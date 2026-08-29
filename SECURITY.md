@@ -28,7 +28,16 @@ Original evidence is retained with capture metadata and provider provenance. Gen
 
 ## Secrets and providers
 
-Credentials are stored using Replit Secrets or managed integrations. Logs redact authorization headers, cookies, and sensitive provider payloads. Provider usage and cost are tenant-scoped.
+Credentials are stored using Replit Secrets or managed integrations. The Apify
+adapter uses Replit's authenticated server-side `apify` proxy and never reads,
+returns, or logs a token. Actor IDs are server-owned provider configuration,
+never browser configuration. Logs redact authorization headers, cookies, and
+sensitive provider payloads.
+
+Provider diagnostics require an authenticated Clerk session, are disabled with
+a 404 in production, and expose only non-secret operational aggregates. Actor
+run and dataset IDs may be retained as operational correlation metadata, but
+raw Actor payloads are not written to provider usage.
 
 ## AI boundaries
 

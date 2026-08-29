@@ -11,11 +11,13 @@
     "test:icp": "node ./scripts/test-icp-engine.mjs",
     "test:business-twin": "node ./scripts/test-business-twin-maturity.mjs",
     "test:companies": "node ./scripts/test-company-identity.mjs",
-    "test:providers": "node ./scripts/test-provider-router.mjs"
+    "test:providers": "node ./scripts/test-provider-router.mjs",
+    "test:apify": "node ./scripts/test-apify-provider.mjs"
   },
   "dependencies": {
     "@clerk/express": "^2.1.63",
     "@clerk/shared": "^4.30.1",
+    "@replit/connectors-sdk": "^0.4.1",
     "@workspace/api-zod": "workspace:*",
     "@workspace/db": "workspace:*",
     "@workspace/integrations-openai-ai-server": "workspace:*",

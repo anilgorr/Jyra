@@ -21,6 +21,14 @@ function capturedAt(): string {
   return new Date().toISOString();
 }
 
+function countResults(data: unknown): number {
+  if (!data || typeof data !== "object") return 0;
+  const record = data as Record<string, unknown>;
+  if (Array.isArray(record.results)) return record.results.length;
+  if (Array.isArray(record.jobs)) return record.jobs.length;
+  return 0;
+}
+
 function response<T>(
   providerId: string,
   requestId: string | undefined,
@@ -41,7 +49,13 @@ function response<T>(
       sourceReference && mode === "success"
         ? [{ kind: "mock", reference: sourceReference, capturedAt: timestamp }]
         : [],
-    usage: { estimatedCost: 0, actualCost: 0, latencyMs },
+    usage: {
+      estimatedCost: 0,
+      actualCost: 0,
+      latencyMs,
+      runtimeMs: latencyMs,
+      resultCount: countResults(data),
+    },
     error: failed
       ? {
           code: retryable ? "MOCK_TEMPORARY_FAILURE" : "MOCK_FAILURE",

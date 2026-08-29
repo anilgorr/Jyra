@@ -2,7 +2,7 @@ import { ReactNode } from "react";
 import { Sidebar } from "./sidebar";
 import { navItems } from "./sidebar";
 import { Link } from "wouter";
-import { Menu, Settings } from "lucide-react";
+import { Menu, Settings, Wrench } from "lucide-react";
 import { useWorkspace } from "@/context/workspace-context";
 
 export function Layout({ children }: { children: ReactNode }) {
@@ -33,6 +33,12 @@ export function Layout({ children }: { children: ReactNode }) {
                   {item.label}
                 </Link>
               ))}
+              {import.meta.env.DEV && (
+                <Link href="/settings/providers" className="flex items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-muted">
+                  <Wrench className="h-4 w-4" />
+                  Provider diagnostics
+                </Link>
+              )}
               <Link href="/settings" className="flex items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-muted">
                 <Settings className="h-4 w-4" />
                 Settings

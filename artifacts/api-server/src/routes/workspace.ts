@@ -1,11 +1,29 @@
-import { Router, type IRouter } from "express";
+import { and, count, eq, sql } from "drizzle-orm";
+import { Router, type IRouter, type RequestHandler } from "express";
 import {
+  GetProviderDiagnosticsResponse,
   GetWorkspaceActivityResponse,
   GetWorkspaceCapabilitiesResponse,
   GetWorkspaceSummaryResponse,
 } from "@workspace/api-zod";
+import {
+  dataProvidersTable,
+  db,
+  providerCapabilitiesTable,
+  providerUsageTable,
+} from "@workspace/db";
+import { requireAuth } from "../middlewares/auth";
 
 const router: IRouter = Router();
+
+type AsyncHandler = (
+  ...args: Parameters<RequestHandler>
+) => Promise<void>;
+
+const asyncRoute = (handler: AsyncHandler): RequestHandler =>
+  (req, res, next) => {
+    void handler(req, res, next).catch(next);
+  };
 
 const capabilityPhases = [
   {
@@ -42,9 +60,9 @@ const capabilityPhases = [
   },
   {
     id: "provider-router",
-    label: "Provider Router",
+    label: "Provider Router & Apify",
     description:
-      "Route normalized research capabilities through configurable providers with usage tracking.",
+      "Route normalized research capabilities through configurable providers, including Apify Actors, with usage tracking.",
     status: "implemented",
     order: 5,
   },
@@ -84,9 +102,9 @@ const capabilityPhases = [
 
 router.get("/workspace/summary", (_req, res) => {
   const data = GetWorkspaceSummaryResponse.parse({
-    milestone: "provider_abstraction",
-    milestoneLabel: "Provider Abstraction",
-    researchStatus: "not_connected",
+    milestone: "apify_provider",
+    milestoneLabel: "Apify Research Provider",
+    researchStatus: "connected_unconfigured",
     intelligenceCount: 0,
     activeSignalCount: 0,
     qualifiedCompanyCount: 0,
@@ -105,5 +123,79 @@ router.get("/workspace/activity", (_req, res) => {
   const data = GetWorkspaceActivityResponse.parse([]);
   res.json(data);
 });
+
+router.get(
+  "/workspace/providers/diagnostics",
+  requireAuth,
+  asyncRoute(async (_req, res) => {
+    if (process.env.NODE_ENV === "production") {
+      res.status(404).json({ error: "Not found" });
+      return;
+    }
+
+    const rows = await db
+      .select({
+        providerId: dataProvidersTable.id,
+        provider: dataProvidersTable.name,
+        providerType: dataProvidersTable.providerType,
+        capability: providerCapabilitiesTable.capability,
+        enabled: dataProvidersTable.enabled,
+        lastSuccessAt: dataProvidersTable.lastSuccessAt,
+        lastFailureAt: dataProvidersTable.lastFailureAt,
+        successRate: dataProvidersTable.successRate,
+        configuredLatencyMs: dataProvidersTable.averageLatency,
+        observedLatencyMs:
+          sql<number>`coalesce(avg(${providerUsageTable.latencyMs}), 0)`.mapWith(Number),
+        spend:
+          sql<number>`coalesce(sum(${providerUsageTable.actualCost}), 0)`.mapWith(Number),
+        results:
+          sql<number>`coalesce(sum(${providerUsageTable.resultCount}), 0)`.mapWith(Number),
+        requestCount: count(providerUsageTable.id),
+      })
+      .from(dataProvidersTable)
+      .leftJoin(
+        providerCapabilitiesTable,
+        eq(providerCapabilitiesTable.providerId, dataProvidersTable.id),
+      )
+      .leftJoin(
+        providerUsageTable,
+        and(
+          eq(providerUsageTable.providerId, dataProvidersTable.id),
+          eq(providerUsageTable.capability, providerCapabilitiesTable.capability),
+        ),
+      )
+      .groupBy(
+        dataProvidersTable.id,
+        providerCapabilitiesTable.capability,
+      )
+      .orderBy(
+        dataProvidersTable.priority,
+        dataProvidersTable.name,
+        providerCapabilitiesTable.capability,
+      );
+
+    res.json(
+      GetProviderDiagnosticsResponse.parse(
+        rows.map((row) => ({
+          providerId: row.providerId,
+          provider: row.provider,
+          providerType: row.providerType,
+          capability: row.capability,
+          enabled: row.enabled,
+          lastSuccessAt: row.lastSuccessAt?.toISOString() ?? null,
+          lastFailureAt: row.lastFailureAt?.toISOString() ?? null,
+          successRate: row.successRate,
+          latencyMs:
+            row.requestCount > 0
+              ? row.observedLatencyMs
+              : row.configuredLatencyMs,
+          spend: row.spend,
+          results: row.results,
+          requestCount: row.requestCount,
+        })),
+      ),
+    );
+  }),
+);
 
 export default router;

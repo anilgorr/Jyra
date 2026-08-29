@@ -17,17 +17,23 @@ import {
   type ProviderOperations,
   type ProviderResponse,
 } from "./provider-contract";
+import {
+  createApifyAdapters,
+  parseApifyProviderConfiguration,
+} from "./apify-provider";
 
 export type ProviderCatalogEntry = Pick<
   DataProvider,
   | "id"
   | "name"
+  | "providerType"
   | "enabled"
   | "priority"
   | "estimatedCost"
   | "successRate"
   | "averageLatency"
   | "qualityScore"
+  | "configuration"
 > & {
   capabilities: ProviderCapability[];
 };
@@ -41,7 +47,10 @@ export type ProviderUsageRecord = {
   latencyMs: number;
   estimatedCost: number;
   actualCost: number | null;
+  runtimeMs: number;
+  resultCount: number;
   errorCode: string | null;
+  metadata: Record<string, unknown>;
   startedAt: Date;
   completedAt: Date;
 };
@@ -55,6 +64,7 @@ export type ProviderRouterOptions = {
   adapters?: ProviderAdapter[];
   loadProviders?: () => Promise<ProviderCatalogEntry[]>;
   usageWriter?: ProviderUsageWriter;
+  adapterFactory?: (provider: ProviderCatalogEntry) => ProviderAdapter[];
 };
 
 const capabilitySet = new Set<string>(PROVIDER_CAPABILITIES);
@@ -64,12 +74,14 @@ function databaseProviderLoader(): Promise<ProviderCatalogEntry[]> {
     .select({
       id: dataProvidersTable.id,
       name: dataProvidersTable.name,
+      providerType: dataProvidersTable.providerType,
       enabled: dataProvidersTable.enabled,
       priority: dataProvidersTable.priority,
       estimatedCost: dataProvidersTable.estimatedCost,
       successRate: dataProvidersTable.successRate,
       averageLatency: dataProvidersTable.averageLatency,
       qualityScore: dataProvidersTable.qualityScore,
+      configuration: dataProvidersTable.configuration,
       capability: providerCapabilitiesTable.capability,
     })
     .from(dataProvidersTable)
@@ -89,12 +101,14 @@ function databaseProviderLoader(): Promise<ProviderCatalogEntry[]> {
           grouped.set(row.id, {
             id: row.id,
             name: row.name,
+            providerType: row.providerType,
             enabled: row.enabled,
             priority: row.priority,
             estimatedCost: row.estimatedCost,
             successRate: row.successRate,
             averageLatency: row.averageLatency,
             qualityScore: row.qualityScore,
+            configuration: row.configuration,
             capabilities: [row.capability as ProviderCapability],
           });
         }
@@ -111,10 +125,12 @@ async function databaseUsageWriter(record: ProviderUsageRecord): Promise<void> {
     status: record.status,
     retryable: record.retryable,
     latencyMs: record.latencyMs,
+    runtimeMs: record.runtimeMs,
+    resultCount: record.resultCount,
     estimatedCost: record.estimatedCost,
     actualCost: record.actualCost,
     errorCode: record.errorCode,
-    metadata: {},
+    metadata: record.metadata,
     startedAt: record.startedAt,
     completedAt: record.completedAt,
   });
@@ -140,7 +156,13 @@ function responseForUnavailable(
     providerRequestId: randomUUID(),
     data: null,
     sources: [],
-    usage: { estimatedCost: 0, actualCost: null, latencyMs: 0 },
+    usage: {
+      estimatedCost: 0,
+      actualCost: null,
+      latencyMs: 0,
+      runtimeMs: 0,
+      resultCount: 0,
+    },
     error: {
       code: "NO_PROVIDER",
       message: `No enabled provider supports ${capability}`,
@@ -164,6 +186,16 @@ function rankProviders(
     left.name.localeCompare(right.name) ||
     left.id.localeCompare(right.id)
   );
+}
+
+function defaultAdapterFactory(
+  provider: ProviderCatalogEntry,
+): ProviderAdapter[] {
+  if (provider.providerType !== "apify") return [];
+  return createApifyAdapters({
+    providerId: provider.id,
+    configuration: parseApifyProviderConfiguration(provider.configuration),
+  });
 }
 
 function thrownError(error: unknown): {
@@ -199,16 +231,51 @@ function thrownError(error: unknown): {
 }
 
 export class ProviderRouter implements ProviderOperations {
-  private readonly adapters: Map<string, ProviderAdapter>;
+  private readonly adapters = new Map<string, ProviderAdapter>();
   private readonly configuredProviders?: ProviderCatalogEntry[];
   private readonly loadProviders: () => Promise<ProviderCatalogEntry[]>;
   private readonly usageWriter: ProviderUsageWriter;
+  private readonly adapterFactory: (
+    provider: ProviderCatalogEntry,
+  ) => ProviderAdapter[];
 
   constructor(options: ProviderRouterOptions = {}) {
-    this.adapters = new Map((options.adapters ?? []).map((adapter) => [adapter.providerId, adapter]));
+    this.registerAdapters(options.adapters ?? []);
     this.configuredProviders = options.providers;
     this.loadProviders = options.loadProviders ?? databaseProviderLoader;
     this.usageWriter = options.usageWriter ?? databaseUsageWriter;
+    this.adapterFactory = options.adapterFactory ?? defaultAdapterFactory;
+  }
+
+  private adapterKey(
+    providerId: string,
+    capability: ProviderCapability,
+  ): string {
+    return `${providerId}:${capability}`;
+  }
+
+  private registerAdapters(adapters: ProviderAdapter[]): void {
+    for (const adapter of adapters) {
+      for (const capability of adapter.capabilities) {
+        this.adapters.set(
+          this.adapterKey(adapter.providerId, capability),
+          adapter,
+        );
+      }
+    }
+  }
+
+  private resolveAdapter(
+    provider: ProviderCatalogEntry,
+    capability: ProviderCapability,
+  ): ProviderAdapter | undefined {
+    const key = this.adapterKey(provider.id, capability);
+    const existing = this.adapters.get(key);
+    if (existing) return existing;
+
+    this.registerAdapters(this.adapterFactory(provider));
+
+    return this.adapters.get(key);
   }
 
   async route<C extends ProviderCapability>(
@@ -236,7 +303,7 @@ export class ProviderRouter implements ProviderOperations {
     for (const provider of providers) {
       const startedAt = new Date();
       const providerRequestId = `${request.requestId ?? randomUUID()}:${provider.id}`;
-      const adapter = this.adapters.get(provider.id);
+      const adapter = this.resolveAdapter(provider, capability);
       let response: ProviderResponse<CapabilityResult<C>>;
 
       if (!adapter) {
@@ -250,6 +317,8 @@ export class ProviderRouter implements ProviderOperations {
             estimatedCost: provider.estimatedCost,
             actualCost: null,
             latencyMs: 0,
+            runtimeMs: 0,
+            resultCount: 0,
           },
           error: {
             code: "ADAPTER_NOT_REGISTERED",
@@ -270,6 +339,8 @@ export class ProviderRouter implements ProviderOperations {
             estimatedCost: provider.estimatedCost,
             actualCost: null,
             latencyMs: 0,
+            runtimeMs: 0,
+            resultCount: 0,
           },
           error: {
             code: "ADAPTER_CAPABILITY_MISMATCH",
@@ -304,6 +375,8 @@ export class ProviderRouter implements ProviderOperations {
               estimatedCost: provider.estimatedCost,
               actualCost: null,
               latencyMs: 0,
+              runtimeMs: 0,
+              resultCount: 0,
             },
             error: normalized,
             retryable: normalized.retryable,
@@ -334,7 +407,10 @@ export class ProviderRouter implements ProviderOperations {
         latencyMs,
         estimatedCost: provider.estimatedCost,
         actualCost: response.usage.actualCost,
+        runtimeMs: response.usage.runtimeMs,
+        resultCount: response.usage.resultCount,
         errorCode: response.error?.code ?? null,
+        metadata: response.metadata ?? {},
         startedAt,
         completedAt,
       });

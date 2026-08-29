@@ -20,6 +20,8 @@ tags:
     description: Objective, versioned Ideal Customer Profile rules
   - name: companies
     description: Canonical company identity and project company operations
+  - name: providers
+    description: Development-only provider diagnostics
 paths:
   /healthz:
     get:
@@ -77,6 +79,27 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/WorkspaceActivity"
+  /workspace/providers/diagnostics:
+    get:
+      operationId: getProviderDiagnostics
+      tags: [providers]
+      summary: Get development provider diagnostics
+      description: Returns non-secret provider health and usage totals in development only.
+      security:
+        - clerkSession: []
+      responses:
+        "200":
+          description: Provider diagnostics
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProviderDiagnostic"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
   /me:
     get:
       operationId: getCurrentUser
@@ -769,6 +792,40 @@ components:
         - type
         - label
         - occurredAt
+    ProviderDiagnostic:
+      type: object
+      properties:
+        providerId: { type: string }
+        provider: { type: string }
+        providerType: { type: string }
+        capability:
+          type: ["string", "null"]
+          enum: [COMPANY_DISCOVERY, COMPANY_LOOKUP, WEB_SEARCH, WEBSITE_CRAWL, JOB_SEARCH, NEWS_SEARCH, TECH_STACK, LEADERSHIP_SEARCH, PUBLIC_SOCIAL_SEARCH, PERSON_LOOKUP, EMAIL_LOOKUP, PHONE_LOOKUP, null]
+        enabled: { type: boolean }
+        lastSuccessAt:
+          type: ["string", "null"]
+          format: date-time
+        lastFailureAt:
+          type: ["string", "null"]
+          format: date-time
+        successRate: { type: number }
+        latencyMs: { type: number }
+        spend: { type: number }
+        results: { type: number }
+        requestCount: { type: number }
+      required:
+        - providerId
+        - provider
+        - providerType
+        - capability
+        - enabled
+        - lastSuccessAt
+        - lastFailureAt
+        - successRate
+        - latencyMs
+        - spend
+        - results
+        - requestCount
     CurrentUser:
       type: object
       properties:

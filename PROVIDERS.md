@@ -41,9 +41,10 @@ error is explicitly retryable. Empty results are successful observations of
 missing provider data and do not trigger fallback. A non-retryable error stops
 the route.
 
-Every attempted provider call must write `provider_usage`, including the selected
-capability, normalized status, retryability, latency, estimated and actual
-cost, and error code. A usage persistence failure fails the routing call rather
+Every attempted provider call must write `provider_usage`, including the
+selected capability, normalized status, retryability, latency, runtime, result
+count, estimated and actual cost, and error code. A usage persistence failure
+fails the routing call rather
 than silently returning an unaccounted result. Provider success/failure
 timestamps are updated separately from commercial interpretation. Success
 rate, cost, quality, and latency are routing configuration in this milestone;
@@ -58,6 +59,35 @@ The provider router:
 3. Spend more only when more information could change a company decision.
 4. Record request status, latency, cost, and result provenance.
 5. Apply deterministic retry, timeout, budget, and stopping rules.
+
+## Apify research adapter
+
+Apify is implemented as a production provider adapter through Replit's managed
+`apify` connection. Application code never reads an Apify token. The adapter:
+
+- starts an Actor through the authenticated server-side proxy
+- polls its run with a bounded timeout and bounded retry/backoff
+- retrieves the default dataset using offset/limit pagination
+- records Apify runtime, result count, reported spend, status, retryability,
+  error code, run ID, and dataset ID
+- normalizes Actor output into JYRA-owned crawl, jobs, web-search, technology,
+  or public-social result types
+
+Actor IDs live only in the provider's opaque `configuration.actorIds` object.
+Changing an Actor is a configuration update and does not require changing the
+adapter. Blank and unsupported Actor mappings are ignored.
+
+The development database contains a disabled Apify placeholder. It has no
+capability mappings and no Actor IDs by default. JYRA does not enable a
+capability until a reliable Actor has been evaluated and its ID is deliberately
+saved in provider configuration. The managed connection itself has been
+verified with a safe authenticated Apify account call.
+
+The authenticated `/api/workspace/providers/diagnostics` endpoint and its
+development-only settings view show provider, capability, enabled state, last
+success/failure, success rate, latency, spend, and result totals. They never
+return credentials or raw provider payloads, and the endpoint returns 404 in
+production.
 
 ## Provider categories
 
@@ -96,8 +126,8 @@ themselves as deterministic mock output, not external evidence. Tests can
 configure success, empty, retryable failure, or terminal failure without
 network access.
 
-No production provider, credential, paid API, scraper, or Apify Actor is
-configured by this milestone.
+The Apify adapter is available for production research, but no paid Actor or
+specific Actor capability is enabled by default.
 
 ## Safety rules
 

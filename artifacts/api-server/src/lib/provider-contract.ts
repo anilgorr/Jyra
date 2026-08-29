@@ -26,6 +26,8 @@ export type ProviderUsageMetadata = {
   estimatedCost: number;
   actualCost: number | null;
   latencyMs: number;
+  runtimeMs: number;
+  resultCount: number;
 };
 
 export type ProviderError = {
@@ -44,6 +46,7 @@ export type ProviderResponse<T> = {
   error: ProviderError | null;
   retryable: boolean;
   capturedAt: string;
+  metadata?: Record<string, unknown>;
 };
 
 export type ProviderRequestBase = {

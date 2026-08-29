@@ -48,6 +48,7 @@ import type {
   ProjectCompany,
   ProjectCompanyUpdate,
   ProjectInput,
+  ProviderDiagnostic,
   UnauthorizedResponse,
   WorkspaceActivity,
   WorkspaceSummary
@@ -380,6 +381,84 @@ export function useGetWorkspaceActivity<TData = Awaited<ReturnType<typeof getWor
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
   const queryOptions = getGetWorkspaceActivityQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getGetProviderDiagnosticsUrl = () => {
+
+
+
+
+  return `/api/workspace/providers/diagnostics`
+}
+
+/**
+ * Returns non-secret provider health and usage totals in development only.
+ * @summary Get development provider diagnostics
+ */
+export const getProviderDiagnostics = async ( options?: Parameters<typeof customFetch>[1]): Promise<ProviderDiagnostic[]> => {
+
+  return customFetch<ProviderDiagnostic[]>(getGetProviderDiagnosticsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetProviderDiagnosticsQueryKey = () => {
+    return [
+    `/api/workspace/providers/diagnostics`
+    ] as const;
+    }
+
+
+export const getGetProviderDiagnosticsQueryOptions = <TData = Awaited<ReturnType<typeof getProviderDiagnostics>>, TError = ErrorType<UnauthorizedResponse | NotFoundResponse>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getProviderDiagnostics>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetProviderDiagnosticsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getProviderDiagnostics>>> = ({ signal }) => getProviderDiagnostics({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getProviderDiagnostics>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetProviderDiagnosticsQueryResult = NonNullable<Awaited<ReturnType<typeof getProviderDiagnostics>>>
+export type GetProviderDiagnosticsQueryError = ErrorType<UnauthorizedResponse | NotFoundResponse>
+
+
+/**
+ * @summary Get development provider diagnostics
+ */
+
+export function useGetProviderDiagnostics<TData = Awaited<ReturnType<typeof getProviderDiagnostics>>, TError = ErrorType<UnauthorizedResponse | NotFoundResponse>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getProviderDiagnostics>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetProviderDiagnosticsQueryOptions(options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 

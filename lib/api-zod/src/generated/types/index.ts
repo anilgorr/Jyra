@@ -83,6 +83,8 @@ export * from './projectCompanyUpdateOpportunityState';
 export * from './projectCompanyUpdateResearchStatus';
 export * from './projectCompanyUpdateStatus';
 export * from './projectInput';
+export * from './providerDiagnostic';
+export * from './providerDiagnosticCapability';
 export * from './unauthorizedResponse';
 export * from './workspaceActivity';
 export * from './workspaceSummary';

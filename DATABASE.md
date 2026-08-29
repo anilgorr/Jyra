@@ -25,13 +25,19 @@ Import preview is non-mutating. The server deterministically normalizes fields, 
 - `provider_capabilities` declares which normalized JYRA capabilities each
   provider supports. Provider/capability pairs are unique.
 - `provider_usage` records every attempted adapter request with capability,
-  normalized status, retryability, latency, estimated and actual cost, error
+  normalized status, retryability, latency, runtime, result count, estimated
+  and actual cost, error
   code, and start/completion timestamps. Request IDs are correlation values,
   not uniqueness keys, so repeated executions remain distinct audit rows.
 
+Apify Actor IDs are stored in the opaque server-owned
+`data_providers.configuration.actorIds` object by JYRA capability. The default
+development placeholder is disabled and has an empty Actor map; no capability
+row is created until a reliable Actor is selected.
+
 Provider usage is operational accounting, not evidence or commercial
 interpretation. Mock provider outputs are never inserted as facts or signals.
-Production provider requests and evidence tables remain planned.
+Evidence persistence remains planned.
 
 # JYRA Database Plan
 

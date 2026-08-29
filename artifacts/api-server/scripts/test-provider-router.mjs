@@ -15,6 +15,7 @@ await build({
 const require = createRequire(import.meta.url);
 const {
   ProviderRouter,
+  createApifyAdapters,
   createMockJobSearchAdapter,
   createMockWebSearchAdapter,
   createMockWebsiteCrawlAdapter,
@@ -23,12 +24,14 @@ const {
 const provider = (overrides) => ({
   id: overrides.id,
   name: overrides.name ?? overrides.id,
+  providerType: overrides.providerType ?? "mock",
   enabled: overrides.enabled ?? true,
   priority: overrides.priority ?? 10,
   estimatedCost: overrides.estimatedCost ?? 0,
   successRate: overrides.successRate ?? 1,
   averageLatency: overrides.averageLatency ?? 1,
   qualityScore: overrides.qualityScore ?? 1,
+  configuration: overrides.configuration ?? {},
   capabilities: overrides.capabilities ?? ["WEB_SEARCH"],
 });
 
@@ -184,7 +187,7 @@ const mismatchedRouter = new ProviderRouter({
 });
 const mismatched = await mismatchedRouter.searchWeb({ query: "wrong capability" });
 assert.equal(mismatched.status, "failed");
-assert.equal(mismatched.error.code, "ADAPTER_CAPABILITY_MISMATCH");
+assert.equal(mismatched.error.code, "ADAPTER_NOT_REGISTERED");
 assert.equal(mismatchedUsage.length, 1);
 
 const persistenceFailureRouter = new ProviderRouter({
@@ -197,6 +200,113 @@ const persistenceFailureRouter = new ProviderRouter({
 await assert.rejects(
   persistenceFailureRouter.searchWeb({ query: "must be audited" }),
   /usage storage unavailable/,
+);
+
+const apifyCalls = [];
+const apifyUsage = [];
+const apifyClient = {
+  async proxy(_connector, path) {
+    apifyCalls.push(path);
+    if (path.includes("owner~search-actor/runs")) {
+      return new Response(
+        JSON.stringify({ data: { id: "search-run", status: "READY" } }),
+        { status: 201 },
+      );
+    }
+    if (path.includes("owner~crawl-actor/runs")) {
+      return new Response(
+        JSON.stringify({ data: { id: "crawl-run", status: "READY" } }),
+        { status: 201 },
+      );
+    }
+    if (path === "/v2/actor-runs/search-run") {
+      return new Response(
+        JSON.stringify({
+          data: {
+            id: "search-run",
+            status: "SUCCEEDED",
+            defaultDatasetId: "search-dataset",
+          },
+        }),
+      );
+    }
+    if (path === "/v2/actor-runs/crawl-run") {
+      return new Response(
+        JSON.stringify({
+          data: {
+            id: "crawl-run",
+            status: "SUCCEEDED",
+            defaultDatasetId: "crawl-dataset",
+          },
+        }),
+      );
+    }
+    if (path.includes("search-dataset")) {
+      return new Response(
+        JSON.stringify([
+          {
+            title: "JYRA",
+            url: "https://jyra.example",
+            snippet: "Opportunity intelligence",
+          },
+        ]),
+      );
+    }
+    if (path.includes("crawl-dataset")) {
+      return new Response(
+        JSON.stringify([
+          {
+            url: "https://jyra.example",
+            title: "JYRA",
+            text: "Who. When. Why.",
+          },
+        ]),
+      );
+    }
+    throw new Error(`Unexpected Apify path: ${path}`);
+  },
+};
+const apifyProvider = provider({
+  id: "apify-multi",
+  providerType: "apify",
+  capabilities: ["WEB_SEARCH", "WEBSITE_CRAWL"],
+  configuration: {
+    actorIds: {
+      WEB_SEARCH: "owner~search-actor",
+      WEBSITE_CRAWL: "owner~crawl-actor",
+    },
+    pollIntervalMs: 0,
+    maxRetries: 0,
+  },
+});
+const apifyRouter = new ProviderRouter({
+  providers: [apifyProvider],
+  adapterFactory: (configuredProvider) =>
+    createApifyAdapters({
+      providerId: configuredProvider.id,
+      configuration: configuredProvider.configuration,
+      client: apifyClient,
+      sleep: async () => {},
+    }),
+  usageWriter: async (record) => apifyUsage.push(record),
+});
+const apifySearch = await apifyRouter.searchWeb({ query: "JYRA" });
+const apifyCrawl = await apifyRouter.crawlWebsite({
+  url: "https://jyra.example",
+});
+assert.equal(apifySearch.status, "success");
+assert.equal(apifySearch.data.results[0].title, "JYRA");
+assert.equal(apifyCrawl.status, "success");
+assert.equal(apifyCrawl.data.page.text, "Who. When. Why.");
+assert.ok(apifyCalls.some((path) => path.includes("owner~search-actor/runs")));
+assert.ok(apifyCalls.some((path) => path.includes("owner~crawl-actor/runs")));
+assert.deepEqual(
+  apifyUsage.map((entry) => entry.capability),
+  ["WEB_SEARCH", "WEBSITE_CRAWL"],
+);
+assert.deepEqual(
+  apifyUsage.map((entry) => entry.resultCount),
+  [1, 1],
 );
 
 console.log("Provider router tests passed.");

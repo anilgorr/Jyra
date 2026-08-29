@@ -21,6 +21,7 @@ import EmptyFeature from './pages/empty-feature';
 import BusinessTwinPage from './pages/business-twin';
 import IcpPage from './pages/icp';
 import CompaniesPage from './pages/companies/index';
+import ProviderDiagnostics from './pages/provider-diagnostics';
 import { WorkspaceProvider } from './context/workspace-context';
 
 const clerkPubKey = publishableKeyFromHost(
@@ -171,6 +172,9 @@ function AuthenticatedRoutes() {
             <Route path="/outcomes">
               <EmptyFeature title="Outcomes" description="Outcome capture is planned for a later milestone. No sales outcomes have been recorded." />
             </Route>
+            {import.meta.env.DEV && (
+              <Route path="/settings/providers" component={ProviderDiagnostics} />
+            )}
             <Route path="/settings" component={Settings} />
             <Route>
               <div className="flex h-[50vh] flex-col items-center justify-center text-center">

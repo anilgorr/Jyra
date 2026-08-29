@@ -60,6 +60,27 @@ export const GetWorkspaceActivityResponse = zod.array(GetWorkspaceActivityRespon
 
 
 /**
+ * Returns non-secret provider health and usage totals in development only.
+ * @summary Get development provider diagnostics
+ */
+export const GetProviderDiagnosticsResponseItem = zod.object({
+  "providerId": zod.string(),
+  "provider": zod.string(),
+  "providerType": zod.string(),
+  "capability": zod.union([zod.literal('COMPANY_DISCOVERY'),zod.literal('COMPANY_LOOKUP'),zod.literal('WEB_SEARCH'),zod.literal('WEBSITE_CRAWL'),zod.literal('JOB_SEARCH'),zod.literal('NEWS_SEARCH'),zod.literal('TECH_STACK'),zod.literal('LEADERSHIP_SEARCH'),zod.literal('PUBLIC_SOCIAL_SEARCH'),zod.literal('PERSON_LOOKUP'),zod.literal('EMAIL_LOOKUP'),zod.literal('PHONE_LOOKUP'),zod.literal(null)]).nullable(),
+  "enabled": zod.boolean(),
+  "lastSuccessAt": zod.coerce.date().nullable(),
+  "lastFailureAt": zod.coerce.date().nullable(),
+  "successRate": zod.number(),
+  "latencyMs": zod.number(),
+  "spend": zod.number(),
+  "results": zod.number(),
+  "requestCount": zod.number()
+})
+export const GetProviderDiagnosticsResponse = zod.array(GetProviderDiagnosticsResponseItem)
+
+
+/**
  * Returns the local JYRA user record and organization count for the authenticated Clerk session.
  * @summary Get the authenticated user
  */

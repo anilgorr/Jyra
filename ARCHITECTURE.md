@@ -20,14 +20,19 @@ explicitly retryable failure.
 
 Adapters normalize their output before it reaches business logic. Vendor
 response formats, credentials, retry semantics, and raw SDK types stay behind
-the adapter boundary. Each attempt records normalized usage, latency, cost,
-status, and error metadata independently from facts, signals, scores, and
-commercial interpretation.
+the adapter boundary. Each attempt records normalized usage, latency, runtime,
+result count, cost, status, and error metadata independently from facts,
+signals, scores, and commercial interpretation.
 
 Deterministic mock adapters for web search, website crawling, and job search
 are implemented for testing. Their `mock://` references are not source
-evidence. Production providers, research planning, background jobs, evidence
-storage, and signal generation remain outside this milestone.
+evidence. The Apify adapter starts and polls configuration-selected Actors
+through Replit's authenticated server-side proxy, paginates the resulting
+dataset, and normalizes it before returning. Actor IDs stay in opaque provider
+configuration; credentials and Actor response shapes do not cross the adapter
+boundary. No Actor capability is enabled by default. Research planning,
+background jobs, evidence storage, and signal generation remain outside this
+milestone.
 
 # JYRA Architecture
 
@@ -79,7 +84,10 @@ The server validates response-shaped data with generated Zod schemas. The client
 - **Commercial interpretation:** signals, clusters, fit, need, timing, relationship, confidence, opportunities, and explanations.
 - **Learning:** user actions, outcomes, and versioned model/rule evaluation.
 
-The identity/tenancy boundary, project-scoped Business Twin and ICP, canonical company identity layer, and provider abstraction are implemented. Research planning, production providers, evidence, opportunity interpretation, and learning remain future phases.
+The identity/tenancy boundary, project-scoped Business Twin and ICP, canonical
+company identity layer, provider abstraction, and Apify research adapter are
+implemented. Research planning, evidence, opportunity interpretation, and
+learning remain future phases.
 
 ## Deterministic versus AI-assisted work
 

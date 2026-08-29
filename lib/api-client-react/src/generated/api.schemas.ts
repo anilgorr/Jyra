@@ -34,6 +34,45 @@ export interface WorkspaceActivity {
   occurredAt: string;
 }
 
+/**
+ * @nullable
+ */
+export type ProviderDiagnosticCapability = typeof ProviderDiagnosticCapability[keyof typeof ProviderDiagnosticCapability] | null;
+
+
+export const ProviderDiagnosticCapability = {
+  COMPANY_DISCOVERY: 'COMPANY_DISCOVERY',
+  COMPANY_LOOKUP: 'COMPANY_LOOKUP',
+  WEB_SEARCH: 'WEB_SEARCH',
+  WEBSITE_CRAWL: 'WEBSITE_CRAWL',
+  JOB_SEARCH: 'JOB_SEARCH',
+  NEWS_SEARCH: 'NEWS_SEARCH',
+  TECH_STACK: 'TECH_STACK',
+  LEADERSHIP_SEARCH: 'LEADERSHIP_SEARCH',
+  PUBLIC_SOCIAL_SEARCH: 'PUBLIC_SOCIAL_SEARCH',
+  PERSON_LOOKUP: 'PERSON_LOOKUP',
+  EMAIL_LOOKUP: 'EMAIL_LOOKUP',
+  PHONE_LOOKUP: 'PHONE_LOOKUP',
+} as const;
+
+export interface ProviderDiagnostic {
+  providerId: string;
+  provider: string;
+  providerType: string;
+  /** @nullable */
+  capability: ProviderDiagnosticCapability;
+  enabled: boolean;
+  /** @nullable */
+  lastSuccessAt: string | null;
+  /** @nullable */
+  lastFailureAt: string | null;
+  successRate: number;
+  latencyMs: number;
+  spend: number;
+  results: number;
+  requestCount: number;
+}
+
 export interface CurrentUser {
   id: string;
   organizationCount: number;

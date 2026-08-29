@@ -1,4 +1,5 @@
 import app from "./app";
+import { ensureApifyProviderPlaceholder } from "./lib/apify-provider-config";
 import { logger } from "./lib/logger";
 
 const rawPort = process.env["PORT"];
@@ -15,11 +16,22 @@ if (Number.isNaN(port) || port <= 0) {
   throw new Error(`Invalid PORT value: "${rawPort}"`);
 }
 
-app.listen(port, (err) => {
-  if (err) {
-    logger.error({ err }, "Error listening on port");
-    process.exit(1);
+async function main() {
+  if (process.env.NODE_ENV !== "production") {
+    await ensureApifyProviderPlaceholder();
   }
 
-  logger.info({ port }, "Server listening");
+  app.listen(port, (err) => {
+    if (err) {
+      logger.error({ err }, "Error listening on port");
+      process.exit(1);
+    }
+
+    logger.info({ port }, "Server listening");
+  });
+}
+
+void main().catch((error) => {
+  logger.error({ error }, "Server startup failed");
+  process.exit(1);
 });

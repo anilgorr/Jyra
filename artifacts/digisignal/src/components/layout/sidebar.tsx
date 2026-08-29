@@ -8,7 +8,8 @@ import {
   Crosshair, 
   BookOpen, 
   TrendingUp, 
-  Settings 
+  Settings,
+  Wrench
 } from "lucide-react";
 import { useUser, useClerk } from "@clerk/react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -114,6 +115,20 @@ export function Sidebar() {
 
       <div className="border-t border-sidebar-border p-4">
         <nav className="space-y-1 mb-4">
+          {import.meta.env.DEV && (
+            <Link
+              href="/settings/providers"
+              className={cn(
+                "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors outline-none",
+                location === "/settings/providers"
+                  ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                  : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+              )}
+            >
+              <Wrench className="h-4 w-4" />
+              Provider diagnostics
+            </Link>
+          )}
           <Link
             href="/settings"
             className={cn(

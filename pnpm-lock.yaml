@@ -156,10 +156,6 @@ overrides:
 importers:
 
   .:
-    dependencies:
-      '@replit/connectors-sdk':
-        specifier: ^0.4.1
-        version: 0.4.1
     devDependencies:
       prettier:
         specifier: ^3.9.6
@@ -176,6 +172,9 @@ importers:
       '@clerk/shared':
         specifier: ^4.30.1
         version: 4.30.1(react-dom@19.1.4(react@19.1.4))(react@19.1.4)
+      '@replit/connectors-sdk':
+        specifier: ^0.4.1
+        version: 0.4.1
       '@workspace/api-zod':
         specifier: workspace:*
         version: link:../../lib/api-zod

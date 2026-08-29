@@ -94,6 +94,8 @@ export const providerUsageTable = pgTable(
     status: providerUsageStatusEnum("status").notNull(),
     retryable: boolean("retryable").notNull().default(false),
     latencyMs: integer("latency_ms"),
+    runtimeMs: integer("runtime_ms"),
+    resultCount: integer("result_count"),
     estimatedCost: real("estimated_cost"),
     actualCost: real("actual_cost"),
     errorCode: text("error_code"),

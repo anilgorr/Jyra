@@ -23,8 +23,23 @@
 - Added retryable-only fallback and normalized empty/failure handling without
   turning missing provider data into a negative finding.
 - Added deterministic mock adapters for web search, website crawling, and job
-  search. No production provider, scraper, credential, or external evidence
-  source was added.
+  search.
+
+## Apify research provider
+
+- Added a reusable Apify Actor start, bounded poll, retry, timeout, and paginated
+  dataset adapter through Replit's managed server-side Apify connection.
+- Added configuration-selected Actor mappings for website crawl, jobs, web
+  search, technology, and public social research without making any Actor
+  mandatory.
+- Added stable JYRA normalization and operational usage capture for runtime,
+  result count, reported spend, status, retryability, errors, run IDs, and
+  dataset IDs.
+- Added authenticated development-only provider diagnostics with no credentials
+  or raw provider payloads.
+- Verified the managed Apify connection with a safe authenticated account call;
+  the default Apify placeholder remains disabled until a reliable Actor is
+  deliberately configured.
 
 # Changelog
 
