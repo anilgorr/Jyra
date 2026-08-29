@@ -24,6 +24,7 @@ import CompaniesPage from './pages/companies/index';
 import ProviderDiagnostics from './pages/provider-diagnostics';
 import Research from './pages/research';
 import Signals from './pages/signals';
+import Opportunities from './pages/opportunities';
 import { WorkspaceProvider } from './context/workspace-context';
 
 const clerkPubKey = publishableKeyFromHost(
@@ -162,9 +163,7 @@ function AuthenticatedRoutes() {
         <RoutedErrorBoundary>
           <Switch>
             <Route path="/today" component={Today} />
-            <Route path="/opportunities">
-              <EmptyFeature title="Opportunity Intelligence" description="Opportunity qualification is planned for a later milestone. No buying intent or recommendations have been generated." />
-            </Route>
+            <Route path="/opportunities" component={Opportunities} />
             <Route path="/companies" component={CompaniesPage} />
             <Route path="/business-twin" component={BusinessTwinPage} />
             <Route path="/icp" component={IcpPage} />

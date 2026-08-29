@@ -20,6 +20,9 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  ActivateOpportunityPack200,
+  AddOpportunityResearchQuestionRequest,
+  AddOpportunitySignalRequest,
   BadRequestResponse,
   BusinessTwinManualInterpretationInput,
   BusinessTwinVersion,
@@ -53,6 +56,13 @@ import type {
   NotFoundResponse,
   OnboardingInput,
   OnboardingResponse,
+  OpportunityItemReviewRequest,
+  OpportunityPackDetail,
+  OpportunityPackGeneration,
+  OpportunityPackList,
+  OpportunityPackVersion,
+  OpportunityResearchQuestion,
+  OpportunitySignalProposal,
   Organization,
   OrganizationInput,
   Project,
@@ -60,12 +70,15 @@ import type {
   ProjectCompanyUpdate,
   ProjectInput,
   ProjectSignalPack,
+  ProposeOpportunityPackRequest,
   ProviderDiagnostic,
   ResearchExecutionResponse,
   ResearchWorkspaceCompany,
   Signal,
   SignalPack,
   UnauthorizedResponse,
+  UpdateOpportunityResearchQuestionRequest,
+  UpdateOpportunitySignalRequest,
   WorkspaceActivity,
   WorkspaceSummary
 } from './api.schemas';
@@ -3515,5 +3528,899 @@ export const useEvaluateProjectSignals = <TError = ErrorType<UnauthorizedRespons
         TContext
       > => {
       return useMutation(getEvaluateProjectSignalsMutationOptions(options));
+    }
+
+export const getListOpportunityPacksUrl = (projectId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/opportunity-packs`
+}
+
+/**
+ * @summary List project Opportunity Intelligence Packs and version history
+ */
+export const listOpportunityPacks = async (projectId: string, options?: Parameters<typeof customFetch>[1]): Promise<OpportunityPackList> => {
+
+  return customFetch<OpportunityPackList>(getListOpportunityPacksUrl(projectId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListOpportunityPacksQueryKey = (projectId: string,) => {
+    return [
+    `/api/projects/${projectId}/opportunity-packs`
+    ] as const;
+    }
+
+
+export const getListOpportunityPacksQueryOptions = <TData = Awaited<ReturnType<typeof listOpportunityPacks>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse>>(projectId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listOpportunityPacks>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListOpportunityPacksQueryKey(projectId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listOpportunityPacks>>> = ({ signal }) => listOpportunityPacks(projectId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: projectId !== null && projectId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listOpportunityPacks>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListOpportunityPacksQueryResult = NonNullable<Awaited<ReturnType<typeof listOpportunityPacks>>>
+export type ListOpportunityPacksQueryError = ErrorType<UnauthorizedResponse | ForbiddenResponse>
+
+
+/**
+ * @summary List project Opportunity Intelligence Packs and version history
+ */
+
+export function useListOpportunityPacks<TData = Awaited<ReturnType<typeof listOpportunityPacks>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse>>(
+ projectId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listOpportunityPacks>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListOpportunityPacksQueryOptions(projectId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getProposeOpportunityPackUrl = (projectId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/opportunity-packs/propose`
+}
+
+/**
+ * @summary Generate a bounded proposal without activating it
+ */
+export const proposeOpportunityPack = async (projectId: string,
+    proposeOpportunityPackRequest: ProposeOpportunityPackRequest, options?: Parameters<typeof customFetch>[1]): Promise<OpportunityPackGeneration> => {
+
+  return customFetch<OpportunityPackGeneration>(getProposeOpportunityPackUrl(projectId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(proposeOpportunityPackRequest)
+  }
+);}
+
+
+
+
+
+export const getProposeOpportunityPackMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof proposeOpportunityPack>>, TError,{projectId: string;data: BodyType<ProposeOpportunityPackRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof proposeOpportunityPack>>, TError,{projectId: string;data: BodyType<ProposeOpportunityPackRequest>}, TContext> => {
+
+const mutationKey = ['proposeOpportunityPack'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof proposeOpportunityPack>>, {projectId: string;data: BodyType<ProposeOpportunityPackRequest>}> = (props) => {
+          const {projectId,data} = props ?? {};
+
+          return  proposeOpportunityPack(projectId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ProposeOpportunityPackMutationResult = NonNullable<Awaited<ReturnType<typeof proposeOpportunityPack>>>
+    export type ProposeOpportunityPackMutationBody = BodyType<ProposeOpportunityPackRequest>
+    export type ProposeOpportunityPackMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse>
+
+    /**
+ * @summary Generate a bounded proposal without activating it
+ */
+export const useProposeOpportunityPack = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof proposeOpportunityPack>>, TError,{projectId: string;data: BodyType<ProposeOpportunityPackRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof proposeOpportunityPack>>,
+        TError,
+        {projectId: string;data: BodyType<ProposeOpportunityPackRequest>},
+        TContext
+      > => {
+      return useMutation(getProposeOpportunityPackMutationOptions(options));
+    }
+
+export const getGetOpportunityPackUrl = (projectId: string,
+    packId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/opportunity-packs/${packId}`
+}
+
+/**
+ * @summary Get one pack proposal and its review items
+ */
+export const getOpportunityPack = async (projectId: string,
+    packId: string, options?: Parameters<typeof customFetch>[1]): Promise<OpportunityPackDetail> => {
+
+  return customFetch<OpportunityPackDetail>(getGetOpportunityPackUrl(projectId,packId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetOpportunityPackQueryKey = (projectId: string,
+    packId: string,) => {
+    return [
+    `/api/projects/${projectId}/opportunity-packs/${packId}`
+    ] as const;
+    }
+
+
+export const getGetOpportunityPackQueryOptions = <TData = Awaited<ReturnType<typeof getOpportunityPack>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(projectId: string,
+    packId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getOpportunityPack>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetOpportunityPackQueryKey(projectId,packId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getOpportunityPack>>> = ({ signal }) => getOpportunityPack(projectId,packId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: projectId !== null && projectId !== undefined && packId !== null && packId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getOpportunityPack>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetOpportunityPackQueryResult = NonNullable<Awaited<ReturnType<typeof getOpportunityPack>>>
+export type GetOpportunityPackQueryError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+
+/**
+ * @summary Get one pack proposal and its review items
+ */
+
+export function useGetOpportunityPack<TData = Awaited<ReturnType<typeof getOpportunityPack>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(
+ projectId: string,
+    packId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getOpportunityPack>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetOpportunityPackQueryOptions(projectId,packId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getReviewOpportunitySignalUrl = (projectId: string,
+    signalId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/opportunity-packs/signals/${signalId}/review`
+}
+
+/**
+ * @summary Approve, disable, or remove a proposed signal
+ */
+export const reviewOpportunitySignal = async (projectId: string,
+    signalId: string,
+    opportunityItemReviewRequest: OpportunityItemReviewRequest, options?: Parameters<typeof customFetch>[1]): Promise<OpportunitySignalProposal> => {
+
+  return customFetch<OpportunitySignalProposal>(getReviewOpportunitySignalUrl(projectId,signalId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(opportunityItemReviewRequest)
+  }
+);}
+
+
+
+
+
+export const getReviewOpportunitySignalMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof reviewOpportunitySignal>>, TError,{projectId: string;signalId: string;data: BodyType<OpportunityItemReviewRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof reviewOpportunitySignal>>, TError,{projectId: string;signalId: string;data: BodyType<OpportunityItemReviewRequest>}, TContext> => {
+
+const mutationKey = ['reviewOpportunitySignal'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof reviewOpportunitySignal>>, {projectId: string;signalId: string;data: BodyType<OpportunityItemReviewRequest>}> = (props) => {
+          const {projectId,signalId,data} = props ?? {};
+
+          return  reviewOpportunitySignal(projectId,signalId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ReviewOpportunitySignalMutationResult = NonNullable<Awaited<ReturnType<typeof reviewOpportunitySignal>>>
+    export type ReviewOpportunitySignalMutationBody = BodyType<OpportunityItemReviewRequest>
+    export type ReviewOpportunitySignalMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse>
+
+    /**
+ * @summary Approve, disable, or remove a proposed signal
+ */
+export const useReviewOpportunitySignal = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof reviewOpportunitySignal>>, TError,{projectId: string;signalId: string;data: BodyType<OpportunityItemReviewRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof reviewOpportunitySignal>>,
+        TError,
+        {projectId: string;signalId: string;data: BodyType<OpportunityItemReviewRequest>},
+        TContext
+      > => {
+      return useMutation(getReviewOpportunitySignalMutationOptions(options));
+    }
+
+export const getUpdateOpportunitySignalUrl = (projectId: string,
+    signalId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/opportunity-packs/signals/${signalId}`
+}
+
+/**
+ * @summary Edit signal metadata in a customer review revision
+ */
+export const updateOpportunitySignal = async (projectId: string,
+    signalId: string,
+    updateOpportunitySignalRequest: UpdateOpportunitySignalRequest, options?: Parameters<typeof customFetch>[1]): Promise<OpportunitySignalProposal> => {
+
+  return customFetch<OpportunitySignalProposal>(getUpdateOpportunitySignalUrl(projectId,signalId),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(updateOpportunitySignalRequest)
+  }
+);}
+
+
+
+
+
+export const getUpdateOpportunitySignalMutationOptions = <TError = ErrorType<BadRequestResponse | ForbiddenResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateOpportunitySignal>>, TError,{projectId: string;signalId: string;data: BodyType<UpdateOpportunitySignalRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateOpportunitySignal>>, TError,{projectId: string;signalId: string;data: BodyType<UpdateOpportunitySignalRequest>}, TContext> => {
+
+const mutationKey = ['updateOpportunitySignal'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateOpportunitySignal>>, {projectId: string;signalId: string;data: BodyType<UpdateOpportunitySignalRequest>}> = (props) => {
+          const {projectId,signalId,data} = props ?? {};
+
+          return  updateOpportunitySignal(projectId,signalId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateOpportunitySignalMutationResult = NonNullable<Awaited<ReturnType<typeof updateOpportunitySignal>>>
+    export type UpdateOpportunitySignalMutationBody = BodyType<UpdateOpportunitySignalRequest>
+    export type UpdateOpportunitySignalMutationError = ErrorType<BadRequestResponse | ForbiddenResponse>
+
+    /**
+ * @summary Edit signal metadata in a customer review revision
+ */
+export const useUpdateOpportunitySignal = <TError = ErrorType<BadRequestResponse | ForbiddenResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateOpportunitySignal>>, TError,{projectId: string;signalId: string;data: BodyType<UpdateOpportunitySignalRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateOpportunitySignal>>,
+        TError,
+        {projectId: string;signalId: string;data: BodyType<UpdateOpportunitySignalRequest>},
+        TContext
+      > => {
+      return useMutation(getUpdateOpportunitySignalMutationOptions(options));
+    }
+
+export const getCreateOpportunityPackReviewRevisionUrl = (projectId: string,
+    versionId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/opportunity-packs/versions/${versionId}/duplicate`
+}
+
+/**
+ * @summary Create an editable customer review revision from an immutable proposal
+ */
+export const createOpportunityPackReviewRevision = async (projectId: string,
+    versionId: string, options?: Parameters<typeof customFetch>[1]): Promise<OpportunityPackVersion> => {
+
+  return customFetch<OpportunityPackVersion>(getCreateOpportunityPackReviewRevisionUrl(projectId,versionId),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getCreateOpportunityPackReviewRevisionMutationOptions = <TError = ErrorType<ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createOpportunityPackReviewRevision>>, TError,{projectId: string;versionId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createOpportunityPackReviewRevision>>, TError,{projectId: string;versionId: string}, TContext> => {
+
+const mutationKey = ['createOpportunityPackReviewRevision'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createOpportunityPackReviewRevision>>, {projectId: string;versionId: string}> = (props) => {
+          const {projectId,versionId} = props ?? {};
+
+          return  createOpportunityPackReviewRevision(projectId,versionId,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateOpportunityPackReviewRevisionMutationResult = NonNullable<Awaited<ReturnType<typeof createOpportunityPackReviewRevision>>>
+
+    export type CreateOpportunityPackReviewRevisionMutationError = ErrorType<ForbiddenResponse | NotFoundResponse>
+
+    /**
+ * @summary Create an editable customer review revision from an immutable proposal
+ */
+export const useCreateOpportunityPackReviewRevision = <TError = ErrorType<ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createOpportunityPackReviewRevision>>, TError,{projectId: string;versionId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createOpportunityPackReviewRevision>>,
+        TError,
+        {projectId: string;versionId: string},
+        TContext
+      > => {
+      return useMutation(getCreateOpportunityPackReviewRevisionMutationOptions(options));
+    }
+
+export const getAddOpportunitySignalUrl = (projectId: string,
+    versionId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/opportunity-packs/versions/${versionId}/signals`
+}
+
+/**
+ * @summary Add a customer signal to a review revision
+ */
+export const addOpportunitySignal = async (projectId: string,
+    versionId: string,
+    addOpportunitySignalRequest: AddOpportunitySignalRequest, options?: Parameters<typeof customFetch>[1]): Promise<OpportunitySignalProposal> => {
+
+  return customFetch<OpportunitySignalProposal>(getAddOpportunitySignalUrl(projectId,versionId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(addOpportunitySignalRequest)
+  }
+);}
+
+
+
+
+
+export const getAddOpportunitySignalMutationOptions = <TError = ErrorType<BadRequestResponse | ForbiddenResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof addOpportunitySignal>>, TError,{projectId: string;versionId: string;data: BodyType<AddOpportunitySignalRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof addOpportunitySignal>>, TError,{projectId: string;versionId: string;data: BodyType<AddOpportunitySignalRequest>}, TContext> => {
+
+const mutationKey = ['addOpportunitySignal'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof addOpportunitySignal>>, {projectId: string;versionId: string;data: BodyType<AddOpportunitySignalRequest>}> = (props) => {
+          const {projectId,versionId,data} = props ?? {};
+
+          return  addOpportunitySignal(projectId,versionId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AddOpportunitySignalMutationResult = NonNullable<Awaited<ReturnType<typeof addOpportunitySignal>>>
+    export type AddOpportunitySignalMutationBody = BodyType<AddOpportunitySignalRequest>
+    export type AddOpportunitySignalMutationError = ErrorType<BadRequestResponse | ForbiddenResponse>
+
+    /**
+ * @summary Add a customer signal to a review revision
+ */
+export const useAddOpportunitySignal = <TError = ErrorType<BadRequestResponse | ForbiddenResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof addOpportunitySignal>>, TError,{projectId: string;versionId: string;data: BodyType<AddOpportunitySignalRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof addOpportunitySignal>>,
+        TError,
+        {projectId: string;versionId: string;data: BodyType<AddOpportunitySignalRequest>},
+        TContext
+      > => {
+      return useMutation(getAddOpportunitySignalMutationOptions(options));
+    }
+
+export const getUpdateOpportunityResearchQuestionUrl = (projectId: string,
+    questionId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/opportunity-packs/questions/${questionId}`
+}
+
+/**
+ * @summary Edit a contextual question in a customer review revision
+ */
+export const updateOpportunityResearchQuestion = async (projectId: string,
+    questionId: string,
+    updateOpportunityResearchQuestionRequest: UpdateOpportunityResearchQuestionRequest, options?: Parameters<typeof customFetch>[1]): Promise<OpportunityResearchQuestion> => {
+
+  return customFetch<OpportunityResearchQuestion>(getUpdateOpportunityResearchQuestionUrl(projectId,questionId),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(updateOpportunityResearchQuestionRequest)
+  }
+);}
+
+
+
+
+
+export const getUpdateOpportunityResearchQuestionMutationOptions = <TError = ErrorType<BadRequestResponse | ForbiddenResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateOpportunityResearchQuestion>>, TError,{projectId: string;questionId: string;data: BodyType<UpdateOpportunityResearchQuestionRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateOpportunityResearchQuestion>>, TError,{projectId: string;questionId: string;data: BodyType<UpdateOpportunityResearchQuestionRequest>}, TContext> => {
+
+const mutationKey = ['updateOpportunityResearchQuestion'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateOpportunityResearchQuestion>>, {projectId: string;questionId: string;data: BodyType<UpdateOpportunityResearchQuestionRequest>}> = (props) => {
+          const {projectId,questionId,data} = props ?? {};
+
+          return  updateOpportunityResearchQuestion(projectId,questionId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateOpportunityResearchQuestionMutationResult = NonNullable<Awaited<ReturnType<typeof updateOpportunityResearchQuestion>>>
+    export type UpdateOpportunityResearchQuestionMutationBody = BodyType<UpdateOpportunityResearchQuestionRequest>
+    export type UpdateOpportunityResearchQuestionMutationError = ErrorType<BadRequestResponse | ForbiddenResponse>
+
+    /**
+ * @summary Edit a contextual question in a customer review revision
+ */
+export const useUpdateOpportunityResearchQuestion = <TError = ErrorType<BadRequestResponse | ForbiddenResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateOpportunityResearchQuestion>>, TError,{projectId: string;questionId: string;data: BodyType<UpdateOpportunityResearchQuestionRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateOpportunityResearchQuestion>>,
+        TError,
+        {projectId: string;questionId: string;data: BodyType<UpdateOpportunityResearchQuestionRequest>},
+        TContext
+      > => {
+      return useMutation(getUpdateOpportunityResearchQuestionMutationOptions(options));
+    }
+
+export const getReviewOpportunityResearchQuestionUrl = (projectId: string,
+    questionId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/opportunity-packs/questions/${questionId}/review`
+}
+
+/**
+ * @summary Approve, disable, or remove a contextual question
+ */
+export const reviewOpportunityResearchQuestion = async (projectId: string,
+    questionId: string,
+    opportunityItemReviewRequest: OpportunityItemReviewRequest, options?: Parameters<typeof customFetch>[1]): Promise<OpportunityResearchQuestion> => {
+
+  return customFetch<OpportunityResearchQuestion>(getReviewOpportunityResearchQuestionUrl(projectId,questionId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(opportunityItemReviewRequest)
+  }
+);}
+
+
+
+
+
+export const getReviewOpportunityResearchQuestionMutationOptions = <TError = ErrorType<BadRequestResponse | ForbiddenResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof reviewOpportunityResearchQuestion>>, TError,{projectId: string;questionId: string;data: BodyType<OpportunityItemReviewRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof reviewOpportunityResearchQuestion>>, TError,{projectId: string;questionId: string;data: BodyType<OpportunityItemReviewRequest>}, TContext> => {
+
+const mutationKey = ['reviewOpportunityResearchQuestion'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof reviewOpportunityResearchQuestion>>, {projectId: string;questionId: string;data: BodyType<OpportunityItemReviewRequest>}> = (props) => {
+          const {projectId,questionId,data} = props ?? {};
+
+          return  reviewOpportunityResearchQuestion(projectId,questionId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ReviewOpportunityResearchQuestionMutationResult = NonNullable<Awaited<ReturnType<typeof reviewOpportunityResearchQuestion>>>
+    export type ReviewOpportunityResearchQuestionMutationBody = BodyType<OpportunityItemReviewRequest>
+    export type ReviewOpportunityResearchQuestionMutationError = ErrorType<BadRequestResponse | ForbiddenResponse>
+
+    /**
+ * @summary Approve, disable, or remove a contextual question
+ */
+export const useReviewOpportunityResearchQuestion = <TError = ErrorType<BadRequestResponse | ForbiddenResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof reviewOpportunityResearchQuestion>>, TError,{projectId: string;questionId: string;data: BodyType<OpportunityItemReviewRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof reviewOpportunityResearchQuestion>>,
+        TError,
+        {projectId: string;questionId: string;data: BodyType<OpportunityItemReviewRequest>},
+        TContext
+      > => {
+      return useMutation(getReviewOpportunityResearchQuestionMutationOptions(options));
+    }
+
+export const getAddOpportunityResearchQuestionUrl = (projectId: string,
+    versionId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/opportunity-packs/versions/${versionId}/questions`
+}
+
+/**
+ * @summary Add a contextual question to a customer review revision
+ */
+export const addOpportunityResearchQuestion = async (projectId: string,
+    versionId: string,
+    addOpportunityResearchQuestionRequest: AddOpportunityResearchQuestionRequest, options?: Parameters<typeof customFetch>[1]): Promise<OpportunityResearchQuestion> => {
+
+  return customFetch<OpportunityResearchQuestion>(getAddOpportunityResearchQuestionUrl(projectId,versionId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(addOpportunityResearchQuestionRequest)
+  }
+);}
+
+
+
+
+
+export const getAddOpportunityResearchQuestionMutationOptions = <TError = ErrorType<BadRequestResponse | ForbiddenResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof addOpportunityResearchQuestion>>, TError,{projectId: string;versionId: string;data: BodyType<AddOpportunityResearchQuestionRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof addOpportunityResearchQuestion>>, TError,{projectId: string;versionId: string;data: BodyType<AddOpportunityResearchQuestionRequest>}, TContext> => {
+
+const mutationKey = ['addOpportunityResearchQuestion'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof addOpportunityResearchQuestion>>, {projectId: string;versionId: string;data: BodyType<AddOpportunityResearchQuestionRequest>}> = (props) => {
+          const {projectId,versionId,data} = props ?? {};
+
+          return  addOpportunityResearchQuestion(projectId,versionId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AddOpportunityResearchQuestionMutationResult = NonNullable<Awaited<ReturnType<typeof addOpportunityResearchQuestion>>>
+    export type AddOpportunityResearchQuestionMutationBody = BodyType<AddOpportunityResearchQuestionRequest>
+    export type AddOpportunityResearchQuestionMutationError = ErrorType<BadRequestResponse | ForbiddenResponse>
+
+    /**
+ * @summary Add a contextual question to a customer review revision
+ */
+export const useAddOpportunityResearchQuestion = <TError = ErrorType<BadRequestResponse | ForbiddenResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof addOpportunityResearchQuestion>>, TError,{projectId: string;versionId: string;data: BodyType<AddOpportunityResearchQuestionRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof addOpportunityResearchQuestion>>,
+        TError,
+        {projectId: string;versionId: string;data: BodyType<AddOpportunityResearchQuestionRequest>},
+        TContext
+      > => {
+      return useMutation(getAddOpportunityResearchQuestionMutationOptions(options));
+    }
+
+export const getApproveOpportunityPackUrl = (projectId: string,
+    versionId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/opportunity-packs/versions/${versionId}/approve`
+}
+
+/**
+ * @summary Freeze a reviewed proposal without activating it
+ */
+export const approveOpportunityPack = async (projectId: string,
+    versionId: string, options?: Parameters<typeof customFetch>[1]): Promise<OpportunityPackVersion> => {
+
+  return customFetch<OpportunityPackVersion>(getApproveOpportunityPackUrl(projectId,versionId),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getApproveOpportunityPackMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof approveOpportunityPack>>, TError,{projectId: string;versionId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof approveOpportunityPack>>, TError,{projectId: string;versionId: string}, TContext> => {
+
+const mutationKey = ['approveOpportunityPack'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof approveOpportunityPack>>, {projectId: string;versionId: string}> = (props) => {
+          const {projectId,versionId} = props ?? {};
+
+          return  approveOpportunityPack(projectId,versionId,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ApproveOpportunityPackMutationResult = NonNullable<Awaited<ReturnType<typeof approveOpportunityPack>>>
+
+    export type ApproveOpportunityPackMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse>
+
+    /**
+ * @summary Freeze a reviewed proposal without activating it
+ */
+export const useApproveOpportunityPack = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof approveOpportunityPack>>, TError,{projectId: string;versionId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof approveOpportunityPack>>,
+        TError,
+        {projectId: string;versionId: string},
+        TContext
+      > => {
+      return useMutation(getApproveOpportunityPackMutationOptions(options));
+    }
+
+export const getActivateOpportunityPackUrl = (projectId: string,
+    versionId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/opportunity-packs/versions/${versionId}/activate`
+}
+
+/**
+ * @summary Explicitly activate one approved version in the Signal Engine
+ */
+export const activateOpportunityPack = async (projectId: string,
+    versionId: string, options?: Parameters<typeof customFetch>[1]): Promise<ActivateOpportunityPack200> => {
+
+  return customFetch<ActivateOpportunityPack200>(getActivateOpportunityPackUrl(projectId,versionId),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getActivateOpportunityPackMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof activateOpportunityPack>>, TError,{projectId: string;versionId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof activateOpportunityPack>>, TError,{projectId: string;versionId: string}, TContext> => {
+
+const mutationKey = ['activateOpportunityPack'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof activateOpportunityPack>>, {projectId: string;versionId: string}> = (props) => {
+          const {projectId,versionId} = props ?? {};
+
+          return  activateOpportunityPack(projectId,versionId,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ActivateOpportunityPackMutationResult = NonNullable<Awaited<ReturnType<typeof activateOpportunityPack>>>
+
+    export type ActivateOpportunityPackMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse>
+
+    /**
+ * @summary Explicitly activate one approved version in the Signal Engine
+ */
+export const useActivateOpportunityPack = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof activateOpportunityPack>>, TError,{projectId: string;versionId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof activateOpportunityPack>>,
+        TError,
+        {projectId: string;versionId: string},
+        TContext
+      > => {
+      return useMutation(getActivateOpportunityPackMutationOptions(options));
     }
 

@@ -139,6 +139,19 @@ export const SIGNAL_PACK_FIXTURES: PackFixture[] = [
       definition("MARKETING_MARTECH_CHANGE", "Martech platform change", "TECHNOLOGY", ["TECHNOLOGY_MENTION"], [70, 78, 76], { matchAny: ["crm", "marketing automation", "hubspot", "salesforce"] }),
     ],
   },
+  {
+    slug: "erp-implementation",
+    name: "ERP implementation consultancy",
+    description: "Synthetic ERP implementation context focused on transformation, finance operations, growth, and platform replacement.",
+    version: "1.0",
+    applicableContext: { offeringFamily: "erp-implementation" },
+    definitions: [
+      definition("ERP_FINANCE_LEADER", "Finance leadership transition", "LEADERSHIP", ["LEADERSHIP_CHANGE"], [68, 80, 74], { matchAny: ["cfo", "finance", "controller"] }),
+      definition("ERP_MULTI_SITE_EXPANSION", "Multi-site operating expansion", "EXPANSION", ["COMPANY_EXPANSION", "NEW_MARKET"], [76, 84, 78], { matchAny: ["site", "facility", "market", "subsidiary"] }),
+      definition("ERP_OPERATIONS_HIRING", "Business systems hiring", "HIRING", ["JOB_OPENING"], [62, 72, 70], { matchAny: ["erp", "business systems", "finance systems", "enterprise applications"] }),
+      definition("ERP_LEGACY_PLATFORM", "Legacy ERP platform signal", "TECHNOLOGY", ["TECHNOLOGY_MENTION"], [82, 78, 84], { matchAny: ["legacy", "on-premise", "sap", "oracle", "dynamics", "netsuite"] }),
+    ],
+  },
 ];
 
 export async function ensureSignalPackFixtures() {

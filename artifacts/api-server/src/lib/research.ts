@@ -353,6 +353,8 @@ export async function executeResearchNow(input: {
   router?: ProviderOperations;
   extractFacts?: (evidenceId: string, rawContent: string) => Promise<unknown[]>;
   now?: Date;
+  plannedQuestion?: NonNullable<ResearchPlanDecision>;
+  idempotencyScope?: string;
 }): Promise<ResearchExecutionResult | { stopped: true; reason: string }> {
   const [row] = await db.select({
     projectCompany: projectCompaniesTable,
@@ -363,7 +365,7 @@ export async function executeResearchNow(input: {
     .limit(1);
   if (!row) throw new Error("Project company not found");
   const now = input.now ?? new Date();
-  const idempotencyKey = `${input.projectCompanyId}:${now.toISOString().slice(0, 10)}`;
+  const idempotencyKey = `${input.projectCompanyId}:${input.idempotencyScope ?? "planner"}:${now.toISOString().slice(0, 10)}`;
   const [replay] = await db.select({
     job: researchJobsTable,
     question: researchQuestionsTable,
@@ -418,7 +420,7 @@ export async function executeResearchNow(input: {
     .from(companyEvidenceTable).where(eq(companyEvidenceTable.companyId, row.company.id));
   const [{ count: factsCount }] = await db.select({ count: sql<number>`count(*)` })
     .from(companyFactsTable).where(eq(companyFactsTable.companyId, row.company.id));
-  const plan = planResearchQuestion({
+  const plan = input.plannedQuestion ?? planResearchQuestion({
     company: row.company,
     criteria,
     evidence,

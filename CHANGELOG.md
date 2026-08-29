@@ -63,6 +63,15 @@
 
 # Changelog
 
+## Dynamic Opportunity Intelligence Packs
+
+- Added project/offering-scoped, immutable Opportunity Intelligence Pack versions with source Business Twin and ICP references.
+- Added strict proposal validation, visible hypothesis/evidence-informed labeling, assumptions, signal metadata, and capability-based research questions.
+- Added customer edit, item review, revision, pack approval, and separate explicit activation APIs.
+- Connected only approved active definitions to the existing deterministic Signal Engine without altering immutable evidence or facts.
+- Replaced the Opportunities placeholder with a customer-facing Opportunity Signals review and activation workspace.
+- Added ERP implementation coverage alongside the four existing synthetic seller contexts while keeping the engine industry-neutral.
+
 ## Phase 11A — Generic Signal Intelligence
 
 - Extracted a seller-independent Signal Engine driven only by approved persisted definition configuration.

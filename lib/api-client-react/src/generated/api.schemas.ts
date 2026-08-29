@@ -5,6 +5,322 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+export interface OpportunityPack {
+  id: string;
+  organizationId: string;
+  projectId: string;
+  offeringKey: string;
+  status: string;
+  currentVersion: number;
+  [key: string]: unknown;
+ }
+
+export type OpportunityPackVersionStatus = typeof OpportunityPackVersionStatus[keyof typeof OpportunityPackVersionStatus];
+
+
+export const OpportunityPackVersionStatus = {
+  PROPOSED: 'PROPOSED',
+  APPROVED: 'APPROVED',
+  ACTIVATED: 'ACTIVATED',
+} as const;
+
+export type OpportunityPackVersionLifecycleLabel = typeof OpportunityPackVersionLifecycleLabel[keyof typeof OpportunityPackVersionLifecycleLabel];
+
+
+export const OpportunityPackVersionLifecycleLabel = {
+  'HYPOTHESIS-LED': 'HYPOTHESIS-LED',
+  'EVIDENCE-INFORMED': 'EVIDENCE-INFORMED',
+} as const;
+
+export type OpportunityPackVersionOfferingSnapshot = { [key: string]: unknown };
+
+export type OpportunityPackVersionBusinessContextSnapshot = { [key: string]: unknown };
+
+export interface OpportunityPackVersion {
+  id: string;
+  intelligencePackId: string;
+  version: number;
+  status: OpportunityPackVersionStatus;
+  lifecycleLabel: OpportunityPackVersionLifecycleLabel;
+  offeringSnapshot: OpportunityPackVersionOfferingSnapshot;
+  businessContextSnapshot: OpportunityPackVersionBusinessContextSnapshot;
+  assumptions: string[];
+  /** @nullable */
+  sourceBusinessTwinVersionId?: string | null;
+  /** @nullable */
+  sourceIcpVersionId?: string | null;
+  [key: string]: unknown;
+ }
+
+export type OpportunitySignalProposalPolarity = typeof OpportunitySignalProposalPolarity[keyof typeof OpportunitySignalProposalPolarity];
+
+
+export const OpportunitySignalProposalPolarity = {
+  POSITIVE: 'POSITIVE',
+  NEGATIVE: 'NEGATIVE',
+} as const;
+
+export interface OpportunitySignalProposal {
+  id: string;
+  code: string;
+  name: string;
+  description: string;
+  whyItMatters: string;
+  category: string;
+  polarity: OpportunitySignalProposalPolarity;
+  /**
+     * @minimum -100
+     * @maximum 100
+     */
+  needImpact: number;
+  /**
+     * @minimum -100
+     * @maximum 100
+     */
+  timingImpact: number;
+  /**
+     * @minimum -100
+     * @maximum 100
+     */
+  fitImpact: number;
+  likelyEvidence: string[];
+  sourceCapabilities: string[];
+  /**
+     * @minimum 1
+     * @maximum 730
+     */
+  lifetimeDays: number;
+  /**
+     * @minimum 0
+     * @maximum 100
+     */
+  suggestedStrength: number;
+  /**
+     * @minimum 0
+     * @maximum 100
+     */
+  minimumConfidence: number;
+  potentialFalsePositives: string[];
+  reviewStatus: string;
+  hypothesis: boolean;
+  [key: string]: unknown;
+ }
+
+export interface OpportunityResearchQuestion {
+  id: string;
+  questionText: string;
+  reason: string;
+  sourceCapabilities: string[];
+  /**
+     * @minimum 1
+     * @maximum 100
+     */
+  priority: number;
+  /**
+     * @minimum 0
+     * @maximum 100
+     */
+  expectedInformationGain: number;
+  /**
+     * @minimum 0
+     * @maximum 5
+     */
+  estimatedCost: number;
+  reviewStatus: string;
+  [key: string]: unknown;
+ }
+
+export interface OpportunityPackDetail {
+  pack: OpportunityPack;
+  version: OpportunityPackVersion;
+  signals: OpportunitySignalProposal[];
+  questions: OpportunityResearchQuestion[];
+}
+
+export interface OpportunityPackList {
+  packs: OpportunityPack[];
+  versions: OpportunityPackVersion[];
+}
+
+export type ProposeOpportunityPackRequestOffering = { [key: string]: unknown };
+
+export interface ProposeOpportunityPackRequest {
+  offering: ProposeOpportunityPackRequestOffering;
+  /**
+     * @maxItems 20
+     * @items.minLength 1
+     * @items.maxLength 1000
+     */
+  assumptions: string[];
+}
+
+export type OpportunityItemReviewRequestReviewStatus = typeof OpportunityItemReviewRequestReviewStatus[keyof typeof OpportunityItemReviewRequestReviewStatus];
+
+
+export const OpportunityItemReviewRequestReviewStatus = {
+  APPROVED: 'APPROVED',
+  DISABLED: 'DISABLED',
+  REMOVED: 'REMOVED',
+} as const;
+
+export interface OpportunityItemReviewRequest {
+  reviewStatus: OpportunityItemReviewRequestReviewStatus;
+}
+
+export interface OpportunityPackGeneration {
+  pack: OpportunityPack;
+  version: OpportunityPackVersion;
+  signals: OpportunitySignalProposal[];
+  questionCount: number;
+}
+
+export type UpdateOpportunitySignalRequestPolarity = typeof UpdateOpportunitySignalRequestPolarity[keyof typeof UpdateOpportunitySignalRequestPolarity];
+
+
+export const UpdateOpportunitySignalRequestPolarity = {
+  POSITIVE: 'POSITIVE',
+  NEGATIVE: 'NEGATIVE',
+} as const;
+
+export interface UpdateOpportunitySignalRequest {
+  name?: string;
+  description?: string;
+  whyItMatters?: string;
+  category?: string;
+  polarity?: UpdateOpportunitySignalRequestPolarity;
+  /**
+     * @minimum -100
+     * @maximum 100
+     */
+  needImpact?: number;
+  /**
+     * @minimum -100
+     * @maximum 100
+     */
+  timingImpact?: number;
+  /**
+     * @minimum -100
+     * @maximum 100
+     */
+  fitImpact?: number;
+  /**
+     * @minimum 1
+     * @maximum 730
+     */
+  lifetimeDays?: number;
+  /**
+     * @minimum 0
+     * @maximum 100
+     */
+  suggestedStrength?: number;
+  /**
+     * @minimum 0
+     * @maximum 100
+     */
+  minimumConfidence?: number;
+}
+
+export type AddOpportunitySignalRequestPolarity = typeof AddOpportunitySignalRequestPolarity[keyof typeof AddOpportunitySignalRequestPolarity];
+
+
+export const AddOpportunitySignalRequestPolarity = {
+  POSITIVE: 'POSITIVE',
+  NEGATIVE: 'NEGATIVE',
+} as const;
+
+export type AddOpportunitySignalRequestMatchingConfiguration = { [key: string]: unknown };
+
+export interface AddOpportunitySignalRequest {
+  code: string;
+  name: string;
+  description: string;
+  whyItMatters: string;
+  category: string;
+  polarity: AddOpportunitySignalRequestPolarity;
+  /**
+     * @minimum -100
+     * @maximum 100
+     */
+  needImpact: number;
+  /**
+     * @minimum -100
+     * @maximum 100
+     */
+  timingImpact: number;
+  /**
+     * @minimum -100
+     * @maximum 100
+     */
+  fitImpact: number;
+  likelyEvidence: string[];
+  /** @minItems 1 */
+  sourceCapabilities: string[];
+  /**
+     * @minimum 1
+     * @maximum 730
+     */
+  lifetimeDays: number;
+  /**
+     * @minimum 0
+     * @maximum 100
+     */
+  suggestedStrength: number;
+  /**
+     * @minimum 0
+     * @maximum 100
+     */
+  minimumConfidence: number;
+  potentialFalsePositives: string[];
+  factTypes: string[];
+  matchingConfiguration: AddOpportunitySignalRequestMatchingConfiguration;
+  hypothesis: boolean;
+}
+
+export interface UpdateOpportunityResearchQuestionRequest {
+  questionText?: string;
+  reason?: string;
+  /** @minItems 1 */
+  sourceCapabilities?: string[];
+  /**
+     * @minimum 1
+     * @maximum 100
+     */
+  priority?: number;
+  /**
+     * @minimum 0
+     * @maximum 100
+     */
+  expectedInformationGain?: number;
+  /**
+     * @minimum 0
+     * @maximum 5
+     */
+  estimatedCost?: number;
+}
+
+export interface AddOpportunityResearchQuestionRequest {
+  signalId: string;
+  questionText: string;
+  reason: string;
+  /** @minItems 1 */
+  sourceCapabilities: string[];
+  /**
+     * @minimum 1
+     * @maximum 100
+     */
+  priority: number;
+  /**
+     * @minimum 0
+     * @maximum 100
+     */
+  expectedInformationGain: number;
+  /**
+     * @minimum 0
+     * @maximum 5
+     */
+  estimatedCost: number;
+}
+
 export interface HealthStatus {
   status: string;
 }
@@ -1625,4 +1941,6 @@ export type CommitCompanyImport409 = {
   error: string;
   needsReview: number;
 };
+
+export type ActivateOpportunityPack200 = { [key: string]: unknown };
 

@@ -4029,3 +4029,620 @@ export const EvaluateProjectSignalsResponse = zod.object({
 })
 
 
+/**
+ * @summary List project Opportunity Intelligence Packs and version history
+ */
+export const ListOpportunityPacksParams = zod.object({
+  "projectId": zod.coerce.string()
+})
+
+export const ListOpportunityPacksResponse = zod.object({
+  "packs": zod.array(zod.object({
+  "id": zod.string(),
+  "organizationId": zod.string(),
+  "projectId": zod.string(),
+  "offeringKey": zod.string(),
+  "status": zod.string(),
+  "currentVersion": zod.number()
+})),
+  "versions": zod.array(zod.object({
+  "id": zod.string(),
+  "intelligencePackId": zod.string(),
+  "version": zod.number(),
+  "status": zod.enum(['PROPOSED', 'APPROVED', 'ACTIVATED']),
+  "lifecycleLabel": zod.enum(['HYPOTHESIS-LED', 'EVIDENCE-INFORMED']),
+  "offeringSnapshot": zod.record(zod.string(), zod.unknown()),
+  "businessContextSnapshot": zod.record(zod.string(), zod.unknown()),
+  "assumptions": zod.array(zod.string()),
+  "sourceBusinessTwinVersionId": zod.string().nullish(),
+  "sourceIcpVersionId": zod.string().nullish()
+}))
+})
+
+
+/**
+ * @summary Generate a bounded proposal without activating it
+ */
+export const ProposeOpportunityPackParams = zod.object({
+  "projectId": zod.coerce.string()
+})
+
+export const proposeOpportunityPackBodyAssumptionsItemMax = 1000;
+
+export const proposeOpportunityPackBodyAssumptionsMax = 20;
+
+
+
+export const ProposeOpportunityPackBody = zod.object({
+  "offering": zod.record(zod.string(), zod.unknown()),
+  "assumptions": zod.array(zod.string().min(1).max(proposeOpportunityPackBodyAssumptionsItemMax)).max(proposeOpportunityPackBodyAssumptionsMax)
+})
+
+export const proposeOpportunityPackResponseSignalsItemNeedImpactMin = -100;
+export const proposeOpportunityPackResponseSignalsItemNeedImpactMax = 100;
+
+export const proposeOpportunityPackResponseSignalsItemTimingImpactMin = -100;
+export const proposeOpportunityPackResponseSignalsItemTimingImpactMax = 100;
+
+export const proposeOpportunityPackResponseSignalsItemFitImpactMin = -100;
+export const proposeOpportunityPackResponseSignalsItemFitImpactMax = 100;
+
+export const proposeOpportunityPackResponseSignalsItemLifetimeDaysMax = 730;
+
+export const proposeOpportunityPackResponseSignalsItemSuggestedStrengthMin = 0;
+export const proposeOpportunityPackResponseSignalsItemSuggestedStrengthMax = 100;
+
+export const proposeOpportunityPackResponseSignalsItemMinimumConfidenceMin = 0;
+export const proposeOpportunityPackResponseSignalsItemMinimumConfidenceMax = 100;
+
+
+
+export const ProposeOpportunityPackResponse = zod.object({
+  "pack": zod.object({
+  "id": zod.string(),
+  "organizationId": zod.string(),
+  "projectId": zod.string(),
+  "offeringKey": zod.string(),
+  "status": zod.string(),
+  "currentVersion": zod.number()
+}),
+  "version": zod.object({
+  "id": zod.string(),
+  "intelligencePackId": zod.string(),
+  "version": zod.number(),
+  "status": zod.enum(['PROPOSED', 'APPROVED', 'ACTIVATED']),
+  "lifecycleLabel": zod.enum(['HYPOTHESIS-LED', 'EVIDENCE-INFORMED']),
+  "offeringSnapshot": zod.record(zod.string(), zod.unknown()),
+  "businessContextSnapshot": zod.record(zod.string(), zod.unknown()),
+  "assumptions": zod.array(zod.string()),
+  "sourceBusinessTwinVersionId": zod.string().nullish(),
+  "sourceIcpVersionId": zod.string().nullish()
+}),
+  "signals": zod.array(zod.object({
+  "id": zod.string(),
+  "code": zod.string(),
+  "name": zod.string(),
+  "description": zod.string(),
+  "whyItMatters": zod.string(),
+  "category": zod.string(),
+  "polarity": zod.enum(['POSITIVE', 'NEGATIVE']),
+  "needImpact": zod.number().min(proposeOpportunityPackResponseSignalsItemNeedImpactMin).max(proposeOpportunityPackResponseSignalsItemNeedImpactMax),
+  "timingImpact": zod.number().min(proposeOpportunityPackResponseSignalsItemTimingImpactMin).max(proposeOpportunityPackResponseSignalsItemTimingImpactMax),
+  "fitImpact": zod.number().min(proposeOpportunityPackResponseSignalsItemFitImpactMin).max(proposeOpportunityPackResponseSignalsItemFitImpactMax),
+  "likelyEvidence": zod.array(zod.string()),
+  "sourceCapabilities": zod.array(zod.string()),
+  "lifetimeDays": zod.number().min(1).max(proposeOpportunityPackResponseSignalsItemLifetimeDaysMax),
+  "suggestedStrength": zod.number().min(proposeOpportunityPackResponseSignalsItemSuggestedStrengthMin).max(proposeOpportunityPackResponseSignalsItemSuggestedStrengthMax),
+  "minimumConfidence": zod.number().min(proposeOpportunityPackResponseSignalsItemMinimumConfidenceMin).max(proposeOpportunityPackResponseSignalsItemMinimumConfidenceMax),
+  "potentialFalsePositives": zod.array(zod.string()),
+  "reviewStatus": zod.string(),
+  "hypothesis": zod.boolean()
+})),
+  "questionCount": zod.number()
+})
+
+
+/**
+ * @summary Get one pack proposal and its review items
+ */
+export const GetOpportunityPackParams = zod.object({
+  "projectId": zod.coerce.string(),
+  "packId": zod.coerce.string()
+})
+
+export const getOpportunityPackResponseSignalsItemNeedImpactMin = -100;
+export const getOpportunityPackResponseSignalsItemNeedImpactMax = 100;
+
+export const getOpportunityPackResponseSignalsItemTimingImpactMin = -100;
+export const getOpportunityPackResponseSignalsItemTimingImpactMax = 100;
+
+export const getOpportunityPackResponseSignalsItemFitImpactMin = -100;
+export const getOpportunityPackResponseSignalsItemFitImpactMax = 100;
+
+export const getOpportunityPackResponseSignalsItemLifetimeDaysMax = 730;
+
+export const getOpportunityPackResponseSignalsItemSuggestedStrengthMin = 0;
+export const getOpportunityPackResponseSignalsItemSuggestedStrengthMax = 100;
+
+export const getOpportunityPackResponseSignalsItemMinimumConfidenceMin = 0;
+export const getOpportunityPackResponseSignalsItemMinimumConfidenceMax = 100;
+
+export const getOpportunityPackResponseQuestionsItemPriorityMax = 100;
+
+export const getOpportunityPackResponseQuestionsItemExpectedInformationGainMin = 0;
+export const getOpportunityPackResponseQuestionsItemExpectedInformationGainMax = 100;
+
+export const getOpportunityPackResponseQuestionsItemEstimatedCostMin = 0;
+export const getOpportunityPackResponseQuestionsItemEstimatedCostMax = 5;
+
+
+
+export const GetOpportunityPackResponse = zod.object({
+  "pack": zod.object({
+  "id": zod.string(),
+  "organizationId": zod.string(),
+  "projectId": zod.string(),
+  "offeringKey": zod.string(),
+  "status": zod.string(),
+  "currentVersion": zod.number()
+}),
+  "version": zod.object({
+  "id": zod.string(),
+  "intelligencePackId": zod.string(),
+  "version": zod.number(),
+  "status": zod.enum(['PROPOSED', 'APPROVED', 'ACTIVATED']),
+  "lifecycleLabel": zod.enum(['HYPOTHESIS-LED', 'EVIDENCE-INFORMED']),
+  "offeringSnapshot": zod.record(zod.string(), zod.unknown()),
+  "businessContextSnapshot": zod.record(zod.string(), zod.unknown()),
+  "assumptions": zod.array(zod.string()),
+  "sourceBusinessTwinVersionId": zod.string().nullish(),
+  "sourceIcpVersionId": zod.string().nullish()
+}),
+  "signals": zod.array(zod.object({
+  "id": zod.string(),
+  "code": zod.string(),
+  "name": zod.string(),
+  "description": zod.string(),
+  "whyItMatters": zod.string(),
+  "category": zod.string(),
+  "polarity": zod.enum(['POSITIVE', 'NEGATIVE']),
+  "needImpact": zod.number().min(getOpportunityPackResponseSignalsItemNeedImpactMin).max(getOpportunityPackResponseSignalsItemNeedImpactMax),
+  "timingImpact": zod.number().min(getOpportunityPackResponseSignalsItemTimingImpactMin).max(getOpportunityPackResponseSignalsItemTimingImpactMax),
+  "fitImpact": zod.number().min(getOpportunityPackResponseSignalsItemFitImpactMin).max(getOpportunityPackResponseSignalsItemFitImpactMax),
+  "likelyEvidence": zod.array(zod.string()),
+  "sourceCapabilities": zod.array(zod.string()),
+  "lifetimeDays": zod.number().min(1).max(getOpportunityPackResponseSignalsItemLifetimeDaysMax),
+  "suggestedStrength": zod.number().min(getOpportunityPackResponseSignalsItemSuggestedStrengthMin).max(getOpportunityPackResponseSignalsItemSuggestedStrengthMax),
+  "minimumConfidence": zod.number().min(getOpportunityPackResponseSignalsItemMinimumConfidenceMin).max(getOpportunityPackResponseSignalsItemMinimumConfidenceMax),
+  "potentialFalsePositives": zod.array(zod.string()),
+  "reviewStatus": zod.string(),
+  "hypothesis": zod.boolean()
+})),
+  "questions": zod.array(zod.object({
+  "id": zod.string(),
+  "questionText": zod.string(),
+  "reason": zod.string(),
+  "sourceCapabilities": zod.array(zod.string()),
+  "priority": zod.number().min(1).max(getOpportunityPackResponseQuestionsItemPriorityMax),
+  "expectedInformationGain": zod.number().min(getOpportunityPackResponseQuestionsItemExpectedInformationGainMin).max(getOpportunityPackResponseQuestionsItemExpectedInformationGainMax),
+  "estimatedCost": zod.number().min(getOpportunityPackResponseQuestionsItemEstimatedCostMin).max(getOpportunityPackResponseQuestionsItemEstimatedCostMax),
+  "reviewStatus": zod.string()
+}))
+})
+
+
+/**
+ * @summary Approve, disable, or remove a proposed signal
+ */
+export const ReviewOpportunitySignalParams = zod.object({
+  "projectId": zod.coerce.string(),
+  "signalId": zod.coerce.string()
+})
+
+export const ReviewOpportunitySignalBody = zod.object({
+  "reviewStatus": zod.enum(['APPROVED', 'DISABLED', 'REMOVED'])
+})
+
+export const reviewOpportunitySignalResponseNeedImpactMin = -100;
+export const reviewOpportunitySignalResponseNeedImpactMax = 100;
+
+export const reviewOpportunitySignalResponseTimingImpactMin = -100;
+export const reviewOpportunitySignalResponseTimingImpactMax = 100;
+
+export const reviewOpportunitySignalResponseFitImpactMin = -100;
+export const reviewOpportunitySignalResponseFitImpactMax = 100;
+
+export const reviewOpportunitySignalResponseLifetimeDaysMax = 730;
+
+export const reviewOpportunitySignalResponseSuggestedStrengthMin = 0;
+export const reviewOpportunitySignalResponseSuggestedStrengthMax = 100;
+
+export const reviewOpportunitySignalResponseMinimumConfidenceMin = 0;
+export const reviewOpportunitySignalResponseMinimumConfidenceMax = 100;
+
+
+
+export const ReviewOpportunitySignalResponse = zod.object({
+  "id": zod.string(),
+  "code": zod.string(),
+  "name": zod.string(),
+  "description": zod.string(),
+  "whyItMatters": zod.string(),
+  "category": zod.string(),
+  "polarity": zod.enum(['POSITIVE', 'NEGATIVE']),
+  "needImpact": zod.number().min(reviewOpportunitySignalResponseNeedImpactMin).max(reviewOpportunitySignalResponseNeedImpactMax),
+  "timingImpact": zod.number().min(reviewOpportunitySignalResponseTimingImpactMin).max(reviewOpportunitySignalResponseTimingImpactMax),
+  "fitImpact": zod.number().min(reviewOpportunitySignalResponseFitImpactMin).max(reviewOpportunitySignalResponseFitImpactMax),
+  "likelyEvidence": zod.array(zod.string()),
+  "sourceCapabilities": zod.array(zod.string()),
+  "lifetimeDays": zod.number().min(1).max(reviewOpportunitySignalResponseLifetimeDaysMax),
+  "suggestedStrength": zod.number().min(reviewOpportunitySignalResponseSuggestedStrengthMin).max(reviewOpportunitySignalResponseSuggestedStrengthMax),
+  "minimumConfidence": zod.number().min(reviewOpportunitySignalResponseMinimumConfidenceMin).max(reviewOpportunitySignalResponseMinimumConfidenceMax),
+  "potentialFalsePositives": zod.array(zod.string()),
+  "reviewStatus": zod.string(),
+  "hypothesis": zod.boolean()
+})
+
+
+/**
+ * @summary Edit signal metadata in a customer review revision
+ */
+export const UpdateOpportunitySignalParams = zod.object({
+  "projectId": zod.coerce.string(),
+  "signalId": zod.coerce.string()
+})
+
+export const updateOpportunitySignalBodyNeedImpactMin = -100;
+export const updateOpportunitySignalBodyNeedImpactMax = 100;
+
+export const updateOpportunitySignalBodyTimingImpactMin = -100;
+export const updateOpportunitySignalBodyTimingImpactMax = 100;
+
+export const updateOpportunitySignalBodyFitImpactMin = -100;
+export const updateOpportunitySignalBodyFitImpactMax = 100;
+
+export const updateOpportunitySignalBodyLifetimeDaysMax = 730;
+
+export const updateOpportunitySignalBodySuggestedStrengthMin = 0;
+export const updateOpportunitySignalBodySuggestedStrengthMax = 100;
+
+export const updateOpportunitySignalBodyMinimumConfidenceMin = 0;
+export const updateOpportunitySignalBodyMinimumConfidenceMax = 100;
+
+
+
+export const UpdateOpportunitySignalBody = zod.object({
+  "name": zod.string().optional(),
+  "description": zod.string().optional(),
+  "whyItMatters": zod.string().optional(),
+  "category": zod.string().optional(),
+  "polarity": zod.enum(['POSITIVE', 'NEGATIVE']).optional(),
+  "needImpact": zod.number().min(updateOpportunitySignalBodyNeedImpactMin).max(updateOpportunitySignalBodyNeedImpactMax).optional(),
+  "timingImpact": zod.number().min(updateOpportunitySignalBodyTimingImpactMin).max(updateOpportunitySignalBodyTimingImpactMax).optional(),
+  "fitImpact": zod.number().min(updateOpportunitySignalBodyFitImpactMin).max(updateOpportunitySignalBodyFitImpactMax).optional(),
+  "lifetimeDays": zod.number().min(1).max(updateOpportunitySignalBodyLifetimeDaysMax).optional(),
+  "suggestedStrength": zod.number().min(updateOpportunitySignalBodySuggestedStrengthMin).max(updateOpportunitySignalBodySuggestedStrengthMax).optional(),
+  "minimumConfidence": zod.number().min(updateOpportunitySignalBodyMinimumConfidenceMin).max(updateOpportunitySignalBodyMinimumConfidenceMax).optional()
+})
+
+export const updateOpportunitySignalResponseNeedImpactMin = -100;
+export const updateOpportunitySignalResponseNeedImpactMax = 100;
+
+export const updateOpportunitySignalResponseTimingImpactMin = -100;
+export const updateOpportunitySignalResponseTimingImpactMax = 100;
+
+export const updateOpportunitySignalResponseFitImpactMin = -100;
+export const updateOpportunitySignalResponseFitImpactMax = 100;
+
+export const updateOpportunitySignalResponseLifetimeDaysMax = 730;
+
+export const updateOpportunitySignalResponseSuggestedStrengthMin = 0;
+export const updateOpportunitySignalResponseSuggestedStrengthMax = 100;
+
+export const updateOpportunitySignalResponseMinimumConfidenceMin = 0;
+export const updateOpportunitySignalResponseMinimumConfidenceMax = 100;
+
+
+
+export const UpdateOpportunitySignalResponse = zod.object({
+  "id": zod.string(),
+  "code": zod.string(),
+  "name": zod.string(),
+  "description": zod.string(),
+  "whyItMatters": zod.string(),
+  "category": zod.string(),
+  "polarity": zod.enum(['POSITIVE', 'NEGATIVE']),
+  "needImpact": zod.number().min(updateOpportunitySignalResponseNeedImpactMin).max(updateOpportunitySignalResponseNeedImpactMax),
+  "timingImpact": zod.number().min(updateOpportunitySignalResponseTimingImpactMin).max(updateOpportunitySignalResponseTimingImpactMax),
+  "fitImpact": zod.number().min(updateOpportunitySignalResponseFitImpactMin).max(updateOpportunitySignalResponseFitImpactMax),
+  "likelyEvidence": zod.array(zod.string()),
+  "sourceCapabilities": zod.array(zod.string()),
+  "lifetimeDays": zod.number().min(1).max(updateOpportunitySignalResponseLifetimeDaysMax),
+  "suggestedStrength": zod.number().min(updateOpportunitySignalResponseSuggestedStrengthMin).max(updateOpportunitySignalResponseSuggestedStrengthMax),
+  "minimumConfidence": zod.number().min(updateOpportunitySignalResponseMinimumConfidenceMin).max(updateOpportunitySignalResponseMinimumConfidenceMax),
+  "potentialFalsePositives": zod.array(zod.string()),
+  "reviewStatus": zod.string(),
+  "hypothesis": zod.boolean()
+})
+
+
+/**
+ * @summary Create an editable customer review revision from an immutable proposal
+ */
+export const CreateOpportunityPackReviewRevisionParams = zod.object({
+  "projectId": zod.coerce.string(),
+  "versionId": zod.coerce.string()
+})
+
+export const CreateOpportunityPackReviewRevisionResponse = zod.object({
+  "id": zod.string(),
+  "intelligencePackId": zod.string(),
+  "version": zod.number(),
+  "status": zod.enum(['PROPOSED', 'APPROVED', 'ACTIVATED']),
+  "lifecycleLabel": zod.enum(['HYPOTHESIS-LED', 'EVIDENCE-INFORMED']),
+  "offeringSnapshot": zod.record(zod.string(), zod.unknown()),
+  "businessContextSnapshot": zod.record(zod.string(), zod.unknown()),
+  "assumptions": zod.array(zod.string()),
+  "sourceBusinessTwinVersionId": zod.string().nullish(),
+  "sourceIcpVersionId": zod.string().nullish()
+})
+
+
+/**
+ * @summary Add a customer signal to a review revision
+ */
+export const AddOpportunitySignalParams = zod.object({
+  "projectId": zod.coerce.string(),
+  "versionId": zod.coerce.string()
+})
+
+export const addOpportunitySignalBodyNeedImpactMin = -100;
+export const addOpportunitySignalBodyNeedImpactMax = 100;
+
+export const addOpportunitySignalBodyTimingImpactMin = -100;
+export const addOpportunitySignalBodyTimingImpactMax = 100;
+
+export const addOpportunitySignalBodyFitImpactMin = -100;
+export const addOpportunitySignalBodyFitImpactMax = 100;
+
+
+export const addOpportunitySignalBodyLifetimeDaysMax = 730;
+
+export const addOpportunitySignalBodySuggestedStrengthMin = 0;
+export const addOpportunitySignalBodySuggestedStrengthMax = 100;
+
+export const addOpportunitySignalBodyMinimumConfidenceMin = 0;
+export const addOpportunitySignalBodyMinimumConfidenceMax = 100;
+
+
+
+export const AddOpportunitySignalBody = zod.object({
+  "code": zod.string(),
+  "name": zod.string(),
+  "description": zod.string(),
+  "whyItMatters": zod.string(),
+  "category": zod.string(),
+  "polarity": zod.enum(['POSITIVE', 'NEGATIVE']),
+  "needImpact": zod.number().min(addOpportunitySignalBodyNeedImpactMin).max(addOpportunitySignalBodyNeedImpactMax),
+  "timingImpact": zod.number().min(addOpportunitySignalBodyTimingImpactMin).max(addOpportunitySignalBodyTimingImpactMax),
+  "fitImpact": zod.number().min(addOpportunitySignalBodyFitImpactMin).max(addOpportunitySignalBodyFitImpactMax),
+  "likelyEvidence": zod.array(zod.string()),
+  "sourceCapabilities": zod.array(zod.string()).min(1),
+  "lifetimeDays": zod.number().min(1).max(addOpportunitySignalBodyLifetimeDaysMax),
+  "suggestedStrength": zod.number().min(addOpportunitySignalBodySuggestedStrengthMin).max(addOpportunitySignalBodySuggestedStrengthMax),
+  "minimumConfidence": zod.number().min(addOpportunitySignalBodyMinimumConfidenceMin).max(addOpportunitySignalBodyMinimumConfidenceMax),
+  "potentialFalsePositives": zod.array(zod.string()),
+  "factTypes": zod.array(zod.string()),
+  "matchingConfiguration": zod.record(zod.string(), zod.unknown()),
+  "hypothesis": zod.boolean()
+})
+
+export const addOpportunitySignalResponseNeedImpactMin = -100;
+export const addOpportunitySignalResponseNeedImpactMax = 100;
+
+export const addOpportunitySignalResponseTimingImpactMin = -100;
+export const addOpportunitySignalResponseTimingImpactMax = 100;
+
+export const addOpportunitySignalResponseFitImpactMin = -100;
+export const addOpportunitySignalResponseFitImpactMax = 100;
+
+export const addOpportunitySignalResponseLifetimeDaysMax = 730;
+
+export const addOpportunitySignalResponseSuggestedStrengthMin = 0;
+export const addOpportunitySignalResponseSuggestedStrengthMax = 100;
+
+export const addOpportunitySignalResponseMinimumConfidenceMin = 0;
+export const addOpportunitySignalResponseMinimumConfidenceMax = 100;
+
+
+
+export const AddOpportunitySignalResponse = zod.object({
+  "id": zod.string(),
+  "code": zod.string(),
+  "name": zod.string(),
+  "description": zod.string(),
+  "whyItMatters": zod.string(),
+  "category": zod.string(),
+  "polarity": zod.enum(['POSITIVE', 'NEGATIVE']),
+  "needImpact": zod.number().min(addOpportunitySignalResponseNeedImpactMin).max(addOpportunitySignalResponseNeedImpactMax),
+  "timingImpact": zod.number().min(addOpportunitySignalResponseTimingImpactMin).max(addOpportunitySignalResponseTimingImpactMax),
+  "fitImpact": zod.number().min(addOpportunitySignalResponseFitImpactMin).max(addOpportunitySignalResponseFitImpactMax),
+  "likelyEvidence": zod.array(zod.string()),
+  "sourceCapabilities": zod.array(zod.string()),
+  "lifetimeDays": zod.number().min(1).max(addOpportunitySignalResponseLifetimeDaysMax),
+  "suggestedStrength": zod.number().min(addOpportunitySignalResponseSuggestedStrengthMin).max(addOpportunitySignalResponseSuggestedStrengthMax),
+  "minimumConfidence": zod.number().min(addOpportunitySignalResponseMinimumConfidenceMin).max(addOpportunitySignalResponseMinimumConfidenceMax),
+  "potentialFalsePositives": zod.array(zod.string()),
+  "reviewStatus": zod.string(),
+  "hypothesis": zod.boolean()
+})
+
+
+/**
+ * @summary Edit a contextual question in a customer review revision
+ */
+export const UpdateOpportunityResearchQuestionParams = zod.object({
+  "projectId": zod.coerce.string(),
+  "questionId": zod.coerce.string()
+})
+
+
+export const updateOpportunityResearchQuestionBodyPriorityMax = 100;
+
+export const updateOpportunityResearchQuestionBodyExpectedInformationGainMin = 0;
+export const updateOpportunityResearchQuestionBodyExpectedInformationGainMax = 100;
+
+export const updateOpportunityResearchQuestionBodyEstimatedCostMin = 0;
+export const updateOpportunityResearchQuestionBodyEstimatedCostMax = 5;
+
+
+
+export const UpdateOpportunityResearchQuestionBody = zod.object({
+  "questionText": zod.string().optional(),
+  "reason": zod.string().optional(),
+  "sourceCapabilities": zod.array(zod.string()).min(1).optional(),
+  "priority": zod.number().min(1).max(updateOpportunityResearchQuestionBodyPriorityMax).optional(),
+  "expectedInformationGain": zod.number().min(updateOpportunityResearchQuestionBodyExpectedInformationGainMin).max(updateOpportunityResearchQuestionBodyExpectedInformationGainMax).optional(),
+  "estimatedCost": zod.number().min(updateOpportunityResearchQuestionBodyEstimatedCostMin).max(updateOpportunityResearchQuestionBodyEstimatedCostMax).optional()
+})
+
+export const updateOpportunityResearchQuestionResponsePriorityMax = 100;
+
+export const updateOpportunityResearchQuestionResponseExpectedInformationGainMin = 0;
+export const updateOpportunityResearchQuestionResponseExpectedInformationGainMax = 100;
+
+export const updateOpportunityResearchQuestionResponseEstimatedCostMin = 0;
+export const updateOpportunityResearchQuestionResponseEstimatedCostMax = 5;
+
+
+
+export const UpdateOpportunityResearchQuestionResponse = zod.object({
+  "id": zod.string(),
+  "questionText": zod.string(),
+  "reason": zod.string(),
+  "sourceCapabilities": zod.array(zod.string()),
+  "priority": zod.number().min(1).max(updateOpportunityResearchQuestionResponsePriorityMax),
+  "expectedInformationGain": zod.number().min(updateOpportunityResearchQuestionResponseExpectedInformationGainMin).max(updateOpportunityResearchQuestionResponseExpectedInformationGainMax),
+  "estimatedCost": zod.number().min(updateOpportunityResearchQuestionResponseEstimatedCostMin).max(updateOpportunityResearchQuestionResponseEstimatedCostMax),
+  "reviewStatus": zod.string()
+})
+
+
+/**
+ * @summary Approve, disable, or remove a contextual question
+ */
+export const ReviewOpportunityResearchQuestionParams = zod.object({
+  "projectId": zod.coerce.string(),
+  "questionId": zod.coerce.string()
+})
+
+export const ReviewOpportunityResearchQuestionBody = zod.object({
+  "reviewStatus": zod.enum(['APPROVED', 'DISABLED', 'REMOVED'])
+})
+
+export const reviewOpportunityResearchQuestionResponsePriorityMax = 100;
+
+export const reviewOpportunityResearchQuestionResponseExpectedInformationGainMin = 0;
+export const reviewOpportunityResearchQuestionResponseExpectedInformationGainMax = 100;
+
+export const reviewOpportunityResearchQuestionResponseEstimatedCostMin = 0;
+export const reviewOpportunityResearchQuestionResponseEstimatedCostMax = 5;
+
+
+
+export const ReviewOpportunityResearchQuestionResponse = zod.object({
+  "id": zod.string(),
+  "questionText": zod.string(),
+  "reason": zod.string(),
+  "sourceCapabilities": zod.array(zod.string()),
+  "priority": zod.number().min(1).max(reviewOpportunityResearchQuestionResponsePriorityMax),
+  "expectedInformationGain": zod.number().min(reviewOpportunityResearchQuestionResponseExpectedInformationGainMin).max(reviewOpportunityResearchQuestionResponseExpectedInformationGainMax),
+  "estimatedCost": zod.number().min(reviewOpportunityResearchQuestionResponseEstimatedCostMin).max(reviewOpportunityResearchQuestionResponseEstimatedCostMax),
+  "reviewStatus": zod.string()
+})
+
+
+/**
+ * @summary Add a contextual question to a customer review revision
+ */
+export const AddOpportunityResearchQuestionParams = zod.object({
+  "projectId": zod.coerce.string(),
+  "versionId": zod.coerce.string()
+})
+
+
+export const addOpportunityResearchQuestionBodyPriorityMax = 100;
+
+export const addOpportunityResearchQuestionBodyExpectedInformationGainMin = 0;
+export const addOpportunityResearchQuestionBodyExpectedInformationGainMax = 100;
+
+export const addOpportunityResearchQuestionBodyEstimatedCostMin = 0;
+export const addOpportunityResearchQuestionBodyEstimatedCostMax = 5;
+
+
+
+export const AddOpportunityResearchQuestionBody = zod.object({
+  "signalId": zod.string(),
+  "questionText": zod.string(),
+  "reason": zod.string(),
+  "sourceCapabilities": zod.array(zod.string()).min(1),
+  "priority": zod.number().min(1).max(addOpportunityResearchQuestionBodyPriorityMax),
+  "expectedInformationGain": zod.number().min(addOpportunityResearchQuestionBodyExpectedInformationGainMin).max(addOpportunityResearchQuestionBodyExpectedInformationGainMax),
+  "estimatedCost": zod.number().min(addOpportunityResearchQuestionBodyEstimatedCostMin).max(addOpportunityResearchQuestionBodyEstimatedCostMax)
+})
+
+export const addOpportunityResearchQuestionResponsePriorityMax = 100;
+
+export const addOpportunityResearchQuestionResponseExpectedInformationGainMin = 0;
+export const addOpportunityResearchQuestionResponseExpectedInformationGainMax = 100;
+
+export const addOpportunityResearchQuestionResponseEstimatedCostMin = 0;
+export const addOpportunityResearchQuestionResponseEstimatedCostMax = 5;
+
+
+
+export const AddOpportunityResearchQuestionResponse = zod.object({
+  "id": zod.string(),
+  "questionText": zod.string(),
+  "reason": zod.string(),
+  "sourceCapabilities": zod.array(zod.string()),
+  "priority": zod.number().min(1).max(addOpportunityResearchQuestionResponsePriorityMax),
+  "expectedInformationGain": zod.number().min(addOpportunityResearchQuestionResponseExpectedInformationGainMin).max(addOpportunityResearchQuestionResponseExpectedInformationGainMax),
+  "estimatedCost": zod.number().min(addOpportunityResearchQuestionResponseEstimatedCostMin).max(addOpportunityResearchQuestionResponseEstimatedCostMax),
+  "reviewStatus": zod.string()
+})
+
+
+/**
+ * @summary Freeze a reviewed proposal without activating it
+ */
+export const ApproveOpportunityPackParams = zod.object({
+  "projectId": zod.coerce.string(),
+  "versionId": zod.coerce.string()
+})
+
+export const ApproveOpportunityPackResponse = zod.object({
+  "id": zod.string(),
+  "intelligencePackId": zod.string(),
+  "version": zod.number(),
+  "status": zod.enum(['PROPOSED', 'APPROVED', 'ACTIVATED']),
+  "lifecycleLabel": zod.enum(['HYPOTHESIS-LED', 'EVIDENCE-INFORMED']),
+  "offeringSnapshot": zod.record(zod.string(), zod.unknown()),
+  "businessContextSnapshot": zod.record(zod.string(), zod.unknown()),
+  "assumptions": zod.array(zod.string()),
+  "sourceBusinessTwinVersionId": zod.string().nullish(),
+  "sourceIcpVersionId": zod.string().nullish()
+})
+
+
+/**
+ * @summary Explicitly activate one approved version in the Signal Engine
+ */
+export const ActivateOpportunityPackParams = zod.object({
+  "projectId": zod.coerce.string(),
+  "versionId": zod.coerce.string()
+})
+
+export const ActivateOpportunityPackResponse = zod.record(zod.string(), zod.unknown())
+
+

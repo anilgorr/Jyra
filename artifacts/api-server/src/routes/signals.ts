@@ -26,7 +26,7 @@ import {
   signalsTable,
 } from "@workspace/db";
 import { evaluateSignalsForCompany, refreshProjectSignalDecay } from "../lib/signal-packs";
-import { ensureSignalPackFixtures } from "../lib/signal-pack-fixtures";
+import { ensureSignalPackFixtures, SIGNAL_PACK_FIXTURES } from "../lib/signal-pack-fixtures";
 import { getAuthenticatedUserId, requireAuth } from "../middlewares/auth";
 
 const router: IRouter = Router();
@@ -117,10 +117,11 @@ function projectPackPayload(row: {
 
 router.get("/signal-packs", requireAuth, asyncRoute(async (_req, res) => {
   await ensureSignalPackFixtures();
-  const packs = await db.select().from(signalPacksTable).where(and(
+  const fixtureSlugs = new Set(SIGNAL_PACK_FIXTURES.map((fixture) => fixture.slug));
+  const packs = (await db.select().from(signalPacksTable).where(and(
     eq(signalPacksTable.active, true),
     eq(signalPacksTable.status, "APPROVED"),
-  ));
+  ))).filter((pack) => fixtureSlugs.has(pack.slug));
   const definitions = await db.select().from(signalDefinitionsTable);
   res.json(ListSignalPacksResponse.parse(packs.map((pack) => ({
     id: pack.id,

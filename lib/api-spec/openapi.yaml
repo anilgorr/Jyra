@@ -26,6 +26,8 @@ tags:
     description: Bounded evidence-first company research
   - name: signals
     description: Configuration-driven source-grounded signals
+  - name: opportunity-packs
+    description: Customer-reviewed seller-specific Opportunity Intelligence Pack proposals
 paths:
   /healthz:
     get:
@@ -1010,8 +1012,455 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
         "404": { $ref: "#/components/responses/NotFound" }
+  /projects/{projectId}/opportunity-packs:
+    get:
+      operationId: listOpportunityPacks
+      tags: [opportunity-packs]
+      summary: List project Opportunity Intelligence Packs and version history
+      security: [{ clerkSession: [] }]
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+      responses:
+        "200":
+          description: Packs and version history
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/OpportunityPackList" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+  /projects/{projectId}/opportunity-packs/propose:
+    post:
+      operationId: proposeOpportunityPack
+      tags: [opportunity-packs]
+      summary: Generate a bounded proposal without activating it
+      security: [{ clerkSession: [] }]
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ProposeOpportunityPackRequest" }
+      responses:
+        "201":
+          description: Stored proposal
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/OpportunityPackGeneration" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+  /projects/{projectId}/opportunity-packs/{packId}:
+    get:
+      operationId: getOpportunityPack
+      tags: [opportunity-packs]
+      summary: Get one pack proposal and its review items
+      security: [{ clerkSession: [] }]
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+        - name: packId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Pack review detail
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/OpportunityPackDetail" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /projects/{projectId}/opportunity-packs/signals/{signalId}/review:
+    post:
+      operationId: reviewOpportunitySignal
+      tags: [opportunity-packs]
+      summary: Approve, disable, or remove a proposed signal
+      security: [{ clerkSession: [] }]
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+        - name: signalId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/OpportunityItemReviewRequest" }
+      responses:
+        "200":
+          description: Reviewed signal
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/OpportunitySignalProposal" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+  /projects/{projectId}/opportunity-packs/signals/{signalId}:
+    patch:
+      operationId: updateOpportunitySignal
+      tags: [opportunity-packs]
+      summary: Edit signal metadata in a customer review revision
+      security: [{ clerkSession: [] }]
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+        - name: signalId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/UpdateOpportunitySignalRequest" }
+      responses:
+        "200":
+          description: Updated signal proposal
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/OpportunitySignalProposal" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+  /projects/{projectId}/opportunity-packs/versions/{versionId}/duplicate:
+    post:
+      operationId: createOpportunityPackReviewRevision
+      tags: [opportunity-packs]
+      summary: Create an editable customer review revision from an immutable proposal
+      security: [{ clerkSession: [] }]
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+        - name: versionId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "201":
+          description: New customer review revision
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/OpportunityPackVersion" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /projects/{projectId}/opportunity-packs/versions/{versionId}/signals:
+    post:
+      operationId: addOpportunitySignal
+      tags: [opportunity-packs]
+      summary: Add a customer signal to a review revision
+      security: [{ clerkSession: [] }]
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+        - name: versionId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/AddOpportunitySignalRequest" }
+      responses:
+        "201":
+          description: Added signal proposal
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/OpportunitySignalProposal" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+  /projects/{projectId}/opportunity-packs/questions/{questionId}:
+    patch:
+      operationId: updateOpportunityResearchQuestion
+      tags: [opportunity-packs]
+      summary: Edit a contextual question in a customer review revision
+      security: [{ clerkSession: [] }]
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+        - name: questionId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/UpdateOpportunityResearchQuestionRequest" }
+      responses:
+        "200":
+          description: Updated research question
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/OpportunityResearchQuestion" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+  /projects/{projectId}/opportunity-packs/questions/{questionId}/review:
+    post:
+      operationId: reviewOpportunityResearchQuestion
+      tags: [opportunity-packs]
+      summary: Approve, disable, or remove a contextual question
+      security: [{ clerkSession: [] }]
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+        - name: questionId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/OpportunityItemReviewRequest" }
+      responses:
+        "200":
+          description: Reviewed research question
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/OpportunityResearchQuestion" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+  /projects/{projectId}/opportunity-packs/versions/{versionId}/questions:
+    post:
+      operationId: addOpportunityResearchQuestion
+      tags: [opportunity-packs]
+      summary: Add a contextual question to a customer review revision
+      security: [{ clerkSession: [] }]
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+        - name: versionId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/AddOpportunityResearchQuestionRequest" }
+      responses:
+        "201":
+          description: Added research question
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/OpportunityResearchQuestion" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+  /projects/{projectId}/opportunity-packs/versions/{versionId}/approve:
+    post:
+      operationId: approveOpportunityPack
+      tags: [opportunity-packs]
+      summary: Freeze a reviewed proposal without activating it
+      security: [{ clerkSession: [] }]
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+        - name: versionId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Approved pack version
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/OpportunityPackVersion" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+  /projects/{projectId}/opportunity-packs/versions/{versionId}/activate:
+    post:
+      operationId: activateOpportunityPack
+      tags: [opportunity-packs]
+      summary: Explicitly activate one approved version in the Signal Engine
+      security: [{ clerkSession: [] }]
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+        - name: versionId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Activation result
+          content:
+            application/json:
+              schema: { type: object, additionalProperties: true }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
 components:
   schemas:
+    OpportunityPack:
+      type: object
+      properties:
+        id: { type: string }
+        organizationId: { type: string }
+        projectId: { type: string }
+        offeringKey: { type: string }
+        status: { type: string }
+        currentVersion: { type: number }
+      required: [id, organizationId, projectId, offeringKey, status, currentVersion]
+      additionalProperties: true
+    OpportunityPackVersion:
+      type: object
+      properties:
+        id: { type: string }
+        intelligencePackId: { type: string }
+        version: { type: number }
+        status: { type: string, enum: [PROPOSED, APPROVED, ACTIVATED] }
+        lifecycleLabel: { type: string, enum: [HYPOTHESIS-LED, EVIDENCE-INFORMED] }
+        offeringSnapshot: { type: object, additionalProperties: true }
+        businessContextSnapshot: { type: object, additionalProperties: true }
+        assumptions:
+          type: array
+          items: { type: string }
+        sourceBusinessTwinVersionId: { type: [string, "null"] }
+        sourceIcpVersionId: { type: [string, "null"] }
+      required: [id, intelligencePackId, version, status, lifecycleLabel, offeringSnapshot, businessContextSnapshot, assumptions]
+      additionalProperties: true
+    OpportunitySignalProposal:
+      type: object
+      properties:
+        id: { type: string }
+        code: { type: string }
+        name: { type: string }
+        description: { type: string }
+        whyItMatters: { type: string }
+        category: { type: string }
+        polarity: { type: string, enum: [POSITIVE, NEGATIVE] }
+        needImpact: { type: number, minimum: -100, maximum: 100 }
+        timingImpact: { type: number, minimum: -100, maximum: 100 }
+        fitImpact: { type: number, minimum: -100, maximum: 100 }
+        likelyEvidence: { type: array, items: { type: string } }
+        sourceCapabilities: { type: array, items: { type: string } }
+        lifetimeDays: { type: number, minimum: 1, maximum: 730 }
+        suggestedStrength: { type: number, minimum: 0, maximum: 100 }
+        minimumConfidence: { type: number, minimum: 0, maximum: 100 }
+        potentialFalsePositives: { type: array, items: { type: string } }
+        reviewStatus: { type: string }
+        hypothesis: { type: boolean }
+      required: [id, code, name, description, whyItMatters, category, polarity, needImpact, timingImpact, fitImpact, likelyEvidence, sourceCapabilities, lifetimeDays, suggestedStrength, minimumConfidence, potentialFalsePositives, reviewStatus, hypothesis]
+      additionalProperties: true
+    OpportunityResearchQuestion:
+      type: object
+      properties:
+        id: { type: string }
+        questionText: { type: string }
+        reason: { type: string }
+        sourceCapabilities: { type: array, items: { type: string } }
+        priority: { type: number, minimum: 1, maximum: 100 }
+        expectedInformationGain: { type: number, minimum: 0, maximum: 100 }
+        estimatedCost: { type: number, minimum: 0, maximum: 5 }
+        reviewStatus: { type: string }
+      required: [id, questionText, reason, sourceCapabilities, priority, expectedInformationGain, estimatedCost, reviewStatus]
+      additionalProperties: true
+    OpportunityPackDetail:
+      type: object
+      properties:
+        pack: { $ref: "#/components/schemas/OpportunityPack" }
+        version: { $ref: "#/components/schemas/OpportunityPackVersion" }
+        signals:
+          type: array
+          items: { $ref: "#/components/schemas/OpportunitySignalProposal" }
+        questions:
+          type: array
+          items: { $ref: "#/components/schemas/OpportunityResearchQuestion" }
+      required: [pack, version, signals, questions]
+    OpportunityPackList:
+      type: object
+      properties:
+        packs:
+          type: array
+          items: { $ref: "#/components/schemas/OpportunityPack" }
+        versions:
+          type: array
+          items: { $ref: "#/components/schemas/OpportunityPackVersion" }
+      required: [packs, versions]
+    ProposeOpportunityPackRequest:
+      type: object
+      properties:
+        offering:
+          type: object
+          additionalProperties: true
+          minProperties: 1
+        assumptions:
+          type: array
+          maxItems: 20
+          items: { type: string, minLength: 1, maxLength: 1000 }
+      required: [offering, assumptions]
+      additionalProperties: false
+    OpportunityItemReviewRequest:
+      type: object
+      properties:
+        reviewStatus: { type: string, enum: [APPROVED, DISABLED, REMOVED] }
+      required: [reviewStatus]
+      additionalProperties: false
+    OpportunityPackGeneration:
+      type: object
+      properties:
+        pack: { $ref: "#/components/schemas/OpportunityPack" }
+        version: { $ref: "#/components/schemas/OpportunityPackVersion" }
+        signals:
+          type: array
+          items: { $ref: "#/components/schemas/OpportunitySignalProposal" }
+        questionCount: { type: number }
+      required: [pack, version, signals, questionCount]
+    UpdateOpportunitySignalRequest:
+      type: object
+      properties:
+        name: { type: string }
+        description: { type: string }
+        whyItMatters: { type: string }
+        category: { type: string }
+        polarity: { type: string, enum: [POSITIVE, NEGATIVE] }
+        needImpact: { type: number, minimum: -100, maximum: 100 }
+        timingImpact: { type: number, minimum: -100, maximum: 100 }
+        fitImpact: { type: number, minimum: -100, maximum: 100 }
+        lifetimeDays: { type: number, minimum: 1, maximum: 730 }
+        suggestedStrength: { type: number, minimum: 0, maximum: 100 }
+        minimumConfidence: { type: number, minimum: 0, maximum: 100 }
+      additionalProperties: false
+    AddOpportunitySignalRequest:
+      type: object
+      properties:
+        code: { type: string }
+        name: { type: string }
+        description: { type: string }
+        whyItMatters: { type: string }
+        category: { type: string }
+        polarity: { type: string, enum: [POSITIVE, NEGATIVE] }
+        needImpact: { type: number, minimum: -100, maximum: 100 }
+        timingImpact: { type: number, minimum: -100, maximum: 100 }
+        fitImpact: { type: number, minimum: -100, maximum: 100 }
+        likelyEvidence: { type: array, items: { type: string } }
+        sourceCapabilities: { type: array, minItems: 1, items: { type: string } }
+        lifetimeDays: { type: number, minimum: 1, maximum: 730 }
+        suggestedStrength: { type: number, minimum: 0, maximum: 100 }
+        minimumConfidence: { type: number, minimum: 0, maximum: 100 }
+        potentialFalsePositives: { type: array, items: { type: string } }
+        factTypes: { type: array, items: { type: string } }
+        matchingConfiguration: { type: object, additionalProperties: true }
+        hypothesis: { type: boolean }
+      required: [code, name, description, whyItMatters, category, polarity, needImpact, timingImpact, fitImpact, likelyEvidence, sourceCapabilities, lifetimeDays, suggestedStrength, minimumConfidence, potentialFalsePositives, factTypes, matchingConfiguration, hypothesis]
+      additionalProperties: false
+    UpdateOpportunityResearchQuestionRequest:
+      type: object
+      properties:
+        questionText: { type: string }
+        reason: { type: string }
+        sourceCapabilities: { type: array, minItems: 1, items: { type: string } }
+        priority: { type: number, minimum: 1, maximum: 100 }
+        expectedInformationGain: { type: number, minimum: 0, maximum: 100 }
+        estimatedCost: { type: number, minimum: 0, maximum: 5 }
+      additionalProperties: false
+    AddOpportunityResearchQuestionRequest:
+      type: object
+      properties:
+        signalId: { type: string }
+        questionText: { type: string }
+        reason: { type: string }
+        sourceCapabilities: { type: array, minItems: 1, items: { type: string } }
+        priority: { type: number, minimum: 1, maximum: 100 }
+        expectedInformationGain: { type: number, minimum: 0, maximum: 100 }
+        estimatedCost: { type: number, minimum: 0, maximum: 5 }
+      required: [signalId, questionText, reason, sourceCapabilities, priority, expectedInformationGain, estimatedCost]
+      additionalProperties: false
     HealthStatus:
       type: object
       properties:

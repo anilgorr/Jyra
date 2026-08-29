@@ -1,0 +1,134 @@
+PHASE 13 — GENERIC SIGNAL CLUSTER ENGINE
+
+JYRA
+Who. When. Why.
+
+Continue from the approved Opportunity Intelligence Pack.
+
+==================================================
+OBJECTIVE
+==================================================
+
+Individual signals can be weak.
+
+Multiple independent signals occurring together may represent a much
+stronger opportunity.
+
+Build a GENERIC Signal Cluster Engine.
+
+Do NOT hardcode industry-specific clusters.
+
+==================================================
+1. CLUSTER DEFINITIONS
+==================================================
+
+Create/extend:
+
+signal_cluster_definitions
+signal_clusters
+signal_cluster_members
+
+A cluster definition should support:
+
+name
+description
+project/intelligence_pack
+required signals
+optional signals
+minimum independent signals
+time window
+strength
+need impact
+timing impact
+negative conditions
+version
+active status
+
+==================================================
+2. DYNAMIC CLUSTERS
+==================================================
+
+AI may PROPOSE useful clusters when creating an Intelligence Pack.
+
+Example:
+
+Signal A
++
+Signal B
++
+Signal C
+
+may indicate a stronger buying window.
+
+But customer/project configuration controls activation.
+
+==================================================
+3. INDEPENDENCE
+==================================================
+
+Do not count duplicate reporting as multiple signals.
+
+Example:
+
+same company announcement
+→ company website
+→ news syndication
+→ LinkedIn repost
+
+This may be ONE underlying event, not three independent signals.
+
+Use source/event deduplication.
+
+==================================================
+4. TEMPORAL PROXIMITY
+==================================================
+
+Clusters should consider time.
+
+Three signals occurring within 30 days may be stronger than the same
+three signals spread across three years.
+
+Make time windows configurable.
+
+==================================================
+5. NEGATIVE CONDITIONS
+==================================================
+
+Allow negative signals to weaken or invalidate clusters.
+
+==================================================
+6. EXPLAINABILITY
+==================================================
+
+Every cluster must explain:
+
+which signals triggered
+when
+supporting evidence
+independence
+why the combination matters
+
+==================================================
+7. TEST
+==================================================
+
+Use several generic Intelligence Packs.
+
+Verify the same cluster engine works across unrelated industries.
+
+==================================================
+ACCEPTANCE
+==================================================
+
+No hardcoded industry cluster logic.
+No duplicate-event inflation.
+Temporal logic works.
+Negative conditions work.
+Evidence traceability works.
+Existing signals remain intact.
+
+Update documentation.
+Update CHANGELOG.md.
+Create checkpoint.
+
+DO NOT begin Phase 14.

@@ -54,6 +54,7 @@ const suffix = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 const userId = `signal-test-${suffix}`;
 let organization;
 let company;
+let activatedPackId;
 try {
   await h.db.insert(h.usersTable).values({ id: userId });
   [organization] = await h.db.insert(h.organizationsTable).values({ name: `Signal Test ${suffix}`, createdByUserId: userId }).returning();
@@ -220,10 +221,10 @@ try {
     { ...fact, id: "funding", factType: "FUNDING_EVENT", supportingExcerpt: "The company raised $20M in growth funding." },
     { ...fact, id: "hiring", factType: "JOB_OPENING", supportingExcerpt: "The company is hiring security, marketing, facilities and growth leaders." },
     { ...fact, id: "leader", factType: "LEADERSHIP_CHANGE", supportingExcerpt: "A new CISO, CMO, facilities and operations leader joined." },
-    { ...fact, id: "tech", factType: "TECHNOLOGY_MENTION", supportingExcerpt: "The company changed its SIEM, CRM, ATS and solar array platforms." },
+    { ...fact, id: "tech", factType: "TECHNOLOGY_MENTION", supportingExcerpt: "The company changed its SIEM, CRM, ATS, legacy ERP and solar array platforms." },
   ];
   const interpretations = {};
-  for (const slug of ["managed-soc", "executive-recruitment", "commercial-solar", "digital-marketing"]) {
+  for (const slug of ["managed-soc", "executive-recruitment", "commercial-solar", "digital-marketing", "erp-implementation"]) {
     const fixturePack = packs.find((item) => item.slug === slug);
     const definitions = await h.db.select().from(h.signalDefinitionsTable).where(h.eq(h.signalDefinitionsTable.signalPackId, fixturePack.id));
     interpretations[slug] = h.detectSignalCandidates(semanticFacts, definitions).map((candidate) => ({
@@ -234,9 +235,77 @@ try {
       polarity: candidate.definition.polarity,
     }));
   }
-  assert.equal(new Set(Object.values(interpretations).map((value) => JSON.stringify(value))).size, 4);
+  assert.equal(new Set(Object.values(interpretations).map((value) => JSON.stringify(value))).size, 5);
   assert.equal(interpretations["commercial-solar"].some((item) => item.code.includes("FUNDING")), false);
   assert.equal(interpretations["commercial-solar"].some((item) => item.polarity === "NEGATIVE"), true);
+  assert.equal(interpretations["erp-implementation"].some((item) => item.code.includes("ERP_")), true);
+  assert.equal(h.opportunityPackProposalSchema.safeParse({
+    assumptions: [],
+    signals: [],
+    researchQuestions: [],
+  }).success, false);
+  const [intelligencePack] = await h.db.insert(h.intelligencePacksTable).values({
+    organizationId: organization.id,
+    projectId: projectA.id,
+    offeringKey: `review-${suffix}`,
+    createdBy: userId,
+  }).returning();
+  const [sourceVersion] = await h.db.insert(h.intelligencePackVersionsTable).values({
+    intelligencePackId: intelligencePack.id,
+    version: 1,
+    status: "PROPOSED",
+    lifecycleLabel: "HYPOTHESIS-LED",
+    offeringSnapshot: { name: "Lifecycle test" },
+    businessContextSnapshot: { fixture: true },
+    assumptions: ["Test assumption"],
+    generationMethod: "AI_PROPOSAL",
+    createdBy: userId,
+  }).returning();
+  const [sourceSignal] = await h.db.insert(h.intelligencePackSignalsTable).values({
+    versionId: sourceVersion.id,
+    code: `LIFECYCLE_${suffix.replace(/[^a-z0-9]/gi, "_").toUpperCase()}`.slice(0, 63),
+    name: "Lifecycle signal",
+    description: "Tests proposal approval and activation.",
+    whyItMatters: "Protects the activation boundary.",
+    category: "TEST",
+    polarity: "POSITIVE",
+    needImpact: 50,
+    timingImpact: 50,
+    fitImpact: 50,
+    likelyEvidence: ["Public source"],
+    sourceCapabilities: ["WEB_SEARCH"],
+    lifetimeDays: 90,
+    suggestedStrength: 60,
+    minimumConfidence: 70,
+    potentialFalsePositives: ["Ambiguous evidence"],
+    factTypes: ["LEADERSHIP_CHANGE"],
+    matchingConfiguration: { factTypes: ["LEADERSHIP_CHANGE"] },
+    reviewStatus: "PROPOSED",
+    hypothesis: true,
+  }).returning();
+  await h.db.insert(h.intelligencePackQuestionsTable).values({
+    versionId: sourceVersion.id,
+    signalId: sourceSignal.id,
+    questionText: "What public evidence supports this signal?",
+    reason: "Required contextual research.",
+    sourceCapabilities: ["WEB_SEARCH"],
+    priority: 50,
+    expectedInformationGain: 50,
+    estimatedCost: 1,
+    reviewStatus: "PROPOSED",
+  });
+  await assert.rejects(() => h.activateOpportunityPackVersion(sourceVersion.id, userId), /Approve/);
+  const revision = await h.cloneOpportunityPackVersion(sourceVersion.id, userId);
+  const [revisionSignal] = await h.db.select().from(h.intelligencePackSignalsTable).where(h.eq(h.intelligencePackSignalsTable.versionId, revision.id));
+  const [revisionQuestion] = await h.db.select().from(h.intelligencePackQuestionsTable).where(h.eq(h.intelligencePackQuestionsTable.versionId, revision.id));
+  await h.db.update(h.intelligencePackSignalsTable).set({ reviewStatus: "APPROVED" }).where(h.eq(h.intelligencePackSignalsTable.id, revisionSignal.id));
+  await assert.rejects(() => h.approveOpportunityPackVersion(revision.id, userId), /research question/);
+  await h.db.update(h.intelligencePackQuestionsTable).set({ reviewStatus: "APPROVED" }).where(h.eq(h.intelligencePackQuestionsTable.id, revisionQuestion.id));
+  const approved = await h.approveOpportunityPackVersion(revision.id, userId);
+  assert.equal(approved.status, "APPROVED");
+  const activation = await h.activateOpportunityPackVersion(revision.id, userId);
+  activatedPackId = activation.signalPack.id;
+  assert.equal(activation.version.status, "ACTIVATED");
   console.log("Signal detection, decay, provenance, and project-isolation tests passed.");
 } finally {
   if (company) {
@@ -248,6 +317,10 @@ try {
     finally { await h.db.execute(h.sql.raw("ALTER TABLE crawl_pages ENABLE TRIGGER crawl_pages_append_only")); }
   }
   if (organization) await h.db.delete(h.organizationsTable).where(h.eq(h.organizationsTable.id, organization.id));
+  if (activatedPackId) {
+    await h.db.delete(h.signalDefinitionsTable).where(h.eq(h.signalDefinitionsTable.signalPackId, activatedPackId));
+    await h.db.delete(h.signalPacksTable).where(h.eq(h.signalPacksTable.id, activatedPackId));
+  }
   if (company) await h.db.delete(h.companiesTable).where(h.eq(h.companiesTable.id, company.id));
   await h.db.delete(h.usersTable).where(h.eq(h.usersTable.id, userId));
 }

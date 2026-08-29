@@ -29,3 +29,4 @@ export * from "./evidence";
 export * from "./facts";
 export * from "./research";
 export * from "./signals";
+export * from "./intelligence-packs";
