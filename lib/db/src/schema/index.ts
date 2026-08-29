@@ -25,3 +25,4 @@ export * from "./business-twins";
 export * from "./icps";
 export * from "./companies";
 export * from "./providers";
+export * from "./evidence";

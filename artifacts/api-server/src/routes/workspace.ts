@@ -76,10 +76,10 @@ const capabilityPhases = [
   },
   {
     id: "evidence-signals",
-    label: "Evidence & Signals",
+    label: "Evidence Provenance",
     description:
-      "Research public evidence, preserve provenance, and detect meaningful signals.",
-    status: "planned",
+      "Preserve public source observations and provenance before interpretation.",
+    status: "implemented",
     order: 7,
   },
   {
@@ -102,13 +102,13 @@ const capabilityPhases = [
 
 router.get("/workspace/summary", (_req, res) => {
   const data = GetWorkspaceSummaryResponse.parse({
-    milestone: "apify_provider",
-    milestoneLabel: "Apify Research Provider",
-    researchStatus: "connected_unconfigured",
+    milestone: "evidence_provenance",
+    milestoneLabel: "Evidence Provenance",
+    researchStatus: "evidence_ready",
     intelligenceCount: 0,
     activeSignalCount: 0,
     qualifiedCompanyCount: 0,
-    nextMilestone: "Build the Market Universe",
+    nextMilestone: "Build structured facts and signals",
   });
 
   res.json(data);

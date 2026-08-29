@@ -8,6 +8,14 @@ JYRA represents a real-world company once and links that canonical identity to a
 
 Manual and CSV import use a preview-first workflow. Exact normalized domain matches reuse an existing canonical company. Similar names are shown as possible duplicates and require a user to explicitly reuse the candidate or create a separate company. Identity resolution never delegates merging to an LLM and never silently turns an uncertain match into a canonical merge.
 
+## Evidence provenance layer
+
+JYRA preserves public company observations in globally reusable crawl captures and evidence records before any downstream fact, signal, or commercial interpretation. Each observation retains its canonical company, normalized source URL and domain, source type, provider, publisher, publication and observation times, immutable raw content reference, source-grounded claim, deterministic heuristic scores, confidence, and review status.
+
+Unchanged content from the same company and source is recognized by a deterministic normalized-content hash and is not processed again. Changed observations create new records rather than overwriting prior source material. Evidence may move through `RAW`, `EXTRACTED`, `VERIFIED`, `CONFLICTING`, and `STALE`; status review cannot rewrite the raw capture.
+
+Authority, directness, freshness, and corroboration values are bounded heuristics for review support. They are not truth labels and do not create facts, signals, buying intent, opportunity scores, or recommendations. All evidence API access remains rooted in an authorized project-company relationship even though the preserved public observation is reusable for the same canonical company across projects.
+
 # JYRA Product Specification
 
 ## Product identity
@@ -81,7 +89,7 @@ JYRA identifies or imports candidate companies and evaluates whether they fit th
 
 The provider abstraction routes normalized capability requests to configured adapters, records each attempt, and supports deterministic fallback. Research planning, budgets, stopping rules, and production provider connections remain future work.
 
-### 4. Evidence, facts, and signals
+### 4. Evidence (implemented), facts, and signals (future)
 
 Research results preserve original source evidence. Structured facts, detected signals, interpretations, and hypotheses are stored separately.
 

@@ -56,7 +56,9 @@ app.use((req, res, next) => {
   res.status(403).json({ error: "Origin not allowed" });
 });
 app.use(cors({ credentials: true, origin: true }));
-app.use(express.json());
+// OpenAPI bounds rawContent by JavaScript characters. Four MiB safely covers
+// 500,000 UTF-16 code units even when JSON escaping expands each unit.
+app.use(express.json({ limit: "4mb" }));
 app.use(express.urlencoded({ extended: true }));
 
 app.use(
@@ -76,6 +78,15 @@ app.use((
   res: express.Response,
   _next: express.NextFunction,
 ) => {
+  if (
+    typeof error === "object" &&
+    error !== null &&
+    "status" in error &&
+    error.status === 413
+  ) {
+    res.status(413).json({ error: "Request body is too large" });
+    return;
+  }
   logger.error({ error }, "Unhandled API error");
   res.status(500).json({ error: "Internal server error" });
 });

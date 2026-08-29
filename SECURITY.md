@@ -24,7 +24,22 @@ Future roles should use least privilege for configuration, research, evidence, i
 
 ## Evidence integrity
 
-Original evidence is retained with capture metadata and provider provenance. Generated text cannot replace or overwrite source evidence.
+Original evidence is retained with capture metadata and provider provenance.
+Exact raw content is stored separately from its normalized SHA-256 hash and
+source-grounded claim. The hash supports duplicate detection but never replaces
+the original capture. Changed content creates another observation rather than
+mutating history. PostgreSQL rejects updates and deletes to crawl captures, so
+internal scripts and future routes cannot silently bypass API-level immutability.
+
+Evidence reads and writes require an authenticated project-company route and a
+server-side organization membership check. Public evidence may be reused for
+the same canonical company across authorized projects, but evidence records
+cannot contain tenant scores, opportunities, recommendations, or private
+interpretation. The preserving organization owns review authority for its
+observation; another organization linked to the same canonical company may read
+the reusable public evidence but cannot alter its global status. Status
+mutations use an allowlisted transition graph and update only status metadata.
+Generated text cannot replace or overwrite source evidence.
 
 ## Secrets and providers
 
@@ -41,7 +56,7 @@ raw Actor payloads are not written to provider usage.
 
 ## AI boundaries
 
-AI output is treated as assistive and reviewable. It cannot authorize access, merge canonical entities, calculate protected scores, decide billing, or create provenance.
+AI output is treated as assistive and reviewable. It cannot authorize access, merge canonical entities, calculate protected scores, decide billing, create provenance, rewrite raw captures, determine duplicate identity, or perform evidence status transitions.
 
 ## Application hygiene
 

@@ -898,6 +898,146 @@ export interface Company {
   updatedAt: string;
 }
 
+export type CompanyEvidenceSourceType = typeof CompanyEvidenceSourceType[keyof typeof CompanyEvidenceSourceType];
+
+
+export const CompanyEvidenceSourceType = {
+  company_website: 'company_website',
+  careers_page: 'careers_page',
+  job_posting: 'job_posting',
+  press_release: 'press_release',
+  news: 'news',
+  blog: 'blog',
+  trust_security_compliance: 'trust_security_compliance',
+  technology: 'technology',
+  public_social: 'public_social',
+  other: 'other',
+} as const;
+
+export type CompanyEvidenceStatus = typeof CompanyEvidenceStatus[keyof typeof CompanyEvidenceStatus];
+
+
+export const CompanyEvidenceStatus = {
+  RAW: 'RAW',
+  EXTRACTED: 'EXTRACTED',
+  VERIFIED: 'VERIFIED',
+  CONFLICTING: 'CONFLICTING',
+  STALE: 'STALE',
+} as const;
+
+export interface CompanyEvidence {
+  id: string;
+  companyId: string;
+  crawlPageId: string;
+  sourceUrl: string;
+  sourceDomain: string;
+  sourceType: CompanyEvidenceSourceType;
+  provider: string;
+  /** @nullable */
+  publisher: string | null;
+  /** @nullable */
+  publishedAt: string | null;
+  observedAt: string;
+  /** @nullable */
+  rawContentReference: string | null;
+  rawContent: string;
+  extractedClaim: string;
+  /**
+     * @minimum 0
+     * @maximum 100
+     */
+  authorityScore: number;
+  /**
+     * @minimum 0
+     * @maximum 100
+     */
+  directnessScore: number;
+  /**
+     * @minimum 0
+     * @maximum 100
+     */
+  freshnessScore: number;
+  /**
+     * @minimum 0
+     * @maximum 100
+     */
+  corroborationScore: number;
+  /**
+     * @minimum 0
+     * @maximum 100
+     */
+  confidence: number;
+  status: CompanyEvidenceStatus;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type CompanyEvidenceInputSourceType = typeof CompanyEvidenceInputSourceType[keyof typeof CompanyEvidenceInputSourceType];
+
+
+export const CompanyEvidenceInputSourceType = {
+  company_website: 'company_website',
+  careers_page: 'careers_page',
+  job_posting: 'job_posting',
+  press_release: 'press_release',
+  news: 'news',
+  blog: 'blog',
+  trust_security_compliance: 'trust_security_compliance',
+  technology: 'technology',
+  public_social: 'public_social',
+  other: 'other',
+} as const;
+
+export interface CompanyEvidenceInput {
+  /** @maxLength 2000 */
+  sourceUrl: string;
+  sourceType: CompanyEvidenceInputSourceType;
+  /**
+     * @minLength 1
+     * @maxLength 120
+     */
+  provider: string;
+  /**
+     * @maxLength 300
+     * @nullable
+     */
+  publisher?: string | null;
+  /** @nullable */
+  publishedAt?: string | null;
+  /** @nullable */
+  observedAt?: string | null;
+  /**
+     * @minLength 1
+     * @maxLength 500000
+     */
+  rawContent: string;
+  /**
+     * @minLength 1
+     * @maxLength 2000
+     */
+  extractedClaim: string;
+}
+
+export type CompanyEvidenceStatusUpdateStatus = typeof CompanyEvidenceStatusUpdateStatus[keyof typeof CompanyEvidenceStatusUpdateStatus];
+
+
+export const CompanyEvidenceStatusUpdateStatus = {
+  RAW: 'RAW',
+  EXTRACTED: 'EXTRACTED',
+  VERIFIED: 'VERIFIED',
+  CONFLICTING: 'CONFLICTING',
+  STALE: 'STALE',
+} as const;
+
+export interface CompanyEvidenceStatusUpdate {
+  status: CompanyEvidenceStatusUpdateStatus;
+}
+
+export interface CompanyEvidenceDuplicate {
+  error: string;
+  evidence: CompanyEvidence;
+}
+
 export interface CompanyInput {
   /**
      * @minLength 1

@@ -26,6 +26,10 @@ import type {
   BusinessTwinVersionInput,
   CapabilityPhase,
   CommitCompanyImport409,
+  CompanyEvidence,
+  CompanyEvidenceDuplicate,
+  CompanyEvidenceInput,
+  CompanyEvidenceStatusUpdate,
   CompanyImportCommitInput,
   CompanyImportInput,
   CompanyImportPreview,
@@ -2357,6 +2361,241 @@ export const useUpdateProjectCompany = <TError = ErrorType<BadRequestResponse | 
         TContext
       > => {
       return useMutation(getUpdateProjectCompanyMutationOptions(options));
+    }
+
+export const getListCompanyEvidenceUrl = (projectId: string,
+    projectCompanyId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/companies/${projectCompanyId}/evidence`
+}
+
+/**
+ * Returns globally reusable source evidence for the canonical company linked to the project.
+ * @summary List public evidence for a project company
+ */
+export const listCompanyEvidence = async (projectId: string,
+    projectCompanyId: string, options?: Parameters<typeof customFetch>[1]): Promise<CompanyEvidence[]> => {
+
+  return customFetch<CompanyEvidence[]>(getListCompanyEvidenceUrl(projectId,projectCompanyId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListCompanyEvidenceQueryKey = (projectId: string,
+    projectCompanyId: string,) => {
+    return [
+    `/api/projects/${projectId}/companies/${projectCompanyId}/evidence`
+    ] as const;
+    }
+
+
+export const getListCompanyEvidenceQueryOptions = <TData = Awaited<ReturnType<typeof listCompanyEvidence>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(projectId: string,
+    projectCompanyId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listCompanyEvidence>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListCompanyEvidenceQueryKey(projectId,projectCompanyId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listCompanyEvidence>>> = ({ signal }) => listCompanyEvidence(projectId,projectCompanyId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: projectId !== null && projectId !== undefined && projectCompanyId !== null && projectCompanyId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listCompanyEvidence>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListCompanyEvidenceQueryResult = NonNullable<Awaited<ReturnType<typeof listCompanyEvidence>>>
+export type ListCompanyEvidenceQueryError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+
+/**
+ * @summary List public evidence for a project company
+ */
+
+export function useListCompanyEvidence<TData = Awaited<ReturnType<typeof listCompanyEvidence>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(
+ projectId: string,
+    projectCompanyId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listCompanyEvidence>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListCompanyEvidenceQueryOptions(projectId,projectCompanyId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getCreateCompanyEvidenceUrl = (projectId: string,
+    projectCompanyId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/companies/${projectCompanyId}/evidence`
+}
+
+/**
+ * Captures immutable raw source content and a source-grounded claim for the canonical company.
+ * @summary Preserve a public source observation
+ */
+export const createCompanyEvidence = async (projectId: string,
+    projectCompanyId: string,
+    companyEvidenceInput: CompanyEvidenceInput, options?: Parameters<typeof customFetch>[1]): Promise<CompanyEvidence> => {
+
+  return customFetch<CompanyEvidence>(getCreateCompanyEvidenceUrl(projectId,projectCompanyId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(companyEvidenceInput)
+  }
+);}
+
+
+
+
+
+export const getCreateCompanyEvidenceMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | CompanyEvidenceDuplicate>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createCompanyEvidence>>, TError,{projectId: string;projectCompanyId: string;data: BodyType<CompanyEvidenceInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createCompanyEvidence>>, TError,{projectId: string;projectCompanyId: string;data: BodyType<CompanyEvidenceInput>}, TContext> => {
+
+const mutationKey = ['createCompanyEvidence'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createCompanyEvidence>>, {projectId: string;projectCompanyId: string;data: BodyType<CompanyEvidenceInput>}> = (props) => {
+          const {projectId,projectCompanyId,data} = props ?? {};
+
+          return  createCompanyEvidence(projectId,projectCompanyId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateCompanyEvidenceMutationResult = NonNullable<Awaited<ReturnType<typeof createCompanyEvidence>>>
+    export type CreateCompanyEvidenceMutationBody = BodyType<CompanyEvidenceInput>
+    export type CreateCompanyEvidenceMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | CompanyEvidenceDuplicate>
+
+    /**
+ * @summary Preserve a public source observation
+ */
+export const useCreateCompanyEvidence = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | CompanyEvidenceDuplicate>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createCompanyEvidence>>, TError,{projectId: string;projectCompanyId: string;data: BodyType<CompanyEvidenceInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createCompanyEvidence>>,
+        TError,
+        {projectId: string;projectCompanyId: string;data: BodyType<CompanyEvidenceInput>},
+        TContext
+      > => {
+      return useMutation(getCreateCompanyEvidenceMutationOptions(options));
+    }
+
+export const getUpdateCompanyEvidenceStatusUrl = (projectId: string,
+    projectCompanyId: string,
+    evidenceId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/companies/${projectCompanyId}/evidence/${evidenceId}`
+}
+
+/**
+ * Changes only the review status; preserved source content and provenance cannot be rewritten.
+ * @summary Transition company evidence status
+ */
+export const updateCompanyEvidenceStatus = async (projectId: string,
+    projectCompanyId: string,
+    evidenceId: string,
+    companyEvidenceStatusUpdate: CompanyEvidenceStatusUpdate, options?: Parameters<typeof customFetch>[1]): Promise<CompanyEvidence> => {
+
+  return customFetch<CompanyEvidence>(getUpdateCompanyEvidenceStatusUrl(projectId,projectCompanyId,evidenceId),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(companyEvidenceStatusUpdate)
+  }
+);}
+
+
+
+
+
+export const getUpdateCompanyEvidenceStatusMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateCompanyEvidenceStatus>>, TError,{projectId: string;projectCompanyId: string;evidenceId: string;data: BodyType<CompanyEvidenceStatusUpdate>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateCompanyEvidenceStatus>>, TError,{projectId: string;projectCompanyId: string;evidenceId: string;data: BodyType<CompanyEvidenceStatusUpdate>}, TContext> => {
+
+const mutationKey = ['updateCompanyEvidenceStatus'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateCompanyEvidenceStatus>>, {projectId: string;projectCompanyId: string;evidenceId: string;data: BodyType<CompanyEvidenceStatusUpdate>}> = (props) => {
+          const {projectId,projectCompanyId,evidenceId,data} = props ?? {};
+
+          return  updateCompanyEvidenceStatus(projectId,projectCompanyId,evidenceId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateCompanyEvidenceStatusMutationResult = NonNullable<Awaited<ReturnType<typeof updateCompanyEvidenceStatus>>>
+    export type UpdateCompanyEvidenceStatusMutationBody = BodyType<CompanyEvidenceStatusUpdate>
+    export type UpdateCompanyEvidenceStatusMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+    /**
+ * @summary Transition company evidence status
+ */
+export const useUpdateCompanyEvidenceStatus = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateCompanyEvidenceStatus>>, TError,{projectId: string;projectCompanyId: string;evidenceId: string;data: BodyType<CompanyEvidenceStatusUpdate>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateCompanyEvidenceStatus>>,
+        TError,
+        {projectId: string;projectCompanyId: string;evidenceId: string;data: BodyType<CompanyEvidenceStatusUpdate>},
+        TContext
+      > => {
+      return useMutation(getUpdateCompanyEvidenceStatusMutationOptions(options));
     }
 
 export const getPreviewCompanyImportUrl = (projectId: string,) => {

@@ -12,7 +12,8 @@
     "test:business-twin": "node ./scripts/test-business-twin-maturity.mjs",
     "test:companies": "node ./scripts/test-company-identity.mjs",
     "test:providers": "node ./scripts/test-provider-router.mjs",
-    "test:apify": "node ./scripts/test-apify-provider.mjs"
+    "test:apify": "node ./scripts/test-apify-provider.mjs",
+    "test:evidence": "node ./scripts/test-evidence.mjs"
   },
   "dependencies": {
     "@clerk/express": "^2.1.63",

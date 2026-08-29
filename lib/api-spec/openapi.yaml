@@ -664,6 +664,82 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
         "404": { $ref: "#/components/responses/NotFound" }
+  /projects/{projectId}/companies/{projectCompanyId}/evidence:
+    get:
+      operationId: listCompanyEvidence
+      tags: [companies]
+      summary: List public evidence for a project company
+      description: Returns globally reusable source evidence for the canonical company linked to the project.
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/ProjectId" }
+        - { $ref: "#/components/parameters/ProjectCompanyId" }
+      responses:
+        "200":
+          description: Company evidence
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/CompanyEvidence" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+    post:
+      operationId: createCompanyEvidence
+      tags: [companies]
+      summary: Preserve a public source observation
+      description: Captures immutable raw source content and a source-grounded claim for the canonical company.
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/ProjectId" }
+        - { $ref: "#/components/parameters/ProjectCompanyId" }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CompanyEvidenceInput" }
+      responses:
+        "201":
+          description: Preserved company evidence
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CompanyEvidence" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409":
+          description: The unchanged source observation already exists
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CompanyEvidenceDuplicate" }
+  /projects/{projectId}/companies/{projectCompanyId}/evidence/{evidenceId}:
+    patch:
+      operationId: updateCompanyEvidenceStatus
+      tags: [companies]
+      summary: Transition company evidence status
+      description: Changes only the review status; preserved source content and provenance cannot be rewritten.
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/ProjectId" }
+        - { $ref: "#/components/parameters/ProjectCompanyId" }
+        - { $ref: "#/components/parameters/EvidenceId" }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CompanyEvidenceStatusUpdate" }
+      responses:
+        "200":
+          description: Updated evidence status
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CompanyEvidence" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
   /projects/{projectId}/companies/import/preview:
     post:
       operationId: previewCompanyImport
@@ -1467,6 +1543,58 @@ components:
         createdAt: { type: string, format: date-time }
         updatedAt: { type: string, format: date-time }
       required: [id, canonicalName, domain, website, linkedinUrl, country, industry, employeeCount, employeeRange, description, createdAt, updatedAt]
+    CompanyEvidence:
+      type: object
+      properties:
+        id: { type: string }
+        companyId: { type: string }
+        crawlPageId: { type: string }
+        sourceUrl: { type: string }
+        sourceDomain: { type: string }
+        sourceType:
+          type: string
+          enum: [company_website, careers_page, job_posting, press_release, news, blog, trust_security_compliance, technology, public_social, other]
+        provider: { type: string }
+        publisher: { type: ["string", "null"] }
+        publishedAt: { type: ["string", "null"], format: date-time }
+        observedAt: { type: string, format: date-time }
+        rawContentReference: { type: ["string", "null"] }
+        rawContent: { type: string }
+        extractedClaim: { type: string }
+        authorityScore: { type: number, minimum: 0, maximum: 100 }
+        directnessScore: { type: number, minimum: 0, maximum: 100 }
+        freshnessScore: { type: number, minimum: 0, maximum: 100 }
+        corroborationScore: { type: number, minimum: 0, maximum: 100 }
+        confidence: { type: number, minimum: 0, maximum: 100 }
+        status: { type: string, enum: [RAW, EXTRACTED, VERIFIED, CONFLICTING, STALE] }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+      required: [id, companyId, crawlPageId, sourceUrl, sourceDomain, sourceType, provider, publisher, publishedAt, observedAt, rawContentReference, rawContent, extractedClaim, authorityScore, directnessScore, freshnessScore, corroborationScore, confidence, status, createdAt, updatedAt]
+    CompanyEvidenceInput:
+      type: object
+      properties:
+        sourceUrl: { type: string, maxLength: 2000 }
+        sourceType:
+          type: string
+          enum: [company_website, careers_page, job_posting, press_release, news, blog, trust_security_compliance, technology, public_social, other]
+        provider: { type: string, minLength: 1, maxLength: 120 }
+        publisher: { type: ["string", "null"], maxLength: 300 }
+        publishedAt: { type: ["string", "null"], format: date-time }
+        observedAt: { type: ["string", "null"], format: date-time }
+        rawContent: { type: string, minLength: 1, maxLength: 500000 }
+        extractedClaim: { type: string, minLength: 1, maxLength: 2000 }
+      required: [sourceUrl, sourceType, provider, rawContent, extractedClaim]
+    CompanyEvidenceStatusUpdate:
+      type: object
+      properties:
+        status: { type: string, enum: [RAW, EXTRACTED, VERIFIED, CONFLICTING, STALE] }
+      required: [status]
+    CompanyEvidenceDuplicate:
+      type: object
+      properties:
+        error: { type: string }
+        evidence: { $ref: "#/components/schemas/CompanyEvidence" }
+      required: [error, evidence]
     CompanyInput:
       type: object
       properties:
@@ -1660,6 +1788,12 @@ components:
         type: string
     ProjectCompanyId:
       name: projectCompanyId
+      in: path
+      required: true
+      schema:
+        type: string
+    EvidenceId:
+      name: evidenceId
       in: path
       required: true
       schema:

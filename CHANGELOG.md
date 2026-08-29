@@ -41,6 +41,19 @@
   the default Apify placeholder remains disabled until a reliable Actor is
   deliberately configured.
 
+## Evidence provenance
+
+- Added immutable `crawl_pages` captures and globally reusable
+  `company_evidence` linked to canonical companies.
+- Added deterministic URL and content normalization, SHA-256 hashing,
+  duplicate prevention, and bounded authority, directness, freshness,
+  corroboration, and confidence heuristics.
+- Added project-authorized APIs and company UI for preserving sources,
+  inspecting exact raw content and provenance, and applying validated `RAW`,
+  `EXTRACTED`, `VERIFIED`, `CONFLICTING`, and `STALE` status transitions.
+- Kept facts, signals, opportunity scoring, recommendations, and all
+  tenant-specific commercial interpretation outside the global evidence layer.
+
 # Changelog
 
 ## JYRA rebrand

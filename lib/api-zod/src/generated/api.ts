@@ -3283,6 +3283,188 @@ export const UpdateProjectCompanyResponse = zod.object({
 
 
 /**
+ * Returns globally reusable source evidence for the canonical company linked to the project.
+ * @summary List public evidence for a project company
+ */
+export const ListCompanyEvidenceParams = zod.object({
+  "projectId": zod.coerce.string(),
+  "projectCompanyId": zod.coerce.string()
+})
+
+export const listCompanyEvidenceResponseAuthorityScoreMin = 0;
+export const listCompanyEvidenceResponseAuthorityScoreMax = 100;
+
+export const listCompanyEvidenceResponseDirectnessScoreMin = 0;
+export const listCompanyEvidenceResponseDirectnessScoreMax = 100;
+
+export const listCompanyEvidenceResponseFreshnessScoreMin = 0;
+export const listCompanyEvidenceResponseFreshnessScoreMax = 100;
+
+export const listCompanyEvidenceResponseCorroborationScoreMin = 0;
+export const listCompanyEvidenceResponseCorroborationScoreMax = 100;
+
+export const listCompanyEvidenceResponseConfidenceMin = 0;
+export const listCompanyEvidenceResponseConfidenceMax = 100;
+
+
+
+export const ListCompanyEvidenceResponseItem = zod.object({
+  "id": zod.string(),
+  "companyId": zod.string(),
+  "crawlPageId": zod.string(),
+  "sourceUrl": zod.string(),
+  "sourceDomain": zod.string(),
+  "sourceType": zod.enum(['company_website', 'careers_page', 'job_posting', 'press_release', 'news', 'blog', 'trust_security_compliance', 'technology', 'public_social', 'other']),
+  "provider": zod.string(),
+  "publisher": zod.string().nullable(),
+  "publishedAt": zod.coerce.date().nullable(),
+  "observedAt": zod.coerce.date(),
+  "rawContentReference": zod.string().nullable(),
+  "rawContent": zod.string(),
+  "extractedClaim": zod.string(),
+  "authorityScore": zod.number().min(listCompanyEvidenceResponseAuthorityScoreMin).max(listCompanyEvidenceResponseAuthorityScoreMax),
+  "directnessScore": zod.number().min(listCompanyEvidenceResponseDirectnessScoreMin).max(listCompanyEvidenceResponseDirectnessScoreMax),
+  "freshnessScore": zod.number().min(listCompanyEvidenceResponseFreshnessScoreMin).max(listCompanyEvidenceResponseFreshnessScoreMax),
+  "corroborationScore": zod.number().min(listCompanyEvidenceResponseCorroborationScoreMin).max(listCompanyEvidenceResponseCorroborationScoreMax),
+  "confidence": zod.number().min(listCompanyEvidenceResponseConfidenceMin).max(listCompanyEvidenceResponseConfidenceMax),
+  "status": zod.enum(['RAW', 'EXTRACTED', 'VERIFIED', 'CONFLICTING', 'STALE']),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+})
+export const ListCompanyEvidenceResponse = zod.array(ListCompanyEvidenceResponseItem)
+
+
+/**
+ * Captures immutable raw source content and a source-grounded claim for the canonical company.
+ * @summary Preserve a public source observation
+ */
+export const CreateCompanyEvidenceParams = zod.object({
+  "projectId": zod.coerce.string(),
+  "projectCompanyId": zod.coerce.string()
+})
+
+export const createCompanyEvidenceBodySourceUrlMax = 2000;
+
+export const createCompanyEvidenceBodyProviderMax = 120;
+
+export const createCompanyEvidenceBodyPublisherMax = 300;
+
+export const createCompanyEvidenceBodyRawContentMax = 500000;
+
+export const createCompanyEvidenceBodyExtractedClaimMax = 2000;
+
+
+
+export const CreateCompanyEvidenceBody = zod.object({
+  "sourceUrl": zod.string().max(createCompanyEvidenceBodySourceUrlMax),
+  "sourceType": zod.enum(['company_website', 'careers_page', 'job_posting', 'press_release', 'news', 'blog', 'trust_security_compliance', 'technology', 'public_social', 'other']),
+  "provider": zod.string().min(1).max(createCompanyEvidenceBodyProviderMax),
+  "publisher": zod.string().max(createCompanyEvidenceBodyPublisherMax).nullish(),
+  "publishedAt": zod.coerce.date().nullish(),
+  "observedAt": zod.coerce.date().nullish(),
+  "rawContent": zod.string().min(1).max(createCompanyEvidenceBodyRawContentMax),
+  "extractedClaim": zod.string().min(1).max(createCompanyEvidenceBodyExtractedClaimMax)
+})
+
+export const createCompanyEvidenceResponseAuthorityScoreMin = 0;
+export const createCompanyEvidenceResponseAuthorityScoreMax = 100;
+
+export const createCompanyEvidenceResponseDirectnessScoreMin = 0;
+export const createCompanyEvidenceResponseDirectnessScoreMax = 100;
+
+export const createCompanyEvidenceResponseFreshnessScoreMin = 0;
+export const createCompanyEvidenceResponseFreshnessScoreMax = 100;
+
+export const createCompanyEvidenceResponseCorroborationScoreMin = 0;
+export const createCompanyEvidenceResponseCorroborationScoreMax = 100;
+
+export const createCompanyEvidenceResponseConfidenceMin = 0;
+export const createCompanyEvidenceResponseConfidenceMax = 100;
+
+
+
+export const CreateCompanyEvidenceResponse = zod.object({
+  "id": zod.string(),
+  "companyId": zod.string(),
+  "crawlPageId": zod.string(),
+  "sourceUrl": zod.string(),
+  "sourceDomain": zod.string(),
+  "sourceType": zod.enum(['company_website', 'careers_page', 'job_posting', 'press_release', 'news', 'blog', 'trust_security_compliance', 'technology', 'public_social', 'other']),
+  "provider": zod.string(),
+  "publisher": zod.string().nullable(),
+  "publishedAt": zod.coerce.date().nullable(),
+  "observedAt": zod.coerce.date(),
+  "rawContentReference": zod.string().nullable(),
+  "rawContent": zod.string(),
+  "extractedClaim": zod.string(),
+  "authorityScore": zod.number().min(createCompanyEvidenceResponseAuthorityScoreMin).max(createCompanyEvidenceResponseAuthorityScoreMax),
+  "directnessScore": zod.number().min(createCompanyEvidenceResponseDirectnessScoreMin).max(createCompanyEvidenceResponseDirectnessScoreMax),
+  "freshnessScore": zod.number().min(createCompanyEvidenceResponseFreshnessScoreMin).max(createCompanyEvidenceResponseFreshnessScoreMax),
+  "corroborationScore": zod.number().min(createCompanyEvidenceResponseCorroborationScoreMin).max(createCompanyEvidenceResponseCorroborationScoreMax),
+  "confidence": zod.number().min(createCompanyEvidenceResponseConfidenceMin).max(createCompanyEvidenceResponseConfidenceMax),
+  "status": zod.enum(['RAW', 'EXTRACTED', 'VERIFIED', 'CONFLICTING', 'STALE']),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+})
+
+
+/**
+ * Changes only the review status; preserved source content and provenance cannot be rewritten.
+ * @summary Transition company evidence status
+ */
+export const UpdateCompanyEvidenceStatusParams = zod.object({
+  "projectId": zod.coerce.string(),
+  "projectCompanyId": zod.coerce.string(),
+  "evidenceId": zod.coerce.string()
+})
+
+export const UpdateCompanyEvidenceStatusBody = zod.object({
+  "status": zod.enum(['RAW', 'EXTRACTED', 'VERIFIED', 'CONFLICTING', 'STALE'])
+})
+
+export const updateCompanyEvidenceStatusResponseAuthorityScoreMin = 0;
+export const updateCompanyEvidenceStatusResponseAuthorityScoreMax = 100;
+
+export const updateCompanyEvidenceStatusResponseDirectnessScoreMin = 0;
+export const updateCompanyEvidenceStatusResponseDirectnessScoreMax = 100;
+
+export const updateCompanyEvidenceStatusResponseFreshnessScoreMin = 0;
+export const updateCompanyEvidenceStatusResponseFreshnessScoreMax = 100;
+
+export const updateCompanyEvidenceStatusResponseCorroborationScoreMin = 0;
+export const updateCompanyEvidenceStatusResponseCorroborationScoreMax = 100;
+
+export const updateCompanyEvidenceStatusResponseConfidenceMin = 0;
+export const updateCompanyEvidenceStatusResponseConfidenceMax = 100;
+
+
+
+export const UpdateCompanyEvidenceStatusResponse = zod.object({
+  "id": zod.string(),
+  "companyId": zod.string(),
+  "crawlPageId": zod.string(),
+  "sourceUrl": zod.string(),
+  "sourceDomain": zod.string(),
+  "sourceType": zod.enum(['company_website', 'careers_page', 'job_posting', 'press_release', 'news', 'blog', 'trust_security_compliance', 'technology', 'public_social', 'other']),
+  "provider": zod.string(),
+  "publisher": zod.string().nullable(),
+  "publishedAt": zod.coerce.date().nullable(),
+  "observedAt": zod.coerce.date(),
+  "rawContentReference": zod.string().nullable(),
+  "rawContent": zod.string(),
+  "extractedClaim": zod.string(),
+  "authorityScore": zod.number().min(updateCompanyEvidenceStatusResponseAuthorityScoreMin).max(updateCompanyEvidenceStatusResponseAuthorityScoreMax),
+  "directnessScore": zod.number().min(updateCompanyEvidenceStatusResponseDirectnessScoreMin).max(updateCompanyEvidenceStatusResponseDirectnessScoreMax),
+  "freshnessScore": zod.number().min(updateCompanyEvidenceStatusResponseFreshnessScoreMin).max(updateCompanyEvidenceStatusResponseFreshnessScoreMax),
+  "corroborationScore": zod.number().min(updateCompanyEvidenceStatusResponseCorroborationScoreMin).max(updateCompanyEvidenceStatusResponseCorroborationScoreMax),
+  "confidence": zod.number().min(updateCompanyEvidenceStatusResponseConfidenceMin).max(updateCompanyEvidenceStatusResponseConfidenceMax),
+  "status": zod.enum(['RAW', 'EXTRACTED', 'VERIFIED', 'CONFLICTING', 'STALE']),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+})
+
+
+/**
  * Normalizes and validates import rows without creating or linking companies.
  * @summary Preview and resolve company identities
  */

@@ -35,6 +35,7 @@ import {
 } from "@/components/ui/select";
 import { Loader2, ExternalLink } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { CompanyEvidencePanel } from "./company-evidence";
 
 const updateSchema = z.object({
   status: z.enum(["candidate", "active", "archived"]),
@@ -162,6 +163,11 @@ export function CompanySheet({
                 )}
               </div>
             </div>
+
+            <CompanyEvidencePanel
+              projectId={projectId}
+              projectCompanyId={projectCompany.id}
+            />
 
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">

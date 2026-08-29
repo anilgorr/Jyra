@@ -118,6 +118,13 @@ Each adapter accepts a typed JYRA capability request and returns:
 Vendor-specific fields stay behind adapters. Adapters must not directly write
 commercial interpretations, signals, scores, or opportunities.
 
+Provider results are not automatically evidence. When an authenticated
+project-company workflow chooses to preserve a public result, the evidence
+ingestion boundary records the provider label, source URL, observation time,
+raw source content, normalized content hash, and source-grounded claim.
+Operational `provider_usage` remains separate from evidence review and from all
+commercial interpretation.
+
 ## Deterministic mock adapters
 
 This milestone includes mock adapters for `WEB_SEARCH`, `WEBSITE_CRAWL`, and

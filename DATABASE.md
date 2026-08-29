@@ -37,7 +37,27 @@ row is created until a reliable Actor is selected.
 
 Provider usage is operational accounting, not evidence or commercial
 interpretation. Mock provider outputs are never inserted as facts or signals.
-Evidence persistence remains planned.
+
+## Evidence provenance storage
+
+- `crawl_pages` stores immutable public source captures keyed to a canonical company. It preserves the normalized URL and domain, source type, provider, publisher, publication and observation times, exact raw content, raw-content reference, and SHA-256 hash of normalized content.
+- `company_evidence` stores a source-grounded claim and review state for one crawl capture. It repeats critical provenance fields for inspectable reads, records the preserving organization for review authority, and stores bounded authority, directness, freshness, corroboration, and confidence heuristics.
+
+One evidence row is allowed per crawl capture. Same-company, same-source,
+unchanged content is protected by a unique URL/content-hash key and
+transaction-scoped duplicate check. A changed hash creates a new capture;
+existing raw content is never updated or deleted; PostgreSQL enforces this with
+an append-only trigger applied after every schema push. Evidence status may change through
+validated transitions among `RAW`, `EXTRACTED`, `VERIFIED`, `CONFLICTING`, and
+`STALE`, but only the organization that preserved an observation may change its
+global review status. Status changes cannot alter source content or provenance.
+The evidence-to-crawl foreign key includes both capture and company IDs so the
+two records cannot silently disagree about canonical company identity.
+
+Evidence belongs to global canonical company identity and therefore contains no
+project ID, tenant score, opportunity state, recommendation, or customer
+interpretation. API access is still authorized through `project_companies`, so
+global reuse does not create an unauthenticated or tenant-wide company listing.
 
 # JYRA Database Plan
 
@@ -94,8 +114,8 @@ The implemented organization, membership, user, and project tables are the tenan
 - `research_jobs`
 - `provider_requests`
 - `provider_usage` (implemented)
-- `source_documents`
-- `evidence_items`
+- `crawl_pages` (implemented)
+- `company_evidence` (implemented)
 - `facts`
 
 ### Commercial interpretation

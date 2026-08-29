@@ -22,6 +22,7 @@ import BusinessTwinPage from './pages/business-twin';
 import IcpPage from './pages/icp';
 import CompaniesPage from './pages/companies/index';
 import ProviderDiagnostics from './pages/provider-diagnostics';
+import Research from './pages/research';
 import { WorkspaceProvider } from './context/workspace-context';
 
 const clerkPubKey = publishableKeyFromHost(
@@ -166,9 +167,7 @@ function AuthenticatedRoutes() {
             <Route path="/companies" component={CompaniesPage} />
             <Route path="/business-twin" component={BusinessTwinPage} />
             <Route path="/icp" component={IcpPage} />
-            <Route path="/research">
-              <EmptyFeature title="Research" description="No research providers or jobs are connected. JYRA has not gathered evidence." />
-            </Route>
+            <Route path="/research" component={Research} />
             <Route path="/outcomes">
               <EmptyFeature title="Outcomes" description="Outcome capture is planned for a later milestone. No sales outcomes have been recorded." />
             </Route>

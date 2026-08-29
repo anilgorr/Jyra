@@ -31,8 +31,35 @@ through Replit's authenticated server-side proxy, paginates the resulting
 dataset, and normalizes it before returning. Actor IDs stay in opaque provider
 configuration; credentials and Actor response shapes do not cross the adapter
 boundary. No Actor capability is enabled by default. Research planning,
-background jobs, evidence storage, and signal generation remain outside this
-milestone.
+background jobs and signal generation remain outside this milestone. Provider
+results become evidence only through the evidence ingestion boundary, which
+validates and preserves source content independently from provider usage.
+
+## Evidence provenance boundary
+
+`crawl_pages` preserves the exact public source content plus deterministic URL,
+domain, content-hash, provider, publication, and observation provenance.
+`company_evidence` links one source-grounded claim and review state to that
+capture. Evidence is attached to the global canonical company and contains no
+project score, opportunity state, recommendation, or tenant interpretation.
+
+All evidence API routes remain project-rooted. The server verifies the Clerk
+session, organization membership, project, and project-company link before it
+returns or mutates globally reusable evidence. The browser's selected project
+and company identifiers do not authorize access.
+
+Ingestion uses normalized SHA-256 content hashes and a transaction-scoped lock
+to avoid duplicate same-company, same-source, unchanged observations. Raw
+content is append-only: the only supported evidence mutation is a validated
+status transition. Authority, directness, freshness, corroboration, and
+confidence are deterministic review heuristics, not facts or commercial
+scores. No language model participates in hashing, provenance, deduplication,
+authorization, scoring, or status transitions.
+
+PostgreSQL enforces crawl captures as append-only with a trigger installed after
+schema reconciliation. The API accepts at most 500,000 JavaScript characters of
+raw content, while the bounded four-MiB JSON transport budget accommodates the
+worst-case UTF-8 and JSON-escaping expansion of that contract.
 
 # JYRA Architecture
 
@@ -85,9 +112,9 @@ The server validates response-shaped data with generated Zod schemas. The client
 - **Learning:** user actions, outcomes, and versioned model/rule evaluation.
 
 The identity/tenancy boundary, project-scoped Business Twin and ICP, canonical
-company identity layer, provider abstraction, and Apify research adapter are
-implemented. Research planning, evidence, opportunity interpretation, and
-learning remain future phases.
+company identity layer, provider abstraction, Apify research adapter, and
+evidence provenance layer are implemented. Research planning, structured facts,
+signals, opportunity interpretation, and learning remain future phases.
 
 ## Deterministic versus AI-assisted work
 
