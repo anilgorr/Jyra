@@ -1,0 +1,120 @@
+Before making changes:
+
+1. Read PRODUCT_SPEC.md, ARCHITECTURE.md, DATABASE.md, SIGNALS.md, PROVIDERS.md, CHANGELOG.md and the entire relevant current codebase.
+
+2. Preserve all working functionality.
+
+3. Implement only the milestone described below.
+
+4. Do not redesign unrelated areas.
+
+5. Create a checkpoint before major changes.
+
+6. Run migrations and tests before completing the milestone.
+
+7. Update documentation after implementation.
+
+8. Do not claim the milestone is complete unless the acceptance criteria pass.
+
+9. Prefer deterministic business logic over LLM reasoning wherever possible.
+
+10. Do not fabricate data, evidence, people, companies, signals, buying intent or outcomes.
+
+Add Apify as DigiSignal's first low-cost external research provider layer.
+
+ENVIRONMENT
+
+Use:
+
+APIFY_API_TOKEN
+
+Store only in Replit Secrets/environment.
+
+Do not expose secrets to browser code.
+
+GENERIC APIFY ADAPTER
+
+Build one reusable adapter capable of:
+
+start Actor
+submit actor input
+poll actor run
+detect completion
+retrieve output dataset
+normalize rows
+handle pagination if needed
+handle timeout
+retry recoverable failures
+log non-recoverable failures
+capture runtime
+capture result count
+record estimated/actual cost
+
+CONFIGURATION
+
+Actor IDs must live inside provider configuration.
+
+Do not hardcode Actor IDs throughout application source code.
+
+Assume Actors may:
+
+change
+fail
+disappear
+alter output schemas
+
+All Actor output must be converted into stable DigiSignal-owned schemas.
+
+INITIAL CAPABILITIES
+
+Configure placeholders/real provider entries where available for:
+
+WEBSITE_CRAWL
+JOB_SEARCH
+WEB_SEARCH if suitable
+TECH_STACK if suitable
+PUBLIC_SOCIAL_SEARCH if suitable
+
+Do not make any one capability mandatory if no reliable actor is configured.
+
+Do not scrape Apollo.
+
+Do not make the architecture dependent on Apollo.
+
+Apollo or other licensed data sources may later exist behind the same provider interface.
+
+PROVIDER DIAGNOSTICS
+
+Create an internal development view:
+
+Provider
+Capability
+Enabled
+Last Success
+Last Failure
+Success Rate
+Latency
+Spend
+Results
+
+ACCEPTANCE CRITERIA
+
+Run at least one real or safe configured Apify test call.
+
+Verify:
+
+- token stays server-side
+- Actor starts
+- results are normalized
+- provider usage is recorded
+- errors are handled
+- timeout is handled
+- provider config can swap Actor ID
+- business logic does not depend on actor-specific shape
+
+Update:
+
+PROVIDERS.md
+ARCHITECTURE.md
+SECURITY.md
+CHANGELOG.md
