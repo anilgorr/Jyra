@@ -1,0 +1,203 @@
+Before making changes:
+
+1. Read PRODUCT_SPEC.md, ARCHITECTURE.md, DATABASE.md, SIGNALS.md, PROVIDERS.md, CHANGELOG.md and the entire relevant current codebase.
+
+2. Preserve all working functionality.
+
+3. Implement only the milestone described below.
+
+4. Do not redesign unrelated areas.
+
+5. Create a checkpoint before major changes.
+
+6. Run migrations and tests before completing the milestone.
+
+7. Update documentation after implementation.
+
+8. Do not claim the milestone is complete unless the acceptance criteria pass.
+
+9. Prefer deterministic business logic over LLM reasoning wherever possible.
+
+10. Do not fabricate data, evidence, people, companies, signals, buying intent or outcomes.
+
+Build the DigiSignal application shell.
+
+PRODUCT CONTEXT
+
+DigiSignal is a B2B buyer/opportunity intelligence platform built around:
+
+Who. When. Why.
+
+The core product flow is:
+
+Business Twin
+→ ICP
+→ Market Universe
+→ Research
+→ Evidence
+→ Facts
+→ Signals
+→ Opportunity Intelligence
+→ Why Now
+→ Buying Committee
+→ Outcomes
+→ Learning
+
+THIS PHASE
+
+Implement:
+
+Authentication
+Organizations
+Organization Members
+Projects
+Application Navigation
+Tenant Isolation
+
+AUTHENTICATION
+
+Use Replit-supported authentication or Clerk if already selected and stable.
+
+Create:
+
+User
+Organization
+Organization Member
+Project
+
+A user may belong to one or more organizations.
+
+An organization may contain multiple DigiSignal projects.
+
+A Project represents one selling motion.
+
+Examples:
+
+Managed SOC India
+ISO 27001 UAE
+AI Automation USA
+
+NAVIGATION
+
+Create these sections:
+
+Today
+Opportunities
+Companies
+Business Twin
+ICP
+Research
+Outcomes
+Settings
+
+Do not create fake working intelligence behind these pages yet.
+
+Use clean empty states.
+
+AUTHORIZATION
+
+Every tenant-owned record must belong to an organization.
+
+Every project operation must verify:
+
+authenticated user
+→ organization membership
+→ project belongs to organization
+→ requested resource belongs to project or is explicitly globally reusable
+
+Never trust user_id or organization_id sent by the browser without server-side validation.
+
+DATABASE
+
+Create:
+
+users
+organizations
+organization_members
+projects
+
+Recommended organization_members fields:
+
+id
+organization_id
+user_id
+role
+
+Roles:
+
+OWNER
+ADMIN
+MEMBER
+
+Projects:
+
+id
+organization_id
+name
+description
+status
+created_at
+updated_at
+
+Add indexes necessary for organization/project access.
+
+FIRST LOGIN
+
+When a user signs in for the first time:
+
+If no organization exists:
+show workspace onboarding.
+
+Collect:
+
+Organization Name
+First Project Name
+
+After creation redirect to Today.
+
+MULTI-TENANCY
+
+Ensure:
+
+Organization A cannot read Organization B projects.
+
+Project A cannot access Project B private records.
+
+Set up row-level security if appropriate for the chosen Postgres architecture.
+
+UI
+
+Create premium enterprise navigation.
+
+Keep design:
+
+simple
+corporate
+minimal
+high quality
+not a generic admin template
+
+ACCEPTANCE CRITERIA
+
+A user can:
+
+sign up
+create organization
+create project
+enter DigiSignal
+refresh safely
+log out
+log back in
+
+Verify:
+
+two organizations remain isolated.
+
+Verify unauthorized project IDs return 403/404 appropriately.
+
+Update:
+
+ARCHITECTURE.md
+DATABASE.md
+SECURITY.md
+CHANGELOG.md
