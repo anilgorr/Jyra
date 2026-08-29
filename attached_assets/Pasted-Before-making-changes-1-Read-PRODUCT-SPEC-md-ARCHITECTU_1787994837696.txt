@@ -1,0 +1,189 @@
+Before making changes:
+
+1. Read PRODUCT_SPEC.md, ARCHITECTURE.md, DATABASE.md, SIGNALS.md, PROVIDERS.md, RESEARCH_ENGINE.md, CHANGELOG.md and the entire relevant current codebase.
+
+2. Preserve all working functionality.
+
+3. Implement only the milestone described below.
+
+4. Do not redesign unrelated areas.
+
+5. Create a checkpoint before major changes.
+
+6. Run migrations and tests before completing the milestone.
+
+7. Update documentation after implementation.
+
+8. Do not claim the milestone is complete unless the acceptance criteria pass.
+
+9. Prefer deterministic business logic over LLM reasoning wherever possible.
+
+10. Do not fabricate data, evidence, people, companies, signals, buying intent or outcomes.
+
+Turn DigiSignal's Research Planner into an executable automatic market-research system.
+
+CORE REQUIREMENT
+
+DigiSignal researches the market.
+
+It must NOT depend only on pages previously supplied by the user.
+
+FLOW
+
+Project Company
+↓
+Research Planner
+↓
+Research Question
+↓
+Provider Router
+↓
+Fresh Provider Research
+↓
+Public Source
+↓
+Evidence
+↓
+Fact Extraction
+↓
+Research Question Resolution
+
+WEBSITE RESEARCH
+
+Discover and prioritize high-value pages:
+
+/
+about
+products
+services
+solutions
+customers
+case-studies
+careers
+jobs
+news
+press
+blog
+security
+trust
+compliance
+privacy
+partners
+
+Do not crawl an entire website by default.
+
+Use:
+
+Business Twin
+ICP
+active research questions
+signal-pack configuration
+
+to decide what matters.
+
+Use content hashing.
+
+Do not repeatedly run AI extraction over unchanged content.
+
+JOB INTELLIGENCE
+
+Store individual job postings where possible.
+
+Fields:
+
+company_id
+provider_id
+external_job_id
+title
+normalized_title
+description
+location
+source_url
+published_at
+first_observed_at
+last_observed_at
+open_status
+
+Track changes over time.
+
+SEARCH / NEWS
+
+Generate targeted searches from actual unanswered research questions.
+
+Do not run every query for every company.
+
+TECHNOLOGY
+
+Store only publicly observable signals.
+
+Never claim knowledge of private infrastructure.
+
+RESEARCH NOW
+
+Create a user-facing action:
+
+Research Now
+
+It must:
+
+1. inspect current research gaps
+2. generate/select research question
+3. select provider
+4. fetch fresh source
+5. persist Evidence
+6. extract Facts
+7. update question status
+8. update research metadata
+
+It must NOT only reprocess existing crawl pages.
+
+BACKGROUND REFRESH
+
+Build a simple scheduled/background workflow suitable for Replit.
+
+It should:
+
+find companies due for refresh
+generate/select questions
+execute bounded research
+save results
+schedule next refresh
+
+Until opportunity states are implemented, prioritize based on:
+
+ICP plausibility
+evidence gaps
+research freshness
+question importance
+
+RESEARCH UI
+
+Show:
+
+Last Researched
+Research Status
+Sources Checked
+Open Questions
+Answered Questions
+Next Refresh
+Estimated Spend
+
+ACCEPTANCE CRITERIA
+
+For a test company, Research Now must:
+
+select a research question
+→ invoke a provider
+→ retrieve fresh information
+→ store evidence
+→ extract facts
+→ resolve/update question.
+
+Verify this works without manually inserting crawl content.
+
+Update:
+
+RESEARCH_ENGINE.md
+PROVIDERS.md
+ARCHITECTURE.md
+CHANGELOG.md
