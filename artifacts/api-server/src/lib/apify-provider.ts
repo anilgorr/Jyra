@@ -287,6 +287,40 @@ function normalizeRows<C extends ProviderCapability>(
     };
   }
 
+  if (capability === "EMAIL_LOOKUP") {
+    const emails = records
+      .map((row) => {
+        const address = firstString(row, ["email", "address", "emailAddress"]);
+        if (!address || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(address)) return null;
+        const rawConfidence = firstString(row, ["confidence", "verification", "emailConfidence"]);
+        const confidence = rawConfidence?.toLowerCase() === "verified"
+          ? "verified" as const
+          : rawConfidence?.toLowerCase() === "unverified"
+            ? "unverified" as const
+            : "unknown" as const;
+        return { address, confidence, sourceUrl: firstString(row, ["sourceUrl", "url", "link"]) };
+      })
+      .filter((email): email is NonNullable<typeof email> => Boolean(email));
+    return { data: emails.length ? ({ emails } as CapabilityResult<C>) : null, resultCount: emails.length };
+  }
+
+  if (capability === "PHONE_LOOKUP") {
+    const phones = records
+      .map((row) => {
+        const number = firstString(row, ["phone", "number", "phoneNumber"]);
+        if (!number) return null;
+        const rawConfidence = firstString(row, ["confidence", "verification", "phoneConfidence"]);
+        const confidence = rawConfidence?.toLowerCase() === "verified"
+          ? "verified" as const
+          : rawConfidence?.toLowerCase() === "unverified"
+            ? "unverified" as const
+            : "unknown" as const;
+        return { number, confidence, sourceUrl: firstString(row, ["sourceUrl", "url", "link"]) };
+      })
+      .filter((phone): phone is NonNullable<typeof phone> => Boolean(phone));
+    return { data: phones.length ? ({ phones } as CapabilityResult<C>) : null, resultCount: phones.length };
+  }
+
   throw new ApifyProviderError(
     "APIFY_CAPABILITY_UNSUPPORTED",
     `Apify adapter does not normalize ${capability}`,

@@ -1,6 +1,6 @@
 import { useMemo, useState, type ReactNode } from "react";
 import { Link, useLocation, useParams } from "wouter";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   ArrowLeft,
   Building2,
@@ -12,6 +12,9 @@ import {
   Info,
   Layers3,
   Loader2,
+  Mail,
+  Phone,
+  Plus,
   RefreshCw,
   Search,
   ShieldCheck,
@@ -91,6 +94,19 @@ type NextBestActionResponse = {
   };
 };
 
+type ProjectPerson = {
+  person: { id: string; name: string; title: string | null; source: string; visibility: string };
+  context: {
+    roleLabel: string;
+    priority: "HIGH" | "MEDIUM" | "LOW";
+    email: string | null;
+    emailStatus: string;
+    phone: string | null;
+    phoneStatus: string;
+    lastEnrichedAt: string | null;
+  };
+};
+
 const getNextBestActionQueryKey = (projectId: string, projectCompanyId: string) =>
   ["next-best-action", projectId, projectCompanyId] as const;
 
@@ -100,6 +116,126 @@ async function getJson<T>(url: string, allowMissing = false): Promise<T | null> 
   const body = await response.json().catch(() => null);
   if (!response.ok) throw new Error(body?.error ?? "Request failed");
   return body as T;
+}
+
+async function postJson<T>(url: string, body: unknown): Promise<T> {
+  const response = await fetch(url, {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  const result = await response.json().catch(() => null);
+  if (!response.ok) throw new Error(result?.error ?? "Request failed");
+  return result as T;
+}
+
+function ContactEnrichmentPanel({ projectId, projectCompanyId }: { projectId: string; projectCompanyId: string }) {
+  const [adding, setAdding] = useState(false);
+  const [name, setName] = useState("");
+  const [title, setTitle] = useState("");
+  const queryKey = ["project-people", projectId, projectCompanyId] as const;
+  const peopleQuery = useQuery({
+    queryKey,
+    queryFn: () => getJson<ProjectPerson[]>(`/api/projects/${projectId}/companies/${projectCompanyId}/people`),
+  });
+  const createPerson = useMutation({
+    mutationFn: () => postJson(`/api/projects/${projectId}/companies/${projectCompanyId}/people`, {
+      name,
+      title: title || null,
+      role: "OTHER",
+      roleLabel: title || "Known contact",
+      roleConfidence: 100,
+      priority: "LOW",
+    }),
+    onSuccess: () => {
+      setName("");
+      setTitle("");
+      setAdding(false);
+      queryClient.invalidateQueries({ queryKey });
+      toast.success("Private contact added");
+    },
+    onError: (error: Error) => toast.error("Contact could not be added", { description: error.message }),
+  });
+  const enrich = useMutation({
+    mutationFn: ({ personId, includePhone }: { personId: string; includePhone: boolean }) =>
+      postJson(`/api/projects/${projectId}/companies/${projectCompanyId}/people/${personId}/enrich-contact`, {
+        explicitRequest: true,
+        includePhone,
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey });
+      toast.success("Contact lookup completed");
+    },
+    onError: (error: Error) => toast.error("Contact lookup failed", { description: error.message }),
+  });
+  const people = peopleQuery.data ?? [];
+
+  return (
+    <Section eyebrow="PEOPLE" title="Selective contact enrichment" icon={<Users className="h-5 w-5" />}>
+      <Card className="border-border/60 shadow-none">
+        <CardContent className="p-6">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <h3 className="font-semibold">Known people at this company</h3>
+              <p className="mt-1 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+                Contact lookup runs only for the person you select. Email is checked first; phone is optional. Missing details stay missing, and JYRA never sends outreach.
+              </p>
+            </div>
+            <Button variant="outline" size="sm" onClick={() => setAdding((value) => !value)}>
+              <Plus className="mr-2 h-4 w-4" /> Add known person
+            </Button>
+          </div>
+
+          {adding && (
+            <div className="mt-5 grid gap-3 rounded-xl border bg-muted/20 p-4 sm:grid-cols-[1fr_1fr_auto]">
+              <input className="h-10 rounded-md border bg-background px-3 text-sm" aria-label="Person name" placeholder="Full name" value={name} onChange={(event) => setName(event.target.value)} />
+              <input className="h-10 rounded-md border bg-background px-3 text-sm" aria-label="Person title" placeholder="Known title or role" value={title} onChange={(event) => setTitle(event.target.value)} />
+              <Button disabled={!name.trim() || createPerson.isPending} onClick={() => createPerson.mutate()}>
+                {createPerson.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Save private contact
+              </Button>
+            </div>
+          )}
+
+          <div className="mt-6 space-y-3">
+            {peopleQuery.isLoading ? (
+              <div className="flex items-center gap-2 py-6 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" /> Loading people…</div>
+            ) : peopleQuery.isError ? (
+              <Unavailable message="People and contact enrichment history could not be loaded." />
+            ) : people.length === 0 ? (
+              <div className="rounded-xl border border-dashed p-8 text-center text-sm text-muted-foreground">
+                No people are attached to this company yet. Add a person you already know before requesting contact lookup.
+              </div>
+            ) : people.map(({ person, context }) => (
+              <div key={person.id} className="flex flex-col gap-4 rounded-xl border p-4 lg:flex-row lg:items-center lg:justify-between">
+                <div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <p className="font-semibold">{person.name}</p>
+                    <Badge variant="outline">{context.priority} priority</Badge>
+                    {person.visibility === "PRIVATE" && <Badge variant="secondary">Private</Badge>}
+                  </div>
+                  <p className="mt-1 text-sm text-muted-foreground">{person.title || context.roleLabel}</p>
+                  <div className="mt-3 flex flex-wrap gap-4 text-xs text-muted-foreground">
+                    <span className="flex items-center gap-1.5"><Mail className="h-3.5 w-3.5" />{context.email ?? "No email"} · {label(context.emailStatus)}</span>
+                    <span className="flex items-center gap-1.5"><Phone className="h-3.5 w-3.5" />{context.phone ?? "No phone"} · {label(context.phoneStatus)}</span>
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <Button size="sm" variant="outline" disabled={enrich.isPending} onClick={() => enrich.mutate({ personId: person.id, includePhone: false })}>
+                    Find email
+                  </Button>
+                  <Button size="sm" disabled={enrich.isPending} onClick={() => enrich.mutate({ personId: person.id, includePhone: true })}>
+                    {enrich.isPending && enrich.variables?.personId === person.id && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    Find email + phone
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    </Section>
+  );
 }
 
 function Section({
@@ -385,6 +521,8 @@ export default function CompanyIntelligencePage() {
           </Card>
         </div>
       </Section>
+
+      <ContactEnrichmentPanel projectId={projectId} projectCompanyId={projectCompanyId} />
 
       <ResearchPanel projectId={projectId} projectCompanyId={projectCompanyId} company={researchCompany} />
 

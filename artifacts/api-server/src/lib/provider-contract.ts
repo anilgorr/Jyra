@@ -113,11 +113,14 @@ export type FindEmailRequest = ProviderRequestBase & {
   personName?: string;
   companyName?: string;
   domain?: string;
+  profileUrl?: string;
 };
 
 export type FindPhoneRequest = ProviderRequestBase & {
+  personName?: string;
   companyName?: string;
   domain?: string;
+  profileUrl?: string;
 };
 
 export type CompanyRecord = {
@@ -158,10 +161,10 @@ export type PersonLookupResult = {
   person: { name: string; title: string; profileUrl: string | null } | null;
 };
 export type EmailLookupResult = {
-  emails: Array<{ address: string; confidence: "unknown"; sourceUrl: string | null }>;
+  emails: Array<{ address: string; confidence: "verified" | "unverified" | "unknown"; sourceUrl: string | null }>;
 };
 export type PhoneLookupResult = {
-  phones: Array<{ number: string; confidence: "unknown"; sourceUrl: string | null }>;
+  phones: Array<{ number: string; confidence: "verified" | "unverified" | "unknown"; sourceUrl: string | null }>;
 };
 
 export type ProviderRequestMap = {

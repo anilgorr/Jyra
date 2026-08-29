@@ -282,6 +282,26 @@ export class ProviderRouter implements ProviderOperations {
     capability: C,
     request: CapabilityRequest<C>,
   ): Promise<ProviderResponse<CapabilityResult<C>>> {
+    return this.routeInternal(
+      capability,
+      request,
+      (response) => response.status !== "failed" || !response.retryable,
+    );
+  }
+
+  async routeWaterfall<C extends ProviderCapability>(
+    capability: C,
+    request: CapabilityRequest<C>,
+    isUsable: (response: ProviderResponse<CapabilityResult<C>>) => boolean,
+  ): Promise<ProviderResponse<CapabilityResult<C>>> {
+    return this.routeInternal(capability, request, isUsable);
+  }
+
+  private async routeInternal<C extends ProviderCapability>(
+    capability: C,
+    request: CapabilityRequest<C>,
+    shouldStop: (response: ProviderResponse<CapabilityResult<C>>) => boolean,
+  ): Promise<ProviderResponse<CapabilityResult<C>>> {
     if (!capabilitySet.has(capability)) {
       throw new Error(`Unsupported provider capability: ${capability}`);
     }
@@ -410,13 +430,13 @@ export class ProviderRouter implements ProviderOperations {
         runtimeMs: response.usage.runtimeMs,
         resultCount: response.usage.resultCount,
         errorCode: response.error?.code ?? null,
-        metadata: response.metadata ?? {},
+        metadata: { ...(request.metadata ?? {}), ...(response.metadata ?? {}) },
         startedAt,
         completedAt,
       });
 
       lastResponse = response;
-      if (response.status !== "failed" || !response.retryable) return response;
+      if (shouldStop(response)) return response;
     }
 
     return {

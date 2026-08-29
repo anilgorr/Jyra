@@ -12,6 +12,7 @@ import signalsRouter from "./signals";
 import opportunityPacksRouter from "./opportunity-packs";
 import signalClustersRouter from "./signal-clusters";
 import opportunityEngineRouter from "./opportunity-engine";
+import peopleRouter from "./people";
 
 const router: IRouter = Router();
 
@@ -28,5 +29,6 @@ router.use(signalsRouter);
 router.use(opportunityPacksRouter);
 router.use(signalClustersRouter);
 router.use(opportunityEngineRouter);
+router.use(peopleRouter);
 
 export default router;

@@ -9,3 +9,4 @@
 - [WHY provenance boundary](why-provenance-boundary.md) — intent claims need proposition-level source support, and WHY generation must use one atomic source snapshot.
 - [Market Today projection](market-today-projection.md) — the landing view reads persisted intelligence only; unsupported strong states must never inflate attention.
 - [Next Best Action rule provenance](next-best-action-rule-provenance.md) — advisory recommendations use the exact immutable Opportunity model policy version and persisted inputs.
+- [Contact enrichment boundary](contact-enrichment-boundary.md) — contact values stay project-scoped; lookup requires a high-priority person or an explicit user request.
