@@ -21,8 +21,16 @@ const capabilityPhases = [
     label: "Business Twin",
     description:
       "Capture the seller’s offer, market, motion, and commercial context.",
-    status: "planned",
+    status: "implemented",
     order: 2,
+  },
+  {
+    id: "ideal-customer-profile",
+    label: "Ideal Customer Profile",
+    description:
+      "Convert the Business Twin into explicit, versioned fit criteria.",
+    status: "implemented",
+    order: 3,
   },
   {
     id: "market-universe",
@@ -30,7 +38,7 @@ const capabilityPhases = [
     description:
       "Define and qualify the companies that could be commercially relevant.",
     status: "planned",
-    order: 3,
+    order: 4,
   },
   {
     id: "evidence-signals",
@@ -38,7 +46,7 @@ const capabilityPhases = [
     description:
       "Research public evidence, preserve provenance, and detect meaningful signals.",
     status: "planned",
-    order: 4,
+    order: 5,
   },
   {
     id: "opportunity-engine",
@@ -46,7 +54,7 @@ const capabilityPhases = [
     description:
       "Explain fit, need, timing, relationship, confidence, and recommended action.",
     status: "planned",
-    order: 5,
+    order: 6,
   },
   {
     id: "outcomes-learning",
@@ -54,7 +62,7 @@ const capabilityPhases = [
     description:
       "Learn from real sales outcomes without collapsing evidence into interpretation.",
     status: "planned",
-    order: 6,
+    order: 7,
   },
 ];
 

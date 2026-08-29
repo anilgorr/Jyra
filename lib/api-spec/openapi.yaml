@@ -16,6 +16,8 @@ tags:
     description: Authenticated user and tenancy operations
   - name: business-twin
     description: Versioned seller Business Twin configuration
+  - name: icp
+    description: Objective, versioned Ideal Customer Profile rules
 paths:
   /healthz:
     get:
@@ -368,6 +370,175 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/NotFound"
+  /projects/{projectId}/icp:
+    get:
+      operationId: getIcp
+      tags: [icp]
+      summary: Get the current ICP
+      security: [{ clerkSession: [] }]
+      parameters: [{ $ref: "#/components/parameters/ProjectId" }]
+      responses:
+        "200":
+          description: Current ICP version
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/IcpVersion" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /projects/{projectId}/icp/generate:
+    post:
+      operationId: generateIcp
+      tags: [icp]
+      summary: Generate ICP suggestions from the current Business Twin
+      security: [{ clerkSession: [] }]
+      parameters: [{ $ref: "#/components/parameters/ProjectId" }]
+      responses:
+        "201":
+          description: Generated ICP version
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/IcpVersion" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /projects/{projectId}/icp/versions:
+    get:
+      operationId: listIcpVersions
+      tags: [icp]
+      summary: List ICP versions
+      security: [{ clerkSession: [] }]
+      parameters: [{ $ref: "#/components/parameters/ProjectId" }]
+      responses:
+        "200":
+          description: ICP version history
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/IcpVersion" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+  /projects/{projectId}/icp/versions/{versionId}:
+    get:
+      operationId: getIcpVersion
+      tags: [icp]
+      summary: Get an ICP version
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/ProjectId" }
+        - { $ref: "#/components/parameters/IcpVersionId" }
+      responses:
+        "200":
+          description: ICP version
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/IcpVersion" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /projects/{projectId}/icp/regenerate:
+    post:
+      operationId: regenerateIcp
+      tags: [icp]
+      summary: Regenerate ICP suggestions
+      security: [{ clerkSession: [] }]
+      parameters: [{ $ref: "#/components/parameters/ProjectId" }]
+      responses:
+        "201":
+          description: Regenerated ICP version
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/IcpVersion" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /projects/{projectId}/icp/versions/{versionId}/criteria:
+    post:
+      operationId: addIcpCriterion
+      tags: [icp]
+      summary: Add a criterion to an ICP
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/ProjectId" }
+        - { $ref: "#/components/parameters/IcpVersionId" }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/IcpCriterionInput" }
+      responses:
+        "201":
+          description: New ICP version
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/IcpVersion" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /projects/{projectId}/icp/versions/{versionId}/criteria/{criterionId}:
+    patch:
+      operationId: updateIcpCriterion
+      tags: [icp]
+      summary: Edit an ICP criterion
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/ProjectId" }
+        - { $ref: "#/components/parameters/IcpVersionId" }
+        - { $ref: "#/components/parameters/IcpCriterionId" }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/IcpCriterionUpdate" }
+      responses:
+        "201":
+          description: New ICP version
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/IcpVersion" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+    delete:
+      operationId: deleteIcpCriterion
+      tags: [icp]
+      summary: Delete an ICP criterion
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/ProjectId" }
+        - { $ref: "#/components/parameters/IcpVersionId" }
+        - { $ref: "#/components/parameters/IcpCriterionId" }
+      responses:
+        "201":
+          description: New ICP version
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/IcpVersion" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /projects/{projectId}/icp/versions/{versionId}/criteria/{criterionId}/accept:
+    post:
+      operationId: acceptIcpCriterion
+      tags: [icp]
+      summary: Accept an ICP criterion
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/ProjectId" }
+        - { $ref: "#/components/parameters/IcpVersionId" }
+        - { $ref: "#/components/parameters/IcpCriterionId" }
+      responses:
+        "201":
+          description: New ICP version
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/IcpVersion" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
   /onboarding:
     post:
       operationId: completeOnboarding
@@ -844,6 +1015,82 @@ components:
         - status
         - createdBy
         - createdAt
+    IcpCriterion:
+      type: object
+      properties:
+        id: { type: string }
+        dimension:
+          type: string
+          enum: [industry, geography, employee_count, revenue, business_model, technology, buyer_maturity, positive_indicator, negative_indicator, compliance]
+        operator:
+          type: string
+          enum: [EQUALS, NOT_EQUALS, IN, NOT_IN, GT, GTE, LT, LTE, BETWEEN, CONTAINS, EXISTS, BOOLEAN]
+        value: {}
+        weight:
+          type: ["number", "null"]
+          minimum: 0
+          maximum: 100
+        criterionType:
+          type: string
+          enum: [MUST_HAVE, PREFERRED, DISQUALIFIER, ADVISORY]
+        description: { type: string, maxLength: 2000 }
+        source:
+          type: string
+          enum: [business_twin, manual]
+        evaluability:
+          type: string
+          enum: [scorable, advisory]
+        accepted: { type: boolean }
+      required: [id, dimension, operator, value, weight, criterionType, description, source, evaluability, accepted]
+    IcpCriterionInput:
+      type: object
+      properties:
+        dimension:
+          type: string
+          enum: [industry, geography, employee_count, revenue, business_model, technology, buyer_maturity, positive_indicator, negative_indicator, compliance]
+        operator:
+          type: string
+          enum: [EQUALS, NOT_EQUALS, IN, NOT_IN, GT, GTE, LT, LTE, BETWEEN, CONTAINS, EXISTS, BOOLEAN]
+        value: {}
+        weight: { type: ["number", "null"], minimum: 0, maximum: 100 }
+        criterionType:
+          type: string
+          enum: [MUST_HAVE, PREFERRED, DISQUALIFIER, ADVISORY]
+        description: { type: string, maxLength: 2000 }
+        source: { type: string, enum: [manual, business_twin] }
+        evaluability: { type: string, enum: [scorable, advisory] }
+      required: [dimension, operator, value, weight, criterionType, description, source, evaluability]
+    IcpCriterionUpdate:
+      type: object
+      properties:
+        dimension:
+          type: string
+          enum: [industry, geography, employee_count, revenue, business_model, technology, buyer_maturity, positive_indicator, negative_indicator, compliance]
+        operator:
+          type: string
+          enum: [EQUALS, NOT_EQUALS, IN, NOT_IN, GT, GTE, LT, LTE, BETWEEN, CONTAINS, EXISTS, BOOLEAN]
+        value: {}
+        weight: { type: ["number", "null"], minimum: 0, maximum: 100 }
+        criterionType:
+          type: string
+          enum: [MUST_HAVE, PREFERRED, DISQUALIFIER, ADVISORY]
+        description: { type: string, maxLength: 2000 }
+        evaluability: { type: string, enum: [scorable, advisory] }
+      minProperties: 1
+    IcpVersion:
+      type: object
+      properties:
+        id: { type: string }
+        icpId: { type: string }
+        projectId: { type: string }
+        sourceBusinessTwinVersionId: { type: ["string", "null"] }
+        version: { type: number }
+        criteria:
+          type: array
+          items: { $ref: "#/components/schemas/IcpCriterion" }
+        createdBy: { type: string }
+        createdAt: { type: string, format: date-time }
+      required: [id, icpId, projectId, sourceBusinessTwinVersionId, version, criteria, createdBy, createdAt]
     ErrorResponse:
       type: object
       properties:
@@ -866,6 +1113,18 @@ components:
         type: string
     BusinessTwinVersionId:
       name: versionId
+      in: path
+      required: true
+      schema:
+        type: string
+    IcpVersionId:
+      name: versionId
+      in: path
+      required: true
+      schema:
+        type: string
+    IcpCriterionId:
+      name: criterionId
       in: path
       required: true
       schema:

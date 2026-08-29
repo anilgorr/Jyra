@@ -22,3 +22,4 @@ export * from "./organizations";
 export * from "./organization-members";
 export * from "./projects";
 export * from "./business-twins";
+export * from "./icps";

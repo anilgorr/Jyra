@@ -1,3 +1,7 @@
+## Ideal Customer Profile engine
+
+JYRA converts the current Business Twin into an explicit, project-scoped ICP. Criteria are grouped as must-have, preferred, disqualifier, or advisory rules. Scorable rules use validated dimensions, operators, values, ranges, and weights; advisory rules remain visible without silently affecting objective evaluation. Missing company facts evaluate as unknown rather than failure. Generation, acceptance, edits, additions, deletions, and regeneration each create a new immutable version.
+
 # JYRA Product Specification
 
 ## Product identity

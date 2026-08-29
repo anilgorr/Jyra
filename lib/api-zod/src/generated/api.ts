@@ -1623,6 +1623,383 @@ export const UpdateBusinessTwinInterpretationResponse = zod.object({
 
 
 /**
+ * @summary Get the current ICP
+ */
+export const GetIcpParams = zod.object({
+  "projectId": zod.coerce.string()
+})
+
+export const getIcpResponseCriteriaItemWeightMin = 0;
+export const getIcpResponseCriteriaItemWeightMax = 100;
+
+export const getIcpResponseCriteriaItemDescriptionMax = 2000;
+
+
+
+export const GetIcpResponse = zod.object({
+  "id": zod.string(),
+  "icpId": zod.string(),
+  "projectId": zod.string(),
+  "sourceBusinessTwinVersionId": zod.string().nullable(),
+  "version": zod.number(),
+  "criteria": zod.array(zod.object({
+  "id": zod.string(),
+  "dimension": zod.enum(['industry', 'geography', 'employee_count', 'revenue', 'business_model', 'technology', 'buyer_maturity', 'positive_indicator', 'negative_indicator', 'compliance']),
+  "operator": zod.enum(['EQUALS', 'NOT_EQUALS', 'IN', 'NOT_IN', 'GT', 'GTE', 'LT', 'LTE', 'BETWEEN', 'CONTAINS', 'EXISTS', 'BOOLEAN']),
+  "value": zod.unknown(),
+  "weight": zod.number().min(getIcpResponseCriteriaItemWeightMin).max(getIcpResponseCriteriaItemWeightMax).nullable(),
+  "criterionType": zod.enum(['MUST_HAVE', 'PREFERRED', 'DISQUALIFIER', 'ADVISORY']),
+  "description": zod.string().max(getIcpResponseCriteriaItemDescriptionMax),
+  "source": zod.enum(['business_twin', 'manual']),
+  "evaluability": zod.enum(['scorable', 'advisory']),
+  "accepted": zod.boolean()
+})),
+  "createdBy": zod.string(),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary Generate ICP suggestions from the current Business Twin
+ */
+export const GenerateIcpParams = zod.object({
+  "projectId": zod.coerce.string()
+})
+
+export const generateIcpResponseCriteriaItemWeightMin = 0;
+export const generateIcpResponseCriteriaItemWeightMax = 100;
+
+export const generateIcpResponseCriteriaItemDescriptionMax = 2000;
+
+
+
+export const GenerateIcpResponse = zod.object({
+  "id": zod.string(),
+  "icpId": zod.string(),
+  "projectId": zod.string(),
+  "sourceBusinessTwinVersionId": zod.string().nullable(),
+  "version": zod.number(),
+  "criteria": zod.array(zod.object({
+  "id": zod.string(),
+  "dimension": zod.enum(['industry', 'geography', 'employee_count', 'revenue', 'business_model', 'technology', 'buyer_maturity', 'positive_indicator', 'negative_indicator', 'compliance']),
+  "operator": zod.enum(['EQUALS', 'NOT_EQUALS', 'IN', 'NOT_IN', 'GT', 'GTE', 'LT', 'LTE', 'BETWEEN', 'CONTAINS', 'EXISTS', 'BOOLEAN']),
+  "value": zod.unknown(),
+  "weight": zod.number().min(generateIcpResponseCriteriaItemWeightMin).max(generateIcpResponseCriteriaItemWeightMax).nullable(),
+  "criterionType": zod.enum(['MUST_HAVE', 'PREFERRED', 'DISQUALIFIER', 'ADVISORY']),
+  "description": zod.string().max(generateIcpResponseCriteriaItemDescriptionMax),
+  "source": zod.enum(['business_twin', 'manual']),
+  "evaluability": zod.enum(['scorable', 'advisory']),
+  "accepted": zod.boolean()
+})),
+  "createdBy": zod.string(),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary List ICP versions
+ */
+export const ListIcpVersionsParams = zod.object({
+  "projectId": zod.coerce.string()
+})
+
+export const listIcpVersionsResponseCriteriaItemWeightMin = 0;
+export const listIcpVersionsResponseCriteriaItemWeightMax = 100;
+
+export const listIcpVersionsResponseCriteriaItemDescriptionMax = 2000;
+
+
+
+export const ListIcpVersionsResponseItem = zod.object({
+  "id": zod.string(),
+  "icpId": zod.string(),
+  "projectId": zod.string(),
+  "sourceBusinessTwinVersionId": zod.string().nullable(),
+  "version": zod.number(),
+  "criteria": zod.array(zod.object({
+  "id": zod.string(),
+  "dimension": zod.enum(['industry', 'geography', 'employee_count', 'revenue', 'business_model', 'technology', 'buyer_maturity', 'positive_indicator', 'negative_indicator', 'compliance']),
+  "operator": zod.enum(['EQUALS', 'NOT_EQUALS', 'IN', 'NOT_IN', 'GT', 'GTE', 'LT', 'LTE', 'BETWEEN', 'CONTAINS', 'EXISTS', 'BOOLEAN']),
+  "value": zod.unknown(),
+  "weight": zod.number().min(listIcpVersionsResponseCriteriaItemWeightMin).max(listIcpVersionsResponseCriteriaItemWeightMax).nullable(),
+  "criterionType": zod.enum(['MUST_HAVE', 'PREFERRED', 'DISQUALIFIER', 'ADVISORY']),
+  "description": zod.string().max(listIcpVersionsResponseCriteriaItemDescriptionMax),
+  "source": zod.enum(['business_twin', 'manual']),
+  "evaluability": zod.enum(['scorable', 'advisory']),
+  "accepted": zod.boolean()
+})),
+  "createdBy": zod.string(),
+  "createdAt": zod.coerce.date()
+})
+export const ListIcpVersionsResponse = zod.array(ListIcpVersionsResponseItem)
+
+
+/**
+ * @summary Get an ICP version
+ */
+export const GetIcpVersionParams = zod.object({
+  "projectId": zod.coerce.string(),
+  "versionId": zod.coerce.string()
+})
+
+export const getIcpVersionResponseCriteriaItemWeightMin = 0;
+export const getIcpVersionResponseCriteriaItemWeightMax = 100;
+
+export const getIcpVersionResponseCriteriaItemDescriptionMax = 2000;
+
+
+
+export const GetIcpVersionResponse = zod.object({
+  "id": zod.string(),
+  "icpId": zod.string(),
+  "projectId": zod.string(),
+  "sourceBusinessTwinVersionId": zod.string().nullable(),
+  "version": zod.number(),
+  "criteria": zod.array(zod.object({
+  "id": zod.string(),
+  "dimension": zod.enum(['industry', 'geography', 'employee_count', 'revenue', 'business_model', 'technology', 'buyer_maturity', 'positive_indicator', 'negative_indicator', 'compliance']),
+  "operator": zod.enum(['EQUALS', 'NOT_EQUALS', 'IN', 'NOT_IN', 'GT', 'GTE', 'LT', 'LTE', 'BETWEEN', 'CONTAINS', 'EXISTS', 'BOOLEAN']),
+  "value": zod.unknown(),
+  "weight": zod.number().min(getIcpVersionResponseCriteriaItemWeightMin).max(getIcpVersionResponseCriteriaItemWeightMax).nullable(),
+  "criterionType": zod.enum(['MUST_HAVE', 'PREFERRED', 'DISQUALIFIER', 'ADVISORY']),
+  "description": zod.string().max(getIcpVersionResponseCriteriaItemDescriptionMax),
+  "source": zod.enum(['business_twin', 'manual']),
+  "evaluability": zod.enum(['scorable', 'advisory']),
+  "accepted": zod.boolean()
+})),
+  "createdBy": zod.string(),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary Regenerate ICP suggestions
+ */
+export const RegenerateIcpParams = zod.object({
+  "projectId": zod.coerce.string()
+})
+
+export const regenerateIcpResponseCriteriaItemWeightMin = 0;
+export const regenerateIcpResponseCriteriaItemWeightMax = 100;
+
+export const regenerateIcpResponseCriteriaItemDescriptionMax = 2000;
+
+
+
+export const RegenerateIcpResponse = zod.object({
+  "id": zod.string(),
+  "icpId": zod.string(),
+  "projectId": zod.string(),
+  "sourceBusinessTwinVersionId": zod.string().nullable(),
+  "version": zod.number(),
+  "criteria": zod.array(zod.object({
+  "id": zod.string(),
+  "dimension": zod.enum(['industry', 'geography', 'employee_count', 'revenue', 'business_model', 'technology', 'buyer_maturity', 'positive_indicator', 'negative_indicator', 'compliance']),
+  "operator": zod.enum(['EQUALS', 'NOT_EQUALS', 'IN', 'NOT_IN', 'GT', 'GTE', 'LT', 'LTE', 'BETWEEN', 'CONTAINS', 'EXISTS', 'BOOLEAN']),
+  "value": zod.unknown(),
+  "weight": zod.number().min(regenerateIcpResponseCriteriaItemWeightMin).max(regenerateIcpResponseCriteriaItemWeightMax).nullable(),
+  "criterionType": zod.enum(['MUST_HAVE', 'PREFERRED', 'DISQUALIFIER', 'ADVISORY']),
+  "description": zod.string().max(regenerateIcpResponseCriteriaItemDescriptionMax),
+  "source": zod.enum(['business_twin', 'manual']),
+  "evaluability": zod.enum(['scorable', 'advisory']),
+  "accepted": zod.boolean()
+})),
+  "createdBy": zod.string(),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary Add a criterion to an ICP
+ */
+export const AddIcpCriterionParams = zod.object({
+  "projectId": zod.coerce.string(),
+  "versionId": zod.coerce.string()
+})
+
+export const addIcpCriterionBodyWeightMin = 0;
+export const addIcpCriterionBodyWeightMax = 100;
+
+export const addIcpCriterionBodyDescriptionMax = 2000;
+
+
+
+export const AddIcpCriterionBody = zod.object({
+  "dimension": zod.enum(['industry', 'geography', 'employee_count', 'revenue', 'business_model', 'technology', 'buyer_maturity', 'positive_indicator', 'negative_indicator', 'compliance']),
+  "operator": zod.enum(['EQUALS', 'NOT_EQUALS', 'IN', 'NOT_IN', 'GT', 'GTE', 'LT', 'LTE', 'BETWEEN', 'CONTAINS', 'EXISTS', 'BOOLEAN']),
+  "value": zod.unknown(),
+  "weight": zod.number().min(addIcpCriterionBodyWeightMin).max(addIcpCriterionBodyWeightMax).nullable(),
+  "criterionType": zod.enum(['MUST_HAVE', 'PREFERRED', 'DISQUALIFIER', 'ADVISORY']),
+  "description": zod.string().max(addIcpCriterionBodyDescriptionMax),
+  "source": zod.enum(['manual', 'business_twin']),
+  "evaluability": zod.enum(['scorable', 'advisory'])
+})
+
+export const addIcpCriterionResponseCriteriaItemWeightMin = 0;
+export const addIcpCriterionResponseCriteriaItemWeightMax = 100;
+
+export const addIcpCriterionResponseCriteriaItemDescriptionMax = 2000;
+
+
+
+export const AddIcpCriterionResponse = zod.object({
+  "id": zod.string(),
+  "icpId": zod.string(),
+  "projectId": zod.string(),
+  "sourceBusinessTwinVersionId": zod.string().nullable(),
+  "version": zod.number(),
+  "criteria": zod.array(zod.object({
+  "id": zod.string(),
+  "dimension": zod.enum(['industry', 'geography', 'employee_count', 'revenue', 'business_model', 'technology', 'buyer_maturity', 'positive_indicator', 'negative_indicator', 'compliance']),
+  "operator": zod.enum(['EQUALS', 'NOT_EQUALS', 'IN', 'NOT_IN', 'GT', 'GTE', 'LT', 'LTE', 'BETWEEN', 'CONTAINS', 'EXISTS', 'BOOLEAN']),
+  "value": zod.unknown(),
+  "weight": zod.number().min(addIcpCriterionResponseCriteriaItemWeightMin).max(addIcpCriterionResponseCriteriaItemWeightMax).nullable(),
+  "criterionType": zod.enum(['MUST_HAVE', 'PREFERRED', 'DISQUALIFIER', 'ADVISORY']),
+  "description": zod.string().max(addIcpCriterionResponseCriteriaItemDescriptionMax),
+  "source": zod.enum(['business_twin', 'manual']),
+  "evaluability": zod.enum(['scorable', 'advisory']),
+  "accepted": zod.boolean()
+})),
+  "createdBy": zod.string(),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary Edit an ICP criterion
+ */
+export const UpdateIcpCriterionParams = zod.object({
+  "projectId": zod.coerce.string(),
+  "versionId": zod.coerce.string(),
+  "criterionId": zod.coerce.string()
+})
+
+export const updateIcpCriterionBodyWeightMin = 0;
+export const updateIcpCriterionBodyWeightMax = 100;
+
+export const updateIcpCriterionBodyDescriptionMax = 2000;
+
+
+
+export const UpdateIcpCriterionBody = zod.object({
+  "dimension": zod.enum(['industry', 'geography', 'employee_count', 'revenue', 'business_model', 'technology', 'buyer_maturity', 'positive_indicator', 'negative_indicator', 'compliance']).optional(),
+  "operator": zod.enum(['EQUALS', 'NOT_EQUALS', 'IN', 'NOT_IN', 'GT', 'GTE', 'LT', 'LTE', 'BETWEEN', 'CONTAINS', 'EXISTS', 'BOOLEAN']).optional(),
+  "value": zod.unknown().optional(),
+  "weight": zod.number().min(updateIcpCriterionBodyWeightMin).max(updateIcpCriterionBodyWeightMax).nullish(),
+  "criterionType": zod.enum(['MUST_HAVE', 'PREFERRED', 'DISQUALIFIER', 'ADVISORY']).optional(),
+  "description": zod.string().max(updateIcpCriterionBodyDescriptionMax).optional(),
+  "evaluability": zod.enum(['scorable', 'advisory']).optional()
+})
+
+export const updateIcpCriterionResponseCriteriaItemWeightMin = 0;
+export const updateIcpCriterionResponseCriteriaItemWeightMax = 100;
+
+export const updateIcpCriterionResponseCriteriaItemDescriptionMax = 2000;
+
+
+
+export const UpdateIcpCriterionResponse = zod.object({
+  "id": zod.string(),
+  "icpId": zod.string(),
+  "projectId": zod.string(),
+  "sourceBusinessTwinVersionId": zod.string().nullable(),
+  "version": zod.number(),
+  "criteria": zod.array(zod.object({
+  "id": zod.string(),
+  "dimension": zod.enum(['industry', 'geography', 'employee_count', 'revenue', 'business_model', 'technology', 'buyer_maturity', 'positive_indicator', 'negative_indicator', 'compliance']),
+  "operator": zod.enum(['EQUALS', 'NOT_EQUALS', 'IN', 'NOT_IN', 'GT', 'GTE', 'LT', 'LTE', 'BETWEEN', 'CONTAINS', 'EXISTS', 'BOOLEAN']),
+  "value": zod.unknown(),
+  "weight": zod.number().min(updateIcpCriterionResponseCriteriaItemWeightMin).max(updateIcpCriterionResponseCriteriaItemWeightMax).nullable(),
+  "criterionType": zod.enum(['MUST_HAVE', 'PREFERRED', 'DISQUALIFIER', 'ADVISORY']),
+  "description": zod.string().max(updateIcpCriterionResponseCriteriaItemDescriptionMax),
+  "source": zod.enum(['business_twin', 'manual']),
+  "evaluability": zod.enum(['scorable', 'advisory']),
+  "accepted": zod.boolean()
+})),
+  "createdBy": zod.string(),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary Delete an ICP criterion
+ */
+export const DeleteIcpCriterionParams = zod.object({
+  "projectId": zod.coerce.string(),
+  "versionId": zod.coerce.string(),
+  "criterionId": zod.coerce.string()
+})
+
+export const deleteIcpCriterionResponseCriteriaItemWeightMin = 0;
+export const deleteIcpCriterionResponseCriteriaItemWeightMax = 100;
+
+export const deleteIcpCriterionResponseCriteriaItemDescriptionMax = 2000;
+
+
+
+export const DeleteIcpCriterionResponse = zod.object({
+  "id": zod.string(),
+  "icpId": zod.string(),
+  "projectId": zod.string(),
+  "sourceBusinessTwinVersionId": zod.string().nullable(),
+  "version": zod.number(),
+  "criteria": zod.array(zod.object({
+  "id": zod.string(),
+  "dimension": zod.enum(['industry', 'geography', 'employee_count', 'revenue', 'business_model', 'technology', 'buyer_maturity', 'positive_indicator', 'negative_indicator', 'compliance']),
+  "operator": zod.enum(['EQUALS', 'NOT_EQUALS', 'IN', 'NOT_IN', 'GT', 'GTE', 'LT', 'LTE', 'BETWEEN', 'CONTAINS', 'EXISTS', 'BOOLEAN']),
+  "value": zod.unknown(),
+  "weight": zod.number().min(deleteIcpCriterionResponseCriteriaItemWeightMin).max(deleteIcpCriterionResponseCriteriaItemWeightMax).nullable(),
+  "criterionType": zod.enum(['MUST_HAVE', 'PREFERRED', 'DISQUALIFIER', 'ADVISORY']),
+  "description": zod.string().max(deleteIcpCriterionResponseCriteriaItemDescriptionMax),
+  "source": zod.enum(['business_twin', 'manual']),
+  "evaluability": zod.enum(['scorable', 'advisory']),
+  "accepted": zod.boolean()
+})),
+  "createdBy": zod.string(),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary Accept an ICP criterion
+ */
+export const AcceptIcpCriterionParams = zod.object({
+  "projectId": zod.coerce.string(),
+  "versionId": zod.coerce.string(),
+  "criterionId": zod.coerce.string()
+})
+
+export const acceptIcpCriterionResponseCriteriaItemWeightMin = 0;
+export const acceptIcpCriterionResponseCriteriaItemWeightMax = 100;
+
+export const acceptIcpCriterionResponseCriteriaItemDescriptionMax = 2000;
+
+
+
+export const AcceptIcpCriterionResponse = zod.object({
+  "id": zod.string(),
+  "icpId": zod.string(),
+  "projectId": zod.string(),
+  "sourceBusinessTwinVersionId": zod.string().nullable(),
+  "version": zod.number(),
+  "criteria": zod.array(zod.object({
+  "id": zod.string(),
+  "dimension": zod.enum(['industry', 'geography', 'employee_count', 'revenue', 'business_model', 'technology', 'buyer_maturity', 'positive_indicator', 'negative_indicator', 'compliance']),
+  "operator": zod.enum(['EQUALS', 'NOT_EQUALS', 'IN', 'NOT_IN', 'GT', 'GTE', 'LT', 'LTE', 'BETWEEN', 'CONTAINS', 'EXISTS', 'BOOLEAN']),
+  "value": zod.unknown(),
+  "weight": zod.number().min(acceptIcpCriterionResponseCriteriaItemWeightMin).max(acceptIcpCriterionResponseCriteriaItemWeightMax).nullable(),
+  "criterionType": zod.enum(['MUST_HAVE', 'PREFERRED', 'DISQUALIFIER', 'ADVISORY']),
+  "description": zod.string().max(acceptIcpCriterionResponseCriteriaItemDescriptionMax),
+  "source": zod.enum(['business_twin', 'manual']),
+  "evaluability": zod.enum(['scorable', 'advisory']),
+  "accepted": zod.boolean()
+})),
+  "createdBy": zod.string(),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
  * Completes first-login onboarding with one organization and its first project.
  * @summary Create an organization and first project
  */

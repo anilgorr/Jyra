@@ -1,3 +1,7 @@
+## ICP evaluation boundary
+
+The ICP engine is project-scoped and tenant-authorized on every request. Business Twin-to-ICP generation produces constrained suggestions, while deterministic application code validates dimensions, operators, values, ranges, criterion types, and weights. The evaluator returns unknown for missing company facts and never delegates pass/fail decisions to a language model. Every mutation copies the complete criterion set into a new immutable version.
+
 # JYRA Architecture
 
 ## Current shape

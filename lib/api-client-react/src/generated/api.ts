@@ -28,6 +28,9 @@ import type {
   CurrentUser,
   ForbiddenResponse,
   HealthStatus,
+  IcpCriterionInput,
+  IcpCriterionUpdate,
+  IcpVersion,
   InterpretationUnavailableResponse,
   NotFoundResponse,
   OnboardingInput,
@@ -1292,6 +1295,684 @@ export const useUpdateBusinessTwinInterpretation = <TError = ErrorType<BadReques
         TContext
       > => {
       return useMutation(getUpdateBusinessTwinInterpretationMutationOptions(options));
+    }
+
+export const getGetIcpUrl = (projectId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/icp`
+}
+
+/**
+ * @summary Get the current ICP
+ */
+export const getIcp = async (projectId: string, options?: Parameters<typeof customFetch>[1]): Promise<IcpVersion> => {
+
+  return customFetch<IcpVersion>(getGetIcpUrl(projectId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetIcpQueryKey = (projectId: string,) => {
+    return [
+    `/api/projects/${projectId}/icp`
+    ] as const;
+    }
+
+
+export const getGetIcpQueryOptions = <TData = Awaited<ReturnType<typeof getIcp>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(projectId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getIcp>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetIcpQueryKey(projectId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getIcp>>> = ({ signal }) => getIcp(projectId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: projectId !== null && projectId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getIcp>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetIcpQueryResult = NonNullable<Awaited<ReturnType<typeof getIcp>>>
+export type GetIcpQueryError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+
+/**
+ * @summary Get the current ICP
+ */
+
+export function useGetIcp<TData = Awaited<ReturnType<typeof getIcp>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(
+ projectId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getIcp>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetIcpQueryOptions(projectId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getGenerateIcpUrl = (projectId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/icp/generate`
+}
+
+/**
+ * @summary Generate ICP suggestions from the current Business Twin
+ */
+export const generateIcp = async (projectId: string, options?: Parameters<typeof customFetch>[1]): Promise<IcpVersion> => {
+
+  return customFetch<IcpVersion>(getGenerateIcpUrl(projectId),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getGenerateIcpMutationOptions = <TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof generateIcp>>, TError,{projectId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof generateIcp>>, TError,{projectId: string}, TContext> => {
+
+const mutationKey = ['generateIcp'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof generateIcp>>, {projectId: string}> = (props) => {
+          const {projectId} = props ?? {};
+
+          return  generateIcp(projectId,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type GenerateIcpMutationResult = NonNullable<Awaited<ReturnType<typeof generateIcp>>>
+
+    export type GenerateIcpMutationError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+    /**
+ * @summary Generate ICP suggestions from the current Business Twin
+ */
+export const useGenerateIcp = <TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof generateIcp>>, TError,{projectId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof generateIcp>>,
+        TError,
+        {projectId: string},
+        TContext
+      > => {
+      return useMutation(getGenerateIcpMutationOptions(options));
+    }
+
+export const getListIcpVersionsUrl = (projectId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/icp/versions`
+}
+
+/**
+ * @summary List ICP versions
+ */
+export const listIcpVersions = async (projectId: string, options?: Parameters<typeof customFetch>[1]): Promise<IcpVersion[]> => {
+
+  return customFetch<IcpVersion[]>(getListIcpVersionsUrl(projectId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListIcpVersionsQueryKey = (projectId: string,) => {
+    return [
+    `/api/projects/${projectId}/icp/versions`
+    ] as const;
+    }
+
+
+export const getListIcpVersionsQueryOptions = <TData = Awaited<ReturnType<typeof listIcpVersions>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse>>(projectId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listIcpVersions>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListIcpVersionsQueryKey(projectId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listIcpVersions>>> = ({ signal }) => listIcpVersions(projectId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: projectId !== null && projectId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listIcpVersions>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListIcpVersionsQueryResult = NonNullable<Awaited<ReturnType<typeof listIcpVersions>>>
+export type ListIcpVersionsQueryError = ErrorType<UnauthorizedResponse | ForbiddenResponse>
+
+
+/**
+ * @summary List ICP versions
+ */
+
+export function useListIcpVersions<TData = Awaited<ReturnType<typeof listIcpVersions>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse>>(
+ projectId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listIcpVersions>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListIcpVersionsQueryOptions(projectId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getGetIcpVersionUrl = (projectId: string,
+    versionId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/icp/versions/${versionId}`
+}
+
+/**
+ * @summary Get an ICP version
+ */
+export const getIcpVersion = async (projectId: string,
+    versionId: string, options?: Parameters<typeof customFetch>[1]): Promise<IcpVersion> => {
+
+  return customFetch<IcpVersion>(getGetIcpVersionUrl(projectId,versionId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetIcpVersionQueryKey = (projectId: string,
+    versionId: string,) => {
+    return [
+    `/api/projects/${projectId}/icp/versions/${versionId}`
+    ] as const;
+    }
+
+
+export const getGetIcpVersionQueryOptions = <TData = Awaited<ReturnType<typeof getIcpVersion>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(projectId: string,
+    versionId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getIcpVersion>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetIcpVersionQueryKey(projectId,versionId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getIcpVersion>>> = ({ signal }) => getIcpVersion(projectId,versionId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: projectId !== null && projectId !== undefined && versionId !== null && versionId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getIcpVersion>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetIcpVersionQueryResult = NonNullable<Awaited<ReturnType<typeof getIcpVersion>>>
+export type GetIcpVersionQueryError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+
+/**
+ * @summary Get an ICP version
+ */
+
+export function useGetIcpVersion<TData = Awaited<ReturnType<typeof getIcpVersion>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(
+ projectId: string,
+    versionId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getIcpVersion>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetIcpVersionQueryOptions(projectId,versionId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getRegenerateIcpUrl = (projectId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/icp/regenerate`
+}
+
+/**
+ * @summary Regenerate ICP suggestions
+ */
+export const regenerateIcp = async (projectId: string, options?: Parameters<typeof customFetch>[1]): Promise<IcpVersion> => {
+
+  return customFetch<IcpVersion>(getRegenerateIcpUrl(projectId),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getRegenerateIcpMutationOptions = <TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof regenerateIcp>>, TError,{projectId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof regenerateIcp>>, TError,{projectId: string}, TContext> => {
+
+const mutationKey = ['regenerateIcp'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof regenerateIcp>>, {projectId: string}> = (props) => {
+          const {projectId} = props ?? {};
+
+          return  regenerateIcp(projectId,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type RegenerateIcpMutationResult = NonNullable<Awaited<ReturnType<typeof regenerateIcp>>>
+
+    export type RegenerateIcpMutationError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+    /**
+ * @summary Regenerate ICP suggestions
+ */
+export const useRegenerateIcp = <TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof regenerateIcp>>, TError,{projectId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof regenerateIcp>>,
+        TError,
+        {projectId: string},
+        TContext
+      > => {
+      return useMutation(getRegenerateIcpMutationOptions(options));
+    }
+
+export const getAddIcpCriterionUrl = (projectId: string,
+    versionId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/icp/versions/${versionId}/criteria`
+}
+
+/**
+ * @summary Add a criterion to an ICP
+ */
+export const addIcpCriterion = async (projectId: string,
+    versionId: string,
+    icpCriterionInput: IcpCriterionInput, options?: Parameters<typeof customFetch>[1]): Promise<IcpVersion> => {
+
+  return customFetch<IcpVersion>(getAddIcpCriterionUrl(projectId,versionId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(icpCriterionInput)
+  }
+);}
+
+
+
+
+
+export const getAddIcpCriterionMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof addIcpCriterion>>, TError,{projectId: string;versionId: string;data: BodyType<IcpCriterionInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof addIcpCriterion>>, TError,{projectId: string;versionId: string;data: BodyType<IcpCriterionInput>}, TContext> => {
+
+const mutationKey = ['addIcpCriterion'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof addIcpCriterion>>, {projectId: string;versionId: string;data: BodyType<IcpCriterionInput>}> = (props) => {
+          const {projectId,versionId,data} = props ?? {};
+
+          return  addIcpCriterion(projectId,versionId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AddIcpCriterionMutationResult = NonNullable<Awaited<ReturnType<typeof addIcpCriterion>>>
+    export type AddIcpCriterionMutationBody = BodyType<IcpCriterionInput>
+    export type AddIcpCriterionMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+    /**
+ * @summary Add a criterion to an ICP
+ */
+export const useAddIcpCriterion = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof addIcpCriterion>>, TError,{projectId: string;versionId: string;data: BodyType<IcpCriterionInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof addIcpCriterion>>,
+        TError,
+        {projectId: string;versionId: string;data: BodyType<IcpCriterionInput>},
+        TContext
+      > => {
+      return useMutation(getAddIcpCriterionMutationOptions(options));
+    }
+
+export const getUpdateIcpCriterionUrl = (projectId: string,
+    versionId: string,
+    criterionId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/icp/versions/${versionId}/criteria/${criterionId}`
+}
+
+/**
+ * @summary Edit an ICP criterion
+ */
+export const updateIcpCriterion = async (projectId: string,
+    versionId: string,
+    criterionId: string,
+    icpCriterionUpdate: IcpCriterionUpdate, options?: Parameters<typeof customFetch>[1]): Promise<IcpVersion> => {
+
+  return customFetch<IcpVersion>(getUpdateIcpCriterionUrl(projectId,versionId,criterionId),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(icpCriterionUpdate)
+  }
+);}
+
+
+
+
+
+export const getUpdateIcpCriterionMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateIcpCriterion>>, TError,{projectId: string;versionId: string;criterionId: string;data: BodyType<IcpCriterionUpdate>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateIcpCriterion>>, TError,{projectId: string;versionId: string;criterionId: string;data: BodyType<IcpCriterionUpdate>}, TContext> => {
+
+const mutationKey = ['updateIcpCriterion'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateIcpCriterion>>, {projectId: string;versionId: string;criterionId: string;data: BodyType<IcpCriterionUpdate>}> = (props) => {
+          const {projectId,versionId,criterionId,data} = props ?? {};
+
+          return  updateIcpCriterion(projectId,versionId,criterionId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateIcpCriterionMutationResult = NonNullable<Awaited<ReturnType<typeof updateIcpCriterion>>>
+    export type UpdateIcpCriterionMutationBody = BodyType<IcpCriterionUpdate>
+    export type UpdateIcpCriterionMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+    /**
+ * @summary Edit an ICP criterion
+ */
+export const useUpdateIcpCriterion = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateIcpCriterion>>, TError,{projectId: string;versionId: string;criterionId: string;data: BodyType<IcpCriterionUpdate>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateIcpCriterion>>,
+        TError,
+        {projectId: string;versionId: string;criterionId: string;data: BodyType<IcpCriterionUpdate>},
+        TContext
+      > => {
+      return useMutation(getUpdateIcpCriterionMutationOptions(options));
+    }
+
+export const getDeleteIcpCriterionUrl = (projectId: string,
+    versionId: string,
+    criterionId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/icp/versions/${versionId}/criteria/${criterionId}`
+}
+
+/**
+ * @summary Delete an ICP criterion
+ */
+export const deleteIcpCriterion = async (projectId: string,
+    versionId: string,
+    criterionId: string, options?: Parameters<typeof customFetch>[1]): Promise<IcpVersion> => {
+
+  return customFetch<IcpVersion>(getDeleteIcpCriterionUrl(projectId,versionId,criterionId),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+
+export const getDeleteIcpCriterionMutationOptions = <TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteIcpCriterion>>, TError,{projectId: string;versionId: string;criterionId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteIcpCriterion>>, TError,{projectId: string;versionId: string;criterionId: string}, TContext> => {
+
+const mutationKey = ['deleteIcpCriterion'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteIcpCriterion>>, {projectId: string;versionId: string;criterionId: string}> = (props) => {
+          const {projectId,versionId,criterionId} = props ?? {};
+
+          return  deleteIcpCriterion(projectId,versionId,criterionId,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteIcpCriterionMutationResult = NonNullable<Awaited<ReturnType<typeof deleteIcpCriterion>>>
+
+    export type DeleteIcpCriterionMutationError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+    /**
+ * @summary Delete an ICP criterion
+ */
+export const useDeleteIcpCriterion = <TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteIcpCriterion>>, TError,{projectId: string;versionId: string;criterionId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof deleteIcpCriterion>>,
+        TError,
+        {projectId: string;versionId: string;criterionId: string},
+        TContext
+      > => {
+      return useMutation(getDeleteIcpCriterionMutationOptions(options));
+    }
+
+export const getAcceptIcpCriterionUrl = (projectId: string,
+    versionId: string,
+    criterionId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/icp/versions/${versionId}/criteria/${criterionId}/accept`
+}
+
+/**
+ * @summary Accept an ICP criterion
+ */
+export const acceptIcpCriterion = async (projectId: string,
+    versionId: string,
+    criterionId: string, options?: Parameters<typeof customFetch>[1]): Promise<IcpVersion> => {
+
+  return customFetch<IcpVersion>(getAcceptIcpCriterionUrl(projectId,versionId,criterionId),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getAcceptIcpCriterionMutationOptions = <TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof acceptIcpCriterion>>, TError,{projectId: string;versionId: string;criterionId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof acceptIcpCriterion>>, TError,{projectId: string;versionId: string;criterionId: string}, TContext> => {
+
+const mutationKey = ['acceptIcpCriterion'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof acceptIcpCriterion>>, {projectId: string;versionId: string;criterionId: string}> = (props) => {
+          const {projectId,versionId,criterionId} = props ?? {};
+
+          return  acceptIcpCriterion(projectId,versionId,criterionId,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AcceptIcpCriterionMutationResult = NonNullable<Awaited<ReturnType<typeof acceptIcpCriterion>>>
+
+    export type AcceptIcpCriterionMutationError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+    /**
+ * @summary Accept an ICP criterion
+ */
+export const useAcceptIcpCriterion = <TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof acceptIcpCriterion>>, TError,{projectId: string;versionId: string;criterionId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof acceptIcpCriterion>>,
+        TError,
+        {projectId: string;versionId: string;criterionId: string},
+        TContext
+      > => {
+      return useMutation(getAcceptIcpCriterionMutationOptions(options));
     }
 
 export const getCompleteOnboardingUrl = () => {

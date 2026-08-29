@@ -228,6 +228,242 @@ export interface BusinessTwinVersion {
   createdAt: string;
 }
 
+export type IcpCriterionDimension = typeof IcpCriterionDimension[keyof typeof IcpCriterionDimension];
+
+
+export const IcpCriterionDimension = {
+  industry: 'industry',
+  geography: 'geography',
+  employee_count: 'employee_count',
+  revenue: 'revenue',
+  business_model: 'business_model',
+  technology: 'technology',
+  buyer_maturity: 'buyer_maturity',
+  positive_indicator: 'positive_indicator',
+  negative_indicator: 'negative_indicator',
+  compliance: 'compliance',
+} as const;
+
+export type IcpCriterionOperator = typeof IcpCriterionOperator[keyof typeof IcpCriterionOperator];
+
+
+export const IcpCriterionOperator = {
+  EQUALS: 'EQUALS',
+  NOT_EQUALS: 'NOT_EQUALS',
+  IN: 'IN',
+  NOT_IN: 'NOT_IN',
+  GT: 'GT',
+  GTE: 'GTE',
+  LT: 'LT',
+  LTE: 'LTE',
+  BETWEEN: 'BETWEEN',
+  CONTAINS: 'CONTAINS',
+  EXISTS: 'EXISTS',
+  BOOLEAN: 'BOOLEAN',
+} as const;
+
+export type IcpCriterionCriterionType = typeof IcpCriterionCriterionType[keyof typeof IcpCriterionCriterionType];
+
+
+export const IcpCriterionCriterionType = {
+  MUST_HAVE: 'MUST_HAVE',
+  PREFERRED: 'PREFERRED',
+  DISQUALIFIER: 'DISQUALIFIER',
+  ADVISORY: 'ADVISORY',
+} as const;
+
+export type IcpCriterionSource = typeof IcpCriterionSource[keyof typeof IcpCriterionSource];
+
+
+export const IcpCriterionSource = {
+  business_twin: 'business_twin',
+  manual: 'manual',
+} as const;
+
+export type IcpCriterionEvaluability = typeof IcpCriterionEvaluability[keyof typeof IcpCriterionEvaluability];
+
+
+export const IcpCriterionEvaluability = {
+  scorable: 'scorable',
+  advisory: 'advisory',
+} as const;
+
+export interface IcpCriterion {
+  id: string;
+  dimension: IcpCriterionDimension;
+  operator: IcpCriterionOperator;
+  value: unknown;
+  /**
+     * @minimum 0
+     * @maximum 100
+     * @nullable
+     */
+  weight: number | null;
+  criterionType: IcpCriterionCriterionType;
+  /** @maxLength 2000 */
+  description: string;
+  source: IcpCriterionSource;
+  evaluability: IcpCriterionEvaluability;
+  accepted: boolean;
+}
+
+export type IcpCriterionInputDimension = typeof IcpCriterionInputDimension[keyof typeof IcpCriterionInputDimension];
+
+
+export const IcpCriterionInputDimension = {
+  industry: 'industry',
+  geography: 'geography',
+  employee_count: 'employee_count',
+  revenue: 'revenue',
+  business_model: 'business_model',
+  technology: 'technology',
+  buyer_maturity: 'buyer_maturity',
+  positive_indicator: 'positive_indicator',
+  negative_indicator: 'negative_indicator',
+  compliance: 'compliance',
+} as const;
+
+export type IcpCriterionInputOperator = typeof IcpCriterionInputOperator[keyof typeof IcpCriterionInputOperator];
+
+
+export const IcpCriterionInputOperator = {
+  EQUALS: 'EQUALS',
+  NOT_EQUALS: 'NOT_EQUALS',
+  IN: 'IN',
+  NOT_IN: 'NOT_IN',
+  GT: 'GT',
+  GTE: 'GTE',
+  LT: 'LT',
+  LTE: 'LTE',
+  BETWEEN: 'BETWEEN',
+  CONTAINS: 'CONTAINS',
+  EXISTS: 'EXISTS',
+  BOOLEAN: 'BOOLEAN',
+} as const;
+
+export type IcpCriterionInputCriterionType = typeof IcpCriterionInputCriterionType[keyof typeof IcpCriterionInputCriterionType];
+
+
+export const IcpCriterionInputCriterionType = {
+  MUST_HAVE: 'MUST_HAVE',
+  PREFERRED: 'PREFERRED',
+  DISQUALIFIER: 'DISQUALIFIER',
+  ADVISORY: 'ADVISORY',
+} as const;
+
+export type IcpCriterionInputSource = typeof IcpCriterionInputSource[keyof typeof IcpCriterionInputSource];
+
+
+export const IcpCriterionInputSource = {
+  manual: 'manual',
+  business_twin: 'business_twin',
+} as const;
+
+export type IcpCriterionInputEvaluability = typeof IcpCriterionInputEvaluability[keyof typeof IcpCriterionInputEvaluability];
+
+
+export const IcpCriterionInputEvaluability = {
+  scorable: 'scorable',
+  advisory: 'advisory',
+} as const;
+
+export interface IcpCriterionInput {
+  dimension: IcpCriterionInputDimension;
+  operator: IcpCriterionInputOperator;
+  value: unknown;
+  /**
+     * @minimum 0
+     * @maximum 100
+     * @nullable
+     */
+  weight: number | null;
+  criterionType: IcpCriterionInputCriterionType;
+  /** @maxLength 2000 */
+  description: string;
+  source: IcpCriterionInputSource;
+  evaluability: IcpCriterionInputEvaluability;
+}
+
+export type IcpCriterionUpdateDimension = typeof IcpCriterionUpdateDimension[keyof typeof IcpCriterionUpdateDimension];
+
+
+export const IcpCriterionUpdateDimension = {
+  industry: 'industry',
+  geography: 'geography',
+  employee_count: 'employee_count',
+  revenue: 'revenue',
+  business_model: 'business_model',
+  technology: 'technology',
+  buyer_maturity: 'buyer_maturity',
+  positive_indicator: 'positive_indicator',
+  negative_indicator: 'negative_indicator',
+  compliance: 'compliance',
+} as const;
+
+export type IcpCriterionUpdateOperator = typeof IcpCriterionUpdateOperator[keyof typeof IcpCriterionUpdateOperator];
+
+
+export const IcpCriterionUpdateOperator = {
+  EQUALS: 'EQUALS',
+  NOT_EQUALS: 'NOT_EQUALS',
+  IN: 'IN',
+  NOT_IN: 'NOT_IN',
+  GT: 'GT',
+  GTE: 'GTE',
+  LT: 'LT',
+  LTE: 'LTE',
+  BETWEEN: 'BETWEEN',
+  CONTAINS: 'CONTAINS',
+  EXISTS: 'EXISTS',
+  BOOLEAN: 'BOOLEAN',
+} as const;
+
+export type IcpCriterionUpdateCriterionType = typeof IcpCriterionUpdateCriterionType[keyof typeof IcpCriterionUpdateCriterionType];
+
+
+export const IcpCriterionUpdateCriterionType = {
+  MUST_HAVE: 'MUST_HAVE',
+  PREFERRED: 'PREFERRED',
+  DISQUALIFIER: 'DISQUALIFIER',
+  ADVISORY: 'ADVISORY',
+} as const;
+
+export type IcpCriterionUpdateEvaluability = typeof IcpCriterionUpdateEvaluability[keyof typeof IcpCriterionUpdateEvaluability];
+
+
+export const IcpCriterionUpdateEvaluability = {
+  scorable: 'scorable',
+  advisory: 'advisory',
+} as const;
+
+export interface IcpCriterionUpdate {
+  dimension?: IcpCriterionUpdateDimension;
+  operator?: IcpCriterionUpdateOperator;
+  value?: unknown;
+  /**
+     * @minimum 0
+     * @maximum 100
+     * @nullable
+     */
+  weight?: number | null;
+  criterionType?: IcpCriterionUpdateCriterionType;
+  /** @maxLength 2000 */
+  description?: string;
+  evaluability?: IcpCriterionUpdateEvaluability;
+}
+
+export interface IcpVersion {
+  id: string;
+  icpId: string;
+  projectId: string;
+  /** @nullable */
+  sourceBusinessTwinVersionId: string | null;
+  version: number;
+  criteria: IcpCriterion[];
+  createdBy: string;
+  createdAt: string;
+}
+
 export interface ErrorResponse {
   error: string;
 }

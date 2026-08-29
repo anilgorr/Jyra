@@ -1,3 +1,9 @@
+## ICP engine
+
+- Added the versioned, tenant-safe Ideal Customer Profile workspace.
+- Added deterministic criterion validation and evaluation, including dynamic employee ranges and unknown-preserving results.
+- Added Business Twin-derived suggestions plus accept, edit, delete, add, regenerate, and version-history workflows.
+
 # Changelog
 
 ## JYRA rebrand

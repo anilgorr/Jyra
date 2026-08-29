@@ -1,3 +1,11 @@
+## Ideal Customer Profile storage
+
+- `icps` owns one project-scoped ICP identity.
+- `icp_versions` stores immutable numbered revisions and the Business Twin version used for generation.
+- `icp_criteria` stores the complete criterion set for one ICP version, including dimension, operator, JSON value, optional weight, type, source, evaluability, and acceptance state.
+
+Historical rows are never updated when criteria change; a new version and criterion set are inserted instead.
+
 # JYRA Database Plan
 
 ## Implemented identity and tenancy storage

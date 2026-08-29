@@ -3,6 +3,7 @@ import healthRouter from "./health";
 import workspaceRouter from "./workspace";
 import identityRouter from "./identity";
 import businessTwinRouter from "./business-twin";
+import icpRouter from "./icp";
 
 const router: IRouter = Router();
 
@@ -10,5 +11,6 @@ router.use(healthRouter);
 router.use(workspaceRouter);
 router.use(identityRouter);
 router.use(businessTwinRouter);
+router.use(icpRouter);
 
 export default router;
