@@ -34,6 +34,10 @@ Each project has immutable model versions containing weights and state/gating ru
 
 Signal and Opportunity Pack approval boundaries remain upstream. Generated proposals cannot modify model versions or assessments without an explicit authenticated API action.
 
+## Evidence-backed WHY
+
+Phase 15 adds a separate versioned WHY over the deterministic assessment. A sufficient WHY contains 2–4 concise claims, and each material claim stores its signal, cluster, fact, evidence, and source URL trace. Weak, stale, or contradictory support returns `Insufficient evidence to establish current urgency.` instead of extrapolating. See `EVIDENCE_BACKED_WHY.md`.
+
 ## API
 
 - `GET /api/projects/:projectId/opportunities`

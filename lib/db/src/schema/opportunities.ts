@@ -1,5 +1,6 @@
 import {
   boolean,
+  check,
   index,
   integer,
   jsonb,
@@ -12,6 +13,7 @@ import {
   uniqueIndex,
   uuid,
 } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 import { companiesTable, projectCompaniesTable } from "./companies";
@@ -26,6 +28,12 @@ export const opportunityAssessmentStatusEnum = pgEnum("opportunity_assessment_st
 ]);
 export const opportunityDimensionEnum = pgEnum("opportunity_dimension", [
   "FIT", "NEED", "TIMING", "RELATIONSHIP", "CONFIDENCE",
+]);
+export const whyExplanationStatusEnum = pgEnum("why_explanation_status", [
+  "SUFFICIENT_EVIDENCE", "INSUFFICIENT_EVIDENCE", "REVIEW_REQUIRED",
+]);
+export const whyTraceabilityStatusEnum = pgEnum("why_traceability_status", [
+  "TRACED", "UNTRACED", "REJECTED",
 ]);
 
 export const opportunityModelVersionsTable = pgTable("opportunity_model_versions", {
@@ -98,9 +106,55 @@ export const opportunityScoreComponentsTable = pgTable("opportunity_score_compon
   primaryKey({ columns: [table.historyId, table.dimension] }),
 ]);
 
+export const whyExplanationsTable = pgTable("why_explanations", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  opportunityId: uuid("opportunity_id").notNull().references(() => opportunitiesTable.id, { onDelete: "cascade" }),
+  version: integer("version").notNull(),
+  status: whyExplanationStatusEnum("status").notNull(),
+  text: text("text").notNull(),
+  ruleVersion: text("rule_version").notNull().default("WHY_V1"),
+  generatedBy: text("generated_by").notNull().default("DETERMINISTIC"),
+  current: boolean("current").notNull().default(true),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+}, (table) => [
+  uniqueIndex("why_explanations_opportunity_version_unique").on(table.opportunityId, table.version),
+  index("why_explanations_opportunity_current_idx").on(table.opportunityId, table.current),
+]);
+
+export const whyClaimsTable = pgTable("why_claims", {
+  explanationId: uuid("explanation_id").notNull().references(() => whyExplanationsTable.id, { onDelete: "cascade" }),
+  ordinal: integer("ordinal").notNull(),
+  claimText: text("claim_text").notNull(),
+  claimType: text("claim_type").notNull(),
+  material: boolean("material").notNull().default(true),
+  traceabilityStatus: whyTraceabilityStatusEnum("traceability_status").notNull(),
+  signalIds: jsonb("signal_ids").$type<string[]>().notNull().default([]),
+  clusterIds: jsonb("cluster_ids").$type<string[]>().notNull().default([]),
+  factIds: jsonb("fact_ids").$type<string[]>().notNull().default([]),
+  evidenceIds: jsonb("evidence_ids").$type<string[]>().notNull().default([]),
+  sourceUrls: jsonb("source_urls").$type<string[]>().notNull().default([]),
+}, (table) => [
+  primaryKey({ columns: [table.explanationId, table.ordinal] }),
+  check("why_material_claims_require_trace", sql`
+    NOT ${table.material}
+    OR (
+      ${table.traceabilityStatus} = 'TRACED'
+      AND jsonb_array_length(${table.evidenceIds}) > 0
+      AND jsonb_array_length(${table.sourceUrls}) > 0
+      AND (
+        jsonb_array_length(${table.signalIds}) > 0
+        OR jsonb_array_length(${table.clusterIds}) > 0
+        OR jsonb_array_length(${table.factIds}) > 0
+      )
+    )
+  `),
+]);
+
 export const insertOpportunityModelVersionSchema = createInsertSchema(opportunityModelVersionsTable).omit({ id: true, createdAt: true });
 export type OpportunityModelVersion = typeof opportunityModelVersionsTable.$inferSelect;
 export type Opportunity = typeof opportunitiesTable.$inferSelect;
 export type OpportunityHistory = typeof opportunityHistoryTable.$inferSelect;
 export type OpportunityScoreComponent = typeof opportunityScoreComponentsTable.$inferSelect;
+export type WhyExplanation = typeof whyExplanationsTable.$inferSelect;
+export type WhyClaim = typeof whyClaimsTable.$inferSelect;
 export type InsertOpportunityModelVersion = z.infer<typeof insertOpportunityModelVersionSchema>;

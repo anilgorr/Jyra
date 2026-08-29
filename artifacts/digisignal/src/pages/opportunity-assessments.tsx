@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Activity, ChevronRight, History, Loader2, RefreshCw, ShieldQuestion } from "lucide-react";
+import { Activity, ChevronRight, ExternalLink, History, Loader2, RefreshCw, ShieldQuestion, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -21,6 +21,17 @@ type Detail = {
   components: Component[];
   history: Array<{ id: string; state: string; score: number | null; assessedAt: string; previousState: string | null }>;
 };
+type WhyClaim = {
+  ordinal: number; claimText: string; claimType: string; traceabilityStatus: string;
+  signals: Array<{ id: string; name: string; description: string; status: string }>;
+  clusters: Array<{ id: string; explanation: string; status: string }>;
+  facts: Array<{ id: string; factType: string; supportingExcerpt: string; confidence: number }>;
+  evidence: Array<{ id: string; extractedClaim: string; status: string; confidence: number; freshnessScore: number; sourceUrl: string; sourceDomain: string }>;
+};
+type WhyDetail = {
+  explanation: { id: string; version: number; status: string; text: string; ruleVersion: string; generatedBy: string; createdAt: string };
+  claims: WhyClaim[];
+};
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(`/api${path}`, { credentials: "include", ...init, headers: { "Content-Type": "application/json", ...init?.headers } });
@@ -39,6 +50,7 @@ export function OpportunityAssessments({ projectId }: { projectId: string }) {
   const [companies, setCompanies] = useState<Company[]>([]);
   const [assessments, setAssessments] = useState<ListItem[]>([]);
   const [detail, setDetail] = useState<Detail | null>(null);
+  const [why, setWhy] = useState<WhyDetail | null>(null);
   const [loadingId, setLoadingId] = useState<string | null>(null);
 
   const load = async () => {
@@ -49,14 +61,19 @@ export function OpportunityAssessments({ projectId }: { projectId: string }) {
     setCompanies(companyRows);
     setAssessments(assessmentRows);
   };
-  useEffect(() => { void load().catch(() => undefined); setDetail(null); }, [projectId]);
+  useEffect(() => { void load().catch(() => undefined); setDetail(null); setWhy(null); }, [projectId]);
 
   const evaluate = async (projectCompanyId: string) => {
     setLoadingId(projectCompanyId);
     try {
       await request(`/projects/${projectId}/companies/${projectCompanyId}/opportunity/evaluate`, { method: "POST" });
       await load();
-      setDetail(await request<Detail>(`/projects/${projectId}/companies/${projectCompanyId}/opportunity`));
+      const [nextDetail, nextWhy] = await Promise.all([
+        request<Detail>(`/projects/${projectId}/companies/${projectCompanyId}/opportunity`),
+        request<WhyDetail>(`/projects/${projectId}/companies/${projectCompanyId}/opportunity/why`),
+      ]);
+      setDetail(nextDetail);
+      setWhy(nextWhy);
       toast.success("Opportunity assessment refreshed");
     } catch (cause) {
       toast.error(cause instanceof Error ? cause.message : "Assessment failed");
@@ -65,8 +82,25 @@ export function OpportunityAssessments({ projectId }: { projectId: string }) {
     }
   };
   const open = async (projectCompanyId: string) => {
-    try { setDetail(await request<Detail>(`/projects/${projectId}/companies/${projectCompanyId}/opportunity`)); }
+    try {
+      const [nextDetail, nextWhy] = await Promise.all([
+        request<Detail>(`/projects/${projectId}/companies/${projectCompanyId}/opportunity`),
+        request<WhyDetail>(`/projects/${projectId}/companies/${projectCompanyId}/opportunity/why`).catch(() => null),
+      ]);
+      setDetail(nextDetail); setWhy(nextWhy);
+    }
     catch (cause) { toast.error(cause instanceof Error ? cause.message : "Assessment could not be loaded"); }
+  };
+  const regenerateWhy = async () => {
+    if (!detail) return;
+    setLoadingId(detail.opportunity.projectCompanyId);
+    try {
+      await request(`/projects/${projectId}/companies/${detail.opportunity.projectCompanyId}/opportunity/why/generate`, { method: "POST" });
+      setWhy(await request<WhyDetail>(`/projects/${projectId}/companies/${detail.opportunity.projectCompanyId}/opportunity/why`));
+      toast.success("Evidence-backed WHY refreshed");
+    } catch (cause) {
+      toast.error(cause instanceof Error ? cause.message : "WHY could not be generated");
+    } finally { setLoadingId(null); }
   };
   const assessmentByCompany = new Map(assessments.map((item) => [item.projectCompany.id, item.opportunity]));
 
@@ -108,6 +142,36 @@ export function OpportunityAssessments({ projectId }: { projectId: string }) {
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div><div className="flex items-center gap-2"><Badge className={stateTone(detail.opportunity.state)}>{detail.opportunity.state}</Badge><Badge variant="outline">{detail.opportunity.assessmentStatus.replaceAll("_", " ")}</Badge></div><p className="mt-3 max-w-3xl text-sm text-muted-foreground">{detail.opportunity.explanation}</p></div>
             <div className="text-right"><p className="font-display text-3xl font-semibold">{scoreText(detail.opportunity.score)}</p><p className="text-xs text-muted-foreground">Model v{detail.model.version}</p></div>
+          </div>
+          <div className="mt-6 rounded-xl border border-accent/20 bg-accent/5 p-5" data-testid="opportunity-why">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <div className="flex items-center gap-2"><Sparkles className="h-4 w-4 text-accent" /><h3 className="font-display text-lg font-semibold">Why this account</h3>{why && <Badge variant="outline">{why.explanation.status.replaceAll("_", " ")}</Badge>}</div>
+                <p className="mt-3 max-w-4xl text-sm leading-6">{why?.explanation.text ?? "Generate a WHY to inspect the evidence behind this assessment."}</p>
+              </div>
+              <Button size="sm" variant="outline" onClick={() => void regenerateWhy()} disabled={loadingId === detail.opportunity.projectCompanyId}>
+                {loadingId === detail.opportunity.projectCompanyId ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}
+                Refresh WHY
+              </Button>
+            </div>
+            {why && why.claims.length > 0 && (
+              <div className="mt-5 space-y-2">
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Inspect traceability</p>
+                {why.claims.map((claim) => (
+                  <details className="group rounded-lg border bg-background/80 p-3" key={claim.ordinal}>
+                    <summary className="flex cursor-pointer list-none items-center gap-3 text-sm font-medium">
+                      <Badge variant="secondary">{claim.ordinal}</Badge><span className="flex-1">{claim.claimText}</span><ChevronRight className="h-4 w-4 transition-transform group-open:rotate-90" />
+                    </summary>
+                    <div className="mt-4 grid gap-3 border-t pt-4 text-xs md:grid-cols-4">
+                      <div><p className="font-semibold">Signals</p>{claim.signals.length ? claim.signals.map((item) => <p className="mt-2 text-muted-foreground" key={item.id}>{item.name} · {item.status}</p>) : <p className="mt-2 text-muted-foreground">None</p>}</div>
+                      <div><p className="font-semibold">Clusters</p>{claim.clusters.length ? claim.clusters.map((item) => <p className="mt-2 text-muted-foreground" key={item.id}>{item.explanation}</p>) : <p className="mt-2 text-muted-foreground">None</p>}</div>
+                      <div><p className="font-semibold">Validated facts</p>{claim.facts.length ? claim.facts.map((item) => <p className="mt-2 text-muted-foreground" key={item.id}>{item.factType.replaceAll("_", " ")} · {Math.round(item.confidence)} confidence<br />“{item.supportingExcerpt}”</p>) : <p className="mt-2 text-muted-foreground">None</p>}</div>
+                      <div><p className="font-semibold">Evidence and source</p>{claim.evidence.length ? claim.evidence.map((item) => <div className="mt-2 text-muted-foreground" key={item.id}><p>{item.extractedClaim}</p><a className="mt-1 inline-flex items-center gap-1 text-accent underline-offset-2 hover:underline" href={item.sourceUrl} target="_blank" rel="noreferrer">{item.sourceDomain}<ExternalLink className="h-3 w-3" /></a></div>) : <p className="mt-2 text-muted-foreground">No source required for this system status.</p>}</div>
+                    </div>
+                  </details>
+                ))}
+              </div>
+            )}
           </div>
           <div className="mt-6 grid gap-3 md:grid-cols-5">
             {detail.components.map((component) => (

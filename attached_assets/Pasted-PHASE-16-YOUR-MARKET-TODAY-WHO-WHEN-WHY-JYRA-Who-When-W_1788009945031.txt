@@ -1,0 +1,203 @@
+PHASE 16 — YOUR MARKET TODAY / WHO. WHEN. WHY.
+
+JYRA
+Who. When. Why.
+
+==================================================
+OBJECTIVE
+==================================================
+
+Build the main JYRA experience.
+
+The user should NOT feel like they are opening a lead database.
+
+They should feel like an intelligent market analyst has researched their
+market and identified what deserves attention today.
+
+==================================================
+PAGE
+==================================================
+
+Create:
+
+YOUR MARKET TODAY
+
+Opening example:
+
+"JYRA found 7 companies worth your attention today."
+
+Use REAL persisted project data.
+
+Never fabricate counts.
+
+==================================================
+SECTIONS
+==================================================
+
+SURGING
+RISING
+EMERGING
+WATCH
+
+Also:
+
+NEW TODAY
+CHANGED TODAY
+NEEDS RESEARCH
+
+==================================================
+OPPORTUNITY CARD
+==================================================
+
+Show:
+
+Company
+
+Opportunity State
+
+Movement
+
+WHO
+
+WHEN
+
+WHY
+
+Fit
+Need
+Timing
+Confidence
+
+Top Signals
+
+Signal Cluster
+
+Latest Relevant Event
+
+Research Freshness
+
+Recommended Action placeholder
+
+==================================================
+WHO
+==================================================
+
+At this stage WHO primarily means:
+
+Which COMPANY should the customer focus on?
+
+Person-level buyers come later.
+
+Do not invent decision-makers.
+
+==================================================
+WHEN
+==================================================
+
+Use understandable categories:
+
+NOW
+EARLY WINDOW
+MONITOR
+TIMING WEAKENING
+INSUFFICIENT EVIDENCE
+
+Derive deterministically from Timing/state/evidence.
+
+==================================================
+WHY
+==================================================
+
+Show Phase 15 evidence-backed explanation.
+
+Allow:
+
+View Evidence
+
+==================================================
+MOVEMENT
+==================================================
+
+Examples:
+
+WATCH → RISING
+
+RISING → SURGING
+
+SURGING → COOLING
+
+Show what changed.
+
+==================================================
+ACTIONS
+==================================================
+
+Provide:
+
+View Intelligence
+Research Now
+Find Buyers
+
+Find Buyers may remain unavailable/placeholder until later phase.
+
+==================================================
+FILTERS
+==================================================
+
+Allow:
+
+state
+industry
+geography
+employee range
+signal
+cluster
+confidence
+research freshness
+relationship
+ICP fit
+
+==================================================
+IMPORTANT
+==================================================
+
+Do not calculate the entire market synchronously whenever the page loads.
+
+Use persisted:
+
+opportunity state
+score components
+Why
+research status
+latest change
+
+==================================================
+GENERICITY TEST
+==================================================
+
+Test Today with unrelated synthetic sellers.
+
+The UI and engine should require no industry-specific changes.
+
+==================================================
+ACCEPTANCE
+==================================================
+
+The page must answer within seconds:
+
+WHO deserves attention?
+
+WHEN should I act?
+
+WHY does JYRA believe this?
+
+And:
+
+Can I inspect the evidence?
+
+If not, Phase 16 is incomplete.
+
+Update documentation.
+Create checkpoint.
+
+DO NOT begin Phase 17.

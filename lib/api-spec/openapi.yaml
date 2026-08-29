@@ -1475,6 +1475,42 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
         "404": { $ref: "#/components/responses/NotFound" }
+  /projects/{projectId}/companies/{projectCompanyId}/opportunity/why:
+    get:
+      operationId: getOpportunityWhy
+      tags: [opportunity-engine]
+      summary: Get the current evidence-backed WHY and claim-level provenance
+      security: [{ clerkSession: [] }]
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+        - $ref: "#/components/parameters/ProjectCompanyId"
+      responses:
+        "200":
+          description: Current WHY with inspectable traces
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/OpportunityWhyDetail" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /projects/{projectId}/companies/{projectCompanyId}/opportunity/why/generate:
+    post:
+      operationId: generateOpportunityWhy
+      tags: [opportunity-engine]
+      summary: Generate a bounded WHY only from current traced evidence
+      security: [{ clerkSession: [] }]
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+        - $ref: "#/components/parameters/ProjectCompanyId"
+      responses:
+        "200":
+          description: Generated WHY
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/OpportunityWhyGeneration" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
   /projects/{projectId}/opportunity-models:
     get:
       operationId: listOpportunityModels
@@ -3054,7 +3090,109 @@ components:
           type: array
           items: { $ref: "#/components/schemas/OpportunityScoreComponent" }
         model: { $ref: "#/components/schemas/OpportunityModelVersion" }
+        why: { $ref: "#/components/schemas/OpportunityWhyGeneration" }
       required: [opportunity, history, components, model]
+    WhyExplanation:
+      type: object
+      properties:
+        id: { type: string }
+        opportunityId: { type: string }
+        version: { type: number }
+        status: { type: string, enum: [SUFFICIENT_EVIDENCE, INSUFFICIENT_EVIDENCE, REVIEW_REQUIRED] }
+        text: { type: string }
+        ruleVersion: { type: string }
+        generatedBy: { type: string, enum: [DETERMINISTIC, LLM] }
+        current: { type: boolean }
+        createdAt: { type: string, format: date-time }
+      required: [id, opportunityId, version, status, text, ruleVersion, generatedBy, current, createdAt]
+    WhyClaim:
+      type: object
+      properties:
+        ordinal: { type: number }
+        claimText: { type: string }
+        claimType: { type: string }
+        material: { type: boolean }
+        traceabilityStatus: { type: string, enum: [TRACED, UNTRACED, REJECTED] }
+        signalIds: { type: array, items: { type: string } }
+        clusterIds: { type: array, items: { type: string } }
+        factIds: { type: array, items: { type: string } }
+        evidenceIds: { type: array, items: { type: string } }
+        sourceUrls: { type: array, items: { type: string } }
+      required: [ordinal, claimText, claimType, material, traceabilityStatus, signalIds, clusterIds, factIds, evidenceIds, sourceUrls]
+      additionalProperties: true
+    WhyTraceSignal:
+      type: object
+      properties:
+        id: { type: string }
+        name: { type: string }
+        description: { type: string }
+        status: { type: string }
+        currentStrength: { type: number }
+        confidence: { type: number }
+        effectiveDate: { type: string, pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" }
+      required: [id, name, description, status, currentStrength, confidence, effectiveDate]
+    WhyTraceCluster:
+      type: object
+      properties:
+        id: { type: string }
+        explanation: { type: string }
+        status: { type: string }
+        currentStrength: { type: number }
+        triggeredSignalIds: { type: array, items: { type: string } }
+      required: [id, explanation, status, currentStrength, triggeredSignalIds]
+    WhyTraceFact:
+      type: object
+      properties:
+        id: { type: string }
+        factType: { type: string }
+        supportingExcerpt: { type: string }
+        confidence: { type: number }
+        effectiveDate: { type: string, pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" }
+        evidenceId: { type: string }
+      required: [id, factType, supportingExcerpt, confidence, effectiveDate, evidenceId]
+    WhyTraceEvidence:
+      type: object
+      properties:
+        id: { type: string }
+        extractedClaim: { type: string }
+        status: { type: string }
+        confidence: { type: number }
+        freshnessScore: { type: number }
+        sourceUrl: { type: string }
+        sourceDomain: { type: string }
+        publisher: { type: ["string", "null"] }
+        observedAt: { type: string, format: date-time }
+      required: [id, extractedClaim, status, confidence, freshnessScore, sourceUrl, sourceDomain, publisher, observedAt]
+    WhyClaimTrace:
+      type: object
+      properties:
+        ordinal: { type: number }
+        claimText: { type: string }
+        claimType: { type: string }
+        material: { type: boolean }
+        traceabilityStatus: { type: string, enum: [TRACED, UNTRACED, REJECTED] }
+        signalIds: { type: array, items: { type: string } }
+        clusterIds: { type: array, items: { type: string } }
+        factIds: { type: array, items: { type: string } }
+        evidenceIds: { type: array, items: { type: string } }
+        sourceUrls: { type: array, items: { type: string } }
+        signals: { type: array, items: { $ref: "#/components/schemas/WhyTraceSignal" } }
+        clusters: { type: array, items: { $ref: "#/components/schemas/WhyTraceCluster" } }
+        facts: { type: array, items: { $ref: "#/components/schemas/WhyTraceFact" } }
+        evidence: { type: array, items: { $ref: "#/components/schemas/WhyTraceEvidence" } }
+      required: [ordinal, claimText, claimType, material, traceabilityStatus, signalIds, clusterIds, factIds, evidenceIds, sourceUrls, signals, clusters, facts, evidence]
+    OpportunityWhyDetail:
+      type: object
+      properties:
+        explanation: { $ref: "#/components/schemas/WhyExplanation" }
+        claims: { type: array, items: { $ref: "#/components/schemas/WhyClaimTrace" } }
+      required: [explanation, claims]
+    OpportunityWhyGeneration:
+      type: object
+      properties:
+        explanation: { $ref: "#/components/schemas/WhyExplanation" }
+        claims: { type: array, items: { $ref: "#/components/schemas/WhyClaim" } }
+      required: [explanation, claims]
     ErrorResponse:
       type: object
       properties:

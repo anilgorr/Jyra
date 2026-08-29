@@ -148,6 +148,10 @@ Signal clusters are a deterministic downstream layer over persisted individual s
 
 The implemented Opportunity Engine is a deterministic project-scoped layer over accepted ICP criteria, current signals, active clusters, and explicit first-party relationship context. Fit, Need, Timing, and Relationship form a weighted score; Confidence is calculated and gated separately. Each run persists its model version, inputs, five component explanations, provenance identifiers, state, and immutable history. Unknowns remain unknown, stale observations stop contributing, and the same canonical company can produce different assessments for different projects.
 
+## Evidence-backed WHY
+
+WHY is a downstream, read-only interpretation of an opportunity assessment. The deterministic composer selects only current sufficiently strong signals, facts, clusters, and evidence, then persists 2–4 calibrated claims with exact provenance arrays and source URLs. PostgreSQL blocks untraced material claims. Language generation cannot create facts, alter evidence, or bypass signal and pack activation boundaries; insufficient or contradictory support produces an explicit uncertainty result.
+
 Future research work should use a simple database-backed job table suitable for Replit:
 
 1. API creates a planned job.

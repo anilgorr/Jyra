@@ -1,4 +1,5 @@
 export * from "../src/lib/opportunity-engine";
+export * from "../src/lib/opportunity-why";
 export {
   companiesTable,
   db,
@@ -9,5 +10,7 @@ export {
   projectCompaniesTable,
   projectsTable,
   usersTable,
+  whyClaimsTable,
+  whyExplanationsTable,
 } from "@workspace/db";
-export { eq } from "drizzle-orm";
+export { and, asc, eq } from "drizzle-orm";

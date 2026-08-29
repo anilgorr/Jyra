@@ -259,7 +259,7 @@ export default function Opportunities() {
     <div className="mx-auto max-w-6xl space-y-8 px-4 py-8">
       <header className="flex flex-col gap-4 border-b border-border/60 pb-7 md:flex-row md:items-end md:justify-between">
         <div>
-          <div className="mb-2 flex items-center gap-2 text-accent"><BrainCircuit className="h-5 w-5" /><span className="text-xs font-semibold uppercase tracking-[0.18em]">Phase 14 · deterministic and explainable</span></div>
+          <div className="mb-2 flex items-center gap-2 text-accent"><BrainCircuit className="h-5 w-5" /><span className="text-xs font-semibold uppercase tracking-[0.18em]">Phase 15 · evidence-backed why</span></div>
           <h1 className="font-display text-3xl font-semibold">Opportunity Intelligence</h1>
           <p className="mt-2 max-w-3xl text-sm text-muted-foreground">Rank project companies transparently from approved ICP criteria, evidence-backed signals, clusters, and first-party relationship context.</p>
         </div>

@@ -5125,7 +5125,141 @@ export const EvaluateOpportunityAssessmentResponse = zod.object({
   "active": zod.boolean(),
   "createdBy": zod.string(),
   "createdAt": zod.coerce.date()
+}),
+  "why": zod.object({
+  "explanation": zod.object({
+  "id": zod.string(),
+  "opportunityId": zod.string(),
+  "version": zod.number(),
+  "status": zod.enum(['SUFFICIENT_EVIDENCE', 'INSUFFICIENT_EVIDENCE', 'REVIEW_REQUIRED']),
+  "text": zod.string(),
+  "ruleVersion": zod.string(),
+  "generatedBy": zod.enum(['DETERMINISTIC', 'LLM']),
+  "current": zod.boolean(),
+  "createdAt": zod.coerce.date()
+}),
+  "claims": zod.array(zod.object({
+  "ordinal": zod.number(),
+  "claimText": zod.string(),
+  "claimType": zod.string(),
+  "material": zod.boolean(),
+  "traceabilityStatus": zod.enum(['TRACED', 'UNTRACED', 'REJECTED']),
+  "signalIds": zod.array(zod.string()),
+  "clusterIds": zod.array(zod.string()),
+  "factIds": zod.array(zod.string()),
+  "evidenceIds": zod.array(zod.string()),
+  "sourceUrls": zod.array(zod.string())
+}))
+}).optional()
 })
+
+
+/**
+ * @summary Get the current evidence-backed WHY and claim-level provenance
+ */
+export const GetOpportunityWhyParams = zod.object({
+  "projectId": zod.coerce.string(),
+  "projectCompanyId": zod.coerce.string()
+})
+
+export const getOpportunityWhyResponseClaimsItemSignalsItemEffectiveDateRegExp = new RegExp('^[0-9]{4}-[0-9]{2}-[0-9]{2}$');
+export const getOpportunityWhyResponseClaimsItemFactsItemEffectiveDateRegExp = new RegExp('^[0-9]{4}-[0-9]{2}-[0-9]{2}$');
+
+
+export const GetOpportunityWhyResponse = zod.object({
+  "explanation": zod.object({
+  "id": zod.string(),
+  "opportunityId": zod.string(),
+  "version": zod.number(),
+  "status": zod.enum(['SUFFICIENT_EVIDENCE', 'INSUFFICIENT_EVIDENCE', 'REVIEW_REQUIRED']),
+  "text": zod.string(),
+  "ruleVersion": zod.string(),
+  "generatedBy": zod.enum(['DETERMINISTIC', 'LLM']),
+  "current": zod.boolean(),
+  "createdAt": zod.coerce.date()
+}),
+  "claims": zod.array(zod.object({
+  "ordinal": zod.number(),
+  "claimText": zod.string(),
+  "claimType": zod.string(),
+  "material": zod.boolean(),
+  "traceabilityStatus": zod.enum(['TRACED', 'UNTRACED', 'REJECTED']),
+  "signalIds": zod.array(zod.string()),
+  "clusterIds": zod.array(zod.string()),
+  "factIds": zod.array(zod.string()),
+  "evidenceIds": zod.array(zod.string()),
+  "sourceUrls": zod.array(zod.string()),
+  "signals": zod.array(zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "description": zod.string(),
+  "status": zod.string(),
+  "currentStrength": zod.number(),
+  "confidence": zod.number(),
+  "effectiveDate": zod.string().regex(getOpportunityWhyResponseClaimsItemSignalsItemEffectiveDateRegExp)
+})),
+  "clusters": zod.array(zod.object({
+  "id": zod.string(),
+  "explanation": zod.string(),
+  "status": zod.string(),
+  "currentStrength": zod.number(),
+  "triggeredSignalIds": zod.array(zod.string())
+})),
+  "facts": zod.array(zod.object({
+  "id": zod.string(),
+  "factType": zod.string(),
+  "supportingExcerpt": zod.string(),
+  "confidence": zod.number(),
+  "effectiveDate": zod.string().regex(getOpportunityWhyResponseClaimsItemFactsItemEffectiveDateRegExp),
+  "evidenceId": zod.string()
+})),
+  "evidence": zod.array(zod.object({
+  "id": zod.string(),
+  "extractedClaim": zod.string(),
+  "status": zod.string(),
+  "confidence": zod.number(),
+  "freshnessScore": zod.number(),
+  "sourceUrl": zod.string(),
+  "sourceDomain": zod.string(),
+  "publisher": zod.string().nullable(),
+  "observedAt": zod.coerce.date()
+}))
+}))
+})
+
+
+/**
+ * @summary Generate a bounded WHY only from current traced evidence
+ */
+export const GenerateOpportunityWhyParams = zod.object({
+  "projectId": zod.coerce.string(),
+  "projectCompanyId": zod.coerce.string()
+})
+
+export const GenerateOpportunityWhyResponse = zod.object({
+  "explanation": zod.object({
+  "id": zod.string(),
+  "opportunityId": zod.string(),
+  "version": zod.number(),
+  "status": zod.enum(['SUFFICIENT_EVIDENCE', 'INSUFFICIENT_EVIDENCE', 'REVIEW_REQUIRED']),
+  "text": zod.string(),
+  "ruleVersion": zod.string(),
+  "generatedBy": zod.enum(['DETERMINISTIC', 'LLM']),
+  "current": zod.boolean(),
+  "createdAt": zod.coerce.date()
+}),
+  "claims": zod.array(zod.object({
+  "ordinal": zod.number(),
+  "claimText": zod.string(),
+  "claimType": zod.string(),
+  "material": zod.boolean(),
+  "traceabilityStatus": zod.enum(['TRACED', 'UNTRACED', 'REJECTED']),
+  "signalIds": zod.array(zod.string()),
+  "clusterIds": zod.array(zod.string()),
+  "factIds": zod.array(zod.string()),
+  "evidenceIds": zod.array(zod.string()),
+  "sourceUrls": zod.array(zod.string())
+}))
 })
 
 

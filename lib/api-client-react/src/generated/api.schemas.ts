@@ -2304,11 +2304,142 @@ export interface OpportunityAssessmentDetail {
   history: OpportunityHistory[];
 }
 
+export type WhyExplanationStatus = typeof WhyExplanationStatus[keyof typeof WhyExplanationStatus];
+
+
+export const WhyExplanationStatus = {
+  SUFFICIENT_EVIDENCE: 'SUFFICIENT_EVIDENCE',
+  INSUFFICIENT_EVIDENCE: 'INSUFFICIENT_EVIDENCE',
+  REVIEW_REQUIRED: 'REVIEW_REQUIRED',
+} as const;
+
+export type WhyExplanationGeneratedBy = typeof WhyExplanationGeneratedBy[keyof typeof WhyExplanationGeneratedBy];
+
+
+export const WhyExplanationGeneratedBy = {
+  DETERMINISTIC: 'DETERMINISTIC',
+  LLM: 'LLM',
+} as const;
+
+export interface WhyExplanation {
+  id: string;
+  opportunityId: string;
+  version: number;
+  status: WhyExplanationStatus;
+  text: string;
+  ruleVersion: string;
+  generatedBy: WhyExplanationGeneratedBy;
+  current: boolean;
+  createdAt: string;
+}
+
+export type WhyClaimTraceabilityStatus = typeof WhyClaimTraceabilityStatus[keyof typeof WhyClaimTraceabilityStatus];
+
+
+export const WhyClaimTraceabilityStatus = {
+  TRACED: 'TRACED',
+  UNTRACED: 'UNTRACED',
+  REJECTED: 'REJECTED',
+} as const;
+
+export interface WhyClaim {
+  ordinal: number;
+  claimText: string;
+  claimType: string;
+  material: boolean;
+  traceabilityStatus: WhyClaimTraceabilityStatus;
+  signalIds: string[];
+  clusterIds: string[];
+  factIds: string[];
+  evidenceIds: string[];
+  sourceUrls: string[];
+  [key: string]: unknown;
+ }
+
+export interface OpportunityWhyGeneration {
+  explanation: WhyExplanation;
+  claims: WhyClaim[];
+}
+
 export interface OpportunityEvaluationResult {
   opportunity: OpportunityAssessment;
   history: OpportunityHistory;
   components: OpportunityScoreComponent[];
   model: OpportunityModelVersion;
+  why?: OpportunityWhyGeneration;
+}
+
+export interface WhyTraceSignal {
+  id: string;
+  name: string;
+  description: string;
+  status: string;
+  currentStrength: number;
+  confidence: number;
+  /** @pattern ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ */
+  effectiveDate: string;
+}
+
+export interface WhyTraceCluster {
+  id: string;
+  explanation: string;
+  status: string;
+  currentStrength: number;
+  triggeredSignalIds: string[];
+}
+
+export interface WhyTraceFact {
+  id: string;
+  factType: string;
+  supportingExcerpt: string;
+  confidence: number;
+  /** @pattern ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ */
+  effectiveDate: string;
+  evidenceId: string;
+}
+
+export interface WhyTraceEvidence {
+  id: string;
+  extractedClaim: string;
+  status: string;
+  confidence: number;
+  freshnessScore: number;
+  sourceUrl: string;
+  sourceDomain: string;
+  /** @nullable */
+  publisher: string | null;
+  observedAt: string;
+}
+
+export type WhyClaimTraceTraceabilityStatus = typeof WhyClaimTraceTraceabilityStatus[keyof typeof WhyClaimTraceTraceabilityStatus];
+
+
+export const WhyClaimTraceTraceabilityStatus = {
+  TRACED: 'TRACED',
+  UNTRACED: 'UNTRACED',
+  REJECTED: 'REJECTED',
+} as const;
+
+export interface WhyClaimTrace {
+  ordinal: number;
+  claimText: string;
+  claimType: string;
+  material: boolean;
+  traceabilityStatus: WhyClaimTraceTraceabilityStatus;
+  signalIds: string[];
+  clusterIds: string[];
+  factIds: string[];
+  evidenceIds: string[];
+  sourceUrls: string[];
+  signals: WhyTraceSignal[];
+  clusters: WhyTraceCluster[];
+  facts: WhyTraceFact[];
+  evidence: WhyTraceEvidence[];
+}
+
+export interface OpportunityWhyDetail {
+  explanation: WhyExplanation;
+  claims: WhyClaimTrace[];
 }
 
 export interface ErrorResponse {

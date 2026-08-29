@@ -72,6 +72,8 @@ import type {
   OpportunityPackVersion,
   OpportunityResearchQuestion,
   OpportunitySignalProposal,
+  OpportunityWhyDetail,
+  OpportunityWhyGeneration,
   Organization,
   OrganizationInput,
   Project,
@@ -5112,6 +5114,161 @@ export const useEvaluateOpportunityAssessment = <TError = ErrorType<Unauthorized
         TContext
       > => {
       return useMutation(getEvaluateOpportunityAssessmentMutationOptions(options));
+    }
+
+export const getGetOpportunityWhyUrl = (projectId: string,
+    projectCompanyId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/companies/${projectCompanyId}/opportunity/why`
+}
+
+/**
+ * @summary Get the current evidence-backed WHY and claim-level provenance
+ */
+export const getOpportunityWhy = async (projectId: string,
+    projectCompanyId: string, options?: Parameters<typeof customFetch>[1]): Promise<OpportunityWhyDetail> => {
+
+  return customFetch<OpportunityWhyDetail>(getGetOpportunityWhyUrl(projectId,projectCompanyId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetOpportunityWhyQueryKey = (projectId: string,
+    projectCompanyId: string,) => {
+    return [
+    `/api/projects/${projectId}/companies/${projectCompanyId}/opportunity/why`
+    ] as const;
+    }
+
+
+export const getGetOpportunityWhyQueryOptions = <TData = Awaited<ReturnType<typeof getOpportunityWhy>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(projectId: string,
+    projectCompanyId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getOpportunityWhy>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetOpportunityWhyQueryKey(projectId,projectCompanyId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getOpportunityWhy>>> = ({ signal }) => getOpportunityWhy(projectId,projectCompanyId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: projectId !== null && projectId !== undefined && projectCompanyId !== null && projectCompanyId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getOpportunityWhy>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetOpportunityWhyQueryResult = NonNullable<Awaited<ReturnType<typeof getOpportunityWhy>>>
+export type GetOpportunityWhyQueryError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+
+/**
+ * @summary Get the current evidence-backed WHY and claim-level provenance
+ */
+
+export function useGetOpportunityWhy<TData = Awaited<ReturnType<typeof getOpportunityWhy>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(
+ projectId: string,
+    projectCompanyId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getOpportunityWhy>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetOpportunityWhyQueryOptions(projectId,projectCompanyId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getGenerateOpportunityWhyUrl = (projectId: string,
+    projectCompanyId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/companies/${projectCompanyId}/opportunity/why/generate`
+}
+
+/**
+ * @summary Generate a bounded WHY only from current traced evidence
+ */
+export const generateOpportunityWhy = async (projectId: string,
+    projectCompanyId: string, options?: Parameters<typeof customFetch>[1]): Promise<OpportunityWhyGeneration> => {
+
+  return customFetch<OpportunityWhyGeneration>(getGenerateOpportunityWhyUrl(projectId,projectCompanyId),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getGenerateOpportunityWhyMutationOptions = <TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof generateOpportunityWhy>>, TError,{projectId: string;projectCompanyId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof generateOpportunityWhy>>, TError,{projectId: string;projectCompanyId: string}, TContext> => {
+
+const mutationKey = ['generateOpportunityWhy'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof generateOpportunityWhy>>, {projectId: string;projectCompanyId: string}> = (props) => {
+          const {projectId,projectCompanyId} = props ?? {};
+
+          return  generateOpportunityWhy(projectId,projectCompanyId,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type GenerateOpportunityWhyMutationResult = NonNullable<Awaited<ReturnType<typeof generateOpportunityWhy>>>
+
+    export type GenerateOpportunityWhyMutationError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+    /**
+ * @summary Generate a bounded WHY only from current traced evidence
+ */
+export const useGenerateOpportunityWhy = <TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof generateOpportunityWhy>>, TError,{projectId: string;projectCompanyId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof generateOpportunityWhy>>,
+        TError,
+        {projectId: string;projectCompanyId: string},
+        TContext
+      > => {
+      return useMutation(getGenerateOpportunityWhyMutationOptions(options));
     }
 
 export const getListOpportunityModelsUrl = (projectId: string,) => {

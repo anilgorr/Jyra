@@ -9,10 +9,12 @@ import type { OpportunityAssessment } from './opportunityAssessment';
 import type { OpportunityHistory } from './opportunityHistory';
 import type { OpportunityModelVersion } from './opportunityModelVersion';
 import type { OpportunityScoreComponent } from './opportunityScoreComponent';
+import type { OpportunityWhyGeneration } from './opportunityWhyGeneration';
 
 export interface OpportunityEvaluationResult {
   opportunity: OpportunityAssessment;
   history: OpportunityHistory;
   components: OpportunityScoreComponent[];
   model: OpportunityModelVersion;
+  why?: OpportunityWhyGeneration;
 }

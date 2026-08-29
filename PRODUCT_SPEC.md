@@ -109,6 +109,10 @@ Research results preserve original source evidence. Structured facts, detected s
 
 Deterministic, project-specific calculations combine Fit, Need, Timing, and first-party Relationship using versioned weights and rules. Confidence is calculated separately and cannot inflate opportunity strength. Unknown data remains unknown, gates prevent unjustified strong states, stale evidence reduces strength, and every assessment preserves component provenance, explanation, model version, and state history.
 
+### Evidence-backed WHY (implemented)
+
+JYRA presents a concise 2–4 sentence account explanation only when current support is sufficient. Every material sentence is inspectable through signals, clusters, validated facts, evidence, and source URL. Unsupported purchase-intent claims are prohibited, calibrated language is preferred, and weak, stale, or contradictory support produces “Insufficient evidence to establish current urgency.”
+
 ### 6. Buying committee and action
 
 Only after a company is commercially interesting does JYRA identify likely buyers, enrich contact data, and recommend an action.

@@ -11,6 +11,7 @@ import {
   projectsTable,
 } from "@workspace/db";
 import { DEFAULT_OPPORTUNITY_RULES, evaluateOpportunity, getOpportunityDetail } from "../lib/opportunity-engine";
+import { generateWhyForOpportunity, getWhyDetail } from "../lib/opportunity-why";
 import { getAuthenticatedUserId, requireAuth } from "../middlewares/auth";
 
 const router: IRouter = Router();
@@ -76,12 +77,37 @@ router.post("/projects/:projectId/companies/:projectCompanyId/opportunity/evalua
     eq(projectCompaniesTable.projectId, params.data.projectId),
   )).limit(1);
   if (!company) return void res.status(404).json({ error: "Project company not found" });
-  res.json(await evaluateOpportunity({
+  const evaluation = await evaluateOpportunity({
     organizationId: access.project.organizationId,
     projectId: access.project.id,
     projectCompanyId: company.id,
     userId,
-  }));
+  });
+  const why = await generateWhyForOpportunity(evaluation.opportunity.id, access.project.id);
+  res.json({ ...evaluation, why });
+}));
+
+router.get("/projects/:projectId/companies/:projectCompanyId/opportunity/why", requireAuth, asyncRoute(async (req, res) => {
+  const params = companyParams.safeParse(req.params);
+  if (!params.success) return void res.status(404).json({ error: "WHY not found" });
+  const access = await authorize(getAuthenticatedUserId(res), params.data.projectId);
+  if (!access.project) return void res.status(access.status).json({ error: access.status === 403 ? "Project access denied" : "Project not found" });
+  const why = await getWhyDetail(params.data.projectId, params.data.projectCompanyId);
+  if (!why) return void res.status(404).json({ error: "WHY has not been generated for this assessment" });
+  res.json(why);
+}));
+
+router.post("/projects/:projectId/companies/:projectCompanyId/opportunity/why/generate", requireAuth, asyncRoute(async (req, res) => {
+  const params = companyParams.safeParse(req.params);
+  if (!params.success) return void res.status(404).json({ error: "WHY not found" });
+  const access = await authorize(getAuthenticatedUserId(res), params.data.projectId);
+  if (!access.project) return void res.status(access.status).json({ error: access.status === 403 ? "Project access denied" : "Project not found" });
+  const [opportunity] = await db.select({ id: opportunitiesTable.id }).from(opportunitiesTable).where(and(
+    eq(opportunitiesTable.projectId, params.data.projectId),
+    eq(opportunitiesTable.projectCompanyId, params.data.projectCompanyId),
+  )).limit(1);
+  if (!opportunity) return void res.status(404).json({ error: "Opportunity assessment not found" });
+  res.json(await generateWhyForOpportunity(opportunity.id, params.data.projectId));
 }));
 
 router.get("/projects/:projectId/opportunity-models", requireAuth, asyncRoute(async (req, res) => {

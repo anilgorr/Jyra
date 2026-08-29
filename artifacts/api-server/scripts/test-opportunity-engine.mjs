@@ -88,6 +88,30 @@ try {
   assert.equal(histories.length, 1);
   const components = await h.db.select().from(h.opportunityScoreComponentsTable).where(h.eq(h.opportunityScoreComponentsTable.historyId, histories[0].id));
   assert.equal(components.length, 5);
+  const concurrentWhy = await Promise.all([
+    h.generateWhyForOpportunity(persisted.opportunity.id, project.id),
+    h.generateWhyForOpportunity(persisted.opportunity.id, project.id),
+  ]);
+  assert.deepEqual(concurrentWhy.map((result) => result.explanation.version).sort(), [1, 2], "concurrent WHY refreshes must receive sequential versions");
+  const whyVersions = await h.db.select().from(h.whyExplanationsTable)
+    .where(h.eq(h.whyExplanationsTable.opportunityId, persisted.opportunity.id))
+    .orderBy(h.asc(h.whyExplanationsTable.version));
+  assert.equal(whyVersions.length, 2);
+  assert.equal(whyVersions.filter((item) => item.current).length, 1, "exactly one WHY version must remain current");
+  assert.equal(whyVersions[0].text, "Insufficient evidence to establish current urgency.");
+  await assert.rejects(
+    () => h.db.update(h.whyExplanationsTable).set({ text: "Rewritten history" }).where(h.eq(h.whyExplanationsTable.id, whyVersions[0].id)),
+    (error) => /immutable/.test(String(error?.cause?.message ?? error?.message)),
+    "historical WHY content must not be editable",
+  );
+  const whyClaims = await h.db.select().from(h.whyClaimsTable).where(h.eq(h.whyClaimsTable.explanationId, whyVersions[0].id));
+  await assert.rejects(
+    () => h.db.update(h.whyClaimsTable).set({ claimText: "Rewritten claim" }).where(h.and(
+      h.eq(h.whyClaimsTable.explanationId, whyVersions[0].id), h.eq(h.whyClaimsTable.ordinal, whyClaims[0].ordinal),
+    )),
+    (error) => /immutable/.test(String(error?.cause?.message ?? error?.message)),
+    "WHY claim provenance must not be editable",
+  );
 } finally {
   if (organization) await h.db.delete(h.organizationsTable).where(h.eq(h.organizationsTable.id, organization.id));
   await h.db.delete(h.usersTable).where(h.eq(h.usersTable.id, userId));

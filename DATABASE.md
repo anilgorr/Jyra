@@ -155,6 +155,8 @@ The implemented organization, membership, user, and project tables are the tenan
 - `opportunities` (implemented; one current project-company assessment)
 - `opportunity_history` (implemented; immutable score/state snapshots)
 - `opportunity_score_components` (implemented; five-dimensional explanations and provenance)
+- `why_explanations` (implemented; immutable versioned current/previous WHY text and evidence status)
+- `why_claims` (implemented; sentence-level signal, cluster, fact, evidence, and source provenance)
 - `buying_committee_members`
 - `recommended_actions`
 

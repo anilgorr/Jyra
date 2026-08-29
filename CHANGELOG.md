@@ -1,3 +1,11 @@
+## Evidence-Backed WHY
+
+- Added concise versioned WHY explanations composed only from current traced signals, clusters, validated facts, and evidence.
+- Added sentence-level provenance through source URLs, database rejection of untraced material claims, and serialized immutable WHY versions.
+- Added forbidden-claim resistance, calibrated language, and explicit insufficient-evidence behavior for stale, weak, or contradictory support.
+- Added authorized WHY generation/retrieval APIs and an Opportunity Intelligence trace view from each claim to its source.
+- Added acceptance coverage for hallucination resistance, contradictions, staleness, weak evidence, strong clusters, explicit source claims, and traceability without beginning Phase 16.
+
 ## Generic Opportunity Engine
 
 - Added deterministic project-specific Fit, Need, Timing, and Relationship scoring with separate evidence-quality Confidence.
