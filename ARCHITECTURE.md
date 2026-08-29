@@ -158,6 +158,8 @@ User configuration
 
 Every transition should be inspectable. Derived records should carry the rule/version and source references needed to reproduce the decision.
 
+Structured fact extraction is a guarded transition rather than an autonomous write. The managed model receives one untrusted source capture and may return strict JSON candidates. Deterministic application code validates each candidate against the canonical company/evidence relationship, vocabulary, date, confidence, and verbatim excerpt before a user can persist it. Extraction itself has no write side effect. Project membership authorizes list, proposal, and create APIs even though public facts and evidence remain reusable at canonical-company scope.
+
 ## Replit runtime
 
 The web service uses the workflow-provided `PORT` and `BASE_PATH`. The API service uses its managed port and mounts Express under `/api`. Secrets are read from Replit Secrets and are never committed.

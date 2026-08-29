@@ -740,6 +740,82 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
         "404": { $ref: "#/components/responses/NotFound" }
+  /projects/{projectId}/companies/{projectCompanyId}/facts:
+    get:
+      operationId: listCompanyFacts
+      tags: [companies]
+      summary: List structured facts for a project company
+      description: Returns source-grounded structured facts linked to the canonical company and preserved evidence.
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/ProjectId" }
+        - { $ref: "#/components/parameters/ProjectCompanyId" }
+      responses:
+        "200":
+          description: Company facts
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/CompanyFact" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+    post:
+      operationId: createCompanyFact
+      tags: [companies]
+      summary: Save a validated structured fact
+      description: Persists a fact only when its evidence reference, effective date, confidence, and supporting excerpt pass deterministic validation.
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/ProjectId" }
+        - { $ref: "#/components/parameters/ProjectCompanyId" }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CompanyFactInput" }
+      responses:
+        "201":
+          description: Created structured fact
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CompanyFact" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409":
+          description: This fact already exists for the evidence observation
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CompanyFactDuplicate" }
+  /projects/{projectId}/companies/{projectCompanyId}/facts/extract:
+    post:
+      operationId: extractCompanyFacts
+      tags: [companies]
+      summary: Propose structured facts from preserved evidence
+      description: Uses the managed model only to propose strict JSON candidates; candidates are validated deterministically and are not persisted by this endpoint.
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/ProjectId" }
+        - { $ref: "#/components/parameters/ProjectCompanyId" }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/FactExtractionInput" }
+      responses:
+        "200":
+          description: Validated fact candidates and rejected candidates
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/FactExtractionResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/InterpretationUnavailable" }
   /projects/{projectId}/companies/import/preview:
     post:
       operationId: previewCompanyImport
@@ -1595,6 +1671,68 @@ components:
         error: { type: string }
         evidence: { $ref: "#/components/schemas/CompanyEvidence" }
       required: [error, evidence]
+    CompanyFact:
+      type: object
+      properties:
+        id: { type: string }
+        companyId: { type: string }
+        evidenceId: { type: string }
+        factType:
+          type: string
+          enum: [LEADERSHIP_CHANGE, JOB_OPENING, HIRING_COUNT, COMPANY_EXPANSION, FUNDING_EVENT, ACQUISITION, CERTIFICATION, COMPLIANCE_MENTION, TECHNOLOGY_MENTION, NEW_MARKET, ENTERPRISE_CUSTOMER, SECURITY_INCIDENT, EMPLOYEE_GROWTH, TRUST_CENTER_CHANGE]
+        structuredValue:
+          type: object
+          additionalProperties: true
+        effectiveDate: { type: string, pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" }
+        confidence: { type: number, minimum: 0, maximum: 100 }
+        supportingExcerpt: { type: string }
+        extractorVersion: { type: string }
+        sourceUrl: { type: string }
+        sourceClaim: { type: string }
+        createdAt: { type: string, format: date-time }
+      required: [id, companyId, evidenceId, factType, structuredValue, effectiveDate, confidence, supportingExcerpt, extractorVersion, sourceUrl, sourceClaim, createdAt]
+    CompanyFactInput:
+      type: object
+      properties:
+        evidenceId: { type: string }
+        factType:
+          type: string
+          enum: [LEADERSHIP_CHANGE, JOB_OPENING, HIRING_COUNT, COMPANY_EXPANSION, FUNDING_EVENT, ACQUISITION, CERTIFICATION, COMPLIANCE_MENTION, TECHNOLOGY_MENTION, NEW_MARKET, ENTERPRISE_CUSTOMER, SECURITY_INCIDENT, EMPLOYEE_GROWTH, TRUST_CENTER_CHANGE]
+        structuredValue:
+          type: object
+          additionalProperties: true
+        effectiveDate: { type: string, pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" }
+        confidence: { type: number, minimum: 0, maximum: 100 }
+        supportingExcerpt: { type: string, minLength: 1, maxLength: 2000 }
+        extractorVersion: { type: string, minLength: 1, maxLength: 100 }
+      required: [evidenceId, factType, structuredValue, effectiveDate, confidence, supportingExcerpt, extractorVersion]
+    FactExtractionInput:
+      type: object
+      properties:
+        evidenceId: { type: string }
+      required: [evidenceId]
+    FactExtractionRejection:
+      type: object
+      properties:
+        factType: { type: ["string", "null"] }
+        reason: { type: string }
+      required: [factType, reason]
+    FactExtractionResponse:
+      type: object
+      properties:
+        candidates:
+          type: array
+          items: { $ref: "#/components/schemas/CompanyFactInput" }
+        rejections:
+          type: array
+          items: { $ref: "#/components/schemas/FactExtractionRejection" }
+      required: [candidates, rejections]
+    CompanyFactDuplicate:
+      type: object
+      properties:
+        error: { type: string }
+        fact: { $ref: "#/components/schemas/CompanyFact" }
+      required: [error, fact]
     CompanyInput:
       type: object
       properties:

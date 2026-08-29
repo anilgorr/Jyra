@@ -13,7 +13,8 @@
     "test:companies": "node ./scripts/test-company-identity.mjs",
     "test:providers": "node ./scripts/test-provider-router.mjs",
     "test:apify": "node ./scripts/test-apify-provider.mjs",
-    "test:evidence": "node ./scripts/test-evidence.mjs"
+    "test:evidence": "node ./scripts/test-evidence.mjs",
+    "test:facts": "node ./scripts/test-facts.mjs"
   },
   "dependencies": {
     "@clerk/express": "^2.1.63",

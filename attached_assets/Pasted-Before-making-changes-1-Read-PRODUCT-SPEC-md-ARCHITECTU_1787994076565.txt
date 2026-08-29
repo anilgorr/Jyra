@@ -1,0 +1,191 @@
+Before making changes:
+
+1. Read PRODUCT_SPEC.md, ARCHITECTURE.md, DATABASE.md, SIGNALS.md, PROVIDERS.md, CHANGELOG.md and the entire relevant current codebase.
+
+2. Preserve all working functionality.
+
+3. Implement only the milestone described below.
+
+4. Do not redesign unrelated areas.
+
+5. Create a checkpoint before major changes.
+
+6. Run migrations and tests before completing the milestone.
+
+7. Update documentation after implementation.
+
+8. Do not claim the milestone is complete unless the acceptance criteria pass.
+
+9. Prefer deterministic business logic over LLM reasoning wherever possible.
+
+10. Do not fabricate data, evidence, people, companies, signals, buying intent or outcomes.
+
+Build DigiSignal's Research Planner.
+
+CORE PRODUCT REQUIREMENT
+
+DigiSignal must decide what it needs to learn about each company.
+
+It must not blindly query every source for every account.
+
+DATABASE
+
+Create/use:
+
+research_jobs
+research_questions
+
+RESEARCH QUESTION FIELDS
+
+id
+organization_id
+project_id
+company_id
+question_type
+question
+reason
+provider_capability
+priority
+expected_information_gain
+estimated_cost
+status
+created_at
+last_attempted_at
+last_result_at
+next_refresh_at
+
+STATUSES
+
+OPEN
+QUEUED
+RUNNING
+ANSWERED
+NO_RESULT
+FAILED
+DEFERRED
+STALE
+
+PLANNER INPUT
+
+For each project-company inspect:
+
+Business Twin
+ICP
+company attributes
+existing evidence
+existing facts
+evidence freshness
+current research status
+active signal pack configuration
+known gaps
+
+The Planner should ask:
+
+What do we already know?
+
+What do we not know?
+
+Which missing information could materially change:
+
+Fit?
+Need?
+Timing?
+Confidence?
+
+What is the cheapest useful way to answer it?
+
+STAGED RESEARCH
+
+STAGE 1 — CHEAP QUALIFICATION
+
+Use:
+
+existing global company cache
+domain
+country
+industry
+employee size
+basic website information
+
+Purpose:
+
+determine basic ICP plausibility.
+
+If a confirmed hard disqualifier exists, stop deep research.
+
+STAGE 2 — NEED / TIMING DISCOVERY
+
+For plausible accounts use:
+
+jobs
+careers
+news
+web search
+leadership changes
+press releases
+security/compliance pages
+expansion events
+relevant technology signals
+
+STAGE 3 — DEEP RESEARCH
+
+Use only for promising or ambiguous accounts.
+
+Use:
+
+additional corroboration
+deeper job details
+technology details
+market/customer expansion
+public social/company signals where appropriate
+
+STOPPING RULES
+
+Stop/pause research when:
+
+hard disqualifier confirmed
+Fit clearly too low
+research sufficiently fresh
+enough evidence exists
+confidence sufficiently high
+extra research unlikely to change commercial conclusion
+estimated cost exceeds likely information value
+
+Continue/deepen when:
+
+Fit high but Need unknown
+Need appears strong but Timing unclear
+one strong signal needs confirmation
+evidence conflicts
+evidence stale
+important research question unanswered
+account is near an important ranking boundary
+
+Do not use a generic LLM agent with unlimited browsing.
+
+Use bounded research questions and deterministic provider capabilities.
+
+ACCEPTANCE CRITERIA
+
+Use 100 demo companies.
+
+Verify:
+
+obvious non-ICP companies receive very few questions.
+
+High-fit ambiguous companies generate relevant questions.
+
+Questions contain provider capability.
+
+Planner does not request every provider for every company.
+
+Update:
+
+ARCHITECTURE.md
+DATABASE.md
+PROVIDERS.md
+CHANGELOG.md
+
+Create:
+
+RESEARCH_ENGINE.md

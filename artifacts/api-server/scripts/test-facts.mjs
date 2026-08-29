@@ -1,0 +1,187 @@
+import assert from "node:assert/strict";
+import { build } from "esbuild";
+import { pathToFileURL } from "node:url";
+
+const output = "/tmp/jyra-facts-test.mjs";
+await build({
+  entryPoints: ["./src/lib/facts.ts"],
+  outfile: output,
+  bundle: true,
+  format: "esm",
+  platform: "node",
+});
+
+const {
+  FACT_TYPES,
+  factCandidateSchema,
+  isFactTypeSupportedByExcerpt,
+  isInterpretationOnlyClaim,
+  isValidCalendarDate,
+  parseFactExtractionModelOutput,
+  validateFactCandidate,
+} = await import(`${pathToFileURL(output).href}?t=${Date.now()}`);
+
+const evidenceId = "b3fe7617-4321-48d6-b878-741c1df99d8a";
+const otherEvidenceId = "1e549f4f-aa41-40d2-b21f-c932736a56cb";
+const context = {
+  companyId: "790b1f2f-4c24-4d1b-91f2-c78735caf13d",
+  evidenceId,
+  rawContent:
+    "On August 20, 2026, Acme appointed Priya Shah as Chief Security Officer. The company opened 12 security roles.",
+};
+const candidate = {
+  evidenceId,
+  factType: "LEADERSHIP_CHANGE",
+  structuredValue: { person: "Priya Shah", role: "Chief Security Officer" },
+  effectiveDate: "2026-08-20",
+  confidence: 96,
+  supportingExcerpt:
+    "On August 20, 2026, Acme appointed Priya Shah as Chief Security Officer.",
+  extractorVersion: "fact-extraction-v1",
+};
+
+assert.deepEqual(validateFactCandidate(candidate, context), candidate);
+assert.equal(isValidCalendarDate("2026-08-20"), true);
+assert.equal(isValidCalendarDate("2026-02-30"), false);
+assert.throws(
+  () => validateFactCandidate({ ...candidate, effectiveDate: "2026-02-30" }, context),
+  /valid calendar date/,
+);
+assert.throws(
+  () =>
+    validateFactCandidate(
+      { ...candidate, factType: "SECURITY_INCIDENT" },
+      context,
+    ),
+  /Fact type is not supported/,
+);
+assert.equal(
+  isFactTypeSupportedByExcerpt(
+    "LEADERSHIP_CHANGE",
+    "On August 20, 2026, Acme's Chief Security Officer described the security program.",
+  ),
+  false,
+);
+assert.equal(
+  isFactTypeSupportedByExcerpt(
+    "SECURITY_INCIDENT",
+    "On August 20, 2026, Acme launched a security incident response platform.",
+  ),
+  false,
+);
+assert.equal(
+  isFactTypeSupportedByExcerpt(
+    "SECURITY_INCIDENT",
+    "On August 20, 2026, Acme reported no data breach.",
+  ),
+  false,
+);
+assert.equal(
+  isFactTypeSupportedByExcerpt(
+    "SECURITY_INCIDENT",
+    "On August 20, 2026, Acme reported that a data breach did not occur.",
+  ),
+  false,
+);
+assert.equal(
+  isFactTypeSupportedByExcerpt(
+    "SECURITY_INCIDENT",
+    "On August 20, 2026, Acme reported a security incident was ruled out.",
+  ),
+  false,
+);
+assert.equal(
+  isFactTypeSupportedByExcerpt(
+    "ACQUISITION",
+    "On August 20, 2026, Acme plans to acquire Beta Ltd.",
+  ),
+  false,
+);
+assert.throws(
+  () => factCandidateSchema.parse({ ...candidate, factType: "BUYING_INTENT" }),
+);
+assert.throws(
+  () => factCandidateSchema.parse({ ...candidate, evidenceId: "not-an-id" }),
+);
+assert.throws(
+  () => validateFactCandidate({ ...candidate, evidenceId: otherEvidenceId }, context),
+  /does not belong/,
+);
+assert.throws(
+  () => validateFactCandidate({ ...candidate, supportingExcerpt: "This text was invented." }, context),
+  /not present/,
+);
+assert.throws(
+  () =>
+    validateFactCandidate(
+      {
+        ...candidate,
+        factType: "SECURITY_INCIDENT",
+        structuredValue: { incident: "ransomware breach" },
+      },
+      context,
+    ),
+  /Fact type is not supported/,
+);
+assert.throws(
+  () => validateFactCandidate({ ...candidate, effectiveDate: "2026-08-21" }, context),
+  /not supported by the supporting excerpt/,
+);
+assert.throws(
+  () => factCandidateSchema.parse({ ...candidate, effectiveDate: undefined }),
+);
+assert.throws(
+  () => factCandidateSchema.parse({ ...candidate, confidence: 101 }),
+);
+assert.throws(
+  () => factCandidateSchema.parse({ ...candidate, confidence: -1 }),
+);
+assert.equal(
+  isInterpretationOnlyClaim({ claim: "Acme may need our solution" }),
+  true,
+);
+assert.equal(
+  isInterpretationOnlyClaim({ claim: "Acme is likely to become a customer" }),
+  true,
+);
+assert.throws(
+  () =>
+    validateFactCandidate(
+      {
+        ...candidate,
+        structuredValue: { claim: "Acme may need our solution" },
+      },
+      context,
+    ),
+  /commercial interpretation/,
+);
+assert.throws(() => JSON.parse('{"facts":['));
+assert.throws(() => parseFactExtractionModelOutput({ candidates: [] }));
+assert.throws(() => parseFactExtractionModelOutput({ facts: [], extra: true }));
+assert.deepEqual(parseFactExtractionModelOutput({ facts: [candidate] }).facts, [candidate]);
+
+const typeSamples = {
+  LEADERSHIP_CHANGE: "On August 20, 2026, Acme appointed Priya Shah as Chief Security Officer.",
+  JOB_OPENING: "On August 20, 2026, Acme published an open role for a security engineer.",
+  HIRING_COUNT: "On August 20, 2026, Acme listed 12 open roles.",
+  COMPANY_EXPANSION: "On August 20, 2026, Acme opened a new office in Berlin.",
+  FUNDING_EVENT: "On August 20, 2026, Acme raised a Series B funding round.",
+  ACQUISITION: "On August 20, 2026, Acme acquired Beta Ltd.",
+  CERTIFICATION: "On August 20, 2026, Acme received ISO 27001 certification.",
+  COMPLIANCE_MENTION: "On August 20, 2026, Acme announced GDPR compliance.",
+  TECHNOLOGY_MENTION: "On August 20, 2026, Acme deployed Orion software.",
+  NEW_MARKET: "On August 20, 2026, Acme entered a new market in Japan.",
+  ENTERPRISE_CUSTOMER: "On August 20, 2026, Globex became an Acme customer.",
+  SECURITY_INCIDENT: "On August 20, 2026, Acme disclosed a data breach.",
+  EMPLOYEE_GROWTH: "On August 20, 2026, Acme's workforce grew to 900 employees.",
+  TRUST_CENTER_CHANGE: "On August 20, 2026, Acme launched a new trust center.",
+};
+for (const factType of FACT_TYPES) {
+  assert.equal(
+    isFactTypeSupportedByExcerpt(factType, typeSamples[factType]),
+    true,
+    factType,
+  );
+}
+
+console.log("Structured fact extraction tests passed.");

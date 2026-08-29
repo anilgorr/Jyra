@@ -6,6 +6,7 @@ import businessTwinRouter from "./business-twin";
 import icpRouter from "./icp";
 import companiesRouter from "./companies";
 import evidenceRouter from "./evidence";
+import factsRouter from "./facts";
 
 const router: IRouter = Router();
 
@@ -16,5 +17,6 @@ router.use(businessTwinRouter);
 router.use(icpRouter);
 router.use(companiesRouter);
 router.use(evidenceRouter);
+router.use(factsRouter);
 
 export default router;

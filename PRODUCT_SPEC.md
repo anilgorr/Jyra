@@ -16,6 +16,12 @@ Unchanged content from the same company and source is recognized by a determinis
 
 Authority, directness, freshness, and corroboration values are bounded heuristics for review support. They are not truth labels and do not create facts, signals, buying intent, opportunity scores, or recommendations. All evidence API access remains rooted in an authorized project-company relationship even though the preserved public observation is reusable for the same canonical company across projects.
 
+## Structured fact extraction
+
+JYRA can turn preserved evidence into reviewable structured facts for leadership, hiring, expansion, funding, acquisitions, certifications, compliance, technology, markets, customers, incidents, growth, and trust-center changes. Every fact references exactly one canonical company and one existing evidence record, carries a structured value, effective date, bounded confidence, verbatim supporting excerpt, extractor version, and creation time, and provides a direct path back to its source.
+
+Managed AI is proposal-only. Strict JSON is retried only within a bounded extraction request and is never persisted directly. Application validation owns the supported vocabulary, company/evidence relationship, real calendar date, confidence range, excerpt presence in the immutable capture, and rejection of ambiguity or commercial interpretation. Facts remain distinct from signals, buying intent, opportunity scores, recommendations, and hypotheses.
+
 # JYRA Product Specification
 
 ## Product identity

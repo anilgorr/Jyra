@@ -54,6 +54,13 @@ global review status. Status changes cannot alter source content or provenance.
 The evidence-to-crawl foreign key includes both capture and company IDs so the
 two records cannot silently disagree about canonical company identity.
 
+`company_facts` stores source-grounded structured observations. Each row includes
+one supported fact type, JSON structured value, calendar-only effective date,
+bounded confidence, supporting excerpt, extractor version, and creation time.
+A composite evidence/company foreign key prevents a fact from naming evidence
+for another canonical company. A unique observation key prevents duplicate fact
+rows for the same evidence, type, date, and excerpt.
+
 Evidence belongs to global canonical company identity and therefore contains no
 project ID, tenant score, opportunity state, recommendation, or customer
 interpretation. API access is still authorized through `project_companies`, so
@@ -116,7 +123,7 @@ The implemented organization, membership, user, and project tables are the tenan
 - `provider_usage` (implemented)
 - `crawl_pages` (implemented)
 - `company_evidence` (implemented)
-- `facts`
+- `company_facts` (implemented)
 
 ### Commercial interpretation
 

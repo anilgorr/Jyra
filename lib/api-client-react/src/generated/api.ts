@@ -30,12 +30,17 @@ import type {
   CompanyEvidenceDuplicate,
   CompanyEvidenceInput,
   CompanyEvidenceStatusUpdate,
+  CompanyFact,
+  CompanyFactDuplicate,
+  CompanyFactInput,
   CompanyImportCommitInput,
   CompanyImportInput,
   CompanyImportPreview,
   CompanyImportResult,
   CompanyInput,
   CurrentUser,
+  FactExtractionInput,
+  FactExtractionResponse,
   ForbiddenResponse,
   HealthStatus,
   IcpCriterionInput,
@@ -2596,6 +2601,239 @@ export const useUpdateCompanyEvidenceStatus = <TError = ErrorType<BadRequestResp
         TContext
       > => {
       return useMutation(getUpdateCompanyEvidenceStatusMutationOptions(options));
+    }
+
+export const getListCompanyFactsUrl = (projectId: string,
+    projectCompanyId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/companies/${projectCompanyId}/facts`
+}
+
+/**
+ * Returns source-grounded structured facts linked to the canonical company and preserved evidence.
+ * @summary List structured facts for a project company
+ */
+export const listCompanyFacts = async (projectId: string,
+    projectCompanyId: string, options?: Parameters<typeof customFetch>[1]): Promise<CompanyFact[]> => {
+
+  return customFetch<CompanyFact[]>(getListCompanyFactsUrl(projectId,projectCompanyId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListCompanyFactsQueryKey = (projectId: string,
+    projectCompanyId: string,) => {
+    return [
+    `/api/projects/${projectId}/companies/${projectCompanyId}/facts`
+    ] as const;
+    }
+
+
+export const getListCompanyFactsQueryOptions = <TData = Awaited<ReturnType<typeof listCompanyFacts>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(projectId: string,
+    projectCompanyId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listCompanyFacts>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListCompanyFactsQueryKey(projectId,projectCompanyId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listCompanyFacts>>> = ({ signal }) => listCompanyFacts(projectId,projectCompanyId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: projectId !== null && projectId !== undefined && projectCompanyId !== null && projectCompanyId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listCompanyFacts>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListCompanyFactsQueryResult = NonNullable<Awaited<ReturnType<typeof listCompanyFacts>>>
+export type ListCompanyFactsQueryError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+
+/**
+ * @summary List structured facts for a project company
+ */
+
+export function useListCompanyFacts<TData = Awaited<ReturnType<typeof listCompanyFacts>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(
+ projectId: string,
+    projectCompanyId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listCompanyFacts>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListCompanyFactsQueryOptions(projectId,projectCompanyId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getCreateCompanyFactUrl = (projectId: string,
+    projectCompanyId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/companies/${projectCompanyId}/facts`
+}
+
+/**
+ * Persists a fact only when its evidence reference, effective date, confidence, and supporting excerpt pass deterministic validation.
+ * @summary Save a validated structured fact
+ */
+export const createCompanyFact = async (projectId: string,
+    projectCompanyId: string,
+    companyFactInput: CompanyFactInput, options?: Parameters<typeof customFetch>[1]): Promise<CompanyFact> => {
+
+  return customFetch<CompanyFact>(getCreateCompanyFactUrl(projectId,projectCompanyId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(companyFactInput)
+  }
+);}
+
+
+
+
+
+export const getCreateCompanyFactMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | CompanyFactDuplicate>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createCompanyFact>>, TError,{projectId: string;projectCompanyId: string;data: BodyType<CompanyFactInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createCompanyFact>>, TError,{projectId: string;projectCompanyId: string;data: BodyType<CompanyFactInput>}, TContext> => {
+
+const mutationKey = ['createCompanyFact'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createCompanyFact>>, {projectId: string;projectCompanyId: string;data: BodyType<CompanyFactInput>}> = (props) => {
+          const {projectId,projectCompanyId,data} = props ?? {};
+
+          return  createCompanyFact(projectId,projectCompanyId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateCompanyFactMutationResult = NonNullable<Awaited<ReturnType<typeof createCompanyFact>>>
+    export type CreateCompanyFactMutationBody = BodyType<CompanyFactInput>
+    export type CreateCompanyFactMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | CompanyFactDuplicate>
+
+    /**
+ * @summary Save a validated structured fact
+ */
+export const useCreateCompanyFact = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | CompanyFactDuplicate>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createCompanyFact>>, TError,{projectId: string;projectCompanyId: string;data: BodyType<CompanyFactInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createCompanyFact>>,
+        TError,
+        {projectId: string;projectCompanyId: string;data: BodyType<CompanyFactInput>},
+        TContext
+      > => {
+      return useMutation(getCreateCompanyFactMutationOptions(options));
+    }
+
+export const getExtractCompanyFactsUrl = (projectId: string,
+    projectCompanyId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/companies/${projectCompanyId}/facts/extract`
+}
+
+/**
+ * Uses the managed model only to propose strict JSON candidates; candidates are validated deterministically and are not persisted by this endpoint.
+ * @summary Propose structured facts from preserved evidence
+ */
+export const extractCompanyFacts = async (projectId: string,
+    projectCompanyId: string,
+    factExtractionInput: FactExtractionInput, options?: Parameters<typeof customFetch>[1]): Promise<FactExtractionResponse> => {
+
+  return customFetch<FactExtractionResponse>(getExtractCompanyFactsUrl(projectId,projectCompanyId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(factExtractionInput)
+  }
+);}
+
+
+
+
+
+export const getExtractCompanyFactsMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | InterpretationUnavailableResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof extractCompanyFacts>>, TError,{projectId: string;projectCompanyId: string;data: BodyType<FactExtractionInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof extractCompanyFacts>>, TError,{projectId: string;projectCompanyId: string;data: BodyType<FactExtractionInput>}, TContext> => {
+
+const mutationKey = ['extractCompanyFacts'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof extractCompanyFacts>>, {projectId: string;projectCompanyId: string;data: BodyType<FactExtractionInput>}> = (props) => {
+          const {projectId,projectCompanyId,data} = props ?? {};
+
+          return  extractCompanyFacts(projectId,projectCompanyId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ExtractCompanyFactsMutationResult = NonNullable<Awaited<ReturnType<typeof extractCompanyFacts>>>
+    export type ExtractCompanyFactsMutationBody = BodyType<FactExtractionInput>
+    export type ExtractCompanyFactsMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | InterpretationUnavailableResponse>
+
+    /**
+ * @summary Propose structured facts from preserved evidence
+ */
+export const useExtractCompanyFacts = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | InterpretationUnavailableResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof extractCompanyFacts>>, TError,{projectId: string;projectCompanyId: string;data: BodyType<FactExtractionInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof extractCompanyFacts>>,
+        TError,
+        {projectId: string;projectCompanyId: string;data: BodyType<FactExtractionInput>},
+        TContext
+      > => {
+      return useMutation(getExtractCompanyFactsMutationOptions(options));
     }
 
 export const getPreviewCompanyImportUrl = (projectId: string,) => {

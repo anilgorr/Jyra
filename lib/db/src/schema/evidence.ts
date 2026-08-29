@@ -118,6 +118,7 @@ export const companyEvidenceTable = pgTable(
       foreignColumns: [crawlPagesTable.id, crawlPagesTable.companyId],
       name: "company_evidence_crawl_company_fk",
     }).onDelete("restrict"),
+    unique("company_evidence_id_company_unique").on(table.id, table.companyId),
     uniqueIndex("company_evidence_crawl_page_unique").on(table.crawlPageId),
     index("company_evidence_company_observed_idx").on(
       table.companyId,

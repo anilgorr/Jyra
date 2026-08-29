@@ -54,6 +54,13 @@
 - Kept facts, signals, opportunity scoring, recommendations, and all
   tenant-specific commercial interpretation outside the global evidence layer.
 
+## Structured fact extraction
+
+- Added `company_facts` with canonical company/evidence consistency, structured values, effective dates, confidence, excerpts, extractor versions, and duplicate protection.
+- Added strict, bounded managed-model proposals that never persist directly and deterministic validation for vocabulary, source relationships, dates, confidence, excerpt support, ambiguity, and commercial interpretation.
+- Added project-authorized fact list, proposal, and create APIs plus company review UI with direct navigation to supporting evidence.
+- Kept facts separate from signals, buying intent, opportunity scoring, recommendations, and hypotheses.
+
 # Changelog
 
 ## JYRA rebrand

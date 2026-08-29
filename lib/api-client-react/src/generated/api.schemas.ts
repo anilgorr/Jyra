@@ -1038,6 +1038,113 @@ export interface CompanyEvidenceDuplicate {
   evidence: CompanyEvidence;
 }
 
+export type CompanyFactFactType = typeof CompanyFactFactType[keyof typeof CompanyFactFactType];
+
+
+export const CompanyFactFactType = {
+  LEADERSHIP_CHANGE: 'LEADERSHIP_CHANGE',
+  JOB_OPENING: 'JOB_OPENING',
+  HIRING_COUNT: 'HIRING_COUNT',
+  COMPANY_EXPANSION: 'COMPANY_EXPANSION',
+  FUNDING_EVENT: 'FUNDING_EVENT',
+  ACQUISITION: 'ACQUISITION',
+  CERTIFICATION: 'CERTIFICATION',
+  COMPLIANCE_MENTION: 'COMPLIANCE_MENTION',
+  TECHNOLOGY_MENTION: 'TECHNOLOGY_MENTION',
+  NEW_MARKET: 'NEW_MARKET',
+  ENTERPRISE_CUSTOMER: 'ENTERPRISE_CUSTOMER',
+  SECURITY_INCIDENT: 'SECURITY_INCIDENT',
+  EMPLOYEE_GROWTH: 'EMPLOYEE_GROWTH',
+  TRUST_CENTER_CHANGE: 'TRUST_CENTER_CHANGE',
+} as const;
+
+export type CompanyFactStructuredValue = { [key: string]: unknown };
+
+export interface CompanyFact {
+  id: string;
+  companyId: string;
+  evidenceId: string;
+  factType: CompanyFactFactType;
+  structuredValue: CompanyFactStructuredValue;
+  /** @pattern ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ */
+  effectiveDate: string;
+  /**
+     * @minimum 0
+     * @maximum 100
+     */
+  confidence: number;
+  supportingExcerpt: string;
+  extractorVersion: string;
+  sourceUrl: string;
+  sourceClaim: string;
+  createdAt: string;
+}
+
+export type CompanyFactInputFactType = typeof CompanyFactInputFactType[keyof typeof CompanyFactInputFactType];
+
+
+export const CompanyFactInputFactType = {
+  LEADERSHIP_CHANGE: 'LEADERSHIP_CHANGE',
+  JOB_OPENING: 'JOB_OPENING',
+  HIRING_COUNT: 'HIRING_COUNT',
+  COMPANY_EXPANSION: 'COMPANY_EXPANSION',
+  FUNDING_EVENT: 'FUNDING_EVENT',
+  ACQUISITION: 'ACQUISITION',
+  CERTIFICATION: 'CERTIFICATION',
+  COMPLIANCE_MENTION: 'COMPLIANCE_MENTION',
+  TECHNOLOGY_MENTION: 'TECHNOLOGY_MENTION',
+  NEW_MARKET: 'NEW_MARKET',
+  ENTERPRISE_CUSTOMER: 'ENTERPRISE_CUSTOMER',
+  SECURITY_INCIDENT: 'SECURITY_INCIDENT',
+  EMPLOYEE_GROWTH: 'EMPLOYEE_GROWTH',
+  TRUST_CENTER_CHANGE: 'TRUST_CENTER_CHANGE',
+} as const;
+
+export type CompanyFactInputStructuredValue = { [key: string]: unknown };
+
+export interface CompanyFactInput {
+  evidenceId: string;
+  factType: CompanyFactInputFactType;
+  structuredValue: CompanyFactInputStructuredValue;
+  /** @pattern ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ */
+  effectiveDate: string;
+  /**
+     * @minimum 0
+     * @maximum 100
+     */
+  confidence: number;
+  /**
+     * @minLength 1
+     * @maxLength 2000
+     */
+  supportingExcerpt: string;
+  /**
+     * @minLength 1
+     * @maxLength 100
+     */
+  extractorVersion: string;
+}
+
+export interface FactExtractionInput {
+  evidenceId: string;
+}
+
+export interface FactExtractionRejection {
+  /** @nullable */
+  factType: string | null;
+  reason: string;
+}
+
+export interface FactExtractionResponse {
+  candidates: CompanyFactInput[];
+  rejections: FactExtractionRejection[];
+}
+
+export interface CompanyFactDuplicate {
+  error: string;
+  fact: CompanyFact;
+}
+
 export interface CompanyInput {
   /**
      * @minLength 1

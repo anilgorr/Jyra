@@ -3465,6 +3465,129 @@ export const UpdateCompanyEvidenceStatusResponse = zod.object({
 
 
 /**
+ * Returns source-grounded structured facts linked to the canonical company and preserved evidence.
+ * @summary List structured facts for a project company
+ */
+export const ListCompanyFactsParams = zod.object({
+  "projectId": zod.coerce.string(),
+  "projectCompanyId": zod.coerce.string()
+})
+
+export const listCompanyFactsResponseEffectiveDateRegExp = new RegExp('^[0-9]{4}-[0-9]{2}-[0-9]{2}$');
+export const listCompanyFactsResponseConfidenceMin = 0;
+export const listCompanyFactsResponseConfidenceMax = 100;
+
+
+
+export const ListCompanyFactsResponseItem = zod.object({
+  "id": zod.string(),
+  "companyId": zod.string(),
+  "evidenceId": zod.string(),
+  "factType": zod.enum(['LEADERSHIP_CHANGE', 'JOB_OPENING', 'HIRING_COUNT', 'COMPANY_EXPANSION', 'FUNDING_EVENT', 'ACQUISITION', 'CERTIFICATION', 'COMPLIANCE_MENTION', 'TECHNOLOGY_MENTION', 'NEW_MARKET', 'ENTERPRISE_CUSTOMER', 'SECURITY_INCIDENT', 'EMPLOYEE_GROWTH', 'TRUST_CENTER_CHANGE']),
+  "structuredValue": zod.record(zod.string(), zod.unknown()),
+  "effectiveDate": zod.string().regex(listCompanyFactsResponseEffectiveDateRegExp),
+  "confidence": zod.number().min(listCompanyFactsResponseConfidenceMin).max(listCompanyFactsResponseConfidenceMax),
+  "supportingExcerpt": zod.string(),
+  "extractorVersion": zod.string(),
+  "sourceUrl": zod.string(),
+  "sourceClaim": zod.string(),
+  "createdAt": zod.coerce.date()
+})
+export const ListCompanyFactsResponse = zod.array(ListCompanyFactsResponseItem)
+
+
+/**
+ * Persists a fact only when its evidence reference, effective date, confidence, and supporting excerpt pass deterministic validation.
+ * @summary Save a validated structured fact
+ */
+export const CreateCompanyFactParams = zod.object({
+  "projectId": zod.coerce.string(),
+  "projectCompanyId": zod.coerce.string()
+})
+
+export const createCompanyFactBodyEffectiveDateRegExp = new RegExp('^[0-9]{4}-[0-9]{2}-[0-9]{2}$');
+export const createCompanyFactBodyConfidenceMin = 0;
+export const createCompanyFactBodyConfidenceMax = 100;
+
+export const createCompanyFactBodySupportingExcerptMax = 2000;
+
+export const createCompanyFactBodyExtractorVersionMax = 100;
+
+
+
+export const CreateCompanyFactBody = zod.object({
+  "evidenceId": zod.string(),
+  "factType": zod.enum(['LEADERSHIP_CHANGE', 'JOB_OPENING', 'HIRING_COUNT', 'COMPANY_EXPANSION', 'FUNDING_EVENT', 'ACQUISITION', 'CERTIFICATION', 'COMPLIANCE_MENTION', 'TECHNOLOGY_MENTION', 'NEW_MARKET', 'ENTERPRISE_CUSTOMER', 'SECURITY_INCIDENT', 'EMPLOYEE_GROWTH', 'TRUST_CENTER_CHANGE']),
+  "structuredValue": zod.record(zod.string(), zod.unknown()),
+  "effectiveDate": zod.string().regex(createCompanyFactBodyEffectiveDateRegExp),
+  "confidence": zod.number().min(createCompanyFactBodyConfidenceMin).max(createCompanyFactBodyConfidenceMax),
+  "supportingExcerpt": zod.string().min(1).max(createCompanyFactBodySupportingExcerptMax),
+  "extractorVersion": zod.string().min(1).max(createCompanyFactBodyExtractorVersionMax)
+})
+
+export const createCompanyFactResponseEffectiveDateRegExp = new RegExp('^[0-9]{4}-[0-9]{2}-[0-9]{2}$');
+export const createCompanyFactResponseConfidenceMin = 0;
+export const createCompanyFactResponseConfidenceMax = 100;
+
+
+
+export const CreateCompanyFactResponse = zod.object({
+  "id": zod.string(),
+  "companyId": zod.string(),
+  "evidenceId": zod.string(),
+  "factType": zod.enum(['LEADERSHIP_CHANGE', 'JOB_OPENING', 'HIRING_COUNT', 'COMPANY_EXPANSION', 'FUNDING_EVENT', 'ACQUISITION', 'CERTIFICATION', 'COMPLIANCE_MENTION', 'TECHNOLOGY_MENTION', 'NEW_MARKET', 'ENTERPRISE_CUSTOMER', 'SECURITY_INCIDENT', 'EMPLOYEE_GROWTH', 'TRUST_CENTER_CHANGE']),
+  "structuredValue": zod.record(zod.string(), zod.unknown()),
+  "effectiveDate": zod.string().regex(createCompanyFactResponseEffectiveDateRegExp),
+  "confidence": zod.number().min(createCompanyFactResponseConfidenceMin).max(createCompanyFactResponseConfidenceMax),
+  "supportingExcerpt": zod.string(),
+  "extractorVersion": zod.string(),
+  "sourceUrl": zod.string(),
+  "sourceClaim": zod.string(),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
+ * Uses the managed model only to propose strict JSON candidates; candidates are validated deterministically and are not persisted by this endpoint.
+ * @summary Propose structured facts from preserved evidence
+ */
+export const ExtractCompanyFactsParams = zod.object({
+  "projectId": zod.coerce.string(),
+  "projectCompanyId": zod.coerce.string()
+})
+
+export const ExtractCompanyFactsBody = zod.object({
+  "evidenceId": zod.string()
+})
+
+export const extractCompanyFactsResponseCandidatesItemEffectiveDateRegExp = new RegExp('^[0-9]{4}-[0-9]{2}-[0-9]{2}$');
+export const extractCompanyFactsResponseCandidatesItemConfidenceMin = 0;
+export const extractCompanyFactsResponseCandidatesItemConfidenceMax = 100;
+
+export const extractCompanyFactsResponseCandidatesItemSupportingExcerptMax = 2000;
+
+export const extractCompanyFactsResponseCandidatesItemExtractorVersionMax = 100;
+
+
+
+export const ExtractCompanyFactsResponse = zod.object({
+  "candidates": zod.array(zod.object({
+  "evidenceId": zod.string(),
+  "factType": zod.enum(['LEADERSHIP_CHANGE', 'JOB_OPENING', 'HIRING_COUNT', 'COMPANY_EXPANSION', 'FUNDING_EVENT', 'ACQUISITION', 'CERTIFICATION', 'COMPLIANCE_MENTION', 'TECHNOLOGY_MENTION', 'NEW_MARKET', 'ENTERPRISE_CUSTOMER', 'SECURITY_INCIDENT', 'EMPLOYEE_GROWTH', 'TRUST_CENTER_CHANGE']),
+  "structuredValue": zod.record(zod.string(), zod.unknown()),
+  "effectiveDate": zod.string().regex(extractCompanyFactsResponseCandidatesItemEffectiveDateRegExp),
+  "confidence": zod.number().min(extractCompanyFactsResponseCandidatesItemConfidenceMin).max(extractCompanyFactsResponseCandidatesItemConfidenceMax),
+  "supportingExcerpt": zod.string().min(1).max(extractCompanyFactsResponseCandidatesItemSupportingExcerptMax),
+  "extractorVersion": zod.string().min(1).max(extractCompanyFactsResponseCandidatesItemExtractorVersionMax)
+})),
+  "rejections": zod.array(zod.object({
+  "factType": zod.string().nullable(),
+  "reason": zod.string()
+}))
+})
+
+
+/**
  * Normalizes and validates import rows without creating or linking companies.
  * @summary Preview and resolve company identities
  */

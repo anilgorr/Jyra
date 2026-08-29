@@ -6,6 +6,13 @@
 
 A source-grounded observation, such as “the company has seven open cybersecurity roles.”
 
+Implemented facts are typed structured records linked to exactly one canonical
+company and one preserved evidence observation. Initial types cover leadership,
+jobs and hiring counts, expansion, funding, acquisitions, certifications,
+compliance and technology mentions, new markets, enterprise customers, security
+incidents, employee growth, and trust-center changes. Their supporting excerpt
+must be present in the immutable source capture.
+
 ### SIGNAL
 
 A deterministic or rule-versioned pattern detected across one or more facts, such as “security hiring acceleration.”
@@ -42,7 +49,7 @@ Each signal should record:
 
 ## Initial signal families
 
-These are future design inputs, not implemented features:
+These remain future signal design inputs; the underlying fact layer is implemented:
 
 - hiring acceleration
 - leadership or ownership change

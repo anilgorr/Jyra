@@ -2,14 +2,19 @@ import { useState, type FormEvent } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   getListCompanyEvidenceQueryKey,
+  getListCompanyFactsQueryKey,
   useCreateCompanyEvidence,
+  useCreateCompanyFact,
+  useExtractCompanyFacts,
   useListCompanyEvidence,
+  useListCompanyFacts,
   useUpdateCompanyEvidenceStatus,
   type CompanyEvidence,
   type CompanyEvidenceInputSourceType,
   type CompanyEvidenceStatus,
+  type CompanyFactInput,
 } from "@workspace/api-client-react";
-import { ExternalLink, FileCheck2, Loader2, Plus, ShieldCheck } from "lucide-react";
+import { ExternalLink, FileCheck2, ListChecks, Loader2, Plus, ShieldCheck, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -170,6 +175,163 @@ function EvidenceCard({
   );
 }
 
+function FactReview({
+  projectId,
+  projectCompanyId,
+  evidence,
+}: {
+  projectId: string;
+  projectCompanyId: string;
+  evidence: CompanyEvidence[];
+}) {
+  const queryClient = useQueryClient();
+  const [evidenceId, setEvidenceId] = useState("");
+  const [candidates, setCandidates] = useState<CompanyFactInput[]>([]);
+  const factsQuery = useListCompanyFacts(projectId, projectCompanyId, {
+    query: {
+      enabled: Boolean(projectId && projectCompanyId),
+      queryKey: getListCompanyFactsQueryKey(projectId, projectCompanyId),
+    },
+  });
+  const extractFacts = useExtractCompanyFacts({
+    mutation: {
+      onSuccess: (result) => {
+        setCandidates(result.candidates);
+        if (result.candidates.length > 0) {
+          toast.success(`${result.candidates.length} reviewable fact${result.candidates.length === 1 ? "" : "s"} proposed`);
+        } else {
+          toast.info("No source-grounded facts were proposed");
+        }
+        if (result.rejections.length > 0) {
+          toast.warning(`${result.rejections.length} unsupported candidate${result.rejections.length === 1 ? " was" : "s were"} rejected`);
+        }
+      },
+      onError: () => toast.error("Fact extraction is temporarily unavailable"),
+    },
+  });
+  const createFact = useCreateCompanyFact({
+    mutation: {
+      onSuccess: (_fact, variables) => {
+        setCandidates((items) => items.filter((item) => item !== variables.data));
+        queryClient.invalidateQueries({
+          queryKey: getListCompanyFactsQueryKey(projectId, projectCompanyId),
+        });
+        toast.success("Validated fact saved");
+      },
+      onError: (error) => {
+        const status = "status" in error ? error.status : undefined;
+        toast.error(status === 409 ? "This fact is already saved" : "The fact did not pass source validation");
+      },
+    },
+  });
+
+  return (
+    <div className="space-y-3 rounded-xl border bg-muted/20 p-4" data-testid="fact-review">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h4 className="flex items-center gap-2 text-sm font-medium">
+            <ListChecks className="h-4 w-4 text-primary" />
+            Structured facts
+          </h4>
+          <p className="mt-1 text-xs text-muted-foreground">
+            AI proposes candidates. Only source-supported facts can be saved.
+          </p>
+        </div>
+        <div className="flex min-w-[260px] items-center gap-2">
+          <Select value={evidenceId} onValueChange={setEvidenceId}>
+            <SelectTrigger className="h-9" data-testid="select-fact-evidence">
+              <SelectValue placeholder="Choose source evidence" />
+            </SelectTrigger>
+            <SelectContent>
+              {evidence.map((item) => (
+                <SelectItem key={item.id} value={item.id}>
+                  {item.extractedClaim.slice(0, 56)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Button
+            type="button"
+            size="sm"
+            disabled={!evidenceId || extractFacts.isPending}
+            onClick={() => extractFacts.mutate({
+              projectId,
+              projectCompanyId,
+              data: { evidenceId },
+            })}
+            data-testid="button-extract-facts"
+          >
+            {extractFacts.isPending ? (
+              <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+            ) : (
+              <Sparkles className="mr-1.5 h-3.5 w-3.5" />
+            )}
+            Extract
+          </Button>
+        </div>
+      </div>
+
+      {candidates.map((candidate, index) => (
+        <div key={`${candidate.evidenceId}-${candidate.factType}-${index}`} className="rounded-lg border bg-background p-3">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-2">
+                <Badge>{candidate.factType.replaceAll("_", " ")}</Badge>
+                <span className="text-xs text-muted-foreground">
+                  {candidate.effectiveDate} · {Math.round(candidate.confidence)} confidence
+                </span>
+              </div>
+              <p className="mt-2 text-sm leading-6">{candidate.supportingExcerpt}</p>
+              <pre className="mt-2 overflow-auto rounded bg-muted/50 p-2 text-[11px]">
+                {JSON.stringify(candidate.structuredValue, null, 2)}
+              </pre>
+            </div>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              disabled={createFact.isPending}
+              onClick={() => createFact.mutate({
+                projectId,
+                projectCompanyId,
+                data: candidate,
+              })}
+              data-testid={`button-save-fact-${index}`}
+            >
+              Save
+            </Button>
+          </div>
+        </div>
+      ))}
+
+      {factsQuery.isLoading && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
+      {factsQuery.data?.map((fact) => (
+        <article key={fact.id} className="rounded-lg border bg-background p-3" data-testid={`fact-${fact.id}`}>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge variant="secondary">{fact.factType.replaceAll("_", " ")}</Badge>
+              <span className="text-xs text-muted-foreground">{fact.effectiveDate}</span>
+            </div>
+            <a href={`#evidence-${fact.evidenceId}`} className="text-xs font-medium text-primary hover:underline">
+              View source evidence
+            </a>
+          </div>
+          <p className="mt-2 text-sm leading-6">{fact.supportingExcerpt}</p>
+          <div className="mt-2 flex items-center justify-between gap-3 text-[11px] text-muted-foreground">
+            <span>{JSON.stringify(fact.structuredValue)}</span>
+            <span>{Math.round(fact.confidence)} confidence · {fact.extractorVersion}</span>
+          </div>
+        </article>
+      ))}
+      {!factsQuery.isLoading && factsQuery.data?.length === 0 && candidates.length === 0 && (
+        <p className="rounded-lg border border-dashed p-4 text-center text-xs text-muted-foreground">
+          No structured facts have been saved.
+        </p>
+      )}
+    </div>
+  );
+}
+
 export function CompanyEvidencePanel({
   projectId,
   projectCompanyId,
@@ -318,6 +480,12 @@ export function CompanyEvidencePanel({
           </div>
         </form>
       )}
+
+      <FactReview
+        projectId={projectId}
+        projectCompanyId={projectCompanyId}
+        evidence={evidenceQuery.data ?? []}
+      />
 
       {evidenceQuery.isLoading && (
         <div className="flex justify-center rounded-xl border p-8">
