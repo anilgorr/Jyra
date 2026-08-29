@@ -1,0 +1,141 @@
+Before making changes:
+
+1. Read PRODUCT_SPEC.md, ARCHITECTURE.md, DATABASE.md, SIGNALS.md, PROVIDERS.md, CHANGELOG.md and the entire relevant current codebase.
+
+2. Preserve all working functionality.
+
+3. Implement only the milestone described below.
+
+4. Do not redesign unrelated areas.
+
+5. Create a checkpoint before major changes.
+
+6. Run migrations and tests before completing the milestone.
+
+7. Update documentation after implementation.
+
+8. Do not claim the milestone is complete unless the acceptance criteria pass.
+
+9. Prefer deterministic business logic over LLM reasoning wherever possible.
+
+10. Do not fabricate data, evidence, people, companies, signals, buying intent or outcomes.
+
+Build DigiSignal's provider abstraction layer.
+
+CORE PRINCIPLE
+
+DigiSignal must not depend directly on one data vendor, API, scraper or Apify Actor.
+
+Business logic asks for a CAPABILITY.
+
+The Provider Router decides which provider satisfies it.
+
+DATABASE
+
+Create:
+
+data_providers
+provider_capabilities
+provider_usage
+
+CAPABILITIES
+
+COMPANY_DISCOVERY
+COMPANY_LOOKUP
+WEB_SEARCH
+WEBSITE_CRAWL
+JOB_SEARCH
+NEWS_SEARCH
+TECH_STACK
+LEADERSHIP_SEARCH
+PUBLIC_SOCIAL_SEARCH
+PERSON_LOOKUP
+EMAIL_LOOKUP
+PHONE_LOOKUP
+
+DATA PROVIDER FIELDS
+
+id
+name
+provider_type
+enabled
+priority
+estimated_cost
+success_rate
+average_latency
+quality_score
+configuration
+last_success_at
+last_failure_at
+created_at
+updated_at
+
+PROVIDER INTERFACES
+
+Create stable DigiSignal-owned interfaces:
+
+discoverCompanies()
+lookupCompany()
+searchWeb()
+crawlWebsite()
+getJobs()
+searchNews()
+detectTechnology()
+findLeadership()
+findPeople()
+findEmail()
+findPhone()
+
+Do not allow the rest of the product to depend on vendor-specific output formats.
+
+PROVIDER ROUTER
+
+Selection should consider:
+
+capability
+enabled status
+priority
+estimated cost
+recent success rate
+quality score
+latency
+
+Support provider fallback.
+
+Example:
+
+Research Planner requests JOB_SEARCH.
+
+Provider Router chooses Provider A.
+
+If A fails and Provider B exists, fallback according to configuration.
+
+USAGE
+
+Every provider request should eventually produce a usage record.
+
+Do not yet build production external providers.
+
+For this milestone create deterministic mock adapters for:
+
+WEB_SEARCH
+WEBSITE_CRAWL
+JOB_SEARCH
+
+ACCEPTANCE CRITERIA
+
+Verify:
+
+- business logic can request a capability
+- provider router selects a configured provider
+- provider can be changed without altering business logic
+- fallback works
+- provider usage can be logged
+- tests use deterministic mock providers
+
+Update:
+
+PROVIDERS.md
+ARCHITECTURE.md
+DATABASE.md
+CHANGELOG.md
