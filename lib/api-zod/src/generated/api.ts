@@ -59,3 +59,148 @@ export const GetWorkspaceActivityResponseItem = zod.object({
 export const GetWorkspaceActivityResponse = zod.array(GetWorkspaceActivityResponseItem)
 
 
+/**
+ * Returns the local DigiSignal user record and organization count for the authenticated Clerk session.
+ * @summary Get the authenticated user
+ */
+export const GetCurrentUserResponse = zod.object({
+  "id": zod.string(),
+  "organizationCount": zod.number()
+})
+
+
+/**
+ * @summary List organizations for the authenticated user
+ */
+export const ListOrganizationsResponseItem = zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "createdAt": zod.coerce.date()
+})
+export const ListOrganizationsResponse = zod.array(ListOrganizationsResponseItem)
+
+
+/**
+ * Creates an organization and adds the authenticated user as its owner.
+ * @summary Create an organization
+ */
+export const createOrganizationBodyNameMin = 2;
+export const createOrganizationBodyNameMax = 120;
+
+
+
+export const CreateOrganizationBody = zod.object({
+  "name": zod.string().min(createOrganizationBodyNameMin).max(createOrganizationBodyNameMax)
+})
+
+export const CreateOrganizationResponse = zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary List projects in an organization
+ */
+export const ListProjectsParams = zod.object({
+  "organizationId": zod.coerce.string()
+})
+
+export const ListProjectsResponseItem = zod.object({
+  "id": zod.string(),
+  "organizationId": zod.string(),
+  "name": zod.string(),
+  "description": zod.string().nullable(),
+  "status": zod.string(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+})
+export const ListProjectsResponse = zod.array(ListProjectsResponseItem)
+
+
+/**
+ * Creates a project after verifying the authenticated user belongs to the organization.
+ * @summary Create a project
+ */
+export const CreateProjectParams = zod.object({
+  "organizationId": zod.coerce.string()
+})
+
+export const createProjectBodyNameMin = 2;
+export const createProjectBodyNameMax = 120;
+
+export const createProjectBodyDescriptionMax = 500;
+
+
+
+export const CreateProjectBody = zod.object({
+  "name": zod.string().min(createProjectBodyNameMin).max(createProjectBodyNameMax),
+  "description": zod.string().max(createProjectBodyDescriptionMax).nullish()
+})
+
+export const CreateProjectResponse = zod.object({
+  "id": zod.string(),
+  "organizationId": zod.string(),
+  "name": zod.string(),
+  "description": zod.string().nullable(),
+  "status": zod.string(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+})
+
+
+/**
+ * Returns a project only when the authenticated user has membership in its organization.
+ * @summary Get a project
+ */
+export const GetProjectParams = zod.object({
+  "projectId": zod.coerce.string()
+})
+
+export const GetProjectResponse = zod.object({
+  "id": zod.string(),
+  "organizationId": zod.string(),
+  "name": zod.string(),
+  "description": zod.string().nullable(),
+  "status": zod.string(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+})
+
+
+/**
+ * Completes first-login onboarding with one organization and its first project.
+ * @summary Create an organization and first project
+ */
+export const completeOnboardingBodyOrganizationNameMin = 2;
+export const completeOnboardingBodyOrganizationNameMax = 120;
+
+export const completeOnboardingBodyProjectNameMin = 2;
+export const completeOnboardingBodyProjectNameMax = 120;
+
+
+
+export const CompleteOnboardingBody = zod.object({
+  "organizationName": zod.string().min(completeOnboardingBodyOrganizationNameMin).max(completeOnboardingBodyOrganizationNameMax),
+  "projectName": zod.string().min(completeOnboardingBodyProjectNameMin).max(completeOnboardingBodyProjectNameMax)
+})
+
+export const CompleteOnboardingResponse = zod.object({
+  "organization": zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "createdAt": zod.coerce.date()
+}),
+  "project": zod.object({
+  "id": zod.string(),
+  "organizationId": zod.string(),
+  "name": zod.string(),
+  "description": zod.string().nullable(),
+  "status": zod.string(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+})
+})
+
+

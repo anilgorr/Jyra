@@ -34,3 +34,88 @@ export interface WorkspaceActivity {
   occurredAt: string;
 }
 
+export interface CurrentUser {
+  id: string;
+  organizationCount: number;
+}
+
+export interface Organization {
+  id: string;
+  name: string;
+  createdAt: string;
+}
+
+export interface OrganizationInput {
+  /**
+     * @minLength 2
+     * @maxLength 120
+     */
+  name: string;
+}
+
+export interface Project {
+  id: string;
+  organizationId: string;
+  name: string;
+  /** @nullable */
+  description: string | null;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ProjectInput {
+  /**
+     * @minLength 2
+     * @maxLength 120
+     */
+  name: string;
+  /**
+     * @maxLength 500
+     * @nullable
+     */
+  description?: string | null;
+}
+
+export interface OnboardingInput {
+  /**
+     * @minLength 2
+     * @maxLength 120
+     */
+  organizationName: string;
+  /**
+     * @minLength 2
+     * @maxLength 120
+     */
+  projectName: string;
+}
+
+export interface OnboardingResponse {
+  organization: Organization;
+  project: Project;
+}
+
+export interface ErrorResponse {
+  error: string;
+}
+
+/**
+ * Invalid request
+ */
+export type BadRequestResponse = ErrorResponse;
+
+/**
+ * Authentication required
+ */
+export type UnauthorizedResponse = ErrorResponse;
+
+/**
+ * Authenticated but not allowed to access this resource
+ */
+export type ForbiddenResponse = ErrorResponse;
+
+/**
+ * Resource not found
+ */
+export type NotFoundResponse = ErrorResponse;
+

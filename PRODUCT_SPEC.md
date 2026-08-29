@@ -41,11 +41,13 @@ Business Twin
 → Learning
 ```
 
-## Foundation milestone
+## Identity and project shell milestone
 
-The current milestone establishes the application shell, API contract, architecture boundaries, security principles, and future phase map. It intentionally does not implement market research, company discovery, contact enrichment, scoring, opportunity recommendations, or sales outcome learning.
+The current milestone adds authenticated users, DigiSignal-managed organizations and memberships, projects representing distinct selling motions, first-login onboarding, and a project-aware application shell.
 
-The foundation UI must show missing intelligence as missing, not as negative evidence. Empty counts and “not connected” states are intentional.
+The application exposes Today, Opportunities, Companies, Business Twin, ICP, Research, Outcomes, and Settings. Future intelligence areas remain explicit empty states: this milestone does not implement market research, company discovery, contact enrichment, scoring, opportunity recommendations, or sales outcome learning.
+
+Missing intelligence remains missing rather than negative evidence. Empty counts, “not connected” states, and planned-phase messages are intentional.
 
 ## Future product phases
 

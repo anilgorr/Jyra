@@ -6,7 +6,19 @@
  * OpenAPI spec version: 0.1.0
  */
 
+export * from './badRequestResponse';
 export * from './capabilityPhase';
+export * from './currentUser';
+export * from './errorResponse';
+export * from './forbiddenResponse';
 export * from './healthStatus';
+export * from './notFoundResponse';
+export * from './onboardingInput';
+export * from './onboardingResponse';
+export * from './organization';
+export * from './organizationInput';
+export * from './project';
+export * from './projectInput';
+export * from './unauthorizedResponse';
 export * from './workspaceActivity';
 export * from './workspaceSummary';

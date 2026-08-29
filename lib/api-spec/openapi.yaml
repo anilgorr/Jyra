@@ -12,6 +12,8 @@ tags:
     description: Health operations
   - name: workspace
     description: Foundation workspace status operations
+  - name: identity
+    description: Authenticated user and tenancy operations
 paths:
   /healthz:
     get:
@@ -69,6 +71,167 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/WorkspaceActivity"
+  /me:
+    get:
+      operationId: getCurrentUser
+      tags: [identity]
+      summary: Get the authenticated user
+      description: Returns the local DigiSignal user record and organization count for the authenticated Clerk session.
+      security:
+        - clerkSession: []
+      responses:
+        "200":
+          description: Authenticated user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CurrentUser"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+  /organizations:
+    get:
+      operationId: listOrganizations
+      tags: [identity]
+      summary: List organizations for the authenticated user
+      security:
+        - clerkSession: []
+      responses:
+        "200":
+          description: Organizations the user belongs to
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Organization"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+    post:
+      operationId: createOrganization
+      tags: [identity]
+      summary: Create an organization
+      description: Creates an organization and adds the authenticated user as its owner.
+      security:
+        - clerkSession: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrganizationInput"
+      responses:
+        "201":
+          description: Created organization
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Organization"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+  /organizations/{organizationId}/projects:
+    get:
+      operationId: listProjects
+      tags: [identity]
+      summary: List projects in an organization
+      security:
+        - clerkSession: []
+      parameters:
+        - $ref: "#/components/parameters/OrganizationId"
+      responses:
+        "200":
+          description: Projects in the organization
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Project"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    post:
+      operationId: createProject
+      tags: [identity]
+      summary: Create a project
+      description: Creates a project after verifying the authenticated user belongs to the organization.
+      security:
+        - clerkSession: []
+      parameters:
+        - $ref: "#/components/parameters/OrganizationId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProjectInput"
+      responses:
+        "201":
+          description: Created project
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Project"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /projects/{projectId}:
+    get:
+      operationId: getProject
+      tags: [identity]
+      summary: Get a project
+      description: Returns a project only when the authenticated user has membership in its organization.
+      security:
+        - clerkSession: []
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+      responses:
+        "200":
+          description: Project
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Project"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /onboarding:
+    post:
+      operationId: completeOnboarding
+      tags: [identity]
+      summary: Create an organization and first project
+      description: Completes first-login onboarding with one organization and its first project.
+      security:
+        - clerkSession: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OnboardingInput"
+      responses:
+        "201":
+          description: Created organization and first project
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OnboardingResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
 components:
   schemas:
     HealthStatus:
@@ -139,4 +302,150 @@ components:
         - type
         - label
         - occurredAt
+    CurrentUser:
+      type: object
+      properties:
+        id:
+          type: string
+        organizationCount:
+          type: number
+      required:
+        - id
+        - organizationCount
+    Organization:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - name
+        - createdAt
+    OrganizationInput:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 2
+          maxLength: 120
+      required:
+        - name
+    Project:
+      type: object
+      properties:
+        id:
+          type: string
+        organizationId:
+          type: string
+        name:
+          type: string
+        description:
+          type: ["string", "null"]
+        status:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - organizationId
+        - name
+        - description
+        - status
+        - createdAt
+        - updatedAt
+    ProjectInput:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 2
+          maxLength: 120
+        description:
+          type: ["string", "null"]
+          maxLength: 500
+      required:
+        - name
+    OnboardingInput:
+      type: object
+      properties:
+        organizationName:
+          type: string
+          minLength: 2
+          maxLength: 120
+        projectName:
+          type: string
+          minLength: 2
+          maxLength: 120
+      required:
+        - organizationName
+        - projectName
+    OnboardingResponse:
+      type: object
+      properties:
+        organization:
+          $ref: "#/components/schemas/Organization"
+        project:
+          $ref: "#/components/schemas/Project"
+      required:
+        - organization
+        - project
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
+  parameters:
+    OrganizationId:
+      name: organizationId
+      in: path
+      required: true
+      schema:
+        type: string
+    ProjectId:
+      name: projectId
+      in: path
+      required: true
+      schema:
+        type: string
+  responses:
+    BadRequest:
+      description: Invalid request
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    Unauthorized:
+      description: Authentication required
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    Forbidden:
+      description: Authenticated but not allowed to access this resource
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+  securitySchemes:
+    clerkSession:
+      type: apiKey
+      in: cookie
+      name: __session
 

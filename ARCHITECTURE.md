@@ -13,7 +13,23 @@ lib/api-zod                Generated Zod schemas
 lib/db                     Drizzle/PostgreSQL access
 ```
 
-The frontend is served at the root path. The API is routed through `/api`. Both are configured as managed Replit artifact services.
+The frontend is served at its artifact base path. The API is routed through `/api`. Both are configured as managed Replit artifact services.
+
+## Identity and tenancy
+
+Clerk owns user authentication and the browser session. The web client uses Clerk's session cookie; it does not construct bearer tokens. Express verifies the session and derives the Clerk user ID before any tenant operation runs.
+
+DigiSignal owns organizations, memberships, roles, and projects in PostgreSQL. Clerk Organizations are not the tenancy model. A local user record is created just in time from the authenticated Clerk user ID, without trusting browser-supplied identity fields.
+
+The authorization sequence for tenant resources is:
+
+1. Verify the Clerk session.
+2. Derive the local user ID from that session.
+3. Resolve the requested organization or project.
+4. Verify an organization membership for the local user.
+5. Only then read or mutate tenant-owned data.
+
+The selected organization and project are client preferences used for navigation. They never authorize access; every API request repeats the server-side membership check.
 
 ## Contract-first development
 
@@ -31,7 +47,7 @@ The server validates response-shaped data with generated Zod schemas. The client
 - **Commercial interpretation:** signals, clusters, fit, need, timing, relationship, confidence, opportunities, and explanations.
 - **Learning:** user actions, outcomes, and versioned model/rule evaluation.
 
-The first milestone only exposes foundation status endpoints. It does not create these domain tables early.
+The identity milestone implements only the identity and tenancy boundary. Seller configuration, canonical entities, research, evidence, commercial interpretation, and learning remain future phases.
 
 ## Deterministic versus AI-assisted work
 

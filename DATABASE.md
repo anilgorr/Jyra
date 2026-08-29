@@ -1,17 +1,23 @@
 # DigiSignal Database Plan
 
-## Foundation policy
+## Implemented identity and tenancy storage
 
-The foundation milestone deliberately does not create domain tables. The current API returns explicit, schema-validated foundation status and empty activity. This avoids building a premature data model around unvalidated product behavior.
+The identity milestone implements:
+
+- `users`: local identities keyed by the verified Clerk user ID
+- `organizations`: top-level customer workspaces and their creating user
+- `organization_members`: organization access with constrained `owner`, `admin`, and `member` roles
+- `projects`: organization-owned selling motions with constrained `active` and `archived` status
+
+Membership is unique per organization and user. Projects are indexed by organization and have organization-scoped unique names. Foreign keys cascade membership and project cleanup when an organization is removed.
+
+The application currently enforces tenancy in the API after verified session lookup. PostgreSQL row-level security is not enabled because requests use a shared server connection pool without a per-request database role or session variable; adding partial RLS would imply protection that is not actually active.
 
 ## Planned storage layers
 
 ### Tenant and access
 
-- `tenants`
-- `users`
-- `tenant_memberships`
-- `roles` or a constrained membership role enum
+The implemented organization, membership, user, and project tables are the tenant foundation. Invitations, audit events, and advanced role administration remain planned.
 
 ### Seller configuration
 
