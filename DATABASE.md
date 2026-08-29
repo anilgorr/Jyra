@@ -162,6 +162,8 @@ The implemented organization, membership, user, and project tables are the tenan
 
 `Your Market Today` adds no derived-state table. Its API reads the current project-company and opportunity rows together with immutable history and current evidence-backed WHY records. Movement is reconstructed from `opportunity_history`; freshness is derived from persisted research timestamps and evidence status. Page reads never mutate or recalculate those records.
 
+`Company Intelligence` also adds no derived-state table. The route composes existing authorized project-company, Opportunity, history, component, WHY, signal, cluster, fact, evidence, and research records. Its only write action is the existing RESEARCH NOW command, which creates a new bounded research attempt rather than rewriting or relabeling prior evidence.
+
 ### Learning
 
 - `sales_outcomes`

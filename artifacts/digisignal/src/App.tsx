@@ -21,6 +21,7 @@ import EmptyFeature from './pages/empty-feature';
 import BusinessTwinPage from './pages/business-twin';
 import IcpPage from './pages/icp';
 import CompaniesPage from './pages/companies/index';
+import CompanyIntelligencePage from './pages/company-intelligence';
 import ProviderDiagnostics from './pages/provider-diagnostics';
 import Research from './pages/research';
 import Signals from './pages/signals';
@@ -164,6 +165,7 @@ function AuthenticatedRoutes() {
           <Switch>
             <Route path="/today" component={Today} />
             <Route path="/opportunities" component={Opportunities} />
+            <Route path="/companies/:projectCompanyId" component={CompanyIntelligencePage} />
             <Route path="/companies" component={CompaniesPage} />
             <Route path="/business-twin" component={BusinessTwinPage} />
             <Route path="/icp" component={IcpPage} />

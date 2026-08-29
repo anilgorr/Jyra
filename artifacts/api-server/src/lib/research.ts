@@ -427,11 +427,6 @@ export async function executeResearchNow(input: {
     factsCount: Number(factsCount),
   });
   if (!plan || plan.estimatedCost > QUESTION_MAX_COST) {
-    await db.update(projectCompaniesTable).set({
-      researchStatus: "complete",
-      latestResearchAt: new Date(),
-      updatedAt: new Date(),
-    }).where(eq(projectCompaniesTable.id, row.projectCompany.id));
     return { stopped: true, reason: plan ? "Estimated cost exceeds the bounded research budget." : "No high-value unanswered research question is currently due." };
   }
 

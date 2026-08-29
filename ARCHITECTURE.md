@@ -158,6 +158,14 @@ WHY is a downstream, read-only interpretation of an opportunity assessment. The 
 
 `ACTIVE` assessments appear in the SURGING presentation section and `COOLING` assessments appear in RISING while retaining their actual canonical state. Unassessed or insufficiently supported companies appear only as needing research. Person-level buyers and recommended actions remain unavailable until later phases.
 
+## Company Intelligence
+
+`/companies/:projectCompanyId` is the canonical project-company intelligence view. It composes the authorized project-company record with the current Opportunity assessment, immutable history, deterministic score components, current evidence-backed WHY, signals, clusters, validated facts, public evidence, and persisted research status. The browser does not recalculate scores or generate interpretations while reading.
+
+“Why did JYRA rank this company?” is answered from the saved component explanations and the current sentence-level WHY trace. Confidence is displayed separately and cannot increase the Opportunity score. Missing assessments, weak support, and unavailable traces remain explicit insufficient-evidence states.
+
+RESEARCH NOW invokes the existing bounded research execution endpoint and creates a fresh provider-backed research attempt. Existing evidence is never presented as a new sweep. Public company evidence remains reusable under its preserving organization’s review ownership; Opportunity assessments, relationship context, research jobs, and project interpretation remain project-authorized.
+
 Future research work should use a simple database-backed job table suitable for Replit:
 
 1. API creates a planned job.

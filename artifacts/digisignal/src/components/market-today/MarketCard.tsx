@@ -298,14 +298,14 @@ export function MarketCard({ card, projectId }: MarketCardProps) {
           )}
 
           {card.state && <Button asChild variant="secondary" size="sm" className="gap-1.5 hidden sm:flex">
-            <Link href={`/opportunities?company=${card.projectCompanyId}#why`}>
+            <Link href={`/companies/${card.projectCompanyId}#why`}>
               <FileSearch className="w-3.5 h-3.5" />
               View Evidence
             </Link>
           </Button>}
           
           <Button asChild size="sm" className="gap-1.5 bg-accent hover:bg-accent/90 text-accent-foreground">
-            <Link href={card.state ? `/opportunities?company=${card.projectCompanyId}` : "/research"}>
+            <Link href={`/companies/${card.projectCompanyId}`}>
               View Intelligence
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>

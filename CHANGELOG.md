@@ -1,3 +1,11 @@
+## Company Intelligence
+
+- Added a canonical project-company intelligence page covering WHO, WHEN, WHY, deterministic score dimensions, state movement, signals, clusters, research health, facts, evidence, timelines, history, and explainability.
+- Added “Why did JYRA rank this company?” from persisted component explanations and sentence-level evidence provenance, including explicit insufficient-evidence states.
+- Connected Company and Today navigation to the detailed route and preserved the existing Opportunity view.
+- Added RESEARCH NOW through the existing fresh bounded research workflow without reprocessing old evidence or changing public/private intelligence boundaries.
+- Kept buyer discovery and Phase 18 behavior out of scope.
+
 ## Your Market Today
 
 - Replaced the workspace-summary landing page with a project-scoped WHO, WHEN, WHY market view sourced only from persisted Opportunity intelligence.

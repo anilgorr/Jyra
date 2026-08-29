@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "wouter";
 import { 
   useListProjectCompanies,
   getListProjectCompaniesQueryKey,
@@ -29,7 +30,6 @@ import { Input } from "@/components/ui/input";
 
 import { CompanyDialog } from "./company-dialog";
 import { ImportDialog } from "./import-dialog";
-import { CompanySheet } from "./company-sheet";
 
 export default function CompaniesPage() {
   const { activeProjectId } = useWorkspace();
@@ -38,7 +38,6 @@ export default function CompaniesPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [createOpen, setCreateOpen] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
-  const [selectedCompany, setSelectedCompany] = useState<ProjectCompany | null>(null);
 
   const { data: companies = [], isLoading, isError } = useListProjectCompanies(
     projectId,
@@ -185,12 +184,13 @@ export default function CompaniesPage() {
                   <TableRow 
                     key={pc.id} 
                     className="cursor-pointer hover:bg-muted/50 transition-colors"
-                    onClick={() => setSelectedCompany(pc)}
                     data-testid={`row-company-${pc.id}`}
                   >
                     <TableCell>
-                      <div className="font-medium">{c.canonicalName}</div>
-                      <div className="text-xs text-muted-foreground">{c.domain || c.industry || "No domain"}</div>
+                      <Link href={`/companies/${pc.id}`} className="block hover:text-primary">
+                        <div className="font-medium">{c.canonicalName}</div>
+                        <div className="text-xs text-muted-foreground">{c.domain || c.industry || "No domain"}</div>
+                      </Link>
                     </TableCell>
                     <TableCell>
                       <Badge variant="outline" className={
@@ -254,10 +254,6 @@ export default function CompaniesPage() {
         onOpenChange={setImportOpen} 
       />
       
-      <CompanySheet 
-        projectCompany={selectedCompany} 
-        onClose={() => setSelectedCompany(null)} 
-      />
     </div>
   );
 }

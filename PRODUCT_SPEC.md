@@ -119,6 +119,14 @@ The authenticated `/today` landing page presents a persisted, project-scoped mar
 
 Users can filter by state, industry, geography, employee range, signal, cluster, confidence, research freshness, relationship, and ICP fit. They can open existing intelligence and evidence views or run the bounded Research Now workflow. Buyer discovery and action recommendations remain explicitly unavailable.
 
+### Company Intelligence — Phase 17 (implemented)
+
+Every project company has a canonical intelligence page at `/companies/:projectCompanyId`. It presents Company Overview, Opportunity State, State Movement, WHO, WHEN, WHY, Fit, Need, Timing, Relationship, Confidence, Signal Clusters, Active Signals, Negative Signals, Research Status, Research Freshness, Facts, Evidence, Opportunity Timeline, State History, and Explainability.
+
+“Why did JYRA rank this company?” uses only persisted deterministic component explanations and evidence-backed WHY provenance. Missing or insufficient support remains visible instead of being replaced with a persuasive narrative. RESEARCH NOW starts the existing fresh bounded research workflow and refreshes the page from its persisted result; it does not merely reinterpret old evidence.
+
+Public company observations can remain reusable, while relationship context, Opportunity scoring, histories, research execution, and commercial interpretation remain authorized to the active project. Buyer discovery and Phase 18 behavior are not included.
+
 ### 6. Buying committee and action
 
 Only after a company is commercially interesting does JYRA identify likely buyers, enrich contact data, and recommend an action.
