@@ -14,6 +14,8 @@ tags:
     description: Foundation workspace status operations
   - name: identity
     description: Authenticated user and tenancy operations
+  - name: business-twin
+    description: Versioned seller Business Twin configuration
 paths:
   /healthz:
     get:
@@ -201,6 +203,165 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Project"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /projects/{projectId}/business-twin:
+    get:
+      operationId: getBusinessTwin
+      tags: [business-twin]
+      summary: Get the current Business Twin version
+      description: Returns the current project-scoped Business Twin version after verifying project membership.
+      security:
+        - clerkSession: []
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+      responses:
+        "200":
+          description: Current Business Twin version
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BusinessTwinVersion"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /projects/{projectId}/business-twin/versions:
+    get:
+      operationId: listBusinessTwinVersions
+      tags: [business-twin]
+      summary: List Business Twin versions
+      description: Returns all project-scoped Business Twin versions from newest to oldest.
+      security:
+        - clerkSession: []
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+      responses:
+        "200":
+          description: Business Twin version history
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BusinessTwinVersion"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    post:
+      operationId: createBusinessTwinVersion
+      tags: [business-twin]
+      summary: Save Business Twin answers as a new version
+      description: Creates a new immutable Business Twin version from explicit seller answers and a validated interpretation.
+      security:
+        - clerkSession: []
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BusinessTwinVersionInput"
+      responses:
+        "201":
+          description: Created Business Twin version
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BusinessTwinVersion"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "502":
+          $ref: "#/components/responses/InterpretationUnavailable"
+  /projects/{projectId}/business-twin/versions/{versionId}:
+    get:
+      operationId: getBusinessTwinVersion
+      tags: [business-twin]
+      summary: Get a Business Twin version
+      description: Returns a specific version only when it belongs to the requested project and the user has project membership.
+      security:
+        - clerkSession: []
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+        - $ref: "#/components/parameters/BusinessTwinVersionId"
+      responses:
+        "200":
+          description: Business Twin version
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BusinessTwinVersion"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /projects/{projectId}/business-twin/regenerate:
+    post:
+      operationId: regenerateBusinessTwin
+      tags: [business-twin]
+      summary: Regenerate the current Business Twin interpretation
+      description: Creates a new version from the current raw answers and a newly validated interpretation.
+      security:
+        - clerkSession: []
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+      responses:
+        "201":
+          description: Regenerated Business Twin version
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BusinessTwinVersion"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "502":
+          $ref: "#/components/responses/InterpretationUnavailable"
+  /projects/{projectId}/business-twin/versions/{versionId}/interpretation:
+    patch:
+      operationId: updateBusinessTwinInterpretation
+      tags: [business-twin]
+      summary: Save manual Business Twin interpretation refinements
+      description: Creates a new immutable version carrying the selected version's raw answers and manually refined interpretation.
+      security:
+        - clerkSession: []
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+        - $ref: "#/components/parameters/BusinessTwinVersionId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BusinessTwinManualInterpretationInput"
+      responses:
+        "201":
+          description: Created manually refined Business Twin version
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BusinessTwinVersion"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "403":
@@ -398,6 +559,291 @@ components:
       required:
         - organization
         - project
+    BusinessTwinCustomerExample:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 200
+        whyGoodCustomer:
+          type: string
+          maxLength: 2000
+        whyBoughtThen:
+          type: string
+          maxLength: 2000
+      required:
+        - name
+        - whyGoodCustomer
+        - whyBoughtThen
+    BusinessTwinRawAnswers:
+      type: object
+      properties:
+        companyName:
+          type: string
+          maxLength: 200
+        website:
+          type: string
+          maxLength: 500
+        primaryGeography:
+          type: string
+          maxLength: 200
+        industry:
+          type: string
+          maxLength: 200
+        offeringName:
+          type: string
+          maxLength: 200
+        productOrServiceDescription:
+          type: string
+          maxLength: 3000
+        problemsSolved:
+          type: string
+          maxLength: 3000
+        costOfInaction:
+          type: string
+          maxLength: 3000
+        typicalCustomerProfile:
+          type: string
+          maxLength: 2000
+        typicalEmployeeRange:
+          type: string
+          maxLength: 200
+        typicalRevenueRange:
+          type: string
+          maxLength: 200
+        typicalDealSize:
+          type: string
+          maxLength: 200
+        typicalSalesCycle:
+          type: string
+          maxLength: 200
+        targetGeographies:
+          type: string
+          maxLength: 1000
+        bestCustomers:
+          type: array
+          minItems: 3
+          maxItems: 3
+          items:
+            $ref: "#/components/schemas/BusinessTwinCustomerExample"
+        badCustomerCharacteristics:
+          type: string
+          maxLength: 3000
+        commonBuyerRoles:
+          type: string
+          maxLength: 1000
+        commonChampionRoles:
+          type: string
+          maxLength: 1000
+        commonTechnicalEvaluatorRoles:
+          type: string
+          maxLength: 1000
+        typicalUrgencyTriggers:
+          type: string
+          maxLength: 3000
+        majorDifferentiators:
+          type: string
+          maxLength: 3000
+        competitorsOrAlternatives:
+          type: string
+          maxLength: 2000
+        commonObjections:
+          type: string
+          maxLength: 3000
+      required:
+        - companyName
+        - website
+        - primaryGeography
+        - industry
+        - offeringName
+        - productOrServiceDescription
+        - problemsSolved
+        - costOfInaction
+        - typicalCustomerProfile
+        - typicalEmployeeRange
+        - typicalRevenueRange
+        - typicalDealSize
+        - typicalSalesCycle
+        - targetGeographies
+        - bestCustomers
+        - badCustomerCharacteristics
+        - commonBuyerRoles
+        - commonChampionRoles
+        - commonTechnicalEvaluatorRoles
+        - typicalUrgencyTriggers
+        - majorDifferentiators
+        - competitorsOrAlternatives
+        - commonObjections
+    BusinessTwinInterpretation:
+      type: object
+      properties:
+        offering_summary:
+          type: string
+          maxLength: 3000
+        problems_solved:
+          type: array
+          items:
+            type: string
+            maxLength: 500
+        business_outcomes:
+          type: array
+          items:
+            type: string
+            maxLength: 500
+        ideal_customer_patterns:
+          type: array
+          items:
+            type: string
+            maxLength: 500
+        negative_customer_patterns:
+          type: array
+          items:
+            type: string
+            maxLength: 500
+        buying_triggers:
+          type: array
+          items:
+            type: string
+            maxLength: 500
+        buyer_roles:
+          type: array
+          items:
+            type: string
+            maxLength: 300
+        champion_roles:
+          type: array
+          items:
+            type: string
+            maxLength: 300
+        technical_roles:
+          type: array
+          items:
+            type: string
+            maxLength: 300
+        industries:
+          type: array
+          items:
+            type: string
+            maxLength: 300
+        geographies:
+          type: array
+          items:
+            type: string
+            maxLength: 300
+        company_size_patterns:
+          type: array
+          items:
+            type: string
+            maxLength: 300
+        technology_patterns:
+          type: array
+          items:
+            type: string
+            maxLength: 300
+        compliance_patterns:
+          type: array
+          items:
+            type: string
+            maxLength: 300
+        urgency_patterns:
+          type: array
+          items:
+            type: string
+            maxLength: 500
+        disqualifier_hypotheses:
+          type: array
+          items:
+            type: string
+            maxLength: 500
+        differentiators:
+          type: array
+          items:
+            type: string
+            maxLength: 500
+        common_objections:
+          type: array
+          items:
+            type: string
+            maxLength: 500
+      required:
+        - offering_summary
+        - problems_solved
+        - business_outcomes
+        - ideal_customer_patterns
+        - negative_customer_patterns
+        - buying_triggers
+        - buyer_roles
+        - champion_roles
+        - technical_roles
+        - industries
+        - geographies
+        - company_size_patterns
+        - technology_patterns
+        - compliance_patterns
+        - urgency_patterns
+        - disqualifier_hypotheses
+        - differentiators
+        - common_objections
+    BusinessTwinVersionInput:
+      type: object
+      properties:
+        rawAnswers:
+          $ref: "#/components/schemas/BusinessTwinRawAnswers"
+      required:
+        - rawAnswers
+    BusinessTwinManualInterpretationInput:
+      type: object
+      properties:
+        manualInterpretation:
+          $ref: "#/components/schemas/BusinessTwinInterpretation"
+      required:
+        - manualInterpretation
+    BusinessTwinVersion:
+      type: object
+      properties:
+        id:
+          type: string
+        businessTwinId:
+          type: string
+        projectId:
+          type: string
+        version:
+          type: number
+        rawAnswers:
+          $ref: "#/components/schemas/BusinessTwinRawAnswers"
+        aiInterpretation:
+          allOf:
+            - $ref: "#/components/schemas/BusinessTwinInterpretation"
+          nullable: true
+        manualInterpretation:
+          allOf:
+            - $ref: "#/components/schemas/BusinessTwinInterpretation"
+          nullable: true
+        modelUsed:
+          type: ["string", "null"]
+        promptVersion:
+          type: ["string", "null"]
+        status:
+          type: string
+          enum: [ready, manual]
+        createdBy:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - businessTwinId
+        - projectId
+        - version
+        - rawAnswers
+        - aiInterpretation
+        - manualInterpretation
+        - modelUsed
+        - promptVersion
+        - status
+        - createdBy
+        - createdAt
     ErrorResponse:
       type: object
       properties:
@@ -414,6 +860,12 @@ components:
         type: string
     ProjectId:
       name: projectId
+      in: path
+      required: true
+      schema:
+        type: string
+    BusinessTwinVersionId:
+      name: versionId
       in: path
       required: true
       schema:
@@ -439,6 +891,12 @@ components:
             $ref: "#/components/schemas/ErrorResponse"
     NotFound:
       description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    InterpretationUnavailable:
+      description: Business Twin interpretation could not be generated
       content:
         application/json:
           schema:

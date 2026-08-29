@@ -21,10 +21,14 @@ import type {
 
 import type {
   BadRequestResponse,
+  BusinessTwinManualInterpretationInput,
+  BusinessTwinVersion,
+  BusinessTwinVersionInput,
   CapabilityPhase,
   CurrentUser,
   ForbiddenResponse,
   HealthStatus,
+  InterpretationUnavailableResponse,
   NotFoundResponse,
   OnboardingInput,
   OnboardingResponse,
@@ -830,6 +834,465 @@ export function useGetProject<TData = Awaited<ReturnType<typeof getProject>>, TE
 
 
 
+
+export const getGetBusinessTwinUrl = (projectId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/business-twin`
+}
+
+/**
+ * Returns the current project-scoped Business Twin version after verifying project membership.
+ * @summary Get the current Business Twin version
+ */
+export const getBusinessTwin = async (projectId: string, options?: Parameters<typeof customFetch>[1]): Promise<BusinessTwinVersion> => {
+
+  return customFetch<BusinessTwinVersion>(getGetBusinessTwinUrl(projectId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetBusinessTwinQueryKey = (projectId: string,) => {
+    return [
+    `/api/projects/${projectId}/business-twin`
+    ] as const;
+    }
+
+
+export const getGetBusinessTwinQueryOptions = <TData = Awaited<ReturnType<typeof getBusinessTwin>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(projectId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getBusinessTwin>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetBusinessTwinQueryKey(projectId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getBusinessTwin>>> = ({ signal }) => getBusinessTwin(projectId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: projectId !== null && projectId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getBusinessTwin>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetBusinessTwinQueryResult = NonNullable<Awaited<ReturnType<typeof getBusinessTwin>>>
+export type GetBusinessTwinQueryError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+
+/**
+ * @summary Get the current Business Twin version
+ */
+
+export function useGetBusinessTwin<TData = Awaited<ReturnType<typeof getBusinessTwin>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(
+ projectId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getBusinessTwin>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetBusinessTwinQueryOptions(projectId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getListBusinessTwinVersionsUrl = (projectId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/business-twin/versions`
+}
+
+/**
+ * Returns all project-scoped Business Twin versions from newest to oldest.
+ * @summary List Business Twin versions
+ */
+export const listBusinessTwinVersions = async (projectId: string, options?: Parameters<typeof customFetch>[1]): Promise<BusinessTwinVersion[]> => {
+
+  return customFetch<BusinessTwinVersion[]>(getListBusinessTwinVersionsUrl(projectId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListBusinessTwinVersionsQueryKey = (projectId: string,) => {
+    return [
+    `/api/projects/${projectId}/business-twin/versions`
+    ] as const;
+    }
+
+
+export const getListBusinessTwinVersionsQueryOptions = <TData = Awaited<ReturnType<typeof listBusinessTwinVersions>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(projectId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listBusinessTwinVersions>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListBusinessTwinVersionsQueryKey(projectId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listBusinessTwinVersions>>> = ({ signal }) => listBusinessTwinVersions(projectId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: projectId !== null && projectId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listBusinessTwinVersions>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListBusinessTwinVersionsQueryResult = NonNullable<Awaited<ReturnType<typeof listBusinessTwinVersions>>>
+export type ListBusinessTwinVersionsQueryError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+
+/**
+ * @summary List Business Twin versions
+ */
+
+export function useListBusinessTwinVersions<TData = Awaited<ReturnType<typeof listBusinessTwinVersions>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(
+ projectId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listBusinessTwinVersions>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListBusinessTwinVersionsQueryOptions(projectId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getCreateBusinessTwinVersionUrl = (projectId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/business-twin/versions`
+}
+
+/**
+ * Creates a new immutable Business Twin version from explicit seller answers and a validated interpretation.
+ * @summary Save Business Twin answers as a new version
+ */
+export const createBusinessTwinVersion = async (projectId: string,
+    businessTwinVersionInput: BusinessTwinVersionInput, options?: Parameters<typeof customFetch>[1]): Promise<BusinessTwinVersion> => {
+
+  return customFetch<BusinessTwinVersion>(getCreateBusinessTwinVersionUrl(projectId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(businessTwinVersionInput)
+  }
+);}
+
+
+
+
+
+export const getCreateBusinessTwinVersionMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | InterpretationUnavailableResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createBusinessTwinVersion>>, TError,{projectId: string;data: BodyType<BusinessTwinVersionInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createBusinessTwinVersion>>, TError,{projectId: string;data: BodyType<BusinessTwinVersionInput>}, TContext> => {
+
+const mutationKey = ['createBusinessTwinVersion'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createBusinessTwinVersion>>, {projectId: string;data: BodyType<BusinessTwinVersionInput>}> = (props) => {
+          const {projectId,data} = props ?? {};
+
+          return  createBusinessTwinVersion(projectId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateBusinessTwinVersionMutationResult = NonNullable<Awaited<ReturnType<typeof createBusinessTwinVersion>>>
+    export type CreateBusinessTwinVersionMutationBody = BodyType<BusinessTwinVersionInput>
+    export type CreateBusinessTwinVersionMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | InterpretationUnavailableResponse>
+
+    /**
+ * @summary Save Business Twin answers as a new version
+ */
+export const useCreateBusinessTwinVersion = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | InterpretationUnavailableResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createBusinessTwinVersion>>, TError,{projectId: string;data: BodyType<BusinessTwinVersionInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createBusinessTwinVersion>>,
+        TError,
+        {projectId: string;data: BodyType<BusinessTwinVersionInput>},
+        TContext
+      > => {
+      return useMutation(getCreateBusinessTwinVersionMutationOptions(options));
+    }
+
+export const getGetBusinessTwinVersionUrl = (projectId: string,
+    versionId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/business-twin/versions/${versionId}`
+}
+
+/**
+ * Returns a specific version only when it belongs to the requested project and the user has project membership.
+ * @summary Get a Business Twin version
+ */
+export const getBusinessTwinVersion = async (projectId: string,
+    versionId: string, options?: Parameters<typeof customFetch>[1]): Promise<BusinessTwinVersion> => {
+
+  return customFetch<BusinessTwinVersion>(getGetBusinessTwinVersionUrl(projectId,versionId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetBusinessTwinVersionQueryKey = (projectId: string,
+    versionId: string,) => {
+    return [
+    `/api/projects/${projectId}/business-twin/versions/${versionId}`
+    ] as const;
+    }
+
+
+export const getGetBusinessTwinVersionQueryOptions = <TData = Awaited<ReturnType<typeof getBusinessTwinVersion>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(projectId: string,
+    versionId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getBusinessTwinVersion>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetBusinessTwinVersionQueryKey(projectId,versionId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getBusinessTwinVersion>>> = ({ signal }) => getBusinessTwinVersion(projectId,versionId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: projectId !== null && projectId !== undefined && versionId !== null && versionId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getBusinessTwinVersion>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetBusinessTwinVersionQueryResult = NonNullable<Awaited<ReturnType<typeof getBusinessTwinVersion>>>
+export type GetBusinessTwinVersionQueryError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+
+/**
+ * @summary Get a Business Twin version
+ */
+
+export function useGetBusinessTwinVersion<TData = Awaited<ReturnType<typeof getBusinessTwinVersion>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(
+ projectId: string,
+    versionId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getBusinessTwinVersion>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetBusinessTwinVersionQueryOptions(projectId,versionId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getRegenerateBusinessTwinUrl = (projectId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/business-twin/regenerate`
+}
+
+/**
+ * Creates a new version from the current raw answers and a newly validated interpretation.
+ * @summary Regenerate the current Business Twin interpretation
+ */
+export const regenerateBusinessTwin = async (projectId: string, options?: Parameters<typeof customFetch>[1]): Promise<BusinessTwinVersion> => {
+
+  return customFetch<BusinessTwinVersion>(getRegenerateBusinessTwinUrl(projectId),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getRegenerateBusinessTwinMutationOptions = <TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | InterpretationUnavailableResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof regenerateBusinessTwin>>, TError,{projectId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof regenerateBusinessTwin>>, TError,{projectId: string}, TContext> => {
+
+const mutationKey = ['regenerateBusinessTwin'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof regenerateBusinessTwin>>, {projectId: string}> = (props) => {
+          const {projectId} = props ?? {};
+
+          return  regenerateBusinessTwin(projectId,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type RegenerateBusinessTwinMutationResult = NonNullable<Awaited<ReturnType<typeof regenerateBusinessTwin>>>
+
+    export type RegenerateBusinessTwinMutationError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | InterpretationUnavailableResponse>
+
+    /**
+ * @summary Regenerate the current Business Twin interpretation
+ */
+export const useRegenerateBusinessTwin = <TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | InterpretationUnavailableResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof regenerateBusinessTwin>>, TError,{projectId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof regenerateBusinessTwin>>,
+        TError,
+        {projectId: string},
+        TContext
+      > => {
+      return useMutation(getRegenerateBusinessTwinMutationOptions(options));
+    }
+
+export const getUpdateBusinessTwinInterpretationUrl = (projectId: string,
+    versionId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/business-twin/versions/${versionId}/interpretation`
+}
+
+/**
+ * Creates a new immutable version carrying the selected version's raw answers and manually refined interpretation.
+ * @summary Save manual Business Twin interpretation refinements
+ */
+export const updateBusinessTwinInterpretation = async (projectId: string,
+    versionId: string,
+    businessTwinManualInterpretationInput: BusinessTwinManualInterpretationInput, options?: Parameters<typeof customFetch>[1]): Promise<BusinessTwinVersion> => {
+
+  return customFetch<BusinessTwinVersion>(getUpdateBusinessTwinInterpretationUrl(projectId,versionId),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(businessTwinManualInterpretationInput)
+  }
+);}
+
+
+
+
+
+export const getUpdateBusinessTwinInterpretationMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateBusinessTwinInterpretation>>, TError,{projectId: string;versionId: string;data: BodyType<BusinessTwinManualInterpretationInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateBusinessTwinInterpretation>>, TError,{projectId: string;versionId: string;data: BodyType<BusinessTwinManualInterpretationInput>}, TContext> => {
+
+const mutationKey = ['updateBusinessTwinInterpretation'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateBusinessTwinInterpretation>>, {projectId: string;versionId: string;data: BodyType<BusinessTwinManualInterpretationInput>}> = (props) => {
+          const {projectId,versionId,data} = props ?? {};
+
+          return  updateBusinessTwinInterpretation(projectId,versionId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateBusinessTwinInterpretationMutationResult = NonNullable<Awaited<ReturnType<typeof updateBusinessTwinInterpretation>>>
+    export type UpdateBusinessTwinInterpretationMutationBody = BodyType<BusinessTwinManualInterpretationInput>
+    export type UpdateBusinessTwinInterpretationMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+    /**
+ * @summary Save manual Business Twin interpretation refinements
+ */
+export const useUpdateBusinessTwinInterpretation = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateBusinessTwinInterpretation>>, TError,{projectId: string;versionId: string;data: BodyType<BusinessTwinManualInterpretationInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateBusinessTwinInterpretation>>,
+        TError,
+        {projectId: string;versionId: string;data: BodyType<BusinessTwinManualInterpretationInput>},
+        TContext
+      > => {
+      return useMutation(getUpdateBusinessTwinInterpretationMutationOptions(options));
+    }
 
 export const getCompleteOnboardingUrl = () => {
 

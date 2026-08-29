@@ -95,6 +95,139 @@ export interface OnboardingResponse {
   project: Project;
 }
 
+export interface BusinessTwinCustomerExample {
+  /** @maxLength 200 */
+  name: string;
+  /** @maxLength 2000 */
+  whyGoodCustomer: string;
+  /** @maxLength 2000 */
+  whyBoughtThen: string;
+}
+
+export interface BusinessTwinRawAnswers {
+  /** @maxLength 200 */
+  companyName: string;
+  /** @maxLength 500 */
+  website: string;
+  /** @maxLength 200 */
+  primaryGeography: string;
+  /** @maxLength 200 */
+  industry: string;
+  /** @maxLength 200 */
+  offeringName: string;
+  /** @maxLength 3000 */
+  productOrServiceDescription: string;
+  /** @maxLength 3000 */
+  problemsSolved: string;
+  /** @maxLength 3000 */
+  costOfInaction: string;
+  /** @maxLength 2000 */
+  typicalCustomerProfile: string;
+  /** @maxLength 200 */
+  typicalEmployeeRange: string;
+  /** @maxLength 200 */
+  typicalRevenueRange: string;
+  /** @maxLength 200 */
+  typicalDealSize: string;
+  /** @maxLength 200 */
+  typicalSalesCycle: string;
+  /** @maxLength 1000 */
+  targetGeographies: string;
+  /**
+     * @minItems 3
+     * @maxItems 3
+     */
+  bestCustomers: BusinessTwinCustomerExample[];
+  /** @maxLength 3000 */
+  badCustomerCharacteristics: string;
+  /** @maxLength 1000 */
+  commonBuyerRoles: string;
+  /** @maxLength 1000 */
+  commonChampionRoles: string;
+  /** @maxLength 1000 */
+  commonTechnicalEvaluatorRoles: string;
+  /** @maxLength 3000 */
+  typicalUrgencyTriggers: string;
+  /** @maxLength 3000 */
+  majorDifferentiators: string;
+  /** @maxLength 2000 */
+  competitorsOrAlternatives: string;
+  /** @maxLength 3000 */
+  commonObjections: string;
+}
+
+export interface BusinessTwinInterpretation {
+  /** @maxLength 3000 */
+  offering_summary: string;
+  /** @items.maxLength 500 */
+  problems_solved: string[];
+  /** @items.maxLength 500 */
+  business_outcomes: string[];
+  /** @items.maxLength 500 */
+  ideal_customer_patterns: string[];
+  /** @items.maxLength 500 */
+  negative_customer_patterns: string[];
+  /** @items.maxLength 500 */
+  buying_triggers: string[];
+  /** @items.maxLength 300 */
+  buyer_roles: string[];
+  /** @items.maxLength 300 */
+  champion_roles: string[];
+  /** @items.maxLength 300 */
+  technical_roles: string[];
+  /** @items.maxLength 300 */
+  industries: string[];
+  /** @items.maxLength 300 */
+  geographies: string[];
+  /** @items.maxLength 300 */
+  company_size_patterns: string[];
+  /** @items.maxLength 300 */
+  technology_patterns: string[];
+  /** @items.maxLength 300 */
+  compliance_patterns: string[];
+  /** @items.maxLength 500 */
+  urgency_patterns: string[];
+  /** @items.maxLength 500 */
+  disqualifier_hypotheses: string[];
+  /** @items.maxLength 500 */
+  differentiators: string[];
+  /** @items.maxLength 500 */
+  common_objections: string[];
+}
+
+export interface BusinessTwinVersionInput {
+  rawAnswers: BusinessTwinRawAnswers;
+}
+
+export interface BusinessTwinManualInterpretationInput {
+  manualInterpretation: BusinessTwinInterpretation;
+}
+
+export type BusinessTwinVersionStatus = typeof BusinessTwinVersionStatus[keyof typeof BusinessTwinVersionStatus];
+
+
+export const BusinessTwinVersionStatus = {
+  ready: 'ready',
+  manual: 'manual',
+} as const;
+
+export interface BusinessTwinVersion {
+  id: string;
+  businessTwinId: string;
+  projectId: string;
+  version: number;
+  rawAnswers: BusinessTwinRawAnswers;
+  aiInterpretation: BusinessTwinInterpretation | null;
+  manualInterpretation: BusinessTwinInterpretation | null;
+  /** @nullable */
+  modelUsed: string | null;
+  /** @nullable */
+  promptVersion: string | null;
+  status: BusinessTwinVersionStatus;
+  createdBy: string;
+  createdAt: string;
+}
+
 export interface ErrorResponse {
   error: string;
 }
@@ -118,4 +251,9 @@ export type ForbiddenResponse = ErrorResponse;
  * Resource not found
  */
 export type NotFoundResponse = ErrorResponse;
+
+/**
+ * Business Twin interpretation could not be generated
+ */
+export type InterpretationUnavailableResponse = ErrorResponse;
 

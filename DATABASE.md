@@ -13,6 +13,13 @@ Membership is unique per organization and user. Projects are indexed by organiza
 
 The application currently enforces tenancy in the API after verified session lookup. PostgreSQL row-level security is not enabled because requests use a shared server connection pool without a per-request database role or session variable; adding partial RLS would imply protection that is not actually active.
 
+## Implemented Business Twin storage
+
+- `business_twins`: one project-owned Business Twin root, with explicit organization ownership
+- `business_twin_versions`: immutable sequential versions containing separate raw answers, AI interpretation, manual interpretation, model metadata, prompt version, author, and timestamp
+
+Every read and write is preceded by a server-side project membership check. Regeneration, raw-answer edits, and manual interpretation refinements insert a new version instead of overwriting history.
+
 ## Planned storage layers
 
 ### Tenant and access
@@ -21,7 +28,6 @@ The implemented organization, membership, user, and project tables are the tenan
 
 ### Seller configuration
 
-- `business_twins`
 - `icp_profiles`
 - `icp_rules`
 - `research_policies`

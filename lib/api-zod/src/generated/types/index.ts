@@ -7,11 +7,19 @@
  */
 
 export * from './badRequestResponse';
+export * from './businessTwinCustomerExample';
+export * from './businessTwinInterpretation';
+export * from './businessTwinManualInterpretationInput';
+export * from './businessTwinRawAnswers';
+export * from './businessTwinVersion';
+export * from './businessTwinVersionInput';
+export * from './businessTwinVersionStatus';
 export * from './capabilityPhase';
 export * from './currentUser';
 export * from './errorResponse';
 export * from './forbiddenResponse';
 export * from './healthStatus';
+export * from './interpretationUnavailableResponse';
 export * from './notFoundResponse';
 export * from './onboardingInput';
 export * from './onboardingResponse';

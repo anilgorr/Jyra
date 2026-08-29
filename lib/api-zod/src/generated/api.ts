@@ -170,6 +170,1459 @@ export const GetProjectResponse = zod.object({
 
 
 /**
+ * Returns the current project-scoped Business Twin version after verifying project membership.
+ * @summary Get the current Business Twin version
+ */
+export const GetBusinessTwinParams = zod.object({
+  "projectId": zod.coerce.string()
+})
+
+export const getBusinessTwinResponseRawAnswersCompanyNameMax = 200;
+
+export const getBusinessTwinResponseRawAnswersWebsiteMax = 500;
+
+export const getBusinessTwinResponseRawAnswersPrimaryGeographyMax = 200;
+
+export const getBusinessTwinResponseRawAnswersIndustryMax = 200;
+
+export const getBusinessTwinResponseRawAnswersOfferingNameMax = 200;
+
+export const getBusinessTwinResponseRawAnswersProductOrServiceDescriptionMax = 3000;
+
+export const getBusinessTwinResponseRawAnswersProblemsSolvedMax = 3000;
+
+export const getBusinessTwinResponseRawAnswersCostOfInactionMax = 3000;
+
+export const getBusinessTwinResponseRawAnswersTypicalCustomerProfileMax = 2000;
+
+export const getBusinessTwinResponseRawAnswersTypicalEmployeeRangeMax = 200;
+
+export const getBusinessTwinResponseRawAnswersTypicalRevenueRangeMax = 200;
+
+export const getBusinessTwinResponseRawAnswersTypicalDealSizeMax = 200;
+
+export const getBusinessTwinResponseRawAnswersTypicalSalesCycleMax = 200;
+
+export const getBusinessTwinResponseRawAnswersTargetGeographiesMax = 1000;
+
+export const getBusinessTwinResponseRawAnswersBestCustomersItemNameMax = 200;
+
+export const getBusinessTwinResponseRawAnswersBestCustomersItemWhyGoodCustomerMax = 2000;
+
+export const getBusinessTwinResponseRawAnswersBestCustomersItemWhyBoughtThenMax = 2000;
+
+export const getBusinessTwinResponseRawAnswersBestCustomersMin = 3;
+export const getBusinessTwinResponseRawAnswersBestCustomersMax = 3;
+
+export const getBusinessTwinResponseRawAnswersBadCustomerCharacteristicsMax = 3000;
+
+export const getBusinessTwinResponseRawAnswersCommonBuyerRolesMax = 1000;
+
+export const getBusinessTwinResponseRawAnswersCommonChampionRolesMax = 1000;
+
+export const getBusinessTwinResponseRawAnswersCommonTechnicalEvaluatorRolesMax = 1000;
+
+export const getBusinessTwinResponseRawAnswersTypicalUrgencyTriggersMax = 3000;
+
+export const getBusinessTwinResponseRawAnswersMajorDifferentiatorsMax = 3000;
+
+export const getBusinessTwinResponseRawAnswersCompetitorsOrAlternativesMax = 2000;
+
+export const getBusinessTwinResponseRawAnswersCommonObjectionsMax = 3000;
+
+export const getBusinessTwinResponseAiInterpretationOneOfferingSummaryMax = 3000;
+
+export const getBusinessTwinResponseAiInterpretationOneProblemsSolvedItemMax = 500;
+
+export const getBusinessTwinResponseAiInterpretationOneBusinessOutcomesItemMax = 500;
+
+export const getBusinessTwinResponseAiInterpretationOneIdealCustomerPatternsItemMax = 500;
+
+export const getBusinessTwinResponseAiInterpretationOneNegativeCustomerPatternsItemMax = 500;
+
+export const getBusinessTwinResponseAiInterpretationOneBuyingTriggersItemMax = 500;
+
+export const getBusinessTwinResponseAiInterpretationOneBuyerRolesItemMax = 300;
+
+export const getBusinessTwinResponseAiInterpretationOneChampionRolesItemMax = 300;
+
+export const getBusinessTwinResponseAiInterpretationOneTechnicalRolesItemMax = 300;
+
+export const getBusinessTwinResponseAiInterpretationOneIndustriesItemMax = 300;
+
+export const getBusinessTwinResponseAiInterpretationOneGeographiesItemMax = 300;
+
+export const getBusinessTwinResponseAiInterpretationOneCompanySizePatternsItemMax = 300;
+
+export const getBusinessTwinResponseAiInterpretationOneTechnologyPatternsItemMax = 300;
+
+export const getBusinessTwinResponseAiInterpretationOneCompliancePatternsItemMax = 300;
+
+export const getBusinessTwinResponseAiInterpretationOneUrgencyPatternsItemMax = 500;
+
+export const getBusinessTwinResponseAiInterpretationOneDisqualifierHypothesesItemMax = 500;
+
+export const getBusinessTwinResponseAiInterpretationOneDifferentiatorsItemMax = 500;
+
+export const getBusinessTwinResponseAiInterpretationOneCommonObjectionsItemMax = 500;
+
+export const getBusinessTwinResponseManualInterpretationOneOfferingSummaryMax = 3000;
+
+export const getBusinessTwinResponseManualInterpretationOneProblemsSolvedItemMax = 500;
+
+export const getBusinessTwinResponseManualInterpretationOneBusinessOutcomesItemMax = 500;
+
+export const getBusinessTwinResponseManualInterpretationOneIdealCustomerPatternsItemMax = 500;
+
+export const getBusinessTwinResponseManualInterpretationOneNegativeCustomerPatternsItemMax = 500;
+
+export const getBusinessTwinResponseManualInterpretationOneBuyingTriggersItemMax = 500;
+
+export const getBusinessTwinResponseManualInterpretationOneBuyerRolesItemMax = 300;
+
+export const getBusinessTwinResponseManualInterpretationOneChampionRolesItemMax = 300;
+
+export const getBusinessTwinResponseManualInterpretationOneTechnicalRolesItemMax = 300;
+
+export const getBusinessTwinResponseManualInterpretationOneIndustriesItemMax = 300;
+
+export const getBusinessTwinResponseManualInterpretationOneGeographiesItemMax = 300;
+
+export const getBusinessTwinResponseManualInterpretationOneCompanySizePatternsItemMax = 300;
+
+export const getBusinessTwinResponseManualInterpretationOneTechnologyPatternsItemMax = 300;
+
+export const getBusinessTwinResponseManualInterpretationOneCompliancePatternsItemMax = 300;
+
+export const getBusinessTwinResponseManualInterpretationOneUrgencyPatternsItemMax = 500;
+
+export const getBusinessTwinResponseManualInterpretationOneDisqualifierHypothesesItemMax = 500;
+
+export const getBusinessTwinResponseManualInterpretationOneDifferentiatorsItemMax = 500;
+
+export const getBusinessTwinResponseManualInterpretationOneCommonObjectionsItemMax = 500;
+
+
+
+export const GetBusinessTwinResponse = zod.object({
+  "id": zod.string(),
+  "businessTwinId": zod.string(),
+  "projectId": zod.string(),
+  "version": zod.number(),
+  "rawAnswers": zod.object({
+  "companyName": zod.string().max(getBusinessTwinResponseRawAnswersCompanyNameMax),
+  "website": zod.string().max(getBusinessTwinResponseRawAnswersWebsiteMax),
+  "primaryGeography": zod.string().max(getBusinessTwinResponseRawAnswersPrimaryGeographyMax),
+  "industry": zod.string().max(getBusinessTwinResponseRawAnswersIndustryMax),
+  "offeringName": zod.string().max(getBusinessTwinResponseRawAnswersOfferingNameMax),
+  "productOrServiceDescription": zod.string().max(getBusinessTwinResponseRawAnswersProductOrServiceDescriptionMax),
+  "problemsSolved": zod.string().max(getBusinessTwinResponseRawAnswersProblemsSolvedMax),
+  "costOfInaction": zod.string().max(getBusinessTwinResponseRawAnswersCostOfInactionMax),
+  "typicalCustomerProfile": zod.string().max(getBusinessTwinResponseRawAnswersTypicalCustomerProfileMax),
+  "typicalEmployeeRange": zod.string().max(getBusinessTwinResponseRawAnswersTypicalEmployeeRangeMax),
+  "typicalRevenueRange": zod.string().max(getBusinessTwinResponseRawAnswersTypicalRevenueRangeMax),
+  "typicalDealSize": zod.string().max(getBusinessTwinResponseRawAnswersTypicalDealSizeMax),
+  "typicalSalesCycle": zod.string().max(getBusinessTwinResponseRawAnswersTypicalSalesCycleMax),
+  "targetGeographies": zod.string().max(getBusinessTwinResponseRawAnswersTargetGeographiesMax),
+  "bestCustomers": zod.array(zod.object({
+  "name": zod.string().max(getBusinessTwinResponseRawAnswersBestCustomersItemNameMax),
+  "whyGoodCustomer": zod.string().max(getBusinessTwinResponseRawAnswersBestCustomersItemWhyGoodCustomerMax),
+  "whyBoughtThen": zod.string().max(getBusinessTwinResponseRawAnswersBestCustomersItemWhyBoughtThenMax)
+})).min(getBusinessTwinResponseRawAnswersBestCustomersMin).max(getBusinessTwinResponseRawAnswersBestCustomersMax),
+  "badCustomerCharacteristics": zod.string().max(getBusinessTwinResponseRawAnswersBadCustomerCharacteristicsMax),
+  "commonBuyerRoles": zod.string().max(getBusinessTwinResponseRawAnswersCommonBuyerRolesMax),
+  "commonChampionRoles": zod.string().max(getBusinessTwinResponseRawAnswersCommonChampionRolesMax),
+  "commonTechnicalEvaluatorRoles": zod.string().max(getBusinessTwinResponseRawAnswersCommonTechnicalEvaluatorRolesMax),
+  "typicalUrgencyTriggers": zod.string().max(getBusinessTwinResponseRawAnswersTypicalUrgencyTriggersMax),
+  "majorDifferentiators": zod.string().max(getBusinessTwinResponseRawAnswersMajorDifferentiatorsMax),
+  "competitorsOrAlternatives": zod.string().max(getBusinessTwinResponseRawAnswersCompetitorsOrAlternativesMax),
+  "commonObjections": zod.string().max(getBusinessTwinResponseRawAnswersCommonObjectionsMax)
+}),
+  "aiInterpretation": zod.object({
+  "offering_summary": zod.string().max(getBusinessTwinResponseAiInterpretationOneOfferingSummaryMax),
+  "problems_solved": zod.array(zod.string().max(getBusinessTwinResponseAiInterpretationOneProblemsSolvedItemMax)),
+  "business_outcomes": zod.array(zod.string().max(getBusinessTwinResponseAiInterpretationOneBusinessOutcomesItemMax)),
+  "ideal_customer_patterns": zod.array(zod.string().max(getBusinessTwinResponseAiInterpretationOneIdealCustomerPatternsItemMax)),
+  "negative_customer_patterns": zod.array(zod.string().max(getBusinessTwinResponseAiInterpretationOneNegativeCustomerPatternsItemMax)),
+  "buying_triggers": zod.array(zod.string().max(getBusinessTwinResponseAiInterpretationOneBuyingTriggersItemMax)),
+  "buyer_roles": zod.array(zod.string().max(getBusinessTwinResponseAiInterpretationOneBuyerRolesItemMax)),
+  "champion_roles": zod.array(zod.string().max(getBusinessTwinResponseAiInterpretationOneChampionRolesItemMax)),
+  "technical_roles": zod.array(zod.string().max(getBusinessTwinResponseAiInterpretationOneTechnicalRolesItemMax)),
+  "industries": zod.array(zod.string().max(getBusinessTwinResponseAiInterpretationOneIndustriesItemMax)),
+  "geographies": zod.array(zod.string().max(getBusinessTwinResponseAiInterpretationOneGeographiesItemMax)),
+  "company_size_patterns": zod.array(zod.string().max(getBusinessTwinResponseAiInterpretationOneCompanySizePatternsItemMax)),
+  "technology_patterns": zod.array(zod.string().max(getBusinessTwinResponseAiInterpretationOneTechnologyPatternsItemMax)),
+  "compliance_patterns": zod.array(zod.string().max(getBusinessTwinResponseAiInterpretationOneCompliancePatternsItemMax)),
+  "urgency_patterns": zod.array(zod.string().max(getBusinessTwinResponseAiInterpretationOneUrgencyPatternsItemMax)),
+  "disqualifier_hypotheses": zod.array(zod.string().max(getBusinessTwinResponseAiInterpretationOneDisqualifierHypothesesItemMax)),
+  "differentiators": zod.array(zod.string().max(getBusinessTwinResponseAiInterpretationOneDifferentiatorsItemMax)),
+  "common_objections": zod.array(zod.string().max(getBusinessTwinResponseAiInterpretationOneCommonObjectionsItemMax))
+}).nullable(),
+  "manualInterpretation": zod.object({
+  "offering_summary": zod.string().max(getBusinessTwinResponseManualInterpretationOneOfferingSummaryMax),
+  "problems_solved": zod.array(zod.string().max(getBusinessTwinResponseManualInterpretationOneProblemsSolvedItemMax)),
+  "business_outcomes": zod.array(zod.string().max(getBusinessTwinResponseManualInterpretationOneBusinessOutcomesItemMax)),
+  "ideal_customer_patterns": zod.array(zod.string().max(getBusinessTwinResponseManualInterpretationOneIdealCustomerPatternsItemMax)),
+  "negative_customer_patterns": zod.array(zod.string().max(getBusinessTwinResponseManualInterpretationOneNegativeCustomerPatternsItemMax)),
+  "buying_triggers": zod.array(zod.string().max(getBusinessTwinResponseManualInterpretationOneBuyingTriggersItemMax)),
+  "buyer_roles": zod.array(zod.string().max(getBusinessTwinResponseManualInterpretationOneBuyerRolesItemMax)),
+  "champion_roles": zod.array(zod.string().max(getBusinessTwinResponseManualInterpretationOneChampionRolesItemMax)),
+  "technical_roles": zod.array(zod.string().max(getBusinessTwinResponseManualInterpretationOneTechnicalRolesItemMax)),
+  "industries": zod.array(zod.string().max(getBusinessTwinResponseManualInterpretationOneIndustriesItemMax)),
+  "geographies": zod.array(zod.string().max(getBusinessTwinResponseManualInterpretationOneGeographiesItemMax)),
+  "company_size_patterns": zod.array(zod.string().max(getBusinessTwinResponseManualInterpretationOneCompanySizePatternsItemMax)),
+  "technology_patterns": zod.array(zod.string().max(getBusinessTwinResponseManualInterpretationOneTechnologyPatternsItemMax)),
+  "compliance_patterns": zod.array(zod.string().max(getBusinessTwinResponseManualInterpretationOneCompliancePatternsItemMax)),
+  "urgency_patterns": zod.array(zod.string().max(getBusinessTwinResponseManualInterpretationOneUrgencyPatternsItemMax)),
+  "disqualifier_hypotheses": zod.array(zod.string().max(getBusinessTwinResponseManualInterpretationOneDisqualifierHypothesesItemMax)),
+  "differentiators": zod.array(zod.string().max(getBusinessTwinResponseManualInterpretationOneDifferentiatorsItemMax)),
+  "common_objections": zod.array(zod.string().max(getBusinessTwinResponseManualInterpretationOneCommonObjectionsItemMax))
+}).nullable(),
+  "modelUsed": zod.string().nullable(),
+  "promptVersion": zod.string().nullable(),
+  "status": zod.enum(['ready', 'manual']),
+  "createdBy": zod.string(),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
+ * Returns all project-scoped Business Twin versions from newest to oldest.
+ * @summary List Business Twin versions
+ */
+export const ListBusinessTwinVersionsParams = zod.object({
+  "projectId": zod.coerce.string()
+})
+
+export const listBusinessTwinVersionsResponseRawAnswersCompanyNameMax = 200;
+
+export const listBusinessTwinVersionsResponseRawAnswersWebsiteMax = 500;
+
+export const listBusinessTwinVersionsResponseRawAnswersPrimaryGeographyMax = 200;
+
+export const listBusinessTwinVersionsResponseRawAnswersIndustryMax = 200;
+
+export const listBusinessTwinVersionsResponseRawAnswersOfferingNameMax = 200;
+
+export const listBusinessTwinVersionsResponseRawAnswersProductOrServiceDescriptionMax = 3000;
+
+export const listBusinessTwinVersionsResponseRawAnswersProblemsSolvedMax = 3000;
+
+export const listBusinessTwinVersionsResponseRawAnswersCostOfInactionMax = 3000;
+
+export const listBusinessTwinVersionsResponseRawAnswersTypicalCustomerProfileMax = 2000;
+
+export const listBusinessTwinVersionsResponseRawAnswersTypicalEmployeeRangeMax = 200;
+
+export const listBusinessTwinVersionsResponseRawAnswersTypicalRevenueRangeMax = 200;
+
+export const listBusinessTwinVersionsResponseRawAnswersTypicalDealSizeMax = 200;
+
+export const listBusinessTwinVersionsResponseRawAnswersTypicalSalesCycleMax = 200;
+
+export const listBusinessTwinVersionsResponseRawAnswersTargetGeographiesMax = 1000;
+
+export const listBusinessTwinVersionsResponseRawAnswersBestCustomersItemNameMax = 200;
+
+export const listBusinessTwinVersionsResponseRawAnswersBestCustomersItemWhyGoodCustomerMax = 2000;
+
+export const listBusinessTwinVersionsResponseRawAnswersBestCustomersItemWhyBoughtThenMax = 2000;
+
+export const listBusinessTwinVersionsResponseRawAnswersBestCustomersMin = 3;
+export const listBusinessTwinVersionsResponseRawAnswersBestCustomersMax = 3;
+
+export const listBusinessTwinVersionsResponseRawAnswersBadCustomerCharacteristicsMax = 3000;
+
+export const listBusinessTwinVersionsResponseRawAnswersCommonBuyerRolesMax = 1000;
+
+export const listBusinessTwinVersionsResponseRawAnswersCommonChampionRolesMax = 1000;
+
+export const listBusinessTwinVersionsResponseRawAnswersCommonTechnicalEvaluatorRolesMax = 1000;
+
+export const listBusinessTwinVersionsResponseRawAnswersTypicalUrgencyTriggersMax = 3000;
+
+export const listBusinessTwinVersionsResponseRawAnswersMajorDifferentiatorsMax = 3000;
+
+export const listBusinessTwinVersionsResponseRawAnswersCompetitorsOrAlternativesMax = 2000;
+
+export const listBusinessTwinVersionsResponseRawAnswersCommonObjectionsMax = 3000;
+
+export const listBusinessTwinVersionsResponseAiInterpretationOneOfferingSummaryMax = 3000;
+
+export const listBusinessTwinVersionsResponseAiInterpretationOneProblemsSolvedItemMax = 500;
+
+export const listBusinessTwinVersionsResponseAiInterpretationOneBusinessOutcomesItemMax = 500;
+
+export const listBusinessTwinVersionsResponseAiInterpretationOneIdealCustomerPatternsItemMax = 500;
+
+export const listBusinessTwinVersionsResponseAiInterpretationOneNegativeCustomerPatternsItemMax = 500;
+
+export const listBusinessTwinVersionsResponseAiInterpretationOneBuyingTriggersItemMax = 500;
+
+export const listBusinessTwinVersionsResponseAiInterpretationOneBuyerRolesItemMax = 300;
+
+export const listBusinessTwinVersionsResponseAiInterpretationOneChampionRolesItemMax = 300;
+
+export const listBusinessTwinVersionsResponseAiInterpretationOneTechnicalRolesItemMax = 300;
+
+export const listBusinessTwinVersionsResponseAiInterpretationOneIndustriesItemMax = 300;
+
+export const listBusinessTwinVersionsResponseAiInterpretationOneGeographiesItemMax = 300;
+
+export const listBusinessTwinVersionsResponseAiInterpretationOneCompanySizePatternsItemMax = 300;
+
+export const listBusinessTwinVersionsResponseAiInterpretationOneTechnologyPatternsItemMax = 300;
+
+export const listBusinessTwinVersionsResponseAiInterpretationOneCompliancePatternsItemMax = 300;
+
+export const listBusinessTwinVersionsResponseAiInterpretationOneUrgencyPatternsItemMax = 500;
+
+export const listBusinessTwinVersionsResponseAiInterpretationOneDisqualifierHypothesesItemMax = 500;
+
+export const listBusinessTwinVersionsResponseAiInterpretationOneDifferentiatorsItemMax = 500;
+
+export const listBusinessTwinVersionsResponseAiInterpretationOneCommonObjectionsItemMax = 500;
+
+export const listBusinessTwinVersionsResponseManualInterpretationOneOfferingSummaryMax = 3000;
+
+export const listBusinessTwinVersionsResponseManualInterpretationOneProblemsSolvedItemMax = 500;
+
+export const listBusinessTwinVersionsResponseManualInterpretationOneBusinessOutcomesItemMax = 500;
+
+export const listBusinessTwinVersionsResponseManualInterpretationOneIdealCustomerPatternsItemMax = 500;
+
+export const listBusinessTwinVersionsResponseManualInterpretationOneNegativeCustomerPatternsItemMax = 500;
+
+export const listBusinessTwinVersionsResponseManualInterpretationOneBuyingTriggersItemMax = 500;
+
+export const listBusinessTwinVersionsResponseManualInterpretationOneBuyerRolesItemMax = 300;
+
+export const listBusinessTwinVersionsResponseManualInterpretationOneChampionRolesItemMax = 300;
+
+export const listBusinessTwinVersionsResponseManualInterpretationOneTechnicalRolesItemMax = 300;
+
+export const listBusinessTwinVersionsResponseManualInterpretationOneIndustriesItemMax = 300;
+
+export const listBusinessTwinVersionsResponseManualInterpretationOneGeographiesItemMax = 300;
+
+export const listBusinessTwinVersionsResponseManualInterpretationOneCompanySizePatternsItemMax = 300;
+
+export const listBusinessTwinVersionsResponseManualInterpretationOneTechnologyPatternsItemMax = 300;
+
+export const listBusinessTwinVersionsResponseManualInterpretationOneCompliancePatternsItemMax = 300;
+
+export const listBusinessTwinVersionsResponseManualInterpretationOneUrgencyPatternsItemMax = 500;
+
+export const listBusinessTwinVersionsResponseManualInterpretationOneDisqualifierHypothesesItemMax = 500;
+
+export const listBusinessTwinVersionsResponseManualInterpretationOneDifferentiatorsItemMax = 500;
+
+export const listBusinessTwinVersionsResponseManualInterpretationOneCommonObjectionsItemMax = 500;
+
+
+
+export const ListBusinessTwinVersionsResponseItem = zod.object({
+  "id": zod.string(),
+  "businessTwinId": zod.string(),
+  "projectId": zod.string(),
+  "version": zod.number(),
+  "rawAnswers": zod.object({
+  "companyName": zod.string().max(listBusinessTwinVersionsResponseRawAnswersCompanyNameMax),
+  "website": zod.string().max(listBusinessTwinVersionsResponseRawAnswersWebsiteMax),
+  "primaryGeography": zod.string().max(listBusinessTwinVersionsResponseRawAnswersPrimaryGeographyMax),
+  "industry": zod.string().max(listBusinessTwinVersionsResponseRawAnswersIndustryMax),
+  "offeringName": zod.string().max(listBusinessTwinVersionsResponseRawAnswersOfferingNameMax),
+  "productOrServiceDescription": zod.string().max(listBusinessTwinVersionsResponseRawAnswersProductOrServiceDescriptionMax),
+  "problemsSolved": zod.string().max(listBusinessTwinVersionsResponseRawAnswersProblemsSolvedMax),
+  "costOfInaction": zod.string().max(listBusinessTwinVersionsResponseRawAnswersCostOfInactionMax),
+  "typicalCustomerProfile": zod.string().max(listBusinessTwinVersionsResponseRawAnswersTypicalCustomerProfileMax),
+  "typicalEmployeeRange": zod.string().max(listBusinessTwinVersionsResponseRawAnswersTypicalEmployeeRangeMax),
+  "typicalRevenueRange": zod.string().max(listBusinessTwinVersionsResponseRawAnswersTypicalRevenueRangeMax),
+  "typicalDealSize": zod.string().max(listBusinessTwinVersionsResponseRawAnswersTypicalDealSizeMax),
+  "typicalSalesCycle": zod.string().max(listBusinessTwinVersionsResponseRawAnswersTypicalSalesCycleMax),
+  "targetGeographies": zod.string().max(listBusinessTwinVersionsResponseRawAnswersTargetGeographiesMax),
+  "bestCustomers": zod.array(zod.object({
+  "name": zod.string().max(listBusinessTwinVersionsResponseRawAnswersBestCustomersItemNameMax),
+  "whyGoodCustomer": zod.string().max(listBusinessTwinVersionsResponseRawAnswersBestCustomersItemWhyGoodCustomerMax),
+  "whyBoughtThen": zod.string().max(listBusinessTwinVersionsResponseRawAnswersBestCustomersItemWhyBoughtThenMax)
+})).min(listBusinessTwinVersionsResponseRawAnswersBestCustomersMin).max(listBusinessTwinVersionsResponseRawAnswersBestCustomersMax),
+  "badCustomerCharacteristics": zod.string().max(listBusinessTwinVersionsResponseRawAnswersBadCustomerCharacteristicsMax),
+  "commonBuyerRoles": zod.string().max(listBusinessTwinVersionsResponseRawAnswersCommonBuyerRolesMax),
+  "commonChampionRoles": zod.string().max(listBusinessTwinVersionsResponseRawAnswersCommonChampionRolesMax),
+  "commonTechnicalEvaluatorRoles": zod.string().max(listBusinessTwinVersionsResponseRawAnswersCommonTechnicalEvaluatorRolesMax),
+  "typicalUrgencyTriggers": zod.string().max(listBusinessTwinVersionsResponseRawAnswersTypicalUrgencyTriggersMax),
+  "majorDifferentiators": zod.string().max(listBusinessTwinVersionsResponseRawAnswersMajorDifferentiatorsMax),
+  "competitorsOrAlternatives": zod.string().max(listBusinessTwinVersionsResponseRawAnswersCompetitorsOrAlternativesMax),
+  "commonObjections": zod.string().max(listBusinessTwinVersionsResponseRawAnswersCommonObjectionsMax)
+}),
+  "aiInterpretation": zod.object({
+  "offering_summary": zod.string().max(listBusinessTwinVersionsResponseAiInterpretationOneOfferingSummaryMax),
+  "problems_solved": zod.array(zod.string().max(listBusinessTwinVersionsResponseAiInterpretationOneProblemsSolvedItemMax)),
+  "business_outcomes": zod.array(zod.string().max(listBusinessTwinVersionsResponseAiInterpretationOneBusinessOutcomesItemMax)),
+  "ideal_customer_patterns": zod.array(zod.string().max(listBusinessTwinVersionsResponseAiInterpretationOneIdealCustomerPatternsItemMax)),
+  "negative_customer_patterns": zod.array(zod.string().max(listBusinessTwinVersionsResponseAiInterpretationOneNegativeCustomerPatternsItemMax)),
+  "buying_triggers": zod.array(zod.string().max(listBusinessTwinVersionsResponseAiInterpretationOneBuyingTriggersItemMax)),
+  "buyer_roles": zod.array(zod.string().max(listBusinessTwinVersionsResponseAiInterpretationOneBuyerRolesItemMax)),
+  "champion_roles": zod.array(zod.string().max(listBusinessTwinVersionsResponseAiInterpretationOneChampionRolesItemMax)),
+  "technical_roles": zod.array(zod.string().max(listBusinessTwinVersionsResponseAiInterpretationOneTechnicalRolesItemMax)),
+  "industries": zod.array(zod.string().max(listBusinessTwinVersionsResponseAiInterpretationOneIndustriesItemMax)),
+  "geographies": zod.array(zod.string().max(listBusinessTwinVersionsResponseAiInterpretationOneGeographiesItemMax)),
+  "company_size_patterns": zod.array(zod.string().max(listBusinessTwinVersionsResponseAiInterpretationOneCompanySizePatternsItemMax)),
+  "technology_patterns": zod.array(zod.string().max(listBusinessTwinVersionsResponseAiInterpretationOneTechnologyPatternsItemMax)),
+  "compliance_patterns": zod.array(zod.string().max(listBusinessTwinVersionsResponseAiInterpretationOneCompliancePatternsItemMax)),
+  "urgency_patterns": zod.array(zod.string().max(listBusinessTwinVersionsResponseAiInterpretationOneUrgencyPatternsItemMax)),
+  "disqualifier_hypotheses": zod.array(zod.string().max(listBusinessTwinVersionsResponseAiInterpretationOneDisqualifierHypothesesItemMax)),
+  "differentiators": zod.array(zod.string().max(listBusinessTwinVersionsResponseAiInterpretationOneDifferentiatorsItemMax)),
+  "common_objections": zod.array(zod.string().max(listBusinessTwinVersionsResponseAiInterpretationOneCommonObjectionsItemMax))
+}).nullable(),
+  "manualInterpretation": zod.object({
+  "offering_summary": zod.string().max(listBusinessTwinVersionsResponseManualInterpretationOneOfferingSummaryMax),
+  "problems_solved": zod.array(zod.string().max(listBusinessTwinVersionsResponseManualInterpretationOneProblemsSolvedItemMax)),
+  "business_outcomes": zod.array(zod.string().max(listBusinessTwinVersionsResponseManualInterpretationOneBusinessOutcomesItemMax)),
+  "ideal_customer_patterns": zod.array(zod.string().max(listBusinessTwinVersionsResponseManualInterpretationOneIdealCustomerPatternsItemMax)),
+  "negative_customer_patterns": zod.array(zod.string().max(listBusinessTwinVersionsResponseManualInterpretationOneNegativeCustomerPatternsItemMax)),
+  "buying_triggers": zod.array(zod.string().max(listBusinessTwinVersionsResponseManualInterpretationOneBuyingTriggersItemMax)),
+  "buyer_roles": zod.array(zod.string().max(listBusinessTwinVersionsResponseManualInterpretationOneBuyerRolesItemMax)),
+  "champion_roles": zod.array(zod.string().max(listBusinessTwinVersionsResponseManualInterpretationOneChampionRolesItemMax)),
+  "technical_roles": zod.array(zod.string().max(listBusinessTwinVersionsResponseManualInterpretationOneTechnicalRolesItemMax)),
+  "industries": zod.array(zod.string().max(listBusinessTwinVersionsResponseManualInterpretationOneIndustriesItemMax)),
+  "geographies": zod.array(zod.string().max(listBusinessTwinVersionsResponseManualInterpretationOneGeographiesItemMax)),
+  "company_size_patterns": zod.array(zod.string().max(listBusinessTwinVersionsResponseManualInterpretationOneCompanySizePatternsItemMax)),
+  "technology_patterns": zod.array(zod.string().max(listBusinessTwinVersionsResponseManualInterpretationOneTechnologyPatternsItemMax)),
+  "compliance_patterns": zod.array(zod.string().max(listBusinessTwinVersionsResponseManualInterpretationOneCompliancePatternsItemMax)),
+  "urgency_patterns": zod.array(zod.string().max(listBusinessTwinVersionsResponseManualInterpretationOneUrgencyPatternsItemMax)),
+  "disqualifier_hypotheses": zod.array(zod.string().max(listBusinessTwinVersionsResponseManualInterpretationOneDisqualifierHypothesesItemMax)),
+  "differentiators": zod.array(zod.string().max(listBusinessTwinVersionsResponseManualInterpretationOneDifferentiatorsItemMax)),
+  "common_objections": zod.array(zod.string().max(listBusinessTwinVersionsResponseManualInterpretationOneCommonObjectionsItemMax))
+}).nullable(),
+  "modelUsed": zod.string().nullable(),
+  "promptVersion": zod.string().nullable(),
+  "status": zod.enum(['ready', 'manual']),
+  "createdBy": zod.string(),
+  "createdAt": zod.coerce.date()
+})
+export const ListBusinessTwinVersionsResponse = zod.array(ListBusinessTwinVersionsResponseItem)
+
+
+/**
+ * Creates a new immutable Business Twin version from explicit seller answers and a validated interpretation.
+ * @summary Save Business Twin answers as a new version
+ */
+export const CreateBusinessTwinVersionParams = zod.object({
+  "projectId": zod.coerce.string()
+})
+
+export const createBusinessTwinVersionBodyRawAnswersCompanyNameMax = 200;
+
+export const createBusinessTwinVersionBodyRawAnswersWebsiteMax = 500;
+
+export const createBusinessTwinVersionBodyRawAnswersPrimaryGeographyMax = 200;
+
+export const createBusinessTwinVersionBodyRawAnswersIndustryMax = 200;
+
+export const createBusinessTwinVersionBodyRawAnswersOfferingNameMax = 200;
+
+export const createBusinessTwinVersionBodyRawAnswersProductOrServiceDescriptionMax = 3000;
+
+export const createBusinessTwinVersionBodyRawAnswersProblemsSolvedMax = 3000;
+
+export const createBusinessTwinVersionBodyRawAnswersCostOfInactionMax = 3000;
+
+export const createBusinessTwinVersionBodyRawAnswersTypicalCustomerProfileMax = 2000;
+
+export const createBusinessTwinVersionBodyRawAnswersTypicalEmployeeRangeMax = 200;
+
+export const createBusinessTwinVersionBodyRawAnswersTypicalRevenueRangeMax = 200;
+
+export const createBusinessTwinVersionBodyRawAnswersTypicalDealSizeMax = 200;
+
+export const createBusinessTwinVersionBodyRawAnswersTypicalSalesCycleMax = 200;
+
+export const createBusinessTwinVersionBodyRawAnswersTargetGeographiesMax = 1000;
+
+export const createBusinessTwinVersionBodyRawAnswersBestCustomersItemNameMax = 200;
+
+export const createBusinessTwinVersionBodyRawAnswersBestCustomersItemWhyGoodCustomerMax = 2000;
+
+export const createBusinessTwinVersionBodyRawAnswersBestCustomersItemWhyBoughtThenMax = 2000;
+
+export const createBusinessTwinVersionBodyRawAnswersBestCustomersMin = 3;
+export const createBusinessTwinVersionBodyRawAnswersBestCustomersMax = 3;
+
+export const createBusinessTwinVersionBodyRawAnswersBadCustomerCharacteristicsMax = 3000;
+
+export const createBusinessTwinVersionBodyRawAnswersCommonBuyerRolesMax = 1000;
+
+export const createBusinessTwinVersionBodyRawAnswersCommonChampionRolesMax = 1000;
+
+export const createBusinessTwinVersionBodyRawAnswersCommonTechnicalEvaluatorRolesMax = 1000;
+
+export const createBusinessTwinVersionBodyRawAnswersTypicalUrgencyTriggersMax = 3000;
+
+export const createBusinessTwinVersionBodyRawAnswersMajorDifferentiatorsMax = 3000;
+
+export const createBusinessTwinVersionBodyRawAnswersCompetitorsOrAlternativesMax = 2000;
+
+export const createBusinessTwinVersionBodyRawAnswersCommonObjectionsMax = 3000;
+
+
+
+export const CreateBusinessTwinVersionBody = zod.object({
+  "rawAnswers": zod.object({
+  "companyName": zod.string().max(createBusinessTwinVersionBodyRawAnswersCompanyNameMax),
+  "website": zod.string().max(createBusinessTwinVersionBodyRawAnswersWebsiteMax),
+  "primaryGeography": zod.string().max(createBusinessTwinVersionBodyRawAnswersPrimaryGeographyMax),
+  "industry": zod.string().max(createBusinessTwinVersionBodyRawAnswersIndustryMax),
+  "offeringName": zod.string().max(createBusinessTwinVersionBodyRawAnswersOfferingNameMax),
+  "productOrServiceDescription": zod.string().max(createBusinessTwinVersionBodyRawAnswersProductOrServiceDescriptionMax),
+  "problemsSolved": zod.string().max(createBusinessTwinVersionBodyRawAnswersProblemsSolvedMax),
+  "costOfInaction": zod.string().max(createBusinessTwinVersionBodyRawAnswersCostOfInactionMax),
+  "typicalCustomerProfile": zod.string().max(createBusinessTwinVersionBodyRawAnswersTypicalCustomerProfileMax),
+  "typicalEmployeeRange": zod.string().max(createBusinessTwinVersionBodyRawAnswersTypicalEmployeeRangeMax),
+  "typicalRevenueRange": zod.string().max(createBusinessTwinVersionBodyRawAnswersTypicalRevenueRangeMax),
+  "typicalDealSize": zod.string().max(createBusinessTwinVersionBodyRawAnswersTypicalDealSizeMax),
+  "typicalSalesCycle": zod.string().max(createBusinessTwinVersionBodyRawAnswersTypicalSalesCycleMax),
+  "targetGeographies": zod.string().max(createBusinessTwinVersionBodyRawAnswersTargetGeographiesMax),
+  "bestCustomers": zod.array(zod.object({
+  "name": zod.string().max(createBusinessTwinVersionBodyRawAnswersBestCustomersItemNameMax),
+  "whyGoodCustomer": zod.string().max(createBusinessTwinVersionBodyRawAnswersBestCustomersItemWhyGoodCustomerMax),
+  "whyBoughtThen": zod.string().max(createBusinessTwinVersionBodyRawAnswersBestCustomersItemWhyBoughtThenMax)
+})).min(createBusinessTwinVersionBodyRawAnswersBestCustomersMin).max(createBusinessTwinVersionBodyRawAnswersBestCustomersMax),
+  "badCustomerCharacteristics": zod.string().max(createBusinessTwinVersionBodyRawAnswersBadCustomerCharacteristicsMax),
+  "commonBuyerRoles": zod.string().max(createBusinessTwinVersionBodyRawAnswersCommonBuyerRolesMax),
+  "commonChampionRoles": zod.string().max(createBusinessTwinVersionBodyRawAnswersCommonChampionRolesMax),
+  "commonTechnicalEvaluatorRoles": zod.string().max(createBusinessTwinVersionBodyRawAnswersCommonTechnicalEvaluatorRolesMax),
+  "typicalUrgencyTriggers": zod.string().max(createBusinessTwinVersionBodyRawAnswersTypicalUrgencyTriggersMax),
+  "majorDifferentiators": zod.string().max(createBusinessTwinVersionBodyRawAnswersMajorDifferentiatorsMax),
+  "competitorsOrAlternatives": zod.string().max(createBusinessTwinVersionBodyRawAnswersCompetitorsOrAlternativesMax),
+  "commonObjections": zod.string().max(createBusinessTwinVersionBodyRawAnswersCommonObjectionsMax)
+})
+})
+
+export const createBusinessTwinVersionResponseRawAnswersCompanyNameMax = 200;
+
+export const createBusinessTwinVersionResponseRawAnswersWebsiteMax = 500;
+
+export const createBusinessTwinVersionResponseRawAnswersPrimaryGeographyMax = 200;
+
+export const createBusinessTwinVersionResponseRawAnswersIndustryMax = 200;
+
+export const createBusinessTwinVersionResponseRawAnswersOfferingNameMax = 200;
+
+export const createBusinessTwinVersionResponseRawAnswersProductOrServiceDescriptionMax = 3000;
+
+export const createBusinessTwinVersionResponseRawAnswersProblemsSolvedMax = 3000;
+
+export const createBusinessTwinVersionResponseRawAnswersCostOfInactionMax = 3000;
+
+export const createBusinessTwinVersionResponseRawAnswersTypicalCustomerProfileMax = 2000;
+
+export const createBusinessTwinVersionResponseRawAnswersTypicalEmployeeRangeMax = 200;
+
+export const createBusinessTwinVersionResponseRawAnswersTypicalRevenueRangeMax = 200;
+
+export const createBusinessTwinVersionResponseRawAnswersTypicalDealSizeMax = 200;
+
+export const createBusinessTwinVersionResponseRawAnswersTypicalSalesCycleMax = 200;
+
+export const createBusinessTwinVersionResponseRawAnswersTargetGeographiesMax = 1000;
+
+export const createBusinessTwinVersionResponseRawAnswersBestCustomersItemNameMax = 200;
+
+export const createBusinessTwinVersionResponseRawAnswersBestCustomersItemWhyGoodCustomerMax = 2000;
+
+export const createBusinessTwinVersionResponseRawAnswersBestCustomersItemWhyBoughtThenMax = 2000;
+
+export const createBusinessTwinVersionResponseRawAnswersBestCustomersMin = 3;
+export const createBusinessTwinVersionResponseRawAnswersBestCustomersMax = 3;
+
+export const createBusinessTwinVersionResponseRawAnswersBadCustomerCharacteristicsMax = 3000;
+
+export const createBusinessTwinVersionResponseRawAnswersCommonBuyerRolesMax = 1000;
+
+export const createBusinessTwinVersionResponseRawAnswersCommonChampionRolesMax = 1000;
+
+export const createBusinessTwinVersionResponseRawAnswersCommonTechnicalEvaluatorRolesMax = 1000;
+
+export const createBusinessTwinVersionResponseRawAnswersTypicalUrgencyTriggersMax = 3000;
+
+export const createBusinessTwinVersionResponseRawAnswersMajorDifferentiatorsMax = 3000;
+
+export const createBusinessTwinVersionResponseRawAnswersCompetitorsOrAlternativesMax = 2000;
+
+export const createBusinessTwinVersionResponseRawAnswersCommonObjectionsMax = 3000;
+
+export const createBusinessTwinVersionResponseAiInterpretationOneOfferingSummaryMax = 3000;
+
+export const createBusinessTwinVersionResponseAiInterpretationOneProblemsSolvedItemMax = 500;
+
+export const createBusinessTwinVersionResponseAiInterpretationOneBusinessOutcomesItemMax = 500;
+
+export const createBusinessTwinVersionResponseAiInterpretationOneIdealCustomerPatternsItemMax = 500;
+
+export const createBusinessTwinVersionResponseAiInterpretationOneNegativeCustomerPatternsItemMax = 500;
+
+export const createBusinessTwinVersionResponseAiInterpretationOneBuyingTriggersItemMax = 500;
+
+export const createBusinessTwinVersionResponseAiInterpretationOneBuyerRolesItemMax = 300;
+
+export const createBusinessTwinVersionResponseAiInterpretationOneChampionRolesItemMax = 300;
+
+export const createBusinessTwinVersionResponseAiInterpretationOneTechnicalRolesItemMax = 300;
+
+export const createBusinessTwinVersionResponseAiInterpretationOneIndustriesItemMax = 300;
+
+export const createBusinessTwinVersionResponseAiInterpretationOneGeographiesItemMax = 300;
+
+export const createBusinessTwinVersionResponseAiInterpretationOneCompanySizePatternsItemMax = 300;
+
+export const createBusinessTwinVersionResponseAiInterpretationOneTechnologyPatternsItemMax = 300;
+
+export const createBusinessTwinVersionResponseAiInterpretationOneCompliancePatternsItemMax = 300;
+
+export const createBusinessTwinVersionResponseAiInterpretationOneUrgencyPatternsItemMax = 500;
+
+export const createBusinessTwinVersionResponseAiInterpretationOneDisqualifierHypothesesItemMax = 500;
+
+export const createBusinessTwinVersionResponseAiInterpretationOneDifferentiatorsItemMax = 500;
+
+export const createBusinessTwinVersionResponseAiInterpretationOneCommonObjectionsItemMax = 500;
+
+export const createBusinessTwinVersionResponseManualInterpretationOneOfferingSummaryMax = 3000;
+
+export const createBusinessTwinVersionResponseManualInterpretationOneProblemsSolvedItemMax = 500;
+
+export const createBusinessTwinVersionResponseManualInterpretationOneBusinessOutcomesItemMax = 500;
+
+export const createBusinessTwinVersionResponseManualInterpretationOneIdealCustomerPatternsItemMax = 500;
+
+export const createBusinessTwinVersionResponseManualInterpretationOneNegativeCustomerPatternsItemMax = 500;
+
+export const createBusinessTwinVersionResponseManualInterpretationOneBuyingTriggersItemMax = 500;
+
+export const createBusinessTwinVersionResponseManualInterpretationOneBuyerRolesItemMax = 300;
+
+export const createBusinessTwinVersionResponseManualInterpretationOneChampionRolesItemMax = 300;
+
+export const createBusinessTwinVersionResponseManualInterpretationOneTechnicalRolesItemMax = 300;
+
+export const createBusinessTwinVersionResponseManualInterpretationOneIndustriesItemMax = 300;
+
+export const createBusinessTwinVersionResponseManualInterpretationOneGeographiesItemMax = 300;
+
+export const createBusinessTwinVersionResponseManualInterpretationOneCompanySizePatternsItemMax = 300;
+
+export const createBusinessTwinVersionResponseManualInterpretationOneTechnologyPatternsItemMax = 300;
+
+export const createBusinessTwinVersionResponseManualInterpretationOneCompliancePatternsItemMax = 300;
+
+export const createBusinessTwinVersionResponseManualInterpretationOneUrgencyPatternsItemMax = 500;
+
+export const createBusinessTwinVersionResponseManualInterpretationOneDisqualifierHypothesesItemMax = 500;
+
+export const createBusinessTwinVersionResponseManualInterpretationOneDifferentiatorsItemMax = 500;
+
+export const createBusinessTwinVersionResponseManualInterpretationOneCommonObjectionsItemMax = 500;
+
+
+
+export const CreateBusinessTwinVersionResponse = zod.object({
+  "id": zod.string(),
+  "businessTwinId": zod.string(),
+  "projectId": zod.string(),
+  "version": zod.number(),
+  "rawAnswers": zod.object({
+  "companyName": zod.string().max(createBusinessTwinVersionResponseRawAnswersCompanyNameMax),
+  "website": zod.string().max(createBusinessTwinVersionResponseRawAnswersWebsiteMax),
+  "primaryGeography": zod.string().max(createBusinessTwinVersionResponseRawAnswersPrimaryGeographyMax),
+  "industry": zod.string().max(createBusinessTwinVersionResponseRawAnswersIndustryMax),
+  "offeringName": zod.string().max(createBusinessTwinVersionResponseRawAnswersOfferingNameMax),
+  "productOrServiceDescription": zod.string().max(createBusinessTwinVersionResponseRawAnswersProductOrServiceDescriptionMax),
+  "problemsSolved": zod.string().max(createBusinessTwinVersionResponseRawAnswersProblemsSolvedMax),
+  "costOfInaction": zod.string().max(createBusinessTwinVersionResponseRawAnswersCostOfInactionMax),
+  "typicalCustomerProfile": zod.string().max(createBusinessTwinVersionResponseRawAnswersTypicalCustomerProfileMax),
+  "typicalEmployeeRange": zod.string().max(createBusinessTwinVersionResponseRawAnswersTypicalEmployeeRangeMax),
+  "typicalRevenueRange": zod.string().max(createBusinessTwinVersionResponseRawAnswersTypicalRevenueRangeMax),
+  "typicalDealSize": zod.string().max(createBusinessTwinVersionResponseRawAnswersTypicalDealSizeMax),
+  "typicalSalesCycle": zod.string().max(createBusinessTwinVersionResponseRawAnswersTypicalSalesCycleMax),
+  "targetGeographies": zod.string().max(createBusinessTwinVersionResponseRawAnswersTargetGeographiesMax),
+  "bestCustomers": zod.array(zod.object({
+  "name": zod.string().max(createBusinessTwinVersionResponseRawAnswersBestCustomersItemNameMax),
+  "whyGoodCustomer": zod.string().max(createBusinessTwinVersionResponseRawAnswersBestCustomersItemWhyGoodCustomerMax),
+  "whyBoughtThen": zod.string().max(createBusinessTwinVersionResponseRawAnswersBestCustomersItemWhyBoughtThenMax)
+})).min(createBusinessTwinVersionResponseRawAnswersBestCustomersMin).max(createBusinessTwinVersionResponseRawAnswersBestCustomersMax),
+  "badCustomerCharacteristics": zod.string().max(createBusinessTwinVersionResponseRawAnswersBadCustomerCharacteristicsMax),
+  "commonBuyerRoles": zod.string().max(createBusinessTwinVersionResponseRawAnswersCommonBuyerRolesMax),
+  "commonChampionRoles": zod.string().max(createBusinessTwinVersionResponseRawAnswersCommonChampionRolesMax),
+  "commonTechnicalEvaluatorRoles": zod.string().max(createBusinessTwinVersionResponseRawAnswersCommonTechnicalEvaluatorRolesMax),
+  "typicalUrgencyTriggers": zod.string().max(createBusinessTwinVersionResponseRawAnswersTypicalUrgencyTriggersMax),
+  "majorDifferentiators": zod.string().max(createBusinessTwinVersionResponseRawAnswersMajorDifferentiatorsMax),
+  "competitorsOrAlternatives": zod.string().max(createBusinessTwinVersionResponseRawAnswersCompetitorsOrAlternativesMax),
+  "commonObjections": zod.string().max(createBusinessTwinVersionResponseRawAnswersCommonObjectionsMax)
+}),
+  "aiInterpretation": zod.object({
+  "offering_summary": zod.string().max(createBusinessTwinVersionResponseAiInterpretationOneOfferingSummaryMax),
+  "problems_solved": zod.array(zod.string().max(createBusinessTwinVersionResponseAiInterpretationOneProblemsSolvedItemMax)),
+  "business_outcomes": zod.array(zod.string().max(createBusinessTwinVersionResponseAiInterpretationOneBusinessOutcomesItemMax)),
+  "ideal_customer_patterns": zod.array(zod.string().max(createBusinessTwinVersionResponseAiInterpretationOneIdealCustomerPatternsItemMax)),
+  "negative_customer_patterns": zod.array(zod.string().max(createBusinessTwinVersionResponseAiInterpretationOneNegativeCustomerPatternsItemMax)),
+  "buying_triggers": zod.array(zod.string().max(createBusinessTwinVersionResponseAiInterpretationOneBuyingTriggersItemMax)),
+  "buyer_roles": zod.array(zod.string().max(createBusinessTwinVersionResponseAiInterpretationOneBuyerRolesItemMax)),
+  "champion_roles": zod.array(zod.string().max(createBusinessTwinVersionResponseAiInterpretationOneChampionRolesItemMax)),
+  "technical_roles": zod.array(zod.string().max(createBusinessTwinVersionResponseAiInterpretationOneTechnicalRolesItemMax)),
+  "industries": zod.array(zod.string().max(createBusinessTwinVersionResponseAiInterpretationOneIndustriesItemMax)),
+  "geographies": zod.array(zod.string().max(createBusinessTwinVersionResponseAiInterpretationOneGeographiesItemMax)),
+  "company_size_patterns": zod.array(zod.string().max(createBusinessTwinVersionResponseAiInterpretationOneCompanySizePatternsItemMax)),
+  "technology_patterns": zod.array(zod.string().max(createBusinessTwinVersionResponseAiInterpretationOneTechnologyPatternsItemMax)),
+  "compliance_patterns": zod.array(zod.string().max(createBusinessTwinVersionResponseAiInterpretationOneCompliancePatternsItemMax)),
+  "urgency_patterns": zod.array(zod.string().max(createBusinessTwinVersionResponseAiInterpretationOneUrgencyPatternsItemMax)),
+  "disqualifier_hypotheses": zod.array(zod.string().max(createBusinessTwinVersionResponseAiInterpretationOneDisqualifierHypothesesItemMax)),
+  "differentiators": zod.array(zod.string().max(createBusinessTwinVersionResponseAiInterpretationOneDifferentiatorsItemMax)),
+  "common_objections": zod.array(zod.string().max(createBusinessTwinVersionResponseAiInterpretationOneCommonObjectionsItemMax))
+}).nullable(),
+  "manualInterpretation": zod.object({
+  "offering_summary": zod.string().max(createBusinessTwinVersionResponseManualInterpretationOneOfferingSummaryMax),
+  "problems_solved": zod.array(zod.string().max(createBusinessTwinVersionResponseManualInterpretationOneProblemsSolvedItemMax)),
+  "business_outcomes": zod.array(zod.string().max(createBusinessTwinVersionResponseManualInterpretationOneBusinessOutcomesItemMax)),
+  "ideal_customer_patterns": zod.array(zod.string().max(createBusinessTwinVersionResponseManualInterpretationOneIdealCustomerPatternsItemMax)),
+  "negative_customer_patterns": zod.array(zod.string().max(createBusinessTwinVersionResponseManualInterpretationOneNegativeCustomerPatternsItemMax)),
+  "buying_triggers": zod.array(zod.string().max(createBusinessTwinVersionResponseManualInterpretationOneBuyingTriggersItemMax)),
+  "buyer_roles": zod.array(zod.string().max(createBusinessTwinVersionResponseManualInterpretationOneBuyerRolesItemMax)),
+  "champion_roles": zod.array(zod.string().max(createBusinessTwinVersionResponseManualInterpretationOneChampionRolesItemMax)),
+  "technical_roles": zod.array(zod.string().max(createBusinessTwinVersionResponseManualInterpretationOneTechnicalRolesItemMax)),
+  "industries": zod.array(zod.string().max(createBusinessTwinVersionResponseManualInterpretationOneIndustriesItemMax)),
+  "geographies": zod.array(zod.string().max(createBusinessTwinVersionResponseManualInterpretationOneGeographiesItemMax)),
+  "company_size_patterns": zod.array(zod.string().max(createBusinessTwinVersionResponseManualInterpretationOneCompanySizePatternsItemMax)),
+  "technology_patterns": zod.array(zod.string().max(createBusinessTwinVersionResponseManualInterpretationOneTechnologyPatternsItemMax)),
+  "compliance_patterns": zod.array(zod.string().max(createBusinessTwinVersionResponseManualInterpretationOneCompliancePatternsItemMax)),
+  "urgency_patterns": zod.array(zod.string().max(createBusinessTwinVersionResponseManualInterpretationOneUrgencyPatternsItemMax)),
+  "disqualifier_hypotheses": zod.array(zod.string().max(createBusinessTwinVersionResponseManualInterpretationOneDisqualifierHypothesesItemMax)),
+  "differentiators": zod.array(zod.string().max(createBusinessTwinVersionResponseManualInterpretationOneDifferentiatorsItemMax)),
+  "common_objections": zod.array(zod.string().max(createBusinessTwinVersionResponseManualInterpretationOneCommonObjectionsItemMax))
+}).nullable(),
+  "modelUsed": zod.string().nullable(),
+  "promptVersion": zod.string().nullable(),
+  "status": zod.enum(['ready', 'manual']),
+  "createdBy": zod.string(),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
+ * Returns a specific version only when it belongs to the requested project and the user has project membership.
+ * @summary Get a Business Twin version
+ */
+export const GetBusinessTwinVersionParams = zod.object({
+  "projectId": zod.coerce.string(),
+  "versionId": zod.coerce.string()
+})
+
+export const getBusinessTwinVersionResponseRawAnswersCompanyNameMax = 200;
+
+export const getBusinessTwinVersionResponseRawAnswersWebsiteMax = 500;
+
+export const getBusinessTwinVersionResponseRawAnswersPrimaryGeographyMax = 200;
+
+export const getBusinessTwinVersionResponseRawAnswersIndustryMax = 200;
+
+export const getBusinessTwinVersionResponseRawAnswersOfferingNameMax = 200;
+
+export const getBusinessTwinVersionResponseRawAnswersProductOrServiceDescriptionMax = 3000;
+
+export const getBusinessTwinVersionResponseRawAnswersProblemsSolvedMax = 3000;
+
+export const getBusinessTwinVersionResponseRawAnswersCostOfInactionMax = 3000;
+
+export const getBusinessTwinVersionResponseRawAnswersTypicalCustomerProfileMax = 2000;
+
+export const getBusinessTwinVersionResponseRawAnswersTypicalEmployeeRangeMax = 200;
+
+export const getBusinessTwinVersionResponseRawAnswersTypicalRevenueRangeMax = 200;
+
+export const getBusinessTwinVersionResponseRawAnswersTypicalDealSizeMax = 200;
+
+export const getBusinessTwinVersionResponseRawAnswersTypicalSalesCycleMax = 200;
+
+export const getBusinessTwinVersionResponseRawAnswersTargetGeographiesMax = 1000;
+
+export const getBusinessTwinVersionResponseRawAnswersBestCustomersItemNameMax = 200;
+
+export const getBusinessTwinVersionResponseRawAnswersBestCustomersItemWhyGoodCustomerMax = 2000;
+
+export const getBusinessTwinVersionResponseRawAnswersBestCustomersItemWhyBoughtThenMax = 2000;
+
+export const getBusinessTwinVersionResponseRawAnswersBestCustomersMin = 3;
+export const getBusinessTwinVersionResponseRawAnswersBestCustomersMax = 3;
+
+export const getBusinessTwinVersionResponseRawAnswersBadCustomerCharacteristicsMax = 3000;
+
+export const getBusinessTwinVersionResponseRawAnswersCommonBuyerRolesMax = 1000;
+
+export const getBusinessTwinVersionResponseRawAnswersCommonChampionRolesMax = 1000;
+
+export const getBusinessTwinVersionResponseRawAnswersCommonTechnicalEvaluatorRolesMax = 1000;
+
+export const getBusinessTwinVersionResponseRawAnswersTypicalUrgencyTriggersMax = 3000;
+
+export const getBusinessTwinVersionResponseRawAnswersMajorDifferentiatorsMax = 3000;
+
+export const getBusinessTwinVersionResponseRawAnswersCompetitorsOrAlternativesMax = 2000;
+
+export const getBusinessTwinVersionResponseRawAnswersCommonObjectionsMax = 3000;
+
+export const getBusinessTwinVersionResponseAiInterpretationOneOfferingSummaryMax = 3000;
+
+export const getBusinessTwinVersionResponseAiInterpretationOneProblemsSolvedItemMax = 500;
+
+export const getBusinessTwinVersionResponseAiInterpretationOneBusinessOutcomesItemMax = 500;
+
+export const getBusinessTwinVersionResponseAiInterpretationOneIdealCustomerPatternsItemMax = 500;
+
+export const getBusinessTwinVersionResponseAiInterpretationOneNegativeCustomerPatternsItemMax = 500;
+
+export const getBusinessTwinVersionResponseAiInterpretationOneBuyingTriggersItemMax = 500;
+
+export const getBusinessTwinVersionResponseAiInterpretationOneBuyerRolesItemMax = 300;
+
+export const getBusinessTwinVersionResponseAiInterpretationOneChampionRolesItemMax = 300;
+
+export const getBusinessTwinVersionResponseAiInterpretationOneTechnicalRolesItemMax = 300;
+
+export const getBusinessTwinVersionResponseAiInterpretationOneIndustriesItemMax = 300;
+
+export const getBusinessTwinVersionResponseAiInterpretationOneGeographiesItemMax = 300;
+
+export const getBusinessTwinVersionResponseAiInterpretationOneCompanySizePatternsItemMax = 300;
+
+export const getBusinessTwinVersionResponseAiInterpretationOneTechnologyPatternsItemMax = 300;
+
+export const getBusinessTwinVersionResponseAiInterpretationOneCompliancePatternsItemMax = 300;
+
+export const getBusinessTwinVersionResponseAiInterpretationOneUrgencyPatternsItemMax = 500;
+
+export const getBusinessTwinVersionResponseAiInterpretationOneDisqualifierHypothesesItemMax = 500;
+
+export const getBusinessTwinVersionResponseAiInterpretationOneDifferentiatorsItemMax = 500;
+
+export const getBusinessTwinVersionResponseAiInterpretationOneCommonObjectionsItemMax = 500;
+
+export const getBusinessTwinVersionResponseManualInterpretationOneOfferingSummaryMax = 3000;
+
+export const getBusinessTwinVersionResponseManualInterpretationOneProblemsSolvedItemMax = 500;
+
+export const getBusinessTwinVersionResponseManualInterpretationOneBusinessOutcomesItemMax = 500;
+
+export const getBusinessTwinVersionResponseManualInterpretationOneIdealCustomerPatternsItemMax = 500;
+
+export const getBusinessTwinVersionResponseManualInterpretationOneNegativeCustomerPatternsItemMax = 500;
+
+export const getBusinessTwinVersionResponseManualInterpretationOneBuyingTriggersItemMax = 500;
+
+export const getBusinessTwinVersionResponseManualInterpretationOneBuyerRolesItemMax = 300;
+
+export const getBusinessTwinVersionResponseManualInterpretationOneChampionRolesItemMax = 300;
+
+export const getBusinessTwinVersionResponseManualInterpretationOneTechnicalRolesItemMax = 300;
+
+export const getBusinessTwinVersionResponseManualInterpretationOneIndustriesItemMax = 300;
+
+export const getBusinessTwinVersionResponseManualInterpretationOneGeographiesItemMax = 300;
+
+export const getBusinessTwinVersionResponseManualInterpretationOneCompanySizePatternsItemMax = 300;
+
+export const getBusinessTwinVersionResponseManualInterpretationOneTechnologyPatternsItemMax = 300;
+
+export const getBusinessTwinVersionResponseManualInterpretationOneCompliancePatternsItemMax = 300;
+
+export const getBusinessTwinVersionResponseManualInterpretationOneUrgencyPatternsItemMax = 500;
+
+export const getBusinessTwinVersionResponseManualInterpretationOneDisqualifierHypothesesItemMax = 500;
+
+export const getBusinessTwinVersionResponseManualInterpretationOneDifferentiatorsItemMax = 500;
+
+export const getBusinessTwinVersionResponseManualInterpretationOneCommonObjectionsItemMax = 500;
+
+
+
+export const GetBusinessTwinVersionResponse = zod.object({
+  "id": zod.string(),
+  "businessTwinId": zod.string(),
+  "projectId": zod.string(),
+  "version": zod.number(),
+  "rawAnswers": zod.object({
+  "companyName": zod.string().max(getBusinessTwinVersionResponseRawAnswersCompanyNameMax),
+  "website": zod.string().max(getBusinessTwinVersionResponseRawAnswersWebsiteMax),
+  "primaryGeography": zod.string().max(getBusinessTwinVersionResponseRawAnswersPrimaryGeographyMax),
+  "industry": zod.string().max(getBusinessTwinVersionResponseRawAnswersIndustryMax),
+  "offeringName": zod.string().max(getBusinessTwinVersionResponseRawAnswersOfferingNameMax),
+  "productOrServiceDescription": zod.string().max(getBusinessTwinVersionResponseRawAnswersProductOrServiceDescriptionMax),
+  "problemsSolved": zod.string().max(getBusinessTwinVersionResponseRawAnswersProblemsSolvedMax),
+  "costOfInaction": zod.string().max(getBusinessTwinVersionResponseRawAnswersCostOfInactionMax),
+  "typicalCustomerProfile": zod.string().max(getBusinessTwinVersionResponseRawAnswersTypicalCustomerProfileMax),
+  "typicalEmployeeRange": zod.string().max(getBusinessTwinVersionResponseRawAnswersTypicalEmployeeRangeMax),
+  "typicalRevenueRange": zod.string().max(getBusinessTwinVersionResponseRawAnswersTypicalRevenueRangeMax),
+  "typicalDealSize": zod.string().max(getBusinessTwinVersionResponseRawAnswersTypicalDealSizeMax),
+  "typicalSalesCycle": zod.string().max(getBusinessTwinVersionResponseRawAnswersTypicalSalesCycleMax),
+  "targetGeographies": zod.string().max(getBusinessTwinVersionResponseRawAnswersTargetGeographiesMax),
+  "bestCustomers": zod.array(zod.object({
+  "name": zod.string().max(getBusinessTwinVersionResponseRawAnswersBestCustomersItemNameMax),
+  "whyGoodCustomer": zod.string().max(getBusinessTwinVersionResponseRawAnswersBestCustomersItemWhyGoodCustomerMax),
+  "whyBoughtThen": zod.string().max(getBusinessTwinVersionResponseRawAnswersBestCustomersItemWhyBoughtThenMax)
+})).min(getBusinessTwinVersionResponseRawAnswersBestCustomersMin).max(getBusinessTwinVersionResponseRawAnswersBestCustomersMax),
+  "badCustomerCharacteristics": zod.string().max(getBusinessTwinVersionResponseRawAnswersBadCustomerCharacteristicsMax),
+  "commonBuyerRoles": zod.string().max(getBusinessTwinVersionResponseRawAnswersCommonBuyerRolesMax),
+  "commonChampionRoles": zod.string().max(getBusinessTwinVersionResponseRawAnswersCommonChampionRolesMax),
+  "commonTechnicalEvaluatorRoles": zod.string().max(getBusinessTwinVersionResponseRawAnswersCommonTechnicalEvaluatorRolesMax),
+  "typicalUrgencyTriggers": zod.string().max(getBusinessTwinVersionResponseRawAnswersTypicalUrgencyTriggersMax),
+  "majorDifferentiators": zod.string().max(getBusinessTwinVersionResponseRawAnswersMajorDifferentiatorsMax),
+  "competitorsOrAlternatives": zod.string().max(getBusinessTwinVersionResponseRawAnswersCompetitorsOrAlternativesMax),
+  "commonObjections": zod.string().max(getBusinessTwinVersionResponseRawAnswersCommonObjectionsMax)
+}),
+  "aiInterpretation": zod.object({
+  "offering_summary": zod.string().max(getBusinessTwinVersionResponseAiInterpretationOneOfferingSummaryMax),
+  "problems_solved": zod.array(zod.string().max(getBusinessTwinVersionResponseAiInterpretationOneProblemsSolvedItemMax)),
+  "business_outcomes": zod.array(zod.string().max(getBusinessTwinVersionResponseAiInterpretationOneBusinessOutcomesItemMax)),
+  "ideal_customer_patterns": zod.array(zod.string().max(getBusinessTwinVersionResponseAiInterpretationOneIdealCustomerPatternsItemMax)),
+  "negative_customer_patterns": zod.array(zod.string().max(getBusinessTwinVersionResponseAiInterpretationOneNegativeCustomerPatternsItemMax)),
+  "buying_triggers": zod.array(zod.string().max(getBusinessTwinVersionResponseAiInterpretationOneBuyingTriggersItemMax)),
+  "buyer_roles": zod.array(zod.string().max(getBusinessTwinVersionResponseAiInterpretationOneBuyerRolesItemMax)),
+  "champion_roles": zod.array(zod.string().max(getBusinessTwinVersionResponseAiInterpretationOneChampionRolesItemMax)),
+  "technical_roles": zod.array(zod.string().max(getBusinessTwinVersionResponseAiInterpretationOneTechnicalRolesItemMax)),
+  "industries": zod.array(zod.string().max(getBusinessTwinVersionResponseAiInterpretationOneIndustriesItemMax)),
+  "geographies": zod.array(zod.string().max(getBusinessTwinVersionResponseAiInterpretationOneGeographiesItemMax)),
+  "company_size_patterns": zod.array(zod.string().max(getBusinessTwinVersionResponseAiInterpretationOneCompanySizePatternsItemMax)),
+  "technology_patterns": zod.array(zod.string().max(getBusinessTwinVersionResponseAiInterpretationOneTechnologyPatternsItemMax)),
+  "compliance_patterns": zod.array(zod.string().max(getBusinessTwinVersionResponseAiInterpretationOneCompliancePatternsItemMax)),
+  "urgency_patterns": zod.array(zod.string().max(getBusinessTwinVersionResponseAiInterpretationOneUrgencyPatternsItemMax)),
+  "disqualifier_hypotheses": zod.array(zod.string().max(getBusinessTwinVersionResponseAiInterpretationOneDisqualifierHypothesesItemMax)),
+  "differentiators": zod.array(zod.string().max(getBusinessTwinVersionResponseAiInterpretationOneDifferentiatorsItemMax)),
+  "common_objections": zod.array(zod.string().max(getBusinessTwinVersionResponseAiInterpretationOneCommonObjectionsItemMax))
+}).nullable(),
+  "manualInterpretation": zod.object({
+  "offering_summary": zod.string().max(getBusinessTwinVersionResponseManualInterpretationOneOfferingSummaryMax),
+  "problems_solved": zod.array(zod.string().max(getBusinessTwinVersionResponseManualInterpretationOneProblemsSolvedItemMax)),
+  "business_outcomes": zod.array(zod.string().max(getBusinessTwinVersionResponseManualInterpretationOneBusinessOutcomesItemMax)),
+  "ideal_customer_patterns": zod.array(zod.string().max(getBusinessTwinVersionResponseManualInterpretationOneIdealCustomerPatternsItemMax)),
+  "negative_customer_patterns": zod.array(zod.string().max(getBusinessTwinVersionResponseManualInterpretationOneNegativeCustomerPatternsItemMax)),
+  "buying_triggers": zod.array(zod.string().max(getBusinessTwinVersionResponseManualInterpretationOneBuyingTriggersItemMax)),
+  "buyer_roles": zod.array(zod.string().max(getBusinessTwinVersionResponseManualInterpretationOneBuyerRolesItemMax)),
+  "champion_roles": zod.array(zod.string().max(getBusinessTwinVersionResponseManualInterpretationOneChampionRolesItemMax)),
+  "technical_roles": zod.array(zod.string().max(getBusinessTwinVersionResponseManualInterpretationOneTechnicalRolesItemMax)),
+  "industries": zod.array(zod.string().max(getBusinessTwinVersionResponseManualInterpretationOneIndustriesItemMax)),
+  "geographies": zod.array(zod.string().max(getBusinessTwinVersionResponseManualInterpretationOneGeographiesItemMax)),
+  "company_size_patterns": zod.array(zod.string().max(getBusinessTwinVersionResponseManualInterpretationOneCompanySizePatternsItemMax)),
+  "technology_patterns": zod.array(zod.string().max(getBusinessTwinVersionResponseManualInterpretationOneTechnologyPatternsItemMax)),
+  "compliance_patterns": zod.array(zod.string().max(getBusinessTwinVersionResponseManualInterpretationOneCompliancePatternsItemMax)),
+  "urgency_patterns": zod.array(zod.string().max(getBusinessTwinVersionResponseManualInterpretationOneUrgencyPatternsItemMax)),
+  "disqualifier_hypotheses": zod.array(zod.string().max(getBusinessTwinVersionResponseManualInterpretationOneDisqualifierHypothesesItemMax)),
+  "differentiators": zod.array(zod.string().max(getBusinessTwinVersionResponseManualInterpretationOneDifferentiatorsItemMax)),
+  "common_objections": zod.array(zod.string().max(getBusinessTwinVersionResponseManualInterpretationOneCommonObjectionsItemMax))
+}).nullable(),
+  "modelUsed": zod.string().nullable(),
+  "promptVersion": zod.string().nullable(),
+  "status": zod.enum(['ready', 'manual']),
+  "createdBy": zod.string(),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
+ * Creates a new version from the current raw answers and a newly validated interpretation.
+ * @summary Regenerate the current Business Twin interpretation
+ */
+export const RegenerateBusinessTwinParams = zod.object({
+  "projectId": zod.coerce.string()
+})
+
+export const regenerateBusinessTwinResponseRawAnswersCompanyNameMax = 200;
+
+export const regenerateBusinessTwinResponseRawAnswersWebsiteMax = 500;
+
+export const regenerateBusinessTwinResponseRawAnswersPrimaryGeographyMax = 200;
+
+export const regenerateBusinessTwinResponseRawAnswersIndustryMax = 200;
+
+export const regenerateBusinessTwinResponseRawAnswersOfferingNameMax = 200;
+
+export const regenerateBusinessTwinResponseRawAnswersProductOrServiceDescriptionMax = 3000;
+
+export const regenerateBusinessTwinResponseRawAnswersProblemsSolvedMax = 3000;
+
+export const regenerateBusinessTwinResponseRawAnswersCostOfInactionMax = 3000;
+
+export const regenerateBusinessTwinResponseRawAnswersTypicalCustomerProfileMax = 2000;
+
+export const regenerateBusinessTwinResponseRawAnswersTypicalEmployeeRangeMax = 200;
+
+export const regenerateBusinessTwinResponseRawAnswersTypicalRevenueRangeMax = 200;
+
+export const regenerateBusinessTwinResponseRawAnswersTypicalDealSizeMax = 200;
+
+export const regenerateBusinessTwinResponseRawAnswersTypicalSalesCycleMax = 200;
+
+export const regenerateBusinessTwinResponseRawAnswersTargetGeographiesMax = 1000;
+
+export const regenerateBusinessTwinResponseRawAnswersBestCustomersItemNameMax = 200;
+
+export const regenerateBusinessTwinResponseRawAnswersBestCustomersItemWhyGoodCustomerMax = 2000;
+
+export const regenerateBusinessTwinResponseRawAnswersBestCustomersItemWhyBoughtThenMax = 2000;
+
+export const regenerateBusinessTwinResponseRawAnswersBestCustomersMin = 3;
+export const regenerateBusinessTwinResponseRawAnswersBestCustomersMax = 3;
+
+export const regenerateBusinessTwinResponseRawAnswersBadCustomerCharacteristicsMax = 3000;
+
+export const regenerateBusinessTwinResponseRawAnswersCommonBuyerRolesMax = 1000;
+
+export const regenerateBusinessTwinResponseRawAnswersCommonChampionRolesMax = 1000;
+
+export const regenerateBusinessTwinResponseRawAnswersCommonTechnicalEvaluatorRolesMax = 1000;
+
+export const regenerateBusinessTwinResponseRawAnswersTypicalUrgencyTriggersMax = 3000;
+
+export const regenerateBusinessTwinResponseRawAnswersMajorDifferentiatorsMax = 3000;
+
+export const regenerateBusinessTwinResponseRawAnswersCompetitorsOrAlternativesMax = 2000;
+
+export const regenerateBusinessTwinResponseRawAnswersCommonObjectionsMax = 3000;
+
+export const regenerateBusinessTwinResponseAiInterpretationOneOfferingSummaryMax = 3000;
+
+export const regenerateBusinessTwinResponseAiInterpretationOneProblemsSolvedItemMax = 500;
+
+export const regenerateBusinessTwinResponseAiInterpretationOneBusinessOutcomesItemMax = 500;
+
+export const regenerateBusinessTwinResponseAiInterpretationOneIdealCustomerPatternsItemMax = 500;
+
+export const regenerateBusinessTwinResponseAiInterpretationOneNegativeCustomerPatternsItemMax = 500;
+
+export const regenerateBusinessTwinResponseAiInterpretationOneBuyingTriggersItemMax = 500;
+
+export const regenerateBusinessTwinResponseAiInterpretationOneBuyerRolesItemMax = 300;
+
+export const regenerateBusinessTwinResponseAiInterpretationOneChampionRolesItemMax = 300;
+
+export const regenerateBusinessTwinResponseAiInterpretationOneTechnicalRolesItemMax = 300;
+
+export const regenerateBusinessTwinResponseAiInterpretationOneIndustriesItemMax = 300;
+
+export const regenerateBusinessTwinResponseAiInterpretationOneGeographiesItemMax = 300;
+
+export const regenerateBusinessTwinResponseAiInterpretationOneCompanySizePatternsItemMax = 300;
+
+export const regenerateBusinessTwinResponseAiInterpretationOneTechnologyPatternsItemMax = 300;
+
+export const regenerateBusinessTwinResponseAiInterpretationOneCompliancePatternsItemMax = 300;
+
+export const regenerateBusinessTwinResponseAiInterpretationOneUrgencyPatternsItemMax = 500;
+
+export const regenerateBusinessTwinResponseAiInterpretationOneDisqualifierHypothesesItemMax = 500;
+
+export const regenerateBusinessTwinResponseAiInterpretationOneDifferentiatorsItemMax = 500;
+
+export const regenerateBusinessTwinResponseAiInterpretationOneCommonObjectionsItemMax = 500;
+
+export const regenerateBusinessTwinResponseManualInterpretationOneOfferingSummaryMax = 3000;
+
+export const regenerateBusinessTwinResponseManualInterpretationOneProblemsSolvedItemMax = 500;
+
+export const regenerateBusinessTwinResponseManualInterpretationOneBusinessOutcomesItemMax = 500;
+
+export const regenerateBusinessTwinResponseManualInterpretationOneIdealCustomerPatternsItemMax = 500;
+
+export const regenerateBusinessTwinResponseManualInterpretationOneNegativeCustomerPatternsItemMax = 500;
+
+export const regenerateBusinessTwinResponseManualInterpretationOneBuyingTriggersItemMax = 500;
+
+export const regenerateBusinessTwinResponseManualInterpretationOneBuyerRolesItemMax = 300;
+
+export const regenerateBusinessTwinResponseManualInterpretationOneChampionRolesItemMax = 300;
+
+export const regenerateBusinessTwinResponseManualInterpretationOneTechnicalRolesItemMax = 300;
+
+export const regenerateBusinessTwinResponseManualInterpretationOneIndustriesItemMax = 300;
+
+export const regenerateBusinessTwinResponseManualInterpretationOneGeographiesItemMax = 300;
+
+export const regenerateBusinessTwinResponseManualInterpretationOneCompanySizePatternsItemMax = 300;
+
+export const regenerateBusinessTwinResponseManualInterpretationOneTechnologyPatternsItemMax = 300;
+
+export const regenerateBusinessTwinResponseManualInterpretationOneCompliancePatternsItemMax = 300;
+
+export const regenerateBusinessTwinResponseManualInterpretationOneUrgencyPatternsItemMax = 500;
+
+export const regenerateBusinessTwinResponseManualInterpretationOneDisqualifierHypothesesItemMax = 500;
+
+export const regenerateBusinessTwinResponseManualInterpretationOneDifferentiatorsItemMax = 500;
+
+export const regenerateBusinessTwinResponseManualInterpretationOneCommonObjectionsItemMax = 500;
+
+
+
+export const RegenerateBusinessTwinResponse = zod.object({
+  "id": zod.string(),
+  "businessTwinId": zod.string(),
+  "projectId": zod.string(),
+  "version": zod.number(),
+  "rawAnswers": zod.object({
+  "companyName": zod.string().max(regenerateBusinessTwinResponseRawAnswersCompanyNameMax),
+  "website": zod.string().max(regenerateBusinessTwinResponseRawAnswersWebsiteMax),
+  "primaryGeography": zod.string().max(regenerateBusinessTwinResponseRawAnswersPrimaryGeographyMax),
+  "industry": zod.string().max(regenerateBusinessTwinResponseRawAnswersIndustryMax),
+  "offeringName": zod.string().max(regenerateBusinessTwinResponseRawAnswersOfferingNameMax),
+  "productOrServiceDescription": zod.string().max(regenerateBusinessTwinResponseRawAnswersProductOrServiceDescriptionMax),
+  "problemsSolved": zod.string().max(regenerateBusinessTwinResponseRawAnswersProblemsSolvedMax),
+  "costOfInaction": zod.string().max(regenerateBusinessTwinResponseRawAnswersCostOfInactionMax),
+  "typicalCustomerProfile": zod.string().max(regenerateBusinessTwinResponseRawAnswersTypicalCustomerProfileMax),
+  "typicalEmployeeRange": zod.string().max(regenerateBusinessTwinResponseRawAnswersTypicalEmployeeRangeMax),
+  "typicalRevenueRange": zod.string().max(regenerateBusinessTwinResponseRawAnswersTypicalRevenueRangeMax),
+  "typicalDealSize": zod.string().max(regenerateBusinessTwinResponseRawAnswersTypicalDealSizeMax),
+  "typicalSalesCycle": zod.string().max(regenerateBusinessTwinResponseRawAnswersTypicalSalesCycleMax),
+  "targetGeographies": zod.string().max(regenerateBusinessTwinResponseRawAnswersTargetGeographiesMax),
+  "bestCustomers": zod.array(zod.object({
+  "name": zod.string().max(regenerateBusinessTwinResponseRawAnswersBestCustomersItemNameMax),
+  "whyGoodCustomer": zod.string().max(regenerateBusinessTwinResponseRawAnswersBestCustomersItemWhyGoodCustomerMax),
+  "whyBoughtThen": zod.string().max(regenerateBusinessTwinResponseRawAnswersBestCustomersItemWhyBoughtThenMax)
+})).min(regenerateBusinessTwinResponseRawAnswersBestCustomersMin).max(regenerateBusinessTwinResponseRawAnswersBestCustomersMax),
+  "badCustomerCharacteristics": zod.string().max(regenerateBusinessTwinResponseRawAnswersBadCustomerCharacteristicsMax),
+  "commonBuyerRoles": zod.string().max(regenerateBusinessTwinResponseRawAnswersCommonBuyerRolesMax),
+  "commonChampionRoles": zod.string().max(regenerateBusinessTwinResponseRawAnswersCommonChampionRolesMax),
+  "commonTechnicalEvaluatorRoles": zod.string().max(regenerateBusinessTwinResponseRawAnswersCommonTechnicalEvaluatorRolesMax),
+  "typicalUrgencyTriggers": zod.string().max(regenerateBusinessTwinResponseRawAnswersTypicalUrgencyTriggersMax),
+  "majorDifferentiators": zod.string().max(regenerateBusinessTwinResponseRawAnswersMajorDifferentiatorsMax),
+  "competitorsOrAlternatives": zod.string().max(regenerateBusinessTwinResponseRawAnswersCompetitorsOrAlternativesMax),
+  "commonObjections": zod.string().max(regenerateBusinessTwinResponseRawAnswersCommonObjectionsMax)
+}),
+  "aiInterpretation": zod.object({
+  "offering_summary": zod.string().max(regenerateBusinessTwinResponseAiInterpretationOneOfferingSummaryMax),
+  "problems_solved": zod.array(zod.string().max(regenerateBusinessTwinResponseAiInterpretationOneProblemsSolvedItemMax)),
+  "business_outcomes": zod.array(zod.string().max(regenerateBusinessTwinResponseAiInterpretationOneBusinessOutcomesItemMax)),
+  "ideal_customer_patterns": zod.array(zod.string().max(regenerateBusinessTwinResponseAiInterpretationOneIdealCustomerPatternsItemMax)),
+  "negative_customer_patterns": zod.array(zod.string().max(regenerateBusinessTwinResponseAiInterpretationOneNegativeCustomerPatternsItemMax)),
+  "buying_triggers": zod.array(zod.string().max(regenerateBusinessTwinResponseAiInterpretationOneBuyingTriggersItemMax)),
+  "buyer_roles": zod.array(zod.string().max(regenerateBusinessTwinResponseAiInterpretationOneBuyerRolesItemMax)),
+  "champion_roles": zod.array(zod.string().max(regenerateBusinessTwinResponseAiInterpretationOneChampionRolesItemMax)),
+  "technical_roles": zod.array(zod.string().max(regenerateBusinessTwinResponseAiInterpretationOneTechnicalRolesItemMax)),
+  "industries": zod.array(zod.string().max(regenerateBusinessTwinResponseAiInterpretationOneIndustriesItemMax)),
+  "geographies": zod.array(zod.string().max(regenerateBusinessTwinResponseAiInterpretationOneGeographiesItemMax)),
+  "company_size_patterns": zod.array(zod.string().max(regenerateBusinessTwinResponseAiInterpretationOneCompanySizePatternsItemMax)),
+  "technology_patterns": zod.array(zod.string().max(regenerateBusinessTwinResponseAiInterpretationOneTechnologyPatternsItemMax)),
+  "compliance_patterns": zod.array(zod.string().max(regenerateBusinessTwinResponseAiInterpretationOneCompliancePatternsItemMax)),
+  "urgency_patterns": zod.array(zod.string().max(regenerateBusinessTwinResponseAiInterpretationOneUrgencyPatternsItemMax)),
+  "disqualifier_hypotheses": zod.array(zod.string().max(regenerateBusinessTwinResponseAiInterpretationOneDisqualifierHypothesesItemMax)),
+  "differentiators": zod.array(zod.string().max(regenerateBusinessTwinResponseAiInterpretationOneDifferentiatorsItemMax)),
+  "common_objections": zod.array(zod.string().max(regenerateBusinessTwinResponseAiInterpretationOneCommonObjectionsItemMax))
+}).nullable(),
+  "manualInterpretation": zod.object({
+  "offering_summary": zod.string().max(regenerateBusinessTwinResponseManualInterpretationOneOfferingSummaryMax),
+  "problems_solved": zod.array(zod.string().max(regenerateBusinessTwinResponseManualInterpretationOneProblemsSolvedItemMax)),
+  "business_outcomes": zod.array(zod.string().max(regenerateBusinessTwinResponseManualInterpretationOneBusinessOutcomesItemMax)),
+  "ideal_customer_patterns": zod.array(zod.string().max(regenerateBusinessTwinResponseManualInterpretationOneIdealCustomerPatternsItemMax)),
+  "negative_customer_patterns": zod.array(zod.string().max(regenerateBusinessTwinResponseManualInterpretationOneNegativeCustomerPatternsItemMax)),
+  "buying_triggers": zod.array(zod.string().max(regenerateBusinessTwinResponseManualInterpretationOneBuyingTriggersItemMax)),
+  "buyer_roles": zod.array(zod.string().max(regenerateBusinessTwinResponseManualInterpretationOneBuyerRolesItemMax)),
+  "champion_roles": zod.array(zod.string().max(regenerateBusinessTwinResponseManualInterpretationOneChampionRolesItemMax)),
+  "technical_roles": zod.array(zod.string().max(regenerateBusinessTwinResponseManualInterpretationOneTechnicalRolesItemMax)),
+  "industries": zod.array(zod.string().max(regenerateBusinessTwinResponseManualInterpretationOneIndustriesItemMax)),
+  "geographies": zod.array(zod.string().max(regenerateBusinessTwinResponseManualInterpretationOneGeographiesItemMax)),
+  "company_size_patterns": zod.array(zod.string().max(regenerateBusinessTwinResponseManualInterpretationOneCompanySizePatternsItemMax)),
+  "technology_patterns": zod.array(zod.string().max(regenerateBusinessTwinResponseManualInterpretationOneTechnologyPatternsItemMax)),
+  "compliance_patterns": zod.array(zod.string().max(regenerateBusinessTwinResponseManualInterpretationOneCompliancePatternsItemMax)),
+  "urgency_patterns": zod.array(zod.string().max(regenerateBusinessTwinResponseManualInterpretationOneUrgencyPatternsItemMax)),
+  "disqualifier_hypotheses": zod.array(zod.string().max(regenerateBusinessTwinResponseManualInterpretationOneDisqualifierHypothesesItemMax)),
+  "differentiators": zod.array(zod.string().max(regenerateBusinessTwinResponseManualInterpretationOneDifferentiatorsItemMax)),
+  "common_objections": zod.array(zod.string().max(regenerateBusinessTwinResponseManualInterpretationOneCommonObjectionsItemMax))
+}).nullable(),
+  "modelUsed": zod.string().nullable(),
+  "promptVersion": zod.string().nullable(),
+  "status": zod.enum(['ready', 'manual']),
+  "createdBy": zod.string(),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
+ * Creates a new immutable version carrying the selected version's raw answers and manually refined interpretation.
+ * @summary Save manual Business Twin interpretation refinements
+ */
+export const UpdateBusinessTwinInterpretationParams = zod.object({
+  "projectId": zod.coerce.string(),
+  "versionId": zod.coerce.string()
+})
+
+export const updateBusinessTwinInterpretationBodyManualInterpretationOfferingSummaryMax = 3000;
+
+export const updateBusinessTwinInterpretationBodyManualInterpretationProblemsSolvedItemMax = 500;
+
+export const updateBusinessTwinInterpretationBodyManualInterpretationBusinessOutcomesItemMax = 500;
+
+export const updateBusinessTwinInterpretationBodyManualInterpretationIdealCustomerPatternsItemMax = 500;
+
+export const updateBusinessTwinInterpretationBodyManualInterpretationNegativeCustomerPatternsItemMax = 500;
+
+export const updateBusinessTwinInterpretationBodyManualInterpretationBuyingTriggersItemMax = 500;
+
+export const updateBusinessTwinInterpretationBodyManualInterpretationBuyerRolesItemMax = 300;
+
+export const updateBusinessTwinInterpretationBodyManualInterpretationChampionRolesItemMax = 300;
+
+export const updateBusinessTwinInterpretationBodyManualInterpretationTechnicalRolesItemMax = 300;
+
+export const updateBusinessTwinInterpretationBodyManualInterpretationIndustriesItemMax = 300;
+
+export const updateBusinessTwinInterpretationBodyManualInterpretationGeographiesItemMax = 300;
+
+export const updateBusinessTwinInterpretationBodyManualInterpretationCompanySizePatternsItemMax = 300;
+
+export const updateBusinessTwinInterpretationBodyManualInterpretationTechnologyPatternsItemMax = 300;
+
+export const updateBusinessTwinInterpretationBodyManualInterpretationCompliancePatternsItemMax = 300;
+
+export const updateBusinessTwinInterpretationBodyManualInterpretationUrgencyPatternsItemMax = 500;
+
+export const updateBusinessTwinInterpretationBodyManualInterpretationDisqualifierHypothesesItemMax = 500;
+
+export const updateBusinessTwinInterpretationBodyManualInterpretationDifferentiatorsItemMax = 500;
+
+export const updateBusinessTwinInterpretationBodyManualInterpretationCommonObjectionsItemMax = 500;
+
+
+
+export const UpdateBusinessTwinInterpretationBody = zod.object({
+  "manualInterpretation": zod.object({
+  "offering_summary": zod.string().max(updateBusinessTwinInterpretationBodyManualInterpretationOfferingSummaryMax),
+  "problems_solved": zod.array(zod.string().max(updateBusinessTwinInterpretationBodyManualInterpretationProblemsSolvedItemMax)),
+  "business_outcomes": zod.array(zod.string().max(updateBusinessTwinInterpretationBodyManualInterpretationBusinessOutcomesItemMax)),
+  "ideal_customer_patterns": zod.array(zod.string().max(updateBusinessTwinInterpretationBodyManualInterpretationIdealCustomerPatternsItemMax)),
+  "negative_customer_patterns": zod.array(zod.string().max(updateBusinessTwinInterpretationBodyManualInterpretationNegativeCustomerPatternsItemMax)),
+  "buying_triggers": zod.array(zod.string().max(updateBusinessTwinInterpretationBodyManualInterpretationBuyingTriggersItemMax)),
+  "buyer_roles": zod.array(zod.string().max(updateBusinessTwinInterpretationBodyManualInterpretationBuyerRolesItemMax)),
+  "champion_roles": zod.array(zod.string().max(updateBusinessTwinInterpretationBodyManualInterpretationChampionRolesItemMax)),
+  "technical_roles": zod.array(zod.string().max(updateBusinessTwinInterpretationBodyManualInterpretationTechnicalRolesItemMax)),
+  "industries": zod.array(zod.string().max(updateBusinessTwinInterpretationBodyManualInterpretationIndustriesItemMax)),
+  "geographies": zod.array(zod.string().max(updateBusinessTwinInterpretationBodyManualInterpretationGeographiesItemMax)),
+  "company_size_patterns": zod.array(zod.string().max(updateBusinessTwinInterpretationBodyManualInterpretationCompanySizePatternsItemMax)),
+  "technology_patterns": zod.array(zod.string().max(updateBusinessTwinInterpretationBodyManualInterpretationTechnologyPatternsItemMax)),
+  "compliance_patterns": zod.array(zod.string().max(updateBusinessTwinInterpretationBodyManualInterpretationCompliancePatternsItemMax)),
+  "urgency_patterns": zod.array(zod.string().max(updateBusinessTwinInterpretationBodyManualInterpretationUrgencyPatternsItemMax)),
+  "disqualifier_hypotheses": zod.array(zod.string().max(updateBusinessTwinInterpretationBodyManualInterpretationDisqualifierHypothesesItemMax)),
+  "differentiators": zod.array(zod.string().max(updateBusinessTwinInterpretationBodyManualInterpretationDifferentiatorsItemMax)),
+  "common_objections": zod.array(zod.string().max(updateBusinessTwinInterpretationBodyManualInterpretationCommonObjectionsItemMax))
+})
+})
+
+export const updateBusinessTwinInterpretationResponseRawAnswersCompanyNameMax = 200;
+
+export const updateBusinessTwinInterpretationResponseRawAnswersWebsiteMax = 500;
+
+export const updateBusinessTwinInterpretationResponseRawAnswersPrimaryGeographyMax = 200;
+
+export const updateBusinessTwinInterpretationResponseRawAnswersIndustryMax = 200;
+
+export const updateBusinessTwinInterpretationResponseRawAnswersOfferingNameMax = 200;
+
+export const updateBusinessTwinInterpretationResponseRawAnswersProductOrServiceDescriptionMax = 3000;
+
+export const updateBusinessTwinInterpretationResponseRawAnswersProblemsSolvedMax = 3000;
+
+export const updateBusinessTwinInterpretationResponseRawAnswersCostOfInactionMax = 3000;
+
+export const updateBusinessTwinInterpretationResponseRawAnswersTypicalCustomerProfileMax = 2000;
+
+export const updateBusinessTwinInterpretationResponseRawAnswersTypicalEmployeeRangeMax = 200;
+
+export const updateBusinessTwinInterpretationResponseRawAnswersTypicalRevenueRangeMax = 200;
+
+export const updateBusinessTwinInterpretationResponseRawAnswersTypicalDealSizeMax = 200;
+
+export const updateBusinessTwinInterpretationResponseRawAnswersTypicalSalesCycleMax = 200;
+
+export const updateBusinessTwinInterpretationResponseRawAnswersTargetGeographiesMax = 1000;
+
+export const updateBusinessTwinInterpretationResponseRawAnswersBestCustomersItemNameMax = 200;
+
+export const updateBusinessTwinInterpretationResponseRawAnswersBestCustomersItemWhyGoodCustomerMax = 2000;
+
+export const updateBusinessTwinInterpretationResponseRawAnswersBestCustomersItemWhyBoughtThenMax = 2000;
+
+export const updateBusinessTwinInterpretationResponseRawAnswersBestCustomersMin = 3;
+export const updateBusinessTwinInterpretationResponseRawAnswersBestCustomersMax = 3;
+
+export const updateBusinessTwinInterpretationResponseRawAnswersBadCustomerCharacteristicsMax = 3000;
+
+export const updateBusinessTwinInterpretationResponseRawAnswersCommonBuyerRolesMax = 1000;
+
+export const updateBusinessTwinInterpretationResponseRawAnswersCommonChampionRolesMax = 1000;
+
+export const updateBusinessTwinInterpretationResponseRawAnswersCommonTechnicalEvaluatorRolesMax = 1000;
+
+export const updateBusinessTwinInterpretationResponseRawAnswersTypicalUrgencyTriggersMax = 3000;
+
+export const updateBusinessTwinInterpretationResponseRawAnswersMajorDifferentiatorsMax = 3000;
+
+export const updateBusinessTwinInterpretationResponseRawAnswersCompetitorsOrAlternativesMax = 2000;
+
+export const updateBusinessTwinInterpretationResponseRawAnswersCommonObjectionsMax = 3000;
+
+export const updateBusinessTwinInterpretationResponseAiInterpretationOneOfferingSummaryMax = 3000;
+
+export const updateBusinessTwinInterpretationResponseAiInterpretationOneProblemsSolvedItemMax = 500;
+
+export const updateBusinessTwinInterpretationResponseAiInterpretationOneBusinessOutcomesItemMax = 500;
+
+export const updateBusinessTwinInterpretationResponseAiInterpretationOneIdealCustomerPatternsItemMax = 500;
+
+export const updateBusinessTwinInterpretationResponseAiInterpretationOneNegativeCustomerPatternsItemMax = 500;
+
+export const updateBusinessTwinInterpretationResponseAiInterpretationOneBuyingTriggersItemMax = 500;
+
+export const updateBusinessTwinInterpretationResponseAiInterpretationOneBuyerRolesItemMax = 300;
+
+export const updateBusinessTwinInterpretationResponseAiInterpretationOneChampionRolesItemMax = 300;
+
+export const updateBusinessTwinInterpretationResponseAiInterpretationOneTechnicalRolesItemMax = 300;
+
+export const updateBusinessTwinInterpretationResponseAiInterpretationOneIndustriesItemMax = 300;
+
+export const updateBusinessTwinInterpretationResponseAiInterpretationOneGeographiesItemMax = 300;
+
+export const updateBusinessTwinInterpretationResponseAiInterpretationOneCompanySizePatternsItemMax = 300;
+
+export const updateBusinessTwinInterpretationResponseAiInterpretationOneTechnologyPatternsItemMax = 300;
+
+export const updateBusinessTwinInterpretationResponseAiInterpretationOneCompliancePatternsItemMax = 300;
+
+export const updateBusinessTwinInterpretationResponseAiInterpretationOneUrgencyPatternsItemMax = 500;
+
+export const updateBusinessTwinInterpretationResponseAiInterpretationOneDisqualifierHypothesesItemMax = 500;
+
+export const updateBusinessTwinInterpretationResponseAiInterpretationOneDifferentiatorsItemMax = 500;
+
+export const updateBusinessTwinInterpretationResponseAiInterpretationOneCommonObjectionsItemMax = 500;
+
+export const updateBusinessTwinInterpretationResponseManualInterpretationOneOfferingSummaryMax = 3000;
+
+export const updateBusinessTwinInterpretationResponseManualInterpretationOneProblemsSolvedItemMax = 500;
+
+export const updateBusinessTwinInterpretationResponseManualInterpretationOneBusinessOutcomesItemMax = 500;
+
+export const updateBusinessTwinInterpretationResponseManualInterpretationOneIdealCustomerPatternsItemMax = 500;
+
+export const updateBusinessTwinInterpretationResponseManualInterpretationOneNegativeCustomerPatternsItemMax = 500;
+
+export const updateBusinessTwinInterpretationResponseManualInterpretationOneBuyingTriggersItemMax = 500;
+
+export const updateBusinessTwinInterpretationResponseManualInterpretationOneBuyerRolesItemMax = 300;
+
+export const updateBusinessTwinInterpretationResponseManualInterpretationOneChampionRolesItemMax = 300;
+
+export const updateBusinessTwinInterpretationResponseManualInterpretationOneTechnicalRolesItemMax = 300;
+
+export const updateBusinessTwinInterpretationResponseManualInterpretationOneIndustriesItemMax = 300;
+
+export const updateBusinessTwinInterpretationResponseManualInterpretationOneGeographiesItemMax = 300;
+
+export const updateBusinessTwinInterpretationResponseManualInterpretationOneCompanySizePatternsItemMax = 300;
+
+export const updateBusinessTwinInterpretationResponseManualInterpretationOneTechnologyPatternsItemMax = 300;
+
+export const updateBusinessTwinInterpretationResponseManualInterpretationOneCompliancePatternsItemMax = 300;
+
+export const updateBusinessTwinInterpretationResponseManualInterpretationOneUrgencyPatternsItemMax = 500;
+
+export const updateBusinessTwinInterpretationResponseManualInterpretationOneDisqualifierHypothesesItemMax = 500;
+
+export const updateBusinessTwinInterpretationResponseManualInterpretationOneDifferentiatorsItemMax = 500;
+
+export const updateBusinessTwinInterpretationResponseManualInterpretationOneCommonObjectionsItemMax = 500;
+
+
+
+export const UpdateBusinessTwinInterpretationResponse = zod.object({
+  "id": zod.string(),
+  "businessTwinId": zod.string(),
+  "projectId": zod.string(),
+  "version": zod.number(),
+  "rawAnswers": zod.object({
+  "companyName": zod.string().max(updateBusinessTwinInterpretationResponseRawAnswersCompanyNameMax),
+  "website": zod.string().max(updateBusinessTwinInterpretationResponseRawAnswersWebsiteMax),
+  "primaryGeography": zod.string().max(updateBusinessTwinInterpretationResponseRawAnswersPrimaryGeographyMax),
+  "industry": zod.string().max(updateBusinessTwinInterpretationResponseRawAnswersIndustryMax),
+  "offeringName": zod.string().max(updateBusinessTwinInterpretationResponseRawAnswersOfferingNameMax),
+  "productOrServiceDescription": zod.string().max(updateBusinessTwinInterpretationResponseRawAnswersProductOrServiceDescriptionMax),
+  "problemsSolved": zod.string().max(updateBusinessTwinInterpretationResponseRawAnswersProblemsSolvedMax),
+  "costOfInaction": zod.string().max(updateBusinessTwinInterpretationResponseRawAnswersCostOfInactionMax),
+  "typicalCustomerProfile": zod.string().max(updateBusinessTwinInterpretationResponseRawAnswersTypicalCustomerProfileMax),
+  "typicalEmployeeRange": zod.string().max(updateBusinessTwinInterpretationResponseRawAnswersTypicalEmployeeRangeMax),
+  "typicalRevenueRange": zod.string().max(updateBusinessTwinInterpretationResponseRawAnswersTypicalRevenueRangeMax),
+  "typicalDealSize": zod.string().max(updateBusinessTwinInterpretationResponseRawAnswersTypicalDealSizeMax),
+  "typicalSalesCycle": zod.string().max(updateBusinessTwinInterpretationResponseRawAnswersTypicalSalesCycleMax),
+  "targetGeographies": zod.string().max(updateBusinessTwinInterpretationResponseRawAnswersTargetGeographiesMax),
+  "bestCustomers": zod.array(zod.object({
+  "name": zod.string().max(updateBusinessTwinInterpretationResponseRawAnswersBestCustomersItemNameMax),
+  "whyGoodCustomer": zod.string().max(updateBusinessTwinInterpretationResponseRawAnswersBestCustomersItemWhyGoodCustomerMax),
+  "whyBoughtThen": zod.string().max(updateBusinessTwinInterpretationResponseRawAnswersBestCustomersItemWhyBoughtThenMax)
+})).min(updateBusinessTwinInterpretationResponseRawAnswersBestCustomersMin).max(updateBusinessTwinInterpretationResponseRawAnswersBestCustomersMax),
+  "badCustomerCharacteristics": zod.string().max(updateBusinessTwinInterpretationResponseRawAnswersBadCustomerCharacteristicsMax),
+  "commonBuyerRoles": zod.string().max(updateBusinessTwinInterpretationResponseRawAnswersCommonBuyerRolesMax),
+  "commonChampionRoles": zod.string().max(updateBusinessTwinInterpretationResponseRawAnswersCommonChampionRolesMax),
+  "commonTechnicalEvaluatorRoles": zod.string().max(updateBusinessTwinInterpretationResponseRawAnswersCommonTechnicalEvaluatorRolesMax),
+  "typicalUrgencyTriggers": zod.string().max(updateBusinessTwinInterpretationResponseRawAnswersTypicalUrgencyTriggersMax),
+  "majorDifferentiators": zod.string().max(updateBusinessTwinInterpretationResponseRawAnswersMajorDifferentiatorsMax),
+  "competitorsOrAlternatives": zod.string().max(updateBusinessTwinInterpretationResponseRawAnswersCompetitorsOrAlternativesMax),
+  "commonObjections": zod.string().max(updateBusinessTwinInterpretationResponseRawAnswersCommonObjectionsMax)
+}),
+  "aiInterpretation": zod.object({
+  "offering_summary": zod.string().max(updateBusinessTwinInterpretationResponseAiInterpretationOneOfferingSummaryMax),
+  "problems_solved": zod.array(zod.string().max(updateBusinessTwinInterpretationResponseAiInterpretationOneProblemsSolvedItemMax)),
+  "business_outcomes": zod.array(zod.string().max(updateBusinessTwinInterpretationResponseAiInterpretationOneBusinessOutcomesItemMax)),
+  "ideal_customer_patterns": zod.array(zod.string().max(updateBusinessTwinInterpretationResponseAiInterpretationOneIdealCustomerPatternsItemMax)),
+  "negative_customer_patterns": zod.array(zod.string().max(updateBusinessTwinInterpretationResponseAiInterpretationOneNegativeCustomerPatternsItemMax)),
+  "buying_triggers": zod.array(zod.string().max(updateBusinessTwinInterpretationResponseAiInterpretationOneBuyingTriggersItemMax)),
+  "buyer_roles": zod.array(zod.string().max(updateBusinessTwinInterpretationResponseAiInterpretationOneBuyerRolesItemMax)),
+  "champion_roles": zod.array(zod.string().max(updateBusinessTwinInterpretationResponseAiInterpretationOneChampionRolesItemMax)),
+  "technical_roles": zod.array(zod.string().max(updateBusinessTwinInterpretationResponseAiInterpretationOneTechnicalRolesItemMax)),
+  "industries": zod.array(zod.string().max(updateBusinessTwinInterpretationResponseAiInterpretationOneIndustriesItemMax)),
+  "geographies": zod.array(zod.string().max(updateBusinessTwinInterpretationResponseAiInterpretationOneGeographiesItemMax)),
+  "company_size_patterns": zod.array(zod.string().max(updateBusinessTwinInterpretationResponseAiInterpretationOneCompanySizePatternsItemMax)),
+  "technology_patterns": zod.array(zod.string().max(updateBusinessTwinInterpretationResponseAiInterpretationOneTechnologyPatternsItemMax)),
+  "compliance_patterns": zod.array(zod.string().max(updateBusinessTwinInterpretationResponseAiInterpretationOneCompliancePatternsItemMax)),
+  "urgency_patterns": zod.array(zod.string().max(updateBusinessTwinInterpretationResponseAiInterpretationOneUrgencyPatternsItemMax)),
+  "disqualifier_hypotheses": zod.array(zod.string().max(updateBusinessTwinInterpretationResponseAiInterpretationOneDisqualifierHypothesesItemMax)),
+  "differentiators": zod.array(zod.string().max(updateBusinessTwinInterpretationResponseAiInterpretationOneDifferentiatorsItemMax)),
+  "common_objections": zod.array(zod.string().max(updateBusinessTwinInterpretationResponseAiInterpretationOneCommonObjectionsItemMax))
+}).nullable(),
+  "manualInterpretation": zod.object({
+  "offering_summary": zod.string().max(updateBusinessTwinInterpretationResponseManualInterpretationOneOfferingSummaryMax),
+  "problems_solved": zod.array(zod.string().max(updateBusinessTwinInterpretationResponseManualInterpretationOneProblemsSolvedItemMax)),
+  "business_outcomes": zod.array(zod.string().max(updateBusinessTwinInterpretationResponseManualInterpretationOneBusinessOutcomesItemMax)),
+  "ideal_customer_patterns": zod.array(zod.string().max(updateBusinessTwinInterpretationResponseManualInterpretationOneIdealCustomerPatternsItemMax)),
+  "negative_customer_patterns": zod.array(zod.string().max(updateBusinessTwinInterpretationResponseManualInterpretationOneNegativeCustomerPatternsItemMax)),
+  "buying_triggers": zod.array(zod.string().max(updateBusinessTwinInterpretationResponseManualInterpretationOneBuyingTriggersItemMax)),
+  "buyer_roles": zod.array(zod.string().max(updateBusinessTwinInterpretationResponseManualInterpretationOneBuyerRolesItemMax)),
+  "champion_roles": zod.array(zod.string().max(updateBusinessTwinInterpretationResponseManualInterpretationOneChampionRolesItemMax)),
+  "technical_roles": zod.array(zod.string().max(updateBusinessTwinInterpretationResponseManualInterpretationOneTechnicalRolesItemMax)),
+  "industries": zod.array(zod.string().max(updateBusinessTwinInterpretationResponseManualInterpretationOneIndustriesItemMax)),
+  "geographies": zod.array(zod.string().max(updateBusinessTwinInterpretationResponseManualInterpretationOneGeographiesItemMax)),
+  "company_size_patterns": zod.array(zod.string().max(updateBusinessTwinInterpretationResponseManualInterpretationOneCompanySizePatternsItemMax)),
+  "technology_patterns": zod.array(zod.string().max(updateBusinessTwinInterpretationResponseManualInterpretationOneTechnologyPatternsItemMax)),
+  "compliance_patterns": zod.array(zod.string().max(updateBusinessTwinInterpretationResponseManualInterpretationOneCompliancePatternsItemMax)),
+  "urgency_patterns": zod.array(zod.string().max(updateBusinessTwinInterpretationResponseManualInterpretationOneUrgencyPatternsItemMax)),
+  "disqualifier_hypotheses": zod.array(zod.string().max(updateBusinessTwinInterpretationResponseManualInterpretationOneDisqualifierHypothesesItemMax)),
+  "differentiators": zod.array(zod.string().max(updateBusinessTwinInterpretationResponseManualInterpretationOneDifferentiatorsItemMax)),
+  "common_objections": zod.array(zod.string().max(updateBusinessTwinInterpretationResponseManualInterpretationOneCommonObjectionsItemMax))
+}).nullable(),
+  "modelUsed": zod.string().nullable(),
+  "promptVersion": zod.string().nullable(),
+  "status": zod.enum(['ready', 'manual']),
+  "createdBy": zod.string(),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
  * Completes first-login onboarding with one organization and its first project.
  * @summary Create an organization and first project
  */

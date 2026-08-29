@@ -41,17 +41,17 @@ Business Twin
 → Learning
 ```
 
-## Identity and project shell milestone
+## Implemented foundation and Business Twin
 
-The current milestone adds authenticated users, JYRA-managed organizations and memberships, projects representing distinct selling motions, first-login onboarding, and a project-aware application shell.
+The implemented product includes authenticated users, JYRA-managed organizations and memberships, project-aware onboarding, and a versioned Business Twin for each selling motion.
 
-The application exposes Today, Opportunities, Companies, Business Twin, ICP, Research, Outcomes, and Settings. Future intelligence areas remain explicit empty states: this milestone does not implement market research, company discovery, contact enrichment, scoring, opportunity recommendations, or sales outcome learning.
+Business Twin preserves the seller's raw answers separately from strictly validated AI interpretation and optional manual refinement. Editing answers, regenerating AI, or refining interpretation creates a new immutable version. Future intelligence areas remain explicit empty states: this milestone does not implement ICP, market research, company discovery, contact enrichment, scoring, opportunity recommendations, or sales outcome learning.
 
 Missing intelligence remains missing rather than negative evidence. Empty counts, “not connected” states, and planned-phase messages are intentional.
 
-## Future product phases
+## Product phases
 
-### 1. Business Twin and ICP
+### 1. Business Twin (implemented) and ICP (future)
 
 The seller describes their offer, ideal customer profile, sales motion, exclusions, geography, and commercial constraints. AI may assist with interpretation and drafting, but the saved configuration must remain explicit and reviewable.
 

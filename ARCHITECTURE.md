@@ -11,6 +11,7 @@ lib/api-spec               OpenAPI source of truth
 lib/api-client-react       Generated React Query client
 lib/api-zod                Generated Zod schemas
 lib/db                     Drizzle/PostgreSQL access
+lib/integrations-openai-ai-server  Managed OpenAI client
 ```
 
 The frontend is served at its artifact base path. The API is routed through `/api`. Both are configured as managed Replit artifact services.
@@ -47,13 +48,15 @@ The server validates response-shaped data with generated Zod schemas. The client
 - **Commercial interpretation:** signals, clusters, fit, need, timing, relationship, confidence, opportunities, and explanations.
 - **Learning:** user actions, outcomes, and versioned model/rule evaluation.
 
-The identity milestone implements only the identity and tenancy boundary. Seller configuration, canonical entities, research, evidence, commercial interpretation, and learning remain future phases.
+The identity/tenancy boundary and project-scoped Business Twin are implemented. ICP, canonical entities, research, evidence, opportunity interpretation, and learning remain future phases.
 
 ## Deterministic versus AI-assisted work
 
 AI can assist with Business Twin interpretation, ICP suggestions, structured fact extraction, ambiguous classification, research-question generation, “Why now” writing, and explanation.
 
 AI must not control tenant authorization, identity resolution, scoring mathematics, billing, evidence provenance, provider cost accounting, database permissions, or canonical identity.
+
+Business Twin interpretation sends only explicit raw answers to the managed model. Output is untrusted until it passes an exact, bounded Zod schema; malformed output is retried once and is never persisted. Raw answers, AI interpretation, and manual interpretation remain separate in each immutable version.
 
 ## Background jobs
 

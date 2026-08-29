@@ -18,6 +18,7 @@ import Today from './pages/today';
 import Onboarding from './pages/onboarding';
 import Settings from './pages/settings';
 import EmptyFeature from './pages/empty-feature';
+import BusinessTwinPage from './pages/business-twin';
 import { WorkspaceProvider } from './context/workspace-context';
 
 const clerkPubKey = publishableKeyFromHost(
@@ -162,9 +163,7 @@ function AuthenticatedRoutes() {
             <Route path="/companies">
               <EmptyFeature title="Company Intelligence" description="Company discovery is not connected yet. No company records have been created." />
             </Route>
-            <Route path="/business-twin">
-              <EmptyFeature title="Business Twin" description="Business Twin configuration is planned for the next product phase and has not been generated." />
-            </Route>
+            <Route path="/business-twin" component={BusinessTwinPage} />
             <Route path="/icp">
               <EmptyFeature title="Ideal Customer Profile" description="ICP configuration is not available yet. Missing criteria are treated as unknown, not inferred." />
             </Route>

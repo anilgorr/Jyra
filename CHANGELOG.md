@@ -22,6 +22,13 @@
 - Replaced the foundation navigation with Today, Opportunities, Companies, Business Twin, ICP, Research, Outcomes, and Settings.
 - Preserved explicit empty states for all future intelligence workflows.
 
+## Business Twin
+
+- Added a project-scoped wizard for seller context, customer patterns, buying roles, urgency, differentiation, and objections while allowing unknown answers to remain blank.
+- Added immutable Business Twin version history with raw-answer edits, validated AI regeneration, previous-version viewing, and manual interpretation refinement.
+- Added tenant-authorized Business Twin APIs, separate raw/AI/manual storage, model and prompt metadata, and managed OpenAI output validation with bounded retry.
+- Kept ICP, market research, providers, signals, opportunities, scoring, outcomes, and learning outside this milestone.
+
 ## Future entries
 
 Future milestones should document user-visible behavior, schema changes, API contract changes, provenance implications, and any new trust boundary.
