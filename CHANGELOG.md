@@ -1,3 +1,10 @@
+## Generic Signal Cluster Engine
+
+- Added versioned project cluster definitions with required, optional, and negative signals, temporal windows, independent-event thresholds, explicit activation, and Opportunity Intelligence Pack proposal review.
+- Added deterministic cluster evaluation over existing signals, normalized-content deduplication for syndicated evidence, invalidating or weakening negative conditions, and version-isolated persistence.
+- Added evidence, independence, timing, member-role, confidence, impact, and explanation snapshots plus authorized definition, evaluation, listing, and review APIs.
+- Added customer-facing cluster review controls and generic tests without introducing industry-specific branches or Phase 14 behavior.
+
 ## ICP engine
 
 - Added the versioned, tenant-safe Ideal Customer Profile workspace.

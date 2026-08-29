@@ -50,6 +50,60 @@ assert.equal(h.detectSignalCandidates([{ ...fact, confidence: 40 }], [definition
 assert.deepEqual(h.recalculateSignalStrength(80, "2026-08-01", 100, "LINEAR", new Date("2026-08-01")), { currentStrength: 80, status: "ACTIVE" });
 assert.equal(h.recalculateSignalStrength(80, "2025-01-01", 90, "LINEAR", new Date("2026-08-29")).status, "STALE");
 
+const clusterDefinition = {
+  id: "cluster-definition",
+  organizationId: "org",
+  projectId: "project",
+  intelligencePackId: null,
+  name: "Generic multi-event pattern",
+  description: "independent changes occurring together strengthen the timing hypothesis.",
+  requiredSignalCodes: ["SIGNAL_A", "SIGNAL_B"],
+  optionalSignalCodes: ["SIGNAL_C"],
+  negativeSignalCodes: ["SIGNAL_NEGATIVE"],
+  minimumIndependentSignals: 2,
+  timeWindowDays: 30,
+  defaultStrength: 80,
+  needImpact: 70,
+  timingImpact: 80,
+  status: "APPROVED",
+  active: true,
+  version: 1,
+  configuration: {},
+  createdBy: "test",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+};
+const clusterSignal = (id, code, date, event) => ({
+  id, code, polarity: "POSITIVE", effectiveDate: date, currentStrength: 80, confidence: 90,
+  supportingEvidenceIds: [`evidence-${id}`], supportingFactIds: [`fact-${id}`], eventKeys: [`content:${event}`],
+});
+assert.equal(h.evaluateSignalClusters([
+  clusterSignal("a", "SIGNAL_A", "2026-08-01", "same-event"),
+  clusterSignal("b", "SIGNAL_B", "2026-08-05", "same-event"),
+], [clusterDefinition]).length, 0, "duplicate reporting must not inflate independence");
+const independentCluster = h.evaluateSignalClusters([
+  clusterSignal("a", "SIGNAL_A", "2026-08-01", "event-a"),
+  clusterSignal("b", "SIGNAL_B", "2026-08-05", "event-b"),
+], [clusterDefinition]);
+assert.equal(independentCluster.length, 1);
+assert.equal(independentCluster[0].independence.independentCount, 2);
+assert.equal(h.evaluateSignalClusters([
+  clusterSignal("a", "SIGNAL_A", "2025-01-01", "event-a"),
+  clusterSignal("b", "SIGNAL_B", "2026-08-05", "event-b"),
+], [clusterDefinition]).length, 0, "signals outside the time window must not cluster");
+assert.equal(h.evaluateSignalClusters([
+  clusterSignal("a", "SIGNAL_A", "2026-08-01", "event-a"),
+  clusterSignal("b", "SIGNAL_B", "2026-08-05", "event-b"),
+  clusterSignal("n", "SIGNAL_NEGATIVE", "2026-08-04", "negative-event"),
+], [clusterDefinition]).length, 0, "negative conditions invalidate by default");
+const weakened = h.evaluateSignalClusters([
+  clusterSignal("a", "SIGNAL_A", "2026-08-01", "event-a"),
+  clusterSignal("b", "SIGNAL_B", "2026-08-05", "event-b"),
+  clusterSignal("n", "SIGNAL_NEGATIVE", "2026-08-04", "negative-event"),
+], [{ ...clusterDefinition, configuration: { negativeMode: "WEAKEN", negativePenalty: 25 } }]);
+assert.equal(weakened.length, 1);
+assert.equal(weakened[0].strength < independentCluster[0].strength, true);
+
 const suffix = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 const userId = `signal-test-${suffix}`;
 let organization;
@@ -283,6 +337,21 @@ try {
     reviewStatus: "PROPOSED",
     hypothesis: true,
   }).returning();
+  await h.db.insert(h.intelligencePackClustersTable).values({
+    versionId: sourceVersion.id,
+    name: "Lifecycle cluster",
+    description: "Two independent configured events occur within a bounded period.",
+    requiredSignalCodes: [sourceSignal.code],
+    optionalSignalCodes: [],
+    negativeSignalCodes: [],
+    minimumIndependentSignals: 1,
+    timeWindowDays: 30,
+    defaultStrength: 80,
+    needImpact: 70,
+    timingImpact: 80,
+    reviewStatus: "PROPOSED",
+    hypothesis: true,
+  });
   await h.db.insert(h.intelligencePackQuestionsTable).values({
     versionId: sourceVersion.id,
     signalId: sourceSignal.id,
@@ -298,14 +367,19 @@ try {
   const revision = await h.cloneOpportunityPackVersion(sourceVersion.id, userId);
   const [revisionSignal] = await h.db.select().from(h.intelligencePackSignalsTable).where(h.eq(h.intelligencePackSignalsTable.versionId, revision.id));
   const [revisionQuestion] = await h.db.select().from(h.intelligencePackQuestionsTable).where(h.eq(h.intelligencePackQuestionsTable.versionId, revision.id));
+  const [revisionCluster] = await h.db.select().from(h.intelligencePackClustersTable).where(h.eq(h.intelligencePackClustersTable.versionId, revision.id));
   await h.db.update(h.intelligencePackSignalsTable).set({ reviewStatus: "APPROVED" }).where(h.eq(h.intelligencePackSignalsTable.id, revisionSignal.id));
   await assert.rejects(() => h.approveOpportunityPackVersion(revision.id, userId), /research question/);
   await h.db.update(h.intelligencePackQuestionsTable).set({ reviewStatus: "APPROVED" }).where(h.eq(h.intelligencePackQuestionsTable.id, revisionQuestion.id));
+  await h.db.update(h.intelligencePackClustersTable).set({ reviewStatus: "APPROVED" }).where(h.eq(h.intelligencePackClustersTable.id, revisionCluster.id));
   const approved = await h.approveOpportunityPackVersion(revision.id, userId);
   assert.equal(approved.status, "APPROVED");
   const activation = await h.activateOpportunityPackVersion(revision.id, userId);
   activatedPackId = activation.signalPack.id;
   assert.equal(activation.version.status, "ACTIVATED");
+  const [activatedClusterDefinition] = await h.db.select().from(h.signalClusterDefinitionsTable).where(h.eq(h.signalClusterDefinitionsTable.intelligencePackId, intelligencePack.id));
+  assert.equal(activatedClusterDefinition.active, true);
+  assert.deepEqual(activatedClusterDefinition.requiredSignalCodes, [sourceSignal.code]);
   console.log("Signal detection, decay, provenance, and project-isolation tests passed.");
 } finally {
   if (company) {

@@ -130,11 +130,29 @@ export interface OpportunityResearchQuestion {
   [key: string]: unknown;
  }
 
+export interface OpportunityClusterProposal {
+  id: string;
+  name: string;
+  description: string;
+  requiredSignalCodes: string[];
+  optionalSignalCodes: string[];
+  negativeSignalCodes: string[];
+  minimumIndependentSignals: number;
+  timeWindowDays: number;
+  defaultStrength: number;
+  needImpact: number;
+  timingImpact: number;
+  reviewStatus: string;
+  hypothesis: boolean;
+  [key: string]: unknown;
+ }
+
 export interface OpportunityPackDetail {
   pack: OpportunityPack;
   version: OpportunityPackVersion;
   signals: OpportunitySignalProposal[];
   questions: OpportunityResearchQuestion[];
+  clusters: OpportunityClusterProposal[];
 }
 
 export interface OpportunityPackList {
@@ -172,7 +190,126 @@ export interface OpportunityPackGeneration {
   version: OpportunityPackVersion;
   signals: OpportunitySignalProposal[];
   questionCount: number;
+  clusterCount: number;
 }
+
+export interface CreateSignalClusterDefinitionRequest {
+  /** @nullable */
+  intelligencePackId?: string | null;
+  /**
+     * @minLength 1
+     * @maxLength 160
+     */
+  name: string;
+  /**
+     * @minLength 1
+     * @maxLength 2000
+     */
+  description: string;
+  /**
+     * @minItems 1
+     * @maxItems 10
+     */
+  requiredSignalCodes: string[];
+  /** @maxItems 10 */
+  optionalSignalCodes: string[];
+  /** @maxItems 10 */
+  negativeSignalCodes: string[];
+  /**
+     * @minimum 1
+     * @maximum 20
+     */
+  minimumIndependentSignals: number;
+  /**
+     * @minimum 1
+     * @maximum 730
+     */
+  timeWindowDays: number;
+  /**
+     * @minimum 0
+     * @maximum 100
+     */
+  defaultStrength: number;
+  /**
+     * @minimum -100
+     * @maximum 100
+     */
+  needImpact: number;
+  /**
+     * @minimum -100
+     * @maximum 100
+     */
+  timingImpact: number;
+}
+
+export interface SignalClusterDefinition {
+  id: string;
+  organizationId: string;
+  projectId: string;
+  /** @nullable */
+  intelligencePackId?: string | null;
+  name: string;
+  description: string;
+  requiredSignalCodes: string[];
+  optionalSignalCodes: string[];
+  negativeSignalCodes: string[];
+  minimumIndependentSignals: number;
+  timeWindowDays: number;
+  defaultStrength: number;
+  needImpact: number;
+  timingImpact: number;
+  status: string;
+  active: boolean;
+  version: number;
+  [key: string]: unknown;
+ }
+
+export interface ConfigureSignalClusterDefinitionRequest {
+  active: boolean;
+}
+
+export type SignalClusterRecordIndependenceSnapshot = { [key: string]: unknown };
+
+export type SignalClusterRecordTemporalSnapshot = { [key: string]: unknown };
+
+export interface SignalClusterRecord {
+  id: string;
+  projectId: string;
+  companyId: string;
+  definitionId: string;
+  triggeredSignalIds: string[];
+  supportingEvidenceIds: string[];
+  independenceSnapshot: SignalClusterRecordIndependenceSnapshot;
+  temporalSnapshot: SignalClusterRecordTemporalSnapshot;
+  explanation: string;
+  originalStrength: number;
+  currentStrength: number;
+  confidence: number;
+  needImpact: number;
+  timingImpact: number;
+  status: string;
+  ruleVersion: string;
+  [key: string]: unknown;
+ }
+
+export type SignalClusterMembersItem = { [key: string]: unknown };
+
+export type SignalClusterIndependenceSnapshot = { [key: string]: unknown };
+
+export type SignalClusterTemporalSnapshot = { [key: string]: unknown };
+
+export interface SignalCluster {
+  id: string;
+  definition: SignalClusterDefinition;
+  members: SignalClusterMembersItem[];
+  explanation: string;
+  currentStrength: number;
+  confidence: number;
+  independenceSnapshot: SignalClusterIndependenceSnapshot;
+  temporalSnapshot: SignalClusterTemporalSnapshot;
+  supportingEvidenceIds: string[];
+  [key: string]: unknown;
+ }
 
 export type UpdateOpportunitySignalRequestPolarity = typeof UpdateOpportunitySignalRequestPolarity[keyof typeof UpdateOpportunitySignalRequestPolarity];
 
@@ -1900,6 +2037,7 @@ export interface ConfigureProjectSignalPackRequest {
 
 export interface EvaluateSignalsResponse {
   evaluated: number;
+  clustersEvaluated: number;
   signals: Signal[];
 }
 
@@ -1943,4 +2081,9 @@ export type CommitCompanyImport409 = {
 };
 
 export type ActivateOpportunityPack200 = { [key: string]: unknown };
+
+export type EvaluateSignalClusters200 = {
+  evaluated: number;
+  clusters: SignalClusterRecord[];
+};
 

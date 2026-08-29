@@ -7,12 +7,14 @@ import {
   icpCriteriaTable,
   icpVersionsTable,
   intelligencePackQuestionsTable,
+  intelligencePackClustersTable,
   intelligencePackSignalsTable,
   intelligencePackVersionsTable,
   intelligencePacksTable,
   projectSignalPacksTable,
   signalDefinitionsTable,
   signalPacksTable,
+  signalClusterDefinitionsTable,
   type IntelligencePackSignal,
 } from "@workspace/db";
 import { PROVIDER_CAPABILITIES, type ProviderCapability } from "./provider-contract";
@@ -55,10 +57,24 @@ export const opportunityQuestionProposalSchema = z.object({
   estimatedCost: z.number().finite().min(0).max(5),
 });
 
+export const opportunityClusterProposalSchema = z.object({
+  name: boundedText(160),
+  description: boundedText(2000),
+  requiredSignalCodes: z.array(z.string().trim().regex(/^[A-Z][A-Z0-9_]{2,63}$/)).min(1).max(10),
+  optionalSignalCodes: z.array(z.string().trim().regex(/^[A-Z][A-Z0-9_]{2,63}$/)).max(10),
+  negativeSignalCodes: z.array(z.string().trim().regex(/^[A-Z][A-Z0-9_]{2,63}$/)).max(10),
+  minimumIndependentSignals: z.number().int().min(1).max(20),
+  timeWindowDays: z.number().int().min(1).max(730),
+  defaultStrength: z.number().finite().min(0).max(100),
+  needImpact: z.number().finite().min(-100).max(100),
+  timingImpact: z.number().finite().min(-100).max(100),
+}).strict();
+
 export const opportunityPackProposalSchema = z.object({
   assumptions: z.array(boundedText(1000)).max(20),
   signals: z.array(opportunitySignalProposalSchema).min(1).max(30),
   researchQuestions: z.array(opportunityQuestionProposalSchema).min(1).max(60),
+  clusters: z.array(opportunityClusterProposalSchema).max(20).default([]),
 }).strict();
 
 export type OpportunityPackProposal = z.infer<typeof opportunityPackProposalSchema>;
@@ -179,6 +195,7 @@ export async function generateOpportunityPackProposal(input: {
                 assumptions: ["string"],
                 signals: [{ code: "UPPER_SNAKE_CASE", name: "string", description: "string", whyItMatters: "string", category: "string", polarity: "POSITIVE|NEGATIVE", needImpact: 0, timingImpact: 0, fitImpact: 0, likelyEvidence: ["string"], sourceCapabilities: ["WEB_SEARCH"], lifetimeDays: 90, suggestedStrength: 70, minimumConfidence: 70, potentialFalsePositives: ["string"], factTypes: ["string"], matchingConfiguration: {}, hypothesis: true }],
                 researchQuestions: [{ signalCode: "UPPER_SNAKE_CASE", questionText: "string", reason: "string", sourceCapabilities: ["WEB_SEARCH"], priority: 50, expectedInformationGain: 50, estimatedCost: 1 }],
+                clusters: [{ name: "string", description: "string", requiredSignalCodes: ["SIGNAL_CODE"], optionalSignalCodes: [], negativeSignalCodes: [], minimumIndependentSignals: 2, timeWindowDays: 30, defaultStrength: 85, needImpact: 70, timingImpact: 80 }],
               })}`,
             ].join("\n"),
           },
@@ -196,6 +213,12 @@ export async function generateOpportunityPackProposal(input: {
         if (!proposal.researchQuestions.some((question) => question.signalCode === code)) {
           throw new Error(`Signal ${code} is missing a contextual research question`);
         }
+      }
+      if (proposal.clusters.some((cluster) =>
+        [...cluster.requiredSignalCodes, ...cluster.optionalSignalCodes, ...cluster.negativeSignalCodes].some((code) => !codes.has(code)) ||
+        cluster.minimumIndependentSignals > cluster.requiredSignalCodes.length + cluster.optionalSignalCodes.length,
+      )) {
+        throw new Error("Every proposed cluster must reference proposed signals and a valid independence threshold");
       }
       const validQuestions = proposal.researchQuestions;
       const [pack] = await db.insert(intelligencePacksTable).values({
@@ -250,7 +273,15 @@ export async function generateOpportunityPackProposal(input: {
           reviewStatus: "PROPOSED",
         })));
       }
-      return { pack, version, signals: signalRows, questionCount: validQuestions.length };
+      if (proposal.clusters.length) {
+        await db.insert(intelligencePackClustersTable).values(proposal.clusters.map((cluster) => ({
+          versionId: version.id,
+          ...cluster,
+          reviewStatus: "PROPOSED",
+          hypothesis: lifecycleLabel(context) === "HYPOTHESIS-LED",
+        })));
+      }
+      return { pack, version, signals: signalRows, questionCount: validQuestions.length, clusterCount: proposal.clusters.length };
     } catch (error) {
       lastError = error;
       if (attempt < 2) await new Promise((resolve) => setTimeout(resolve, 400));
@@ -269,12 +300,13 @@ export async function getOpportunityPackDetail(projectId: string, packId: string
     eq(intelligencePackVersionsTable.intelligencePackId, pack.id),
     versionId ? eq(intelligencePackVersionsTable.id, versionId) : sql`true`,
   )).orderBy(desc(intelligencePackVersionsTable.version)).limit(1);
-  if (!version) return { pack, version: null, signals: [], questions: [] };
-  const [signals, questions] = await Promise.all([
+  if (!version) return { pack, version: null, signals: [], questions: [], clusters: [] };
+  const [signals, questions, clusters] = await Promise.all([
     db.select().from(intelligencePackSignalsTable).where(eq(intelligencePackSignalsTable.versionId, version.id)),
     db.select().from(intelligencePackQuestionsTable).where(eq(intelligencePackQuestionsTable.versionId, version.id)),
+    db.select().from(intelligencePackClustersTable).where(eq(intelligencePackClustersTable.versionId, version.id)),
   ]);
-  return { pack, version, signals, questions };
+  return { pack, version, signals, questions, clusters };
 }
 
 export async function updateOpportunitySignal(signalId: string, input: Partial<Pick<IntelligencePackSignal, "name" | "description" | "whyItMatters" | "category" | "polarity" | "needImpact" | "timingImpact" | "fitImpact" | "likelyEvidence" | "sourceCapabilities" | "lifetimeDays" | "suggestedStrength" | "minimumConfidence" | "potentialFalsePositives">>) {
@@ -301,6 +333,19 @@ export async function setOpportunityQuestionReview(questionId: string, reviewSta
     .where(eq(intelligencePackQuestionsTable.id, questionId)).limit(1);
   if (!current || ["APPROVED", "ACTIVATED"].includes(current.version.status) || current.version.generationMethod !== "CUSTOMER_REVISION") throw new Error("Create a customer review revision before changing disposition");
   const [updated] = await db.update(intelligencePackQuestionsTable).set({ reviewStatus, updatedAt: new Date() }).where(eq(intelligencePackQuestionsTable.id, questionId)).returning();
+  return updated;
+}
+
+export async function setOpportunityClusterReview(clusterId: string, reviewStatus: "APPROVED" | "DISABLED" | "REMOVED") {
+  const [current] = await db.select({ cluster: intelligencePackClustersTable, version: intelligencePackVersionsTable })
+    .from(intelligencePackClustersTable).innerJoin(intelligencePackVersionsTable, eq(intelligencePackClustersTable.versionId, intelligencePackVersionsTable.id))
+    .where(eq(intelligencePackClustersTable.id, clusterId)).limit(1);
+  if (!current || current.version.status !== "PROPOSED" || current.version.generationMethod !== "CUSTOMER_REVISION") {
+    throw new Error("Create a customer review revision before changing cluster disposition");
+  }
+  const [updated] = await db.update(intelligencePackClustersTable)
+    .set({ reviewStatus, updatedAt: new Date() })
+    .where(eq(intelligencePackClustersTable.id, clusterId)).returning();
   return updated;
 }
 
@@ -406,6 +451,22 @@ export async function cloneOpportunityPackVersion(versionId: string, userId: str
       estimatedCost: question.estimatedCost,
       reviewStatus: "PROPOSED",
     })));
+    const clusters = await tx.select().from(intelligencePackClustersTable).where(eq(intelligencePackClustersTable.versionId, source.id));
+    if (clusters.length) await tx.insert(intelligencePackClustersTable).values(clusters.map((cluster) => ({
+      versionId: version.id,
+      name: cluster.name,
+      description: cluster.description,
+      requiredSignalCodes: cluster.requiredSignalCodes,
+      optionalSignalCodes: cluster.optionalSignalCodes,
+      negativeSignalCodes: cluster.negativeSignalCodes,
+      minimumIndependentSignals: cluster.minimumIndependentSignals,
+      timeWindowDays: cluster.timeWindowDays,
+      defaultStrength: cluster.defaultStrength,
+      needImpact: cluster.needImpact,
+      timingImpact: cluster.timingImpact,
+      reviewStatus: "PROPOSED",
+      hypothesis: cluster.hypothesis,
+    })));
     return version;
   });
 }
@@ -428,6 +489,10 @@ export async function approveOpportunityPackVersion(versionId: string, userId: s
       throw new Error("Every approved signal requires at least one approved contextual research question");
     }
   }
+  const clusters = await db.select().from(intelligencePackClustersTable).where(eq(intelligencePackClustersTable.versionId, version.id));
+  if (clusters.some((cluster) => !["APPROVED", "DISABLED", "REMOVED"].includes(cluster.reviewStatus))) {
+    throw new Error("Review every proposed cluster before approving the pack");
+  }
   const [approved] = await db.update(intelligencePackVersionsTable).set({
     status: "APPROVED", approvedBy: userId, approvedAt: new Date(),
   }).where(eq(intelligencePackVersionsTable.id, version.id)).returning();
@@ -446,8 +511,17 @@ export async function activateOpportunityPackVersion(versionId: string, userId: 
       eq(intelligencePackSignalsTable.reviewStatus, "APPROVED"),
     ));
     if (!signals.length) throw new Error("At least one approved signal is required to activate the pack");
+    const clusters = await tx.select().from(intelligencePackClustersTable).where(and(
+      eq(intelligencePackClustersTable.versionId, version.id),
+      eq(intelligencePackClustersTable.reviewStatus, "APPROVED"),
+    ));
     const [pack] = await tx.select().from(intelligencePacksTable).where(eq(intelligencePacksTable.id, version.intelligencePackId)).limit(1);
     if (!pack) throw new Error("Opportunity Intelligence Pack not found");
+    await tx.update(signalClusterDefinitionsTable).set({ active: false, updatedAt: new Date() }).where(and(
+      eq(signalClusterDefinitionsTable.projectId, pack.projectId),
+      eq(signalClusterDefinitionsTable.intelligencePackId, pack.id),
+      eq(signalClusterDefinitionsTable.active, true),
+    ));
     const slugPrefix = `opportunity-${pack.id.slice(0, 12)}`;
     const slug = `${slugPrefix}-v${version.version}`;
     const priorSelections = await tx.select({ selection: projectSignalPacksTable, signalPack: signalPacksTable })
@@ -506,6 +580,32 @@ export async function activateOpportunityPackVersion(versionId: string, userId: 
         eq(signalDefinitionsTable.code, signal.code),
       )).limit(1))[0];
       if (existing) await tx.update(intelligencePackSignalsTable).set({ activatedSignalDefinitionId: existing.id, reviewStatus: "ACTIVATED", updatedAt: new Date() }).where(eq(intelligencePackSignalsTable.id, signal.id));
+    }
+    for (const cluster of clusters) {
+      const [definition] = await tx.insert(signalClusterDefinitionsTable).values({
+        organizationId: pack.organizationId,
+        projectId: pack.projectId,
+        intelligencePackId: pack.id,
+        name: cluster.name,
+        description: cluster.description,
+        requiredSignalCodes: cluster.requiredSignalCodes,
+        optionalSignalCodes: cluster.optionalSignalCodes,
+        negativeSignalCodes: cluster.negativeSignalCodes,
+        minimumIndependentSignals: cluster.minimumIndependentSignals,
+        timeWindowDays: cluster.timeWindowDays,
+        defaultStrength: cluster.defaultStrength,
+        needImpact: cluster.needImpact,
+        timingImpact: cluster.timingImpact,
+        active: true,
+        status: "APPROVED",
+        version: version.version,
+        createdBy: userId,
+      }).returning();
+      if (definition) {
+        await tx.update(intelligencePackClustersTable)
+          .set({ activatedDefinitionId: definition.id, reviewStatus: "ACTIVATED", updatedAt: new Date() })
+          .where(eq(intelligencePackClustersTable.id, cluster.id));
+      }
     }
     const [selection] = await tx.insert(projectSignalPacksTable).values({
       organizationId: pack.organizationId,

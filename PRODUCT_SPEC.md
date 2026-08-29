@@ -1,3 +1,7 @@
+# Phase 13 — Generic Signal Cluster Engine
+
+Approved signals may be combined only through customer-approved, versioned cluster definitions. Definitions configure required, optional, and negative signal codes, independent-event thresholds, and bounded temporal proximity. The deterministic evaluator preserves evidence, timing, independence, member roles, confidence, impacts, and an explanation snapshot. AI-generated cluster definitions are proposals and remain inert until customer review, pack approval, and separate activation. This phase does not add predictive likelihood, recommendations, buying intent, autonomous actions, learning, or other Phase 14 scope.
+
 ## Ideal Customer Profile engine
 
 JYRA converts the current Business Twin into an explicit, project-scoped ICP. Criteria are grouped as must-have, preferred, disqualifier, or advisory rules. Scorable rules use validated dimensions, operators, values, ranges, and weights; advisory rules remain visible without silently affecting objective evaluation. Missing company facts evaluate as unknown rather than failure. Generation, acceptance, edits, additions, deletions, and regeneration each create a new immutable version.

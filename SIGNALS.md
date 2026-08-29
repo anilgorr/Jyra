@@ -86,8 +86,12 @@ Phase 11A includes optional configuration fixtures for managed SOC, executive re
 
 Phase 12 adds customer-reviewed Opportunity Intelligence Pack proposals, including ERP implementation genericity coverage. Proposal generation is not activation. Only a separately approved and explicitly activated version can create approved project definitions for this same generic evaluator. See `INTELLIGENCE_PACKS.md`.
 
+Phase 13 adds the generic deterministic Signal Cluster Engine. Individual signals remain unchanged. Approved configuration may combine required and optional signal codes inside a bounded window, enforce independent underlying events, and invalidate or weaken a result with negative conditions. See `SIGNAL_CLUSTERS.md`.
+
 Each selection snapshots the customer's offering plus current Business Twin and ICP version references. Every new signal snapshots its pack, definition version, category, generation method, observed time, and fit/need/timing impacts so later configuration edits do not rewrite historical meaning.
 
 ## Explainability
 
 Every surfaced signal and “Why now” explanation must provide a path back to original evidence. If the evidence path is incomplete, the system should lower confidence or withhold the conclusion instead of fabricating support.
+
+Clusters preserve the triggering signal IDs, evidence IDs, normalized event groups, timing snapshot, definition version, and explanation. Reposted or syndicated content with the same normalized content hash counts as one underlying event.

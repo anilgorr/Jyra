@@ -28,6 +28,8 @@ tags:
     description: Configuration-driven source-grounded signals
   - name: opportunity-packs
     description: Customer-reviewed seller-specific Opportunity Intelligence Pack proposals
+  - name: signal-clusters
+    description: Generic deterministic combinations of independent signals
 paths:
   /healthz:
     get:
@@ -1284,6 +1286,138 @@ paths:
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
+  /projects/{projectId}/opportunity-packs/clusters/{clusterId}/review:
+    post:
+      operationId: reviewOpportunityCluster
+      tags: [opportunity-packs]
+      summary: Approve, disable, or remove a proposed signal cluster
+      security: [{ clerkSession: [] }]
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+        - name: clusterId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/OpportunityItemReviewRequest" }
+      responses:
+        "200":
+          description: Reviewed cluster proposal
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/OpportunityClusterProposal" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /projects/{projectId}/signal-clusters/definitions:
+    get:
+      operationId: listSignalClusterDefinitions
+      tags: [signal-clusters]
+      summary: List versioned project cluster definitions
+      security: [{ clerkSession: [] }]
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+      responses:
+        "200":
+          description: Cluster definitions
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/SignalClusterDefinition" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+    post:
+      operationId: createSignalClusterDefinition
+      tags: [signal-clusters]
+      summary: Create an inactive versioned cluster definition
+      security: [{ clerkSession: [] }]
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CreateSignalClusterDefinitionRequest" }
+      responses:
+        "201":
+          description: Created cluster definition
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SignalClusterDefinition" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+  /projects/{projectId}/signal-clusters/definitions/{definitionId}:
+    patch:
+      operationId: configureSignalClusterDefinition
+      tags: [signal-clusters]
+      summary: Explicitly activate or deactivate a cluster definition
+      security: [{ clerkSession: [] }]
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+        - name: definitionId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ConfigureSignalClusterDefinitionRequest" }
+      responses:
+        "200":
+          description: Updated cluster definition
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SignalClusterDefinition" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /projects/{projectId}/signal-clusters:
+    get:
+      operationId: listSignalClusters
+      tags: [signal-clusters]
+      summary: List explainable evaluated signal clusters
+      security: [{ clerkSession: [] }]
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+      responses:
+        "200":
+          description: Evaluated clusters
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/SignalCluster" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /projects/{projectId}/companies/{projectCompanyId}/signal-clusters/evaluate:
+    post:
+      operationId: evaluateSignalClusters
+      tags: [signal-clusters]
+      summary: Evaluate active cluster definitions for one project company
+      security: [{ clerkSession: [] }]
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+        - $ref: "#/components/parameters/ProjectCompanyId"
+      responses:
+        "200":
+          description: Cluster evaluation result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  evaluated: { type: number }
+                  clusters:
+                    type: array
+                    items: { $ref: "#/components/schemas/SignalClusterRecord" }
+                required: [evaluated, clusters]
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
 components:
   schemas:
     OpportunityPack:
@@ -1350,6 +1484,24 @@ components:
         reviewStatus: { type: string }
       required: [id, questionText, reason, sourceCapabilities, priority, expectedInformationGain, estimatedCost, reviewStatus]
       additionalProperties: true
+    OpportunityClusterProposal:
+      type: object
+      properties:
+        id: { type: string }
+        name: { type: string }
+        description: { type: string }
+        requiredSignalCodes: { type: array, items: { type: string } }
+        optionalSignalCodes: { type: array, items: { type: string } }
+        negativeSignalCodes: { type: array, items: { type: string } }
+        minimumIndependentSignals: { type: number }
+        timeWindowDays: { type: number }
+        defaultStrength: { type: number }
+        needImpact: { type: number }
+        timingImpact: { type: number }
+        reviewStatus: { type: string }
+        hypothesis: { type: boolean }
+      required: [id, name, description, requiredSignalCodes, optionalSignalCodes, negativeSignalCodes, minimumIndependentSignals, timeWindowDays, defaultStrength, needImpact, timingImpact, reviewStatus, hypothesis]
+      additionalProperties: true
     OpportunityPackDetail:
       type: object
       properties:
@@ -1361,7 +1513,10 @@ components:
         questions:
           type: array
           items: { $ref: "#/components/schemas/OpportunityResearchQuestion" }
-      required: [pack, version, signals, questions]
+        clusters:
+          type: array
+          items: { $ref: "#/components/schemas/OpportunityClusterProposal" }
+      required: [pack, version, signals, questions, clusters]
     OpportunityPackList:
       type: object
       properties:
@@ -1400,7 +1555,91 @@ components:
           type: array
           items: { $ref: "#/components/schemas/OpportunitySignalProposal" }
         questionCount: { type: number }
-      required: [pack, version, signals, questionCount]
+        clusterCount: { type: number }
+      required: [pack, version, signals, questionCount, clusterCount]
+    CreateSignalClusterDefinitionRequest:
+      type: object
+      properties:
+        intelligencePackId: { type: [string, "null"] }
+        name: { type: string, minLength: 1, maxLength: 160 }
+        description: { type: string, minLength: 1, maxLength: 2000 }
+        requiredSignalCodes: { type: array, minItems: 1, maxItems: 10, items: { type: string } }
+        optionalSignalCodes: { type: array, maxItems: 10, items: { type: string } }
+        negativeSignalCodes: { type: array, maxItems: 10, items: { type: string } }
+        minimumIndependentSignals: { type: number, minimum: 1, maximum: 20 }
+        timeWindowDays: { type: number, minimum: 1, maximum: 730 }
+        defaultStrength: { type: number, minimum: 0, maximum: 100 }
+        needImpact: { type: number, minimum: -100, maximum: 100 }
+        timingImpact: { type: number, minimum: -100, maximum: 100 }
+      required: [name, description, requiredSignalCodes, optionalSignalCodes, negativeSignalCodes, minimumIndependentSignals, timeWindowDays, defaultStrength, needImpact, timingImpact]
+      additionalProperties: false
+    SignalClusterDefinition:
+      type: object
+      properties:
+        id: { type: string }
+        organizationId: { type: string }
+        projectId: { type: string }
+        intelligencePackId: { type: [string, "null"] }
+        name: { type: string }
+        description: { type: string }
+        requiredSignalCodes: { type: array, items: { type: string } }
+        optionalSignalCodes: { type: array, items: { type: string } }
+        negativeSignalCodes: { type: array, items: { type: string } }
+        minimumIndependentSignals: { type: number }
+        timeWindowDays: { type: number }
+        defaultStrength: { type: number }
+        needImpact: { type: number }
+        timingImpact: { type: number }
+        status: { type: string }
+        active: { type: boolean }
+        version: { type: number }
+      required: [id, organizationId, projectId, name, description, requiredSignalCodes, optionalSignalCodes, negativeSignalCodes, minimumIndependentSignals, timeWindowDays, defaultStrength, needImpact, timingImpact, status, active, version]
+      additionalProperties: true
+    ConfigureSignalClusterDefinitionRequest:
+      type: object
+      properties:
+        active: { type: boolean }
+      required: [active]
+      additionalProperties: false
+    SignalClusterRecord:
+      type: object
+      properties:
+        id: { type: string }
+        projectId: { type: string }
+        companyId: { type: string }
+        definitionId: { type: string }
+        triggeredSignalIds: { type: array, items: { type: string } }
+        supportingEvidenceIds: { type: array, items: { type: string } }
+        independenceSnapshot: { type: object, additionalProperties: true }
+        temporalSnapshot: { type: object, additionalProperties: true }
+        explanation: { type: string }
+        originalStrength: { type: number }
+        currentStrength: { type: number }
+        confidence: { type: number }
+        needImpact: { type: number }
+        timingImpact: { type: number }
+        status: { type: string }
+        ruleVersion: { type: string }
+      required: [id, projectId, companyId, definitionId, triggeredSignalIds, supportingEvidenceIds, independenceSnapshot, temporalSnapshot, explanation, originalStrength, currentStrength, confidence, needImpact, timingImpact, status, ruleVersion]
+      additionalProperties: true
+    SignalCluster:
+      type: object
+      properties:
+        id: { type: string }
+        definition: { $ref: "#/components/schemas/SignalClusterDefinition" }
+        members:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        explanation: { type: string }
+        currentStrength: { type: number }
+        confidence: { type: number }
+        independenceSnapshot: { type: object, additionalProperties: true }
+        temporalSnapshot: { type: object, additionalProperties: true }
+        supportingEvidenceIds: { type: array, items: { type: string } }
+      required: [id, definition, members, explanation, currentStrength, confidence, independenceSnapshot, temporalSnapshot, supportingEvidenceIds]
+      additionalProperties: true
     UpdateOpportunitySignalRequest:
       type: object
       properties:
@@ -2594,10 +2833,11 @@ components:
       type: object
       properties:
         evaluated: { type: number }
+        clustersEvaluated: { type: number }
         signals:
           type: array
           items: { $ref: "#/components/schemas/Signal" }
-      required: [evaluated, signals]
+      required: [evaluated, clustersEvaluated, signals]
     ErrorResponse:
       type: object
       properties:

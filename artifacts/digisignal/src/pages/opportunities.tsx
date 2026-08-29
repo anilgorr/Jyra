@@ -49,7 +49,22 @@ type Question = {
   priority: number;
   estimatedCost: number;
 };
-type Detail = { pack: Pack; version: Version; signals: Signal[]; questions: Question[] };
+type Cluster = {
+  id: string;
+  name: string;
+  description: string;
+  requiredSignalCodes: string[];
+  optionalSignalCodes: string[];
+  negativeSignalCodes: string[];
+  minimumIndependentSignals: number;
+  timeWindowDays: number;
+  defaultStrength: number;
+  needImpact: number;
+  timingImpact: number;
+  reviewStatus: string;
+  hypothesis: boolean;
+};
+type Detail = { pack: Pack; version: Version; signals: Signal[]; questions: Question[]; clusters: Cluster[] };
 
 async function api<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(`/api${path}`, {
@@ -134,6 +149,14 @@ export default function Opportunities() {
       method: "POST", body: JSON.stringify({ reviewStatus }),
     });
     await load(detail?.version.id);
+  };
+
+  const reviewCluster = async (id: string, reviewStatus: "APPROVED" | "DISABLED" | "REMOVED") => {
+    if (!activeProjectId) return;
+    await api(`/projects/${activeProjectId}/opportunity-packs/clusters/${id}/review`, {
+      method: "POST", body: JSON.stringify({ reviewStatus }),
+    });
+    await load(detail?.version.id, detail?.pack.id);
   };
 
   const saveSignal = async (signal: Signal) => {
@@ -235,7 +258,7 @@ export default function Opportunities() {
     <div className="mx-auto max-w-6xl space-y-8 px-4 py-8">
       <header className="flex flex-col gap-4 border-b border-border/60 pb-7 md:flex-row md:items-end md:justify-between">
         <div>
-          <div className="mb-2 flex items-center gap-2 text-accent"><BrainCircuit className="h-5 w-5" /><span className="text-xs font-semibold uppercase tracking-[0.18em]">Phase 12 · customer controlled</span></div>
+          <div className="mb-2 flex items-center gap-2 text-accent"><BrainCircuit className="h-5 w-5" /><span className="text-xs font-semibold uppercase tracking-[0.18em]">Phase 13 · customer controlled</span></div>
           <h1 className="font-display text-3xl font-semibold">Opportunity Signals</h1>
           <p className="mt-2 max-w-3xl text-sm text-muted-foreground">Create a seller-specific proposal from your offering, Business Twin, and ICP. Nothing becomes active until you review, approve, and activate it.</p>
         </div>
@@ -320,6 +343,31 @@ export default function Opportunities() {
           <section className="space-y-4">
             <div className="flex flex-wrap items-end justify-between gap-3"><div><h2 className="font-display text-2xl font-semibold">Contextual research questions</h2><p className="text-sm text-muted-foreground">Questions identify capabilities only; ProviderRouter chooses an enabled provider when research runs.</p></div>{detail.version.status === "PROPOSED" && detail.version.generationMethod === "CUSTOMER_REVISION" && <Button variant="outline" onClick={addCustomQuestion}><Plus className="mr-2 h-4 w-4" />Add question</Button>}</div>
             {detail.questions.map((question) => <Card className="p-5" key={question.id}><div className="flex flex-col justify-between gap-4 sm:flex-row"><div className="flex-1"><div className="flex items-center gap-2"><Badge variant="outline">Priority {question.priority}</Badge><Badge>{question.reviewStatus}</Badge></div>{detail.version.status === "PROPOSED" && detail.version.generationMethod === "CUSTOMER_REVISION" ? <div className="mt-3 space-y-2"><Textarea value={question.questionText} onChange={(event) => setDetail({ ...detail, questions: detail.questions.map((item) => item.id === question.id ? { ...item, questionText: event.target.value } : item) })} /><Textarea value={question.reason} onChange={(event) => setDetail({ ...detail, questions: detail.questions.map((item) => item.id === question.id ? { ...item, reason: event.target.value } : item) })} /><Button size="sm" variant="ghost" onClick={() => void saveQuestion(question)}>Save question</Button></div> : <><h3 className="mt-3 font-medium">{question.questionText}</h3><p className="mt-1 text-sm text-muted-foreground">{question.reason}</p></>}<p className="mt-2 text-xs text-muted-foreground">{question.sourceCapabilities.join(" · ")} · bounded cost {question.estimatedCost}</p></div>{detail.version.status === "PROPOSED" && detail.version.generationMethod === "CUSTOMER_REVISION" && <div className="flex shrink-0 gap-2"><Button size="sm" variant="ghost" onClick={() => void reviewQuestion(question.id, "REMOVED")}>Remove</Button><Button size="sm" variant="outline" onClick={() => void reviewQuestion(question.id, "DISABLED")}>Disable</Button><Button size="sm" onClick={() => void reviewQuestion(question.id, "APPROVED")}>Approve</Button></div>}</div></Card>)}
+          </section>
+
+          <section className="space-y-4">
+            <div><h2 className="font-display text-2xl font-semibold">Signal clusters</h2><p className="text-sm text-muted-foreground">Independent signals inside a configured time window can form a stronger pattern. Proposals remain inert until reviewed and activated with the pack.</p></div>
+            {detail.clusters.length === 0 && <Card className="p-6 text-sm text-muted-foreground">No cluster hypotheses were proposed for this version. Individual signals continue to work normally.</Card>}
+            {detail.clusters.map((cluster) => (
+              <Card className="p-5" key={cluster.id}>
+                <div className="flex flex-col justify-between gap-4 md:flex-row">
+                  <div className="flex-1">
+                    <div className="flex flex-wrap items-center gap-2"><Badge>{cluster.reviewStatus}</Badge>{cluster.hypothesis && <Badge variant="secondary">Hypothesis</Badge>}<Badge variant="outline">{cluster.timeWindowDays} day window</Badge><Badge variant="outline">{cluster.minimumIndependentSignals} independent minimum</Badge></div>
+                    <h3 className="mt-3 font-display text-lg font-semibold">{cluster.name}</h3>
+                    <p className="mt-1 text-sm text-muted-foreground">{cluster.description}</p>
+                    <div className="mt-4 grid gap-3 text-sm md:grid-cols-3">
+                      <div><p className="font-medium">Required</p><p className="mt-1 text-muted-foreground">{cluster.requiredSignalCodes.join(" · ")}</p></div>
+                      <div><p className="font-medium">Optional</p><p className="mt-1 text-muted-foreground">{cluster.optionalSignalCodes.join(" · ") || "None"}</p></div>
+                      <div><p className="font-medium">Negative conditions</p><p className="mt-1 text-muted-foreground">{cluster.negativeSignalCodes.join(" · ") || "None"}</p></div>
+                    </div>
+                    <div className="mt-4 flex gap-4 text-xs text-muted-foreground"><span>Strength {cluster.defaultStrength}</span><span>Need {cluster.needImpact}</span><span>Timing {cluster.timingImpact}</span></div>
+                  </div>
+                  {detail.version.status === "PROPOSED" && detail.version.generationMethod === "CUSTOMER_REVISION" && (
+                    <div className="flex shrink-0 gap-2"><Button size="sm" variant="ghost" onClick={() => void reviewCluster(cluster.id, "REMOVED")}>Remove</Button><Button size="sm" variant="outline" onClick={() => void reviewCluster(cluster.id, "DISABLED")}>Disable</Button><Button size="sm" onClick={() => void reviewCluster(cluster.id, "APPROVED")}><Check className="mr-1 h-3.5 w-3.5" />Approve</Button></div>
+                  )}
+                </div>
+              </Card>
+            ))}
           </section>
 
           <Card className="border-accent/30 bg-accent/5 p-6">

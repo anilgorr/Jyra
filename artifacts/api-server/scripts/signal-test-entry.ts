@@ -1,6 +1,7 @@
 export * from "../src/lib/signal-packs";
 export * from "../src/lib/signal-pack-fixtures";
 export * from "../src/lib/opportunity-packs";
+export * from "../src/lib/signal-clusters";
 export {
   companiesTable,
   companyEvidenceTable,
@@ -15,6 +16,10 @@ export {
   intelligencePackVersionsTable,
   intelligencePackSignalsTable,
   intelligencePackQuestionsTable,
+  intelligencePackClustersTable,
+  signalClusterDefinitionsTable,
+  signalClustersTable,
+  signalClusterMembersTable,
   signalDefinitionsTable,
   signalPacksTable,
   signalEvidenceTable,

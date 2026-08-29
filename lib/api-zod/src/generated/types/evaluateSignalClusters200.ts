@@ -5,10 +5,9 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
-import type { Signal } from './signal';
+import type { SignalClusterRecord } from './signalClusterRecord';
 
-export interface EvaluateSignalsResponse {
+export type EvaluateSignalClusters200 = {
   evaluated: number;
-  clustersEvaluated: number;
-  signals: Signal[];
-}
+  clusters: SignalClusterRecord[];
+};

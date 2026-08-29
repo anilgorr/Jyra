@@ -5,6 +5,7 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+import type { OpportunityClusterProposal } from './opportunityClusterProposal';
 import type { OpportunityPack } from './opportunityPack';
 import type { OpportunityPackVersion } from './opportunityPackVersion';
 import type { OpportunityResearchQuestion } from './opportunityResearchQuestion';
@@ -15,4 +16,5 @@ export interface OpportunityPackDetail {
   version: OpportunityPackVersion;
   signals: OpportunitySignalProposal[];
   questions: OpportunityResearchQuestion[];
+  clusters: OpportunityClusterProposal[];
 }

@@ -42,7 +42,10 @@ import type {
   CompanyImportResult,
   CompanyInput,
   ConfigureProjectSignalPackRequest,
+  ConfigureSignalClusterDefinitionRequest,
+  CreateSignalClusterDefinitionRequest,
   CurrentUser,
+  EvaluateSignalClusters200,
   EvaluateSignalsResponse,
   FactExtractionInput,
   FactExtractionResponse,
@@ -56,6 +59,7 @@ import type {
   NotFoundResponse,
   OnboardingInput,
   OnboardingResponse,
+  OpportunityClusterProposal,
   OpportunityItemReviewRequest,
   OpportunityPackDetail,
   OpportunityPackGeneration,
@@ -75,6 +79,8 @@ import type {
   ResearchExecutionResponse,
   ResearchWorkspaceCompany,
   Signal,
+  SignalCluster,
+  SignalClusterDefinition,
   SignalPack,
   UnauthorizedResponse,
   UpdateOpportunityResearchQuestionRequest,
@@ -4422,5 +4428,452 @@ export const useActivateOpportunityPack = <TError = ErrorType<BadRequestResponse
         TContext
       > => {
       return useMutation(getActivateOpportunityPackMutationOptions(options));
+    }
+
+export const getReviewOpportunityClusterUrl = (projectId: string,
+    clusterId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/opportunity-packs/clusters/${clusterId}/review`
+}
+
+/**
+ * @summary Approve, disable, or remove a proposed signal cluster
+ */
+export const reviewOpportunityCluster = async (projectId: string,
+    clusterId: string,
+    opportunityItemReviewRequest: OpportunityItemReviewRequest, options?: Parameters<typeof customFetch>[1]): Promise<OpportunityClusterProposal> => {
+
+  return customFetch<OpportunityClusterProposal>(getReviewOpportunityClusterUrl(projectId,clusterId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(opportunityItemReviewRequest)
+  }
+);}
+
+
+
+
+
+export const getReviewOpportunityClusterMutationOptions = <TError = ErrorType<BadRequestResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof reviewOpportunityCluster>>, TError,{projectId: string;clusterId: string;data: BodyType<OpportunityItemReviewRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof reviewOpportunityCluster>>, TError,{projectId: string;clusterId: string;data: BodyType<OpportunityItemReviewRequest>}, TContext> => {
+
+const mutationKey = ['reviewOpportunityCluster'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof reviewOpportunityCluster>>, {projectId: string;clusterId: string;data: BodyType<OpportunityItemReviewRequest>}> = (props) => {
+          const {projectId,clusterId,data} = props ?? {};
+
+          return  reviewOpportunityCluster(projectId,clusterId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ReviewOpportunityClusterMutationResult = NonNullable<Awaited<ReturnType<typeof reviewOpportunityCluster>>>
+    export type ReviewOpportunityClusterMutationBody = BodyType<OpportunityItemReviewRequest>
+    export type ReviewOpportunityClusterMutationError = ErrorType<BadRequestResponse | ForbiddenResponse | NotFoundResponse>
+
+    /**
+ * @summary Approve, disable, or remove a proposed signal cluster
+ */
+export const useReviewOpportunityCluster = <TError = ErrorType<BadRequestResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof reviewOpportunityCluster>>, TError,{projectId: string;clusterId: string;data: BodyType<OpportunityItemReviewRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof reviewOpportunityCluster>>,
+        TError,
+        {projectId: string;clusterId: string;data: BodyType<OpportunityItemReviewRequest>},
+        TContext
+      > => {
+      return useMutation(getReviewOpportunityClusterMutationOptions(options));
+    }
+
+export const getListSignalClusterDefinitionsUrl = (projectId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/signal-clusters/definitions`
+}
+
+/**
+ * @summary List versioned project cluster definitions
+ */
+export const listSignalClusterDefinitions = async (projectId: string, options?: Parameters<typeof customFetch>[1]): Promise<SignalClusterDefinition[]> => {
+
+  return customFetch<SignalClusterDefinition[]>(getListSignalClusterDefinitionsUrl(projectId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListSignalClusterDefinitionsQueryKey = (projectId: string,) => {
+    return [
+    `/api/projects/${projectId}/signal-clusters/definitions`
+    ] as const;
+    }
+
+
+export const getListSignalClusterDefinitionsQueryOptions = <TData = Awaited<ReturnType<typeof listSignalClusterDefinitions>>, TError = ErrorType<ForbiddenResponse | NotFoundResponse>>(projectId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listSignalClusterDefinitions>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListSignalClusterDefinitionsQueryKey(projectId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listSignalClusterDefinitions>>> = ({ signal }) => listSignalClusterDefinitions(projectId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: projectId !== null && projectId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listSignalClusterDefinitions>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListSignalClusterDefinitionsQueryResult = NonNullable<Awaited<ReturnType<typeof listSignalClusterDefinitions>>>
+export type ListSignalClusterDefinitionsQueryError = ErrorType<ForbiddenResponse | NotFoundResponse>
+
+
+/**
+ * @summary List versioned project cluster definitions
+ */
+
+export function useListSignalClusterDefinitions<TData = Awaited<ReturnType<typeof listSignalClusterDefinitions>>, TError = ErrorType<ForbiddenResponse | NotFoundResponse>>(
+ projectId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listSignalClusterDefinitions>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListSignalClusterDefinitionsQueryOptions(projectId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getCreateSignalClusterDefinitionUrl = (projectId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/signal-clusters/definitions`
+}
+
+/**
+ * @summary Create an inactive versioned cluster definition
+ */
+export const createSignalClusterDefinition = async (projectId: string,
+    createSignalClusterDefinitionRequest: CreateSignalClusterDefinitionRequest, options?: Parameters<typeof customFetch>[1]): Promise<SignalClusterDefinition> => {
+
+  return customFetch<SignalClusterDefinition>(getCreateSignalClusterDefinitionUrl(projectId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(createSignalClusterDefinitionRequest)
+  }
+);}
+
+
+
+
+
+export const getCreateSignalClusterDefinitionMutationOptions = <TError = ErrorType<BadRequestResponse | ForbiddenResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createSignalClusterDefinition>>, TError,{projectId: string;data: BodyType<CreateSignalClusterDefinitionRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createSignalClusterDefinition>>, TError,{projectId: string;data: BodyType<CreateSignalClusterDefinitionRequest>}, TContext> => {
+
+const mutationKey = ['createSignalClusterDefinition'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createSignalClusterDefinition>>, {projectId: string;data: BodyType<CreateSignalClusterDefinitionRequest>}> = (props) => {
+          const {projectId,data} = props ?? {};
+
+          return  createSignalClusterDefinition(projectId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateSignalClusterDefinitionMutationResult = NonNullable<Awaited<ReturnType<typeof createSignalClusterDefinition>>>
+    export type CreateSignalClusterDefinitionMutationBody = BodyType<CreateSignalClusterDefinitionRequest>
+    export type CreateSignalClusterDefinitionMutationError = ErrorType<BadRequestResponse | ForbiddenResponse>
+
+    /**
+ * @summary Create an inactive versioned cluster definition
+ */
+export const useCreateSignalClusterDefinition = <TError = ErrorType<BadRequestResponse | ForbiddenResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createSignalClusterDefinition>>, TError,{projectId: string;data: BodyType<CreateSignalClusterDefinitionRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createSignalClusterDefinition>>,
+        TError,
+        {projectId: string;data: BodyType<CreateSignalClusterDefinitionRequest>},
+        TContext
+      > => {
+      return useMutation(getCreateSignalClusterDefinitionMutationOptions(options));
+    }
+
+export const getConfigureSignalClusterDefinitionUrl = (projectId: string,
+    definitionId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/signal-clusters/definitions/${definitionId}`
+}
+
+/**
+ * @summary Explicitly activate or deactivate a cluster definition
+ */
+export const configureSignalClusterDefinition = async (projectId: string,
+    definitionId: string,
+    configureSignalClusterDefinitionRequest: ConfigureSignalClusterDefinitionRequest, options?: Parameters<typeof customFetch>[1]): Promise<SignalClusterDefinition> => {
+
+  return customFetch<SignalClusterDefinition>(getConfigureSignalClusterDefinitionUrl(projectId,definitionId),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(configureSignalClusterDefinitionRequest)
+  }
+);}
+
+
+
+
+
+export const getConfigureSignalClusterDefinitionMutationOptions = <TError = ErrorType<BadRequestResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof configureSignalClusterDefinition>>, TError,{projectId: string;definitionId: string;data: BodyType<ConfigureSignalClusterDefinitionRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof configureSignalClusterDefinition>>, TError,{projectId: string;definitionId: string;data: BodyType<ConfigureSignalClusterDefinitionRequest>}, TContext> => {
+
+const mutationKey = ['configureSignalClusterDefinition'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof configureSignalClusterDefinition>>, {projectId: string;definitionId: string;data: BodyType<ConfigureSignalClusterDefinitionRequest>}> = (props) => {
+          const {projectId,definitionId,data} = props ?? {};
+
+          return  configureSignalClusterDefinition(projectId,definitionId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ConfigureSignalClusterDefinitionMutationResult = NonNullable<Awaited<ReturnType<typeof configureSignalClusterDefinition>>>
+    export type ConfigureSignalClusterDefinitionMutationBody = BodyType<ConfigureSignalClusterDefinitionRequest>
+    export type ConfigureSignalClusterDefinitionMutationError = ErrorType<BadRequestResponse | ForbiddenResponse | NotFoundResponse>
+
+    /**
+ * @summary Explicitly activate or deactivate a cluster definition
+ */
+export const useConfigureSignalClusterDefinition = <TError = ErrorType<BadRequestResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof configureSignalClusterDefinition>>, TError,{projectId: string;definitionId: string;data: BodyType<ConfigureSignalClusterDefinitionRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof configureSignalClusterDefinition>>,
+        TError,
+        {projectId: string;definitionId: string;data: BodyType<ConfigureSignalClusterDefinitionRequest>},
+        TContext
+      > => {
+      return useMutation(getConfigureSignalClusterDefinitionMutationOptions(options));
+    }
+
+export const getListSignalClustersUrl = (projectId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/signal-clusters`
+}
+
+/**
+ * @summary List explainable evaluated signal clusters
+ */
+export const listSignalClusters = async (projectId: string, options?: Parameters<typeof customFetch>[1]): Promise<SignalCluster[]> => {
+
+  return customFetch<SignalCluster[]>(getListSignalClustersUrl(projectId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListSignalClustersQueryKey = (projectId: string,) => {
+    return [
+    `/api/projects/${projectId}/signal-clusters`
+    ] as const;
+    }
+
+
+export const getListSignalClustersQueryOptions = <TData = Awaited<ReturnType<typeof listSignalClusters>>, TError = ErrorType<ForbiddenResponse | NotFoundResponse>>(projectId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listSignalClusters>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListSignalClustersQueryKey(projectId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listSignalClusters>>> = ({ signal }) => listSignalClusters(projectId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: projectId !== null && projectId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listSignalClusters>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListSignalClustersQueryResult = NonNullable<Awaited<ReturnType<typeof listSignalClusters>>>
+export type ListSignalClustersQueryError = ErrorType<ForbiddenResponse | NotFoundResponse>
+
+
+/**
+ * @summary List explainable evaluated signal clusters
+ */
+
+export function useListSignalClusters<TData = Awaited<ReturnType<typeof listSignalClusters>>, TError = ErrorType<ForbiddenResponse | NotFoundResponse>>(
+ projectId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listSignalClusters>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListSignalClustersQueryOptions(projectId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getEvaluateSignalClustersUrl = (projectId: string,
+    projectCompanyId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/companies/${projectCompanyId}/signal-clusters/evaluate`
+}
+
+/**
+ * @summary Evaluate active cluster definitions for one project company
+ */
+export const evaluateSignalClusters = async (projectId: string,
+    projectCompanyId: string, options?: Parameters<typeof customFetch>[1]): Promise<EvaluateSignalClusters200> => {
+
+  return customFetch<EvaluateSignalClusters200>(getEvaluateSignalClustersUrl(projectId,projectCompanyId),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getEvaluateSignalClustersMutationOptions = <TError = ErrorType<ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof evaluateSignalClusters>>, TError,{projectId: string;projectCompanyId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof evaluateSignalClusters>>, TError,{projectId: string;projectCompanyId: string}, TContext> => {
+
+const mutationKey = ['evaluateSignalClusters'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof evaluateSignalClusters>>, {projectId: string;projectCompanyId: string}> = (props) => {
+          const {projectId,projectCompanyId} = props ?? {};
+
+          return  evaluateSignalClusters(projectId,projectCompanyId,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type EvaluateSignalClustersMutationResult = NonNullable<Awaited<ReturnType<typeof evaluateSignalClusters>>>
+
+    export type EvaluateSignalClustersMutationError = ErrorType<ForbiddenResponse | NotFoundResponse>
+
+    /**
+ * @summary Evaluate active cluster definitions for one project company
+ */
+export const useEvaluateSignalClusters = <TError = ErrorType<ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof evaluateSignalClusters>>, TError,{projectId: string;projectCompanyId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof evaluateSignalClusters>>,
+        TError,
+        {projectId: string;projectCompanyId: string},
+        TContext
+      > => {
+      return useMutation(getEvaluateSignalClustersMutationOptions(options));
     }
 

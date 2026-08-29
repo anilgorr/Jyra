@@ -14,4 +14,5 @@ export interface OpportunityPackGeneration {
   version: OpportunityPackVersion;
   signals: OpportunitySignalProposal[];
   questionCount: number;
+  clusterCount: number;
 }

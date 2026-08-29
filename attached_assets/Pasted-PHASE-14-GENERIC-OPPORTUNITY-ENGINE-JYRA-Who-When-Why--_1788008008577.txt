@@ -1,0 +1,256 @@
+PHASE 14 — GENERIC OPPORTUNITY ENGINE
+
+JYRA
+Who. When. Why.
+
+==================================================
+OBJECTIVE
+==================================================
+
+Transform evidence-backed company intelligence into a transparent,
+deterministic Opportunity assessment.
+
+JYRA must evaluate:
+
+FIT
+NEED
+TIMING
+RELATIONSHIP
+
+and separately:
+
+CONFIDENCE
+
+==================================================
+1. DATA MODEL
+==================================================
+
+Create/extend:
+
+opportunities
+opportunity_history
+opportunity_score_components
+model_versions
+
+Preserve historical state.
+
+==================================================
+2. DIMENSIONS
+==================================================
+
+FIT:
+How closely does the company match the ICP?
+
+NEED:
+How much evidence suggests the company may have the problem JYRA's customer solves?
+
+TIMING:
+How much evidence suggests the problem may matter now?
+
+RELATIONSHIP:
+What existing relationship does the customer have with the account?
+
+CONFIDENCE:
+How confident is JYRA in the underlying information?
+
+==================================================
+3. INITIAL WEIGHTS
+==================================================
+
+Default:
+
+Fit = 30%
+Need = 30%
+Timing = 30%
+Relationship = 10%
+
+Make configurable/versioned.
+
+Confidence is NOT part of the opportunity score.
+
+High confidence should never artificially make a weak opportunity strong.
+
+==================================================
+4. MISSING DATA
+==================================================
+
+Missing information does NOT mean failure.
+
+Unknown ≠ negative.
+
+Example:
+
+employee count unknown
+
+must not automatically mean:
+
+ICP mismatch.
+
+Represent uncertainty explicitly.
+
+==================================================
+5. RELATIONSHIP
+==================================================
+
+Use first-party data when available.
+
+Examples:
+
+existing customer
+past customer
+open opportunity
+lost opportunity
+previous contact
+meeting held
+known champion
+no relationship
+
+Do not fabricate relationship data.
+
+==================================================
+6. CONFIDENCE
+==================================================
+
+Calculate separately using factors such as:
+
+source authority
+freshness
+directness
+corroboration
+independent source count
+contradictions
+information completeness
+
+Keep deterministic and explainable.
+
+==================================================
+7. OPPORTUNITY STATES
+==================================================
+
+Implement:
+
+DORMANT
+WATCH
+EMERGING
+RISING
+SURGING
+ACTIVE
+COOLING
+
+State depends on:
+
+Fit
+Need
+Timing
+Relationship where relevant
+signal strength
+clusters
+confidence gates
+movement over time
+
+Use versioned deterministic rules.
+
+==================================================
+8. GATING
+==================================================
+
+Prevent false positives.
+
+Examples:
+
+High Fit + no Need evidence
+must not automatically become Surging.
+
+Strong Need + poor Fit
+must not automatically become Surging.
+
+Weak Confidence
+may require:
+
+NEEDS_MORE_RESEARCH
+
+rather than a strong conclusion.
+
+==================================================
+9. DECAY
+==================================================
+
+Signals age.
+
+Opportunity strength should change as evidence becomes stale.
+
+Persist state transitions.
+
+==================================================
+10. PROJECT-SPECIFIC INTERPRETATION
+==================================================
+
+The SAME company can have:
+
+SURGING
+
+for Seller A
+
+and:
+
+DORMANT
+
+for Seller B.
+
+This is expected.
+
+Never create a universal company buying-intent score.
+
+==================================================
+11. EXPLAINABILITY
+==================================================
+
+For every component preserve:
+
+score
+rule
+signals
+clusters
+facts
+evidence
+model version
+
+JYRA must be able to answer:
+
+"Why did you rank this company?"
+
+==================================================
+12. MODEL VERSIONING
+==================================================
+
+Never silently change scoring behavior.
+
+Example:
+
+Opportunity Model v1.0
+Opportunity Model v1.1
+
+Store which version produced each historical assessment.
+
+==================================================
+ACCEPTANCE
+==================================================
+
+Test:
+
+high Fit/no Need
+high Need/low Fit
+high Timing/weak Confidence
+strong cluster
+negative signals
+stale signals
+contradictory evidence
+missing data
+customer relationship data
+same company/different sellers
+
+Update OPPORTUNITY_ENGINE.md.
+Update CHANGELOG.md.
+Create checkpoint.
+
+DO NOT begin Phase 15.

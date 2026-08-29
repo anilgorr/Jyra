@@ -30,3 +30,4 @@ export * from "./facts";
 export * from "./research";
 export * from "./signals";
 export * from "./intelligence-packs";
+export * from "./signal-clusters";

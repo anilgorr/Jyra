@@ -140,6 +140,10 @@ Signal Packs are reusable rule configuration; detected signals are project-and-o
 
 Pack selection snapshots offering context and current Business Twin/ICP version references. Signal rows snapshot the resolved pack/definition versions, category, generation method, observed time, context, and fit/need/timing impacts. Existing Cybersecurity records remain valid; Cybersecurity is an optional configured sample rather than a global default.
 
+## Signal Clusters
+
+Signal clusters are a deterministic downstream layer over persisted individual signals. Active, versioned project definitions specify required, optional, and negative signal codes, a time window, and a minimum independent-event count. Evaluation uses normalized source-content hashes to collapse syndicated reporting and never lets repeated observations of one signal code inflate independence. Results snapshot member roles, evidence, independence groups, timing, explanation, impacts, confidence, and rule version. AI-generated definitions remain inert Opportunity Pack proposals until customer review, pack approval, and separate activation.
+
 Future research work should use a simple database-backed job table suitable for Replit:
 
 1. API creates a planned job.

@@ -20,6 +20,15 @@ Signals require at least one supporting fact and evidence ID. The same canonical
 
 Signal definitions add category, applicable context, fact requirements, polarity, fit/need/timing impact, lifetime/decay, source preferences, approval status, creator, and version metadata. New signals snapshot the context and resolved definition impacts. All Phase 11A schema changes are additive; existing signal and provenance rows remain valid.
 
+## Signal Cluster storage
+
+- `signal_cluster_definitions` stores immutable versioned, organization/project-scoped configuration with required, optional, and negative codes, time window, independent-event threshold, impacts, status, and activation state.
+- `signal_clusters` stores one evaluated result per company, project, definition, and rule version, including signal/evidence IDs plus immutable independence, timing, and explanation snapshots.
+- `signal_cluster_members` stores each participating signal's required, optional, or negative role and event identity.
+- `intelligence_pack_clusters` stores inert AI proposals and their customer review/activation state inside one Opportunity Intelligence Pack version.
+
+All relations are additive. Historical individual signals remain unchanged, and a new definition version cannot rewrite an existing cluster snapshot.
+
 - `companies` stores globally reusable company identity and descriptive fields. Its normalized domain is the strongest V1 identity key and is unique when present.
 - `company_aliases` records alternate names and normalized domains with their source. Alias domains are unique and participate in exact identity matching.
 - `project_companies` links a canonical company to a project and owns all customer-specific state: status, research status, nullable future scores, opportunity state, and research timestamps.

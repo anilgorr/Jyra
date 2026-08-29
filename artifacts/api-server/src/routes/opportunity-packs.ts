@@ -4,6 +4,7 @@ import { z } from "zod/v4";
 import {
   db,
   intelligencePackQuestionsTable,
+  intelligencePackClustersTable,
   intelligencePackSignalsTable,
   intelligencePackVersionsTable,
   intelligencePacksTable,
@@ -23,6 +24,7 @@ import {
   opportunityQuestionProposalSchema,
   opportunitySignalProposalSchema,
   setOpportunityQuestionReview,
+  setOpportunityClusterReview,
   setOpportunitySignalReview,
   updateOpportunityQuestion,
   updateOpportunitySignal,
@@ -39,6 +41,7 @@ const packParams = projectParams.extend({ packId: z.string().uuid() });
 const versionParams = projectParams.extend({ versionId: z.string().uuid() });
 const signalParams = projectParams.extend({ signalId: z.string().uuid() });
 const questionParams = projectParams.extend({ questionId: z.string().uuid() });
+const clusterParams = projectParams.extend({ clusterId: z.string().uuid() });
 const questionCompanyParams = questionParams.extend({ projectCompanyId: z.string().uuid() });
 const reviewBody = z.object({ reviewStatus: z.enum(["APPROVED", "DISABLED", "REMOVED"]) }).strict();
 
@@ -70,6 +73,14 @@ async function ownsQuestion(projectId: string, questionId: string) {
     .innerJoin(intelligencePackVersionsTable, eq(intelligencePackQuestionsTable.versionId, intelligencePackVersionsTable.id))
     .innerJoin(intelligencePacksTable, eq(intelligencePackVersionsTable.intelligencePackId, intelligencePacksTable.id))
     .where(and(eq(intelligencePackQuestionsTable.id, questionId), eq(intelligencePacksTable.projectId, projectId))).limit(1);
+  return Boolean(row);
+}
+
+async function ownsCluster(projectId: string, clusterId: string) {
+  const [row] = await db.select({ id: intelligencePackClustersTable.id }).from(intelligencePackClustersTable)
+    .innerJoin(intelligencePackVersionsTable, eq(intelligencePackClustersTable.versionId, intelligencePackVersionsTable.id))
+    .innerJoin(intelligencePacksTable, eq(intelligencePackVersionsTable.intelligencePackId, intelligencePacksTable.id))
+    .where(and(eq(intelligencePackClustersTable.id, clusterId), eq(intelligencePacksTable.projectId, projectId))).limit(1);
   return Boolean(row);
 }
 
@@ -169,6 +180,16 @@ router.post("/projects/:projectId/opportunity-packs/questions/:questionId/review
   if (access.status !== 200) return void fail(res, access.status, access.status === 403 ? "Project access denied" : "Project not found");
   if (!await ownsQuestion(params.data.projectId, params.data.questionId)) return void fail(res, 404, "Research question proposal not found");
   res.json(await setOpportunityQuestionReview(params.data.questionId, body.data.reviewStatus));
+}));
+
+router.post("/projects/:projectId/opportunity-packs/clusters/:clusterId/review", requireAuth, asyncRoute(async (req, res) => {
+  const params = clusterParams.safeParse(req.params);
+  const body = reviewBody.safeParse(req.body);
+  if (!params.success || !body.success) return void fail(res, 400, "Invalid cluster review");
+  const access = await projectAccess(getAuthenticatedUserId(res), params.data.projectId);
+  if (access.status !== 200) return void fail(res, access.status, access.status === 403 ? "Project access denied" : "Project not found");
+  if (!await ownsCluster(params.data.projectId, params.data.clusterId)) return void fail(res, 404, "Cluster proposal not found");
+  res.json(await setOpportunityClusterReview(params.data.clusterId, body.data.reviewStatus));
 }));
 
 router.patch("/projects/:projectId/opportunity-packs/questions/:questionId", requireAuth, asyncRoute(async (req, res) => {

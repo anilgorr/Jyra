@@ -26,6 +26,7 @@ import {
   signalsTable,
 } from "@workspace/db";
 import { evaluateSignalsForCompany, refreshProjectSignalDecay } from "../lib/signal-packs";
+import { evaluateClustersForCompany } from "../lib/signal-clusters";
 import { ensureSignalPackFixtures, SIGNAL_PACK_FIXTURES } from "../lib/signal-pack-fixtures";
 import { getAuthenticatedUserId, requireAuth } from "../middlewares/auth";
 
@@ -216,11 +217,16 @@ router.post("/projects/:projectId/companies/:projectCompanyId/signals/evaluate",
     projectId: params.data.projectId,
     companyId: row.company.id,
   });
+  const clusterResult = await evaluateClustersForCompany({
+    organizationId: access.project.organizationId,
+    projectId: params.data.projectId,
+    companyId: row.company.id,
+  });
   const rows = await db.select({ signal: signalsTable, definition: signalDefinitionsTable }).from(signalsTable)
     .innerJoin(signalDefinitionsTable, eq(signalsTable.signalDefinitionId, signalDefinitionsTable.id))
     .where(and(eq(signalsTable.projectId, params.data.projectId), eq(signalsTable.companyId, row.company.id)))
     .orderBy(desc(signalsTable.currentStrength));
-  res.json(EvaluateProjectSignalsResponse.parse({ evaluated: result.created.length, signals: rows.map(signalPayload) }));
+  res.json(EvaluateProjectSignalsResponse.parse({ evaluated: result.created.length, clustersEvaluated: clusterResult.evaluated, signals: rows.map(signalPayload) }));
 }));
 
 export default router;

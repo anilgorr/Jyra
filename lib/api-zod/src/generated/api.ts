@@ -3999,6 +3999,7 @@ export const evaluateProjectSignalsResponseSignalsItemEffectiveDateRegExp = new 
 
 export const EvaluateProjectSignalsResponse = zod.object({
   "evaluated": zod.number(),
+  "clustersEvaluated": zod.number(),
   "signals": zod.array(zod.object({
   "id": zod.string(),
   "companyId": zod.string(),
@@ -4138,7 +4139,8 @@ export const ProposeOpportunityPackResponse = zod.object({
   "reviewStatus": zod.string(),
   "hypothesis": zod.boolean()
 })),
-  "questionCount": zod.number()
+  "questionCount": zod.number(),
+  "clusterCount": zod.number()
 })
 
 
@@ -4227,6 +4229,21 @@ export const GetOpportunityPackResponse = zod.object({
   "expectedInformationGain": zod.number().min(getOpportunityPackResponseQuestionsItemExpectedInformationGainMin).max(getOpportunityPackResponseQuestionsItemExpectedInformationGainMax),
   "estimatedCost": zod.number().min(getOpportunityPackResponseQuestionsItemEstimatedCostMin).max(getOpportunityPackResponseQuestionsItemEstimatedCostMax),
   "reviewStatus": zod.string()
+})),
+  "clusters": zod.array(zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "description": zod.string(),
+  "requiredSignalCodes": zod.array(zod.string()),
+  "optionalSignalCodes": zod.array(zod.string()),
+  "negativeSignalCodes": zod.array(zod.string()),
+  "minimumIndependentSignals": zod.number(),
+  "timeWindowDays": zod.number(),
+  "defaultStrength": zod.number(),
+  "needImpact": zod.number(),
+  "timingImpact": zod.number(),
+  "reviewStatus": zod.string(),
+  "hypothesis": zod.boolean()
 }))
 })
 
@@ -4644,5 +4661,233 @@ export const ActivateOpportunityPackParams = zod.object({
 })
 
 export const ActivateOpportunityPackResponse = zod.record(zod.string(), zod.unknown())
+
+
+/**
+ * @summary Approve, disable, or remove a proposed signal cluster
+ */
+export const ReviewOpportunityClusterParams = zod.object({
+  "projectId": zod.coerce.string(),
+  "clusterId": zod.coerce.string()
+})
+
+export const ReviewOpportunityClusterBody = zod.object({
+  "reviewStatus": zod.enum(['APPROVED', 'DISABLED', 'REMOVED'])
+})
+
+export const ReviewOpportunityClusterResponse = zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "description": zod.string(),
+  "requiredSignalCodes": zod.array(zod.string()),
+  "optionalSignalCodes": zod.array(zod.string()),
+  "negativeSignalCodes": zod.array(zod.string()),
+  "minimumIndependentSignals": zod.number(),
+  "timeWindowDays": zod.number(),
+  "defaultStrength": zod.number(),
+  "needImpact": zod.number(),
+  "timingImpact": zod.number(),
+  "reviewStatus": zod.string(),
+  "hypothesis": zod.boolean()
+})
+
+
+/**
+ * @summary List versioned project cluster definitions
+ */
+export const ListSignalClusterDefinitionsParams = zod.object({
+  "projectId": zod.coerce.string()
+})
+
+export const ListSignalClusterDefinitionsResponseItem = zod.object({
+  "id": zod.string(),
+  "organizationId": zod.string(),
+  "projectId": zod.string(),
+  "intelligencePackId": zod.string().nullish(),
+  "name": zod.string(),
+  "description": zod.string(),
+  "requiredSignalCodes": zod.array(zod.string()),
+  "optionalSignalCodes": zod.array(zod.string()),
+  "negativeSignalCodes": zod.array(zod.string()),
+  "minimumIndependentSignals": zod.number(),
+  "timeWindowDays": zod.number(),
+  "defaultStrength": zod.number(),
+  "needImpact": zod.number(),
+  "timingImpact": zod.number(),
+  "status": zod.string(),
+  "active": zod.boolean(),
+  "version": zod.number()
+})
+export const ListSignalClusterDefinitionsResponse = zod.array(ListSignalClusterDefinitionsResponseItem)
+
+
+/**
+ * @summary Create an inactive versioned cluster definition
+ */
+export const CreateSignalClusterDefinitionParams = zod.object({
+  "projectId": zod.coerce.string()
+})
+
+export const createSignalClusterDefinitionBodyNameMax = 160;
+
+export const createSignalClusterDefinitionBodyDescriptionMax = 2000;
+
+export const createSignalClusterDefinitionBodyRequiredSignalCodesMax = 10;
+
+export const createSignalClusterDefinitionBodyOptionalSignalCodesMax = 10;
+
+export const createSignalClusterDefinitionBodyNegativeSignalCodesMax = 10;
+
+export const createSignalClusterDefinitionBodyMinimumIndependentSignalsMax = 20;
+
+export const createSignalClusterDefinitionBodyTimeWindowDaysMax = 730;
+
+export const createSignalClusterDefinitionBodyDefaultStrengthMin = 0;
+export const createSignalClusterDefinitionBodyDefaultStrengthMax = 100;
+
+export const createSignalClusterDefinitionBodyNeedImpactMin = -100;
+export const createSignalClusterDefinitionBodyNeedImpactMax = 100;
+
+export const createSignalClusterDefinitionBodyTimingImpactMin = -100;
+export const createSignalClusterDefinitionBodyTimingImpactMax = 100;
+
+
+
+export const CreateSignalClusterDefinitionBody = zod.object({
+  "intelligencePackId": zod.string().nullish(),
+  "name": zod.string().min(1).max(createSignalClusterDefinitionBodyNameMax),
+  "description": zod.string().min(1).max(createSignalClusterDefinitionBodyDescriptionMax),
+  "requiredSignalCodes": zod.array(zod.string()).min(1).max(createSignalClusterDefinitionBodyRequiredSignalCodesMax),
+  "optionalSignalCodes": zod.array(zod.string()).max(createSignalClusterDefinitionBodyOptionalSignalCodesMax),
+  "negativeSignalCodes": zod.array(zod.string()).max(createSignalClusterDefinitionBodyNegativeSignalCodesMax),
+  "minimumIndependentSignals": zod.number().min(1).max(createSignalClusterDefinitionBodyMinimumIndependentSignalsMax),
+  "timeWindowDays": zod.number().min(1).max(createSignalClusterDefinitionBodyTimeWindowDaysMax),
+  "defaultStrength": zod.number().min(createSignalClusterDefinitionBodyDefaultStrengthMin).max(createSignalClusterDefinitionBodyDefaultStrengthMax),
+  "needImpact": zod.number().min(createSignalClusterDefinitionBodyNeedImpactMin).max(createSignalClusterDefinitionBodyNeedImpactMax),
+  "timingImpact": zod.number().min(createSignalClusterDefinitionBodyTimingImpactMin).max(createSignalClusterDefinitionBodyTimingImpactMax)
+})
+
+export const CreateSignalClusterDefinitionResponse = zod.object({
+  "id": zod.string(),
+  "organizationId": zod.string(),
+  "projectId": zod.string(),
+  "intelligencePackId": zod.string().nullish(),
+  "name": zod.string(),
+  "description": zod.string(),
+  "requiredSignalCodes": zod.array(zod.string()),
+  "optionalSignalCodes": zod.array(zod.string()),
+  "negativeSignalCodes": zod.array(zod.string()),
+  "minimumIndependentSignals": zod.number(),
+  "timeWindowDays": zod.number(),
+  "defaultStrength": zod.number(),
+  "needImpact": zod.number(),
+  "timingImpact": zod.number(),
+  "status": zod.string(),
+  "active": zod.boolean(),
+  "version": zod.number()
+})
+
+
+/**
+ * @summary Explicitly activate or deactivate a cluster definition
+ */
+export const ConfigureSignalClusterDefinitionParams = zod.object({
+  "projectId": zod.coerce.string(),
+  "definitionId": zod.coerce.string()
+})
+
+export const ConfigureSignalClusterDefinitionBody = zod.object({
+  "active": zod.boolean()
+})
+
+export const ConfigureSignalClusterDefinitionResponse = zod.object({
+  "id": zod.string(),
+  "organizationId": zod.string(),
+  "projectId": zod.string(),
+  "intelligencePackId": zod.string().nullish(),
+  "name": zod.string(),
+  "description": zod.string(),
+  "requiredSignalCodes": zod.array(zod.string()),
+  "optionalSignalCodes": zod.array(zod.string()),
+  "negativeSignalCodes": zod.array(zod.string()),
+  "minimumIndependentSignals": zod.number(),
+  "timeWindowDays": zod.number(),
+  "defaultStrength": zod.number(),
+  "needImpact": zod.number(),
+  "timingImpact": zod.number(),
+  "status": zod.string(),
+  "active": zod.boolean(),
+  "version": zod.number()
+})
+
+
+/**
+ * @summary List explainable evaluated signal clusters
+ */
+export const ListSignalClustersParams = zod.object({
+  "projectId": zod.coerce.string()
+})
+
+export const ListSignalClustersResponseItem = zod.object({
+  "id": zod.string(),
+  "definition": zod.object({
+  "id": zod.string(),
+  "organizationId": zod.string(),
+  "projectId": zod.string(),
+  "intelligencePackId": zod.string().nullish(),
+  "name": zod.string(),
+  "description": zod.string(),
+  "requiredSignalCodes": zod.array(zod.string()),
+  "optionalSignalCodes": zod.array(zod.string()),
+  "negativeSignalCodes": zod.array(zod.string()),
+  "minimumIndependentSignals": zod.number(),
+  "timeWindowDays": zod.number(),
+  "defaultStrength": zod.number(),
+  "needImpact": zod.number(),
+  "timingImpact": zod.number(),
+  "status": zod.string(),
+  "active": zod.boolean(),
+  "version": zod.number()
+}),
+  "members": zod.array(zod.record(zod.string(), zod.unknown())),
+  "explanation": zod.string(),
+  "currentStrength": zod.number(),
+  "confidence": zod.number(),
+  "independenceSnapshot": zod.record(zod.string(), zod.unknown()),
+  "temporalSnapshot": zod.record(zod.string(), zod.unknown()),
+  "supportingEvidenceIds": zod.array(zod.string())
+})
+export const ListSignalClustersResponse = zod.array(ListSignalClustersResponseItem)
+
+
+/**
+ * @summary Evaluate active cluster definitions for one project company
+ */
+export const EvaluateSignalClustersParams = zod.object({
+  "projectId": zod.coerce.string(),
+  "projectCompanyId": zod.coerce.string()
+})
+
+export const EvaluateSignalClustersResponse = zod.object({
+  "evaluated": zod.number(),
+  "clusters": zod.array(zod.object({
+  "id": zod.string(),
+  "projectId": zod.string(),
+  "companyId": zod.string(),
+  "definitionId": zod.string(),
+  "triggeredSignalIds": zod.array(zod.string()),
+  "supportingEvidenceIds": zod.array(zod.string()),
+  "independenceSnapshot": zod.record(zod.string(), zod.unknown()),
+  "temporalSnapshot": zod.record(zod.string(), zod.unknown()),
+  "explanation": zod.string(),
+  "originalStrength": zod.number(),
+  "currentStrength": zod.number(),
+  "confidence": zod.number(),
+  "needImpact": zod.number(),
+  "timingImpact": zod.number(),
+  "status": zod.string(),
+  "ruleVersion": zod.string()
+}))
+})
 
 

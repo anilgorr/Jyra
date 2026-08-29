@@ -124,6 +124,32 @@ export const intelligencePackQuestionsTable = pgTable(
   ],
 );
 
+export const intelligencePackClustersTable = pgTable(
+  "intelligence_pack_clusters",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    versionId: uuid("version_id").notNull().references(() => intelligencePackVersionsTable.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    description: text("description").notNull(),
+    requiredSignalCodes: jsonb("required_signal_codes").$type<string[]>().notNull().default([]),
+    optionalSignalCodes: jsonb("optional_signal_codes").$type<string[]>().notNull().default([]),
+    negativeSignalCodes: jsonb("negative_signal_codes").$type<string[]>().notNull().default([]),
+    minimumIndependentSignals: integer("minimum_independent_signals").notNull().default(2),
+    timeWindowDays: integer("time_window_days").notNull().default(30),
+    defaultStrength: real("default_strength").notNull().default(80),
+    needImpact: real("need_impact").notNull().default(0),
+    timingImpact: real("timing_impact").notNull().default(0),
+    reviewStatus: text("review_status").notNull().default("PROPOSED"),
+    hypothesis: boolean("hypothesis").notNull().default(true),
+    activatedDefinitionId: uuid("activated_definition_id"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
+  },
+  (table) => [
+    index("intelligence_pack_clusters_version_idx").on(table.versionId, table.reviewStatus),
+  ],
+);
+
 export const insertIntelligencePackSchema = createInsertSchema(intelligencePacksTable).omit({ id: true, createdAt: true, updatedAt: true });
 export const insertIntelligencePackVersionSchema = createInsertSchema(intelligencePackVersionsTable).omit({ id: true, createdAt: true });
 export const insertIntelligencePackSignalSchema = createInsertSchema(intelligencePackSignalsTable).omit({ id: true, createdAt: true, updatedAt: true });
@@ -133,6 +159,7 @@ export type IntelligencePack = typeof intelligencePacksTable.$inferSelect;
 export type IntelligencePackVersion = typeof intelligencePackVersionsTable.$inferSelect;
 export type IntelligencePackSignal = typeof intelligencePackSignalsTable.$inferSelect;
 export type IntelligencePackQuestion = typeof intelligencePackQuestionsTable.$inferSelect;
+export type IntelligencePackCluster = typeof intelligencePackClustersTable.$inferSelect;
 export type InsertIntelligencePack = z.infer<typeof insertIntelligencePackSchema>;
 export type InsertIntelligencePackVersion = z.infer<typeof insertIntelligencePackVersionSchema>;
 export type InsertIntelligencePackSignal = z.infer<typeof insertIntelligencePackSignalSchema>;
