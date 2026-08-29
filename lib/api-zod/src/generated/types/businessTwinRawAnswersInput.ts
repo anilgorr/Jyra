@@ -6,11 +6,10 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { BusinessTwinCustomerExample } from './businessTwinCustomerExample';
-import type { BusinessTwinRawAnswersBusinessMaturityStage } from './businessTwinRawAnswersBusinessMaturityStage';
+import type { BusinessTwinRawAnswersInputBusinessMaturityStage } from './businessTwinRawAnswersInputBusinessMaturityStage';
 
-export interface BusinessTwinRawAnswers {
-  /** @nullable */
-  businessMaturityStage: BusinessTwinRawAnswersBusinessMaturityStage;
+export interface BusinessTwinRawAnswersInput {
+  businessMaturityStage: BusinessTwinRawAnswersInputBusinessMaturityStage;
   /** @maxLength 200 */
   companyName: string;
   /** @maxLength 500 */

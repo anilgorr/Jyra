@@ -9,7 +9,9 @@ import type { IcpCriterionCriterionType } from './icpCriterionCriterionType';
 import type { IcpCriterionDimension } from './icpCriterionDimension';
 import type { IcpCriterionEvaluability } from './icpCriterionEvaluability';
 import type { IcpCriterionOperator } from './icpCriterionOperator';
+import type { IcpCriterionProvenance } from './icpCriterionProvenance';
 import type { IcpCriterionSource } from './icpCriterionSource';
+import type { IcpCriterionValidationStatus } from './icpCriterionValidationStatus';
 
 export interface IcpCriterion {
   id: string;
@@ -27,5 +29,9 @@ export interface IcpCriterion {
   description: string;
   source: IcpCriterionSource;
   evaluability: IcpCriterionEvaluability;
+  /** @nullable */
+  provenance: IcpCriterionProvenance;
+  /** @nullable */
+  validationStatus: IcpCriterionValidationStatus;
   accepted: boolean;
 }

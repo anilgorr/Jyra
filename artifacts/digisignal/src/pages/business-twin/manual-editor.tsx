@@ -60,7 +60,11 @@ export function ManualEditor({ twin, onCancel, onSuccess }: { twin: BusinessTwin
   const handleSave = () => {
     if (!activeProjectId) return;
 
-    const manualInterpretation: any = {};
+    const manualInterpretation: any = {
+      claims: initialInterpretation.claims || [],
+      unknowns: initialInterpretation.unknowns || [],
+    };
+
     SECTIONS.forEach(s => {
       if (s.type === 'list') {
         manualInterpretation[s.key] = formData[s.key]

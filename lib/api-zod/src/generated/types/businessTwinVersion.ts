@@ -5,8 +5,10 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+import type { BusinessTwinClaim } from './businessTwinClaim';
 import type { BusinessTwinInterpretation } from './businessTwinInterpretation';
 import type { BusinessTwinRawAnswers } from './businessTwinRawAnswers';
+import type { BusinessTwinVersionBusinessMaturityStage } from './businessTwinVersionBusinessMaturityStage';
 import type { BusinessTwinVersionStatus } from './businessTwinVersionStatus';
 
 export interface BusinessTwinVersion {
@@ -21,6 +23,9 @@ export interface BusinessTwinVersion {
   modelUsed: string | null;
   /** @nullable */
   promptVersion: string | null;
+  /** @nullable */
+  businessMaturityStage?: BusinessTwinVersionBusinessMaturityStage;
+  evidenceClaims?: BusinessTwinClaim[];
   status: BusinessTwinVersionStatus;
   createdBy: string;
   createdAt: Date;

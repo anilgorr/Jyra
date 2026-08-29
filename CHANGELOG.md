@@ -43,6 +43,14 @@
 - Added tenant-authorized Business Twin APIs, separate raw/AI/manual storage, model and prompt metadata, and managed OpenAI output validation with bounded retry.
 - Kept ICP, market research, providers, signals, opportunities, scoring, outcomes, and learning outside this milestone.
 
+## Business Twin maturity support
+
+- Added five explicit maturity stages and an adaptive wizard that supports pre-launch, zero-customer, early-customer, repeatable-sales, and established companies.
+- Added structured claim provenance, validation status, visible unknowns, and startup-friendly hypothesis and validation prompts without requiring fabricated customer or sales history.
+- Added deterministic hypothesis, early-evidence, and validated ICP modes with explicit assumptions and no unsupported confidence percentage.
+- Preserved immutable Business Twin and ICP versioning, manual refinement, regeneration, legacy reads, and project-scoped authorization.
+- Prepared the data boundary for a future outcome-driven learning loop while keeping automatic ICP rewriting and outcome ingestion out of scope.
+
 ## Future entries
 
 Future milestones should document user-visible behavior, schema changes, API contract changes, provenance implications, and any new trust boundary.

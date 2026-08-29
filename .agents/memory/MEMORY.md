@@ -1,1 +1,2 @@
 - [OpenAPI integer generation](openapi-integer-generation.md) — avoid integer schemas until the workspace Zod/Orval versions agree on the generated integer helper.
+- [OpenAPI composition generation](openapi-composition-generation.md) — avoid allOf for request variants because this Orval/Zod combination emits unsupported helpers.

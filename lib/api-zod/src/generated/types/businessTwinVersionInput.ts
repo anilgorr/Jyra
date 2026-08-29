@@ -5,8 +5,8 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
-import type { BusinessTwinRawAnswers } from './businessTwinRawAnswers';
+import type { BusinessTwinRawAnswersInput } from './businessTwinRawAnswersInput';
 
 export interface BusinessTwinVersionInput {
-  rawAnswers: BusinessTwinRawAnswers;
+  rawAnswers: BusinessTwinRawAnswersInput;
 }

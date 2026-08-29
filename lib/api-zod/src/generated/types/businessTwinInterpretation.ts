@@ -5,6 +5,7 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+import type { BusinessTwinClaim } from './businessTwinClaim';
 
 export interface BusinessTwinInterpretation {
   /** @maxLength 3000 */
@@ -43,4 +44,7 @@ export interface BusinessTwinInterpretation {
   differentiators: string[];
   /** @items.maxLength 500 */
   common_objections: string[];
+  claims?: BusinessTwinClaim[];
+  /** @items.maxLength 500 */
+  unknowns?: string[];
 }

@@ -38,6 +38,10 @@ The application currently enforces tenancy in the API after verified session loo
 
 Every read and write is preceded by a server-side project membership check. Regeneration, raw-answer edits, and manual interpretation refinements insert a new version instead of overwriting history.
 
+Business Twin versions also store a nullable maturity stage and structured evidence claims. The maturity column is nullable so historical versions remain readable without inventing a stage. Claims record statement, provenance, validation status, evidence basis, and whether the statement is an assumption.
+
+ICP versions store nullable mode metadata for legacy compatibility, a plain-language explanation, and explicit testable assumptions. ICP criteria carry nullable provenance and validation status for historical rows; newly generated criteria always receive both. Hypothesis, early-evidence, and validated modes remain version metadata and are copied forward by manual criterion edits.
+
 ## Planned storage layers
 
 ### Tenant and access

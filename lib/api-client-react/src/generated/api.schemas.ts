@@ -104,7 +104,23 @@ export interface BusinessTwinCustomerExample {
   whyBoughtThen: string;
 }
 
+/**
+ * @nullable
+ */
+export type BusinessTwinRawAnswersBusinessMaturityStage = typeof BusinessTwinRawAnswersBusinessMaturityStage[keyof typeof BusinessTwinRawAnswersBusinessMaturityStage] | null;
+
+
+export const BusinessTwinRawAnswersBusinessMaturityStage = {
+  PRE_LAUNCH: 'PRE_LAUNCH',
+  LAUNCHED_NO_CUSTOMERS: 'LAUNCHED_NO_CUSTOMERS',
+  EARLY_CUSTOMERS: 'EARLY_CUSTOMERS',
+  REPEATABLE_SALES: 'REPEATABLE_SALES',
+  ESTABLISHED: 'ESTABLISHED',
+} as const;
+
 export interface BusinessTwinRawAnswers {
+  /** @nullable */
+  businessMaturityStage: BusinessTwinRawAnswersBusinessMaturityStage;
   /** @maxLength 200 */
   companyName: string;
   /** @maxLength 500 */
@@ -133,10 +149,7 @@ export interface BusinessTwinRawAnswers {
   typicalSalesCycle: string;
   /** @maxLength 1000 */
   targetGeographies: string;
-  /**
-     * @minItems 3
-     * @maxItems 3
-     */
+  /** @maxItems 10 */
   bestCustomers: BusinessTwinCustomerExample[];
   /** @maxLength 3000 */
   badCustomerCharacteristics: string;
@@ -154,6 +167,232 @@ export interface BusinessTwinRawAnswers {
   competitorsOrAlternatives: string;
   /** @maxLength 3000 */
   commonObjections: string;
+  /** @maxLength 3000 */
+  marketHypotheses?: string;
+  /** @maxLength 3000 */
+  prospectiveCustomerEvidence?: string;
+  /** @maxLength 2000 */
+  designPartners?: string;
+  /** @maxLength 2000 */
+  pilotUsers?: string;
+  /** @maxLength 2000 */
+  betaUsers?: string;
+  /** @maxLength 2000 */
+  waitlistOrLettersOfIntent?: string;
+  /** @maxLength 3000 */
+  activeProspects?: string;
+  /** @maxLength 3000 */
+  validationNotes?: string;
+  /** @maxLength 100 */
+  customerCount?: string;
+  /** @maxLength 4000 */
+  currentCustomers?: string;
+  /** @maxLength 3000 */
+  payingCustomers?: string;
+  /** @maxLength 3000 */
+  pilotCustomers?: string;
+  /** @maxLength 3000 */
+  customerBuyingReasons?: string;
+  /** @maxLength 3000 */
+  customerProblems?: string;
+  /** @maxLength 2000 */
+  customerInitiators?: string;
+  /** @maxLength 2000 */
+  customerApprovers?: string;
+  /** @maxLength 3000 */
+  customerInterestTriggers?: string;
+  /** @maxLength 3000 */
+  bestCustomerPatterns?: string;
+  /** @maxLength 4000 */
+  wonOpportunities?: string;
+  /** @maxLength 4000 */
+  lostOpportunities?: string;
+  /** @maxLength 2000 */
+  dealSizeHistory?: string;
+  /** @maxLength 2000 */
+  salesCycleHistory?: string;
+  /** @maxLength 2000 */
+  historicalBuyerRoles?: string;
+  /** @maxLength 2000 */
+  historicalChampions?: string;
+  /** @maxLength 2000 */
+  economicBuyerRoles?: string;
+  /** @maxLength 2000 */
+  historicalIndustries?: string;
+  /** @maxLength 2000 */
+  historicalCompanySizes?: string;
+  /** @maxLength 2000 */
+  historicalGeographies?: string;
+  /** @maxLength 3000 */
+  objectionHistory?: string;
+  /** @maxLength 3000 */
+  competitorHistory?: string;
+  /** @maxLength 3000 */
+  expansionPatterns?: string;
+}
+
+export type BusinessTwinRawAnswersInputBusinessMaturityStage = typeof BusinessTwinRawAnswersInputBusinessMaturityStage[keyof typeof BusinessTwinRawAnswersInputBusinessMaturityStage];
+
+
+export const BusinessTwinRawAnswersInputBusinessMaturityStage = {
+  PRE_LAUNCH: 'PRE_LAUNCH',
+  LAUNCHED_NO_CUSTOMERS: 'LAUNCHED_NO_CUSTOMERS',
+  EARLY_CUSTOMERS: 'EARLY_CUSTOMERS',
+  REPEATABLE_SALES: 'REPEATABLE_SALES',
+  ESTABLISHED: 'ESTABLISHED',
+} as const;
+
+export interface BusinessTwinRawAnswersInput {
+  businessMaturityStage: BusinessTwinRawAnswersInputBusinessMaturityStage;
+  /** @maxLength 200 */
+  companyName: string;
+  /** @maxLength 500 */
+  website: string;
+  /** @maxLength 200 */
+  primaryGeography: string;
+  /** @maxLength 200 */
+  industry: string;
+  /** @maxLength 200 */
+  offeringName: string;
+  /** @maxLength 3000 */
+  productOrServiceDescription: string;
+  /** @maxLength 3000 */
+  problemsSolved: string;
+  /** @maxLength 3000 */
+  costOfInaction: string;
+  /** @maxLength 2000 */
+  typicalCustomerProfile: string;
+  /** @maxLength 200 */
+  typicalEmployeeRange: string;
+  /** @maxLength 200 */
+  typicalRevenueRange: string;
+  /** @maxLength 200 */
+  typicalDealSize: string;
+  /** @maxLength 200 */
+  typicalSalesCycle: string;
+  /** @maxLength 1000 */
+  targetGeographies: string;
+  /** @maxItems 10 */
+  bestCustomers: BusinessTwinCustomerExample[];
+  /** @maxLength 3000 */
+  badCustomerCharacteristics: string;
+  /** @maxLength 1000 */
+  commonBuyerRoles: string;
+  /** @maxLength 1000 */
+  commonChampionRoles: string;
+  /** @maxLength 1000 */
+  commonTechnicalEvaluatorRoles: string;
+  /** @maxLength 3000 */
+  typicalUrgencyTriggers: string;
+  /** @maxLength 3000 */
+  majorDifferentiators: string;
+  /** @maxLength 2000 */
+  competitorsOrAlternatives: string;
+  /** @maxLength 3000 */
+  commonObjections: string;
+  /** @maxLength 3000 */
+  marketHypotheses?: string;
+  /** @maxLength 3000 */
+  prospectiveCustomerEvidence?: string;
+  /** @maxLength 2000 */
+  designPartners?: string;
+  /** @maxLength 2000 */
+  pilotUsers?: string;
+  /** @maxLength 2000 */
+  betaUsers?: string;
+  /** @maxLength 2000 */
+  waitlistOrLettersOfIntent?: string;
+  /** @maxLength 3000 */
+  activeProspects?: string;
+  /** @maxLength 3000 */
+  validationNotes?: string;
+  /** @maxLength 100 */
+  customerCount?: string;
+  /** @maxLength 4000 */
+  currentCustomers?: string;
+  /** @maxLength 3000 */
+  payingCustomers?: string;
+  /** @maxLength 3000 */
+  pilotCustomers?: string;
+  /** @maxLength 3000 */
+  customerBuyingReasons?: string;
+  /** @maxLength 3000 */
+  customerProblems?: string;
+  /** @maxLength 2000 */
+  customerInitiators?: string;
+  /** @maxLength 2000 */
+  customerApprovers?: string;
+  /** @maxLength 3000 */
+  customerInterestTriggers?: string;
+  /** @maxLength 3000 */
+  bestCustomerPatterns?: string;
+  /** @maxLength 4000 */
+  wonOpportunities?: string;
+  /** @maxLength 4000 */
+  lostOpportunities?: string;
+  /** @maxLength 2000 */
+  dealSizeHistory?: string;
+  /** @maxLength 2000 */
+  salesCycleHistory?: string;
+  /** @maxLength 2000 */
+  historicalBuyerRoles?: string;
+  /** @maxLength 2000 */
+  historicalChampions?: string;
+  /** @maxLength 2000 */
+  economicBuyerRoles?: string;
+  /** @maxLength 2000 */
+  historicalIndustries?: string;
+  /** @maxLength 2000 */
+  historicalCompanySizes?: string;
+  /** @maxLength 2000 */
+  historicalGeographies?: string;
+  /** @maxLength 3000 */
+  objectionHistory?: string;
+  /** @maxLength 3000 */
+  competitorHistory?: string;
+  /** @maxLength 3000 */
+  expansionPatterns?: string;
+}
+
+export type BusinessTwinClaimProvenance = typeof BusinessTwinClaimProvenance[keyof typeof BusinessTwinClaimProvenance];
+
+
+export const BusinessTwinClaimProvenance = {
+  FOUNDER_HYPOTHESIS: 'FOUNDER_HYPOTHESIS',
+  CUSTOMER_INTERVIEW: 'CUSTOMER_INTERVIEW',
+  DESIGN_PARTNER: 'DESIGN_PARTNER',
+  PILOT: 'PILOT',
+  CUSTOMER: 'CUSTOMER',
+  CRM_HISTORY: 'CRM_HISTORY',
+  SALES_OUTCOME: 'SALES_OUTCOME',
+  USER_CONFIRMED: 'USER_CONFIRMED',
+  AI_INFERRED: 'AI_INFERRED',
+} as const;
+
+export type BusinessTwinClaimValidationStatus = typeof BusinessTwinClaimValidationStatus[keyof typeof BusinessTwinClaimValidationStatus];
+
+
+export const BusinessTwinClaimValidationStatus = {
+  UNTESTED: 'UNTESTED',
+  PARTIALLY_VALIDATED: 'PARTIALLY_VALIDATED',
+  VALIDATED: 'VALIDATED',
+  CONTRADICTED: 'CONTRADICTED',
+  UNKNOWN: 'UNKNOWN',
+} as const;
+
+export interface BusinessTwinClaim {
+  /** @maxLength 100 */
+  key: string;
+  /** @maxLength 2000 */
+  statement: string;
+  provenance: BusinessTwinClaimProvenance;
+  validationStatus: BusinessTwinClaimValidationStatus;
+  /**
+     * @maxLength 2000
+     * @nullable
+     */
+  evidence: string | null;
+  isAssumption: boolean;
 }
 
 export interface BusinessTwinInterpretation {
@@ -193,15 +432,32 @@ export interface BusinessTwinInterpretation {
   differentiators: string[];
   /** @items.maxLength 500 */
   common_objections: string[];
+  claims?: BusinessTwinClaim[];
+  /** @items.maxLength 500 */
+  unknowns?: string[];
 }
 
 export interface BusinessTwinVersionInput {
-  rawAnswers: BusinessTwinRawAnswers;
+  rawAnswers: BusinessTwinRawAnswersInput;
 }
 
 export interface BusinessTwinManualInterpretationInput {
   manualInterpretation: BusinessTwinInterpretation;
 }
+
+/**
+ * @nullable
+ */
+export type BusinessTwinVersionBusinessMaturityStage = typeof BusinessTwinVersionBusinessMaturityStage[keyof typeof BusinessTwinVersionBusinessMaturityStage] | null;
+
+
+export const BusinessTwinVersionBusinessMaturityStage = {
+  PRE_LAUNCH: 'PRE_LAUNCH',
+  LAUNCHED_NO_CUSTOMERS: 'LAUNCHED_NO_CUSTOMERS',
+  EARLY_CUSTOMERS: 'EARLY_CUSTOMERS',
+  REPEATABLE_SALES: 'REPEATABLE_SALES',
+  ESTABLISHED: 'ESTABLISHED',
+} as const;
 
 export type BusinessTwinVersionStatus = typeof BusinessTwinVersionStatus[keyof typeof BusinessTwinVersionStatus];
 
@@ -223,6 +479,9 @@ export interface BusinessTwinVersion {
   modelUsed: string | null;
   /** @nullable */
   promptVersion: string | null;
+  /** @nullable */
+  businessMaturityStage?: BusinessTwinVersionBusinessMaturityStage;
+  evidenceClaims?: BusinessTwinClaim[];
   status: BusinessTwinVersionStatus;
   createdBy: string;
   createdAt: string;
@@ -288,6 +547,38 @@ export const IcpCriterionEvaluability = {
   advisory: 'advisory',
 } as const;
 
+/**
+ * @nullable
+ */
+export type IcpCriterionProvenance = typeof IcpCriterionProvenance[keyof typeof IcpCriterionProvenance] | null;
+
+
+export const IcpCriterionProvenance = {
+  FOUNDER_HYPOTHESIS: 'FOUNDER_HYPOTHESIS',
+  CUSTOMER_INTERVIEW: 'CUSTOMER_INTERVIEW',
+  DESIGN_PARTNER: 'DESIGN_PARTNER',
+  PILOT: 'PILOT',
+  CUSTOMER: 'CUSTOMER',
+  CRM_HISTORY: 'CRM_HISTORY',
+  SALES_OUTCOME: 'SALES_OUTCOME',
+  USER_CONFIRMED: 'USER_CONFIRMED',
+  AI_INFERRED: 'AI_INFERRED',
+} as const;
+
+/**
+ * @nullable
+ */
+export type IcpCriterionValidationStatus = typeof IcpCriterionValidationStatus[keyof typeof IcpCriterionValidationStatus] | null;
+
+
+export const IcpCriterionValidationStatus = {
+  UNTESTED: 'UNTESTED',
+  PARTIALLY_VALIDATED: 'PARTIALLY_VALIDATED',
+  VALIDATED: 'VALIDATED',
+  CONTRADICTED: 'CONTRADICTED',
+  UNKNOWN: 'UNKNOWN',
+} as const;
+
 export interface IcpCriterion {
   id: string;
   dimension: IcpCriterionDimension;
@@ -304,6 +595,10 @@ export interface IcpCriterion {
   description: string;
   source: IcpCriterionSource;
   evaluability: IcpCriterionEvaluability;
+  /** @nullable */
+  provenance: IcpCriterionProvenance;
+  /** @nullable */
+  validationStatus: IcpCriterionValidationStatus;
   accepted: boolean;
 }
 
@@ -367,6 +662,32 @@ export const IcpCriterionInputEvaluability = {
   advisory: 'advisory',
 } as const;
 
+export type IcpCriterionInputProvenance = typeof IcpCriterionInputProvenance[keyof typeof IcpCriterionInputProvenance];
+
+
+export const IcpCriterionInputProvenance = {
+  FOUNDER_HYPOTHESIS: 'FOUNDER_HYPOTHESIS',
+  CUSTOMER_INTERVIEW: 'CUSTOMER_INTERVIEW',
+  DESIGN_PARTNER: 'DESIGN_PARTNER',
+  PILOT: 'PILOT',
+  CUSTOMER: 'CUSTOMER',
+  CRM_HISTORY: 'CRM_HISTORY',
+  SALES_OUTCOME: 'SALES_OUTCOME',
+  USER_CONFIRMED: 'USER_CONFIRMED',
+  AI_INFERRED: 'AI_INFERRED',
+} as const;
+
+export type IcpCriterionInputValidationStatus = typeof IcpCriterionInputValidationStatus[keyof typeof IcpCriterionInputValidationStatus];
+
+
+export const IcpCriterionInputValidationStatus = {
+  UNTESTED: 'UNTESTED',
+  PARTIALLY_VALIDATED: 'PARTIALLY_VALIDATED',
+  VALIDATED: 'VALIDATED',
+  CONTRADICTED: 'CONTRADICTED',
+  UNKNOWN: 'UNKNOWN',
+} as const;
+
 export interface IcpCriterionInput {
   dimension: IcpCriterionInputDimension;
   operator: IcpCriterionInputOperator;
@@ -382,6 +703,8 @@ export interface IcpCriterionInput {
   description: string;
   source: IcpCriterionInputSource;
   evaluability: IcpCriterionInputEvaluability;
+  provenance?: IcpCriterionInputProvenance;
+  validationStatus?: IcpCriterionInputValidationStatus;
 }
 
 export type IcpCriterionUpdateDimension = typeof IcpCriterionUpdateDimension[keyof typeof IcpCriterionUpdateDimension];
@@ -436,6 +759,32 @@ export const IcpCriterionUpdateEvaluability = {
   advisory: 'advisory',
 } as const;
 
+export type IcpCriterionUpdateProvenance = typeof IcpCriterionUpdateProvenance[keyof typeof IcpCriterionUpdateProvenance];
+
+
+export const IcpCriterionUpdateProvenance = {
+  FOUNDER_HYPOTHESIS: 'FOUNDER_HYPOTHESIS',
+  CUSTOMER_INTERVIEW: 'CUSTOMER_INTERVIEW',
+  DESIGN_PARTNER: 'DESIGN_PARTNER',
+  PILOT: 'PILOT',
+  CUSTOMER: 'CUSTOMER',
+  CRM_HISTORY: 'CRM_HISTORY',
+  SALES_OUTCOME: 'SALES_OUTCOME',
+  USER_CONFIRMED: 'USER_CONFIRMED',
+  AI_INFERRED: 'AI_INFERRED',
+} as const;
+
+export type IcpCriterionUpdateValidationStatus = typeof IcpCriterionUpdateValidationStatus[keyof typeof IcpCriterionUpdateValidationStatus];
+
+
+export const IcpCriterionUpdateValidationStatus = {
+  UNTESTED: 'UNTESTED',
+  PARTIALLY_VALIDATED: 'PARTIALLY_VALIDATED',
+  VALIDATED: 'VALIDATED',
+  CONTRADICTED: 'CONTRADICTED',
+  UNKNOWN: 'UNKNOWN',
+} as const;
+
 export interface IcpCriterionUpdate {
   dimension?: IcpCriterionUpdateDimension;
   operator?: IcpCriterionUpdateOperator;
@@ -450,7 +799,21 @@ export interface IcpCriterionUpdate {
   /** @maxLength 2000 */
   description?: string;
   evaluability?: IcpCriterionUpdateEvaluability;
+  provenance?: IcpCriterionUpdateProvenance;
+  validationStatus?: IcpCriterionUpdateValidationStatus;
 }
+
+/**
+ * @nullable
+ */
+export type IcpVersionIcpMode = typeof IcpVersionIcpMode[keyof typeof IcpVersionIcpMode] | null;
+
+
+export const IcpVersionIcpMode = {
+  HYPOTHESIS_ICP: 'HYPOTHESIS_ICP',
+  EARLY_EVIDENCE_ICP: 'EARLY_EVIDENCE_ICP',
+  VALIDATED_ICP: 'VALIDATED_ICP',
+} as const;
 
 export interface IcpVersion {
   id: string;
@@ -458,6 +821,15 @@ export interface IcpVersion {
   projectId: string;
   /** @nullable */
   sourceBusinessTwinVersionId: string | null;
+  /** @nullable */
+  icpMode: IcpVersionIcpMode;
+  /**
+     * @maxLength 2000
+     * @nullable
+     */
+  modeExplanation: string | null;
+  /** @items.maxLength 2000 */
+  assumptions: string[];
   version: number;
   criteria: IcpCriterion[];
   createdBy: string;
@@ -807,6 +1179,11 @@ export type ForbiddenResponse = ErrorResponse;
  * Resource not found
  */
 export type NotFoundResponse = ErrorResponse;
+
+/**
+ * A legacy Business Twin must be saved with a maturity stage before creating a derived version
+ */
+export type MaturityStageRequiredResponse = ErrorResponse;
 
 /**
  * Business Twin interpretation could not be generated

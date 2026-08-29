@@ -6,6 +6,7 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { IcpCriterion } from './icpCriterion';
+import type { IcpVersionIcpMode } from './icpVersionIcpMode';
 
 export interface IcpVersion {
   id: string;
@@ -13,6 +14,15 @@ export interface IcpVersion {
   projectId: string;
   /** @nullable */
   sourceBusinessTwinVersionId: string | null;
+  /** @nullable */
+  icpMode: IcpVersionIcpMode;
+  /**
+     * @maxLength 2000
+     * @nullable
+     */
+  modeExplanation: string | null;
+  /** @items.maxLength 2000 */
+  assumptions: string[];
   version: number;
   criteria: IcpCriterion[];
   createdBy: string;

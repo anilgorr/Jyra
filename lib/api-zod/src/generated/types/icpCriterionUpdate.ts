@@ -9,6 +9,8 @@ import type { IcpCriterionUpdateCriterionType } from './icpCriterionUpdateCriter
 import type { IcpCriterionUpdateDimension } from './icpCriterionUpdateDimension';
 import type { IcpCriterionUpdateEvaluability } from './icpCriterionUpdateEvaluability';
 import type { IcpCriterionUpdateOperator } from './icpCriterionUpdateOperator';
+import type { IcpCriterionUpdateProvenance } from './icpCriterionUpdateProvenance';
+import type { IcpCriterionUpdateValidationStatus } from './icpCriterionUpdateValidationStatus';
 
 export interface IcpCriterionUpdate {
   dimension?: IcpCriterionUpdateDimension;
@@ -24,4 +26,6 @@ export interface IcpCriterionUpdate {
   /** @maxLength 2000 */
   description?: string;
   evaluability?: IcpCriterionUpdateEvaluability;
+  provenance?: IcpCriterionUpdateProvenance;
+  validationStatus?: IcpCriterionUpdateValidationStatus;
 }

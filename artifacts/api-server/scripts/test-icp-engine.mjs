@@ -17,6 +17,7 @@ try {
   });
 
   const {
+    deriveIcpGenerationContext,
     evaluateIcpCriterion,
     generateIcpCriteria,
     icpCriterionInputSchema,
@@ -116,6 +117,36 @@ try {
   const hypothesis = generated.find((criterion) => criterion.value === "May lack budget");
   assert.equal(hypothesis?.criterionType, "ADVISORY");
   assert.equal(hypothesis?.evaluability, "advisory");
+  assert.equal(hypothesis?.provenance, "AI_INFERRED");
+  assert.equal(hypothesis?.validationStatus, "UNTESTED");
+
+  const startup = deriveIcpGenerationContext({
+    businessMaturityStage: "LAUNCHED_NO_CUSTOMERS",
+    typicalCustomerProfile: "B2B SaaS security teams",
+    typicalEmployeeRange: "100-500",
+    commonBuyerRoles: "CTO",
+  });
+  assert.equal(startup.icpMode, "HYPOTHESIS_ICP");
+  assert.match(startup.modeExplanation, /market assumptions/i);
+  assert.ok(startup.assumptions.some((item) => item.includes("100-500")));
+
+  const early = deriveIcpGenerationContext({
+    businessMaturityStage: "EARLY_CUSTOMERS",
+    customerCount: "2",
+    currentCustomers: "Two pilots",
+  });
+  assert.equal(early.icpMode, "EARLY_EVIDENCE_ICP");
+  assert.match(early.modeExplanation, /Early evidence suggests/);
+
+  const established = deriveIcpGenerationContext({
+    businessMaturityStage: "ESTABLISHED",
+    customerCount: "50+",
+    wonOpportunities: "Security-led opportunities win when a CISO sponsors them.",
+    lostOpportunities: "Deals without an executive sponsor are usually lost.",
+    dealSizeHistory: "$25k-$75k ARR",
+  });
+  assert.equal(established.icpMode, "VALIDATED_ICP");
+  assert.doesNotMatch(established.modeExplanation, /%/);
 
   console.log("ICP engine contract tests passed");
 } finally {

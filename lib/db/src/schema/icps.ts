@@ -50,6 +50,32 @@ export const icpCriterionSourceEnum = pgEnum("icp_criterion_source", [
   "manual",
 ]);
 
+export const icpModeEnum = pgEnum("icp_mode", [
+  "HYPOTHESIS_ICP",
+  "EARLY_EVIDENCE_ICP",
+  "VALIDATED_ICP",
+]);
+
+export const evidenceProvenanceEnum = pgEnum("evidence_provenance", [
+  "FOUNDER_HYPOTHESIS",
+  "CUSTOMER_INTERVIEW",
+  "DESIGN_PARTNER",
+  "PILOT",
+  "CUSTOMER",
+  "CRM_HISTORY",
+  "SALES_OUTCOME",
+  "USER_CONFIRMED",
+  "AI_INFERRED",
+]);
+
+export const validationStatusEnum = pgEnum("validation_status", [
+  "UNTESTED",
+  "PARTIALLY_VALIDATED",
+  "VALIDATED",
+  "CONTRADICTED",
+  "UNKNOWN",
+]);
+
 export const icpsTable = pgTable(
   "icps",
   {
@@ -91,6 +117,9 @@ export const icpVersionsTable = pgTable(
       () => businessTwinVersionsTable.id,
       { onDelete: "set null" },
     ),
+    icpMode: icpModeEnum("icp_mode"),
+    modeExplanation: text("mode_explanation"),
+    assumptions: jsonb("assumptions").notNull().default([]),
     version: integer("version").notNull(),
     createdBy: text("created_by")
       .notNull()
@@ -123,6 +152,8 @@ export const icpCriteriaTable = pgTable(
     description: text("description").notNull(),
     source: icpCriterionSourceEnum("source").notNull(),
     evaluability: icpCriterionEvaluabilityEnum("evaluability").notNull(),
+    provenance: evidenceProvenanceEnum("provenance"),
+    validationStatus: validationStatusEnum("validation_status"),
     accepted: boolean("accepted").notNull().default(false),
   },
   (table) => [

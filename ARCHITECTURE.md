@@ -70,6 +70,12 @@ AI must not control tenant authorization, identity resolution, scoring mathemati
 
 Business Twin interpretation sends only explicit raw answers to the managed model. Output is untrusted until it passes an exact, bounded Zod schema; malformed output is retried once and is never persisted. Raw answers, AI interpretation, and manual interpretation remain separate in each immutable version.
 
+Maturity stage, evidence claims, provenance, validation status, ICP mode, and ICP assumptions are stored with immutable versions. Legacy Business Twin and ICP versions remain readable with nullable/unknown maturity metadata rather than having a stage or evidence status inferred retroactively.
+
+The model may summarize supplied answers, but application code assigns evidence provenance and caps validation according to explicit maturity and outcome history. Founder hypotheses and AI inference cannot become validated evidence. ICP mode is derived deterministically: zero-customer stages remain hypothesis-led, small samples remain early evidence, and validated mode requires both explicit customer volume and repeated outcome evidence.
+
+The future learning loop ends at a suggested ICP change. Outcome ingestion, pattern analysis, and recommendation generation are outside this milestone, and any later change must create a user-approved immutable ICP version rather than mutating the active version.
+
 ## Background jobs
 
 Future research work should use a simple database-backed job table suitable for Replit:

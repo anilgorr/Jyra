@@ -1,12 +1,13 @@
 import { openai } from "@workspace/integrations-openai-ai-server";
 import {
+  buildBusinessTwinEvidence,
   businessTwinInterpretationSchema,
   type BusinessTwinInterpretation,
   type BusinessTwinRawAnswers,
 } from "./business-twin-schemas";
 
 export const BUSINESS_TWIN_MODEL = "gpt-5.6-terra";
-export const BUSINESS_TWIN_PROMPT_VERSION = "business-twin-v1";
+export const BUSINESS_TWIN_PROMPT_VERSION = "business-twin-maturity-v2";
 
 export class BusinessTwinInterpretationError extends Error {
   constructor(message: string, options?: ErrorOptions) {
@@ -34,6 +35,8 @@ const outputShape = {
   disqualifier_hypotheses: ["string"],
   differentiators: ["string"],
   common_objections: ["string"],
+  claims: [],
+  unknowns: ["string"],
 };
 
 export async function interpretBusinessTwin(
@@ -55,7 +58,11 @@ export async function interpretBusinessTwin(
               "Use only facts present in the supplied answers.",
               "Never invent customer names, customer facts, technologies, compliance obligations, industries, geographies, results, or buying reasons.",
               "An empty or unknown answer must remain unknown: use an empty array or an empty offering summary when unsupported.",
-              "A hypothesis may appear only in disqualifier_hypotheses and must be phrased as a hypothesis grounded in supplied answers.",
+              "Respect businessMaturityStage. PRE_LAUNCH and LAUNCHED_NO_CUSTOMERS have no customer or sales history unless the user explicitly supplied it.",
+              "For EARLY_CUSTOMERS, phrase patterns as 'Early evidence suggests...' and never imply a tiny sample is definitive.",
+              "Do not invent validation, confidence percentages, customers, deal sizes, win rates, or sales history.",
+              "claims must be an empty array. The application assigns provenance and validation status deterministically from supplied answers.",
+              "unknowns must list commercially relevant information that the answers leave unknown.",
               "Return JSON only. Return exactly the listed keys and no additional keys.",
               `Required shape: ${JSON.stringify(outputShape)}`,
             ].join("\n"),
@@ -75,7 +82,15 @@ export async function interpretBusinessTwin(
         throw new Error("The model returned no content");
       }
 
-      return businessTwinInterpretationSchema.parse(JSON.parse(content));
+      const parsed = businessTwinInterpretationSchema.parse(JSON.parse(content));
+      const evidence = buildBusinessTwinEvidence(rawAnswers);
+      return {
+        ...parsed,
+        claims: evidence.claims,
+        unknowns: Array.from(
+          new Set([...parsed.unknowns, ...evidence.unknowns]),
+        ).slice(0, 50),
+      };
     } catch (error) {
       lastError = error;
       if (attempt < 2) {

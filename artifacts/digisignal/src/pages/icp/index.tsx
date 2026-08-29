@@ -22,7 +22,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { AlertTriangle, Check, Clock3, Loader2, Pencil, Plus, RefreshCw, ShieldCheck, Sparkles, Trash2 } from "lucide-react";
+import { AlertTriangle, Check, Clock3, Loader2, Pencil, Plus, RefreshCw, ShieldCheck, Sparkles, Trash2, Info } from "lucide-react";
 
 const groups = [
   { type: "MUST_HAVE", title: "Must have", detail: "Required fit conditions. Missing company data stays unknown.", tone: "border-sky-500/25 bg-sky-500/5" },
@@ -170,7 +170,22 @@ export default function IcpPage() {
   return (
     <div className="space-y-7 pb-12 animate-in fade-in duration-500">
       <header className="flex flex-col gap-4 border-b pb-6 lg:flex-row lg:items-end lg:justify-between">
-        <div><div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground"><span>Opportunity intelligence</span><span>·</span><span>Version {version.version}</span></div><h1 className="font-display text-3xl font-bold">Ideal Customer Profile</h1><p className="mt-2 max-w-2xl text-muted-foreground">Objective fit logic derived from your Business Twin. Every change creates a new, auditable version.</p></div>
+        <div>
+          <div className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+            <span>Opportunity intelligence</span><span>·</span><span>Version {version.version}</span>
+          </div>
+          <h1 className="font-display text-3xl font-bold flex items-center gap-3">
+            Ideal Customer Profile
+            {version.icpMode && (
+              <Badge variant="secondary" className="bg-sidebar-accent/10 text-sidebar-accent hover:bg-sidebar-accent/20 border-transparent text-sm font-semibold uppercase tracking-wider">
+                {version.icpMode.replace(/_/g, ' ')}
+              </Badge>
+            )}
+          </h1>
+          <p className="mt-3 max-w-2xl text-muted-foreground">
+            {version.modeExplanation || "Objective fit logic derived from your Business Twin. Every change creates a new, auditable version."}
+          </p>
+        </div>
         <div className="flex flex-wrap gap-2">
           <select className="h-9 rounded-md border bg-background px-3 text-sm" value={selectedVersionId ?? current.id} onChange={(e) => setSelectedVersionId(e.target.value === current.id ? null : e.target.value)}>
             {(versionsQuery.data ?? [current]).map((item) => <option value={item.id} key={item.id}>Version {item.version}{item.id === current.id ? " · Current" : ""}</option>)}
@@ -179,6 +194,24 @@ export default function IcpPage() {
           <Button onClick={() => setEditor({ open: true, criterion: null })}><Plus className="mr-2 h-4 w-4" />Add criterion</Button>
         </div>
       </header>
+
+      {version.assumptions && version.assumptions.length > 0 && (
+        <Card className="border-amber-500/20 bg-amber-500/5 shadow-none">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2 text-amber-700 dark:text-amber-500 font-semibold text-sm mb-2 uppercase tracking-wider">
+              <Info className="h-4 w-4" /> Key Assumptions
+            </div>
+            <ul className="space-y-1.5 mt-2">
+              {version.assumptions.map((assumption, i) => (
+                <li key={i} className="flex gap-2 text-sm text-amber-900 dark:text-amber-400">
+                  <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-amber-500/50" />
+                  <span>{assumption}</span>
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+      )}
 
       {selectedVersionId && <div className="flex items-center gap-2 rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm"><Clock3 className="h-4 w-4 text-amber-600" />You are viewing an earlier immutable version. Editing it will create the next current version.</div>}
       <div className="grid gap-3 md:grid-cols-2">
@@ -194,8 +227,39 @@ export default function IcpPage() {
             <div className="space-y-3">
               {criteria.length === 0 && <div className="rounded-lg border border-dashed bg-background/40 p-5 text-center text-sm text-muted-foreground">No criteria in this section.</div>}
               {criteria.map((criterion) => <Card key={criterion.id} className="bg-background/90 shadow-none"><CardContent className="p-4">
-                <div className="flex items-start justify-between gap-3"><div><div className="flex flex-wrap items-center gap-2"><Badge variant="secondary" className="font-mono text-[10px]">{criterion.dimension}</Badge><Badge variant="outline" className="font-mono text-[10px]">{criterion.operator}</Badge>{criterion.weight !== null && <Badge variant="outline">{criterion.weight}% weight</Badge>}{criterion.accepted && <Badge className="bg-emerald-600"><Check className="mr-1 h-3 w-3" />Accepted</Badge>}</div><p className="mt-3 text-sm font-medium">{readable(criterion.value)}</p><p className="mt-1 text-sm leading-relaxed text-muted-foreground">{criterion.description}</p></div>
-                  <div className="flex shrink-0 gap-1"><Button size="icon" variant="ghost" aria-label="Edit criterion" onClick={() => setEditor({ open: true, criterion })}><Pencil className="h-4 w-4" /></Button><Button size="icon" variant="ghost" aria-label="Delete criterion" onClick={() => remove.mutate({ projectId, versionId: version.id, criterionId: criterion.id })}><Trash2 className="h-4 w-4" /></Button></div>
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <Badge variant="secondary" className="font-mono text-[10px]">{criterion.dimension}</Badge>
+                      <Badge variant="outline" className="font-mono text-[10px]">{criterion.operator}</Badge>
+                      {criterion.weight !== null && <Badge variant="outline">{criterion.weight}% weight</Badge>}
+                      {criterion.accepted && <Badge className="bg-emerald-600"><Check className="mr-1 h-3 w-3" />Accepted</Badge>}
+                    </div>
+                    <p className="mt-3 text-sm font-medium">{readable(criterion.value)}</p>
+                    <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{criterion.description}</p>
+
+                    <div className="flex flex-wrap items-center gap-2 mt-4">
+                      {criterion.provenance && (
+                        <Badge variant="outline" className="text-[10px] font-medium text-muted-foreground bg-muted/30">
+                          {criterion.provenance.replace(/_/g, ' ')}
+                        </Badge>
+                      )}
+                      {criterion.validationStatus && (
+                        <Badge variant="outline" className={`text-[10px] font-medium ${
+                          criterion.validationStatus === 'VALIDATED' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' :
+                          criterion.validationStatus === 'CONTRADICTED' ? 'bg-rose-500/10 text-rose-600 border-rose-500/20' :
+                          criterion.validationStatus === 'PARTIALLY_VALIDATED' ? 'bg-amber-500/10 text-amber-600 border-amber-500/20' :
+                          'bg-slate-500/10 text-slate-600 border-slate-500/20'
+                        }`}>
+                          {criterion.validationStatus.replace(/_/g, ' ')}
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex shrink-0 gap-1 ml-2">
+                    <Button size="icon" variant="ghost" aria-label="Edit criterion" onClick={() => setEditor({ open: true, criterion })}><Pencil className="h-4 w-4" /></Button>
+                    <Button size="icon" variant="ghost" aria-label="Delete criterion" onClick={() => remove.mutate({ projectId, versionId: version.id, criterionId: criterion.id })}><Trash2 className="h-4 w-4" /></Button>
+                  </div>
                 </div>
                 {!criterion.accepted && <Button size="sm" variant="outline" className="mt-4" onClick={() => accept.mutate({ projectId, versionId: version.id, criterionId: criterion.id })}><Check className="mr-2 h-4 w-4" />Accept criterion</Button>}
               </CardContent></Card>)}

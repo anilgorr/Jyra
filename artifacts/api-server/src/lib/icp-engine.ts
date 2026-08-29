@@ -1,5 +1,12 @@
 import type { IcpCriterion } from "@workspace/db";
 import { z } from "zod/v4";
+import {
+  BUSINESS_MATURITY_STAGES,
+  EVIDENCE_PROVENANCE,
+  VALIDATION_STATUSES,
+  hasSubstantialBusinessEvidence,
+  type BusinessTwinRawAnswers,
+} from "./business-twin-schemas";
 
 export const ICP_DIMENSIONS = [
   "industry",
@@ -108,6 +115,8 @@ export const icpCriterionInputSchema = z
     description: z.string().trim().min(1).max(2000),
     source: z.enum(["business_twin", "manual"]),
     evaluability: z.enum(ICP_EVALUABILITY),
+    provenance: z.enum(EVIDENCE_PROVENANCE).default("USER_CONFIRMED"),
+    validationStatus: z.enum(VALIDATION_STATUSES).default("UNKNOWN"),
   })
   .strict()
   .superRefine((criterion, ctx) => {
@@ -228,32 +237,122 @@ function customerIndustries(raw: string): string[] {
   return known.filter((item) => raw.toLowerCase().includes(item));
 }
 
+export const ICP_MODES = [
+  "HYPOTHESIS_ICP",
+  "EARLY_EVIDENCE_ICP",
+  "VALIDATED_ICP",
+] as const;
+
+export type IcpMode = (typeof ICP_MODES)[number];
+
+export type IcpGenerationContext = {
+  icpMode: IcpMode | null;
+  modeExplanation: string | null;
+  assumptions: string[];
+};
+
+function readString(rawAnswers: Record<string, unknown>, key: string): string {
+  return typeof rawAnswers[key] === "string"
+    ? String(rawAnswers[key]).trim()
+    : "";
+}
+
+export function deriveIcpGenerationContext(
+  rawAnswers: Record<string, unknown>,
+): IcpGenerationContext {
+  const stageValue = rawAnswers.businessMaturityStage;
+  const stage = BUSINESS_MATURITY_STAGES.includes(
+    stageValue as (typeof BUSINESS_MATURITY_STAGES)[number],
+  )
+    ? (stageValue as (typeof BUSINESS_MATURITY_STAGES)[number])
+    : null;
+  const substantialEvidence = hasSubstantialBusinessEvidence(
+    rawAnswers as BusinessTwinRawAnswers,
+  );
+
+  const icpMode: IcpMode = substantialEvidence
+    ? "VALIDATED_ICP"
+    : stage === "EARLY_CUSTOMERS" ||
+        stage === "REPEATABLE_SALES" ||
+        stage === "ESTABLISHED"
+      ? "EARLY_EVIDENCE_ICP"
+      : "HYPOTHESIS_ICP";
+
+  const modeExplanation =
+    icpMode === "VALIDATED_ICP"
+      ? "This evidence-led ICP is grounded in the customer volume and repeated sales outcomes explicitly supplied in this Business Twin. It remains versioned and changes only with user approval."
+      : icpMode === "EARLY_EVIDENCE_ICP"
+        ? "Early evidence suggests these patterns, but the sample is not treated as definitive. Review each criterion and continue testing the assumptions against real outcomes."
+        : "This ICP is based primarily on your current market assumptions. JYRA will help test and refine it as real outcomes accumulate; no customer validation is implied.";
+
+  const assumptions = [
+    readString(rawAnswers, "marketHypotheses"),
+    readString(rawAnswers, "typicalCustomerProfile")
+      ? `We believe ${readString(rawAnswers, "typicalCustomerProfile")}.`
+      : "",
+    readString(rawAnswers, "typicalEmployeeRange")
+      ? `We believe companies with ${readString(rawAnswers, "typicalEmployeeRange")} employees are a strong fit.`
+      : "",
+    readString(rawAnswers, "commonBuyerRoles")
+      ? `We believe ${readString(rawAnswers, "commonBuyerRoles")} is involved in buying.`
+      : "",
+    readString(rawAnswers, "commonChampionRoles")
+      ? `We believe ${readString(rawAnswers, "commonChampionRoles")} can champion the purchase.`
+      : "",
+    readString(rawAnswers, "typicalUrgencyTriggers")
+      ? `We believe urgency increases when ${readString(rawAnswers, "typicalUrgencyTriggers")}.`
+      : "",
+  ]
+    .map((assumption) => assumption.trim())
+    .filter(Boolean);
+
+  return {
+    icpMode,
+    modeExplanation,
+    assumptions: Array.from(new Set(assumptions)).slice(0, 20),
+  };
+}
+
 export function generateIcpCriteria(rawAnswers: Record<string, unknown>, interpretation?: Record<string, unknown>): IcpCriterionInput[] {
   const raw = (key: string) => typeof rawAnswers[key] === "string" ? String(rawAnswers[key]).trim() : "";
+  const context = deriveIcpGenerationContext(rawAnswers);
+  const provenance =
+    context.icpMode === "HYPOTHESIS_ICP"
+      ? "FOUNDER_HYPOTHESIS"
+      : context.icpMode === "VALIDATED_ICP"
+        ? "SALES_OUTCOME"
+        : "CUSTOMER";
+  const validationStatus =
+    context.icpMode === "HYPOTHESIS_ICP"
+      ? "UNTESTED"
+      : context.icpMode === "VALIDATED_ICP"
+        ? "VALIDATED"
+        : "PARTIALLY_VALIDATED";
+  const metadata = { provenance, validationStatus } as const;
   const result: IcpCriterionInput[] = [];
   const add = (criterion: IcpCriterionInput) => result.push(criterion);
   const industries = customerIndustries(raw("typicalCustomerProfile"));
   const sellerIndustry = raw("industry");
   if (industries.length) {
-    add({ dimension: "industry", operator: "IN", value: industries, weight: null, criterionType: "MUST_HAVE", description: "Target customer operates in a stated target industry.", source: "business_twin", evaluability: "scorable" });
+    add({ dimension: "industry", operator: "IN", value: industries, weight: null, criterionType: "MUST_HAVE", description: "Target customer operates in a stated target industry.", source: "business_twin", evaluability: "scorable", ...metadata });
   } else if (sellerIndustry) {
-    add({ dimension: "industry", operator: "CONTAINS", value: sellerIndustry, weight: null, criterionType: "MUST_HAVE", description: "Target customer should match the industry context provided in the Business Twin.", source: "business_twin", evaluability: "scorable" });
+    add({ dimension: "industry", operator: "CONTAINS", value: sellerIndustry, weight: null, criterionType: "MUST_HAVE", description: "Target customer should match the industry context provided in the Business Twin.", source: "business_twin", evaluability: "scorable", ...metadata });
   }
   const geographies = splitValues(raw("targetGeographies") || raw("primaryGeography"));
   if (geographies.length) {
-    add({ dimension: "geography", operator: "IN", value: geographies, weight: null, criterionType: "MUST_HAVE", description: "Company is located in a stated target geography.", source: "business_twin", evaluability: "scorable" });
+    add({ dimension: "geography", operator: "IN", value: geographies, weight: null, criterionType: "MUST_HAVE", description: "Company is located in a stated target geography.", source: "business_twin", evaluability: "scorable", ...metadata });
   }
   const employeeRange = parseEmployeeRange(raw("typicalEmployeeRange"));
   if (employeeRange) {
-    add({ dimension: "employee_count", operator: "BETWEEN", value: employeeRange, weight: null, criterionType: "MUST_HAVE", description: "Company employee count falls within the seller's stated target range.", source: "business_twin", evaluability: "scorable" });
+    add({ dimension: "employee_count", operator: "BETWEEN", value: employeeRange, weight: null, criterionType: "MUST_HAVE", description: "Company employee count falls within the seller's stated target range.", source: "business_twin", evaluability: "scorable", ...metadata });
   }
   const patterns = Array.isArray(interpretation?.technology_patterns) ? interpretation?.technology_patterns : [];
   if (patterns.length) {
-    add({ dimension: "technology", operator: "IN", value: patterns, weight: 10, criterionType: "PREFERRED", description: "Technology pattern suggested by the Business Twin interpretation.", source: "business_twin", evaluability: "scorable" });
+    add({ dimension: "technology", operator: "IN", value: patterns, weight: 10, criterionType: "PREFERRED", description: "Technology pattern suggested by the Business Twin interpretation.", source: "business_twin", evaluability: "scorable", provenance: "AI_INFERRED", validationStatus: context.icpMode === "VALIDATED_ICP" ? "PARTIALLY_VALIDATED" : "UNTESTED" });
   }
   const compliance = Array.isArray(interpretation?.compliance_patterns) ? interpretation?.compliance_patterns : [];
   if (compliance.length) {
-    add({ dimension: "compliance", operator: "IN", value: compliance, weight: 10, criterionType: "PREFERRED", description: "Compliance context may improve commercial fit but is not mandatory.", source: "business_twin", evaluability: "scorable" });
+    add({ dimension: "compliance", operator: "IN", value: compliance, weight: 10, criterionType: "PREFERRED", description: "Compliance context may improve commercial fit but is not mandatory.", source: "business_twin", evaluability: "scorable", provenance: "AI_INFERRED", validationStatus: context.icpMode === "VALIDATED_ICP" ? "PARTIALLY_VALIDATED" : "UNTESTED" });
   }
   const rawDisqualifier = raw("badCustomerCharacteristics");
   const negativePatterns = (Array.isArray(interpretation?.negative_customer_patterns) ? interpretation.negative_customer_patterns : [])
@@ -261,18 +360,18 @@ export function generateIcpCriteria(rawAnswers: Record<string, unknown>, interpr
   const hypotheses = (Array.isArray(interpretation?.disqualifier_hypotheses) ? interpretation.disqualifier_hypotheses : [])
     .filter((value): value is string => typeof value === "string" && value.trim().length > 0);
   if (rawDisqualifier) {
-    add({ dimension: "negative_indicator", operator: "CONTAINS", value: rawDisqualifier, weight: null, criterionType: "DISQUALIFIER", description: "Seller-stated negative customer characteristic. Once accepted, confirmed presence disqualifies the account.", source: "business_twin", evaluability: "scorable" });
+    add({ dimension: "negative_indicator", operator: "CONTAINS", value: rawDisqualifier, weight: null, criterionType: "DISQUALIFIER", description: "Seller-stated negative customer characteristic. Once accepted, confirmed presence disqualifies the account.", source: "business_twin", evaluability: "scorable", ...metadata });
   } else {
     for (const pattern of negativePatterns) {
-      add({ dimension: "negative_indicator", operator: "CONTAINS", value: pattern, weight: null, criterionType: "DISQUALIFIER", description: "Suggested negative customer pattern. Review and accept it before it can affect objective fit.", source: "business_twin", evaluability: "scorable" });
+      add({ dimension: "negative_indicator", operator: "CONTAINS", value: pattern, weight: null, criterionType: "DISQUALIFIER", description: "Suggested negative customer pattern. Review and accept it before it can affect objective fit.", source: "business_twin", evaluability: "scorable", provenance: "AI_INFERRED", validationStatus: "UNTESTED" });
     }
   }
   for (const hypothesis of hypotheses) {
-    add({ dimension: "negative_indicator", operator: "CONTAINS", value: hypothesis, weight: null, criterionType: "ADVISORY", description: "A Business Twin hypothesis that requires human validation before becoming a disqualifier.", source: "business_twin", evaluability: "advisory" });
+    add({ dimension: "negative_indicator", operator: "CONTAINS", value: hypothesis, weight: null, criterionType: "ADVISORY", description: "A Business Twin hypothesis that requires human validation before becoming a disqualifier.", source: "business_twin", evaluability: "advisory", provenance: "AI_INFERRED", validationStatus: "UNTESTED" });
   }
   const advisoryText = raw("typicalUrgencyTriggers") || raw("majorDifferentiators");
   if (advisoryText) {
-    add({ dimension: "positive_indicator", operator: "CONTAINS", value: advisoryText, weight: null, criterionType: "ADVISORY", description: "Commercially meaningful indicator that requires research before it can be scored.", source: "business_twin", evaluability: "advisory" });
+    add({ dimension: "positive_indicator", operator: "CONTAINS", value: advisoryText, weight: null, criterionType: "ADVISORY", description: "Commercially meaningful indicator that requires research before it can be scored.", source: "business_twin", evaluability: "advisory", ...metadata });
   }
   return result;
 }

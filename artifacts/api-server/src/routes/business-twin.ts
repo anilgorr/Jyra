@@ -31,7 +31,9 @@ import {
   interpretBusinessTwin,
 } from "../lib/business-twin-interpreter";
 import {
+  buildBusinessTwinEvidence,
   businessTwinInterpretationSchema,
+  businessTwinRawAnswersInputSchema,
   businessTwinRawAnswersSchema,
   type BusinessTwinInterpretation,
   type BusinessTwinRawAnswers,
@@ -85,14 +87,29 @@ function denyProjectAccess(
 }
 
 function versionPayload(version: typeof businessTwinVersionsTable.$inferSelect) {
+  const rawAnswers = businessTwinRawAnswersSchema.parse(version.rawAnswers);
+  const evidence = buildBusinessTwinEvidence(rawAnswers);
   return {
     id: version.id,
     businessTwinId: version.businessTwinId,
     projectId: version.projectId,
     version: version.version,
-    rawAnswers: version.rawAnswers,
+    rawAnswers: {
+      ...rawAnswers,
+      businessMaturityStage:
+        version.businessMaturityStage ??
+        rawAnswers.businessMaturityStage ??
+        null,
+    },
     aiInterpretation: version.aiInterpretation,
     manualInterpretation: version.manualInterpretation,
+    businessMaturityStage:
+      version.businessMaturityStage ??
+      rawAnswers.businessMaturityStage ??
+      null,
+    evidenceClaims: Array.isArray(version.evidenceClaims)
+      ? version.evidenceClaims
+      : evidence.claims,
     modelUsed: version.modelUsed,
     promptVersion: version.promptVersion,
     status: version.status,
@@ -140,10 +157,12 @@ async function persistVersion(input: {
       .values({
         businessTwinId: twin.id,
         projectId: input.project.id,
+        businessMaturityStage: input.rawAnswers.businessMaturityStage ?? null,
         version: (latest?.version ?? 0) + 1,
         rawAnswers: input.rawAnswers,
         aiInterpretation: input.aiInterpretation,
         manualInterpretation: input.manualInterpretation,
+        evidenceClaims: buildBusinessTwinEvidence(input.rawAnswers).claims,
         modelUsed: input.modelUsed,
         promptVersion: input.promptVersion,
         status: input.status,
@@ -232,7 +251,7 @@ router.post(
     const params = CreateBusinessTwinVersionParams.safeParse(req.params);
     const body = CreateBusinessTwinVersionBody.safeParse(req.body);
     const rawAnswers = body.success
-      ? businessTwinRawAnswersSchema.safeParse(body.data.rawAnswers)
+      ? businessTwinRawAnswersInputSchema.safeParse(body.data.rawAnswers)
       : null;
     if (!params.success || !body.success || !rawAnswers?.success) {
       res.status(400).json({ error: "Enter valid Business Twin answers" });
@@ -338,6 +357,13 @@ router.post(
     }
 
     const rawAnswers = businessTwinRawAnswersSchema.parse(current.rawAnswers);
+    if (!rawAnswers.businessMaturityStage) {
+      res.status(409).json({
+        error:
+          "Select a business maturity stage by editing this Business Twin before regenerating it.",
+      });
+      return;
+    }
     try {
       const aiInterpretation = await interpretBusinessTwin(rawAnswers);
       const version = await persistVersion({
@@ -404,14 +430,30 @@ router.patch(
       return;
     }
 
+    const sourceRawAnswers = businessTwinRawAnswersSchema.parse(source.rawAnswers);
+    if (!sourceRawAnswers.businessMaturityStage) {
+      res.status(409).json({
+        error:
+          "Select a business maturity stage by editing this Business Twin before refining its interpretation.",
+      });
+      return;
+    }
+    const sourceEvidence = buildBusinessTwinEvidence(sourceRawAnswers);
     const version = await persistVersion({
       project: access.project,
       userId,
-      rawAnswers: businessTwinRawAnswersSchema.parse(source.rawAnswers),
+      rawAnswers: sourceRawAnswers,
       aiInterpretation: source.aiInterpretation
         ? businessTwinInterpretationSchema.parse(source.aiInterpretation)
         : null,
-      manualInterpretation: manualInterpretation.data,
+      manualInterpretation: {
+        ...manualInterpretation.data,
+        claims: sourceEvidence.claims,
+        unknowns:
+          manualInterpretation.data.unknowns.length > 0
+            ? manualInterpretation.data.unknowns
+            : sourceEvidence.unknowns,
+      },
       modelUsed: source.modelUsed,
       promptVersion: source.promptVersion,
       status: "manual",

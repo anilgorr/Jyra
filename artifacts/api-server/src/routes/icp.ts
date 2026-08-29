@@ -35,8 +35,10 @@ import {
 } from "@workspace/db";
 import { getAuthenticatedUserId, requireAuth } from "../middlewares/auth";
 import {
+  deriveIcpGenerationContext,
   generateIcpCriteria,
   icpCriterionInputSchema,
+  type IcpGenerationContext,
   type IcpCriterionInput,
 } from "../lib/icp-engine";
 
@@ -76,6 +78,9 @@ function payload(version: typeof icpVersionsTable.$inferSelect, criteria: typeof
     icpId: version.icpId,
     projectId: version.projectId,
     sourceBusinessTwinVersionId: version.sourceBusinessTwinVersionId,
+    icpMode: version.icpMode,
+    modeExplanation: version.modeExplanation,
+    assumptions: Array.isArray(version.assumptions) ? version.assumptions : [],
     version: version.version,
     criteria: criteria.map((criterion) => ({
       id: criterion.id,
@@ -87,6 +92,8 @@ function payload(version: typeof icpVersionsTable.$inferSelect, criteria: typeof
       description: criterion.description,
       source: criterion.source,
       evaluability: criterion.evaluability,
+      provenance: criterion.provenance,
+      validationStatus: criterion.validationStatus,
       accepted: criterion.accepted,
     })),
     createdBy: version.createdBy,
@@ -105,6 +112,8 @@ function cloneCriterion(item: IcpCriterion): IcpCriterionInput & { accepted: boo
       description: item.description,
       source: item.source,
       evaluability: item.evaluability,
+      provenance: item.provenance ?? undefined,
+      validationStatus: item.validationStatus ?? undefined,
     }),
     accepted: item.accepted,
   };
@@ -114,6 +123,7 @@ async function persistVersion(input: {
   project: Project;
   userId: string;
   sourceBusinessTwinVersionId: string | null;
+  generationContext: IcpGenerationContext;
   criteria: Array<IcpCriterionInput & { accepted?: boolean }>;
 }) {
   return db.transaction(async (tx) => {
@@ -132,6 +142,9 @@ async function persistVersion(input: {
       icpId: icp.id,
       projectId: input.project.id,
       sourceBusinessTwinVersionId: input.sourceBusinessTwinVersionId,
+      icpMode: input.generationContext.icpMode,
+      modeExplanation: input.generationContext.modeExplanation,
+      assumptions: input.generationContext.assumptions,
       version: (latest?.version ?? 0) + 1,
       createdBy: input.userId,
     }).returning();
@@ -147,6 +160,8 @@ async function persistVersion(input: {
         description: criterion.description,
         source: criterion.source,
         evaluability: criterion.evaluability,
+        provenance: criterion.provenance,
+        validationStatus: criterion.validationStatus,
         accepted: criterion.accepted ?? false,
       })));
     }
@@ -173,8 +188,15 @@ async function createFromTwin(project: Project, userId: string) {
   const twin = await getBusinessTwin(project.id);
   if (!twin) return null;
   const interpretation = (twin.manualInterpretation ?? twin.aiInterpretation) as Record<string, unknown> | null | undefined;
-  const criteria = generateIcpCriteria(twin.rawAnswers as Record<string, unknown>, interpretation ?? undefined);
-  return persistVersion({ project, userId, sourceBusinessTwinVersionId: twin.id, criteria });
+  const rawAnswers = twin.rawAnswers as Record<string, unknown>;
+  const criteria = generateIcpCriteria(rawAnswers, interpretation ?? undefined);
+  return persistVersion({
+    project,
+    userId,
+    sourceBusinessTwinVersionId: twin.id,
+    generationContext: deriveIcpGenerationContext(rawAnswers),
+    criteria,
+  });
 }
 
 async function authorizedVersion(req: Parameters<RequestHandler>[0], res: Parameters<RequestHandler>[1], projectId: string, versionId: string) {
@@ -249,7 +271,21 @@ async function mutateCriteria(
   source: { version: typeof icpVersionsTable.$inferSelect; criteria: IcpCriterion[] },
   criteria: Array<IcpCriterionInput & { accepted?: boolean }>,
 ) {
-  return persistVersion({ project, userId, sourceBusinessTwinVersionId: source.version.sourceBusinessTwinVersionId, criteria });
+  return persistVersion({
+    project,
+    userId,
+    sourceBusinessTwinVersionId: source.version.sourceBusinessTwinVersionId,
+    generationContext: {
+      icpMode: source.version.icpMode,
+      modeExplanation: source.version.modeExplanation,
+      assumptions: Array.isArray(source.version.assumptions)
+        ? source.version.assumptions.filter(
+            (value): value is string => typeof value === "string",
+          )
+        : [],
+    },
+    criteria,
+  });
 }
 
 router.post("/projects/:projectId/icp/versions/:versionId/criteria", requireAuth, asyncRoute(async (req, res) => {
@@ -261,7 +297,12 @@ router.post("/projects/:projectId/icp/versions/:versionId/criteria", requireAuth
   if (!selected) return;
   const result = await mutateCriteria(selected.project, getAuthenticatedUserId(res), selected.selected, [
     ...selected.selected.criteria.map(cloneCriterion),
-    criterion.data,
+    {
+      ...criterion.data,
+      source: "manual",
+      provenance: "USER_CONFIRMED",
+      validationStatus: "UNKNOWN",
+    },
   ]);
   res.status(201).json(AddIcpCriterionResponse.parse(payload(result.version, result.criteria)));
 }));
@@ -274,7 +315,19 @@ router.patch("/projects/:projectId/icp/versions/:versionId/criteria/:criterionId
   if (!selected) return;
   const target = selected.selected.criteria.find((criterion) => criterion.id === params.data.criterionId);
   if (!target) { res.status(404).json({ error: "ICP criterion not found" }); return; }
-  const merged = { dimension: target.dimension, operator: target.operator, value: target.value, weight: target.weight, criterionType: target.criterionType, description: target.description, source: target.source, evaluability: target.evaluability, ...body.data };
+  const merged = {
+    dimension: target.dimension,
+    operator: target.operator,
+    value: target.value,
+    weight: target.weight,
+    criterionType: target.criterionType,
+    description: target.description,
+    source: "manual",
+    evaluability: target.evaluability,
+    ...body.data,
+    provenance: "USER_CONFIRMED",
+    validationStatus: "UNKNOWN",
+  };
   const criterion = icpCriterionInputSchema.safeParse(merged);
   if (!criterion.success) { res.status(400).json({ error: "The criterion update is invalid" }); return; }
   const result = await mutateCriteria(selected.project, getAuthenticatedUserId(res), selected.selected,

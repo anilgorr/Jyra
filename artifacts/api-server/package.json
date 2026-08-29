@@ -9,6 +9,7 @@
     "start": "node --enable-source-maps ./dist/index.mjs",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test:icp": "node ./scripts/test-icp-engine.mjs",
+    "test:business-twin": "node ./scripts/test-business-twin-maturity.mjs",
     "test:companies": "node ./scripts/test-company-identity.mjs"
   },
   "dependencies": {

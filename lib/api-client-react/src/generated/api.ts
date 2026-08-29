@@ -38,6 +38,7 @@ import type {
   IcpCriterionUpdate,
   IcpVersion,
   InterpretationUnavailableResponse,
+  MaturityStageRequiredResponse,
   NotFoundResponse,
   OnboardingInput,
   OnboardingResponse,
@@ -1185,7 +1186,7 @@ export const regenerateBusinessTwin = async (projectId: string, options?: Parame
 
 
 
-export const getRegenerateBusinessTwinMutationOptions = <TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | InterpretationUnavailableResponse>,
+export const getRegenerateBusinessTwinMutationOptions = <TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | MaturityStageRequiredResponse | InterpretationUnavailableResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof regenerateBusinessTwin>>, TError,{projectId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof regenerateBusinessTwin>>, TError,{projectId: string}, TContext> => {
 
@@ -1214,12 +1215,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type RegenerateBusinessTwinMutationResult = NonNullable<Awaited<ReturnType<typeof regenerateBusinessTwin>>>
 
-    export type RegenerateBusinessTwinMutationError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | InterpretationUnavailableResponse>
+    export type RegenerateBusinessTwinMutationError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | MaturityStageRequiredResponse | InterpretationUnavailableResponse>
 
     /**
  * @summary Regenerate the current Business Twin interpretation
  */
-export const useRegenerateBusinessTwin = <TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | InterpretationUnavailableResponse>,
+export const useRegenerateBusinessTwin = <TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | MaturityStageRequiredResponse | InterpretationUnavailableResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof regenerateBusinessTwin>>, TError,{projectId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
  ): UseMutationResult<
         Awaited<ReturnType<typeof regenerateBusinessTwin>>,
@@ -1260,7 +1261,7 @@ export const updateBusinessTwinInterpretation = async (projectId: string,
 
 
 
-export const getUpdateBusinessTwinInterpretationMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+export const getUpdateBusinessTwinInterpretationMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | MaturityStageRequiredResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateBusinessTwinInterpretation>>, TError,{projectId: string;versionId: string;data: BodyType<BusinessTwinManualInterpretationInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof updateBusinessTwinInterpretation>>, TError,{projectId: string;versionId: string;data: BodyType<BusinessTwinManualInterpretationInput>}, TContext> => {
 
@@ -1289,12 +1290,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type UpdateBusinessTwinInterpretationMutationResult = NonNullable<Awaited<ReturnType<typeof updateBusinessTwinInterpretation>>>
     export type UpdateBusinessTwinInterpretationMutationBody = BodyType<BusinessTwinManualInterpretationInput>
-    export type UpdateBusinessTwinInterpretationMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+    export type UpdateBusinessTwinInterpretationMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | MaturityStageRequiredResponse>
 
     /**
  * @summary Save manual Business Twin interpretation refinements
  */
-export const useUpdateBusinessTwinInterpretation = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+export const useUpdateBusinessTwinInterpretation = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | MaturityStageRequiredResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateBusinessTwinInterpretation>>, TError,{projectId: string;versionId: string;data: BodyType<BusinessTwinManualInterpretationInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
  ): UseMutationResult<
         Awaited<ReturnType<typeof updateBusinessTwinInterpretation>>,

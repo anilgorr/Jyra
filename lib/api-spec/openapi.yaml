@@ -338,6 +338,8 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/MaturityStageRequired"
         "502":
           $ref: "#/components/responses/InterpretationUnavailable"
   /projects/{projectId}/business-twin/versions/{versionId}/interpretation:
@@ -372,6 +374,8 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/MaturityStageRequired"
   /projects/{projectId}/icp:
     get:
       operationId: getIcp
@@ -879,7 +883,10 @@ components:
         - whyBoughtThen
     BusinessTwinRawAnswers:
       type: object
-      properties:
+      properties: &businessTwinRawAnswerProperties
+        businessMaturityStage:
+          type: ["string", "null"]
+          enum: [PRE_LAUNCH, LAUNCHED_NO_CUSTOMERS, EARLY_CUSTOMERS, REPEATABLE_SALES, ESTABLISHED, null]
         companyName:
           type: string
           maxLength: 200
@@ -924,8 +931,7 @@ components:
           maxLength: 1000
         bestCustomers:
           type: array
-          minItems: 3
-          maxItems: 3
+          maxItems: 10
           items:
             $ref: "#/components/schemas/BusinessTwinCustomerExample"
         badCustomerCharacteristics:
@@ -952,7 +958,101 @@ components:
         commonObjections:
           type: string
           maxLength: 3000
-      required:
+        marketHypotheses:
+          type: string
+          maxLength: 3000
+        prospectiveCustomerEvidence:
+          type: string
+          maxLength: 3000
+        designPartners:
+          type: string
+          maxLength: 2000
+        pilotUsers:
+          type: string
+          maxLength: 2000
+        betaUsers:
+          type: string
+          maxLength: 2000
+        waitlistOrLettersOfIntent:
+          type: string
+          maxLength: 2000
+        activeProspects:
+          type: string
+          maxLength: 3000
+        validationNotes:
+          type: string
+          maxLength: 3000
+        customerCount:
+          type: string
+          maxLength: 100
+        currentCustomers:
+          type: string
+          maxLength: 4000
+        payingCustomers:
+          type: string
+          maxLength: 3000
+        pilotCustomers:
+          type: string
+          maxLength: 3000
+        customerBuyingReasons:
+          type: string
+          maxLength: 3000
+        customerProblems:
+          type: string
+          maxLength: 3000
+        customerInitiators:
+          type: string
+          maxLength: 2000
+        customerApprovers:
+          type: string
+          maxLength: 2000
+        customerInterestTriggers:
+          type: string
+          maxLength: 3000
+        bestCustomerPatterns:
+          type: string
+          maxLength: 3000
+        wonOpportunities:
+          type: string
+          maxLength: 4000
+        lostOpportunities:
+          type: string
+          maxLength: 4000
+        dealSizeHistory:
+          type: string
+          maxLength: 2000
+        salesCycleHistory:
+          type: string
+          maxLength: 2000
+        historicalBuyerRoles:
+          type: string
+          maxLength: 2000
+        historicalChampions:
+          type: string
+          maxLength: 2000
+        economicBuyerRoles:
+          type: string
+          maxLength: 2000
+        historicalIndustries:
+          type: string
+          maxLength: 2000
+        historicalCompanySizes:
+          type: string
+          maxLength: 2000
+        historicalGeographies:
+          type: string
+          maxLength: 2000
+        objectionHistory:
+          type: string
+          maxLength: 3000
+        competitorHistory:
+          type: string
+          maxLength: 3000
+        expansionPatterns:
+          type: string
+          maxLength: 3000
+      required: &businessTwinRawAnswerRequired
+        - businessMaturityStage
         - companyName
         - website
         - primaryGeography
@@ -976,6 +1076,35 @@ components:
         - majorDifferentiators
         - competitorsOrAlternatives
         - commonObjections
+    BusinessTwinRawAnswersInput:
+      type: object
+      properties:
+        <<: *businessTwinRawAnswerProperties
+        businessMaturityStage:
+          type: string
+          enum: [PRE_LAUNCH, LAUNCHED_NO_CUSTOMERS, EARLY_CUSTOMERS, REPEATABLE_SALES, ESTABLISHED]
+      required: *businessTwinRawAnswerRequired
+    BusinessTwinClaim:
+      type: object
+      properties:
+        key:
+          type: string
+          maxLength: 100
+        statement:
+          type: string
+          maxLength: 2000
+        provenance:
+          type: string
+          enum: [FOUNDER_HYPOTHESIS, CUSTOMER_INTERVIEW, DESIGN_PARTNER, PILOT, CUSTOMER, CRM_HISTORY, SALES_OUTCOME, USER_CONFIRMED, AI_INFERRED]
+        validationStatus:
+          type: string
+          enum: [UNTESTED, PARTIALLY_VALIDATED, VALIDATED, CONTRADICTED, UNKNOWN]
+        evidence:
+          type: ["string", "null"]
+          maxLength: 2000
+        isAssumption:
+          type: boolean
+      required: [key, statement, provenance, validationStatus, evidence, isAssumption]
     BusinessTwinInterpretation:
       type: object
       properties:
@@ -1067,6 +1196,15 @@ components:
           items:
             type: string
             maxLength: 500
+        claims:
+          type: array
+          items:
+            $ref: "#/components/schemas/BusinessTwinClaim"
+        unknowns:
+          type: array
+          items:
+            type: string
+            maxLength: 500
       required:
         - offering_summary
         - problems_solved
@@ -1090,7 +1228,7 @@ components:
       type: object
       properties:
         rawAnswers:
-          $ref: "#/components/schemas/BusinessTwinRawAnswers"
+          $ref: "#/components/schemas/BusinessTwinRawAnswersInput"
       required:
         - rawAnswers
     BusinessTwinManualInterpretationInput:
@@ -1125,6 +1263,13 @@ components:
           type: ["string", "null"]
         promptVersion:
           type: ["string", "null"]
+        businessMaturityStage:
+          type: ["string", "null"]
+          enum: [PRE_LAUNCH, LAUNCHED_NO_CUSTOMERS, EARLY_CUSTOMERS, REPEATABLE_SALES, ESTABLISHED, null]
+        evidenceClaims:
+          type: array
+          items:
+            $ref: "#/components/schemas/BusinessTwinClaim"
         status:
           type: string
           enum: [ready, manual]
@@ -1171,8 +1316,14 @@ components:
         evaluability:
           type: string
           enum: [scorable, advisory]
+        provenance:
+          type: ["string", "null"]
+          enum: [FOUNDER_HYPOTHESIS, CUSTOMER_INTERVIEW, DESIGN_PARTNER, PILOT, CUSTOMER, CRM_HISTORY, SALES_OUTCOME, USER_CONFIRMED, AI_INFERRED, null]
+        validationStatus:
+          type: ["string", "null"]
+          enum: [UNTESTED, PARTIALLY_VALIDATED, VALIDATED, CONTRADICTED, UNKNOWN, null]
         accepted: { type: boolean }
-      required: [id, dimension, operator, value, weight, criterionType, description, source, evaluability, accepted]
+      required: [id, dimension, operator, value, weight, criterionType, description, source, evaluability, provenance, validationStatus, accepted]
     IcpCriterionInput:
       type: object
       properties:
@@ -1190,6 +1341,12 @@ components:
         description: { type: string, maxLength: 2000 }
         source: { type: string, enum: [manual, business_twin] }
         evaluability: { type: string, enum: [scorable, advisory] }
+        provenance:
+          type: string
+          enum: [FOUNDER_HYPOTHESIS, CUSTOMER_INTERVIEW, DESIGN_PARTNER, PILOT, CUSTOMER, CRM_HISTORY, SALES_OUTCOME, USER_CONFIRMED, AI_INFERRED]
+        validationStatus:
+          type: string
+          enum: [UNTESTED, PARTIALLY_VALIDATED, VALIDATED, CONTRADICTED, UNKNOWN]
       required: [dimension, operator, value, weight, criterionType, description, source, evaluability]
     IcpCriterionUpdate:
       type: object
@@ -1207,6 +1364,12 @@ components:
           enum: [MUST_HAVE, PREFERRED, DISQUALIFIER, ADVISORY]
         description: { type: string, maxLength: 2000 }
         evaluability: { type: string, enum: [scorable, advisory] }
+        provenance:
+          type: string
+          enum: [FOUNDER_HYPOTHESIS, CUSTOMER_INTERVIEW, DESIGN_PARTNER, PILOT, CUSTOMER, CRM_HISTORY, SALES_OUTCOME, USER_CONFIRMED, AI_INFERRED]
+        validationStatus:
+          type: string
+          enum: [UNTESTED, PARTIALLY_VALIDATED, VALIDATED, CONTRADICTED, UNKNOWN]
       minProperties: 1
     IcpVersion:
       type: object
@@ -1215,13 +1378,22 @@ components:
         icpId: { type: string }
         projectId: { type: string }
         sourceBusinessTwinVersionId: { type: ["string", "null"] }
+        icpMode:
+          type: ["string", "null"]
+          enum: [HYPOTHESIS_ICP, EARLY_EVIDENCE_ICP, VALIDATED_ICP, null]
+        modeExplanation: { type: ["string", "null"], maxLength: 2000 }
+        assumptions:
+          type: array
+          items:
+            type: string
+            maxLength: 2000
         version: { type: number }
         criteria:
           type: array
           items: { $ref: "#/components/schemas/IcpCriterion" }
         createdBy: { type: string }
         createdAt: { type: string, format: date-time }
-      required: [id, icpId, projectId, sourceBusinessTwinVersionId, version, criteria, createdBy, createdAt]
+      required: [id, icpId, projectId, sourceBusinessTwinVersionId, icpMode, modeExplanation, assumptions, version, criteria, createdBy, createdAt]
     Company:
       type: object
       properties:
@@ -1456,6 +1628,12 @@ components:
             $ref: "#/components/schemas/ErrorResponse"
     NotFound:
       description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    MaturityStageRequired:
+      description: A legacy Business Twin must be saved with a maturity stage before creating a derived version
       content:
         application/json:
           schema:

@@ -1,0 +1,917 @@
+PHASE 4A — FIRST-PARTY DATA + ANALYZE MY LIST
+
+We are building:
+
+JYRA
+Who. When. Why.
+
+IMPORTANT CONTEXT:
+
+Phase 0, Phase 1, Phase 2, Phase 3 and the ORIGINAL Phase 4
+(Canonical Companies and Import) have already been implemented.
+
+DO NOT rebuild those phases.
+
+The existing Phase 4 already includes canonical companies, company aliases,
+project companies, company import, domain normalization and duplicate handling.
+
+This phase EXTENDS that architecture.
+
+Before changing anything:
+
+1. Read the existing code and documentation.
+2. Inspect the current database schema and migrations.
+3. Identify existing company/import/duplicate functionality.
+4. Reuse existing tables and services wherever appropriate.
+5. Do not create duplicate architecture.
+6. Preserve all working functionality.
+7. Preserve tenant isolation.
+8. Run migrations and tests.
+9. Create a checkpoint.
+10. Update documentation and CHANGELOG.md.
+
+Do not claim completion unless the acceptance tests pass.
+
+==================================================
+PRODUCT PRINCIPLE
+==================================================
+
+JYRA must support TWO equally important ways of building a market universe:
+
+1. FIND MY MARKET
+   JYRA discovers companies matching the customer's ICP.
+
+2. ANALYZE MY LIST
+   Customer supplies their own ICP/company/prospect dataset and JYRA determines
+   which companies deserve attention now.
+
+Customers may obtain their data from:
+
+- their CRM
+- internal databases
+- CSV/XLSX files
+- LinkedIn/Sales Navigator exports
+- Apollo/Clay exports
+- external data vendors
+- conferences
+- directories
+- their own lawful scraping/research tools
+- manually researched lists
+- other legitimate sources
+
+JYRA does NOT need to know how the customer obtained the dataset.
+
+JYRA's job is to transform the supplied market universe into:
+
+WHO
+WHEN
+WHY
+
+==================================================
+CORE CONCEPT
+==================================================
+
+The customer may upload:
+
+ONLY COMPANY DATA
+
+OR
+
+COMPANY + CONTACT DATA
+
+OR
+
+COMPANY + ALREADY-SCRAPED MARKET DATA
+
+OR
+
+COMPANY + HISTORICAL SALES DATA
+
+OR
+
+A MIXTURE OF THESE.
+
+Example:
+
+Company
+Website
+Domain
+LinkedIn
+Industry
+Employees
+Country
+Job Title
+Job Description
+Job URL
+Recent News
+News URL
+Technology
+Recent LinkedIn Post
+Source URL
+Contact
+Title
+Email
+CRM Stage
+Deal Value
+Notes
+
+JYRA must be flexible enough to ingest these datasets without requiring
+a rigid CSV template.
+
+==================================================
+1. DATA AREA
+==================================================
+
+Add or extend a main navigation item:
+
+DATA
+
+Sections:
+
+Overview
+Companies
+Contacts
+Imports
+Analyze My List
+Manual Entry
+Data Sources
+Needs Review
+
+Do not turn this into database administration software.
+
+The UX message should be:
+
+"Bring the market you already know. JYRA will find what you're missing."
+
+==================================================
+2. ANALYZE MY LIST
+==================================================
+
+Create a prominent workflow:
+
+ANALYZE MY LIST
+
+Supporting message:
+
+"Already have your ICP accounts? Upload them and let JYRA identify which
+companies deserve your attention now."
+
+Workflow:
+
+Upload
+→ Parse
+→ Preview
+→ Identify Dataset Type
+→ Map Columns
+→ Validate
+→ Resolve Companies
+→ Detect Duplicates
+→ Review
+→ Import
+→ Prepare for Analysis
+
+Do NOT yet run the future signal/research engine.
+
+This phase prepares the data correctly for those later phases.
+
+==================================================
+3. INPUT METHODS
+==================================================
+
+Support:
+
+CSV
+XLSX
+Manual company entry
+Manual contact entry
+Copy/paste tabular data
+
+Architect for future connectors such as:
+
+HubSpot
+Salesforce
+Zoho CRM
+Pipedrive
+Google Sheets
+Microsoft Dynamics
+
+Do NOT implement those connectors now.
+
+==================================================
+4. DATASET TYPES
+==================================================
+
+Ask:
+
+"What kind of data are you adding?"
+
+Options:
+
+ICP Company List
+Prospect Companies
+Existing Customers
+Past Customers
+Open Opportunities
+Lost Opportunities
+Contacts
+CRM Export
+Scraped/Researched Dataset
+Historical Sales Data
+Other
+
+Allow mixed datasets.
+
+==================================================
+5. INTELLIGENT COLUMN MAPPING
+==================================================
+
+Do not require fixed column names.
+
+Automatically suggest mappings.
+
+Examples:
+
+Account Name → Company Name
+Company → Company Name
+URL → Website
+Website → Website
+Company URL → Website
+Employee Count → Employees
+Headcount → Employees
+Job → Job Title
+Vacancy → Job Title
+JD → Job Description
+Job Link → Job Source URL
+Article → News Content
+Article URL → News Source URL
+Tech → Technology
+Contact Name → Contact
+Designation → Job Title
+Email Address → Email
+
+Show:
+
+Incoming Column
+Sample Values
+Suggested JYRA Field
+Mapping Confidence
+User Override
+
+Use deterministic mapping first.
+
+AI may help with ambiguous mappings later.
+
+Never silently map uncertain columns.
+
+==================================================
+6. FLEXIBLE UNKNOWN COLUMNS
+==================================================
+
+This is important.
+
+Customers will upload datasets containing fields JYRA has never seen.
+
+Do NOT discard unknown columns.
+
+Allow:
+
+Map to JYRA field
+Ignore
+Store as Custom Field
+Treat as Evidence Candidate
+
+Preserve original row data.
+
+==================================================
+7. COMPANY RESOLUTION
+==================================================
+
+Extend the existing canonical company architecture.
+
+Use normalized domain as strongest V1 identity.
+
+Also consider:
+
+website
+company name
+LinkedIn company URL
+country
+
+Classify:
+
+EXACT_MATCH
+PROBABLE_MATCH
+POSSIBLE_MATCH
+NEW_COMPANY
+
+Never automatically merge POSSIBLE_MATCH.
+
+Provide review workflow.
+
+==================================================
+8. FIRST-PARTY PRIVATE DATA
+==================================================
+
+Create or extend project-specific account information.
+
+Examples:
+
+relationship_status
+account_status
+crm_stage
+account_owner
+deal_value
+currency
+first_contact_date
+last_contact_date
+last_activity_date
+next_activity_date
+customer_since
+customer_until
+lost_date
+lost_reason
+notes
+tags
+external_source
+external_id
+do_not_contact
+competitor
+bad_fit
+
+This information is PRIVATE to the customer's organization/project.
+
+Never make it globally reusable.
+
+==================================================
+9. CONTACT DATA
+==================================================
+
+Support imported contacts.
+
+Fields may include:
+
+first_name
+last_name
+full_name
+job_title
+department
+seniority
+email
+phone
+linkedin_url
+company
+company_id
+relationship_status
+last_contact_date
+notes
+external_id
+
+Never invent missing information.
+
+Contacts uploaded by customers are PRIVATE.
+
+==================================================
+10. SCRAPED / RESEARCHED DATA
+==================================================
+
+This is a major JYRA capability.
+
+Customers may already possess scraped/researched information about companies.
+
+Examples:
+
+job postings
+job descriptions
+company descriptions
+technology information
+recent posts
+news
+leadership information
+funding information
+certification information
+compliance information
+employee counts
+company growth information
+
+JYRA must be able to ingest this data.
+
+But:
+
+CUSTOMER-SUPPLIED SCRAPED DATA IS NOT AUTOMATICALLY A VERIFIED FACT.
+
+It enters JYRA as supplied evidence/data with provenance.
+
+Later Evidence and Fact phases will determine how it should be interpreted.
+
+==================================================
+11. EVIDENCE CANDIDATES
+==================================================
+
+Create a concept such as:
+
+imported_evidence_candidates
+
+or reuse an existing appropriate structure.
+
+Potential fields:
+
+project_id
+company_id
+import_id
+import_row_id
+evidence_type
+raw_value
+source_url
+source_name
+source_date
+observed_at
+imported_at
+original_column
+original_value
+status
+
+Statuses could include:
+
+UNPROCESSED
+READY_FOR_EXTRACTION
+INVALID
+DUPLICATE
+NEEDS_REVIEW
+
+Do NOT implement the full Evidence Engine from Phase 7 prematurely.
+
+This is only a staging layer.
+
+==================================================
+12. PROVENANCE
+==================================================
+
+Every imported item should know where it came from.
+
+Examples:
+
+FIRST_PARTY_UPLOAD
+FIRST_PARTY_MANUAL
+CRM_EXPORT
+CUSTOMER_RESEARCH
+CUSTOMER_SCRAPED_DATA
+PUBLIC_WEB
+PROVIDER
+
+Preserve:
+
+import ID
+row ID
+source URL when supplied
+source date when supplied
+import timestamp
+original values
+
+Never represent customer-supplied data as JYRA independently verified data.
+
+==================================================
+13. SOURCE DATE VS IMPORT DATE
+==================================================
+
+Do not confuse:
+
+"When JYRA received the data"
+
+with
+
+"When the information was actually observed."
+
+Example:
+
+Customer uploads a CSV today.
+
+Employee Count = 150
+
+But the underlying data was collected 18 months ago.
+
+JYRA must not treat:
+
+150 employees
+
+as confirmed current headcount simply because the file was uploaded today.
+
+Track dates separately.
+
+==================================================
+14. EXISTING SALES RELATIONSHIPS
+==================================================
+
+Customer data can tell JYRA things public research cannot.
+
+Normalize relationships such as:
+
+NO_RELATIONSHIP
+KNOWN_ACCOUNT
+PREVIOUSLY_CONTACTED
+POSITIVE_REPLY
+NEGATIVE_REPLY
+MEETING_HELD
+OPEN_OPPORTUNITY
+LOST_OPPORTUNITY
+PAST_CUSTOMER
+EXISTING_CUSTOMER
+KNOWN_CHAMPION
+DO_NOT_CONTACT
+
+Do not implement Opportunity scoring yet.
+
+Prepare these fields for the future Relationship dimension.
+
+==================================================
+15. NEGATIVE KNOWLEDGE
+==================================================
+
+Support information that prevents wasted research.
+
+Examples:
+
+Existing Customer
+Competitor
+Do Not Contact
+Bad Fit
+Recently Lost
+Existing Vendor
+Wrong Geography
+Duplicate
+Blacklisted
+No Budget
+Too Small
+Too Large
+
+These should eventually influence qualification and research planning.
+
+Do NOT convert every negative note into a hard disqualifier automatically.
+
+==================================================
+16. IMPORT PIPELINE
+==================================================
+
+Never insert raw files blindly into canonical tables.
+
+Pipeline:
+
+RECEIVED
+→
+PARSED
+→
+MAPPED
+→
+VALIDATED
+→
+ENTITY_RESOLUTION
+→
+REVIEW
+→
+IMPORTED
+
+Track status.
+
+Users should be able to leave and resume an unfinished import.
+
+==================================================
+17. ROW VALIDATION
+==================================================
+
+Classify rows:
+
+READY
+WARNING
+DUPLICATE
+AMBIGUOUS
+INVALID
+REJECTED
+
+Never silently discard data.
+
+Show reasons.
+
+==================================================
+18. IMPORT HISTORY
+==================================================
+
+Show:
+
+File
+Dataset Type
+Uploaded By
+Date
+Rows Received
+Companies Matched
+Companies Created
+Companies Updated
+Contacts Created
+Evidence Candidates
+Duplicates
+Warnings
+Rejected Rows
+
+Allow drill-down.
+
+==================================================
+19. IDEMPOTENCY
+==================================================
+
+Uploading the same dataset twice must not blindly duplicate data.
+
+Use where appropriate:
+
+file hash
+row fingerprint
+external ID
+domain
+LinkedIn URL
+email
+source URL
+
+Preserve lineage.
+
+==================================================
+20. CUSTOM FIELDS
+==================================================
+
+Allow customers to preserve arbitrary useful columns.
+
+Example:
+
+Territory
+Lead Score
+Campaign
+Event
+Sales Rep
+Custom Segment
+Priority
+
+These should remain project/private data.
+
+Do not make them global company attributes.
+
+==================================================
+21. MANUAL ENTRY
+==================================================
+
+Support:
+
++ Add Company
++ Add Contact
+
+Minimum company requirement:
+
+Company Name
+
+Optional:
+
+Domain
+Website
+LinkedIn
+Industry
+Employees
+Country
+Relationship
+Tags
+Notes
+
+==================================================
+22. COPY/PASTE
+==================================================
+
+Create:
+
+PASTE DATA
+
+Allow users to paste rows copied from:
+
+Excel
+Google Sheets
+CSV
+web tables
+
+Use the same mapping/validation pipeline.
+
+==================================================
+23. DATA OVERVIEW
+==================================================
+
+Show real values for:
+
+Companies
+Prospects
+Customers
+Open Opportunities
+Lost Opportunities
+Contacts
+Imports
+Evidence Candidates
+Duplicates
+Needs Review
+Data Quality Issues
+
+Do not fabricate metrics.
+
+==================================================
+24. FUTURE ANALYSIS WORKFLOW
+==================================================
+
+Design the data model so later phases can perform:
+
+Customer uploads 5,000 ICP companies
+↓
+JYRA resolves 5,000 companies
+↓
+ICP qualification
+↓
+cheap qualification research
+↓
+research planner
+↓
+selective external research
+↓
+evidence
+↓
+facts
+↓
+signals
+↓
+signal clusters
+↓
+Fit / Need / Timing / Relationship
+↓
+Confidence
+↓
+Opportunity State
+↓
+WHO / WHEN / WHY
+
+DO NOT implement this entire workflow now.
+
+Only ensure Phase 4A does not block it.
+
+==================================================
+25. VERY IMPORTANT COST PRINCIPLE
+==================================================
+
+Uploading 5,000 companies must NOT automatically trigger deep research
+on 5,000 companies.
+
+Later JYRA should spend research budget selectively.
+
+Therefore this phase should only:
+
+ingest
+normalize
+resolve
+validate
+classify
+prepare
+
+Do not automatically call expensive providers or LLMs for every row.
+
+==================================================
+26. PRIVACY BOUNDARIES
+==================================================
+
+PUBLIC INTELLIGENCE:
+
+May eventually be globally reusable.
+
+CUSTOMER FIRST-PARTY DATA:
+
+Never globally reusable.
+
+Customer uploaded:
+contacts
+emails
+phone numbers
+notes
+CRM stages
+deal values
+outcomes
+custom fields
+scraped datasets
+private research
+
+must remain tenant-private unless a future explicit product policy says otherwise.
+
+Test tenant isolation.
+
+==================================================
+27. SECURITY
+==================================================
+
+Implement:
+
+file validation
+MIME validation
+file size limits
+safe CSV parsing
+safe XLSX parsing
+formula injection protection
+filename sanitization
+tenant authorization
+project authorization
+rate limits where appropriate
+
+Never expose uploaded private data through public/global company APIs.
+
+==================================================
+28. ACCEPTANCE TEST
+==================================================
+
+Create a synthetic test dataset with at least:
+
+100 companies
+20 contacts
+10 existing customers
+10 lost opportunities
+5 open opportunities
+duplicate domains
+missing domains
+duplicate contacts
+invalid emails
+unknown/custom columns
+CRM data
+job postings
+job descriptions
+job URLs
+technology fields
+recent news
+source URLs
+old source dates
+new source dates
+
+Verify:
+
+CSV import
+XLSX import
+paste import
+manual company
+manual contact
+column mapping
+custom fields
+evidence candidate creation
+company resolution
+duplicate handling
+private relationship data
+import history
+idempotent re-import
+tenant isolation
+
+Verify especially:
+
+A customer-supplied job posting does NOT automatically become a verified JYRA fact.
+
+A customer-supplied source URL is preserved.
+
+Old data is not treated as fresh because it was imported today.
+
+Unknown columns are not silently lost.
+
+==================================================
+29. UX
+==================================================
+
+The user should understand two paths:
+
+FIND MY MARKET
+
+"Let JYRA discover companies matching your ICP."
+
+ANALYZE MY LIST
+
+"Already have your market? Upload your accounts and let JYRA identify
+which ones matter now."
+
+This distinction should become part of the product architecture.
+
+==================================================
+COMPLETION
+==================================================
+
+Run migrations.
+Run tests.
+Run security tests.
+Run acceptance tests.
+Verify old Phase 4 still works.
+Verify tenant isolation.
+Update docs.
+Update CHANGELOG.md.
+Create checkpoint.
+
+Report:
+
+1. Existing Phase 4 functionality reused
+2. New functionality added
+3. Database changes
+4. Analyze My List workflow
+5. Scraped dataset handling
+6. Evidence candidate handling
+7. Privacy protections
+8. Duplicate logic
+9. Tests
+10. Known limitations
+
+DO NOT begin Phase 5.

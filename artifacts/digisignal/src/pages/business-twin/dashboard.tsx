@@ -7,14 +7,15 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useWorkspace } from '@/context/workspace-context';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { Loader2, RefreshCw, PenLine, Sparkles } from 'lucide-react';
+import { Loader2, RefreshCw, PenLine, Sparkles, HelpCircle } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 
 function TextBlock({ label, value }: { label: string, value: string }) {
+  if (!value) return null;
   return (
     <div>
       <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">{label}</div>
-      <div className="text-sm leading-relaxed whitespace-pre-wrap">{value || '—'}</div>
+      <div className="text-sm leading-relaxed whitespace-pre-wrap">{value}</div>
     </div>
   );
 }
@@ -94,6 +95,56 @@ function InterpretationView({ twin, onEditInterpretation }: any) {
         </Button>
       </div>
 
+      {interpretation.claims && interpretation.claims.length > 0 && (
+        <Card className="shadow-sm border-sidebar-accent/20 bg-sidebar-accent/5">
+          <CardHeader className="bg-sidebar-accent/5 border-b border-sidebar-accent/10 pb-4">
+            <CardTitle className="text-sm font-semibold uppercase tracking-wider text-sidebar-accent">Evidence Claims</CardTitle>
+          </CardHeader>
+          <CardContent className="pt-6">
+            <ul className="space-y-6">
+              {interpretation.claims.map((claim: any, i: number) => (
+                <li key={i} className="flex flex-col gap-2 border-b border-sidebar-accent/10 pb-6 last:border-0 last:pb-0">
+                  <div className="font-medium text-foreground text-base">{claim.statement}</div>
+                  <div className="flex flex-wrap items-center gap-3 text-xs">
+                     <span className="px-2.5 py-0.5 rounded-full bg-secondary text-secondary-foreground font-medium">{claim.provenance.replace(/_/g, ' ')}</span>
+                     <span className={`px-2.5 py-0.5 rounded-full font-medium ${
+                       claim.validationStatus === 'VALIDATED' ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400' :
+                       claim.validationStatus === 'CONTRADICTED' ? 'bg-rose-500/15 text-rose-700 dark:text-rose-400' :
+                       claim.validationStatus === 'PARTIALLY_VALIDATED' ? 'bg-amber-500/15 text-amber-700 dark:text-amber-400' :
+                       'bg-slate-500/15 text-slate-700 dark:text-slate-400'
+                     }`}>
+                       {claim.validationStatus.replace(/_/g, ' ')}
+                     </span>
+                     {claim.isAssumption && <span className="text-amber-600 font-medium text-xs px-2.5 py-0.5 rounded-full bg-amber-500/10">Assumption</span>}
+                  </div>
+                  {claim.evidence && <div className="mt-1 text-sm text-muted-foreground italic bg-background/50 p-3 rounded-md border border-border/50">"{claim.evidence}"</div>}
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+      )}
+
+      {interpretation.unknowns && interpretation.unknowns.length > 0 && (
+        <Card className="shadow-sm border-dashed">
+          <CardHeader className="bg-muted/30 border-b pb-4 flex flex-row items-center gap-2">
+            <HelpCircle className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-semibold uppercase tracking-wider text-muted-foreground m-0">Identified Unknowns</CardTitle>
+          </CardHeader>
+          <CardContent className="pt-6">
+            <p className="text-sm text-muted-foreground mb-4">The following areas require more evidence before they can be reliably used in opportunity qualification:</p>
+            <ul className="space-y-3">
+              {interpretation.unknowns.map((item: string, i: number) => (
+                <li key={i} className="flex items-start gap-3 text-sm leading-relaxed text-foreground">
+                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-muted-foreground/40" />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+      )}
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {sections.map((section, idx) => {
           if (!section.value || (Array.isArray(section.value) && section.value.length === 0)) return null;
@@ -146,6 +197,71 @@ function RawAnswersView({ twin, onEdit }: any) {
     { label: "Offering Name", value: rawAnswers.offeringName },
   ];
 
+  const valueFields = [
+    { label: "Description", value: rawAnswers.productOrServiceDescription },
+    { label: "Problems Solved", value: rawAnswers.problemsSolved },
+    { label: "Cost of Inaction", value: rawAnswers.costOfInaction },
+    { label: "Differentiators", value: rawAnswers.majorDifferentiators },
+  ].filter(f => f.value);
+
+  const marketFields = [
+    { label: "Ideal Customer", value: rawAnswers.typicalCustomerProfile },
+    { label: "Employee Range", value: rawAnswers.typicalEmployeeRange },
+    { label: "Revenue Range", value: rawAnswers.typicalRevenueRange },
+    { label: "Deal Size", value: rawAnswers.typicalDealSize },
+    { label: "Sales Cycle", value: rawAnswers.typicalSalesCycle },
+    { label: "Competitors", value: rawAnswers.competitorsOrAlternatives },
+  ].filter(f => f.value);
+
+  const validationFields = [
+    { label: "Market Hypotheses", value: rawAnswers.marketHypotheses },
+    { label: "Prospective Customer Evidence", value: rawAnswers.prospectiveCustomerEvidence },
+    { label: "Active Prospects", value: rawAnswers.activeProspects },
+    { label: "Validation Notes", value: rawAnswers.validationNotes },
+    { label: "Design Partners", value: rawAnswers.designPartners },
+    { label: "Pilot Users", value: rawAnswers.pilotUsers },
+    { label: "Beta Users", value: rawAnswers.betaUsers },
+    { label: "Waitlist", value: rawAnswers.waitlistOrLettersOfIntent },
+  ].filter(f => f.value);
+
+  const evidenceFields = [
+    { label: "Customer Count", value: rawAnswers.customerCount },
+    { label: "Paying Customers", value: rawAnswers.payingCustomers },
+    { label: "Pilot Customers", value: rawAnswers.pilotCustomers },
+    { label: "Buying Reasons", value: rawAnswers.customerBuyingReasons },
+    { label: "Customer Problems", value: rawAnswers.customerProblems },
+    { label: "Initiators", value: rawAnswers.customerInitiators },
+    { label: "Approvers", value: rawAnswers.customerApprovers },
+    { label: "Interest Triggers", value: rawAnswers.customerInterestTriggers },
+    { label: "Current Customers", value: rawAnswers.currentCustomers },
+    { label: "Best Customer Patterns", value: rawAnswers.bestCustomerPatterns },
+    { label: "Expansion Patterns", value: rawAnswers.expansionPatterns },
+  ].filter(f => f.value);
+
+  const salesHistoryFields = [
+    { label: "Won Opportunities", value: rawAnswers.wonOpportunities },
+    { label: "Lost Opportunities", value: rawAnswers.lostOpportunities },
+    { label: "Deal Size History", value: rawAnswers.dealSizeHistory },
+    { label: "Sales Cycle History", value: rawAnswers.salesCycleHistory },
+    { label: "Historical Buyer Roles", value: rawAnswers.historicalBuyerRoles },
+    { label: "Historical Champions", value: rawAnswers.historicalChampions },
+    { label: "Economic Buyer Roles", value: rawAnswers.economicBuyerRoles },
+    { label: "Objection History", value: rawAnswers.objectionHistory },
+    { label: "Competitor History", value: rawAnswers.competitorHistory },
+    { label: "Historical Industries", value: rawAnswers.historicalIndustries },
+    { label: "Historical Company Sizes", value: rawAnswers.historicalCompanySizes },
+    { label: "Historical Geographies", value: rawAnswers.historicalGeographies },
+  ].filter(f => f.value);
+
+  const buyerFields = [
+    { label: "Bad Customer Traits", value: rawAnswers.badCustomerCharacteristics },
+    { label: "Urgency Triggers", value: rawAnswers.typicalUrgencyTriggers },
+    { label: "Buyer Roles", value: rawAnswers.commonBuyerRoles },
+    { label: "Champion Roles", value: rawAnswers.commonChampionRoles },
+    { label: "Technical Evaluators", value: rawAnswers.commonTechnicalEvaluatorRoles },
+    { label: "Common Objections", value: rawAnswers.commonObjections },
+  ].filter(f => f.value);
+
   return (
     <div className="space-y-8">
       <div className="flex justify-end">
@@ -155,8 +271,13 @@ function RawAnswersView({ twin, onEdit }: any) {
       </div>
 
       <Card>
-        <CardHeader className="bg-muted/30 border-b pb-4">
+        <CardHeader className="bg-muted/30 border-b pb-4 flex flex-row items-center justify-between">
           <CardTitle className="text-lg">Core Identity</CardTitle>
+          {rawAnswers.businessMaturityStage && (
+            <span className="px-3 py-1 rounded-full bg-sidebar-accent/10 text-sidebar-accent text-xs font-semibold">
+              {rawAnswers.businessMaturityStage.replace(/_/g, ' ')}
+            </span>
+          )}
         </CardHeader>
         <CardContent className="pt-6 grid grid-cols-2 md:grid-cols-3 gap-6">
           {basicFields.map(f => (
@@ -169,63 +290,89 @@ function RawAnswersView({ twin, onEdit }: any) {
       </Card>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <Card>
-          <CardHeader className="bg-muted/30 border-b pb-4">
-            <CardTitle className="text-lg">Value Proposition</CardTitle>
-          </CardHeader>
-          <CardContent className="pt-6 space-y-6">
-            <TextBlock label="Description" value={rawAnswers.productOrServiceDescription} />
-            <TextBlock label="Problems Solved" value={rawAnswers.problemsSolved} />
-            <TextBlock label="Cost of Inaction" value={rawAnswers.costOfInaction} />
-            <TextBlock label="Differentiators" value={rawAnswers.majorDifferentiators} />
-          </CardContent>
-        </Card>
+        {valueFields.length > 0 && (
+          <Card>
+            <CardHeader className="bg-muted/30 border-b pb-4">
+              <CardTitle className="text-lg">Value Proposition</CardTitle>
+            </CardHeader>
+            <CardContent className="pt-6 space-y-6">
+              {valueFields.map(f => <TextBlock key={f.label} label={f.label} value={f.value} />)}
+            </CardContent>
+          </Card>
+        )}
 
-        <Card>
-          <CardHeader className="bg-muted/30 border-b pb-4">
-            <CardTitle className="text-lg">Market Dynamics</CardTitle>
-          </CardHeader>
-          <CardContent className="pt-6 space-y-6">
-            <TextBlock label="Ideal Customer" value={rawAnswers.typicalCustomerProfile} />
-            <div className="grid grid-cols-2 gap-4">
-              <TextBlock label="Employee Range" value={rawAnswers.typicalEmployeeRange} />
-              <TextBlock label="Revenue Range" value={rawAnswers.typicalRevenueRange} />
-              <TextBlock label="Deal Size" value={rawAnswers.typicalDealSize} />
-              <TextBlock label="Sales Cycle" value={rawAnswers.typicalSalesCycle} />
-            </div>
-            <TextBlock label="Competitors" value={rawAnswers.competitorsOrAlternatives} />
-          </CardContent>
-        </Card>
+        {marketFields.length > 0 && (
+          <Card>
+            <CardHeader className="bg-muted/30 border-b pb-4">
+              <CardTitle className="text-lg">Market Dynamics</CardTitle>
+            </CardHeader>
+            <CardContent className="pt-6 space-y-6">
+              {marketFields.map(f => <TextBlock key={f.label} label={f.label} value={f.value} />)}
+            </CardContent>
+          </Card>
+        )}
+
+        {validationFields.length > 0 && (
+          <Card>
+            <CardHeader className="bg-muted/30 border-b pb-4">
+              <CardTitle className="text-lg">Early Validation</CardTitle>
+            </CardHeader>
+            <CardContent className="pt-6 space-y-6">
+              {validationFields.map(f => <TextBlock key={f.label} label={f.label} value={f.value} />)}
+            </CardContent>
+          </Card>
+        )}
+
+        {evidenceFields.length > 0 && (
+          <Card>
+            <CardHeader className="bg-muted/30 border-b pb-4">
+              <CardTitle className="text-lg">Customer Evidence</CardTitle>
+            </CardHeader>
+            <CardContent className="pt-6 space-y-6">
+              {evidenceFields.map(f => <TextBlock key={f.label} label={f.label} value={f.value} />)}
+            </CardContent>
+          </Card>
+        )}
+
+        {salesHistoryFields.length > 0 && (
+          <Card>
+            <CardHeader className="bg-muted/30 border-b pb-4">
+              <CardTitle className="text-lg">Historical Patterns</CardTitle>
+            </CardHeader>
+            <CardContent className="pt-6 space-y-6">
+              {salesHistoryFields.map(f => <TextBlock key={f.label} label={f.label} value={f.value} />)}
+            </CardContent>
+          </Card>
+        )}
+
+        {buyerFields.length > 0 && (
+          <Card>
+            <CardHeader className="bg-muted/30 border-b pb-4">
+              <CardTitle className="text-lg">Buyer Personas</CardTitle>
+            </CardHeader>
+            <CardContent className="pt-6 space-y-6">
+              {buyerFields.map(f => <TextBlock key={f.label} label={f.label} value={f.value} />)}
+            </CardContent>
+          </Card>
+        )}
       </div>
 
-      <Card>
-        <CardHeader className="bg-muted/30 border-b pb-4">
-          <CardTitle className="text-lg">Best Customer Examples</CardTitle>
-        </CardHeader>
-        <CardContent className="pt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
-          {rawAnswers.bestCustomers?.map((c: any, i: number) => (
-            <div key={i} className="space-y-4 p-4 rounded-lg bg-secondary/30 border">
-              <div className="font-semibold text-sidebar-accent">{c.name}</div>
-              <TextBlock label="Why Good?" value={c.whyGoodCustomer} />
-              <TextBlock label="Why Bought Then?" value={c.whyBoughtThen} />
-            </div>
-          ))}
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader className="bg-muted/30 border-b pb-4">
-          <CardTitle className="text-lg">Buyer Personas</CardTitle>
-        </CardHeader>
-        <CardContent className="pt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-          <TextBlock label="Bad Customer Traits" value={rawAnswers.badCustomerCharacteristics} />
-          <TextBlock label="Urgency Triggers" value={rawAnswers.typicalUrgencyTriggers} />
-          <TextBlock label="Buyer Roles" value={rawAnswers.commonBuyerRoles} />
-          <TextBlock label="Champion Roles" value={rawAnswers.commonChampionRoles} />
-          <TextBlock label="Technical Evaluators" value={rawAnswers.commonTechnicalEvaluatorRoles} />
-          <TextBlock label="Common Objections" value={rawAnswers.commonObjections} />
-        </CardContent>
-      </Card>
+      {rawAnswers.bestCustomers && rawAnswers.bestCustomers.length > 0 && (
+        <Card>
+          <CardHeader className="bg-muted/30 border-b pb-4">
+            <CardTitle className="text-lg">Best Customer Examples</CardTitle>
+          </CardHeader>
+          <CardContent className="pt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+            {rawAnswers.bestCustomers.map((c: any, i: number) => (
+              <div key={i} className="space-y-4 p-4 rounded-lg bg-secondary/30 border">
+                <div className="font-semibold text-sidebar-accent">{c.name}</div>
+                <TextBlock label="Why Good?" value={c.whyGoodCustomer} />
+                <TextBlock label="Why Bought Then?" value={c.whyBoughtThen} />
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
@@ -251,13 +398,18 @@ function HistoryView({ currentTwin, onSelect }: { currentTwin: BusinessTwinVersi
         <Card key={v.id} className={v.id === currentTwin.id ? "border-sidebar-accent ring-1 ring-sidebar-accent/20" : ""}>
           <CardContent className="p-6 flex items-center justify-between">
             <div>
-              <div className="flex items-center gap-3 mb-1">
+              <div className="flex flex-wrap items-center gap-3 mb-2">
                 <span className="font-display font-semibold text-lg">Version {v.version}</span>
                 {v.id === currentTwin.id && (
                   <span className="inline-flex items-center rounded-full border border-transparent bg-sidebar-accent/10 px-2.5 py-0.5 text-xs font-semibold text-sidebar-accent">Current Active</span>
                 )}
                 {v.status === 'manual' && (
                   <span className="inline-flex items-center rounded-full border border-primary/20 px-2.5 py-0.5 text-xs font-semibold text-primary">Manually Refined</span>
+                )}
+                {v.rawAnswers?.businessMaturityStage && (
+                  <span className="inline-flex items-center rounded-full border border-transparent bg-secondary px-2.5 py-0.5 text-xs font-semibold text-secondary-foreground">
+                    {v.rawAnswers.businessMaturityStage.replace(/_/g, ' ')}
+                  </span>
                 )}
               </div>
               <div className="text-sm text-muted-foreground flex gap-4">
@@ -267,7 +419,7 @@ function HistoryView({ currentTwin, onSelect }: { currentTwin: BusinessTwinVersi
             </div>
             
             <div className="flex items-center gap-4">
-              <div className="text-right text-xs text-muted-foreground">
+              <div className="text-right text-xs text-muted-foreground hidden sm:block">
                 ID: {v.id.substring(0,8)}...
               </div>
               <Button type="button" variant="outline" size="sm" onClick={() => onSelect(v)}>
@@ -308,6 +460,11 @@ export function BusinessTwinDashboard({ twin, onEdit }: { twin: BusinessTwinVers
             {displayedTwin.status === 'manual' && (
               <span className="px-2.5 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-semibold uppercase tracking-wider">
                 Manually Refined
+              </span>
+            )}
+            {displayedTwin.rawAnswers?.businessMaturityStage && (
+              <span className="px-2.5 py-0.5 rounded-full bg-secondary text-secondary-foreground text-xs font-semibold uppercase tracking-wider hidden sm:inline-flex">
+                {displayedTwin.rawAnswers.businessMaturityStage.replace(/_/g, ' ')}
               </span>
             )}
           </div>

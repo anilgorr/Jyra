@@ -20,6 +20,14 @@ export const businessTwinVersionStatusEnum = pgEnum(
   ["ready", "manual"],
 );
 
+export const businessMaturityStageEnum = pgEnum("business_maturity_stage", [
+  "PRE_LAUNCH",
+  "LAUNCHED_NO_CUSTOMERS",
+  "EARLY_CUSTOMERS",
+  "REPEATABLE_SALES",
+  "ESTABLISHED",
+]);
+
 export const businessTwinsTable = pgTable(
   "business_twins",
   {
@@ -57,10 +65,12 @@ export const businessTwinVersionsTable = pgTable(
     projectId: uuid("project_id")
       .notNull()
       .references(() => projectsTable.id, { onDelete: "cascade" }),
+    businessMaturityStage: businessMaturityStageEnum("business_maturity_stage"),
     version: integer("version").notNull(),
     rawAnswers: jsonb("raw_answers").notNull(),
     aiInterpretation: jsonb("ai_interpretation"),
     manualInterpretation: jsonb("manual_interpretation"),
+    evidenceClaims: jsonb("evidence_claims").notNull().default([]),
     modelUsed: text("model_used"),
     promptVersion: text("prompt_version"),
     status: businessTwinVersionStatusEnum("status").notNull().default("ready"),

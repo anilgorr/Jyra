@@ -59,6 +59,14 @@ Business Twin preserves the seller's raw answers separately from strictly valida
 
 Missing intelligence remains missing rather than negative evidence. Empty counts, “not connected” states, and planned-phase messages are intentional.
 
+### Business maturity and evidence
+
+Business Twin supports `PRE_LAUNCH`, `LAUNCHED_NO_CUSTOMERS`, `EARLY_CUSTOMERS`, `REPEATABLE_SALES`, and `ESTABLISHED`. The wizard asks for maturity near the beginning and adapts the remaining questions. Pre-launch and zero-customer companies can complete a Twin from market hypotheses, prospective-customer conversations, design partners, pilots, and validation notes without inventing customers, deal sizes, win rates, or sales history.
+
+Claims keep provenance separate from validation. Supported provenance includes founder hypothesis, customer interview, design partner, pilot, customer, CRM history, sales outcome, user confirmation, and AI inference. Validation remains one of untested, partially validated, validated, contradicted, or unknown. Early-customer conclusions use “early evidence suggests” language rather than claiming a definitive ideal customer.
+
+Generated ICP versions are labeled `HYPOTHESIS_ICP`, `EARLY_EVIDENCE_ICP`, or `VALIDATED_ICP`. Mode selection is deterministic, exposes testable assumptions, contains no unsupported confidence percentage, and never silently rewrites an accepted version.
+
 ## Product phases
 
 ### 1. Business Twin and ICP (implemented)
