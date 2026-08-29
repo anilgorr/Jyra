@@ -1,0 +1,146 @@
+Before making changes:
+
+1. Read PRODUCT_SPEC.md, ARCHITECTURE.md, DATABASE.md, SIGNALS.md, PROVIDERS.md, CHANGELOG.md and the entire relevant current codebase.
+
+2. Preserve all working functionality.
+
+3. Implement only the milestone described below.
+
+4. Do not redesign unrelated areas.
+
+5. Create a checkpoint before major changes.
+
+6. Run migrations and tests before completing the milestone.
+
+7. Update documentation after implementation.
+
+8. Do not claim the milestone is complete unless the acceptance criteria pass.
+
+9. Prefer deterministic business logic over LLM reasoning wherever possible.
+
+10. Do not fabricate data, evidence, people, companies, signals, buying intent or outcomes.
+
+Build DigiSignal's evidence/provenance layer.
+
+CORE PRINCIPLE
+
+Evidence is preserved public observation.
+
+Interpretation can change.
+
+Evidence should not.
+
+DATABASE
+
+Create:
+
+crawl_pages
+company_evidence
+
+COMPANY EVIDENCE FIELDS
+
+id
+company_id
+source_url
+source_domain
+source_type
+provider_id
+publisher
+source_published_at
+observed_at
+content_hash
+raw_content_reference
+extracted_claim
+authority_score
+freshness_score
+directness_score
+corroboration_score
+confidence
+status
+created_at
+
+STATUSES
+
+RAW
+EXTRACTED
+VERIFIED
+CONFLICTING
+STALE
+
+SOURCE TYPES
+
+COMPANY_WEBSITE
+CAREERS_PAGE
+JOB_POSTING
+PRESS_RELEASE
+NEWS
+BLOG
+TRUST_CENTER
+SECURITY_PAGE
+COMPLIANCE_PAGE
+TECHNOLOGY
+PUBLIC_SOCIAL
+OTHER
+
+CONTENT
+
+Preserve source text/content reference.
+
+Do not overwrite raw content when later interpretation changes.
+
+CONTENT HASHING
+
+Hash normalized content.
+
+Avoid unnecessary processing when unchanged content is fetched repeatedly.
+
+DUPLICATION
+
+Prevent obvious duplicate evidence by:
+
+company
+URL/content hash
+observation logic
+
+AUTHORITY / DIRECTNESS
+
+Build simple deterministic heuristics.
+
+Examples:
+
+Company's own career posting:
+High directness for hiring activity.
+
+Company's official press release:
+High authority for an announcement.
+
+Unknown third-party page:
+Lower authority.
+
+Do not confuse authority with absolute truth.
+
+GLOBAL REUSE
+
+Company evidence describing public company facts may be globally reusable.
+
+Tenant-specific commercial interpretation must not be written into evidence.
+
+ACCEPTANCE CRITERIA
+
+Ingest several sources for one demo company.
+
+Verify:
+
+- source URL retained
+- duplicate ingestion handled
+- raw content preserved
+- status transitions work
+- public evidence is separate from project-specific interpretation
+- evidence cannot be silently rewritten by AI
+
+Update:
+
+DATABASE.md
+ARCHITECTURE.md
+SECURITY.md
+CHANGELOG.md
