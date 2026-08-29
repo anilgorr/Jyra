@@ -169,7 +169,7 @@ function AuthenticatedRoutes() {
               <EmptyFeature title="Ideal Customer Profile" description="ICP configuration is not available yet. Missing criteria are treated as unknown, not inferred." />
             </Route>
             <Route path="/research">
-              <EmptyFeature title="Research" description="No research providers or jobs are connected. DigiSignal has not gathered evidence." />
+              <EmptyFeature title="Research" description="No research providers or jobs are connected. JYRA has not gathered evidence." />
             </Route>
             <Route path="/outcomes">
               <EmptyFeature title="Outcomes" description="Outcome capture is planned for a later milestone. No sales outcomes have been recorded." />
@@ -248,13 +248,13 @@ function ClerkProviderWithRoutes() {
         signIn: {
           start: {
             title: 'Welcome back',
-            subtitle: 'Sign in to continue to DigiSignal',
+            subtitle: 'Sign in to continue to JYRA',
           },
         },
         signUp: {
           start: {
             title: 'Create your account',
-            subtitle: 'Set up your first DigiSignal workspace',
+            subtitle: 'Set up your first JYRA workspace',
           },
         },
       }}

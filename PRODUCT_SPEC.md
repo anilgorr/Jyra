@@ -1,14 +1,14 @@
-# DigiSignal Product Specification
+# JYRA Product Specification
 
 ## Product identity
 
-DigiSignal is a B2B market intelligence application for sellers who need to decide which small number of companies deserve attention now, why now, and what to do next.
+JYRA is an Opportunity Intelligence platform for B2B sales teams that need to decide which small number of companies deserve attention now, when to approach them, and why.
 
 Its product language is **Who. When. Why.**
 
 ## Product promise
 
-DigiSignal continuously researches a seller’s market, detects evidence of commercial need and timing, identifies the companies that deserve attention, explains the reason, identifies relevant buyers, and learns from actual sales outcomes.
+JYRA continuously researches a seller’s market, detects evidence of commercial need and timing, identifies the companies that deserve attention, explains the reason, identifies relevant buyers, and learns from actual sales outcomes.
 
 The product is not primarily a lead database, email scraper, cold-email platform, CRM, outreach sequencer, or generic AI research agent.
 
@@ -43,7 +43,7 @@ Business Twin
 
 ## Identity and project shell milestone
 
-The current milestone adds authenticated users, DigiSignal-managed organizations and memberships, projects representing distinct selling motions, first-login onboarding, and a project-aware application shell.
+The current milestone adds authenticated users, JYRA-managed organizations and memberships, projects representing distinct selling motions, first-login onboarding, and a project-aware application shell.
 
 The application exposes Today, Opportunities, Companies, Business Twin, ICP, Research, Outcomes, and Settings. Future intelligence areas remain explicit empty states: this milestone does not implement market research, company discovery, contact enrichment, scoring, opportunity recommendations, or sales outcome learning.
 
@@ -57,7 +57,7 @@ The seller describes their offer, ideal customer profile, sales motion, exclusio
 
 ### 2. Market Universe and qualification
 
-DigiSignal identifies or imports candidate companies and evaluates whether they fit the seller’s explicit criteria before researching people. Company identity resolution is deterministic and auditable.
+JYRA identifies or imports candidate companies and evaluates whether they fit the seller’s explicit criteria before researching people. Company identity resolution is deterministic and auditable.
 
 ### 3. Research planning and provider routing
 
@@ -73,7 +73,7 @@ Deterministic calculations combine fit, need, timing, relationship, and confiden
 
 ### 6. Buying committee and action
 
-Only after a company is commercially interesting does DigiSignal identify likely buyers, enrich contact data, and recommend an action.
+Only after a company is commercially interesting does JYRA identify likely buyers, enrich contact data, and recommend an action.
 
 ### 7. Outcomes and learning
 

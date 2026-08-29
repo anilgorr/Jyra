@@ -42,7 +42,7 @@ export function Layout({ children }: LayoutProps) {
                   D
                 </div>
                 <span className="font-display font-semibold text-lg tracking-wide">
-                  DigiSignal
+                  JYRA
                 </span>
               </Link>
               <button onClick={() => setMobileMenuOpen(false)} className="text-sidebar-foreground/70 hover:text-sidebar-foreground">
@@ -102,7 +102,7 @@ export function Layout({ children }: LayoutProps) {
               D
             </div>
             <span className="font-display font-semibold text-lg tracking-wide">
-              DigiSignal
+              JYRA
             </span>
           </Link>
         </div>
@@ -162,7 +162,7 @@ export function Layout({ children }: LayoutProps) {
         <header className="h-16 border-b border-border bg-card/50 backdrop-blur-sm flex items-center justify-between px-4 md:hidden">
            <Link href="/" className="font-display font-semibold text-lg flex items-center gap-2">
              <div className="w-6 h-6 rounded bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold">D</div>
-             DigiSignal
+             JYRA
            </Link>
            <button onClick={() => setMobileMenuOpen(true)} className="p-2 text-foreground/70 hover:text-foreground bg-muted/50 rounded-md">
              <Menu className="w-5 h-5" />

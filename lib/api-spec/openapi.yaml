@@ -76,7 +76,7 @@ paths:
       operationId: getCurrentUser
       tags: [identity]
       summary: Get the authenticated user
-      description: Returns the local DigiSignal user record and organization count for the authenticated Clerk session.
+      description: Returns the local JYRA user record and organization count for the authenticated Clerk session.
       security:
         - clerkSession: []
       responses:

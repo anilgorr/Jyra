@@ -1,4 +1,4 @@
-# DigiSignal Database Plan
+# JYRA Database Plan
 
 ## Implemented identity and tenancy storage
 

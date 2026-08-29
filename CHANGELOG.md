@@ -1,8 +1,14 @@
 # Changelog
 
+## JYRA rebrand
+
+- Renamed the customer-facing product from DigiSignal to JYRA.
+- Updated application metadata, navigation, authentication, onboarding, empty states, and product documentation.
+- Preserved compatibility-sensitive internal identifiers such as the artifact directory, workspace package name, and local storage keys.
+
 ## Foundation
 
-- Created the DigiSignal application shell.
+- Created the initial application shell.
 - Added the contract-first foundation summary, capability phase, and activity endpoints.
 - Added documentation for product boundaries, architecture, planned database model, signal vocabulary, provider routing, and security.
 - Kept research, evidence, scoring, opportunity, enrichment, and learning features out of this milestone by design.

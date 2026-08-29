@@ -36,7 +36,7 @@ export default function EmptyFeature({ title, description }: EmptyFeatureProps) 
             </CardHeader>
             <CardContent>
               <CardDescription className="text-sm">
-                DigiSignal intentionally shows empty states rather than inventing fake signals, intent, or companies. When your Business Twin begins recognizing patterns, they will appear here.
+                JYRA intentionally shows empty states rather than inventing fake signals, intent, or companies. When your Business Twin begins recognizing patterns, they will appear here.
               </CardDescription>
             </CardContent>
           </Card>

@@ -75,9 +75,9 @@ export default function Onboarding() {
       <Card className="w-full max-w-md shadow-[var(--elevate-2)]">
         <CardHeader className="text-center space-y-2 pb-8">
           <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-accent text-accent-foreground">
-            <img src={logoUrl} alt="DigiSignal" className="h-6 w-6 brightness-0 invert" />
+            <img src={logoUrl} alt="JYRA" className="h-6 w-6 brightness-0 invert" />
           </div>
-          <CardTitle className="text-3xl">Welcome to DigiSignal</CardTitle>
+          <CardTitle className="text-3xl">Welcome to JYRA</CardTitle>
           <CardDescription className="text-base">
             Let's set up your foundation workspace.
           </CardDescription>

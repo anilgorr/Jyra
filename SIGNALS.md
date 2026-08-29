@@ -1,4 +1,4 @@
-# DigiSignal Signals
+# JYRA Signals
 
 ## Vocabulary
 

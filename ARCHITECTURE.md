@@ -1,8 +1,8 @@
-# DigiSignal Architecture
+# JYRA Architecture
 
 ## Current shape
 
-DigiSignal is a pnpm monorepo with one deployable React + Vite web application, one shared Express API service, and shared API/database libraries.
+JYRA is a pnpm monorepo with one deployable React + Vite web application, one shared Express API service, and shared API/database libraries.
 
 ```text
 artifacts/digisignal       React + Vite product surface
@@ -19,7 +19,7 @@ The frontend is served at its artifact base path. The API is routed through `/ap
 
 Clerk owns user authentication and the browser session. The web client uses Clerk's session cookie; it does not construct bearer tokens. Express verifies the session and derives the Clerk user ID before any tenant operation runs.
 
-DigiSignal owns organizations, memberships, roles, and projects in PostgreSQL. Clerk Organizations are not the tenancy model. A local user record is created just in time from the authenticated Clerk user ID, without trusting browser-supplied identity fields.
+JYRA owns organizations, memberships, roles, and projects in PostgreSQL. Clerk Organizations are not the tenancy model. A local user record is created just in time from the authenticated Clerk user ID, without trusting browser-supplied identity fields.
 
 The authorization sequence for tenant resources is:
 

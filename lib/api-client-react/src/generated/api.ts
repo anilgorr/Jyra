@@ -385,7 +385,7 @@ export const getGetCurrentUserUrl = () => {
 }
 
 /**
- * Returns the local DigiSignal user record and organization count for the authenticated Clerk session.
+ * Returns the local JYRA user record and organization count for the authenticated Clerk session.
  * @summary Get the authenticated user
  */
 export const getCurrentUser = async ( options?: Parameters<typeof customFetch>[1]): Promise<CurrentUser> => {

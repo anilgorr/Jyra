@@ -1,6 +1,6 @@
-# DigiSignal
+# JYRA
 
-DigiSignal helps B2B sellers understand which companies deserve attention now, why, and what to do next.
+JYRA is an Opportunity Intelligence platform helping B2B sales teams understand who to target, when to approach them, and why they are likely to need what they sell.
 
 ## Run & Operate
 
@@ -21,7 +21,7 @@ DigiSignal helps B2B sellers understand which companies deserve attention now, w
 
 ## Where things live
 
-- `artifacts/digisignal` — main React + Vite web application
+- `artifacts/digisignal` — main JYRA React + Vite web application (directory retained for compatibility)
 - `artifacts/api-server` — shared Express API under `/api`
 - `lib/api-spec/openapi.yaml` — API contract source of truth
 - `lib/db/src/schema` — Drizzle schema source of truth for future domain tables
@@ -36,7 +36,7 @@ DigiSignal helps B2B sellers understand which companies deserve attention now, w
 
 ## Product
 
-DigiSignal’s foundation shell introduces the “Who. When. Why.” product language and shows the current milestone, future capability boundaries, and honest empty states. Research and opportunity workflows are intentionally reserved for later milestones.
+JYRA’s shell introduces the “Who. When. Why.” product language and shows the current milestone, future capability boundaries, and honest empty states. Research and opportunity workflows are intentionally reserved for later milestones.
 
 ## User preferences
 

@@ -1,4 +1,4 @@
-# DigiSignal Providers
+# JYRA Providers
 
 ## Provider router goals
 

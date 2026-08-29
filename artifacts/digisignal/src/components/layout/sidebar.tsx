@@ -50,8 +50,8 @@ export function Sidebar() {
     <aside className="hidden h-full w-64 flex-col border-r border-border bg-sidebar text-sidebar-foreground md:flex">
       <div className="p-6">
         <Link href="/today" className="flex items-center gap-2 outline-none">
-          <img src={logoUrl} alt="DigiSignal" className="h-8 w-8" />
-          <span className="font-display text-xl font-bold tracking-tight">DigiSignal</span>
+          <img src={logoUrl} alt="JYRA" className="h-8 w-8" />
+          <span className="font-display text-xl font-bold tracking-tight">JYRA</span>
         </Link>
       </div>
 

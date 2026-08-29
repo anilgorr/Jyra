@@ -60,7 +60,7 @@ export const GetWorkspaceActivityResponse = zod.array(GetWorkspaceActivityRespon
 
 
 /**
- * Returns the local DigiSignal user record and organization count for the authenticated Clerk session.
+ * Returns the local JYRA user record and organization count for the authenticated Clerk session.
  * @summary Get the authenticated user
  */
 export const GetCurrentUserResponse = zod.object({

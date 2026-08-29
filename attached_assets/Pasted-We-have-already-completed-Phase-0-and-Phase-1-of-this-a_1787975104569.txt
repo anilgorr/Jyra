@@ -1,0 +1,110 @@
+We have already completed Phase 0 and Phase 1 of this application.
+
+The product was previously named DigiSignal.
+
+The product name has now changed permanently to:
+
+JYRA
+
+Tagline:
+Who. When. Why.
+
+IMPORTANT:
+Do NOT rebuild Phase 0 or Phase 1.
+Do NOT change the existing architecture.
+Do NOT redesign working functionality.
+Do NOT reset or recreate the database.
+Do NOT remove existing authentication, tenancy, organization, project, navigation, security, or documentation work.
+
+Your task is ONLY to rename and rebrand the existing application from DigiSignal to JYRA.
+
+Update all appropriate user-facing references including:
+- Application name
+- Browser/page titles
+- Metadata
+- Navigation branding
+- Login/onboarding branding
+- Dashboard branding
+- Empty states
+- Loading states
+- Documentation
+- README
+- PRODUCT_SPEC.md
+- ARCHITECTURE.md
+- DATABASE.md
+- SIGNALS.md
+- PROVIDERS.md
+- SECURITY.md
+- CHANGELOG.md
+- Seed/demo labels where appropriate
+
+Brand:
+
+JYRA
+Who. When. Why.
+
+Brand concept:
+JYRA is an AI-powered market and opportunity intelligence platform.
+
+JYRA helps B2B sales teams understand:
+
+WHO should we target?
+WHEN should we approach them?
+WHY are they likely to need what we sell?
+
+JYRA continuously researches the market, collects evidence, extracts facts, identifies buying signals, detects signal clusters, evaluates opportunities, and explains why an account deserves attention.
+
+JYRA should feel like an intelligent market analyst working continuously for the customer.
+
+Future product language should naturally support phrases such as:
+
+"JYRA found 7 companies worth your attention today."
+
+"JYRA detected a new buying signal."
+
+"Ask JYRA why this company is rising."
+
+"JYRA recommends researching this account further."
+
+"JYRA is monitoring your market."
+
+IMPORTANT BRANDING RULE:
+Do not overuse the Sanskrit origin in the product UI.
+
+The inspiration behind JYRA can be documented internally as:
+Inspired by the idea of moving from darkness/uncertainty toward light/clarity.
+
+The actual customer-facing positioning should remain modern, global, enterprise and technology-focused.
+
+Do not describe JYRA as a lead database.
+
+JYRA is an Opportunity Intelligence platform.
+
+Do not rename internal database identifiers unnecessarily if doing so could break existing migrations or functionality.
+
+For example, if an existing internal identifier contains "digisignal" and changing it would create migration or compatibility risk, preserve the internal identifier.
+
+Prioritize changing customer-facing branding safely.
+
+After completing the rename:
+
+1. Search the entire repository for "DigiSignal", "Digisignal", "digisignal", and related old-brand references.
+2. Categorize remaining references as:
+   - should change
+   - intentionally retained for technical compatibility
+3. Update all safe references.
+4. Verify the application builds.
+5. Verify authentication still works.
+6. Verify organization/project tenancy still works.
+7. Verify navigation still works.
+8. Run existing tests.
+9. Create a checkpoint.
+10. Add the rename to CHANGELOG.md.
+
+Do not begin Phase 2 yet.
+
+At the end, report:
+- files changed
+- old-brand references intentionally retained
+- build/test status
+- any issues found

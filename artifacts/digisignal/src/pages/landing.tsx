@@ -7,8 +7,8 @@ export default function Landing() {
     <div className="min-h-[100dvh] flex flex-col bg-background selection:bg-accent/20">
       <header className="flex h-20 items-center justify-between px-8 border-b border-border/40 bg-background/80 backdrop-blur-md sticky top-0 z-50">
         <div className="flex items-center gap-2">
-          <img src={logoUrl} alt="DigiSignal Logo" className="h-8 w-8" />
-          <span className="font-display text-2xl font-bold tracking-tight text-foreground">DigiSignal</span>
+          <img src={logoUrl} alt="JYRA" className="h-8 w-8" />
+          <span className="font-display text-2xl font-bold tracking-tight text-foreground">JYRA</span>
         </div>
         <div className="flex items-center gap-4">
           <Link href="/sign-in" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
@@ -30,7 +30,7 @@ export default function Landing() {
             B2B buyer intelligence that feels <span className="text-accent">human.</span>
           </h1>
           <p className="mx-auto mt-8 max-w-2xl text-lg text-muted-foreground sm:text-xl">
-            Go beyond generic firmographics. DigiSignal builds a dynamic Business Twin and Ideal Customer Profile that learns from your actual project activity.
+            Go beyond generic firmographics. JYRA helps your team understand who to target, when to approach them, and why they are likely to need what you sell.
           </p>
           <div className="mt-12 flex flex-col gap-4 sm:flex-row">
             <Link href="/sign-up" className="inline-flex h-12 items-center justify-center rounded-md bg-accent px-8 text-base font-medium text-accent-foreground shadow-sm transition-colors hover:bg-accent/90">
@@ -75,7 +75,7 @@ export default function Landing() {
       </main>
       
       <footer className="border-t border-border bg-background py-8 text-center text-sm text-muted-foreground">
-        <p>© {new Date().getFullYear()} DigiSignal. All rights reserved.</p>
+        <p>© {new Date().getFullYear()} JYRA. All rights reserved.</p>
       </footer>
     </div>
   );

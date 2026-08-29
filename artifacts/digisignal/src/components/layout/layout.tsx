@@ -16,7 +16,7 @@ export function Layout({ children }: { children: ReactNode }) {
         <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-border bg-card px-4 md:hidden">
           <Link href="/today" className="flex items-center gap-2 font-display font-bold">
             <img src={logoUrl} alt="" className="h-7 w-7" />
-            DigiSignal
+            JYRA
           </Link>
           <details className="relative">
             <summary className="flex h-9 w-9 cursor-pointer list-none items-center justify-center rounded-md border border-border">

@@ -1,8 +1,8 @@
-# DigiSignal Security
+# JYRA Security
 
 ## Trust boundaries
 
-DigiSignal separates:
+JYRA separates:
 
 - user identity and tenant authorization
 - public source evidence
@@ -18,7 +18,7 @@ Authorization is deterministic and server-side. The client may hide unavailable 
 
 Implemented tenant routes return `401` without a valid session, `404` when a requested resource does not exist, and `403` when the user is authenticated but lacks membership. Unauthorized project responses contain no project or organization data.
 
-The browser uses Clerk's secure session cookie. DigiSignal does not store Clerk tokens in local storage or add browser bearer-token plumbing. Local storage contains only the selected organization and project IDs, which are untrusted navigation preferences.
+The browser uses Clerk's secure session cookie. JYRA does not store Clerk tokens in local storage or add browser bearer-token plumbing. Local storage contains only the selected organization and project IDs, which are untrusted navigation preferences.
 
 Future roles should use least privilege for configuration, research, evidence, interpretation, billing, and administration.
 
