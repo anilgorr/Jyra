@@ -464,6 +464,326 @@ export interface IcpVersion {
   createdAt: string;
 }
 
+export interface Company {
+  id: string;
+  canonicalName: string;
+  /** @nullable */
+  domain: string | null;
+  /** @nullable */
+  website: string | null;
+  /** @nullable */
+  linkedinUrl: string | null;
+  /** @nullable */
+  country: string | null;
+  /** @nullable */
+  industry: string | null;
+  /** @nullable */
+  employeeCount: number | null;
+  /** @nullable */
+  employeeRange: string | null;
+  /** @nullable */
+  description: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CompanyInput {
+  /**
+     * @minLength 1
+     * @maxLength 300
+     */
+  canonicalName: string;
+  /**
+     * @maxLength 300
+     * @nullable
+     */
+  domain?: string | null;
+  /**
+     * @maxLength 500
+     * @nullable
+     */
+  website?: string | null;
+  /**
+     * @maxLength 500
+     * @nullable
+     */
+  linkedinUrl?: string | null;
+  /**
+     * @maxLength 120
+     * @nullable
+     */
+  country?: string | null;
+  /**
+     * @maxLength 200
+     * @nullable
+     */
+  industry?: string | null;
+  /**
+     * @minimum 0
+     * @nullable
+     */
+  employeeCount?: number | null;
+  /**
+     * @maxLength 120
+     * @nullable
+     */
+  employeeRange?: string | null;
+  /**
+     * @maxLength 2000
+     * @nullable
+     */
+  description?: string | null;
+}
+
+export interface CompanyImportCandidateInput {
+  /** @nullable */
+  canonicalName?: string | null;
+  /** @nullable */
+  domain?: string | null;
+  /** @nullable */
+  website?: string | null;
+  /** @nullable */
+  linkedinUrl?: string | null;
+  /** @nullable */
+  country?: string | null;
+  /** @nullable */
+  industry?: string | null;
+  employeeCount?: number | string | null;
+  /** @nullable */
+  employeeRange?: string | null;
+  /** @nullable */
+  description?: string | null;
+}
+
+export type ProjectCompanyStatus = typeof ProjectCompanyStatus[keyof typeof ProjectCompanyStatus];
+
+
+export const ProjectCompanyStatus = {
+  candidate: 'candidate',
+  active: 'active',
+  archived: 'archived',
+} as const;
+
+export type ProjectCompanyResearchStatus = typeof ProjectCompanyResearchStatus[keyof typeof ProjectCompanyResearchStatus];
+
+
+export const ProjectCompanyResearchStatus = {
+  not_started: 'not_started',
+  in_progress: 'in_progress',
+  complete: 'complete',
+} as const;
+
+/**
+ * @nullable
+ */
+export type ProjectCompanyOpportunityState = typeof ProjectCompanyOpportunityState[keyof typeof ProjectCompanyOpportunityState] | null;
+
+
+export const ProjectCompanyOpportunityState = {
+  none: 'none',
+  potential: 'potential',
+  active: 'active',
+  won: 'won',
+  lost: 'lost',
+} as const;
+
+export interface ProjectCompany {
+  id: string;
+  projectId: string;
+  companyId: string;
+  company: Company;
+  status: ProjectCompanyStatus;
+  researchStatus: ProjectCompanyResearchStatus;
+  /** @nullable */
+  fitScore: number | null;
+  /** @nullable */
+  needScore: number | null;
+  /** @nullable */
+  timingScore: number | null;
+  /** @nullable */
+  relationshipScore: number | null;
+  /** @nullable */
+  confidenceScore: number | null;
+  /** @nullable */
+  opportunityState: ProjectCompanyOpportunityState;
+  /** @nullable */
+  latestResearchAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type ProjectCompanyUpdateStatus = typeof ProjectCompanyUpdateStatus[keyof typeof ProjectCompanyUpdateStatus];
+
+
+export const ProjectCompanyUpdateStatus = {
+  candidate: 'candidate',
+  active: 'active',
+  archived: 'archived',
+} as const;
+
+export type ProjectCompanyUpdateResearchStatus = typeof ProjectCompanyUpdateResearchStatus[keyof typeof ProjectCompanyUpdateResearchStatus];
+
+
+export const ProjectCompanyUpdateResearchStatus = {
+  not_started: 'not_started',
+  in_progress: 'in_progress',
+  complete: 'complete',
+} as const;
+
+/**
+ * @nullable
+ */
+export type ProjectCompanyUpdateOpportunityState = typeof ProjectCompanyUpdateOpportunityState[keyof typeof ProjectCompanyUpdateOpportunityState] | null;
+
+
+export const ProjectCompanyUpdateOpportunityState = {
+  none: 'none',
+  potential: 'potential',
+  active: 'active',
+  won: 'won',
+  lost: 'lost',
+} as const;
+
+export interface ProjectCompanyUpdate {
+  status?: ProjectCompanyUpdateStatus;
+  researchStatus?: ProjectCompanyUpdateResearchStatus;
+  /**
+     * @minimum 0
+     * @maximum 100
+     * @nullable
+     */
+  fitScore?: number | null;
+  /**
+     * @minimum 0
+     * @maximum 100
+     * @nullable
+     */
+  needScore?: number | null;
+  /**
+     * @minimum 0
+     * @maximum 100
+     * @nullable
+     */
+  timingScore?: number | null;
+  /**
+     * @minimum 0
+     * @maximum 100
+     * @nullable
+     */
+  relationshipScore?: number | null;
+  /**
+     * @minimum 0
+     * @maximum 100
+     * @nullable
+     */
+  confidenceScore?: number | null;
+  /** @nullable */
+  opportunityState?: ProjectCompanyUpdateOpportunityState;
+}
+
+export interface CompanyImportRow {
+  /**
+     * @minLength 1
+     * @maxLength 100
+     */
+  rowId: string;
+  company: CompanyImportCandidateInput;
+}
+
+export interface CompanyImportInput {
+  /**
+     * @minItems 1
+     * @maxItems 500
+     */
+  rows: CompanyImportRow[];
+}
+
+export type CompanyImportResolutionAction = typeof CompanyImportResolutionAction[keyof typeof CompanyImportResolutionAction];
+
+
+export const CompanyImportResolutionAction = {
+  create: 'create',
+  reuse: 'reuse',
+} as const;
+
+export interface CompanyImportResolution {
+  action: CompanyImportResolutionAction;
+  /** @nullable */
+  companyId?: string | null;
+}
+
+export interface CompanyImportCommitRow {
+  /**
+     * @minLength 1
+     * @maxLength 100
+     */
+  rowId: string;
+  company: CompanyImportCandidateInput;
+  resolution?: CompanyImportResolution;
+}
+
+export interface CompanyImportCommitInput {
+  /**
+     * @minItems 1
+     * @maxItems 500
+     */
+  rows: CompanyImportCommitRow[];
+}
+
+export interface CompanyImportMatch {
+  id: string;
+  canonicalName: string;
+  /** @nullable */
+  domain: string | null;
+}
+
+export type CompanyImportRowResultDecision = typeof CompanyImportRowResultDecision[keyof typeof CompanyImportRowResultDecision];
+
+
+export const CompanyImportRowResultDecision = {
+  new: 'new',
+  exact_match: 'exact_match',
+  possible_duplicate: 'possible_duplicate',
+  invalid: 'invalid',
+  already_linked: 'already_linked',
+  created: 'created',
+  reused: 'reused',
+  needs_review: 'needs_review',
+} as const;
+
+export interface CompanyImportRowResult {
+  rowId: string;
+  input: CompanyImportCandidateInput;
+  /** @nullable */
+  normalizedDomain: string | null;
+  normalizedName: string;
+  decision: CompanyImportRowResultDecision;
+  errors: string[];
+  exactMatch: CompanyImportMatch | null;
+  possibleMatches: CompanyImportMatch[];
+  projectCompany: ProjectCompany | null;
+}
+
+export interface CompanyImportPreview {
+  total: number;
+  valid: number;
+  invalid: number;
+  exactMatches: number;
+  possibleDuplicates: number;
+  newCompanies: number;
+  rows: CompanyImportRowResult[];
+}
+
+export interface CompanyImportResult {
+  total: number;
+  created: number;
+  reused: number;
+  linked: number;
+  skipped: number;
+  needsReview: number;
+  rows: CompanyImportRowResult[];
+}
+
 export interface ErrorResponse {
   error: string;
 }
@@ -492,4 +812,9 @@ export type NotFoundResponse = ErrorResponse;
  * Business Twin interpretation could not be generated
  */
 export type InterpretationUnavailableResponse = ErrorResponse;
+
+export type CommitCompanyImport409 = {
+  error: string;
+  needsReview: number;
+};
 

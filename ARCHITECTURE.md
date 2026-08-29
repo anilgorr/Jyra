@@ -2,6 +2,14 @@
 
 The ICP engine is project-scoped and tenant-authorized on every request. Business Twin-to-ICP generation produces constrained suggestions, while deterministic application code validates dimensions, operators, values, ranges, criterion types, and weights. The evaluator returns unknown for missing company facts and never delegates pass/fail decisions to a language model. Every mutation copies the complete criterion set into a new immutable version.
 
+## Canonical company identity boundary
+
+Company identity is globally reusable while every customer evaluation remains project-specific. Canonical `companies` and `company_aliases` hold shared identity fields; `project_companies` holds private status, research state, nullable scoring fields, opportunity state, and timestamps.
+
+The identity resolver is deterministic. It canonicalizes HTTP/HTTPS URLs to lowercase hostnames, removes `www` and trailing URL syntax, matches canonical and alias domains exactly, and uses normalized names only to surface possible duplicates. Possible name matches require an explicit create-or-reuse decision and are never automatically merged.
+
+All company product endpoints are rooted in a project. The server verifies the authenticated user's organization membership before listing, importing, linking, or updating a project company. This keeps shared identity reusable without exposing another project's private state.
+
 # JYRA Architecture
 
 ## Current shape
@@ -52,7 +60,7 @@ The server validates response-shaped data with generated Zod schemas. The client
 - **Commercial interpretation:** signals, clusters, fit, need, timing, relationship, confidence, opportunities, and explanations.
 - **Learning:** user actions, outcomes, and versioned model/rule evaluation.
 
-The identity/tenancy boundary and project-scoped Business Twin are implemented. ICP, canonical entities, research, evidence, opportunity interpretation, and learning remain future phases.
+The identity/tenancy boundary, project-scoped Business Twin and ICP, and canonical company identity layer are implemented. Research, evidence, opportunity interpretation, and learning remain future phases.
 
 ## Deterministic versus AI-assisted work
 

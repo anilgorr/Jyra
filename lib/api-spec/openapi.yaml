@@ -18,6 +18,8 @@ tags:
     description: Versioned seller Business Twin configuration
   - name: icp
     description: Objective, versioned Ideal Customer Profile rules
+  - name: companies
+    description: Canonical company identity and project company operations
 paths:
   /healthz:
     get:
@@ -564,6 +566,135 @@ paths:
           $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
+  /projects/{projectId}/companies:
+    get:
+      operationId: listProjectCompanies
+      tags: [companies]
+      summary: List companies linked to a project
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/ProjectId" }
+      responses:
+        "200":
+          description: Companies linked to the project
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/ProjectCompany" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+    post:
+      operationId: createProjectCompany
+      tags: [companies]
+      summary: Add a company to a project
+      description: Creates or reuses a canonical company after deterministic identity checks.
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/ProjectId" }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CompanyInput" }
+      responses:
+        "201":
+          description: Company linked to the project
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ProjectCompany" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409":
+          description: Manual duplicate review is required
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CompanyImportPreview" }
+  /projects/{projectId}/companies/{projectCompanyId}:
+    patch:
+      operationId: updateProjectCompany
+      tags: [companies]
+      summary: Update project-specific company state
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/ProjectId" }
+        - { $ref: "#/components/parameters/ProjectCompanyId" }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ProjectCompanyUpdate" }
+      responses:
+        "200":
+          description: Updated project company
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ProjectCompany" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /projects/{projectId}/companies/import/preview:
+    post:
+      operationId: previewCompanyImport
+      tags: [companies]
+      summary: Preview and resolve company identities
+      description: Normalizes and validates import rows without creating or linking companies.
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/ProjectId" }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CompanyImportInput" }
+      responses:
+        "200":
+          description: Import preview
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CompanyImportPreview" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /projects/{projectId}/companies/import/commit:
+    post:
+      operationId: commitCompanyImport
+      tags: [companies]
+      summary: Commit an explicitly reviewed company import
+      description: Creates or reuses canonical companies and links them to the project only after duplicate decisions are explicit.
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/ProjectId" }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CompanyImportCommitInput" }
+      responses:
+        "200":
+          description: Import results
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CompanyImportResult" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "409":
+          description: Identity state changed after preview; refresh duplicate review before committing.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [error, needsReview]
+                properties:
+                  error: { type: string }
+                  needsReview: { type: number }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
 components:
   schemas:
     HealthStatus:
@@ -1091,6 +1222,175 @@ components:
         createdBy: { type: string }
         createdAt: { type: string, format: date-time }
       required: [id, icpId, projectId, sourceBusinessTwinVersionId, version, criteria, createdBy, createdAt]
+    Company:
+      type: object
+      properties:
+        id: { type: string }
+        canonicalName: { type: string }
+        domain: { type: ["string", "null"] }
+        website: { type: ["string", "null"] }
+        linkedinUrl: { type: ["string", "null"] }
+        country: { type: ["string", "null"] }
+        industry: { type: ["string", "null"] }
+        employeeCount: { type: ["number", "null"] }
+        employeeRange: { type: ["string", "null"] }
+        description: { type: ["string", "null"] }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+      required: [id, canonicalName, domain, website, linkedinUrl, country, industry, employeeCount, employeeRange, description, createdAt, updatedAt]
+    CompanyInput:
+      type: object
+      properties:
+        canonicalName: { type: string, minLength: 1, maxLength: 300 }
+        domain: { type: ["string", "null"], maxLength: 300 }
+        website: { type: ["string", "null"], maxLength: 500 }
+        linkedinUrl: { type: ["string", "null"], maxLength: 500 }
+        country: { type: ["string", "null"], maxLength: 120 }
+        industry: { type: ["string", "null"], maxLength: 200 }
+        employeeCount: { type: ["number", "null"], minimum: 0 }
+        employeeRange: { type: ["string", "null"], maxLength: 120 }
+        description: { type: ["string", "null"], maxLength: 2000 }
+      required: [canonicalName]
+    CompanyImportCandidateInput:
+      type: object
+      properties:
+        canonicalName: { type: ["string", "null"] }
+        domain: { type: ["string", "null"] }
+        website: { type: ["string", "null"] }
+        linkedinUrl: { type: ["string", "null"] }
+        country: { type: ["string", "null"] }
+        industry: { type: ["string", "null"] }
+        employeeCount:
+          oneOf:
+            - { type: number }
+            - { type: string }
+            - { type: "null" }
+        employeeRange: { type: ["string", "null"] }
+        description: { type: ["string", "null"] }
+    ProjectCompany:
+      type: object
+      properties:
+        id: { type: string }
+        projectId: { type: string }
+        companyId: { type: string }
+        company: { $ref: "#/components/schemas/Company" }
+        status: { type: string, enum: [candidate, active, archived] }
+        researchStatus: { type: string, enum: [not_started, in_progress, complete] }
+        fitScore: { type: ["number", "null"] }
+        needScore: { type: ["number", "null"] }
+        timingScore: { type: ["number", "null"] }
+        relationshipScore: { type: ["number", "null"] }
+        confidenceScore: { type: ["number", "null"] }
+        opportunityState: { type: ["string", "null"], enum: [none, potential, active, won, lost, null] }
+        latestResearchAt: { type: ["string", "null"], format: date-time }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+      required: [id, projectId, companyId, company, status, researchStatus, fitScore, needScore, timingScore, relationshipScore, confidenceScore, opportunityState, latestResearchAt, createdAt, updatedAt]
+    ProjectCompanyUpdate:
+      type: object
+      properties:
+        status: { type: string, enum: [candidate, active, archived] }
+        researchStatus: { type: string, enum: [not_started, in_progress, complete] }
+        fitScore: { type: ["number", "null"], minimum: 0, maximum: 100 }
+        needScore: { type: ["number", "null"], minimum: 0, maximum: 100 }
+        timingScore: { type: ["number", "null"], minimum: 0, maximum: 100 }
+        relationshipScore: { type: ["number", "null"], minimum: 0, maximum: 100 }
+        confidenceScore: { type: ["number", "null"], minimum: 0, maximum: 100 }
+        opportunityState: { type: ["string", "null"], enum: [none, potential, active, won, lost, null] }
+      minProperties: 1
+    CompanyImportRow:
+      type: object
+      properties:
+        rowId: { type: string, minLength: 1, maxLength: 100 }
+        company: { $ref: "#/components/schemas/CompanyImportCandidateInput" }
+      required: [rowId, company]
+    CompanyImportInput:
+      type: object
+      properties:
+        rows:
+          type: array
+          minItems: 1
+          maxItems: 500
+          items: { $ref: "#/components/schemas/CompanyImportRow" }
+      required: [rows]
+    CompanyImportResolution:
+      type: object
+      properties:
+        action: { type: string, enum: [create, reuse] }
+        companyId: { type: ["string", "null"] }
+      required: [action]
+    CompanyImportCommitRow:
+      type: object
+      properties:
+        rowId: { type: string, minLength: 1, maxLength: 100 }
+        company: { $ref: "#/components/schemas/CompanyImportCandidateInput" }
+        resolution: { $ref: "#/components/schemas/CompanyImportResolution" }
+      required: [rowId, company]
+    CompanyImportCommitInput:
+      type: object
+      properties:
+        rows:
+          type: array
+          minItems: 1
+          maxItems: 500
+          items: { $ref: "#/components/schemas/CompanyImportCommitRow" }
+      required: [rows]
+    CompanyImportMatch:
+      type: object
+      properties:
+        id: { type: string }
+        canonicalName: { type: string }
+        domain: { type: ["string", "null"] }
+      required: [id, canonicalName, domain]
+    CompanyImportRowResult:
+      type: object
+      properties:
+        rowId: { type: string }
+        input: { $ref: "#/components/schemas/CompanyImportCandidateInput" }
+        normalizedDomain: { type: ["string", "null"] }
+        normalizedName: { type: string }
+        decision: { type: string, enum: [new, exact_match, possible_duplicate, invalid, already_linked, created, reused, needs_review] }
+        errors:
+          type: array
+          items: { type: string }
+        exactMatch:
+          allOf:
+            - $ref: "#/components/schemas/CompanyImportMatch"
+          nullable: true
+        possibleMatches:
+          type: array
+          items: { $ref: "#/components/schemas/CompanyImportMatch" }
+        projectCompany:
+          allOf:
+            - $ref: "#/components/schemas/ProjectCompany"
+          nullable: true
+      required: [rowId, input, normalizedDomain, normalizedName, decision, errors, exactMatch, possibleMatches, projectCompany]
+    CompanyImportPreview:
+      type: object
+      properties:
+        total: { type: number }
+        valid: { type: number }
+        invalid: { type: number }
+        exactMatches: { type: number }
+        possibleDuplicates: { type: number }
+        newCompanies: { type: number }
+        rows:
+          type: array
+          items: { $ref: "#/components/schemas/CompanyImportRowResult" }
+      required: [total, valid, invalid, exactMatches, possibleDuplicates, newCompanies, rows]
+    CompanyImportResult:
+      type: object
+      properties:
+        total: { type: number }
+        created: { type: number }
+        reused: { type: number }
+        linked: { type: number }
+        skipped: { type: number }
+        needsReview: { type: number }
+        rows:
+          type: array
+          items: { $ref: "#/components/schemas/CompanyImportRowResult" }
+      required: [total, created, reused, linked, skipped, needsReview, rows]
     ErrorResponse:
       type: object
       properties:
@@ -1125,6 +1425,12 @@ components:
         type: string
     IcpCriterionId:
       name: criterionId
+      in: path
+      required: true
+      schema:
+        type: string
+    ProjectCompanyId:
+      name: projectCompanyId
       in: path
       required: true
       schema:

@@ -33,12 +33,20 @@ const capabilityPhases = [
     order: 3,
   },
   {
+    id: "company-identity",
+    label: "Company Identity",
+    description:
+      "Import companies, resolve canonical identities, and keep project state private.",
+    status: "implemented",
+    order: 4,
+  },
+  {
     id: "market-universe",
     label: "Market Universe",
     description:
       "Define and qualify the companies that could be commercially relevant.",
     status: "planned",
-    order: 4,
+    order: 5,
   },
   {
     id: "evidence-signals",
@@ -46,7 +54,7 @@ const capabilityPhases = [
     description:
       "Research public evidence, preserve provenance, and detect meaningful signals.",
     status: "planned",
-    order: 5,
+    order: 6,
   },
   {
     id: "opportunity-engine",
@@ -54,7 +62,7 @@ const capabilityPhases = [
     description:
       "Explain fit, need, timing, relationship, confidence, and recommended action.",
     status: "planned",
-    order: 6,
+    order: 7,
   },
   {
     id: "outcomes-learning",
@@ -62,19 +70,19 @@ const capabilityPhases = [
     description:
       "Learn from real sales outcomes without collapsing evidence into interpretation.",
     status: "planned",
-    order: 7,
+    order: 8,
   },
 ];
 
 router.get("/workspace/summary", (_req, res) => {
   const data = GetWorkspaceSummaryResponse.parse({
-    milestone: "foundation",
-    milestoneLabel: "Foundation",
+    milestone: "company_identity",
+    milestoneLabel: "Company Identity",
     researchStatus: "not_connected",
     intelligenceCount: 0,
     activeSignalCount: 0,
     qualifiedCompanyCount: 0,
-    nextMilestone: "Define your Business Twin",
+    nextMilestone: "Build the Market Universe",
   });
 
   res.json(data);

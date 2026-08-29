@@ -1,0 +1,470 @@
+PHASE 2A — BUSINESS TWIN MATURITY & STARTUP SUPPORT
+
+JYRA
+Who. When. Why.
+
+IMPORTANT:
+
+The Business Twin from Phase 2 is already implemented.
+
+DO NOT rebuild Phase 2.
+DO NOT remove existing Business Twin functionality.
+DO NOT break existing Business Twin records.
+
+This is an extension to make Business Twin work correctly for companies
+at different stages, including startups with zero customers.
+
+Read the existing Business Twin implementation, database schema,
+versioning logic and documentation before making changes.
+
+==================================================
+PROBLEM
+==================================================
+
+The current Business Twin may assume that a company already has customers.
+
+That assumption is incorrect.
+
+JYRA must support:
+
+- pre-launch companies
+- startups with zero customers
+- companies with pilot/design partners
+- companies with a few early customers
+- growing businesses
+- mature businesses
+
+JYRA must NEVER require a startup to fabricate:
+
+best customers
+bad customers
+average deal size
+win patterns
+sales history
+conversion patterns
+
+Unknown information must remain unknown.
+
+==================================================
+1. BUSINESS MATURITY
+==================================================
+
+Add:
+
+business_maturity_stage
+
+Supported values:
+
+PRE_LAUNCH
+LAUNCHED_NO_CUSTOMERS
+EARLY_CUSTOMERS
+REPEATABLE_SALES
+ESTABLISHED
+
+Ask near the beginning:
+
+"What stage best describes your business?"
+
+Options:
+
+Pre-launch / validating the idea
+
+Launched, but no customers yet
+
+Early customers / pilots
+
+Growing with repeatable sales
+
+Established business
+
+==================================================
+2. ADAPTIVE BUSINESS TWIN
+==================================================
+
+Business Twin questions must adapt to maturity.
+
+Do NOT show irrelevant mandatory questions.
+
+==================================================
+3. PRE-LAUNCH / NO CUSTOMERS
+==================================================
+
+For:
+
+PRE_LAUNCH
+LAUNCHED_NO_CUSTOMERS
+
+focus on:
+
+What do you sell?
+
+What problem does it solve?
+
+Who experiences this problem?
+
+How painful is the problem?
+
+How do companies solve it today?
+
+What alternatives exist?
+
+Why is your solution different?
+
+What events make the problem urgent?
+
+Who do you believe would benefit most?
+
+Which industries?
+
+What company sizes?
+
+Which geographies?
+
+Who is likely to use the product?
+
+Who is likely to champion it?
+
+Who is likely to approve it?
+
+Who likely controls the budget?
+
+What would make a company NOT suitable?
+
+Which 5–10 companies would you love to win as your first customers?
+
+Why do you believe those companies would buy?
+
+Have you spoken with prospective customers?
+
+Do you have:
+
+design partners
+pilot users
+beta users
+waitlist users
+LOIs
+active prospects
+
+What have those prospects told you?
+
+What assumptions have actually been validated?
+
+==================================================
+4. EARLY CUSTOMERS
+==================================================
+
+For:
+
+EARLY_CUSTOMERS
+
+ask both hypothesis and evidence questions.
+
+Examples:
+
+Who are your current customers?
+
+Which are paying customers?
+
+Which are pilots?
+
+Why did they start using the product?
+
+What problem were they trying to solve?
+
+Who initiated the conversation?
+
+Who approved the purchase?
+
+What happened immediately before they became interested?
+
+Which customers appear to get the most value?
+
+Which customers are poor fits?
+
+But:
+
+Do not infer strong patterns from tiny samples.
+
+If there are only 2 customers, JYRA should not claim:
+
+"Your ideal customer is..."
+
+Instead say:
+
+"Early evidence suggests..."
+
+==================================================
+5. REPEATABLE / ESTABLISHED
+==================================================
+
+For:
+
+REPEATABLE_SALES
+ESTABLISHED
+
+use richer historical questions:
+
+best customers
+bad-fit customers
+won opportunities
+lost opportunities
+deal size
+sales cycle
+buyer roles
+champions
+economic buyers
+industries
+company size
+geographies
+urgency triggers
+objections
+competitors
+reasons won
+reasons lost
+expansion patterns
+
+==================================================
+6. EVIDENCE VS HYPOTHESIS
+==================================================
+
+This distinction is critical.
+
+Business Twin information should support provenance such as:
+
+FOUNDER_HYPOTHESIS
+CUSTOMER_INTERVIEW
+DESIGN_PARTNER
+PILOT
+CUSTOMER
+CRM_HISTORY
+SALES_OUTCOME
+USER_CONFIRMED
+AI_INFERRED
+
+Do not treat all Business Twin statements as equally proven.
+
+==================================================
+7. VALIDATION STATUS
+==================================================
+
+Allow important Business Twin assumptions to be classified:
+
+UNTESTED
+PARTIALLY_VALIDATED
+VALIDATED
+CONTRADICTED
+UNKNOWN
+
+Example:
+
+Target Industry:
+B2B SaaS
+
+Source:
+FOUNDER_HYPOTHESIS
+
+Status:
+UNTESTED
+
+Later:
+
+6 qualified opportunities from B2B SaaS
+
+Status may become:
+PARTIALLY_VALIDATED
+
+Do NOT automatically promote assumptions to VALIDATED based on weak evidence.
+
+==================================================
+8. ICP MODE
+==================================================
+
+When generating the ICP, classify it as:
+
+HYPOTHESIS_ICP
+EARLY_EVIDENCE_ICP
+VALIDATED_ICP
+
+Examples:
+
+Startup with zero customers:
+
+ICP MODE:
+HYPOTHESIS
+
+Message:
+
+"This ICP is based primarily on your current market assumptions.
+JYRA will help test and refine it as real outcomes accumulate."
+
+Established company with substantial outcome history:
+
+ICP MODE:
+VALIDATED / EVIDENCE-LED
+
+Do not fabricate a numerical confidence percentage unless the methodology
+supports it.
+
+==================================================
+9. ICP ASSUMPTIONS
+==================================================
+
+For startups, explicitly store assumptions.
+
+Examples:
+
+"We believe companies with 100–500 employees experience this problem."
+
+"We believe the CTO is the economic buyer."
+
+"We believe international expansion creates urgency."
+
+These should later be testable against outcomes.
+
+==================================================
+10. LEARNING LOOP
+==================================================
+
+Prepare the architecture for:
+
+ICP Hypothesis V1
+↓
+Market Research
+↓
+Recommendations
+↓
+Contacts
+↓
+Replies
+↓
+Meetings
+↓
+Qualified Opportunities
+↓
+Wins / Losses
+↓
+Pattern Analysis
+↓
+Suggested ICP Changes
+↓
+User Approval
+↓
+ICP V2
+
+Do NOT automatically rewrite the customer's ICP.
+
+JYRA should eventually recommend changes.
+
+The customer approves them.
+
+==================================================
+11. FUTURE JYRA INSIGHT
+==================================================
+
+Prepare for future insights such as:
+
+"Your strongest opportunities are appearing outside your original
+employee range."
+
+"Companies with newly appointed CISOs are converting significantly
+better than your baseline."
+
+"FinTech companies are producing more qualified opportunities than
+general SaaS companies."
+
+"CTOs rarely become champions in your successful opportunities;
+Heads of Security do."
+
+These insights must eventually be based on real outcome data.
+
+Never fabricate them.
+
+==================================================
+12. ZERO CUSTOMER EXPERIENCE
+==================================================
+
+Test the complete Business Twin with a synthetic startup:
+
+Company:
+AI cybersecurity startup
+
+Stage:
+LAUNCHED_NO_CUSTOMERS
+
+Customers:
+0
+
+The user must be able to complete Business Twin successfully.
+
+No customer-history question should be mandatory.
+
+JYRA should generate:
+
+Business Twin
++
+Hypothesis ICP
+
+without pretending customer validation exists.
+
+==================================================
+13. EXISTING COMPANY EXPERIENCE
+==================================================
+
+Also test:
+
+Managed cybersecurity company
+
+Stage:
+ESTABLISHED
+
+Customers:
+50+
+
+Business Twin should expose the richer historical questions.
+
+ICP generation should use available customer evidence.
+
+==================================================
+14. UX LANGUAGE
+==================================================
+
+Never make startup founders feel that their Business Twin is incomplete
+simply because they have no customers.
+
+Instead explain:
+
+"No customers yet? That's fine. We'll start with your market hypothesis
+and help you validate it as JYRA learns from real opportunities."
+
+However, remain analytically honest.
+
+Do not imply that founder assumptions have the same evidentiary value
+as actual sales outcomes.
+
+==================================================
+COMPLETION
+==================================================
+
+Run migrations.
+Run existing Business Twin tests.
+Add startup tests.
+Add established-company tests.
+Verify old Business Twin records still work.
+Verify Business Twin versioning still works.
+Verify ICP generation remains functional.
+Update PRODUCT_SPEC.md.
+Update CHANGELOG.md.
+Create checkpoint.
+
+Report:
+
+1. Schema changes
+2. Adaptive questions implemented
+3. Startup workflow
+4. Established workflow
+5. Hypothesis/evidence distinction
+6. ICP mode logic
+7. Tests performed
+8. Compatibility with existing Business Twin records
+
+Do NOT begin another phase.

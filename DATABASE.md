@@ -6,6 +6,16 @@
 
 Historical rows are never updated when criteria change; a new version and criterion set are inserted instead.
 
+## Canonical company identity storage
+
+- `companies` stores globally reusable company identity and descriptive fields. Its normalized domain is the strongest V1 identity key and is unique when present.
+- `company_aliases` records alternate names and normalized domains with their source. Alias domains are unique and participate in exact identity matching.
+- `project_companies` links a canonical company to a project and owns all customer-specific state: status, research status, nullable future scores, opportunity state, and research timestamps.
+
+A canonical company may be linked to multiple projects, but each link is unique within its project and its private state is updated independently. API authorization always starts from the project and verified organization membership; there is no tenant-wide endpoint that lists the global company table.
+
+Import preview is non-mutating. The server deterministically normalizes fields, recognizes exact canonical or alias domain matches, and surfaces name-based possible duplicates for explicit resolution. Only an explicit commit creates or reuses a canonical company and links it to the active project. Uncertain name matches are never automatically merged.
+
 # JYRA Database Plan
 
 ## Implemented identity and tenancy storage
@@ -42,8 +52,9 @@ The implemented organization, membership, user, and project tables are the tenan
 
 ### Canonical entities
 
-- `companies`
-- `company_aliases`
+- `companies` (implemented)
+- `company_aliases` (implemented)
+- `project_companies` (implemented)
 - `people`
 - `person_company_relationships`
 

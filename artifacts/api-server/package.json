@@ -8,7 +8,8 @@
     "build": "node ./build.mjs",
     "start": "node --enable-source-maps ./dist/index.mjs",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test:icp": "node ./scripts/test-icp-engine.mjs"
+    "test:icp": "node ./scripts/test-icp-engine.mjs",
+    "test:companies": "node ./scripts/test-company-identity.mjs"
   },
   "dependencies": {
     "@clerk/express": "^2.1.63",

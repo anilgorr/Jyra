@@ -25,6 +25,12 @@ import type {
   BusinessTwinVersion,
   BusinessTwinVersionInput,
   CapabilityPhase,
+  CommitCompanyImport409,
+  CompanyImportCommitInput,
+  CompanyImportInput,
+  CompanyImportPreview,
+  CompanyImportResult,
+  CompanyInput,
   CurrentUser,
   ForbiddenResponse,
   HealthStatus,
@@ -38,6 +44,8 @@ import type {
   Organization,
   OrganizationInput,
   Project,
+  ProjectCompany,
+  ProjectCompanyUpdate,
   ProjectInput,
   UnauthorizedResponse,
   WorkspaceActivity,
@@ -2045,5 +2053,375 @@ export const useCompleteOnboarding = <TError = ErrorType<BadRequestResponse | Un
         TContext
       > => {
       return useMutation(getCompleteOnboardingMutationOptions(options));
+    }
+
+export const getListProjectCompaniesUrl = (projectId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/companies`
+}
+
+/**
+ * @summary List companies linked to a project
+ */
+export const listProjectCompanies = async (projectId: string, options?: Parameters<typeof customFetch>[1]): Promise<ProjectCompany[]> => {
+
+  return customFetch<ProjectCompany[]>(getListProjectCompaniesUrl(projectId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListProjectCompaniesQueryKey = (projectId: string,) => {
+    return [
+    `/api/projects/${projectId}/companies`
+    ] as const;
+    }
+
+
+export const getListProjectCompaniesQueryOptions = <TData = Awaited<ReturnType<typeof listProjectCompanies>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(projectId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listProjectCompanies>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListProjectCompaniesQueryKey(projectId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listProjectCompanies>>> = ({ signal }) => listProjectCompanies(projectId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: projectId !== null && projectId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listProjectCompanies>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListProjectCompaniesQueryResult = NonNullable<Awaited<ReturnType<typeof listProjectCompanies>>>
+export type ListProjectCompaniesQueryError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+
+/**
+ * @summary List companies linked to a project
+ */
+
+export function useListProjectCompanies<TData = Awaited<ReturnType<typeof listProjectCompanies>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(
+ projectId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listProjectCompanies>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListProjectCompaniesQueryOptions(projectId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getCreateProjectCompanyUrl = (projectId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/companies`
+}
+
+/**
+ * Creates or reuses a canonical company after deterministic identity checks.
+ * @summary Add a company to a project
+ */
+export const createProjectCompany = async (projectId: string,
+    companyInput: CompanyInput, options?: Parameters<typeof customFetch>[1]): Promise<ProjectCompany> => {
+
+  return customFetch<ProjectCompany>(getCreateProjectCompanyUrl(projectId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(companyInput)
+  }
+);}
+
+
+
+
+
+export const getCreateProjectCompanyMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | CompanyImportPreview>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createProjectCompany>>, TError,{projectId: string;data: BodyType<CompanyInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createProjectCompany>>, TError,{projectId: string;data: BodyType<CompanyInput>}, TContext> => {
+
+const mutationKey = ['createProjectCompany'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createProjectCompany>>, {projectId: string;data: BodyType<CompanyInput>}> = (props) => {
+          const {projectId,data} = props ?? {};
+
+          return  createProjectCompany(projectId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateProjectCompanyMutationResult = NonNullable<Awaited<ReturnType<typeof createProjectCompany>>>
+    export type CreateProjectCompanyMutationBody = BodyType<CompanyInput>
+    export type CreateProjectCompanyMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | CompanyImportPreview>
+
+    /**
+ * @summary Add a company to a project
+ */
+export const useCreateProjectCompany = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | CompanyImportPreview>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createProjectCompany>>, TError,{projectId: string;data: BodyType<CompanyInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createProjectCompany>>,
+        TError,
+        {projectId: string;data: BodyType<CompanyInput>},
+        TContext
+      > => {
+      return useMutation(getCreateProjectCompanyMutationOptions(options));
+    }
+
+export const getUpdateProjectCompanyUrl = (projectId: string,
+    projectCompanyId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/companies/${projectCompanyId}`
+}
+
+/**
+ * @summary Update project-specific company state
+ */
+export const updateProjectCompany = async (projectId: string,
+    projectCompanyId: string,
+    projectCompanyUpdate: ProjectCompanyUpdate, options?: Parameters<typeof customFetch>[1]): Promise<ProjectCompany> => {
+
+  return customFetch<ProjectCompany>(getUpdateProjectCompanyUrl(projectId,projectCompanyId),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(projectCompanyUpdate)
+  }
+);}
+
+
+
+
+
+export const getUpdateProjectCompanyMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateProjectCompany>>, TError,{projectId: string;projectCompanyId: string;data: BodyType<ProjectCompanyUpdate>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateProjectCompany>>, TError,{projectId: string;projectCompanyId: string;data: BodyType<ProjectCompanyUpdate>}, TContext> => {
+
+const mutationKey = ['updateProjectCompany'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateProjectCompany>>, {projectId: string;projectCompanyId: string;data: BodyType<ProjectCompanyUpdate>}> = (props) => {
+          const {projectId,projectCompanyId,data} = props ?? {};
+
+          return  updateProjectCompany(projectId,projectCompanyId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateProjectCompanyMutationResult = NonNullable<Awaited<ReturnType<typeof updateProjectCompany>>>
+    export type UpdateProjectCompanyMutationBody = BodyType<ProjectCompanyUpdate>
+    export type UpdateProjectCompanyMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+    /**
+ * @summary Update project-specific company state
+ */
+export const useUpdateProjectCompany = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateProjectCompany>>, TError,{projectId: string;projectCompanyId: string;data: BodyType<ProjectCompanyUpdate>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateProjectCompany>>,
+        TError,
+        {projectId: string;projectCompanyId: string;data: BodyType<ProjectCompanyUpdate>},
+        TContext
+      > => {
+      return useMutation(getUpdateProjectCompanyMutationOptions(options));
+    }
+
+export const getPreviewCompanyImportUrl = (projectId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/companies/import/preview`
+}
+
+/**
+ * Normalizes and validates import rows without creating or linking companies.
+ * @summary Preview and resolve company identities
+ */
+export const previewCompanyImport = async (projectId: string,
+    companyImportInput: CompanyImportInput, options?: Parameters<typeof customFetch>[1]): Promise<CompanyImportPreview> => {
+
+  return customFetch<CompanyImportPreview>(getPreviewCompanyImportUrl(projectId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(companyImportInput)
+  }
+);}
+
+
+
+
+
+export const getPreviewCompanyImportMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof previewCompanyImport>>, TError,{projectId: string;data: BodyType<CompanyImportInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof previewCompanyImport>>, TError,{projectId: string;data: BodyType<CompanyImportInput>}, TContext> => {
+
+const mutationKey = ['previewCompanyImport'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof previewCompanyImport>>, {projectId: string;data: BodyType<CompanyImportInput>}> = (props) => {
+          const {projectId,data} = props ?? {};
+
+          return  previewCompanyImport(projectId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PreviewCompanyImportMutationResult = NonNullable<Awaited<ReturnType<typeof previewCompanyImport>>>
+    export type PreviewCompanyImportMutationBody = BodyType<CompanyImportInput>
+    export type PreviewCompanyImportMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+    /**
+ * @summary Preview and resolve company identities
+ */
+export const usePreviewCompanyImport = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof previewCompanyImport>>, TError,{projectId: string;data: BodyType<CompanyImportInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof previewCompanyImport>>,
+        TError,
+        {projectId: string;data: BodyType<CompanyImportInput>},
+        TContext
+      > => {
+      return useMutation(getPreviewCompanyImportMutationOptions(options));
+    }
+
+export const getCommitCompanyImportUrl = (projectId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/companies/import/commit`
+}
+
+/**
+ * Creates or reuses canonical companies and links them to the project only after duplicate decisions are explicit.
+ * @summary Commit an explicitly reviewed company import
+ */
+export const commitCompanyImport = async (projectId: string,
+    companyImportCommitInput: CompanyImportCommitInput, options?: Parameters<typeof customFetch>[1]): Promise<CompanyImportResult> => {
+
+  return customFetch<CompanyImportResult>(getCommitCompanyImportUrl(projectId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(companyImportCommitInput)
+  }
+);}
+
+
+
+
+
+export const getCommitCompanyImportMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | CommitCompanyImport409>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof commitCompanyImport>>, TError,{projectId: string;data: BodyType<CompanyImportCommitInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof commitCompanyImport>>, TError,{projectId: string;data: BodyType<CompanyImportCommitInput>}, TContext> => {
+
+const mutationKey = ['commitCompanyImport'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof commitCompanyImport>>, {projectId: string;data: BodyType<CompanyImportCommitInput>}> = (props) => {
+          const {projectId,data} = props ?? {};
+
+          return  commitCompanyImport(projectId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CommitCompanyImportMutationResult = NonNullable<Awaited<ReturnType<typeof commitCompanyImport>>>
+    export type CommitCompanyImportMutationBody = BodyType<CompanyImportCommitInput>
+    export type CommitCompanyImportMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | CommitCompanyImport409>
+
+    /**
+ * @summary Commit an explicitly reviewed company import
+ */
+export const useCommitCompanyImport = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | CommitCompanyImport409>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof commitCompanyImport>>, TError,{projectId: string;data: BodyType<CompanyImportCommitInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof commitCompanyImport>>,
+        TError,
+        {projectId: string;data: BodyType<CompanyImportCommitInput>},
+        TContext
+      > => {
+      return useMutation(getCommitCompanyImportMutationOptions(options));
     }
 

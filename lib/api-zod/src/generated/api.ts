@@ -2034,3 +2034,385 @@ export const CompleteOnboardingResponse = zod.object({
 })
 
 
+/**
+ * @summary List companies linked to a project
+ */
+export const ListProjectCompaniesParams = zod.object({
+  "projectId": zod.coerce.string()
+})
+
+export const ListProjectCompaniesResponseItem = zod.object({
+  "id": zod.string(),
+  "projectId": zod.string(),
+  "companyId": zod.string(),
+  "company": zod.object({
+  "id": zod.string(),
+  "canonicalName": zod.string(),
+  "domain": zod.string().nullable(),
+  "website": zod.string().nullable(),
+  "linkedinUrl": zod.string().nullable(),
+  "country": zod.string().nullable(),
+  "industry": zod.string().nullable(),
+  "employeeCount": zod.number().nullable(),
+  "employeeRange": zod.string().nullable(),
+  "description": zod.string().nullable(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+}),
+  "status": zod.enum(['candidate', 'active', 'archived']),
+  "researchStatus": zod.enum(['not_started', 'in_progress', 'complete']),
+  "fitScore": zod.number().nullable(),
+  "needScore": zod.number().nullable(),
+  "timingScore": zod.number().nullable(),
+  "relationshipScore": zod.number().nullable(),
+  "confidenceScore": zod.number().nullable(),
+  "opportunityState": zod.union([zod.literal('none'),zod.literal('potential'),zod.literal('active'),zod.literal('won'),zod.literal('lost'),zod.literal(null)]).nullable(),
+  "latestResearchAt": zod.coerce.date().nullable(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+})
+export const ListProjectCompaniesResponse = zod.array(ListProjectCompaniesResponseItem)
+
+
+/**
+ * Creates or reuses a canonical company after deterministic identity checks.
+ * @summary Add a company to a project
+ */
+export const CreateProjectCompanyParams = zod.object({
+  "projectId": zod.coerce.string()
+})
+
+export const createProjectCompanyBodyCanonicalNameMax = 300;
+
+export const createProjectCompanyBodyDomainMax = 300;
+
+export const createProjectCompanyBodyWebsiteMax = 500;
+
+export const createProjectCompanyBodyLinkedinUrlMax = 500;
+
+export const createProjectCompanyBodyCountryMax = 120;
+
+export const createProjectCompanyBodyIndustryMax = 200;
+
+export const createProjectCompanyBodyEmployeeCountMin = 0;
+
+export const createProjectCompanyBodyEmployeeRangeMax = 120;
+
+export const createProjectCompanyBodyDescriptionMax = 2000;
+
+
+
+export const CreateProjectCompanyBody = zod.object({
+  "canonicalName": zod.string().min(1).max(createProjectCompanyBodyCanonicalNameMax),
+  "domain": zod.string().max(createProjectCompanyBodyDomainMax).nullish(),
+  "website": zod.string().max(createProjectCompanyBodyWebsiteMax).nullish(),
+  "linkedinUrl": zod.string().max(createProjectCompanyBodyLinkedinUrlMax).nullish(),
+  "country": zod.string().max(createProjectCompanyBodyCountryMax).nullish(),
+  "industry": zod.string().max(createProjectCompanyBodyIndustryMax).nullish(),
+  "employeeCount": zod.number().min(createProjectCompanyBodyEmployeeCountMin).nullish(),
+  "employeeRange": zod.string().max(createProjectCompanyBodyEmployeeRangeMax).nullish(),
+  "description": zod.string().max(createProjectCompanyBodyDescriptionMax).nullish()
+})
+
+export const CreateProjectCompanyResponse = zod.object({
+  "id": zod.string(),
+  "projectId": zod.string(),
+  "companyId": zod.string(),
+  "company": zod.object({
+  "id": zod.string(),
+  "canonicalName": zod.string(),
+  "domain": zod.string().nullable(),
+  "website": zod.string().nullable(),
+  "linkedinUrl": zod.string().nullable(),
+  "country": zod.string().nullable(),
+  "industry": zod.string().nullable(),
+  "employeeCount": zod.number().nullable(),
+  "employeeRange": zod.string().nullable(),
+  "description": zod.string().nullable(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+}),
+  "status": zod.enum(['candidate', 'active', 'archived']),
+  "researchStatus": zod.enum(['not_started', 'in_progress', 'complete']),
+  "fitScore": zod.number().nullable(),
+  "needScore": zod.number().nullable(),
+  "timingScore": zod.number().nullable(),
+  "relationshipScore": zod.number().nullable(),
+  "confidenceScore": zod.number().nullable(),
+  "opportunityState": zod.union([zod.literal('none'),zod.literal('potential'),zod.literal('active'),zod.literal('won'),zod.literal('lost'),zod.literal(null)]).nullable(),
+  "latestResearchAt": zod.coerce.date().nullable(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary Update project-specific company state
+ */
+export const UpdateProjectCompanyParams = zod.object({
+  "projectId": zod.coerce.string(),
+  "projectCompanyId": zod.coerce.string()
+})
+
+export const updateProjectCompanyBodyFitScoreMin = 0;
+export const updateProjectCompanyBodyFitScoreMax = 100;
+
+export const updateProjectCompanyBodyNeedScoreMin = 0;
+export const updateProjectCompanyBodyNeedScoreMax = 100;
+
+export const updateProjectCompanyBodyTimingScoreMin = 0;
+export const updateProjectCompanyBodyTimingScoreMax = 100;
+
+export const updateProjectCompanyBodyRelationshipScoreMin = 0;
+export const updateProjectCompanyBodyRelationshipScoreMax = 100;
+
+export const updateProjectCompanyBodyConfidenceScoreMin = 0;
+export const updateProjectCompanyBodyConfidenceScoreMax = 100;
+
+
+
+export const UpdateProjectCompanyBody = zod.object({
+  "status": zod.enum(['candidate', 'active', 'archived']).optional(),
+  "researchStatus": zod.enum(['not_started', 'in_progress', 'complete']).optional(),
+  "fitScore": zod.number().min(updateProjectCompanyBodyFitScoreMin).max(updateProjectCompanyBodyFitScoreMax).nullish(),
+  "needScore": zod.number().min(updateProjectCompanyBodyNeedScoreMin).max(updateProjectCompanyBodyNeedScoreMax).nullish(),
+  "timingScore": zod.number().min(updateProjectCompanyBodyTimingScoreMin).max(updateProjectCompanyBodyTimingScoreMax).nullish(),
+  "relationshipScore": zod.number().min(updateProjectCompanyBodyRelationshipScoreMin).max(updateProjectCompanyBodyRelationshipScoreMax).nullish(),
+  "confidenceScore": zod.number().min(updateProjectCompanyBodyConfidenceScoreMin).max(updateProjectCompanyBodyConfidenceScoreMax).nullish(),
+  "opportunityState": zod.union([zod.literal('none'),zod.literal('potential'),zod.literal('active'),zod.literal('won'),zod.literal('lost'),zod.literal(null)]).nullish()
+})
+
+export const UpdateProjectCompanyResponse = zod.object({
+  "id": zod.string(),
+  "projectId": zod.string(),
+  "companyId": zod.string(),
+  "company": zod.object({
+  "id": zod.string(),
+  "canonicalName": zod.string(),
+  "domain": zod.string().nullable(),
+  "website": zod.string().nullable(),
+  "linkedinUrl": zod.string().nullable(),
+  "country": zod.string().nullable(),
+  "industry": zod.string().nullable(),
+  "employeeCount": zod.number().nullable(),
+  "employeeRange": zod.string().nullable(),
+  "description": zod.string().nullable(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+}),
+  "status": zod.enum(['candidate', 'active', 'archived']),
+  "researchStatus": zod.enum(['not_started', 'in_progress', 'complete']),
+  "fitScore": zod.number().nullable(),
+  "needScore": zod.number().nullable(),
+  "timingScore": zod.number().nullable(),
+  "relationshipScore": zod.number().nullable(),
+  "confidenceScore": zod.number().nullable(),
+  "opportunityState": zod.union([zod.literal('none'),zod.literal('potential'),zod.literal('active'),zod.literal('won'),zod.literal('lost'),zod.literal(null)]).nullable(),
+  "latestResearchAt": zod.coerce.date().nullable(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+})
+
+
+/**
+ * Normalizes and validates import rows without creating or linking companies.
+ * @summary Preview and resolve company identities
+ */
+export const PreviewCompanyImportParams = zod.object({
+  "projectId": zod.coerce.string()
+})
+
+export const previewCompanyImportBodyRowsItemRowIdMax = 100;
+
+export const previewCompanyImportBodyRowsMax = 500;
+
+
+
+export const PreviewCompanyImportBody = zod.object({
+  "rows": zod.array(zod.object({
+  "rowId": zod.string().min(1).max(previewCompanyImportBodyRowsItemRowIdMax),
+  "company": zod.object({
+  "canonicalName": zod.string().nullish(),
+  "domain": zod.string().nullish(),
+  "website": zod.string().nullish(),
+  "linkedinUrl": zod.string().nullish(),
+  "country": zod.string().nullish(),
+  "industry": zod.string().nullish(),
+  "employeeCount": zod.union([zod.number(),zod.string(),zod.null()]).optional(),
+  "employeeRange": zod.string().nullish(),
+  "description": zod.string().nullish()
+})
+})).min(1).max(previewCompanyImportBodyRowsMax)
+})
+
+export const PreviewCompanyImportResponse = zod.object({
+  "total": zod.number(),
+  "valid": zod.number(),
+  "invalid": zod.number(),
+  "exactMatches": zod.number(),
+  "possibleDuplicates": zod.number(),
+  "newCompanies": zod.number(),
+  "rows": zod.array(zod.object({
+  "rowId": zod.string(),
+  "input": zod.object({
+  "canonicalName": zod.string().nullish(),
+  "domain": zod.string().nullish(),
+  "website": zod.string().nullish(),
+  "linkedinUrl": zod.string().nullish(),
+  "country": zod.string().nullish(),
+  "industry": zod.string().nullish(),
+  "employeeCount": zod.union([zod.number(),zod.string(),zod.null()]).optional(),
+  "employeeRange": zod.string().nullish(),
+  "description": zod.string().nullish()
+}),
+  "normalizedDomain": zod.string().nullable(),
+  "normalizedName": zod.string(),
+  "decision": zod.enum(['new', 'exact_match', 'possible_duplicate', 'invalid', 'already_linked', 'created', 'reused', 'needs_review']),
+  "errors": zod.array(zod.string()),
+  "exactMatch": zod.object({
+  "id": zod.string(),
+  "canonicalName": zod.string(),
+  "domain": zod.string().nullable()
+}).nullable(),
+  "possibleMatches": zod.array(zod.object({
+  "id": zod.string(),
+  "canonicalName": zod.string(),
+  "domain": zod.string().nullable()
+})),
+  "projectCompany": zod.object({
+  "id": zod.string(),
+  "projectId": zod.string(),
+  "companyId": zod.string(),
+  "company": zod.object({
+  "id": zod.string(),
+  "canonicalName": zod.string(),
+  "domain": zod.string().nullable(),
+  "website": zod.string().nullable(),
+  "linkedinUrl": zod.string().nullable(),
+  "country": zod.string().nullable(),
+  "industry": zod.string().nullable(),
+  "employeeCount": zod.number().nullable(),
+  "employeeRange": zod.string().nullable(),
+  "description": zod.string().nullable(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+}),
+  "status": zod.enum(['candidate', 'active', 'archived']),
+  "researchStatus": zod.enum(['not_started', 'in_progress', 'complete']),
+  "fitScore": zod.number().nullable(),
+  "needScore": zod.number().nullable(),
+  "timingScore": zod.number().nullable(),
+  "relationshipScore": zod.number().nullable(),
+  "confidenceScore": zod.number().nullable(),
+  "opportunityState": zod.union([zod.literal('none'),zod.literal('potential'),zod.literal('active'),zod.literal('won'),zod.literal('lost'),zod.literal(null)]).nullable(),
+  "latestResearchAt": zod.coerce.date().nullable(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+}).nullable()
+}))
+})
+
+
+/**
+ * Creates or reuses canonical companies and links them to the project only after duplicate decisions are explicit.
+ * @summary Commit an explicitly reviewed company import
+ */
+export const CommitCompanyImportParams = zod.object({
+  "projectId": zod.coerce.string()
+})
+
+export const commitCompanyImportBodyRowsItemRowIdMax = 100;
+
+export const commitCompanyImportBodyRowsMax = 500;
+
+
+
+export const CommitCompanyImportBody = zod.object({
+  "rows": zod.array(zod.object({
+  "rowId": zod.string().min(1).max(commitCompanyImportBodyRowsItemRowIdMax),
+  "company": zod.object({
+  "canonicalName": zod.string().nullish(),
+  "domain": zod.string().nullish(),
+  "website": zod.string().nullish(),
+  "linkedinUrl": zod.string().nullish(),
+  "country": zod.string().nullish(),
+  "industry": zod.string().nullish(),
+  "employeeCount": zod.union([zod.number(),zod.string(),zod.null()]).optional(),
+  "employeeRange": zod.string().nullish(),
+  "description": zod.string().nullish()
+}),
+  "resolution": zod.object({
+  "action": zod.enum(['create', 'reuse']),
+  "companyId": zod.string().nullish()
+}).optional()
+})).min(1).max(commitCompanyImportBodyRowsMax)
+})
+
+export const CommitCompanyImportResponse = zod.object({
+  "total": zod.number(),
+  "created": zod.number(),
+  "reused": zod.number(),
+  "linked": zod.number(),
+  "skipped": zod.number(),
+  "needsReview": zod.number(),
+  "rows": zod.array(zod.object({
+  "rowId": zod.string(),
+  "input": zod.object({
+  "canonicalName": zod.string().nullish(),
+  "domain": zod.string().nullish(),
+  "website": zod.string().nullish(),
+  "linkedinUrl": zod.string().nullish(),
+  "country": zod.string().nullish(),
+  "industry": zod.string().nullish(),
+  "employeeCount": zod.union([zod.number(),zod.string(),zod.null()]).optional(),
+  "employeeRange": zod.string().nullish(),
+  "description": zod.string().nullish()
+}),
+  "normalizedDomain": zod.string().nullable(),
+  "normalizedName": zod.string(),
+  "decision": zod.enum(['new', 'exact_match', 'possible_duplicate', 'invalid', 'already_linked', 'created', 'reused', 'needs_review']),
+  "errors": zod.array(zod.string()),
+  "exactMatch": zod.object({
+  "id": zod.string(),
+  "canonicalName": zod.string(),
+  "domain": zod.string().nullable()
+}).nullable(),
+  "possibleMatches": zod.array(zod.object({
+  "id": zod.string(),
+  "canonicalName": zod.string(),
+  "domain": zod.string().nullable()
+})),
+  "projectCompany": zod.object({
+  "id": zod.string(),
+  "projectId": zod.string(),
+  "companyId": zod.string(),
+  "company": zod.object({
+  "id": zod.string(),
+  "canonicalName": zod.string(),
+  "domain": zod.string().nullable(),
+  "website": zod.string().nullable(),
+  "linkedinUrl": zod.string().nullable(),
+  "country": zod.string().nullable(),
+  "industry": zod.string().nullable(),
+  "employeeCount": zod.number().nullable(),
+  "employeeRange": zod.string().nullable(),
+  "description": zod.string().nullable(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+}),
+  "status": zod.enum(['candidate', 'active', 'archived']),
+  "researchStatus": zod.enum(['not_started', 'in_progress', 'complete']),
+  "fitScore": zod.number().nullable(),
+  "needScore": zod.number().nullable(),
+  "timingScore": zod.number().nullable(),
+  "relationshipScore": zod.number().nullable(),
+  "confidenceScore": zod.number().nullable(),
+  "opportunityState": zod.union([zod.literal('none'),zod.literal('potential'),zod.literal('active'),zod.literal('won'),zod.literal('lost'),zod.literal(null)]).nullable(),
+  "latestResearchAt": zod.coerce.date().nullable(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+}).nullable()
+}))
+})
+
+

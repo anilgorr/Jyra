@@ -2,6 +2,12 @@
 
 JYRA converts the current Business Twin into an explicit, project-scoped ICP. Criteria are grouped as must-have, preferred, disqualifier, or advisory rules. Scorable rules use validated dimensions, operators, values, ranges, and weights; advisory rules remain visible without silently affecting objective evaluation. Missing company facts evaluate as unknown rather than failure. Generation, acceptance, edits, additions, deletions, and regeneration each create a new immutable version.
 
+## Canonical company identity
+
+JYRA represents a real-world company once and links that canonical identity to any number of projects. Canonical names, normalized domains, websites, LinkedIn URLs, geography, industry, employee data, and descriptions are globally reusable. Research status, scores, signals, opportunity state, recommendations, and all other commercial interpretation remain private to the project.
+
+Manual and CSV import use a preview-first workflow. Exact normalized domain matches reuse an existing canonical company. Similar names are shown as possible duplicates and require a user to explicitly reuse the candidate or create a separate company. Identity resolution never delegates merging to an LLM and never silently turns an uncertain match into a canonical merge.
+
 # JYRA Product Specification
 
 ## Product identity
@@ -55,11 +61,11 @@ Missing intelligence remains missing rather than negative evidence. Empty counts
 
 ## Product phases
 
-### 1. Business Twin (implemented) and ICP (future)
+### 1. Business Twin and ICP (implemented)
 
 The seller describes their offer, ideal customer profile, sales motion, exclusions, geography, and commercial constraints. AI may assist with interpretation and drafting, but the saved configuration must remain explicit and reviewable.
 
-### 2. Market Universe and qualification
+### 2. Canonical company identity (implemented), Market Universe and qualification (future)
 
 JYRA identifies or imports candidate companies and evaluates whether they fit the seller’s explicit criteria before researching people. Company identity resolution is deterministic and auditable.
 

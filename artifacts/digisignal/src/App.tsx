@@ -20,6 +20,7 @@ import Settings from './pages/settings';
 import EmptyFeature from './pages/empty-feature';
 import BusinessTwinPage from './pages/business-twin';
 import IcpPage from './pages/icp';
+import CompaniesPage from './pages/companies/index';
 import { WorkspaceProvider } from './context/workspace-context';
 
 const clerkPubKey = publishableKeyFromHost(
@@ -161,9 +162,7 @@ function AuthenticatedRoutes() {
             <Route path="/opportunities">
               <EmptyFeature title="Opportunity Intelligence" description="Opportunity qualification is planned for a later milestone. No buying intent or recommendations have been generated." />
             </Route>
-            <Route path="/companies">
-              <EmptyFeature title="Company Intelligence" description="Company discovery is not connected yet. No company records have been created." />
-            </Route>
+            <Route path="/companies" component={CompaniesPage} />
             <Route path="/business-twin" component={BusinessTwinPage} />
             <Route path="/icp" component={IcpPage} />
             <Route path="/research">

@@ -4,6 +4,14 @@
 - Added deterministic criterion validation and evaluation, including dynamic employee ranges and unknown-preserving results.
 - Added Business Twin-derived suggestions plus accept, edit, delete, add, regenerate, and version-history workflows.
 
+## Canonical company identity
+
+- Added globally reusable canonical companies, source-labeled aliases, and project-private company state.
+- Added deterministic domain and company-name normalization with exact domain reuse and explicit review for possible name duplicates.
+- Added manual entry and preview-first CSV import with row validation, duplicate resolution, idempotent project linking, and 500-row request limits.
+- Added the project Companies workspace for importing, reviewing, listing, and updating project-specific company status without fabricating research or scores.
+- Preserved server-side tenant authorization for every company list, import, link, and state update.
+
 # Changelog
 
 ## JYRA rebrand
