@@ -136,7 +136,9 @@ Executable research uses database-backed questions and idempotent execution jobs
 
 ## Signal Packs
 
-Signal Packs are reusable rule configuration; detected signals are project-scoped interpretation. Saving a validated fact invokes deterministic rules for the project-company. Every persisted signal retains the exact fact and evidence identifiers that support it. Strength decay is recalculated from immutable original strength and effective date; expiry marks a signal stale without deleting history.
+Signal Packs are reusable rule configuration; detected signals are project-and-offering-scoped interpretation. The generic evaluator contains no seller-industry branches and evaluates only active, approved definitions from packs explicitly selected for the project. Saving a validated fact invokes those deterministic rules for the project-company. Every persisted signal retains the exact fact and evidence identifiers that support it. Strength decay is recalculated from immutable original strength and effective date; expiry marks a signal stale without deleting history.
+
+Pack selection snapshots offering context and current Business Twin/ICP version references. Signal rows snapshot the resolved pack/definition versions, category, generation method, observed time, context, and fit/need/timing impacts. Existing Cybersecurity records remain valid; Cybersecurity is an optional configured sample rather than a global default.
 
 Future research work should use a simple database-backed job table suitable for Replit:
 

@@ -9,7 +9,8 @@ import {
   BookOpen, 
   TrendingUp, 
   Settings,
-  Wrench
+  Wrench,
+  RadioTower,
 } from "lucide-react";
 import { useUser, useClerk } from "@clerk/react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -29,6 +30,7 @@ export const navItems = [
   { href: "/business-twin", label: "Business Twin", icon: Workflow },
   { href: "/icp", label: "Dynamic ICP", icon: Crosshair },
   { href: "/research", label: "Research", icon: BookOpen },
+  { href: "/signals", label: "Signals", icon: RadioTower },
   { href: "/outcomes", label: "Outcomes", icon: TrendingUp },
 ];
 

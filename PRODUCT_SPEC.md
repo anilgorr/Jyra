@@ -22,6 +22,8 @@ JYRA can turn preserved evidence into reviewable structured facts for leadership
 
 Managed AI is proposal-only. Strict JSON is retried only within a bounded extraction request and is never persisted directly. Application validation owns the supported vocabulary, company/evidence relationship, real calendar date, confidence range, excerpt presence in the immutable capture, and rejection of ambiguity or commercial interpretation. Facts remain distinct from signals, buying intent, opportunity scores, recommendations, and hypotheses.
 
+Signal interpretation is also configuration-controlled. A reusable fact becomes a signal only when an approved definition in an explicitly selected project/offering Signal Pack matches it. Signal meaning is contextual to the customer's Business Twin, ICP, offering, pack, and project; no industry pack is universally or automatically applied.
+
 # JYRA Product Specification
 
 ## Product identity

@@ -1,4 +1,5 @@
 export * from "../src/lib/signal-packs";
+export * from "../src/lib/signal-pack-fixtures";
 export {
   companiesTable,
   companyEvidenceTable,

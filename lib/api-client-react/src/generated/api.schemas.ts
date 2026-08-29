@@ -1501,6 +1501,8 @@ export interface ResearchExecutionResponse {
   resultStatus: string;
 }
 
+export type SignalContextSnapshot = { [key: string]: unknown };
+
 export interface Signal {
   id: string;
   companyId: string;
@@ -1509,6 +1511,8 @@ export interface Signal {
   name: string;
   description: string;
   polarity: string;
+  category: string;
+  contextSnapshot: SignalContextSnapshot;
   supportingFactIds: string[];
   supportingEvidenceIds: string[];
   /** @pattern ^\d{4}-\d{2}-\d{2}$ */
@@ -1519,8 +1523,63 @@ export interface Signal {
   status: string;
   needImpact: number;
   timingImpact: number;
+  fitImpact: number;
+  generationMethod: string;
+  generatorVersion: string;
+  observedAt: string;
+  createdAt: string;
   ruleVersion: string;
   lastEvaluatedAt: string;
+}
+
+export type SignalPackApplicableContext = { [key: string]: unknown };
+
+export interface SignalPack {
+  id: string;
+  slug: string;
+  name: string;
+  description: string;
+  version: string;
+  status: string;
+  applicableContext: SignalPackApplicableContext;
+  definitionCount: number;
+}
+
+export type ProjectSignalPackOfferingSnapshot = { [key: string]: unknown };
+
+export type ProjectSignalPackBusinessContextSnapshot = { [key: string]: unknown };
+
+export type ProjectSignalPackConfiguration = { [key: string]: unknown };
+
+export interface ProjectSignalPack {
+  signalPackId: string;
+  slug: string;
+  name: string;
+  version: string;
+  active: boolean;
+  /** @nullable */
+  offeringKey: string | null;
+  offeringSnapshot: ProjectSignalPackOfferingSnapshot;
+  businessContextSnapshot: ProjectSignalPackBusinessContextSnapshot;
+  configuration: ProjectSignalPackConfiguration;
+}
+
+export type ConfigureProjectSignalPackRequestOfferingSnapshot = { [key: string]: unknown };
+
+export type ConfigureProjectSignalPackRequestBusinessContextSnapshot = { [key: string]: unknown };
+
+export type ConfigureProjectSignalPackRequestConfiguration = { [key: string]: unknown };
+
+export interface ConfigureProjectSignalPackRequest {
+  active: boolean;
+  /**
+     * @maxLength 160
+     * @nullable
+     */
+  offeringKey?: string | null;
+  offeringSnapshot: ConfigureProjectSignalPackRequestOfferingSnapshot;
+  businessContextSnapshot: ConfigureProjectSignalPackRequestBusinessContextSnapshot;
+  configuration: ConfigureProjectSignalPackRequestConfiguration;
 }
 
 export interface EvaluateSignalsResponse {

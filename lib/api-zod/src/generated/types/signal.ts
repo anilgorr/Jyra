@@ -5,6 +5,7 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+import type { SignalContextSnapshot } from './signalContextSnapshot';
 
 export interface Signal {
   id: string;
@@ -14,6 +15,8 @@ export interface Signal {
   name: string;
   description: string;
   polarity: string;
+  category: string;
+  contextSnapshot: SignalContextSnapshot;
   supportingFactIds: string[];
   supportingEvidenceIds: string[];
   /** @pattern ^\d{4}-\d{2}-\d{2}$ */
@@ -24,6 +27,11 @@ export interface Signal {
   status: string;
   needImpact: number;
   timingImpact: number;
+  fitImpact: number;
+  generationMethod: string;
+  generatorVersion: string;
+  observedAt: Date;
+  createdAt: Date;
   ruleVersion: string;
   lastEvaluatedAt: Date;
 }

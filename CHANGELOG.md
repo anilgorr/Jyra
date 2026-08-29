@@ -63,6 +63,17 @@
 
 # Changelog
 
+## Phase 11A — Generic Signal Intelligence
+
+- Extracted a seller-independent Signal Engine driven only by approved persisted definition configuration.
+- Removed automatic Cybersecurity application; existing Cybersecurity data remains compatible as an optional sample pack.
+- Added explicit project/offering pack activation with Business Twin and ICP context snapshots.
+- Added definition category, fact requirements, fit impact, source preferences, lifecycle, creator, and version metadata.
+- Added deterministic generation/context snapshots to signals while preserving immutable fact/evidence provenance and decay.
+- Added configuration-only managed SOC, executive recruitment, commercial solar, and digital marketing fixtures using one engine.
+- Added pack discovery/configuration APIs, generic Signals workspace controls, and semantic-difference tests.
+- Phase 12 opportunity scoring and clustering remain out of scope.
+
 ## Configuration-driven Signal Packs
 
 - Added versioned signal packs, deterministic signal definitions, project-specific signals, and provenance requirements.

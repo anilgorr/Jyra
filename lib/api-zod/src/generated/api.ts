@@ -3894,6 +3894,8 @@ export const ListProjectSignalsResponseItem = zod.object({
   "name": zod.string(),
   "description": zod.string(),
   "polarity": zod.string(),
+  "category": zod.string(),
+  "contextSnapshot": zod.record(zod.string(), zod.unknown()),
   "supportingFactIds": zod.array(zod.string()),
   "supportingEvidenceIds": zod.array(zod.string()),
   "effectiveDate": zod.string().regex(listProjectSignalsResponseEffectiveDateRegExp),
@@ -3903,10 +3905,85 @@ export const ListProjectSignalsResponseItem = zod.object({
   "status": zod.string(),
   "needImpact": zod.number(),
   "timingImpact": zod.number(),
+  "fitImpact": zod.number(),
+  "generationMethod": zod.string(),
+  "generatorVersion": zod.string(),
+  "observedAt": zod.coerce.date(),
+  "createdAt": zod.coerce.date(),
   "ruleVersion": zod.string(),
   "lastEvaluatedAt": zod.coerce.date()
 })
 export const ListProjectSignalsResponse = zod.array(ListProjectSignalsResponseItem)
+
+
+/**
+ * @summary List approved configurable signal packs
+ */
+export const ListSignalPacksResponseItem = zod.object({
+  "id": zod.string(),
+  "slug": zod.string(),
+  "name": zod.string(),
+  "description": zod.string(),
+  "version": zod.string(),
+  "status": zod.string(),
+  "applicableContext": zod.record(zod.string(), zod.unknown()),
+  "definitionCount": zod.number()
+})
+export const ListSignalPacksResponse = zod.array(ListSignalPacksResponseItem)
+
+
+/**
+ * @summary List selected signal packs and offering context for a project
+ */
+export const ListProjectSignalPacksParams = zod.object({
+  "projectId": zod.coerce.string()
+})
+
+export const ListProjectSignalPacksResponseItem = zod.object({
+  "signalPackId": zod.string(),
+  "slug": zod.string(),
+  "name": zod.string(),
+  "version": zod.string(),
+  "active": zod.boolean(),
+  "offeringKey": zod.string().nullable(),
+  "offeringSnapshot": zod.record(zod.string(), zod.unknown()),
+  "businessContextSnapshot": zod.record(zod.string(), zod.unknown()),
+  "configuration": zod.record(zod.string(), zod.unknown())
+})
+export const ListProjectSignalPacksResponse = zod.array(ListProjectSignalPacksResponseItem)
+
+
+/**
+ * @summary Select, configure, or deactivate an approved signal pack
+ */
+export const ConfigureProjectSignalPackParams = zod.object({
+  "projectId": zod.coerce.string(),
+  "signalPackId": zod.coerce.string()
+})
+
+export const configureProjectSignalPackBodyOfferingKeyMax = 160;
+
+
+
+export const ConfigureProjectSignalPackBody = zod.object({
+  "active": zod.boolean(),
+  "offeringKey": zod.string().max(configureProjectSignalPackBodyOfferingKeyMax).nullish(),
+  "offeringSnapshot": zod.record(zod.string(), zod.unknown()),
+  "businessContextSnapshot": zod.record(zod.string(), zod.unknown()),
+  "configuration": zod.record(zod.string(), zod.unknown())
+})
+
+export const ConfigureProjectSignalPackResponse = zod.object({
+  "signalPackId": zod.string(),
+  "slug": zod.string(),
+  "name": zod.string(),
+  "version": zod.string(),
+  "active": zod.boolean(),
+  "offeringKey": zod.string().nullable(),
+  "offeringSnapshot": zod.record(zod.string(), zod.unknown()),
+  "businessContextSnapshot": zod.record(zod.string(), zod.unknown()),
+  "configuration": zod.record(zod.string(), zod.unknown())
+})
 
 
 /**
@@ -3930,6 +4007,8 @@ export const EvaluateProjectSignalsResponse = zod.object({
   "name": zod.string(),
   "description": zod.string(),
   "polarity": zod.string(),
+  "category": zod.string(),
+  "contextSnapshot": zod.record(zod.string(), zod.unknown()),
   "supportingFactIds": zod.array(zod.string()),
   "supportingEvidenceIds": zod.array(zod.string()),
   "effectiveDate": zod.string().regex(evaluateProjectSignalsResponseSignalsItemEffectiveDateRegExp),
@@ -3939,6 +4018,11 @@ export const EvaluateProjectSignalsResponse = zod.object({
   "status": zod.string(),
   "needImpact": zod.number(),
   "timingImpact": zod.number(),
+  "fitImpact": zod.number(),
+  "generationMethod": zod.string(),
+  "generatorVersion": zod.string(),
+  "observedAt": zod.coerce.date(),
+  "createdAt": zod.coerce.date(),
   "ruleVersion": zod.string(),
   "lastEvaluatedAt": zod.coerce.date()
 }))

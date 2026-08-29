@@ -934,6 +934,64 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
         "404": { $ref: "#/components/responses/NotFound" }
+  /signal-packs:
+    get:
+      operationId: listSignalPacks
+      tags: [signals]
+      summary: List approved configurable signal packs
+      security: [{ clerkSession: [] }]
+      responses:
+        "200":
+          description: Available signal packs
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/SignalPack" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+  /projects/{projectId}/signal-packs:
+    get:
+      operationId: listProjectSignalPacks
+      tags: [signals]
+      summary: List selected signal packs and offering context for a project
+      security: [{ clerkSession: [] }]
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+      responses:
+        "200":
+          description: Project signal pack selections
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/ProjectSignalPack" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /projects/{projectId}/signal-packs/{signalPackId}:
+    put:
+      operationId: configureProjectSignalPack
+      tags: [signals]
+      summary: Select, configure, or deactivate an approved signal pack
+      security: [{ clerkSession: [] }]
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+        - $ref: "#/components/parameters/SignalPackId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ConfigureProjectSignalPackRequest" }
+      responses:
+        "200":
+          description: Updated project signal pack selection
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ProjectSignalPack" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
   /projects/{projectId}/companies/{projectCompanyId}/signals/evaluate:
     post:
       operationId: evaluateProjectSignals
@@ -2028,6 +2086,8 @@ components:
         name: { type: string }
         description: { type: string }
         polarity: { type: string }
+        category: { type: string }
+        contextSnapshot: { type: object, additionalProperties: true }
         supportingFactIds: { type: array, items: { type: string } }
         supportingEvidenceIds: { type: array, items: { type: string } }
         effectiveDate: { type: string, pattern: '^\d{4}-\d{2}-\d{2}$' }
@@ -2037,9 +2097,50 @@ components:
         status: { type: string }
         needImpact: { type: number }
         timingImpact: { type: number }
+        fitImpact: { type: number }
+        generationMethod: { type: string }
+        generatorVersion: { type: string }
+        observedAt: { type: string, format: date-time }
+        createdAt: { type: string, format: date-time }
         ruleVersion: { type: string }
         lastEvaluatedAt: { type: string, format: date-time }
-      required: [id, companyId, projectId, code, name, description, polarity, supportingFactIds, supportingEvidenceIds, effectiveDate, originalStrength, currentStrength, confidence, status, needImpact, timingImpact, ruleVersion, lastEvaluatedAt]
+      required: [id, companyId, projectId, code, name, description, polarity, category, contextSnapshot, supportingFactIds, supportingEvidenceIds, effectiveDate, originalStrength, currentStrength, confidence, status, needImpact, timingImpact, fitImpact, generationMethod, generatorVersion, observedAt, createdAt, ruleVersion, lastEvaluatedAt]
+    SignalPack:
+      type: object
+      properties:
+        id: { type: string }
+        slug: { type: string }
+        name: { type: string }
+        description: { type: string }
+        version: { type: string }
+        status: { type: string }
+        applicableContext: { type: object, additionalProperties: true }
+        definitionCount: { type: number }
+      required: [id, slug, name, description, version, status, applicableContext, definitionCount]
+    ProjectSignalPack:
+      type: object
+      properties:
+        signalPackId: { type: string }
+        slug: { type: string }
+        name: { type: string }
+        version: { type: string }
+        active: { type: boolean }
+        offeringKey: { type: ["string", "null"] }
+        offeringSnapshot: { type: object, additionalProperties: true }
+        businessContextSnapshot: { type: object, additionalProperties: true }
+        configuration: { type: object, additionalProperties: true }
+      required: [signalPackId, slug, name, version, active, offeringKey, offeringSnapshot, businessContextSnapshot, configuration]
+    ConfigureProjectSignalPackRequest:
+      type: object
+      properties:
+        active: { type: boolean }
+        offeringKey: { type: ["string", "null"], maxLength: 160 }
+        offeringSnapshot: { type: object, additionalProperties: true }
+        businessContextSnapshot: { type: object, additionalProperties: true }
+        configuration:
+          type: object
+          additionalProperties: true
+      required: [active, offeringSnapshot, businessContextSnapshot, configuration]
     EvaluateSignalsResponse:
       type: object
       properties:
@@ -2064,6 +2165,12 @@ components:
         type: string
     ProjectId:
       name: projectId
+      in: path
+      required: true
+      schema:
+        type: string
+    SignalPackId:
+      name: signalPackId
       in: path
       required: true
       schema:

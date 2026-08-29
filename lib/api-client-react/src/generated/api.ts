@@ -38,6 +38,7 @@ import type {
   CompanyImportPreview,
   CompanyImportResult,
   CompanyInput,
+  ConfigureProjectSignalPackRequest,
   CurrentUser,
   EvaluateSignalsResponse,
   FactExtractionInput,
@@ -58,10 +59,12 @@ import type {
   ProjectCompany,
   ProjectCompanyUpdate,
   ProjectInput,
+  ProjectSignalPack,
   ProviderDiagnostic,
   ResearchExecutionResponse,
   ResearchWorkspaceCompany,
   Signal,
+  SignalPack,
   UnauthorizedResponse,
   WorkspaceActivity,
   WorkspaceSummary
@@ -3212,6 +3215,234 @@ export function useListProjectSignals<TData = Awaited<ReturnType<typeof listProj
 
 
 
+
+export const getListSignalPacksUrl = () => {
+
+
+
+
+  return `/api/signal-packs`
+}
+
+/**
+ * @summary List approved configurable signal packs
+ */
+export const listSignalPacks = async ( options?: Parameters<typeof customFetch>[1]): Promise<SignalPack[]> => {
+
+  return customFetch<SignalPack[]>(getListSignalPacksUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListSignalPacksQueryKey = () => {
+    return [
+    `/api/signal-packs`
+    ] as const;
+    }
+
+
+export const getListSignalPacksQueryOptions = <TData = Awaited<ReturnType<typeof listSignalPacks>>, TError = ErrorType<UnauthorizedResponse>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listSignalPacks>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListSignalPacksQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listSignalPacks>>> = ({ signal }) => listSignalPacks({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listSignalPacks>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListSignalPacksQueryResult = NonNullable<Awaited<ReturnType<typeof listSignalPacks>>>
+export type ListSignalPacksQueryError = ErrorType<UnauthorizedResponse>
+
+
+/**
+ * @summary List approved configurable signal packs
+ */
+
+export function useListSignalPacks<TData = Awaited<ReturnType<typeof listSignalPacks>>, TError = ErrorType<UnauthorizedResponse>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listSignalPacks>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListSignalPacksQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getListProjectSignalPacksUrl = (projectId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/signal-packs`
+}
+
+/**
+ * @summary List selected signal packs and offering context for a project
+ */
+export const listProjectSignalPacks = async (projectId: string, options?: Parameters<typeof customFetch>[1]): Promise<ProjectSignalPack[]> => {
+
+  return customFetch<ProjectSignalPack[]>(getListProjectSignalPacksUrl(projectId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListProjectSignalPacksQueryKey = (projectId: string,) => {
+    return [
+    `/api/projects/${projectId}/signal-packs`
+    ] as const;
+    }
+
+
+export const getListProjectSignalPacksQueryOptions = <TData = Awaited<ReturnType<typeof listProjectSignalPacks>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(projectId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listProjectSignalPacks>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListProjectSignalPacksQueryKey(projectId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listProjectSignalPacks>>> = ({ signal }) => listProjectSignalPacks(projectId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: projectId !== null && projectId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listProjectSignalPacks>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListProjectSignalPacksQueryResult = NonNullable<Awaited<ReturnType<typeof listProjectSignalPacks>>>
+export type ListProjectSignalPacksQueryError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+
+/**
+ * @summary List selected signal packs and offering context for a project
+ */
+
+export function useListProjectSignalPacks<TData = Awaited<ReturnType<typeof listProjectSignalPacks>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(
+ projectId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listProjectSignalPacks>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListProjectSignalPacksQueryOptions(projectId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getConfigureProjectSignalPackUrl = (projectId: string,
+    signalPackId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/signal-packs/${signalPackId}`
+}
+
+/**
+ * @summary Select, configure, or deactivate an approved signal pack
+ */
+export const configureProjectSignalPack = async (projectId: string,
+    signalPackId: string,
+    configureProjectSignalPackRequest: ConfigureProjectSignalPackRequest, options?: Parameters<typeof customFetch>[1]): Promise<ProjectSignalPack> => {
+
+  return customFetch<ProjectSignalPack>(getConfigureProjectSignalPackUrl(projectId,signalPackId),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(configureProjectSignalPackRequest)
+  }
+);}
+
+
+
+
+
+export const getConfigureProjectSignalPackMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof configureProjectSignalPack>>, TError,{projectId: string;signalPackId: string;data: BodyType<ConfigureProjectSignalPackRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof configureProjectSignalPack>>, TError,{projectId: string;signalPackId: string;data: BodyType<ConfigureProjectSignalPackRequest>}, TContext> => {
+
+const mutationKey = ['configureProjectSignalPack'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof configureProjectSignalPack>>, {projectId: string;signalPackId: string;data: BodyType<ConfigureProjectSignalPackRequest>}> = (props) => {
+          const {projectId,signalPackId,data} = props ?? {};
+
+          return  configureProjectSignalPack(projectId,signalPackId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ConfigureProjectSignalPackMutationResult = NonNullable<Awaited<ReturnType<typeof configureProjectSignalPack>>>
+    export type ConfigureProjectSignalPackMutationBody = BodyType<ConfigureProjectSignalPackRequest>
+    export type ConfigureProjectSignalPackMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+    /**
+ * @summary Select, configure, or deactivate an approved signal pack
+ */
+export const useConfigureProjectSignalPack = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof configureProjectSignalPack>>, TError,{projectId: string;signalPackId: string;data: BodyType<ConfigureProjectSignalPackRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof configureProjectSignalPack>>,
+        TError,
+        {projectId: string;signalPackId: string;data: BodyType<ConfigureProjectSignalPackRequest>},
+        TContext
+      > => {
+      return useMutation(getConfigureProjectSignalPackMutationOptions(options));
+    }
 
 export const getEvaluateProjectSignalsUrl = (projectId: string,
     projectCompanyId: string,) => {

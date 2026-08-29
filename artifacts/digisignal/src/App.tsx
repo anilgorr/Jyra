@@ -23,6 +23,7 @@ import IcpPage from './pages/icp';
 import CompaniesPage from './pages/companies/index';
 import ProviderDiagnostics from './pages/provider-diagnostics';
 import Research from './pages/research';
+import Signals from './pages/signals';
 import { WorkspaceProvider } from './context/workspace-context';
 
 const clerkPubKey = publishableKeyFromHost(
@@ -168,6 +169,7 @@ function AuthenticatedRoutes() {
             <Route path="/business-twin" component={BusinessTwinPage} />
             <Route path="/icp" component={IcpPage} />
             <Route path="/research" component={Research} />
+            <Route path="/signals" component={Signals} />
             <Route path="/outcomes">
               <EmptyFeature title="Outcomes" description="Outcome capture is planned for a later milestone. No sales outcomes have been recorded." />
             </Route>

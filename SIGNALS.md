@@ -15,7 +15,15 @@ must be present in the immutable source capture.
 
 ### SIGNAL
 
-A deterministic, rule-versioned, project-specific pattern detected across one or more facts, such as “security hiring acceleration.” Signal packs and definitions are configuration records; each detected signal retains supporting fact and evidence IDs.
+A deterministic, rule-versioned, project-and-offering-specific interpretation of one or more facts. Signal packs and definitions are configuration records; each detected signal retains supporting fact and evidence IDs plus the context in which those facts became meaningful.
+
+## Fact ≠ Signal ≠ Opportunity
+
+- A **fact** is a reusable, source-grounded observation about a company.
+- A **signal** is an approved definition matching those facts in the context of a project, Business Twin, ICP, offering, and selected Signal Pack.
+- An **opportunity** is a later commercial conclusion. Phase 11A does not create or score opportunities.
+
+The same funding, hiring, leadership, or technology fact can be meaningful to one seller, weak for another, negative for a third, and irrelevant for a fourth.
 
 ### INTERPRETATION
 
@@ -49,7 +57,7 @@ Each signal should record:
 
 ## Initial signal families
 
-The initial Cybersecurity Signal Pack implements:
+The optional Cybersecurity sample Signal Pack implements:
 
 - hiring acceleration
 - leadership or ownership change
@@ -69,6 +77,14 @@ Signal freshness is deterministic, explicit, and definition-specific. Definition
 Facts saved through the validated fact boundary trigger project-specific rule evaluation. Missing facts create no signal. Rules never invent evidence, buying intent, opportunity quality, or outcomes.
 
 Projects select active pack versions through project-pack configuration. They may disable definitions or override strength and confidence thresholds without changing the globally reusable public fact. Provenance links are normalized and database-enforced: every signal must retain the exact same-company facts and the evidence rows backing those facts.
+
+## Generic engine and configured packs
+
+The core engine knows only approved definition configuration: fact types, text requirements, minimum fact and confidence thresholds, polarity, impacts, lifetime, and decay. It contains no seller-industry branches.
+
+Phase 11A includes optional configuration fixtures for managed SOC, executive recruitment, commercial solar, and digital marketing. They exercise the same engine but intentionally interpret common facts differently. Packs are never automatically assigned to a new project.
+
+Each selection snapshots the customer's offering plus current Business Twin and ICP version references. Every new signal snapshots its pack, definition version, category, generation method, observed time, and fit/need/timing impacts so later configuration edits do not rewrite historical meaning.
 
 ## Explainability
 

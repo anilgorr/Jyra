@@ -60,11 +60,13 @@ try {
   const [projectA] = await h.db.insert(h.projectsTable).values({ organizationId: organization.id, name: "Project A" }).returning();
   const [projectB] = await h.db.insert(h.projectsTable).values({ organizationId: organization.id, name: "Project B" }).returning();
   const [projectC] = await h.db.insert(h.projectsTable).values({ organizationId: organization.id, name: "Project C" }).returning();
+  const [projectWithoutPack] = await h.db.insert(h.projectsTable).values({ organizationId: organization.id, name: "No Pack Project" }).returning();
   [company] = await h.db.insert(h.companiesTable).values({ canonicalName: `Signal Co ${suffix}`, domain: `signal-${suffix}.example` }).returning();
   await h.db.insert(h.projectCompaniesTable).values([
     { projectId: projectA.id, companyId: company.id },
     { projectId: projectB.id, companyId: company.id },
     { projectId: projectC.id, companyId: company.id },
+    { projectId: projectWithoutPack.id, companyId: company.id },
   ]);
   const [page] = await h.db.insert(h.crawlPagesTable).values({
     companyId: company.id,
@@ -96,6 +98,36 @@ try {
     status: "VERIFIED",
   }).returning();
   const [savedFact] = await h.db.insert(h.companyFactsTable).values({ ...fact, id: undefined, companyId: company.id, evidenceId: evidence.id }).returning();
+  const noPackResult = await h.evaluateSignalsForCompany({
+    organizationId: organization.id,
+    projectId: projectWithoutPack.id,
+    companyId: company.id,
+    now: new Date("2026-08-29"),
+  });
+  assert.deepEqual(noPackResult, { packs: [], created: [], total: 0 }, "new projects must not receive an industry pack automatically");
+  const pack = await h.ensureCybersecuritySignalPack();
+  await h.db.insert(h.projectSignalPacksTable).values([
+    {
+      organizationId: organization.id,
+      projectId: projectA.id,
+      signalPackId: pack.id,
+      active: true,
+      offeringKey: "managed-security",
+      offeringSnapshot: { name: "Managed security services" },
+      businessContextSnapshot: { source: "test-business-twin" },
+      configuration: {},
+    },
+    {
+      organizationId: organization.id,
+      projectId: projectC.id,
+      signalPackId: pack.id,
+      active: true,
+      offeringKey: "managed-security",
+      offeringSnapshot: { name: "Managed security services" },
+      businessContextSnapshot: { source: "test-business-twin" },
+      configuration: {},
+    },
+  ]);
   await h.evaluateSignalsForCompany({ organizationId: organization.id, projectId: projectA.id, companyId: company.id, now: new Date("2026-08-29") });
   const [secondFact] = await h.db.insert(h.companyFactsTable).values({
     ...fact,
@@ -106,12 +138,14 @@ try {
   }).returning();
   await h.evaluateSignalsForCompany({ organizationId: organization.id, projectId: projectA.id, companyId: company.id, now: new Date("2026-08-29") });
   await h.evaluateSignalsForCompany({ organizationId: organization.id, projectId: projectA.id, companyId: company.id, now: new Date("2026-08-29") });
-  const pack = await h.ensureCybersecuritySignalPack();
   await h.db.insert(h.projectSignalPacksTable).values({
     organizationId: organization.id,
     projectId: projectB.id,
     signalPackId: pack.id,
     active: true,
+    offeringKey: "security-advisory",
+    offeringSnapshot: { name: "Security advisory" },
+    businessContextSnapshot: { source: "test-business-twin" },
     configuration: { disabledCodes: ["NEW_CISO"] },
   });
   await h.evaluateSignalsForCompany({ organizationId: organization.id, projectId: projectB.id, companyId: company.id, now: new Date("2026-08-29") });
@@ -123,6 +157,8 @@ try {
   assert.ok(signals.length >= 3);
   assert.equal(new Set(signals.map((signal) => signal.projectId)).size, 3, "same facts must create separate project-specific signals");
   assert.ok(signals.every((signal) => signal.supportingFactIds.length && signal.supportingEvidenceIds.length));
+  assert.ok(signals.every((signal) => signal.generationMethod === "DETERMINISTIC"));
+  assert.ok(signals.every((signal) => signal.contextSnapshot.offeringKey));
   const supportRows = await h.db.select().from(h.signalFactsTable).where(h.eq(h.signalFactsTable.companyId, company.id));
   assert.ok(supportRows.some((row) => row.factId === secondFact.id), "re-evaluation must atomically expand immutable provenance");
   assert.ok(supportRows.length > signals.length);
@@ -179,6 +215,28 @@ try {
   await h.refreshProjectSignalDecay(projectA.id, new Date("2027-08-29"));
   const decayed = await h.db.select().from(h.signalsTable).where(h.eq(h.signalsTable.projectId, projectA.id));
   assert.ok(decayed.every((signal) => signal.status === "STALE" && signal.currentStrength === 0));
+  const packs = await h.ensureSignalPackFixtures();
+  const semanticFacts = [
+    { ...fact, id: "funding", factType: "FUNDING_EVENT", supportingExcerpt: "The company raised $20M in growth funding." },
+    { ...fact, id: "hiring", factType: "JOB_OPENING", supportingExcerpt: "The company is hiring security, marketing, facilities and growth leaders." },
+    { ...fact, id: "leader", factType: "LEADERSHIP_CHANGE", supportingExcerpt: "A new CISO, CMO, facilities and operations leader joined." },
+    { ...fact, id: "tech", factType: "TECHNOLOGY_MENTION", supportingExcerpt: "The company changed its SIEM, CRM, ATS and solar array platforms." },
+  ];
+  const interpretations = {};
+  for (const slug of ["managed-soc", "executive-recruitment", "commercial-solar", "digital-marketing"]) {
+    const fixturePack = packs.find((item) => item.slug === slug);
+    const definitions = await h.db.select().from(h.signalDefinitionsTable).where(h.eq(h.signalDefinitionsTable.signalPackId, fixturePack.id));
+    interpretations[slug] = h.detectSignalCandidates(semanticFacts, definitions).map((candidate) => ({
+      code: candidate.definition.code,
+      need: candidate.definition.needImpact,
+      timing: candidate.definition.timingImpact,
+      fit: candidate.definition.fitImpact,
+      polarity: candidate.definition.polarity,
+    }));
+  }
+  assert.equal(new Set(Object.values(interpretations).map((value) => JSON.stringify(value))).size, 4);
+  assert.equal(interpretations["commercial-solar"].some((item) => item.code.includes("FUNDING")), false);
+  assert.equal(interpretations["commercial-solar"].some((item) => item.polarity === "NEGATIVE"), true);
   console.log("Signal detection, decay, provenance, and project-isolation tests passed.");
 } finally {
   if (company) {

@@ -4,3 +4,4 @@
 - [Global evidence review ownership](global-evidence-review-ownership.md) — reusable public evidence stays global, but only its preserving organization may mutate review status.
 - [Signal provenance invariants](signal-provenance-invariants.md) — signal support is an exact immutable snapshot, enforced across parent and link-table mutations.
 - [Postgres unique index adoption](postgres-unique-index-adoption.md) — adopt an existing unique index as a constraint when schema tooling repeatedly tries to recreate it.
+- [Signal context revisions](signal-context-revisions.md) — changed offering, Business Twin, ICP, or pack configuration must create a new signal rule revision.
