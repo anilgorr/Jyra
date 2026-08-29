@@ -27,6 +27,7 @@ import {
 } from "@workspace/db";
 import { evaluateSignalsForCompany, refreshProjectSignalDecay } from "../lib/signal-packs";
 import { evaluateClustersForCompany } from "../lib/signal-clusters";
+import { evaluateOpportunity } from "../lib/opportunity-engine";
 import { ensureSignalPackFixtures, SIGNAL_PACK_FIXTURES } from "../lib/signal-pack-fixtures";
 import { getAuthenticatedUserId, requireAuth } from "../middlewares/auth";
 
@@ -221,6 +222,12 @@ router.post("/projects/:projectId/companies/:projectCompanyId/signals/evaluate",
     organizationId: access.project.organizationId,
     projectId: params.data.projectId,
     companyId: row.company.id,
+  });
+  await evaluateOpportunity({
+    organizationId: access.project.organizationId,
+    projectId: params.data.projectId,
+    projectCompanyId: row.projectCompany.id,
+    userId: getAuthenticatedUserId(res),
   });
   const rows = await db.select({ signal: signalsTable, definition: signalDefinitionsTable }).from(signalsTable)
     .innerJoin(signalDefinitionsTable, eq(signalsTable.signalDefinitionId, signalDefinitionsTable.id))

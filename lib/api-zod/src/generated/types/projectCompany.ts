@@ -6,7 +6,9 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { Company } from './company';
+import type { ProjectCompanyOpportunityAssessmentState } from './projectCompanyOpportunityAssessmentState';
 import type { ProjectCompanyOpportunityState } from './projectCompanyOpportunityState';
+import type { ProjectCompanyRelationshipStatus } from './projectCompanyRelationshipStatus';
 import type { ProjectCompanyResearchStatus } from './projectCompanyResearchStatus';
 import type { ProjectCompanyStatus } from './projectCompanyStatus';
 
@@ -29,6 +31,11 @@ export interface ProjectCompany {
   confidenceScore: number | null;
   /** @nullable */
   opportunityState: ProjectCompanyOpportunityState;
+  relationshipStatus: ProjectCompanyRelationshipStatus;
+  /** @nullable */
+  opportunityScore: number | null;
+  /** @nullable */
+  opportunityAssessmentState: ProjectCompanyOpportunityAssessmentState;
   /** @nullable */
   latestResearchAt: Date | null;
   createdAt: Date;

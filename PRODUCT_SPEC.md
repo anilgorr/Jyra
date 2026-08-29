@@ -105,9 +105,9 @@ The provider abstraction routes normalized capability requests to configured ada
 
 Research results preserve original source evidence. Structured facts, detected signals, interpretations, and hypotheses are stored separately.
 
-### 5. Opportunity engine
+### 5. Opportunity engine (implemented)
 
-Deterministic calculations combine fit, need, timing, relationship, and confidence. A generated “Why now” explanation must cite the evidence behind it.
+Deterministic, project-specific calculations combine Fit, Need, Timing, and first-party Relationship using versioned weights and rules. Confidence is calculated separately and cannot inflate opportunity strength. Unknown data remains unknown, gates prevent unjustified strong states, stale evidence reduces strength, and every assessment preserves component provenance, explanation, model version, and state history.
 
 ### 6. Buying committee and action
 

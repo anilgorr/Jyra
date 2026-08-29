@@ -46,6 +46,7 @@ const updateSchema = z.object({
   relationshipScore: z.coerce.number().min(0).max(100).optional().or(z.literal("").transform(() => undefined)),
   confidenceScore: z.coerce.number().min(0).max(100).optional().or(z.literal("").transform(() => undefined)),
   opportunityState: z.enum(["none", "potential", "active", "won", "lost"]),
+  relationshipStatus: z.enum(["NONE", "PREVIOUS_CONTACT", "MEETING_HELD", "KNOWN_CHAMPION", "EXISTING_CUSTOMER", "PAST_CUSTOMER", "OPEN_OPPORTUNITY", "LOST_OPPORTUNITY"]),
 });
 
 type UpdateFormValues = z.infer<typeof updateSchema>;
@@ -66,6 +67,7 @@ export function CompanySheet({
       status: "candidate",
       researchStatus: "not_started",
       opportunityState: "none",
+      relationshipStatus: "NONE",
     },
   });
 
@@ -83,6 +85,7 @@ export function CompanySheet({
         relationshipScore: projectCompany.relationshipScore ?? undefined,
         confidenceScore: projectCompany.confidenceScore ?? undefined,
         opportunityState: projectCompany.opportunityState ?? "none",
+        relationshipStatus: projectCompany.relationshipStatus,
       });
     }
   }, [projectCompany, form]);
@@ -118,6 +121,7 @@ export function CompanySheet({
         relationshipScore: data.relationshipScore ?? null,
         confidenceScore: data.confidenceScore ?? null,
         opportunityState: data.opportunityState === "none" ? null : data.opportunityState,
+        relationshipStatus: data.relationshipStatus,
       },
     });
   };
@@ -193,6 +197,30 @@ export function CompanySheet({
                           </SelectContent>
                         </Select>
                         <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="relationshipStatus"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>First-party relationship</FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value}>
+                          <FormControl><SelectTrigger data-testid="select-relationship-status"><SelectValue /></SelectTrigger></FormControl>
+                          <SelectContent>
+                            <SelectItem value="NONE">No relationship</SelectItem>
+                            <SelectItem value="PREVIOUS_CONTACT">Previous contact</SelectItem>
+                            <SelectItem value="MEETING_HELD">Meeting held</SelectItem>
+                            <SelectItem value="KNOWN_CHAMPION">Known champion</SelectItem>
+                            <SelectItem value="EXISTING_CUSTOMER">Existing customer</SelectItem>
+                            <SelectItem value="PAST_CUSTOMER">Past customer</SelectItem>
+                            <SelectItem value="OPEN_OPPORTUNITY">Open opportunity</SelectItem>
+                            <SelectItem value="LOST_OPPORTUNITY">Lost opportunity</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <p className="text-xs text-muted-foreground">Customer-maintained context only; JYRA never fabricates this status.</p>
                       </FormItem>
                     )}
                   />

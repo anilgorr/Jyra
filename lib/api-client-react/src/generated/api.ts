@@ -43,6 +43,7 @@ import type {
   CompanyInput,
   ConfigureProjectSignalPackRequest,
   ConfigureSignalClusterDefinitionRequest,
+  CreateOpportunityModelRequest,
   CreateSignalClusterDefinitionRequest,
   CurrentUser,
   EvaluateSignalClusters200,
@@ -59,8 +60,12 @@ import type {
   NotFoundResponse,
   OnboardingInput,
   OnboardingResponse,
+  OpportunityAssessmentDetail,
+  OpportunityAssessmentListItem,
   OpportunityClusterProposal,
+  OpportunityEvaluationResult,
   OpportunityItemReviewRequest,
+  OpportunityModelVersion,
   OpportunityPackDetail,
   OpportunityPackGeneration,
   OpportunityPackList,
@@ -4875,5 +4880,386 @@ export const useEvaluateSignalClusters = <TError = ErrorType<ForbiddenResponse |
         TContext
       > => {
       return useMutation(getEvaluateSignalClustersMutationOptions(options));
+    }
+
+export const getListOpportunityAssessmentsUrl = (projectId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/opportunities`
+}
+
+/**
+ * @summary List current project-specific opportunity assessments
+ */
+export const listOpportunityAssessments = async (projectId: string, options?: Parameters<typeof customFetch>[1]): Promise<OpportunityAssessmentListItem[]> => {
+
+  return customFetch<OpportunityAssessmentListItem[]>(getListOpportunityAssessmentsUrl(projectId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListOpportunityAssessmentsQueryKey = (projectId: string,) => {
+    return [
+    `/api/projects/${projectId}/opportunities`
+    ] as const;
+    }
+
+
+export const getListOpportunityAssessmentsQueryOptions = <TData = Awaited<ReturnType<typeof listOpportunityAssessments>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(projectId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listOpportunityAssessments>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListOpportunityAssessmentsQueryKey(projectId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listOpportunityAssessments>>> = ({ signal }) => listOpportunityAssessments(projectId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: projectId !== null && projectId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listOpportunityAssessments>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListOpportunityAssessmentsQueryResult = NonNullable<Awaited<ReturnType<typeof listOpportunityAssessments>>>
+export type ListOpportunityAssessmentsQueryError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+
+/**
+ * @summary List current project-specific opportunity assessments
+ */
+
+export function useListOpportunityAssessments<TData = Awaited<ReturnType<typeof listOpportunityAssessments>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(
+ projectId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listOpportunityAssessments>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListOpportunityAssessmentsQueryOptions(projectId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getGetOpportunityAssessmentUrl = (projectId: string,
+    projectCompanyId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/companies/${projectCompanyId}/opportunity`
+}
+
+/**
+ * @summary Get current assessment, component explanations, and history
+ */
+export const getOpportunityAssessment = async (projectId: string,
+    projectCompanyId: string, options?: Parameters<typeof customFetch>[1]): Promise<OpportunityAssessmentDetail> => {
+
+  return customFetch<OpportunityAssessmentDetail>(getGetOpportunityAssessmentUrl(projectId,projectCompanyId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetOpportunityAssessmentQueryKey = (projectId: string,
+    projectCompanyId: string,) => {
+    return [
+    `/api/projects/${projectId}/companies/${projectCompanyId}/opportunity`
+    ] as const;
+    }
+
+
+export const getGetOpportunityAssessmentQueryOptions = <TData = Awaited<ReturnType<typeof getOpportunityAssessment>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(projectId: string,
+    projectCompanyId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getOpportunityAssessment>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetOpportunityAssessmentQueryKey(projectId,projectCompanyId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getOpportunityAssessment>>> = ({ signal }) => getOpportunityAssessment(projectId,projectCompanyId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: projectId !== null && projectId !== undefined && projectCompanyId !== null && projectCompanyId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getOpportunityAssessment>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetOpportunityAssessmentQueryResult = NonNullable<Awaited<ReturnType<typeof getOpportunityAssessment>>>
+export type GetOpportunityAssessmentQueryError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+
+/**
+ * @summary Get current assessment, component explanations, and history
+ */
+
+export function useGetOpportunityAssessment<TData = Awaited<ReturnType<typeof getOpportunityAssessment>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(
+ projectId: string,
+    projectCompanyId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getOpportunityAssessment>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetOpportunityAssessmentQueryOptions(projectId,projectCompanyId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getEvaluateOpportunityAssessmentUrl = (projectId: string,
+    projectCompanyId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/companies/${projectCompanyId}/opportunity/evaluate`
+}
+
+/**
+ * @summary Persist a deterministic assessment using the active model version
+ */
+export const evaluateOpportunityAssessment = async (projectId: string,
+    projectCompanyId: string, options?: Parameters<typeof customFetch>[1]): Promise<OpportunityEvaluationResult> => {
+
+  return customFetch<OpportunityEvaluationResult>(getEvaluateOpportunityAssessmentUrl(projectId,projectCompanyId),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getEvaluateOpportunityAssessmentMutationOptions = <TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof evaluateOpportunityAssessment>>, TError,{projectId: string;projectCompanyId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof evaluateOpportunityAssessment>>, TError,{projectId: string;projectCompanyId: string}, TContext> => {
+
+const mutationKey = ['evaluateOpportunityAssessment'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof evaluateOpportunityAssessment>>, {projectId: string;projectCompanyId: string}> = (props) => {
+          const {projectId,projectCompanyId} = props ?? {};
+
+          return  evaluateOpportunityAssessment(projectId,projectCompanyId,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type EvaluateOpportunityAssessmentMutationResult = NonNullable<Awaited<ReturnType<typeof evaluateOpportunityAssessment>>>
+
+    export type EvaluateOpportunityAssessmentMutationError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+    /**
+ * @summary Persist a deterministic assessment using the active model version
+ */
+export const useEvaluateOpportunityAssessment = <TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof evaluateOpportunityAssessment>>, TError,{projectId: string;projectCompanyId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof evaluateOpportunityAssessment>>,
+        TError,
+        {projectId: string;projectCompanyId: string},
+        TContext
+      > => {
+      return useMutation(getEvaluateOpportunityAssessmentMutationOptions(options));
+    }
+
+export const getListOpportunityModelsUrl = (projectId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/opportunity-models`
+}
+
+/**
+ * @summary List immutable opportunity model versions
+ */
+export const listOpportunityModels = async (projectId: string, options?: Parameters<typeof customFetch>[1]): Promise<OpportunityModelVersion[]> => {
+
+  return customFetch<OpportunityModelVersion[]>(getListOpportunityModelsUrl(projectId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListOpportunityModelsQueryKey = (projectId: string,) => {
+    return [
+    `/api/projects/${projectId}/opportunity-models`
+    ] as const;
+    }
+
+
+export const getListOpportunityModelsQueryOptions = <TData = Awaited<ReturnType<typeof listOpportunityModels>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse>>(projectId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listOpportunityModels>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListOpportunityModelsQueryKey(projectId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listOpportunityModels>>> = ({ signal }) => listOpportunityModels(projectId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: projectId !== null && projectId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listOpportunityModels>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListOpportunityModelsQueryResult = NonNullable<Awaited<ReturnType<typeof listOpportunityModels>>>
+export type ListOpportunityModelsQueryError = ErrorType<UnauthorizedResponse | ForbiddenResponse>
+
+
+/**
+ * @summary List immutable opportunity model versions
+ */
+
+export function useListOpportunityModels<TData = Awaited<ReturnType<typeof listOpportunityModels>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse>>(
+ projectId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listOpportunityModels>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListOpportunityModelsQueryOptions(projectId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getCreateOpportunityModelUrl = (projectId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/opportunity-models`
+}
+
+/**
+ * @summary Create and activate a new immutable model version
+ */
+export const createOpportunityModel = async (projectId: string,
+    createOpportunityModelRequest: CreateOpportunityModelRequest, options?: Parameters<typeof customFetch>[1]): Promise<OpportunityModelVersion> => {
+
+  return customFetch<OpportunityModelVersion>(getCreateOpportunityModelUrl(projectId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(createOpportunityModelRequest)
+  }
+);}
+
+
+
+
+
+export const getCreateOpportunityModelMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createOpportunityModel>>, TError,{projectId: string;data: BodyType<CreateOpportunityModelRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createOpportunityModel>>, TError,{projectId: string;data: BodyType<CreateOpportunityModelRequest>}, TContext> => {
+
+const mutationKey = ['createOpportunityModel'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createOpportunityModel>>, {projectId: string;data: BodyType<CreateOpportunityModelRequest>}> = (props) => {
+          const {projectId,data} = props ?? {};
+
+          return  createOpportunityModel(projectId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateOpportunityModelMutationResult = NonNullable<Awaited<ReturnType<typeof createOpportunityModel>>>
+    export type CreateOpportunityModelMutationBody = BodyType<CreateOpportunityModelRequest>
+    export type CreateOpportunityModelMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse>
+
+    /**
+ * @summary Create and activate a new immutable model version
+ */
+export const useCreateOpportunityModel = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createOpportunityModel>>, TError,{projectId: string;data: BodyType<CreateOpportunityModelRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createOpportunityModel>>,
+        TError,
+        {projectId: string;data: BodyType<CreateOpportunityModelRequest>},
+        TContext
+      > => {
+      return useMutation(getCreateOpportunityModelMutationOptions(options));
     }
 

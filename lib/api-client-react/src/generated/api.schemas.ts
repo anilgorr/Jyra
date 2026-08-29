@@ -1698,6 +1698,36 @@ export const ProjectCompanyOpportunityState = {
   lost: 'lost',
 } as const;
 
+export type ProjectCompanyRelationshipStatus = typeof ProjectCompanyRelationshipStatus[keyof typeof ProjectCompanyRelationshipStatus];
+
+
+export const ProjectCompanyRelationshipStatus = {
+  NONE: 'NONE',
+  PREVIOUS_CONTACT: 'PREVIOUS_CONTACT',
+  MEETING_HELD: 'MEETING_HELD',
+  KNOWN_CHAMPION: 'KNOWN_CHAMPION',
+  EXISTING_CUSTOMER: 'EXISTING_CUSTOMER',
+  PAST_CUSTOMER: 'PAST_CUSTOMER',
+  OPEN_OPPORTUNITY: 'OPEN_OPPORTUNITY',
+  LOST_OPPORTUNITY: 'LOST_OPPORTUNITY',
+} as const;
+
+/**
+ * @nullable
+ */
+export type ProjectCompanyOpportunityAssessmentState = typeof ProjectCompanyOpportunityAssessmentState[keyof typeof ProjectCompanyOpportunityAssessmentState] | null;
+
+
+export const ProjectCompanyOpportunityAssessmentState = {
+  DORMANT: 'DORMANT',
+  WATCH: 'WATCH',
+  EMERGING: 'EMERGING',
+  RISING: 'RISING',
+  SURGING: 'SURGING',
+  ACTIVE: 'ACTIVE',
+  COOLING: 'COOLING',
+} as const;
+
 export interface ProjectCompany {
   id: string;
   projectId: string;
@@ -1717,6 +1747,11 @@ export interface ProjectCompany {
   confidenceScore: number | null;
   /** @nullable */
   opportunityState: ProjectCompanyOpportunityState;
+  relationshipStatus: ProjectCompanyRelationshipStatus;
+  /** @nullable */
+  opportunityScore: number | null;
+  /** @nullable */
+  opportunityAssessmentState: ProjectCompanyOpportunityAssessmentState;
   /** @nullable */
   latestResearchAt: string | null;
   createdAt: string;
@@ -1755,6 +1790,20 @@ export const ProjectCompanyUpdateOpportunityState = {
   lost: 'lost',
 } as const;
 
+export type ProjectCompanyUpdateRelationshipStatus = typeof ProjectCompanyUpdateRelationshipStatus[keyof typeof ProjectCompanyUpdateRelationshipStatus];
+
+
+export const ProjectCompanyUpdateRelationshipStatus = {
+  NONE: 'NONE',
+  PREVIOUS_CONTACT: 'PREVIOUS_CONTACT',
+  MEETING_HELD: 'MEETING_HELD',
+  KNOWN_CHAMPION: 'KNOWN_CHAMPION',
+  EXISTING_CUSTOMER: 'EXISTING_CUSTOMER',
+  PAST_CUSTOMER: 'PAST_CUSTOMER',
+  OPEN_OPPORTUNITY: 'OPEN_OPPORTUNITY',
+  LOST_OPPORTUNITY: 'LOST_OPPORTUNITY',
+} as const;
+
 export interface ProjectCompanyUpdate {
   status?: ProjectCompanyUpdateStatus;
   researchStatus?: ProjectCompanyUpdateResearchStatus;
@@ -1790,6 +1839,7 @@ export interface ProjectCompanyUpdate {
   confidenceScore?: number | null;
   /** @nullable */
   opportunityState?: ProjectCompanyUpdateOpportunityState;
+  relationshipStatus?: ProjectCompanyUpdateRelationshipStatus;
 }
 
 export interface CompanyImportRow {
@@ -2039,6 +2089,226 @@ export interface EvaluateSignalsResponse {
   evaluated: number;
   clustersEvaluated: number;
   signals: Signal[];
+}
+
+export type OpportunityModelVersionWeights = {
+  fit: number;
+  need: number;
+  timing: number;
+  relationship: number;
+};
+
+export type OpportunityModelVersionRules = { [key: string]: unknown };
+
+export interface OpportunityModelVersion {
+  id: string;
+  organizationId: string;
+  projectId: string;
+  version: number;
+  name: string;
+  weights: OpportunityModelVersionWeights;
+  rules: OpportunityModelVersionRules;
+  active: boolean;
+  createdBy: string;
+  createdAt: string;
+}
+
+export type CreateOpportunityModelRequestWeights = {
+  /**
+     * @minimum 0
+     * @maximum 100
+     */
+  fit: number;
+  /**
+     * @minimum 0
+     * @maximum 100
+     */
+  need: number;
+  /**
+     * @minimum 0
+     * @maximum 100
+     */
+  timing: number;
+  /**
+     * @minimum 0
+     * @maximum 100
+     */
+  relationship: number;
+};
+
+export type CreateOpportunityModelRequestRules = { [key: string]: unknown };
+
+export interface CreateOpportunityModelRequest {
+  /**
+     * @minLength 1
+     * @maxLength 160
+     */
+  name?: string;
+  weights: CreateOpportunityModelRequestWeights;
+  rules?: CreateOpportunityModelRequestRules;
+}
+
+export type OpportunityAssessmentState = typeof OpportunityAssessmentState[keyof typeof OpportunityAssessmentState];
+
+
+export const OpportunityAssessmentState = {
+  DORMANT: 'DORMANT',
+  WATCH: 'WATCH',
+  EMERGING: 'EMERGING',
+  RISING: 'RISING',
+  SURGING: 'SURGING',
+  ACTIVE: 'ACTIVE',
+  COOLING: 'COOLING',
+} as const;
+
+export type OpportunityAssessmentAssessmentStatus = typeof OpportunityAssessmentAssessmentStatus[keyof typeof OpportunityAssessmentAssessmentStatus];
+
+
+export const OpportunityAssessmentAssessmentStatus = {
+  COMPLETE: 'COMPLETE',
+  NEEDS_MORE_RESEARCH: 'NEEDS_MORE_RESEARCH',
+  INSUFFICIENT_DATA: 'INSUFFICIENT_DATA',
+} as const;
+
+export type OpportunityAssessmentInputSnapshot = { [key: string]: unknown };
+
+export interface OpportunityAssessment {
+  id: string;
+  organizationId: string;
+  projectId: string;
+  projectCompanyId: string;
+  companyId: string;
+  modelVersionId: string;
+  /** @nullable */
+  score: number | null;
+  /** @nullable */
+  fitScore: number | null;
+  /** @nullable */
+  needScore: number | null;
+  /** @nullable */
+  timingScore: number | null;
+  /** @nullable */
+  relationshipScore: number | null;
+  /** @nullable */
+  confidenceScore: number | null;
+  state: OpportunityAssessmentState;
+  assessmentStatus: OpportunityAssessmentAssessmentStatus;
+  explanation: string;
+  inputSnapshot: OpportunityAssessmentInputSnapshot;
+  assessedAt: string;
+  [key: string]: unknown;
+ }
+
+export type OpportunityScoreComponentDimension = typeof OpportunityScoreComponentDimension[keyof typeof OpportunityScoreComponentDimension];
+
+
+export const OpportunityScoreComponentDimension = {
+  FIT: 'FIT',
+  NEED: 'NEED',
+  TIMING: 'TIMING',
+  RELATIONSHIP: 'RELATIONSHIP',
+  CONFIDENCE: 'CONFIDENCE',
+} as const;
+
+export type OpportunityScoreComponentStatus = typeof OpportunityScoreComponentStatus[keyof typeof OpportunityScoreComponentStatus];
+
+
+export const OpportunityScoreComponentStatus = {
+  KNOWN: 'KNOWN',
+  UNKNOWN: 'UNKNOWN',
+  GATED: 'GATED',
+} as const;
+
+export type OpportunityScoreComponentDetails = { [key: string]: unknown };
+
+export interface OpportunityScoreComponent {
+  dimension: OpportunityScoreComponentDimension;
+  /** @nullable */
+  score: number | null;
+  status: OpportunityScoreComponentStatus;
+  rule: string;
+  explanation: string;
+  signalIds: string[];
+  clusterIds: string[];
+  factIds: string[];
+  evidenceIds: string[];
+  details: OpportunityScoreComponentDetails;
+  [key: string]: unknown;
+ }
+
+export type OpportunityHistoryState = typeof OpportunityHistoryState[keyof typeof OpportunityHistoryState];
+
+
+export const OpportunityHistoryState = {
+  DORMANT: 'DORMANT',
+  WATCH: 'WATCH',
+  EMERGING: 'EMERGING',
+  RISING: 'RISING',
+  SURGING: 'SURGING',
+  ACTIVE: 'ACTIVE',
+  COOLING: 'COOLING',
+} as const;
+
+export type OpportunityHistoryAssessmentStatus = typeof OpportunityHistoryAssessmentStatus[keyof typeof OpportunityHistoryAssessmentStatus];
+
+
+export const OpportunityHistoryAssessmentStatus = {
+  COMPLETE: 'COMPLETE',
+  NEEDS_MORE_RESEARCH: 'NEEDS_MORE_RESEARCH',
+  INSUFFICIENT_DATA: 'INSUFFICIENT_DATA',
+} as const;
+
+export type OpportunityHistoryDimensionSnapshot = { [key: string]: unknown };
+
+/**
+ * @nullable
+ */
+export type OpportunityHistoryPreviousState = typeof OpportunityHistoryPreviousState[keyof typeof OpportunityHistoryPreviousState] | null;
+
+
+export const OpportunityHistoryPreviousState = {
+  DORMANT: 'DORMANT',
+  WATCH: 'WATCH',
+  EMERGING: 'EMERGING',
+  RISING: 'RISING',
+  SURGING: 'SURGING',
+  ACTIVE: 'ACTIVE',
+  COOLING: 'COOLING',
+} as const;
+
+export interface OpportunityHistory {
+  id: string;
+  opportunityId: string;
+  modelVersionId: string;
+  /** @nullable */
+  score: number | null;
+  state: OpportunityHistoryState;
+  assessmentStatus: OpportunityHistoryAssessmentStatus;
+  dimensionSnapshot: OpportunityHistoryDimensionSnapshot;
+  explanation: string;
+  /** @nullable */
+  previousState: OpportunityHistoryPreviousState;
+  assessedAt: string;
+}
+
+export interface OpportunityAssessmentListItem {
+  opportunity: OpportunityAssessment;
+  projectCompany: ProjectCompany;
+  company: Company;
+}
+
+export interface OpportunityAssessmentDetail {
+  opportunity: OpportunityAssessment;
+  model: OpportunityModelVersion;
+  components: OpportunityScoreComponent[];
+  history: OpportunityHistory[];
+}
+
+export interface OpportunityEvaluationResult {
+  opportunity: OpportunityAssessment;
+  history: OpportunityHistory;
+  components: OpportunityScoreComponent[];
+  model: OpportunityModelVersion;
 }
 
 export interface ErrorResponse {

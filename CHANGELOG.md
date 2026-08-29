@@ -1,3 +1,11 @@
+## Generic Opportunity Engine
+
+- Added deterministic project-specific Fit, Need, Timing, and Relationship scoring with separate evidence-quality Confidence.
+- Added versioned weights and state/gating rules, explicit unknown handling, stale-signal exclusion, negative-signal effects, cooling transitions, and strong-state safeguards.
+- Added current assessments, immutable component/history snapshots, provenance links, first-party relationship context, tenant-safe APIs, and database scope invariants.
+- Added Opportunity Intelligence UI for assessment refresh, five-dimensional explanations, Confidence, uncertainty, and history.
+- Added generic acceptance coverage without predictive likelihood, autonomous recommendations, outreach, outcome learning, or Phase 15 behavior.
+
 ## Generic Signal Cluster Engine
 
 - Added versioned project cluster definitions with required, optional, and negative signals, temporal windows, independent-event thresholds, explicit activation, and Opportunity Intelligence Pack proposal review.

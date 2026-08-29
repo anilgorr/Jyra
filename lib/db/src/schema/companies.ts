@@ -30,6 +30,11 @@ export const projectCompanyOpportunityStateEnum = pgEnum(
   ["none", "potential", "active", "won", "lost"],
 );
 
+export const projectCompanyRelationshipStatusEnum = pgEnum(
+  "project_company_relationship_status",
+  ["NONE", "PREVIOUS_CONTACT", "MEETING_HELD", "KNOWN_CHAMPION", "EXISTING_CUSTOMER", "PAST_CUSTOMER", "OPEN_OPPORTUNITY", "LOST_OPPORTUNITY"],
+);
+
 export const companiesTable = pgTable(
   "companies",
   {
@@ -102,6 +107,9 @@ export const projectCompaniesTable = pgTable(
     relationshipScore: real("relationship_score"),
     confidenceScore: real("confidence_score"),
     opportunityState: projectCompanyOpportunityStateEnum("opportunity_state"),
+    relationshipStatus: projectCompanyRelationshipStatusEnum("relationship_status").notNull().default("NONE"),
+    opportunityScore: real("opportunity_score"),
+    opportunityAssessmentState: text("opportunity_assessment_state"),
     latestResearchAt: timestamp("latest_research_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true })
       .notNull()

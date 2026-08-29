@@ -151,9 +151,10 @@ The implemented organization, membership, user, and project tables are the tenan
 
 - `signals`
 - `signal_clusters`
-- `company_assessments`
-- `opportunities`
-- `opportunity_explanations`
+- `opportunity_model_versions` (implemented; versioned weights and deterministic state/gating rules)
+- `opportunities` (implemented; one current project-company assessment)
+- `opportunity_history` (implemented; immutable score/state snapshots)
+- `opportunity_score_components` (implemented; five-dimensional explanations and provenance)
 - `buying_committee_members`
 - `recommended_actions`
 

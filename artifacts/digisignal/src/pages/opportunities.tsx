@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { OpportunityAssessments } from "./opportunity-assessments";
 
 type Pack = { id: string; status: string; offeringKey: string; currentVersion: number };
 type Version = {
@@ -258,12 +259,14 @@ export default function Opportunities() {
     <div className="mx-auto max-w-6xl space-y-8 px-4 py-8">
       <header className="flex flex-col gap-4 border-b border-border/60 pb-7 md:flex-row md:items-end md:justify-between">
         <div>
-          <div className="mb-2 flex items-center gap-2 text-accent"><BrainCircuit className="h-5 w-5" /><span className="text-xs font-semibold uppercase tracking-[0.18em]">Phase 13 · customer controlled</span></div>
-          <h1 className="font-display text-3xl font-semibold">Opportunity Signals</h1>
-          <p className="mt-2 max-w-3xl text-sm text-muted-foreground">Create a seller-specific proposal from your offering, Business Twin, and ICP. Nothing becomes active until you review, approve, and activate it.</p>
+          <div className="mb-2 flex items-center gap-2 text-accent"><BrainCircuit className="h-5 w-5" /><span className="text-xs font-semibold uppercase tracking-[0.18em]">Phase 14 · deterministic and explainable</span></div>
+          <h1 className="font-display text-3xl font-semibold">Opportunity Intelligence</h1>
+          <p className="mt-2 max-w-3xl text-sm text-muted-foreground">Rank project companies transparently from approved ICP criteria, evidence-backed signals, clusters, and first-party relationship context.</p>
         </div>
         {detail && <Badge variant="outline">Version {detail.version.version} · {detail.version.status}</Badge>}
       </header>
+
+      <OpportunityAssessments projectId={activeProjectId} />
 
       <Card className="p-6">
         <div className="grid gap-4 md:grid-cols-[1fr_1fr_auto] md:items-end">

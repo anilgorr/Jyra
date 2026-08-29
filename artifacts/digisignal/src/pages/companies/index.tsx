@@ -75,7 +75,7 @@ export default function CompaniesPage() {
 
   const activeCount = companies.filter(c => c.status === "active").length;
   const inProgressCount = companies.filter(c => c.researchStatus === "in_progress").length;
-  const oppCount = companies.filter(c => c.opportunityState !== "none" && c.opportunityState !== null).length;
+  const oppCount = companies.filter(c => c.opportunityAssessmentState && !["DORMANT", "WATCH"].includes(c.opportunityAssessmentState)).length;
 
   return (
     <div className="space-y-7 pb-12 animate-in fade-in duration-500">
@@ -174,7 +174,7 @@ export default function CompaniesPage() {
                 <TableHead>Company</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Research</TableHead>
-                <TableHead>Fit Score</TableHead>
+                <TableHead>Opportunity score</TableHead>
                 <TableHead>Opportunity</TableHead>
               </TableRow>
             </TableHeader>
@@ -211,24 +211,24 @@ export default function CompaniesPage() {
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      {pc.fitScore !== null ? (
+                      {pc.opportunityScore !== null ? (
                         <div className="flex items-center gap-2">
                           <div className="h-1.5 w-16 bg-muted rounded-full overflow-hidden">
                             <div 
-                              className={`h-full ${pc.fitScore >= 70 ? 'bg-emerald-500' : pc.fitScore >= 40 ? 'bg-amber-500' : 'bg-destructive'}`} 
-                              style={{ width: `${pc.fitScore}%` }}
+                              className={`h-full ${pc.opportunityScore >= 70 ? 'bg-emerald-500' : pc.opportunityScore >= 40 ? 'bg-amber-500' : 'bg-muted-foreground'}`} 
+                              style={{ width: `${pc.opportunityScore}%` }}
                             />
                           </div>
-                          <span className="text-xs font-medium">{pc.fitScore}</span>
+                          <span className="text-xs font-medium">{Math.round(pc.opportunityScore)}</span>
                         </div>
                       ) : (
                         <span className="text-xs text-muted-foreground">--</span>
                       )}
                     </TableCell>
                     <TableCell>
-                      {pc.opportunityState && pc.opportunityState !== 'none' ? (
+                      {pc.opportunityAssessmentState ? (
                         <Badge variant="outline" className="border-primary/20 text-primary">
-                          {pc.opportunityState}
+                          {pc.opportunityAssessmentState}
                         </Badge>
                       ) : (
                         <span className="text-xs text-muted-foreground">--</span>

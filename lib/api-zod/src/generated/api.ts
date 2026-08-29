@@ -3135,6 +3135,9 @@ export const ListProjectCompaniesResponseItem = zod.object({
   "relationshipScore": zod.number().nullable(),
   "confidenceScore": zod.number().nullable(),
   "opportunityState": zod.union([zod.literal('none'),zod.literal('potential'),zod.literal('active'),zod.literal('won'),zod.literal('lost'),zod.literal(null)]).nullable(),
+  "relationshipStatus": zod.enum(['NONE', 'PREVIOUS_CONTACT', 'MEETING_HELD', 'KNOWN_CHAMPION', 'EXISTING_CUSTOMER', 'PAST_CUSTOMER', 'OPEN_OPPORTUNITY', 'LOST_OPPORTUNITY']),
+  "opportunityScore": zod.number().nullable(),
+  "opportunityAssessmentState": zod.union([zod.literal('DORMANT'),zod.literal('WATCH'),zod.literal('EMERGING'),zod.literal('RISING'),zod.literal('SURGING'),zod.literal('ACTIVE'),zod.literal('COOLING'),zod.literal(null)]).nullable(),
   "latestResearchAt": zod.coerce.date().nullable(),
   "createdAt": zod.coerce.date(),
   "updatedAt": zod.coerce.date()
@@ -3208,6 +3211,9 @@ export const CreateProjectCompanyResponse = zod.object({
   "relationshipScore": zod.number().nullable(),
   "confidenceScore": zod.number().nullable(),
   "opportunityState": zod.union([zod.literal('none'),zod.literal('potential'),zod.literal('active'),zod.literal('won'),zod.literal('lost'),zod.literal(null)]).nullable(),
+  "relationshipStatus": zod.enum(['NONE', 'PREVIOUS_CONTACT', 'MEETING_HELD', 'KNOWN_CHAMPION', 'EXISTING_CUSTOMER', 'PAST_CUSTOMER', 'OPEN_OPPORTUNITY', 'LOST_OPPORTUNITY']),
+  "opportunityScore": zod.number().nullable(),
+  "opportunityAssessmentState": zod.union([zod.literal('DORMANT'),zod.literal('WATCH'),zod.literal('EMERGING'),zod.literal('RISING'),zod.literal('SURGING'),zod.literal('ACTIVE'),zod.literal('COOLING'),zod.literal(null)]).nullable(),
   "latestResearchAt": zod.coerce.date().nullable(),
   "createdAt": zod.coerce.date(),
   "updatedAt": zod.coerce.date()
@@ -3247,7 +3253,8 @@ export const UpdateProjectCompanyBody = zod.object({
   "timingScore": zod.number().min(updateProjectCompanyBodyTimingScoreMin).max(updateProjectCompanyBodyTimingScoreMax).nullish(),
   "relationshipScore": zod.number().min(updateProjectCompanyBodyRelationshipScoreMin).max(updateProjectCompanyBodyRelationshipScoreMax).nullish(),
   "confidenceScore": zod.number().min(updateProjectCompanyBodyConfidenceScoreMin).max(updateProjectCompanyBodyConfidenceScoreMax).nullish(),
-  "opportunityState": zod.union([zod.literal('none'),zod.literal('potential'),zod.literal('active'),zod.literal('won'),zod.literal('lost'),zod.literal(null)]).nullish()
+  "opportunityState": zod.union([zod.literal('none'),zod.literal('potential'),zod.literal('active'),zod.literal('won'),zod.literal('lost'),zod.literal(null)]).nullish(),
+  "relationshipStatus": zod.enum(['NONE', 'PREVIOUS_CONTACT', 'MEETING_HELD', 'KNOWN_CHAMPION', 'EXISTING_CUSTOMER', 'PAST_CUSTOMER', 'OPEN_OPPORTUNITY', 'LOST_OPPORTUNITY']).optional()
 })
 
 export const UpdateProjectCompanyResponse = zod.object({
@@ -3276,6 +3283,9 @@ export const UpdateProjectCompanyResponse = zod.object({
   "relationshipScore": zod.number().nullable(),
   "confidenceScore": zod.number().nullable(),
   "opportunityState": zod.union([zod.literal('none'),zod.literal('potential'),zod.literal('active'),zod.literal('won'),zod.literal('lost'),zod.literal(null)]).nullable(),
+  "relationshipStatus": zod.enum(['NONE', 'PREVIOUS_CONTACT', 'MEETING_HELD', 'KNOWN_CHAMPION', 'EXISTING_CUSTOMER', 'PAST_CUSTOMER', 'OPEN_OPPORTUNITY', 'LOST_OPPORTUNITY']),
+  "opportunityScore": zod.number().nullable(),
+  "opportunityAssessmentState": zod.union([zod.literal('DORMANT'),zod.literal('WATCH'),zod.literal('EMERGING'),zod.literal('RISING'),zod.literal('SURGING'),zod.literal('ACTIVE'),zod.literal('COOLING'),zod.literal(null)]).nullable(),
   "latestResearchAt": zod.coerce.date().nullable(),
   "createdAt": zod.coerce.date(),
   "updatedAt": zod.coerce.date()
@@ -3678,6 +3688,9 @@ export const PreviewCompanyImportResponse = zod.object({
   "relationshipScore": zod.number().nullable(),
   "confidenceScore": zod.number().nullable(),
   "opportunityState": zod.union([zod.literal('none'),zod.literal('potential'),zod.literal('active'),zod.literal('won'),zod.literal('lost'),zod.literal(null)]).nullable(),
+  "relationshipStatus": zod.enum(['NONE', 'PREVIOUS_CONTACT', 'MEETING_HELD', 'KNOWN_CHAMPION', 'EXISTING_CUSTOMER', 'PAST_CUSTOMER', 'OPEN_OPPORTUNITY', 'LOST_OPPORTUNITY']),
+  "opportunityScore": zod.number().nullable(),
+  "opportunityAssessmentState": zod.union([zod.literal('DORMANT'),zod.literal('WATCH'),zod.literal('EMERGING'),zod.literal('RISING'),zod.literal('SURGING'),zod.literal('ACTIVE'),zod.literal('COOLING'),zod.literal(null)]).nullable(),
   "latestResearchAt": zod.coerce.date().nullable(),
   "createdAt": zod.coerce.date(),
   "updatedAt": zod.coerce.date()
@@ -3781,6 +3794,9 @@ export const CommitCompanyImportResponse = zod.object({
   "relationshipScore": zod.number().nullable(),
   "confidenceScore": zod.number().nullable(),
   "opportunityState": zod.union([zod.literal('none'),zod.literal('potential'),zod.literal('active'),zod.literal('won'),zod.literal('lost'),zod.literal(null)]).nullable(),
+  "relationshipStatus": zod.enum(['NONE', 'PREVIOUS_CONTACT', 'MEETING_HELD', 'KNOWN_CHAMPION', 'EXISTING_CUSTOMER', 'PAST_CUSTOMER', 'OPEN_OPPORTUNITY', 'LOST_OPPORTUNITY']),
+  "opportunityScore": zod.number().nullable(),
+  "opportunityAssessmentState": zod.union([zod.literal('DORMANT'),zod.literal('WATCH'),zod.literal('EMERGING'),zod.literal('RISING'),zod.literal('SURGING'),zod.literal('ACTIVE'),zod.literal('COOLING'),zod.literal(null)]).nullable(),
   "latestResearchAt": zod.coerce.date().nullable(),
   "createdAt": zod.coerce.date(),
   "updatedAt": zod.coerce.date()
@@ -4888,6 +4904,308 @@ export const EvaluateSignalClustersResponse = zod.object({
   "status": zod.string(),
   "ruleVersion": zod.string()
 }))
+})
+
+
+/**
+ * @summary List current project-specific opportunity assessments
+ */
+export const ListOpportunityAssessmentsParams = zod.object({
+  "projectId": zod.coerce.string()
+})
+
+export const ListOpportunityAssessmentsResponseItem = zod.object({
+  "opportunity": zod.object({
+  "id": zod.string(),
+  "organizationId": zod.string(),
+  "projectId": zod.string(),
+  "projectCompanyId": zod.string(),
+  "companyId": zod.string(),
+  "modelVersionId": zod.string(),
+  "score": zod.number().nullable(),
+  "fitScore": zod.number().nullable(),
+  "needScore": zod.number().nullable(),
+  "timingScore": zod.number().nullable(),
+  "relationshipScore": zod.number().nullable(),
+  "confidenceScore": zod.number().nullable(),
+  "state": zod.enum(['DORMANT', 'WATCH', 'EMERGING', 'RISING', 'SURGING', 'ACTIVE', 'COOLING']),
+  "assessmentStatus": zod.enum(['COMPLETE', 'NEEDS_MORE_RESEARCH', 'INSUFFICIENT_DATA']),
+  "explanation": zod.string(),
+  "inputSnapshot": zod.record(zod.string(), zod.unknown()),
+  "assessedAt": zod.coerce.date()
+}),
+  "projectCompany": zod.object({
+  "id": zod.string(),
+  "projectId": zod.string(),
+  "companyId": zod.string(),
+  "company": zod.object({
+  "id": zod.string(),
+  "canonicalName": zod.string(),
+  "domain": zod.string().nullable(),
+  "website": zod.string().nullable(),
+  "linkedinUrl": zod.string().nullable(),
+  "country": zod.string().nullable(),
+  "industry": zod.string().nullable(),
+  "employeeCount": zod.number().nullable(),
+  "employeeRange": zod.string().nullable(),
+  "description": zod.string().nullable(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+}),
+  "status": zod.enum(['candidate', 'active', 'archived']),
+  "researchStatus": zod.enum(['not_started', 'in_progress', 'complete']),
+  "fitScore": zod.number().nullable(),
+  "needScore": zod.number().nullable(),
+  "timingScore": zod.number().nullable(),
+  "relationshipScore": zod.number().nullable(),
+  "confidenceScore": zod.number().nullable(),
+  "opportunityState": zod.union([zod.literal('none'),zod.literal('potential'),zod.literal('active'),zod.literal('won'),zod.literal('lost'),zod.literal(null)]).nullable(),
+  "relationshipStatus": zod.enum(['NONE', 'PREVIOUS_CONTACT', 'MEETING_HELD', 'KNOWN_CHAMPION', 'EXISTING_CUSTOMER', 'PAST_CUSTOMER', 'OPEN_OPPORTUNITY', 'LOST_OPPORTUNITY']),
+  "opportunityScore": zod.number().nullable(),
+  "opportunityAssessmentState": zod.union([zod.literal('DORMANT'),zod.literal('WATCH'),zod.literal('EMERGING'),zod.literal('RISING'),zod.literal('SURGING'),zod.literal('ACTIVE'),zod.literal('COOLING'),zod.literal(null)]).nullable(),
+  "latestResearchAt": zod.coerce.date().nullable(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+}),
+  "company": zod.object({
+  "id": zod.string(),
+  "canonicalName": zod.string(),
+  "domain": zod.string().nullable(),
+  "website": zod.string().nullable(),
+  "linkedinUrl": zod.string().nullable(),
+  "country": zod.string().nullable(),
+  "industry": zod.string().nullable(),
+  "employeeCount": zod.number().nullable(),
+  "employeeRange": zod.string().nullable(),
+  "description": zod.string().nullable(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+})
+})
+export const ListOpportunityAssessmentsResponse = zod.array(ListOpportunityAssessmentsResponseItem)
+
+
+/**
+ * @summary Get current assessment, component explanations, and history
+ */
+export const GetOpportunityAssessmentParams = zod.object({
+  "projectId": zod.coerce.string(),
+  "projectCompanyId": zod.coerce.string()
+})
+
+export const GetOpportunityAssessmentResponse = zod.object({
+  "opportunity": zod.object({
+  "id": zod.string(),
+  "organizationId": zod.string(),
+  "projectId": zod.string(),
+  "projectCompanyId": zod.string(),
+  "companyId": zod.string(),
+  "modelVersionId": zod.string(),
+  "score": zod.number().nullable(),
+  "fitScore": zod.number().nullable(),
+  "needScore": zod.number().nullable(),
+  "timingScore": zod.number().nullable(),
+  "relationshipScore": zod.number().nullable(),
+  "confidenceScore": zod.number().nullable(),
+  "state": zod.enum(['DORMANT', 'WATCH', 'EMERGING', 'RISING', 'SURGING', 'ACTIVE', 'COOLING']),
+  "assessmentStatus": zod.enum(['COMPLETE', 'NEEDS_MORE_RESEARCH', 'INSUFFICIENT_DATA']),
+  "explanation": zod.string(),
+  "inputSnapshot": zod.record(zod.string(), zod.unknown()),
+  "assessedAt": zod.coerce.date()
+}),
+  "model": zod.object({
+  "id": zod.string(),
+  "organizationId": zod.string(),
+  "projectId": zod.string(),
+  "version": zod.number(),
+  "name": zod.string(),
+  "weights": zod.object({
+  "fit": zod.number(),
+  "need": zod.number(),
+  "timing": zod.number(),
+  "relationship": zod.number()
+}),
+  "rules": zod.record(zod.string(), zod.unknown()),
+  "active": zod.boolean(),
+  "createdBy": zod.string(),
+  "createdAt": zod.coerce.date()
+}),
+  "components": zod.array(zod.object({
+  "dimension": zod.enum(['FIT', 'NEED', 'TIMING', 'RELATIONSHIP', 'CONFIDENCE']),
+  "score": zod.number().nullable(),
+  "status": zod.enum(['KNOWN', 'UNKNOWN', 'GATED']),
+  "rule": zod.string(),
+  "explanation": zod.string(),
+  "signalIds": zod.array(zod.string()),
+  "clusterIds": zod.array(zod.string()),
+  "factIds": zod.array(zod.string()),
+  "evidenceIds": zod.array(zod.string()),
+  "details": zod.record(zod.string(), zod.unknown())
+})),
+  "history": zod.array(zod.object({
+  "id": zod.string(),
+  "opportunityId": zod.string(),
+  "modelVersionId": zod.string(),
+  "score": zod.number().nullable(),
+  "state": zod.enum(['DORMANT', 'WATCH', 'EMERGING', 'RISING', 'SURGING', 'ACTIVE', 'COOLING']),
+  "assessmentStatus": zod.enum(['COMPLETE', 'NEEDS_MORE_RESEARCH', 'INSUFFICIENT_DATA']),
+  "dimensionSnapshot": zod.record(zod.string(), zod.unknown()),
+  "explanation": zod.string(),
+  "previousState": zod.union([zod.literal('DORMANT'),zod.literal('WATCH'),zod.literal('EMERGING'),zod.literal('RISING'),zod.literal('SURGING'),zod.literal('ACTIVE'),zod.literal('COOLING'),zod.literal(null)]).nullable(),
+  "assessedAt": zod.coerce.date()
+}))
+})
+
+
+/**
+ * @summary Persist a deterministic assessment using the active model version
+ */
+export const EvaluateOpportunityAssessmentParams = zod.object({
+  "projectId": zod.coerce.string(),
+  "projectCompanyId": zod.coerce.string()
+})
+
+export const EvaluateOpportunityAssessmentResponse = zod.object({
+  "opportunity": zod.object({
+  "id": zod.string(),
+  "organizationId": zod.string(),
+  "projectId": zod.string(),
+  "projectCompanyId": zod.string(),
+  "companyId": zod.string(),
+  "modelVersionId": zod.string(),
+  "score": zod.number().nullable(),
+  "fitScore": zod.number().nullable(),
+  "needScore": zod.number().nullable(),
+  "timingScore": zod.number().nullable(),
+  "relationshipScore": zod.number().nullable(),
+  "confidenceScore": zod.number().nullable(),
+  "state": zod.enum(['DORMANT', 'WATCH', 'EMERGING', 'RISING', 'SURGING', 'ACTIVE', 'COOLING']),
+  "assessmentStatus": zod.enum(['COMPLETE', 'NEEDS_MORE_RESEARCH', 'INSUFFICIENT_DATA']),
+  "explanation": zod.string(),
+  "inputSnapshot": zod.record(zod.string(), zod.unknown()),
+  "assessedAt": zod.coerce.date()
+}),
+  "history": zod.object({
+  "id": zod.string(),
+  "opportunityId": zod.string(),
+  "modelVersionId": zod.string(),
+  "score": zod.number().nullable(),
+  "state": zod.enum(['DORMANT', 'WATCH', 'EMERGING', 'RISING', 'SURGING', 'ACTIVE', 'COOLING']),
+  "assessmentStatus": zod.enum(['COMPLETE', 'NEEDS_MORE_RESEARCH', 'INSUFFICIENT_DATA']),
+  "dimensionSnapshot": zod.record(zod.string(), zod.unknown()),
+  "explanation": zod.string(),
+  "previousState": zod.union([zod.literal('DORMANT'),zod.literal('WATCH'),zod.literal('EMERGING'),zod.literal('RISING'),zod.literal('SURGING'),zod.literal('ACTIVE'),zod.literal('COOLING'),zod.literal(null)]).nullable(),
+  "assessedAt": zod.coerce.date()
+}),
+  "components": zod.array(zod.object({
+  "dimension": zod.enum(['FIT', 'NEED', 'TIMING', 'RELATIONSHIP', 'CONFIDENCE']),
+  "score": zod.number().nullable(),
+  "status": zod.enum(['KNOWN', 'UNKNOWN', 'GATED']),
+  "rule": zod.string(),
+  "explanation": zod.string(),
+  "signalIds": zod.array(zod.string()),
+  "clusterIds": zod.array(zod.string()),
+  "factIds": zod.array(zod.string()),
+  "evidenceIds": zod.array(zod.string()),
+  "details": zod.record(zod.string(), zod.unknown())
+})),
+  "model": zod.object({
+  "id": zod.string(),
+  "organizationId": zod.string(),
+  "projectId": zod.string(),
+  "version": zod.number(),
+  "name": zod.string(),
+  "weights": zod.object({
+  "fit": zod.number(),
+  "need": zod.number(),
+  "timing": zod.number(),
+  "relationship": zod.number()
+}),
+  "rules": zod.record(zod.string(), zod.unknown()),
+  "active": zod.boolean(),
+  "createdBy": zod.string(),
+  "createdAt": zod.coerce.date()
+})
+})
+
+
+/**
+ * @summary List immutable opportunity model versions
+ */
+export const ListOpportunityModelsParams = zod.object({
+  "projectId": zod.coerce.string()
+})
+
+export const ListOpportunityModelsResponseItem = zod.object({
+  "id": zod.string(),
+  "organizationId": zod.string(),
+  "projectId": zod.string(),
+  "version": zod.number(),
+  "name": zod.string(),
+  "weights": zod.object({
+  "fit": zod.number(),
+  "need": zod.number(),
+  "timing": zod.number(),
+  "relationship": zod.number()
+}),
+  "rules": zod.record(zod.string(), zod.unknown()),
+  "active": zod.boolean(),
+  "createdBy": zod.string(),
+  "createdAt": zod.coerce.date()
+})
+export const ListOpportunityModelsResponse = zod.array(ListOpportunityModelsResponseItem)
+
+
+/**
+ * @summary Create and activate a new immutable model version
+ */
+export const CreateOpportunityModelParams = zod.object({
+  "projectId": zod.coerce.string()
+})
+
+export const createOpportunityModelBodyNameMax = 160;
+
+export const createOpportunityModelBodyWeightsFitMin = 0;
+export const createOpportunityModelBodyWeightsFitMax = 100;
+
+export const createOpportunityModelBodyWeightsNeedMin = 0;
+export const createOpportunityModelBodyWeightsNeedMax = 100;
+
+export const createOpportunityModelBodyWeightsTimingMin = 0;
+export const createOpportunityModelBodyWeightsTimingMax = 100;
+
+export const createOpportunityModelBodyWeightsRelationshipMin = 0;
+export const createOpportunityModelBodyWeightsRelationshipMax = 100;
+
+
+
+export const CreateOpportunityModelBody = zod.object({
+  "name": zod.string().min(1).max(createOpportunityModelBodyNameMax).optional(),
+  "weights": zod.object({
+  "fit": zod.number().min(createOpportunityModelBodyWeightsFitMin).max(createOpportunityModelBodyWeightsFitMax),
+  "need": zod.number().min(createOpportunityModelBodyWeightsNeedMin).max(createOpportunityModelBodyWeightsNeedMax),
+  "timing": zod.number().min(createOpportunityModelBodyWeightsTimingMin).max(createOpportunityModelBodyWeightsTimingMax),
+  "relationship": zod.number().min(createOpportunityModelBodyWeightsRelationshipMin).max(createOpportunityModelBodyWeightsRelationshipMax)
+}),
+  "rules": zod.record(zod.string(), zod.unknown()).optional()
+})
+
+export const CreateOpportunityModelResponse = zod.object({
+  "id": zod.string(),
+  "organizationId": zod.string(),
+  "projectId": zod.string(),
+  "version": zod.number(),
+  "name": zod.string(),
+  "weights": zod.object({
+  "fit": zod.number(),
+  "need": zod.number(),
+  "timing": zod.number(),
+  "relationship": zod.number()
+}),
+  "rules": zod.record(zod.string(), zod.unknown()),
+  "active": zod.boolean(),
+  "createdBy": zod.string(),
+  "createdAt": zod.coerce.date()
 })
 
 

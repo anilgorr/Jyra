@@ -30,6 +30,8 @@ tags:
     description: Customer-reviewed seller-specific Opportunity Intelligence Pack proposals
   - name: signal-clusters
     description: Generic deterministic combinations of independent signals
+  - name: opportunity-engine
+    description: Versioned deterministic project-specific opportunity assessments
 paths:
   /healthz:
     get:
@@ -1418,6 +1420,100 @@ paths:
                 required: [evaluated, clusters]
         "403": { $ref: "#/components/responses/Forbidden" }
         "404": { $ref: "#/components/responses/NotFound" }
+  /projects/{projectId}/opportunities:
+    get:
+      operationId: listOpportunityAssessments
+      tags: [opportunity-engine]
+      summary: List current project-specific opportunity assessments
+      security: [{ clerkSession: [] }]
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+      responses:
+        "200":
+          description: Current assessments
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/OpportunityAssessmentListItem" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /projects/{projectId}/companies/{projectCompanyId}/opportunity:
+    get:
+      operationId: getOpportunityAssessment
+      tags: [opportunity-engine]
+      summary: Get current assessment, component explanations, and history
+      security: [{ clerkSession: [] }]
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+        - $ref: "#/components/parameters/ProjectCompanyId"
+      responses:
+        "200":
+          description: Opportunity assessment detail
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/OpportunityAssessmentDetail" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /projects/{projectId}/companies/{projectCompanyId}/opportunity/evaluate:
+    post:
+      operationId: evaluateOpportunityAssessment
+      tags: [opportunity-engine]
+      summary: Persist a deterministic assessment using the active model version
+      security: [{ clerkSession: [] }]
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+        - $ref: "#/components/parameters/ProjectCompanyId"
+      responses:
+        "200":
+          description: Persisted assessment
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/OpportunityEvaluationResult" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /projects/{projectId}/opportunity-models:
+    get:
+      operationId: listOpportunityModels
+      tags: [opportunity-engine]
+      summary: List immutable opportunity model versions
+      security: [{ clerkSession: [] }]
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+      responses:
+        "200":
+          description: Model versions
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/OpportunityModelVersion" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+    post:
+      operationId: createOpportunityModel
+      tags: [opportunity-engine]
+      summary: Create and activate a new immutable model version
+      security: [{ clerkSession: [] }]
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CreateOpportunityModelRequest" }
+      responses:
+        "201":
+          description: New active model version
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/OpportunityModelVersion" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
 components:
   schemas:
     OpportunityPack:
@@ -2601,10 +2697,13 @@ components:
         relationshipScore: { type: ["number", "null"] }
         confidenceScore: { type: ["number", "null"] }
         opportunityState: { type: ["string", "null"], enum: [none, potential, active, won, lost, null] }
+        relationshipStatus: { type: string, enum: [NONE, PREVIOUS_CONTACT, MEETING_HELD, KNOWN_CHAMPION, EXISTING_CUSTOMER, PAST_CUSTOMER, OPEN_OPPORTUNITY, LOST_OPPORTUNITY] }
+        opportunityScore: { type: ["number", "null"] }
+        opportunityAssessmentState: { type: ["string", "null"], enum: [DORMANT, WATCH, EMERGING, RISING, SURGING, ACTIVE, COOLING, null] }
         latestResearchAt: { type: ["string", "null"], format: date-time }
         createdAt: { type: string, format: date-time }
         updatedAt: { type: string, format: date-time }
-      required: [id, projectId, companyId, company, status, researchStatus, fitScore, needScore, timingScore, relationshipScore, confidenceScore, opportunityState, latestResearchAt, createdAt, updatedAt]
+      required: [id, projectId, companyId, company, status, researchStatus, fitScore, needScore, timingScore, relationshipScore, confidenceScore, opportunityState, relationshipStatus, opportunityScore, opportunityAssessmentState, latestResearchAt, createdAt, updatedAt]
     ProjectCompanyUpdate:
       type: object
       properties:
@@ -2616,6 +2715,7 @@ components:
         relationshipScore: { type: ["number", "null"], minimum: 0, maximum: 100 }
         confidenceScore: { type: ["number", "null"], minimum: 0, maximum: 100 }
         opportunityState: { type: ["string", "null"], enum: [none, potential, active, won, lost, null] }
+        relationshipStatus: { type: string, enum: [NONE, PREVIOUS_CONTACT, MEETING_HELD, KNOWN_CHAMPION, EXISTING_CUSTOMER, PAST_CUSTOMER, OPEN_OPPORTUNITY, LOST_OPPORTUNITY] }
       minProperties: 1
     CompanyImportRow:
       type: object
@@ -2838,6 +2938,123 @@ components:
           type: array
           items: { $ref: "#/components/schemas/Signal" }
       required: [evaluated, clustersEvaluated, signals]
+    OpportunityModelVersion:
+      type: object
+      properties:
+        id: { type: string }
+        organizationId: { type: string }
+        projectId: { type: string }
+        version: { type: number }
+        name: { type: string }
+        weights:
+          type: object
+          properties:
+            fit: { type: number }
+            need: { type: number }
+            timing: { type: number }
+            relationship: { type: number }
+          required: [fit, need, timing, relationship]
+        rules: { type: object, additionalProperties: true }
+        active: { type: boolean }
+        createdBy: { type: string }
+        createdAt: { type: string, format: date-time }
+      required: [id, organizationId, projectId, version, name, weights, rules, active, createdBy, createdAt]
+    CreateOpportunityModelRequest:
+      type: object
+      properties:
+        name: { type: string, minLength: 1, maxLength: 160 }
+        weights:
+          type: object
+          properties:
+            fit: { type: number, minimum: 0, maximum: 100 }
+            need: { type: number, minimum: 0, maximum: 100 }
+            timing: { type: number, minimum: 0, maximum: 100 }
+            relationship: { type: number, minimum: 0, maximum: 100 }
+          required: [fit, need, timing, relationship]
+          additionalProperties: false
+        rules: { type: object, additionalProperties: true }
+      required: [weights]
+      additionalProperties: false
+    OpportunityAssessment:
+      type: object
+      properties:
+        id: { type: string }
+        organizationId: { type: string }
+        projectId: { type: string }
+        projectCompanyId: { type: string }
+        companyId: { type: string }
+        modelVersionId: { type: string }
+        score: { type: ["number", "null"] }
+        fitScore: { type: ["number", "null"] }
+        needScore: { type: ["number", "null"] }
+        timingScore: { type: ["number", "null"] }
+        relationshipScore: { type: ["number", "null"] }
+        confidenceScore: { type: ["number", "null"] }
+        state: { type: string, enum: [DORMANT, WATCH, EMERGING, RISING, SURGING, ACTIVE, COOLING] }
+        assessmentStatus: { type: string, enum: [COMPLETE, NEEDS_MORE_RESEARCH, INSUFFICIENT_DATA] }
+        explanation: { type: string }
+        inputSnapshot: { type: object, additionalProperties: true }
+        assessedAt: { type: string, format: date-time }
+      required: [id, organizationId, projectId, projectCompanyId, companyId, modelVersionId, score, fitScore, needScore, timingScore, relationshipScore, confidenceScore, state, assessmentStatus, explanation, inputSnapshot, assessedAt]
+      additionalProperties: true
+    OpportunityScoreComponent:
+      type: object
+      properties:
+        dimension: { type: string, enum: [FIT, NEED, TIMING, RELATIONSHIP, CONFIDENCE] }
+        score: { type: ["number", "null"] }
+        status: { type: string, enum: [KNOWN, UNKNOWN, GATED] }
+        rule: { type: string }
+        explanation: { type: string }
+        signalIds: { type: array, items: { type: string } }
+        clusterIds: { type: array, items: { type: string } }
+        factIds: { type: array, items: { type: string } }
+        evidenceIds: { type: array, items: { type: string } }
+        details: { type: object, additionalProperties: true }
+      required: [dimension, score, status, rule, explanation, signalIds, clusterIds, factIds, evidenceIds, details]
+      additionalProperties: true
+    OpportunityHistory:
+      type: object
+      properties:
+        id: { type: string }
+        opportunityId: { type: string }
+        modelVersionId: { type: string }
+        score: { type: ["number", "null"] }
+        state: { type: string, enum: [DORMANT, WATCH, EMERGING, RISING, SURGING, ACTIVE, COOLING] }
+        assessmentStatus: { type: string, enum: [COMPLETE, NEEDS_MORE_RESEARCH, INSUFFICIENT_DATA] }
+        dimensionSnapshot: { type: object, additionalProperties: true }
+        explanation: { type: string }
+        previousState: { type: ["string", "null"], enum: [DORMANT, WATCH, EMERGING, RISING, SURGING, ACTIVE, COOLING, null] }
+        assessedAt: { type: string, format: date-time }
+      required: [id, opportunityId, modelVersionId, score, state, assessmentStatus, dimensionSnapshot, explanation, previousState, assessedAt]
+    OpportunityAssessmentListItem:
+      type: object
+      properties:
+        opportunity: { $ref: "#/components/schemas/OpportunityAssessment" }
+        projectCompany: { $ref: "#/components/schemas/ProjectCompany" }
+        company: { $ref: "#/components/schemas/Company" }
+      required: [opportunity, projectCompany, company]
+    OpportunityAssessmentDetail:
+      type: object
+      properties:
+        opportunity: { $ref: "#/components/schemas/OpportunityAssessment" }
+        model: { $ref: "#/components/schemas/OpportunityModelVersion" }
+        components:
+          type: array
+          items: { $ref: "#/components/schemas/OpportunityScoreComponent" }
+        history:
+          type: array
+          items: { $ref: "#/components/schemas/OpportunityHistory" }
+      required: [opportunity, model, components, history]
+    OpportunityEvaluationResult:
+      type: object
+      properties:
+        opportunity: { $ref: "#/components/schemas/OpportunityAssessment" }
+        history: { $ref: "#/components/schemas/OpportunityHistory" }
+        components:
+          type: array
+          items: { $ref: "#/components/schemas/OpportunityScoreComponent" }
+        model: { $ref: "#/components/schemas/OpportunityModelVersion" }
+      required: [opportunity, history, components, model]
     ErrorResponse:
       type: object
       properties:

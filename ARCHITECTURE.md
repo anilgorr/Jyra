@@ -144,6 +144,10 @@ Pack selection snapshots offering context and current Business Twin/ICP version 
 
 Signal clusters are a deterministic downstream layer over persisted individual signals. Active, versioned project definitions specify required, optional, and negative signal codes, a time window, and a minimum independent-event count. Evaluation uses normalized source-content hashes to collapse syndicated reporting and never lets repeated observations of one signal code inflate independence. Results snapshot member roles, evidence, independence groups, timing, explanation, impacts, confidence, and rule version. AI-generated definitions remain inert Opportunity Pack proposals until customer review, pack approval, and separate activation.
 
+## Opportunity Engine
+
+The implemented Opportunity Engine is a deterministic project-scoped layer over accepted ICP criteria, current signals, active clusters, and explicit first-party relationship context. Fit, Need, Timing, and Relationship form a weighted score; Confidence is calculated and gated separately. Each run persists its model version, inputs, five component explanations, provenance identifiers, state, and immutable history. Unknowns remain unknown, stale observations stop contributing, and the same canonical company can produce different assessments for different projects.
+
 Future research work should use a simple database-backed job table suitable for Replit:
 
 1. API creates a planned job.

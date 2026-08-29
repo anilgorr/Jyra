@@ -11,6 +11,7 @@ import researchRouter from "./research";
 import signalsRouter from "./signals";
 import opportunityPacksRouter from "./opportunity-packs";
 import signalClustersRouter from "./signal-clusters";
+import opportunityEngineRouter from "./opportunity-engine";
 
 const router: IRouter = Router();
 
@@ -26,5 +27,6 @@ router.use(researchRouter);
 router.use(signalsRouter);
 router.use(opportunityPacksRouter);
 router.use(signalClustersRouter);
+router.use(opportunityEngineRouter);
 
 export default router;
