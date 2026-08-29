@@ -2,3 +2,5 @@
 - [OpenAPI composition generation](openapi-composition-generation.md) — avoid allOf for request variants because this Orval/Zod combination emits unsupported helpers.
 - [OpenAPI calendar dates](openapi-calendar-dates.md) — calendar-only API fields need string patterns; format date is coerced to Date by this workspace generator.
 - [Global evidence review ownership](global-evidence-review-ownership.md) — reusable public evidence stays global, but only its preserving organization may mutate review status.
+- [Signal provenance invariants](signal-provenance-invariants.md) — signal support is an exact immutable snapshot, enforced across parent and link-table mutations.
+- [Postgres unique index adoption](postgres-unique-index-adoption.md) — adopt an existing unique index as a constraint when schema tooling repeatedly tries to recreate it.

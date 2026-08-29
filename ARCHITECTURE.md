@@ -134,6 +134,10 @@ The future learning loop ends at a suggested ICP change. Outcome ingestion, patt
 
 Executable research uses database-backed questions and idempotent execution jobs rather than a distributed workflow system. One bounded job selects one provider capability through `ProviderRouter`; all returned public content crosses the immutable evidence boundary before proposal-only fact extraction. A capped due-company runner supports scheduled refresh without provider fan-out.
 
+## Signal Packs
+
+Signal Packs are reusable rule configuration; detected signals are project-scoped interpretation. Saving a validated fact invokes deterministic rules for the project-company. Every persisted signal retains the exact fact and evidence identifiers that support it. Strength decay is recalculated from immutable original strength and effective date; expiry marks a signal stale without deleting history.
+
 Future research work should use a simple database-backed job table suitable for Replit:
 
 1. API creates a planned job.

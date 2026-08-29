@@ -1501,6 +1501,33 @@ export interface ResearchExecutionResponse {
   resultStatus: string;
 }
 
+export interface Signal {
+  id: string;
+  companyId: string;
+  projectId: string;
+  code: string;
+  name: string;
+  description: string;
+  polarity: string;
+  supportingFactIds: string[];
+  supportingEvidenceIds: string[];
+  /** @pattern ^\d{4}-\d{2}-\d{2}$ */
+  effectiveDate: string;
+  originalStrength: number;
+  currentStrength: number;
+  confidence: number;
+  status: string;
+  needImpact: number;
+  timingImpact: number;
+  ruleVersion: string;
+  lastEvaluatedAt: string;
+}
+
+export interface EvaluateSignalsResponse {
+  evaluated: number;
+  signals: Signal[];
+}
+
 export interface ErrorResponse {
   error: string;
 }

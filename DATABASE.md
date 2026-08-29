@@ -8,6 +8,16 @@ Historical rows are never updated when criteria change; a new version and criter
 
 ## Canonical company identity storage
 
+## Signal Pack storage
+
+- `signal_packs` stores versioned, reusable selling-motion configurations.
+- `signal_definitions` stores polarity, evidence requirements, confidence thresholds, lifetime/decay rules, need/timing impact, and rule configuration.
+- `signals` stores project-specific detections with supporting fact and evidence IDs, effective date, original/current strength, confidence, status, and rule version.
+- `project_signal_packs` selects a pack per project and stores project-specific rule overrides.
+- `signal_facts` and `signal_evidence` are the FK-backed provenance source; deferred database triggers require exact agreement with response IDs and reject link removal or mismatched fact/evidence pairs.
+
+Signals require at least one supporting fact and evidence ID. The same canonical company may receive different signal rows in different projects. Expired rows are retained as stale.
+
 - `companies` stores globally reusable company identity and descriptive fields. Its normalized domain is the strongest V1 identity key and is unique when present.
 - `company_aliases` records alternate names and normalized domains with their source. Alias domains are unique and participate in exact identity matching.
 - `project_companies` links a canonical company to a project and owns all customer-specific state: status, research status, nullable future scores, opportunity state, and research timestamps.

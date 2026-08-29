@@ -26,6 +26,7 @@ import {
   extractFactCandidatesFromSource,
   validateFactCandidate,
 } from "../lib/facts";
+import { evaluateSignalsForCompany } from "../lib/signal-packs";
 import { getAuthenticatedUserId, requireAuth } from "../middlewares/auth";
 
 const router: IRouter = Router();
@@ -42,6 +43,7 @@ async function authorizeProjectCompany(
 ): Promise<{
   projectCompany?: ProjectCompany;
   company?: Company;
+  organizationId?: string;
   status?: 403 | 404;
 }> {
   const [project] = await db
@@ -77,7 +79,7 @@ async function authorizeProjectCompany(
       ),
     )
     .limit(1);
-  return row ?? { status: 404 };
+  return row ? { ...row, organizationId: project.organizationId } : { status: 404 };
 }
 
 type FactRow = {
@@ -199,19 +201,27 @@ router.post(
       return;
     }
     try {
-      const [fact] = await db
-        .insert(companyFactsTable)
-        .values({
-          companyId: access.company.id,
-          evidenceId: candidate.evidenceId,
-          factType: candidate.factType,
-          structuredValue: candidate.structuredValue,
-          effectiveDate: candidate.effectiveDate,
-          confidence: candidate.confidence,
-          supportingExcerpt: candidate.supportingExcerpt,
-          extractorVersion: candidate.extractorVersion,
-        })
-        .returning();
+      const fact = await db.transaction(async (tx) => {
+        const [savedFact] = await tx
+          .insert(companyFactsTable)
+          .values({
+            companyId: access.company!.id,
+            evidenceId: candidate.evidenceId,
+            factType: candidate.factType,
+            structuredValue: candidate.structuredValue,
+            effectiveDate: candidate.effectiveDate,
+            confidence: candidate.confidence,
+            supportingExcerpt: candidate.supportingExcerpt,
+            extractorVersion: candidate.extractorVersion,
+          })
+          .returning();
+        await evaluateSignalsForCompany({
+          organizationId: access.organizationId!,
+          projectId: params.data.projectId,
+          companyId: access.company!.id,
+        }, tx);
+        return savedFact;
+      });
       res.status(201).json(CreateCompanyFactResponse.parse(factPayload({ fact, evidence: source.evidence })));
     } catch (error) {
       if (typeof error === "object" && error !== null && "code" in error && error.code === "23505") {

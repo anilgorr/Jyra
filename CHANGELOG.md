@@ -63,6 +63,14 @@
 
 # Changelog
 
+## Configuration-driven Signal Packs
+
+- Added versioned signal packs, deterministic signal definitions, project-specific signals, and provenance requirements.
+- Added the initial Cybersecurity Signal Pack covering leadership, hiring, compliance, expansion, funding, incidents, growth, customers, and technology changes.
+- Added deterministic strength decay and stale retention.
+- Added authenticated signal listing/evaluation contracts and automatic evaluation after validated fact persistence.
+- Added rule, confidence, provenance, decay, and cross-project isolation tests.
+
 ## Bounded market research
 
 - Added staged Research Planner questions, idempotent execution jobs, and append-only job-posting observations.

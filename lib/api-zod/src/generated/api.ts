@@ -3876,3 +3876,72 @@ export const ExecuteCompanyResearchResponse = zod.object({
 })
 
 
+/**
+ * @summary List active and stale signals for a project
+ */
+export const ListProjectSignalsParams = zod.object({
+  "projectId": zod.coerce.string()
+})
+
+export const listProjectSignalsResponseEffectiveDateRegExp = new RegExp('^\\d{4}-\\d{2}-\\d{2}$');
+
+
+export const ListProjectSignalsResponseItem = zod.object({
+  "id": zod.string(),
+  "companyId": zod.string(),
+  "projectId": zod.string(),
+  "code": zod.string(),
+  "name": zod.string(),
+  "description": zod.string(),
+  "polarity": zod.string(),
+  "supportingFactIds": zod.array(zod.string()),
+  "supportingEvidenceIds": zod.array(zod.string()),
+  "effectiveDate": zod.string().regex(listProjectSignalsResponseEffectiveDateRegExp),
+  "originalStrength": zod.number(),
+  "currentStrength": zod.number(),
+  "confidence": zod.number(),
+  "status": zod.string(),
+  "needImpact": zod.number(),
+  "timingImpact": zod.number(),
+  "ruleVersion": zod.string(),
+  "lastEvaluatedAt": zod.coerce.date()
+})
+export const ListProjectSignalsResponse = zod.array(ListProjectSignalsResponseItem)
+
+
+/**
+ * @summary Evaluate deterministic signal rules for one company
+ */
+export const EvaluateProjectSignalsParams = zod.object({
+  "projectId": zod.coerce.string(),
+  "projectCompanyId": zod.coerce.string()
+})
+
+export const evaluateProjectSignalsResponseSignalsItemEffectiveDateRegExp = new RegExp('^\\d{4}-\\d{2}-\\d{2}$');
+
+
+export const EvaluateProjectSignalsResponse = zod.object({
+  "evaluated": zod.number(),
+  "signals": zod.array(zod.object({
+  "id": zod.string(),
+  "companyId": zod.string(),
+  "projectId": zod.string(),
+  "code": zod.string(),
+  "name": zod.string(),
+  "description": zod.string(),
+  "polarity": zod.string(),
+  "supportingFactIds": zod.array(zod.string()),
+  "supportingEvidenceIds": zod.array(zod.string()),
+  "effectiveDate": zod.string().regex(evaluateProjectSignalsResponseSignalsItemEffectiveDateRegExp),
+  "originalStrength": zod.number(),
+  "currentStrength": zod.number(),
+  "confidence": zod.number(),
+  "status": zod.string(),
+  "needImpact": zod.number(),
+  "timingImpact": zod.number(),
+  "ruleVersion": zod.string(),
+  "lastEvaluatedAt": zod.coerce.date()
+}))
+})
+
+

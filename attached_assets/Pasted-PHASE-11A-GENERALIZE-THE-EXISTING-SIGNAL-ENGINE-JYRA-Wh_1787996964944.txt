@@ -1,0 +1,386 @@
+PHASE 11A — GENERALIZE THE EXISTING SIGNAL ENGINE
+
+JYRA
+Who. When. Why.
+
+IMPORTANT CONTEXT:
+
+Phases 0 through 11 have ALREADY been implemented.
+
+DO NOT rebuild any previous phase.
+DO NOT reset the database.
+DO NOT remove working functionality.
+DO NOT redesign unrelated functionality.
+
+The existing Phase 11 Signal Pack Framework may contain cybersecurity-specific
+signals and assumptions.
+
+We have now clarified an important product requirement:
+
+JYRA IS A GENERIC B2B OPPORTUNITY INTELLIGENCE PLATFORM.
+
+JYRA must work for ANY B2B seller, including examples such as:
+
+cybersecurity
+compliance consulting
+recruitment
+digital marketing
+ERP
+cloud services
+AI automation
+commercial real estate
+logistics
+manufacturing
+solar
+HR services
+financial services
+SaaS
+professional services
+
+These are examples only.
+
+DO NOT hardcode these industries.
+
+==================================================
+CORE PRODUCT QUESTION
+==================================================
+
+For any company using JYRA:
+
+WHO should they target?
+
+WHEN should they approach them?
+
+WHY might that company need what they sell?
+
+The Signal Intelligence architecture must answer these questions based on
+the CUSTOMER'S Business Twin, ICP and offering.
+
+==================================================
+1. AUDIT EXISTING PHASE 11
+==================================================
+
+Before changing anything:
+
+Inspect:
+
+signal_packs
+signal_definitions
+signals
+signal generation services
+signal decay
+Need/Timing impact
+existing cybersecurity definitions
+database relationships
+APIs
+UI
+tests
+
+Document which components are:
+
+GENERIC
+
+versus
+
+INDUSTRY-SPECIFIC
+
+Preserve generic architecture.
+
+Refactor industry-specific assumptions out of core business logic.
+
+==================================================
+2. SIGNAL ENGINE MUST BE GENERIC
+==================================================
+
+The core engine must NOT contain logic such as:
+
+if cybersecurity company...
+if ISO consultant...
+if recruitment company...
+if SaaS company...
+
+Instead use configurable Signal Definitions.
+
+A signal definition should support:
+
+id
+name
+description
+category
+applicable offering/context
+evidence requirements
+fact requirements
+positive_or_negative
+default_strength
+need_impact
+timing_impact
+fit_impact if appropriate
+lifetime
+decay_rule
+minimum_confidence
+source preferences
+status
+created_by
+version
+
+==================================================
+3. GENERIC SIGNAL CATEGORIES
+==================================================
+
+Support broad categories such as:
+
+LEADERSHIP
+HIRING
+GROWTH
+FUNDING
+EXPANSION
+TECHNOLOGY
+COMPLIANCE
+REGULATORY
+ORGANIZATIONAL_CHANGE
+PRODUCT
+CUSTOMER
+COMPETITIVE
+PROCUREMENT
+PARTNERSHIP
+M_AND_A
+FINANCIAL
+OPERATIONAL
+PUBLIC_INTENT
+FIRST_PARTY_INTENT
+RELATIONSHIP
+NEGATIVE
+CUSTOM
+
+These are categories, not buying conclusions.
+
+==================================================
+4. SIGNAL MEANING IS CONTEXTUAL
+==================================================
+
+The same fact can mean different things for different sellers.
+
+Example:
+
+FACT:
+Company raised $20M.
+
+For recruitment company:
+May indicate hiring/growth opportunity.
+
+For ERP consultancy:
+May indicate scaling/infrastructure opportunity.
+
+For ISO consultant:
+Funding alone may mean almost nothing.
+
+Therefore:
+
+FACTS may be reusable.
+
+SIGNAL INTERPRETATION must be contextual to:
+
+Business Twin
++
+ICP
++
+Offering
++
+Signal Pack
++
+Project
+
+Do not globally assign universal buying meaning to facts.
+
+==================================================
+5. PRESERVE CYBERSECURITY SIGNALS SAFELY
+==================================================
+
+Do NOT delete useful existing cybersecurity definitions.
+
+Move/refactor them so they are:
+
+optional sample intelligence pack
+or test fixture
+or seeded example pack
+
+They must NOT be automatically applied to every JYRA customer.
+
+Label them appropriately.
+
+==================================================
+6. SIGNAL PACKS
+==================================================
+
+A Signal Pack represents:
+
+"What market events and conditions may indicate opportunity for THIS offering?"
+
+Signal Packs must be project/offering aware.
+
+A customer may eventually have:
+
+Company A
+Offering 1
+Signal Pack 1
+
+Company A
+Offering 2
+Signal Pack 2
+
+The same target company may therefore produce different opportunity
+interpretations for different offerings.
+
+==================================================
+7. SIGNAL PROVENANCE
+==================================================
+
+Every generated signal must preserve:
+
+project
+company
+signal definition
+supporting facts
+supporting evidence
+generation method
+created timestamp
+observed timestamp
+confidence
+strength
+decay
+model/version
+
+A signal without supporting evidence/facts must not be treated as confirmed.
+
+==================================================
+8. DO NOT LET AI INVENT SIGNALS DURING ANALYSIS
+==================================================
+
+Later AI may propose Signal Definitions.
+
+But during production opportunity analysis:
+
+AI must NOT spontaneously invent a new signal and use it for scoring.
+
+Only active/approved Signal Definitions may influence opportunity scoring.
+
+==================================================
+9. NEGATIVE SIGNALS
+==================================================
+
+Generic architecture must support negative signals.
+
+Examples:
+
+existing solution
+recent contract
+wrong geography
+downsizing
+budget freeze
+recently lost
+existing customer
+competitor
+no relevant need
+mature internal capability
+
+These examples must not become universal rules.
+
+Their meaning depends on offering/context.
+
+==================================================
+10. TEST GENERICITY
+==================================================
+
+Test the SAME Signal Engine with at least four synthetic sellers:
+
+A. Managed SOC provider
+
+B. Executive recruitment company
+
+C. Commercial solar installation company
+
+D. Digital marketing agency
+
+Do not build four separate engines.
+
+Use:
+
+ONE generic engine
++
+different configurable signal definitions.
+
+Verify that:
+
+Funding does not have identical meaning across all four.
+
+Hiring does not have identical meaning across all four.
+
+Leadership change does not have identical meaning across all four.
+
+Technology changes do not have identical meaning across all four.
+
+==================================================
+11. COMPATIBILITY
+==================================================
+
+Existing Phase 11 functionality must continue working.
+
+Existing signal records must remain valid or be safely migrated.
+
+Do not break:
+
+evidence relationships
+fact relationships
+company relationships
+project relationships
+research workflows
+
+==================================================
+12. DOCUMENTATION
+==================================================
+
+Update SIGNALS.md.
+
+Clearly document:
+
+Fact ≠ Signal.
+
+Signal ≠ Opportunity.
+
+A signal only has meaning in the context of what the customer sells.
+
+Update PRODUCT_SPEC.md if necessary.
+
+Update CHANGELOG.md.
+
+==================================================
+ACCEPTANCE
+==================================================
+
+Phase 11A passes only if:
+
+1. Core Signal Engine contains no cybersecurity dependency.
+
+2. Cybersecurity can still work through configuration.
+
+3. Recruitment can use the same engine.
+
+4. Solar can use the same engine.
+
+5. Marketing can use the same engine.
+
+6. Signal definitions are configurable.
+
+7. Signals remain evidence-backed.
+
+8. Signal meaning is project/offering-specific.
+
+9. Existing data is preserved.
+
+10. Existing tests pass.
+
+11. New genericity tests pass.
+
+Create checkpoint after completion.
+
+DO NOT start Phase 12.

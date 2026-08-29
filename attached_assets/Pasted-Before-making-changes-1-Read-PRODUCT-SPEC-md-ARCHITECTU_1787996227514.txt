@@ -1,0 +1,143 @@
+Before making changes:
+
+1. Read PRODUCT_SPEC.md, ARCHITECTURE.md, DATABASE.md, SIGNALS.md, PROVIDERS.md, RESEARCH_ENGINE.md, CHANGELOG.md and the entire relevant current codebase.
+
+2. Preserve all working functionality.
+
+3. Implement only the milestone described below.
+
+4. Do not redesign unrelated areas.
+
+5. Create a checkpoint before major changes.
+
+6. Run migrations and tests before completing the milestone.
+
+7. Update documentation after implementation.
+
+8. Do not claim the milestone is complete unless the acceptance criteria pass.
+
+9. Prefer deterministic business logic over LLM reasoning wherever possible.
+
+10. Do not fabricate data, evidence, people, companies, signals, buying intent or outcomes.
+
+Build configuration-driven DigiSignal Signal Packs.
+
+CORE PRINCIPLE
+
+A Signal Pack teaches DigiSignal what evidence matters for a particular selling motion.
+
+The same company facts can mean different things for different customers.
+
+DATABASE
+
+Create:
+
+signal_packs
+signal_definitions
+signals
+
+SIGNAL DEFINITION FIELDS
+
+id
+signal_pack_id
+name
+description
+positive_or_negative
+evidence_requirements
+default_strength
+minimum_confidence
+lifetime_days
+decay_rule
+need_impact
+timing_impact
+configuration
+created_at
+updated_at
+
+SIGNALS
+
+A detected signal must reference:
+
+project
+company
+signal definition
+supporting fact IDs
+supporting evidence IDs
+effective date
+original strength
+current strength
+confidence
+
+INITIAL CYBERSECURITY SIGNAL PACK
+
+Include:
+
+NEW_CISO
+NEW_CIO
+SECURITY_LEADERSHIP_CHANGE
+SECURITY_HIRING
+SOC_HIRING
+GRC_HIRING
+CLOUD_SECURITY_HIRING
+SECURITY_HIRING_ACCELERATION
+CLOUD_EXPANSION
+ISO27001_ACTIVITY
+SOC2_ACTIVITY
+PCI_ACTIVITY
+REGULATORY_PRESSURE
+GEOGRAPHIC_EXPANSION
+FUNDING_EVENT
+ACQUISITION
+SECURITY_INCIDENT
+RAPID_COMPANY_GROWTH
+NEW_ENTERPRISE_CUSTOMERS
+SECURITY_TOOL_CHANGE
+
+SIGNAL DETECTION
+
+Prefer deterministic rules.
+
+Example:
+
+If job facts show 2 security roles last period and 9 now:
+possible SECURITY_HIRING_ACCELERATION.
+
+AI may assist only where classification is ambiguous.
+
+Example:
+
+Does "VP Trust and Safety" count as senior cybersecurity leadership?
+
+SIGNAL DECAY
+
+Signals weaken over time.
+
+Store lifetime/decay configuration.
+
+Current strength should be recalculated from:
+
+original strength
+effective date
+lifetime
+decay rule
+
+Do not delete expired signals.
+
+Mark them inactive/stale.
+
+ACCEPTANCE CRITERIA
+
+Facts must generate signals deterministically where rules exist.
+
+No signal may exist without supporting fact/evidence.
+
+Old signals must decay.
+
+Same company can have different project-specific signals.
+
+Update:
+
+SIGNALS.md
+DATABASE.md
+ARCHITECTURE.md
+CHANGELOG.md

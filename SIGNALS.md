@@ -15,7 +15,7 @@ must be present in the immutable source capture.
 
 ### SIGNAL
 
-A deterministic or rule-versioned pattern detected across one or more facts, such as “security hiring acceleration.”
+A deterministic, rule-versioned, project-specific pattern detected across one or more facts, such as “security hiring acceleration.” Signal packs and definitions are configuration records; each detected signal retains supporting fact and evidence IDs.
 
 ### INTERPRETATION
 
@@ -49,7 +49,7 @@ Each signal should record:
 
 ## Initial signal families
 
-These remain future signal design inputs; the underlying fact layer is implemented:
+The initial Cybersecurity Signal Pack implements:
 
 - hiring acceleration
 - leadership or ownership change
@@ -64,7 +64,11 @@ Do not infer a signal from a single vague mention when the product rule requires
 
 ## Freshness and decay
 
-Signal freshness should be deterministic, explicit, and domain-specific. A decayed signal may remain historically true while contributing less to “why now.” A missing refresh is stale/unknown, not evidence that the underlying condition stopped existing.
+Signal freshness is deterministic, explicit, and definition-specific. Definitions store lifetime and decay rules. Current strength is recalculated from original strength, effective date, lifetime, and decay rule. Expired signals remain stored and are marked `STALE`; they are never deleted as if the historical observation had not occurred.
+
+Facts saved through the validated fact boundary trigger project-specific rule evaluation. Missing facts create no signal. Rules never invent evidence, buying intent, opportunity quality, or outcomes.
+
+Projects select active pack versions through project-pack configuration. They may disable definitions or override strength and confidence thresholds without changing the globally reusable public fact. Provenance links are normalized and database-enforced: every signal must retain the exact same-company facts and the evidence rows backing those facts.
 
 ## Explainability
 

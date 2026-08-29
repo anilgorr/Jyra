@@ -6,6 +6,7 @@ import {
   real,
   text,
   timestamp,
+  unique,
   uniqueIndex,
   uuid,
 } from "drizzle-orm/pg-core";
@@ -111,7 +112,7 @@ export const projectCompaniesTable = pgTable(
       .$onUpdate(() => new Date()),
   },
   (table) => [
-    uniqueIndex("project_companies_project_company_unique").on(
+    unique("project_companies_project_company_unique").on(
       table.projectId,
       table.companyId,
     ),

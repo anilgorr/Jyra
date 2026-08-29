@@ -76,9 +76,9 @@ const capabilityPhases = [
   },
   {
     id: "evidence-signals",
-    label: "Evidence Provenance",
+    label: "Evidence, Facts & Signals",
     description:
-      "Preserve public source observations and provenance before interpretation.",
+      "Preserve public source observations, validate facts, and derive project-specific signals.",
     status: "implemented",
     order: 7,
   },

@@ -24,6 +24,8 @@ tags:
     description: Development-only provider diagnostics
   - name: research
     description: Bounded evidence-first company research
+  - name: signals
+    description: Configuration-driven source-grounded signals
 paths:
   /healthz:
     get:
@@ -910,6 +912,43 @@ paths:
           content:
             application/json:
               schema: { $ref: "#/components/schemas/ResearchExecutionResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /projects/{projectId}/signals:
+    get:
+      operationId: listProjectSignals
+      tags: [signals]
+      summary: List active and stale signals for a project
+      security: [{ clerkSession: [] }]
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+      responses:
+        "200":
+          description: Project signals
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Signal" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /projects/{projectId}/companies/{projectCompanyId}/signals/evaluate:
+    post:
+      operationId: evaluateProjectSignals
+      tags: [signals]
+      summary: Evaluate deterministic signal rules for one company
+      security: [{ clerkSession: [] }]
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+        - $ref: "#/components/parameters/ProjectCompanyId"
+      responses:
+        "200":
+          description: Evaluation result
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/EvaluateSignalsResponse" }
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
         "404": { $ref: "#/components/responses/NotFound" }
@@ -1979,6 +2018,36 @@ components:
         factRejectionCount: { type: number }
         resultStatus: { type: string }
       required: [stopped, reason, question, job, evidenceCount, factProposalCount, factRejectionCount, resultStatus]
+    Signal:
+      type: object
+      properties:
+        id: { type: string }
+        companyId: { type: string }
+        projectId: { type: string }
+        code: { type: string }
+        name: { type: string }
+        description: { type: string }
+        polarity: { type: string }
+        supportingFactIds: { type: array, items: { type: string } }
+        supportingEvidenceIds: { type: array, items: { type: string } }
+        effectiveDate: { type: string, pattern: '^\d{4}-\d{2}-\d{2}$' }
+        originalStrength: { type: number }
+        currentStrength: { type: number }
+        confidence: { type: number }
+        status: { type: string }
+        needImpact: { type: number }
+        timingImpact: { type: number }
+        ruleVersion: { type: string }
+        lastEvaluatedAt: { type: string, format: date-time }
+      required: [id, companyId, projectId, code, name, description, polarity, supportingFactIds, supportingEvidenceIds, effectiveDate, originalStrength, currentStrength, confidence, status, needImpact, timingImpact, ruleVersion, lastEvaluatedAt]
+    EvaluateSignalsResponse:
+      type: object
+      properties:
+        evaluated: { type: number }
+        signals:
+          type: array
+          items: { $ref: "#/components/schemas/Signal" }
+      required: [evaluated, signals]
     ErrorResponse:
       type: object
       properties:

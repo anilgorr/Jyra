@@ -39,6 +39,7 @@ import type {
   CompanyImportResult,
   CompanyInput,
   CurrentUser,
+  EvaluateSignalsResponse,
   FactExtractionInput,
   FactExtractionResponse,
   ForbiddenResponse,
@@ -60,6 +61,7 @@ import type {
   ProviderDiagnostic,
   ResearchExecutionResponse,
   ResearchWorkspaceCompany,
+  Signal,
   UnauthorizedResponse,
   WorkspaceActivity,
   WorkspaceSummary
@@ -3132,5 +3134,155 @@ export const useExecuteCompanyResearch = <TError = ErrorType<UnauthorizedRespons
         TContext
       > => {
       return useMutation(getExecuteCompanyResearchMutationOptions(options));
+    }
+
+export const getListProjectSignalsUrl = (projectId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/signals`
+}
+
+/**
+ * @summary List active and stale signals for a project
+ */
+export const listProjectSignals = async (projectId: string, options?: Parameters<typeof customFetch>[1]): Promise<Signal[]> => {
+
+  return customFetch<Signal[]>(getListProjectSignalsUrl(projectId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListProjectSignalsQueryKey = (projectId: string,) => {
+    return [
+    `/api/projects/${projectId}/signals`
+    ] as const;
+    }
+
+
+export const getListProjectSignalsQueryOptions = <TData = Awaited<ReturnType<typeof listProjectSignals>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(projectId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listProjectSignals>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListProjectSignalsQueryKey(projectId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listProjectSignals>>> = ({ signal }) => listProjectSignals(projectId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: projectId !== null && projectId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listProjectSignals>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListProjectSignalsQueryResult = NonNullable<Awaited<ReturnType<typeof listProjectSignals>>>
+export type ListProjectSignalsQueryError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+
+/**
+ * @summary List active and stale signals for a project
+ */
+
+export function useListProjectSignals<TData = Awaited<ReturnType<typeof listProjectSignals>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(
+ projectId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listProjectSignals>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListProjectSignalsQueryOptions(projectId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getEvaluateProjectSignalsUrl = (projectId: string,
+    projectCompanyId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/companies/${projectCompanyId}/signals/evaluate`
+}
+
+/**
+ * @summary Evaluate deterministic signal rules for one company
+ */
+export const evaluateProjectSignals = async (projectId: string,
+    projectCompanyId: string, options?: Parameters<typeof customFetch>[1]): Promise<EvaluateSignalsResponse> => {
+
+  return customFetch<EvaluateSignalsResponse>(getEvaluateProjectSignalsUrl(projectId,projectCompanyId),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getEvaluateProjectSignalsMutationOptions = <TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof evaluateProjectSignals>>, TError,{projectId: string;projectCompanyId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof evaluateProjectSignals>>, TError,{projectId: string;projectCompanyId: string}, TContext> => {
+
+const mutationKey = ['evaluateProjectSignals'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof evaluateProjectSignals>>, {projectId: string;projectCompanyId: string}> = (props) => {
+          const {projectId,projectCompanyId} = props ?? {};
+
+          return  evaluateProjectSignals(projectId,projectCompanyId,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type EvaluateProjectSignalsMutationResult = NonNullable<Awaited<ReturnType<typeof evaluateProjectSignals>>>
+
+    export type EvaluateProjectSignalsMutationError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+    /**
+ * @summary Evaluate deterministic signal rules for one company
+ */
+export const useEvaluateProjectSignals = <TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof evaluateProjectSignals>>, TError,{projectId: string;projectCompanyId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof evaluateProjectSignals>>,
+        TError,
+        {projectId: string;projectCompanyId: string},
+        TContext
+      > => {
+      return useMutation(getEvaluateProjectSignalsMutationOptions(options));
     }
 

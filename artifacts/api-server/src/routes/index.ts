@@ -8,6 +8,7 @@ import companiesRouter from "./companies";
 import evidenceRouter from "./evidence";
 import factsRouter from "./facts";
 import researchRouter from "./research";
+import signalsRouter from "./signals";
 
 const router: IRouter = Router();
 
@@ -20,5 +21,6 @@ router.use(companiesRouter);
 router.use(evidenceRouter);
 router.use(factsRouter);
 router.use(researchRouter);
+router.use(signalsRouter);
 
 export default router;
