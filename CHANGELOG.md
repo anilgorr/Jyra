@@ -63,6 +63,13 @@
 
 # Changelog
 
+## Bounded market research
+
+- Added staged Research Planner questions, idempotent execution jobs, and append-only job-posting observations.
+- Added authenticated Research Now API and workspace UI contract.
+- Routed fresh provider results through immutable evidence preservation and deterministic proposal validation.
+- Added bounded stop rules, visible failure/empty outcomes, and a deterministic 100-company planner demonstration.
+
 ## JYRA rebrand
 
 - Renamed the customer-facing product from DigiSignal to JYRA.

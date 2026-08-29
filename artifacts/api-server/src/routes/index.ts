@@ -7,6 +7,7 @@ import icpRouter from "./icp";
 import companiesRouter from "./companies";
 import evidenceRouter from "./evidence";
 import factsRouter from "./facts";
+import researchRouter from "./research";
 
 const router: IRouter = Router();
 
@@ -18,5 +19,6 @@ router.use(icpRouter);
 router.use(companiesRouter);
 router.use(evidenceRouter);
 router.use(factsRouter);
+router.use(researchRouter);
 
 export default router;

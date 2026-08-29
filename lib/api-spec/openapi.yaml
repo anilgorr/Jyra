@@ -22,6 +22,8 @@ tags:
     description: Canonical company identity and project company operations
   - name: providers
     description: Development-only provider diagnostics
+  - name: research
+    description: Bounded evidence-first company research
 paths:
   /healthz:
     get:
@@ -871,6 +873,43 @@ paths:
                 properties:
                   error: { type: string }
                   needsReview: { type: number }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /projects/{projectId}/research:
+    get:
+      operationId: listResearchWorkspace
+      tags: [research]
+      summary: List bounded research state for project companies
+      security: [{ clerkSession: [] }]
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+      responses:
+        "200":
+          description: Research workspace
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/ResearchWorkspaceCompany" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /projects/{projectId}/companies/{projectCompanyId}/research:
+    post:
+      operationId: executeCompanyResearch
+      tags: [research]
+      summary: Execute the highest-value due research question
+      security: [{ clerkSession: [] }]
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+        - $ref: "#/components/parameters/ProjectCompanyId"
+      responses:
+        "200":
+          description: Research execution result
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ResearchExecutionResponse" }
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
         "404": { $ref: "#/components/responses/NotFound" }
@@ -1886,6 +1925,60 @@ components:
           type: array
           items: { $ref: "#/components/schemas/CompanyImportRowResult" }
       required: [total, created, reused, linked, skipped, needsReview, rows]
+    ResearchQuestion:
+      type: object
+      properties:
+        id: { type: string }
+        questionType: { type: string }
+        questionText: { type: string }
+        reason: { type: string }
+        providerCapability: { type: string }
+        priority: { type: number }
+        expectedInformationGain: { type: number }
+        estimatedCost: { type: number }
+        status: { type: string }
+        lastResultSummary: { type: ["string", "null"] }
+        lastAttemptAt: { type: ["string", "null"], format: date-time }
+        answeredAt: { type: ["string", "null"], format: date-time }
+      required: [id, questionType, questionText, reason, providerCapability, priority, expectedInformationGain, estimatedCost, status, lastResultSummary, lastAttemptAt, answeredAt]
+    ResearchJob:
+      type: object
+      properties:
+        id: { type: string }
+        status: { type: string }
+        providerCapability: { type: string }
+        resultCount: { type: number }
+        sourceCount: { type: number }
+        errorCode: { type: ["string", "null"] }
+        errorMessage: { type: ["string", "null"] }
+        createdAt: { type: string, format: date-time }
+        completedAt: { type: ["string", "null"], format: date-time }
+      required: [id, status, providerCapability, resultCount, sourceCount, errorCode, errorMessage, createdAt, completedAt]
+    ResearchWorkspaceCompany:
+      type: object
+      properties:
+        projectCompanyId: { type: string }
+        companyId: { type: string }
+        companyName: { type: string }
+        domain: { type: ["string", "null"] }
+        researchStatus: { type: string }
+        latestResearchAt: { type: ["string", "null"], format: date-time }
+        evidenceCount: { type: number }
+        question: { oneOf: [{ $ref: "#/components/schemas/ResearchQuestion" }, { type: "null" }] }
+        job: { oneOf: [{ $ref: "#/components/schemas/ResearchJob" }, { type: "null" }] }
+      required: [projectCompanyId, companyId, companyName, domain, researchStatus, latestResearchAt, evidenceCount, question, job]
+    ResearchExecutionResponse:
+      type: object
+      properties:
+        stopped: { type: boolean }
+        reason: { type: ["string", "null"] }
+        question: { oneOf: [{ $ref: "#/components/schemas/ResearchQuestion" }, { type: "null" }] }
+        job: { oneOf: [{ $ref: "#/components/schemas/ResearchJob" }, { type: "null" }] }
+        evidenceCount: { type: number }
+        factProposalCount: { type: number }
+        factRejectionCount: { type: number }
+        resultStatus: { type: string }
+      required: [stopped, reason, question, job, evidenceCount, factProposalCount, factRejectionCount, resultStatus]
     ErrorResponse:
       type: object
       properties:

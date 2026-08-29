@@ -91,9 +91,9 @@ The seller describes their offer, ideal customer profile, sales motion, exclusio
 
 JYRA identifies or imports candidate companies and evaluates whether they fit the seller’s explicit criteria before researching people. Company identity resolution is deterministic and auditable.
 
-### 3. Research planning and provider routing (provider abstraction implemented; planning future)
+### 3. Research planning and provider routing (implemented)
 
-The provider abstraction routes normalized capability requests to configured adapters, records each attempt, and supports deterministic fallback. Research planning, budgets, stopping rules, and production provider connections remain future work.
+The provider abstraction routes normalized capability requests to configured adapters, records each attempt, and supports deterministic fallback. The bounded Research Planner selects one highest-value due question, records budget and stopping decisions, preserves fresh provider results as immutable evidence, and validates proposal-only facts. Provider availability remains configuration-dependent.
 
 ### 4. Evidence (implemented), facts, and signals (future)
 

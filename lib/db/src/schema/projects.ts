@@ -35,6 +35,7 @@ export const projectsTable = pgTable(
       .$onUpdate(() => new Date()),
   },
   (table) => [
+    uniqueIndex("projects_id_organization_unique").on(table.id, table.organizationId),
     uniqueIndex("projects_organization_name_unique").on(
       table.organizationId,
       table.name,

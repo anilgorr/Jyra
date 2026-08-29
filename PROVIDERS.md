@@ -138,6 +138,8 @@ specific Actor capability is enabled by default.
 
 ## Safety rules
 
+Research Planner uses this router as its only provider boundary. Each execution requests exactly the capability recorded on the selected question. Provider failures, unavailable capabilities, empty results, and usage remain explicit job outcomes; the planner does not fabricate fallback content or invoke every provider.
+
 - Never fabricate a provider response.
 - Never treat a provider timeout as a negative finding.
 - Do not enrich people before company qualification.

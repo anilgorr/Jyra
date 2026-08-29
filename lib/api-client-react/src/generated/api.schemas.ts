@@ -1442,6 +1442,65 @@ export interface CompanyImportResult {
   rows: CompanyImportRowResult[];
 }
 
+export interface ResearchQuestion {
+  id: string;
+  questionType: string;
+  questionText: string;
+  reason: string;
+  providerCapability: string;
+  priority: number;
+  expectedInformationGain: number;
+  estimatedCost: number;
+  status: string;
+  /** @nullable */
+  lastResultSummary: string | null;
+  /** @nullable */
+  lastAttemptAt: string | null;
+  /** @nullable */
+  answeredAt: string | null;
+}
+
+export interface ResearchJob {
+  id: string;
+  status: string;
+  providerCapability: string;
+  resultCount: number;
+  sourceCount: number;
+  /** @nullable */
+  errorCode: string | null;
+  /** @nullable */
+  errorMessage: string | null;
+  createdAt: string;
+  /** @nullable */
+  completedAt: string | null;
+}
+
+export interface ResearchWorkspaceCompany {
+  projectCompanyId: string;
+  companyId: string;
+  companyName: string;
+  /** @nullable */
+  domain: string | null;
+  researchStatus: string;
+  /** @nullable */
+  latestResearchAt: string | null;
+  evidenceCount: number;
+  question: ResearchQuestion | null;
+  job: ResearchJob | null;
+}
+
+export interface ResearchExecutionResponse {
+  stopped: boolean;
+  /** @nullable */
+  reason: string | null;
+  question: ResearchQuestion | null;
+  job: ResearchJob | null;
+  evidenceCount: number;
+  factProposalCount: number;
+  factRejectionCount: number;
+  resultStatus: string;
+}
+
 export interface ErrorResponse {
   error: string;
 }

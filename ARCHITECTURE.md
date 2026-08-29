@@ -132,6 +132,8 @@ The future learning loop ends at a suggested ICP change. Outcome ingestion, patt
 
 ## Background jobs
 
+Executable research uses database-backed questions and idempotent execution jobs rather than a distributed workflow system. One bounded job selects one provider capability through `ProviderRouter`; all returned public content crosses the immutable evidence boundary before proposal-only fact extraction. A capped due-company runner supports scheduled refresh without provider fan-out.
+
 Future research work should use a simple database-backed job table suitable for Replit:
 
 1. API creates a planned job.

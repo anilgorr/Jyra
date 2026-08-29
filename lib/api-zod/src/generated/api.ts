@@ -3789,3 +3789,90 @@ export const CommitCompanyImportResponse = zod.object({
 })
 
 
+/**
+ * @summary List bounded research state for project companies
+ */
+export const ListResearchWorkspaceParams = zod.object({
+  "projectId": zod.coerce.string()
+})
+
+export const ListResearchWorkspaceResponseItem = zod.object({
+  "projectCompanyId": zod.string(),
+  "companyId": zod.string(),
+  "companyName": zod.string(),
+  "domain": zod.string().nullable(),
+  "researchStatus": zod.string(),
+  "latestResearchAt": zod.coerce.date().nullable(),
+  "evidenceCount": zod.number(),
+  "question": zod.union([zod.object({
+  "id": zod.string(),
+  "questionType": zod.string(),
+  "questionText": zod.string(),
+  "reason": zod.string(),
+  "providerCapability": zod.string(),
+  "priority": zod.number(),
+  "expectedInformationGain": zod.number(),
+  "estimatedCost": zod.number(),
+  "status": zod.string(),
+  "lastResultSummary": zod.string().nullable(),
+  "lastAttemptAt": zod.coerce.date().nullable(),
+  "answeredAt": zod.coerce.date().nullable()
+}),zod.null()]),
+  "job": zod.union([zod.object({
+  "id": zod.string(),
+  "status": zod.string(),
+  "providerCapability": zod.string(),
+  "resultCount": zod.number(),
+  "sourceCount": zod.number(),
+  "errorCode": zod.string().nullable(),
+  "errorMessage": zod.string().nullable(),
+  "createdAt": zod.coerce.date(),
+  "completedAt": zod.coerce.date().nullable()
+}),zod.null()])
+})
+export const ListResearchWorkspaceResponse = zod.array(ListResearchWorkspaceResponseItem)
+
+
+/**
+ * @summary Execute the highest-value due research question
+ */
+export const ExecuteCompanyResearchParams = zod.object({
+  "projectId": zod.coerce.string(),
+  "projectCompanyId": zod.coerce.string()
+})
+
+export const ExecuteCompanyResearchResponse = zod.object({
+  "stopped": zod.boolean(),
+  "reason": zod.string().nullable(),
+  "question": zod.union([zod.object({
+  "id": zod.string(),
+  "questionType": zod.string(),
+  "questionText": zod.string(),
+  "reason": zod.string(),
+  "providerCapability": zod.string(),
+  "priority": zod.number(),
+  "expectedInformationGain": zod.number(),
+  "estimatedCost": zod.number(),
+  "status": zod.string(),
+  "lastResultSummary": zod.string().nullable(),
+  "lastAttemptAt": zod.coerce.date().nullable(),
+  "answeredAt": zod.coerce.date().nullable()
+}),zod.null()]),
+  "job": zod.union([zod.object({
+  "id": zod.string(),
+  "status": zod.string(),
+  "providerCapability": zod.string(),
+  "resultCount": zod.number(),
+  "sourceCount": zod.number(),
+  "errorCode": zod.string().nullable(),
+  "errorMessage": zod.string().nullable(),
+  "createdAt": zod.coerce.date(),
+  "completedAt": zod.coerce.date().nullable()
+}),zod.null()]),
+  "evidenceCount": zod.number(),
+  "factProposalCount": zod.number(),
+  "factRejectionCount": zod.number(),
+  "resultStatus": zod.string()
+})
+
+

@@ -15,6 +15,7 @@
     "test:apify": "node ./scripts/test-apify-provider.mjs",
     "test:evidence": "node ./scripts/test-evidence.mjs",
     "test:facts": "node ./scripts/test-facts.mjs"
+    ,"test:research": "node ./scripts/test-research.mjs"
   },
   "dependencies": {
     "@clerk/express": "^2.1.63",

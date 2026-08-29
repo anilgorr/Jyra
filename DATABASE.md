@@ -116,9 +116,10 @@ The implemented organization, membership, user, and project tables are the tenan
 
 ### Research and evidence
 
-- `research_questions`
-- `research_plans`
-- `research_jobs`
+- `research_questions` stores project-scoped questions, priority, expected information gain, capability, cost, status, and refresh timing.
+- `research_jobs` stores idempotent execution attempts, explicit provider outcomes, usage, errors, and counts.
+- `research_job_postings` stores append-only observations so later crawls never overwrite history.
+- `research_plans` remains a possible future materialized grouping; current bounded plans are represented by selected questions and their jobs.
 - `provider_requests`
 - `provider_usage` (implemented)
 - `crawl_pages` (implemented)
