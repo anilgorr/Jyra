@@ -6,6 +6,10 @@ import {
   db,
   icpCriteriaTable,
   icpVersionsTable,
+  intelligencePackClustersTable,
+  intelligencePacksTable,
+  intelligencePackSignalsTable,
+  intelligencePackVersionsTable,
   opportunityHistoryTable,
   opportunityModelVersionsTable,
   opportunityScoreComponentsTable,
@@ -248,6 +252,17 @@ export async function evaluateOpportunity(input: { organizationId: string; proje
   if (!row) throw new Error("Project company not found");
   const model = await ensureOpportunityModel(input.organizationId, input.projectId, input.userId);
   const [icpVersion] = await db.select().from(icpVersionsTable).where(eq(icpVersionsTable.projectId, input.projectId)).orderBy(desc(icpVersionsTable.version)).limit(1);
+  const [activePackVersion] = icpVersion
+    ? await db.select({ version: intelligencePackVersionsTable }).from(intelligencePackVersionsTable)
+      .innerJoin(intelligencePacksTable, eq(intelligencePackVersionsTable.intelligencePackId, intelligencePacksTable.id))
+      .where(and(
+        eq(intelligencePacksTable.projectId, input.projectId),
+        eq(intelligencePackVersionsTable.sourceIcpVersionId, icpVersion.id),
+        eq(intelligencePackVersionsTable.status, "ACTIVATED"),
+      ))
+      .orderBy(desc(intelligencePackVersionsTable.activatedAt), desc(intelligencePackVersionsTable.version))
+      .limit(1)
+    : [];
   const criteria = icpVersion ? await db.select().from(icpCriteriaTable).where(eq(icpCriteriaTable.icpVersionId, icpVersion.id)) : [];
   const facts = await db.select().from(companyFactsTable).where(eq(companyFactsTable.companyId, row.company.id));
   const factsForIcp = companyFacts(row.company, facts);
@@ -255,11 +270,29 @@ export async function evaluateOpportunity(input: { organizationId: string; proje
     id: criterion.id, type: criterion.criterionType, weight: criterion.weight,
     result: evaluateIcpCriterion(criterion, factsForIcp, criterion.dimension),
   }));
-  const signalRows = await db.select({ signal: signalsTable, definition: signalDefinitionsTable }).from(signalsTable)
+  const allSignalRows = await db.select({ signal: signalsTable, definition: signalDefinitionsTable }).from(signalsTable)
     .innerJoin(signalDefinitionsTable, eq(signalsTable.signalDefinitionId, signalDefinitionsTable.id))
     .where(and(eq(signalsTable.projectId, input.projectId), eq(signalsTable.companyId, row.company.id)));
-  const clusters = await db.select().from(signalClustersTable)
+  const allClusters = await db.select().from(signalClustersTable)
     .where(and(eq(signalClustersTable.projectId, input.projectId), eq(signalClustersTable.companyId, row.company.id)));
+  const [packSignals, packClusters] = activePackVersion
+    ? await Promise.all([
+      db.select({ definitionId: intelligencePackSignalsTable.activatedSignalDefinitionId })
+        .from(intelligencePackSignalsTable)
+        .where(eq(intelligencePackSignalsTable.versionId, activePackVersion.version.id)),
+      db.select({ definitionId: intelligencePackClustersTable.activatedDefinitionId })
+        .from(intelligencePackClustersTable)
+        .where(eq(intelligencePackClustersTable.versionId, activePackVersion.version.id)),
+    ])
+    : [[], []];
+  const packSignalDefinitionIds = new Set(packSignals.flatMap((item) => item.definitionId ? [item.definitionId] : []));
+  const packClusterDefinitionIds = new Set(packClusters.flatMap((item) => item.definitionId ? [item.definitionId] : []));
+  const signalRows = activePackVersion
+    ? allSignalRows.filter(({ definition }) => packSignalDefinitionIds.has(definition.id))
+    : allSignalRows;
+  const clusters = activePackVersion
+    ? allClusters.filter((cluster) => packClusterDefinitionIds.has(cluster.definitionId))
+    : allClusters;
   const evidenceIds = unique([
     ...signalRows.flatMap(({ signal }) => signal.supportingEvidenceIds),
     ...clusters.flatMap((cluster) => cluster.supportingEvidenceIds),
@@ -300,7 +333,7 @@ export async function evaluateOpportunity(input: { organizationId: string; proje
       relationshipScore: dimensions.RELATIONSHIP, confidenceScore: dimensions.CONFIDENCE,
       state: calculation.state, assessmentStatus: calculation.assessmentStatus,
       explanation: calculation.explanation,
-      inputSnapshot: { icpVersionId: icpVersion?.id ?? null, signalIds: signalRows.map(({ signal }) => signal.id), clusterIds: clusters.map((cluster) => cluster.id), relationshipStatus: row.projectCompany.relationshipStatus },
+      inputSnapshot: { icpVersionId: icpVersion?.id ?? null, intelligencePackVersionId: activePackVersion?.version.id ?? null, signalIds: signalRows.map(({ signal }) => signal.id), clusterIds: clusters.map((cluster) => cluster.id), relationshipStatus: row.projectCompany.relationshipStatus },
       assessedAt: now,
     }).onConflictDoUpdate({
       target: [opportunitiesTable.projectId, opportunitiesTable.projectCompanyId],
@@ -308,7 +341,7 @@ export async function evaluateOpportunity(input: { organizationId: string; proje
         modelVersionId: model.id, score: calculation.score, fitScore: dimensions.FIT, needScore: dimensions.NEED,
         timingScore: dimensions.TIMING, relationshipScore: dimensions.RELATIONSHIP, confidenceScore: dimensions.CONFIDENCE,
         state: calculation.state, assessmentStatus: calculation.assessmentStatus, explanation: calculation.explanation,
-        inputSnapshot: { icpVersionId: icpVersion?.id ?? null, signalIds: signalRows.map(({ signal }) => signal.id), clusterIds: clusters.map((cluster) => cluster.id), relationshipStatus: row.projectCompany.relationshipStatus },
+        inputSnapshot: { icpVersionId: icpVersion?.id ?? null, intelligencePackVersionId: activePackVersion?.version.id ?? null, signalIds: signalRows.map(({ signal }) => signal.id), clusterIds: clusters.map((cluster) => cluster.id), relationshipStatus: row.projectCompany.relationshipStatus },
         assessedAt: now, updatedAt: now,
       },
     }).returning();

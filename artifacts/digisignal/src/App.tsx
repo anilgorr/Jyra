@@ -17,7 +17,6 @@ import Landing from './pages/landing';
 import Today from './pages/today';
 import Onboarding from './pages/onboarding';
 import Settings from './pages/settings';
-import EmptyFeature from './pages/empty-feature';
 import BusinessTwinPage from './pages/business-twin';
 import IcpPage from './pages/icp';
 import CompaniesPage from './pages/companies/index';
@@ -26,6 +25,7 @@ import ProviderDiagnostics from './pages/provider-diagnostics';
 import Research from './pages/research';
 import Signals from './pages/signals';
 import Opportunities from './pages/opportunities';
+import Outcomes from './pages/outcomes';
 import { WorkspaceProvider } from './context/workspace-context';
 
 const clerkPubKey = publishableKeyFromHost(
@@ -171,9 +171,7 @@ function AuthenticatedRoutes() {
             <Route path="/icp" component={IcpPage} />
             <Route path="/research" component={Research} />
             <Route path="/signals" component={Signals} />
-            <Route path="/outcomes">
-              <EmptyFeature title="Outcomes" description="Outcome capture is planned for a later milestone. No sales outcomes have been recorded." />
-            </Route>
+            <Route path="/outcomes" component={Outcomes} />
             {import.meta.env.DEV && (
               <Route path="/settings/providers" component={ProviderDiagnostics} />
             )}

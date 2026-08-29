@@ -13,6 +13,7 @@ import opportunityPacksRouter from "./opportunity-packs";
 import signalClustersRouter from "./signal-clusters";
 import opportunityEngineRouter from "./opportunity-engine";
 import peopleRouter from "./people";
+import recommendationLedgerRouter from "./recommendation-ledger";
 
 const router: IRouter = Router();
 
@@ -30,5 +31,6 @@ router.use(opportunityPacksRouter);
 router.use(signalClustersRouter);
 router.use(opportunityEngineRouter);
 router.use(peopleRouter);
+router.use(recommendationLedgerRouter);
 
 export default router;

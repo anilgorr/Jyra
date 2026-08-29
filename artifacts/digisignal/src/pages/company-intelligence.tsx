@@ -3,6 +3,7 @@ import { Link, useLocation, useParams } from "wouter";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   ArrowLeft,
+  ArrowRight,
   Building2,
   CheckCircle2,
   Clock3,
@@ -540,7 +541,12 @@ export default function CompanyIntelligencePage() {
                   <span className="text-xs font-medium text-muted-foreground">Rule {nextBestActionQuery.data.recommendation.ruleVersion}</span>
                 </div>
                 <p className="mt-4 max-w-3xl text-base font-medium leading-relaxed text-foreground">{nextBestActionQuery.data.recommendation.explanation}</p>
-                <p className="mt-3 text-xs text-muted-foreground">Recommendation only. JYRA does not send outreach or execute this action.</p>
+                <div className="mt-4 flex flex-col sm:flex-row sm:items-center gap-4">
+                  <p className="text-xs text-muted-foreground">Recommendation only. JYRA does not send outreach or execute this action.</p>
+                  <Link href="/outcomes" className="inline-flex items-center text-xs font-medium text-accent hover:text-accent/80 transition-colors">
+                    View recommendation ledger <ArrowRight className="ml-1 h-3 w-3" />
+                  </Link>
+                </div>
               </div>
               <div className="grid min-w-[240px] grid-cols-2 gap-3 text-xs">
                 <div className="rounded-lg border bg-background p-3"><p className="text-muted-foreground">Research</p><p className="mt-1 font-semibold">{label(nextBestActionQuery.data.recommendation.factors.researchFreshness)}</p></div>

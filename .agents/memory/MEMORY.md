@@ -10,3 +10,4 @@
 - [Market Today projection](market-today-projection.md) — the landing view reads persisted intelligence only; unsupported strong states must never inflate attention.
 - [Next Best Action rule provenance](next-best-action-rule-provenance.md) — advisory recommendations use the exact immutable Opportunity model policy version and persisted inputs.
 - [Contact enrichment boundary](contact-enrichment-boundary.md) — contact values stay project-scoped; lookup requires a high-priority person or an explicit user request.
+- [Recommendation ledger provenance](recommendation-ledger-provenance.md) — copy exact assessment-time versions; outcomes are append-only and skipped stays neutral.
