@@ -1,0 +1,164 @@
+Before making changes:
+
+1. Read PRODUCT_SPEC.md, ARCHITECTURE.md, DATABASE.md, SIGNALS.md, PROVIDERS.md, CHANGELOG.md and the entire relevant current codebase.
+
+2. Preserve all working functionality.
+
+3. Implement only the milestone described below.
+
+4. Do not redesign unrelated areas.
+
+5. Create a checkpoint before major changes.
+
+6. Run migrations and tests before completing the milestone.
+
+7. Update documentation after implementation.
+
+8. Do not claim the milestone is complete unless the acceptance criteria pass.
+
+9. Prefer deterministic business logic over LLM reasoning wherever possible.
+
+10. Do not fabricate data, evidence, people, companies, signals, buying intent or outcomes.
+
+Build DigiSignal's canonical company identity layer.
+
+CORE PRINCIPLE
+
+A real-world company is a globally reusable entity.
+
+A customer's evaluation of that company is project specific.
+
+DATABASE
+
+Create:
+
+companies
+company_aliases
+project_companies
+
+CANONICAL COMPANY
+
+Fields should include:
+
+id
+canonical_name
+domain
+website
+linkedin_url
+country
+industry
+employee_count
+employee_range
+description
+created_at
+updated_at
+
+DOMAIN
+
+The canonical domain should be the strongest V1 identity key.
+
+Normalize:
+
+HTTP/HTTPS
+www
+trailing slash
+capitalization
+
+ALIASES
+
+company_aliases may store:
+
+alias_name
+alias_domain
+source
+company_id
+
+PROJECT_COMPANY
+
+Fields:
+
+id
+project_id
+company_id
+status
+research_status
+fit_score nullable
+need_score nullable
+timing_score nullable
+relationship_score nullable
+confidence_score nullable
+opportunity_state nullable
+latest_research_at
+created_at
+updated_at
+
+IMPORT
+
+Support:
+
+Manual Entry
+CSV Import
+
+Recognize:
+
+company_name
+domain
+website
+country
+industry
+employee_count
+
+IMPORT FLOW
+
+1. Preview
+2. Normalize
+3. Validate
+4. Detect exact matches
+5. Detect possible duplicates
+6. Ask for manual resolution where needed
+7. Create/reuse canonical company
+8. Link company to active project
+
+Do not silently duplicate entities because of:
+
+Acme Pvt Ltd
+Acme Private Limited
+ACME Technologies
+www.acme.com
+https://acme.com
+
+Do not automatically merge uncertain companies.
+
+Provide a review state for possible duplicates.
+
+GLOBAL VS PRIVATE
+
+Canonical company identity can be globally reusable.
+
+Project-specific:
+
+research status
+scores
+signals
+opportunity state
+recommendations
+
+must remain private.
+
+ACCEPTANCE CRITERIA
+
+Import at least 100 demo companies.
+
+Verify:
+
+- duplicates are not silently created
+- possible duplicates can be manually resolved
+- the same canonical company can appear in two projects
+- the project-specific states are independent
+- tenant isolation remains intact
+
+Update:
+
+DATABASE.md
+ARCHITECTURE.md
+CHANGELOG.md
