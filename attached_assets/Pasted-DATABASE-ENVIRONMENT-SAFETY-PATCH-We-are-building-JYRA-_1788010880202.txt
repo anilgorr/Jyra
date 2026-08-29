@@ -1,0 +1,487 @@
+DATABASE ENVIRONMENT SAFETY PATCH
+
+We are building:
+
+JYRA
+Who. When. Why.
+
+STOP FEATURE DEVELOPMENT TEMPORARILY.
+
+Before implementing any further phases, audit and fix the database
+environment architecture.
+
+PROBLEM:
+
+During development, database/schema changes are affecting both the
+development database and the deployment/production database.
+
+This is NOT acceptable.
+
+Development and production must be isolated.
+
+==================================================
+1. ENVIRONMENT SEPARATION
+==================================================
+
+JYRA must have clearly separated database environments:
+
+DEVELOPMENT DATABASE
+PRODUCTION DATABASE
+
+If a test database is useful, also support:
+
+TEST DATABASE
+
+Each environment must use its own database connection.
+
+Never use the production database automatically during local/development
+work.
+
+==================================================
+2. ENVIRONMENT VARIABLES
+==================================================
+
+Review the current Replit/database configuration.
+
+Create a safe environment-aware configuration.
+
+Conceptually:
+
+Development:
+DATABASE_URL = development database
+
+Production/Deployment:
+DATABASE_URL = production database
+
+Test:
+TEST_DATABASE_URL = test database
+
+Use the appropriate Replit environment/secrets mechanism.
+
+Do NOT hardcode database credentials.
+
+Do NOT expose credentials client-side.
+
+==================================================
+3. FAIL CLOSED
+==================================================
+
+Database selection must FAIL CLOSED.
+
+If the application cannot determine which environment it is running in,
+it must NOT default to production.
+
+Production database access must require explicit production environment
+configuration.
+
+==================================================
+4. DEVELOPMENT RULE
+==================================================
+
+During normal Replit Agent development:
+
+ONLY the DEVELOPMENT database may be:
+
+migrated
+seeded
+reset
+cleared
+modified for testing
+populated with synthetic data
+
+Never automatically perform these actions against production.
+
+==================================================
+5. PRODUCTION RULE
+==================================================
+
+Production database must NEVER be:
+
+reset
+dropped
+recreated
+truncated
+automatically seeded with test data
+populated with synthetic data
+modified by development scripts
+
+Production data must be treated as persistent customer data.
+
+==================================================
+6. MIGRATIONS
+==================================================
+
+Schema migrations must be version-controlled.
+
+Create a clear workflow:
+
+Development:
+
+Create migration
+→
+Apply to DEVELOPMENT
+→
+Run tests
+→
+Verify migration
+→
+Commit migration
+
+Production:
+
+Existing approved migration
+→
+Explicit production migration command/process
+→
+Apply to PRODUCTION
+→
+Verify
+
+Do NOT automatically generate new migrations while deploying production.
+
+Production should execute already-created and tested migrations only.
+
+==================================================
+7. NEVER USE SCHEMA PUSH FOR PRODUCTION
+==================================================
+
+If the current stack/database ORM supports commands equivalent to:
+
+db push
+schema push
+force push
+reset database
+sync schema
+
+do NOT use destructive/direct schema synchronization against production.
+
+Production schema changes should use controlled migrations.
+
+==================================================
+8. MIGRATION SAFETY
+==================================================
+
+Before applying a production migration, detect potentially destructive
+operations such as:
+
+DROP TABLE
+DROP COLUMN
+TRUNCATE
+DELETE without appropriate condition
+column type changes that may lose data
+renaming implemented as drop + recreate
+removing constraints
+recreating tables
+destructive enum changes
+
+Flag these for explicit review.
+
+Do not silently execute destructive migrations.
+
+==================================================
+9. BACKWARD-COMPATIBLE MIGRATIONS
+==================================================
+
+Prefer additive migrations.
+
+Example:
+
+GOOD:
+
+add nullable column
+deploy code supporting it
+backfill data
+add constraints later
+
+AVOID:
+
+drop old column immediately
+rename destructively
+recreate production table
+
+Use expand-and-contract migration patterns when appropriate.
+
+==================================================
+10. SEEDING
+==================================================
+
+Separate:
+
+development seeds
+demo seeds
+production initialization
+
+Development/demo seeds must NEVER run automatically in production.
+
+Production initialization should only create genuinely required system
+configuration.
+
+Never create synthetic companies, signals, opportunities, contacts,
+evidence or outcomes in real customer projects.
+
+==================================================
+11. TEST DATABASE
+==================================================
+
+Automated tests must NOT use production.
+
+Prefer a separate test database.
+
+Before destructive test setup, verify environment.
+
+If database appears to be production:
+
+ABORT.
+
+==================================================
+12. SAFETY GUARD
+==================================================
+
+Create a centralized database safety guard.
+
+Before executing any destructive database operation, inspect:
+
+NODE_ENV / application environment
+database host/database identifier where available
+explicit production flag
+command being executed
+
+If environment is production and operation is destructive:
+
+BLOCK IT.
+
+==================================================
+13. DATABASE COMMANDS
+==================================================
+
+Create explicit scripts/commands such as:
+
+db:migrate:dev
+db:migrate:test
+db:migrate:prod
+db:seed:dev
+db:seed:demo
+
+Do NOT create:
+
+db:reset:prod
+
+Production migration command should be intentionally distinct so it
+cannot easily be executed accidentally.
+
+==================================================
+14. DEPLOYMENT
+==================================================
+
+Audit Replit deployment configuration.
+
+Deployment should:
+
+connect only to production DB
+run approved migrations safely
+start application
+
+Deployment should NOT:
+
+run development seed
+reset DB
+run test fixtures
+generate migrations
+perform destructive schema synchronization
+
+==================================================
+15. DATA ISOLATION
+==================================================
+
+Development data and production data must be physically/logically
+separated according to the database infrastructure available.
+
+A development company/account/contact must never appear in production
+simply because it was created during development.
+
+Production customer data must never appear in development automatically.
+
+==================================================
+16. DATABASE IDENTIFICATION
+==================================================
+
+Add safe server-side diagnostics so developers can determine:
+
+Environment: Development / Test / Production
+
+Database connection: configured
+
+Migration version/status
+
+Do NOT display:
+
+password
+connection string
+secret
+database credentials
+
+In non-production development UI/logs, clearly identify:
+
+DEVELOPMENT DATABASE
+
+to reduce mistakes.
+
+==================================================
+17. PRODUCTION DATA PROTECTION
+==================================================
+
+Prepare JYRA for real customer data.
+
+Assume production will eventually contain:
+
+Business Twins
+ICPs
+uploaded company lists
+CRM information
+contacts
+emails
+phone numbers
+private notes
+evidence
+signals
+opportunities
+outcomes
+learning data
+
+A deployment must NEVER destroy this information.
+
+==================================================
+18. AUDIT CURRENT PROJECT
+==================================================
+
+Before changing anything, determine:
+
+1. Which database development currently uses.
+2. Which database deployment currently uses.
+3. Whether they are actually separate.
+4. Which environment variables select them.
+5. Whether migrations run automatically.
+6. Whether schema push is being used.
+7. Whether seed scripts run during deployment.
+8. Whether tests can touch production.
+9. Whether Agent development currently modifies production.
+10. Whether any destructive commands exist.
+
+Document the findings.
+
+==================================================
+19. DO NOT DESTROY CURRENT DATA
+==================================================
+
+IMPORTANT:
+
+Do NOT reset either existing database while implementing this patch.
+
+Do NOT delete existing production data.
+
+Do NOT recreate production schema.
+
+Do NOT blindly change DATABASE_URL.
+
+Inspect the existing configuration first.
+
+If separating the databases requires creating or provisioning another
+database that cannot safely be done automatically, STOP and explain
+exactly what manual action is required.
+
+==================================================
+20. DATABASE DOCUMENTATION
+==================================================
+
+Create/update:
+
+DATABASE.md
+
+Include:
+
+Development database
+Test database
+Production database
+Environment selection
+Migration workflow
+Deployment migration workflow
+Seed policy
+Backup expectations
+Recovery procedure
+Destructive-operation policy
+
+Also add:
+
+DATABASE_SAFETY.md
+
+with explicit instructions for future Replit Agent sessions.
+
+==================================================
+21. INSTRUCTIONS FOR ALL FUTURE AGENT WORK
+==================================================
+
+Add a permanent project instruction:
+
+"During feature development, NEVER modify, migrate, seed, reset or test
+against the production database.
+
+Create and test migrations against development first.
+
+Production migrations may only use already-created, tested migrations
+through the explicit production migration process.
+
+Never reset, truncate, recreate or seed the production database with
+development/demo data."
+
+Ensure future Replit Agent sessions can see this instruction.
+
+==================================================
+22. ACCEPTANCE TEST
+==================================================
+
+Verify:
+
+Development app → Development DB
+
+Production deployment → Production DB
+
+Tests → Test DB or isolated development test environment
+
+Development migration does NOT modify production.
+
+Development seed does NOT modify production.
+
+Tests cannot access production.
+
+Production deployment does NOT run development seeds.
+
+Production deployment does NOT generate migrations.
+
+Existing production data survives deployment.
+
+Existing development functionality still works.
+
+==================================================
+COMPLETION
+==================================================
+
+Do NOT continue feature development.
+
+At the end report:
+
+1. Previous database architecture
+2. Why development and production were both changing
+3. New environment architecture
+4. Exact database used by each environment
+5. Migration workflow
+6. Deployment workflow
+7. Seed workflow
+8. Safety guards added
+9. Files changed
+10. Tests performed
+11. Any manual Replit configuration I still need to perform
+
+Do NOT claim the issue is fixed unless development database changes can
+be demonstrated NOT to modify the production database.
+
+Create a checkpoint after the safety patch is verified.
