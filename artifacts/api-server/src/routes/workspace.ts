@@ -41,12 +41,20 @@ const capabilityPhases = [
     order: 4,
   },
   {
+    id: "provider-router",
+    label: "Provider Router",
+    description:
+      "Route normalized research capabilities through configurable providers with usage tracking.",
+    status: "implemented",
+    order: 5,
+  },
+  {
     id: "market-universe",
     label: "Market Universe",
     description:
       "Define and qualify the companies that could be commercially relevant.",
     status: "planned",
-    order: 5,
+    order: 6,
   },
   {
     id: "evidence-signals",
@@ -54,7 +62,7 @@ const capabilityPhases = [
     description:
       "Research public evidence, preserve provenance, and detect meaningful signals.",
     status: "planned",
-    order: 6,
+    order: 7,
   },
   {
     id: "opportunity-engine",
@@ -62,7 +70,7 @@ const capabilityPhases = [
     description:
       "Explain fit, need, timing, relationship, confidence, and recommended action.",
     status: "planned",
-    order: 7,
+    order: 8,
   },
   {
     id: "outcomes-learning",
@@ -70,14 +78,14 @@ const capabilityPhases = [
     description:
       "Learn from real sales outcomes without collapsing evidence into interpretation.",
     status: "planned",
-    order: 8,
+    order: 9,
   },
 ];
 
 router.get("/workspace/summary", (_req, res) => {
   const data = GetWorkspaceSummaryResponse.parse({
-    milestone: "company_identity",
-    milestoneLabel: "Company Identity",
+    milestone: "provider_abstraction",
+    milestoneLabel: "Provider Abstraction",
     researchStatus: "not_connected",
     intelligenceCount: 0,
     activeSignalCount: 0,

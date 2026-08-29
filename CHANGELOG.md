@@ -12,6 +12,20 @@
 - Added the project Companies workspace for importing, reviewing, listing, and updating project-specific company status without fabricating research or scores.
 - Preserved server-side tenant authorization for every company list, import, link, and state update.
 
+## Provider abstraction
+
+- Added global provider configuration, capability mapping, and per-attempt
+  usage accounting.
+- Added stable JYRA-owned interfaces for company, web, jobs, news, technology,
+  leadership, people, email, and phone capabilities.
+- Added deterministic provider selection using enabled state, priority, cost,
+  quality, success rate, latency, and stable tie-breakers.
+- Added retryable-only fallback and normalized empty/failure handling without
+  turning missing provider data into a negative finding.
+- Added deterministic mock adapters for web search, website crawling, and job
+  search. No production provider, scraper, credential, or external evidence
+  source was added.
+
 # Changelog
 
 ## JYRA rebrand

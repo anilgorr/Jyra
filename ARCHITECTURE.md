@@ -10,6 +10,25 @@ The identity resolver is deterministic. It canonicalizes HTTP/HTTPS URLs to lowe
 
 All company product endpoints are rooted in a project. The server verifies the authenticated user's organization membership before listing, importing, linking, or updating a project company. This keeps shared identity reusable without exposing another project's private state.
 
+## Provider abstraction boundary
+
+Business logic requests a JYRA capability through a stable provider contract.
+The deterministic provider router loads enabled provider/capability
+configuration, ranks viable adapters by priority, estimated cost, quality,
+success rate, latency, and stable tie-breakers, and falls back only after an
+explicitly retryable failure.
+
+Adapters normalize their output before it reaches business logic. Vendor
+response formats, credentials, retry semantics, and raw SDK types stay behind
+the adapter boundary. Each attempt records normalized usage, latency, cost,
+status, and error metadata independently from facts, signals, scores, and
+commercial interpretation.
+
+Deterministic mock adapters for web search, website crawling, and job search
+are implemented for testing. Their `mock://` references are not source
+evidence. Production providers, research planning, background jobs, evidence
+storage, and signal generation remain outside this milestone.
+
 # JYRA Architecture
 
 ## Current shape
@@ -60,7 +79,7 @@ The server validates response-shaped data with generated Zod schemas. The client
 - **Commercial interpretation:** signals, clusters, fit, need, timing, relationship, confidence, opportunities, and explanations.
 - **Learning:** user actions, outcomes, and versioned model/rule evaluation.
 
-The identity/tenancy boundary, project-scoped Business Twin and ICP, and canonical company identity layer are implemented. Research, evidence, opportunity interpretation, and learning remain future phases.
+The identity/tenancy boundary, project-scoped Business Twin and ICP, canonical company identity layer, and provider abstraction are implemented. Research planning, production providers, evidence, opportunity interpretation, and learning remain future phases.
 
 ## Deterministic versus AI-assisted work
 

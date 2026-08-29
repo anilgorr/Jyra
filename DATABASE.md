@@ -16,6 +16,23 @@ A canonical company may be linked to multiple projects, but each link is unique 
 
 Import preview is non-mutating. The server deterministically normalizes fields, recognizes exact canonical or alias domain matches, and surfaces name-based possible duplicates for explicit resolution. Only an explicit commit creates or reuses a canonical company and links it to the active project. Uncertain name matches are never automatically merged.
 
+## Provider abstraction storage
+
+- `data_providers` stores global provider configuration and routing metadata:
+  type, enabled state, priority, estimated cost, recent success rate, average
+  latency, quality score, opaque server-owned configuration, and lifecycle
+  timestamps.
+- `provider_capabilities` declares which normalized JYRA capabilities each
+  provider supports. Provider/capability pairs are unique.
+- `provider_usage` records every attempted adapter request with capability,
+  normalized status, retryability, latency, estimated and actual cost, error
+  code, and start/completion timestamps. Request IDs are correlation values,
+  not uniqueness keys, so repeated executions remain distinct audit rows.
+
+Provider usage is operational accounting, not evidence or commercial
+interpretation. Mock provider outputs are never inserted as facts or signals.
+Production provider requests and evidence tables remain planned.
+
 # JYRA Database Plan
 
 ## Implemented identity and tenancy storage
@@ -61,6 +78,8 @@ The implemented organization, membership, user, and project tables are the tenan
 - `project_companies` (implemented)
 - `people`
 - `person_company_relationships`
+- `data_providers` (implemented)
+- `provider_capabilities` (implemented)
 
 ### Research and evidence
 
@@ -68,7 +87,7 @@ The implemented organization, membership, user, and project tables are the tenan
 - `research_plans`
 - `research_jobs`
 - `provider_requests`
-- `provider_usage`
+- `provider_usage` (implemented)
 - `source_documents`
 - `evidence_items`
 - `facts`
