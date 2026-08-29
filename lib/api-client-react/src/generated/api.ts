@@ -56,6 +56,7 @@ import type {
   IcpCriterionUpdate,
   IcpVersion,
   InterpretationUnavailableResponse,
+  MarketTodayResponse,
   MaturityStageRequiredResponse,
   NotFoundResponse,
   OnboardingInput,
@@ -4883,6 +4884,84 @@ export const useEvaluateSignalClusters = <TError = ErrorType<ForbiddenResponse |
       > => {
       return useMutation(getEvaluateSignalClustersMutationOptions(options));
     }
+
+export const getGetMarketTodayUrl = (projectId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/market-today`
+}
+
+/**
+ * Returns deterministic WHO, WHEN, WHY, movement, grouping, and research-readiness projections from persisted opportunity intelligence. It does not run scoring or research.
+ * @summary Read the persisted project-scoped market summary
+ */
+export const getMarketToday = async (projectId: string, options?: Parameters<typeof customFetch>[1]): Promise<MarketTodayResponse> => {
+
+  return customFetch<MarketTodayResponse>(getGetMarketTodayUrl(projectId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetMarketTodayQueryKey = (projectId: string,) => {
+    return [
+    `/api/projects/${projectId}/market-today`
+    ] as const;
+    }
+
+
+export const getGetMarketTodayQueryOptions = <TData = Awaited<ReturnType<typeof getMarketToday>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(projectId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getMarketToday>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetMarketTodayQueryKey(projectId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getMarketToday>>> = ({ signal }) => getMarketToday(projectId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: projectId !== null && projectId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getMarketToday>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetMarketTodayQueryResult = NonNullable<Awaited<ReturnType<typeof getMarketToday>>>
+export type GetMarketTodayQueryError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+
+/**
+ * @summary Read the persisted project-scoped market summary
+ */
+
+export function useGetMarketToday<TData = Awaited<ReturnType<typeof getMarketToday>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(
+ projectId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getMarketToday>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetMarketTodayQueryOptions(projectId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
 
 export const getListOpportunityAssessmentsUrl = (projectId: string,) => {
 

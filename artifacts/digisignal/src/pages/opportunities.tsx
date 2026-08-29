@@ -80,6 +80,8 @@ async function api<T>(path: string, init?: RequestInit): Promise<T> {
 
 export default function Opportunities() {
   const { activeProjectId, activeProject } = useWorkspace();
+  const deepLinkedCompanyId = new URLSearchParams(window.location.search).get("company");
+  const focusWhy = window.location.hash === "#why";
   const [detail, setDetail] = useState<Detail | null>(null);
   const [versions, setVersions] = useState<Version[]>([]);
   const [packs, setPacks] = useState<Pack[]>([]);
@@ -266,7 +268,7 @@ export default function Opportunities() {
         {detail && <Badge variant="outline">Version {detail.version.version} · {detail.version.status}</Badge>}
       </header>
 
-      <OpportunityAssessments projectId={activeProjectId} />
+      <OpportunityAssessments projectId={activeProjectId} initialCompanyId={deepLinkedCompanyId} focusWhy={focusWhy} />
 
       <Card className="p-6">
         <div className="grid gap-4 md:grid-cols-[1fr_1fr_auto] md:items-end">

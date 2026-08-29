@@ -4908,6 +4908,118 @@ export const EvaluateSignalClustersResponse = zod.object({
 
 
 /**
+ * Returns deterministic WHO, WHEN, WHY, movement, grouping, and research-readiness projections from persisted opportunity intelligence. It does not run scoring or research.
+ * @summary Read the persisted project-scoped market summary
+ */
+export const GetMarketTodayParams = zod.object({
+  "projectId": zod.coerce.string()
+})
+
+export const getMarketTodayResponseCardsItemTopSignalsItemEffectiveDateRegExp = new RegExp('^\\d{4}-\\d{2}-\\d{2}$');
+
+
+export const GetMarketTodayResponse = zod.object({
+  "projectId": zod.string(),
+  "generatedAt": zod.coerce.date(),
+  "attentionCount": zod.number(),
+  "totalCompanyCount": zod.number(),
+  "counts": zod.object({
+  "SURGING": zod.number(),
+  "RISING": zod.number(),
+  "EMERGING": zod.number(),
+  "WATCH": zod.number(),
+  "NEW_TODAY": zod.number(),
+  "CHANGED_TODAY": zod.number(),
+  "NEEDS_RESEARCH": zod.number()
+}),
+  "cards": zod.array(zod.object({
+  "projectCompanyId": zod.string(),
+  "companyId": zod.string(),
+  "company": zod.object({
+  "name": zod.string(),
+  "domain": zod.string().nullable(),
+  "industry": zod.string().nullable(),
+  "geography": zod.string().nullable(),
+  "employeeRange": zod.string().nullable()
+}),
+  "state": zod.union([zod.literal('DORMANT'),zod.literal('WATCH'),zod.literal('EMERGING'),zod.literal('RISING'),zod.literal('SURGING'),zod.literal('ACTIVE'),zod.literal('COOLING'),zod.literal(null)]).nullable(),
+  "section": zod.enum(['SURGING', 'RISING', 'EMERGING', 'WATCH', 'NEEDS_RESEARCH']),
+  "movement": zod.object({
+  "from": zod.string().nullable(),
+  "to": zod.string().nullable(),
+  "label": zod.string(),
+  "changedAt": zod.coerce.date().nullable(),
+  "summary": zod.string(),
+  "scoreDelta": zod.number().nullable()
+}),
+  "who": zod.string(),
+  "when": zod.enum(['NOW', 'EARLY_WINDOW', 'MONITOR', 'TIMING_WEAKENING', 'INSUFFICIENT_EVIDENCE']),
+  "why": zod.object({
+  "status": zod.enum(['SUFFICIENT_EVIDENCE', 'INSUFFICIENT_EVIDENCE']),
+  "text": zod.string(),
+  "explanationId": zod.string().nullable()
+}),
+  "scores": zod.object({
+  "fit": zod.number().nullable(),
+  "need": zod.number().nullable(),
+  "timing": zod.number().nullable(),
+  "confidence": zod.number().nullable()
+}),
+  "topSignals": zod.array(zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "status": zod.string(),
+  "currentStrength": zod.number(),
+  "confidence": zod.number(),
+  "effectiveDate": zod.string().regex(getMarketTodayResponseCardsItemTopSignalsItemEffectiveDateRegExp)
+})),
+  "signalNames": zod.array(zod.string()),
+  "clusterNames": zod.array(zod.string()),
+  "cluster": zod.union([zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "explanation": zod.string(),
+  "status": zod.string(),
+  "currentStrength": zod.number(),
+  "confidence": zod.number()
+}),zod.null()]),
+  "latestRelevantEvent": zod.union([zod.object({
+  "type": zod.enum(['SIGNAL', 'CLUSTER', 'EVIDENCE', 'RESEARCH']),
+  "label": zod.string(),
+  "occurredAt": zod.coerce.date()
+}),zod.null()]),
+  "research": zod.object({
+  "status": zod.string(),
+  "freshness": zod.enum(['FRESH', 'AGING', 'STALE', 'NOT_RESEARCHED']),
+  "latestResearchAt": zod.coerce.date().nullable(),
+  "evidenceCount": zod.number()
+}),
+  "relationship": zod.string(),
+  "icpFit": zod.enum(['HIGH', 'MEDIUM', 'LOW', 'UNKNOWN']),
+  "confidenceBand": zod.enum(['HIGH', 'MEDIUM', 'LOW', 'UNKNOWN']),
+  "flags": zod.object({
+  "newToday": zod.boolean(),
+  "changedToday": zod.boolean(),
+  "needsResearch": zod.boolean()
+}),
+  "recommendedAction": zod.string()
+})),
+  "filterOptions": zod.object({
+  "states": zod.array(zod.string()),
+  "industries": zod.array(zod.string()),
+  "geographies": zod.array(zod.string()),
+  "employeeRanges": zod.array(zod.string()),
+  "signals": zod.array(zod.string()),
+  "clusters": zod.array(zod.string()),
+  "confidences": zod.array(zod.string()),
+  "researchFreshness": zod.array(zod.string()),
+  "relationships": zod.array(zod.string()),
+  "icpFit": zod.array(zod.string())
+})
+})
+
+
+/**
  * @summary List current project-specific opportunity assessments
  */
 export const ListOpportunityAssessmentsParams = zod.object({

@@ -160,6 +160,8 @@ The implemented organization, membership, user, and project tables are the tenan
 - `buying_committee_members`
 - `recommended_actions`
 
+`Your Market Today` adds no derived-state table. Its API reads the current project-company and opportunity rows together with immutable history and current evidence-backed WHY records. Movement is reconstructed from `opportunity_history`; freshness is derived from persisted research timestamps and evidence status. Page reads never mutate or recalculate those records.
+
 ### Learning
 
 - `sales_outcomes`

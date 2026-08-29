@@ -10,6 +10,8 @@ import {
   projectCompaniesTable,
   projectsTable,
 } from "@workspace/db";
+import { GetMarketTodayResponse } from "@workspace/api-zod";
+import { getMarketToday } from "../lib/market-today";
 import { DEFAULT_OPPORTUNITY_RULES, evaluateOpportunity, getOpportunityDetail } from "../lib/opportunity-engine";
 import { generateWhyForOpportunity, getWhyDetail } from "../lib/opportunity-why";
 import { getAuthenticatedUserId, requireAuth } from "../middlewares/auth";
@@ -54,6 +56,14 @@ router.get("/projects/:projectId/opportunities", requireAuth, asyncRoute(async (
     .where(eq(opportunitiesTable.projectId, params.data.projectId))
     .orderBy(desc(opportunitiesTable.score), desc(opportunitiesTable.assessedAt));
   res.json(rows);
+}));
+
+router.get("/projects/:projectId/market-today", requireAuth, asyncRoute(async (req, res) => {
+  const params = projectParams.safeParse(req.params);
+  if (!params.success) return void res.status(404).json({ error: "Project not found" });
+  const access = await authorize(getAuthenticatedUserId(res), params.data.projectId);
+  if (!access.project) return void res.status(access.status).json({ error: access.status === 403 ? "Project access denied" : "Project not found" });
+  res.json(GetMarketTodayResponse.parse(await getMarketToday(access.project.id)));
 }));
 
 router.get("/projects/:projectId/companies/:projectCompanyId/opportunity", requireAuth, asyncRoute(async (req, res) => {

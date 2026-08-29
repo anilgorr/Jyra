@@ -2091,6 +2091,232 @@ export interface EvaluateSignalsResponse {
   signals: Signal[];
 }
 
+export interface MarketTodayMovement {
+  /** @nullable */
+  from: string | null;
+  /** @nullable */
+  to: string | null;
+  label: string;
+  /** @nullable */
+  changedAt: string | null;
+  summary: string;
+  /** @nullable */
+  scoreDelta: number | null;
+}
+
+export interface MarketTodaySignal {
+  id: string;
+  name: string;
+  status: string;
+  currentStrength: number;
+  confidence: number;
+  /** @pattern ^\d{4}-\d{2}-\d{2}$ */
+  effectiveDate: string;
+}
+
+export interface MarketTodayCluster {
+  id: string;
+  name: string;
+  explanation: string;
+  status: string;
+  currentStrength: number;
+  confidence: number;
+}
+
+export type MarketTodayCardCompany = {
+  name: string;
+  /** @nullable */
+  domain: string | null;
+  /** @nullable */
+  industry: string | null;
+  /** @nullable */
+  geography: string | null;
+  /** @nullable */
+  employeeRange: string | null;
+};
+
+/**
+ * @nullable
+ */
+export type MarketTodayCardState = typeof MarketTodayCardState[keyof typeof MarketTodayCardState] | null;
+
+
+export const MarketTodayCardState = {
+  DORMANT: 'DORMANT',
+  WATCH: 'WATCH',
+  EMERGING: 'EMERGING',
+  RISING: 'RISING',
+  SURGING: 'SURGING',
+  ACTIVE: 'ACTIVE',
+  COOLING: 'COOLING',
+} as const;
+
+export type MarketTodayCardSection = typeof MarketTodayCardSection[keyof typeof MarketTodayCardSection];
+
+
+export const MarketTodayCardSection = {
+  SURGING: 'SURGING',
+  RISING: 'RISING',
+  EMERGING: 'EMERGING',
+  WATCH: 'WATCH',
+  NEEDS_RESEARCH: 'NEEDS_RESEARCH',
+} as const;
+
+export type MarketTodayCardWhen = typeof MarketTodayCardWhen[keyof typeof MarketTodayCardWhen];
+
+
+export const MarketTodayCardWhen = {
+  NOW: 'NOW',
+  EARLY_WINDOW: 'EARLY_WINDOW',
+  MONITOR: 'MONITOR',
+  TIMING_WEAKENING: 'TIMING_WEAKENING',
+  INSUFFICIENT_EVIDENCE: 'INSUFFICIENT_EVIDENCE',
+} as const;
+
+export type MarketTodayCardWhyStatus = typeof MarketTodayCardWhyStatus[keyof typeof MarketTodayCardWhyStatus];
+
+
+export const MarketTodayCardWhyStatus = {
+  SUFFICIENT_EVIDENCE: 'SUFFICIENT_EVIDENCE',
+  INSUFFICIENT_EVIDENCE: 'INSUFFICIENT_EVIDENCE',
+} as const;
+
+export type MarketTodayCardWhy = {
+  status: MarketTodayCardWhyStatus;
+  text: string;
+  /** @nullable */
+  explanationId: string | null;
+};
+
+export type MarketTodayCardScores = {
+  /** @nullable */
+  fit: number | null;
+  /** @nullable */
+  need: number | null;
+  /** @nullable */
+  timing: number | null;
+  /** @nullable */
+  confidence: number | null;
+};
+
+export type MarketTodayCardLatestRelevantEventType = typeof MarketTodayCardLatestRelevantEventType[keyof typeof MarketTodayCardLatestRelevantEventType];
+
+
+export const MarketTodayCardLatestRelevantEventType = {
+  SIGNAL: 'SIGNAL',
+  CLUSTER: 'CLUSTER',
+  EVIDENCE: 'EVIDENCE',
+  RESEARCH: 'RESEARCH',
+} as const;
+
+export type MarketTodayCardLatestRelevantEvent = {
+  type: MarketTodayCardLatestRelevantEventType;
+  label: string;
+  occurredAt: string;
+} | null;
+
+export type MarketTodayCardResearchFreshness = typeof MarketTodayCardResearchFreshness[keyof typeof MarketTodayCardResearchFreshness];
+
+
+export const MarketTodayCardResearchFreshness = {
+  FRESH: 'FRESH',
+  AGING: 'AGING',
+  STALE: 'STALE',
+  NOT_RESEARCHED: 'NOT_RESEARCHED',
+} as const;
+
+export type MarketTodayCardResearch = {
+  status: string;
+  freshness: MarketTodayCardResearchFreshness;
+  /** @nullable */
+  latestResearchAt: string | null;
+  evidenceCount: number;
+};
+
+export type MarketTodayCardIcpFit = typeof MarketTodayCardIcpFit[keyof typeof MarketTodayCardIcpFit];
+
+
+export const MarketTodayCardIcpFit = {
+  HIGH: 'HIGH',
+  MEDIUM: 'MEDIUM',
+  LOW: 'LOW',
+  UNKNOWN: 'UNKNOWN',
+} as const;
+
+export type MarketTodayCardConfidenceBand = typeof MarketTodayCardConfidenceBand[keyof typeof MarketTodayCardConfidenceBand];
+
+
+export const MarketTodayCardConfidenceBand = {
+  HIGH: 'HIGH',
+  MEDIUM: 'MEDIUM',
+  LOW: 'LOW',
+  UNKNOWN: 'UNKNOWN',
+} as const;
+
+export type MarketTodayCardFlags = {
+  newToday: boolean;
+  changedToday: boolean;
+  needsResearch: boolean;
+};
+
+export interface MarketTodayCard {
+  projectCompanyId: string;
+  companyId: string;
+  company: MarketTodayCardCompany;
+  /** @nullable */
+  state: MarketTodayCardState;
+  section: MarketTodayCardSection;
+  movement: MarketTodayMovement;
+  who: string;
+  when: MarketTodayCardWhen;
+  why: MarketTodayCardWhy;
+  scores: MarketTodayCardScores;
+  topSignals: MarketTodaySignal[];
+  signalNames: string[];
+  clusterNames: string[];
+  cluster: MarketTodayCluster | null;
+  latestRelevantEvent: MarketTodayCardLatestRelevantEvent;
+  research: MarketTodayCardResearch;
+  relationship: string;
+  icpFit: MarketTodayCardIcpFit;
+  confidenceBand: MarketTodayCardConfidenceBand;
+  flags: MarketTodayCardFlags;
+  recommendedAction: string;
+}
+
+export type MarketTodayResponseCounts = {
+  SURGING: number;
+  RISING: number;
+  EMERGING: number;
+  WATCH: number;
+  NEW_TODAY: number;
+  CHANGED_TODAY: number;
+  NEEDS_RESEARCH: number;
+};
+
+export type MarketTodayResponseFilterOptions = {
+  states: string[];
+  industries: string[];
+  geographies: string[];
+  employeeRanges: string[];
+  signals: string[];
+  clusters: string[];
+  confidences: string[];
+  researchFreshness: string[];
+  relationships: string[];
+  icpFit: string[];
+};
+
+export interface MarketTodayResponse {
+  projectId: string;
+  generatedAt: string;
+  attentionCount: number;
+  totalCompanyCount: number;
+  counts: MarketTodayResponseCounts;
+  cards: MarketTodayCard[];
+  filterOptions: MarketTodayResponseFilterOptions;
+}
+
 export type OpportunityModelVersionWeights = {
   fit: number;
   need: number;

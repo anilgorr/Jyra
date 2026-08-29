@@ -1420,6 +1420,24 @@ paths:
                 required: [evaluated, clusters]
         "403": { $ref: "#/components/responses/Forbidden" }
         "404": { $ref: "#/components/responses/NotFound" }
+  /projects/{projectId}/market-today:
+    get:
+      operationId: getMarketToday
+      tags: [opportunity-engine]
+      summary: Read the persisted project-scoped market summary
+      description: Returns deterministic WHO, WHEN, WHY, movement, grouping, and research-readiness projections from persisted opportunity intelligence. It does not run scoring or research.
+      security: [{ clerkSession: [] }]
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+      responses:
+        "200":
+          description: Current persisted market summary
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/MarketTodayResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
   /projects/{projectId}/opportunities:
     get:
       operationId: listOpportunityAssessments
@@ -2974,6 +2992,150 @@ components:
           type: array
           items: { $ref: "#/components/schemas/Signal" }
       required: [evaluated, clustersEvaluated, signals]
+    MarketTodayMovement:
+      type: object
+      properties:
+        from: { type: ["string", "null"] }
+        to: { type: ["string", "null"] }
+        label: { type: string }
+        changedAt: { type: ["string", "null"], format: date-time }
+        summary: { type: string }
+        scoreDelta: { type: ["number", "null"] }
+      required: [from, to, label, changedAt, summary, scoreDelta]
+    MarketTodaySignal:
+      type: object
+      properties:
+        id: { type: string }
+        name: { type: string }
+        status: { type: string }
+        currentStrength: { type: number }
+        confidence: { type: number }
+        effectiveDate: { type: string, pattern: '^\d{4}-\d{2}-\d{2}$' }
+      required: [id, name, status, currentStrength, confidence, effectiveDate]
+    MarketTodayCluster:
+      type: object
+      properties:
+        id: { type: string }
+        name: { type: string }
+        explanation: { type: string }
+        status: { type: string }
+        currentStrength: { type: number }
+        confidence: { type: number }
+      required: [id, name, explanation, status, currentStrength, confidence]
+    MarketTodayCard:
+      type: object
+      properties:
+        projectCompanyId: { type: string }
+        companyId: { type: string }
+        company:
+          type: object
+          properties:
+            name: { type: string }
+            domain: { type: ["string", "null"] }
+            industry: { type: ["string", "null"] }
+            geography: { type: ["string", "null"] }
+            employeeRange: { type: ["string", "null"] }
+          required: [name, domain, industry, geography, employeeRange]
+        state:
+          type: ["string", "null"]
+          enum: [DORMANT, WATCH, EMERGING, RISING, SURGING, ACTIVE, COOLING, null]
+        section:
+          type: string
+          enum: [SURGING, RISING, EMERGING, WATCH, NEEDS_RESEARCH]
+        movement: { $ref: "#/components/schemas/MarketTodayMovement" }
+        who: { type: string }
+        when:
+          type: string
+          enum: [NOW, EARLY_WINDOW, MONITOR, TIMING_WEAKENING, INSUFFICIENT_EVIDENCE]
+        why:
+          type: object
+          properties:
+            status: { type: string, enum: [SUFFICIENT_EVIDENCE, INSUFFICIENT_EVIDENCE] }
+            text: { type: string }
+            explanationId: { type: ["string", "null"] }
+          required: [status, text, explanationId]
+        scores:
+          type: object
+          properties:
+            fit: { type: ["number", "null"] }
+            need: { type: ["number", "null"] }
+            timing: { type: ["number", "null"] }
+            confidence: { type: ["number", "null"] }
+          required: [fit, need, timing, confidence]
+        topSignals:
+          type: array
+          items: { $ref: "#/components/schemas/MarketTodaySignal" }
+        signalNames: { type: array, items: { type: string } }
+        clusterNames: { type: array, items: { type: string } }
+        cluster:
+          oneOf:
+            - { $ref: "#/components/schemas/MarketTodayCluster" }
+            - { type: "null" }
+        latestRelevantEvent:
+          oneOf:
+            - type: object
+              properties:
+                type: { type: string, enum: [SIGNAL, CLUSTER, EVIDENCE, RESEARCH] }
+                label: { type: string }
+                occurredAt: { type: string, format: date-time }
+              required: [type, label, occurredAt]
+            - { type: "null" }
+        research:
+          type: object
+          properties:
+            status: { type: string }
+            freshness: { type: string, enum: [FRESH, AGING, STALE, NOT_RESEARCHED] }
+            latestResearchAt: { type: ["string", "null"], format: date-time }
+            evidenceCount: { type: number }
+          required: [status, freshness, latestResearchAt, evidenceCount]
+        relationship: { type: string }
+        icpFit: { type: string, enum: [HIGH, MEDIUM, LOW, UNKNOWN] }
+        confidenceBand: { type: string, enum: [HIGH, MEDIUM, LOW, UNKNOWN] }
+        flags:
+          type: object
+          properties:
+            newToday: { type: boolean }
+            changedToday: { type: boolean }
+            needsResearch: { type: boolean }
+          required: [newToday, changedToday, needsResearch]
+        recommendedAction: { type: string }
+      required: [projectCompanyId, companyId, company, state, section, movement, who, when, why, scores, topSignals, signalNames, clusterNames, cluster, latestRelevantEvent, research, relationship, icpFit, confidenceBand, flags, recommendedAction]
+    MarketTodayResponse:
+      type: object
+      properties:
+        projectId: { type: string }
+        generatedAt: { type: string, format: date-time }
+        attentionCount: { type: number }
+        totalCompanyCount: { type: number }
+        counts:
+          type: object
+          properties:
+            SURGING: { type: number }
+            RISING: { type: number }
+            EMERGING: { type: number }
+            WATCH: { type: number }
+            NEW_TODAY: { type: number }
+            CHANGED_TODAY: { type: number }
+            NEEDS_RESEARCH: { type: number }
+          required: [SURGING, RISING, EMERGING, WATCH, NEW_TODAY, CHANGED_TODAY, NEEDS_RESEARCH]
+        cards:
+          type: array
+          items: { $ref: "#/components/schemas/MarketTodayCard" }
+        filterOptions:
+          type: object
+          properties:
+            states: { type: array, items: { type: string } }
+            industries: { type: array, items: { type: string } }
+            geographies: { type: array, items: { type: string } }
+            employeeRanges: { type: array, items: { type: string } }
+            signals: { type: array, items: { type: string } }
+            clusters: { type: array, items: { type: string } }
+            confidences: { type: array, items: { type: string } }
+            researchFreshness: { type: array, items: { type: string } }
+            relationships: { type: array, items: { type: string } }
+            icpFit: { type: array, items: { type: string } }
+          required: [states, industries, geographies, employeeRanges, signals, clusters, confidences, researchFreshness, relationships, icpFit]
+      required: [projectId, generatedAt, attentionCount, totalCompanyCount, counts, cards, filterOptions]
     OpportunityModelVersion:
       type: object
       properties:

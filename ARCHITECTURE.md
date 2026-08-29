@@ -152,6 +152,12 @@ The implemented Opportunity Engine is a deterministic project-scoped layer over 
 
 WHY is a downstream, read-only interpretation of an opportunity assessment. The deterministic composer selects only current sufficiently strong signals, facts, clusters, and evidence, then persists 2–4 calibrated claims with exact provenance arrays and source URLs. PostgreSQL blocks untraced material claims. Language generation cannot create facts, alter evidence, or bypass signal and pack activation boundaries; insufficient or contradictory support produces an explicit uncertainty result.
 
+## Your Market Today
+
+`/today` is a project-scoped read model over persisted Opportunity assessments, immutable assessment history, current WHY versions, signals, clusters, evidence, and research state. The endpoint never evaluates an opportunity or launches research while reading. It deterministically derives market sections, movement, WHO, WHEN, WHY, freshness, and filter options; the UI may filter this bounded persisted projection without changing canonical state.
+
+`ACTIVE` assessments appear in the SURGING presentation section and `COOLING` assessments appear in RISING while retaining their actual canonical state. Unassessed or insufficiently supported companies appear only as needing research. Person-level buyers and recommended actions remain unavailable until later phases.
+
 Future research work should use a simple database-backed job table suitable for Replit:
 
 1. API creates a planned job.

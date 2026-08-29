@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Activity, ChevronRight, ExternalLink, History, Loader2, RefreshCw, ShieldQuestion, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
@@ -46,12 +46,17 @@ const stateTone = (state: string) =>
   state === "RISING" || state === "EMERGING" ? "bg-amber-500/10 text-amber-700 border-amber-500/20" :
   state === "COOLING" ? "bg-blue-500/10 text-blue-700 border-blue-500/20" : "";
 
-export function OpportunityAssessments({ projectId }: { projectId: string }) {
+export function OpportunityAssessments({ projectId, initialCompanyId, focusWhy = false }: {
+  projectId: string;
+  initialCompanyId?: string | null;
+  focusWhy?: boolean;
+}) {
   const [companies, setCompanies] = useState<Company[]>([]);
   const [assessments, setAssessments] = useState<ListItem[]>([]);
   const [detail, setDetail] = useState<Detail | null>(null);
   const [why, setWhy] = useState<WhyDetail | null>(null);
   const [loadingId, setLoadingId] = useState<string | null>(null);
+  const openedKey = useRef<string | null>(null);
 
   const load = async () => {
     const [companyRows, assessmentRows] = await Promise.all([
@@ -91,6 +96,15 @@ export function OpportunityAssessments({ projectId }: { projectId: string }) {
     }
     catch (cause) { toast.error(cause instanceof Error ? cause.message : "Assessment could not be loaded"); }
   };
+  useEffect(() => {
+    if (!initialCompanyId) return;
+    const key = `${projectId}:${initialCompanyId}:${focusWhy}`;
+    if (openedKey.current === key) return;
+    openedKey.current = key;
+    void open(initialCompanyId).then(() => {
+      if (focusWhy) window.setTimeout(() => document.querySelector('[data-testid="opportunity-why"]')?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
+    });
+  }, [projectId, initialCompanyId, focusWhy]);
   const regenerateWhy = async () => {
     if (!detail) return;
     setLoadingId(detail.opportunity.projectCompanyId);

@@ -113,6 +113,12 @@ Deterministic, project-specific calculations combine Fit, Need, Timing, and firs
 
 JYRA presents a concise 2–4 sentence account explanation only when current support is sufficient. Every material sentence is inspectable through signals, clusters, validated facts, evidence, and source URL. Unsupported purchase-intent claims are prohibited, calibrated language is preferred, and weak, stale, or contradictory support produces “Insufficient evidence to establish current urgency.”
 
+### Your Market Today — WHO. WHEN. WHY. (implemented)
+
+The authenticated `/today` landing page presents a persisted, project-scoped market read model. Companies are grouped into SURGING, RISING, EMERGING, and WATCH views, with overlapping NEW TODAY, CHANGED TODAY, and NEEDS RESEARCH views. Movement and “what changed” come from immutable Opportunity history. WHEN is deterministically classified as NOW, EARLY WINDOW, MONITOR, TIMING WEAKENING, or INSUFFICIENT EVIDENCE, and WHY reuses the current traceable explanation.
+
+Users can filter by state, industry, geography, employee range, signal, cluster, confidence, research freshness, relationship, and ICP fit. They can open existing intelligence and evidence views or run the bounded Research Now workflow. Buyer discovery and action recommendations remain explicitly unavailable.
+
 ### 6. Buying committee and action
 
 Only after a company is commercially interesting does JYRA identify likely buyers, enrich contact data, and recommend an action.

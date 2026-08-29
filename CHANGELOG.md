@@ -1,3 +1,10 @@
+## Your Market Today
+
+- Replaced the workspace-summary landing page with a project-scoped WHO, WHEN, WHY market view sourced only from persisted Opportunity intelligence.
+- Added deterministic SURGING, RISING, EMERGING, WATCH, NEW TODAY, CHANGED TODAY, and NEEDS RESEARCH views, plus movement and research-freshness derivation.
+- Added working market filters, responsive opportunity cards, deep links to intelligence and evidence traces, and bounded Research Now actions.
+- Kept buyer discovery and recommendations explicitly unavailable and added regression coverage for classification, movement, freshness, and insufficient evidence.
+
 ## Evidence-Backed WHY
 
 - Added concise versioned WHY explanations composed only from current traced signals, clusters, validated facts, and evidence.
