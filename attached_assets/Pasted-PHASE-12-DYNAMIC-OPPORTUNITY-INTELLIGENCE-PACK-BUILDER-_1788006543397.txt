@@ -1,0 +1,319 @@
+PHASE 12 — DYNAMIC OPPORTUNITY INTELLIGENCE PACK BUILDER
+
+JYRA
+Who. When. Why.
+
+IMPORTANT CONTEXT:
+
+Phases 0–11 and Phase 11A have already been implemented.
+
+JYRA is a GENERIC B2B Opportunity Intelligence platform.
+
+DO NOT hardcode cybersecurity, ISO 27001, recruitment, marketing, SaaS,
+solar, IT services or any other industry into the core architecture.
+
+The purpose of this phase is to allow JYRA to understand:
+
+"What should I look for in the market that may indicate a company needs
+what THIS customer sells?"
+
+==================================================
+CORE CONCEPT
+==================================================
+
+Every seller is different.
+
+Therefore JYRA should dynamically create an:
+
+OPPORTUNITY INTELLIGENCE PACK
+
+based on:
+
+Business Twin
++
+ICP
++
+Offering
++
+Customer-provided assumptions
++
+existing approved signal definitions
+
+The Intelligence Pack defines what JYRA should research and monitor.
+
+==================================================
+1. INTELLIGENCE PACK
+==================================================
+
+Create appropriate schema such as:
+
+intelligence_packs
+intelligence_pack_versions
+intelligence_pack_signals
+intelligence_pack_research_questions
+
+Reuse existing Signal Pack structures if appropriate.
+
+Do NOT create redundant tables if existing architecture supports this cleanly.
+
+Each pack belongs to:
+
+organization
+project
+offering/business twin version
+ICP version
+
+Support versioning.
+
+==================================================
+2. GENERATION WORKFLOW
+==================================================
+
+After Business Twin + ICP exist:
+
+JYRA should be able to propose an Intelligence Pack.
+
+Use:
+
+Business Twin
+ICP
+offering
+problems solved
+buyer roles
+urgency triggers
+differentiators
+negative criteria
+known customer patterns if available
+
+Ask:
+
+"What changes or events usually cause a company to need what you sell?"
+
+Allow customer input.
+
+Then generate candidate signals.
+
+==================================================
+3. AI ROLE
+==================================================
+
+AI may PROPOSE signal definitions.
+
+AI must NOT silently activate them.
+
+Workflow:
+
+AI proposes
+→
+JYRA validates structure
+→
+Customer reviews
+→
+Customer approves/edits/removes/adds
+→
+Signal becomes ACTIVE
+
+Use strict structured output.
+
+==================================================
+4. SIGNAL PROPOSAL
+==================================================
+
+For each proposed signal show:
+
+Signal Name
+Description
+Why It Matters
+Category
+Need Impact
+Timing Impact
+Likely Evidence
+Where JYRA Could Detect It
+Expected Lifetime
+Suggested Strength
+Potential False Positives
+Confidence Requirements
+
+Do not claim the signal is predictive before outcome evidence exists.
+
+Label initial signals appropriately as:
+
+HYPOTHESIS
+
+==================================================
+5. SIGNAL TYPES
+==================================================
+
+Allow packs to contain:
+
+POSITIVE SIGNALS
+TIMING SIGNALS
+NEED SIGNALS
+NEGATIVE SIGNALS
+DISQUALIFYING CONDITIONS
+MONITORING SIGNALS
+
+Do not assume every signal directly means buying intent.
+
+==================================================
+6. RESEARCH QUESTIONS
+==================================================
+
+For every approved signal, derive research questions.
+
+Example generic structure:
+
+Signal:
+Leadership change
+
+Research questions:
+- Has a relevant executive joined recently?
+- When?
+- What responsibility does that executive have?
+- Is the role relevant to the seller's offering?
+
+Another seller may not care about this signal.
+
+Research questions must be contextual.
+
+==================================================
+7. SOURCE STRATEGY
+==================================================
+
+For each research question define potential source capabilities:
+
+WEBSITE_CRAWL
+WEB_SEARCH
+JOB_SEARCH
+NEWS_SEARCH
+TECH_STACK
+LEADERSHIP_SEARCH
+PUBLIC_SOCIAL_SEARCH
+
+Do not bind questions permanently to one provider.
+
+Use capabilities.
+
+Provider Router decides provider later.
+
+==================================================
+8. CUSTOMER EDITING
+==================================================
+
+Customer can:
+
+Approve
+Edit
+Disable
+Delete
+Add Custom Signal
+Change Importance
+Change Signal Lifetime
+Change Need Impact
+Change Timing Impact
+Add Research Question
+Remove Research Question
+
+Version changes.
+
+==================================================
+9. STARTUP HANDLING
+==================================================
+
+If Business Twin is based mainly on founder hypotheses:
+
+mark Intelligence Pack:
+
+HYPOTHESIS-LED
+
+Explain:
+
+"These signals are based primarily on your current assumptions.
+JYRA will help evaluate them as outcomes accumulate."
+
+For established businesses with strong historical data:
+
+mark appropriately:
+
+EVIDENCE-INFORMED
+
+Do not pretend historical correlation exists unless actual data supports it.
+
+==================================================
+10. GENERICITY TEST
+==================================================
+
+Generate packs for synthetic sellers:
+
+A. Managed SOC provider
+B. Executive recruitment firm
+C. Commercial solar installer
+D. Digital marketing agency
+E. ERP implementation consultancy
+
+Verify:
+
+Each receives materially different signals.
+
+No industry-specific code is required.
+
+The same generic engine generates all packs.
+
+==================================================
+11. IMPORTANT RULE
+==================================================
+
+JYRA'S competitive advantage is NOT:
+
+"a database of predefined signals."
+
+It is:
+
+"understanding what THIS seller sells and determining what market changes
+could indicate opportunity for THIS seller."
+
+==================================================
+12. UX
+==================================================
+
+Call the customer-facing feature:
+
+OPPORTUNITY SIGNALS
+
+Suggested message:
+
+"JYRA has identified the market signals that may indicate a company is
+entering a buying window for your offering."
+
+Show:
+
+Need Signals
+Timing Signals
+Negative Signals
+Signals to Monitor
+
+Provide:
+
+Approve Intelligence Pack
+
+==================================================
+ACCEPTANCE
+==================================================
+
+Verify:
+
+dynamic generation works
+customer editing works
+versioning works
+signals remain project/offering-specific
+startup hypothesis distinction works
+no industry dependency exists
+approved signals feed existing Signal Engine
+unapproved signals cannot affect opportunity scoring
+
+Update SIGNALS.md.
+Create INTELLIGENCE_PACKS.md.
+Update CHANGELOG.md.
+Create checkpoint.
+
+DO NOT begin Phase 13.
