@@ -16,6 +16,7 @@ import {
   signalsTable,
 } from "@workspace/db";
 import { evaluateIcpCriterion, type CriterionResult } from "./icp-engine";
+import { DEFAULT_NEXT_BEST_ACTION_RULES } from "./next-best-action";
 
 export const DEFAULT_OPPORTUNITY_WEIGHTS = { fit: 30, need: 30, timing: 30, relationship: 10 } as const;
 export const DEFAULT_OPPORTUNITY_RULES = {
@@ -231,7 +232,7 @@ export async function ensureOpportunityModel(organizationId: string, projectId: 
   if (active) return active;
   const [model] = await db.insert(opportunityModelVersionsTable).values({
     organizationId, projectId, version: 1, weights: DEFAULT_OPPORTUNITY_WEIGHTS,
-    rules: DEFAULT_OPPORTUNITY_RULES, active: true, createdBy,
+    rules: { ...DEFAULT_OPPORTUNITY_RULES, nextBestAction: DEFAULT_NEXT_BEST_ACTION_RULES }, active: true, createdBy,
   }).onConflictDoNothing().returning();
   if (model) return model;
   const [existing] = await db.select().from(opportunityModelVersionsTable)

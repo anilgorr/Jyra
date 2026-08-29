@@ -251,11 +251,15 @@ export function MarketCard({ card, projectId }: MarketCardProps) {
             </div>
           )}
         </div>
+        <div className="rounded-lg border border-accent/20 bg-accent/5 p-3" data-testid="market-next-best-action">
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Next best action</p>
+          <p className="mt-1.5 text-sm font-medium leading-relaxed text-foreground">{card.recommendedAction}</p>
+        </div>
       </CardContent>
 
       <Separator />
 
-      <CardFooter className="pt-4 flex flex-wrap items-center justify-between gap-3 bg-muted/10 rounded-b-xl">
+      <CardFooter className="pt-4 flex flex-col items-stretch justify-between gap-3 bg-muted/10 rounded-b-xl sm:flex-row sm:items-center">
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
             {card.research.freshness === 'FRESH' ? (
@@ -267,7 +271,7 @@ export function MarketCard({ card, projectId }: MarketCardProps) {
           </div>
         </div>
         
-        <div className="flex items-center gap-2">
+        <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto sm:justify-end">
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>

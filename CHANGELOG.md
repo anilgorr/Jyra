@@ -1,3 +1,11 @@
+## Next Best Action
+
+- Added the generic deterministic Phase 18 recommendation engine with all seven supported actions and an explanation for every result.
+- Added configurable, explicitly versioned action thresholds and deterministic precedence for evidence readiness, disqualifiers, lost opportunities, relationship paths, contact readiness, and timing waits.
+- Added an authorized project-company recommendation endpoint plus Company Intelligence and Your Market Today presentation.
+- Added tests for every action, negative-signal precedence, stale research, first-party relationships, configuration versions, and repeatability.
+- Kept recommendations advisory only: no outreach, buyer discovery, industry-specific branches, or Phase 19 behavior.
+
 ## Company Intelligence
 
 - Added a canonical project-company intelligence page covering WHO, WHEN, WHY, deterministic score dimensions, state movement, signals, clusters, research health, facts, evidence, timelines, history, and explainability.

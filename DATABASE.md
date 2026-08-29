@@ -164,6 +164,8 @@ The implemented organization, membership, user, and project tables are the tenan
 
 `Company Intelligence` also adds no derived-state table. The route composes existing authorized project-company, Opportunity, history, component, WHY, signal, cluster, fact, evidence, and research records. Its only write action is the existing RESEARCH NOW command, which creates a new bounded research attempt rather than rewriting or relabeling prior evidence.
 
+`Next Best Action` adds no mutable recommendation table. The authorized read composes the current persisted Opportunity assessment, score components, project-company relationship, research timestamp, public evidence, and project-scoped active signals. Configurable NBA thresholds live in the immutable Opportunity model version’s `rules.nextBestAction` block. The response carries the NBA and model version plus its factor snapshot so callers can explain the result without treating it as immutable Opportunity history.
+
 ### Learning
 
 - `sales_outcomes`

@@ -127,6 +127,14 @@ Every project company has a canonical intelligence page at `/companies/:projectC
 
 Public company observations can remain reusable, while relationship context, Opportunity scoring, histories, research execution, and commercial interpretation remain authorized to the active project. Buyer discovery and Phase 18 behavior are not included.
 
+### Next Best Action — Phase 18 (implemented)
+
+JYRA shows one deterministic recommended action for each project company: Contact Now, Research More, Monitor, Wait for Signal, Review Disqualifier, Request Introduction, or Reopen Opportunity. Every action includes a concise explanation and the rule version that selected it.
+
+The engine uses only Opportunity state, Fit, Need, Timing, Relationship, Confidence, research freshness, current negative signals, independent evidence sources, and known first-party relationship status. Low confidence or stale research prevents action-oriented recommendations; confirmed disqualifiers and severe negative signals take precedence; known lost opportunities and known relationship paths receive explicit handling.
+
+Recommendations appear in Company Intelligence and Your Market Today. They never send outreach, identify buyers, infer a buying committee, or execute the action. No industry-specific recommendation logic is allowed.
+
 ### 6. Buying committee and action
 
 Only after a company is commercially interesting does JYRA identify likely buyers, enrich contact data, and recommend an action.

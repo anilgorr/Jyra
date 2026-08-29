@@ -14,6 +14,8 @@ import { GetMarketTodayResponse } from "@workspace/api-zod";
 import { getMarketToday } from "../lib/market-today";
 import { DEFAULT_OPPORTUNITY_RULES, evaluateOpportunity, getOpportunityDetail } from "../lib/opportunity-engine";
 import { generateWhyForOpportunity, getWhyDetail } from "../lib/opportunity-why";
+import { getNextBestActionForCompany } from "../lib/next-best-action-service";
+import { nextBestActionConfigSchema } from "../lib/next-best-action";
 import { getAuthenticatedUserId, requireAuth } from "../middlewares/auth";
 
 const router: IRouter = Router();
@@ -21,6 +23,9 @@ type AsyncHandler = (...args: Parameters<RequestHandler>) => Promise<void>;
 const asyncRoute = (handler: AsyncHandler): RequestHandler => (req, res, next) => void handler(req, res, next).catch(next);
 const projectParams = z.object({ projectId: z.string().uuid() });
 const companyParams = projectParams.extend({ projectCompanyId: z.string().uuid() });
+const modelRulesBody = z.object({
+  nextBestAction: nextBestActionConfigSchema.optional(),
+}).catchall(z.unknown());
 const modelBody = z.object({
   name: z.string().trim().min(1).max(160).default("Opportunity Model"),
   weights: z.object({
@@ -29,7 +34,7 @@ const modelBody = z.object({
     timing: z.number().min(0).max(100),
     relationship: z.number().min(0).max(100),
   }).strict(),
-  rules: z.record(z.string(), z.unknown()).default({}),
+  rules: modelRulesBody.default({}),
 }).strict().refine((value) => Math.abs(Object.values(value.weights).reduce((sum, weight) => sum + weight, 0) - 100) < 0.001, {
   message: "Opportunity weights must total 100",
 });
@@ -74,6 +79,16 @@ router.get("/projects/:projectId/companies/:projectCompanyId/opportunity", requi
   const detail = await getOpportunityDetail(params.data.projectId, params.data.projectCompanyId);
   if (!detail) return void res.status(404).json({ error: "Opportunity assessment not found" });
   res.json(detail);
+}));
+
+router.get("/projects/:projectId/companies/:projectCompanyId/next-best-action", requireAuth, asyncRoute(async (req, res) => {
+  const params = companyParams.safeParse(req.params);
+  if (!params.success) return void res.status(404).json({ error: "Project company not found" });
+  const access = await authorize(getAuthenticatedUserId(res), params.data.projectId);
+  if (!access.project) return void res.status(access.status).json({ error: access.status === 403 ? "Project access denied" : "Project not found" });
+  const result = await getNextBestActionForCompany(params.data.projectId, params.data.projectCompanyId);
+  if (!result) return void res.status(404).json({ error: "Project company not found" });
+  res.json(result);
 }));
 
 router.post("/projects/:projectId/companies/:projectCompanyId/opportunity/evaluate", requireAuth, asyncRoute(async (req, res) => {

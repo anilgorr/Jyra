@@ -5,6 +5,8 @@ import {
   db,
   opportunitiesTable,
   opportunityHistoryTable,
+  opportunityModelVersionsTable,
+  opportunityScoreComponentsTable,
   projectCompaniesTable,
   researchQuestionsTable,
   signalClusterDefinitionsTable,
@@ -13,9 +15,17 @@ import {
   signalsTable,
   whyExplanationsTable,
 } from "@workspace/db";
+import {
+  formatNextBestAction,
+  hasConfirmedDisqualifier,
+  recommendNextBestAction,
+  rulesForOpportunityModel,
+} from "./next-best-action";
 
 type Opportunity = typeof opportunitiesTable.$inferSelect;
 type OpportunityHistory = typeof opportunityHistoryTable.$inferSelect;
+type OpportunityModel = typeof opportunityModelVersionsTable.$inferSelect;
+type OpportunityScoreComponent = typeof opportunityScoreComponentsTable.$inferSelect;
 type ProjectCompany = typeof projectCompaniesTable.$inferSelect;
 type Company = typeof companiesTable.$inferSelect;
 type Signal = typeof signalsTable.$inferSelect;
@@ -40,7 +50,9 @@ type MarketCardInput = {
   projectCompany: ProjectCompany;
   company: Company;
   opportunity: Opportunity | null;
+  model: OpportunityModel | null;
   histories: OpportunityHistory[];
+  scoreComponents: OpportunityScoreComponent[];
   why: Why | null;
   signals: Array<{ signal: Signal; definition: SignalDefinition }>;
   clusters: Array<{ cluster: Cluster; definition: ClusterDefinition }>;
@@ -201,6 +213,45 @@ export function buildMarketTodayCard(input: MarketCardInput) {
     .filter(({ cluster }) => cluster.status === "ACTIVE")
     .sort((left, right) => right.cluster.currentStrength - left.cluster.currentStrength || left.cluster.id.localeCompare(right.cluster.id))[0];
   const researchFreshness = deriveResearchFreshness(input.projectCompany.latestResearchAt, evidence, input.now);
+  const negativeSignals = input.signals
+    .filter(({ signal, definition }) =>
+      signal.status === "ACTIVE" &&
+      (
+        definition.polarity === "NEGATIVE" ||
+        (signal.fitImpactSnapshot ?? definition.fitImpact) < 0 ||
+        (signal.needImpactSnapshot ?? definition.needImpact) < 0 ||
+        (signal.timingImpactSnapshot ?? definition.timingImpact) < 0
+      ))
+    .map(({ signal, definition }) => ({
+      id: signal.id,
+      name: definition.name,
+      strength: signal.currentStrength,
+      fitImpact: signal.fitImpactSnapshot ?? definition.fitImpact,
+      needImpact: signal.needImpactSnapshot ?? definition.needImpact,
+      timingImpact: signal.timingImpactSnapshot ?? definition.timingImpact,
+    }));
+  const fitComponent = (input.scoreComponents ?? []).find((component) => component.dimension === "FIT");
+  const nextBestAction = recommendNextBestAction({
+    opportunityState: input.opportunity?.state ?? null,
+    assessmentStatus: input.opportunity?.assessmentStatus ?? null,
+    fitScore: input.opportunity?.fitScore ?? null,
+    needScore: input.opportunity?.needScore ?? null,
+    timingScore: input.opportunity?.timingScore ?? null,
+    relationshipScore: input.opportunity?.relationshipScore ?? null,
+    confidenceScore: input.opportunity?.confidenceScore ?? null,
+    researchFreshness,
+    relationshipStatus: input.projectCompany.relationshipStatus,
+    independentSourceCount: new Set(
+      evidence
+        .filter((item) => !["STALE", "CONFLICTING"].includes(item.status))
+        .map((item) => item.sourceDomain),
+    ).size,
+    negativeSignals,
+    confirmedDisqualifier: hasConfirmedDisqualifier(fitComponent?.details),
+  }, rulesForOpportunityModel(
+    input.model?.version ?? null,
+    input.model?.rules as Record<string, unknown> | null | undefined,
+  ));
   const when = deriveWhen({
     state: input.opportunity?.state ?? null,
     assessmentStatus: input.opportunity?.assessmentStatus ?? null,
@@ -257,7 +308,7 @@ export function buildMarketTodayCard(input: MarketCardInput) {
     icpFit: scoreBand(input.opportunity?.fitScore ?? null),
     confidenceBand: scoreBand(input.opportunity?.confidenceScore ?? null),
     flags: { newToday, changedToday, needsResearch },
-    recommendedAction: "Recommendation coming in a later phase.",
+    recommendedAction: formatNextBestAction(nextBestAction),
   };
 }
 
@@ -275,13 +326,14 @@ export async function getMarketToday(projectId: string, now = new Date()) {
     .where(eq(projectCompaniesTable.projectId, projectId));
   const companyIds = baseRows.map((row) => row.company.id);
   const opportunityIds = baseRows.flatMap((row) => row.opportunity ? [row.opportunity.id] : []);
-  const [histories, whys, signalRows, clusterRows, evidenceRows, questions]: [
+  const [histories, whys, signalRows, clusterRows, evidenceRows, questions, models]: [
     OpportunityHistory[],
     Why[],
     Array<{ signal: Signal; definition: SignalDefinition }>,
     Array<{ cluster: Cluster; definition: ClusterDefinition }>,
     Evidence[],
     ResearchQuestion[],
+    OpportunityModel[],
   ] = await Promise.all([
     opportunityIds.length ? db.select().from(opportunityHistoryTable)
       .where(inArray(opportunityHistoryTable.opportunityId, opportunityIds))
@@ -304,10 +356,26 @@ export async function getMarketToday(projectId: string, now = new Date()) {
     companyIds.length ? db.select().from(researchQuestionsTable)
       .where(and(eq(researchQuestionsTable.projectId, projectId), inArray(researchQuestionsTable.companyId, companyIds)))
       .orderBy(desc(researchQuestionsTable.updatedAt)) : Promise.resolve([]),
+    db.select().from(opportunityModelVersionsTable)
+      .where(eq(opportunityModelVersionsTable.projectId, projectId)),
   ]);
+  const historyIds = histories.map((history) => history.id);
+  const scoreComponents = historyIds.length
+    ? await db.select().from(opportunityScoreComponentsTable)
+      .where(inArray(opportunityScoreComponentsTable.historyId, historyIds))
+    : [];
   const cards = baseRows.map((row) => buildMarketTodayCard({
     ...row,
+    model: row.opportunity
+      ? models.find((model) => model.id === row.opportunity?.modelVersionId) ?? null
+      : models.find((model) => model.active) ?? null,
     histories: histories.filter((history) => history.opportunityId === row.opportunity?.id),
+    scoreComponents: (() => {
+      const history = histories.find((item) => item.opportunityId === row.opportunity?.id);
+      return history
+        ? scoreComponents.filter((component) => component.historyId === history.id)
+        : [];
+    })(),
     why: whys.find((why) => why.opportunityId === row.opportunity?.id) ?? null,
     signals: signalRows.filter(({ signal }) => signal.companyId === row.company.id),
     clusters: clusterRows.filter(({ cluster }) => cluster.companyId === row.company.id),

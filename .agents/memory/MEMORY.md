@@ -8,3 +8,4 @@
 - [Opportunity Pack activation](opportunity-pack-activation.md) — approval freezes a reviewed proposal; only a separate explicit activation may feed approved items to the Signal Engine.
 - [WHY provenance boundary](why-provenance-boundary.md) — intent claims need proposition-level source support, and WHY generation must use one atomic source snapshot.
 - [Market Today projection](market-today-projection.md) — the landing view reads persisted intelligence only; unsupported strong states must never inflate attention.
+- [Next Best Action rule provenance](next-best-action-rule-provenance.md) — advisory recommendations use the exact immutable Opportunity model policy version and persisted inputs.

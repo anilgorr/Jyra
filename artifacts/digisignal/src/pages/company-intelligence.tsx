@@ -71,6 +71,29 @@ function stateClass(state: string | null | undefined) {
   return "border-border/50 text-muted-foreground bg-muted/50";
 }
 
+type NextBestActionResponse = {
+  projectId: string;
+  projectCompanyId: string;
+  companyId: string;
+  generatedAt: string;
+  recommendation: {
+    action: "CONTACT_NOW" | "RESEARCH_MORE" | "MONITOR" | "WAIT_FOR_SIGNAL" | "REVIEW_DISQUALIFIER" | "REQUEST_INTRODUCTION" | "REOPEN_OPPORTUNITY";
+    label: string;
+    explanation: string;
+    ruleVersion: string;
+    factors: {
+      researchFreshness: string;
+      relationshipStatus: string;
+      knownFirstPartyRelationship: boolean;
+      independentSourceCount: number;
+      negativeSignalCount: number;
+    };
+  };
+};
+
+const getNextBestActionQueryKey = (projectId: string, projectCompanyId: string) =>
+  ["next-best-action", projectId, projectCompanyId] as const;
+
 async function getJson<T>(url: string, allowMissing = false): Promise<T | null> {
   const response = await fetch(url, { credentials: "include" });
   if (allowMissing && response.status === 404) return null;
@@ -149,6 +172,8 @@ function ResearchPanel({
         queryClient.invalidateQueries({ queryKey: getListProjectCompaniesQueryKey(projectId) });
         queryClient.invalidateQueries({ queryKey: getListCompanyEvidenceQueryKey(projectId, projectCompanyId) });
         queryClient.invalidateQueries({ queryKey: getListCompanyFactsQueryKey(projectId, projectCompanyId) });
+        queryClient.invalidateQueries({ queryKey: getNextBestActionQueryKey(projectId, projectCompanyId) });
+        queryClient.invalidateQueries({ queryKey: getGetMarketTodayQueryKey(projectId) });
         if (result.stopped) {
           toast.error("Research stopped", { description: result.reason ?? "No new research was completed." });
         } else if (result.resultStatus.toLowerCase() === "success") {
@@ -249,6 +274,11 @@ export default function CompanyIntelligencePage() {
   });
   const marketQuery = useGetMarketToday(projectId, {
     query: { enabled: Boolean(projectId), queryKey: getGetMarketTodayQueryKey(projectId) },
+  });
+  const nextBestActionQuery = useQuery({
+    queryKey: getNextBestActionQueryKey(projectId, projectCompanyId),
+    enabled: Boolean(projectId && projectCompanyId),
+    queryFn: () => getJson<NextBestActionResponse>(`/api/projects/${projectId}/companies/${projectCompanyId}/next-best-action`),
   });
 
   const signals = useMemo(() => (signalsQuery.data ?? []).filter((item) => item.companyId === companyId), [signalsQuery.data, companyId]);
@@ -357,6 +387,33 @@ export default function CompanyIntelligencePage() {
       </Section>
 
       <ResearchPanel projectId={projectId} projectCompanyId={projectCompanyId} company={researchCompany} />
+
+      <Section eyebrow="NEXT BEST ACTION" title="Deterministic recommendation" icon={<Sparkles className="h-5 w-5" />}>
+        {nextBestActionQuery.isLoading ? (
+          <Card className="border-border/60"><CardContent className="flex items-center gap-3 p-6 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" />Calculating from persisted intelligence…</CardContent></Card>
+        ) : nextBestActionQuery.isError || !nextBestActionQuery.data ? (
+          <Unavailable message="The next best action could not be loaded." />
+        ) : (
+          <Card className="overflow-hidden border-accent/30 shadow-sm" data-testid="next-best-action">
+            <CardContent className="grid gap-6 bg-accent/5 p-6 lg:grid-cols-[1fr_auto] lg:items-center">
+              <div>
+                <div className="flex flex-wrap items-center gap-3">
+                  <Badge className="bg-accent text-accent-foreground">{nextBestActionQuery.data.recommendation.label}</Badge>
+                  <span className="text-xs font-medium text-muted-foreground">Rule {nextBestActionQuery.data.recommendation.ruleVersion}</span>
+                </div>
+                <p className="mt-4 max-w-3xl text-base font-medium leading-relaxed text-foreground">{nextBestActionQuery.data.recommendation.explanation}</p>
+                <p className="mt-3 text-xs text-muted-foreground">Recommendation only. JYRA does not send outreach or execute this action.</p>
+              </div>
+              <div className="grid min-w-[240px] grid-cols-2 gap-3 text-xs">
+                <div className="rounded-lg border bg-background p-3"><p className="text-muted-foreground">Research</p><p className="mt-1 font-semibold">{label(nextBestActionQuery.data.recommendation.factors.researchFreshness)}</p></div>
+                <div className="rounded-lg border bg-background p-3"><p className="text-muted-foreground">Relationship</p><p className="mt-1 font-semibold">{label(nextBestActionQuery.data.recommendation.factors.relationshipStatus)}</p></div>
+                <div className="rounded-lg border bg-background p-3"><p className="text-muted-foreground">Independent sources</p><p className="mt-1 font-semibold">{nextBestActionQuery.data.recommendation.factors.independentSourceCount}</p></div>
+                <div className="rounded-lg border bg-background p-3"><p className="text-muted-foreground">Negative signals</p><p className="mt-1 font-semibold">{nextBestActionQuery.data.recommendation.factors.negativeSignalCount}</p></div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+      </Section>
 
       <Section eyebrow="OPPORTUNITY" title="State and movement" icon={<TrendingUp className="h-5 w-5" />}>
         {assessmentQuery.isError ? <Unavailable message="Opportunity assessment and history could not be loaded." /> : <div className="grid gap-4 md:grid-cols-3">

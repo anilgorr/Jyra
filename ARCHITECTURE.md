@@ -166,6 +166,14 @@ WHY is a downstream, read-only interpretation of an opportunity assessment. The 
 
 RESEARCH NOW invokes the existing bounded research execution endpoint and creates a fresh provider-backed research attempt. Existing evidence is never presented as a new sweep. Public company evidence remains reusable under its preserving organization’s review ownership; Opportunity assessments, relationship context, research jobs, and project interpretation remain project-authorized.
 
+## Next Best Action
+
+Phase 18 adds a generic deterministic recommendation layer over persisted project-company intelligence. It reads Opportunity state and dimensions, Confidence, research freshness, current negative signals, independent source count, and the customer-maintained first-party relationship status. It does not use industry branches, inferred contacts, predictive conversion claims, or model-generated advice.
+
+The evaluator returns exactly one of `CONTACT_NOW`, `RESEARCH_MORE`, `MONITOR`, `WAIT_FOR_SIGNAL`, `REVIEW_DISQUALIFIER`, `REQUEST_INTRODUCTION`, or `REOPEN_OPPORTUNITY`, plus a rule version, explanation, and input-factor summary. NBA thresholds and relationship groups are read from the immutable Opportunity model version’s `nextBestAction` rule block, defaulting to `NBA_V1`; the response identifies both the NBA version and the persisted Opportunity model version.
+
+Recommendations are computed on authorized reads from current persisted intelligence and do not mutate Opportunity history. RESEARCH_MORE and other actions are recommendations only; no outreach or external action is executed.
+
 Future research work should use a simple database-backed job table suitable for Replit:
 
 1. API creates a planned job.
