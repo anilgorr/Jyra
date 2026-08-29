@@ -1,0 +1,234 @@
+Before making changes:
+
+1. Read PRODUCT_SPEC.md, ARCHITECTURE.md, DATABASE.md, SIGNALS.md, PROVIDERS.md, CHANGELOG.md and the entire relevant current codebase if these files already exist.
+
+2. Preserve all working functionality.
+
+3. Implement only the milestone described below.
+
+4. Do not redesign unrelated areas.
+
+5. Create a checkpoint before major changes.
+
+6. Run migrations and tests before completing the milestone.
+
+7. Update documentation after implementation.
+
+8. Do not claim the milestone is complete unless the acceptance criteria pass.
+
+9. Prefer deterministic business logic over LLM reasoning wherever possible.
+
+10. Do not fabricate data, evidence, people, companies, signals, buying intent or outcomes.
+
+You are the principal product engineer and AI architect building a new B2B SaaS application called DigiSignal.
+
+Build the application from scratch.
+
+PRODUCT NAME
+
+DigiSignal
+
+PRODUCT PHILOSOPHY
+
+Who. When. Why.
+
+CORE PRODUCT PROMISE
+
+DigiSignal continuously researches a seller's market, detects evidence of commercial need and timing, identifies the companies that deserve attention, explains why now, identifies relevant buyers, and learns from actual sales outcomes.
+
+DigiSignal is NOT primarily:
+
+- a lead database
+- an email scraper
+- a cold-email platform
+- a CRM
+- an outreach sequencer
+- a generic AI research agent
+
+The core product question is:
+
+"Out of all possible companies, which small number should this seller focus on now, why, and what should they do next?"
+
+CORE INFORMATION FLOW
+
+Business Twin
+→ ICP
+→ Market Universe
+→ Company Qualification
+→ Research Planner
+→ Provider Router
+→ Market Research
+→ Evidence
+→ Facts
+→ Signals
+→ Signal Clusters
+→ Fit
+→ Need
+→ Timing
+→ Relationship
+→ Confidence
+→ Opportunity Engine
+→ Opportunity State
+→ Why Now
+→ Buying Committee
+→ Contact Enrichment
+→ Recommended Action
+→ Outcome
+→ Learning
+
+CORE ARCHITECTURAL PRINCIPLES
+
+1. Company first, people later.
+
+Do not discover and enrich thousands of contacts first.
+
+Determine whether a company is commercially interesting before spending money finding people.
+
+2. Evidence before interpretation.
+
+The system must preserve original source evidence.
+
+3. Separate:
+
+FACT
+SIGNAL
+INTERPRETATION
+HYPOTHESIS
+
+Example:
+
+FACT:
+Company has seven open cybersecurity roles.
+
+SIGNAL:
+Security hiring acceleration.
+
+INTERPRETATION:
+Security investment appears to be increasing.
+
+HYPOTHESIS:
+The company may need managed security services.
+
+Never store these as the same thing.
+
+4. Every important commercial conclusion should be explainable.
+
+5. Every Why Now statement must be traceable to evidence.
+
+6. LLMs must not control:
+
+- tenant authorization
+- identity resolution
+- scoring mathematics
+- billing
+- evidence provenance
+- provider cost accounting
+- database permissions
+- canonical entity identity
+
+7. Use AI where it adds value:
+
+- Business Twin interpretation
+- ICP assistance
+- structured fact extraction
+- ambiguous classification
+- research-question generation
+- Why Now writing
+- explanation
+
+8. Use deterministic logic wherever possible:
+
+- scoring
+- signal detection
+- decay
+- opportunity state
+- confidence calculation
+- research budgets
+- provider routing
+- stopping rules
+
+9. Missing information is uncertainty.
+
+Missing evidence must not automatically mean absence of need.
+
+10. Optimize research cost.
+
+Research cheap sources first.
+
+Spend more only on companies where additional information could change the commercial decision.
+
+11. Public company intelligence should be reusable globally.
+
+Customer-specific commercial interpretations must remain private.
+
+12. Avoid premature infrastructure.
+
+STARTING STACK
+
+Use:
+
+- Next.js
+- TypeScript
+- React
+- Tailwind
+- shadcn/ui
+- PostgreSQL
+- Replit deployment
+- Replit secrets
+- a simple background job architecture suitable for Replit
+
+Use pgvector only if a real semantic-search requirement appears.
+
+Do NOT initially introduce:
+
+- Neo4j
+- Kafka
+- Kubernetes
+- Temporal
+- Qdrant unless clearly required
+- microservice sprawl
+- complex event buses
+- large autonomous agent frameworks
+
+DESIGN
+
+Premium enterprise intelligence application.
+
+Visually:
+
+- understated
+- corporate
+- clean
+- high information density
+- restrained typography
+- minimal gradients
+- no gamified giant score circles
+
+Primary product language:
+
+Who. When. Why.
+
+Create these documentation files before implementing major product logic:
+
+PRODUCT_SPEC.md
+ARCHITECTURE.md
+DATABASE.md
+SIGNALS.md
+PROVIDERS.md
+SECURITY.md
+CHANGELOG.md
+
+Document the complete architecture described above.
+
+Do not build all functionality in this milestone.
+
+ACCEPTANCE CRITERIA
+
+This phase is complete when:
+
+- the application skeleton exists
+- the technical architecture is documented
+- future phases have clear boundaries
+- the chosen stack runs in Replit
+- the documentation files exist
+- no major product feature has been prematurely implemented

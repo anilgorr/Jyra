@@ -10,6 +10,8 @@ servers:
 tags:
   - name: health
     description: Health operations
+  - name: workspace
+    description: Foundation workspace status operations
 paths:
   /healthz:
     get:
@@ -24,6 +26,49 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /workspace/summary:
+    get:
+      operationId: getWorkspaceSummary
+      tags: [workspace]
+      summary: Get foundation workspace summary
+      description: Returns the current foundation milestone status without inventing market or company intelligence.
+      responses:
+        "200":
+          description: Foundation workspace summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkspaceSummary"
+  /workspace/capabilities:
+    get:
+      operationId: getWorkspaceCapabilities
+      tags: [workspace]
+      summary: List product capability phases
+      description: Returns the documented product phases and their implementation status.
+      responses:
+        "200":
+          description: Product capability phases
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CapabilityPhase"
+  /workspace/activity:
+    get:
+      operationId: getWorkspaceActivity
+      tags: [workspace]
+      summary: List workspace activity
+      description: Returns activity recorded by implemented workspace workflows. The foundation milestone intentionally returns an empty list.
+      responses:
+        "200":
+          description: Workspace activity
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/WorkspaceActivity"
 components:
   schemas:
     HealthStatus:
@@ -33,4 +78,65 @@ components:
           type: string
       required:
         - status
+    WorkspaceSummary:
+      type: object
+      properties:
+        milestone:
+          type: string
+        milestoneLabel:
+          type: string
+        researchStatus:
+          type: string
+        intelligenceCount:
+          type: number
+        activeSignalCount:
+          type: number
+        qualifiedCompanyCount:
+          type: number
+        nextMilestone:
+          type: string
+      required:
+        - milestone
+        - milestoneLabel
+        - researchStatus
+        - intelligenceCount
+        - activeSignalCount
+        - qualifiedCompanyCount
+        - nextMilestone
+    CapabilityPhase:
+      type: object
+      properties:
+        id:
+          type: string
+        label:
+          type: string
+        description:
+          type: string
+        status:
+          type: string
+        order:
+          type: number
+      required:
+        - id
+        - label
+        - description
+        - status
+        - order
+    WorkspaceActivity:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        label:
+          type: string
+        occurredAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - type
+        - label
+        - occurredAt
 

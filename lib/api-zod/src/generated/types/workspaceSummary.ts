@@ -5,9 +5,6 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
-export interface HealthStatus {
-  status: string;
-}
 
 export interface WorkspaceSummary {
   milestone: string;
@@ -18,19 +15,3 @@ export interface WorkspaceSummary {
   qualifiedCompanyCount: number;
   nextMilestone: string;
 }
-
-export interface CapabilityPhase {
-  id: string;
-  label: string;
-  description: string;
-  status: string;
-  order: number;
-}
-
-export interface WorkspaceActivity {
-  id: string;
-  type: string;
-  label: string;
-  occurredAt: string;
-}
-

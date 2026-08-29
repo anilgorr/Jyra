@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "DigiSignal"
+description = "A premium B2B market intelligence workspace that helps sellers understand which companies deserve attention now, why, and what to do next. This first milestone establishes the product shell and documented architecture for future evidence-based research workflows."
+version = "1.0.0"
+id = "artifacts/digisignal"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 19442
+
+[services.development]
+run = "pnpm --filter @workspace/digisignal run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/digisignal", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/digisignal/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "19442"
+BASE_PATH = "/"

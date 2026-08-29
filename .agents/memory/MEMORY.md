@@ -1,0 +1,1 @@
+- [OpenAPI integer generation](openapi-integer-generation.md) — avoid integer schemas until the workspace Zod/Orval versions agree on the generated integer helper.

@@ -1,6 +1,6 @@
-# [Project name]
+# DigiSignal
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+DigiSignal helps B2B sellers understand which companies deserve attention now, why, and what to do next.
 
 ## Run & Operate
 
@@ -8,8 +8,7 @@ _Replace the heading above with the project's name, and this line with one sente
 - `pnpm run typecheck` — full typecheck across all packages
 - `pnpm run build` — typecheck + build all packages
 - `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
-- `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `DATABASE_URL` — Postgres connection string
+- `pnpm --filter @workspace/db run push` — push DB schema changes (dev only; no domain schema is used in the foundation milestone)
 
 ## Stack
 
@@ -22,24 +21,34 @@ _Replace the heading above with the project's name, and this line with one sente
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `artifacts/digisignal` — main React + Vite web application
+- `artifacts/api-server` — shared Express API under `/api`
+- `lib/api-spec/openapi.yaml` — API contract source of truth
+- `lib/db/src/schema` — Drizzle schema source of truth for future domain tables
+- Root documentation files — product and architecture source of truth
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- The foundation milestone intentionally serves zero intelligence records; empty and “not connected” states are honest product behavior.
+- API contracts are defined in OpenAPI and generated into React Query hooks and Zod validation schemas.
+- Research, evidence, commercial interpretation, and learning remain separate future domain boundaries.
+- Deterministic rules own identity, authorization, provenance, scoring, cost, and stopping decisions; AI is assistive only.
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+DigiSignal’s foundation shell introduces the “Who. When. Why.” product language and shows the current milestone, future capability boundaries, and honest empty states. Research and opportunity workflows are intentionally reserved for later milestones.
 
 ## User preferences
 
-_Populate as you build — explicit user instructions worth remembering across sessions._
+No additional user preferences recorded.
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- Run API code generation after editing `lib/api-spec/openapi.yaml`.
+- Do not introduce provider-backed intelligence or fabricated sample data in the foundation milestone.
 
 ## Pointers
 
 - See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and package details
+- See `PRODUCT_SPEC.md` for product boundaries and future phases
+- See `ARCHITECTURE.md` for system boundaries and contract-first decisions
