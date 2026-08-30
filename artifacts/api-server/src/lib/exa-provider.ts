@@ -235,6 +235,19 @@ export function createExaCompanyDiscoveryAdapter(
         if (!Array.isArray(payload.results)) {
           throw new ExaProviderError("MALFORMED_RESPONSE", "Exa returned an unrecognized response", false);
         }
+        const rawResultProjection = payload.results.slice(0, limit).map((raw, index) => {
+          const result = raw && typeof raw === "object" ? raw as ExaResult : {};
+          return {
+            index: index + 1,
+            title: stringValue(result.title) ?? stringValue(result.companyName),
+            url: urlValue(result.url),
+            providerResultId: stringValue(result.id),
+            description: stringValue(result.summary) ?? textFromHighlights(result.highlights),
+            entityStatus: stringValue(result.companyName) || stringValue(result.title)
+              ? "VALID"
+              : "REJECTED_MISSING_NAME",
+          };
+        });
 
         const companies = payload.results
           .filter((result): result is ExaResult => Boolean(result && typeof result === "object"))
@@ -275,6 +288,8 @@ export function createExaCompanyDiscoveryAdapter(
             category: "company",
             numResults: limit,
             rawResultCount: payload.results.length,
+            rawResultProjection,
+            normalizedResultCount: companies.length,
             retrievalTimestamp: capturedAt,
           },
         };

@@ -1,5 +1,13 @@
 # REAL DATA TEST 08 — Exa Company Discovery
 
+## Hotfix 07 resolution
+
+The bounded Hotfix 07 replay completed successfully after direct `exa-js`
+migration, focused query construction, and domain-optional platform-profile
+handling. One company-category call returned ten raw rows and ten initial
+candidates; no downstream or production operations occurred. See
+`artifacts/api-server/HOTFIX_07_EXA_ZERO_CANDIDATES.md`.
+
 ## Implementation decision addendum
 
 After this historical test run, the Exa adapter was changed to use the official

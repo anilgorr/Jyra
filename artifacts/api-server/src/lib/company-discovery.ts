@@ -77,6 +77,19 @@ export type DiscoveryResult = {
   candidates: DiscoveryCandidateReport[];
 };
 
+export function buildHighRecallDiscoveryQueries(
+  targetIndustries: string[],
+  offeringLabel: string,
+): string[] {
+  const offering = offeringLabel.trim() || "the seller's offering";
+  const industries = targetIndustries.map((industry) => industry.trim()).filter(Boolean);
+  if (!industries.length) {
+    return [`companies that may be relevant buyers for ${offering}`];
+  }
+  return industries.map((industry) =>
+    `${industry} companies that may be relevant buyers for ${offering}`.slice(0, 500));
+}
+
 function textValue(value: unknown): string {
   return typeof value === "string" ? value.trim() : "";
 }
@@ -200,26 +213,12 @@ export async function buildDiscoveryPlan(projectId: string): Promise<DiscoveryPl
         .map((criterion) => criterion.description),
     ],
   };
-  const industryGroups = targetIndustries.length
-    ? Array.from({ length: Math.ceil(targetIndustries.length / 3) }, (_, index) =>
-        targetIndustries.slice(index * 3, index * 3 + 3))
-    : [[]];
-  const queries = industryGroups.slice(0, 5).map((industryGroup) => [
-    `Find official websites of companies that may fit ${offeringLabel}.`,
-    geographies.length ? `Countries: ${geographies.join(", ")}.` : "",
-    industryGroup.length ? `Industries: ${industryGroup.join(", ")}.` : "",
-    employeeRange?.minimum !== undefined || employeeRange?.maximum !== undefined
-      ? `Size: ${employeeRange.minimum ?? "UNKNOWN"}-${employeeRange.maximum ?? "UNKNOWN"} employees.`
-      : "",
-    technologyCharacteristics.length
-      ? `Optional traits: ${technologyCharacteristics.join(", ")}.`
-      : "",
-  ].filter(Boolean).join(" ").slice(0, 500));
+  const queries = buildHighRecallDiscoveryQueries(targetIndustries, offeringLabel);
   return {
     businessTwinVersionId: twin?.id ?? null,
     icpVersionId: icp?.id ?? null,
     strategy,
-    queries: queries.length ? queries : ["Find official company websites matching the seller's target market."],
+    queries,
   };
 }
 

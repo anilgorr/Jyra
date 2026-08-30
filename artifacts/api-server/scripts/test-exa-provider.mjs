@@ -83,6 +83,24 @@ assert.equal(
   response.data.companies[1].providerMetadata.originalResultUrl,
   "https://linkedin.com/company/infravault",
 );
+assert.equal(response.metadata.normalizedResultCount, 2);
+assert.equal(response.metadata.rawResultProjection.length, 3);
+assert.deepEqual(response.metadata.rawResultProjection[0], {
+  index: 1,
+  title: "Acme Security",
+  url: "https://www.acme-security.example",
+  providerResultId: "result-1",
+  description: "Cloud security platform for enterprise customers.",
+  entityStatus: "VALID",
+});
+assert.deepEqual(response.metadata.rawResultProjection[2], {
+  index: 3,
+  title: null,
+  url: "https://missing-name.example",
+  providerResultId: "result-3",
+  description: null,
+  entityStatus: "REJECTED_MISSING_NAME",
+});
 assert.equal(response.usage.actualCost, 0.008);
 assert.equal(calls.length, 1);
 assert.equal(calls[0].query, "Find target-market cloud companies");

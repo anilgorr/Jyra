@@ -1,0 +1,777 @@
+{
+  "test": "JYRA REAL DATA HOTFIX 07",
+  "environment": "development",
+  "seller": "Aadit Technologies",
+  "project": "GTM-Q1",
+  "offering": "Managed SOC",
+  "historicalRootCause": "The historical Test 08 call failed with HTTP 400 in the obsolete connector adapter before returning raw results; JYRA filtering was never reached.",
+  "exactHistoricalFailurePoint": "Provider request -> HTTP 400 -> zero raw results",
+  "queryProblem": true,
+  "exaProblem": false,
+  "entityResolutionProblem": false,
+  "domainHandlingProblem": true,
+  "icpFilteringProblem": false,
+  "unknownSemanticsProblem": false,
+  "queryDiagnostics": [
+    {
+      "queryNumber": 1,
+      "exactQuery": "SaaS companies that may be relevant buyers for Managed Soc",
+      "category": "company",
+      "type": "auto",
+      "numResultsRequested": 10,
+      "includedCriteria": [
+        "focused industry",
+        "offering context"
+      ],
+      "omittedCriteria": [
+        "geography",
+        "employee size",
+        "Azure",
+        "Microsoft 365"
+      ],
+      "reason": "High-recall discovery followed by downstream qualification",
+      "httpStatus": 200,
+      "resultCount": 10,
+      "requestId": "hotfix-07:1:b220e720-6d21-4c7a-badf-3aec920febca",
+      "cost": 0.007,
+      "latencyMs": 1854,
+      "rawResultProjection": [
+        {
+          "index": 1,
+          "title": "Digital Maelstrom",
+          "url": "https://digitalmaelstrom.net",
+          "providerResultId": "https://exa.ai/library/organization/fjzrpfm8kmn",
+          "description": null,
+          "entityStatus": "VALID"
+        },
+        {
+          "index": 2,
+          "title": "Truvo Cyber",
+          "url": "https://truvocyber.com",
+          "providerResultId": "https://exa.ai/library/organization/vjby0qxjcbn",
+          "description": null,
+          "entityStatus": "VALID"
+        },
+        {
+          "index": 3,
+          "title": "CyberForge",
+          "url": "https://cyberforgeconsulting.com",
+          "providerResultId": "https://exa.ai/library/organization/39gbqxg8q21",
+          "description": null,
+          "entityStatus": "VALID"
+        },
+        {
+          "index": 4,
+          "title": "Simple IT Inc",
+          "url": "https://simpleitindy.com",
+          "providerResultId": "https://exa.ai/library/organization/jlp00fkpd1z",
+          "description": null,
+          "entityStatus": "VALID"
+        },
+        {
+          "index": 5,
+          "title": "Jutsu Inc.",
+          "url": "https://agentsoc.com",
+          "providerResultId": "https://exa.ai/library/organization/q0sns1fmj90",
+          "description": null,
+          "entityStatus": "VALID"
+        },
+        {
+          "index": 6,
+          "title": "CybrX IT",
+          "url": "https://cybrxit.com",
+          "providerResultId": "https://exa.ai/library/organization/jwlxpvb1ymy",
+          "description": null,
+          "entityStatus": "VALID"
+        },
+        {
+          "index": 7,
+          "title": "Cycore",
+          "url": "https://cycoresecure.com",
+          "providerResultId": "https://exa.ai/library/organization/8w35v4vmm05",
+          "description": null,
+          "entityStatus": "VALID"
+        },
+        {
+          "index": 8,
+          "title": "SecureSky",
+          "url": "https://securesky.com",
+          "providerResultId": "https://exa.ai/library/organization/x2r6b3zs4vr",
+          "description": null,
+          "entityStatus": "VALID"
+        },
+        {
+          "index": 9,
+          "title": "Decrypt Compliance",
+          "url": "https://decrypt.cpa",
+          "providerResultId": "https://exa.ai/library/organization/vrytr4m658c",
+          "description": null,
+          "entityStatus": "VALID"
+        },
+        {
+          "index": 10,
+          "title": "Secov",
+          "url": "https://linkedin.com/company/secovhq",
+          "providerResultId": "https://exa.ai/library/organization/5wbj8vfj2n5",
+          "description": null,
+          "entityStatus": "VALID"
+        }
+      ]
+    }
+  ],
+  "stages": [
+    {
+      "candidate": {
+        "name": "Digital Maelstrom",
+        "domain": "digitalmaelstrom.net",
+        "website": "https://digitalmaelstrom.net",
+        "description": null,
+        "industry": null,
+        "location": null,
+        "employeeCount": null,
+        "employeeRange": null,
+        "linkedinUrl": null,
+        "profileUrls": {},
+        "sourceUrl": "https://digitalmaelstrom.net",
+        "relevanceScore": null,
+        "providerMetadata": {
+          "resultId": "https://exa.ai/library/organization/fjzrpfm8kmn",
+          "title": "Digital Maelstrom",
+          "author": "Exa",
+          "publishedDate": "2026-06-29T00:00:00.000Z",
+          "originalResultUrl": "https://digitalmaelstrom.net",
+          "profilePlatform": null
+        }
+      },
+      "query": "SaaS companies that may be relevant buyers for Managed Soc",
+      "entityStatus": "ACCEPTED",
+      "domainStatus": "HIGH_CONFIDENCE",
+      "canonicalizationStatus": "ACCEPTED_DOMAIN_OPTIONAL",
+      "icpStatus": "INSUFFICIENT_DATA",
+      "finalCandidate": true,
+      "reason": "Usable non-platform domain"
+    },
+    {
+      "candidate": {
+        "name": "Truvo Cyber",
+        "domain": "truvocyber.com",
+        "website": "https://truvocyber.com",
+        "description": null,
+        "industry": null,
+        "location": null,
+        "employeeCount": null,
+        "employeeRange": null,
+        "linkedinUrl": null,
+        "profileUrls": {},
+        "sourceUrl": "https://truvocyber.com",
+        "relevanceScore": null,
+        "providerMetadata": {
+          "resultId": "https://exa.ai/library/organization/vjby0qxjcbn",
+          "title": "Truvo Cyber",
+          "author": "Exa",
+          "publishedDate": "2026-06-02T00:00:00.000Z",
+          "originalResultUrl": "https://truvocyber.com",
+          "profilePlatform": null
+        }
+      },
+      "query": "SaaS companies that may be relevant buyers for Managed Soc",
+      "entityStatus": "ACCEPTED",
+      "domainStatus": "HIGH_CONFIDENCE",
+      "canonicalizationStatus": "ACCEPTED_DOMAIN_OPTIONAL",
+      "icpStatus": "INSUFFICIENT_DATA",
+      "finalCandidate": true,
+      "reason": "Usable non-platform domain"
+    },
+    {
+      "candidate": {
+        "name": "CyberForge",
+        "domain": "cyberforgeconsulting.com",
+        "website": "https://cyberforgeconsulting.com",
+        "description": null,
+        "industry": null,
+        "location": null,
+        "employeeCount": null,
+        "employeeRange": null,
+        "linkedinUrl": null,
+        "profileUrls": {},
+        "sourceUrl": "https://cyberforgeconsulting.com",
+        "relevanceScore": null,
+        "providerMetadata": {
+          "resultId": "https://exa.ai/library/organization/39gbqxg8q21",
+          "title": "CyberForge",
+          "author": "Exa",
+          "publishedDate": "2026-06-05T00:00:00.000Z",
+          "originalResultUrl": "https://cyberforgeconsulting.com",
+          "profilePlatform": null
+        }
+      },
+      "query": "SaaS companies that may be relevant buyers for Managed Soc",
+      "entityStatus": "ACCEPTED",
+      "domainStatus": "HIGH_CONFIDENCE",
+      "canonicalizationStatus": "ACCEPTED_DOMAIN_OPTIONAL",
+      "icpStatus": "INSUFFICIENT_DATA",
+      "finalCandidate": true,
+      "reason": "Usable non-platform domain"
+    },
+    {
+      "candidate": {
+        "name": "Simple IT Inc",
+        "domain": "simpleitindy.com",
+        "website": "https://simpleitindy.com",
+        "description": null,
+        "industry": null,
+        "location": null,
+        "employeeCount": null,
+        "employeeRange": null,
+        "linkedinUrl": null,
+        "profileUrls": {},
+        "sourceUrl": "https://simpleitindy.com",
+        "relevanceScore": null,
+        "providerMetadata": {
+          "resultId": "https://exa.ai/library/organization/jlp00fkpd1z",
+          "title": "Simple IT Inc",
+          "author": "Exa",
+          "publishedDate": "2026-06-25T00:00:00.000Z",
+          "originalResultUrl": "https://simpleitindy.com",
+          "profilePlatform": null
+        }
+      },
+      "query": "SaaS companies that may be relevant buyers for Managed Soc",
+      "entityStatus": "ACCEPTED",
+      "domainStatus": "HIGH_CONFIDENCE",
+      "canonicalizationStatus": "ACCEPTED_DOMAIN_OPTIONAL",
+      "icpStatus": "INSUFFICIENT_DATA",
+      "finalCandidate": true,
+      "reason": "Usable non-platform domain"
+    },
+    {
+      "candidate": {
+        "name": "Jutsu Inc.",
+        "domain": "agentsoc.com",
+        "website": "https://agentsoc.com",
+        "description": null,
+        "industry": null,
+        "location": null,
+        "employeeCount": null,
+        "employeeRange": null,
+        "linkedinUrl": null,
+        "profileUrls": {},
+        "sourceUrl": "https://agentsoc.com",
+        "relevanceScore": null,
+        "providerMetadata": {
+          "resultId": "https://exa.ai/library/organization/q0sns1fmj90",
+          "title": "Jutsu Inc.",
+          "author": "Exa",
+          "publishedDate": "2026-05-27T00:00:00.000Z",
+          "originalResultUrl": "https://agentsoc.com",
+          "profilePlatform": null
+        }
+      },
+      "query": "SaaS companies that may be relevant buyers for Managed Soc",
+      "entityStatus": "ACCEPTED",
+      "domainStatus": "HIGH_CONFIDENCE",
+      "canonicalizationStatus": "ACCEPTED_DOMAIN_OPTIONAL",
+      "icpStatus": "INSUFFICIENT_DATA",
+      "finalCandidate": true,
+      "reason": "Usable non-platform domain"
+    },
+    {
+      "candidate": {
+        "name": "CybrX IT",
+        "domain": "cybrxit.com",
+        "website": "https://cybrxit.com",
+        "description": null,
+        "industry": null,
+        "location": null,
+        "employeeCount": null,
+        "employeeRange": null,
+        "linkedinUrl": null,
+        "profileUrls": {},
+        "sourceUrl": "https://cybrxit.com",
+        "relevanceScore": null,
+        "providerMetadata": {
+          "resultId": "https://exa.ai/library/organization/jwlxpvb1ymy",
+          "title": "CybrX IT",
+          "author": "Exa",
+          "publishedDate": "2026-06-28T00:00:00.000Z",
+          "originalResultUrl": "https://cybrxit.com",
+          "profilePlatform": null
+        }
+      },
+      "query": "SaaS companies that may be relevant buyers for Managed Soc",
+      "entityStatus": "ACCEPTED",
+      "domainStatus": "HIGH_CONFIDENCE",
+      "canonicalizationStatus": "ACCEPTED_DOMAIN_OPTIONAL",
+      "icpStatus": "INSUFFICIENT_DATA",
+      "finalCandidate": true,
+      "reason": "Usable non-platform domain"
+    },
+    {
+      "candidate": {
+        "name": "Cycore",
+        "domain": "cycoresecure.com",
+        "website": "https://cycoresecure.com",
+        "description": null,
+        "industry": null,
+        "location": null,
+        "employeeCount": null,
+        "employeeRange": null,
+        "linkedinUrl": null,
+        "profileUrls": {},
+        "sourceUrl": "https://cycoresecure.com",
+        "relevanceScore": null,
+        "providerMetadata": {
+          "resultId": "https://exa.ai/library/organization/8w35v4vmm05",
+          "title": "Cycore",
+          "author": "Exa",
+          "publishedDate": "2026-06-21T00:00:00.000Z",
+          "originalResultUrl": "https://cycoresecure.com",
+          "profilePlatform": null
+        }
+      },
+      "query": "SaaS companies that may be relevant buyers for Managed Soc",
+      "entityStatus": "ACCEPTED",
+      "domainStatus": "HIGH_CONFIDENCE",
+      "canonicalizationStatus": "ACCEPTED_DOMAIN_OPTIONAL",
+      "icpStatus": "INSUFFICIENT_DATA",
+      "finalCandidate": true,
+      "reason": "Usable non-platform domain"
+    },
+    {
+      "candidate": {
+        "name": "SecureSky",
+        "domain": "securesky.com",
+        "website": "https://securesky.com",
+        "description": null,
+        "industry": null,
+        "location": null,
+        "employeeCount": null,
+        "employeeRange": null,
+        "linkedinUrl": null,
+        "profileUrls": {},
+        "sourceUrl": "https://securesky.com",
+        "relevanceScore": null,
+        "providerMetadata": {
+          "resultId": "https://exa.ai/library/organization/x2r6b3zs4vr",
+          "title": "SecureSky",
+          "author": "Exa",
+          "publishedDate": "2026-06-26T00:00:00.000Z",
+          "originalResultUrl": "https://securesky.com",
+          "profilePlatform": null
+        }
+      },
+      "query": "SaaS companies that may be relevant buyers for Managed Soc",
+      "entityStatus": "ACCEPTED",
+      "domainStatus": "HIGH_CONFIDENCE",
+      "canonicalizationStatus": "ACCEPTED_DOMAIN_OPTIONAL",
+      "icpStatus": "INSUFFICIENT_DATA",
+      "finalCandidate": true,
+      "reason": "Usable non-platform domain"
+    },
+    {
+      "candidate": {
+        "name": "Decrypt Compliance",
+        "domain": "decrypt.cpa",
+        "website": "https://decrypt.cpa",
+        "description": null,
+        "industry": null,
+        "location": null,
+        "employeeCount": null,
+        "employeeRange": null,
+        "linkedinUrl": null,
+        "profileUrls": {},
+        "sourceUrl": "https://decrypt.cpa",
+        "relevanceScore": null,
+        "providerMetadata": {
+          "resultId": "https://exa.ai/library/organization/vrytr4m658c",
+          "title": "Decrypt Compliance",
+          "author": "Exa",
+          "publishedDate": "2026-06-14T00:00:00.000Z",
+          "originalResultUrl": "https://decrypt.cpa",
+          "profilePlatform": null
+        }
+      },
+      "query": "SaaS companies that may be relevant buyers for Managed Soc",
+      "entityStatus": "ACCEPTED",
+      "domainStatus": "HIGH_CONFIDENCE",
+      "canonicalizationStatus": "ACCEPTED_DOMAIN_OPTIONAL",
+      "icpStatus": "INSUFFICIENT_DATA",
+      "finalCandidate": true,
+      "reason": "Usable non-platform domain"
+    },
+    {
+      "candidate": {
+        "name": "Secov",
+        "domain": null,
+        "website": null,
+        "description": null,
+        "industry": null,
+        "location": null,
+        "employeeCount": null,
+        "employeeRange": null,
+        "linkedinUrl": "https://linkedin.com/company/secovhq",
+        "profileUrls": {
+          "linkedin": "https://linkedin.com/company/secovhq"
+        },
+        "sourceUrl": "https://linkedin.com/company/secovhq",
+        "relevanceScore": null,
+        "providerMetadata": {
+          "resultId": "https://exa.ai/library/organization/5wbj8vfj2n5",
+          "title": "Secov",
+          "author": "Exa",
+          "publishedDate": "2026-06-26T00:00:00.000Z",
+          "originalResultUrl": "https://linkedin.com/company/secovhq",
+          "profilePlatform": "linkedin"
+        }
+      },
+      "query": "SaaS companies that may be relevant buyers for Managed Soc",
+      "entityStatus": "ACCEPTED",
+      "domainStatus": "NEEDS_RESOLUTION",
+      "canonicalizationStatus": "ACCEPTED_DOMAIN_OPTIONAL",
+      "icpStatus": "INSUFFICIENT_DATA",
+      "finalCandidate": true,
+      "reason": "Valid company identity; unresolved domain is not a rejection"
+    }
+  ],
+  "counts": {
+    "discoveryQueries": 1,
+    "exaCompanyCategoryCalls": 1,
+    "rawCompanyCategoryResults": 10,
+    "generalSearchComparisonCalls": 0,
+    "generalSearchRawResults": 0,
+    "entityRejections": 0,
+    "ambiguousEntities": 0,
+    "domainRelatedDrops": 0,
+    "canonicalizationDrops": 0,
+    "duplicates": 0,
+    "icpRelatedRejections": 0,
+    "unknownDataRejections": 0,
+    "finalCandidates": 10
+  },
+  "rawResultsBeforeFix": 0,
+  "finalCandidatesBeforeFix": 0,
+  "rawResultsAfterFix": 10,
+  "finalCandidatesAfterFix": [
+    {
+      "candidate": {
+        "name": "Digital Maelstrom",
+        "domain": "digitalmaelstrom.net",
+        "website": "https://digitalmaelstrom.net",
+        "description": null,
+        "industry": null,
+        "location": null,
+        "employeeCount": null,
+        "employeeRange": null,
+        "linkedinUrl": null,
+        "profileUrls": {},
+        "sourceUrl": "https://digitalmaelstrom.net",
+        "relevanceScore": null,
+        "providerMetadata": {
+          "resultId": "https://exa.ai/library/organization/fjzrpfm8kmn",
+          "title": "Digital Maelstrom",
+          "author": "Exa",
+          "publishedDate": "2026-06-29T00:00:00.000Z",
+          "originalResultUrl": "https://digitalmaelstrom.net",
+          "profilePlatform": null
+        }
+      },
+      "query": "SaaS companies that may be relevant buyers for Managed Soc",
+      "entityStatus": "ACCEPTED",
+      "domainStatus": "HIGH_CONFIDENCE",
+      "canonicalizationStatus": "ACCEPTED_DOMAIN_OPTIONAL",
+      "icpStatus": "INSUFFICIENT_DATA",
+      "finalCandidate": true,
+      "reason": "Usable non-platform domain"
+    },
+    {
+      "candidate": {
+        "name": "Truvo Cyber",
+        "domain": "truvocyber.com",
+        "website": "https://truvocyber.com",
+        "description": null,
+        "industry": null,
+        "location": null,
+        "employeeCount": null,
+        "employeeRange": null,
+        "linkedinUrl": null,
+        "profileUrls": {},
+        "sourceUrl": "https://truvocyber.com",
+        "relevanceScore": null,
+        "providerMetadata": {
+          "resultId": "https://exa.ai/library/organization/vjby0qxjcbn",
+          "title": "Truvo Cyber",
+          "author": "Exa",
+          "publishedDate": "2026-06-02T00:00:00.000Z",
+          "originalResultUrl": "https://truvocyber.com",
+          "profilePlatform": null
+        }
+      },
+      "query": "SaaS companies that may be relevant buyers for Managed Soc",
+      "entityStatus": "ACCEPTED",
+      "domainStatus": "HIGH_CONFIDENCE",
+      "canonicalizationStatus": "ACCEPTED_DOMAIN_OPTIONAL",
+      "icpStatus": "INSUFFICIENT_DATA",
+      "finalCandidate": true,
+      "reason": "Usable non-platform domain"
+    },
+    {
+      "candidate": {
+        "name": "CyberForge",
+        "domain": "cyberforgeconsulting.com",
+        "website": "https://cyberforgeconsulting.com",
+        "description": null,
+        "industry": null,
+        "location": null,
+        "employeeCount": null,
+        "employeeRange": null,
+        "linkedinUrl": null,
+        "profileUrls": {},
+        "sourceUrl": "https://cyberforgeconsulting.com",
+        "relevanceScore": null,
+        "providerMetadata": {
+          "resultId": "https://exa.ai/library/organization/39gbqxg8q21",
+          "title": "CyberForge",
+          "author": "Exa",
+          "publishedDate": "2026-06-05T00:00:00.000Z",
+          "originalResultUrl": "https://cyberforgeconsulting.com",
+          "profilePlatform": null
+        }
+      },
+      "query": "SaaS companies that may be relevant buyers for Managed Soc",
+      "entityStatus": "ACCEPTED",
+      "domainStatus": "HIGH_CONFIDENCE",
+      "canonicalizationStatus": "ACCEPTED_DOMAIN_OPTIONAL",
+      "icpStatus": "INSUFFICIENT_DATA",
+      "finalCandidate": true,
+      "reason": "Usable non-platform domain"
+    },
+    {
+      "candidate": {
+        "name": "Simple IT Inc",
+        "domain": "simpleitindy.com",
+        "website": "https://simpleitindy.com",
+        "description": null,
+        "industry": null,
+        "location": null,
+        "employeeCount": null,
+        "employeeRange": null,
+        "linkedinUrl": null,
+        "profileUrls": {},
+        "sourceUrl": "https://simpleitindy.com",
+        "relevanceScore": null,
+        "providerMetadata": {
+          "resultId": "https://exa.ai/library/organization/jlp00fkpd1z",
+          "title": "Simple IT Inc",
+          "author": "Exa",
+          "publishedDate": "2026-06-25T00:00:00.000Z",
+          "originalResultUrl": "https://simpleitindy.com",
+          "profilePlatform": null
+        }
+      },
+      "query": "SaaS companies that may be relevant buyers for Managed Soc",
+      "entityStatus": "ACCEPTED",
+      "domainStatus": "HIGH_CONFIDENCE",
+      "canonicalizationStatus": "ACCEPTED_DOMAIN_OPTIONAL",
+      "icpStatus": "INSUFFICIENT_DATA",
+      "finalCandidate": true,
+      "reason": "Usable non-platform domain"
+    },
+    {
+      "candidate": {
+        "name": "Jutsu Inc.",
+        "domain": "agentsoc.com",
+        "website": "https://agentsoc.com",
+        "description": null,
+        "industry": null,
+        "location": null,
+        "employeeCount": null,
+        "employeeRange": null,
+        "linkedinUrl": null,
+        "profileUrls": {},
+        "sourceUrl": "https://agentsoc.com",
+        "relevanceScore": null,
+        "providerMetadata": {
+          "resultId": "https://exa.ai/library/organization/q0sns1fmj90",
+          "title": "Jutsu Inc.",
+          "author": "Exa",
+          "publishedDate": "2026-05-27T00:00:00.000Z",
+          "originalResultUrl": "https://agentsoc.com",
+          "profilePlatform": null
+        }
+      },
+      "query": "SaaS companies that may be relevant buyers for Managed Soc",
+      "entityStatus": "ACCEPTED",
+      "domainStatus": "HIGH_CONFIDENCE",
+      "canonicalizationStatus": "ACCEPTED_DOMAIN_OPTIONAL",
+      "icpStatus": "INSUFFICIENT_DATA",
+      "finalCandidate": true,
+      "reason": "Usable non-platform domain"
+    },
+    {
+      "candidate": {
+        "name": "CybrX IT",
+        "domain": "cybrxit.com",
+        "website": "https://cybrxit.com",
+        "description": null,
+        "industry": null,
+        "location": null,
+        "employeeCount": null,
+        "employeeRange": null,
+        "linkedinUrl": null,
+        "profileUrls": {},
+        "sourceUrl": "https://cybrxit.com",
+        "relevanceScore": null,
+        "providerMetadata": {
+          "resultId": "https://exa.ai/library/organization/jwlxpvb1ymy",
+          "title": "CybrX IT",
+          "author": "Exa",
+          "publishedDate": "2026-06-28T00:00:00.000Z",
+          "originalResultUrl": "https://cybrxit.com",
+          "profilePlatform": null
+        }
+      },
+      "query": "SaaS companies that may be relevant buyers for Managed Soc",
+      "entityStatus": "ACCEPTED",
+      "domainStatus": "HIGH_CONFIDENCE",
+      "canonicalizationStatus": "ACCEPTED_DOMAIN_OPTIONAL",
+      "icpStatus": "INSUFFICIENT_DATA",
+      "finalCandidate": true,
+      "reason": "Usable non-platform domain"
+    },
+    {
+      "candidate": {
+        "name": "Cycore",
+        "domain": "cycoresecure.com",
+        "website": "https://cycoresecure.com",
+        "description": null,
+        "industry": null,
+        "location": null,
+        "employeeCount": null,
+        "employeeRange": null,
+        "linkedinUrl": null,
+        "profileUrls": {},
+        "sourceUrl": "https://cycoresecure.com",
+        "relevanceScore": null,
+        "providerMetadata": {
+          "resultId": "https://exa.ai/library/organization/8w35v4vmm05",
+          "title": "Cycore",
+          "author": "Exa",
+          "publishedDate": "2026-06-21T00:00:00.000Z",
+          "originalResultUrl": "https://cycoresecure.com",
+          "profilePlatform": null
+        }
+      },
+      "query": "SaaS companies that may be relevant buyers for Managed Soc",
+      "entityStatus": "ACCEPTED",
+      "domainStatus": "HIGH_CONFIDENCE",
+      "canonicalizationStatus": "ACCEPTED_DOMAIN_OPTIONAL",
+      "icpStatus": "INSUFFICIENT_DATA",
+      "finalCandidate": true,
+      "reason": "Usable non-platform domain"
+    },
+    {
+      "candidate": {
+        "name": "SecureSky",
+        "domain": "securesky.com",
+        "website": "https://securesky.com",
+        "description": null,
+        "industry": null,
+        "location": null,
+        "employeeCount": null,
+        "employeeRange": null,
+        "linkedinUrl": null,
+        "profileUrls": {},
+        "sourceUrl": "https://securesky.com",
+        "relevanceScore": null,
+        "providerMetadata": {
+          "resultId": "https://exa.ai/library/organization/x2r6b3zs4vr",
+          "title": "SecureSky",
+          "author": "Exa",
+          "publishedDate": "2026-06-26T00:00:00.000Z",
+          "originalResultUrl": "https://securesky.com",
+          "profilePlatform": null
+        }
+      },
+      "query": "SaaS companies that may be relevant buyers for Managed Soc",
+      "entityStatus": "ACCEPTED",
+      "domainStatus": "HIGH_CONFIDENCE",
+      "canonicalizationStatus": "ACCEPTED_DOMAIN_OPTIONAL",
+      "icpStatus": "INSUFFICIENT_DATA",
+      "finalCandidate": true,
+      "reason": "Usable non-platform domain"
+    },
+    {
+      "candidate": {
+        "name": "Decrypt Compliance",
+        "domain": "decrypt.cpa",
+        "website": "https://decrypt.cpa",
+        "description": null,
+        "industry": null,
+        "location": null,
+        "employeeCount": null,
+        "employeeRange": null,
+        "linkedinUrl": null,
+        "profileUrls": {},
+        "sourceUrl": "https://decrypt.cpa",
+        "relevanceScore": null,
+        "providerMetadata": {
+          "resultId": "https://exa.ai/library/organization/vrytr4m658c",
+          "title": "Decrypt Compliance",
+          "author": "Exa",
+          "publishedDate": "2026-06-14T00:00:00.000Z",
+          "originalResultUrl": "https://decrypt.cpa",
+          "profilePlatform": null
+        }
+      },
+      "query": "SaaS companies that may be relevant buyers for Managed Soc",
+      "entityStatus": "ACCEPTED",
+      "domainStatus": "HIGH_CONFIDENCE",
+      "canonicalizationStatus": "ACCEPTED_DOMAIN_OPTIONAL",
+      "icpStatus": "INSUFFICIENT_DATA",
+      "finalCandidate": true,
+      "reason": "Usable non-platform domain"
+    },
+    {
+      "candidate": {
+        "name": "Secov",
+        "domain": null,
+        "website": null,
+        "description": null,
+        "industry": null,
+        "location": null,
+        "employeeCount": null,
+        "employeeRange": null,
+        "linkedinUrl": "https://linkedin.com/company/secovhq",
+        "profileUrls": {
+          "linkedin": "https://linkedin.com/company/secovhq"
+        },
+        "sourceUrl": "https://linkedin.com/company/secovhq",
+        "relevanceScore": null,
+        "providerMetadata": {
+          "resultId": "https://exa.ai/library/organization/5wbj8vfj2n5",
+          "title": "Secov",
+          "author": "Exa",
+          "publishedDate": "2026-06-26T00:00:00.000Z",
+          "originalResultUrl": "https://linkedin.com/company/secovhq",
+          "profilePlatform": "linkedin"
+        }
+      },
+      "query": "SaaS companies that may be relevant buyers for Managed Soc",
+      "entityStatus": "ACCEPTED",
+      "domainStatus": "NEEDS_RESOLUTION",
+      "canonicalizationStatus": "ACCEPTED_DOMAIN_OPTIONAL",
+      "icpStatus": "INSUFFICIENT_DATA",
+      "finalCandidate": true,
+      "reason": "Valid company identity; unresolved domain is not a rejection"
+    }
+  ],
+  "deltas": {
+    "projectCompanies": 0,
+    "researchJobs": 0,
+    "evidence": 0,
+    "contacts": 0,
+    "signals": 0
+  },
+  "productionOperations": 0,
+  "finalStatus": "PASS"
+}
