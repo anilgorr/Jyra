@@ -85,6 +85,13 @@ export type ResearchPlannerInput = {
   now?: Date;
 };
 
+export type SignalDefinitionResearchInput = {
+  name: string;
+  category: string;
+  factRequirements: Record<string, unknown>;
+  configuration: Record<string, unknown>;
+};
+
 type ProviderOperations = Pick<
   ProviderRouter,
   "searchWeb" | "crawlWebsite" | "getJobs" | "searchNews" | "detectTechnology"
@@ -206,6 +213,50 @@ export function planResearchQuestion(input: ResearchPlannerInput): ResearchPlanD
   return null;
 }
 
+export function planSignalPackWebResearchQuestions(input: {
+  company: Pick<Company, "canonicalName" | "domain">;
+  offeringName: string;
+  definitions: SignalDefinitionResearchInput[];
+  maxQuestions?: number;
+}): Array<NonNullable<ResearchPlanDecision>> {
+  const identity = [
+    `"${input.company.canonicalName}"`,
+    input.company.domain,
+  ].filter(Boolean).join(" ");
+  const byArea = new Map<string, { type: NonNullable<ResearchPlanDecision>["questionType"]; label: string; terms: Set<string> }>();
+  for (const definition of input.definitions) {
+    const category = definition.category.toUpperCase();
+    const area = category.includes("LEADERSHIP")
+      ? { key: "leadership", type: "LEADERSHIP" as const, label: "security leadership changes" }
+      : category.includes("HIRING")
+        ? { key: "hiring", type: "HIRING" as const, label: "security and cybersecurity hiring" }
+        : category.includes("FUND") || category.includes("EXPANS")
+          ? { key: "funding", type: "EXPANSION" as const, label: "funding, expansion, security, or compliance initiatives" }
+          : { key: "technology", type: "TECHNOLOGY" as const, label: "security stack, SOC, SIEM, EDR, or IAM changes" };
+    const current = byArea.get(area.key) ?? { type: area.type, label: area.label, terms: new Set<string>() };
+    const matchAny = Array.isArray(definition.configuration.matchAny)
+      ? definition.configuration.matchAny
+      : [];
+    for (const term of matchAny) {
+      if (typeof term === "string" && term.trim()) current.terms.add(term.trim());
+    }
+    byArea.set(area.key, current);
+  }
+
+  return [...byArea.values()]
+    .slice(0, Math.min(Math.max(input.maxQuestions ?? 4, 1), 4))
+    .map((area, index) => ({
+      questionType: area.type,
+      questionText: `${identity} public evidence of ${area.label}${area.terms.size ? ` (${[...area.terms].join(", ")})` : ""}`,
+      reason: `The active signal pack for ${input.offeringName} has an unresolved ${area.label} evidence gap.`,
+      providerCapability: "WEB_SEARCH",
+      priority: 80 - index,
+      expectedInformationGain: 70 - index,
+      estimatedCost: 0.01,
+      stage: area.type === "LEADERSHIP" || area.type === "HIRING" ? "need" : "timing",
+    }));
+}
+
 function sourceTypeForQuestion(questionType: ResearchQuestion["questionType"]): EvidenceSourceType {
   switch (questionType) {
     case "HIRING": return "job_posting";
@@ -218,9 +269,9 @@ function sourceTypeForQuestion(questionType: ResearchQuestion["questionType"]): 
 }
 
 function rawSourceForResult(
-  source: { title?: string; url: string; snippet?: string; summary?: string },
+  source: { title?: string; url: string; snippet?: string; summary?: string; rawContent?: string | null },
 ): string {
-  return [source.title, source.summary ?? source.snippet, `Source URL: ${source.url}`]
+  return [source.title, source.rawContent ?? source.summary ?? source.snippet, `Source URL: ${source.url}`]
     .filter(Boolean)
     .join("\n\n");
 }
@@ -238,23 +289,33 @@ async function preserveResearchEvidence(input: {
   const normalizedContent = normalizeEvidenceContent(input.rawContent);
   if (!normalizedContent) return { evidence: null, duplicate: false };
   const sourceDomain = normalizeSourceDomain(sourceUrl);
-  const normalizedContentHash = hashNormalizedContent(input.rawContent);
+  const contentForDeduplication = input.rawContent
+    .replace(/\n+\s*Source URL:\s*https?:\/\/\S+\s*$/i, "")
+    .trim();
+  const normalizedContentHash = hashNormalizedContent(contentForDeduplication);
   const result = await db.transaction(async (tx) => {
     await tx.execute(sql`select pg_advisory_xact_lock(hashtext(${[
       input.company.id,
-      sourceUrl,
       normalizedContentHash,
     ].join(":")}))`);
-    const [duplicate] = await tx
-      .select({ evidence: companyEvidenceTable })
+    const existingSources = await tx
+      .select({
+        evidence: companyEvidenceTable,
+        rawContent: crawlPagesTable.rawContent,
+      })
       .from(companyEvidenceTable)
       .innerJoin(crawlPagesTable, eq(companyEvidenceTable.crawlPageId, crawlPagesTable.id))
-      .where(and(
-        eq(crawlPagesTable.companyId, input.company.id),
-        eq(crawlPagesTable.sourceUrl, sourceUrl),
-        eq(crawlPagesTable.normalizedContentHash, normalizedContentHash),
-      ))
-      .limit(1);
+      .where(eq(crawlPagesTable.companyId, input.company.id));
+    const duplicate = existingSources.find((candidate) => {
+      const sameFreshSource = normalizeSourceUrl(candidate.evidence.sourceUrl) === sourceUrl
+        && Math.abs(input.observedAt.getTime() - candidate.evidence.observedAt.getTime())
+          < FRESHNESS_DAYS * 86_400_000;
+      if (sameFreshSource) return true;
+      const candidateContent = candidate.rawContent
+        .replace(/\n+\s*Source URL:\s*https?:\/\/\S+\s*$/i, "")
+        .trim();
+      return hashNormalizedContent(candidateContent) === normalizedContentHash;
+    });
     if (duplicate) return { evidence: duplicate.evidence, duplicate: true };
     const scores = calculateEvidenceScores({
       sourceType: input.sourceType,
@@ -323,8 +384,15 @@ function requestForQuestion(
     case "JOB_SEARCH":
       return { ...base, companyName: company.canonicalName, domain: company.domain ?? undefined, limit: 25 };
     case "NEWS_SEARCH":
-    case "WEB_SEARCH":
       return { ...base, query: question.questionText, domains: company.domain ? [company.domain] : undefined, limit: 10 };
+    case "WEB_SEARCH":
+      return {
+        ...base,
+        query: question.questionText,
+        limit: 10,
+        searchDepth: "advanced",
+        includeRawContent: true,
+      };
     case "TECH_STACK":
       return { ...base, domain: company.domain ?? "" };
     default:
@@ -362,12 +430,44 @@ function resultSources(
   return [];
 }
 
+function normalizedIdentityText(value: string): string {
+  return value.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+}
+
+function sourceIsAttributableToCompany(
+  source: { url: string; title?: string; snippet?: string; summary?: string; rawContent: string },
+  company: Pick<Company, "canonicalName" | "domain">,
+): boolean {
+  const companyDomain = company.domain?.toLowerCase().replace(/^www\./, "") ?? null;
+  try {
+    const sourceDomain = new URL(source.url).hostname.toLowerCase().replace(/^www\./, "");
+    if (companyDomain && (sourceDomain === companyDomain || sourceDomain.endsWith(`.${companyDomain}`))) {
+      return true;
+    }
+  } catch {
+    return false;
+  }
+
+  const companyName = normalizedIdentityText(company.canonicalName);
+  if (!companyName || !companyDomain) return false;
+  const searchable = normalizedIdentityText([
+    source.title,
+    source.snippet,
+    source.summary,
+    source.rawContent,
+  ].filter(Boolean).join(" "));
+  return searchable.includes(companyName)
+    && searchable.includes(normalizedIdentityText(companyDomain));
+}
+
 export type ResearchExecutionResult = {
   question: ResearchQuestion;
   job: typeof researchJobsTable.$inferSelect;
   evidenceCount: number;
   factProposalCount: number;
   factRejectionCount: number;
+  ambiguousResultCount: number;
+  duplicateEvidenceCount: number;
   resultStatus: string;
 };
 
@@ -381,6 +481,7 @@ export async function executeResearchNow(input: {
   now?: Date;
   plannedQuestion?: NonNullable<ResearchPlanDecision>;
   idempotencyScope?: string;
+  forceRefresh?: boolean;
 }): Promise<ResearchExecutionResult | { stopped: true; reason: string }> {
   const [row] = await db.select({
     projectCompany: projectCompaniesTable,
@@ -421,6 +522,8 @@ export async function executeResearchNow(input: {
       evidenceCount: replay.job.sourceCount,
       factProposalCount: Number(proposalCount),
       factRejectionCount: 0,
+      ambiguousResultCount: 0,
+      duplicateEvidenceCount: 0,
       resultStatus: replay.job.status,
     };
   }
@@ -432,6 +535,7 @@ export async function executeResearchNow(input: {
     .orderBy(desc(researchQuestionsTable.createdAt))
     .limit(1);
   if (
+    !input.forceRefresh &&
     !failedAttempt &&
     latestQuestion?.nextRefreshAt &&
     latestQuestion.nextRefreshAt > now &&
@@ -531,7 +635,34 @@ export async function executeResearchNow(input: {
     };
   }
 
-  const [question] = await db.insert(researchQuestionsTable).values({
+  const matchingQuestions = input.forceRefresh
+    ? await db.select().from(researchQuestionsTable).where(and(
+        eq(researchQuestionsTable.projectId, input.projectId),
+        eq(researchQuestionsTable.companyId, row.company.id),
+        eq(researchQuestionsTable.questionType, plan.questionType),
+        eq(researchQuestionsTable.providerCapability, plan.providerCapability),
+      )).orderBy(desc(researchQuestionsTable.createdAt))
+    : [];
+  const reusableQuestion = matchingQuestions.find((question) => question.status === "ANSWERED")
+    ?? matchingQuestions.find((question) => question.status === "BLOCKED")
+    ?? matchingQuestions.find((question) => question.status === "OPEN")
+    ?? matchingQuestions[0];
+  const [refreshedQuestion] = reusableQuestion
+    ? await db.update(researchQuestionsTable).set({
+        questionText: plan.questionText,
+        reason: plan.reason,
+        priority: plan.priority,
+        expectedInformationGain: plan.expectedInformationGain,
+        estimatedCost: plan.estimatedCost,
+        status: "IN_PROGRESS",
+        attemptCount: reusableQuestion.attemptCount + 1,
+        lastAttemptAt: now,
+        answeredAt: null,
+        lastResultSummary: null,
+        nextRefreshAt: null,
+      }).where(eq(researchQuestionsTable.id, reusableQuestion.id)).returning()
+    : [];
+  const [insertedQuestion] = refreshedQuestion ? [] : await db.insert(researchQuestionsTable).values({
     organizationId: input.organizationId,
     projectId: input.projectId,
     companyId: row.company.id,
@@ -546,7 +677,7 @@ export async function executeResearchNow(input: {
     attemptCount: 1,
     lastAttemptAt: now,
   }).onConflictDoNothing().returning();
-  const selectedQuestion = question ?? (await db.select().from(researchQuestionsTable)
+  const selectedQuestion = refreshedQuestion ?? insertedQuestion ?? (await db.select().from(researchQuestionsTable)
     .where(and(
       eq(researchQuestionsTable.projectId, input.projectId),
       eq(researchQuestionsTable.companyId, row.company.id),
@@ -568,7 +699,16 @@ export async function executeResearchNow(input: {
   if (!job) {
     const [existing] = await db.select().from(researchJobsTable).where(eq(researchJobsTable.idempotencyKey, idempotencyKey)).limit(1);
     if (!existing) throw new Error("Research job could not be created");
-    return { question: selectedQuestion, job: existing, evidenceCount: 0, factProposalCount: 0, factRejectionCount: 0, resultStatus: existing.status };
+    return {
+      question: selectedQuestion,
+      job: existing,
+      evidenceCount: 0,
+      factProposalCount: 0,
+      factRejectionCount: 0,
+      ambiguousResultCount: 0,
+      duplicateEvidenceCount: 0,
+      resultStatus: existing.status,
+    };
   }
   selectedQuestionForObserver = selectedQuestion;
   selectedJobIdForObserver = job.id;
@@ -638,10 +778,19 @@ export async function executeResearchNow(input: {
   let evidenceCount = 0;
   let factProposalCount = 0;
   let factRejectionCount = 0;
+  let ambiguousResultCount = 0;
+  let duplicateEvidenceCount = 0;
   const sourceType = sourceTypeForQuestion(selectedQuestion.questionType);
   if (response.data) {
     for (const source of resultSources(selectedQuestion.providerCapability, response.data)) {
       if (!/^https?:\/\//i.test(source.url) || !source.rawContent.trim()) continue;
+      if (
+        selectedQuestion.providerCapability === "WEB_SEARCH"
+        && !sourceIsAttributableToCompany(source, row.company)
+      ) {
+        ambiguousResultCount += 1;
+        continue;
+      }
       const preserved = await preserveResearchEvidence({
         company: row.company,
         organizationId: input.organizationId,
@@ -652,7 +801,8 @@ export async function executeResearchNow(input: {
         observedAt: completedAt,
       });
       if (!preserved.evidence) continue;
-      evidenceCount += preserved.duplicate ? 0 : 1;
+      if (preserved.duplicate) duplicateEvidenceCount += 1;
+      else evidenceCount += 1;
       const candidates = await (input.extractFacts ?? extractFactCandidatesFromSource)(
         preserved.evidence.id,
         source.rawContent,
@@ -717,7 +867,7 @@ export async function executeResearchNow(input: {
   const status = response.status === "failed" ? "FAILED" : response.status === "empty" ? "EMPTY" : "SUCCEEDED";
   const summary = response.status === "failed"
     ? response.error?.message ?? "Provider request failed"
-    : `${evidenceCount} new evidence record(s), ${factProposalCount} validated fact proposal(s), ${factRejectionCount} rejected proposal(s).`;
+    : `${evidenceCount} new evidence record(s), ${duplicateEvidenceCount} duplicate(s), ${ambiguousResultCount} ambiguous result(s) rejected, ${factProposalCount} validated fact proposal(s), ${factRejectionCount} rejected proposal(s).`;
   const [updatedJob] = await db.update(researchJobsTable).set({
     status,
     providerId,
@@ -747,6 +897,8 @@ export async function executeResearchNow(input: {
     evidenceCount,
     factProposalCount,
     factRejectionCount,
+    ambiguousResultCount,
+    duplicateEvidenceCount,
     resultStatus: status,
   };
 }

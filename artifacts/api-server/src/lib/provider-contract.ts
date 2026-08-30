@@ -68,6 +68,13 @@ export type SearchWebRequest = ProviderRequestBase & {
   query: string;
   domains?: string[];
   limit?: number;
+  searchDepth?: "basic" | "advanced";
+  excludeDomains?: string[];
+  topic?: "general" | "news" | "finance";
+  timeRange?: "day" | "week" | "month" | "year";
+  startDate?: string;
+  endDate?: string;
+  includeRawContent?: boolean;
 };
 
 export type CrawlWebsiteRequest = ProviderRequestBase & {
@@ -133,7 +140,15 @@ export type CompanyRecord = {
 export type CompanyDiscoveryResult = { companies: CompanyRecord[] };
 export type CompanyLookupResult = { company: CompanyRecord | null };
 export type WebSearchResult = {
-  results: Array<{ title: string; url: string; snippet: string }>;
+  results: Array<{
+    title: string;
+    url: string;
+    snippet: string;
+    rawContent?: string | null;
+    publishedAt?: string | null;
+    relevanceScore?: number | null;
+    sourceDomain?: string | null;
+  }>;
 };
 export type WebsiteCrawlResult = {
   page: { url: string; title: string | null; text: string };

@@ -21,6 +21,10 @@ import {
   createApifyAdapters,
   parseApifyProviderConfiguration,
 } from "./apify-provider";
+import {
+  createTavilyWebSearchAdapter,
+  parseTavilyProviderConfiguration,
+} from "./tavily-provider";
 
 export type ProviderCatalogEntry = Pick<
   DataProvider,
@@ -198,11 +202,19 @@ function rankProviders(
 function defaultAdapterFactory(
   provider: ProviderCatalogEntry,
 ): ProviderAdapter[] {
-  if (provider.providerType !== "apify") return [];
-  return createApifyAdapters({
-    providerId: provider.id,
-    configuration: parseApifyProviderConfiguration(provider.configuration),
-  });
+  if (provider.providerType === "apify") {
+    return createApifyAdapters({
+      providerId: provider.id,
+      configuration: parseApifyProviderConfiguration(provider.configuration),
+    });
+  }
+  if (provider.providerType === "tavily") {
+    return [createTavilyWebSearchAdapter({
+      providerId: provider.id,
+      configuration: parseTavilyProviderConfiguration(provider.configuration),
+    })];
+  }
+  return [];
 }
 
 function thrownError(error: unknown): {
