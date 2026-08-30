@@ -1,0 +1,577 @@
+JYRA — REAL DATA TEST 10
+DISCOVERY → CHEAP ICP QUALIFICATION
+
+CURRENT VERIFIED STATE
+
+Exa COMPANY_DISCOVERY:
+Technical pipeline PASS
+Discovery quality FAIL
+
+Test 09 results:
+
+- 40 raw Exa appearances
+- 37 unique entities
+- 20 reviewed
+- 19 confirmed entities
+- 1 probable entity
+- 0 strong ICP candidates
+- 0 plausible ICP candidates
+- 20 INSUFFICIENT_DATA
+
+Root quality problem:
+
+Exa successfully discovers company identities, but the returned company
+records do not contain sufficient structured ICP attributes.
+
+For all 20 reviewed candidates:
+
+geography = UNKNOWN
+industry = UNKNOWN
+employee size = UNKNOWN
+
+This test must NOT attempt to improve Exa semantic queries again.
+
+==================================================
+OBJECTIVE
+==================================================
+
+Prove a two-stage market discovery architecture:
+
+STAGE 1
+Exa COMPANY_DISCOVERY
+→ candidate identities
+
+STAGE 2
+CHEAP COMPANY QUALIFICATION
+→ geography
+→ industry
+→ employee-size evidence
+→ basic company characteristics
+
+Then:
+
+→ ICP qualification
+→ research priority
+
+STOP before opportunity research.
+
+We are NOT researching:
+
+security need
+security hiring
+security leadership
+funding timing
+security stack changes
+buying intent
+people/contacts
+
+==================================================
+1. IMPORTANT ARCHITECTURAL PRINCIPLE
+==================================================
+
+Do NOT expect COMPANY_DISCOVERY to provide every ICP attribute.
+
+Separate:
+
+DISCOVERY
+"What companies might belong to this market?"
+
+from:
+
+QUALIFICATION
+"Does this company actually fit our ICP?"
+
+from:
+
+OPPORTUNITY RESEARCH
+"Why should we talk to this company now?"
+
+These must remain separate stages.
+
+==================================================
+2. USE EXISTING TEST 09 COMPANIES
+==================================================
+
+Do NOT run another Exa discovery.
+
+Use the existing Test 09 canonical companies.
+
+Select maximum:
+
+10 companies
+
+from the existing Test 09 review set.
+
+Prefer a representative sample including:
+
+- apparently relevant companies
+- questionable companies
+- large/inappropriate-looking companies
+- companies with missing domains if available
+
+This lets us determine whether qualification correctly separates them.
+
+==================================================
+3. QUALIFICATION ATTRIBUTES
+==================================================
+
+For each selected company attempt to establish:
+
+A. COMPANY IDENTITY
+
+company name
+canonical domain
+official website
+
+B. GEOGRAPHY
+
+headquarters country
+headquarters city if available
+
+C. INDUSTRY
+
+primary industry/category
+
+D. COMPANY SIZE
+
+employee count
+or employee-size range
+
+E. BASIC COMPANY DESCRIPTION
+
+what the company actually does
+
+F. TECHNOLOGY CHARACTERISTICS
+
+Only if cheaply and explicitly available.
+
+Do NOT deeply investigate technology stack during this test.
+
+==================================================
+4. ATTRIBUTE PROVENANCE
+==================================================
+
+Every qualification attribute must have provenance.
+
+Example:
+
+ATTRIBUTE:
+Employee range
+
+VALUE:
+201–500
+
+SOURCE:
+[actual source]
+
+SOURCE URL:
+[...]
+
+OBSERVED:
+[...]
+
+CONFIDENCE:
+[...]
+
+Do NOT store an LLM inference as an externally verified fact.
+
+==================================================
+5. SOURCE PRIORITY
+==================================================
+
+Use existing provider architecture.
+
+Before making calls, determine which existing capability/provider can
+cheaply verify each missing attribute.
+
+Potential existing capabilities:
+
+WEB_SEARCH → Tavily
+
+WEBSITE_CRAWL → Apify
+
+COMPANY_DISCOVERY → Exa
+
+Prefer the cheapest sufficient source.
+
+Do NOT automatically crawl every company website.
+
+Do NOT automatically call every provider for every company.
+
+==================================================
+6. TAVILY ROLE
+==================================================
+
+Tavily WEB_SEARCH may be used for cheap factual qualification.
+
+Queries must be qualification-focused.
+
+Examples conceptually:
+
+"[company] headquarters employees industry"
+
+"[company] company profile employees"
+
+Do NOT search:
+
+"[company] cybersecurity problems"
+
+"[company] needs SOC"
+
+"[company] security hiring"
+
+"[company] buying cybersecurity"
+
+"[company] Managed SOC"
+
+This stage establishes ICP fit only.
+
+==================================================
+7. APIFY ROLE
+==================================================
+
+Do NOT automatically use Apify.
+
+Use WEBSITE_CRAWL only if:
+
+- official website identity needs verification
+- company description cannot be established cheaply
+- another important ICP attribute can reasonably be verified from the
+  official site
+
+Research Economics must decide whether the additional call is justified.
+
+==================================================
+8. EXA ROLE
+==================================================
+
+Do not perform new COMPANY_DISCOVERY.
+
+Do not use Exa Agent.
+
+Do not use Exa People Search.
+
+The existing Exa candidate identity/provenance remains available.
+
+==================================================
+9. COMPANY SIZE
+==================================================
+
+Employee size is important for GTM-Q1.
+
+Target:
+100–2,000
+
+Sweet spot:
+200–1,000
+
+Do NOT fabricate employee count.
+
+Accept a credible employee band where exact count is unavailable.
+
+Examples:
+
+51–200
+201–500
+501–1,000
+1,001–5,000
+
+If credible evidence cannot establish size:
+
+UNKNOWN
+
+==================================================
+10. LARGE COMPANY TEST
+==================================================
+
+Test 09 reportedly returned questionable candidates such as:
+
+Cloudflare
+Fortinet/Panopta
+large infrastructure providers
+
+If any such companies exist in the Test 09 review set, include at least
+one in this test.
+
+The qualification engine should be capable of determining that a company
+is outside the accepted size/ICP when evidence supports that conclusion.
+
+Do NOT force it to remain INSUFFICIENT_DATA when reliable qualification
+evidence establishes non-fit.
+
+==================================================
+11. ICP QUALIFICATION
+==================================================
+
+After qualification, evaluate against the EXISTING accepted GTM-Q1 ICP.
+
+Use:
+
+geography
+industry
+employee range
+other accepted ICP attributes
+
+Technology characteristics may remain UNKNOWN.
+
+Produce existing qualification states.
+
+Conceptually:
+
+LIKELY_FIT
+POSSIBLE_FIT
+INSUFFICIENT_DATA
+LIKELY_NOT_FIT
+
+Missing data ≠ negative.
+
+But known contradictory data CAN establish non-fit.
+
+Example:
+
+verified 10,000+ employees
+versus ICP maximum 2,000
+
+→ legitimate negative fit evidence.
+
+==================================================
+12. DO NOT CONFUSE FIT WITH OPPORTUNITY
+==================================================
+
+A company becoming LIKELY_FIT must NOT create:
+
+Need score
+Timing score
+buying intent
+opportunity signal
+opportunity score
+RISING
+SURGING
+ACTIVE
+
+It only means:
+
+"This company appears to fit the seller's target market."
+
+==================================================
+13. RESEARCH ECONOMICS
+==================================================
+
+For every qualification attempt record:
+
+provider
+capability
+query/action
+cost
+latency
+attribute gap being investigated
+result
+
+Stop researching a company when enough information exists to classify
+ICP fit with reasonable confidence.
+
+Do not fill every field merely because it is possible.
+
+==================================================
+14. CONTROLLED COST
+==================================================
+
+Maximum companies:
+10
+
+Maximum external qualification calls:
+20 TOTAL
+
+Target average:
+<= 2 calls/company
+
+Prefer fewer.
+
+No uncontrolled loops.
+
+==================================================
+15. REQUIRED BEFORE/AFTER TABLE
+==================================================
+
+Return:
+
+COMPANY
+
+DOMAIN
+
+BEFORE:
+GEOGRAPHY
+INDUSTRY
+EMPLOYEE SIZE
+ICP STATUS
+
+AFTER:
+GEOGRAPHY
+INDUSTRY
+EMPLOYEE SIZE
+ICP STATUS
+
+SOURCES USED
+
+EXTERNAL CALLS
+
+QUALIFICATION COST
+
+==================================================
+16. REQUIRED QUALITY TABLE
+==================================================
+
+Then return:
+
+COMPANY
+ICP STATUS
+FIT REASONS
+NON-FIT REASONS
+UNKNOWN IMPORTANT ATTRIBUTES
+QUALIFICATION CONFIDENCE
+RESEARCH NEXT?
+YES/NO
+
+"RESEARCH NEXT" means:
+
+worth performing downstream WHEN/WHY research.
+
+It does NOT mean:
+
+contact sales prospect.
+
+==================================================
+17. SUCCESS METRIC
+==================================================
+
+Test 09 had:
+
+20/20 INSUFFICIENT_DATA.
+
+Test 10 should determine whether cheap qualification can materially
+reduce that uncertainty.
+
+PASS does NOT require every company to become a fit.
+
+A healthy result could look like:
+
+4 LIKELY_FIT
+2 POSSIBLE_FIT
+3 LIKELY_NOT_FIT
+1 INSUFFICIENT_DATA
+
+That would be substantially better than incorrectly making all 10 fit.
+
+Accuracy matters more than positive classification.
+
+==================================================
+18. CRITICAL FAILURE CONDITION
+==================================================
+
+FAIL if Tavily snippets are blindly converted into attributes without
+source/evidence validation.
+
+FAIL if an LLM simply guesses:
+
+employee count
+industry
+location
+
+FAIL if search-result ranking is treated as ICP evidence.
+
+Every material qualification attribute requires evidence/provenance.
+
+==================================================
+19. DO NOT RUN OPPORTUNITY RESEARCH
+==================================================
+
+During this test:
+
+NEW EXA DISCOVERY CALLS:
+0
+
+SECURITY-SIGNAL SEARCHES:
+0
+
+CONTACT ENRICHMENT:
+0
+
+SIGNALS CREATED:
+0
+
+OPPORTUNITY SCORES CREATED:
+0
+
+==================================================
+20. REPORT
+==================================================
+
+COMPANIES TESTED:
+
+EXTERNAL QUALIFICATION CALLS:
+
+TAVILY CALLS:
+
+APIFY CALLS:
+
+EXA DISCOVERY CALLS:
+0
+
+TOTAL QUALIFICATION COST:
+
+AVERAGE COST PER COMPANY:
+
+GEOGRAPHY RESOLVED:
+
+INDUSTRY RESOLVED:
+
+EMPLOYEE SIZE RESOLVED:
+
+LIKELY FIT:
+
+POSSIBLE FIT:
+
+LIKELY NOT FIT:
+
+INSUFFICIENT DATA:
+
+QUALIFIED FOR WHEN/WHY RESEARCH:
+
+ATTRIBUTE PROVENANCE:
+PASS/FAIL
+
+UNSUPPORTED ATTRIBUTES CREATED:
+YES/NO
+
+BUYING INTENT CREATED:
+Must be NO
+
+==================================================
+21. DATABASE SAFETY
+==================================================
+
+DEVELOPMENT ONLY.
+
+Production untouched.
+
+==================================================
+22. STOP CONDITION
+==================================================
+
+STOP after:
+
+existing Exa candidates
+→ cheap attribute qualification
+→ ICP classification
+→ research-next decision
+
+Do NOT perform WHEN/WHY research.
+
+Create:
+
+REAL_DATA_TEST_10.md
+
+Return the full before/after table.
+
+FINAL STATUS:
+PASS/FAIL
