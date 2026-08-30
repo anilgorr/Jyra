@@ -70,7 +70,7 @@ assert.equal(calls[0].query, "Find target-market cloud companies");
 assert.equal(calls[0].options.category, "company");
 assert.equal(calls[0].options.type, "auto");
 assert.equal(calls[0].options.numResults, 10);
-assert.equal("contents" in calls[0].options, false);
+assert.deepEqual(calls[0].options.contents, { highlights: true });
 assert.equal("outputSchema" in calls[0].options, false);
 assert.equal("agent" in calls[0].options, false);
 assert.equal("answer" in calls[0].options, false);

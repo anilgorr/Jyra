@@ -10,12 +10,15 @@ exa.search(discoveryQuery, {
   category: "company",
   type: "auto",
   numResults: controlledLimit,
+  contents: { highlights: true },
 })
 ```
 
 The current adapter does not use Exa people search, Agent API, Answer API,
-Contents API, or `outputSchema`. It asks Exa only for raw company-category
-search results. JYRA remains responsible for canonicalization, entity
+the separate Contents API, or `outputSchema`. The `contents` option above is
+part of the Search API request and only asks for raw query-relevant highlights;
+it is not an Exa Contents API call. The adapter asks Exa only for raw
+company-category search results. JYRA remains responsible for canonicalization, entity
 resolution, ICP qualification, research prioritization, evidence governance,
 signals, and opportunity reasoning. Missing candidate fields remain unknown.
 

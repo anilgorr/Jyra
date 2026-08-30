@@ -209,6 +209,7 @@ export function createExaCompanyDiscoveryAdapter(
         type: "auto" as const,
         numResults: limit,
         category: "company" as const,
+        contents: { highlights: true },
       };
 
       try {
