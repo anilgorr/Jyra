@@ -19,6 +19,7 @@
     "hotfix:exa-zero-candidates": "NODE_ENV=development node ./scripts/run-hotfix-07.mjs",
     "hotfix:exa-path-proof": "NODE_ENV=development node ./scripts/run-hotfix-08.mjs",
     "test:real-data-09": "NODE_ENV=development node ./scripts/run-test-09.mjs",
+    "test:real-data-10": "NODE_ENV=development node ./scripts/run-test-10.mjs",
     "test:real-data-08": "NODE_ENV=development node ./scripts/run-test-08.mjs",
     "test:tavily": "node ./scripts/test-tavily-provider.mjs",
     "hotfix:tavily-evidence-quality": "NODE_ENV=development node ./scripts/reprocess-tavily-evidence-quality.mjs",
