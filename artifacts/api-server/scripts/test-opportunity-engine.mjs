@@ -1,6 +1,9 @@
 import assert from "node:assert/strict";
 import { build } from "esbuild";
 import { pathToFileURL } from "node:url";
+import { assertDevelopmentDatabase } from "../../../lib/db/scripts/assert-development.mjs";
+
+assertDevelopmentDatabase("Opportunity engine tests");
 
 const output = "/tmp/jyra-opportunity-engine-test.cjs";
 await build({ entryPoints: ["./scripts/opportunity-test-entry.ts"], outfile: output, bundle: true, format: "cjs", platform: "node" });
@@ -57,6 +60,29 @@ assert.equal(contradictory.components.find((item) => item.dimension === "CONFIDE
 
 const missing = h.calculateOpportunityAssessment(base({ fitResults: [{ id: "criterion-1", type: "MUST_HAVE", weight: null, result: "unknown" }] }));
 assert.equal(missing.components.find((item) => item.dimension === "FIT").score, null, "unknown ICP information must not become failure");
+assert.equal(missing.score, null, "an unknown core dimension must keep the overall score unknown");
+assert.equal(missing.assessmentStatus, "INSUFFICIENT_DATA");
+assert.notEqual(missing.state, "DORMANT", "insufficient evidence must not become DORMANT");
+
+const entirelyUnknown = h.calculateOpportunityAssessment(base({ fitResults: fit("unknown"), signals: [], clusters: [], evidence: [], relationshipStatus: "NONE" }));
+assert.equal(entirelyUnknown.score, null, "unknown dimensions must not silently become numeric zero");
+assert.ok(entirelyUnknown.components.filter((item) => item.dimension !== "CONFIDENCE").every((item) => item.score === null));
+assert.notEqual(entirelyUnknown.state, "DORMANT");
+
+const evaluatedWeak = h.calculateOpportunityAssessment(base({
+  signals: [signal({ polarity: "NEGATIVE", needImpact: 0, timingImpact: 0 })],
+  relationshipStatus: "PREVIOUS_CONTACT",
+}));
+assert.equal(evaluatedWeak.score, 32.5, "evaluated zero impacts remain real numeric zeroes");
+assert.equal(evaluatedWeak.state, "WATCH");
+
+const evaluatedDormant = h.calculateOpportunityAssessment(base({
+  fitResults: [{ id: "criterion-1", type: "DISQUALIFIER", weight: null, result: "pass" }],
+  signals: [signal({ polarity: "NEGATIVE", needImpact: 0, timingImpact: 0 })],
+  relationshipStatus: "NONE",
+}));
+assert.equal(evaluatedDormant.score, 0);
+assert.equal(evaluatedDormant.state, "DORMANT", "sufficiently evaluated weak inputs may still be DORMANT");
 
 const relationship = h.calculateOpportunityAssessment(base({ relationshipStatus: "OPEN_OPPORTUNITY" }));
 assert.equal(relationship.state, "ACTIVE");
@@ -82,8 +108,9 @@ try {
   const [company] = await h.db.insert(h.companiesTable).values({ canonicalName: `Opportunity Co ${suffix}`, domain: `opportunity-${suffix}.example` }).returning();
   const [projectCompany] = await h.db.insert(h.projectCompaniesTable).values({ projectId: project.id, companyId: company.id, relationshipStatus: "NONE" }).returning();
   const persisted = await h.evaluateOpportunity({ organizationId: organization.id, projectId: project.id, projectCompanyId: projectCompany.id, userId });
-  assert.equal(persisted.opportunity.state, "DORMANT");
-  assert.equal(persisted.opportunity.assessmentStatus, "NEEDS_MORE_RESEARCH");
+  assert.equal(persisted.opportunity.state, "WATCH");
+  assert.equal(persisted.opportunity.score, null);
+  assert.equal(persisted.opportunity.assessmentStatus, "INSUFFICIENT_DATA");
   const histories = await h.db.select().from(h.opportunityHistoryTable).where(h.eq(h.opportunityHistoryTable.opportunityId, persisted.opportunity.id));
   assert.equal(histories.length, 1);
   const components = await h.db.select().from(h.opportunityScoreComponentsTable).where(h.eq(h.opportunityScoreComponentsTable.historyId, histories[0].id));

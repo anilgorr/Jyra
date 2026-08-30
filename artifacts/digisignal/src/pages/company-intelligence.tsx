@@ -331,7 +331,7 @@ function ResearchPanel({
             <Zap className="h-5 w-5" />
           </div>
           <div>
-            <h3 className="font-semibold text-foreground">Keep this company current</h3>
+            <h3 className="font-semibold text-foreground">{company?.latestResearchAt ? "Continue company research" : "Research this company"}</h3>
             <p className="mt-1 max-w-2xl text-sm leading-relaxed text-muted-foreground">
               RESEARCH NOW requests a new bounded public-source sweep when research is due. It does not reprocess the existing evidence set.
             </p>
@@ -362,7 +362,7 @@ function ResearchPanel({
           data-testid="button-research-now"
         >
           {research.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}
-          RESEARCH NOW
+          {company?.latestResearchAt ? "CONTINUE RESEARCH" : "RESEARCH COMPANY"}
         </Button>
       </CardContent>
     </Card>
@@ -377,7 +377,7 @@ export default function CompanyIntelligencePage() {
   const projectCompanyId = params.projectCompanyId ?? "";
 
   const companiesQuery = useListProjectCompanies(projectId, {
-    query: { enabled: Boolean(projectId), queryKey: getListProjectCompaniesQueryKey(projectId) },
+    query: { enabled: Boolean(projectId), queryKey: getListProjectCompaniesQueryKey(projectId), refetchOnMount: "always" },
   });
   const projectCompany = companiesQuery.data?.find((item) => item.id === projectCompanyId) ?? null;
   const companyId = projectCompany?.companyId ?? "";
@@ -385,11 +385,13 @@ export default function CompanyIntelligencePage() {
   const assessmentQuery = useQuery({
     queryKey: getGetOpportunityAssessmentQueryKey(projectId, projectCompanyId),
     enabled: Boolean(projectId && projectCompanyId),
+    refetchOnMount: "always",
     queryFn: () => getJson<OpportunityAssessmentDetail>(`/api/projects/${projectId}/companies/${projectCompanyId}/opportunity`, true),
   });
   const whyQuery = useQuery({
     queryKey: getGetOpportunityWhyQueryKey(projectId, projectCompanyId),
     enabled: Boolean(projectId && projectCompanyId && assessmentQuery.data),
+    refetchOnMount: "always",
     queryFn: () => getJson<OpportunityWhyDetail>(`/api/projects/${projectId}/companies/${projectCompanyId}/opportunity/why`, true),
   });
   const evidenceQuery = useListCompanyEvidence(projectId, projectCompanyId, {
@@ -458,6 +460,20 @@ export default function CompanyIntelligencePage() {
   const marketCard = marketQuery.data?.cards.find((card) => card.projectCompanyId === projectCompanyId);
   const when = marketQuery.isError ? "UNAVAILABLE" : marketCard?.when ?? "NOT_IN_MARKET_VIEW";
   const whyText = why?.explanation.text ?? (detail?.opportunity.assessmentStatus === "COMPLETE" ? detail.opportunity.explanation : "JYRA does not have enough validated evidence to explain a strong ranking yet.");
+  const missingInformation = [
+    !company.domain ? "Missing company domain; research will use a bounded name-based search." : null,
+    detail?.components.find((component) => component.dimension === "FIT")?.score == null ? "ICP qualification cannot yet be evaluated from accepted criteria and known company facts." : null,
+    detail?.components.find((component) => component.dimension === "NEED")?.score == null ? "Need signals have not been established by current evidence-backed signals or clusters." : null,
+    detail?.components.find((component) => component.dimension === "TIMING")?.score == null ? "Timing signals have not been established by current evidence-backed signals or clusters." : null,
+    detail?.components.find((component) => component.dimension === "RELATIONSHIP")?.score == null ? "No affirmative first-party relationship status is available." : null,
+    evidence.length === 0 ? "No preserved public evidence is available." : null,
+    researchCompany?.question && !["ANSWERED", "BLOCKED"].includes(researchCompany.question.status)
+      ? `Research question remains ${label(researchCompany.question.status)}: ${researchCompany.question.questionText}`
+      : null,
+    researchCompany?.question?.status === "BLOCKED"
+      ? `Research is blocked: ${researchCompany.question.lastResultSummary ?? researchCompany.job?.errorMessage ?? researchCompany.question.reason}`
+      : null,
+  ].filter((item): item is string => Boolean(item));
 
   return (
     <div className="space-y-12 pb-20" data-testid="company-intelligence-page">
@@ -468,7 +484,7 @@ export default function CompanyIntelligencePage() {
         <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
           <div>
             <div className="flex flex-wrap items-center gap-2 mb-3">
-              <Badge variant="outline" className={stateClass(detail?.opportunity.state ?? projectCompany.opportunityAssessmentState)}>{label(detail?.opportunity.state ?? projectCompany.opportunityAssessmentState)}</Badge>
+              <Badge variant="outline" className={stateClass(detail?.opportunity.state ?? projectCompany.opportunityAssessmentState)}>{detail?.opportunity.assessmentStatus === "INSUFFICIENT_DATA" ? "Needs Research" : label(detail?.opportunity.state ?? projectCompany.opportunityAssessmentState)}</Badge>
               <Badge variant="secondary" className="bg-secondary/50">{label(projectCompany.researchStatus)}</Badge>
               {detail?.opportunity.assessmentStatus && <Badge variant="outline" className="border-border/50 text-muted-foreground">{label(detail.opportunity.assessmentStatus)}</Badge>}
             </div>
@@ -525,6 +541,20 @@ export default function CompanyIntelligencePage() {
 
       <ContactEnrichmentPanel projectId={projectId} projectCompanyId={projectCompanyId} />
 
+      <Section eyebrow="MISSING INFORMATION" title={missingInformation.length ? "Why more research is needed" : "Assessment coverage"} icon={<ShieldCheck className="h-5 w-5" />}>
+        <Card className="border-border/60 shadow-none">
+          <CardContent className="p-6">
+            {missingInformation.length ? (
+              <ul className="space-y-3 text-sm text-muted-foreground">
+                {missingInformation.map((reason) => <li className="flex gap-3" key={reason}><Info className="mt-0.5 h-4 w-4 shrink-0 text-amber-500" /><span>{reason}</span></li>)}
+              </ul>
+            ) : (
+              <p className="text-sm text-muted-foreground">Fit, Need, and Timing are evaluated. Review confidence and source traceability below before acting.</p>
+            )}
+          </CardContent>
+        </Card>
+      </Section>
+
       <ResearchPanel projectId={projectId} projectCompanyId={projectCompanyId} company={researchCompany} />
 
       <Section eyebrow="NEXT BEST ACTION" title="Deterministic recommendation" icon={<Sparkles className="h-5 w-5" />}>
@@ -561,7 +591,7 @@ export default function CompanyIntelligencePage() {
 
       <Section eyebrow="OPPORTUNITY" title="State and movement" icon={<TrendingUp className="h-5 w-5" />}>
         {assessmentQuery.isError ? <Unavailable message="Opportunity assessment and history could not be loaded." /> : <div className="grid gap-4 md:grid-cols-3">
-          <Card className="shadow-none hover:bg-muted/30 transition-colors border-border/60"><CardContent className="p-6 flex flex-col h-full justify-between"><div className="mb-4"><p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Current state</p></div><div><p className="font-display text-3xl font-bold tracking-tight text-foreground">{label(detail?.opportunity.state ?? projectCompany.opportunityAssessmentState)}</p><p className="mt-2 text-sm text-muted-foreground/80">{detail?.opportunity.assessedAt ? `Assessed on ${new Date(detail.opportunity.assessedAt).toLocaleDateString()}` : "Not assessed"}</p></div></CardContent></Card>
+          <Card className="shadow-none hover:bg-muted/30 transition-colors border-border/60"><CardContent className="p-6 flex flex-col h-full justify-between"><div className="mb-4"><p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Current state</p></div><div><p className="font-display text-3xl font-bold tracking-tight text-foreground">{detail?.opportunity.assessmentStatus === "INSUFFICIENT_DATA" ? "Needs Research" : label(detail?.opportunity.state ?? projectCompany.opportunityAssessmentState)}</p><p className="mt-2 text-sm text-muted-foreground/80">{detail?.opportunity.assessedAt ? `Assessed on ${new Date(detail.opportunity.assessedAt).toLocaleDateString()}` : "Not assessed"}</p></div></CardContent></Card>
           <Card className="shadow-none hover:bg-muted/30 transition-colors border-border/60"><CardContent className="p-6 flex flex-col h-full justify-between"><div className="mb-4"><p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">State movement</p></div><div><p className="font-display text-3xl font-bold tracking-tight text-foreground">{movement}</p><p className="mt-2 text-sm text-muted-foreground/80">From immutable assessment history</p></div></CardContent></Card>
           <Card className="shadow-none hover:bg-muted/30 transition-colors border-border/60"><CardContent className="p-6 flex flex-col h-full justify-between"><div className="mb-4"><p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Opportunity score</p></div><div><p className="font-display text-4xl font-bold tracking-tight text-accent">{scoreText(detail?.opportunity.score ?? projectCompany.opportunityScore)}</p><p className="mt-2 text-sm text-muted-foreground/80">Confidence never boosts this score</p></div></CardContent></Card>
         </div>}

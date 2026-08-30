@@ -15,3 +15,4 @@
 - [Company entry provenance](company-entry-provenance.md) — canonical identity is global; private imports and unverified discovery attributes stay in scoped provenance.
 - [Development DB verification](development-database-target-verification.md) — mutation tools must match the approved DB fingerprint before connecting.
 - [Internal admin quality boundary](internal-admin-quality-boundary.md) — cross-tenant monitoring needs fail-closed staff authorization and aggregate-only responses.
+- [Opportunity unknown state](opportunity-unknown-state.md) — core dimensions must be known before scoring; reserve DORMANT for evaluated weakness.

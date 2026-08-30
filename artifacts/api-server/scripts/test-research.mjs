@@ -1,6 +1,9 @@
 import assert from "node:assert/strict";
 import { build } from "esbuild";
 import { pathToFileURL } from "node:url";
+import { assertDevelopmentDatabase } from "../../../lib/db/scripts/assert-development.mjs";
+
+assertDevelopmentDatabase("Research planner and execution tests");
 
 const output = "/tmp/jyra-research-test.cjs";
 await build({

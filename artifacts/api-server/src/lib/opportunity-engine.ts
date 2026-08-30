@@ -119,7 +119,7 @@ function impactComponent(input: OpportunityCalculationInput, dimension: "NEED" |
 }
 
 const RELATIONSHIP_SCORES: Record<string, number> = {
-  NONE: 0, PREVIOUS_CONTACT: 25, MEETING_HELD: 45, KNOWN_CHAMPION: 65,
+  PREVIOUS_CONTACT: 25, MEETING_HELD: 45, KNOWN_CHAMPION: 65,
   PAST_CUSTOMER: 55, LOST_OPPORTUNITY: 20, OPEN_OPPORTUNITY: 80, EXISTING_CUSTOMER: 90,
 };
 function relationshipComponent(status: string): ScoreComponent {
@@ -127,7 +127,7 @@ function relationshipComponent(status: string): ScoreComponent {
   return {
     dimension: "RELATIONSHIP", score, status: score === null ? "UNKNOWN" : "KNOWN",
     rule: "first_party_relationship_status_v1",
-    explanation: score === null ? "Relationship is unknown because no supported first-party status was supplied." :
+    explanation: score === null ? "Relationship is unknown because no affirmative first-party relationship status was supplied." :
       `Relationship uses the customer-maintained first-party status ${status}; JYRA does not infer it from public evidence.`,
     signalIds: [], clusterIds: [], factIds: [], evidenceIds: [], details: { relationshipStatus: status },
   };
@@ -160,7 +160,8 @@ function confidenceComponent(input: OpportunityCalculationInput, completeness: n
 
 const STATE_ORDER: OpportunityAssessmentState[] = ["DORMANT", "WATCH", "EMERGING", "RISING", "SURGING"];
 function stateFor(score: number | null, rules: typeof DEFAULT_OPPORTUNITY_RULES): OpportunityAssessmentState {
-  if (score === null || score < rules.stateThresholds.DORMANT) return "DORMANT";
+  if (score === null) return "WATCH";
+  if (score < rules.stateThresholds.DORMANT) return "DORMANT";
   if (score < rules.stateThresholds.WATCH) return "WATCH";
   if (score < rules.stateThresholds.EMERGING) return "EMERGING";
   if (score < rules.stateThresholds.SURGING) return "RISING";
@@ -187,8 +188,11 @@ export function calculateOpportunityAssessment(input: OpportunityCalculationInpu
     { component: timing, weight: input.weights.timing },
     { component: relationship, weight: input.weights.relationship },
   ];
+  const coreDimensionsKnown = fit.score !== null && need.score !== null && timing.score !== null;
   const knownWeight = scoring.filter((item) => item.component.score !== null).reduce((sum, item) => sum + item.weight, 0);
-  const score = knownWeight ? round(scoring.reduce((sum, item) => sum + (item.component.score ?? 0) * item.weight, 0) / knownWeight) : null;
+  const score = coreDimensionsKnown && knownWeight
+    ? round(scoring.reduce((sum, item) => sum + (item.component.score ?? 0) * item.weight, 0) / knownWeight)
+    : null;
   const completeness = scoring.filter((item) => item.component.score !== null).reduce((sum, item) => sum + item.weight, 0) / 100;
   const confidence = confidenceComponent(input, completeness);
   let state = stateFor(score, rules);
@@ -215,7 +219,7 @@ export function calculateOpportunityAssessment(input: OpportunityCalculationInpu
   }
   return {
     score, state, assessmentStatus, components: [fit, need, timing, relationship, confidence],
-    explanation: `${state}: ${score === null ? "an opportunity score cannot yet be calculated" : `weighted opportunity strength is ${score}`}. Confidence is ${confidence.score ?? "unknown"} and is not included in that score.${gates.length ? ` Gates: ${gates.join("; ")}.` : ""}`,
+    explanation: `${score === null ? "NEEDS RESEARCH" : state}: ${score === null ? "an opportunity score cannot yet be calculated because Fit, Need, or Timing remains unknown" : `weighted opportunity strength is ${score}`}. Confidence is ${confidence.score ?? "unknown"} and is not included in that score.${gates.length ? ` Gates: ${gates.join("; ")}.` : ""}`,
   };
 }
 

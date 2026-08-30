@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useLocation } from "wouter";
 import { Activity, ChevronRight, ExternalLink, History, Loader2, RefreshCw, ShieldQuestion, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
@@ -51,6 +52,7 @@ export function OpportunityAssessments({ projectId, initialCompanyId, focusWhy =
   initialCompanyId?: string | null;
   focusWhy?: boolean;
 }) {
+  const [, navigate] = useLocation();
   const [companies, setCompanies] = useState<Company[]>([]);
   const [assessments, setAssessments] = useState<ListItem[]>([]);
   const [detail, setDetail] = useState<Detail | null>(null);
@@ -133,12 +135,18 @@ export function OpportunityAssessments({ projectId, initialCompanyId, focusWhy =
           const assessment = assessmentByCompany.get(company.id);
           return (
             <div className="flex flex-col gap-3 border-b p-4 last:border-b-0 sm:flex-row sm:items-center sm:justify-between" key={company.id}>
-              <button className="flex flex-1 items-center gap-3 text-left" onClick={() => assessment && void open(company.id)} disabled={!assessment}>
+              <button
+                className="flex flex-1 items-center gap-3 text-left"
+                onClick={() => assessment && navigate(`/companies/${company.id}`)}
+                disabled={!assessment}
+                aria-label={assessment ? `Open opportunity intelligence for ${company.company.canonicalName}` : undefined}
+                data-testid={assessment ? `open-opportunity-${company.id}` : undefined}
+              >
                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted font-display font-semibold">{scoreText(assessment?.score ?? null)}</div>
                 <div>
                   <p className="font-medium">{company.company.canonicalName}</p>
                   <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-                    {assessment ? <><Badge variant="outline" className={stateTone(assessment.state)}>{assessment.state}</Badge><span>Confidence {scoreText(assessment.confidenceScore)}</span><span>{assessment.assessmentStatus.replaceAll("_", " ")}</span></> : <span>Not assessed</span>}
+                    {assessment ? <><Badge variant="outline" className={stateTone(assessment.state)}>{assessment.assessmentStatus === "INSUFFICIENT_DATA" ? "NEEDS RESEARCH" : assessment.state}</Badge><span>Confidence {scoreText(assessment.confidenceScore)}</span><span>{assessment.assessmentStatus.replaceAll("_", " ")}</span></> : <span>Not assessed</span>}
                   </div>
                 </div>
                 {assessment && <ChevronRight className="ml-auto h-4 w-4 text-muted-foreground" />}
