@@ -1,0 +1,464 @@
+JYRA — REAL DATA HOTFIX 07
+EXA COMPANY_DISCOVERY RETURNS ZERO CANDIDATES
+
+Current state:
+
+- Exa COMPANY_DISCOVERY is registered
+- EXA_API_KEY works
+- Real Exa health test succeeded
+- Exa returned real companies during health verification
+- Real Data Test 08 completed but produced ZERO final companies
+
+DO NOT proceed to Tavily/Apify research.
+
+OBJECTIVE:
+
+Determine exactly where Test 08 lost the companies.
+
+We need to distinguish between:
+
+A. Exa returned zero raw results
+B. Exa returned results but JYRA rejected them
+C. Entity validation rejected everything
+D. Canonicalization/domain handling dropped everything
+E. ICP qualification incorrectly removed candidates
+F. Query construction was too restrictive
+
+==================================================
+1. REPLAY TEST 08 DIAGNOSTICALLY
+==================================================
+
+Use the same:
+
+Seller:
+Aadit Technologies
+
+Project:
+GTM-Q1
+
+Offering:
+Managed SOC
+
+Use the same accepted Business Twin and ICP.
+
+DO NOT create new configuration.
+
+Run in DEVELOPMENT only.
+
+==================================================
+2. PRINT EVERY DISCOVERY QUERY BEFORE EXECUTION
+==================================================
+
+For each planned Exa query report:
+
+QUERY NUMBER
+
+EXACT QUERY TEXT
+
+CATEGORY
+
+TYPE
+
+NUM RESULTS REQUESTED
+
+WHICH ICP CRITERIA WERE INCLUDED
+
+WHICH ICP CRITERIA WERE OMITTED
+
+WHY
+
+We need to see whether the generated query became too restrictive.
+
+==================================================
+3. TEST EXA COMPANY CATEGORY FIRST
+==================================================
+
+For each query use:
+
+category: "company"
+type: "auto"
+
+Do not apply unsupported Exa filters.
+
+Maximum diagnostic queries:
+3
+
+Maximum results requested per query:
+10
+
+DO NOT create canonical company records yet.
+
+This first stage is RAW PROVIDER DIAGNOSTICS only.
+
+==================================================
+4. REPORT RAW EXA RESPONSE
+==================================================
+
+For EACH query report:
+
+HTTP status
+
+result count
+
+request ID if available
+
+cost/usage if available
+
+latency
+
+Then print up to 10 raw results with:
+
+title
+
+URL
+
+provider result ID
+
+description/snippet if returned
+
+Do not normalize or reject them yet.
+
+==================================================
+5. IDENTIFY ZERO-RESULT ROOT CAUSE
+==================================================
+
+If category="company" returns results:
+
+STOP blaming Exa.
+
+Trace each raw result through:
+
+RAW EXA RESULT
+→ entity validation
+→ canonicalization
+→ deduplication
+→ ICP qualification
+→ final candidate decision
+
+For each result show exactly where it was:
+
+ACCEPTED
+REJECTED
+QUARANTINED
+DROPPED
+
+and WHY.
+
+No silent filtering is allowed.
+
+==================================================
+6. IF COMPANY CATEGORY RETURNS ZERO
+==================================================
+
+Only if a reasonable ICP-derived query produces zero or unusably few
+results using:
+
+category: "company"
+
+perform ONE controlled comparison query WITHOUT category.
+
+Use:
+
+type: "auto"
+numResults: 10
+
+Use the SAME query text.
+
+Purpose:
+
+Compare:
+
+COMPANY CATEGORY
+
+vs
+
+GENERAL EXA SEARCH
+
+This is diagnostic only.
+
+Do NOT automatically adopt general search as the production
+COMPANY_DISCOVERY implementation.
+
+==================================================
+7. QUERY DESIGN RULE
+==================================================
+
+Do not put every ICP criterion into one sentence.
+
+For example, avoid a query equivalent to:
+
+"Find SaaS, technology, IT services, fintech, financial services,
+healthcare and professional services companies in United States, India,
+UAE, United Kingdom and Singapore with 100-2000 employees, Microsoft
+365, Azure and significant cloud infrastructure."
+
+That is too broad in some dimensions and too restrictive in others.
+
+Instead test focused discovery queries such as:
+
+QUERY A
+"cloud software company with enterprise IT infrastructure"
+
+QUERY B
+"IT services company serving mid-market or enterprise customers"
+
+QUERY C
+"fintech company with significant cloud infrastructure"
+
+Then let JYRA perform geography/size/industry qualification downstream
+where data exists.
+
+Do not require Azure/Microsoft 365 at discovery time.
+
+Those are SOFT characteristics.
+
+==================================================
+8. IMPORTANT — DISCOVERY MUST HAVE RECALL
+==================================================
+
+COMPANY_DISCOVERY should prioritize finding plausible ICP companies.
+
+It should NOT require proof of every ICP field at search time.
+
+Discovery:
+high enough recall
+
+Qualification:
+reduces false positives
+
+Research:
+verifies missing attributes
+
+Signals:
+determine timing/need
+
+Do not collapse these stages.
+
+==================================================
+9. AUDIT FILTERING
+==================================================
+
+Inspect Test 08 for any logic equivalent to:
+
+if geography unknown → reject
+
+if employee size unknown → reject
+
+if industry unknown → reject
+
+if Azure unknown → reject
+
+if domain unknown → reject
+
+if canonical domain unresolved → reject
+
+These are WRONG for initial discovery.
+
+Missing values must normally remain:
+
+UNKNOWN
+
+rather than causing automatic rejection.
+
+==================================================
+10. LINKEDIN RESULTS
+==================================================
+
+A result such as:
+
+https://linkedin.com/company/company-name
+
+is a valid company identity candidate.
+
+It must NOT become:
+
+canonical_domain = linkedin.com
+
+But it also must NOT be discarded simply because no official domain has
+yet been resolved.
+
+Correct handling:
+
+linkedin_company_url = result URL
+canonical_domain = UNKNOWN
+domain_status = NEEDS_RESOLUTION
+
+Company candidate may continue through qualification.
+
+==================================================
+11. FINAL DIAGNOSTIC TABLE
+==================================================
+
+Return:
+
+RAW COMPANY
+EXA URL
+QUERY
+RAW RESULT
+ENTITY STATUS
+DOMAIN STATUS
+CANONICALIZATION STATUS
+ICP STATUS
+FINAL CANDIDATE
+REJECTION/DROP REASON
+
+==================================================
+12. REQUIRED COUNTS
+==================================================
+
+Return:
+
+DISCOVERY QUERIES:
+
+EXA COMPANY-CATEGORY CALLS:
+
+RAW COMPANY-CATEGORY RESULTS:
+
+GENERAL SEARCH COMPARISON CALLS:
+
+GENERAL SEARCH RAW RESULTS:
+
+ENTITY REJECTIONS:
+
+AMBIGUOUS ENTITIES:
+
+DOMAIN-RELATED DROPS:
+
+CANONICALIZATION DROPS:
+
+DUPLICATES:
+
+ICP-RELATED REJECTIONS:
+
+UNKNOWN-DATA REJECTIONS:
+
+FINAL CANDIDATES:
+
+==================================================
+13. FIX ONLY THE PROVEN ROOT CAUSE
+==================================================
+
+After identifying the exact failure:
+
+fix only that layer.
+
+Examples:
+
+If queries are too restrictive:
+fix discovery query generation.
+
+If UNKNOWN fields are causing rejection:
+fix qualification semantics.
+
+If LinkedIn results are being discarded:
+fix company identity handling.
+
+If canonicalization requires a domain:
+fix domain-optional ingestion.
+
+Do NOT redesign the whole pipeline.
+
+==================================================
+14. CONTROLLED RETEST
+==================================================
+
+After the fix, run ONE controlled Exa discovery test.
+
+Maximum Exa calls:
+3
+
+Maximum final candidates:
+10
+
+10 is a ceiling, not a quota.
+
+Return only legitimate candidates.
+
+Do NOT run Tavily.
+
+Do NOT run Apify.
+
+Do NOT create signals.
+
+Do NOT enrich contacts.
+
+==================================================
+PASS CRITERIA
+==================================================
+
+PASS if:
+
+1. We can explain exactly why Test 08 returned zero companies.
+
+2. Raw Exa results are visible before JYRA filtering.
+
+3. No candidate disappears silently.
+
+4. Missing domain does not automatically reject a candidate.
+
+5. Missing ICP attributes remain UNKNOWN.
+
+6. Discovery queries are not overconstrained.
+
+7. At least one real candidate survives if Exa returns legitimate
+   company results.
+
+8. Production remains untouched.
+
+==================================================
+REPORT
+==================================================
+
+ROOT CAUSE:
+
+EXACT TEST 08 FAILURE POINT:
+
+QUERY PROBLEM:
+YES/NO
+
+EXA PROBLEM:
+YES/NO
+
+ENTITY RESOLUTION PROBLEM:
+YES/NO
+
+DOMAIN HANDLING PROBLEM:
+YES/NO
+
+ICP FILTERING PROBLEM:
+YES/NO
+
+UNKNOWN-SEMANTICS PROBLEM:
+YES/NO
+
+CODE CHANGE:
+
+RAW RESULTS BEFORE FIX:
+
+FINAL CANDIDATES BEFORE FIX:
+0
+
+RAW RESULTS AFTER FIX:
+
+FINAL CANDIDATES AFTER FIX:
+
+TAVILY CALLS:
+0
+
+APIFY CALLS:
+0
+
+CONTACT CALLS:
+0
+
+SIGNALS CREATED:
+0
+
+PRODUCTION OPERATIONS:
+0
+
+FINAL STATUS:
+PASS/FAIL
+
+STOP after returning the diagnostic table and maximum 10 corrected
+candidates.
