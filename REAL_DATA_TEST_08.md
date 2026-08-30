@@ -1,5 +1,27 @@
 # REAL DATA TEST 08 — Exa Company Discovery
 
+## Implementation decision addendum
+
+After this historical test run, the Exa adapter was changed to use the official
+`exa-js` SDK directly. The current `COMPANY_DISCOVERY` call is intentionally:
+
+```ts
+exa.search(discoveryQuery, {
+  category: "company",
+  type: "auto",
+  numResults: controlledLimit,
+})
+```
+
+The current adapter does not use Exa people search, Agent API, Answer API,
+Contents API, or `outputSchema`. It asks Exa only for raw company-category
+search results. JYRA remains responsible for canonicalization, entity
+resolution, ICP qualification, research prioritization, evidence governance,
+signals, and opportunity reasoning. Missing candidate fields remain unknown.
+
+This addendum describes the implementation after the run below; the blocked
+result and five-call audit remain unchanged and were not rerun.
+
 ## Result
 
 **BLOCKED after the allowed five Exa calls.**

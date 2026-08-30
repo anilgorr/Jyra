@@ -20,4 +20,4 @@
 - [Timeless fact dates](timeless-fact-dates.md) — stable source-backed facts use the evidence observation date; event facts still require a source-stated date.
 - [Append-only evidence cleanup](append-only-evidence-cleanup.md) — invalid evidence links may be removed, but crawl payloads remain immutable audit records.
 - [Evidence attribution reviews](evidence-attribution-reviews.md) — keep immutable search payloads separate from mutable entity, source-quality, acceptance, and duplicate decisions.
-- [Exa connector company search](exa-connector-company-search.md) — minimal company searches work, but larger result requests may return HTTP 400; keep per-call limits conservative.
+- [Exa company discovery boundary](exa-company-discovery-boundary.md) — use raw exa-js company search only; all qualification and opportunity reasoning stays inside JYRA.
