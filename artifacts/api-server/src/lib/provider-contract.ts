@@ -54,9 +54,26 @@ export type ProviderRequestBase = {
   metadata?: Record<string, string>;
 };
 
+export type CompanyDiscoveryStrategy = {
+  icpDescription?: string;
+  targetIndustries?: string[];
+  geographies?: string[];
+  employeeRange?: {
+    minimum?: number;
+    maximum?: number;
+    sweetSpotMinimum?: number;
+    sweetSpotMaximum?: number;
+  };
+  technologyCharacteristics?: string[];
+  exclusions?: string[];
+  hardFilters?: string[];
+  softCriteria?: string[];
+};
+
 export type DiscoverCompaniesRequest = ProviderRequestBase & {
   query: string;
   limit?: number;
+  strategy?: CompanyDiscoveryStrategy;
 };
 
 export type LookupCompanyRequest = ProviderRequestBase & {
@@ -135,6 +152,14 @@ export type CompanyRecord = {
   domain: string | null;
   website: string | null;
   description: string | null;
+  industry?: string | null;
+  location?: string | null;
+  employeeCount?: number | null;
+  employeeRange?: string | null;
+  linkedinUrl?: string | null;
+  sourceUrl?: string | null;
+  relevanceScore?: number | null;
+  providerMetadata?: Record<string, unknown>;
 };
 
 export type CompanyDiscoveryResult = { companies: CompanyRecord[] };

@@ -1,0 +1,144 @@
+{
+  "test": "REAL DATA TEST 08",
+  "environment": "development",
+  "seller": "Aadit Technologies",
+  "project": "GTM-Q1",
+  "offering": "Managed SOC",
+  "startedAt": "2026-08-30T08:24:37.947Z",
+  "result": {
+    "status": "blocked",
+    "runId": "87699815-bfc8-4210-95f9-0e4811b28239",
+    "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+    "query": "Find official websites of companies that may fit Managed Soc. Countries: United States, India, UAE, United Kingdom, Singapore. Industries: SaaS, technology, IT services. Size: 100-2000 employees. Optional traits: Microsoft 365, Azure, significant cloud/IT infrastructure, other cloud platforms.",
+    "queries": [
+      "Find official websites of companies that may fit Managed Soc. Countries: United States, India, UAE, United Kingdom, Singapore. Industries: SaaS, technology, IT services. Size: 100-2000 employees. Optional traits: Microsoft 365, Azure, significant cloud/IT infrastructure, other cloud platforms.",
+      "Find official websites of companies that may fit Managed Soc. Countries: United States, India, UAE, United Kingdom, Singapore. Industries: fintech, financial services, healthcare. Size: 100-2000 employees. Optional traits: Microsoft 365, Azure, significant cloud/IT infrastructure, other cloud platforms.",
+      "Find official websites of companies that may fit Managed Soc. Countries: United States, India, UAE, United Kingdom, Singapore. Industries: professional services. Size: 100-2000 employees. Optional traits: Microsoft 365, Azure, significant cloud/IT infrastructure, other cloud platforms."
+    ],
+    "providerCalls": 1,
+    "estimatedCost": 0.007,
+    "actualCost": null,
+    "rawResults": 0,
+    "discovered": 0,
+    "canonicalized": 0,
+    "duplicatesRemoved": 0,
+    "linked": 0,
+    "possibleMatches": 0,
+    "rejected": 0,
+    "blockedReason": "Exa rejected this request",
+    "candidates": []
+  },
+  "provider": {
+    "id": "b220e720-6d21-4c7a-badf-3aec920febca",
+    "name": "Exa",
+    "type": "exa",
+    "enabled": true,
+    "credentialStatus": "AVAILABLE",
+    "health": "FAILING",
+    "capabilities": [
+      "COMPANY_DISCOVERY"
+    ]
+  },
+  "usage": [
+    {
+      "id": "95498780-ce66-4a37-af0a-faab8b6548d1",
+      "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+      "capability": "COMPANY_DISCOVERY",
+      "requestId": "discovery:87699815-bfc8-4210-95f9-0e4811b28239:1:b220e720-6d21-4c7a-badf-3aec920febca",
+      "status": "failed",
+      "retryable": false,
+      "latencyMs": 567,
+      "runtimeMs": 567,
+      "resultCount": 0,
+      "estimatedCost": 0.007,
+      "actualCost": null,
+      "errorCode": "PROVIDER_REQUEST_FAILED",
+      "metadata": {
+        "query": "Find official websites of companies that may fit Managed Soc. Countries: United States, India, UAE, United Kingdom, Singapore. Industries: SaaS, technology, IT services. Size: 100-2000 employees. Optional traits: Microsoft 365, Azure, significant cloud/IT infrastructure, other cloud platforms.",
+        "projectId": "b4c8a95a-eb1c-4a86-89d6-62d72097d820",
+        "queryIndex": "1",
+        "searchType": "fast",
+        "discoveryRunId": "87699815-bfc8-4210-95f9-0e4811b28239",
+        "organizationId": "02d40c31-72e4-42d9-9d8d-fe676a369205"
+      },
+      "startedAt": "2026-08-30T08:24:37.979Z",
+      "completedAt": "2026-08-30T08:24:38.546Z",
+      "createdAt": "2026-08-30T08:24:38.547Z"
+    }
+  ],
+  "runRow": {
+    "id": "87699815-bfc8-4210-95f9-0e4811b28239",
+    "organizationId": "02d40c31-72e4-42d9-9d8d-fe676a369205",
+    "projectId": "b4c8a95a-eb1c-4a86-89d6-62d72097d820",
+    "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+    "businessTwinVersionId": "a355a198-e9d3-449e-a9cf-c064fab4faa2",
+    "icpVersionId": "584ac312-0d43-4f8a-b857-5db7249c6c2e",
+    "status": "FAILED",
+    "strategy": {
+      "exclusions": [],
+      "geographies": [
+        "United States",
+        "India",
+        "UAE",
+        "United Kingdom",
+        "Singapore"
+      ],
+      "hardFilters": [
+        "Geography: United States, India, UAE, United Kingdom, Singapore",
+        "Industries: SaaS, technology, IT services, fintech, financial services, healthcare, professional services",
+        "Employees: 100–2000"
+      ],
+      "softCriteria": [
+        "We believe Mid-market and growing organizations with significant cloud and IT infrastructure that need continuous cybersecurity monitoring but do not have a fully staffed 24/7 internal SOC. Ideal customers typically use Microsoft 365/Azure or other cloud platforms, have 100+ employees, handle sensitive customer or business data, serve enterprise customers, and have security or compliance requirements such as ISO 27001, SOC 2, customer security assessments or cyber-insurance. Strong industries include SaaS, technology, IT services, fintech, financial services, healthcare and professional services..",
+        "We believe companies with 100–2,000 employees; sweet spot: 200–1,000 employees employees are a strong fit."
+      ],
+      "employeeRange": {
+        "maximum": 2000,
+        "minimum": 100,
+        "sweetSpotMaximum": 1000,
+        "sweetSpotMinimum": 200
+      },
+      "icpDescription": "We believe Mid-market and growing organizations with significant cloud and IT infrastructure that need continuous cybersecurity monitoring but do not have a fully staffed 24/7 internal SOC. Ideal customers typically use Microsoft 365/Azure or other cloud platforms, have 100+ employees, handle sensitive customer or business data, serve enterprise customers, and have security or compliance requirements such as ISO 27001, SOC 2, customer security assessments or cyber-insurance. Strong industries include SaaS, technology, IT services, fintech, financial services, healthcare and professional services.. We believe companies with 100–2,000 employees; sweet spot: 200–1,000 employees employees are a strong fit.",
+      "targetIndustries": [
+        "SaaS",
+        "technology",
+        "IT services",
+        "fintech",
+        "financial services",
+        "healthcare",
+        "professional services"
+      ],
+      "technologyCharacteristics": [
+        "Microsoft 365",
+        "Azure",
+        "significant cloud/IT infrastructure",
+        "other cloud platforms"
+      ]
+    },
+    "queries": [
+      "Find official websites of companies that may fit Managed Soc. Countries: United States, India, UAE, United Kingdom, Singapore. Industries: SaaS, technology, IT services. Size: 100-2000 employees. Optional traits: Microsoft 365, Azure, significant cloud/IT infrastructure, other cloud platforms.",
+      "Find official websites of companies that may fit Managed Soc. Countries: United States, India, UAE, United Kingdom, Singapore. Industries: fintech, financial services, healthcare. Size: 100-2000 employees. Optional traits: Microsoft 365, Azure, significant cloud/IT infrastructure, other cloud platforms.",
+      "Find official websites of companies that may fit Managed Soc. Countries: United States, India, UAE, United Kingdom, Singapore. Industries: professional services. Size: 100-2000 employees. Optional traits: Microsoft 365, Azure, significant cloud/IT infrastructure, other cloud platforms."
+    ],
+    "maxProviderCalls": 5,
+    "maxCandidates": 20,
+    "providerCalls": 1,
+    "rawResultCount": 0,
+    "acceptedCandidateCount": 0,
+    "duplicateCount": 0,
+    "rejectedCount": 0,
+    "estimatedCost": 0.007,
+    "actualCost": null,
+    "errorCode": "PROVIDER_REQUEST_FAILED",
+    "errorMessage": "Exa rejected this request",
+    "requestedAt": "2026-08-30T08:24:37.947Z",
+    "completedAt": "2026-08-30T08:24:38.572Z",
+    "createdAt": "2026-08-30T08:24:37.965Z"
+  },
+  "provenanceCount": 0,
+  "followUpDeltas": {
+    "researchJobs": 0,
+    "evidenceRows": 0,
+    "contactEnrichmentAttempts": 0
+  }
+}

@@ -13,6 +13,8 @@
     "test:companies": "node ./scripts/test-company-identity.mjs",
     "test:providers": "node ./scripts/test-provider-router.mjs",
     "test:apify": "node ./scripts/test-apify-provider.mjs",
+    "test:exa": "node ./scripts/test-exa-provider.mjs",
+    "test:real-data-08": "NODE_ENV=development node ./scripts/run-test-08.mjs",
     "test:tavily": "node ./scripts/test-tavily-provider.mjs",
     "hotfix:tavily-evidence-quality": "NODE_ENV=development node ./scripts/reprocess-tavily-evidence-quality.mjs",
     "test:real-data-06": "NODE_ENV=development node ./scripts/test-06-trusted-external-evidence.mjs",

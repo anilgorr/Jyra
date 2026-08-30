@@ -25,6 +25,10 @@ import {
   createTavilyWebSearchAdapter,
   parseTavilyProviderConfiguration,
 } from "./tavily-provider";
+import {
+  createExaCompanyDiscoveryAdapter,
+  parseExaProviderConfiguration,
+} from "./exa-provider";
 
 export type ProviderCatalogEntry = Pick<
   DataProvider,
@@ -212,6 +216,12 @@ function defaultAdapterFactory(
     return [createTavilyWebSearchAdapter({
       providerId: provider.id,
       configuration: parseTavilyProviderConfiguration(provider.configuration),
+    })];
+  }
+  if (provider.providerType === "exa") {
+    return [createExaCompanyDiscoveryAdapter({
+      providerId: provider.id,
+      configuration: parseExaProviderConfiguration(provider.configuration),
     })];
   }
   return [];

@@ -8,12 +8,16 @@ import { z } from "zod/v4";
 
 const router: IRouter = Router();
 const paramsSchema = z.object({ projectId: z.string().uuid() });
-const bodySchema = z.object({ limit: z.number().int().min(1).max(50).optional() }).default({});
+const bodySchema = z.object({ limit: z.number().int().min(1).max(20).optional() }).default({});
 type AsyncHandler = (...args: Parameters<RequestHandler>) => Promise<void>;
 const asyncRoute = (handler: AsyncHandler): RequestHandler =>
   (req, res, next) => void handler(req, res, next).catch(next);
 
 router.post("/projects/:projectId/discovery", requireAuth, asyncRoute(async (req, res) => {
+  if (process.env.NODE_ENV === "production") {
+    res.status(404).json({ error: "Not found" });
+    return;
+  }
   const params = paramsSchema.safeParse(req.params);
   const body = bodySchema.safeParse(req.body ?? {});
   if (!params.success || !body.success) {

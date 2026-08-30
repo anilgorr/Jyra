@@ -1,5 +1,6 @@
 import app from "./app";
 import { ensureDevelopmentApifyProvider } from "./lib/apify-provider-config";
+import { ensureDevelopmentExaProvider } from "./lib/exa-provider-config";
 import { ensureDevelopmentTavilyProvider } from "./lib/tavily-provider-config";
 import { logger } from "./lib/logger";
 
@@ -20,6 +21,7 @@ if (Number.isNaN(port) || port <= 0) {
 async function main() {
   if (process.env.NODE_ENV !== "production") {
     await ensureDevelopmentApifyProvider();
+    await ensureDevelopmentExaProvider();
     await ensureDevelopmentTavilyProvider();
   }
 

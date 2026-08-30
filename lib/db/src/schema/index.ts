@@ -25,6 +25,7 @@ export * from "./business-twins";
 export * from "./icps";
 export * from "./companies";
 export * from "./company-provenance";
+export * from "./company-discovery";
 export * from "./providers";
 export * from "./evidence";
 export * from "./facts";
