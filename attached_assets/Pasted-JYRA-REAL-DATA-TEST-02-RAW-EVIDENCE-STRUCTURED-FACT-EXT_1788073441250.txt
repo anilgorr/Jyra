@@ -1,0 +1,182 @@
+JYRA — REAL DATA TEST 02
+RAW EVIDENCE → STRUCTURED FACT EXTRACTION
+
+We have successfully completed the first real research test.
+
+Company:
+7C Studio
+Domain:
+7cstudio.com
+
+Existing verified state:
+
+Provider: Apify Website Content Crawler
+Capability: WEBSITE_CRAWL
+Result items: 1
+Pages with content: 1
+RAW evidence persisted: 1
+Evidence status: RAW
+
+Do NOT crawl the website again unless technically required.
+
+The purpose of this test is to verify the NEXT stage:
+
+RAW EVIDENCE
+→ FACT EXTRACTION
+→ STRUCTURED FACTS
+
+==================================================
+TASK
+==================================================
+
+Take the existing RAW evidence for 7C Studio and run it through the
+existing fact extraction pipeline.
+
+Determine why the previous research run reported:
+
+Extraction candidates: 0
+
+Trace:
+
+RAW evidence
+→ extraction eligibility
+→ content parsing
+→ fact extraction
+→ validation
+→ fact persistence
+
+==================================================
+IMPORTANT PRINCIPLE
+==================================================
+
+Facts are NOT buying signals.
+
+Examples of acceptable facts:
+
+- company describes itself as providing X service
+- company operates in X market
+- company lists X technology/service
+- company has X office/location
+- company mentions X customer segment
+- company has a careers page
+- company publicly describes X capability
+
+Only extract facts actually supported by the source.
+
+Do NOT convert generic marketing language into buying intent.
+
+Do NOT infer:
+
+"needs Managed SOC"
+"has cybersecurity problem"
+"is buying security services"
+"has budget"
+"has urgency"
+
+unless evidence explicitly supports such a fact.
+
+==================================================
+PROVENANCE
+==================================================
+
+Every persisted fact must retain:
+
+company
+source evidence ID
+source URL
+retrieved timestamp
+fact type/category
+fact statement/value
+confidence or validation status if supported by current schema
+
+A fact must always be traceable back to its RAW evidence.
+
+==================================================
+TEST EXISTING EVIDENCE
+==================================================
+
+Use ONLY the existing 7C Studio RAW evidence.
+
+Do not:
+
+- test another company
+- add Tavily
+- test COMPANY_DISCOVERY
+- modify opportunity scoring
+- modify state logic
+- modify signal weights
+- modify ICP
+- fabricate additional evidence
+
+==================================================
+PASS CRITERIA
+==================================================
+
+PASS if:
+
+1. Existing RAW evidence is eligible for extraction.
+
+2. Actual page content is parsed.
+
+3. At least one legitimate source-backed company fact is extracted,
+   IF the page contains factual information.
+
+4. Every extracted fact references the original evidence/source.
+
+5. Unsupported statements are rejected.
+
+6. No buying intent is invented.
+
+If the page genuinely contains no extractable factual information,
+report that honestly instead of manufacturing facts.
+
+==================================================
+REPORT
+==================================================
+
+Return:
+
+RAW EVIDENCE FOUND:
+YES/NO
+
+RAW EVIDENCE ID:
+
+SOURCE URL:
+
+CONTENT LENGTH:
+
+EXTRACTION ELIGIBLE:
+YES/NO
+
+FACT CANDIDATES:
+
+FACTS ACCEPTED:
+
+FACTS REJECTED:
+
+ACCEPTED FACTS:
+[list exact extracted facts]
+
+REJECTION REASONS:
+
+ROOT CAUSE OF PREVIOUS EXTRACTION CANDIDATES = 0:
+
+FIX APPLIED:
+(if required)
+
+FACT → EVIDENCE TRACEABILITY:
+PASS/FAIL
+
+==================================================
+DATABASE SAFETY
+==================================================
+
+DEVELOPMENT ONLY.
+
+Production untouched.
+
+STOP after proving:
+
+RAW EVIDENCE → FACT
+
+Do not proceed to signals automatically.

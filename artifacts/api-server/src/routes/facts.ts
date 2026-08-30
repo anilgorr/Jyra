@@ -285,6 +285,7 @@ router.post(
       rawCandidates = await extractFactCandidatesFromSource(
         source.evidence.id,
         source.crawlPage.rawContent,
+        source.evidence.observedAt.toISOString().slice(0, 10),
       );
     } catch {
       res.status(502).json({ error: "Fact extraction is temporarily unavailable" });
@@ -299,6 +300,7 @@ router.post(
             companyId: access.company.id,
             evidenceId: source.evidence.id,
             rawContent: source.crawlPage.rawContent,
+            observationDate: source.evidence.observedAt.toISOString().slice(0, 10),
           }),
         );
       } catch (error) {

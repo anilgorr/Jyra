@@ -17,6 +17,7 @@ const {
   isFactTypeSupportedByExcerpt,
   isInterpretationOnlyClaim,
   isValidCalendarDate,
+  mergeTechnologyMentionCandidates,
   parseFactExtractionModelOutput,
   validateFactCandidate,
 } = await import(`${pathToFileURL(output).href}?t=${Date.now()}`);
@@ -29,6 +30,51 @@ const context = {
   rawContent:
     "On August 20, 2026, Acme appointed Priya Shah as Chief Security Officer. The company opened 12 security roles.",
 };
+const timelessContext = {
+  companyId: context.companyId,
+  evidenceId,
+  rawContent: "With a backend built on Python, AWS, and GCP, we focus on speed and reliability.",
+  observationDate: "2026-08-30",
+};
+const timelessCandidate = {
+  evidenceId,
+  factType: "TECHNOLOGY_MENTION",
+  structuredValue: { technologies: ["Python", "AWS", "GCP"] },
+  effectiveDate: "2026-08-30",
+  confidence: 95,
+  supportingExcerpt: timelessContext.rawContent,
+  extractorVersion: "fact-extraction-v2",
+};
+assert.deepEqual(
+  validateFactCandidate(timelessCandidate, timelessContext),
+  timelessCandidate,
+  "timeless source-backed facts may use the evidence observation date",
+);
+assert.deepEqual(
+  mergeTechnologyMentionCandidates([
+    {
+      ...timelessCandidate,
+      structuredValue: { technology: "Python" },
+    },
+    {
+      ...timelessCandidate,
+      structuredValue: { technology: "AWS" },
+      confidence: 93,
+    },
+  ]),
+  [{
+    ...timelessCandidate,
+    structuredValue: { technologies: ["Python", "AWS"] },
+    confidence: 93,
+  }],
+);
+assert.throws(
+  () => validateFactCandidate(
+    { ...timelessCandidate, effectiveDate: "2026-08-29" },
+    timelessContext,
+  ),
+  /not supported by the supporting excerpt/,
+);
 const candidate = {
   evidenceId,
   factType: "LEADERSHIP_CHANGE",

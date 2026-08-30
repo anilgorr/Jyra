@@ -656,6 +656,7 @@ export async function executeResearchNow(input: {
       const candidates = await (input.extractFacts ?? extractFactCandidatesFromSource)(
         preserved.evidence.id,
         source.rawContent,
+        completedAt.toISOString().slice(0, 10),
       ).catch(() => []);
       for (const candidate of candidates) {
         try {
@@ -663,6 +664,7 @@ export async function executeResearchNow(input: {
             companyId: row.company.id,
             evidenceId: preserved.evidence.id,
             rawContent: source.rawContent,
+            observationDate: completedAt.toISOString().slice(0, 10),
           });
           await db.insert(researchFactProposalsTable).values({
             researchJobId: job.id,
