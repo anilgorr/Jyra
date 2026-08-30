@@ -1,6 +1,7 @@
 import {
   index,
   integer,
+  jsonb,
   pgEnum,
   pgTable,
   real,
@@ -43,6 +44,7 @@ export const companiesTable = pgTable(
     domain: text("domain"),
     website: text("website"),
     linkedinUrl: text("linkedin_url"),
+    profileUrls: jsonb("profile_urls").$type<Record<string, string>>().notNull().default({}),
     country: text("country"),
     industry: text("industry"),
     employeeCount: integer("employee_count"),

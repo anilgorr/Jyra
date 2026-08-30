@@ -29,7 +29,7 @@ type DiscoveryInput = {
   organizationId: string;
   projectId: string;
   userId: string;
-  router: Pick<ProviderOperations, "discoverCompanies">;
+  router: Pick<ProviderOperations, "discoverCompanies" | "lookupCompany">;
   limit?: number;
   maxProviderCalls?: number;
   now?: Date;
@@ -252,6 +252,7 @@ function candidateInput(candidate: CompanyDiscoveryResult["companies"][number]) 
     domain: candidate.domain,
     website: candidate.website,
     linkedinUrl: candidate.linkedinUrl,
+    profileUrls: candidate.profileUrls,
     country: candidate.location,
     industry: candidate.industry,
     employeeCount: candidate.employeeCount,
@@ -496,7 +497,33 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
   let rejected = 0;
   const reports: DiscoveryCandidateReport[] = [];
   for (const { candidate, response, query } of rawCandidates.slice(0, limit)) {
-    const normalized = candidateInput(candidate);
+    let resolvedCandidate = candidate;
+    if (!candidate.domain) {
+      const lookup = await input.router.lookupCompany({
+        name: candidate.name,
+        sourceUrl: candidate.sourceUrl ?? candidate.website ?? undefined,
+        linkedinUrl: candidate.linkedinUrl ?? undefined,
+        location: candidate.location ?? undefined,
+        industry: candidate.industry ?? undefined,
+        description: candidate.description ?? undefined,
+        requestId: `domain-resolution:${run.id}:${reports.length + rejected + 1}`,
+        metadata: {
+          organizationId: input.organizationId,
+          projectId: input.projectId,
+          discoveryRunId: run.id,
+        },
+      });
+      const lookupCompany = lookup.status === "success" ? lookup.data?.company : null;
+      const lookupNormalized = lookupCompany ? candidateInput(lookupCompany) : null;
+      if (lookupNormalized?.value?.domain) {
+        resolvedCandidate = {
+          ...candidate,
+          domain: lookupNormalized.value.domain,
+          website: lookupNormalized.value.website,
+        };
+      }
+    }
+    const normalized = candidateInput(resolvedCandidate);
     if (!normalized.value) {
       rejected += 1;
       continue;
@@ -520,11 +547,12 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
       if (!existing && await hasPossibleNameMatch(value.canonicalName, tx)) {
         return { outcome: "possible" as const, company: null, priority: researchPriority(assessment, 0) };
       }
-      const company = existing ?? (await tx.insert(companiesTable).values({
+      let company = existing ?? (await tx.insert(companiesTable).values({
         canonicalName: value.canonicalName,
         domain: value.domain,
         website: value.website,
         linkedinUrl: value.linkedinUrl,
+        profileUrls: value.profileUrls,
         country: value.country,
         industry: value.industry,
         employeeCount: value.employeeCount,
@@ -533,6 +561,17 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
       }).returning())[0];
       if (!company) {
         return { outcome: "rejected" as const, company: null, priority: 0 };
+      }
+      if (existing && (value.linkedinUrl || Object.keys(value.profileUrls).length)) {
+        const [updated] = await tx.update(companiesTable).set({
+          linkedinUrl: existing.linkedinUrl ?? value.linkedinUrl,
+          profileUrls: {
+            ...(existing.profileUrls ?? {}),
+            ...value.profileUrls,
+          },
+          updatedAt: now,
+        }).where(eq(companiesTable.id, existing.id)).returning();
+        company = updated ?? company;
       }
       const [evidenceCount] = await tx.select({
         count: sql<number>`count(*)::int`,
@@ -570,14 +609,16 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
           providerMetadata: candidate.providerMetadata ?? {},
           providerRelevance: candidate.relevanceScore ?? null,
           name: candidate.name,
-          domain: candidate.domain,
-          website: candidate.website,
+          originalResultUrl: candidate.sourceUrl ?? candidate.website ?? null,
+          domain: resolvedCandidate.domain,
+          website: resolvedCandidate.website,
           description: candidate.description,
           industry: candidate.industry ?? null,
           location: candidate.location ?? null,
           employeeCount: candidate.employeeCount ?? null,
           employeeRange: candidate.employeeRange ?? null,
-          linkedinUrl: candidate.linkedinUrl ?? null,
+          linkedinUrl: resolvedCandidate.linkedinUrl ?? null,
+          profileUrls: resolvedCandidate.profileUrls ?? {},
           qualification: assessment,
           researchPriority: priority,
           domainConfidence: value.domain ? "HIGH_CONFIDENCE" : "UNKNOWN",

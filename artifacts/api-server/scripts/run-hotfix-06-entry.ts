@@ -37,7 +37,10 @@ function reportResult(
   const id = typeof result.providerMetadata?.resultId === "string"
     ? result.providerMetadata.resultId
     : "UNKNOWN";
-  return `${index}. ${result.name} — URL: ${result.website ?? "UNKNOWN"}; domain: ${result.domain ?? "UNKNOWN"}; provider result ID: ${id}`;
+  const linkedin = result.providerMetadata?.profilePlatform === "linkedin"
+    ? result.providerMetadata.originalResultUrl
+    : null;
+  return `${index}. ${result.name} — URL: ${linkedin ?? result.website ?? "UNKNOWN"}; canonical domain: ${result.domain ?? "UNKNOWN"}; provider result ID: ${id}`;
 }
 
 async function run(): Promise<void> {

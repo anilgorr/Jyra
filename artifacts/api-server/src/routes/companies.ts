@@ -409,6 +409,7 @@ async function createCanonicalCompany(
       domain: input.domain,
       website: input.website,
       linkedinUrl: input.linkedinUrl,
+      profileUrls: input.profileUrls,
     })
     .returning();
   if (input.domain) {

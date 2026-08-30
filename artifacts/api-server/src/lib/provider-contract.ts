@@ -79,6 +79,11 @@ export type DiscoverCompaniesRequest = ProviderRequestBase & {
 export type LookupCompanyRequest = ProviderRequestBase & {
   name?: string;
   domain?: string;
+  sourceUrl?: string;
+  linkedinUrl?: string;
+  location?: string;
+  industry?: string;
+  description?: string;
 };
 
 export type SearchWebRequest = ProviderRequestBase & {
@@ -157,6 +162,7 @@ export type CompanyRecord = {
   employeeCount?: number | null;
   employeeRange?: string | null;
   linkedinUrl?: string | null;
+  profileUrls?: Record<string, string>;
   sourceUrl?: string | null;
   relevanceScore?: number | null;
   providerMetadata?: Record<string, unknown>;

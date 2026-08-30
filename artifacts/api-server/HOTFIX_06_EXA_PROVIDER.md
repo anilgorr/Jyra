@@ -77,7 +77,7 @@
 **RESULTS:**
 
 1. Nubosas — URL: https://nubosas.com; domain: nubosas.com; provider result ID: https://exa.ai/library/organization/wmgnn2yrk5j
-2. InfraVault — URL: https://linkedin.com/company/infravault; domain: linkedin.com; provider result ID: https://exa.ai/library/organization/3r1h9bzfzlt
+2. InfraVault — LinkedIn company URL: https://linkedin.com/company/infravault; canonical domain: UNKNOWN; provider result ID: https://exa.ai/library/organization/3r1h9bzfzlt
 3. 21Vianet Blue Cloud — URL: https://21vbluecloud.com; domain: 21vbluecloud.com; provider result ID: https://exa.ai/library/organization/knhs4lsswmv
 
 **LAST SUCCESS:** 2026-08-30T08:36:07.970Z
@@ -99,3 +99,12 @@
 **PRODUCTION OPERATIONS:** 0
 
 **FINAL STATUS:** PASS
+
+## Post-verification URL classification correction
+
+The health test exposed that a company-category result can point to a platform
+profile rather than an official website. JYRA now classifies known platform
+domains before canonical-domain extraction. The original Exa URL remains in
+provider provenance; LinkedIn URLs populate the LinkedIn/profile fields; and
+domain resolution remains `UNKNOWN` unless the bounded `COMPANY_LOOKUP`
+workflow returns a sufficiently verified non-platform domain.

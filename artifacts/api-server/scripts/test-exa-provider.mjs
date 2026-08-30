@@ -36,6 +36,11 @@ const adapter = createExaCompanyDiscoveryAdapter({
           },
           {
             id: "result-2",
+            title: "InfraVault",
+            url: "https://linkedin.com/company/infravault",
+          },
+          {
+            id: "result-3",
             url: "https://missing-name.example",
           },
         ],
@@ -58,12 +63,26 @@ const response = await adapter.execute({
 
 assert.equal(response.status, "success");
 assert.equal(response.providerRequestId, "exa-request-1");
-assert.equal(response.data.companies.length, 1);
+assert.equal(response.data.companies.length, 2);
 assert.equal(response.data.companies[0].name, "Acme Security");
 assert.equal(response.data.companies[0].domain, "acme-security.example");
 assert.equal(response.data.companies[0].industry, null);
 assert.equal(response.data.companies[0].location, null);
 assert.equal(response.data.companies[0].relevanceScore, 0.91);
+assert.equal(response.data.companies[1].name, "InfraVault");
+assert.equal(response.data.companies[1].domain, null);
+assert.equal(response.data.companies[1].website, null);
+assert.equal(
+  response.data.companies[1].linkedinUrl,
+  "https://linkedin.com/company/infravault",
+);
+assert.deepEqual(response.data.companies[1].profileUrls, {
+  linkedin: "https://linkedin.com/company/infravault",
+});
+assert.equal(
+  response.data.companies[1].providerMetadata.originalResultUrl,
+  "https://linkedin.com/company/infravault",
+);
 assert.equal(response.usage.actualCost, 0.008);
 assert.equal(calls.length, 1);
 assert.equal(calls[0].query, "Find target-market cloud companies");

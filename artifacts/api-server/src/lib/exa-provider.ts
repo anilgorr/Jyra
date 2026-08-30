@@ -5,6 +5,7 @@ import type {
   ProviderAdapter,
   ProviderResponse,
 } from "./provider-contract";
+import { companyProfilePlatform, isCompanyProfileDomain } from "./company-identity";
 
 type ExaResult = {
   id?: unknown;
@@ -113,6 +114,7 @@ function resultSource(result: ExaResult): string | null {
 
 function normalizeResult(result: ExaResult) {
   const sourceUrl = resultSource(result);
+  const sourcePlatform = companyProfilePlatform(sourceUrl);
   const linkedinUrl = urlValue(result.linkedinUrl)
     ?? (sourceUrl && /(^|\.)linkedin\.com$/i.test(new URL(sourceUrl).hostname)
       ? sourceUrl
@@ -120,17 +122,23 @@ function normalizeResult(result: ExaResult) {
   const name = stringValue(result.companyName) ?? stringValue(result.title);
   if (!name) return null;
 
+  const explicitDomain = stringValue(result.domain);
+  const canonicalDomain = explicitDomain && !isCompanyProfileDomain(explicitDomain)
+    ? explicitDomain.toLowerCase().replace(/^www\./, "")
+    : sourcePlatform ? null : domainFromUrl(sourceUrl);
+  const profileUrls = sourceUrl && sourcePlatform ? { [sourcePlatform]: sourceUrl } : {};
   const rawEmployeeCount = numberValue(result.employeeCount);
   return {
     name,
-    domain: stringValue(result.domain) ?? domainFromUrl(sourceUrl),
-    website: sourceUrl,
+    domain: canonicalDomain,
+    website: sourcePlatform ? null : sourceUrl,
     description: stringValue(result.summary) ?? textFromHighlights(result.highlights),
     industry: stringValue(result.industry),
     location: stringValue(result.location),
     employeeCount: rawEmployeeCount,
     employeeRange: stringValue(result.employeeRange),
     linkedinUrl,
+    profileUrls,
     sourceUrl,
     relevanceScore: numberValue(result.score),
     providerMetadata: {
@@ -138,6 +146,8 @@ function normalizeResult(result: ExaResult) {
       title: stringValue(result.title),
       author: stringValue(result.author),
       publishedDate: stringValue(result.publishedDate),
+      originalResultUrl: sourceUrl,
+      profilePlatform: sourcePlatform,
     },
   };
 }

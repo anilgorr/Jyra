@@ -588,6 +588,7 @@ export async function commitRealDataImport(
             domain: item.company.domain,
             website: item.company.website,
             linkedinUrl: item.company.linkedinUrl,
+            profileUrls: item.company.profileUrls,
           })
           .returning();
         if (!company) throw new Error("Canonical company could not be created");

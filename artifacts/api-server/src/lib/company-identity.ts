@@ -3,6 +3,7 @@ export interface RawCompanyInput {
   domain?: unknown;
   website?: unknown;
   linkedinUrl?: unknown;
+  profileUrls?: unknown;
   country?: unknown;
   industry?: unknown;
   employeeCount?: unknown;
@@ -15,6 +16,7 @@ export interface NormalizedCompanyInput {
   domain: string | null;
   website: string | null;
   linkedinUrl: string | null;
+  profileUrls: Record<string, string>;
   country: string | null;
   industry: string | null;
   employeeCount: number | null;
@@ -44,6 +46,34 @@ const NON_DISTINCTIVE_SUFFIXES = new Set([
   "technology",
   "technologies",
 ]);
+
+const COMPANY_PROFILE_DOMAINS: Record<string, string> = {
+  "linkedin.com": "linkedin",
+  "crunchbase.com": "crunchbase",
+  "pitchbook.com": "pitchbook",
+  "wellfound.com": "wellfound",
+  "github.com": "github",
+  "facebook.com": "facebook",
+  "x.com": "x",
+  "twitter.com": "x",
+};
+
+export function companyProfilePlatform(value: unknown): string | null {
+  const raw = typeof value === "string" ? value.trim() : "";
+  if (!raw) return null;
+  try {
+    const parsed = new URL(/^[a-z][a-z\d+.-]*:\/\//i.test(raw) ? raw : `https://${raw}`);
+    const hostname = parsed.hostname.toLowerCase().replace(/^www\./, "");
+    return Object.entries(COMPANY_PROFILE_DOMAINS)
+      .find(([domain]) => hostname === domain || hostname.endsWith(`.${domain}`))?.[1] ?? null;
+  } catch {
+    return null;
+  }
+}
+
+export function isCompanyProfileDomain(value: unknown): boolean {
+  return companyProfilePlatform(value) !== null;
+}
 
 function optionalText(value: unknown): string | null {
   if (value == null) return null;
@@ -170,21 +200,40 @@ export function normalizeCompanyInput(input: RawCompanyInput): {
   let domain: string | null = null;
   let website: string | null = null;
   let linkedinUrl: string | null = null;
+  const profileUrls: Record<string, string> = {};
+  const suppliedProfiles = input.profileUrls && typeof input.profileUrls === "object"
+    ? input.profileUrls as Record<string, unknown>
+    : {};
   try {
-    domain = normalizeDomain(input.domain ?? input.website);
+    const candidateDomain = normalizeDomain(input.domain);
+    domain = candidateDomain && !isCompanyProfileDomain(candidateDomain) ? candidateDomain : null;
   } catch (error) {
     errors.push(error instanceof Error ? error.message : "Invalid domain");
   }
   try {
-    website = normalizeUrl(input.website);
+    const candidateWebsite = normalizeUrl(input.website);
+    const platform = companyProfilePlatform(candidateWebsite);
+    if (candidateWebsite && platform) profileUrls[platform] = candidateWebsite;
+    else website = candidateWebsite;
   } catch {
     errors.push("Website must be a valid URL");
   }
   try {
     linkedinUrl = normalizeUrl(input.linkedinUrl);
+    if (linkedinUrl) profileUrls.linkedin = linkedinUrl;
   } catch {
     errors.push("LinkedIn URL must be a valid URL");
   }
+  for (const [platform, rawUrl] of Object.entries(suppliedProfiles)) {
+    try {
+      const url = normalizeUrl(rawUrl);
+      if (url && companyProfilePlatform(url)) profileUrls[platform] = url;
+    } catch {
+      errors.push(`${platform} profile URL must be a valid URL`);
+    }
+  }
+  linkedinUrl ??= profileUrls.linkedin ?? null;
+  if (!domain && website) domain = normalizeDomain(website);
 
   let employeeCount: number | null = null;
   if (input.employeeCount !== null && input.employeeCount !== undefined && input.employeeCount !== "") {
@@ -224,6 +273,7 @@ export function normalizeCompanyInput(input: RawCompanyInput): {
       domain,
       website: website ?? (domain ? `https://${domain}` : null),
       linkedinUrl,
+      profileUrls,
       country,
       industry,
       employeeCount,
