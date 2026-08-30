@@ -1,3 +1,12 @@
+## Research Economics & Cost Engine
+
+- Added an immutable tenant/project/company-linked research request ledger covering successful, empty, failed, and unknown-cost attempts.
+- Added optional daily and monthly project budgets enforced before job creation and provider invocation, with visible deferral reasons.
+- Added Research workspace spend, projection, unknown-cost, per-company, per-opportunity, and per-buyer metrics with editable limits.
+- Added deterministic value-aware candidate ranking and a hard 50-company execution cap so large imports cannot fan out into deep research.
+- Added typed APIs, database scope/immutability constraints, and acceptance coverage for accounting, budget boundaries, idempotency, ranking, and 10,000-company safety.
+- Did not add billing, cross-organization analytics, autonomous provider authorization, causal claims, or Phase 24 behavior.
+
 ## Continuous Learning Foundation
 
 - Added configurable, immutable outcome-strength policies and evidence thresholds while keeping viewed, skipped, and missing actions neutral.

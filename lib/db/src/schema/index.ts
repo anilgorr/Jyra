@@ -28,6 +28,7 @@ export * from "./providers";
 export * from "./evidence";
 export * from "./facts";
 export * from "./research";
+export * from "./research-economics";
 export * from "./signals";
 export * from "./intelligence-packs";
 export * from "./signal-clusters";

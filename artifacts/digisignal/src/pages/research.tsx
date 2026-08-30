@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "wouter";
 import { 
   Loader2, 
@@ -10,12 +10,17 @@ import {
   Info, 
   Files, 
   Zap, 
-  Globe 
+  Globe,
+  DollarSign,
+  Gauge,
 } from "lucide-react";
 import { useWorkspace } from "@/context/workspace-context";
 import {
   useListResearchWorkspace,
   useExecuteCompanyResearch,
+  useGetResearchEconomics,
+  useUpdateResearchBudget,
+  getGetResearchEconomicsQueryKey,
   getListResearchWorkspaceQueryKey,
   type ResearchWorkspaceCompany,
   type ResearchExecutionResponse
@@ -28,6 +33,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
 
@@ -116,6 +122,7 @@ export default function Research() {
           Execute bounded research sweeps to extract structured facts and evidence.
         </p>
       </div>
+      <ResearchEconomics projectId={activeProjectId} />
 
       <div className="flex-1 rounded-xl border border-border bg-background shadow-sm overflow-hidden flex flex-col md:block">
         <ResizablePanelGroup direction="horizontal">
@@ -164,6 +171,68 @@ export default function Research() {
         </ResizablePanelGroup>
       </div>
     </div>
+  );
+}
+
+function money(value: number | null, currency = "USD") {
+  if (value === null) return "Not available";
+  return new Intl.NumberFormat("en-US", { style: "currency", currency, maximumFractionDigits: 2 }).format(value);
+}
+
+function ResearchEconomics({ projectId }: { projectId: string }) {
+  const economics = useGetResearchEconomics(projectId, {
+    query: { queryKey: getGetResearchEconomicsQueryKey(projectId) },
+  });
+  const [daily, setDaily] = useState("");
+  const [monthly, setMonthly] = useState("");
+  useEffect(() => {
+    if (!economics.data) return;
+    setDaily(economics.data.dailyBudget?.toString() ?? "");
+    setMonthly(economics.data.monthlyBudget?.toString() ?? "");
+  }, [economics.data?.dailyBudget, economics.data?.monthlyBudget]);
+  const updateBudget = useUpdateResearchBudget({
+    mutation: {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: getGetResearchEconomicsQueryKey(projectId) });
+        toast.success("Research budget updated");
+      },
+      onError: () => toast.error("Budget update failed"),
+    },
+  });
+  if (!economics.data) return null;
+  const data = economics.data;
+  const submit = () => updateBudget.mutate({
+    projectId,
+    data: {
+      dailyBudget: daily.trim() ? Number(daily) : null,
+      monthlyBudget: monthly.trim() ? Number(monthly) : null,
+      currency: "USD",
+    },
+  });
+  return (
+    <Card className="mb-6 border-border/70 shadow-sm">
+      <CardContent className="p-5">
+        <div className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
+          <div className="grid flex-1 grid-cols-2 gap-3 md:grid-cols-4">
+            <div><p className="text-xs uppercase tracking-wider text-muted-foreground">Today</p><p className="mt-1 text-xl font-semibold">{money(data.spendToday, data.currency)}</p></div>
+            <div><p className="text-xs uppercase tracking-wider text-muted-foreground">This month</p><p className="mt-1 text-xl font-semibold">{money(data.spendThisMonth, data.currency)}</p></div>
+            <div><p className="text-xs uppercase tracking-wider text-muted-foreground">Projected</p><p className="mt-1 text-xl font-semibold">{money(data.projectedMonthSpend, data.currency)}</p></div>
+            <div><p className="text-xs uppercase tracking-wider text-muted-foreground">Per company</p><p className="mt-1 text-xl font-semibold">{money(data.costPerCompanyResearched, data.currency)}</p></div>
+          </div>
+          <div className="grid gap-2 sm:grid-cols-[140px_160px_auto] xl:w-auto">
+            <label className="text-xs text-muted-foreground">Daily cap<Input type="number" min="0" step="0.01" value={daily} onChange={(event) => setDaily(event.target.value)} placeholder="Optional" className="mt-1" /></label>
+            <label className="text-xs text-muted-foreground">Monthly cap<Input type="number" min="0" step="0.01" value={monthly} onChange={(event) => setMonthly(event.target.value)} placeholder="Optional" className="mt-1" /></label>
+            <Button variant="outline" className="self-end" onClick={submit} disabled={updateBudget.isPending}><Gauge className="mr-2 h-4 w-4" />Save limits</Button>
+          </div>
+        </div>
+        <div className="mt-4 flex flex-wrap gap-2 border-t pt-4 text-xs text-muted-foreground">
+          <Badge variant="outline"><DollarSign className="mr-1 h-3 w-3" />{data.requestsThisMonth} requests</Badge>
+          <Badge variant="outline">{money(data.costPerOpportunityIdentified, data.currency)} / opportunity</Badge>
+          <Badge variant="outline">{money(data.costPerBuyerFound, data.currency)} / buyer</Badge>
+          {data.unknownCostRequestsThisMonth > 0 && <Badge variant="secondary">{data.unknownCostRequestsThisMonth} request cost{data.unknownCostRequestsThisMonth === 1 ? "" : "s"} still estimated</Badge>}
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 

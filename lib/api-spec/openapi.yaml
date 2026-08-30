@@ -905,6 +905,46 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
         "404": { $ref: "#/components/responses/NotFound" }
+  /projects/{projectId}/research/economics:
+    get:
+      operationId: getResearchEconomics
+      tags: [research]
+      summary: Get project research spend, projection, and unit economics
+      security: [{ clerkSession: [] }]
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+      responses:
+        "200":
+          description: Research economics summary
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ResearchEconomicsSummary" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /projects/{projectId}/research/budget:
+    put:
+      operationId: updateResearchBudget
+      tags: [research]
+      summary: Configure optional daily and monthly project research budgets
+      security: [{ clerkSession: [] }]
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ResearchBudgetInput" }
+      responses:
+        "200":
+          description: Updated research budget
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ResearchBudget" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
   /projects/{projectId}/companies/{projectCompanyId}/research:
     post:
       operationId: executeCompanyResearch
@@ -3130,6 +3170,41 @@ components:
         factRejectionCount: { type: number }
         resultStatus: { type: string }
       required: [stopped, reason, question, job, evidenceCount, factProposalCount, factRejectionCount, resultStatus]
+    ResearchBudgetInput:
+      type: object
+      properties:
+        dailyBudget: { type: ["number", "null"], minimum: 0 }
+        monthlyBudget: { type: ["number", "null"], minimum: 0 }
+        currency: { type: string, enum: [USD], default: USD }
+      required: [dailyBudget, monthlyBudget, currency]
+    ResearchBudget:
+      type: object
+      properties:
+        dailyBudget: { type: ["number", "null"] }
+        monthlyBudget: { type: ["number", "null"] }
+        currency: { type: string }
+        updatedAt: { type: string, format: date-time }
+      required: [dailyBudget, monthlyBudget, currency, updatedAt]
+    ResearchEconomicsSummary:
+      type: object
+      properties:
+        currency: { type: string }
+        dailyBudget: { type: ["number", "null"] }
+        monthlyBudget: { type: ["number", "null"] }
+        spendToday: { type: number }
+        spendThisMonth: { type: number }
+        projectedMonthSpend: { type: number }
+        unknownCostRequestsThisMonth: { type: number }
+        requestsThisMonth: { type: number }
+        successfulRequestsThisMonth: { type: number }
+        blockedRequestsThisMonth: { type: number }
+        costPerCompanyResearched: { type: ["number", "null"] }
+        costPerOpportunityIdentified: { type: ["number", "null"] }
+        costPerBuyerFound: { type: ["number", "null"] }
+        companiesResearchedThisMonth: { type: number }
+        opportunitiesIdentified: { type: number }
+        buyersFound: { type: number }
+      required: [currency, dailyBudget, monthlyBudget, spendToday, spendThisMonth, projectedMonthSpend, unknownCostRequestsThisMonth, requestsThisMonth, successfulRequestsThisMonth, blockedRequestsThisMonth, costPerCompanyResearched, costPerOpportunityIdentified, costPerBuyerFound, companiesResearchedThisMonth, opportunitiesIdentified, buyersFound]
     Signal:
       type: object
       properties:

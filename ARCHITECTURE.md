@@ -77,6 +77,14 @@ Improvement proposals are inert review records. JYRA may suggest a signal, clust
 
 Global learning is aggregated within the authenticated organization, not across tenant boundaries. Every market or project request begins with project membership authorization, and PostgreSQL validates scoped inserts.
 
+## Research economics boundary
+
+The provider router remains responsible for operational per-adapter attempt telemetry. The research executor adds the tenant and decision context needed for product economics: organization, project, canonical company, research question, research job, provider capability, outcome, latency, result metadata, and known or unknown cost.
+
+Budget enforcement occurs after deterministic question planning and before question/job persistence or provider invocation. The router resolves the authorized waterfall and reserves the sum of its configured estimates, not a planner placeholder. A project-scoped transactional advisory lock serializes the spend check and reservation so concurrent companies cannot independently consume the same remaining budget. Every attempted provider writes tenant-scoped terminal economics, including failed fallbacks; reservation release occurs only after routing completes. Current spend uses actual cost when known and otherwise reserves the provider estimate; unknown actual cost is still counted and displayed separately. Phase 23 accounting is USD-only until a per-request FX policy exists. Optional limits never authorize a provider or model that the provider router would otherwise reject.
+
+The immutable request-cost ledger is project-scoped and PostgreSQL validates its organization, company, question, and job links. Ranking is deterministic and bounded. Import endpoints do not call the research executor, and scheduled execution clamps every requested batch to 50 companies.
+
 ```text
 artifacts/digisignal       React + Vite product surface
 artifacts/api-server       Express API mounted at /api

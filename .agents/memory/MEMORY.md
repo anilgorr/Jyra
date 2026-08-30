@@ -11,3 +11,4 @@
 - [Next Best Action rule provenance](next-best-action-rule-provenance.md) — advisory recommendations use the exact immutable Opportunity model policy version and persisted inputs.
 - [Contact enrichment boundary](contact-enrichment-boundary.md) — contact values stay project-scoped; lookup requires a high-priority person or an explicit user request.
 - [Recommendation ledger provenance](recommendation-ledger-provenance.md) — copy exact assessment-time versions; outcomes are append-only and skipped stays neutral.
+- [Research budget reservations](research-budget-reservations.md) — serialize admission and reserve estimated cost before dispatch; terminal accounting must precede downstream processing.

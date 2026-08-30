@@ -34,7 +34,13 @@ import {
 } from "./evidence";
 import {
   ProviderRouter,
+  type ProviderUsageRecord,
 } from "./provider-router";
+import {
+  releaseResearchReservation,
+  reserveResearchBudget,
+  recordResearchRequest,
+} from "./research-economics";
 import type {
   CapabilityResult,
   ProviderCapability,
@@ -425,9 +431,63 @@ export async function executeResearchNow(input: {
     criteria,
     evidence,
     factsCount: Number(factsCount),
+    now,
   });
   if (!plan || plan.estimatedCost > QUESTION_MAX_COST) {
     return { stopped: true, reason: plan ? "Estimated cost exceeds the bounded research budget." : "No high-value unanswered research question is currently due." };
+  }
+  let attemptRecords = 0;
+  let selectedQuestionForObserver: ResearchQuestion | null = null;
+  let selectedJobIdForObserver: string | null = null;
+  const usageObserver = async (record: ProviderUsageRecord) => {
+    if (!selectedQuestionForObserver || !selectedJobIdForObserver) return;
+    attemptRecords += 1;
+    await recordResearchRequest({
+      organizationId: input.organizationId,
+      projectId: input.projectId,
+      companyId: row.company.id,
+      questionId: selectedQuestionForObserver.id,
+      researchJobId: selectedJobIdForObserver,
+      researchQuestion: selectedQuestionForObserver.questionText,
+      providerCapability: record.capability,
+      providerId: record.providerId,
+      providerRequestId: record.requestId,
+      status: record.status === "timeout" ? "failed" : record.status,
+      success: record.status === "success",
+      latencyMs: record.latencyMs,
+      estimatedCost: record.estimatedCost,
+      actualCost: record.actualCost,
+      resultMetadata: {
+        ...record.metadata,
+        resultCount: record.resultCount,
+        runtimeMs: record.runtimeMs,
+        retryable: record.retryable,
+        errorCode: record.errorCode,
+      },
+      startedAt: record.startedAt,
+      completedAt: record.completedAt,
+      attemptKey: idempotencyKey,
+      releaseReservation: false,
+    });
+  };
+  const router = input.router ?? new ProviderRouter({ usageObserver });
+  if (router instanceof ProviderRouter) router.setUsageObserver(usageObserver);
+  const estimatedProviderCost = router instanceof ProviderRouter
+    ? await router.maximumEstimatedCost(plan.providerCapability)
+    : plan.estimatedCost;
+  const budget = await reserveResearchBudget({
+    organizationId: input.organizationId,
+    projectId: input.projectId,
+    companyId: row.company.id,
+    attemptKey: idempotencyKey,
+    estimatedCost: Math.max(plan.estimatedCost, estimatedProviderCost),
+    now,
+  });
+  if (!budget.allowed) {
+    return {
+      stopped: true,
+      reason: `${budget.reason} Research was deferred before creating a job or calling a provider.`,
+    };
   }
 
   const [question] = await db.insert(researchQuestionsTable).values({
@@ -469,14 +529,66 @@ export async function executeResearchNow(input: {
     if (!existing) throw new Error("Research job could not be created");
     return { question: selectedQuestion, job: existing, evidenceCount: 0, factProposalCount: 0, factRejectionCount: 0, resultStatus: existing.status };
   }
+  selectedQuestionForObserver = selectedQuestion;
+  selectedJobIdForObserver = job.id;
 
-  const router = input.router ?? new ProviderRouter();
-  const response = await routeQuestion(router, selectedQuestion, row.company);
+  let response: ProviderResponse<CapabilityResult<ProviderCapability>>;
+  try {
+    response = await routeQuestion(router, selectedQuestion, row.company);
+  } catch (error) {
+    response = {
+      status: "failed",
+      providerId: "router",
+      providerRequestId: randomUUID(),
+      data: null,
+      sources: [],
+      usage: {
+        estimatedCost: selectedQuestion.estimatedCost,
+        actualCost: null,
+        latencyMs: 0,
+        runtimeMs: 0,
+        resultCount: 0,
+      },
+      error: {
+        code: "PROVIDER_EXCEPTION",
+        message: error instanceof Error ? error.message : "Provider request failed unexpectedly",
+        retryable: true,
+      },
+      retryable: true,
+      capturedAt: new Date().toISOString(),
+    };
+  }
   const providerId = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(response.providerId)
     ? (await db.select({ id: dataProvidersTable.id }).from(dataProvidersTable)
         .where(eq(dataProvidersTable.id, response.providerId)).limit(1))[0]?.id ?? null
     : null;
   const completedAt = input.now ?? new Date();
+  if (attemptRecords === 0) await recordResearchRequest({
+    organizationId: input.organizationId,
+    projectId: input.projectId,
+    companyId: row.company.id,
+    questionId: selectedQuestion.id,
+    researchJobId: job.id,
+    researchQuestion: selectedQuestion.questionText,
+    providerCapability: selectedQuestion.providerCapability,
+    providerId,
+    providerRequestId: response.providerRequestId,
+    status: response.status,
+    success: response.status === "success",
+    latencyMs: response.usage.latencyMs,
+    estimatedCost: response.usage.estimatedCost || selectedQuestion.estimatedCost,
+    actualCost: response.usage.actualCost,
+    resultMetadata: {
+      providerMetadata: response.metadata ?? {},
+      resultCount: response.usage.resultCount,
+      sourceReferenceCount: response.sources.length,
+      errorCode: response.error?.code ?? null,
+    },
+    startedAt: now,
+    completedAt,
+    attemptKey: idempotencyKey,
+  });
+  else await releaseResearchReservation(idempotencyKey);
   let evidenceCount = 0;
   let factProposalCount = 0;
   let factRejectionCount = 0;
@@ -618,11 +730,33 @@ export async function listDueResearchCompanies(limit = 10): Promise<Array<{ proj
       eq(projectCompaniesTable.researchStatus, "not_started"),
       lt(projectCompaniesTable.latestResearchAt, new Date(now.getTime() - RESEARCH_INTERVAL_DAYS * 86_400_000)),
     ))
+    .orderBy(desc(sql`
+      coalesce(${projectCompaniesTable.fitScore}, 50) * 0.20 +
+      (100 - coalesce(${projectCompaniesTable.confidenceScore}, 0)) * 0.20 +
+      coalesce(${projectCompaniesTable.opportunityScore}, 0) * 0.25 +
+      least(100, extract(epoch from (${now} - coalesce(${projectCompaniesTable.latestResearchAt}, '1970-01-01'::timestamptz))) / 86400) * 0.15 +
+      coalesce((
+        select max(rq.expected_information_gain)
+        from research_questions rq
+        where rq.project_id = ${projectCompaniesTable.projectId}
+          and rq.company_id = ${projectCompaniesTable.companyId}
+      ), 75) * 0.20 -
+      coalesce((
+        select min(rq.estimated_cost)
+        from research_questions rq
+        where rq.project_id = ${projectCompaniesTable.projectId}
+          and rq.company_id = ${projectCompaniesTable.companyId}
+      ), 1) * 5
+    `), projectCompaniesTable.id)
     .limit(limit);
 }
 
+export function boundedResearchBatchSize(requested: number): number {
+  return Math.max(1, Math.min(50, Math.floor(requested)));
+}
+
 export async function runDueResearch(limit = 10): Promise<number> {
-  const due = await listDueResearchCompanies(Math.max(1, Math.min(50, limit)));
+  const due = await listDueResearchCompanies(boundedResearchBatchSize(limit));
   let completed = 0;
   for (const company of due) {
     try {

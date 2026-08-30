@@ -13,7 +13,12 @@ await build({
 const harness = await import(`${pathToFileURL(output).href}?t=${Date.now()}`);
 const {
   planResearchQuestion,
+  rankResearchCandidates,
+  boundedResearchBatchSize,
+  ProviderRouter,
   executeResearchNow,
+  getResearchEconomics,
+  upsertResearchBudget,
   companiesTable,
   companyEvidenceTable,
   crawlPagesTable,
@@ -23,8 +28,10 @@ const {
   projectCompaniesTable,
   projectsTable,
   researchFactProposalsTable,
+  researchBudgetsTable,
   researchJobsTable,
   researchQuestionsTable,
+  researchRequestCostsTable,
   usersTable,
   eq,
   sql,
@@ -73,6 +80,14 @@ const deeper = planResearchQuestion({
 });
 assert.equal(deeper.providerCapability, "JOB_SEARCH");
 assert.equal(deeper.questionType, "HIRING");
+assert.equal(boundedResearchBatchSize(10_000), 50, "a 10,000-company import can never become an unbounded research batch");
+const ranked = rankResearchCandidates([
+  { companyId: "known", companyName: "Known", fit: 90, freshness: 5, uncertainty: 5, expectedInformationGain: 10, opportunityImpact: 30, estimatedCost: 1, reason: "Well understood" },
+  { companyId: "promising", companyName: "Promising", fit: 90, freshness: 90, uncertainty: 90, expectedInformationGain: 90, opportunityImpact: 90, estimatedCost: 1, reason: "Promising and uncertain" },
+  { companyId: "poor", companyName: "Poor", fit: 10, freshness: 90, uncertainty: 90, expectedInformationGain: 50, opportunityImpact: 10, estimatedCost: 1, reason: "Poor fit" },
+]);
+assert.equal(ranked[0].companyId, "promising", "promising uncertain companies should rank first");
+assert.equal(ranked.at(-1).companyId, "known", "well-understood low-value companies should rank last");
 
 console.log("Research planner tests passed, including the 100-company bounded demonstration.");
 
@@ -81,7 +96,9 @@ const userId = `research-test-${suffix}`;
 let organization;
 let company;
 let provider;
+let fallbackProvider;
 let unavailableCompany;
+let waterfallCompany;
 try {
   await db.insert(usersTable).values({ id: userId });
   [organization] = await db.insert(organizationsTable).values({ name: `Research Test ${suffix}`, createdByUserId: userId }).returning();
@@ -94,6 +111,7 @@ try {
   }).returning();
   const [projectCompany] = await db.insert(projectCompaniesTable).values({ projectId: project.id, companyId: company.id }).returning();
   [provider] = await db.insert(dataProvidersTable).values({ name: `research-test-provider-${suffix}`, providerType: "mock" }).returning();
+  [fallbackProvider] = await db.insert(dataProvidersTable).values({ name: `research-test-fallback-${suffix}`, providerType: "mock" }).returning();
   let providerCalls = 0;
   const crawlResponse = async (request) => {
     providerCalls += 1;
@@ -151,6 +169,13 @@ try {
   assert.equal((await db.select().from(researchQuestionsTable).where(eq(researchQuestionsTable.projectId, project.id))).length, 1);
   assert.equal((await db.select().from(researchFactProposalsTable).where(eq(researchFactProposalsTable.projectId, project.id))).length, 1);
   assert.equal((await db.select().from(companyEvidenceTable).where(eq(companyEvidenceTable.companyId, company.id))).length, 1);
+  const costRows = await db.select().from(researchRequestCostsTable).where(eq(researchRequestCostsTable.projectId, project.id));
+  assert.equal(costRows.length, 1, "the provider request must create one economics record");
+  assert.equal(costRows[0].actualCost, 0, "a known zero cost must remain distinct from unknown cost");
+  assert.equal(costRows[0].latencyMs, 1);
+  const economics = await getResearchEconomics(project.id);
+  assert.equal(economics.requestsThisMonth, 1);
+  assert.equal(economics.unknownCostRequestsThisMonth, 0);
   const nextDay = await executeResearchNow({
     projectId: project.id,
     projectCompanyId: projectCompany.id,
@@ -180,7 +205,7 @@ try {
     providerRequestId: request.requestId,
     data: null,
     sources: [],
-    usage: { estimatedCost: 0, actualCost: 0, latencyMs: 0, runtimeMs: 0, resultCount: 0 },
+    usage: { estimatedCost: 1, actualCost: null, latencyMs: 0, runtimeMs: 0, resultCount: 0 },
     error: { code: "NO_PROVIDER", message: "No enabled provider supports WEBSITE_CRAWL", retryable: false },
     retryable: false,
     capturedAt: new Date().toISOString(),
@@ -198,6 +223,110 @@ try {
   assert.equal(unavailableResult.job.errorCode, "NO_PROVIDER");
   assert.equal(unavailableResult.job.status, "FAILED");
   assert.equal(unavailableResult.question.status, "BLOCKED");
+  const economicsWithUnknown = await getResearchEconomics(project.id);
+  assert.equal(economicsWithUnknown.unknownCostRequestsThisMonth, 1, "unknown actual cost must remain visible");
+  assert.equal(economicsWithUnknown.spendThisMonth, 1, "unknown actual cost must reserve its estimate rather than become free");
+
+  const [budgetCompany] = await db.insert(companiesTable).values({
+    canonicalName: `Budget Co ${suffix}`,
+    domain: `budget-${suffix}.example`,
+    website: `https://budget-${suffix}.example`,
+    industry: "software",
+  }).returning();
+  const [budgetProjectCompany] = await db.insert(projectCompaniesTable).values({
+    projectId: project.id,
+    companyId: budgetCompany.id,
+  }).returning();
+  await upsertResearchBudget({
+    organizationId: organization.id,
+    projectId: project.id,
+    createdBy: userId,
+    dailyBudget: 5,
+    monthlyBudget: 5,
+  });
+  const callsBeforeBudgetBlock = providerCalls;
+  const costlyRouter = new ProviderRouter({
+    providers: [{
+      id: provider.id, name: "Costly", providerType: "mock", enabled: true, priority: 1,
+      estimatedCost: 10, successRate: 1, averageLatency: 1, qualityScore: 1,
+      configuration: {}, capabilities: ["WEBSITE_CRAWL"],
+    }],
+    adapters: [{
+      providerId: provider.id,
+      capabilities: ["WEBSITE_CRAWL"],
+      execute: crawlResponse,
+    }],
+    usageWriter: async () => {},
+  });
+  const budgetBlocked = await executeResearchNow({
+    projectId: project.id,
+    projectCompanyId: budgetProjectCompany.id,
+    organizationId: organization.id,
+    userId,
+    router: costlyRouter,
+    extractFacts,
+  });
+  assert.equal(budgetBlocked.stopped, true);
+  assert.match(budgetBlocked.reason, /budget reached/i);
+  assert.equal(providerCalls, callsBeforeBudgetBlock, "budget rejection must happen before the provider call");
+  assert.equal(
+    (await db.select().from(researchJobsTable).where(eq(researchJobsTable.companyId, budgetCompany.id))).length,
+    0,
+    "budget rejection must not create a research job",
+  );
+  await db.delete(companiesTable).where(eq(companiesTable.id, budgetCompany.id));
+
+  await upsertResearchBudget({
+    organizationId: organization.id,
+    projectId: project.id,
+    createdBy: userId,
+    dailyBudget: 100,
+    monthlyBudget: 100,
+  });
+  [waterfallCompany] = await db.insert(companiesTable).values({
+    canonicalName: `Waterfall Co ${suffix}`,
+    domain: `waterfall-${suffix}.example`,
+    website: `https://waterfall-${suffix}.example`,
+    industry: "software",
+  }).returning();
+  const [waterfallProjectCompany] = await db.insert(projectCompaniesTable).values({
+    projectId: project.id,
+    companyId: waterfallCompany.id,
+  }).returning();
+  const responseFor = (providerId, status, retryable, actualCost) => async (request) => ({
+    status,
+    providerId,
+    providerRequestId: request.requestId,
+    data: null,
+    sources: [],
+    usage: { estimatedCost: providerId === provider.id ? 2 : 3, actualCost, latencyMs: 1, runtimeMs: 1, resultCount: status === "success" ? 1 : 0 },
+    error: status === "failed" ? { code: "RETRY", message: "retry", retryable } : null,
+    retryable,
+    capturedAt: new Date().toISOString(),
+  });
+  const waterfallRouter = new ProviderRouter({
+    providers: [
+      { id: provider.id, name: "Primary", providerType: "mock", enabled: true, priority: 1, estimatedCost: 2, successRate: 1, averageLatency: 1, qualityScore: 1, configuration: {}, capabilities: ["WEBSITE_CRAWL"] },
+      { id: fallbackProvider.id, name: "Fallback", providerType: "mock", enabled: true, priority: 2, estimatedCost: 3, successRate: 1, averageLatency: 1, qualityScore: 1, configuration: {}, capabilities: ["WEBSITE_CRAWL"] },
+    ],
+    adapters: [
+      { providerId: provider.id, capabilities: ["WEBSITE_CRAWL"], execute: responseFor(provider.id, "failed", true, null) },
+      { providerId: fallbackProvider.id, capabilities: ["WEBSITE_CRAWL"], execute: responseFor(fallbackProvider.id, "success", false, 3) },
+    ],
+    usageWriter: async () => {},
+  });
+  await executeResearchNow({
+    projectId: project.id,
+    projectCompanyId: waterfallProjectCompany.id,
+    organizationId: organization.id,
+    userId,
+    router: waterfallRouter,
+    extractFacts: async () => [],
+  });
+  const waterfallCosts = await db.select().from(researchRequestCostsTable)
+    .where(eq(researchRequestCostsTable.companyId, waterfallCompany.id));
+  assert.equal(waterfallCosts.length, 2, "every provider attempt in a fallback waterfall must be tenant-accounted");
+  assert.deepEqual(waterfallCosts.map((row) => row.providerId), [provider.id, fallbackProvider.id]);
   console.log("Research execution integration and replay tests passed.");
 } finally {
   if (company) {
@@ -215,6 +344,8 @@ try {
     await db.delete(companiesTable).where(eq(companiesTable.id, company.id));
   }
   if (unavailableCompany) await db.delete(companiesTable).where(eq(companiesTable.id, unavailableCompany.id));
+  if (waterfallCompany) await db.delete(companiesTable).where(eq(companiesTable.id, waterfallCompany.id));
   if (provider) await db.delete(dataProvidersTable).where(eq(dataProvidersTable.id, provider.id));
+  if (fallbackProvider) await db.delete(dataProvidersTable).where(eq(dataProvidersTable.id, fallbackProvider.id));
   await db.delete(usersTable).where(eq(usersTable.id, userId));
 }

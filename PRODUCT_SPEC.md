@@ -50,6 +50,16 @@ When configurable minimum evidence is met, JYRA may create an inert suggestion t
 
 This phase does not train or fine-tune a model, autonomously change customer configuration, infer causality, execute outreach, or begin Phase 23.
 
+## Phase 23 — Research Economics & Cost Engine
+
+Every provider attempt in a bounded research execution—including failed waterfall attempts—is attributable to its organization, project, company, question, capability, provider request, status, latency, result metadata, estimated cost, actual cost when known, and execution time. Failed and empty attempts remain visible; unknown actual cost remains explicitly unknown and is conservatively represented by its estimate in budget calculations.
+
+Projects may configure optional daily and monthly research limits. The server checks the relevant limit before creating a research job or invoking a provider and returns a visible deferral reason when the proposed request would exceed it. The Research workspace shows current spend, monthly projection, unknown-cost count, and cost per researched company, identified opportunity, and discovered buyer.
+
+Research prioritization is deterministic and value-aware. Expected information gain, current uncertainty, opportunity impact, fit, freshness, and estimated cost rank bounded candidates. Promising unresolved companies rise; obvious poor fits, fresh well-understood companies, and stale low-value accounts fall or receive no question. Bulk import remains preview-first and never invokes research. Explicit scheduled execution is capped at 50 companies per batch, including requests derived from much larger imports.
+
+This phase does not collect payment, compare organizations, make causal claims from cost correlations, bypass provider authorization, or begin Phase 24.
+
 The product is not primarily a lead database, email scraper, cold-email platform, CRM, outreach sequencer, or generic AI research agent.
 
 ## Core information flow

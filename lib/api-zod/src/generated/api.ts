@@ -3850,6 +3850,60 @@ export const ListResearchWorkspaceResponse = zod.array(ListResearchWorkspaceResp
 
 
 /**
+ * @summary Get project research spend, projection, and unit economics
+ */
+export const GetResearchEconomicsParams = zod.object({
+  "projectId": zod.coerce.string()
+})
+
+export const GetResearchEconomicsResponse = zod.object({
+  "currency": zod.string(),
+  "dailyBudget": zod.number().nullable(),
+  "monthlyBudget": zod.number().nullable(),
+  "spendToday": zod.number(),
+  "spendThisMonth": zod.number(),
+  "projectedMonthSpend": zod.number(),
+  "unknownCostRequestsThisMonth": zod.number(),
+  "requestsThisMonth": zod.number(),
+  "successfulRequestsThisMonth": zod.number(),
+  "blockedRequestsThisMonth": zod.number(),
+  "costPerCompanyResearched": zod.number().nullable(),
+  "costPerOpportunityIdentified": zod.number().nullable(),
+  "costPerBuyerFound": zod.number().nullable(),
+  "companiesResearchedThisMonth": zod.number(),
+  "opportunitiesIdentified": zod.number(),
+  "buyersFound": zod.number()
+})
+
+
+/**
+ * @summary Configure optional daily and monthly project research budgets
+ */
+export const UpdateResearchBudgetParams = zod.object({
+  "projectId": zod.coerce.string()
+})
+
+export const updateResearchBudgetBodyDailyBudgetMin = 0;
+
+export const updateResearchBudgetBodyMonthlyBudgetMin = 0;
+
+export const updateResearchBudgetBodyCurrencyDefault = `USD`;
+
+export const UpdateResearchBudgetBody = zod.object({
+  "dailyBudget": zod.number().min(updateResearchBudgetBodyDailyBudgetMin).nullable(),
+  "monthlyBudget": zod.number().min(updateResearchBudgetBodyMonthlyBudgetMin).nullable(),
+  "currency": zod.enum(['USD']).default(updateResearchBudgetBodyCurrencyDefault)
+})
+
+export const UpdateResearchBudgetResponse = zod.object({
+  "dailyBudget": zod.number().nullable(),
+  "monthlyBudget": zod.number().nullable(),
+  "currency": zod.string(),
+  "updatedAt": zod.coerce.date()
+})
+
+
+/**
  * @summary Execute the highest-value due research question
  */
 export const ExecuteCompanyResearchParams = zod.object({

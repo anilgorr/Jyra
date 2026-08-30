@@ -15,6 +15,14 @@ Historical rows are never updated when criteria change; a new version and criter
 
 PostgreSQL rejects policy, metric, and learning-version updates or deletes. Scope triggers prevent a project learning record from crossing its organization boundary and validate market-pack ownership. Historical recommendation and outcome rows remain the source of truth; aggregate snapshots never replace them.
 
+## Research economics storage
+
+- `research_budgets` stores optional daily and monthly project limits plus currency and audit metadata. Organization/project consistency and nonnegative limits are database-enforced.
+- `research_budget_reservations` atomically reserves estimated cost under a project advisory lock before provider dispatch. A terminal ledger write releases the reservation; an interrupted post-dispatch pipeline leaves the reservation visible and counted rather than losing the billable attempt.
+- `research_request_costs` is the immutable product-economics ledger for research executions. Each row retains organization, project, company, question, job, provider/capability, provider request, status, success, latency, result metadata, estimated cost, nullable actual cost, and timestamps.
+
+Actual zero and unknown actual cost are distinct. Aggregation uses actual cost when present and the estimate as a conservative reservation otherwise, while separately reporting unknown-cost request counts. PostgreSQL rejects negative values, cross-scope links, updates, and deletes except parent-organization teardown.
+
 ## Canonical company identity storage
 
 ## Signal Pack storage

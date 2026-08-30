@@ -3,8 +3,13 @@ import { Router, type IRouter, type RequestHandler } from "express";
 import {
   ExecuteCompanyResearchParams,
   ExecuteCompanyResearchResponse,
+  GetResearchEconomicsParams,
+  GetResearchEconomicsResponse,
   ListResearchWorkspaceParams,
   ListResearchWorkspaceResponse,
+  UpdateResearchBudgetBody,
+  UpdateResearchBudgetParams,
+  UpdateResearchBudgetResponse,
 } from "@workspace/api-zod";
 import {
   companiesTable,
@@ -17,6 +22,10 @@ import {
   researchQuestionsTable,
 } from "@workspace/db";
 import { executeResearchNow } from "../lib/research";
+import {
+  getResearchEconomics,
+  upsertResearchBudget,
+} from "../lib/research-economics";
 import { getAuthenticatedUserId, requireAuth } from "../middlewares/auth";
 
 const router: IRouter = Router();
@@ -102,6 +111,38 @@ router.get("/projects/:projectId/research", requireAuth, asyncRoute(async (req, 
     };
   }));
   res.json(ListResearchWorkspaceResponse.parse(payload));
+}));
+
+router.get("/projects/:projectId/research/economics", requireAuth, asyncRoute(async (req, res) => {
+  const params = GetResearchEconomicsParams.safeParse(req.params);
+  if (!params.success) return void res.status(404).json({ error: "Project not found" });
+  const access = await authorizeProject(getAuthenticatedUserId(res), params.data.projectId);
+  if (!access.project) return void res.status(access.status).json({ error: access.status === 403 ? "Project access denied" : "Project not found" });
+  const summary = await getResearchEconomics(params.data.projectId);
+  res.json(GetResearchEconomicsResponse.parse(summary));
+}));
+
+router.put("/projects/:projectId/research/budget", requireAuth, asyncRoute(async (req, res) => {
+  const params = UpdateResearchBudgetParams.safeParse(req.params);
+  const body = UpdateResearchBudgetBody.safeParse(req.body);
+  if (!params.success || !body.success) return void res.status(400).json({ error: "Invalid research budget" });
+  const userId = getAuthenticatedUserId(res);
+  const access = await authorizeProject(userId, params.data.projectId);
+  if (!access.project) return void res.status(access.status).json({ error: access.status === 403 ? "Project access denied" : "Project not found" });
+  const budget = await upsertResearchBudget({
+    organizationId: access.project.organizationId,
+    projectId: params.data.projectId,
+    createdBy: userId,
+    dailyBudget: body.data.dailyBudget,
+    monthlyBudget: body.data.monthlyBudget,
+    currency: body.data.currency,
+  });
+  res.json(UpdateResearchBudgetResponse.parse({
+    dailyBudget: budget.dailyBudget,
+    monthlyBudget: budget.monthlyBudget,
+    currency: budget.currency,
+    updatedAt: budget.updatedAt,
+  }));
 }));
 
 router.post("/projects/:projectId/companies/:projectCompanyId/research", requireAuth, asyncRoute(async (req, res) => {

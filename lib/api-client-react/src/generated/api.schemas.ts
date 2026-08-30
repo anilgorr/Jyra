@@ -2151,6 +2151,60 @@ export interface ResearchExecutionResponse {
   resultStatus: string;
 }
 
+export type ResearchBudgetInputCurrency = typeof ResearchBudgetInputCurrency[keyof typeof ResearchBudgetInputCurrency];
+
+
+export const ResearchBudgetInputCurrency = {
+  USD: 'USD',
+} as const;
+
+export interface ResearchBudgetInput {
+  /**
+     * @minimum 0
+     * @nullable
+     */
+  dailyBudget: number | null;
+  /**
+     * @minimum 0
+     * @nullable
+     */
+  monthlyBudget: number | null;
+  currency: ResearchBudgetInputCurrency;
+}
+
+export interface ResearchBudget {
+  /** @nullable */
+  dailyBudget: number | null;
+  /** @nullable */
+  monthlyBudget: number | null;
+  currency: string;
+  updatedAt: string;
+}
+
+export interface ResearchEconomicsSummary {
+  currency: string;
+  /** @nullable */
+  dailyBudget: number | null;
+  /** @nullable */
+  monthlyBudget: number | null;
+  spendToday: number;
+  spendThisMonth: number;
+  projectedMonthSpend: number;
+  unknownCostRequestsThisMonth: number;
+  requestsThisMonth: number;
+  successfulRequestsThisMonth: number;
+  blockedRequestsThisMonth: number;
+  /** @nullable */
+  costPerCompanyResearched: number | null;
+  /** @nullable */
+  costPerOpportunityIdentified: number | null;
+  /** @nullable */
+  costPerBuyerFound: number | null;
+  companiesResearchedThisMonth: number;
+  opportunitiesIdentified: number;
+  buyersFound: number;
+}
+
 export type SignalContextSnapshot = { [key: string]: unknown };
 
 export interface Signal {

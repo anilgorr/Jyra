@@ -64,6 +64,7 @@ export type ProviderRouterOptions = {
   adapters?: ProviderAdapter[];
   loadProviders?: () => Promise<ProviderCatalogEntry[]>;
   usageWriter?: ProviderUsageWriter;
+  usageObserver?: ProviderUsageWriter;
   adapterFactory?: (provider: ProviderCatalogEntry) => ProviderAdapter[];
 };
 
@@ -235,6 +236,7 @@ export class ProviderRouter implements ProviderOperations {
   private readonly configuredProviders?: ProviderCatalogEntry[];
   private readonly loadProviders: () => Promise<ProviderCatalogEntry[]>;
   private readonly usageWriter: ProviderUsageWriter;
+  private usageObserver?: ProviderUsageWriter;
   private readonly adapterFactory: (
     provider: ProviderCatalogEntry,
   ) => ProviderAdapter[];
@@ -244,7 +246,19 @@ export class ProviderRouter implements ProviderOperations {
     this.configuredProviders = options.providers;
     this.loadProviders = options.loadProviders ?? databaseProviderLoader;
     this.usageWriter = options.usageWriter ?? databaseUsageWriter;
+    this.usageObserver = options.usageObserver;
     this.adapterFactory = options.adapterFactory ?? defaultAdapterFactory;
+  }
+
+  setUsageObserver(observer: ProviderUsageWriter): void {
+    this.usageObserver = observer;
+  }
+
+  async maximumEstimatedCost(capability: ProviderCapability): Promise<number> {
+    const providers = this.configuredProviders ?? await this.loadProviders();
+    return providers
+      .filter((provider) => provider.enabled && provider.capabilities.includes(capability))
+      .reduce((total, provider) => total + Math.max(0, provider.estimatedCost), 0);
   }
 
   private adapterKey(
@@ -450,6 +464,7 @@ export class ProviderRouter implements ProviderOperations {
 
   private async writeUsage(record: ProviderUsageRecord): Promise<void> {
     await this.usageWriter(record);
+    await this.usageObserver?.(record);
   }
 
   discoverCompanies(request: CapabilityRequest<"COMPANY_DISCOVERY">) {

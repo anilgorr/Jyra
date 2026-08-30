@@ -92,6 +92,9 @@ import type {
   ProjectSignalPack,
   ProposeOpportunityPackRequest,
   ProviderDiagnostic,
+  ResearchBudget,
+  ResearchBudgetInput,
+  ResearchEconomicsSummary,
   ResearchExecutionResponse,
   ResearchWorkspaceCompany,
   ReviewLearningProposalRequest,
@@ -3101,6 +3104,155 @@ export function useListResearchWorkspace<TData = Awaited<ReturnType<typeof listR
 
 
 
+
+export const getGetResearchEconomicsUrl = (projectId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/research/economics`
+}
+
+/**
+ * @summary Get project research spend, projection, and unit economics
+ */
+export const getResearchEconomics = async (projectId: string, options?: Parameters<typeof customFetch>[1]): Promise<ResearchEconomicsSummary> => {
+
+  return customFetch<ResearchEconomicsSummary>(getGetResearchEconomicsUrl(projectId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetResearchEconomicsQueryKey = (projectId: string,) => {
+    return [
+    `/api/projects/${projectId}/research/economics`
+    ] as const;
+    }
+
+
+export const getGetResearchEconomicsQueryOptions = <TData = Awaited<ReturnType<typeof getResearchEconomics>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(projectId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getResearchEconomics>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetResearchEconomicsQueryKey(projectId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getResearchEconomics>>> = ({ signal }) => getResearchEconomics(projectId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: projectId !== null && projectId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getResearchEconomics>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetResearchEconomicsQueryResult = NonNullable<Awaited<ReturnType<typeof getResearchEconomics>>>
+export type GetResearchEconomicsQueryError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+
+/**
+ * @summary Get project research spend, projection, and unit economics
+ */
+
+export function useGetResearchEconomics<TData = Awaited<ReturnType<typeof getResearchEconomics>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(
+ projectId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getResearchEconomics>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetResearchEconomicsQueryOptions(projectId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getUpdateResearchBudgetUrl = (projectId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/research/budget`
+}
+
+/**
+ * @summary Configure optional daily and monthly project research budgets
+ */
+export const updateResearchBudget = async (projectId: string,
+    researchBudgetInput: ResearchBudgetInput, options?: Parameters<typeof customFetch>[1]): Promise<ResearchBudget> => {
+
+  return customFetch<ResearchBudget>(getUpdateResearchBudgetUrl(projectId),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(researchBudgetInput)
+  }
+);}
+
+
+
+
+
+export const getUpdateResearchBudgetMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateResearchBudget>>, TError,{projectId: string;data: BodyType<ResearchBudgetInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateResearchBudget>>, TError,{projectId: string;data: BodyType<ResearchBudgetInput>}, TContext> => {
+
+const mutationKey = ['updateResearchBudget'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateResearchBudget>>, {projectId: string;data: BodyType<ResearchBudgetInput>}> = (props) => {
+          const {projectId,data} = props ?? {};
+
+          return  updateResearchBudget(projectId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateResearchBudgetMutationResult = NonNullable<Awaited<ReturnType<typeof updateResearchBudget>>>
+    export type UpdateResearchBudgetMutationBody = BodyType<ResearchBudgetInput>
+    export type UpdateResearchBudgetMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+    /**
+ * @summary Configure optional daily and monthly project research budgets
+ */
+export const useUpdateResearchBudget = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateResearchBudget>>, TError,{projectId: string;data: BodyType<ResearchBudgetInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateResearchBudget>>,
+        TError,
+        {projectId: string;data: BodyType<ResearchBudgetInput>},
+        TContext
+      > => {
+      return useMutation(getUpdateResearchBudgetMutationOptions(options));
+    }
 
 export const getExecuteCompanyResearchUrl = (projectId: string,
     projectCompanyId: string,) => {
