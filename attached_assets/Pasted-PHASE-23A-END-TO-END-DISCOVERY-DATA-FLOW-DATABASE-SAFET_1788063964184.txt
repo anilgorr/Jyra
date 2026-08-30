@@ -1,0 +1,1286 @@
+PHASE 23A — END-TO-END DISCOVERY, DATA FLOW & DATABASE SAFETY AUDIT/FIX
+
+JYRA
+Who. When. Why.
+
+IMPORTANT CONTEXT:
+
+Phases 0 through 23 have already been implemented or are complete.
+
+DO NOT rebuild previous phases.
+DO NOT reset the database.
+DO NOT redesign unrelated areas.
+DO NOT modify production/deployment data during development work.
+
+This phase is a consolidated AUDIT + FIX phase.
+
+The objective is to verify that JYRA's core architecture actually works
+end-to-end before we continue with Admin Quality, Security Hardening,
+Demo Mode and Final Acceptance.
+
+==================================================
+PRIMARY PRODUCT PRINCIPLE
+==================================================
+
+JYRA must support BOTH:
+
+1. FIND MY MARKET
+   JYRA discovers companies the customer did NOT upload.
+
+2. ANALYZE MY LIST
+   Customer uploads their own target market / CRM / scraped / researched data.
+
+Both entry paths must converge into ONE canonical company universe and
+ONE downstream opportunity intelligence pipeline.
+
+==================================================
+DATABASE SAFETY — MANDATORY
+==================================================
+
+This is development work.
+
+Use ONLY the development database for implementation and testing.
+
+You may create and apply migrations to DEVELOPMENT.
+
+DO NOT:
+
+migrate production
+seed production
+reset production
+truncate production
+test against production
+copy development data into production
+run synthetic/demo data against production
+
+Production schema changes must happen only through the explicit,
+controlled production migration workflow.
+
+Before making changes, verify that development and deployment databases
+are actually separate.
+
+If they are not separate:
+
+STOP destructive work.
+
+Implement safe environment separation first.
+
+Do not delete existing data.
+
+==================================================
+PART 1 — AUDIT CURRENT ARCHITECTURE
+==================================================
+
+Before writing code, inspect the existing implementation.
+
+For every requirement below mark:
+
+PASS
+PARTIAL
+NOT IMPLEMENTED
+
+Do NOT mark PASS because documentation says it should exist.
+
+PASS requires working code and/or a passing test.
+
+==================================================
+1. BUSINESS TWIN
+==================================================
+
+Verify:
+
+Business Twin captures what the seller offers.
+
+It can represent:
+
+startup/no customers
+early customers
+established seller
+
+Business Twin assumptions preserve provenance/validation state.
+
+Confirm it is project/offering-specific.
+
+==================================================
+2. ICP
+==================================================
+
+Verify ICP supports:
+
+HYPOTHESIS_ICP
+EARLY_EVIDENCE_ICP
+VALIDATED_ICP
+
+or equivalent existing implementation.
+
+Confirm ICP can be used both for:
+
+market discovery
+uploaded-list qualification
+
+==================================================
+3. FIND MY MARKET — CRITICAL
+==================================================
+
+Verify JYRA can discover NEW companies from external sources.
+
+IMPORTANT:
+
+Searching or filtering companies already stored in the JYRA database
+does NOT count as Find My Market.
+
+JYRA must be able to start from:
+
+Business Twin
++
+ICP
+
+and acquire company candidates that did not previously exist in the
+project/company universe.
+
+Trace:
+
+ICP
+→ discovery query/planner
+→ Provider Router
+→ external provider
+→ results
+→ normalization
+→ entity resolution
+→ canonical company
+
+If this does not currently work, FIX IT.
+
+==================================================
+4. ANALYZE MY LIST
+==================================================
+
+Verify customer can upload/import:
+
+CSV
+XLSX if supported
+copy/paste if implemented
+manual company entry
+
+Support datasets such as:
+
+ICP Company List
+Prospect Companies
+Existing Customers
+Past Customers
+Open Opportunities
+Lost Opportunities
+Contacts
+CRM Export
+Scraped/Researched Dataset
+Historical Sales Data
+
+Do not require exact JYRA column names.
+
+==================================================
+5. FLEXIBLE COLUMN MAPPING
+==================================================
+
+Verify mappings such as:
+
+Company
+Company Name
+Account Name
+
+→ company_name
+
+Website
+Domain
+Company URL
+
+→ domain/website
+
+Employees
+Headcount
+Employee Count
+
+→ employee_count
+
+Unknown columns must be preservable as:
+
+custom field
+evidence candidate
+ignored field
+
+Do not silently discard unknown columns.
+
+==================================================
+6. CANONICAL COMPANY RESOLUTION — CRITICAL
+==================================================
+
+Uploaded companies and JYRA-discovered companies must use the SAME
+canonical company architecture.
+
+Domain should be the strongest V1 identity key where available.
+
+Support safe resolution statuses such as:
+
+EXACT_MATCH
+PROBABLE
+POSSIBLE
+NEW
+
+or equivalent.
+
+POSSIBLE matches must not be auto-merged without sufficient confidence.
+
+==================================================
+7. REQUIRED DEDUPLICATION TEST
+==================================================
+
+Perform this controlled development test:
+
+Record A:
+
+Company Name:
+ACME
+
+Domain:
+acme.com
+
+Source:
+FIRST_PARTY_UPLOAD
+
+Then independently simulate/discover:
+
+Company Name:
+Acme Technologies
+
+Domain:
+acme.com
+
+Source:
+JYRA_DISCOVERY
+
+Expected:
+
+ONE canonical company
+
+with multiple provenance/source records.
+
+NOT two companies.
+
+Document exactly which record/table preserves each source.
+
+==================================================
+8. PROVENANCE
+==================================================
+
+Verify support for clear provenance.
+
+At minimum equivalent values for:
+
+FIRST_PARTY_UPLOAD
+FIRST_PARTY_MANUAL
+CRM_EXPORT
+CUSTOMER_RESEARCH
+CUSTOMER_SCRAPED_DATA
+JYRA_DISCOVERY
+PUBLIC_WEB
+PROVIDER
+
+Do not overwrite original provenance when data is later corroborated.
+
+==================================================
+9. PUBLIC VS PRIVATE DATA
+==================================================
+
+Verify:
+
+public company intelligence can be reusable where architecture allows
+
+but customer-private:
+
+CRM stage
+notes
+contacts
+deal values
+outcomes
+relationship data
+uploaded private research
+
+remains tenant/project isolated.
+
+==================================================
+10. CUSTOMER-SUPPLIED SCRAPED DATA
+==================================================
+
+Customer-provided scraped/researched fields must NOT automatically become
+verified facts.
+
+Flow should be:
+
+Imported Data
+→ Evidence Candidate
+→ validation/normalization
+→ Fact if supported
+→ Signal if definition applies
+
+Preserve:
+
+original field
+original value
+source URL if supplied
+source date if supplied
+import date
+provenance
+
+==================================================
+PART 2 — UNIFIED PIPELINE
+==================================================
+
+Verify that BOTH:
+
+JYRA DISCOVERED COMPANY
+
+and
+
+CUSTOMER UPLOADED COMPANY
+
+go through the SAME downstream pipeline:
+
+Canonical Company
+→ ICP Qualification
+→ Research Planning
+→ Evidence
+→ Facts
+→ Signals
+→ Signal Clusters
+→ Fit
+→ Need
+→ Timing
+→ Relationship
+→ Confidence
+→ Opportunity State
+→ Why
+→ Next Best Action
+→ Buying Committee
+→ Outcomes
+→ Learning
+
+There must NOT be:
+
+one scoring engine for uploaded companies
+
+and another scoring engine for discovered companies.
+
+If parallel/duplicated pipelines exist:
+
+refactor safely into one shared flow.
+
+==================================================
+PART 3 — DISCOVERY VS RESEARCH
+==================================================
+
+Keep these concepts separate.
+
+DISCOVERY:
+
+Find candidate companies.
+
+RESEARCH:
+
+Find information about a known candidate company.
+
+Do not confuse:
+
+WEB_SEARCH for ACME
+
+with:
+
+finding new companies matching the ICP.
+
+Verify separate capabilities/workflows exist.
+
+==================================================
+PART 4 — SELECTIVE RESEARCH
+==================================================
+
+CRITICAL COST REQUIREMENT:
+
+If JYRA discovers or imports 10,000 companies,
+it must NOT automatically deep research all 10,000.
+
+Verify staged flow such as:
+
+Stage 1:
+cheap qualification
+
+Stage 2:
+light research
+
+Stage 3:
+need/timing research
+
+Stage 4:
+deep research only for promising/uncertain accounts
+
+People/contact research last.
+
+Research Planner should stop when:
+
+hard disqualifier found
+fit too low
+confidence sufficient
+information unlikely to change decision
+budget limit reached
+
+Fix if necessary.
+
+==================================================
+PART 5 — RESEARCH ECONOMICS INTEGRATION
+==================================================
+
+Phase 23 introduced cost controls.
+
+Verify Research Planner actually uses them.
+
+Track:
+
+provider
+capability
+company
+project
+research question
+cost
+latency
+success
+result count
+
+Research decision should consider:
+
+current uncertainty
+ICP fit
+potential opportunity value
+expected information gain
+estimated research cost
+
+Do not merely record costs after the fact.
+
+Cost should influence whether additional research is worth performing.
+
+==================================================
+PART 6 — FRESH RESEARCH
+==================================================
+
+Verify:
+
+RESEARCH NOW
+
+and automated research can acquire genuinely fresh external information.
+
+Reprocessing existing stored pages does NOT count as fresh research.
+
+Trace:
+
+Research Request
+→ Research Planner
+→ Provider Router
+→ Provider
+→ Fresh Result
+→ Raw Evidence
+→ Facts
+→ Signals
+→ Opportunity recalculation
+
+Fix if required.
+
+==================================================
+PART 7 — EVIDENCE
+==================================================
+
+Verify Evidence is separate from Facts.
+
+Evidence should preserve as appropriate:
+
+source URL
+source type
+provider
+published/source date
+retrieved date
+raw reference
+extracted claim
+authority
+freshness
+directness
+corroboration
+confidence
+status
+visibility
+content hash
+
+Never delete raw evidence because later interpretation changes.
+
+==================================================
+PART 8 — FACTS
+==================================================
+
+Verify:
+
+facts are derived from evidence
+
+facts reference supporting evidence
+
+contradictory facts/evidence can coexist safely
+
+facts are not equivalent to buying intent
+
+Example:
+
+FACT:
+Company opened 8 jobs.
+
+This is not automatically:
+
+SIGNAL:
+Company will buy our product.
+
+==================================================
+PART 9 — GENERIC SIGNAL ENGINE
+==================================================
+
+Verify core signal engine is generic.
+
+There must be no dependency such as:
+
+if cybersecurity...
+if ISO...
+if recruitment...
+if marketing...
+
+Signal meaning must depend on:
+
+Business Twin
+ICP
+Offering
+Intelligence Pack
+Project
+
+Cybersecurity/ISO definitions may exist only as configuration/sample data.
+
+==================================================
+PART 10 — INTELLIGENCE PACK
+==================================================
+
+Verify dynamic Intelligence Pack Builder works.
+
+Customer/project must be able to have different approved signals.
+
+Example:
+
+Funding Event
+
+may matter significantly for:
+
+recruitment seller
+
+but minimally for:
+
+another seller.
+
+Only approved/active signal definitions can affect scoring.
+
+AI-proposed signal definitions must not silently become active.
+
+==================================================
+PART 11 — SIGNAL CLUSTERS
+==================================================
+
+Verify:
+
+clusters use multiple signals
+
+duplicate reports of same underlying event do not inflate cluster strength
+
+temporal proximity works
+
+negative conditions can weaken/invalidate a cluster
+
+clusters are generic/configurable
+
+==================================================
+PART 12 — OPPORTUNITY ENGINE
+==================================================
+
+Verify dimensions remain distinct:
+
+FIT
+NEED
+TIMING
+RELATIONSHIP
+
+and separate:
+
+CONFIDENCE
+
+Default weights may be:
+
+Fit 30
+Need 30
+Timing 30
+Relationship 10
+
+but must remain configurable/versioned.
+
+Confidence must NOT inflate opportunity value.
+
+Test:
+
+High Fit + no Need
+→ should not become SURGING
+
+Strong Need + terrible Fit
+→ should not become SURGING
+
+Strong signals + low confidence
+→ may need more research rather than false certainty
+
+Unknown data
+→ uncertainty, not automatic negative
+
+==================================================
+PART 13 — OPPORTUNITY STATE
+==================================================
+
+Verify states such as:
+
+DORMANT
+WATCH
+EMERGING
+RISING
+SURGING
+ACTIVE
+COOLING
+
+are generated consistently.
+
+Historical transitions must be preserved.
+
+Example:
+
+WATCH
+→ RISING
+→ SURGING
+→ COOLING
+
+Do not overwrite history.
+
+==================================================
+PART 14 — WHY
+==================================================
+
+Verify every material Why statement can trace:
+
+Why
+→ Signal/Cluster
+→ Fact
+→ Evidence
+→ Source
+
+LLM may compose wording.
+
+LLM must NOT introduce new facts.
+
+Test unsupported claims such as:
+
+"They have budget."
+"They are ready to buy."
+"They need our service."
+
+These must not appear without evidence.
+
+==================================================
+PART 15 — TODAY / WHO.WHEN.WHY.
+==================================================
+
+Verify Today page uses REAL persisted intelligence.
+
+It must not be a static shell.
+
+Cards should support:
+
+Company
+State
+Movement
+WHO
+WHEN
+WHY
+Fit
+Need
+Timing
+Confidence
+Signals
+Cluster
+Research freshness
+Source/provenance
+Recommended Action
+
+Show opportunity origin where useful:
+
+FROM YOUR LIST
+
+or
+
+DISCOVERED BY JYRA
+
+without creating separate intelligence logic.
+
+==================================================
+PART 16 — WHO
+==================================================
+
+Verify JYRA distinguishes:
+
+WHO = which company deserves attention
+
+and later:
+
+WHO = which person/buying role to contact.
+
+Company qualification must happen first.
+
+==================================================
+PART 17 — PEOPLE / CONTACT COST CONTROL
+==================================================
+
+Verify people research happens only when:
+
+company reaches threshold
+
+OR
+
+user explicitly clicks Find Buyers.
+
+Do not enrich the whole market.
+
+Never fabricate:
+
+person
+email
+phone
+job title
+
+Preserve provenance.
+
+==================================================
+PART 18 — FIRST-PARTY RELATIONSHIP DATA
+==================================================
+
+Verify support for relationship context such as:
+
+NO_RELATIONSHIP
+KNOWN_ACCOUNT
+PREVIOUSLY_CONTACTED
+POSITIVE_REPLY
+NEGATIVE_REPLY
+MEETING_HELD
+OPEN_OPPORTUNITY
+LOST_OPPORTUNITY
+PAST_CUSTOMER
+EXISTING_CUSTOMER
+KNOWN_CHAMPION
+DO_NOT_CONTACT
+
+Relationship data should influence appropriate logic without leaking
+between projects/organizations.
+
+==================================================
+PART 19 — OUTCOME / LEARNING
+==================================================
+
+Verify Recommendation Ledger snapshots:
+
+Business Twin version
+ICP version
+Intelligence Pack version
+Opportunity Model version
+scores
+state
+signals
+clusters
+evidence
+Why
+action
+
+Historical recommendations must be immutable.
+
+Outcomes should connect to recommendations.
+
+Learning suggestions must not silently rewrite:
+
+ICP
+signals
+weights
+clusters
+models
+
+without explicit/versioned promotion.
+
+==================================================
+PART 20 — DATABASE ENVIRONMENT ISOLATION
+==================================================
+
+Audit:
+
+development database
+test database if used
+production/deployment database
+
+Document:
+
+which URL/config is selected in development
+which URL/config is selected in deployment
+which database tests use
+
+Verify:
+
+Development migration DOES NOT affect deployment DB.
+
+Development seed DOES NOT affect deployment DB.
+
+Automated tests cannot reach deployment DB.
+
+Production deployment does not run dev/demo seeds.
+
+Production does not use schema push/reset.
+
+If database isolation is unsafe:
+
+FIX THIS BEFORE OTHER WORK.
+
+==================================================
+PART 21 — REAL DATA TEST READINESS
+==================================================
+
+We intend to test with real prospect/company data.
+
+Verify the DEVELOPMENT system can safely import:
+
+200–500 real companies initially
+
+and later:
+
+1,000+ companies.
+
+Mark real imported test datasets:
+
+REAL_TEST_DATA
+
+or equivalent metadata.
+
+Do not copy them into production automatically.
+
+Do not send private CRM notes/contact information to external research
+providers unless explicitly required.
+
+For external company research, use minimum necessary fields such as:
+
+company name
+domain
+
+when possible.
+
+==================================================
+PART 22 — IMPORT FORMAT READINESS
+==================================================
+
+Verify the importer can handle a company-centric file with fields such as:
+
+company_name
+domain
+linkedin_company_url
+country
+city
+industry
+employee_count
+employee_range
+revenue
+company_description
+source_url
+source_type
+relationship_status
+crm_stage
+account_owner
+deal_value
+existing_customer
+past_customer
+previously_contacted
+last_contact_date
+notes
+
+And optional research fields such as:
+
+job_title
+job_description
+job_url
+job_posted_date
+recent_news
+news_url
+news_date
+technology
+recent_company_post
+post_url
+leadership_change
+leadership_change_date
+custom_signal_notes
+
+Do not require every column.
+
+==================================================
+PART 23 — MULTI-SHEET / RELATIONAL IMPORT READINESS
+==================================================
+
+If XLSX multi-sheet import exists or can be supported with the existing
+architecture, verify compatibility with:
+
+SHEET: Companies
+
+company_name
+domain
+linkedin_company_url
+industry
+employee_count
+country
+source_url
+notes
+
+SHEET: Contacts
+
+company_domain
+first_name
+last_name
+job_title
+seniority
+department
+linkedin_url
+email
+phone
+contact_source
+source_url
+relationship_status
+notes
+
+SHEET: Jobs
+
+company_domain
+job_title
+job_description
+location
+posted_date
+job_url
+source
+
+SHEET: Events
+
+company_domain
+event_type
+event_title
+event_description
+event_date
+source_url
+source_type
+
+SHEET: Sales History
+
+company_domain
+relationship_status
+crm_stage
+deal_value
+first_contact_date
+last_contact_date
+meeting_date
+outcome
+loss_reason
+account_owner
+notes
+
+If multi-sheet XLSX is not currently implemented:
+
+do NOT over-engineer.
+
+Mark PARTIAL and ensure separate CSV imports can achieve the same result.
+
+==================================================
+PART 24 — END-TO-END REALISTIC TEST
+==================================================
+
+Using DEVELOPMENT only, create controlled test data.
+
+Do NOT use production data.
+
+Test scenario:
+
+Seller:
+Managed SOC provider
+
+Create/import:
+
+100 synthetic/test candidate companies
+
+including:
+
+good fits
+borderline fits
+bad fits
+duplicate companies
+some customer-supplied evidence
+some companies with no research
+
+Then allow JYRA discovery to add additional companies.
+
+Verify:
+
+uploaded companies
++
+discovered companies
+
+enter ONE company universe.
+
+==================================================
+PART 25 — DISCOVERY TEST
+==================================================
+
+Start with a project containing an ICP but WITHOUT manually importing the
+full target market.
+
+Run Find My Market.
+
+Verify JYRA actually produces previously unknown candidate companies.
+
+Record:
+
+number discovered
+number canonicalized
+duplicates removed
+number ICP-qualified
+number selected for research
+research cost
+
+Do NOT fabricate successful discovery if external provider configuration
+is missing.
+
+If providers are unavailable, clearly mark the test BLOCKED.
+
+==================================================
+PART 26 — COST TEST
+==================================================
+
+Simulate/import:
+
+1,000 candidate companies.
+
+Verify JYRA does NOT deep research all 1,000.
+
+Report:
+
+companies ingested
+companies rejected by cheap qualification
+companies lightly researched
+companies deeply researched
+people enriched
+estimated provider cost
+
+==================================================
+PART 27 — FAILURE TESTS
+==================================================
+
+Test:
+
+provider timeout
+provider returns nothing
+duplicate provider results
+bad domain
+company without domain
+contradictory evidence
+stale evidence
+malformed CSV
+duplicate rows
+unknown columns
+ambiguous company
+AI structured output failure
+research budget exhausted
+
+System should degrade safely.
+
+==================================================
+PART 28 — FIX POLICY
+==================================================
+
+For every NOT IMPLEMENTED or PARTIAL result:
+
+Classify:
+
+CRITICAL
+HIGH
+MEDIUM
+LOW
+
+Fix all CRITICAL issues required for the core end-to-end JYRA workflow.
+
+Fix HIGH issues when they are reasonably contained within this phase.
+
+Do NOT expand into unrelated major features.
+
+Document remaining non-critical gaps.
+
+==================================================
+PART 29 — REQUIRED ARCHITECTURAL RESULT
+==================================================
+
+At the end the architecture must effectively behave like:
+
+                    BUSINESS TWIN
+                          ↓
+                         ICP
+                          ↓
+          ┌───────────────┴───────────────┐
+          ↓                               ↓
+     FIND MY MARKET                  ANALYZE MY LIST
+          ↓                               ↓
+    JYRA Discovery                   Customer Data
+          └───────────────┬───────────────┘
+                          ↓
+                 CANONICAL COMPANY
+                          ↓
+                    QUALIFICATION
+                          ↓
+                   RESEARCH PLANNER
+                          ↓
+              PROVIDERS + FIRST-PARTY
+                          ↓
+                       EVIDENCE
+                          ↓
+                        FACTS
+                          ↓
+                       SIGNALS
+                          ↓
+                 SIGNAL CLUSTERS
+                          ↓
+              FIT / NEED / TIMING /
+                  RELATIONSHIP
+                          ↓
+                     CONFIDENCE
+                          ↓
+                 OPPORTUNITY STATE
+                          ↓
+                    WHO.WHEN.WHY.
+                          ↓
+                  BUYING COMMITTEE
+                          ↓
+                       OUTCOME
+                          ↓
+                       LEARNING
+
+There must be ONE opportunity intelligence pipeline.
+
+==================================================
+PART 30 — DOCUMENTATION
+==================================================
+
+Create:
+
+PHASE_23A_AUDIT.md
+
+Include a table:
+
+Requirement
+Status
+Code Evidence
+Test Evidence
+Problem
+Fix Applied
+Remaining Risk
+
+Update as appropriate:
+
+ARCHITECTURE.md
+DATABASE.md
+DATABASE_SAFETY.md
+RESEARCH.md
+PROVIDERS.md
+SIGNALS.md
+OPPORTUNITY_ENGINE.md
+CHANGELOG.md
+
+Do not rewrite good documentation unnecessarily.
+
+==================================================
+FINAL REPORT
+==================================================
+
+At completion, report clearly:
+
+1. Did Find My Market actually discover new companies?
+
+2. Did uploaded and discovered companies converge to one canonical
+   company architecture?
+
+3. Did the ACME duplicate test pass?
+
+4. Is research selective rather than market-wide deep research?
+
+5. Does Research Planner consider cost?
+
+6. Does Research Now acquire fresh external information?
+
+7. Are evidence/facts/signals correctly separated?
+
+8. Is Signal Intelligence generic?
+
+9. Is opportunity scoring explainable?
+
+10. Is Today using persisted real intelligence?
+
+11. Are people enriched only after company qualification?
+
+12. Is Recommendation History immutable?
+
+13. Are development and production databases actually isolated?
+
+14. Can I safely upload 200–500 real companies into DEVELOPMENT?
+
+15. Can JYRA safely handle a 1,000-company market test?
+
+16. List every remaining CRITICAL/HIGH issue.
+
+==================================================
+ACCEPTANCE
+==================================================
+
+PHASE 23A PASSES ONLY IF:
+
+- JYRA can discover companies not uploaded by the user.
+- Find My Market is more than filtering an existing database.
+- Uploaded and discovered companies share one canonical model.
+- Duplicate company identities are resolved safely.
+- One downstream intelligence pipeline is used.
+- Deep research is selective.
+- Research economics affects research decisions.
+- Fresh provider research works when configured.
+- Evidence → Fact → Signal separation is enforced.
+- Signal interpretation is offering/project-specific.
+- Opportunity scoring remains generic and explainable.
+- Why statements are evidence-backed.
+- Company-first / people-second behavior is enforced.
+- Tenant/private-data isolation remains intact.
+- Development activity cannot modify production data.
+- Real test data can safely be loaded into DEVELOPMENT.
+
+If external provider credentials are not configured, clearly distinguish:
+
+CODE PASS
+
+from
+
+LIVE INTEGRATION TEST BLOCKED.
+
+Do NOT fake results.
+
+Create a checkpoint after all safe fixes and tests are complete.
+
+DO NOT begin Phase 24 automatically.
