@@ -1,0 +1,739 @@
+PHASE 25A — REAL-WORLD DATA IMPORT READINESS
+
+JYRA
+Who. When. Why.
+
+IMPORTANT:
+
+Phases through 25 are complete.
+
+DO NOT redesign the application.
+DO NOT modify the production database.
+DO NOT use the production database for this test.
+
+This phase verifies that JYRA can accept messy real-world B2B prospect
+datasets before we begin real opportunity-intelligence testing.
+
+The user has a real prospect dataset exported/scraped from external
+sources.
+
+Real customer datasets will NOT necessarily follow JYRA's preferred schema.
+
+JYRA must adapt to customer data rather than requiring customers to
+manually restructure every file.
+
+==================================================
+1. REAL-WORLD IMPORT PRINCIPLE
+==================================================
+
+JYRA should accept datasets originating from sources such as:
+
+Sales Navigator
+CRM exports
+Apollo
+Clay
+scrapers
+Excel lists
+CSV lists
+internal company databases
+research datasets
+manually maintained prospect lists
+
+Do NOT require exact JYRA column names.
+
+==================================================
+2. MIXED COMPANY + PERSON DATA
+==================================================
+
+A single uploaded row may contain BOTH:
+
+COMPANY INFORMATION
+
+and
+
+PERSON/CONTACT INFORMATION.
+
+Example:
+
+company = ABC Technologies
+website = abc.com
+industry = Software
+company size = 500
+
+first name = John
+last name = Smith
+title = CTO
+email = john@abc.com
+
+JYRA must separate this internally into:
+
+Canonical Company
+        ↓
+Person
+        ↓
+Person ↔ Company relationship
+
+Do NOT create a new company for every contact row.
+
+==================================================
+3. MULTIPLE CONTACTS / SAME COMPANY
+==================================================
+
+Test:
+
+Row 1:
+ABC Technologies + CTO
+
+Row 2:
+ABC Technologies + CISO
+
+Row 3:
+ABC Technologies + CIO
+
+Expected:
+
+1 canonical company
+3 people
+3 company/person relationships
+
+NOT:
+
+3 duplicate companies.
+
+==================================================
+4. FLEXIBLE COLUMN DETECTION
+==================================================
+
+Automatically suggest mappings.
+
+Examples:
+
+company
+company name
+account
+account name
+organization
+
+→ company_name
+
+website
+company website
+company url
+domain
+
+→ website/domain
+
+clinkedin
+company linkedin
+linkedin company url
+
+→ linkedin_company_url
+
+companysize
+company size
+employees
+headcount
+
+→ employee_count / employee_range
+
+ccountry
+company country
+hq country
+
+→ company_country
+
+Do not silently apply uncertain mappings.
+
+Show mapping preview before final import.
+
+==================================================
+5. COMPANY VS PERSON FIELDS
+==================================================
+
+JYRA must distinguish:
+
+PERSON LOCATION
+
+country
+state
+city
+
+from:
+
+COMPANY LOCATION
+
+ccountry
+cstate
+ccity
+
+or equivalent mapped fields.
+
+Company ICP qualification should use COMPANY location.
+
+Do not accidentally use the contact's location as company headquarters.
+
+==================================================
+6. DOMAIN NORMALIZATION
+==================================================
+
+Accept:
+
+https://www.acme.com
+http://acme.com/
+www.acme.com
+acme.com
+
+Normalize to:
+
+acme.com
+
+while preserving original source value.
+
+==================================================
+7. MISSING DOMAIN
+==================================================
+
+Domain must NOT be mandatory.
+
+If domain is missing:
+
+attempt domain resolution using:
+
+company name
+company LinkedIn URL
+country
+city
+industry
+description
+other available identifiers
+
+Generate candidate domain(s).
+
+Validate identity.
+
+Statuses:
+
+CONFIRMED
+HIGH_CONFIDENCE
+NEEDS_REVIEW
+UNRESOLVED
+
+Never fabricate domains.
+
+After resolving domain:
+
+rerun canonical entity resolution.
+
+==================================================
+8. DUPLICATE COMPANY RESOLUTION
+==================================================
+
+Use strongest available identifiers such as:
+
+domain
+LinkedIn company URL
+normalized company name
+location
+industry
+description
+
+Do not merge companies purely because names look similar.
+
+Ambiguous matches → NEEDS_REVIEW.
+
+==================================================
+9. CONTACT DATA
+==================================================
+
+Support imported:
+
+first name
+last name
+full name
+title
+department
+seniority/management level
+LinkedIn URL
+email
+phone
+
+Imported contact data should be marked with provenance such as:
+
+FIRST_PARTY_UPLOAD
+
+Do NOT automatically call paid enrichment providers for contacts that
+already contain usable information.
+
+==================================================
+10. MISSING CONTACT DATA
+==================================================
+
+Missing email or phone is acceptable.
+
+Do NOT enrich immediately.
+
+Contact enrichment should happen later only when:
+
+company qualifies as sufficiently important
+
+OR
+
+user explicitly requests enrichment.
+
+==================================================
+11. TECHNOLOGY DATA
+==================================================
+
+Uploaded technology fields may contain:
+
+one technology
+comma-separated technologies
+JSON
+arrays
+free text
+provider-specific formatting
+
+Normalize where practical.
+
+Preserve original value.
+
+Uploaded technology data becomes:
+
+customer-supplied evidence / evidence candidate
+
+NOT automatically a verified buying signal.
+
+==================================================
+12. KEYWORDS
+==================================================
+
+Uploaded keyword fields may contain useful company context.
+
+Preserve them.
+
+Do not automatically interpret every keyword as buying intent.
+
+They may become:
+
+custom fields
+research context
+evidence candidates
+
+depending on mapping.
+
+==================================================
+13. COMPANY DESCRIPTION
+==================================================
+
+Preserve company descriptions.
+
+Description can help with:
+
+entity resolution
+ICP qualification
+research planning
+
+But customer-uploaded description is not necessarily authoritative.
+
+Preserve provenance.
+
+==================================================
+14. FUNDING / REVENUE / EMPLOYEE DATA
+==================================================
+
+Support partial availability.
+
+If:
+
+funding missing
+revenue missing
+employee count missing
+
+represent as:
+
+UNKNOWN
+
+Do NOT convert missing values to zero.
+
+UNKNOWN ≠ NEGATIVE.
+
+==================================================
+15. DATA TYPES
+==================================================
+
+Handle common messy formats.
+
+Examples:
+
+Employee size:
+
+"51-200"
+"201 – 500"
+"500+"
+"1000"
+"1,001-5,000"
+
+Revenue:
+
+"$10M"
+"10000000"
+"₹50 Cr"
+"10-50M"
+
+Dates:
+
+2026-08-15
+15/08/2026
+Aug 15 2026
+
+Phones:
+
+country codes
+spaces
+hyphens
+brackets
+
+Do not destroy original values during normalization.
+
+==================================================
+16. UNKNOWN COLUMNS
+==================================================
+
+If JYRA encounters a column it doesn't recognize, provide:
+
+MAP TO JYRA FIELD
+
+STORE AS CUSTOM FIELD
+
+TREAT AS EVIDENCE
+
+IGNORE
+
+Never silently discard customer data.
+
+==================================================
+17. SOURCE / PROVENANCE
+==================================================
+
+Every imported record should retain:
+
+import batch
+original row
+source type
+import timestamp
+original values where necessary
+
+Company-level and contact-level provenance should remain independently
+traceable.
+
+==================================================
+18. IMPORT PREVIEW
+==================================================
+
+Before final import show:
+
+Rows detected
+Companies detected
+Contacts detected
+Mapped columns
+Unknown columns
+Missing domains
+Possible duplicates
+Invalid emails
+Invalid URLs
+Rows requiring review
+
+Allow user to correct mappings.
+
+==================================================
+19. POST-IMPORT REPORT
+==================================================
+
+After import show:
+
+Rows processed
+
+Canonical companies created
+
+Existing companies matched
+
+Duplicates merged
+
+Companies needing review
+
+Domains resolved
+
+Domains unresolved
+
+Contacts created
+
+Contacts matched
+
+Invalid contacts
+
+Evidence candidates created
+
+Custom fields created
+
+Rows rejected
+
+==================================================
+20. IMPORT IDEMPOTENCY
+==================================================
+
+Uploading the same file twice should NOT create duplicate companies and
+contacts.
+
+Use appropriate:
+
+file hash
+row fingerprint
+domain
+LinkedIn URL
+email
+external identifiers
+
+to detect duplicates.
+
+==================================================
+21. REALISTIC TEST FILE
+==================================================
+
+Test using a dataset structurally similar to the user's Aadit prospect
+dataset.
+
+It contains approximately:
+
+146 rows
+31 columns
+
+and includes mixed:
+
+company information
+company location
+person information
+person location
+LinkedIn URLs
+websites
+emails
+phones
+industry
+company size
+revenue
+description
+keywords
+technology information
+funding information
+
+Do NOT require the dataset to be manually cleaned into JYRA's schema.
+
+==================================================
+22. REQUIRED TEST CASES
+==================================================
+
+Test:
+
+A. Complete company + complete contact
+
+B. Company + no contact
+
+C. Contact + company without domain
+
+D. Multiple contacts for same company
+
+E. Same company written differently
+
+F. Company with website containing www/http/https
+
+G. Missing revenue
+
+H. Missing funding
+
+I. Missing employee count
+
+J. Missing email
+
+K. Invalid email
+
+L. Missing phone
+
+M. Person country different from company country
+
+N. Unknown custom column
+
+O. Technology list
+
+P. Duplicate uploaded row
+
+Q. Same file uploaded twice
+
+R. Ambiguous company name
+
+S. Company already discovered by JYRA before upload
+
+==================================================
+23. CRITICAL CONVERGENCE TEST
+==================================================
+
+Scenario:
+
+JYRA previously discovered:
+
+Acme Technologies
+acme.com
+
+Later customer uploads:
+
+ACME
+https://www.acme.com
+
+with 3 contacts.
+
+Expected:
+
+ONE canonical company.
+
+Existing JYRA-discovered company receives additional project/private
+context.
+
+Three contacts attach to the same company.
+
+Both provenance paths remain visible:
+
+JYRA_DISCOVERY
+
+FIRST_PARTY_UPLOAD
+
+==================================================
+24. PRIVACY
+==================================================
+
+Emails
+phones
+CRM fields
+private notes
+uploaded contacts
+
+must remain organization/project private.
+
+Never turn customer-uploaded contact information into globally reusable
+public data.
+
+==================================================
+25. EXTERNAL AI / PROVIDER SAFETY
+==================================================
+
+Do not send the entire uploaded row to external AI/provider services by
+default.
+
+Use minimum necessary data.
+
+For example domain resolution may require:
+
+company name
+LinkedIn company URL
+location
+
+It does NOT require:
+
+contact email
+phone
+private notes
+deal value.
+
+==================================================
+26. PERFORMANCE
+==================================================
+
+Test:
+
+150 rows
+1,000 rows
+
+Import should use batch processing where appropriate.
+
+Do not perform expensive external research synchronously during file
+parsing.
+
+Import first.
+
+Resolve/qualify/research through controlled jobs afterward.
+
+==================================================
+27. DO NOT START DEEP RESEARCH AUTOMATICALLY
+==================================================
+
+Successful import must NOT mean:
+
+research every company immediately.
+
+Flow:
+
+Import
+→ Normalize
+→ Resolve
+→ Canonicalize
+→ ICP Qualification
+→ Research Planner
+→ selective research
+
+Research economics from Phase 23 must remain active.
+
+==================================================
+28. DEVELOPMENT DATABASE ONLY
+==================================================
+
+All tests in this phase must use DEVELOPMENT.
+
+Verify production/deployment database remains unchanged.
+
+Do not use real production customer data.
+
+==================================================
+ACCEPTANCE
+==================================================
+
+Phase 25A passes only if:
+
+1. Mixed company/person CSV works.
+
+2. Flexible column mapping works.
+
+3. Multiple contacts do not create duplicate companies.
+
+4. Missing domains can enter the system.
+
+5. Domain resolution works where confidence is sufficient.
+
+6. Ambiguous domains go to review.
+
+7. Company vs person location remains separate.
+
+8. Missing values remain UNKNOWN.
+
+9. Imported technology/research fields preserve provenance.
+
+10. Unknown columns are not silently discarded.
+
+11. Duplicate imports are safe.
+
+12. Existing JYRA-discovered companies merge correctly with later
+customer-uploaded records.
+
+13. Private contact information remains private.
+
+14. Import does not automatically trigger expensive market-wide research.
+
+15. 1,000-row test succeeds at acceptable performance.
+
+16. Production database is untouched.
+
+Create:
+
+REAL_DATA_IMPORT_TEST.md
+
+Document PASS / PARTIAL / FAIL for every requirement.
+
+Fix critical import issues found during testing.
+
+Do NOT start Phase 26 automatically.

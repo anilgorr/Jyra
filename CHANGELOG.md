@@ -209,3 +209,10 @@
 ## Future entries
 
 Future milestones should document user-visible behavior, schema changes, API contract changes, provenance implications, and any new trust boundary.
+
+## Restricted admin quality monitoring
+
+- Added a fail-closed internal-admin authorization boundary independent of customer organization roles.
+- Added a versioned, bounded, read-only aggregate quality API covering provider health, research economics, evidence, facts, signals, clusters, opportunities, outcomes, model versions, failures, and stale research.
+- Added an internal dashboard with low-sample and association-only labels, refresh/window controls, unavailable states, and server-confirmed navigation visibility.
+- Added privacy regression checks that reject customer identifiers and private content fields from dashboard responses.

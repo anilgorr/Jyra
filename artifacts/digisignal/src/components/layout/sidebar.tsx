@@ -12,6 +12,7 @@ import {
   Settings,
   Wrench,
   RadioTower,
+  ShieldCheck,
 } from "lucide-react";
 import { useUser, useClerk } from "@clerk/react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -23,6 +24,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useWorkspace } from "@/context/workspace-context";
+import { useAdminAccess } from "@/hooks/use-admin-access";
 
 export const navItems = [
   { href: "/today", label: "Today", icon: LayoutDashboard },
@@ -50,6 +52,7 @@ export function Sidebar() {
   } = useWorkspace();
   const logoUrl = `${import.meta.env.BASE_URL}logo.svg`;
   const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
+  const { isAdmin } = useAdminAccess();
 
   return (
     <aside className="hidden h-full w-64 flex-col border-r border-border bg-sidebar text-sidebar-foreground md:flex">
@@ -119,6 +122,20 @@ export function Sidebar() {
 
       <div className="border-t border-sidebar-border p-4">
         <nav className="space-y-1 mb-4">
+          {isAdmin && (
+            <Link
+              href="/admin/quality"
+              className={cn(
+                "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors outline-none",
+                location === "/admin/quality"
+                  ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                  : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+              )}
+            >
+              <ShieldCheck className="h-4 w-4" />
+              Quality dashboard
+            </Link>
+          )}
           {import.meta.env.DEV && (
             <Link
               href="/settings/providers"

@@ -5,6 +5,46 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+export type AdminMetricSectionSummary = { [key: string]: unknown };
+
+export type AdminMetricSectionRowsItem = { [key: string]: unknown };
+
+export interface AdminMetricSection {
+  sampleSize: number;
+  note?: string;
+  summary?: AdminMetricSectionSummary;
+  rows?: AdminMetricSectionRowsItem[];
+}
+
+export type AdminQualityDashboardWindow = {
+  days: number;
+  from: string;
+  to: string;
+};
+
+export type AdminQualityDashboardSections = {
+  providerHealth: AdminMetricSection;
+  researchSuccess: AdminMetricSection;
+  researchCost: AdminMetricSection;
+  evidenceQuality: AdminMetricSection;
+  factExtractionQuality: AdminMetricSection;
+  signalQuality: AdminMetricSection;
+  signalFalsePositives: AdminMetricSection;
+  clusterPerformance: AdminMetricSection;
+  opportunityStateDistribution: AdminMetricSection;
+  outcomeQuality: AdminMetricSection;
+  modelVersions: AdminMetricSection;
+  failedJobs: AdminMetricSection;
+  staleResearch: AdminMetricSection;
+};
+
+export interface AdminQualityDashboard {
+  version: string;
+  window: AdminQualityDashboardWindow;
+  generatedAt: string;
+  sections: AdminQualityDashboardSections;
+}
+
 export type LearningScope = typeof LearningScope[keyof typeof LearningScope];
 
 
@@ -2940,6 +2980,14 @@ export type LearningScopeParameter = LearningScope;
  * Optional immutable Intelligence Pack version for MARKET scope; omit for the market-wide aggregate.
  */
 export type IntelligencePackVersionIdParameter = string;
+
+export type GetAdminQualityDashboardParams = {
+/**
+ * @minimum 1
+ * @maximum 90
+ */
+days?: number;
+};
 
 export type CommitCompanyImport409 = {
   error: string;

@@ -2,12 +2,14 @@ import { ReactNode } from "react";
 import { Sidebar } from "./sidebar";
 import { navItems } from "./sidebar";
 import { Link } from "wouter";
-import { Menu, Settings, Wrench } from "lucide-react";
+import { Menu, Settings, ShieldCheck, Wrench } from "lucide-react";
 import { useWorkspace } from "@/context/workspace-context";
+import { useAdminAccess } from "@/hooks/use-admin-access";
 
 export function Layout({ children }: { children: ReactNode }) {
   const { activeProject } = useWorkspace();
   const logoUrl = `${import.meta.env.BASE_URL}logo.svg`;
+  const { isAdmin } = useAdminAccess();
 
   return (
     <div className="flex min-h-[100dvh] w-full overflow-hidden bg-background md:h-[100dvh]">
@@ -37,6 +39,12 @@ export function Layout({ children }: { children: ReactNode }) {
                 <Link href="/settings/providers" className="flex items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-muted">
                   <Wrench className="h-4 w-4" />
                   Provider diagnostics
+                </Link>
+              )}
+              {isAdmin && (
+                <Link href="/admin/quality" className="flex items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-muted">
+                  <ShieldCheck className="h-4 w-4" />
+                  Quality dashboard
                 </Link>
               )}
               <Link href="/settings" className="flex items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-muted">

@@ -24,6 +24,8 @@
     ,"test:recommendation-ledger": "node ./scripts/test-recommendation-ledger.mjs"
     ,"test:learning": "node ./scripts/test-learning.mjs"
     ,"test:phase23a": "node ./scripts/test-phase23a.mjs"
+    ,"test:admin-quality": "node ./scripts/test-admin-quality.mjs"
+    ,"test:admin-quality-db": "node ./scripts/test-admin-quality-db.mjs"
   },
   "dependencies": {
     "@clerk/express": "^2.1.63",

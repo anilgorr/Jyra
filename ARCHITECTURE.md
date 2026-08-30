@@ -227,3 +227,9 @@ The web service uses the workflow-provided `PORT` and `BASE_PATH`. The API servi
 ## Unified company entry
 
 Find My Market and Analyze My List converge on the same canonical `companies` and project-scoped `project_companies` records. Discovery is a bounded external capability, not a filter over stored companies and not known-company research. Domain identity is resolved under an advisory lock; ambiguous name-only candidates are held for review. Project/organization provenance preserves each upload, manual entry, and provider discovery independently.
+
+## Internal quality monitoring
+
+The internal quality dashboard uses a fail-closed authorization boundary that is separate from organization ownership and project membership. Internal access is granted only by an explicit server-side Clerk user allowlist or a trusted `internalAdmin` Clerk metadata claim. Normal authenticated users receive a non-disclosing response and never receive dashboard data.
+
+The quality endpoint is read-only and globally aggregated within a bounded 1–90 day window. Its query projection excludes organization, project, company, contact, source URL, evidence text, and recommendation-copy fields. A runtime response guard rejects private-field keys before serialization. The dashboard reports operational association and sample-size measures only; it does not claim causal model performance or trigger providers, research, or customer-data mutations.

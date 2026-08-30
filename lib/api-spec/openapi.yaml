@@ -22,6 +22,8 @@ tags:
     description: Canonical company identity and project company operations
   - name: providers
     description: Development-only provider diagnostics
+  - name: admin
+    description: Restricted aggregate-only internal operational quality monitoring
   - name: research
     description: Bounded evidence-first company research
   - name: signals
@@ -112,6 +114,28 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         "404":
           $ref: "#/components/responses/NotFound"
+  /admin/quality:
+    get:
+      operationId: getAdminQualityDashboard
+      tags: [admin]
+      summary: Get aggregate internal quality metrics
+      description: Returns read-only, aggregate operational metrics for explicitly authorized internal admins. Customer and company identifiers and private payloads are never returned.
+      security:
+        - clerkSession: []
+      parameters:
+        - name: days
+          in: query
+          required: false
+          schema: { type: number, minimum: 1, maximum: 90, default: 30 }
+      responses:
+        "200":
+          description: Aggregate quality dashboard
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AdminQualityDashboard" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/NotFound" }
   /me:
     get:
       operationId: getCurrentUser
@@ -1750,6 +1774,50 @@ paths:
         "404": { $ref: "#/components/responses/NotFound" }
 components:
   schemas:
+    AdminMetricSection:
+      type: object
+      properties:
+        sampleSize: { type: number }
+        note: { type: string }
+        summary:
+          type: object
+          additionalProperties: true
+        rows:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+      required: [sampleSize]
+    AdminQualityDashboard:
+      type: object
+      properties:
+        version: { type: string }
+        window:
+          type: object
+          properties:
+            days: { type: number }
+            from: { type: string, format: date-time }
+            to: { type: string, format: date-time }
+          required: [days, from, to]
+        generatedAt: { type: string, format: date-time }
+        sections:
+          type: object
+          properties:
+            providerHealth: { $ref: "#/components/schemas/AdminMetricSection" }
+            researchSuccess: { $ref: "#/components/schemas/AdminMetricSection" }
+            researchCost: { $ref: "#/components/schemas/AdminMetricSection" }
+            evidenceQuality: { $ref: "#/components/schemas/AdminMetricSection" }
+            factExtractionQuality: { $ref: "#/components/schemas/AdminMetricSection" }
+            signalQuality: { $ref: "#/components/schemas/AdminMetricSection" }
+            signalFalsePositives: { $ref: "#/components/schemas/AdminMetricSection" }
+            clusterPerformance: { $ref: "#/components/schemas/AdminMetricSection" }
+            opportunityStateDistribution: { $ref: "#/components/schemas/AdminMetricSection" }
+            outcomeQuality: { $ref: "#/components/schemas/AdminMetricSection" }
+            modelVersions: { $ref: "#/components/schemas/AdminMetricSection" }
+            failedJobs: { $ref: "#/components/schemas/AdminMetricSection" }
+            staleResearch: { $ref: "#/components/schemas/AdminMetricSection" }
+          required: [providerHealth, researchSuccess, researchCost, evidenceQuality, factExtractionQuality, signalQuality, signalFalsePositives, clusterPerformance, opportunityStateDistribution, outcomeQuality, modelVersions, failedJobs, staleResearch]
+      required: [version, window, generatedAt, sections]
     LearningScope:
       type: string
       enum: [GLOBAL, MARKET, PROJECT]

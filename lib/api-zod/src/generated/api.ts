@@ -81,6 +81,110 @@ export const GetProviderDiagnosticsResponse = zod.array(GetProviderDiagnosticsRe
 
 
 /**
+ * Returns read-only, aggregate operational metrics for explicitly authorized internal admins. Customer and company identifiers and private payloads are never returned.
+ * @summary Get aggregate internal quality metrics
+ */
+export const getAdminQualityDashboardQueryDaysDefault = 30;
+export const getAdminQualityDashboardQueryDaysMax = 90;
+
+
+
+export const GetAdminQualityDashboardQueryParams = zod.object({
+  "days": zod.coerce.number().min(1).max(getAdminQualityDashboardQueryDaysMax).default(getAdminQualityDashboardQueryDaysDefault)
+})
+
+export const GetAdminQualityDashboardResponse = zod.object({
+  "version": zod.string(),
+  "window": zod.object({
+  "days": zod.number(),
+  "from": zod.coerce.date(),
+  "to": zod.coerce.date()
+}),
+  "generatedAt": zod.coerce.date(),
+  "sections": zod.object({
+  "providerHealth": zod.object({
+  "sampleSize": zod.number(),
+  "note": zod.string().optional(),
+  "summary": zod.record(zod.string(), zod.unknown()).optional(),
+  "rows": zod.array(zod.record(zod.string(), zod.unknown())).optional()
+}),
+  "researchSuccess": zod.object({
+  "sampleSize": zod.number(),
+  "note": zod.string().optional(),
+  "summary": zod.record(zod.string(), zod.unknown()).optional(),
+  "rows": zod.array(zod.record(zod.string(), zod.unknown())).optional()
+}),
+  "researchCost": zod.object({
+  "sampleSize": zod.number(),
+  "note": zod.string().optional(),
+  "summary": zod.record(zod.string(), zod.unknown()).optional(),
+  "rows": zod.array(zod.record(zod.string(), zod.unknown())).optional()
+}),
+  "evidenceQuality": zod.object({
+  "sampleSize": zod.number(),
+  "note": zod.string().optional(),
+  "summary": zod.record(zod.string(), zod.unknown()).optional(),
+  "rows": zod.array(zod.record(zod.string(), zod.unknown())).optional()
+}),
+  "factExtractionQuality": zod.object({
+  "sampleSize": zod.number(),
+  "note": zod.string().optional(),
+  "summary": zod.record(zod.string(), zod.unknown()).optional(),
+  "rows": zod.array(zod.record(zod.string(), zod.unknown())).optional()
+}),
+  "signalQuality": zod.object({
+  "sampleSize": zod.number(),
+  "note": zod.string().optional(),
+  "summary": zod.record(zod.string(), zod.unknown()).optional(),
+  "rows": zod.array(zod.record(zod.string(), zod.unknown())).optional()
+}),
+  "signalFalsePositives": zod.object({
+  "sampleSize": zod.number(),
+  "note": zod.string().optional(),
+  "summary": zod.record(zod.string(), zod.unknown()).optional(),
+  "rows": zod.array(zod.record(zod.string(), zod.unknown())).optional()
+}),
+  "clusterPerformance": zod.object({
+  "sampleSize": zod.number(),
+  "note": zod.string().optional(),
+  "summary": zod.record(zod.string(), zod.unknown()).optional(),
+  "rows": zod.array(zod.record(zod.string(), zod.unknown())).optional()
+}),
+  "opportunityStateDistribution": zod.object({
+  "sampleSize": zod.number(),
+  "note": zod.string().optional(),
+  "summary": zod.record(zod.string(), zod.unknown()).optional(),
+  "rows": zod.array(zod.record(zod.string(), zod.unknown())).optional()
+}),
+  "outcomeQuality": zod.object({
+  "sampleSize": zod.number(),
+  "note": zod.string().optional(),
+  "summary": zod.record(zod.string(), zod.unknown()).optional(),
+  "rows": zod.array(zod.record(zod.string(), zod.unknown())).optional()
+}),
+  "modelVersions": zod.object({
+  "sampleSize": zod.number(),
+  "note": zod.string().optional(),
+  "summary": zod.record(zod.string(), zod.unknown()).optional(),
+  "rows": zod.array(zod.record(zod.string(), zod.unknown())).optional()
+}),
+  "failedJobs": zod.object({
+  "sampleSize": zod.number(),
+  "note": zod.string().optional(),
+  "summary": zod.record(zod.string(), zod.unknown()).optional(),
+  "rows": zod.array(zod.record(zod.string(), zod.unknown())).optional()
+}),
+  "staleResearch": zod.object({
+  "sampleSize": zod.number(),
+  "note": zod.string().optional(),
+  "summary": zod.record(zod.string(), zod.unknown()).optional(),
+  "rows": zod.array(zod.record(zod.string(), zod.unknown())).optional()
+})
+})
+})
+
+
+/**
  * Returns the local JYRA user record and organization count for the authenticated Clerk session.
  * @summary Get the authenticated user
  */

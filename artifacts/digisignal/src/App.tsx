@@ -27,6 +27,7 @@ import Signals from './pages/signals';
 import Opportunities from './pages/opportunities';
 import Outcomes from './pages/outcomes';
 import Learning from './pages/learning';
+import AdminQualityPage from './pages/admin-quality';
 import { WorkspaceProvider } from './context/workspace-context';
 
 const clerkPubKey = publishableKeyFromHost(
@@ -174,6 +175,7 @@ function AuthenticatedRoutes() {
             <Route path="/signals" component={Signals} />
             <Route path="/outcomes" component={Outcomes} />
             <Route path="/learning" component={Learning} />
+            <Route path="/admin/quality" component={AdminQualityPage} />
             {import.meta.env.DEV && (
               <Route path="/settings/providers" component={ProviderDiagnostics} />
             )}
