@@ -1,16 +1,16 @@
 import { and, eq } from "drizzle-orm";
 import { dataProvidersTable, db, providerCapabilitiesTable } from "@workspace/db";
 
-const EXA_PROVIDER_CONFIGURATION = {
-  connector: "exa",
-  timeoutMs: 30_000,
-  searchType: "fast",
-  estimatedCost: 0.007,
-  credentialStatus: "AVAILABLE",
-};
-
 export async function ensureDevelopmentExaProvider(): Promise<void> {
   if (process.env.NODE_ENV === "production") return;
+  const configuration = {
+    sdk: "exa-js",
+    timeoutMs: 30_000,
+    searchType: "auto",
+    category: "company",
+    estimatedCost: 0.007,
+    credentialStatus: process.env.EXA_API_KEY ? "AVAILABLE" : "MISSING",
+  };
 
   await db.transaction(async (tx) => {
     await tx.insert(dataProvidersTable).values({
@@ -18,11 +18,11 @@ export async function ensureDevelopmentExaProvider(): Promise<void> {
       providerType: "exa",
       enabled: true,
       priority: 5,
-      estimatedCost: EXA_PROVIDER_CONFIGURATION.estimatedCost,
+      estimatedCost: configuration.estimatedCost,
       successRate: 0,
       averageLatency: 0,
       qualityScore: 0.9,
-      configuration: EXA_PROVIDER_CONFIGURATION,
+      configuration,
     }).onConflictDoNothing({ target: dataProvidersTable.name });
 
     const [provider] = await tx.select().from(dataProvidersTable)
@@ -33,11 +33,11 @@ export async function ensureDevelopmentExaProvider(): Promise<void> {
     await tx.update(dataProvidersTable).set({
       enabled: true,
       priority: 5,
-      estimatedCost: EXA_PROVIDER_CONFIGURATION.estimatedCost,
+      estimatedCost: configuration.estimatedCost,
       qualityScore: 0.9,
       configuration: {
         ...provider.configuration,
-        ...EXA_PROVIDER_CONFIGURATION,
+        ...configuration,
       },
       updatedAt: new Date(),
     }).where(eq(dataProvidersTable.id, provider.id));

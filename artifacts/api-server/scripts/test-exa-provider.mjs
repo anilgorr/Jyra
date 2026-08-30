@@ -21,9 +21,9 @@ const calls = [];
 const adapter = createExaCompanyDiscoveryAdapter({
   providerId: "exa-provider",
   client: {
-    async proxy(connector, path, options) {
-      calls.push({ connector, path, options });
-      return new Response(JSON.stringify({
+    async search(query, options) {
+      calls.push({ query, options });
+      return {
         requestId: "exa-request-1",
         costDollars: { total: 0.008 },
         results: [
@@ -39,13 +39,10 @@ const adapter = createExaCompanyDiscoveryAdapter({
             url: "https://missing-name.example",
           },
         ],
-      }), {
-        status: 200,
-        headers: { "content-type": "application/json" },
-      });
+      };
     },
   },
-  configuration: { searchType: "fast", estimatedCost: 0.007 },
+  configuration: { estimatedCost: 0.007 },
 });
 
 const response = await adapter.execute({
@@ -69,18 +66,20 @@ assert.equal(response.data.companies[0].location, null);
 assert.equal(response.data.companies[0].relevanceScore, 0.91);
 assert.equal(response.usage.actualCost, 0.008);
 assert.equal(calls.length, 1);
-assert.equal(calls[0].connector, "exa");
-assert.equal(calls[0].path, "/search");
-assert.equal(calls[0].options.body.category, "company");
-assert.equal(calls[0].options.body.numResults, 10);
-assert.equal(calls[0].options.body.query, "Find target-market cloud companies");
-assert.equal("apiKey" in calls[0].options.body, false);
+assert.equal(calls[0].query, "Find target-market cloud companies");
+assert.equal(calls[0].options.category, "company");
+assert.equal(calls[0].options.type, "auto");
+assert.equal(calls[0].options.numResults, 10);
+assert.equal("contents" in calls[0].options, false);
+assert.equal("outputSchema" in calls[0].options, false);
+assert.equal("agent" in calls[0].options, false);
+assert.equal("answer" in calls[0].options, false);
 
 const authFailure = createExaCompanyDiscoveryAdapter({
   providerId: "exa-provider",
   client: {
-    async proxy() {
-      return new Response(JSON.stringify({ error: "invalid" }), { status: 401 });
+    async search() {
+      throw Object.assign(new Error("unauthorized"), { statusCode: 401 });
     },
   },
 });
@@ -93,10 +92,9 @@ assert.deepEqual(
   parseExaProviderConfiguration({
     timeoutMs: 12_000,
     estimatedCost: 0.01,
-    searchType: "instant",
     credentialStatus: "AVAILABLE",
   }),
-  { timeoutMs: 12_000, estimatedCost: 0.01, searchType: "instant" },
+  { timeoutMs: 12_000, estimatedCost: 0.01 },
 );
 
 console.log("Exa provider tests passed.");

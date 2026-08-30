@@ -1,4 +1,4 @@
-import { ReplitConnectors } from "@replit/connectors-sdk";
+import Exa from "exa-js";
 import type {
   CompanyDiscoveryResult,
   DiscoverCompaniesRequest,
@@ -33,10 +33,9 @@ type ExaResponse = {
 export type ExaProviderConfiguration = {
   timeoutMs?: number;
   estimatedCost?: number;
-  searchType?: "instant" | "fast" | "auto";
 };
 
-export type ExaClient = Pick<ReplitConnectors, "proxy">;
+export type ExaClient = Pick<Exa, "search">;
 
 export type ExaAdapterOptions = {
   providerId: string;
@@ -159,6 +158,23 @@ function errorForStatus(status: number): ExaProviderError {
   return new ExaProviderError(`EXA_HTTP_${status}`, "Exa rejected this request", false);
 }
 
+function normalizeExaError(error: unknown): ExaProviderError {
+  if (error instanceof ExaProviderError) return error;
+  const statusCode = error && typeof error === "object" && "statusCode" in error
+    ? numberValue((error as { statusCode?: unknown }).statusCode)
+    : null;
+  if (statusCode !== null) return errorForStatus(statusCode);
+  const message = error instanceof Error ? error.message : "";
+  if (/api key|credential|authentication/i.test(message)) {
+    return new ExaProviderError(
+      "CREDENTIALS_MISSING",
+      "Exa credentials are not configured",
+      false,
+    );
+  }
+  return new ExaProviderError("PROVIDER_UNAVAILABLE", "Exa discovery is unavailable", true);
+}
+
 export function parseExaProviderConfiguration(
   configuration: Record<string, unknown>,
 ): ExaProviderConfiguration {
@@ -166,24 +182,19 @@ export function parseExaProviderConfiguration(
     const value = configuration[key];
     return typeof value === "number" && Number.isFinite(value) && value > 0 ? value : undefined;
   };
-  const searchType = configuration.searchType;
   return {
     timeoutMs: positiveNumber("timeoutMs"),
     estimatedCost: positiveNumber("estimatedCost"),
-    searchType: searchType === "instant" || searchType === "fast" || searchType === "auto"
-      ? searchType
-      : undefined,
   };
 }
 
 export function createExaCompanyDiscoveryAdapter(
   options: ExaAdapterOptions,
 ): ProviderAdapter<"COMPANY_DISCOVERY"> {
-  const client = options.client ?? new ReplitConnectors();
+  let client = options.client;
   const configuration = options.configuration ?? {};
   const timeoutMs = configuration.timeoutMs ?? 30_000;
   const estimatedCost = configuration.estimatedCost ?? 0.007;
-  const searchType = configuration.searchType ?? "fast";
   const now = options.now ?? (() => new Date());
 
   return {
@@ -195,19 +206,15 @@ export function createExaCompanyDiscoveryAdapter(
       let timeout: ReturnType<typeof setTimeout> | null = null;
       const limit = Math.min(Math.max(request.limit ?? 10, 1), 10);
       const body = {
-        query: request.query.trim(),
-        type: searchType,
+        type: "auto" as const,
         numResults: limit,
-        category: "company",
+        category: "company" as const,
       };
 
       try {
-        const response = await Promise.race([
-          client.proxy("exa", "/search", {
-            method: "POST",
-            headers: { "content-type": "application/json" },
-            body,
-          }),
+        client ??= new Exa();
+        const payload = await Promise.race([
+          client.search(request.query.trim(), body) as Promise<ExaResponse>,
           new Promise<never>((_resolve, reject) => {
             timeout = setTimeout(
               () => reject(new ExaProviderError("TIMEOUT", "Exa discovery timed out", true)),
@@ -215,14 +222,6 @@ export function createExaCompanyDiscoveryAdapter(
             );
           }),
         ]);
-        if (!response.ok) throw errorForStatus(response.status);
-
-        let payload: ExaResponse;
-        try {
-          payload = await response.json() as ExaResponse;
-        } catch {
-          throw new ExaProviderError("MALFORMED_RESPONSE", "Exa returned invalid JSON", false);
-        }
         if (!Array.isArray(payload.results)) {
           throw new ExaProviderError("MALFORMED_RESPONSE", "Exa returned an unrecognized response", false);
         }
@@ -262,16 +261,15 @@ export function createExaCompanyDiscoveryAdapter(
           metadata: {
             query: request.query,
             strategy: request.strategy ?? null,
-            searchType,
+            searchType: "auto",
+            category: "company",
             numResults: limit,
             rawResultCount: payload.results.length,
             retrievalTimestamp: capturedAt,
           },
         };
       } catch (error) {
-        const normalized = error instanceof ExaProviderError
-          ? error
-          : new ExaProviderError("PROVIDER_UNAVAILABLE", "Exa discovery is unavailable", true);
+        const normalized = normalizeExaError(error);
         const runtimeMs = Date.now() - startedAt;
         return {
           status: "failed",
@@ -295,7 +293,8 @@ export function createExaCompanyDiscoveryAdapter(
           capturedAt,
           metadata: {
             query: request.query,
-            searchType,
+            searchType: "auto",
+            category: "company",
           },
         };
       } finally {
