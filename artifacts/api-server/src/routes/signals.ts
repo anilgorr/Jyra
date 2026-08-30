@@ -30,6 +30,7 @@ import { evaluateClustersForCompany } from "../lib/signal-clusters";
 import { evaluateOpportunity } from "../lib/opportunity-engine";
 import { generateWhyForOpportunity } from "../lib/opportunity-why";
 import { ensureSignalPackFixtures, SIGNAL_PACK_FIXTURES } from "../lib/signal-pack-fixtures";
+import { configureProjectSignalPack } from "../lib/project-signal-pack-config";
 import { getAuthenticatedUserId, requireAuth } from "../middlewares/auth";
 
 const router: IRouter = Router();
@@ -160,52 +161,25 @@ router.put("/projects/:projectId/signal-packs/:signalPackId", requireAuth, async
   }
   const access = await authorize(getAuthenticatedUserId(res), params.data.projectId);
   if (!access.project) return void res.status(access.status).json({ error: access.status === 403 ? "Project access denied" : "Project not found" });
-  const [pack] = await db.select().from(signalPacksTable).where(and(
-    eq(signalPacksTable.id, params.data.signalPackId),
-    eq(signalPacksTable.status, "APPROVED"),
-  )).limit(1);
-  if (!pack) return void res.status(404).json({ error: "Approved signal pack not found" });
-  const [businessTwinVersion] = await db.select({
-    id: businessTwinVersionsTable.id,
-    version: businessTwinVersionsTable.version,
-    status: businessTwinVersionsTable.status,
-  }).from(businessTwinVersionsTable)
-    .where(eq(businessTwinVersionsTable.projectId, params.data.projectId))
-    .orderBy(desc(businessTwinVersionsTable.version)).limit(1);
-  const [icpVersion] = await db.select({
-    id: icpVersionsTable.id,
-    version: icpVersionsTable.version,
-    mode: icpVersionsTable.icpMode,
-    sourceBusinessTwinVersionId: icpVersionsTable.sourceBusinessTwinVersionId,
-  }).from(icpVersionsTable)
-    .where(eq(icpVersionsTable.projectId, params.data.projectId))
-    .orderBy(desc(icpVersionsTable.version)).limit(1);
-  const businessContextSnapshot = {
-    ...body.data.businessContextSnapshot,
-    businessTwinVersion: businessTwinVersion ?? null,
-    icpVersion: icpVersion ?? null,
-  };
-  const [selection] = await db.insert(projectSignalPacksTable).values({
-    organizationId: access.project.organizationId,
-    projectId: params.data.projectId,
-    signalPackId: pack.id,
-    active: body.data.active,
-    offeringKey: body.data.offeringKey ?? null,
-    offeringSnapshot: body.data.offeringSnapshot,
-    businessContextSnapshot,
-    configuration: body.data.configuration,
-  }).onConflictDoUpdate({
-    target: [projectSignalPacksTable.projectId, projectSignalPacksTable.signalPackId],
-    set: {
+  let configured;
+  try {
+    configured = await configureProjectSignalPack({
+      organizationId: access.project.organizationId,
+      projectId: params.data.projectId,
+      signalPackId: params.data.signalPackId,
       active: body.data.active,
       offeringKey: body.data.offeringKey ?? null,
       offeringSnapshot: body.data.offeringSnapshot,
-      businessContextSnapshot,
+      businessContextSnapshot: body.data.businessContextSnapshot,
       configuration: body.data.configuration,
-      updatedAt: new Date(),
-    },
-  }).returning();
-  res.json(ConfigureProjectSignalPackResponse.parse(projectPackPayload({ selection, pack })));
+    });
+  } catch (error) {
+    if (error instanceof Error && error.message === "Approved signal pack not found") {
+      return void res.status(404).json({ error: error.message });
+    }
+    throw error;
+  }
+  res.json(ConfigureProjectSignalPackResponse.parse(projectPackPayload(configured)));
 }));
 
 router.post("/projects/:projectId/companies/:projectCompanyId/signals/evaluate", requireAuth, asyncRoute(async (req, res) => {

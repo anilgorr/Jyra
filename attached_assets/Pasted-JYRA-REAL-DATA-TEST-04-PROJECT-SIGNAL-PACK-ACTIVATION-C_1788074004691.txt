@@ -1,0 +1,242 @@
+JYRA — REAL DATA TEST 04
+PROJECT SIGNAL PACK ACTIVATION + CONTROLLED RE-EVALUATION
+
+Real Data Tests 01–03 passed.
+
+Current finding:
+
+Company: 7C Studio
+Seller: Aadit Technologies
+Project: GTM-Q1
+Offering: Managed SOC
+
+Existing approved company facts: 2
+
+However:
+
+Active project signal packs: 0
+
+An approved global signal pack named:
+
+managed-soc
+
+already exists, but it is not selected/activated for the Aadit
+Technologies GTM-Q1 project.
+
+==================================================
+OBJECTIVE
+==================================================
+
+Prove the intended configuration chain:
+
+Business Twin
+→ Offering
+→ Project
+→ Selected Opportunity Intelligence / Signal Pack
+→ Signal Definitions
+→ Approved Facts
+→ Signal Evaluation
+
+Do NOT create a new Managed SOC pack if the correct existing approved
+pack already exists.
+
+Do NOT hardcode managed-soc into the signal engine.
+
+==================================================
+STEP 1 — INSPECT CONFIGURATION
+==================================================
+
+Inspect:
+
+Aadit Technologies
+GTM-Q1
+Managed SOC
+
+and the existing approved global:
+
+managed-soc
+
+Report:
+
+- pack ID
+- pack version
+- approval/status
+- number of signal definitions
+- signal categories/types
+- whether it is compatible with the project's offering
+- why it is currently not selected
+
+Also determine whether the normal product workflow should have selected
+this pack earlier.
+
+If this represents a missing product workflow/configuration bug, fix the
+workflow rather than only changing this one database record.
+
+==================================================
+STEP 2 — ACTIVATE THROUGH NORMAL GOVERNED PATH
+==================================================
+
+Associate/select the existing approved managed-soc pack with GTM-Q1
+using the application's intended project configuration mechanism.
+
+Do not bypass governance.
+
+The architecture must continue supporting:
+
+different seller
+→ different offering
+→ different project
+→ different signal pack
+
+and multiple packs later if the data model supports that intentionally.
+
+==================================================
+STEP 3 — VERIFY ACTIVE DEFINITIONS
+==================================================
+
+After activation confirm:
+
+Active project signal packs > 0
+Active signal definitions > 0
+
+List the active definitions/categories.
+
+Do not modify their rules merely to make 7C Studio trigger something.
+
+==================================================
+STEP 4 — RE-EVALUATE EXISTING FACTS ONLY
+==================================================
+
+Use ONLY the two already approved 7C Studio facts:
+
+1. TECHNOLOGY_MENTION
+   React
+   Flutter
+   Swift
+   Kotlin
+
+2. TECHNOLOGY_MENTION
+   Python
+   AWS
+   GCP
+
+Do NOT crawl again.
+
+Do NOT call Apify.
+
+Do NOT add Tavily.
+
+Do NOT perform new research.
+
+Run these existing facts through the now-active project signal pack.
+
+==================================================
+IMPORTANT EXPECTATION
+==================================================
+
+Signals created may STILL legitimately equal 0.
+
+AWS/GCP presence must not automatically mean:
+
+Managed SOC need
+security pain
+buying intent
+urgency
+budget
+vendor search
+
+We are testing whether the correct signal rules are actually considered,
+not trying to force a positive opportunity.
+
+==================================================
+PASS CRITERIA
+==================================================
+
+PASS if:
+
+1. managed-soc is activated for GTM-Q1 through the normal configuration
+   mechanism.
+
+2. Signal engine sees the project's active pack.
+
+3. Signal definitions are actually considered.
+
+4. Existing approved facts are evaluated.
+
+5. Unsupported signals remain untriggered.
+
+6. Any triggered signal has full:
+
+SIGNAL
+→ FACT
+→ RAW EVIDENCE
+→ SOURCE
+
+provenance.
+
+7. Unknown remains unknown where evidence is insufficient.
+
+==================================================
+REPORT
+==================================================
+
+Return:
+
+PROJECT:
+
+OFFERING:
+
+SIGNAL PACK:
+
+PACK VERSION:
+
+PACK STATUS:
+
+WHY PACK WAS PREVIOUSLY INACTIVE:
+
+FIX APPLIED:
+
+ACTIVE PACKS BEFORE:
+
+ACTIVE PACKS AFTER:
+
+ACTIVE SIGNAL DEFINITIONS:
+
+FACTS EVALUATED:
+
+RULES CONSIDERED:
+
+SIGNALS CREATED:
+
+SIGNALS NOT TRIGGERED:
+
+FIT IMPACT:
+
+NEED IMPACT:
+
+TIMING IMPACT:
+
+RELATIONSHIP IMPACT:
+
+PROVENANCE:
+PASS/FAIL
+
+ANY UNSUPPORTED BUYING INTENT:
+YES/NO
+
+==================================================
+DATABASE SAFETY
+==================================================
+
+DEVELOPMENT ONLY.
+
+Production untouched.
+
+Do not research another company.
+Do not add another provider.
+Do not change signal rules simply to make the test pass.
+
+STOP after proving:
+
+PROJECT SIGNAL PACK
+→ FACT EVALUATION
