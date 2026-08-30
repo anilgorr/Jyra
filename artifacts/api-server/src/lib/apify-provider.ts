@@ -218,26 +218,24 @@ function normalizeRows<C extends ProviderCapability>(
   }
 
   if (capability === "WEBSITE_CRAWL") {
-    const row = records.find(
-      (item) =>
-        firstString(item, ["url", "link"]) ||
-        firstString(item, ["text", "content", "body"]),
-    );
-    if (!row) return { data: null, resultCount: 0 };
-    const url =
-      firstString(row, ["url", "link"]) ??
-      (request as CrawlWebsiteRequest).url;
-    const text = firstString(row, ["text", "content", "body"]);
-    if (!text) return { data: null, resultCount: 0 };
-    return {
-      data: {
-        page: {
-          url,
+    const pages = records
+      .map((row) => {
+        const text = firstString(row, ["text", "markdown", "content", "body"]);
+        if (!text) return null;
+        return {
+          url: firstString(row, ["url", "link"]) ?? (request as CrawlWebsiteRequest).url,
           title: firstString(row, ["title", "name"]),
           text,
-        },
+        };
+      })
+      .filter((page): page is NonNullable<typeof page> => Boolean(page));
+    if (!pages.length) return { data: null, resultCount: 0 };
+    return {
+      data: {
+        page: pages[0],
+        pages,
       } as CapabilityResult<C>,
-      resultCount: 1,
+      resultCount: pages.length,
     };
   }
 
@@ -404,6 +402,17 @@ export function createApifyAdapter<C extends ProviderCapability>(
         payload && typeof payload === "object" && "error" in payload
           ? String((payload as { error?: { message?: unknown } }).error?.message ?? response.statusText)
           : response.statusText || "Apify request failed";
+      if (
+        response.status === 401 ||
+        response.status === 403 ||
+        /credential|connection.*missing|not connected|api key/i.test(message)
+      ) {
+        throw new ApifyProviderError(
+          "CREDENTIALS_MISSING",
+          `${options.capability} provider configured but credentials are missing`,
+          false,
+        );
+      }
       throw errorFromStatus(response.status, message);
     }
     return { payload, headers: response.headers };
@@ -417,14 +426,20 @@ export function createApifyAdapter<C extends ProviderCapability>(
     while (attempts <= maxRetries) {
       attempts += 1;
       try {
-        const actorInput = {
-          ...(options.actorInput ?? {}),
-          ...Object.fromEntries(
+        const genericRequest = Object.fromEntries(
             Object.entries(request as Record<string, unknown>).filter(
               ([key]) => key !== "requestId" && key !== "metadata",
             ),
-          ),
-        };
+          );
+        const actorInput = options.capability === "WEBSITE_CRAWL"
+          ? {
+              startUrls: [{ url: (request as CrawlWebsiteRequest).url }],
+              ...(options.actorInput ?? {}),
+            }
+          : {
+              ...(options.actorInput ?? {}),
+              ...genericRequest,
+            };
         const start = await requestJson(
           `/v2/actors/${encodeURIComponent(options.actorId)}/runs?waitForFinish=0`,
           { method: "POST", body: actorInput },

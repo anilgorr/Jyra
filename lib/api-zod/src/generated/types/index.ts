@@ -215,6 +215,8 @@ export * from './proposeOpportunityPackRequest';
 export * from './proposeOpportunityPackRequestOffering';
 export * from './providerDiagnostic';
 export * from './providerDiagnosticCapability';
+export * from './providerDiagnosticCredentialStatus';
+export * from './providerDiagnosticHealth';
 export * from './realDataImportCommitInput';
 export * from './realDataImportInput';
 export * from './realDataImportMapping';

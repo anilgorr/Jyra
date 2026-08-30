@@ -22,6 +22,10 @@ import {
   researchQuestionsTable,
 } from "@workspace/db";
 import { executeResearchNow } from "../lib/research";
+import { evaluateSignalsForCompany } from "../lib/signal-packs";
+import { evaluateClustersForCompany } from "../lib/signal-clusters";
+import { evaluateOpportunity } from "../lib/opportunity-engine";
+import { generateWhyForOpportunity } from "../lib/opportunity-why";
 import {
   getResearchEconomics,
   upsertResearchBudget,
@@ -168,6 +172,33 @@ router.post("/projects/:projectId/companies/:projectCompanyId/research", require
       resultStatus: "STOPPED",
     }));
     return;
+  }
+  if (result.resultStatus === "SUCCEEDED" && result.evidenceCount > 0) {
+    const [row] = await db.select({
+      companyId: projectCompaniesTable.companyId,
+    }).from(projectCompaniesTable).where(and(
+      eq(projectCompaniesTable.id, params.data.projectCompanyId),
+      eq(projectCompaniesTable.projectId, params.data.projectId),
+    )).limit(1);
+    if (row) {
+      await evaluateSignalsForCompany({
+        organizationId: access.project.organizationId,
+        projectId: params.data.projectId,
+        companyId: row.companyId,
+      });
+      await evaluateClustersForCompany({
+        organizationId: access.project.organizationId,
+        projectId: params.data.projectId,
+        companyId: row.companyId,
+      });
+      const opportunity = await evaluateOpportunity({
+        organizationId: access.project.organizationId,
+        projectId: params.data.projectId,
+        projectCompanyId: params.data.projectCompanyId,
+        userId: getAuthenticatedUserId(res),
+      });
+      await generateWhyForOpportunity(opportunity.opportunity.id, params.data.projectId);
+    }
   }
   res.json(ExecuteCompanyResearchResponse.parse({
     stopped: false,

@@ -6,6 +6,8 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { ProviderDiagnosticCapability } from './providerDiagnosticCapability';
+import type { ProviderDiagnosticCredentialStatus } from './providerDiagnosticCredentialStatus';
+import type { ProviderDiagnosticHealth } from './providerDiagnosticHealth';
 
 export interface ProviderDiagnostic {
   providerId: string;
@@ -14,6 +16,9 @@ export interface ProviderDiagnostic {
   /** @nullable */
   capability: ProviderDiagnosticCapability;
   enabled: boolean;
+  priority: number;
+  credentialStatus: ProviderDiagnosticCredentialStatus;
+  health: ProviderDiagnosticHealth;
   /** @nullable */
   lastSuccessAt: Date | null;
   /** @nullable */

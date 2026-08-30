@@ -117,11 +117,11 @@ export function createMockWebsiteCrawlAdapter(
         title: "Deterministic mock page",
         text: "Deterministic mock crawl output; not external evidence.",
       };
-      const data: WebsiteCrawlResult = { page };
+      const data: WebsiteCrawlResult = { page, pages: [page] };
       return response(
         options.providerId,
         request.requestId,
-        mode === "empty" ? { page: { ...page, text: "" } } : mode === "success" ? data : null,
+        mode === "empty" ? { page: { ...page, text: "" }, pages: [] } : mode === "success" ? data : null,
         mode,
         latencyMs,
         page.url,

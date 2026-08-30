@@ -137,6 +137,7 @@ export type WebSearchResult = {
 };
 export type WebsiteCrawlResult = {
   page: { url: string; title: string | null; text: string };
+  pages: Array<{ url: string; title: string | null; text: string }>;
 };
 export type JobSearchResult = {
   jobs: Array<{

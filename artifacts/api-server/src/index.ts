@@ -1,5 +1,5 @@
 import app from "./app";
-import { ensureApifyProviderPlaceholder } from "./lib/apify-provider-config";
+import { ensureDevelopmentApifyProvider } from "./lib/apify-provider-config";
 import { logger } from "./lib/logger";
 
 const rawPort = process.env["PORT"];
@@ -18,7 +18,7 @@ if (Number.isNaN(port) || port <= 0) {
 
 async function main() {
   if (process.env.NODE_ENV !== "production") {
-    await ensureApifyProviderPlaceholder();
+    await ensureDevelopmentApifyProvider();
   }
 
   app.listen(port, (err) => {

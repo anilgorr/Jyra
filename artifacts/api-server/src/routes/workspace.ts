@@ -140,6 +140,8 @@ router.get(
         providerType: dataProvidersTable.providerType,
         capability: providerCapabilitiesTable.capability,
         enabled: dataProvidersTable.enabled,
+        priority: dataProvidersTable.priority,
+        configuration: dataProvidersTable.configuration,
         lastSuccessAt: dataProvidersTable.lastSuccessAt,
         lastFailureAt: dataProvidersTable.lastFailureAt,
         successRate: dataProvidersTable.successRate,
@@ -182,6 +184,11 @@ router.get(
           providerType: row.providerType,
           capability: row.capability,
           enabled: row.enabled,
+          priority: row.priority,
+          credentialStatus: row.configuration.credentialStatus === "AVAILABLE" ? "AVAILABLE" : "MISSING",
+          health: row.lastFailureAt && (!row.lastSuccessAt || row.lastFailureAt > row.lastSuccessAt)
+            ? "FAILING"
+            : row.lastSuccessAt ? "HEALTHY" : "UNTESTED",
           lastSuccessAt: row.lastSuccessAt?.toISOString() ?? null,
           lastFailureAt: row.lastFailureAt?.toISOString() ?? null,
           successRate: row.successRate,

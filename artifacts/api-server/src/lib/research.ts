@@ -323,7 +323,12 @@ function resultSources(
 ): Array<{ url: string; title?: string; snippet?: string; summary?: string; rawContent: string; job?: Record<string, unknown> }> {
   if (!data) return [];
   if (capability === "WEBSITE_CRAWL" && "page" in data && data.page.text) {
-    return [{ url: data.page.url, title: data.page.title ?? undefined, rawContent: data.page.text }];
+    const pages = "pages" in data && Array.isArray(data.pages) ? data.pages : [data.page];
+    return pages.map((page) => ({
+      url: page.url,
+      title: page.title ?? undefined,
+      rawContent: page.text,
+    }));
   }
   if (capability === "WEB_SEARCH" && "results" in data) {
     return data.results.map((item) => ({ ...item, rawContent: rawSourceForResult(item) }));

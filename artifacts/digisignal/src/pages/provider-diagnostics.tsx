@@ -98,6 +98,9 @@ export default function ProviderDiagnostics() {
                   <TableHead>Provider</TableHead>
                   <TableHead>Capability</TableHead>
                   <TableHead>Enabled</TableHead>
+                  <TableHead>Credentials</TableHead>
+                  <TableHead>Health</TableHead>
+                  <TableHead className="text-right">Priority</TableHead>
                   <TableHead>Last success</TableHead>
                   <TableHead>Last failure</TableHead>
                   <TableHead className="text-right">Success rate</TableHead>
@@ -113,6 +116,9 @@ export default function ProviderDiagnostics() {
                       <div className="font-medium">{item.provider}</div>
                       <div className="text-xs text-muted-foreground">{item.providerType}</div>
                     </TableCell>
+                    <TableCell><Badge variant="outline">{item.credentialStatus}</Badge></TableCell>
+                    <TableCell><Badge variant={item.health === "HEALTHY" ? "secondary" : "outline"}>{item.health}</Badge></TableCell>
+                    <TableCell className="text-right">{item.priority}</TableCell>
                     <TableCell className="font-mono text-xs">
                       {item.capability ?? "UNCONFIGURED"}
                     </TableCell>

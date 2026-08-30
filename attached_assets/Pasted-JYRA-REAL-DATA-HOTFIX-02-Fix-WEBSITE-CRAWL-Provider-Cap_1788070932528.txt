@@ -1,0 +1,397 @@
+JYRA — REAL DATA HOTFIX 02
+Fix WEBSITE_CRAWL Provider Capability
+
+CURRENT ERROR
+
+Research Engine fails with:
+
+"No enabled provider supports WEBSITE_CRAWL"
+
+This is blocking real company research and therefore opportunity assessment.
+
+Do not redesign JYRA.
+Do not modify production.
+Use DEVELOPMENT only.
+
+==================================================
+1. INVESTIGATE ROOT CAUSE
+==================================================
+
+Inspect:
+
+provider registry
+provider configuration
+provider capability mappings
+enabled flags
+environment variables
+provider router
+research planner
+Apify/provider adapters
+database provider records
+
+Determine whether:
+
+A. WEBSITE_CRAWL adapter exists but is disabled
+
+B. provider exists but capability is not registered
+
+C. capability naming mismatch exists
+
+D. provider configuration was never seeded
+
+E. environment/API credentials are missing
+
+F. WEBSITE_CRAWL implementation does not exist
+
+Report exact root cause.
+
+==================================================
+2. PROVIDER CAPABILITY MODEL
+==================================================
+
+JYRA should support provider capabilities such as:
+
+COMPANY_DISCOVERY
+COMPANY_LOOKUP
+WEB_SEARCH
+WEBSITE_CRAWL
+JOB_SEARCH
+NEWS_SEARCH
+TECH_STACK
+LEADERSHIP_SEARCH
+PUBLIC_SOCIAL_SEARCH
+PERSON_LOOKUP
+EMAIL_LOOKUP
+PHONE_LOOKUP
+
+Providers should declare which capabilities they support.
+
+Research Planner asks for a CAPABILITY.
+
+Provider Router selects an enabled provider supporting that capability.
+
+Do not hardcode provider names into research logic.
+
+==================================================
+3. IMPLEMENT / ENABLE WEBSITE_CRAWL
+==================================================
+
+Ensure at least ONE working DEVELOPMENT provider supports:
+
+WEBSITE_CRAWL
+
+Prefer the existing low-cost provider architecture.
+
+If an Apify integration already exists, use the existing generic Apify
+adapter architecture rather than introducing another vendor unnecessarily.
+
+Do not hardcode one specific Apify actor throughout the application.
+
+Provider configuration should allow:
+
+provider
+capability
+enabled
+priority
+estimated_cost
+timeout
+rate limits where relevant
+
+==================================================
+4. PROVIDER CONFIGURATION
+==================================================
+
+Ensure DEVELOPMENT has a valid enabled provider record for WEBSITE_CRAWL.
+
+Example conceptual configuration:
+
+Provider: Apify
+Capability: WEBSITE_CRAWL
+Enabled: true
+Priority: appropriate
+Cost estimate: configured
+
+Do not create fake success responses.
+
+If credentials are required and missing, fail clearly with:
+
+"WEBSITE_CRAWL provider configured but credentials are missing"
+
+rather than:
+
+"No enabled provider supports WEBSITE_CRAWL"
+
+==================================================
+5. CREDENTIAL SAFETY
+==================================================
+
+API credentials must come from environment/secrets.
+
+Never:
+
+hardcode API keys
+log API keys
+store API keys in frontend
+expose credentials in API responses
+
+==================================================
+6. WEBSITE CRAWL INPUT
+==================================================
+
+For a company with a known domain:
+
+canonical domain
+→ official website URL
+→ WEBSITE_CRAWL
+
+Fetch only a reasonable number of relevant pages initially.
+
+Prioritize pages such as:
+
+homepage
+about
+services/products
+security/trust if relevant to research question
+careers
+news/blog
+press
+contact/company information
+
+Do not crawl entire websites blindly.
+
+Research Planner should determine what information is needed.
+
+==================================================
+7. COST CONTROL
+==================================================
+
+Phase 23 economics must remain active.
+
+Do not automatically crawl every imported company.
+
+WEBSITE_CRAWL should execute only when:
+
+research planner determines it is useful
+AND
+company passes required qualification thresholds
+AND
+research budget permits it.
+
+Cache website research results.
+
+Avoid repeatedly crawling unchanged pages.
+
+==================================================
+8. FRESH RESEARCH
+==================================================
+
+When user explicitly requests Refresh / Research Again and planner approves:
+
+perform a genuine provider acquisition.
+
+Do not merely rerun extraction over existing cached website pages and call
+that fresh research.
+
+Store:
+
+provider
+capability
+request time
+research question
+source URL
+crawl result
+cost estimate / actual cost where available
+cache state
+freshness
+
+==================================================
+9. RAW EVIDENCE
+==================================================
+
+Crawler output is RAW SOURCE MATERIAL.
+
+Do not immediately convert arbitrary website text into buying intent.
+
+Pipeline:
+
+Website Crawl
+→ Raw Evidence
+→ Fact Extraction
+→ Fact Validation
+→ Signals
+→ Clusters
+→ Opportunity Assessment
+
+Preserve source URL for every relevant extracted item.
+
+==================================================
+10. FALLBACK BEHAVIOR
+==================================================
+
+Do not make the entire research engine dependent on WEBSITE_CRAWL.
+
+If website crawl fails:
+
+Research Planner / Provider Router may use other available capabilities
+where appropriate, such as:
+
+WEB_SEARCH
+NEWS_SEARCH
+JOB_SEARCH
+
+provided those capabilities answer the research question.
+
+Do not fabricate evidence if no provider succeeds.
+
+Return:
+
+RESEARCH_INCOMPLETE
+
+with reason.
+
+==================================================
+11. DOMAIN MISSING
+==================================================
+
+If a company has no verified domain:
+
+do not call WEBSITE_CRAWL against a guessed domain.
+
+First run domain/company resolution.
+
+Only crawl after identity confidence is sufficient.
+
+==================================================
+12. TEST REAL AADIT COMPANIES
+==================================================
+
+After fixing, test DEVELOPMENT with one existing imported company.
+
+Use:
+
+Accelray Technologies
+
+or another imported Aadit test company with a valid domain.
+
+Verify:
+
+Research Planner creates research question(s)
+
+→ Provider Router selects WEBSITE_CRAWL provider
+
+→ actual provider call succeeds
+
+→ pages/evidence stored
+
+→ facts extracted
+
+→ relevant signals evaluated
+
+→ opportunity assessment recalculates
+
+→ confidence reflects evidence coverage
+
+→ WHY can trace back to source.
+
+Do NOT test all imported companies.
+
+==================================================
+13. PROVIDER DIAGNOSTICS
+==================================================
+
+Add an Admin/diagnostic capability view if not already present.
+
+Show:
+
+Capability
+Configured providers
+Enabled/disabled
+Credential status (AVAILABLE / MISSING only)
+Health
+Priority
+Last success
+Last failure
+
+Never display secrets.
+
+Example:
+
+WEBSITE_CRAWL
+Apify
+Enabled
+Credentials Available
+Healthy
+
+This will make provider configuration failures visible before running
+customer research.
+
+==================================================
+14. TESTS
+==================================================
+
+Add tests for:
+
+1. Router finds enabled WEBSITE_CRAWL provider.
+2. Disabled provider is not selected.
+3. Missing credentials produce correct error.
+4. Provider failure is recorded.
+5. Alternative provider can be selected if available.
+6. Successful crawl creates raw evidence.
+7. Evidence retains source URLs.
+8. Crawl does not automatically create unsupported buying signals.
+9. Research economics can prevent crawl.
+10. Missing domain prevents unsafe crawl.
+11. Fresh research really calls provider when approved.
+12. Production remains untouched.
+
+==================================================
+15. REPORT
+==================================================
+
+Create:
+
+REAL_DATA_HOTFIX_02.md
+
+Include:
+
+ROOT CAUSE
+
+PROVIDER USED
+
+CAPABILITY REGISTRATION
+
+CONFIGURATION CHANGES
+
+ENVIRONMENT REQUIREMENTS
+
+TEST COMPANY
+
+PROVIDER CALL RESULT
+
+EVIDENCE CREATED
+
+ASSESSMENT RESULT
+
+COST CONTROL RESULT
+
+PASS / PARTIAL / FAIL
+
+==================================================
+DATABASE SAFETY
+==================================================
+
+DEVELOPMENT ONLY.
+
+Do not migrate/reset/seed/modify production.
+
+Any schema migration must be created and tested only in development.
+
+==================================================
+STOP CONDITION
+==================================================
+
+Do not continue assessing the Aadit dataset.
+
+Stop after ONE successful end-to-end company research test.
+
+Do not proceed to Phase 26.

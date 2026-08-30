@@ -2324,6 +2324,9 @@ components:
           type: ["string", "null"]
           enum: [COMPANY_DISCOVERY, COMPANY_LOOKUP, WEB_SEARCH, WEBSITE_CRAWL, JOB_SEARCH, NEWS_SEARCH, TECH_STACK, LEADERSHIP_SEARCH, PUBLIC_SOCIAL_SEARCH, PERSON_LOOKUP, EMAIL_LOOKUP, PHONE_LOOKUP, null]
         enabled: { type: boolean }
+        priority: { type: number }
+        credentialStatus: { type: string, enum: [AVAILABLE, MISSING] }
+        health: { type: string, enum: [HEALTHY, FAILING, UNTESTED] }
         lastSuccessAt:
           type: ["string", "null"]
           format: date-time
@@ -2341,6 +2344,9 @@ components:
         - providerType
         - capability
         - enabled
+        - priority
+        - credentialStatus
+        - health
         - lastSuccessAt
         - lastFailureAt
         - successRate

@@ -103,6 +103,18 @@ assert.equal(paged.data.jobs.length, 3);
 assert.equal(paged.data.jobs[0].title, "Security Engineer");
 assert.equal(paged.usage.resultCount, 3);
 assert.equal(paged.usage.actualCost, 0.0125);
+
+const missingCredentialsAdapter = createApifyAdapter({
+  providerId: "apify-missing-credentials",
+  capability: "WEBSITE_CRAWL",
+  actorId: "owner~crawl",
+  client: { proxy: async () => json({ error: { message: "API key missing" } }, 401) },
+  maxRetries: 0,
+});
+const missingCredentials = await missingCredentialsAdapter.execute({ url: "https://example.test" });
+assert.equal(missingCredentials.status, "failed");
+assert.equal(missingCredentials.error.code, "CREDENTIALS_MISSING");
+assert.equal(missingCredentials.error.message, "WEBSITE_CRAWL provider configured but credentials are missing");
 assert.equal(paged.metadata.rawResultCount, 3);
 assert.ok(calls[0].path.includes("owner~jobs-actor"));
 assert.ok(calls.some((call) => call.path.includes("offset=2")));

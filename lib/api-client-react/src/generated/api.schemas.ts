@@ -695,6 +695,23 @@ export const ProviderDiagnosticCapability = {
   PHONE_LOOKUP: 'PHONE_LOOKUP',
 } as const;
 
+export type ProviderDiagnosticCredentialStatus = typeof ProviderDiagnosticCredentialStatus[keyof typeof ProviderDiagnosticCredentialStatus];
+
+
+export const ProviderDiagnosticCredentialStatus = {
+  AVAILABLE: 'AVAILABLE',
+  MISSING: 'MISSING',
+} as const;
+
+export type ProviderDiagnosticHealth = typeof ProviderDiagnosticHealth[keyof typeof ProviderDiagnosticHealth];
+
+
+export const ProviderDiagnosticHealth = {
+  HEALTHY: 'HEALTHY',
+  FAILING: 'FAILING',
+  UNTESTED: 'UNTESTED',
+} as const;
+
 export interface ProviderDiagnostic {
   providerId: string;
   provider: string;
@@ -702,6 +719,9 @@ export interface ProviderDiagnostic {
   /** @nullable */
   capability: ProviderDiagnosticCapability;
   enabled: boolean;
+  priority: number;
+  credentialStatus: ProviderDiagnosticCredentialStatus;
+  health: ProviderDiagnosticHealth;
   /** @nullable */
   lastSuccessAt: string | null;
   /** @nullable */
