@@ -14,6 +14,7 @@ import signalClustersRouter from "./signal-clusters";
 import opportunityEngineRouter from "./opportunity-engine";
 import peopleRouter from "./people";
 import recommendationLedgerRouter from "./recommendation-ledger";
+import learningRouter from "./learning";
 
 const router: IRouter = Router();
 
@@ -32,5 +33,6 @@ router.use(signalClustersRouter);
 router.use(opportunityEngineRouter);
 router.use(peopleRouter);
 router.use(recommendationLedgerRouter);
+router.use(learningRouter);
 
 export default router;

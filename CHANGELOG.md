@@ -1,3 +1,11 @@
+## Continuous Learning Foundation
+
+- Added configurable, immutable outcome-strength policies and evidence thresholds while keeping viewed, skipped, and missing actions neutral.
+- Added organization, market-pack, and project learning analytics for signals, combinations, clusters, states, actions, providers, and research sources with sample sizes and correlation-only language.
+- Added evidence-gated improvement proposals, explicit approval/rejection, and immutable learning versions without automatically changing customer models.
+- Added hypothesis-ICP early-pattern insights, tenant-scope and append-only database invariants, typed APIs, a Learning workspace, and deterministic tests.
+- Did not add autonomous retraining, causal claims, silent model changes, or Phase 23 behavior.
+
 ## Next Best Action
 
 - Added the generic deterministic Phase 18 recommendation engine with all seven supported actions and an explanation for every result.

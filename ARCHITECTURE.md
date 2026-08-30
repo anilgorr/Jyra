@@ -67,6 +67,16 @@ worst-case UTF-8 and JSON-escaping expansion of that contract.
 
 JYRA is a pnpm monorepo with one deployable React + Vite web application, one shared Express API service, and shared API/database libraries.
 
+## Continuous learning boundary
+
+Phase 22 reads only immutable recommendation snapshots and append-only outcomes. It computes organization-wide, market-pack, and project-scoped associations for signals, signal combinations, clusters, opportunity states, recommended actions, providers, and research sources. Rates always include observed sample sizes and an explicit warning that correlation does not establish causality.
+
+Outcome strength and evidence thresholds are immutable policy versions. `VIEWED` and `SKIPPED` remain neutral and do not lower a recommendation's score. Historical recommendations retain the Business Twin, ICP, Intelligence Pack, Opportunity Model, evidence, signal, cluster, and action versions used at assessment time.
+
+Improvement proposals are inert review records. JYRA may suggest a signal, cluster, ICP-assumption, or research-priority change only after configurable evidence thresholds are met. Approval creates a new immutable learning version; it does not edit or activate an Opportunity Model, ICP, Intelligence Pack, or customer configuration automatically.
+
+Global learning is aggregated within the authenticated organization, not across tenant boundaries. Every market or project request begins with project membership authorization, and PostgreSQL validates scoped inserts.
+
 ```text
 artifacts/digisignal       React + Vite product surface
 artifacts/api-server       Express API mounted at /api

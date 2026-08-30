@@ -43,6 +43,7 @@ import type {
   CompanyInput,
   ConfigureProjectSignalPackRequest,
   ConfigureSignalClusterDefinitionRequest,
+  CreateLearningPolicyRequest,
   CreateOpportunityModelRequest,
   CreateSignalClusterDefinitionRequest,
   CurrentUser,
@@ -51,11 +52,18 @@ import type {
   FactExtractionInput,
   FactExtractionResponse,
   ForbiddenResponse,
+  GenerateLearningProposalsParams,
+  GetLearningAnalyticsParams,
   HealthStatus,
   IcpCriterionInput,
   IcpCriterionUpdate,
   IcpVersion,
   InterpretationUnavailableResponse,
+  LearningAnalytics,
+  LearningPolicy,
+  LearningProposal,
+  LearningProposalReview,
+  ListLearningProposalsParams,
   MarketTodayResponse,
   MaturityStageRequiredResponse,
   NotFoundResponse,
@@ -86,6 +94,7 @@ import type {
   ProviderDiagnostic,
   ResearchExecutionResponse,
   ResearchWorkspaceCompany,
+  ReviewLearningProposalRequest,
   Signal,
   SignalCluster,
   SignalClusterDefinition,
@@ -5497,5 +5506,409 @@ export const useCreateOpportunityModel = <TError = ErrorType<BadRequestResponse 
         TContext
       > => {
       return useMutation(getCreateOpportunityModelMutationOptions(options));
+    }
+
+export const getGetLearningAnalyticsUrl = (projectId: string,
+    params?: GetLearningAnalyticsParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/projects/${projectId}/learning?${stringifiedParams}` : `/api/projects/${projectId}/learning`
+}
+
+/**
+ * @summary Measure outcome associations without implying causality
+ */
+export const getLearningAnalytics = async (projectId: string,
+    params?: GetLearningAnalyticsParams, options?: Parameters<typeof customFetch>[1]): Promise<LearningAnalytics> => {
+
+  return customFetch<LearningAnalytics>(getGetLearningAnalyticsUrl(projectId,params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetLearningAnalyticsQueryKey = (projectId: string,
+    params?: GetLearningAnalyticsParams,) => {
+    return [
+    `/api/projects/${projectId}/learning`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getGetLearningAnalyticsQueryOptions = <TData = Awaited<ReturnType<typeof getLearningAnalytics>>, TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse>>(projectId: string,
+    params?: GetLearningAnalyticsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getLearningAnalytics>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetLearningAnalyticsQueryKey(projectId,params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getLearningAnalytics>>> = ({ signal }) => getLearningAnalytics(projectId,params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: projectId !== null && projectId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getLearningAnalytics>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetLearningAnalyticsQueryResult = NonNullable<Awaited<ReturnType<typeof getLearningAnalytics>>>
+export type GetLearningAnalyticsQueryError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse>
+
+
+/**
+ * @summary Measure outcome associations without implying causality
+ */
+
+export function useGetLearningAnalytics<TData = Awaited<ReturnType<typeof getLearningAnalytics>>, TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse>>(
+ projectId: string,
+    params?: GetLearningAnalyticsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getLearningAnalytics>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetLearningAnalyticsQueryOptions(projectId,params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getCreateLearningPolicyVersionUrl = (projectId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/learning/policy`
+}
+
+/**
+ * @summary Create a new immutable outcome-strength policy version
+ */
+export const createLearningPolicyVersion = async (projectId: string,
+    createLearningPolicyRequest: CreateLearningPolicyRequest, options?: Parameters<typeof customFetch>[1]): Promise<LearningPolicy> => {
+
+  return customFetch<LearningPolicy>(getCreateLearningPolicyVersionUrl(projectId),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(createLearningPolicyRequest)
+  }
+);}
+
+
+
+
+
+export const getCreateLearningPolicyVersionMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createLearningPolicyVersion>>, TError,{projectId: string;data: BodyType<CreateLearningPolicyRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createLearningPolicyVersion>>, TError,{projectId: string;data: BodyType<CreateLearningPolicyRequest>}, TContext> => {
+
+const mutationKey = ['createLearningPolicyVersion'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createLearningPolicyVersion>>, {projectId: string;data: BodyType<CreateLearningPolicyRequest>}> = (props) => {
+          const {projectId,data} = props ?? {};
+
+          return  createLearningPolicyVersion(projectId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateLearningPolicyVersionMutationResult = NonNullable<Awaited<ReturnType<typeof createLearningPolicyVersion>>>
+    export type CreateLearningPolicyVersionMutationBody = BodyType<CreateLearningPolicyRequest>
+    export type CreateLearningPolicyVersionMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse>
+
+    /**
+ * @summary Create a new immutable outcome-strength policy version
+ */
+export const useCreateLearningPolicyVersion = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createLearningPolicyVersion>>, TError,{projectId: string;data: BodyType<CreateLearningPolicyRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createLearningPolicyVersion>>,
+        TError,
+        {projectId: string;data: BodyType<CreateLearningPolicyRequest>},
+        TContext
+      > => {
+      return useMutation(getCreateLearningPolicyVersionMutationOptions(options));
+    }
+
+export const getListLearningProposalsUrl = (projectId: string,
+    params?: ListLearningProposalsParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/projects/${projectId}/learning/proposals?${stringifiedParams}` : `/api/projects/${projectId}/learning/proposals`
+}
+
+/**
+ * @summary List reviewable evidence-backed improvement proposals
+ */
+export const listLearningProposals = async (projectId: string,
+    params?: ListLearningProposalsParams, options?: Parameters<typeof customFetch>[1]): Promise<LearningProposal[]> => {
+
+  return customFetch<LearningProposal[]>(getListLearningProposalsUrl(projectId,params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListLearningProposalsQueryKey = (projectId: string,
+    params?: ListLearningProposalsParams,) => {
+    return [
+    `/api/projects/${projectId}/learning/proposals`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getListLearningProposalsQueryOptions = <TData = Awaited<ReturnType<typeof listLearningProposals>>, TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse>>(projectId: string,
+    params?: ListLearningProposalsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listLearningProposals>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListLearningProposalsQueryKey(projectId,params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listLearningProposals>>> = ({ signal }) => listLearningProposals(projectId,params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: projectId !== null && projectId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listLearningProposals>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListLearningProposalsQueryResult = NonNullable<Awaited<ReturnType<typeof listLearningProposals>>>
+export type ListLearningProposalsQueryError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse>
+
+
+/**
+ * @summary List reviewable evidence-backed improvement proposals
+ */
+
+export function useListLearningProposals<TData = Awaited<ReturnType<typeof listLearningProposals>>, TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse>>(
+ projectId: string,
+    params?: ListLearningProposalsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listLearningProposals>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListLearningProposalsQueryOptions(projectId,params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getGenerateLearningProposalsUrl = (projectId: string,
+    params?: GenerateLearningProposalsParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/projects/${projectId}/learning/proposals/generate?${stringifiedParams}` : `/api/projects/${projectId}/learning/proposals/generate`
+}
+
+/**
+ * @summary Generate suggestions from sufficiently supported associations
+ */
+export const generateLearningProposals = async (projectId: string,
+    params?: GenerateLearningProposalsParams, options?: Parameters<typeof customFetch>[1]): Promise<LearningProposal[]> => {
+
+  return customFetch<LearningProposal[]>(getGenerateLearningProposalsUrl(projectId,params),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getGenerateLearningProposalsMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof generateLearningProposals>>, TError,{projectId: string;params?: GenerateLearningProposalsParams}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof generateLearningProposals>>, TError,{projectId: string;params?: GenerateLearningProposalsParams}, TContext> => {
+
+const mutationKey = ['generateLearningProposals'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof generateLearningProposals>>, {projectId: string;params?: GenerateLearningProposalsParams}> = (props) => {
+          const {projectId,params} = props ?? {};
+
+          return  generateLearningProposals(projectId,params,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type GenerateLearningProposalsMutationResult = NonNullable<Awaited<ReturnType<typeof generateLearningProposals>>>
+
+    export type GenerateLearningProposalsMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse>
+
+    /**
+ * @summary Generate suggestions from sufficiently supported associations
+ */
+export const useGenerateLearningProposals = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof generateLearningProposals>>, TError,{projectId: string;params?: GenerateLearningProposalsParams}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof generateLearningProposals>>,
+        TError,
+        {projectId: string;params?: GenerateLearningProposalsParams},
+        TContext
+      > => {
+      return useMutation(getGenerateLearningProposalsMutationOptions(options));
+    }
+
+export const getReviewLearningProposalUrl = (projectId: string,
+    proposalId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/learning/proposals/${proposalId}/review`
+}
+
+/**
+ * @summary Approve or reject a proposal; approval creates a new immutable learning version
+ */
+export const reviewLearningProposal = async (projectId: string,
+    proposalId: string,
+    reviewLearningProposalRequest: ReviewLearningProposalRequest, options?: Parameters<typeof customFetch>[1]): Promise<LearningProposalReview> => {
+
+  return customFetch<LearningProposalReview>(getReviewLearningProposalUrl(projectId,proposalId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(reviewLearningProposalRequest)
+  }
+);}
+
+
+
+
+
+export const getReviewLearningProposalMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof reviewLearningProposal>>, TError,{projectId: string;proposalId: string;data: BodyType<ReviewLearningProposalRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof reviewLearningProposal>>, TError,{projectId: string;proposalId: string;data: BodyType<ReviewLearningProposalRequest>}, TContext> => {
+
+const mutationKey = ['reviewLearningProposal'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof reviewLearningProposal>>, {projectId: string;proposalId: string;data: BodyType<ReviewLearningProposalRequest>}> = (props) => {
+          const {projectId,proposalId,data} = props ?? {};
+
+          return  reviewLearningProposal(projectId,proposalId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ReviewLearningProposalMutationResult = NonNullable<Awaited<ReturnType<typeof reviewLearningProposal>>>
+    export type ReviewLearningProposalMutationBody = BodyType<ReviewLearningProposalRequest>
+    export type ReviewLearningProposalMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+    /**
+ * @summary Approve or reject a proposal; approval creates a new immutable learning version
+ */
+export const useReviewLearningProposal = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof reviewLearningProposal>>, TError,{projectId: string;proposalId: string;data: BodyType<ReviewLearningProposalRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof reviewLearningProposal>>,
+        TError,
+        {projectId: string;proposalId: string;data: BodyType<ReviewLearningProposalRequest>},
+        TContext
+      > => {
+      return useMutation(getReviewLearningProposalMutationOptions(options));
     }
 

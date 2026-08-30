@@ -32,6 +32,8 @@ export const recommendationOutcomeTypeEnum = pgEnum("recommendation_outcome_type
   "PROPOSAL",
   "WON",
   "LOST",
+  "VIEWED",
+  "SKIPPED",
 ]);
 
 export const recommendationOutcomeReasonEnum = pgEnum("recommendation_outcome_reason", [

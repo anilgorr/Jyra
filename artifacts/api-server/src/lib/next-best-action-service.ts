@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { and, desc, eq } from "drizzle-orm";
 import {
   businessTwinVersionsTable,
+  companiesTable,
   companyEvidenceTable,
   db,
   icpVersionsTable,
@@ -34,10 +35,12 @@ export async function getNextBestActionForCompany(
 ) {
   const [row] = await db.select({
     projectCompany: projectCompaniesTable,
+    company: companiesTable,
     project: projectsTable,
     opportunity: opportunitiesTable,
   }).from(projectCompaniesTable)
     .innerJoin(projectsTable, eq(projectCompaniesTable.projectId, projectsTable.id))
+    .innerJoin(companiesTable, eq(projectCompaniesTable.companyId, companiesTable.id))
     .leftJoin(opportunitiesTable, and(
       eq(opportunitiesTable.projectId, projectId),
       eq(opportunitiesTable.projectCompanyId, projectCompaniesTable.id),
@@ -195,6 +198,7 @@ export async function getNextBestActionForCompany(
     projectId,
     projectCompanyId,
     companyId: row.projectCompany.companyId,
+    companyEmployeeRange: row.company.employeeRange,
     opportunityId: row.opportunity?.id ?? null,
     opportunityAssessedAt: row.opportunity?.assessedAt.toISOString() ?? null,
     businessTwinVersionId: businessTwinVersion?.id ?? null,

@@ -8,6 +8,7 @@ import {
   Crosshair, 
   BookOpen, 
   TrendingUp, 
+  BrainCircuit,
   Settings,
   Wrench,
   RadioTower,
@@ -32,6 +33,7 @@ export const navItems = [
   { href: "/research", label: "Research", icon: BookOpen },
   { href: "/signals", label: "Signals", icon: RadioTower },
   { href: "/outcomes", label: "Outcomes", icon: TrendingUp },
+  { href: "/learning", label: "Learning", icon: BrainCircuit },
 ];
 
 export function Sidebar() {

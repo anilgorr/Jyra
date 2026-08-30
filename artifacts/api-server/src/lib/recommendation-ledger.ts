@@ -17,6 +17,8 @@ export const RECOMMENDATION_OUTCOME_TYPES = [
   "PROPOSAL",
   "WON",
   "LOST",
+  "VIEWED",
+  "SKIPPED",
 ] as const;
 
 export const RECOMMENDATION_OUTCOME_REASONS = [

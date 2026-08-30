@@ -22,6 +22,7 @@
     ,"test:market-today": "node ./scripts/test-market-today.mjs"
     ,"test:next-best-action": "node ./scripts/test-next-best-action.mjs"
     ,"test:recommendation-ledger": "node ./scripts/test-recommendation-ledger.mjs"
+    ,"test:learning": "node ./scripts/test-learning.mjs"
   },
   "dependencies": {
     "@clerk/express": "^2.1.63",

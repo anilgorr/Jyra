@@ -26,6 +26,7 @@ import Research from './pages/research';
 import Signals from './pages/signals';
 import Opportunities from './pages/opportunities';
 import Outcomes from './pages/outcomes';
+import Learning from './pages/learning';
 import { WorkspaceProvider } from './context/workspace-context';
 
 const clerkPubKey = publishableKeyFromHost(
@@ -172,6 +173,7 @@ function AuthenticatedRoutes() {
             <Route path="/research" component={Research} />
             <Route path="/signals" component={Signals} />
             <Route path="/outcomes" component={Outcomes} />
+            <Route path="/learning" component={Learning} />
             {import.meta.env.DEV && (
               <Route path="/settings/providers" component={ProviderDiagnostics} />
             )}

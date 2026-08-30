@@ -5,6 +5,153 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+export type LearningScope = typeof LearningScope[keyof typeof LearningScope];
+
+
+export const LearningScope = {
+  GLOBAL: 'GLOBAL',
+  MARKET: 'MARKET',
+  PROJECT: 'PROJECT',
+} as const;
+
+export type LearningPolicyOutcomeWeights = {[key: string]: number};
+
+export interface LearningPolicy {
+  /** @nullable */
+  id: string | null;
+  version: number;
+  outcomeWeights: LearningPolicyOutcomeWeights;
+  minimumObservedSample: number;
+  minimumPositiveOutcomes: number;
+}
+
+export type CreateLearningPolicyRequestOutcomeWeights = {[key: string]: number};
+
+export interface CreateLearningPolicyRequest {
+  scope?: LearningScope;
+  intelligencePackVersionId?: string;
+  outcomeWeights?: CreateLearningPolicyRequestOutcomeWeights;
+  /**
+     * @minimum 1
+     * @maximum 1000
+     */
+  minimumObservedSample?: number;
+  /**
+     * @minimum 1
+     * @maximum 1000
+     */
+  minimumPositiveOutcomes?: number;
+}
+
+export type LearningMetricDimension = typeof LearningMetricDimension[keyof typeof LearningMetricDimension];
+
+
+export const LearningMetricDimension = {
+  SIGNAL: 'SIGNAL',
+  SIGNAL_COMBINATION: 'SIGNAL_COMBINATION',
+  CLUSTER: 'CLUSTER',
+  OPPORTUNITY_STATE: 'OPPORTUNITY_STATE',
+  RECOMMENDED_ACTION: 'RECOMMENDED_ACTION',
+  PROVIDER: 'PROVIDER',
+  RESEARCH_SOURCE: 'RESEARCH_SOURCE',
+} as const;
+
+export interface LearningMetric {
+  /** @nullable */
+  id: string | null;
+  dimension: LearningMetricDimension;
+  segmentKey: string;
+  segmentLabel: string;
+  sampleSize: number;
+  observedOutcomeCount: number;
+  positiveOutcomeCount: number;
+  neutralOutcomeCount: number;
+  /** @nullable */
+  weightedOutcomeScore: number | null;
+  /** @nullable */
+  meetingRate: number | null;
+  /** @nullable */
+  qualificationRate: number | null;
+  /** @nullable */
+  winRate: number | null;
+  associationNote: string;
+  recommendationIds: string[];
+  outcomeIds: string[];
+  modelVersionIds: string[];
+  policyVersion: number;
+  calculatedAt: string;
+}
+
+export interface LearningAnalytics {
+  scope: LearningScope;
+  scopeKey: string;
+  policy: LearningPolicy;
+  metrics: LearningMetric[];
+  hypothesisInsights: string[];
+  associationWarning: string;
+  generatedAt: string;
+}
+
+export type LearningProposalProposalType = typeof LearningProposalProposalType[keyof typeof LearningProposalProposalType];
+
+
+export const LearningProposalProposalType = {
+  INCREASE_SIGNAL_IMPORTANCE: 'INCREASE_SIGNAL_IMPORTANCE',
+  DECREASE_SIGNAL_IMPORTANCE: 'DECREASE_SIGNAL_IMPORTANCE',
+  CHANGE_CLUSTER: 'CHANGE_CLUSTER',
+  CHANGE_ICP_ASSUMPTION: 'CHANGE_ICP_ASSUMPTION',
+  CHANGE_RESEARCH_PRIORITY: 'CHANGE_RESEARCH_PRIORITY',
+} as const;
+
+export type LearningProposalProposedChange = { [key: string]: unknown };
+
+export type LearningProposalEvidenceSnapshot = { [key: string]: unknown };
+
+export type LearningProposalStatus = typeof LearningProposalStatus[keyof typeof LearningProposalStatus];
+
+
+export const LearningProposalStatus = {
+  PROPOSED: 'PROPOSED',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED',
+} as const;
+
+export interface LearningProposal {
+  id: string;
+  organizationId: string;
+  scope: LearningScope;
+  scopeKey: string;
+  /** @nullable */
+  projectId: string | null;
+  proposalType: LearningProposalProposalType;
+  targetKey: string;
+  title: string;
+  explanation: string;
+  proposedChange: LearningProposalProposedChange;
+  evidenceSnapshot: LearningProposalEvidenceSnapshot;
+  status: LearningProposalStatus;
+  sourcePolicyVersion: number;
+  /** @nullable */
+  approvedLearningVersionId: string | null;
+  createdAt: string;
+  /** @nullable */
+  reviewedAt: string | null;
+  /** @nullable */
+  reviewedBy: string | null;
+  [key: string]: unknown;
+ }
+
+export interface ReviewLearningProposalRequest {
+  approved: boolean;
+}
+
+export type LearningProposalReviewLearningVersion = null | { [key: string]: unknown };
+
+export interface LearningProposalReview {
+  proposal: LearningProposal;
+  learningVersion: LearningProposalReviewLearningVersion;
+}
+
 export interface OpportunityPack {
   id: string;
   organizationId: string;
@@ -2702,6 +2849,13 @@ export type MaturityStageRequiredResponse = ErrorResponse;
  */
 export type InterpretationUnavailableResponse = ErrorResponse;
 
+export type LearningScopeParameter = LearningScope;
+
+/**
+ * Optional immutable Intelligence Pack version for MARKET scope; omit for the market-wide aggregate.
+ */
+export type IntelligencePackVersionIdParameter = string;
+
 export type CommitCompanyImport409 = {
   error: string;
   needsReview: number;
@@ -2712,5 +2866,29 @@ export type ActivateOpportunityPack200 = { [key: string]: unknown };
 export type EvaluateSignalClusters200 = {
   evaluated: number;
   clusters: SignalClusterRecord[];
+};
+
+export type GetLearningAnalyticsParams = {
+scope?: LearningScopeParameter;
+/**
+ * Optional immutable Intelligence Pack version for MARKET scope; omit for the market-wide aggregate.
+ */
+intelligencePackVersionId?: IntelligencePackVersionIdParameter;
+};
+
+export type ListLearningProposalsParams = {
+scope?: LearningScopeParameter;
+/**
+ * Optional immutable Intelligence Pack version for MARKET scope; omit for the market-wide aggregate.
+ */
+intelligencePackVersionId?: IntelligencePackVersionIdParameter;
+};
+
+export type GenerateLearningProposalsParams = {
+scope?: LearningScopeParameter;
+/**
+ * Optional immutable Intelligence Pack version for MARKET scope; omit for the market-wide aggregate.
+ */
+intelligencePackVersionId?: IntelligencePackVersionIdParameter;
 };
 

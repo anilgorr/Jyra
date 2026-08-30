@@ -40,6 +40,16 @@ Its product language is **Who. When. Why.**
 
 JYRA continuously researches a seller’s market, detects evidence of commercial need and timing, identifies the companies that deserve attention, explains the reason, identifies relevant buyers, and learns from actual sales outcomes.
 
+## Phase 22 — Continuous Learning Foundation
+
+JYRA measures associations between real recommendation outcomes and the signals, signal combinations, clusters, opportunity states, actions, providers, and research sources present in the immutable recommendation ledger. Outcome strength is configurable and ordered from weak engagement through meetings, qualification, and wins. Missing, viewed, or skipped behavior is neutral rather than negative.
+
+Learning is available at organization-wide, Opportunity Intelligence Pack/market, and customer project scopes without mixing private tenant data. Meeting, qualification, and win rates are shown with observed sample sizes and never described as causal effects.
+
+When configurable minimum evidence is met, JYRA may create an inert suggestion to adjust signal importance, cluster configuration, an ICP assumption, or research priority. Startups using a Hypothesis ICP may see cautious early-pattern insights only after the same evidence gate. A person must approve every suggestion. Approval creates a new immutable learning version and never silently rewrites an active customer model or historical interpretation.
+
+This phase does not train or fine-tune a model, autonomously change customer configuration, infer causality, execute outreach, or begin Phase 23.
+
 The product is not primarily a lead database, email scraper, cold-email platform, CRM, outreach sequencer, or generic AI research agent.
 
 ## Core information flow

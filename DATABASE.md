@@ -6,6 +6,15 @@
 
 Historical rows are never updated when criteria change; a new version and criterion set are inserted instead.
 
+## Continuous learning storage
+
+- `learning_policy_versions` stores immutable organization, market-pack, or project-scoped outcome weights and minimum evidence thresholds.
+- `learning_metric_snapshots` stores derived aggregate associations with sample counts, outcome counts, rates, exact recommendation/outcome/model identifiers, policy version, and a deterministic snapshot key.
+- `learning_improvement_proposals` stores inert evidence snapshots and proposed changes. Only a one-time explicit approve or reject transition is allowed.
+- `learning_model_versions` stores the immutable configuration delta created by an approved proposal.
+
+PostgreSQL rejects policy, metric, and learning-version updates or deletes. Scope triggers prevent a project learning record from crossing its organization boundary and validate market-pack ownership. Historical recommendation and outcome rows remain the source of truth; aggregate snapshots never replace them.
+
 ## Canonical company identity storage
 
 ## Signal Pack storage

@@ -32,6 +32,8 @@ tags:
     description: Generic deterministic combinations of independent signals
   - name: opportunity-engine
     description: Versioned deterministic project-specific opportunity assessments
+  - name: learning
+    description: Evidence-based correlation analytics and user-approved learning proposals
 paths:
   /healthz:
     get:
@@ -1568,8 +1570,218 @@ paths:
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
+  /projects/{projectId}/learning:
+    get:
+      operationId: getLearningAnalytics
+      tags: [learning]
+      summary: Measure outcome associations without implying causality
+      security: [{ clerkSession: [] }]
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+        - $ref: "#/components/parameters/LearningScope"
+        - $ref: "#/components/parameters/IntelligencePackVersionId"
+      responses:
+        "200":
+          description: Evidence-based learning analytics
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/LearningAnalytics" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+  /projects/{projectId}/learning/policy:
+    put:
+      operationId: createLearningPolicyVersion
+      tags: [learning]
+      summary: Create a new immutable outcome-strength policy version
+      security: [{ clerkSession: [] }]
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CreateLearningPolicyRequest" }
+      responses:
+        "201":
+          description: New learning policy version
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/LearningPolicy" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+  /projects/{projectId}/learning/proposals:
+    get:
+      operationId: listLearningProposals
+      tags: [learning]
+      summary: List reviewable evidence-backed improvement proposals
+      security: [{ clerkSession: [] }]
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+        - $ref: "#/components/parameters/LearningScope"
+        - $ref: "#/components/parameters/IntelligencePackVersionId"
+      responses:
+        "200":
+          description: Learning proposals
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/LearningProposal" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+  /projects/{projectId}/learning/proposals/generate:
+    post:
+      operationId: generateLearningProposals
+      tags: [learning]
+      summary: Generate suggestions from sufficiently supported associations
+      security: [{ clerkSession: [] }]
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+        - $ref: "#/components/parameters/LearningScope"
+        - $ref: "#/components/parameters/IntelligencePackVersionId"
+      responses:
+        "201":
+          description: Newly generated reviewable proposals
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/LearningProposal" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+  /projects/{projectId}/learning/proposals/{proposalId}/review:
+    post:
+      operationId: reviewLearningProposal
+      tags: [learning]
+      summary: Approve or reject a proposal; approval creates a new immutable learning version
+      security: [{ clerkSession: [] }]
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+        - name: proposalId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ReviewLearningProposalRequest" }
+      responses:
+        "200":
+          description: Reviewed proposal and optional new learning version
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/LearningProposalReview" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
 components:
   schemas:
+    LearningScope:
+      type: string
+      enum: [GLOBAL, MARKET, PROJECT]
+    LearningPolicy:
+      type: object
+      properties:
+        id: { type: [string, "null"] }
+        version: { type: number }
+        outcomeWeights:
+          type: object
+          additionalProperties: { type: number }
+        minimumObservedSample: { type: number }
+        minimumPositiveOutcomes: { type: number }
+      required: [id, version, outcomeWeights, minimumObservedSample, minimumPositiveOutcomes]
+    CreateLearningPolicyRequest:
+      type: object
+      properties:
+        scope: { $ref: "#/components/schemas/LearningScope" }
+        intelligencePackVersionId: { type: string }
+        outcomeWeights:
+          type: object
+          additionalProperties: { type: number, minimum: 0, maximum: 1 }
+        minimumObservedSample: { type: number, minimum: 1, maximum: 1000 }
+        minimumPositiveOutcomes: { type: number, minimum: 1, maximum: 1000 }
+    LearningMetric:
+      type: object
+      properties:
+        id: { type: [string, "null"] }
+        dimension:
+          type: string
+          enum: [SIGNAL, SIGNAL_COMBINATION, CLUSTER, OPPORTUNITY_STATE, RECOMMENDED_ACTION, PROVIDER, RESEARCH_SOURCE]
+        segmentKey: { type: string }
+        segmentLabel: { type: string }
+        sampleSize: { type: number }
+        observedOutcomeCount: { type: number }
+        positiveOutcomeCount: { type: number }
+        neutralOutcomeCount: { type: number }
+        weightedOutcomeScore: { type: [number, "null"] }
+        meetingRate: { type: [number, "null"] }
+        qualificationRate: { type: [number, "null"] }
+        winRate: { type: [number, "null"] }
+        associationNote: { type: string }
+        recommendationIds: { type: array, items: { type: string } }
+        outcomeIds: { type: array, items: { type: string } }
+        modelVersionIds: { type: array, items: { type: string } }
+        policyVersion: { type: number }
+        calculatedAt: { type: string, format: date-time }
+      required: [id, dimension, segmentKey, segmentLabel, sampleSize, observedOutcomeCount, positiveOutcomeCount, neutralOutcomeCount, weightedOutcomeScore, meetingRate, qualificationRate, winRate, associationNote, recommendationIds, outcomeIds, modelVersionIds, policyVersion, calculatedAt]
+    LearningAnalytics:
+      type: object
+      properties:
+        scope: { $ref: "#/components/schemas/LearningScope" }
+        scopeKey: { type: string }
+        policy: { $ref: "#/components/schemas/LearningPolicy" }
+        metrics:
+          type: array
+          items: { $ref: "#/components/schemas/LearningMetric" }
+        hypothesisInsights: { type: array, items: { type: string } }
+        associationWarning: { type: string }
+        generatedAt: { type: string, format: date-time }
+      required: [scope, scopeKey, policy, metrics, hypothesisInsights, associationWarning, generatedAt]
+    LearningProposal:
+      type: object
+      additionalProperties: true
+      properties:
+        id: { type: string }
+        organizationId: { type: string }
+        scope: { $ref: "#/components/schemas/LearningScope" }
+        scopeKey: { type: string }
+        projectId: { type: [string, "null"] }
+        proposalType:
+          type: string
+          enum: [INCREASE_SIGNAL_IMPORTANCE, DECREASE_SIGNAL_IMPORTANCE, CHANGE_CLUSTER, CHANGE_ICP_ASSUMPTION, CHANGE_RESEARCH_PRIORITY]
+        targetKey: { type: string }
+        title: { type: string }
+        explanation: { type: string }
+        proposedChange: { type: object, additionalProperties: true }
+        evidenceSnapshot: { type: object, additionalProperties: true }
+        status: { type: string, enum: [PROPOSED, APPROVED, REJECTED] }
+        sourcePolicyVersion: { type: number }
+        approvedLearningVersionId: { type: [string, "null"] }
+        createdAt: { type: string, format: date-time }
+        reviewedAt: { type: [string, "null"], format: date-time }
+        reviewedBy: { type: [string, "null"] }
+      required: [id, organizationId, scope, scopeKey, projectId, proposalType, targetKey, title, explanation, proposedChange, evidenceSnapshot, status, sourcePolicyVersion, approvedLearningVersionId, createdAt, reviewedAt, reviewedBy]
+    ReviewLearningProposalRequest:
+      type: object
+      properties:
+        approved: { type: boolean }
+      required: [approved]
+    LearningProposalReview:
+      type: object
+      properties:
+        proposal: { $ref: "#/components/schemas/LearningProposal" }
+        learningVersion:
+          oneOf:
+            - type: "null"
+            - type: object
+              additionalProperties: true
+      required: [proposal, learningVersion]
     OpportunityPack:
       type: object
       properties:
@@ -3363,6 +3575,19 @@ components:
       required:
         - error
   parameters:
+    LearningScope:
+      name: scope
+      in: query
+      required: false
+      schema:
+        $ref: "#/components/schemas/LearningScope"
+    IntelligencePackVersionId:
+      name: intelligencePackVersionId
+      in: query
+      required: false
+      description: Optional immutable Intelligence Pack version for MARKET scope; omit for the market-wide aggregate.
+      schema:
+        type: string
     OrganizationId:
       name: organizationId
       in: path

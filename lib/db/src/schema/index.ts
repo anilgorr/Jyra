@@ -34,4 +34,5 @@ export * from "./signal-clusters";
 export * from "./opportunities";
 export * from "./people";
 export * from "./buyers";
+export * from "./learning";
 export * from "./recommendation-ledger";

@@ -5455,3 +5455,188 @@ export const CreateOpportunityModelResponse = zod.object({
 })
 
 
+/**
+ * @summary Measure outcome associations without implying causality
+ */
+export const GetLearningAnalyticsParams = zod.object({
+  "projectId": zod.coerce.string()
+})
+
+export const GetLearningAnalyticsQueryParams = zod.object({
+  "scope": zod.enum(['GLOBAL', 'MARKET', 'PROJECT']).optional(),
+  "intelligencePackVersionId": zod.coerce.string().optional().describe('Optional immutable Intelligence Pack version for MARKET scope; omit for the market-wide aggregate.')
+})
+
+export const GetLearningAnalyticsResponse = zod.object({
+  "scope": zod.enum(['GLOBAL', 'MARKET', 'PROJECT']),
+  "scopeKey": zod.string(),
+  "policy": zod.object({
+  "id": zod.string().nullable(),
+  "version": zod.number(),
+  "outcomeWeights": zod.record(zod.string(), zod.number()),
+  "minimumObservedSample": zod.number(),
+  "minimumPositiveOutcomes": zod.number()
+}),
+  "metrics": zod.array(zod.object({
+  "id": zod.string().nullable(),
+  "dimension": zod.enum(['SIGNAL', 'SIGNAL_COMBINATION', 'CLUSTER', 'OPPORTUNITY_STATE', 'RECOMMENDED_ACTION', 'PROVIDER', 'RESEARCH_SOURCE']),
+  "segmentKey": zod.string(),
+  "segmentLabel": zod.string(),
+  "sampleSize": zod.number(),
+  "observedOutcomeCount": zod.number(),
+  "positiveOutcomeCount": zod.number(),
+  "neutralOutcomeCount": zod.number(),
+  "weightedOutcomeScore": zod.number().nullable(),
+  "meetingRate": zod.number().nullable(),
+  "qualificationRate": zod.number().nullable(),
+  "winRate": zod.number().nullable(),
+  "associationNote": zod.string(),
+  "recommendationIds": zod.array(zod.string()),
+  "outcomeIds": zod.array(zod.string()),
+  "modelVersionIds": zod.array(zod.string()),
+  "policyVersion": zod.number(),
+  "calculatedAt": zod.coerce.date()
+})),
+  "hypothesisInsights": zod.array(zod.string()),
+  "associationWarning": zod.string(),
+  "generatedAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary Create a new immutable outcome-strength policy version
+ */
+export const CreateLearningPolicyVersionParams = zod.object({
+  "projectId": zod.coerce.string()
+})
+
+export const createLearningPolicyVersionBodyOutcomeWeightsMinOne = 0;
+export const createLearningPolicyVersionBodyOutcomeWeightsMaxOne = 1;
+
+export const createLearningPolicyVersionBodyMinimumObservedSampleMax = 1000;
+
+export const createLearningPolicyVersionBodyMinimumPositiveOutcomesMax = 1000;
+
+
+
+export const CreateLearningPolicyVersionBody = zod.object({
+  "scope": zod.enum(['GLOBAL', 'MARKET', 'PROJECT']).optional(),
+  "intelligencePackVersionId": zod.string().optional(),
+  "outcomeWeights": zod.record(zod.string(), zod.number().min(createLearningPolicyVersionBodyOutcomeWeightsMinOne).max(createLearningPolicyVersionBodyOutcomeWeightsMaxOne)).optional(),
+  "minimumObservedSample": zod.number().min(1).max(createLearningPolicyVersionBodyMinimumObservedSampleMax).optional(),
+  "minimumPositiveOutcomes": zod.number().min(1).max(createLearningPolicyVersionBodyMinimumPositiveOutcomesMax).optional()
+})
+
+export const CreateLearningPolicyVersionResponse = zod.object({
+  "id": zod.string().nullable(),
+  "version": zod.number(),
+  "outcomeWeights": zod.record(zod.string(), zod.number()),
+  "minimumObservedSample": zod.number(),
+  "minimumPositiveOutcomes": zod.number()
+})
+
+
+/**
+ * @summary List reviewable evidence-backed improvement proposals
+ */
+export const ListLearningProposalsParams = zod.object({
+  "projectId": zod.coerce.string()
+})
+
+export const ListLearningProposalsQueryParams = zod.object({
+  "scope": zod.enum(['GLOBAL', 'MARKET', 'PROJECT']).optional(),
+  "intelligencePackVersionId": zod.coerce.string().optional().describe('Optional immutable Intelligence Pack version for MARKET scope; omit for the market-wide aggregate.')
+})
+
+export const ListLearningProposalsResponseItem = zod.object({
+  "id": zod.string(),
+  "organizationId": zod.string(),
+  "scope": zod.enum(['GLOBAL', 'MARKET', 'PROJECT']),
+  "scopeKey": zod.string(),
+  "projectId": zod.string().nullable(),
+  "proposalType": zod.enum(['INCREASE_SIGNAL_IMPORTANCE', 'DECREASE_SIGNAL_IMPORTANCE', 'CHANGE_CLUSTER', 'CHANGE_ICP_ASSUMPTION', 'CHANGE_RESEARCH_PRIORITY']),
+  "targetKey": zod.string(),
+  "title": zod.string(),
+  "explanation": zod.string(),
+  "proposedChange": zod.record(zod.string(), zod.unknown()),
+  "evidenceSnapshot": zod.record(zod.string(), zod.unknown()),
+  "status": zod.enum(['PROPOSED', 'APPROVED', 'REJECTED']),
+  "sourcePolicyVersion": zod.number(),
+  "approvedLearningVersionId": zod.string().nullable(),
+  "createdAt": zod.coerce.date(),
+  "reviewedAt": zod.coerce.date().nullable(),
+  "reviewedBy": zod.string().nullable()
+})
+export const ListLearningProposalsResponse = zod.array(ListLearningProposalsResponseItem)
+
+
+/**
+ * @summary Generate suggestions from sufficiently supported associations
+ */
+export const GenerateLearningProposalsParams = zod.object({
+  "projectId": zod.coerce.string()
+})
+
+export const GenerateLearningProposalsQueryParams = zod.object({
+  "scope": zod.enum(['GLOBAL', 'MARKET', 'PROJECT']).optional(),
+  "intelligencePackVersionId": zod.coerce.string().optional().describe('Optional immutable Intelligence Pack version for MARKET scope; omit for the market-wide aggregate.')
+})
+
+export const GenerateLearningProposalsResponseItem = zod.object({
+  "id": zod.string(),
+  "organizationId": zod.string(),
+  "scope": zod.enum(['GLOBAL', 'MARKET', 'PROJECT']),
+  "scopeKey": zod.string(),
+  "projectId": zod.string().nullable(),
+  "proposalType": zod.enum(['INCREASE_SIGNAL_IMPORTANCE', 'DECREASE_SIGNAL_IMPORTANCE', 'CHANGE_CLUSTER', 'CHANGE_ICP_ASSUMPTION', 'CHANGE_RESEARCH_PRIORITY']),
+  "targetKey": zod.string(),
+  "title": zod.string(),
+  "explanation": zod.string(),
+  "proposedChange": zod.record(zod.string(), zod.unknown()),
+  "evidenceSnapshot": zod.record(zod.string(), zod.unknown()),
+  "status": zod.enum(['PROPOSED', 'APPROVED', 'REJECTED']),
+  "sourcePolicyVersion": zod.number(),
+  "approvedLearningVersionId": zod.string().nullable(),
+  "createdAt": zod.coerce.date(),
+  "reviewedAt": zod.coerce.date().nullable(),
+  "reviewedBy": zod.string().nullable()
+})
+export const GenerateLearningProposalsResponse = zod.array(GenerateLearningProposalsResponseItem)
+
+
+/**
+ * @summary Approve or reject a proposal; approval creates a new immutable learning version
+ */
+export const ReviewLearningProposalParams = zod.object({
+  "projectId": zod.coerce.string(),
+  "proposalId": zod.coerce.string()
+})
+
+export const ReviewLearningProposalBody = zod.object({
+  "approved": zod.boolean()
+})
+
+export const ReviewLearningProposalResponse = zod.object({
+  "proposal": zod.object({
+  "id": zod.string(),
+  "organizationId": zod.string(),
+  "scope": zod.enum(['GLOBAL', 'MARKET', 'PROJECT']),
+  "scopeKey": zod.string(),
+  "projectId": zod.string().nullable(),
+  "proposalType": zod.enum(['INCREASE_SIGNAL_IMPORTANCE', 'DECREASE_SIGNAL_IMPORTANCE', 'CHANGE_CLUSTER', 'CHANGE_ICP_ASSUMPTION', 'CHANGE_RESEARCH_PRIORITY']),
+  "targetKey": zod.string(),
+  "title": zod.string(),
+  "explanation": zod.string(),
+  "proposedChange": zod.record(zod.string(), zod.unknown()),
+  "evidenceSnapshot": zod.record(zod.string(), zod.unknown()),
+  "status": zod.enum(['PROPOSED', 'APPROVED', 'REJECTED']),
+  "sourcePolicyVersion": zod.number(),
+  "approvedLearningVersionId": zod.string().nullable(),
+  "createdAt": zod.coerce.date(),
+  "reviewedAt": zod.coerce.date().nullable(),
+  "reviewedBy": zod.string().nullable()
+}),
+  "learningVersion": zod.union([zod.null(),zod.record(zod.string(), zod.unknown())])
+})
+
+
