@@ -1,0 +1,855 @@
+{
+  "test": "REAL DATA TEST 09",
+  "environment": "development",
+  "seller": "Aadit Technologies",
+  "project": "GTM-Q1",
+  "offering": "Managed SOC",
+  "acceptedIcp": {
+    "icpDescription": "We believe Mid-market and growing organizations with significant cloud and IT infrastructure that need continuous cybersecurity monitoring but do not have a fully staffed 24/7 internal SOC. Ideal customers typically use Microsoft 365/Azure or other cloud platforms, have 100+ employees, handle sensitive customer or business data, serve enterprise customers, and have security or compliance requirements such as ISO 27001, SOC 2, customer security assessments or cyber-insurance. Strong industries include SaaS, technology, IT services, fintech, financial services, healthcare and professional services.. We believe companies with 100–2,000 employees; sweet spot: 200–1,000 employees employees are a strong fit.",
+    "targetIndustries": [
+      "SaaS",
+      "technology",
+      "IT services",
+      "fintech",
+      "financial services",
+      "healthcare",
+      "professional services"
+    ],
+    "geographies": [
+      "United States",
+      "India",
+      "UAE",
+      "United Kingdom",
+      "Singapore"
+    ],
+    "employeeRange": {
+      "minimum": 100,
+      "maximum": 2000,
+      "sweetSpotMinimum": 200,
+      "sweetSpotMaximum": 1000
+    },
+    "technologyCharacteristics": [
+      "Microsoft 365",
+      "Azure",
+      "significant cloud/IT infrastructure",
+      "other cloud platforms"
+    ],
+    "exclusions": [],
+    "hardFilters": [
+      "Geography: United States, India, UAE, United Kingdom, Singapore",
+      "Industries: SaaS, technology, IT services, fintech, financial services, healthcare, professional services",
+      "Employees: 100–2000"
+    ],
+    "softCriteria": [
+      "We believe Mid-market and growing organizations with significant cloud and IT infrastructure that need continuous cybersecurity monitoring but do not have a fully staffed 24/7 internal SOC. Ideal customers typically use Microsoft 365/Azure or other cloud platforms, have 100+ employees, handle sensitive customer or business data, serve enterprise customers, and have security or compliance requirements such as ISO 27001, SOC 2, customer security assessments or cyber-insurance. Strong industries include SaaS, technology, IT services, fintech, financial services, healthcare and professional services..",
+      "We believe companies with 100–2,000 employees; sweet spot: 200–1,000 employees employees are a strong fit."
+    ]
+  },
+  "queries": [
+    "SaaS company with significant significant cloud/IT infrastructure",
+    "technology company serving enterprise customers with cloud-based infrastructure",
+    "IT services company serving mid-market or enterprise customers",
+    "fintech company operating significant significant cloud/IT infrastructure"
+  ],
+  "queryPerformance": [
+    {
+      "query": "SaaS company with significant significant cloud/IT infrastructure",
+      "rawResults": 10,
+      "uniqueCompanies": 10,
+      "strong": 0,
+      "plausible": 0,
+      "weak": 0,
+      "insufficient": 10
+    },
+    {
+      "query": "technology company serving enterprise customers with cloud-based infrastructure",
+      "rawResults": 10,
+      "uniqueCompanies": 10,
+      "strong": 0,
+      "plausible": 0,
+      "weak": 0,
+      "insufficient": 10
+    },
+    {
+      "query": "IT services company serving mid-market or enterprise customers",
+      "rawResults": 10,
+      "uniqueCompanies": 10,
+      "strong": 0,
+      "plausible": 0,
+      "weak": 0,
+      "insufficient": 10
+    },
+    {
+      "query": "fintech company operating significant significant cloud/IT infrastructure",
+      "rawResults": 10,
+      "uniqueCompanies": 10,
+      "strong": 0,
+      "plausible": 0,
+      "weak": 0,
+      "insufficient": 10
+    }
+  ],
+  "rawRecords": [
+    {
+      "index": 1,
+      "title": "Cloudflare",
+      "url": "https://cloudflare.com",
+      "providerResultId": "https://exa.ai/library/organization/mxwft7wlgy9",
+      "description": null,
+      "entityStatus": "VALID",
+      "query": "SaaS company with significant significant cloud/IT infrastructure"
+    },
+    {
+      "index": 2,
+      "title": "Panopta",
+      "url": "https://fortinet.com/products/fortimonitor",
+      "providerResultId": "https://exa.ai/library/organization/j8dvcq5spxm",
+      "description": null,
+      "entityStatus": "VALID",
+      "query": "SaaS company with significant significant cloud/IT infrastructure"
+    },
+    {
+      "index": 3,
+      "title": "21Vianet Blue Cloud",
+      "url": "https://21vbluecloud.com",
+      "providerResultId": "https://exa.ai/library/organization/knhs4lsswmv",
+      "description": null,
+      "entityStatus": "VALID",
+      "query": "SaaS company with significant significant cloud/IT infrastructure"
+    },
+    {
+      "index": 4,
+      "title": "E2E Cloud",
+      "url": "https://e2enetworks.com",
+      "providerResultId": "https://exa.ai/library/organization/6npgsdbbcdd",
+      "description": null,
+      "entityStatus": "VALID",
+      "query": "SaaS company with significant significant cloud/IT infrastructure"
+    },
+    {
+      "index": 5,
+      "title": "Warren Cloud Infrastructure Platform",
+      "url": "https://warren.io",
+      "providerResultId": "https://exa.ai/library/organization/82ggcx37fh0",
+      "description": null,
+      "entityStatus": "VALID",
+      "query": "SaaS company with significant significant cloud/IT infrastructure"
+    },
+    {
+      "index": 6,
+      "title": "Cloud4C Services",
+      "url": "https://cloud4c.com",
+      "providerResultId": "https://exa.ai/library/organization/7h4r0b0qbjz",
+      "description": null,
+      "entityStatus": "VALID",
+      "query": "SaaS company with significant significant cloud/IT infrastructure"
+    },
+    {
+      "index": 7,
+      "title": "EdgeCore Digital Infrastructure",
+      "url": "https://edgecore.com",
+      "providerResultId": "https://exa.ai/library/organization/459qv1kkk8r",
+      "description": null,
+      "entityStatus": "VALID",
+      "query": "SaaS company with significant significant cloud/IT infrastructure"
+    },
+    {
+      "index": 8,
+      "title": "GrandTech Cloud Services Inc.",
+      "url": "https://grandtechcloud.com",
+      "providerResultId": "https://exa.ai/library/organization/l5ggn5dvkhd",
+      "description": null,
+      "entityStatus": "VALID",
+      "query": "SaaS company with significant significant cloud/IT infrastructure"
+    },
+    {
+      "index": 9,
+      "title": "NeevCloud®",
+      "url": "https://neevcloud.com",
+      "providerResultId": "https://exa.ai/library/organization/s53pf89kwxc",
+      "description": null,
+      "entityStatus": "VALID",
+      "query": "SaaS company with significant significant cloud/IT infrastructure"
+    },
+    {
+      "index": 10,
+      "title": "CloudHQ, LLC",
+      "url": "https://cloudhq.com",
+      "providerResultId": "https://exa.ai/library/organization/4zl0scm3wcn",
+      "description": null,
+      "entityStatus": "VALID",
+      "query": "SaaS company with significant significant cloud/IT infrastructure"
+    },
+    {
+      "index": 1,
+      "title": "Alibaba Cloud",
+      "url": "https://alibabacloud.com",
+      "providerResultId": "https://exa.ai/library/organization/xxqslc7wy4m",
+      "description": null,
+      "entityStatus": "VALID",
+      "query": "technology company serving enterprise customers with cloud-based infrastructure"
+    },
+    {
+      "index": 2,
+      "title": "Oracle Cloud",
+      "url": "https://oracle.com/cloud",
+      "providerResultId": "https://exa.ai/library/organization/wtzgvn880vs",
+      "description": null,
+      "entityStatus": "VALID",
+      "query": "technology company serving enterprise customers with cloud-based infrastructure"
+    },
+    {
+      "index": 3,
+      "title": "Amazon Web Services (AWS)",
+      "url": "https://linkedin.com/company/amazon-web-services",
+      "providerResultId": "https://exa.ai/library/organization/mcz1pvgkv4g",
+      "description": null,
+      "entityStatus": "VALID",
+      "query": "technology company serving enterprise customers with cloud-based infrastructure"
+    },
+    {
+      "index": 4,
+      "title": "Oracle",
+      "url": "https://oracle.com",
+      "providerResultId": "https://exa.ai/library/organization/9kzyvyzqbcb",
+      "description": null,
+      "entityStatus": "VALID",
+      "query": "technology company serving enterprise customers with cloud-based infrastructure"
+    },
+    {
+      "index": 5,
+      "title": "E2E Cloud",
+      "url": "https://e2enetworks.com",
+      "providerResultId": "https://exa.ai/library/organization/6npgsdbbcdd",
+      "description": null,
+      "entityStatus": "VALID",
+      "query": "technology company serving enterprise customers with cloud-based infrastructure"
+    },
+    {
+      "index": 6,
+      "title": "Cloudflare",
+      "url": "https://cloudflare.com",
+      "providerResultId": "https://exa.ai/library/organization/mxwft7wlgy9",
+      "description": null,
+      "entityStatus": "VALID",
+      "query": "technology company serving enterprise customers with cloud-based infrastructure"
+    },
+    {
+      "index": 7,
+      "title": "IBM Hybrid Cloud and Infrastructure",
+      "url": "https://ibm.com/solutions/it-infrastructure",
+      "providerResultId": "https://exa.ai/library/organization/xkl0k1vh6dt",
+      "description": null,
+      "entityStatus": "VALID",
+      "query": "technology company serving enterprise customers with cloud-based infrastructure"
+    },
+    {
+      "index": 8,
+      "title": "IT-Conductor Inc.",
+      "url": "https://itconductor.com",
+      "providerResultId": "https://exa.ai/library/organization/j9cwnpkhnhp",
+      "description": null,
+      "entityStatus": "VALID",
+      "query": "technology company serving enterprise customers with cloud-based infrastructure"
+    },
+    {
+      "index": 9,
+      "title": "21Vianet Blue Cloud",
+      "url": "https://21vbluecloud.com",
+      "providerResultId": "https://exa.ai/library/organization/knhs4lsswmv",
+      "description": null,
+      "entityStatus": "VALID",
+      "query": "technology company serving enterprise customers with cloud-based infrastructure"
+    },
+    {
+      "index": 10,
+      "title": "Cloudi",
+      "url": "https://cloudi-infra.com",
+      "providerResultId": "https://exa.ai/library/organization/l4dhycrlpm1",
+      "description": null,
+      "entityStatus": "VALID",
+      "query": "technology company serving enterprise customers with cloud-based infrastructure"
+    },
+    {
+      "index": 1,
+      "title": "Emergys",
+      "url": "https://emergys.com",
+      "providerResultId": "https://exa.ai/library/organization/phf590t2sjk",
+      "description": null,
+      "entityStatus": "VALID",
+      "query": "IT services company serving mid-market or enterprise customers"
+    },
+    {
+      "index": 2,
+      "title": "Value Stream Systems",
+      "url": "https://valuestreamsystems.com",
+      "providerResultId": "https://exa.ai/library/organization/p08mz3m7tfd",
+      "description": null,
+      "entityStatus": "VALID",
+      "query": "IT services company serving mid-market or enterprise customers"
+    },
+    {
+      "index": 3,
+      "title": "Meridian IT Inc.",
+      "url": "https://meridianitinc.com",
+      "providerResultId": "https://exa.ai/library/organization/4pkywkhlk9f",
+      "description": null,
+      "entityStatus": "VALID",
+      "query": "IT services company serving mid-market or enterprise customers"
+    },
+    {
+      "index": 4,
+      "title": "ENTUNE IT Consulting Pvt Ltd",
+      "url": "https://entune.co",
+      "providerResultId": "https://exa.ai/library/organization/khvv5p7drrw",
+      "description": null,
+      "entityStatus": "VALID",
+      "query": "IT services company serving mid-market or enterprise customers"
+    },
+    {
+      "index": 5,
+      "title": "BENEX",
+      "url": "https://benex.com",
+      "providerResultId": "https://exa.ai/library/organization/6c7fydh19lm",
+      "description": null,
+      "entityStatus": "VALID",
+      "query": "IT services company serving mid-market or enterprise customers"
+    },
+    {
+      "index": 6,
+      "title": "RPS Tek Sol LLC",
+      "url": "https://rpsteksol.com",
+      "providerResultId": "https://exa.ai/library/organization/z1nknx3s4d5",
+      "description": null,
+      "entityStatus": "VALID",
+      "query": "IT services company serving mid-market or enterprise customers"
+    },
+    {
+      "index": 7,
+      "title": "SRI Consultants Inc.",
+      "url": "https://sriconsultants.us",
+      "providerResultId": "https://exa.ai/library/organization/h52zz0fjxxk",
+      "description": null,
+      "entityStatus": "VALID",
+      "query": "IT services company serving mid-market or enterprise customers"
+    },
+    {
+      "index": 8,
+      "title": "KS2 Technologies",
+      "url": "https://ks2inc.com",
+      "providerResultId": "https://exa.ai/library/organization/94s6brw7ll5",
+      "description": null,
+      "entityStatus": "VALID",
+      "query": "IT services company serving mid-market or enterprise customers"
+    },
+    {
+      "index": 9,
+      "title": "CBY Services",
+      "url": "https://cbyservices.com",
+      "providerResultId": "https://exa.ai/library/organization/hrstb6p9kb0",
+      "description": null,
+      "entityStatus": "VALID",
+      "query": "IT services company serving mid-market or enterprise customers"
+    },
+    {
+      "index": 10,
+      "title": "Galaxy Cloud Solutions",
+      "url": "https://linkedin.com/showcase/galaxy-cloud-services",
+      "providerResultId": "https://exa.ai/library/organization/p8w0d0w89x7",
+      "description": null,
+      "entityStatus": "VALID",
+      "query": "IT services company serving mid-market or enterprise customers"
+    },
+    {
+      "index": 1,
+      "title": "Mambu",
+      "url": "https://mambu.com",
+      "providerResultId": "https://exa.ai/library/organization/g3tlxv6x7ks",
+      "description": null,
+      "entityStatus": "VALID",
+      "query": "fintech company operating significant significant cloud/IT infrastructure"
+    },
+    {
+      "index": 2,
+      "title": "IFTAS - Indian Financial Technology & Allied Services",
+      "url": "https://iftas.in",
+      "providerResultId": "https://exa.ai/library/organization/310l1x4102d",
+      "description": null,
+      "entityStatus": "VALID",
+      "query": "fintech company operating significant significant cloud/IT infrastructure"
+    },
+    {
+      "index": 3,
+      "title": "FinHub",
+      "url": "https://finhub.cloud",
+      "providerResultId": "https://exa.ai/library/organization/zj2605xd9ws",
+      "description": null,
+      "entityStatus": "VALID",
+      "query": "fintech company operating significant significant cloud/IT infrastructure"
+    },
+    {
+      "index": 4,
+      "title": "Fireblocks",
+      "url": "https://fireblocks.com",
+      "providerResultId": "https://exa.ai/library/organization/cbdnh8xnk71",
+      "description": null,
+      "entityStatus": "VALID",
+      "query": "fintech company operating significant significant cloud/IT infrastructure"
+    },
+    {
+      "index": 5,
+      "title": "Beeks Group",
+      "url": "https://beeksgroup.com",
+      "providerResultId": "https://exa.ai/library/organization/xg7b58mmrxp",
+      "description": null,
+      "entityStatus": "VALID",
+      "query": "fintech company operating significant significant cloud/IT infrastructure"
+    },
+    {
+      "index": 6,
+      "title": "FINEXUS Group",
+      "url": "https://finexusgroup.com",
+      "providerResultId": "https://exa.ai/library/organization/d9lwxl6fpz9",
+      "description": null,
+      "entityStatus": "VALID",
+      "query": "fintech company operating significant significant cloud/IT infrastructure"
+    },
+    {
+      "index": 7,
+      "title": "Akkuro",
+      "url": "https://akkuro.com",
+      "providerResultId": "https://exa.ai/library/organization/5cprqlygnj0",
+      "description": null,
+      "entityStatus": "VALID",
+      "query": "fintech company operating significant significant cloud/IT infrastructure"
+    },
+    {
+      "index": 8,
+      "title": "FinOptSys",
+      "url": "https://finoptsys.com",
+      "providerResultId": "https://exa.ai/library/organization/10cxy5hd5xp",
+      "description": null,
+      "entityStatus": "VALID",
+      "query": "fintech company operating significant significant cloud/IT infrastructure"
+    },
+    {
+      "index": 9,
+      "title": "Partior",
+      "url": "https://partior.com",
+      "providerResultId": "https://exa.ai/library/organization/151jxybbvly",
+      "description": null,
+      "entityStatus": "VALID",
+      "query": "fintech company operating significant significant cloud/IT infrastructure"
+    },
+    {
+      "index": 10,
+      "title": "Mentor Global",
+      "url": "https://mentorclubglobal.com",
+      "providerResultId": "https://exa.ai/library/organization/w3gznyd2lcd1qr8hv3z461",
+      "description": null,
+      "entityStatus": "VALID",
+      "query": "fintech company operating significant significant cloud/IT infrastructure"
+    }
+  ],
+  "candidates": [
+    {
+      "company": "Cloudflare",
+      "canonicalDomain": "cloudflare.com",
+      "originalExaUrl": "https://cloudflare.com",
+      "geography": null,
+      "industry": null,
+      "employeeSize": null,
+      "entityStatus": "CONFIRMED_ENTITY",
+      "icpQualification": "INSUFFICIENT_DATA",
+      "discoveryQuality": "INSUFFICIENT DATA",
+      "whyInMarket": "Identity is available; geography, industry, employee size remain unknown.",
+      "queryFoundBy": [
+        "SaaS company with significant significant cloud/IT infrastructure",
+        "technology company serving enterprise customers with cloud-based infrastructure"
+      ],
+      "rawAppearances": 2,
+      "existingOrNew": "NEW",
+      "linkedinUrl": null
+    },
+    {
+      "company": "Panopta",
+      "canonicalDomain": "fortinet.com",
+      "originalExaUrl": "https://fortinet.com/products/fortimonitor",
+      "geography": null,
+      "industry": null,
+      "employeeSize": null,
+      "entityStatus": "CONFIRMED_ENTITY",
+      "icpQualification": "INSUFFICIENT_DATA",
+      "discoveryQuality": "INSUFFICIENT DATA",
+      "whyInMarket": "Identity is available; geography, industry, employee size remain unknown.",
+      "queryFoundBy": [
+        "SaaS company with significant significant cloud/IT infrastructure"
+      ],
+      "rawAppearances": 1,
+      "existingOrNew": "NEW",
+      "linkedinUrl": null
+    },
+    {
+      "company": "21Vianet Blue Cloud",
+      "canonicalDomain": "21vbluecloud.com",
+      "originalExaUrl": "https://21vbluecloud.com",
+      "geography": null,
+      "industry": null,
+      "employeeSize": null,
+      "entityStatus": "CONFIRMED_ENTITY",
+      "icpQualification": "INSUFFICIENT_DATA",
+      "discoveryQuality": "INSUFFICIENT DATA",
+      "whyInMarket": "Identity is available; geography, industry, employee size remain unknown.",
+      "queryFoundBy": [
+        "SaaS company with significant significant cloud/IT infrastructure",
+        "technology company serving enterprise customers with cloud-based infrastructure"
+      ],
+      "rawAppearances": 2,
+      "existingOrNew": "NEW",
+      "linkedinUrl": null
+    },
+    {
+      "company": "E2E Cloud",
+      "canonicalDomain": "e2enetworks.com",
+      "originalExaUrl": "https://e2enetworks.com",
+      "geography": null,
+      "industry": null,
+      "employeeSize": null,
+      "entityStatus": "CONFIRMED_ENTITY",
+      "icpQualification": "INSUFFICIENT_DATA",
+      "discoveryQuality": "INSUFFICIENT DATA",
+      "whyInMarket": "Identity is available; geography, industry, employee size remain unknown.",
+      "queryFoundBy": [
+        "SaaS company with significant significant cloud/IT infrastructure",
+        "technology company serving enterprise customers with cloud-based infrastructure"
+      ],
+      "rawAppearances": 2,
+      "existingOrNew": "NEW",
+      "linkedinUrl": null
+    },
+    {
+      "company": "Warren Cloud Infrastructure Platform",
+      "canonicalDomain": "warren.io",
+      "originalExaUrl": "https://warren.io",
+      "geography": null,
+      "industry": null,
+      "employeeSize": null,
+      "entityStatus": "CONFIRMED_ENTITY",
+      "icpQualification": "INSUFFICIENT_DATA",
+      "discoveryQuality": "INSUFFICIENT DATA",
+      "whyInMarket": "Identity is available; geography, industry, employee size remain unknown.",
+      "queryFoundBy": [
+        "SaaS company with significant significant cloud/IT infrastructure"
+      ],
+      "rawAppearances": 1,
+      "existingOrNew": "NEW",
+      "linkedinUrl": null
+    },
+    {
+      "company": "Cloud4C Services",
+      "canonicalDomain": "cloud4c.com",
+      "originalExaUrl": "https://cloud4c.com",
+      "geography": null,
+      "industry": null,
+      "employeeSize": null,
+      "entityStatus": "CONFIRMED_ENTITY",
+      "icpQualification": "INSUFFICIENT_DATA",
+      "discoveryQuality": "INSUFFICIENT DATA",
+      "whyInMarket": "Identity is available; geography, industry, employee size remain unknown.",
+      "queryFoundBy": [
+        "SaaS company with significant significant cloud/IT infrastructure"
+      ],
+      "rawAppearances": 1,
+      "existingOrNew": "NEW",
+      "linkedinUrl": null
+    },
+    {
+      "company": "EdgeCore Digital Infrastructure",
+      "canonicalDomain": "edgecore.com",
+      "originalExaUrl": "https://edgecore.com",
+      "geography": null,
+      "industry": null,
+      "employeeSize": null,
+      "entityStatus": "CONFIRMED_ENTITY",
+      "icpQualification": "INSUFFICIENT_DATA",
+      "discoveryQuality": "INSUFFICIENT DATA",
+      "whyInMarket": "Identity is available; geography, industry, employee size remain unknown.",
+      "queryFoundBy": [
+        "SaaS company with significant significant cloud/IT infrastructure"
+      ],
+      "rawAppearances": 1,
+      "existingOrNew": "NEW",
+      "linkedinUrl": null
+    },
+    {
+      "company": "GrandTech Cloud Services Inc.",
+      "canonicalDomain": "grandtechcloud.com",
+      "originalExaUrl": "https://grandtechcloud.com",
+      "geography": null,
+      "industry": null,
+      "employeeSize": null,
+      "entityStatus": "CONFIRMED_ENTITY",
+      "icpQualification": "INSUFFICIENT_DATA",
+      "discoveryQuality": "INSUFFICIENT DATA",
+      "whyInMarket": "Identity is available; geography, industry, employee size remain unknown.",
+      "queryFoundBy": [
+        "SaaS company with significant significant cloud/IT infrastructure"
+      ],
+      "rawAppearances": 1,
+      "existingOrNew": "NEW",
+      "linkedinUrl": null
+    },
+    {
+      "company": "NeevCloud®",
+      "canonicalDomain": "neevcloud.com",
+      "originalExaUrl": "https://neevcloud.com",
+      "geography": null,
+      "industry": null,
+      "employeeSize": null,
+      "entityStatus": "CONFIRMED_ENTITY",
+      "icpQualification": "INSUFFICIENT_DATA",
+      "discoveryQuality": "INSUFFICIENT DATA",
+      "whyInMarket": "Identity is available; geography, industry, employee size remain unknown.",
+      "queryFoundBy": [
+        "SaaS company with significant significant cloud/IT infrastructure"
+      ],
+      "rawAppearances": 1,
+      "existingOrNew": "NEW",
+      "linkedinUrl": null
+    },
+    {
+      "company": "CloudHQ, LLC",
+      "canonicalDomain": "cloudhq.com",
+      "originalExaUrl": "https://cloudhq.com",
+      "geography": null,
+      "industry": null,
+      "employeeSize": null,
+      "entityStatus": "CONFIRMED_ENTITY",
+      "icpQualification": "INSUFFICIENT_DATA",
+      "discoveryQuality": "INSUFFICIENT DATA",
+      "whyInMarket": "Identity is available; geography, industry, employee size remain unknown.",
+      "queryFoundBy": [
+        "SaaS company with significant significant cloud/IT infrastructure"
+      ],
+      "rawAppearances": 1,
+      "existingOrNew": "NEW",
+      "linkedinUrl": null
+    },
+    {
+      "company": "Alibaba Cloud",
+      "canonicalDomain": "alibabacloud.com",
+      "originalExaUrl": "https://alibabacloud.com",
+      "geography": null,
+      "industry": null,
+      "employeeSize": null,
+      "entityStatus": "CONFIRMED_ENTITY",
+      "icpQualification": "INSUFFICIENT_DATA",
+      "discoveryQuality": "INSUFFICIENT DATA",
+      "whyInMarket": "Identity is available; geography, industry, employee size remain unknown.",
+      "queryFoundBy": [
+        "technology company serving enterprise customers with cloud-based infrastructure"
+      ],
+      "rawAppearances": 1,
+      "existingOrNew": "NEW",
+      "linkedinUrl": null
+    },
+    {
+      "company": "Oracle Cloud",
+      "canonicalDomain": "oracle.com",
+      "originalExaUrl": "https://oracle.com/cloud",
+      "geography": null,
+      "industry": null,
+      "employeeSize": null,
+      "entityStatus": "CONFIRMED_ENTITY",
+      "icpQualification": "INSUFFICIENT_DATA",
+      "discoveryQuality": "INSUFFICIENT DATA",
+      "whyInMarket": "Identity is available; geography, industry, employee size remain unknown.",
+      "queryFoundBy": [
+        "technology company serving enterprise customers with cloud-based infrastructure"
+      ],
+      "rawAppearances": 2,
+      "existingOrNew": "NEW",
+      "linkedinUrl": null
+    },
+    {
+      "company": "Amazon Web Services (AWS)",
+      "canonicalDomain": null,
+      "originalExaUrl": "https://linkedin.com/company/amazon-web-services",
+      "geography": null,
+      "industry": null,
+      "employeeSize": null,
+      "entityStatus": "PROBABLE_ENTITY",
+      "icpQualification": "INSUFFICIENT_DATA",
+      "discoveryQuality": "INSUFFICIENT DATA",
+      "whyInMarket": "Identity is available; geography, industry, employee size remain unknown.",
+      "queryFoundBy": [
+        "technology company serving enterprise customers with cloud-based infrastructure"
+      ],
+      "rawAppearances": 1,
+      "existingOrNew": "NEW",
+      "linkedinUrl": "https://linkedin.com/company/amazon-web-services"
+    },
+    {
+      "company": "IBM Hybrid Cloud and Infrastructure",
+      "canonicalDomain": "ibm.com",
+      "originalExaUrl": "https://ibm.com/solutions/it-infrastructure",
+      "geography": null,
+      "industry": null,
+      "employeeSize": null,
+      "entityStatus": "CONFIRMED_ENTITY",
+      "icpQualification": "INSUFFICIENT_DATA",
+      "discoveryQuality": "INSUFFICIENT DATA",
+      "whyInMarket": "Identity is available; geography, industry, employee size remain unknown.",
+      "queryFoundBy": [
+        "technology company serving enterprise customers with cloud-based infrastructure"
+      ],
+      "rawAppearances": 1,
+      "existingOrNew": "NEW",
+      "linkedinUrl": null
+    },
+    {
+      "company": "IT-Conductor Inc.",
+      "canonicalDomain": "itconductor.com",
+      "originalExaUrl": "https://itconductor.com",
+      "geography": null,
+      "industry": null,
+      "employeeSize": null,
+      "entityStatus": "CONFIRMED_ENTITY",
+      "icpQualification": "INSUFFICIENT_DATA",
+      "discoveryQuality": "INSUFFICIENT DATA",
+      "whyInMarket": "Identity is available; geography, industry, employee size remain unknown.",
+      "queryFoundBy": [
+        "technology company serving enterprise customers with cloud-based infrastructure"
+      ],
+      "rawAppearances": 1,
+      "existingOrNew": "NEW",
+      "linkedinUrl": null
+    },
+    {
+      "company": "Cloudi",
+      "canonicalDomain": "cloudi-infra.com",
+      "originalExaUrl": "https://cloudi-infra.com",
+      "geography": null,
+      "industry": null,
+      "employeeSize": null,
+      "entityStatus": "CONFIRMED_ENTITY",
+      "icpQualification": "INSUFFICIENT_DATA",
+      "discoveryQuality": "INSUFFICIENT DATA",
+      "whyInMarket": "Identity is available; geography, industry, employee size remain unknown.",
+      "queryFoundBy": [
+        "technology company serving enterprise customers with cloud-based infrastructure"
+      ],
+      "rawAppearances": 1,
+      "existingOrNew": "NEW",
+      "linkedinUrl": null
+    },
+    {
+      "company": "Emergys",
+      "canonicalDomain": "emergys.com",
+      "originalExaUrl": "https://emergys.com",
+      "geography": null,
+      "industry": null,
+      "employeeSize": null,
+      "entityStatus": "CONFIRMED_ENTITY",
+      "icpQualification": "INSUFFICIENT_DATA",
+      "discoveryQuality": "INSUFFICIENT DATA",
+      "whyInMarket": "Identity is available; geography, industry, employee size remain unknown.",
+      "queryFoundBy": [
+        "IT services company serving mid-market or enterprise customers"
+      ],
+      "rawAppearances": 1,
+      "existingOrNew": "NEW",
+      "linkedinUrl": null
+    },
+    {
+      "company": "Value Stream Systems",
+      "canonicalDomain": "valuestreamsystems.com",
+      "originalExaUrl": "https://valuestreamsystems.com",
+      "geography": null,
+      "industry": null,
+      "employeeSize": null,
+      "entityStatus": "CONFIRMED_ENTITY",
+      "icpQualification": "INSUFFICIENT_DATA",
+      "discoveryQuality": "INSUFFICIENT DATA",
+      "whyInMarket": "Identity is available; geography, industry, employee size remain unknown.",
+      "queryFoundBy": [
+        "IT services company serving mid-market or enterprise customers"
+      ],
+      "rawAppearances": 1,
+      "existingOrNew": "NEW",
+      "linkedinUrl": null
+    },
+    {
+      "company": "Meridian IT Inc.",
+      "canonicalDomain": "meridianitinc.com",
+      "originalExaUrl": "https://meridianitinc.com",
+      "geography": null,
+      "industry": null,
+      "employeeSize": null,
+      "entityStatus": "CONFIRMED_ENTITY",
+      "icpQualification": "INSUFFICIENT_DATA",
+      "discoveryQuality": "INSUFFICIENT DATA",
+      "whyInMarket": "Identity is available; geography, industry, employee size remain unknown.",
+      "queryFoundBy": [
+        "IT services company serving mid-market or enterprise customers"
+      ],
+      "rawAppearances": 1,
+      "existingOrNew": "NEW",
+      "linkedinUrl": null
+    },
+    {
+      "company": "ENTUNE IT Consulting Pvt Ltd",
+      "canonicalDomain": "entune.co",
+      "originalExaUrl": "https://entune.co",
+      "geography": null,
+      "industry": null,
+      "employeeSize": null,
+      "entityStatus": "CONFIRMED_ENTITY",
+      "icpQualification": "INSUFFICIENT_DATA",
+      "discoveryQuality": "INSUFFICIENT DATA",
+      "whyInMarket": "Identity is available; geography, industry, employee size remain unknown.",
+      "queryFoundBy": [
+        "IT services company serving mid-market or enterprise customers"
+      ],
+      "rawAppearances": 1,
+      "existingOrNew": "NEW",
+      "linkedinUrl": null
+    }
+  ],
+  "counts": {
+    "exaCalls": 4,
+    "rawResults": 40,
+    "uniqueRawEntities": 37,
+    "confirmedEntities": 19,
+    "probableEntities": 1,
+    "ambiguousEntities": 0,
+    "wrongEntities": 0,
+    "duplicates": 3,
+    "canonicalCompanies": 20,
+    "strong": 0,
+    "plausible": 0,
+    "weak": 0,
+    "insufficient": 20
+  },
+  "safety": {
+    "databaseDeltas": {
+      "researchJobs": 0,
+      "evidenceRows": 0,
+      "contactEnrichmentAttempts": 0,
+      "signals": 0,
+      "opportunityScores": 0
+    },
+    "productionOperations": 0,
+    "tavilyCalls": 0,
+    "apifyCalls": 0,
+    "contactCalls": 0,
+    "signalsCreated": 0,
+    "opportunityScoresCreated": 0
+  },
+  "assessment": "The technical path returned candidates, but the returned universe is not sufficiently aligned with the accepted ICP from known attributes alone.",
+  "finalStatus": {
+    "technicalPipeline": "PASS",
+    "discoveryQuality": "FAIL",
+    "overall": "FAIL"
+  }
+}

@@ -1,0 +1,483 @@
+JYRA — REAL DATA TEST 09
+COMPANY_DISCOVERY QUALITY VALIDATION
+
+CURRENT STATE
+
+The Exa COMPANY_DISCOVERY pipeline is now proven end-to-end:
+
+Find My Market
+→ ProviderRouter.discoverCompanies
+→ COMPANY_DISCOVERY adapter
+→ Exa
+→ normalization
+→ entity validation
+→ canonicalization
+→ persistence
+→ Find My Market
+
+Known technical test:
+
+Raw Exa results: 3
+Final candidates: 3
+
+GTM-Q1 test:
+
+Raw Exa results: 10
+Final candidates: 10
+
+No Tavily, Apify, contacts, signals, or production operations occurred.
+
+==================================================
+OBJECTIVE
+==================================================
+
+Now test QUALITY, not connectivity.
+
+Determine whether Exa can produce a credible company universe for:
+
+Seller:
+Aadit Technologies
+
+Project:
+GTM-Q1
+
+Offering:
+Managed SOC
+
+using neutral ICP-based discovery.
+
+Do NOT ask Exa who is likely to buy Managed SOC.
+
+Do NOT include buying-intent language in discovery queries.
+
+==================================================
+1. IMPORTANT QUERY RULE
+==================================================
+
+Do NOT use queries such as:
+
+"companies that may be relevant buyers for Managed SOC"
+
+"companies that need Managed SOC"
+
+"companies likely to buy cybersecurity"
+
+"companies looking for SOC services"
+
+Those mix discovery with opportunity inference.
+
+COMPANY_DISCOVERY should answer:
+
+"What companies plausibly fit the target market?"
+
+JYRA later determines:
+
+"Why now?"
+
+==================================================
+2. USE ACCEPTED ICP
+==================================================
+
+Read current GTM-Q1 ICP configuration.
+
+Previously verified criteria include:
+
+Geographies:
+- United States
+- India
+- UAE
+- United Kingdom
+- Singapore
+
+Industries:
+- SaaS
+- Technology
+- IT Services
+- Fintech
+- Financial Services
+- Healthcare
+- Professional Services
+
+Employee range:
+100–2,000
+
+Sweet spot:
+200–1,000
+
+Technology characteristics:
+- Microsoft 365
+- Azure
+- significant cloud / IT infrastructure
+
+Revenue:
+UNKNOWN
+
+Accepted exclusions:
+None
+
+Use actual stored project configuration as source of truth.
+
+==================================================
+3. GENERATE NEUTRAL DISCOVERY QUERIES
+==================================================
+
+Generate up to 4 focused company-discovery queries.
+
+Queries should describe company characteristics, not purchase intent.
+
+Examples conceptually:
+
+A.
+"mid-market SaaS company with significant cloud infrastructure"
+
+B.
+"technology company serving enterprise customers with cloud-based infrastructure"
+
+C.
+"IT services company serving mid-market or enterprise customers"
+
+D.
+"fintech company operating significant cloud infrastructure"
+
+These are examples only.
+
+Use the actual accepted ICP to generate queries.
+
+Do not include:
+
+Managed SOC
+cybersecurity need
+security pain
+buying
+vendor search
+urgency
+
+unless such a term is itself an accepted ICP characteristic.
+
+==================================================
+4. CONTROLLED EXA SEARCH
+==================================================
+
+Use:
+
+category: "company"
+type: "auto"
+
+Maximum Exa calls:
+4
+
+Maximum raw results per query:
+10
+
+Maximum unique canonical candidates after dedupe:
+20
+
+20 is a ceiling.
+
+Do not pad results.
+
+==================================================
+5. DO NOT DEEP RESEARCH
+==================================================
+
+During Test 09:
+
+Tavily calls:
+0
+
+Apify calls:
+0
+
+Exa Agent calls:
+0
+
+People search:
+0
+
+Contact enrichment:
+0
+
+Fact extraction:
+0
+
+Signal creation:
+0
+
+Opportunity scoring:
+0
+
+==================================================
+6. ENTITY QUALITY
+==================================================
+
+For every raw result verify:
+
+- is it actually a company?
+- does the identity appear legitimate?
+- is the LinkedIn/company URL handled correctly?
+- does canonical domain resolution behave safely?
+- is the same company duplicated across queries?
+
+Classify:
+
+CONFIRMED_ENTITY
+PROBABLE_ENTITY
+AMBIGUOUS_ENTITY
+WRONG_ENTITY
+
+Do not silently discard candidates.
+
+==================================================
+7. ICP QUALIFICATION
+==================================================
+
+Evaluate each canonical company using ONLY known information.
+
+Evaluate:
+
+geography
+industry
+employee range
+known cloud/technology characteristics
+other accepted ICP criteria
+
+Missing information remains UNKNOWN.
+
+Do not reject a company solely because Exa does not return employee size,
+technology stack, or geography.
+
+Use existing qualification model.
+
+==================================================
+8. DISCOVERY QUALITY SCORE
+==================================================
+
+For this TEST ONLY, produce a diagnostic discovery-quality assessment.
+
+Do not turn it into an opportunity score.
+
+For each company report:
+
+STRONG ICP CANDIDATE
+PLAUSIBLE ICP CANDIDATE
+WEAK ICP CANDIDATE
+INSUFFICIENT DATA
+
+This diagnostic classification must be explainable from ICP attributes.
+
+Do not infer buying intent.
+
+==================================================
+9. WHY IN MARKET
+==================================================
+
+For each candidate produce:
+
+WHY IN MARKET
+
+This should explain only why the company may belong in the ICP.
+
+Examples:
+
+"Industry and geography match; employee size unknown."
+
+"IT services company in India; size appears within target range."
+
+NOT:
+
+"Likely needs Managed SOC."
+
+NOT:
+
+"High security urgency."
+
+NOT:
+
+"Strong buying intent."
+
+==================================================
+10. DEDUPLICATION
+==================================================
+
+Deduplicate across all discovery queries.
+
+If the same company appears 3 times:
+
+one canonical company
+
+with multiple discovery provenance records.
+
+Report:
+
+RAW APPEARANCES
+CANONICAL COMPANY
+
+==================================================
+11. MANUAL-REVIEW TABLE
+==================================================
+
+Return maximum 20 companies in a table:
+
+COMPANY
+
+CANONICAL DOMAIN
+
+ORIGINAL EXA URL
+
+GEOGRAPHY
+
+INDUSTRY
+
+EMPLOYEE SIZE
+
+ENTITY STATUS
+
+ICP QUALIFICATION
+
+DISCOVERY QUALITY
+
+WHY IN MARKET
+
+QUERY FOUND BY
+
+EXISTING / NEW
+
+==================================================
+12. QUALITY SUMMARY
+==================================================
+
+Report:
+
+EXA CALLS:
+
+RAW RESULTS:
+
+UNIQUE RAW ENTITIES:
+
+CONFIRMED ENTITIES:
+
+PROBABLE ENTITIES:
+
+AMBIGUOUS:
+
+WRONG ENTITY:
+
+DUPLICATES:
+
+CANONICAL COMPANIES:
+
+STRONG ICP CANDIDATES:
+
+PLAUSIBLE ICP CANDIDATES:
+
+WEAK ICP CANDIDATES:
+
+INSUFFICIENT DATA:
+
+TAVILY CALLS:
+0
+
+APIFY CALLS:
+0
+
+CONTACT CALLS:
+0
+
+SIGNALS CREATED:
+0
+
+OPPORTUNITY SCORES CREATED:
+0
+
+PRODUCTION OPERATIONS:
+0
+
+==================================================
+13. IMPORTANT SUCCESS CRITERION
+==================================================
+
+PASS does NOT mean:
+
+20 companies returned.
+
+PASS means:
+
+The returned companies are reasonably aligned with the accepted ICP.
+
+If most candidates are irrelevant, mark:
+
+DISCOVERY QUALITY:
+FAIL
+
+even if the technical pipeline worked perfectly.
+
+==================================================
+14. REPORT QUERY PERFORMANCE
+==================================================
+
+For each discovery query report:
+
+QUERY
+
+RAW RESULTS
+
+UNIQUE COMPANIES
+
+STRONG ICP
+
+PLAUSIBLE ICP
+
+WEAK ICP
+
+INSUFFICIENT DATA
+
+This will let us determine which query styles produce the best market
+coverage.
+
+==================================================
+15. DO NOT MODIFY THE DISCOVERY ENGINE YET
+==================================================
+
+This test is primarily evaluative.
+
+Do not substantially rewrite:
+
+Provider Router
+Exa adapter
+ICP model
+Research Planner
+
+unless a clear correctness bug is found.
+
+We want to observe Exa quality first.
+
+==================================================
+DATABASE SAFETY
+==================================================
+
+DEVELOPMENT ONLY.
+
+Production untouched.
+
+==================================================
+STOP CONDITION
+==================================================
+
+STOP after returning:
+
+- candidate table
+- query-performance summary
+- discovery-quality assessment
+
+Do not automatically research the companies.
+
+FINAL STATUS:
+
+TECHNICAL PIPELINE:
+PASS/FAIL
+
+DISCOVERY QUALITY:
+PASS/FAIL
+
+OVERALL TEST:
+PASS/FAIL
