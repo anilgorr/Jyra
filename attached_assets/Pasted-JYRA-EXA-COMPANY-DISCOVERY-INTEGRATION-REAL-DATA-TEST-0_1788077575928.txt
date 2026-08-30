@@ -1,0 +1,592 @@
+JYRA — EXA COMPANY_DISCOVERY INTEGRATION
+REAL DATA TEST 08
+
+Current provider architecture:
+
+Tavily
+→ WEB_SEARCH
+
+Apify
+→ WEBSITE_CRAWL
+
+Now add:
+
+Exa
+→ COMPANY_DISCOVERY
+
+Do NOT replace Tavily.
+Do NOT replace Apify.
+
+==================================================
+OBJECTIVE
+==================================================
+
+Implement Exa as JYRA's first real COMPANY_DISCOVERY provider.
+
+Then perform ONE controlled Find My Market test for:
+
+Seller:
+Aadit Technologies
+
+Project:
+GTM-Q1
+
+Offering:
+Managed SOC
+
+Maximum:
+20 candidate companies
+
+The objective is to prove:
+
+Business Twin
+→ ICP
+→ Discovery Strategy
+→ Provider Router
+→ Exa COMPANY_DISCOVERY
+→ Candidate Companies
+→ Entity Resolution
+→ Cheap Qualification
+→ Prioritized Research Queue
+
+Do NOT perform deep research on the discovered companies yet.
+
+==================================================
+1. GENERIC PROVIDER ARCHITECTURE
+==================================================
+
+Implement Exa through the existing provider abstraction.
+
+Register:
+
+Provider:
+Exa
+
+Capability:
+COMPANY_DISCOVERY
+
+Provider Router must discover Exa dynamically.
+
+DO NOT implement:
+
+if COMPANY_DISCOVERY:
+    callExa()
+
+The architecture must allow another COMPANY_DISCOVERY provider later.
+
+==================================================
+2. CREDENTIALS
+==================================================
+
+Use:
+
+EXA_API_KEY
+
+from Replit/environment secrets.
+
+Never expose the API key in:
+
+frontend
+logs
+database
+provider diagnostics
+evidence
+API responses
+
+Provider Diagnostics should display only:
+
+AVAILABLE
+MISSING
+
+==================================================
+3. PROVIDER DIAGNOSTICS
+==================================================
+
+Add Exa to Provider Diagnostics.
+
+Show:
+
+Provider: Exa
+Capability: COMPANY_DISCOVERY
+Enabled
+Credentials
+Health
+Priority
+Last success
+Last failure
+Latency
+Requests
+Results
+Spend
+
+Perform a minimal real health/integration test.
+
+Do not mark HEALTHY merely because the API key exists.
+
+==================================================
+4. EXA ADAPTER
+==================================================
+
+Create a generic Exa COMPANY_DISCOVERY adapter.
+
+Input should support JYRA's normalized discovery request:
+
+ICP description
+target industries
+geographies
+company-size criteria
+technology characteristics
+exclusions
+maximum results
+
+Translate these into the best supported Exa query/request.
+
+Do not make downstream JYRA logic dependent on Exa-specific fields.
+
+==================================================
+5. NORMALIZED COMPANY RESULT
+==================================================
+
+Normalize returned results into JYRA candidate-company objects.
+
+Preserve whatever is genuinely available:
+
+company name
+domain
+company URL
+description
+industry
+location
+employee information
+LinkedIn company URL
+source URL
+provider relevance
+provider metadata
+discovery query
+retrieval timestamp
+
+Missing information must remain UNKNOWN.
+
+NEVER fabricate:
+
+employee count
+revenue
+industry
+location
+domain
+technology
+funding
+LinkedIn URL
+
+==================================================
+6. ICP-DRIVEN DISCOVERY
+==================================================
+
+Use the existing accepted GTM-Q1 ICP.
+
+Current verified criteria include:
+
+Geographies:
+United States
+India
+UAE
+United Kingdom
+Singapore
+
+Industries:
+SaaS
+Technology
+IT services
+Fintech
+Financial services
+Healthcare
+Professional services
+
+Employee range:
+100–2,000
+
+Sweet spot:
+200–1,000
+
+Technology characteristics:
+Microsoft 365
+Azure
+significant cloud/IT infrastructure
+
+Revenue:
+UNKNOWN
+
+Accepted exclusions:
+None
+
+AI-inferred exclusions must NOT become hard filters unless accepted.
+
+==================================================
+7. IMPORTANT — HARD VS SOFT CRITERIA
+==================================================
+
+Do not make every ICP characteristic a mandatory discovery filter.
+
+Separate:
+
+HARD FILTERS
+
+from:
+
+SOFT QUALIFICATION CRITERIA
+
+For example:
+
+geography
+industry
+employee range
+
+may be usable discovery constraints where supported.
+
+Technology characteristics such as:
+
+Microsoft 365
+Azure
+significant cloud infrastructure
+
+may not always be reliably known during initial discovery.
+
+Do not reject a candidate merely because these fields are missing.
+
+Missing ≠ negative.
+
+==================================================
+8. DISCOVERY QUERY STRATEGY
+==================================================
+
+Generate a small number of high-quality discovery queries from the ICP.
+
+Do not issue one giant vague query if multiple focused queries produce
+better coverage.
+
+However:
+
+MAXIMUM Exa calls for this test:
+5
+
+MAXIMUM final candidate companies:
+20
+
+Stop when sufficient candidates have been discovered.
+
+==================================================
+9. COMPANY DISCOVERY ≠ BUYING INTENT
+==================================================
+
+This is critical.
+
+Exa discovery results establish:
+
+"This company may belong to the target market."
+
+They do NOT establish:
+
+"this company needs Managed SOC"
+
+or:
+
+"this company is buying"
+
+or:
+
+"this company has urgency"
+
+Do not generate Need or Timing signals directly from discovery results.
+
+==================================================
+10. ENTITY RESOLUTION
+==================================================
+
+Run all Exa candidates through JYRA's canonical company resolver.
+
+Normalize:
+
+company name
+domain
+http/https
+www/non-www
+LinkedIn company URL
+
+Compare against:
+
+existing imported companies
+existing discovered companies
+existing project companies
+
+Avoid duplicate companies.
+
+==================================================
+11. DOMAIN RESOLUTION
+==================================================
+
+Domain is NOT mandatory for ingestion.
+
+If Exa does not return a domain:
+
+use existing cheap domain-resolution workflow.
+
+Possible inputs:
+
+company name
+company URL
+LinkedIn URL
+location
+industry
+description
+
+Only auto-accept a domain when sufficiently verified.
+
+Ambiguous:
+NEEDS REVIEW
+
+Unresolved:
+UNKNOWN
+
+Never guess.
+
+==================================================
+12. PROVENANCE
+==================================================
+
+Every discovered candidate must retain:
+
+Provider:
+Exa
+
+Capability:
+COMPANY_DISCOVERY
+
+Discovery run ID
+
+Query
+
+Source URL
+
+Retrieval timestamp
+
+Provider metadata
+
+This must eventually allow JYRA to answer:
+
+"Why is this company in my market?"
+
+==================================================
+13. CHEAP ICP QUALIFICATION
+==================================================
+
+After canonicalization, evaluate candidates using available cheap facts.
+
+Evaluate:
+
+geography
+industry
+employee range
+known technology characteristics
+other accepted ICP criteria
+
+Classify using the existing qualification model.
+
+Do NOT treat missing attributes as failures.
+
+==================================================
+14. NO DEEP RESEARCH YET
+==================================================
+
+DO NOT automatically call:
+
+Tavily
+Apify
+Exa again
+people enrichment
+email enrichment
+phone enrichment
+
+after discovering the companies.
+
+Instead produce a:
+
+PRIORITIZED RESEARCH QUEUE
+
+Select which companies deserve Tavily/Apify research next.
+
+==================================================
+15. RESEARCH PRIORITIZATION
+==================================================
+
+Rank research candidates using existing deterministic logic based on:
+
+ICP fit
+missing information
+expected information value
+research cost
+existing evidence
+
+Do not use fabricated buying intent.
+
+This ranking means:
+
+"worth researching next"
+
+NOT:
+
+"best sales opportunity."
+
+==================================================
+16. COST CONTROL
+==================================================
+
+Record:
+
+Exa calls
+results returned
+accepted candidates
+duplicates
+rejected candidates
+credits/cost if available
+latency
+
+Maximum:
+5 Exa calls
+20 final candidates
+
+No uncontrolled loops.
+
+==================================================
+17. CONTROLLED REAL TEST
+==================================================
+
+Run ONE development-only discovery test.
+
+Seller:
+Aadit Technologies
+
+Project:
+GTM-Q1
+
+Offering:
+Managed SOC
+
+Return maximum:
+20 canonical candidate companies.
+
+Do not research them after discovery.
+
+==================================================
+18. OUTPUT
+==================================================
+
+Return a table:
+
+COMPANY
+DOMAIN
+GEOGRAPHY
+INDUSTRY
+EMPLOYEE SIZE
+DISCOVERY SOURCE
+ICP QUALIFICATION
+DOMAIN CONFIDENCE
+EXISTING/NEW
+RESEARCH PRIORITY
+
+Then report:
+
+EXA INTEGRATION:
+PASS/FAIL
+
+PROVIDER HEALTH:
+
+ROUTER:
+PASS/FAIL
+
+DISCOVERY QUERIES:
+
+EXA CALLS:
+
+RAW RESULTS:
+
+ENTITY-VALID RESULTS:
+
+WRONG/AMBIGUOUS RESULTS:
+
+DUPLICATES:
+
+EXISTING COMPANIES MATCHED:
+
+NEW CANONICAL COMPANIES:
+
+MISSING DOMAINS:
+
+DOMAIN RESOLUTION ATTEMPTS:
+
+LIKELY FIT:
+
+POSSIBLE FIT:
+
+INSUFFICIENT DATA:
+
+LIKELY NOT FIT:
+
+PRIORITIZED FOR RESEARCH:
+
+EXA COST:
+
+CONTACT ENRICHMENT CALLS:
+0
+
+TAVILY CALLS:
+0
+
+APIFY CALLS:
+0
+
+BUYING SIGNALS CREATED:
+0
+
+PROVENANCE:
+PASS/FAIL
+
+FINAL STATUS:
+PASS/FAIL
+
+==================================================
+19. IMPORTANT QUALITY RULE
+==================================================
+
+20 companies is NOT the success criterion.
+
+Correct companies are the success criterion.
+
+Returning 8 high-quality candidates is better than returning 20
+questionable companies.
+
+Do not pad the result set.
+
+==================================================
+20. DATABASE SAFETY
+==================================================
+
+DEVELOPMENT ONLY.
+
+Do not migrate/reset/seed/modify production.
+
+Production untouched.
+
+==================================================
+STOP CONDITION
+==================================================
+
+STOP after:
+
+ICP
+→ Exa COMPANY_DISCOVERY
+→ canonical companies
+→ cheap qualification
+→ prioritized research queue
+
+Do not automatically run Tavily or Apify against the discovered
+companies.
