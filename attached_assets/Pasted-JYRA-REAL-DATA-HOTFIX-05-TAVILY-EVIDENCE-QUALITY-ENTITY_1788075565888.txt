@@ -1,0 +1,334 @@
+JYRA — REAL DATA HOTFIX 05
+TAVILY EVIDENCE QUALITY, ENTITY ATTRIBUTION & SOURCE DEDUPLICATION
+
+Current real test:
+Company: 7C Studio
+Canonical domain: 7cstudio.com
+Provider: Tavily
+Capability: WEB_SEARCH
+
+Tavily integration itself works.
+
+However the real evidence UI exposed quality problems.
+
+Current public evidence includes:
+
+- https://crunchbase.com/organization/7c-studio
+- https://discover.7cstudio.com
+- a LinkedIn company URL apparently beginning:
+  https://in.linkedin.com/company/7evenc...
+- https://7cstudio.com
+- http://7cstudio.com
+
+The UI labels these records as COMPANY WEBSITE.
+
+Do NOT proceed to fact extraction/signals yet.
+
+==================================================
+OBJECTIVE
+==================================================
+
+Make external WEB_SEARCH evidence safe enough to enter JYRA's
+intelligence pipeline.
+
+Fix:
+
+1. entity attribution
+2. source classification
+3. canonical URL deduplication
+4. evidence-quality acceptance
+
+Use ONLY existing 7C Studio Tavily results.
+
+Do not perform another Tavily search unless absolutely required for
+debugging.
+
+==================================================
+1. ENTITY ATTRIBUTION
+==================================================
+
+Re-evaluate every Tavily result currently associated with 7C Studio.
+
+Use available identity evidence:
+
+- canonical domain: 7cstudio.com
+- company name: 7C Studio
+- aliases if legitimately known
+- company description
+- geography if known
+- official-site references
+- cross-source identity evidence
+
+Do NOT accept a result merely because:
+
+"7C"
+"7C Studio"
+"Studio"
+
+appears somewhere.
+
+For every existing result classify:
+
+CONFIRMED_ENTITY
+PROBABLE_ENTITY
+AMBIGUOUS_ENTITY
+WRONG_ENTITY
+
+Explain the evidence supporting the classification.
+
+==================================================
+2. INVESTIGATE LINKEDIN RESULT
+==================================================
+
+Specifically inspect the existing LinkedIn result currently attached
+to 7C Studio.
+
+Determine whether that LinkedIn company actually represents:
+
+7C Studio / 7cstudio.com
+
+If identity cannot be established sufficiently, remove/quarantine it
+from signal-eligible evidence.
+
+Do NOT delete provenance/history.
+
+Mark rejected/quarantined evidence with the reason.
+
+Wrong-company evidence must NEVER enter fact/signal evaluation.
+
+==================================================
+3. SOURCE CLASSIFICATION
+==================================================
+
+Do not label every Tavily result COMPANY_WEBSITE.
+
+Introduce/use generic source types such as the existing model supports.
+
+At minimum distinguish:
+
+OFFICIAL_WEBSITE
+NEWS
+JOB_LISTING
+SOCIAL_COMPANY_PROFILE
+BUSINESS_DATABASE
+PRESS_RELEASE
+PARTNER_VENDOR
+OTHER_WEB
+
+Examples:
+
+7cstudio.com
+→ OFFICIAL_WEBSITE
+
+discover.7cstudio.com
+→ OFFICIAL_WEBSITE if ownership is confirmed by canonical domain
+
+crunchbase.com
+→ BUSINESS_DATABASE
+
+linkedin.com/company/...
+→ SOCIAL_COMPANY_PROFILE
+
+Do not infer NEWS merely from page text.
+
+==================================================
+4. CANONICAL URL NORMALIZATION
+==================================================
+
+Normalize URLs before evidence deduplication.
+
+Handle:
+
+http vs https
+www vs non-www where equivalent
+trailing slash
+fragments
+tracking parameters
+common campaign parameters
+URL casing where appropriate
+
+Example:
+
+http://7cstudio.com
+https://7cstudio.com/
+https://www.7cstudio.com
+
+should resolve to the same canonical source identity when they represent
+the same page/site.
+
+Do not collapse genuinely different paths/pages containing different
+evidence.
+
+==================================================
+5. CONTENT DEDUPLICATION
+==================================================
+
+Use both:
+
+canonical source identity
++
+content hash/fingerprint
+
+Do not retain multiple RAW evidence records containing essentially the
+same content merely because different providers or protocols returned it.
+
+However preserve provider provenance.
+
+If Apify and Tavily discovered the same source/content:
+
+one canonical evidence item may have multiple acquisition/provenance
+records if the current data model supports this.
+
+Do not lose knowledge of which provider discovered it.
+
+==================================================
+6. EVIDENCE ACCEPTANCE
+==================================================
+
+Separate:
+
+SEARCH RESULT
+
+from:
+
+ACCEPTED RAW EVIDENCE
+
+A Tavily result should not automatically become company evidence.
+
+Require sufficient entity attribution first.
+
+Suggested semantics:
+
+CONFIRMED_ENTITY
+→ eligible
+
+PROBABLE_ENTITY
+→ eligible only according to existing confidence/governance policy
+
+AMBIGUOUS_ENTITY
+→ Needs Review / not signal eligible
+
+WRONG_ENTITY
+→ rejected / not signal eligible
+
+Do not fabricate confidence thresholds merely for this test; use or
+extend the existing governed confidence model consistently.
+
+==================================================
+7. SOURCE CONFIDENCE
+==================================================
+
+Do not assign the same confidence mechanically to unrelated source
+types.
+
+Entity confidence and source reliability should remain conceptually
+separate.
+
+For example:
+
+Official website:
+strong identity attribution
+
+Crunchbase:
+external source, identity still must be matched
+
+LinkedIn:
+company profile, identity must be verified
+
+A confidence number must have an explainable basis.
+
+==================================================
+8. REPROCESS EXISTING RECORDS ONLY
+==================================================
+
+Reprocess the currently stored 7C Studio public evidence.
+
+Do NOT:
+
+change signal rules
+change ICP
+change scoring
+change opportunity state
+add another provider
+run COMPANY_DISCOVERY
+research another company
+
+==================================================
+PASS CRITERIA
+==================================================
+
+PASS if:
+
+1. Every current Tavily result receives an entity-attribution decision.
+
+2. Wrong/ambiguous results cannot enter fact/signal evaluation.
+
+3. Crunchbase is no longer classified as COMPANY_WEBSITE.
+
+4. LinkedIn is no longer classified as COMPANY_WEBSITE.
+
+5. Official 7cstudio.com sources are correctly classified.
+
+6. HTTP/HTTPS duplicate official evidence is consolidated/recognized.
+
+7. Provider provenance is preserved.
+
+8. No valid unique external evidence is accidentally deleted.
+
+9. No signals are generated during this hotfix.
+
+==================================================
+REPORT
+==================================================
+
+Return a table:
+
+SOURCE URL
+SOURCE TYPE
+ENTITY STATUS
+ENTITY CONFIDENCE
+ACCEPTED AS EVIDENCE
+DUPLICATE
+REASON
+
+Then report:
+
+RESULTS REVIEWED:
+
+CONFIRMED:
+
+PROBABLE:
+
+AMBIGUOUS:
+
+WRONG ENTITY:
+
+DUPLICATES FOUND:
+
+CANONICAL EVIDENCE ITEMS AFTER CLEANUP:
+
+SIGNAL-ELIGIBLE EVIDENCE:
+
+PROVENANCE PRESERVED:
+PASS/FAIL
+
+ANY FACTS CREATED:
+YES/NO
+
+ANY SIGNALS CREATED:
+YES/NO
+
+==================================================
+DATABASE SAFETY
+==================================================
+
+DEVELOPMENT ONLY.
+
+Production untouched.
+
+STOP after proving:
+
+WEB SEARCH RESULT
+→ ENTITY VERIFICATION
+→ SOURCE CLASSIFICATION
+→ DEDUPLICATED TRUSTED RAW EVIDENCE
