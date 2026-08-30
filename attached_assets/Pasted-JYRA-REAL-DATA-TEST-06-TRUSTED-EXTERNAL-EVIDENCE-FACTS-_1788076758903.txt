@@ -1,0 +1,421 @@
+JYRA — REAL DATA TEST 06
+TRUSTED EXTERNAL EVIDENCE → FACTS → SIGNALS → OPPORTUNITY
+
+Previous real-data tests have established:
+
+- Apify WEBSITE_CRAWL works
+- Tavily WEB_SEARCH works
+- RAW evidence persistence works
+- fact extraction works
+- governed fact approval works
+- managed-soc signal pack is active for GTM-Q1
+- signal evaluation works
+- external evidence entity attribution/source classification/deduplication
+  has been corrected
+
+Test company:
+
+7C Studio
+Canonical domain: 7cstudio.com
+
+Seller:
+Aadit Technologies
+
+Project:
+GTM-Q1
+
+Offering:
+Managed SOC
+
+Signal pack:
+managed-soc v1.0
+
+==================================================
+OBJECTIVE
+==================================================
+
+Test the complete downstream intelligence pipeline using ONLY the
+existing trusted evidence already collected for 7C Studio.
+
+Do NOT perform new external research.
+
+Pipeline:
+
+TRUSTED RAW EVIDENCE
+→ FACT EXTRACTION
+→ FACT VALIDATION
+→ GOVERNED APPROVAL
+→ SIGNAL EVALUATION
+→ SIGNAL CLUSTERS
+→ FIT / NEED / TIMING / RELATIONSHIP
+→ CONFIDENCE
+→ OPPORTUNITY STATE
+→ WHY / WHY NOW
+→ NEXT BEST ACTION
+
+==================================================
+1. USE ONLY TRUSTED EVIDENCE
+==================================================
+
+Use only evidence classified as sufficiently attributable to 7C Studio.
+
+Exclude:
+
+WRONG_ENTITY
+AMBIGUOUS_ENTITY
+rejected evidence
+quarantined evidence
+duplicate evidence
+
+Preserve all provenance/history.
+
+Do not use rejected evidence in downstream reasoning.
+
+==================================================
+2. FACT EXTRACTION
+==================================================
+
+Run eligible RAW evidence through fact-extraction-v2.
+
+Extract only facts explicitly supported by sources.
+
+Potential categories may include existing supported fact types such as:
+
+TECHNOLOGY_MENTION
+JOB_OPENING
+HIRING_ACTIVITY
+LEADERSHIP_CHANGE
+FUNDING_EVENT
+SECURITY_TECHNOLOGY
+COMPLIANCE_ACTIVITY
+EXPANSION_EVENT
+
+Only use types supported by the existing generic fact model.
+
+Do NOT create new fact types merely to make this company score.
+
+==================================================
+3. FACT VALIDATION
+==================================================
+
+Validate every proposed fact.
+
+Event facts must satisfy existing event/date requirements.
+
+Timeless company facts may use evidence observation date according to the
+existing governed policy.
+
+Reject unsupported inference.
+
+Examples:
+
+"Founder: Suresh"
+
+does NOT equal:
+
+LEADERSHIP_CHANGE
+
+"AWS"
+
+does NOT equal:
+
+SECURITY_STACK_CHANGE
+
+"Company is hiring developers"
+
+does NOT equal:
+
+SECURITY_HIRING
+
+==================================================
+4. GOVERNED FACT LIFECYCLE
+==================================================
+
+Respect:
+
+RAW EVIDENCE
+→ PENDING FACT PROPOSAL
+→ APPROVED FACT
+→ signal eligible
+
+Do not bypass governance.
+
+For this controlled development test, process legitimate proposals
+through the same governed approval path already proven in Test 03.
+
+Report every approval/rejection.
+
+==================================================
+5. SIGNAL EVALUATION
+==================================================
+
+Evaluate approved facts against the active:
+
+managed-soc v1.0
+
+definitions:
+
+MSOC_SECURITY_LEADER
+MSOC_SECURITY_HIRING
+MSOC_FUNDED_RISK_PROGRAM
+MSOC_SECURITY_STACK_CHANGE
+
+Do NOT modify these definitions during this test.
+
+For every approved fact report:
+
+FACT
+→ SIGNAL RULES CONSIDERED
+→ MATCH / NO MATCH
+→ REASON
+
+==================================================
+6. SIGNAL PROVENANCE
+==================================================
+
+Every signal must provide:
+
+SIGNAL
+→ APPROVED FACT
+→ RAW EVIDENCE
+→ SOURCE URL
+
+No orphan signals.
+
+No signal directly from a Tavily snippet/query.
+
+==================================================
+7. SIGNAL CLUSTERS
+==================================================
+
+Run the existing generic cluster engine.
+
+Do not manufacture a cluster when only one weak fact exists unless the
+existing cluster definition legitimately permits it.
+
+Report:
+
+signals evaluated
+clusters considered
+clusters triggered
+clusters not triggered
+
+==================================================
+8. OPPORTUNITY DIMENSIONS
+==================================================
+
+Evaluate independently:
+
+FIT
+NEED
+TIMING
+RELATIONSHIP
+
+Missing evidence must remain UNKNOWN.
+
+UNKNOWN ≠ 0
+UNKNOWN ≠ negative
+UNKNOWN ≠ DORMANT
+
+Do not force all dimensions to have numeric scores.
+
+==================================================
+9. CONFIDENCE
+==================================================
+
+Calculate confidence separately using the existing confidence model.
+
+Confidence must reflect factors already supported by the architecture,
+such as:
+
+evidence quantity
+source independence
+source quality
+fact validation
+signal corroboration
+
+Confidence must NEVER increase the opportunity score.
+
+==================================================
+10. OPPORTUNITY STATE
+==================================================
+
+Run the existing opportunity-state engine.
+
+Possible existing states include:
+
+DORMANT
+WATCH
+EMERGING
+RISING
+SURGING
+ACTIVE
+COOLING
+
+But if evidence remains insufficient to establish an opportunity state,
+retain:
+
+NEEDS RESEARCH / UNKNOWN
+
+Do not use DORMANT simply because no positive signal was found.
+
+==================================================
+11. WHY / WHY NOW
+==================================================
+
+Generate the explainability output strictly from supported intelligence.
+
+Every material statement must trace to:
+
+WHY
+→ signal / cluster
+→ fact
+→ evidence
+→ source
+
+If no Need/Timing evidence exists, JYRA should say something equivalent
+to:
+
+"No evidence currently establishes Managed SOC need or buying timing."
+
+That is a valid result.
+
+Do NOT create generic sales language such as:
+
+"They use cloud technology, therefore they need Managed SOC."
+
+==================================================
+12. NEXT BEST ACTION
+==================================================
+
+Run the deterministic recommendation engine.
+
+If evidence remains insufficient:
+
+NEXT BEST ACTION may remain:
+
+RESEARCH MORE
+
+If genuine signals exist, use the existing deterministic rules.
+
+Do not automatically recommend outreach merely because a company exists.
+
+==================================================
+13. NO NEW RESEARCH
+==================================================
+
+During this test:
+
+DO NOT call Tavily.
+DO NOT call Apify.
+DO NOT call another provider.
+DO NOT run COMPANY_DISCOVERY.
+DO NOT enrich contacts.
+DO NOT research another company.
+
+We are testing downstream reasoning only.
+
+==================================================
+PASS CRITERIA
+==================================================
+
+PASS if:
+
+1. Only trusted 7C Studio evidence enters extraction.
+
+2. Legitimate facts are extracted.
+
+3. Unsupported facts are rejected.
+
+4. Governed fact lifecycle is preserved.
+
+5. Approved facts are evaluated against managed-soc.
+
+6. Signals are created only when rules genuinely match.
+
+7. Signal provenance is complete.
+
+8. Clusters are evaluated correctly.
+
+9. UNKNOWN remains UNKNOWN where appropriate.
+
+10. Opportunity state is evidence-driven.
+
+11. WHY is completely traceable.
+
+12. No unsupported buying intent is generated.
+
+13. Production is untouched.
+
+A result of ZERO signals is still a PASS if the available evidence does
+not support a Managed SOC opportunity.
+
+==================================================
+REPORT
+==================================================
+
+Return:
+
+TRUSTED EVIDENCE ITEMS:
+
+EVIDENCE SOURCES:
+
+FACT CANDIDATES:
+
+FACTS APPROVED:
+
+FACTS REJECTED:
+
+APPROVED FACTS:
+[list]
+
+SIGNAL DEFINITIONS CONSIDERED:
+
+SIGNALS CREATED:
+
+SIGNALS NOT TRIGGERED:
+
+SIGNAL CLUSTERS CREATED:
+
+FIT:
+
+NEED:
+
+TIMING:
+
+RELATIONSHIP:
+
+CONFIDENCE:
+
+OPPORTUNITY STATE:
+
+OPPORTUNITY SCORE:
+
+WHY:
+
+WHY NOW:
+
+NEXT BEST ACTION:
+
+FULL PROVENANCE:
+PASS/FAIL
+
+UNSUPPORTED BUYING INTENT CREATED:
+YES/NO
+
+FINAL TEST STATUS:
+PASS/FAIL
+
+==================================================
+DATABASE SAFETY
+==================================================
+
+DEVELOPMENT ONLY.
+
+Production untouched.
+
+STOP after completing this test.
+
+Do not research another company.
+Do not add another provider.
+Do not run COMPANY_DISCOVERY.
