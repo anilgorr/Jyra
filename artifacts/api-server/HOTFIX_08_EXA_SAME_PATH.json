@@ -1,0 +1,818 @@
+{
+  "test": "JYRA HOTFIX 08 — EXA SAME-PATH PROOF",
+  "environment": "development",
+  "seller": "Aadit Technologies",
+  "project": "GTM-Q1",
+  "offering": "Managed SOC",
+  "healthTestAndFindMyMarketSamePath": "YES",
+  "pathComparison": {
+    "healthTestEntrypoint": "scripts/run-hotfix-08-entry.ts (known-working query branch)",
+    "healthRouterFunction": "ProviderRouter.discoverCompanies",
+    "healthAdapterFunction": "createExaCompanyDiscoveryAdapter.execute",
+    "healthExaSdkCall": "exa.search(query, { type: 'auto', numResults, category: 'company' })",
+    "findMyMarketEntrypoint": "routes/discovery.ts POST /projects/:projectId/discovery",
+    "findMyMarketRouterFunction": "ProviderRouter.discoverCompanies",
+    "findMyMarketAdapterFunction": "createExaCompanyDiscoveryAdapter.execute",
+    "findMyMarketExaSdkCall": "exa.search(query, { type: 'auto', numResults, category: 'company' })",
+    "sameProviderRegistration": true,
+    "sameCapabilityEnum": true,
+    "sameRouter": true,
+    "sameAdapter": true,
+    "sameCredentials": true,
+    "sameEnvironment": true,
+    "sameRequestBuilder": true
+  },
+  "differenceFound": "The prior health report did not expose the adapter raw-result projection; the current application path and request builder are the same.",
+  "rootCause": "No current path divergence found. The historical zero was caused by the obsolete connector request failing before raw results; current direct exa-js routed requests return candidates.",
+  "knownWorkingQuery": {
+    "label": "known-working health query",
+    "request": {
+      "query": "SaaS company cloud infrastructure",
+      "category": "company",
+      "type": "auto",
+      "numResults": 3,
+      "otherFilters": {}
+    },
+    "response": {
+      "status": "success",
+      "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+      "requestId": "hotfix-08:1:b220e720-6d21-4c7a-badf-3aec920febca",
+      "rawResultCount": 3,
+      "normalizedResultCount": 3,
+      "actualCost": 0.007,
+      "latencyMs": 1368,
+      "error": null,
+      "rawResultProjection": [
+        {
+          "index": 1,
+          "title": "Nubosas",
+          "url": "https://nubosas.com",
+          "providerResultId": "https://exa.ai/library/organization/wmgnn2yrk5j",
+          "description": null,
+          "entityStatus": "VALID"
+        },
+        {
+          "index": 2,
+          "title": "InfraVault",
+          "url": "https://linkedin.com/company/infravault",
+          "providerResultId": "https://exa.ai/library/organization/3r1h9bzfzlt",
+          "description": null,
+          "entityStatus": "VALID"
+        },
+        {
+          "index": 3,
+          "title": "Em Tech",
+          "url": "https://linkedin.com/company/ems-tech",
+          "providerResultId": "https://exa.ai/library/organization/9rxnfkjgypd",
+          "description": null,
+          "entityStatus": "VALID"
+        }
+      ]
+    },
+    "normalized": [
+      {
+        "name": "Nubosas",
+        "domain": "nubosas.com",
+        "website": "https://nubosas.com",
+        "description": null,
+        "industry": null,
+        "location": null,
+        "employeeCount": null,
+        "employeeRange": null,
+        "linkedinUrl": null,
+        "profileUrls": {},
+        "sourceUrl": "https://nubosas.com",
+        "relevanceScore": null,
+        "providerMetadata": {
+          "resultId": "https://exa.ai/library/organization/wmgnn2yrk5j",
+          "title": "Nubosas",
+          "author": "Exa",
+          "publishedDate": "2026-06-04T00:00:00.000Z",
+          "originalResultUrl": "https://nubosas.com",
+          "profilePlatform": null
+        }
+      },
+      {
+        "name": "InfraVault",
+        "domain": null,
+        "website": null,
+        "description": null,
+        "industry": null,
+        "location": null,
+        "employeeCount": null,
+        "employeeRange": null,
+        "linkedinUrl": "https://linkedin.com/company/infravault",
+        "profileUrls": {
+          "linkedin": "https://linkedin.com/company/infravault"
+        },
+        "sourceUrl": "https://linkedin.com/company/infravault",
+        "relevanceScore": null,
+        "providerMetadata": {
+          "resultId": "https://exa.ai/library/organization/3r1h9bzfzlt",
+          "title": "InfraVault",
+          "author": "Exa",
+          "publishedDate": "2026-06-06T00:00:00.000Z",
+          "originalResultUrl": "https://linkedin.com/company/infravault",
+          "profilePlatform": "linkedin"
+        }
+      },
+      {
+        "name": "Em Tech",
+        "domain": null,
+        "website": null,
+        "description": null,
+        "industry": null,
+        "location": null,
+        "employeeCount": null,
+        "employeeRange": null,
+        "linkedinUrl": "https://linkedin.com/company/ems-tech",
+        "profileUrls": {
+          "linkedin": "https://linkedin.com/company/ems-tech"
+        },
+        "sourceUrl": "https://linkedin.com/company/ems-tech",
+        "relevanceScore": null,
+        "providerMetadata": {
+          "resultId": "https://exa.ai/library/organization/9rxnfkjgypd",
+          "title": "Em Tech",
+          "author": "Exa",
+          "publishedDate": "2026-06-08T00:00:00.000Z",
+          "originalResultUrl": "https://linkedin.com/company/ems-tech",
+          "profilePlatform": "linkedin"
+        }
+      }
+    ],
+    "stageTrace": {
+      "candidates": [
+        {
+          "company": "Nubosas",
+          "rawExaUrl": "https://nubosas.com",
+          "canonicalDomain": "nubosas.com",
+          "entityStatus": "VALID",
+          "icpStatus": "UNKNOWN_FIELDS_PRESERVED",
+          "finalStatus": "FINAL_CANDIDATE",
+          "reason": "Non-platform domain available"
+        },
+        {
+          "company": "InfraVault",
+          "rawExaUrl": "https://linkedin.com/company/infravault",
+          "canonicalDomain": null,
+          "entityStatus": "VALID",
+          "icpStatus": "UNKNOWN_FIELDS_PRESERVED",
+          "finalStatus": "FINAL_CANDIDATE",
+          "reason": "Domain unresolved; candidate retained"
+        },
+        {
+          "company": "Em Tech",
+          "rawExaUrl": "https://linkedin.com/company/ems-tech",
+          "canonicalDomain": null,
+          "entityStatus": "VALID",
+          "icpStatus": "UNKNOWN_FIELDS_PRESERVED",
+          "finalStatus": "FINAL_CANDIDATE",
+          "reason": "Domain unresolved; candidate retained"
+        }
+      ],
+      "counters": {
+        "providerRawResults": 3,
+        "normalizedResults": 3,
+        "entityValidCandidates": 3,
+        "canonicalizationSurvivors": 3,
+        "dedupeSurvivors": 3,
+        "icpQualificationSurvivors": 3,
+        "persistableCandidates": 3,
+        "finalFindMyMarketResults": 3
+      },
+      "query": "SaaS company cloud infrastructure"
+    }
+  },
+  "icpTestQuery": {
+    "label": "GTM-Q1 ICP query",
+    "request": {
+      "query": "SaaS companies that may be relevant buyers for Managed Soc",
+      "category": "company",
+      "type": "auto",
+      "numResults": 10,
+      "otherFilters": {}
+    },
+    "response": {
+      "status": "success",
+      "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+      "requestId": "hotfix-08:2:b220e720-6d21-4c7a-badf-3aec920febca",
+      "rawResultCount": 10,
+      "normalizedResultCount": 10,
+      "actualCost": 0.007,
+      "latencyMs": 306,
+      "error": null,
+      "rawResultProjection": [
+        {
+          "index": 1,
+          "title": "Digital Maelstrom",
+          "url": "https://digitalmaelstrom.net",
+          "providerResultId": "https://exa.ai/library/organization/fjzrpfm8kmn",
+          "description": null,
+          "entityStatus": "VALID"
+        },
+        {
+          "index": 2,
+          "title": "Truvo Cyber",
+          "url": "https://truvocyber.com",
+          "providerResultId": "https://exa.ai/library/organization/vjby0qxjcbn",
+          "description": null,
+          "entityStatus": "VALID"
+        },
+        {
+          "index": 3,
+          "title": "CyberForge",
+          "url": "https://cyberforgeconsulting.com",
+          "providerResultId": "https://exa.ai/library/organization/39gbqxg8q21",
+          "description": null,
+          "entityStatus": "VALID"
+        },
+        {
+          "index": 4,
+          "title": "Simple IT Inc",
+          "url": "https://simpleitindy.com",
+          "providerResultId": "https://exa.ai/library/organization/jlp00fkpd1z",
+          "description": null,
+          "entityStatus": "VALID"
+        },
+        {
+          "index": 5,
+          "title": "Jutsu Inc.",
+          "url": "https://agentsoc.com",
+          "providerResultId": "https://exa.ai/library/organization/q0sns1fmj90",
+          "description": null,
+          "entityStatus": "VALID"
+        },
+        {
+          "index": 6,
+          "title": "CybrX IT",
+          "url": "https://cybrxit.com",
+          "providerResultId": "https://exa.ai/library/organization/jwlxpvb1ymy",
+          "description": null,
+          "entityStatus": "VALID"
+        },
+        {
+          "index": 7,
+          "title": "Cycore",
+          "url": "https://cycoresecure.com",
+          "providerResultId": "https://exa.ai/library/organization/8w35v4vmm05",
+          "description": null,
+          "entityStatus": "VALID"
+        },
+        {
+          "index": 8,
+          "title": "SecureSky",
+          "url": "https://securesky.com",
+          "providerResultId": "https://exa.ai/library/organization/x2r6b3zs4vr",
+          "description": null,
+          "entityStatus": "VALID"
+        },
+        {
+          "index": 9,
+          "title": "Decrypt Compliance",
+          "url": "https://decrypt.cpa",
+          "providerResultId": "https://exa.ai/library/organization/vrytr4m658c",
+          "description": null,
+          "entityStatus": "VALID"
+        },
+        {
+          "index": 10,
+          "title": "Secov",
+          "url": "https://linkedin.com/company/secovhq",
+          "providerResultId": "https://exa.ai/library/organization/5wbj8vfj2n5",
+          "description": null,
+          "entityStatus": "VALID"
+        }
+      ]
+    },
+    "normalized": [
+      {
+        "name": "Digital Maelstrom",
+        "domain": "digitalmaelstrom.net",
+        "website": "https://digitalmaelstrom.net",
+        "description": null,
+        "industry": null,
+        "location": null,
+        "employeeCount": null,
+        "employeeRange": null,
+        "linkedinUrl": null,
+        "profileUrls": {},
+        "sourceUrl": "https://digitalmaelstrom.net",
+        "relevanceScore": null,
+        "providerMetadata": {
+          "resultId": "https://exa.ai/library/organization/fjzrpfm8kmn",
+          "title": "Digital Maelstrom",
+          "author": "Exa",
+          "publishedDate": "2026-06-29T00:00:00.000Z",
+          "originalResultUrl": "https://digitalmaelstrom.net",
+          "profilePlatform": null
+        }
+      },
+      {
+        "name": "Truvo Cyber",
+        "domain": "truvocyber.com",
+        "website": "https://truvocyber.com",
+        "description": null,
+        "industry": null,
+        "location": null,
+        "employeeCount": null,
+        "employeeRange": null,
+        "linkedinUrl": null,
+        "profileUrls": {},
+        "sourceUrl": "https://truvocyber.com",
+        "relevanceScore": null,
+        "providerMetadata": {
+          "resultId": "https://exa.ai/library/organization/vjby0qxjcbn",
+          "title": "Truvo Cyber",
+          "author": "Exa",
+          "publishedDate": "2026-06-02T00:00:00.000Z",
+          "originalResultUrl": "https://truvocyber.com",
+          "profilePlatform": null
+        }
+      },
+      {
+        "name": "CyberForge",
+        "domain": "cyberforgeconsulting.com",
+        "website": "https://cyberforgeconsulting.com",
+        "description": null,
+        "industry": null,
+        "location": null,
+        "employeeCount": null,
+        "employeeRange": null,
+        "linkedinUrl": null,
+        "profileUrls": {},
+        "sourceUrl": "https://cyberforgeconsulting.com",
+        "relevanceScore": null,
+        "providerMetadata": {
+          "resultId": "https://exa.ai/library/organization/39gbqxg8q21",
+          "title": "CyberForge",
+          "author": "Exa",
+          "publishedDate": "2026-06-05T00:00:00.000Z",
+          "originalResultUrl": "https://cyberforgeconsulting.com",
+          "profilePlatform": null
+        }
+      },
+      {
+        "name": "Simple IT Inc",
+        "domain": "simpleitindy.com",
+        "website": "https://simpleitindy.com",
+        "description": null,
+        "industry": null,
+        "location": null,
+        "employeeCount": null,
+        "employeeRange": null,
+        "linkedinUrl": null,
+        "profileUrls": {},
+        "sourceUrl": "https://simpleitindy.com",
+        "relevanceScore": null,
+        "providerMetadata": {
+          "resultId": "https://exa.ai/library/organization/jlp00fkpd1z",
+          "title": "Simple IT Inc",
+          "author": "Exa",
+          "publishedDate": "2026-06-25T00:00:00.000Z",
+          "originalResultUrl": "https://simpleitindy.com",
+          "profilePlatform": null
+        }
+      },
+      {
+        "name": "Jutsu Inc.",
+        "domain": "agentsoc.com",
+        "website": "https://agentsoc.com",
+        "description": null,
+        "industry": null,
+        "location": null,
+        "employeeCount": null,
+        "employeeRange": null,
+        "linkedinUrl": null,
+        "profileUrls": {},
+        "sourceUrl": "https://agentsoc.com",
+        "relevanceScore": null,
+        "providerMetadata": {
+          "resultId": "https://exa.ai/library/organization/q0sns1fmj90",
+          "title": "Jutsu Inc.",
+          "author": "Exa",
+          "publishedDate": "2026-05-27T00:00:00.000Z",
+          "originalResultUrl": "https://agentsoc.com",
+          "profilePlatform": null
+        }
+      },
+      {
+        "name": "CybrX IT",
+        "domain": "cybrxit.com",
+        "website": "https://cybrxit.com",
+        "description": null,
+        "industry": null,
+        "location": null,
+        "employeeCount": null,
+        "employeeRange": null,
+        "linkedinUrl": null,
+        "profileUrls": {},
+        "sourceUrl": "https://cybrxit.com",
+        "relevanceScore": null,
+        "providerMetadata": {
+          "resultId": "https://exa.ai/library/organization/jwlxpvb1ymy",
+          "title": "CybrX IT",
+          "author": "Exa",
+          "publishedDate": "2026-06-28T00:00:00.000Z",
+          "originalResultUrl": "https://cybrxit.com",
+          "profilePlatform": null
+        }
+      },
+      {
+        "name": "Cycore",
+        "domain": "cycoresecure.com",
+        "website": "https://cycoresecure.com",
+        "description": null,
+        "industry": null,
+        "location": null,
+        "employeeCount": null,
+        "employeeRange": null,
+        "linkedinUrl": null,
+        "profileUrls": {},
+        "sourceUrl": "https://cycoresecure.com",
+        "relevanceScore": null,
+        "providerMetadata": {
+          "resultId": "https://exa.ai/library/organization/8w35v4vmm05",
+          "title": "Cycore",
+          "author": "Exa",
+          "publishedDate": "2026-06-21T00:00:00.000Z",
+          "originalResultUrl": "https://cycoresecure.com",
+          "profilePlatform": null
+        }
+      },
+      {
+        "name": "SecureSky",
+        "domain": "securesky.com",
+        "website": "https://securesky.com",
+        "description": null,
+        "industry": null,
+        "location": null,
+        "employeeCount": null,
+        "employeeRange": null,
+        "linkedinUrl": null,
+        "profileUrls": {},
+        "sourceUrl": "https://securesky.com",
+        "relevanceScore": null,
+        "providerMetadata": {
+          "resultId": "https://exa.ai/library/organization/x2r6b3zs4vr",
+          "title": "SecureSky",
+          "author": "Exa",
+          "publishedDate": "2026-06-26T00:00:00.000Z",
+          "originalResultUrl": "https://securesky.com",
+          "profilePlatform": null
+        }
+      },
+      {
+        "name": "Decrypt Compliance",
+        "domain": "decrypt.cpa",
+        "website": "https://decrypt.cpa",
+        "description": null,
+        "industry": null,
+        "location": null,
+        "employeeCount": null,
+        "employeeRange": null,
+        "linkedinUrl": null,
+        "profileUrls": {},
+        "sourceUrl": "https://decrypt.cpa",
+        "relevanceScore": null,
+        "providerMetadata": {
+          "resultId": "https://exa.ai/library/organization/vrytr4m658c",
+          "title": "Decrypt Compliance",
+          "author": "Exa",
+          "publishedDate": "2026-06-14T00:00:00.000Z",
+          "originalResultUrl": "https://decrypt.cpa",
+          "profilePlatform": null
+        }
+      },
+      {
+        "name": "Secov",
+        "domain": null,
+        "website": null,
+        "description": null,
+        "industry": null,
+        "location": null,
+        "employeeCount": null,
+        "employeeRange": null,
+        "linkedinUrl": "https://linkedin.com/company/secovhq",
+        "profileUrls": {
+          "linkedin": "https://linkedin.com/company/secovhq"
+        },
+        "sourceUrl": "https://linkedin.com/company/secovhq",
+        "relevanceScore": null,
+        "providerMetadata": {
+          "resultId": "https://exa.ai/library/organization/5wbj8vfj2n5",
+          "title": "Secov",
+          "author": "Exa",
+          "publishedDate": "2026-06-26T00:00:00.000Z",
+          "originalResultUrl": "https://linkedin.com/company/secovhq",
+          "profilePlatform": "linkedin"
+        }
+      }
+    ],
+    "stageTrace": {
+      "candidates": [
+        {
+          "company": "Digital Maelstrom",
+          "rawExaUrl": "https://digitalmaelstrom.net",
+          "canonicalDomain": "digitalmaelstrom.net",
+          "entityStatus": "VALID",
+          "icpStatus": "UNKNOWN_FIELDS_PRESERVED",
+          "finalStatus": "FINAL_CANDIDATE",
+          "reason": "Non-platform domain available"
+        },
+        {
+          "company": "Truvo Cyber",
+          "rawExaUrl": "https://truvocyber.com",
+          "canonicalDomain": "truvocyber.com",
+          "entityStatus": "VALID",
+          "icpStatus": "UNKNOWN_FIELDS_PRESERVED",
+          "finalStatus": "FINAL_CANDIDATE",
+          "reason": "Non-platform domain available"
+        },
+        {
+          "company": "CyberForge",
+          "rawExaUrl": "https://cyberforgeconsulting.com",
+          "canonicalDomain": "cyberforgeconsulting.com",
+          "entityStatus": "VALID",
+          "icpStatus": "UNKNOWN_FIELDS_PRESERVED",
+          "finalStatus": "FINAL_CANDIDATE",
+          "reason": "Non-platform domain available"
+        },
+        {
+          "company": "Simple IT Inc",
+          "rawExaUrl": "https://simpleitindy.com",
+          "canonicalDomain": "simpleitindy.com",
+          "entityStatus": "VALID",
+          "icpStatus": "UNKNOWN_FIELDS_PRESERVED",
+          "finalStatus": "FINAL_CANDIDATE",
+          "reason": "Non-platform domain available"
+        },
+        {
+          "company": "Jutsu Inc.",
+          "rawExaUrl": "https://agentsoc.com",
+          "canonicalDomain": "agentsoc.com",
+          "entityStatus": "VALID",
+          "icpStatus": "UNKNOWN_FIELDS_PRESERVED",
+          "finalStatus": "FINAL_CANDIDATE",
+          "reason": "Non-platform domain available"
+        },
+        {
+          "company": "CybrX IT",
+          "rawExaUrl": "https://cybrxit.com",
+          "canonicalDomain": "cybrxit.com",
+          "entityStatus": "VALID",
+          "icpStatus": "UNKNOWN_FIELDS_PRESERVED",
+          "finalStatus": "FINAL_CANDIDATE",
+          "reason": "Non-platform domain available"
+        },
+        {
+          "company": "Cycore",
+          "rawExaUrl": "https://cycoresecure.com",
+          "canonicalDomain": "cycoresecure.com",
+          "entityStatus": "VALID",
+          "icpStatus": "UNKNOWN_FIELDS_PRESERVED",
+          "finalStatus": "FINAL_CANDIDATE",
+          "reason": "Non-platform domain available"
+        },
+        {
+          "company": "SecureSky",
+          "rawExaUrl": "https://securesky.com",
+          "canonicalDomain": "securesky.com",
+          "entityStatus": "VALID",
+          "icpStatus": "UNKNOWN_FIELDS_PRESERVED",
+          "finalStatus": "FINAL_CANDIDATE",
+          "reason": "Non-platform domain available"
+        },
+        {
+          "company": "Decrypt Compliance",
+          "rawExaUrl": "https://decrypt.cpa",
+          "canonicalDomain": "decrypt.cpa",
+          "entityStatus": "VALID",
+          "icpStatus": "UNKNOWN_FIELDS_PRESERVED",
+          "finalStatus": "FINAL_CANDIDATE",
+          "reason": "Non-platform domain available"
+        },
+        {
+          "company": "Secov",
+          "rawExaUrl": "https://linkedin.com/company/secovhq",
+          "canonicalDomain": null,
+          "entityStatus": "VALID",
+          "icpStatus": "UNKNOWN_FIELDS_PRESERVED",
+          "finalStatus": "FINAL_CANDIDATE",
+          "reason": "Domain unresolved; candidate retained"
+        }
+      ],
+      "counters": {
+        "providerRawResults": 10,
+        "normalizedResults": 10,
+        "entityValidCandidates": 10,
+        "canonicalizationSurvivors": 10,
+        "dedupeSurvivors": 10,
+        "icpQualificationSurvivors": 10,
+        "persistableCandidates": 10,
+        "finalFindMyMarketResults": 10
+      },
+      "query": "SaaS companies that may be relevant buyers for Managed Soc"
+    }
+  },
+  "requiredFinalReport": {
+    "providerRouterSelected": "b220e720-6d21-4c7a-badf-3aec920febca",
+    "exaRawResults": 3,
+    "normalizedResults": 3,
+    "entityValid": 3,
+    "canonicalizationSurvivors": 3,
+    "dedupeSurvivors": 3,
+    "icpSurvivors": 3,
+    "persistable": 10,
+    "finalUiApiResults": 10,
+    "dropPoint": "NONE",
+    "dropReason": "NONE",
+    "databaseError": "NO"
+  },
+  "safety": {
+    "providerCalls": 2,
+    "tavilyCalls": 0,
+    "apifyCalls": 0,
+    "contactEnrichment": 0,
+    "signals": 0,
+    "productionOperations": 0,
+    "databaseDeltas": {
+      "projectCompanies": 0,
+      "researchJobs": 0,
+      "evidenceRows": 0,
+      "contactEnrichmentAttempts": 0,
+      "signals": 0
+    }
+  },
+  "finalStatus": "PASS",
+  "findMyMarketPipeline": {
+    "replayedProviderRequestId": "hotfix-08:2:b220e720-6d21-4c7a-badf-3aec920febca",
+    "additionalExaCalls": 0,
+    "result": {
+      "status": "completed",
+      "runId": "dd73809f-9c36-4a27-8881-2b7ed3c2d26b",
+      "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+      "query": "SaaS companies that may be relevant buyers for Managed Soc",
+      "queries": [
+        "SaaS companies that may be relevant buyers for Managed Soc"
+      ],
+      "providerCalls": 1,
+      "estimatedCost": 0,
+      "actualCost": 0.007,
+      "rawResults": 10,
+      "discovered": 10,
+      "canonicalized": 10,
+      "duplicatesRemoved": 0,
+      "linked": 10,
+      "possibleMatches": 0,
+      "rejected": 0,
+      "blockedReason": null,
+      "candidates": [
+        {
+          "companyId": "326ed75f-2c27-4bdc-b037-98d940757116",
+          "name": "CyberForge",
+          "domain": "cyberforgeconsulting.com",
+          "geography": null,
+          "industry": null,
+          "employeeSize": null,
+          "discoverySource": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "qualification": "INSUFFICIENT_DATA",
+          "domainConfidence": "HIGH_CONFIDENCE",
+          "existingOrNew": "NEW",
+          "researchPriority": 82,
+          "sourceUrl": "https://cyberforgeconsulting.com"
+        },
+        {
+          "companyId": "da4f58d5-6840-461f-9415-fa0737970fc2",
+          "name": "CybrX IT",
+          "domain": "cybrxit.com",
+          "geography": null,
+          "industry": null,
+          "employeeSize": null,
+          "discoverySource": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "qualification": "INSUFFICIENT_DATA",
+          "domainConfidence": "HIGH_CONFIDENCE",
+          "existingOrNew": "NEW",
+          "researchPriority": 82,
+          "sourceUrl": "https://cybrxit.com"
+        },
+        {
+          "companyId": "24fd414c-4496-4911-b8e6-710d02ca68c6",
+          "name": "Cycore",
+          "domain": "cycoresecure.com",
+          "geography": null,
+          "industry": null,
+          "employeeSize": null,
+          "discoverySource": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "qualification": "INSUFFICIENT_DATA",
+          "domainConfidence": "HIGH_CONFIDENCE",
+          "existingOrNew": "NEW",
+          "researchPriority": 82,
+          "sourceUrl": "https://cycoresecure.com"
+        },
+        {
+          "companyId": "7fc5cd9b-bafa-409f-9570-39f28e39af75",
+          "name": "Decrypt Compliance",
+          "domain": "decrypt.cpa",
+          "geography": null,
+          "industry": null,
+          "employeeSize": null,
+          "discoverySource": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "qualification": "INSUFFICIENT_DATA",
+          "domainConfidence": "HIGH_CONFIDENCE",
+          "existingOrNew": "NEW",
+          "researchPriority": 82,
+          "sourceUrl": "https://decrypt.cpa"
+        },
+        {
+          "companyId": "42ed009d-c6bb-43b6-b985-1a45ffd79c50",
+          "name": "Digital Maelstrom",
+          "domain": "digitalmaelstrom.net",
+          "geography": null,
+          "industry": null,
+          "employeeSize": null,
+          "discoverySource": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "qualification": "INSUFFICIENT_DATA",
+          "domainConfidence": "HIGH_CONFIDENCE",
+          "existingOrNew": "NEW",
+          "researchPriority": 82,
+          "sourceUrl": "https://digitalmaelstrom.net"
+        },
+        {
+          "companyId": "4c617b7f-e5dc-49d9-a047-4d13b3c7fd94",
+          "name": "Jutsu Inc.",
+          "domain": "agentsoc.com",
+          "geography": null,
+          "industry": null,
+          "employeeSize": null,
+          "discoverySource": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "qualification": "INSUFFICIENT_DATA",
+          "domainConfidence": "HIGH_CONFIDENCE",
+          "existingOrNew": "NEW",
+          "researchPriority": 82,
+          "sourceUrl": "https://agentsoc.com"
+        },
+        {
+          "companyId": "b04e95ac-d570-4a7f-aebf-c3f3281e92c1",
+          "name": "Secov",
+          "domain": null,
+          "geography": null,
+          "industry": null,
+          "employeeSize": null,
+          "discoverySource": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "qualification": "INSUFFICIENT_DATA",
+          "domainConfidence": "UNKNOWN",
+          "existingOrNew": "NEW",
+          "researchPriority": 82,
+          "sourceUrl": "https://linkedin.com/company/secovhq"
+        },
+        {
+          "companyId": "f6f7a0e7-9f05-45c6-b0c9-2abc91ec243e",
+          "name": "SecureSky",
+          "domain": "securesky.com",
+          "geography": null,
+          "industry": null,
+          "employeeSize": null,
+          "discoverySource": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "qualification": "INSUFFICIENT_DATA",
+          "domainConfidence": "HIGH_CONFIDENCE",
+          "existingOrNew": "NEW",
+          "researchPriority": 82,
+          "sourceUrl": "https://securesky.com"
+        },
+        {
+          "companyId": "b7c7deb4-86e5-4568-96eb-5ef20977e083",
+          "name": "Simple IT Inc",
+          "domain": "simpleitindy.com",
+          "geography": null,
+          "industry": null,
+          "employeeSize": null,
+          "discoverySource": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "qualification": "INSUFFICIENT_DATA",
+          "domainConfidence": "HIGH_CONFIDENCE",
+          "existingOrNew": "NEW",
+          "researchPriority": 82,
+          "sourceUrl": "https://simpleitindy.com"
+        },
+        {
+          "companyId": "a0fc1f51-cd6f-42b1-858c-b0eba3ccf2bc",
+          "name": "Truvo Cyber",
+          "domain": "truvocyber.com",
+          "geography": null,
+          "industry": null,
+          "employeeSize": null,
+          "discoverySource": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "qualification": "INSUFFICIENT_DATA",
+          "domainConfidence": "HIGH_CONFIDENCE",
+          "existingOrNew": "NEW",
+          "researchPriority": 82,
+          "sourceUrl": "https://truvocyber.com"
+        }
+      ]
+    },
+    "projectCompaniesBefore": 136,
+    "projectCompaniesAfter": 146,
+    "projectCompanyDelta": 10,
+    "databaseError": "NO"
+  }
+}

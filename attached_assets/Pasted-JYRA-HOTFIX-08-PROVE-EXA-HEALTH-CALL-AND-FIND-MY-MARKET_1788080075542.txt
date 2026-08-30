@@ -1,0 +1,464 @@
+JYRA — HOTFIX 08
+PROVE EXA HEALTH CALL AND FIND-MY-MARKET USE THE SAME EXECUTION PATH
+
+CURRENT FACTS
+
+Exa API connectivity is proven.
+
+A minimal real Exa test returned:
+
+1. Nubosas
+   https://nubosas.com
+
+2. InfraVault
+   https://linkedin.com/company/infravault
+
+3. 21Vianet Blue Cloud
+   https://21vbluecloud.com
+
+However:
+
+REAL DATA TEST 08
+and
+HOTFIX 07
+
+still produced ZERO final companies.
+
+Do NOT tune the ICP again yet.
+
+Do NOT add Tavily or Apify.
+
+We need to determine whether the successful Exa health test and the
+actual Find My Market workflow are using different code paths.
+
+==================================================
+OBJECTIVE
+==================================================
+
+Prove the complete execution path:
+
+Find My Market
+→ Research/Discovery Planner
+→ Provider Router
+→ Exa COMPANY_DISCOVERY adapter
+→ Exa API
+→ raw results
+→ normalized candidates
+
+Before doing ANY:
+
+entity filtering
+domain resolution
+ICP qualification
+canonicalization
+deduplication
+database persistence.
+
+==================================================
+1. IDENTIFY BOTH CODE PATHS
+==================================================
+
+Trace and report the exact functions/modules used by:
+
+A. successful Exa health/minimal test
+
+B. Find My Market / COMPANY_DISCOVERY
+
+Return:
+
+HEALTH TEST ENTRYPOINT:
+ROUTER FUNCTION:
+ADAPTER FUNCTION:
+EXA SDK CALL:
+
+FIND MY MARKET ENTRYPOINT:
+ROUTER FUNCTION:
+ADAPTER FUNCTION:
+EXA SDK CALL:
+
+Report whether both paths use the SAME:
+
+provider registration
+capability enum
+router
+adapter
+credentials
+environment
+request builder
+
+YES/NO for each.
+
+==================================================
+2. DO NOT ACCEPT SEPARATE DIRECT EXA TEST
+==================================================
+
+A direct script like:
+
+new Exa(...)
+exa.search(...)
+
+is NOT sufficient proof.
+
+The test MUST invoke Exa through the SAME production application
+COMPANY_DISCOVERY adapter/router that Find My Market uses.
+
+No bypass.
+
+==================================================
+3. KNOWN-WORKING QUERY THROUGH REAL ROUTER
+==================================================
+
+Invoke the actual Provider Router with:
+
+capability:
+COMPANY_DISCOVERY
+
+query:
+"SaaS company cloud infrastructure"
+
+options:
+
+category: company
+type: auto
+numResults: 3
+
+Use the SAME method Find My Market calls.
+
+Do not persist companies yet.
+
+==================================================
+4. PRINT RAW PROVIDER OUTPUT BEFORE NORMALIZATION
+==================================================
+
+Immediately after Exa responds, print sanitized:
+
+HTTP/API success
+
+results.length
+
+for each result:
+
+result.id
+result.title
+result.url
+
+description if returned
+
+Do NOT apply:
+
+entity resolution
+ICP logic
+domain logic
+dedupe
+persistence
+
+before printing this.
+
+Expected behavior based on previous real Exa verification:
+
+results.length > 0
+
+If zero here, the router/adapter/request path is broken.
+
+==================================================
+5. COMPARE REQUESTS
+==================================================
+
+Compare the successful health-test request with the actual router request.
+
+Report exact sanitized request configuration:
+
+query
+category
+type
+numResults
+contents
+includeDomains
+excludeDomains
+other filters
+
+Check for accidental parameters such as:
+
+excludeDomains with category=company
+
+date filters
+
+unsupported filters
+
+empty includeDomains
+
+invalid category
+
+incorrect nested request fields
+
+undefined/null values being serialized
+
+Do not expose API key.
+
+==================================================
+6. NORMALIZATION TEST
+==================================================
+
+ONLY if raw Exa results > 0:
+
+pass those SAME results into the Exa normalization layer.
+
+Report:
+
+RAW RESULTS:
+N
+
+NORMALIZED RESULTS:
+N
+
+For each:
+
+RAW TITLE
+RAW URL
+NORMALIZED COMPANY NAME
+NORMALIZED SOURCE URL
+NORMALIZED CANONICAL DOMAIN
+LINKEDIN URL
+NORMALIZATION STATUS
+
+No filtering yet.
+
+Critical:
+
+InfraVault-style result:
+
+https://linkedin.com/company/infravault
+
+must survive normalization as a company candidate.
+
+It may have:
+
+canonical_domain = UNKNOWN
+
+but must NOT disappear.
+
+==================================================
+7. DISCOVERY PIPELINE STAGE COUNTERS
+==================================================
+
+Using the SAME 3 results, trace counters after every stage:
+
+01 PROVIDER RAW RESULTS
+02 NORMALIZED RESULTS
+03 ENTITY-VALID CANDIDATES
+04 CANONICALIZATION SURVIVORS
+05 DEDUPE SURVIVORS
+06 ICP QUALIFICATION SURVIVORS
+07 PERSISTABLE CANDIDATES
+08 FINAL FIND-MY-MARKET RESULTS
+
+Example:
+
+RAW                   3
+NORMALIZED            3
+ENTITY VALID          3
+CANONICALIZED         3
+DEDUPED               3
+QUALIFIED             3
+PERSISTABLE           3
+FINAL                  3
+
+If a counter drops:
+
+print EACH dropped company and exact reason.
+
+NO SILENT DROPS.
+
+==================================================
+8. DO NOT REQUIRE DOMAIN
+==================================================
+
+Verify every relevant layer.
+
+A candidate must NOT disappear because:
+
+canonical domain is UNKNOWN.
+
+Company identity can temporarily be based on:
+
+provider result ID
+company name
+LinkedIn company URL
+source URL
+other identity evidence
+
+Domain resolution occurs separately.
+
+==================================================
+9. DO NOT REQUIRE ICP COMPLETENESS
+==================================================
+
+For this diagnostic, verify that candidates do not disappear simply
+because these are UNKNOWN:
+
+employee count
+geography
+industry
+Azure usage
+Microsoft 365 usage
+revenue
+
+They may become:
+
+INSUFFICIENT_DATA
+
+but they must remain candidates.
+
+==================================================
+10. VERIFY DATABASE INSERT IS NOT THE PROBLEM
+==================================================
+
+If a candidate reaches PERSISTABLE but does not appear in Find My Market,
+inspect:
+
+transaction
+upsert
+unique constraints
+foreign keys
+project/org scoping
+discovery_run_id
+canonical_company_id
+
+Report any DB rejection.
+
+Do not swallow insert/upsert errors.
+
+==================================================
+11. RUN ONE REAL ICP QUERY ONLY AFTER KNOWN QUERY PASSES
+==================================================
+
+ONLY after the known working query produces candidates through the full
+application pipeline:
+
+run ONE simple GTM-Q1-derived query.
+
+Do NOT include every ICP field.
+
+Example conceptually:
+
+"mid-market SaaS company with significant cloud infrastructure"
+
+Use:
+
+category: company
+type: auto
+numResults: 10
+
+Then trace the same stage counters.
+
+==================================================
+12. DO NOT PAD RESULTS
+==================================================
+
+If the query returns 4 valid companies:
+
+return 4.
+
+No requirement to reach 10 or 20.
+
+==================================================
+13. REQUIRED FINAL REPORT
+==================================================
+
+HEALTH TEST AND FIND-MY-MARKET SAME PATH:
+YES/NO
+
+DIFFERENCE FOUND:
+
+ROOT CAUSE:
+
+KNOWN-WORKING QUERY:
+
+PROVIDER ROUTER SELECTED:
+
+EXA RAW RESULTS:
+
+NORMALIZED RESULTS:
+
+ENTITY VALID:
+
+CANONICALIZATION SURVIVORS:
+
+DEDUPE SURVIVORS:
+
+ICP SURVIVORS:
+
+PERSISTABLE:
+
+FINAL UI/API RESULTS:
+
+DROP POINT:
+
+DROP REASON:
+
+DATABASE ERROR:
+YES/NO
+
+ICP TEST QUERY:
+
+ICP RAW RESULTS:
+
+ICP FINAL CANDIDATES:
+
+==================================================
+14. REQUIRED CANDIDATE TABLE
+==================================================
+
+If ANY candidate survives, print:
+
+COMPANY
+RAW EXA URL
+CANONICAL DOMAIN
+ENTITY STATUS
+ICP STATUS
+FINAL STATUS
+
+Even if only 1 company exists.
+
+==================================================
+PASS CRITERIA
+==================================================
+
+PASS only when:
+
+1. The actual Find My Market router invokes real Exa.
+
+2. A known-working Exa query returns raw results THROUGH that router.
+
+3. Raw results survive normalization correctly.
+
+4. Every downstream drop has an explicit reason.
+
+5. Missing domain does not silently remove companies.
+
+6. Missing ICP data does not silently remove companies.
+
+7. At least one real company reaches the Find My Market result if Exa
+   returned legitimate companies.
+
+==================================================
+DATABASE SAFETY
+==================================================
+
+DEVELOPMENT ONLY.
+
+Production untouched.
+
+TAVILY CALLS:
+0
+
+APIFY CALLS:
+0
+
+CONTACT ENRICHMENT:
+0
+
+SIGNALS:
+0
+
+STOP after identifying and fixing the exact zero-result point.
