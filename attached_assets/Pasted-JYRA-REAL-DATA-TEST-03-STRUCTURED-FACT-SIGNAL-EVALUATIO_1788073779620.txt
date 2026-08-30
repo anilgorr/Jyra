@@ -1,0 +1,276 @@
+JYRA — REAL DATA TEST 03
+STRUCTURED FACT → SIGNAL EVALUATION
+
+Real Data Tests 01 and 02 have passed.
+
+Company:
+7C Studio
+Domain:
+7cstudio.com
+
+Existing source-backed fact proposals:
+
+FACT 1 — TECHNOLOGY_MENTION
+React
+Flutter
+Swift
+Kotlin
+
+FACT 2 — TECHNOLOGY_MENTION
+Python
+AWS
+GCP
+
+Both are backed by existing RAW evidence from:
+http://7cstudio.com
+
+The purpose of this test is to verify:
+
+STRUCTURED FACT
+→ SIGNAL EVALUATION
+
+Do NOT perform additional external research yet.
+
+==================================================
+FIRST: HANDLE FACT APPROVAL STATE CORRECTLY
+==================================================
+
+The two extracted facts currently have status:
+
+PENDING
+
+Inspect the existing fact lifecycle.
+
+Determine whether PENDING facts are intended to:
+
+A. require explicit user/system validation before signal evaluation
+
+or
+
+B. be automatically accepted when deterministic validation passes.
+
+Do not bypass the intended governance model merely to make this test pass.
+
+If facts must be accepted before signal evaluation, execute the normal
+development validation/acceptance path and report exactly what happened.
+
+Preserve provenance and validation history.
+
+==================================================
+TEST CONTEXT
+==================================================
+
+Use the currently active Business Twin / ICP / Opportunity Intelligence
+Pack for:
+
+Aadit Technologies
+Offering: Managed SOC
+
+Evaluate 7C Studio only.
+
+==================================================
+CORE PRINCIPLE
+==================================================
+
+A FACT IS NOT AUTOMATICALLY A SIGNAL.
+
+Example:
+
+FACT:
+7C Studio mentions AWS and GCP.
+
+This does NOT by itself prove:
+
+- cybersecurity pain
+- SOC requirement
+- security incident
+- compliance pressure
+- active buying intent
+- urgency
+- budget
+- vendor search
+- security team gap
+
+Therefore do not manufacture a Need or Timing signal merely because
+technology facts exist.
+
+==================================================
+EVALUATE THE FACTS
+==================================================
+
+Run the existing generic signal engine against the accepted/eligible
+facts.
+
+For every fact, determine:
+
+1. Which configured signal definitions considered it?
+
+2. Did it satisfy a signal rule?
+
+3. If YES:
+   - signal type
+   - polarity
+   - strength
+   - dimension affected
+   - evidence/fact provenance
+   - reason
+
+4. If NO:
+   explain why not.
+
+==================================================
+GENERIC ARCHITECTURE
+==================================================
+
+Do not hardcode:
+
+7C Studio
+Aadit
+Managed SOC
+AWS
+GCP
+
+into application logic.
+
+The evaluation must use:
+
+Business Twin
+→ ICP
+→ Opportunity Intelligence Pack
+→ configured signal definitions
+→ facts
+→ deterministic signal evaluation
+
+The same architecture must work for unrelated industries and offerings.
+
+==================================================
+EXPECTED BEHAVIOR
+==================================================
+
+It is completely acceptable — and potentially CORRECT — for:
+
+Signals generated = 0
+
+from the currently available facts.
+
+For example:
+
+TECHNOLOGY_MENTION: AWS/GCP
+
+could potentially contribute to FIT if the approved ICP explicitly
+contains cloud-environment criteria.
+
+But it should NOT automatically create NEED or TIMING.
+
+If no configured criterion or signal rule maps these facts to an
+opportunity dimension, preserve UNKNOWN.
+
+UNKNOWN ≠ 0
+UNKNOWN ≠ negative
+UNKNOWN ≠ dormant
+
+==================================================
+SIGNAL PROVENANCE
+==================================================
+
+If any signal is created it must be traceable:
+
+SIGNAL
+→ FACT
+→ RAW EVIDENCE
+→ SOURCE URL
+
+No orphan signal is allowed.
+
+==================================================
+NO NEW RESEARCH
+==================================================
+
+For this test:
+
+DO NOT call Apify.
+DO NOT add Tavily.
+DO NOT run WEB_SEARCH.
+DO NOT run COMPANY_DISCOVERY.
+DO NOT enrich contacts.
+
+Use only existing 7C Studio evidence/facts.
+
+==================================================
+PASS CRITERIA
+==================================================
+
+PASS if:
+
+1. Existing facts are correctly made eligible according to the normal
+   fact-validation lifecycle.
+
+2. Signal engine evaluates them.
+
+3. Unsupported signals are NOT created.
+
+4. Any generated signal has complete provenance.
+
+5. Lack of a signal preserves unknown dimensions where appropriate.
+
+6. Technology presence alone does not become fake buying intent.
+
+7. No scoring/state manipulation is introduced merely to obtain a
+   non-zero result.
+
+==================================================
+REPORT
+==================================================
+
+Return:
+
+FACTS EVALUATED:
+
+FACT STATUS BEFORE:
+
+FACT STATUS AFTER:
+
+SIGNAL DEFINITIONS CONSIDERED:
+
+SIGNALS CREATED:
+
+SIGNALS REJECTED / NOT TRIGGERED:
+
+For each fact:
+FACT →
+RULES CONSIDERED →
+RESULT →
+REASON
+
+FIT IMPACT:
+
+NEED IMPACT:
+
+TIMING IMPACT:
+
+RELATIONSHIP IMPACT:
+
+SIGNAL → FACT → EVIDENCE → SOURCE TRACEABILITY:
+PASS/FAIL
+
+FINAL 7C STUDIO SIGNAL COUNT:
+
+ANY UNSUPPORTED BUYING INTENT CREATED:
+YES/NO
+
+ROOT CAUSE / FIXES REQUIRED:
+(if applicable)
+
+==================================================
+DATABASE SAFETY
+==================================================
+
+DEVELOPMENT ONLY.
+
+Production untouched.
+
+Do not test another company.
+
+STOP after proving:
+
+FACT → SIGNAL
