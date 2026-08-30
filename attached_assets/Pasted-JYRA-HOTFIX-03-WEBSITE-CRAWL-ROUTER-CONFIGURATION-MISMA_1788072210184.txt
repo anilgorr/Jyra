@@ -1,0 +1,205 @@
+JYRA — HOTFIX 03
+WEBSITE_CRAWL ROUTER CONFIGURATION MISMATCH
+
+REAL TEST OBSERVATION:
+
+Provider Diagnostics currently shows:
+
+Provider: Apify
+Capability: WEBSITE_CRAWL
+Enabled: Yes
+Credentials: AVAILABLE
+Health: HEALTHY
+Last success: 30/08/2026 12:07:43
+
+However, when clicking CONTINUE RESEARCH for 7C Studio,
+the live research engine returns:
+
+"No enabled provider supports WEBSITE_CRAWL"
+
+Therefore DO NOT add another provider.
+
+This is a configuration/router consistency bug.
+
+==================================================
+TASK
+==================================================
+
+Trace the exact live execution path for:
+
+7C Studio
+→ Continue Research
+→ Research Planner
+→ Provider Router
+→ WEBSITE_CRAWL provider selection
+
+Determine why Provider Diagnostics can see an enabled healthy Apify
+WEBSITE_CRAWL provider while the live research router cannot.
+
+Check specifically:
+
+1. Are diagnostics and Provider Router reading the same database table?
+
+2. Are they using the same DEVELOPMENT database?
+
+3. Are they using the same organization/project/tenant scope?
+
+4. Is one reading seeded/global provider configuration while the other
+   expects project-specific configuration?
+
+5. Is there a capability enum/string mismatch such as:
+   WEBSITE_CRAWL
+   website_crawl
+   WEBSITE-CRAWL
+   or another internal value?
+
+6. Is enabled status represented differently between the two paths?
+
+7. Is Provider Router filtering the provider because of:
+   credentials
+   health
+   priority
+   budget
+   project
+   tenant
+   environment
+   capability
+   provider type?
+
+8. Is the Apify provider registered only in diagnostics but not in the
+   actual runtime provider registry?
+
+9. Is there stale application/runtime configuration requiring reload?
+
+10. Is the research job running in a different process/environment from
+    the web/admin application?
+
+==================================================
+IMPORTANT
+==================================================
+
+Do NOT:
+
+- add a fake provider
+- add another WEBSITE_CRAWL provider
+- bypass Provider Router
+- hardcode Apify into Continue Research
+- return mock evidence
+- disable the error
+- manually insert evidence
+- change scoring
+- change opportunity states
+- test COMPANY_DISCOVERY yet
+
+Fix the ROOT CAUSE.
+
+==================================================
+REQUIRED DIAGNOSTIC
+==================================================
+
+For one DEVELOPMENT request, safely log/inspect:
+
+requested capability = WEBSITE_CRAWL
+
+candidate providers found
+
+provider IDs
+
+provider capabilities
+
+enabled status
+
+credential availability
+
+health
+
+project/tenant scope
+
+environment
+
+reason each candidate was accepted/rejected
+
+DO NOT log secrets.
+
+The result should make it obvious why Apify is currently being rejected
+or not found.
+
+==================================================
+AFTER FIX
+==================================================
+
+Use ONLY:
+
+7C Studio
+7cstudio.com
+
+Run:
+
+Continue Research
+
+Expected:
+
+Research Planner
+→ requests WEBSITE_CRAWL
+→ Provider Router sees Apify
+→ selects Apify
+→ real Apify call executes
+→ crawl returns source material
+→ raw evidence is persisted
+
+For this test, STOP at proving that real evidence was persisted.
+
+Do not worry yet about whether signals or opportunity scoring are good.
+
+==================================================
+PASS CRITERIA
+==================================================
+
+PASS only if:
+
+1. Provider Diagnostics still shows Apify WEBSITE_CRAWL healthy/enabled.
+
+2. The SAME provider is visible to the live Provider Router.
+
+3. Continue Research no longer returns:
+   "No enabled provider supports WEBSITE_CRAWL"
+
+4. A real Apify WEBSITE_CRAWL request executes for 7cstudio.com.
+
+5. At least one legitimate raw evidence/source record is persisted
+   IF the website returns usable content.
+
+6. If the website itself cannot be crawled, JYRA reports the real crawl
+   failure rather than claiming no provider exists.
+
+7. Production is untouched.
+
+==================================================
+DATABASE SAFETY
+==================================================
+
+DEVELOPMENT ONLY.
+
+Do not modify/migrate/reset/seed/test production.
+
+==================================================
+REPORT
+==================================================
+
+Tell me:
+
+ROOT CAUSE
+
+WHY DIAGNOSTICS SAW APIFY BUT ROUTER DID NOT
+
+FIX
+
+7C STUDIO PROVIDER SELECTED
+
+APIFY CALL ATTEMPTED: YES/NO
+
+APIFY CALL RESULT
+
+RAW EVIDENCE CREATED: YES/NO
+
+Do not proceed to other companies or capabilities.

@@ -16,3 +16,4 @@
 - [Development DB verification](development-database-target-verification.md) — mutation tools must match the approved DB fingerprint before connecting.
 - [Internal admin quality boundary](internal-admin-quality-boundary.md) — cross-tenant monitoring needs fail-closed staff authorization and aggregate-only responses.
 - [Opportunity unknown state](opportunity-unknown-state.md) — core dimensions must be known before scoring; reserve DORMANT for evaluated weakness.
+- [Failed research replay](failed-research-replay.md) — do not let a stale failed idempotent job mask repaired provider configuration.

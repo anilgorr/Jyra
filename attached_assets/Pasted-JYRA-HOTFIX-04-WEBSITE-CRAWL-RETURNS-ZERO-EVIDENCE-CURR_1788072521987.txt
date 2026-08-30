@@ -1,0 +1,247 @@
+JYRA — HOTFIX 04
+WEBSITE_CRAWL RETURNS ZERO EVIDENCE
+
+CURRENT REAL TEST
+
+Company:
+7C Studio
+Domain:
+7cstudio.com
+
+Previous provider-routing error is fixed.
+
+Current user-facing result:
+
+"Fresh research attempted.
+The sweep completed without new evidence."
+
+This means the request reaches the provider path, but no new evidence is
+being created.
+
+Do NOT work on other companies.
+Do NOT work on COMPANY_DISCOVERY.
+Do NOT change scoring/signals/opportunity logic.
+
+==================================================
+TRACE ONE REQUEST END TO END
+==================================================
+
+For 7C Studio only, inspect:
+
+Continue Research
+→ research plan
+→ provider selection
+→ Apify request
+→ Apify run/result
+→ returned URLs/pages
+→ content extraction
+→ evidence candidate creation
+→ deduplication
+→ evidence persistence
+
+Identify the exact stage where data becomes zero.
+
+==================================================
+REQUIRED DIAGNOSTIC OUTPUT
+==================================================
+
+Report, without exposing secrets:
+
+Provider selected
+Capability
+Requested URL
+Normalized URL/domain
+Apify actor/adapter used
+HTTP/provider status
+Number of provider result items
+Number of URLs returned
+Number of pages with non-empty text
+Number of extraction candidates
+Number rejected
+Reason for rejection
+Number deduplicated
+Number persisted as raw evidence
+
+If zero occurs at any stage, state exactly why.
+
+==================================================
+CHECK URL NORMALIZATION
+==================================================
+
+Verify that:
+
+7cstudio.com
+
+is converted safely into a crawlable official URL such as:
+
+https://7cstudio.com
+
+Do not accidentally call:
+
+7cstudio.com without scheme
+a malformed URL
+a person LinkedIn URL
+an unrelated source URL
+
+Preserve canonical domain separately.
+
+==================================================
+CHECK PROVIDER RESPONSE PARSING
+==================================================
+
+Confirm the Apify adapter is parsing the actual response schema returned
+by the configured crawler/actor.
+
+Do not assume fields exist.
+
+Inspect actual returned field names.
+
+Typical content may appear under fields such as:
+
+url
+loadedUrl
+title
+text
+markdown
+html
+metadata
+
+Use the actual runtime response contract.
+
+If the adapter expects a different schema, fix the adapter.
+
+==================================================
+CHECK CRAWL SCOPE
+==================================================
+
+For this test, use a small bounded crawl.
+
+Allow enough pages to retrieve useful public company information.
+
+Prioritize:
+
+homepage
+about
+services
+products
+careers
+blog/news
+
+Do not crawl the entire site.
+
+==================================================
+CHECK EMPTY / BLOCKED SITE
+==================================================
+
+If the website:
+
+redirects
+returns 403
+uses heavy JS
+blocks bots
+has no useful public text
+
+report that explicitly.
+
+Do not call that a successful evidence sweep.
+
+Use a status such as:
+
+PROVIDER_SUCCESS_NO_CONTENT
+
+or
+
+SOURCE_UNAVAILABLE
+
+according to existing model.
+
+==================================================
+CHECK EVIDENCE CREATION
+==================================================
+
+Valid public website content should first become RAW EVIDENCE.
+
+Do not require it to already prove buying intent.
+
+For example:
+
+"7C Studio provides X services"
+
+may be stored as source-backed raw evidence/fact candidate even if it does
+not create a Need or Timing signal.
+
+Do not discard all content simply because it does not trigger a signal.
+
+Pipeline must remain:
+
+source material
+→ raw evidence
+→ facts
+→ signals
+
+NOT:
+
+source material
+→ only keep it if it creates a signal.
+
+==================================================
+CHECK DEDUPLICATION
+==================================================
+
+Ensure a failed earlier sweep did not create fingerprints that cause a
+real later crawl to be incorrectly treated as duplicate.
+
+Deduplicate actual evidence records, not failed attempts.
+
+==================================================
+TEST EXPECTATION
+==================================================
+
+Rerun 7C Studio only.
+
+PASS if one of these occurs:
+
+A. Real usable website content is returned and at least one raw evidence
+record is persisted.
+
+OR
+
+B. The website genuinely cannot provide usable content and JYRA reports
+the exact source/provider reason clearly.
+
+Do not fabricate evidence just to satisfy the test.
+
+==================================================
+REPORT
+==================================================
+
+Return:
+
+APIFY CALL: PASS/FAIL
+
+REQUESTED URL
+
+RESULT ITEMS
+
+PAGES WITH CONTENT
+
+RAW EVIDENCE CANDIDATES
+
+PERSISTED EVIDENCE
+
+REJECTION REASONS
+
+ROOT CAUSE
+
+FIX APPLIED
+
+FINAL STATUS
+
+==================================================
+DATABASE SAFETY
+==================================================
+
+DEVELOPMENT ONLY.
+Production untouched.
+
+STOP after this single-company test.

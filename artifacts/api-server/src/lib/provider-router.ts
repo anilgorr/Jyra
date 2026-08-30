@@ -34,6 +34,8 @@ export type ProviderCatalogEntry = Pick<
   | "averageLatency"
   | "qualityScore"
   | "configuration"
+  | "lastSuccessAt"
+  | "lastFailureAt"
 > & {
   capabilities: ProviderCapability[];
 };
@@ -83,6 +85,8 @@ function databaseProviderLoader(): Promise<ProviderCatalogEntry[]> {
       averageLatency: dataProvidersTable.averageLatency,
       qualityScore: dataProvidersTable.qualityScore,
       configuration: dataProvidersTable.configuration,
+      lastSuccessAt: dataProvidersTable.lastSuccessAt,
+      lastFailureAt: dataProvidersTable.lastFailureAt,
       capability: providerCapabilitiesTable.capability,
     })
     .from(dataProvidersTable)
@@ -110,6 +114,8 @@ function databaseProviderLoader(): Promise<ProviderCatalogEntry[]> {
             averageLatency: row.averageLatency,
             qualityScore: row.qualityScore,
             configuration: row.configuration,
+            lastSuccessAt: row.lastSuccessAt,
+            lastFailureAt: row.lastFailureAt,
             capabilities: [row.capability as ProviderCapability],
           });
         }
@@ -320,7 +326,42 @@ export class ProviderRouter implements ProviderOperations {
       throw new Error(`Unsupported provider capability: ${capability}`);
     }
 
-    const providers = (this.configuredProviders ?? (await this.loadProviders()))
+    const candidates = this.configuredProviders ?? (await this.loadProviders());
+    if (process.env.NODE_ENV !== "production") {
+      console.info("[provider-router:diagnostic]", JSON.stringify({
+        requestedCapability: capability,
+        environment: process.env.NODE_ENV ?? "unknown",
+        projectId: request.metadata?.projectId ?? null,
+        organizationId: request.metadata?.organizationId ?? null,
+        candidates: candidates.map((provider) => {
+          const capabilityMatch = provider.capabilities.includes(capability);
+          const adapterAvailable = Boolean(this.resolveAdapter(provider, capability));
+          const credentialStatus = provider.configuration.credentialStatus === "AVAILABLE"
+            ? "AVAILABLE"
+            : "MISSING";
+          const health = provider.lastFailureAt && (!provider.lastSuccessAt || provider.lastFailureAt > provider.lastSuccessAt)
+            ? "FAILING"
+            : provider.lastSuccessAt ? "HEALTHY" : "UNTESTED";
+          return {
+            providerId: provider.id,
+            providerType: provider.providerType,
+            capabilities: provider.capabilities,
+            enabled: provider.enabled,
+            credentialStatus,
+            health,
+            priority: provider.priority,
+            adapterAvailable,
+            accepted: provider.enabled && capabilityMatch && adapterAvailable,
+            rejectionReasons: [
+              ...(!provider.enabled ? ["DISABLED"] : []),
+              ...(!capabilityMatch ? ["CAPABILITY_MISMATCH"] : []),
+              ...(!adapterAvailable ? ["ADAPTER_NOT_REGISTERED"] : []),
+            ],
+          };
+        }),
+      }));
+    }
+    const providers = candidates
       .filter(
         (provider) =>
           provider.enabled && provider.capabilities.includes(capability),

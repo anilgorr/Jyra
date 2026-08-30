@@ -226,6 +226,36 @@ try {
   assert.equal(unavailableResult.job.errorCode, "NO_PROVIDER");
   assert.equal(unavailableResult.job.status, "FAILED");
   assert.equal(unavailableResult.question.status, "BLOCKED");
+  let repairedProviderCalls = 0;
+  const repaired = async (request) => {
+    repairedProviderCalls += 1;
+    return {
+      status: "empty",
+      providerId: provider.id,
+      providerRequestId: request.requestId,
+      data: null,
+      sources: [],
+      usage: { estimatedCost: 1, actualCost: 0, latencyMs: 1, runtimeMs: 1, resultCount: 0 },
+      error: null,
+      retryable: false,
+      capturedAt: new Date().toISOString(),
+    };
+  };
+  const repairedResult = await executeResearchNow({
+    projectId: project.id,
+    projectCompanyId: unavailableProjectCompany.id,
+    organizationId: organization.id,
+    userId,
+    router: { crawlWebsite: repaired, searchWeb: repaired, getJobs: repaired, searchNews: repaired, detectTechnology: repaired },
+    extractFacts,
+  });
+  assert.equal(repairedResult.resultStatus, "EMPTY", "a failed same-day provider attempt must be retryable after configuration is repaired");
+  assert.equal(repairedProviderCalls, 1, "the repaired provider must be called instead of replaying stale NO_PROVIDER");
+  assert.equal(
+    (await db.select().from(researchJobsTable).where(eq(researchJobsTable.companyId, unavailableCompany.id))).length,
+    2,
+    "failed attempt and deterministic retry must remain independently auditable",
+  );
   const economicsWithUnknown = await getResearchEconomics(project.id);
   assert.equal(economicsWithUnknown.unknownCostRequestsThisMonth, 1, "unknown actual cost must remain visible");
   assert.equal(economicsWithUnknown.spendThisMonth, 1, "unknown actual cost must reserve its estimate rather than become free");

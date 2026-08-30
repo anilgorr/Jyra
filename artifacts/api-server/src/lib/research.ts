@@ -300,8 +300,18 @@ async function preserveResearchEvidence(input: {
 function requestForQuestion(
   question: ResearchQuestion,
   company: Company,
+  scope?: { projectId: string; organizationId: string },
 ): unknown {
-  const base = { requestId: `research:${question.id}` };
+  const base = {
+    requestId: `research:${question.id}`,
+    metadata: scope
+      ? {
+          projectId: scope.projectId,
+          organizationId: scope.organizationId,
+          environment: process.env.NODE_ENV ?? "unknown",
+        }
+      : undefined,
+  };
   switch (question.providerCapability) {
     case "WEBSITE_CRAWL":
       return { ...base, url: company.website ?? `https://${company.domain}` };
@@ -376,14 +386,26 @@ export async function executeResearchNow(input: {
     .limit(1);
   if (!row) throw new Error("Project company not found");
   const now = input.now ?? new Date();
-  const idempotencyKey = `${input.projectCompanyId}:${input.idempotencyScope ?? "planner"}:${now.toISOString().slice(0, 10)}`;
-  const [replay] = await db.select({
+  const baseIdempotencyKey = `${input.projectCompanyId}:${input.idempotencyScope ?? "planner"}:${now.toISOString().slice(0, 10)}`;
+  let idempotencyKey = baseIdempotencyKey;
+  let [replay] = await db.select({
     job: researchJobsTable,
     question: researchQuestionsTable,
   }).from(researchJobsTable)
     .innerJoin(researchQuestionsTable, eq(researchJobsTable.questionId, researchQuestionsTable.id))
     .where(eq(researchJobsTable.idempotencyKey, idempotencyKey))
     .limit(1);
+  const failedAttempt = replay?.job.status === "FAILED" ? replay : null;
+  if (failedAttempt) {
+    idempotencyKey = `${baseIdempotencyKey}:retry:${failedAttempt.job.id}`;
+    [replay] = await db.select({
+      job: researchJobsTable,
+      question: researchQuestionsTable,
+    }).from(researchJobsTable)
+      .innerJoin(researchQuestionsTable, eq(researchJobsTable.questionId, researchQuestionsTable.id))
+      .where(eq(researchJobsTable.idempotencyKey, idempotencyKey))
+      .limit(1);
+  }
   if (replay) {
     const [{ count: proposalCount }] = await db.select({ count: sql<number>`count(*)` })
       .from(researchFactProposalsTable)
@@ -405,6 +427,7 @@ export async function executeResearchNow(input: {
     .orderBy(desc(researchQuestionsTable.createdAt))
     .limit(1);
   if (
+    !failedAttempt &&
     latestQuestion?.nextRefreshAt &&
     latestQuestion.nextRefreshAt > now &&
     (latestQuestion.status === "ANSWERED" || latestQuestion.status === "BLOCKED")
@@ -431,13 +454,21 @@ export async function executeResearchNow(input: {
     .from(companyEvidenceTable).where(eq(companyEvidenceTable.companyId, row.company.id));
   const [{ count: factsCount }] = await db.select({ count: sql<number>`count(*)` })
     .from(companyFactsTable).where(eq(companyFactsTable.companyId, row.company.id));
-  const plan = input.plannedQuestion ?? planResearchQuestion({
+  const plan = input.plannedQuestion ?? (failedAttempt ? {
+    questionType: failedAttempt.question.questionType,
+    questionText: failedAttempt.question.questionText,
+    reason: `${failedAttempt.question.reason} Retrying after a failed provider attempt.`,
+    providerCapability: failedAttempt.question.providerCapability,
+    priority: failedAttempt.question.priority,
+    expectedInformationGain: failedAttempt.question.expectedInformationGain,
+    estimatedCost: failedAttempt.question.estimatedCost,
+  } : planResearchQuestion({
     company: row.company,
     criteria,
     evidence,
     factsCount: Number(factsCount),
     now,
-  });
+  }));
   if (!plan || plan.estimatedCost > QUESTION_MAX_COST) {
     return { stopped: true, reason: plan ? "Estimated cost exceeds the bounded research budget." : "No high-value unanswered research question is currently due." };
   }
@@ -539,7 +570,12 @@ export async function executeResearchNow(input: {
 
   let response: ProviderResponse<CapabilityResult<ProviderCapability>>;
   try {
-    response = await routeQuestion(router, selectedQuestion, row.company);
+    response = await routeQuestion(
+      router,
+      selectedQuestion,
+      row.company,
+      { projectId: input.projectId, organizationId: input.organizationId },
+    );
   } catch (error) {
     response = {
       status: "failed",
@@ -712,8 +748,9 @@ async function routeQuestion(
   router: ProviderOperations,
   question: ResearchQuestion,
   company: Company,
+  scope: { projectId: string; organizationId: string },
 ): Promise<ProviderResponse<CapabilityResult<ProviderCapability>>> {
-  const request = requestForQuestion(question, company);
+  const request = requestForQuestion(question, company, scope);
   switch (question.providerCapability) {
     case "WEBSITE_CRAWL": return router.crawlWebsite(request as Parameters<ProviderOperations["crawlWebsite"]>[0]) as Promise<ProviderResponse<CapabilityResult<ProviderCapability>>>;
     case "JOB_SEARCH": return router.getJobs(request as Parameters<ProviderOperations["getJobs"]>[0]) as Promise<ProviderResponse<CapabilityResult<ProviderCapability>>>;
