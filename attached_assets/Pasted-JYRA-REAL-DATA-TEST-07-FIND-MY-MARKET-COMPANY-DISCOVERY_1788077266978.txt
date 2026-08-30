@@ -1,0 +1,455 @@
+JYRA — REAL DATA TEST 07
+FIND MY MARKET / COMPANY_DISCOVERY
+
+Tests 01–06 have established the known-company intelligence pipeline.
+
+Now test JYRA's market discovery capability for the first time.
+
+Seller:
+Aadit Technologies
+
+Project:
+GTM-Q1
+
+Offering:
+Managed SOC
+
+Use the existing:
+Business Twin
+ICP
+managed-soc v1.0 signal pack
+research economics framework
+provider router
+
+==================================================
+OBJECTIVE
+==================================================
+
+Prove:
+
+Business Twin + ICP
+→ Discovery Strategy
+→ COMPANY_DISCOVERY
+→ Candidate Companies
+→ Entity Resolution
+→ Cheap Qualification
+→ Ranked Research Candidates
+
+This test is NOT intended to fully research every discovered company.
+
+We are testing whether JYRA can identify a sensible market universe.
+
+==================================================
+1. DO NOT HARDCODE AADIT
+==================================================
+
+Discovery must be generated from the project's:
+
+Business Twin
+Offering
+ICP
+geography
+company-size criteria
+industry criteria
+exclusions
+other accepted ICP criteria
+
+Do not hardcode Managed SOC-specific company lists into application code.
+
+The architecture must work for another seller/offering later.
+
+==================================================
+2. CHECK COMPANY_DISCOVERY PROVIDER
+==================================================
+
+Before executing discovery, inspect Provider Router.
+
+Requested capability:
+
+COMPANY_DISCOVERY
+
+Report:
+
+available providers
+enabled providers
+credential status
+health
+priority
+
+IMPORTANT:
+
+Tavily currently supports WEB_SEARCH.
+
+Apify currently supports WEBSITE_CRAWL.
+
+Do NOT silently treat either provider as COMPANY_DISCOVERY unless an
+adapter has explicitly implemented and validated that capability.
+
+If no enabled COMPANY_DISCOVERY provider exists:
+
+STOP THE LIVE TEST.
+
+Return:
+
+COMPANY_DISCOVERY_PROVIDER_MISSING
+
+and recommend the best implementation path using the existing provider
+architecture.
+
+Do not fake discovery using database fixtures.
+
+==================================================
+3. DISCOVERY STRATEGY
+==================================================
+
+Before calling any provider, generate and persist a discovery plan from
+the accepted ICP.
+
+Show:
+
+TARGET GEOGRAPHIES
+
+TARGET INDUSTRIES
+
+COMPANY SIZE
+
+REVENUE RANGE
+if available
+
+TECHNOLOGY CHARACTERISTICS
+if actually part of ICP
+
+EXCLUSIONS
+
+POSITIVE QUALIFICATION CRITERIA
+
+DISCOVERY QUERIES / FILTERS
+
+SOURCE OF EACH CRITERION:
+Business Twin / ICP / user-confirmed configuration
+
+Do not invent criteria missing from the ICP.
+
+==================================================
+4. DISCOVERY VS RESEARCH
+==================================================
+
+Keep these concepts separate.
+
+COMPANY_DISCOVERY answers:
+
+"What companies may belong to this market?"
+
+WEB_SEARCH answers:
+
+"What current public evidence exists about this known company?"
+
+WEBSITE_CRAWL answers:
+
+"What does this known company's official website say?"
+
+Do not perform deep research on every discovered company.
+
+==================================================
+5. CONTROLLED TEST SIZE
+==================================================
+
+For the first live discovery test:
+
+TARGET:
+20 candidate companies maximum.
+
+This is deliberately small.
+
+Do not discover hundreds or thousands yet.
+
+==================================================
+6. REQUIRED COMPANY DATA
+==================================================
+
+For each discovered candidate preserve whatever the provider genuinely
+returns, such as:
+
+company name
+domain
+LinkedIn company URL
+industry
+location
+employee range
+description
+source URL
+provider
+discovery query
+retrieval timestamp
+
+Missing values remain UNKNOWN.
+
+Never fabricate missing fields.
+
+==================================================
+7. ENTITY RESOLUTION
+==================================================
+
+Run candidates through canonical company resolution.
+
+Normalize:
+
+company name
+domain
+www/non-www
+http/https
+LinkedIn company URL
+
+Detect duplicates against:
+
+existing imported companies
+existing discovered companies
+current project companies
+
+Do not create a second company simply because the same company came from
+another provider/query.
+
+==================================================
+8. MISSING DOMAIN
+==================================================
+
+Domain is NOT mandatory for discovery ingestion.
+
+If a candidate lacks a domain:
+
+attempt cheap domain resolution using existing supported mechanisms.
+
+Use:
+
+company name
+LinkedIn URL
+geography
+industry
+description
+public evidence
+
+Generate candidate domains.
+
+Auto-accept only when confidence is sufficiently high under existing
+governance rules.
+
+Ambiguous:
+NEEDS REVIEW
+
+Unresolved:
+UNKNOWN
+
+Never guess a domain.
+
+==================================================
+9. CHEAP QUALIFICATION
+==================================================
+
+Do NOT immediately run Tavily + Apify for all 20 companies.
+
+First evaluate cheap available attributes against ICP.
+
+Classify candidates using existing architecture into something like:
+
+LIKELY_FIT
+POSSIBLE_FIT
+INSUFFICIENT_DATA
+LIKELY_NOT_FIT
+
+Do not introduce these exact enums if an equivalent governed model
+already exists.
+
+Missing data must not become a disqualifier.
+
+==================================================
+10. RESEARCH PRIORITIZATION
+==================================================
+
+After cheap qualification, determine which candidates deserve additional
+research.
+
+Research Planner should consider:
+
+ICP fit uncertainty
+potential information value
+current evidence gaps
+provider cost
+existing evidence
+cache
+
+Do not actually perform deep research yet unless required by existing
+workflow.
+
+For this test, preferably STOP after producing the prioritized research
+queue.
+
+==================================================
+11. SIGNALS ARE NOT DISCOVERY FILTERS
+==================================================
+
+Do not require companies to already have:
+
+security hiring
+security leadership changes
+funding
+security-stack changes
+
+to enter the candidate universe.
+
+Those are opportunity/timing signals discovered later.
+
+ICP determines whether the company is worth considering.
+
+Signals determine whether NOW may be a good time.
+
+==================================================
+12. PROVENANCE
+==================================================
+
+Every candidate must retain:
+
+provider
+source/query
+retrieval timestamp
+project
+discovery run
+
+The UI should eventually be able to answer:
+
+"Why is this company in my market?"
+
+separately from:
+
+"Why should I contact this company now?"
+
+==================================================
+13. NO CONTACT ENRICHMENT
+==================================================
+
+Do NOT find:
+
+people
+emails
+phone numbers
+
+during market discovery.
+
+Company first.
+
+People later.
+
+==================================================
+14. COST CONTROL
+==================================================
+
+Record:
+
+provider calls
+results
+credits
+estimated/actual cost
+duplicates
+accepted candidates
+rejected candidates
+
+No uncontrolled recursive discovery.
+
+==================================================
+15. PASS CRITERIA
+==================================================
+
+PASS if:
+
+1. Discovery strategy is derived from the project's accepted ICP.
+
+2. COMPANY_DISCOVERY is routed through the capability architecture.
+
+3. A real provider is used.
+
+4. Maximum 20 candidates are returned.
+
+5. Candidate companies retain provenance.
+
+6. Entity resolution/deduplication works.
+
+7. Missing domains do not break ingestion.
+
+8. No company attributes are fabricated.
+
+9. Cheap qualification occurs before expensive research.
+
+10. No contact enrichment occurs.
+
+11. No buying intent is manufactured.
+
+12. Production remains untouched.
+
+If no COMPANY_DISCOVERY provider exists, returning
+COMPANY_DISCOVERY_PROVIDER_MISSING is the CORRECT result.
+
+==================================================
+REPORT
+==================================================
+
+Return:
+
+DISCOVERY PROVIDER STATUS:
+
+PROVIDER USED:
+
+DISCOVERY STRATEGY:
+
+DISCOVERY QUERIES/FILTERS:
+
+PROVIDER CALLS:
+
+RAW CANDIDATES:
+
+DUPLICATES:
+
+EXISTING COMPANIES MATCHED:
+
+NEW CANONICAL COMPANIES:
+
+DOMAIN RESOLUTION ATTEMPTS:
+
+UNRESOLVED DOMAINS:
+
+LIKELY FIT:
+
+POSSIBLE FIT:
+
+INSUFFICIENT DATA:
+
+LIKELY NOT FIT:
+
+PRIORITIZED FOR RESEARCH:
+
+TOTAL COST:
+
+CONTACT ENRICHMENT CALLS:
+Must be 0
+
+DEEP RESEARCH CALLS:
+Preferably 0
+
+PROVENANCE:
+PASS/FAIL
+
+FINAL STATUS:
+PASS/FAIL/BLOCKED_PROVIDER_MISSING
+
+==================================================
+DATABASE SAFETY
+==================================================
+
+DEVELOPMENT ONLY.
+
+Production untouched.
+
+Maximum 20 candidates.
+
+Do not automatically proceed to research those candidates.
+
+STOP after discovery + canonicalization + cheap qualification +
+research prioritization.
