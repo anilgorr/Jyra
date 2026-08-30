@@ -1,0 +1,545 @@
+JYRA — TAVILY WEB_SEARCH INTEGRATION
+
+We have already proven:
+
+1. Apify WEBSITE_CRAWL works
+2. RAW evidence persistence works
+3. RAW evidence → structured facts works
+4. Governed fact approval works
+5. Project signal pack activation works
+6. Fact → signal evaluation works
+
+Now add Tavily as the primary WEB_SEARCH provider.
+
+IMPORTANT:
+Do NOT replace Apify.
+Do NOT change WEBSITE_CRAWL.
+Do NOT modify scoring, signal rules, ICP, opportunity states, or COMPANY_DISCOVERY.
+
+==================================================
+ARCHITECTURE
+==================================================
+
+JYRA must remain provider-agnostic:
+
+Research Planner
+→ Provider Router
+→ Capability Adapter
+→ Provider
+
+Register Tavily for:
+
+WEB_SEARCH
+
+Provider:
+Tavily
+
+Apify remains responsible for:
+
+WEBSITE_CRAWL
+
+Do NOT hardcode Tavily directly into company research logic.
+
+==================================================
+1. TAVILY PROVIDER ADAPTER
+==================================================
+
+Implement a production-quality Tavily adapter using the existing generic
+provider interface.
+
+Required input support:
+
+- query
+- max results
+- search depth if supported
+- include domains if supported
+- exclude domains if supported
+- topic/search type if supported
+- time/date filters if supported by current Tavily API
+
+Required normalized output:
+
+- title
+- source URL
+- snippet/content
+- raw content if requested/available
+- published date if returned
+- provider relevance score if returned
+- provider metadata
+- query
+- retrieval timestamp
+
+Do not make downstream JYRA code depend on Tavily-specific response fields.
+
+Normalize Tavily responses into JYRA's generic WEB_SEARCH result model.
+
+==================================================
+2. CREDENTIALS
+==================================================
+
+Use environment/secrets for the Tavily API key.
+
+Suggested variable:
+
+TAVILY_API_KEY
+
+Never expose the key in:
+
+- frontend
+- logs
+- database records
+- evidence
+- API error messages
+- provider diagnostics
+
+If the credential is missing, Provider Diagnostics should clearly show:
+
+CREDENTIALS_MISSING
+
+without exposing the secret.
+
+==================================================
+3. PROVIDER REGISTRATION
+==================================================
+
+Register Tavily through the existing provider registry/configuration
+system.
+
+Capability:
+
+WEB_SEARCH
+
+Provider Router must discover Tavily dynamically.
+
+Do not use:
+
+if capability == WEB_SEARCH:
+    callTavily()
+
+Instead use the generic provider registry/router.
+
+Provider Diagnostics should show:
+
+Provider: Tavily
+Capability: WEB_SEARCH
+Enabled: Yes/No
+Credentials: AVAILABLE/MISSING
+Health: HEALTHY/DEGRADED/FAILED
+Last check
+Last success
+Usage/cost if available
+
+==================================================
+4. REAL HEALTH CHECK
+==================================================
+
+Do not mark Tavily HEALTHY only because TAVILY_API_KEY exists.
+
+Perform a minimal real API test.
+
+Use a harmless low-cost query.
+
+Confirm:
+
+HTTP/provider response succeeds
+response schema is recognized
+at least normal result parsing works
+
+Never persist health-check results as company evidence.
+
+==================================================
+5. RESEARCH PLANNER SUPPORT
+==================================================
+
+Allow the Research Planner to request:
+
+WEB_SEARCH
+
+when information is unlikely to be available solely from the company's
+official website.
+
+Research questions should be derived from:
+
+Business Twin
+→ ICP
+→ active Opportunity Intelligence / Signal Pack
+→ unresolved evidence gaps
+
+Do NOT run generic random web searches.
+
+For Aadit Managed SOC, examples of legitimate research areas include:
+
+- security leadership changes
+- cybersecurity/security hiring
+- security/compliance initiatives
+- security incidents
+- funding or expansion
+- SIEM / EDR / IAM / SOC technology changes
+- regulatory/compliance pressure
+
+These are research topics only.
+
+Keywords must NEVER become facts or signals merely because they were used
+in the search query.
+
+==================================================
+6. RESEARCH ECONOMICS
+==================================================
+
+Tavily must participate in the existing research economics engine.
+
+Record for each call:
+
+- provider
+- capability
+- company
+- project
+- research job
+- query
+- timestamp
+- result count
+- credits if returned/calculable
+- estimated/actual cost if available
+- success/failure
+
+The planner should avoid unnecessary calls.
+
+Before making a Tavily call:
+
+1. check existing usable evidence
+2. check cache
+3. determine whether unresolved research question justifies the call
+
+Stop when sufficient evidence is already available.
+
+Do NOT run Tavily for every company automatically.
+
+==================================================
+7. CACHE
+==================================================
+
+Implement/use the existing research cache.
+
+Cache Tavily WEB_SEARCH results based on relevant dimensions such as:
+
+normalized query
+provider
+time window
+domain constraints
+
+Use an appropriate TTL according to existing research policy.
+
+Fresh searches should still be possible when explicitly requested.
+
+Do not treat failed calls as valid evidence cache entries.
+
+==================================================
+8. ENTITY RESOLUTION
+==================================================
+
+Search results must be attributable to the correct company.
+
+For a company such as:
+
+7C Studio
+7cstudio.com
+
+use available context:
+
+company name
+canonical domain
+location
+industry
+description
+
+Reject or flag results for unrelated companies with similar names.
+
+Do not silently attach ambiguous web results to a company.
+
+==================================================
+9. SOURCE QUALITY
+==================================================
+
+Preserve the original source URL and domain.
+
+Identify/source-type when reasonably possible using existing JYRA models:
+
+- official company website
+- news
+- job listing
+- partner/vendor page
+- press release
+- business database
+- other public web source
+
+Do not invent credibility scores if the system does not already support them.
+
+Do not treat all web pages as equally authoritative.
+
+==================================================
+10. RAW EVIDENCE
+==================================================
+
+Tavily results must NOT directly create signals.
+
+Correct pipeline:
+
+Tavily WEB_SEARCH
+→ source result
+→ RAW evidence
+→ fact extraction
+→ governed validation/approval
+→ signal evaluation
+→ opportunity reasoning
+
+Persist legitimate attributable search results as RAW evidence with:
+
+- company ID
+- project/research job
+- provider
+- query
+- title
+- source URL
+- source domain
+- snippet/content
+- published date if available
+- retrieval timestamp
+- provenance metadata
+
+==================================================
+11. DEDUPLICATION
+==================================================
+
+Do not duplicate evidence already collected through Apify.
+
+If Tavily returns:
+
+https://7cstudio.com/
+
+and equivalent content already exists from WEBSITE_CRAWL,
+use canonical source/content deduplication.
+
+Distinct external pages should remain distinct evidence records.
+
+Deduplicate actual evidence, not merely queries.
+
+==================================================
+12. FAILURE HANDLING
+==================================================
+
+Handle explicitly:
+
+- authentication failure
+- rate limit
+- timeout
+- malformed response
+- zero results
+- provider unavailable
+- wrong entity results
+- duplicate-only results
+
+Do not convert these into:
+
+"No buying intent"
+
+or:
+
+"Dormant"
+
+Research failure is not negative evidence.
+
+==================================================
+13. CONTROLLED REAL TEST
+==================================================
+
+After implementation, run ONE development-only real integration test.
+
+Company:
+
+7C Studio
+Domain:
+7cstudio.com
+
+Seller:
+Aadit Technologies
+
+Project:
+GTM-Q1
+
+Offering:
+Managed SOC
+
+Active signal pack:
+managed-soc v1.0
+
+Do NOT run another company.
+
+Do NOT use COMPANY_DISCOVERY.
+
+==================================================
+14. TEST QUERIES
+==================================================
+
+Use no more than 4 focused searches.
+
+Derive the final wording through the Research Planner.
+
+Research areas:
+
+1. Security leadership
+2. Security/cybersecurity hiring
+3. Funding/expansion/security/compliance initiatives
+4. Security stack / SOC / SIEM / EDR / IAM changes
+
+Use company-name/domain context to improve entity precision.
+
+Do not force all 4 searches if earlier searches satisfy the research need.
+
+==================================================
+15. TEST BOUNDARY
+==================================================
+
+For this integration test, the main objective is:
+
+TAVILY
+→ WEB_SEARCH
+→ EXTERNAL RAW EVIDENCE
+
+Do NOT modify signal definitions to make results trigger.
+
+It is acceptable to find:
+
+0 useful results
+0 new facts
+0 signals
+
+if that is what the public web actually supports.
+
+Never fabricate evidence.
+
+==================================================
+16. PASS CRITERIA
+==================================================
+
+PASS only if:
+
+1. Tavily is registered through the generic provider architecture.
+
+2. WEB_SEARCH is visible to Provider Router.
+
+3. Credentials are loaded securely.
+
+4. Real Tavily API health test succeeds.
+
+5. A real 7C Studio WEB_SEARCH request executes.
+
+6. Results are normalized correctly.
+
+7. Wrong/ambiguous entity results are rejected.
+
+8. Legitimate attributable results can become RAW evidence.
+
+9. Source URLs and provenance are retained.
+
+10. Duplicate evidence is not unnecessarily created.
+
+11. Tavily does not directly create buying signals.
+
+12. Usage/cost is recorded.
+
+13. Production remains untouched.
+
+==================================================
+17. REQUIRED REPORT
+==================================================
+
+Return:
+
+TAVILY INTEGRATION:
+PASS/FAIL
+
+PROVIDER:
+
+CAPABILITY:
+
+CREDENTIAL STATUS:
+
+HEALTH:
+
+ROUTER SELECTION:
+PASS/FAIL
+
+TEST COMPANY:
+7C Studio
+
+QUERIES PLANNED:
+
+QUERIES ACTUALLY EXECUTED:
+
+TOTAL API CALLS:
+
+TOTAL RESULTS RETURNED:
+
+RESULTS ATTRIBUTED TO CORRECT COMPANY:
+
+AMBIGUOUS/WRONG-ENTITY RESULTS REJECTED:
+
+DUPLICATES SKIPPED:
+
+NEW RAW EVIDENCE CREATED:
+
+SOURCE URLS:
+
+CREDITS USED:
+if available
+
+COST:
+if available
+
+ANY FACTS AUTO-APPROVED:
+YES/NO
+
+ANY SIGNALS CREATED DIRECTLY FROM SEARCH:
+YES/NO
+
+PROVENANCE:
+PASS/FAIL
+
+ROOT CAUSE/FIXES:
+if any
+
+FINAL STATUS:
+PASS/FAIL
+
+==================================================
+DATABASE SAFETY
+==================================================
+
+THIS IS DEVELOPMENT WORK.
+
+Use ONLY the development database.
+
+DO NOT:
+
+- migrate production
+- reset production
+- seed production
+- modify production data
+- test against production customer records
+
+Production schema changes must only happen later through the explicit
+production migration workflow.
+
+==================================================
+STOP CONDITION
+==================================================
+
+STOP after proving:
+
+Research Planner
+→ Provider Router
+→ Tavily WEB_SEARCH
+→ external search results
+→ RAW evidence
+
+Do not proceed automatically to COMPANY_DISCOVERY or another provider.
