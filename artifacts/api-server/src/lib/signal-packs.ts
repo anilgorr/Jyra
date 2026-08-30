@@ -11,6 +11,7 @@ import {
   type CompanyFact,
   type SignalDefinition,
 } from "@workspace/db";
+import { selectAcceptedFactsForCompany } from "./accepted-facts";
 
 type DbExecutor = typeof db | Parameters<Parameters<typeof db.transaction>[0]>[0];
 
@@ -75,7 +76,7 @@ export async function evaluateSignalsForCompany(input: { organizationId: string;
     eq(projectSignalPacksTable.active, true),
   ));
   if (!selections.length) return { packs: [], created: [], total: 0 };
-  const facts = await executor.select().from(companyFactsTable).where(eq(companyFactsTable.companyId, input.companyId));
+  const facts = await selectAcceptedFactsForCompany(input.companyId, executor);
   const now = input.now ?? new Date();
   const created = [];
   const packs = [];

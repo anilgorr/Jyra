@@ -19,3 +19,4 @@
 - [Failed research replay](failed-research-replay.md) — do not let a stale failed idempotent job mask repaired provider configuration.
 - [Timeless fact dates](timeless-fact-dates.md) — stable source-backed facts use the evidence observation date; event facts still require a source-stated date.
 - [Append-only evidence cleanup](append-only-evidence-cleanup.md) — invalid evidence links may be removed, but crawl payloads remain immutable audit records.
+- [Evidence attribution reviews](evidence-attribution-reviews.md) — keep immutable search payloads separate from mutable entity, source-quality, acceptance, and duplicate decisions.

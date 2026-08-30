@@ -8,6 +8,7 @@ import {
   crawlPagesTable,
   db,
   dataProvidersTable,
+  evidenceAttributionReviewsTable,
   icpCriteriaTable,
   icpVersionsTable,
   projectCompaniesTable,
@@ -25,13 +26,19 @@ import {
   validateFactCandidate,
 } from "./facts";
 import {
+  assessWebSearchEntityAttribution,
   calculateEvidenceScores,
+  canonicalSourceIdentity,
+  classifyEvidenceSource,
   hashNormalizedContent,
   normalizeEvidenceContent,
   normalizeSourceDomain,
   normalizeSourceUrl,
+  sourceReliabilityForClassification,
+  type EvidenceAttributionDecision,
   type EvidenceSourceType,
 } from "./evidence";
+import { selectAcceptedFactsForCompany } from "./accepted-facts";
 import {
   ProviderRouter,
   type ProviderUsageRecord,
@@ -281,6 +288,7 @@ async function preserveResearchEvidence(input: {
   organizationId: string;
   provider: string;
   sourceType: EvidenceSourceType;
+  attribution: EvidenceAttributionDecision;
   sourceUrl: string;
   rawContent: string;
   observedAt: Date;
@@ -307,7 +315,7 @@ async function preserveResearchEvidence(input: {
       .innerJoin(crawlPagesTable, eq(companyEvidenceTable.crawlPageId, crawlPagesTable.id))
       .where(eq(crawlPagesTable.companyId, input.company.id));
     const duplicate = existingSources.find((candidate) => {
-      const sameFreshSource = normalizeSourceUrl(candidate.evidence.sourceUrl) === sourceUrl
+      const sameFreshSource = canonicalSourceIdentity(candidate.evidence.sourceUrl) === canonicalSourceIdentity(sourceUrl)
         && Math.abs(input.observedAt.getTime() - candidate.evidence.observedAt.getTime())
           < FRESHNESS_DAYS * 86_400_000;
       if (sameFreshSource) return true;
@@ -353,6 +361,18 @@ async function preserveResearchEvidence(input: {
       ...scores,
       status: "RAW",
     }).returning();
+    await tx.insert(evidenceAttributionReviewsTable).values({
+      crawlPageId,
+      companyId: input.company.id,
+      reviewedByOrganizationId: input.organizationId,
+      sourceClassification: input.attribution.sourceClassification,
+      entityStatus: input.attribution.entityStatus,
+      entityConfidence: input.attribution.entityConfidence,
+      entityReason: input.attribution.entityReason,
+      sourceReliabilityScore: input.attribution.sourceReliabilityScore,
+      qualityReason: input.attribution.qualityReason,
+      acceptedAsEvidence: input.attribution.acceptedAsEvidence,
+    });
     return { evidence, duplicate: false };
   });
   return result;
@@ -428,36 +448,6 @@ function resultSources(
     }));
   }
   return [];
-}
-
-function normalizedIdentityText(value: string): string {
-  return value.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
-}
-
-function sourceIsAttributableToCompany(
-  source: { url: string; title?: string; snippet?: string; summary?: string; rawContent: string },
-  company: Pick<Company, "canonicalName" | "domain">,
-): boolean {
-  const companyDomain = company.domain?.toLowerCase().replace(/^www\./, "") ?? null;
-  try {
-    const sourceDomain = new URL(source.url).hostname.toLowerCase().replace(/^www\./, "");
-    if (companyDomain && (sourceDomain === companyDomain || sourceDomain.endsWith(`.${companyDomain}`))) {
-      return true;
-    }
-  } catch {
-    return false;
-  }
-
-  const companyName = normalizedIdentityText(company.canonicalName);
-  if (!companyName || !companyDomain) return false;
-  const searchable = normalizedIdentityText([
-    source.title,
-    source.snippet,
-    source.summary,
-    source.rawContent,
-  ].filter(Boolean).join(" "));
-  return searchable.includes(companyName)
-    && searchable.includes(normalizedIdentityText(companyDomain));
 }
 
 export type ResearchExecutionResult = {
@@ -561,8 +551,7 @@ export async function executeResearchNow(input: {
   }).from(icpCriteriaTable).where(eq(icpCriteriaTable.icpVersionId, icp.id)) : [];
   const evidence = await db.select({ observedAt: companyEvidenceTable.observedAt, status: companyEvidenceTable.status })
     .from(companyEvidenceTable).where(eq(companyEvidenceTable.companyId, row.company.id));
-  const [{ count: factsCount }] = await db.select({ count: sql<number>`count(*)` })
-    .from(companyFactsTable).where(eq(companyFactsTable.companyId, row.company.id));
+  const factsCount = (await selectAcceptedFactsForCompany(row.company.id)).length;
   const plan = input.plannedQuestion ?? (failedAttempt ? {
     questionType: failedAttempt.question.questionType,
     questionText: failedAttempt.question.questionText,
@@ -575,7 +564,7 @@ export async function executeResearchNow(input: {
     company: row.company,
     criteria,
     evidence,
-    factsCount: Number(factsCount),
+    factsCount,
     now,
   }));
   if (!plan || plan.estimatedCost > QUESTION_MAX_COST) {
@@ -784,10 +773,31 @@ export async function executeResearchNow(input: {
   if (response.data) {
     for (const source of resultSources(selectedQuestion.providerCapability, response.data)) {
       if (!/^https?:\/\//i.test(source.url) || !source.rawContent.trim()) continue;
-      if (
-        selectedQuestion.providerCapability === "WEB_SEARCH"
-        && !sourceIsAttributableToCompany(source, row.company)
-      ) {
+      const attribution = selectedQuestion.providerCapability === "WEB_SEARCH"
+        ? assessWebSearchEntityAttribution({
+            ...source,
+            sourceUrl: source.url,
+            sourceType,
+            company: row.company,
+          })
+        : (() => {
+            const sourceClassification = classifyEvidenceSource(
+              source.url,
+              row.company.domain,
+              sourceType,
+            );
+            const reliability = sourceReliabilityForClassification(sourceClassification);
+            return {
+              sourceClassification,
+              entityStatus: "CONFIRMED_ENTITY" as const,
+              entityConfidence: 100,
+              entityReason: "The source came from the provider capability selected for this canonical company.",
+              sourceReliabilityScore: reliability.score,
+              qualityReason: reliability.reason,
+              acceptedAsEvidence: true,
+            };
+          })();
+      if (!attribution.acceptedAsEvidence) {
         ambiguousResultCount += 1;
         continue;
       }
@@ -796,6 +806,7 @@ export async function executeResearchNow(input: {
         organizationId: input.organizationId,
         provider: response.providerId,
         sourceType,
+        attribution,
         sourceUrl: source.url,
         rawContent: source.rawContent,
         observedAt: completedAt,

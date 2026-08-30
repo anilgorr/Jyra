@@ -12,9 +12,12 @@ await build({
 });
 
 const {
+  assessWebSearchEntityAttribution,
   assertEvidenceStatusTransition,
+  canonicalSourceIdentity,
   canOrganizationReviewEvidence,
   calculateEvidenceScores,
+  classifyEvidenceSource,
   evidenceObservationKey,
   hashNormalizedContent,
   isSameEvidenceObservation,
@@ -29,6 +32,50 @@ assert.equal(
 );
 assert.equal(normalizeSourceDomain("https://www.Acme.com/jobs/1"), "acme.com");
 assert.throws(() => normalizeSourceUrl("javascript:alert(1)"));
+assert.equal(
+  canonicalSourceIdentity("http://www.acme.com/?utm_source=test#top"),
+  "https://acme.com",
+);
+assert.equal(
+  canonicalSourceIdentity("https://in.linkedin.com/company/acme?gclid=123"),
+  canonicalSourceIdentity("http://tn.linkedin.com/company/acme/"),
+);
+assert.notEqual(
+  canonicalSourceIdentity("https://acme.com/news/one"),
+  canonicalSourceIdentity("https://acme.com/news/two"),
+);
+
+assert.equal(
+  classifyEvidenceSource("https://acme.com/about", "acme.com"),
+  "OFFICIAL_WEBSITE",
+);
+assert.equal(
+  classifyEvidenceSource("https://www.crunchbase.com/organization/acme", "acme.com"),
+  "BUSINESS_DATABASE",
+);
+assert.equal(
+  classifyEvidenceSource("https://in.linkedin.com/company/acme", "acme.com"),
+  "SOCIAL_COMPANY_PROFILE",
+);
+
+const confirmedExternal = assessWebSearchEntityAttribution({
+  sourceUrl: "https://www.crunchbase.com/organization/acme",
+  title: "Acme company profile",
+  rawContent: "Acme official website https://www.acme.com",
+  company: { canonicalName: "Acme", domain: "acme.com" },
+});
+assert.equal(confirmedExternal.entityStatus, "CONFIRMED_ENTITY");
+assert.equal(confirmedExternal.acceptedAsEvidence, true);
+assert.equal(confirmedExternal.sourceClassification, "BUSINESS_DATABASE");
+
+const ambiguousExternal = assessWebSearchEntityAttribution({
+  sourceUrl: "https://directory.example/acme",
+  title: "Acme",
+  rawContent: "Acme provides professional services.",
+  company: { canonicalName: "Acme", domain: "acme.com" },
+});
+assert.equal(ambiguousExternal.entityStatus, "AMBIGUOUS_ENTITY");
+assert.equal(ambiguousExternal.acceptedAsEvidence, false);
 
 const raw = "Acme  opened\r\n\r\n\r\n seven roles.  ";
 assert.equal(normalizeEvidenceContent(raw), "Acme opened\n\nseven roles.");

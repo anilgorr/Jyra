@@ -7,6 +7,7 @@ export {
   crawlPagesTable,
   dataProvidersTable,
   db,
+  evidenceAttributionReviewsTable,
   organizationsTable,
   projectCompaniesTable,
   projectsTable,

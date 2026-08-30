@@ -19,6 +19,7 @@ import {
   signalDefinitionsTable,
   signalsTable,
 } from "@workspace/db";
+import { selectAcceptedFactsForCompany } from "./accepted-facts";
 import { evaluateIcpCriterion, type CriterionResult } from "./icp-engine";
 import { DEFAULT_NEXT_BEST_ACTION_RULES } from "./next-best-action";
 
@@ -268,7 +269,7 @@ export async function evaluateOpportunity(input: { organizationId: string; proje
       .limit(1)
     : [];
   const criteria = icpVersion ? await db.select().from(icpCriteriaTable).where(eq(icpCriteriaTable.icpVersionId, icpVersion.id)) : [];
-  const facts = await db.select().from(companyFactsTable).where(eq(companyFactsTable.companyId, row.company.id));
+  const facts = await selectAcceptedFactsForCompany(row.company.id);
   const factsForIcp = companyFacts(row.company, facts);
   const fitResults = criteria.map((criterion) => ({
     id: criterion.id, type: criterion.criterionType, weight: criterion.weight,

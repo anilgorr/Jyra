@@ -3453,6 +3453,12 @@ export const listCompanyEvidenceResponseCorroborationScoreMax = 100;
 export const listCompanyEvidenceResponseConfidenceMin = 0;
 export const listCompanyEvidenceResponseConfidenceMax = 100;
 
+export const listCompanyEvidenceResponseEntityConfidenceMin = 0;
+export const listCompanyEvidenceResponseEntityConfidenceMax = 100;
+
+export const listCompanyEvidenceResponseSourceReliabilityScoreMin = 0;
+export const listCompanyEvidenceResponseSourceReliabilityScoreMax = 100;
+
 
 
 export const ListCompanyEvidenceResponseItem = zod.object({
@@ -3474,6 +3480,14 @@ export const ListCompanyEvidenceResponseItem = zod.object({
   "freshnessScore": zod.number().min(listCompanyEvidenceResponseFreshnessScoreMin).max(listCompanyEvidenceResponseFreshnessScoreMax),
   "corroborationScore": zod.number().min(listCompanyEvidenceResponseCorroborationScoreMin).max(listCompanyEvidenceResponseCorroborationScoreMax),
   "confidence": zod.number().min(listCompanyEvidenceResponseConfidenceMin).max(listCompanyEvidenceResponseConfidenceMax),
+  "sourceClassification": zod.enum(['OFFICIAL_WEBSITE', 'NEWS', 'JOB_LISTING', 'SOCIAL_COMPANY_PROFILE', 'BUSINESS_DATABASE', 'PRESS_RELEASE', 'PARTNER_VENDOR', 'OTHER_WEB']),
+  "entityStatus": zod.enum(['CONFIRMED_ENTITY', 'PROBABLE_ENTITY', 'AMBIGUOUS_ENTITY', 'WRONG_ENTITY']),
+  "entityConfidence": zod.number().min(listCompanyEvidenceResponseEntityConfidenceMin).max(listCompanyEvidenceResponseEntityConfidenceMax),
+  "entityReason": zod.string(),
+  "sourceReliabilityScore": zod.number().min(listCompanyEvidenceResponseSourceReliabilityScoreMin).max(listCompanyEvidenceResponseSourceReliabilityScoreMax),
+  "qualityReason": zod.string(),
+  "acceptedAsEvidence": zod.boolean(),
+  "duplicateOfCrawlPageId": zod.string().nullable(),
   "status": zod.enum(['RAW', 'EXTRACTED', 'VERIFIED', 'CONFLICTING', 'STALE']),
   "createdAt": zod.coerce.date(),
   "updatedAt": zod.coerce.date()
@@ -3528,6 +3542,12 @@ export const createCompanyEvidenceResponseCorroborationScoreMax = 100;
 export const createCompanyEvidenceResponseConfidenceMin = 0;
 export const createCompanyEvidenceResponseConfidenceMax = 100;
 
+export const createCompanyEvidenceResponseEntityConfidenceMin = 0;
+export const createCompanyEvidenceResponseEntityConfidenceMax = 100;
+
+export const createCompanyEvidenceResponseSourceReliabilityScoreMin = 0;
+export const createCompanyEvidenceResponseSourceReliabilityScoreMax = 100;
+
 
 
 export const CreateCompanyEvidenceResponse = zod.object({
@@ -3549,6 +3569,14 @@ export const CreateCompanyEvidenceResponse = zod.object({
   "freshnessScore": zod.number().min(createCompanyEvidenceResponseFreshnessScoreMin).max(createCompanyEvidenceResponseFreshnessScoreMax),
   "corroborationScore": zod.number().min(createCompanyEvidenceResponseCorroborationScoreMin).max(createCompanyEvidenceResponseCorroborationScoreMax),
   "confidence": zod.number().min(createCompanyEvidenceResponseConfidenceMin).max(createCompanyEvidenceResponseConfidenceMax),
+  "sourceClassification": zod.enum(['OFFICIAL_WEBSITE', 'NEWS', 'JOB_LISTING', 'SOCIAL_COMPANY_PROFILE', 'BUSINESS_DATABASE', 'PRESS_RELEASE', 'PARTNER_VENDOR', 'OTHER_WEB']),
+  "entityStatus": zod.enum(['CONFIRMED_ENTITY', 'PROBABLE_ENTITY', 'AMBIGUOUS_ENTITY', 'WRONG_ENTITY']),
+  "entityConfidence": zod.number().min(createCompanyEvidenceResponseEntityConfidenceMin).max(createCompanyEvidenceResponseEntityConfidenceMax),
+  "entityReason": zod.string(),
+  "sourceReliabilityScore": zod.number().min(createCompanyEvidenceResponseSourceReliabilityScoreMin).max(createCompanyEvidenceResponseSourceReliabilityScoreMax),
+  "qualityReason": zod.string(),
+  "acceptedAsEvidence": zod.boolean(),
+  "duplicateOfCrawlPageId": zod.string().nullable(),
   "status": zod.enum(['RAW', 'EXTRACTED', 'VERIFIED', 'CONFLICTING', 'STALE']),
   "createdAt": zod.coerce.date(),
   "updatedAt": zod.coerce.date()
@@ -3584,6 +3612,12 @@ export const updateCompanyEvidenceStatusResponseCorroborationScoreMax = 100;
 export const updateCompanyEvidenceStatusResponseConfidenceMin = 0;
 export const updateCompanyEvidenceStatusResponseConfidenceMax = 100;
 
+export const updateCompanyEvidenceStatusResponseEntityConfidenceMin = 0;
+export const updateCompanyEvidenceStatusResponseEntityConfidenceMax = 100;
+
+export const updateCompanyEvidenceStatusResponseSourceReliabilityScoreMin = 0;
+export const updateCompanyEvidenceStatusResponseSourceReliabilityScoreMax = 100;
+
 
 
 export const UpdateCompanyEvidenceStatusResponse = zod.object({
@@ -3605,6 +3639,14 @@ export const UpdateCompanyEvidenceStatusResponse = zod.object({
   "freshnessScore": zod.number().min(updateCompanyEvidenceStatusResponseFreshnessScoreMin).max(updateCompanyEvidenceStatusResponseFreshnessScoreMax),
   "corroborationScore": zod.number().min(updateCompanyEvidenceStatusResponseCorroborationScoreMin).max(updateCompanyEvidenceStatusResponseCorroborationScoreMax),
   "confidence": zod.number().min(updateCompanyEvidenceStatusResponseConfidenceMin).max(updateCompanyEvidenceStatusResponseConfidenceMax),
+  "sourceClassification": zod.enum(['OFFICIAL_WEBSITE', 'NEWS', 'JOB_LISTING', 'SOCIAL_COMPANY_PROFILE', 'BUSINESS_DATABASE', 'PRESS_RELEASE', 'PARTNER_VENDOR', 'OTHER_WEB']),
+  "entityStatus": zod.enum(['CONFIRMED_ENTITY', 'PROBABLE_ENTITY', 'AMBIGUOUS_ENTITY', 'WRONG_ENTITY']),
+  "entityConfidence": zod.number().min(updateCompanyEvidenceStatusResponseEntityConfidenceMin).max(updateCompanyEvidenceStatusResponseEntityConfidenceMax),
+  "entityReason": zod.string(),
+  "sourceReliabilityScore": zod.number().min(updateCompanyEvidenceStatusResponseSourceReliabilityScoreMin).max(updateCompanyEvidenceStatusResponseSourceReliabilityScoreMax),
+  "qualityReason": zod.string(),
+  "acceptedAsEvidence": zod.boolean(),
+  "duplicateOfCrawlPageId": zod.string().nullable(),
   "status": zod.enum(['RAW', 'EXTRACTED', 'VERIFIED', 'CONFLICTING', 'STALE']),
   "createdAt": zod.coerce.date(),
   "updatedAt": zod.coerce.date()

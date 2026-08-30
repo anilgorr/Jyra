@@ -91,7 +91,10 @@ function EvidenceCard({
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <Badge variant="outline">{evidence.sourceType.replaceAll("_", " ")}</Badge>
+            <Badge variant="outline">{evidence.sourceClassification.replaceAll("_", " ")}</Badge>
+            <Badge variant={evidence.acceptedAsEvidence ? "secondary" : "destructive"}>
+              {evidence.entityStatus.replaceAll("_", " ")}
+            </Badge>
             <span className="text-xs text-muted-foreground">{evidence.provider}</span>
           </div>
           <p className="mt-3 text-sm font-medium leading-6 text-foreground">
@@ -109,19 +112,30 @@ function EvidenceCard({
         </a>
       </div>
 
-      <div className="mt-4 grid grid-cols-5 gap-2 rounded-lg bg-muted/40 p-3 text-center">
+      <div className="mt-4 grid grid-cols-2 gap-2 rounded-lg bg-muted/40 p-3 text-center sm:grid-cols-6">
         {[
           ["Authority", evidence.authorityScore],
           ["Direct", evidence.directnessScore],
           ["Fresh", evidence.freshnessScore],
           ["Support", evidence.corroborationScore],
-          ["Confidence", evidence.confidence],
+          ["Source", evidence.sourceReliabilityScore],
+          ["Entity", evidence.entityConfidence],
         ].map(([label, value]) => (
           <div key={label as string}>
             <div className="text-sm font-semibold text-foreground">{scoreLabel(value as number)}</div>
             <div className="text-[10px] text-muted-foreground">{label}</div>
           </div>
         ))}
+      </div>
+
+      <div className="mt-3 rounded-lg border px-3 py-2 text-xs leading-5 text-muted-foreground">
+        <p>{evidence.entityReason}</p>
+        <p className="mt-1">{evidence.qualityReason}</p>
+        {!evidence.acceptedAsEvidence && (
+          <p className="mt-1 font-medium text-destructive">
+            Quarantined — this result cannot be used for fact extraction or signals.
+          </p>
+        )}
       </div>
 
       <div className="mt-4 flex items-center justify-between gap-3">
@@ -484,7 +498,7 @@ export function CompanyEvidencePanel({
       <FactReview
         projectId={projectId}
         projectCompanyId={projectCompanyId}
-        evidence={evidenceQuery.data ?? []}
+        evidence={(evidenceQuery.data ?? []).filter((item) => item.acceptedAsEvidence)}
       />
 
       {evidenceQuery.isLoading && (

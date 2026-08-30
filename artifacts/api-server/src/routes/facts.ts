@@ -1,4 +1,4 @@
-import { and, desc, eq } from "drizzle-orm";
+import { and, desc, eq, isNull, or } from "drizzle-orm";
 import { Router, type IRouter, type RequestHandler } from "express";
 import {
   CreateCompanyFactBody,
@@ -16,6 +16,7 @@ import {
   companyFactsTable,
   crawlPagesTable,
   db,
+  evidenceAttributionReviewsTable,
   organizationMembersTable,
   projectCompaniesTable,
   projectsTable,
@@ -112,10 +113,18 @@ async function getEvidenceForCompany(evidenceId: string, companyId: string) {
     })
     .from(companyEvidenceTable)
     .innerJoin(crawlPagesTable, eq(companyEvidenceTable.crawlPageId, crawlPagesTable.id))
+    .leftJoin(
+      evidenceAttributionReviewsTable,
+      eq(evidenceAttributionReviewsTable.crawlPageId, crawlPagesTable.id),
+    )
     .where(
       and(
         eq(companyEvidenceTable.id, evidenceId),
         eq(companyEvidenceTable.companyId, companyId),
+        or(
+          isNull(evidenceAttributionReviewsTable.crawlPageId),
+          eq(evidenceAttributionReviewsTable.acceptedAsEvidence, true),
+        ),
       ),
     )
     .limit(1);
@@ -153,7 +162,18 @@ router.get(
       .select({ fact: companyFactsTable, evidence: companyEvidenceTable })
       .from(companyFactsTable)
       .innerJoin(companyEvidenceTable, eq(companyFactsTable.evidenceId, companyEvidenceTable.id))
-      .where(eq(companyFactsTable.companyId, access.company.id))
+      .innerJoin(crawlPagesTable, eq(companyEvidenceTable.crawlPageId, crawlPagesTable.id))
+      .leftJoin(
+        evidenceAttributionReviewsTable,
+        eq(evidenceAttributionReviewsTable.crawlPageId, crawlPagesTable.id),
+      )
+      .where(and(
+        eq(companyFactsTable.companyId, access.company.id),
+        or(
+          isNull(evidenceAttributionReviewsTable.crawlPageId),
+          eq(evidenceAttributionReviewsTable.acceptedAsEvidence, true),
+        ),
+      ))
       .orderBy(desc(companyFactsTable.effectiveDate), desc(companyFactsTable.createdAt));
     res.json(ListCompanyFactsResponse.parse(rows.map(factPayload)));
   }),

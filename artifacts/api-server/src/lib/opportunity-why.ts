@@ -10,6 +10,7 @@ import {
   whyClaimsTable,
   whyExplanationsTable,
 } from "@workspace/db";
+import { selectAcceptedFactsByIds } from "./accepted-facts";
 
 const FORBIDDEN_INTENT = {
   BUDGET: /\b(?:(?:has|have|approved|allocated|secured|confirmed)\s+(?:an?\s+|the\s+)?budget|(?:the\s+)?budget\s+(?:has\s+been\s+|is\s+)?(?:approved|allocated|secured|confirmed|available))\b/i,
@@ -188,7 +189,7 @@ export async function generateWhyForOpportunity(opportunityId: string, projectId
       ...signalRows.flatMap(({ signal }) => signal.supportingEvidenceIds),
       ...clusters.flatMap((cluster) => cluster.supportingEvidenceIds),
     ]);
-    const facts = factIds.length ? await tx.select().from(companyFactsTable).where(inArray(companyFactsTable.id, factIds)) : [];
+    const facts = await selectAcceptedFactsByIds(factIds, tx);
     const evidence = evidenceIds.length ? await tx.select().from(companyEvidenceTable).where(inArray(companyEvidenceTable.id, evidenceIds)) : [];
     const result = composeEvidenceBackedWhy({
       signals: signalRows.map(({ signal, definition }) => ({
@@ -248,9 +249,8 @@ export async function getWhyDetail(projectId: string, projectCompanyId: string) 
     inArray(companyEvidenceTable.id, traceIds), eq(companyEvidenceTable.companyId, opportunity.companyId),
   )) : [];
   const facts = unique(claims.flatMap((claim) => claim.factIds));
-  const factRows = facts.length ? await db.select().from(companyFactsTable).where(and(
-    inArray(companyFactsTable.id, facts), eq(companyFactsTable.companyId, opportunity.companyId),
-  )) : [];
+  const factRows = (await selectAcceptedFactsByIds(facts))
+    .filter((fact) => fact.companyId === opportunity.companyId);
   const signals = unique(claims.flatMap((claim) => claim.signalIds));
   const signalRows = signals.length ? await db.select({ signal: signalsTable, definition: signalDefinitionsTable })
     .from(signalsTable).innerJoin(signalDefinitionsTable, eq(signalsTable.signalDefinitionId, signalDefinitionsTable.id))

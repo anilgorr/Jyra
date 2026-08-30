@@ -14,6 +14,7 @@
     "test:providers": "node ./scripts/test-provider-router.mjs",
     "test:apify": "node ./scripts/test-apify-provider.mjs",
     "test:tavily": "node ./scripts/test-tavily-provider.mjs",
+    "hotfix:tavily-evidence-quality": "NODE_ENV=development node ./scripts/reprocess-tavily-evidence-quality.mjs",
     "test:evidence": "node ./scripts/test-evidence.mjs",
     "test:facts": "node ./scripts/test-facts.mjs"
     ,"test:research": "node ./scripts/test-research.mjs"

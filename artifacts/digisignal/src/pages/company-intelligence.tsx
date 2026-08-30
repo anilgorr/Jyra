@@ -876,7 +876,8 @@ function EvidenceRow({ evidence }: { evidence: CompanyEvidence }) {
     <div className="rounded-xl border bg-card p-4 hover:bg-muted/30 transition-colors shadow-sm">
       <div className="flex items-start justify-between gap-4 mb-3">
         <div className="flex flex-wrap items-center gap-2">
-          <Badge variant="outline" className="bg-background text-[10px] uppercase tracking-wider">{label(evidence.sourceType)}</Badge>
+          <Badge variant="outline" className="bg-background text-[10px] uppercase tracking-wider">{label(evidence.sourceClassification)}</Badge>
+          <Badge variant={evidence.acceptedAsEvidence ? "secondary" : "destructive"} className="text-[10px] uppercase tracking-wider">{label(evidence.entityStatus)}</Badge>
           <Badge variant="secondary" className="bg-muted/50 text-[10px] uppercase tracking-wider">{label(evidence.status)}</Badge>
         </div>
         <a href={evidence.sourceUrl} target="_blank" rel="noreferrer" aria-label="Open source" className="shrink-0 text-muted-foreground hover:text-foreground p-1.5 rounded-md hover:bg-muted/50 transition-colors">
@@ -886,7 +887,8 @@ function EvidenceRow({ evidence }: { evidence: CompanyEvidence }) {
       <p className="text-sm font-medium leading-relaxed text-foreground mb-4">{evidence.extractedClaim}</p>
       <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs font-medium text-muted-foreground/80 pt-3 border-t border-border/40">
         <span className="flex items-center gap-1.5"><RefreshCw className="h-3.5 w-3.5" /> Fresh {scoreText(evidence.freshnessScore)}</span>
-        <span className="flex items-center gap-1.5"><ShieldCheck className="h-3.5 w-3.5" /> {scoreText(evidence.confidence)} conf</span>
+        <span className="flex items-center gap-1.5"><ShieldCheck className="h-3.5 w-3.5" /> Entity {scoreText(evidence.entityConfidence)}</span>
+        <span>Source {scoreText(evidence.sourceReliabilityScore)}</span>
         <span className="flex items-center gap-1.5"><Clock3 className="h-3.5 w-3.5" /> {new Date(evidence.observedAt).toLocaleDateString()}</span>
       </div>
     </div>

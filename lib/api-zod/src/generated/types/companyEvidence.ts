@@ -5,6 +5,8 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+import type { CompanyEvidenceEntityStatus } from './companyEvidenceEntityStatus';
+import type { CompanyEvidenceSourceClassification } from './companyEvidenceSourceClassification';
 import type { CompanyEvidenceSourceType } from './companyEvidenceSourceType';
 import type { CompanyEvidenceStatus } from './companyEvidenceStatus';
 
@@ -50,6 +52,23 @@ export interface CompanyEvidence {
      * @maximum 100
      */
   confidence: number;
+  sourceClassification: CompanyEvidenceSourceClassification;
+  entityStatus: CompanyEvidenceEntityStatus;
+  /**
+     * @minimum 0
+     * @maximum 100
+     */
+  entityConfidence: number;
+  entityReason: string;
+  /**
+     * @minimum 0
+     * @maximum 100
+     */
+  sourceReliabilityScore: number;
+  qualityReason: string;
+  acceptedAsEvidence: boolean;
+  /** @nullable */
+  duplicateOfCrawlPageId: string | null;
   status: CompanyEvidenceStatus;
   createdAt: Date;
   updatedAt: Date;

@@ -25,6 +25,39 @@ export const EVIDENCE_STATUSES = [
 
 export type EvidenceStatus = (typeof EVIDENCE_STATUSES)[number];
 
+export const EVIDENCE_SOURCE_CLASSIFICATIONS = [
+  "OFFICIAL_WEBSITE",
+  "NEWS",
+  "JOB_LISTING",
+  "SOCIAL_COMPANY_PROFILE",
+  "BUSINESS_DATABASE",
+  "PRESS_RELEASE",
+  "PARTNER_VENDOR",
+  "OTHER_WEB",
+] as const;
+
+export type EvidenceSourceClassification =
+  (typeof EVIDENCE_SOURCE_CLASSIFICATIONS)[number];
+
+export const EVIDENCE_ENTITY_STATUSES = [
+  "CONFIRMED_ENTITY",
+  "PROBABLE_ENTITY",
+  "AMBIGUOUS_ENTITY",
+  "WRONG_ENTITY",
+] as const;
+
+export type EvidenceEntityStatus = (typeof EVIDENCE_ENTITY_STATUSES)[number];
+
+export type EvidenceAttributionDecision = {
+  sourceClassification: EvidenceSourceClassification;
+  entityStatus: EvidenceEntityStatus;
+  entityConfidence: number;
+  entityReason: string;
+  sourceReliabilityScore: number;
+  qualityReason: string;
+  acceptedAsEvidence: boolean;
+};
+
 export type EvidenceScoreInput = {
   sourceType: EvidenceSourceType;
   sourceDomain: string;
@@ -83,6 +116,34 @@ export function normalizeSourceUrl(value: string): string {
   return parsed.toString().replace(/\/$/, "");
 }
 
+const TRACKING_QUERY_PARAMETERS = new Set([
+  "fbclid",
+  "gclid",
+  "dclid",
+  "msclkid",
+  "mc_cid",
+  "mc_eid",
+  "_hsenc",
+  "_hsmi",
+]);
+
+export function canonicalSourceIdentity(value: string): string {
+  const parsed = new URL(normalizeSourceUrl(value));
+  parsed.protocol = "https:";
+  parsed.port = "";
+  if (/^[a-z]{2}\.linkedin\.com$/i.test(parsed.hostname)) {
+    parsed.hostname = "linkedin.com";
+  }
+  for (const key of [...parsed.searchParams.keys()]) {
+    if (key.toLowerCase().startsWith("utm_") || TRACKING_QUERY_PARAMETERS.has(key.toLowerCase())) {
+      parsed.searchParams.delete(key);
+    }
+  }
+  parsed.searchParams.sort();
+  if (parsed.pathname === "/") parsed.pathname = "";
+  return parsed.toString().replace(/\/$/, "");
+}
+
 export function normalizeSourceDomain(value: string): string {
   const url = normalizeSourceUrl(value);
   return new URL(url).hostname;
@@ -114,9 +175,190 @@ export function evidenceObservationKey(
 ): string {
   return [
     companyId,
-    normalizeSourceUrl(sourceUrl),
+    canonicalSourceIdentity(sourceUrl),
     hashNormalizedContent(rawContent),
   ].join(":");
+}
+
+function normalizedIdentityText(value: string): string {
+  return value.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+}
+
+function sourceDomain(value: string): string {
+  return new URL(normalizeSourceUrl(value)).hostname;
+}
+
+export function classifyEvidenceSource(
+  sourceUrl: string,
+  companyDomain: string | null,
+  sourceType: EvidenceSourceType = "other",
+): EvidenceSourceClassification {
+  const domain = sourceDomain(sourceUrl);
+  const canonicalCompanyDomain = companyDomain?.toLowerCase().replace(/^www\./, "") ?? null;
+  if (
+    canonicalCompanyDomain &&
+    (domain === canonicalCompanyDomain || domain.endsWith(`.${canonicalCompanyDomain}`))
+  ) {
+    return "OFFICIAL_WEBSITE";
+  }
+  if (domain === "linkedin.com" || domain.endsWith(".linkedin.com")) {
+    return sourceType === "job_posting" ? "JOB_LISTING" : "SOCIAL_COMPANY_PROFILE";
+  }
+  if (
+    domain === "facebook.com" || domain.endsWith(".facebook.com") ||
+    domain === "instagram.com" || domain.endsWith(".instagram.com") ||
+    domain === "x.com" || domain.endsWith(".x.com") ||
+    domain === "twitter.com" || domain.endsWith(".twitter.com")
+  ) {
+    return "SOCIAL_COMPANY_PROFILE";
+  }
+  if (
+    domain === "crunchbase.com" || domain.endsWith(".crunchbase.com") ||
+    domain === "goodfirms.co" || domain.endsWith(".goodfirms.co") ||
+    domain === "clutch.co" || domain.endsWith(".clutch.co")
+  ) {
+    return "BUSINESS_DATABASE";
+  }
+  if (domain === "inc42.com" || domain.endsWith(".inc42.com")) {
+    return "NEWS";
+  }
+  if (sourceType === "job_posting") return "JOB_LISTING";
+  if (sourceType === "press_release") return "PRESS_RELEASE";
+  if (sourceType === "news") return "NEWS";
+  return "OTHER_WEB";
+}
+
+export function legacySourceTypeForClassification(
+  classification: EvidenceSourceClassification,
+): EvidenceSourceType {
+  switch (classification) {
+    case "OFFICIAL_WEBSITE": return "company_website";
+    case "NEWS": return "news";
+    case "JOB_LISTING": return "job_posting";
+    case "SOCIAL_COMPANY_PROFILE": return "public_social";
+    case "PRESS_RELEASE": return "press_release";
+    default: return "other";
+  }
+}
+
+export function sourceReliabilityForClassification(
+  classification: EvidenceSourceClassification,
+): { score: number; reason: string } {
+  switch (classification) {
+    case "OFFICIAL_WEBSITE":
+      return { score: 95, reason: "First-party source on the canonical company domain." };
+    case "PRESS_RELEASE":
+      return { score: 80, reason: "Named organizational announcement; claims still require direct source support." };
+    case "SOCIAL_COMPANY_PROFILE":
+      return { score: 75, reason: "Public company profile; identity and profile ownership must be verified." };
+    case "JOB_LISTING":
+      return { score: 75, reason: "Direct public hiring source when the employer identity is verified." };
+    case "NEWS":
+      return { score: 70, reason: "Independent editorial source; reliability depends on direct attribution." };
+    case "BUSINESS_DATABASE":
+      return { score: 65, reason: "Structured third-party company database; identity must be corroborated." };
+    case "PARTNER_VENDOR":
+      return { score: 65, reason: "External partner or vendor source with potential commercial context." };
+    default:
+      return { score: 50, reason: "Unclassified external web source requiring additional review." };
+  }
+}
+
+export function assessWebSearchEntityAttribution(input: {
+  sourceUrl: string;
+  title?: string;
+  snippet?: string;
+  summary?: string;
+  rawContent: string;
+  sourceType?: EvidenceSourceType;
+  company: {
+    canonicalName: string;
+    domain: string | null;
+    description?: string | null;
+    country?: string | null;
+  };
+}): EvidenceAttributionDecision {
+  const sourceClassification = classifyEvidenceSource(
+    input.sourceUrl,
+    input.company.domain,
+    input.sourceType,
+  );
+  const reliability = sourceReliabilityForClassification(sourceClassification);
+  const domain = sourceDomain(input.sourceUrl);
+  const companyDomain = input.company.domain?.toLowerCase().replace(/^www\./, "") ?? null;
+  const officialDomain = Boolean(companyDomain) &&
+    (domain === companyDomain || domain.endsWith(`.${companyDomain}`));
+  if (officialDomain) {
+    return {
+      sourceClassification,
+      entityStatus: "CONFIRMED_ENTITY",
+      entityConfidence: 100,
+      entityReason: `The source is hosted on the canonical ${companyDomain} domain.`,
+      sourceReliabilityScore: reliability.score,
+      qualityReason: reliability.reason,
+      acceptedAsEvidence: true,
+    };
+  }
+
+  const searchable = normalizedIdentityText([
+    input.title,
+    input.snippet,
+    input.summary,
+    input.rawContent,
+  ].filter(Boolean).join(" "));
+  const companyName = normalizedIdentityText(input.company.canonicalName);
+  const normalizedDomain = normalizedIdentityText(companyDomain ?? "");
+  const hasName = Boolean(companyName) && searchable.includes(companyName);
+  const hasDomain = Boolean(normalizedDomain) && searchable.includes(normalizedDomain);
+  const descriptionTerms = normalizedIdentityText(input.company.description ?? "")
+    .split(" ")
+    .filter((term) => term.length >= 6);
+  const descriptionMatches = descriptionTerms.filter((term) => searchable.includes(term)).length;
+  const country = normalizedIdentityText(input.company.country ?? "");
+  const hasCountry = Boolean(country) && searchable.includes(country);
+
+  if (hasName && hasDomain) {
+    return {
+      sourceClassification,
+      entityStatus: "CONFIRMED_ENTITY",
+      entityConfidence: 95,
+      entityReason: `The external source names ${input.company.canonicalName} and explicitly references ${companyDomain}.`,
+      sourceReliabilityScore: reliability.score,
+      qualityReason: reliability.reason,
+      acceptedAsEvidence: true,
+    };
+  }
+  if (hasName && (descriptionMatches >= 2 || hasCountry)) {
+    return {
+      sourceClassification,
+      entityStatus: "PROBABLE_ENTITY",
+      entityConfidence: 70,
+      entityReason: "The company name and corroborating company context match, but the canonical domain is absent.",
+      sourceReliabilityScore: reliability.score,
+      qualityReason: reliability.reason,
+      acceptedAsEvidence: false,
+    };
+  }
+  if (hasName) {
+    return {
+      sourceClassification,
+      entityStatus: "AMBIGUOUS_ENTITY",
+      entityConfidence: 40,
+      entityReason: "The company name appears, but no canonical-domain or independent identity corroboration is present.",
+      sourceReliabilityScore: reliability.score,
+      qualityReason: reliability.reason,
+      acceptedAsEvidence: false,
+    };
+  }
+  return {
+    sourceClassification,
+    entityStatus: "WRONG_ENTITY",
+    entityConfidence: 5,
+    entityReason: `The source does not establish an identity match to ${input.company.canonicalName} or ${companyDomain ?? "its canonical domain"}.`,
+    sourceReliabilityScore: reliability.score,
+    qualityReason: reliability.reason,
+    acceptedAsEvidence: false,
+  };
 }
 
 export function isSameEvidenceObservation(

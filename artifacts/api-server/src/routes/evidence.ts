@@ -16,23 +16,28 @@ import {
   companyEvidenceTable,
   crawlPagesTable,
   db,
+  evidenceAttributionReviewsTable,
   organizationMembersTable,
   projectCompaniesTable,
   projectsTable,
   type Company,
   type CompanyEvidence,
   type CrawlPage,
+  type EvidenceAttributionReview,
   type ProjectCompany,
 } from "@workspace/db";
 import {
   assertEvidenceStatusTransition,
   calculateEvidenceScores,
   canOrganizationReviewEvidence,
+  classifyEvidenceSource,
   evidenceObservationKey,
   hashNormalizedContent,
   normalizeEvidenceContent,
   normalizeSourceDomain,
   normalizeSourceUrl,
+  sourceReliabilityForClassification,
+  type EvidenceSourceClassification,
   type EvidenceStatus,
 } from "../lib/evidence";
 import {
@@ -50,10 +55,14 @@ const asyncRoute = (handler: AsyncHandler): RequestHandler =>
 type EvidenceRow = {
   evidence: CompanyEvidence;
   crawlPage: CrawlPage;
+  attributionReview: EvidenceAttributionReview | null;
 };
 
 function evidencePayload(row: EvidenceRow) {
-  const { evidence, crawlPage } = row;
+  const { evidence, crawlPage, attributionReview } = row;
+  const sourceClassification = (attributionReview?.sourceClassification as EvidenceSourceClassification | undefined) ??
+    classifyEvidenceSource(evidence.sourceUrl, null, evidence.sourceType);
+  const reliability = sourceReliabilityForClassification(sourceClassification);
   return {
     id: evidence.id,
     companyId: evidence.companyId,
@@ -73,6 +82,15 @@ function evidencePayload(row: EvidenceRow) {
     freshnessScore: evidence.freshnessScore,
     corroborationScore: evidence.corroborationScore,
     confidence: evidence.confidence,
+    sourceClassification,
+    entityStatus: attributionReview?.entityStatus ?? "PROBABLE_ENTITY",
+    entityConfidence: attributionReview?.entityConfidence ?? evidence.confidence,
+    entityReason: attributionReview?.entityReason ??
+      "Legacy evidence predates explicit entity-attribution review.",
+    sourceReliabilityScore: attributionReview?.sourceReliabilityScore ?? reliability.score,
+    qualityReason: attributionReview?.qualityReason ?? reliability.reason,
+    acceptedAsEvidence: attributionReview?.acceptedAsEvidence ?? true,
+    duplicateOfCrawlPageId: attributionReview?.duplicateOfCrawlPageId ?? null,
     status: evidence.status,
     createdAt: evidence.createdAt,
     updatedAt: evidence.updatedAt,
@@ -145,11 +163,16 @@ async function getEvidenceRow(
     .select({
       evidence: companyEvidenceTable,
       crawlPage: crawlPagesTable,
+      attributionReview: evidenceAttributionReviewsTable,
     })
     .from(companyEvidenceTable)
     .innerJoin(
       crawlPagesTable,
       eq(companyEvidenceTable.crawlPageId, crawlPagesTable.id),
+    )
+    .leftJoin(
+      evidenceAttributionReviewsTable,
+      eq(evidenceAttributionReviewsTable.crawlPageId, crawlPagesTable.id),
     )
     .where(
       and(
@@ -184,11 +207,16 @@ router.get(
       .select({
         evidence: companyEvidenceTable,
         crawlPage: crawlPagesTable,
+        attributionReview: evidenceAttributionReviewsTable,
       })
       .from(companyEvidenceTable)
       .innerJoin(
         crawlPagesTable,
         eq(companyEvidenceTable.crawlPageId, crawlPagesTable.id),
+      )
+      .leftJoin(
+        evidenceAttributionReviewsTable,
+        eq(evidenceAttributionReviewsTable.crawlPageId, crawlPagesTable.id),
       )
       .where(eq(companyEvidenceTable.companyId, access.company.id))
       .orderBy(desc(companyEvidenceTable.observedAt));
@@ -256,11 +284,16 @@ router.post(
         .select({
           evidence: companyEvidenceTable,
           crawlPage: crawlPagesTable,
+          attributionReview: evidenceAttributionReviewsTable,
         })
         .from(crawlPagesTable)
         .innerJoin(
           companyEvidenceTable,
           eq(companyEvidenceTable.crawlPageId, crawlPagesTable.id),
+        )
+        .leftJoin(
+          evidenceAttributionReviewsTable,
+          eq(evidenceAttributionReviewsTable.crawlPageId, crawlPagesTable.id),
         )
         .where(
           and(
@@ -335,7 +368,28 @@ router.post(
           status: "RAW",
         })
         .returning();
-      return { created: { evidence, crawlPage } };
+      const sourceClassification = classifyEvidenceSource(
+        sourceUrl,
+        access.company!.domain,
+        body.data.sourceType,
+      );
+      const reliability = sourceReliabilityForClassification(sourceClassification);
+      const [attributionReview] = await tx
+        .insert(evidenceAttributionReviewsTable)
+        .values({
+          crawlPageId,
+          companyId: access.company!.id,
+          reviewedByOrganizationId: access.organizationId,
+          sourceClassification,
+          entityStatus: "CONFIRMED_ENTITY",
+          entityConfidence: 100,
+          entityReason: "An authenticated organization explicitly attributed this manually preserved source to the company.",
+          sourceReliabilityScore: reliability.score,
+          qualityReason: reliability.reason,
+          acceptedAsEvidence: true,
+        })
+        .returning();
+      return { created: { evidence, crawlPage, attributionReview } };
     });
 
     if ("duplicate" in result && result.duplicate) {
@@ -418,7 +472,11 @@ router.patch(
       .returning();
     res.json(
       UpdateCompanyEvidenceStatusResponse.parse(
-        evidencePayload({ evidence: updated, crawlPage: existing.crawlPage }),
+        evidencePayload({
+          evidence: updated,
+          crawlPage: existing.crawlPage,
+          attributionReview: existing.attributionReview,
+        }),
       ),
     );
   }),

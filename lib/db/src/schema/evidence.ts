@@ -1,4 +1,5 @@
 import {
+  boolean,
   foreignKey,
   index,
   pgEnum,
@@ -131,6 +132,50 @@ export const companyEvidenceTable = pgTable(
   ],
 );
 
+export const evidenceAttributionReviewsTable = pgTable(
+  "evidence_attribution_reviews",
+  {
+    crawlPageId: uuid("crawl_page_id")
+      .primaryKey()
+      .references(() => crawlPagesTable.id, { onDelete: "restrict" }),
+    companyId: uuid("company_id")
+      .notNull()
+      .references(() => companiesTable.id, { onDelete: "restrict" }),
+    reviewedByOrganizationId: uuid("reviewed_by_organization_id").references(
+      () => organizationsTable.id,
+      { onDelete: "restrict" },
+    ),
+    sourceClassification: text("source_classification").notNull(),
+    entityStatus: text("entity_status").notNull(),
+    entityConfidence: real("entity_confidence").notNull(),
+    entityReason: text("entity_reason").notNull(),
+    sourceReliabilityScore: real("source_reliability_score").notNull(),
+    qualityReason: text("quality_reason").notNull(),
+    acceptedAsEvidence: boolean("accepted_as_evidence").notNull().default(false),
+    duplicateOfCrawlPageId: uuid("duplicate_of_crawl_page_id").references(
+      () => crawlPagesTable.id,
+      { onDelete: "restrict" },
+    ),
+    reviewedAt: timestamp("reviewed_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.crawlPageId, table.companyId],
+      foreignColumns: [crawlPagesTable.id, crawlPagesTable.companyId],
+      name: "evidence_attribution_review_crawl_company_fk",
+    }).onDelete("restrict"),
+    index("evidence_attribution_review_company_idx").on(
+      table.companyId,
+      table.acceptedAsEvidence,
+    ),
+    index("evidence_attribution_review_entity_idx").on(
+      table.entityStatus,
+    ),
+  ],
+);
+
 export const insertCrawlPageSchema = createInsertSchema(crawlPagesTable).omit({
   id: true,
   createdAt: true,
@@ -142,8 +187,18 @@ export const insertCompanyEvidenceSchema = createInsertSchema(
   createdAt: true,
   updatedAt: true,
 });
+export const insertEvidenceAttributionReviewSchema = createInsertSchema(
+  evidenceAttributionReviewsTable,
+).omit({
+  reviewedAt: true,
+});
 
 export type CrawlPage = typeof crawlPagesTable.$inferSelect;
 export type InsertCrawlPage = z.infer<typeof insertCrawlPageSchema>;
 export type CompanyEvidence = typeof companyEvidenceTable.$inferSelect;
 export type InsertCompanyEvidence = z.infer<typeof insertCompanyEvidenceSchema>;
+export type EvidenceAttributionReview =
+  typeof evidenceAttributionReviewsTable.$inferSelect;
+export type InsertEvidenceAttributionReview = z.infer<
+  typeof insertEvidenceAttributionReviewSchema
+>;

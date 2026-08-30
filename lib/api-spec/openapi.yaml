@@ -3018,10 +3018,22 @@ components:
         freshnessScore: { type: number, minimum: 0, maximum: 100 }
         corroborationScore: { type: number, minimum: 0, maximum: 100 }
         confidence: { type: number, minimum: 0, maximum: 100 }
+        sourceClassification:
+          type: string
+          enum: [OFFICIAL_WEBSITE, NEWS, JOB_LISTING, SOCIAL_COMPANY_PROFILE, BUSINESS_DATABASE, PRESS_RELEASE, PARTNER_VENDOR, OTHER_WEB]
+        entityStatus:
+          type: string
+          enum: [CONFIRMED_ENTITY, PROBABLE_ENTITY, AMBIGUOUS_ENTITY, WRONG_ENTITY]
+        entityConfidence: { type: number, minimum: 0, maximum: 100 }
+        entityReason: { type: string }
+        sourceReliabilityScore: { type: number, minimum: 0, maximum: 100 }
+        qualityReason: { type: string }
+        acceptedAsEvidence: { type: boolean }
+        duplicateOfCrawlPageId: { type: ["string", "null"] }
         status: { type: string, enum: [RAW, EXTRACTED, VERIFIED, CONFLICTING, STALE] }
         createdAt: { type: string, format: date-time }
         updatedAt: { type: string, format: date-time }
-      required: [id, companyId, crawlPageId, sourceUrl, sourceDomain, sourceType, provider, publisher, publishedAt, observedAt, rawContentReference, rawContent, extractedClaim, authorityScore, directnessScore, freshnessScore, corroborationScore, confidence, status, createdAt, updatedAt]
+      required: [id, companyId, crawlPageId, sourceUrl, sourceDomain, sourceType, provider, publisher, publishedAt, observedAt, rawContentReference, rawContent, extractedClaim, authorityScore, directnessScore, freshnessScore, corroborationScore, confidence, sourceClassification, entityStatus, entityConfidence, entityReason, sourceReliabilityScore, qualityReason, acceptedAsEvidence, duplicateOfCrawlPageId, status, createdAt, updatedAt]
     CompanyEvidenceInput:
       type: object
       properties:

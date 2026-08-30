@@ -27,6 +27,7 @@ const {
   crawlPagesTable,
   dataProvidersTable,
   db,
+  evidenceAttributionReviewsTable,
   organizationsTable,
   projectCompaniesTable,
   projectsTable,
@@ -365,6 +366,7 @@ try {
   if (company) {
     await db.delete(researchFactProposalsTable).where(eq(researchFactProposalsTable.companyId, company.id));
     await db.delete(companyEvidenceTable).where(eq(companyEvidenceTable.companyId, company.id));
+    await db.delete(evidenceAttributionReviewsTable).where(eq(evidenceAttributionReviewsTable.companyId, company.id));
     await db.execute(sql.raw("ALTER TABLE crawl_pages DISABLE TRIGGER crawl_pages_append_only"));
     try {
       await db.delete(crawlPagesTable).where(eq(crawlPagesTable.companyId, company.id));

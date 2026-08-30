@@ -1574,6 +1574,30 @@ export const CompanyEvidenceSourceType = {
   other: 'other',
 } as const;
 
+export type CompanyEvidenceSourceClassification = typeof CompanyEvidenceSourceClassification[keyof typeof CompanyEvidenceSourceClassification];
+
+
+export const CompanyEvidenceSourceClassification = {
+  OFFICIAL_WEBSITE: 'OFFICIAL_WEBSITE',
+  NEWS: 'NEWS',
+  JOB_LISTING: 'JOB_LISTING',
+  SOCIAL_COMPANY_PROFILE: 'SOCIAL_COMPANY_PROFILE',
+  BUSINESS_DATABASE: 'BUSINESS_DATABASE',
+  PRESS_RELEASE: 'PRESS_RELEASE',
+  PARTNER_VENDOR: 'PARTNER_VENDOR',
+  OTHER_WEB: 'OTHER_WEB',
+} as const;
+
+export type CompanyEvidenceEntityStatus = typeof CompanyEvidenceEntityStatus[keyof typeof CompanyEvidenceEntityStatus];
+
+
+export const CompanyEvidenceEntityStatus = {
+  CONFIRMED_ENTITY: 'CONFIRMED_ENTITY',
+  PROBABLE_ENTITY: 'PROBABLE_ENTITY',
+  AMBIGUOUS_ENTITY: 'AMBIGUOUS_ENTITY',
+  WRONG_ENTITY: 'WRONG_ENTITY',
+} as const;
+
 export type CompanyEvidenceStatus = typeof CompanyEvidenceStatus[keyof typeof CompanyEvidenceStatus];
 
 
@@ -1627,6 +1651,23 @@ export interface CompanyEvidence {
      * @maximum 100
      */
   confidence: number;
+  sourceClassification: CompanyEvidenceSourceClassification;
+  entityStatus: CompanyEvidenceEntityStatus;
+  /**
+     * @minimum 0
+     * @maximum 100
+     */
+  entityConfidence: number;
+  entityReason: string;
+  /**
+     * @minimum 0
+     * @maximum 100
+     */
+  sourceReliabilityScore: number;
+  qualityReason: string;
+  acceptedAsEvidence: boolean;
+  /** @nullable */
+  duplicateOfCrawlPageId: string | null;
   status: CompanyEvidenceStatus;
   createdAt: string;
   updatedAt: string;
