@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { asc, eq } from "drizzle-orm";
+import { asc, eq, sql } from "drizzle-orm";
 import {
   dataProvidersTable,
   db,
@@ -156,6 +156,17 @@ async function databaseUsageWriter(record: ProviderUsageRecord): Promise<void> {
       ...(record.status === "success"
         ? { lastSuccessAt: record.completedAt }
         : { lastFailureAt: record.completedAt }),
+      successRate: sql<number>`coalesce((
+        select count(*) filter (where ${providerUsageTable.status} = 'success')::real
+          / nullif(count(*), 0)
+        from ${providerUsageTable}
+        where ${providerUsageTable.providerId} = ${record.providerId}
+      ), 0)`,
+      averageLatency: sql<number>`coalesce((
+        select round(avg(${providerUsageTable.latencyMs}))::integer
+        from ${providerUsageTable}
+        where ${providerUsageTable.providerId} = ${record.providerId}
+      ), 0)`,
       updatedAt: record.completedAt,
     })
     .where(eq(dataProvidersTable.id, record.providerId));

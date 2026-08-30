@@ -145,6 +145,13 @@ router.get(
         lastSuccessAt: dataProvidersTable.lastSuccessAt,
         lastFailureAt: dataProvidersTable.lastFailureAt,
         successRate: dataProvidersTable.successRate,
+        observedSuccessRate:
+          sql<number>`coalesce(
+            count(${providerUsageTable.id}) filter (
+              where ${providerUsageTable.status} = 'success'
+            )::real / nullif(count(${providerUsageTable.id}), 0),
+            0
+          )`.mapWith(Number),
         configuredLatencyMs: dataProvidersTable.averageLatency,
         observedLatencyMs:
           sql<number>`coalesce(avg(${providerUsageTable.latencyMs}), 0)`.mapWith(Number),
@@ -191,7 +198,10 @@ router.get(
             : row.lastSuccessAt ? "HEALTHY" : "UNTESTED",
           lastSuccessAt: row.lastSuccessAt?.toISOString() ?? null,
           lastFailureAt: row.lastFailureAt?.toISOString() ?? null,
-          successRate: row.successRate,
+          successRate:
+            row.requestCount > 0
+              ? row.observedSuccessRate
+              : row.successRate,
           latencyMs:
             row.requestCount > 0
               ? row.observedLatencyMs

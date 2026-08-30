@@ -1,0 +1,218 @@
+JYRA — HOTFIX 06
+EXA COMPANY_DISCOVERY PROVIDER FAILING
+
+Current Provider Diagnostics:
+
+Provider: Exa
+Capability: COMPANY_DISCOVERY
+Enabled: Yes
+Credentials: AVAILABLE
+Health: FAILING
+Last success: Never
+Last failure: 30/08/2026 13:54:38
+
+Do NOT run Find My Market yet.
+
+OBJECTIVE:
+
+Find and fix the exact reason the real Exa COMPANY_DISCOVERY request is
+failing.
+
+==================================================
+1. TRACE THE REAL FAILURE
+==================================================
+
+Inspect the actual Exa provider request and response.
+
+Report:
+
+- endpoint used
+- HTTP status
+- Exa error code/message
+- request parameters excluding API key
+- SDK version
+- response body/error safely sanitized
+
+Do not expose EXA_API_KEY.
+
+Do not guess the cause.
+
+==================================================
+2. EXPECTED IMPLEMENTATION
+==================================================
+
+For this milestone COMPANY_DISCOVERY should use Exa Search.
+
+Expected pattern:
+
+exa.search(query, {
+  category: "company",
+  type: "auto",
+  numResults: controlledLimit
+})
+
+Do NOT use:
+
+category: "people"
+Exa Agent
+Exa Answer
+Exa Contents
+
+unless the actual API requires a documented adjustment.
+
+==================================================
+3. VERIFY SDK/API
+==================================================
+
+Verify the installed exa-js version supports:
+
+category: "company"
+type: "auto"
+numResults
+
+Verify request shape against the installed SDK/API behavior.
+
+Do not rely solely on TypeScript compilation.
+
+==================================================
+4. MINIMAL LIVE TEST
+==================================================
+
+After fixing the root cause, perform ONE minimal real request.
+
+Use a simple generic company discovery query such as:
+
+"SaaS company cloud infrastructure"
+
+category:
+company
+
+type:
+auto
+
+numResults:
+3
+
+This is provider verification only.
+
+Do not create JYRA companies from this health test.
+
+==================================================
+5. VALIDATE RESPONSE
+==================================================
+
+Report the real returned structure.
+
+For each of the maximum 3 results report only:
+
+title/company name
+URL/domain if returned
+provider result ID if returned
+
+Do not fabricate missing company attributes.
+
+==================================================
+6. PROVIDER DIAGNOSTICS
+==================================================
+
+After successful live verification Provider Diagnostics must show:
+
+Exa
+COMPANY_DISCOVERY
+Enabled
+Credentials AVAILABLE
+Health HEALTHY
+Last success populated
+
+Last failure may remain historically recorded.
+
+==================================================
+7. DO NOT RUN TEST 08 YET
+==================================================
+
+Do NOT:
+
+- discover 20 companies
+- call Tavily
+- call Apify
+- create signals
+- perform contact enrichment
+- modify opportunity scores
+
+This hotfix proves Exa connectivity only.
+
+==================================================
+8. DIAGNOSTICS METRIC NOTE
+==================================================
+
+Also inspect why provider success-rate displays 0.0% despite successful
+calls for providers such as Tavily.
+
+Do not let this metric issue block Exa connectivity.
+
+If the cause is obvious and safe to fix, fix it.
+
+Otherwise document it for a later diagnostics cleanup.
+
+==================================================
+PASS CRITERIA
+==================================================
+
+PASS only if a REAL Exa API request succeeds.
+
+Return:
+
+ROOT CAUSE:
+
+HTTP STATUS BEFORE FIX:
+
+EXA ERROR BEFORE FIX:
+
+CODE/CONFIGURATION CHANGE:
+
+SDK VERSION:
+
+TEST QUERY:
+
+CATEGORY:
+
+SEARCH TYPE:
+
+RESULT COUNT:
+
+RESULTS:
+1.
+2.
+3.
+
+LAST SUCCESS:
+
+PROVIDER HEALTH:
+
+REAL EXA API CALL:
+PASS/FAIL
+
+COMPANY RECORDS CREATED:
+0
+
+TAVILY CALLS:
+0
+
+APIFY CALLS:
+0
+
+PRODUCTION OPERATIONS:
+0
+
+FINAL STATUS:
+PASS/FAIL
+
+==================================================
+DATABASE SAFETY
+==================================================
+
+DEVELOPMENT ONLY.
+
+Production untouched.
+
+STOP immediately after Exa becomes HEALTHY.

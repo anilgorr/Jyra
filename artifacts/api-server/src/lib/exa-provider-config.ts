@@ -8,7 +8,7 @@ export async function ensureDevelopmentExaProvider(): Promise<void> {
     timeoutMs: 30_000,
     searchType: "auto",
     category: "company",
-    content: "highlights",
+    content: "none",
     estimatedCost: 0.007,
     credentialStatus: process.env.EXA_API_KEY ? "AVAILABLE" : "MISSING",
   };

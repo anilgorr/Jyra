@@ -1,0 +1,16 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "I0g0wuW2vqmg7S9yr-KYi"
+uri = "file://artifacts/api-server/HOTFIX_06_EXA_PROVIDER.md"
+type = "text"
+title = "Hotfix 06 — Exa Provider Verification"
+description = "Sanitized development-only connectivity report for the successful three-result Exa COMPANY_DISCOVERY health check."
+logical_id = "2ed34317-8a6e-488f-b339-646ea0ccf45e"
+content_hash = "sha256:d8b930d3cceeb906424571b398e50beed9c197c4ec0e62d474a111b51dad9b3d"
+size = 2735
+mtime_ms = 1788078968109
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/2ed34317-8a6e-488f-b339-646ea0ccf45e/8f449f05-2e47-4bcd-88d9-480005ab3b3c"
+storage_version_token = "1788079019294703"
+content_type = "text/markdown"
