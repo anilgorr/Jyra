@@ -96,6 +96,10 @@ import type {
   ProjectSignalPack,
   ProposeOpportunityPackRequest,
   ProviderDiagnostic,
+  RealDataImportCommitInput,
+  RealDataImportInput,
+  RealDataImportPreview,
+  RealDataImportResult,
   ResearchBudget,
   ResearchBudgetInput,
   ResearchEconomicsSummary,
@@ -3188,6 +3192,152 @@ export const useCommitCompanyImport = <TError = ErrorType<BadRequestResponse | U
         TContext
       > => {
       return useMutation(getCommitCompanyImportMutationOptions(options));
+    }
+
+export const getPreviewRealDataImportUrl = (projectId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/data-import/preview`
+}
+
+/**
+ * Validates a customer-provided CSV projection without creating records or triggering enrichment and research.
+ * @summary Preview a mixed company and contact import
+ */
+export const previewRealDataImport = async (projectId: string,
+    realDataImportInput: RealDataImportInput, options?: Parameters<typeof customFetch>[1]): Promise<RealDataImportPreview> => {
+
+  return customFetch<RealDataImportPreview>(getPreviewRealDataImportUrl(projectId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(realDataImportInput)
+  }
+);}
+
+
+
+
+
+export const getPreviewRealDataImportMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof previewRealDataImport>>, TError,{projectId: string;data: BodyType<RealDataImportInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof previewRealDataImport>>, TError,{projectId: string;data: BodyType<RealDataImportInput>}, TContext> => {
+
+const mutationKey = ['previewRealDataImport'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof previewRealDataImport>>, {projectId: string;data: BodyType<RealDataImportInput>}> = (props) => {
+          const {projectId,data} = props ?? {};
+
+          return  previewRealDataImport(projectId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PreviewRealDataImportMutationResult = NonNullable<Awaited<ReturnType<typeof previewRealDataImport>>>
+    export type PreviewRealDataImportMutationBody = BodyType<RealDataImportInput>
+    export type PreviewRealDataImportMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+    /**
+ * @summary Preview a mixed company and contact import
+ */
+export const usePreviewRealDataImport = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof previewRealDataImport>>, TError,{projectId: string;data: BodyType<RealDataImportInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof previewRealDataImport>>,
+        TError,
+        {projectId: string;data: BodyType<RealDataImportInput>},
+        TContext
+      > => {
+      return useMutation(getPreviewRealDataImportMutationOptions(options));
+    }
+
+export const getCommitRealDataImportUrl = (projectId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/data-import/commit`
+}
+
+/**
+ * Creates or reuses canonical companies and private project contacts from an explicitly reviewed import projection.
+ * @summary Commit a reviewed mixed company and contact import
+ */
+export const commitRealDataImport = async (projectId: string,
+    realDataImportCommitInput: RealDataImportCommitInput, options?: Parameters<typeof customFetch>[1]): Promise<RealDataImportResult> => {
+
+  return customFetch<RealDataImportResult>(getCommitRealDataImportUrl(projectId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(realDataImportCommitInput)
+  }
+);}
+
+
+
+
+
+export const getCommitRealDataImportMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof commitRealDataImport>>, TError,{projectId: string;data: BodyType<RealDataImportCommitInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof commitRealDataImport>>, TError,{projectId: string;data: BodyType<RealDataImportCommitInput>}, TContext> => {
+
+const mutationKey = ['commitRealDataImport'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof commitRealDataImport>>, {projectId: string;data: BodyType<RealDataImportCommitInput>}> = (props) => {
+          const {projectId,data} = props ?? {};
+
+          return  commitRealDataImport(projectId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CommitRealDataImportMutationResult = NonNullable<Awaited<ReturnType<typeof commitRealDataImport>>>
+    export type CommitRealDataImportMutationBody = BodyType<RealDataImportCommitInput>
+    export type CommitRealDataImportMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+    /**
+ * @summary Commit a reviewed mixed company and contact import
+ */
+export const useCommitRealDataImport = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof commitRealDataImport>>, TError,{projectId: string;data: BodyType<RealDataImportCommitInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof commitRealDataImport>>,
+        TError,
+        {projectId: string;data: BodyType<RealDataImportCommitInput>},
+        TContext
+      > => {
+      return useMutation(getCommitRealDataImportMutationOptions(options));
     }
 
 export const getListResearchWorkspaceUrl = (projectId: string,) => {

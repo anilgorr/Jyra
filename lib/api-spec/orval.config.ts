@@ -41,6 +41,9 @@ export default defineConfig({
     },
   },
   zod: {
+    hooks: {
+      afterAllFilesWrite: "node ./scripts/fix-zod-index.mjs",
+    },
     input: {
       target: "./openapi.yaml",
       override: {

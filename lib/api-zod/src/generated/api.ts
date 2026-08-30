@@ -3940,6 +3940,195 @@ export const CommitCompanyImportResponse = zod.object({
 
 
 /**
+ * Validates a customer-provided CSV projection without creating records or triggering enrichment and research.
+ * @summary Preview a mixed company and contact import
+ */
+export const PreviewRealDataImportParams = zod.object({
+  "projectId": zod.coerce.string()
+})
+
+export const previewRealDataImportBodyFileNameMax = 255;
+
+export const previewRealDataImportBodyMappingsItemSourceHeaderMax = 200;
+
+export const previewRealDataImportBodyMappingsMax = 100;
+
+export const previewRealDataImportBodyRowsItemRowIdMax = 100;
+
+export const previewRealDataImportBodyRowsItemValuesMaxOne = 10000;
+
+export const previewRealDataImportBodyRowsMax = 1000;
+
+
+
+export const PreviewRealDataImportBody = zod.object({
+  "fileName": zod.string().max(previewRealDataImportBodyFileNameMax).nullish(),
+  "mappings": zod.array(zod.object({
+  "sourceHeader": zod.string().min(1).max(previewRealDataImportBodyMappingsItemSourceHeaderMax),
+  "targetField": zod.enum(['company_name', 'company_domain', 'company_website', 'company_linkedin_url', 'company_country', 'company_state', 'company_city', 'company_industry', 'company_employee_count', 'company_employee_range', 'company_revenue', 'company_funding', 'company_description', 'person_first_name', 'person_last_name', 'person_full_name', 'person_title', 'person_department', 'person_seniority', 'person_linkedin_url', 'person_email', 'person_phone', 'person_country', 'person_state', 'person_city', 'technology', 'keywords', 'ignore', 'custom_field', 'evidence_candidate']),
+  "action": zod.enum(['MAP', 'CUSTOM_FIELD', 'EVIDENCE_CANDIDATE', 'IGNORE'])
+})).min(1).max(previewRealDataImportBodyMappingsMax),
+  "rows": zod.array(zod.object({
+  "rowId": zod.string().min(1).max(previewRealDataImportBodyRowsItemRowIdMax),
+  "values": zod.record(zod.string(), zod.string().max(previewRealDataImportBodyRowsItemValuesMaxOne))
+})).min(1).max(previewRealDataImportBodyRowsMax)
+})
+
+export const previewRealDataImportResponseSummaryRowsDetectedMin = 0;
+
+export const previewRealDataImportResponseSummaryCompaniesDetectedMin = 0;
+
+export const previewRealDataImportResponseSummaryContactsDetectedMin = 0;
+
+export const previewRealDataImportResponseSummaryUnknownColumnsMin = 0;
+
+export const previewRealDataImportResponseSummaryMissingDomainsMin = 0;
+
+export const previewRealDataImportResponseSummaryPossibleDuplicatesMin = 0;
+
+export const previewRealDataImportResponseSummaryRepeatUploadsMin = 0;
+
+export const previewRealDataImportResponseSummaryInvalidEmailsMin = 0;
+
+export const previewRealDataImportResponseSummaryInvalidUrlsMin = 0;
+
+export const previewRealDataImportResponseSummaryRowsRequiringReviewMin = 0;
+
+export const previewRealDataImportResponseSummaryValidRowsMin = 0;
+
+
+
+export const PreviewRealDataImportResponse = zod.object({
+  "mappings": zod.array(zod.object({
+  "sourceHeader": zod.string(),
+  "suggestedField": zod.string().nullable(),
+  "confidence": zod.enum(['HIGH', 'MEDIUM', 'LOW', 'UNKNOWN']),
+  "reason": zod.string()
+})),
+  "unknownColumns": zod.array(zod.string()),
+  "summary": zod.object({
+  "rowsDetected": zod.number().min(previewRealDataImportResponseSummaryRowsDetectedMin),
+  "companiesDetected": zod.number().min(previewRealDataImportResponseSummaryCompaniesDetectedMin),
+  "contactsDetected": zod.number().min(previewRealDataImportResponseSummaryContactsDetectedMin),
+  "unknownColumns": zod.number().min(previewRealDataImportResponseSummaryUnknownColumnsMin),
+  "missingDomains": zod.number().min(previewRealDataImportResponseSummaryMissingDomainsMin),
+  "possibleDuplicates": zod.number().min(previewRealDataImportResponseSummaryPossibleDuplicatesMin),
+  "repeatUploads": zod.number().min(previewRealDataImportResponseSummaryRepeatUploadsMin),
+  "invalidEmails": zod.number().min(previewRealDataImportResponseSummaryInvalidEmailsMin),
+  "invalidUrls": zod.number().min(previewRealDataImportResponseSummaryInvalidUrlsMin),
+  "rowsRequiringReview": zod.number().min(previewRealDataImportResponseSummaryRowsRequiringReviewMin),
+  "validRows": zod.number().min(previewRealDataImportResponseSummaryValidRowsMin)
+}),
+  "rows": zod.array(zod.object({
+  "rowId": zod.string(),
+  "companyName": zod.string().nullable(),
+  "normalizedDomain": zod.string().nullable(),
+  "companyStatus": zod.enum(['CONFIRMED', 'HIGH_CONFIDENCE', 'NEEDS_REVIEW', 'UNRESOLVED', 'INVALID']),
+  "personName": zod.string().nullable(),
+  "contactStatus": zod.enum(['READY', 'PARTIAL', 'MISSING', 'INVALID']),
+  "duplicateStatus": zod.enum(['NONE', 'EXACT_MATCH', 'POSSIBLE_DUPLICATE', 'REPEAT_UPLOAD']),
+  "matchedCompanyName": zod.string().nullable(),
+  "errors": zod.array(zod.string()),
+  "warnings": zod.array(zod.string())
+}))
+})
+
+
+/**
+ * Creates or reuses canonical companies and private project contacts from an explicitly reviewed import projection.
+ * @summary Commit a reviewed mixed company and contact import
+ */
+export const CommitRealDataImportParams = zod.object({
+  "projectId": zod.coerce.string()
+})
+
+export const commitRealDataImportBodyOneFileNameMax = 255;
+
+export const commitRealDataImportBodyOneMappingsItemSourceHeaderMax = 200;
+
+export const commitRealDataImportBodyOneMappingsMax = 100;
+
+export const commitRealDataImportBodyOneRowsItemRowIdMax = 100;
+
+export const commitRealDataImportBodyOneRowsItemValuesMaxOne = 10000;
+
+export const commitRealDataImportBodyOneRowsMax = 1000;
+
+
+
+export const CommitRealDataImportBody = zod.object({
+  "fileName": zod.string().max(commitRealDataImportBodyOneFileNameMax).nullish(),
+  "mappings": zod.array(zod.object({
+  "sourceHeader": zod.string().min(1).max(commitRealDataImportBodyOneMappingsItemSourceHeaderMax),
+  "targetField": zod.enum(['company_name', 'company_domain', 'company_website', 'company_linkedin_url', 'company_country', 'company_state', 'company_city', 'company_industry', 'company_employee_count', 'company_employee_range', 'company_revenue', 'company_funding', 'company_description', 'person_first_name', 'person_last_name', 'person_full_name', 'person_title', 'person_department', 'person_seniority', 'person_linkedin_url', 'person_email', 'person_phone', 'person_country', 'person_state', 'person_city', 'technology', 'keywords', 'ignore', 'custom_field', 'evidence_candidate']),
+  "action": zod.enum(['MAP', 'CUSTOM_FIELD', 'EVIDENCE_CANDIDATE', 'IGNORE'])
+})).min(1).max(commitRealDataImportBodyOneMappingsMax),
+  "rows": zod.array(zod.object({
+  "rowId": zod.string().min(1).max(commitRealDataImportBodyOneRowsItemRowIdMax),
+  "values": zod.record(zod.string(), zod.string().max(commitRealDataImportBodyOneRowsItemValuesMaxOne))
+})).min(1).max(commitRealDataImportBodyOneRowsMax)
+}).and(zod.object({
+  "confirm": zod.boolean()
+}))
+
+export const commitRealDataImportResponseRowsProcessedMin = 0;
+
+export const commitRealDataImportResponseCanonicalCompaniesCreatedMin = 0;
+
+export const commitRealDataImportResponseExistingCompaniesMatchedMin = 0;
+
+export const commitRealDataImportResponseDuplicatesMergedMin = 0;
+
+export const commitRealDataImportResponseCompaniesNeedingReviewMin = 0;
+
+export const commitRealDataImportResponseDomainsResolvedMin = 0;
+
+export const commitRealDataImportResponseDomainsUnresolvedMin = 0;
+
+export const commitRealDataImportResponseContactsCreatedMin = 0;
+
+export const commitRealDataImportResponseContactsMatchedMin = 0;
+
+export const commitRealDataImportResponseInvalidContactsMin = 0;
+
+export const commitRealDataImportResponseEvidenceCandidatesCreatedMin = 0;
+
+export const commitRealDataImportResponseCustomFieldsCreatedMin = 0;
+
+export const commitRealDataImportResponseRowsRejectedMin = 0;
+
+
+
+export const CommitRealDataImportResponse = zod.object({
+  "rowsProcessed": zod.number().min(commitRealDataImportResponseRowsProcessedMin),
+  "canonicalCompaniesCreated": zod.number().min(commitRealDataImportResponseCanonicalCompaniesCreatedMin),
+  "existingCompaniesMatched": zod.number().min(commitRealDataImportResponseExistingCompaniesMatchedMin),
+  "duplicatesMerged": zod.number().min(commitRealDataImportResponseDuplicatesMergedMin),
+  "companiesNeedingReview": zod.number().min(commitRealDataImportResponseCompaniesNeedingReviewMin),
+  "domainsResolved": zod.number().min(commitRealDataImportResponseDomainsResolvedMin),
+  "domainsUnresolved": zod.number().min(commitRealDataImportResponseDomainsUnresolvedMin),
+  "contactsCreated": zod.number().min(commitRealDataImportResponseContactsCreatedMin),
+  "contactsMatched": zod.number().min(commitRealDataImportResponseContactsMatchedMin),
+  "invalidContacts": zod.number().min(commitRealDataImportResponseInvalidContactsMin),
+  "evidenceCandidatesCreated": zod.number().min(commitRealDataImportResponseEvidenceCandidatesCreatedMin),
+  "customFieldsCreated": zod.number().min(commitRealDataImportResponseCustomFieldsCreatedMin),
+  "rowsRejected": zod.number().min(commitRealDataImportResponseRowsRejectedMin),
+  "rows": zod.array(zod.object({
+  "rowId": zod.string(),
+  "companyName": zod.string().nullable(),
+  "normalizedDomain": zod.string().nullable(),
+  "companyStatus": zod.enum(['CONFIRMED', 'HIGH_CONFIDENCE', 'NEEDS_REVIEW', 'UNRESOLVED', 'INVALID']),
+  "personName": zod.string().nullable(),
+  "contactStatus": zod.enum(['READY', 'PARTIAL', 'MISSING', 'INVALID']),
+  "duplicateStatus": zod.enum(['NONE', 'EXACT_MATCH', 'POSSIBLE_DUPLICATE', 'REPEAT_UPLOAD']),
+  "matchedCompanyName": zod.string().nullable(),
+  "errors": zod.array(zod.string()),
+  "warnings": zod.array(zod.string())
+}))
+})
+
+
+/**
  * @summary List bounded research state for project companies
  */
 export const ListResearchWorkspaceParams = zod.object({

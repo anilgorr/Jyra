@@ -938,6 +938,54 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
         "404": { $ref: "#/components/responses/NotFound" }
+  /projects/{projectId}/data-import/preview:
+    post:
+      operationId: previewRealDataImport
+      tags: [companies]
+      summary: Preview a mixed company and contact import
+      description: Validates a customer-provided CSV projection without creating records or triggering enrichment and research.
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/ProjectId" }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/RealDataImportInput" }
+      responses:
+        "200":
+          description: Mixed import preview
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/RealDataImportPreview" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /projects/{projectId}/data-import/commit:
+    post:
+      operationId: commitRealDataImport
+      tags: [companies]
+      summary: Commit a reviewed mixed company and contact import
+      description: Creates or reuses canonical companies and private project contacts from an explicitly reviewed import projection.
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/ProjectId" }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/RealDataImportCommitInput" }
+      responses:
+        "200":
+          description: Mixed import results
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/RealDataImportResult" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
   /projects/{projectId}/research:
     get:
       operationId: listResearchWorkspace
@@ -3232,6 +3280,146 @@ components:
           type: array
           items: { $ref: "#/components/schemas/CompanyImportRowResult" }
       required: [total, created, reused, linked, skipped, needsReview, rows]
+    RealDataImportMapping:
+      type: object
+      properties:
+        sourceHeader: { type: string, minLength: 1, maxLength: 200 }
+        targetField:
+          type: string
+          enum:
+            - company_name
+            - company_domain
+            - company_website
+            - company_linkedin_url
+            - company_country
+            - company_state
+            - company_city
+            - company_industry
+            - company_employee_count
+            - company_employee_range
+            - company_revenue
+            - company_funding
+            - company_description
+            - person_first_name
+            - person_last_name
+            - person_full_name
+            - person_title
+            - person_department
+            - person_seniority
+            - person_linkedin_url
+            - person_email
+            - person_phone
+            - person_country
+            - person_state
+            - person_city
+            - technology
+            - keywords
+            - ignore
+            - custom_field
+            - evidence_candidate
+        action:
+          type: string
+          enum: [MAP, CUSTOM_FIELD, EVIDENCE_CANDIDATE, IGNORE]
+      required: [sourceHeader, targetField, action]
+    RealDataImportRow:
+      type: object
+      properties:
+        rowId: { type: string, minLength: 1, maxLength: 100 }
+        values:
+          type: object
+          additionalProperties: { type: string, maxLength: 10000 }
+      required: [rowId, values]
+    RealDataImportInput:
+      type: object
+      properties:
+        fileName: { type: ["string", "null"], maxLength: 255 }
+        mappings:
+          type: array
+          minItems: 1
+          maxItems: 100
+          items: { $ref: "#/components/schemas/RealDataImportMapping" }
+        rows:
+          type: array
+          minItems: 1
+          maxItems: 1000
+          items: { $ref: "#/components/schemas/RealDataImportRow" }
+      required: [mappings, rows]
+    RealDataImportMappingSuggestion:
+      type: object
+      properties:
+        sourceHeader: { type: string }
+        suggestedField: { type: ["string", "null"] }
+        confidence: { type: string, enum: [HIGH, MEDIUM, LOW, UNKNOWN] }
+        reason: { type: string }
+      required: [sourceHeader, suggestedField, confidence, reason]
+    RealDataImportRowPreview:
+      type: object
+      properties:
+        rowId: { type: string }
+        companyName: { type: ["string", "null"] }
+        normalizedDomain: { type: ["string", "null"] }
+        companyStatus: { type: string, enum: [CONFIRMED, HIGH_CONFIDENCE, NEEDS_REVIEW, UNRESOLVED, INVALID] }
+        personName: { type: ["string", "null"] }
+        contactStatus: { type: string, enum: [READY, PARTIAL, MISSING, INVALID] }
+        duplicateStatus: { type: string, enum: [NONE, EXACT_MATCH, POSSIBLE_DUPLICATE, REPEAT_UPLOAD] }
+        matchedCompanyName: { type: ["string", "null"] }
+        errors: { type: array, items: { type: string } }
+        warnings: { type: array, items: { type: string } }
+      required: [rowId, companyName, normalizedDomain, companyStatus, personName, contactStatus, duplicateStatus, matchedCompanyName, errors, warnings]
+    RealDataImportSummary:
+      type: object
+      properties:
+        rowsDetected: { type: number, minimum: 0 }
+        companiesDetected: { type: number, minimum: 0 }
+        contactsDetected: { type: number, minimum: 0 }
+        unknownColumns: { type: number, minimum: 0 }
+        missingDomains: { type: number, minimum: 0 }
+        possibleDuplicates: { type: number, minimum: 0 }
+        repeatUploads: { type: number, minimum: 0 }
+        invalidEmails: { type: number, minimum: 0 }
+        invalidUrls: { type: number, minimum: 0 }
+        rowsRequiringReview: { type: number, minimum: 0 }
+        validRows: { type: number, minimum: 0 }
+      required: [rowsDetected, companiesDetected, contactsDetected, unknownColumns, missingDomains, possibleDuplicates, repeatUploads, invalidEmails, invalidUrls, rowsRequiringReview, validRows]
+    RealDataImportPreview:
+      type: object
+      properties:
+        mappings:
+          type: array
+          items: { $ref: "#/components/schemas/RealDataImportMappingSuggestion" }
+        unknownColumns:
+          type: array
+          items: { type: string }
+        summary: { $ref: "#/components/schemas/RealDataImportSummary" }
+        rows:
+          type: array
+          items: { $ref: "#/components/schemas/RealDataImportRowPreview" }
+      required: [mappings, unknownColumns, summary, rows]
+    RealDataImportCommitInput:
+      allOf:
+        - $ref: "#/components/schemas/RealDataImportInput"
+        - type: object
+          properties:
+            confirm: { type: boolean }
+          required: [confirm]
+    RealDataImportResult:
+      type: object
+      properties:
+        rowsProcessed: { type: number, minimum: 0 }
+        canonicalCompaniesCreated: { type: number, minimum: 0 }
+        existingCompaniesMatched: { type: number, minimum: 0 }
+        duplicatesMerged: { type: number, minimum: 0 }
+        companiesNeedingReview: { type: number, minimum: 0 }
+        domainsResolved: { type: number, minimum: 0 }
+        domainsUnresolved: { type: number, minimum: 0 }
+        contactsCreated: { type: number, minimum: 0 }
+        contactsMatched: { type: number, minimum: 0 }
+        invalidContacts: { type: number, minimum: 0 }
+        evidenceCandidatesCreated: { type: number, minimum: 0 }
+        customFieldsCreated: { type: number, minimum: 0 }
+        rowsRejected: { type: number, minimum: 0 }
+        rows: { type: array, items: { $ref: "#/components/schemas/RealDataImportRowPreview" } }
+      required: [rowsProcessed, canonicalCompaniesCreated, existingCompaniesMatched, duplicatesMerged, companiesNeedingReview, domainsResolved, domainsUnresolved, contactsCreated, contactsMatched, invalidContacts, evidenceCandidatesCreated, customFieldsCreated, rowsRejected, rows]
     ResearchQuestion:
       type: object
       properties:

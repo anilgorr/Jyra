@@ -26,6 +26,7 @@
     ,"test:phase23a": "node ./scripts/test-phase23a.mjs"
     ,"test:admin-quality": "node ./scripts/test-admin-quality.mjs"
     ,"test:admin-quality-db": "node ./scripts/test-admin-quality-db.mjs"
+    ,"test:real-data-import": "node ./scripts/test-real-data-import.mjs"
   },
   "dependencies": {
     "@clerk/express": "^2.1.63",

@@ -2163,6 +2163,223 @@ export interface CompanyImportResult {
   rows: CompanyImportRowResult[];
 }
 
+export type RealDataImportMappingTargetField = typeof RealDataImportMappingTargetField[keyof typeof RealDataImportMappingTargetField];
+
+
+export const RealDataImportMappingTargetField = {
+  company_name: 'company_name',
+  company_domain: 'company_domain',
+  company_website: 'company_website',
+  company_linkedin_url: 'company_linkedin_url',
+  company_country: 'company_country',
+  company_state: 'company_state',
+  company_city: 'company_city',
+  company_industry: 'company_industry',
+  company_employee_count: 'company_employee_count',
+  company_employee_range: 'company_employee_range',
+  company_revenue: 'company_revenue',
+  company_funding: 'company_funding',
+  company_description: 'company_description',
+  person_first_name: 'person_first_name',
+  person_last_name: 'person_last_name',
+  person_full_name: 'person_full_name',
+  person_title: 'person_title',
+  person_department: 'person_department',
+  person_seniority: 'person_seniority',
+  person_linkedin_url: 'person_linkedin_url',
+  person_email: 'person_email',
+  person_phone: 'person_phone',
+  person_country: 'person_country',
+  person_state: 'person_state',
+  person_city: 'person_city',
+  technology: 'technology',
+  keywords: 'keywords',
+  ignore: 'ignore',
+  custom_field: 'custom_field',
+  evidence_candidate: 'evidence_candidate',
+} as const;
+
+export type RealDataImportMappingAction = typeof RealDataImportMappingAction[keyof typeof RealDataImportMappingAction];
+
+
+export const RealDataImportMappingAction = {
+  MAP: 'MAP',
+  CUSTOM_FIELD: 'CUSTOM_FIELD',
+  EVIDENCE_CANDIDATE: 'EVIDENCE_CANDIDATE',
+  IGNORE: 'IGNORE',
+} as const;
+
+export interface RealDataImportMapping {
+  /**
+     * @minLength 1
+     * @maxLength 200
+     */
+  sourceHeader: string;
+  targetField: RealDataImportMappingTargetField;
+  action: RealDataImportMappingAction;
+}
+
+export type RealDataImportRowValues = {[key: string]: string};
+
+export interface RealDataImportRow {
+  /**
+     * @minLength 1
+     * @maxLength 100
+     */
+  rowId: string;
+  values: RealDataImportRowValues;
+}
+
+export interface RealDataImportInput {
+  /**
+     * @maxLength 255
+     * @nullable
+     */
+  fileName?: string | null;
+  /**
+     * @minItems 1
+     * @maxItems 100
+     */
+  mappings: RealDataImportMapping[];
+  /**
+     * @minItems 1
+     * @maxItems 1000
+     */
+  rows: RealDataImportRow[];
+}
+
+export type RealDataImportMappingSuggestionConfidence = typeof RealDataImportMappingSuggestionConfidence[keyof typeof RealDataImportMappingSuggestionConfidence];
+
+
+export const RealDataImportMappingSuggestionConfidence = {
+  HIGH: 'HIGH',
+  MEDIUM: 'MEDIUM',
+  LOW: 'LOW',
+  UNKNOWN: 'UNKNOWN',
+} as const;
+
+export interface RealDataImportMappingSuggestion {
+  sourceHeader: string;
+  /** @nullable */
+  suggestedField: string | null;
+  confidence: RealDataImportMappingSuggestionConfidence;
+  reason: string;
+}
+
+export type RealDataImportRowPreviewCompanyStatus = typeof RealDataImportRowPreviewCompanyStatus[keyof typeof RealDataImportRowPreviewCompanyStatus];
+
+
+export const RealDataImportRowPreviewCompanyStatus = {
+  CONFIRMED: 'CONFIRMED',
+  HIGH_CONFIDENCE: 'HIGH_CONFIDENCE',
+  NEEDS_REVIEW: 'NEEDS_REVIEW',
+  UNRESOLVED: 'UNRESOLVED',
+  INVALID: 'INVALID',
+} as const;
+
+export type RealDataImportRowPreviewContactStatus = typeof RealDataImportRowPreviewContactStatus[keyof typeof RealDataImportRowPreviewContactStatus];
+
+
+export const RealDataImportRowPreviewContactStatus = {
+  READY: 'READY',
+  PARTIAL: 'PARTIAL',
+  MISSING: 'MISSING',
+  INVALID: 'INVALID',
+} as const;
+
+export type RealDataImportRowPreviewDuplicateStatus = typeof RealDataImportRowPreviewDuplicateStatus[keyof typeof RealDataImportRowPreviewDuplicateStatus];
+
+
+export const RealDataImportRowPreviewDuplicateStatus = {
+  NONE: 'NONE',
+  EXACT_MATCH: 'EXACT_MATCH',
+  POSSIBLE_DUPLICATE: 'POSSIBLE_DUPLICATE',
+  REPEAT_UPLOAD: 'REPEAT_UPLOAD',
+} as const;
+
+export interface RealDataImportRowPreview {
+  rowId: string;
+  /** @nullable */
+  companyName: string | null;
+  /** @nullable */
+  normalizedDomain: string | null;
+  companyStatus: RealDataImportRowPreviewCompanyStatus;
+  /** @nullable */
+  personName: string | null;
+  contactStatus: RealDataImportRowPreviewContactStatus;
+  duplicateStatus: RealDataImportRowPreviewDuplicateStatus;
+  /** @nullable */
+  matchedCompanyName: string | null;
+  errors: string[];
+  warnings: string[];
+}
+
+export interface RealDataImportSummary {
+  /** @minimum 0 */
+  rowsDetected: number;
+  /** @minimum 0 */
+  companiesDetected: number;
+  /** @minimum 0 */
+  contactsDetected: number;
+  /** @minimum 0 */
+  unknownColumns: number;
+  /** @minimum 0 */
+  missingDomains: number;
+  /** @minimum 0 */
+  possibleDuplicates: number;
+  /** @minimum 0 */
+  repeatUploads: number;
+  /** @minimum 0 */
+  invalidEmails: number;
+  /** @minimum 0 */
+  invalidUrls: number;
+  /** @minimum 0 */
+  rowsRequiringReview: number;
+  /** @minimum 0 */
+  validRows: number;
+}
+
+export interface RealDataImportPreview {
+  mappings: RealDataImportMappingSuggestion[];
+  unknownColumns: string[];
+  summary: RealDataImportSummary;
+  rows: RealDataImportRowPreview[];
+}
+
+export type RealDataImportCommitInput = RealDataImportInput & {
+  confirm: boolean;
+};
+
+export interface RealDataImportResult {
+  /** @minimum 0 */
+  rowsProcessed: number;
+  /** @minimum 0 */
+  canonicalCompaniesCreated: number;
+  /** @minimum 0 */
+  existingCompaniesMatched: number;
+  /** @minimum 0 */
+  duplicatesMerged: number;
+  /** @minimum 0 */
+  companiesNeedingReview: number;
+  /** @minimum 0 */
+  domainsResolved: number;
+  /** @minimum 0 */
+  domainsUnresolved: number;
+  /** @minimum 0 */
+  contactsCreated: number;
+  /** @minimum 0 */
+  contactsMatched: number;
+  /** @minimum 0 */
+  invalidContacts: number;
+  /** @minimum 0 */
+  evidenceCandidatesCreated: number;
+  /** @minimum 0 */
+  customFieldsCreated: number;
+  /** @minimum 0 */
+  rowsRejected: number;
+  rows: RealDataImportRowPreview[];
+}
+
 export interface ResearchQuestion {
   id: string;
   questionType: string;
