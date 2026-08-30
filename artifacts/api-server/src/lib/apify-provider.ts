@@ -163,6 +163,7 @@ function urlSources(rows: unknown[]): string[] {
     if (!row || typeof row !== "object") continue;
     const url = firstString(row as Record<string, unknown>, [
       "url",
+      "loadedUrl",
       "link",
       "sourceUrl",
       "profileUrl",
@@ -223,7 +224,7 @@ function normalizeRows<C extends ProviderCapability>(
         const text = firstString(row, ["text", "markdown", "content", "body"]);
         if (!text) return null;
         return {
-          url: firstString(row, ["url", "link"]) ?? (request as CrawlWebsiteRequest).url,
+          url: firstString(row, ["url", "loadedUrl", "link"]) ?? (request as CrawlWebsiteRequest).url,
           title: firstString(row, ["title", "name"]),
           text,
         };
@@ -539,6 +540,15 @@ export function createApifyAdapter<C extends ProviderCapability>(
         const run = await runActor(request);
         const normalized = normalizeRows(options.capability, request, run.rows);
         const sourceUrls = urlSources(run.rows);
+        const contentPageCount = options.capability === "WEBSITE_CRAWL"
+          ? run.rows.filter((row) => {
+              if (!row || typeof row !== "object" || Array.isArray(row)) return false;
+              return Boolean(firstString(
+                row as Record<string, unknown>,
+                ["text", "markdown", "content", "body"],
+              ));
+            }).length
+          : undefined;
         return {
           status: normalized.resultCount ? "success" : "empty",
           providerId: options.providerId,
@@ -565,6 +575,8 @@ export function createApifyAdapter<C extends ProviderCapability>(
             datasetId: run.datasetId,
             attempts: run.attempts,
             rawResultCount: run.rows.length,
+            returnedUrlCount: sourceUrls.length,
+            ...(contentPageCount === undefined ? {} : { contentPageCount }),
           },
         };
       } catch (error) {

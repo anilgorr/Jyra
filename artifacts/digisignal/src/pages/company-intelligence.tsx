@@ -313,8 +313,14 @@ function ResearchPanel({
         queryClient.invalidateQueries({ queryKey: getGetMarketTodayQueryKey(projectId) });
         if (result.stopped) {
           toast.error("Research stopped", { description: result.reason ?? "No new research was completed." });
-        } else if (result.resultStatus.toLowerCase() === "success") {
-          toast.success("Fresh research complete", { description: `Added ${result.evidenceCount} evidence item${result.evidenceCount === 1 ? "" : "s"}.` });
+        } else if (result.resultStatus === "SUCCEEDED") {
+          toast.success("Fresh research complete", {
+            description: result.evidenceCount > 0
+              ? `Added ${result.evidenceCount} evidence item${result.evidenceCount === 1 ? "" : "s"}.`
+              : result.job?.resultCount
+                ? `The provider returned ${result.job.resultCount} usable page${result.job.resultCount === 1 ? "" : "s"}; the content was already captured.`
+                : "The provider completed but returned no usable public content.",
+          });
         } else {
           toast.warning("Fresh research attempted", { description: result.job?.errorMessage ?? "The sweep completed without new evidence." });
         }
@@ -343,13 +349,17 @@ function ResearchPanel({
                 </span>
               )}
               {lastResult && (
-                <span className={cn("flex items-center gap-1.5", lastResult.stopped || lastResult.resultStatus.toLowerCase() !== "success" ? "text-amber-600" : "text-emerald-600")}>
-                  {lastResult.stopped || lastResult.resultStatus.toLowerCase() !== "success" ? <Info className="h-3.5 w-3.5" /> : <CheckCircle2 className="h-3.5 w-3.5" />}
+                <span className={cn("flex items-center gap-1.5", lastResult.stopped || lastResult.resultStatus !== "SUCCEEDED" ? "text-amber-600" : "text-emerald-600")}>
+                  {lastResult.stopped || lastResult.resultStatus !== "SUCCEEDED" ? <Info className="h-3.5 w-3.5" /> : <CheckCircle2 className="h-3.5 w-3.5" />}
               {lastResult.stopped
                 ? "No provider sweep ran."
-                : lastResult.resultStatus.toLowerCase() !== "success"
+                : lastResult.resultStatus !== "SUCCEEDED"
                 ? "The provider sweep did not add new evidence."
-                : `${lastResult.evidenceCount} new evidence item${lastResult.evidenceCount === 1 ? "" : "s"} returned.`}
+                : lastResult.evidenceCount > 0
+                  ? `${lastResult.evidenceCount} new evidence item${lastResult.evidenceCount === 1 ? "" : "s"} returned.`
+                  : lastResult.job?.resultCount
+                    ? `${lastResult.job.resultCount} usable page${lastResult.job.resultCount === 1 ? "" : "s"} already captured.`
+                    : "Provider succeeded without usable public content."}
                 </span>
               )}
             </div>

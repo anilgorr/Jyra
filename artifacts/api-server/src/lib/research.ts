@@ -314,7 +314,12 @@ function requestForQuestion(
   };
   switch (question.providerCapability) {
     case "WEBSITE_CRAWL":
-      return { ...base, url: company.website ?? `https://${company.domain}` };
+      return {
+        ...base,
+        url: company.domain
+          ? `https://${company.domain.toLowerCase().replace(/^www\./, "")}`
+          : normalizeSourceUrl(company.website ?? ""),
+      };
     case "JOB_SEARCH":
       return { ...base, companyName: company.canonicalName, domain: company.domain ?? undefined, limit: 25 };
     case "NEWS_SEARCH":
