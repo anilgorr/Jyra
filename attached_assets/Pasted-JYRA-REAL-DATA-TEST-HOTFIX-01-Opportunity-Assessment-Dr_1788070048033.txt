@@ -1,0 +1,469 @@
+JYRA — REAL DATA TEST HOTFIX 01
+Opportunity Assessment Drill-Down + Unknown-State Semantics
+
+We are conducting the first real-data test after Phase 25A.
+
+DO NOT start a new phase.
+DO NOT redesign unrelated parts of JYRA.
+DO NOT modify production data.
+Use DEVELOPMENT database only.
+
+CURRENT OBSERVED BEHAVIOR
+
+On Opportunity Intelligence → Opportunity Assessments:
+
+1. Imported companies initially show:
+   Unknown
+   Not assessed
+   Assess
+
+2. After clicking Assess, companies are showing:
+   Score: 0
+   State: DORMANT
+   Confidence: Unknown
+   NEEDS MORE RESEARCH
+
+3. Each assessed company displays a chevron / ">" suggesting a drill-down.
+
+4. Clicking the chevron currently does NOTHING.
+
+This must be investigated and fixed.
+
+==================================================
+A. FIX THE CHEVRON / COMPANY DRILL-DOWN
+==================================================
+
+Determine what the chevron was intended to do from the existing
+architecture/code.
+
+Do not merely remove the button.
+
+An assessed company must have a usable drill-down.
+
+Preferred behavior:
+
+Click company row / chevron
+→ open Company Opportunity Intelligence detail
+
+The detail should expose, where available:
+
+Company
+Domain
+ICP qualification
+
+Fit
+Need
+Timing
+Relationship
+
+Confidence
+
+Opportunity state
+
+WHY
+
+Supporting signals
+
+Signal clusters
+
+Facts
+
+Evidence
+
+Sources
+
+Missing information
+
+Research status
+
+Research questions
+
+Next Best Action
+
+Buying committee, if available
+
+Opportunity history/timeline
+
+Do not fabricate fields that have no data.
+
+If information is unavailable, explicitly show:
+
+Unknown
+Insufficient Evidence
+Needs Research
+
+as appropriate.
+
+==================================================
+B. INVESTIGATE ROUTING/UI BUG
+==================================================
+
+Determine why the chevron currently does nothing.
+
+Check:
+
+onClick handler
+Link/router implementation
+route existence
+company/project IDs
+event propagation
+disabled state
+JavaScript errors
+API errors
+missing detail route
+incorrect href
+tenant/project context
+
+Fix root cause.
+
+Add test verifying that clicking an assessed company opens its correct
+detail view.
+
+==================================================
+C. FIX UNKNOWN ≠ DORMANT
+==================================================
+
+Current behavior:
+
+Score 0
+DORMANT
+Confidence Unknown
+NEEDS MORE RESEARCH
+
+is semantically misleading.
+
+JYRA must distinguish:
+
+"No opportunity evidence exists"
+
+from:
+
+"We do not have enough information to determine whether an opportunity
+exists."
+
+Missing evidence must NOT automatically become negative evidence.
+
+UNKNOWN ≠ 0.
+
+UNKNOWN ≠ DORMANT.
+
+If Fit/Need/Timing cannot be evaluated because required information is
+missing, represent the assessment as something such as:
+
+NEEDS RESEARCH
+
+or
+
+INSUFFICIENT EVIDENCE
+
+rather than DORMANT.
+
+Use the existing domain model where possible rather than introducing
+unnecessary new states.
+
+==================================================
+D. DORMANT SEMANTICS
+==================================================
+
+DORMANT should mean JYRA has sufficient information to reasonably
+conclude that there is currently weak/no actionable opportunity.
+
+Example:
+
+Fit may be acceptable,
+but there are no meaningful Need/Timing signals,
+and evidence coverage is sufficient to support that conclusion.
+
+It should NOT mean:
+
+"We haven't researched this company."
+
+==================================================
+E. NULL VS ZERO
+==================================================
+
+Audit scoring implementation.
+
+Unknown dimensions must not silently become numeric zero.
+
+For example:
+
+Fit = unknown
+Need = unknown
+Timing = unknown
+Relationship = unknown
+
+must not automatically calculate:
+
+0 + 0 + 0 + 0 = opportunity score 0
+
+unless the scoring model explicitly has sufficient evidence to assign
+those zero values.
+
+Preserve distinction between:
+
+0 = evaluated and genuinely zero/very weak
+
+NULL/UNKNOWN = not sufficiently evaluated.
+
+==================================================
+F. ASSESS BEHAVIOR
+==================================================
+
+Audit exactly what the Assess button currently does.
+
+Document:
+
+Does Assess only evaluate existing stored evidence?
+
+Does it invoke Research Planner?
+
+Does it call external research providers?
+
+Does it create research tasks?
+
+Does it fetch fresh evidence?
+
+Does it extract facts?
+
+Does it evaluate signals?
+
+Does it create clusters?
+
+Does it calculate opportunity?
+
+We need to know the actual current pipeline.
+
+==================================================
+G. EXPECTED ASSESSMENT PIPELINE
+==================================================
+
+The intended architecture is:
+
+Company
+→ ICP Qualification
+→ Research Planner
+→ Existing Evidence Check
+→ Research Decision
+→ External Research IF justified
+→ Evidence
+→ Facts
+→ Signals
+→ Clusters
+→ Fit / Need / Timing / Relationship
+→ Confidence
+→ Opportunity
+→ WHY
+→ Next Best Action
+
+However:
+
+DO NOT blindly perform expensive research whenever Assess is clicked.
+
+Phase 23 research economics must remain active.
+
+The Research Planner should decide whether additional research is
+justified.
+
+==================================================
+H. NEEDS MORE RESEARCH
+==================================================
+
+If JYRA concludes:
+
+NEEDS MORE RESEARCH
+
+the detail view must explain WHY.
+
+Examples:
+
+Missing company domain
+Insufficient ICP data
+No recent evidence
+Need signals not evaluated
+Timing signals not evaluated
+Required research questions unanswered
+Provider unavailable
+Research budget threshold reached
+Low expected information value
+
+Do not show an unexplained generic label.
+
+==================================================
+I. RESEARCH ACTION
+==================================================
+
+Where appropriate provide an explicit action such as:
+
+Research Company
+
+or
+
+Continue Research
+
+But route it through:
+
+Research Planner
++
+Research Economics
+
+Do not bypass cost controls.
+
+==================================================
+J. FRESH RESEARCH
+==================================================
+
+If fresh research is approved by the planner:
+
+it must actually acquire new information through configured providers.
+
+Do NOT simply reprocess old crawl pages and call it "fresh research."
+
+Record:
+
+provider
+research question
+timestamp
+cost
+result
+evidence generated
+facts generated
+
+==================================================
+K. EVIDENCE-BACKED WHY
+==================================================
+
+After sufficient research, the detail page should allow us to inspect:
+
+WHY
+→ Signal/Cluster
+→ Fact
+→ Evidence
+→ Source
+
+No material WHY claim may exist without traceable support.
+
+==================================================
+L. TEST USING CURRENT REAL DATA
+==================================================
+
+Do not delete/reimport the Aadit dataset.
+
+Use existing DEVELOPMENT data.
+
+Test at least:
+
+18th Technology, Noida
+7C Studio
+Accelray Technologies
+Acctel Systems Pvt Ltd
+
+Verify their existing assessment records are handled safely.
+
+Reassess only where necessary after the fix.
+
+==================================================
+M. DO NOT AUTO-ASSESS ALL IMPORTED COMPANIES
+==================================================
+
+Do not solve this by automatically doing deep research on every imported
+company.
+
+The intended eventual workflow remains:
+
+Imported Market
+→ cheap qualification
+→ prioritization
+→ selective research
+→ opportunity assessment
+
+==================================================
+N. AUTOMATED TESTS
+==================================================
+
+Add tests for:
+
+1. Chevron opens correct company detail.
+2. Correct company/project ID is routed.
+3. Unknown inputs do not become numeric zero.
+4. Insufficient evidence does not automatically produce DORMANT.
+5. Genuine evaluated weak opportunity can produce DORMANT.
+6. NEEDS RESEARCH displays reasons.
+7. Research action invokes planner.
+8. Planner respects Phase 23 economics.
+9. Fresh research uses provider when approved.
+10. Evidence remains traceable through opportunity explanation.
+
+==================================================
+O. REPORT
+==================================================
+
+Create:
+
+REAL_DATA_HOTFIX_01.md
+
+Report:
+
+ROOT CAUSE — chevron
+
+ROOT CAUSE — 0/DORMANT behavior
+
+WHAT ASSESS DID BEFORE FIX
+
+WHAT ASSESS DOES AFTER FIX
+
+RESEARCH PLANNER behavior
+
+PROVIDER behavior
+
+FILES CHANGED
+
+DATABASE CHANGES
+
+TESTS
+
+PASS/PARTIAL/FAIL
+
+Do not claim completion unless acceptance tests pass.
+
+==================================================
+DATABASE SAFETY
+==================================================
+
+This is DEVELOPMENT work.
+
+Use ONLY the development database during implementation/testing.
+
+DO NOT:
+migrate production
+reset production
+seed production
+modify production
+truncate production
+run tests against production
+
+If a schema migration is required:
+
+create migration
+→ apply/test DEVELOPMENT only
+→ leave production migration for explicit deployment workflow.
+
+==================================================
+ACCEPTANCE
+==================================================
+
+PASS only if:
+
+- clicking the chevron opens meaningful company intelligence detail;
+- UNKNOWN is no longer silently treated as zero;
+- insufficient evidence is not incorrectly labeled DORMANT;
+- JYRA explains what research is missing;
+- Research Company/Continue Research works through the planner;
+- Phase 23 economics remains enforced;
+- fresh research actually uses configured provider(s) when justified;
+- evidence is traceable;
+- existing Aadit test data remains intact;
+- production is untouched.
+
+STOP after this hotfix.
+Do not proceed to Phase 26.
