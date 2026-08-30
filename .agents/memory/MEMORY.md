@@ -12,3 +12,5 @@
 - [Contact enrichment boundary](contact-enrichment-boundary.md) — contact values stay project-scoped; lookup requires a high-priority person or an explicit user request.
 - [Recommendation ledger provenance](recommendation-ledger-provenance.md) — copy exact assessment-time versions; outcomes are append-only and skipped stays neutral.
 - [Research budget reservations](research-budget-reservations.md) — serialize admission and reserve estimated cost before dispatch; terminal accounting must precede downstream processing.
+- [Company entry provenance](company-entry-provenance.md) — canonical identity is global; private imports and unverified discovery attributes stay in scoped provenance.
+- [Development DB verification](development-database-target-verification.md) — mutation tools must match the approved DB fingerprint before connecting.

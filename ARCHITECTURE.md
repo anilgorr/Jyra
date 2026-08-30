@@ -223,3 +223,7 @@ Structured fact extraction is a guarded transition rather than an autonomous wri
 ## Replit runtime
 
 The web service uses the workflow-provided `PORT` and `BASE_PATH`. The API service uses its managed port and mounts Express under `/api`. Secrets are read from Replit Secrets and are never committed.
+
+## Unified company entry
+
+Find My Market and Analyze My List converge on the same canonical `companies` and project-scoped `project_companies` records. Discovery is a bounded external capability, not a filter over stored companies and not known-company research. Domain identity is resolved under an advisory lock; ambiguous name-only candidates are held for review. Project/organization provenance preserves each upload, manual entry, and provider discovery independently.

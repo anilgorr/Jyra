@@ -15,6 +15,7 @@ import opportunityEngineRouter from "./opportunity-engine";
 import peopleRouter from "./people";
 import recommendationLedgerRouter from "./recommendation-ledger";
 import learningRouter from "./learning";
+import discoveryRouter from "./discovery";
 
 const router: IRouter = Router();
 
@@ -34,5 +35,6 @@ router.use(opportunityEngineRouter);
 router.use(peopleRouter);
 router.use(recommendationLedgerRouter);
 router.use(learningRouter);
+router.use(discoveryRouter);
 
 export default router;

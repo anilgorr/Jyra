@@ -29,6 +29,8 @@ import type {
   BusinessTwinVersionInput,
   CapabilityPhase,
   CommitCompanyImport409,
+  CompanyDiscoveryInput,
+  CompanyDiscoverySummary,
   CompanyEvidence,
   CompanyEvidenceDuplicate,
   CompanyEvidenceInput,
@@ -2412,6 +2414,79 @@ export const useUpdateProjectCompany = <TError = ErrorType<BadRequestResponse | 
         TContext
       > => {
       return useMutation(getUpdateProjectCompanyMutationOptions(options));
+    }
+
+export const getDiscoverProjectCompaniesUrl = (projectId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/discovery`
+}
+
+/**
+ * Routes a bounded external company-discovery request through configured providers and canonicalizes returned candidates without starting deep research.
+ * @summary Find new market candidates from the current Business Twin and ICP
+ */
+export const discoverProjectCompanies = async (projectId: string,
+    companyDiscoveryInput?: CompanyDiscoveryInput, options?: Parameters<typeof customFetch>[1]): Promise<CompanyDiscoverySummary> => {
+
+  return customFetch<CompanyDiscoverySummary>(getDiscoverProjectCompaniesUrl(projectId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(companyDiscoveryInput)
+  }
+);}
+
+
+
+
+
+export const getDiscoverProjectCompaniesMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | CompanyDiscoverySummary>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof discoverProjectCompanies>>, TError,{projectId: string;data?: BodyType<CompanyDiscoveryInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof discoverProjectCompanies>>, TError,{projectId: string;data?: BodyType<CompanyDiscoveryInput>}, TContext> => {
+
+const mutationKey = ['discoverProjectCompanies'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof discoverProjectCompanies>>, {projectId: string;data?: BodyType<CompanyDiscoveryInput>}> = (props) => {
+          const {projectId,data} = props ?? {};
+
+          return  discoverProjectCompanies(projectId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DiscoverProjectCompaniesMutationResult = NonNullable<Awaited<ReturnType<typeof discoverProjectCompanies>>>
+    export type DiscoverProjectCompaniesMutationBody = BodyType<CompanyDiscoveryInput> | undefined
+    export type DiscoverProjectCompaniesMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | CompanyDiscoverySummary>
+
+    /**
+ * @summary Find new market candidates from the current Business Twin and ICP
+ */
+export const useDiscoverProjectCompanies = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | CompanyDiscoverySummary>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof discoverProjectCompanies>>, TError,{projectId: string;data?: BodyType<CompanyDiscoveryInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof discoverProjectCompanies>>,
+        TError,
+        {projectId: string;data?: BodyType<CompanyDiscoveryInput>},
+        TContext
+      > => {
+      return useMutation(getDiscoverProjectCompaniesMutationOptions(options));
     }
 
 export const getListCompanyEvidenceUrl = (projectId: string,

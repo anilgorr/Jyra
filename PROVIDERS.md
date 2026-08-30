@@ -13,6 +13,8 @@ capabilities are:
 - `JOB_SEARCH`
 - `NEWS_SEARCH`
 - `TECH_STACK`
+
+`COMPANY_DISCOVERY` finds candidates not already stored in JYRA. Apify configurations may supply a dedicated discovery actor ID; returned rows are normalized into name, domain, website, and description before canonical identity resolution. Missing configuration is reported as blocked and is never replaced with fabricated candidates.
 - `LEADERSHIP_SEARCH`
 - `PUBLIC_SOCIAL_SEARCH`
 - `PERSON_LOOKUP`

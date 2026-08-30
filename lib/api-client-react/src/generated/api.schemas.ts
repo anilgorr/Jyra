@@ -1745,6 +1745,37 @@ export interface CompanyFactDuplicate {
   fact: CompanyFact;
 }
 
+export interface CompanyDiscoveryInput {
+  /**
+     * @minimum 1
+     * @maximum 50
+     */
+  limit?: number;
+}
+
+export type CompanyDiscoverySummaryStatus = typeof CompanyDiscoverySummaryStatus[keyof typeof CompanyDiscoverySummaryStatus];
+
+
+export const CompanyDiscoverySummaryStatus = {
+  completed: 'completed',
+  blocked: 'blocked',
+} as const;
+
+export interface CompanyDiscoverySummary {
+  status: CompanyDiscoverySummaryStatus;
+  /** @nullable */
+  providerId: string | null;
+  query: string;
+  discovered: number;
+  canonicalized: number;
+  duplicatesRemoved: number;
+  linked: number;
+  possibleMatches: number;
+  rejected: number;
+  /** @nullable */
+  blockedReason: string | null;
+}
+
 export interface CompanyInput {
   /**
      * @minLength 1

@@ -3293,6 +3293,36 @@ export const UpdateProjectCompanyResponse = zod.object({
 
 
 /**
+ * Routes a bounded external company-discovery request through configured providers and canonicalizes returned candidates without starting deep research.
+ * @summary Find new market candidates from the current Business Twin and ICP
+ */
+export const DiscoverProjectCompaniesParams = zod.object({
+  "projectId": zod.coerce.string()
+})
+
+export const discoverProjectCompaniesBodyLimitMax = 50;
+
+
+
+export const DiscoverProjectCompaniesBody = zod.object({
+  "limit": zod.number().min(1).max(discoverProjectCompaniesBodyLimitMax).optional()
+})
+
+export const DiscoverProjectCompaniesResponse = zod.object({
+  "status": zod.enum(['completed', 'blocked']),
+  "providerId": zod.string().nullable(),
+  "query": zod.string(),
+  "discovered": zod.number(),
+  "canonicalized": zod.number(),
+  "duplicatesRemoved": zod.number(),
+  "linked": zod.number(),
+  "possibleMatches": zod.number(),
+  "rejected": zod.number(),
+  "blockedReason": zod.string().nullable()
+})
+
+
+/**
  * Returns globally reusable source evidence for the canonical company linked to the project.
  * @summary List public evidence for a project company
  */

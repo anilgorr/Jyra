@@ -23,17 +23,18 @@ import { parseCSV } from "@/lib/csv";
 import { Badge } from "@/components/ui/badge";
 
 export function mapCsvRowToCompanyInput(row: Record<string, string>) {
-  const canonicalName = row['company_name'] || row['canonical_name'] || row['name'] || '';
-  const domain = row['domain'] || null;
-  const website = row['website'] || null;
-  const linkedinUrl = row['linkedin_url'] || null;
+  const value = (...keys: string[]) => keys.map((key) => row[key]).find(Boolean) || null;
+  const canonicalName = value('company_name', 'canonical_name', 'company', 'account_name', 'name') || '';
+  const domain = value('domain', 'company_domain');
+  const website = value('website', 'company_url', 'url');
+  const linkedinUrl = value('linkedin_url', 'linkedin_company_url');
   const country = row['country'] || null;
   const industry = row['industry'] || null;
   
-  const employeeCount = row['employee_count'] || null;
+  const employeeCount = value('employee_count', 'employees', 'headcount');
   
-  const employeeRange = row['employee_range'] || null;
-  const description = row['description'] || null;
+  const employeeRange = value('employee_range', 'company_size');
+  const description = value('description', 'company_description');
 
   return {
     canonicalName: canonicalName || null,

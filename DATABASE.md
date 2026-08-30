@@ -205,3 +205,7 @@ The implemented organization, membership, user, and project tables are the tenan
 ## Migration policy
 
 Schema changes are development-only changes until explicitly published through Replit’s supported publish-time migration flow. Do not run startup-time DDL, custom production migration scripts, or destructive resets.
+
+## Company provenance
+
+`company_provenance` stores project- and organization-scoped source observations for canonical companies. Upload/manual records are private; public provider discoveries are marked public. Raw source payloads remain evidence-candidate context and do not become verified facts without the evidence/fact validation pipeline.

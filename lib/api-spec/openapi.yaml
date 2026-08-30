@@ -676,6 +676,34 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
         "404": { $ref: "#/components/responses/NotFound" }
+  /projects/{projectId}/discovery:
+    post:
+      operationId: discoverProjectCompanies
+      tags: [companies]
+      summary: Find new market candidates from the current Business Twin and ICP
+      description: Routes a bounded external company-discovery request through configured providers and canonicalizes returned candidates without starting deep research.
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/ProjectId" }
+      requestBody:
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CompanyDiscoveryInput" }
+      responses:
+        "200":
+          description: Discovery completed
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CompanyDiscoverySummary" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "424":
+          description: No usable external discovery provider is configured
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CompanyDiscoverySummary" }
   /projects/{projectId}/companies/{projectCompanyId}/evidence:
     get:
       operationId: listCompanyEvidence
@@ -2959,6 +2987,26 @@ components:
         error: { type: string }
         fact: { $ref: "#/components/schemas/CompanyFact" }
       required: [error, fact]
+    CompanyDiscoveryInput:
+      type: object
+      properties:
+        limit: { type: number, minimum: 1, maximum: 50 }
+      additionalProperties: false
+    CompanyDiscoverySummary:
+      type: object
+      properties:
+        status: { type: string, enum: [completed, blocked] }
+        providerId: { type: ["string", "null"] }
+        query: { type: string }
+        discovered: { type: number }
+        canonicalized: { type: number }
+        duplicatesRemoved: { type: number }
+        linked: { type: number }
+        possibleMatches: { type: number }
+        rejected: { type: number }
+        blockedReason: { type: ["string", "null"] }
+      required: [status, providerId, query, discovered, canonicalized, duplicatesRemoved, linked, possibleMatches, rejected, blockedReason]
+      additionalProperties: false
     CompanyInput:
       type: object
       properties:

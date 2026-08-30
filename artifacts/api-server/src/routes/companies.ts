@@ -19,6 +19,7 @@ import {
 import {
   companiesTable,
   companyAliasesTable,
+  companyProvenanceTable,
   db,
   organizationMembersTable,
   projectCompaniesTable,
@@ -31,6 +32,7 @@ import {
   namesArePossibleDuplicates,
   normalizeCompanyInput,
   normalizeCompanyName,
+  canonicalCompanyNameKey,
   type NormalizedCompanyInput,
   type RawCompanyInput,
 } from "../lib/company-identity";
@@ -115,11 +117,11 @@ function companyPayload(company: Company) {
     domain: company.domain,
     website: company.website,
     linkedinUrl: company.linkedinUrl,
-    country: company.country,
-    industry: company.industry,
-    employeeCount: company.employeeCount,
-    employeeRange: company.employeeRange,
-    description: company.description,
+    country: null,
+    industry: null,
+    employeeCount: null,
+    employeeRange: null,
+    description: null,
     createdAt: company.createdAt.toISOString(),
     updatedAt: company.updatedAt.toISOString(),
   };
@@ -380,7 +382,12 @@ async function addAlias(
 async function createCanonicalCompany(
   client: DbClient,
   input: NormalizedCompanyInput,
+  allowPossibleMatch = false,
 ) {
+  const identityKey = `company-name:${canonicalCompanyNameKey(input.canonicalName)}`;
+  await client.execute(
+    sql`select pg_advisory_xact_lock(hashtext(${identityKey}))`,
+  );
   if (input.domain) {
     await client.execute(
       sql`select pg_advisory_xact_lock(hashtext(${input.domain}))`,
@@ -388,10 +395,21 @@ async function createCanonicalCompany(
     const exact = await findExactCompany(input.domain, client);
     if (exact) return { company: exact, created: false };
   }
+  if (!allowPossibleMatch) {
+    const possible = await findPossibleCompanies(input.canonicalName, client);
+    if (possible.length) {
+      throw new Error("A possible canonical company match must be reviewed before creation");
+    }
+  }
 
   const [created] = await client
     .insert(companiesTable)
-    .values(input)
+    .values({
+      canonicalName: input.canonicalName,
+      domain: input.domain,
+      website: input.website,
+      linkedinUrl: input.linkedinUrl,
+    })
     .returning();
   if (input.domain) {
     await client.insert(companyAliasesTable).values({
@@ -514,9 +532,19 @@ router.post(
       if (!canonical.created) {
         await addAlias(client, canonical.company, normalized.value!, "manual");
       }
+      const projectLink = await linkCompany(client, access.project!.id, canonical.company);
+      await tx.insert(companyProvenanceTable).values({
+        organizationId: access.project!.organizationId,
+        projectId: access.project!.id,
+        companyId: canonical.company.id,
+        sourceType: "FIRST_PARTY_MANUAL",
+        sourceLabel: "manual",
+        payload: body.data,
+        visibility: "PRIVATE",
+      });
       return {
         company: canonical.company,
-        linked: await linkCompany(client, access.project!.id, canonical.company),
+        linked: projectLink,
       };
     });
     res
@@ -645,6 +673,7 @@ router.post(
         company: Company | null;
         sourceRowId: string | null;
         create: boolean;
+        allowPossibleMatch: boolean;
       }> = [];
       const earlier = new Map<string, NormalizedCompanyInput>();
 
@@ -736,6 +765,11 @@ router.post(
           company,
           sourceRowId,
           create: !company && !sourceRowId,
+          allowPossibleMatch:
+            !company &&
+            !sourceRowId &&
+            possibleMatches.length > 0 &&
+            row.resolution?.action === "create",
         });
         earlier.set(row.rowId, normalized.value);
       }
@@ -767,7 +801,11 @@ router.post(
           if (!company) throw new Error("Resolved import source row is unavailable");
         }
         if (!company) {
-          const canonical = await createCanonicalCompany(client, item.normalized);
+          const canonical = await createCanonicalCompany(
+            client,
+            item.normalized,
+            item.allowPossibleMatch,
+          );
           company = canonical.company;
           created = canonical.created;
         } else {
@@ -775,6 +813,15 @@ router.post(
         }
         companiesByRow.set(item.rowId, company);
         const linked = await linkCompany(client, access.project!.id, company);
+        await tx.insert(companyProvenanceTable).values({
+          organizationId: access.project!.organizationId,
+          projectId: access.project!.id,
+          companyId: company.id,
+          sourceType: "FIRST_PARTY_UPLOAD",
+          sourceLabel: "csv_import",
+          payload: item.input as Record<string, unknown>,
+          visibility: "PRIVATE",
+        });
         if (created) createdCount += 1;
         else reusedCount += 1;
         if (linked.linked) linkedCount += 1;

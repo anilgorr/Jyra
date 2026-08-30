@@ -2,6 +2,7 @@ import { ReplitConnectors } from "@replit/connectors-sdk";
 import type {
   CapabilityRequest,
   CapabilityResult,
+  CompanyDiscoveryResult,
   CrawlWebsiteRequest,
   GetJobsRequest,
   ProviderAdapter,
@@ -16,7 +17,7 @@ import type {
 } from "./provider-contract";
 
 type ApifyActorIds = Partial<Record<
-  "WEBSITE_CRAWL" | "JOB_SEARCH" | "WEB_SEARCH" | "TECH_STACK" | "PUBLIC_SOCIAL_SEARCH",
+  "COMPANY_DISCOVERY" | "WEBSITE_CRAWL" | "JOB_SEARCH" | "WEB_SEARCH" | "TECH_STACK" | "PUBLIC_SOCIAL_SEARCH",
   string
 >>;
 
@@ -94,6 +95,7 @@ export function parseApifyProviderConfiguration(
       ? configuration.actorIds as Record<string, unknown>
       : {};
   const supported = new Set([
+    "COMPANY_DISCOVERY",
     "WEBSITE_CRAWL",
     "JOB_SEARCH",
     "WEB_SEARCH",
@@ -183,6 +185,37 @@ function normalizeRows<C extends ProviderCapability>(
     (row): row is Record<string, unknown> =>
       Boolean(row && typeof row === "object" && !Array.isArray(row)),
   );
+
+  if (capability === "COMPANY_DISCOVERY") {
+    const companies = records
+      .map((row) => {
+        const name = firstString(row, ["companyName", "name", "title"]);
+        if (!name) return null;
+        const website = firstString(row, ["website", "companyWebsite", "url"]);
+        const rawDomain = firstString(row, ["domain", "companyDomain"]);
+        let domain = rawDomain;
+        if (!domain && website) {
+          try {
+            domain = new URL(website).hostname.replace(/^www\./, "");
+          } catch {
+            domain = null;
+          }
+        }
+        return {
+          name,
+          domain,
+          website,
+          description: firstString(row, ["description", "companyDescription", "snippet"]),
+        };
+      })
+      .filter((company): company is NonNullable<typeof company> => Boolean(company));
+    return {
+      data: companies.length
+        ? ({ companies } as CompanyDiscoveryResult as CapabilityResult<C>)
+        : null,
+      resultCount: companies.length,
+    };
+  }
 
   if (capability === "WEBSITE_CRAWL") {
     const row = records.find(

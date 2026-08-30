@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { 
   useListProjectCompanies,
@@ -24,7 +25,8 @@ import {
   Loader2, 
   Plus, 
   Search, 
-  Target 
+  Target,
+  Telescope
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
@@ -33,11 +35,47 @@ import { ImportDialog } from "./import-dialog";
 
 export default function CompaniesPage() {
   const { activeProjectId } = useWorkspace();
+  const queryClient = useQueryClient();
   const projectId = activeProjectId ?? "";
   
   const [searchTerm, setSearchTerm] = useState("");
   const [createOpen, setCreateOpen] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
+  const [discovering, setDiscovering] = useState(false);
+  const [discoveryMessage, setDiscoveryMessage] = useState<string | null>(null);
+
+  const findMyMarket = async () => {
+    setDiscovering(true);
+    setDiscoveryMessage(null);
+    try {
+      const response = await fetch(`/api/projects/${projectId}/discovery`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ limit: 25 }),
+      });
+      const result = await response.json() as {
+        status?: string;
+        linked?: number;
+        duplicatesRemoved?: number;
+        possibleMatches?: number;
+        blockedReason?: string | null;
+        error?: string;
+      };
+      if (!response.ok) {
+        setDiscoveryMessage(result.blockedReason ?? result.error ?? "Market discovery is unavailable.");
+        return;
+      }
+      setDiscoveryMessage(
+        `Added ${result.linked ?? 0} candidates; removed ${result.duplicatesRemoved ?? 0} duplicates and held ${result.possibleMatches ?? 0} possible matches for review.`,
+      );
+      await queryClient.invalidateQueries({ queryKey: getListProjectCompaniesQueryKey(projectId) });
+    } catch {
+      setDiscoveryMessage("Market discovery could not connect. Try again.");
+    } finally {
+      setDiscovering(false);
+    }
+  };
 
   const { data: companies = [], isLoading, isError } = useListProjectCompanies(
     projectId,
@@ -89,6 +127,10 @@ export default function CompaniesPage() {
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
+          <Button variant="outline" onClick={findMyMarket} disabled={discovering} data-testid="button-find-market">
+            {discovering ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Telescope className="mr-2 h-4 w-4" />}
+            Find My Market
+          </Button>
           <Button variant="outline" onClick={() => setImportOpen(true)} data-testid="button-import-csv">
             <DownloadCloud className="mr-2 h-4 w-4" />
             Import CSV
@@ -99,6 +141,11 @@ export default function CompaniesPage() {
           </Button>
         </div>
       </header>
+      {discoveryMessage && (
+        <div className="rounded-lg border bg-muted/30 px-4 py-3 text-sm" data-testid="text-discovery-result">
+          {discoveryMessage}
+        </div>
+      )}
 
       <div className="grid gap-4 md:grid-cols-3">
         <Card className="shadow-none">

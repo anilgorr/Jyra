@@ -124,6 +124,10 @@ function baseNameTokens(name: string): string[] {
   return tokens;
 }
 
+export function canonicalCompanyNameKey(name: string): string {
+  return baseNameTokens(normalizeCompanyName(name)).join(" ");
+}
+
 export function namesArePossibleDuplicates(left: string, right: string): boolean {
   if (!left || !right) return false;
   const leftNormalized = normalizeCompanyName(left);

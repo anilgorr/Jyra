@@ -126,6 +126,14 @@
 
 # Changelog
 
+## Phase 23A — End-to-End Discovery, Data Flow & Database Safety
+
+- Added true provider-backed Find My Market discovery from Business Twin and ICP.
+- Unified discovered and imported candidates through canonical domain resolution and project linking.
+- Added project/organization source provenance for manual, CSV, and provider-discovered companies.
+- Added Apify company-discovery normalization, common CSV header aliases, development-only database guards, and controlled ACME convergence tests.
+- Added the Phase 23A audit and database-safety documentation.
+
 ## Dynamic Opportunity Intelligence Packs
 
 - Added project/offering-scoped, immutable Opportunity Intelligence Pack versions with source Business Twin and ICP references.
