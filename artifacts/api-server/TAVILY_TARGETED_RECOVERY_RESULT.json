@@ -1,0 +1,10 @@
+{
+  "healthCheck": {
+    "performed": false,
+    "reason": "No proven invalid credit attempt; health check is prohibited by audit guard."
+  },
+  "requiredQuestionIds": [],
+  "executed": 0,
+  "rows": [],
+  "idempotency": "Stable scope tavily-credit-recovery:<frozen-question-id>; existing job replay is returned without a duplicate job."
+}

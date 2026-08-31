@@ -1,0 +1,496 @@
+{
+  "controls": [
+    {
+      "manifestIndex": 0,
+      "company": "SolarWinds",
+      "companyId": "3cd73d96-37d1-4cf8-9dab-db596e019783",
+      "classification": "FULLY_VALID",
+      "affectedResearchAreas": [],
+      "questionIds": [
+        "24e2f54f-18bf-4338-bdc4-c42cc3af6d53",
+        "b37fba97-d1bd-4bd6-9452-48199eff53bb",
+        "8083b764-b2c7-4788-ad1f-8c631f1110f6",
+        "eca3e77a-1b13-42c2-ace5-d3e027232b3d"
+      ],
+      "detectedBeforeRecovery": false,
+      "terminalStateAudit": [
+        {
+          "questionId": "24e2f54f-18bf-4338-bdc4-c42cc3af6d53",
+          "providerFailure": false,
+          "persistedStatus": "ANSWERED",
+          "observedHarnessDisposition": null,
+          "persistedSemanticConclusion": true,
+          "correct": true
+        },
+        {
+          "questionId": "b37fba97-d1bd-4bd6-9452-48199eff53bb",
+          "providerFailure": false,
+          "persistedStatus": "ANSWERED",
+          "observedHarnessDisposition": null,
+          "persistedSemanticConclusion": true,
+          "correct": true
+        },
+        {
+          "questionId": "8083b764-b2c7-4788-ad1f-8c631f1110f6",
+          "providerFailure": false,
+          "persistedStatus": "ANSWERED",
+          "observedHarnessDisposition": null,
+          "persistedSemanticConclusion": true,
+          "correct": true
+        },
+        {
+          "questionId": "eca3e77a-1b13-42c2-ace5-d3e027232b3d",
+          "providerFailure": false,
+          "persistedStatus": "ANSWERED",
+          "observedHarnessDisposition": null,
+          "persistedSemanticConclusion": true,
+          "correct": true
+        }
+      ]
+    },
+    {
+      "manifestIndex": 1,
+      "company": "First Horizon",
+      "companyId": "e236b692-7d46-4d2f-a8c4-e7b5f7a5f2e8",
+      "classification": "FULLY_VALID",
+      "affectedResearchAreas": [],
+      "questionIds": [
+        "3cf4846c-9fca-4d4a-a32b-20dca383f4f6",
+        "00f740e6-2e21-4926-a46c-70345c145c30",
+        "27ddeb99-bfea-4737-8ce7-f7ec884d6d24",
+        "3f44cb7e-baee-449d-be22-e5a26c7ecc47"
+      ],
+      "detectedBeforeRecovery": false,
+      "terminalStateAudit": [
+        {
+          "questionId": "3cf4846c-9fca-4d4a-a32b-20dca383f4f6",
+          "providerFailure": false,
+          "persistedStatus": "ANSWERED",
+          "observedHarnessDisposition": null,
+          "persistedSemanticConclusion": true,
+          "correct": true
+        },
+        {
+          "questionId": "00f740e6-2e21-4926-a46c-70345c145c30",
+          "providerFailure": false,
+          "persistedStatus": "ANSWERED",
+          "observedHarnessDisposition": null,
+          "persistedSemanticConclusion": true,
+          "correct": true
+        },
+        {
+          "questionId": "27ddeb99-bfea-4737-8ce7-f7ec884d6d24",
+          "providerFailure": false,
+          "persistedStatus": "ANSWERED",
+          "observedHarnessDisposition": null,
+          "persistedSemanticConclusion": true,
+          "correct": true
+        },
+        {
+          "questionId": "3f44cb7e-baee-449d-be22-e5a26c7ecc47",
+          "providerFailure": false,
+          "persistedStatus": "ANSWERED",
+          "observedHarnessDisposition": null,
+          "persistedSemanticConclusion": true,
+          "correct": true
+        }
+      ]
+    },
+    {
+      "manifestIndex": 2,
+      "company": "GitLab",
+      "companyId": "417409dc-ca3f-449f-90bb-f315f91f450a",
+      "classification": "FULLY_VALID",
+      "affectedResearchAreas": [],
+      "questionIds": [
+        "bd190926-02e1-4ff8-b881-82f181db00a2",
+        "3a5a7952-5c64-4033-9e1e-91b3bfa0796a",
+        "69032b03-2ba8-473c-972b-85f0017d439b",
+        "9a189399-1ab3-486d-8546-d4b692085169"
+      ],
+      "detectedBeforeRecovery": true,
+      "terminalStateAudit": [
+        {
+          "questionId": "bd190926-02e1-4ff8-b881-82f181db00a2",
+          "providerFailure": false,
+          "persistedStatus": "ANSWERED",
+          "observedHarnessDisposition": null,
+          "persistedSemanticConclusion": true,
+          "correct": true
+        },
+        {
+          "questionId": "3a5a7952-5c64-4033-9e1e-91b3bfa0796a",
+          "providerFailure": false,
+          "persistedStatus": "ANSWERED",
+          "observedHarnessDisposition": null,
+          "persistedSemanticConclusion": true,
+          "correct": true
+        },
+        {
+          "questionId": "69032b03-2ba8-473c-972b-85f0017d439b",
+          "providerFailure": false,
+          "persistedStatus": "ANSWERED",
+          "observedHarnessDisposition": null,
+          "persistedSemanticConclusion": true,
+          "correct": true
+        },
+        {
+          "questionId": "9a189399-1ab3-486d-8546-d4b692085169",
+          "providerFailure": false,
+          "persistedStatus": "ANSWERED",
+          "observedHarnessDisposition": null,
+          "persistedSemanticConclusion": true,
+          "correct": true
+        }
+      ]
+    },
+    {
+      "manifestIndex": 3,
+      "company": "Infoblox",
+      "companyId": "408bc044-5be0-4118-b486-75c494e5cd8f",
+      "classification": "FULLY_INVALID",
+      "affectedResearchAreas": [
+        "LEADERSHIP",
+        "HIRING",
+        "EXPANSION",
+        "TECHNOLOGY"
+      ],
+      "questionIds": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "detectedBeforeRecovery": true,
+      "terminalStateAudit": [
+        {
+          "questionId": null,
+          "providerFailure": true,
+          "persistedStatus": null,
+          "observedHarnessDisposition": "TIMED_OUT",
+          "persistedSemanticConclusion": false,
+          "correct": "NOT_ADJUDICABLE_NO_PERSISTED_QUESTION"
+        },
+        {
+          "questionId": null,
+          "providerFailure": true,
+          "persistedStatus": null,
+          "observedHarnessDisposition": "TIMED_OUT",
+          "persistedSemanticConclusion": false,
+          "correct": "NOT_ADJUDICABLE_NO_PERSISTED_QUESTION"
+        },
+        {
+          "questionId": null,
+          "providerFailure": true,
+          "persistedStatus": null,
+          "observedHarnessDisposition": "TIMED_OUT",
+          "persistedSemanticConclusion": false,
+          "correct": "NOT_ADJUDICABLE_NO_PERSISTED_QUESTION"
+        },
+        {
+          "questionId": null,
+          "providerFailure": true,
+          "persistedStatus": null,
+          "observedHarnessDisposition": "TIMED_OUT",
+          "persistedSemanticConclusion": false,
+          "correct": "NOT_ADJUDICABLE_NO_PERSISTED_QUESTION"
+        }
+      ]
+    },
+    {
+      "manifestIndex": 4,
+      "company": "Teradata",
+      "companyId": "0ba57746-1f8e-4691-a647-0921de1a971d",
+      "classification": "FULLY_VALID",
+      "affectedResearchAreas": [],
+      "questionIds": [
+        "fbe0a8b3-eeb5-43bf-a3a7-b4273ba35c42",
+        "799806ca-c9c0-4461-ba93-a21457f7250b",
+        "c3a71eb7-6511-46a3-bf51-33d04337b943",
+        "9d40f5c4-b962-41bf-8975-3ccb51fbfddd"
+      ],
+      "detectedBeforeRecovery": false,
+      "terminalStateAudit": [
+        {
+          "questionId": "fbe0a8b3-eeb5-43bf-a3a7-b4273ba35c42",
+          "providerFailure": false,
+          "persistedStatus": "ANSWERED",
+          "observedHarnessDisposition": null,
+          "persistedSemanticConclusion": true,
+          "correct": true
+        },
+        {
+          "questionId": "799806ca-c9c0-4461-ba93-a21457f7250b",
+          "providerFailure": false,
+          "persistedStatus": "ANSWERED",
+          "observedHarnessDisposition": null,
+          "persistedSemanticConclusion": true,
+          "correct": true
+        },
+        {
+          "questionId": "c3a71eb7-6511-46a3-bf51-33d04337b943",
+          "providerFailure": false,
+          "persistedStatus": "ANSWERED",
+          "observedHarnessDisposition": null,
+          "persistedSemanticConclusion": true,
+          "correct": true
+        },
+        {
+          "questionId": "9d40f5c4-b962-41bf-8975-3ccb51fbfddd",
+          "providerFailure": false,
+          "persistedStatus": "ANSWERED",
+          "observedHarnessDisposition": null,
+          "persistedSemanticConclusion": true,
+          "correct": true
+        }
+      ]
+    },
+    {
+      "manifestIndex": 5,
+      "company": "Nubank",
+      "companyId": "8ee8a9ce-dd62-4b03-bfb0-f9f9a3683f32",
+      "classification": "PARTIALLY_INVALID",
+      "affectedResearchAreas": [
+        "EXPANSION"
+      ],
+      "questionIds": [
+        "2c57327a-8a7f-4629-9b60-2dbd03b7e400",
+        "9fef5c5b-73e2-46a6-8ccb-0124d659a6e5",
+        null,
+        "484f1d37-25ae-45b0-8e81-c7030da0217a"
+      ],
+      "detectedBeforeRecovery": false,
+      "terminalStateAudit": [
+        {
+          "questionId": "2c57327a-8a7f-4629-9b60-2dbd03b7e400",
+          "providerFailure": false,
+          "persistedStatus": "ANSWERED",
+          "observedHarnessDisposition": null,
+          "persistedSemanticConclusion": true,
+          "correct": true
+        },
+        {
+          "questionId": "9fef5c5b-73e2-46a6-8ccb-0124d659a6e5",
+          "providerFailure": false,
+          "persistedStatus": "ANSWERED",
+          "observedHarnessDisposition": null,
+          "persistedSemanticConclusion": true,
+          "correct": true
+        },
+        {
+          "questionId": null,
+          "providerFailure": true,
+          "persistedStatus": null,
+          "observedHarnessDisposition": "TIMED_OUT",
+          "persistedSemanticConclusion": false,
+          "correct": "NOT_ADJUDICABLE_NO_PERSISTED_QUESTION"
+        },
+        {
+          "questionId": "484f1d37-25ae-45b0-8e81-c7030da0217a",
+          "providerFailure": false,
+          "persistedStatus": "ANSWERED",
+          "observedHarnessDisposition": null,
+          "persistedSemanticConclusion": true,
+          "correct": true
+        }
+      ]
+    },
+    {
+      "manifestIndex": 6,
+      "company": "Black Duck",
+      "companyId": "fafc40de-2c9e-4968-bc3c-602d7d3f23c6",
+      "classification": "FULLY_VALID",
+      "affectedResearchAreas": [],
+      "questionIds": [
+        "a1ce0837-ed29-4c30-bb4a-5e7ae4ba98ec",
+        "905d31ee-714b-4e6b-8eb8-660b3dd6478a",
+        "f8ebe294-a23d-46f4-9efa-de85ea7e024e",
+        "5c5842e3-4178-46b5-801e-df24b5deb92a"
+      ],
+      "detectedBeforeRecovery": false,
+      "terminalStateAudit": [
+        {
+          "questionId": "a1ce0837-ed29-4c30-bb4a-5e7ae4ba98ec",
+          "providerFailure": false,
+          "persistedStatus": "ANSWERED",
+          "observedHarnessDisposition": null,
+          "persistedSemanticConclusion": true,
+          "correct": true
+        },
+        {
+          "questionId": "905d31ee-714b-4e6b-8eb8-660b3dd6478a",
+          "providerFailure": false,
+          "persistedStatus": "ANSWERED",
+          "observedHarnessDisposition": null,
+          "persistedSemanticConclusion": true,
+          "correct": true
+        },
+        {
+          "questionId": "f8ebe294-a23d-46f4-9efa-de85ea7e024e",
+          "providerFailure": false,
+          "persistedStatus": "ANSWERED",
+          "observedHarnessDisposition": null,
+          "persistedSemanticConclusion": true,
+          "correct": true
+        },
+        {
+          "questionId": "5c5842e3-4178-46b5-801e-df24b5deb92a",
+          "providerFailure": false,
+          "persistedStatus": "ANSWERED",
+          "observedHarnessDisposition": null,
+          "persistedSemanticConclusion": true,
+          "correct": true
+        }
+      ]
+    },
+    {
+      "manifestIndex": 7,
+      "company": "OpenAssets",
+      "companyId": "4944433c-43a4-41bb-b3f4-24fe98d56a8b",
+      "classification": "FULLY_VALID",
+      "affectedResearchAreas": [],
+      "questionIds": [
+        "e5f5d0e4-4067-4ce2-947f-335586ab6423",
+        "23530fbd-b972-4f52-befb-0393c98c71da",
+        "6e32d60c-e8f8-44c2-898d-5a900c35049b",
+        "64df2e23-c040-408a-a03d-59ee00c3cf81"
+      ],
+      "detectedBeforeRecovery": false,
+      "terminalStateAudit": [
+        {
+          "questionId": "e5f5d0e4-4067-4ce2-947f-335586ab6423",
+          "providerFailure": false,
+          "persistedStatus": "ANSWERED",
+          "observedHarnessDisposition": null,
+          "persistedSemanticConclusion": true,
+          "correct": true
+        },
+        {
+          "questionId": "23530fbd-b972-4f52-befb-0393c98c71da",
+          "providerFailure": false,
+          "persistedStatus": "ANSWERED",
+          "observedHarnessDisposition": null,
+          "persistedSemanticConclusion": true,
+          "correct": true
+        },
+        {
+          "questionId": "6e32d60c-e8f8-44c2-898d-5a900c35049b",
+          "providerFailure": false,
+          "persistedStatus": "ANSWERED",
+          "observedHarnessDisposition": null,
+          "persistedSemanticConclusion": true,
+          "correct": true
+        },
+        {
+          "questionId": "64df2e23-c040-408a-a03d-59ee00c3cf81",
+          "providerFailure": false,
+          "persistedStatus": "ANSWERED",
+          "observedHarnessDisposition": null,
+          "persistedSemanticConclusion": true,
+          "correct": true
+        }
+      ]
+    },
+    {
+      "manifestIndex": 8,
+      "company": "Black & McDonald",
+      "companyId": "f757f1d3-fc2d-4086-8903-b4da90e166e3",
+      "classification": "FULLY_VALID",
+      "affectedResearchAreas": [],
+      "questionIds": [
+        "8387e12d-b79c-4d86-8b83-7d5f775bb849",
+        "f0b7536f-3e25-43d3-86ea-351d57e339b8",
+        "77c31679-be25-4411-ad9f-b5fe6ea3b398",
+        "e474c1bd-0a06-4443-aff2-a2c138334bc3"
+      ],
+      "detectedBeforeRecovery": false,
+      "terminalStateAudit": [
+        {
+          "questionId": "8387e12d-b79c-4d86-8b83-7d5f775bb849",
+          "providerFailure": false,
+          "persistedStatus": "ANSWERED",
+          "observedHarnessDisposition": null,
+          "persistedSemanticConclusion": true,
+          "correct": true
+        },
+        {
+          "questionId": "f0b7536f-3e25-43d3-86ea-351d57e339b8",
+          "providerFailure": false,
+          "persistedStatus": "ANSWERED",
+          "observedHarnessDisposition": null,
+          "persistedSemanticConclusion": true,
+          "correct": true
+        },
+        {
+          "questionId": "77c31679-be25-4411-ad9f-b5fe6ea3b398",
+          "providerFailure": false,
+          "persistedStatus": "ANSWERED",
+          "observedHarnessDisposition": null,
+          "persistedSemanticConclusion": true,
+          "correct": true
+        },
+        {
+          "questionId": "e474c1bd-0a06-4443-aff2-a2c138334bc3",
+          "providerFailure": false,
+          "persistedStatus": "ANSWERED",
+          "observedHarnessDisposition": null,
+          "persistedSemanticConclusion": true,
+          "correct": true
+        }
+      ]
+    },
+    {
+      "manifestIndex": 9,
+      "company": "RAKBANK",
+      "companyId": "94457ffa-bf97-426e-95b0-a1cf30250bd0",
+      "classification": "FULLY_VALID",
+      "affectedResearchAreas": [],
+      "questionIds": [
+        "fe64ad8e-75ae-45e7-931c-fa28a2678f82",
+        "12f498ed-5bfe-4e85-9159-56eea1aea073",
+        "c48687ca-74c7-42c2-b5c6-0c552bc6038b",
+        "2f01903e-0a22-4f68-b6c3-48b986accc4f"
+      ],
+      "detectedBeforeRecovery": false,
+      "terminalStateAudit": [
+        {
+          "questionId": "fe64ad8e-75ae-45e7-931c-fa28a2678f82",
+          "providerFailure": false,
+          "persistedStatus": "ANSWERED",
+          "observedHarnessDisposition": null,
+          "persistedSemanticConclusion": true,
+          "correct": true
+        },
+        {
+          "questionId": "12f498ed-5bfe-4e85-9159-56eea1aea073",
+          "providerFailure": false,
+          "persistedStatus": "ANSWERED",
+          "observedHarnessDisposition": null,
+          "persistedSemanticConclusion": true,
+          "correct": true
+        },
+        {
+          "questionId": "c48687ca-74c7-42c2-b5c6-0c552bc6038b",
+          "providerFailure": false,
+          "persistedStatus": "ANSWERED",
+          "observedHarnessDisposition": null,
+          "persistedSemanticConclusion": true,
+          "correct": true
+        },
+        {
+          "questionId": "2f01903e-0a22-4f68-b6c3-48b986accc4f",
+          "providerFailure": false,
+          "persistedStatus": "ANSWERED",
+          "observedHarnessDisposition": null,
+          "persistedSemanticConclusion": true,
+          "correct": true
+        }
+      ]
+    }
+  ],
+  "preRecoveryValidRunRecall": {
+    "detected": 1,
+    "total": 8,
+    "recall": 0.125
+  }
+}

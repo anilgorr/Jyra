@@ -178,3 +178,17 @@ content_hash = "sha256:97dc0c99ec2c5f05601077aad053ee2e39e4834d5e9e4880de998be7a
 size = 2890
 mtime_ms = 1788182800000
 content_type = "text/csv"
+
+[[outputs]]
+id = "z4JJKKET0fnDTKSPG-CEF"
+uri = "file://artifacts/api-server/TAVILY_CREDIT_INTERRUPTION_AUDIT.md"
+type = "text"
+title = "Tavily Credit Interruption Audit"
+description = "Development-only benchmark validity audit with Decision D, exact control validity counts, recovery gate outcome, and cost/safety summary."
+logical_id = "03616b91-5efe-4884-acba-3de1c52de654"
+content_hash = "sha256:376bd52ff03ea4043e316612f698237b776a39bbe05df67c020701f2cbce6432"
+size = 1479
+mtime_ms = 1788189668909
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/03616b91-5efe-4884-acba-3de1c52de654/8b0eb3c2-3217-4797-906d-5047725caa9b"
+storage_version_token = "1788189697355677"
+content_type = "text/markdown"

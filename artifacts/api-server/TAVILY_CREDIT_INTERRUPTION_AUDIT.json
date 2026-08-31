@@ -1,0 +1,442 @@
+{
+  "audit": "TAVILY_CREDIT_INTERRUPTION_AUDIT",
+  "frozenControlRun": "MVP_FIX_CYCLE_01_V2_CONTROL_RESULTS.json",
+  "frozenEvaluation": "MVP_FIX_CYCLE_01_CONTROL_RETEST.json",
+  "productionOperations": 0,
+  "controls": 10,
+  "researchQuestions": 40,
+  "questionClassifications": {
+    "VALID_RESEARCH_RUN": 35,
+    "INVALID_PROVIDER_CREDIT": 0,
+    "INVALID_PROVIDER_RATE_LIMIT": 0,
+    "INVALID_PROVIDER_ERROR": 0,
+    "INVALID_TIMEOUT": 5,
+    "NOT_ATTEMPTED": 0,
+    "VALID_CACHE_REPLAY": 0,
+    "OTHER_INVALID": 0
+  },
+  "controlClassifications": {
+    "FULLY_VALID": 8,
+    "PARTIALLY_INVALID": 1,
+    "FULLY_INVALID": 1
+  },
+  "originalReportedRecall": {
+    "detected": 2,
+    "total": 10,
+    "recall": 0.2
+  },
+  "executiveSummary": {
+    "totalControlCompanies": 10,
+    "totalResearchQuestions": 40,
+    "validResearchQuestions": 35,
+    "invalidDueToCredits": 0,
+    "invalidDueToRateLimit": 0,
+    "invalidDueToOtherProviderError": 0,
+    "invalidDueToTimeout": 5,
+    "fullyValidControls": 8,
+    "partiallyInvalidControls": 1,
+    "fullyInvalidControls": 1,
+    "questionsRequiringRecovery": 0,
+    "recoveryQuestionsExecuted": 0,
+    "recoveryQuestionsSuccessful": 0,
+    "productionOperations": 0
+  },
+  "preRecoveryValidRunRecall": {
+    "detected": 1,
+    "total": 8,
+    "recall": 0.125
+  },
+  "terminalStateAudit": [
+    {
+      "questionId": "24e2f54f-18bf-4338-bdc4-c42cc3af6d53",
+      "providerFailure": false,
+      "persistedStatus": "ANSWERED",
+      "observedHarnessDisposition": null,
+      "persistedSemanticConclusion": true,
+      "correct": true
+    },
+    {
+      "questionId": "b37fba97-d1bd-4bd6-9452-48199eff53bb",
+      "providerFailure": false,
+      "persistedStatus": "ANSWERED",
+      "observedHarnessDisposition": null,
+      "persistedSemanticConclusion": true,
+      "correct": true
+    },
+    {
+      "questionId": "8083b764-b2c7-4788-ad1f-8c631f1110f6",
+      "providerFailure": false,
+      "persistedStatus": "ANSWERED",
+      "observedHarnessDisposition": null,
+      "persistedSemanticConclusion": true,
+      "correct": true
+    },
+    {
+      "questionId": "eca3e77a-1b13-42c2-ace5-d3e027232b3d",
+      "providerFailure": false,
+      "persistedStatus": "ANSWERED",
+      "observedHarnessDisposition": null,
+      "persistedSemanticConclusion": true,
+      "correct": true
+    },
+    {
+      "questionId": "3cf4846c-9fca-4d4a-a32b-20dca383f4f6",
+      "providerFailure": false,
+      "persistedStatus": "ANSWERED",
+      "observedHarnessDisposition": null,
+      "persistedSemanticConclusion": true,
+      "correct": true
+    },
+    {
+      "questionId": "00f740e6-2e21-4926-a46c-70345c145c30",
+      "providerFailure": false,
+      "persistedStatus": "ANSWERED",
+      "observedHarnessDisposition": null,
+      "persistedSemanticConclusion": true,
+      "correct": true
+    },
+    {
+      "questionId": "27ddeb99-bfea-4737-8ce7-f7ec884d6d24",
+      "providerFailure": false,
+      "persistedStatus": "ANSWERED",
+      "observedHarnessDisposition": null,
+      "persistedSemanticConclusion": true,
+      "correct": true
+    },
+    {
+      "questionId": "3f44cb7e-baee-449d-be22-e5a26c7ecc47",
+      "providerFailure": false,
+      "persistedStatus": "ANSWERED",
+      "observedHarnessDisposition": null,
+      "persistedSemanticConclusion": true,
+      "correct": true
+    },
+    {
+      "questionId": "bd190926-02e1-4ff8-b881-82f181db00a2",
+      "providerFailure": false,
+      "persistedStatus": "ANSWERED",
+      "observedHarnessDisposition": null,
+      "persistedSemanticConclusion": true,
+      "correct": true
+    },
+    {
+      "questionId": "3a5a7952-5c64-4033-9e1e-91b3bfa0796a",
+      "providerFailure": false,
+      "persistedStatus": "ANSWERED",
+      "observedHarnessDisposition": null,
+      "persistedSemanticConclusion": true,
+      "correct": true
+    },
+    {
+      "questionId": "69032b03-2ba8-473c-972b-85f0017d439b",
+      "providerFailure": false,
+      "persistedStatus": "ANSWERED",
+      "observedHarnessDisposition": null,
+      "persistedSemanticConclusion": true,
+      "correct": true
+    },
+    {
+      "questionId": "9a189399-1ab3-486d-8546-d4b692085169",
+      "providerFailure": false,
+      "persistedStatus": "ANSWERED",
+      "observedHarnessDisposition": null,
+      "persistedSemanticConclusion": true,
+      "correct": true
+    },
+    {
+      "questionId": null,
+      "providerFailure": true,
+      "persistedStatus": null,
+      "observedHarnessDisposition": "TIMED_OUT",
+      "persistedSemanticConclusion": false,
+      "correct": "NOT_ADJUDICABLE_NO_PERSISTED_QUESTION"
+    },
+    {
+      "questionId": null,
+      "providerFailure": true,
+      "persistedStatus": null,
+      "observedHarnessDisposition": "TIMED_OUT",
+      "persistedSemanticConclusion": false,
+      "correct": "NOT_ADJUDICABLE_NO_PERSISTED_QUESTION"
+    },
+    {
+      "questionId": null,
+      "providerFailure": true,
+      "persistedStatus": null,
+      "observedHarnessDisposition": "TIMED_OUT",
+      "persistedSemanticConclusion": false,
+      "correct": "NOT_ADJUDICABLE_NO_PERSISTED_QUESTION"
+    },
+    {
+      "questionId": null,
+      "providerFailure": true,
+      "persistedStatus": null,
+      "observedHarnessDisposition": "TIMED_OUT",
+      "persistedSemanticConclusion": false,
+      "correct": "NOT_ADJUDICABLE_NO_PERSISTED_QUESTION"
+    },
+    {
+      "questionId": "fbe0a8b3-eeb5-43bf-a3a7-b4273ba35c42",
+      "providerFailure": false,
+      "persistedStatus": "ANSWERED",
+      "observedHarnessDisposition": null,
+      "persistedSemanticConclusion": true,
+      "correct": true
+    },
+    {
+      "questionId": "799806ca-c9c0-4461-ba93-a21457f7250b",
+      "providerFailure": false,
+      "persistedStatus": "ANSWERED",
+      "observedHarnessDisposition": null,
+      "persistedSemanticConclusion": true,
+      "correct": true
+    },
+    {
+      "questionId": "c3a71eb7-6511-46a3-bf51-33d04337b943",
+      "providerFailure": false,
+      "persistedStatus": "ANSWERED",
+      "observedHarnessDisposition": null,
+      "persistedSemanticConclusion": true,
+      "correct": true
+    },
+    {
+      "questionId": "9d40f5c4-b962-41bf-8975-3ccb51fbfddd",
+      "providerFailure": false,
+      "persistedStatus": "ANSWERED",
+      "observedHarnessDisposition": null,
+      "persistedSemanticConclusion": true,
+      "correct": true
+    },
+    {
+      "questionId": "2c57327a-8a7f-4629-9b60-2dbd03b7e400",
+      "providerFailure": false,
+      "persistedStatus": "ANSWERED",
+      "observedHarnessDisposition": null,
+      "persistedSemanticConclusion": true,
+      "correct": true
+    },
+    {
+      "questionId": "9fef5c5b-73e2-46a6-8ccb-0124d659a6e5",
+      "providerFailure": false,
+      "persistedStatus": "ANSWERED",
+      "observedHarnessDisposition": null,
+      "persistedSemanticConclusion": true,
+      "correct": true
+    },
+    {
+      "questionId": null,
+      "providerFailure": true,
+      "persistedStatus": null,
+      "observedHarnessDisposition": "TIMED_OUT",
+      "persistedSemanticConclusion": false,
+      "correct": "NOT_ADJUDICABLE_NO_PERSISTED_QUESTION"
+    },
+    {
+      "questionId": "484f1d37-25ae-45b0-8e81-c7030da0217a",
+      "providerFailure": false,
+      "persistedStatus": "ANSWERED",
+      "observedHarnessDisposition": null,
+      "persistedSemanticConclusion": true,
+      "correct": true
+    },
+    {
+      "questionId": "a1ce0837-ed29-4c30-bb4a-5e7ae4ba98ec",
+      "providerFailure": false,
+      "persistedStatus": "ANSWERED",
+      "observedHarnessDisposition": null,
+      "persistedSemanticConclusion": true,
+      "correct": true
+    },
+    {
+      "questionId": "905d31ee-714b-4e6b-8eb8-660b3dd6478a",
+      "providerFailure": false,
+      "persistedStatus": "ANSWERED",
+      "observedHarnessDisposition": null,
+      "persistedSemanticConclusion": true,
+      "correct": true
+    },
+    {
+      "questionId": "f8ebe294-a23d-46f4-9efa-de85ea7e024e",
+      "providerFailure": false,
+      "persistedStatus": "ANSWERED",
+      "observedHarnessDisposition": null,
+      "persistedSemanticConclusion": true,
+      "correct": true
+    },
+    {
+      "questionId": "5c5842e3-4178-46b5-801e-df24b5deb92a",
+      "providerFailure": false,
+      "persistedStatus": "ANSWERED",
+      "observedHarnessDisposition": null,
+      "persistedSemanticConclusion": true,
+      "correct": true
+    },
+    {
+      "questionId": "e5f5d0e4-4067-4ce2-947f-335586ab6423",
+      "providerFailure": false,
+      "persistedStatus": "ANSWERED",
+      "observedHarnessDisposition": null,
+      "persistedSemanticConclusion": true,
+      "correct": true
+    },
+    {
+      "questionId": "23530fbd-b972-4f52-befb-0393c98c71da",
+      "providerFailure": false,
+      "persistedStatus": "ANSWERED",
+      "observedHarnessDisposition": null,
+      "persistedSemanticConclusion": true,
+      "correct": true
+    },
+    {
+      "questionId": "6e32d60c-e8f8-44c2-898d-5a900c35049b",
+      "providerFailure": false,
+      "persistedStatus": "ANSWERED",
+      "observedHarnessDisposition": null,
+      "persistedSemanticConclusion": true,
+      "correct": true
+    },
+    {
+      "questionId": "64df2e23-c040-408a-a03d-59ee00c3cf81",
+      "providerFailure": false,
+      "persistedStatus": "ANSWERED",
+      "observedHarnessDisposition": null,
+      "persistedSemanticConclusion": true,
+      "correct": true
+    },
+    {
+      "questionId": "8387e12d-b79c-4d86-8b83-7d5f775bb849",
+      "providerFailure": false,
+      "persistedStatus": "ANSWERED",
+      "observedHarnessDisposition": null,
+      "persistedSemanticConclusion": true,
+      "correct": true
+    },
+    {
+      "questionId": "f0b7536f-3e25-43d3-86ea-351d57e339b8",
+      "providerFailure": false,
+      "persistedStatus": "ANSWERED",
+      "observedHarnessDisposition": null,
+      "persistedSemanticConclusion": true,
+      "correct": true
+    },
+    {
+      "questionId": "77c31679-be25-4411-ad9f-b5fe6ea3b398",
+      "providerFailure": false,
+      "persistedStatus": "ANSWERED",
+      "observedHarnessDisposition": null,
+      "persistedSemanticConclusion": true,
+      "correct": true
+    },
+    {
+      "questionId": "e474c1bd-0a06-4443-aff2-a2c138334bc3",
+      "providerFailure": false,
+      "persistedStatus": "ANSWERED",
+      "observedHarnessDisposition": null,
+      "persistedSemanticConclusion": true,
+      "correct": true
+    },
+    {
+      "questionId": "fe64ad8e-75ae-45e7-931c-fa28a2678f82",
+      "providerFailure": false,
+      "persistedStatus": "ANSWERED",
+      "observedHarnessDisposition": null,
+      "persistedSemanticConclusion": true,
+      "correct": true
+    },
+    {
+      "questionId": "12f498ed-5bfe-4e85-9159-56eea1aea073",
+      "providerFailure": false,
+      "persistedStatus": "ANSWERED",
+      "observedHarnessDisposition": null,
+      "persistedSemanticConclusion": true,
+      "correct": true
+    },
+    {
+      "questionId": "c48687ca-74c7-42c2-b5c6-0c552bc6038b",
+      "providerFailure": false,
+      "persistedStatus": "ANSWERED",
+      "observedHarnessDisposition": null,
+      "persistedSemanticConclusion": true,
+      "correct": true
+    },
+    {
+      "questionId": "2f01903e-0a22-4f68-b6c3-48b986accc4f",
+      "providerFailure": false,
+      "persistedStatus": "ANSWERED",
+      "observedHarnessDisposition": null,
+      "persistedSemanticConclusion": true,
+      "correct": true
+    }
+  ],
+  "retryAudit": [],
+  "postRecovery": {
+    "knownEventsDetected": 2,
+    "knownEventRecall": 0.2,
+    "signals": 2,
+    "signalIds": [
+      "3c0eb744-1328-425f-bcc1-5b30de6be3e9",
+      "52c50105-cf55-4953-adda-6953ac4d8660"
+    ],
+    "signalPrecision": 1,
+    "strictSignalAdjudication": {
+      "TRUE_SUPPORTED": 2,
+      "WEAKLY_SUPPORTED": 0,
+      "UNSUPPORTED": 0,
+      "WRONG_ENTITY": 0,
+      "DUPLICATE_EVENT": 0,
+      "STALE_AS_CURRENT": 0,
+      "SELLER_AS_BUYER_ERROR": 0
+    },
+    "remainingMissBreakdown": {
+      "QUERY_FAILURE": 3,
+      "FACT_EXTRACTION_FAILURE": 3,
+      "SIGNAL_MAPPING_FAILURE": 1,
+      "SOURCE_NOT_FOUND": 1
+    },
+    "remainingMisses": 8,
+    "note": "No recovery ran; original frozen evaluation is preserved."
+  },
+  "cost": {
+    "originalAttempts": {
+      "estimated": {
+        "knownRows": 109,
+        "totalRows": 109,
+        "knownSubtotal": 1.0900000000000007,
+        "total": 1.0900000000000007
+      },
+      "actual": {
+        "knownRows": 0,
+        "totalRows": 109,
+        "knownSubtotal": 0,
+        "total": null
+      }
+    },
+    "healthCheck": {
+      "estimated": 0,
+      "actual": null
+    },
+    "recoveryAttempts": 0,
+    "totalAdditionalEstimatedCost": 0,
+    "totalAdditionalActualReportedCost": null
+  },
+  "finalDecision": "D — AUDIT INCONCLUSIVE",
+  "invariants": {
+    "developmentOnly": true,
+    "frozenControlCount": true,
+    "frozenQuestionSlots": true,
+    "persistedFrozenQuestionIds": 33,
+    "resolvedPlaceholderQuestionIds": 2,
+    "labelsNotUsedBeforeRecovery": true,
+    "fullBenchmarkRerun": false,
+    "outputFiles": [
+      "TAVILY_CREDIT_INTERRUPTION_AUDIT.md",
+      "TAVILY_CREDIT_INTERRUPTION_AUDIT.json",
+      "TAVILY_ATTEMPT_TIMELINE.json",
+      "TAVILY_CONTROL_VALIDITY.json",
+      "TAVILY_TARGETED_RECOVERY_RESULT.json"
+    ],
+    "exactUsageJoin": true,
+    "oneTimelineRowPerUsage": true,
+    "exactV2JobsSelected": true
+  }
+}
