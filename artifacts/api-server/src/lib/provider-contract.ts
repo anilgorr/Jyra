@@ -93,6 +93,7 @@ export type CompanyFirmographicsRequest = ProviderRequestBase & {
   canonicalDomain?: string | null;
   websiteUrl?: string | null;
   linkedinCompanyUrl?: string | null;
+  linkedinCompanyUrlProvenance?: "CANONICAL_EXISTING" | "USER_VERIFIED" | "UNVERIFIED";
   country?: string | null;
   existingProviderIdentifiers?: Record<string, string>;
 };
@@ -224,6 +225,17 @@ export type CompanyFirmographicsResult = {
   providerRecordId: string | null;
   entityMatchStatus: FirmographicEntityMatchStatus;
   entityMatchConfidence: number;
+  entityMatchReasons: string[];
+  requestProvenance: {
+    requestedIdentifierType: "LINKEDIN_COMPANY_URL";
+    requestedIdentifierValue: string | null;
+    normalizedRequestedIdentifierValue: string | null;
+    requestedIdentifierProvenance: "CANONICAL_EXISTING" | "USER_VERIFIED" | "UNVERIFIED";
+    requestedCompanyId: string | null;
+    requestedCompanyName: string | null;
+    requestedCanonicalDomain: string | null;
+    requestedWebsiteUrl: string | null;
+  };
   attributes: CompanyFirmographicAttributes;
   attributeProvenance: Partial<Record<keyof CompanyFirmographicAttributes, FirmographicAttributeProvenance>>;
 };

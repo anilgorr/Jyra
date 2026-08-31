@@ -25,6 +25,7 @@
     "test:bright-data": "node ./scripts/test-bright-data-provider.mjs",
     "test:company-firmographics": "node ./scripts/test-company-firmographics.mjs",
     "test:bright-data-real": "NODE_ENV=development node ./scripts/run-bright-data-integration.mjs",
+    "test:bright-data-reprocess": "NODE_ENV=development node ./scripts/reprocess-bright-data-integration.mjs",
     "hotfix:tavily-evidence-quality": "NODE_ENV=development node ./scripts/reprocess-tavily-evidence-quality.mjs",
     "test:real-data-06": "NODE_ENV=development node ./scripts/test-06-trusted-external-evidence.mjs",
     "test:evidence": "node ./scripts/test-evidence.mjs",

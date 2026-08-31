@@ -158,43 +158,135 @@ function emptyAttributes(): CompanyFirmographicAttributes {
 function matchEntity(
   request: CompanyFirmographicsRequest,
   returned: CompanyFirmographicAttributes,
-): { status: FirmographicEntityMatchStatus; confidence: number; reason: string } {
+): { status: FirmographicEntityMatchStatus; confidence: number; reasons: string[] } {
   const requestedLinkedIn = normalizeLinkedInUrl(request.linkedinCompanyUrl);
   const returnedLinkedIn = normalizeLinkedInUrl(returned.linkedinCompanyUrl);
   const hasRequestedName = Boolean(request.companyName?.trim());
   const hasReturnedName = Boolean(returned.companyName?.trim());
   const nameMatch = hasRequestedName && hasReturnedName &&
     namesArePossibleDuplicates(request.companyName!, returned.companyName!);
+  const normalizedRequestedName = request.companyName?.trim().toLowerCase().replace(/[^a-z0-9]+/g, " ") ?? "";
+  const normalizedReturnedName = returned.companyName?.trim().toLowerCase().replace(/[^a-z0-9]+/g, " ") ?? "";
+  const genericNameTokens = new Set([
+    "analytics", "cloud", "company", "consulting", "data", "digital", "global",
+    "group", "inc", "labs", "llc", "ltd", "services", "software", "solutions",
+    "systems", "technologies", "technology",
+  ]);
+  const distinctiveTokens = normalizedRequestedName.split(" ")
+    .filter((token) => token && !genericNameTokens.has(token));
+  const distinctiveName = distinctiveTokens.length >= 2 ||
+    (distinctiveTokens.length === 1 && distinctiveTokens[0]!.length >= 8);
+  const strongNameMatch = distinctiveName &&
+    normalizedRequestedName === normalizedReturnedName;
   const nameContradiction = hasRequestedName && hasReturnedName && !nameMatch;
   const requestedDomain = text(request.canonicalDomain)?.toLowerCase().replace(/^www\./, "");
-  const domainMatch = Boolean(requestedDomain && returned.canonicalDomain && (
-    requestedDomain === returned.canonicalDomain || returned.canonicalDomain.endsWith(`.${requestedDomain}`)
-  ));
+  const exactDomainMatch = Boolean(
+    requestedDomain && returned.canonicalDomain && requestedDomain === returned.canonicalDomain,
+  );
+  const relatedSubdomainMatch = Boolean(
+    requestedDomain &&
+    returned.canonicalDomain &&
+    returned.canonicalDomain.endsWith(`.${requestedDomain}`),
+  );
+  const domainMatch = exactDomainMatch || relatedSubdomainMatch;
   const domainContradiction = Boolean(requestedDomain && returned.canonicalDomain && !domainMatch);
   const countryMatch = Boolean(request.country && returned.headquartersCountry &&
     request.country.trim().toLowerCase() === returned.headquartersCountry.trim().toLowerCase());
   const countryContradiction = Boolean(request.country && returned.headquartersCountry && !countryMatch);
+  const trustedRequestedLinkedIn = Boolean(requestedLinkedIn) &&
+    ["CANONICAL_EXISTING", "USER_VERIFIED"].includes(
+      request.linkedinCompanyUrlProvenance ?? "UNVERIFIED",
+    );
+  const parentAmbiguity = Boolean(
+    request.companyName &&
+    returned.parentCompany &&
+    namesArePossibleDuplicates(request.companyName, returned.parentCompany) &&
+    !strongNameMatch,
+  );
   if (requestedLinkedIn && returnedLinkedIn && requestedLinkedIn === returnedLinkedIn) {
     if (nameContradiction) {
-      return { status: "WRONG", confidence: 5, reason: "Returned name contradicts the requested company despite the echoed LinkedIn URL." };
+      return { status: "WRONG", confidence: 5, reasons: [
+        "+ Returned LinkedIn URL matches the requested identifier",
+        "- Returned company name materially contradicts the requested company",
+      ] };
     }
     if (domainContradiction || countryContradiction) {
-      return { status: "AMBIGUOUS", confidence: 50, reason: "LinkedIn URL matches, but returned identity attributes conflict with the requested company." };
+      return { status: "AMBIGUOUS", confidence: 50, reasons: [
+        "+ Returned LinkedIn URL matches the requested identifier",
+        "- Returned identity attributes conflict with the requested company",
+      ] };
     }
-    return { status: "CONFIRMED", confidence: 100, reason: "Requested and returned LinkedIn company URLs match." };
+    return { status: "CONFIRMED", confidence: 100, reasons: [
+      "+ Returned LinkedIn URL matches the requested identifier",
+      "+ No material contradictory identity evidence",
+    ] };
+  }
+
+  if (!returnedLinkedIn && requestedLinkedIn) {
+    const reasons = [
+      trustedRequestedLinkedIn
+        ? "+ Requested LinkedIn URL has trusted canonical or user-verified provenance"
+        : "- Requested LinkedIn URL does not have strong provenance",
+      "- Bright Data did not echo the LinkedIn URL",
+      ...(nameMatch ? ["+ Returned company name matches the requested company"] : []),
+      ...(exactDomainMatch ? ["+ Returned official domain exactly agrees with canonical identity"] : []),
+      ...(relatedSubdomainMatch ? ["+ Returned domain is related as a subdomain but is not an exact identity match"] : []),
+      ...(countryMatch ? ["+ Returned geography agrees with canonical identity"] : []),
+    ];
+    if (parentAmbiguity) {
+      return {
+        status: "AMBIGUOUS",
+        confidence: 45,
+        reasons: [...reasons, "- Parent/subsidiary identity remains ambiguous"],
+      };
+    }
+    if (nameContradiction || domainContradiction) {
+      return {
+        status: "WRONG",
+        confidence: 5,
+        reasons: [...reasons, "- Returned company name or official domain materially contradicts canonical identity"],
+      };
+    }
+    if (countryContradiction) {
+      return {
+        status: "AMBIGUOUS",
+        confidence: 50,
+        reasons: [...reasons, "- Returned geography materially conflicts with canonical identity"],
+      };
+    }
+    if (trustedRequestedLinkedIn && exactDomainMatch) {
+      return {
+        status: "CONFIRMED",
+        confidence: nameMatch ? 98 : 94,
+        reasons: [...reasons, "+ No material contradictory identity evidence"],
+      };
+    }
+    if (trustedRequestedLinkedIn && strongNameMatch && !returned.canonicalDomain) {
+      return {
+        status: "CONFIRMED",
+        confidence: 90,
+        reasons: [...reasons, "+ Strong exact company-name agreement", "+ No material contradictory identity evidence"],
+      };
+    }
+    if (nameMatch) {
+      return { status: "PROBABLE", confidence: domainMatch ? 85 : 65, reasons };
+    }
   }
 
   if (nameMatch && (domainMatch || countryMatch)) {
     return {
       status: "PROBABLE",
       confidence: domainMatch ? 90 : 75,
-      reason: "Company name matches with supporting domain or location identity.",
+      reasons: ["+ Company name matches", domainMatch ? "+ Official domain matches" : "+ Geography matches"],
     };
   }
   if (nameMatch) {
-    return { status: "AMBIGUOUS", confidence: 40, reason: "Company name matches but stronger identity corroboration is absent." };
+    return { status: "AMBIGUOUS", confidence: 40, reasons: [
+      "+ Company name matches",
+      "- Stronger identity corroboration is absent",
+    ] };
   }
-  return { status: "WRONG", confidence: 5, reason: "Returned profile does not match the requested company identity." };
+  return { status: "WRONG", confidence: 5, reasons: ["- Returned profile does not match the requested company identity"] };
 }
 
 export function parseBrightDataCompanyResponse(
@@ -247,7 +339,11 @@ export function parseBrightDataCompanyResponse(
     companyType: first(record, ["company_type", "type"]),
     specialties: first(record, ["specialties", "specialities"]),
     followers: first(record, ["followers", "follower_count"]),
-    employeesOnLinkedin: first(record, ["employees_on_linkedin", "linkedin_employee_count"]),
+    employeesOnLinkedin: first(record, [
+      "employees_on_linkedin",
+      "employees_in_linkedin",
+      "linkedin_employee_count",
+    ]),
     fundingTotal: first(record, ["funding_total", "total_funding"]),
     fundingRounds: first(record, ["funding_rounds", "funding_round_count"]),
     parentCompany: first(record, ["parent_company", "parent"]),
@@ -309,6 +405,17 @@ export function parseBrightDataCompanyResponse(
     providerRecordId: text(first(record, ["id", "record_id", "company_id"])),
     entityMatchStatus: match.status,
     entityMatchConfidence: match.confidence,
+    entityMatchReasons: match.reasons,
+    requestProvenance: {
+      requestedIdentifierType: "LINKEDIN_COMPANY_URL",
+      requestedIdentifierValue: request.linkedinCompanyUrl ?? null,
+      normalizedRequestedIdentifierValue: normalizeLinkedInUrl(request.linkedinCompanyUrl),
+      requestedIdentifierProvenance: request.linkedinCompanyUrlProvenance ?? "UNVERIFIED",
+      requestedCompanyId: request.companyId ?? null,
+      requestedCompanyName: request.companyName ?? null,
+      requestedCanonicalDomain: request.canonicalDomain ?? null,
+      requestedWebsiteUrl: request.websiteUrl ?? null,
+    },
     attributes,
     attributeProvenance,
   };
@@ -480,7 +587,7 @@ export function createBrightDataFirmographicsAdapter(
             retryable: false,
           }, runtimeMs, { datasetId: configuration.datasetId, rawProviderResponse: boundedRaw(payload) });
         }
-        const data = parseBrightDataCompanyResponse(usableRecords[0], { ...request, linkedinCompanyUrl: linkedinUrl }, options.providerId, capturedAt);
+        const data = parseBrightDataCompanyResponse(usableRecords[0], request, options.providerId, capturedAt);
         if (!data) {
           return response(options.providerId, requestId, estimatedCost, capturedAt, "empty", null, {
             code: "PARTIAL_PROFILE",

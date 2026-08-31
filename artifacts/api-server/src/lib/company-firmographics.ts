@@ -63,6 +63,7 @@ export type CompanyFirmographicsEnrichmentInput = {
   companyId: string;
   router: Pick<ProviderOperations, "enrichCompany">;
   linkedinCompanyUrl?: string | null;
+  linkedinCompanyUrlProvenance?: "CANONICAL_EXISTING" | "USER_VERIFIED" | "UNVERIFIED";
   approveProbable?: boolean;
   freshnessDays?: number;
   now?: Date;
@@ -190,6 +191,11 @@ export async function enrichCompanyFirmographics(
   const now = input.now ?? new Date();
   const company = await projectCompany(input);
   const linkedinCompanyUrl = input.linkedinCompanyUrl ?? company.linkedinUrl;
+  const linkedinCompanyUrlProvenance = input.linkedinCompanyUrlProvenance ??
+    (linkedinCompanyUrl && company.linkedinUrl &&
+      canonicalSourceIdentity(linkedinCompanyUrl) === canonicalSourceIdentity(company.linkedinUrl)
+      ? "CANONICAL_EXISTING"
+      : "UNVERIFIED");
   if (!linkedinCompanyUrl) {
     const response = await input.router.enrichCompany({
       companyId: company.id,
@@ -197,6 +203,7 @@ export async function enrichCompanyFirmographics(
       canonicalDomain: company.domain,
       websiteUrl: company.website,
       linkedinCompanyUrl: null,
+      linkedinCompanyUrlProvenance: "UNVERIFIED",
       country: company.country,
       requestId: `firmographics:${company.id}:${now.toISOString()}`,
       metadata: {
@@ -257,6 +264,7 @@ export async function enrichCompanyFirmographics(
     canonicalDomain: company.domain,
     websiteUrl: company.website,
     linkedinCompanyUrl,
+    linkedinCompanyUrlProvenance,
     country: company.country,
     requestId: `firmographics:${company.id}:${now.toISOString()}`,
     metadata: {

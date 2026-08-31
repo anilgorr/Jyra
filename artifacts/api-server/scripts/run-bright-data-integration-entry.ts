@@ -130,6 +130,7 @@ async function main(): Promise<void> {
     canonicalDomain: company.domain,
     websiteUrl: company.website,
     linkedinCompanyUrl: company.linkedinUrl,
+    linkedinCompanyUrlProvenance: persistedCompany ? "CANONICAL_EXISTING" : "USER_VERIFIED",
     country: company.country,
     requestId: `bright-data-health:${company.id}:${Date.now()}`,
     metadata: {

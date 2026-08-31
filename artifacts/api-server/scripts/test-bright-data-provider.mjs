@@ -35,6 +35,7 @@ const adapter = createBrightDataFirmographicsAdapter({
       website: "https://www.acme.example/about?utm_source=test",
       industry: "Cloud Security",
       employee_count: 327,
+      employees_in_linkedin: 1414,
       company_size: "201-500",
       headquarters: { city: "Pune", state: "Maharashtra", country: "India" },
       specialties: ["Cloud security", "Managed SOC"],
@@ -59,6 +60,7 @@ assert.equal(success.data.attributes.canonicalDomain, "acme.example");
 assert.equal(success.data.attributes.linkedinCompanyUrl, "https://linkedin.com/company/acme");
 assert.equal(success.data.attributes.employeeCount, 327);
 assert.equal(success.data.attributes.employeeRange, "201-500");
+assert.equal(success.data.attributes.employeesOnLinkedin, 1414);
 assert.equal(success.data.attributes.headquartersCountry, "India");
 assert.equal(success.data.attributes.headquartersRegion, "Maharashtra");
 assert.equal(success.data.attributeProvenance.industry.retrievalProvider, "BRIGHT_DATA");
@@ -149,6 +151,104 @@ const omittedLinkedIn = parseBrightDataCompanyResponse({
 assert.equal(omittedLinkedIn.attributes.linkedinCompanyUrl, null);
 assert.equal(omittedLinkedIn.entityMatchStatus, "WRONG");
 assert.equal(omittedLinkedIn.attributeProvenance.linkedinCompanyUrl, undefined);
+
+const omittedLinkedInTrustedDomain = parseBrightDataCompanyResponse({
+  name: "Acme",
+  website: "https://acme.example",
+}, {
+  companyId: "company-1",
+  companyName: "Acme",
+  canonicalDomain: "acme.example",
+  websiteUrl: "https://acme.example",
+  linkedinCompanyUrl: "https://www.linkedin.com/company/acme/?trk=test#about",
+  linkedinCompanyUrlProvenance: "CANONICAL_EXISTING",
+}, "bright-data-test", requestedAt.toISOString());
+assert.equal(omittedLinkedInTrustedDomain.entityMatchStatus, "CONFIRMED");
+assert.equal(omittedLinkedInTrustedDomain.attributes.linkedinCompanyUrl, null);
+assert.equal(
+  omittedLinkedInTrustedDomain.requestProvenance.requestedIdentifierValue,
+  "https://www.linkedin.com/company/acme/?trk=test#about",
+);
+assert.equal(
+  omittedLinkedInTrustedDomain.requestProvenance.normalizedRequestedIdentifierValue,
+  "https://linkedin.com/company/acme",
+);
+assert.ok(omittedLinkedInTrustedDomain.entityMatchReasons.some((reason) => reason.includes("official domain")));
+
+const omittedLinkedInGuessed = parseBrightDataCompanyResponse({
+  name: "Acme",
+  website: "https://acme.example",
+}, {
+  companyName: "Acme",
+  canonicalDomain: "acme.example",
+  linkedinCompanyUrl: "https://linkedin.com/company/acme",
+  linkedinCompanyUrlProvenance: "UNVERIFIED",
+}, "bright-data-test", requestedAt.toISOString());
+assert.equal(omittedLinkedInGuessed.entityMatchStatus, "PROBABLE");
+
+const omittedLinkedInWeakNameOnly = parseBrightDataCompanyResponse({
+  name: "Acme Inc",
+}, {
+  companyName: "Acme",
+  linkedinCompanyUrl: "https://linkedin.com/company/acme",
+  linkedinCompanyUrlProvenance: "CANONICAL_EXISTING",
+}, "bright-data-test", requestedAt.toISOString());
+assert.equal(omittedLinkedInWeakNameOnly.entityMatchStatus, "PROBABLE");
+
+const omittedLinkedInDomainConflict = parseBrightDataCompanyResponse({
+  name: "Acme",
+  website: "https://different.example",
+}, {
+  companyName: "Acme",
+  canonicalDomain: "acme.example",
+  linkedinCompanyUrl: "https://linkedin.com/company/acme",
+  linkedinCompanyUrlProvenance: "CANONICAL_EXISTING",
+}, "bright-data-test", requestedAt.toISOString());
+assert.equal(omittedLinkedInDomainConflict.entityMatchStatus, "WRONG");
+
+const omittedLinkedInCountryConflict = parseBrightDataCompanyResponse({
+  name: "Acme",
+  website: "https://acme.example",
+  headquarters: { country: "Canada" },
+}, {
+  companyName: "Acme",
+  canonicalDomain: "acme.example",
+  country: "India",
+  linkedinCompanyUrl: "https://linkedin.com/company/acme",
+  linkedinCompanyUrlProvenance: "CANONICAL_EXISTING",
+}, "bright-data-test", requestedAt.toISOString());
+assert.equal(omittedLinkedInCountryConflict.entityMatchStatus, "AMBIGUOUS");
+
+const genericExactNameOnly = parseBrightDataCompanyResponse({
+  name: "Acme Solutions",
+}, {
+  companyName: "Acme Solutions",
+  linkedinCompanyUrl: "https://linkedin.com/company/acme-solutions",
+  linkedinCompanyUrlProvenance: "CANONICAL_EXISTING",
+}, "bright-data-test", requestedAt.toISOString());
+assert.equal(genericExactNameOnly.entityMatchStatus, "PROBABLE");
+
+const relatedSubdomainOnly = parseBrightDataCompanyResponse({
+  name: "Acme",
+  website: "https://subsidiary.acme.example",
+}, {
+  companyName: "Acme",
+  canonicalDomain: "acme.example",
+  linkedinCompanyUrl: "https://linkedin.com/company/acme",
+  linkedinCompanyUrlProvenance: "CANONICAL_EXISTING",
+}, "bright-data-test", requestedAt.toISOString());
+assert.equal(relatedSubdomainOnly.entityMatchStatus, "PROBABLE");
+assert.ok(relatedSubdomainOnly.entityMatchReasons.some((reason) => reason.includes("subdomain")));
+
+const parentSubsidiaryAmbiguity = parseBrightDataCompanyResponse({
+  name: "Acme Cloud",
+  parent_company: "Acme",
+}, {
+  companyName: "Acme",
+  linkedinCompanyUrl: "https://linkedin.com/company/acme",
+  linkedinCompanyUrlProvenance: "CANONICAL_EXISTING",
+}, "bright-data-test", requestedAt.toISOString());
+assert.equal(parentSubsidiaryAmbiguity.entityMatchStatus, "AMBIGUOUS");
 
 const echoedLinkedInWrongName = parseBrightDataCompanyResponse({
   name: "Completely Different Company",

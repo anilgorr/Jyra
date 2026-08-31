@@ -1,0 +1,392 @@
+JYRA — BRIGHT DATA HOTFIX 01
+ENTITY CONFIRMATION WHEN PROVIDER DOES NOT ECHO LINKEDIN URL
+
+CURRENT VERIFIED RESULT
+
+Bright Data COMPANY_FIRMOGRAPHICS is working.
+
+Dataset:
+gd_l1vikfnt1wgvvqz95w
+
+Real result:
+
+Company: Emergys
+Website: https://emergys.com
+Industry: IT Services and IT Consulting
+Employee range: 1,001–5,000
+LinkedIn employees: 1,414
+Founded: 1998
+Description: available
+Specialties: available
+Followers: available
+Estimated cost: $0.0015
+Latency: 5.35 seconds
+
+API request:
+PASS
+
+Provider data quality:
+PASS
+
+Current integration report:
+FAIL
+
+Reason:
+Bright Data did not echo the submitted LinkedIn company URL in the returned
+record.
+
+Current entity matcher therefore classified the result as:
+
+PROBABLE
+
+instead of:
+
+CONFIRMED
+
+This hotfix must correct the entity-validation semantics without weakening
+entity safety.
+
+==================================================
+OBJECTIVE
+==================================================
+
+Allow a Bright Data firmographic result to become CONFIRMED even when the
+provider does not return the LinkedIn URL, provided the complete identity
+chain gives strong deterministic evidence that the returned record belongs
+to the requested canonical company.
+
+Do NOT simply convert every PROBABLE result to CONFIRMED.
+
+==================================================
+1. REQUESTED IDENTIFIER IS EVIDENCE
+==================================================
+
+The submitted LinkedIn company URL is itself part of the provider request
+provenance.
+
+Preserve:
+
+requested_linkedin_url
+
+requested_company_id
+
+requested_company_name
+
+requested_canonical_domain
+
+requested_website_url
+
+Do not depend on Bright Data echoing the submitted identifier.
+
+==================================================
+2. NORMALIZE LINKEDIN URL
+==================================================
+
+Normalize the submitted LinkedIn company URL before comparison.
+
+Handle safely:
+
+www.linkedin.com/company/example
+linkedin.com/company/example/
+country-specific LinkedIn host variants
+query parameters
+fragments
+
+Preserve the original URL in provenance.
+
+Never derive canonical company domain as linkedin.com.
+
+==================================================
+3. ENTITY CONFIRMATION MODEL
+==================================================
+
+Evaluate independent identity evidence.
+
+Strong identifiers:
+
+A. requested LinkedIn URL was already associated with the canonical company
+   with acceptable provenance/confidence
+
+B. returned official website/domain exactly matches existing canonical domain
+
+C. returned company name strongly matches existing canonical company name
+
+Supporting identifiers:
+
+D. geography consistent
+E. industry consistent
+F. provider/company identifiers consistent
+G. known aliases consistent
+
+Contradictions must also be evaluated.
+
+==================================================
+4. CONFIRMED RULE
+==================================================
+
+A Bright Data result may be CONFIRMED without returned LinkedIn URL when:
+
+1. The request used an existing LinkedIn company URL associated with the
+   canonical company
+
+AND
+
+2. At least one additional strong independent identifier agrees.
+
+Preferred confirmation:
+
+requested LinkedIn identity
++
+exact returned domain match
+
+Alternative:
+
+requested LinkedIn identity
++
+strong company-name match
++
+no material contradictory identity evidence
+
+Exact domain agreement should carry greater weight than fuzzy name agreement.
+
+==================================================
+5. DO NOT CONFIRM WHEN
+==================================================
+
+Remain PROBABLE or AMBIGUOUS if:
+
+LinkedIn URL was newly guessed
+
+LinkedIn URL provenance is weak
+
+company name is generic
+
+returned domain conflicts
+
+geography materially conflicts
+
+multiple companies plausibly match
+
+parent/subsidiary ambiguity exists
+
+provider result appears to represent a different legal/company entity
+
+==================================================
+6. WRONG ENTITY
+==================================================
+
+If returned data materially contradicts canonical identity:
+
+classify:
+
+WRONG
+
+Do not attach firmographics.
+
+Examples:
+
+different official domain
+clearly different company
+different geography combined with weak name match
+parent company returned instead of requested subsidiary without evidence
+
+==================================================
+7. PROVENANCE
+==================================================
+
+Record separately:
+
+requested_identifier_type:
+LINKEDIN_COMPANY_URL
+
+requested_identifier_value
+
+requested_identifier_provenance
+
+retrieval_provider:
+BRIGHT_DATA
+
+publisher:
+LINKEDIN
+
+returned_company_name
+
+returned_website
+
+returned_domain
+
+returned_linkedin_url:
+NULL if absent
+
+entity_match_status
+
+entity_match_reasons
+
+entity_match_confidence
+
+Do not manufacture returned_linkedin_url from the request.
+
+This distinction is important.
+
+The submitted LinkedIn URL belongs to request provenance.
+
+It must NOT be represented as if Bright Data returned it.
+
+==================================================
+8. EXPLAINABLE MATCH RESULT
+==================================================
+
+Entity matcher should produce reasons.
+
+Example:
+
+ENTITY STATUS:
+CONFIRMED
+
+REASONS:
+
++ Requested LinkedIn URL already associated with canonical company
++ Returned company name matches Emergys
++ Returned website resolves to emergys.com
++ Returned domain agrees with canonical company identity
++ No contradictory identity evidence
+- Bright Data did not echo LinkedIn URL
+
+This must be auditable.
+
+==================================================
+9. RE-RUN EXISTING RESULT FIRST
+==================================================
+
+Do NOT call Bright Data initially.
+
+Reprocess the existing Emergys provider response through the corrected
+entity matcher.
+
+Expected outcome IF existing canonical identity supports it:
+
+PROBABLE
+→ CONFIRMED
+
+Do not force this result.
+
+If evidence genuinely remains insufficient:
+
+leave PROBABLE and report why.
+
+==================================================
+10. CANONICAL WRITE TEST
+==================================================
+
+Do NOT write to canonical company records during the first reprocessing test.
+
+First prove:
+
+entity matcher = CONFIRMED
+
+Then report which fields WOULD be eligible for canonical update:
+
+website/domain
+industry
+employee range
+LinkedIn employee count
+founded year
+description
+specialties
+followers
+
+Existing field-conflict and provenance rules still apply.
+
+==================================================
+11. TESTS
+==================================================
+
+Add regression tests for:
+
+provider echoes LinkedIn URL → CONFIRMED
+
+provider does not echo LinkedIn URL but domain + identity agree → CONFIRMED
+
+provider does not echo URL but name only weakly agrees → PROBABLE
+
+returned domain conflicts → not CONFIRMED
+
+parent/subsidiary ambiguity → AMBIGUOUS
+
+guessed LinkedIn URL → cannot independently establish CONFIRMED
+
+linkedin.com never becomes canonical domain
+
+requested URL never masquerades as provider-returned URL
+
+wrong entity → no canonical write
+
+==================================================
+12. DATABASE SAFETY
+==================================================
+
+DEVELOPMENT ONLY.
+
+Do not modify production.
+
+Do not migrate/reset/seed/truncate production.
+
+Do not make any production provider calls.
+
+==================================================
+13. REPORT
+==================================================
+
+Update:
+
+BRIGHT_DATA_INTEGRATION_TEST.md
+
+Report:
+
+Provider API:
+PASS/FAIL
+
+Data quality:
+PASS/FAIL
+
+Entity matching:
+PASS/FAIL
+
+Previous Emergys status:
+PROBABLE
+
+New Emergys status:
+
+Identity reasons:
+
+Returned LinkedIn URL:
+PRESENT/ABSENT
+
+Requested LinkedIn URL used as provenance:
+YES/NO
+
+Canonical domain verified:
+YES/NO
+
+Eligible firmographic attributes:
+
+Unsupported attributes:
+0
+
+New Bright Data calls:
+0
+
+Production operations:
+0
+
+FINAL STATUS:
+PASS/FAIL
+
+==================================================
+STOP
+==================================================
+
+STOP after reprocessing the existing Emergys result and completing
+regression tests.
+
+Do NOT run the 10-company Test 11 yet.
