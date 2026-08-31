@@ -27,3 +27,4 @@
 - [Profile candidate attribution](profile-candidate-attribution.md) — score direct profile results or official-site outbound links; never inherit one result's evidence across embedded profile URLs.
 - [Stored profile trust](stored-profile-trust.md) — a canonical profile URL is not verified merely because it is stored; enrichment requires verified provenance or explicit user verification.
 - [Independent research scheduling](independent-research-scheduling.md) — explicit pack questions schedule independently; refresh reuse must respect status-aware uniqueness.
+- [Blind retrieval bake-offs](blind-retrieval-bakeoffs.md) — compare providers only after freezing generic queries and preserving raw results; query gains can outweigh provider choice.

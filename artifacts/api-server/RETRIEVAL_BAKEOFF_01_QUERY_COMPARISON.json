@@ -1,0 +1,259 @@
+{
+  "test": "RETRIEVAL_BAKEOFF_01",
+  "generatedAt": "2026-08-31T16:09:01.341Z",
+  "populationSource": "MVP_FIX_CYCLE_02_AUTOPSY.json: earliestFirstBrokenStage=QUERY_OR_RESULT_RELEVANCE",
+  "controls": [
+    {
+      "controlIndex": 0,
+      "company": "SolarWinds",
+      "category": "SECURITY_LEADERSHIP",
+      "questionType": "LEADERSHIP",
+      "currentTavily": {
+        "query": "\"SolarWinds\" solarwinds.com public evidence of security leadership changes (security, ciso)",
+        "blindValidated": true,
+        "variants": 1
+      },
+      "improvedTavily": [
+        {
+          "variant": "GENERIC_TAVILY_1",
+          "query": "\"SolarWinds\" solarwinds.com security leadership appointment public announcement",
+          "blindValidated": true
+        },
+        {
+          "variant": "GENERIC_TAVILY_2",
+          "query": "\"SolarWinds\" solarwinds.com CISO security executive news",
+          "blindValidated": true
+        }
+      ],
+      "improvedExa": [
+        {
+          "variant": "GENERIC_EXA_1",
+          "query": "\"SolarWinds\" solarwinds.com security leadership appointment public announcement",
+          "blindValidated": true
+        },
+        {
+          "variant": "GENERIC_EXA_2",
+          "query": "\"SolarWinds\" solarwinds.com CISO security executive news",
+          "blindValidated": true
+        }
+      ],
+      "blindnessRule": "Queries may use only company identity, canonical domain, and generic research-area language; reference event, person, source, date, and event-specific technology are excluded."
+    },
+    {
+      "controlIndex": 1,
+      "company": "First Horizon",
+      "category": "SECURITY_LEADERSHIP",
+      "questionType": "LEADERSHIP",
+      "currentTavily": {
+        "query": "\"First Horizon National Corp\" fhnc.com public evidence of security leadership changes (security, ciso)",
+        "blindValidated": true,
+        "variants": 1
+      },
+      "improvedTavily": [
+        {
+          "variant": "GENERIC_TAVILY_1",
+          "query": "\"First Horizon\" fhnc.com security leadership appointment public announcement",
+          "blindValidated": true
+        },
+        {
+          "variant": "GENERIC_TAVILY_2",
+          "query": "\"First Horizon\" fhnc.com CISO security executive news",
+          "blindValidated": true
+        }
+      ],
+      "improvedExa": [
+        {
+          "variant": "GENERIC_EXA_1",
+          "query": "\"First Horizon\" fhnc.com security leadership appointment public announcement",
+          "blindValidated": true
+        },
+        {
+          "variant": "GENERIC_EXA_2",
+          "query": "\"First Horizon\" fhnc.com CISO security executive news",
+          "blindValidated": true
+        }
+      ],
+      "blindnessRule": "Queries may use only company identity, canonical domain, and generic research-area language; reference event, person, source, date, and event-specific technology are excluded."
+    },
+    {
+      "controlIndex": 4,
+      "company": "Teradata",
+      "category": "SECURITY_LEADERSHIP",
+      "questionType": "LEADERSHIP",
+      "currentTavily": {
+        "query": "\"Teradata\" teradata.com public evidence of security leadership changes (security, ciso)",
+        "blindValidated": true,
+        "variants": 1
+      },
+      "improvedTavily": [
+        {
+          "variant": "GENERIC_TAVILY_1",
+          "query": "\"Teradata\" teradata.com security leadership appointment public announcement",
+          "blindValidated": true
+        },
+        {
+          "variant": "GENERIC_TAVILY_2",
+          "query": "\"Teradata\" teradata.com CISO security executive news",
+          "blindValidated": true
+        }
+      ],
+      "improvedExa": [
+        {
+          "variant": "GENERIC_EXA_1",
+          "query": "\"Teradata\" teradata.com security leadership appointment public announcement",
+          "blindValidated": true
+        },
+        {
+          "variant": "GENERIC_EXA_2",
+          "query": "\"Teradata\" teradata.com CISO security executive news",
+          "blindValidated": true
+        }
+      ],
+      "blindnessRule": "Queries may use only company identity, canonical domain, and generic research-area language; reference event, person, source, date, and event-specific technology are excluded."
+    },
+    {
+      "controlIndex": 5,
+      "company": "Nubank",
+      "category": "SECURITY_LEADERSHIP",
+      "questionType": "LEADERSHIP",
+      "currentTavily": {
+        "query": "\"Nubank\" nubank.com.br public evidence of security leadership changes (security, ciso)",
+        "blindValidated": true,
+        "variants": 1
+      },
+      "improvedTavily": [
+        {
+          "variant": "GENERIC_TAVILY_1",
+          "query": "\"Nubank\" nubank.com.br security leadership appointment public announcement",
+          "blindValidated": true
+        },
+        {
+          "variant": "GENERIC_TAVILY_2",
+          "query": "\"Nubank\" nubank.com.br CISO security executive news",
+          "blindValidated": true
+        }
+      ],
+      "improvedExa": [
+        {
+          "variant": "GENERIC_EXA_1",
+          "query": "\"Nubank\" nubank.com.br security leadership appointment public announcement",
+          "blindValidated": true
+        },
+        {
+          "variant": "GENERIC_EXA_2",
+          "query": "\"Nubank\" nubank.com.br CISO security executive news",
+          "blindValidated": true
+        }
+      ],
+      "blindnessRule": "Queries may use only company identity, canonical domain, and generic research-area language; reference event, person, source, date, and event-specific technology are excluded."
+    },
+    {
+      "controlIndex": 7,
+      "company": "OpenAssets",
+      "category": "FUNDED_RISK_PROGRAM",
+      "questionType": "EXPANSION",
+      "currentTavily": {
+        "query": "\"OpenAssets\" openassets.to public evidence of funding, expansion, security, or compliance initiatives",
+        "blindValidated": true,
+        "variants": 1
+      },
+      "improvedTavily": [
+        {
+          "variant": "GENERIC_TAVILY_1",
+          "query": "\"OpenAssets\" openassets.to security compliance certification public announcement",
+          "blindValidated": true
+        },
+        {
+          "variant": "GENERIC_TAVILY_2",
+          "query": "\"OpenAssets\" openassets.to cybersecurity assurance compliance news",
+          "blindValidated": true
+        }
+      ],
+      "improvedExa": [
+        {
+          "variant": "GENERIC_EXA_1",
+          "query": "\"OpenAssets\" openassets.to security compliance certification public announcement",
+          "blindValidated": true
+        },
+        {
+          "variant": "GENERIC_EXA_2",
+          "query": "\"OpenAssets\" openassets.to cybersecurity assurance compliance news",
+          "blindValidated": true
+        }
+      ],
+      "blindnessRule": "Queries may use only company identity, canonical domain, and generic research-area language; reference event, person, source, date, and event-specific technology are excluded."
+    },
+    {
+      "controlIndex": 8,
+      "company": "Black & McDonald",
+      "category": "FUNDED_RISK_PROGRAM",
+      "questionType": "EXPANSION",
+      "currentTavily": {
+        "query": "\"Black & McDonald Limited\" blackandmcdonald.com public evidence of funding, expansion, security, or compliance initiatives",
+        "blindValidated": true,
+        "variants": 1
+      },
+      "improvedTavily": [
+        {
+          "variant": "GENERIC_TAVILY_1",
+          "query": "\"Black & McDonald\" blackandmcdonald.com security compliance certification public announcement",
+          "blindValidated": true
+        },
+        {
+          "variant": "GENERIC_TAVILY_2",
+          "query": "\"Black & McDonald\" blackandmcdonald.com cybersecurity assurance compliance news",
+          "blindValidated": true
+        }
+      ],
+      "improvedExa": [
+        {
+          "variant": "GENERIC_EXA_1",
+          "query": "\"Black & McDonald\" blackandmcdonald.com security compliance certification public announcement",
+          "blindValidated": true
+        },
+        {
+          "variant": "GENERIC_EXA_2",
+          "query": "\"Black & McDonald\" blackandmcdonald.com cybersecurity assurance compliance news",
+          "blindValidated": true
+        }
+      ],
+      "blindnessRule": "Queries may use only company identity, canonical domain, and generic research-area language; reference event, person, source, date, and event-specific technology are excluded."
+    },
+    {
+      "controlIndex": 9,
+      "company": "RAKBANK",
+      "category": "SECURITY_STACK_CHANGE",
+      "questionType": "TECHNOLOGY",
+      "currentTavily": {
+        "query": "\"RAKBANK\" rakbank.ae public evidence of security stack, SOC, SIEM, EDR, or IAM changes (security, siem, endpoint, iam)",
+        "blindValidated": true,
+        "variants": 1
+      },
+      "improvedTavily": [
+        {
+          "variant": "GENERIC_TAVILY_1",
+          "query": "\"RAKBANK\" rakbank.ae security operations technology change public announcement",
+          "blindValidated": true
+        },
+        {
+          "variant": "GENERIC_TAVILY_2",
+          "query": "\"RAKBANK\" rakbank.ae cybersecurity infrastructure platform change news",
+          "blindValidated": true
+        }
+      ],
+      "improvedExa": [
+        {
+          "variant": "GENERIC_EXA_1",
+          "query": "\"RAKBANK\" rakbank.ae security operations technology change public announcement",
+          "blindValidated": true
+        },
+        {
+          "variant": "GENERIC_EXA_2",
+          "query": "\"RAKBANK\" rakbank.ae cybersecurity infrastructure platform change news",
+          "blindValidated": true
+        }
+      ],
+      "blindnessRule": "Queries may use only company identity, canonical domain, and generic research-area language; reference event, person, source, date, and event-specific technology are excluded."
+    }
+  ]
+}
