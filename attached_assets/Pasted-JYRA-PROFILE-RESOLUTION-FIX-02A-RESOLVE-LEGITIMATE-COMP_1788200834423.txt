@@ -1,0 +1,1020 @@
+JYRA — PROFILE RESOLUTION FIX 02A
+RESOLVE LEGITIMATE COMPANY AMBIGUITIES WITHOUT WEAKENING IDENTITY SAFETY
+
+CURRENT STATE
+
+Completed and frozen:
+
+1. MVP_RETRIEVAL_V1_FROZEN
+   Tavily primary → Exa fallback for research retrieval.
+
+2. Black Duck Extraction Fix 01
+   Evidence → atomic facts → validation → existing signal mapping validated.
+
+3. Identity Fix 02
+   Company-likeness and identity safety improved.
+
+4. Find My Market Hotfix 01
+   Companies → Find My Market works through real UI.
+   Exa COMPANY_DISCOVERY remains separate from research WEB_SEARCH.
+
+Identity Fix 02 results:
+
+Digital Maelstrom = AMBIGUOUS
+Mandiant = AMBIGUOUS
+Managed Services - Monitoring 24/7 = NOT_A_COMPANY
+Corsa = AMBIGUOUS
+
+Wrong automatic attaches = 0.
+
+Final Identity Fix 02 decision:
+
+C — NON-COMPANY FILTER FIXED BUT PROFILE RESOLUTION STILL FAILS
+
+GOAL
+
+Determine why three legitimate companies remain AMBIGUOUS:
+
+- Digital Maelstrom
+- Mandiant
+- Corsa
+
+Then implement ONLY generic profile-resolution improvements demonstrated
+by these cases.
+
+Do NOT force all three to CONFIRMED.
+
+The objective is:
+
+MAXIMIZE SAFE RESOLUTION
+WHILE KEEPING
+WRONG AUTOMATIC ATTACHES = 0.
+
+==================================================
+1. DATABASE SAFETY
+==================================================
+
+DEVELOPMENT ONLY.
+
+Use ONLY the development database.
+
+DO NOT:
+
+- modify production
+- migrate production
+- reset production
+- seed production
+- truncate production
+- test against production
+
+Production operations must remain 0.
+
+Prefer no schema changes.
+
+==================================================
+2. FREEZE VALIDATED SYSTEMS
+==================================================
+
+DO NOT CHANGE:
+
+MVP_RETRIEVAL_V1_FROZEN
+
+Tavily primary research retrieval
+
+Exa research fallback
+
+Exa COMPANY_DISCOVERY behavior
+
+Find My Market
+
+research query construction
+
+fact extraction
+
+fact validation
+
+signal definitions
+
+signal mapping
+
+ICP qualification
+
+opportunity scoring
+
+confidence
+
+ranking
+
+WHY
+
+NBA
+
+contacts
+
+UI
+
+Do not weaken Identity Fix 02 safety rules.
+
+==================================================
+3. TEST POPULATION
+==================================================
+
+Primary cases:
+
+1. Digital Maelstrom
+2. Mandiant
+3. Corsa
+
+Regression fixture:
+
+4. Managed Services - Monitoring 24/7
+
+Do NOT introduce additional benchmark companies.
+
+Do NOT rerun the 10-control benchmark.
+
+Do NOT rerun the 50-company benchmark.
+
+==================================================
+4. PRESERVE THE CORRECT NEGATIVE
+==================================================
+
+Managed Services - Monitoring 24/7
+
+must remain:
+
+NOT_A_COMPANY
+
+It must NOT:
+
+- enter profile resolution
+- consume provider calls
+- become PROBABLE
+- become CONFIRMED
+- become a canonical company
+
+If this changes, stop and return safety regression.
+
+==================================================
+5. AUTOPSY BEFORE FIX
+==================================================
+
+For each legitimate ambiguous company reconstruct:
+
+ORIGINAL INPUT
+→ ORIGINAL PROVENANCE
+→ COMPANY-LIKENESS
+→ KNOWN DOMAIN
+→ KNOWN LINKEDIN
+→ KNOWN ALIASES
+→ PROFILE RESOLUTION REQUEST
+→ PROVIDER RESULTS
+→ CANDIDATE PROFILES
+→ DOMAIN COMPARISON
+→ LINKEDIN COMPARISON
+→ NAME COMPARISON
+→ DESCRIPTION COMPARISON
+→ INDUSTRY COMPARISON
+→ GEOGRAPHY COMPARISON
+→ OWNERSHIP/BRAND RELATIONSHIP
+→ ENTITY VALIDATION
+→ FINAL AMBIGUOUS REASON
+
+Do not implement anything until all three traces are complete.
+
+==================================================
+6. ROOT CAUSE TAXONOMY
+==================================================
+
+Assign exactly one PRIMARY root cause per company:
+
+NO_PROFILE_CANDIDATE_FOUND
+
+MULTIPLE_PROFILE_CANDIDATES
+
+NAME_ALIAS_NOT_RECOGNIZED
+
+SHORT_NAME_COLLISION
+
+DOMAIN_NOT_AVAILABLE
+
+DOMAIN_NOT_CORROBORATED
+
+LINKEDIN_NOT_AVAILABLE
+
+LINKEDIN_NOT_CORROBORATED
+
+DISCOVERY_EVIDENCE_NOT_REUSED
+
+PROFILE_EVIDENCE_NOT_PERSISTED
+
+PARENT_BRAND_AMBIGUITY
+
+ACQUIRED_BRAND_AMBIGUITY
+
+ENTITY_ATTRIBUTES_CONFLICT
+
+VERIFICATION_RULE_TOO_STRICT
+
+INSUFFICIENT_INDEPENDENT_EVIDENCE
+
+PROVIDER_RESULT_INSUFFICIENT
+
+OTHER
+
+Also record secondary causes separately.
+
+==================================================
+7. IDENTITY PRINCIPLE
+==================================================
+
+JYRA must distinguish:
+
+CANONICAL ACCOUNT IDENTITY
+
+from:
+
+CORPORATE OWNERSHIP.
+
+These are not necessarily the same thing.
+
+A company or operating brand may remain a meaningful sales account even
+when owned by another corporation.
+
+Therefore:
+
+Acquisition must NOT automatically rewrite:
+
+Brand A
+
+into:
+
+Parent Company B.
+
+==================================================
+8. RELATIONSHIP MODEL
+==================================================
+
+Where supported, identity resolution should distinguish:
+
+SAME_ENTITY
+
+LEGAL_NAME_OF
+
+TRADE_NAME_OF
+
+PREVIOUS_NAME_OF
+
+SUBSIDIARY_OF
+
+PARENT_OF
+
+ACQUIRED_BRAND_OF
+
+OPERATING_BRAND_OF
+
+RELATED_BUT_DISTINCT
+
+UNKNOWN_RELATIONSHIP
+
+Never silently merge:
+
+RELATED_BUT_DISTINCT.
+
+==================================================
+9. MANDIANT
+==================================================
+
+Mandiant is the critical brand/ownership test.
+
+Do NOT hardcode Mandiant.
+
+Determine why the existing resolver cannot safely represent the
+observed identity.
+
+Check whether the evidence supports:
+
+Mandiant as an operating/account identity
+
+plus
+
+an ownership/acquisition relationship to another entity.
+
+If so, preserve:
+
+canonical account = Mandiant
+
+and separately store:
+
+ownership relationship
+
+rather than replacing the account identity with the parent.
+
+Only do this if existing evidence genuinely supports it.
+
+==================================================
+10. CORSA
+==================================================
+
+Corsa is the short-name collision test.
+
+Do NOT increase global fuzzy matching.
+
+Short names require stronger corroboration.
+
+Potential strong corroboration:
+
+verified domain
++
+matching official website identity
+
+or
+
+verified LinkedIn company URL
++
+matching domain
+
+or
+
+trusted provider profile
++
+matching domain
++
+matching business description.
+
+Name match alone remains insufficient.
+
+==================================================
+11. DIGITAL MAELSTROM
+==================================================
+
+Digital Maelstrom is the obscure-company resolution test.
+
+Determine whether ambiguity is caused by:
+
+missing profile result
+
+missing domain
+
+existing evidence not reused
+
+alias mismatch
+
+insufficient corroboration
+
+provider result not persisted
+
+or another generic problem.
+
+Do not create a company-specific alias or rule in runtime code.
+
+==================================================
+12. REUSE EXISTING EVIDENCE FIRST
+==================================================
+
+Before making provider calls, inspect all existing trusted evidence for
+each company.
+
+Include:
+
+discovery-time evidence
+
+canonical candidate evidence
+
+domain-resolution evidence
+
+profile-resolution evidence
+
+verified LinkedIn evidence
+
+firmographic evidence
+
+official website evidence
+
+provider responses already stored
+
+Identity Fix 02 evidence
+
+Do not pay for data JYRA already possesses.
+
+==================================================
+13. DISCOVERY EVIDENCE MUST BE REUSABLE
+==================================================
+
+Inspect whether Find My Market / COMPANY_DISCOVERY can produce useful
+identity evidence that is later discarded.
+
+If discovery provides:
+
+company name
+
+domain
+
+company URL
+
+description
+
+profile URL
+
+or other identity attributes
+
+and they have valid provenance:
+
+persist and reuse them during identity resolution.
+
+Do NOT treat discovery evidence as automatically verified.
+
+But do not throw it away.
+
+==================================================
+14. PROFILE RESOLUTION
+==================================================
+
+Use existing generic:
+
+COMPANY_PROFILE_RESOLUTION
+
+architecture.
+
+Do not add providers.
+
+Profile candidates should be evaluated using multiple attributes.
+
+Potential evidence weights should conceptually follow:
+
+VERY STRONG:
+
+verified exact domain
+verified exact LinkedIn company URL
+
+STRONG:
+
+official website identity
+trusted profile corroborating domain + name
+
+SUPPORTING:
+
+legal/trade alias
+business description
+industry
+geography
+
+WEAK:
+
+fuzzy name similarity
+search rank
+keyword overlap
+
+Do not implement arbitrary benchmark-specific scoring.
+
+==================================================
+15. CONTRADICTION RULE
+==================================================
+
+Strong contradiction must block automatic attachment.
+
+Examples:
+
+correct-looking name + wrong verified domain
+
+matching LinkedIn name + unrelated website
+
+parent profile returned for subsidiary
+
+same short name belonging to another company
+
+provider profile with conflicting business identity
+
+Result should become:
+
+AMBIGUOUS
+
+or
+
+WRONG_ENTITY.
+
+==================================================
+16. VERIFIED ALIASES
+==================================================
+
+Support aliases only with provenance.
+
+Possible alias types:
+
+LEGAL_NAME
+
+TRADE_NAME
+
+FORMER_NAME
+
+OPERATING_BRAND
+
+ACQUIRED_BRAND
+
+ABBREVIATION
+
+Do NOT infer aliases solely because strings are similar.
+
+==================================================
+17. PROBABLE MUST HAVE MEANING
+==================================================
+
+Inspect current handling of:
+
+PROBABLE.
+
+PROBABLE should mean:
+
+substantial identity evidence exists
+
+but automatic CONFIRMED attachment threshold is not met.
+
+Store:
+
+best candidate
+
+supporting evidence
+
+missing verification requirement
+
+confidence
+
+contradictions if any.
+
+Do NOT collapse every unresolved real company into AMBIGUOUS.
+
+Conceptually:
+
+PROBABLE =
+one strong identity path with no material contradiction but incomplete
+confirmation.
+
+AMBIGUOUS =
+multiple plausible identities OR meaningful conflict.
+
+==================================================
+18. CONFIRMED
+==================================================
+
+CONFIRMED should require strong corroboration.
+
+Examples:
+
+verified domain + matching verified LinkedIn
+
+or
+
+verified domain + official website identity + trusted profile
+
+or equivalent strong independent evidence.
+
+Do NOT lower the global CONFIRMED threshold just to pass these cases.
+
+==================================================
+19. PROVIDER CALL POLICY
+==================================================
+
+First use cached/preserved evidence.
+
+If insufficient:
+
+allow tightly controlled calls using ONLY existing capabilities.
+
+Allowed:
+
+COMPANY_PROFILE_RESOLUTION
+
+COMPANY_FIRMOGRAPHICS
+
+Do NOT add providers.
+
+Do NOT use:
+
+Unipile
+
+new scraping providers
+
+new paid data vendors.
+
+Track:
+
+provider
+capability
+calls
+latency
+estimated cost
+actual cost if available.
+
+==================================================
+20. PROVIDER BUDGET
+==================================================
+
+Maximum for this task:
+
+3 legitimate companies only.
+
+Prefer:
+
+<= 1 profile-resolution call per unresolved company
+
+and firmographic confirmation only when a safe profile identifier has
+already been established.
+
+Managed Services fixture:
+
+0 calls required.
+
+==================================================
+21. MINIMAL GENERIC FIX
+==================================================
+
+After autopsy, implement ONLY fixes justified by observed failures.
+
+Potential acceptable fixes:
+
+reuse persisted discovery identity evidence
+
+better verified alias handling
+
+better operating-brand / ownership separation
+
+better multi-attribute profile verification
+
+correct PROBABLE vs AMBIGUOUS semantics
+
+safe handling of short-name companies
+
+profile evidence persistence
+
+Do NOT redesign the whole entity engine.
+
+==================================================
+22. TARGETED RETEST
+==================================================
+
+Run through the NORMAL identity-resolution path:
+
+Digital Maelstrom
+Mandiant
+Corsa
+
+and regression fixture:
+
+Managed Services - Monitoring 24/7.
+
+For each report:
+
+Original name
+
+Company-likeness
+
+Best candidate
+
+Canonical account name
+
+Canonical domain
+
+LinkedIn URL
+
+Alias evidence
+
+Ownership relationship
+
+Identity evidence count
+
+Strong corroborators
+
+Contradictions
+
+Confidence
+
+Final state
+
+Auto-attached YES/NO
+
+Provider calls
+
+==================================================
+23. EXPECTED OUTCOMES
+==================================================
+
+Do NOT predefine the identity answer.
+
+Valid outcomes:
+
+CONFIRMED
+
+PROBABLE
+
+AMBIGUOUS
+
+NOT_A_COMPANY
+
+WRONG_ENTITY
+
+UNRESOLVED.
+
+However, explain precisely why any legitimate company remains
+AMBIGUOUS or UNRESOLVED.
+
+==================================================
+24. REGRESSION TESTS
+==================================================
+
+Add generic tests for:
+
+A.
+Verified domain + matching verified LinkedIn
+→ CONFIRMED
+
+B.
+One strong corroborated identity path, no contradiction, missing second
+strong confirmation
+→ PROBABLE
+
+C.
+Two plausible companies with same short name
+→ AMBIGUOUS
+
+D.
+Name match + conflicting verified domain
+→ no auto-attach
+
+E.
+Acquired operating brand
+→ brand can remain account identity while ownership relationship is
+stored separately
+
+F.
+Parent and subsidiary
+→ no silent merge
+
+G.
+Verified alias with provenance
+→ usable for identity resolution
+
+H.
+Fuzzy alias without provenance
+→ insufficient
+
+I.
+Service-description company name
+→ NOT_A_COMPANY
+
+J.
+Existing trusted discovery evidence
+→ reusable but not automatically verified
+
+K.
+Wrong provider profile
+→ WRONG_ENTITY or rejected
+
+L.
+Idempotent replay
+→ no duplicate canonical companies / aliases / relationships.
+
+==================================================
+25. HARD-CODING AUDIT
+==================================================
+
+Search normal runtime logic for:
+
+Digital Maelstrom
+Mandiant
+Corsa
+Managed Services - Monitoring 24/7
+
+Required:
+
+0 company-specific production rules.
+
+Allowed only in:
+
+tests
+fixtures
+artifacts
+benchmark manifests.
+
+==================================================
+26. WHO SAMPLE REPLAY
+==================================================
+
+After the four-case targeted retest passes safety:
+
+reprocess the SAME previous WHO identity sample.
+
+Use preserved data where possible.
+
+Do not introduce new sample companies.
+
+Report:
+
+TOTAL
+
+ADJUDICABLE
+
+CORRECT CONFIRMED
+
+CORRECT PROBABLE
+
+SAFE AMBIGUOUS
+
+SAFE UNRESOLVED
+
+NOT_A_COMPANY
+
+WRONG IDENTITY
+
+WRONG AUTO-ATTACH
+
+==================================================
+27. IDENTITY QUALITY METRICS
+==================================================
+
+Report TWO separate metrics.
+
+METRIC 1 — IDENTITY PRECISION
+
+Among automatically attached identities:
+
+correct auto-attaches / all auto-attaches
+
+Target:
+
+100% for this sample.
+
+METRIC 2 — SAFE RESOLUTION COVERAGE
+
+Among adjudicable legitimate companies:
+
+CONFIRMED + correctly PROBABLE
+/
+adjudicable legitimate companies
+
+Target:
+
+>= 95% where mathematically possible.
+
+Do not hide ambiguity inside an accuracy percentage.
+
+==================================================
+28. IMPORTANT PASS RULE
+==================================================
+
+Do NOT declare success merely because:
+
+wrong auto-attach = 0.
+
+Identity Fix 02 already achieved that.
+
+This task must demonstrate improved RESOLUTION COVERAGE while retaining
+safety.
+
+==================================================
+29. REQUIRED ARTIFACTS
+==================================================
+
+Generate:
+
+PROFILE_RESOLUTION_FIX_02A.md
+
+PROFILE_RESOLUTION_FIX_02A.json
+
+PROFILE_RESOLUTION_FIX_02A_TRACES.json
+
+PROFILE_RESOLUTION_FIX_02A_RETEST.json
+
+PROFILE_RESOLUTION_FIX_02A_WHO_REPLAY.json
+
+PROFILE_RESOLUTION_FIX_02A_TESTS.json
+
+==================================================
+30. REQUIRED FINAL SUMMARY
+==================================================
+
+Return:
+
+ROOT CAUSES
+
+Digital Maelstrom =
+Mandiant =
+Corsa =
+
+GENERIC FIXES IMPLEMENTED
+
+1.
+2.
+3.
+
+TARGETED RETEST
+
+Digital Maelstrom =
+State:
+Auto-attached:
+Reason:
+
+Mandiant =
+State:
+Auto-attached:
+Relationship:
+Reason:
+
+Corsa =
+State:
+Auto-attached:
+Reason:
+
+Managed Services - Monitoring 24/7 =
+State:
+Provider calls:
+
+WHO REPLAY
+
+Total =
+Adjudicable legitimate =
+Confirmed =
+Probable =
+Ambiguous =
+Unresolved =
+Not a company =
+Wrong identities =
+Wrong auto-attaches =
+
+Identity precision =
+
+Safe resolution coverage =
+
+Provider calls =
+Estimated cost =
+Actual cost =
+
+Retrieval changed = NO required
+Find My Market changed = NO required
+Extraction changed = NO required
+Signals changed = NO required
+ICP changed = NO required
+Production operations = 0 required
+
+==================================================
+31. FINAL DECISION
+==================================================
+
+Return exactly ONE:
+
+A — PROFILE RESOLUTION VALIDATED
+
+Requirements:
+
+identity precision = 100%
+
+AND
+
+safe resolution coverage >= 95% where mathematically possible
+
+AND
+
+Managed Services fixture remains NOT_A_COMPANY
+
+AND
+
+no safety regression.
+
+B — SAFE BUT RESOLUTION COVERAGE STILL INSUFFICIENT
+
+C — BRAND / OWNERSHIP MODEL REMAINS BLOCKING
+
+D — WRONG-ENTITY SAFETY REGRESSION
+
+E — INCONCLUSIVE
+
+==================================================
+32. STOP
+==================================================
+
+STOP after this milestone.
+
+DO NOT:
+
+run the 10-control benchmark
+
+run the 50-company benchmark
+
+change retrieval
+
+change Find My Market
+
+change extraction
+
+change signals
+
+change ICP
+
+change scoring
+
+add providers
+
+work on contacts
+
+work on UI.
+
+Return results for human review.
