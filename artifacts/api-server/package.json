@@ -42,6 +42,7 @@
     "test:evidence": "node ./scripts/test-evidence.mjs",
     "test:facts": "node ./scripts/test-facts.mjs"
     ,"test:research": "node ./scripts/test-research.mjs"
+    ,"test:icp-qualification": "node ./scripts/test-icp-qualification.mjs"
     ,"test:signals": "node ./scripts/test-signals.mjs"
     ,"test:opportunities": "node ./scripts/test-opportunity-engine.mjs"
     ,"test:opportunity-why": "node ./scripts/test-opportunity-why.mjs"

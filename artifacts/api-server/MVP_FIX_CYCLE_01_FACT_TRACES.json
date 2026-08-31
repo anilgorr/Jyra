@@ -1,0 +1,135 @@
+{
+  "traceRows": [
+    {
+      "company": "GitLab",
+      "referenceEvent": "GitLab appointed Chaim Mazal as Chief Information Security Officer.",
+      "eventCategory": "SECURITY_LEADERSHIP",
+      "sourceFound": true,
+      "rawEvidencePresent": true,
+      "relevantTextPresent": true,
+      "extractionInvoked": true,
+      "extractorInputContainedEvent": "HISTORICALLY_NOT_PERSISTED",
+      "factCandidateGenerated": true,
+      "factType": "LEADERSHIP_CHANGE",
+      "factRejected": false,
+      "rejectionReason": "Persisted proposal existed but no accepted matching fact survived.",
+      "proposalStatuses": [
+        "PENDING",
+        "APPROVED"
+      ],
+      "acceptedFactIds": [
+        "a4caf6a2-de85-44ba-8060-62129c20d8eb"
+      ],
+      "rootCause": "OTHER_HISTORICAL_SILENT_EXTRACTION_DIAGNOSTICS",
+      "preFixMiss": "FACT_EXTRACTION_FAILURE",
+      "fixCycleMiss": null
+    },
+    {
+      "company": "Infoblox",
+      "referenceEvent": "Infoblox appointed Henrik Smith as Chief Information Security Officer.",
+      "eventCategory": "SECURITY_LEADERSHIP",
+      "sourceFound": true,
+      "rawEvidencePresent": true,
+      "relevantTextPresent": true,
+      "extractionInvoked": true,
+      "extractorInputContainedEvent": "HISTORICALLY_NOT_PERSISTED",
+      "factCandidateGenerated": false,
+      "factType": null,
+      "factRejected": false,
+      "rejectionReason": "UNKNOWN: exact extractor output/validation rejection was not historically persisted.",
+      "proposalStatuses": [],
+      "acceptedFactIds": [],
+      "rootCause": "OTHER_HISTORICAL_SILENT_EXTRACTION_DIAGNOSTICS",
+      "preFixMiss": "FACT_EXTRACTION_FAILURE",
+      "fixCycleMiss": null
+    },
+    {
+      "company": "Teradata",
+      "referenceEvent": "Teradata appointed Ken Ricketts as Chief Information Security Officer.",
+      "eventCategory": "SECURITY_LEADERSHIP",
+      "sourceFound": true,
+      "rawEvidencePresent": true,
+      "relevantTextPresent": true,
+      "extractionInvoked": true,
+      "extractorInputContainedEvent": "HISTORICALLY_NOT_PERSISTED",
+      "factCandidateGenerated": false,
+      "factType": null,
+      "factRejected": false,
+      "rejectionReason": "UNKNOWN: exact extractor output/validation rejection was not historically persisted.",
+      "proposalStatuses": [],
+      "acceptedFactIds": [],
+      "rootCause": "OTHER_HISTORICAL_SILENT_EXTRACTION_DIAGNOSTICS",
+      "preFixMiss": "FACT_EXTRACTION_FAILURE",
+      "fixCycleMiss": "FACT_EXTRACTION_FAILURE"
+    },
+    {
+      "company": "Nubank",
+      "referenceEvent": "Nubank appointed John Walton as Chief Information Security Officer.",
+      "eventCategory": "SECURITY_LEADERSHIP",
+      "sourceFound": true,
+      "rawEvidencePresent": true,
+      "relevantTextPresent": true,
+      "extractionInvoked": true,
+      "extractorInputContainedEvent": "HISTORICALLY_NOT_PERSISTED",
+      "factCandidateGenerated": false,
+      "factType": null,
+      "factRejected": false,
+      "rejectionReason": "UNKNOWN: exact extractor output/validation rejection was not historically persisted.",
+      "proposalStatuses": [],
+      "acceptedFactIds": [],
+      "rootCause": "OTHER_HISTORICAL_SILENT_EXTRACTION_DIAGNOSTICS",
+      "preFixMiss": "FACT_EXTRACTION_FAILURE",
+      "fixCycleMiss": "QUERY_FAILURE"
+    },
+    {
+      "company": "Black Duck",
+      "referenceEvent": "Black Duck appointed Dom Glavach as Chief Information Security Officer.",
+      "eventCategory": "SECURITY_LEADERSHIP",
+      "sourceFound": true,
+      "rawEvidencePresent": true,
+      "relevantTextPresent": true,
+      "extractionInvoked": true,
+      "extractorInputContainedEvent": "HISTORICALLY_NOT_PERSISTED",
+      "factCandidateGenerated": true,
+      "factType": "TECHNOLOGY_MENTION",
+      "factRejected": false,
+      "rejectionReason": "Persisted proposal existed but no accepted matching fact survived.",
+      "proposalStatuses": [
+        "PENDING",
+        "PENDING",
+        "PENDING",
+        "APPROVED",
+        "APPROVED"
+      ],
+      "acceptedFactIds": [
+        "af019a59-c6bb-457e-8e38-d90109fa0eb6"
+      ],
+      "rootCause": "OTHER_HISTORICAL_SILENT_EXTRACTION_DIAGNOSTICS",
+      "preFixMiss": "FACT_EXTRACTION_FAILURE",
+      "fixCycleMiss": "SIGNAL_MAPPING_FAILURE"
+    },
+    {
+      "company": "OpenAssets",
+      "referenceEvent": "OpenAssets achieved SOC 2 Type 2 compliance and renewed ISO 27001 certification.",
+      "eventCategory": "FUNDED_RISK_PROGRAM",
+      "sourceFound": true,
+      "rawEvidencePresent": true,
+      "relevantTextPresent": true,
+      "extractionInvoked": true,
+      "extractorInputContainedEvent": "HISTORICALLY_NOT_PERSISTED",
+      "factCandidateGenerated": false,
+      "factType": null,
+      "factRejected": false,
+      "rejectionReason": "UNKNOWN: exact extractor output/validation rejection was not historically persisted.",
+      "proposalStatuses": [],
+      "acceptedFactIds": [],
+      "rootCause": "OTHER_HISTORICAL_SILENT_EXTRACTION_DIAGNOSTICS",
+      "preFixMiss": "FACT_EXTRACTION_FAILURE",
+      "fixCycleMiss": "FACT_EXTRACTION_FAILURE"
+    }
+  ],
+  "rootCauseCounts": {
+    "OTHER_HISTORICAL_SILENT_EXTRACTION_DIAGNOSTICS": 6
+  },
+  "persistedControlJobCount": 33
+}

@@ -1,0 +1,166 @@
+{
+  "test": "MVP_FIX_CYCLE_01",
+  "executedAt": "2026-08-31T14:46:35.489Z",
+  "productionOperations": 0,
+  "labelsExposedDuringExecution": false,
+  "controls": {
+    "knownEvents": 10,
+    "provisioned": 10,
+    "detected": 2,
+    "recall": 0.2
+  },
+  "signals": {
+    "generated": 2,
+    "strictAdjudicationCounts": {
+      "TRUE_SUPPORTED": 2,
+      "WEAKLY_SUPPORTED": 0,
+      "UNSUPPORTED": 0,
+      "WRONG_ENTITY": 0,
+      "DUPLICATE_EVENT": 0,
+      "STALE_AS_CURRENT": 0,
+      "SELLER_AS_BUYER_ERROR": 0
+    },
+    "precision": 1
+  },
+  "who": {
+    "sample": 12,
+    "canonicalIdentityAccuracy": {
+      "correct": 8,
+      "adjudicable": 10,
+      "rate": 0.8
+    },
+    "icpClassificationAccuracy": {
+      "correct": 12,
+      "total": 12,
+      "rate": 1
+    },
+    "geographyAccuracy": "NOT_INDEPENDENTLY_ADJUDICATED",
+    "industryAccuracy": "NOT_INDEPENDENTLY_ADJUDICATED",
+    "sizeInterpretationAccuracy": "NOT_INDEPENDENTLY_ADJUDICATED"
+  },
+  "providerAccounting": {
+    "stages": {
+      "DISCOVERY": {
+        "calls": 10,
+        "estimated": {
+          "status": "COMPLETE",
+          "total": 0.07,
+          "knownSubtotal": 0.07,
+          "knownRows": 10,
+          "totalRows": 10
+        },
+        "actual": {
+          "status": "COMPLETE",
+          "total": 0.07,
+          "knownSubtotal": 0.07,
+          "knownRows": 10,
+          "totalRows": 10
+        }
+      },
+      "PROFILE_RESOLUTION": {
+        "calls": 0,
+        "estimated": {
+          "status": "COMPLETE",
+          "total": 0,
+          "knownSubtotal": 0,
+          "knownRows": 0,
+          "totalRows": 0
+        },
+        "actual": {
+          "status": "COMPLETE",
+          "total": 0,
+          "knownSubtotal": 0,
+          "knownRows": 0,
+          "totalRows": 0
+        }
+      },
+      "FIRMOGRAPHICS": {
+        "calls": 0,
+        "estimated": {
+          "status": "COMPLETE",
+          "total": 0,
+          "knownSubtotal": 0,
+          "knownRows": 0,
+          "totalRows": 0
+        },
+        "actual": {
+          "status": "COMPLETE",
+          "total": 0,
+          "knownSubtotal": 0,
+          "knownRows": 0,
+          "totalRows": 0
+        }
+      },
+      "WHEN_WHY_RESEARCH": {
+        "calls": 104,
+        "estimated": {
+          "status": "COMPLETE",
+          "total": 1.0400000000000007,
+          "knownSubtotal": 1.0400000000000007,
+          "knownRows": 104,
+          "totalRows": 104
+        },
+        "actual": {
+          "status": "PARTIAL_UNKNOWN",
+          "total": null,
+          "knownSubtotal": 0,
+          "knownRows": 0,
+          "totalRows": 104
+        }
+      },
+      "CONTACT_ENRICHMENT": {
+        "calls": 0,
+        "estimated": {
+          "status": "COMPLETE",
+          "total": 0,
+          "knownSubtotal": 0,
+          "knownRows": 0,
+          "totalRows": 0
+        },
+        "actual": {
+          "status": "COMPLETE",
+          "total": 0,
+          "knownSubtotal": 0,
+          "knownRows": 0,
+          "totalRows": 0
+        }
+      },
+      "OTHER": {
+        "calls": 0,
+        "estimated": {
+          "status": "COMPLETE",
+          "total": 0,
+          "knownSubtotal": 0,
+          "knownRows": 0,
+          "totalRows": 0
+        },
+        "actual": {
+          "status": "COMPLETE",
+          "total": 0,
+          "knownSubtotal": 0,
+          "knownRows": 0,
+          "totalRows": 0
+        }
+      }
+    },
+    "totals": {
+      "calls": 114,
+      "estimated": {
+        "status": "COMPLETE",
+        "total": 1.1100000000000005,
+        "knownSubtotal": 1.1100000000000005,
+        "knownRows": 114,
+        "totalRows": 114
+      },
+      "actual": {
+        "status": "PARTIAL_UNKNOWN",
+        "total": null,
+        "knownSubtotal": 0.07,
+        "knownRows": 10,
+        "totalRows": 114
+      }
+    }
+  },
+  "finalDecision": "E — MULTIPLE CORE FAILURES REMAIN",
+  "reason": "Measured control recall 20.0%; canonical identity 80.0%; ICP classification 100.0%."
+}

@@ -22,19 +22,21 @@ import {
   signalsTable,
 } from "@workspace/db";
 import { discoverCompaniesForProject } from "../src/lib/company-discovery";
+import { namesArePossibleDuplicates } from "../src/lib/company-identity";
 import { ProviderRouter } from "../src/lib/provider-router";
 import { executeResearchNow, planSignalPackWebResearchQuestions } from "../src/lib/research";
 import { evaluateSignalsForCompany } from "../src/lib/signal-packs";
 
 const TEST = "JYRA_MVP_REALITY_TEST_01";
-const SCOPE = "jyra-mvp-reality-test-01-blind-controls-v1";
+const OUTPUT_TEST = process.env.JYRA_CONTROL_OUTPUT_TEST ?? TEST;
+const SCOPE = process.env.JYRA_CONTROL_SCOPE ?? "jyra-mvp-reality-test-01-blind-controls-v1";
 const MAIN_SCOPE = "jyra-mvp-reality-test-01";
 const RESUME_SINCE = new Date(process.env.JYRA_TEST_01_RESUME_SINCE ?? "2026-08-31T11:20:00.000Z");
 const manifestText = readFileSync(`${TEST}_CONTROL_SET.json`, "utf8");
 const manifest = JSON.parse(manifestText);
 const manifestHash = createHash("sha256").update(manifestText).digest("hex");
 const controls = manifest.controls;
-const stateFile = `${TEST}_CONTROL_RUN_STATE.json`;
+const stateFile = `${OUTPUT_TEST}_CONTROL_RUN_STATE.json`;
 const TERMINAL_STATUSES = new Set(["SUCCEEDED", "FAILED", "DEFERRED", "TIMED_OUT"]);
 const QUESTION_WAIT_MS = 150_000;
 
@@ -77,7 +79,7 @@ if (!exa) throw new Error("Enabled Exa provider required for normal company disc
 
 const router = new ProviderRouter();
 const priorState = (() => {
-  for (const path of [stateFile, `${TEST}_CONTROL_RESULTS.json`]) {
+  for (const path of [stateFile, `${OUTPUT_TEST}_CONTROL_RESULTS.json`]) {
     try {
       const value = JSON.parse(readFileSync(path, "utf8"));
       if (value.manifestSha256 === manifestHash && Array.isArray(value.runs)) return value.runs;
@@ -116,9 +118,12 @@ for (const identity of identities) {
       maxProviderCalls: 1,
       queryOverrides: [`"${identity.company}" official company`],
     });
-    const normalized = (value: string) => value.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+    // Controls are provisioned independently of market-discovery rank.  An
+    // exact string equality incorrectly excludes safe legal-name variants
+    // such as "First Horizon Bank" and "Black and McDonald".  Preserve the
+    // existing conservative duplicate semantics rather than broad matching.
     const candidate = discovery.candidates.find((item) =>
-      item.companyId && normalized(item.name) === normalized(identity.company));
+      item.companyId && namesArePossibleDuplicates(item.name, identity.company));
     run.provision = {
       discoveryRunId: discovery.runId,
       providerId: discovery.providerId,
@@ -176,6 +181,7 @@ for (const identity of identities) {
             userId: "system:jyra-mvp-reality-test-01-controls",
             plannedQuestion: question,
             idempotencyScope: `${SCOPE}:${identity.manifestIndex}:${questionIndex}:${question.questionType}`,
+            forceRefresh: process.env.JYRA_CONTROL_FORCE_REFRESH === "1",
           });
           const result = await Promise.race([execution, timeout]);
           if (timeoutId) clearTimeout(timeoutId);
@@ -566,13 +572,13 @@ if (!terminalInvariantSatisfied) {
   writeFileSync(`${TEST}_CONTROL_INCOMPLETE.json`, JSON.stringify(output, null, 2) + "\n");
   throw new Error("Blind-control evaluation incomplete: every provisioned control must have four terminal question dispositions");
 }
-writeFileSync(`${TEST}_CONTROL_RESULTS.json`, JSON.stringify(output, null, 2) + "\n");
+writeFileSync(`${OUTPUT_TEST}_CONTROL_RESULTS.json`, JSON.stringify(output, null, 2) + "\n");
 console.log(JSON.stringify({
   controlsAttempted: output.controlsAttempted,
   controlsProvisioned: output.controlsProvisioned,
   detectedCount,
   knownEventDetectionRecall: output.knownEventDetectionRecall,
-  resultFile: `${TEST}_CONTROL_RESULTS.json`,
+  resultFile: `${OUTPUT_TEST}_CONTROL_RESULTS.json`,
 }, null, 2));
 }
 

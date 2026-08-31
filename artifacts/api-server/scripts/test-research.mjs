@@ -24,18 +24,24 @@ const {
   upsertResearchBudget,
   companiesTable,
   companyEvidenceTable,
+  companyFactsTable,
   crawlPagesTable,
   dataProvidersTable,
   db,
   evidenceAttributionReviewsTable,
   organizationsTable,
   projectCompaniesTable,
+  projectSignalPacksTable,
   projectsTable,
   researchFactProposalsTable,
   researchBudgetsTable,
   researchJobsTable,
   researchQuestionsTable,
   researchRequestCostsTable,
+  signalDefinitionsTable,
+  signalsTable,
+  ensureCybersecuritySignalPack,
+  evaluateSignalsForCompany,
   usersTable,
   eq,
   sql,
@@ -107,6 +113,16 @@ try {
   await db.insert(usersTable).values({ id: userId });
   [organization] = await db.insert(organizationsTable).values({ name: `Research Test ${suffix}`, createdByUserId: userId }).returning();
   const [project] = await db.insert(projectsTable).values({ organizationId: organization.id, name: "Research Test" }).returning();
+  const signalPack = await ensureCybersecuritySignalPack();
+  await db.insert(projectSignalPacksTable).values({
+    organizationId: organization.id,
+    projectId: project.id,
+    signalPackId: signalPack.id,
+    offeringKey: "research-test",
+    offeringSnapshot: { name: "Research Test" },
+    businessContextSnapshot: {},
+    active: true,
+  });
   [company] = await db.insert(companiesTable).values({
     canonicalName: `Integration Co ${suffix}`,
     domain: `integration-${suffix}.example`,
@@ -128,7 +144,7 @@ try {
         page: {
           url: company.website,
           title: "Integration Co news",
-          text: "On August 29, 2026, Integration Co appointed Priya Shah as Chief Security Officer.",
+          text: "On August 29, 2026, Integration Co appointed Priya Shah as Chief Information Security Officer.",
         },
       },
       sources: [{ kind: "mock", reference: company.website, capturedAt }],
@@ -143,10 +159,10 @@ try {
   const extractFacts = async (evidenceId) => [{
     evidenceId,
     factType: "LEADERSHIP_CHANGE",
-    structuredValue: { person: "Priya Shah", role: "Chief Security Officer" },
+    structuredValue: { person: "Priya Shah", role: "Chief Information Security Officer" },
     effectiveDate: "2026-08-29",
     confidence: 98,
-    supportingExcerpt: "On August 29, 2026, Integration Co appointed Priya Shah as Chief Security Officer.",
+    supportingExcerpt: "On August 29, 2026, Integration Co appointed Priya Shah as Chief Information Security Officer.",
     extractorVersion: "fact-extraction-v1",
   }];
   const first = await executeResearchNow({
@@ -171,7 +187,24 @@ try {
   assert.equal(first.job.providerId, provider.id, "job must retain provider audit identity");
   assert.equal((await db.select().from(researchJobsTable).where(eq(researchJobsTable.projectId, project.id))).length, 1);
   assert.equal((await db.select().from(researchQuestionsTable).where(eq(researchQuestionsTable.projectId, project.id))).length, 1);
-  assert.equal((await db.select().from(researchFactProposalsTable).where(eq(researchFactProposalsTable.projectId, project.id))).length, 1);
+  const proposals = await db.select().from(researchFactProposalsTable).where(eq(researchFactProposalsTable.projectId, project.id));
+  assert.equal(proposals.length, 1);
+  assert.equal(proposals[0].status, "APPROVED", "a source-grounded validated proposal must be governed-approved");
+  const acceptedFacts = await db.select().from(companyFactsTable).where(eq(companyFactsTable.companyId, company.id));
+  assert.equal(acceptedFacts.length, 1, "approved proposal and immutable fact must persist atomically");
+  const signalResult = await evaluateSignalsForCompany({
+    organizationId: organization.id,
+    projectId: project.id,
+    companyId: company.id,
+    now: new Date("2026-08-29T12:00:00Z"),
+  });
+  const leadershipDefinition = await db.select().from(signalDefinitionsTable)
+    .where(eq(signalDefinitionsTable.code, "NEW_CISO"));
+  const activeSignals = await db.select().from(signalsTable).where(eq(signalsTable.companyId, company.id));
+  assert.ok(signalResult.total > 0 && leadershipDefinition.length > 0);
+  assert.ok(activeSignals.some((signal) =>
+    signal.signalDefinitionId === leadershipDefinition[0].id && signal.status === "ACTIVE"),
+  "preserved leadership evidence must flow through an approved fact to the unchanged expected signal");
   assert.equal((await db.select().from(companyEvidenceTable).where(eq(companyEvidenceTable.companyId, company.id))).length, 1);
   const costRows = await db.select().from(researchRequestCostsTable).where(eq(researchRequestCostsTable.projectId, project.id));
   assert.equal(costRows.length, 1, "the provider request must create one economics record");
@@ -364,6 +397,8 @@ try {
   console.log("Research execution integration and replay tests passed.");
 } finally {
   if (company) {
+    await db.delete(signalsTable).where(eq(signalsTable.companyId, company.id));
+    await db.delete(companyFactsTable).where(eq(companyFactsTable.companyId, company.id));
     await db.delete(researchFactProposalsTable).where(eq(researchFactProposalsTable.companyId, company.id));
     await db.delete(companyEvidenceTable).where(eq(companyEvidenceTable.companyId, company.id));
     await db.delete(evidenceAttributionReviewsTable).where(eq(evidenceAttributionReviewsTable.companyId, company.id));

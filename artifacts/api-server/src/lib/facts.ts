@@ -63,7 +63,7 @@ const INTERPRETATION_PATTERNS = [
 
 const FACT_TYPE_PATTERNS: Record<FactType, RegExp[]> = {
   LEADERSHIP_CHANGE: [
-    /\b(?:appointed|named|promoted|joined as|resigned|departed|stepped down|succeeded)\b/i,
+    /\b(?:appoint(?:ed|s)|nam(?:ed|es)|promot(?:ed|es)|join(?:ed|s) as|resign(?:ed|s)|depart(?:ed|s)|steps? down|succeed(?:ed|s))\b/i,
     /\b(?:chief|ceo|cfo|cto|ciso|president|director|officer|head of|vice president|vp)\b/i,
   ],
   JOB_OPENING: [/\b(?:job opening|open roles?|hiring for|vacanc(?:y|ies)|open positions?|seeking applicants)\b/i],

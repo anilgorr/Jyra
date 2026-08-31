@@ -775,6 +775,8 @@ export async function executeResearchNow(input: {
   let evidenceCount = 0;
   let factProposalCount = 0;
   let factRejectionCount = 0;
+  let factExtractionFailureCount = 0;
+  const factRejectionReasons = new Set<string>();
   let ambiguousResultCount = 0;
   let duplicateEvidenceCount = 0;
   const sourceType = sourceTypeForQuestion(selectedQuestion.questionType);
@@ -822,11 +824,32 @@ export async function executeResearchNow(input: {
       if (!preserved.evidence) continue;
       if (preserved.duplicate) duplicateEvidenceCount += 1;
       else evidenceCount += 1;
-      const candidates = await (input.extractFacts ?? extractFactCandidatesFromSource)(
-        preserved.evidence.id,
-        source.rawContent,
-        completedAt.toISOString().slice(0, 10),
-      ).catch(() => []);
+      const [acceptedAttribution] = await db.select({ accepted: evidenceAttributionReviewsTable.acceptedAsEvidence })
+        .from(evidenceAttributionReviewsTable)
+        .where(and(
+          eq(evidenceAttributionReviewsTable.crawlPageId, preserved.evidence.crawlPageId),
+          eq(evidenceAttributionReviewsTable.companyId, row.company.id),
+          eq(evidenceAttributionReviewsTable.acceptedAsEvidence, true),
+        )).limit(1);
+      if (!acceptedAttribution) {
+        factRejectionCount += 1;
+        factRejectionReasons.add("Preserved evidence does not have accepted entity attribution");
+        continue;
+      }
+      let candidates: unknown[] = [];
+      try {
+        candidates = await (input.extractFacts ?? extractFactCandidatesFromSource)(
+          preserved.evidence.id,
+          source.rawContent,
+          completedAt.toISOString().slice(0, 10),
+        );
+      } catch (error) {
+        // A source has already been preserved.  Keep the job successful, but
+        // make an extraction-contract failure observable and auditable rather
+        // than silently treating it as an empty extraction.
+        factExtractionFailureCount += 1;
+        factRejectionReasons.add(`EXTRACTION_ERROR: ${error instanceof Error ? error.message : "Unknown extraction error"}`);
+      }
       for (const candidate of candidates) {
         try {
           const validated = validateFactCandidate(candidate, {
@@ -835,24 +858,51 @@ export async function executeResearchNow(input: {
             rawContent: source.rawContent,
             observationDate: completedAt.toISOString().slice(0, 10),
           });
-          await db.insert(researchFactProposalsTable).values({
-            researchJobId: job.id,
-            questionId: selectedQuestion.id,
-            organizationId: input.organizationId,
-            projectId: input.projectId,
-            companyId: row.company.id,
-            evidenceId: preserved.evidence.id,
-            factType: validated.factType,
-            structuredValue: validated.structuredValue,
-            effectiveDate: validated.effectiveDate,
-            confidence: validated.confidence,
-            supportingExcerpt: validated.supportingExcerpt,
-            extractorVersion: validated.extractorVersion,
-            status: "PENDING",
-          }).onConflictDoNothing();
+          await db.transaction(async (tx) => {
+            let [proposal] = await tx.insert(researchFactProposalsTable).values({
+              researchJobId: job.id,
+              questionId: selectedQuestion.id,
+              organizationId: input.organizationId,
+              projectId: input.projectId,
+              companyId: row.company.id,
+              evidenceId: preserved.evidence.id,
+              factType: validated.factType,
+              structuredValue: validated.structuredValue,
+              effectiveDate: validated.effectiveDate,
+              confidence: validated.confidence,
+              supportingExcerpt: validated.supportingExcerpt,
+              extractorVersion: validated.extractorVersion,
+              status: "APPROVED",
+            }).onConflictDoNothing().returning();
+            if (!proposal) {
+              [proposal] = await tx.select().from(researchFactProposalsTable).where(and(
+                eq(researchFactProposalsTable.researchJobId, job.id),
+                eq(researchFactProposalsTable.evidenceId, preserved.evidence.id),
+                eq(researchFactProposalsTable.factType, validated.factType),
+                eq(researchFactProposalsTable.effectiveDate, validated.effectiveDate),
+                eq(researchFactProposalsTable.supportingExcerpt, validated.supportingExcerpt),
+              )).limit(1);
+            }
+            if (!proposal) throw new Error("Validated fact proposal could not be resolved");
+            await tx.insert(companyFactsTable).values({
+              companyId: row.company.id,
+              evidenceId: preserved.evidence.id,
+              factType: validated.factType,
+              structuredValue: validated.structuredValue,
+              effectiveDate: validated.effectiveDate,
+              confidence: validated.confidence,
+              supportingExcerpt: validated.supportingExcerpt,
+              extractorVersion: validated.extractorVersion,
+            }).onConflictDoNothing();
+            if (proposal.status !== "APPROVED") {
+              await tx.update(researchFactProposalsTable).set({ status: "APPROVED" })
+                .where(eq(researchFactProposalsTable.id, proposal.id));
+            }
+          });
           factProposalCount += 1;
-        } catch {
+        } catch (error) {
           factRejectionCount += 1;
+          factRejectionReasons.add(error instanceof Error ? error.message : "Unknown candidate validation error");
         }
       }
       if (source.job) {
@@ -886,7 +936,7 @@ export async function executeResearchNow(input: {
   const status = response.status === "failed" ? "FAILED" : response.status === "empty" ? "EMPTY" : "SUCCEEDED";
   const summary = response.status === "failed"
     ? response.error?.message ?? "Provider request failed"
-    : `${evidenceCount} new evidence record(s), ${duplicateEvidenceCount} duplicate(s), ${ambiguousResultCount} ambiguous result(s) rejected, ${factProposalCount} validated fact proposal(s), ${factRejectionCount} rejected proposal(s).`;
+    : `${evidenceCount} new evidence record(s), ${duplicateEvidenceCount} duplicate(s), ${ambiguousResultCount} ambiguous result(s) rejected, ${factProposalCount} validated fact proposal(s), ${factRejectionCount} rejected proposal(s), ${factExtractionFailureCount} extraction failure(s)${factRejectionReasons.size ? `; reasons: ${[...factRejectionReasons].slice(0, 5).join(" | ")}` : ""}.`;
   const [updatedJob] = await db.update(researchJobsTable).set({
     status,
     providerId,

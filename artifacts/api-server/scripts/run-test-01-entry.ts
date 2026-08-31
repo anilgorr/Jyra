@@ -32,6 +32,11 @@ import {
 import { ProviderRouter } from "../src/lib/provider-router";
 import { buildDiscoveryPlan, discoverCompaniesForProject } from "../src/lib/company-discovery";
 import {
+  classifyIcpFit,
+  employeeRangeDecision,
+  parseEmployeeRange,
+} from "../src/lib/icp-qualification";
+import {
   normalizeLinkedInCompanyUrl,
   resolveAndPersistCompanyProfile,
 } from "../src/lib/company-profile-resolution";
@@ -117,17 +122,6 @@ function targetMatch(value: string | null, targets: string[], industry = false):
   return matched ? "pass" : "fail";
 }
 
-function parseEmployeeRange(value: unknown) {
-  if (typeof value !== "string" || !value.trim()) return null;
-  const raw = value.replace(/,/g, "").trim();
-  const band = raw.match(/(\d+)\s*(?:[-–—]|to)\s*(\d+)/i);
-  if (band) return { minimum: Number(band[1]), maximum: Number(band[2]), label: value };
-  const plus = raw.match(/(\d+)\s*\+/);
-  if (plus) return { minimum: Number(plus[1]), maximum: null, label: value };
-  const exact = raw.match(/\b(\d+)\b/);
-  return exact ? { minimum: Number(exact[1]), maximum: Number(exact[1]), label: value } : null;
-}
-
 function employeeEvidence(attributes: CompanyFirmographicAttributes) {
   const range = parseEmployeeRange(attributes.employeeRange);
   if (range) return range;
@@ -148,11 +142,7 @@ function evaluateDimensions(strategy: Record<string, unknown>, attributes: Compa
   const industry = targetMatch(attributes.industry, industries, true);
   const observed = employeeEvidence(attributes);
   const target = strategy.employeeRange as { minimum?: unknown; maximum?: unknown } | undefined;
-  const minimum = typeof target?.minimum === "number" ? target.minimum : null;
-  const maximum = typeof target?.maximum === "number" ? target.maximum : null;
-  const employeeSize: DimensionResult = !observed || minimum === null || maximum === null ? "unknown"
-    : observed.minimum > maximum || (observed.maximum !== null && observed.maximum < minimum) ? "fail"
-      : observed.minimum >= minimum && observed.maximum !== null && observed.maximum <= maximum ? "pass" : "partial";
+  const employeeSize = employeeRangeDecision(observed, target);
   const reasons = [
     geography === "pass" ? `Geography matches ${display(attributes.headquartersCountry)}` : "",
     industry === "pass" ? `Industry matches ${display(attributes.industry)}` : "",
@@ -173,15 +163,7 @@ function evaluateDimensions(strategy: Record<string, unknown>, attributes: Compa
 }
 
 function classifyFit(dimensions: ReturnType<typeof evaluateDimensions>) {
-  if (dimensions.nonFitReasons.length) return { status: "LIKELY_NOT_FIT" as FitStatus, confidence: "HIGH" as const };
-  const matched = [dimensions.geography, dimensions.industry, dimensions.employeeSize]
-    .filter((value) => value === "pass" || value === "partial").length;
-  if (matched >= 2) return {
-    status: "LIKELY_FIT" as FitStatus,
-    confidence: dimensions.employeeSize === "partial" ? "MEDIUM" as const : "HIGH" as const,
-  };
-  if (matched === 1) return { status: "POSSIBLE_FIT" as FitStatus, confidence: "MEDIUM" as const };
-  return { status: "INSUFFICIENT_DATA" as FitStatus, confidence: "LOW" as const };
+  return classifyIcpFit(dimensions);
 }
 
 function attributesReturned(attributes: CompanyFirmographicAttributes | null): string[] {
@@ -397,20 +379,10 @@ async function main() {
     return;
   }
 
-  const [icpVersion] = await db.select().from((await import("@workspace/db")).icpVersionsTable)
-    .where(eq((await import("@workspace/db")).icpVersionsTable.projectId, target.project.id))
-    .orderBy(desc((await import("@workspace/db")).icpVersionsTable.createdAt)).limit(1);
-  if (!icpVersion) throw new Error("No ICP version found");
-  const icpCriteria = await db.select().from((await import("@workspace/db")).icpCriteriaTable)
-    .where(eq((await import("@workspace/db")).icpCriteriaTable.icpVersionId, icpVersion.id));
-  const strategy = {
-    geographies: [...new Set(icpCriteria.filter((c: any) => /geograph|country|location/i.test(c.description)).flatMap((c: any) => c.configuration?.values ?? c.configuration?.countries ?? []))],
-    targetIndustries: [...new Set(icpCriteria.filter((c: any) => /industr|sector|vertical/i.test(c.description)).flatMap((c: any) => c.configuration?.values ?? c.configuration?.industries ?? []))],
-    employeeRange: (icpCriteria.find((c: any) => /employee|size|headcount/i.test(c.description))?.configuration ?? {}) as Record<string, unknown>,
-  } as Record<string, unknown>;
-  if (!Array.isArray(strategy.geographies) || !strategy.geographies.length) strategy.geographies = ["United States", "United Kingdom", "Canada", "Australia", "India"];
-  if (!Array.isArray(strategy.targetIndustries) || !strategy.targetIndustries.length) strategy.targetIndustries = ["IT Services", "Technology"];
-  if (!(strategy.employeeRange as any).minimum) strategy.employeeRange = { minimum: 50, maximum: 5000 };
+  // Use the same persisted interpretation used by discovery.  Reconstructing
+  // a second strategy from criterion configuration previously fell back to
+  // 50–5,000 and contradicted the frozen 100–2,000 ICP.
+  const strategy = (await buildDiscoveryPlan(target.project.id)).strategy as Record<string, unknown>;
 
   // Blind controls are intentionally absent from the main benchmark process.
   // The separately frozen manifest is consumed only by run-test-01-controls.

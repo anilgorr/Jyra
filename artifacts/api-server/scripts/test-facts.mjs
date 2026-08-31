@@ -87,6 +87,14 @@ const candidate = {
 };
 
 assert.deepEqual(validateFactCandidate(candidate, context), candidate);
+assert.equal(
+  isFactTypeSupportedByExcerpt(
+    "LEADERSHIP_CHANGE",
+    "Infoblox Appoints Henrik Smith as Chief Information Security Officer.",
+  ),
+  true,
+  "present-tense press-release headlines are directly supported leadership observations",
+);
 assert.equal(isValidCalendarDate("2026-08-20"), true);
 assert.equal(isValidCalendarDate("2026-02-30"), false);
 assert.throws(
