@@ -1,0 +1,880 @@
+JYRA — REAL DATA TEST 11
+BRIGHT DATA COMPANY_FIRMOGRAPHICS QUALITY VALIDATION
+
+CURRENT VERIFIED STATE
+
+Bright Data integration:
+PASS
+
+Capability:
+COMPANY_FIRMOGRAPHICS
+
+Provider:
+Bright Data
+
+Dataset:
+gd_l1vikfnt1wgvvqz95w
+
+Bright Data Hotfix 01:
+PASS
+
+Verified behavior:
+- Bright Data real request succeeds
+- firmographic data returned
+- requested LinkedIn URL retained as request provenance
+- provider does not need to echo LinkedIn URL
+- independent canonical domain agreement can establish CONFIRMED identity
+- platform URLs never become canonical domains
+- ambiguous/wrong entities cannot overwrite canonical records
+- API key protected
+- cost tracking exists
+- provider diagnostics exist
+
+Known real example:
+
+Emergys
+Website: emergys.com
+Industry: IT Services and IT Consulting
+Employee range: 1,001–5,000
+LinkedIn employees: 1,414
+Founded: 1998
+Entity status: CONFIRMED
+
+==================================================
+OBJECTIVE
+==================================================
+
+Determine whether Bright Data is sufficiently accurate, complete and
+cost-efficient to become JYRA's primary COMPANY_FIRMOGRAPHICS provider
+for the MVP.
+
+Use EXACTLY the same 10 canonical companies used in Real Data Test 10.
+
+Do not discover new companies.
+
+Compare results directly against the Test 10 baseline.
+
+This test evaluates:
+
+WHO / company qualification
+
+ONLY.
+
+Do not proceed into WHEN/WHY.
+
+==================================================
+1. TEST POPULATION
+==================================================
+
+Load the exact 10 canonical companies from Real Data Test 10.
+
+Do not manually replace companies.
+
+Do not select easier companies.
+
+Do not exclude difficult records merely because they lack a domain.
+
+Preserve the same population so Test 10 vs Test 11 comparison is valid.
+
+Report the 10 company IDs/names before starting.
+
+==================================================
+2. BASELINE
+==================================================
+
+Use the recorded Test 10 values as the BEFORE state.
+
+Test 10:
+
+Companies:
+10
+
+External qualification calls:
+19
+
+Tavily:
+19
+
+Apify:
+0
+
+Exa:
+0 during qualification
+
+Total qualification cost:
+$0.19
+
+Average cost/company:
+$0.019
+
+Geography resolved:
+1/10
+
+Industry resolved:
+2/10
+
+Employee size resolved:
+1/10
+
+Likely Fit:
+0
+
+Possible Fit:
+2
+
+Likely Not Fit:
+1
+
+Insufficient Data:
+7
+
+Qualified for WHEN/WHY:
+2
+
+Do not alter this baseline.
+
+==================================================
+3. IDENTIFIER SELECTION
+==================================================
+
+For each company determine whether a usable LinkedIn company URL already
+exists.
+
+Classify identifier status:
+
+VERIFIED_LINKEDIN_URL
+PROBABLE_LINKEDIN_URL
+NO_LINKEDIN_URL
+INVALID_LINKEDIN_URL
+
+Bright Data LinkedIn Company Information dataset may only be called with
+a valid company LinkedIn URL.
+
+Do not fabricate or guess URLs.
+
+Do not use:
+
+LinkedIn people URLs
+LinkedIn job URLs
+LinkedIn post URLs
+LinkedIn search URLs
+
+Only company/organization profile URLs.
+
+==================================================
+4. IMPORTANT — NO AUTOMATIC LINKEDIN RESOLUTION YET
+==================================================
+
+If a company lacks a LinkedIn company URL:
+
+do NOT automatically call Tavily, Exa, Google, Apify or another provider
+to find one during the initial Bright Data coverage test.
+
+Mark:
+
+FIRMOGRAPHIC_LOOKUP_BLOCKED_NO_LINKEDIN_URL
+
+This distinction is important.
+
+We first need to know:
+
+A. Bright Data data coverage when identifier exists
+
+B. identifier coverage in our current company graph
+
+Do not mix those two problems.
+
+==================================================
+5. BRIGHT DATA LOOKUPS
+==================================================
+
+For every company with a usable LinkedIn company URL:
+
+route through:
+
+Provider Router
+→ COMPANY_FIRMOGRAPHICS
+→ Bright Data adapter
+
+Do not call Bright Data directly from the test script unless existing
+test architecture specifically invokes the normal Provider Router path.
+
+We must test the real production-intended execution path.
+
+==================================================
+6. CACHE POLICY
+==================================================
+
+Respect existing firmographic cache.
+
+If a valid recent Bright Data result already exists:
+
+use cache.
+
+Record:
+
+CACHE_HIT
+
+Do not consume another provider call.
+
+If cache is absent/stale:
+
+perform exactly one lookup.
+
+Do not repeatedly retry successful profiles.
+
+==================================================
+7. ENTITY RESOLUTION
+==================================================
+
+For each returned record run normal entity validation.
+
+Possible statuses:
+
+CONFIRMED
+PROBABLE
+AMBIGUOUS
+WRONG
+
+Use:
+
+requested LinkedIn provenance
+returned company name
+returned website
+returned domain
+existing canonical domain
+existing company name
+geography
+other identity evidence
+
+Do not weaken Hotfix 01 safeguards.
+
+Do not automatically attach:
+
+AMBIGUOUS
+WRONG
+
+records.
+
+Report every non-CONFIRMED case and why.
+
+==================================================
+8. FIRMOGRAPHIC ATTRIBUTES
+==================================================
+
+Evaluate at minimum:
+
+canonical domain
+
+company name
+
+industry
+
+employee count
+
+employee range
+
+LinkedIn employee count
+
+headquarters country
+
+headquarters city
+
+headquarters region/state
+
+founded year
+
+company description
+
+company type
+
+specialties
+
+followers
+
+website
+
+Do not manufacture values.
+
+UNKNOWN remains UNKNOWN.
+
+==================================================
+9. ATTRIBUTE PROVENANCE
+==================================================
+
+Every accepted field must preserve:
+
+canonical company
+
+retrieval provider:
+BRIGHT_DATA
+
+publisher/source:
+LINKEDIN when applicable
+
+source/request profile URL
+
+retrieved_at
+
+raw value
+
+normalized value
+
+entity confidence
+
+attribute confidence
+
+Do not represent the requested LinkedIn URL as though Bright Data returned
+it if it did not.
+
+==================================================
+10. CANONICAL UPDATE RULE
+==================================================
+
+For this test it is acceptable to update DEVELOPMENT canonical company
+attributes when:
+
+entity status = CONFIRMED
+
+AND
+
+existing field-conflict/provenance rules permit the update.
+
+Do not overwrite user-confirmed values.
+
+Do not silently replace stronger evidence.
+
+If conflict exists:
+
+retain observations
+record conflict
+resolve using existing authority/freshness rules.
+
+==================================================
+11. EMPLOYEE NORMALIZATION
+==================================================
+
+Preserve both where available:
+
+employee_range
+LinkedIn_employee_count
+
+Example:
+
+range:
+1,001–5,000
+
+LinkedIn count:
+1,414
+
+Do not interpret LinkedIn employee count as exact global workforce unless
+the source semantics support that.
+
+For ICP qualification:
+
+prefer provider's company-size range where appropriate.
+
+Use exact/LinkedIn counts only according to existing normalization rules.
+
+==================================================
+12. GTM-Q1 ICP
+==================================================
+
+Use the existing approved Aadit GTM-Q1 Managed SOC ICP.
+
+Do NOT modify it to improve test results.
+
+Known criteria include:
+
+Geographies:
+US
+India
+UAE
+UK
+Singapore
+
+Industries:
+SaaS
+Technology
+IT Services
+Fintech
+Financial Services
+Healthcare
+Professional Services
+
+Employee size:
+100–2,000
+
+Sweet spot:
+200–1,000
+
+Technology criteria may remain UNKNOWN.
+
+Revenue remains UNKNOWN unless legitimate data exists.
+
+Do not invent exclusions.
+
+==================================================
+13. ICP QUALIFICATION
+==================================================
+
+After enrichment, rerun the existing ICP qualification engine.
+
+Allowed states:
+
+LIKELY_FIT
+POSSIBLE_FIT
+LIKELY_NOT_FIT
+INSUFFICIENT_DATA
+
+Missing data must not count negatively.
+
+Fit is NOT intent.
+
+Do not create:
+
+Need
+Timing
+Relationship
+buying intent
+opportunity score
+opportunity state
+signals
+signal clusters
+
+==================================================
+14. BEFORE/AFTER TABLE
+==================================================
+
+Generate a table for all 10 companies:
+
+COMPANY
+
+LINKEDIN IDENTIFIER STATUS
+
+BEFORE:
+DOMAIN
+GEOGRAPHY
+INDUSTRY
+EMPLOYEE SIZE
+ICP STATUS
+
+AFTER:
+DOMAIN
+GEOGRAPHY
+INDUSTRY
+EMPLOYEE SIZE
+ICP STATUS
+
+BRIGHT DATA:
+CALLED/CACHE/BLOCKED
+
+ENTITY STATUS
+
+ATTRIBUTES RETURNED
+
+CONFlicts
+
+CALL COST
+
+QUALIFIED FOR WHEN/WHY:
+YES/NO
+
+==================================================
+15. COVERAGE METRICS
+==================================================
+
+Calculate two different coverage groups.
+
+A. ALL 10 COMPANIES
+
+LinkedIn URL available:
+X/10
+
+Industry resolved:
+X/10
+
+Geography resolved:
+X/10
+
+Employee size resolved:
+X/10
+
+Domain resolved:
+X/10
+
+
+B. BRIGHT DATA ELIGIBLE COMPANIES ONLY
+
+Eligible:
+N
+
+Successful profiles:
+X/N
+
+Confirmed entities:
+X/N
+
+Industry:
+X/N
+
+Geography:
+X/N
+
+Employee size:
+X/N
+
+Website/domain:
+X/N
+
+This distinction is mandatory.
+
+Do not call Bright Data poor merely because JYRA lacks LinkedIn URLs.
+
+Likewise do not call the overall WHO pipeline successful if identifier
+coverage is poor.
+
+==================================================
+16. QUALITY TARGETS
+==================================================
+
+Targets across the complete 10-company population:
+
+ENTITY CORRECTNESS:
+>= 9/10
+
+INDUSTRY RESOLVED:
+>= 8/10
+
+GEOGRAPHY RESOLVED:
+>= 8/10
+
+EMPLOYEE SIZE RESOLVED:
+>= 7/10
+
+DOMAIN RESOLVED OR SAFELY UNKNOWN:
+10/10
+
+UNSUPPORTED ATTRIBUTES:
+0
+
+Targets for Bright Data-eligible records:
+
+SUCCESSFUL PROFILE RETRIEVAL:
+>= 90%
+
+CONFIRMED/SAFE ENTITY ATTRIBUTION:
+>= 90%
+
+Do not manipulate output to satisfy targets.
+
+==================================================
+17. IMPORTANT ROOT-CAUSE CLASSIFICATION
+==================================================
+
+For every missing final attribute classify why.
+
+Use categories such as:
+
+NO_LINKEDIN_IDENTIFIER
+
+BRIGHT_DATA_NO_RESULT
+
+BRIGHT_DATA_PARTIAL_PROFILE
+
+ENTITY_AMBIGUOUS
+
+ENTITY_WRONG
+
+FIELD_NOT_RETURNED
+
+FIELD_CONFLICT
+
+NORMALIZATION_FAILURE
+
+DATABASE_WRITE_FAILURE
+
+UNKNOWN_OTHER
+
+We need to know exactly where remaining coverage fails.
+
+==================================================
+18. COST ECONOMICS
+==================================================
+
+Record:
+
+actual Bright Data calls
+
+cache hits
+
+records returned
+
+estimated provider cost
+
+latency
+
+cost/company tested
+
+cost/successful profile
+
+cost/confirmed profile
+
+cost/qualified company
+
+Compare against Test 10:
+
+19 Tavily calls
+$0.19 total
+$0.019/company
+
+Do not fabricate actual Bright Data billing if the API does not return it.
+
+Use:
+
+ESTIMATED COST
+
+where appropriate.
+
+==================================================
+19. NO FALLBACK PROVIDERS YET
+==================================================
+
+For this first run:
+
+Tavily:
+0
+
+Exa:
+0
+
+Apify:
+0
+
+No other firmographic provider.
+
+Reason:
+
+We need isolated measurement of Bright Data.
+
+Do not compensate for missing Bright Data coverage in this test.
+
+==================================================
+20. NO CONTACTS
+==================================================
+
+Do not enrich:
+
+people
+emails
+phones
+buying committees
+
+Contact enrichment calls:
+0
+
+==================================================
+21. NO OPPORTUNITY RESEARCH
+==================================================
+
+Do not perform:
+
+security research
+hiring research
+news research
+technology research
+funding research
+leadership research
+
+Do not create Managed SOC signals.
+
+The only question for Test 11 is:
+
+WHO IS THIS COMPANY AND HOW WELL DOES IT FIT THE ICP?
+
+==================================================
+22. DATABASE SAFETY
+==================================================
+
+DEVELOPMENT ONLY.
+
+Use development database only.
+
+Do not:
+
+migrate
+reset
+seed
+truncate
+modify
+test
+
+production.
+
+Production operations:
+0
+
+==================================================
+23. IDEMPOTENCY TEST
+==================================================
+
+After completing Test 11 once:
+
+rerun only enough of the workflow to verify valid fresh results are cached.
+
+The second run must not unnecessarily call Bright Data again.
+
+Report:
+
+first-run Bright Data calls
+
+second-run Bright Data calls
+
+cache hits
+
+No need to rerun full business analysis.
+
+==================================================
+24. REQUIRED REPORT
+==================================================
+
+Create:
+
+REAL_DATA_TEST_11.md
+
+Include:
+
+TEST POPULATION:
+10
+
+LINKEDIN COMPANY URL AVAILABLE:
+X/10
+
+BRIGHT DATA ELIGIBLE:
+X/10
+
+BRIGHT DATA REAL CALLS:
+
+CACHE HITS:
+
+SUCCESSFUL PROFILES:
+
+NO RESULT:
+
+PARTIAL PROFILES:
+
+CONFIRMED ENTITIES:
+
+PROBABLE:
+
+AMBIGUOUS:
+
+WRONG:
+
+DOMAIN RESOLVED:
+
+GEOGRAPHY RESOLVED:
+
+INDUSTRY RESOLVED:
+
+EMPLOYEE SIZE RESOLVED:
+
+FOUNDED YEAR RESOLVED:
+
+DESCRIPTION RESOLVED:
+
+LIKELY FIT:
+
+POSSIBLE FIT:
+
+LIKELY NOT FIT:
+
+INSUFFICIENT DATA:
+
+QUALIFIED FOR WHEN/WHY:
+
+TOTAL ESTIMATED COST:
+
+AVERAGE COST/COMPANY:
+
+AVERAGE COST/SUCCESSFUL PROFILE:
+
+TEST 10 COST:
+$0.19
+
+COVERAGE IMPROVEMENT:
+PASS/FAIL
+
+COST EFFICIENCY:
+PASS/FAIL
+
+ENTITY SAFETY:
+PASS/FAIL
+
+ATTRIBUTE PROVENANCE:
+PASS/FAIL
+
+UNSUPPORTED ATTRIBUTES:
+YES/NO
+
+BUYING INTENT CREATED:
+NO
+
+SIGNALS CREATED:
+0
+
+EXA CALLS:
+0
+
+TAVILY CALLS:
+0
+
+APIFY CALLS:
+0
+
+CONTACT ENRICHMENT:
+0
+
+PRODUCTION OPERATIONS:
+0
+
+FINAL STATUS:
+PASS/FAIL
+
+==================================================
+25. DECISION OUTPUT
+==================================================
+
+At the end provide one of:
+
+DECISION A:
+BRIGHT DATA APPROVED AS PRIMARY MVP COMPANY_FIRMOGRAPHICS PROVIDER
+
+DECISION B:
+BRIGHT DATA DATA QUALITY PASSES BUT LINKEDIN IDENTIFIER COVERAGE IS THE
+NEXT BOTTLENECK
+
+DECISION C:
+BRIGHT DATA COVERAGE/QUALITY IS INSUFFICIENT — ADD SECOND PROVIDER
+
+DECISION D:
+ENTITY ATTRIBUTION IS UNSAFE — DO NOT USE
+
+Explain decision using measured results only.
+
+==================================================
+STOP
+==================================================
+
+STOP after Test 11.
+
+Do NOT:
+
+resolve missing LinkedIn URLs
+add another provider
+run Tavily fallback
+run WHEN/WHY
+create signals
+research contacts
+change ICP
+build additional UI
