@@ -192,6 +192,21 @@ assert.equal(
 );
 assert.ok(omittedLinkedInResolverVerified.entityMatchReasons.some((reason) => reason.includes("resolver verified")));
 
+const omittedLinkedInTrustedDistinctiveName = parseBrightDataCompanyResponse({
+  name: "Amazon Web Services (AWS)",
+  website: "https://aws.amazon.com",
+  headquarters: "Seattle, WA",
+  country_code: "US,GB,IN",
+}, {
+  companyName: "Amazon Web Services (AWS)",
+  linkedinCompanyUrl: "https://www.linkedin.com/company/amazon-web-services",
+  linkedinCompanyUrlProvenance: "USER_VERIFIED",
+}, "bright-data-test", requestedAt.toISOString());
+assert.equal(omittedLinkedInTrustedDistinctiveName.entityMatchStatus, "CONFIRMED");
+assert.equal(omittedLinkedInTrustedDistinctiveName.attributes.headquartersCountry, "United States");
+assert.equal(omittedLinkedInTrustedDistinctiveName.attributes.headquartersCity, "Seattle");
+assert.equal(omittedLinkedInTrustedDistinctiveName.attributes.headquartersRegion, "WA");
+
 const omittedLinkedInGuessed = parseBrightDataCompanyResponse({
   name: "Acme",
   website: "https://acme.example",

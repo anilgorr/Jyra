@@ -107,7 +107,7 @@ function unresolvedProfileResponse(input: {
 }
 
 function cacheIdentity(companyId: string, linkedinCompanyUrl: string): string {
-  return `${companyId}:${canonicalSourceIdentity(linkedinCompanyUrl)}`;
+  return `v2:${companyId}:${canonicalSourceIdentity(linkedinCompanyUrl)}`;
 }
 
 function cachePayload(value: unknown): FirmographicsCachePayload | null {

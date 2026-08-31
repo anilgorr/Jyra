@@ -74,6 +74,22 @@ function strings(value: unknown): string[] {
   return valueText ? valueText.split(/[,;|]/).map((item) => item.trim()).filter(Boolean) : [];
 }
 
+function countryName(value: unknown): string | null {
+  const raw = text(value)?.split(",")[0]?.trim().toUpperCase();
+  if (!raw) return null;
+  const names: Record<string, string> = {
+    AE: "United Arab Emirates",
+    AU: "Australia",
+    CA: "Canada",
+    CN: "China",
+    GB: "United Kingdom",
+    IN: "India",
+    SG: "Singapore",
+    US: "United States",
+  };
+  return names[raw] ?? text(value);
+}
+
 function first(record: BrightDataRecord, keys: string[]): unknown {
   for (const key of keys) {
     if (record[key] !== undefined && record[key] !== null) return record[key];
@@ -261,11 +277,11 @@ function matchEntity(
         reasons: [...reasons, "+ No material contradictory identity evidence"],
       };
     }
-    if (trustedRequestedLinkedIn && strongNameMatch && !returned.canonicalDomain) {
+    if (trustedRequestedLinkedIn && strongNameMatch && !requestedDomain) {
       return {
         status: "CONFIRMED",
         confidence: 90,
-        reasons: [...reasons, "+ Strong exact company-name agreement", "+ No material contradictory identity evidence"],
+        reasons: [...reasons, "+ Strong exact company-name agreement independently corroborates the trusted requested profile", "+ No material contradictory identity evidence"],
       };
     }
     if (nameMatch) {
@@ -299,6 +315,8 @@ export function parseBrightDataCompanyResponse(
     ? payload as BrightDataRecord
     : {};
   const headquarters = nestedRecord(record, ["headquarters", "headquarters_location", "location"]);
+  const headquartersText = text(first(record, ["headquarters", "headquarters_location"]));
+  const headquartersParts = headquartersText?.split(",").map((part) => part.trim()).filter(Boolean) ?? [];
   const rawCompanyName = first(record, ["company_name", "name", "title"]);
   const rawWebsite = first(record, ["website", "website_url", "company_website", "url"]);
   const rawLinkedInUrl = first(record, [
@@ -317,11 +335,11 @@ export function parseBrightDataCompanyResponse(
     "employees_range",
   ]);
   const rawHeadquartersCountry = first(headquarters, ["country", "country_name"]) ??
-    first(record, ["headquarters_country", "country"]);
+    first(record, ["headquarters_country", "country", "country_code"]);
   const rawHeadquartersCity = first(headquarters, ["city", "city_name"]) ??
-    first(record, ["headquarters_city", "city"]);
+    first(record, ["headquarters_city", "city"]) ?? headquartersParts[0];
   const rawHeadquartersRegion = first(headquarters, ["region", "state", "state_name", "region_name"]) ??
-    first(record, ["headquarters_region", "headquarters_state", "state"]);
+    first(record, ["headquarters_region", "headquarters_state", "state"]) ?? headquartersParts[1];
   const rawByAttribute: Partial<Record<keyof CompanyFirmographicAttributes, unknown>> = {
     companyName: rawCompanyName,
     websiteUrl: rawWebsite,
@@ -361,7 +379,7 @@ export function parseBrightDataCompanyResponse(
     industry: text(rawByAttribute.industry),
     employeeCount: integer(rawByAttribute.employeeCount),
     employeeRange: text(rawEmployeeRange),
-    headquartersCountry: text(rawHeadquartersCountry),
+    headquartersCountry: countryName(rawHeadquartersCountry),
     headquartersCity: text(rawHeadquartersCity),
     headquartersRegion: text(rawHeadquartersRegion),
     locations: strings(rawByAttribute.locations),
