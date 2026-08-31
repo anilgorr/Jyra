@@ -542,6 +542,7 @@
     "brightDataEligible": {
       "eligible": 1,
       "successfulProfiles": 1,
+      "strongFirmographicProfiles": 1,
       "confirmedEntities": 0,
       "industryResolved": 0,
       "geographyResolved": 0,
@@ -559,6 +560,8 @@
     "secondRunBrightDataCalls": 0,
     "idempotencyCacheHits": 1,
     "successfulProfiles": 1,
+    "strongFirmographicProfiles": 1,
+    "firmographicRetrievalQualityPass": true,
     "noResult": 0,
     "partialProfiles": 0,
     "confirmedEntities": 0,
@@ -586,6 +589,9 @@
   },
   "quality": {
     "coverageImprovement": "FAIL",
+    "firmographicRetrievalQuality": "PASS",
+    "safeEntityAcceptance": "FAIL",
+    "identifierCoverage": "FAIL",
     "costEfficiency": "PASS",
     "entitySafety": "PASS",
     "attributeProvenance": "PASS",
@@ -647,7 +653,7 @@
       "pass": true
     }
   },
-  "decision": "DECISION C: BRIGHT DATA COVERAGE/QUALITY IS INSUFFICIENT — ADD SECOND PROVIDER",
+  "decision": "DECISION B: BRIGHT DATA FIRMOGRAPHIC QUALITY PASSES WHEN GIVEN A LINKEDIN URL; IDENTIFIER RESOLUTION IS THE NEXT BOTTLENECK",
   "finalStatus": "PASS",
-  "generatedAt": "2026-08-31T08:10:38.144Z"
+  "generatedAt": "2026-08-31T08:35:25.222Z"
 }

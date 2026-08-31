@@ -23,3 +23,4 @@
 - [Exa company discovery boundary](exa-company-discovery-boundary.md) — use raw exa-js company search only; all qualification and opportunity reasoning stays inside JYRA.
 - [Provider test configuration truth](provider-test-configuration-truth.md) — live reports must derive provider identifiers from runtime config, not duplicate constants that can drift.
 - [No-echo provider identity](no-echo-provider-identity.md) — a trusted requested identifier needs strict independent agreement before an omitted provider echo can be confirmed.
+- [Provider quality versus identifier coverage](provider-quality-vs-identifier-coverage.md) — low LinkedIn coverage points to profile resolution, not a second firmographic provider, when eligible results are strong.

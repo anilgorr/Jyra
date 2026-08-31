@@ -4,7 +4,7 @@
 
 **PASS**
 
-DECISION C: BRIGHT DATA COVERAGE/QUALITY IS INSUFFICIENT — ADD SECOND PROVIDER
+DECISION B: BRIGHT DATA FIRMOGRAPHIC QUALITY PASSES WHEN GIVEN A LINKEDIN URL; IDENTIFIER RESOLUTION IS THE NEXT BOTTLENECK
 
 This test used exactly the 10-company population from Real Data Test 10 and evaluated
 WHO/company qualification only. Missing LinkedIn identifiers were blocked without
@@ -59,6 +59,7 @@ qualification values. Non-confirmed provider observations were not attached.
 
 - Eligible: 1
 - Successful profiles: 1/1
+- Strong raw firmographic profiles: 1/1
 - Confirmed entities: 0/1
 - Industry: 0/1
 - Geography: 0/1
@@ -95,6 +96,9 @@ qualification values. Non-confirmed provider observations were not attached.
 - AVERAGE COST/SUCCESSFUL PROFILE: $0.0015
 - TEST 10 COST: $0.19
 - COVERAGE IMPROVEMENT: FAIL
+- FIRMOGRAPHIC RETRIEVAL QUALITY WHEN URL EXISTS: PASS
+- SAFE ENTITY ACCEPTANCE: FAIL
+- LINKEDIN IDENTIFIER COVERAGE: FAIL
 - COST EFFICIENCY: PASS
 - ENTITY SAFETY: PASS
 - ATTRIBUTE PROVENANCE: PASS
@@ -212,12 +216,15 @@ raw value, normalized value, entity confidence, and attribute confidence.
 
 ## Decision
 
-DECISION C: BRIGHT DATA COVERAGE/QUALITY IS INSUFFICIENT — ADD SECOND PROVIDER
+DECISION B: BRIGHT DATA FIRMOGRAPHIC QUALITY PASSES WHEN GIVEN A LINKEDIN URL; IDENTIFIER RESOLUTION IS THE NEXT BOTTLENECK
 
 Measured result: 1/10 companies had usable existing LinkedIn company
-identifiers. The initial Test 11 run made 1 real Bright Data call,
-the persisted-cache rerun made 0, 1 profile was
-successful, and total estimated cost was $0.0015.
+identifiers. For 1 eligible company, 1
+returned a strong raw firmographic profile. The initial Test 11 run made
+1 real Bright Data call, the persisted-cache rerun made
+0, and total estimated cost was $0.0015.
+This does not justify adding a second firmographic provider while identifier
+coverage is low.
 
 STOP: Test 11 complete. No fallback, identifier resolution, WHEN/WHY, contacts,
 signals, opportunity research, or production operations were performed.

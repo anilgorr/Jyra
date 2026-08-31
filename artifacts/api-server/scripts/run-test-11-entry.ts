@@ -527,6 +527,10 @@ async function main(): Promise<void> {
   const statusCount = (status: string) => rows.filter((row) => row.entityStatus === status).length;
   const eligible = rows.filter((row) => ["VERIFIED_LINKEDIN_URL", "PROBABLE_LINKEDIN_URL"].includes(row.identifierStatus));
   const successfulProfiles = rows.filter((row) => ["CALLED", "CACHE_HIT"].includes(row.brightData) && row.attributesReturned.length > 0).length;
+  const strongFirmographicProfiles = eligible.filter((row) =>
+    ["canonical domain", "industry", "employee range"].every((attribute) =>
+      row.attributesReturned.includes(attribute)) &&
+    !["AMBIGUOUS", "WRONG"].includes(row.entityStatus)).length;
   const noResult = rows.filter((row) => row.brightData === "NO_RESULT").length;
   const partialProfiles = rows.filter((row) => row.brightData === "CALLED_FAILED" || row.brightData === "CALLED" && row.attributesReturned.length === 0).length;
   const domainResolved = rows.filter((row) => row.after.domain !== "UNKNOWN").length;
@@ -551,14 +555,20 @@ async function main(): Promise<void> {
   const eligibleRetrievalPass = eligible.length === 0 || successfulProfiles / eligible.length >= 0.9;
   const eligibleEntityPass = eligible.length === 0 ||
     rows.filter((row) => row.entityStatus === "CONFIRMED").length / eligible.length >= 0.9;
+  const firmographicRetrievalQualityPass = eligible.length > 0 &&
+    strongFirmographicProfiles / eligible.length >= 0.9;
   const totalRecordedCalls = priorRecordedBrightDataCalls + actualCalls;
   const totalEstimatedCost = Number((priorRecordedCost + estimatedCost).toFixed(4));
   const costEfficiencyPass = totalEstimatedCost / MAX_COMPANIES < 0.019 &&
     (successfulProfiles === 0 || totalEstimatedCost / successfulProfiles < 0.019);
   const decision = !safetyPass ? "DECISION D: ENTITY ATTRIBUTION IS UNSAFE — DO NOT USE"
-    : !eligibleRetrievalPass || !eligibleEntityPass ? "DECISION C: BRIGHT DATA COVERAGE/QUALITY IS INSUFFICIENT — ADD SECOND PROVIDER"
-      : eligible.length < 9 ? "DECISION B: BRIGHT DATA DATA QUALITY PASSES BUT LINKEDIN IDENTIFIER COVERAGE IS THE NEXT BOTTLENECK"
-        : "DECISION A: BRIGHT DATA APPROVED AS PRIMARY MVP COMPANY_FIRMOGRAPHICS PROVIDER";
+    : eligible.length < 9 && firmographicRetrievalQualityPass
+      ? "DECISION B: BRIGHT DATA FIRMOGRAPHIC QUALITY PASSES WHEN GIVEN A LINKEDIN URL; IDENTIFIER RESOLUTION IS THE NEXT BOTTLENECK"
+      : eligible.length >= 9 && (!eligibleRetrievalPass || !eligibleEntityPass)
+        ? "DECISION C: LINKEDIN COVERAGE IS HIGH BUT BRIGHT DATA COVERAGE/QUALITY IS INSUFFICIENT — ADD SECOND PROVIDER"
+        : eligible.length < 9
+          ? "DECISION B: LINKEDIN IDENTIFIER COVERAGE IS INSUFFICIENT TO JUSTIFY A SECOND FIRMOGRAPHIC PROVIDER"
+          : "DECISION A: BRIGHT DATA APPROVED AS PRIMARY MVP COMPANY_FIRMOGRAPHICS PROVIDER";
   const report = {
     test: "REAL DATA TEST 11",
     environment: "development",
@@ -598,6 +608,7 @@ async function main(): Promise<void> {
       brightDataEligible: {
         eligible: eligible.length,
         successfulProfiles,
+        strongFirmographicProfiles,
         confirmedEntities: statusCount("CONFIRMED"),
         industryResolved: eligible.filter((row) => row.after.industry !== "UNKNOWN").length,
         geographyResolved: eligible.filter((row) => row.after.geography !== "UNKNOWN").length,
@@ -615,6 +626,8 @@ async function main(): Promise<void> {
       secondRunBrightDataCalls: 0,
       idempotencyCacheHits: firstRunCacheHits,
       successfulProfiles,
+      strongFirmographicProfiles,
+      firmographicRetrievalQualityPass,
       noResult,
       partialProfiles,
       confirmedEntities: statusCount("CONFIRMED"),
@@ -642,6 +655,9 @@ async function main(): Promise<void> {
     },
     quality: {
       coverageImprovement: coverageImprovementPass ? "PASS" : "FAIL",
+      firmographicRetrievalQuality: firmographicRetrievalQualityPass ? "PASS" : "FAIL",
+      safeEntityAcceptance: eligibleEntityPass ? "PASS" : "FAIL",
+      identifierCoverage: eligible.length >= 9 ? "PASS" : "FAIL",
       costEfficiency: costEfficiencyPass ? "PASS" : "FAIL",
       entitySafety: safetyPass ? "PASS" : "FAIL",
       attributeProvenance: provenancePass ? "PASS" : "FAIL",
@@ -753,6 +769,7 @@ ${table}
 
 - Eligible: ${report.coverage.brightDataEligible.eligible}
 - Successful profiles: ${report.coverage.brightDataEligible.successfulProfiles}/${report.coverage.brightDataEligible.eligible}
+- Strong raw firmographic profiles: ${report.coverage.brightDataEligible.strongFirmographicProfiles}/${report.coverage.brightDataEligible.eligible}
 - Confirmed entities: ${report.coverage.brightDataEligible.confirmedEntities}/${report.coverage.brightDataEligible.eligible}
 - Industry: ${report.coverage.brightDataEligible.industryResolved}/${report.coverage.brightDataEligible.eligible}
 - Geography: ${report.coverage.brightDataEligible.geographyResolved}/${report.coverage.brightDataEligible.eligible}
@@ -789,6 +806,9 @@ ${table}
 - AVERAGE COST/SUCCESSFUL PROFILE: $${report.summary.averageCostPerSuccessfulProfile.toFixed(4)}
 - TEST 10 COST: $0.19
 - COVERAGE IMPROVEMENT: ${report.quality.coverageImprovement}
+- FIRMOGRAPHIC RETRIEVAL QUALITY WHEN URL EXISTS: ${report.quality.firmographicRetrievalQuality}
+- SAFE ENTITY ACCEPTANCE: ${report.quality.safeEntityAcceptance}
+- LINKEDIN IDENTIFIER COVERAGE: ${report.quality.identifierCoverage}
 - COST EFFICIENCY: ${report.quality.costEfficiency}
 - ENTITY SAFETY: ${report.quality.entitySafety}
 - ATTRIBUTE PROVENANCE: ${report.quality.attributeProvenance}
@@ -840,9 +860,12 @@ ${JSON.stringify(report.safety, null, 2)}
 ${report.decision}
 
 Measured result: ${eligible.length}/10 companies had usable existing LinkedIn company
-identifiers. The initial Test 11 run made ${totalRecordedCalls} real Bright Data call,
-the persisted-cache rerun made ${actualCalls}, ${successfulProfiles} profile was
-successful, and total estimated cost was $${totalEstimatedCost.toFixed(4)}.
+identifiers. For ${eligible.length} eligible company, ${strongFirmographicProfiles}
+returned a strong raw firmographic profile. The initial Test 11 run made
+${totalRecordedCalls} real Bright Data call, the persisted-cache rerun made
+${actualCalls}, and total estimated cost was $${totalEstimatedCost.toFixed(4)}.
+This does not justify adding a second firmographic provider while identifier
+coverage is low.
 
 STOP: Test 11 complete. No fallback, identifier resolution, WHEN/WHY, contacts,
 signals, opportunity research, or production operations were performed.
