@@ -2,6 +2,7 @@ import app from "./app";
 import { ensureDevelopmentApifyProvider } from "./lib/apify-provider-config";
 import { ensureDevelopmentExaProvider } from "./lib/exa-provider-config";
 import { ensureDevelopmentTavilyProvider } from "./lib/tavily-provider-config";
+import { ensureDevelopmentBrightDataProvider } from "./lib/bright-data-provider-config";
 import { logger } from "./lib/logger";
 
 const rawPort = process.env["PORT"];
@@ -23,6 +24,7 @@ async function main() {
     await ensureDevelopmentApifyProvider();
     await ensureDevelopmentExaProvider();
     await ensureDevelopmentTavilyProvider();
+    await ensureDevelopmentBrightDataProvider();
   }
 
   app.listen(port, (err) => {

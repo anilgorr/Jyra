@@ -1,6 +1,7 @@
 export const PROVIDER_CAPABILITIES = [
   "COMPANY_DISCOVERY",
   "COMPANY_LOOKUP",
+  "COMPANY_FIRMOGRAPHICS",
   "WEB_SEARCH",
   "WEBSITE_CRAWL",
   "JOB_SEARCH",
@@ -84,6 +85,16 @@ export type LookupCompanyRequest = ProviderRequestBase & {
   location?: string;
   industry?: string;
   description?: string;
+};
+
+export type CompanyFirmographicsRequest = ProviderRequestBase & {
+  companyId?: string;
+  companyName?: string;
+  canonicalDomain?: string | null;
+  websiteUrl?: string | null;
+  linkedinCompanyUrl?: string | null;
+  country?: string | null;
+  existingProviderIdentifiers?: Record<string, string>;
 };
 
 export type SearchWebRequest = ProviderRequestBase & {
@@ -170,6 +181,52 @@ export type CompanyRecord = {
 
 export type CompanyDiscoveryResult = { companies: CompanyRecord[] };
 export type CompanyLookupResult = { company: CompanyRecord | null };
+export type FirmographicEntityMatchStatus = "CONFIRMED" | "PROBABLE" | "AMBIGUOUS" | "WRONG";
+export type FirmographicAttributeProvenance = {
+  retrievalProvider: string;
+  publisher: string | null;
+  sourceType: "SOCIAL_COMPANY_PROFILE";
+  sourceUrl: string | null;
+  retrievedAt: string;
+  providerRecordId: string | null;
+  rawValue: unknown;
+  normalizedValue: unknown;
+  entityMatchConfidence: number;
+  attributeConfidence: number;
+};
+export type CompanyFirmographicAttributes = {
+  companyName: string | null;
+  websiteUrl: string | null;
+  canonicalDomain: string | null;
+  linkedinCompanyUrl: string | null;
+  industry: string | null;
+  employeeCount: number | null;
+  employeeRange: string | null;
+  headquartersCountry: string | null;
+  headquartersCity: string | null;
+  headquartersRegion: string | null;
+  locations: string[];
+  companyDescription: string | null;
+  foundedYear: number | null;
+  companyType: string | null;
+  specialties: string[];
+  followers: number | null;
+  employeesOnLinkedin: number | null;
+  fundingTotal: number | null;
+  fundingRounds: number | null;
+  parentCompany: string | null;
+  logoUrl: string | null;
+  rawProfileUrl: string | null;
+};
+export type CompanyFirmographicsResult = {
+  companyId: string | null;
+  provider: string;
+  providerRecordId: string | null;
+  entityMatchStatus: FirmographicEntityMatchStatus;
+  entityMatchConfidence: number;
+  attributes: CompanyFirmographicAttributes;
+  attributeProvenance: Partial<Record<keyof CompanyFirmographicAttributes, FirmographicAttributeProvenance>>;
+};
 export type WebSearchResult = {
   results: Array<{
     title: string;
@@ -217,6 +274,7 @@ export type PhoneLookupResult = {
 export type ProviderRequestMap = {
   COMPANY_DISCOVERY: DiscoverCompaniesRequest;
   COMPANY_LOOKUP: LookupCompanyRequest;
+  COMPANY_FIRMOGRAPHICS: CompanyFirmographicsRequest;
   WEB_SEARCH: SearchWebRequest;
   WEBSITE_CRAWL: CrawlWebsiteRequest;
   JOB_SEARCH: GetJobsRequest;
@@ -232,6 +290,7 @@ export type ProviderRequestMap = {
 export type ProviderResultMap = {
   COMPANY_DISCOVERY: CompanyDiscoveryResult;
   COMPANY_LOOKUP: CompanyLookupResult;
+  COMPANY_FIRMOGRAPHICS: CompanyFirmographicsResult;
   WEB_SEARCH: WebSearchResult;
   WEBSITE_CRAWL: WebsiteCrawlResult;
   JOB_SEARCH: JobSearchResult;
@@ -262,6 +321,9 @@ export interface ProviderOperations {
   lookupCompany(
     request: LookupCompanyRequest,
   ): Promise<ProviderResponse<CompanyLookupResult>>;
+  enrichCompany(
+    request: CompanyFirmographicsRequest,
+  ): Promise<ProviderResponse<CompanyFirmographicsResult>>;
   searchWeb(
     request: SearchWebRequest,
   ): Promise<ProviderResponse<WebSearchResult>>;

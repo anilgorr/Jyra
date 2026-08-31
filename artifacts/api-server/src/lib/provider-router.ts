@@ -29,6 +29,10 @@ import {
   createExaCompanyDiscoveryAdapter,
   parseExaProviderConfiguration,
 } from "./exa-provider";
+import {
+  createBrightDataFirmographicsAdapter,
+  parseBrightDataProviderConfiguration,
+} from "./bright-data-provider";
 
 export type ProviderCatalogEntry = Pick<
   DataProvider,
@@ -233,6 +237,12 @@ function defaultAdapterFactory(
     return [createExaCompanyDiscoveryAdapter({
       providerId: provider.id,
       configuration: parseExaProviderConfiguration(provider.configuration),
+    })];
+  }
+  if (provider.providerType === "bright_data") {
+    return [createBrightDataFirmographicsAdapter({
+      providerId: provider.id,
+      configuration: parseBrightDataProviderConfiguration(provider.configuration),
     })];
   }
   return [];
@@ -546,6 +556,9 @@ export class ProviderRouter implements ProviderOperations {
   }
   lookupCompany(request: CapabilityRequest<"COMPANY_LOOKUP">) {
     return this.route("COMPANY_LOOKUP", request);
+  }
+  enrichCompany(request: CapabilityRequest<"COMPANY_FIRMOGRAPHICS">) {
+    return this.route("COMPANY_FIRMOGRAPHICS", request);
   }
   searchWeb(request: CapabilityRequest<"WEB_SEARCH">) {
     return this.route("WEB_SEARCH", request);

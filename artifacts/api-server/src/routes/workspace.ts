@@ -157,9 +157,19 @@ router.get(
           sql<number>`coalesce(avg(${providerUsageTable.latencyMs}), 0)`.mapWith(Number),
         spend:
           sql<number>`coalesce(sum(${providerUsageTable.actualCost}), 0)`.mapWith(Number),
+        estimatedSpend:
+          sql<number>`coalesce(sum(coalesce(${providerUsageTable.actualCost}, ${providerUsageTable.estimatedCost})), 0)`.mapWith(Number),
         results:
           sql<number>`coalesce(sum(${providerUsageTable.resultCount}), 0)`.mapWith(Number),
         requestCount: count(providerUsageTable.id),
+        successCount:
+          sql<number>`count(${providerUsageTable.id}) filter (
+            where ${providerUsageTable.status} = 'success'
+          )`.mapWith(Number),
+        failureCount:
+          sql<number>`count(${providerUsageTable.id}) filter (
+            where ${providerUsageTable.status} in ('failed', 'timeout')
+          )`.mapWith(Number),
       })
       .from(dataProvidersTable)
       .leftJoin(
@@ -207,8 +217,11 @@ router.get(
               ? row.observedLatencyMs
               : row.configuredLatencyMs,
           spend: row.spend,
+          estimatedSpend: row.estimatedSpend,
           results: row.results,
           requestCount: row.requestCount,
+          successCount: row.successCount,
+          failureCount: row.failureCount,
         })),
       ),
     );

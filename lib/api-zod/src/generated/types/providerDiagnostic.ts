@@ -26,6 +26,9 @@ export interface ProviderDiagnostic {
   successRate: number;
   latencyMs: number;
   spend: number;
+  estimatedSpend: number;
   results: number;
   requestCount: number;
+  successCount: number;
+  failureCount: number;
 }

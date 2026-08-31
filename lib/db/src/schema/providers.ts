@@ -17,6 +17,7 @@ import { z } from "zod/v4";
 export const providerCapabilityEnum = pgEnum("provider_capability", [
   "COMPANY_DISCOVERY",
   "COMPANY_LOOKUP",
+  "COMPANY_FIRMOGRAPHICS",
   "WEB_SEARCH",
   "WEBSITE_CRAWL",
   "JOB_SEARCH",

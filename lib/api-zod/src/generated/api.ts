@@ -67,7 +67,7 @@ export const GetProviderDiagnosticsResponseItem = zod.object({
   "providerId": zod.string(),
   "provider": zod.string(),
   "providerType": zod.string(),
-  "capability": zod.union([zod.literal('COMPANY_DISCOVERY'),zod.literal('COMPANY_LOOKUP'),zod.literal('WEB_SEARCH'),zod.literal('WEBSITE_CRAWL'),zod.literal('JOB_SEARCH'),zod.literal('NEWS_SEARCH'),zod.literal('TECH_STACK'),zod.literal('LEADERSHIP_SEARCH'),zod.literal('PUBLIC_SOCIAL_SEARCH'),zod.literal('PERSON_LOOKUP'),zod.literal('EMAIL_LOOKUP'),zod.literal('PHONE_LOOKUP'),zod.literal(null)]).nullable(),
+  "capability": zod.union([zod.literal('COMPANY_DISCOVERY'),zod.literal('COMPANY_LOOKUP'),zod.literal('COMPANY_FIRMOGRAPHICS'),zod.literal('WEB_SEARCH'),zod.literal('WEBSITE_CRAWL'),zod.literal('JOB_SEARCH'),zod.literal('NEWS_SEARCH'),zod.literal('TECH_STACK'),zod.literal('LEADERSHIP_SEARCH'),zod.literal('PUBLIC_SOCIAL_SEARCH'),zod.literal('PERSON_LOOKUP'),zod.literal('EMAIL_LOOKUP'),zod.literal('PHONE_LOOKUP'),zod.literal(null)]).nullable(),
   "enabled": zod.boolean(),
   "priority": zod.number(),
   "credentialStatus": zod.enum(['AVAILABLE', 'MISSING']),
@@ -77,8 +77,11 @@ export const GetProviderDiagnosticsResponseItem = zod.object({
   "successRate": zod.number(),
   "latencyMs": zod.number(),
   "spend": zod.number(),
+  "estimatedSpend": zod.number(),
   "results": zod.number(),
-  "requestCount": zod.number()
+  "requestCount": zod.number(),
+  "successCount": zod.number(),
+  "failureCount": zod.number()
 })
 export const GetProviderDiagnosticsResponse = zod.array(GetProviderDiagnosticsResponseItem)
 

@@ -2322,7 +2322,7 @@ components:
         providerType: { type: string }
         capability:
           type: ["string", "null"]
-          enum: [COMPANY_DISCOVERY, COMPANY_LOOKUP, WEB_SEARCH, WEBSITE_CRAWL, JOB_SEARCH, NEWS_SEARCH, TECH_STACK, LEADERSHIP_SEARCH, PUBLIC_SOCIAL_SEARCH, PERSON_LOOKUP, EMAIL_LOOKUP, PHONE_LOOKUP, null]
+          enum: [COMPANY_DISCOVERY, COMPANY_LOOKUP, COMPANY_FIRMOGRAPHICS, WEB_SEARCH, WEBSITE_CRAWL, JOB_SEARCH, NEWS_SEARCH, TECH_STACK, LEADERSHIP_SEARCH, PUBLIC_SOCIAL_SEARCH, PERSON_LOOKUP, EMAIL_LOOKUP, PHONE_LOOKUP, null]
         enabled: { type: boolean }
         priority: { type: number }
         credentialStatus: { type: string, enum: [AVAILABLE, MISSING] }
@@ -2336,8 +2336,11 @@ components:
         successRate: { type: number }
         latencyMs: { type: number }
         spend: { type: number }
+        estimatedSpend: { type: number }
         results: { type: number }
         requestCount: { type: number }
+        successCount: { type: number }
+        failureCount: { type: number }
       required:
         - providerId
         - provider
@@ -2352,8 +2355,11 @@ components:
         - successRate
         - latencyMs
         - spend
+        - estimatedSpend
         - results
         - requestCount
+        - successCount
+        - failureCount
     CurrentUser:
       type: object
       properties:

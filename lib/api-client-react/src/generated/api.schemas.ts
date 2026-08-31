@@ -683,6 +683,7 @@ export type ProviderDiagnosticCapability = typeof ProviderDiagnosticCapability[k
 export const ProviderDiagnosticCapability = {
   COMPANY_DISCOVERY: 'COMPANY_DISCOVERY',
   COMPANY_LOOKUP: 'COMPANY_LOOKUP',
+  COMPANY_FIRMOGRAPHICS: 'COMPANY_FIRMOGRAPHICS',
   WEB_SEARCH: 'WEB_SEARCH',
   WEBSITE_CRAWL: 'WEBSITE_CRAWL',
   JOB_SEARCH: 'JOB_SEARCH',
@@ -729,8 +730,11 @@ export interface ProviderDiagnostic {
   successRate: number;
   latencyMs: number;
   spend: number;
+  estimatedSpend: number;
   results: number;
   requestCount: number;
+  successCount: number;
+  failureCount: number;
 }
 
 export interface CurrentUser {
