@@ -16,6 +16,9 @@ await build({
 const harness = await import(`${pathToFileURL(output).href}?t=${Date.now()}`);
 const {
   planResearchQuestion,
+  buildResearchQueryPlan,
+  assessWebSearchRetrieval,
+  executeAdaptiveWebSearch,
   rankResearchCandidates,
   boundedResearchBatchSize,
   ProviderRouter,
@@ -98,6 +101,143 @@ const ranked = rankResearchCandidates([
 ]);
 assert.equal(ranked[0].companyId, "promising", "promising uncertain companies should rank first");
 assert.equal(ranked.at(-1).companyId, "known", "well-understood low-value companies should rank last");
+
+const unseenCompany = {
+  canonicalName: "Northstar Systems",
+  domain: "northstar.example",
+  description: "Enterprise software company",
+};
+const unseenQuestion = {
+  id: "11111111-1111-4111-8111-111111111111",
+  questionType: "LEADERSHIP",
+  questionText: "Did Northstar Systems appoint Jane Benchmark as CISO on the known reference date?",
+};
+const unseenPlan = buildResearchQueryPlan({
+  company: unseenCompany,
+  question: unseenQuestion,
+  now: new Date("2026-08-31T00:00:00Z"),
+});
+assert.equal(
+  unseenPlan.primaryQuery,
+  "\"Northstar Systems\" northstar.example security leadership appointment public announcement",
+);
+assert.equal(unseenPlan.fallbackQuery, "\"Northstar Systems\" northstar.example CISO security executive news");
+assert.equal(unseenPlan.primaryQuery.includes("Jane Benchmark"), false, "reference-event details must never enter generated queries");
+assert.equal(unseenPlan.primaryQuery.includes("known reference date"), false);
+
+const response = (status, query, results = []) => ({
+  status,
+  providerId: "tavily-test",
+  providerRequestId: `request:${query}`,
+  data: status === "failed" ? null : { results },
+  sources: results.map((result) => ({ kind: "public_url", reference: result.url, capturedAt: "2026-08-31T00:00:00Z" })),
+  usage: { estimatedCost: 0.01, actualCost: 0.01, latencyMs: 1, runtimeMs: 1, resultCount: results.length },
+  error: status === "failed" ? { code: "PROVIDER_UNAVAILABLE", message: "offline", retryable: true } : null,
+  retryable: status === "failed",
+  capturedAt: "2026-08-31T00:00:00Z",
+  metadata: { query },
+});
+const officialLeadershipResult = {
+  title: "Northstar Systems appoints a new Chief Information Security Officer",
+  url: "https://northstar.example/news/security-leadership",
+  snippet: "Northstar Systems appointed a new CISO to lead information security.",
+  rawContent: "Northstar Systems appointed a new Chief Information Security Officer.",
+  publishedAt: "2026-08-15",
+  relevanceScore: 0.9,
+  sourceDomain: "northstar.example",
+};
+assert.equal(assessWebSearchRetrieval({
+  response: response("success", unseenPlan.primaryQuery, [officialLeadershipResult]),
+  question: unseenQuestion,
+  company: unseenCompany,
+  query: unseenPlan.primaryQuery,
+  now: new Date("2026-08-31T00:00:00Z"),
+}).status, "SUFFICIENT_RETRIEVAL");
+assert.equal(assessWebSearchRetrieval({
+  response: response("failed", unseenPlan.primaryQuery),
+  question: unseenQuestion,
+  company: unseenCompany,
+  query: unseenPlan.primaryQuery,
+}).status, "PROVIDER_FAILURE");
+
+const adaptiveCalls = [];
+const adaptiveRouter = {
+  searchWeb: async (request) => {
+    adaptiveCalls.push(request);
+    return adaptiveCalls.length === 1
+      ? response("success", request.query, [{
+          title: "Northstar Systems company profile",
+          url: "https://directory.example/northstar",
+          snippet: "A generic company profile for Northstar Systems.",
+          rawContent: "Northstar Systems is an enterprise software company.",
+          publishedAt: null,
+          relevanceScore: 0.5,
+          sourceDomain: "directory.example",
+        }])
+      : response("success", request.query, [
+          officialLeadershipResult,
+          { ...officialLeadershipResult, url: "https://northstar.example/news/security-leadership?utm_source=duplicate" },
+          {
+            title: "Managed SOC services",
+            url: "https://vendor.example/managed-soc",
+            snippet: "We provide managed SOC security services. Book a demo.",
+            rawContent: "Northstar Systems buyers can book a demo of our managed SOC services.",
+            publishedAt: "2026-08-20",
+            relevanceScore: 0.8,
+            sourceDomain: "vendor.example",
+          },
+          {
+            title: "Another Northstar names a security chief",
+            url: "https://news.example/wrong-northstar",
+            snippet: "An unrelated Northstar mining business named a security chief.",
+            rawContent: "This concerns an unrelated mining business.",
+            publishedAt: "2026-08-20",
+            relevanceScore: 0.8,
+            sourceDomain: "news.example",
+          },
+        ]);
+  },
+};
+const adaptive = await executeAdaptiveWebSearch({
+  router: adaptiveRouter,
+  question: unseenQuestion,
+  company: unseenCompany,
+  now: new Date("2026-08-31T00:00:00Z"),
+});
+assert.equal(adaptive.attempts.length, 2, "insufficient primary retrieval must execute one fallback");
+assert.equal(adaptiveCalls.length, 2, "adaptive execution must never exceed two calls");
+assert.equal(adaptive.attempts[0].assessment.status, "INSUFFICIENT_RETRIEVAL");
+assert.equal(adaptive.finalAssessment.status, "SUFFICIENT_RETRIEVAL");
+assert.equal(adaptive.response.data.results.length, 4, "canonical URL deduplication must collapse fallback duplicates");
+assert.equal(adaptive.attempts[1].assessment.sellerVendorCount, 1, "seller content must remain visible in diagnostics");
+assert.equal(adaptive.attempts[1].assessment.wrongEntityCount, 1, "wrong entities must remain visible in diagnostics");
+
+let sufficientCalls = 0;
+await executeAdaptiveWebSearch({
+  router: {
+    searchWeb: async (request) => {
+      sufficientCalls += 1;
+      return response("success", request.query, [officialLeadershipResult]);
+    },
+  },
+  question: unseenQuestion,
+  company: unseenCompany,
+});
+assert.equal(sufficientCalls, 1, "sufficient primary retrieval must not execute fallback");
+
+let failureCalls = 0;
+const failedAdaptive = await executeAdaptiveWebSearch({
+  router: {
+    searchWeb: async (request) => {
+      failureCalls += 1;
+      return response("failed", request.query);
+    },
+  },
+  question: unseenQuestion,
+  company: unseenCompany,
+});
+assert.equal(failureCalls, 1, "provider failure must not trigger semantic fallback");
+assert.equal(failedAdaptive.finalAssessment.status, "PROVIDER_FAILURE");
 
 console.log("Research planner tests passed, including the 100-company bounded demonstration.");
 

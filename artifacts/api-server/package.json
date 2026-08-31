@@ -43,6 +43,7 @@
     "test:facts": "node ./scripts/test-facts.mjs",
     "test:retrieval-bakeoff-01": "NODE_ENV=development node ./scripts/run-retrieval-bakeoff-01.mjs",
     "test:retrieval-bakeoff-01:reprocess": "NODE_ENV=development JYRA_RETRIEVAL_BAKEOFF_REPROCESS=1 node ./scripts/run-retrieval-bakeoff-01.mjs"
+    ,"test:query-engine-fix-01": "NODE_ENV=development node ./scripts/run-query-engine-fix-01.mjs"
     ,"test:research": "node ./scripts/test-research.mjs"
     ,"test:icp-qualification": "node ./scripts/test-icp-qualification.mjs"
     ,"test:signals": "node ./scripts/test-signals.mjs"

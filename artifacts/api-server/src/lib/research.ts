@@ -17,6 +17,7 @@ import {
   researchJobsTable,
   researchQuestionsTable,
   researchFactProposalsTable,
+  researchRequestCostsTable,
   type Company,
   type CompanyEvidence,
   type ResearchQuestion,
@@ -52,6 +53,7 @@ import type {
   CapabilityResult,
   ProviderCapability,
   ProviderResponse,
+  WebSearchResult,
 } from "./provider-contract";
 
 const FRESHNESS_DAYS = 14;
@@ -97,6 +99,53 @@ export type SignalDefinitionResearchInput = {
   category: string;
   factRequirements: Record<string, unknown>;
   configuration: Record<string, unknown>;
+};
+
+export type RetrievalStatus =
+  | "SUFFICIENT_RETRIEVAL"
+  | "INSUFFICIENT_RETRIEVAL"
+  | "PROVIDER_FAILURE"
+  | "AMBIGUOUS_RETRIEVAL";
+
+export type ResearchQueryPlan = {
+  primaryQuery: string;
+  fallbackQuery: string | null;
+  temporalContext: {
+    timeRange: "year" | null;
+    startDate: string | null;
+    endDate: string | null;
+  };
+};
+
+export type WebSearchResultDiagnostic = {
+  rank: number;
+  provider: string;
+  query: string;
+  retrievedAt: string;
+  title: string;
+  url: string;
+  publisherDomain: string | null;
+  snippet: string;
+  rawContent: string | null;
+  publishedAt: string | null;
+  relevanceScore: number | null;
+  sourceClassification: string;
+  entityStatus: string;
+  entityConfidence: number;
+  sellerVendorContent: boolean;
+  temporalQuality: "CURRENT" | "RECENT" | "STALE" | "UNKNOWN_DATE";
+  retrievalDisposition: "RELEVANT" | "AMBIGUOUS" | "WRONG_ENTITY" | "SELLER_CONTENT" | "IRRELEVANT";
+};
+
+export type WebSearchRetrievalAssessment = {
+  status: RetrievalStatus;
+  resultCount: number;
+  relevantResultCount: number;
+  ambiguousResultCount: number;
+  wrongEntityCount: number;
+  sellerVendorCount: number;
+  irrelevantCount: number;
+  diagnostics: WebSearchResultDiagnostic[];
 };
 
 type ProviderOperations = Pick<
@@ -283,6 +332,385 @@ function rawSourceForResult(
     .join("\n\n");
 }
 
+const GENERIC_QUERY_TERMS: Record<ResearchQuestion["questionType"], {
+  primary: string;
+  fallback: string;
+}> = {
+  QUALIFICATION: {
+    primary: "company profile offering business public information",
+    fallback: "company overview industry public information",
+  },
+  NEED: {
+    primary: "security program initiative public announcement",
+    fallback: "cybersecurity risk program news",
+  },
+  TIMING: {
+    primary: "security business change public announcement",
+    fallback: "cybersecurity initiative news",
+  },
+  HIRING: {
+    primary: "security cybersecurity hiring jobs",
+    fallback: "SOC SIEM security engineer analyst jobs",
+  },
+  SECURITY: {
+    primary: "security compliance certification public announcement",
+    fallback: "\"SOC 2\" \"ISO 27001\" security certification announcement",
+  },
+  EXPANSION: {
+    primary: "security compliance certification public announcement",
+    fallback: "\"SOC 2\" \"ISO 27001\" security certification announcement",
+  },
+  TECHNOLOGY: {
+    primary: "security operations technology change public announcement",
+    fallback: "\"SIEM\" security platform migration implementation \"case study\"",
+  },
+  LEADERSHIP: {
+    primary: "security leadership appointment public announcement",
+    fallback: "CISO security executive news",
+  },
+  NEWS: {
+    primary: "security business change public announcement",
+    fallback: "cybersecurity initiative news",
+  },
+};
+
+function normalizedCompanyIdentity(
+  company: Pick<Company, "canonicalName" | "domain">,
+  stripLegalSuffix = false,
+): string {
+  const canonicalName = company.canonicalName.replace(/["\r\n]+/g, " ").replace(/\s+/g, " ").trim();
+  const name = stripLegalSuffix
+    ? canonicalName.replace(/\s+(?:incorporated|inc|corporation|corp|limited|ltd|llc|plc)\.?$/i, "").trim()
+    : canonicalName;
+  const domain = company.domain?.toLowerCase().replace(/^https?:\/\//, "").replace(/^www\./, "").replace(/\/.*$/, "").trim();
+  return [`"${name}"`, domain].filter(Boolean).join(" ");
+}
+
+function dateOnly(date: Date): string {
+  return date.toISOString().slice(0, 10);
+}
+
+export function buildResearchQueryPlan(input: {
+  question: Pick<ResearchQuestion, "questionType" | "questionText">;
+  company: Pick<Company, "canonicalName" | "domain">;
+  now?: Date;
+}): ResearchQueryPlan {
+  const terms = GENERIC_QUERY_TERMS[input.question.questionType] ?? GENERIC_QUERY_TERMS.NEWS;
+  const identity = normalizedCompanyIdentity(input.company);
+  const fallbackIdentity = normalizedCompanyIdentity(input.company, true);
+  const now = input.now ?? new Date();
+  return {
+    primaryQuery: `${identity} ${terms.primary}`,
+    fallbackQuery: `${fallbackIdentity} ${terms.fallback}`,
+    temporalContext: {
+      timeRange: null,
+      startDate: null,
+      endDate: dateOnly(now),
+    },
+  };
+}
+
+function sourceHost(value: string): string | null {
+  try {
+    return new URL(normalizeSourceUrl(value)).hostname.toLowerCase().replace(/^www\./, "");
+  } catch {
+    return null;
+  }
+}
+
+function isOfficialCompanyDomain(host: string | null, companyDomain: string | null): boolean {
+  const normalized = companyDomain?.toLowerCase().replace(/^www\./, "") ?? null;
+  return Boolean(host && normalized && (host === normalized || host.endsWith(`.${normalized}`)));
+}
+
+function temporalQuality(
+  publishedAt: string | null | undefined,
+  now: Date,
+): WebSearchResultDiagnostic["temporalQuality"] {
+  if (!publishedAt) return "UNKNOWN_DATE";
+  const published = new Date(publishedAt);
+  if (Number.isNaN(published.getTime())) return "UNKNOWN_DATE";
+  const ageDays = Math.max(0, now.getTime() - published.getTime()) / 86_400_000;
+  if (ageDays <= 90) return "CURRENT";
+  if (ageDays <= 365) return "RECENT";
+  return "STALE";
+}
+
+function categoryTerms(questionType: ResearchQuestion["questionType"]): string[] {
+  switch (questionType) {
+    case "LEADERSHIP":
+      return ["security", "cybersecurity", "information security", "ciso", "chief information security officer", "security leadership", "head of security"];
+    case "HIRING":
+      return ["security", "cybersecurity", "soc", "siem", "security engineer", "security analyst", "hiring", "jobs"];
+    case "TECHNOLOGY":
+      return ["siem", "soc", "security platform", "security operations", "security implementation", "security migration", "security replacement", "cybersecurity platform", "technology"];
+    case "SECURITY":
+    case "EXPANSION":
+      return ["security program", "cybersecurity initiative", "security investment", "risk program", "security transformation", "compliance", "security modernization", "certification", "assurance"];
+    case "QUALIFICATION":
+      return ["company", "business", "platform", "software", "services", "offering", "industry"];
+    default:
+      return ["security", "cybersecurity", "initiative", "change", "announcement", "news"];
+  }
+}
+
+function eventTerms(questionType: ResearchQuestion["questionType"]): string[] {
+  switch (questionType) {
+    case "LEADERSHIP": return ["appoint", "appointed", "hire", "hired", "joins", "joined", "named", "promoted", "executive", "ciso"];
+    case "HIRING": return ["hiring", "jobs", "job", "career", "careers", "vacancy", "vacancies", "engineer", "analyst", "recruit"];
+    case "TECHNOLOGY": return ["change", "changed", "implement", "implementation", "migrat", "replac", "adopt", "deploy", "launch", "select", "partner"];
+    case "SECURITY":
+    case "EXPANSION": return ["achiev", "complete", "renew", "certified", "obtain", "attestation", "launch", "implement", "invest", "transform", "moderniz", "announce"];
+    case "QUALIFICATION": return ["company", "business", "offer", "platform", "service"];
+    default: return ["announce", "announced", "launch", "initiative", "change", "news", "expan"];
+  }
+}
+
+function includesTerm(text: string, term: string): boolean {
+  return text.includes(term);
+}
+
+function isSellerVendorContent(text: string): boolean {
+  return /\b(?:we|our company)\s+(?:offer|provide|deliver)\s+(?:managed\s+)?(?:soc|security|cybersecurity|compliance|risk)\b|\b(?:managed|cybersecurity|security)\s+(?:soc|services?|solutions?)\s+provider\b|\b(?:vendor|supplier)\s+(?:of|for)\s+(?:security|cybersecurity|soc)\b|\b(?:book|schedule)\s+(?:a\s+)?demo\b/i.test(text);
+}
+
+function authorityForRetrievedSource(
+  host: string | null,
+  officialDomain: boolean,
+): "TIER_1_DIRECT" | "TIER_2_HIGH_AUTHORITY" | "TIER_3_SECONDARY" | "TIER_4_LOW_AUTHORITY" | "UNKNOWN" {
+  if (!host) return "UNKNOWN";
+  if (officialDomain) return "TIER_1_DIRECT";
+  const highAuthority = [
+    "reuters.com", "bloomberg.com", "cnbc.com", "forbes.com", "wsj.com", "ft.com",
+    "businesswire.com", "globenewswire.com", "prnewswire.com", "securityweek.com",
+    "darkreading.com", "csoonline.com", "techcrunch.com",
+  ];
+  if (highAuthority.some((domain) => host === domain || host.endsWith(`.${domain}`))) return "TIER_2_HIGH_AUTHORITY";
+  const lowAuthority = ["medium.com", "blogspot.com", "facebook.com", "reddit.com", "quora.com"];
+  if (lowAuthority.some((domain) => host === domain || host.endsWith(`.${domain}`))) return "TIER_4_LOW_AUTHORITY";
+  return "TIER_3_SECONDARY";
+}
+
+export function assessWebSearchRetrieval(input: {
+  response: ProviderResponse<WebSearchResult>;
+  question: Pick<ResearchQuestion, "questionType" | "questionText">;
+  company: Pick<Company, "canonicalName" | "domain" | "description">;
+  query: string;
+  now?: Date;
+}): WebSearchRetrievalAssessment {
+  const now = input.now ?? new Date();
+  if (input.response.status === "failed") {
+    return {
+      status: "PROVIDER_FAILURE",
+      resultCount: 0,
+      relevantResultCount: 0,
+      ambiguousResultCount: 0,
+      wrongEntityCount: 0,
+      sellerVendorCount: 0,
+      irrelevantCount: 0,
+      diagnostics: [],
+    };
+  }
+
+  const results = input.response.data?.results ?? [];
+  const diagnostics = results.map((result, index): WebSearchResultDiagnostic => {
+    const rawContent = result.rawContent ?? "";
+    const searchable = [result.title, result.snippet, rawContent].join(" ").toLowerCase();
+    const eventSurface = [result.title, result.snippet].join(" ").toLowerCase();
+    const host = sourceHost(result.url);
+    const officialDomain = isOfficialCompanyDomain(host, input.company.domain);
+    const attribution = assessWebSearchEntityAttribution({
+      sourceUrl: result.url,
+      title: result.title,
+      snippet: result.snippet,
+      rawContent,
+      sourceType: sourceTypeForQuestion(input.question.questionType),
+      company: input.company,
+    });
+    const categoryRelevant = categoryTerms(input.question.questionType).some((term) => includesTerm(eventSurface, term));
+    const eventOriented = eventTerms(input.question.questionType).some((term) => includesTerm(eventSurface, term));
+    const titleText = result.title.toLowerCase();
+    const strongEventHeadline = categoryTerms(input.question.questionType).some((term) => includesTerm(titleText, term))
+      && eventTerms(input.question.questionType).some((term) => includesTerm(titleText, term));
+    const sellerVendorContent = isSellerVendorContent(searchable);
+    const temporal = temporalQuality(result.publishedAt, now);
+    const authority = authorityForRetrievedSource(host, officialDomain);
+    const credible = authority === "TIER_1_DIRECT" || authority === "TIER_2_HIGH_AUTHORITY" || (
+      authority === "TIER_3_SECONDARY" && attribution.entityStatus === "CONFIRMED_ENTITY"
+    );
+    const entityOkay = attribution.entityStatus === "CONFIRMED_ENTITY";
+    const probableEntity = attribution.entityStatus === "PROBABLE_ENTITY";
+    const materiallyRelevant = categoryRelevant
+      && eventOriented
+      && temporal !== "STALE"
+      && (temporal !== "UNKNOWN_DATE" || strongEventHeadline);
+    const retrievalDisposition = sellerVendorContent
+      ? "SELLER_CONTENT"
+      : attribution.entityStatus === "WRONG_ENTITY"
+        ? "WRONG_ENTITY"
+        : materiallyRelevant && entityOkay && credible
+          ? "RELEVANT"
+          : materiallyRelevant && (probableEntity || attribution.entityStatus === "AMBIGUOUS_ENTITY")
+            ? "AMBIGUOUS"
+            : "IRRELEVANT";
+    return {
+      rank: index + 1,
+      provider: input.response.providerId,
+      query: input.query,
+      retrievedAt: input.response.capturedAt,
+      title: result.title,
+      url: result.url,
+      publisherDomain: host,
+      snippet: result.snippet,
+      rawContent: rawContent || null,
+      publishedAt: result.publishedAt ?? null,
+      relevanceScore: result.relevanceScore ?? null,
+      sourceClassification: attribution.sourceClassification,
+      entityStatus: attribution.entityStatus,
+      entityConfidence: attribution.entityConfidence,
+      sellerVendorContent,
+      temporalQuality: temporal,
+      retrievalDisposition,
+    };
+  });
+  const relevantResultCount = diagnostics.filter((item) => item.retrievalDisposition === "RELEVANT").length;
+  const ambiguousResultCount = diagnostics.filter((item) => item.retrievalDisposition === "AMBIGUOUS").length;
+  const wrongEntityCount = diagnostics.filter((item) => item.retrievalDisposition === "WRONG_ENTITY").length;
+  const sellerVendorCount = diagnostics.filter((item) => item.retrievalDisposition === "SELLER_CONTENT").length;
+  const irrelevantCount = diagnostics.filter((item) => item.retrievalDisposition === "IRRELEVANT").length;
+  return {
+    status: relevantResultCount > 0
+      ? "SUFFICIENT_RETRIEVAL"
+      : ambiguousResultCount > 0
+        ? "AMBIGUOUS_RETRIEVAL"
+        : "INSUFFICIENT_RETRIEVAL",
+    resultCount: results.length,
+    relevantResultCount,
+    ambiguousResultCount,
+    wrongEntityCount,
+    sellerVendorCount,
+    irrelevantCount,
+    diagnostics,
+  };
+}
+
+function deduplicateWebResults(results: WebSearchResult["results"]): WebSearchResult["results"] {
+  const seen = new Set<string>();
+  return results.filter((result) => {
+    let identity: string;
+    try {
+      identity = `url:${canonicalSourceIdentity(result.url)}`;
+    } catch {
+      identity = `content:${hashNormalizedContent(rawSourceForResult(result))}`;
+    }
+    if (seen.has(identity)) return false;
+    seen.add(identity);
+    return true;
+  });
+}
+
+function mergeWebSearchResponses(
+  attempts: Array<{ response: ProviderResponse<WebSearchResult> }>,
+): ProviderResponse<WebSearchResult> {
+  const successful = attempts.filter(({ response }) => response.status !== "failed");
+  const results = deduplicateWebResults(successful.flatMap(({ response }) => response.data?.results ?? []));
+  const last = attempts.at(-1)?.response;
+  const usage = attempts.reduce((total, { response }) => ({
+    estimatedCost: total.estimatedCost + response.usage.estimatedCost,
+    actualCost: total.actualCost === null || response.usage.actualCost === null
+      ? null
+      : total.actualCost + response.usage.actualCost,
+    latencyMs: total.latencyMs + response.usage.latencyMs,
+    runtimeMs: total.runtimeMs + response.usage.runtimeMs,
+    resultCount: total.resultCount + response.usage.resultCount,
+  }), { estimatedCost: 0, actualCost: 0 as number | null, latencyMs: 0, runtimeMs: 0, resultCount: 0 });
+  return {
+    ...(last ?? attempts[0].response),
+    status: results.length ? "success" : successful.length ? "empty" : "failed",
+    data: successful.length ? { results } : null,
+    sources: results.map((result) => ({
+      kind: "public_url" as const,
+      reference: result.url,
+      capturedAt: last?.capturedAt ?? attempts[0].response.capturedAt,
+    })),
+    usage,
+    error: results.length || successful.length ? null : last?.error ?? null,
+    retryable: false,
+    metadata: {
+      ...(last?.metadata ?? {}),
+      adaptiveQueryCount: attempts.length,
+    },
+  };
+}
+
+export type AdaptiveWebSearchAttempt = {
+  stage: "PRIMARY" | "FALLBACK";
+  query: string;
+  response: ProviderResponse<WebSearchResult>;
+  assessment: WebSearchRetrievalAssessment;
+};
+
+export type AdaptiveWebSearchResult = {
+  plan: ResearchQueryPlan;
+  attempts: AdaptiveWebSearchAttempt[];
+  response: ProviderResponse<WebSearchResult>;
+  finalAssessment: WebSearchRetrievalAssessment;
+};
+
+function redactSensitiveText(value: string): string {
+  return value
+    .replace(/([?&](?:api[_-]?key|access[_-]?token|token|secret|password|authorization)=)[^&\s]+/gi, "$1[REDACTED]")
+    .replace(/\b(?:bearer|basic)\s+[a-z0-9._~+/=-]{12,}\b/gi, "[REDACTED_AUTHORIZATION]")
+    .replace(/\b(?:api[_-]?key|access[_-]?token|secret|password)\s*[:=]\s*[^\s,;]+/gi, "[REDACTED_CREDENTIAL]");
+}
+
+function redactSensitiveValue(value: unknown, key = ""): unknown {
+  if (/api[_-]?key|authorization|access[_-]?token|password|secret/i.test(key)) return "[REDACTED]";
+  if (typeof value === "string") return redactSensitiveText(value);
+  if (Array.isArray(value)) return value.map((item) => redactSensitiveValue(item));
+  if (value && typeof value === "object") {
+    return Object.fromEntries(Object.entries(value).map(([entryKey, entryValue]) => [
+      entryKey,
+      redactSensitiveValue(entryValue, entryKey),
+    ]));
+  }
+  return value;
+}
+
+function retrievalAttemptMetadata(
+  attempt: {
+    stage: "PRIMARY" | "FALLBACK";
+    query: string;
+    response: ProviderResponse<WebSearchResult>;
+    assessment: WebSearchRetrievalAssessment | null;
+  },
+  plan: ResearchQueryPlan,
+): Record<string, unknown> {
+  const normalizedResults = attempt.response.data?.results ?? [];
+  const diagnostics = attempt.assessment?.diagnostics.map((diagnostic) => ({
+    ...diagnostic,
+    snippet: redactSensitiveText(diagnostic.snippet).slice(0, 10_000),
+    rawContent: diagnostic.rawContent
+      ? redactSensitiveText(diagnostic.rawContent).slice(0, 20_000)
+      : null,
+    providerPayload: redactSensitiveValue(normalizedResults[diagnostic.rank - 1] ?? null),
+  })) ?? [];
+  return {
+    queryEngineVersion: "adaptive-generic-v1",
+    queryStage: attempt.stage,
+    query: redactSensitiveText(attempt.query),
+    temporalContext: plan.temporalContext,
+    providerMetadata: redactSensitiveValue(attempt.response.metadata ?? {}),
+    provider: attempt.response.providerId,
+    providerRequestId: attempt.response.providerRequestId,
+    retrievalStatus: attempt.assessment?.status ?? null,
+    resultCount: attempt.response.usage.resultCount,
+    sourceReferenceCount: attempt.response.sources.length,
+    errorCode: attempt.response.error?.code ?? null,
+    rawResults: diagnostics,
+  };
+}
+
 async function preserveResearchEvidence(input: {
   company: Company;
   organizationId: string;
@@ -382,14 +810,18 @@ function requestForQuestion(
   question: ResearchQuestion,
   company: Company,
   scope?: { projectId: string; organizationId: string },
+  queryOverride?: string,
+  queryStage?: "PRIMARY" | "FALLBACK",
+  now?: Date,
 ): unknown {
   const base = {
-    requestId: `research:${question.id}`,
+    requestId: `research:${question.id}:${queryStage?.toLowerCase() ?? "request"}`,
     metadata: scope
       ? {
           projectId: scope.projectId,
           organizationId: scope.organizationId,
           environment: process.env.NODE_ENV ?? "unknown",
+          ...(queryStage ? { queryStage } : {}),
         }
       : undefined,
   };
@@ -405,14 +837,18 @@ function requestForQuestion(
       return { ...base, companyName: company.canonicalName, domain: company.domain ?? undefined, limit: 25 };
     case "NEWS_SEARCH":
       return { ...base, query: question.questionText, domains: company.domain ? [company.domain] : undefined, limit: 10 };
-    case "WEB_SEARCH":
+    case "WEB_SEARCH": {
+      const queryPlan = buildResearchQueryPlan({ question, company, now });
+      const temporalContext = queryPlan.temporalContext;
       return {
         ...base,
-        query: question.questionText,
+        query: queryOverride ?? queryPlan.primaryQuery,
         limit: 10,
         searchDepth: "advanced",
+        ...(temporalContext.timeRange ? { timeRange: temporalContext.timeRange } : {}),
         includeRawContent: true,
       };
+    }
     case "TECH_STACK":
       return { ...base, domain: company.domain ?? "" };
     default:
@@ -612,9 +1048,12 @@ export async function executeResearchNow(input: {
   };
   const router = input.router ?? new ProviderRouter({ usageObserver });
   if (router instanceof ProviderRouter) router.setUsageObserver(usageObserver);
-  const estimatedProviderCost = router instanceof ProviderRouter
+  const singleQueryProviderCost = router instanceof ProviderRouter
     ? await router.maximumEstimatedCost(plan.providerCapability)
     : plan.estimatedCost;
+  const estimatedProviderCost = plan.providerCapability === "WEB_SEARCH"
+    ? singleQueryProviderCost * 2
+    : singleQueryProviderCost;
   const budget = await reserveResearchBudget({
     organizationId: input.organizationId,
     projectId: input.projectId,
@@ -690,7 +1129,7 @@ export async function executeResearchNow(input: {
     providerCapability: selectedQuestion.providerCapability,
     idempotencyKey,
     status: "RUNNING",
-    estimatedCost: selectedQuestion.estimatedCost,
+    estimatedCost: budget.estimatedCost,
     startedAt: now,
   }).onConflictDoNothing().returning();
   if (!job) {
@@ -711,13 +1150,25 @@ export async function executeResearchNow(input: {
   selectedJobIdForObserver = job.id;
 
   let response: ProviderResponse<CapabilityResult<ProviderCapability>>;
+  let adaptiveSearch: AdaptiveWebSearchResult | null = null;
   try {
-    response = await routeQuestion(
-      router,
-      selectedQuestion,
-      row.company,
-      { projectId: input.projectId, organizationId: input.organizationId },
-    );
+    if (selectedQuestion.providerCapability === "WEB_SEARCH") {
+      adaptiveSearch = await executeAdaptiveWebSearch({
+        router,
+        question: selectedQuestion,
+        company: row.company,
+        scope: { projectId: input.projectId, organizationId: input.organizationId },
+        now,
+      });
+      response = adaptiveSearch.response as ProviderResponse<CapabilityResult<ProviderCapability>>;
+    } else {
+      response = await routeQuestion(
+        router,
+        selectedQuestion,
+        row.company,
+        { projectId: input.projectId, organizationId: input.organizationId },
+      );
+    }
   } catch (error) {
     response = {
       status: "failed",
@@ -746,32 +1197,56 @@ export async function executeResearchNow(input: {
         .where(eq(dataProvidersTable.id, response.providerId)).limit(1))[0]?.id ?? null
     : null;
   const completedAt = input.now ?? new Date();
-  if (attemptRecords === 0) await recordResearchRequest({
-    organizationId: input.organizationId,
-    projectId: input.projectId,
-    companyId: row.company.id,
-    questionId: selectedQuestion.id,
-    researchJobId: job.id,
-    researchQuestion: selectedQuestion.questionText,
-    providerCapability: selectedQuestion.providerCapability,
-    providerId,
-    providerRequestId: response.providerRequestId,
-    status: response.status,
-    success: response.status === "success",
-    latencyMs: response.usage.latencyMs,
-    estimatedCost: response.usage.estimatedCost || selectedQuestion.estimatedCost,
-    actualCost: response.usage.actualCost,
-    resultMetadata: {
-      providerMetadata: response.metadata ?? {},
-      resultCount: response.usage.resultCount,
-      sourceReferenceCount: response.sources.length,
-      errorCode: response.error?.code ?? null,
-    },
-    startedAt: now,
-    completedAt,
-    attemptKey: idempotencyKey,
-  });
-  else await releaseResearchReservation(idempotencyKey);
+  const responseAttempts = adaptiveSearch?.attempts ?? [{
+    stage: "PRIMARY" as const,
+    query: selectedQuestion.questionText,
+    response: response as ProviderResponse<WebSearchResult>,
+    assessment: null,
+  }];
+  if (attemptRecords === 0) {
+    for (const [index, attempt] of responseAttempts.entries()) {
+      await recordResearchRequest({
+        organizationId: input.organizationId,
+        projectId: input.projectId,
+        companyId: row.company.id,
+        questionId: selectedQuestion.id,
+        researchJobId: job.id,
+        researchQuestion: selectedQuestion.questionText,
+        providerCapability: selectedQuestion.providerCapability,
+        providerId,
+        providerRequestId: attempt.response.providerRequestId,
+        status: attempt.response.status,
+        success: attempt.response.status === "success",
+        latencyMs: attempt.response.usage.latencyMs,
+        estimatedCost: attempt.response.usage.estimatedCost || selectedQuestion.estimatedCost,
+        actualCost: attempt.response.usage.actualCost,
+        resultMetadata: adaptiveSearch
+          ? retrievalAttemptMetadata(attempt, adaptiveSearch.plan)
+          : {
+              providerMetadata: attempt.response.metadata ?? {},
+              resultCount: attempt.response.usage.resultCount,
+              sourceReferenceCount: attempt.response.sources.length,
+              errorCode: attempt.response.error?.code ?? null,
+            },
+        startedAt: now,
+        completedAt,
+        attemptKey: idempotencyKey,
+        releaseReservation: index === responseAttempts.length - 1,
+      });
+    }
+  } else {
+    await releaseResearchReservation(idempotencyKey);
+    if (adaptiveSearch) {
+      for (const attempt of adaptiveSearch.attempts) {
+        await db.update(researchRequestCostsTable).set({
+          resultMetadata: retrievalAttemptMetadata(attempt, adaptiveSearch.plan),
+        }).where(and(
+          eq(researchRequestCostsTable.researchJobId, job.id),
+          eq(researchRequestCostsTable.providerRequestId, attempt.response.providerRequestId),
+        ));
+      }
+    }
+  }
   let evidenceCount = 0;
   let factProposalCount = 0;
   let factRejectionCount = 0;
@@ -783,6 +1258,13 @@ export async function executeResearchNow(input: {
   if (response.data) {
     for (const source of resultSources(selectedQuestion.providerCapability, response.data)) {
       if (!/^https?:\/\//i.test(source.url) || !source.rawContent.trim()) continue;
+      const sellerVendorContent = selectedQuestion.providerCapability === "WEB_SEARCH" && isSellerVendorContent(
+        [source.title, source.snippet, source.summary, source.rawContent].filter(Boolean).join(" "),
+      );
+      if (sellerVendorContent) {
+        ambiguousResultCount += 1;
+        continue;
+      }
       const attribution = selectedQuestion.providerCapability === "WEB_SEARCH"
         ? assessWebSearchEntityAttribution({
             ...source,
@@ -972,13 +1454,71 @@ export async function executeResearchNow(input: {
   };
 }
 
+export async function executeAdaptiveWebSearch(input: {
+  router: ProviderOperations;
+  question: Pick<ResearchQuestion, "id" | "questionType" | "questionText"> & Partial<Pick<ResearchQuestion, "reason">>;
+  company: Pick<Company, "canonicalName" | "domain" | "description">;
+  scope?: { projectId: string; organizationId: string };
+  now?: Date;
+}): Promise<AdaptiveWebSearchResult> {
+  const now = input.now ?? new Date();
+  const plan = buildResearchQueryPlan({
+    question: input.question,
+    company: input.company,
+    now,
+  });
+  const attempts: AdaptiveWebSearchAttempt[] = [];
+  const run = async (stage: "PRIMARY" | "FALLBACK", query: string) => {
+    const response = await routeQuestion(
+      input.router,
+      input.question as ResearchQuestion,
+      input.company as Company,
+      input.scope ?? { projectId: "research", organizationId: "research" },
+      query,
+      stage,
+      now,
+    ) as ProviderResponse<WebSearchResult>;
+    const assessment = assessWebSearchRetrieval({
+      response,
+      question: input.question,
+      company: input.company,
+      query,
+      now,
+    });
+    attempts.push({ stage, query, response, assessment });
+    return assessment;
+  };
+
+  const primaryAssessment = await run("PRIMARY", plan.primaryQuery);
+  if (
+    primaryAssessment.status !== "PROVIDER_FAILURE" &&
+    (primaryAssessment.status === "INSUFFICIENT_RETRIEVAL" || primaryAssessment.status === "AMBIGUOUS_RETRIEVAL") &&
+    plan.fallbackQuery &&
+    plan.fallbackQuery !== plan.primaryQuery
+  ) {
+    await run("FALLBACK", plan.fallbackQuery);
+  }
+  const response = mergeWebSearchResponses(attempts);
+  const finalAssessment = assessWebSearchRetrieval({
+    response,
+    question: input.question,
+    company: input.company,
+    query: attempts.map((attempt) => attempt.query).join(" || "),
+    now,
+  });
+  return { plan, attempts, response, finalAssessment };
+}
+
 async function routeQuestion(
   router: ProviderOperations,
   question: ResearchQuestion,
   company: Company,
   scope: { projectId: string; organizationId: string },
+  queryOverride?: string,
+  queryStage?: "PRIMARY" | "FALLBACK",
+  now?: Date,
 ): Promise<ProviderResponse<CapabilityResult<ProviderCapability>>> {
-  const request = requestForQuestion(question, company, scope);
+  const request = requestForQuestion(question, company, scope, queryOverride, queryStage, now);
   switch (question.providerCapability) {
     case "WEBSITE_CRAWL": return router.crawlWebsite(request as Parameters<ProviderOperations["crawlWebsite"]>[0]) as Promise<ProviderResponse<CapabilityResult<ProviderCapability>>>;
     case "JOB_SEARCH": return router.getJobs(request as Parameters<ProviderOperations["getJobs"]>[0]) as Promise<ProviderResponse<CapabilityResult<ProviderCapability>>>;
