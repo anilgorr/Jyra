@@ -1,0 +1,176 @@
+{
+  "suite": "BLACK_DUCK_EXTRACTION_FIX_01_TRACE",
+  "environment": "development",
+  "productionOperations": 0,
+  "providerCalls": {
+    "tavily": 0,
+    "exa": 0
+  },
+  "rootCause": "WRONG_FACT_PRIORITIZED",
+  "researchQuestion": "\"Black Duck\" blackduck.com public evidence of security leadership changes (security, ciso)",
+  "source": {
+    "evidenceId": "cc77c1fb-ec22-4cbb-aa1b-e097d5475a2d",
+    "sourceUrl": "https://news.blackduck.com",
+    "publisher": "news.blackduck.com",
+    "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+    "observedAt": "2026-08-31T14:04:17.258Z",
+    "entityStatus": "CONFIRMED_ENTITY",
+    "acceptedAsEvidence": true
+  },
+  "relevantSentences": [
+    "  Apr 9, 2026",
+    "  [Black Duck Appoints Dom Glavach as Chief Information Security Officer](https://news.blackduck.com/2026-04-09-Black-Duck-Appoints-Dom-Glavach-as-Chief-Information-Security-Officer)"
+  ],
+  "extractor": {
+    "model": "gpt-5.6-terra",
+    "version": "fact-extraction-v3",
+    "inputCharacterCount": 3618,
+    "rawOutput": {
+      "facts": [
+        {
+          "evidenceId": "cc77c1fb-ec22-4cbb-aa1b-e097d5475a2d",
+          "factType": "LEADERSHIP_CHANGE",
+          "structuredValue": {
+            "person": "Dom Glavach",
+            "event": "Appoints",
+            "role": "Chief Information Security Officer",
+            "company": "Black Duck"
+          },
+          "effectiveDate": "2026-04-09",
+          "confidence": 100,
+          "supportingExcerpt": "Black Duck Appoints Dom Glavach as Chief Information Security Officer",
+          "extractorVersion": "fact-extraction-v3"
+        },
+        {
+          "evidenceId": "cc77c1fb-ec22-4cbb-aa1b-e097d5475a2d",
+          "factType": "TECHNOLOGY_MENTION",
+          "structuredValue": {
+            "technology": "Coverity",
+            "capability": "AI-Powered Enhancements"
+          },
+          "effectiveDate": "2026-07-14",
+          "confidence": 100,
+          "supportingExcerpt": "Black Duck Accelerates Coverity with AI-Powered Enhancements and EU CRA-Ready Capabilities",
+          "extractorVersion": "fact-extraction-v3"
+        },
+        {
+          "evidenceId": "cc77c1fb-ec22-4cbb-aa1b-e097d5475a2d",
+          "factType": "COMPLIANCE_MENTION",
+          "structuredValue": {
+            "compliance": "EU CRA-Ready Capabilities"
+          },
+          "effectiveDate": "2026-07-14",
+          "confidence": 100,
+          "supportingExcerpt": "Black Duck Accelerates Coverity with AI-Powered Enhancements and EU CRA-Ready Capabilities",
+          "extractorVersion": "fact-extraction-v3"
+        },
+        {
+          "evidenceId": "cc77c1fb-ec22-4cbb-aa1b-e097d5475a2d",
+          "factType": "TECHNOLOGY_MENTION",
+          "structuredValue": {
+            "technology": "Polaris Platform"
+          },
+          "effectiveDate": "2026-06-16",
+          "confidence": 100,
+          "supportingExcerpt": "New Polaris Platform capabilities empower teams to close security testing gaps, withstand the flood of supply chain vulnerabilities, and automate remediation pipelines",
+          "extractorVersion": "fact-extraction-v3"
+        }
+      ]
+    },
+    "modelCandidateCount": 4,
+    "deterministicCandidateCount": 1,
+    "mergedCandidateCount": 5
+  },
+  "acceptedFacts": [
+    {
+      "evidenceId": "cc77c1fb-ec22-4cbb-aa1b-e097d5475a2d",
+      "factType": "LEADERSHIP_CHANGE",
+      "structuredValue": {
+        "company": "Black Duck",
+        "person": "Dom Glavach",
+        "role": "Chief Information Security Officer",
+        "eventType": "Appoints"
+      },
+      "effectiveDate": "2026-04-09",
+      "confidence": 98,
+      "supportingExcerpt": "Apr 9, 2026\n\n[Black Duck Appoints Dom Glavach as Chief Information Security Officer](https://news.blackduck.com/2026-04-09-Black-Duck-Appoints-Dom-Glavach-as-Chief-Information-Security-Officer)\n\nVeteran security executive brings more than two decades of enterprise, SaaS, and national defense cybersecurity leadership to Black Duck BURLINGTON, Mass., April 9, 2026 /PRNewswire/ -- Black...",
+      "extractorVersion": "fact-extraction-v3"
+    }
+  ],
+  "rejectedFacts": [
+    {
+      "factType": "LEADERSHIP_CHANGE",
+      "reason": "Effective date is not supported by the supporting excerpt",
+      "candidate": {
+        "evidenceId": "cc77c1fb-ec22-4cbb-aa1b-e097d5475a2d",
+        "factType": "LEADERSHIP_CHANGE",
+        "structuredValue": {
+          "person": "Dom Glavach",
+          "event": "Appoints",
+          "role": "Chief Information Security Officer",
+          "company": "Black Duck"
+        },
+        "effectiveDate": "2026-04-09",
+        "confidence": 100,
+        "supportingExcerpt": "Black Duck Appoints Dom Glavach as Chief Information Security Officer",
+        "extractorVersion": "fact-extraction-v3"
+      }
+    },
+    {
+      "factType": "COMPLIANCE_MENTION",
+      "reason": "Effective date is not supported by the supporting excerpt",
+      "candidate": {
+        "evidenceId": "cc77c1fb-ec22-4cbb-aa1b-e097d5475a2d",
+        "factType": "COMPLIANCE_MENTION",
+        "structuredValue": {
+          "compliance": "EU CRA-Ready Capabilities"
+        },
+        "effectiveDate": "2026-07-14",
+        "confidence": 100,
+        "supportingExcerpt": "Black Duck Accelerates Coverity with AI-Powered Enhancements and EU CRA-Ready Capabilities",
+        "extractorVersion": "fact-extraction-v3"
+      }
+    },
+    {
+      "factType": "TECHNOLOGY_MENTION",
+      "reason": "Effective date is not supported by the supporting excerpt",
+      "candidate": {
+        "evidenceId": "cc77c1fb-ec22-4cbb-aa1b-e097d5475a2d",
+        "factType": "TECHNOLOGY_MENTION",
+        "structuredValue": {
+          "technologies": [
+            "Coverity"
+          ]
+        },
+        "effectiveDate": "2026-07-14",
+        "confidence": 100,
+        "supportingExcerpt": "Black Duck Accelerates Coverity with AI-Powered Enhancements and EU CRA-Ready Capabilities",
+        "extractorVersion": "fact-extraction-v3"
+      }
+    },
+    {
+      "factType": "TECHNOLOGY_MENTION",
+      "reason": "Effective date is not supported by the supporting excerpt",
+      "candidate": {
+        "evidenceId": "cc77c1fb-ec22-4cbb-aa1b-e097d5475a2d",
+        "factType": "TECHNOLOGY_MENTION",
+        "structuredValue": {
+          "technologies": [
+            "Polaris Platform"
+          ]
+        },
+        "effectiveDate": "2026-06-16",
+        "confidence": 100,
+        "supportingExcerpt": "New Polaris Platform capabilities empower teams to close security testing gaps, withstand the flood of supply chain vulnerabilities, and automate remediation pipelines",
+        "extractorVersion": "fact-extraction-v3"
+      }
+    }
+  ],
+  "expectedGenericFactType": "LEADERSHIP_CHANGE",
+  "signalEvaluation": {
+    "definitionCode": "MSOC_SECURITY_LEADER",
+    "unchanged": true,
+    "reached": true,
+    "generated": true
+  }
+}

@@ -1,0 +1,74 @@
+{
+  "suite": "BLACK_DUCK_EXTRACTION_FIX_01_TESTS",
+  "passed": 8,
+  "failed": 0,
+  "cases": [
+    {
+      "id": "A",
+      "name": "Appointment as CISO",
+      "result": "PASS",
+      "factType": "LEADERSHIP_CHANGE",
+      "approved": true
+    },
+    {
+      "id": "B",
+      "name": "Appointment as Head of Information Security",
+      "result": "PASS",
+      "factType": "LEADERSHIP_CHANGE",
+      "approved": true
+    },
+    {
+      "id": "C",
+      "name": "Ordinary founder and CEO biography",
+      "result": "PASS",
+      "factType": null,
+      "approved": false
+    },
+    {
+      "id": "D",
+      "name": "Leadership and technology in one excerpt",
+      "result": "PASS",
+      "factTypes": [
+        "LEADERSHIP_CHANGE",
+        "TECHNOLOGY_MENTION"
+      ],
+      "approved": true
+    },
+    {
+      "id": "E",
+      "name": "Generic marketing or security-leadership language",
+      "result": "PASS",
+      "factType": null,
+      "approved": false
+    },
+    {
+      "id": "F",
+      "name": "Historical CISO tenure",
+      "result": "PASS",
+      "factType": null,
+      "approved": false
+    },
+    {
+      "id": "G",
+      "name": "Wrong-company leadership",
+      "result": "PASS",
+      "factType": "LEADERSHIP_CHANGE",
+      "approved": false,
+      "note": "The observation retains the actual company so the existing entity-attribution boundary rejects it for the requested company."
+    },
+    {
+      "id": "H",
+      "name": "Explicit appointment without exact event date",
+      "result": "PASS",
+      "factType": "LEADERSHIP_CHANGE",
+      "approved": false,
+      "eventDate": "UNKNOWN",
+      "note": "The current fact schema requires a source-supported calendar date. The extractor does not substitute retrieval or observation time."
+    }
+  ],
+  "commands": [
+    "pnpm --filter @workspace/api-server run test:facts",
+    "pnpm --filter @workspace/api-server run test:black-duck-extraction-fix",
+    "pnpm --filter @workspace/api-server run typecheck"
+  ]
+}

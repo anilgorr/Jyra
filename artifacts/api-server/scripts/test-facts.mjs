@@ -13,11 +13,13 @@ await build({
 
 const {
   FACT_TYPES,
+  extractExplicitLeadershipCandidates,
   factCandidateSchema,
   isFactTypeSupportedByExcerpt,
   isInterpretationOnlyClaim,
   isValidCalendarDate,
   mergeTechnologyMentionCandidates,
+  mergeExtractedFactCandidates,
   parseFactExtractionModelOutput,
   validateFactCandidate,
 } = await import(`${pathToFileURL(output).href}?t=${Date.now()}`);
@@ -237,5 +239,70 @@ for (const factType of FACT_TYPES) {
     factType,
   );
 }
+
+const extractionEvidenceId = "1d47755c-6548-49aa-a93a-b73062bdc96f";
+const leadershipCases = {
+  A: "On August 20, 2026, Acme appoints Jane Doe as CISO.",
+  B: "On August 20, 2026, Acme named John Doe as Head of Information Security.",
+  C: "Jane Doe is the founder and CEO.",
+  D: "On August 20, 2026, Acme uses AWS and appointed Jane Doe as CISO.",
+  E: "Our security leadership solutions help modern teams reduce risk.",
+  F: "Jane Doe served as CISO from 2019 to 2022.",
+  G: "On August 20, 2026, Other Company appointed Jane Doe as CISO.",
+  H: "Acme appointed Jane Doe as CISO.",
+};
+const extractedA = extractExplicitLeadershipCandidates(extractionEvidenceId, leadershipCases.A);
+assert.equal(extractedA.length, 1, "A");
+assert.equal(extractedA[0].factType, "LEADERSHIP_CHANGE", "A");
+assert.deepEqual(extractedA[0].structuredValue, {
+  company: "Acme",
+  person: "Jane Doe",
+  role: "CISO",
+  eventType: "appoints",
+}, "A");
+assert.deepEqual(validateFactCandidate(extractedA[0], {
+  companyId: context.companyId,
+  evidenceId: extractionEvidenceId,
+  rawContent: leadershipCases.A,
+}), extractedA[0], "A validates");
+
+const extractedB = extractExplicitLeadershipCandidates(extractionEvidenceId, leadershipCases.B);
+assert.equal(extractedB.length, 1, "B");
+assert.equal(extractedB[0].structuredValue.role, "Head of Information Security", "B");
+assert.equal(extractExplicitLeadershipCandidates(extractionEvidenceId, leadershipCases.C).length, 0, "C");
+assert.equal(extractExplicitLeadershipCandidates(extractionEvidenceId, leadershipCases.E).length, 0, "E");
+assert.equal(extractExplicitLeadershipCandidates(extractionEvidenceId, leadershipCases.F).length, 0, "F");
+assert.equal(extractExplicitLeadershipCandidates(extractionEvidenceId, leadershipCases.H).length, 0, "H preserves unknown event date instead of substituting observation date");
+
+const technologyCandidate = {
+  evidenceId: extractionEvidenceId,
+  factType: "TECHNOLOGY_MENTION",
+  structuredValue: { technology: "AWS" },
+  effectiveDate: "2026-08-20",
+  confidence: 95,
+  supportingExcerpt: leadershipCases.D,
+  extractorVersion: "fact-extraction-v3",
+};
+const extractedD = mergeExtractedFactCandidates(
+  extractionEvidenceId,
+  leadershipCases.D,
+  [technologyCandidate],
+);
+assert.deepEqual(
+  extractedD.map((item) => item.factType).sort(),
+  ["LEADERSHIP_CHANGE", "TECHNOLOGY_MENTION"],
+  "D",
+);
+for (const extracted of extractedD) {
+  assert.doesNotThrow(() => validateFactCandidate(extracted, {
+    companyId: context.companyId,
+    evidenceId: extractionEvidenceId,
+    rawContent: leadershipCases.D,
+  }), `D validates ${extracted.factType}`);
+}
+
+const wrongCompany = extractExplicitLeadershipCandidates(extractionEvidenceId, leadershipCases.G);
+assert.equal(wrongCompany.length, 1, "G extracts the observation before company attribution");
+assert.equal(wrongCompany[0].structuredValue.company, "Other Company", "G retains the actual attributed company for downstream rejection");
 
 console.log("Structured fact extraction tests passed.");

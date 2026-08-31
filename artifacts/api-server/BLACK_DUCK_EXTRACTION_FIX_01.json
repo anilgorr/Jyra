@@ -1,0 +1,19 @@
+{
+  "suite": "BLACK_DUCK_EXTRACTION_FIX_01",
+  "rootCause": "WRONG_FACT_PRIORITIZED",
+  "fixImplemented": "Added a generic dated security-leadership event extractor and merged every independent model-supported fact instead of selecting one arbitrary fact.",
+  "relevantEvidenceAvailable": true,
+  "correctLeadershipFactProposed": true,
+  "correctLeadershipFactApproved": true,
+  "signalEvaluationReached": true,
+  "existingSignalGenerated": true,
+  "unsupportedFacts": 4,
+  "unsupportedSignals": 0,
+  "wrongEntityAccepted": 0,
+  "newTavilyCalls": 0,
+  "newExaCalls": 0,
+  "retrievalCodeChanged": 0,
+  "signalCodeChanged": 0,
+  "productionOperations": 0,
+  "decision": "A — EXTRACTION FIX VALIDATED"
+}

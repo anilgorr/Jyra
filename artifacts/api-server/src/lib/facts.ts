@@ -261,14 +261,158 @@ export function mergeTechnologyMentionCandidates(candidates: unknown[]): unknown
   return [...others, ...merged.values()];
 }
 
-export const FACT_EXTRACTION_MODEL = "gpt-5.6-terra";
-export const FACT_EXTRACTION_PROMPT_VERSION = "fact-extraction-v2";
+const LEADERSHIP_ROLE_PATTERN = [
+  "Chief Information Security Officer",
+  "Chief Security Officer",
+  "CISO",
+  "CSO",
+  "Vice President(?: of)? Security",
+  "VP(?: of)? Security",
+  "Head of Information Security",
+  "Head of Cybersecurity",
+  "Head of Security",
+  "Director of Information Security",
+  "Security Leader",
+].join("|");
 
-export async function extractFactCandidatesFromSource(
+const LEADERSHIP_EVENT_PATTERN = new RegExp(
+  [
+    String.raw`\b(?<company>[A-Z][A-Za-z0-9&'.-]*(?:\s+[A-Z][A-Za-z0-9&'.-]*){0,7})`,
+    String.raw`\s+(?<verb>appoints?|appointed|names?|named|promotes?|promoted|hires?|hired)`,
+    String.raw`\s+(?<person>[A-Z][A-Za-z'.-]+(?:\s+[A-Z][A-Za-z'.-]+){1,5})`,
+    String.raw`\s+(?:as|to)\s+(?<role>${LEADERSHIP_ROLE_PATTERN})\b`,
+  ].join(""),
+  "gi",
+);
+
+const MONTH_NUMBER: Record<string, number> = {
+  january: 1,
+  jan: 1,
+  february: 2,
+  feb: 2,
+  march: 3,
+  mar: 3,
+  april: 4,
+  apr: 4,
+  may: 5,
+  june: 6,
+  jun: 6,
+  july: 7,
+  jul: 7,
+  august: 8,
+  aug: 8,
+  september: 9,
+  sep: 9,
+  october: 10,
+  oct: 10,
+  november: 11,
+  nov: 11,
+  december: 12,
+  dec: 12,
+};
+
+function explicitDateBefore(content: string, eventIndex: number): {
+  effectiveDate: string;
+  excerptStart: number;
+} | null {
+  const prefixStart = Math.max(0, eventIndex - 180);
+  const prefix = content.slice(prefixStart, eventIndex);
+  const matches = [
+    ...prefix.matchAll(/\b(?<month>January|Jan|February|Feb|March|Mar|April|Apr|May|June|Jun|July|Jul|August|Aug|September|Sep|October|Oct|November|Nov|December|Dec)\s+(?<day>\d{1,2}),\s+(?<year>\d{4})\b/gi),
+    ...prefix.matchAll(/\b(?<year>\d{4})-(?<monthNumber>\d{2})-(?<day>\d{2})\b/g),
+  ].sort((left, right) => (right.index ?? 0) - (left.index ?? 0));
+  const match = matches[0];
+  if (!match?.groups) return null;
+  const month = match.groups.month
+    ? MONTH_NUMBER[match.groups.month.toLowerCase()]
+    : Number(match.groups.monthNumber);
+  const day = Number(match.groups.day);
+  const year = Number(match.groups.year);
+  const effectiveDate = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+  if (!isValidCalendarDate(effectiveDate)) return null;
+  return {
+    effectiveDate,
+    excerptStart: prefixStart + (match.index ?? 0),
+  };
+}
+
+export function extractExplicitLeadershipCandidates(
+  evidenceId: string,
+  rawContent: string,
+): FactCandidate[] {
+  const content = normalizeEvidenceContent(rawContent);
+  const candidates: FactCandidate[] = [];
+  for (const match of content.matchAll(LEADERSHIP_EVENT_PATTERN)) {
+    if (match.index === undefined || !match.groups) continue;
+    const date = explicitDateBefore(content, match.index);
+    if (!date) continue;
+    const sentenceEnd = content.slice(match.index).search(/[.!?](?:\s|$)/);
+    const eventEnd = sentenceEnd >= 0
+      ? match.index + sentenceEnd + 1
+      : match.index + match[0].length;
+    const supportingExcerpt = content.slice(date.excerptStart, eventEnd).trim();
+    const candidate = {
+      evidenceId,
+      factType: "LEADERSHIP_CHANGE" as const,
+      structuredValue: {
+        company: match.groups.company,
+        person: match.groups.person,
+        role: match.groups.role,
+        eventType: match.groups.verb,
+      },
+      effectiveDate: date.effectiveDate,
+      confidence: 98,
+      supportingExcerpt,
+      extractorVersion: FACT_EXTRACTION_PROMPT_VERSION,
+    };
+    const parsed = factCandidateSchema.safeParse(candidate);
+    if (parsed.success) candidates.push(parsed.data);
+  }
+  return candidates;
+}
+
+export function mergeExtractedFactCandidates(
+  evidenceId: string,
+  rawContent: string,
+  modelCandidates: unknown[],
+): unknown[] {
+  const combined = [
+    ...extractExplicitLeadershipCandidates(evidenceId, rawContent),
+    ...modelCandidates,
+  ];
+  const seen = new Set<string>();
+  return mergeTechnologyMentionCandidates(combined).filter((candidate) => {
+    if (!candidate || typeof candidate !== "object" || Array.isArray(candidate)) return true;
+    const row = candidate as Record<string, unknown>;
+    const key = JSON.stringify([
+      row.evidenceId,
+      row.factType,
+      row.effectiveDate,
+      normalizeEvidenceContent(String(row.supportingExcerpt ?? "")),
+    ]);
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+export const FACT_EXTRACTION_MODEL = "gpt-5.6-terra";
+export const FACT_EXTRACTION_PROMPT_VERSION = "fact-extraction-v3";
+
+export type FactExtractionDiagnostics = {
+  evidenceId: string;
+  extractorVersion: string;
+  rawModelOutput: unknown;
+  modelCandidates: unknown[];
+  deterministicCandidates: FactCandidate[];
+  candidates: unknown[];
+};
+
+export async function extractFactCandidatesWithDiagnostics(
   evidenceId: string,
   rawContent: string,
   observationDate = new Date().toISOString().slice(0, 10),
-): Promise<unknown[]> {
+): Promise<FactExtractionDiagnostics> {
   let lastError: unknown;
   for (let attempt = 1; attempt <= 2; attempt += 1) {
     try {
@@ -288,6 +432,9 @@ export async function extractFactCandidatesFromSource(
               "confidence must be a number from 0 to 100 and reflects source support, not commercial value.",
               "supportingExcerpt must be copied from the source content.",
               "Every string or number in structuredValue must appear verbatim in supportingExcerpt. Omit labels such as area, category, or department unless that exact value is inside the excerpt.",
+              "Extract every independent supported claim as its own atomic fact. Never choose only one best fact when the source supports multiple fact types.",
+              "Leadership appointments, hires, promotions, and named-role changes are LEADERSHIP_CHANGE facts. Preserve the exact person, company, event verb, and source role title.",
+              "A current title, biography, or generic mention of leadership is not a leadership change unless the source explicitly states a change event.",
               "Return JSON only with exactly one top-level key: facts.",
               "Each fact must contain evidenceId, factType, structuredValue, effectiveDate, confidence, supportingExcerpt, and extractorVersion.",
               `evidenceId is exactly ${evidenceId}.`,
@@ -308,9 +455,21 @@ export async function extractFactCandidatesFromSource(
       });
       const content = response.choices[0]?.message?.content;
       if (!content) throw new Error("The model returned no content");
-      return mergeTechnologyMentionCandidates(
-        parseFactExtractionModelOutput(JSON.parse(content)).facts,
-      );
+      const rawModelOutput: unknown = JSON.parse(content);
+      const modelCandidates = parseFactExtractionModelOutput(rawModelOutput).facts;
+      const deterministicCandidates = extractExplicitLeadershipCandidates(evidenceId, rawContent);
+      return {
+        evidenceId,
+        extractorVersion: FACT_EXTRACTION_PROMPT_VERSION,
+        rawModelOutput,
+        modelCandidates,
+        deterministicCandidates,
+        candidates: mergeExtractedFactCandidates(
+        evidenceId,
+        rawContent,
+          modelCandidates,
+        ),
+      };
     } catch (error) {
       lastError = error;
       if (attempt < 2) {
@@ -321,4 +480,16 @@ export async function extractFactCandidatesFromSource(
   throw new Error("Fact extraction did not match the required JSON contract", {
     cause: lastError,
   });
+}
+
+export async function extractFactCandidatesFromSource(
+  evidenceId: string,
+  rawContent: string,
+  observationDate = new Date().toISOString().slice(0, 10),
+): Promise<unknown[]> {
+  return (await extractFactCandidatesWithDiagnostics(
+    evidenceId,
+    rawContent,
+    observationDate,
+  )).candidates;
 }
