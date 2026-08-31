@@ -1,0 +1,750 @@
+JYRA — TAVILY CREDIT INTERRUPTION AUDIT
+BENCHMARK VALIDITY CHECK BEFORE MVP FIX CYCLE 02
+
+PURPOSE
+
+During MVP Fix Cycle 01 / blind-control testing, Tavily credits were
+exhausted and were recharged during the testing period.
+
+Therefore the reported:
+
+Known events detected = 2/10
+Known-event detection recall = 20%
+
+MAY be contaminated by provider-credit exhaustion.
+
+Before changing JYRA logic, determine exactly which research attempts
+were valid and which were affected by Tavily credit/quota availability.
+
+THIS IS AN AUDIT + TARGETED RECOVERY TEST.
+
+Do NOT modify JYRA intelligence logic.
+
+==================================================
+1. DATABASE SAFETY
+==================================================
+
+DEVELOPMENT ONLY.
+
+Use only development database.
+
+Production operations = 0.
+
+Do NOT:
+
+migrate production
+reset production
+seed production
+truncate production
+modify production customer data
+
+==================================================
+2. FREEZE ALL INTELLIGENCE LOGIC
+==================================================
+
+DO NOT CHANGE:
+
+research planner logic
+research questions
+queries
+fact extraction
+fact validation
+signal definitions
+signal mapping
+source classification
+entity resolution
+ICP logic
+opportunity logic
+ranking
+confidence
+provider routing
+thresholds
+
+Do not add providers.
+
+The purpose is to determine whether Tavily availability invalidated
+part of the benchmark.
+
+==================================================
+3. USE EXACT FROZEN CONTROL SET
+==================================================
+
+Use the exact same 10 blind controls from:
+
+MVP_FIX_CYCLE_01_CONTROL_RETEST.json
+
+Do NOT create new controls.
+
+Do NOT change reference events.
+
+Do NOT expose reference-event labels to JYRA research execution.
+
+Use the frozen reference manifest only AFTER research execution for
+evaluation.
+
+==================================================
+4. RECONSTRUCT EVERY TAVILY ATTEMPT
+==================================================
+
+For each of the 10 controls, reconstruct every WEB_SEARCH/Tavily attempt
+during the relevant benchmark/fix-cycle run.
+
+For every attempt report:
+
+COMPANY
+
+RESEARCH QUESTION
+
+QUESTION CATEGORY
+
+ATTEMPT ID
+
+RESEARCH JOB ID
+
+TIMESTAMP
+
+PROVIDER
+
+CAPABILITY
+
+QUERY
+
+REQUEST STARTED?
+
+REQUEST COMPLETED?
+
+HTTP STATUS if available
+
+PROVIDER STATUS
+
+ERROR TYPE
+
+ERROR MESSAGE sanitized
+
+QUOTA / CREDIT ERROR?
+
+RATE LIMIT ERROR?
+
+TIMEOUT?
+
+NETWORK ERROR?
+
+RESULT COUNT
+
+RAW EVIDENCE COUNT
+
+QUESTION-RELEVANT EVIDENCE COUNT
+
+DIRECT-EVENT EVIDENCE COUNT
+
+RETRY OCCURRED?
+
+RETRY TIMESTAMP
+
+RETRY RESULT
+
+FINAL QUESTION DISPOSITION
+
+CACHE USED?
+
+ESTIMATED COST
+
+ACTUAL REPORTED COST
+
+Do not expose API keys or secrets.
+
+==================================================
+5. IDENTIFY TAVILY CREDIT EXHAUSTION
+==================================================
+
+Determine whether logs/provider responses show evidence of:
+
+insufficient credits
+quota exhausted
+billing limitation
+HTTP 402
+HTTP 429 where attributable to quota/rate limit
+provider-specific credit errors
+request rejection before search
+other account-level availability failure
+
+Do not infer credit exhaustion merely because zero results were returned.
+
+There must be provider/log evidence.
+
+==================================================
+6. BUILD PROVIDER AVAILABILITY TIMELINE
+==================================================
+
+Construct a chronological Tavily availability timeline covering the
+entire relevant test period.
+
+For example:
+
+TIME A
+Tavily successful
+
+TIME B
+first confirmed credit/quota failure
+
+TIME C
+continued failed requests
+
+TIME D
+first successful request after recharge
+
+TIME E
+stable operation restored
+
+Use actual timestamps from logs.
+
+If exact recharge time is unavailable, infer ONLY:
+
+LAST_CONFIRMED_FAILED_ATTEMPT
+
+and
+
+FIRST_CONFIRMED_SUCCESSFUL_ATTEMPT_AFTER_FAILURE.
+
+Do not invent a recharge timestamp.
+
+==================================================
+7. CLASSIFY EACH RESEARCH QUESTION
+==================================================
+
+Every control research question must receive one audit classification:
+
+VALID_RESEARCH_RUN
+
+INVALID_PROVIDER_CREDIT
+
+INVALID_PROVIDER_RATE_LIMIT
+
+INVALID_PROVIDER_ERROR
+
+INVALID_TIMEOUT
+
+NOT_ATTEMPTED
+
+VALID_CACHE_REPLAY
+
+OTHER_INVALID
+
+Definition:
+
+VALID_RESEARCH_RUN means the provider successfully executed the intended
+research request and returned a legitimate provider response, including
+a legitimate zero-result response.
+
+A zero-result successful search is VALID.
+
+A request rejected because credits were exhausted is INVALID.
+
+==================================================
+8. CLASSIFY EACH CONTROL
+==================================================
+
+For each of the 10 controls classify:
+
+FULLY_VALID
+
+PARTIALLY_INVALID
+
+FULLY_INVALID
+
+FULLY_VALID:
+
+all required research areas received valid execution.
+
+PARTIALLY_INVALID:
+
+one or more required research questions were affected by provider
+availability.
+
+FULLY_INVALID:
+
+research coverage was materially prevented by provider availability.
+
+Report exactly which research areas were affected.
+
+==================================================
+9. IMPORTANT — TERMINAL STATE AUDIT
+==================================================
+
+Check whether provider-credit failures were incorrectly persisted as:
+
+INSUFFICIENT_EVIDENCE
+
+ANSWERED_NEGATIVE
+
+ANSWERED_POSITIVE
+
+DEFERRED
+
+or another semantic research conclusion.
+
+Provider failure must NOT mean:
+
+"No evidence exists."
+
+Determine whether this occurred.
+
+Report:
+
+QUESTION
+PROVIDER FAILURE
+PERSISTED STATUS
+CORRECT / INCORRECT
+
+Do not fix yet.
+
+==================================================
+10. RETRY BEHAVIOR AUDIT
+==================================================
+
+Determine whether questions affected by exhausted credits were retried
+after Tavily became available again.
+
+For every affected question report:
+
+FAILED BEFORE RECHARGE?
+
+RETRY ATTEMPTED?
+
+RETRY AFTER RESTORED AVAILABILITY?
+
+RETRY SUCCESSFUL?
+
+RESULT COUNT?
+
+FINAL DISPOSITION?
+
+If no retry occurred, explain exactly why:
+
+terminal-state reuse
+refresh gate
+retry policy
+job status
+cache
+budget
+planner decision
+other
+
+Again:
+
+DO NOT FIX THE LOGIC DURING THIS AUDIT.
+
+==================================================
+11. CALCULATE CLEAN BASELINE
+==================================================
+
+Before any recovery rerun, calculate:
+
+TOTAL CONTROLS = 10
+
+FULLY_VALID CONTROLS = X
+
+PARTIALLY_INVALID CONTROLS = X
+
+FULLY_INVALID CONTROLS = X
+
+EVENTS DETECTED AMONG FULLY_VALID = X
+
+CLEAN FULL-CONTROL RECALL =
+
+detected known events among fully valid controls
+/
+fully valid controls
+
+Only report this metric if denominator > 0.
+
+Also report:
+
+ORIGINAL REPORTED RECALL = 2/10 = 20%
+
+Do NOT replace the original number.
+
+Label the new metric:
+
+PRE-RECOVERY VALID-RUN RECALL
+
+==================================================
+12. TARGETED RECOVERY RERUN
+==================================================
+
+After the audit is complete:
+
+Rerun ONLY research questions proven to have been invalidated by
+provider availability.
+
+DO NOT rerun valid research questions.
+
+DO NOT rerun all 10 controls automatically.
+
+DO NOT change queries.
+
+DO NOT change extraction.
+
+DO NOT change signals.
+
+DO NOT change research logic.
+
+This is simply completing research that failed because Tavily was
+unavailable.
+
+==================================================
+13. VERIFY TAVILY BEFORE RECOVERY
+==================================================
+
+Before targeted rerun:
+
+perform ONE minimal Tavily provider health check using the existing
+provider-router health/test path if available.
+
+Verify:
+
+authentication works
+credits available
+request succeeds
+normal response received
+
+Do not perform unnecessary searches.
+
+Record:
+
+health check timestamp
+success/failure
+estimated/actual cost if applicable
+
+If Tavily is still unavailable:
+
+STOP.
+
+Do not run recovery.
+
+==================================================
+14. RECOVERY EXECUTION
+==================================================
+
+For each invalid research question:
+
+reuse the exact frozen:
+
+company
+research category
+query/question semantics
+signal pack
+source rules
+fact rules
+signal rules
+
+Execute through normal JYRA provider routing.
+
+Do not manually feed known event URLs or event descriptions.
+
+Do not expose the control label.
+
+==================================================
+15. RECOVERY RESULTS
+==================================================
+
+For each recovered question report:
+
+COMPANY
+
+QUESTION CATEGORY
+
+ORIGINAL FAILURE
+
+RECOVERY PROVIDER ATTEMPT
+
+RESULT COUNT
+
+RAW EVIDENCE
+
+QUESTION-RELEVANT EVIDENCE
+
+DIRECT-EVENT EVIDENCE
+
+FACT PROPOSALS
+
+APPROVED FACTS
+
+SIGNALS
+
+FINAL QUESTION DISPOSITION
+
+ESTIMATED COST
+
+ACTUAL COST
+
+==================================================
+16. RECALCULATE CONTROL RECALL
+==================================================
+
+After completing only the invalid research attempts:
+
+evaluate all 10 controls against the SAME frozen reference manifest.
+
+Calculate:
+
+KNOWN EVENTS = 10
+
+KNOWN EVENTS DETECTED = X
+
+KNOWN-EVENT DETECTION RECALL = X%
+
+Do not change the expected/reference events.
+
+==================================================
+17. SIGNAL PRECISION
+==================================================
+
+Strictly adjudicate all signals present after recovery.
+
+Classify:
+
+TRUE_SUPPORTED
+WEAKLY_SUPPORTED
+UNSUPPORTED
+WRONG_ENTITY
+DUPLICATE_EVENT
+STALE_AS_CURRENT
+SELLER_AS_BUYER_ERROR
+
+Calculate:
+
+TRUE_SUPPORTED SIGNAL PRECISION
+
+only when signals > 0.
+
+Do not treat zero signals as 100% precision.
+
+==================================================
+18. MISSED EVENT ATTRIBUTION AFTER RECOVERY
+==================================================
+
+For every remaining missed known event classify:
+
+SOURCE_NOT_FOUND
+
+QUERY_FAILURE
+
+CONTENT_NOT_FETCHED
+
+FACT_EXTRACTION_FAILURE
+
+FACT_VALIDATION_FAILURE
+
+SIGNAL_MAPPING_FAILURE
+
+ENTITY_FAILURE
+
+TEMPORAL_FAILURE
+
+OTHER
+
+Provider-credit exhaustion should no longer be a miss reason after a
+successful recovery rerun.
+
+For each remaining miss provide the exact pipeline stage where the event
+was lost.
+
+==================================================
+19. CRITICAL DISTINCTION
+==================================================
+
+Do not classify a miss as FACT_EXTRACTION_FAILURE unless:
+
+relevant evidence containing the reference event actually reached the
+fact extractor.
+
+If the provider never retrieved the relevant event:
+
+SOURCE_NOT_FOUND or QUERY_FAILURE
+
+is the correct classification.
+
+If the result contained the event in title/snippet but the extractor
+never received that evidence:
+
+CONTENT_NOT_FETCHED / evidence-pipeline failure.
+
+We need precise failure attribution.
+
+==================================================
+20. IDENTITY ISSUE
+==================================================
+
+DO NOT fix the separate 80% canonical identity accuracy problem in this
+audit.
+
+Keep it recorded as an independent unresolved issue.
+
+This test is ONLY about whether Tavily credit exhaustion contaminated
+the 20% event-recall measurement.
+
+==================================================
+21. COST
+==================================================
+
+Report separately:
+
+ORIGINAL ATTEMPTS
+
+HEALTH CHECK
+
+RECOVERY ATTEMPTS
+
+TOTAL ADDITIONAL ESTIMATED COST
+
+TOTAL ADDITIONAL ACTUAL REPORTED COST
+
+Do not mix cached operations with provider calls.
+
+==================================================
+22. IDEMPOTENCY
+==================================================
+
+Recovery must be idempotent.
+
+Do not duplicate:
+
+evidence
+facts
+signals
+research questions
+research jobs
+
+Existing successful research must remain untouched.
+
+==================================================
+23. REQUIRED REPORT
+==================================================
+
+Generate:
+
+TAVILY_CREDIT_INTERRUPTION_AUDIT.md
+
+TAVILY_CREDIT_INTERRUPTION_AUDIT.json
+
+TAVILY_ATTEMPT_TIMELINE.json
+
+TAVILY_CONTROL_VALIDITY.json
+
+TAVILY_TARGETED_RECOVERY_RESULT.json
+
+==================================================
+24. EXECUTIVE SUMMARY
+==================================================
+
+Report:
+
+ORIGINAL RECALL:
+2/10 = 20%
+
+TOTAL CONTROL COMPANIES:
+10
+
+TOTAL RESEARCH QUESTIONS:
+
+VALID RESEARCH QUESTIONS:
+
+INVALID DUE TO CREDITS:
+
+INVALID DUE TO RATE LIMIT:
+
+INVALID DUE TO OTHER PROVIDER ERROR:
+
+FULLY VALID CONTROLS:
+
+PARTIALLY INVALID CONTROLS:
+
+FULLY INVALID CONTROLS:
+
+PRE-RECOVERY VALID-RUN RECALL:
+
+QUESTIONS REQUIRING RECOVERY:
+
+RECOVERY QUESTIONS EXECUTED:
+
+RECOVERY QUESTIONS SUCCESSFUL:
+
+POST-RECOVERY EVENTS DETECTED:
+
+POST-RECOVERY KNOWN-EVENT RECALL:
+
+POST-RECOVERY SIGNALS:
+
+POST-RECOVERY SIGNAL PRECISION:
+
+REMAINING MISSES:
+
+REMAINING MISS BREAKDOWN:
+
+ADDITIONAL RECOVERY COST:
+
+PRODUCTION OPERATIONS:
+
+==================================================
+25. FINAL DECISION
+==================================================
+
+Return exactly ONE:
+
+A — ORIGINAL RECALL INVALIDATED BY PROVIDER INTERRUPTION
+
+Credit exhaustion materially affected the benchmark and recovery
+significantly changes the result.
+
+B — PROVIDER INTERRUPTION HAD SOME EFFECT
+
+Some research was invalid, but substantial recall problems remain after
+recovery.
+
+C — ORIGINAL 20% RECALL REMAINS VALID
+
+Credit exhaustion did not materially affect the research used to
+calculate the result.
+
+D — AUDIT INCONCLUSIVE
+
+Available logs are insufficient to determine whether credit exhaustion
+affected the benchmark.
+
+==================================================
+26. VERY IMPORTANT
+==================================================
+
+DO NOT:
+
+fix fact extraction
+fix entity resolution
+change ICP
+change signal definitions
+change research planner
+change Tavily queries
+add another search provider
+rerun the full 50-company benchmark
+run contact enrichment
+change opportunity scoring
+change ranking
+
+We are isolating ONE variable:
+
+TAVILY PROVIDER AVAILABILITY.
+
+==================================================
+27. STOP
+==================================================
+
+STOP after:
+
+audit
+targeted recovery if required
+recalculated recall
+reports
+
+Return the results for human review.
+
+Do not proceed to MVP Fix Cycle 02 automatically.
