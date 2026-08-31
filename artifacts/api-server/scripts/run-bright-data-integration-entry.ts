@@ -29,15 +29,46 @@ async function main(): Promise<void> {
   }
   await ensureDevelopmentBrightDataProvider();
   const test10 = JSON.parse(readFileSync(TEST10_RESULT, "utf8")) as {
-    companies?: Array<{ company?: string; name?: string; canonicalName?: string }>;
+    companies?: Array<{
+      company?: string;
+      name?: string;
+      canonicalName?: string;
+      domain?: string | null;
+      geography?: { value?: string } | null;
+    }>;
   };
   const test10Names = (test10.companies ?? [])
     .map((company) => company.company ?? company.name ?? company.canonicalName ?? "")
     .filter(Boolean);
   const eligibleCompanies = await db.select().from(companiesTable)
     .where(isNotNull(companiesTable.linkedinUrl));
-  const company = eligibleCompanies.find((candidate) =>
+  const persistedCompany = eligibleCompanies.find((candidate) =>
     test10Names.some((name) => namesArePossibleDuplicates(name, candidate.canonicalName)));
+  const requestedTestCompanyName = process.env.BRIGHTDATA_TEST_COMPANY_NAME?.trim() ?? "";
+  const requestedTestLinkedInUrl = process.env.BRIGHTDATA_TEST_LINKEDIN_URL?.trim() ?? "";
+  const reportCandidate = (test10.companies ?? []).find((candidate) => {
+    const name = candidate.company ?? candidate.name ?? candidate.canonicalName ?? "";
+    return requestedTestCompanyName && namesArePossibleDuplicates(requestedTestCompanyName, name);
+  });
+  const company = persistedCompany
+    ? {
+        id: persistedCompany.id,
+        canonicalName: persistedCompany.canonicalName,
+        domain: persistedCompany.domain,
+        website: persistedCompany.website,
+        linkedinUrl: persistedCompany.linkedinUrl,
+        country: persistedCompany.country,
+      }
+    : reportCandidate && requestedTestLinkedInUrl
+      ? {
+          id: `test-10:${requestedTestCompanyName}`,
+          canonicalName: reportCandidate.company ?? reportCandidate.name ?? reportCandidate.canonicalName ?? requestedTestCompanyName,
+          domain: reportCandidate.domain ?? null,
+          website: reportCandidate.domain ? `https://${reportCandidate.domain}` : null,
+          linkedinUrl: requestedTestLinkedInUrl,
+          country: reportCandidate.geography?.value ?? null,
+        }
+      : null;
   const [provider] = await db.select().from(dataProvidersTable)
     .where(and(
       eq(dataProvidersTable.name, "Bright Data"),
