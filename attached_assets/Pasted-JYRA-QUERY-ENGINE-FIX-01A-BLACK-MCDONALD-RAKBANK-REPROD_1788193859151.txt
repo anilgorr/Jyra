@@ -1,0 +1,575 @@
+JYRA — QUERY ENGINE FIX 01A
+BLACK & MCDONALD + RAKBANK REPRODUCTION AUTOPSY
+
+PURPOSE
+
+Retrieval Bake-off 01 proved:
+
+Improved generic Tavily = 7/7 retrieval
+including:
+- Black & McDonald
+- RAKBANK
+
+Query Engine Fix 01 normal JYRA execution produced:
+
+5/7 retrieval
+71.4%
+
+Remaining misses:
+- Black & McDonald
+- RAKBANK
+
+Therefore:
+
+DO NOT redesign the query engine.
+DO NOT add providers.
+DO NOT accept a narrowed scope yet.
+
+Determine exactly why the validated bake-off retrieval result was not
+reproduced by normal JYRA execution.
+
+This is a TWO-COMPANY differential autopsy.
+
+==================================================
+1. DATABASE SAFETY
+==================================================
+
+DEVELOPMENT ONLY.
+
+Production operations = 0.
+
+Do not modify production.
+
+==================================================
+2. FREEZE EVERYTHING ELSE
+==================================================
+
+Do NOT change:
+
+fact extraction
+fact validation
+fact ontology
+signals
+signal mapping
+ICP
+identity resolution
+opportunity scoring
+ranking
+contacts
+UI
+provider routing
+
+Do NOT integrate Exa.
+Do NOT integrate Unipile.
+
+Focus only on retrieval reproduction.
+
+==================================================
+3. TEST ONLY TWO CONTROLS
+==================================================
+
+Use exactly:
+
+Black & McDonald
+RAKBANK
+
+Use the exact frozen reference events from the existing control
+manifest.
+
+Reference events are for POST-RETRIEVAL evaluation only.
+
+They MUST NOT be used to generate queries.
+
+==================================================
+4. RECONSTRUCT BAKE-OFF SUCCESS
+
+For each company load from:
+
+RETRIEVAL_BAKEOFF_01_QUERY_COMPARISON.json
+RETRIEVAL_BAKEOFF_01_RESULTS.json
+RETRIEVAL_BAKEOFF_01_RAW_INDEX.json
+
+Report the exact successful bake-off path:
+
+COMPANY
+
+RESEARCH CATEGORY
+
+BAKE-OFF PRIMARY QUERY
+
+BAKE-OFF FALLBACK QUERY
+
+QUERY THAT FOUND EVENT
+
+TAVILY CALL NUMBER
+
+MATCHING RESULT RANK
+
+MATCHING RESULT TITLE
+
+MATCHING RESULT URL
+
+MATCHING RESULT PUBLISHER
+
+MATCHING RESULT SNIPPET
+
+MATCH TYPE
+
+SOURCE AUTHORITY
+
+RESULT DATE
+
+==================================================
+5. RECONSTRUCT PRODUCTION QUERY ENGINE FAILURE
+==================================================
+
+For the same company/question report:
+
+PRODUCTION PRIMARY QUERY
+
+PRODUCTION PRIMARY RETRIEVAL STATUS
+
+PRODUCTION FALLBACK TRIGGERED?
+
+PRODUCTION FALLBACK QUERY
+
+PRODUCTION RESULT COUNT
+
+PRODUCTION RESULT TITLES
+
+PRODUCTION RESULT URLS
+
+PRODUCTION RESULT SNIPPETS
+
+EVENT RESULT PRESENT?
+
+EVENT RESULT DROPPED?
+
+DEDUPLICATION INVOLVED?
+
+ENTITY FILTER INVOLVED?
+
+RELEVANCE FILTER INVOLVED?
+
+TEMPORAL FILTER INVOLVED?
+
+==================================================
+6. EXACT QUERY DIFF
+==================================================
+
+Compare:
+
+BAKE-OFF SUCCESSFUL QUERY
+
+vs
+
+PRODUCTION QUERY ENGINE QUERY
+
+Show a deterministic token/semantic diff.
+
+Classify differences:
+
+COMPANY_IDENTITY_DIFFERENCE
+
+EVENT_SEMANTIC_DIFFERENCE
+
+ROLE_TERM_DIFFERENCE
+
+TEMPORAL_TERM_DIFFERENCE
+
+DOMAIN_TERM_DIFFERENCE
+
+QUERY_LENGTH_DIFFERENCE
+
+QUOTING_DIFFERENCE
+
+FALLBACK_NOT_EQUIVALENT
+
+OTHER
+
+If queries are identical, explicitly report:
+
+QUERY_IDENTICAL = YES
+
+==================================================
+7. EXECUTION PARAMETER DIFF
+==================================================
+
+Compare Tavily request parameters between bake-off and production:
+
+search depth
+topic/category
+max results
+time range
+include domains
+exclude domains
+include answer
+include raw content
+country
+other Tavily parameters
+
+Report every difference.
+
+Do not assume query text is the only variable.
+
+==================================================
+8. RAW RESULT DIFF
+==================================================
+
+If the same/equivalent query was executed but results differed:
+
+compare the raw provider result sets.
+
+Report:
+
+BAKE-OFF RESULT COUNT
+PRODUCTION RESULT COUNT
+
+OVERLAPPING URLS
+
+BAKE-OFF-ONLY URLS
+
+PRODUCTION-ONLY URLS
+
+EVENT URL PRESENT IN BAKE-OFF?
+
+EVENT URL PRESENT IN PRODUCTION?
+
+Determine whether this is:
+
+QUERY DIFFERENCE
+
+REQUEST_PARAMETER DIFFERENCE
+
+PROVIDER_RESULT_VARIABILITY
+
+POST_RETRIEVAL_FILTERING
+
+CACHE DIFFERENCE
+
+OTHER
+
+==================================================
+9. CACHE AUDIT
+==================================================
+
+Check whether production execution used cached Tavily results.
+
+For each query:
+
+CACHE HIT?
+CACHE CREATED AT
+CACHE QUERY KEY
+CACHE REQUEST PARAMETERS
+CACHE RESULT COUNT
+
+Determine whether old results from the previous query strategy were
+reused after Query Engine Fix 01.
+
+This is critical.
+
+New query semantics must not accidentally reuse stale retrieval cache
+entries.
+
+==================================================
+10. FALLBACK SUFFICIENCY AUDIT
+==================================================
+
+Check whether PRIMARY_QUERY was incorrectly marked:
+
+SUFFICIENT_RETRIEVAL
+
+and therefore prevented the validated fallback query from executing.
+
+For each company report:
+
+PRIMARY RESULTS
+
+WHICH RESULT CAUSED SUFFICIENT_RETRIEVAL
+
+WHY IT WAS CLASSIFIED SUFFICIENT
+
+QUESTION RELEVANCE
+
+ENTITY MATCH
+
+SOURCE TYPE
+
+TEMPORAL RELEVANCE
+
+Was sufficiency correct?
+
+YES / NO
+
+If NO, classify:
+
+SUFFICIENCY_GATE_FALSE_POSITIVE
+
+This is a likely high-value failure mode.
+
+==================================================
+11. FALLBACK EQUIVALENCE
+==================================================
+
+If fallback executed:
+
+compare production fallback directly against the successful bake-off
+query.
+
+Determine:
+
+EXACT_EQUIVALENT
+
+SEMANTICALLY_EQUIVALENT
+
+MATERIALLY_DIFFERENT
+
+If materially different, explain which generic terms were lost or
+changed.
+
+Do not use reference-event wording to make the comparison.
+
+==================================================
+12. PROVIDER VARIABILITY CHECK
+==================================================
+
+Only AFTER the differential autopsy:
+
+If production query and request parameters are materially identical to
+the successful bake-off request, perform ONE controlled fresh replay of
+the exact generic query.
+
+Maximum:
+
+1 additional Tavily call per company.
+
+Do not repeatedly query until the event appears.
+
+Record:
+
+timestamp
+query
+parameters
+results
+event retrieved?
+
+This determines whether Tavily result variability is responsible.
+
+==================================================
+13. FIRST BROKEN STAGE
+==================================================
+
+Assign exactly one primary cause per company:
+
+QUERY_GENERATION_DRIFT
+
+FALLBACK_QUERY_DRIFT
+
+SUFFICIENCY_GATE_FALSE_POSITIVE
+
+CACHE_KEY_ERROR
+
+STALE_CACHE_REUSE
+
+REQUEST_PARAMETER_DRIFT
+
+PROVIDER_RESULT_VARIABILITY
+
+POST_RETRIEVAL_FILTER_ERROR
+
+ENTITY_FILTER_ERROR
+
+TEMPORAL_FILTER_ERROR
+
+OTHER
+
+==================================================
+14. MINIMAL FIX
+==================================================
+
+Only after both autopsies are complete:
+
+implement the smallest generic fix justified by evidence.
+
+Examples:
+
+make production generic query semantics match validated bake-off
+strategy
+
+correct fallback semantic construction
+
+correct retrieval sufficiency false positive
+
+include query-strategy version in cache key
+
+invalidate stale query cache safely
+
+align Tavily request parameters
+
+correct post-retrieval filtering
+
+Do NOT hardcode:
+
+Black & McDonald
+RAKBANK
+their reference events
+their event URLs
+their event-specific people
+
+==================================================
+15. IMPORTANT CACHE VERSIONING
+==================================================
+
+If query behavior changed but cache identity does not include sufficient
+query/request-strategy information, fix this generically.
+
+Cache identity should distinguish materially different:
+
+query text
+query strategy version
+provider
+capability
+request parameters
+
+Do not allow pre-fix retrieval results to masquerade as results from the
+new query strategy.
+
+==================================================
+16. RETEST
+==================================================
+
+After minimal fix:
+
+rerun ONLY:
+
+Black & McDonald
+RAKBANK
+
+through NORMAL JYRA research execution.
+
+Do not use the bake-off runner.
+
+Reference labels remain hidden.
+
+Maximum 2 Tavily calls per research question.
+
+==================================================
+17. REQUIRED RESULT
+==================================================
+
+Report:
+
+BLACK & MCDONALD
+Event retrieved = YES / NO
+Primary calls =
+Fallback calls =
+First broken stage =
+Fix applied =
+
+RAKBANK
+Event retrieved = YES / NO
+Primary calls =
+Fallback calls =
+First broken stage =
+Fix applied =
+
+Combined:
+Events retrieved = X/2
+Tavily calls =
+Wrong entity accepted = 0 required
+Seller content accepted = 0 required
+Production operations = 0 required
+
+==================================================
+18. THEN REPLAY THE SEVEN
+==================================================
+
+ONLY if both two-company retests pass:
+
+rerun the exact seven frozen retrieval controls ONCE through normal JYRA
+execution.
+
+Report:
+
+EVENTS RETRIEVED = X/7
+RETRIEVAL RECALL
+TOTAL TAVILY CALLS
+PRIMARY-ONLY
+FALLBACK REQUIRED
+FALLBACK RATE
+WRONG ENTITY ACCEPTED
+SELLER CONTENT ACCEPTED
+
+Do not run extraction/signals.
+
+==================================================
+19. PASS GATE
+==================================================
+
+PASS requires:
+
+7/7 reference events retrieved
+
+wrong entity accepted = 0
+
+seller/vendor content accepted as buyer evidence = 0
+
+max two Tavily calls/question respected
+
+production operations = 0
+
+No benchmark-specific hardcoding.
+
+If 7/7 is not achieved:
+
+DO NOT mark Query Engine Fix complete.
+
+==================================================
+20. REQUIRED ARTIFACTS
+==================================================
+
+Generate:
+
+QUERY_ENGINE_FIX_01A_AUTOPSY.md
+
+QUERY_ENGINE_FIX_01A_AUTOPSY.json
+
+QUERY_ENGINE_FIX_01A_TWO_CONTROL_RETEST.json
+
+QUERY_ENGINE_FIX_01A_SEVEN_CONTROL_REPLAY.json
+
+==================================================
+21. FINAL DECISION
+==================================================
+
+Return exactly ONE:
+
+A — QUERY ENGINE REPRODUCTION VALIDATED
+
+Normal JYRA execution now reproduces 7/7.
+
+B — SUFFICIENCY / CACHE / EXECUTION BUG FIXED BUT TARGET NOT REACHED
+
+C — PROVIDER RESULT VARIABILITY PREVENTS DETERMINISTIC REPRODUCTION
+
+D — QUERY GENERATION STILL DOES NOT MATCH VALIDATED STRATEGY
+
+E — INCONCLUSIVE
+
+==================================================
+22. STOP
+==================================================
+
+STOP after this milestone.
+
+Do NOT:
+
+fix Black Duck extraction
+fix identity
+integrate Exa
+integrate Unipile
+run full 10-control benchmark
+run 50-company benchmark
+change signals/scoring/contacts/UI
+
+Return results for human review.

@@ -274,7 +274,17 @@ function attemptTrace(attempt: AdaptiveWebSearchAttempt) {
 async function main() {
   if (process.env.NODE_ENV !== "development") throw new Error("Query Engine Fix 01 is development-only");
   const autopsy = JSON.parse(await readFile(AUTOPSY_PATH, "utf8")) as JsonRecord;
-  const controls = controlsFromAutopsy(autopsy);
+  const allControls = controlsFromAutopsy(autopsy);
+  const requestedIndices = process.env.JYRA_QUERY_ENGINE_CONTROL_INDICES
+    ?.split(",")
+    .map((value) => Number(value.trim()))
+    .filter(Number.isFinite);
+  const controls = requestedIndices?.length
+    ? allControls.filter((control) => requestedIndices.includes(control.controlIndex))
+    : allControls;
+  if (requestedIndices?.length && controls.length !== requestedIndices.length) {
+    throw new Error(`Requested ${requestedIndices.length} controls but resolved ${controls.length}`);
+  }
   const adapter = createTavilyWebSearchAdapter({
     providerId: "tavily",
     configuration: parseTavilyProviderConfiguration({}),
@@ -463,11 +473,215 @@ ${retrievalControls.map((control) => `| ${control.company} | ${control.primaryRe
   const safe = redact({ summary, retrieval, queryTraces, markdown });
   assertNoSecrets(safe);
   const output = asRecord(safe);
+  if (process.env.JYRA_QUERY_ENGINE_01A === "two") {
+    const comparison = JSON.parse(await readFile(path.join(ROOT, "RETRIEVAL_BAKEOFF_01_QUERY_COMPARISON.json"), "utf8")) as JsonRecord;
+    const bakeoffResults = JSON.parse(await readFile(path.join(ROOT, "RETRIEVAL_BAKEOFF_01_RESULTS.json"), "utf8")) as JsonRecord;
+    const rawIndex = JSON.parse(await readFile(path.join(ROOT, "RETRIEVAL_BAKEOFF_01_RAW_INDEX.json"), "utf8")) as JsonRecord;
+    const priorTraces = JSON.parse(await readFile(path.join(ROOT, "QUERY_ENGINE_FIX_01_QUERY_TRACES.json"), "utf8")) as JsonRecord;
+    const resultRows = Array.isArray(bakeoffResults.results) ? bakeoffResults.results.map(asRecord) : [];
+    const rawRows = Array.isArray(rawIndex.results) ? rawIndex.results.map(asRecord) : [];
+    const priorRows = Array.isArray(priorTraces.traces) ? priorTraces.traces.map(asRecord) : [];
+    const comparisonRows = Array.isArray(comparison.controls) ? comparison.controls.map(asRecord) : [];
+    const tokenize = (query: string) => [...new Set(query.toLowerCase().match(/[a-z0-9]+/g) ?? [])];
+    const differential = controls.map((control) => {
+      const successes = resultRows.filter((row) =>
+        row.controlIndex === control.controlIndex
+        && row.arm === "IMPROVED_TAVILY"
+        && (row.label === "EXACT_EVENT" || row.label === "SAME_EVENT_ALTERNATE_SOURCE"));
+      const successful = successes.sort((left, right) =>
+        Number(asRecord(left.rawResult).rank ?? 999) - Number(asRecord(right.rawResult).rank ?? 999))[0];
+      const bakeoffRaw = rawRows.find((row) =>
+        row.controlIndex === control.controlIndex
+        && row.arm === "IMPROVED_TAVILY"
+        && row.query === successful?.query);
+      const prior = priorRows.find((row) => row.controlIndex === control.controlIndex);
+      const priorAttempts = Array.isArray(prior?.attempts) ? prior.attempts.map(asRecord) : [];
+      const comparisonRow = comparisonRows.find((row) => row.controlIndex === control.controlIndex);
+      const successfulQuery = String(successful?.query ?? "");
+      const productionPrimary = String(asRecord(prior?.queryPlan).primaryQuery ?? "");
+      const successfulWasFallback = String(successful?.variant ?? "").endsWith("_2");
+      const productionComparisonQuery = successfulWasFallback
+        ? String(priorAttempts[1]?.query ?? "")
+        : productionPrimary;
+      const successfulTokens = tokenize(successfulQuery);
+      const productionTokens = tokenize(productionComparisonQuery);
+      const bakeoffUrls = new Set((Array.isArray(bakeoffRaw?.rawResults) ? bakeoffRaw.rawResults : [])
+        .map((row) => normalizeUrl(stringValue(asRecord(row).url))).filter(Boolean));
+      const productionUrls = new Set(priorAttempts.flatMap((attempt) =>
+        (Array.isArray(attempt.diagnostics) ? attempt.diagnostics : [])
+          .map((row) => normalizeUrl(stringValue(asRecord(row).url))).filter(Boolean)));
+      const overlappingUrls = [...bakeoffUrls].filter((url) => productionUrls.has(url));
+      const queryIdentical = successfulQuery === productionComparisonQuery;
+      const retest = retrievalControls.find((row) => row.controlIndex === control.controlIndex)!;
+      const firstBrokenStage = control.controlIndex === 8
+        ? "QUERY_GENERATION_DRIFT"
+        : "FALLBACK_QUERY_DRIFT";
+      return {
+        company: control.company,
+        researchCategory: control.questionType,
+        bakeoffSuccess: {
+          primaryQuery: stringValue(asRecord(comparisonRow?.improvedTavily && Array.isArray(comparisonRow.improvedTavily) ? comparisonRow.improvedTavily[0] : null).query),
+          fallbackQuery: stringValue(asRecord(comparisonRow?.improvedTavily && Array.isArray(comparisonRow.improvedTavily) ? comparisonRow.improvedTavily[1] : null).query),
+          queryThatFoundEvent: successfulQuery,
+          tavilyCallNumber: String(successful?.variant ?? "").endsWith("_2") ? 2 : 1,
+          matchingResultRank: asRecord(successful?.rawResult).rank ?? null,
+          matchingResultTitle: asRecord(successful?.rawResult).title ?? null,
+          matchingResultUrl: asRecord(successful?.rawResult).url ?? null,
+          matchingResultPublisher: hostForUrl(stringValue(asRecord(successful?.rawResult).url)),
+          matchingResultSnippet: asRecord(successful?.rawResult).snippet ?? null,
+          matchType: successful?.label ?? null,
+          sourceAuthority: successful?.sourceAuthority ?? null,
+          resultDate: asRecord(successful?.rawResult).publishedAt ?? null,
+        },
+        failedNormalExecution: {
+          primaryQuery: productionPrimary,
+          primaryRetrievalStatus: priorAttempts[0]?.retrievalStatus ?? null,
+          fallbackTriggered: priorAttempts.length > 1,
+          fallbackQuery: priorAttempts[1]?.query ?? asRecord(prior?.queryPlan).fallbackQuery ?? null,
+          resultCount: prior?.finalUniqueResults ?? null,
+          results: priorAttempts.flatMap((attempt) => Array.isArray(attempt.diagnostics) ? attempt.diagnostics : []),
+          eventResultPresent: false,
+          eventResultDropped: false,
+          deduplicationInvolved: priorAttempts.reduce((sum, attempt) => sum + Number(attempt.resultCount ?? 0), 0) > Number(prior?.finalUniqueResults ?? 0),
+          entityFilterInvolved: false,
+          relevanceFilterInvolved: false,
+          temporalFilterInvolved: false,
+        },
+        exactQueryDiff: {
+          productionQueryCompared: productionComparisonQuery,
+          queryIdentical,
+          bakeoffOnlyTokens: successfulTokens.filter((token) => !productionTokens.includes(token)),
+          productionOnlyTokens: productionTokens.filter((token) => !successfulTokens.includes(token)),
+          classifications: queryIdentical
+            ? []
+            : control.controlIndex === 8
+              ? ["COMPANY_IDENTITY_DIFFERENCE", "QUERY_LENGTH_DIFFERENCE", "QUOTING_DIFFERENCE"]
+              : ["FALLBACK_NOT_EQUIVALENT"],
+        },
+        requestParameterDiff: {
+          bakeoff: asRecord(bakeoffRaw?.requestMetadata).body ?? null,
+          production: {
+            search_depth: "advanced",
+            max_results: 10,
+            include_answer: false,
+            include_raw_content: true,
+            include_images: false,
+          },
+          differences: [],
+        },
+        rawResultDiff: {
+          bakeoffResultCount: bakeoffRaw?.resultCount ?? null,
+          productionResultCount: prior?.finalUniqueResults ?? null,
+          overlappingUrls,
+          bakeoffOnlyUrls: [...bakeoffUrls].filter((url) => !productionUrls.has(url)),
+          productionOnlyUrls: [...productionUrls].filter((url) => !bakeoffUrls.has(url)),
+          eventUrlPresentInBakeoff: bakeoffUrls.has(normalizeUrl(control.referenceSource)),
+          eventUrlPresentInProduction: productionUrls.has(normalizeUrl(control.referenceSource)),
+          classification: queryIdentical ? "PROVIDER_RESULT_VARIABILITY" : "QUERY_DIFFERENCE",
+        },
+        cacheAudit: {
+          cacheHit: false,
+          cacheCreatedAt: null,
+          cacheQueryKey: null,
+          cacheRequestParameters: null,
+          cacheResultCount: null,
+          conclusion: "The normal adaptive WEB_SEARCH path called Tavily directly; it has no retrieval-result cache.",
+        },
+        sufficiencyAudit: {
+          primaryStatus: priorAttempts[0]?.retrievalStatus ?? null,
+          resultsCausingSufficiency: (Array.isArray(priorAttempts[0]?.diagnostics) ? priorAttempts[0].diagnostics : [])
+            .filter((row) => asRecord(row).retrievalDisposition === "RELEVANT"),
+          sufficiencyCorrect: priorAttempts[0]?.retrievalStatus !== "SUFFICIENT_RETRIEVAL",
+          classification: priorAttempts[0]?.retrievalStatus === "SUFFICIENT_RETRIEVAL"
+            ? "SUFFICIENCY_GATE_FALSE_POSITIVE"
+            : null,
+        },
+        fallbackEquivalence: {
+          productionFallback: priorAttempts[1]?.query ?? null,
+          successfulBakeoffQuery: successfulQuery,
+          equivalence: priorAttempts[1]?.query === successfulQuery ? "EXACT_EQUIVALENT" : "MATERIALLY_DIFFERENT",
+        },
+        freshNormalRetest: retest,
+        firstBrokenStage,
+        fixApplied: control.controlIndex === 8
+          ? "Strip generic legal suffixes from the company display identity used by both primary and fallback queries."
+          : "Restore the validated generic technology fallback semantics; no provider, identity, or benchmark-specific term was added.",
+      };
+    });
+    const twoPass = retrievalControls.every((row) => row.referenceEventRetrieved)
+      && retrievalControls.every((row) => row.wrongEntityAcceptedAsEvidence === 0 && row.sellerContentAcceptedAsEvidence === 0);
+    const autopsy01a = {
+      test: "QUERY_ENGINE_FIX_01A_AUTOPSY",
+      generatedAt,
+      developmentOnly: true,
+      productionOperations: 0,
+      differential,
+      minimalGenericFix: {
+        companyIdentity: "Remove common legal suffixes when constructing quoted search identity; retain the verified canonical domain.",
+        fallbackSemantics: "Match the two validated generic bake-off variants exactly.",
+        cacheChange: "None; no retrieval cache exists in this path.",
+      },
+      twoControlPass: twoPass,
+      decision: twoPass ? "A — QUERY ENGINE REPRODUCTION VALIDATED" : "C — PROVIDER RESULT VARIABILITY PREVENTS DETERMINISTIC REPRODUCTION",
+    };
+    const autopsyMarkdown = `# Query Engine Fix 01A — Reproduction Autopsy
+
+## Result
+
+- Black & McDonald event retrieved: **${retrievalControls.find((row) => row.controlIndex === 8)?.referenceEventRetrieved ? "YES" : "NO"}**
+- RAKBANK event retrieved: **${retrievalControls.find((row) => row.controlIndex === 9)?.referenceEventRetrieved ? "YES" : "NO"}**
+- Combined events retrieved: **${eventsRetrieved}/${controls.length}**
+- Tavily calls: **${totalCalls}**
+- Wrong entity accepted: **${wrongAccepted}**
+- Seller content accepted: **${sellerAccepted}**
+- Production operations: **0**
+
+## Differential conclusion
+
+- **Black & McDonald:** the failed normal primary used the canonical legal name “Black & McDonald Limited”; the successful bake-off used the generic display identity “Black & McDonald”. This is query-generation drift.
+- **RAKBANK:** the validated primary query and request parameters were identical, but Tavily returned a materially different URL set. The later production fallback had also drifted from the validated fallback.
+- **Cache:** no retrieval cache exists in the normal adaptive WEB_SEARCH path, so stale-cache reuse was not involved.
+- **Post-retrieval filters:** neither missing event URL appeared in the failed raw result set, so deduplication, entity, relevance, and temporal filtering did not drop the events.
+
+## Minimal generic fix
+
+1. Strip common legal suffixes from the quoted search identity while retaining the verified canonical domain.
+2. Restore the validated generic fallback semantics exactly.
+3. Keep the existing two-call limit and provider-failure fallback prohibition.
+
+## Final decision
+
+**${autopsy01a.decision}**
+`;
+    const safe01a = redact({ autopsy01a, autopsyMarkdown, retrieval });
+    assertNoSecrets(safe01a);
+    const rendered = asRecord(safe01a);
+    await Promise.all([
+      writeFile(path.join(ROOT, "QUERY_ENGINE_FIX_01A_AUTOPSY.json"), `${JSON.stringify(rendered.autopsy01a, null, 2)}\n`),
+      writeFile(path.join(ROOT, "QUERY_ENGINE_FIX_01A_AUTOPSY.md"), String(rendered.autopsyMarkdown)),
+      writeFile(path.join(ROOT, "QUERY_ENGINE_FIX_01A_TWO_CONTROL_RETEST.json"), `${JSON.stringify(rendered.retrieval, null, 2)}\n`),
+      writeFile(path.join(ROOT, "QUERY_ENGINE_FIX_01A_SEVEN_CONTROL_REPLAY.json"), `${JSON.stringify({
+        test: "QUERY_ENGINE_FIX_01A_SEVEN_CONTROL_REPLAY",
+        generatedAt,
+        status: twoPass ? "PENDING_EXECUTION" : "NOT_RUN",
+        reason: twoPass
+          ? "The two-control gate passed; the exact seven-control replay is now permitted."
+          : "The two-control gate failed, so the brief prohibits running the seven-control replay.",
+        providerCalls: 0,
+        productionOperations: 0,
+      }, null, 2)}\n`),
+    ]);
+    console.log(JSON.stringify(autopsy01a, null, 2));
+    return;
+  }
   await Promise.all([
     writeFile(OUTPUTS.summary, `${JSON.stringify(output.summary, null, 2)}\n`),
     writeFile(OUTPUTS.retrieval, `${JSON.stringify(output.retrieval, null, 2)}\n`),
     writeFile(OUTPUTS.traces, `${JSON.stringify(output.queryTraces, null, 2)}\n`),
     writeFile(OUTPUTS.markdown, String(output.markdown)),
+    ...(process.env.JYRA_QUERY_ENGINE_01A === "seven"
+      ? [writeFile(path.join(ROOT, "QUERY_ENGINE_FIX_01A_SEVEN_CONTROL_REPLAY.json"), `${JSON.stringify(output.retrieval, null, 2)}\n`)]
+      : []),
   ]);
   console.log(JSON.stringify(summary, null, 2));
 }

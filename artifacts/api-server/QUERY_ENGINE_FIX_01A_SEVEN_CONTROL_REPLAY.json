@@ -1,0 +1,8 @@
+{
+  "test": "QUERY_ENGINE_FIX_01A_SEVEN_CONTROL_REPLAY",
+  "generatedAt": "2026-08-31T16:32:34.301Z",
+  "status": "NOT_RUN",
+  "reason": "The two-control gate failed, so the brief prohibits running the seven-control replay.",
+  "providerCalls": 0,
+  "productionOperations": 0
+}

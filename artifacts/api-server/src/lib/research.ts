@@ -354,15 +354,15 @@ const GENERIC_QUERY_TERMS: Record<ResearchQuestion["questionType"], {
   },
   SECURITY: {
     primary: "security compliance certification public announcement",
-    fallback: "\"SOC 2\" \"ISO 27001\" security certification announcement",
+    fallback: "cybersecurity assurance compliance news",
   },
   EXPANSION: {
     primary: "security compliance certification public announcement",
-    fallback: "\"SOC 2\" \"ISO 27001\" security certification announcement",
+    fallback: "cybersecurity assurance compliance news",
   },
   TECHNOLOGY: {
     primary: "security operations technology change public announcement",
-    fallback: "\"SIEM\" security platform migration implementation \"case study\"",
+    fallback: "cybersecurity infrastructure platform change news",
   },
   LEADERSHIP: {
     primary: "security leadership appointment public announcement",
@@ -396,7 +396,7 @@ export function buildResearchQueryPlan(input: {
   now?: Date;
 }): ResearchQueryPlan {
   const terms = GENERIC_QUERY_TERMS[input.question.questionType] ?? GENERIC_QUERY_TERMS.NEWS;
-  const identity = normalizedCompanyIdentity(input.company);
+  const identity = normalizedCompanyIdentity(input.company, true);
   const fallbackIdentity = normalizedCompanyIdentity(input.company, true);
   const now = input.now ?? new Date();
   return {
