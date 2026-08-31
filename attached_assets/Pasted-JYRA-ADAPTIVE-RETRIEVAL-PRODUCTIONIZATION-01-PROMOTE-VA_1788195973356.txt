@@ -1,0 +1,849 @@
+JYRA — ADAPTIVE RETRIEVAL PRODUCTIONIZATION 01
+PROMOTE VALIDATED TAVILY → EXA FALLBACK INTO NORMAL RESEARCH PATH
+
+PURPOSE
+
+The retrieval architecture has now been validated.
+
+Retrieval Fallback Validation 01 established:
+
+- Tavily runs first.
+- Exa runs only when Tavily retrieval is insufficient or Tavily fails.
+- Maximum two provider calls per research question.
+- 7/7 frozen retrieval controls retrieved in BOTH preserved validation runs.
+- 100% final retrieval recall.
+- 1 Tavily-only result.
+- 1 Exa-only recovery.
+- 5 events found by both providers.
+- 0 controls missed by both.
+- Wrong entity accepted = 0.
+- Seller content accepted = 0.
+- Cross-provider deduplication passed.
+- Publisher/provider separation passed.
+
+Decision:
+
+ADAPTIVE TAVILY → EXA RETRIEVAL VALIDATED.
+
+Exa is currently experimental/development-only and has NOT been
+permanently added to normal research routing.
+
+GOAL OF THIS MILESTONE:
+
+Promote the validated adaptive retrieval architecture into JYRA's
+NORMAL research execution path:
+
+ResearchQuestion
+→ Tavily primary
+→ retrieval sufficiency evaluation
+→ Exa fallback only when required
+→ merge/dedupe
+→ normal evidence pipeline
+
+After this milestone, RETRIEVAL SHOULD BE FROZEN for the current MVP
+unless a later end-to-end benchmark reveals a new demonstrated defect.
+
+==================================================
+1. DATABASE SAFETY
+==================================================
+
+This is development implementation work.
+
+Use ONLY development database during implementation/testing.
+
+Create/apply migrations to DEVELOPMENT only if genuinely necessary.
+
+DO NOT:
+
+migrate production
+reset production
+seed production
+truncate production
+modify production customer data
+test against production
+
+Production schema changes only through explicit production migration
+workflow.
+
+Prefer NO schema changes.
+
+==================================================
+2. SCOPE
+==================================================
+
+Change ONLY what is necessary to productionize:
+
+Tavily primary retrieval
+retrieval sufficiency gate
+conditional Exa fallback
+provider failure fallback
+cross-provider merge/deduplication
+retrieval provenance
+cost/call accounting
+provider diagnostics
+routing tests
+
+DO NOT CHANGE:
+
+Business Twin
+ICP
+firmographics
+company discovery
+entity resolution
+canonical identity
+fact extraction
+fact ontology
+fact validation
+signal definitions
+signal mapping
+clusters
+opportunity scoring
+confidence
+ranking
+WHY
+NBA
+buying committee
+contacts
+UI
+outreach
+learning/outcomes
+
+==================================================
+3. NO UNIPILE
+==================================================
+
+Unipile is explicitly OUT OF SCOPE.
+
+DO NOT:
+
+integrate Unipile
+call Unipile
+add Unipile abstractions
+add LinkedIn account connections
+change architecture around Unipile
+
+Do not introduce any new provider.
+
+==================================================
+4. NORMAL RESEARCH ARCHITECTURE
+==================================================
+
+Implement this in JYRA's NORMAL ResearchQuestion execution path:
+
+ResearchQuestion
+↓
+build validated generic query
+↓
+TAVILY WEB_SEARCH
+↓
+normalize + retain retrieval results
+↓
+evaluate retrieval sufficiency
+↓
+IF SUFFICIENT_RETRIEVAL
+    continue normal evidence pipeline
+↓
+IF INSUFFICIENT_RETRIEVAL
+   OR AMBIGUOUS_RETRIEVAL
+   OR PROVIDER_FAILURE
+    execute EXA fallback
+↓
+normalize Exa results
+↓
+merge Tavily + Exa
+↓
+dedupe
+↓
+entity/seller/source safety
+↓
+normal evidence pipeline
+
+This must NOT remain a benchmark-only/test-runner path.
+
+==================================================
+5. TAVILY REMAINS PRIMARY
+==================================================
+
+Tavily remains the default primary WEB_SEARCH provider for this MVP.
+
+Do NOT run Tavily and Exa in parallel by default.
+
+Do NOT send every research question to both providers.
+
+Normal behavior:
+
+TAVILY FIRST.
+
+Exa is resilience/fallback retrieval.
+
+==================================================
+6. EXA FALLBACK CONDITIONS
+==================================================
+
+Exa may execute only when Tavily results in:
+
+INSUFFICIENT_RETRIEVAL
+
+AMBIGUOUS_RETRIEVAL
+
+PROVIDER_FAILURE
+
+Record exact fallback reason:
+
+FALLBACK_INSUFFICIENT
+
+FALLBACK_AMBIGUOUS
+
+FALLBACK_PROVIDER_FAILURE
+
+If Tavily returns:
+
+SUFFICIENT_RETRIEVAL
+
+Exa MUST NOT execute.
+
+==================================================
+7. MAXIMUM PROVIDER CALLS
+==================================================
+
+For one ResearchQuestion:
+
+maximum Tavily calls = 1
+
+maximum Exa calls = 1
+
+maximum total retrieval-provider calls = 2
+
+Do not implement:
+
+Tavily
+→ Tavily retry for semantic insufficiency
+→ Exa
+
+Provider transport retry behavior may remain governed by existing
+provider reliability rules, but logical research attempts must respect
+the architecture.
+
+==================================================
+8. PROVIDER FAILURE IS NOT NEGATIVE EVIDENCE
+==================================================
+
+Critical semantic rule:
+
+Tavily timeout
+Tavily quota error
+Tavily provider error
+Tavily transport failure
+
+MUST NOT become:
+
+NO EVENT
+
+NO SIGNAL
+
+INSUFFICIENT MARKET ACTIVITY
+
+WATCH because nothing found
+
+Instead:
+
+PROVIDER_FAILURE
+→ Exa fallback
+
+If both providers fail:
+
+RESEARCH_INCOMPLETE / PROVIDER_FAILURE
+
+not negative evidence.
+
+==================================================
+9. QUERY CONSTRUCTION
+==================================================
+
+Use the corrected generic query semantics already implemented and
+validated in:
+
+Query Engine Fix 01
+Query Engine Fix 01A
+
+Preserve:
+
+category-driven event vocabulary
+generic research semantics
+legal suffix normalization where justified
+verified-domain context
+validated fallback semantics where relevant
+
+However, with adaptive routing:
+
+Tavily gets the primary generic query.
+
+Exa gets the appropriate generic fallback query/objective when required.
+
+Do NOT use benchmark/reference-event information.
+
+==================================================
+10. EXA IMPLEMENTATION
+==================================================
+
+Promote Exa only for the generic retrieval capability required here.
+
+Use:
+
+regular Exa Search
+
+Do NOT use:
+
+Exa Agent
+Exa Answer
+people search
+contact search
+company discovery through this retrieval path
+automatic enrichment
+
+Existing Exa COMPANY_DISCOVERY functionality must remain logically
+separate.
+
+Do not accidentally conflate:
+
+COMPANY_DISCOVERY
+
+with
+
+WEB / EVENT RETRIEVAL.
+
+==================================================
+11. CAPABILITY ARCHITECTURE
+==================================================
+
+Keep provider abstractions generic.
+
+Do NOT write:
+
+if Tavily fails call hardcodedExaFunction()
+
+through unrelated business logic.
+
+Normal research execution should depend on retrieval capability /
+strategy semantics.
+
+Conceptually:
+
+Research Retrieval Strategy
+    PRIMARY → Tavily
+    FALLBACK → Exa
+
+Provider-specific SDK details remain inside provider adapters.
+
+Avoid vendor-specific logic leaking into:
+
+signal engine
+opportunity engine
+ResearchQuestion semantics
+
+==================================================
+12. RETRIEVAL SUFFICIENCY
+==================================================
+
+Use the validated deterministic statuses:
+
+SUFFICIENT_RETRIEVAL
+
+INSUFFICIENT_RETRIEVAL
+
+AMBIGUOUS_RETRIEVAL
+
+PROVIDER_FAILURE
+
+Do not redesign the sufficiency system during this milestone unless a
+clear implementation defect prevents productionization.
+
+==================================================
+13. SUFFICIENCY IS NOT OPPORTUNITY
+==================================================
+
+Retrieval sufficiency answers only:
+
+"Did we retrieve credible evidence relevant enough to this research
+question to continue?"
+
+It does NOT mean:
+
+signal exists
+buyer intent exists
+opportunity exists
+company should be prioritized
+
+Do not allow retrieval sufficiency to influence opportunity scoring
+directly.
+
+==================================================
+14. CROSS-PROVIDER NORMALIZATION
+==================================================
+
+Normalize Tavily and Exa into the same provider-neutral retrieval result
+shape where practical.
+
+Preserve:
+
+retrieval provider
+publisher
+query
+result rank
+title
+URL
+canonical URL
+snippet/highlight
+published date
+retrieved timestamp
+provider score if available
+source classification
+entity match status
+retrieval disposition
+
+Provider-specific raw metadata may remain separately retained.
+
+==================================================
+15. PUBLISHER VS PROVIDER
+==================================================
+
+Mandatory separation:
+
+retrievalProvider = Tavily / Exa
+
+publisher = actual originating source
+
+Example:
+
+retrievalProvider:
+EXA
+
+publisher:
+Reuters
+
+Do not label evidence source as "Exa" when Exa merely discovered the
+Reuters page.
+
+==================================================
+16. RAW RETRIEVAL FORENSICS
+==================================================
+
+Preserve sufficient diagnostics to reconstruct future failures:
+
+ResearchQuestion ID
+provider
+query
+request timestamp
+request parameters
+response status
+latency
+result rank
+title
+URL
+canonical URL
+publisher
+snippet/highlight
+published date
+provider score
+retrieval disposition
+fallback reason
+estimated cost
+actual cost where reported
+
+Never persist:
+
+API keys
+authorization headers
+credentials
+
+Preserve existing redaction/DLP protections.
+
+==================================================
+17. CROSS-PROVIDER DEDUPLICATION
+==================================================
+
+If Tavily and Exa retrieve the same page/event:
+
+do not create duplicate evidence.
+
+Use existing conservative dedupe using appropriate combinations of:
+
+canonical URL
+normalized URL
+content hash
+normalized title
+publisher
+event identity where defensible
+
+Retain retrieval provenance showing that multiple providers may have
+discovered the source.
+
+Example:
+
+same evidence source
+retrievedBy = [TAVILY, EXA]
+
+rather than two independent buyer events.
+
+==================================================
+18. ENTITY SAFETY
+==================================================
+
+Do NOT loosen entity validation.
+
+Wrong-company search results:
+
+may remain in raw diagnostics
+
+but must not become trusted evidence for the canonical company.
+
+Required:
+
+WRONG_ENTITY_ACCEPTED = 0
+
+==================================================
+19. SELLER VS BUYER SAFETY
+==================================================
+
+Preserve existing seller/buyer protections.
+
+Vendor marketing content must not become evidence that the vendor is
+buying the service it sells.
+
+Required:
+
+SELLER_CONTENT_ACCEPTED_AS_BUYER_EVIDENCE = 0
+
+==================================================
+20. TEMPORAL SAFETY
+==================================================
+
+Preserve:
+
+published date
+event date if explicitly available
+retrieval timestamp
+freshness classification
+
+Do not convert stale evidence into current events.
+
+Unknown dates remain UNKNOWN unless defensibly resolved.
+
+==================================================
+21. COST ACCOUNTING
+==================================================
+
+For every ResearchQuestion record:
+
+Tavily calls
+Exa calls
+fallback reason
+estimated Tavily cost
+actual Tavily cost if available
+estimated Exa cost
+actual Exa cost if available
+total retrieval cost
+
+Also aggregate:
+
+Exa fallback rate
+
+average provider calls/question
+
+cost/question
+
+cost/researched company
+
+provider failure rate
+
+retrieval sufficiency rate after Tavily
+
+retrieval sufficiency rate after adaptive fallback
+
+==================================================
+22. DO NOT USE BENCHMARK-SPECIFIC LOGIC
+==================================================
+
+Search codebase for:
+
+Black & McDonald
+RAKBANK
+Infoblox
+Nubank
+other frozen control company names
+reference-event phrases
+reference URLs
+
+None may appear in normal retrieval logic.
+
+Benchmark names may exist only in:
+
+test fixtures
+validation artifacts
+benchmark manifests
+
+Fail validation if benchmark-specific terms leak into runtime logic.
+
+==================================================
+23. NORMAL-PATH INTEGRATION TESTS
+==================================================
+
+Add deterministic mocked integration tests for normal ResearchQuestion
+execution.
+
+TEST A — TAVILY SUFFICIENT
+
+Tavily returns sufficient relevant evidence.
+
+Expected:
+
+Tavily calls = 1
+Exa calls = 0
+normal evidence path continues.
+
+TEST B — TAVILY INSUFFICIENT
+
+Expected:
+
+Tavily calls = 1
+Exa calls = 1
+results merged
+normal evidence path continues.
+
+TEST C — TAVILY AMBIGUOUS
+
+Expected:
+
+Exa fallback executes.
+
+TEST D — TAVILY PROVIDER FAILURE
+
+Expected:
+
+Exa executes.
+Tavily failure is not treated as negative evidence.
+
+TEST E — BOTH PROVIDERS FAIL
+
+Expected:
+
+research remains incomplete/provider-failed.
+No negative buyer inference.
+
+TEST F — DUPLICATE SOURCE
+
+Both providers return same source.
+
+Expected:
+
+one canonical evidence source
+multi-provider provenance retained.
+
+TEST G — WRONG ENTITY
+
+Expected:
+
+diagnostic retention allowed
+trusted evidence = 0.
+
+TEST H — SELLER CONTENT
+
+Expected:
+
+buyer evidence = 0.
+
+==================================================
+24. DO NOT RERUN FROZEN 7-CONTROL BENCHMARK
+==================================================
+
+Do NOT rerun the exact seven controls during this milestone.
+
+We have already used them repeatedly.
+
+Do not consume them again merely to prove wiring.
+
+Use deterministic mocked integration tests plus appropriate generic
+non-benchmark smoke tests.
+
+The next meaningful frozen benchmark should be the later exact
+10-control end-to-end test.
+
+==================================================
+25. GENERIC SMOKE TEST
+==================================================
+
+After mocked tests pass, run a SMALL development-only smoke test through
+the normal ResearchQuestion path.
+
+Use 2–3 non-benchmark companies/questions.
+
+Purpose:
+
+verify real provider wiring works.
+
+Do NOT evaluate purchase intent.
+
+Verify only:
+
+Tavily primary executes
+
+Exa fallback executes when genuinely required
+
+provider provenance is correct
+
+dedupe works
+
+cost recorded
+
+no production operations
+
+Do not optimize based on smoke-test results.
+
+==================================================
+26. IMPORTANT — DO NOT TOUCH EXTRACTION
+==================================================
+
+Do NOT fix the known Black Duck extraction issue.
+
+Even if encountered incidentally:
+
+record it
+
+do not modify extraction.
+
+That is the next isolated milestone.
+
+==================================================
+27. IMPORTANT — DO NOT TOUCH IDENTITY
+==================================================
+
+Do NOT fix:
+
+Digital Maelstrom
+Mandiant
+Managed Services - Monitoring 24/7
+Corsa
+
+Identity remains a separate milestone.
+
+==================================================
+28. RETRIEVAL FREEZE
+==================================================
+
+If this productionization passes:
+
+mark current MVP retrieval architecture as:
+
+MVP_RETRIEVAL_V1_FROZEN
+
+Architecture:
+
+Tavily primary
+→ sufficiency gate
+→ Exa conditional fallback
+→ provider-neutral evidence
+
+Do not continue tuning retrieval unless later benchmark evidence
+demonstrates a concrete failure.
+
+==================================================
+29. REQUIRED ARTIFACTS
+==================================================
+
+Generate:
+
+ADAPTIVE_RETRIEVAL_PRODUCTIONIZATION_01.md
+
+ADAPTIVE_RETRIEVAL_PRODUCTIONIZATION_01.json
+
+ADAPTIVE_RETRIEVAL_PRODUCTIONIZATION_01_TESTS.json
+
+ADAPTIVE_RETRIEVAL_PRODUCTIONIZATION_01_SMOKE.json
+
+==================================================
+30. REQUIRED SUMMARY
+==================================================
+
+Return:
+
+IMPLEMENTATION:
+PASS / FAIL
+
+NORMAL RESEARCH PATH:
+TAVILY PRIMARY = PASS / FAIL
+SUFFICIENCY GATE = PASS / FAIL
+EXA CONDITIONAL FALLBACK = PASS / FAIL
+CROSS-PROVIDER DEDUPE = PASS / FAIL
+PROVIDER PROVENANCE = PASS / FAIL
+COST ACCOUNTING = PASS / FAIL
+
+MOCKED TESTS:
+A Tavily sufficient =
+B Tavily insufficient =
+C Tavily ambiguous =
+D Tavily failure =
+E both providers fail =
+F duplicate source =
+G wrong entity =
+H seller content =
+
+GENERIC SMOKE TEST:
+Companies/questions =
+Tavily calls =
+Exa calls =
+Fallback reasons =
+Provider failures =
+Wrong entity accepted =
+Seller content accepted =
+Production operations =
+
+BENCHMARK-SPECIFIC RUNTIME CONSTANTS:
+0 required
+
+UNIPILE CALLS:
+0 required
+
+PRODUCTION OPERATIONS:
+0 required
+
+==================================================
+31. FINAL DECISION
+==================================================
+
+Return exactly ONE:
+
+A — ADAPTIVE RETRIEVAL PRODUCTIONIZED AND FROZEN
+
+Use when validated Tavily → Exa routing now works through normal JYRA
+research execution with all safety tests passing.
+
+B — ROUTING IMPLEMENTED BUT NORMAL PATH HAS DEFECTS
+
+C — COST / FALLBACK CONTROL REQUIRES FIX
+
+D — SAFETY / PROVENANCE REGRESSION
+
+E — IMPLEMENTATION INCONCLUSIVE
+
+==================================================
+32. STOP
+==================================================
+
+STOP after productionization.
+
+DO NOT:
+
+rerun the 7 controls
+rerun the 10 controls
+rerun the 50-company benchmark
+fix Black Duck extraction
+fix identity
+change ICP
+change signals
+change opportunity scoring
+run contact enrichment
+change UI
+add Unipile
+add another provider
+
+Return the complete result for human review.
