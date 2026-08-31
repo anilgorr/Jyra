@@ -6,10 +6,13 @@ import {
   projectCompaniesTable,
 } from "@workspace/db";
 import {
+  assessCompanyIdentity,
   canonicalCompanyNameKey,
   namesArePossibleDuplicates,
   normalizeCompanyName,
+  normalizeCompanyInput,
   normalizeDomain,
+  parseCompanyRelationshipLabel,
 } from "./company-identity";
 import type {
   CompanyProfileResolutionCandidate,
@@ -17,6 +20,7 @@ import type {
   CompanyProfileResolutionRequest,
   CompanyProfileResolutionResult,
   CompanyProfileResolutionStatus,
+  CompanyRelationshipAssertion,
   ProviderOperations,
   ProviderResponse,
   SearchWebRequest,
@@ -125,6 +129,12 @@ function containsDomain(text: string, domain: string | null | undefined): boolea
   return Boolean(normalized && new RegExp(`(^|[^a-z0-9])${normalized.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?=$|[^a-z0-9])`, "i").test(text));
 }
 
+function explicitOfficialWebsiteDomains(text: string): string[] {
+  return [...text.matchAll(
+    /\b(?:official\s+website|company\s+website|website)\s*(?:is|:)?\s*(?:https?:\/\/)?(?:www\.)?([a-z0-9](?:[a-z0-9.-]*[a-z0-9])?\.[a-z]{2,})/gi,
+  )].map((match) => match[1]!.toLowerCase().replace(/^www\./, ""));
+}
+
 function candidateLabel(result: WebSearchResult["results"][number], slug: string): string {
   const title = result.title.replace(/\s*[|–—-]\s*(LinkedIn|Official Site).*$/i, "").trim();
   return title || slug.replace(/-/g, " ");
@@ -149,10 +159,13 @@ function resolveCandidate(
 ): CompanyProfileResolutionCandidate {
   const text = `${result.title} ${result.snippet} ${result.rawContent ?? ""}`;
   const label = candidateLabel(result, profile.profileSlug);
-  const nameMatch = namesArePossibleDuplicates(request.companyName, label) ||
-    canonicalCompanyNameKey(request.companyName) === canonicalCompanyNameKey(profile.profileSlug.replace(/-/g, " "));
+  const requestedAccountName = accountName(request);
+  const exactNameMatch =
+    canonicalCompanyNameKey(requestedAccountName) === canonicalCompanyNameKey(label) ||
+    canonicalCompanyNameKey(requestedAccountName) === canonicalCompanyNameKey(profile.profileSlug.replace(/-/g, " "));
+  const nameMatch = exactNameMatch || namesArePossibleDuplicates(requestedAccountName, label);
   const aliasMatch = (request.knownAliases ?? []).some((alias) =>
-    namesArePossibleDuplicates(alias, label) ||
+    canonicalCompanyNameKey(alias) === canonicalCompanyNameKey(label) ||
     canonicalCompanyNameKey(alias) === canonicalCompanyNameKey(profile.profileSlug.replace(/-/g, " ")),
   );
   const domainMatch = containsDomain(text, request.canonicalDomain) ||
@@ -165,6 +178,9 @@ function resolveCandidate(
   const countryMatch = Boolean(request.country && normalizedText(text).includes(normalizedText(request.country)));
   const cityMatch = Boolean(request.city && normalizedText(text).includes(normalizedText(request.city)));
   const industryMatch = Boolean(request.industry && normalizedText(text).includes(normalizedText(request.industry)));
+  const requestedDomain = request.canonicalDomain ? normalizeDomain(request.canonicalDomain) : null;
+  const explicitDomainConflict = Boolean(requestedDomain &&
+    explicitOfficialWebsiteDomains(text).some((domain) => domain !== requestedDomain));
 
   const supportingEvidence: CompanyProfileResolutionEvidence[] = [];
   const contradictingEvidence: CompanyProfileResolutionEvidence[] = [];
@@ -174,6 +190,14 @@ function resolveCandidate(
   if (officialWebsiteLink) supportingEvidence.push(evidence("OFFICIAL_WEBSITE_LINK", "The canonical website result references the same LinkedIn company profile", "strong", result.url));
   if (countryMatch || cityMatch) supportingEvidence.push(evidence("GEOGRAPHY_MATCH", "Search evidence agrees with the supplied company geography", "supporting", result.url));
   if (industryMatch) supportingEvidence.push(evidence("INDUSTRY_MATCH", "Search evidence agrees with the supplied industry", "supporting", result.url));
+  if (explicitDomainConflict) {
+    contradictingEvidence.push(evidence(
+      "CONTRADICTION",
+      `Candidate evidence explicitly names an official website different from canonical domain "${requestedDomain}"`,
+      "contradicting",
+      result.url,
+    ));
+  }
 
   const looksLikeDifferentCompany = !nameMatch && !aliasMatch && !domainMatch && !officialWebsiteLink;
   if (looksLikeDifferentCompany) {
@@ -186,10 +210,14 @@ function resolveCandidate(
   }
 
   const strongName = nameMatch || aliasMatch;
+  const compactName = canonicalCompanyNameKey(requestedAccountName).replace(/\s+/g, "");
+  const shortCollisionProneName = compactName.length <= 5;
+  const shortNameIdentityAgreement = !shortCollisionProneName || exactNameMatch || aliasMatch;
   const verified = !contradictingEvidence.length &&
-    officialWebsiteLink ||
-    (!contradictingEvidence.length && nameMatch && domainMatch);
-  const probable = !contradictingEvidence.length && !verified && strongName && (countryMatch || cityMatch || industryMatch || !request.canonicalDomain);
+    shortNameIdentityAgreement &&
+    (officialWebsiteLink || (nameMatch && domainMatch));
+  const probable = !contradictingEvidence.length && !verified && strongName &&
+    (countryMatch || cityMatch || industryMatch || (!request.canonicalDomain && !shortCollisionProneName));
   const score = Math.max(0, Math.min(100,
     (nameMatch ? 45 : 0) +
     (aliasMatch ? 25 : 0) +
@@ -217,6 +245,106 @@ function resolveCandidate(
     searchResultTitle: result.title,
     searchResultExcerpt: result.snippet,
     retrievedAt,
+    missingVerificationRequirement: resolutionStatus === "VERIFIED"
+      ? null
+      : "Independent evidence must bind this LinkedIn company profile to the canonical company domain or another verified identifier.",
+  };
+}
+
+function relationshipAssertions(
+  request: CompanyProfileResolutionRequest,
+): CompanyRelationshipAssertion[] {
+  const relationship = parseCompanyRelationshipLabel(request.companyName);
+  if (!relationship) return [];
+  return [{
+    subjectAccountName: relationship.accountName,
+    relationshipType: relationship.relationshipType,
+    relatedOrganizationName: relationship.relatedOrganizationName,
+    sourceType: request.discoveryEvidence?.sourceType ?? "UNVERIFIED_INPUT",
+    sourceUrl: request.discoveryEvidence?.sourceUrl ?? null,
+    verifiedSameEntity: false,
+  }];
+}
+
+function accountName(request: CompanyProfileResolutionRequest): string {
+  return parseCompanyRelationshipLabel(request.companyName)?.accountName ?? request.companyName.trim();
+}
+
+function discoveryProfileCandidate(
+  request: CompanyProfileResolutionRequest,
+  now: Date,
+): CompanyProfileResolutionCandidate | null {
+  const evidenceInput = request.discoveryEvidence;
+  const existing = normalizeLinkedInCompanyUrl(request.existingProfileUrls?.linkedin);
+  const evidenced = normalizeLinkedInCompanyUrl(evidenceInput?.profileUrls?.linkedin);
+  if (!existing || !evidenced ||
+    existing.normalizedProfileUrl !== evidenced.normalizedProfileUrl ||
+    evidenceInput?.sourceType !== "JYRA_DISCOVERY" ||
+    evidenceInput.providerOrganizationResult !== true) return null;
+  const requestedAccount = accountName(request);
+  const slugName = existing.profileSlug.replace(/-/g, " ");
+  const exactName = canonicalCompanyNameKey(requestedAccount) === canonicalCompanyNameKey(slugName);
+  const exactAlias = (request.knownAliases ?? []).some((alias) =>
+    canonicalCompanyNameKey(alias) === canonicalCompanyNameKey(slugName));
+  const supportingEvidence: CompanyProfileResolutionEvidence[] = [];
+  const contradictingEvidence: CompanyProfileResolutionEvidence[] = [];
+  supportingEvidence.push(evidence(
+    "DISCOVERY_IDENTIFIER",
+    "The preserved organization discovery result supplied this exact LinkedIn company identifier",
+    "strong",
+    evidenceInput.sourceUrl ?? existing.normalizedProfileUrl,
+  ));
+  if (exactName) {
+    supportingEvidence.push(evidence(
+      "NAME_MATCH",
+      `The profile slug exactly agrees with account name "${requestedAccount}"`,
+      "strong",
+      existing.normalizedProfileUrl,
+    ));
+  } else if (exactAlias) {
+    supportingEvidence.push(evidence(
+      "ALIAS_MATCH",
+      "The profile slug exactly agrees with a supplied alias",
+      "supporting",
+      existing.normalizedProfileUrl,
+    ));
+  } else {
+    contradictingEvidence.push(evidence(
+      "CONTRADICTION",
+      `The profile slug does not exactly agree with account name "${requestedAccount}" or a supplied alias`,
+      "contradicting",
+      existing.normalizedProfileUrl,
+    ));
+  }
+  const relationship = parseCompanyRelationshipLabel(request.companyName);
+  if (relationship) {
+    supportingEvidence.push(evidence(
+      "RELATIONSHIP_ASSERTION",
+      `${relationship.accountName} is represented as the account while ${relationship.relatedOrganizationName} remains a distinct related organization`,
+      "supporting",
+      evidenceInput.sourceUrl ?? null,
+    ));
+  }
+  const probable = !contradictingEvidence.length && (exactName || exactAlias);
+  return {
+    profileType: "LINKEDIN_COMPANY",
+    profileUrl: existing.profileUrl,
+    normalizedProfileUrl: existing.normalizedProfileUrl,
+    profileSlug: existing.profileSlug,
+    resolutionStatus: probable ? "PROBABLE" : "WRONG",
+    resolutionConfidence: probable ? (exactName ? 80 : 70) : 10,
+    supportingEvidence,
+    contradictingEvidence,
+    retrievalProvider: "JYRA_DISCOVERY",
+    publisher: "LINKEDIN",
+    discoveryQuery: "PRESERVED_DISCOVERY_IDENTIFIER",
+    searchResultUrl: evidenceInput.sourceUrl ?? existing.normalizedProfileUrl,
+    searchResultTitle: evidenceInput.suppliedName ?? requestedAccount,
+    searchResultExcerpt: "Preserved organization discovery evidence",
+    retrievedAt: evidenceInput.observedAt ?? now.toISOString(),
+    missingVerificationRequirement: probable
+      ? "One independent source must bind this LinkedIn company profile to the account before canonical attachment."
+      : "The profile identity must agree with the account name or a verified alias.",
   };
 }
 
@@ -261,7 +389,7 @@ function candidatesFromSearch(
 }
 
 export function buildProfileResolutionQueries(request: CompanyProfileResolutionRequest): string[] {
-  const name = request.companyName.trim();
+  const name = accountName(request);
   const domain = request.canonicalDomain ? normalizeDomain(request.canonicalDomain) : null;
   const first = domain
     ? `site:linkedin.com/company "${name}" "${domain}"`
@@ -293,6 +421,7 @@ function buildResponse(
 ): ProviderResponse<CompanyProfileResolutionResult> {
   const selectedResult = resultStatus(candidates);
   const selected = selectedResult.selected;
+  const relationships = relationshipAssertions(request);
   const supportingEvidence = selected?.supportingEvidence ?? [];
   const contradictingEvidence = selected?.contradictingEvidence ??
     (candidates.length ? candidates.flatMap((candidate) => candidate.contradictingEvidence) : []);
@@ -316,6 +445,7 @@ function buildResponse(
     providerRequestId: last?.providerRequestId ?? `profile-resolution:${request.companyId ?? request.companyName}`,
     data: {
       companyId: request.companyId ?? null,
+      accountName: accountName(request),
       profileType: "LINKEDIN_COMPANY",
       profileUrl: selected?.profileUrl ?? null,
       normalizedProfileUrl: selected?.normalizedProfileUrl ?? null,
@@ -328,6 +458,11 @@ function buildResponse(
       contradictingEvidence,
       candidates,
       discoveryQueries: queries,
+      relationships,
+      missingVerificationRequirement: selected?.missingVerificationRequirement ??
+        (selectedResult.status === "NOT_FOUND"
+          ? "No plausible LinkedIn company profile was found; an independent domain-bound profile identifier is required."
+          : null),
       resolvedAt: now.toISOString(),
     },
     sources: candidates.map((candidate) => ({
@@ -355,11 +490,123 @@ export async function resolveCompanyProfileWithRouter(input: {
 }): Promise<CompanyProfileResolutionExecution> {
   const now = input.now ?? new Date();
   const request = input.request;
+  const relationships = relationshipAssertions(request);
+  const gateInput = normalizeCompanyInput({
+    canonicalName: accountName(request),
+    domain: request.canonicalDomain,
+    website: request.websiteUrl,
+    linkedinUrl: request.existingProfileUrls?.linkedin,
+    profileUrls: request.existingProfileUrls,
+    country: request.country,
+    industry: request.industry,
+  });
+  const gateIdentity = gateInput.value
+    ? assessCompanyIdentity(gateInput.value, {
+        verifiedLinkedin: request.existingProfileVerified === true,
+      })
+    : null;
+  if (gateIdentity?.identityState === "NOT_A_COMPANY") {
+    const result: CompanyProfileResolutionResult = {
+      companyId: request.companyId ?? null,
+      accountName: accountName(request),
+      profileType: "LINKEDIN_COMPANY",
+      profileUrl: null,
+      normalizedProfileUrl: null,
+      profileSlug: null,
+      resolutionStatus: "WRONG",
+      resolutionConfidence: 0,
+      provider: "IDENTITY_GATE",
+      retrievalMethod: "IDENTITY_GATE",
+      supportingEvidence: [],
+      contradictingEvidence: [evidence(
+        "CONTRADICTION",
+        "The supplied label is service- or fragment-shaped rather than a resolvable company account",
+        "contradicting",
+        request.discoveryEvidence?.sourceUrl ?? null,
+      )],
+      candidates: [],
+      discoveryQueries: [],
+      relationships,
+      missingVerificationRequirement: "Provide a canonical company account name before profile resolution.",
+      resolvedAt: now.toISOString(),
+    };
+    return {
+      response: {
+        status: "success",
+        providerId: "identity-gate",
+        providerRequestId: `identity-gate:${request.companyId ?? accountName(request)}`,
+        data: result,
+        sources: [],
+        usage: { estimatedCost: 0, actualCost: 0, latencyMs: 0, runtimeMs: 0, resultCount: 0 },
+        error: null,
+        retryable: false,
+        capturedAt: now.toISOString(),
+        metadata: { resolutionCapability: "COMPANY_PROFILE_RESOLUTION", searchCallCount: 0, identityGate: "NOT_A_COMPANY" },
+      },
+      cacheHit: false,
+      canonicalUpdated: false,
+      historicallyCanonicalUpdated: false,
+      searchCalls: 0,
+    };
+  }
   const existing = request.existingProfileUrls?.linkedin;
   const normalizedExisting = request.existingProfileVerified ? normalizeLinkedInCompanyUrl(existing) : null;
   if (normalizedExisting) {
+    const requestedAccount = accountName(request);
+    const profileName = normalizedExisting.profileSlug.replace(/-/g, " ");
+    const exactAccountMatch =
+      canonicalCompanyNameKey(requestedAccount) === canonicalCompanyNameKey(profileName);
+    const exactAliasMatch = (request.knownAliases ?? []).some((alias) =>
+      canonicalCompanyNameKey(alias) === canonicalCompanyNameKey(profileName));
+    const identityBound = exactAccountMatch || exactAliasMatch;
+    if (!identityBound) {
+      const contradiction = evidence(
+        "CONTRADICTION",
+        `Existing profile slug does not agree with account name "${requestedAccount}" or an exact supplied alias`,
+        "contradicting",
+        normalizedExisting.normalizedProfileUrl,
+      );
+      const result: CompanyProfileResolutionResult = {
+        companyId: request.companyId ?? null,
+        accountName: requestedAccount,
+        profileType: "LINKEDIN_COMPANY",
+        profileUrl: null,
+        normalizedProfileUrl: null,
+        profileSlug: null,
+        resolutionStatus: "WRONG",
+        resolutionConfidence: 0,
+        provider: "CANONICAL_EXISTING",
+        retrievalMethod: "EXISTING_IDENTIFIER",
+        supportingEvidence: [],
+        contradictingEvidence: [contradiction],
+        candidates: [],
+        discoveryQueries: [],
+        relationships,
+        missingVerificationRequirement: "The existing profile must agree with the account name or an exact verified alias.",
+        resolvedAt: now.toISOString(),
+      };
+      return {
+        response: {
+          status: "success",
+          providerId: "canonical-existing",
+          providerRequestId: `existing-conflict:${request.companyId ?? requestedAccount}`,
+          data: result,
+          sources: [{ kind: "public_url", reference: normalizedExisting.normalizedProfileUrl, capturedAt: now.toISOString() }],
+          usage: { estimatedCost: 0, actualCost: 0, latencyMs: 0, runtimeMs: 0, resultCount: 1 },
+          error: null,
+          retryable: false,
+          capturedAt: now.toISOString(),
+          metadata: { resolutionCapability: "COMPANY_PROFILE_RESOLUTION", cacheHit: false, searchCallCount: 0, existingIdentifierConflict: true },
+        },
+        cacheHit: false,
+        canonicalUpdated: false,
+        historicallyCanonicalUpdated: false,
+        searchCalls: 0,
+      };
+    }
     const result: CompanyProfileResolutionResult = {
       companyId: request.companyId ?? null,
+      accountName: accountName(request),
       profileType: "LINKEDIN_COMPANY",
       profileUrl: normalizedExisting.profileUrl,
       normalizedProfileUrl: normalizedExisting.normalizedProfileUrl,
@@ -372,6 +619,8 @@ export async function resolveCompanyProfileWithRouter(input: {
       contradictingEvidence: [],
       candidates: [],
       discoveryQueries: [],
+      relationships,
+      missingVerificationRequirement: null,
       resolvedAt: now.toISOString(),
     };
     return {
@@ -394,9 +643,51 @@ export async function resolveCompanyProfileWithRouter(input: {
     };
   }
 
+  const reusedCandidate = discoveryProfileCandidate(request, now);
+  if (reusedCandidate?.resolutionStatus === "PROBABLE") {
+    const result: CompanyProfileResolutionResult = {
+      companyId: request.companyId ?? null,
+      accountName: accountName(request),
+      profileType: "LINKEDIN_COMPANY",
+      profileUrl: reusedCandidate.profileUrl,
+      normalizedProfileUrl: reusedCandidate.normalizedProfileUrl,
+      profileSlug: reusedCandidate.profileSlug,
+      resolutionStatus: "PROBABLE",
+      resolutionConfidence: reusedCandidate.resolutionConfidence,
+      provider: "JYRA_DISCOVERY",
+      retrievalMethod: "DISCOVERY_EVIDENCE_REUSE",
+      supportingEvidence: reusedCandidate.supportingEvidence,
+      contradictingEvidence: [],
+      candidates: [reusedCandidate],
+      discoveryQueries: [],
+      relationships,
+      missingVerificationRequirement: reusedCandidate.missingVerificationRequirement,
+      resolvedAt: now.toISOString(),
+    };
+    return {
+      response: {
+        status: "success",
+        providerId: "jyra-discovery",
+        providerRequestId: `discovery-evidence:${request.companyId ?? accountName(request)}`,
+        data: result,
+        sources: [{ kind: "public_url", reference: reusedCandidate.searchResultUrl, capturedAt: now.toISOString() }],
+        usage: { estimatedCost: 0, actualCost: 0, latencyMs: 0, runtimeMs: 0, resultCount: 1 },
+        error: null,
+        retryable: false,
+        capturedAt: now.toISOString(),
+        metadata: { resolutionCapability: "COMPANY_PROFILE_RESOLUTION", cacheHit: false, searchCallCount: 0, discoveryEvidenceReused: true },
+      },
+      cacheHit: false,
+      canonicalUpdated: false,
+      historicallyCanonicalUpdated: false,
+      searchCalls: 0,
+    };
+  }
+
   const queries = buildProfileResolutionQueries(request);
   const responses: ProviderResponse<WebSearchResult>[] = [];
   const candidates = new Map<string, CompanyProfileResolutionCandidate>();
+  if (reusedCandidate) candidates.set(reusedCandidate.normalizedProfileUrl, reusedCandidate);
   for (const [index, query] of queries.entries()) {
     const searchRequest: SearchWebRequest = {
       requestId: `${request.requestId ?? `profile-resolution:${request.companyId ?? request.companyName}`}:search-${index + 1}`,

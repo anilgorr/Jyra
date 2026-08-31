@@ -1,0 +1,170 @@
+{
+  "milestone": "PROFILE_RESOLUTION_FIX_02A",
+  "generatedAt": "2026-08-31T18:49:24.604Z",
+  "population": [
+    "Digital Maelstrom",
+    "Mandiant",
+    "Managed Services - Monitoring 24/7",
+    "Corsa"
+  ],
+  "executionPath": "discoverCompaniesForProject",
+  "productionOperations": 0,
+  "externalProviderCalls": 0,
+  "canonicalIdentifierGuardRegression": {
+    "fixture": "SecureSky",
+    "sourcePopulation": "PRESERVED_12_COMPANY_WHO_SAMPLE",
+    "unverifiedCandidateProfile": "https://www.linkedin.com/company/unverified-wrong-profile",
+    "canonicalLinkedinUnchanged": true,
+    "canonicalProfileUrlsUnchanged": true,
+    "passed": true
+  },
+  "results": [
+    {
+      "requestedCompany": "Digital Maelstrom",
+      "suppliedLabel": "Digital Maelstrom",
+      "accountName": "Digital Maelstrom",
+      "domain": "digitalmaelstrom.net",
+      "identityState": "PROBABLE",
+      "automaticAttach": false,
+      "canonicalCompanyId": null,
+      "existingOrNew": "NEEDS_REVIEW",
+      "qualification": "INSUFFICIENT_DATA",
+      "sourceUrl": "https://digitalmaelstrom.net",
+      "profileResolution": null,
+      "relationshipAssertions": [],
+      "providerAccounting": {
+        "preservedDiscoveryCalls": 1,
+        "lookupCalls": 0,
+        "profileSearchCalls": 0,
+        "totalPathCalls": 1,
+        "externalProviderCalls": 0,
+        "estimatedCost": 0,
+        "actualCost": 0
+      },
+      "safeDecision": true,
+      "wrongAutomaticAttach": false
+    },
+    {
+      "requestedCompany": "Mandiant",
+      "suppliedLabel": "Mandiant (part of Google Cloud)",
+      "accountName": "Mandiant",
+      "domain": null,
+      "identityState": "PROBABLE",
+      "automaticAttach": false,
+      "canonicalCompanyId": null,
+      "existingOrNew": "NEEDS_REVIEW",
+      "qualification": "INSUFFICIENT_DATA",
+      "sourceUrl": "https://linkedin.com/company/mandiant",
+      "profileResolution": {
+        "status": "PROBABLE",
+        "confidence": 80,
+        "profileUrl": "https://www.linkedin.com/company/mandiant",
+        "supportingEvidence": [
+          {
+            "kind": "DISCOVERY_IDENTIFIER",
+            "detail": "The preserved organization discovery result supplied this exact LinkedIn company identifier",
+            "strength": "strong",
+            "sourceUrl": "https://linkedin.com/company/mandiant"
+          },
+          {
+            "kind": "NAME_MATCH",
+            "detail": "The profile slug exactly agrees with account name \"Mandiant\"",
+            "strength": "strong",
+            "sourceUrl": "https://www.linkedin.com/company/mandiant"
+          },
+          {
+            "kind": "RELATIONSHIP_ASSERTION",
+            "detail": "Mandiant is represented as the account while Google Cloud remains a distinct related organization",
+            "strength": "supporting",
+            "sourceUrl": "https://linkedin.com/company/mandiant"
+          }
+        ],
+        "contradictingEvidence": [],
+        "missingVerificationRequirement": "One independent source must bind this LinkedIn company profile to the account before canonical attachment."
+      },
+      "relationshipAssertions": [
+        {
+          "subjectAccountName": "Mandiant",
+          "relationshipType": "PART_OF",
+          "relatedOrganizationName": "Google Cloud",
+          "sourceType": "JYRA_DISCOVERY",
+          "sourceUrl": "https://linkedin.com/company/mandiant",
+          "verifiedSameEntity": false
+        }
+      ],
+      "providerAccounting": {
+        "preservedDiscoveryCalls": 1,
+        "lookupCalls": 0,
+        "profileSearchCalls": 0,
+        "totalPathCalls": 1,
+        "externalProviderCalls": 0,
+        "estimatedCost": 0,
+        "actualCost": 0
+      },
+      "safeDecision": true,
+      "wrongAutomaticAttach": false
+    },
+    {
+      "requestedCompany": "Managed Services - Monitoring 24/7",
+      "suppliedLabel": "Managed Services - Monitoring 24/7",
+      "accountName": "Managed Services - Monitoring 24/7",
+      "domain": null,
+      "identityState": "NOT_A_COMPANY",
+      "automaticAttach": false,
+      "canonicalCompanyId": null,
+      "existingOrNew": "NEEDS_REVIEW",
+      "qualification": "INSUFFICIENT_DATA",
+      "sourceUrl": "https://linkedin.com/showcase/managed-services---monitoring-24-7",
+      "profileResolution": null,
+      "relationshipAssertions": [],
+      "providerAccounting": {
+        "preservedDiscoveryCalls": 1,
+        "lookupCalls": 0,
+        "profileSearchCalls": 0,
+        "totalPathCalls": 1,
+        "externalProviderCalls": 0,
+        "estimatedCost": 0,
+        "actualCost": 0
+      },
+      "safeDecision": true,
+      "wrongAutomaticAttach": false
+    },
+    {
+      "requestedCompany": "Corsa",
+      "suppliedLabel": "Corsa",
+      "accountName": "Corsa",
+      "domain": "corsa.finance",
+      "identityState": "PROBABLE",
+      "automaticAttach": false,
+      "canonicalCompanyId": null,
+      "existingOrNew": "NEEDS_REVIEW",
+      "qualification": "INSUFFICIENT_DATA",
+      "sourceUrl": "https://corsa.finance",
+      "profileResolution": null,
+      "relationshipAssertions": [],
+      "providerAccounting": {
+        "preservedDiscoveryCalls": 1,
+        "lookupCalls": 0,
+        "profileSearchCalls": 0,
+        "totalPathCalls": 1,
+        "externalProviderCalls": 0,
+        "estimatedCost": 0,
+        "actualCost": 0
+      },
+      "safeDecision": true,
+      "wrongAutomaticAttach": false
+    }
+  ],
+  "metrics": {
+    "cases": 4,
+    "legitimateCompanies": 3,
+    "confirmed": 0,
+    "probable": 3,
+    "ambiguous": 0,
+    "unresolved": 0,
+    "notACompany": 1,
+    "wrongAutomaticAttaches": 0,
+    "identityPrecisionAmongAutoAttaches": "NO_AUTO_ATTACHES_IN_TARGETED_RETEST",
+    "safeResolutionCoverage": 1
+  }
+}

@@ -131,7 +131,9 @@ export type CompanyProfileResolutionEvidence = {
     | "INDUSTRY_MATCH"
     | "ALIAS_MATCH"
     | "CONTRADICTION"
-    | "EXISTING_IDENTIFIER";
+    | "EXISTING_IDENTIFIER"
+    | "DISCOVERY_IDENTIFIER"
+    | "RELATIONSHIP_ASSERTION";
   detail: string;
   strength: "strong" | "supporting" | "contradicting";
   sourceUrl?: string | null;
@@ -152,6 +154,26 @@ export type CompanyProfileResolutionCandidate = {
   searchResultTitle: string;
   searchResultExcerpt: string;
   retrievedAt: string;
+  missingVerificationRequirement: string | null;
+};
+export type CompanyRelationshipAssertion = {
+  subjectAccountName: string;
+  relationshipType: "PART_OF" | "SUBSIDIARY_OF" | "OWNED_BY" | "ACQUIRED_BY" | "DIVISION_OF";
+  relatedOrganizationName: string;
+  sourceType: string;
+  sourceUrl: string | null;
+  verifiedSameEntity: false;
+};
+export type CompanyProfileDiscoveryEvidence = {
+  sourceType: "JYRA_DISCOVERY";
+  sourceUrl?: string | null;
+  observedAt?: string | null;
+  providerOrganizationResult?: boolean;
+  providerResultId?: string | null;
+  suppliedName?: string | null;
+  canonicalDomain?: string | null;
+  websiteUrl?: string | null;
+  profileUrls?: Record<string, string>;
 };
 export type CompanyProfileResolutionRequest = ProviderRequestBase & {
   companyId?: string;
@@ -164,11 +186,13 @@ export type CompanyProfileResolutionRequest = ProviderRequestBase & {
   knownAliases?: string[];
   existingProfileUrls?: Record<string, string>;
   existingProfileVerified?: boolean;
+  discoveryEvidence?: CompanyProfileDiscoveryEvidence;
   providerIds?: Record<string, string>;
   profileType?: CompanyProfileType;
 };
 export type CompanyProfileResolutionResult = {
   companyId: string | null;
+  accountName: string;
   profileType: CompanyProfileType;
   profileUrl: string | null;
   normalizedProfileUrl: string | null;
@@ -176,11 +200,13 @@ export type CompanyProfileResolutionResult = {
   resolutionStatus: CompanyProfileResolutionStatus;
   resolutionConfidence: number;
   provider: string;
-  retrievalMethod: "EXISTING_IDENTIFIER" | "TAVILY_WEB_SEARCH";
+  retrievalMethod: "IDENTITY_GATE" | "EXISTING_IDENTIFIER" | "DISCOVERY_EVIDENCE_REUSE" | "TAVILY_WEB_SEARCH";
   supportingEvidence: CompanyProfileResolutionEvidence[];
   contradictingEvidence: CompanyProfileResolutionEvidence[];
   candidates: CompanyProfileResolutionCandidate[];
   discoveryQueries: string[];
+  relationships: CompanyRelationshipAssertion[];
+  missingVerificationRequirement: string | null;
   resolvedAt: string;
 };
 

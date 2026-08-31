@@ -1,0 +1,51 @@
+{
+  "milestone": "PROFILE_RESOLUTION_FIX_02A",
+  "generatedAt": "2026-08-31T18:49:24.864Z",
+  "genericRegressionCases": "A-L",
+  "genericRegressionCount": 12,
+  "genericRegressionFailures": 0,
+  "verification": [
+    {
+      "name": "profileResolutionRegressions",
+      "passed": true,
+      "command": "node scripts/test-company-profile-resolution.mjs",
+      "output": "Company profile resolution tests passed (12 regressions A-L)."
+    },
+    {
+      "name": "identityRegressions",
+      "passed": true,
+      "command": "node scripts/test-company-identity.mjs",
+      "output": "Company identity tests passed (100-row normalization set + regressions A-J)."
+    },
+    {
+      "name": "typecheck",
+      "passed": true,
+      "command": "pnpm run typecheck",
+      "output": "> @workspace/api-server@0.0.0 typecheck /home/runner/workspace/artifacts/api-server\n> tsc -p tsconfig.json --noEmit"
+    },
+    {
+      "name": "build",
+      "passed": true,
+      "command": "pnpm run build",
+      "output": "> @workspace/api-server@0.0.0 build /home/runner/workspace/artifacts/api-server\n> node ./build.mjs"
+    },
+    {
+      "name": "runtimeHardCodingAudit",
+      "passed": true,
+      "command": "rg -n '<four case names>' src/lib/company-{identity,profile-resolution,discovery}.ts",
+      "output": "No case-specific runtime rules found"
+    }
+  ],
+  "boundaries": {
+    "retrievalVersion": "MVP_RETRIEVAL_V1_FROZEN",
+    "schemaChanges": 0,
+    "productionOperations": 0,
+    "externalProviderCalls": 0,
+    "benchmarkPopulationsRun": [
+      "PRESERVED_FOUR_CASE_RETEST",
+      "PRESERVED_12_COMPANY_WHO_SAMPLE"
+    ],
+    "forbiddenBenchmarksRun": [],
+    "frozenSystemsChanged": []
+  }
+}

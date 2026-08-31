@@ -17,11 +17,14 @@ import {
   namesArePossibleDuplicates,
   normalizeCompanyInput,
   normalizeCompanyName,
+  parseCompanyRelationshipLabel,
   type NormalizedCompanyInput,
 } from "./company-identity";
 import type {
   CompanyDiscoveryStrategy,
   CompanyDiscoveryResult,
+  CompanyProfileResolutionResult,
+  CompanyRelationshipAssertion,
   ProviderOperations,
   ProviderResponse,
 } from "./provider-contract";
@@ -60,6 +63,15 @@ export type DiscoveryCandidateReport = {
   researchPriority: number;
   sourceUrl: string | null;
   identityState: "CONFIRMED" | "PROBABLE" | "AMBIGUOUS" | "NOT_A_COMPANY" | "WRONG_ENTITY" | "UNRESOLVED";
+  profileResolution: {
+    status: CompanyProfileResolutionResult["resolutionStatus"];
+    confidence: number;
+    profileUrl: string | null;
+    supportingEvidence: CompanyProfileResolutionResult["supportingEvidence"];
+    contradictingEvidence: CompanyProfileResolutionResult["contradictingEvidence"];
+    missingVerificationRequirement: string | null;
+  } | null;
+  relationshipAssertions: CompanyRelationshipAssertion[];
 };
 
 export type DiscoveryResult = {
@@ -420,6 +432,7 @@ function candidateReport(
   priority: number,
   companyId: string | null = null,
   identityState: DiscoveryCandidateReport["identityState"] = "UNRESOLVED",
+  profileResolution: CompanyProfileResolutionResult | null = null,
 ): DiscoveryCandidateReport {
   return {
     companyId,
@@ -437,6 +450,15 @@ function candidateReport(
     researchPriority: priority,
     sourceUrl: candidate.sourceUrl ?? candidate.website,
     identityState,
+    profileResolution: profileResolution ? {
+      status: profileResolution.resolutionStatus,
+      confidence: profileResolution.resolutionConfidence,
+      profileUrl: profileResolution.normalizedProfileUrl,
+      supportingEvidence: profileResolution.supportingEvidence,
+      contradictingEvidence: profileResolution.contradictingEvidence,
+      missingVerificationRequirement: profileResolution.missingVerificationRequirement,
+    } : null,
+    relationshipAssertions: profileResolution?.relationships ?? [],
   };
 }
 
@@ -571,8 +593,11 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
       ));
       continue;
     }
-    let resolvedCandidate = candidate;
-    if (!candidate.domain && remainingProviderCalls > 0) {
+    const relationship = parseCompanyRelationshipLabel(candidate.name);
+    let resolvedCandidate = relationship
+      ? { ...candidate, name: relationship.accountName }
+      : candidate;
+    if (!candidate.domain && !candidate.linkedinUrl && remainingProviderCalls > 0) {
       remainingProviderCalls -= 1;
       const lookup = await input.router.lookupCompany({
         name: candidate.name,
@@ -592,7 +617,7 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
       const lookupNormalized = lookupCompany ? candidateInput(lookupCompany) : null;
       if (lookupNormalized?.value?.domain) {
         resolvedCandidate = {
-          ...candidate,
+          ...resolvedCandidate,
           domain: lookupNormalized.value.domain,
           website: lookupNormalized.value.website,
         };
@@ -620,9 +645,9 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
     if (!preexisting &&
       !candidateIdentity.canonicalAttachAllowed &&
       candidateIdentity.identityState !== "NOT_A_COMPANY" &&
-      value.domain &&
+      (value.domain || Boolean(value.linkedinUrl)) &&
       input.router.searchWeb &&
-      remainingProviderCalls > 0) {
+      (remainingProviderCalls > 0 || Boolean(value.linkedinUrl))) {
       let actualProfileCalls = 0;
       const budgetedSearchWeb: ProviderOperations["searchWeb"] = async (request) => {
         if (remainingProviderCalls <= 0) {
@@ -644,13 +669,26 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
       };
       const resolution = await resolveCompanyProfileWithRouter({
         request: {
-          companyName: value.canonicalName,
+          companyName: relationship?.originalLabel ?? value.canonicalName,
           canonicalDomain: value.domain,
           websiteUrl: value.website,
           country: value.country,
           industry: value.industry,
           existingProfileUrls: value.linkedinUrl ? { linkedin: value.linkedinUrl } : {},
           existingProfileVerified: false,
+          discoveryEvidence: {
+            sourceType: "JYRA_DISCOVERY",
+            sourceUrl: sourceUrlForCandidate(candidate, response.sources) ?? candidate.sourceUrl ?? candidate.website ?? null,
+            observedAt: response.capturedAt,
+            providerOrganizationResult: Boolean(candidate.providerMetadata?.resultId),
+            providerResultId: typeof candidate.providerMetadata?.resultId === "string"
+              ? candidate.providerMetadata.resultId
+              : null,
+            suppliedName: candidate.name,
+            canonicalDomain: value.domain,
+            websiteUrl: value.website,
+            profileUrls: value.profileUrls,
+          },
           requestId: `discovery-profile:${run.id}:${reports.length + 1}`,
           metadata: {
             organizationId: input.organizationId,
@@ -683,6 +721,29 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
           verifiedDomain: profile!.supportingEvidence.some((item) =>
             item.kind === "DOMAIN_MATCH" || item.kind === "OFFICIAL_WEBSITE_LINK"),
         });
+      } else if (profile?.resolutionStatus === "PROBABLE" &&
+        profile.normalizedProfileUrl &&
+        profile.contradictingEvidence.length === 0) {
+        candidateIdentity = assessCompanyIdentity(value, {
+          sourceUrl: sourceUrlForCandidate(candidate, response.sources) ?? candidate.sourceUrl ?? candidate.website ?? null,
+          providerOrganizationResult: Boolean(candidate.providerMetadata?.resultId),
+          probableLinkedin: true,
+        });
+      } else if (profile?.resolutionStatus === "WRONG" &&
+        profile.contradictingEvidence.length > 0) {
+        candidateIdentity = assessCompanyIdentity(value, {
+          sourceUrl: sourceUrlForCandidate(candidate, response.sources) ?? candidate.sourceUrl ?? candidate.website ?? null,
+          providerOrganizationResult: Boolean(candidate.providerMetadata?.resultId),
+          identifierConflict: true,
+        });
+      } else if (profile?.resolutionStatus === "AMBIGUOUS") {
+        candidateIdentity = {
+          ...candidateIdentity,
+          companyLikeness: "AMBIGUOUS_COMPANY",
+          identityState: "AMBIGUOUS",
+          canonicalAttachAllowed: false,
+          conflicts: [...new Set([...candidateIdentity.conflicts, "PROFILE_CANDIDATE_AMBIGUITY"])],
+        };
       }
     }
     const identityKey = value.domain
@@ -705,11 +766,13 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
       const trustedExisting = Boolean(existing && domain && exactName &&
         await hasTrustedIdentityProvenance(existing.id, domain, tx));
       const identity = existing
-        ? assessCompanyIdentity(value, {
-            verifiedDomain: trustedExisting,
-            knownAliasMatch: exactName,
-            identifierConflict: !exactName,
-          })
+        ? exactName && candidateIdentity.identityState === "PROBABLE" && !trustedExisting
+          ? candidateIdentity
+          : assessCompanyIdentity(value, {
+              verifiedDomain: trustedExisting,
+              knownAliasMatch: exactName,
+              identifierConflict: !exactName,
+            })
         : candidateIdentity;
       if (!identity.canonicalAttachAllowed) {
         return {
@@ -737,7 +800,13 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
       if (!company) {
         return { outcome: "rejected" as const, company: null, priority: 0, identity };
       }
-      if (existing && (value.linkedinUrl || Object.keys(value.profileUrls).length)) {
+      const verifiedProfileForCanonicalUpdate = Boolean(
+        profileResolutionResult &&
+        ["VERIFIED", "VERIFIED_EXISTING"].includes(profileResolutionResult.resolutionStatus) &&
+        profileResolutionResult.normalizedProfileUrl &&
+        profileResolutionResult.normalizedProfileUrl === value.linkedinUrl,
+      );
+      if (existing && verifiedProfileForCanonicalUpdate) {
         const [updated] = await tx.update(companiesTable).set({
           linkedinUrl: existing.linkedinUrl ?? value.linkedinUrl,
           profileUrls: {
@@ -798,6 +867,14 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
           researchPriority: priority,
           domainConfidence: value.domain ? "HIGH_CONFIDENCE" : "UNKNOWN",
           identityAssessment: identity,
+          relationshipAssertions: relationship ? [{
+            subjectAccountName: relationship.accountName,
+            relationshipType: relationship.relationshipType,
+            relatedOrganizationName: relationship.relatedOrganizationName,
+            sourceType: "JYRA_DISCOVERY",
+            sourceUrl: sourceUrlForCandidate(candidate, response.sources) ?? candidate.sourceUrl ?? candidate.website ?? null,
+            verifiedSameEntity: false,
+          }] : [],
           profileResolution: profileResolutionResult,
         },
         visibility: "PUBLIC",
@@ -844,6 +921,7 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
         result.priority,
         null,
         result.identity.identityState,
+        profileResolutionResult,
       ));
     } else if (result.outcome === "rejected") {
       rejected += 1;
@@ -861,6 +939,7 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
         result.priority,
         result.company.id,
         result.identity.identityState,
+        profileResolutionResult,
       ));
     }
   }
@@ -888,6 +967,8 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
           sourceUrl: report.sourceUrl,
           identityState: report.identityState,
           qualification: report.qualification,
+          profileResolution: report.profileResolution,
+          relationshipAssertions: report.relationshipAssertions,
           recordedAt: now.toISOString(),
         })),
     },

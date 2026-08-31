@@ -18,6 +18,7 @@ const {
   normalizeCompanyName,
   normalizeDomain,
   namesArePossibleDuplicates,
+  parseCompanyRelationshipLabel,
 } = await import(`${pathToFileURL(output).href}?t=${Date.now()}`);
 
 function identity(input, context = {}) {
@@ -119,5 +120,15 @@ assert.equal(identity(
   { canonicalName: "Northstar", linkedinUrl: "https://linkedin.com/showcase/northstar-product" },
   {},
 ).canonicalAttachAllowed, false); // J
+assert.deepEqual(
+  parseCompanyRelationshipLabel("Atlas Security (part of Northstar)"),
+  {
+    accountName: "Atlas Security",
+    relationshipType: "PART_OF",
+    relatedOrganizationName: "Northstar",
+    originalLabel: "Atlas Security (part of Northstar)",
+  },
+);
+assert.equal(parseCompanyRelationshipLabel("Managed Security Services - Monitoring 24/7"), null);
 
 console.log("Company identity tests passed (100-row normalization set + regressions A-J).");

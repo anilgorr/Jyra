@@ -1,0 +1,1722 @@
+{
+  "milestone": "PROFILE_RESOLUTION_FIX_02A",
+  "phase": "PRE_FIX_AUTOPSY",
+  "generatedAt": "2026-08-31T18:31:48.341Z",
+  "population": [
+    "Digital Maelstrom",
+    "Mandiant",
+    "Corsa"
+  ],
+  "providerCalls": 0,
+  "productionOperations": 0,
+  "traces": [
+    {
+      "company": "Digital Maelstrom",
+      "sourcePopulation": "PRESERVED_IDENTITY_FIX_02_FOUR_CASES",
+      "originalProvenance": {
+        "sourceType": "JYRA_DISCOVERY",
+        "sourceLabel": "b220e720-6d21-4c7a-badf-3aec920febca",
+        "sourceUrl": "https://digitalmaelstrom.net",
+        "observedAt": "2026-08-30T08:56:18.527Z",
+        "provider": "b220e720-6d21-4c7a-badf-3aec920febca",
+        "providerRequestId": "hotfix-08:2:b220e720-6d21-4c7a-badf-3aec920febca",
+        "providerResultId": "https://exa.ai/library/organization/fjzrpfm8kmn",
+        "providerOrganizationResult": true,
+        "retrievalTimestamp": "2026-08-30T08:56:18.527Z"
+      },
+      "preservedIdentityEvidence": {
+        "suppliedName": "Digital Maelstrom",
+        "accountName": "Digital Maelstrom",
+        "domain": "digitalmaelstrom.net",
+        "website": "https://digitalmaelstrom.net",
+        "linkedinUrl": null,
+        "profileUrls": {},
+        "description": null,
+        "industry": null,
+        "location": null,
+        "providerMetadata": {
+          "title": "Digital Maelstrom",
+          "author": "Exa",
+          "resultId": "https://exa.ai/library/organization/fjzrpfm8kmn",
+          "publishedDate": "2026-06-29T00:00:00.000Z",
+          "profilePlatform": null,
+          "originalResultUrl": "https://digitalmaelstrom.net"
+        }
+      },
+      "profileResolutionAttempts": [
+        {
+          "resolutionStatus": "AMBIGUOUS",
+          "resolutionConfidence": 45,
+          "profileUrl": "https://www.linkedin.com/company/digital-maelstrom-llc",
+          "queries": [
+            "site:linkedin.com/company \"Digital Maelstrom\" \"digitalmaelstrom.net\"",
+            "site:linkedin.com/company \"Digital Maelstrom\" LinkedIn company"
+          ],
+          "provider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+          "retrievalMethod": "TAVILY_WEB_SEARCH",
+          "candidateCount": 9,
+          "supportingEvidence": [
+            {
+              "kind": "NAME_MATCH",
+              "detail": "Candidate title or slug agrees with \"Digital Maelstrom\"",
+              "strength": "strong",
+              "sourceUrl": "https://www.linkedin.com/company/digital-maelstrom-llc"
+            }
+          ],
+          "contradictingEvidence": []
+        },
+        {
+          "resolutionStatus": "AMBIGUOUS",
+          "resolutionConfidence": 45,
+          "profileUrl": "https://www.linkedin.com/company/digital-maelstrom-llc",
+          "queries": [
+            "site:linkedin.com/company \"Digital Maelstrom\" \"digitalmaelstrom.net\"",
+            "site:linkedin.com/company \"Digital Maelstrom\" LinkedIn company"
+          ],
+          "provider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+          "retrievalMethod": "TAVILY_WEB_SEARCH",
+          "candidateCount": 9,
+          "supportingEvidence": [
+            {
+              "kind": "NAME_MATCH",
+              "detail": "Candidate title or slug agrees with \"Digital Maelstrom\"",
+              "strength": "strong",
+              "sourceUrl": "https://www.linkedin.com/company/digital-maelstrom-llc"
+            }
+          ],
+          "contradictingEvidence": []
+        },
+        {
+          "resolutionStatus": "AMBIGUOUS",
+          "resolutionConfidence": 45,
+          "profileUrl": "https://www.linkedin.com/company/digital-maelstrom-llc",
+          "queries": [
+            "site:linkedin.com/company \"Digital Maelstrom\" \"digitalmaelstrom.net\"",
+            "site:linkedin.com/company \"Digital Maelstrom\" LinkedIn company"
+          ],
+          "provider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+          "retrievalMethod": "TAVILY_WEB_SEARCH",
+          "candidateCount": 9,
+          "supportingEvidence": [
+            {
+              "kind": "NAME_MATCH",
+              "detail": "Candidate title or slug agrees with \"Digital Maelstrom\"",
+              "strength": "strong",
+              "sourceUrl": "https://www.linkedin.com/company/digital-maelstrom-llc"
+            }
+          ],
+          "contradictingEvidence": []
+        },
+        {
+          "resolutionStatus": "AMBIGUOUS",
+          "resolutionConfidence": 45,
+          "profileUrl": "https://www.linkedin.com/company/digital-maelstrom-llc",
+          "queries": [
+            "site:linkedin.com/company \"Digital Maelstrom\" \"digitalmaelstrom.net\"",
+            "site:linkedin.com/company \"Digital Maelstrom\" LinkedIn company"
+          ],
+          "provider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+          "retrievalMethod": "TAVILY_WEB_SEARCH",
+          "candidateCount": 9,
+          "supportingEvidence": [
+            {
+              "kind": "NAME_MATCH",
+              "detail": "Candidate title or slug agrees with \"Digital Maelstrom\"",
+              "strength": "strong",
+              "sourceUrl": "https://www.linkedin.com/company/digital-maelstrom-llc"
+            }
+          ],
+          "contradictingEvidence": []
+        },
+        {
+          "resolutionStatus": "AMBIGUOUS",
+          "resolutionConfidence": 45,
+          "profileUrl": "https://www.linkedin.com/company/digital-maelstrom-llc",
+          "queries": [
+            "site:linkedin.com/company \"Digital Maelstrom\" \"digitalmaelstrom.net\"",
+            "site:linkedin.com/company \"Digital Maelstrom\" LinkedIn company"
+          ],
+          "provider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+          "retrievalMethod": "TAVILY_WEB_SEARCH",
+          "candidateCount": 10,
+          "supportingEvidence": [
+            {
+              "kind": "NAME_MATCH",
+              "detail": "Candidate title or slug agrees with \"Digital Maelstrom\"",
+              "strength": "strong",
+              "sourceUrl": "https://www.linkedin.com/company/digital-maelstrom-llc"
+            }
+          ],
+          "contradictingEvidence": []
+        },
+        {
+          "resolutionStatus": "AMBIGUOUS",
+          "resolutionConfidence": 45,
+          "profileUrl": "https://www.linkedin.com/company/digital-maelstrom-llc",
+          "queries": [
+            "site:linkedin.com/company \"Digital Maelstrom\" \"digitalmaelstrom.net\"",
+            "site:linkedin.com/company \"Digital Maelstrom\" LinkedIn company"
+          ],
+          "provider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+          "retrievalMethod": "TAVILY_WEB_SEARCH",
+          "candidateCount": 10,
+          "supportingEvidence": [
+            {
+              "kind": "NAME_MATCH",
+              "detail": "Candidate title or slug agrees with \"Digital Maelstrom\"",
+              "strength": "strong",
+              "sourceUrl": "https://www.linkedin.com/company/digital-maelstrom-llc"
+            }
+          ],
+          "contradictingEvidence": []
+        },
+        {
+          "resolutionStatus": "NOT_FOUND",
+          "resolutionConfidence": 0,
+          "profileUrl": null,
+          "queries": [
+            "site:linkedin.com/company \"Digital Maelstrom\" \"digitalmaelstrom.net\"",
+            "site:linkedin.com/company \"Digital Maelstrom\" LinkedIn company"
+          ],
+          "provider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+          "retrievalMethod": "TAVILY_WEB_SEARCH",
+          "candidateCount": 0,
+          "supportingEvidence": [],
+          "contradictingEvidence": []
+        }
+      ],
+      "candidateProfiles": [
+        {
+          "publisher": "LINKEDIN",
+          "profileUrl": "https://www.linkedin.com/company/digital-maelstrom-llc",
+          "profileSlug": "digital-maelstrom-llc",
+          "profileType": "LINKEDIN_COMPANY",
+          "retrievedAt": "2026-08-31T11:27:55.531Z",
+          "discoveryQuery": "site:linkedin.com/company \"Digital Maelstrom\" \"digitalmaelstrom.net\"",
+          "searchResultUrl": "https://www.linkedin.com/company/digital-maelstrom-llc",
+          "resolutionStatus": "AMBIGUOUS",
+          "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+          "searchResultTitle": "Digital Maelstrom | LinkedIn",
+          "supportingEvidence": [
+            {
+              "kind": "NAME_MATCH",
+              "detail": "Candidate title or slug agrees with \"Digital Maelstrom\"",
+              "strength": "strong",
+              "sourceUrl": "https://www.linkedin.com/company/digital-maelstrom-llc"
+            }
+          ],
+          "searchResultExcerpt": "Digital Maelstrom is the embedded IT operations and security function for growth-stage B2B SaaS companies between 10 and 300 employees.\nHere's the situation we solve. Your CTO is spending 20% of their week on security questionnaires and infrastructure fires. A Fortune 500 deal is stalled in procurement, waiting on a SOC 2 report you don't have. Your cloud environment is running, but nobody's actively managing it. Someone handed \"achieve SOC 2 by Q3\" to your VP of Engineering as an OKR, without headcount or budget clarity.\nWe fix all of it. And we run it. [...] We fix all of it. And we run it.\nOur engagements cover the full IT operations and security stack: cloud infrastructure management across AWS, Azure, and GCP; managed endpoint protection with XDR and EDR; compliance program management for SOC 2 Type 2, NIST 800-171, PCI DSS 4.1, and ISO 27001; and virtual executive leadership as vCISO, vCTO, or vCloud Architect.\nWe show up in your Slack. We answer auditor follow-up questions. We present to your board. Your engineers don't lose sprints to compliance work or infrastructure maintenance.\nYour team builds product. We run the operations and security that make that possible.\nCISSP and OSCP certified team members. Kansas City-based. Serving US B2B SaaS companies at Series A through C. [...] ## LinkedIn respects your privacy\n\nLinkedIn and 3rd parties use essential and non-essential cookies to provide, secure, analyze and improve our Services, and to show you relevant ads (including professional and job ads) on and off LinkedIn. Learn more in our Cookie Policy.\n\nSelect Accept to consent or Reject to decline non-essential cookies for this use. You can update your choices at any time in your settings.\n\nDigital Maelstrom’s cover photo\nDigital Maelstrom\n\n# Digital Maelstrom\n\n## IT Services and IT Consulting\n\n### Kansas City, Missouri 236 followers\n\n#### We run your IT operations and security program.\n\nView all 8 employees\n\n## About us",
+          "normalizedProfileUrl": "https://www.linkedin.com/company/digital-maelstrom-llc",
+          "resolutionConfidence": 45,
+          "contradictingEvidence": []
+        },
+        {
+          "publisher": "LINKEDIN",
+          "profileUrl": "https://www.linkedin.com/company/maelstromfund",
+          "profileSlug": "maelstromfund",
+          "profileType": "LINKEDIN_COMPANY",
+          "retrievedAt": "2026-08-31T11:28:00.521Z",
+          "discoveryQuery": "site:linkedin.com/company \"Digital Maelstrom\" LinkedIn company",
+          "searchResultUrl": "https://www.linkedin.com/company/maelstromfund",
+          "resolutionStatus": "AMBIGUOUS",
+          "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+          "searchResultTitle": "Maelstrom",
+          "supportingEvidence": [
+            {
+              "kind": "NAME_MATCH",
+              "detail": "Candidate title or slug agrees with \"Digital Maelstrom\"",
+              "strength": "strong",
+              "sourceUrl": "https://www.linkedin.com/company/maelstromfund"
+            }
+          ],
+          "searchResultExcerpt": "### Industry\nVenture Capital and Private Equity Principals\n\n### Company Size\n2-10 employees  \n14 associated members (LinkedIn members who've listed Maelstrom as their current workplace on their profile)\n\n### Founded\nN/A\n\n### Funding\nLast Round Date: N/A\nLast Round Type: N/A\nTotal Rounds: N/A\nLast Round Raised: N/A\n\n### Investors\nN/A\n\n### Specialties\nN/A\n\n## Locations\n\n### Get Directions\n\n## Employees\nAkshat Vaidya (N/A):  Carl Joseph-Black (N/A):  Sophy Olingo (N/A):  Max Grenert (N/A): [...] ## Overview\nManaged by the family office of Arthur Hayes (co-founder, BitMEX), Maelstrom is building a long-term portfolio across Venture, Liquid, Private Equity, and Public Markets, focused on infrastructure companies and assets that will form the foundation of the next wave of trustless decentralization. We back high-conviction opportunities ranging from early-stage equity and token investments to private and public market positions, bringing to each cap table the experience, relationships, and resources of having built one of the industry’s first profitable unicorns from the ground up. We encourage founders to reach out to us at: info@maelstrom.fund.\n\n### Website\n\n### Crunchbase\nN/A\n### LinkedIn\nN/A\n\n### Industry\nVenture Capital and Private Equity Principals [...] # Maelstrom\nA @CryptoHayes family office fund, investing in products, infra and services building the decentralization of everything\nVenture Capital and Private Equity Principals • N/A • 3,647 followers • 2-10 employees",
+          "normalizedProfileUrl": "https://www.linkedin.com/company/maelstromfund",
+          "resolutionConfidence": 45,
+          "contradictingEvidence": []
+        },
+        {
+          "publisher": "LINKEDIN",
+          "profileUrl": "https://nz.linkedin.com/company/centric-networks",
+          "profileSlug": "centric-networks",
+          "profileType": "LINKEDIN_COMPANY",
+          "retrievedAt": "2026-08-31T11:28:00.521Z",
+          "discoveryQuery": "site:linkedin.com/company \"Digital Maelstrom\" LinkedIn company",
+          "searchResultUrl": "https://nz.linkedin.com/company/centric-networks",
+          "resolutionStatus": "WRONG",
+          "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+          "searchResultTitle": "Centric Networks - Business IT and Communication Solutions",
+          "supportingEvidence": [],
+          "searchResultExcerpt": "## Employees\nScott Morrison (N/A): \n\n## Similar Companies\nCentrics Networks (IT Services and IT Consulting):  (N/A); Sophos (Software Development):  (Abingdon, Oxfordshire); Centris Networks (Software Development):  (N/A); Digital Maelstrom (IT Services and IT Consulting):  (Kansas City, Missouri); AtomIT Networks Pte Ltd (Information Technology & Services):  (Singapore, SG); The Meetings Show APAC (Events Services):  (N/A); Lars Thrane A/S (Maritime Transportation):  (Holte, Copenhagen); SiS Technologies (Singapore) (Technology, Information and Internet):  (N/A); Secuna (Computer and Network Security):  (Taguig, Metro Manila); Canapii (Events Services):  (N/A)\n\n## Posts\n\n## Media\n- Images: \n- Logo: Company Logo\n\n## Additional  \nNone",
+          "normalizedProfileUrl": "https://www.linkedin.com/company/centric-networks",
+          "resolutionConfidence": 0,
+          "contradictingEvidence": [
+            {
+              "kind": "CONTRADICTION",
+              "detail": "Candidate \"Centric Networks - Business IT and Communication Solutions\" does not independently agree with the requested company identity",
+              "strength": "contradicting",
+              "sourceUrl": "https://nz.linkedin.com/company/centric-networks"
+            }
+          ]
+        },
+        {
+          "publisher": "LINKEDIN",
+          "profileUrl": "https://www.linkedin.com/company/indigo-three-strategies",
+          "profileSlug": "indigo-three-strategies",
+          "profileType": "LINKEDIN_COMPANY",
+          "retrievedAt": "2026-08-31T11:28:00.521Z",
+          "discoveryQuery": "site:linkedin.com/company \"Digital Maelstrom\" LinkedIn company",
+          "searchResultUrl": "https://www.linkedin.com/company/indigo-three-strategies",
+          "resolutionStatus": "WRONG",
+          "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+          "searchResultTitle": "indigo three strategies",
+          "supportingEvidence": [],
+          "searchResultExcerpt": "Digital Maelstrom. IT Services and IT Consulting. Kansas City, Missouri · Happitu. Software Development. Maryland Heights, MO · Phoenix Solutions. IT Services",
+          "normalizedProfileUrl": "https://www.linkedin.com/company/indigo-three-strategies",
+          "resolutionConfidence": 0,
+          "contradictingEvidence": [
+            {
+              "kind": "CONTRADICTION",
+              "detail": "Candidate \"indigo three strategies\" does not independently agree with the requested company identity",
+              "strength": "contradicting",
+              "sourceUrl": "https://www.linkedin.com/company/indigo-three-strategies"
+            }
+          ]
+        },
+        {
+          "publisher": "LINKEDIN",
+          "profileUrl": "https://www.linkedin.com/company/jet-stream",
+          "profileSlug": "jet-stream",
+          "profileType": "LINKEDIN_COMPANY",
+          "retrievedAt": "2026-08-31T11:27:55.531Z",
+          "discoveryQuery": "site:linkedin.com/company \"Digital Maelstrom\" \"digitalmaelstrom.net\"",
+          "searchResultUrl": "https://www.linkedin.com/company/jet-stream",
+          "resolutionStatus": "WRONG",
+          "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+          "searchResultTitle": "Jet-Stream - Europe's streaming cloud - Multi CDN - Privacy Player - Accurate Analytics - Workflow Automation & Orchestration",
+          "supportingEvidence": [],
+          "searchResultExcerpt": "with every possible type of interference. With MaelStrom, you’re no longer tied to outdated technology or closed systems. You gain control, flexibility, and the confidence that your video infrastructure is ready for the future. 𝗪𝗵𝘆 𝗠𝗮𝗲𝗹𝗦𝘁𝗿𝗼𝗺? ✅ Modern hardware and software – No more bulky, inefficient servers. ✅ Open and customizable – Tune what you want, integrate where you want. ✅ 90% energy savings – Good for your budget and the planet. ✅ Automatic scaling and recovery – Set it up once and focus on what really matters. ✅ Unmatched video quality – Even in the toughest conditions. 𝗧𝗵𝗲 𝗙𝘂𝘁𝘂𝗿𝗲 𝗜𝘀 𝗢𝗽𝗲𝗻 𝗮𝗻𝗱 𝗦𝗺𝗮𝗿𝘁 MaelStrom proves that live video encoding doesn’t have to be a headache. It’s time to say goodbye to black boxes and embrace the freedom, efficiency, and quality that modern [...] scale and resilience. Stack multiple MaelStrom servers and create your own high availability cloud to process thousands of streams. MaelStrom runs at 64-bits which means no more 32-bits timing issues for 247365 uninterrupted, continuous operation beyond 99.999% uptime. MaelStrom offers the highest picture quality with great color depth, razor sharp deinterlacing, ML-optimized focus areas, even with detailed pictures and fast motion. MaelStrom reduces bandwidth and costs thanks to efficient decoding and encoding, H.264, H.265 and AV1 codecs, and VMAF optimization. MaelStrom supports modern input and output protocols such as SRT, for reliable inputs and outputs, with detailed data, and stream monitoring and previews for analysis. MaelStrom offers an open architecture, not a black box. [...] hardware and software. An open solution where you can fine-tune every detail. A system that seamlessly integrates into your own product and workflow, and works effortlessly with multiple packagers, CDNs, and monitoring tools. A solution that saves 90% on power, supports the latest codecs and ML tools, and automatically distributes, restarts, and scales channels. A system you install once—and then never have to worry about again. 𝗠𝗮𝗲𝗹𝗦𝘁𝗿𝗼𝗺: 𝗧𝗵𝗲 𝗚𝗮𝗺𝗲-𝗖𝗵𝗮𝗻𝗴𝗲𝗿 𝗶𝗻 𝗟𝗶𝘃𝗲 𝗩𝗶𝗱𝗲𝗼 𝗘𝗻𝗰𝗼𝗱𝗶𝗻𝗴 That solution exists. MaelStrom doesn’t just offer all these benefits—it also delivers the highest video quality and exceptional stability, even in the most challenging environments. Think source signals in the middle of the desert, from a satellite dish, with every possible type of interference. With MaelStrom,",
+          "normalizedProfileUrl": "https://www.linkedin.com/company/jet-stream",
+          "resolutionConfidence": 0,
+          "contradictingEvidence": [
+            {
+              "kind": "CONTRADICTION",
+              "detail": "Candidate \"Jet-Stream - Europe's streaming cloud - Multi CDN - Privacy Player - Accurate Analytics - Workflow Automation & Orchestration\" does not independently agree with the requested company identity",
+              "strength": "contradicting",
+              "sourceUrl": "https://www.linkedin.com/company/jet-stream"
+            }
+          ]
+        },
+        {
+          "publisher": "LINKEDIN",
+          "profileUrl": "https://www.linkedin.com/company/maelstrom-cv",
+          "profileSlug": "maelstrom-cv",
+          "profileType": "LINKEDIN_COMPANY",
+          "retrievedAt": "2026-08-31T12:05:45.777Z",
+          "discoveryQuery": "site:linkedin.com/company \"Digital Maelstrom\" LinkedIn company",
+          "searchResultUrl": "https://www.linkedin.com/company/maelstrom-cv",
+          "resolutionStatus": "WRONG",
+          "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+          "searchResultTitle": "House of Maelstrom | LinkedIn",
+          "supportingEvidence": [],
+          "searchResultExcerpt": "Surveying and Mapping Services\n\nWatsonville, California\n\n### Maelström Group\n\nChemical Manufacturing\n\nSaint-Médard-d'Aunis, Nouvelle-Aquitaine\n\n### InfoArch\n\nIT Services and IT Consulting\n\nCharleston, South Carolina\n\n### Muse Digital\n\nStaffing and Recruiting\n\nMelbourne, Victoria\n\n### Blade-Logic\n\nIT Services and IT Consulting\n\nDelmar, NY\n\n### Voxos\n\nTechnology, Information and Internet\n\nOttawa, ON\n\n### Blade\n\nSecurity and Investigations\n\nLas Vegas, Nevada\n\nAgree & Join LinkedIn\n\nBy clicking Continue to join or sign in, you agree to LinkedIn’s User Agreement, Privacy Policy, and Cookie Policy.\n\n## Sign in to see who you already know at House of Maelstrom\n\nor\n\nNew to LinkedIn? Join now [...] ## Employees at House of Maelstrom\n\nClick here to view Dusan K.’s profile\n\n### Dusan K.\n\nClick here to view LinkedIn Member’s profile\n\n### LinkedIn Member\n\n## View 2 employees at House of Maelstrom\n\n### \n\n## Welcome back\n\nor\n\nBy clicking Continue to join or sign in, you agree to LinkedIn’s User Agreement, Privacy Policy, and Cookie Policy.\n\nNew to LinkedIn? Join now\n\nor\n\nBy clicking Continue to join or sign in, you agree to LinkedIn’s User Agreement, Privacy Policy, and Cookie Policy.\n\n## Locations\n\nLos Angeles, US\n\n## Similar pages\n\n### Maelstrom\n\nVenture Capital and Private Equity Principals\n\n### ClicksOrbit\n\nBusiness Consulting and Services\n\n### Maelstrom Software\n\nTechnology, Information and Internet\n\nSeattle, WA\n\n### Horizonview Technologies\n\nSurveying and Mapping Services [...] Agree & Join LinkedIn\n\nBy clicking Continue to join or sign in, you agree to LinkedIn’s User Agreement, Privacy Policy, and Cookie Policy.\n\nHouse of Maelstrom’s cover photo\nHouse of Maelstrom\n\n# House of Maelstrom\n\n## Design Services\n\n#### 𝙲𝚛𝚎𝚊𝚝𝚒𝚗𝚐 𝚟𝚒𝚜𝚞𝚊𝚕 𝚠𝚘𝚛𝚕𝚍𝚜 𝚙𝚎𝚘𝚙𝚕𝚎 𝚠𝚊𝚗𝚝 𝚝𝚘 𝚋𝚎𝚕𝚘𝚗𝚐 𝚝𝚘.\n\nDiscover all 2 employees\n\n## About us\n\nA house for visual storytelling, worldbuilding, and creative direction for culture, brands, and entertainment.\nDesign studio founded and led by Dusan Kovacevic, aka Maelstrom—a Serbian designer and creative director shaping pixels into stories, mood, and meaning since 2014.\nFor people who...\n• Don’t seek approval — they set the aesthetic agenda\n• Want to turn attention into allegiance\n• You.\n\nExternal link for House of Maelstrom\n\n## Employees at House of Maelstrom",
+          "normalizedProfileUrl": "https://www.linkedin.com/company/maelstrom-cv",
+          "resolutionConfidence": 0,
+          "contradictingEvidence": [
+            {
+              "kind": "CONTRADICTION",
+              "detail": "Candidate \"House of Maelstrom\" does not independently agree with the requested company identity",
+              "strength": "contradicting",
+              "sourceUrl": "https://www.linkedin.com/company/maelstrom-cv"
+            }
+          ]
+        },
+        {
+          "publisher": "LINKEDIN",
+          "profileUrl": "https://in.linkedin.com/company/maelstrom-global-pvt-ltd",
+          "profileSlug": "maelstrom-global-pvt-ltd",
+          "profileType": "LINKEDIN_COMPANY",
+          "retrievedAt": "2026-08-31T11:28:00.521Z",
+          "discoveryQuery": "site:linkedin.com/company \"Digital Maelstrom\" LinkedIn company",
+          "searchResultUrl": "https://in.linkedin.com/company/maelstrom-global-pvt-ltd",
+          "resolutionStatus": "WRONG",
+          "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+          "searchResultTitle": "Maelstrom Global Pvt. Ltd.",
+          "supportingEvidence": [],
+          "searchResultExcerpt": "# Maelstrom Global Pvt. Ltd.\nDigital Marketing, SEO & Brand Growth Solutions | Based in Perinthalmanna, Kerala | Serving South India\nAdvertising Services • Perintalmanna, Kerala • 13 followers • 11-50 employees\n\n## Overview\nDigital marketing and branding company based in Perinthalmanna, Kerala. We provide SEO, social media marketing, performance ads, content marketing, web visibility strategies, and brand growth solutions for businesses across Kerala and South India.\n\n### Website\n\n### Crunchbase\nN/A\n### LinkedIn\nN/A\n\n### Industry\nAdvertising Services\n\n### Company Size\n11-50 employees  \n11 associated members (LinkedIn members who've listed Maelstrom Global Pvt. Ltd. as their current workplace on their profile)\n\n### Founded\n2024 [...] ## Posts [...] #creativeagency #creativeposter #perinthalmana #digitalmarketingagency #marketing #maelstromglobal #startupindia #digitalmarketing #graphicdesign #Drishyam3 #laboursday #laboursday2026 [Likes: 1, Comments: 0]; Maelstrom Global Pvt. Ltd. (2mo): NASA gave us Landsat. We turned it into Maelstrom. #perinthalmana #creativeagency #branding #creativeposter #maelstromglobal #digitalmarketingagency #digitalmarketingagencyindia #marketing #NASA #landsat [Likes: 0, Comments: 0]; Maelstrom Global Pvt. Ltd. (3mo): Still in our hands. Handle with care. #maelstromglobal #digitalmarketingagency #branding #creativeposter #creativeagency #perinthalmana #socialmediamanagement #worldearthday #earthday2026 [Likes: 0, Comments: 0]; Maelstrom Global Pvt. Ltd. (3mo): Not just a festival, a glow that stands out.",
+          "normalizedProfileUrl": "https://www.linkedin.com/company/maelstrom-global-pvt-ltd",
+          "resolutionConfidence": 0,
+          "contradictingEvidence": [
+            {
+              "kind": "CONTRADICTION",
+              "detail": "Candidate \"Maelstrom Global Pvt. Ltd.\" does not independently agree with the requested company identity",
+              "strength": "contradicting",
+              "sourceUrl": "https://in.linkedin.com/company/maelstrom-global-pvt-ltd"
+            }
+          ]
+        },
+        {
+          "publisher": "LINKEDIN",
+          "profileUrl": "https://sk.linkedin.com/company/maelstrom-media",
+          "profileSlug": "maelstrom-media",
+          "profileType": "LINKEDIN_COMPANY",
+          "retrievedAt": "2026-08-31T11:28:00.521Z",
+          "discoveryQuery": "site:linkedin.com/company \"Digital Maelstrom\" LinkedIn company",
+          "searchResultUrl": "https://sk.linkedin.com/company/maelstrom-media",
+          "resolutionStatus": "WRONG",
+          "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+          "searchResultTitle": "Maelstrom Media",
+          "supportingEvidence": [],
+          "searchResultExcerpt": "# Maelstrom Media\nN/A\nIT Services and IT Consulting • Bratislava, Bratislava • 26 followers • 2-10 employees\n\n## Overview\nMaelstrom is your one-stop-shop for 360° #digital #media solutions that tell your story online.\n\n### Website\n\n### Crunchbase\nN/A\n### LinkedIn\nN/A\n\n### Industry\nIT Services and IT Consulting\n\n### Company Size\n2-10 employees  \n2 associated members (LinkedIn members who've listed Maelstrom Media as their current workplace on their profile)\n\n### Founded\nN/A\n\n### Funding\nLast Round Date: N/A\nLast Round Type: N/A\nTotal Rounds: N/A\nLast Round Raised: N/A\n\n### Investors\nN/A\n\n### Specialties\nN/A\n\n## Locations\nŠášovská 14, Bratislava, Bratislava 85107, SK\n\n### Get Directions\nDirections\n\n## Employees\nMaelstrom Media (N/A): [...] ## Employees\nMaelstrom Media (N/A): \n\n## Similar Companies\nBlueLink Foundation (Non-profit Organizations):  (Sofia, Sofia City); SpringerNature科研服务 (Business Consulting and Services):  (N/A); Journal of Open Source Software (Research):  (N/A); Property Advisor & Architecture Group (Investment Management):  (Barcelona, Cataluña); Green Tech Valley (Environmental Services):  (Graz, Steiermark); LECG (Business Consulting and Services):  (N/A); Think Tanks and Civil Societies Program (TTCSP) (Think Tanks):  (Philadelphia, Pennsylvania); British Business Bank (Financial Services):  (Sheffield, South Yorkshire); Compass Lexecon (Business Consulting and Services):  (Washington, DC); Itau BBA (Banking):  (São Paulo, SP)\n\n## Posts\n\n## Media\n- Images: \n- Logo: Company Logo\n\n## Additional  \nNone",
+          "normalizedProfileUrl": "https://www.linkedin.com/company/maelstrom-media",
+          "resolutionConfidence": 0,
+          "contradictingEvidence": [
+            {
+              "kind": "CONTRADICTION",
+              "detail": "Candidate \"Maelstrom Media\" does not independently agree with the requested company identity",
+              "strength": "contradicting",
+              "sourceUrl": "https://sk.linkedin.com/company/maelstrom-media"
+            }
+          ]
+        },
+        {
+          "publisher": "LINKEDIN",
+          "profileUrl": "https://www.linkedin.com/company/maelstrom-studio",
+          "profileSlug": "maelstrom-studio",
+          "profileType": "LINKEDIN_COMPANY",
+          "retrievedAt": "2026-08-31T11:27:55.531Z",
+          "discoveryQuery": "site:linkedin.com/company \"Digital Maelstrom\" \"digitalmaelstrom.net\"",
+          "searchResultUrl": "https://www.linkedin.com/company/maelstrom-studio",
+          "resolutionStatus": "WRONG",
+          "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+          "searchResultTitle": "Maelstrom Studio | LinkedIn",
+          "supportingEvidence": [],
+          "searchResultExcerpt": "We are a boutique full-service multi-agency specializing in digital and music marketing. A small team of prolific and driven creatives with over 15 years combined experience. We specialize in crafting stunning and inspired music websites for independent artists, musicians and or band as well as carefully crafted professional designs for small to medium businesses to expand their online presence, and give it a compelling makeover. We artfully and effectively execute music campaigns that places our artist’s music front and center with tangible results. Creative people excite and inspire us! We want to work with you. [...] Our expertise:\nSpotify, iTunes, Shazam, Soundcloud campaigns. Video promotions. Web Development and Design . Video Editing . Copywriting . Graphics Design . Logo Design. Social Media Presence. Branding. Content Management\nWe speak: Wordpress. PHP. SQL. HTML. CSS\nWe think about: music, music and music\nWe drink: Java, C# and C++\nWe eat: Adobe products for breakfast!\nWe play with: Words, Python, Perl and Ruby\nWe breathe the internet.\nWe love Indie Artists and Indie Music\nWe dream of unicorns, world peace, and happy endings\nCreative people excite and inspire us!\n// mael.strom (mlstrm)\nn.\n1. A turbulent situation.\n2. A whirlpool of extraordinary size or violence.\n3. a tumultuous state of affairs.\nWe find order in chaos. We create harmony in the muddle of ideas. #Maelstromnify it! [...] Field of concentration: Music and the artists who make them. One stop shop for musicians who are keen enough to focus on their artistry-- be the best that they can be in their craft, and are astute enough to let us create and manage their home on the web. Among the creative things we do for them: branding, web design, development and management, copywriting, editing, ghostwriting, logo design, targeted PR and social media growth and management, lyric video editing, video promotion, album/single/EP promotion, pro biography writing, elevator pitch, e-mail newsletter and many more.\nOur expertise:",
+          "normalizedProfileUrl": "https://www.linkedin.com/company/maelstrom-studio",
+          "resolutionConfidence": 0,
+          "contradictingEvidence": [
+            {
+              "kind": "CONTRADICTION",
+              "detail": "Candidate \"Maelstrom Studio\" does not independently agree with the requested company identity",
+              "strength": "contradicting",
+              "sourceUrl": "https://www.linkedin.com/company/maelstrom-studio"
+            }
+          ]
+        },
+        {
+          "publisher": "LINKEDIN",
+          "profileUrl": "https://www.linkedin.com/company/maelstromlibrary",
+          "profileSlug": "maelstromlibrary",
+          "profileType": "LINKEDIN_COMPANY",
+          "retrievedAt": "2026-08-31T12:05:45.777Z",
+          "discoveryQuery": "site:linkedin.com/company \"Digital Maelstrom\" LinkedIn company",
+          "searchResultUrl": "https://www.linkedin.com/company/maelstromlibrary",
+          "resolutionStatus": "WRONG",
+          "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+          "searchResultTitle": "Maelstrom Library | LinkedIn",
+          "supportingEvidence": [],
+          "searchResultExcerpt": "Maelstrom Library’s cover photo\nMaelstrom Library\n\n# Maelstrom Library\n\n## Computer Games\n\n### Orhangazi, Bursa 54 followers\n\n#### Photogrammetry, Photometric Stereo & Outsource Studio\n\n## About us\n\nOutsourcing Studio - We're creating high-quality game-ready and film assets.\n\nExternal link for Maelstrom Library\n\n## Locations\n\nOrhangazi, Bursa, TR\n\n## Updates\n\nView organization page for Maelstrom Library\n\n54 followers\n\nHello everyone!\n🌻 We’re excited to introduce our new MAE Sunflower Collection 01 for Unreal Engine 5.\n🔗 Buy now:\n\nNo alternative text description for this image\nNo alternative text description for this image\nNo alternative text description for this image\nNo alternative text description for this image\nNo alternative text description for this image [...] ## Join now to see what you are missing\n\n## Similar pages\n\n### ScansLibrary\n\nSoftware Development\n\n### Scans Factory\n\nComputer Games\n\n### Kotlin Multiplatform Updates and Showcases\n\nSoftware Development\n\n### Android Engineers\n\nEducation\n\nMountain View, Santa Clara\n\n### JetBrains\n\nSoftware Development\n\n## Browse jobs\n\n### Developer jobs\n\nAgree & Join LinkedIn\n\nBy clicking Continue to join or sign in, you agree to LinkedIn’s User Agreement, Privacy Policy, and Cookie Policy.\n\n## Sign in to see who you already know at Maelstrom Library\n\nor\n\nNew to LinkedIn? Join now\n\nBy clicking Continue to join or sign in, you agree to LinkedIn’s User Agreement, Privacy Policy, and Cookie Policy.\n\nLinkedIn\n\nLinkedIn is better on the app\n\nDon’t have the app? Get it in the Microsoft Store.",
+          "normalizedProfileUrl": "https://www.linkedin.com/company/maelstromlibrary",
+          "resolutionConfidence": 0,
+          "contradictingEvidence": [
+            {
+              "kind": "CONTRADICTION",
+              "detail": "Candidate \"Maelstrom Library\" does not independently agree with the requested company identity",
+              "strength": "contradicting",
+              "sourceUrl": "https://www.linkedin.com/company/maelstromlibrary"
+            }
+          ]
+        },
+        {
+          "publisher": "LINKEDIN",
+          "profileUrl": "https://in.linkedin.com/company/s-s-digital-marketing-agency",
+          "profileSlug": "s-s-digital-marketing-agency",
+          "profileType": "LINKEDIN_COMPANY",
+          "retrievedAt": "2026-08-31T12:05:45.777Z",
+          "discoveryQuery": "site:linkedin.com/company \"Digital Maelstrom\" LinkedIn company",
+          "searchResultUrl": "https://in.linkedin.com/company/s-s-digital-marketing-agency",
+          "resolutionStatus": "WRONG",
+          "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+          "searchResultTitle": "SDMA - 🚀grow your business digitally 📈 Social Media Set up and Management 💻 Creative Designs for your business.",
+          "supportingEvidence": [],
+          "searchResultExcerpt": "# SDMA\n🚀grow your business digitally 📈 Social Media Set up and Management 💻 Creative Designs for your business.\nMarketing Services • ahmedabad, Gujarat • 1,652 followers • 2-10 employees\n\n## Overview\nSDMA is an Ahmedabad based digital marketing agency, Founded in 2020 with a spirit of world change. Smit Solanki, who owned a digital marketing degree along with an MBA degree and holds the strongest team in this domain with having more than 2 years of experience. In order to make a tiny difference in the digital marketing maelstrom, we've introduced our services. and we are pleased to show that more than 25 firms received our assistance.\n\n### Website\nN/A\n### Crunchbase\nN/A\n### LinkedIn\nN/A\n\n### Industry\nMarketing Services [...] ### Industry\nMarketing Services\n\n### Company Size\n2-10 employees  \n11 associated members (LinkedIn members who've listed SDMA as their current workplace on their profile)\n\n### Founded\n2020\n\n### Funding\nLast Round Date: N/A\nLast Round Type: N/A\nTotal Rounds: N/A\nLast Round Raised: N/A\n\n### Investors\nN/A\n\n### Specialties\nN/A\n\n## Locations\nAhmedabad, ahmedabad, Gujarat 382460, IN\n\n### Get Directions\nDirections\n\n## Employees\nVarun Rajput (N/A):  Km Gupta (N/A):  Aboudramane Diarra (N/A):  Amrit Joshi (N/A):",
+          "normalizedProfileUrl": "https://www.linkedin.com/company/s-s-digital-marketing-agency",
+          "resolutionConfidence": 0,
+          "contradictingEvidence": [
+            {
+              "kind": "CONTRADICTION",
+              "detail": "Candidate \"SDMA - 🚀grow your business digitally 📈 Social Media Set up and Management 💻 Creative Designs for your business.\" does not independently agree with the requested company identity",
+              "strength": "contradicting",
+              "sourceUrl": "https://in.linkedin.com/company/s-s-digital-marketing-agency"
+            }
+          ]
+        },
+        {
+          "publisher": "LINKEDIN",
+          "profileUrl": "https://www.linkedin.com/company/security-ps",
+          "profileSlug": "security-ps",
+          "profileType": "LINKEDIN_COMPANY",
+          "retrievedAt": "2026-08-31T11:28:00.521Z",
+          "discoveryQuery": "site:linkedin.com/company \"Digital Maelstrom\" LinkedIn company",
+          "searchResultUrl": "https://www.linkedin.com/company/security-ps",
+          "resolutionStatus": "WRONG",
+          "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+          "searchResultTitle": "Security PS",
+          "supportingEvidence": [],
+          "searchResultExcerpt": "## Similar Companies\nDepth Security (IT Services and IT Consulting):  (Kansas City, Missouri); Active Security Systems (Security Systems Services):  (New York, NY); In.security (Computer and Network Security):  (Crewe, Cheshire); Digital Maelstrom (IT Services and IT Consulting):  (Kansas City, Missouri); Security Mentor (Computer and Network Security):  (Monterey, California); Aetna Fine Art Logistics (Transportation, Logistics, Supply Chain and Storage):  (Valley Stream, New York); Dori Doors NYC (Construction):  (Bronx, New York); Go Security Pro (Computer and Network Security):  (Tulsa, Oklahoma); America's Call Center (Telecommunications):  (Kansas City, MO); Trulight LLC (Business Consulting and Services):  (Crawfordville, Florida)\n\n## Posts [...] ### Website\n\n### Crunchbase\nN/A\n### LinkedIn\nN/A\n\n### Industry\nComputer and Network Security\n\n### Company Size\n11-50 employees  \n22 associated members (LinkedIn members who've listed Security PS as their current workplace on their profile)\n\n### Founded\n2002\n\n### Funding\nLast Round Date: N/A\nLast Round Type: N/A\nTotal Rounds: N/A\nLast Round Raised: N/A\n\n### Investors\nN/A\n\n### Specialties\ninformation security, application security, network security, Application Security Assessments, Network Security Assessments, Pentesting, Network pentesting, and Application pentesting\n\n## Locations\nLenexa, Kansas 66215, US\n\n### Get Directions\nDirections\n\n## Employees\nKris Drent (N/A):  yves marcel (N/A):  Rayan Maina (N/A):  PRANTA DAS (N/A): [...] ## Posts\n\n## Media\n- Images: \n- Logo: Company Logo\n\n## Additional  \nNone",
+          "normalizedProfileUrl": "https://www.linkedin.com/company/security-ps",
+          "resolutionConfidence": 0,
+          "contradictingEvidence": [
+            {
+              "kind": "CONTRADICTION",
+              "detail": "Candidate \"Security PS\" does not independently agree with the requested company identity",
+              "strength": "contradicting",
+              "sourceUrl": "https://www.linkedin.com/company/security-ps"
+            }
+          ]
+        }
+      ],
+      "attributeComparisons": [
+        {
+          "profileUrl": "https://www.linkedin.com/company/digital-maelstrom-llc",
+          "candidateLabel": "Digital Maelstrom",
+          "requestedAccountName": "Digital Maelstrom",
+          "nameAgreement": true,
+          "domainAgreement": false,
+          "discoveryProfileAgreement": false,
+          "geographyAgreement": false,
+          "industryAgreement": false,
+          "contradictions": [],
+          "priorResolutionStatus": "AMBIGUOUS",
+          "priorConfidence": 45
+        },
+        {
+          "profileUrl": "https://www.linkedin.com/company/maelstromfund",
+          "candidateLabel": "Maelstrom",
+          "requestedAccountName": "Digital Maelstrom",
+          "nameAgreement": false,
+          "domainAgreement": false,
+          "discoveryProfileAgreement": false,
+          "geographyAgreement": false,
+          "industryAgreement": false,
+          "contradictions": [],
+          "priorResolutionStatus": "AMBIGUOUS",
+          "priorConfidence": 45
+        },
+        {
+          "profileUrl": "https://www.linkedin.com/company/centric-networks",
+          "candidateLabel": "Centric Networks - Business IT and Communication Solutions",
+          "requestedAccountName": "Digital Maelstrom",
+          "nameAgreement": true,
+          "domainAgreement": false,
+          "discoveryProfileAgreement": false,
+          "geographyAgreement": false,
+          "industryAgreement": false,
+          "contradictions": [
+            {
+              "kind": "CONTRADICTION",
+              "detail": "Candidate \"Centric Networks - Business IT and Communication Solutions\" does not independently agree with the requested company identity",
+              "strength": "contradicting",
+              "sourceUrl": "https://nz.linkedin.com/company/centric-networks"
+            }
+          ],
+          "priorResolutionStatus": "WRONG",
+          "priorConfidence": 0
+        },
+        {
+          "profileUrl": "https://www.linkedin.com/company/indigo-three-strategies",
+          "candidateLabel": "indigo three strategies",
+          "requestedAccountName": "Digital Maelstrom",
+          "nameAgreement": true,
+          "domainAgreement": false,
+          "discoveryProfileAgreement": false,
+          "geographyAgreement": false,
+          "industryAgreement": false,
+          "contradictions": [
+            {
+              "kind": "CONTRADICTION",
+              "detail": "Candidate \"indigo three strategies\" does not independently agree with the requested company identity",
+              "strength": "contradicting",
+              "sourceUrl": "https://www.linkedin.com/company/indigo-three-strategies"
+            }
+          ],
+          "priorResolutionStatus": "WRONG",
+          "priorConfidence": 0
+        },
+        {
+          "profileUrl": "https://www.linkedin.com/company/jet-stream",
+          "candidateLabel": "Jet-Stream - Europe's streaming cloud - Multi CDN - Privacy Player - Accurate Analytics - Workflow Automation & Orchestration",
+          "requestedAccountName": "Digital Maelstrom",
+          "nameAgreement": false,
+          "domainAgreement": false,
+          "discoveryProfileAgreement": false,
+          "geographyAgreement": false,
+          "industryAgreement": false,
+          "contradictions": [
+            {
+              "kind": "CONTRADICTION",
+              "detail": "Candidate \"Jet-Stream - Europe's streaming cloud - Multi CDN - Privacy Player - Accurate Analytics - Workflow Automation & Orchestration\" does not independently agree with the requested company identity",
+              "strength": "contradicting",
+              "sourceUrl": "https://www.linkedin.com/company/jet-stream"
+            }
+          ],
+          "priorResolutionStatus": "WRONG",
+          "priorConfidence": 0
+        },
+        {
+          "profileUrl": "https://www.linkedin.com/company/maelstrom-cv",
+          "candidateLabel": "House of Maelstrom",
+          "requestedAccountName": "Digital Maelstrom",
+          "nameAgreement": false,
+          "domainAgreement": false,
+          "discoveryProfileAgreement": false,
+          "geographyAgreement": false,
+          "industryAgreement": false,
+          "contradictions": [
+            {
+              "kind": "CONTRADICTION",
+              "detail": "Candidate \"House of Maelstrom\" does not independently agree with the requested company identity",
+              "strength": "contradicting",
+              "sourceUrl": "https://www.linkedin.com/company/maelstrom-cv"
+            }
+          ],
+          "priorResolutionStatus": "WRONG",
+          "priorConfidence": 0
+        },
+        {
+          "profileUrl": "https://www.linkedin.com/company/maelstrom-global-pvt-ltd",
+          "candidateLabel": "Maelstrom Global Pvt. Ltd.",
+          "requestedAccountName": "Digital Maelstrom",
+          "nameAgreement": false,
+          "domainAgreement": false,
+          "discoveryProfileAgreement": false,
+          "geographyAgreement": false,
+          "industryAgreement": false,
+          "contradictions": [
+            {
+              "kind": "CONTRADICTION",
+              "detail": "Candidate \"Maelstrom Global Pvt. Ltd.\" does not independently agree with the requested company identity",
+              "strength": "contradicting",
+              "sourceUrl": "https://in.linkedin.com/company/maelstrom-global-pvt-ltd"
+            }
+          ],
+          "priorResolutionStatus": "WRONG",
+          "priorConfidence": 0
+        },
+        {
+          "profileUrl": "https://www.linkedin.com/company/maelstrom-media",
+          "candidateLabel": "Maelstrom Media",
+          "requestedAccountName": "Digital Maelstrom",
+          "nameAgreement": false,
+          "domainAgreement": false,
+          "discoveryProfileAgreement": false,
+          "geographyAgreement": false,
+          "industryAgreement": false,
+          "contradictions": [
+            {
+              "kind": "CONTRADICTION",
+              "detail": "Candidate \"Maelstrom Media\" does not independently agree with the requested company identity",
+              "strength": "contradicting",
+              "sourceUrl": "https://sk.linkedin.com/company/maelstrom-media"
+            }
+          ],
+          "priorResolutionStatus": "WRONG",
+          "priorConfidence": 0
+        },
+        {
+          "profileUrl": "https://www.linkedin.com/company/maelstrom-studio",
+          "candidateLabel": "Maelstrom Studio",
+          "requestedAccountName": "Digital Maelstrom",
+          "nameAgreement": false,
+          "domainAgreement": false,
+          "discoveryProfileAgreement": false,
+          "geographyAgreement": false,
+          "industryAgreement": false,
+          "contradictions": [
+            {
+              "kind": "CONTRADICTION",
+              "detail": "Candidate \"Maelstrom Studio\" does not independently agree with the requested company identity",
+              "strength": "contradicting",
+              "sourceUrl": "https://www.linkedin.com/company/maelstrom-studio"
+            }
+          ],
+          "priorResolutionStatus": "WRONG",
+          "priorConfidence": 0
+        },
+        {
+          "profileUrl": "https://www.linkedin.com/company/maelstromlibrary",
+          "candidateLabel": "Maelstrom Library",
+          "requestedAccountName": "Digital Maelstrom",
+          "nameAgreement": false,
+          "domainAgreement": false,
+          "discoveryProfileAgreement": false,
+          "geographyAgreement": false,
+          "industryAgreement": false,
+          "contradictions": [
+            {
+              "kind": "CONTRADICTION",
+              "detail": "Candidate \"Maelstrom Library\" does not independently agree with the requested company identity",
+              "strength": "contradicting",
+              "sourceUrl": "https://www.linkedin.com/company/maelstromlibrary"
+            }
+          ],
+          "priorResolutionStatus": "WRONG",
+          "priorConfidence": 0
+        },
+        {
+          "profileUrl": "https://www.linkedin.com/company/s-s-digital-marketing-agency",
+          "candidateLabel": "SDMA - 🚀grow your business digitally 📈 Social Media Set up and Management 💻 Creative Designs for your business.",
+          "requestedAccountName": "Digital Maelstrom",
+          "nameAgreement": false,
+          "domainAgreement": false,
+          "discoveryProfileAgreement": false,
+          "geographyAgreement": false,
+          "industryAgreement": false,
+          "contradictions": [
+            {
+              "kind": "CONTRADICTION",
+              "detail": "Candidate \"SDMA - 🚀grow your business digitally 📈 Social Media Set up and Management 💻 Creative Designs for your business.\" does not independently agree with the requested company identity",
+              "strength": "contradicting",
+              "sourceUrl": "https://in.linkedin.com/company/s-s-digital-marketing-agency"
+            }
+          ],
+          "priorResolutionStatus": "WRONG",
+          "priorConfidence": 0
+        },
+        {
+          "profileUrl": "https://www.linkedin.com/company/security-ps",
+          "candidateLabel": "Security PS",
+          "requestedAccountName": "Digital Maelstrom",
+          "nameAgreement": true,
+          "domainAgreement": false,
+          "discoveryProfileAgreement": false,
+          "geographyAgreement": false,
+          "industryAgreement": false,
+          "contradictions": [
+            {
+              "kind": "CONTRADICTION",
+              "detail": "Candidate \"Security PS\" does not independently agree with the requested company identity",
+              "strength": "contradicting",
+              "sourceUrl": "https://www.linkedin.com/company/security-ps"
+            }
+          ],
+          "priorResolutionStatus": "WRONG",
+          "priorConfidence": 0
+        }
+      ],
+      "ownershipContext": [],
+      "priorEntityAssessment": {
+        "companyLikeness": "LIKELY_COMPANY",
+        "identityState": "PROBABLE",
+        "canonicalAttachAllowed": false,
+        "evidence": [
+          "NAME_DOMAIN_AGREEMENT",
+          "OFFICIAL_SOURCE_DOMAIN",
+          "PROVIDER_ORGANIZATION_RESULT"
+        ],
+        "conflicts": []
+      },
+      "priorFinalState": "PROBABLE",
+      "priorAutomaticAttachAllowed": false,
+      "missingVerificationRequirement": "One independent source that binds the selected company profile to the preserved canonical domain without contradiction.",
+      "primaryRootCause": "DISCOVERY_EVIDENCE_NOT_REUSED",
+      "secondaryRootCauses": [
+        "PROFILE_SEARCH_FOUND_NO_DOMAIN_CORROBORATED_CANDIDATE",
+        "PROVIDER_ORGANIZATION_RESULT_INSUFFICIENT_FOR_CONFIRMATION",
+        "PROBABLE_IDENTITY_NOT_PRESERVED_AS_ACTIONABLE_REVIEW_STATE"
+      ],
+      "exactFinalStateReason": "The normal path has an exact discovery name/domain/official-URL tuple and provider organization result, but none of that preserved discovery evidence is passed into profile candidate construction. Profile resolution therefore returns NOT_FOUND and the safe identity decision remains PROBABLE, missing independent domain-bound profile corroboration."
+    },
+    {
+      "company": "Mandiant",
+      "sourcePopulation": "PRESERVED_IDENTITY_FIX_02_FOUR_CASES",
+      "originalProvenance": {
+        "sourceType": "JYRA_DISCOVERY",
+        "sourceLabel": "b220e720-6d21-4c7a-badf-3aec920febca",
+        "sourceUrl": "https://linkedin.com/company/mandiant",
+        "observedAt": "2026-08-31T11:22:49.448Z",
+        "provider": "b220e720-6d21-4c7a-badf-3aec920febca",
+        "providerRequestId": "discovery:85142dd3-94c0-40c1-afaa-591bedbcc959:1:b220e720-6d21-4c7a-badf-3aec920febca",
+        "providerResultId": "https://exa.ai/library/organization/x5rq3y7dcvl",
+        "providerOrganizationResult": true,
+        "retrievalTimestamp": "2026-08-31T11:22:49.524Z"
+      },
+      "preservedIdentityEvidence": {
+        "suppliedName": "Mandiant (part of Google Cloud)",
+        "accountName": "Mandiant",
+        "domain": null,
+        "website": null,
+        "linkedinUrl": "https://linkedin.com/company/mandiant",
+        "profileUrls": {
+          "linkedin": "https://linkedin.com/company/mandiant"
+        },
+        "description": null,
+        "industry": null,
+        "location": null,
+        "providerMetadata": {
+          "title": "Mandiant (part of Google Cloud)",
+          "author": "Exa",
+          "resultId": "https://exa.ai/library/organization/x5rq3y7dcvl",
+          "publishedDate": "2026-06-18T00:00:00.000Z",
+          "profilePlatform": "linkedin",
+          "originalResultUrl": "https://linkedin.com/company/mandiant"
+        }
+      },
+      "profileResolutionAttempts": [
+        {
+          "resolutionStatus": "PROBABLE",
+          "resolutionConfidence": 45,
+          "profileUrl": "https://www.linkedin.com/company/mandiant",
+          "queries": [
+            "site:linkedin.com/company \"Mandiant (part of Google Cloud)\"",
+            "site:linkedin.com/company \"Mandiant (part of Google Cloud)\" LinkedIn company"
+          ],
+          "provider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+          "retrievalMethod": "TAVILY_WEB_SEARCH",
+          "candidateCount": 2,
+          "supportingEvidence": [
+            {
+              "kind": "NAME_MATCH",
+              "detail": "Candidate title or slug agrees with \"Mandiant (part of Google Cloud)\"",
+              "strength": "strong",
+              "sourceUrl": "https://www.linkedin.com/company/mandiant"
+            }
+          ],
+          "contradictingEvidence": []
+        },
+        {
+          "resolutionStatus": "PROBABLE",
+          "resolutionConfidence": 45,
+          "profileUrl": "https://www.linkedin.com/company/mandiant",
+          "queries": [
+            "site:linkedin.com/company \"Mandiant (part of Google Cloud)\"",
+            "site:linkedin.com/company \"Mandiant (part of Google Cloud)\" LinkedIn company"
+          ],
+          "provider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+          "retrievalMethod": "TAVILY_WEB_SEARCH",
+          "candidateCount": 2,
+          "supportingEvidence": [
+            {
+              "kind": "NAME_MATCH",
+              "detail": "Candidate title or slug agrees with \"Mandiant (part of Google Cloud)\"",
+              "strength": "strong",
+              "sourceUrl": "https://www.linkedin.com/company/mandiant"
+            }
+          ],
+          "contradictingEvidence": []
+        },
+        {
+          "resolutionStatus": "PROBABLE",
+          "resolutionConfidence": 45,
+          "profileUrl": "https://www.linkedin.com/company/mandiant",
+          "queries": [
+            "site:linkedin.com/company \"Mandiant (part of Google Cloud)\"",
+            "site:linkedin.com/company \"Mandiant (part of Google Cloud)\" LinkedIn company"
+          ],
+          "provider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+          "retrievalMethod": "TAVILY_WEB_SEARCH",
+          "candidateCount": 2,
+          "supportingEvidence": [
+            {
+              "kind": "NAME_MATCH",
+              "detail": "Candidate title or slug agrees with \"Mandiant (part of Google Cloud)\"",
+              "strength": "strong",
+              "sourceUrl": "https://www.linkedin.com/company/mandiant"
+            }
+          ],
+          "contradictingEvidence": []
+        },
+        {
+          "resolutionStatus": "PROBABLE",
+          "resolutionConfidence": 45,
+          "profileUrl": "https://www.linkedin.com/company/mandiant",
+          "queries": [
+            "site:linkedin.com/company \"Mandiant (part of Google Cloud)\"",
+            "site:linkedin.com/company \"Mandiant (part of Google Cloud)\" LinkedIn company"
+          ],
+          "provider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+          "retrievalMethod": "TAVILY_WEB_SEARCH",
+          "candidateCount": 2,
+          "supportingEvidence": [
+            {
+              "kind": "NAME_MATCH",
+              "detail": "Candidate title or slug agrees with \"Mandiant (part of Google Cloud)\"",
+              "strength": "strong",
+              "sourceUrl": "https://www.linkedin.com/company/mandiant"
+            }
+          ],
+          "contradictingEvidence": []
+        },
+        {
+          "resolutionStatus": "PROBABLE",
+          "resolutionConfidence": 45,
+          "profileUrl": "https://www.linkedin.com/company/mandiant",
+          "queries": [
+            "site:linkedin.com/company \"Mandiant (part of Google Cloud)\"",
+            "site:linkedin.com/company \"Mandiant (part of Google Cloud)\" LinkedIn company"
+          ],
+          "provider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+          "retrievalMethod": "TAVILY_WEB_SEARCH",
+          "candidateCount": 2,
+          "supportingEvidence": [
+            {
+              "kind": "NAME_MATCH",
+              "detail": "Candidate title or slug agrees with \"Mandiant (part of Google Cloud)\"",
+              "strength": "strong",
+              "sourceUrl": "https://www.linkedin.com/company/mandiant"
+            }
+          ],
+          "contradictingEvidence": []
+        },
+        {
+          "resolutionStatus": "PROBABLE",
+          "resolutionConfidence": 45,
+          "profileUrl": "https://www.linkedin.com/company/mandiant",
+          "queries": [
+            "site:linkedin.com/company \"Mandiant (part of Google Cloud)\"",
+            "site:linkedin.com/company \"Mandiant (part of Google Cloud)\" LinkedIn company"
+          ],
+          "provider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+          "retrievalMethod": "TAVILY_WEB_SEARCH",
+          "candidateCount": 2,
+          "supportingEvidence": [
+            {
+              "kind": "NAME_MATCH",
+              "detail": "Candidate title or slug agrees with \"Mandiant (part of Google Cloud)\"",
+              "strength": "strong",
+              "sourceUrl": "https://www.linkedin.com/company/mandiant"
+            }
+          ],
+          "contradictingEvidence": []
+        },
+        {
+          "resolutionStatus": "PROBABLE",
+          "resolutionConfidence": 45,
+          "profileUrl": "https://www.linkedin.com/company/mandiant",
+          "queries": [
+            "site:linkedin.com/company \"Mandiant (part of Google Cloud)\"",
+            "site:linkedin.com/company \"Mandiant (part of Google Cloud)\" LinkedIn company"
+          ],
+          "provider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+          "retrievalMethod": "TAVILY_WEB_SEARCH",
+          "candidateCount": 1,
+          "supportingEvidence": [
+            {
+              "kind": "NAME_MATCH",
+              "detail": "Candidate title or slug agrees with \"Mandiant (part of Google Cloud)\"",
+              "strength": "strong",
+              "sourceUrl": "https://www.linkedin.com/company/mandiant"
+            }
+          ],
+          "contradictingEvidence": []
+        },
+        {
+          "resolutionStatus": "PROBABLE",
+          "resolutionConfidence": 45,
+          "profileUrl": "https://www.linkedin.com/company/mandiant",
+          "queries": [
+            "site:linkedin.com/company \"Mandiant (part of Google Cloud)\"",
+            "site:linkedin.com/company \"Mandiant (part of Google Cloud)\" LinkedIn company"
+          ],
+          "provider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+          "retrievalMethod": "TAVILY_WEB_SEARCH",
+          "candidateCount": 1,
+          "supportingEvidence": [
+            {
+              "kind": "NAME_MATCH",
+              "detail": "Candidate title or slug agrees with \"Mandiant (part of Google Cloud)\"",
+              "strength": "strong",
+              "sourceUrl": "https://www.linkedin.com/company/mandiant"
+            }
+          ],
+          "contradictingEvidence": []
+        },
+        {
+          "resolutionStatus": "NOT_FOUND",
+          "resolutionConfidence": 0,
+          "profileUrl": null,
+          "queries": [
+            "site:linkedin.com/company \"Mandiant (part of Google Cloud)\"",
+            "site:linkedin.com/company \"Mandiant (part of Google Cloud)\" LinkedIn company"
+          ],
+          "provider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+          "retrievalMethod": "TAVILY_WEB_SEARCH",
+          "candidateCount": 0,
+          "supportingEvidence": [],
+          "contradictingEvidence": []
+        }
+      ],
+      "candidateProfiles": [
+        {
+          "publisher": "LINKEDIN",
+          "profileUrl": "https://www.linkedin.com/company/mandiant",
+          "profileSlug": "mandiant",
+          "profileType": "LINKEDIN_COMPANY",
+          "retrievedAt": "2026-08-31T11:25:02.660Z",
+          "discoveryQuery": "site:linkedin.com/company \"Mandiant (part of Google Cloud)\"",
+          "searchResultUrl": "https://www.linkedin.com/company/mandiant",
+          "resolutionStatus": "PROBABLE",
+          "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+          "searchResultTitle": "Mandiant (part of Google Cloud)",
+          "supportingEvidence": [
+            {
+              "kind": "NAME_MATCH",
+              "detail": "Candidate title or slug agrees with \"Mandiant (part of Google Cloud)\"",
+              "strength": "strong",
+              "sourceUrl": "https://www.linkedin.com/company/mandiant"
+            }
+          ],
+          "searchResultExcerpt": "# Mandiant (part of Google Cloud)\nN/A\nComputer and Network Security • Mountain View, California • 220,589 followers • 10,001+ employees\n\n## Overview\nWe’re determined to make organizations secure against cyber threats and confident in their readiness. Experience the same trusted cybersecurity solutions, now from Google Cloud.\n\n### Website\n\n### Crunchbase\nN/A\n### LinkedIn\nN/A\n\n### Industry\nComputer and Network Security\n\n### Company Size\n10,001+ employees  \n1473 associated members (LinkedIn members who've listed Mandiant (part of Google Cloud) as their current workplace on their profile)\n\n### Founded\nN/A\n\n### Funding\nLast Round Date: N/A\nLast Round Type: N/A\nTotal Rounds: N/A\nLast Round Raised: N/A\n\n### Investors\nN/A [...] Mandiant (part of Google Cloud) (1d): The retirement of the \"BlackFile\" extortion brand was a ruse. UNC6671 has secretly diversified its operations across multiple new brands, aggressively targeting financial services, private equity, and law firms with tailored vishing and AiTM tactics. ➡️ Swipe through the carousel to see their evolving playbook, accelerated operational tempo, and immediate defensive guidance. 📄 Get the full analysis, recommendations, and indicators:  [Likes: 23, Comments: 2]; Mandiant (part of Google Cloud) (5d): Our frontline experience shows that while technical tools are absolutely essential, they are only as effective as the practitioners trained to wield them. True cyber resilience requires bridging the gap between advanced technology and human expertise. [Likes: [...] July 22, 2026 ⏰: 11AM ET | 8AM PT ✍️ Register:  [Likes: 34, Comments: 1]; Mandiant (part of Google Cloud) (1mo): Today’s security leaders don't just mitigate risk—they must prove financial ROI to the board. 📊 A new IDC study analyzed the business outcomes of Mandiant Cybersecurity Consulting, proving that modern enterprises are successfully turning security resilience into a commercial asset. As one healthcare leader in the study noted: \"Mandiant has enabled us to engage more confidently with customers and position our security posture as a market differentiator, with security now consistently ranking among the top three reasons clients choose us. It has also contributed to reducing our insurance costs by $50,000 per year.\" 🤝 📄 Get additional IDC White Paper highlights:  🏛 Dive deeper on",
+          "normalizedProfileUrl": "https://www.linkedin.com/company/mandiant",
+          "resolutionConfidence": 45,
+          "contradictingEvidence": []
+        },
+        {
+          "publisher": "LINKEDIN",
+          "profileUrl": "https://www.linkedin.com/company/fireeye",
+          "profileSlug": "fireeye",
+          "profileType": "LINKEDIN_COMPANY",
+          "retrievedAt": "2026-08-31T11:25:06.597Z",
+          "discoveryQuery": "site:linkedin.com/company \"Mandiant (part of Google Cloud)\" LinkedIn company",
+          "searchResultUrl": "https://www.linkedin.com/company/fireeye",
+          "resolutionStatus": "WRONG",
+          "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+          "searchResultTitle": "FireEye, Inc. - FireEye is now Trellix! Follow us at Trellix for more as we bring security to life.",
+          "supportingEvidence": [],
+          "searchResultExcerpt": "## Similar Companies\nTrellix (Computer and Network Security):  (Plano, Texas); Mandiant (part of Google Cloud) (Computer and Network Security):  (Mountain View, California); McAfee (Computer and Network Security):  (San Jose, California); CrowdStrike (Computer and Network Security):  (N/A); Palo Alto Networks (Computer and Network Security):  (SANTA CLARA, California); SentinelOne (Computer and Network Security):  (Mountain View, California); Google (Software Development):  (Mountain View, CA); Fortinet (Computer and Network Security):  (Sunnyvale, California); Symantec (Software Development):  (San Jose, California); Zscaler (Computer and Network Security):  (San Jose, California)\n\n## Posts\n\n## Media\n- Images: \n- Logo: Company Logo\n\n## Additional  \nNone",
+          "normalizedProfileUrl": "https://www.linkedin.com/company/fireeye",
+          "resolutionConfidence": 0,
+          "contradictingEvidence": [
+            {
+              "kind": "CONTRADICTION",
+              "detail": "Candidate \"FireEye, Inc. - FireEye is now Trellix! Follow us at Trellix for more as we bring security to life.\" does not independently agree with the requested company identity",
+              "strength": "contradicting",
+              "sourceUrl": "https://www.linkedin.com/company/fireeye"
+            }
+          ]
+        }
+      ],
+      "attributeComparisons": [
+        {
+          "profileUrl": "https://www.linkedin.com/company/mandiant",
+          "candidateLabel": "Mandiant (part of Google Cloud)",
+          "requestedAccountName": "Mandiant",
+          "nameAgreement": true,
+          "domainAgreement": false,
+          "discoveryProfileAgreement": true,
+          "geographyAgreement": false,
+          "industryAgreement": false,
+          "contradictions": [],
+          "priorResolutionStatus": "PROBABLE",
+          "priorConfidence": 45
+        },
+        {
+          "profileUrl": "https://www.linkedin.com/company/fireeye",
+          "candidateLabel": "FireEye, Inc. - FireEye is now Trellix! Follow us at Trellix for more as we bring security to life.",
+          "requestedAccountName": "Mandiant",
+          "nameAgreement": true,
+          "domainAgreement": false,
+          "discoveryProfileAgreement": false,
+          "geographyAgreement": false,
+          "industryAgreement": false,
+          "contradictions": [
+            {
+              "kind": "CONTRADICTION",
+              "detail": "Candidate \"FireEye, Inc. - FireEye is now Trellix! Follow us at Trellix for more as we bring security to life.\" does not independently agree with the requested company identity",
+              "strength": "contradicting",
+              "sourceUrl": "https://www.linkedin.com/company/fireeye"
+            }
+          ],
+          "priorResolutionStatus": "WRONG",
+          "priorConfidence": 0
+        }
+      ],
+      "ownershipContext": [
+        {
+          "subjectAccountName": "Mandiant",
+          "relationshipType": "PART_OF",
+          "relatedOrganizationName": "Google Cloud",
+          "assertionSource": "JYRA_DISCOVERY",
+          "sourceUrl": "https://linkedin.com/company/mandiant",
+          "verifiedSameEntity": false,
+          "interpretation": "Mandiant is the account identity. Google Cloud is a related owner/parent context and must not replace or silently merge with the account."
+        }
+      ],
+      "priorEntityAssessment": {
+        "companyLikeness": "AMBIGUOUS_COMPANY",
+        "identityState": "AMBIGUOUS",
+        "canonicalAttachAllowed": false,
+        "evidence": [
+          "PROVIDER_ORGANIZATION_RESULT"
+        ],
+        "conflicts": [
+          "RELATED_ENTITY_CONFLICT"
+        ]
+      },
+      "priorFinalState": "AMBIGUOUS",
+      "priorAutomaticAttachAllowed": false,
+      "missingVerificationRequirement": "Independent support that the supplied LinkedIn company profile belongs to the Mandiant account while Google Cloud remains a related owner/parent.",
+      "primaryRootCause": "PARENT_BRAND_AMBIGUITY",
+      "secondaryRootCauses": [
+        "QUALIFIED_ACCOUNT_NAME_USED_AS_SEARCH_IDENTITY",
+        "DISCOVERY_PROFILE_IDENTIFIER_NOT_REUSED_AS_UNVERIFIED_CANDIDATE",
+        "NO_TYPED_ACCOUNT_OWNER_ASSERTION"
+      ],
+      "exactFinalStateReason": "The normal path searches the combined label \"Mandiant (part of Google Cloud)\" and discards the supplied LinkedIn company URL because it is not already verified. The relationship qualifier is then treated only as a conflict, so the account cannot be represented separately from its owner and the final identity remains AMBIGUOUS."
+    },
+    {
+      "company": "Corsa",
+      "sourcePopulation": "PRESERVED_IDENTITY_FIX_02_FOUR_CASES",
+      "originalProvenance": {
+        "sourceType": "JYRA_DISCOVERY",
+        "sourceLabel": "b220e720-6d21-4c7a-badf-3aec920febca",
+        "sourceUrl": "https://corsa.finance",
+        "observedAt": "2026-08-31T11:36:17.906Z",
+        "provider": "b220e720-6d21-4c7a-badf-3aec920febca",
+        "providerRequestId": "discovery:383fb83f-633d-434f-9765-78257a4a5d1f:1:b220e720-6d21-4c7a-badf-3aec920febca",
+        "providerResultId": "https://exa.ai/library/organization/1qq3ncbwprx",
+        "providerOrganizationResult": true,
+        "retrievalTimestamp": "2026-08-31T11:36:17.914Z"
+      },
+      "preservedIdentityEvidence": {
+        "suppliedName": "Corsa",
+        "accountName": "Corsa",
+        "domain": "corsa.finance",
+        "website": "https://corsa.finance",
+        "linkedinUrl": null,
+        "profileUrls": {},
+        "description": null,
+        "industry": null,
+        "location": null,
+        "providerMetadata": {
+          "title": "Corsa",
+          "author": "Exa",
+          "resultId": "https://exa.ai/library/organization/1qq3ncbwprx",
+          "publishedDate": "2026-06-17T00:00:00.000Z",
+          "profilePlatform": null,
+          "originalResultUrl": "https://corsa.finance"
+        }
+      },
+      "profileResolutionAttempts": [
+        {
+          "resolutionStatus": "AMBIGUOUS",
+          "resolutionConfidence": 100,
+          "profileUrl": "https://www.linkedin.com/company/107413632",
+          "queries": [
+            "site:linkedin.com/company \"Corsa\" \"corsa.finance\"",
+            "site:linkedin.com/company \"Corsa\" LinkedIn company"
+          ],
+          "provider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+          "retrievalMethod": "TAVILY_WEB_SEARCH",
+          "candidateCount": 13,
+          "supportingEvidence": [
+            {
+              "kind": "NAME_MATCH",
+              "detail": "Candidate title or slug agrees with \"Corsa\"",
+              "strength": "strong",
+              "sourceUrl": "https://corsa.finance/blog/corsa-defining-a-new-category-in-compliance-tooling/compliance-tooling"
+            },
+            {
+              "kind": "DOMAIN_MATCH",
+              "detail": "The indexed candidate evidence references canonical domain \"corsa.finance\"",
+              "strength": "strong",
+              "sourceUrl": "https://corsa.finance/blog/corsa-defining-a-new-category-in-compliance-tooling/compliance-tooling"
+            },
+            {
+              "kind": "OFFICIAL_WEBSITE_LINK",
+              "detail": "The canonical website result references the same LinkedIn company profile",
+              "strength": "strong",
+              "sourceUrl": "https://corsa.finance/blog/corsa-defining-a-new-category-in-compliance-tooling/compliance-tooling"
+            }
+          ],
+          "contradictingEvidence": []
+        },
+        {
+          "resolutionStatus": "AMBIGUOUS",
+          "resolutionConfidence": 100,
+          "profileUrl": "https://www.linkedin.com/company/107413632",
+          "queries": [
+            "site:linkedin.com/company \"Corsa\" \"corsa.finance\"",
+            "site:linkedin.com/company \"Corsa\" LinkedIn company"
+          ],
+          "provider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+          "retrievalMethod": "TAVILY_WEB_SEARCH",
+          "candidateCount": 13,
+          "supportingEvidence": [
+            {
+              "kind": "NAME_MATCH",
+              "detail": "Candidate title or slug agrees with \"Corsa\"",
+              "strength": "strong",
+              "sourceUrl": "https://corsa.finance/blog/corsa-defining-a-new-category-in-compliance-tooling/compliance-tooling"
+            },
+            {
+              "kind": "DOMAIN_MATCH",
+              "detail": "The indexed candidate evidence references canonical domain \"corsa.finance\"",
+              "strength": "strong",
+              "sourceUrl": "https://corsa.finance/blog/corsa-defining-a-new-category-in-compliance-tooling/compliance-tooling"
+            },
+            {
+              "kind": "OFFICIAL_WEBSITE_LINK",
+              "detail": "The canonical website result references the same LinkedIn company profile",
+              "strength": "strong",
+              "sourceUrl": "https://corsa.finance/blog/corsa-defining-a-new-category-in-compliance-tooling/compliance-tooling"
+            }
+          ],
+          "contradictingEvidence": []
+        },
+        {
+          "resolutionStatus": "NOT_FOUND",
+          "resolutionConfidence": 0,
+          "profileUrl": null,
+          "queries": [
+            "site:linkedin.com/company \"Corsa\" \"corsa.finance\"",
+            "site:linkedin.com/company \"Corsa\" LinkedIn company"
+          ],
+          "provider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+          "retrievalMethod": "TAVILY_WEB_SEARCH",
+          "candidateCount": 0,
+          "supportingEvidence": [],
+          "contradictingEvidence": []
+        },
+        {
+          "resolutionStatus": "NOT_FOUND",
+          "resolutionConfidence": 0,
+          "profileUrl": null,
+          "queries": [
+            "site:linkedin.com/company \"Corsa\" \"corsa.finance\"",
+            "site:linkedin.com/company \"Corsa\" LinkedIn company"
+          ],
+          "provider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+          "retrievalMethod": "TAVILY_WEB_SEARCH",
+          "candidateCount": 0,
+          "supportingEvidence": [],
+          "contradictingEvidence": []
+        }
+      ],
+      "candidateProfiles": [
+        {
+          "publisher": "LINKEDIN",
+          "profileUrl": "https://www.linkedin.com/company/107413632/",
+          "profileSlug": "107413632",
+          "profileType": "LINKEDIN_COMPANY",
+          "retrievedAt": "2026-08-31T11:42:44.341Z",
+          "discoveryQuery": "site:linkedin.com/company \"Corsa\" \"corsa.finance\"",
+          "searchResultUrl": "https://corsa.finance/blog/corsa-defining-a-new-category-in-compliance-tooling/compliance-tooling",
+          "resolutionStatus": "VERIFIED",
+          "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+          "searchResultTitle": "Corsa: Defining a new category in compliance tooling - Corsa - The AI-First Compliance & Risk OS",
+          "supportingEvidence": [
+            {
+              "kind": "NAME_MATCH",
+              "detail": "Candidate title or slug agrees with \"Corsa\"",
+              "strength": "strong",
+              "sourceUrl": "https://corsa.finance/blog/corsa-defining-a-new-category-in-compliance-tooling/compliance-tooling"
+            },
+            {
+              "kind": "DOMAIN_MATCH",
+              "detail": "The indexed candidate evidence references canonical domain \"corsa.finance\"",
+              "strength": "strong",
+              "sourceUrl": "https://corsa.finance/blog/corsa-defining-a-new-category-in-compliance-tooling/compliance-tooling"
+            },
+            {
+              "kind": "OFFICIAL_WEBSITE_LINK",
+              "detail": "The canonical website result references the same LinkedIn company profile",
+              "strength": "strong",
+              "sourceUrl": "https://corsa.finance/blog/corsa-defining-a-new-category-in-compliance-tooling/compliance-tooling"
+            }
+          ],
+          "searchResultExcerpt": "The Agentic OS is vendor-agnostic and future-proof. Companies can add or replace providers without rebuilding pipelines, losing data history, or re-stitching workflows. Data stays structured, traceable, and actionable.  \n  \nIt also gives fintechs regulatory confidence from day one. Every workflow, alert, action, and decision is automatically captured with full traceability, making audits, examinations, and regulatory inquiries straightforward. No engineering lift, no scrambling for evidence, no gaps - just clean, complete records whenever they're needed. [...] ###### A New Category: The Agentic Compliance OS.\n\nAn Agentic Compliance OS is an out-of-the-box platform that seamlessly plugs into any data source or vendor and becomes the unified operational layer across the company.\n\nIt extends a fintech’s internal admin with the functionality it actually needs: deeply risk-aware workflows, flexible automation, and a horizontal data layer that serves every team - compliance, fraud, ops, support, security, and finance. Everyone works from the same source of truth, with shared context and consistent insights. [...] AI in Corsa isn’t a feature - it’s the core intelligence layer that powers the entire OS. And unlike generic AI tools, it’s built with the security, privacy, and regulatory requirements that fintechs need from day one.\n\nMost regulated companies can’t integrate AI internally without building significant infrastructure around it - secure data boundaries, model isolation, access controls, auditability, and continuous validation. It’s costly, complex, and risky to do in-house.\n\nCorsa handles this at the platform level. Our AI layer operates within strict security and governance frameworks, ensuring every insight is explainable, traceable, and compliant.\n\nWithin this environment, AI becomes the engine of the OS:",
+          "normalizedProfileUrl": "https://www.linkedin.com/company/107413632",
+          "resolutionConfidence": 100,
+          "contradictingEvidence": []
+        },
+        {
+          "publisher": "LINKEDIN",
+          "profileUrl": "https://www.linkedin.com/company/corsafinance",
+          "profileSlug": "corsafinance",
+          "profileType": "LINKEDIN_COMPANY",
+          "retrievedAt": "2026-08-31T11:42:44.341Z",
+          "discoveryQuery": "site:linkedin.com/company \"Corsa\" \"corsa.finance\"",
+          "searchResultUrl": "https://www.linkedin.com/company/corsafinance",
+          "resolutionStatus": "VERIFIED",
+          "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+          "searchResultTitle": "Corsa - The first Agentic OS for modern financial institutions and compliance teams",
+          "supportingEvidence": [
+            {
+              "kind": "NAME_MATCH",
+              "detail": "Candidate title or slug agrees with \"Corsa\"",
+              "strength": "strong",
+              "sourceUrl": "https://www.linkedin.com/company/corsafinance"
+            },
+            {
+              "kind": "DOMAIN_MATCH",
+              "detail": "The indexed candidate evidence references canonical domain \"corsa.finance\"",
+              "strength": "strong",
+              "sourceUrl": "https://www.linkedin.com/company/corsafinance"
+            }
+          ],
+          "searchResultExcerpt": "Corsa is an AI-first operational infrastructure layer for regulated fintechs, designed to unify identity, transaction, and risk data across both on-chain and traditional financial systems. It acts as a centralized control plane that aggregates AML, fraud, behavioral, and financial signals into a single, queryable environment - giving teams a consistent, contextual view of customers, counterparties, and activity across the stack. Corsa sits between external vendors and internal admin systems, providing the connective tissue most teams otherwise have to build themselves. It introduces a deep analytical and orchestration layer across all data sources, enabling blended on/off-chain rule logic and transaction monitoring, multi-dimensional risk scoring, graph analysis, and AI-driven [...] risk scoring, graph analysis, and AI-driven interrogation of signals. This allows teams to reason across systems, correlate behavior in real time, and adapt detection logic without rebuilding infrastructure. Instead of fragmented tools and manual handoffs, teams operate on a shared system for risk-aware decisioning - surfacing emerging patterns, improving detection accuracy, accelerating investigations, and aligning workflows across compliance, fraud, onboarding, security, and customer operations. Corsa can be integrated in under two weeks and provides a centralized, audit-ready foundation built to scale as products, geographies, and threat models evolve. [...] # Corsa\nThe first Agentic OS for modern financial institutions and compliance teams\nSoftware Development • New York • 978 followers • 11-50 employees",
+          "normalizedProfileUrl": "https://www.linkedin.com/company/corsafinance",
+          "resolutionConfidence": 85,
+          "contradictingEvidence": []
+        },
+        {
+          "publisher": "LINKEDIN",
+          "profileUrl": "https://uk.linkedin.com/company/corsa-consulting",
+          "profileSlug": "corsa-consulting",
+          "profileType": "LINKEDIN_COMPANY",
+          "retrievedAt": "2026-08-31T11:42:44.341Z",
+          "discoveryQuery": "site:linkedin.com/company \"Corsa\" \"corsa.finance\"",
+          "searchResultUrl": "https://uk.linkedin.com/company/corsa-consulting",
+          "resolutionStatus": "AMBIGUOUS",
+          "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+          "searchResultTitle": "Corsa Consulting - Creating better outcomes",
+          "supportingEvidence": [
+            {
+              "kind": "NAME_MATCH",
+              "detail": "Candidate title or slug agrees with \"Corsa\"",
+              "strength": "strong",
+              "sourceUrl": "https://uk.linkedin.com/company/corsa-consulting"
+            }
+          ],
+          "searchResultExcerpt": "CORSA is a specialist advisory and delivery consultancy supporting complex change across the investment lifecycle. We engage with clients at moments of ambiguity — helping them structure problems, assess options, and translate ideas into clear, evidence-based decision points that can be executed with confidence. Our advisory work is deliberately designed to create continuity into delivery, avoiding the common disconnect between strategy and implementation. CORSA operates through a core team of senior industry practitioners, supported by a trusted network of subject-matter experts spanning front, middle, and back office. This model enables us to support the full investment value chain — from operating model design and transformation through to system implementation, optimisation, and [...] through to system implementation, optimisation, and operational readiness. We have deep specialism in BlackRock Aladdin and Bloomberg AIM, alongside proven delivery capability across Charles River IMS, Finastra, Murex, SimCorp Dimension, and ThinkFolio. CORSA works with asset managers, insurers, pension funds, and investment service providers globally, embedding directly within client teams or leading blended delivery models to ensure accountability, execution quality, and durable outcomes. [...] Corsa Consulting (1mo): 🚨 Job Alert: Private Markets Business Analyst 🚨 CORSA is looking to connect with experienced Private Markets Business Analysts for a major investment platform transformation programme. This is a specialist BA role, not a generic change or project management role. We are looking for someone who can hit the ground running, understands the private markets investment lifecycle, and has direct experience producing high-quality business analysis artefacts across investment platforms, operating models, data, reporting and system selection. Must-have experience: • Private equity, private debt, venture capital, infrastructure, funds or fund-of-funds • Commitments, capital calls, drawdowns, distributions, valuations, NAV, IRR, portfolio monitoring and reporting • Front",
+          "normalizedProfileUrl": "https://www.linkedin.com/company/corsa-consulting",
+          "resolutionConfidence": 45,
+          "contradictingEvidence": []
+        },
+        {
+          "publisher": "LINKEDIN",
+          "profileUrl": "https://www.linkedin.com/company/corsa-finance",
+          "profileSlug": "corsa-finance",
+          "profileType": "LINKEDIN_COMPANY",
+          "retrievedAt": "2026-08-31T11:42:44.341Z",
+          "discoveryQuery": "site:linkedin.com/company \"Corsa\" \"corsa.finance\"",
+          "searchResultUrl": "https://www.linkedin.com/company/corsa-finance",
+          "resolutionStatus": "AMBIGUOUS",
+          "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+          "searchResultTitle": "Corsa Finance - All the tools to get the Business Capital you need.",
+          "supportingEvidence": [
+            {
+              "kind": "NAME_MATCH",
+              "detail": "Candidate title or slug agrees with \"Corsa\"",
+              "strength": "strong",
+              "sourceUrl": "https://www.linkedin.com/company/corsa-finance"
+            }
+          ],
+          "searchResultExcerpt": "Corsa Finance (7mo): Tired of the \"shotgun approach\" to securing business funding? Introducing the Corsa 'Capital Matchmaker' model! We use a proprietary, data-driven 3-step process to pair your Small and Medium-sized Enterprise (SME) with the exact right funding partner. Get access to up to $1.5 million in diverse funding products like lines of credit and invoice factoring, all at no cost to your business owner. Ready to simplify your finance journey? Read the blog to learn more!  #CapitalMatchmaker #SmallBusinessFunding #SMEFinancing #BusinessFinance #CommercialLending #CorsaFinance [Likes: 1, Comments: 0]; Corsa Finance (8mo): We help small and medium-sized businesses access fast, flexible funding to smooth cash flow and seize opportunities. Choose transparent terms, low fees, and [...] # Corsa Finance\nAll the tools to get the Business Capital you need.\nFinancial Services • Seattle, WA • 108 followers • 1 employee\n\n## Overview\nCorsa Finance partners with industry experts who bring a myriad of financial solutions for your business. Are you looking for financing? Let us know how much you need and how fast you need it and we'll do our best to present you with options to help you and your business.\n\n### Website\n\n### Crunchbase\nN/A\n### LinkedIn\nN/A\n\n### Industry\nFinancial Services\n\n### Company Size\n1 employee  \n2 associated members (LinkedIn members who've listed Corsa Finance as their current workplace on their profile)\n\n### Founded\n2018\n\n### Funding\nLast Round Date: N/A\nLast Round Type: N/A\nTotal Rounds: N/A\nLast Round Raised: N/A\n\n### Investors\nN/A [...] have to be a struggle. At Corsa Finance, we provide access to quick cash flow loans uniquely tailored to your immediate needs—whether it's covering payroll, purchasing inventory, or seizing a growth opportunity. 🏢💵 Our process is fast and transparent, with no hidden fees or long-term contracts. Check your eligibility today and experience funding designed to empower you and your business! #CashFlowManagement #BusinessGrowth #FundingMadeSimple [Likes: 0, Comments: 0]; Corsa Finance (10mo): Small business owners, are you ready to take the next step toward growth? 💼 Our latest blog post breaks down the essentials of small business loans, showing you how to navigate the options and secure funding that meets your needs. Dive in for a clear, no-nonsense guide to choices like SBA loans, term",
+          "normalizedProfileUrl": "https://www.linkedin.com/company/corsa-finance",
+          "resolutionConfidence": 45,
+          "contradictingEvidence": []
+        },
+        {
+          "publisher": "LINKEDIN",
+          "profileUrl": "https://www.linkedin.com/company/corsa-is",
+          "profileSlug": "corsa-is",
+          "profileType": "LINKEDIN_COMPANY",
+          "retrievedAt": "2026-08-31T11:42:46.699Z",
+          "discoveryQuery": "site:linkedin.com/company \"Corsa\" LinkedIn company",
+          "searchResultUrl": "https://www.linkedin.com/company/corsa-is",
+          "resolutionStatus": "AMBIGUOUS",
+          "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+          "searchResultTitle": "Corsa - Corsa is a modern event management system focused on user-friendly experiences for organizers and participants.",
+          "supportingEvidence": [
+            {
+              "kind": "NAME_MATCH",
+              "detail": "Candidate title or slug agrees with \"Corsa\"",
+              "strength": "strong",
+              "sourceUrl": "https://www.linkedin.com/company/corsa-is"
+            }
+          ],
+          "searchResultExcerpt": "# Corsa\nCorsa is a modern event management system focused on user-friendly experiences for organizers and participants.\nIT Services and IT Consulting • Reykjavík, Capital Region • 740 followers • 11-50 employees\n\n## Overview\nCorsa is a modern event management system focused on ease of use. The system is web-based and easy to operate both on desktop and mobile, focusing primarily on the user experience.\n\n### Website\n\n### Crunchbase\nN/A\n### LinkedIn\nN/A\n\n### Industry\nIT Services and IT Consulting\n\n### Company Size\n11-50 employees  \n3 associated members (LinkedIn members who've listed Corsa as their current workplace on their profile)\n\n### Founded\n2021\n\n### Funding\nLast Round Date: N/A\nLast Round Type: N/A\nTotal Rounds: N/A\nLast Round Raised: N/A\n\n### Investors\nN/A [...] ### Investors\nN/A\n\n### Specialties\nevents, software, events management, events registration, events ticketing, social commerce, webshop, event technology, fundraising, email marketing, marketing, reporting and analysis, and event dashboard\n\n## Locations\nÁrmúli 3, Reykjavík, Capital Region 108, IS, Stockholm, SE, Roseland, New Jersey, US\n\n### Get Directions\nDirections, Directions, Directions\n\n## Employees\nEloise Freygang (N/A):  LinkedIn Member (N/A): N/A; LinkedIn Member (N/A): N/A [...] ## Similar Companies\nKalahari Studio (Computer Games):  (N/A); CORSA (Machinery Manufacturing):  (Barcelona, Barcelona); Infosynk (Strategic Management Services):  (Växjö, Kronobergs län); LUV Events Dubai (Entertainment Providers):  (Fujairah, Dubai); VERKVIST (Engineering Services):  (N/A); Velocert (Technology, Information and Internet):  (N/A); TechEdge360 (IT Services and IT Consulting):  (Amwaj, Kingdom Of Bahrain, Manama); Kodo (Technology, Information and Internet):  (Reykjavík, Capital Region); Skærtoft Mølle (Food and Beverage Manufacturing):  (Augustenborg, Syddanmark); Iron Valley Labs (Technology, Information and Internet):  (Wilmington, Delaware)",
+          "normalizedProfileUrl": "https://www.linkedin.com/company/corsa-is",
+          "resolutionConfidence": 45,
+          "contradictingEvidence": []
+        },
+        {
+          "publisher": "LINKEDIN",
+          "profileUrl": "https://www.linkedin.com/company/corsa-management",
+          "profileSlug": "corsa-management",
+          "profileType": "LINKEDIN_COMPANY",
+          "retrievedAt": "2026-08-31T11:42:46.699Z",
+          "discoveryQuery": "site:linkedin.com/company \"Corsa\" LinkedIn company",
+          "searchResultUrl": "https://www.linkedin.com/company/corsa-management",
+          "resolutionStatus": "AMBIGUOUS",
+          "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+          "searchResultTitle": "Corsa Management",
+          "supportingEvidence": [
+            {
+              "kind": "NAME_MATCH",
+              "detail": "Candidate title or slug agrees with \"Corsa\"",
+              "strength": "strong",
+              "sourceUrl": "https://www.linkedin.com/company/corsa-management"
+            }
+          ],
+          "searchResultExcerpt": "### Website\n\n### Crunchbase\nN/A\n### LinkedIn\nN/A\n\n### Industry\nReal Estate\n\n### Company Size\n51-200 employees  \n31 associated members (LinkedIn members who've listed Corsa Management as their current workplace on their profile)\n\n### Founded\n1978\n\n### Funding\nLast Round Date: N/A\nLast Round Type: N/A\nTotal Rounds: N/A\nLast Round Raised: N/A\n\n### Investors\nN/A\n\n### Specialties\nProviding Quality, Affordabe Apartment Homes\n\n## Locations\nPO Box 770, South Orange, NJ 07079, US\n\n### Get Directions\nDirections\n\n## Employees\nTara Kieffer (N/A):  Milada Acacio (N/A):  Derek Sr (N/A):  Edwin Figueroa (N/A): [...] # Corsa Management\nN/A\nReal Estate • South Orange, NJ • 188 followers • 51-200 employees",
+          "normalizedProfileUrl": "https://www.linkedin.com/company/corsa-management",
+          "resolutionConfidence": 45,
+          "contradictingEvidence": []
+        },
+        {
+          "publisher": "LINKEDIN",
+          "profileUrl": "https://www.linkedin.com/company/corsa-myanmar",
+          "profileSlug": "corsa-myanmar",
+          "profileType": "LINKEDIN_COMPANY",
+          "retrievedAt": "2026-08-31T11:42:46.699Z",
+          "discoveryQuery": "site:linkedin.com/company \"Corsa\" LinkedIn company",
+          "searchResultUrl": "https://www.linkedin.com/company/corsa-myanmar",
+          "resolutionStatus": "AMBIGUOUS",
+          "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+          "searchResultTitle": "Corsa Myanmar - Moving Goods, Powering Growth",
+          "supportingEvidence": [
+            {
+              "kind": "NAME_MATCH",
+              "detail": "Candidate title or slug agrees with \"Corsa\"",
+              "strength": "strong",
+              "sourceUrl": "https://www.linkedin.com/company/corsa-myanmar"
+            }
+          ],
+          "searchResultExcerpt": "### Website\n\n### Crunchbase\nN/A\n### LinkedIn\nN/A\n\n### Industry\nFood and Beverage Services\n\n### Company Size\n51-200 employees  \n6 associated members (LinkedIn members who've listed Corsa Myanmar as their current workplace on their profile)\n\n### Founded\n2025\n\n### Funding\nLast Round Date: N/A\nLast Round Type: N/A\nTotal Rounds: N/A\nLast Round Raised: N/A\n\n### Investors\nN/A\n\n### Specialties\nN/A\n\n## Locations\n\n### Get Directions\n\n## Employees\nPhyo Wai Moe (N/A):  LinkedIn Member (N/A): N/A; LinkedIn Member (N/A): N/A; LinkedIn Member (N/A): N/A [...] Corsa Co., Ltd is a FMCG distribution company based in Myanmar, built with a clear vision: to become a trusted partner for both international and local brands seeking to reach consumers across the country. While we are at the beginning of our journey, our ambition is bold _to develop a robust, nationwide distribution network that connects quality products with communities throughout Myanmar. With a focus on both imported and OEM goods, we are laying the groundwork for an agile and efficient supply chain that can grow alongside the evolving needs of the market. Driven by our tagline, \"Moving Goods, Powering Growth, we are committed to drive commercial growth for our partners while creating positive impact for the communities we serve. At Corsa, we are guided by strong values, long-term [...] # Corsa Myanmar\nMoving Goods, Powering Growth\nFood and Beverage Services • N/A • 182 followers • 51-200 employees",
+          "normalizedProfileUrl": "https://www.linkedin.com/company/corsa-myanmar",
+          "resolutionConfidence": 45,
+          "contradictingEvidence": []
+        },
+        {
+          "publisher": "LINKEDIN",
+          "profileUrl": "https://www.linkedin.com/company/corsa-performance-exhausts",
+          "profileSlug": "corsa-performance-exhausts",
+          "profileType": "LINKEDIN_COMPANY",
+          "retrievedAt": "2026-08-31T11:42:46.699Z",
+          "discoveryQuery": "site:linkedin.com/company \"Corsa\" LinkedIn company",
+          "searchResultUrl": "https://www.linkedin.com/company/corsa-performance-exhausts",
+          "resolutionStatus": "AMBIGUOUS",
+          "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+          "searchResultTitle": "CORSA Performance",
+          "supportingEvidence": [
+            {
+              "kind": "NAME_MATCH",
+              "detail": "Candidate title or slug agrees with \"Corsa\"",
+              "strength": "strong",
+              "sourceUrl": "https://www.linkedin.com/company/corsa-performance-exhausts"
+            }
+          ],
+          "searchResultExcerpt": "### Website\n\n### Crunchbase\nN/A\n### LinkedIn\nN/A\n\n### Industry\nMotor Vehicle Manufacturing\n\n### Company Size\n51-200 employees  \n45 associated members (LinkedIn members who've listed CORSA Performance as their current workplace on their profile)\n\n### Founded\n1988\n\n### Funding\nLast Round Date: N/A\nLast Round Type: N/A\nTotal Rounds: N/A\nLast Round Raised: N/A\n\n### Investors\nN/A\n\n### Specialties\nN/A\n\n## Locations\n140 Blaze Industrial Parkway, Berea, OH 44017, US\n\n### Get Directions\nDirections\n\n## Employees\nRobert Jr. Flores (N/A):  Ric Sturm (N/A):  Melanie Wacker (N/A):  Teresa G Warren (N/A): [...] # CORSA Performance\nN/A\nMotor Vehicle Manufacturing • Berea, OH • 1,232 followers • 51-200 employees [...] systems fit, every time. Our true focus on the driver and enhancing their driving experience is supported by the entire team of dedicated associates. We recognize and value the importance of employees at all levels of an organization in creating long-term value and focus on developing and sustaining job opportunities. As a brand of TMG Performance Products, a Division of The Mifsud Group, CORSA Performance Exhausts is committed to its employees, its partners its values and to delivering premium performance exhausts to consumers.",
+          "normalizedProfileUrl": "https://www.linkedin.com/company/corsa-performance-exhausts",
+          "resolutionConfidence": 45,
+          "contradictingEvidence": []
+        },
+        {
+          "publisher": "LINKEDIN",
+          "profileUrl": "https://www.linkedin.com/company/corsa-ventures",
+          "profileSlug": "corsa-ventures",
+          "profileType": "LINKEDIN_COMPANY",
+          "retrievedAt": "2026-08-31T11:42:46.699Z",
+          "discoveryQuery": "site:linkedin.com/company \"Corsa\" LinkedIn company",
+          "searchResultUrl": "https://www.linkedin.com/company/corsa-ventures",
+          "resolutionStatus": "AMBIGUOUS",
+          "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+          "searchResultTitle": "Corsa Ventures",
+          "supportingEvidence": [
+            {
+              "kind": "NAME_MATCH",
+              "detail": "Candidate title or slug agrees with \"Corsa\"",
+              "strength": "strong",
+              "sourceUrl": "https://www.linkedin.com/company/corsa-ventures"
+            }
+          ],
+          "searchResultExcerpt": "### Website\n\n### Crunchbase\nN/A\n### LinkedIn\nN/A\n\n### Industry\nVenture Capital and Private Equity Principals\n\n### Company Size\n1 employee  \n3 associated members (LinkedIn members who've listed Corsa Ventures as their current workplace on their profile)\n\n### Founded\n2011\n\n### Funding\nLast Round Date: N/A\nLast Round Type: N/A\nTotal Rounds: N/A\nLast Round Raised: N/A\n\n### Investors\nN/A\n\n### Specialties\nN/A\n\n## Locations\n103 E. 5th Street, Suite 208, Austin, TX 78701, US\n\n### Get Directions\nDirections\n\n## Employees\nJohn Dubois (N/A):  Brian Grigsby (N/A):  Alex Gruzen (N/A): [...] # Corsa Ventures\nN/A\nVenture Capital and Private Equity Principals • Austin, TX • 163 followers • 1 employee\n\n## Overview\nAn early-stage Information Technology venture capital fund focused on investment opportunities in Texas and the Southwest. We invest in entrepreneurs, helping them grow innovative capital-efficient businesses. Our operating experience spans from startups to Fortune 500 companies. We leverage our extensive professional network to collaborate and assist entrepreneurs through the full venture investment cycle. Our goal is to help talented entrepreneurs build exceptional companies. We've demonstrated that the venture capital model works for both the entrepreneur and the investor when you build a strong team and partnership.\n\n### Website\n\n### Crunchbase\nN/A\n### LinkedIn\nN/A",
+          "normalizedProfileUrl": "https://www.linkedin.com/company/corsa-ventures",
+          "resolutionConfidence": 45,
+          "contradictingEvidence": []
+        },
+        {
+          "publisher": "LINKEDIN",
+          "profileUrl": "https://www.linkedin.com/company/corsainsuranceservices",
+          "profileSlug": "corsainsuranceservices",
+          "profileType": "LINKEDIN_COMPANY",
+          "retrievedAt": "2026-08-31T11:42:44.341Z",
+          "discoveryQuery": "site:linkedin.com/company \"Corsa\" \"corsa.finance\"",
+          "searchResultUrl": "https://www.linkedin.com/company/corsainsuranceservices",
+          "resolutionStatus": "AMBIGUOUS",
+          "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+          "searchResultTitle": "Corsa Insurance Services - Personal, business, and cyber insurance for those who can’t afford mistakes",
+          "supportingEvidence": [
+            {
+              "kind": "NAME_MATCH",
+              "detail": "Candidate title or slug agrees with \"Corsa\"",
+              "strength": "strong",
+              "sourceUrl": "https://www.linkedin.com/company/corsainsuranceservices"
+            }
+          ],
+          "searchResultExcerpt": "Corsa Insurance Services is a boutique insurance advisory providing tailored personal, business, and cyber insurance solutions for high-level individuals and sophisticated businesses. We take a strategic, advisory-driven approach to insurance—focusing on precision, proactive risk management, and long-term protection rather than transactional coverage. Our work is centered on identifying risk exposure, designing thoughtful coverage strategies, and aligning insurance solutions with our clients’ assets, operations, and long-term objectives. Corsa specializes in personal insurance for complex assets, business insurance for growing organizations, and active cyber insurance solutions that help reduce risk while protecting against financial, operational, and reputational impact. Based in New [...] # Corsa Insurance Services\nPersonal, business, and cyber insurance for those who can’t afford mistakes\nInsurance Agencies and Brokerages • Chittenden, Vermont • 21 followers • 1 employee [...] operational, and reputational impact. Based in New York and Vermont, we work with select clients locally and nationally who value discretion, expertise, and direct advisor access.",
+          "normalizedProfileUrl": "https://www.linkedin.com/company/corsainsuranceservices",
+          "resolutionConfidence": 45,
+          "contradictingEvidence": []
+        },
+        {
+          "publisher": "LINKEDIN",
+          "profileUrl": "https://www.linkedin.com/company/scuderia-corsa",
+          "profileSlug": "scuderia-corsa",
+          "profileType": "LINKEDIN_COMPANY",
+          "retrievedAt": "2026-08-31T11:42:46.699Z",
+          "discoveryQuery": "site:linkedin.com/company \"Corsa\" LinkedIn company",
+          "searchResultUrl": "https://www.linkedin.com/company/scuderia-corsa",
+          "resolutionStatus": "AMBIGUOUS",
+          "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+          "searchResultTitle": "Scuderia Corsa",
+          "supportingEvidence": [
+            {
+              "kind": "NAME_MATCH",
+              "detail": "Candidate title or slug agrees with \"Corsa\"",
+              "strength": "strong",
+              "sourceUrl": "https://www.linkedin.com/company/scuderia-corsa"
+            }
+          ],
+          "searchResultExcerpt": "# Scuderia Corsa\nN/A\nEvents Services • N/A • 83 followers • 2-10 employees\n\n## Overview\nLuxurious Ferrari Track Days\n\n### Website\n\n### Crunchbase\nN/A\n### LinkedIn\nN/A\n\n### Industry\nEvents Services\n\n### Company Size\n2-10 employees  \n9 associated members (LinkedIn members who've listed Scuderia Corsa as their current workplace on their profile)\n\n### Founded\nN/A\n\n### Funding\nLast Round Date: N/A\nLast Round Type: N/A\nTotal Rounds: N/A\nLast Round Raised: N/A\n\n### Investors\nN/A\n\n### Specialties\nN/A\n\n## Locations\n\n### Get Directions\nDirections\n\n## Employees\nRudy Courtade (N/A):  Mario T. (N/A):  Brett Flynn (N/A):  Jason Wang (N/A): [...] ## Similar Companies\nRob & Stu Automotive Concepts (Vehicle Repair and Maintenance):  (Henderson, Nevada); ROSSO RACING, LLC (N/A):  (Beverly Hills, California); MG1 MOTORSPORTS, LLC (Events Services):  (N/A); TWG Motorsports (Spectator Sports):  (N/A); United Autosports (Spectator Sports):  (Normanton, England); Andretti Global (Spectator Sports):  (Indianapolis, IN); Sauber Group (Spectator Sports):  (Hinwil, Zürich); Visa Cash App RB F1 Team (Spectator Sports):  (N/A); Ahold Delhaize (Retail):  (N/A); Alpine Formula One Team (Spectator Sports):  (Chipping Norton, Oxfordshire)\n\n## Posts\n\n## Media\n- Images: \n- Logo: Company Logo\n\n## Additional  \nNone",
+          "normalizedProfileUrl": "https://www.linkedin.com/company/scuderia-corsa",
+          "resolutionConfidence": 45,
+          "contradictingEvidence": []
+        },
+        {
+          "publisher": "LINKEDIN",
+          "profileUrl": "https://www.linkedin.com/company/thecorsabrand",
+          "profileSlug": "thecorsabrand",
+          "profileType": "LINKEDIN_COMPANY",
+          "retrievedAt": "2026-08-31T11:42:46.699Z",
+          "discoveryQuery": "site:linkedin.com/company \"Corsa\" LinkedIn company",
+          "searchResultUrl": "https://www.linkedin.com/company/thecorsabrand",
+          "resolutionStatus": "AMBIGUOUS",
+          "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+          "searchResultTitle": "Corsa Brand",
+          "supportingEvidence": [
+            {
+              "kind": "NAME_MATCH",
+              "detail": "Candidate title or slug agrees with \"Corsa\"",
+              "strength": "strong",
+              "sourceUrl": "https://www.linkedin.com/company/thecorsabrand"
+            }
+          ],
+          "searchResultExcerpt": "### Website\n\n### Crunchbase\nN/A\n### LinkedIn\nN/A\n\n### Industry\nApparel & Fashion\n\n### Company Size\n2-10 employees  \n2 associated members (LinkedIn members who've listed Corsa Brand as their current workplace on their profile)\n\n### Founded\n2000\n\n### Funding\nLast Round Date: N/A\nLast Round Type: N/A\nTotal Rounds: N/A\nLast Round Raised: N/A\n\n### Investors\nN/A\n\n### Specialties\nAccessories, Motorcycle Jackets, Gloves, T-shirts, Fashion Jackets, Jewelry, Keychains, Eyewear, Boots, Motorcycle Pants, and Race Suits\n\n## Locations\n6 Brandywine St SE, Washington, DC 20032, US\n\n### Get Directions\nDirections\n\n## Employees\nMohad Yusuf (N/A): [...] # Corsa Brand\nN/A\nApparel & Fashion • Washington, DC • 146 followers • 2-10 employees\n\n## Overview\nCORSA is a unique, energetic company that designs, develops, manufacturers & distributes its own line of high performance, race inspired, protective motorcycle apparel for motorcyclists and enthusiasts. CORSA currently has a full range of leather apparel for the serious rider who wants to express their individuality. Our apparel features vibrant colors and designs which utilize high quality materials and the most current technology available when constructing its jackets, trousers, gloves and racing suits. Our goal at CORSA is to create the best vintage and modern motorcycle apparel available in the world without compromising safety or style. LIVE THE DREAM\n\n### Website [...] ## Employees\nMohad Yusuf (N/A): \n\n## Similar Companies\nUmberto Luce (Retail Apparel and Fashion):  (N/A); WD Motorsports (Retail Apparel and Fashion):  (N/A); Cazlex Industries (Apparel Manufacturing):  (Sialkot, Punjab); GentleBiker (Retail):  (N/A); Adventure Harley-Davidson (Retail):  (Dover, OH); Racing Rabbit - Performance Motorcycle Apparel (Retail):  (Campinas, São Paulo); Blip Roasters (Retail):  (Kansas City, Missouri); DEUS EMEA S.R.L. (Retail Apparel and Fashion):  (Milano, MI); Hell Babes (Retail Apparel and Fashion):  (N/A); MT Wear (Wholesale):  (N/A)\n\n## Posts\n\n## Media\n- Images: \n- Logo: Company Logo\n\n## Additional  \nNone",
+          "normalizedProfileUrl": "https://www.linkedin.com/company/thecorsabrand",
+          "resolutionConfidence": 45,
+          "contradictingEvidence": []
+        },
+        {
+          "publisher": "LINKEDIN",
+          "profileUrl": "https://www.linkedin.com/company/wearecorsa",
+          "profileSlug": "wearecorsa",
+          "profileType": "LINKEDIN_COMPANY",
+          "retrievedAt": "2026-08-31T11:42:46.699Z",
+          "discoveryQuery": "site:linkedin.com/company \"Corsa\" LinkedIn company",
+          "searchResultUrl": "https://www.linkedin.com/company/wearecorsa",
+          "resolutionStatus": "AMBIGUOUS",
+          "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+          "searchResultTitle": "Corsa Group - STRATEGY | CREATIVE | AMPLIFICATION Creating forward motion",
+          "supportingEvidence": [
+            {
+              "kind": "NAME_MATCH",
+              "detail": "Candidate title or slug agrees with \"Corsa\"",
+              "strength": "strong",
+              "sourceUrl": "https://www.linkedin.com/company/wearecorsa"
+            }
+          ],
+          "searchResultExcerpt": "# Corsa Group\nSTRATEGY | CREATIVE | AMPLIFICATION Creating forward motion\nAdvertising Services • N/A • 30 followers • 11-50 employees\n\n## Overview\nN/A\n\n### Website\n\n### Crunchbase\nN/A\n### LinkedIn\nN/A\n\n### Industry\nAdvertising Services\n\n### Company Size\n11-50 employees  \n5 associated members (LinkedIn members who've listed Corsa Group as their current workplace on their profile)\n\n### Founded\nN/A\n\n### Funding\nLast Round Date: N/A\nLast Round Type: N/A\nTotal Rounds: N/A\nLast Round Raised: N/A\n\n### Investors\nN/A\n\n### Specialties\nN/A\n\n## Locations\n\n### Get Directions\n\n## Employees\nKristian Curcio (N/A):  LinkedIn Member (N/A): N/A; LinkedIn Member (N/A): N/A [...] ## Similar Companies\nCorsa Empire (Marketing Services):  (Kluang, Johore); Market Info Reports (Market Research):  (Pune, Maharashtra); Checkmate Digital (Advertising Services):  (Sydney, NSW); Koanga Pty Ltd (IT Services and IT Consulting):  (N/A); Dineshchandra Defence Systems Pvt Ltd (Defense and Space Manufacturing):  (N/A); Compound One (Marketing Services):  (N/A); Cota Group (Construction):  (Southbank, Victoria); Usha Excellence Solutions Pvt. Ltd (Climate Technology Product Manufacturing):  (N/A); FLEX (Executive Offices):  (Southbank, Victoria); Express Retail Group (Retail):  (North Perth, WA)\n\n## Posts\n\n## Media\n- Images: \n- Logo: Company Logo\n\n## Additional  \nNone",
+          "normalizedProfileUrl": "https://www.linkedin.com/company/wearecorsa",
+          "resolutionConfidence": 45,
+          "contradictingEvidence": []
+        }
+      ],
+      "attributeComparisons": [
+        {
+          "profileUrl": "https://www.linkedin.com/company/107413632",
+          "candidateLabel": "Corsa: Defining a new category in compliance tooling - Corsa - The AI-First Compliance & Risk OS",
+          "requestedAccountName": "Corsa",
+          "nameAgreement": true,
+          "domainAgreement": false,
+          "discoveryProfileAgreement": false,
+          "geographyAgreement": false,
+          "industryAgreement": false,
+          "contradictions": [],
+          "priorResolutionStatus": "VERIFIED",
+          "priorConfidence": 100
+        },
+        {
+          "profileUrl": "https://www.linkedin.com/company/corsafinance",
+          "candidateLabel": "Corsa - The first Agentic OS for modern financial institutions and compliance teams",
+          "requestedAccountName": "Corsa",
+          "nameAgreement": true,
+          "domainAgreement": false,
+          "discoveryProfileAgreement": false,
+          "geographyAgreement": false,
+          "industryAgreement": false,
+          "contradictions": [],
+          "priorResolutionStatus": "VERIFIED",
+          "priorConfidence": 85
+        },
+        {
+          "profileUrl": "https://www.linkedin.com/company/corsa-consulting",
+          "candidateLabel": "Corsa Consulting - Creating better outcomes",
+          "requestedAccountName": "Corsa",
+          "nameAgreement": true,
+          "domainAgreement": false,
+          "discoveryProfileAgreement": false,
+          "geographyAgreement": false,
+          "industryAgreement": false,
+          "contradictions": [],
+          "priorResolutionStatus": "AMBIGUOUS",
+          "priorConfidence": 45
+        },
+        {
+          "profileUrl": "https://www.linkedin.com/company/corsa-finance",
+          "candidateLabel": "Corsa Finance - All the tools to get the Business Capital you need.",
+          "requestedAccountName": "Corsa",
+          "nameAgreement": true,
+          "domainAgreement": false,
+          "discoveryProfileAgreement": false,
+          "geographyAgreement": false,
+          "industryAgreement": false,
+          "contradictions": [],
+          "priorResolutionStatus": "AMBIGUOUS",
+          "priorConfidence": 45
+        },
+        {
+          "profileUrl": "https://www.linkedin.com/company/corsa-is",
+          "candidateLabel": "Corsa - Corsa is a modern event management system focused on user-friendly experiences for organizers and participants.",
+          "requestedAccountName": "Corsa",
+          "nameAgreement": true,
+          "domainAgreement": false,
+          "discoveryProfileAgreement": false,
+          "geographyAgreement": false,
+          "industryAgreement": false,
+          "contradictions": [],
+          "priorResolutionStatus": "AMBIGUOUS",
+          "priorConfidence": 45
+        },
+        {
+          "profileUrl": "https://www.linkedin.com/company/corsa-management",
+          "candidateLabel": "Corsa Management",
+          "requestedAccountName": "Corsa",
+          "nameAgreement": true,
+          "domainAgreement": false,
+          "discoveryProfileAgreement": false,
+          "geographyAgreement": false,
+          "industryAgreement": false,
+          "contradictions": [],
+          "priorResolutionStatus": "AMBIGUOUS",
+          "priorConfidence": 45
+        },
+        {
+          "profileUrl": "https://www.linkedin.com/company/corsa-myanmar",
+          "candidateLabel": "Corsa Myanmar - Moving Goods, Powering Growth",
+          "requestedAccountName": "Corsa",
+          "nameAgreement": true,
+          "domainAgreement": false,
+          "discoveryProfileAgreement": false,
+          "geographyAgreement": false,
+          "industryAgreement": false,
+          "contradictions": [],
+          "priorResolutionStatus": "AMBIGUOUS",
+          "priorConfidence": 45
+        },
+        {
+          "profileUrl": "https://www.linkedin.com/company/corsa-performance-exhausts",
+          "candidateLabel": "CORSA Performance",
+          "requestedAccountName": "Corsa",
+          "nameAgreement": true,
+          "domainAgreement": false,
+          "discoveryProfileAgreement": false,
+          "geographyAgreement": false,
+          "industryAgreement": false,
+          "contradictions": [],
+          "priorResolutionStatus": "AMBIGUOUS",
+          "priorConfidence": 45
+        },
+        {
+          "profileUrl": "https://www.linkedin.com/company/corsa-ventures",
+          "candidateLabel": "Corsa Ventures",
+          "requestedAccountName": "Corsa",
+          "nameAgreement": true,
+          "domainAgreement": false,
+          "discoveryProfileAgreement": false,
+          "geographyAgreement": false,
+          "industryAgreement": false,
+          "contradictions": [],
+          "priorResolutionStatus": "AMBIGUOUS",
+          "priorConfidence": 45
+        },
+        {
+          "profileUrl": "https://www.linkedin.com/company/corsainsuranceservices",
+          "candidateLabel": "Corsa Insurance Services - Personal, business, and cyber insurance for those who can’t afford mistakes",
+          "requestedAccountName": "Corsa",
+          "nameAgreement": true,
+          "domainAgreement": false,
+          "discoveryProfileAgreement": false,
+          "geographyAgreement": false,
+          "industryAgreement": false,
+          "contradictions": [],
+          "priorResolutionStatus": "AMBIGUOUS",
+          "priorConfidence": 45
+        },
+        {
+          "profileUrl": "https://www.linkedin.com/company/scuderia-corsa",
+          "candidateLabel": "Scuderia Corsa",
+          "requestedAccountName": "Corsa",
+          "nameAgreement": true,
+          "domainAgreement": false,
+          "discoveryProfileAgreement": false,
+          "geographyAgreement": false,
+          "industryAgreement": false,
+          "contradictions": [],
+          "priorResolutionStatus": "AMBIGUOUS",
+          "priorConfidence": 45
+        },
+        {
+          "profileUrl": "https://www.linkedin.com/company/thecorsabrand",
+          "candidateLabel": "Corsa Brand",
+          "requestedAccountName": "Corsa",
+          "nameAgreement": true,
+          "domainAgreement": false,
+          "discoveryProfileAgreement": false,
+          "geographyAgreement": false,
+          "industryAgreement": false,
+          "contradictions": [],
+          "priorResolutionStatus": "AMBIGUOUS",
+          "priorConfidence": 45
+        },
+        {
+          "profileUrl": "https://www.linkedin.com/company/wearecorsa",
+          "candidateLabel": "Corsa Group - STRATEGY | CREATIVE | AMPLIFICATION Creating forward motion",
+          "requestedAccountName": "Corsa",
+          "nameAgreement": true,
+          "domainAgreement": false,
+          "discoveryProfileAgreement": false,
+          "geographyAgreement": false,
+          "industryAgreement": false,
+          "contradictions": [],
+          "priorResolutionStatus": "AMBIGUOUS",
+          "priorConfidence": 45
+        }
+      ],
+      "ownershipContext": [],
+      "priorEntityAssessment": {
+        "companyLikeness": "LIKELY_COMPANY",
+        "identityState": "PROBABLE",
+        "canonicalAttachAllowed": false,
+        "evidence": [
+          "NAME_DOMAIN_AGREEMENT",
+          "OFFICIAL_SOURCE_DOMAIN",
+          "PROVIDER_ORGANIZATION_RESULT"
+        ],
+        "conflicts": []
+      },
+      "priorFinalState": "PROBABLE",
+      "priorAutomaticAttachAllowed": false,
+      "missingVerificationRequirement": "One independent source that binds the selected company profile to the preserved canonical domain without contradiction.",
+      "primaryRootCause": "DISCOVERY_EVIDENCE_NOT_REUSED",
+      "secondaryRootCauses": [
+        "SHORT_NAME_COLLISION_RISK",
+        "PROFILE_SEARCH_FOUND_NO_DOMAIN_CORROBORATED_CANDIDATE",
+        "PROBABLE_IDENTITY_NOT_PRESERVED_AS_ACTIONABLE_REVIEW_STATE"
+      ],
+      "exactFinalStateReason": "The normal path has an exact discovery name/domain/official-URL tuple and provider organization result, but profile resolution starts from an empty candidate set and returns NOT_FOUND. Because Corsa is a short collision-prone name, name-only candidates are insufficient; the safe identity decision is PROBABLE with the missing requirement of independent domain-bound profile corroboration."
+    }
+  ]
+}

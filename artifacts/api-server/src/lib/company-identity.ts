@@ -45,6 +45,13 @@ export type CompanyIdentityAssessment = {
   conflicts: string[];
 };
 
+export type ParsedCompanyRelationship = {
+  accountName: string;
+  relationshipType: "PART_OF" | "SUBSIDIARY_OF" | "OWNED_BY" | "ACQUIRED_BY" | "DIVISION_OF";
+  relatedOrganizationName: string;
+  originalLabel: string;
+};
+
 const LEGAL_TOKEN_EXPANSIONS: Record<string, string> = {
   pvt: "private",
   ltd: "limited",
@@ -239,6 +246,37 @@ function hasRelatedEntityQualifier(name: string): boolean {
   return /\b(?:part of|subsidiary of|owned by|acquired by|a division of|a [a-z0-9& -]+ company)\b/i.test(name);
 }
 
+const RELATIONSHIP_LABEL_PATTERNS: Array<{
+  relationshipType: ParsedCompanyRelationship["relationshipType"];
+  pattern: RegExp;
+}> = [
+  { relationshipType: "PART_OF", pattern: /^(.+?)\s*(?:\(|,|[-–—])\s*part of\s+(.+?)\s*\)?$/i },
+  { relationshipType: "SUBSIDIARY_OF", pattern: /^(.+?)\s*(?:\(|,|[-–—])\s*subsidiary of\s+(.+?)\s*\)?$/i },
+  { relationshipType: "OWNED_BY", pattern: /^(.+?)\s*(?:\(|,|[-–—])\s*owned by\s+(.+?)\s*\)?$/i },
+  { relationshipType: "ACQUIRED_BY", pattern: /^(.+?)\s*(?:\(|,|[-–—])\s*acquired by\s+(.+?)\s*\)?$/i },
+  { relationshipType: "DIVISION_OF", pattern: /^(.+?)\s*(?:\(|,|[-–—])\s*a division of\s+(.+?)\s*\)?$/i },
+];
+
+export function parseCompanyRelationshipLabel(value: unknown): ParsedCompanyRelationship | null {
+  if (typeof value !== "string") return null;
+  const originalLabel = value.trim().replace(/\s+/g, " ");
+  if (!originalLabel) return null;
+  for (const definition of RELATIONSHIP_LABEL_PATTERNS) {
+    const match = originalLabel.match(definition.pattern);
+    const accountName = match?.[1]?.trim();
+    const relatedOrganizationName = match?.[2]?.trim();
+    if (!accountName || !relatedOrganizationName) continue;
+    if (!normalizeCompanyName(accountName) || !normalizeCompanyName(relatedOrganizationName)) continue;
+    return {
+      accountName,
+      relationshipType: definition.relationshipType,
+      relatedOrganizationName,
+      originalLabel,
+    };
+  }
+  return null;
+}
+
 /**
  * A cheap, conservative pre-enrichment identity gate. Provider assertions and
  * name shape are evidence, not proof; conflicting strong identifiers fail shut.
@@ -248,6 +286,7 @@ export function assessCompanyIdentity(input: NormalizedCompanyInput, context: {
   providerOrganizationResult?: boolean;
   verifiedDomain?: boolean;
   verifiedLinkedin?: boolean;
+  probableLinkedin?: boolean;
   knownAliasMatch?: boolean;
   identifierConflict?: boolean;
   relatedEntityConflict?: boolean;
@@ -271,6 +310,7 @@ export function assessCompanyIdentity(input: NormalizedCompanyInput, context: {
   if (domainAgrees) evidence.push("NAME_DOMAIN_AGREEMENT");
   if (officialSourceAgrees) evidence.push("OFFICIAL_SOURCE_DOMAIN");
   if (linkedinCompany) evidence.push("LINKEDIN_COMPANY_PROFILE");
+  if (context.probableLinkedin) evidence.push("PROBABLE_LINKEDIN_COMPANY_PROFILE");
   if (context.verifiedDomain) evidence.push("VERIFIED_DOMAIN");
   if (context.knownAliasMatch) evidence.push("KNOWN_ALIAS");
   if (context.providerOrganizationResult) evidence.push("PROVIDER_ORGANIZATION_RESULT");
@@ -312,6 +352,15 @@ export function assessCompanyIdentity(input: NormalizedCompanyInput, context: {
     };
   }
   if (domainAgrees && officialSourceAgrees && context.providerOrganizationResult) {
+    return {
+      companyLikeness: "LIKELY_COMPANY",
+      identityState: "PROBABLE",
+      canonicalAttachAllowed: false,
+      evidence,
+      conflicts,
+    };
+  }
+  if (context.probableLinkedin && context.providerOrganizationResult) {
     return {
       companyLikeness: "LIKELY_COMPANY",
       identityState: "PROBABLE",

@@ -1,0 +1,55 @@
+{
+  "milestone": "PROFILE_RESOLUTION_FIX_02A",
+  "generatedAt": "2026-08-31T18:49:24.864Z",
+  "decision": "A",
+  "decisionLabel": "SAFE_PROFILE_RESOLUTION_COVERAGE_REPAIRED",
+  "retrievalVersion": "MVP_RETRIEVAL_V1_FROZEN",
+  "scope": "PRESERVED_FOUR_CASES_AND_12_COMPANY_WHO_SAMPLE_ONLY",
+  "fixes": [
+    "Preserved organization-discovery profile evidence is reused before paid profile search.",
+    "Qualified labels are split into a canonical account name and a distinct provenance-backed ownership relationship.",
+    "PROBABLE now preserves one strong contradiction-free identity path and its explicit missing verification requirement.",
+    "Exact repeat discovery evidence remains PROBABLE instead of being downgraded merely because an unsafe historical canonical row exists."
+  ],
+  "safetyBoundaries": [
+    "Only VERIFIED or VERIFIED_EXISTING profile results can update canonical profile identifiers.",
+    "PROBABLE never permits automatic canonical attachment.",
+    "Short names still require domain-bound or otherwise independent corroboration.",
+    "Parent and operating-brand identities remain distinct unless SAME_ENTITY is independently proven.",
+    "Service-shaped names are rejected before lookup or profile search."
+  ],
+  "operations": {
+    "schemaChanges": 0,
+    "externalProviderCalls": 0,
+    "productionOperations": 0
+  },
+  "targetedMetrics": {
+    "cases": 4,
+    "legitimateCompanies": 3,
+    "confirmed": 0,
+    "probable": 3,
+    "ambiguous": 0,
+    "unresolved": 0,
+    "notACompany": 1,
+    "wrongAutomaticAttaches": 0,
+    "identityPrecisionAmongAutoAttaches": "NO_AUTO_ATTACHES_IN_TARGETED_RETEST",
+    "safeResolutionCoverage": 1
+  },
+  "whoReplayMetrics": {
+    "confirmed": 8,
+    "probable": 3,
+    "safeAmbiguous": 0,
+    "safeUnresolved": 0,
+    "notACompany": 1,
+    "wrongIdentity": 0,
+    "wrongAutomaticAttach": 0,
+    "autoAttaches": 8,
+    "correctAutoAttaches": 8,
+    "identityPrecisionAmongAutoAttaches": 1,
+    "adjudicableLegitimateCompanies": 11,
+    "safelyResolvedLegitimateCompanies": 11,
+    "safeResolutionCoverage": 1,
+    "identityRegressions": 0,
+    "icpRegressions": 0
+  }
+}
