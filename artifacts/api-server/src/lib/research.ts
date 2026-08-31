@@ -595,25 +595,55 @@ export function assessWebSearchRetrieval(input: {
 }
 
 function deduplicateWebResults(results: WebSearchResult["results"]): WebSearchResult["results"] {
-  const seen = new Set<string>();
-  return results.filter((result) => {
+  const deduplicated = new Map<string, WebSearchResult["results"][number]>();
+  for (const result of results) {
     let identity: string;
     try {
       identity = `url:${canonicalSourceIdentity(result.url)}`;
     } catch {
       identity = `content:${hashNormalizedContent(rawSourceForResult(result))}`;
     }
-    if (seen.has(identity)) return false;
-    seen.add(identity);
-    return true;
-  });
+    const existing = deduplicated.get(identity);
+    if (existing) {
+      const retrievalProviders = [...new Set([
+        ...(existing.retrievalProviders ?? []),
+        ...(result.retrievalProviders ?? []),
+      ])];
+      const providerResultIds = [...new Set([
+        ...(existing.providerResultIds ?? []),
+        ...(result.providerResultIds ?? []),
+      ])];
+      const existingInformation = (existing.rawContent?.length ?? 0) + existing.snippet.length;
+      const candidateInformation = (result.rawContent?.length ?? 0) + result.snippet.length;
+      if (
+        (result.relevanceScore ?? -1) > (existing.relevanceScore ?? -1) ||
+        ((result.relevanceScore ?? -1) === (existing.relevanceScore ?? -1) && candidateInformation > existingInformation)
+      ) {
+        deduplicated.set(identity, { ...result, retrievalProviders, providerResultIds });
+      } else {
+        existing.retrievalProviders = retrievalProviders;
+        existing.providerResultIds = providerResultIds;
+      }
+    } else {
+      deduplicated.set(identity, {
+        ...result,
+        retrievalProviders: [...new Set(result.retrievalProviders ?? [])],
+        providerResultIds: [...new Set(result.providerResultIds ?? [])],
+      });
+    }
+  }
+  return [...deduplicated.values()];
 }
 
 function mergeWebSearchResponses(
   attempts: Array<{ response: ProviderResponse<WebSearchResult> }>,
 ): ProviderResponse<WebSearchResult> {
   const successful = attempts.filter(({ response }) => response.status !== "failed");
-  const results = deduplicateWebResults(successful.flatMap(({ response }) => response.data?.results ?? []));
+  const results = deduplicateWebResults(successful.flatMap(({ response }) =>
+    (response.data?.results ?? []).map((result) => ({
+      ...result,
+      retrievalProviders: [...new Set([...(result.retrievalProviders ?? []), response.providerId])],
+    }))));
   const last = attempts.at(-1)?.response;
   const usage = attempts.reduce((total, { response }) => ({
     estimatedCost: total.estimatedCost + response.usage.estimatedCost,
@@ -646,6 +676,11 @@ function mergeWebSearchResponses(
 export type AdaptiveWebSearchAttempt = {
   stage: "PRIMARY" | "FALLBACK";
   query: string;
+  fallbackReason:
+    | "FALLBACK_INSUFFICIENT"
+    | "FALLBACK_AMBIGUOUS"
+    | "FALLBACK_PROVIDER_FAILURE"
+    | null;
   response: ProviderResponse<WebSearchResult>;
   assessment: WebSearchRetrievalAssessment;
 };
@@ -698,11 +733,18 @@ function retrievalAttemptMetadata(
   return {
     queryEngineVersion: "adaptive-generic-v1",
     queryStage: attempt.stage,
+    fallbackReason: "fallbackReason" in attempt ? attempt.fallbackReason : null,
     query: redactSensitiveText(attempt.query),
     temporalContext: plan.temporalContext,
     providerMetadata: redactSensitiveValue(attempt.response.metadata ?? {}),
     provider: attempt.response.providerId,
     providerRequestId: attempt.response.providerRequestId,
+    providerStatus: attempt.response.status,
+    retryable: attempt.response.retryable,
+    estimatedCost: attempt.response.usage.estimatedCost,
+    actualCost: attempt.response.usage.actualCost,
+    latencyMs: attempt.response.usage.latencyMs,
+    runtimeMs: attempt.response.usage.runtimeMs,
     retrievalStatus: attempt.assessment?.status ?? null,
     resultCount: attempt.response.usage.resultCount,
     sourceReferenceCount: attempt.response.sources.length,
@@ -821,7 +863,7 @@ function requestForQuestion(
           projectId: scope.projectId,
           organizationId: scope.organizationId,
           environment: process.env.NODE_ENV ?? "unknown",
-          ...(queryStage ? { queryStage } : {}),
+          ...(queryStage ? { queryStage, routingRole: queryStage, maxProviderAttempts: "1" } : {}),
         }
       : undefined,
   };
@@ -859,7 +901,16 @@ function requestForQuestion(
 function resultSources(
   capability: ProviderCapability,
   data: CapabilityResult<ProviderCapability> | null,
-): Array<{ url: string; title?: string; snippet?: string; summary?: string; rawContent: string; job?: Record<string, unknown> }> {
+): Array<{
+  url: string;
+  title?: string;
+  snippet?: string;
+  summary?: string;
+  rawContent: string;
+  retrievalProviders?: string[];
+  providerResultIds?: string[];
+  job?: Record<string, unknown>;
+}> {
   if (!data) return [];
   if (capability === "WEBSITE_CRAWL" && "page" in data && data.page.text) {
     const pages = "pages" in data && Array.isArray(data.pages) ? data.pages : [data.page];
@@ -1012,48 +1063,21 @@ export async function executeResearchNow(input: {
   if (!plan || plan.estimatedCost > QUESTION_MAX_COST) {
     return { stopped: true, reason: plan ? "Estimated cost exceeds the bounded research budget." : "No high-value unanswered research question is currently due." };
   }
-  let attemptRecords = 0;
+  const observedUsageRecords: ProviderUsageRecord[] = [];
   let selectedQuestionForObserver: ResearchQuestion | null = null;
   let selectedJobIdForObserver: string | null = null;
   const usageObserver = async (record: ProviderUsageRecord) => {
     if (!selectedQuestionForObserver || !selectedJobIdForObserver) return;
-    attemptRecords += 1;
-    await recordResearchRequest({
-      organizationId: input.organizationId,
-      projectId: input.projectId,
-      companyId: row.company.id,
-      questionId: selectedQuestionForObserver.id,
-      researchJobId: selectedJobIdForObserver,
-      researchQuestion: selectedQuestionForObserver.questionText,
-      providerCapability: record.capability,
-      providerId: record.providerId,
-      providerRequestId: record.requestId,
-      status: record.status === "timeout" ? "failed" : record.status,
-      success: record.status === "success",
-      latencyMs: record.latencyMs,
-      estimatedCost: record.estimatedCost,
-      actualCost: record.actualCost,
-      resultMetadata: {
-        ...record.metadata,
-        resultCount: record.resultCount,
-        runtimeMs: record.runtimeMs,
-        retryable: record.retryable,
-        errorCode: record.errorCode,
-      },
-      startedAt: record.startedAt,
-      completedAt: record.completedAt,
-      attemptKey: idempotencyKey,
-      releaseReservation: false,
-    });
+    observedUsageRecords.push(record);
   };
   const router = input.router ?? new ProviderRouter({ usageObserver });
   if (router instanceof ProviderRouter) router.setUsageObserver(usageObserver);
   const singleQueryProviderCost = router instanceof ProviderRouter
-    ? await router.maximumEstimatedCost(plan.providerCapability)
+    ? plan.providerCapability === "WEB_SEARCH"
+      ? await router.maximumAdaptiveWebSearchCost()
+      : await router.maximumEstimatedCost(plan.providerCapability)
     : plan.estimatedCost;
-  const estimatedProviderCost = plan.providerCapability === "WEB_SEARCH"
-    ? singleQueryProviderCost * 2
-    : singleQueryProviderCost;
+  const estimatedProviderCost = singleQueryProviderCost;
   const budget = await reserveResearchBudget({
     organizationId: input.organizationId,
     projectId: input.projectId,
@@ -1200,11 +1224,16 @@ export async function executeResearchNow(input: {
   const responseAttempts = adaptiveSearch?.attempts ?? [{
     stage: "PRIMARY" as const,
     query: selectedQuestion.questionText,
+    fallbackReason: null,
     response: response as ProviderResponse<WebSearchResult>,
     assessment: null,
   }];
-  if (attemptRecords === 0) {
+  if (observedUsageRecords.length === 0) {
     for (const [index, attempt] of responseAttempts.entries()) {
+      const attemptProviderId = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{12}$/i.test(attempt.response.providerId)
+        ? (await db.select({ id: dataProvidersTable.id }).from(dataProvidersTable)
+            .where(eq(dataProvidersTable.id, attempt.response.providerId)).limit(1))[0]?.id ?? null
+        : null;
       await recordResearchRequest({
         organizationId: input.organizationId,
         projectId: input.projectId,
@@ -1213,7 +1242,7 @@ export async function executeResearchNow(input: {
         researchJobId: job.id,
         researchQuestion: selectedQuestion.questionText,
         providerCapability: selectedQuestion.providerCapability,
-        providerId,
+        providerId: attemptProviderId,
         providerRequestId: attempt.response.providerRequestId,
         status: attempt.response.status,
         success: attempt.response.status === "success",
@@ -1235,16 +1264,39 @@ export async function executeResearchNow(input: {
       });
     }
   } else {
-    await releaseResearchReservation(idempotencyKey);
-    if (adaptiveSearch) {
-      for (const attempt of adaptiveSearch.attempts) {
-        await db.update(researchRequestCostsTable).set({
-          resultMetadata: retrievalAttemptMetadata(attempt, adaptiveSearch.plan),
-        }).where(and(
-          eq(researchRequestCostsTable.researchJobId, job.id),
-          eq(researchRequestCostsTable.providerRequestId, attempt.response.providerRequestId),
-        ));
-      }
+    for (const [index, record] of observedUsageRecords.entries()) {
+      const adaptiveAttempt = adaptiveSearch?.attempts.find(
+        (attempt) => attempt.response.providerRequestId === record.requestId,
+      );
+      await recordResearchRequest({
+        organizationId: input.organizationId,
+        projectId: input.projectId,
+        companyId: row.company.id,
+        questionId: selectedQuestion.id,
+        researchJobId: job.id,
+        researchQuestion: selectedQuestion.questionText,
+        providerCapability: record.capability,
+        providerId: record.providerId,
+        providerRequestId: record.requestId,
+        status: record.status === "timeout" ? "failed" : record.status,
+        success: record.status === "success",
+        latencyMs: record.latencyMs,
+        estimatedCost: record.estimatedCost,
+        actualCost: record.actualCost,
+        resultMetadata: adaptiveAttempt && adaptiveSearch
+          ? retrievalAttemptMetadata(adaptiveAttempt, adaptiveSearch.plan)
+          : {
+              ...record.metadata,
+              resultCount: record.resultCount,
+              runtimeMs: record.runtimeMs,
+              retryable: record.retryable,
+              errorCode: record.errorCode,
+            },
+        startedAt: record.startedAt,
+        completedAt: record.completedAt,
+        attemptKey: idempotencyKey,
+        releaseReservation: index === observedUsageRecords.length - 1,
+      });
     }
   }
   let evidenceCount = 0;
@@ -1296,7 +1348,9 @@ export async function executeResearchNow(input: {
       const preserved = await preserveResearchEvidence({
         company: row.company,
         organizationId: input.organizationId,
-        provider: response.providerId,
+        provider: source.retrievalProviders?.length
+          ? source.retrievalProviders.join(",")
+          : response.providerId,
         sourceType,
         attribution,
         sourceUrl: source.url,
@@ -1438,7 +1492,7 @@ export async function executeResearchNow(input: {
     updatedAt: completedAt,
   }).where(eq(researchQuestionsTable.id, selectedQuestion.id)).returning();
   await db.update(projectCompaniesTable).set({
-    researchStatus: "complete",
+    researchStatus: response.status === "failed" ? "in_progress" : "complete",
     latestResearchAt: completedAt,
     updatedAt: completedAt,
   }).where(eq(projectCompaniesTable.id, row.projectCompany.id));
@@ -1468,7 +1522,11 @@ export async function executeAdaptiveWebSearch(input: {
     now,
   });
   const attempts: AdaptiveWebSearchAttempt[] = [];
-  const run = async (stage: "PRIMARY" | "FALLBACK", query: string) => {
+  const run = async (
+    stage: "PRIMARY" | "FALLBACK",
+    query: string,
+    fallbackReason: AdaptiveWebSearchAttempt["fallbackReason"],
+  ) => {
     const response = await routeQuestion(
       input.router,
       input.question as ResearchQuestion,
@@ -1485,18 +1543,22 @@ export async function executeAdaptiveWebSearch(input: {
       query,
       now,
     });
-    attempts.push({ stage, query, response, assessment });
+    attempts.push({ stage, query, fallbackReason, response, assessment });
     return assessment;
   };
 
-  const primaryAssessment = await run("PRIMARY", plan.primaryQuery);
+  const primaryAssessment = await run("PRIMARY", plan.primaryQuery, null);
   if (
-    primaryAssessment.status !== "PROVIDER_FAILURE" &&
-    (primaryAssessment.status === "INSUFFICIENT_RETRIEVAL" || primaryAssessment.status === "AMBIGUOUS_RETRIEVAL") &&
+    primaryAssessment.status !== "SUFFICIENT_RETRIEVAL" &&
     plan.fallbackQuery &&
     plan.fallbackQuery !== plan.primaryQuery
   ) {
-    await run("FALLBACK", plan.fallbackQuery);
+    const fallbackReason = primaryAssessment.status === "PROVIDER_FAILURE"
+      ? "FALLBACK_PROVIDER_FAILURE"
+      : primaryAssessment.status === "AMBIGUOUS_RETRIEVAL"
+        ? "FALLBACK_AMBIGUOUS"
+        : "FALLBACK_INSUFFICIENT";
+    await run("FALLBACK", plan.fallbackQuery, fallbackReason);
   }
   const response = mergeWebSearchResponses(attempts);
   const finalAssessment = assessWebSearchRetrieval({

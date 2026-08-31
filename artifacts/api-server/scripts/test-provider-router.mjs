@@ -15,6 +15,7 @@ await build({
 const require = createRequire(import.meta.url);
 const {
   ProviderRouter,
+  redactProviderMetadata,
   createApifyAdapters,
   createMockJobSearchAdapter,
   createMockWebSearchAdapter,
@@ -308,5 +309,79 @@ assert.deepEqual(
   apifyUsage.map((entry) => entry.resultCount),
   [1, 1],
 );
+
+const stagedCalls = [];
+const stagedResponse = (providerId) => async (request) => {
+  stagedCalls.push(providerId);
+  return {
+    status: "empty",
+    providerId,
+    providerRequestId: request.requestId,
+    data: { results: [] },
+    sources: [],
+    usage: { estimatedCost: providerId === "tavily-default" ? 0.01 : 0.007, actualCost: 0, latencyMs: 1, runtimeMs: 1, resultCount: 0 },
+    error: null,
+    retryable: false,
+    capturedAt: new Date().toISOString(),
+  };
+};
+const stagedRouter = new ProviderRouter({
+  providers: [
+    provider({ id: "tavily-default", providerType: "tavily", estimatedCost: 0.01 }),
+    provider({ id: "exa-default", providerType: "exa", estimatedCost: 0.007, priority: 1 }),
+  ],
+  adapters: [
+    { providerId: "tavily-default", capabilities: ["WEB_SEARCH"], execute: stagedResponse("tavily-default") },
+    { providerId: "exa-default", capabilities: ["WEB_SEARCH"], execute: stagedResponse("exa-default") },
+  ],
+  usageWriter: async () => {},
+});
+await stagedRouter.searchWeb({ query: "primary", metadata: { routingRole: "PRIMARY" } });
+await stagedRouter.searchWeb({ query: "fallback", metadata: { routingRole: "FALLBACK" } });
+assert.deepEqual(stagedCalls, ["tavily-default", "exa-default"], "production-like provider records without new role configuration must retain safe defaults");
+assert.equal(await stagedRouter.maximumAdaptiveWebSearchCost(), 0.017);
+
+const redacted = redactProviderMetadata({
+  authorization: "Bearer this-must-not-persist",
+  nested: { apiKey: "secret-value", url: "https://example.test?q=1&token=sensitive" },
+  safe: "retained",
+});
+assert.equal(redacted.authorization, "[REDACTED]");
+assert.equal(redacted.nested.apiKey, "[REDACTED]");
+assert.equal(redactProviderMetadata({ token: "bare-sensitive-token" }).token, "[REDACTED]");
+assert.doesNotMatch(redacted.nested.url, /sensitive/);
+assert.equal(redacted.safe, "retained");
+
+const cappedCalls = [];
+const retryableFailure = (providerId) => async (request) => {
+  cappedCalls.push(providerId);
+  return {
+    status: "failed",
+    providerId,
+    providerRequestId: request.requestId,
+    data: null,
+    sources: [],
+    usage: { estimatedCost: 0.01, actualCost: null, latencyMs: 1, runtimeMs: 1, resultCount: 0 },
+    error: { code: "RETRYABLE", message: "retryable", retryable: true },
+    retryable: true,
+    capturedAt: new Date().toISOString(),
+  };
+};
+const cappedRouter = new ProviderRouter({
+  providers: [
+    provider({ id: "tavily-first", providerType: "tavily", priority: 1, estimatedCost: 0.01 }),
+    provider({ id: "tavily-second", providerType: "tavily", priority: 2, estimatedCost: 0.02 }),
+  ],
+  adapters: [
+    { providerId: "tavily-first", capabilities: ["WEB_SEARCH"], execute: retryableFailure("tavily-first") },
+    { providerId: "tavily-second", capabilities: ["WEB_SEARCH"], execute: retryableFailure("tavily-second") },
+  ],
+  usageWriter: async () => {},
+});
+await cappedRouter.searchWeb({
+  query: "bounded primary",
+  metadata: { routingRole: "PRIMARY", maxProviderAttempts: "1" },
+});
+assert.deepEqual(cappedCalls, ["tavily-first"], "adaptive stages must never waterfall across multiple same-role providers");
 
 console.log("Provider router tests passed.");

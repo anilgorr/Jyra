@@ -6,6 +6,7 @@ const TAVILY_PROVIDER_CONFIGURATION = {
   credentialEnv: "TAVILY_API_KEY",
   timeoutMs: 20_000,
   estimatedCost: 0.01,
+  routingRole: "PRIMARY",
 };
 
 export async function ensureDevelopmentTavilyProvider(): Promise<void> {

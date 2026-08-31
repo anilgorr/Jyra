@@ -1,0 +1,65 @@
+{
+  "suite": "ADAPTIVE_RETRIEVAL_PRODUCTIONIZATION_01_SMOKE",
+  "generatedAt": "2026-08-31T17:23:58.835Z",
+  "environment": "development",
+  "benchmarkControlsUsed": 0,
+  "productionOperations": 0,
+  "companiesAndQuestions": [
+    {
+      "company": "Cloudflare",
+      "domain": "cloudflare.com",
+      "skipped": "Existing canonical company was left untouched by the isolated smoke test."
+    },
+    {
+      "company": "GitLab",
+      "domain": "gitlab.com",
+      "skipped": "Existing canonical company was left untouched by the isolated smoke test."
+    },
+    {
+      "company": "OpenInfra Foundation",
+      "domain": "openinfra.dev",
+      "questionId": "af1ae3e9-5673-4a79-b4d2-dbb92289bef7",
+      "researchJobId": "6cac480b-0784-43d1-b5ae-39e6d829fcd8",
+      "resultStatus": "SUCCEEDED",
+      "evidenceCount": 6,
+      "duplicateEvidenceCount": 0,
+      "ambiguousResultCount": 14
+    }
+  ],
+  "tavilyCalls": 1,
+  "exaCalls": 1,
+  "fallbackReasons": [
+    "FALLBACK_INSUFFICIENT"
+  ],
+  "providerFailures": 0,
+  "providerCalls": [
+    {
+      "provider": "Tavily",
+      "providerRequestId": "research:af1ae3e9-5673-4a79-b4d2-dbb92289bef7:primary:b1bac8b0-c8d4-426a-9c81-588c96031dca",
+      "queryStage": "PRIMARY",
+      "fallbackReason": null,
+      "status": "success",
+      "estimatedCost": 0.01,
+      "actualCost": null,
+      "latencyMs": 1277
+    },
+    {
+      "provider": "Exa",
+      "providerRequestId": "research:af1ae3e9-5673-4a79-b4d2-dbb92289bef7:fallback:b220e720-6d21-4c7a-badf-3aec920febca",
+      "queryStage": "FALLBACK",
+      "fallbackReason": "FALLBACK_INSUFFICIENT",
+      "status": "success",
+      "estimatedCost": 0.007,
+      "actualCost": 0.016,
+      "latencyMs": 346
+    }
+  ],
+  "totalEstimatedCost": 0.017,
+  "totalActualCost": null,
+  "acceptedEvidenceCount": 6,
+  "evidenceUrlCount": 6,
+  "uniqueEvidenceUrlCount": 6,
+  "dedupePassed": true,
+  "wrongEntityAccepted": 0,
+  "sellerContentAcceptedAsBuyerEvidence": 0
+}

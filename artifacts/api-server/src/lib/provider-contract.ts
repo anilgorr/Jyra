@@ -55,6 +55,8 @@ export type ProviderRequestBase = {
   metadata?: Record<string, string>;
 };
 
+export type ProviderRoutingRole = "PRIMARY" | "FALLBACK";
+
 export type CompanyDiscoveryStrategy = {
   icpDescription?: string;
   targetIndustries?: string[];
@@ -320,6 +322,8 @@ export type WebSearchResult = {
     publishedAt?: string | null;
     relevanceScore?: number | null;
     sourceDomain?: string | null;
+    retrievalProviders?: string[];
+    providerResultIds?: string[];
   }>;
 };
 export type WebsiteCrawlResult = {

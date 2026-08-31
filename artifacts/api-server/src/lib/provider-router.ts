@@ -18,6 +18,7 @@ import {
   type ProviderCapability,
   type ProviderOperations,
   type ProviderResponse,
+  type ProviderRoutingRole,
 } from "./provider-contract";
 import { resolveCompanyProfileWithRouter } from "./company-profile-resolution";
 import {
@@ -30,6 +31,7 @@ import {
 } from "./tavily-provider";
 import {
   createExaCompanyDiscoveryAdapter,
+  createExaWebSearchAdapter,
   parseExaProviderConfiguration,
 } from "./exa-provider";
 import {
@@ -84,6 +86,39 @@ export type ProviderRouterOptions = {
   usageObserver?: ProviderUsageWriter;
   adapterFactory?: (provider: ProviderCatalogEntry) => ProviderAdapter[];
 };
+
+function defaultRoutingRole(providerType: string): ProviderRoutingRole | null {
+  if (providerType === "tavily") return "PRIMARY";
+  if (providerType === "exa") return "FALLBACK";
+  return null;
+}
+
+function routingRoleForProvider(provider: ProviderCatalogEntry): ProviderRoutingRole | null {
+  const configured = provider.configuration.routingRole;
+  return configured === "PRIMARY" || configured === "FALLBACK"
+    ? configured
+    : defaultRoutingRole(provider.providerType);
+}
+
+export function redactProviderMetadata(value: unknown, key = ""): unknown {
+  if (/api[_-]?key|authorization|(?:access[_-]?)?token|password|secret|credential/i.test(key)) {
+    return "[REDACTED]";
+  }
+  if (typeof value === "string") {
+    return value
+      .replace(/([?&](?:api[_-]?key|access[_-]?token|token|secret|password|authorization)=)[^&\s]+/gi, "$1[REDACTED]")
+      .replace(/\b(?:bearer|basic)\s+[a-z0-9._~+/=-]{12,}\b/gi, "[REDACTED_AUTHORIZATION]")
+      .replace(/\b(?:api[_-]?key|access[_-]?token|secret|password|credential)\s*[:=]\s*[^\s,;]+/gi, "[REDACTED_CREDENTIAL]");
+  }
+  if (Array.isArray(value)) return value.map((item) => redactProviderMetadata(item));
+  if (value && typeof value === "object") {
+    return Object.fromEntries(Object.entries(value).map(([entryKey, entryValue]) => [
+      entryKey,
+      redactProviderMetadata(entryValue, entryKey),
+    ]));
+  }
+  return value;
+}
 
 const capabilitySet = new Set<string>(PROVIDER_CAPABILITIES);
 
@@ -152,7 +187,7 @@ async function databaseUsageWriter(record: ProviderUsageRecord): Promise<void> {
     estimatedCost: record.estimatedCost,
     actualCost: record.actualCost,
     errorCode: record.errorCode,
-    metadata: record.metadata,
+    metadata: redactProviderMetadata(record.metadata) as Record<string, unknown>,
     startedAt: record.startedAt,
     completedAt: record.completedAt,
   });
@@ -237,10 +272,14 @@ function defaultAdapterFactory(
     })];
   }
   if (provider.providerType === "exa") {
-    return [createExaCompanyDiscoveryAdapter({
+    const options = {
       providerId: provider.id,
       configuration: parseExaProviderConfiguration(provider.configuration),
-    })];
+    };
+    return [
+      createExaCompanyDiscoveryAdapter(options),
+      createExaWebSearchAdapter(options),
+    ];
   }
   if (provider.providerType === "bright_data") {
     return [createBrightDataFirmographicsAdapter({
@@ -311,6 +350,19 @@ export class ProviderRouter implements ProviderOperations {
     return providers
       .filter((provider) => provider.enabled && provider.capabilities.includes(capability))
       .reduce((total, provider) => total + Math.max(0, provider.estimatedCost), 0);
+  }
+
+  async maximumAdaptiveWebSearchCost(): Promise<number> {
+    const providers = this.configuredProviders ?? await this.loadProviders();
+    const costForRole = (role: ProviderRoutingRole) => providers
+      .filter((provider) =>
+        provider.enabled &&
+        provider.capabilities.includes("WEB_SEARCH") &&
+        routingRoleForProvider(provider) === role)
+      .sort(rankProviders)
+      .slice(0, 1)
+      .reduce((total, provider) => total + Math.max(0, provider.estimatedCost), 0);
+    return costForRole("PRIMARY") + costForRole("FALLBACK");
   }
 
   private adapterKey(
@@ -407,12 +459,17 @@ export class ProviderRouter implements ProviderOperations {
         }),
       }));
     }
+    const requestedRoutingRole = request.metadata?.routingRole;
+    const maximumProviderAttempts = request.metadata?.maxProviderAttempts === "1" ? 1 : undefined;
     const providers = candidates
       .filter(
         (provider) =>
-          provider.enabled && provider.capabilities.includes(capability),
+          provider.enabled &&
+          provider.capabilities.includes(capability) &&
+          (!requestedRoutingRole || routingRoleForProvider(provider) === requestedRoutingRole),
       )
-      .sort(rankProviders);
+      .sort(rankProviders)
+      .slice(0, maximumProviderAttempts);
 
     if (!providers.length) {
       return responseForUnavailable(capability) as unknown as ProviderResponse<

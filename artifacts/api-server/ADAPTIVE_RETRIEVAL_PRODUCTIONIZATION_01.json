@@ -1,0 +1,78 @@
+{
+  "milestone": "ADAPTIVE_RETRIEVAL_PRODUCTIONIZATION_01",
+  "implementation": "PASS",
+  "freezeStatus": "MVP_RETRIEVAL_V1_FROZEN",
+  "architecture": [
+    "Tavily PRIMARY WEB_SEARCH",
+    "deterministic retrieval sufficiency gate",
+    "conditional Exa FALLBACK WEB_SEARCH",
+    "provider-neutral merge and conservative deduplication",
+    "existing entity, seller, temporal, evidence, and fact pipeline"
+  ],
+  "normalResearchPath": {
+    "tavilyPrimary": "PASS",
+    "sufficiencyGate": "PASS",
+    "exaConditionalFallback": "PASS",
+    "providerFailureFallback": "PASS",
+    "maximumProviderCallsPerQuestion": 2,
+    "crossProviderDedupe": "PASS",
+    "providerProvenance": "PASS",
+    "publisherProviderSeparation": "PASS",
+    "costAccounting": "PASS",
+    "appendOnlyDiagnostics": "PASS",
+    "credentialRedaction": "PASS",
+    "dualProviderFailureRemainsIncomplete": "PASS"
+  },
+  "mockedTests": {
+    "A_TAVILY_SUFFICIENT": "PASS",
+    "B_TAVILY_INSUFFICIENT": "PASS",
+    "C_TAVILY_AMBIGUOUS": "PASS",
+    "D_TAVILY_FAILURE": "PASS",
+    "E_BOTH_PROVIDERS_FAIL": "PASS",
+    "F_DUPLICATE_SOURCE": "PASS",
+    "G_WRONG_ENTITY": "PASS",
+    "H_SELLER_CONTENT": "PASS"
+  },
+  "smoke": {
+    "environment": "development",
+    "executedQuestions": 1,
+    "skippedExistingCompanies": 2,
+    "tavilyCalls": 1,
+    "exaCalls": 1,
+    "fallbackReasons": [
+      "FALLBACK_INSUFFICIENT"
+    ],
+    "providerFailures": 0,
+    "acceptedEvidence": 6,
+    "dedupe": "PASS",
+    "wrongEntityAccepted": 0,
+    "sellerContentAcceptedAsBuyerEvidence": 0,
+    "productionOperations": 0
+  },
+  "validation": {
+    "typecheck": "PASS",
+    "build": "PASS",
+    "researchTests": "PASS",
+    "providerRouterTests": "PASS",
+    "exaAdapterTests": "PASS",
+    "architectReview": "PASS",
+    "sastFindings": 0,
+    "dlpFindings": 0,
+    "dependencyAudit": {
+      "critical": 0,
+      "high": 3,
+      "moderate": 1,
+      "low": 1,
+      "note": "Workspace dependency findings were reported separately and were not introduced or remediated in this retrieval-only milestone."
+    }
+  },
+  "excludedOperations": {
+    "frozenSevenControlRerun": 0,
+    "tenControlRerun": 0,
+    "fiftyCompanyRerun": 0,
+    "benchmarkSpecificRuntimeConstants": 0,
+    "unipileCalls": 0,
+    "productionDatabaseOperations": 0
+  },
+  "decision": "A — ADAPTIVE RETRIEVAL PRODUCTIONIZED AND FROZEN"
+}

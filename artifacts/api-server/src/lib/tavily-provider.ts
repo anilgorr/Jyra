@@ -99,6 +99,8 @@ function parseResults(payload: TavilyResponse): WebSearchResult {
       publishedAt: stringValue(item.published_date),
       relevanceScore: numberValue(item.score),
       sourceDomain: domainFromUrl(url),
+      retrievalProviders: [],
+      providerResultIds: [],
     }];
   });
 
@@ -193,6 +195,10 @@ export function createTavilyWebSearchAdapter(
           throw new TavilyProviderError("MALFORMED_RESPONSE", "Tavily returned invalid JSON", false);
         }
         const data = parseResults(payload);
+        data.results = data.results.map((result) => ({
+          ...result,
+          retrievalProviders: [options.providerId],
+        }));
         const runtimeMs = Date.now() - startedAt;
         const actualCost = numberValue(payload.credits_used);
         return {

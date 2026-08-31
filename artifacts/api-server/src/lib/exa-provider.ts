@@ -4,6 +4,8 @@ import type {
   DiscoverCompaniesRequest,
   ProviderAdapter,
   ProviderResponse,
+  SearchWebRequest,
+  WebSearchResult,
 } from "./provider-contract";
 import { companyProfilePlatform, isCompanyProfileDomain } from "./company-identity";
 
@@ -16,6 +18,7 @@ type ExaResult = {
   highlights?: unknown;
   summary?: unknown;
   score?: unknown;
+  text?: unknown;
   companyName?: unknown;
   domain?: unknown;
   industry?: unknown;
@@ -182,7 +185,24 @@ function normalizeExaError(error: unknown): ExaProviderError {
       false,
     );
   }
-  return new ExaProviderError("PROVIDER_UNAVAILABLE", "Exa discovery is unavailable", true);
+  return new ExaProviderError("PROVIDER_UNAVAILABLE", "Exa is unavailable", true);
+}
+
+function normalizeWebResult(result: ExaResult, providerId: string): WebSearchResult["results"][number] | null {
+  const url = urlValue(result.url);
+  if (!url) return null;
+  const snippet = stringValue(result.summary) ?? textFromHighlights(result.highlights) ?? "";
+  return {
+    title: stringValue(result.title) ?? url,
+    url,
+    snippet,
+    rawContent: stringValue(result.text) ?? snippet,
+    publishedAt: stringValue(result.publishedDate),
+    relevanceScore: numberValue(result.score),
+    sourceDomain: domainFromUrl(url),
+    retrievalProviders: [providerId],
+    providerResultIds: stringValue(result.id) ? [stringValue(result.id)!] : [],
+  };
 }
 
 export function parseExaProviderConfiguration(
@@ -321,6 +341,100 @@ export function createExaCompanyDiscoveryAdapter(
             searchType: "auto",
             category: "company",
           },
+        };
+      } finally {
+        if (timeout) clearTimeout(timeout);
+      }
+    },
+  };
+}
+
+export function createExaWebSearchAdapter(
+  options: ExaAdapterOptions,
+): ProviderAdapter<"WEB_SEARCH"> {
+  let client = options.client;
+  const configuration = options.configuration ?? {};
+  const timeoutMs = configuration.timeoutMs ?? 30_000;
+  const estimatedCost = configuration.estimatedCost ?? 0.007;
+  const now = options.now ?? (() => new Date());
+
+  return {
+    providerId: options.providerId,
+    capabilities: ["WEB_SEARCH"],
+    async execute(request: SearchWebRequest): Promise<ProviderResponse<WebSearchResult>> {
+      const capturedAt = now().toISOString();
+      const startedAt = Date.now();
+      let timeout: ReturnType<typeof setTimeout> | null = null;
+      const limit = Math.min(Math.max(request.limit ?? 10, 1), 20);
+      const searchOptions = {
+        type: "auto" as const,
+        numResults: limit,
+        ...(request.domains?.length ? { includeDomains: request.domains } : {}),
+        ...(request.excludeDomains?.length ? { excludeDomains: request.excludeDomains } : {}),
+        ...(request.startDate ? { startPublishedDate: request.startDate } : {}),
+        ...(request.endDate ? { endPublishedDate: request.endDate } : {}),
+        contents: {
+          text: request.includeRawContent ?? true,
+          highlights: { maxCharacters: 1_500 },
+          summary: { query: request.query },
+        },
+      };
+
+      try {
+        client ??= new Exa();
+        const payload = await Promise.race([
+          client.search(request.query.trim(), searchOptions) as Promise<ExaResponse>,
+          new Promise<never>((_resolve, reject) => {
+            timeout = setTimeout(
+              () => reject(new ExaProviderError("TIMEOUT", "Exa web search timed out", true)),
+              timeoutMs,
+            );
+          }),
+        ]);
+        if (!Array.isArray(payload.results)) {
+          throw new ExaProviderError("MALFORMED_RESPONSE", "Exa returned an unrecognized response", false);
+        }
+        const results = payload.results
+          .filter((result): result is ExaResult => Boolean(result && typeof result === "object"))
+          .map((result) => normalizeWebResult(result, options.providerId))
+          .filter((result): result is NonNullable<typeof result> => Boolean(result))
+          .slice(0, limit);
+        const runtimeMs = Date.now() - startedAt;
+        const actualCost = costValue(payload.costDollars);
+        return {
+          status: results.length ? "success" : "empty",
+          providerId: options.providerId,
+          providerRequestId: stringValue(payload.requestId) ?? request.requestId ?? `${options.providerId}:${capturedAt}`,
+          data: { results },
+          sources: results.map((result) => ({ kind: "public_url" as const, reference: result.url, capturedAt })),
+          usage: { estimatedCost, actualCost, latencyMs: runtimeMs, runtimeMs, resultCount: results.length },
+          error: null,
+          retryable: false,
+          capturedAt,
+          metadata: {
+            query: request.query,
+            retrievalTimestamp: capturedAt,
+            searchType: "auto",
+            numResults: limit,
+            rawResultCount: payload.results.length,
+            normalizedResultCount: results.length,
+            providerResultIds: results.flatMap((result) => result.providerResultIds ?? []),
+          },
+        };
+      } catch (error) {
+        const normalized = normalizeExaError(error);
+        const runtimeMs = Date.now() - startedAt;
+        return {
+          status: "failed",
+          providerId: options.providerId,
+          providerRequestId: request.requestId ?? `${options.providerId}:${capturedAt}`,
+          data: null,
+          sources: [],
+          usage: { estimatedCost, actualCost: null, latencyMs: runtimeMs, runtimeMs, resultCount: 0 },
+          error: { code: normalized.code, message: normalized.message, retryable: normalized.retryable },
+          retryable: normalized.retryable,
+          capturedAt,
+          metadata: { query: request.query, searchType: "auto", numResults: limit },
         };
       } finally {
         if (timeout) clearTimeout(timeout);

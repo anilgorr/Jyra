@@ -1,4 +1,4 @@
-export { ProviderRouter } from "../src/lib/provider-router";
+export { ProviderRouter, redactProviderMetadata } from "../src/lib/provider-router";
 export { createApifyAdapters } from "../src/lib/apify-provider";
 export {
   createMockJobSearchAdapter,

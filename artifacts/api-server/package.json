@@ -47,6 +47,8 @@
     ,"test:retrieval-fallback-validation-01": "NODE_ENV=development node ./scripts/run-retrieval-fallback-validation-01.mjs"
     ,"test:retrieval-fallback-validation-01:reprocess": "NODE_ENV=development JYRA_RETRIEVAL_FALLBACK_REPROCESS=1 node ./scripts/run-retrieval-fallback-validation-01.mjs"
     ,"test:research": "node ./scripts/test-research.mjs"
+    ,"test:adaptive-retrieval-productionization": "node ./scripts/test-adaptive-retrieval-productionization.mjs"
+    ,"smoke:adaptive-retrieval-productionization": "NODE_ENV=development node ./scripts/run-adaptive-retrieval-productionization-smoke.mjs"
     ,"test:icp-qualification": "node ./scripts/test-icp-qualification.mjs"
     ,"test:signals": "node ./scripts/test-signals.mjs"
     ,"test:opportunities": "node ./scripts/test-opportunity-engine.mjs"

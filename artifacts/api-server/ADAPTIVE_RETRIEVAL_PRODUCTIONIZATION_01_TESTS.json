@@ -1,0 +1,19 @@
+{
+  "suite": "ADAPTIVE_RETRIEVAL_PRODUCTIONIZATION_01",
+  "generatedAt": "2026-08-31T00:00:00.000Z",
+  "decision": "PASS",
+  "tests": {
+    "A_TAVILY_SUFFICIENT": "PASS",
+    "B_TAVILY_INSUFFICIENT": "PASS",
+    "C_TAVILY_AMBIGUOUS": "PASS",
+    "D_TAVILY_FAILURE": "PASS",
+    "E_BOTH_PROVIDERS_FAIL": "PASS",
+    "F_DUPLICATE_SOURCE": "PASS",
+    "G_WRONG_ENTITY": "PASS",
+    "H_SELLER_CONTENT": "PASS"
+  },
+  "benchmarkControlsUsed": 0,
+  "providerCallLimit": 2,
+  "wrongEntityAccepted": 0,
+  "sellerContentAcceptedAsBuyerEvidence": 0
+}

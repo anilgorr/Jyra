@@ -14,6 +14,7 @@ await build({
 const require = createRequire(import.meta.url);
 const {
   createExaCompanyDiscoveryAdapter,
+  createExaWebSearchAdapter,
   parseExaProviderConfiguration,
 } = require(output);
 
@@ -124,6 +125,44 @@ const failed = await authFailure.execute({ query: "health check", limit: 1 });
 assert.equal(failed.status, "failed");
 assert.equal(failed.error.code, "AUTHENTICATION_ERROR");
 assert.equal(failed.error.message, "Exa authentication failed");
+
+const webCalls = [];
+const webAdapter = createExaWebSearchAdapter({
+  providerId: "exa-provider",
+  client: {
+    async search(query, options) {
+      webCalls.push({ query, options });
+      return {
+        requestId: "exa-web-request-1",
+        costDollars: { total: 0.009 },
+        results: [{
+          id: "web-result-1",
+          title: "Acme appoints security leader",
+          url: "https://news.example/acme-security",
+          summary: "Acme appointed a new Chief Information Security Officer.",
+          text: "Acme appointed a new Chief Information Security Officer.",
+          publishedDate: "2026-08-30",
+          score: 0.95,
+        }],
+      };
+    },
+  },
+});
+const webResponse = await webAdapter.execute({
+  requestId: "web-test",
+  query: "Acme security leadership appointment",
+  limit: 5,
+  startDate: "2026-01-01",
+  endDate: "2026-08-31",
+});
+assert.equal(webResponse.status, "success");
+assert.equal(webResponse.providerRequestId, "exa-web-request-1");
+assert.equal(webResponse.data.results.length, 1);
+assert.deepEqual(webResponse.data.results[0].retrievalProviders, ["exa-provider"]);
+assert.deepEqual(webResponse.data.results[0].providerResultIds, ["web-result-1"]);
+assert.equal(webCalls[0].options.category, undefined, "regular web search must remain separate from company discovery");
+assert.equal(webCalls[0].options.startPublishedDate, "2026-01-01");
+assert.equal(webCalls[0].options.endPublishedDate, "2026-08-31");
 
 assert.deepEqual(
   parseExaProviderConfiguration({

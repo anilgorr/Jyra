@@ -9,6 +9,7 @@ export async function ensureDevelopmentExaProvider(): Promise<void> {
     searchType: "auto",
     category: "company",
     content: "none",
+    routingRole: "FALLBACK",
     estimatedCost: 0.007,
     credentialStatus: process.env.EXA_API_KEY ? "AVAILABLE" : "MISSING",
   };
@@ -46,6 +47,12 @@ export async function ensureDevelopmentExaProvider(): Promise<void> {
     await tx.insert(providerCapabilitiesTable).values({
       providerId: provider.id,
       capability: "COMPANY_DISCOVERY",
+    }).onConflictDoNothing({
+      target: [providerCapabilitiesTable.providerId, providerCapabilitiesTable.capability],
+    });
+    await tx.insert(providerCapabilitiesTable).values({
+      providerId: provider.id,
+      capability: "WEB_SEARCH",
     }).onConflictDoNothing({
       target: [providerCapabilitiesTable.providerId, providerCapabilitiesTable.capability],
     });

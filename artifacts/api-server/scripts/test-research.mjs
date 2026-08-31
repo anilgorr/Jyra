@@ -207,6 +207,7 @@ const adaptive = await executeAdaptiveWebSearch({
 assert.equal(adaptive.attempts.length, 2, "insufficient primary retrieval must execute one fallback");
 assert.equal(adaptiveCalls.length, 2, "adaptive execution must never exceed two calls");
 assert.equal(adaptive.attempts[0].assessment.status, "INSUFFICIENT_RETRIEVAL");
+assert.equal(adaptive.attempts[1].fallbackReason, "FALLBACK_INSUFFICIENT");
 assert.equal(adaptive.finalAssessment.status, "SUFFICIENT_RETRIEVAL");
 assert.equal(adaptive.response.data.results.length, 4, "canonical URL deduplication must collapse fallback duplicates");
 assert.equal(adaptive.attempts[1].assessment.sellerVendorCount, 1, "seller content must remain visible in diagnostics");
@@ -236,7 +237,8 @@ const failedAdaptive = await executeAdaptiveWebSearch({
   question: unseenQuestion,
   company: unseenCompany,
 });
-assert.equal(failureCalls, 1, "provider failure must not trigger semantic fallback");
+assert.equal(failureCalls, 2, "provider failure must trigger exactly one fallback provider");
+assert.equal(failedAdaptive.attempts[1].fallbackReason, "FALLBACK_PROVIDER_FAILURE");
 assert.equal(failedAdaptive.finalAssessment.status, "PROVIDER_FAILURE");
 
 console.log("Research planner tests passed, including the 100-company bounded demonstration.");
