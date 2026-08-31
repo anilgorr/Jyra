@@ -14,3 +14,31 @@ mtime_ms = 1788078968109
 storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/2ed34317-8a6e-488f-b339-646ea0ccf45e/8f449f05-2e47-4bcd-88d9-480005ab3b3c"
 storage_version_token = "1788079019294703"
 content_type = "text/markdown"
+
+[[outputs]]
+id = "8FKWHYJI_0m4GAiDFUC_c"
+uri = "file://artifacts/api-server/REAL_DATA_TEST_14.md"
+type = "text"
+title = "Real Data Test 14 Report"
+description = "Human-readable Managed SOC WHEN/WHY validation across the five Test 13 likely-fit companies."
+logical_id = "45316013-5833-4626-8482-3a26cb6e8e9e"
+content_hash = "sha256:2df817bc4ad1f28aab1171d884e035e914747ad8e663cccdc2a3f5e3dbff0cac"
+size = 11551
+mtime_ms = 1788171135539
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/45316013-5833-4626-8482-3a26cb6e8e9e/b1b177f8-a311-4387-8e2a-14d7f69fb222"
+storage_version_token = "1788171213107271"
+content_type = "text/markdown"
+
+[[outputs]]
+id = "U0p4Vb9b_IyF_pGZIRDmn"
+uri = "file://artifacts/api-server/REAL_DATA_TEST_14_RESULT.json"
+type = "unspecified"
+title = "Real Data Test 14 Results"
+description = "Machine-readable questions, provider costs, evidence decisions, opportunity outputs, and quality assertions."
+logical_id = "bff2ff82-16e9-4ef8-baf8-34805836f6c0"
+content_hash = "sha256:3cc3c50ba6051b9fde6635b46c71e7865a8d0e8b3f274bb33b1bfe2285bdbf8f"
+size = 27563
+mtime_ms = 1788171135535
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/bff2ff82-16e9-4ef8-baf8-34805836f6c0/d1d64365-aa1f-47c7-9746-2acac91ebd55"
+storage_version_token = "1788171214455425"
+content_type = "application/octet-stream"

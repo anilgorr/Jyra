@@ -1,0 +1,810 @@
+{
+  "test": "REAL_DATA_TEST_14",
+  "generatedAt": "2026-08-31T10:12:15.541Z",
+  "environment": "development",
+  "seller": "Aadit Technologies",
+  "project": "GTM-Q1",
+  "population": [
+    "E2E Cloud",
+    "Cloud4C Services",
+    "Emergys",
+    "ENTUNE IT Consulting Pvt Ltd",
+    "Cloudi"
+  ],
+  "configuration": {
+    "source": "approved active project signal pack",
+    "packSlug": "managed-soc",
+    "packVersion": "1.0",
+    "definitions": [
+      {
+        "id": "44029679-535f-4a11-8ac2-0acea2dda02a",
+        "code": "MSOC_SECURITY_LEADER",
+        "name": "Security leader change",
+        "status": "APPROVED"
+      },
+      {
+        "id": "3d650a92-a92e-4047-934e-a1f083db0de3",
+        "code": "MSOC_SECURITY_HIRING",
+        "name": "Security operations hiring",
+        "status": "APPROVED"
+      },
+      {
+        "id": "67781795-9bb1-46ff-a120-f9b6d79ae6a0",
+        "code": "MSOC_FUNDED_RISK_PROGRAM",
+        "name": "Funded risk program window",
+        "status": "APPROVED"
+      },
+      {
+        "id": "dc1fc390-e3b1-465d-bc3d-1d04e08d95de",
+        "code": "MSOC_SECURITY_STACK_CHANGE",
+        "name": "Security stack change",
+        "status": "APPROVED"
+      }
+    ],
+    "dynamicIntelligencePackRequired": false
+  },
+  "bounds": {
+    "maxQuestionsPerCompany": 4,
+    "maxProviderCalls": 20,
+    "maxEstimatedCost": 1
+  },
+  "beforeAfter": {
+    "before": {
+      "questions": 5,
+      "jobs": 5,
+      "evidence": 28,
+      "facts": 0,
+      "proposals": 1,
+      "costs": 5,
+      "signals": 0,
+      "clusters": 0,
+      "opportunities": 5,
+      "contacts": 0
+    },
+    "after": {
+      "questions": 5,
+      "jobs": 5,
+      "evidence": 28,
+      "facts": 0,
+      "proposals": 1,
+      "costs": 5,
+      "signals": 0,
+      "clusters": 0,
+      "opportunities": 5,
+      "contacts": 0
+    }
+  },
+  "companies": [
+    {
+      "company": "Cloud4C Services",
+      "domain": "cloud4c.com",
+      "baseline": {
+        "researchJobs": 1,
+        "evidence": 10,
+        "facts": 0,
+        "signals": 0,
+        "clusters": 0,
+        "opportunities": 1,
+        "capturedAt": "2026-08-31T10:12:15.243Z"
+      },
+      "questions": [
+        {
+          "type": "LEADERSHIP",
+          "text": "\"Cloud4C Services\" cloud4c.com public evidence of security leadership changes (security, ciso)",
+          "status": "SUCCEEDED",
+          "reason": "The active signal pack for Managed SOC has an unresolved security leadership changes evidence gap.",
+          "questionId": "35c5c493-1d6a-40d3-948e-d5a29766189a"
+        },
+        {
+          "type": "HIRING",
+          "text": "\"Cloud4C Services\" cloud4c.com public evidence of security and cybersecurity hiring (security, soc, cyber)",
+          "status": "DEFERRED",
+          "reason": "The latest research question is not due until 2026-09-07T10:07:05.846Z.",
+          "questionId": null
+        },
+        {
+          "type": "EXPANSION",
+          "text": "\"Cloud4C Services\" cloud4c.com public evidence of funding, expansion, security, or compliance initiatives",
+          "status": "DEFERRED",
+          "reason": "The latest research question is not due until 2026-09-07T10:07:05.846Z.",
+          "questionId": null
+        },
+        {
+          "type": "TECHNOLOGY",
+          "text": "\"Cloud4C Services\" cloud4c.com public evidence of security stack, SOC, SIEM, EDR, or IAM changes (security, siem, endpoint, iam)",
+          "status": "DEFERRED",
+          "reason": "The latest research question is not due until 2026-09-07T10:07:05.846Z.",
+          "questionId": null
+        }
+      ],
+      "providerCalls": [
+        {
+          "provider": "Tavily",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "latencyMs": 3985,
+          "estimatedCost": 0.01,
+          "actualCost": null,
+          "questionId": "35c5c493-1d6a-40d3-948e-d5a29766189a"
+        }
+      ],
+      "evidence": {
+        "accepted": [
+          {
+            "id": "36e624c6-46ea-439d-bac4-49bf91c856eb",
+            "sourceUrl": "https://cloud4c.com/cybersecurity-services/managed-soc",
+            "status": "RAW",
+            "entityStatus": "CONFIRMED_ENTITY"
+          },
+          {
+            "id": "0978c7a2-5876-4f7d-928f-fe736e3395a2",
+            "sourceUrl": "https://cloud4c.com/cybersecurity-services/cybersecurity-governance",
+            "status": "RAW",
+            "entityStatus": "CONFIRMED_ENTITY"
+          },
+          {
+            "id": "6eed8273-ee3c-4781-bd9a-b1493f8cf862",
+            "sourceUrl": "https://cloud4c.com/cybersecurity-services/managed-security-services",
+            "status": "RAW",
+            "entityStatus": "CONFIRMED_ENTITY"
+          },
+          {
+            "id": "13dc6454-f3de-4844-bf57-d4e21b34a218",
+            "sourceUrl": "https://cloud4c.com/oracle-cloud-services/oracle-security",
+            "status": "RAW",
+            "entityStatus": "CONFIRMED_ENTITY"
+          },
+          {
+            "id": "e9a3dbb1-96c9-4051-a85d-d3809feae1fa",
+            "sourceUrl": "https://cloud4c.com/blogs/shifting-landscape-of-cybersecurity-challenges-and-opportunities",
+            "status": "RAW",
+            "entityStatus": "CONFIRMED_ENTITY"
+          },
+          {
+            "id": "d3ebc8b8-6ce8-4aff-8168-975a98b87dcb",
+            "sourceUrl": "https://cloud4c.com/socialconnect/Linkedin",
+            "status": "RAW",
+            "entityStatus": "CONFIRMED_ENTITY"
+          },
+          {
+            "id": "8d4c200f-5c77-4e12-a927-5cc7d93cf759",
+            "sourceUrl": "https://linkedin.com/company/cloud4c",
+            "status": "RAW",
+            "entityStatus": "CONFIRMED_ENTITY"
+          },
+          {
+            "id": "a4d315fd-395d-411e-b343-7dc191106e83",
+            "sourceUrl": "https://cloud4c.com/solutions/cloud-managed-services",
+            "status": "RAW",
+            "entityStatus": "CONFIRMED_ENTITY"
+          },
+          {
+            "id": "d0bf8820-35bf-4448-97a0-4508537e4db9",
+            "sourceUrl": "https://cloud4c.com",
+            "status": "RAW",
+            "entityStatus": "CONFIRMED_ENTITY"
+          },
+          {
+            "id": "47fc1011-525c-452c-a653-bbcc157356d8",
+            "sourceUrl": "https://cloud4c.com/about-us",
+            "status": "RAW",
+            "entityStatus": "CONFIRMED_ENTITY"
+          }
+        ],
+        "rejected": []
+      },
+      "factProposals": {
+        "approved": [],
+        "pending": [
+          {
+            "id": "e56a5edc-5556-4e39-a030-f3d4bb2d5d62",
+            "researchJobId": "6c236b7f-8e87-4bb4-ab72-c4e5d89f14d2",
+            "questionId": "35c5c493-1d6a-40d3-948e-d5a29766189a",
+            "organizationId": "02d40c31-72e4-42d9-9d8d-fe676a369205",
+            "projectId": "b4c8a95a-eb1c-4a86-89d6-62d72097d820",
+            "companyId": "2c37012e-b4db-49f3-bd22-584989680664",
+            "evidenceId": "d0bf8820-35bf-4448-97a0-4508537e4db9",
+            "factType": "TECHNOLOGY_MENTION",
+            "structuredValue": {
+              "technologies": [
+                "Agentic AI"
+              ]
+            },
+            "effectiveDate": "2026-08-31",
+            "confidence": 96,
+            "supportingExcerpt": "Trusted by 2500+ enterprises—including 50+ Global Fortune 1000 firms in 25 countries—we bring together Agentic AI, self-healing secure processes, Centers of Excellences (COEs), and next-gen technologies to help enterprises run, modernize, protect, and scale mission-critical operations across sovereign, hybrid & multi-cloud estates at fool-proof continuity.",
+            "extractorVersion": "fact-extraction-v2",
+            "status": "PENDING",
+            "createdAt": "2026-08-31T10:08:30.812Z"
+          }
+        ],
+        "rejected": []
+      },
+      "persistedFacts": [],
+      "signals": [],
+      "clusters": [],
+      "independentEvents": [],
+      "when": "UNKNOWN — no accepted current timing signal",
+      "why": {
+        "status": "INSUFFICIENT_EVIDENCE",
+        "text": "Insufficient evidence to establish current urgency.",
+        "claims": [
+          {
+            "explanationId": "310a3ebd-851c-4fb5-adaf-fc2de0689a36",
+            "ordinal": 1,
+            "claimText": "Insufficient evidence to establish current urgency.",
+            "claimType": "INSUFFICIENT_EVIDENCE",
+            "material": false,
+            "traceabilityStatus": "TRACED",
+            "signalIds": [],
+            "clusterIds": [],
+            "factIds": [],
+            "evidenceIds": [],
+            "sourceUrls": []
+          }
+        ]
+      },
+      "opportunity": {
+        "state": "WATCH",
+        "score": null,
+        "confidence": null,
+        "fit": null,
+        "need": null,
+        "timing": null,
+        "hypothesis": "Insufficient evidence for a scored Managed SOC opportunity"
+      },
+      "contradictions": [],
+      "missingEvidence": [
+        "Security leader change",
+        "Security operations hiring",
+        "Funded risk program window",
+        "Security stack change"
+      ],
+      "nextBestAction": "Gather independent, direct evidence for the missing approved Managed SOC signal areas; do not infer intent."
+    },
+    {
+      "company": "Cloudi",
+      "domain": "cloudi-infra.com",
+      "baseline": {
+        "researchJobs": 1,
+        "evidence": 8,
+        "facts": 0,
+        "signals": 0,
+        "clusters": 0,
+        "opportunities": 1,
+        "capturedAt": "2026-08-31T10:12:15.243Z"
+      },
+      "questions": [
+        {
+          "type": "LEADERSHIP",
+          "text": "\"Cloudi\" cloudi-infra.com public evidence of security leadership changes (security, ciso)",
+          "status": "DEFERRED",
+          "reason": "The latest research question is not due until 2026-09-07T09:56:03.796Z.",
+          "questionId": null
+        },
+        {
+          "type": "HIRING",
+          "text": "\"Cloudi\" cloudi-infra.com public evidence of security and cybersecurity hiring (security, soc, cyber)",
+          "status": "DEFERRED",
+          "reason": "The latest research question is not due until 2026-09-07T09:56:03.796Z.",
+          "questionId": null
+        },
+        {
+          "type": "EXPANSION",
+          "text": "\"Cloudi\" cloudi-infra.com public evidence of funding, expansion, security, or compliance initiatives",
+          "status": "DEFERRED",
+          "reason": "The latest research question is not due until 2026-09-07T09:56:03.796Z.",
+          "questionId": null
+        },
+        {
+          "type": "TECHNOLOGY",
+          "text": "\"Cloudi\" cloudi-infra.com public evidence of security stack, SOC, SIEM, EDR, or IAM changes (security, siem, endpoint, iam)",
+          "status": "DEFERRED",
+          "reason": "The latest research question is not due until 2026-09-07T09:56:03.796Z.",
+          "questionId": null
+        }
+      ],
+      "providerCalls": [],
+      "evidence": {
+        "accepted": [],
+        "rejected": []
+      },
+      "factProposals": {
+        "approved": [],
+        "pending": [],
+        "rejected": []
+      },
+      "persistedFacts": [],
+      "signals": [],
+      "clusters": [],
+      "independentEvents": [],
+      "when": "UNKNOWN — no accepted current timing signal",
+      "why": {
+        "status": "INSUFFICIENT_EVIDENCE",
+        "text": "Insufficient evidence to establish current urgency.",
+        "claims": [
+          {
+            "explanationId": "a45b8f6a-c7df-4440-9b66-71f77faa7812",
+            "ordinal": 1,
+            "claimText": "Insufficient evidence to establish current urgency.",
+            "claimType": "INSUFFICIENT_EVIDENCE",
+            "material": false,
+            "traceabilityStatus": "TRACED",
+            "signalIds": [],
+            "clusterIds": [],
+            "factIds": [],
+            "evidenceIds": [],
+            "sourceUrls": []
+          }
+        ]
+      },
+      "opportunity": {
+        "state": "WATCH",
+        "score": null,
+        "confidence": null,
+        "fit": null,
+        "need": null,
+        "timing": null,
+        "hypothesis": "Insufficient evidence for a scored Managed SOC opportunity"
+      },
+      "contradictions": [],
+      "missingEvidence": [
+        "Security leader change",
+        "Security operations hiring",
+        "Funded risk program window",
+        "Security stack change"
+      ],
+      "nextBestAction": "Gather independent, direct evidence for the missing approved Managed SOC signal areas; do not infer intent."
+    },
+    {
+      "company": "E2E Cloud",
+      "domain": "e2enetworks.com",
+      "baseline": {
+        "researchJobs": 1,
+        "evidence": 3,
+        "facts": 0,
+        "signals": 0,
+        "clusters": 0,
+        "opportunities": 1,
+        "capturedAt": "2026-08-31T10:12:15.243Z"
+      },
+      "questions": [
+        {
+          "type": "LEADERSHIP",
+          "text": "\"E2E Cloud\" e2enetworks.com public evidence of security leadership changes (security, ciso)",
+          "status": "SUCCEEDED",
+          "reason": "The active signal pack for Managed SOC has an unresolved security leadership changes evidence gap.",
+          "questionId": "432207af-1add-4c1f-9833-ee73a30a3598"
+        },
+        {
+          "type": "HIRING",
+          "text": "\"E2E Cloud\" e2enetworks.com public evidence of security and cybersecurity hiring (security, soc, cyber)",
+          "status": "DEFERRED",
+          "reason": "The latest research question is not due until 2026-09-07T10:09:01.592Z.",
+          "questionId": null
+        },
+        {
+          "type": "EXPANSION",
+          "text": "\"E2E Cloud\" e2enetworks.com public evidence of funding, expansion, security, or compliance initiatives",
+          "status": "DEFERRED",
+          "reason": "The latest research question is not due until 2026-09-07T10:09:01.592Z.",
+          "questionId": null
+        },
+        {
+          "type": "TECHNOLOGY",
+          "text": "\"E2E Cloud\" e2enetworks.com public evidence of security stack, SOC, SIEM, EDR, or IAM changes (security, siem, endpoint, iam)",
+          "status": "DEFERRED",
+          "reason": "The latest research question is not due until 2026-09-07T10:09:01.592Z.",
+          "questionId": null
+        }
+      ],
+      "providerCalls": [
+        {
+          "provider": "Tavily",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "latencyMs": 7164,
+          "estimatedCost": 0.01,
+          "actualCost": null,
+          "questionId": "432207af-1add-4c1f-9833-ee73a30a3598"
+        }
+      ],
+      "evidence": {
+        "accepted": [
+          {
+            "id": "092dfe98-93aa-43e4-b7a6-e9fa5c70e16d",
+            "sourceUrl": "https://in.linkedin.com/company/e2enetworks",
+            "status": "RAW",
+            "entityStatus": "CONFIRMED_ENTITY"
+          },
+          {
+            "id": "4ad6e2df-79ba-46bc-a85e-f7d86c041879",
+            "sourceUrl": "https://e2enetworks.com/investors/media-updates",
+            "status": "RAW",
+            "entityStatus": "CONFIRMED_ENTITY"
+          },
+          {
+            "id": "9e23fc2d-09ed-4549-9932-5e1917377306",
+            "sourceUrl": "https://e2enetworks.com/policies/terms-of-service",
+            "status": "RAW",
+            "entityStatus": "CONFIRMED_ENTITY"
+          }
+        ],
+        "rejected": []
+      },
+      "factProposals": {
+        "approved": [],
+        "pending": [],
+        "rejected": []
+      },
+      "persistedFacts": [],
+      "signals": [],
+      "clusters": [],
+      "independentEvents": [],
+      "when": "UNKNOWN — no accepted current timing signal",
+      "why": {
+        "status": "INSUFFICIENT_EVIDENCE",
+        "text": "Insufficient evidence to establish current urgency.",
+        "claims": [
+          {
+            "explanationId": "16fa0f80-b87f-4c38-8d65-a01dd215be8e",
+            "ordinal": 1,
+            "claimText": "Insufficient evidence to establish current urgency.",
+            "claimType": "INSUFFICIENT_EVIDENCE",
+            "material": false,
+            "traceabilityStatus": "TRACED",
+            "signalIds": [],
+            "clusterIds": [],
+            "factIds": [],
+            "evidenceIds": [],
+            "sourceUrls": []
+          }
+        ]
+      },
+      "opportunity": {
+        "state": "WATCH",
+        "score": null,
+        "confidence": null,
+        "fit": null,
+        "need": null,
+        "timing": null,
+        "hypothesis": "Insufficient evidence for a scored Managed SOC opportunity"
+      },
+      "contradictions": [],
+      "missingEvidence": [
+        "Security leader change",
+        "Security operations hiring",
+        "Funded risk program window",
+        "Security stack change"
+      ],
+      "nextBestAction": "Gather independent, direct evidence for the missing approved Managed SOC signal areas; do not infer intent."
+    },
+    {
+      "company": "ENTUNE IT Consulting Pvt Ltd",
+      "domain": "entune.co",
+      "baseline": {
+        "researchJobs": 1,
+        "evidence": 4,
+        "facts": 0,
+        "signals": 0,
+        "clusters": 0,
+        "opportunities": 1,
+        "capturedAt": "2026-08-31T10:12:15.243Z"
+      },
+      "questions": [
+        {
+          "type": "LEADERSHIP",
+          "text": "\"ENTUNE IT Consulting Pvt Ltd\" entune.co public evidence of security leadership changes (security, ciso)",
+          "status": "SUCCEEDED",
+          "reason": "The active signal pack for Managed SOC has an unresolved security leadership changes evidence gap.",
+          "questionId": "bbb63363-2c4b-487d-b6cd-ec9d257c707f"
+        },
+        {
+          "type": "HIRING",
+          "text": "\"ENTUNE IT Consulting Pvt Ltd\" entune.co public evidence of security and cybersecurity hiring (security, soc, cyber)",
+          "status": "DEFERRED",
+          "reason": "The latest research question is not due until 2026-09-07T10:09:34.901Z.",
+          "questionId": null
+        },
+        {
+          "type": "EXPANSION",
+          "text": "\"ENTUNE IT Consulting Pvt Ltd\" entune.co public evidence of funding, expansion, security, or compliance initiatives",
+          "status": "DEFERRED",
+          "reason": "The latest research question is not due until 2026-09-07T10:09:34.901Z.",
+          "questionId": null
+        },
+        {
+          "type": "TECHNOLOGY",
+          "text": "\"ENTUNE IT Consulting Pvt Ltd\" entune.co public evidence of security stack, SOC, SIEM, EDR, or IAM changes (security, siem, endpoint, iam)",
+          "status": "DEFERRED",
+          "reason": "The latest research question is not due until 2026-09-07T10:09:34.901Z.",
+          "questionId": null
+        }
+      ],
+      "providerCalls": [
+        {
+          "provider": "Tavily",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "latencyMs": 5979,
+          "estimatedCost": 0.01,
+          "actualCost": null,
+          "questionId": "bbb63363-2c4b-487d-b6cd-ec9d257c707f"
+        }
+      ],
+      "evidence": {
+        "accepted": [
+          {
+            "id": "218badc4-28e2-46e5-82c0-fb22cc760eef",
+            "sourceUrl": "https://entune.co/about-us",
+            "status": "RAW",
+            "entityStatus": "CONFIRMED_ENTITY"
+          },
+          {
+            "id": "d130d4ef-c8b0-4bde-8f98-bb64b940995f",
+            "sourceUrl": "https://in.linkedin.com/company/entune",
+            "status": "RAW",
+            "entityStatus": "CONFIRMED_ENTITY"
+          },
+          {
+            "id": "e5a42a34-8fc3-4e24-9100-df3e15891a95",
+            "sourceUrl": "https://entune.co",
+            "status": "RAW",
+            "entityStatus": "CONFIRMED_ENTITY"
+          },
+          {
+            "id": "8a326f10-2b1e-43a6-b67b-9745b293f566",
+            "sourceUrl": "https://entune.co/current-openings",
+            "status": "RAW",
+            "entityStatus": "CONFIRMED_ENTITY"
+          }
+        ],
+        "rejected": []
+      },
+      "factProposals": {
+        "approved": [],
+        "pending": [],
+        "rejected": []
+      },
+      "persistedFacts": [],
+      "signals": [],
+      "clusters": [],
+      "independentEvents": [],
+      "when": "UNKNOWN — no accepted current timing signal",
+      "why": {
+        "status": "INSUFFICIENT_EVIDENCE",
+        "text": "Insufficient evidence to establish current urgency.",
+        "claims": [
+          {
+            "explanationId": "266da5aa-d578-4afc-8193-57738bef21a3",
+            "ordinal": 1,
+            "claimText": "Insufficient evidence to establish current urgency.",
+            "claimType": "INSUFFICIENT_EVIDENCE",
+            "material": false,
+            "traceabilityStatus": "TRACED",
+            "signalIds": [],
+            "clusterIds": [],
+            "factIds": [],
+            "evidenceIds": [],
+            "sourceUrls": []
+          }
+        ]
+      },
+      "opportunity": {
+        "state": "WATCH",
+        "score": null,
+        "confidence": null,
+        "fit": null,
+        "need": null,
+        "timing": null,
+        "hypothesis": "Insufficient evidence for a scored Managed SOC opportunity"
+      },
+      "contradictions": [],
+      "missingEvidence": [
+        "Security leader change",
+        "Security operations hiring",
+        "Funded risk program window",
+        "Security stack change"
+      ],
+      "nextBestAction": "Gather independent, direct evidence for the missing approved Managed SOC signal areas; do not infer intent."
+    },
+    {
+      "company": "Emergys",
+      "domain": "emergys.com",
+      "baseline": {
+        "researchJobs": 1,
+        "evidence": 3,
+        "facts": 0,
+        "signals": 0,
+        "clusters": 0,
+        "opportunities": 1,
+        "capturedAt": "2026-08-31T10:12:15.243Z"
+      },
+      "questions": [
+        {
+          "type": "LEADERSHIP",
+          "text": "\"Emergys\" emergys.com public evidence of security leadership changes (security, ciso)",
+          "status": "SUCCEEDED",
+          "reason": "The active signal pack for Managed SOC has an unresolved security leadership changes evidence gap.",
+          "questionId": "a4ef9412-7050-4802-a89c-5f8dd88210e7"
+        },
+        {
+          "type": "HIRING",
+          "text": "\"Emergys\" emergys.com public evidence of security and cybersecurity hiring (security, soc, cyber)",
+          "status": "DEFERRED",
+          "reason": "The latest research question is not due until 2026-09-07T10:10:07.650Z.",
+          "questionId": null
+        },
+        {
+          "type": "EXPANSION",
+          "text": "\"Emergys\" emergys.com public evidence of funding, expansion, security, or compliance initiatives",
+          "status": "DEFERRED",
+          "reason": "The latest research question is not due until 2026-09-07T10:10:07.650Z.",
+          "questionId": null
+        },
+        {
+          "type": "TECHNOLOGY",
+          "text": "\"Emergys\" emergys.com public evidence of security stack, SOC, SIEM, EDR, or IAM changes (security, siem, endpoint, iam)",
+          "status": "DEFERRED",
+          "reason": "The latest research question is not due until 2026-09-07T10:10:07.650Z.",
+          "questionId": null
+        }
+      ],
+      "providerCalls": [
+        {
+          "provider": "Tavily",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "latencyMs": 4562,
+          "estimatedCost": 0.01,
+          "actualCost": null,
+          "questionId": "a4ef9412-7050-4802-a89c-5f8dd88210e7"
+        }
+      ],
+      "evidence": {
+        "accepted": [
+          {
+            "id": "db755779-25a6-4941-8efb-292452a3c2f3",
+            "sourceUrl": "https://emergys.com/news/name-change-vy-dx-elc-emergys",
+            "status": "RAW",
+            "entityStatus": "CONFIRMED_ENTITY"
+          },
+          {
+            "id": "0df18cea-bdd9-47e5-bdde-2097c9a800b8",
+            "sourceUrl": "https://linkedin.com/company/emergys-llc",
+            "status": "RAW",
+            "entityStatus": "CONFIRMED_ENTITY"
+          },
+          {
+            "id": "aae9f3c4-d572-4817-9c8a-d1b144417cf5",
+            "sourceUrl": "https://emergys.com/news/entities-name-change-north-america",
+            "status": "RAW",
+            "entityStatus": "CONFIRMED_ENTITY"
+          }
+        ],
+        "rejected": []
+      },
+      "factProposals": {
+        "approved": [],
+        "pending": [],
+        "rejected": []
+      },
+      "persistedFacts": [],
+      "signals": [],
+      "clusters": [],
+      "independentEvents": [],
+      "when": "UNKNOWN — no accepted current timing signal",
+      "why": {
+        "status": "INSUFFICIENT_EVIDENCE",
+        "text": "Insufficient evidence to establish current urgency.",
+        "claims": [
+          {
+            "explanationId": "5d639223-4f4b-4f75-94af-22d276c4e97f",
+            "ordinal": 1,
+            "claimText": "Insufficient evidence to establish current urgency.",
+            "claimType": "INSUFFICIENT_EVIDENCE",
+            "material": false,
+            "traceabilityStatus": "TRACED",
+            "signalIds": [],
+            "clusterIds": [],
+            "factIds": [],
+            "evidenceIds": [],
+            "sourceUrls": []
+          }
+        ]
+      },
+      "opportunity": {
+        "state": "WATCH",
+        "score": null,
+        "confidence": null,
+        "fit": null,
+        "need": null,
+        "timing": null,
+        "hypothesis": "Insufficient evidence for a scored Managed SOC opportunity"
+      },
+      "contradictions": [],
+      "missingEvidence": [
+        "Security leader change",
+        "Security operations hiring",
+        "Funded risk program window",
+        "Security stack change"
+      ],
+      "nextBestAction": "Gather independent, direct evidence for the missing approved Managed SOC signal areas; do not infer intent."
+    }
+  ],
+  "ranking": [
+    {
+      "company": "Cloud4C Services",
+      "state": "WATCH",
+      "score": null,
+      "confidence": null,
+      "reason": "Insufficient evidence for a scored Managed SOC opportunity"
+    },
+    {
+      "company": "Cloudi",
+      "state": "WATCH",
+      "score": null,
+      "confidence": null,
+      "reason": "Insufficient evidence for a scored Managed SOC opportunity"
+    },
+    {
+      "company": "E2E Cloud",
+      "state": "WATCH",
+      "score": null,
+      "confidence": null,
+      "reason": "Insufficient evidence for a scored Managed SOC opportunity"
+    },
+    {
+      "company": "ENTUNE IT Consulting Pvt Ltd",
+      "state": "WATCH",
+      "score": null,
+      "confidence": null,
+      "reason": "Insufficient evidence for a scored Managed SOC opportunity"
+    },
+    {
+      "company": "Emergys",
+      "state": "WATCH",
+      "score": null,
+      "confidence": null,
+      "reason": "Insufficient evidence for a scored Managed SOC opportunity"
+    }
+  ],
+  "summary": {
+    "companies": 5,
+    "questions": 20,
+    "providerCalls": 4,
+    "estimatedCost": 0.04,
+    "actualCost": 0,
+    "pendingFactProposals": 1,
+    "approvedFacts": 0,
+    "activeSignals": 0,
+    "activeClusters": 0
+  },
+  "quality": {
+    "whyProvenance": "PASS",
+    "unsupportedIntentClaims": 0,
+    "wrongEntityEvidence": 0,
+    "duplicateEventInflation": 0,
+    "missingEvidenceTreatedAsNegative": "PASS",
+    "costQuestionTraceability": "PASS"
+  },
+  "safety": {
+    "delta": {
+      "questions": 0,
+      "jobs": 0,
+      "evidence": 0,
+      "facts": 0,
+      "proposals": 0,
+      "costs": 0,
+      "signals": 0,
+      "clusters": 0,
+      "opportunities": 0,
+      "contacts": 0
+    },
+    "providerCallsWithinBound": true,
+    "estimatedCostWithinBound": true,
+    "contactEnrichmentDelta": 0,
+    "productionOperations": 0
+  },
+  "finalStatus": "PASS"
+}
