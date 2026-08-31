@@ -1,0 +1,636 @@
+JYRA — TEST 14A
+WHEN/WHY RESEARCH PLANNER EXECUTION FIX + CONTROLLED RERUN
+
+BACKGROUND
+
+Real Data Test 14 passed its safety assertions but did NOT adequately
+validate WHEN/WHY research coverage.
+
+Observed Test 14 behavior:
+
+Companies: 5
+Research questions created: 20
+Provider attempts: 4
+
+For most companies:
+
+LEADERSHIP → executed
+HIRING → DEFERRED
+EXPANSION → DEFERRED
+TECHNOLOGY → DEFERRED
+
+Cloudi received 0 provider attempts.
+
+This means the Research Planner stopped/deferred before independently
+investigating the approved Managed SOC signal areas.
+
+This task must fix that behavior and rerun the controlled test.
+
+Do NOT loosen evidence standards.
+Do NOT manufacture signals.
+Do NOT change the Managed SOC signal pack.
+
+==================================================
+1. ROOT-CAUSE ANALYSIS FIRST
+==================================================
+
+Before changing code, determine exactly why:
+
+20 questions
+→ only 4 provider attempts.
+
+Inspect:
+
+research planner
+question scheduling
+budget allocation
+dedupe
+existing research-job reuse
+cache logic
+stop conditions
+deferred-state logic
+company-level stop conditions
+question-level stop conditions
+expected information value logic
+provider routing
+
+Report the exact root cause.
+
+Do not simply increase limits until the cause is understood.
+
+==================================================
+2. REQUIRED PLANNER SEMANTICS
+==================================================
+
+Research questions are independent unless evidence from one question
+actually answers another.
+
+For Managed SOC, these four areas are independent:
+
+SECURITY_LEADERSHIP
+SECURITY_HIRING
+FUNDED_RISK_PROGRAM
+SECURITY_STACK_CHANGE
+
+Failure to find evidence for SECURITY_LEADERSHIP must NOT cause:
+
+SECURITY_HIRING
+FUNDED_RISK_PROGRAM
+SECURITY_STACK_CHANGE
+
+to be deferred automatically.
+
+Likewise, finding evidence for one category must not automatically
+satisfy another category.
+
+==================================================
+3. QUESTION STATUS
+==================================================
+
+Every research question must end with an explicit status:
+
+ANSWERED_POSITIVE
+ANSWERED_NEGATIVE
+INSUFFICIENT_EVIDENCE
+DEFERRED_BUDGET
+DEFERRED_DUPLICATE
+DEFERRED_PROVIDER_UNAVAILABLE
+DEFERRED_LOW_INFORMATION_VALUE
+ERROR
+
+Do not use generic DEFERRED without a reason.
+
+IMPORTANT:
+
+No search result does NOT prove ANSWERED_NEGATIVE.
+
+Use INSUFFICIENT_EVIDENCE unless credible evidence actually supports a
+negative conclusion.
+
+==================================================
+4. QUESTION-LEVEL STOP CONDITIONS
+==================================================
+
+Stop researching an individual question when:
+
+A. sufficient credible evidence answers it,
+
+OR
+
+B. reasonable attempts find no useful evidence,
+
+OR
+
+C. additional research has genuinely low expected information value,
+
+OR
+
+D. budget is exhausted.
+
+Stopping QUESTION A must not stop Questions B/C/D unless there is an
+explicit documented reason.
+
+==================================================
+5. COMPANY-LEVEL STOP CONDITIONS
+==================================================
+
+Do not stop research for a company merely because its first question
+produces no signal.
+
+Company-level early stopping is allowed only when:
+
+a hard disqualifier appears,
+
+OR
+
+the company exceeds research budget,
+
+OR
+
+sufficient evidence already answers the opportunity hypothesis across
+the required dimensions,
+
+OR
+
+remaining questions are explicitly proven redundant.
+
+Record the stop reason.
+
+==================================================
+6. RESEARCH COVERAGE REQUIREMENT
+==================================================
+
+Rerun exactly the same 5 Test 13 LIKELY_FIT companies.
+
+Each company has 4 approved research areas.
+
+Expected question population:
+
+5 × 4 = 20.
+
+For this controlled validation, every question must receive an actual
+research decision.
+
+Do not require exactly 20 provider calls.
+
+Caching or one search result may legitimately answer multiple questions.
+
+However, every question must show:
+
+whether research occurred
+which evidence answered it
+or exactly why no provider call was required.
+
+Target:
+
+20/20 questions with explicit terminal disposition.
+
+==================================================
+7. SEARCH QUERY QUALITY
+==================================================
+
+Queries must be event-oriented, not generic.
+
+SECURITY LEADERSHIP examples:
+
+"<company>" CISO appointed
+"<company>" head of security appointed
+"<company>" cybersecurity leadership
+"<company>" information security leader
+
+SECURITY HIRING examples:
+
+"<company>" SOC analyst jobs
+"<company>" security engineer jobs
+"<company>" cybersecurity hiring
+"<company>" incident response jobs
+
+FUNDED RISK PROGRAM examples:
+
+"<company>" security investment
+"<company>" cybersecurity program
+"<company>" ISO 27001
+"<company>" SOC 2
+"<company>" security compliance initiative
+
+SECURITY STACK CHANGE examples:
+
+"<company>" SIEM migration
+"<company>" Microsoft Sentinel
+"<company>" Splunk migration
+"<company>" EDR implementation
+"<company>" XDR implementation
+"<company>" security transformation
+
+Generate queries from company identity + research question.
+
+Do not blindly use every example.
+
+==================================================
+8. SOURCE RELEVANCE
+==================================================
+
+A page mentioning security is NOT automatically evidence for a security
+trigger.
+
+For every candidate result classify:
+
+DIRECT_EVENT_EVIDENCE
+SUPPORTING_CONTEXT
+GENERIC_COMPANY_CONTENT
+VENDOR_CONTENT
+UNRELATED
+AMBIGUOUS
+
+Only DIRECT_EVENT_EVIDENCE can independently establish a timing signal.
+
+SUPPORTING_CONTEXT may strengthen a direct event but cannot create WHEN
+on its own.
+
+Generic company/service pages must not become opportunity evidence.
+
+==================================================
+9. SELLER/BUYER CONFLICT
+==================================================
+
+Important example from Test 14:
+
+Cloud4C has pages advertising:
+
+Managed SOC
+Managed Security Services
+Cybersecurity Governance
+
+These describe services Cloud4C SELLS.
+
+They do NOT establish that Cloud4C is currently a buyer of Aadit's
+Managed SOC service.
+
+Add/verify semantics that distinguish:
+
+COMPANY_AS_BUYER
+
+COMPANY_AS_SELLER
+
+COMPANY_AS_VENDOR
+
+COMPANY_AS_PARTNER
+
+UNKNOWN_RELATION
+
+Do not generate buyer opportunity signals from seller/service-marketing
+content.
+
+==================================================
+10. EVIDENCE ACCEPTANCE
+==================================================
+
+Separate:
+
+RAW_RETRIEVED
+
+from
+
+QUESTION_RELEVANT
+
+from
+
+FACT_ACCEPTED
+
+from
+
+SIGNAL_SUPPORTING.
+
+Test 14 reported pages as "Accepted evidence" even though many were only
+raw company pages.
+
+Fix/report terminology so the pipeline clearly distinguishes them.
+
+A retrieved page can be valid RAW evidence while still being irrelevant
+to the research question.
+
+==================================================
+11. FACT EXTRACTION
+==================================================
+
+Only create facts that are atomic and relevant.
+
+Do NOT propose generic marketing copy such as:
+
+"Trusted by 2500+ enterprises..."
+
+as TECHNOLOGY_MENTION merely because it contains words such as:
+
+AI
+cloud
+security
+technology.
+
+Technology facts require identifiable technologies or specific
+technology events.
+
+==================================================
+12. FRESHNESS
+==================================================
+
+WHEN requires temporal evidence.
+
+For every direct event capture:
+
+event date
+published date
+retrieved date
+
+Classify:
+
+CURRENT
+RECENT
+STALE
+UNKNOWN_DATE
+
+Unknown-date generic pages cannot establish WHEN.
+
+==================================================
+13. SIGNAL SAFETY
+==================================================
+
+Keep the existing APPROVED Managed SOC signal definitions unchanged:
+
+MSOC_SECURITY_LEADER
+MSOC_SECURITY_HIRING
+MSOC_FUNDED_RISK_PROGRAM
+MSOC_SECURITY_STACK_CHANGE
+
+Facts must satisfy signal requirements.
+
+No signal simply because:
+
+company fits ICP
+company talks about security
+company sells security
+company uses cloud
+company has Microsoft 365
+company has a security employee.
+
+==================================================
+14. TEST BUDGET
+==================================================
+
+This is a controlled validation.
+
+Maximum estimated research cost:
+
+$0.10/company
+
+Maximum total:
+
+$0.50.
+
+Do not try to spend the full amount.
+
+But do not prematurely stop merely to minimize cost.
+
+The objective is:
+
+useful information per dollar,
+
+not:
+
+minimum possible spend.
+
+==================================================
+15. PROVIDERS
+==================================================
+
+Use existing WEB_SEARCH provider routing.
+
+Do not add another provider.
+
+Do not integrate new APIs.
+
+Expected primary provider:
+
+Tavily.
+
+Use cache correctly.
+
+No:
+
+Bright Data firmographic reruns
+Exa discovery
+contact enrichment
+new Apify technology research.
+
+==================================================
+16. RERUN OUTPUT
+==================================================
+
+For each company report a matrix:
+
+QUESTION
+STATUS
+PROVIDER CALLS
+CACHE HITS
+RAW RESULTS
+QUESTION-RELEVANT RESULTS
+DIRECT EVENT EVIDENCE
+SUPPORTING CONTEXT
+REJECTED/IRRELEVANT
+FACTS
+SIGNALS
+COST
+STOP REASON
+
+==================================================
+17. COMPANY RESULT
+==================================================
+
+For each company report:
+
+COMPANY
+
+ICP FIT
+
+QUESTIONS TOTAL
+
+QUESTIONS ACTUALLY INVESTIGATED
+
+QUESTIONS ANSWERED POSITIVE
+
+QUESTIONS INSUFFICIENT
+
+QUESTIONS DEFERRED + EXACT REASONS
+
+DIRECT EVENT EVIDENCE
+
+SUPPORTING CONTEXT
+
+FACTS
+
+SIGNALS
+
+CLUSTERS
+
+WHEN
+
+WHY
+
+HYPOTHESIS
+
+CONFIDENCE
+
+NEXT BEST ACTION
+
+==================================================
+18. WHEN / WHY
+==================================================
+
+Do not force an opportunity.
+
+Valid final result remains:
+
+INSUFFICIENT_EVIDENCE
+
+if no meaningful triggers are found after proper research.
+
+But this time it must mean:
+
+"We actually looked for the approved trigger classes and did not obtain
+sufficient evidence."
+
+not:
+
+"We executed one question and deferred the rest."
+
+==================================================
+19. TEST SUCCESS CRITERIA
+==================================================
+
+PASS requires:
+
+20/20 questions have explicit terminal disposition
+
+No unexplained generic DEFERRED states
+
+No company skipped without documented reason
+
+Question-independent scheduling works
+
+Seller content does not become buyer evidence
+
+Generic company content does not establish WHEN
+
+WHY provenance = 100%
+
+Unsupported intent claims = 0
+
+Wrong entity evidence = 0
+
+Duplicate event inflation = 0
+
+Production operations = 0
+
+==================================================
+20. COST REPORT
+==================================================
+
+Report:
+
+Companies: 5
+
+Questions: 20
+
+Questions actually investigated:
+
+Questions answered from cache:
+
+Questions deferred:
+
+Provider attempts:
+
+Tavily calls:
+
+Raw retrieved results:
+
+Question-relevant evidence:
+
+Direct event evidence:
+
+Supporting context:
+
+Facts:
+
+Signals:
+
+Clusters:
+
+Estimated cost:
+
+Actual cost:
+
+Average cost/company:
+
+Average cost/question investigated:
+
+==================================================
+21. COMPARE TEST 14 VS 14A
+==================================================
+
+TEST 14:
+
+Questions = 20
+Provider attempts = 4
+New evidence = 0
+Approved facts = 0
+Signals = 0
+
+TEST 14A:
+
+Questions = 20
+Provider attempts = X
+Question-relevant evidence = X
+Direct event evidence = X
+Approved facts = X
+Signals = X
+
+Explain whether research coverage materially improved.
+
+==================================================
+22. DATABASE SAFETY
+==================================================
+
+DEVELOPMENT ONLY.
+
+Use ONLY development database.
+
+Do not migrate/reset/seed/truncate/modify production.
+
+Production operations = 0.
+
+==================================================
+23. OUTPUT
+==================================================
+
+Create:
+
+REAL_DATA_TEST_14A.md
+
+REAL_DATA_TEST_14A_RESULT.json
+
+Include root-cause analysis and all validation results.
+
+==================================================
+24. STOP
+==================================================
+
+STOP after Test 14A.
+
+Do NOT begin contacts.
+
+Do NOT modify the signal pack.
+
+Do NOT add providers.
+
+Do NOT begin continuous monitoring.
+
+Return the complete result for review.

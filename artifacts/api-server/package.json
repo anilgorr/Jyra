@@ -25,6 +25,7 @@
     "test:real-data-12": "NODE_ENV=development node ./scripts/run-test-12.mjs",
     "test:real-data-13": "NODE_ENV=development node ./scripts/run-test-13.mjs",
     "test:real-data-14": "NODE_ENV=development node ./scripts/run-test-14.mjs",
+    "test:real-data-14a": "NODE_ENV=development node ./scripts/run-test-14a.mjs",
     "test:real-data-08": "NODE_ENV=development node ./scripts/run-test-08.mjs",
     "test:tavily": "node ./scripts/test-tavily-provider.mjs",
     "test:bright-data": "node ./scripts/test-bright-data-provider.mjs",

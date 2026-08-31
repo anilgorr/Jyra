@@ -42,3 +42,31 @@ mtime_ms = 1788171135535
 storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/bff2ff82-16e9-4ef8-baf8-34805836f6c0/d1d64365-aa1f-47c7-9746-2acac91ebd55"
 storage_version_token = "1788171214455425"
 content_type = "application/octet-stream"
+
+[[outputs]]
+id = "q5VFU6vMyc5p1WrD696Um"
+uri = "file://artifacts/api-server/REAL_DATA_TEST_14A.md"
+type = "text"
+title = "Real Data Test 14A Report"
+description = "Root-cause analysis, 20-question research matrix, Test 14 comparison, and Managed SOC WHEN/WHY validation."
+logical_id = "ce64d11f-fbe9-40c8-8ed3-798a33b92824"
+content_hash = "sha256:944ecc4e75145a3e586e41f1c446a252839e1739d8c33783acbe6d2129cc3009"
+size = 20148
+mtime_ms = 1788172817700
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/ce64d11f-fbe9-40c8-8ed3-798a33b92824/411f11a8-0bef-41ed-81f7-fef6bd8a171f"
+storage_version_token = "1788172857458860"
+content_type = "text/markdown"
+
+[[outputs]]
+id = "bMEH2-67n6zVBHU3ok3nA"
+uri = "file://artifacts/api-server/REAL_DATA_TEST_14A_RESULT.json"
+type = "unspecified"
+title = "Real Data Test 14A Results"
+description = "Machine-readable provider attempts, evidence classifications, terminal dispositions, costs, and safety assertions."
+logical_id = "adaddd31-ff9d-418e-a31b-4477e9541710"
+content_hash = "sha256:f21dbbe3dd6a03bc422842a1b8a5bd249f4a1d0af8d3105bb3d6d04bb17b8b53"
+size = 57325
+mtime_ms = 1788172817700
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/adaddd31-ff9d-418e-a31b-4477e9541710/47bbc7f8-8217-43fe-bb66-b4c081960042"
+storage_version_token = "1788172858761835"
+content_type = "application/octet-stream"

@@ -1,0 +1,1567 @@
+{
+  "test": "REAL_DATA_TEST_14A",
+  "generatedAt": "2026-08-31T10:40:17.701Z",
+  "environment": "development",
+  "seller": "Aadit Technologies",
+  "project": "GTM-Q1",
+  "population": [
+    "E2E Cloud",
+    "Cloud4C Services",
+    "Emergys",
+    "ENTUNE IT Consulting Pvt Ltd",
+    "Cloudi"
+  ],
+  "configuration": {
+    "source": "approved active project signal pack",
+    "packSlug": "managed-soc",
+    "packVersion": "1.0",
+    "definitions": [
+      {
+        "id": "44029679-535f-4a11-8ac2-0acea2dda02a",
+        "code": "MSOC_SECURITY_LEADER",
+        "name": "Security leader change",
+        "status": "APPROVED"
+      },
+      {
+        "id": "3d650a92-a92e-4047-934e-a1f083db0de3",
+        "code": "MSOC_SECURITY_HIRING",
+        "name": "Security operations hiring",
+        "status": "APPROVED"
+      },
+      {
+        "id": "67781795-9bb1-46ff-a120-f9b6d79ae6a0",
+        "code": "MSOC_FUNDED_RISK_PROGRAM",
+        "name": "Funded risk program window",
+        "status": "APPROVED"
+      },
+      {
+        "id": "dc1fc390-e3b1-465d-bc3d-1d04e08d95de",
+        "code": "MSOC_SECURITY_STACK_CHANGE",
+        "name": "Security stack change",
+        "status": "APPROVED"
+      }
+    ],
+    "dynamicIntelligencePackRequired": false
+  },
+  "rootCause": "The executor inspected the latest question for the company, regardless of question type. Once the first independent Managed SOC question became ANSWERED with a future nextRefreshAt, the shared company-level refresh guard returned early for the remaining question types before job creation, budget reservation, or provider routing. Explicit planned questions also did not reuse an existing matching terminal question row, which could collide with the database uniqueness constraint on refresh.",
+  "fix": "The latest-question refresh guard now applies only to ordinary planner refreshes. Callers supplying an explicit plannedQuestion schedule that question independently and reuse the matching question-type row. Idempotency, budget reservation, and provider routing remain unchanged.",
+  "bounds": {
+    "maxQuestionsPerCompany": 4,
+    "maxProviderAttempts": 50,
+    "maxEstimatedCost": 0.5,
+    "maxEstimatedCostPerCompany": 0.1
+  },
+  "beforeAfter": {
+    "before": {
+      "questions": 22,
+      "jobs": 27,
+      "evidence": 72,
+      "facts": 0,
+      "proposals": 5,
+      "costs": 27,
+      "signals": 0,
+      "clusters": 0,
+      "opportunities": 5,
+      "contacts": 0
+    },
+    "after": {
+      "questions": 22,
+      "jobs": 27,
+      "evidence": 72,
+      "facts": 0,
+      "proposals": 5,
+      "costs": 27,
+      "signals": 0,
+      "clusters": 0,
+      "opportunities": 5,
+      "contacts": 0
+    }
+  },
+  "companies": [
+    {
+      "company": "Cloud4C Services",
+      "domain": "cloud4c.com",
+      "baseline": {
+        "researchJobs": 7,
+        "evidence": 21,
+        "facts": 0,
+        "signals": 0,
+        "clusters": 0,
+        "opportunities": 1,
+        "capturedAt": "2026-08-31T10:40:17.360Z"
+      },
+      "questions": [
+        {
+          "type": "LEADERSHIP",
+          "text": "\"Cloud4C Services\" cloud4c.com public evidence of security leadership changes (security, ciso)",
+          "terminalDisposition": "INSUFFICIENT_EVIDENCE",
+          "providerCalls": 1,
+          "cacheHits": 0,
+          "rawResults": 0,
+          "questionRelevantResults": 0,
+          "directEventEvidence": 0,
+          "supportingContext": 0,
+          "rejectedOrIrrelevant": 11,
+          "facts": 1,
+          "signals": 0,
+          "cost": 0.01,
+          "stopReason": "Reasonable bounded attempt found no accepted signal-supporting fact.",
+          "questionId": "35c5c493-1d6a-40d3-948e-d5a29766189a"
+        },
+        {
+          "type": "HIRING",
+          "text": "\"Cloud4C Services\" cloud4c.com public evidence of security and cybersecurity hiring (security, soc, cyber)",
+          "terminalDisposition": "INSUFFICIENT_EVIDENCE",
+          "providerCalls": 1,
+          "cacheHits": 0,
+          "rawResults": 0,
+          "questionRelevantResults": 0,
+          "directEventEvidence": 0,
+          "supportingContext": 0,
+          "rejectedOrIrrelevant": 11,
+          "facts": 1,
+          "signals": 0,
+          "cost": 0.01,
+          "stopReason": "Reasonable bounded attempt found no accepted signal-supporting fact.",
+          "questionId": "3c3c88e6-5d93-4150-8b6d-07fa17b866d1"
+        },
+        {
+          "type": "EXPANSION",
+          "text": "\"Cloud4C Services\" cloud4c.com public evidence of funding, expansion, security, or compliance initiatives",
+          "terminalDisposition": "INSUFFICIENT_EVIDENCE",
+          "providerCalls": 1,
+          "cacheHits": 0,
+          "rawResults": 0,
+          "questionRelevantResults": 0,
+          "directEventEvidence": 0,
+          "supportingContext": 0,
+          "rejectedOrIrrelevant": 11,
+          "facts": 1,
+          "signals": 0,
+          "cost": 0.01,
+          "stopReason": "Reasonable bounded attempt found no accepted signal-supporting fact.",
+          "questionId": "99ece23e-1a79-43df-adde-43bf087217e3"
+        },
+        {
+          "type": "TECHNOLOGY",
+          "text": "\"Cloud4C Services\" cloud4c.com public evidence of security stack, SOC, SIEM, EDR, or IAM changes (security, siem, endpoint, iam)",
+          "terminalDisposition": "INSUFFICIENT_EVIDENCE",
+          "providerCalls": 2,
+          "cacheHits": 0,
+          "rawResults": 0,
+          "questionRelevantResults": 2,
+          "directEventEvidence": 2,
+          "supportingContext": 0,
+          "rejectedOrIrrelevant": 9,
+          "facts": 0,
+          "signals": 0,
+          "cost": 0.02,
+          "stopReason": "Reasonable bounded attempt found no accepted signal-supporting fact.",
+          "questionId": "51d57e37-c6e7-4c32-92f5-d4bede44183b"
+        }
+      ],
+      "providerCalls": [
+        {
+          "provider": "Tavily",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "latencyMs": 1508,
+          "estimatedCost": 0.01,
+          "actualCost": null,
+          "questionId": "35c5c493-1d6a-40d3-948e-d5a29766189a"
+        },
+        {
+          "provider": "Tavily",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "latencyMs": 3014,
+          "estimatedCost": 0.01,
+          "actualCost": null,
+          "questionId": "51d57e37-c6e7-4c32-92f5-d4bede44183b"
+        },
+        {
+          "provider": "Tavily",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "latencyMs": 7310,
+          "estimatedCost": 0.01,
+          "actualCost": null,
+          "questionId": "3c3c88e6-5d93-4150-8b6d-07fa17b866d1"
+        },
+        {
+          "provider": "Tavily",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "latencyMs": 3248,
+          "estimatedCost": 0.01,
+          "actualCost": null,
+          "questionId": "99ece23e-1a79-43df-adde-43bf087217e3"
+        },
+        {
+          "provider": "Tavily",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "latencyMs": 1329,
+          "estimatedCost": 0.01,
+          "actualCost": null,
+          "questionId": "51d57e37-c6e7-4c32-92f5-d4bede44183b"
+        }
+      ],
+      "evidence": {
+        "rawRetrieved": 11,
+        "questionRelevant": 3,
+        "directEvent": 2,
+        "supportingContext": 1,
+        "accepted": [
+          {
+            "id": "816e4259-20ee-4a64-9308-65d186bd5628",
+            "sourceUrl": "https://cloud4c.com/cybersecurity-services/hybrid-multi-cloud-security",
+            "status": "RAW",
+            "entityStatus": "CONFIRMED_ENTITY",
+            "classification": "DIRECT_EVENT_EVIDENCE",
+            "freshness": "RECENT",
+            "relation": "COMPANY_AS_BUYER"
+          },
+          {
+            "id": "bf741550-ca22-4617-9cad-81c76c55d68e",
+            "sourceUrl": "https://cloud4c.com/blogs/managed-security-for-multi-cloud-environments",
+            "status": "RAW",
+            "entityStatus": "CONFIRMED_ENTITY",
+            "classification": "VENDOR_CONTENT",
+            "freshness": "CURRENT",
+            "relation": "COMPANY_AS_SELLER"
+          },
+          {
+            "id": "6118c57a-ca6c-432e-a353-65f0f0af2f90",
+            "sourceUrl": "https://leadiq.com/c/cloud4c-services/5a1d9a712300005400898c40",
+            "status": "RAW",
+            "entityStatus": "CONFIRMED_ENTITY",
+            "classification": "VENDOR_CONTENT",
+            "freshness": "CURRENT",
+            "relation": "COMPANY_AS_SELLER"
+          },
+          {
+            "id": "586bcd0f-9558-4a2e-956b-2a794b5ff8b6",
+            "sourceUrl": "https://cloud4c.com/blogs/day-in-the-life-of-a-soc-analyst",
+            "status": "RAW",
+            "entityStatus": "CONFIRMED_ENTITY",
+            "classification": "VENDOR_CONTENT",
+            "freshness": "CURRENT",
+            "relation": "COMPANY_AS_SELLER"
+          },
+          {
+            "id": "ea3c16a6-75ac-4c45-a4de-acb5f57e41dd",
+            "sourceUrl": "https://cloud4c.com/data-privacy",
+            "status": "RAW",
+            "entityStatus": "CONFIRMED_ENTITY",
+            "classification": "VENDOR_CONTENT",
+            "freshness": "RECENT",
+            "relation": "COMPANY_AS_SELLER"
+          },
+          {
+            "id": "d366c4f2-47e3-4fe0-9ed1-a7e23494102a",
+            "sourceUrl": "https://cloud4c.com/esg-initiatives",
+            "status": "RAW",
+            "entityStatus": "CONFIRMED_ENTITY",
+            "classification": "SUPPORTING_CONTEXT",
+            "freshness": "RECENT",
+            "relation": "UNKNOWN_RELATION"
+          },
+          {
+            "id": "3bfad446-a76e-4074-a44b-a970ab607f95",
+            "sourceUrl": "https://cloud4c.com/cybersecurity-services/compliance-as-a-service",
+            "status": "RAW",
+            "entityStatus": "CONFIRMED_ENTITY",
+            "classification": "DIRECT_EVENT_EVIDENCE",
+            "freshness": "RECENT",
+            "relation": "COMPANY_AS_BUYER"
+          },
+          {
+            "id": "0ef42df2-6374-40ab-ac33-4dca223a7398",
+            "sourceUrl": "https://cloud4c.com/global-isv-partnership-program",
+            "status": "RAW",
+            "entityStatus": "CONFIRMED_ENTITY",
+            "classification": "VENDOR_CONTENT",
+            "freshness": "UNKNOWN_DATE",
+            "relation": "COMPANY_AS_SELLER"
+          },
+          {
+            "id": "8afc4f57-1741-4394-a2e2-813ea602f603",
+            "sourceUrl": "https://cloud4c.com/cybersecurity-services/endpoint-security",
+            "status": "RAW",
+            "entityStatus": "CONFIRMED_ENTITY",
+            "classification": "VENDOR_CONTENT",
+            "freshness": "CURRENT",
+            "relation": "COMPANY_AS_SELLER"
+          },
+          {
+            "id": "369b5464-d452-4ac6-bf98-c2ee284010de",
+            "sourceUrl": "https://cloud4c.com/blogs/managed-security-model-for-the-next-decade",
+            "status": "RAW",
+            "entityStatus": "CONFIRMED_ENTITY",
+            "classification": "VENDOR_CONTENT",
+            "freshness": "CURRENT",
+            "relation": "COMPANY_AS_SELLER"
+          },
+          {
+            "id": "181b9420-c3c5-45d2-87b1-3a32b62617bb",
+            "sourceUrl": "https://cloud4c.com/blogs/cloud-security-solutions-blog",
+            "status": "RAW",
+            "entityStatus": "CONFIRMED_ENTITY",
+            "classification": "GENERIC_COMPANY_CONTENT",
+            "freshness": "UNKNOWN_DATE",
+            "relation": "UNKNOWN_RELATION"
+          }
+        ],
+        "rejected": []
+      },
+      "factProposals": {
+        "approved": [],
+        "pending": [
+          {
+            "id": "e4df9b72-1fbf-400c-b837-02605e7c30b7",
+            "researchJobId": "643515aa-6fd9-4c50-b44b-3debf0c0b6f7",
+            "questionId": "35c5c493-1d6a-40d3-948e-d5a29766189a",
+            "organizationId": "02d40c31-72e4-42d9-9d8d-fe676a369205",
+            "projectId": "b4c8a95a-eb1c-4a86-89d6-62d72097d820",
+            "companyId": "2c37012e-b4db-49f3-bd22-584989680664",
+            "evidenceId": "a4d315fd-395d-411e-b343-7dc191106e83",
+            "factType": "TECHNOLOGY_MENTION",
+            "structuredValue": {
+              "technologies": [
+                "AWS",
+                "Azure",
+                "Google Cloud Platform (GCP)",
+                "Oracle",
+                "IBM Cloud"
+              ]
+            },
+            "effectiveDate": "2026-08-31",
+            "confidence": 95,
+            "supportingExcerpt": "Embrace cutting-edge public-private-hybrid cloud solutions powered by AWS, Azure, Google Cloud Platform (GCP), Oracle, or IBM Cloud architecture.",
+            "extractorVersion": "fact-extraction-v2",
+            "status": "PENDING",
+            "createdAt": "2026-08-31T10:23:59.344Z"
+          },
+          {
+            "id": "0ad81a6c-cec8-403b-a137-dbb914e6fe9b",
+            "researchJobId": "0bb2ed7a-47ab-4ee8-8b1e-a0fcf940f403",
+            "questionId": "3c3c88e6-5d93-4150-8b6d-07fa17b866d1",
+            "organizationId": "02d40c31-72e4-42d9-9d8d-fe676a369205",
+            "projectId": "b4c8a95a-eb1c-4a86-89d6-62d72097d820",
+            "companyId": "2c37012e-b4db-49f3-bd22-584989680664",
+            "evidenceId": "bf741550-ca22-4617-9cad-81c76c55d68e",
+            "factType": "TECHNOLOGY_MENTION",
+            "structuredValue": {
+              "technologies": [
+                "AI-driven SIEM"
+              ]
+            },
+            "effectiveDate": "2026-08-31",
+            "confidence": 96,
+            "supportingExcerpt": "They are operations built on AI-driven SIEM, advanced cross-cloud threat correlation, and dedicated security analysts working across provider environments without siloed tooling.",
+            "extractorVersion": "fact-extraction-v2",
+            "status": "PENDING",
+            "createdAt": "2026-08-31T10:25:29.090Z"
+          },
+          {
+            "id": "5ba371e6-e734-4e91-bfc8-5ab841c74712",
+            "researchJobId": "7e8d41c8-20aa-4066-a8be-a16d385f40c4",
+            "questionId": "99ece23e-1a79-43df-adde-43bf087217e3",
+            "organizationId": "02d40c31-72e4-42d9-9d8d-fe676a369205",
+            "projectId": "b4c8a95a-eb1c-4a86-89d6-62d72097d820",
+            "companyId": "2c37012e-b4db-49f3-bd22-584989680664",
+            "evidenceId": "d366c4f2-47e3-4fe0-9ed1-a7e23494102a",
+            "factType": "TECHNOLOGY_MENTION",
+            "structuredValue": {
+              "technologies": [
+                "AWS",
+                "Azure",
+                "GCP",
+                "OCI"
+              ]
+            },
+            "effectiveDate": "2026-08-31",
+            "confidence": 96,
+            "supportingExcerpt": "Cloud4C, as a global managed services provider, partners with the world’s top technology companies and hyperscaler cloud providers such as AWS, Azure, GCP, OCI who are torchbearers of the sustainable IT revolution.",
+            "extractorVersion": "fact-extraction-v2",
+            "status": "PENDING",
+            "createdAt": "2026-08-31T10:26:49.732Z"
+          }
+        ],
+        "rejected": []
+      },
+      "persistedFacts": [],
+      "signals": [],
+      "clusters": [],
+      "independentEvents": [],
+      "when": "UNKNOWN — no accepted current timing signal",
+      "why": {
+        "status": "INSUFFICIENT_EVIDENCE",
+        "text": "Insufficient evidence to establish current urgency.",
+        "claims": [
+          {
+            "explanationId": "1b4dc892-99a0-40b7-bff0-4f8b6b57baa6",
+            "ordinal": 1,
+            "claimText": "Insufficient evidence to establish current urgency.",
+            "claimType": "INSUFFICIENT_EVIDENCE",
+            "material": false,
+            "traceabilityStatus": "TRACED",
+            "signalIds": [],
+            "clusterIds": [],
+            "factIds": [],
+            "evidenceIds": [],
+            "sourceUrls": []
+          }
+        ]
+      },
+      "opportunity": {
+        "state": "WATCH",
+        "score": null,
+        "confidence": null,
+        "fit": null,
+        "need": null,
+        "timing": null,
+        "hypothesis": "Insufficient evidence for a scored Managed SOC opportunity"
+      },
+      "contradictions": [],
+      "missingEvidence": [
+        "Security leader change",
+        "Security operations hiring",
+        "Funded risk program window",
+        "Security stack change"
+      ],
+      "nextBestAction": "Gather independent, direct evidence for the missing approved Managed SOC signal areas; do not infer intent."
+    },
+    {
+      "company": "Cloudi",
+      "domain": "cloudi-infra.com",
+      "baseline": {
+        "researchJobs": 5,
+        "evidence": 11,
+        "facts": 0,
+        "signals": 0,
+        "clusters": 0,
+        "opportunities": 1,
+        "capturedAt": "2026-08-31T10:40:17.360Z"
+      },
+      "questions": [
+        {
+          "type": "LEADERSHIP",
+          "text": "\"Cloudi\" cloudi-infra.com public evidence of security leadership changes (security, ciso)",
+          "terminalDisposition": "INSUFFICIENT_EVIDENCE",
+          "providerCalls": 1,
+          "cacheHits": 0,
+          "rawResults": 0,
+          "questionRelevantResults": 0,
+          "directEventEvidence": 0,
+          "supportingContext": 0,
+          "rejectedOrIrrelevant": 3,
+          "facts": 0,
+          "signals": 0,
+          "cost": 0.01,
+          "stopReason": "Reasonable bounded attempt found no accepted signal-supporting fact.",
+          "questionId": "0e8063e6-eb72-494a-9414-fe8b3efd7e60"
+        },
+        {
+          "type": "HIRING",
+          "text": "\"Cloudi\" cloudi-infra.com public evidence of security and cybersecurity hiring (security, soc, cyber)",
+          "terminalDisposition": "INSUFFICIENT_EVIDENCE",
+          "providerCalls": 1,
+          "cacheHits": 0,
+          "rawResults": 0,
+          "questionRelevantResults": 0,
+          "directEventEvidence": 0,
+          "supportingContext": 0,
+          "rejectedOrIrrelevant": 3,
+          "facts": 0,
+          "signals": 0,
+          "cost": 0.01,
+          "stopReason": "Reasonable bounded attempt found no accepted signal-supporting fact.",
+          "questionId": "1dda2de2-8fa2-4701-b40c-7cd3be42e5fe"
+        },
+        {
+          "type": "EXPANSION",
+          "text": "\"Cloudi\" cloudi-infra.com public evidence of funding, expansion, security, or compliance initiatives",
+          "terminalDisposition": "INSUFFICIENT_EVIDENCE",
+          "providerCalls": 1,
+          "cacheHits": 0,
+          "rawResults": 0,
+          "questionRelevantResults": 0,
+          "directEventEvidence": 0,
+          "supportingContext": 0,
+          "rejectedOrIrrelevant": 3,
+          "facts": 0,
+          "signals": 0,
+          "cost": 0.01,
+          "stopReason": "Reasonable bounded attempt found no accepted signal-supporting fact.",
+          "questionId": "ded0c40f-e8bd-4710-90e2-fe745e8664ad"
+        },
+        {
+          "type": "TECHNOLOGY",
+          "text": "\"Cloudi\" cloudi-infra.com public evidence of security stack, SOC, SIEM, EDR, or IAM changes (security, siem, endpoint, iam)",
+          "terminalDisposition": "INSUFFICIENT_EVIDENCE",
+          "providerCalls": 1,
+          "cacheHits": 0,
+          "rawResults": 0,
+          "questionRelevantResults": 0,
+          "directEventEvidence": 0,
+          "supportingContext": 0,
+          "rejectedOrIrrelevant": 3,
+          "facts": 0,
+          "signals": 0,
+          "cost": 0.01,
+          "stopReason": "Reasonable bounded attempt found no accepted signal-supporting fact.",
+          "questionId": "3a534438-0491-40e3-9571-61f1ad1218f4"
+        }
+      ],
+      "providerCalls": [
+        {
+          "provider": "Tavily",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "latencyMs": 5085,
+          "estimatedCost": 0.01,
+          "actualCost": null,
+          "questionId": "0e8063e6-eb72-494a-9414-fe8b3efd7e60"
+        },
+        {
+          "provider": "Tavily",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "latencyMs": 7082,
+          "estimatedCost": 0.01,
+          "actualCost": null,
+          "questionId": "1dda2de2-8fa2-4701-b40c-7cd3be42e5fe"
+        },
+        {
+          "provider": "Tavily",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "latencyMs": 2667,
+          "estimatedCost": 0.01,
+          "actualCost": null,
+          "questionId": "ded0c40f-e8bd-4710-90e2-fe745e8664ad"
+        },
+        {
+          "provider": "Tavily",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "latencyMs": 4505,
+          "estimatedCost": 0.01,
+          "actualCost": null,
+          "questionId": "3a534438-0491-40e3-9571-61f1ad1218f4"
+        }
+      ],
+      "evidence": {
+        "rawRetrieved": 3,
+        "questionRelevant": 0,
+        "directEvent": 0,
+        "supportingContext": 0,
+        "accepted": [
+          {
+            "id": "ac28e2b5-79e7-4fa3-9862-1d8ff2bdd598",
+            "sourceUrl": "https://cloudi-infra.com/about",
+            "status": "RAW",
+            "entityStatus": "CONFIRMED_ENTITY",
+            "classification": "VENDOR_CONTENT",
+            "freshness": "CURRENT",
+            "relation": "COMPANY_AS_SELLER"
+          },
+          {
+            "id": "dfd5ae8d-ff41-42f6-9965-c796f97cda15",
+            "sourceUrl": "https://linkedin.com/company/cloudi-infra",
+            "status": "RAW",
+            "entityStatus": "CONFIRMED_ENTITY",
+            "classification": "VENDOR_CONTENT",
+            "freshness": "CURRENT",
+            "relation": "COMPANY_AS_SELLER"
+          },
+          {
+            "id": "de7b7646-792f-4ae0-988b-a22a2fab0525",
+            "sourceUrl": "https://cloudi-infra.com/cyber-security",
+            "status": "RAW",
+            "entityStatus": "CONFIRMED_ENTITY",
+            "classification": "VENDOR_CONTENT",
+            "freshness": "CURRENT",
+            "relation": "COMPANY_AS_SELLER"
+          }
+        ],
+        "rejected": []
+      },
+      "factProposals": {
+        "approved": [],
+        "pending": [],
+        "rejected": []
+      },
+      "persistedFacts": [],
+      "signals": [],
+      "clusters": [],
+      "independentEvents": [],
+      "when": "UNKNOWN — no accepted current timing signal",
+      "why": {
+        "status": "INSUFFICIENT_EVIDENCE",
+        "text": "Insufficient evidence to establish current urgency.",
+        "claims": [
+          {
+            "explanationId": "92fe96a1-4daf-4a02-b31f-c2248d82e9e0",
+            "ordinal": 1,
+            "claimText": "Insufficient evidence to establish current urgency.",
+            "claimType": "INSUFFICIENT_EVIDENCE",
+            "material": false,
+            "traceabilityStatus": "TRACED",
+            "signalIds": [],
+            "clusterIds": [],
+            "factIds": [],
+            "evidenceIds": [],
+            "sourceUrls": []
+          }
+        ]
+      },
+      "opportunity": {
+        "state": "WATCH",
+        "score": null,
+        "confidence": null,
+        "fit": null,
+        "need": null,
+        "timing": null,
+        "hypothesis": "Insufficient evidence for a scored Managed SOC opportunity"
+      },
+      "contradictions": [],
+      "missingEvidence": [
+        "Security leader change",
+        "Security operations hiring",
+        "Funded risk program window",
+        "Security stack change"
+      ],
+      "nextBestAction": "Gather independent, direct evidence for the missing approved Managed SOC signal areas; do not infer intent."
+    },
+    {
+      "company": "E2E Cloud",
+      "domain": "e2enetworks.com",
+      "baseline": {
+        "researchJobs": 5,
+        "evidence": 16,
+        "facts": 0,
+        "signals": 0,
+        "clusters": 0,
+        "opportunities": 1,
+        "capturedAt": "2026-08-31T10:40:17.360Z"
+      },
+      "questions": [
+        {
+          "type": "LEADERSHIP",
+          "text": "\"E2E Cloud\" e2enetworks.com public evidence of security leadership changes (security, ciso)",
+          "terminalDisposition": "INSUFFICIENT_EVIDENCE",
+          "providerCalls": 1,
+          "cacheHits": 0,
+          "rawResults": 0,
+          "questionRelevantResults": 0,
+          "directEventEvidence": 0,
+          "supportingContext": 0,
+          "rejectedOrIrrelevant": 13,
+          "facts": 0,
+          "signals": 0,
+          "cost": 0.01,
+          "stopReason": "Reasonable bounded attempt found no accepted signal-supporting fact.",
+          "questionId": "432207af-1add-4c1f-9833-ee73a30a3598"
+        },
+        {
+          "type": "HIRING",
+          "text": "\"E2E Cloud\" e2enetworks.com public evidence of security and cybersecurity hiring (security, soc, cyber)",
+          "terminalDisposition": "INSUFFICIENT_EVIDENCE",
+          "providerCalls": 1,
+          "cacheHits": 0,
+          "rawResults": 0,
+          "questionRelevantResults": 0,
+          "directEventEvidence": 0,
+          "supportingContext": 0,
+          "rejectedOrIrrelevant": 13,
+          "facts": 0,
+          "signals": 0,
+          "cost": 0.01,
+          "stopReason": "Reasonable bounded attempt found no accepted signal-supporting fact.",
+          "questionId": "f4f3e50e-cf34-483f-8cb5-2ce45f6d0b59"
+        },
+        {
+          "type": "EXPANSION",
+          "text": "\"E2E Cloud\" e2enetworks.com public evidence of funding, expansion, security, or compliance initiatives",
+          "terminalDisposition": "INSUFFICIENT_EVIDENCE",
+          "providerCalls": 1,
+          "cacheHits": 0,
+          "rawResults": 0,
+          "questionRelevantResults": 0,
+          "directEventEvidence": 0,
+          "supportingContext": 0,
+          "rejectedOrIrrelevant": 13,
+          "facts": 0,
+          "signals": 0,
+          "cost": 0.01,
+          "stopReason": "Reasonable bounded attempt found no accepted signal-supporting fact.",
+          "questionId": "48b97ce0-92c9-46af-9083-82d7948b4ebd"
+        },
+        {
+          "type": "TECHNOLOGY",
+          "text": "\"E2E Cloud\" e2enetworks.com public evidence of security stack, SOC, SIEM, EDR, or IAM changes (security, siem, endpoint, iam)",
+          "terminalDisposition": "INSUFFICIENT_EVIDENCE",
+          "providerCalls": 1,
+          "cacheHits": 0,
+          "rawResults": 0,
+          "questionRelevantResults": 0,
+          "directEventEvidence": 0,
+          "supportingContext": 0,
+          "rejectedOrIrrelevant": 13,
+          "facts": 0,
+          "signals": 0,
+          "cost": 0.01,
+          "stopReason": "Reasonable bounded attempt found no accepted signal-supporting fact.",
+          "questionId": "4f112562-e6fd-4d17-b130-3e7df6cc7549"
+        }
+      ],
+      "providerCalls": [
+        {
+          "provider": "Tavily",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "latencyMs": 6855,
+          "estimatedCost": 0.01,
+          "actualCost": null,
+          "questionId": "f4f3e50e-cf34-483f-8cb5-2ce45f6d0b59"
+        },
+        {
+          "provider": "Tavily",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "latencyMs": 6085,
+          "estimatedCost": 0.01,
+          "actualCost": null,
+          "questionId": "4f112562-e6fd-4d17-b130-3e7df6cc7549"
+        },
+        {
+          "provider": "Tavily",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "latencyMs": 229,
+          "estimatedCost": 0.01,
+          "actualCost": null,
+          "questionId": "432207af-1add-4c1f-9833-ee73a30a3598"
+        },
+        {
+          "provider": "Tavily",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "latencyMs": 3523,
+          "estimatedCost": 0.01,
+          "actualCost": null,
+          "questionId": "48b97ce0-92c9-46af-9083-82d7948b4ebd"
+        }
+      ],
+      "evidence": {
+        "rawRetrieved": 13,
+        "questionRelevant": 4,
+        "directEvent": 0,
+        "supportingContext": 4,
+        "accepted": [
+          {
+            "id": "116929c3-eb38-439b-874f-4a4e0d304a23",
+            "sourceUrl": "https://e2enetworks.com/careers/jobs/all",
+            "status": "RAW",
+            "entityStatus": "CONFIRMED_ENTITY",
+            "classification": "SUPPORTING_CONTEXT",
+            "freshness": "UNKNOWN_DATE",
+            "relation": "UNKNOWN_RELATION"
+          },
+          {
+            "id": "71335c98-d449-4f6d-9d98-486863178f15",
+            "sourceUrl": "https://e2enetworks.com/careers/jobs/security-operations-analyst",
+            "status": "RAW",
+            "entityStatus": "CONFIRMED_ENTITY",
+            "classification": "SUPPORTING_CONTEXT",
+            "freshness": "UNKNOWN_DATE",
+            "relation": "UNKNOWN_RELATION"
+          },
+          {
+            "id": "792c8655-c932-4bbb-864f-27fd495452a2",
+            "sourceUrl": "https://docs.e2enetworks.com/docs/myaccount/security",
+            "status": "RAW",
+            "entityStatus": "CONFIRMED_ENTITY",
+            "classification": "GENERIC_COMPANY_CONTENT",
+            "freshness": "UNKNOWN_DATE",
+            "relation": "UNKNOWN_RELATION"
+          },
+          {
+            "id": "4eb359dc-e066-4034-8848-60cbff0b1c60",
+            "sourceUrl": "https://e2enetworks.com/certifications",
+            "status": "RAW",
+            "entityStatus": "CONFIRMED_ENTITY",
+            "classification": "SUPPORTING_CONTEXT",
+            "freshness": "STALE",
+            "relation": "UNKNOWN_RELATION"
+          },
+          {
+            "id": "edc8a1b1-3835-44a8-b162-50e78f8f8b5f",
+            "sourceUrl": "https://e2e-mainsite-ui.objectstore.e2enetworks.net/Investor_Resources/Investor_Presentations/Investors_Presentation_September_2023_27_09_2023.pdf",
+            "status": "RAW",
+            "entityStatus": "CONFIRMED_ENTITY",
+            "classification": "GENERIC_COMPANY_CONTENT",
+            "freshness": "CURRENT",
+            "relation": "UNKNOWN_RELATION"
+          },
+          {
+            "id": "4b0624e6-4ac9-4296-aabf-a5e3d91970d1",
+            "sourceUrl": "https://nsearchives.nseindia.com/corporate/E2E_22072025164315_InvestorsPresentationFinal.pdf",
+            "status": "RAW",
+            "entityStatus": "CONFIRMED_ENTITY",
+            "classification": "GENERIC_COMPANY_CONTENT",
+            "freshness": "CURRENT",
+            "relation": "UNKNOWN_RELATION"
+          },
+          {
+            "id": "03c2ce5b-8e86-4633-8088-2c284c062571",
+            "sourceUrl": "https://e2enetworks.com/investors/corporate-announcements",
+            "status": "RAW",
+            "entityStatus": "CONFIRMED_ENTITY",
+            "classification": "GENERIC_COMPANY_CONTENT",
+            "freshness": "CURRENT",
+            "relation": "UNKNOWN_RELATION"
+          },
+          {
+            "id": "db75364f-b895-44fb-ae11-b7c9844b30b2",
+            "sourceUrl": "https://e2enetworks.com/e2e-partner-program",
+            "status": "RAW",
+            "entityStatus": "CONFIRMED_ENTITY",
+            "classification": "GENERIC_COMPANY_CONTENT",
+            "freshness": "UNKNOWN_DATE",
+            "relation": "UNKNOWN_RELATION"
+          },
+          {
+            "id": "63469722-d082-4d3e-84ab-c824bd8bb75c",
+            "sourceUrl": "https://e2enetworks.com/sovereign-cloud-platform",
+            "status": "RAW",
+            "entityStatus": "CONFIRMED_ENTITY",
+            "classification": "SUPPORTING_CONTEXT",
+            "freshness": "UNKNOWN_DATE",
+            "relation": "UNKNOWN_RELATION"
+          },
+          {
+            "id": "5e4e6366-168e-48b2-b217-f7ff6e712bf3",
+            "sourceUrl": "https://e2enetworks.com/investors/shareholders-meeting",
+            "status": "RAW",
+            "entityStatus": "CONFIRMED_ENTITY",
+            "classification": "GENERIC_COMPANY_CONTENT",
+            "freshness": "CURRENT",
+            "relation": "UNKNOWN_RELATION"
+          },
+          {
+            "id": "16e09219-0502-46ca-85e6-d9a09224f781",
+            "sourceUrl": "https://e2enetworks.com/blog",
+            "status": "RAW",
+            "entityStatus": "CONFIRMED_ENTITY",
+            "classification": "GENERIC_COMPANY_CONTENT",
+            "freshness": "CURRENT",
+            "relation": "UNKNOWN_RELATION"
+          },
+          {
+            "id": "26320249-6cc5-4051-b1ab-60b1618fa232",
+            "sourceUrl": "https://docs.e2enetworks.com/docs/myaccount/GettingStarted/iam",
+            "status": "RAW",
+            "entityStatus": "CONFIRMED_ENTITY",
+            "classification": "GENERIC_COMPANY_CONTENT",
+            "freshness": "UNKNOWN_DATE",
+            "relation": "UNKNOWN_RELATION"
+          },
+          {
+            "id": "92f24ce3-cae8-43f6-81ec-9bb6c01a2440",
+            "sourceUrl": "https://marketplace.e2enetworks.com/vendors/guidelines",
+            "status": "RAW",
+            "entityStatus": "CONFIRMED_ENTITY",
+            "classification": "GENERIC_COMPANY_CONTENT",
+            "freshness": "UNKNOWN_DATE",
+            "relation": "UNKNOWN_RELATION"
+          }
+        ],
+        "rejected": []
+      },
+      "factProposals": {
+        "approved": [],
+        "pending": [],
+        "rejected": []
+      },
+      "persistedFacts": [],
+      "signals": [],
+      "clusters": [],
+      "independentEvents": [],
+      "when": "UNKNOWN — no accepted current timing signal",
+      "why": {
+        "status": "INSUFFICIENT_EVIDENCE",
+        "text": "Insufficient evidence to establish current urgency.",
+        "claims": [
+          {
+            "explanationId": "b8f5429f-f0fa-432f-b4ca-45857f1fd2f5",
+            "ordinal": 1,
+            "claimText": "Insufficient evidence to establish current urgency.",
+            "claimType": "INSUFFICIENT_EVIDENCE",
+            "material": false,
+            "traceabilityStatus": "TRACED",
+            "signalIds": [],
+            "clusterIds": [],
+            "factIds": [],
+            "evidenceIds": [],
+            "sourceUrls": []
+          }
+        ]
+      },
+      "opportunity": {
+        "state": "WATCH",
+        "score": null,
+        "confidence": null,
+        "fit": null,
+        "need": null,
+        "timing": null,
+        "hypothesis": "Insufficient evidence for a scored Managed SOC opportunity"
+      },
+      "contradictions": [],
+      "missingEvidence": [
+        "Security leader change",
+        "Security operations hiring",
+        "Funded risk program window",
+        "Security stack change"
+      ],
+      "nextBestAction": "Gather independent, direct evidence for the missing approved Managed SOC signal areas; do not infer intent."
+    },
+    {
+      "company": "ENTUNE IT Consulting Pvt Ltd",
+      "domain": "entune.co",
+      "baseline": {
+        "researchJobs": 5,
+        "evidence": 7,
+        "facts": 0,
+        "signals": 0,
+        "clusters": 0,
+        "opportunities": 1,
+        "capturedAt": "2026-08-31T10:40:17.360Z"
+      },
+      "questions": [
+        {
+          "type": "LEADERSHIP",
+          "text": "\"ENTUNE IT Consulting Pvt Ltd\" entune.co public evidence of security leadership changes (security, ciso)",
+          "terminalDisposition": "INSUFFICIENT_EVIDENCE",
+          "providerCalls": 1,
+          "cacheHits": 0,
+          "rawResults": 0,
+          "questionRelevantResults": 0,
+          "directEventEvidence": 0,
+          "supportingContext": 0,
+          "rejectedOrIrrelevant": 3,
+          "facts": 0,
+          "signals": 0,
+          "cost": 0.01,
+          "stopReason": "Reasonable bounded attempt found no accepted signal-supporting fact.",
+          "questionId": "bbb63363-2c4b-487d-b6cd-ec9d257c707f"
+        },
+        {
+          "type": "HIRING",
+          "text": "\"ENTUNE IT Consulting Pvt Ltd\" entune.co public evidence of security and cybersecurity hiring (security, soc, cyber)",
+          "terminalDisposition": "INSUFFICIENT_EVIDENCE",
+          "providerCalls": 1,
+          "cacheHits": 0,
+          "rawResults": 0,
+          "questionRelevantResults": 0,
+          "directEventEvidence": 0,
+          "supportingContext": 0,
+          "rejectedOrIrrelevant": 3,
+          "facts": 0,
+          "signals": 0,
+          "cost": 0.01,
+          "stopReason": "Reasonable bounded attempt found no accepted signal-supporting fact.",
+          "questionId": "602cd54d-691f-4fac-a9c4-89fbf4d067a7"
+        },
+        {
+          "type": "EXPANSION",
+          "text": "\"ENTUNE IT Consulting Pvt Ltd\" entune.co public evidence of funding, expansion, security, or compliance initiatives",
+          "terminalDisposition": "INSUFFICIENT_EVIDENCE",
+          "providerCalls": 1,
+          "cacheHits": 0,
+          "rawResults": 0,
+          "questionRelevantResults": 0,
+          "directEventEvidence": 0,
+          "supportingContext": 0,
+          "rejectedOrIrrelevant": 3,
+          "facts": 0,
+          "signals": 0,
+          "cost": 0.01,
+          "stopReason": "Reasonable bounded attempt found no accepted signal-supporting fact.",
+          "questionId": "80a3b77f-077a-4b7e-bc7f-6bdef68ac718"
+        },
+        {
+          "type": "TECHNOLOGY",
+          "text": "\"ENTUNE IT Consulting Pvt Ltd\" entune.co public evidence of security stack, SOC, SIEM, EDR, or IAM changes (security, siem, endpoint, iam)",
+          "terminalDisposition": "INSUFFICIENT_EVIDENCE",
+          "providerCalls": 1,
+          "cacheHits": 0,
+          "rawResults": 0,
+          "questionRelevantResults": 0,
+          "directEventEvidence": 0,
+          "supportingContext": 0,
+          "rejectedOrIrrelevant": 3,
+          "facts": 0,
+          "signals": 0,
+          "cost": 0.01,
+          "stopReason": "Reasonable bounded attempt found no accepted signal-supporting fact.",
+          "questionId": "c5902dae-b13e-441b-b216-2fa65eb531ae"
+        }
+      ],
+      "providerCalls": [
+        {
+          "provider": "Tavily",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "latencyMs": 1475,
+          "estimatedCost": 0.01,
+          "actualCost": null,
+          "questionId": "bbb63363-2c4b-487d-b6cd-ec9d257c707f"
+        },
+        {
+          "provider": "Tavily",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "latencyMs": 3233,
+          "estimatedCost": 0.01,
+          "actualCost": null,
+          "questionId": "602cd54d-691f-4fac-a9c4-89fbf4d067a7"
+        },
+        {
+          "provider": "Tavily",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "latencyMs": 7137,
+          "estimatedCost": 0.01,
+          "actualCost": null,
+          "questionId": "c5902dae-b13e-441b-b216-2fa65eb531ae"
+        },
+        {
+          "provider": "Tavily",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "latencyMs": 7520,
+          "estimatedCost": 0.01,
+          "actualCost": null,
+          "questionId": "80a3b77f-077a-4b7e-bc7f-6bdef68ac718"
+        }
+      ],
+      "evidence": {
+        "rawRetrieved": 3,
+        "questionRelevant": 0,
+        "directEvent": 0,
+        "supportingContext": 0,
+        "accepted": [
+          {
+            "id": "51a2af05-c32c-43a9-b34f-fce809bb7968",
+            "sourceUrl": "https://entune.co/industry-solutions",
+            "status": "RAW",
+            "entityStatus": "CONFIRMED_ENTITY",
+            "classification": "GENERIC_COMPANY_CONTENT",
+            "freshness": "STALE",
+            "relation": "UNKNOWN_RELATION"
+          },
+          {
+            "id": "bb2dfc58-0b43-452f-bb5b-c65a89165f21",
+            "sourceUrl": "https://entune.co/5-reasons-why-you-should-join-entune-it-consulting-pvt-ltd",
+            "status": "RAW",
+            "entityStatus": "CONFIRMED_ENTITY",
+            "classification": "GENERIC_COMPANY_CONTENT",
+            "freshness": "STALE",
+            "relation": "UNKNOWN_RELATION"
+          },
+          {
+            "id": "4decd882-245e-4ab1-8e66-4ca62234b66f",
+            "sourceUrl": "https://entune.co/contact-us",
+            "status": "RAW",
+            "entityStatus": "CONFIRMED_ENTITY",
+            "classification": "GENERIC_COMPANY_CONTENT",
+            "freshness": "STALE",
+            "relation": "UNKNOWN_RELATION"
+          }
+        ],
+        "rejected": []
+      },
+      "factProposals": {
+        "approved": [],
+        "pending": [],
+        "rejected": []
+      },
+      "persistedFacts": [],
+      "signals": [],
+      "clusters": [],
+      "independentEvents": [],
+      "when": "UNKNOWN — no accepted current timing signal",
+      "why": {
+        "status": "INSUFFICIENT_EVIDENCE",
+        "text": "Insufficient evidence to establish current urgency.",
+        "claims": [
+          {
+            "explanationId": "b87c19da-9a9c-40f0-b3a7-210f70428eab",
+            "ordinal": 1,
+            "claimText": "Insufficient evidence to establish current urgency.",
+            "claimType": "INSUFFICIENT_EVIDENCE",
+            "material": false,
+            "traceabilityStatus": "TRACED",
+            "signalIds": [],
+            "clusterIds": [],
+            "factIds": [],
+            "evidenceIds": [],
+            "sourceUrls": []
+          }
+        ]
+      },
+      "opportunity": {
+        "state": "WATCH",
+        "score": null,
+        "confidence": null,
+        "fit": null,
+        "need": null,
+        "timing": null,
+        "hypothesis": "Insufficient evidence for a scored Managed SOC opportunity"
+      },
+      "contradictions": [],
+      "missingEvidence": [
+        "Security leader change",
+        "Security operations hiring",
+        "Funded risk program window",
+        "Security stack change"
+      ],
+      "nextBestAction": "Gather independent, direct evidence for the missing approved Managed SOC signal areas; do not infer intent."
+    },
+    {
+      "company": "Emergys",
+      "domain": "emergys.com",
+      "baseline": {
+        "researchJobs": 5,
+        "evidence": 17,
+        "facts": 0,
+        "signals": 0,
+        "clusters": 0,
+        "opportunities": 1,
+        "capturedAt": "2026-08-31T10:40:17.360Z"
+      },
+      "questions": [
+        {
+          "type": "LEADERSHIP",
+          "text": "\"Emergys\" emergys.com public evidence of security leadership changes (security, ciso)",
+          "terminalDisposition": "INSUFFICIENT_EVIDENCE",
+          "providerCalls": 1,
+          "cacheHits": 0,
+          "rawResults": 0,
+          "questionRelevantResults": 0,
+          "directEventEvidence": 0,
+          "supportingContext": 0,
+          "rejectedOrIrrelevant": 14,
+          "facts": 0,
+          "signals": 0,
+          "cost": 0.01,
+          "stopReason": "Reasonable bounded attempt found no accepted signal-supporting fact.",
+          "questionId": "a4ef9412-7050-4802-a89c-5f8dd88210e7"
+        },
+        {
+          "type": "HIRING",
+          "text": "\"Emergys\" emergys.com public evidence of security and cybersecurity hiring (security, soc, cyber)",
+          "terminalDisposition": "INSUFFICIENT_EVIDENCE",
+          "providerCalls": 1,
+          "cacheHits": 0,
+          "rawResults": 0,
+          "questionRelevantResults": 0,
+          "directEventEvidence": 0,
+          "supportingContext": 0,
+          "rejectedOrIrrelevant": 14,
+          "facts": 0,
+          "signals": 0,
+          "cost": 0.01,
+          "stopReason": "Reasonable bounded attempt found no accepted signal-supporting fact.",
+          "questionId": "2e1d3804-5850-4903-8863-2d4b235a0669"
+        },
+        {
+          "type": "EXPANSION",
+          "text": "\"Emergys\" emergys.com public evidence of funding, expansion, security, or compliance initiatives",
+          "terminalDisposition": "INSUFFICIENT_EVIDENCE",
+          "providerCalls": 1,
+          "cacheHits": 0,
+          "rawResults": 0,
+          "questionRelevantResults": 0,
+          "directEventEvidence": 0,
+          "supportingContext": 0,
+          "rejectedOrIrrelevant": 14,
+          "facts": 1,
+          "signals": 0,
+          "cost": 0.01,
+          "stopReason": "Reasonable bounded attempt found no accepted signal-supporting fact.",
+          "questionId": "86595e4b-3607-4cb8-bdbe-cc7253bf0e09"
+        },
+        {
+          "type": "TECHNOLOGY",
+          "text": "\"Emergys\" emergys.com public evidence of security stack, SOC, SIEM, EDR, or IAM changes (security, siem, endpoint, iam)",
+          "terminalDisposition": "INSUFFICIENT_EVIDENCE",
+          "providerCalls": 1,
+          "cacheHits": 0,
+          "rawResults": 0,
+          "questionRelevantResults": 0,
+          "directEventEvidence": 0,
+          "supportingContext": 0,
+          "rejectedOrIrrelevant": 14,
+          "facts": 0,
+          "signals": 0,
+          "cost": 0.01,
+          "stopReason": "Reasonable bounded attempt found no accepted signal-supporting fact.",
+          "questionId": "07d07262-64f1-4c0c-a87e-dc546684abd4"
+        }
+      ],
+      "providerCalls": [
+        {
+          "provider": "Tavily",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "latencyMs": 1265,
+          "estimatedCost": 0.01,
+          "actualCost": null,
+          "questionId": "a4ef9412-7050-4802-a89c-5f8dd88210e7"
+        },
+        {
+          "provider": "Tavily",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "latencyMs": 7110,
+          "estimatedCost": 0.01,
+          "actualCost": null,
+          "questionId": "2e1d3804-5850-4903-8863-2d4b235a0669"
+        },
+        {
+          "provider": "Tavily",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "latencyMs": 2920,
+          "estimatedCost": 0.01,
+          "actualCost": null,
+          "questionId": "86595e4b-3607-4cb8-bdbe-cc7253bf0e09"
+        },
+        {
+          "provider": "Tavily",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "latencyMs": 3769,
+          "estimatedCost": 0.01,
+          "actualCost": null,
+          "questionId": "07d07262-64f1-4c0c-a87e-dc546684abd4"
+        }
+      ],
+      "evidence": {
+        "rawRetrieved": 14,
+        "questionRelevant": 1,
+        "directEvent": 0,
+        "supportingContext": 1,
+        "accepted": [
+          {
+            "id": "1a605a14-4537-4688-816c-c83351c50106",
+            "sourceUrl": "https://emergys.com/careers/senior-windows-server-administrator",
+            "status": "RAW",
+            "entityStatus": "CONFIRMED_ENTITY",
+            "classification": "GENERIC_COMPANY_CONTENT",
+            "freshness": "CURRENT",
+            "relation": "UNKNOWN_RELATION"
+          },
+          {
+            "id": "ef5f5fe2-075b-4e75-b458-c0b7537f2123",
+            "sourceUrl": "https://emergys.com/careers/solutions-architect-engineer",
+            "status": "RAW",
+            "entityStatus": "CONFIRMED_ENTITY",
+            "classification": "GENERIC_COMPANY_CONTENT",
+            "freshness": "CURRENT",
+            "relation": "UNKNOWN_RELATION"
+          },
+          {
+            "id": "3d02c864-9c95-48ac-ba67-0b1626709fa5",
+            "sourceUrl": "https://emergys.com/industries/banking-financial-services-and-insurance",
+            "status": "RAW",
+            "entityStatus": "CONFIRMED_ENTITY",
+            "classification": "VENDOR_CONTENT",
+            "freshness": "CURRENT",
+            "relation": "COMPANY_AS_SELLER"
+          },
+          {
+            "id": "de669be8-472e-4f30-a1e0-213921ebb4c0",
+            "sourceUrl": "https://leadiq.com/c/emergys/5a1d800324000024005afeb2",
+            "status": "RAW",
+            "entityStatus": "CONFIRMED_ENTITY",
+            "classification": "GENERIC_COMPANY_CONTENT",
+            "freshness": "CURRENT",
+            "relation": "UNKNOWN_RELATION"
+          },
+          {
+            "id": "e1b6de14-38ee-45ad-819f-fcbe1a16abe6",
+            "sourceUrl": "https://emergys.com/whitepapers",
+            "status": "RAW",
+            "entityStatus": "CONFIRMED_ENTITY",
+            "classification": "GENERIC_COMPANY_CONTENT",
+            "freshness": "UNKNOWN_DATE",
+            "relation": "UNKNOWN_RELATION"
+          },
+          {
+            "id": "315255b2-c067-4145-97f7-a3f4650384e4",
+            "sourceUrl": "https://emergys.com/news/vyomlabs-now-rebranded-as-emergys",
+            "status": "RAW",
+            "entityStatus": "CONFIRMED_ENTITY",
+            "classification": "GENERIC_COMPANY_CONTENT",
+            "freshness": "CURRENT",
+            "relation": "UNKNOWN_RELATION"
+          },
+          {
+            "id": "6631e236-7f77-4d10-bf22-99f802f85156",
+            "sourceUrl": "https://emergys.com/news",
+            "status": "RAW",
+            "entityStatus": "CONFIRMED_ENTITY",
+            "classification": "GENERIC_COMPANY_CONTENT",
+            "freshness": "CURRENT",
+            "relation": "UNKNOWN_RELATION"
+          },
+          {
+            "id": "8a539b35-aa8f-461d-9cbf-e9da63deee42",
+            "sourceUrl": "https://emergys.com/blog/business-intelligence-bi-for-regulatory-compliance",
+            "status": "RAW",
+            "entityStatus": "CONFIRMED_ENTITY",
+            "classification": "GENERIC_COMPANY_CONTENT",
+            "freshness": "UNKNOWN_DATE",
+            "relation": "UNKNOWN_RELATION"
+          },
+          {
+            "id": "0414453c-740d-4cad-bd66-03685bfdfdc4",
+            "sourceUrl": "https://emergys.com/modern-applications/platform-engineering/platform-sustenance",
+            "status": "RAW",
+            "entityStatus": "CONFIRMED_ENTITY",
+            "classification": "GENERIC_COMPANY_CONTENT",
+            "freshness": "UNKNOWN_DATE",
+            "relation": "UNKNOWN_RELATION"
+          },
+          {
+            "id": "11e75011-7426-488a-8ac1-356438428eb5",
+            "sourceUrl": "https://emergys.com/news/bmc-connect-2024",
+            "status": "RAW",
+            "entityStatus": "CONFIRMED_ENTITY",
+            "classification": "GENERIC_COMPANY_CONTENT",
+            "freshness": "RECENT",
+            "relation": "UNKNOWN_RELATION"
+          },
+          {
+            "id": "4974cdc1-474e-4b28-9ef0-61e18753149c",
+            "sourceUrl": "https://emergys.com/news/emergys-sme-tech-advancements-with-sap",
+            "status": "RAW",
+            "entityStatus": "CONFIRMED_ENTITY",
+            "classification": "GENERIC_COMPANY_CONTENT",
+            "freshness": "CURRENT",
+            "relation": "UNKNOWN_RELATION"
+          },
+          {
+            "id": "d78834fe-0e11-4f71-9dcc-51d018e2c2f1",
+            "sourceUrl": "https://emergys.com/blog/digital-transformation-for-financial-services-with-servicenow",
+            "status": "RAW",
+            "entityStatus": "CONFIRMED_ENTITY",
+            "classification": "SUPPORTING_CONTEXT",
+            "freshness": "CURRENT",
+            "relation": "UNKNOWN_RELATION"
+          },
+          {
+            "id": "11b37770-912f-4a83-8719-4e5db553940d",
+            "sourceUrl": "https://emergys.com/blog/top-no-code-and-low-code-platforms-for-2023",
+            "status": "RAW",
+            "entityStatus": "CONFIRMED_ENTITY",
+            "classification": "GENERIC_COMPANY_CONTENT",
+            "freshness": "CURRENT",
+            "relation": "UNKNOWN_RELATION"
+          },
+          {
+            "id": "b180dcbf-65df-4a9f-b68e-be25bdd0f3c9",
+            "sourceUrl": "https://emergys.com/blog/how-a-cross-platform-ai-assistant-unifies-the-modern-enterprise",
+            "status": "RAW",
+            "entityStatus": "CONFIRMED_ENTITY",
+            "classification": "GENERIC_COMPANY_CONTENT",
+            "freshness": "CURRENT",
+            "relation": "UNKNOWN_RELATION"
+          }
+        ],
+        "rejected": []
+      },
+      "factProposals": {
+        "approved": [],
+        "pending": [
+          {
+            "id": "ee2a5ed0-5fef-4fc3-a5eb-68f9ad171656",
+            "researchJobId": "1beecf16-1552-4d9d-b53b-76eba0e3c7be",
+            "questionId": "86595e4b-3607-4cb8-bdbe-cc7253bf0e09",
+            "organizationId": "02d40c31-72e4-42d9-9d8d-fe676a369205",
+            "projectId": "b4c8a95a-eb1c-4a86-89d6-62d72097d820",
+            "companyId": "8d247b8b-9abc-4153-969e-1598165b2139",
+            "evidenceId": "de669be8-472e-4f30-a1e0-213921ebb4c0",
+            "factType": "TECHNOLOGY_MENTION",
+            "structuredValue": {
+              "technologies": [
+                "Continuous Delivery",
+                "GitLab CI",
+                "SQL",
+                "Oracle",
+                "JSON-LD",
+                "Really Simple Discovery",
+                "Google Tag Manager",
+                "Autoptimize"
+              ]
+            },
+            "effectiveDate": "2026-08-31",
+            "confidence": 95,
+            "supportingExcerpt": "Emergys uses 8 technology products and services including Continuous Delivery, GitLab CI, SQL, and more. Explore Emergys's tech stack below.\n\n* Continuous Delivery\n\n  Continuous Integration\n* GitLab CI\n\n  Continuous Integration\n* SQL\n\n  Database\n* Oracle\n\n  Enterprise\n* JSON-LD\n\n  Javascript Frameworks\n* Really Simple Discovery\n\n  Miscellaneous\n* Google Tag Manager\n\n  Tag Management\n* Autoptimize\n\n  Web Platform Extensions",
+            "extractorVersion": "fact-extraction-v2",
+            "status": "PENDING",
+            "createdAt": "2026-08-31T10:36:09.036Z"
+          }
+        ],
+        "rejected": []
+      },
+      "persistedFacts": [],
+      "signals": [],
+      "clusters": [],
+      "independentEvents": [],
+      "when": "UNKNOWN — no accepted current timing signal",
+      "why": {
+        "status": "INSUFFICIENT_EVIDENCE",
+        "text": "Insufficient evidence to establish current urgency.",
+        "claims": [
+          {
+            "explanationId": "6d18d6a0-c24d-4238-bb2d-70efc8659dec",
+            "ordinal": 1,
+            "claimText": "Insufficient evidence to establish current urgency.",
+            "claimType": "INSUFFICIENT_EVIDENCE",
+            "material": false,
+            "traceabilityStatus": "TRACED",
+            "signalIds": [],
+            "clusterIds": [],
+            "factIds": [],
+            "evidenceIds": [],
+            "sourceUrls": []
+          }
+        ]
+      },
+      "opportunity": {
+        "state": "WATCH",
+        "score": null,
+        "confidence": null,
+        "fit": null,
+        "need": null,
+        "timing": null,
+        "hypothesis": "Insufficient evidence for a scored Managed SOC opportunity"
+      },
+      "contradictions": [],
+      "missingEvidence": [
+        "Security leader change",
+        "Security operations hiring",
+        "Funded risk program window",
+        "Security stack change"
+      ],
+      "nextBestAction": "Gather independent, direct evidence for the missing approved Managed SOC signal areas; do not infer intent."
+    }
+  ],
+  "ranking": [
+    {
+      "company": "Cloud4C Services",
+      "state": "WATCH",
+      "score": null,
+      "confidence": null,
+      "reason": "Insufficient evidence for a scored Managed SOC opportunity"
+    },
+    {
+      "company": "Cloudi",
+      "state": "WATCH",
+      "score": null,
+      "confidence": null,
+      "reason": "Insufficient evidence for a scored Managed SOC opportunity"
+    },
+    {
+      "company": "E2E Cloud",
+      "state": "WATCH",
+      "score": null,
+      "confidence": null,
+      "reason": "Insufficient evidence for a scored Managed SOC opportunity"
+    },
+    {
+      "company": "ENTUNE IT Consulting Pvt Ltd",
+      "state": "WATCH",
+      "score": null,
+      "confidence": null,
+      "reason": "Insufficient evidence for a scored Managed SOC opportunity"
+    },
+    {
+      "company": "Emergys",
+      "state": "WATCH",
+      "score": null,
+      "confidence": null,
+      "reason": "Insufficient evidence for a scored Managed SOC opportunity"
+    }
+  ],
+  "summary": {
+    "companies": 5,
+    "questions": 20,
+    "questionsInvestigated": 20,
+    "questionsAnsweredFromCache": 0,
+    "questionsDeferred": 0,
+    "providerCalls": 21,
+    "tavilyCalls": 21,
+    "rawRetrievedResults": 44,
+    "questionRelevantEvidence": 8,
+    "directEventEvidence": 2,
+    "supportingContext": 6,
+    "estimatedCost": 0.21000000000000005,
+    "actualCost": 0,
+    "averageCostPerCompany": 0.04200000000000001,
+    "averageCostPerQuestionInvestigated": 0.010500000000000002,
+    "pendingFactProposals": 4,
+    "approvedFacts": 0,
+    "activeSignals": 0,
+    "activeClusters": 0
+  },
+  "comparison": {
+    "test14": {
+      "questions": 20,
+      "providerCalls": 4,
+      "approvedFacts": 0,
+      "signals": 0
+    },
+    "coverageMateriallyImproved": true
+  },
+  "quality": {
+    "whyProvenance": "PASS",
+    "unsupportedIntentClaims": 0,
+    "wrongEntityEvidence": 0,
+    "duplicateEventInflation": 0,
+    "missingEvidenceTreatedAsNegative": "PASS",
+    "costQuestionTraceability": "PASS",
+    "terminalQuestionCoverage": "PASS",
+    "unexplainedGenericDeferred": 0,
+    "skippedCompanies": 0,
+    "sellerContentProducedBuyerSignal": "PASS",
+    "genericContentEstablishedWhen": "PASS"
+  },
+  "safety": {
+    "delta": {
+      "questions": 0,
+      "jobs": 0,
+      "evidence": 0,
+      "facts": 0,
+      "proposals": 0,
+      "costs": 0,
+      "signals": 0,
+      "clusters": 0,
+      "opportunities": 0,
+      "contacts": 0
+    },
+    "providerCallsWithinBound": true,
+    "estimatedCostWithinBound": true,
+    "perCompanyEstimatedCostWithinBound": true,
+    "contactEnrichmentDelta": 0,
+    "productionOperations": 0
+  },
+  "finalStatus": "PASS"
+}

@@ -491,7 +491,12 @@ export async function executeResearchNow(input: {
     .innerJoin(researchQuestionsTable, eq(researchJobsTable.questionId, researchQuestionsTable.id))
     .where(eq(researchJobsTable.idempotencyKey, idempotencyKey))
     .limit(1);
-  const failedAttempt = replay?.job.status === "FAILED" ? replay : null;
+  const interruptedAttempt = replay?.job.status === "RUNNING"
+    && replay.job.startedAt !== null
+    && replay.job.startedAt.getTime() <= now.getTime() - 120_000
+    ? replay
+    : null;
+  const failedAttempt = replay?.job.status === "FAILED" || interruptedAttempt ? replay : null;
   if (failedAttempt) {
     idempotencyKey = `${baseIdempotencyKey}:retry:${failedAttempt.job.id}`;
     [replay] = await db.select({
@@ -526,6 +531,7 @@ export async function executeResearchNow(input: {
     .limit(1);
   if (
     !input.forceRefresh &&
+    !input.plannedQuestion &&
     !failedAttempt &&
     latestQuestion?.nextRefreshAt &&
     latestQuestion.nextRefreshAt > now &&
@@ -624,7 +630,7 @@ export async function executeResearchNow(input: {
     };
   }
 
-  const matchingQuestions = input.forceRefresh
+  const matchingQuestions = input.forceRefresh || input.plannedQuestion
     ? await db.select().from(researchQuestionsTable).where(and(
         eq(researchQuestionsTable.projectId, input.projectId),
         eq(researchQuestionsTable.companyId, row.company.id),
@@ -643,12 +649,14 @@ export async function executeResearchNow(input: {
         priority: plan.priority,
         expectedInformationGain: plan.expectedInformationGain,
         estimatedCost: plan.estimatedCost,
-        status: "IN_PROGRESS",
         attemptCount: reusableQuestion.attemptCount + 1,
         lastAttemptAt: now,
-        answeredAt: null,
-        lastResultSummary: null,
-        nextRefreshAt: null,
+        ...(reusableQuestion.status === "OPEN" || reusableQuestion.status === "IN_PROGRESS" ? {
+          status: "IN_PROGRESS" as const,
+          answeredAt: null,
+          lastResultSummary: null,
+          nextRefreshAt: null,
+        } : {}),
       }).where(eq(researchQuestionsTable.id, reusableQuestion.id)).returning()
     : [];
   const [insertedQuestion] = refreshedQuestion ? [] : await db.insert(researchQuestionsTable).values({

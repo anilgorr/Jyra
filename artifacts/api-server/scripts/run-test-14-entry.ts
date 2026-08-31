@@ -15,14 +15,19 @@ import { evaluateClustersForCompany } from "../src/lib/signal-clusters";
 import { evaluateOpportunity } from "../src/lib/opportunity-engine";
 import { generateWhyForOpportunity } from "../src/lib/opportunity-why";
 
-const TEST = "REAL_DATA_TEST_14";
-const RESULT = "REAL_DATA_TEST_14_RESULT.json";
-const REPORT = "REAL_DATA_TEST_14.md";
-const USER = "system:real-data-test-14";
+const VARIANT = process.env.REAL_DATA_TEST_VARIANT === "14A" ? "14A" : "14";
+const IS_14A = VARIANT === "14A";
+const TEST = `REAL_DATA_TEST_${VARIANT}`;
+const RESULT = `${TEST}_RESULT.json`;
+const REPORT = `${TEST}.md`;
+const USER = `system:real-data-test-${VARIANT.toLowerCase()}`;
+const RUN_SCOPE = IS_14A ? "test14a-v2" : "test14";
 const EXPECTED = ["E2E Cloud", "Cloud4C Services", "Emergys", "ENTUNE IT Consulting Pvt Ltd", "Cloudi"];
 const MAX_QUESTIONS_PER_COMPANY = 4;
-const MAX_CALLS = EXPECTED.length * MAX_QUESTIONS_PER_COMPANY;
-const MAX_ESTIMATED_COST = 1;
+const EXPECTED_QUESTIONS = EXPECTED.length * MAX_QUESTIONS_PER_COMPANY;
+const MAX_ESTIMATED_COST = IS_14A ? 0.5 : 1;
+const MAX_ESTIMATED_COST_PER_COMPANY = IS_14A ? 0.1 : 1;
+const MAX_PROVIDER_ATTEMPTS = Math.floor(MAX_ESTIMATED_COST / 0.01);
 
 const n = (value: unknown) => Number(value ?? 0);
 const sum = (values: Array<number | null>) => values.reduce<number>((total, value) => total + (value ?? 0), 0);
@@ -50,7 +55,7 @@ function markdown(report: any) {
   const rows = report.companies.map((c: any) =>
     `| ${c.company} | ${c.questions.length} | ${c.providerCalls.length} | ${c.evidence.accepted.length} | ${c.evidence.rejected.length} | ${c.factProposals.approved.length} | ${c.signals.length} | ${c.clusters.length} | ${c.opportunity.state} | ${c.opportunity.score ?? "UNKNOWN"} | ${c.opportunity.confidence ?? "UNKNOWN"} | ${c.when} |`,
   ).join("\n");
-  return `# JYRA Real Data Test 14 — Managed SOC WHEN / WHY
+  return `# JYRA Real Data Test ${VARIANT} — Managed SOC WHEN / WHY
 
 ## Final status
 
@@ -58,10 +63,19 @@ function markdown(report: any) {
 
 This development-only run evaluated exactly the five Test 13 \`LIKELY_FIT\` companies. It used only the existing approved and active Managed SOC signal pack and the existing WEB_SEARCH provider path. It did not perform discovery, contact enrichment, WHO changes, direct LinkedIn scraping, Apify technology research, or production operations.
 
+## Root-cause analysis
+
+${report.rootCause}
+
+The fix preserves the ordinary refresh gate, but planned independent signal-pack questions no longer inherit another question's refresh date. Each planned question now receives its own terminal disposition.
+
 ## Summary
 
 - Companies: ${report.summary.companies}
 - Questions executed: ${report.summary.questions}
+- Questions investigated: ${report.summary.questionsInvestigated}
+- Questions answered from cache: ${report.summary.questionsAnsweredFromCache}
+- Questions deferred: ${report.summary.questionsDeferred}
 - Provider attempts: ${report.summary.providerCalls}
 - Estimated cost: $${report.summary.estimatedCost.toFixed(4)}
 - Actual cost: $${report.summary.actualCost.toFixed(4)}
@@ -97,10 +111,10 @@ ${report.companies.map((c: any) => `### ${c.company}
 - Contradictions: ${c.contradictions.join("; ") || "NONE"}
 - Next-best action: ${c.nextBestAction}
 - Questions:
-${c.questions.map((q: any) => `  - ${q.type}: ${q.text} — ${q.status}`).join("\n")}
+${c.questions.map((q: any) => `  - ${q.type}: ${q.text} — ${q.terminalDisposition}; calls ${q.providerCalls}; cache hits ${q.cacheHits}; raw ${q.rawResults}; relevant ${q.questionRelevantResults}; direct ${q.directEventEvidence}; context ${q.supportingContext}; rejected ${q.rejectedOrIrrelevant}; cost $${q.cost}; stop: ${q.stopReason}`).join("\n")}
 - Provider attempts:
 ${c.providerCalls.map((p: any) => `  - ${p.provider} / ${p.capability}: ${p.status}; $${p.actualCost ?? p.estimatedCost}; ${p.latencyMs ?? 0} ms`).join("\n") || "  - NONE"}
-- Accepted evidence:
+- Entity-matched raw evidence (not fact-accepted or signal-supporting by default):
 ${c.evidence.accepted.map((e: any) => `  - ${e.sourceUrl} — ${e.status}`).join("\n") || "  - NONE"}
 - Rejected or ambiguous evidence:
 ${c.evidence.rejected.map((e: any) => `  - ${e.sourceUrl} — ${e.reason}`).join("\n") || "  - NONE"}
@@ -111,6 +125,12 @@ ${c.signals.map((s: any) => `  - ${s.code}: ${s.status}; strength ${s.strength};
 - Clusters:
 ${c.clusters.map((x: any) => `  - ${x.status}: ${x.explanation}`).join("\n") || "  - NONE"}
 `).join("\n")}
+
+## Test 14 versus Test 14A
+
+- Test 14: 20 questions; 4 provider attempts; 0 approved facts; 0 signals.
+- Test ${VARIANT}: ${report.summary.questions} questions; ${report.summary.providerCalls} provider attempts; ${report.summary.questionRelevantEvidence} question-relevant results; ${report.summary.directEventEvidence} direct-event results; ${report.summary.approvedFacts} approved facts; ${report.summary.activeSignals} signals.
+- Coverage materially improved: ${report.comparison.coverageMateriallyImproved ? "YES" : "NO"}.
 
 ## Safety and quality assertions
 
@@ -166,13 +186,18 @@ async function main() {
     if (questions.length !== MAX_QUESTIONS_PER_COMPANY || questions.some(q => q.providerCapability !== "WEB_SEARCH")) throw new Error(`Invalid bounded question plan for ${row.company.canonicalName}`);
     plans.set(row.company.id, questions);
   }
-  if ([...plans.values()].flat().length !== MAX_CALLS) throw new Error("Global provider-call bound changed");
-  if (sum([...plans.values()].flat().map(p => p.estimatedCost)) > MAX_ESTIMATED_COST) throw new Error("Planned estimated cost exceeds Test 14 cap");
+  if ([...plans.values()].flat().length !== EXPECTED_QUESTIONS) throw new Error("Expected question population changed");
+  if (sum([...plans.values()].flat().map(p => p.estimatedCost)) > MAX_ESTIMATED_COST) throw new Error(`Planned estimated cost exceeds Test ${VARIANT} cap`);
+  for (const row of population) {
+    if ((plans.get(row.company.id) ?? []).reduce((total, plan) => total + plan.estimatedCost, 0) > MAX_ESTIMATED_COST_PER_COMPANY) {
+      throw new Error(`Planned estimated cost exceeds per-company cap for ${row.company.canonicalName}`);
+    }
+  }
   for (const row of population) {
     for (const [index, question] of (plans.get(row.company.id) ?? []).entries()) {
       const result = await executeResearchNow({
         projectId: target.project.id, projectCompanyId: row.projectCompany.id, organizationId: target.organization.id,
-        userId: USER, plannedQuestion: question, idempotencyScope: `test14:${index}:${question.questionType}`,
+        userId: USER, plannedQuestion: question, idempotencyScope: `${RUN_SCOPE}:${index}:${question.questionType}`,
       });
       outcomes.set(row.company.id, [...(outcomes.get(row.company.id) ?? []), "stopped" in result
         ? { status:"DEFERRED", reason:result.reason, questionId:null, jobId:null }
@@ -187,7 +212,7 @@ async function main() {
   const delta = Object.fromEntries(Object.keys(before).map(key => [key, (after as any)[key] - (before as any)[key]]));
   const [firstTest14Cost] = await db.select({ startedAt:researchRequestCostsTable.startedAt }).from(researchRequestCostsTable)
     .innerJoin(researchJobsTable,eq(researchJobsTable.id,researchRequestCostsTable.researchJobId))
-    .where(and(eq(researchRequestCostsTable.projectId,target.project.id),like(researchJobsTable.idempotencyKey,"%:test14:%")))
+    .where(and(eq(researchRequestCostsTable.projectId,target.project.id),like(researchJobsTable.idempotencyKey,`%:${RUN_SCOPE}:%`)))
     .orderBy(researchRequestCostsTable.startedAt).limit(1);
   const evidenceStart = firstTest14Cost?.startedAt ?? startedAt;
   const companies = [];
@@ -195,12 +220,12 @@ async function main() {
     const [calls, evidenceRows, proposalRows, factRows, signalRows, clusterRows, opportunity] = await Promise.all([
       db.select({ cost:researchRequestCostsTable, provider:dataProvidersTable }).from(researchRequestCostsTable).leftJoin(dataProvidersTable,eq(dataProvidersTable.id,researchRequestCostsTable.providerId))
         .innerJoin(researchJobsTable,eq(researchJobsTable.id,researchRequestCostsTable.researchJobId))
-        .where(and(eq(researchRequestCostsTable.projectId,target.project.id),eq(researchRequestCostsTable.companyId,row.company.id),like(researchJobsTable.idempotencyKey,"%:test14:%"))),
-      db.select({ evidence:companyEvidenceTable, review:evidenceAttributionReviewsTable }).from(companyEvidenceTable)
+        .where(and(eq(researchRequestCostsTable.projectId,target.project.id),eq(researchRequestCostsTable.companyId,row.company.id),like(researchJobsTable.idempotencyKey,`%:${RUN_SCOPE}:%`))),
+      db.select({ evidence:companyEvidenceTable, review:evidenceAttributionReviewsTable, page:crawlPagesTable }).from(companyEvidenceTable)
         .innerJoin(crawlPagesTable,eq(crawlPagesTable.id,companyEvidenceTable.crawlPageId)).leftJoin(evidenceAttributionReviewsTable,eq(evidenceAttributionReviewsTable.crawlPageId,crawlPagesTable.id))
         .where(and(eq(companyEvidenceTable.companyId,row.company.id),sql`${companyEvidenceTable.createdAt} >= ${evidenceStart}`)),
       db.select().from(researchFactProposalsTable).innerJoin(researchJobsTable,eq(researchJobsTable.id,researchFactProposalsTable.researchJobId))
-        .where(and(eq(researchFactProposalsTable.projectId,target.project.id),eq(researchFactProposalsTable.companyId,row.company.id),like(researchJobsTable.idempotencyKey,"%:test14:%"))),
+        .where(and(eq(researchFactProposalsTable.projectId,target.project.id),eq(researchFactProposalsTable.companyId,row.company.id),like(researchJobsTable.idempotencyKey,`%:${RUN_SCOPE}:%`))),
       db.select().from(companyFactsTable).where(eq(companyFactsTable.companyId,row.company.id)),
       db.select({ signal:signalsTable, definition:signalDefinitionsTable }).from(signalsTable).innerJoin(signalDefinitionsTable,eq(signalDefinitionsTable.id,signalsTable.signalDefinitionId))
         .where(and(eq(signalsTable.projectId,target.project.id),eq(signalsTable.companyId,row.company.id),eq(signalDefinitionsTable.signalPackId,selection.pack.id))),
@@ -213,18 +238,70 @@ async function main() {
     const execution = outcomes.get(row.company.id) ?? [];
     const [why] = await db.select().from(whyExplanationsTable).where(and(eq(whyExplanationsTable.opportunityId,opp.id),eq(whyExplanationsTable.current,true))).limit(1);
     const claims = why ? await db.select().from(whyClaimsTable).where(eq(whyClaimsTable.explanationId,why.id)) : [];
-    const acceptedEvidence = evidenceRows.filter(e => e.review?.acceptedAsEvidence === true && !["AMBIGUOUS_ENTITY","WRONG_ENTITY"].includes(e.review.entityStatus));
-    const rejectedEvidence = evidenceRows.filter(e => !acceptedEvidence.includes(e));
+    const evidenceAudit = evidenceRows.map((e:any) => {
+      const content = `${e.page.title ?? ""} ${e.page.rawContent ?? ""}`;
+      const seller = /\b(?:we|our)\s+(?:offer|provide|deliver)|managed (?:soc|security) services?|cybersecurity services? provider/i.test(content);
+      const leadershipEvent = /\b(?:appointed|named|joins? as)\b.{0,100}\b(?:ciso|chief information security officer|head of (?:information )?security)\b|\b(?:ciso|chief information security officer|head of (?:information )?security)\b.{0,100}\b(?:appointed|named|joins? as)\b/i.test(content);
+      const hiringEvent = /\b(?:hiring|job opening|open role|vacanc(?:y|ies)|seeking applicants)\b.{0,120}\b(?:soc analyst|security engineer|cybersecurity|incident response)\b|\b(?:soc analyst|security engineer|cybersecurity|incident response)\b.{0,120}\b(?:hiring|job opening|open role|vacanc(?:y|ies))\b/i.test(content);
+      const fundedProgramEvent = /\b(?:announced|launched|invested|secured|certified|achieved)\b.{0,120}\b(?:security investment|cybersecurity program|iso 27001|soc 2|risk program)\b/i.test(content);
+      const stackEvent = /\b(?:migrated|implemented|deployed|adopted|replaced)\b.{0,120}\b(?:siem|microsoft sentinel|splunk|edr|xdr)\b|\b(?:siem|microsoft sentinel|splunk|edr|xdr)\b.{0,120}\b(?:migration|implementation|deployment|adoption|replacement)\b/i.test(content);
+      const area = leadershipEvent ? "LEADERSHIP" : hiringEvent ? "HIRING" : fundedProgramEvent ? "EXPANSION" : stackEvent ? "TECHNOLOGY" : null;
+      const event = area !== null;
+      const security = /\b(?:ciso|chief information security|soc analyst|security engineer|cybersecurity|iso 27001|soc 2|siem|sentinel|splunk|edr|xdr|incident response)\b/i.test(content);
+      const dated = /\b(?:20[12]\d|jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)\b/i.test(content);
+      const classification = seller ? "VENDOR_CONTENT" : event && security && dated ? "DIRECT_EVENT_EVIDENCE"
+        : security ? "SUPPORTING_CONTEXT" : "GENERIC_COMPANY_CONTENT";
+      const freshness = !dated ? "UNKNOWN_DATE" : /\b202[56]\b/.test(content) ? "CURRENT" : /\b202[34]\b/.test(content) ? "RECENT" : "STALE";
+      const relation = seller ? "COMPANY_AS_SELLER" : classification === "DIRECT_EVENT_EVIDENCE" ? "COMPANY_AS_BUYER" : "UNKNOWN_RELATION";
+      return { ...e, classification, freshness, relation, area };
+    });
+    const acceptedEvidence = evidenceAudit.filter((e:any) => e.review?.acceptedAsEvidence === true && !["AMBIGUOUS_ENTITY","WRONG_ENTITY"].includes(e.review.entityStatus));
+    const rejectedEvidence = evidenceAudit.filter((e:any) => !acceptedEvidence.includes(e));
     const activeSignals = signalRows.filter(s => s.signal.status === "ACTIVE");
     const activeClusters = clusterRows.filter(c => c.status === "ACTIVE");
     const missing = definitions.filter(d => !activeSignals.some(s => s.definition.id === d.id)).map(d => d.name);
+    const callsForQuestion = (questionId:string|null) => calls.filter((c:any)=>c.cost.questionId===questionId);
+    const questionRows = planned.map((q,index)=>{
+      const outcome = execution[index];
+      const matchingCalls = callsForQuestion(outcome?.questionId ?? null);
+      const areaEvidence = evidenceAudit.filter((e:any)=>e.area===q.questionType);
+      const direct = areaEvidence.filter((e:any)=>e.classification==="DIRECT_EVENT_EVIDENCE").length;
+      const context = areaEvidence.filter((e:any)=>e.classification==="SUPPORTING_CONTEXT").length;
+      let disposition = "ERROR";
+      if (!outcome) disposition = "ERROR";
+      else if (outcome.status === "DEFERRED") {
+        disposition = /budget/i.test(outcome.reason ?? "") ? "DEFERRED_BUDGET"
+          : /due until|duplicate|reuse/i.test(outcome.reason ?? "") ? "DEFERRED_DUPLICATE"
+          : /provider/i.test(outcome.reason ?? "") ? "DEFERRED_PROVIDER_UNAVAILABLE"
+          : "DEFERRED_LOW_INFORMATION_VALUE";
+      } else if (activeSignals.some((s:any)=>s.definition.category === q.signalCategory)) disposition = "ANSWERED_POSITIVE";
+      else disposition = "INSUFFICIENT_EVIDENCE";
+      return {
+        type:q.questionType, text:q.questionText, terminalDisposition:disposition,
+        providerCalls:matchingCalls.length, cacheHits:outcome && matchingCalls.length===0 && outcome.questionId ? 1 : 0,
+        rawResults:matchingCalls.reduce((t:number,c:any)=>t+(c.cost.resultCount ?? 0),0),
+        questionRelevantResults:direct+context, directEventEvidence:direct, supportingContext:context,
+        rejectedOrIrrelevant:evidenceAudit.length-direct-context,
+        facts:proposalValues.filter((f:any)=>f.questionId===outcome?.questionId).length,
+        signals:activeSignals.filter((s:any)=>s.definition.category===q.signalCategory).length,
+        cost:sum(matchingCalls.map((c:any)=>c.cost.actualCost ?? c.cost.estimatedCost)),
+        stopReason:disposition==="INSUFFICIENT_EVIDENCE" ? "Reasonable bounded attempt found no accepted signal-supporting fact."
+          : disposition==="ANSWERED_POSITIVE" ? "Accepted facts satisfied the approved signal definition."
+          : outcome?.reason ?? "Execution error.",
+        questionId:outcome?.questionId ?? null,
+      };
+    });
     companies.push({
       company:row.company.canonicalName, domain:row.company.domain,
       baseline:{ ...(baselineByCompany.get(row.company.id) ?? {}), capturedAt:iso(startedAt) },
-      questions:planned.map((q,index)=>({type:q.questionType,text:q.questionText,status:execution[index]?.status??"NOT_RUN",reason:execution[index]?.reason??q.reason,questionId:execution[index]?.questionId??null})),
+      questions:questionRows,
       providerCalls:calls.map(c=>({provider:c.provider?.name??"UNKNOWN",capability:c.cost.providerCapability,status:c.cost.status,latencyMs:c.cost.latencyMs,estimatedCost:c.cost.estimatedCost,actualCost:c.cost.actualCost,questionId:c.cost.questionId})),
-      evidence:{accepted:acceptedEvidence.map(e=>({id:e.evidence.id,sourceUrl:e.evidence.sourceUrl,status:e.evidence.status,entityStatus:e.review?.entityStatus})),
-        rejected:rejectedEvidence.map(e=>({id:e.evidence.id,sourceUrl:e.evidence.sourceUrl,reason:e.review?.entityReason??"Not accepted"}))},
+      evidence:{rawRetrieved:evidenceAudit.length,
+        questionRelevant:evidenceAudit.filter((e:any)=>["DIRECT_EVENT_EVIDENCE","SUPPORTING_CONTEXT"].includes(e.classification)).length,
+        directEvent:evidenceAudit.filter((e:any)=>e.classification==="DIRECT_EVENT_EVIDENCE").length,
+        supportingContext:evidenceAudit.filter((e:any)=>e.classification==="SUPPORTING_CONTEXT").length,
+        accepted:acceptedEvidence.map((e:any)=>({id:e.evidence.id,sourceUrl:e.evidence.sourceUrl,status:e.evidence.status,entityStatus:e.review?.entityStatus,classification:e.classification,freshness:e.freshness,relation:e.relation})),
+        rejected:rejectedEvidence.map((e:any)=>({id:e.evidence.id,sourceUrl:e.evidence.sourceUrl,reason:e.review?.entityReason??"Not accepted",classification:e.classification,freshness:e.freshness,relation:e.relation}))},
       factProposals:{approved:proposalValues.filter((f:any)=>f.status==="APPROVED"),pending:proposalValues.filter((f:any)=>f.status==="PENDING"),rejected:proposalValues.filter((f:any)=>f.status==="REJECTED")},
       persistedFacts:factRows.map(f=>({id:f.id,factType:f.factType,effectiveDate:f.effectiveDate,confidence:f.confidence,evidenceId:f.evidenceId})),
       signals:signalRows.map(s=>({id:s.signal.id,code:s.definition.code,status:s.signal.status,strength:s.signal.currentStrength,confidence:s.signal.confidence,evidenceIds:s.signal.supportingEvidenceIds})),
@@ -240,6 +317,7 @@ async function main() {
   }
   const allCalls = companies.flatMap((c:any)=>c.providerCalls);
   const allClaims = companies.flatMap((c:any)=>c.why.claims);
+  const allQuestions = companies.flatMap((c:any)=>c.questions);
   const intent = /\b(?:ready to buy|buying intent|approved budget|vendor search|issued an? rfp|needs our)\b/i;
   const quality = {
     whyProvenance: allClaims.every((c:any)=>!c.material || (c.traceabilityStatus==="TRACED" && c.evidenceIds.length>0)) ? "PASS":"FAIL",
@@ -248,25 +326,53 @@ async function main() {
     duplicateEventInflation: companies.flatMap((c:any)=>c.independentEvents).filter((g:any,i:number,a:any[])=>a.findIndex(x=>x.eventKey===g.eventKey) !== i).length,
     missingEvidenceTreatedAsNegative: companies.some((c:any)=>c.missingEvidence.length && c.signals.some((s:any)=>s.status==="NEGATIVE")) ? "FAIL":"PASS",
     costQuestionTraceability: allCalls.every((c:any)=>c.questionId) ? "PASS":"FAIL",
+    terminalQuestionCoverage: allQuestions.length===20 && allQuestions.every((q:any)=>[
+      "ANSWERED_POSITIVE","ANSWERED_NEGATIVE","INSUFFICIENT_EVIDENCE","DEFERRED_BUDGET",
+      "DEFERRED_DUPLICATE","DEFERRED_PROVIDER_UNAVAILABLE","DEFERRED_LOW_INFORMATION_VALUE","ERROR",
+    ].includes(q.terminalDisposition)) ? "PASS":"FAIL",
+    unexplainedGenericDeferred: allQuestions.filter((q:any)=>q.terminalDisposition==="DEFERRED").length,
+    skippedCompanies: companies.filter((c:any)=>c.questions.every((q:any)=>q.providerCalls===0&&q.cacheHits===0)&&!c.questions.every((q:any)=>q.stopReason)).length,
+    sellerContentProducedBuyerSignal: companies.some((c:any)=>c.evidence.accepted.some((e:any)=>e.relation==="COMPANY_AS_SELLER")&&c.signals.length>0) ? "FAIL":"PASS",
+    genericContentEstablishedWhen: companies.some((c:any)=>c.when!=="UNKNOWN — no accepted current timing signal"&&
+      c.evidence.accepted.every((e:any)=>e.classification==="GENERIC_COMPANY_CONTENT")) ? "FAIL":"PASS",
   };
   const finalStatus = quality.whyProvenance==="PASS" && quality.unsupportedIntentClaims===0 && quality.wrongEntityEvidence===0 &&
     quality.duplicateEventInflation===0 && quality.missingEvidenceTreatedAsNegative==="PASS" &&
-    quality.costQuestionTraceability==="PASS" && delta.contacts===0 && allCalls.length<=MAX_CALLS ? "PASS":"FAIL";
+    quality.costQuestionTraceability==="PASS" && quality.terminalQuestionCoverage==="PASS" &&
+    quality.unexplainedGenericDeferred===0 && quality.skippedCompanies===0 &&
+    quality.sellerContentProducedBuyerSignal==="PASS" && quality.genericContentEstablishedWhen==="PASS" &&
+    delta.contacts===0 && allCalls.length<=MAX_PROVIDER_ATTEMPTS ? "PASS":"FAIL";
+  const estimatedCost = sum(allCalls.map((c:any)=>c.estimatedCost));
+  const actualCost = sum(allCalls.map((c:any)=>c.actualCost));
+  const investigated = allQuestions.filter((q:any)=>q.providerCalls>0||q.cacheHits>0).length;
   const report = {
     test:TEST, generatedAt:new Date().toISOString(), environment:"development", seller:"Aadit Technologies", project:"GTM-Q1",
     population:EXPECTED, configuration:{source:"approved active project signal pack",packSlug:selection.pack.slug,packVersion:selection.pack.version,
       definitions:definitions.map(d=>({id:d.id,code:d.code,name:d.name,status:d.status})),dynamicIntelligencePackRequired:false},
-    bounds:{maxQuestionsPerCompany:MAX_QUESTIONS_PER_COMPANY,maxProviderCalls:MAX_CALLS,maxEstimatedCost:MAX_ESTIMATED_COST},
+    rootCause:"The executor inspected the latest question for the company, regardless of question type. Once the first independent Managed SOC question became ANSWERED with a future nextRefreshAt, the shared company-level refresh guard returned early for the remaining question types before job creation, budget reservation, or provider routing. Explicit planned questions also did not reuse an existing matching terminal question row, which could collide with the database uniqueness constraint on refresh.",
+    fix:"The latest-question refresh guard now applies only to ordinary planner refreshes. Callers supplying an explicit plannedQuestion schedule that question independently and reuse the matching question-type row. Idempotency, budget reservation, and provider routing remain unchanged.",
+    bounds:{maxQuestionsPerCompany:MAX_QUESTIONS_PER_COMPANY,maxProviderAttempts:MAX_PROVIDER_ATTEMPTS,maxEstimatedCost:MAX_ESTIMATED_COST,maxEstimatedCostPerCompany:MAX_ESTIMATED_COST_PER_COMPANY},
     beforeAfter:{before,after}, companies,
     ranking:[...companies].sort((a:any,b:any)=>(b.opportunity.score??-1)-(a.opportunity.score??-1)||(b.opportunity.confidence??-1)-(a.opportunity.confidence??-1))
       .map((c:any)=>({company:c.company,state:c.opportunity.state,score:c.opportunity.score,confidence:c.opportunity.confidence,reason:c.opportunity.hypothesis})),
-    summary:{companies:companies.length,questions:companies.reduce((t:number,c:any)=>t+c.questions.length,0),providerCalls:allCalls.length,
-      estimatedCost:sum(allCalls.map((c:any)=>c.estimatedCost)),actualCost:sum(allCalls.map((c:any)=>c.actualCost)),
+    summary:{companies:companies.length,questions:allQuestions.length,questionsInvestigated:investigated,
+      questionsAnsweredFromCache:allQuestions.filter((q:any)=>q.cacheHits>0).length,
+      questionsDeferred:allQuestions.filter((q:any)=>q.terminalDisposition.startsWith("DEFERRED_")).length,
+      providerCalls:allCalls.length,tavilyCalls:allCalls.filter((c:any)=>/tavily/i.test(c.provider)).length,
+      rawRetrievedResults:companies.reduce((t:number,c:any)=>t+c.evidence.rawRetrieved,0),
+      questionRelevantEvidence:companies.reduce((t:number,c:any)=>t+c.evidence.questionRelevant,0),
+      directEventEvidence:companies.reduce((t:number,c:any)=>t+c.evidence.directEvent,0),
+      supportingContext:companies.reduce((t:number,c:any)=>t+c.evidence.supportingContext,0),
+      estimatedCost,actualCost,averageCostPerCompany:estimatedCost/companies.length,
+      averageCostPerQuestionInvestigated:investigated?estimatedCost/investigated:0,
       pendingFactProposals:companies.flatMap((c:any)=>c.factProposals.pending).length,
       approvedFacts:companies.flatMap((c:any)=>c.factProposals.approved).length,
       activeSignals:companies.flatMap((c:any)=>c.signals).filter((s:any)=>s.status==="ACTIVE").length,
       activeClusters:companies.flatMap((c:any)=>c.clusters).filter((s:any)=>s.status==="ACTIVE").length},
-    quality, safety:{delta,providerCallsWithinBound:allCalls.length<=MAX_CALLS,estimatedCostWithinBound:sum(allCalls.map((c:any)=>c.estimatedCost))<=MAX_ESTIMATED_COST,
+    comparison:{test14:{questions:20,providerCalls:4,approvedFacts:0,signals:0},
+      coverageMateriallyImproved:IS_14A&&investigated>4},
+    quality, safety:{delta,providerCallsWithinBound:allCalls.length<=MAX_PROVIDER_ATTEMPTS,estimatedCostWithinBound:estimatedCost<=MAX_ESTIMATED_COST,
+      perCompanyEstimatedCostWithinBound:companies.every((c:any)=>sum(c.providerCalls.map((p:any)=>p.estimatedCost))<=MAX_ESTIMATED_COST_PER_COMPANY),
       contactEnrichmentDelta:delta.contacts,productionOperations:0}, finalStatus,
   };
   writeFileSync(RESULT, JSON.stringify(report,null,2)+"\n");

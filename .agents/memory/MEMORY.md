@@ -26,3 +26,4 @@
 - [Provider quality versus identifier coverage](provider-quality-vs-identifier-coverage.md) — low LinkedIn coverage points to profile resolution, not a second firmographic provider, when eligible results are strong.
 - [Profile candidate attribution](profile-candidate-attribution.md) — score direct profile results or official-site outbound links; never inherit one result's evidence across embedded profile URLs.
 - [Stored profile trust](stored-profile-trust.md) — a canonical profile URL is not verified merely because it is stored; enrichment requires verified provenance or explicit user verification.
+- [Independent research scheduling](independent-research-scheduling.md) — explicit pack questions schedule independently; refresh reuse must respect status-aware uniqueness.
