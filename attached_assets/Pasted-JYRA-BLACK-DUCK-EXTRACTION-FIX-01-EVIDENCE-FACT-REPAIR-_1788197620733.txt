@@ -1,0 +1,712 @@
+JYRA — BLACK DUCK EXTRACTION FIX 01
+EVIDENCE → FACT REPAIR ONLY
+
+PURPOSE
+
+Retrieval is now frozen for the MVP.
+
+Freeze marker:
+MVP_RETRIEVAL_V1_FROZEN
+
+Adaptive retrieval has been productionized:
+
+ResearchQuestion
+→ Tavily primary
+→ sufficiency gate
+→ Exa conditional fallback
+→ merge/dedupe
+→ evidence pipeline
+
+DO NOT modify retrieval in this milestone.
+
+Known remaining issue:
+
+BLACK DUCK
+
+During MVP Fix Cycle 02, Black Duck had evidence mentioning the relevant
+security leadership event, but JYRA accepted an unrelated technology
+fact instead.
+
+This was classified as:
+
+FACT_EXTRACTION_FAILURE
+
+NOT:
+retrieval failure
+signal mapping failure
+entity failure
+
+GOAL
+
+Identify the exact generic extraction failure and implement the smallest
+safe fix so:
+
+relevant evidence
+→ correct atomic fact proposal
+→ correct validation
+→ approved fact
+
+Do NOT weaken evidence standards.
+
+==================================================
+1. DATABASE SAFETY
+==================================================
+
+DEVELOPMENT ONLY.
+
+Use ONLY development database.
+
+Do not:
+
+migrate production
+reset production
+seed production
+truncate production
+modify production customer data
+test against production
+
+Prefer no schema changes.
+
+==================================================
+2. FREEZE EVERYTHING ELSE
+==================================================
+
+DO NOT CHANGE:
+
+Tavily
+Exa
+provider routing
+query construction
+retrieval sufficiency
+retrieval dedupe
+Business Twin
+ICP
+firmographics
+entity resolution
+canonical identity
+signal definitions
+signal mapping
+signal thresholds
+clusters
+opportunity scoring
+confidence
+ranking
+WHY
+NBA
+contacts
+UI
+outreach
+
+Retrieval freeze must remain intact.
+
+==================================================
+3. TEST SCOPE
+==================================================
+
+Primary control:
+
+BLACK DUCK
+
+Use the exact frozen Black Duck reference event and historical evidence
+from:
+
+MVP_FIX_CYCLE_02_AUTOPSY.json
+
+and related event/fact traces.
+
+Do NOT use the reference event to alter extraction input.
+
+Reference information is adjudication-only.
+
+==================================================
+4. RECONSTRUCT THE EXACT FAILURE
+==================================================
+
+Trace:
+
+RESEARCH QUESTION
+→ RETRIEVED SOURCE
+→ RAW EVIDENCE
+→ QUESTION-RELEVANT EVIDENCE
+→ CONTENT SENT TO EXTRACTOR
+→ EXTRACTOR OUTPUT
+→ FACT PROPOSALS
+→ VALIDATION
+→ APPROVED FACTS
+→ SIGNAL EVALUATION
+
+Report:
+
+Research question
+
+Source URL
+
+Publisher
+
+Retrieval provider
+
+Evidence text used
+
+Relevant sentence(s)
+
+Extractor input
+
+Extractor candidate facts
+
+Accepted facts
+
+Rejected facts
+
+Validation reasons
+
+Expected generic fact type
+
+Whether signal mapping would have handled the correct fact
+
+==================================================
+5. FIRST BROKEN STAGE
+==================================================
+
+Assign exactly one primary cause:
+
+EXTRACTOR_NOT_INVOKED
+
+RELEVANT_TEXT_NOT_INCLUDED
+
+EVENT_SENTENCE_TRUNCATED
+
+FACT_TYPE_NOT_SUPPORTED
+
+FACT_TYPE_CLASSIFICATION_ERROR
+
+ENTITY_ROLE_PARSE_ERROR
+
+PERSON_NAME_PARSE_ERROR
+
+ROLE_TITLE_PARSE_ERROR
+
+EVENT_VERB_PARSE_ERROR
+
+EVENT_DATE_PARSE_ERROR
+
+EXTRACTOR_PROMPT_FAILURE
+
+EXTRACTOR_OUTPUT_SCHEMA_FAILURE
+
+FACT_VALIDATION_TOO_STRICT
+
+FACT_VALIDATION_INCORRECT
+
+CONFIDENCE_THRESHOLD_TOO_HIGH
+
+WRONG_FACT_PRIORITIZED
+
+MULTI_FACT_EVIDENCE_HANDLING_FAILURE
+
+OTHER
+
+Do not implement a fix until this is established.
+
+==================================================
+6. FACT ONTOLOGY
+==================================================
+
+Use generic reusable fact semantics.
+
+For leadership events, the fact should conceptually support:
+
+PERSON_ROLE_CHANGE
+
+Possible structured fields:
+
+company
+person
+new_role
+previous_role if explicit
+event_type
+event_date if explicit
+source
+publisher
+retrieved_at
+confidence
+evidence span
+
+Do NOT create:
+
+PURCHASE_INTENT
+
+BUYING_SIGNAL
+
+NEEDS_MANAGED_SOC
+
+SECURITY_SPEND
+
+unless explicitly observed as facts.
+
+Fact layer must remain observational.
+
+==================================================
+7. LEADERSHIP EVENT SEMANTICS
+==================================================
+
+Ensure generic extraction can recognize appointment/change language such as:
+
+appoints
+appointed
+names
+named
+joins as
+promotes
+promoted to
+hires
+hired as
+becomes
+takes over as
+steps into role
+new CISO
+new Chief Information Security Officer
+new Head of Security
+
+Do not hardcode Black Duck-specific wording.
+
+==================================================
+8. SECURITY ROLE NORMALIZATION
+==================================================
+
+Role recognition should support generic security leadership titles such as:
+
+Chief Information Security Officer
+CISO
+Chief Security Officer
+CSO when context is security
+VP Security
+Vice President Security
+Head of Information Security
+Head of Cybersecurity
+Head of Security
+Director of Information Security
+Security Leader
+
+Preserve original source title.
+
+Normalized role classification may be separate.
+
+Do not classify unrelated CSO meanings as security without context.
+
+==================================================
+9. MULTI-FACT EVIDENCE
+==================================================
+
+The historical Black Duck evidence apparently contained both:
+
+security leadership information
+
+and
+
+technology information.
+
+The extractor must not choose only one arbitrary fact when multiple
+independent factual claims exist.
+
+If one evidence item contains:
+
+leadership event
++
+technology mention
+
+the extractor may produce multiple atomic fact proposals.
+
+Example:
+
+Fact A:
+PERSON_ROLE_CHANGE
+
+Fact B:
+TECHNOLOGY_MENTION
+
+Each must be independently validated.
+
+Do not force a single "best fact" per evidence item.
+
+==================================================
+10. ATOMIC FACTS
+==================================================
+
+Each proposal must represent one atomic observation.
+
+Bad:
+
+"Black Duck appointed a security leader and is modernizing its stack,
+indicating higher security investment."
+
+Good:
+
+Fact 1:
+Person X appointed to Role Y.
+
+Fact 2:
+Technology Z mentioned/implemented, if explicitly supported.
+
+Interpretation belongs downstream.
+
+==================================================
+11. EVIDENCE SPAN
+==================================================
+
+Every proposed fact must identify the exact supporting evidence span or
+source fragment.
+
+Do not approve facts supported only by unrelated nearby text.
+
+For leadership fact validate:
+
+person
+role
+company attribution
+event wording
+
+against supporting source content.
+
+==================================================
+12. EVENT DATE RULE
+==================================================
+
+Preserve prior date semantics:
+
+Event facts:
+use explicit source/event date when available.
+
+Do not substitute retrieval date as event date.
+
+If exact event date is absent:
+
+event_date = UNKNOWN
+
+retrieved_at remains recorded.
+
+Do NOT reject an otherwise valid event solely because exact event date
+is absent unless current signal semantics explicitly require it.
+
+==================================================
+13. VALIDATION
+==================================================
+
+Inspect whether Black Duck failure happened because extraction or
+validation discarded the correct leadership fact.
+
+Validation should require:
+
+correct entity attribution
+supported person
+supported role
+supported event relationship
+sufficient evidence confidence
+
+Validation should NOT require:
+
+purchase intent
+signal interpretation
+Managed SOC relevance at fact layer
+
+==================================================
+14. DO NOT LOWER GLOBAL THRESHOLDS BLINDLY
+==================================================
+
+Do not solve the case by:
+
+lowering all confidence thresholds
+auto-approving all leadership facts
+removing entity validation
+removing temporal validation
+accepting snippets without evidence
+
+Only change the demonstrated generic defect.
+
+==================================================
+15. SEARCH RESULT EVIDENCE
+==================================================
+
+If the leadership event exists explicitly in a search-result title or
+snippet but destination content is unavailable:
+
+preserve existing SEARCH_RESULT evidence semantics.
+
+A search result may support a proposal only when:
+
+the claim is explicit
+entity attribution is clear
+source/publisher is retained
+
+Do not fabricate destination-page content.
+
+Do not change retrieval behavior.
+
+==================================================
+16. EXTRACTION DIAGNOSTICS
+==================================================
+
+Persist enough diagnostics for future failures:
+
+evidence ID
+extractor version
+fact type candidate
+raw extractor output
+normalized proposal
+validation result
+rejection reason
+supporting span
+confidence
+
+Sanitize secrets.
+
+No hidden reasoning/chain-of-thought should be persisted.
+
+==================================================
+17. BLACK DUCK TARGETED RETEST
+==================================================
+
+After the minimal fix:
+
+Use the EXISTING preserved Black Duck evidence if available.
+
+Do NOT make new provider calls unless absolutely required to execute the
+normal extraction path.
+
+Preferred:
+
+0 new Tavily calls
+0 new Exa calls
+
+Run:
+
+existing evidence
+→ extractor
+→ validation
+→ fact approval
+→ signal evaluation
+
+Report:
+
+Correct leadership fact proposed?
+YES / NO
+
+Correct leadership fact approved?
+YES / NO
+
+Unrelated technology fact still handled correctly?
+YES / NO
+
+Signal generated from correct approved fact?
+YES / NO
+
+Unsupported signal?
+YES / NO
+
+==================================================
+18. SIGNAL ENGINE MUST REMAIN UNCHANGED
+==================================================
+
+Do NOT alter:
+
+MSOC_SECURITY_LEADER
+
+or any signal definition.
+
+If the correct approved fact reaches the existing signal engine and the
+signal still fails:
+
+STOP.
+
+Report SIGNAL_MAPPING_FAILURE.
+
+Do NOT fix signal mapping in this milestone.
+
+==================================================
+19. REGRESSION SET
+==================================================
+
+Add generic extraction tests covering at minimum:
+
+A. "Company appoints Jane Doe as CISO"
+Expected:
+PERSON_ROLE_CHANGE
+
+B. "Company named John Doe Head of Information Security"
+Expected:
+PERSON_ROLE_CHANGE
+
+C. "Jane Doe is the founder and CEO"
+Expected:
+NO leadership-change event unless change wording exists
+
+D. "Company uses AWS and appointed a new CISO"
+Expected:
+two independent fact proposals where supported
+
+E. Generic marketing text mentioning "security leadership"
+Expected:
+NO appointment fact
+
+F. Historical bio:
+"Jane Doe served as CISO from 2019 to 2022"
+Expected:
+historical role observation, not current appointment unless source states event
+
+G. Wrong-company leadership result
+Expected:
+rejected
+
+H. Missing exact event date but explicit appointment
+Expected:
+valid leadership fact with event_date UNKNOWN where allowed
+
+==================================================
+20. BLINDNESS / HARD-CODING CHECK
+==================================================
+
+Search runtime extraction code for:
+
+Black Duck
+reference person's name
+reference event title
+reference URL
+benchmark-specific wording
+
+Required:
+
+0 benchmark-specific runtime constants.
+
+Allowed only in:
+
+test fixtures
+benchmark manifests
+artifacts
+
+==================================================
+21. NO FULL RETEST YET
+==================================================
+
+Do NOT run:
+
+7 retrieval controls
+10-control end-to-end benchmark
+50-company benchmark
+
+This milestone tests only extraction.
+
+==================================================
+22. REQUIRED ARTIFACTS
+==================================================
+
+Generate:
+
+BLACK_DUCK_EXTRACTION_FIX_01.md
+
+BLACK_DUCK_EXTRACTION_FIX_01.json
+
+BLACK_DUCK_EXTRACTION_FIX_01_TRACE.json
+
+BLACK_DUCK_EXTRACTION_FIX_01_TESTS.json
+
+==================================================
+23. REQUIRED SUMMARY
+==================================================
+
+Return:
+
+ROOT CAUSE:
+<taxonomy>
+
+FIX IMPLEMENTED:
+<short description>
+
+BLACK DUCK:
+
+Relevant evidence available:
+YES / NO
+
+Correct leadership fact proposed:
+YES / NO
+
+Correct leadership fact approved:
+YES / NO
+
+Signal evaluation reached:
+YES / NO
+
+Existing signal generated:
+YES / NO
+
+Unsupported facts:
+X
+
+Unsupported signals:
+X
+
+Wrong entity accepted:
+0 required
+
+New Tavily calls:
+0 preferred
+
+New Exa calls:
+0 preferred
+
+Retrieval code changed:
+0 required
+
+Signal code changed:
+0 required
+
+Production operations:
+0 required
+
+REGRESSION TESTS:
+A =
+B =
+C =
+D =
+E =
+F =
+G =
+H =
+
+==================================================
+24. FINAL DECISION
+==================================================
+
+Return exactly ONE:
+
+A — EXTRACTION FIX VALIDATED
+
+Correct generic fact now flows from evidence through validation and the
+existing signal engine without safety regression.
+
+B — EXTRACTION FIXED BUT VALIDATION STILL BLOCKS FACT
+
+C — FACT REACHES SIGNAL ENGINE BUT SIGNAL MAPPING FAILS
+
+D — EVIDENCE IS INSUFFICIENT TO SUPPORT EXPECTED FACT
+
+E — INCONCLUSIVE
+
+==================================================
+25. STOP
+==================================================
+
+STOP after this milestone.
+
+DO NOT:
+
+change retrieval
+change provider routing
+fix identity
+change ICP
+change signal definitions
+change opportunity scoring
+run contacts
+change UI
+run 10-control benchmark
+run 50-company benchmark
+
+Return results for human review.
