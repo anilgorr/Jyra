@@ -1,0 +1,752 @@
+JYRA — REAL DATA TEST 12
+COMPANY PROFILE RESOLUTION
+
+PURPOSE
+
+Build a generic capability that converts an existing canonical company
+identity into a VERIFIED LinkedIn company profile URL.
+
+This solves the bottleneck demonstrated by Real Data Test 11:
+
+10 companies tested
+1/10 usable LinkedIn company URLs
+Bright Data quality when identifier exists: PASS
+Bright Data cost: excellent
+Firmographic provider replacement: NOT justified
+
+We need:
+
+Company
+→ COMPANY_PROFILE_RESOLUTION
+→ verified LinkedIn company URL
+→ Bright Data COMPANY_FIRMOGRAPHICS
+
+This milestone stops BEFORE Bright Data firmographic enrichment.
+
+==================================================
+1. NEW GENERIC CAPABILITY
+==================================================
+
+Add:
+
+COMPANY_PROFILE_RESOLUTION
+
+Do NOT call this:
+
+LINKEDIN_LOOKUP
+
+The business capability is:
+
+resolve external company profiles/identifiers.
+
+LinkedIn is the first target profile type.
+
+Future profile types may include:
+
+Crunchbase
+GitHub organization
+company careers site
+regulatory/legal entity
+other company profiles
+
+Provider Router must remain provider-independent.
+
+==================================================
+2. INPUT
+==================================================
+
+Resolver accepts available canonical identity:
+
+company_id
+company_name
+canonical_domain
+website_url
+country
+city
+industry
+known aliases
+existing profile URLs
+provider IDs
+
+Do NOT require every field.
+
+Strongest typical input:
+
+company_name + canonical_domain
+
+==================================================
+3. OUTPUT
+==================================================
+
+Return:
+
+company_id
+
+profile_type:
+LINKEDIN_COMPANY
+
+profile_url
+
+normalized_profile_url
+
+profile_slug
+
+resolution_status
+
+resolution_confidence
+
+provider
+
+retrieval_method
+
+supporting_evidence
+
+contradicting_evidence
+
+resolved_at
+
+Do NOT immediately write an unverified candidate as the company's
+canonical LinkedIn URL.
+
+==================================================
+4. RESOLUTION STATES
+==================================================
+
+Use:
+
+VERIFIED
+PROBABLE
+AMBIGUOUS
+NOT_FOUND
+WRONG
+
+VERIFIED must require strong identity agreement.
+
+PROBABLE must NOT automatically become an authoritative identifier.
+
+AMBIGUOUS must preserve candidates for review.
+
+NOT_FOUND is valid.
+
+Never guess.
+
+==================================================
+5. FIRST PROVIDER STRATEGY
+==================================================
+
+Use existing providers before adding another vendor.
+
+Preferred initial resolver:
+
+TAVILY → WEB_SEARCH
+
+The Research Planner / Provider Router should invoke Tavily through the
+existing provider architecture.
+
+Do NOT scrape LinkedIn directly.
+
+Do NOT use browser automation.
+
+Do NOT bypass LinkedIn access controls.
+
+We are discovering publicly indexed company profile URLs.
+
+==================================================
+6. SEARCH STRATEGY
+==================================================
+
+Generate deterministic identity-resolution searches.
+
+Examples conceptually:
+
+site:linkedin.com/company "Company Name"
+
+site:linkedin.com/company "Company Name" "companydomain.com"
+
+"Company Name" LinkedIn company
+
+Use canonical domain when available because it is strong disambiguation
+evidence.
+
+Maximum:
+
+2 Tavily searches/company
+
+Prefer one strong query first.
+
+Only use second query if first is insufficient.
+
+==================================================
+7. SEARCH RESULT ≠ VERIFIED PROFILE
+==================================================
+
+Critical rule:
+
+A Tavily result containing:
+
+linkedin.com/company/xyz
+
+is only a CANDIDATE.
+
+It is not automatically the correct company.
+
+Candidate must pass entity verification.
+
+==================================================
+8. LINKEDIN URL VALIDATION
+==================================================
+
+Accept company profile forms only.
+
+Examples:
+
+linkedin.com/company/{slug}
+
+Normalize:
+
+www host
+country-specific LinkedIn host
+scheme
+trailing slash
+query
+fragment
+
+Reject:
+
+/in/
+/jobs/
+/posts/
+/feed/
+/learning/
+/school/ unless explicitly supported later
+/person profiles
+search URLs
+redirect URLs
+
+Never set:
+
+canonical_domain = linkedin.com
+
+==================================================
+9. ENTITY VERIFICATION
+==================================================
+
+Score/verify candidate using independent evidence.
+
+Strong evidence:
+
+A. company name agreement
+
+B. canonical domain agreement visible in search/result/source metadata
+
+C. official company website links to same LinkedIn company profile
+
+D. LinkedIn candidate references the same official website/domain
+
+Supporting evidence:
+
+country
+city
+industry
+description
+aliases
+parent/subsidiary relationships
+
+Contradicting evidence must reduce confidence.
+
+==================================================
+10. OFFICIAL WEBSITE EVIDENCE
+==================================================
+
+If the canonical website already contains a LinkedIn company link,
+that should be considered high-authority identity evidence.
+
+Use existing stored website evidence first if available.
+
+Do not automatically crawl all websites.
+
+If existing evidence contains an outbound LinkedIn company URL:
+
+validate and use it.
+
+Only use WEBSITE_CRAWL later if economically justified and needed.
+
+For this test:
+
+Apify calls must remain 0 initially.
+
+==================================================
+11. VERIFICATION POLICY
+==================================================
+
+VERIFIED examples:
+
+company name matches
++
+canonical domain independently matches
+
+OR
+
+official canonical website links directly to candidate LinkedIn profile
+
+OR
+
+multiple independent strong identity observations converge.
+
+PROBABLE:
+
+strong name match
++
+supporting geography/industry
+but domain confirmation unavailable.
+
+AMBIGUOUS:
+
+multiple plausible LinkedIn companies
+or weak/generic company name.
+
+WRONG:
+
+material identity contradiction.
+
+==================================================
+12. PLATFORM RESULT SAFETY
+==================================================
+
+A result such as:
+
+https://linkedin.com/company/infravault
+
+must become:
+
+profile_type = LINKEDIN_COMPANY
+profile_url = ...
+
+It must NEVER become:
+
+canonical_domain = linkedin.com
+
+This regression has already been identified in earlier testing.
+
+==================================================
+13. SOURCE PROVENANCE
+==================================================
+
+Preserve:
+
+retrieval_provider:
+TAVILY
+
+publisher:
+LINKEDIN
+
+discovery_query
+
+search_result_url
+
+search_result_title
+
+search_result_excerpt
+
+retrieved_at
+
+verification evidence
+
+The resolver must distinguish:
+
+discovered candidate
+
+from
+
+verified canonical profile.
+
+==================================================
+14. EXISTING IDENTIFIERS
+==================================================
+
+If company already has a verified LinkedIn URL:
+
+do NOT search again.
+
+Return:
+
+VERIFIED_EXISTING
+
+or equivalent internal result.
+
+Provider calls:
+0
+
+This is important for cost control.
+
+==================================================
+15. TEST POPULATION
+==================================================
+
+Use EXACTLY the same 10 companies from Test 11:
+
+1. Cloudflare
+2. Panopta
+3. Amazon Web Services (AWS)
+4. Oracle Cloud
+5. Alibaba Cloud
+6. E2E Cloud
+7. Cloud4C Services
+8. Emergys
+9. ENTUNE IT Consulting Pvt Ltd
+10. Cloudi
+
+Do not replace difficult companies.
+
+==================================================
+16. AWS
+==================================================
+
+AWS already has a usable LinkedIn URL in the Test 11 snapshot.
+
+Do not search for AWS again.
+
+Treat it as existing identifier according to its stored provenance/status.
+
+The test should measure incremental resolution for the remaining companies.
+
+==================================================
+17. SEARCH BUDGET
+==================================================
+
+Maximum Tavily calls:
+
+18
+
+Reason:
+
+9 unresolved companies
+× maximum 2 searches
+
+But target substantially fewer.
+
+Stop immediately once a company is VERIFIED.
+
+Do not perform a second query merely because budget remains.
+
+==================================================
+18. NO BRIGHT DATA YET
+==================================================
+
+Bright Data calls:
+
+0
+
+This test isolates PROFILE RESOLUTION.
+
+Do not enrich firmographics yet.
+
+After Test 12 passes we will chain:
+
+PROFILE_RESOLUTION
+→ COMPANY_FIRMOGRAPHICS
+
+==================================================
+19. NO EXA DISCOVERY
+==================================================
+
+Exa calls:
+0
+
+Do not discover companies.
+
+These canonical companies already exist.
+
+==================================================
+20. NO OPPORTUNITY RESEARCH
+==================================================
+
+Do not research:
+
+security
+hiring
+funding
+leadership
+technology
+Managed SOC need
+buying intent
+
+Do not create:
+
+facts
+signals
+clusters
+Need
+Timing
+opportunity score
+opportunity state
+
+==================================================
+21. RESOLUTION TABLE
+==================================================
+
+For all 10 companies report:
+
+COMPANY
+
+CANONICAL DOMAIN
+
+BEFORE LINKEDIN URL
+
+EXISTING IDENTIFIER STATUS
+
+SEARCH REQUIRED:
+YES/NO
+
+SEARCH CALLS
+
+CANDIDATES FOUND
+
+SELECTED CANDIDATE
+
+NAME MATCH
+
+DOMAIN MATCH
+
+GEOGRAPHY MATCH
+
+CONTRADICTIONS
+
+FINAL STATUS
+
+CONFIDENCE
+
+REASON
+
+==================================================
+22. QUALITY TARGET
+==================================================
+
+Target:
+
+VERIFIED OR SAFE EXISTING PROFILE:
+>= 8/10
+
+WRONG PROFILE ACCEPTED:
+0
+
+AMBIGUOUS PROFILE AUTO-ACCEPTED:
+0
+
+LINKEDIN.COM USED AS CANONICAL DOMAIN:
+0
+
+UNSUPPORTED PROFILE FABRICATION:
+0
+
+These are targets, not instructions to force PASS.
+
+If only 5/10 can be safely resolved:
+
+FAIL and report why.
+
+==================================================
+23. MANUAL AUDIT
+==================================================
+
+For every VERIFIED result:
+
+include enough evidence in the report for a human to audit the match.
+
+Randomly/manually inspect all VERIFIED results because population is only 10.
+
+The report should answer:
+
+"Why are we confident this LinkedIn page belongs to this exact company?"
+
+Do not rely solely on an LLM confidence score.
+
+==================================================
+24. COST
+==================================================
+
+Record:
+
+Tavily calls
+
+cost
+
+latency
+
+queries/company
+
+cost/verified profile
+
+cache usage
+
+We need to compare profile-resolution cost against the downstream Bright
+Data cost.
+
+==================================================
+25. CACHE
+==================================================
+
+Persist VERIFIED profile resolution with provenance.
+
+Do not repeatedly resolve the same profile.
+
+Use appropriate slow-changing identifier freshness.
+
+A LinkedIn company URL should not require frequent refresh.
+
+If later evidence contradicts it, invalidate/review.
+
+==================================================
+26. DATABASE WRITE POLICY
+==================================================
+
+VERIFIED:
+
+may attach normalized LinkedIn company profile to DEVELOPMENT canonical
+company.
+
+PROBABLE:
+
+do not automatically promote to authoritative identifier.
+
+AMBIGUOUS:
+
+do not attach.
+
+WRONG:
+
+do not attach.
+
+NOT_FOUND:
+
+do not fabricate.
+
+==================================================
+27. DATABASE SAFETY
+==================================================
+
+DEVELOPMENT ONLY.
+
+Do not:
+
+migrate
+reset
+seed
+truncate
+modify
+test
+
+production.
+
+Production operations:
+0
+
+==================================================
+28. REQUIRED REPORT
+==================================================
+
+Create:
+
+REAL_DATA_TEST_12.md
+
+Report:
+
+COMPANIES:
+10
+
+EXISTING USABLE LINKEDIN:
+1
+
+COMPANIES REQUIRING RESOLUTION:
+9
+
+TAVILY CALLS:
+
+CANDIDATE PROFILES FOUND:
+
+VERIFIED NEW:
+
+VERIFIED EXISTING:
+
+PROBABLE:
+
+AMBIGUOUS:
+
+NOT FOUND:
+
+WRONG:
+
+TOTAL SAFE LINKEDIN COVERAGE:
+X/10
+
+WRONG PROFILES ACCEPTED:
+0
+
+LINKEDIN AS CANONICAL DOMAIN:
+0
+
+AVERAGE CALLS/RESOLVED COMPANY:
+
+TOTAL COST:
+
+COST/VERIFIED PROFILE:
+
+PROVENANCE:
+PASS/FAIL
+
+ENTITY SAFETY:
+PASS/FAIL
+
+BRIGHT DATA CALLS:
+0
+
+EXA CALLS:
+0
+
+APIFY CALLS:
+0
+
+CONTACT ENRICHMENT:
+0
+
+SIGNALS:
+0
+
+BUYING INTENT:
+0
+
+PRODUCTION OPERATIONS:
+0
+
+FINAL STATUS:
+PASS/FAIL
+
+==================================================
+29. DECISION
+==================================================
+
+Return one:
+
+A:
+PROFILE RESOLUTION PASSES.
+Proceed to chained Profile Resolution → Bright Data Firmographics.
+
+B:
+Tavily resolution quality is insufficient.
+Evaluate another profile-resolution source.
+
+C:
+Identity verification is too weak.
+Improve entity-resolution evidence before continuing.
+
+D:
+Cost is too high.
+Change resolution strategy.
+
+==================================================
+STOP
+==================================================
+
+STOP after resolving and auditing the 10-company LinkedIn profile coverage.
+
+Do NOT automatically run Bright Data afterward.
