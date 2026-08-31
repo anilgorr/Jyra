@@ -1,0 +1,165 @@
+{
+  "status": "FAIL",
+  "persistedComparison": {
+    "sameResearchQuestionIds": true,
+    "sameResearchJobIds": true,
+    "newProviderCalls": 0,
+    "stableSignals": true,
+    "stableClusters": true,
+    "stableBaseOpportunities": true,
+    "duplicateOpportunityHistoryRows": 10,
+    "duplicateWhyVersions": 10,
+    "duplicateRecommendationLedgerRows": 10,
+    "replayComparisons": [
+      {
+        "companyId": "3cd73d96-37d1-4cf8-9dab-db596e019783",
+        "signalIdsStable": true,
+        "clusterIdsStable": true,
+        "opportunityIdStable": true,
+        "historyDuplicated": true,
+        "whyDuplicated": true,
+        "recommendationDuplicated": true
+      },
+      {
+        "companyId": "3ec654e3-3bed-405a-a1aa-1405f28ffcba",
+        "signalIdsStable": true,
+        "clusterIdsStable": true,
+        "opportunityIdStable": true,
+        "historyDuplicated": true,
+        "whyDuplicated": true,
+        "recommendationDuplicated": true
+      },
+      {
+        "companyId": "417409dc-ca3f-449f-90bb-f315f91f450a",
+        "signalIdsStable": true,
+        "clusterIdsStable": true,
+        "opportunityIdStable": true,
+        "historyDuplicated": true,
+        "whyDuplicated": true,
+        "recommendationDuplicated": true
+      },
+      {
+        "companyId": "408bc044-5be0-4118-b486-75c494e5cd8f",
+        "signalIdsStable": true,
+        "clusterIdsStable": true,
+        "opportunityIdStable": true,
+        "historyDuplicated": true,
+        "whyDuplicated": true,
+        "recommendationDuplicated": true
+      },
+      {
+        "companyId": "0ba57746-1f8e-4691-a647-0921de1a971d",
+        "signalIdsStable": true,
+        "clusterIdsStable": true,
+        "opportunityIdStable": true,
+        "historyDuplicated": true,
+        "whyDuplicated": true,
+        "recommendationDuplicated": true
+      },
+      {
+        "companyId": "8ee8a9ce-dd62-4b03-bfb0-f9f9a3683f32",
+        "signalIdsStable": true,
+        "clusterIdsStable": true,
+        "opportunityIdStable": true,
+        "historyDuplicated": true,
+        "whyDuplicated": true,
+        "recommendationDuplicated": true
+      },
+      {
+        "companyId": "fafc40de-2c9e-4968-bc3c-602d7d3f23c6",
+        "signalIdsStable": true,
+        "clusterIdsStable": true,
+        "opportunityIdStable": true,
+        "historyDuplicated": true,
+        "whyDuplicated": true,
+        "recommendationDuplicated": true
+      },
+      {
+        "companyId": "4944433c-43a4-41bb-b3f4-24fe98d56a8b",
+        "signalIdsStable": true,
+        "clusterIdsStable": true,
+        "opportunityIdStable": true,
+        "historyDuplicated": true,
+        "whyDuplicated": true,
+        "recommendationDuplicated": true
+      },
+      {
+        "companyId": "f757f1d3-fc2d-4086-8903-b4da90e166e3",
+        "signalIdsStable": true,
+        "clusterIdsStable": true,
+        "opportunityIdStable": true,
+        "historyDuplicated": true,
+        "whyDuplicated": true,
+        "recommendationDuplicated": true
+      },
+      {
+        "companyId": "94457ffa-bf97-426e-95b0-a1cf30250bd0",
+        "signalIdsStable": true,
+        "clusterIdsStable": true,
+        "opportunityIdStable": true,
+        "historyDuplicated": true,
+        "whyDuplicated": true,
+        "recommendationDuplicated": true
+      }
+    ]
+  },
+  "opportunityHistory": {
+    "rootCause": "MISSING_IDEMPOTENCY_KEY",
+    "secondary": [
+      "NO_CHANGE_DETECTION",
+      "ALWAYS_APPEND_DESIGN"
+    ],
+    "codeTrace": [
+      {
+        "file": "artifacts/api-server/src/lib/opportunity-engine.ts",
+        "lines": "331-357",
+        "finding": "Base opportunity upserts on project/company, assessedAt is replaced with now, then history is inserted unconditionally without a conflict target or semantic equality test."
+      },
+      {
+        "file": "artifacts/api-server/src/lib/opportunity-engine.ts",
+        "lines": "358-360",
+        "finding": "Score components are then appended under the new history row."
+      }
+    ],
+    "expectedFingerprint": "Canonical opportunity identity + model version + scores/dimensions + state/status/explanation + previous state + stable input snapshot (sorted signal/cluster IDs, ICP/pack/relationship versions); exclude assessedAt/updatedAt/runtime timestamps."
+  },
+  "whyVersion": {
+    "rootCause": "VERSIONING_SEMANTICS_ERROR",
+    "secondary": [
+      "NO_CHANGE_DETECTION",
+      "ALWAYS_APPEND_DESIGN"
+    ],
+    "codeTrace": [
+      {
+        "file": "artifacts/api-server/src/lib/opportunity-why.ts",
+        "lines": "170-225",
+        "finding": "Composition is deterministic, but the transaction only reads the latest integer version, clears current, and unconditionally inserts latest+1; no semantic hash/equality check exists."
+      }
+    ],
+    "expectedFingerprint": "Opportunity ID + WHY rule/version + canonical status/text/claims/provenance references, with sorted arrays; exclude row ID, numeric version, current flag, and timestamps."
+  },
+  "recommendationLedger": {
+    "rootCause": "TIMESTAMP_INCLUDED_IN_FINGERPRINT",
+    "secondary": [
+      "UNSTABLE_FINGERPRINT"
+    ],
+    "codeTrace": [
+      {
+        "file": "artifacts/api-server/src/lib/next-best-action-service.ts",
+        "lines": "187-219",
+        "finding": "snapshotKey includes opportunityAssessedAt and evidence observedAt. Re-evaluation changes opportunityAssessedAt, so semantically identical recommendations hash differently."
+      },
+      {
+        "file": "artifacts/api-server/src/lib/next-best-action-service.ts",
+        "lines": "220-253",
+        "finding": "The unique conflict guard is present and works only when snapshotKey is stable; recommendedAt is output metadata and is not the primary cause."
+      }
+    ],
+    "expectedFingerprint": "Stable company/project/opportunity/model/rule/config versions + scores/state + sorted signal/cluster/evidence IDs + WHY semantic fingerprint + recommended action; exclude assessment/observation/generation timestamps unless they represent a true changed source version."
+  },
+  "separation": {
+    "intelligenceSafety": "Invalid facts/source roles and unsupported inferences.",
+    "intelligenceRecall": "Six extraction failures and two temporal failures after successful retrieval/evidence persistence.",
+    "replayIdempotency": "Independent downstream materialization/deduplication defects."
+  }
+}

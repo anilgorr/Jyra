@@ -1,0 +1,1257 @@
+{
+  "counts": {
+    "total": 6,
+    "supported": 2,
+    "unsupportedFact": 1,
+    "unsupportedSignalInference": 1,
+    "sellerAsBuyer": 1,
+    "temporalInvalid": 1,
+    "wrongEntity": 0,
+    "duplicate": 0,
+    "staleEvent": 0,
+    "genericContentAsEvent": 0,
+    "other": 0,
+    "precision": 0.3333333333333333
+  },
+  "factPrecision": {
+    "total": 11,
+    "supported": 5,
+    "unsupported": 0,
+    "misclassified": 1,
+    "temporallyInvalid": 2,
+    "sellerContent": 3,
+    "wrongEntity": 0,
+    "precision": 0.45454545454545453
+  },
+  "invalidSignalsCausedByUpstreamInput": 3,
+  "invalidSignalsCausedBySignalDefinitionDefect": 1,
+  "signals": [
+    {
+      "company": "GitLab",
+      "companyId": "417409dc-ca3f-449f-90bb-f315f91f450a",
+      "referenceEvent": "GitLab appointed Chaim Mazal as Chief Information Security Officer.",
+      "signalId": "3c0eb744-1328-425f-bcc1-5b30de6be3e9",
+      "signalDefinition": {
+        "id": "44029679-535f-4a11-8ac2-0acea2dda02a",
+        "code": "MSOC_SECURITY_LEADER",
+        "name": "Security leader change",
+        "description": "Security leader change interpreted for this offering.",
+        "configuration": {
+          "mode": "single",
+          "matchAny": [
+            "security",
+            "ciso"
+          ],
+          "minFacts": 1,
+          "factTypes": [
+            "LEADERSHIP_CHANGE"
+          ]
+        },
+        "factRequirements": {
+          "minFacts": 1,
+          "factTypes": [
+            "LEADERSHIP_CHANGE"
+          ]
+        },
+        "minimumConfidence": 60,
+        "lifetimeDays": 90,
+        "decayRule": "LINEAR"
+      },
+      "chain": [
+        {
+          "factId": "44238513-4a5b-4ac4-ab33-1e4f6149eb42",
+          "factType": "LEADERSHIP_CHANGE",
+          "finalFactClassification": "SUPPORTED",
+          "classificationReason": "Atomic claim and event date are directly supported by persisted evidence.",
+          "approved": true,
+          "structuredValue": {
+            "name": "Chaim Mazal",
+            "title": "Chief Information Security Officer"
+          },
+          "atomicClaim": "June 9, 2026\n\n  GitLab Appoints Chaim Mazal as Chief Information Security Officer",
+          "effectiveDate": "2026-06-09",
+          "observationDate": "2026-08-31",
+          "entityCompanyId": "417409dc-ca3f-449f-90bb-f315f91f450a",
+          "factProposal": null,
+          "validation": {
+            "result": "APPROVED",
+            "rejectionReason": null,
+            "note": "No rejected signal-feeding proposal exists in the persisted benchmark scope."
+          },
+          "question": null,
+          "job": null,
+          "query": null,
+          "provider": "tavily",
+          "rawResult": {
+            "url": "https://about.gitlab.com/press/releases",
+            "rank": null,
+            "rankNote": "Exact raw rank not retained for this evidence row.",
+            "contentReference": "crawl_pages:e80c1fb3-cdfa-46af-997e-6f43fb9e79e5",
+            "contentExcerpt": "June 9, 2026\n\n  GitLab Appoints Chaim Mazal as Chief Information Security Officer"
+          },
+          "evidence": {
+            "id": "048eba7d-9516-4522-b5d6-955a015e571c",
+            "sourceUrl": "https://about.gitlab.com/press/releases",
+            "sourceDomain": "about.gitlab.com",
+            "sourceType": "company_website",
+            "publisher": null,
+            "publisherNote": "Publisher field null; source domain about.gitlab.com is persisted.",
+            "publishedAt": null,
+            "observedAt": "2026-08-31T12:32:34.750Z",
+            "status": "RAW",
+            "classification": {
+              "authority": 92,
+              "directness": 94,
+              "freshness": 100,
+              "corroboration": 20,
+              "confidence": 83.4
+            },
+            "entityMatch": "EXACT_COMPANY_ID"
+          },
+          "retrievalHits": [
+            {
+              "provider": "tavily",
+              "stage": null,
+              "rank": null,
+              "requestId": null,
+              "query": null,
+              "url": "https://about.gitlab.com/press/releases",
+              "note": "Provider identity persisted on evidence; raw rank was not retained for this reused evidence row."
+            }
+          ]
+        },
+        {
+          "factId": "a4caf6a2-de85-44ba-8060-62129c20d8eb",
+          "factType": "LEADERSHIP_CHANGE",
+          "finalFactClassification": "SUPPORTED",
+          "classificationReason": "Atomic claim and event date are directly supported by persisted evidence.",
+          "approved": true,
+          "structuredValue": {
+            "role": "Chief Information Security Officer (CISO)",
+            "person": "Chaim Mazal"
+          },
+          "atomicClaim": "SAN FRANCISCO, June 9, 2026 - All Remote - GitLab Inc., the intelligent orchestration platform for DevSecOps, announced that Chaim Mazal has joined as Chief Information Security Officer (CISO).",
+          "effectiveDate": "2026-06-09",
+          "observationDate": "2026-08-31",
+          "entityCompanyId": "417409dc-ca3f-449f-90bb-f315f91f450a",
+          "factProposal": {
+            "id": "cdd288d5-19bc-4fe9-afc4-b55c0c4d3aac",
+            "status": "APPROVED",
+            "extractorVersion": "fact-extraction-v3",
+            "confidence": 100,
+            "effectiveDate": "2026-06-09",
+            "structuredValue": {
+              "role": "Chief Information Security Officer (CISO)",
+              "event": "has joined",
+              "person": "Chaim Mazal",
+              "company": "GitLab Inc."
+            }
+          },
+          "validation": {
+            "result": "APPROVED",
+            "rejectionReason": null,
+            "note": "No rejected signal-feeding proposal exists in the persisted benchmark scope."
+          },
+          "question": {
+            "id": "bd190926-02e1-4ff8-b881-82f181db00a2",
+            "type": "LEADERSHIP",
+            "text": "\"GitLab\" about.gitlab.com public evidence of security leadership changes (security, ciso)"
+          },
+          "job": {
+            "id": "7643ec0f-472a-45dc-84f3-d6464bff8aad",
+            "status": "SUCCEEDED",
+            "providerCapability": "WEB_SEARCH",
+            "providerRequestId": "research:bd190926-02e1-4ff8-b881-82f181db00a2:primary:b1bac8b0-c8d4-426a-9c81-588c96031dca",
+            "resultCount": 10
+          },
+          "query": null,
+          "provider": "tavily",
+          "rawResult": {
+            "url": "https://about.gitlab.com/press/releases/2026-06-09-gitlab-appoints-chaim-mazal-as-chief-information-security-officer",
+            "rank": null,
+            "rankNote": "Exact raw rank not retained for this evidence row.",
+            "contentReference": "crawl_pages:06b9e156-cdf0-4476-9e4a-49c383bb9381",
+            "contentExcerpt": "SAN FRANCISCO, June 9, 2026 - All Remote - GitLab Inc., the intelligent orchestration platform for DevSecOps, announced that Chaim Mazal has joined as Chief Information Security Officer (CISO)."
+          },
+          "evidence": {
+            "id": "0488986c-21e7-4675-b161-edf2f9307156",
+            "sourceUrl": "https://about.gitlab.com/press/releases/2026-06-09-gitlab-appoints-chaim-mazal-as-chief-information-security-officer",
+            "sourceDomain": "about.gitlab.com",
+            "sourceType": "company_website",
+            "publisher": null,
+            "publisherNote": "Publisher field null; source domain about.gitlab.com is persisted.",
+            "publishedAt": null,
+            "observedAt": "2026-08-31T12:30:07.292Z",
+            "status": "RAW",
+            "classification": {
+              "authority": 92,
+              "directness": 94,
+              "freshness": 100,
+              "corroboration": 20,
+              "confidence": 83.4
+            },
+            "entityMatch": "EXACT_COMPANY_ID"
+          },
+          "retrievalHits": [
+            {
+              "provider": "tavily",
+              "stage": null,
+              "rank": null,
+              "requestId": null,
+              "query": null,
+              "url": "https://about.gitlab.com/press/releases/2026-06-09-gitlab-appoints-chaim-mazal-as-chief-information-security-officer",
+              "note": "Provider identity persisted on evidence; raw rank was not retained for this reused evidence row."
+            }
+          ]
+        }
+      ],
+      "signalOutput": {
+        "effectiveDate": "2026-06-09",
+        "observedAt": "2026-08-31T19:35:36.191Z",
+        "detectedAt": "2026-08-31T14:28:39.050Z",
+        "lastEvaluatedAt": "2026-08-31T19:35:36.191Z",
+        "status": "ACTIVE",
+        "originalStrength": 70,
+        "currentStrength": 4.81,
+        "confidence": 99,
+        "supportingFactIds": [
+          "44238513-4a5b-4ac4-ab33-1e4f6149eb42",
+          "a4caf6a2-de85-44ba-8060-62129c20d8eb"
+        ],
+        "supportingEvidenceIds": [
+          "0488986c-21e7-4675-b161-edf2f9307156",
+          "048eba7d-9516-4522-b5d6-955a015e571c"
+        ],
+        "generationMethod": "DETERMINISTIC",
+        "generatorVersion": "1.0",
+        "needImpact": 78,
+        "timingImpact": 88
+      },
+      "finalAdjudication": {
+        "classification": "SUPPORTED",
+        "earliestStop": null,
+        "defect": "NONE",
+        "rationale": "Direct GitLab appointment evidence produced correctly dated leadership facts and the intended security-leader signal."
+      },
+      "whyState": "INSUFFICIENT_EVIDENCE"
+    },
+    {
+      "company": "Infoblox",
+      "companyId": "408bc044-5be0-4118-b486-75c494e5cd8f",
+      "referenceEvent": "Infoblox appointed Henrik Smith as Chief Information Security Officer.",
+      "signalId": "d8f2a8f8-b6a2-4145-944b-3c9a91451bd8",
+      "signalDefinition": {
+        "id": "dc1fc390-e3b1-465d-bc3d-1d04e08d95de",
+        "code": "MSOC_SECURITY_STACK_CHANGE",
+        "name": "Security stack change",
+        "description": "Security stack change interpreted for this offering.",
+        "configuration": {
+          "mode": "single",
+          "matchAny": [
+            "security",
+            "siem",
+            "endpoint",
+            "iam"
+          ],
+          "minFacts": 1,
+          "factTypes": [
+            "TECHNOLOGY_MENTION"
+          ]
+        },
+        "factRequirements": {
+          "minFacts": 1,
+          "factTypes": [
+            "TECHNOLOGY_MENTION"
+          ]
+        },
+        "minimumConfidence": 60,
+        "lifetimeDays": 90,
+        "decayRule": "LINEAR"
+      },
+      "chain": [
+        {
+          "factId": "a8b3aa97-5f73-44d3-9d10-d45427c58304",
+          "factType": "TECHNOLOGY_MENTION",
+          "finalFactClassification": "MISCLASSIFIED",
+          "classificationReason": "A board member biography about experience in cloud/SaaS/security was classified as an Infoblox technology implementation/stack fact.",
+          "approved": true,
+          "structuredValue": {
+            "technologies": [
+              "cloud, SaaS, security, and enterprise go-to-market strategies"
+            ]
+          },
+          "atomicClaim": "A technology industry expert and business transformation leader with extensive experience in cloud, SaaS, security, and enterprise go-to-market strategies, Wassenaar will provide strategic guidance to Infoblox",
+          "effectiveDate": "2026-08-31",
+          "observationDate": "2026-08-31",
+          "entityCompanyId": "408bc044-5be0-4118-b486-75c494e5cd8f",
+          "factProposal": {
+            "id": "0176d0b7-1727-4299-a77e-9c25dcf75f60",
+            "status": "APPROVED",
+            "extractorVersion": "fact-extraction-v3",
+            "confidence": 93,
+            "effectiveDate": "2026-08-31",
+            "structuredValue": {
+              "technologies": [
+                "cloud, SaaS, security, and enterprise go-to-market strategies"
+              ]
+            }
+          },
+          "validation": {
+            "result": "APPROVED",
+            "rejectionReason": null,
+            "note": "No rejected signal-feeding proposal exists in the persisted benchmark scope."
+          },
+          "question": {
+            "id": "7f2108cf-16fc-4a30-97ad-b1a85c598be9",
+            "type": "LEADERSHIP",
+            "text": "\"Infoblox\" infoblox.com public evidence of security leadership changes (security, ciso)"
+          },
+          "job": {
+            "id": "ae2b3420-9ba8-47e7-9371-5d0c0b870699",
+            "status": "SUCCEEDED",
+            "providerCapability": "WEB_SEARCH",
+            "providerRequestId": "research:7f2108cf-16fc-4a30-97ad-b1a85c598be9:primary:b1bac8b0-c8d4-426a-9c81-588c96031dca",
+            "resultCount": 10
+          },
+          "query": null,
+          "provider": "tavily",
+          "rawResult": {
+            "url": "https://infoblox.com/news/news-events/press-releases/infoblox-appoints-yvonne-wassenaar-to-its-board-of-directors",
+            "rank": null,
+            "rankNote": "Exact raw rank not retained for this evidence row.",
+            "contentReference": "crawl_pages:d5e94067-9f21-409e-9758-11c3a86edee0",
+            "contentExcerpt": "A technology industry expert and business transformation leader with extensive experience in cloud, SaaS, security, and enterprise go-to-market strategies, Wassenaar will provide strategic guidance to Infoblox"
+          },
+          "evidence": {
+            "id": "c54779c1-3ba0-47ff-aaff-aecd48e30701",
+            "sourceUrl": "https://infoblox.com/news/news-events/press-releases/infoblox-appoints-yvonne-wassenaar-to-its-board-of-directors",
+            "sourceDomain": "infoblox.com",
+            "sourceType": "company_website",
+            "publisher": null,
+            "publisherNote": "Publisher field null; source domain infoblox.com is persisted.",
+            "publishedAt": null,
+            "observedAt": "2026-08-31T19:04:59.724Z",
+            "status": "RAW",
+            "classification": {
+              "authority": 92,
+              "directness": 94,
+              "freshness": 100,
+              "corroboration": 20,
+              "confidence": 83.4
+            },
+            "entityMatch": "EXACT_COMPANY_ID"
+          },
+          "retrievalHits": [
+            {
+              "provider": "tavily",
+              "stage": null,
+              "rank": null,
+              "requestId": null,
+              "query": null,
+              "url": "https://infoblox.com/news/news-events/press-releases/infoblox-appoints-yvonne-wassenaar-to-its-board-of-directors",
+              "note": "Provider identity persisted on evidence; raw rank was not retained for this reused evidence row."
+            }
+          ]
+        }
+      ],
+      "signalOutput": {
+        "effectiveDate": "2026-08-31",
+        "observedAt": "2026-08-31T19:35:36.383Z",
+        "detectedAt": "2026-08-31T19:07:22.224Z",
+        "lastEvaluatedAt": "2026-08-31T19:35:36.383Z",
+        "status": "ACTIVE",
+        "originalStrength": 70,
+        "currentStrength": 69.37,
+        "confidence": 93,
+        "supportingFactIds": [
+          "a8b3aa97-5f73-44d3-9d10-d45427c58304"
+        ],
+        "supportingEvidenceIds": [
+          "c54779c1-3ba0-47ff-aaff-aecd48e30701"
+        ],
+        "generationMethod": "DETERMINISTIC",
+        "generatorVersion": "1.0",
+        "needImpact": 75,
+        "timingImpact": 84
+      },
+      "finalAdjudication": {
+        "classification": "UNSUPPORTED_FACT",
+        "earliestStop": "FACT_EXTRACTION_FAILURE",
+        "defect": "UPSTREAM_INPUT_DEFECT",
+        "rationale": "A board biography mentioning cloud, SaaS, and security was not an implementation, migration, replacement, or purchase by Infoblox."
+      },
+      "whyState": "INSUFFICIENT_EVIDENCE"
+    },
+    {
+      "company": "Infoblox",
+      "companyId": "408bc044-5be0-4118-b486-75c494e5cd8f",
+      "referenceEvent": "Infoblox appointed Henrik Smith as Chief Information Security Officer.",
+      "signalId": "52c50105-cf55-4953-adda-6953ac4d8660",
+      "signalDefinition": {
+        "id": "44029679-535f-4a11-8ac2-0acea2dda02a",
+        "code": "MSOC_SECURITY_LEADER",
+        "name": "Security leader change",
+        "description": "Security leader change interpreted for this offering.",
+        "configuration": {
+          "mode": "single",
+          "matchAny": [
+            "security",
+            "ciso"
+          ],
+          "minFacts": 1,
+          "factTypes": [
+            "LEADERSHIP_CHANGE"
+          ]
+        },
+        "factRequirements": {
+          "minFacts": 1,
+          "factTypes": [
+            "LEADERSHIP_CHANGE"
+          ]
+        },
+        "minimumConfidence": 60,
+        "lifetimeDays": 90,
+        "decayRule": "LINEAR"
+      },
+      "chain": [
+        {
+          "factId": "f0ec9e39-c064-4a0b-bb12-015c84cc03d0",
+          "factType": "LEADERSHIP_CHANGE",
+          "finalFactClassification": "TEMPORALLY_INVALID",
+          "classificationReason": "Correct appointment claim, but observation date 2026-08-31 was accepted as the event date instead of source-stated 2026-06-09.",
+          "approved": true,
+          "structuredValue": {
+            "title": "Chief Information Security Officer",
+            "person": "Henrik Smith"
+          },
+          "atomicClaim": "Infoblox Appoints Henrik Smith as Chief Information Security Officer",
+          "effectiveDate": "2026-08-31",
+          "observationDate": "2026-08-31",
+          "entityCompanyId": "408bc044-5be0-4118-b486-75c494e5cd8f",
+          "factProposal": null,
+          "validation": {
+            "result": "APPROVED",
+            "rejectionReason": null,
+            "note": "No rejected signal-feeding proposal exists in the persisted benchmark scope."
+          },
+          "question": null,
+          "job": null,
+          "query": null,
+          "provider": "tavily",
+          "rawResult": {
+            "url": "https://infoblox.com/news/press-releases",
+            "rank": null,
+            "rankNote": "Exact raw rank not retained for this evidence row.",
+            "contentReference": "crawl_pages:0e22a734-cbe9-483a-877e-027ee72b6ae7",
+            "contentExcerpt": "Infoblox Appoints Henrik Smith as Chief Information Security Officer"
+          },
+          "evidence": {
+            "id": "aa0f0ca6-300a-4a2a-a4f2-5aa518c8d2f5",
+            "sourceUrl": "https://infoblox.com/news/press-releases",
+            "sourceDomain": "infoblox.com",
+            "sourceType": "company_website",
+            "publisher": null,
+            "publisherNote": "Publisher field null; source domain infoblox.com is persisted.",
+            "publishedAt": null,
+            "observedAt": "2026-08-31T13:55:53.597Z",
+            "status": "RAW",
+            "classification": {
+              "authority": 92,
+              "directness": 94,
+              "freshness": 100,
+              "corroboration": 20,
+              "confidence": 83.4
+            },
+            "entityMatch": "EXACT_COMPANY_ID"
+          },
+          "retrievalHits": [
+            {
+              "provider": "tavily",
+              "stage": null,
+              "rank": null,
+              "requestId": null,
+              "query": null,
+              "url": "https://infoblox.com/news/press-releases",
+              "note": "Provider identity persisted on evidence; raw rank was not retained for this reused evidence row."
+            }
+          ]
+        }
+      ],
+      "signalOutput": {
+        "effectiveDate": "2026-08-31",
+        "observedAt": "2026-08-31T19:35:36.383Z",
+        "detectedAt": "2026-08-31T14:31:37.201Z",
+        "lastEvaluatedAt": "2026-08-31T19:35:36.383Z",
+        "status": "ACTIVE",
+        "originalStrength": 70,
+        "currentStrength": 69.37,
+        "confidence": 98,
+        "supportingFactIds": [
+          "f0ec9e39-c064-4a0b-bb12-015c84cc03d0"
+        ],
+        "supportingEvidenceIds": [
+          "aa0f0ca6-300a-4a2a-a4f2-5aa518c8d2f5"
+        ],
+        "generationMethod": "DETERMINISTIC",
+        "generatorVersion": "1.0",
+        "needImpact": 78,
+        "timingImpact": 88
+      },
+      "finalAdjudication": {
+        "classification": "TEMPORALLY_INVALID",
+        "earliestStop": "FACT_VALIDATION_FAILURE",
+        "defect": "UPSTREAM_INPUT_DEFECT",
+        "rationale": "The appointment was real, but retrieval/observation date 2026-08-31 became the fact and signal event date instead of 2026-06-09."
+      },
+      "whyState": "INSUFFICIENT_EVIDENCE"
+    },
+    {
+      "company": "Black Duck",
+      "companyId": "fafc40de-2c9e-4968-bc3c-602d7d3f23c6",
+      "referenceEvent": "Black Duck appointed Dom Glavach as Chief Information Security Officer.",
+      "signalId": "94354b6d-c865-4555-b5d8-a3fdb839f710",
+      "signalDefinition": {
+        "id": "44029679-535f-4a11-8ac2-0acea2dda02a",
+        "code": "MSOC_SECURITY_LEADER",
+        "name": "Security leader change",
+        "description": "Security leader change interpreted for this offering.",
+        "configuration": {
+          "mode": "single",
+          "matchAny": [
+            "security",
+            "ciso"
+          ],
+          "minFacts": 1,
+          "factTypes": [
+            "LEADERSHIP_CHANGE"
+          ]
+        },
+        "factRequirements": {
+          "minFacts": 1,
+          "factTypes": [
+            "LEADERSHIP_CHANGE"
+          ]
+        },
+        "minimumConfidence": 60,
+        "lifetimeDays": 90,
+        "decayRule": "LINEAR"
+      },
+      "chain": [
+        {
+          "factId": "02d7c3ef-8c67-492b-9b0f-3fda92679253",
+          "factType": "LEADERSHIP_CHANGE",
+          "finalFactClassification": "SUPPORTED",
+          "classificationReason": "Atomic claim and event date are directly supported by persisted evidence.",
+          "approved": true,
+          "structuredValue": {
+            "role": "Chief Information Security Officer",
+            "person": "Dom Glavach",
+            "company": "Black Duck",
+            "eventType": "Appoints"
+          },
+          "atomicClaim": "Apr 9, 2026\n\n[Black Duck Appoints Dom Glavach as Chief Information Security Officer](https://news.blackduck.com/2026-04-09-Black-Duck-Appoints-Dom-Glavach-as-Chief-Information-Security-Officer)\n\nVeteran security executive brings more than two decades of enterprise, SaaS, and national defense cybersecurity leadership to Black Duck BURLINGTON, Mass., April 9, 2026 /PRNewswire/ -- Black...",
+          "effectiveDate": "2026-04-09",
+          "observationDate": "2026-08-31",
+          "entityCompanyId": "fafc40de-2c9e-4968-bc3c-602d7d3f23c6",
+          "factProposal": {
+            "id": "ecc8d5fa-e24b-4858-b75c-53db1714034f",
+            "status": "APPROVED",
+            "extractorVersion": "fact-extraction-v3",
+            "confidence": 98,
+            "effectiveDate": "2026-04-09",
+            "structuredValue": {
+              "role": "Chief Information Security Officer",
+              "person": "Dom Glavach",
+              "company": "Black Duck",
+              "eventType": "Appoints"
+            }
+          },
+          "validation": {
+            "result": "APPROVED",
+            "rejectionReason": null,
+            "note": "No rejected signal-feeding proposal exists in the persisted benchmark scope."
+          },
+          "question": {
+            "id": "a1ce0837-ed29-4c30-bb4a-5e7ae4ba98ec",
+            "type": "LEADERSHIP",
+            "text": "\"Black Duck\" blackduck.com public evidence of security leadership changes (security, ciso)"
+          },
+          "job": {
+            "id": "d9643abe-1aa5-44b0-b6f6-e1b47fa3dc94",
+            "status": "SUCCEEDED",
+            "providerCapability": "WEB_SEARCH",
+            "providerRequestId": "research:a1ce0837-ed29-4c30-bb4a-5e7ae4ba98ec:primary:b1bac8b0-c8d4-426a-9c81-588c96031dca",
+            "resultCount": 10
+          },
+          "query": null,
+          "provider": "tavily",
+          "rawResult": {
+            "url": "https://news.blackduck.com/news-releases?l=25",
+            "rank": null,
+            "rankNote": "Exact raw rank not retained for this evidence row.",
+            "contentReference": "crawl_pages:16f77927-98ad-453e-8379-91d30aa93073",
+            "contentExcerpt": "Apr 9, 2026\n\n[Black Duck Appoints Dom Glavach as Chief Information Security Officer](https://news.blackduck.com/2026-04-09-Black-Duck-Appoints-Dom-Glavach-as-Chief-Information-Security-Officer)\n\nVeteran security executive brings more than two decades of enterprise, SaaS, and national defense cybersecurity leadership to Black Duck BURLINGTON, Mass., April 9, 2026 /PRNewswire/ -- Black..."
+          },
+          "evidence": {
+            "id": "036c327e-c766-451c-ae30-04e866622a66",
+            "sourceUrl": "https://news.blackduck.com/news-releases?l=25",
+            "sourceDomain": "news.blackduck.com",
+            "sourceType": "company_website",
+            "publisher": null,
+            "publisherNote": "Publisher field null; source domain news.blackduck.com is persisted.",
+            "publishedAt": null,
+            "observedAt": "2026-08-31T19:12:13.520Z",
+            "status": "RAW",
+            "classification": {
+              "authority": 72,
+              "directness": 82,
+              "freshness": 100,
+              "corroboration": 20,
+              "confidence": 72.8
+            },
+            "entityMatch": "EXACT_COMPANY_ID"
+          },
+          "retrievalHits": [
+            {
+              "provider": "tavily",
+              "stage": null,
+              "rank": null,
+              "requestId": null,
+              "query": null,
+              "url": "https://news.blackduck.com/news-releases?l=25",
+              "note": "Provider identity persisted on evidence; raw rank was not retained for this reused evidence row."
+            }
+          ]
+        },
+        {
+          "factId": "962f776e-2bed-46cd-93b6-d7c0f3f9f40d",
+          "factType": "LEADERSHIP_CHANGE",
+          "finalFactClassification": "SUPPORTED",
+          "classificationReason": "Atomic claim and event date are directly supported by persisted evidence.",
+          "approved": true,
+          "structuredValue": {
+            "role": "Chief Information Security Officer",
+            "person": "Dom Glavach",
+            "company": "Black Duck",
+            "eventType": "Appoints"
+          },
+          "atomicClaim": "Apr 9, 2026\n\n[Black Duck Appoints Dom Glavach as Chief Information Security Officer](https://news.blackduck.com/2026-04-09-Black-Duck-Appoints-Dom-Glavach-as-Chief-Information-Security-Officer)\n\nVeteran security executive brings more than two decades of enterprise, SaaS, and national defense cybersecurity leadership to Black Duck BURLINGTON, Mass., April 9, 2026 /PRNewswire/ -- Black...",
+          "effectiveDate": "2026-04-09",
+          "observationDate": "2026-08-31",
+          "entityCompanyId": "fafc40de-2c9e-4968-bc3c-602d7d3f23c6",
+          "factProposal": {
+            "id": "cb95547b-95da-4b7b-85b5-35e17ba01221",
+            "status": "APPROVED",
+            "extractorVersion": "fact-extraction-v3",
+            "confidence": 98,
+            "effectiveDate": "2026-04-09",
+            "structuredValue": {
+              "role": "Chief Information Security Officer",
+              "person": "Dom Glavach",
+              "company": "Black Duck",
+              "eventType": "Appoints"
+            }
+          },
+          "validation": {
+            "result": "APPROVED",
+            "rejectionReason": null,
+            "note": "No rejected signal-feeding proposal exists in the persisted benchmark scope."
+          },
+          "question": {
+            "id": "5c5842e3-4178-46b5-801e-df24b5deb92a",
+            "type": "TECHNOLOGY",
+            "text": "\"Black Duck\" blackduck.com public evidence of security stack, SOC, SIEM, EDR, or IAM changes (security, siem, endpoint, iam)"
+          },
+          "job": {
+            "id": "9e8e4276-8a2d-47c0-80fb-4fdb01eb31f1",
+            "status": "SUCCEEDED",
+            "providerCapability": "WEB_SEARCH",
+            "providerRequestId": "research:5c5842e3-4178-46b5-801e-df24b5deb92a:fallback:b220e720-6d21-4c7a-badf-3aec920febca",
+            "resultCount": 20
+          },
+          "query": null,
+          "provider": "tavily",
+          "rawResult": {
+            "url": "https://news.blackduck.com/news-releases?l=100",
+            "rank": null,
+            "rankNote": "Exact raw rank not retained for this evidence row.",
+            "contentReference": "crawl_pages:0ad60add-1126-4cda-940e-6a45c36be168",
+            "contentExcerpt": "Apr 9, 2026\n\n[Black Duck Appoints Dom Glavach as Chief Information Security Officer](https://news.blackduck.com/2026-04-09-Black-Duck-Appoints-Dom-Glavach-as-Chief-Information-Security-Officer)\n\nVeteran security executive brings more than two decades of enterprise, SaaS, and national defense cybersecurity leadership to Black Duck BURLINGTON, Mass., April 9, 2026 /PRNewswire/ -- Black..."
+          },
+          "evidence": {
+            "id": "525dea1a-8781-4f5d-bc1e-0618f3d3fd2c",
+            "sourceUrl": "https://news.blackduck.com/news-releases?l=100",
+            "sourceDomain": "news.blackduck.com",
+            "sourceType": "company_website",
+            "publisher": null,
+            "publisherNote": "Publisher field null; source domain news.blackduck.com is persisted.",
+            "publishedAt": null,
+            "observedAt": "2026-08-31T12:52:12.587Z",
+            "status": "RAW",
+            "classification": {
+              "authority": 72,
+              "directness": 82,
+              "freshness": 100,
+              "corroboration": 20,
+              "confidence": 72.8
+            },
+            "entityMatch": "EXACT_COMPANY_ID"
+          },
+          "retrievalHits": [
+            {
+              "provider": "tavily",
+              "stage": null,
+              "rank": null,
+              "requestId": null,
+              "query": null,
+              "url": "https://news.blackduck.com/news-releases?l=100",
+              "note": "Provider identity persisted on evidence; raw rank was not retained for this reused evidence row."
+            }
+          ]
+        }
+      ],
+      "signalOutput": {
+        "effectiveDate": "2026-04-09",
+        "observedAt": "2026-08-31T19:35:36.608Z",
+        "detectedAt": "2026-08-31T19:14:40.280Z",
+        "lastEvaluatedAt": "2026-08-31T19:35:36.608Z",
+        "status": "STALE",
+        "originalStrength": 70,
+        "currentStrength": 0,
+        "confidence": 98,
+        "supportingFactIds": [
+          "02d7c3ef-8c67-492b-9b0f-3fda92679253",
+          "962f776e-2bed-46cd-93b6-d7c0f3f9f40d"
+        ],
+        "supportingEvidenceIds": [
+          "036c327e-c766-451c-ae30-04e866622a66",
+          "525dea1a-8781-4f5d-bc1e-0618f3d3fd2c"
+        ],
+        "generationMethod": "DETERMINISTIC",
+        "generatorVersion": "1.0",
+        "needImpact": 78,
+        "timingImpact": 88
+      },
+      "finalAdjudication": {
+        "classification": "SUPPORTED",
+        "earliestStop": null,
+        "defect": "NONE",
+        "rationale": "Direct Black Duck appointment evidence produced correctly dated leadership facts and the intended security-leader signal."
+      },
+      "whyState": "INSUFFICIENT_EVIDENCE"
+    },
+    {
+      "company": "Black Duck",
+      "companyId": "fafc40de-2c9e-4968-bc3c-602d7d3f23c6",
+      "referenceEvent": "Black Duck appointed Dom Glavach as Chief Information Security Officer.",
+      "signalId": "870a1394-d13e-498a-a6ec-cc168083e82c",
+      "signalDefinition": {
+        "id": "dc1fc390-e3b1-465d-bc3d-1d04e08d95de",
+        "code": "MSOC_SECURITY_STACK_CHANGE",
+        "name": "Security stack change",
+        "description": "Security stack change interpreted for this offering.",
+        "configuration": {
+          "mode": "single",
+          "matchAny": [
+            "security",
+            "siem",
+            "endpoint",
+            "iam"
+          ],
+          "minFacts": 1,
+          "factTypes": [
+            "TECHNOLOGY_MENTION"
+          ]
+        },
+        "factRequirements": {
+          "minFacts": 1,
+          "factTypes": [
+            "TECHNOLOGY_MENTION"
+          ]
+        },
+        "minimumConfidence": 60,
+        "lifetimeDays": 90,
+        "decayRule": "LINEAR"
+      },
+      "chain": [
+        {
+          "factId": "9f3128c6-41af-4d1a-9006-cc44a4322ecf",
+          "factType": "TECHNOLOGY_MENTION",
+          "finalFactClassification": "SELLER_CONTENT",
+          "classificationReason": "Accurate description of Black Duck Polaris, but it describes the company’s own product.",
+          "approved": true,
+          "structuredValue": {
+            "technologies": [
+              "an integrated, software-as-a-service application security platform",
+              "static application security testing",
+              "software composition analysis",
+              "dynamic application security testing"
+            ]
+          },
+          "atomicClaim": "The Polaris Platform is an integrated, software-as-a-service application security platform powered by the industry's leading static application security testing, software composition analysis, and dynamic application security testing engines.",
+          "effectiveDate": "2026-08-31",
+          "observationDate": "2026-08-31",
+          "entityCompanyId": "fafc40de-2c9e-4968-bc3c-602d7d3f23c6",
+          "factProposal": {
+            "id": "22485bf9-0f07-435a-9ee7-d46bdf40491d",
+            "status": "APPROVED",
+            "extractorVersion": "fact-extraction-v3",
+            "confidence": 97,
+            "effectiveDate": "2026-08-31",
+            "structuredValue": {
+              "technologies": [
+                "an integrated, software-as-a-service application security platform",
+                "static application security testing",
+                "software composition analysis",
+                "dynamic application security testing"
+              ]
+            }
+          },
+          "validation": {
+            "result": "APPROVED",
+            "rejectionReason": null,
+            "note": "No rejected signal-feeding proposal exists in the persisted benchmark scope."
+          },
+          "question": {
+            "id": "5c5842e3-4178-46b5-801e-df24b5deb92a",
+            "type": "TECHNOLOGY",
+            "text": "\"Black Duck\" blackduck.com public evidence of security stack, SOC, SIEM, EDR, or IAM changes (security, siem, endpoint, iam)"
+          },
+          "job": {
+            "id": "9e8e4276-8a2d-47c0-80fb-4fdb01eb31f1",
+            "status": "SUCCEEDED",
+            "providerCapability": "WEB_SEARCH",
+            "providerRequestId": "research:5c5842e3-4178-46b5-801e-df24b5deb92a:fallback:b220e720-6d21-4c7a-badf-3aec920febca",
+            "resultCount": 20
+          },
+          "query": "\"Black Duck\" blackduck.com cybersecurity infrastructure platform change news",
+          "provider": "exa",
+          "rawResult": {
+            "url": "https://news.blackduck.com/2026-02-12-Black-Duck-Expands-Polaris-Integrations-to-Deliver-Frictionless-DevSecOps-at-Enterprise-Scale",
+            "rank": 2,
+            "rankNote": null,
+            "contentReference": "crawl_pages:08e36d34-c9c0-44bc-8def-3855042e9137",
+            "contentExcerpt": "The Polaris Platform is an integrated, software-as-a-service application security platform powered by the industry's leading static application security testing, software composition analysis, and dynamic application security testing engines."
+          },
+          "evidence": {
+            "id": "57404b8f-b23d-4369-962f-d94b7ee81232",
+            "sourceUrl": "https://news.blackduck.com/2026-02-12-Black-Duck-Expands-Polaris-Integrations-to-Deliver-Frictionless-DevSecOps-at-Enterprise-Scale",
+            "sourceDomain": "news.blackduck.com",
+            "sourceType": "technology",
+            "publisher": null,
+            "publisherNote": "Publisher field null; source domain news.blackduck.com is persisted.",
+            "publishedAt": null,
+            "observedAt": "2026-08-31T19:12:34.063Z",
+            "status": "RAW",
+            "classification": {
+              "authority": 72,
+              "directness": 82,
+              "freshness": 100,
+              "corroboration": 20,
+              "confidence": 72.8
+            },
+            "entityMatch": "EXACT_COMPANY_ID"
+          },
+          "retrievalHits": [
+            {
+              "provider": "exa",
+              "stage": "FALLBACK",
+              "rank": 2,
+              "requestId": "research:5c5842e3-4178-46b5-801e-df24b5deb92a:fallback:b220e720-6d21-4c7a-badf-3aec920febca",
+              "query": "\"Black Duck\" blackduck.com cybersecurity infrastructure platform change news",
+              "url": "https://news.blackduck.com/2026-02-12-Black-Duck-Expands-Polaris-Integrations-to-Deliver-Frictionless-DevSecOps-at-Enterprise-Scale"
+            }
+          ]
+        },
+        {
+          "factId": "c082bc0e-c7cf-4b4d-84ba-7d68e8d618d2",
+          "factType": "TECHNOLOGY_MENTION",
+          "finalFactClassification": "SELLER_CONTENT",
+          "classificationReason": "Accurate description of Black Duck ContextAI, but it describes the company’s own product.",
+          "approved": true,
+          "structuredValue": {
+            "technologies": [
+              "ContextAI™"
+            ]
+          },
+          "atomicClaim": "Signal uses a coordinated system of specialized AI security agents powered by ContextAI™ to analyze code, assess exploitability, and guide remediation in real time.",
+          "effectiveDate": "2026-08-31",
+          "observationDate": "2026-08-31",
+          "entityCompanyId": "fafc40de-2c9e-4968-bc3c-602d7d3f23c6",
+          "factProposal": {
+            "id": "713c80ff-46d5-4e11-8817-a29ee27d39ae",
+            "status": "APPROVED",
+            "extractorVersion": "fact-extraction-v3",
+            "confidence": 98,
+            "effectiveDate": "2026-08-31",
+            "structuredValue": {
+              "technologies": [
+                "ContextAI™"
+              ]
+            }
+          },
+          "validation": {
+            "result": "APPROVED",
+            "rejectionReason": null,
+            "note": "No rejected signal-feeding proposal exists in the persisted benchmark scope."
+          },
+          "question": {
+            "id": "5c5842e3-4178-46b5-801e-df24b5deb92a",
+            "type": "TECHNOLOGY",
+            "text": "\"Black Duck\" blackduck.com public evidence of security stack, SOC, SIEM, EDR, or IAM changes (security, siem, endpoint, iam)"
+          },
+          "job": {
+            "id": "9e8e4276-8a2d-47c0-80fb-4fdb01eb31f1",
+            "status": "SUCCEEDED",
+            "providerCapability": "WEB_SEARCH",
+            "providerRequestId": "research:5c5842e3-4178-46b5-801e-df24b5deb92a:fallback:b220e720-6d21-4c7a-badf-3aec920febca",
+            "resultCount": 20
+          },
+          "query": null,
+          "provider": "exa",
+          "rawResult": {
+            "url": "https://blackduck.com/blog/black-duck-polaris-may-2026-platform-updates.html",
+            "rank": null,
+            "rankNote": "Exact raw rank not retained for this evidence row.",
+            "contentReference": "crawl_pages:90d0071b-3a70-4ba2-b383-ebcd2092cddf",
+            "contentExcerpt": "Signal uses a coordinated system of specialized AI security agents powered by ContextAI™ to analyze code, assess exploitability, and guide remediation in real time."
+          },
+          "evidence": {
+            "id": "1f964cc8-c674-4fbc-bead-b60a9a4230ef",
+            "sourceUrl": "https://blackduck.com/blog/black-duck-polaris-may-2026-platform-updates.html",
+            "sourceDomain": "blackduck.com",
+            "sourceType": "technology",
+            "publisher": null,
+            "publisherNote": "Publisher field null; source domain blackduck.com is persisted.",
+            "publishedAt": null,
+            "observedAt": "2026-08-31T19:12:34.063Z",
+            "status": "RAW",
+            "classification": {
+              "authority": 92,
+              "directness": 94,
+              "freshness": 100,
+              "corroboration": 20,
+              "confidence": 83.4
+            },
+            "entityMatch": "EXACT_COMPANY_ID"
+          },
+          "retrievalHits": [
+            {
+              "provider": "exa",
+              "stage": null,
+              "rank": null,
+              "requestId": null,
+              "query": null,
+              "url": "https://blackduck.com/blog/black-duck-polaris-may-2026-platform-updates.html",
+              "note": "Provider identity persisted on evidence; raw rank was not retained for this reused evidence row."
+            }
+          ]
+        },
+        {
+          "factId": "e15df13e-5622-480d-8d36-c2c373dca56b",
+          "factType": "TECHNOLOGY_MENTION",
+          "finalFactClassification": "SELLER_CONTENT",
+          "classificationReason": "Accurate description of Black Duck-owned products/capabilities, but seller content is not buyer adoption evidence.",
+          "approved": true,
+          "structuredValue": {
+            "technologies": [
+              "Managed Services Portal",
+              "Polaris (Classic & Next Generation)",
+              "Knowledge Base",
+              "Black Duck Binary Analysis"
+            ]
+          },
+          "atomicClaim": "The certificate scope comprises the Information Security Management System underlying the Black Duck Software Inc. Information Technology (IT) and Cloud Operations processes that collect, process and store confidential customer information supporting the Managed Services Portal, Polaris (Classic & Next Generation), and Black Duck applications (including Knowledge Base & Black Duck Binary Analysis).",
+          "effectiveDate": "2026-08-31",
+          "observationDate": "2026-08-31",
+          "entityCompanyId": "fafc40de-2c9e-4968-bc3c-602d7d3f23c6",
+          "factProposal": {
+            "id": "a4657682-76fc-45af-98bb-a6dbce6cea59",
+            "status": "APPROVED",
+            "extractorVersion": "fact-extraction-v3",
+            "confidence": 93,
+            "effectiveDate": "2026-08-31",
+            "structuredValue": {
+              "technologies": [
+                "Managed Services Portal",
+                "Polaris (Classic & Next Generation)",
+                "Knowledge Base",
+                "Black Duck Binary Analysis"
+              ]
+            }
+          },
+          "validation": {
+            "result": "APPROVED",
+            "rejectionReason": null,
+            "note": "No rejected signal-feeding proposal exists in the persisted benchmark scope."
+          },
+          "question": {
+            "id": "f8ebe294-a23d-46f4-9efa-de85ea7e024e",
+            "type": "EXPANSION",
+            "text": "\"Black Duck\" blackduck.com public evidence of funding, expansion, security, or compliance initiatives"
+          },
+          "job": {
+            "id": "9b7d16a9-f79d-40c6-a0e8-d5991c771cd6",
+            "status": "SUCCEEDED",
+            "providerCapability": "WEB_SEARCH",
+            "providerRequestId": "research:f8ebe294-a23d-46f4-9efa-de85ea7e024e:fallback:b220e720-6d21-4c7a-badf-3aec920febca",
+            "resultCount": 20
+          },
+          "query": null,
+          "provider": "tavily",
+          "rawResult": {
+            "url": "https://blackduck.com/content/dam/black-duck/en-us/documents/21-Certificate-ISO%2027017-Black%20Duck%20Software-2025.pdf",
+            "rank": null,
+            "rankNote": "Exact raw rank not retained for this evidence row.",
+            "contentReference": "crawl_pages:cde79d2c-17a7-4f31-a249-e543be48d203",
+            "contentExcerpt": "The certificate scope comprises the Information Security Management System underlying the Black Duck Software Inc. Information Technology (IT) and Cloud Operations processes that collect, process and store confidential customer information supporting the Managed Services Portal, Polaris (Classic & Next Generation), and Black Duck applications (including Knowledge Base & Black Duck Binary Analysis)."
+          },
+          "evidence": {
+            "id": "cdfad517-1340-4f19-911c-6128416af443",
+            "sourceUrl": "https://blackduck.com/content/dam/black-duck/en-us/documents/21-Certificate-ISO%2027017-Black%20Duck%20Software-2025.pdf",
+            "sourceDomain": "blackduck.com",
+            "sourceType": "company_website",
+            "publisher": null,
+            "publisherNote": "Publisher field null; source domain blackduck.com is persisted.",
+            "publishedAt": null,
+            "observedAt": "2026-08-31T19:12:27.433Z",
+            "status": "RAW",
+            "classification": {
+              "authority": 92,
+              "directness": 94,
+              "freshness": 100,
+              "corroboration": 20,
+              "confidence": 83.4
+            },
+            "entityMatch": "EXACT_COMPANY_ID"
+          },
+          "retrievalHits": [
+            {
+              "provider": "tavily",
+              "stage": null,
+              "rank": null,
+              "requestId": null,
+              "query": null,
+              "url": "https://blackduck.com/content/dam/black-duck/en-us/documents/21-Certificate-ISO%2027017-Black%20Duck%20Software-2025.pdf",
+              "note": "Provider identity persisted on evidence; raw rank was not retained for this reused evidence row."
+            }
+          ]
+        }
+      ],
+      "signalOutput": {
+        "effectiveDate": "2026-08-31",
+        "observedAt": "2026-08-31T19:35:36.608Z",
+        "detectedAt": "2026-08-31T19:14:40.280Z",
+        "lastEvaluatedAt": "2026-08-31T19:35:36.608Z",
+        "status": "ACTIVE",
+        "originalStrength": 70,
+        "currentStrength": 69.37,
+        "confidence": 93,
+        "supportingFactIds": [
+          "9f3128c6-41af-4d1a-9006-cc44a4322ecf",
+          "c082bc0e-c7cf-4b4d-84ba-7d68e8d618d2",
+          "e15df13e-5622-480d-8d36-c2c373dca56b"
+        ],
+        "supportingEvidenceIds": [
+          "1f964cc8-c674-4fbc-bead-b60a9a4230ef",
+          "57404b8f-b23d-4369-962f-d94b7ee81232",
+          "cdfad517-1340-4f19-911c-6128416af443"
+        ],
+        "generationMethod": "DETERMINISTIC",
+        "generatorVersion": "1.0",
+        "needImpact": 75,
+        "timingImpact": 84
+      },
+      "finalAdjudication": {
+        "classification": "SELLER_AS_BUYER",
+        "earliestStop": "BUYER_SELLER_ROLE_FAILURE",
+        "defect": "UPSTREAM_INPUT_DEFECT",
+        "rationale": "Black Duck’s own product, platform, and certification content was interpreted as Black Duck buying or changing a security stack."
+      },
+      "whyState": "INSUFFICIENT_EVIDENCE"
+    },
+    {
+      "company": "RAKBANK",
+      "companyId": "94457ffa-bf97-426e-95b0-a1cf30250bd0",
+      "referenceEvent": "RAKBANK replaced ArcSight with Securonix for security operations.",
+      "signalId": "17f628a1-c885-4a82-8c1e-f1ef0f0720a1",
+      "signalDefinition": {
+        "id": "67781795-9bb1-46ff-a120-f9b6d79ae6a0",
+        "code": "MSOC_FUNDED_RISK_PROGRAM",
+        "name": "Funded risk program window",
+        "description": "Funded risk program window interpreted for this offering.",
+        "configuration": {
+          "mode": "single",
+          "matchAny": [],
+          "minFacts": 1,
+          "factTypes": [
+            "FUNDING_EVENT"
+          ]
+        },
+        "factRequirements": {
+          "minFacts": 1,
+          "factTypes": [
+            "FUNDING_EVENT"
+          ]
+        },
+        "minimumConfidence": 60,
+        "lifetimeDays": 90,
+        "decayRule": "LINEAR"
+      },
+      "chain": [
+        {
+          "factId": "5cb8284e-93a4-4dce-a699-5527d9663586",
+          "factType": "FUNDING_EVENT",
+          "finalFactClassification": "SUPPORTED",
+          "classificationReason": "Atomic claim and event date are directly supported by persisted evidence.",
+          "approved": true,
+          "structuredValue": {
+            "amount": "$300M"
+          },
+          "atomicClaim": "As of July 2026, RAKBANK has raised $300M in funding. The last funding round occurred on Jun 30, 2025 for $300M.",
+          "effectiveDate": "2025-06-30",
+          "observationDate": "2026-08-31",
+          "entityCompanyId": "94457ffa-bf97-426e-95b0-a1cf30250bd0",
+          "factProposal": null,
+          "validation": {
+            "result": "APPROVED",
+            "rejectionReason": null,
+            "note": "No rejected signal-feeding proposal exists in the persisted benchmark scope."
+          },
+          "question": null,
+          "job": null,
+          "query": null,
+          "provider": "tavily",
+          "rawResult": {
+            "url": "https://leadiq.com/c/rakbank/5a1d95da23000053008481ef",
+            "rank": null,
+            "rankNote": "Exact raw rank not retained for this evidence row.",
+            "contentReference": "crawl_pages:b28ec7ee-10da-4620-98e4-87eca4a7598c",
+            "contentExcerpt": "As of July 2026, RAKBANK has raised $300M in funding. The last funding round occurred on Jun 30, 2025 for $300M."
+          },
+          "evidence": {
+            "id": "1dbd847c-8821-4773-9703-ffc2134f66f8",
+            "sourceUrl": "https://leadiq.com/c/rakbank/5a1d95da23000053008481ef",
+            "sourceDomain": "leadiq.com",
+            "sourceType": "company_website",
+            "publisher": null,
+            "publisherNote": "Publisher field null; source domain leadiq.com is persisted.",
+            "publishedAt": null,
+            "observedAt": "2026-08-31T14:44:00.832Z",
+            "status": "RAW",
+            "classification": {
+              "authority": 72,
+              "directness": 82,
+              "freshness": 100,
+              "corroboration": 20,
+              "confidence": 72.8
+            },
+            "entityMatch": "EXACT_COMPANY_ID"
+          },
+          "retrievalHits": [
+            {
+              "provider": "tavily",
+              "stage": null,
+              "rank": null,
+              "requestId": null,
+              "query": null,
+              "url": "https://leadiq.com/c/rakbank/5a1d95da23000053008481ef",
+              "note": "Provider identity persisted on evidence; raw rank was not retained for this reused evidence row."
+            }
+          ]
+        },
+        {
+          "factId": "cd7d9f70-f160-4b91-925e-23d97c905a94",
+          "factType": "FUNDING_EVENT",
+          "finalFactClassification": "TEMPORALLY_INVALID",
+          "classificationReason": "The funding total has no source-stated event date in the excerpt; observation date 2026-08-31 was accepted for an event fact.",
+          "approved": true,
+          "structuredValue": {
+            "fundingRounds": "1",
+            "totalCapitalRaised": "$300,000,000"
+          },
+          "atomicClaim": "RAKBANK has raised a total of **$300,000,000** across **1** funding rounds.",
+          "effectiveDate": "2026-08-31",
+          "observationDate": "2026-08-31",
+          "entityCompanyId": "94457ffa-bf97-426e-95b0-a1cf30250bd0",
+          "factProposal": null,
+          "validation": {
+            "result": "APPROVED",
+            "rejectionReason": null,
+            "note": "No rejected signal-feeding proposal exists in the persisted benchmark scope."
+          },
+          "question": null,
+          "job": null,
+          "query": null,
+          "provider": "tavily",
+          "rawResult": {
+            "url": "https://prospeo.io/c/rakbank",
+            "rank": null,
+            "rankNote": "Exact raw rank not retained for this evidence row.",
+            "contentReference": "crawl_pages:df43ade5-eaa9-406f-9160-8985691a9338",
+            "contentExcerpt": "RAKBANK has raised a total of **$300,000,000** across **1** funding rounds."
+          },
+          "evidence": {
+            "id": "80418a7d-91f6-4a26-a586-a24059cdb3fd",
+            "sourceUrl": "https://prospeo.io/c/rakbank",
+            "sourceDomain": "prospeo.io",
+            "sourceType": "company_website",
+            "publisher": null,
+            "publisherNote": "Publisher field null; source domain prospeo.io is persisted.",
+            "publishedAt": null,
+            "observedAt": "2026-08-31T14:44:00.832Z",
+            "status": "RAW",
+            "classification": {
+              "authority": 72,
+              "directness": 82,
+              "freshness": 100,
+              "corroboration": 20,
+              "confidence": 72.8
+            },
+            "entityMatch": "EXACT_COMPANY_ID"
+          },
+          "retrievalHits": [
+            {
+              "provider": "tavily",
+              "stage": null,
+              "rank": null,
+              "requestId": null,
+              "query": null,
+              "url": "https://prospeo.io/c/rakbank",
+              "note": "Provider identity persisted on evidence; raw rank was not retained for this reused evidence row."
+            }
+          ]
+        }
+      ],
+      "signalOutput": {
+        "effectiveDate": "2026-08-31",
+        "observedAt": "2026-08-31T19:35:36.788Z",
+        "detectedAt": "2026-08-31T14:46:35.104Z",
+        "lastEvaluatedAt": "2026-08-31T19:35:36.788Z",
+        "status": "ACTIVE",
+        "originalStrength": 70,
+        "currentStrength": 69.37,
+        "confidence": 78,
+        "supportingFactIds": [
+          "5cb8284e-93a4-4dce-a699-5527d9663586",
+          "cd7d9f70-f160-4b91-925e-23d97c905a94"
+        ],
+        "supportingEvidenceIds": [
+          "1dbd847c-8821-4773-9703-ffc2134f66f8",
+          "80418a7d-91f6-4a26-a586-a24059cdb3fd"
+        ],
+        "generationMethod": "DETERMINISTIC",
+        "generatorVersion": "1.0",
+        "needImpact": 42,
+        "timingImpact": 48
+      },
+      "finalAdjudication": {
+        "classification": "UNSUPPORTED_SIGNAL_INFERENCE",
+        "earliestStop": "SIGNAL_MAPPING_FAILURE",
+        "defect": "SIGNAL_DEFINITION_DEFECT",
+        "rationale": "Generic company funding facts do not establish a funded security/risk program; the definition accepts any FUNDING_EVENT with no risk-program condition."
+      },
+      "whyState": "INSUFFICIENT_EVIDENCE"
+    }
+  ]
+}

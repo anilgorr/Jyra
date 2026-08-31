@@ -1,0 +1,135 @@
+{
+  "summary": {
+    "controls": 10,
+    "strictDetected": 2,
+    "partial": 2,
+    "missed": 6,
+    "eventRelevantRawRetrievalAvailableFor": 10,
+    "eventRelevantEvidenceAcceptedFor": 10,
+    "correctFactsExtractedFor": 4,
+    "correctFactsApprovedFor": 4,
+    "correctSignalsProducedFor": 2,
+    "earliestFailureDistribution": {
+      "identity": 0,
+      "questionGeneration": 0,
+      "retrieval": 0,
+      "fallback": 0,
+      "relevance": 0,
+      "evidencePersistence": 0,
+      "content": 0,
+      "extraction": 6,
+      "validation": 0,
+      "signalMapping": 0,
+      "temporal": 2,
+      "other": 0
+    }
+  },
+  "failures": [
+    {
+      "control": "SolarWinds",
+      "outcome": "MISS",
+      "earliestBreak": "FACT_EXTRACTION_FAILURE",
+      "secondaryCauses": [],
+      "eventRelevantRawAvailable": true,
+      "eventRelevantEvidenceAccepted": true,
+      "correctFactProduced": false,
+      "correctFactApproved": false,
+      "correctSignalProduced": false,
+      "couldExistingEvidenceSupportStrictDetection": "YES",
+      "detail": "Official appointment evidence reached persistence; no leadership fact was extracted."
+    },
+    {
+      "control": "First Horizon",
+      "outcome": "MISS",
+      "earliestBreak": "FACT_EXTRACTION_FAILURE",
+      "secondaryCauses": [],
+      "eventRelevantRawAvailable": true,
+      "eventRelevantEvidenceAccepted": true,
+      "correctFactProduced": false,
+      "correctFactApproved": false,
+      "correctSignalProduced": false,
+      "couldExistingEvidenceSupportStrictDetection": "YES",
+      "detail": "Exact appointment results/evidence existed; extractor produced unrelated compliance facts."
+    },
+    {
+      "control": "Infoblox",
+      "outcome": "PARTIAL",
+      "earliestBreak": "TEMPORAL_FAILURE",
+      "secondaryCauses": [],
+      "eventRelevantRawAvailable": true,
+      "eventRelevantEvidenceAccepted": true,
+      "correctFactProduced": true,
+      "correctFactApproved": true,
+      "correctSignalProduced": false,
+      "couldExistingEvidenceSupportStrictDetection": "YES",
+      "detail": "Role/person detected, but event date was replaced by observation date; existing evidence could support strict detection."
+    },
+    {
+      "control": "Teradata",
+      "outcome": "MISS",
+      "earliestBreak": "FACT_EXTRACTION_FAILURE",
+      "secondaryCauses": [],
+      "eventRelevantRawAvailable": true,
+      "eventRelevantEvidenceAccepted": true,
+      "correctFactProduced": false,
+      "correctFactApproved": false,
+      "correctSignalProduced": false,
+      "couldExistingEvidenceSupportStrictDetection": "YES",
+      "detail": "Official appointment evidence reached persistence; no leadership fact was extracted."
+    },
+    {
+      "control": "Nubank",
+      "outcome": "MISS",
+      "earliestBreak": "FACT_EXTRACTION_FAILURE",
+      "secondaryCauses": [],
+      "eventRelevantRawAvailable": true,
+      "eventRelevantEvidenceAccepted": true,
+      "correctFactProduced": false,
+      "correctFactApproved": false,
+      "correctSignalProduced": false,
+      "couldExistingEvidenceSupportStrictDetection": "YES",
+      "detail": "Official appointment evidence reached persistence; no leadership fact was extracted."
+    },
+    {
+      "control": "OpenAssets",
+      "outcome": "PARTIAL",
+      "earliestBreak": "TEMPORAL_FAILURE",
+      "secondaryCauses": [
+        "SIGNAL_MAPPING_FAILURE"
+      ],
+      "eventRelevantRawAvailable": true,
+      "eventRelevantEvidenceAccepted": true,
+      "correctFactProduced": true,
+      "correctFactApproved": true,
+      "correctSignalProduced": false,
+      "couldExistingEvidenceSupportStrictDetection": "YES",
+      "detail": "Both certifications were extracted, but event date was replaced by observation date and no signal was produced; existing evidence could support strict detection."
+    },
+    {
+      "control": "Black & McDonald",
+      "outcome": "MISS",
+      "earliestBreak": "FACT_EXTRACTION_FAILURE",
+      "secondaryCauses": [],
+      "eventRelevantRawAvailable": true,
+      "eventRelevantEvidenceAccepted": true,
+      "correctFactProduced": false,
+      "correctFactApproved": false,
+      "correctSignalProduced": false,
+      "couldExistingEvidenceSupportStrictDetection": "YES",
+      "detail": "Official certification evidence reached persistence; extracted facts were unrelated technology/customer facts."
+    },
+    {
+      "control": "RAKBANK",
+      "outcome": "MISS",
+      "earliestBreak": "FACT_EXTRACTION_FAILURE",
+      "secondaryCauses": [],
+      "eventRelevantRawAvailable": true,
+      "eventRelevantEvidenceAccepted": true,
+      "correctFactProduced": false,
+      "correctFactApproved": false,
+      "correctSignalProduced": false,
+      "couldExistingEvidenceSupportStrictDetection": "YES",
+      "detail": "Exact vendor case study was retrieved and accepted; no stack replacement fact was extracted. Generic funding produced an unrelated signal."
+    }
+  ]
+}

@@ -1,0 +1,843 @@
+JYRA — CORE INTELLIGENCE SAFETY AUTOPSY 01
+
+PURPOSE
+
+The frozen 10-Control Blind End-to-End Retest 01 returned:
+
+G — SAFETY FAILURE
+
+Results:
+
+Controls evaluated = 10/10
+
+Strict detections = 2/10
+Partial detections = 2/10
+Strict recall = 20%
+Strict + partial coverage = 40%
+
+Signals generated = 6
+Supported signals = 2
+Strict signal precision = 33.3%
+Unsupported/non-valid signals = 4/6
+Seller-as-buyer signals = 1
+Temporally invalid signals = 1
+
+Identity precision = 100%
+Safe identity coverage = 100%
+
+Provider failures = 0
+
+WHY provenance = 100% safe/traced
+
+Idempotency replay:
+research/provider replay was stable with zero new provider calls,
+but created:
+
+10 new opportunity-history rows
+10 new WHY versions
+10 new recommendation-ledger rows.
+
+GOAL
+
+Perform a forensic autopsy of:
+
+A. ALL 6 generated signals
+
+B. ALL 10 control event paths
+
+C. the downstream idempotency failure
+
+DO NOT FIX ANYTHING IN THIS TASK.
+
+This task is diagnosis only.
+
+==================================================
+1. DATABASE SAFETY
+==================================================
+
+DEVELOPMENT ONLY.
+
+Production operations = 0.
+
+Do not mutate production.
+
+Do not run migrations.
+
+Prefer read-only analysis of persisted benchmark data.
+
+==================================================
+2. FREEZE EVERYTHING
+==================================================
+
+DO NOT CHANGE:
+
+identity
+
+company resolution
+
+retrieval
+
+Tavily
+
+Exa
+
+query generation
+
+evidence classification
+
+fact extraction
+
+fact validation
+
+signal definitions
+
+signal mapping
+
+signal thresholds
+
+clusters
+
+ICP
+
+opportunity scoring
+
+WHY
+
+NBA
+
+recommendation ledger
+
+idempotency logic
+
+UI
+
+contacts
+
+providers.
+
+NO CODE FIXES.
+
+==================================================
+3. USE EXISTING BENCHMARK DATA
+==================================================
+
+Use the persisted artifacts/data from:
+
+MVP_10_CONTROL_E2E_RETEST_01
+
+Do NOT rerun provider research.
+
+Required new provider calls:
+
+0.
+
+Do not selectively rerun failed controls.
+
+==================================================
+4. SIGNAL AUTOPSY — ALL SIX
+==================================================
+
+For EACH generated signal reconstruct:
+
+COMPANY
+→ RESEARCH QUESTION
+→ QUERY
+→ PROVIDER
+→ RAW RESULT
+→ EVIDENCE
+→ EVIDENCE CLASSIFICATION
+→ ENTITY MATCH
+→ PUBLISHER
+→ EVENT DATE
+→ FACT PROPOSAL
+→ FACT VALIDATION
+→ APPROVED FACT
+→ SIGNAL DEFINITION
+→ SIGNAL OUTPUT
+→ FINAL ADJUDICATION
+
+Show exact IDs where available.
+
+==================================================
+5. SIGNAL ADJUDICATION
+==================================================
+
+Classify each of the six as exactly one:
+
+SUPPORTED
+
+UNSUPPORTED_FACT
+
+UNSUPPORTED_SIGNAL_INFERENCE
+
+SELLER_AS_BUYER
+
+TEMPORALLY_INVALID
+
+WRONG_ENTITY
+
+DUPLICATE_EVENT
+
+STALE_EVENT
+
+GENERIC_CONTENT_AS_EVENT
+
+OTHER
+
+For every non-supported signal identify the
+EARLIEST stage where JYRA should have stopped it.
+
+==================================================
+6. SELLER-AS-BUYER AUTOPSY
+==================================================
+
+For the known seller-as-buyer signal, determine:
+
+What was the source?
+
+Who was the publisher?
+
+What did the company actually claim?
+
+Was the company:
+
+selling the service
+
+buying the service
+
+describing its own capability
+
+publishing thought leadership
+
+appearing in third-party evidence?
+
+At which stage should it have been blocked?
+
+Classify primary failure as one:
+
+SOURCE_CLASSIFICATION_FAILURE
+
+BUYER_SELLER_ROLE_FAILURE
+
+FACT_EXTRACTION_FAILURE
+
+FACT_VALIDATION_FAILURE
+
+SIGNAL_MAPPING_FAILURE
+
+OTHER.
+
+Do not implement the fix.
+
+==================================================
+7. TEMPORAL INVALIDITY AUTOPSY
+==================================================
+
+For the temporally invalid signal trace:
+
+source published date
+
+event date
+
+retrieval date
+
+fact event date
+
+fact observation date
+
+signal event date
+
+signal activation date
+
+signal freshness/decay rule if applicable.
+
+Determine whether the error originated from:
+
+EVENT_DATE_EXTRACTION
+
+PUBLISHED_DATE_USED_AS_EVENT_DATE
+
+RETRIEVAL_DATE_USED_AS_EVENT_DATE
+
+MISSING_EVENT_DATE_ACCEPTED
+
+STALE_EVENT_NOT_REJECTED
+
+SIGNAL_TEMPORAL_RULE
+
+OTHER.
+
+Do not implement the fix.
+
+==================================================
+8. OTHER INVALID SIGNALS
+==================================================
+
+There are four non-valid signals total.
+
+Seller-as-buyer and temporal invalidity explain at
+least two.
+
+Trace the remaining invalid signals independently.
+
+Do not assume they share the same root cause.
+
+==================================================
+9. FACT PRECISION
+==================================================
+
+For all facts feeding the six signals report:
+
+fact type
+
+approved/rejected
+
+supporting evidence
+
+atomic claim
+
+event date
+
+entity
+
+whether the fact itself is:
+
+SUPPORTED
+
+UNSUPPORTED
+
+MISCLASSIFIED
+
+TEMPORALLY_INVALID
+
+SELLER_CONTENT
+
+WRONG_ENTITY.
+
+Calculate:
+
+FACT PRECISION AMONG SIGNAL-FEEDING FACTS.
+
+This is important to distinguish:
+
+bad facts
+
+from
+
+good facts → bad signal mapping.
+
+==================================================
+10. SIGNAL DEFINITION AUDIT
+==================================================
+
+For every invalid signal answer:
+
+Was the signal definition itself wrong?
+
+OR
+
+did invalid input reach a correct signal definition?
+
+Do NOT modify the Managed SOC signal pack.
+
+Explicitly classify:
+
+SIGNAL_DEFINITION_DEFECT
+
+or
+
+UPSTREAM_INPUT_DEFECT.
+
+==================================================
+11. TEN-CONTROL RECALL AUTOPSY
+==================================================
+
+Now inspect ALL 10 controls.
+
+For each reference event trace:
+
+CONTROL
+→ IDENTITY
+→ RESEARCH QUESTION
+→ RETRIEVAL
+→ RELEVANT RESULT
+→ ACCEPTED EVIDENCE
+→ FACT
+→ VALIDATION
+→ SIGNAL
+→ STRICT/PARTIAL/MISS.
+
+==================================================
+12. STRICT DETECTIONS
+==================================================
+
+For the 2 strict detections document the successful
+path completely.
+
+We need successful-path comparison, not only failures.
+
+Report:
+
+provider
+
+rank
+
+evidence
+
+fact
+
+signal
+
+event date
+
+WHY state.
+
+==================================================
+13. PARTIAL DETECTIONS
+==================================================
+
+For each of the 2 partial detections explain precisely:
+
+What did JYRA detect?
+
+What part of the reference event was missing?
+
+Where was the missing information lost?
+
+Classify earliest break:
+
+RETRIEVAL_INCOMPLETE
+
+CONTENT_INCOMPLETE
+
+EVIDENCE_CLASSIFICATION
+
+FACT_EXTRACTION
+
+FACT_VALIDATION
+
+SIGNAL_MAPPING
+
+TEMPORAL
+
+OTHER.
+
+Also answer:
+
+Could the existing evidence have supported a strict detection?
+
+YES / NO.
+
+This distinction is critical.
+
+==================================================
+14. SIX STRICT MISSES
+==================================================
+
+For every strict miss determine the earliest broken stage.
+
+Use exactly one primary category:
+
+IDENTITY_FAILURE
+
+QUESTION_GENERATION_FAILURE
+
+TAVILY_RETRIEVAL_FAILURE
+
+FALLBACK_NOT_TRIGGERED
+
+EXA_RETRIEVAL_FAILURE
+
+RELEVANCE_CLASSIFICATION_FAILURE
+
+EVIDENCE_PERSISTENCE_FAILURE
+
+CONTENT_NOT_FETCHED
+
+FACT_EXTRACTION_FAILURE
+
+FACT_VALIDATION_FAILURE
+
+SIGNAL_MAPPING_FAILURE
+
+TEMPORAL_FAILURE
+
+OTHER.
+
+Secondary causes may be recorded separately.
+
+==================================================
+15. RETRIEVAL CHECK
+==================================================
+
+Because adaptive retrieval was previously validated and frozen,
+do not assume retrieval is broken merely because the event was missed.
+
+For every missed/partial event answer:
+
+Was event-relevant information present anywhere in
+Tavily or Exa raw results?
+
+YES / NO.
+
+If YES:
+
+retrieval succeeded and failure is downstream.
+
+If NO:
+
+retrieval failure is legitimate.
+
+==================================================
+16. EVIDENCE CHECK
+==================================================
+
+If event-relevant information existed in raw results:
+
+Was it promoted into accepted evidence?
+
+YES / NO.
+
+If NO, explain:
+
+wrong entity?
+
+seller content?
+
+generic content?
+
+insufficient claim?
+
+classification defect?
+
+dedupe?
+
+content not fetched?
+
+other?
+
+==================================================
+17. EXTRACTION CHECK
+==================================================
+
+If relevant evidence reached extraction:
+
+Did extractor produce the correct atomic fact?
+
+YES / NO.
+
+If NO:
+
+record expected generic fact type
+
+and actual output.
+
+Do not alter ontology.
+
+==================================================
+18. VALIDATION CHECK
+==================================================
+
+If correct fact proposal existed:
+
+Was it approved?
+
+YES / NO.
+
+If rejected:
+
+give exact validation reason.
+
+Determine whether rejection was:
+
+correct safety behavior
+
+or
+
+false negative.
+
+==================================================
+19. SIGNAL MAPPING CHECK
+==================================================
+
+If correct approved fact existed:
+
+Did an existing Managed SOC signal definition match?
+
+YES / NO.
+
+If NO, identify exact missing mapping condition.
+
+Do not create a new definition.
+
+==================================================
+20. RECALL FAILURE DISTRIBUTION
+==================================================
+
+Produce counts by earliest failure stage.
+
+Example format:
+
+Question generation =
+Retrieval =
+Relevance =
+Evidence persistence =
+Extraction =
+Validation =
+Signal mapping =
+Temporal =
+Other =
+
+Do not double-count one control across primary categories.
+
+==================================================
+21. DETECTABILITY ANALYSIS
+==================================================
+
+For each of the 10 controls classify:
+
+HIGHLY_DETECTABLE
+
+DETECTABLE
+
+WEAK_PUBLIC_EVIDENCE
+
+NOT_REASONABLY_DETECTABLE
+
+based on evidence available to the NORMAL JYRA research path at the
+time of benchmark.
+
+Do not use this classification to alter benchmark scoring.
+
+It is diagnostic only.
+
+==================================================
+22. IDEMPOTENCY AUTOPSY
+==================================================
+
+Separately trace why replay produced:
+
+10 new opportunity-history rows
+
+10 new WHY versions
+
+10 new recommendation-ledger rows
+
+despite:
+
+same research question IDs
+
+same research job IDs
+
+zero new provider calls
+
+stable signals
+
+stable clusters
+
+stable base opportunities.
+
+Trace:
+
+REPLAY
+→ OPPORTUNITY EVALUATION
+→ OPPORTUNITY HISTORY WRITE
+→ WHY GENERATION/VERSION WRITE
+→ RECOMMENDATION LEDGER WRITE.
+
+==================================================
+23. IDEMPOTENCY EXPECTED SEMANTICS
+==================================================
+
+Determine what SHOULD happen when intelligence inputs have not changed.
+
+Expected concept:
+
+same material input state
+→ no new semantic event/version/recommendation.
+
+Do not implement this yet.
+
+Identify what stable fingerprint/idempotency key SHOULD conceptually
+represent for each:
+
+OPPORTUNITY HISTORY
+
+WHY VERSION
+
+RECOMMENDATION LEDGER.
+
+==================================================
+24. IDEMPOTENCY ROOT CAUSE
+==================================================
+
+Classify each duplicate-write issue as one:
+
+MISSING_IDEMPOTENCY_KEY
+
+UNSTABLE_FINGERPRINT
+
+TIMESTAMP_INCLUDED_IN_FINGERPRINT
+
+ALWAYS_APPEND_DESIGN
+
+NO_CHANGE_DETECTION
+
+VERSIONING_SEMANTICS_ERROR
+
+RECOMMENDATION_DEDUPE_MISSING
+
+OTHER.
+
+==================================================
+25. DO NOT MIX SAFETY AND IDEMPOTENCY
+==================================================
+
+Produce separate diagnoses for:
+
+INTELLIGENCE SAFETY
+
+INTELLIGENCE RECALL
+
+REPLAY IDEMPOTENCY.
+
+They may require separate fixes.
+
+Do not propose one giant rewrite.
+
+==================================================
+26. REQUIRED ARTIFACTS
+==================================================
+
+Generate:
+
+CORE_INTELLIGENCE_SAFETY_AUTOPSY_01.md
+
+CORE_INTELLIGENCE_SAFETY_AUTOPSY_01.json
+
+CORE_INTELLIGENCE_SAFETY_AUTOPSY_01_SIGNALS.json
+
+CORE_INTELLIGENCE_SAFETY_AUTOPSY_01_CONTROLS.json
+
+CORE_INTELLIGENCE_SAFETY_AUTOPSY_01_RECALL_FAILURES.json
+
+CORE_INTELLIGENCE_SAFETY_AUTOPSY_01_IDEMPOTENCY.json
+
+==================================================
+27. REQUIRED FINAL REPORT
+==================================================
+
+SIGNAL SAFETY
+
+Signals total = 6
+
+Supported =
+
+Unsupported fact =
+
+Unsupported inference =
+
+Seller-as-buyer =
+
+Temporal invalid =
+
+Wrong entity =
+
+Duplicate =
+
+Other =
+
+Signal precision =
+
+Fact precision among signal-feeding facts =
+
+Invalid signals caused by upstream input =
+
+Invalid signals caused by signal-definition defect =
+
+
+RECALL
+
+Controls = 10
+
+Strict detected = 2
+
+Partial = 2
+
+Missed = 6
+
+Event-relevant raw retrieval available for =
+Event-relevant evidence accepted for =
+Correct facts extracted for =
+Correct facts approved for =
+Correct signals produced for =
+
+Earliest failure distribution:
+
+Identity =
+Question generation =
+Retrieval =
+Fallback =
+Relevance =
+Evidence persistence =
+Content =
+Extraction =
+Validation =
+Signal mapping =
+Temporal =
+Other =
+
+
+IDEMPOTENCY
+
+Duplicate opportunity history rows = 10
+
+Duplicate WHY versions = 10
+
+Duplicate recommendation ledger rows = 10
+
+Primary opportunity-history cause =
+
+Primary WHY cause =
+
+Primary recommendation-ledger cause =
+
+
+RECOMMENDED FIX ORDER
+
+Return the smallest ordered list of root-cause areas that should be
+fixed.
+
+Do NOT implement them.
+
+==================================================
+28. FINAL DECISION
+==================================================
+
+Return exactly ONE diagnosis:
+
+A — UPSTREAM FACT/EVIDENCE SAFETY IS PRIMARY BLOCKER
+
+B — SIGNAL DEFINITIONS ARE PRIMARY BLOCKER
+
+C — RETRIEVAL/RECALL IS PRIMARY BLOCKER
+
+D — MULTIPLE INDEPENDENT CORE DEFECTS
+
+E — BENCHMARK DATA INSUFFICIENT FOR DIAGNOSIS
+
+==================================================
+29. STOP
+==================================================
+
+STOP.
+
+DO NOT FIX ANYTHING.
+
+DO NOT RUN PROVIDERS.
+
+DO NOT RUN THE 50-COMPANY BENCHMARK.
+
+DO NOT CHANGE CODE.
+
+Return the forensic results for human review.

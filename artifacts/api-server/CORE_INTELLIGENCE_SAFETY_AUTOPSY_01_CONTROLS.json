@@ -1,0 +1,2155 @@
+{
+  "summary": {
+    "controls": 10,
+    "strictDetected": 2,
+    "partial": 2,
+    "missed": 6,
+    "eventRelevantRawRetrievalAvailableFor": 10,
+    "eventRelevantEvidenceAcceptedFor": 10,
+    "correctFactsExtractedFor": 4,
+    "correctFactsApprovedFor": 4,
+    "correctSignalsProducedFor": 2,
+    "earliestFailureDistribution": {
+      "identity": 0,
+      "questionGeneration": 0,
+      "retrieval": 0,
+      "fallback": 0,
+      "relevance": 0,
+      "evidencePersistence": 0,
+      "content": 0,
+      "extraction": 6,
+      "validation": 0,
+      "signalMapping": 0,
+      "temporal": 2,
+      "other": 0
+    }
+  },
+  "controls": [
+    {
+      "control": "SolarWinds",
+      "companyId": "3cd73d96-37d1-4cf8-9dab-db596e019783",
+      "identity": {
+        "canonicalName": "SolarWinds",
+        "domain": "solarwinds.com",
+        "state": "CONFIRMED",
+        "confidence": 1,
+        "autoAttached": false,
+        "contradictions": []
+      },
+      "reference": {
+        "category": "SECURITY_LEADERSHIP",
+        "eventDate": "2026-06-17",
+        "event": "SolarWinds appointed Justin Henkel as Chief Information Security Officer.",
+        "source": "https://www.solarwinds.com/company/newsroom/press-releases/solarwinds-appoints-justin-henkel-as-chief-information-security-officer"
+      },
+      "questions": [
+        {
+          "id": "24e2f54f-18bf-4338-bdc4-c42cc3af6d53",
+          "type": "LEADERSHIP",
+          "text": "\"SolarWinds\" solarwinds.com public evidence of security leadership changes (security, ciso)",
+          "status": "ANSWERED"
+        },
+        {
+          "id": "eca3e77a-1b13-42c2-ace5-d3e027232b3d",
+          "type": "TECHNOLOGY",
+          "text": "\"SolarWinds\" solarwinds.com public evidence of security stack, SOC, SIEM, EDR, or IAM changes (security, siem, endpoint, iam)",
+          "status": "ANSWERED"
+        },
+        {
+          "id": "8083b764-b2c7-4788-ad1f-8c631f1110f6",
+          "type": "EXPANSION",
+          "text": "\"SolarWinds\" solarwinds.com public evidence of funding, expansion, security, or compliance initiatives",
+          "status": "ANSWERED"
+        },
+        {
+          "id": "b37fba97-d1bd-4bd6-9452-48199eff53bb",
+          "type": "HIRING",
+          "text": "\"SolarWinds\" solarwinds.com public evidence of security and cybersecurity hiring (security, soc, cyber)",
+          "status": "ANSWERED"
+        }
+      ],
+      "retrieval": {
+        "tavilyCalls": 3,
+        "exaFallbackCalls": 1,
+        "providerFailures": 0,
+        "rawResultCount": 50,
+        "eventRelevantRawAvailable": true,
+        "eventResultHits": [],
+        "rankCaveat": "Only ranks retained in providerResultIds are reported; reused accepted evidence may have no recoverable rank."
+      },
+      "evidence": {
+        "accepted": true,
+        "matchedEvidenceIds": [
+          "33ab1424-6091-4007-bb19-c76fb6d6afff"
+        ],
+        "matchedEvidenceCount": 1,
+        "sourceDetails": [
+          {
+            "id": "33ab1424-6091-4007-bb19-c76fb6d6afff",
+            "url": "https://solarwinds.com/company/newsroom/press-releases/solarwinds-appoints-justin-henkel-as-chief-information-security-officer",
+            "domain": "solarwinds.com",
+            "type": "company_website",
+            "status": "RAW",
+            "observedAt": "2026-08-31T13:51:57.240Z"
+          }
+        ]
+      },
+      "extraction": {
+        "correctFactProduced": false,
+        "correctFactIds": [],
+        "actualApprovedProposals": [
+          {
+            "id": "3aa4bc78-2d08-4298-bbbd-fb28a0bd0aee",
+            "type": "ACQUISITION",
+            "status": "APPROVED",
+            "evidenceId": "744a1ae1-76ef-4dc8-b557-6455d52347c9",
+            "effectiveDate": "2026-08-31",
+            "structuredValue": {
+              "year": "2022",
+              "acquirer": "SolarWinds",
+              "acquiredCompany": "Monalytic"
+            }
+          },
+          {
+            "id": "f1a6a8be-8769-43e7-bc22-d3ceb3c9a53f",
+            "type": "CERTIFICATION",
+            "status": "APPROVED",
+            "evidenceId": "cdf9c067-ece8-4162-baa7-6ef76b4965e0",
+            "effectiveDate": "2026-08-31",
+            "structuredValue": {
+              "product": "SolarWinds Observability Self-Hosted for Federal Government v2022.4.1",
+              "certifier": "Netherlands Scheme for Certification in the Area of IT Security (NSCIB)",
+              "certification": "Common Criteria",
+              "evaluation assurance level": "(EAL) 2+"
+            }
+          },
+          {
+            "id": "91e1b44e-2a1d-4af9-901d-689582547cf9",
+            "type": "HIRING_COUNT",
+            "status": "APPROVED",
+            "evidenceId": "fefe0d60-ba59-4419-8f4e-cccda48e8f96",
+            "effectiveDate": "2026-08-31",
+            "structuredValue": {
+              "openJobs": "3,556"
+            }
+          },
+          {
+            "id": "5aeeb8a4-152b-4f37-b21f-5f51b74e8759",
+            "type": "TECHNOLOGY_MENTION",
+            "status": "APPROVED",
+            "evidenceId": "984f89df-7699-458f-81e0-14be3dff693e",
+            "effectiveDate": "2026-08-31",
+            "structuredValue": {
+              "technologies": [
+                "Amazon Web Services (AWS)"
+              ]
+            }
+          },
+          {
+            "id": "ea788059-72f5-4ded-926a-438b4b9df330",
+            "type": "ENTERPRISE_CUSTOMER",
+            "status": "APPROVED",
+            "evidenceId": "4dac2ae2-d98a-4ddd-b46f-cb4fad0eff5d",
+            "effectiveDate": "2026-08-31",
+            "structuredValue": {
+              "customer": "Federal government"
+            }
+          },
+          {
+            "id": "8e7649cd-b400-4e1f-ad32-da54017b1c55",
+            "type": "TECHNOLOGY_MENTION",
+            "status": "APPROVED",
+            "evidenceId": "9ed009dd-d679-499e-abaa-4579b90fcbda",
+            "effectiveDate": "2026-08-31",
+            "structuredValue": {
+              "technologies": [
+                "flexible technology platform",
+                "powerful integrations"
+              ]
+            }
+          }
+        ]
+      },
+      "validation": {
+        "correctFactApproved": false,
+        "rejectedCorrectFacts": [],
+        "note": "No correct proposal was rejected in these paths; six misses had no correct proposal, and two partials had approved but temporally invalid facts."
+      },
+      "signal": {
+        "correctSignalProduced": false,
+        "correctSignalIds": [],
+        "allGeneratedSignalIds": []
+      },
+      "outcome": "MISS",
+      "earliestBreak": "FACT_EXTRACTION_FAILURE",
+      "secondaryCauses": [],
+      "detail": "Official appointment evidence reached persistence; no leadership fact was extracted.",
+      "couldExistingEvidenceSupportStrictDetection": "YES",
+      "detectability": "HIGHLY_DETECTABLE",
+      "whyState": "INSUFFICIENT_EVIDENCE",
+      "nba": "RESEARCH_MORE"
+    },
+    {
+      "control": "First Horizon",
+      "companyId": "3ec654e3-3bed-405a-a1aa-1405f28ffcba",
+      "identity": {
+        "canonicalName": "First Horizon Bank",
+        "domain": "firsthorizon.com",
+        "state": "CONFIRMED",
+        "confidence": 1,
+        "autoAttached": false,
+        "contradictions": []
+      },
+      "reference": {
+        "category": "SECURITY_LEADERSHIP",
+        "eventDate": "2026-02-11",
+        "event": "First Horizon appointed Leilani Farol as Chief Information Security Officer.",
+        "source": "https://ir.firsthorizon.com/press-releases/press-release-details/2026/First-Horizon-Appoints-Leilani-Farol-as-Chief-Information-Security-Officer/default.aspx"
+      },
+      "questions": [
+        {
+          "id": "faf47884-2727-4315-a4ef-e7424bd7d749",
+          "type": "TECHNOLOGY",
+          "text": "\"First Horizon Bank\" firsthorizon.com public evidence of security stack, SOC, SIEM, EDR, or IAM changes (security, siem, endpoint, iam)",
+          "status": "ANSWERED"
+        },
+        {
+          "id": "5bb2669f-06e9-4418-8b61-ed332895ecbf",
+          "type": "HIRING",
+          "text": "\"First Horizon Bank\" firsthorizon.com public evidence of security and cybersecurity hiring (security, soc, cyber)",
+          "status": "ANSWERED"
+        },
+        {
+          "id": "30d04ff3-9705-472c-bc45-947475102571",
+          "type": "LEADERSHIP",
+          "text": "\"First Horizon Bank\" firsthorizon.com public evidence of security leadership changes (security, ciso)",
+          "status": "ANSWERED"
+        },
+        {
+          "id": "36b674d4-47bb-4c98-a4bb-ae3cc1891f05",
+          "type": "EXPANSION",
+          "text": "\"First Horizon Bank\" firsthorizon.com public evidence of funding, expansion, security, or compliance initiatives",
+          "status": "ANSWERED"
+        }
+      ],
+      "retrieval": {
+        "tavilyCalls": 2,
+        "exaFallbackCalls": 2,
+        "providerFailures": 0,
+        "rawResultCount": 60,
+        "eventRelevantRawAvailable": true,
+        "eventResultHits": [
+          {
+            "provider": "exa",
+            "stage": "FALLBACK",
+            "rank": 1,
+            "url": "https://ir.firsthorizon.com/press-releases/press-release-details/2026/First-Horizon-Appoints-Leilani-Farol-as-Chief-Information-Security-Officer/default.aspx",
+            "query": "\"First Horizon Bank\" firsthorizon.com cybersecurity infrastructure platform change news",
+            "requestId": "research:faf47884-2727-4315-a4ef-e7424bd7d749:fallback:b220e720-6d21-4c7a-badf-3aec920febca"
+          },
+          {
+            "provider": "exa",
+            "stage": "FALLBACK",
+            "rank": 5,
+            "url": "https://www.prnewswire.com/news-releases/first-horizon-appoints-leilani-farol-as-chief-information-security-officer-302685334.html",
+            "query": "\"First Horizon Bank\" firsthorizon.com cybersecurity infrastructure platform change news",
+            "requestId": "research:faf47884-2727-4315-a4ef-e7424bd7d749:fallback:b220e720-6d21-4c7a-badf-3aec920febca"
+          },
+          {
+            "provider": "exa",
+            "stage": "FALLBACK",
+            "rank": 7,
+            "url": "https://soc-news.com/first-horizon-appoints-leilani-farol-as-ciso-lead/",
+            "query": "\"First Horizon Bank\" firsthorizon.com cybersecurity infrastructure platform change news",
+            "requestId": "research:faf47884-2727-4315-a4ef-e7424bd7d749:fallback:b220e720-6d21-4c7a-badf-3aec920febca"
+          },
+          {
+            "provider": "exa",
+            "stage": "FALLBACK",
+            "rank": 1,
+            "url": "https://ir.firsthorizon.com/press-releases/press-release-details/2026/First-Horizon-Appoints-Leilani-Farol-as-Chief-Information-Security-Officer/default.aspx",
+            "query": "\"First Horizon Bank\" firsthorizon.com cybersecurity assurance compliance news",
+            "requestId": "research:36b674d4-47bb-4c98-a4bb-ae3cc1891f05:fallback:b220e720-6d21-4c7a-badf-3aec920febca"
+          },
+          {
+            "provider": "exa",
+            "stage": "FALLBACK",
+            "rank": 5,
+            "url": "https://www.prnewswire.com/news-releases/first-horizon-appoints-leilani-farol-as-chief-information-security-officer-302685334.html",
+            "query": "\"First Horizon Bank\" firsthorizon.com cybersecurity assurance compliance news",
+            "requestId": "research:36b674d4-47bb-4c98-a4bb-ae3cc1891f05:fallback:b220e720-6d21-4c7a-badf-3aec920febca"
+          },
+          {
+            "provider": "exa",
+            "stage": "FALLBACK",
+            "rank": 6,
+            "url": "https://soc-news.com/first-horizon-appoints-leilani-farol-as-ciso-lead/",
+            "query": "\"First Horizon Bank\" firsthorizon.com cybersecurity assurance compliance news",
+            "requestId": "research:36b674d4-47bb-4c98-a4bb-ae3cc1891f05:fallback:b220e720-6d21-4c7a-badf-3aec920febca"
+          },
+          {
+            "provider": "exa",
+            "stage": "FALLBACK",
+            "rank": 7,
+            "url": "https://ca.marketscreener.com/news/first-horizon-corporation-appoints-leilani-farol-as-chief-information-security-officer-ce7e5addde80f421",
+            "query": "\"First Horizon Bank\" firsthorizon.com cybersecurity assurance compliance news",
+            "requestId": "research:36b674d4-47bb-4c98-a4bb-ae3cc1891f05:fallback:b220e720-6d21-4c7a-badf-3aec920febca"
+          },
+          {
+            "provider": "exa",
+            "stage": "FALLBACK",
+            "rank": 10,
+            "url": "https://www.stocktitan.net/news/FHN/first-horizon-appoints-leilani-farol-as-chief-information-security-nw16bbc6cqz2.html",
+            "query": "\"First Horizon Bank\" firsthorizon.com cybersecurity assurance compliance news",
+            "requestId": "research:36b674d4-47bb-4c98-a4bb-ae3cc1891f05:fallback:b220e720-6d21-4c7a-badf-3aec920febca"
+          }
+        ],
+        "rankCaveat": "Only ranks retained in providerResultIds are reported; reused accepted evidence may have no recoverable rank."
+      },
+      "evidence": {
+        "accepted": true,
+        "matchedEvidenceIds": [
+          "4ec7b5c0-2fe9-4cc9-8876-647b39c4ebd5",
+          "5b593a01-5853-41e3-8df7-a24eec9be7bb",
+          "d5fc2662-6866-481a-b4d7-314b8823e9aa",
+          "b2f46000-2ca1-4f0c-a2fc-eaa5a389b8ce",
+          "a61a61e9-dd99-4a8e-8c1e-70d5c4e0ed51",
+          "0c292009-dc2d-480e-9f5e-9d238abc99db",
+          "59f846c8-f590-4d10-a70e-4c1e0eb0fc5c",
+          "49435b3a-6eff-4aca-8af1-c03277a07098",
+          "405ed64a-4ed7-4081-9152-90eae835f5ec",
+          "d8ca2057-47cd-48bd-bfa9-942350566ee4",
+          "cab5a7c1-78b0-4b9d-8dac-59421f7063e7",
+          "8cfd0080-ca2f-45a6-b2dc-4135c284ef26",
+          "29e9ec91-d6b0-4ef3-ba4f-69c2da0b94b9",
+          "f57502ac-7e13-4c74-852c-96ea6e7d84ec",
+          "a2a7445c-0763-41d1-a347-5375d04fb4c8",
+          "4ea37633-5a11-47fa-ba4c-c4e526e5ad9c",
+          "647dc248-557f-4239-bc76-e6482f7e8fcb",
+          "405f601b-bc1f-4e6f-bb9c-6b9c73c5d713",
+          "427d0152-89f8-4454-bdea-a992a14b2aa6",
+          "c492c233-6623-4dcf-beec-1b847a07c0dc",
+          "0bd7b822-dd99-4ca9-9f1e-93777dbbfc15",
+          "c60067b9-e9a2-43b0-8bb8-e5103754dbd5",
+          "30e13583-94e2-4825-b081-a4124d1c85d3",
+          "0cc429ec-9c19-46a2-8589-d170648d907f",
+          "30ad0a37-4a6e-4232-86cc-7053e2b70787",
+          "07f18d9d-0bd4-4494-bd7b-7ce1d4482fb4",
+          "6d812673-5c21-4f2c-bd4f-e10f87d59496"
+        ],
+        "matchedEvidenceCount": 27,
+        "sourceDetails": [
+          {
+            "id": "4ec7b5c0-2fe9-4cc9-8876-647b39c4ebd5",
+            "url": "https://prnewswire.com/news-releases/first-horizon-appoints-leilani-farol-as-chief-information-security-officer-302685334.html",
+            "domain": "prnewswire.com",
+            "type": "company_website",
+            "status": "RAW",
+            "observedAt": "2026-08-31T13:53:19.157Z"
+          },
+          {
+            "id": "5b593a01-5853-41e3-8df7-a24eec9be7bb",
+            "url": "https://firsthorizon.com/first-horizon-corporation/Community-Reinvestment",
+            "domain": "firsthorizon.com",
+            "type": "company_website",
+            "status": "RAW",
+            "observedAt": "2026-08-31T13:53:20.005Z"
+          },
+          {
+            "id": "d5fc2662-6866-481a-b4d7-314b8823e9aa",
+            "url": "https://profilemagazine.com/2024/steven-jones-first-horizon-bank",
+            "domain": "profilemagazine.com",
+            "type": "company_website",
+            "status": "RAW",
+            "observedAt": "2026-08-31T13:53:19.157Z"
+          },
+          {
+            "id": "b2f46000-2ca1-4f0c-a2fc-eaa5a389b8ce",
+            "url": "https://firsthorizon.com/First-Horizon-Corporation/Corporate-Responsibility/Corporate-Statements",
+            "domain": "firsthorizon.com",
+            "type": "job_posting",
+            "status": "RAW",
+            "observedAt": "2026-08-31T13:53:23.407Z"
+          },
+          {
+            "id": "a61a61e9-dd99-4a8e-8c1e-70d5c4e0ed51",
+            "url": "https://panorays.com/free-security-reports/first-horizon-bank",
+            "domain": "panorays.com",
+            "type": "company_website",
+            "status": "RAW",
+            "observedAt": "2026-08-31T13:53:20.005Z"
+          },
+          {
+            "id": "0c292009-dc2d-480e-9f5e-9d238abc99db",
+            "url": "https://firsthorizon.com/First-Horizon-Corporation/Careers",
+            "domain": "firsthorizon.com",
+            "type": "technology",
+            "status": "RAW",
+            "observedAt": "2026-08-31T13:53:20.128Z"
+          },
+          {
+            "id": "59f846c8-f590-4d10-a70e-4c1e0eb0fc5c",
+            "url": "https://firsthorizon.com/First-Horizon-Corporation/About-Us/Our-Leadership",
+            "domain": "firsthorizon.com",
+            "type": "company_website",
+            "status": "RAW",
+            "observedAt": "2026-08-31T13:53:19.157Z"
+          },
+          {
+            "id": "49435b3a-6eff-4aca-8af1-c03277a07098",
+            "url": "https://prnewswire.com/news-releases/first-horizon-bank-expands-loan-syndications-team-with-strategic-hires-302835291.html",
+            "domain": "prnewswire.com",
+            "type": "company_website",
+            "status": "RAW",
+            "observedAt": "2026-08-31T13:53:20.005Z"
+          },
+          {
+            "id": "405ed64a-4ed7-4081-9152-90eae835f5ec",
+            "url": "https://firsthorizon.com/first-horizon-corporation/leadership/amy-perry",
+            "domain": "firsthorizon.com",
+            "type": "company_website",
+            "status": "RAW",
+            "observedAt": "2026-08-31T13:53:19.157Z"
+          },
+          {
+            "id": "d8ca2057-47cd-48bd-bfa9-942350566ee4",
+            "url": "https://linkedin.com/company/first-horizon-bank",
+            "domain": "linkedin.com",
+            "type": "company_website",
+            "status": "RAW",
+            "observedAt": "2026-08-31T13:53:20.005Z"
+          },
+          {
+            "id": "cab5a7c1-78b0-4b9d-8dac-59421f7063e7",
+            "url": "https://firsthorizon.com/First-Horizon-Corporation/Privacy-Policy",
+            "domain": "firsthorizon.com",
+            "type": "company_website",
+            "status": "RAW",
+            "observedAt": "2026-08-31T13:53:20.005Z"
+          },
+          {
+            "id": "8cfd0080-ca2f-45a6-b2dc-4135c284ef26",
+            "url": "https://firsthorizon.com/First-Horizon-Corporation",
+            "domain": "firsthorizon.com",
+            "type": "company_website",
+            "status": "RAW",
+            "observedAt": "2026-08-31T13:53:20.005Z"
+          },
+          {
+            "id": "29e9ec91-d6b0-4ef3-ba4f-69c2da0b94b9",
+            "url": "https://prnewswire.com/news-releases/first-horizon-bank-strengthens-leadership-in-cookeville-and-sparta-302822914.html",
+            "domain": "prnewswire.com",
+            "type": "company_website",
+            "status": "RAW",
+            "observedAt": "2026-08-31T19:00:00.701Z"
+          },
+          {
+            "id": "f57502ac-7e13-4c74-852c-96ea6e7d84ec",
+            "url": "https://talents.vaia.com/companies/first-horizon-bank/senior-it-security-engineer-30375407",
+            "domain": "talents.vaia.com",
+            "type": "job_posting",
+            "status": "RAW",
+            "observedAt": "2026-08-31T19:00:04.942Z"
+          },
+          {
+            "id": "a2a7445c-0763-41d1-a347-5375d04fb4c8",
+            "url": "https://prnewswire.com/news-releases/first-horizon-expands-atlanta-leadership-team-302803229.html",
+            "domain": "prnewswire.com",
+            "type": "company_website",
+            "status": "RAW",
+            "observedAt": "2026-08-31T19:00:00.701Z"
+          },
+          {
+            "id": "4ea37633-5a11-47fa-ba4c-c4e526e5ad9c",
+            "url": "https://linkedin.com/company/first-horizon-bank/jobs",
+            "domain": "linkedin.com",
+            "type": "job_posting",
+            "status": "RAW",
+            "observedAt": "2026-08-31T19:00:04.942Z"
+          },
+          {
+            "id": "647dc248-557f-4239-bc76-e6482f7e8fcb",
+            "url": "https://facebook.com/FirstHorizonBank/posts/first-horizon-is-proud-to-announce-that-14-members-of-our-leadership-team-includ/10159916558257159",
+            "domain": "facebook.com",
+            "type": "company_website",
+            "status": "RAW",
+            "observedAt": "2026-08-31T19:00:00.701Z"
+          },
+          {
+            "id": "405f601b-bc1f-4e6f-bb9c-6b9c73c5d713",
+            "url": "https://leadiq.com/c/first-horizon-bank/5a1d96602300005b008506ee",
+            "domain": "leadiq.com",
+            "type": "company_website",
+            "status": "RAW",
+            "observedAt": "2026-08-31T19:00:00.701Z"
+          },
+          {
+            "id": "427d0152-89f8-4454-bdea-a992a14b2aa6",
+            "url": "https://appsruntheworld.com/customers-database/customers/view/first-horizon-bank-united-states",
+            "domain": "appsruntheworld.com",
+            "type": "technology",
+            "status": "RAW",
+            "observedAt": "2026-08-31T19:00:20.545Z"
+          },
+          {
+            "id": "c492c233-6623-4dcf-beec-1b847a07c0dc",
+            "url": "https://firsthorizon.com/First-Horizon-Corporation/Careers-FAQs",
+            "domain": "firsthorizon.com",
+            "type": "job_posting",
+            "status": "RAW",
+            "observedAt": "2026-08-31T19:00:04.942Z"
+          }
+        ]
+      },
+      "extraction": {
+        "correctFactProduced": false,
+        "correctFactIds": [],
+        "actualApprovedProposals": [
+          {
+            "id": "a4b1f999-510c-45ba-b185-16872026856b",
+            "type": "COMPLIANCE_MENTION",
+            "status": "APPROVED",
+            "evidenceId": "b2f46000-2ca1-4f0c-a2fc-eaa5a389b8ce",
+            "effectiveDate": "2026-08-31",
+            "structuredValue": {
+              "company": "First Horizon",
+              "program": "BSA/AML/OFAC Compliance Program"
+            }
+          },
+          {
+            "id": "1db70291-df69-4354-bd26-6e6072ec6c98",
+            "type": "COMPLIANCE_MENTION",
+            "status": "APPROVED",
+            "evidenceId": "07f18d9d-0bd4-4494-bd7b-7ce1d4482fb4",
+            "effectiveDate": "2026-08-31",
+            "structuredValue": {
+              "program": "BSA/AML/OFAC Compliance Program"
+            }
+          },
+          {
+            "id": "fba41762-72e6-4310-97cf-20280c32b253",
+            "type": "COMPLIANCE_MENTION",
+            "status": "APPROVED",
+            "evidenceId": "07f18d9d-0bd4-4494-bd7b-7ce1d4482fb4",
+            "effectiveDate": "2026-08-31",
+            "structuredValue": {
+              "program": "Fair Lending Compliance Program"
+            }
+          }
+        ]
+      },
+      "validation": {
+        "correctFactApproved": false,
+        "rejectedCorrectFacts": [],
+        "note": "No correct proposal was rejected in these paths; six misses had no correct proposal, and two partials had approved but temporally invalid facts."
+      },
+      "signal": {
+        "correctSignalProduced": false,
+        "correctSignalIds": [],
+        "allGeneratedSignalIds": []
+      },
+      "outcome": "MISS",
+      "earliestBreak": "FACT_EXTRACTION_FAILURE",
+      "secondaryCauses": [],
+      "detail": "Exact appointment results/evidence existed; extractor produced unrelated compliance facts.",
+      "couldExistingEvidenceSupportStrictDetection": "YES",
+      "detectability": "HIGHLY_DETECTABLE",
+      "whyState": "INSUFFICIENT_EVIDENCE",
+      "nba": "RESEARCH_MORE"
+    },
+    {
+      "control": "GitLab",
+      "companyId": "417409dc-ca3f-449f-90bb-f315f91f450a",
+      "identity": {
+        "canonicalName": "GitLab",
+        "domain": "about.gitlab.com",
+        "state": "CONFIRMED",
+        "confidence": 1,
+        "autoAttached": false,
+        "contradictions": []
+      },
+      "reference": {
+        "category": "SECURITY_LEADERSHIP",
+        "eventDate": "2026-06-09",
+        "event": "GitLab appointed Chaim Mazal as Chief Information Security Officer.",
+        "source": "https://s204.q4cdn.com/984476563/files/doc_news/GitLab-Appoints-Chaim-Mazal-as-Chief-Information-Security-Officer-2026.pdf"
+      },
+      "questions": [
+        {
+          "id": "bd190926-02e1-4ff8-b881-82f181db00a2",
+          "type": "LEADERSHIP",
+          "text": "\"GitLab\" about.gitlab.com public evidence of security leadership changes (security, ciso)",
+          "status": "ANSWERED"
+        },
+        {
+          "id": "69032b03-2ba8-473c-972b-85f0017d439b",
+          "type": "EXPANSION",
+          "text": "\"GitLab\" about.gitlab.com public evidence of funding, expansion, security, or compliance initiatives",
+          "status": "ANSWERED"
+        },
+        {
+          "id": "9a189399-1ab3-486d-8546-d4b692085169",
+          "type": "TECHNOLOGY",
+          "text": "\"GitLab\" about.gitlab.com public evidence of security stack, SOC, SIEM, EDR, or IAM changes (security, siem, endpoint, iam)",
+          "status": "ANSWERED"
+        },
+        {
+          "id": "3a5a7952-5c64-4033-9e1e-91b3bfa0796a",
+          "type": "HIRING",
+          "text": "\"GitLab\" about.gitlab.com public evidence of security and cybersecurity hiring (security, soc, cyber)",
+          "status": "ANSWERED"
+        }
+      ],
+      "retrieval": {
+        "tavilyCalls": 3,
+        "exaFallbackCalls": 1,
+        "providerFailures": 0,
+        "rawResultCount": 50,
+        "eventRelevantRawAvailable": true,
+        "eventResultHits": [],
+        "rankCaveat": "Only ranks retained in providerResultIds are reported; reused accepted evidence may have no recoverable rank."
+      },
+      "evidence": {
+        "accepted": true,
+        "matchedEvidenceIds": [
+          "0488986c-21e7-4675-b161-edf2f9307156"
+        ],
+        "matchedEvidenceCount": 1,
+        "sourceDetails": [
+          {
+            "id": "0488986c-21e7-4675-b161-edf2f9307156",
+            "url": "https://about.gitlab.com/press/releases/2026-06-09-gitlab-appoints-chaim-mazal-as-chief-information-security-officer",
+            "domain": "about.gitlab.com",
+            "type": "company_website",
+            "status": "RAW",
+            "observedAt": "2026-08-31T12:30:07.292Z"
+          }
+        ]
+      },
+      "extraction": {
+        "correctFactProduced": true,
+        "correctFactIds": [
+          "a4caf6a2-de85-44ba-8060-62129c20d8eb",
+          "44238513-4a5b-4ac4-ab33-1e4f6149eb42"
+        ],
+        "actualApprovedProposals": [
+          {
+            "id": "cdd288d5-19bc-4fe9-afc4-b55c0c4d3aac",
+            "type": "LEADERSHIP_CHANGE",
+            "status": "APPROVED",
+            "evidenceId": "0488986c-21e7-4675-b161-edf2f9307156",
+            "effectiveDate": "2026-06-09",
+            "structuredValue": {
+              "role": "Chief Information Security Officer (CISO)",
+              "event": "has joined",
+              "person": "Chaim Mazal",
+              "company": "GitLab Inc."
+            }
+          },
+          {
+            "id": "3c81f258-c7f4-442e-8115-cc2b330aaafd",
+            "type": "EMPLOYEE_GROWTH",
+            "status": "APPROVED",
+            "evidenceId": "363d6ee7-9d17-4ab0-b8f4-2fc40202828e",
+            "effectiveDate": "2026-08-31",
+            "structuredValue": {
+              "growth": "15%",
+              "period": "12 months"
+            }
+          },
+          {
+            "id": "7504f94b-4366-4f57-aaa4-b75bc755f0ab",
+            "type": "COMPLIANCE_MENTION",
+            "status": "APPROVED",
+            "evidenceId": "44e736bb-ebd4-4075-bd00-33065da88882",
+            "effectiveDate": "2026-08-31",
+            "structuredValue": {
+              "services": "GitLab software-as-a-service (SaaS) subscriptions, GitLab.com and GitLab Dedicated",
+              "standard": "ISO/IEC 27017:2015 compliance"
+            }
+          },
+          {
+            "id": "705cd7d6-0429-42b0-becc-71501977eb39",
+            "type": "COMPLIANCE_MENTION",
+            "status": "APPROVED",
+            "evidenceId": "44e736bb-ebd4-4075-bd00-33065da88882",
+            "effectiveDate": "2026-08-31",
+            "structuredValue": {
+              "services": "GitLab software-as-a-service (SaaS) subscriptions, GitLab.com and GitLab Dedicated",
+              "standard": "ISO/IEC 27018:2019 compliance"
+            }
+          },
+          {
+            "id": "8dfc5d11-085a-483e-9fbd-79ff2deb20ba",
+            "type": "COMPLIANCE_MENTION",
+            "status": "APPROVED",
+            "evidenceId": "44e736bb-ebd4-4075-bd00-33065da88882",
+            "effectiveDate": "2026-08-31",
+            "structuredValue": {
+              "requirement": "GDPR requirements"
+            }
+          },
+          {
+            "id": "f01cde6d-224e-4b2c-be48-e6631fc85e29",
+            "type": "HIRING_COUNT",
+            "status": "APPROVED",
+            "evidenceId": "ca139587-06c3-44d4-b5dc-36fbbe1e528c",
+            "effectiveDate": "2026-08-31",
+            "structuredValue": {
+              "count": 160,
+              "label": "Open roles"
+            }
+          },
+          {
+            "id": "de81dab9-4e04-4b73-9132-524bd55794eb",
+            "type": "CERTIFICATION",
+            "status": "APPROVED",
+            "evidenceId": "e334c58b-e3f2-4b86-a897-81ccc0eb5d5f",
+            "effectiveDate": "2026-08-31",
+            "structuredValue": {
+              "scope": "AI governance",
+              "certification": "ISO/IEC 42001 certification"
+            }
+          },
+          {
+            "id": "b28b799b-faea-44e0-b93b-3f8b25563be0",
+            "type": "TECHNOLOGY_MENTION",
+            "status": "APPROVED",
+            "evidenceId": "5fe1b28d-e2cb-41d8-a4d2-5cc99da94ad8",
+            "effectiveDate": "2026-08-31",
+            "structuredValue": {
+              "technologies": [
+                "GitLab Dedicated"
+              ]
+            }
+          }
+        ]
+      },
+      "validation": {
+        "correctFactApproved": true,
+        "rejectedCorrectFacts": [],
+        "note": "No correct proposal was rejected in these paths; six misses had no correct proposal, and two partials had approved but temporally invalid facts."
+      },
+      "signal": {
+        "correctSignalProduced": true,
+        "correctSignalIds": [
+          "3c0eb744-1328-425f-bcc1-5b30de6be3e9"
+        ],
+        "allGeneratedSignalIds": [
+          "3c0eb744-1328-425f-bcc1-5b30de6be3e9"
+        ]
+      },
+      "outcome": "STRICT",
+      "earliestBreak": null,
+      "secondaryCauses": [],
+      "detail": "Complete direct evidence → correctly dated facts → supported signal path.",
+      "couldExistingEvidenceSupportStrictDetection": "YES",
+      "detectability": "HIGHLY_DETECTABLE",
+      "whyState": "INSUFFICIENT_EVIDENCE",
+      "nba": "CONTACT_NOW"
+    },
+    {
+      "control": "Infoblox",
+      "companyId": "408bc044-5be0-4118-b486-75c494e5cd8f",
+      "identity": {
+        "canonicalName": "Infoblox",
+        "domain": "infoblox.com",
+        "state": "CONFIRMED",
+        "confidence": 1,
+        "autoAttached": false,
+        "contradictions": []
+      },
+      "reference": {
+        "category": "SECURITY_LEADERSHIP",
+        "eventDate": "2026-06-09",
+        "event": "Infoblox appointed Henrik Smith as Chief Information Security Officer.",
+        "source": "https://www.infoblox.com/news/news-events/press-releases/infoblox-appoints-henrik-smith-as-chief-information-security-officer/"
+      },
+      "questions": [
+        {
+          "id": "aa12aa6d-c262-4967-8d70-d503a3c9310c",
+          "type": "TECHNOLOGY",
+          "text": "\"Infoblox\" infoblox.com public evidence of security stack, SOC, SIEM, EDR, or IAM changes (security, siem, endpoint, iam)",
+          "status": "ANSWERED"
+        },
+        {
+          "id": "7f2108cf-16fc-4a30-97ad-b1a85c598be9",
+          "type": "LEADERSHIP",
+          "text": "\"Infoblox\" infoblox.com public evidence of security leadership changes (security, ciso)",
+          "status": "ANSWERED"
+        },
+        {
+          "id": "9b63012f-e5be-444b-b3c7-d68477f33eee",
+          "type": "HIRING",
+          "text": "\"Infoblox\" infoblox.com public evidence of security and cybersecurity hiring (security, soc, cyber)",
+          "status": "ANSWERED"
+        },
+        {
+          "id": "d5aa9fd2-d125-4681-954c-bdba9e0f78fa",
+          "type": "EXPANSION",
+          "text": "\"Infoblox\" infoblox.com public evidence of funding, expansion, security, or compliance initiatives",
+          "status": "ANSWERED"
+        }
+      ],
+      "retrieval": {
+        "tavilyCalls": 2,
+        "exaFallbackCalls": 2,
+        "providerFailures": 0,
+        "rawResultCount": 60,
+        "eventRelevantRawAvailable": true,
+        "eventResultHits": [],
+        "rankCaveat": "Only ranks retained in providerResultIds are reported; reused accepted evidence may have no recoverable rank."
+      },
+      "evidence": {
+        "accepted": true,
+        "matchedEvidenceIds": [
+          "df4597ec-3a1d-4a60-bb9e-eef8f8281bfa",
+          "7d53db09-bddc-46a9-a9be-4bf51e625180"
+        ],
+        "matchedEvidenceCount": 2,
+        "sourceDetails": [
+          {
+            "id": "df4597ec-3a1d-4a60-bb9e-eef8f8281bfa",
+            "url": "https://infoblox.com/news/news-events/press-releases/infoblox-appoints-henrik-smith-as-chief-information-security-officer",
+            "domain": "infoblox.com",
+            "type": "company_website",
+            "status": "RAW",
+            "observedAt": "2026-08-31T12:35:13.631Z"
+          },
+          {
+            "id": "7d53db09-bddc-46a9-a9be-4bf51e625180",
+            "url": "https://finance.yahoo.com/sectors/technology/articles/infoblox-appoints-henrik-smith-chief-130000632.html",
+            "domain": "finance.yahoo.com",
+            "type": "company_website",
+            "status": "RAW",
+            "observedAt": "2026-08-31T12:35:13.631Z"
+          }
+        ]
+      },
+      "extraction": {
+        "correctFactProduced": true,
+        "correctFactIds": [
+          "f0ec9e39-c064-4a0b-bb12-015c84cc03d0"
+        ],
+        "actualApprovedProposals": [
+          {
+            "id": "bebb0619-39a9-4c82-be53-3a9fd200fa85",
+            "type": "CERTIFICATION",
+            "status": "APPROVED",
+            "evidenceId": "64fd6807-014a-4d7a-9308-f30829f4db26",
+            "effectiveDate": "2026-08-31",
+            "structuredValue": {
+              "product": "Infoblox Universal DDI™ Management",
+              "baseline": "Moderate",
+              "certification": "FedRAMP Certification"
+            }
+          },
+          {
+            "id": "98e2a29e-f7c9-4cd9-adb4-a5c4b2a98ca8",
+            "type": "CERTIFICATION",
+            "status": "APPROVED",
+            "evidenceId": "b1db0318-1980-4365-ac75-b7c5cc2eecb7",
+            "effectiveDate": "2026-08-31",
+            "structuredValue": {
+              "company": "Infoblox",
+              "certification": "ISO/IEC 27001 certification"
+            }
+          },
+          {
+            "id": "0176d0b7-1727-4299-a77e-9c25dcf75f60",
+            "type": "TECHNOLOGY_MENTION",
+            "status": "APPROVED",
+            "evidenceId": "c54779c1-3ba0-47ff-aaff-aecd48e30701",
+            "effectiveDate": "2026-08-31",
+            "structuredValue": {
+              "technologies": [
+                "cloud, SaaS, security, and enterprise go-to-market strategies"
+              ]
+            }
+          },
+          {
+            "id": "150ac875-6cdc-4900-aabc-e8a2f1f903c2",
+            "type": "JOB_OPENING",
+            "status": "APPROVED",
+            "evidenceId": "4a3c2c75-9509-420e-886e-eb63c5cf2bc5",
+            "effectiveDate": "2026-08-31",
+            "structuredValue": {
+              "jobOpening": "open positions"
+            }
+          },
+          {
+            "id": "8b509b7e-cd4d-4da8-afd3-f26da4da4fbd",
+            "type": "SECURITY_INCIDENT",
+            "status": "APPROVED",
+            "evidenceId": "74dffcca-f799-485f-907f-a81b8d2c31e8",
+            "effectiveDate": "2026-08-31",
+            "structuredValue": {
+              "outcome": "zero successful infections of systems or ransomware attacks"
+            }
+          }
+        ]
+      },
+      "validation": {
+        "correctFactApproved": true,
+        "rejectedCorrectFacts": [],
+        "note": "No correct proposal was rejected in these paths; six misses had no correct proposal, and two partials had approved but temporally invalid facts."
+      },
+      "signal": {
+        "correctSignalProduced": false,
+        "correctSignalIds": [],
+        "allGeneratedSignalIds": [
+          "d8f2a8f8-b6a2-4145-944b-3c9a91451bd8",
+          "52c50105-cf55-4953-adda-6953ac4d8660"
+        ]
+      },
+      "outcome": "PARTIAL",
+      "earliestBreak": "TEMPORAL_FAILURE",
+      "secondaryCauses": [],
+      "detail": "Role/person detected, but event date was replaced by observation date; existing evidence could support strict detection.",
+      "couldExistingEvidenceSupportStrictDetection": "YES",
+      "detectability": "HIGHLY_DETECTABLE",
+      "whyState": "INSUFFICIENT_EVIDENCE",
+      "nba": "CONTACT_NOW"
+    },
+    {
+      "control": "Teradata",
+      "companyId": "0ba57746-1f8e-4691-a647-0921de1a971d",
+      "identity": {
+        "canonicalName": "Teradata",
+        "domain": "teradata.com",
+        "state": "CONFIRMED",
+        "confidence": 1,
+        "autoAttached": false,
+        "contradictions": []
+      },
+      "reference": {
+        "category": "SECURITY_LEADERSHIP",
+        "eventDate": "2026-01-21",
+        "event": "Teradata appointed Ken Ricketts as Chief Information Security Officer.",
+        "source": "https://www.teradata.com/press-releases/2026/teradata-appoints-ken-ricketts-as-ciso"
+      },
+      "questions": [
+        {
+          "id": "fbe0a8b3-eeb5-43bf-a3a7-b4273ba35c42",
+          "type": "LEADERSHIP",
+          "text": "\"Teradata\" teradata.com public evidence of security leadership changes (security, ciso)",
+          "status": "ANSWERED"
+        },
+        {
+          "id": "9d40f5c4-b962-41bf-8975-3ccb51fbfddd",
+          "type": "TECHNOLOGY",
+          "text": "\"Teradata\" teradata.com public evidence of security stack, SOC, SIEM, EDR, or IAM changes (security, siem, endpoint, iam)",
+          "status": "ANSWERED"
+        },
+        {
+          "id": "c3a71eb7-6511-46a3-bf51-33d04337b943",
+          "type": "EXPANSION",
+          "text": "\"Teradata\" teradata.com public evidence of funding, expansion, security, or compliance initiatives",
+          "status": "ANSWERED"
+        },
+        {
+          "id": "799806ca-c9c0-4461-ba93-a21457f7250b",
+          "type": "HIRING",
+          "text": "\"Teradata\" teradata.com public evidence of security and cybersecurity hiring (security, soc, cyber)",
+          "status": "ANSWERED"
+        }
+      ],
+      "retrieval": {
+        "tavilyCalls": 3,
+        "exaFallbackCalls": 1,
+        "providerFailures": 0,
+        "rawResultCount": 50,
+        "eventRelevantRawAvailable": true,
+        "eventResultHits": [
+          {
+            "provider": "exa",
+            "stage": "FALLBACK",
+            "rank": 1,
+            "url": "https://www.teradata.com/press-releases/2026/teradata-appoints-ken-ricketts-as-ciso",
+            "query": "\"Teradata\" teradata.com cybersecurity infrastructure platform change news",
+            "requestId": "research:9d40f5c4-b962-41bf-8975-3ccb51fbfddd:fallback:b220e720-6d21-4c7a-badf-3aec920febca"
+          }
+        ],
+        "rankCaveat": "Only ranks retained in providerResultIds are reported; reused accepted evidence may have no recoverable rank."
+      },
+      "evidence": {
+        "accepted": true,
+        "matchedEvidenceIds": [
+          "da37b7d0-cd3d-48ba-998c-ee6af7896e48",
+          "9fc73350-4e40-4bd3-9576-4dd6a5cb9ebb",
+          "6ae4f9dc-a52d-47ec-9888-d5bfc874f83d",
+          "a815796d-04a5-4a0f-9152-e8143585904e"
+        ],
+        "matchedEvidenceCount": 4,
+        "sourceDetails": [
+          {
+            "id": "da37b7d0-cd3d-48ba-998c-ee6af7896e48",
+            "url": "https://stocktitan.net/news/TDC/teradata-appoints-ken-ricketts-as-chief-information-security-5x3804nnmwt2.html",
+            "domain": "stocktitan.net",
+            "type": "company_website",
+            "status": "RAW",
+            "observedAt": "2026-08-31T12:42:33.196Z"
+          },
+          {
+            "id": "9fc73350-4e40-4bd3-9576-4dd6a5cb9ebb",
+            "url": "https://prnewswire.com/news-releases/teradata-appoints-ken-ricketts-as-chief-information-security-officer-302666405.html",
+            "domain": "prnewswire.com",
+            "type": "company_website",
+            "status": "RAW",
+            "observedAt": "2026-08-31T12:42:33.196Z"
+          },
+          {
+            "id": "6ae4f9dc-a52d-47ec-9888-d5bfc874f83d",
+            "url": "https://teradata.com/press-releases/2026/teradata-appoints-ken-ricketts-as-ciso",
+            "domain": "teradata.com",
+            "type": "company_website",
+            "status": "RAW",
+            "observedAt": "2026-08-31T12:42:33.196Z"
+          },
+          {
+            "id": "a815796d-04a5-4a0f-9152-e8143585904e",
+            "url": "https://linkedin.com/posts/ken-ricketts-297b1_teradata-appoints-ken-ricketts-as-ciso-activity-7419888980076310528-gngT",
+            "domain": "linkedin.com",
+            "type": "company_website",
+            "status": "RAW",
+            "observedAt": "2026-08-31T12:42:33.196Z"
+          }
+        ]
+      },
+      "extraction": {
+        "correctFactProduced": false,
+        "correctFactIds": [],
+        "actualApprovedProposals": [
+          {
+            "id": "fc12bcd6-921c-4c3c-96e1-92586f1c3258",
+            "type": "COMPLIANCE_MENTION",
+            "status": "APPROVED",
+            "evidenceId": "de8f219a-de20-4e8a-a2ee-9e1f85ce71fb",
+            "effectiveDate": "2026-08-31",
+            "structuredValue": {
+              "capability": "Every data and model interaction is traceable and compliant",
+              "description": "governed end-to-end across analytics, AI, and autonomous agents"
+            }
+          },
+          {
+            "id": "15955d29-77b5-4f44-9e8f-0d28cb05cfb6",
+            "type": "TECHNOLOGY_MENTION",
+            "status": "APPROVED",
+            "evidenceId": "ca94b186-3764-4252-a1a3-7808b04297ea",
+            "effectiveDate": "2026-08-31",
+            "structuredValue": {
+              "technologies": [
+                "Dell Technologies enterprise compute and storage",
+                "AI Studio"
+              ]
+            }
+          },
+          {
+            "id": "1e779ea6-3962-484b-8de1-20003d81a928",
+            "type": "TECHNOLOGY_MENTION",
+            "status": "APPROVED",
+            "evidenceId": "6c9fea41-b773-4ad7-a8e7-6a385e8cff97",
+            "effectiveDate": "2026-08-31",
+            "structuredValue": {
+              "product": "Teradata Vantage®",
+              "environments": "public cloud, on-premises, and hybrid cloud environments"
+            }
+          }
+        ]
+      },
+      "validation": {
+        "correctFactApproved": false,
+        "rejectedCorrectFacts": [],
+        "note": "No correct proposal was rejected in these paths; six misses had no correct proposal, and two partials had approved but temporally invalid facts."
+      },
+      "signal": {
+        "correctSignalProduced": false,
+        "correctSignalIds": [],
+        "allGeneratedSignalIds": []
+      },
+      "outcome": "MISS",
+      "earliestBreak": "FACT_EXTRACTION_FAILURE",
+      "secondaryCauses": [],
+      "detail": "Official appointment evidence reached persistence; no leadership fact was extracted.",
+      "couldExistingEvidenceSupportStrictDetection": "YES",
+      "detectability": "HIGHLY_DETECTABLE",
+      "whyState": "INSUFFICIENT_EVIDENCE",
+      "nba": "RESEARCH_MORE"
+    },
+    {
+      "control": "Nubank",
+      "companyId": "8ee8a9ce-dd62-4b03-bfb0-f9f9a3683f32",
+      "identity": {
+        "canonicalName": "Nubank",
+        "domain": "nubank.com.br",
+        "state": "CONFIRMED",
+        "confidence": 1,
+        "autoAttached": false,
+        "contradictions": []
+      },
+      "reference": {
+        "category": "SECURITY_LEADERSHIP",
+        "eventDate": "2026-06-08",
+        "event": "Nubank appointed John Walton as Chief Information Security Officer.",
+        "source": "https://international.nubank.com.br/company/nubank-appoints-john-walton-as-chief-information-security-officer/"
+      },
+      "questions": [
+        {
+          "id": "9fef5c5b-73e2-46a6-8ccb-0124d659a6e5",
+          "type": "HIRING",
+          "text": "\"Nubank\" nubank.com.br public evidence of security and cybersecurity hiring (security, soc, cyber)",
+          "status": "ANSWERED"
+        },
+        {
+          "id": "5d693007-7ae7-461d-878b-3310a3cf8416",
+          "type": "EXPANSION",
+          "text": "\"Nubank\" nubank.com.br public evidence of funding, expansion, security, or compliance initiatives",
+          "status": "ANSWERED"
+        },
+        {
+          "id": "484f1d37-25ae-45b0-8e81-c7030da0217a",
+          "type": "TECHNOLOGY",
+          "text": "\"Nubank\" nubank.com.br public evidence of security stack, SOC, SIEM, EDR, or IAM changes (security, siem, endpoint, iam)",
+          "status": "ANSWERED"
+        },
+        {
+          "id": "2c57327a-8a7f-4629-9b60-2dbd03b7e400",
+          "type": "LEADERSHIP",
+          "text": "\"Nubank\" nubank.com.br public evidence of security leadership changes (security, ciso)",
+          "status": "ANSWERED"
+        }
+      ],
+      "retrieval": {
+        "tavilyCalls": 1,
+        "exaFallbackCalls": 3,
+        "providerFailures": 0,
+        "rawResultCount": 70,
+        "eventRelevantRawAvailable": true,
+        "eventResultHits": [
+          {
+            "provider": "exa",
+            "stage": "FALLBACK",
+            "rank": 1,
+            "url": "https://international.nubank.com.br/company/nubank-appoints-john-walton-as-chief-information-security-officer/",
+            "query": "\"Nubank\" nubank.com.br CISO security executive news",
+            "requestId": "research:2c57327a-8a7f-4629-9b60-2dbd03b7e400:fallback:b220e720-6d21-4c7a-badf-3aec920febca"
+          },
+          {
+            "provider": "exa",
+            "stage": "FALLBACK",
+            "rank": 2,
+            "url": "https://au.marketscreener.com/news/nu-nubank-appoints-john-walton-as-chief-information-security-officer-ce7f5dd3d98df122",
+            "query": "\"Nubank\" nubank.com.br CISO security executive news",
+            "requestId": "research:2c57327a-8a7f-4629-9b60-2dbd03b7e400:fallback:b220e720-6d21-4c7a-badf-3aec920febca"
+          },
+          {
+            "provider": "exa",
+            "stage": "FALLBACK",
+            "rank": 3,
+            "url": "https://tiinside.com.br/08/06/2026/nubank-nomeia-john-walton-como-chief-information-security-officer/",
+            "query": "\"Nubank\" nubank.com.br CISO security executive news",
+            "requestId": "research:2c57327a-8a7f-4629-9b60-2dbd03b7e400:fallback:b220e720-6d21-4c7a-badf-3aec920febca"
+          },
+          {
+            "provider": "exa",
+            "stage": "FALLBACK",
+            "rank": 1,
+            "url": "https://international.nubank.com.br/company/nubank-appoints-john-walton-as-chief-information-security-officer/",
+            "query": "\"Nubank\" nubank.com.br cybersecurity assurance compliance news",
+            "requestId": "research:5d693007-7ae7-461d-878b-3310a3cf8416:fallback:b220e720-6d21-4c7a-badf-3aec920febca"
+          },
+          {
+            "provider": "exa",
+            "stage": "FALLBACK",
+            "rank": 3,
+            "url": "https://tiinside.com.br/08/06/2026/nubank-nomeia-john-walton-como-chief-information-security-officer/",
+            "query": "\"Nubank\" nubank.com.br cybersecurity assurance compliance news",
+            "requestId": "research:5d693007-7ae7-461d-878b-3310a3cf8416:fallback:b220e720-6d21-4c7a-badf-3aec920febca"
+          },
+          {
+            "provider": "exa",
+            "stage": "FALLBACK",
+            "rank": 1,
+            "url": "https://international.nubank.com.br/company/nubank-appoints-john-walton-as-chief-information-security-officer/",
+            "query": "\"Nubank\" nubank.com.br cybersecurity infrastructure platform change news",
+            "requestId": "research:484f1d37-25ae-45b0-8e81-c7030da0217a:fallback:b220e720-6d21-4c7a-badf-3aec920febca"
+          },
+          {
+            "provider": "exa",
+            "stage": "FALLBACK",
+            "rank": 5,
+            "url": "https://tiinside.com.br/08/06/2026/nubank-nomeia-john-walton-como-chief-information-security-officer/",
+            "query": "\"Nubank\" nubank.com.br cybersecurity infrastructure platform change news",
+            "requestId": "research:484f1d37-25ae-45b0-8e81-c7030da0217a:fallback:b220e720-6d21-4c7a-badf-3aec920febca"
+          }
+        ],
+        "rankCaveat": "Only ranks retained in providerResultIds are reported; reused accepted evidence may have no recoverable rank."
+      },
+      "evidence": {
+        "accepted": true,
+        "matchedEvidenceIds": [
+          "911c6edc-99cc-4d23-b753-c210b09142d8"
+        ],
+        "matchedEvidenceCount": 1,
+        "sourceDetails": [
+          {
+            "id": "911c6edc-99cc-4d23-b753-c210b09142d8",
+            "url": "https://international.nubank.com.br/company/nubank-appoints-john-walton-as-chief-information-security-officer",
+            "domain": "international.nubank.com.br",
+            "type": "company_website",
+            "status": "RAW",
+            "observedAt": "2026-08-31T12:45:44.082Z"
+          }
+        ]
+      },
+      "extraction": {
+        "correctFactProduced": false,
+        "correctFactIds": [],
+        "actualApprovedProposals": [
+          {
+            "id": "ae8484b5-522a-4621-be07-af6d5651a046",
+            "type": "TECHNOLOGY_MENTION",
+            "status": "APPROVED",
+            "evidenceId": "45637914-5919-4884-a647-a0d953a88444",
+            "effectiveDate": "2026-08-31",
+            "structuredValue": {
+              "technologies": [
+                "Clojure"
+              ]
+            }
+          }
+        ]
+      },
+      "validation": {
+        "correctFactApproved": false,
+        "rejectedCorrectFacts": [],
+        "note": "No correct proposal was rejected in these paths; six misses had no correct proposal, and two partials had approved but temporally invalid facts."
+      },
+      "signal": {
+        "correctSignalProduced": false,
+        "correctSignalIds": [],
+        "allGeneratedSignalIds": []
+      },
+      "outcome": "MISS",
+      "earliestBreak": "FACT_EXTRACTION_FAILURE",
+      "secondaryCauses": [],
+      "detail": "Official appointment evidence reached persistence; no leadership fact was extracted.",
+      "couldExistingEvidenceSupportStrictDetection": "YES",
+      "detectability": "HIGHLY_DETECTABLE",
+      "whyState": "INSUFFICIENT_EVIDENCE",
+      "nba": "RESEARCH_MORE"
+    },
+    {
+      "control": "Black Duck",
+      "companyId": "fafc40de-2c9e-4968-bc3c-602d7d3f23c6",
+      "identity": {
+        "canonicalName": "Black Duck",
+        "domain": "blackduck.com",
+        "state": "CONFIRMED",
+        "confidence": 1,
+        "autoAttached": false,
+        "contradictions": []
+      },
+      "reference": {
+        "category": "SECURITY_LEADERSHIP",
+        "eventDate": "2026-04-09",
+        "event": "Black Duck appointed Dom Glavach as Chief Information Security Officer.",
+        "source": "https://news.blackduck.com/2026-04-09-Black-Duck-Appoints-Dom-Glavach-as-Chief-Information-Security-Officer"
+      },
+      "questions": [
+        {
+          "id": "a1ce0837-ed29-4c30-bb4a-5e7ae4ba98ec",
+          "type": "LEADERSHIP",
+          "text": "\"Black Duck\" blackduck.com public evidence of security leadership changes (security, ciso)",
+          "status": "ANSWERED"
+        },
+        {
+          "id": "5c5842e3-4178-46b5-801e-df24b5deb92a",
+          "type": "TECHNOLOGY",
+          "text": "\"Black Duck\" blackduck.com public evidence of security stack, SOC, SIEM, EDR, or IAM changes (security, siem, endpoint, iam)",
+          "status": "ANSWERED"
+        },
+        {
+          "id": "f8ebe294-a23d-46f4-9efa-de85ea7e024e",
+          "type": "EXPANSION",
+          "text": "\"Black Duck\" blackduck.com public evidence of funding, expansion, security, or compliance initiatives",
+          "status": "ANSWERED"
+        },
+        {
+          "id": "905d31ee-714b-4e6b-8eb8-660b3dd6478a",
+          "type": "HIRING",
+          "text": "\"Black Duck\" blackduck.com public evidence of security and cybersecurity hiring (security, soc, cyber)",
+          "status": "ANSWERED"
+        }
+      ],
+      "retrieval": {
+        "tavilyCalls": 2,
+        "exaFallbackCalls": 2,
+        "providerFailures": 0,
+        "rawResultCount": 60,
+        "eventRelevantRawAvailable": true,
+        "eventResultHits": [],
+        "rankCaveat": "Only ranks retained in providerResultIds are reported; reused accepted evidence may have no recoverable rank."
+      },
+      "evidence": {
+        "accepted": true,
+        "matchedEvidenceIds": [
+          "58ba43c3-3c52-4423-beac-8eb2750375e3",
+          "4a9fbc45-1012-440a-89a0-6c592f421761",
+          "09101ce7-ad5c-4621-819a-13ebf8433368",
+          "2c1c3ffa-df94-4c44-ac0e-6519cc8b9616",
+          "75cd76ca-83e6-4229-9855-2ea132360cd8",
+          "94cd090c-7ff7-434b-8775-e25359bd83f1",
+          "f62d23b9-d8e6-48af-a0ed-0c800fbf56a7",
+          "16713492-ccff-4861-8c43-e0de1b3061b0",
+          "a778a14b-2e85-4e67-abdf-0c394ea061d1",
+          "8f1c477d-6a09-46b0-9945-59bd641838d0",
+          "457ad638-ba9f-4989-a15f-a44a78f68e63",
+          "a782d3e0-e81d-4d9b-ac08-b4182e0499af",
+          "6a0f6ba6-fede-4b75-a89b-d25aa7aee86b",
+          "aca282ad-138d-4e39-b5cd-d86d8519d475",
+          "22442261-8517-406d-baf3-91ac6ae34807",
+          "d904139d-d5a4-4352-a543-c3ecb11abf37",
+          "0550fbf1-f2ea-4167-b061-365196919520",
+          "91395bd5-1a4a-4aef-8cd6-2a5b0329b85e",
+          "087dc6b7-51da-49df-8252-1781e4a86ca3",
+          "1d38cbc6-7ab9-4bc7-88b2-6312a29f992c",
+          "ccbcd3f8-2fcc-4848-99ea-dcde1fe87f14",
+          "c1617a3a-d585-4c8e-aca6-3b70facd5b66",
+          "7ce16a46-5b2c-4081-b78d-eb2308d60223",
+          "058d6684-c606-409d-b684-377276832f77",
+          "cab8f518-f8e1-468d-b5df-086b0fcb90a1",
+          "ad65b06e-6204-4a26-a106-2820579f9eb0",
+          "cdfad517-1340-4f19-911c-6128416af443",
+          "ebed4a25-e472-4cc1-a168-8e6b3a824f2f",
+          "b80970e2-605e-42ef-afc2-de6c112e5e0b",
+          "30d69fed-bef0-4829-a737-fc43887a21dc",
+          "816756ed-4d5a-42ff-85e6-3b7b37442eb4",
+          "57404b8f-b23d-4369-962f-d94b7ee81232",
+          "f0ebf2b2-f894-4ad7-9daf-7600358d9e87",
+          "134c6552-0c27-4d96-9d66-32999df758df",
+          "d7f6e9a2-a308-4b4c-a6e5-9f37e477adaa",
+          "3c9af17c-43ee-405c-ab00-61c748c636e7",
+          "07d3626b-eb05-4745-80d4-8d0f17cbc93d",
+          "bf2c7cd0-b75e-4a2f-b8a4-9fd7cec46755",
+          "a3d5836d-3376-4437-8c5f-a792a7a30671",
+          "6a4ee2b4-3eb0-42cf-bc18-3a35e4b5b408",
+          "1f964cc8-c674-4fbc-bead-b60a9a4230ef",
+          "83936c96-977e-454a-a937-d3901c93061c",
+          "e9338427-9a1b-4f02-9bc2-ddfb279ad9b6"
+        ],
+        "matchedEvidenceCount": 43,
+        "sourceDetails": [
+          {
+            "id": "58ba43c3-3c52-4423-beac-8eb2750375e3",
+            "url": "https://news.blackduck.com/2024-12-19-Black-Duck-Welcomes-New-CIO,-CISO-in-Latest-Executive-Expansion-Moves",
+            "domain": "news.blackduck.com",
+            "type": "company_website",
+            "status": "RAW",
+            "observedAt": "2026-08-31T12:48:42.491Z"
+          },
+          {
+            "id": "4a9fbc45-1012-440a-89a0-6c592f421761",
+            "url": "https://leadiq.com/c/black-duck/5a1d8aa22400002400647cc5",
+            "domain": "leadiq.com",
+            "type": "company_website",
+            "status": "RAW",
+            "observedAt": "2026-08-31T12:48:42.491Z"
+          },
+          {
+            "id": "09101ce7-ad5c-4621-819a-13ebf8433368",
+            "url": "https://prnewswire.com/news-releases/black-duck-appoints-dom-glavach-as-chief-information-security-officer-302737311.html",
+            "domain": "prnewswire.com",
+            "type": "company_website",
+            "status": "RAW",
+            "observedAt": "2026-08-31T12:48:42.491Z"
+          },
+          {
+            "id": "2c1c3ffa-df94-4c44-ac0e-6519cc8b9616",
+            "url": "https://news.blackduck.com/2026-04-09-Black-Duck-Appoints-Dom-Glavach-as-Chief-Information-Security-Officer",
+            "domain": "news.blackduck.com",
+            "type": "company_website",
+            "status": "RAW",
+            "observedAt": "2026-08-31T12:48:42.491Z"
+          },
+          {
+            "id": "75cd76ca-83e6-4229-9855-2ea132360cd8",
+            "url": "https://news.blackduck.com/2024-10-01-Introducing-Black-Duck-Software-The-Leader-in-Application-Security-Has-a-New-Name",
+            "domain": "news.blackduck.com",
+            "type": "company_website",
+            "status": "RAW",
+            "observedAt": "2026-08-31T12:48:42.491Z"
+          },
+          {
+            "id": "94cd090c-7ff7-434b-8775-e25359bd83f1",
+            "url": "https://clearlake.com/news/clearlake-and-francisco-partners-complete-acquisition-of-black-duck-software-formerly-known-as-synopsys-software-integrity-group",
+            "domain": "clearlake.com",
+            "type": "company_website",
+            "status": "RAW",
+            "observedAt": "2026-08-31T12:48:42.491Z"
+          },
+          {
+            "id": "f62d23b9-d8e6-48af-a0ed-0c800fbf56a7",
+            "url": "https://linkedin.com/company/black-duck-software",
+            "domain": "linkedin.com",
+            "type": "job_posting",
+            "status": "RAW",
+            "observedAt": "2026-08-31T12:50:01.070Z"
+          },
+          {
+            "id": "16713492-ccff-4861-8c43-e0de1b3061b0",
+            "url": "https://tracxn.com/d/companies/black-duck/__vaa626lqWTfuanFv_EfwUPj9X_BUgMzFB2PAgx6gkXk",
+            "domain": "tracxn.com",
+            "type": "job_posting",
+            "status": "RAW",
+            "observedAt": "2026-08-31T12:50:01.070Z"
+          },
+          {
+            "id": "a778a14b-2e85-4e67-abdf-0c394ea061d1",
+            "url": "https://en.wikipedia.org/wiki/Black_Duck_Software",
+            "domain": "en.wikipedia.org",
+            "type": "job_posting",
+            "status": "RAW",
+            "observedAt": "2026-08-31T12:50:01.070Z"
+          },
+          {
+            "id": "8f1c477d-6a09-46b0-9945-59bd641838d0",
+            "url": "https://franciscopartners.com/media/clearlake-and-francisco-partners-complete-acquisition-of-black-duck-software-formerly-known-as-synopsys-software-integrity-group",
+            "domain": "franciscopartners.com",
+            "type": "job_posting",
+            "status": "RAW",
+            "observedAt": "2026-08-31T12:50:01.070Z"
+          },
+          {
+            "id": "457ad638-ba9f-4989-a15f-a44a78f68e63",
+            "url": "https://blackduck.com/software-composition-analysis-tools/black-duck-sca.html",
+            "domain": "blackduck.com",
+            "type": "technology",
+            "status": "RAW",
+            "observedAt": "2026-08-31T12:52:12.347Z"
+          },
+          {
+            "id": "a782d3e0-e81d-4d9b-ac08-b4182e0499af",
+            "url": "https://blackduck.com/blog/black-duck-product-updates-faster-fixes-smarter-security.html",
+            "domain": "blackduck.com",
+            "type": "technology",
+            "status": "RAW",
+            "observedAt": "2026-08-31T12:52:12.347Z"
+          },
+          {
+            "id": "6a0f6ba6-fede-4b75-a89b-d25aa7aee86b",
+            "url": "https://prnewswire.com/news-releases/black-duck-named-a-leader-in-the-inaugural-2026-gartner-magic-quadrant-for-software-supply-chain-security-302806514.html",
+            "domain": "prnewswire.com",
+            "type": "company_website",
+            "status": "RAW",
+            "observedAt": "2026-08-31T12:52:12.587Z"
+          },
+          {
+            "id": "aca282ad-138d-4e39-b5cd-d86d8519d475",
+            "url": "https://blackduck.com/blog/ai-transforming-appsec-black-duck-ceo-rsa-2026.html",
+            "domain": "blackduck.com",
+            "type": "technology",
+            "status": "RAW",
+            "observedAt": "2026-08-31T12:52:12.347Z"
+          },
+          {
+            "id": "22442261-8517-406d-baf3-91ac6ae34807",
+            "url": "https://prnewswire.com/news-releases/black-duck-releases-bsimm16-revealing-ai-and-regulatory-compliance-reshaping-application-security-processes-302676652.html",
+            "domain": "prnewswire.com",
+            "type": "company_website",
+            "status": "RAW",
+            "observedAt": "2026-08-31T14:04:17.656Z"
+          },
+          {
+            "id": "d904139d-d5a4-4352-a543-c3ecb11abf37",
+            "url": "https://justia.jobs/employer/black-duck-software-25092",
+            "domain": "justia.jobs",
+            "type": "job_posting",
+            "status": "RAW",
+            "observedAt": "2026-08-31T14:04:16.741Z"
+          },
+          {
+            "id": "0550fbf1-f2ea-4167-b061-365196919520",
+            "url": "https://mend.io/blog/black-duck-sca-solution-overview",
+            "domain": "mend.io",
+            "type": "technology",
+            "status": "RAW",
+            "observedAt": "2026-08-31T14:04:17.262Z"
+          },
+          {
+            "id": "91395bd5-1a4a-4aef-8cd6-2a5b0329b85e",
+            "url": "https://community.blackduck.com/s/article/Black-Duck-SCA-in-a-Nutshell",
+            "domain": "community.blackduck.com",
+            "type": "technology",
+            "status": "RAW",
+            "observedAt": "2026-08-31T14:36:58.153Z"
+          },
+          {
+            "id": "087dc6b7-51da-49df-8252-1781e4a86ca3",
+            "url": "https://prospeo.io/c/black-duck",
+            "domain": "prospeo.io",
+            "type": "company_website",
+            "status": "RAW",
+            "observedAt": "2026-08-31T14:36:59.869Z"
+          },
+          {
+            "id": "1d38cbc6-7ab9-4bc7-88b2-6312a29f992c",
+            "url": "https://blackduck.com/content/dam/black-duck/en-us/datasheets/bdodaudits-ds-ul.pdf",
+            "domain": "blackduck.com",
+            "type": "company_website",
+            "status": "RAW",
+            "observedAt": "2026-08-31T14:36:59.869Z"
+          }
+        ]
+      },
+      "extraction": {
+        "correctFactProduced": true,
+        "correctFactIds": [
+          "02d7c3ef-8c67-492b-9b0f-3fda92679253",
+          "962f776e-2bed-46cd-93b6-d7c0f3f9f40d"
+        ],
+        "actualApprovedProposals": [
+          {
+            "id": "a4657682-76fc-45af-98bb-a6dbce6cea59",
+            "type": "TECHNOLOGY_MENTION",
+            "status": "APPROVED",
+            "evidenceId": "cdfad517-1340-4f19-911c-6128416af443",
+            "effectiveDate": "2026-08-31",
+            "structuredValue": {
+              "technologies": [
+                "Managed Services Portal",
+                "Polaris (Classic & Next Generation)",
+                "Knowledge Base",
+                "Black Duck Binary Analysis"
+              ]
+            }
+          },
+          {
+            "id": "cb95547b-95da-4b7b-85b5-35e17ba01221",
+            "type": "LEADERSHIP_CHANGE",
+            "status": "APPROVED",
+            "evidenceId": "525dea1a-8781-4f5d-bc1e-0618f3d3fd2c",
+            "effectiveDate": "2026-04-09",
+            "structuredValue": {
+              "role": "Chief Information Security Officer",
+              "person": "Dom Glavach",
+              "company": "Black Duck",
+              "eventType": "Appoints"
+            }
+          },
+          {
+            "id": "f7809423-fef0-4670-96b0-2e12e9bca225",
+            "type": "LEADERSHIP_CHANGE",
+            "status": "APPROVED",
+            "evidenceId": "525dea1a-8781-4f5d-bc1e-0618f3d3fd2c",
+            "effectiveDate": "2026-04-09",
+            "structuredValue": {
+              "role": "Chief Information Security Officer",
+              "person": "Dom Glavach",
+              "company": "Black Duck",
+              "eventType": "Appoints"
+            }
+          },
+          {
+            "id": "ecc8d5fa-e24b-4858-b75c-53db1714034f",
+            "type": "LEADERSHIP_CHANGE",
+            "status": "APPROVED",
+            "evidenceId": "036c327e-c766-451c-ae30-04e866622a66",
+            "effectiveDate": "2026-04-09",
+            "structuredValue": {
+              "role": "Chief Information Security Officer",
+              "person": "Dom Glavach",
+              "company": "Black Duck",
+              "eventType": "Appoints"
+            }
+          },
+          {
+            "id": "22485bf9-0f07-435a-9ee7-d46bdf40491d",
+            "type": "TECHNOLOGY_MENTION",
+            "status": "APPROVED",
+            "evidenceId": "57404b8f-b23d-4369-962f-d94b7ee81232",
+            "effectiveDate": "2026-08-31",
+            "structuredValue": {
+              "technologies": [
+                "an integrated, software-as-a-service application security platform",
+                "static application security testing",
+                "software composition analysis",
+                "dynamic application security testing"
+              ]
+            }
+          },
+          {
+            "id": "2bd0ad9e-68cd-46a0-b8fc-85a5ac52ac0c",
+            "type": "LEADERSHIP_CHANGE",
+            "status": "APPROVED",
+            "evidenceId": "525dea1a-8781-4f5d-bc1e-0618f3d3fd2c",
+            "effectiveDate": "2026-04-09",
+            "structuredValue": {
+              "role": "Chief Information Security Officer",
+              "person": "Dom Glavach",
+              "company": "Black Duck",
+              "eventType": "Appoints"
+            }
+          },
+          {
+            "id": "713c80ff-46d5-4e11-8817-a29ee27d39ae",
+            "type": "TECHNOLOGY_MENTION",
+            "status": "APPROVED",
+            "evidenceId": "1f964cc8-c674-4fbc-bead-b60a9a4230ef",
+            "effectiveDate": "2026-08-31",
+            "structuredValue": {
+              "technologies": [
+                "ContextAI™"
+              ]
+            }
+          }
+        ]
+      },
+      "validation": {
+        "correctFactApproved": true,
+        "rejectedCorrectFacts": [],
+        "note": "No correct proposal was rejected in these paths; six misses had no correct proposal, and two partials had approved but temporally invalid facts."
+      },
+      "signal": {
+        "correctSignalProduced": true,
+        "correctSignalIds": [
+          "94354b6d-c865-4555-b5d8-a3fdb839f710"
+        ],
+        "allGeneratedSignalIds": [
+          "94354b6d-c865-4555-b5d8-a3fdb839f710",
+          "870a1394-d13e-498a-a6ec-cc168083e82c"
+        ]
+      },
+      "outcome": "STRICT",
+      "earliestBreak": null,
+      "secondaryCauses": [],
+      "detail": "Complete direct evidence → correctly dated facts → supported signal path.",
+      "couldExistingEvidenceSupportStrictDetection": "YES",
+      "detectability": "HIGHLY_DETECTABLE",
+      "whyState": "INSUFFICIENT_EVIDENCE",
+      "nba": "CONTACT_NOW"
+    },
+    {
+      "control": "OpenAssets",
+      "companyId": "4944433c-43a4-41bb-b3f4-24fe98d56a8b",
+      "identity": {
+        "canonicalName": "OpenAssets",
+        "domain": "openassets.to",
+        "state": "CONFIRMED",
+        "confidence": 1,
+        "autoAttached": false,
+        "contradictions": []
+      },
+      "reference": {
+        "category": "FUNDED_RISK_PROGRAM",
+        "eventDate": "2026-08-03",
+        "event": "OpenAssets achieved SOC 2 Type 2 compliance and renewed ISO 27001 certification.",
+        "source": "https://www.prnewswire.com/news-releases/openassets-achieves-soc-2-type-2-compliance-and-renews-iso-27001-certification-302840457.html"
+      },
+      "questions": [
+        {
+          "id": "6e32d60c-e8f8-44c2-898d-5a900c35049b",
+          "type": "EXPANSION",
+          "text": "\"OpenAssets\" openassets.to public evidence of funding, expansion, security, or compliance initiatives",
+          "status": "ANSWERED"
+        },
+        {
+          "id": "23530fbd-b972-4f52-befb-0393c98c71da",
+          "type": "HIRING",
+          "text": "\"OpenAssets\" openassets.to public evidence of security and cybersecurity hiring (security, soc, cyber)",
+          "status": "ANSWERED"
+        },
+        {
+          "id": "e5f5d0e4-4067-4ce2-947f-335586ab6423",
+          "type": "LEADERSHIP",
+          "text": "\"OpenAssets\" openassets.to public evidence of security leadership changes (security, ciso)",
+          "status": "ANSWERED"
+        },
+        {
+          "id": "64df2e23-c040-408a-a03d-59ee00c3cf81",
+          "type": "TECHNOLOGY",
+          "text": "\"OpenAssets\" openassets.to public evidence of security stack, SOC, SIEM, EDR, or IAM changes (security, siem, endpoint, iam)",
+          "status": "ANSWERED"
+        }
+      ],
+      "retrieval": {
+        "tavilyCalls": 1,
+        "exaFallbackCalls": 3,
+        "providerFailures": 0,
+        "rawResultCount": 70,
+        "eventRelevantRawAvailable": true,
+        "eventResultHits": [
+          {
+            "provider": "exa",
+            "stage": "FALLBACK",
+            "rank": 1,
+            "url": "https://www.prnewswire.com/news-releases/openassets-achieves-soc-2-type-2-compliance-and-renews-iso-27001-certification-302840457.html",
+            "query": "\"OpenAssets\" openassets.to CISO security executive news",
+            "requestId": "research:e5f5d0e4-4067-4ce2-947f-335586ab6423:fallback:b220e720-6d21-4c7a-badf-3aec920febca"
+          },
+          {
+            "provider": "exa",
+            "stage": "FALLBACK",
+            "rank": 2,
+            "url": "https://www.linkedin.com/posts/skalidindi_openassets-achieves-soc-2-type-2-compliance-activity-7490042958361067520-Fpgg",
+            "query": "\"OpenAssets\" openassets.to CISO security executive news",
+            "requestId": "research:e5f5d0e4-4067-4ce2-947f-335586ab6423:fallback:b220e720-6d21-4c7a-badf-3aec920febca"
+          },
+          {
+            "provider": "exa",
+            "stage": "FALLBACK",
+            "rank": 3,
+            "url": "https://www.linkedin.com/posts/openassetsinc_openassets-achieves-soc-2-type-2-compliance-activity-7490025625970196480-ToU8",
+            "query": "\"OpenAssets\" openassets.to CISO security executive news",
+            "requestId": "research:e5f5d0e4-4067-4ce2-947f-335586ab6423:fallback:b220e720-6d21-4c7a-badf-3aec920febca"
+          },
+          {
+            "provider": "exa",
+            "stage": "FALLBACK",
+            "rank": 6,
+            "url": "https://ittech-pulse.com/news/openassets-achieves-soc-2-type-2-and-renews-iso-27001-certification/",
+            "query": "\"OpenAssets\" openassets.to CISO security executive news",
+            "requestId": "research:e5f5d0e4-4067-4ce2-947f-335586ab6423:fallback:b220e720-6d21-4c7a-badf-3aec920febca"
+          },
+          {
+            "provider": "exa",
+            "stage": "FALLBACK",
+            "rank": 1,
+            "url": "https://www.prnewswire.com/news-releases/openassets-achieves-soc-2-type-2-compliance-and-renews-iso-27001-certification-302840457.html",
+            "query": "\"OpenAssets\" openassets.to cybersecurity infrastructure platform change news",
+            "requestId": "research:64df2e23-c040-408a-a03d-59ee00c3cf81:fallback:b220e720-6d21-4c7a-badf-3aec920febca"
+          },
+          {
+            "provider": "exa",
+            "stage": "FALLBACK",
+            "rank": 8,
+            "url": "https://ittech-pulse.com/news/openassets-achieves-soc-2-type-2-and-renews-iso-27001-certification/",
+            "query": "\"OpenAssets\" openassets.to cybersecurity infrastructure platform change news",
+            "requestId": "research:64df2e23-c040-408a-a03d-59ee00c3cf81:fallback:b220e720-6d21-4c7a-badf-3aec920febca"
+          },
+          {
+            "provider": "exa",
+            "stage": "FALLBACK",
+            "rank": 9,
+            "url": "https://www.linkedin.com/posts/openassetsinc_openassets-achieves-soc-2-type-2-compliance-activity-7490025625970196480-ToU8",
+            "query": "\"OpenAssets\" openassets.to cybersecurity infrastructure platform change news",
+            "requestId": "research:64df2e23-c040-408a-a03d-59ee00c3cf81:fallback:b220e720-6d21-4c7a-badf-3aec920febca"
+          },
+          {
+            "provider": "exa",
+            "stage": "FALLBACK",
+            "rank": 4,
+            "url": "https://www.prnewswire.com/news-releases/openassets-achieves-soc-2-type-2-compliance-and-renews-iso-27001-certification-302840457.html",
+            "query": "\"OpenAssets\" openassets.to SOC SIEM security engineer analyst jobs",
+            "requestId": "research:23530fbd-b972-4f52-befb-0393c98c71da:fallback:b220e720-6d21-4c7a-badf-3aec920febca"
+          },
+          {
+            "provider": "exa",
+            "stage": "FALLBACK",
+            "rank": 5,
+            "url": "https://www.linkedin.com/posts/openassetsinc_openassets-achieves-soc-2-type-2-compliance-activity-7490025625970196480-ToU8",
+            "query": "\"OpenAssets\" openassets.to SOC SIEM security engineer analyst jobs",
+            "requestId": "research:23530fbd-b972-4f52-befb-0393c98c71da:fallback:b220e720-6d21-4c7a-badf-3aec920febca"
+          },
+          {
+            "provider": "exa",
+            "stage": "FALLBACK",
+            "rank": 6,
+            "url": "https://www.linkedin.com/posts/skalidindi_openassets-achieves-soc-2-type-2-compliance-activity-7490042958361067520-Fpgg",
+            "query": "\"OpenAssets\" openassets.to SOC SIEM security engineer analyst jobs",
+            "requestId": "research:23530fbd-b972-4f52-befb-0393c98c71da:fallback:b220e720-6d21-4c7a-badf-3aec920febca"
+          },
+          {
+            "provider": "exa",
+            "stage": "FALLBACK",
+            "rank": 7,
+            "url": "https://ittech-pulse.com/news/openassets-achieves-soc-2-type-2-and-renews-iso-27001-certification/",
+            "query": "\"OpenAssets\" openassets.to SOC SIEM security engineer analyst jobs",
+            "requestId": "research:23530fbd-b972-4f52-befb-0393c98c71da:fallback:b220e720-6d21-4c7a-badf-3aec920febca"
+          }
+        ],
+        "rankCaveat": "Only ranks retained in providerResultIds are reported; reused accepted evidence may have no recoverable rank."
+      },
+      "evidence": {
+        "accepted": true,
+        "matchedEvidenceIds": [
+          "4e647bd0-6d4c-469a-80c4-21008e44f4d3",
+          "2bd2ce88-2582-4d2d-b1dc-810ab1c84cd6"
+        ],
+        "matchedEvidenceCount": 2,
+        "sourceDetails": [
+          {
+            "id": "4e647bd0-6d4c-469a-80c4-21008e44f4d3",
+            "url": "https://prnewswire.com/news-releases/openassets-achieves-soc-2-type-2-compliance-and-renews-iso-27001-certification-302840457.html",
+            "domain": "prnewswire.com",
+            "type": "job_posting",
+            "status": "RAW",
+            "observedAt": "2026-08-31T12:54:27.090Z"
+          },
+          {
+            "id": "2bd2ce88-2582-4d2d-b1dc-810ab1c84cd6",
+            "url": "https://morningstar.com/news/pr-newswire/20260803ne17123/openassets-achieves-soc-2-type-2-compliance-and-renews-iso-27001-certification",
+            "domain": "morningstar.com",
+            "type": "company_website",
+            "status": "RAW",
+            "observedAt": "2026-08-31T12:54:29.333Z"
+          }
+        ]
+      },
+      "extraction": {
+        "correctFactProduced": true,
+        "correctFactIds": [
+          "459b069f-38e3-47fa-bfa8-32b53ef8acca",
+          "e7fd0317-f96a-4047-9a2c-d9df57e79b04"
+        ],
+        "actualApprovedProposals": [
+          {
+            "id": "446cf10a-4821-4df1-a05a-80c59631502c",
+            "type": "CERTIFICATION",
+            "status": "APPROVED",
+            "evidenceId": "41cbc9eb-371f-430f-9ee0-a3041a9eff69",
+            "effectiveDate": "2026-08-31",
+            "structuredValue": {
+              "certification": "ISO/IEC 27001 certification"
+            }
+          },
+          {
+            "id": "76ea6829-d672-41cb-9901-8e88b7412864",
+            "type": "CERTIFICATION",
+            "status": "APPROVED",
+            "evidenceId": "41cbc9eb-371f-430f-9ee0-a3041a9eff69",
+            "effectiveDate": "2026-08-31",
+            "structuredValue": {
+              "certification": "SOC 2 Type 2 compliance"
+            }
+          }
+        ]
+      },
+      "validation": {
+        "correctFactApproved": true,
+        "rejectedCorrectFacts": [],
+        "note": "No correct proposal was rejected in these paths; six misses had no correct proposal, and two partials had approved but temporally invalid facts."
+      },
+      "signal": {
+        "correctSignalProduced": false,
+        "correctSignalIds": [],
+        "allGeneratedSignalIds": []
+      },
+      "outcome": "PARTIAL",
+      "earliestBreak": "TEMPORAL_FAILURE",
+      "secondaryCauses": [
+        "SIGNAL_MAPPING_FAILURE"
+      ],
+      "detail": "Both certifications were extracted, but event date was replaced by observation date and no signal was produced; existing evidence could support strict detection.",
+      "couldExistingEvidenceSupportStrictDetection": "YES",
+      "detectability": "HIGHLY_DETECTABLE",
+      "whyState": "INSUFFICIENT_EVIDENCE",
+      "nba": "RESEARCH_MORE"
+    },
+    {
+      "control": "Black & McDonald",
+      "companyId": "f757f1d3-fc2d-4086-8903-b4da90e166e3",
+      "identity": {
+        "canonicalName": "Black & McDonald Limited",
+        "domain": "blackandmcdonald.com",
+        "state": "CONFIRMED",
+        "confidence": 1,
+        "autoAttached": false,
+        "contradictions": []
+      },
+      "reference": {
+        "category": "FUNDED_RISK_PROGRAM",
+        "eventDate": "2026-05-08",
+        "event": "Black & McDonald achieved ISO 27001 certification and completed a SOC 2 Type II examination.",
+        "source": "https://blackandmcdonald.com/news/bm-achieves-iso-27001-certification-and-completes-soc-2-type-ii-examination/"
+      },
+      "questions": [
+        {
+          "id": "e474c1bd-0a06-4443-aff2-a2c138334bc3",
+          "type": "TECHNOLOGY",
+          "text": "\"Black & McDonald Limited\" blackandmcdonald.com public evidence of security stack, SOC, SIEM, EDR, or IAM changes (security, siem, endpoint, iam)",
+          "status": "ANSWERED"
+        },
+        {
+          "id": "8387e12d-b79c-4d86-8b83-7d5f775bb849",
+          "type": "LEADERSHIP",
+          "text": "\"Black & McDonald Limited\" blackandmcdonald.com public evidence of security leadership changes (security, ciso)",
+          "status": "ANSWERED"
+        },
+        {
+          "id": "f0b7536f-3e25-43d3-86ea-351d57e339b8",
+          "type": "HIRING",
+          "text": "\"Black & McDonald Limited\" blackandmcdonald.com public evidence of security and cybersecurity hiring (security, soc, cyber)",
+          "status": "ANSWERED"
+        },
+        {
+          "id": "77c31679-be25-4411-ad9f-b5fe6ea3b398",
+          "type": "EXPANSION",
+          "text": "\"Black & McDonald Limited\" blackandmcdonald.com public evidence of funding, expansion, security, or compliance initiatives",
+          "status": "ANSWERED"
+        }
+      ],
+      "retrieval": {
+        "tavilyCalls": 2,
+        "exaFallbackCalls": 2,
+        "providerFailures": 0,
+        "rawResultCount": 60,
+        "eventRelevantRawAvailable": true,
+        "eventResultHits": [
+          {
+            "provider": "exa",
+            "stage": "FALLBACK",
+            "rank": 1,
+            "url": "https://blackandmcdonald.com/news/bm-achieves-iso-27001-certification-and-completes-soc-2-type-ii-examination/",
+            "query": "\"Black & McDonald\" blackandmcdonald.com cybersecurity infrastructure platform change news",
+            "requestId": "research:e474c1bd-0a06-4443-aff2-a2c138334bc3:fallback:b220e720-6d21-4c7a-badf-3aec920febca"
+          },
+          {
+            "provider": "exa",
+            "stage": "FALLBACK",
+            "rank": 1,
+            "url": "https://blackandmcdonald.com/news/bm-achieves-iso-27001-certification-and-completes-soc-2-type-ii-examination/",
+            "query": "\"Black & McDonald\" blackandmcdonald.com CISO security executive news",
+            "requestId": "research:8387e12d-b79c-4d86-8b83-7d5f775bb849:fallback:b220e720-6d21-4c7a-badf-3aec920febca"
+          }
+        ],
+        "rankCaveat": "Only ranks retained in providerResultIds are reported; reused accepted evidence may have no recoverable rank."
+      },
+      "evidence": {
+        "accepted": true,
+        "matchedEvidenceIds": [
+          "847b2574-872b-45b6-9c64-776ee87d4eaf",
+          "a884cce8-fd58-4b24-9e92-591b75b72919",
+          "a0d7edf6-b579-4469-a266-7a96cecd3279",
+          "8bcb7652-0ba0-49f6-979d-688cd48ea5cf",
+          "95043c3c-9fcc-435f-a10a-53736cbd2e0c",
+          "53cddfd5-6e4c-4223-993c-2661024a13ab"
+        ],
+        "matchedEvidenceCount": 6,
+        "sourceDetails": [
+          {
+            "id": "847b2574-872b-45b6-9c64-776ee87d4eaf",
+            "url": "https://leadiq.com/c/black--mcdonald-limited/5a1d7dbe240000240057357a",
+            "domain": "leadiq.com",
+            "type": "technology",
+            "status": "RAW",
+            "observedAt": "2026-08-31T14:09:47.980Z"
+          },
+          {
+            "id": "a884cce8-fd58-4b24-9e92-591b75b72919",
+            "url": "https://es.linkedin.com/company/black-&-mcdonald-limited",
+            "domain": "es.linkedin.com",
+            "type": "job_posting",
+            "status": "RAW",
+            "observedAt": "2026-08-31T14:09:48.667Z"
+          },
+          {
+            "id": "a0d7edf6-b579-4469-a266-7a96cecd3279",
+            "url": "https://devex.com/organizations/black-mcdonald-limited-100931",
+            "domain": "devex.com",
+            "type": "technology",
+            "status": "RAW",
+            "observedAt": "2026-08-31T14:09:47.980Z"
+          },
+          {
+            "id": "8bcb7652-0ba0-49f6-979d-688cd48ea5cf",
+            "url": "https://blackandmcdonald.com/us/news/bm-achieves-iso-27001-certification-and-completes-soc-2-type-ii-examination",
+            "domain": "blackandmcdonald.com",
+            "type": "company_website",
+            "status": "RAW",
+            "observedAt": "2026-08-31T19:17:13.916Z"
+          },
+          {
+            "id": "95043c3c-9fcc-435f-a10a-53736cbd2e0c",
+            "url": "https://blackandmcdonald.com/us/news/black-mcdonald-acquires-power-precision",
+            "domain": "blackandmcdonald.com",
+            "type": "company_website",
+            "status": "RAW",
+            "observedAt": "2026-08-31T19:17:30.203Z"
+          },
+          {
+            "id": "53cddfd5-6e4c-4223-993c-2661024a13ab",
+            "url": "https://blackandmcdonald.com/news/bm-achieves-iso-27001-certification-and-completes-soc-2-type-ii-examination",
+            "domain": "blackandmcdonald.com",
+            "type": "company_website",
+            "status": "RAW",
+            "observedAt": "2026-08-31T19:17:30.203Z"
+          }
+        ]
+      },
+      "extraction": {
+        "correctFactProduced": false,
+        "correctFactIds": [],
+        "actualApprovedProposals": [
+          {
+            "id": "038afb1b-5c5c-493f-88a3-cfb05235e6e1",
+            "type": "TECHNOLOGY_MENTION",
+            "status": "APPROVED",
+            "evidenceId": "847b2574-872b-45b6-9c64-776ee87d4eaf",
+            "effectiveDate": "2026-08-31",
+            "structuredValue": {
+              "technologies": [
+                "JSON-LD"
+              ]
+            }
+          },
+          {
+            "id": "50e410da-2371-4456-a1e4-53d6bc7d7fba",
+            "type": "ENTERPRISE_CUSTOMER",
+            "status": "APPROVED",
+            "evidenceId": "a961463f-ee01-41e4-afe6-f7d6da2d0887",
+            "effectiveDate": "2026-08-31",
+            "structuredValue": {
+              "company": "Black & McDonald",
+              "project": "five-month project",
+              "customer": "Darling Ingredients"
+            }
+          }
+        ]
+      },
+      "validation": {
+        "correctFactApproved": false,
+        "rejectedCorrectFacts": [],
+        "note": "No correct proposal was rejected in these paths; six misses had no correct proposal, and two partials had approved but temporally invalid facts."
+      },
+      "signal": {
+        "correctSignalProduced": false,
+        "correctSignalIds": [],
+        "allGeneratedSignalIds": []
+      },
+      "outcome": "MISS",
+      "earliestBreak": "FACT_EXTRACTION_FAILURE",
+      "secondaryCauses": [],
+      "detail": "Official certification evidence reached persistence; extracted facts were unrelated technology/customer facts.",
+      "couldExistingEvidenceSupportStrictDetection": "YES",
+      "detectability": "HIGHLY_DETECTABLE",
+      "whyState": "INSUFFICIENT_EVIDENCE",
+      "nba": "RESEARCH_MORE"
+    },
+    {
+      "control": "RAKBANK",
+      "companyId": "94457ffa-bf97-426e-95b0-a1cf30250bd0",
+      "identity": {
+        "canonicalName": "RAKBANK",
+        "domain": "rakbank.ae",
+        "state": "CONFIRMED",
+        "confidence": 1,
+        "autoAttached": false,
+        "contradictions": []
+      },
+      "reference": {
+        "category": "SECURITY_STACK_CHANGE",
+        "eventDate": "2025-05-08",
+        "event": "RAKBANK replaced ArcSight with Securonix for security operations.",
+        "source": "https://www.securonix.com/resources/rakbank-replaces-arcsight-with-securonix-accelerates-threat-detection-and-data-retrieval-with-snowflake-integration/"
+      },
+      "questions": [
+        {
+          "id": "c48687ca-74c7-42c2-b5c6-0c552bc6038b",
+          "type": "EXPANSION",
+          "text": "\"RAKBANK\" rakbank.ae public evidence of funding, expansion, security, or compliance initiatives",
+          "status": "ANSWERED"
+        },
+        {
+          "id": "fe64ad8e-75ae-45e7-931c-fa28a2678f82",
+          "type": "LEADERSHIP",
+          "text": "\"RAKBANK\" rakbank.ae public evidence of security leadership changes (security, ciso)",
+          "status": "ANSWERED"
+        },
+        {
+          "id": "12f498ed-5bfe-4e85-9159-56eea1aea073",
+          "type": "HIRING",
+          "text": "\"RAKBANK\" rakbank.ae public evidence of security and cybersecurity hiring (security, soc, cyber)",
+          "status": "ANSWERED"
+        },
+        {
+          "id": "2f01903e-0a22-4f68-b6c3-48b986accc4f",
+          "type": "TECHNOLOGY",
+          "text": "\"RAKBANK\" rakbank.ae public evidence of security stack, SOC, SIEM, EDR, or IAM changes (security, siem, endpoint, iam)",
+          "status": "ANSWERED"
+        }
+      ],
+      "retrieval": {
+        "tavilyCalls": 1,
+        "exaFallbackCalls": 3,
+        "providerFailures": 0,
+        "rawResultCount": 70,
+        "eventRelevantRawAvailable": true,
+        "eventResultHits": [
+          {
+            "provider": "exa",
+            "stage": "FALLBACK",
+            "rank": 1,
+            "url": "https://www.securonix.com/resources/rakbank-replaces-arcsight-with-securonix-accelerates-threat-detection-and-data-retrieval-with-snowflake-integration/",
+            "query": "\"RAKBANK\" rakbank.ae cybersecurity infrastructure platform change news",
+            "requestId": "research:2f01903e-0a22-4f68-b6c3-48b986accc4f:fallback:b220e720-6d21-4c7a-badf-3aec920febca"
+          },
+          {
+            "provider": "exa",
+            "stage": "FALLBACK",
+            "rank": 1,
+            "url": "https://www.securonix.com/resources/rakbank-replaces-arcsight-with-securonix-accelerates-threat-detection-and-data-retrieval-with-snowflake-integration/",
+            "query": "\"RAKBANK\" rakbank.ae cybersecurity assurance compliance news",
+            "requestId": "research:c48687ca-74c7-42c2-b5c6-0c552bc6038b:fallback:b220e720-6d21-4c7a-badf-3aec920febca"
+          }
+        ],
+        "rankCaveat": "Only ranks retained in providerResultIds are reported; reused accepted evidence may have no recoverable rank."
+      },
+      "evidence": {
+        "accepted": true,
+        "matchedEvidenceIds": [
+          "07790919-bdbe-4061-93c5-fced044ebfaf"
+        ],
+        "matchedEvidenceCount": 1,
+        "sourceDetails": [
+          {
+            "id": "07790919-bdbe-4061-93c5-fced044ebfaf",
+            "url": "https://prnewswire.com/ae/news-releases/rakbank-set-to-transform-its-business-finance-operations-selects-newgens-trade-and-supply-chain-finance-solution-301855118.html",
+            "domain": "prnewswire.com",
+            "type": "technology",
+            "status": "RAW",
+            "observedAt": "2026-08-31T19:19:59.090Z"
+          }
+        ]
+      },
+      "extraction": {
+        "correctFactProduced": false,
+        "correctFactIds": [],
+        "actualApprovedProposals": [
+          {
+            "id": "69d576bd-3116-40d3-b11b-d73a5a62c185",
+            "type": "TECHNOLOGY_MENTION",
+            "status": "APPROVED",
+            "evidenceId": "9a9caf1b-fdcf-41ee-9da9-9706ac73e072",
+            "effectiveDate": "2026-08-31",
+            "structuredValue": {
+              "technologies": [
+                "single platform"
+              ]
+            }
+          }
+        ]
+      },
+      "validation": {
+        "correctFactApproved": false,
+        "rejectedCorrectFacts": [],
+        "note": "No correct proposal was rejected in these paths; six misses had no correct proposal, and two partials had approved but temporally invalid facts."
+      },
+      "signal": {
+        "correctSignalProduced": false,
+        "correctSignalIds": [],
+        "allGeneratedSignalIds": [
+          "17f628a1-c885-4a82-8c1e-f1ef0f0720a1"
+        ]
+      },
+      "outcome": "MISS",
+      "earliestBreak": "FACT_EXTRACTION_FAILURE",
+      "secondaryCauses": [],
+      "detail": "Exact vendor case study was retrieved and accepted; no stack replacement fact was extracted. Generic funding produced an unrelated signal.",
+      "couldExistingEvidenceSupportStrictDetection": "YES",
+      "detectability": "DETECTABLE",
+      "whyState": "INSUFFICIENT_EVIDENCE",
+      "nba": "MONITOR"
+    }
+  ]
+}

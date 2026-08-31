@@ -220,3 +220,17 @@ mtime_ms = 1788205037160
 storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/38500331-cad1-40ef-9f6c-2e18e8e7d0fd/aa8154ad-5477-4112-804a-e9b09c4af30f"
 storage_version_token = "1788205108702510"
 content_type = "text/csv"
+
+[[outputs]]
+id = "GwfiTqOubdiNvyhcshKxP"
+uri = "file://artifacts/api-server/CORE_INTELLIGENCE_SAFETY_AUTOPSY_01.md"
+type = "text"
+title = "Core Intelligence Safety Autopsy 01"
+description = "Complete diagnosis-only forensic report covering all six signals, all ten control paths, fact precision, recall failures, and downstream replay idempotency."
+logical_id = "7820d844-ebca-42cd-9c67-306678d5b93b"
+content_hash = "sha256:9e293cb243cb22414f7086d5edbbba073f26f9da5438986465c15793f0201c28"
+size = 20586
+mtime_ms = 1788205721453
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/7820d844-ebca-42cd-9c67-306678d5b93b/03d0ad94-b535-4adf-9755-d8ac6f646ffb"
+storage_version_token = "1788205752293575"
+content_type = "text/markdown"
