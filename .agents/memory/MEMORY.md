@@ -24,3 +24,5 @@
 - [Provider test configuration truth](provider-test-configuration-truth.md) — live reports must derive provider identifiers from runtime config, not duplicate constants that can drift.
 - [No-echo provider identity](no-echo-provider-identity.md) — a trusted requested identifier needs strict independent agreement before an omitted provider echo can be confirmed.
 - [Provider quality versus identifier coverage](provider-quality-vs-identifier-coverage.md) — low LinkedIn coverage points to profile resolution, not a second firmographic provider, when eligible results are strong.
+- [Profile candidate attribution](profile-candidate-attribution.md) — score direct profile results or official-site outbound links; never inherit one result's evidence across embedded profile URLs.
+- [Stored profile trust](stored-profile-trust.md) — a canonical profile URL is not verified merely because it is stored; enrichment requires verified provenance or explicit user verification.

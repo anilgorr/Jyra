@@ -175,6 +175,23 @@ assert.equal(
 );
 assert.ok(omittedLinkedInTrustedDomain.entityMatchReasons.some((reason) => reason.includes("official domain")));
 
+const omittedLinkedInResolverVerified = parseBrightDataCompanyResponse({
+  name: "Acme",
+  website: "https://acme.example",
+}, {
+  companyId: "company-1",
+  companyName: "Acme",
+  canonicalDomain: "acme.example",
+  linkedinCompanyUrl: "https://www.linkedin.com/company/acme",
+  linkedinCompanyUrlProvenance: "RESOLVER_VERIFIED",
+}, "bright-data-test", requestedAt.toISOString());
+assert.equal(omittedLinkedInResolverVerified.entityMatchStatus, "CONFIRMED");
+assert.equal(
+  omittedLinkedInResolverVerified.requestProvenance.requestedIdentifierProvenance,
+  "RESOLVER_VERIFIED",
+);
+assert.ok(omittedLinkedInResolverVerified.entityMatchReasons.some((reason) => reason.includes("resolver verified")));
+
 const omittedLinkedInGuessed = parseBrightDataCompanyResponse({
   name: "Acme",
   website: "https://acme.example",

@@ -93,7 +93,7 @@ export type CompanyFirmographicsRequest = ProviderRequestBase & {
   canonicalDomain?: string | null;
   websiteUrl?: string | null;
   linkedinCompanyUrl?: string | null;
-  linkedinCompanyUrlProvenance?: "CANONICAL_EXISTING" | "USER_VERIFIED" | "UNVERIFIED";
+  linkedinCompanyUrlProvenance?: "CANONICAL_EXISTING" | "USER_VERIFIED" | "RESOLVER_VERIFIED" | "UNVERIFIED";
   country?: string | null;
   existingProviderIdentifiers?: Record<string, string>;
 };
@@ -109,6 +109,77 @@ export type SearchWebRequest = ProviderRequestBase & {
   startDate?: string;
   endDate?: string;
   includeRawContent?: boolean;
+};
+
+export type CompanyProfileType = "LINKEDIN_COMPANY";
+export const COMPANY_PROFILE_RESOLUTION_CAPABILITY = "COMPANY_PROFILE_RESOLUTION" as const;
+export type CompanyProfileResolutionStatus =
+  | "VERIFIED"
+  | "VERIFIED_EXISTING"
+  | "PROBABLE"
+  | "AMBIGUOUS"
+  | "NOT_FOUND"
+  | "WRONG";
+export type CompanyProfileResolutionEvidence = {
+  kind:
+    | "NAME_MATCH"
+    | "DOMAIN_MATCH"
+    | "OFFICIAL_WEBSITE_LINK"
+    | "GEOGRAPHY_MATCH"
+    | "INDUSTRY_MATCH"
+    | "ALIAS_MATCH"
+    | "CONTRADICTION"
+    | "EXISTING_IDENTIFIER";
+  detail: string;
+  strength: "strong" | "supporting" | "contradicting";
+  sourceUrl?: string | null;
+};
+export type CompanyProfileResolutionCandidate = {
+  profileType: CompanyProfileType;
+  profileUrl: string;
+  normalizedProfileUrl: string;
+  profileSlug: string;
+  resolutionStatus: Exclude<CompanyProfileResolutionStatus, "VERIFIED_EXISTING">;
+  resolutionConfidence: number;
+  supportingEvidence: CompanyProfileResolutionEvidence[];
+  contradictingEvidence: CompanyProfileResolutionEvidence[];
+  retrievalProvider: string;
+  publisher: "LINKEDIN";
+  discoveryQuery: string;
+  searchResultUrl: string;
+  searchResultTitle: string;
+  searchResultExcerpt: string;
+  retrievedAt: string;
+};
+export type CompanyProfileResolutionRequest = ProviderRequestBase & {
+  companyId?: string;
+  companyName: string;
+  canonicalDomain?: string | null;
+  websiteUrl?: string | null;
+  country?: string | null;
+  city?: string | null;
+  industry?: string | null;
+  knownAliases?: string[];
+  existingProfileUrls?: Record<string, string>;
+  existingProfileVerified?: boolean;
+  providerIds?: Record<string, string>;
+  profileType?: CompanyProfileType;
+};
+export type CompanyProfileResolutionResult = {
+  companyId: string | null;
+  profileType: CompanyProfileType;
+  profileUrl: string | null;
+  normalizedProfileUrl: string | null;
+  profileSlug: string | null;
+  resolutionStatus: CompanyProfileResolutionStatus;
+  resolutionConfidence: number;
+  provider: string;
+  retrievalMethod: "EXISTING_IDENTIFIER" | "TAVILY_WEB_SEARCH";
+  supportingEvidence: CompanyProfileResolutionEvidence[];
+  contradictingEvidence: CompanyProfileResolutionEvidence[];
+  candidates: CompanyProfileResolutionCandidate[];
+  discoveryQueries: string[];
+  resolvedAt: string;
 };
 
 export type CrawlWebsiteRequest = ProviderRequestBase & {
@@ -231,7 +302,7 @@ export type CompanyFirmographicsResult = {
     requestedIdentifierType: "LINKEDIN_COMPANY_URL";
     requestedIdentifierValue: string | null;
     normalizedRequestedIdentifierValue: string | null;
-    requestedIdentifierProvenance: "CANONICAL_EXISTING" | "USER_VERIFIED" | "UNVERIFIED";
+    requestedIdentifierProvenance: "CANONICAL_EXISTING" | "USER_VERIFIED" | "RESOLVER_VERIFIED" | "UNVERIFIED";
     requestedCompanyId: string | null;
     requestedCompanyName: string | null;
     requestedCanonicalDomain: string | null;
@@ -340,6 +411,9 @@ export interface ProviderOperations {
   searchWeb(
     request: SearchWebRequest,
   ): Promise<ProviderResponse<WebSearchResult>>;
+  resolveCompanyProfile(
+    request: CompanyProfileResolutionRequest,
+  ): Promise<ProviderResponse<CompanyProfileResolutionResult>>;
   crawlWebsite(
     request: CrawlWebsiteRequest,
   ): Promise<ProviderResponse<WebsiteCrawlResult>>;

@@ -35,6 +35,8 @@ let organization;
 let project;
 let confirmedCompany;
 let reviewCompany;
+let resolutionCompany;
+let ambiguousCompany;
 let provider;
 
 function firmographicsResponse(companyId, request, status) {
@@ -97,6 +99,45 @@ function firmographicsResponse(companyId, request, status) {
   };
 }
 
+async function insertVerifiedProfileProvenance(company, profileUrl, userVerified = false) {
+  const normalizedProfileUrl = profileUrl.replace(/^https:\/\/linkedin\.com/, "https://www.linkedin.com");
+  await db.insert(companyProvenanceTable).values({
+    organizationId: organization.id,
+    projectId: project.id,
+    companyId: company.id,
+    sourceType: userVerified ? "COMPANY_PROFILE_USER_VERIFICATION" : "COMPANY_PROFILE_RESOLUTION",
+    sourceLabel: "Verified profile test fixture",
+    sourceUrl: profileUrl,
+    observedAt: new Date("2026-08-30T09:00:00.000Z"),
+    payload: userVerified ? {
+      kind: "COMPANY_PROFILE_USER_VERIFICATION",
+      normalizedProfileUrl,
+    } : {
+      kind: "COMPANY_PROFILE_RESOLUTION",
+      cacheKey: `${company.id}:LINKEDIN_COMPANY`,
+      providerId: "tavily-test",
+      canonicalUpdated: true,
+      result: {
+        companyId: company.id,
+        profileType: "LINKEDIN_COMPANY",
+        profileUrl,
+        normalizedProfileUrl,
+        profileSlug: profileUrl.split("/").pop(),
+        resolutionStatus: "VERIFIED",
+        resolutionConfidence: 100,
+        provider: "tavily-test",
+        retrievalMethod: "TAVILY_WEB_SEARCH",
+        supportingEvidence: [],
+        contradictingEvidence: [],
+        candidates: [],
+        discoveryQueries: [],
+        resolvedAt: "2026-08-30T09:00:00.000Z",
+      },
+    },
+    visibility: "PRIVATE",
+  });
+}
+
 try {
   await db.insert(usersTable).values({ id: userId });
   [organization] = await db.insert(organizationsTable).values({
@@ -120,15 +161,29 @@ try {
     canonicalName: `Firmographics Review ${suffix}`,
     linkedinUrl: `https://linkedin.com/company/firmographics-review-${suffix}`,
   }).returning();
+  [resolutionCompany] = await db.insert(companiesTable).values({
+    canonicalName: `Resolution Company ${suffix}`,
+    domain: `resolution-${suffix}.example`,
+  }).returning();
+  [ambiguousCompany] = await db.insert(companiesTable).values({
+    canonicalName: `Ambiguous Company ${suffix}`,
+    domain: `ambiguous-${suffix}.example`,
+    linkedinUrl: `https://www.linkedin.com/company/wrong-ambiguous-${suffix}`,
+  }).returning();
   await db.insert(projectCompaniesTable).values([
     { projectId: project.id, companyId: confirmedCompany.id },
     { projectId: project.id, companyId: reviewCompany.id },
+    { projectId: project.id, companyId: resolutionCompany.id },
+    { projectId: project.id, companyId: ambiguousCompany.id },
   ]);
+  await insertVerifiedProfileProvenance(confirmedCompany, confirmedCompany.linkedinUrl, true);
+  await insertVerifiedProfileProvenance(reviewCompany, reviewCompany.linkedinUrl);
 
   let confirmedCalls = 0;
   const confirmedRouter = {
     enrichCompany: async (request) => {
       confirmedCalls += 1;
+      assert.equal(request.linkedinCompanyUrlProvenance, "USER_VERIFIED");
       return firmographicsResponse(confirmedCompany.id, request, "CONFIRMED");
     },
   };
@@ -216,8 +271,11 @@ try {
   });
   assert.equal(wrongResult.canonicalUpdated, false);
   const [wrongProvenance] = await db.select({ value: count() }).from(companyProvenanceTable)
-    .where(eq(companyProvenanceTable.companyId, reviewCompany.id));
-  assert.equal(Number(wrongProvenance.value), 0, "wrong entities must not create provenance");
+    .where(and(
+      eq(companyProvenanceTable.companyId, reviewCompany.id),
+      eq(companyProvenanceTable.sourceType, "COMPANY_FIRMOGRAPHICS"),
+    ));
+  assert.equal(Number(wrongProvenance.value), 0, "wrong entities must not create firmographic provenance");
 
   const review = await enrichCompanyFirmographics({
     organizationId: organization.id,
@@ -239,11 +297,121 @@ try {
   assert.equal(Number(reviewCount.value), 1);
   assert.equal(reviewCalls, 1);
 
+  let resolutionSearchCalls = 0;
+  let resolvedFirmographicsCalls = 0;
+  const resolvedProfileUrl = `https://www.linkedin.com/company/resolution-${suffix}`;
+  const resolutionRouter = {
+    searchWeb: async (request) => {
+      resolutionSearchCalls += 1;
+      return {
+        status: "success",
+        providerId: "tavily-test",
+        providerRequestId: request.requestId,
+        data: {
+          query: request.query,
+          answer: null,
+          results: [{
+            title: `Resolution Company ${suffix} - LinkedIn`,
+            url: resolvedProfileUrl,
+            snippet: `Resolution Company ${suffix} official website resolution-${suffix}.example`,
+            score: 1,
+            rawContent: null,
+            publishedDate: null,
+          }],
+        },
+        sources: [{ kind: "public_url", reference: resolvedProfileUrl, capturedAt: "2026-08-31T10:00:00.000Z" }],
+        usage: { estimatedCost: 0.01, actualCost: 0.01, latencyMs: 5, runtimeMs: 5, resultCount: 1 },
+        error: null,
+        retryable: false,
+        capturedAt: "2026-08-31T10:00:00.000Z",
+        metadata: {},
+      };
+    },
+    enrichCompany: async (request) => {
+      resolvedFirmographicsCalls += 1;
+      assert.equal(request.linkedinCompanyUrl, resolvedProfileUrl);
+      assert.equal(request.linkedinCompanyUrlProvenance, "RESOLVER_VERIFIED");
+      return firmographicsResponse(resolutionCompany.id, request, "CONFIRMED");
+    },
+  };
+  const resolvedEnrichment = await enrichCompanyFirmographics({
+    organizationId: organization.id,
+    projectId: project.id,
+    companyId: resolutionCompany.id,
+    router: resolutionRouter,
+    now: new Date("2026-08-31T10:00:00.000Z"),
+  });
+  assert.equal(resolutionSearchCalls, 1);
+  assert.equal(resolvedFirmographicsCalls, 1);
+  assert.equal(resolvedEnrichment.profileResolution.resolutionStatus, "VERIFIED");
+  await enrichCompanyFirmographics({
+    organizationId: organization.id,
+    projectId: project.id,
+    companyId: resolutionCompany.id,
+    router: resolutionRouter,
+    now: new Date("2026-09-01T10:00:00.000Z"),
+  });
+  assert.equal(resolutionSearchCalls, 1, "stored VERIFIED profile provenance must bypass repeat resolution");
+  assert.equal(resolvedFirmographicsCalls, 1, "fresh firmographics cache must bypass Bright Data");
+
+  let blockedFirmographicsCalls = 0;
+  const ambiguousRouter = {
+    searchWeb: async (request) => ({
+      status: "success",
+      providerId: "tavily-test",
+      providerRequestId: request.requestId,
+      data: {
+        query: request.query,
+        answer: null,
+        results: ["one", "two"].map((slug) => ({
+          title: `Ambiguous Company ${suffix} - LinkedIn`,
+          url: `https://www.linkedin.com/company/ambiguous-${suffix}-${slug}`,
+          snippet: `Ambiguous Company ${suffix} official website ambiguous-${suffix}.example`,
+          score: 1,
+          rawContent: null,
+          publishedDate: null,
+        })),
+      },
+      sources: [],
+      usage: { estimatedCost: 0.01, actualCost: 0.01, latencyMs: 5, runtimeMs: 5, resultCount: 2 },
+      error: null,
+      retryable: false,
+      capturedAt: "2026-08-31T10:00:00.000Z",
+      metadata: {},
+    }),
+    enrichCompany: async () => {
+      blockedFirmographicsCalls += 1;
+      throw new Error("Bright Data must not run for ambiguous profile resolution");
+    },
+  };
+  const previousNodeEnv = process.env.NODE_ENV;
+  let blocked;
+  try {
+    process.env.NODE_ENV = "production";
+    blocked = await enrichCompanyFirmographics({
+      organizationId: organization.id,
+      projectId: project.id,
+      companyId: ambiguousCompany.id,
+      router: ambiguousRouter,
+      linkedinCompanyUrl: ambiguousCompany.linkedinUrl,
+      linkedinCompanyUrlProvenance: "CANONICAL_EXISTING",
+      now: new Date("2026-08-31T10:00:00.000Z"),
+    });
+  } finally {
+    process.env.NODE_ENV = previousNodeEnv;
+  }
+  assert.equal(blocked.profileResolution.resolutionStatus, "AMBIGUOUS");
+  assert.equal(blocked.response.status, "empty");
+  assert.equal(blocked.response.metadata.blockedBeforeFirmographics, true);
+  assert.equal(blockedFirmographicsCalls, 0);
+
   console.log("Company firmographics persistence, conflict, review, and cache tests passed.");
 } finally {
   if (project) await db.delete(projectsTable).where(eq(projectsTable.id, project.id));
   if (confirmedCompany) await db.delete(companiesTable).where(eq(companiesTable.id, confirmedCompany.id));
   if (reviewCompany) await db.delete(companiesTable).where(eq(companiesTable.id, reviewCompany.id));
+  if (resolutionCompany) await db.delete(companiesTable).where(eq(companiesTable.id, resolutionCompany.id));
+  if (ambiguousCompany) await db.delete(companiesTable).where(eq(companiesTable.id, ambiguousCompany.id));
   if (organization) await db.delete(organizationsTable).where(eq(organizationsTable.id, organization.id));
   if (provider) await db.delete(providerUsageTable).where(eq(providerUsageTable.providerId, provider.id));
   if (provider) await db.delete(dataProvidersTable).where(eq(dataProvidersTable.id, provider.id));

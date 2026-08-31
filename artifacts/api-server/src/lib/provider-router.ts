@@ -11,12 +11,15 @@ import {
   PROVIDER_CAPABILITIES,
   type CapabilityRequest,
   type CapabilityResult,
+  type CompanyProfileResolutionRequest,
+  type CompanyProfileResolutionResult,
   type FindPeopleRequest,
   type ProviderAdapter,
   type ProviderCapability,
   type ProviderOperations,
   type ProviderResponse,
 } from "./provider-contract";
+import { resolveCompanyProfileWithRouter } from "./company-profile-resolution";
 import {
   createApifyAdapters,
   parseApifyProviderConfiguration,
@@ -562,6 +565,12 @@ export class ProviderRouter implements ProviderOperations {
   }
   searchWeb(request: CapabilityRequest<"WEB_SEARCH">) {
     return this.route("WEB_SEARCH", request);
+  }
+  resolveCompanyProfile(request: CompanyProfileResolutionRequest) {
+    return resolveCompanyProfileWithRouter({
+      request,
+      router: this,
+    }).then((result) => result.response);
   }
   crawlWebsite(request: CapabilityRequest<"WEBSITE_CRAWL">) {
     return this.route("WEBSITE_CRAWL", request);

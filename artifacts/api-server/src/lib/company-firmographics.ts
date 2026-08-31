@@ -9,11 +9,17 @@ import {
 } from "@workspace/db";
 import { canonicalSourceIdentity } from "./evidence";
 import type {
+  CompanyProfileResolutionResult,
   CompanyFirmographicAttributes,
   CompanyFirmographicsResult,
   ProviderOperations,
   ProviderResponse,
 } from "./provider-contract";
+import {
+  trustedCompanyProfileProvenance,
+  normalizeLinkedInCompanyUrl,
+  resolveAndPersistCompanyProfile,
+} from "./company-profile-resolution";
 
 const DAY_MS = 86_400_000;
 const DEFAULT_FRESHNESS_DAYS = 30;
@@ -61,9 +67,9 @@ export type CompanyFirmographicsEnrichmentInput = {
   organizationId: string;
   projectId: string;
   companyId: string;
-  router: Pick<ProviderOperations, "enrichCompany">;
+  router: Pick<ProviderOperations, "enrichCompany" | "searchWeb">;
   linkedinCompanyUrl?: string | null;
-  linkedinCompanyUrlProvenance?: "CANONICAL_EXISTING" | "USER_VERIFIED" | "UNVERIFIED";
+  linkedinCompanyUrlProvenance?: "CANONICAL_EXISTING" | "USER_VERIFIED" | "RESOLVER_VERIFIED" | "UNVERIFIED";
   approveProbable?: boolean;
   freshnessDays?: number;
   now?: Date;
@@ -74,7 +80,31 @@ export type CompanyFirmographicsEnrichment = {
   cacheHit: boolean;
   canonicalUpdated: boolean;
   conflicts: FirmographicsCachePayload["conflicts"];
+  profileResolution?: CompanyProfileResolutionResult | null;
 };
+
+function unresolvedProfileResponse(input: {
+  companyId: string;
+  profileResolution: CompanyProfileResolutionResult | null;
+  capturedAt: string;
+}): ProviderResponse<CompanyFirmographicsResult> {
+  return {
+    status: "empty",
+    providerId: input.profileResolution?.provider ?? "company-profile-resolution",
+    providerRequestId: `firmographics-blocked:${input.companyId}:${input.capturedAt}`,
+    data: null,
+    sources: [],
+    usage: { estimatedCost: 0, actualCost: 0, latencyMs: 0, runtimeMs: 0, resultCount: 0 },
+    error: {
+      code: "VERIFIED_COMPANY_PROFILE_REQUIRED",
+      message: `Firmographic enrichment requires a verified LinkedIn company profile; resolution status was ${input.profileResolution?.resolutionStatus ?? "NOT_FOUND"}`,
+      retryable: false,
+    },
+    retryable: false,
+    capturedAt: input.capturedAt,
+    metadata: { blockedBeforeFirmographics: true },
+  };
+}
 
 function cacheIdentity(companyId: string, linkedinCompanyUrl: string): string {
   return `${companyId}:${canonicalSourceIdentity(linkedinCompanyUrl)}`;
@@ -190,29 +220,64 @@ export async function enrichCompanyFirmographics(
 ): Promise<CompanyFirmographicsEnrichment> {
   const now = input.now ?? new Date();
   const company = await projectCompany(input);
-  const linkedinCompanyUrl = input.linkedinCompanyUrl ?? company.linkedinUrl;
-  const linkedinCompanyUrlProvenance = input.linkedinCompanyUrlProvenance ??
-    (linkedinCompanyUrl && company.linkedinUrl &&
-      canonicalSourceIdentity(linkedinCompanyUrl) === canonicalSourceIdentity(company.linkedinUrl)
-      ? "CANONICAL_EXISTING"
-      : "UNVERIFIED");
-  if (!linkedinCompanyUrl) {
-    const response = await input.router.enrichCompany({
+  let linkedinCompanyUrl = input.linkedinCompanyUrl ?? company.linkedinUrl;
+  const sameCanonicalProfile = Boolean(linkedinCompanyUrl && company.linkedinUrl &&
+      canonicalSourceIdentity(linkedinCompanyUrl) === canonicalSourceIdentity(company.linkedinUrl) &&
+      normalizeLinkedInCompanyUrl(linkedinCompanyUrl));
+  const trustedProfileProvenance = sameCanonicalProfile
+    ? await trustedCompanyProfileProvenance({
+      projectId: input.projectId,
       companyId: company.id,
-      companyName: company.canonicalName,
-      canonicalDomain: company.domain,
-      websiteUrl: company.website,
-      linkedinCompanyUrl: null,
-      linkedinCompanyUrlProvenance: "UNVERIFIED",
-      country: company.country,
-      requestId: `firmographics:${company.id}:${now.toISOString()}`,
-      metadata: {
-        organizationId: input.organizationId,
-        projectId: input.projectId,
+      profileUrl: linkedinCompanyUrl!,
+    })
+    : null;
+  let linkedinCompanyUrlProvenance: "CANONICAL_EXISTING" | "USER_VERIFIED" | "RESOLVER_VERIFIED" | "UNVERIFIED" =
+    trustedProfileProvenance ?? "UNVERIFIED";
+  let profileResolution: CompanyProfileResolutionResult | null = null;
+  if (!linkedinCompanyUrl || linkedinCompanyUrlProvenance === "UNVERIFIED" ||
+    !normalizeLinkedInCompanyUrl(linkedinCompanyUrl)) {
+    const resolution = await resolveAndPersistCompanyProfile({
+      organizationId: input.organizationId,
+      projectId: input.projectId,
+      companyId: company.id,
+      router: input.router,
+      request: {
         companyId: company.id,
+        companyName: company.canonicalName,
+        canonicalDomain: company.domain,
+        websiteUrl: company.website,
+        country: company.country,
+        industry: company.industry,
+        existingProfileUrls: linkedinCompanyUrl ? { linkedin: linkedinCompanyUrl } : {},
+        existingProfileVerified: false,
+        requestId: `profile-before-firmographics:${company.id}:${now.toISOString()}`,
+        metadata: {
+          organizationId: input.organizationId,
+          projectId: input.projectId,
+          companyId: company.id,
+          downstreamCapability: "COMPANY_FIRMOGRAPHICS",
+        },
       },
+      now,
     });
-    return { response, cacheHit: false, canonicalUpdated: false, conflicts: [] };
+    profileResolution = resolution.response.data;
+    if (!profileResolution ||
+      !["VERIFIED", "VERIFIED_EXISTING"].includes(profileResolution.resolutionStatus) ||
+      !profileResolution.normalizedProfileUrl) {
+      return {
+        response: unresolvedProfileResponse({
+          companyId: company.id,
+          profileResolution,
+          capturedAt: now.toISOString(),
+        }),
+        cacheHit: false,
+        canonicalUpdated: false,
+        conflicts: [],
+        profileResolution,
+      };
+    }
+    linkedinCompanyUrl = profileResolution.normalizedProfileUrl;
+    linkedinCompanyUrlProvenance = "RESOLVER_VERIFIED";
   }
 
   const cacheKey = cacheIdentity(company.id, linkedinCompanyUrl);
@@ -335,5 +400,5 @@ export async function enrichCompanyFirmographics(
       });
     }
   });
-  return { response, cacheHit: false, canonicalUpdated, conflicts };
+  return { response, cacheHit: false, canonicalUpdated, conflicts, profileResolution };
 }

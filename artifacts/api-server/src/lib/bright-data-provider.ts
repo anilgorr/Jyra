@@ -194,7 +194,7 @@ function matchEntity(
     request.country.trim().toLowerCase() === returned.headquartersCountry.trim().toLowerCase());
   const countryContradiction = Boolean(request.country && returned.headquartersCountry && !countryMatch);
   const trustedRequestedLinkedIn = Boolean(requestedLinkedIn) &&
-    ["CANONICAL_EXISTING", "USER_VERIFIED"].includes(
+    ["CANONICAL_EXISTING", "USER_VERIFIED", "RESOLVER_VERIFIED"].includes(
       request.linkedinCompanyUrlProvenance ?? "UNVERIFIED",
     );
   const parentAmbiguity = Boolean(
@@ -225,7 +225,7 @@ function matchEntity(
   if (!returnedLinkedIn && requestedLinkedIn) {
     const reasons = [
       trustedRequestedLinkedIn
-        ? "+ Requested LinkedIn URL has trusted canonical or user-verified provenance"
+        ? `+ Requested LinkedIn URL has trusted ${request.linkedinCompanyUrlProvenance?.toLowerCase().replaceAll("_", " ")} provenance`
         : "- Requested LinkedIn URL does not have strong provenance",
       "- Bright Data did not echo the LinkedIn URL",
       ...(nameMatch ? ["+ Returned company name matches the requested company"] : []),

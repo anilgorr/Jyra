@@ -1,0 +1,1636 @@
+{
+  "test": "REAL_DATA_TEST_12",
+  "environment": "development",
+  "canonicalPrecondition": {
+    "companiesPresent": 10,
+    "projectLinksPresent": 10,
+    "companiesCreatedByMeasuredRun": 0,
+    "projectLinksCreatedByMeasuredRun": 0
+  },
+  "population": [
+    "Cloudflare",
+    "Panopta",
+    "Amazon Web Services (AWS)",
+    "Oracle Cloud",
+    "Alibaba Cloud",
+    "E2E Cloud",
+    "Cloud4C Services",
+    "Emergys",
+    "ENTUNE IT Consulting Pvt Ltd",
+    "Cloudi"
+  ],
+  "rows": [
+    {
+      "Company": "Cloudflare",
+      "Canonical domain": "cloudflare.com",
+      "Before LinkedIn URL": "https://www.linkedin.com/company/cloudflare",
+      "Historical pre-resolution LinkedIn URL": "NONE",
+      "Existing identifier status": "NO_LINKEDIN_URL",
+      "Search required": "YES",
+      "Search calls": 1,
+      "Current run provider calls": 0,
+      "Candidates found": 1,
+      "Selected candidate": "https://www.linkedin.com/company/cloudflare",
+      "Name match": "YES",
+      "Domain match": "YES",
+      "Geography match": "NO",
+      "Contradictions": "NONE",
+      "Final status": "VERIFIED",
+      "Confidence": 85,
+      "Reason": "Candidate title or slug agrees with \"Cloudflare\"; The indexed candidate evidence references canonical domain \"cloudflare.com\"",
+      "supportingEvidence": "NAME_MATCH, DOMAIN_MATCH",
+      "auditQuery": "site:linkedin.com/company \"Cloudflare\" \"cloudflare.com\"",
+      "auditResultTitle": "Cloudflare - LinkedIn",
+      "auditResultUrl": "https://www.linkedin.com/company/cloudflare",
+      "auditExcerpt": "## Overview\nCloudflare, Inc. (NYSE: NET) is the leading connectivity cloud company. It empowers organizations to make their employees, applications and networks faster and more secure everywhere, while reducing complexity and cost. Cloudflare’s connectivity cloud delivers the most full-featured, unified platform of cloud-native products and developer tools, so any organization can gain the control",
+      "auditRetrievedAt": "2026-08-31T08:49:05.812Z",
+      "canonicalCompanyId": "654c5b16-c6fd-4750-9ed1-ffa2a69cf1a4",
+      "beforeCanonicalLinkedInUrl": "https://www.linkedin.com/company/cloudflare",
+      "Current canonical persistence": "NO_CANONICAL_CHANGE",
+      "Historical canonical persistence": "ATTACHED_VERIFIED",
+      "selectedCandidateDetails": {
+        "profileUrl": "https://www.linkedin.com/company/cloudflare",
+        "normalizedProfileUrl": "https://www.linkedin.com/company/cloudflare",
+        "profileSlug": "cloudflare",
+        "status": "VERIFIED",
+        "supportingEvidence": [
+          {
+            "kind": "NAME_MATCH",
+            "detail": "Candidate title or slug agrees with \"Cloudflare\"",
+            "strength": "strong",
+            "sourceUrl": "https://www.linkedin.com/company/cloudflare"
+          },
+          {
+            "kind": "DOMAIN_MATCH",
+            "detail": "The indexed candidate evidence references canonical domain \"cloudflare.com\"",
+            "strength": "strong",
+            "sourceUrl": "https://www.linkedin.com/company/cloudflare"
+          }
+        ],
+        "contradictingEvidence": [],
+        "candidates": [
+          {
+            "publisher": "LINKEDIN",
+            "profileUrl": "https://www.linkedin.com/company/cloudflare",
+            "profileSlug": "cloudflare",
+            "profileType": "LINKEDIN_COMPANY",
+            "retrievedAt": "2026-08-31T08:49:05.812Z",
+            "discoveryQuery": "site:linkedin.com/company \"Cloudflare\" \"cloudflare.com\"",
+            "searchResultUrl": "https://www.linkedin.com/company/cloudflare",
+            "resolutionStatus": "VERIFIED",
+            "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+            "searchResultTitle": "Cloudflare - LinkedIn",
+            "supportingEvidence": [
+              {
+                "kind": "NAME_MATCH",
+                "detail": "Candidate title or slug agrees with \"Cloudflare\"",
+                "strength": "strong",
+                "sourceUrl": "https://www.linkedin.com/company/cloudflare"
+              },
+              {
+                "kind": "DOMAIN_MATCH",
+                "detail": "The indexed candidate evidence references canonical domain \"cloudflare.com\"",
+                "strength": "strong",
+                "sourceUrl": "https://www.linkedin.com/company/cloudflare"
+              }
+            ],
+            "searchResultExcerpt": "## Overview\nCloudflare, Inc. (NYSE: NET) is the leading connectivity cloud company. It empowers organizations to make their employees, applications and networks faster and more secure everywhere, while reducing complexity and cost. Cloudflare’s connectivity cloud delivers the most full-featured, unified platform of cloud-native products and developer tools, so any organization can gain the control they need to work, develop, and accelerate their business. Powered by one of the world’s largest and most interconnected networks, Cloudflare blocks billions of threats online for its customers every day. It is trusted by millions of organizations – from the largest brands to entrepreneurs and small businesses to nonprofits, humanitarian groups, and governments across the globe.\n\n### Website [...] # Cloudflare\nAt Cloudflare, we have our eyes set on an ambitious goal — to help build a better Internet.\nComputer and Network Security • San Francisco, California • 1,180,608 followers • 1,001-5,000 employees [...] ecosystem partner or explore the program directly at cloudflare.com/startups [Likes: 112, Comments: 2]; Cloudflare (5d): The push to become an \"AI-first\" organization shouldn't mean compromising on security. Yet, for many, the trade-off feels inevitable. It’s time to change that. Join us on August 13th for an exclusive session with Cloudflare’s Michael Snowden as he shares actionable strategies to fortify your API architecture. Don't let your connectivity become your liability. Learn how to keep your business running at the speed of AI. Register now:  [Likes: 39, Comments: 0]; Cloudflare (5d): Be among the first to govern connections between your workforce, MCP servers, and internal data.  [Likes: 50, Comments: 3]; Ai Everything Abu Dhabi (5d): Waseem Hattar , Country Manager for the UAE",
+            "normalizedProfileUrl": "https://www.linkedin.com/company/cloudflare",
+            "resolutionConfidence": 85,
+            "contradictingEvidence": []
+          }
+        ],
+        "discoveryQueries": [
+          "site:linkedin.com/company \"Cloudflare\" \"cloudflare.com\""
+        ],
+        "provider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+        "retrievalMethod": "TAVILY_WEB_SEARCH",
+        "resolvedAt": "2026-08-31T08:49:05.807Z"
+      }
+    },
+    {
+      "Company": "Panopta",
+      "Canonical domain": "fortinet.com",
+      "Before LinkedIn URL": "https://www.linkedin.com/company/panopta-llc",
+      "Historical pre-resolution LinkedIn URL": "NONE",
+      "Existing identifier status": "NO_LINKEDIN_URL",
+      "Search required": "YES",
+      "Search calls": 1,
+      "Current run provider calls": 0,
+      "Candidates found": 4,
+      "Selected candidate": "https://www.linkedin.com/company/panopta-llc",
+      "Name match": "YES",
+      "Domain match": "YES",
+      "Geography match": "NO",
+      "Contradictions": "NONE",
+      "Final status": "VERIFIED",
+      "Confidence": 85,
+      "Reason": "Candidate title or slug agrees with \"Panopta\"; The indexed candidate evidence references canonical domain \"fortinet.com\"",
+      "supportingEvidence": "NAME_MATCH, DOMAIN_MATCH",
+      "auditQuery": "site:linkedin.com/company \"Panopta\" \"fortinet.com\"",
+      "auditResultTitle": "Panopta - We're excited to have joined the Fortinet team. https://www.fortinet.com/products/fortinet-acquires-panopta",
+      "auditResultUrl": "https://www.linkedin.com/company/panopta-llc",
+      "auditExcerpt": "# Panopta\nWe're excited to have joined the Fortinet team. \nInformation Technology & Services • Chicago, IL • 3,564 followers • 11-50 employees\n\n## Overview\nPanopta is changing the way businesses monitor their network, servers, and applications with our advanced infrastructure monitoring platform. The rapid emergence of hybrid infrastructure environments has put a significant strain on operations t",
+      "auditRetrievedAt": "2026-08-31T08:49:07.132Z",
+      "canonicalCompanyId": "72e4b0bb-1366-473f-bd97-5a0a84ba5427",
+      "beforeCanonicalLinkedInUrl": "https://www.linkedin.com/company/panopta-llc",
+      "Current canonical persistence": "NO_CANONICAL_CHANGE",
+      "Historical canonical persistence": "ATTACHED_VERIFIED",
+      "selectedCandidateDetails": {
+        "profileUrl": "https://www.linkedin.com/company/panopta-llc",
+        "normalizedProfileUrl": "https://www.linkedin.com/company/panopta-llc",
+        "profileSlug": "panopta-llc",
+        "status": "VERIFIED",
+        "supportingEvidence": [
+          {
+            "kind": "NAME_MATCH",
+            "detail": "Candidate title or slug agrees with \"Panopta\"",
+            "strength": "strong",
+            "sourceUrl": "https://www.linkedin.com/company/panopta-llc"
+          },
+          {
+            "kind": "DOMAIN_MATCH",
+            "detail": "The indexed candidate evidence references canonical domain \"fortinet.com\"",
+            "strength": "strong",
+            "sourceUrl": "https://www.linkedin.com/company/panopta-llc"
+          }
+        ],
+        "contradictingEvidence": [],
+        "candidates": [
+          {
+            "publisher": "LINKEDIN",
+            "profileUrl": "https://www.linkedin.com/company/panopta-llc",
+            "profileSlug": "panopta-llc",
+            "profileType": "LINKEDIN_COMPANY",
+            "retrievedAt": "2026-08-31T08:49:07.132Z",
+            "discoveryQuery": "site:linkedin.com/company \"Panopta\" \"fortinet.com\"",
+            "searchResultUrl": "https://www.linkedin.com/company/panopta-llc",
+            "resolutionStatus": "VERIFIED",
+            "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+            "searchResultTitle": "Panopta - We're excited to have joined the Fortinet team. https://www.fortinet.com/products/fortinet-acquires-panopta",
+            "supportingEvidence": [
+              {
+                "kind": "NAME_MATCH",
+                "detail": "Candidate title or slug agrees with \"Panopta\"",
+                "strength": "strong",
+                "sourceUrl": "https://www.linkedin.com/company/panopta-llc"
+              },
+              {
+                "kind": "DOMAIN_MATCH",
+                "detail": "The indexed candidate evidence references canonical domain \"fortinet.com\"",
+                "strength": "strong",
+                "sourceUrl": "https://www.linkedin.com/company/panopta-llc"
+              }
+            ],
+            "searchResultExcerpt": "# Panopta\nWe're excited to have joined the Fortinet team. \nInformation Technology & Services • Chicago, IL • 3,564 followers • 11-50 employees\n\n## Overview\nPanopta is changing the way businesses monitor their network, servers, and applications with our advanced infrastructure monitoring platform. The rapid emergence of hybrid infrastructure environments has put a significant strain on operations teams; managing multiple tools leads to increased diagnostic delay and increased costs. Panopta centralizes your public/private monitoring, alerting, and reporting into a globally available SaaS solution. Whether you leverage public cloud, private cloud, or on-premise infrastructure, Panopta provides a single pane of glass into your infrastructure’s health.\n\n### Website [...] ### Website\n\n### Crunchbase\nN/A\n### LinkedIn\nN/A\n\n### Industry\nInformation Technology & Services\n\n### Company Size\n11-50 employees  \n1 associated members (LinkedIn members who've listed Panopta as their current workplace on their profile)\n\n### Founded\n2007\n\n### Funding\nLast Round Date: N/A\nLast Round Type: N/A\nTotal Rounds: N/A\nLast Round Raised: N/A\n\n### Investors\nN/A\n\n### Specialties\nInfrastructure Monitoring, Server Monitoring, Incident Management, Hybrid Environment Monitoring, Application Monitoring, Network Monitoring, Infrastructure Reporting and Dashboards, Website/API Monitoring, and Public/Private Cloud Monitoring\n\n## Locations\n412 S. Wells St, 9th Floor, Chicago, IL 60607, US\n\n### Get Directions\nDirections\n\n## Employees\nKeith Scheiwiller (N/A): [...] ## Employees\nKeith Scheiwiller (N/A): \n\n## Similar Companies\nFortinet (Computer and Network Security):  (Sunnyvale, CA); AccelOps (Software Development):  (Santa Clara, CA); CrowdStrike (Computer and Network Security):  (N/A); Palo Alto Networks (Computer and Network Security):  (SANTA CLARA, California); SentinelOne (Computer and Network Security):  (Mountain View, California); Bradford Networks (Computer and Network Security):  (Boston, MA); OPĀQ (Computer and Network Security):  (Herndon, VA); SpotGenius (Technology, Information and Internet):  (Lombard, Illinois); ZoneFox (IT Services and IT Consulting):  (N/A); Cisco (Software Development):  (San Jose, CA)\n\n## Posts\n\n## Media\n- Images: \n- Logo: Company Logo\n\n## Additional  \nNone",
+            "normalizedProfileUrl": "https://www.linkedin.com/company/panopta-llc",
+            "resolutionConfidence": 85,
+            "contradictingEvidence": []
+          },
+          {
+            "publisher": "LINKEDIN",
+            "profileUrl": "https://www.linkedin.com/company/bradford-networks",
+            "profileSlug": "bradford-networks",
+            "profileType": "LINKEDIN_COMPANY",
+            "retrievedAt": "2026-08-31T08:49:07.132Z",
+            "discoveryQuery": "site:linkedin.com/company \"Panopta\" \"fortinet.com\"",
+            "searchResultUrl": "https://www.linkedin.com/company/bradford-networks",
+            "resolutionStatus": "AMBIGUOUS",
+            "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+            "searchResultTitle": "Bradford Networks - We're excited to have joined the @Fortinet team. https://www.fortinet.com/corporate/about-us/newsroom/press-releases/201",
+            "supportingEvidence": [
+              {
+                "kind": "DOMAIN_MATCH",
+                "detail": "The indexed candidate evidence references canonical domain \"fortinet.com\"",
+                "strength": "strong",
+                "sourceUrl": "https://www.linkedin.com/company/bradford-networks"
+              }
+            ],
+            "searchResultExcerpt": "## Similar Companies\nFortinet (Computer and Network Security):  (Sunnyvale, CA); Panopta (Information Technology & Services):  (Chicago, IL); CyberSponse, Inc. (Computer and Network Security):  (Arlington, Virginia); AccelOps (Software Development):  (Santa Clara, CA); Palo Alto Networks (Computer and Network Security):  (SANTA CLARA, California); ZoneFox (IT Services and IT Consulting):  (N/A); enSilo (Computer and Network Security):  (San Francisco, CA); Fortinet Federal (Computer and Network Security):  (Reston, Virginia); Meru Networks (Wireless Services):  (Sunnyvale, CA); OPĀQ (Computer and Network Security):  (Herndon, VA)\n\n## Posts\n\n## Media\n- Images: \n- Logo: Company Logo\n\n## Additional  \nNone [...] Sold exclusively through channel partners, Network Sentry is used by more than 1000 customers worldwide across market segments such as financials, hospitality, entertainment, education, government, retail, technology, transportation and utilities. Find out more at www.bradfordnetworks.com. [...] ### Website\n\n### Crunchbase\nN/A\n### LinkedIn\nN/A\n\n### Industry\nComputer and Network Security\n\n### Company Size\n51-200 employees  \n21 associated members (LinkedIn members who've listed Bradford Networks as their current workplace on their profile)\n\n### Founded\n1999\n\n### Funding\nLast Round Date: N/A\nLast Round Type: N/A\nTotal Rounds: N/A\nLast Round Raised: N/A\n\n### Investors\nN/A\n\n### Specialties\nNetwork Security, Network Access Control (NAC), Mobile Security, Bring Your Own Device (BYOD), Security Automation, and Mobile Device Management (MDM)\n\n## Locations\n374 Congress Street, Suite 502, Boston, MA 02210, US\n\n### Get Directions\nDirections\n\n## Employees\nKatherine Szczypinski (N/A):  areesha khalid (N/A):  James Gibson (N/A):",
+            "normalizedProfileUrl": "https://www.linkedin.com/company/bradford-networks",
+            "resolutionConfidence": 40,
+            "contradictingEvidence": []
+          },
+          {
+            "publisher": "LINKEDIN",
+            "profileUrl": "https://bo.linkedin.com/company/cybersponse-inc-",
+            "profileSlug": "cybersponse-inc-",
+            "profileType": "LINKEDIN_COMPANY",
+            "retrievedAt": "2026-08-31T08:49:07.132Z",
+            "discoveryQuery": "site:linkedin.com/company \"Panopta\" \"fortinet.com\"",
+            "searchResultUrl": "https://bo.linkedin.com/company/cybersponse-inc-",
+            "resolutionStatus": "AMBIGUOUS",
+            "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+            "searchResultTitle": "CyberSponse, Inc. - We're excited to have joined the @Fortinet team. https://www.fortinet.com/products/fortinet-acquires-cybersponse",
+            "supportingEvidence": [
+              {
+                "kind": "DOMAIN_MATCH",
+                "detail": "The indexed candidate evidence references canonical domain \"fortinet.com\"",
+                "strength": "strong",
+                "sourceUrl": "https://bo.linkedin.com/company/cybersponse-inc-"
+              }
+            ],
+            "searchResultExcerpt": "### Get Directions\nDirections\n\n## Employees\nManisha Varma (N/A):  Max Zeumer (N/A): \n\n## Similar Companies\nFortinet (Computer and Network Security):  (Sunnyvale, California); CheckRed (Computer and Network Security):  (St Petersburg, Florida); Panopta (Information Technology & Services):  (Chicago, IL); AccelOps (Software Development):  (Santa Clara, CA); CrowdStrike (Computer and Network Security):  (N/A); Arambh Labs (Technology, Information and Internet):  (Palo Alto, CA); TurboVets, Inc. (Technology, Information and Internet):  (Dallas, Texas); Bradford Networks (Computer and Network Security):  (Boston, MA); Symantec (Software Development):  (San Jose, California); OPĀQ (Computer and Network Security):  (Herndon, VA)\n\n## Posts\n\n## Media\n- Images: \n- Logo: Company Logo [...] platform that provides a competitive edge regardless of an organization’s size or budget. The CyOPs™ SOAR solution is customizable and agnostic, allowing our customers to leverage a multitude of products & tools maximizing their investment, increasing efficiency & eliminating alert fatigue. Create customized CyOPs™ Dashboards to monitor security operations KPIs, have a customized tailored pulse on the status of security operations & produce enterprise quality automated reports. Easily create drag & drop playbooks that don’t require coding with the CyOPs™ Playbook Builder. Track the progress of an incident throughout its lifecycle with the CyOPs™ Ticketing system which provides tracking details, timestamps & task assignments. Handle automatic work assignments across multiple queues, teams",
+            "normalizedProfileUrl": "https://www.linkedin.com/company/cybersponse-inc-",
+            "resolutionConfidence": 40,
+            "contradictingEvidence": []
+          },
+          {
+            "publisher": "LINKEDIN",
+            "profileUrl": "https://uk.linkedin.com/company/zonefox",
+            "profileSlug": "zonefox",
+            "profileType": "LINKEDIN_COMPANY",
+            "retrievedAt": "2026-08-31T08:49:07.132Z",
+            "discoveryQuery": "site:linkedin.com/company \"Panopta\" \"fortinet.com\"",
+            "searchResultUrl": "https://uk.linkedin.com/company/zonefox",
+            "resolutionStatus": "AMBIGUOUS",
+            "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+            "searchResultTitle": "ZoneFox - We're excited to have joined the @Fortinet team. https://www.fortinet.com/products/fortinet-acquires-zonefox",
+            "supportingEvidence": [
+              {
+                "kind": "DOMAIN_MATCH",
+                "detail": "The indexed candidate evidence references canonical domain \"fortinet.com\"",
+                "strength": "strong",
+                "sourceUrl": "https://uk.linkedin.com/company/zonefox"
+              }
+            ],
+            "searchResultExcerpt": "## Employees\nGeorgia Hall (N/A): \n\n## Similar Companies\nFortinet (Computer and Network Security):  (Sunnyvale, CA); AccelOps (Software Development):  (Santa Clara, CA); OPĀQ (Computer and Network Security):  (Herndon, VA); Bradford Networks (Computer and Network Security):  (Boston, MA); enSilo (Computer and Network Security):  (San Francisco, CA); Panopta (Information Technology & Services):  (Chicago, IL); Meru Networks (Wireless Services):  (Sunnyvale, CA); CyberSponse, Inc. (Computer and Network Security):  (Arlington, Virginia); Palo Alto Networks (Computer and Network Security):  (SANTA CLARA, California); CrowdStrike (Computer and Network Security):  (N/A)\n\n## Posts\n\n## Media\n- Images: \n- Logo: Company Logo",
+            "normalizedProfileUrl": "https://www.linkedin.com/company/zonefox",
+            "resolutionConfidence": 40,
+            "contradictingEvidence": []
+          }
+        ],
+        "discoveryQueries": [
+          "site:linkedin.com/company \"Panopta\" \"fortinet.com\""
+        ],
+        "provider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+        "retrievalMethod": "TAVILY_WEB_SEARCH",
+        "resolvedAt": "2026-08-31T08:49:07.130Z"
+      }
+    },
+    {
+      "Company": "Amazon Web Services (AWS)",
+      "Canonical domain": "UNKNOWN",
+      "Before LinkedIn URL": "https://linkedin.com/company/amazon-web-services",
+      "Historical pre-resolution LinkedIn URL": "https://www.linkedin.com/company/amazon-web-services",
+      "Existing identifier status": "VERIFIED_EXISTING",
+      "Search required": "NO",
+      "Search calls": 0,
+      "Current run provider calls": 0,
+      "Candidates found": 0,
+      "Selected candidate": "https://www.linkedin.com/company/amazon-web-services",
+      "Name match": "NO",
+      "Domain match": "NO",
+      "Geography match": "NO",
+      "Contradictions": "NONE",
+      "Final status": "VERIFIED_EXISTING",
+      "Confidence": 100,
+      "Reason": "Existing verified LinkedIn company identifier was reused without a provider call",
+      "supportingEvidence": "EXISTING_IDENTIFIER",
+      "auditQuery": "EXISTING IDENTIFIER",
+      "auditResultTitle": "Existing verified identifier",
+      "auditResultUrl": "https://www.linkedin.com/company/amazon-web-services",
+      "auditExcerpt": "Existing verified identifier reused without search",
+      "auditRetrievedAt": "2026-08-31T09:07:13.514Z",
+      "canonicalCompanyId": "5a8472e3-b686-42be-9173-02b6035b7d7f",
+      "beforeCanonicalLinkedInUrl": "https://linkedin.com/company/amazon-web-services",
+      "Current canonical persistence": "NO_CANONICAL_CHANGE",
+      "Historical canonical persistence": "NO_CANONICAL_CHANGE",
+      "selectedCandidateDetails": {
+        "profileUrl": "https://linkedin.com/company/amazon-web-services",
+        "normalizedProfileUrl": "https://www.linkedin.com/company/amazon-web-services",
+        "profileSlug": "amazon-web-services",
+        "status": "VERIFIED_EXISTING",
+        "supportingEvidence": [
+          {
+            "kind": "EXISTING_IDENTIFIER",
+            "detail": "Existing verified LinkedIn company identifier was reused without a provider call",
+            "strength": "strong",
+            "sourceUrl": "https://www.linkedin.com/company/amazon-web-services"
+          }
+        ],
+        "contradictingEvidence": [],
+        "candidates": [],
+        "discoveryQueries": [],
+        "provider": "CANONICAL_EXISTING",
+        "retrievalMethod": "EXISTING_IDENTIFIER",
+        "resolvedAt": "2026-08-31T09:07:13.514Z"
+      }
+    },
+    {
+      "Company": "Oracle Cloud",
+      "Canonical domain": "oracle.com",
+      "Before LinkedIn URL": "https://www.linkedin.com/company/oracle",
+      "Historical pre-resolution LinkedIn URL": "NONE",
+      "Existing identifier status": "NO_LINKEDIN_URL",
+      "Search required": "YES",
+      "Search calls": 1,
+      "Current run provider calls": 0,
+      "Candidates found": 1,
+      "Selected candidate": "https://www.linkedin.com/company/oracle",
+      "Name match": "YES",
+      "Domain match": "YES",
+      "Geography match": "NO",
+      "Contradictions": "NONE",
+      "Final status": "VERIFIED",
+      "Confidence": 85,
+      "Reason": "Candidate title or slug agrees with \"Oracle Cloud\"; The indexed candidate evidence references canonical domain \"oracle.com\"",
+      "supportingEvidence": "NAME_MATCH, DOMAIN_MATCH",
+      "auditQuery": "site:linkedin.com/company \"Oracle Cloud\" \"oracle.com\"",
+      "auditResultTitle": "Oracle",
+      "auditResultUrl": "https://www.linkedin.com/company/oracle",
+      "auditExcerpt": "Oracle is a global leader in AI, delivering the cloud infrastructure, data, and applications that organizations across the world trust to successfully achieve business outcomes at scale. Oracle Cloud Infrastructure (OCI) provides fast, flexible, scalable AI infrastructure. With superior compute performance and network design, a comprehensive choice of AI services for developing and orchestrating a",
+      "auditRetrievedAt": "2026-08-31T08:49:07.401Z",
+      "canonicalCompanyId": "0e4bf167-77c2-44b3-af13-444f931614ac",
+      "beforeCanonicalLinkedInUrl": "https://www.linkedin.com/company/oracle",
+      "Current canonical persistence": "NO_CANONICAL_CHANGE",
+      "Historical canonical persistence": "ATTACHED_VERIFIED",
+      "selectedCandidateDetails": {
+        "profileUrl": "https://www.linkedin.com/company/oracle",
+        "normalizedProfileUrl": "https://www.linkedin.com/company/oracle",
+        "profileSlug": "oracle",
+        "status": "VERIFIED",
+        "supportingEvidence": [
+          {
+            "kind": "NAME_MATCH",
+            "detail": "Candidate title or slug agrees with \"Oracle Cloud\"",
+            "strength": "strong",
+            "sourceUrl": "https://www.linkedin.com/company/oracle"
+          },
+          {
+            "kind": "DOMAIN_MATCH",
+            "detail": "The indexed candidate evidence references canonical domain \"oracle.com\"",
+            "strength": "strong",
+            "sourceUrl": "https://www.linkedin.com/company/oracle"
+          }
+        ],
+        "contradictingEvidence": [],
+        "candidates": [
+          {
+            "publisher": "LINKEDIN",
+            "profileUrl": "https://www.linkedin.com/company/oracle",
+            "profileSlug": "oracle",
+            "profileType": "LINKEDIN_COMPANY",
+            "retrievedAt": "2026-08-31T08:49:07.401Z",
+            "discoveryQuery": "site:linkedin.com/company \"Oracle Cloud\" \"oracle.com\"",
+            "searchResultUrl": "https://www.linkedin.com/company/oracle",
+            "resolutionStatus": "VERIFIED",
+            "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+            "searchResultTitle": "Oracle",
+            "supportingEvidence": [
+              {
+                "kind": "NAME_MATCH",
+                "detail": "Candidate title or slug agrees with \"Oracle Cloud\"",
+                "strength": "strong",
+                "sourceUrl": "https://www.linkedin.com/company/oracle"
+              },
+              {
+                "kind": "DOMAIN_MATCH",
+                "detail": "The indexed candidate evidence references canonical domain \"oracle.com\"",
+                "strength": "strong",
+                "sourceUrl": "https://www.linkedin.com/company/oracle"
+              }
+            ],
+            "searchResultExcerpt": "Oracle is a global leader in AI, delivering the cloud infrastructure, data, and applications that organizations across the world trust to successfully achieve business outcomes at scale. Oracle Cloud Infrastructure (OCI) provides fast, flexible, scalable AI infrastructure. With superior compute performance and network design, a comprehensive choice of AI services for developing and orchestrating agentic AI workflows at scale, and unrivaled data control, security, privacy, and governance, OCI is designed for AI workloads. It also gives customers the flexibility to run their workloads wherever they need by supporting public cloud, multicloud, hybrid cloud, sovereign, and on-premises deployments. The Oracle AI Database is the only database with AI natively built in everywhere. By bringing AI [...] 5]; Oracle Developers (3d): Whether you’re learning about the latest AI innovations from our experts, or connecting with your peers to compare approaches and gain fresh perspectives— #AIWorld is the place to be for developers looking to shape the future with AI. Register today and we’ll see you in Las Vegas:  [Likes: 50, Comments: 4]; Oracle Cloud (1w): We’re deepening our collaboration with Amazon Web Services (AWS) as enterprise adoption of Oracle AI Database@AWS accelerates. One year after GA, organizations across the world have migrated their critical workloads to the cloud and put AI to work on the data that runs their business. Learn about the latest capabilities, including the GA of Oracle Exadata Database Service on Exascale Infrastructure, and hear from organizations like yours [...] where work happens. They include the only applications suite that brings AI to every aspect of a business, with AI-powered ERP, HCM, and CX applications, and the Oracle Health Suite which provides applications for managing the entire healthcare ecosystem. Oracle also provides industry-specific cloud application suites for more than two dozen industries and NetSuite, the world’s first cloud computing company. This LinkedIn page serves as Oracle’s official global company page.",
+            "normalizedProfileUrl": "https://www.linkedin.com/company/oracle",
+            "resolutionConfidence": 85,
+            "contradictingEvidence": []
+          }
+        ],
+        "discoveryQueries": [
+          "site:linkedin.com/company \"Oracle Cloud\" \"oracle.com\""
+        ],
+        "provider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+        "retrievalMethod": "TAVILY_WEB_SEARCH",
+        "resolvedAt": "2026-08-31T08:49:07.399Z"
+      }
+    },
+    {
+      "Company": "Alibaba Cloud",
+      "Canonical domain": "alibabacloud.com",
+      "Before LinkedIn URL": "https://www.linkedin.com/company/alibaba-cloud-computing-company",
+      "Historical pre-resolution LinkedIn URL": "NONE",
+      "Existing identifier status": "NO_LINKEDIN_URL",
+      "Search required": "YES",
+      "Search calls": 1,
+      "Current run provider calls": 0,
+      "Candidates found": 1,
+      "Selected candidate": "https://www.linkedin.com/company/alibaba-cloud-computing-company",
+      "Name match": "YES",
+      "Domain match": "YES",
+      "Geography match": "NO",
+      "Contradictions": "NONE",
+      "Final status": "VERIFIED",
+      "Confidence": 85,
+      "Reason": "Candidate title or slug agrees with \"Alibaba Cloud\"; The indexed candidate evidence references canonical domain \"alibabacloud.com\"",
+      "supportingEvidence": "NAME_MATCH, DOMAIN_MATCH",
+      "auditQuery": "site:linkedin.com/company \"Alibaba Cloud\" \"alibabacloud.com\"",
+      "auditResultTitle": "Alibaba Cloud | LinkedIn",
+      "auditResultUrl": "https://www.linkedin.com/company/alibaba-cloud-computing-company",
+      "auditExcerpt": "Founded in 2009, Alibaba Cloud is a leading cloud computing and artificial intelligence company. Leveraging its proprietary Apsara Cloud operating system, Alibaba Cloud offers a comprehensive suite of cloud services based on a three-tiered architecture of Infrastructure-as-a-Service (IaaS), Platform-as-a-Service (PaaS) and Model-as-a-Service (MaaS) to customers worldwide. Alibaba Cloud is the larg",
+      "auditRetrievedAt": "2026-08-31T08:49:07.847Z",
+      "canonicalCompanyId": "a3b8ba70-5181-489b-b055-618943de6ed7",
+      "beforeCanonicalLinkedInUrl": "https://www.linkedin.com/company/alibaba-cloud-computing-company",
+      "Current canonical persistence": "NO_CANONICAL_CHANGE",
+      "Historical canonical persistence": "ATTACHED_VERIFIED",
+      "selectedCandidateDetails": {
+        "profileUrl": "https://www.linkedin.com/company/alibaba-cloud-computing-company",
+        "normalizedProfileUrl": "https://www.linkedin.com/company/alibaba-cloud-computing-company",
+        "profileSlug": "alibaba-cloud-computing-company",
+        "status": "VERIFIED",
+        "supportingEvidence": [
+          {
+            "kind": "NAME_MATCH",
+            "detail": "Candidate title or slug agrees with \"Alibaba Cloud\"",
+            "strength": "strong",
+            "sourceUrl": "https://www.linkedin.com/company/alibaba-cloud-computing-company"
+          },
+          {
+            "kind": "DOMAIN_MATCH",
+            "detail": "The indexed candidate evidence references canonical domain \"alibabacloud.com\"",
+            "strength": "strong",
+            "sourceUrl": "https://www.linkedin.com/company/alibaba-cloud-computing-company"
+          }
+        ],
+        "contradictingEvidence": [],
+        "candidates": [
+          {
+            "publisher": "LINKEDIN",
+            "profileUrl": "https://www.linkedin.com/company/alibaba-cloud-computing-company",
+            "profileSlug": "alibaba-cloud-computing-company",
+            "profileType": "LINKEDIN_COMPANY",
+            "retrievedAt": "2026-08-31T08:49:07.847Z",
+            "discoveryQuery": "site:linkedin.com/company \"Alibaba Cloud\" \"alibabacloud.com\"",
+            "searchResultUrl": "https://www.linkedin.com/company/alibaba-cloud-computing-company",
+            "resolutionStatus": "VERIFIED",
+            "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+            "searchResultTitle": "Alibaba Cloud | LinkedIn",
+            "supportingEvidence": [
+              {
+                "kind": "NAME_MATCH",
+                "detail": "Candidate title or slug agrees with \"Alibaba Cloud\"",
+                "strength": "strong",
+                "sourceUrl": "https://www.linkedin.com/company/alibaba-cloud-computing-company"
+              },
+              {
+                "kind": "DOMAIN_MATCH",
+                "detail": "The indexed candidate evidence references canonical domain \"alibabacloud.com\"",
+                "strength": "strong",
+                "sourceUrl": "https://www.linkedin.com/company/alibaba-cloud-computing-company"
+              }
+            ],
+            "searchResultExcerpt": "Founded in 2009, Alibaba Cloud is a leading cloud computing and artificial intelligence company. Leveraging its proprietary Apsara Cloud operating system, Alibaba Cloud offers a comprehensive suite of cloud services based on a three-tiered architecture of Infrastructure-as-a-Service (IaaS), Platform-as-a-Service (PaaS) and Model-as-a-Service (MaaS) to customers worldwide. Alibaba Cloud is the largest provider of public cloud services in China and Asia Pacific. With its large scale and strong foundation in IaaS and PaaS infrastructure, Alibaba Cloud provides enterprises with high-performance and low-cost computing resources, and platform services for large-scale model training, fine-tuning, and inference. Alibaba Cloud aspires to become the most open cloud computing company in the AI era. [...] become the most open cloud computing company in the AI era. Alibaba Cloud’s proprietary LLM Qwen is one of the world’s leading LLMs, and has open-sourced Qwens of different sizes with multimodalities, supporting more enterprise customers to realize their AI-driven innovation. Follow us: Twitter: www.twitter.com/alibaba_cloud Facebook: [...] Website \nExternal link for Alibaba Cloud\n\n Industry  IT System Custom Software Development \n\n Company size  10,001+ employees \n\n Headquarters  Hangzhou \n\n Type  Public Company \n\n Specialties  cloud, e-commerce, data, and big data \n\n## Products\n\n See all \n\n No more previous content \n\n   Alibaba ACM, DevOps SoftwareImage 7: Alibaba ACM ### Alibaba ACM\n\n#### DevOps Software  \n   Alibaba Cloud Elastic MapReduce (EMR), Big Data Processing & Distribution SoftwareImage 8: Alibaba Cloud Elastic MapReduce (EMR) ### Alibaba Cloud Elastic MapReduce (EMR)\n\n#### Big Data Processing & Distribution Software  \n   Alibaba File Storage NAS, Cloud File Storage SoftwareImage 9: Alibaba File Storage NAS ### Alibaba File Storage NAS",
+            "normalizedProfileUrl": "https://www.linkedin.com/company/alibaba-cloud-computing-company",
+            "resolutionConfidence": 85,
+            "contradictingEvidence": []
+          }
+        ],
+        "discoveryQueries": [
+          "site:linkedin.com/company \"Alibaba Cloud\" \"alibabacloud.com\""
+        ],
+        "provider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+        "retrievalMethod": "TAVILY_WEB_SEARCH",
+        "resolvedAt": "2026-08-31T08:49:07.843Z"
+      }
+    },
+    {
+      "Company": "E2E Cloud",
+      "Canonical domain": "e2enetworks.com",
+      "Before LinkedIn URL": "https://www.linkedin.com/company/e2enetworks",
+      "Historical pre-resolution LinkedIn URL": "NONE",
+      "Existing identifier status": "NO_LINKEDIN_URL",
+      "Search required": "YES",
+      "Search calls": 1,
+      "Current run provider calls": 0,
+      "Candidates found": 7,
+      "Selected candidate": "https://www.linkedin.com/company/e2enetworks",
+      "Name match": "YES",
+      "Domain match": "YES",
+      "Geography match": "NO",
+      "Contradictions": "NONE",
+      "Final status": "VERIFIED",
+      "Confidence": 85,
+      "Reason": "Candidate title or slug agrees with \"E2E Cloud\"; The indexed candidate evidence references canonical domain \"e2enetworks.com\"",
+      "supportingEvidence": "NAME_MATCH, DOMAIN_MATCH",
+      "auditQuery": "site:linkedin.com/company \"E2E Cloud\" \"e2enetworks.com\"",
+      "auditResultTitle": "E2E Cloud - Supercharge your AI workloads with E2E Cloud",
+      "auditResultUrl": "https://in.linkedin.com/company/e2enetworks",
+      "auditExcerpt": "E2E Cloud is amongst India's fastest growing accelerated computing platform in India. E2E Networks High-Performance cloud platform can be accessed via self-service portal at  where you can provision/manage and monitor Linux/Windows/GPU Cloud Machines with high performance CPU, large memory(RAM) or Smart Dedicated Compute featuring dedicated CPU cores. We began in 2009 as a contractless computing p",
+      "auditRetrievedAt": "2026-08-31T08:49:08.304Z",
+      "canonicalCompanyId": "fbe6e484-3db7-4e2d-948d-4e1551523d73",
+      "beforeCanonicalLinkedInUrl": "https://www.linkedin.com/company/e2enetworks",
+      "Current canonical persistence": "NO_CANONICAL_CHANGE",
+      "Historical canonical persistence": "ATTACHED_VERIFIED",
+      "selectedCandidateDetails": {
+        "profileUrl": "https://in.linkedin.com/company/e2enetworks",
+        "normalizedProfileUrl": "https://www.linkedin.com/company/e2enetworks",
+        "profileSlug": "e2enetworks",
+        "status": "VERIFIED",
+        "supportingEvidence": [
+          {
+            "kind": "NAME_MATCH",
+            "detail": "Candidate title or slug agrees with \"E2E Cloud\"",
+            "strength": "strong",
+            "sourceUrl": "https://in.linkedin.com/company/e2enetworks"
+          },
+          {
+            "kind": "DOMAIN_MATCH",
+            "detail": "The indexed candidate evidence references canonical domain \"e2enetworks.com\"",
+            "strength": "strong",
+            "sourceUrl": "https://in.linkedin.com/company/e2enetworks"
+          }
+        ],
+        "contradictingEvidence": [],
+        "candidates": [
+          {
+            "publisher": "LINKEDIN",
+            "profileUrl": "https://in.linkedin.com/company/e2enetworks",
+            "profileSlug": "e2enetworks",
+            "profileType": "LINKEDIN_COMPANY",
+            "retrievedAt": "2026-08-31T08:49:08.304Z",
+            "discoveryQuery": "site:linkedin.com/company \"E2E Cloud\" \"e2enetworks.com\"",
+            "searchResultUrl": "https://in.linkedin.com/company/e2enetworks",
+            "resolutionStatus": "VERIFIED",
+            "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+            "searchResultTitle": "E2E Cloud - Supercharge your AI workloads with E2E Cloud",
+            "supportingEvidence": [
+              {
+                "kind": "NAME_MATCH",
+                "detail": "Candidate title or slug agrees with \"E2E Cloud\"",
+                "strength": "strong",
+                "sourceUrl": "https://in.linkedin.com/company/e2enetworks"
+              },
+              {
+                "kind": "DOMAIN_MATCH",
+                "detail": "The indexed candidate evidence references canonical domain \"e2enetworks.com\"",
+                "strength": "strong",
+                "sourceUrl": "https://in.linkedin.com/company/e2enetworks"
+              }
+            ],
+            "searchResultExcerpt": "E2E Cloud is amongst India's fastest growing accelerated computing platform in India. E2E Networks High-Performance cloud platform can be accessed via self-service portal at  where you can provision/manage and monitor Linux/Windows/GPU Cloud Machines with high performance CPU, large memory(RAM) or Smart Dedicated Compute featuring dedicated CPU cores. We began in 2009 as a contractless computing player targeting the value-conscious segment of customers especially startups. Before there were hyperscalers in India we were the premier choice of many of today's soonicorns/Unicorns/well established businesses for Cloud Infrastructure. E2E Networks Cloud was used by many of successfully scaledup startups like Zomato/Cardekho/Cars24/Healthkart/Junglee Games/1mg/Team-BHP/Instant [...] Games/1mg/Team-BHP/Instant Pay/WishFin/Algolia/Intrcity(RailYatri)/Clovia/Groupon India (later crazeal/nearbuy), Jabong and Tapzo and many more to scale during a significant part of their journey from startup stage to multi-million DAUs ( Daily Active Users). In 2018, E2E Networks Ltd issued its IPO through NSE Emerge. Investors rushed and oversubscribed 70 times to the IPO, making it a huge success. Today, E2E Networks is the largest NSE listed Cloud Provider having served more than 10,000 customers and having thousands of active customers Our self‐service public cloud platform enables rapid deployment of compute workloads. We provide Cloud Solutions via control panel or API, this includes CDN,Load Balancers,Firewalls,VPC,DBaaS,Reserved IPv4,Object Storage, DNS/rDNS, Continuous Data [...] of Dell Technologies India, where he transformed the company into a comprehensive, end-to-end technology solutions powerhouse in the Indian market. His expertise spans enterprise technology, go-to-market strategy, omni-channel ecosystems, SaaS solutions, and strategic account management. He has also held senior leadership roles with nasscom , IBM , and the Security Council of India, and has served as a Super Mentor for the Government of India's Atal Innovation Mission, a testament to his commitment to India's technology growth story. E2E Networks, as India's No. 1 Public Cloud Provider in terms of Performance-to-Price Ratio, we are on an accelerated mission to power the AI and cloud revolution. Having Alok Ohrie guiding us is a significant milestone on that journey. We look forward to",
+            "normalizedProfileUrl": "https://www.linkedin.com/company/e2enetworks",
+            "resolutionConfidence": 85,
+            "contradictingEvidence": []
+          },
+          {
+            "publisher": "LINKEDIN",
+            "profileUrl": "https://uk.linkedin.com/company/e2ecloudit",
+            "profileSlug": "e2ecloudit",
+            "profileType": "LINKEDIN_COMPANY",
+            "retrievedAt": "2026-08-31T08:49:08.304Z",
+            "discoveryQuery": "site:linkedin.com/company \"E2E Cloud\" \"e2enetworks.com\"",
+            "searchResultUrl": "https://uk.linkedin.com/company/e2ecloudit",
+            "resolutionStatus": "AMBIGUOUS",
+            "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+            "searchResultTitle": "e2e Cloud IT Limited - be the game changer ...with our quick on Cloud services",
+            "supportingEvidence": [
+              {
+                "kind": "NAME_MATCH",
+                "detail": "Candidate title or slug agrees with \"E2E Cloud\"",
+                "strength": "strong",
+                "sourceUrl": "https://uk.linkedin.com/company/e2ecloudit"
+              }
+            ],
+            "searchResultExcerpt": "### Get Directions\nDirections\n\n## Employees\nHemant Kinge (N/A): \n\n## Similar Companies\nE2E Cloud (Technology, Information and Internet):  (New Delhi, DELHI); E2E (Information Services):  (London, England); Larsen & Toubro-Vyoma (IT Services and IT Consulting):  (N/A); E2E Networks S.L. (Telecommunications):  (Vilassar de Dalt, Cataluña); E2 Consulting Ltd (Professional Training and Coaching):  (N/A); Vertiv (Appliances, Electrical, and Electronics Manufacturing):  (Columbus, OH); Velvuri PM (E-Learning Providers):  (N/A); Qusion (Technology, Information and Internet):  (Prague, Prague 2); NetWeb Technology (Computer and Network Security):  (Ahmedabad, Gujarat); Rayvantage (Staffing and Recruiting):  (N/A)\n\n## Posts\n\n## Media\n- Images: \n- Logo: Company Logo\n\n## Additional  \nNone [...] ## Overview\ne2e Cloud IT, founded in 2011 in United Kingdom has been providing top consulting services to the global business to resolve the critical business problems and come up with innovative solutions, through continuous research and latest technology skills. We are official Microsoft partner for Cloud Solution Provider. At e2e Cloud IT, our goal is to empower business with the latest technology resources, to digitally transform and transition to the cloud and realize greater business values. e2e Cloud IT provide following services to Small, Medium and Large businesses. ◆ Strategies & Consulting ◆ Cloud solutions design and implementation ◆ Digital transformation ◆ Big data solutions ◆ Security Architecture Solutions Consulting - Compliance and Regulations\n\n### Website [...] ### Website\n\n### Crunchbase\nN/A\n### LinkedIn\nN/A\n\n### Industry\nIT Services and IT Consulting\n\n### Company Size\n2-10 employees  \n2 associated members (LinkedIn members who've listed e2e Cloud IT Limited as their current workplace on their profile)\n\n### Founded\n2011\n\n### Funding\nLast Round Date: N/A\nLast Round Type: N/A\nTotal Rounds: N/A\nLast Round Raised: N/A\n\n### Investors\nN/A\n\n### Specialties\nAzure Cloud, Amazon Web Services, Digital Transformation Services, Microservices Strategy, DevOps, Integration, Cloud IT, Corporate Data Security, Big Data Lake design, Artificial Intelligence, Machine Learning, Security Architecture, Identity and Access Management, and Artificial Intelligence\n\n## Locations\n118 North Street, Leeds, England LS2 7PN, GB\n\n### Get Directions\nDirections",
+            "normalizedProfileUrl": "https://www.linkedin.com/company/e2ecloudit",
+            "resolutionConfidence": 45,
+            "contradictingEvidence": []
+          },
+          {
+            "publisher": "LINKEDIN",
+            "profileUrl": "https://ca.linkedin.com/company/e2-networks",
+            "profileSlug": "e2-networks",
+            "profileType": "LINKEDIN_COMPANY",
+            "retrievedAt": "2026-08-31T08:49:08.304Z",
+            "discoveryQuery": "site:linkedin.com/company \"E2E Cloud\" \"e2enetworks.com\"",
+            "searchResultUrl": "https://ca.linkedin.com/company/e2-networks",
+            "resolutionStatus": "WRONG",
+            "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+            "searchResultTitle": "E2 Networks",
+            "supportingEvidence": [],
+            "searchResultExcerpt": "## Similar Companies\nE2E Cloud (Technology, Information and Internet):  (New Delhi, DELHI); E2E Networks S.L. (Telecommunications):  (Vilassar de Dalt, Cataluña); Synergy IT Solutions Inc. (IT Services and IT Consulting):  (Mississauga, Ontario); Onepoint Consulting (Information Technology & Services):  (London, England); TRAVELBULLZ.COM (Leisure, Travel & Tourism):  (N/A); LinkedIn (Software Development):  (Sunnyvale, CA)\n\n## Posts\n\n## Media\n- Images: \n- Logo: Company Logo\n\n## Additional  \nNone [...] functions can be re-accessed. E2 services offers the expertise to keep your business running smoothly from the technological end. Comprehensive Cloud Computing Solutions through E2 Networks in Toronto and GTA. -makes businesses lighter -makes businesses more flexible -more affordable in the long run Our aim is to aid organizations to organize and store business information on the Cloud, glean data from the Cloud as required and also use it to the business advantage to advance systems, and pre-empt enduring business purposes.The IT Support team at Markham and other centres caters to businesses to manage their overall IT system and computer environments. The technicians continuously assess the network and systems for your business, and any change in the IT environment from acquiring users [...] E2 Networks offers an extensive range of IT Services today include: -Managed IT Services -Cloud Computing -Cisco Unified Communications, -Citrix, Cisco, HP, IBM, Microsoft and VMware Solutions and Support -IT Consulting The E2 Networks Advantage: •Broad Range of IT Services •Complete Solutions for IT Infrastructure •Aligning IT network with overall business vision For all IT and IT Managed Services, E2 Networks and its well appointed team is your best bet in the following regions: - Markham - Toronto - Mississauga - Oakville - Pickering - Richmond Hill - Brampton The team at E2 Networks assures that your business and business information is secured well. If and when disaster occurs, E2 Networks makes sure that all data and network functions can be re-accessed. E2 services offers the",
+            "normalizedProfileUrl": "https://www.linkedin.com/company/e2-networks",
+            "resolutionConfidence": 0,
+            "contradictingEvidence": [
+              {
+                "kind": "CONTRADICTION",
+                "detail": "Candidate \"E2 Networks\" does not independently agree with the requested company identity",
+                "strength": "contradicting",
+                "sourceUrl": "https://ca.linkedin.com/company/e2-networks"
+              }
+            ]
+          },
+          {
+            "publisher": "LINKEDIN",
+            "profileUrl": "https://es.linkedin.com/company/e2e-networks-s-l",
+            "profileSlug": "e2e-networks-s-l",
+            "profileType": "LINKEDIN_COMPANY",
+            "retrievedAt": "2026-08-31T08:49:08.304Z",
+            "discoveryQuery": "site:linkedin.com/company \"E2E Cloud\" \"e2enetworks.com\"",
+            "searchResultUrl": "https://es.linkedin.com/company/e2e-networks-s-l",
+            "resolutionStatus": "WRONG",
+            "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+            "searchResultTitle": "E2E Networks S.L. - Despliegue, instalación y mantenimiento de redes de telefonía móvil en España.",
+            "supportingEvidence": [],
+            "searchResultExcerpt": "## Similar Companies\nE2E Cloud (Technology, Information and Internet):  (New Delhi, DELHI); Infibeam Avenues Limited (Technology, Information and Internet):  (Mumbai, Maharashtra); Zippee (Technology, Information and Internet):  (New Delhi, Delhi); immunitoAI (Biotechnology Research):  (Bangalore, Karnataka); Nawgati (Software Development):  (Noida, Uttar Pradesh); Manastu Space (Defense and Space Manufacturing):  (Mumbai, Maharashtra); Just Bumm (Manufacturing):  (Namakkal, TamilNadu); Shiplog (Transportation, Logistics, Supply Chain and Storage):  (Gurgaon, Haryana); Nicco Park (Recreational Facilities):  (Kolkata, West Bengal); E2E (Information Services):  (London, England)\n\n## Posts\n\n## Media\n- Images: \n- Logo: Company Logo [...] Creada en Vilassar de Dalt por profesionales del sector de las telecomunicaciones con más de 20 años de experiencia en el despliegue, instalación y mantenimiento de redes de telefonía móvil en España. E2E Networks S.L. participa activamente y en colaboración con los proveedores de Ingeniería, Servicios de Radio, Obra Civil y Mantenimiento homologados por los operadores Movistar, Vodafone y Orange. E2E Networks S.L. garantiza la ejecución de los proyectos asignados y asegura su calidad de entrega aplicando estrictos procesos de control. Conocedores de las exigentes necesidades del sector de las telecomuicaciones, E2E Networks S.L. realiza un Insourcing personalizado en cada una de las operaciones de sus clientes, consiguiendo un alto nivel de excelencia y servicio. E2E Networks S.L. [...] un alto nivel de excelencia y servicio. E2E Networks S.L. dispone de procesos 24x7 para la resolución de incidencias en sus diferentes grados, control de contingencias, supervisión y mantenimientos. La filosofía y compromiso de E2E Networks S.L. : \"ser un miembro activo de su organización\". Una sólida base de experiencia, capacidad de planificación y compromiso de mejora fortalece la confianza entre Empresas Colaboradoras, Proveedores de Servicio, Propiedades de Emplazamientos y Administración Pública.",
+            "normalizedProfileUrl": "https://www.linkedin.com/company/e2e-networks-s-l",
+            "resolutionConfidence": 0,
+            "contradictingEvidence": [
+              {
+                "kind": "CONTRADICTION",
+                "detail": "Candidate \"E2E Networks S.L. - Despliegue, instalación y mantenimiento de redes de telefonía móvil en España.\" does not independently agree with the requested company identity",
+                "strength": "contradicting",
+                "sourceUrl": "https://es.linkedin.com/company/e2e-networks-s-l"
+              }
+            ]
+          },
+          {
+            "publisher": "LINKEDIN",
+            "profileUrl": "https://www.linkedin.com/company/e2emsp",
+            "profileSlug": "e2emsp",
+            "profileType": "LINKEDIN_COMPANY",
+            "retrievedAt": "2026-08-31T08:49:08.304Z",
+            "discoveryQuery": "site:linkedin.com/company \"E2E Cloud\" \"e2enetworks.com\"",
+            "searchResultUrl": "https://www.linkedin.com/company/e2emsp",
+            "resolutionStatus": "WRONG",
+            "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+            "searchResultTitle": "E2E Managed Services - Relax, we got this.",
+            "supportingEvidence": [],
+            "searchResultExcerpt": "End 2 End (E2E) is a Information Technology and Telecommunications Services Company founded in 2009 on two fundamental principles; hire a professional, customer focused team and provide phenomenal service and support. These principles, along with unparalleled communication, are absolutely imperative to our success and that of our customers. We utilize technology to enable superior communication, efficiencies, and practices. We provide the highest quality communication products to customers throughout Indiana and beyond. We are a tech and IT solutions firm. We provide low voltage cabling and fiber infrastructure. Phone and computer systems, wireless networks, over head speakers, and Key-less entry door systems are just a few things E2E Managed Services will provide you with. We want you to [...] ## Similar Companies\nReach Networks (Technology, Information and Internet):  (New Castle, Indiana); NEXTmsp (IT Services and IT Consulting):  (Carmel, IN); Multiple Networks (IT Services and IT Consulting):  (N/A); Enterprise Logic, Inc (IT Services and IT Consulting):  (N/A); Cutting Edge Computers Inc (IT Services and IT Consulting):  (North Branch, Michigan); DiverseNet--Technology Deployment and Support (IT Services and IT Consulting):  (Indianapolis, Indiana); Techlocity (IT Services and IT Consulting):  (Indianapolis, Indiana); CentraComm (IT Services and IT Consulting):  (Findlay, OH); Axia Technology Partners (IT Services and IT Consulting):  (Zionsville, Indiana); E2E Networks S.L. (Telecommunications):  (Vilassar de Dalt, Cataluña) [...] E2E Managed Services will provide you with. We want you to get back to what you do for a living; let us do the same by providing a managed service for you.",
+            "normalizedProfileUrl": "https://www.linkedin.com/company/e2emsp",
+            "resolutionConfidence": 0,
+            "contradictingEvidence": [
+              {
+                "kind": "CONTRADICTION",
+                "detail": "Candidate \"E2E Managed Services - Relax, we got this.\" does not independently agree with the requested company identity",
+                "strength": "contradicting",
+                "sourceUrl": "https://www.linkedin.com/company/e2emsp"
+              }
+            ]
+          },
+          {
+            "publisher": "LINKEDIN",
+            "profileUrl": "https://uk.linkedin.com/company/e2exchange",
+            "profileSlug": "e2exchange",
+            "profileType": "LINKEDIN_COMPANY",
+            "retrievedAt": "2026-08-31T08:49:08.304Z",
+            "discoveryQuery": "site:linkedin.com/company \"E2E Cloud\" \"e2enetworks.com\"",
+            "searchResultUrl": "https://uk.linkedin.com/company/e2exchange",
+            "resolutionStatus": "WRONG",
+            "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+            "searchResultTitle": "E2E - Enabling Extraordinary Connections for Entrepreneurs.",
+            "supportingEvidence": [],
+            "searchResultExcerpt": "## Similar Companies\nE2E Cloud (Technology, Information and Internet):  (New Delhi, DELHI); Lloyds Technology Centre India (Technology, Information and Internet):  (N/A); E2E Networks S.L. (Telecommunications):  (Vilassar de Dalt, Cataluña); e2e-assure (Computer and Network Security):  (N/A); Universal Partners (Financial Services):  (London, England); E2E Research - Enigma to enlightenment (Market Research):  (New York, New York); Yotta Data Services Private Limited (IT Services and IT Consulting):  (Mumbai, Maharashtra); OWN-KIND (Retail Apparel and Fashion):  (London, Greater London); ServiceNow (Software Development):  (Santa Clara, CA); BSNL LTD (Telecommunications):  (N/A) [...] # E2E\nEnabling Extraordinary Connections for Entrepreneurs.\nInformation Services • London, England • 8,839 followers • 2-10 employees\n\n## Overview\nE2E’s vision is to enable extraordinary entrepreneurship. We aim to be the main catalyst for economic growth first in the U.K. and then internationally. We offer one platform where entrepreneurs can find the right advice, support, people and finance to give their enterprise the best chance of success. We focus on facilitating strong links between scale up founders, investors, non-executive directors and corporates. We are also proud to have world class entrepreneurs sharing their experience and wisdom with our community creating extraordinary connections for entrepreneurs.\n\n### Website\n\n### Crunchbase\nN/A\n### LinkedIn\nN/A [...] ## Posts",
+            "normalizedProfileUrl": "https://www.linkedin.com/company/e2exchange",
+            "resolutionConfidence": 0,
+            "contradictingEvidence": [
+              {
+                "kind": "CONTRADICTION",
+                "detail": "Candidate \"E2E - Enabling Extraordinary Connections for Entrepreneurs.\" does not independently agree with the requested company identity",
+                "strength": "contradicting",
+                "sourceUrl": "https://uk.linkedin.com/company/e2exchange"
+              }
+            ]
+          },
+          {
+            "publisher": "LINKEDIN",
+            "profileUrl": "https://om.linkedin.com/company/end-2-end-technologies-e2e-",
+            "profileSlug": "end-2-end-technologies-e2e-",
+            "profileType": "LINKEDIN_COMPANY",
+            "retrievedAt": "2026-08-31T08:49:08.304Z",
+            "discoveryQuery": "site:linkedin.com/company \"E2E Cloud\" \"e2enetworks.com\"",
+            "searchResultUrl": "https://om.linkedin.com/company/end-2-end-technologies-e2e-",
+            "resolutionStatus": "WRONG",
+            "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+            "searchResultTitle": "E2E Technologies - We consult, design, deploy and manage critical industrial communications from end-to-end.",
+            "supportingEvidence": [],
+            "searchResultExcerpt": "## Similar Companies\nCeragon Networks (Telecommunications):  (Richardson, Texas); End 2 End Technologies (Telecommunications):  (Gilbert, Arizona); E2E Cloud (Technology, Information and Internet):  (New Delhi, DELHI); E2E Networks S.L. (Telecommunications):  (Vilassar de Dalt, Cataluña); Twin Eagle Solutions (Oil and Gas):  (Littleton, Colorado); Vogel Venture Marketing (Marketing Services):  (Minneapolis , MN); Infrastructure Networks (Telecommunications):  (Houston, TX); All West Fiber (Telecommunications):  (Kamas, UT); Future Technologies Venture, LLC (Telecommunications):  (Suwanee, GA); RADWIN (Wireless Services):  (N/A) [...] ## Overview\nE2E Technologies is now part of Ceragon Networks. As a trusted leader in system integration and remote field communications, E2E is adding its proven expertise in automation, engineering, and end-to-end network management. This includes its network & edge management software platform that delivers real-time visibility into device health, network performance, and operational analytics. Together, Ceragon and E2E offer a powerful combination of infrastructure, intelligence, and integration—empowering our Private Networks customers to modernize operations, reduce risk, and increase efficiency from the core to the edge.\n\n### Website\n\n### Crunchbase\nN/A\n### LinkedIn\nN/A\n\n### Industry\nWireless Services [...] ## Additional",
+            "normalizedProfileUrl": "https://www.linkedin.com/company/end-2-end-technologies-e2e-",
+            "resolutionConfidence": 0,
+            "contradictingEvidence": [
+              {
+                "kind": "CONTRADICTION",
+                "detail": "Candidate \"E2E Technologies - We consult, design, deploy and manage critical industrial communications from end-to-end.\" does not independently agree with the requested company identity",
+                "strength": "contradicting",
+                "sourceUrl": "https://om.linkedin.com/company/end-2-end-technologies-e2e-"
+              }
+            ]
+          }
+        ],
+        "discoveryQueries": [
+          "site:linkedin.com/company \"E2E Cloud\" \"e2enetworks.com\""
+        ],
+        "provider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+        "retrievalMethod": "TAVILY_WEB_SEARCH",
+        "resolvedAt": "2026-08-31T08:49:08.302Z"
+      }
+    },
+    {
+      "Company": "Cloud4C Services",
+      "Canonical domain": "cloud4c.com",
+      "Before LinkedIn URL": "https://www.linkedin.com/company/cloud4c",
+      "Historical pre-resolution LinkedIn URL": "NONE",
+      "Existing identifier status": "NO_LINKEDIN_URL",
+      "Search required": "YES",
+      "Search calls": 1,
+      "Current run provider calls": 0,
+      "Candidates found": 9,
+      "Selected candidate": "https://www.linkedin.com/company/cloud4c",
+      "Name match": "YES",
+      "Domain match": "YES",
+      "Geography match": "NO",
+      "Contradictions": "NONE",
+      "Final status": "VERIFIED",
+      "Confidence": 85,
+      "Reason": "Candidate title or slug agrees with \"Cloud4C Services\"; The indexed candidate evidence references canonical domain \"cloud4c.com\"",
+      "supportingEvidence": "NAME_MATCH, DOMAIN_MATCH",
+      "auditQuery": "site:linkedin.com/company \"Cloud4C Services\" \"cloud4c.com\"",
+      "auditResultTitle": "Cloud4C Services - World’s Leading Automation-driven, Application Focused Cloud Managed Services Provider (MSP)",
+      "auditResultUrl": "https://sg.linkedin.com/company/cloud4c",
+      "auditExcerpt": "Cloud4C, part of Capgemini, is a global leader in AI-powered, automation-driven, application-centric managed services and cloud infrastructure, delivering Sovereign and Secure Industry Hybrid Cloud solutions across 25 countries. Headquartered in Singapore, Cloud4C supports 2500+ enterprises—including 50+ Global Fortune 1000 firms—with end-to-end transformation under a Single SLA covering cloud, cy",
+      "auditRetrievedAt": "2026-08-31T08:49:08.553Z",
+      "canonicalCompanyId": "2c37012e-b4db-49f3-bd22-584989680664",
+      "beforeCanonicalLinkedInUrl": "https://www.linkedin.com/company/cloud4c",
+      "Current canonical persistence": "NO_CANONICAL_CHANGE",
+      "Historical canonical persistence": "ATTACHED_VERIFIED",
+      "selectedCandidateDetails": {
+        "profileUrl": "https://sg.linkedin.com/company/cloud4c",
+        "normalizedProfileUrl": "https://www.linkedin.com/company/cloud4c",
+        "profileSlug": "cloud4c",
+        "status": "VERIFIED",
+        "supportingEvidence": [
+          {
+            "kind": "NAME_MATCH",
+            "detail": "Candidate title or slug agrees with \"Cloud4C Services\"",
+            "strength": "strong",
+            "sourceUrl": "https://sg.linkedin.com/company/cloud4c"
+          },
+          {
+            "kind": "DOMAIN_MATCH",
+            "detail": "The indexed candidate evidence references canonical domain \"cloud4c.com\"",
+            "strength": "strong",
+            "sourceUrl": "https://sg.linkedin.com/company/cloud4c"
+          }
+        ],
+        "contradictingEvidence": [],
+        "candidates": [
+          {
+            "publisher": "LINKEDIN",
+            "profileUrl": "https://sg.linkedin.com/company/cloud4c",
+            "profileSlug": "cloud4c",
+            "profileType": "LINKEDIN_COMPANY",
+            "retrievedAt": "2026-08-31T08:49:08.553Z",
+            "discoveryQuery": "site:linkedin.com/company \"Cloud4C Services\" \"cloud4c.com\"",
+            "searchResultUrl": "https://sg.linkedin.com/company/cloud4c",
+            "resolutionStatus": "VERIFIED",
+            "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+            "searchResultTitle": "Cloud4C Services - World’s Leading Automation-driven, Application Focused Cloud Managed Services Provider (MSP)",
+            "supportingEvidence": [
+              {
+                "kind": "NAME_MATCH",
+                "detail": "Candidate title or slug agrees with \"Cloud4C Services\"",
+                "strength": "strong",
+                "sourceUrl": "https://sg.linkedin.com/company/cloud4c"
+              },
+              {
+                "kind": "DOMAIN_MATCH",
+                "detail": "The indexed candidate evidence references canonical domain \"cloud4c.com\"",
+                "strength": "strong",
+                "sourceUrl": "https://sg.linkedin.com/company/cloud4c"
+              }
+            ],
+            "searchResultExcerpt": "Cloud4C, part of Capgemini, is a global leader in AI-powered, automation-driven, application-centric managed services and cloud infrastructure, delivering Sovereign and Secure Industry Hybrid Cloud solutions across 25 countries. Headquartered in Singapore, Cloud4C supports 2500+ enterprises—including 50+ Global Fortune 1000 firms—with end-to-end transformation under a Single SLA covering cloud, cybersecurity, FinOps, and AI. As a long-standing Global Premium Partner for RISE with SAP, Cloud4C provides secure cloud infrastructure (sovereign/hybrid/public) for SAP workloads along with comprehensive SAP migration, modernization, and managed services. Its unified SLA delivers up to 99.9% uptime, covering the full stack from infrastructure to application layers. Cloud4C’s strategic advantage [...] to application layers. Cloud4C’s strategic advantage lies in its strong presence across emerging and regulated markets—many of which are currently underserved, enabling secure SAP and cloud adoption. Our proprietary AIOps platform, rendering hyper automated AI-powered cloud operations across sovereign, hybrid, public, multi-cloud environments, and processes ensure high availability, resilience, and compliance across the entire stack and operations footprint. Cloud4C is also a leader in Next-Gen Managed Security Services, integrating SASE, MXDR, and MSSP frameworks for real-time threat detection, response, and risk management. Its Sovereign Cloud, available in localized and hybrid modes, helps regulated entities and governments meet data residency and sovereignty mandates, while the Secure [...] look forward to continuing these conversations and driving more impactful transformations together. #SAPSapphire2026 #SAP #RISEwithSAP #Cloud4C #Capgemini #SAPTransformation #EnterpriseCloud #AI Chanakya Levaka | Kotilingeshwar Rao Vudhari | Rakesh Reddy | Hitesh Bhardwaj, AIGP, CISSP, CCSP, TOGAF | Arindam Mukherjee | Chaitanya Reddy | Tejveer Singh Kalsi | Kamalakar Gunupati | Ashish Gupta [Likes: 210, Comments: 1]; Cloud4C Services (4w): Cloud4C is proud to participate in the BITC 17th Annual Conclave 2026 in Kolkata — bringing together leaders, innovators, and enterprises shaping the future of intelligent business transformation. Join us as we explore how organizations can modernize securely, scale confidently, and innovate faster with AI, sovereign cloud, and mission-critical digital",
+            "normalizedProfileUrl": "https://www.linkedin.com/company/cloud4c",
+            "resolutionConfidence": 85,
+            "contradictingEvidence": []
+          },
+          {
+            "publisher": "LINKEDIN",
+            "profileUrl": "https://www.linkedin.com/company/cloud4c-korea",
+            "profileSlug": "cloud4c-korea",
+            "profileType": "LINKEDIN_COMPANY",
+            "retrievedAt": "2026-08-31T08:49:08.553Z",
+            "discoveryQuery": "site:linkedin.com/company \"Cloud4C Services\" \"cloud4c.com\"",
+            "searchResultUrl": "https://www.linkedin.com/company/cloud4c-korea",
+            "resolutionStatus": "AMBIGUOUS",
+            "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+            "searchResultTitle": "Cloud4C Korea - 기업용 클라우드 전문 글로벌 MSP, Cloud4C Korea 공식 페이지입니다. 빠른 문의를 원하실 경우 하단 문의(Contact Us)버튼을 눌러주세요! :)",
+            "supportingEvidence": [
+              {
+                "kind": "DOMAIN_MATCH",
+                "detail": "The indexed candidate evidence references canonical domain \"cloud4c.com\"",
+                "strength": "strong",
+                "sourceUrl": "https://www.linkedin.com/company/cloud4c-korea"
+              }
+            ],
+            "searchResultExcerpt": "# Cloud4C Korea\n기업용 클라우드 전문 글로벌 MSP, Cloud4C Korea 공식 페이지입니다. 빠른 문의를 원하실 경우 하단 문의(Contact Us)버튼을 눌러주세요! :)\nIT Services and IT Consulting • 서울시 • 1,213 followers • 10,001+ employees\n\n## Overview\n기업용 글로벌 클라우드 솔루션 MSP (Managed Service Provider)인 클라우드포씨 코리아입니다. Cloud4C는 일반 클라우드(공공, 민간, 하이브리드)와 커뮤니티 클라우드 (뱅킹 커뮤니티 클라우드, SAP 커뮤니티 클라우드) 서비스를 비롯하여, AWS, MS Azure, Google Cloud 같은 하이퍼스케일러에서 클라우드 이동, 포괄적인 관리 서비스, 재난 복구 서비스, 관리 보안 서비스 등 엔드투엔드 서비스를 고객에게 제공합니다. 싱가폴 본사를 기반으로 전세계 26개국 50개 지역에서 포춘지 선정 500대 글로벌 기업 중 60개사를 포함해 총 4,000개 고객사에 서비스를 제공하고 있습니다. 더 자세한 정보는 홈페이지 (www.cloud4c.com) 혹은 네이버 공식 블로그 (blog.naver.com/cloud4ckorea) 에서 확인하실 수 있습니다. 문의는 korea@cloud4c.com 으로 부탁드립니다.\n\n### Website\n\n### Crunchbase\nN/A\n### LinkedIn\nN/A\n\n### Industry\nIT Services and IT Consulting [...] ### Get Directions\nDirections\n\n## Employees\n\n## Similar Companies\nCloud4C Services (Information Technology & Services):  (N/A); CtrlS Datacenters (IT Services and IT Consulting):  (Hyderabad, Telangana); Cloud4C Vietnam (IT Services and IT Consulting):  (N/A); Cloud4com (IT Services and IT Consulting):  (Prague 6, Capital City of Prague); AutomatonsX (IT Services and IT Consulting):  (N/A); Yotta Data Services Private Limited (IT Services and IT Consulting):  (Mumbai, Maharashtra); 8bit.ai (Software Development):  (N/A); Sify Technologies Limited. (Information Technology & Services):  (Chennai, Tamil nadu); Kyndryl (IT Services and IT Consulting):  (New York City, New York); 4C EXPERIENCE (IT Services and IT Consulting):  (Le Plessis-Robinson, Île-de-France)\n\n## Posts [...] Additional jobs info: Application Developer (64,604 open jobs). Developer (258,935 open jobs). Engineer (555,845 open jobs). Cyber Security Specialist (20,744 open jobs). Analyst (694,057 open jobs). Database Administrator (225,956 open jobs). Associate Program Director (2,232 open jobs). Technical Expert (102,840 open jobs). Process Improvement Manager (41,230 open jobs). Project Management Officer (7,970 open jobs). Freelance Project Manager (11,923 open jobs). SAP Project Manager (15,493 open jobs). Associate Project Manager (11,398 open jobs). Research Intern (21,678 open jobs). Chief Information Security Officer (1,734 open jobs). Model (475,289 open jobs). Electrical Engineer (60,569 open jobs). Junior Project Manager (85,483 open jobs). Customer Service Manager (231,330 open jobs).",
+            "normalizedProfileUrl": "https://www.linkedin.com/company/cloud4c-korea",
+            "resolutionConfidence": 40,
+            "contradictingEvidence": []
+          },
+          {
+            "publisher": "LINKEDIN",
+            "profileUrl": "https://vn.linkedin.com/company/cloud4c-vietnam",
+            "profileSlug": "cloud4c-vietnam",
+            "profileType": "LINKEDIN_COMPANY",
+            "retrievedAt": "2026-08-31T08:49:08.553Z",
+            "discoveryQuery": "site:linkedin.com/company \"Cloud4C Services\" \"cloud4c.com\"",
+            "searchResultUrl": "https://vn.linkedin.com/company/cloud4c-vietnam",
+            "resolutionStatus": "AMBIGUOUS",
+            "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+            "searchResultTitle": "Cloud4C Vietnam",
+            "supportingEvidence": [
+              {
+                "kind": "DOMAIN_MATCH",
+                "detail": "The indexed candidate evidence references canonical domain \"cloud4c.com\"",
+                "strength": "strong",
+                "sourceUrl": "https://vn.linkedin.com/company/cloud4c-vietnam"
+              }
+            ],
+            "searchResultExcerpt": "Giới thiệu về chúng tôi ; Trang web: https://www.cloud4c.com/vn/. Liên kết ngoài cho Cloud4C Vietnam ; Ngành: Tư vấn và dịch vụ CNTT ; Quy mô công ty: 1.001-5.000",
+            "normalizedProfileUrl": "https://www.linkedin.com/company/cloud4c-vietnam",
+            "resolutionConfidence": 40,
+            "contradictingEvidence": []
+          },
+          {
+            "publisher": "LINKEDIN",
+            "profileUrl": "https://www.linkedin.com/company/8bit-ai",
+            "profileSlug": "8bit-ai",
+            "profileType": "LINKEDIN_COMPANY",
+            "retrievedAt": "2026-08-31T08:49:08.553Z",
+            "discoveryQuery": "site:linkedin.com/company \"Cloud4C Services\" \"cloud4c.com\"",
+            "searchResultUrl": "https://www.linkedin.com/company/8bit-ai",
+            "resolutionStatus": "WRONG",
+            "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+            "searchResultTitle": "8bit.ai",
+            "supportingEvidence": [],
+            "searchResultExcerpt": "## Similar Companies\nCloud4C Services (Information Technology & Services):  (N/A); 8Bit.ai (Technology, Information and Internet):  (N/A); DeepForrest AI (IT Services and IT Consulting):  (Hyderabad, Telangana); CtrlS Datacenters (IT Services and IT Consulting):  (Hyderabad, Telangana); AutomatonsX (IT Services and IT Consulting):  (N/A); Yotta Data Services Private Limited (IT Services and IT Consulting):  (Mumbai, Maharashtra); SuperAGI (Technology, Information and Internet):  (Palo Alto, California); VerbaFlo.AI (Real Estate):  (St Albans, England); Nxtra by Airtel (Information Technology & Services):  (Gurugram, Haryana); Tanla Platforms Limited (Software Development):  (Hyderabad, Telangana)\n\n## Posts\n\n## Media\n- Images: \n- Logo: Company Logo [...] enable your business to truly unlock its operational future. 8bit.ai is part of CtrlS-Cloud4C group, one of the world's leading rated IV datacenter companies and globally renowned multi-cloud MSP with presence in 30+ countries. 8bit ai's professional services is backed by the entity's own AI engineering centre and CtrlS-Cloud4C group's 25+ Centers of Excellence, assuring truly end-to-end outcomes for an enterprise's technology transformation strategies. [...] 8bit.ai is an innovative, new-age accelerated cloud and AI entity focused on delivering highly available xPU Cloud, GenAI, autonomous agents (Neutrino), and AI consulting services. From the underneath high performance infrastructure to AI platforms, applications, innovation building, and security management, 8bit.ai is your one stop partner for mission-critical, forward-thinking AI evolutions. While xPU cloud delivers the foundations for your GenAI advancements, AI engineering and consulting services help anywhere from Vector DB management, AI use case design to model building, training, and deployment. Autonomous agents, powerful intelligent solutions for automating core processes and empowering decision making with deep data analysis, enable your business to truly unlock its operational",
+            "normalizedProfileUrl": "https://www.linkedin.com/company/8bit-ai",
+            "resolutionConfidence": 0,
+            "contradictingEvidence": [
+              {
+                "kind": "CONTRADICTION",
+                "detail": "Candidate \"8bit.ai\" does not independently agree with the requested company identity",
+                "strength": "contradicting",
+                "sourceUrl": "https://www.linkedin.com/company/8bit-ai"
+              }
+            ]
+          },
+          {
+            "publisher": "LINKEDIN",
+            "profileUrl": "https://www.linkedin.com/company/automatonsx",
+            "profileSlug": "automatonsx",
+            "profileType": "LINKEDIN_COMPANY",
+            "retrievedAt": "2026-08-31T08:49:08.553Z",
+            "discoveryQuery": "site:linkedin.com/company \"Cloud4C Services\" \"cloud4c.com\"",
+            "searchResultUrl": "https://www.linkedin.com/company/automatonsx",
+            "resolutionStatus": "WRONG",
+            "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+            "searchResultTitle": "AutomatonsX - Unlock the X-factor for Your Business | GenAI-powered Intelligent Automation Solutions",
+            "supportingEvidence": [],
+            "searchResultExcerpt": "## Similar Companies\nDeepForrest AI (IT Services and IT Consulting):  (Hyderabad, Telangana); Cloud4C Services (Information Technology & Services):  (N/A); CtrlS Datacenters (IT Services and IT Consulting):  (Hyderabad, Telangana); 8bit.ai (Software Development):  (N/A); Amotion AI (Technology, Information and Internet):  (Dubai, Dubai); AINE AI (Information Technology & Services):  (N/A); Samriddhi Energies (Oil and Gas):  (Hyderabad, Telangana); InRhythm Solutions (IT Services and IT Consulting):  (Hyderabad, Telangana); Krab (Financial Services):  (Hyderabad, Telangana); Deloitte (Business Consulting and Services):  (N/A) [...] ## Overview\nAutomatonsX is a new-age technology brand from the CtrlS Group, focused on delivering intelligent automation for large-scale enterprises. We go beyond traditional RPA to enable hyperautomation, powered by Analytics, AI, GenAI, and autonomous platforms helping organizations automate smarter, scale faster, and drive measurable outcomes. Serving industries such as manufacturing, healthcare, energy, BFSI, and logistics, we help leaders eliminate repetitive work, boost productivity multi-fold, and free human talent for high-value innovation. Backed by CtrlS, India’s leading Rated-IV data center provider, our experts have delivered 1.2M+ man-hours saved and enabled 5× faster go-to-market. Power the X-factor in your enterprise with AutomatonsX\n\n### Website [...] behind. Read the case study. Link in comments #AutomatonsX #FinanceTransformation #SAP #RealTimeAnalytics #DataDriven #EnterpriseTransformation [Likes: 13, Comments: 1]; AutomatonsX (2w): May this Eid-ul-adha bring joy, prosperity, and warmth to you and your loved ones. [Likes: 18, Comments: 0]; AutomatonsX (2w): When data pipelines slow production, businesses lose more than time. With real-time replication and lakehouse architecture, enterprises can move from reactive reporting to instant decision-making. ▪️5K transactions/min. ▪️Sub-second dashboards. ▪️Zero downtime migration. Read our case study to know more. Link in comments. #AutomatonsX #EnterpriseData #Analytics #AIInfrastructure #BusinessIntelligence #Automation [Likes: 14, Comments: 1]; AutomatonsX (2w): Behind every successful",
+            "normalizedProfileUrl": "https://www.linkedin.com/company/automatonsx",
+            "resolutionConfidence": 0,
+            "contradictingEvidence": [
+              {
+                "kind": "CONTRADICTION",
+                "detail": "Candidate \"AutomatonsX - Unlock the X-factor for Your Business | GenAI-powered Intelligent Automation Solutions\" does not independently agree with the requested company identity",
+                "strength": "contradicting",
+                "sourceUrl": "https://www.linkedin.com/company/automatonsx"
+              }
+            ]
+          },
+          {
+            "publisher": "LINKEDIN",
+            "profileUrl": "https://in.linkedin.com/company/citrus-consulting-services",
+            "profileSlug": "citrus-consulting-services",
+            "profileType": "LINKEDIN_COMPANY",
+            "retrievedAt": "2026-08-31T08:49:08.553Z",
+            "discoveryQuery": "site:linkedin.com/company \"Cloud4C Services\" \"cloud4c.com\"",
+            "searchResultUrl": "https://in.linkedin.com/company/citrus-consulting-services",
+            "resolutionStatus": "WRONG",
+            "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+            "searchResultTitle": "Citrus Consulting Services - UAE's leading team of Agile Technologists ensuring business continuity through Emerging Technologies.",
+            "supportingEvidence": [],
+            "searchResultExcerpt": "## Similar Companies\nZainTECH (IT Services and IT Consulting):  (Dubai Internet City, Building 11 Office 212, Dubai); Cloud4C Services (Information Technology & Services):  (N/A); PrimisPro IT Solutions (Information Technology & Services):  (Noida, Uttar Pradesh); Univista Consulting Group (Business Consulting and Services):  (San Francisco, California); EnCyb (Computer and Network Security):  (Dubai, Dubai); SecureLink (Computer and Network Security):  (N/A); ValueMentor (Computer and Network Security):  (Houston, Texas); Redington Middle East (IT Services and IT Consulting):  (Dubai, Dubai); Indicia Worldwide (Advertising Services):  (London, England); Help AG, an e& enterprise company (Computer and Network Security):  (Dubai, United Arab Emirates)\n\n## Posts [...] A registered free zone (Dubai Internet City) company headquartered in Dubai, UAE, Citrus Consulting Services is a Technology Consultancy firm that helps ambitious change-makers define and validate their growth stories through technology. As hybrid cloud experts, we deliver technical services and provide Consulting, Managed Services and Advisory across different verticals and drive cloud-first strategies. Across 3 Global Delivery Centers in United Arab Emirates, Kingdom of Saudi Arabia and India, we help private, public and governmental organizations across Middle East and Africa take the next step in their digital transformation journey. We complement our tailored, integrated expertise with a vibrant ecosystem of digital innovators to deliver better, faster, and more enduring outcomes.",
+            "normalizedProfileUrl": "https://www.linkedin.com/company/citrus-consulting-services",
+            "resolutionConfidence": 0,
+            "contradictingEvidence": [
+              {
+                "kind": "CONTRADICTION",
+                "detail": "Candidate \"Citrus Consulting Services - UAE's leading team of Agile Technologists ensuring business continuity through Emerging Technologies.\" does not independently agree with the requested company identity",
+                "strength": "contradicting",
+                "sourceUrl": "https://in.linkedin.com/company/citrus-consulting-services"
+              }
+            ]
+          },
+          {
+            "publisher": "LINKEDIN",
+            "profileUrl": "https://www.linkedin.com/company/cloud-4-com",
+            "profileSlug": "cloud-4-com",
+            "profileType": "LINKEDIN_COMPANY",
+            "retrievedAt": "2026-08-31T08:49:08.553Z",
+            "discoveryQuery": "site:linkedin.com/company \"Cloud4C Services\" \"cloud4c.com\"",
+            "searchResultUrl": "https://www.linkedin.com/company/cloud-4-com",
+            "resolutionStatus": "WRONG",
+            "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+            "searchResultTitle": "Cloud4com",
+            "supportingEvidence": [],
+            "searchResultExcerpt": "## Similar Companies\nCloud4C Services (Information Technology & Services):  (N/A); CRA (IT Services and IT Consulting):  (Prague 6, Czech republic); Cloud4C Korea (IT Services and IT Consulting):  (N/A); CtrlS Datacenters (IT Services and IT Consulting):  (Hyderabad, Telangana); SPORTNET DATA, S.R.O. (N/A):  (Třebechovice pod Orebem, Hradec Králové); Cloud4Climate (Software Development):  (N/A); Aurora agency.cz (Marketing Services):  (N/A); Cynosure Group Events (Events Services):  (N/A); Actinet Informační systémy s.r.o. (IT Services and IT Consulting):  (Praha 1, N/A); Neit Consulting (IT Services and IT Consulting):  (Prague, Czech Republic) [...] is part of a broader CRA ecosystem: IaaS, Managed Services, PaaS and dedicated private cloud options — all designed to fit your specific infrastructure needs. [Likes: 3, Comments: 0]; Cloud4com (8mo): Managing IT shouldn’t slow your business down. With Cloud4Com #ManagedServices , you can hand over the responsibility for your IT operations and focus entirely on what moves your company forward. We take long-term responsibility for your IT environment — based on a tailored #SLA and a predictable monthly fee. Our team ensures continuous operations, security, monitoring, backups, incident response, and everything else your infrastructure needs to stay stable. What you gain: Security & stability – Continuous monitoring, regular backups, and fast response to incidents to ensure operational [...] # Cloud4com\nN/A\nIT Services and IT Consulting • Prague 6, Capital City of Prague • 391 followers • 11-50 employees\n\n## Overview\nCloud4com delivers cutting-edge Data Centre Infrastructure as a Service (IaaS), offering high-performance computing power, secure storage, advanced network components, and robust security—ensuring unmatched reliability and availability. Our mission is to provide customers with maximum flexibility in managing their IT infrastructure, enhancing efficiency in investments, processes, and the deployment of business applications. With intuitive online management tools, we empower organisations of all sizes—from large enterprises and public sector institutions to growing mid-sized businesses—to optimise their IT environments and drive operational success.\n\n### Website",
+            "normalizedProfileUrl": "https://www.linkedin.com/company/cloud-4-com",
+            "resolutionConfidence": 0,
+            "contradictingEvidence": [
+              {
+                "kind": "CONTRADICTION",
+                "detail": "Candidate \"Cloud4com\" does not independently agree with the requested company identity",
+                "strength": "contradicting",
+                "sourceUrl": "https://www.linkedin.com/company/cloud-4-com"
+              }
+            ]
+          },
+          {
+            "publisher": "LINKEDIN",
+            "profileUrl": "https://www.linkedin.com/company/cloud4uglobal",
+            "profileSlug": "cloud4uglobal",
+            "profileType": "LINKEDIN_COMPANY",
+            "retrievedAt": "2026-08-31T08:49:08.553Z",
+            "discoveryQuery": "site:linkedin.com/company \"Cloud4C Services\" \"cloud4c.com\"",
+            "searchResultUrl": "https://www.linkedin.com/company/cloud4uglobal",
+            "resolutionStatus": "WRONG",
+            "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+            "searchResultTitle": "Cloud4U - Cloud & Infrastructure solutions for business (IaaS, SaaS). SLA 99.982% Uptime",
+            "supportingEvidence": [],
+            "searchResultExcerpt": "## Similar Companies\nCloud4U Turkey (IT Services and IT Consulting):  (Kadikoy, Istanbul); Cloud4C Services (Information Technology & Services):  (N/A); Cloud4U Technologies (Technology, Information and Internet):  (N/A); cloud4u.net (IT Services and IT Consulting):  (Kadikoy, Istanbul); Ortimo ICT (Computer Networking Products):  (Eindhoven, North Brabant); Intertech Information Technology and Marketing Inc. (IT Services and IT Consulting):  (Istanbul, TR); Getir (Technology, Information and Internet):  (Istanbul, Etiler, Beşiktaş); RemoteDerm (Health and Human Services):  (N/A); Arsalweb Startup Development CO. (Software Development):  (Ahvaz, Khouzestan); Serv Tree Solutions (IT Services and IT Consulting):  (Sargodha, Punjab)\n\n## Posts\n\n## Media\n- Images: \n- Logo: Company Logo [...] Established in 2009, Cloud4U is an on-demand cloud-computing platform that provides cloud services and solutions to companies and governments on a metered pay-as-you-go basis. We help companies of any types and sizes to build reliable and scalable IT-infrastructure at an affordable price. Our team is built of certified IT professionals and leaders in the virtualization and information security with extensive experience in building cloud solutions for private (private cloud) or public (public cloud) use. POPULAR SOLUTIONS: • Infrastructure-as-a-Service (IaaS) • Disaster recovery (DRaaS) • Storage solutions (incl S3 compatible storage) • GPU computing • Backup in the cloud (BaaS) • Virtual desktop solutions (DaaS) • SaaS security solutions and more KEY FEATURES • 13+ years of experience in [...] # Cloud4U\nCloud & Infrastructure solutions for business (IaaS, SaaS). SLA 99.982% Uptime\nIT Services and IT Consulting • N/A • 194 followers • 51-200 employees",
+            "normalizedProfileUrl": "https://www.linkedin.com/company/cloud4uglobal",
+            "resolutionConfidence": 0,
+            "contradictingEvidence": [
+              {
+                "kind": "CONTRADICTION",
+                "detail": "Candidate \"Cloud4U - Cloud & Infrastructure solutions for business (IaaS, SaaS). SLA 99.982% Uptime\" does not independently agree with the requested company identity",
+                "strength": "contradicting",
+                "sourceUrl": "https://www.linkedin.com/company/cloud4uglobal"
+              }
+            ]
+          },
+          {
+            "publisher": "LINKEDIN",
+            "profileUrl": "https://in.linkedin.com/company/oneitsecurity-llc",
+            "profileSlug": "oneitsecurity-llc",
+            "profileType": "LINKEDIN_COMPANY",
+            "retrievedAt": "2026-08-31T08:49:08.553Z",
+            "discoveryQuery": "site:linkedin.com/company \"Cloud4C Services\" \"cloud4c.com\"",
+            "searchResultUrl": "https://in.linkedin.com/company/oneitsecurity-llc",
+            "resolutionStatus": "WRONG",
+            "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+            "searchResultTitle": "One IT Security LLC - Think “OneITSecurity\" and consider it done, for all your local and global InfoSec and Data Privacy Compliance needs.",
+            "supportingEvidence": [],
+            "searchResultExcerpt": "sai sundar , MD at IYRA Consultants — a student coach and overseas education mentor who understands what students are truly missing. Thank you Cloud4C Services for being as a venue partner. #ISACA #ISACAHyderabad #StudentEvent2026 #Cybersecurity #ITAudit #GRC #RiskManagement #InfoSec #CareerInCybersecurity #HyderabadEvents #StudentLife #FutureProfessionals #GCC #Cloud4C #CISA #CRISC #CISM #DigitalTrust Sujay G. , Raj Pawar , Rajnish Dasari, CISA, CPEW, CCIO , Vamsi Krishna GV , Dr. Ponnaluru Sowjanya , Chandrasekhar Sarma Garimella , Padma Akella , Ramadevi Komandur , Venkata Pavan Kumar , Venugopal Hari , Ajay Soni, CISSP, CISM, CISA, CRISC , Anjani K. Gupta, Venkatram C , Sharon Gaddala , Johnson Theegala [Likes: 73, Comments: 1]; One IT Security LLC (4w): Information Security and Data [...] needs to hear. SPEAKER Taking the stage for our career session is Prasad Anumula PMP®, CISM(Q), LSSBB Anumula, Founder and Director of Risk Guard Enterprise Solutions. A practitioner and mentor with deep expertise in Cybersecurity, GRC, Enterprise Risk Management and DPDPA. MODERATOR AND PANELISTS Our panel discussion will be led by Moderator Venkata Pavan Kumar , VP at Cloud4C — bringing together three exceptional panelists for an honest and inspiring conversation with students. Kotilingeshwar Rao Vudhari Rao, COO at Cloud4C — bringing the industry and employer perspective directly to the table. Manas Sarkar, CISA Sarkar, Senior Cybersecurity Auditor at IIIT Hyderabad, with experience spanning government, research and academia. sai sundar , MD at IYRA Consultants — a student coach and",
+            "normalizedProfileUrl": "https://www.linkedin.com/company/oneitsecurity-llc",
+            "resolutionConfidence": 0,
+            "contradictingEvidence": [
+              {
+                "kind": "CONTRADICTION",
+                "detail": "Candidate \"One IT Security LLC - Think “OneITSecurity\" and consider it done, for all your local and global InfoSec and Data Privacy Compliance needs.\" does not independently agree with the requested company identity",
+                "strength": "contradicting",
+                "sourceUrl": "https://in.linkedin.com/company/oneitsecurity-llc"
+              }
+            ]
+          }
+        ],
+        "discoveryQueries": [
+          "site:linkedin.com/company \"Cloud4C Services\" \"cloud4c.com\""
+        ],
+        "provider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+        "retrievalMethod": "TAVILY_WEB_SEARCH",
+        "resolvedAt": "2026-08-31T08:49:08.551Z"
+      }
+    },
+    {
+      "Company": "Emergys",
+      "Canonical domain": "emergys.com",
+      "Before LinkedIn URL": "https://www.linkedin.com/company/emergys-llc",
+      "Historical pre-resolution LinkedIn URL": "NONE",
+      "Existing identifier status": "NO_LINKEDIN_URL",
+      "Search required": "YES",
+      "Search calls": 1,
+      "Current run provider calls": 0,
+      "Candidates found": 1,
+      "Selected candidate": "https://www.linkedin.com/company/emergys-llc",
+      "Name match": "YES",
+      "Domain match": "YES",
+      "Geography match": "NO",
+      "Contradictions": "NONE",
+      "Final status": "VERIFIED",
+      "Confidence": 100,
+      "Reason": "Candidate title or slug agrees with \"Emergys\"; The indexed candidate evidence references canonical domain \"emergys.com\"; The canonical website result references the same LinkedIn company profile",
+      "supportingEvidence": "NAME_MATCH, DOMAIN_MATCH, OFFICIAL_WEBSITE_LINK",
+      "auditQuery": "site:linkedin.com/company \"Emergys\" \"emergys.com\"",
+      "auditResultTitle": "News | Emergys",
+      "auditResultUrl": "https://www.emergys.com/news",
+      "auditExcerpt": "June 17, 2025\n\n  ### Emergys announces the official name change of its integrated entity in Germany\n Platinum Partnership Automation Anywhere\n\n  April 22, 2025\n\n  ### Platinum Partnership Automation Anywhere\n Finalist for 2025 SAP Pinnacle Award\n\n  April 10, 2025\n\n  ### Emergys Named a Finalist for 2025 SAP® Pinnacle Awards in the Rising Star Category\n Press release entity in Dubai\n\n  March 24, 20",
+      "auditRetrievedAt": "2026-08-31T08:49:08.792Z",
+      "canonicalCompanyId": "8d247b8b-9abc-4153-969e-1598165b2139",
+      "beforeCanonicalLinkedInUrl": "https://www.linkedin.com/company/emergys-llc",
+      "Current canonical persistence": "NO_CANONICAL_CHANGE",
+      "Historical canonical persistence": "ATTACHED_VERIFIED",
+      "selectedCandidateDetails": {
+        "profileUrl": "https://www.linkedin.com/company/emergys-llc",
+        "normalizedProfileUrl": "https://www.linkedin.com/company/emergys-llc",
+        "profileSlug": "emergys-llc",
+        "status": "VERIFIED",
+        "supportingEvidence": [
+          {
+            "kind": "NAME_MATCH",
+            "detail": "Candidate title or slug agrees with \"Emergys\"",
+            "strength": "strong",
+            "sourceUrl": "https://www.emergys.com/news"
+          },
+          {
+            "kind": "DOMAIN_MATCH",
+            "detail": "The indexed candidate evidence references canonical domain \"emergys.com\"",
+            "strength": "strong",
+            "sourceUrl": "https://www.emergys.com/news"
+          },
+          {
+            "kind": "OFFICIAL_WEBSITE_LINK",
+            "detail": "The canonical website result references the same LinkedIn company profile",
+            "strength": "strong",
+            "sourceUrl": "https://www.emergys.com/news"
+          }
+        ],
+        "contradictingEvidence": [],
+        "candidates": [
+          {
+            "publisher": "LINKEDIN",
+            "profileUrl": "https://www.linkedin.com/company/emergys-llc",
+            "profileSlug": "emergys-llc",
+            "profileType": "LINKEDIN_COMPANY",
+            "retrievedAt": "2026-08-31T08:49:08.792Z",
+            "discoveryQuery": "site:linkedin.com/company \"Emergys\" \"emergys.com\"",
+            "searchResultUrl": "https://www.emergys.com/news",
+            "resolutionStatus": "VERIFIED",
+            "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+            "searchResultTitle": "News | Emergys",
+            "supportingEvidence": [
+              {
+                "kind": "NAME_MATCH",
+                "detail": "Candidate title or slug agrees with \"Emergys\"",
+                "strength": "strong",
+                "sourceUrl": "https://www.emergys.com/news"
+              },
+              {
+                "kind": "DOMAIN_MATCH",
+                "detail": "The indexed candidate evidence references canonical domain \"emergys.com\"",
+                "strength": "strong",
+                "sourceUrl": "https://www.emergys.com/news"
+              },
+              {
+                "kind": "OFFICIAL_WEBSITE_LINK",
+                "detail": "The canonical website result references the same LinkedIn company profile",
+                "strength": "strong",
+                "sourceUrl": "https://www.emergys.com/news"
+              }
+            ],
+            "searchResultExcerpt": "June 17, 2025\n\n  ### Emergys announces the official name change of its integrated entity in Germany\n Platinum Partnership Automation Anywhere\n\n  April 22, 2025\n\n  ### Platinum Partnership Automation Anywhere\n Finalist for 2025 SAP Pinnacle Award\n\n  April 10, 2025\n\n  ### Emergys Named a Finalist for 2025 SAP® Pinnacle Awards in the Rising Star Category\n Press release entity in Dubai\n\n  March 24, 2025\n\n  ### Emergys announces the official name change of its integrated entity in Dubai\n\n12Next\n\nEmergys\n\nAs a global brand, we are committed to curating solutions and providing services that accelerate digital enterprises across industries.\n\n### Quick Links\n\n Industries\n Company\n Insights\n Careers\n Contact\n\n### Our Services\n\n AI & Data\n Enterprise Solutions\n Modern Applications [...] December 23, 2025\n\n  ### Emergys Achieves Prestigious “Best Firm for AI Professionals” Certification, Earning 86.81% Approval Rating from Customers and Employees\n Emergys Achieves 4.0 Star\n\n  December 3, 2025\n\n  ### Emergys Achieves 4 Star Outstanding Innovation Rating at AGBA 2025\n BMC Helix Top Partner for APAC Region\n\n  November 7, 2025\n\n  ### Emergys Named BMC Helix Top Partner for APAC Region, Honored with H1 Award for Enterprise Transformation Excellence\n Sales Summit 2025 Banner\n\n  September 11, 2025\n\n  ### Sales Summit 2025\n ServiceNow Drive AI\n\n  July 3, 2025\n\n  ### Emergys and ServiceNow Drive AI-Led Manufacturing Transformation at Leadership Think Turf in Pune\n Entity name change Germany\n\n  June 17, 2025 [...] Skip to content\n\nEmergys\n\nNews2026-08-17T10:24:04+05:30\n\n# News – Stay updated with Emergys\n\nKnow about events, announcements and discussion in and around Emergys entities across the globe. Know how we are creating an impact on the world.\n\nExplore More\n\nExplore More\n\nExplore More\n\nExplore More\n\n New Office in Malaysia\n\n  August 3, 2026\n\n  ### Emergys Expands Global Footprint with New Office in Malaysia\n Emergys Chennai New office\n\n  June 26, 2026\n\n  ### Emergys Marks Chennai Expansion with New Office Inauguration\n Emergys FoundrySmart secures SAP-Qualified recognition\n\n  March 13, 2026\n\n  ### Emergys’ FoundrySmart secures SAP-Qualified recognition, reinforcing industry focus in metal casting and mining\n Best Firm for AI Professionals by AIM New\n\n  December 23, 2025",
+            "normalizedProfileUrl": "https://www.linkedin.com/company/emergys-llc",
+            "resolutionConfidence": 100,
+            "contradictingEvidence": []
+          }
+        ],
+        "discoveryQueries": [
+          "site:linkedin.com/company \"Emergys\" \"emergys.com\""
+        ],
+        "provider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+        "retrievalMethod": "TAVILY_WEB_SEARCH",
+        "resolvedAt": "2026-08-31T08:49:08.790Z"
+      }
+    },
+    {
+      "Company": "ENTUNE IT Consulting Pvt Ltd",
+      "Canonical domain": "entune.co",
+      "Before LinkedIn URL": "https://www.linkedin.com/company/entune",
+      "Historical pre-resolution LinkedIn URL": "NONE",
+      "Existing identifier status": "NO_LINKEDIN_URL",
+      "Search required": "YES",
+      "Search calls": 1,
+      "Current run provider calls": 0,
+      "Candidates found": 6,
+      "Selected candidate": "https://www.linkedin.com/company/entune",
+      "Name match": "YES",
+      "Domain match": "YES",
+      "Geography match": "NO",
+      "Contradictions": "NONE",
+      "Final status": "VERIFIED",
+      "Confidence": 85,
+      "Reason": "Candidate title or slug agrees with \"ENTUNE IT Consulting Pvt Ltd\"; The indexed candidate evidence references canonical domain \"entune.co\"",
+      "supportingEvidence": "NAME_MATCH, DOMAIN_MATCH",
+      "auditQuery": "site:linkedin.com/company \"ENTUNE IT Consulting Pvt Ltd\" \"entune.co\"",
+      "auditResultTitle": "ENTUNE IT Consulting Pvt Ltd - Your Partner for Success...",
+      "auditResultUrl": "https://in.linkedin.com/company/entune",
+      "auditExcerpt": "# ENTUNE IT Consulting Pvt Ltd\nYour Partner for Success...\nIT Services and IT Consulting • Bengaluru, Karnataka • 5,031 followers • 51-200 employees\n\n## Overview\nENTUNE IT Consulting Pvt Ltd (ENTUNE) based out of Bangalore, India was founded in 2015 with the core objective of offering top class Enterprise Solutions to the Mid-market and Large Enterprise segments. We aim to provide efficient and af",
+      "auditRetrievedAt": "2026-08-31T08:49:09.029Z",
+      "canonicalCompanyId": "79a95c27-95ab-4974-850c-7cc699504133",
+      "beforeCanonicalLinkedInUrl": "https://www.linkedin.com/company/entune",
+      "Current canonical persistence": "NO_CANONICAL_CHANGE",
+      "Historical canonical persistence": "ATTACHED_VERIFIED",
+      "selectedCandidateDetails": {
+        "profileUrl": "https://in.linkedin.com/company/entune",
+        "normalizedProfileUrl": "https://www.linkedin.com/company/entune",
+        "profileSlug": "entune",
+        "status": "VERIFIED",
+        "supportingEvidence": [
+          {
+            "kind": "NAME_MATCH",
+            "detail": "Candidate title or slug agrees with \"ENTUNE IT Consulting Pvt Ltd\"",
+            "strength": "strong",
+            "sourceUrl": "https://in.linkedin.com/company/entune"
+          },
+          {
+            "kind": "DOMAIN_MATCH",
+            "detail": "The indexed candidate evidence references canonical domain \"entune.co\"",
+            "strength": "strong",
+            "sourceUrl": "https://in.linkedin.com/company/entune"
+          }
+        ],
+        "contradictingEvidence": [],
+        "candidates": [
+          {
+            "publisher": "LINKEDIN",
+            "profileUrl": "https://in.linkedin.com/company/entune",
+            "profileSlug": "entune",
+            "profileType": "LINKEDIN_COMPANY",
+            "retrievedAt": "2026-08-31T08:49:09.029Z",
+            "discoveryQuery": "site:linkedin.com/company \"ENTUNE IT Consulting Pvt Ltd\" \"entune.co\"",
+            "searchResultUrl": "https://in.linkedin.com/company/entune",
+            "resolutionStatus": "VERIFIED",
+            "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+            "searchResultTitle": "ENTUNE IT Consulting Pvt Ltd - Your Partner for Success...",
+            "supportingEvidence": [
+              {
+                "kind": "NAME_MATCH",
+                "detail": "Candidate title or slug agrees with \"ENTUNE IT Consulting Pvt Ltd\"",
+                "strength": "strong",
+                "sourceUrl": "https://in.linkedin.com/company/entune"
+              },
+              {
+                "kind": "DOMAIN_MATCH",
+                "detail": "The indexed candidate evidence references canonical domain \"entune.co\"",
+                "strength": "strong",
+                "sourceUrl": "https://in.linkedin.com/company/entune"
+              }
+            ],
+            "searchResultExcerpt": "# ENTUNE IT Consulting Pvt Ltd\nYour Partner for Success...\nIT Services and IT Consulting • Bengaluru, Karnataka • 5,031 followers • 51-200 employees\n\n## Overview\nENTUNE IT Consulting Pvt Ltd (ENTUNE) based out of Bangalore, India was founded in 2015 with the core objective of offering top class Enterprise Solutions to the Mid-market and Large Enterprise segments. We aim to provide efficient and affordable IT solutions that add value to our Customer’s business. With a deep understanding of our target industry sector and our expertise in providing Enterprise Application Solutions, we’re helping some global brands to add value to their business.\n\n### Website\n\n### Crunchbase\nN/A\n### LinkedIn\nN/A\n\n### Industry\nIT Services and IT Consulting [...] ### Industry\nIT Services and IT Consulting\n\n### Company Size\n51-200 employees  \n114 associated members (LinkedIn members who've listed ENTUNE IT Consulting Pvt Ltd as their current workplace on their profile)\n\n### Founded\n2015\n\n### Funding\nLast Round Date: N/A\nLast Round Type: N/A\nTotal Rounds: N/A\nLast Round Raised: N/A\n\n### Investors\nN/A\n\n### Specialties\nConsulting, Implementing, Application support, Technical service, Rollout, Cloud offering, GST Implementation, SAP ERP, and SAPS4HANA\n\n## Locations\nH S R Layout In Road, Bengaluru, Karnataka 560102, IN\n\n### Get Directions\nDirections\n\n## Employees\nKarthikeyan Keelaiyur (N/A):  LinkedIn Member (N/A): N/A; LinkedIn Member (N/A): N/A; LinkedIn Member (N/A): N/A; LinkedIn Member (N/A): N/A; LinkedIn Member (N/A): N/A [...] ## Similar Companies\nUneecops (IT Services and IT Consulting):  (N/A); Entune (Services for Renewable Energy):  (Eindhoven, North Brabant); YASH Technologies (IT Services and IT Consulting):  (East Moline, IL); Orane Consulting Private Limited (Information Technology & Services):  (Noida, UP); TRUSPEQ: SAP Gold Partner (IT Services and IT Consulting):  (Bangalore, Karnataka); Altiux Innovations (IT Services and IT Consulting):  (Bangalore, Karnataka); SoftCore Solutions Pvt. Ltd. | SAP GOLD Partner (IT Services and IT Consulting):  (Thane (W) ,Mumbai, Maharashtra); HROne (Software Development):  (Noida, Uttar Pradesh); Sonata Software (IT Services and IT Consulting):  (Bangalore, Karnataka); Elevra Tech (IT Services and IT Consulting):  (N/A)\n\n## Posts",
+            "normalizedProfileUrl": "https://www.linkedin.com/company/entune",
+            "resolutionConfidence": 85,
+            "contradictingEvidence": []
+          },
+          {
+            "publisher": "LINKEDIN",
+            "profileUrl": "https://nl.linkedin.com/company/entunebv",
+            "profileSlug": "entunebv",
+            "profileType": "LINKEDIN_COMPANY",
+            "retrievedAt": "2026-08-31T08:49:09.029Z",
+            "discoveryQuery": "site:linkedin.com/company \"ENTUNE IT Consulting Pvt Ltd\" \"entune.co\"",
+            "searchResultUrl": "https://nl.linkedin.com/company/entunebv",
+            "resolutionStatus": "AMBIGUOUS",
+            "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+            "searchResultTitle": "Entune | LinkedIn",
+            "supportingEvidence": [
+              {
+                "kind": "NAME_MATCH",
+                "detail": "Candidate title or slug agrees with \"ENTUNE IT Consulting Pvt Ltd\"",
+                "strength": "strong",
+                "sourceUrl": "https://nl.linkedin.com/company/entunebv"
+              }
+            ],
+            "searchResultExcerpt": "Geen alternatieve tekst opgegeven voor deze afbeelding\n\n## Word nu lid en bekijk wat u mist\n\n## Vergelijkbare pagina’s\n\n### ENTUNE IT Consulting Pvt Ltd\n\nIT-services en consultancy\n\nBengaluru, Karnataka\n\n### Itility\n\nIT-services en consultancy\n\nEindhoven, Brabant\n\n### Uneecops\n\nIT-services en consultancy\n\n### Altiux Innovations\n\nIT-services en consultancy\n\nBangalore, Karnataka\n\n### entune\n\nBedrijfsconsulting en -services\n\n### Energiemanagers\n\nOpwekking van zonne-energie\n\nIJsselstein, Utrecht\n\n### Cape Canaveral\n\nDurfkapitaal en privévermogen\n\n### Qonnected Logistics\n\nTransport, logistiek, supplychain en opslag\n\n### ASML\n\nProductie halfgeleiders\n\n### Scholt Energy\n\nServices voor hernieuwbare energie\n\nEindhoven, North Brabant\n\n## Door vacatures bladeren [...] Entune is onderdeel van Itility BV, een high-end ICT-dienstverlener met ruime ervaring in het toepassen van data- en modelgedreven oplossingen in combinatie met ICT-diensten om waarde te leveren aan bedrijven. Itility is wereldwijd actief in hightech productie-, landbouw- en energiedomeinen. [...] 🚀 Wil jij bouwen aan de slimste gebouwen van Nederland?\nBij Entune combineren we AI, gebouwtechniek, cloud en data om gebouwen energiezuiniger, comfortabeler en toekomstbestendig te maken. We groeien hard en zoeken nieuwe collega's die impact willen maken op de energietransitie en de gebouwde omgeving.\n🔥 Openstaande vacatures:\nAI Software Engineer & Agentic AI\nFullstack Software Engineer\nDevOps & Cloud Engineer\nProjectleider Smart Buildings & AI\nChef Scale-up (Business Operations Lead)  \nWaarom Entune? ✅ Werken aan AI-oplossingen die dagelijks draaien in echte gebouwen ✅ Directe impact op energiebesparing, comfort en duurzaamheid ✅ Veel vrijheid, verantwoordelijkheid en ondernemerschap ✅ Snelle scale-up cultuur met de technische slagkracht van Itility op de achtergrond",
+            "normalizedProfileUrl": "https://www.linkedin.com/company/entunebv",
+            "resolutionConfidence": 45,
+            "contradictingEvidence": []
+          },
+          {
+            "publisher": "LINKEDIN",
+            "profileUrl": "https://in.linkedin.com/company/altiux-innovations",
+            "profileSlug": "altiux-innovations",
+            "profileType": "LINKEDIN_COMPANY",
+            "retrievedAt": "2026-08-31T08:49:09.029Z",
+            "discoveryQuery": "site:linkedin.com/company \"ENTUNE IT Consulting Pvt Ltd\" \"entune.co\"",
+            "searchResultUrl": "https://in.linkedin.com/company/altiux-innovations",
+            "resolutionStatus": "WRONG",
+            "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+            "searchResultTitle": "Altiux Innovations - Dream. Innovate. Connect your IoT dreams with Altiux Innovations.",
+            "supportingEvidence": [],
+            "searchResultExcerpt": "## Similar Companies\nvidaXL (Retail):  (Venlo, Limburg); KeyPoint Technologies (Software Development):  (N/A); ENTUNE IT Consulting Pvt Ltd (IT Services and IT Consulting):  (Bengaluru, Karnataka); Cerina Labs (IT Services and IT Consulting):  (Hyderabad, Telangana); DiLytics (IT Services and IT Consulting):  (San Mateo, CA); BURGEON IT SERVICES (IT Services and IT Consulting):  (Claymont, Delaware); ExactSpace (Oil and Gas):  (Bangalore, Karnataka); WinGIG IT Consulting Services Pvt. Ltd (Staffing and Recruiting):  (HYDERABAD, TELANGANA); GND Solutions India Pvt. Ltd. (Wireless Services):  (Bengaluru, Karnataka); SmartBytes Technology Services (Information Technology & Services):  (N/A)\n\n## Posts\n\n## Media\n- Images: \n- Logo: Company Logo [...] # Altiux Innovations\nDream. Innovate. Connect your IoT dreams with Altiux Innovations.\nIT Services and IT Consulting • Bangalore, Karnataka • 8,736 followers • 201-500 employees",
+            "normalizedProfileUrl": "https://www.linkedin.com/company/altiux-innovations",
+            "resolutionConfidence": 0,
+            "contradictingEvidence": [
+              {
+                "kind": "CONTRADICTION",
+                "detail": "Candidate \"Altiux Innovations - Dream. Innovate. Connect your IoT dreams with Altiux Innovations.\" does not independently agree with the requested company identity",
+                "strength": "contradicting",
+                "sourceUrl": "https://in.linkedin.com/company/altiux-innovations"
+              }
+            ]
+          },
+          {
+            "publisher": "LINKEDIN",
+            "profileUrl": "https://in.linkedin.com/company/espouse-technology-private-limited",
+            "profileSlug": "espouse-technology-private-limited",
+            "profileType": "LINKEDIN_COMPANY",
+            "retrievedAt": "2026-08-31T08:49:09.029Z",
+            "discoveryQuery": "site:linkedin.com/company \"ENTUNE IT Consulting Pvt Ltd\" \"entune.co\"",
+            "searchResultUrl": "https://in.linkedin.com/company/espouse-technology-private-limited",
+            "resolutionStatus": "WRONG",
+            "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+            "searchResultTitle": "ESPOUSE TECHNOLOGY PRIVATE LIMITED - Espouse is formed to dig up a solution for the client who has an issue and resolve problem and issues related to ERP Sys",
+            "supportingEvidence": [],
+            "searchResultExcerpt": "## Similar Companies\nEspouse (N/A):  (Nairobi, Nairobi); Sapphire Technocrats Pvt Ltd (Information Technology & Services):  (Noida, UP); Centroxy (IT Services and IT Consulting):  (Bhubaneswar, Odisha); Codyin (Technology, Information and Internet):  (N/A); Eagle Technology Resources Pvt Ltd (Software Development):  (Bhubaneswar, Odisha); CARLine Technologies Pvt Ltd. (Automotive):  (Bhubaneswar, Odisha); ENTUNE IT Consulting Pvt Ltd (IT Services and IT Consulting):  (Bengaluru, Karnataka); E Square System & Technologies Pvt Ltd. (Information Technology & Services):  (Bhubaneswar, Odisha); Cozentus (IT Services and IT Consulting):  (Bhubaneswar, Odisha); EY (Professional Services):  (N/A)\n\n## Posts\n\n## Media\n- Images: \n- Logo: Company Logo [...] # ESPOUSE TECHNOLOGY PRIVATE LIMITED\nEspouse is formed to dig up a solution for the client who has an issue and resolve problem and issues related to ERP Sys\nIT Services and IT Consulting • BANGALORE, Karnataka • 319 followers • 11-50 employees\n\n## Overview\nESPOUSE TECHNOLOGY PRIVATE LIMITED is a company based out of B-105, MAP ENCLAVE, 3RD MAIN VIGNAN NAGAR,, BANGALORE, Karnataka, India.\n\n### Website\n\n### Crunchbase\nN/A\n### LinkedIn\nN/A\n\n### Industry\nIT Services and IT Consulting\n\n### Company Size\n11-50 employees  \n51 associated members (LinkedIn members who've listed ESPOUSE TECHNOLOGY PRIVATE LIMITED as their current workplace on their profile)\n\n### Founded\n2011\n\n### Funding\nLast Round Date: N/A\nLast Round Type: N/A\nTotal Rounds: N/A\nLast Round Raised: N/A\n\n### Investors\nN/A [...] Additional jobs info: Support Analyst (78,440 open jobs). Information Technology Support Specialist (6,966 open jobs). Support Engineer (294,729 open jobs). Engineer (555,845 open jobs). SAP Consultant (8,111 open jobs). Developer (258,935 open jobs). Campaign Specialist (5,761 open jobs). Market Research Analyst (35,163 open jobs). Human Resources Generalist (20,704 open jobs). Software Engineer (300,699 open jobs). Social Media Manager (27,779 open jobs). Manager (1,880,925 open jobs). SAP Technology Consultant (5,151 open jobs). Oracle Application Developer (6,631 open jobs). Technical Consultant (86,361 open jobs). Analyst (694,057 open jobs). Technical Lead (214,024 open jobs). Assistant Manager (360,456 open jobs). Policy Consultant (2,476 open jobs). Project Management Analyst",
+            "normalizedProfileUrl": "https://www.linkedin.com/company/espouse-technology-private-limited",
+            "resolutionConfidence": 0,
+            "contradictingEvidence": [
+              {
+                "kind": "CONTRADICTION",
+                "detail": "Candidate \"ESPOUSE TECHNOLOGY PRIVATE LIMITED - Espouse is formed to dig up a solution for the client who has an issue and resolve problem and issues related to ERP Sys\" does not independently agree with the requested company identity",
+                "strength": "contradicting",
+                "sourceUrl": "https://in.linkedin.com/company/espouse-technology-private-limited"
+              }
+            ]
+          },
+          {
+            "publisher": "LINKEDIN",
+            "profileUrl": "https://www.linkedin.com/company/forceflake",
+            "profileSlug": "forceflake",
+            "profileType": "LINKEDIN_COMPANY",
+            "retrievedAt": "2026-08-31T08:49:09.029Z",
+            "discoveryQuery": "site:linkedin.com/company \"ENTUNE IT Consulting Pvt Ltd\" \"entune.co\"",
+            "searchResultUrl": "https://www.linkedin.com/company/forceflake",
+            "resolutionStatus": "WRONG",
+            "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+            "searchResultTitle": "ForceFlake | LinkedIn",
+            "supportingEvidence": [],
+            "searchResultExcerpt": "### Intelli Platforms Inc\n\nIT Services and IT Consulting\n\nPrinceton Junction, New Jersey\n\n### XtracIT Inc\n\nStaffing and Recruiting\n\nCharlotte , NC\n\n### ENTUNE IT Consulting Pvt Ltd\n\nIT Services and IT Consulting\n\nBengaluru, Karnataka\n\n### Elpis IT Solutions Pvt Ltd\n\nSoftware Development\n\nBengaluru, Karnataka\n\nAgree & Join LinkedIn\n\nBy clicking Continue to join or sign in, you agree to LinkedIn’s User Agreement, Privacy Policy, and Cookie Policy.\n\n## Sign in to see who you already know at ForceFlake\n\nor\n\nNew to LinkedIn? Join now\n\nBy clicking Continue to join or sign in, you agree to LinkedIn’s User Agreement, Privacy Policy, and Cookie Policy.\n\nLinkedIn\n\nLinkedIn is better on the app\n\nDon’t have the app? Get it in the Microsoft Store. [...] ## Locations\n\nMcKinney, TX 75072, US\n\n## Employees at ForceFlake\n\nClick here to view Akhila Nama’s profile\n\n### Akhila Nama\n\nClick here to view Gopi Krishna Ogururi’s profile\n\n### Gopi Krishna Ogururi\n\n## Similar pages\n\n### Eminence IT Solutions (EITS)\n\nIT Services and IT Consulting\n\nCary, North Carolina\n\n### S3Vision Software Pvt Ltd\n\nStaffing and Recruiting\n\nHyedarabad, Telangana\n\n### Vaisakhi Skypark\n\nReal Estate\n\nVisakhapatnam, Andhra Pradesh\n\n### Great Logics Inc.\n\nInformation Technology & Services\n\nCanton, Michigan\n\n### Transcad Engineering & Detailing, LLC\n\nCivil Engineering\n\nLewes, Delaware\n\n### Executive Softway Guild India Private Limited - (SoftWay Systems)\n\nInformation Technology & Services\n\nSecunderabad, Telangana\n\n### Intelli Platforms Inc\n\nIT Services and IT Consulting",
+            "normalizedProfileUrl": "https://www.linkedin.com/company/forceflake",
+            "resolutionConfidence": 0,
+            "contradictingEvidence": [
+              {
+                "kind": "CONTRADICTION",
+                "detail": "Candidate \"ForceFlake\" does not independently agree with the requested company identity",
+                "strength": "contradicting",
+                "sourceUrl": "https://www.linkedin.com/company/forceflake"
+              }
+            ]
+          },
+          {
+            "publisher": "LINKEDIN",
+            "profileUrl": "https://in.linkedin.com/company/uneecops-business-solutions",
+            "profileSlug": "uneecops-business-solutions",
+            "profileType": "LINKEDIN_COMPANY",
+            "retrievedAt": "2026-08-31T08:49:09.029Z",
+            "discoveryQuery": "site:linkedin.com/company \"ENTUNE IT Consulting Pvt Ltd\" \"entune.co\"",
+            "searchResultUrl": "https://in.linkedin.com/company/uneecops-business-solutions",
+            "resolutionStatus": "WRONG",
+            "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+            "searchResultTitle": "Uneecops",
+            "supportingEvidence": [],
+            "searchResultExcerpt": "Uneecops Technologies (Technology, Information and Internet):  (N/A); HROne (Software Development):  (Noida, Uttar Pradesh); SoftCore Solutions Pvt. Ltd. | SAP GOLD Partner (IT Services and IT Consulting):  (Thane (W) ,Mumbai, Maharashtra); Elevra Tech (IT Services and IT Consulting):  (N/A); Cogniscient Business Solutions (IT Services and IT Consulting):  (NOIDA, UTTAR PRADESH); ENTUNE IT Consulting Pvt Ltd (IT Services and IT Consulting):  (Bengaluru, Karnataka); Cinntra (IT Services and IT Consulting):  (New York City, New York); TechMatrix Consulting (IT Services and IT Consulting):  (Singapore, SG); Orane Consulting Private Limited (Information Technology & Services):  (Noida, UP); RPM Infotech Consulting Pvt Ltd | SAP Gold Partner (IT Services and IT Consulting):  (Mumbai, [...] SAP Gold Partner (IT Services and IT Consulting):  (Mumbai, Maharashtra) [...] ### Website\n\n### Crunchbase\nN/A\n### LinkedIn\nN/A\n\n### Industry\nIT Services and IT Consulting\n\n### Company Size\n501-1,000 employees  \n921 associated members (LinkedIn members who've listed Uneecops as their current workplace on their profile)\n\n### Founded\nN/A\n\n### Funding\nLast Round Date: N/A\nLast Round Type: N/A\nTotal Rounds: N/A\nLast Round Raised: N/A\n\n### Investors\nN/A\n\n### Specialties\nSAP, SAP Business One, SAP S/4 HANA Cloud, Salesforce, Tableau, Power BI, Alteryx, AWS, ERP, Consulting, Implementation, Customization, Managed Support, User adoption, Migration, Dashboards, Support Services, Digital Transformation, IT Modernization, and Automation",
+            "normalizedProfileUrl": "https://www.linkedin.com/company/uneecops-business-solutions",
+            "resolutionConfidence": 0,
+            "contradictingEvidence": [
+              {
+                "kind": "CONTRADICTION",
+                "detail": "Candidate \"Uneecops\" does not independently agree with the requested company identity",
+                "strength": "contradicting",
+                "sourceUrl": "https://in.linkedin.com/company/uneecops-business-solutions"
+              }
+            ]
+          }
+        ],
+        "discoveryQueries": [
+          "site:linkedin.com/company \"ENTUNE IT Consulting Pvt Ltd\" \"entune.co\""
+        ],
+        "provider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+        "retrievalMethod": "TAVILY_WEB_SEARCH",
+        "resolvedAt": "2026-08-31T08:49:09.025Z"
+      }
+    },
+    {
+      "Company": "Cloudi",
+      "Canonical domain": "cloudi-infra.com",
+      "Before LinkedIn URL": "https://www.linkedin.com/company/cloudi-infra",
+      "Historical pre-resolution LinkedIn URL": "NONE",
+      "Existing identifier status": "NO_LINKEDIN_URL",
+      "Search required": "YES",
+      "Search calls": 1,
+      "Current run provider calls": 0,
+      "Candidates found": 8,
+      "Selected candidate": "https://www.linkedin.com/company/cloudi-infra",
+      "Name match": "YES",
+      "Domain match": "YES",
+      "Geography match": "NO",
+      "Contradictions": "NONE",
+      "Final status": "VERIFIED",
+      "Confidence": 85,
+      "Reason": "Candidate title or slug agrees with \"Cloudi\"; The indexed candidate evidence references canonical domain \"cloudi-infra.com\"",
+      "supportingEvidence": "NAME_MATCH, DOMAIN_MATCH",
+      "auditQuery": "site:linkedin.com/company \"Cloudi\" \"cloudi-infra.com\"",
+      "auditResultTitle": "Cloudi - We help organizations rethink their IT strategies and plan the technologies that best fit their business requirements.",
+      "auditResultUrl": "https://in.linkedin.com/company/cloudi-infra",
+      "auditExcerpt": "## Overview\nCloudi s a Strategic Managed Services Provider (MSP) distinct for its ability to merge its vision & think tank with that of its clients strives to understand your business thoroughly, We offer exclusively tailored, comprehensive and effective strategies for business consulting and IT services dedicated to serving businesses with Innovative and Simple business Solutions that nurture pro",
+      "auditRetrievedAt": "2026-08-31T08:49:09.277Z",
+      "canonicalCompanyId": "0ea2e29c-87df-4124-9c46-e96672160f33",
+      "beforeCanonicalLinkedInUrl": "https://www.linkedin.com/company/cloudi-infra",
+      "Current canonical persistence": "NO_CANONICAL_CHANGE",
+      "Historical canonical persistence": "ATTACHED_VERIFIED",
+      "selectedCandidateDetails": {
+        "profileUrl": "https://in.linkedin.com/company/cloudi-infra",
+        "normalizedProfileUrl": "https://www.linkedin.com/company/cloudi-infra",
+        "profileSlug": "cloudi-infra",
+        "status": "VERIFIED",
+        "supportingEvidence": [
+          {
+            "kind": "NAME_MATCH",
+            "detail": "Candidate title or slug agrees with \"Cloudi\"",
+            "strength": "strong",
+            "sourceUrl": "https://in.linkedin.com/company/cloudi-infra"
+          },
+          {
+            "kind": "DOMAIN_MATCH",
+            "detail": "The indexed candidate evidence references canonical domain \"cloudi-infra.com\"",
+            "strength": "strong",
+            "sourceUrl": "https://in.linkedin.com/company/cloudi-infra"
+          }
+        ],
+        "contradictingEvidence": [],
+        "candidates": [
+          {
+            "publisher": "LINKEDIN",
+            "profileUrl": "https://in.linkedin.com/company/cloudi-infra",
+            "profileSlug": "cloudi-infra",
+            "profileType": "LINKEDIN_COMPANY",
+            "retrievedAt": "2026-08-31T08:49:09.277Z",
+            "discoveryQuery": "site:linkedin.com/company \"Cloudi\" \"cloudi-infra.com\"",
+            "searchResultUrl": "https://in.linkedin.com/company/cloudi-infra",
+            "resolutionStatus": "VERIFIED",
+            "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+            "searchResultTitle": "Cloudi - We help organizations rethink their IT strategies and plan the technologies that best fit their business requirements.",
+            "supportingEvidence": [
+              {
+                "kind": "NAME_MATCH",
+                "detail": "Candidate title or slug agrees with \"Cloudi\"",
+                "strength": "strong",
+                "sourceUrl": "https://in.linkedin.com/company/cloudi-infra"
+              },
+              {
+                "kind": "DOMAIN_MATCH",
+                "detail": "The indexed candidate evidence references canonical domain \"cloudi-infra.com\"",
+                "strength": "strong",
+                "sourceUrl": "https://in.linkedin.com/company/cloudi-infra"
+              }
+            ],
+            "searchResultExcerpt": "## Overview\nCloudi s a Strategic Managed Services Provider (MSP) distinct for its ability to merge its vision & think tank with that of its clients strives to understand your business thoroughly, We offer exclusively tailored, comprehensive and effective strategies for business consulting and IT services dedicated to serving businesses with Innovative and Simple business Solutions that nurture proﬁtability and drive enterprise to be backed up with innovative projects, abundant experience, top-notch, talented employees. Cloudi is An Award-Winning Managed IT Service Provider. Cloudi provides complete IT services and Solutions for All Small to large-sized Enterprises.\n\n### Website\n\n### Crunchbase\nN/A\n### LinkedIn\nN/A\n\n### Industry\nIT Services and IT Consulting [...] – Pune (On-site) Are you passionate about advanced network infrastructure, security, and performance optimization? Join Cloudi, where we design, build, and manage robust enterprise-grade network and cloud environments for leading businesses. 💼 Role: L3 Network Engineer 📍 Location: Pune, Maharashtra (On-site) 🌐 Company: Cloudi We’re looking for professionals with deep expertise in: Routing & Switching (Cisco / Fortinet / Palo Alto preferred) Firewall and VPN configurations Network monitoring, troubleshooting, and optimization Experience handling complex enterprise networks At Cloudi, you’ll collaborate with skilled engineers, work on cutting-edge projects, and be part of a team that values innovation and reliability. If this sounds like you — apply now or tag someone who’d be a great fit! [...] ## Similar Companies\nCloudi ☁️ (Technology, Information and Internet):  (Rosh HaAyin, Center District); Candour Pro Managed Solutions (IT Services and IT Consulting):  (N/A); Market Intelligence And Consulting Private Limited (IT Services and IT Consulting):  (Pune, Maharashtra); Spinta Digital (Advertising Services):  (Chennai, Tamil Nadu); Bluescope AV Technologies Pvt. Ltd. (Facilities Services):  (MUMBAI, ANDHERI KURLA ROAD); Cult91 (Retail Apparel and Fashion):  (Pune, Maharashtra); Cloudli Communications (Telecommunications):  (N/A); First Connect- Human Capital Services LLP. (Staffing and Recruiting):  (Pune, Maharashtra); ThinkHumble (Software Development):  (Pune, Maharashtra); CloudInfra (IT Services and IT Consulting):  (Bangalore, Karnataka)",
+            "normalizedProfileUrl": "https://www.linkedin.com/company/cloudi-infra",
+            "resolutionConfidence": 85,
+            "contradictingEvidence": []
+          },
+          {
+            "publisher": "LINKEDIN",
+            "profileUrl": "https://www.linkedin.com/company/cloudi-computing",
+            "profileSlug": "cloudi-computing",
+            "profileType": "LINKEDIN_COMPANY",
+            "retrievedAt": "2026-08-31T08:49:09.277Z",
+            "discoveryQuery": "site:linkedin.com/company \"Cloudi\" \"cloudi-infra.com\"",
+            "searchResultUrl": "https://www.linkedin.com/company/cloudi-computing",
+            "resolutionStatus": "AMBIGUOUS",
+            "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+            "searchResultTitle": "Cloudi ☁️ - Cloudi invites you to discover our innovative technology and advanced capabilities that boost performance, reduce costs.",
+            "supportingEvidence": [
+              {
+                "kind": "NAME_MATCH",
+                "detail": "Candidate title or slug agrees with \"Cloudi\"",
+                "strength": "strong",
+                "sourceUrl": "https://www.linkedin.com/company/cloudi-computing"
+              }
+            ],
+            "searchResultExcerpt": "## Overview\nCloudi invites you to discover our innovative technology and advanced cloud capabilities that boost performance, reduce costs, and enable your employees to achieve output at record levels. With Cloudi these capabilities are at your fingertips, with our technology tailored precisely to the dimensions of your company or startup/project. Cloudi's ground-breaking technology is a game-changer that translates into an improved bottom line. Come benefit from a cloud platform (private or public) with working speed capabilities like nothing you've seen before, resource allocation in support of all current and future organizational needs, and supplementary tools that drastically increase the speed, smoothness, and efficiency of work in your organization.\n\n### Website [...] can survive external impacts. Data Sovereignty: Ensuring your critical assets remain on Israeli soil, managed by local experts who understand the unique security landscape of our region. 3 Steps to Safeguard Your Data NOW: Air-Gapped Backups: Maintain an immutable copy of your data that is completely disconnected from your main network to prevent \"cascading\" failures. Multi-Cloud / Hybrid Strategy: Don't put all your eggs in one basket. Distributing workloads between local providers like Cloudi and global hyperscalers adds a vital layer of survival. Real-Time DR (Disaster Recovery): Test your failover protocols. If a primary site goes dark, your secondary site should take over in minutes, not hours. At Cloudi, we don’t just provide servers; we provide a fortress for your digital future. [...] spending ₪180K/month on Azure. After a full FinOps audit and a few infrastructure changes, they dropped to ₪110K/month. Same workloads. Same performance. Just tighter configuration. Cloud cost isn't a finance problem. It's an infrastructure discipline problem. And it's almost always fixable. [Likes: 4, Comments: 0]; Cloudi ☁️ (5mo): The recent March 1st attacks on AWS data centers in the Gulf (UAE and Bahrain) have sent a shockwave through the global tech industry. We’ve officially entered an era where Data Centers are strategic military targets, just like power plants or oil refineries. For Israeli companies, the \"Cloud\" is no longer an abstract concept—it is physical infrastructure that requires a physical defense strategy. The Reality Check: The impact in the Gulf wasn't just digital.",
+            "normalizedProfileUrl": "https://www.linkedin.com/company/cloudi-computing",
+            "resolutionConfidence": 45,
+            "contradictingEvidence": []
+          },
+          {
+            "publisher": "LINKEDIN",
+            "profileUrl": "https://www.linkedin.com/company/cloudi-fi",
+            "profileSlug": "cloudi-fi",
+            "profileType": "LINKEDIN_COMPANY",
+            "retrievedAt": "2026-08-31T08:49:09.277Z",
+            "discoveryQuery": "site:linkedin.com/company \"Cloudi\" \"cloudi-infra.com\"",
+            "searchResultUrl": "https://www.linkedin.com/company/cloudi-fi",
+            "resolutionStatus": "AMBIGUOUS",
+            "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+            "searchResultTitle": "Cloudi-Fi",
+            "supportingEvidence": [
+              {
+                "kind": "NAME_MATCH",
+                "detail": "Candidate title or slug agrees with \"Cloudi\"",
+                "strength": "strong",
+                "sourceUrl": "https://www.linkedin.com/company/cloudi-fi"
+              }
+            ],
+            "searchResultExcerpt": "# Cloudi-Fi\nN/A\nComputer and Network Security • Greater Paris • 6,429 followers • 11-50 employees\n\n## Overview\nCloudi-Fi offers Internet connectivity for guests on top of existing infrastructures. Cloudi-Fi provides security, compliance and marketing services at an unmatched international scale. Its 100% cloud delivery service allows instantaneous deployments on all sites worldwide without additional investment. Cloudi-Fi is used by large corporations who want to simplify their Wi-Fi onboarding for guests, IOT, employees.. but also by brands, retailers and hospitality companies who want to leverage their physical presence to improve their digital campaigns. Let's connect with your guests! www.cloudi-fi.com\n\n### Website\n\n### Crunchbase\nN/A\n### LinkedIn\nN/A [...] and SASE reshape enterprise security, one challenge is becoming more visible, more strategic and more urgent: 𝗦𝗘𝗖𝗨𝗥𝗘 𝗪𝗛𝗔𝗧 𝗦𝗔𝗦𝗘 𝗙𝗢𝗥𝗚𝗢𝗧. This is where Cloudi-Fi is positioned: helping enterprises close the network access blind spots that SASE does not fully address, including guest and contractor access, BYOD, IoT, and shared devices. Cloudi-Fi has been built for this from day one. 🌎 Today, our platform is trusted by 200+ customers across 120 countries, and our customer-led approach has driven $10M in ARR with <0.5% churn. 𝙉𝙤𝙬, 𝙬𝙚’𝙧𝙚 𝙤𝙥𝙚𝙣𝙞𝙣𝙜 𝙖 𝙙𝙤𝙯𝙚𝙣 𝙣𝙚𝙬 𝙥𝙤𝙨𝙞𝙩𝙞𝙤𝙣𝙨 𝙖𝙘𝙧𝙤𝙨𝙨 𝙩𝙝𝙚 𝙬𝙤𝙧𝙡𝙙 𝙩𝙤 𝙨𝙪𝙥𝙥𝙤𝙧𝙩 𝙤𝙪𝙧 𝙣𝙚𝙭𝙩 𝙨𝙩𝙖𝙜𝙚 𝙤𝙛 𝙜𝙧𝙤𝙬𝙩𝙝. We’re looking for people who want to join a financially solid, customer-focused company at a pivotal moment in its growth and help us shape the future of network access [...] ! 💡 Is ZTNA’s Biggest Blind Spot at Network Access?” Find out by joining our live customer session with Steffen Erler from Baker & Baker today at 3:00 p.m - Stolz 1:  Simranjeet Singh Kahlon Alexandre de Thomasson Shruti Parmar Jérome Guidou Boris Bertuzzi Eric Ingrand Bertrand Dequivre Louis Robertson Mahfoud AMHIYEN Richard Marchegay #ZenithLive #Zscaler #CloudiFi #CloudNAC #ZTNA #ZeroTrust #NetworkSecurity [Likes: 25, Comments: 0]; Cloudi-Fi (2d): After a hectic and insightful week at Zscaler #ZenithLive in Las Vegas, we are now getting ready for Zenith Live EMEA in Vienna!! The Cloudi-Fi Team is eager to continue the conversation around how Cloudi-Fi helps global enterprises eliminate ZTNA blind spots and secure network access across large, complex, global infrastructures! Join us",
+            "normalizedProfileUrl": "https://www.linkedin.com/company/cloudi-fi",
+            "resolutionConfidence": 45,
+            "contradictingEvidence": []
+          },
+          {
+            "publisher": "LINKEDIN",
+            "profileUrl": "https://in.linkedin.com/company/antonyshinuaa",
+            "profileSlug": "antonyshinuaa",
+            "profileType": "LINKEDIN_COMPANY",
+            "retrievedAt": "2026-08-31T08:49:09.277Z",
+            "discoveryQuery": "site:linkedin.com/company \"Cloudi\" \"cloudi-infra.com\"",
+            "searchResultUrl": "https://in.linkedin.com/company/antonyshinuaa",
+            "resolutionStatus": "WRONG",
+            "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+            "searchResultTitle": "IT & Cloud Infrastructure Expert and Consultant - 25+Yrs Exp. IT & Cloud Infrastructure Consultant [Open To Discuss New Projects / Assignments / Roles / Opportunities]",
+            "supportingEvidence": [],
+            "searchResultExcerpt": "25+ Years of Experienced Independent IT & Cloud Infrastructure Consultant |[Ready To Contribute My Skills and Experiences for the success of your organization,be it Full-Time or Freelance or Remote Opportunities/Roles/Projects/Assignments] Website :-  Areas Of Expertise ================== IT & Cloud Infrastructure Management Remote IT Infrastructure Support Work From Home (WFH) Support Remote / WFH Infra. Deployment IT Operations Management IT Project Management Service Delivery Management Data Center Management NOC Management Vendor Management IS Audit Management IT Security Management Hosting Infrastructure Management Network Monitoring & Analysis Server & Desktop Management Mail & Communication Management Web & FTP Server Management IT Infrastructure Architect IT Infrastructure Design [...] ### Investors\nN/A\n\n### Specialties\nIT Infrastructure Management, Remote IT Infrastructure Support, Work From Home (WFH) Support, Remote / WFH Infra. Deployment, IT Operations Management , IT Project Management, Service Delivery Management, Data Center Management, NOC Management , Vendor Management, IT Security Management , Cloud Infrastructure Management, Network Monitoring & Analysis , Server & Desktop Management, IT Infrastructure Architect, IT Infrastructure Design & Deployment , IT Technical Support Management, IT Infrastructure Cabling Management, IT Budget Planning & Management, IT Procurement Management , LAN, WAN, WINDOWS, LINUX, NETWORK MANAGEMENT, SYSTEM MANAGEMENT, SYSTEM ADMINISTRATION, NETWORK ADMINISTRATION, IT MANAGER, and IT MANAGEMENT [...] ## Similar Companies",
+            "normalizedProfileUrl": "https://www.linkedin.com/company/antonyshinuaa",
+            "resolutionConfidence": 0,
+            "contradictingEvidence": [
+              {
+                "kind": "CONTRADICTION",
+                "detail": "Candidate \"IT & Cloud Infrastructure Expert and Consultant - 25+Yrs Exp. IT & Cloud Infrastructure Consultant [Open To Discuss New Projects / Assignments / Roles / Opportunities]\" does not independently agree with the requested company identity",
+                "strength": "contradicting",
+                "sourceUrl": "https://in.linkedin.com/company/antonyshinuaa"
+              }
+            ]
+          },
+          {
+            "publisher": "LINKEDIN",
+            "profileUrl": "https://uk.linkedin.com/company/cloud-infrastructure-services",
+            "profileSlug": "cloud-infrastructure-services",
+            "profileType": "LINKEDIN_COMPANY",
+            "retrievedAt": "2026-08-31T08:49:09.277Z",
+            "discoveryQuery": "site:linkedin.com/company \"Cloudi\" \"cloudi-infra.com\"",
+            "searchResultUrl": "https://uk.linkedin.com/company/cloud-infrastructure-services",
+            "resolutionStatus": "WRONG",
+            "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+            "searchResultTitle": "Cloud Infrastructure Services - Helping customers with their cloud infrastructure deployments.",
+            "supportingEvidence": [],
+            "searchResultExcerpt": "## Similar Companies\nCapgemini (IT Services and IT Consulting):  (Paris, France); Cloud-A (clouda.ca) (Information Technology & Services):  (Halifax, NS); Cloud Infra Lab (IT Services and IT Consulting):  (N/A); Cloud Infratech (Technology, Information and Internet):  (Gurgaon, Haryana); Lumina Cloud Solutions (IT Services and IT Consulting):  (Dallas, TX); CISPE (Cloud Infrastructure Services Providers in Europe) (IT Services and IT Consulting):  (Brussels, Brussels Region); UST (IT Services and IT Consulting):  (Aliso Viejo, California); Accenture Middle East (Business Consulting and Services):  (N/A); WIN WIN IT (Computer and Network Security):  (Sousse, Sousse); Azure Thursdays Meetup (IT Services and IT Consulting):  (N/A) [...] ## Posts [...] # Cloud Infrastructure Services\nHelping customers with their cloud infrastructure deployments.\nIT Services and IT Consulting • London • 531 followers • 2-10 employees\n\n## Overview\nWe help companies transform to the cloud. We have different solutions available to make using the cloud easy and secure. 20 years experience working in complex IT infrastructure environments\n\n### Website\n\n### Crunchbase\nN/A\n### LinkedIn\nN/A\n\n### Industry\nIT Services and IT Consulting\n\n### Company Size\n2-10 employees  \n2 associated members (LinkedIn members who've listed Cloud Infrastructure Services as their current workplace on their profile)\n\n### Founded\n2014\n\n### Funding\nLast Round Date: N/A\nLast Round Type: N/A\nTotal Rounds: N/A\nLast Round Raised: N/A\n\n### Investors\nN/A",
+            "normalizedProfileUrl": "https://www.linkedin.com/company/cloud-infrastructure-services",
+            "resolutionConfidence": 0,
+            "contradictingEvidence": [
+              {
+                "kind": "CONTRADICTION",
+                "detail": "Candidate \"Cloud Infrastructure Services - Helping customers with their cloud infrastructure deployments.\" does not independently agree with the requested company identity",
+                "strength": "contradicting",
+                "sourceUrl": "https://uk.linkedin.com/company/cloud-infrastructure-services"
+              }
+            ]
+          },
+          {
+            "publisher": "LINKEDIN",
+            "profileUrl": "https://www.linkedin.com/company/cloud-infrastructures-llc",
+            "profileSlug": "cloud-infrastructures-llc",
+            "profileType": "LINKEDIN_COMPANY",
+            "retrievedAt": "2026-08-31T08:49:09.277Z",
+            "discoveryQuery": "site:linkedin.com/company \"Cloudi\" \"cloudi-infra.com\"",
+            "searchResultUrl": "https://www.linkedin.com/company/cloud-infrastructures-llc",
+            "resolutionStatus": "WRONG",
+            "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+            "searchResultTitle": "Cloud Infrastructures LLC - Helping small business navigate cybersecurity",
+            "supportingEvidence": [],
+            "searchResultExcerpt": "# Cloud Infrastructures LLC\nHelping small business navigate cybersecurity\nComputer and Network Security • N/A • 46 followers • 11-50 employees\n\n## Overview\nCloud Infrastructures LLC is an IT Security and Cloud Services Provider with many specialized offerings. We are a reseller and professional services provider for Palo Alto Networks, with engineers who are certified and came from the company. We offer a comprehensive SD-WAN solution by Viptela, which we secure with Palo Alto Netwoks' devices, and we also offer Microsoft Cloud Services, Azure, Office 365, and Dynamic CRM\n\n### Website\n\n### Crunchbase\nN/A\n### LinkedIn\nN/A\n\n### Industry\nComputer and Network Security [...] ### Industry\nComputer and Network Security\n\n### Company Size\n11-50 employees  \n2 associated members (LinkedIn members who've listed Cloud Infrastructures LLC as their current workplace on their profile)\n\n### Founded\n2016\n\n### Funding\nLast Round Date: N/A\nLast Round Type: N/A\nTotal Rounds: N/A\nLast Round Raised: N/A\n\n### Investors\nN/A\n\n### Specialties\nCloud Services, IT Security, and Virtualization\n\n## Locations\n\n### Get Directions\n\n## Employees\nVladimir M. (N/A):  Alexey Fedotov (N/A): \n\n## Similar Companies\nInnovative Developments LLC (Security Systems Services):  (Gaithersburg, Maryland)\n\n## Posts\n\n## Media\n- Images: \n- Logo: Company Logo\n\n## Additional  \nNone",
+            "normalizedProfileUrl": "https://www.linkedin.com/company/cloud-infrastructures-llc",
+            "resolutionConfidence": 0,
+            "contradictingEvidence": [
+              {
+                "kind": "CONTRADICTION",
+                "detail": "Candidate \"Cloud Infrastructures LLC - Helping small business navigate cybersecurity\" does not independently agree with the requested company identity",
+                "strength": "contradicting",
+                "sourceUrl": "https://www.linkedin.com/company/cloud-infrastructures-llc"
+              }
+            ]
+          },
+          {
+            "publisher": "LINKEDIN",
+            "profileUrl": "https://au.linkedin.com/company/cloudfi-consulting",
+            "profileSlug": "cloudfi-consulting",
+            "profileType": "LINKEDIN_COMPANY",
+            "retrievedAt": "2026-08-31T08:49:09.277Z",
+            "discoveryQuery": "site:linkedin.com/company \"Cloudi\" \"cloudi-infra.com\"",
+            "searchResultUrl": "https://au.linkedin.com/company/cloudfi-consulting",
+            "resolutionStatus": "WRONG",
+            "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+            "searchResultTitle": "CloudFi Consulting - Any muppet can follow the leader, be different.",
+            "supportingEvidence": [],
+            "searchResultExcerpt": "Cloud and Digital Marketing Business Consultants: We specialise in simple easy to manage IT solutions. Designing, Migrating and on-going support are all part of the service. CloudFi can support you in migrating your in-house infrastructure to the cloud while eliminating potential risks for your business. Your productivity will remain uninhibited as we deliver quick solutions for any unexpected IT related issues thanks to an international team of experts. We will tailor a specific design that meets your requirements at a very affordable budget depending on the size of your business and technology to be used. Our offer is subscription-based with no massive investment required. Upscaling and downscaling your business becomes easy with our “pay for what you use” model. For enquiries, call us [...] ## Employees\nTerrence Valley (N/A): \n\n## Similar Companies\nCloudFI, LLC, The Fastest Hardware & Software Solutions for Your Remote Workforce in Latin America. (IT Services and IT Consulting):  (Miami, FL); Cloudi-Fi (Computer and Network Security):  (N/A); ieng Group (Telecommunications):  (N/A); AVASO Technology Solutions (IT Services and IT Consulting):  (N/A); Rippling (Software Development):  (San Francisco, California)\n\n## Posts\n\n## Media\n- Images: \n- Logo: Company Logo\n\n## Additional  \nNone [...] our “pay for what you use” model. For enquiries, call us at 0423244631 or email us at info@cloudfi.com.au.",
+            "normalizedProfileUrl": "https://www.linkedin.com/company/cloudfi-consulting",
+            "resolutionConfidence": 0,
+            "contradictingEvidence": [
+              {
+                "kind": "CONTRADICTION",
+                "detail": "Candidate \"CloudFi Consulting - Any muppet can follow the leader, be different.\" does not independently agree with the requested company identity",
+                "strength": "contradicting",
+                "sourceUrl": "https://au.linkedin.com/company/cloudfi-consulting"
+              }
+            ]
+          },
+          {
+            "publisher": "LINKEDIN",
+            "profileUrl": "https://in.linkedin.com/company/infinient-corporation",
+            "profileSlug": "infinient-corporation",
+            "profileType": "LINKEDIN_COMPANY",
+            "retrievedAt": "2026-08-31T08:49:09.277Z",
+            "discoveryQuery": "site:linkedin.com/company \"Cloudi\" \"cloudi-infra.com\"",
+            "searchResultUrl": "https://in.linkedin.com/company/infinient-corporation",
+            "resolutionStatus": "WRONG",
+            "retrievalProvider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+            "searchResultTitle": "Cloudinfra Technologies Private Limited",
+            "supportingEvidence": [],
+            "searchResultExcerpt": "We are a Digital Marketing Agency and Cloud, Technology Consulting Company. We design Amazing Web & Mobile Apps, manage Cloud Infrastructure and run Digital",
+            "normalizedProfileUrl": "https://www.linkedin.com/company/infinient-corporation",
+            "resolutionConfidence": 0,
+            "contradictingEvidence": [
+              {
+                "kind": "CONTRADICTION",
+                "detail": "Candidate \"Cloudinfra Technologies Private Limited\" does not independently agree with the requested company identity",
+                "strength": "contradicting",
+                "sourceUrl": "https://in.linkedin.com/company/infinient-corporation"
+              }
+            ]
+          }
+        ],
+        "discoveryQueries": [
+          "site:linkedin.com/company \"Cloudi\" \"cloudi-infra.com\""
+        ],
+        "provider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+        "retrievalMethod": "TAVILY_WEB_SEARCH",
+        "resolvedAt": "2026-08-31T08:49:09.275Z"
+      }
+    }
+  ],
+  "summary": {
+    "companies": 10,
+    "existingUsableLinkedIn": 1,
+    "companiesRequiringResolution": 9,
+    "tavilyCalls": 9,
+    "candidateProfilesFound": 38,
+    "verifiedNew": 9,
+    "verifiedExisting": 1,
+    "probable": 0,
+    "ambiguous": 0,
+    "notFound": 0,
+    "wrong": 0,
+    "totalSafeLinkedInCoverage": 10,
+    "averageCallsPerResolvedCompany": 1,
+    "totalCost": 0.09,
+    "costPerVerifiedProfile": 0.009
+  },
+  "cache": {
+    "firstRunTavilyCalls": 9,
+    "currentRunProviderCalls": 0,
+    "secondRunTavilyCalls": 0,
+    "firstRunCacheHits": 9,
+    "secondRunCacheHits": 9,
+    "persistedVerifiedCacheReplay": true
+  },
+  "economics": {
+    "averageLatencyMs": 0,
+    "providerCost": 0.09,
+    "downstreamBrightDataCost": 0
+  },
+  "quality": {
+    "provenance": "PASS",
+    "entitySafety": "PASS",
+    "wrongProfilesAccepted": 0,
+    "unsafeProfilesAccepted": 0,
+    "linkedinAsCanonicalDomain": 0,
+    "unsupportedProfileFabrication": 0,
+    "noAutoAcceptedAmbiguous": "PASS"
+  },
+  "safety": {
+    "databaseDeltas": {
+      "researchJobs": 0,
+      "evidenceRows": 0,
+      "contactEnrichmentAttempts": 0,
+      "signals": 0,
+      "opportunityScores": 0,
+      "companies": 0,
+      "projectCompanies": 0
+    },
+    "brightDataCalls": 0,
+    "exaCalls": 0,
+    "apifyCalls": 0,
+    "contactEnrichment": 0,
+    "signals": 0,
+    "buyingIntent": 0,
+    "productionOperations": 0
+  },
+  "finalStatus": "PASS",
+  "decision": "DECISION A: PROFILE RESOLUTION PASSES. Proceed to the chained Profile Resolution → Bright Data Firmographics evaluation in a separate test.",
+  "providerUsage": {
+    "observedTavilyResolutionEvents": 0,
+    "observedProviderIds": []
+  }
+}
