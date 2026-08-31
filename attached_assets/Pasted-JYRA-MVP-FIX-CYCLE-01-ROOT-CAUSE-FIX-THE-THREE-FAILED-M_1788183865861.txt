@@ -1,0 +1,675 @@
+JYRA — MVP FIX CYCLE 01
+ROOT-CAUSE + FIX THE THREE FAILED MVP LAYERS
+
+BACKGROUND
+
+JYRA MVP Reality Test 01 produced:
+
+50 market companies
+
+LIKELY_FIT = 7
+POSSIBLE_FIT = 0
+LIKELY_NOT_FIT = 24
+INSUFFICIENT = 19
+
+Blind controls = 10
+Known events detected = 0
+Known-event detection recall = 0%
+
+Miss attribution:
+
+FACT_EXTRACTION_FAILURE = 6
+DISCOVERY_FAILURE = 2
+SOURCE_NOT_FOUND = 2
+ENTITY_FAILURE = 0
+SIGNAL_MAPPING_FAILURE = 0
+
+Manual WHO review:
+
+canonical identity accuracy = 80% in adjudicable sample
+obvious ICP errors = 4/12
+
+The purpose of this cycle is NOT to broadly tune JYRA.
+
+Fix ONLY:
+
+1. FACT EXTRACTION
+2. FIRMOGRAPHIC / ICP QUALIFICATION
+3. DISCOVERY COVERAGE
+
+Do not change signal definitions, opportunity scoring, clustering,
+contact enrichment, ranking or UI.
+
+==================================================
+PART A — FACT EXTRACTION FAILURE ANALYSIS
+==================================================
+
+Take the exact 6 blind-control cases classified as:
+
+FACT_EXTRACTION_FAILURE
+
+For each case trace:
+
+REFERENCE EVENT
+
+→ provider query
+
+→ retrieved result
+
+→ raw evidence
+
+→ question relevance classification
+
+→ extraction input
+
+→ extractor output
+
+→ fact proposal
+
+→ approval/rejection
+
+→ reason the expected fact did not survive.
+
+Create a trace table:
+
+COMPANY
+REFERENCE EVENT
+EVENT CATEGORY
+SOURCE FOUND?
+RAW EVIDENCE PRESENT?
+RELEVANT TEXT PRESENT?
+EXTRACTION INVOKED?
+EXTRACTOR INPUT CONTAINED EVENT?
+FACT CANDIDATE GENERATED?
+FACT TYPE
+FACT REJECTED?
+REJECTION REASON
+ROOT CAUSE
+
+Do not modify code until all 6 are traced.
+
+==================================================
+FACT EXTRACTION — LIKELY FAILURE CLASSES
+==================================================
+
+Classify each failure into one:
+
+CONTENT_NOT_FETCHED
+
+SEARCH_SNIPPET_NOT_PROMOTED
+
+WRONG_CONTENT_SECTION
+
+EVENT_DATE_EXTRACTION
+
+FACT_TYPE_MISSING
+
+EXTRACTOR_PROMPT_FAILURE
+
+ENTITY_LINK_FAILURE
+
+CONFIDENCE_THRESHOLD
+
+VALIDATION_RULE_TOO_STRICT
+
+VALIDATION_RULE_INCORRECT
+
+DEDUPLICATION_ERROR
+
+TEMPORAL_RULE_ERROR
+
+OTHER
+
+Report counts.
+
+==================================================
+FACT ONTOLOGY CHECK
+==================================================
+
+Determine whether existing fact types can represent all known events.
+
+Do NOT immediately create signal-specific fact types.
+
+Prefer generic reusable event facts such as:
+
+PERSON_ROLE_CHANGE
+
+JOB_OPENING
+
+HIRING_EXPANSION
+
+TECHNOLOGY_IMPLEMENTATION
+
+TECHNOLOGY_MIGRATION
+
+TECHNOLOGY_REPLACEMENT
+
+COMPLIANCE_INITIATIVE
+
+SECURITY_INCIDENT
+
+PROGRAM_INVESTMENT
+
+MARKET_EXPANSION
+
+ACQUISITION
+
+FUNDING_EVENT
+
+Only add a missing generic fact type when existing ontology genuinely
+cannot represent the event.
+
+==================================================
+EXTRACTION PRINCIPLE
+==================================================
+
+Fact extraction must extract OBSERVATIONS.
+
+Example:
+
+SOURCE:
+
+"Acme appointed Jane Smith as Chief Information Security Officer on
+August 12, 2026."
+
+GOOD FACT:
+
+type = PERSON_ROLE_CHANGE
+person = Jane Smith
+role = Chief Information Security Officer
+company = Acme
+event_date = 2026-08-12
+
+BAD FACT:
+
+"Acme has increased cybersecurity intent."
+
+==================================================
+SEARCH RESULT VS PAGE CONTENT
+==================================================
+
+Determine whether relevant events appear in:
+
+search-result title/snippet
+
+but disappear because the destination page is inaccessible or poorly
+parsed.
+
+If so:
+
+do NOT fabricate page content.
+
+But preserve the search result itself as a distinct evidence object with:
+
+publisher
+retrieval provider
+title
+snippet
+URL
+retrieved_at
+published_at if supplied
+evidence type = SEARCH_RESULT
+
+Allow fact extraction from search-result evidence ONLY when the actual
+claim is explicitly present in the title/snippet.
+
+Confidence/source authority should reflect that evidence class.
+
+==================================================
+EVENT DATE
+==================================================
+
+Fix legitimate cases where event date handling prevents timeless or
+dated facts incorrectly.
+
+Preserve:
+
+event_at
+published_at
+retrieved_at
+
+Never invent event_at.
+
+==================================================
+PART B — ICP / FIRMOGRAPHIC FAILURE ANALYSIS
+==================================================
+
+Take the exact 12-company manual-review sample from MVP Reality Test 01.
+
+Do not select a new sample.
+
+For every company show:
+
+CANONICAL COMPANY
+
+DOMAIN
+
+PROVIDER IDENTITY STATUS
+
+COUNTRY RAW
+
+COUNTRY NORMALIZED
+
+INDUSTRY RAW
+
+INDUSTRY NORMALIZED
+
+EMPLOYEE RANGE RAW
+
+EMPLOYEE COUNT RAW
+
+SIZE INTERPRETATION
+
+ICP GEO DECISION
+
+ICP INDUSTRY DECISION
+
+ICP SIZE DECISION
+
+FINAL ICP CLASSIFICATION
+
+MANUAL ADJUDICATION
+
+CORRECT / INCORRECT
+
+ROOT CAUSE IF INCORRECT
+
+==================================================
+SIZE LOGIC
+==================================================
+
+ICP:
+
+100–2,000 employees
+sweet spot 200–1,000.
+
+Do not treat overlapping ranges as exact matches.
+
+Examples:
+
+1,001–5,000
+
+overlaps target but cannot prove company <=2,000.
+
+Therefore classification must preserve uncertainty.
+
+Likewise:
+
+51–200
+
+partially overlaps lower boundary.
+
+Use:
+
+MATCH
+PARTIAL_MATCH
+NO_MATCH
+UNKNOWN
+
+at dimension level where appropriate.
+
+Do not convert PARTIAL_MATCH automatically to full fit.
+
+==================================================
+GEOGRAPHY LOGIC
+==================================================
+
+Distinguish:
+
+HEADQUARTERS_COUNTRY
+
+OPERATING_COUNTRY
+
+OFFICE_LOCATION
+
+PERSON_LOCATION
+
+Do not classify a company as ICP geography match merely because it has
+an employee or office in a target country unless the approved ICP
+semantics allow operating geography.
+
+Use existing approved ICP meaning.
+
+==================================================
+INDUSTRY LOGIC
+==================================================
+
+Normalize provider industries conservatively.
+
+Do not make extremely broad mappings.
+
+Examples need explicit deterministic taxonomy mapping.
+
+Preserve:
+
+raw industry
+normalized industry
+mapping version
+mapping confidence.
+
+==================================================
+IDENTITY QUALITY
+==================================================
+
+The benchmark reported 80% canonical identity accuracy.
+
+Trace every incorrect/ambiguous sample identity.
+
+Determine whether error originated in:
+
+DISCOVERY
+
+DOMAIN RESOLUTION
+
+LINKEDIN RESOLUTION
+
+BRIGHT DATA ATTRIBUTION
+
+CANONICAL MERGE
+
+MANUAL REVIEW LOGIC
+
+Do not loosen matching thresholds.
+
+Fix incorrect matching semantics instead.
+
+==================================================
+PART C — DISCOVERY FAILURE
+==================================================
+
+Take the exact 2 blind controls classified:
+
+DISCOVERY_FAILURE
+
+Reported examples include:
+
+First Horizon
+Black & McDonald
+
+Trace:
+
+ICP eligibility
+discovery query
+Exa raw candidates
+candidate ranking
+pagination/limits
+canonicalization
+filtering
+deduplication
+final provisioning
+
+Determine whether each company:
+
+was never returned
+
+was returned but ranked below cutoff
+
+was returned but filtered
+
+was returned but entity resolution failed
+
+was incorrectly disqualified
+
+==================================================
+IMPORTANT BENCHMARK SEMANTICS
+==================================================
+
+A general ICP discovery engine cannot be expected to discover every
+specific known company in the entire market from a 50-company sample.
+
+Therefore distinguish:
+
+MARKET_DISCOVERY_MISS
+
+from
+
+CONTROL_PROVISIONING_FAILURE.
+
+Do NOT falsely interpret:
+
+"this company was not among the first 50 discovered"
+
+as proof that COMPANY_DISCOVERY is broken.
+
+For blind event-detection recall, controls should be provisioned into
+the research pipeline independently of market-discovery ranking while
+keeping their reference-event labels hidden.
+
+Fix benchmark methodology if necessary.
+
+This is important.
+
+==================================================
+PART D — IMPLEMENT MINIMAL FIXES
+==================================================
+
+After root-cause analysis, implement ONLY fixes justified by the traces.
+
+Allowed:
+
+fact extraction fixes
+
+generic fact ontology additions where genuinely necessary
+
+search-result evidence handling
+
+event-date fixes
+
+firmographic normalization fixes
+
+ICP dimension semantics fixes
+
+entity-matching correctness fixes
+
+benchmark control provisioning fix
+
+discovery correctness fixes
+
+Not allowed:
+
+changing signal definitions
+
+loosening evidence requirements
+
+changing opportunity thresholds
+
+changing scoring weights
+
+changing ranking to improve benchmark
+
+adding new data providers
+
+contact enrichment changes
+
+UI changes.
+
+==================================================
+PART E — REGRESSION
+==================================================
+
+After fixes, rerun ONLY:
+
+the exact 10 blind controls
+
+and
+
+the exact 12-company WHO adjudication sample.
+
+Do NOT rerun the full 50-company benchmark yet.
+
+==================================================
+CONTROL RETEST
+==================================================
+
+Keep reference-event labels hidden from JYRA execution.
+
+After execution compare against frozen reference manifest.
+
+Report:
+
+KNOWN EVENTS = 10
+
+EVENTS DETECTED = X
+
+KNOWN-EVENT DETECTION RECALL = X%
+
+For every event:
+
+FOUND SOURCE?
+EXTRACTED FACT?
+GENERATED SIGNAL?
+EVENT DETECTED?
+
+Miss reason.
+
+==================================================
+IMPORTANT
+==================================================
+
+Detection does not necessarily require a final opportunity.
+
+The test is:
+
+Can JYRA detect the known qualifying event and map it correctly?
+
+Opportunity scoring comes later.
+
+==================================================
+SIGNAL PRECISION
+==================================================
+
+Strictly adjudicate every signal generated during the 10-control retest.
+
+Classify:
+
+TRUE_SUPPORTED
+WEAKLY_SUPPORTED
+UNSUPPORTED
+WRONG_ENTITY
+DUPLICATE_EVENT
+STALE_AS_CURRENT
+SELLER_AS_BUYER_ERROR
+
+Calculate precision only if signals > 0.
+
+==================================================
+WHO RETEST
+==================================================
+
+For exact 12-company sample calculate:
+
+CANONICAL IDENTITY ACCURACY
+
+ICP CLASSIFICATION ACCURACY
+
+GEOGRAPHY ACCURACY
+
+INDUSTRY ACCURACY
+
+SIZE INTERPRETATION ACCURACY
+
+List every remaining error.
+
+==================================================
+SUCCESS TARGETS
+==================================================
+
+Do not force PASS.
+
+Target:
+
+Known-event detection recall >= 70%
+
+True-supported signal precision >= 85%
+
+Unsupported signals <= 5%
+
+Wrong entity attachment = 0
+
+12-company canonical identity accuracy >= 95%
+
+12-company obvious ICP classification accuracy >= 90%
+
+WHY provenance = 100%
+
+Production operations = 0
+
+==================================================
+COST
+==================================================
+
+Track:
+
+provider calls
+cache hits
+estimated cost
+actual reported cost
+
+Do not optimize cost during this fix cycle.
+
+Accuracy first.
+
+==================================================
+DATABASE SAFETY
+==================================================
+
+DEVELOPMENT ONLY.
+
+Production operations = 0.
+
+Do not reset/migrate/seed/truncate/modify production.
+
+==================================================
+OUTPUT
+==================================================
+
+Generate:
+
+MVP_FIX_CYCLE_01.md
+
+MVP_FIX_CYCLE_01_RESULT.json
+
+MVP_FIX_CYCLE_01_FACT_TRACES.json
+
+MVP_FIX_CYCLE_01_WHO_TRACES.json
+
+MVP_FIX_CYCLE_01_CONTROL_RETEST.json
+
+==================================================
+FINAL DECISION
+==================================================
+
+Return ONE:
+
+A — FIX SUCCESSFUL
+Core event detection and WHO accuracy now meet targets.
+Rerun full MVP Reality Test.
+
+B — FACT EXTRACTION STILL FAILING
+Do not rerun full benchmark.
+
+C — WHO / ICP STILL FAILING
+Do not rerun full benchmark.
+
+D — DATA COVERAGE IS NOW PRIMARY BOTTLENECK
+Extraction works when evidence exists, but sources are not providing
+enough events.
+
+E — MULTIPLE CORE FAILURES REMAIN
+Do not proceed.
+
+==================================================
+STOP
+==================================================
+
+STOP after the 10-control + 12-company targeted retest.
+
+Do NOT rerun the 50-company benchmark automatically.
+
+Do NOT change signals.
+
+Do NOT add providers.
+
+Do NOT build contacts/UI/outreach.
+
+Return results for review.
