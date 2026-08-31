@@ -1,0 +1,35 @@
+{
+  "milestone": "IDENTITY_FIX_02",
+  "generatedAt": "2026-08-31T18:03:49.924Z",
+  "scope": "FOUR_KNOWN_FAILURE_CASES_ONLY",
+  "retrievalVersion": "MVP_RETRIEVAL_V1_FROZEN",
+  "decision": "C",
+  "decisionLabel": "NON_COMPANY_FILTER_FIXED_BUT_PROFILE_RESOLUTION_STILL_FAILS",
+  "fixes": [
+    "Conservative company-likeness gate before canonical attachment and enrichment",
+    "Explicit identity states and fail-closed identifier/related-entity conflicts",
+    "Canonical attachment requires independently verified identity evidence"
+  ],
+  "unchanged": [
+    "retrieval",
+    "facts",
+    "signals",
+    "ICP",
+    "opportunities",
+    "contacts",
+    "UI",
+    "providers"
+  ],
+  "operations": {
+    "providerCalls": 0,
+    "productionOperations": 0,
+    "schemaChanges": 0
+  },
+  "metrics": {
+    "cases": 4,
+    "wrongAutomaticAttaches": 0,
+    "safeNonAttaches": 4,
+    "canonicalIdentityAccuracy": 1,
+    "icpClassificationsChanged": 0
+  }
+}

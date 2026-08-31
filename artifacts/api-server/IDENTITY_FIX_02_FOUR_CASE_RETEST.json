@@ -1,0 +1,149 @@
+{
+  "generatedAt": "2026-08-31T18:03:49.924Z",
+  "population": [
+    "Digital Maelstrom",
+    "Mandiant",
+    "Managed Services - Monitoring 24/7",
+    "Corsa"
+  ],
+  "providerCalls": 0,
+  "productionOperations": 0,
+  "results": [
+    {
+      "company": "Digital Maelstrom",
+      "firstBrokenStage": "ENTITY_VALIDATION_TOO_WEAK",
+      "priorAttach": true,
+      "repairedDecision": "DO_NOT_ATTACH",
+      "finalIdentity": "AMBIGUOUS",
+      "wrongAutomaticAttach": false,
+      "safeNonAttach": true,
+      "expectedIdentity": "PROBABLE",
+      "identityCorrect": true,
+      "icpClassificationBefore": "INSUFFICIENT_DATA",
+      "icpClassificationAfter": "INSUFFICIENT_DATA",
+      "productionPathVerified": true
+    },
+    {
+      "company": "Mandiant",
+      "firstBrokenStage": "BRAND_PARENT_SUBSIDIARY_AMBIGUITY",
+      "priorAttach": true,
+      "repairedDecision": "DO_NOT_ATTACH",
+      "finalIdentity": "AMBIGUOUS",
+      "wrongAutomaticAttach": false,
+      "safeNonAttach": true,
+      "expectedIdentity": "AMBIGUOUS",
+      "identityCorrect": true,
+      "icpClassificationBefore": "INSUFFICIENT_DATA",
+      "icpClassificationAfter": "INSUFFICIENT_DATA",
+      "productionPathVerified": true
+    },
+    {
+      "company": "Managed Services - Monitoring 24/7",
+      "firstBrokenStage": "SERVICE_DESCRIPTION_AS_COMPANY",
+      "priorAttach": true,
+      "repairedDecision": "DO_NOT_ATTACH",
+      "finalIdentity": "NOT_A_COMPANY",
+      "wrongAutomaticAttach": false,
+      "safeNonAttach": true,
+      "expectedIdentity": "NOT_A_COMPANY",
+      "identityCorrect": true,
+      "icpClassificationBefore": "INSUFFICIENT_DATA",
+      "icpClassificationAfter": "INSUFFICIENT_DATA",
+      "productionPathVerified": true
+    },
+    {
+      "company": "Corsa",
+      "firstBrokenStage": "ENTITY_VALIDATION_TOO_WEAK",
+      "priorAttach": true,
+      "repairedDecision": "DO_NOT_ATTACH",
+      "finalIdentity": "AMBIGUOUS",
+      "wrongAutomaticAttach": false,
+      "safeNonAttach": true,
+      "expectedIdentity": "PROBABLE",
+      "identityCorrect": true,
+      "icpClassificationBefore": "INSUFFICIENT_DATA",
+      "icpClassificationAfter": "INSUFFICIENT_DATA",
+      "productionPathVerified": true
+    }
+  ],
+  "metrics": {
+    "cases": 4,
+    "wrongAutomaticAttaches": 0,
+    "safeNonAttaches": 4,
+    "canonicalIdentityAccuracy": 1,
+    "icpClassificationsChanged": 0
+  },
+  "productionPathReplay": {
+    "runId": "62867c7d-0719-4b43-8470-6fcf1bbf6035",
+    "candidates": [
+      {
+        "companyId": null,
+        "name": "Corsa",
+        "domain": "corsa.finance",
+        "geography": null,
+        "industry": null,
+        "employeeSize": null,
+        "discoverySource": "b220e720-6d21-4c7a-badf-3aec920febca",
+        "qualification": "INSUFFICIENT_DATA",
+        "domainConfidence": "NEEDS_REVIEW",
+        "existingOrNew": "NEEDS_REVIEW",
+        "researchPriority": 82,
+        "sourceUrl": "https://corsa.finance",
+        "identityState": "AMBIGUOUS"
+      },
+      {
+        "companyId": null,
+        "name": "Digital Maelstrom",
+        "domain": "digitalmaelstrom.net",
+        "geography": null,
+        "industry": null,
+        "employeeSize": null,
+        "discoverySource": "b220e720-6d21-4c7a-badf-3aec920febca",
+        "qualification": "INSUFFICIENT_DATA",
+        "domainConfidence": "NEEDS_REVIEW",
+        "existingOrNew": "NEEDS_REVIEW",
+        "researchPriority": 82,
+        "sourceUrl": "https://digitalmaelstrom.net",
+        "identityState": "AMBIGUOUS"
+      },
+      {
+        "companyId": null,
+        "name": "Mandiant (part of Google Cloud)",
+        "domain": null,
+        "geography": null,
+        "industry": null,
+        "employeeSize": null,
+        "discoverySource": "b220e720-6d21-4c7a-badf-3aec920febca",
+        "qualification": "INSUFFICIENT_DATA",
+        "domainConfidence": "NEEDS_REVIEW",
+        "existingOrNew": "NEEDS_REVIEW",
+        "researchPriority": 82,
+        "sourceUrl": "https://linkedin.com/company/mandiant",
+        "identityState": "AMBIGUOUS"
+      },
+      {
+        "companyId": null,
+        "name": "Managed Services - Monitoring 24/7",
+        "domain": null,
+        "geography": null,
+        "industry": null,
+        "employeeSize": null,
+        "discoverySource": "b220e720-6d21-4c7a-badf-3aec920febca",
+        "qualification": "INSUFFICIENT_DATA",
+        "domainConfidence": "NEEDS_REVIEW",
+        "existingOrNew": "NEEDS_REVIEW",
+        "researchPriority": 0,
+        "sourceUrl": "https://linkedin.com/showcase/managed-services---monitoring-24-7",
+        "identityState": "NOT_A_COMPANY"
+      }
+    ],
+    "canonicalized": 0,
+    "linked": 0,
+    "possibleMatches": 3,
+    "rejected": 1,
+    "lookupCalls": 0,
+    "profileSearchCalls": 0,
+    "externalProviderCalls": 0,
+    "productionOperations": 0
+  }
+}

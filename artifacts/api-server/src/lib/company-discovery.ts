@@ -12,6 +12,7 @@ import {
   projectCompaniesTable,
 } from "@workspace/db";
 import {
+  assessCompanyIdentity,
   canonicalCompanyNameKey,
   namesArePossibleDuplicates,
   normalizeCompanyInput,
@@ -24,12 +25,14 @@ import type {
   ProviderOperations,
   ProviderResponse,
 } from "./provider-contract";
+import { resolveCompanyProfileWithRouter } from "./company-profile-resolution";
 
 type DiscoveryInput = {
   organizationId: string;
   projectId: string;
   userId: string;
-  router: Pick<ProviderOperations, "discoverCompanies" | "lookupCompany">;
+  router: Pick<ProviderOperations, "discoverCompanies" | "lookupCompany"> &
+    Partial<Pick<ProviderOperations, "searchWeb">>;
   limit?: number;
   maxProviderCalls?: number;
   queryOverrides?: string[];
@@ -56,6 +59,7 @@ export type DiscoveryCandidateReport = {
   existingOrNew: "EXISTING" | "NEW" | "NEEDS_REVIEW";
   researchPriority: number;
   sourceUrl: string | null;
+  identityState: "CONFIRMED" | "PROBABLE" | "AMBIGUOUS" | "NOT_A_COMPANY" | "WRONG_ENTITY" | "UNRESOLVED";
 };
 
 export type DiscoveryResult = {
@@ -246,6 +250,48 @@ async function hasPossibleNameMatch(name: string, executor: DbExecutor = db): Pr
   );
 }
 
+async function hasTrustedIdentityProvenance(
+  companyId: string,
+  domain: string,
+  executor: DbExecutor = db,
+): Promise<boolean> {
+  const rows = await executor.select({
+    sourceType: companyProvenanceTable.sourceType,
+    payload: companyProvenanceTable.payload,
+  }).from(companyProvenanceTable)
+    .where(eq(companyProvenanceTable.companyId, companyId));
+  return rows.some(({ sourceType, payload }) => {
+    if (sourceType === "COMPANY_PROFILE_RESOLUTION") {
+      const result = payload?.result as Record<string, unknown> | undefined;
+      const evidence = [
+        ...(Array.isArray(result?.supportingEvidence) ? result.supportingEvidence : []),
+        ...(Array.isArray(result?.candidates)
+          ? result.candidates.flatMap((candidate) =>
+              candidate && typeof candidate === "object" &&
+              Array.isArray((candidate as Record<string, unknown>).supportingEvidence)
+                ? (candidate as Record<string, unknown>).supportingEvidence as unknown[]
+                : [])
+          : []),
+      ];
+      const exactDomainEvidence = evidence.some((item) => {
+        if (!item || typeof item !== "object") return false;
+        const row = item as Record<string, unknown>;
+        return ["DOMAIN_MATCH", "OFFICIAL_WEBSITE_LINK"].includes(String(row.kind ?? "")) &&
+          String(row.detail ?? "").toLowerCase().includes(domain);
+      });
+      return ["VERIFIED", "VERIFIED_EXISTING"].includes(String(result?.resolutionStatus ?? "")) &&
+        exactDomainEvidence;
+    }
+    if (sourceType === "COMPANY_FIRMOGRAPHICS") {
+      const result = payload?.result as Record<string, unknown> | undefined;
+      const attributes = result?.attributes as Record<string, unknown> | undefined;
+      return result?.entityMatchStatus === "CONFIRMED" &&
+        String(attributes?.canonicalDomain ?? "").toLowerCase() === domain;
+    }
+    return false;
+  });
+}
+
 function candidateInput(candidate: CompanyDiscoveryResult["companies"][number]) {
   return normalizeCompanyInput({
     canonicalName: candidate.name,
@@ -373,6 +419,7 @@ function candidateReport(
   existingOrNew: DiscoveryCandidateReport["existingOrNew"],
   priority: number,
   companyId: string | null = null,
+  identityState: DiscoveryCandidateReport["identityState"] = "UNRESOLVED",
 ): DiscoveryCandidateReport {
   return {
     companyId,
@@ -389,6 +436,7 @@ function candidateReport(
     existingOrNew,
     researchPriority: priority,
     sourceUrl: candidate.sourceUrl ?? candidate.website,
+    identityState,
   };
 }
 
@@ -397,7 +445,8 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
   const limit = Math.min(20, Math.max(1, input.limit ?? 20));
   const maxProviderCalls = Math.min(5, Math.max(1, input.maxProviderCalls ?? 5));
   const plan = await buildDiscoveryPlan(input.projectId);
-  const queries = (input.queryOverrides?.length ? input.queryOverrides : plan.queries).slice(0, maxProviderCalls);
+  const discoveryCallLimit = Math.max(1, Math.ceil(maxProviderCalls / 2));
+  const queries = (input.queryOverrides?.length ? input.queryOverrides : plan.queries).slice(0, discoveryCallLimit);
   const [run] = await db.insert(companyDiscoveryRunsTable).values({
     organizationId: input.organizationId,
     projectId: input.projectId,
@@ -444,6 +493,7 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
   }
 
   const providerCalls = responses.length;
+  let remainingProviderCalls = Math.max(0, maxProviderCalls - providerCalls);
   const estimatedCost = responses.reduce((sum, response) => sum + response.usage.estimatedCost, 0);
   const costs = responses.map((response) => response.usage.actualCost).filter((cost): cost is number => cost !== null);
   const actualCost = costs.length ? costs.reduce((sum, cost) => sum + cost, 0) : null;
@@ -496,9 +546,34 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
   let possibleMatches = 0;
   let rejected = 0;
   const reports: DiscoveryCandidateReport[] = [];
+  let identityProviderCalls = 0;
+  let identityEstimatedCost = 0;
+  let identityActualCost: number | null = 0;
   for (const { candidate, response, query } of rawCandidates.slice(0, limit)) {
+    const initialNormalized = candidateInput(candidate);
+    if (!initialNormalized.value) {
+      rejected += 1;
+      continue;
+    }
+    const initialIdentity = assessCompanyIdentity(initialNormalized.value);
+    if (initialIdentity.identityState === "NOT_A_COMPANY") {
+      rejected += 1;
+      reports.push(candidateReport(
+        candidate,
+        initialNormalized.value,
+        response.providerId,
+        "INSUFFICIENT_DATA",
+        "NEEDS_REVIEW",
+        "NEEDS_REVIEW",
+        0,
+        null,
+        initialIdentity.identityState,
+      ));
+      continue;
+    }
     let resolvedCandidate = candidate;
-    if (!candidate.domain) {
+    if (!candidate.domain && remainingProviderCalls > 0) {
+      remainingProviderCalls -= 1;
       const lookup = await input.router.lookupCompany({
         name: candidate.name,
         sourceUrl: candidate.sourceUrl ?? candidate.website ?? undefined,
@@ -522,6 +597,13 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
           website: lookupNormalized.value.website,
         };
       }
+      identityProviderCalls += 1;
+      identityEstimatedCost += lookup.usage.estimatedCost;
+      if (identityActualCost !== null) {
+        identityActualCost = lookup.usage.actualCost === null
+          ? null
+          : identityActualCost + lookup.usage.actualCost;
+      }
     }
     const normalized = candidateInput(resolvedCandidate);
     if (!normalized.value) {
@@ -529,6 +611,80 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
       continue;
     }
     const value = normalized.value;
+    let profileResolutionResult: Awaited<ReturnType<typeof resolveCompanyProfileWithRouter>>["response"]["data"] = null;
+    let candidateIdentity = assessCompanyIdentity(value, {
+      sourceUrl: sourceUrlForCandidate(candidate, response.sources) ?? candidate.sourceUrl ?? candidate.website ?? null,
+      providerOrganizationResult: Boolean(candidate.providerMetadata?.resultId),
+    });
+    const preexisting = value.domain ? await findCompanyByDomain(value.domain) : null;
+    if (!preexisting &&
+      !candidateIdentity.canonicalAttachAllowed &&
+      candidateIdentity.identityState !== "NOT_A_COMPANY" &&
+      value.domain &&
+      input.router.searchWeb &&
+      remainingProviderCalls > 0) {
+      let actualProfileCalls = 0;
+      const budgetedSearchWeb: ProviderOperations["searchWeb"] = async (request) => {
+        if (remainingProviderCalls <= 0) {
+          return {
+            status: "failed",
+            providerId: "identity-budget",
+            providerRequestId: request.requestId ?? `identity-budget:${run.id}`,
+            data: null,
+            sources: [],
+            usage: { estimatedCost: 0, actualCost: 0, latencyMs: 0, runtimeMs: 0, resultCount: 0 },
+            error: { code: "BUDGET_EXHAUSTED", message: "Identity provider-call budget exhausted", retryable: false },
+            retryable: false,
+            capturedAt: now.toISOString(),
+          };
+        }
+        remainingProviderCalls -= 1;
+        actualProfileCalls += 1;
+        return input.router.searchWeb!(request);
+      };
+      const resolution = await resolveCompanyProfileWithRouter({
+        request: {
+          companyName: value.canonicalName,
+          canonicalDomain: value.domain,
+          websiteUrl: value.website,
+          country: value.country,
+          industry: value.industry,
+          existingProfileUrls: value.linkedinUrl ? { linkedin: value.linkedinUrl } : {},
+          existingProfileVerified: false,
+          requestId: `discovery-profile:${run.id}:${reports.length + 1}`,
+          metadata: {
+            organizationId: input.organizationId,
+            projectId: input.projectId,
+            discoveryRunId: run.id,
+          },
+        },
+        router: { searchWeb: budgetedSearchWeb },
+        now,
+      });
+      identityProviderCalls += actualProfileCalls;
+      identityEstimatedCost += resolution.response.usage.estimatedCost;
+      if (identityActualCost !== null) {
+        identityActualCost = resolution.response.usage.actualCost === null
+          ? null
+          : identityActualCost + resolution.response.usage.actualCost;
+      }
+      const profile = resolution.response.data;
+      profileResolutionResult = profile;
+      const verifiedProfile = Boolean(profile &&
+        ["VERIFIED", "VERIFIED_EXISTING"].includes(profile.resolutionStatus) &&
+        profile.normalizedProfileUrl);
+      if (verifiedProfile) {
+        value.linkedinUrl = profile!.normalizedProfileUrl;
+        value.profileUrls = { ...value.profileUrls, linkedin: profile!.normalizedProfileUrl! };
+        candidateIdentity = assessCompanyIdentity(value, {
+          sourceUrl: sourceUrlForCandidate(candidate, response.sources) ?? candidate.sourceUrl ?? candidate.website ?? null,
+          providerOrganizationResult: Boolean(candidate.providerMetadata?.resultId),
+          verifiedLinkedin: true,
+          verifiedDomain: profile!.supportingEvidence.some((item) =>
+            item.kind === "DOMAIN_MATCH" || item.kind === "OFFICIAL_WEBSITE_LINK"),
+        });
+      }
+    }
     const identityKey = value.domain
       ?? value.linkedinUrl
       ?? `name:${canonicalCompanyNameKey(value.canonicalName)}`;
@@ -544,8 +700,27 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
       await tx.execute(sql`select pg_advisory_xact_lock(hashtext(${nameKey}))`);
       if (domain) await tx.execute(sql`select pg_advisory_xact_lock(hashtext(${domain}))`);
       const existing = domain ? await findCompanyByDomain(domain, tx) : null;
+      const exactName = Boolean(existing &&
+        canonicalCompanyNameKey(value.canonicalName) === canonicalCompanyNameKey(existing.canonicalName));
+      const trustedExisting = Boolean(existing && domain && exactName &&
+        await hasTrustedIdentityProvenance(existing.id, domain, tx));
+      const identity = existing
+        ? assessCompanyIdentity(value, {
+            verifiedDomain: trustedExisting,
+            knownAliasMatch: exactName,
+            identifierConflict: !exactName,
+          })
+        : candidateIdentity;
+      if (!identity.canonicalAttachAllowed) {
+        return {
+          outcome: identity.identityState === "WRONG_ENTITY" ? "rejected" as const : "possible" as const,
+          company: null,
+          priority: researchPriority(assessment, 0),
+          identity,
+        };
+      }
       if (!existing && await hasPossibleNameMatch(value.canonicalName, tx)) {
-        return { outcome: "possible" as const, company: null, priority: researchPriority(assessment, 0) };
+        return { outcome: "possible" as const, company: null, priority: researchPriority(assessment, 0), identity };
       }
       let company = existing ?? (await tx.insert(companiesTable).values({
         canonicalName: value.canonicalName,
@@ -560,7 +735,7 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
         description: value.description,
       }).returning())[0];
       if (!company) {
-        return { outcome: "rejected" as const, company: null, priority: 0 };
+        return { outcome: "rejected" as const, company: null, priority: 0, identity };
       }
       if (existing && (value.linkedinUrl || Object.keys(value.profileUrls).length)) {
         const [updated] = await tx.update(companiesTable).set({
@@ -622,14 +797,38 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
           qualification: assessment,
           researchPriority: priority,
           domainConfidence: value.domain ? "HIGH_CONFIDENCE" : "UNKNOWN",
+          identityAssessment: identity,
+          profileResolution: profileResolutionResult,
         },
         visibility: "PUBLIC",
       });
+      if (!existing && profileResolutionResult &&
+        ["VERIFIED", "VERIFIED_EXISTING"].includes(profileResolutionResult.resolutionStatus) &&
+        profileResolutionResult.normalizedProfileUrl) {
+        await tx.insert(companyProvenanceTable).values({
+          organizationId: input.organizationId,
+          projectId: input.projectId,
+          companyId: company.id,
+          sourceType: "COMPANY_PROFILE_RESOLUTION",
+          sourceLabel: "Verified during company discovery",
+          sourceUrl: profileResolutionResult.normalizedProfileUrl,
+          observedAt: now,
+          payload: {
+            kind: "COMPANY_PROFILE_RESOLUTION",
+            cacheKey: `${company.id}:LINKEDIN_COMPANY`,
+            result: profileResolutionResult,
+            providerId: profileResolutionResult.provider,
+            canonicalUpdated: true,
+          },
+          visibility: "PRIVATE",
+        });
+      }
       return {
         outcome: projectCompany ? "linked" as const : "existing_link" as const,
         company,
         priority,
         existing: Boolean(existing),
+        identity,
       };
     });
 
@@ -643,10 +842,13 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
         "NEEDS_REVIEW",
         "NEEDS_REVIEW",
         result.priority,
+        null,
+        result.identity.identityState,
       ));
     } else if (result.outcome === "rejected") {
       rejected += 1;
     } else {
+      if (!result.company) throw new Error("Canonical company result is missing");
       if (result.outcome === "linked") linked += 1;
       if (!result.existing) canonicalized += 1;
       reports.push(candidateReport(
@@ -658,6 +860,7 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
         result.existing ? "EXISTING" : "NEW",
         result.priority,
         result.company.id,
+        result.identity.identityState,
       ));
     }
   }
@@ -666,13 +869,28 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
   await db.update(companyDiscoveryRunsTable).set({
     providerId,
     status,
-    providerCalls,
+    providerCalls: providerCalls + identityProviderCalls,
     rawResultCount: rawCandidates.length,
     acceptedCandidateCount: reports.length,
     duplicateCount: duplicatesRemoved,
     rejectedCount: rejected,
-    estimatedCost,
-    actualCost,
+    estimatedCost: estimatedCost + identityEstimatedCost,
+    actualCost: actualCost === null || identityActualCost === null
+      ? null
+      : actualCost + identityActualCost,
+    strategy: {
+      ...plan.strategy,
+      identityCandidateReviews: reports
+        .filter((report) => report.existingOrNew === "NEEDS_REVIEW")
+        .map((report) => ({
+          name: report.name,
+          domain: report.domain,
+          sourceUrl: report.sourceUrl,
+          identityState: report.identityState,
+          qualification: report.qualification,
+          recordedAt: now.toISOString(),
+        })),
+    },
     completedAt: new Date(),
   }).where(eq(companyDiscoveryRunsTable.id, run.id));
   return {
@@ -681,9 +899,11 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
     providerId,
     query: queries[0] ?? "",
     queries,
-    providerCalls,
-    estimatedCost,
-    actualCost,
+    providerCalls: providerCalls + identityProviderCalls,
+    estimatedCost: estimatedCost + identityEstimatedCost,
+    actualCost: actualCost === null || identityActualCost === null
+      ? null
+      : actualCost + identityActualCost,
     rawResults: rawCandidates.length,
     discovered: reports.length,
     canonicalized,

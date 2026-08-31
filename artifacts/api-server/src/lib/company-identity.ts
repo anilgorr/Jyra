@@ -24,6 +24,27 @@ export interface NormalizedCompanyInput {
   description: string | null;
 }
 
+export type CompanyLikeness =
+  | "LIKELY_COMPANY"
+  | "AMBIGUOUS_COMPANY"
+  | "LIKELY_NOT_COMPANY";
+
+export type CompanyIdentityState =
+  | "CONFIRMED"
+  | "PROBABLE"
+  | "AMBIGUOUS"
+  | "NOT_A_COMPANY"
+  | "WRONG_ENTITY"
+  | "UNRESOLVED";
+
+export type CompanyIdentityAssessment = {
+  companyLikeness: CompanyLikeness;
+  identityState: CompanyIdentityState;
+  canonicalAttachAllowed: boolean;
+  evidence: string[];
+  conflicts: string[];
+};
+
 const LEGAL_TOKEN_EXPANSIONS: Record<string, string> = {
   pvt: "private",
   ltd: "limited",
@@ -73,6 +94,20 @@ export function companyProfilePlatform(value: unknown): string | null {
 
 export function isCompanyProfileDomain(value: unknown): boolean {
   return companyProfilePlatform(value) !== null;
+}
+
+function isLinkedInCompanyProfile(value: unknown): boolean {
+  if (typeof value !== "string" || !value.trim()) return false;
+  try {
+    const parsed = new URL(/^[a-z][a-z\d+.-]*:\/\//i.test(value) ? value : `https://${value}`);
+    const host = parsed.hostname.toLowerCase().replace(/^www\./, "");
+    const parts = parsed.pathname.split("/").filter(Boolean);
+    return (host === "linkedin.com" || host.endsWith(".linkedin.com")) &&
+      parts.length === 2 &&
+      parts[0]?.toLowerCase() === "company";
+  } catch {
+    return false;
+  }
 }
 
 function optionalText(value: unknown): string | null {
@@ -184,6 +219,114 @@ export function namesArePossibleDuplicates(left: string, right: string): boolean
     (intersection / union >= 0.6 || intersection === shortest) &&
     [...leftSet].some((token) => token.length >= 4)
   );
+}
+
+function domainLabel(domain: string): string {
+  return domain.split(".")[0]?.replace(/[^a-z0-9]+/gi, "") ?? "";
+}
+
+function nameLooksLikeServiceOrFragment(name: string): boolean {
+  const normalized = normalizeCompanyName(name);
+  const tokens = normalized.split(" ").filter(Boolean);
+  const availability = /\b(?:24\s*7|24x7|round the clock|always on)\b/i.test(name);
+  const serviceLead = /^(?:(?:managed|professional|consulting|monitoring|support|hosting|security|cloud|it)\s+){1,3}services?\b/i.test(name);
+  const featurePhrase = /\b(?:monitoring|support|management|solution|platform|service|services|department|team)\b/i.test(name);
+  const sentenceLike = tokens.length >= 8 || /[.!?]\s+\S/.test(name);
+  return sentenceLike || (availability && featurePhrase) || (serviceLead && tokens.length >= 3);
+}
+
+function hasRelatedEntityQualifier(name: string): boolean {
+  return /\b(?:part of|subsidiary of|owned by|acquired by|a division of|a [a-z0-9& -]+ company)\b/i.test(name);
+}
+
+/**
+ * A cheap, conservative pre-enrichment identity gate. Provider assertions and
+ * name shape are evidence, not proof; conflicting strong identifiers fail shut.
+ */
+export function assessCompanyIdentity(input: NormalizedCompanyInput, context: {
+  sourceUrl?: string | null;
+  providerOrganizationResult?: boolean;
+  verifiedDomain?: boolean;
+  verifiedLinkedin?: boolean;
+  knownAliasMatch?: boolean;
+  identifierConflict?: boolean;
+  relatedEntityConflict?: boolean;
+} = {}): CompanyIdentityAssessment {
+  const evidence: string[] = [];
+  const conflicts: string[] = [];
+  const compactName = canonicalCompanyNameKey(input.canonicalName).replace(/\s+/g, "");
+  const domainAgrees = Boolean(input.domain &&
+    compactName.length >= 3 &&
+    (domainLabel(input.domain).includes(compactName) || compactName.includes(domainLabel(input.domain))));
+  let sourceDomain: string | null = null;
+  try {
+    sourceDomain = context.sourceUrl ? normalizeDomain(context.sourceUrl) : null;
+  } catch {
+    sourceDomain = null;
+  }
+  const officialSourceAgrees = Boolean(input.domain && sourceDomain === input.domain);
+  const linkedinCompany = context.verifiedLinkedin === true &&
+    isLinkedInCompanyProfile(input.linkedinUrl);
+
+  if (domainAgrees) evidence.push("NAME_DOMAIN_AGREEMENT");
+  if (officialSourceAgrees) evidence.push("OFFICIAL_SOURCE_DOMAIN");
+  if (linkedinCompany) evidence.push("LINKEDIN_COMPANY_PROFILE");
+  if (context.verifiedDomain) evidence.push("VERIFIED_DOMAIN");
+  if (context.knownAliasMatch) evidence.push("KNOWN_ALIAS");
+  if (context.providerOrganizationResult) evidence.push("PROVIDER_ORGANIZATION_RESULT");
+  if (context.identifierConflict) conflicts.push("IDENTIFIER_CONFLICT");
+  if (context.relatedEntityConflict || hasRelatedEntityQualifier(input.canonicalName)) {
+    conflicts.push("RELATED_ENTITY_CONFLICT");
+  }
+
+  if (conflicts.length) {
+    return {
+      companyLikeness: "AMBIGUOUS_COMPANY",
+      identityState: context.identifierConflict ? "WRONG_ENTITY" : "AMBIGUOUS",
+      canonicalAttachAllowed: false,
+      evidence,
+      conflicts,
+    };
+  }
+  const phraseLike = nameLooksLikeServiceOrFragment(input.canonicalName);
+  const strongIdentifier = context.verifiedDomain === true || context.verifiedLinkedin === true;
+  if (phraseLike && !strongIdentifier) {
+    return {
+      companyLikeness: "LIKELY_NOT_COMPANY",
+      identityState: "NOT_A_COMPANY",
+      canonicalAttachAllowed: false,
+      evidence,
+      conflicts: ["SERVICE_OR_FRAGMENT_NAME"],
+    };
+  }
+  if ((context.verifiedDomain && linkedinCompany) ||
+    (context.verifiedDomain && domainAgrees) ||
+    (context.verifiedDomain && context.knownAliasMatch) ||
+    (context.verifiedLinkedin && (domainAgrees || context.knownAliasMatch))) {
+    return {
+      companyLikeness: "LIKELY_COMPANY",
+      identityState: "CONFIRMED",
+      canonicalAttachAllowed: true,
+      evidence,
+      conflicts,
+    };
+  }
+  if (domainAgrees && officialSourceAgrees && context.providerOrganizationResult) {
+    return {
+      companyLikeness: "LIKELY_COMPANY",
+      identityState: "PROBABLE",
+      canonicalAttachAllowed: false,
+      evidence,
+      conflicts,
+    };
+  }
+  return {
+    companyLikeness: phraseLike ? "AMBIGUOUS_COMPANY" : "LIKELY_COMPANY",
+    identityState: input.domain || linkedinCompany ? "AMBIGUOUS" : "UNRESOLVED",
+    canonicalAttachAllowed: false,
+    evidence,
+    conflicts,
+  };
 }
 
 export function normalizeCompanyInput(input: RawCompanyInput): {

@@ -1,0 +1,501 @@
+{
+  "generatedAt": "2026-08-31T18:03:49.924Z",
+  "traces": [
+    {
+      "companyId": "42ed009d-c6bb-43b6-b985-1a45ffd79c50",
+      "requestedCompany": "Digital Maelstrom",
+      "firstBrokenStage": "ENTITY_VALIDATION_TOO_WEAK",
+      "originalInput": {
+        "source": "JYRA_DISCOVERY",
+        "name": "Digital Maelstrom",
+        "domain": "digitalmaelstrom.net",
+        "linkedinUrl": null,
+        "description": null,
+        "industry": null,
+        "location": null
+      },
+      "discoveryCandidate": {
+        "name": "Digital Maelstrom",
+        "query": "SaaS companies that may be relevant buyers for Managed Soc",
+        "domain": "digitalmaelstrom.net",
+        "website": "https://digitalmaelstrom.net",
+        "industry": null,
+        "location": null,
+        "provider": "b220e720-6d21-4c7a-badf-3aec920febca",
+        "capability": "COMPANY_DISCOVERY",
+        "description": null,
+        "linkedinUrl": null,
+        "profileUrls": {},
+        "employeeCount": null,
+        "employeeRange": null,
+        "qualification": {
+          "checks": {
+            "industry": null,
+            "geography": null,
+            "technology": null,
+            "employeeRange": null
+          },
+          "knownCriteria": 0,
+          "classification": "INSUFFICIENT_DATA",
+          "matchedCriteria": 0,
+          "missingCriteria": 4
+        },
+        "discoveryRunId": "dd73809f-9c36-4a27-8881-2b7ed3c2d26b",
+        "domainConfidence": "HIGH_CONFIDENCE",
+        "providerMetadata": {
+          "title": "Digital Maelstrom",
+          "author": "Exa",
+          "resultId": "https://exa.ai/library/organization/fjzrpfm8kmn",
+          "publishedDate": "2026-06-29T00:00:00.000Z",
+          "profilePlatform": null,
+          "originalResultUrl": "https://digitalmaelstrom.net"
+        },
+        "researchPriority": 82,
+        "originalResultUrl": "https://digitalmaelstrom.net",
+        "providerRelevance": null,
+        "providerRequestId": "hotfix-08:2:b220e720-6d21-4c7a-badf-3aec920febca",
+        "retrievalTimestamp": "2026-08-30T08:56:18.527Z"
+      },
+      "canonicalCompanyCreated": true,
+      "domainResolution": {
+        "domain": "digitalmaelstrom.net",
+        "website": "https://digitalmaelstrom.net"
+      },
+      "linkedinProfileResolution": {
+        "provider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+        "companyId": "42ed009d-c6bb-43b6-b985-1a45ffd79c50",
+        "candidates": [],
+        "profileUrl": null,
+        "resolvedAt": "2026-08-31T12:10:42.677Z",
+        "profileSlug": null,
+        "profileType": "LINKEDIN_COMPANY",
+        "retrievalMethod": "TAVILY_WEB_SEARCH",
+        "discoveryQueries": [
+          "site:linkedin.com/company \"Digital Maelstrom\" \"digitalmaelstrom.net\"",
+          "site:linkedin.com/company \"Digital Maelstrom\" LinkedIn company"
+        ],
+        "resolutionStatus": "NOT_FOUND",
+        "supportingEvidence": [],
+        "normalizedProfileUrl": null,
+        "resolutionConfidence": 0,
+        "contradictingEvidence": []
+      },
+      "profileCandidates": [],
+      "verificationStatus": {
+        "providerIdentityStatus": "NOT_FOUND",
+        "linkedinUrl": null
+      },
+      "firmographicsResult": null,
+      "entityValidation": {
+        "companyLikeness": "LIKELY_COMPANY",
+        "identityState": "PROBABLE",
+        "canonicalAttachAllowed": false,
+        "evidence": [
+          "NAME_DOMAIN_AGREEMENT",
+          "OFFICIAL_SOURCE_DOMAIN",
+          "PROVIDER_ORGANIZATION_RESULT"
+        ],
+        "conflicts": []
+      },
+      "priorCanonicalAttach": {
+        "id": "42ed009d-c6bb-43b6-b985-1a45ffd79c50",
+        "canonicalName": "Digital Maelstrom",
+        "domain": "digitalmaelstrom.net",
+        "website": "https://digitalmaelstrom.net",
+        "linkedinUrl": null,
+        "profileUrls": {},
+        "country": null,
+        "industry": null,
+        "employeeCount": null,
+        "employeeRange": null,
+        "description": null,
+        "createdAt": "2026-08-30T08:56:18.549Z",
+        "updatedAt": "2026-08-30T08:56:18.549Z"
+      },
+      "repairedDecision": "DO_NOT_ATTACH",
+      "finalIdentity": "PROBABLE",
+      "manualAdjudication": {
+        "companyId": "42ed009d-c6bb-43b6-b985-1a45ffd79c50",
+        "company": "Digital Maelstrom",
+        "qualification": "INSUFFICIENT_DATA",
+        "canonicalIdentity": "NOT_ADJUDICABLE",
+        "icpClassification": "NO_OBVIOUS_ERROR",
+        "rationale": "A discovery name/domain exists, but profile resolution returned NOT_FOUND and no confirmed firmographics exist. Identity cannot be manually verified from allowed persisted evidence; INSUFFICIENT_DATA is appropriate."
+      }
+    },
+    {
+      "companyId": "e3622850-6588-44eb-a86e-938edf323339",
+      "requestedCompany": "Mandiant",
+      "firstBrokenStage": "BRAND_PARENT_SUBSIDIARY_AMBIGUITY",
+      "originalInput": {
+        "source": "JYRA_DISCOVERY",
+        "name": "Mandiant (part of Google Cloud)",
+        "domain": null,
+        "linkedinUrl": "https://linkedin.com/company/mandiant",
+        "description": null,
+        "industry": null,
+        "location": null
+      },
+      "discoveryCandidate": {
+        "name": "Mandiant (part of Google Cloud)",
+        "query": "SaaS companies that may be relevant buyers for Managed Soc",
+        "domain": null,
+        "website": null,
+        "industry": null,
+        "location": null,
+        "provider": "b220e720-6d21-4c7a-badf-3aec920febca",
+        "capability": "COMPANY_DISCOVERY",
+        "description": null,
+        "linkedinUrl": "https://linkedin.com/company/mandiant",
+        "profileUrls": {
+          "linkedin": "https://linkedin.com/company/mandiant"
+        },
+        "employeeCount": null,
+        "employeeRange": null,
+        "qualification": {
+          "checks": {
+            "industry": null,
+            "geography": null,
+            "technology": null,
+            "employeeRange": null
+          },
+          "knownCriteria": 0,
+          "classification": "INSUFFICIENT_DATA",
+          "matchedCriteria": 0,
+          "missingCriteria": 4
+        },
+        "discoveryRunId": "85142dd3-94c0-40c1-afaa-591bedbcc959",
+        "domainConfidence": "UNKNOWN",
+        "providerMetadata": {
+          "title": "Mandiant (part of Google Cloud)",
+          "author": "Exa",
+          "resultId": "https://exa.ai/library/organization/x5rq3y7dcvl",
+          "publishedDate": "2026-06-18T00:00:00.000Z",
+          "profilePlatform": "linkedin",
+          "originalResultUrl": "https://linkedin.com/company/mandiant"
+        },
+        "researchPriority": 82,
+        "originalResultUrl": "https://linkedin.com/company/mandiant",
+        "providerRelevance": null,
+        "providerRequestId": "discovery:85142dd3-94c0-40c1-afaa-591bedbcc959:1:b220e720-6d21-4c7a-badf-3aec920febca",
+        "retrievalTimestamp": "2026-08-31T11:22:49.524Z"
+      },
+      "canonicalCompanyCreated": true,
+      "domainResolution": {
+        "domain": null,
+        "website": null
+      },
+      "linkedinProfileResolution": {
+        "provider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+        "companyId": "e3622850-6588-44eb-a86e-938edf323339",
+        "candidates": [],
+        "profileUrl": null,
+        "resolvedAt": "2026-08-31T12:10:43.240Z",
+        "profileSlug": null,
+        "profileType": "LINKEDIN_COMPANY",
+        "retrievalMethod": "TAVILY_WEB_SEARCH",
+        "discoveryQueries": [
+          "site:linkedin.com/company \"Mandiant (part of Google Cloud)\"",
+          "site:linkedin.com/company \"Mandiant (part of Google Cloud)\" LinkedIn company"
+        ],
+        "resolutionStatus": "NOT_FOUND",
+        "supportingEvidence": [],
+        "normalizedProfileUrl": null,
+        "resolutionConfidence": 0,
+        "contradictingEvidence": []
+      },
+      "profileCandidates": [],
+      "verificationStatus": {
+        "providerIdentityStatus": "NOT_FOUND",
+        "linkedinUrl": "https://linkedin.com/company/mandiant"
+      },
+      "firmographicsResult": null,
+      "entityValidation": {
+        "companyLikeness": "AMBIGUOUS_COMPANY",
+        "identityState": "AMBIGUOUS",
+        "canonicalAttachAllowed": false,
+        "evidence": [
+          "PROVIDER_ORGANIZATION_RESULT"
+        ],
+        "conflicts": [
+          "RELATED_ENTITY_CONFLICT"
+        ]
+      },
+      "priorCanonicalAttach": {
+        "id": "e3622850-6588-44eb-a86e-938edf323339",
+        "canonicalName": "Mandiant (part of Google Cloud)",
+        "domain": null,
+        "website": null,
+        "linkedinUrl": "https://linkedin.com/company/mandiant",
+        "profileUrls": {
+          "linkedin": "https://linkedin.com/company/mandiant"
+        },
+        "country": null,
+        "industry": null,
+        "employeeCount": null,
+        "employeeRange": null,
+        "description": null,
+        "createdAt": "2026-08-31T11:22:52.664Z",
+        "updatedAt": "2026-08-31T11:22:52.664Z"
+      },
+      "repairedDecision": "DO_NOT_ATTACH",
+      "finalIdentity": "AMBIGUOUS",
+      "manualAdjudication": {
+        "companyId": "e3622850-6588-44eb-a86e-938edf323339",
+        "company": "Mandiant (part of Google Cloud)",
+        "qualification": "INSUFFICIENT_DATA",
+        "canonicalIdentity": "INCORRECT_OR_AMBIGUOUS",
+        "icpClassification": "NO_OBVIOUS_ERROR",
+        "rationale": "The persisted label combines a company with its parent, has no domain, and profile resolution returned NOT_FOUND. It is not a safely resolved independent canonical identity; INSUFFICIENT_DATA does not overstate fit."
+      }
+    },
+    {
+      "companyId": "f85d8e05-8896-4712-a894-c664e32ca03c",
+      "requestedCompany": "Managed Services - Monitoring 24/7",
+      "firstBrokenStage": "SERVICE_DESCRIPTION_AS_COMPANY",
+      "originalInput": {
+        "source": "JYRA_DISCOVERY",
+        "name": "Managed Services - Monitoring 24/7",
+        "domain": null,
+        "linkedinUrl": "https://linkedin.com/showcase/managed-services---monitoring-24-7",
+        "description": null,
+        "industry": null,
+        "location": null
+      },
+      "discoveryCandidate": {
+        "name": "Managed Services - Monitoring 24/7",
+        "query": "SaaS companies that may be relevant buyers for Managed Soc in cloud infrastructure",
+        "domain": null,
+        "website": null,
+        "industry": null,
+        "location": null,
+        "provider": "b220e720-6d21-4c7a-badf-3aec920febca",
+        "capability": "COMPANY_DISCOVERY",
+        "description": null,
+        "linkedinUrl": "https://linkedin.com/showcase/managed-services---monitoring-24-7",
+        "profileUrls": {
+          "linkedin": "https://linkedin.com/showcase/managed-services---monitoring-24-7"
+        },
+        "employeeCount": null,
+        "employeeRange": null,
+        "qualification": {
+          "checks": {
+            "industry": null,
+            "geography": null,
+            "technology": null,
+            "employeeRange": null
+          },
+          "knownCriteria": 0,
+          "classification": "INSUFFICIENT_DATA",
+          "matchedCriteria": 0,
+          "missingCriteria": 4
+        },
+        "discoveryRunId": "914746c6-657b-4293-98be-c147f514a95a",
+        "domainConfidence": "UNKNOWN",
+        "providerMetadata": {
+          "title": "Managed Services - Monitoring 24/7",
+          "author": "Exa",
+          "resultId": "https://exa.ai/library/organization/lxtjt24cpzl",
+          "publishedDate": "2026-06-29T00:00:00.000Z",
+          "profilePlatform": "linkedin",
+          "originalResultUrl": "https://linkedin.com/showcase/managed-services---monitoring-24-7"
+        },
+        "researchPriority": 82,
+        "originalResultUrl": "https://linkedin.com/showcase/managed-services---monitoring-24-7",
+        "providerRelevance": null,
+        "providerRequestId": "discovery:914746c6-657b-4293-98be-c147f514a95a:1:b220e720-6d21-4c7a-badf-3aec920febca",
+        "retrievalTimestamp": "2026-08-31T11:36:14.178Z"
+      },
+      "canonicalCompanyCreated": true,
+      "domainResolution": {
+        "domain": null,
+        "website": null
+      },
+      "linkedinProfileResolution": {
+        "provider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+        "companyId": "f85d8e05-8896-4712-a894-c664e32ca03c",
+        "candidates": [],
+        "profileUrl": null,
+        "resolvedAt": "2026-08-31T12:10:48.898Z",
+        "profileSlug": null,
+        "profileType": "LINKEDIN_COMPANY",
+        "retrievalMethod": "TAVILY_WEB_SEARCH",
+        "discoveryQueries": [
+          "site:linkedin.com/company \"Managed Services - Monitoring 24/7\"",
+          "site:linkedin.com/company \"Managed Services - Monitoring 24/7\" LinkedIn company"
+        ],
+        "resolutionStatus": "NOT_FOUND",
+        "supportingEvidence": [],
+        "normalizedProfileUrl": null,
+        "resolutionConfidence": 0,
+        "contradictingEvidence": []
+      },
+      "profileCandidates": [],
+      "verificationStatus": {
+        "providerIdentityStatus": "NOT_FOUND",
+        "linkedinUrl": "https://linkedin.com/showcase/managed-services---monitoring-24-7"
+      },
+      "firmographicsResult": null,
+      "entityValidation": {
+        "companyLikeness": "LIKELY_NOT_COMPANY",
+        "identityState": "NOT_A_COMPANY",
+        "canonicalAttachAllowed": false,
+        "evidence": [
+          "PROVIDER_ORGANIZATION_RESULT"
+        ],
+        "conflicts": [
+          "SERVICE_OR_FRAGMENT_NAME"
+        ]
+      },
+      "priorCanonicalAttach": {
+        "id": "f85d8e05-8896-4712-a894-c664e32ca03c",
+        "canonicalName": "Managed Services - Monitoring 24/7",
+        "domain": null,
+        "website": null,
+        "linkedinUrl": "https://linkedin.com/showcase/managed-services---monitoring-24-7",
+        "profileUrls": {
+          "linkedin": "https://linkedin.com/showcase/managed-services---monitoring-24-7"
+        },
+        "country": null,
+        "industry": null,
+        "employeeCount": null,
+        "employeeRange": null,
+        "description": null,
+        "createdAt": "2026-08-31T11:36:15.446Z",
+        "updatedAt": "2026-08-31T11:36:15.446Z"
+      },
+      "repairedDecision": "DO_NOT_ATTACH",
+      "finalIdentity": "NOT_A_COMPANY",
+      "manualAdjudication": {
+        "companyId": "f85d8e05-8896-4712-a894-c664e32ca03c",
+        "company": "Managed Services - Monitoring 24/7",
+        "qualification": "INSUFFICIENT_DATA",
+        "canonicalIdentity": "INCORRECT_OR_AMBIGUOUS",
+        "icpClassification": "NO_OBVIOUS_ERROR",
+        "rationale": "The persisted value is a service description rather than a resolved company, with no domain and a NOT_FOUND profile. It is not a defensible canonical company; INSUFFICIENT_DATA avoids a false fit."
+      }
+    },
+    {
+      "companyId": "a12e0494-6189-4bef-99ee-060fc561f575",
+      "requestedCompany": "Corsa",
+      "firstBrokenStage": "ENTITY_VALIDATION_TOO_WEAK",
+      "originalInput": {
+        "source": "JYRA_DISCOVERY",
+        "name": "Corsa",
+        "domain": "corsa.finance",
+        "linkedinUrl": null,
+        "description": null,
+        "industry": null,
+        "location": null
+      },
+      "discoveryCandidate": {
+        "name": "Corsa",
+        "query": "SaaS companies that may be relevant buyers for Managed Soc in financial technology",
+        "domain": "corsa.finance",
+        "website": "https://corsa.finance",
+        "industry": null,
+        "location": null,
+        "provider": "b220e720-6d21-4c7a-badf-3aec920febca",
+        "capability": "COMPANY_DISCOVERY",
+        "description": null,
+        "linkedinUrl": null,
+        "profileUrls": {},
+        "employeeCount": null,
+        "employeeRange": null,
+        "qualification": {
+          "checks": {
+            "industry": null,
+            "geography": null,
+            "technology": null,
+            "employeeRange": null
+          },
+          "knownCriteria": 0,
+          "classification": "INSUFFICIENT_DATA",
+          "matchedCriteria": 0,
+          "missingCriteria": 4
+        },
+        "discoveryRunId": "383fb83f-633d-434f-9765-78257a4a5d1f",
+        "domainConfidence": "HIGH_CONFIDENCE",
+        "providerMetadata": {
+          "title": "Corsa",
+          "author": "Exa",
+          "resultId": "https://exa.ai/library/organization/1qq3ncbwprx",
+          "publishedDate": "2026-06-17T00:00:00.000Z",
+          "profilePlatform": null,
+          "originalResultUrl": "https://corsa.finance"
+        },
+        "researchPriority": 82,
+        "originalResultUrl": "https://corsa.finance",
+        "providerRelevance": null,
+        "providerRequestId": "discovery:383fb83f-633d-434f-9765-78257a4a5d1f:1:b220e720-6d21-4c7a-badf-3aec920febca",
+        "retrievalTimestamp": "2026-08-31T11:36:17.914Z"
+      },
+      "canonicalCompanyCreated": true,
+      "domainResolution": {
+        "domain": "corsa.finance",
+        "website": "https://corsa.finance"
+      },
+      "linkedinProfileResolution": {
+        "provider": "b1bac8b0-c8d4-426a-9c81-588c96031dca",
+        "companyId": "a12e0494-6189-4bef-99ee-060fc561f575",
+        "candidates": [],
+        "profileUrl": null,
+        "resolvedAt": "2026-08-31T12:10:50.467Z",
+        "profileSlug": null,
+        "profileType": "LINKEDIN_COMPANY",
+        "retrievalMethod": "TAVILY_WEB_SEARCH",
+        "discoveryQueries": [
+          "site:linkedin.com/company \"Corsa\" \"corsa.finance\"",
+          "site:linkedin.com/company \"Corsa\" LinkedIn company"
+        ],
+        "resolutionStatus": "NOT_FOUND",
+        "supportingEvidence": [],
+        "normalizedProfileUrl": null,
+        "resolutionConfidence": 0,
+        "contradictingEvidence": []
+      },
+      "profileCandidates": [],
+      "verificationStatus": {
+        "providerIdentityStatus": "NOT_FOUND",
+        "linkedinUrl": null
+      },
+      "firmographicsResult": null,
+      "entityValidation": {
+        "companyLikeness": "LIKELY_COMPANY",
+        "identityState": "PROBABLE",
+        "canonicalAttachAllowed": false,
+        "evidence": [
+          "NAME_DOMAIN_AGREEMENT",
+          "OFFICIAL_SOURCE_DOMAIN",
+          "PROVIDER_ORGANIZATION_RESULT"
+        ],
+        "conflicts": []
+      },
+      "priorCanonicalAttach": {
+        "id": "a12e0494-6189-4bef-99ee-060fc561f575",
+        "canonicalName": "Corsa",
+        "domain": "corsa.finance",
+        "website": "https://corsa.finance",
+        "linkedinUrl": null,
+        "profileUrls": {},
+        "country": null,
+        "industry": null,
+        "employeeCount": null,
+        "employeeRange": null,
+        "description": null,
+        "createdAt": "2026-08-31T11:36:20.175Z",
+        "updatedAt": "2026-08-31T11:36:20.175Z"
+      },
+      "repairedDecision": "DO_NOT_ATTACH",
+      "finalIdentity": "PROBABLE",
+      "manualAdjudication": {
+        "companyId": "a12e0494-6189-4bef-99ee-060fc561f575",
+        "company": "Corsa",
+        "qualification": "INSUFFICIENT_DATA",
+        "canonicalIdentity": "NOT_ADJUDICABLE",
+        "icpClassification": "NO_OBVIOUS_ERROR",
+        "rationale": "corsa.finance is persisted, but profile resolution is NOT_FOUND and no confirmed provider firmographics exist. The allowed evidence cannot establish canonical accuracy; INSUFFICIENT_DATA is appropriate."
+      }
+    }
+  ]
+}

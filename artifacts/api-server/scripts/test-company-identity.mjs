@@ -12,11 +12,19 @@ await build({
 });
 
 const {
+  assessCompanyIdentity,
+  canonicalCompanyNameKey,
   normalizeCompanyInput,
   normalizeCompanyName,
   normalizeDomain,
   namesArePossibleDuplicates,
 } = await import(`${pathToFileURL(output).href}?t=${Date.now()}`);
+
+function identity(input, context = {}) {
+  const normalized = normalizeCompanyInput(input);
+  assert.deepEqual(normalized.errors, []);
+  return assessCompanyIdentity(normalized.value, context);
+}
 
 assert.equal(normalizeDomain("HTTPS://WWW.Acme.com/"), "acme.com");
 assert.equal(normalizeDomain("http://acme.com/about"), "acme.com");
@@ -80,4 +88,36 @@ assert.equal(demoRows.length, 100);
 assert.ok(demoRows.every((row) => row.value && row.errors.length === 0));
 assert.equal(new Set(demoRows.map((row) => row.value.domain)).size, 100);
 
-console.log("Company identity tests passed (100-row normalization set).");
+// Identity Fix 02 generic regressions A-J.
+assert.equal(namesArePossibleDuplicates("Northstar Pvt Ltd", "Northstar Private Limited"), true); // A
+assert.equal(identity({ canonicalName: "Managed Security Services - Monitoring 24/7" }).identityState, "NOT_A_COMPANY"); // B
+assert.equal(identity({ canonicalName: "Corsa" }).companyLikeness, "LIKELY_COMPANY"); // C
+assert.equal(identity(
+  { canonicalName: "Atlas Security (part of Northstar)", domain: "atlas-security.com" },
+).identityState, "AMBIGUOUS"); // D
+assert.equal(identity(
+  { canonicalName: "Acme", domain: "acme-one.com" },
+  { identifierConflict: true },
+).canonicalAttachAllowed, false); // E
+assert.equal(identity(
+  { canonicalName: "Northstar", domain: "northstar.com", linkedinUrl: "https://linkedin.com/company/northstar" },
+  { verifiedDomain: true, verifiedLinkedin: true },
+).identityState, "CONFIRMED"); // F
+assert.equal(identity(
+  { canonicalName: "Northstar", domain: "northstar.com" },
+  { verifiedDomain: true, identifierConflict: true },
+).identityState, "WRONG_ENTITY"); // G
+assert.equal(identity(
+  { canonicalName: "Managed Services - Monitoring 24/7", domain: "managed.example" },
+  { verifiedDomain: true },
+).companyLikeness, "LIKELY_COMPANY"); // H
+assert.equal(
+  canonicalCompanyNameKey("Example Corporation"),
+  canonicalCompanyNameKey("Example Corp"),
+); // I
+assert.equal(identity(
+  { canonicalName: "Northstar", linkedinUrl: "https://linkedin.com/showcase/northstar-product" },
+  {},
+).canonicalAttachAllowed, false); // J
+
+console.log("Company identity tests passed (100-row normalization set + regressions A-J).");

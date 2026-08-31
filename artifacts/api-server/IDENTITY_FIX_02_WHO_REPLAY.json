@@ -1,0 +1,159 @@
+{
+  "generatedAt": "2026-08-31T18:03:49.924Z",
+  "source": "MVP_FIX_CYCLE_01_WHO_TRACES.json",
+  "preservedPopulation": true,
+  "companies": 12,
+  "providerCalls": 0,
+  "productionOperations": 0,
+  "rows": [
+    {
+      "company": "SecureSky",
+      "domain": "securesky.com",
+      "priorProviderIdentityStatus": "CONFIRMED",
+      "replayIdentityStatus": "CONFIRMED",
+      "replayAutoAttach": true,
+      "expectedTreatment": "CONFIRMED",
+      "identityCorrect": true,
+      "priorIcpClassification": "LIKELY_NOT_FIT",
+      "replayIcpClassification": "LIKELY_NOT_FIT",
+      "icpChanged": false
+    },
+    {
+      "company": "Nio Stars Technologies LLP",
+      "domain": "niostarstechnologies.com",
+      "priorProviderIdentityStatus": "CONFIRMED",
+      "replayIdentityStatus": "CONFIRMED",
+      "replayAutoAttach": true,
+      "expectedTreatment": "CONFIRMED",
+      "identityCorrect": true,
+      "priorIcpClassification": "LIKELY_NOT_FIT",
+      "replayIcpClassification": "LIKELY_NOT_FIT",
+      "icpChanged": false
+    },
+    {
+      "company": "Prokopto",
+      "domain": "prokopto.io",
+      "priorProviderIdentityStatus": "CONFIRMED",
+      "replayIdentityStatus": "CONFIRMED",
+      "replayAutoAttach": true,
+      "expectedTreatment": "CONFIRMED",
+      "identityCorrect": true,
+      "priorIcpClassification": "LIKELY_NOT_FIT",
+      "replayIcpClassification": "LIKELY_NOT_FIT",
+      "icpChanged": false
+    },
+    {
+      "company": "Acoru",
+      "domain": "acoru.com",
+      "priorProviderIdentityStatus": "CONFIRMED",
+      "replayIdentityStatus": "CONFIRMED",
+      "replayAutoAttach": true,
+      "expectedTreatment": "CONFIRMED",
+      "identityCorrect": true,
+      "priorIcpClassification": "LIKELY_NOT_FIT",
+      "replayIcpClassification": "LIKELY_NOT_FIT",
+      "icpChanged": false
+    },
+    {
+      "company": "Truvo Cyber",
+      "domain": "truvocyber.com",
+      "priorProviderIdentityStatus": "CONFIRMED",
+      "replayIdentityStatus": "CONFIRMED",
+      "replayAutoAttach": true,
+      "expectedTreatment": "CONFIRMED",
+      "identityCorrect": true,
+      "priorIcpClassification": "LIKELY_NOT_FIT",
+      "replayIcpClassification": "LIKELY_NOT_FIT",
+      "icpChanged": false
+    },
+    {
+      "company": "Simple IT Inc",
+      "domain": "simpleitindy.com",
+      "priorProviderIdentityStatus": "CONFIRMED",
+      "replayIdentityStatus": "CONFIRMED",
+      "replayAutoAttach": true,
+      "expectedTreatment": "CONFIRMED",
+      "identityCorrect": true,
+      "priorIcpClassification": "LIKELY_NOT_FIT",
+      "replayIcpClassification": "LIKELY_NOT_FIT",
+      "icpChanged": false
+    },
+    {
+      "company": "AMARU",
+      "domain": "amaru.co.nz",
+      "priorProviderIdentityStatus": "CONFIRMED",
+      "replayIdentityStatus": "CONFIRMED",
+      "replayAutoAttach": true,
+      "expectedTreatment": "CONFIRMED",
+      "identityCorrect": true,
+      "priorIcpClassification": "LIKELY_NOT_FIT",
+      "replayIcpClassification": "LIKELY_NOT_FIT",
+      "icpChanged": false
+    },
+    {
+      "company": "Socure",
+      "domain": "socure.com",
+      "priorProviderIdentityStatus": "CONFIRMED",
+      "replayIdentityStatus": "CONFIRMED",
+      "replayAutoAttach": true,
+      "expectedTreatment": "CONFIRMED",
+      "identityCorrect": true,
+      "priorIcpClassification": "LIKELY_NOT_FIT",
+      "replayIcpClassification": "LIKELY_NOT_FIT",
+      "icpChanged": false
+    },
+    {
+      "company": "Digital Maelstrom",
+      "domain": "digitalmaelstrom.net",
+      "priorProviderIdentityStatus": "NOT_FOUND",
+      "replayIdentityStatus": "AMBIGUOUS",
+      "replayAutoAttach": false,
+      "expectedTreatment": "SAFE_NON_ATTACH",
+      "identityCorrect": true,
+      "priorIcpClassification": "INSUFFICIENT_DATA",
+      "replayIcpClassification": "INSUFFICIENT_DATA",
+      "icpChanged": false
+    },
+    {
+      "company": "Mandiant (part of Google Cloud)",
+      "domain": null,
+      "priorProviderIdentityStatus": "NOT_FOUND",
+      "replayIdentityStatus": "AMBIGUOUS",
+      "replayAutoAttach": false,
+      "expectedTreatment": "SAFE_NON_ATTACH",
+      "identityCorrect": true,
+      "priorIcpClassification": "INSUFFICIENT_DATA",
+      "replayIcpClassification": "INSUFFICIENT_DATA",
+      "icpChanged": false
+    },
+    {
+      "company": "Managed Services - Monitoring 24/7",
+      "domain": null,
+      "priorProviderIdentityStatus": "NOT_FOUND",
+      "replayIdentityStatus": "NOT_A_COMPANY",
+      "replayAutoAttach": false,
+      "expectedTreatment": "SAFE_NON_ATTACH",
+      "identityCorrect": true,
+      "priorIcpClassification": "INSUFFICIENT_DATA",
+      "replayIcpClassification": "INSUFFICIENT_DATA",
+      "icpChanged": false
+    },
+    {
+      "company": "Corsa",
+      "domain": "corsa.finance",
+      "priorProviderIdentityStatus": "NOT_FOUND",
+      "replayIdentityStatus": "AMBIGUOUS",
+      "replayAutoAttach": false,
+      "expectedTreatment": "SAFE_NON_ATTACH",
+      "identityCorrect": true,
+      "priorIcpClassification": "INSUFFICIENT_DATA",
+      "replayIcpClassification": "INSUFFICIENT_DATA",
+      "icpChanged": false
+    }
+  ],
+  "metrics": {
+    "identityRegressions": 0,
+    "icpRegressions": 0,
+    "canonicalIdentityAccuracy": 1
+  }
+}

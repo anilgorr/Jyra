@@ -1,0 +1,11 @@
+{
+  "generatedAt": "2026-08-31T18:03:49.924Z",
+  "cases": "A-J",
+  "passed": 10,
+  "failed": 0,
+  "command": "node scripts/test-company-identity.mjs",
+  "hardCodingCheck": {
+    "runtimeCaseNamesFound": false,
+    "exactServicePhraseFoundInRuntime": false
+  }
+}
