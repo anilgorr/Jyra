@@ -1,0 +1,117 @@
+{
+  "status": "FAIL",
+  "runtimeMs": 10438,
+  "research": {
+    "checkpointSha256Before": "65664967d0ff677de736a0df0b4dce8d2d4347736a886e11d87c5845a9978376",
+    "checkpointSha256After": "65664967d0ff677de736a0df0b4dce8d2d4347736a886e11d87c5845a9978376",
+    "questionIdsStable": true,
+    "jobIdsStable": true,
+    "providerCalls": 0,
+    "duplicateCanonicalCompanies": 0,
+    "duplicateEvidence": 0,
+    "duplicateFacts": 0,
+    "duplicateSignals": 0,
+    "duplicateResearchQuestions": 0
+  },
+  "downstream": {
+    "signalRowsStable": true,
+    "clusterRowsStable": true,
+    "opportunityRowsStable": true,
+    "newOpportunityHistoryRows": 10,
+    "newWhyVersions": 10,
+    "newRecommendationLedgerRows": 10,
+    "violation": "Replay created duplicate downstream assessment/history, WHY version, and recommendation events."
+  },
+  "comparisons": [
+    {
+      "companyId": "3cd73d96-37d1-4cf8-9dab-db596e019783",
+      "signalIdsStable": true,
+      "clusterIdsStable": true,
+      "opportunityIdStable": true,
+      "historyDuplicated": true,
+      "whyDuplicated": true,
+      "recommendationDuplicated": true
+    },
+    {
+      "companyId": "3ec654e3-3bed-405a-a1aa-1405f28ffcba",
+      "signalIdsStable": true,
+      "clusterIdsStable": true,
+      "opportunityIdStable": true,
+      "historyDuplicated": true,
+      "whyDuplicated": true,
+      "recommendationDuplicated": true
+    },
+    {
+      "companyId": "417409dc-ca3f-449f-90bb-f315f91f450a",
+      "signalIdsStable": true,
+      "clusterIdsStable": true,
+      "opportunityIdStable": true,
+      "historyDuplicated": true,
+      "whyDuplicated": true,
+      "recommendationDuplicated": true
+    },
+    {
+      "companyId": "408bc044-5be0-4118-b486-75c494e5cd8f",
+      "signalIdsStable": true,
+      "clusterIdsStable": true,
+      "opportunityIdStable": true,
+      "historyDuplicated": true,
+      "whyDuplicated": true,
+      "recommendationDuplicated": true
+    },
+    {
+      "companyId": "0ba57746-1f8e-4691-a647-0921de1a971d",
+      "signalIdsStable": true,
+      "clusterIdsStable": true,
+      "opportunityIdStable": true,
+      "historyDuplicated": true,
+      "whyDuplicated": true,
+      "recommendationDuplicated": true
+    },
+    {
+      "companyId": "8ee8a9ce-dd62-4b03-bfb0-f9f9a3683f32",
+      "signalIdsStable": true,
+      "clusterIdsStable": true,
+      "opportunityIdStable": true,
+      "historyDuplicated": true,
+      "whyDuplicated": true,
+      "recommendationDuplicated": true
+    },
+    {
+      "companyId": "fafc40de-2c9e-4968-bc3c-602d7d3f23c6",
+      "signalIdsStable": true,
+      "clusterIdsStable": true,
+      "opportunityIdStable": true,
+      "historyDuplicated": true,
+      "whyDuplicated": true,
+      "recommendationDuplicated": true
+    },
+    {
+      "companyId": "4944433c-43a4-41bb-b3f4-24fe98d56a8b",
+      "signalIdsStable": true,
+      "clusterIdsStable": true,
+      "opportunityIdStable": true,
+      "historyDuplicated": true,
+      "whyDuplicated": true,
+      "recommendationDuplicated": true
+    },
+    {
+      "companyId": "f757f1d3-fc2d-4086-8903-b4da90e166e3",
+      "signalIdsStable": true,
+      "clusterIdsStable": true,
+      "opportunityIdStable": true,
+      "historyDuplicated": true,
+      "whyDuplicated": true,
+      "recommendationDuplicated": true
+    },
+    {
+      "companyId": "94457ffa-bf97-426e-95b0-a1cf30250bd0",
+      "signalIdsStable": true,
+      "clusterIdsStable": true,
+      "opportunityIdStable": true,
+      "historyDuplicated": true,
+      "whyDuplicated": true,
+      "recommendationDuplicated": true
+    }
+  ]
+}

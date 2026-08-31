@@ -1,0 +1,995 @@
+JYRA — 10-CONTROL BLIND END-TO-END RETEST 01
+
+GOAL
+
+Validate whether the repaired JYRA MVP core now works end-to-end on the
+same frozen 10 blind control companies/events.
+
+This is NOT a fix task.
+
+This is a frozen evaluation run.
+
+The objective is to test the normal pipeline:
+
+CONTROL COMPANY
+→ IDENTITY
+→ RESEARCH QUESTION
+→ TAVILY PRIMARY
+→ EXA ADAPTIVE FALLBACK IF REQUIRED
+→ EVIDENCE
+→ FACT EXTRACTION
+→ FACT VALIDATION
+→ SIGNAL
+→ SIGNAL CLUSTER IF APPLICABLE
+→ WHEN
+→ WHY
+→ NEXT BEST ACTION
+
+Do not modify intelligence logic during this run.
+
+==================================================
+1. DATABASE SAFETY
+==================================================
+
+DEVELOPMENT ONLY.
+
+Use ONLY development database.
+
+Production operations = 0.
+
+Do not:
+
+- migrate production
+- seed production
+- reset production
+- truncate production
+- modify production
+- test against production
+
+==================================================
+2. FROZEN SYSTEMS
+==================================================
+
+The following are FROZEN for this benchmark:
+
+MVP_RETRIEVAL_V1_FROZEN
+
+Tavily primary research retrieval
+
+Exa adaptive WEB_SEARCH fallback
+
+COMPANY_DISCOVERY routing
+
+query generation
+
+identity safety / profile resolution
+
+company-likeness gate
+
+fact ontology
+
+fact extraction
+
+fact validation
+
+signal definitions
+
+signal mapping
+
+Managed SOC signal pack
+
+ICP logic
+
+opportunity logic
+
+WHY logic
+
+NBA logic
+
+Do NOT modify these during the benchmark.
+
+==================================================
+3. PRECONDITION
+==================================================
+
+Confirm before starting:
+
+Find My Market Hotfix 01 = PASS
+
+Profile Resolution Fix 02A = PASS
+
+Identity precision prior replay = 100%
+
+Safe resolution coverage prior replay = 100%
+
+Wrong automatic attachments = 0
+
+MVP_RETRIEVAL_V1_FROZEN marker exists
+
+Black Duck extraction fix merged
+
+If any precondition is not true:
+
+STOP and return PRECONDITION_FAILED.
+
+==================================================
+4. FROZEN CONTROL SET
+==================================================
+
+Use the EXACT SAME 10 blind-control companies/events used in the prior
+MVP Reality Test and Fix Cycles.
+
+Do not:
+
+add controls
+
+remove controls
+
+replace controls
+
+change reference events
+
+change event dates
+
+change labels after the run
+
+The ground-truth event labels must remain hidden from normal JYRA
+research/query/extraction logic.
+
+They may be used ONLY by the evaluation/adjudication layer after JYRA
+has completed its run.
+
+==================================================
+5. CONTROL PROVISIONING
+==================================================
+
+Provision the exact 10 controls into the normal research pipeline.
+
+Separate two concepts clearly:
+
+CONTROL PROVISIONING
+
+vs
+
+MARKET DISCOVERY.
+
+A control failing to appear in an Exa Find My Market search must NOT
+automatically count as event-retrieval failure.
+
+Every valid control should be independently provisioned into the
+research test population using its frozen benchmark identity input.
+
+Report:
+
+controls expected
+controls provisioned
+controls blocked
+reason blocked.
+
+==================================================
+6. IDENTITY FIRST
+==================================================
+
+Run every control through current normal identity resolution.
+
+Report for each:
+
+input company
+company-likeness
+canonical identity
+domain
+LinkedIn
+identity state
+identity confidence
+ownership/brand relationship if applicable
+auto-attached YES/NO
+identity contradictions.
+
+Valid states include:
+
+CONFIRMED
+PROBABLE
+AMBIGUOUS
+NOT_A_COMPANY
+WRONG_ENTITY
+UNRESOLVED
+
+Do not force ambiguous identities into confirmation.
+
+==================================================
+7. IDENTITY GATE
+==================================================
+
+If a benchmark control is genuinely ambiguous:
+
+do not attach evidence to an uncertain company.
+
+Record:
+
+IDENTITY_BLOCKED
+
+and distinguish this from:
+
+RETRIEVAL_MISS.
+
+Wrong-entity research is worse than missing research.
+
+==================================================
+8. NORMAL RESEARCH QUESTION GENERATION
+==================================================
+
+Use the approved Managed SOC opportunity-intelligence pack.
+
+Generate research questions through the NORMAL planner.
+
+Do not inject benchmark event terms.
+
+Do not use the hidden control label.
+
+Do not manually write a question designed to retrieve the reference
+event.
+
+Questions must be derived only from:
+
+seller
+offering
+signal pack
+company
+known company evidence
+normal research context.
+
+==================================================
+9. NORMAL RETRIEVAL PATH
+==================================================
+
+For each research question:
+
+Tavily = primary WEB_SEARCH
+
+If Tavily disposition is:
+
+INSUFFICIENT_RETRIEVAL
+AMBIGUOUS_RETRIEVAL
+PROVIDER_FAILURE
+
+then:
+
+Exa regular WEB_SEARCH = fallback.
+
+Do NOT use Exa COMPANY_DISCOVERY for event research.
+
+Maximum logical provider calls/question:
+
+1 Tavily
++
+1 Exa fallback.
+
+Preserve:
+
+provider
+publisher
+query
+rank
+URL
+title
+snippet
+published date
+retrieved date
+request ID
+fallback reason
+latency
+cost
+raw metadata.
+
+==================================================
+10. PROVIDER FAILURE SEMANTICS
+==================================================
+
+Provider failure must NOT become negative evidence.
+
+Examples:
+
+timeout
+quota
+API failure
+empty malformed response
+transport failure.
+
+These must remain:
+
+PROVIDER_FAILURE
+
+or equivalent incomplete-research state.
+
+Do not convert them to:
+
+NO_EVENT
+NO_SIGNAL
+DORMANT.
+
+==================================================
+11. RAW EVIDENCE
+==================================================
+
+Persist/reuse evidence through the normal evidence pipeline.
+
+Maintain distinction:
+
+RAW RETRIEVED RESULT
+
+QUESTION-RELEVANT EVIDENCE
+
+DIRECT EVENT EVIDENCE
+
+SUPPORTING CONTEXT
+
+GENERIC COMPANY CONTENT
+
+SELLER/VENDOR CONTENT
+
+WRONG ENTITY
+
+Only acceptable evidence should proceed into fact extraction.
+
+==================================================
+12. SELLER / BUYER SAFETY
+==================================================
+
+Managed security marketing pages from the company itself must NOT
+automatically mean the company is buying managed security.
+
+Examples:
+
+company offers SOC services
+company markets cybersecurity services
+company has security content
+company publishes generic security thought leadership
+
+must not create buyer intent by themselves.
+
+Seller-as-buyer signals = FAIL.
+
+==================================================
+13. FACT EXTRACTION
+==================================================
+
+Use current frozen generic extraction.
+
+Extract all independent atomic facts supported by evidence.
+
+Examples include:
+
+PERSON_ROLE_CHANGE
+
+JOB_OPENING
+
+HIRING_EXPANSION
+
+TECHNOLOGY_IMPLEMENTATION
+
+TECHNOLOGY_MIGRATION
+
+TECHNOLOGY_REPLACEMENT
+
+COMPLIANCE_INITIATIVE
+
+SECURITY_INCIDENT
+
+PROGRAM_INVESTMENT
+
+MARKET_EXPANSION
+
+ACQUISITION
+
+FUNDING_EVENT
+
+Do not infer purchase intent in the fact layer.
+
+==================================================
+14. EVENT DATE RULES
+==================================================
+
+Event facts must retain defensible event dates.
+
+Do not use retrieval date as event date when the underlying claim is
+historical.
+
+Timeless observations may use observation/retrieval date according to
+existing rules.
+
+No unsupported temporal claims.
+
+==================================================
+15. FACT VALIDATION
+==================================================
+
+Run current validation unchanged.
+
+Report each fact proposal as:
+
+APPROVED
+REJECTED
+
+with reason.
+
+Do not silently discard proposals during benchmark reporting.
+
+For rejected potentially relevant facts, preserve diagnostic reason.
+
+==================================================
+16. SIGNAL GENERATION
+==================================================
+
+Run the existing approved Managed SOC signal definitions unchanged.
+
+No benchmark-specific signal rules.
+
+No threshold relaxation.
+
+No manual signal creation.
+
+No new signal categories.
+
+For each generated signal show:
+
+signal definition
+supporting fact IDs
+supporting evidence IDs
+company
+event date
+confidence
+state.
+
+==================================================
+17. SIGNAL PRECISION REVIEW
+==================================================
+
+Manually/adjudicatively review every generated signal after the normal
+pipeline finishes.
+
+Classify each:
+
+SUPPORTED
+
+UNSUPPORTED
+
+WRONG_ENTITY
+
+SELLER_AS_BUYER
+
+DUPLICATE_EVENT
+
+TEMPORALLY_INVALID.
+
+Strict signal precision:
+
+SUPPORTED
+/
+all generated material signals.
+
+Do not count zero signals as 100% precision.
+
+If zero signals:
+
+precision = UNKNOWN.
+
+==================================================
+18. BLIND EVENT DETECTION
+==================================================
+
+Only AFTER JYRA finishes its normal processing, compare outputs to the
+frozen hidden reference events.
+
+For each control determine:
+
+EVENT_DETECTED
+EVENT_PARTIALLY_DETECTED
+EVENT_NOT_DETECTED
+INVALID_CONTROL_RUN.
+
+A reference event counts as detected only when JYRA independently
+produced sufficient evidence/fact representation of that event.
+
+Search-result presence alone is not enough.
+
+==================================================
+19. EVENT RECALL
+==================================================
+
+Known-event recall:
+
+controls with correctly detected reference event
+/
+valid evaluated controls.
+
+Report:
+
+strict recall
+
+and optionally:
+
+partial recall
+
+separately.
+
+Do not inflate strict recall using partial detections.
+
+==================================================
+20. MISSED-EVENT ATTRIBUTION
+==================================================
+
+For every missed control identify the EARLIEST broken stage:
+
+IDENTITY_FAILURE
+
+QUESTION_GENERATION_FAILURE
+
+TAVILY_RETRIEVAL_FAILURE
+
+FALLBACK_NOT_TRIGGERED
+
+EXA_RETRIEVAL_FAILURE
+
+RELEVANCE_CLASSIFICATION_FAILURE
+
+EVIDENCE_PERSISTENCE_FAILURE
+
+CONTENT_NOT_FETCHED
+
+FACT_EXTRACTION_FAILURE
+
+FACT_VALIDATION_FAILURE
+
+SIGNAL_MAPPING_FAILURE
+
+TEMPORAL_FAILURE
+
+OTHER.
+
+Only one PRIMARY earliest break per miss.
+
+Secondary causes may also be recorded.
+
+==================================================
+21. TRACE SUCCESSFUL CONTROLS TOO
+==================================================
+
+Do not inspect only failures.
+
+For every detected reference event preserve:
+
+query
+provider
+result
+evidence
+fact
+signal
+WHY.
+
+This lets us compare success vs failure paths.
+
+==================================================
+22. WHEN
+==================================================
+
+For every control report WHEN state using normal logic.
+
+Examples:
+
+KNOWN CURRENT WINDOW
+
+RECENT EVENT / EMERGING
+
+UNKNOWN
+
+INSUFFICIENT EVIDENCE
+
+Do not manufacture urgency from company fit alone.
+
+==================================================
+23. WHY
+==================================================
+
+Every material WHY statement must map to:
+
+signal
+→ fact
+→ evidence
+→ source.
+
+WHY provenance target:
+
+100%.
+
+If evidence is insufficient, valid WHY is:
+
+Insufficient evidence to establish current urgency.
+
+Do not fabricate a persuasive explanation.
+
+==================================================
+24. NEXT BEST ACTION
+==================================================
+
+Run existing NBA logic unchanged.
+
+Examples may include:
+
+RESEARCH_MORE
+
+MONITOR
+
+REVIEW_ACCOUNT
+
+PREPARE_OUTREACH
+
+Do not force outreach merely because an account has good ICP fit.
+
+NBA should reflect evidence state.
+
+==================================================
+25. OPPORTUNITY STATE
+==================================================
+
+Report current opportunity state.
+
+Do NOT interpret:
+
+UNKNOWN
+
+as:
+
+DORMANT.
+
+Insufficient research must remain distinct from genuine low opportunity.
+
+==================================================
+26. CONTROL-LEVEL REPORT
+==================================================
+
+For each of the 10 controls report:
+
+Company
+
+Identity state
+
+Reference event category
+
+Research questions
+
+Tavily calls
+
+Exa fallback calls
+
+Provider failures
+
+Raw results
+
+Relevant evidence
+
+Direct-event evidence
+
+Approved facts
+
+Rejected relevant facts
+
+Signals
+
+Supported signals
+
+Unsupported signals
+
+Reference event detected YES/NO/PARTIAL
+
+WHEN
+
+WHY
+
+NBA
+
+Earliest failure if missed
+
+Estimated cost
+
+Actual cost where available.
+
+==================================================
+27. GLOBAL METRICS
+==================================================
+
+Calculate:
+
+CONTROL PROVISIONING RATE
+
+IDENTITY PRECISION
+
+IDENTITY SAFE COVERAGE
+
+KNOWN-EVENT STRICT RECALL
+
+KNOWN-EVENT PARTIAL RECALL
+
+SIGNAL PRECISION
+
+UNSUPPORTED SIGNAL RATE
+
+WRONG-ENTITY SIGNAL RATE
+
+SELLER-AS-BUYER RATE
+
+WHY PROVENANCE RATE
+
+PROVIDER FAILURE RATE
+
+TAVILY-ONLY SUCCESS COUNT
+
+EXA-RECOVERED SUCCESS COUNT
+
+BOTH-PROVIDER FAILURE COUNT
+
+AVERAGE COST / CONTROL
+
+COST / DETECTED EVENT
+
+==================================================
+28. PASS GATES
+==================================================
+
+Core MVP intelligence gate:
+
+KNOWN-EVENT STRICT RECALL >= 70%
+
+SIGNAL PRECISION >= 85%
+
+UNSUPPORTED SIGNAL RATE <= 5%
+
+WRONG-ENTITY SIGNALS = 0
+
+SELLER-AS-BUYER SIGNALS = 0
+
+WHY PROVENANCE = 100%
+
+IDENTITY PRECISION = 100%
+
+PROVIDER FAILURES NEVER TREATED AS NEGATIVE EVIDENCE
+
+PRODUCTION OPERATIONS = 0.
+
+If precision denominator = 0:
+
+do not declare precision pass.
+
+Return precision UNKNOWN and fail the intelligence gate for
+insufficient signal generation.
+
+==================================================
+29. IDEMPOTENCY REPLAY
+==================================================
+
+After first benchmark run completes:
+
+replay the exact test once using persisted state/cache where normal
+architecture allows it.
+
+The replay must NOT create:
+
+duplicate canonical companies
+
+duplicate evidence
+
+duplicate facts
+
+duplicate signals
+
+duplicate research questions
+
+duplicate opportunity events.
+
+Provider calls should be 0 where cached completed results are safely
+reusable according to existing system design.
+
+Report unavoidable calls separately.
+
+==================================================
+30. COST AUDIT
+==================================================
+
+Report costs by:
+
+Tavily
+
+Exa WEB_SEARCH
+
+profile resolution if any
+
+firmographics if any
+
+other providers if unexpectedly invoked.
+
+Actual provider cost must not be silently replaced with estimated cost.
+
+Show:
+
+actual known
+estimated
+unknown/unreported
+
+separately.
+
+==================================================
+31. NO CONTACT ENRICHMENT
+==================================================
+
+Contact enrichment must remain OFF.
+
+Buying-committee enrichment must remain OFF.
+
+No email lookup.
+
+No phone lookup.
+
+No person lookup requiring paid enrichment.
+
+This test is only core opportunity intelligence.
+
+==================================================
+32. NO BENCHMARK TUNING
+==================================================
+
+During the entire benchmark:
+
+DO NOT modify code
+
+DO NOT change queries
+
+DO NOT change provider routing
+
+DO NOT change extraction prompts
+
+DO NOT change identity thresholds
+
+DO NOT change signal definitions
+
+DO NOT change signal thresholds
+
+DO NOT change ICP logic
+
+DO NOT manually approve facts to improve scores
+
+DO NOT rerun individual controls selectively until they pass.
+
+Complete the frozen run first.
+
+==================================================
+33. ARTIFACTS
+==================================================
+
+Generate:
+
+MVP_10_CONTROL_E2E_RETEST_01.md
+
+MVP_10_CONTROL_E2E_RETEST_01.json
+
+MVP_10_CONTROL_E2E_RETEST_01_CONTROLS.csv
+
+MVP_10_CONTROL_E2E_RETEST_01_TRACES.json
+
+MVP_10_CONTROL_E2E_RETEST_01_FAILURES.md
+
+MVP_10_CONTROL_E2E_RETEST_01_COSTS.json
+
+MVP_10_CONTROL_E2E_RETEST_01_REPLAY.json
+
+==================================================
+34. REQUIRED FINAL SUMMARY
+==================================================
+
+Return:
+
+Controls expected =
+Controls provisioned =
+Controls validly evaluated =
+
+Identity precision =
+Safe identity coverage =
+
+Events detected =
+Events partially detected =
+Events missed =
+
+Strict event recall =
+Partial event recall =
+
+Signals generated =
+Supported signals =
+Unsupported signals =
+Wrong-entity signals =
+Seller-as-buyer signals =
+
+Strict signal precision =
+Unsupported signal rate =
+
+WHY provenance =
+
+Tavily calls =
+Exa fallback calls =
+Tavily-only event recoveries =
+Exa event recoveries =
+
+Provider failures =
+Failures incorrectly treated as negative evidence =
+
+Estimated cost =
+Actual known cost =
+Unknown cost =
+
+Idempotent replay =
+Production operations =
+
+Miss attribution:
+
+Identity =
+Question generation =
+Retrieval =
+Fallback =
+Relevance =
+Evidence persistence =
+Fact extraction =
+Validation =
+Signal mapping =
+Temporal =
+Other =
+
+==================================================
+35. FINAL DECISION
+==================================================
+
+Return exactly ONE:
+
+A — CORE INTELLIGENCE VALIDATED
+
+Requirements:
+all pass gates satisfied.
+
+B — PROMISING, RECALL BELOW TARGET
+
+Precision/safety good but strict event recall <70%.
+
+C — EXTRACTION / FACT PIPELINE STILL BLOCKING
+
+Retrieval finds events but facts fail materially.
+
+D — RETRIEVAL STILL BLOCKING
+
+Normal adaptive retrieval fails materially.
+
+E — IDENTITY STILL BLOCKING
+
+Identity defects prevent reliable research.
+
+F — SIGNAL LOGIC BLOCKING
+
+Facts exist but correct signals are not produced.
+
+G — SAFETY FAILURE
+
+Wrong-entity, unsupported, seller-as-buyer or fabricated claims exceed
+accepted limits.
+
+H — INCONCLUSIVE
+
+Provider/system failures prevent a valid benchmark.
+
+==================================================
+36. STOP
+==================================================
+
+STOP after the benchmark.
+
+DO NOT FIX FAILURES.
+
+DO NOT RUN THE 50-COMPANY TEST.
+
+DO NOT CHANGE CODE.
+
+Return the full results for human review.

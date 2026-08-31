@@ -192,3 +192,31 @@ mtime_ms = 1788189668909
 storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/03616b91-5efe-4884-acba-3de1c52de654/8b0eb3c2-3217-4797-906d-5047725caa9b"
 storage_version_token = "1788189697355677"
 content_type = "text/markdown"
+
+[[outputs]]
+id = "4x21Jl5OGTNvWEC5y4UXb"
+uri = "file://artifacts/api-server/MVP_10_CONTROL_E2E_RETEST_01.md"
+type = "text"
+title = "10-Control E2E Retest 01"
+description = "Final frozen benchmark report with decision, metrics, control outcomes, signal adjudication, replay, and cost summary."
+logical_id = "7b801a43-8107-4b15-ad7e-f35e8ed444da"
+content_hash = "sha256:e6ec661c77e5669e9f2f5b49dbc39641df75eb1fc6ba95c62ce4cea937ddb240"
+size = 6269
+mtime_ms = 1788205037160
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/7b801a43-8107-4b15-ad7e-f35e8ed444da/d3069877-3cab-4f92-9b80-09f2b21fda1e"
+storage_version_token = "1788205107374352"
+content_type = "text/markdown"
+
+[[outputs]]
+id = "sgT6-Ut78-ivf3x45ZIxj"
+uri = "file://artifacts/api-server/MVP_10_CONTROL_E2E_RETEST_01_CONTROLS.csv"
+type = "table"
+title = "10-Control Retest Control Matrix"
+description = "Per-control identity, retrieval, evidence, facts, signals, WHEN, WHY, NBA, cost, and failure-stage results."
+logical_id = "38500331-cad1-40ef-9f6c-2e18e8e7d0fd"
+content_hash = "sha256:58a1f54669bfbb24d314082c2798929610f9d4976e73e6a81be38c9cf03c5bb3"
+size = 2385
+mtime_ms = 1788205037160
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/38500331-cad1-40ef-9f6c-2e18e8e7d0fd/aa8154ad-5477-4112-804a-e9b09c4af30f"
+storage_version_token = "1788205108702510"
+content_type = "text/csv"

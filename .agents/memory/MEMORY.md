@@ -30,3 +30,4 @@
 - [Blind retrieval bake-offs](blind-retrieval-bakeoffs.md) — compare providers only after freezing generic queries and preserving raw results; query gains can outweigh provider choice.
 - [Append-only research diagnostics](append-only-research-diagnostics.md) — collect provider assessment metadata before inserting immutable request-cost records; never enrich them by update.
 - [Canonical identifier trust](canonical-identifier-trust.md) — stored domains cannot verify themselves; automatic reuse needs trusted provenance and exact identity agreement.
+- [Downstream replay idempotency](downstream-replay-idempotency.md) — stable signals/opportunities can still hide duplicate history, WHY, and recommendation events on replay.

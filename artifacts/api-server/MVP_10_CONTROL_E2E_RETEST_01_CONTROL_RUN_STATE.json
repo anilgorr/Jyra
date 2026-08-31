@@ -1,0 +1,420 @@
+{
+  "manifestSha256": "438ae22cc5f06ed16588d911541572fd0617dd608c6ad9bfc451462f5ff90931",
+  "runs": [
+    {
+      "manifestIndex": 0,
+      "requestedCompany": "SolarWinds",
+      "provision": {
+        "status": "PROVISIONED",
+        "companyId": "3cd73d96-37d1-4cf8-9dab-db596e019783",
+        "provisioningMethod": "FROZEN_CONTROL_IDENTITY_EXISTING_CANONICAL",
+        "discoveryRunId": null,
+        "providerId": null,
+        "providerWasExa": false,
+        "rawResults": 0,
+        "canonicalized": 0,
+        "duplicatesRemoved": 0,
+        "rejected": 0,
+        "possibleMatches": 0
+      },
+      "questions": [
+        {
+          "questionType": "LEADERSHIP",
+          "status": "TIMED_OUT",
+          "reason": "No terminal research disposition persisted within 150000ms"
+        },
+        {
+          "questionType": "HIRING",
+          "status": "SUCCEEDED",
+          "questionId": "b37fba97-d1bd-4bd6-9452-48199eff53bb",
+          "jobId": "764ea962-122e-42a7-9657-cffca2456494"
+        },
+        {
+          "questionType": "EXPANSION",
+          "status": "SUCCEEDED",
+          "questionId": "8083b764-b2c7-4788-ad1f-8c631f1110f6",
+          "jobId": "a2d5757f-9b13-490d-a796-bb4104fa4cc2"
+        },
+        {
+          "questionType": "TECHNOLOGY",
+          "status": "TIMED_OUT",
+          "reason": "No terminal research disposition persisted within 150000ms"
+        }
+      ]
+    },
+    {
+      "manifestIndex": 1,
+      "requestedCompany": "First Horizon",
+      "provision": {
+        "status": "PROVISIONED",
+        "companyId": "3ec654e3-3bed-405a-a1aa-1405f28ffcba",
+        "provisioningMethod": "FROZEN_CONTROL_IDENTITY_EXISTING_CANONICAL",
+        "discoveryRunId": null,
+        "providerId": null,
+        "providerWasExa": false,
+        "rawResults": 0,
+        "canonicalized": 0,
+        "duplicatesRemoved": 0,
+        "rejected": 0,
+        "possibleMatches": 0
+      },
+      "questions": [
+        {
+          "questionType": "LEADERSHIP",
+          "status": "SUCCEEDED",
+          "questionId": "30d04ff3-9705-472c-bc45-947475102571",
+          "jobId": "12ddee22-e7d2-4a59-acf4-b44c8a429e62"
+        },
+        {
+          "questionType": "HIRING",
+          "status": "SUCCEEDED",
+          "questionId": "5bb2669f-06e9-4418-8b61-ed332895ecbf",
+          "jobId": "1b1b9bd7-d25c-4906-977b-0b9de779adf3"
+        },
+        {
+          "questionType": "EXPANSION",
+          "status": "SUCCEEDED",
+          "questionId": "36b674d4-47bb-4c98-a4bb-ae3cc1891f05",
+          "jobId": "a83f995f-c363-4589-8567-1d816a564fe6"
+        },
+        {
+          "questionType": "TECHNOLOGY",
+          "status": "SUCCEEDED",
+          "questionId": "faf47884-2727-4315-a4ef-e7424bd7d749",
+          "jobId": "aa8ce657-04f1-4b9c-b90e-2dd7314d36cf"
+        }
+      ]
+    },
+    {
+      "manifestIndex": 2,
+      "requestedCompany": "GitLab",
+      "provision": {
+        "status": "PROVISIONED",
+        "companyId": "417409dc-ca3f-449f-90bb-f315f91f450a",
+        "provisioningMethod": "FROZEN_CONTROL_IDENTITY_EXISTING_CANONICAL",
+        "discoveryRunId": null,
+        "providerId": null,
+        "providerWasExa": false,
+        "rawResults": 0,
+        "canonicalized": 0,
+        "duplicatesRemoved": 0,
+        "rejected": 0,
+        "possibleMatches": 0
+      },
+      "questions": [
+        {
+          "questionType": "LEADERSHIP",
+          "status": "SUCCEEDED",
+          "questionId": "bd190926-02e1-4ff8-b881-82f181db00a2",
+          "jobId": "7643ec0f-472a-45dc-84f3-d6464bff8aad"
+        },
+        {
+          "questionType": "HIRING",
+          "status": "SUCCEEDED",
+          "questionId": "3a5a7952-5c64-4033-9e1e-91b3bfa0796a",
+          "jobId": "9e78ef9a-1d24-49a5-84dc-55b7b59af49b"
+        },
+        {
+          "questionType": "EXPANSION",
+          "status": "SUCCEEDED",
+          "questionId": "69032b03-2ba8-473c-972b-85f0017d439b",
+          "jobId": "e5891508-0518-459d-9ee8-79da1693719d"
+        },
+        {
+          "questionType": "TECHNOLOGY",
+          "status": "TIMED_OUT",
+          "reason": "No terminal research disposition persisted within 150000ms"
+        }
+      ]
+    },
+    {
+      "manifestIndex": 3,
+      "requestedCompany": "Infoblox",
+      "provision": {
+        "status": "PROVISIONED",
+        "companyId": "408bc044-5be0-4118-b486-75c494e5cd8f",
+        "provisioningMethod": "FROZEN_CONTROL_IDENTITY_EXISTING_CANONICAL",
+        "discoveryRunId": null,
+        "providerId": null,
+        "providerWasExa": false,
+        "rawResults": 0,
+        "canonicalized": 0,
+        "duplicatesRemoved": 0,
+        "rejected": 0,
+        "possibleMatches": 0
+      },
+      "questions": [
+        {
+          "questionType": "LEADERSHIP",
+          "status": "SUCCEEDED",
+          "questionId": "7f2108cf-16fc-4a30-97ad-b1a85c598be9",
+          "jobId": "ae2b3420-9ba8-47e7-9371-5d0c0b870699"
+        },
+        {
+          "questionType": "HIRING",
+          "status": "TIMED_OUT",
+          "reason": "No terminal research disposition persisted within 150000ms"
+        },
+        {
+          "questionType": "EXPANSION",
+          "status": "SUCCEEDED",
+          "questionId": "d5aa9fd2-d125-4681-954c-bdba9e0f78fa",
+          "jobId": "4040372b-0e71-46f2-ae78-d2724c8dfcfc"
+        },
+        {
+          "questionType": "TECHNOLOGY",
+          "status": "TIMED_OUT",
+          "reason": "No terminal research disposition persisted within 150000ms"
+        }
+      ]
+    },
+    {
+      "manifestIndex": 4,
+      "requestedCompany": "Teradata",
+      "provision": {
+        "status": "PROVISIONED",
+        "companyId": "0ba57746-1f8e-4691-a647-0921de1a971d",
+        "provisioningMethod": "FROZEN_CONTROL_IDENTITY_EXISTING_CANONICAL",
+        "discoveryRunId": null,
+        "providerId": null,
+        "providerWasExa": false,
+        "rawResults": 0,
+        "canonicalized": 0,
+        "duplicatesRemoved": 0,
+        "rejected": 0,
+        "possibleMatches": 0
+      },
+      "questions": [
+        {
+          "questionType": "LEADERSHIP",
+          "status": "SUCCEEDED",
+          "questionId": "fbe0a8b3-eeb5-43bf-a3a7-b4273ba35c42",
+          "jobId": "0cc39119-0c99-4a77-93ff-1afda509aa22"
+        },
+        {
+          "questionType": "HIRING",
+          "status": "SUCCEEDED",
+          "questionId": "799806ca-c9c0-4461-ba93-a21457f7250b",
+          "jobId": "4b9f1807-744f-4581-946d-c324638351c1"
+        },
+        {
+          "questionType": "EXPANSION",
+          "status": "SUCCEEDED",
+          "questionId": "c3a71eb7-6511-46a3-bf51-33d04337b943",
+          "jobId": "f30c4318-36d5-4699-adec-7318b9c0c5c6"
+        },
+        {
+          "questionType": "TECHNOLOGY",
+          "status": "TIMED_OUT",
+          "reason": "No terminal research disposition persisted within 150000ms"
+        }
+      ]
+    },
+    {
+      "manifestIndex": 5,
+      "requestedCompany": "Nubank",
+      "provision": {
+        "status": "PROVISIONED",
+        "companyId": "8ee8a9ce-dd62-4b03-bfb0-f9f9a3683f32",
+        "provisioningMethod": "FROZEN_CONTROL_IDENTITY_EXISTING_CANONICAL",
+        "discoveryRunId": null,
+        "providerId": null,
+        "providerWasExa": false,
+        "rawResults": 0,
+        "canonicalized": 0,
+        "duplicatesRemoved": 0,
+        "rejected": 0,
+        "possibleMatches": 0
+      },
+      "questions": [
+        {
+          "questionType": "LEADERSHIP",
+          "status": "SUCCEEDED",
+          "questionId": "2c57327a-8a7f-4629-9b60-2dbd03b7e400",
+          "jobId": "8d9a1603-943c-42a1-b22e-7117e4fec119"
+        },
+        {
+          "questionType": "HIRING",
+          "status": "SUCCEEDED",
+          "questionId": "9fef5c5b-73e2-46a6-8ccb-0124d659a6e5",
+          "jobId": "d019b7e0-8a9e-40f2-a747-ae0911634446"
+        },
+        {
+          "questionType": "EXPANSION",
+          "status": "SUCCEEDED",
+          "questionId": "5d693007-7ae7-461d-878b-3310a3cf8416",
+          "jobId": "1b6cb812-e70a-40ed-9102-8b4e697adf65"
+        },
+        {
+          "questionType": "TECHNOLOGY",
+          "status": "SUCCEEDED",
+          "questionId": "484f1d37-25ae-45b0-8e81-c7030da0217a",
+          "jobId": "b6451df5-5c27-4007-83be-1bad93b60973"
+        }
+      ]
+    },
+    {
+      "manifestIndex": 6,
+      "requestedCompany": "Black Duck",
+      "provision": {
+        "status": "PROVISIONED",
+        "companyId": "fafc40de-2c9e-4968-bc3c-602d7d3f23c6",
+        "provisioningMethod": "FROZEN_CONTROL_IDENTITY_EXISTING_CANONICAL",
+        "discoveryRunId": null,
+        "providerId": null,
+        "providerWasExa": false,
+        "rawResults": 0,
+        "canonicalized": 0,
+        "duplicatesRemoved": 0,
+        "rejected": 0,
+        "possibleMatches": 0
+      },
+      "questions": [
+        {
+          "questionType": "LEADERSHIP",
+          "status": "SUCCEEDED",
+          "questionId": "a1ce0837-ed29-4c30-bb4a-5e7ae4ba98ec",
+          "jobId": "d9643abe-1aa5-44b0-b6f6-e1b47fa3dc94"
+        },
+        {
+          "questionType": "HIRING",
+          "status": "TIMED_OUT",
+          "reason": "No terminal research disposition persisted within 150000ms"
+        },
+        {
+          "questionType": "EXPANSION",
+          "status": "TIMED_OUT",
+          "reason": "No terminal research disposition persisted within 150000ms"
+        },
+        {
+          "questionType": "TECHNOLOGY",
+          "status": "TIMED_OUT",
+          "reason": "No terminal research disposition persisted within 150000ms"
+        }
+      ]
+    },
+    {
+      "manifestIndex": 7,
+      "requestedCompany": "OpenAssets",
+      "provision": {
+        "status": "PROVISIONED",
+        "companyId": "4944433c-43a4-41bb-b3f4-24fe98d56a8b",
+        "provisioningMethod": "FROZEN_CONTROL_IDENTITY_EXISTING_CANONICAL",
+        "discoveryRunId": null,
+        "providerId": null,
+        "providerWasExa": false,
+        "rawResults": 0,
+        "canonicalized": 0,
+        "duplicatesRemoved": 0,
+        "rejected": 0,
+        "possibleMatches": 0
+      },
+      "questions": [
+        {
+          "questionType": "LEADERSHIP",
+          "status": "TIMED_OUT",
+          "reason": "No terminal research disposition persisted within 150000ms"
+        },
+        {
+          "questionType": "HIRING",
+          "status": "TIMED_OUT",
+          "reason": "No terminal research disposition persisted within 150000ms"
+        },
+        {
+          "questionType": "EXPANSION",
+          "status": "SUCCEEDED",
+          "questionId": "6e32d60c-e8f8-44c2-898d-5a900c35049b",
+          "jobId": "d4792efe-fd88-470c-83cc-b7220e1c4433"
+        },
+        {
+          "questionType": "TECHNOLOGY",
+          "status": "TIMED_OUT",
+          "reason": "No terminal research disposition persisted within 150000ms"
+        }
+      ]
+    },
+    {
+      "manifestIndex": 8,
+      "requestedCompany": "Black & McDonald",
+      "provision": {
+        "status": "PROVISIONED",
+        "companyId": "f757f1d3-fc2d-4086-8903-b4da90e166e3",
+        "provisioningMethod": "FROZEN_CONTROL_IDENTITY_EXISTING_CANONICAL",
+        "discoveryRunId": null,
+        "providerId": null,
+        "providerWasExa": false,
+        "rawResults": 0,
+        "canonicalized": 0,
+        "duplicatesRemoved": 0,
+        "rejected": 0,
+        "possibleMatches": 0
+      },
+      "questions": [
+        {
+          "questionType": "LEADERSHIP",
+          "status": "TIMED_OUT",
+          "reason": "No terminal research disposition persisted within 150000ms"
+        },
+        {
+          "questionType": "HIRING",
+          "status": "SUCCEEDED",
+          "questionId": "f0b7536f-3e25-43d3-86ea-351d57e339b8",
+          "jobId": "272b6127-7d2e-448f-a6b8-521ab60dd35f"
+        },
+        {
+          "questionType": "EXPANSION",
+          "status": "SUCCEEDED",
+          "questionId": "77c31679-be25-4411-ad9f-b5fe6ea3b398",
+          "jobId": "36453fb1-55dd-4140-b094-76163aeff572"
+        },
+        {
+          "questionType": "TECHNOLOGY",
+          "status": "TIMED_OUT",
+          "reason": "No terminal research disposition persisted within 150000ms"
+        }
+      ]
+    },
+    {
+      "manifestIndex": 9,
+      "requestedCompany": "RAKBANK",
+      "provision": {
+        "status": "PROVISIONED",
+        "companyId": "94457ffa-bf97-426e-95b0-a1cf30250bd0",
+        "provisioningMethod": "FROZEN_CONTROL_IDENTITY_EXISTING_CANONICAL",
+        "discoveryRunId": null,
+        "providerId": null,
+        "providerWasExa": false,
+        "rawResults": 0,
+        "canonicalized": 0,
+        "duplicatesRemoved": 0,
+        "rejected": 0,
+        "possibleMatches": 0
+      },
+      "questions": [
+        {
+          "questionType": "LEADERSHIP",
+          "status": "SUCCEEDED",
+          "questionId": "fe64ad8e-75ae-45e7-931c-fa28a2678f82",
+          "jobId": "27e1ed5e-3bbe-438f-a9ae-670fd16eecc9"
+        },
+        {
+          "questionType": "HIRING",
+          "status": "SUCCEEDED",
+          "questionId": "12f498ed-5bfe-4e85-9159-56eea1aea073",
+          "jobId": "f60a18cd-ea71-4e62-933a-84bcbad9b80a"
+        },
+        {
+          "questionType": "EXPANSION",
+          "status": "TIMED_OUT",
+          "reason": "No terminal research disposition persisted within 150000ms"
+        },
+        {
+          "questionType": "TECHNOLOGY",
+          "status": "SUCCEEDED",
+          "questionId": "2f01903e-0a22-4f68-b6c3-48b986accc4f",
+          "jobId": "633510cd-3994-4b3b-bd3e-91b475cfab9a"
+        }
+      ]
+    }
+  ]
+}

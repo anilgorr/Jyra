@@ -1,0 +1,175 @@
+{
+  "manifestSha256": "438ae22cc5f06ed16588d911541572fd0617dd608c6ad9bfc451462f5ff90931",
+  "runs": [
+    {
+      "manifestIndex": 0,
+      "requestedCompany": "SolarWinds",
+      "provision": {
+        "discoveryRunId": "368a6dd1-1b15-4570-8cce-5e3998eccb33",
+        "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+        "providerWasExa": true,
+        "rawResults": 10,
+        "canonicalized": 0,
+        "duplicatesRemoved": 0,
+        "rejected": 1,
+        "possibleMatches": 9,
+        "companyId": null,
+        "status": "NOT_PROVISIONED"
+      },
+      "questions": []
+    },
+    {
+      "manifestIndex": 1,
+      "requestedCompany": "First Horizon",
+      "provision": {
+        "discoveryRunId": "7c415d2b-ea82-4572-b7e9-25d51cf20605",
+        "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+        "providerWasExa": true,
+        "rawResults": 10,
+        "canonicalized": 0,
+        "duplicatesRemoved": 2,
+        "rejected": 1,
+        "possibleMatches": 7,
+        "companyId": null,
+        "status": "NOT_PROVISIONED"
+      },
+      "questions": []
+    },
+    {
+      "manifestIndex": 2,
+      "requestedCompany": "GitLab",
+      "provision": {
+        "discoveryRunId": "c60af14b-21da-4cc0-845c-fa49bf719c60",
+        "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+        "providerWasExa": true,
+        "rawResults": 10,
+        "canonicalized": 0,
+        "duplicatesRemoved": 0,
+        "rejected": 1,
+        "possibleMatches": 9,
+        "companyId": null,
+        "status": "NOT_PROVISIONED"
+      },
+      "questions": []
+    },
+    {
+      "manifestIndex": 3,
+      "requestedCompany": "Infoblox",
+      "provision": {
+        "discoveryRunId": "57754f78-14cf-4b6d-88ec-83c339641874",
+        "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+        "providerWasExa": true,
+        "rawResults": 10,
+        "canonicalized": 0,
+        "duplicatesRemoved": 0,
+        "rejected": 1,
+        "possibleMatches": 9,
+        "companyId": null,
+        "status": "NOT_PROVISIONED"
+      },
+      "questions": []
+    },
+    {
+      "manifestIndex": 4,
+      "requestedCompany": "Teradata",
+      "provision": {
+        "discoveryRunId": "6c0127b5-3073-493f-a2d9-33ce935f13d2",
+        "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+        "providerWasExa": true,
+        "rawResults": 10,
+        "canonicalized": 0,
+        "duplicatesRemoved": 0,
+        "rejected": 2,
+        "possibleMatches": 8,
+        "companyId": null,
+        "status": "NOT_PROVISIONED"
+      },
+      "questions": []
+    },
+    {
+      "manifestIndex": 5,
+      "requestedCompany": "Nubank",
+      "provision": {
+        "discoveryRunId": "81258554-3287-454b-b0c4-0426c2495f2d",
+        "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+        "providerWasExa": true,
+        "rawResults": 10,
+        "canonicalized": 0,
+        "duplicatesRemoved": 0,
+        "rejected": 0,
+        "possibleMatches": 10,
+        "companyId": null,
+        "status": "NOT_PROVISIONED"
+      },
+      "questions": []
+    },
+    {
+      "manifestIndex": 6,
+      "requestedCompany": "Black Duck",
+      "provision": {
+        "discoveryRunId": "00a5d059-c69f-4a68-acbe-820f7e6a3ee5",
+        "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+        "providerWasExa": true,
+        "rawResults": 10,
+        "canonicalized": 0,
+        "duplicatesRemoved": 0,
+        "rejected": 0,
+        "possibleMatches": 10,
+        "companyId": null,
+        "status": "NOT_PROVISIONED"
+      },
+      "questions": []
+    },
+    {
+      "manifestIndex": 7,
+      "requestedCompany": "OpenAssets",
+      "provision": {
+        "discoveryRunId": "d08dfc81-2093-4564-b98a-341495d6da08",
+        "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+        "providerWasExa": true,
+        "rawResults": 1,
+        "canonicalized": 0,
+        "duplicatesRemoved": 0,
+        "rejected": 0,
+        "possibleMatches": 1,
+        "companyId": null,
+        "status": "NOT_PROVISIONED"
+      },
+      "questions": []
+    },
+    {
+      "manifestIndex": 8,
+      "requestedCompany": "Black & McDonald",
+      "provision": {
+        "discoveryRunId": "3b7b3eb7-71ac-48ed-8979-fc45310ffada",
+        "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+        "providerWasExa": true,
+        "rawResults": 9,
+        "canonicalized": 0,
+        "duplicatesRemoved": 0,
+        "rejected": 0,
+        "possibleMatches": 9,
+        "companyId": null,
+        "status": "NOT_PROVISIONED"
+      },
+      "questions": []
+    },
+    {
+      "manifestIndex": 9,
+      "requestedCompany": "RAKBANK",
+      "provision": {
+        "discoveryRunId": "db4d1d0f-dc75-4b95-94d8-03a164b98ff9",
+        "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+        "providerWasExa": true,
+        "rawResults": 10,
+        "canonicalized": 0,
+        "duplicatesRemoved": 0,
+        "rejected": 1,
+        "possibleMatches": 9,
+        "companyId": null,
+        "status": "NOT_PROVISIONED"
+      },
+      "questions": []
+    }
+  ]
+}

@@ -1,0 +1,1149 @@
+{
+  "benchmark": "JYRA — 10-CONTROL BLIND END-TO-END RETEST 01",
+  "retrievalVersion": "MVP_RETRIEVAL_V1_FROZEN",
+  "generatedAt": "2026-08-31T19:37:17.159Z",
+  "scope": "EXACT_FROZEN_10_CONTROLS_ONLY",
+  "preconditions": {
+    "findMyMarketHotfix01": "PASS",
+    "profileResolutionFix02A": "PASS",
+    "priorIdentityPrecision": 1,
+    "priorSafeResolutionCoverage": 1,
+    "priorWrongAutomaticAttachments": 0,
+    "frozenMarker": true,
+    "blackDuckExtractionFix": "PASS"
+  },
+  "operations": {
+    "developmentOnly": true,
+    "productionOperations": 0,
+    "codeOrIntelligenceLogicModified": false,
+    "benchmarkSpecificQueriesOrRules": false,
+    "contactsDisabled": true
+  },
+  "metrics": {
+    "controlsExpected": 10,
+    "controlsProvisioned": 10,
+    "controlsValidlyEvaluated": 10,
+    "controlProvisioningRate": 1,
+    "identityPrecision": 1,
+    "safeIdentityCoverage": 1,
+    "wrongAutomaticAttachments": 0,
+    "eventsDetected": 2,
+    "eventsPartiallyDetected": 2,
+    "eventsMissed": 6,
+    "strictEventRecall": 0.2,
+    "partialEventRecall": 0.2,
+    "strictPlusPartialCoverage": 0.4,
+    "signalsGenerated": 6,
+    "supportedSignals": 2,
+    "unsupportedSignals": 4,
+    "wrongEntitySignals": 0,
+    "sellerAsBuyerSignals": 1,
+    "temporallyInvalidSignals": 1,
+    "strictSignalPrecision": 0.3333333333333333,
+    "unsupportedSignalRate": 0.6666666666666666,
+    "whyProvenanceRate": 1,
+    "whyMaterialClaims": 0,
+    "providerFailures": 0,
+    "failuresIncorrectlyTreatedAsNegativeEvidence": 0,
+    "tavilyCalls": 20,
+    "exaFallbackCalls": 20,
+    "tavilyOnlyEventRecoveries": 1,
+    "exaRecoveredEvents": 0,
+    "bothProviderFailures": 0,
+    "estimatedCost": 0.34,
+    "actualKnownCost": 0.322,
+    "unknownCostCalls": 20,
+    "idempotentReplay": false,
+    "productionOperations": 0,
+    "contactEnrichmentCalls": 0
+  },
+  "missAttribution": {
+    "IDENTITY_FAILURE": 0,
+    "QUESTION_GENERATION_FAILURE": 0,
+    "TAVILY_RETRIEVAL_FAILURE": 0,
+    "FALLBACK_NOT_TRIGGERED": 0,
+    "EXA_RETRIEVAL_FAILURE": 0,
+    "RELEVANCE_CLASSIFICATION_FAILURE": 0,
+    "EVIDENCE_PERSISTENCE_FAILURE": 0,
+    "CONTENT_NOT_FETCHED": 0,
+    "FACT_EXTRACTION_FAILURE": 6,
+    "FACT_VALIDATION_FAILURE": 0,
+    "SIGNAL_MAPPING_FAILURE": 0,
+    "TEMPORAL_FAILURE": 2,
+    "OTHER": 0
+  },
+  "costs": {
+    "currency": "USD",
+    "validBenchmark": {
+      "tavily": {
+        "calls": 20,
+        "estimated": 0.2,
+        "actualKnown": 0,
+        "actualUnknownCalls": 20
+      },
+      "exaWebSearch": {
+        "calls": 20,
+        "estimated": 0.14,
+        "actualKnown": 0.322,
+        "actualUnknownCalls": 0
+      },
+      "profileResolution": {
+        "calls": 0,
+        "estimated": 0,
+        "actualKnown": 0
+      },
+      "firmographics": {
+        "calls": 0,
+        "estimated": 0,
+        "actualKnown": 0
+      },
+      "contacts": {
+        "calls": 0,
+        "estimated": 0,
+        "actualKnown": 0
+      },
+      "total": {
+        "calls": 40,
+        "estimated": 0.34,
+        "actualKnown": 0.322,
+        "actualUnknownCalls": 20,
+        "averageEstimatedPerControl": 0.034,
+        "estimatedCostPerStrictDetectedEvent": 0.17
+      }
+    },
+    "excludedInvalidProvisioningAttempt": {
+      "reason": "The legacy runner incorrectly depended on market discovery for control provisioning; the attempt was stopped and excluded before valid research.",
+      "exaCompanyDiscoveryCalls": 10,
+      "estimated": 0.07,
+      "actualKnown": 0.07,
+      "actualUnknownCalls": 0
+    },
+    "productionOperations": 0
+  },
+  "replay": {
+    "status": "FAIL",
+    "runtimeMs": 10438,
+    "research": {
+      "checkpointSha256Before": "65664967d0ff677de736a0df0b4dce8d2d4347736a886e11d87c5845a9978376",
+      "checkpointSha256After": "65664967d0ff677de736a0df0b4dce8d2d4347736a886e11d87c5845a9978376",
+      "questionIdsStable": true,
+      "jobIdsStable": true,
+      "providerCalls": 0,
+      "duplicateCanonicalCompanies": 0,
+      "duplicateEvidence": 0,
+      "duplicateFacts": 0,
+      "duplicateSignals": 0,
+      "duplicateResearchQuestions": 0
+    },
+    "downstream": {
+      "signalRowsStable": true,
+      "clusterRowsStable": true,
+      "opportunityRowsStable": true,
+      "newOpportunityHistoryRows": 10,
+      "newWhyVersions": 10,
+      "newRecommendationLedgerRows": 10,
+      "violation": "Replay created duplicate downstream assessment/history, WHY version, and recommendation events."
+    },
+    "comparisons": [
+      {
+        "companyId": "3cd73d96-37d1-4cf8-9dab-db596e019783",
+        "signalIdsStable": true,
+        "clusterIdsStable": true,
+        "opportunityIdStable": true,
+        "historyDuplicated": true,
+        "whyDuplicated": true,
+        "recommendationDuplicated": true
+      },
+      {
+        "companyId": "3ec654e3-3bed-405a-a1aa-1405f28ffcba",
+        "signalIdsStable": true,
+        "clusterIdsStable": true,
+        "opportunityIdStable": true,
+        "historyDuplicated": true,
+        "whyDuplicated": true,
+        "recommendationDuplicated": true
+      },
+      {
+        "companyId": "417409dc-ca3f-449f-90bb-f315f91f450a",
+        "signalIdsStable": true,
+        "clusterIdsStable": true,
+        "opportunityIdStable": true,
+        "historyDuplicated": true,
+        "whyDuplicated": true,
+        "recommendationDuplicated": true
+      },
+      {
+        "companyId": "408bc044-5be0-4118-b486-75c494e5cd8f",
+        "signalIdsStable": true,
+        "clusterIdsStable": true,
+        "opportunityIdStable": true,
+        "historyDuplicated": true,
+        "whyDuplicated": true,
+        "recommendationDuplicated": true
+      },
+      {
+        "companyId": "0ba57746-1f8e-4691-a647-0921de1a971d",
+        "signalIdsStable": true,
+        "clusterIdsStable": true,
+        "opportunityIdStable": true,
+        "historyDuplicated": true,
+        "whyDuplicated": true,
+        "recommendationDuplicated": true
+      },
+      {
+        "companyId": "8ee8a9ce-dd62-4b03-bfb0-f9f9a3683f32",
+        "signalIdsStable": true,
+        "clusterIdsStable": true,
+        "opportunityIdStable": true,
+        "historyDuplicated": true,
+        "whyDuplicated": true,
+        "recommendationDuplicated": true
+      },
+      {
+        "companyId": "fafc40de-2c9e-4968-bc3c-602d7d3f23c6",
+        "signalIdsStable": true,
+        "clusterIdsStable": true,
+        "opportunityIdStable": true,
+        "historyDuplicated": true,
+        "whyDuplicated": true,
+        "recommendationDuplicated": true
+      },
+      {
+        "companyId": "4944433c-43a4-41bb-b3f4-24fe98d56a8b",
+        "signalIdsStable": true,
+        "clusterIdsStable": true,
+        "opportunityIdStable": true,
+        "historyDuplicated": true,
+        "whyDuplicated": true,
+        "recommendationDuplicated": true
+      },
+      {
+        "companyId": "f757f1d3-fc2d-4086-8903-b4da90e166e3",
+        "signalIdsStable": true,
+        "clusterIdsStable": true,
+        "opportunityIdStable": true,
+        "historyDuplicated": true,
+        "whyDuplicated": true,
+        "recommendationDuplicated": true
+      },
+      {
+        "companyId": "94457ffa-bf97-426e-95b0-a1cf30250bd0",
+        "signalIdsStable": true,
+        "clusterIdsStable": true,
+        "opportunityIdStable": true,
+        "historyDuplicated": true,
+        "whyDuplicated": true,
+        "recommendationDuplicated": true
+      }
+    ]
+  },
+  "controls": [
+    {
+      "company": "SolarWinds",
+      "canonicalIdentity": "SolarWinds",
+      "companyLikeness": "LIKELY_COMPANY",
+      "domain": "solarwinds.com",
+      "linkedin": null,
+      "identityState": "CONFIRMED",
+      "identityConfidence": 1,
+      "ownershipRelationship": null,
+      "autoAttached": false,
+      "identityContradictions": [],
+      "provisionStatus": "PROVISIONED",
+      "provisioningMethod": "FROZEN_CONTROL_IDENTITY_EXISTING_CANONICAL",
+      "referenceEventCategory": "SECURITY_LEADERSHIP",
+      "referenceEventDate": "2026-06-17",
+      "referenceSource": "https://www.solarwinds.com/company/newsroom/press-releases/solarwinds-appoints-justin-henkel-as-chief-information-security-officer",
+      "researchQuestions": [
+        {
+          "type": "LEADERSHIP",
+          "text": "\"SolarWinds\" solarwinds.com public evidence of security leadership changes (security, ciso)",
+          "status": "ANSWERED",
+          "attemptCount": 4
+        },
+        {
+          "type": "TECHNOLOGY",
+          "text": "\"SolarWinds\" solarwinds.com public evidence of security stack, SOC, SIEM, EDR, or IAM changes (security, siem, endpoint, iam)",
+          "status": "ANSWERED",
+          "attemptCount": 4
+        },
+        {
+          "type": "EXPANSION",
+          "text": "\"SolarWinds\" solarwinds.com public evidence of funding, expansion, security, or compliance initiatives",
+          "status": "ANSWERED",
+          "attemptCount": 4
+        },
+        {
+          "type": "HIRING",
+          "text": "\"SolarWinds\" solarwinds.com public evidence of security and cybersecurity hiring (security, soc, cyber)",
+          "status": "ANSWERED",
+          "attemptCount": 4
+        }
+      ],
+      "tavilyCalls": 3,
+      "exaFallbackCalls": 1,
+      "safelyReusedCompletedQuestions": 1,
+      "providerFailures": 0,
+      "harnessWaitWindowExpirations": 2,
+      "rawResults": 50,
+      "relevantEvidence": 6,
+      "directEventEvidence": 1,
+      "approvedFacts": 6,
+      "rejectedRelevantFacts": 0,
+      "signals": 0,
+      "signalAdjudications": [],
+      "supportedSignals": 0,
+      "unsupportedSignals": 0,
+      "referenceEventOutcome": "EVENT_NOT_DETECTED",
+      "earliestFailure": "FACT_EXTRACTION_FAILURE",
+      "adjudication": "Direct reference-event evidence was persisted, but no atomic leadership-change fact was extracted.",
+      "when": {
+        "state": "WATCH",
+        "assessmentStatus": "INSUFFICIENT_DATA",
+        "timingScore": null,
+        "adjudication": "INSUFFICIENT_EVIDENCE"
+      },
+      "why": {
+        "status": "INSUFFICIENT_EVIDENCE",
+        "text": "Insufficient evidence to establish current urgency.",
+        "provenanceCorrect": true,
+        "materialClaims": 0
+      },
+      "nba": {
+        "action": "RESEARCH_MORE",
+        "label": "Research more",
+        "explanation": "The opportunity is not fully supported: Fit is 70, Need is unknown, and Confidence is unknown.",
+        "adjudication": "CONSISTENT_WITH_REPORTED_EVIDENCE_STATE"
+      },
+      "estimatedCost": 0.037,
+      "actualKnownCost": 0.017,
+      "unknownActualCostCalls": 3
+    },
+    {
+      "company": "First Horizon",
+      "canonicalIdentity": "First Horizon Bank",
+      "companyLikeness": "LIKELY_COMPANY",
+      "domain": "firsthorizon.com",
+      "linkedin": null,
+      "identityState": "CONFIRMED",
+      "identityConfidence": 1,
+      "ownershipRelationship": null,
+      "autoAttached": false,
+      "identityContradictions": [],
+      "provisionStatus": "PROVISIONED",
+      "provisioningMethod": "FROZEN_CONTROL_IDENTITY_EXISTING_CANONICAL",
+      "referenceEventCategory": "SECURITY_LEADERSHIP",
+      "referenceEventDate": "2026-02-11",
+      "referenceSource": "https://ir.firsthorizon.com/press-releases/press-release-details/2026/First-Horizon-Appoints-Leilani-Farol-as-Chief-Information-Security-Officer/default.aspx",
+      "researchQuestions": [
+        {
+          "type": "TECHNOLOGY",
+          "text": "\"First Horizon Bank\" firsthorizon.com public evidence of security stack, SOC, SIEM, EDR, or IAM changes (security, siem, endpoint, iam)",
+          "status": "ANSWERED",
+          "attemptCount": 2
+        },
+        {
+          "type": "HIRING",
+          "text": "\"First Horizon Bank\" firsthorizon.com public evidence of security and cybersecurity hiring (security, soc, cyber)",
+          "status": "ANSWERED",
+          "attemptCount": 2
+        },
+        {
+          "type": "LEADERSHIP",
+          "text": "\"First Horizon Bank\" firsthorizon.com public evidence of security leadership changes (security, ciso)",
+          "status": "ANSWERED",
+          "attemptCount": 2
+        },
+        {
+          "type": "EXPANSION",
+          "text": "\"First Horizon Bank\" firsthorizon.com public evidence of funding, expansion, security, or compliance initiatives",
+          "status": "ANSWERED",
+          "attemptCount": 2
+        }
+      ],
+      "tavilyCalls": 2,
+      "exaFallbackCalls": 2,
+      "safelyReusedCompletedQuestions": 2,
+      "providerFailures": 0,
+      "harnessWaitWindowExpirations": 0,
+      "rawResults": 60,
+      "relevantEvidence": 2,
+      "directEventEvidence": 27,
+      "approvedFacts": 3,
+      "rejectedRelevantFacts": 0,
+      "signals": 0,
+      "signalAdjudications": [],
+      "supportedSignals": 0,
+      "unsupportedSignals": 0,
+      "referenceEventOutcome": "EVENT_NOT_DETECTED",
+      "earliestFailure": "FACT_EXTRACTION_FAILURE",
+      "adjudication": "The reference appointment appeared in evidence, but extraction produced unrelated compliance facts rather than the CISO appointment.",
+      "when": {
+        "state": "WATCH",
+        "assessmentStatus": "INSUFFICIENT_DATA",
+        "timingScore": null,
+        "adjudication": "INSUFFICIENT_EVIDENCE"
+      },
+      "why": {
+        "status": "INSUFFICIENT_EVIDENCE",
+        "text": "Insufficient evidence to establish current urgency.",
+        "provenanceCorrect": true,
+        "materialClaims": 0
+      },
+      "nba": {
+        "action": "RESEARCH_MORE",
+        "label": "Research more",
+        "explanation": "The opportunity is not fully supported: Fit is 70, Need is unknown, and Confidence is unknown.",
+        "adjudication": "CONSISTENT_WITH_REPORTED_EVIDENCE_STATE"
+      },
+      "estimatedCost": 0.034,
+      "actualKnownCost": 0.03,
+      "unknownActualCostCalls": 2
+    },
+    {
+      "company": "GitLab",
+      "canonicalIdentity": "GitLab",
+      "companyLikeness": "LIKELY_COMPANY",
+      "domain": "about.gitlab.com",
+      "linkedin": null,
+      "identityState": "CONFIRMED",
+      "identityConfidence": 1,
+      "ownershipRelationship": null,
+      "autoAttached": false,
+      "identityContradictions": [],
+      "provisionStatus": "PROVISIONED",
+      "provisioningMethod": "FROZEN_CONTROL_IDENTITY_EXISTING_CANONICAL",
+      "referenceEventCategory": "SECURITY_LEADERSHIP",
+      "referenceEventDate": "2026-06-09",
+      "referenceSource": "https://s204.q4cdn.com/984476563/files/doc_news/GitLab-Appoints-Chaim-Mazal-as-Chief-Information-Security-Officer-2026.pdf",
+      "researchQuestions": [
+        {
+          "type": "LEADERSHIP",
+          "text": "\"GitLab\" about.gitlab.com public evidence of security leadership changes (security, ciso)",
+          "status": "ANSWERED",
+          "attemptCount": 5
+        },
+        {
+          "type": "EXPANSION",
+          "text": "\"GitLab\" about.gitlab.com public evidence of funding, expansion, security, or compliance initiatives",
+          "status": "ANSWERED",
+          "attemptCount": 4
+        },
+        {
+          "type": "TECHNOLOGY",
+          "text": "\"GitLab\" about.gitlab.com public evidence of security stack, SOC, SIEM, EDR, or IAM changes (security, siem, endpoint, iam)",
+          "status": "ANSWERED",
+          "attemptCount": 4
+        },
+        {
+          "type": "HIRING",
+          "text": "\"GitLab\" about.gitlab.com public evidence of security and cybersecurity hiring (security, soc, cyber)",
+          "status": "ANSWERED",
+          "attemptCount": 4
+        }
+      ],
+      "tavilyCalls": 3,
+      "exaFallbackCalls": 1,
+      "safelyReusedCompletedQuestions": 1,
+      "providerFailures": 0,
+      "harnessWaitWindowExpirations": 1,
+      "rawResults": 50,
+      "relevantEvidence": 6,
+      "directEventEvidence": 1,
+      "approvedFacts": 8,
+      "rejectedRelevantFacts": 0,
+      "signals": 1,
+      "signalAdjudications": [
+        {
+          "signalId": "3c0eb744-1328-425f-bcc1-5b30de6be3e9",
+          "signalCode": "MSOC_SECURITY_LEADER",
+          "classification": "SUPPORTED",
+          "referenceEventSupported": true,
+          "rationale": "Exact GitLab CISO appointment with source-stated 2026-06-09 date."
+        }
+      ],
+      "supportedSignals": 1,
+      "unsupportedSignals": 0,
+      "referenceEventOutcome": "EVENT_DETECTED",
+      "earliestFailure": null,
+      "adjudication": "Direct evidence, correctly dated leadership facts, and a supported security-leader signal represent the reference event.",
+      "when": {
+        "state": "RISING",
+        "assessmentStatus": "COMPLETE",
+        "timingScore": 88,
+        "adjudication": "RECENT_EVENT / EMERGING"
+      },
+      "why": {
+        "status": "INSUFFICIENT_EVIDENCE",
+        "text": "Insufficient evidence to establish current urgency.",
+        "provenanceCorrect": true,
+        "materialClaims": 0
+      },
+      "nba": {
+        "action": "CONTACT_NOW",
+        "label": "Contact now",
+        "explanation": "Strong Fit, Need, and Timing are supported by fresh independent evidence.",
+        "adjudication": "INCONSISTENT_WITH_INSUFFICIENT_WHY"
+      },
+      "estimatedCost": 0.037,
+      "actualKnownCost": 0.015,
+      "unknownActualCostCalls": 3
+    },
+    {
+      "company": "Infoblox",
+      "canonicalIdentity": "Infoblox",
+      "companyLikeness": "LIKELY_COMPANY",
+      "domain": "infoblox.com",
+      "linkedin": null,
+      "identityState": "CONFIRMED",
+      "identityConfidence": 1,
+      "ownershipRelationship": null,
+      "autoAttached": false,
+      "identityContradictions": [],
+      "provisionStatus": "PROVISIONED",
+      "provisioningMethod": "FROZEN_CONTROL_IDENTITY_EXISTING_CANONICAL",
+      "referenceEventCategory": "SECURITY_LEADERSHIP",
+      "referenceEventDate": "2026-06-09",
+      "referenceSource": "https://www.infoblox.com/news/news-events/press-releases/infoblox-appoints-henrik-smith-as-chief-information-security-officer/",
+      "researchQuestions": [
+        {
+          "type": "TECHNOLOGY",
+          "text": "\"Infoblox\" infoblox.com public evidence of security stack, SOC, SIEM, EDR, or IAM changes (security, siem, endpoint, iam)",
+          "status": "ANSWERED",
+          "attemptCount": 6
+        },
+        {
+          "type": "LEADERSHIP",
+          "text": "\"Infoblox\" infoblox.com public evidence of security leadership changes (security, ciso)",
+          "status": "ANSWERED",
+          "attemptCount": 7
+        },
+        {
+          "type": "HIRING",
+          "text": "\"Infoblox\" infoblox.com public evidence of security and cybersecurity hiring (security, soc, cyber)",
+          "status": "ANSWERED",
+          "attemptCount": 5
+        },
+        {
+          "type": "EXPANSION",
+          "text": "\"Infoblox\" infoblox.com public evidence of funding, expansion, security, or compliance initiatives",
+          "status": "ANSWERED",
+          "attemptCount": 7
+        }
+      ],
+      "tavilyCalls": 2,
+      "exaFallbackCalls": 2,
+      "safelyReusedCompletedQuestions": 2,
+      "providerFailures": 0,
+      "harnessWaitWindowExpirations": 2,
+      "rawResults": 60,
+      "relevantEvidence": 5,
+      "directEventEvidence": 2,
+      "approvedFacts": 5,
+      "rejectedRelevantFacts": 0,
+      "signals": 2,
+      "signalAdjudications": [
+        {
+          "signalId": "d8f2a8f8-b6a2-4145-944b-3c9a91451bd8",
+          "signalCode": "MSOC_SECURITY_STACK_CHANGE",
+          "classification": "UNSUPPORTED",
+          "referenceEventSupported": false,
+          "rationale": "A board-member biography mentioning cloud, SaaS, and security is not a security-stack implementation, migration, or replacement."
+        },
+        {
+          "signalId": "52c50105-cf55-4953-adda-6953ac4d8660",
+          "signalCode": "MSOC_SECURITY_LEADER",
+          "classification": "TEMPORALLY_INVALID",
+          "referenceEventSupported": false,
+          "rationale": "The CISO appointment content is relevant, but the fact/signal uses the 2026-08-31 observation date instead of the source-stated 2026-06-09 event date."
+        }
+      ],
+      "supportedSignals": 0,
+      "unsupportedSignals": 2,
+      "referenceEventOutcome": "EVENT_PARTIALLY_DETECTED",
+      "earliestFailure": "TEMPORAL_FAILURE",
+      "adjudication": "The appointment was represented by evidence, fact, and signal, but the historical event used observation date 2026-08-31 instead of 2026-06-09.",
+      "when": {
+        "state": "RISING",
+        "assessmentStatus": "COMPLETE",
+        "timingScore": 86,
+        "adjudication": "INSUFFICIENT_EVIDENCE (temporal defect)"
+      },
+      "why": {
+        "status": "INSUFFICIENT_EVIDENCE",
+        "text": "Insufficient evidence to establish current urgency.",
+        "provenanceCorrect": true,
+        "materialClaims": 0
+      },
+      "nba": {
+        "action": "CONTACT_NOW",
+        "label": "Contact now",
+        "explanation": "Strong Fit, Need, and Timing are supported by fresh independent evidence.",
+        "adjudication": "INCONSISTENT_WITH_INSUFFICIENT_WHY"
+      },
+      "estimatedCost": 0.034,
+      "actualKnownCost": 0.031,
+      "unknownActualCostCalls": 2
+    },
+    {
+      "company": "Teradata",
+      "canonicalIdentity": "Teradata",
+      "companyLikeness": "LIKELY_COMPANY",
+      "domain": "teradata.com",
+      "linkedin": null,
+      "identityState": "CONFIRMED",
+      "identityConfidence": 1,
+      "ownershipRelationship": null,
+      "autoAttached": false,
+      "identityContradictions": [],
+      "provisionStatus": "PROVISIONED",
+      "provisioningMethod": "FROZEN_CONTROL_IDENTITY_EXISTING_CANONICAL",
+      "referenceEventCategory": "SECURITY_LEADERSHIP",
+      "referenceEventDate": "2026-01-21",
+      "referenceSource": "https://www.teradata.com/press-releases/2026/teradata-appoints-ken-ricketts-as-ciso",
+      "researchQuestions": [
+        {
+          "type": "LEADERSHIP",
+          "text": "\"Teradata\" teradata.com public evidence of security leadership changes (security, ciso)",
+          "status": "ANSWERED",
+          "attemptCount": 4
+        },
+        {
+          "type": "TECHNOLOGY",
+          "text": "\"Teradata\" teradata.com public evidence of security stack, SOC, SIEM, EDR, or IAM changes (security, siem, endpoint, iam)",
+          "status": "ANSWERED",
+          "attemptCount": 4
+        },
+        {
+          "type": "EXPANSION",
+          "text": "\"Teradata\" teradata.com public evidence of funding, expansion, security, or compliance initiatives",
+          "status": "ANSWERED",
+          "attemptCount": 4
+        },
+        {
+          "type": "HIRING",
+          "text": "\"Teradata\" teradata.com public evidence of security and cybersecurity hiring (security, soc, cyber)",
+          "status": "ANSWERED",
+          "attemptCount": 4
+        }
+      ],
+      "tavilyCalls": 3,
+      "exaFallbackCalls": 1,
+      "safelyReusedCompletedQuestions": 1,
+      "providerFailures": 0,
+      "harnessWaitWindowExpirations": 1,
+      "rawResults": 50,
+      "relevantEvidence": 3,
+      "directEventEvidence": 4,
+      "approvedFacts": 3,
+      "rejectedRelevantFacts": 0,
+      "signals": 0,
+      "signalAdjudications": [],
+      "supportedSignals": 0,
+      "unsupportedSignals": 0,
+      "referenceEventOutcome": "EVENT_NOT_DETECTED",
+      "earliestFailure": "FACT_EXTRACTION_FAILURE",
+      "adjudication": "Reference-event evidence was present, but no leadership-change fact was extracted.",
+      "when": {
+        "state": "WATCH",
+        "assessmentStatus": "INSUFFICIENT_DATA",
+        "timingScore": null,
+        "adjudication": "INSUFFICIENT_EVIDENCE"
+      },
+      "why": {
+        "status": "INSUFFICIENT_EVIDENCE",
+        "text": "Insufficient evidence to establish current urgency.",
+        "provenanceCorrect": true,
+        "materialClaims": 0
+      },
+      "nba": {
+        "action": "RESEARCH_MORE",
+        "label": "Research more",
+        "explanation": "The opportunity is not fully supported: Fit is 70, Need is unknown, and Confidence is unknown.",
+        "adjudication": "CONSISTENT_WITH_REPORTED_EVIDENCE_STATE"
+      },
+      "estimatedCost": 0.037,
+      "actualKnownCost": 0.016,
+      "unknownActualCostCalls": 3
+    },
+    {
+      "company": "Nubank",
+      "canonicalIdentity": "Nubank",
+      "companyLikeness": "LIKELY_COMPANY",
+      "domain": "nubank.com.br",
+      "linkedin": null,
+      "identityState": "CONFIRMED",
+      "identityConfidence": 1,
+      "ownershipRelationship": null,
+      "autoAttached": false,
+      "identityContradictions": [],
+      "provisionStatus": "PROVISIONED",
+      "provisioningMethod": "FROZEN_CONTROL_IDENTITY_EXISTING_CANONICAL",
+      "referenceEventCategory": "SECURITY_LEADERSHIP",
+      "referenceEventDate": "2026-06-08",
+      "referenceSource": "https://international.nubank.com.br/company/nubank-appoints-john-walton-as-chief-information-security-officer/",
+      "researchQuestions": [
+        {
+          "type": "HIRING",
+          "text": "\"Nubank\" nubank.com.br public evidence of security and cybersecurity hiring (security, soc, cyber)",
+          "status": "ANSWERED",
+          "attemptCount": 7
+        },
+        {
+          "type": "EXPANSION",
+          "text": "\"Nubank\" nubank.com.br public evidence of funding, expansion, security, or compliance initiatives",
+          "status": "ANSWERED",
+          "attemptCount": 6
+        },
+        {
+          "type": "TECHNOLOGY",
+          "text": "\"Nubank\" nubank.com.br public evidence of security stack, SOC, SIEM, EDR, or IAM changes (security, siem, endpoint, iam)",
+          "status": "ANSWERED",
+          "attemptCount": 5
+        },
+        {
+          "type": "LEADERSHIP",
+          "text": "\"Nubank\" nubank.com.br public evidence of security leadership changes (security, ciso)",
+          "status": "ANSWERED",
+          "attemptCount": 6
+        }
+      ],
+      "tavilyCalls": 1,
+      "exaFallbackCalls": 3,
+      "safelyReusedCompletedQuestions": 3,
+      "providerFailures": 0,
+      "harnessWaitWindowExpirations": 0,
+      "rawResults": 70,
+      "relevantEvidence": 1,
+      "directEventEvidence": 1,
+      "approvedFacts": 1,
+      "rejectedRelevantFacts": 0,
+      "signals": 0,
+      "signalAdjudications": [],
+      "supportedSignals": 0,
+      "unsupportedSignals": 0,
+      "referenceEventOutcome": "EVENT_NOT_DETECTED",
+      "earliestFailure": "FACT_EXTRACTION_FAILURE",
+      "adjudication": "Reference-event evidence was present, but no leadership-change fact was extracted.",
+      "when": {
+        "state": "WATCH",
+        "assessmentStatus": "INSUFFICIENT_DATA",
+        "timingScore": null,
+        "adjudication": "INSUFFICIENT_EVIDENCE"
+      },
+      "why": {
+        "status": "INSUFFICIENT_EVIDENCE",
+        "text": "Insufficient evidence to establish current urgency.",
+        "provenanceCorrect": true,
+        "materialClaims": 0
+      },
+      "nba": {
+        "action": "RESEARCH_MORE",
+        "label": "Research more",
+        "explanation": "The opportunity is not fully supported: Fit is 70, Need is unknown, and Confidence is unknown.",
+        "adjudication": "CONSISTENT_WITH_REPORTED_EVIDENCE_STATE"
+      },
+      "estimatedCost": 0.031,
+      "actualKnownCost": 0.048,
+      "unknownActualCostCalls": 1
+    },
+    {
+      "company": "Black Duck",
+      "canonicalIdentity": "Black Duck",
+      "companyLikeness": "LIKELY_COMPANY",
+      "domain": "blackduck.com",
+      "linkedin": null,
+      "identityState": "CONFIRMED",
+      "identityConfidence": 1,
+      "ownershipRelationship": null,
+      "autoAttached": false,
+      "identityContradictions": [],
+      "provisionStatus": "PROVISIONED",
+      "provisioningMethod": "FROZEN_CONTROL_IDENTITY_EXISTING_CANONICAL",
+      "referenceEventCategory": "SECURITY_LEADERSHIP",
+      "referenceEventDate": "2026-04-09",
+      "referenceSource": "https://news.blackduck.com/2026-04-09-Black-Duck-Appoints-Dom-Glavach-as-Chief-Information-Security-Officer",
+      "researchQuestions": [
+        {
+          "type": "LEADERSHIP",
+          "text": "\"Black Duck\" blackduck.com public evidence of security leadership changes (security, ciso)",
+          "status": "ANSWERED",
+          "attemptCount": 4
+        },
+        {
+          "type": "TECHNOLOGY",
+          "text": "\"Black Duck\" blackduck.com public evidence of security stack, SOC, SIEM, EDR, or IAM changes (security, siem, endpoint, iam)",
+          "status": "ANSWERED",
+          "attemptCount": 4
+        },
+        {
+          "type": "EXPANSION",
+          "text": "\"Black Duck\" blackduck.com public evidence of funding, expansion, security, or compliance initiatives",
+          "status": "ANSWERED",
+          "attemptCount": 4
+        },
+        {
+          "type": "HIRING",
+          "text": "\"Black Duck\" blackduck.com public evidence of security and cybersecurity hiring (security, soc, cyber)",
+          "status": "ANSWERED",
+          "attemptCount": 5
+        }
+      ],
+      "tavilyCalls": 2,
+      "exaFallbackCalls": 2,
+      "safelyReusedCompletedQuestions": 2,
+      "providerFailures": 0,
+      "harnessWaitWindowExpirations": 3,
+      "rawResults": 60,
+      "relevantEvidence": 5,
+      "directEventEvidence": 43,
+      "approvedFacts": 7,
+      "rejectedRelevantFacts": 0,
+      "signals": 2,
+      "signalAdjudications": [
+        {
+          "signalId": "94354b6d-c865-4555-b5d8-a3fdb839f710",
+          "signalCode": "MSOC_SECURITY_LEADER",
+          "classification": "SUPPORTED",
+          "referenceEventSupported": true,
+          "rationale": "Exact Black Duck CISO appointment with source-stated 2026-04-09 date."
+        },
+        {
+          "signalId": "870a1394-d13e-498a-a6ec-cc168083e82c",
+          "signalCode": "MSOC_SECURITY_STACK_CHANGE",
+          "classification": "SELLER_AS_BUYER",
+          "referenceEventSupported": false,
+          "rationale": "Black Duck product/platform and certification content was converted into a buyer-side security stack signal for the vendor itself."
+        }
+      ],
+      "supportedSignals": 1,
+      "unsupportedSignals": 1,
+      "referenceEventOutcome": "EVENT_DETECTED",
+      "earliestFailure": null,
+      "adjudication": "Direct evidence, correctly dated leadership facts, and a supported security-leader signal represent the reference event.",
+      "when": {
+        "state": "RISING",
+        "assessmentStatus": "COMPLETE",
+        "timingScore": 84,
+        "adjudication": "RECENT_EVENT / EMERGING"
+      },
+      "why": {
+        "status": "INSUFFICIENT_EVIDENCE",
+        "text": "Insufficient evidence to establish current urgency.",
+        "provenanceCorrect": true,
+        "materialClaims": 0
+      },
+      "nba": {
+        "action": "CONTACT_NOW",
+        "label": "Contact now",
+        "explanation": "Strong Fit, Need, and Timing are supported by fresh independent evidence.",
+        "adjudication": "INCONSISTENT_WITH_INSUFFICIENT_WHY"
+      },
+      "estimatedCost": 0.034,
+      "actualKnownCost": 0.032,
+      "unknownActualCostCalls": 2
+    },
+    {
+      "company": "OpenAssets",
+      "canonicalIdentity": "OpenAssets",
+      "companyLikeness": "LIKELY_COMPANY",
+      "domain": "openassets.to",
+      "linkedin": null,
+      "identityState": "CONFIRMED",
+      "identityConfidence": 1,
+      "ownershipRelationship": null,
+      "autoAttached": false,
+      "identityContradictions": [],
+      "provisionStatus": "PROVISIONED",
+      "provisioningMethod": "FROZEN_CONTROL_IDENTITY_EXISTING_CANONICAL",
+      "referenceEventCategory": "FUNDED_RISK_PROGRAM",
+      "referenceEventDate": "2026-08-03",
+      "referenceSource": "https://www.prnewswire.com/news-releases/openassets-achieves-soc-2-type-2-compliance-and-renews-iso-27001-certification-302840457.html",
+      "researchQuestions": [
+        {
+          "type": "EXPANSION",
+          "text": "\"OpenAssets\" openassets.to public evidence of funding, expansion, security, or compliance initiatives",
+          "status": "ANSWERED",
+          "attemptCount": 5
+        },
+        {
+          "type": "HIRING",
+          "text": "\"OpenAssets\" openassets.to public evidence of security and cybersecurity hiring (security, soc, cyber)",
+          "status": "ANSWERED",
+          "attemptCount": 4
+        },
+        {
+          "type": "LEADERSHIP",
+          "text": "\"OpenAssets\" openassets.to public evidence of security leadership changes (security, ciso)",
+          "status": "ANSWERED",
+          "attemptCount": 5
+        },
+        {
+          "type": "TECHNOLOGY",
+          "text": "\"OpenAssets\" openassets.to public evidence of security stack, SOC, SIEM, EDR, or IAM changes (security, siem, endpoint, iam)",
+          "status": "ANSWERED",
+          "attemptCount": 5
+        }
+      ],
+      "tavilyCalls": 1,
+      "exaFallbackCalls": 3,
+      "safelyReusedCompletedQuestions": 3,
+      "providerFailures": 0,
+      "harnessWaitWindowExpirations": 3,
+      "rawResults": 70,
+      "relevantEvidence": 1,
+      "directEventEvidence": 2,
+      "approvedFacts": 2,
+      "rejectedRelevantFacts": 0,
+      "signals": 0,
+      "signalAdjudications": [],
+      "supportedSignals": 0,
+      "unsupportedSignals": 0,
+      "referenceEventOutcome": "EVENT_PARTIALLY_DETECTED",
+      "earliestFailure": "TEMPORAL_FAILURE",
+      "adjudication": "Both certification claims were extracted, but used observation date 2026-08-31 instead of source-stated 2026-08-03 and produced no correct signal.",
+      "when": {
+        "state": "WATCH",
+        "assessmentStatus": "INSUFFICIENT_DATA",
+        "timingScore": null,
+        "adjudication": "INSUFFICIENT_EVIDENCE (temporal defect)"
+      },
+      "why": {
+        "status": "INSUFFICIENT_EVIDENCE",
+        "text": "Insufficient evidence to establish current urgency.",
+        "provenanceCorrect": true,
+        "materialClaims": 0
+      },
+      "nba": {
+        "action": "RESEARCH_MORE",
+        "label": "Research more",
+        "explanation": "The opportunity is not fully supported: Fit is 70, Need is unknown, and Confidence is unknown.",
+        "adjudication": "CONSISTENT_WITH_REPORTED_EVIDENCE_STATE"
+      },
+      "estimatedCost": 0.031,
+      "actualKnownCost": 0.05,
+      "unknownActualCostCalls": 1
+    },
+    {
+      "company": "Black & McDonald",
+      "canonicalIdentity": "Black & McDonald Limited",
+      "companyLikeness": "LIKELY_COMPANY",
+      "domain": "blackandmcdonald.com",
+      "linkedin": null,
+      "identityState": "CONFIRMED",
+      "identityConfidence": 1,
+      "ownershipRelationship": null,
+      "autoAttached": false,
+      "identityContradictions": [],
+      "provisionStatus": "PROVISIONED",
+      "provisioningMethod": "FROZEN_CONTROL_IDENTITY_EXISTING_CANONICAL",
+      "referenceEventCategory": "FUNDED_RISK_PROGRAM",
+      "referenceEventDate": "2026-05-08",
+      "referenceSource": "https://blackandmcdonald.com/news/bm-achieves-iso-27001-certification-and-completes-soc-2-type-ii-examination/",
+      "researchQuestions": [
+        {
+          "type": "TECHNOLOGY",
+          "text": "\"Black & McDonald Limited\" blackandmcdonald.com public evidence of security stack, SOC, SIEM, EDR, or IAM changes (security, siem, endpoint, iam)",
+          "status": "ANSWERED",
+          "attemptCount": 3
+        },
+        {
+          "type": "LEADERSHIP",
+          "text": "\"Black & McDonald Limited\" blackandmcdonald.com public evidence of security leadership changes (security, ciso)",
+          "status": "ANSWERED",
+          "attemptCount": 3
+        },
+        {
+          "type": "HIRING",
+          "text": "\"Black & McDonald Limited\" blackandmcdonald.com public evidence of security and cybersecurity hiring (security, soc, cyber)",
+          "status": "ANSWERED",
+          "attemptCount": 3
+        },
+        {
+          "type": "EXPANSION",
+          "text": "\"Black & McDonald Limited\" blackandmcdonald.com public evidence of funding, expansion, security, or compliance initiatives",
+          "status": "ANSWERED",
+          "attemptCount": 3
+        }
+      ],
+      "tavilyCalls": 2,
+      "exaFallbackCalls": 2,
+      "safelyReusedCompletedQuestions": 2,
+      "providerFailures": 0,
+      "harnessWaitWindowExpirations": 2,
+      "rawResults": 60,
+      "relevantEvidence": 2,
+      "directEventEvidence": 6,
+      "approvedFacts": 2,
+      "rejectedRelevantFacts": 0,
+      "signals": 0,
+      "signalAdjudications": [],
+      "supportedSignals": 0,
+      "unsupportedSignals": 0,
+      "referenceEventOutcome": "EVENT_NOT_DETECTED",
+      "earliestFailure": "FACT_EXTRACTION_FAILURE",
+      "adjudication": "Reference-event evidence was persisted, but extracted facts were unrelated technology/customer facts rather than the certification event.",
+      "when": {
+        "state": "WATCH",
+        "assessmentStatus": "INSUFFICIENT_DATA",
+        "timingScore": null,
+        "adjudication": "INSUFFICIENT_EVIDENCE"
+      },
+      "why": {
+        "status": "INSUFFICIENT_EVIDENCE",
+        "text": "Insufficient evidence to establish current urgency.",
+        "provenanceCorrect": true,
+        "materialClaims": 0
+      },
+      "nba": {
+        "action": "RESEARCH_MORE",
+        "label": "Research more",
+        "explanation": "The opportunity is not fully supported: Fit is 70, Need is unknown, and Confidence is unknown.",
+        "adjudication": "CONSISTENT_WITH_REPORTED_EVIDENCE_STATE"
+      },
+      "estimatedCost": 0.034,
+      "actualKnownCost": 0.032,
+      "unknownActualCostCalls": 2
+    },
+    {
+      "company": "RAKBANK",
+      "canonicalIdentity": "RAKBANK",
+      "companyLikeness": "LIKELY_COMPANY",
+      "domain": "rakbank.ae",
+      "linkedin": null,
+      "identityState": "CONFIRMED",
+      "identityConfidence": 1,
+      "ownershipRelationship": null,
+      "autoAttached": false,
+      "identityContradictions": [],
+      "provisionStatus": "PROVISIONED",
+      "provisioningMethod": "FROZEN_CONTROL_IDENTITY_EXISTING_CANONICAL",
+      "referenceEventCategory": "SECURITY_STACK_CHANGE",
+      "referenceEventDate": "2025-05-08",
+      "referenceSource": "https://www.securonix.com/resources/rakbank-replaces-arcsight-with-securonix-accelerates-threat-detection-and-data-retrieval-with-snowflake-integration/",
+      "researchQuestions": [
+        {
+          "type": "EXPANSION",
+          "text": "\"RAKBANK\" rakbank.ae public evidence of funding, expansion, security, or compliance initiatives",
+          "status": "ANSWERED",
+          "attemptCount": 6
+        },
+        {
+          "type": "LEADERSHIP",
+          "text": "\"RAKBANK\" rakbank.ae public evidence of security leadership changes (security, ciso)",
+          "status": "ANSWERED",
+          "attemptCount": 5
+        },
+        {
+          "type": "HIRING",
+          "text": "\"RAKBANK\" rakbank.ae public evidence of security and cybersecurity hiring (security, soc, cyber)",
+          "status": "ANSWERED",
+          "attemptCount": 6
+        },
+        {
+          "type": "TECHNOLOGY",
+          "text": "\"RAKBANK\" rakbank.ae public evidence of security stack, SOC, SIEM, EDR, or IAM changes (security, siem, endpoint, iam)",
+          "status": "ANSWERED",
+          "attemptCount": 5
+        }
+      ],
+      "tavilyCalls": 1,
+      "exaFallbackCalls": 3,
+      "safelyReusedCompletedQuestions": 3,
+      "providerFailures": 0,
+      "harnessWaitWindowExpirations": 1,
+      "rawResults": 70,
+      "relevantEvidence": 1,
+      "directEventEvidence": 1,
+      "approvedFacts": 1,
+      "rejectedRelevantFacts": 0,
+      "signals": 1,
+      "signalAdjudications": [
+        {
+          "signalId": "17f628a1-c885-4a82-8c1e-f1ef0f0720a1",
+          "signalCode": "MSOC_FUNDED_RISK_PROGRAM",
+          "classification": "UNSUPPORTED",
+          "referenceEventSupported": false,
+          "rationale": "Generic corporate funding does not establish a funded security or risk program and does not support the RAKBANK stack-replacement event."
+        }
+      ],
+      "supportedSignals": 0,
+      "unsupportedSignals": 1,
+      "referenceEventOutcome": "EVENT_NOT_DETECTED",
+      "earliestFailure": "FACT_EXTRACTION_FAILURE",
+      "adjudication": "The exact Securonix replacement source was persisted, but no technology replacement/migration fact was extracted.",
+      "when": {
+        "state": "EMERGING",
+        "assessmentStatus": "COMPLETE",
+        "timingScore": 48,
+        "adjudication": "INSUFFICIENT_EVIDENCE"
+      },
+      "why": {
+        "status": "INSUFFICIENT_EVIDENCE",
+        "text": "Insufficient evidence to establish current urgency.",
+        "provenanceCorrect": true,
+        "materialClaims": 0
+      },
+      "nba": {
+        "action": "MONITOR",
+        "label": "Monitor",
+        "explanation": "Fit is 70, Need is 42, and Timing is 48 do not support a stronger action yet.",
+        "adjudication": "CONSISTENT_WITH_REPORTED_EVIDENCE_STATE"
+      },
+      "estimatedCost": 0.031,
+      "actualKnownCost": 0.051,
+      "unknownActualCostCalls": 1
+    }
+  ],
+  "passGates": {
+    "strictRecall": {
+      "target": 0.7,
+      "actual": 0.2,
+      "pass": false
+    },
+    "signalPrecision": {
+      "target": 0.85,
+      "actual": 0.3333333333333333,
+      "pass": false
+    },
+    "unsupportedSignalRate": {
+      "maximum": 0.05,
+      "actual": 0.6666666666666666,
+      "pass": false
+    },
+    "wrongEntitySignals": {
+      "required": 0,
+      "actual": 0,
+      "pass": true
+    },
+    "sellerAsBuyerSignals": {
+      "required": 0,
+      "actual": 1,
+      "pass": false
+    },
+    "whyProvenance": {
+      "required": 1,
+      "actual": 1,
+      "pass": true
+    },
+    "identityPrecision": {
+      "required": 1,
+      "actual": 1,
+      "pass": true
+    },
+    "providerFailureSemantics": {
+      "pass": true
+    },
+    "productionOperations": {
+      "required": 0,
+      "actual": 0,
+      "pass": true
+    }
+  },
+  "decision": {
+    "code": "G",
+    "label": "SAFETY_FAILURE",
+    "text": "G — SAFETY FAILURE",
+    "reason": "Strict signal precision is 33.3%, unsupported/non-valid signals are 66.7%, and one seller-as-buyer signal was generated. Strict event recall is also only 20%, and downstream idempotency failed."
+  }
+}

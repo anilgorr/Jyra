@@ -1,0 +1,48 @@
+{
+  "currency": "USD",
+  "validBenchmark": {
+    "tavily": {
+      "calls": 20,
+      "estimated": 0.2,
+      "actualKnown": 0,
+      "actualUnknownCalls": 20
+    },
+    "exaWebSearch": {
+      "calls": 20,
+      "estimated": 0.14,
+      "actualKnown": 0.322,
+      "actualUnknownCalls": 0
+    },
+    "profileResolution": {
+      "calls": 0,
+      "estimated": 0,
+      "actualKnown": 0
+    },
+    "firmographics": {
+      "calls": 0,
+      "estimated": 0,
+      "actualKnown": 0
+    },
+    "contacts": {
+      "calls": 0,
+      "estimated": 0,
+      "actualKnown": 0
+    },
+    "total": {
+      "calls": 40,
+      "estimated": 0.34,
+      "actualKnown": 0.322,
+      "actualUnknownCalls": 20,
+      "averageEstimatedPerControl": 0.034,
+      "estimatedCostPerStrictDetectedEvent": 0.17
+    }
+  },
+  "excludedInvalidProvisioningAttempt": {
+    "reason": "The legacy runner incorrectly depended on market discovery for control provisioning; the attempt was stopped and excluded before valid research.",
+    "exaCompanyDiscoveryCalls": 10,
+    "estimated": 0.07,
+    "actualKnown": 0.07,
+    "actualUnknownCalls": 0
+  },
+  "productionOperations": 0
+}

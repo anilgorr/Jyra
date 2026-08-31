@@ -1,0 +1,4244 @@
+{
+  "generatedAt": "2026-08-31T19:35:36.856Z",
+  "projectId": "b4c8a95a-eb1c-4a86-89d6-62d72097d820",
+  "organizationId": "02d40c31-72e4-42d9-9d8d-fe676a369205",
+  "outputs": [
+    {
+      "companyId": "3cd73d96-37d1-4cf8-9dab-db596e019783",
+      "projectCompanyId": "0c6e46fb-a2b6-4fe5-ba5d-80ce8266399c",
+      "signalEvaluation": {
+        "packs": [
+          {
+            "id": "f91c7581-a46e-42df-988a-3ccfffc6743c",
+            "slug": "managed-soc",
+            "name": "Managed SOC provider",
+            "description": "Synthetic managed security operations selling context used to validate the generic engine.",
+            "version": "1.0",
+            "active": true,
+            "status": "APPROVED",
+            "applicableContext": {
+              "offeringFamily": "managed-soc"
+            },
+            "configuration": {},
+            "createdAt": "2026-08-29T10:05:08.038Z",
+            "updatedAt": "2026-08-29T10:06:29.111Z"
+          }
+        ],
+        "created": [],
+        "total": 0
+      },
+      "clusterEvaluation": {
+        "evaluated": 0,
+        "clusters": []
+      },
+      "opportunity": {
+        "opportunity": {
+          "id": "2a4023a4-64b6-4540-a773-a929e5e703eb",
+          "organizationId": "02d40c31-72e4-42d9-9d8d-fe676a369205",
+          "projectId": "b4c8a95a-eb1c-4a86-89d6-62d72097d820",
+          "projectCompanyId": "0c6e46fb-a2b6-4fe5-ba5d-80ce8266399c",
+          "companyId": "3cd73d96-37d1-4cf8-9dab-db596e019783",
+          "modelVersionId": "02d72bd1-25e4-4ed2-8c99-26622998a11b",
+          "score": null,
+          "fitScore": 70,
+          "needScore": null,
+          "timingScore": null,
+          "relationshipScore": null,
+          "confidenceScore": null,
+          "state": "WATCH",
+          "assessmentStatus": "INSUFFICIENT_DATA",
+          "explanation": "NEEDS RESEARCH: an opportunity score cannot yet be calculated because Fit, Need, or Timing remains unknown. Confidence is unknown and is not included in that score. Gates: Need evidence is absent or weak; Confidence requires more research.",
+          "inputSnapshot": {
+            "signalIds": [],
+            "clusterIds": [],
+            "icpVersionId": "a7f0c79f-bf17-4b42-84cd-60a46c562f56",
+            "relationshipStatus": "NONE",
+            "intelligencePackVersionId": null
+          },
+          "assessedAt": "2026-08-31T19:35:35.438Z",
+          "createdAt": "2026-08-31T19:28:08.100Z",
+          "updatedAt": "2026-08-31T19:35:35.438Z"
+        },
+        "history": {
+          "id": "2cb42043-cc79-405c-b6df-04b3e44e94ff",
+          "opportunityId": "2a4023a4-64b6-4540-a773-a929e5e703eb",
+          "modelVersionId": "02d72bd1-25e4-4ed2-8c99-26622998a11b",
+          "score": null,
+          "state": "WATCH",
+          "assessmentStatus": "INSUFFICIENT_DATA",
+          "dimensionSnapshot": {
+            "FIT": 70,
+            "NEED": null,
+            "TIMING": null,
+            "CONFIDENCE": null,
+            "RELATIONSHIP": null
+          },
+          "explanation": "NEEDS RESEARCH: an opportunity score cannot yet be calculated because Fit, Need, or Timing remains unknown. Confidence is unknown and is not included in that score. Gates: Need evidence is absent or weak; Confidence requires more research.",
+          "previousState": "WATCH",
+          "assessedAt": "2026-08-31T19:35:35.438Z"
+        },
+        "components": [
+          {
+            "dimension": "FIT",
+            "score": 70,
+            "status": "KNOWN",
+            "rule": "accepted_scorable_icp_v1",
+            "explanation": "2 accepted ICP criterion result(s) were known; 2 remain unknown and were not treated as failures.",
+            "signalIds": [],
+            "clusterIds": [],
+            "factIds": [],
+            "evidenceIds": [],
+            "details": {
+              "criterionResults": [
+                {
+                  "id": "822adffd-389b-4e7b-a16d-c54cf31265df",
+                  "type": "MUST_HAVE",
+                  "weight": null,
+                  "result": "unknown"
+                },
+                {
+                  "id": "9c6b3e12-0327-47fd-b2a7-28972d29f961",
+                  "type": "MUST_HAVE",
+                  "weight": null,
+                  "result": "unknown"
+                },
+                {
+                  "id": "53b38bd9-d968-4dcf-8cf5-a9686727574e",
+                  "type": "PREFERRED",
+                  "weight": 10,
+                  "result": "fail"
+                },
+                {
+                  "id": "0f7ce50f-26c1-4a04-b477-d013f3d97466",
+                  "type": "PREFERRED",
+                  "weight": 10,
+                  "result": "fail"
+                },
+                {
+                  "id": "2316d686-b545-4598-87fe-dec44dc10b37",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "6fce27dd-f1fd-4bf7-baea-60a0a4706cd1",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "a50f80af-e88d-43f9-964f-dd218a9f2315",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "42b57c9c-9805-478f-942d-5da9a0d5d0f0",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "c765036d-5f50-416d-ae3a-e59ee9886a71",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "4f24c710-e16d-4226-8d1b-6684fe75061c",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "e4a57a37-878a-4f64-81ef-abf9a32839f6",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "a30ab9d3-c730-4342-b75d-706e592537d0",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "50924419-9063-4f44-8996-52dd1f0eb4dd",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "fd1f2c80-e5b4-4072-8762-b1ec218b71ea",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "b1a55725-ee8a-4e01-a9bb-526943aa96c6",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "76636301-8f2f-423e-895a-2394fb2655d1",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "ea48bcbd-a61a-43a7-827c-2ca418c256d1",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "cd257de2-f4e1-4880-bcbf-4a45ff56d7d6",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "ba1e8213-62d4-4350-964a-74aa315e8192",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                }
+              ],
+              "knownCount": 2,
+              "unknownCount": 2,
+              "disqualified": false
+            }
+          },
+          {
+            "dimension": "NEED",
+            "score": null,
+            "status": "UNKNOWN",
+            "rule": "strength_weighted_need_impacts_v1",
+            "explanation": "NEED is unknown because no current evidence-backed signal or cluster contributes to it.",
+            "signalIds": [],
+            "clusterIds": [],
+            "factIds": [],
+            "evidenceIds": [],
+            "details": {
+              "observationCount": 0,
+              "negativeSignalCount": 0
+            }
+          },
+          {
+            "dimension": "TIMING",
+            "score": null,
+            "status": "UNKNOWN",
+            "rule": "strength_weighted_timing_impacts_v1",
+            "explanation": "TIMING is unknown because no current evidence-backed signal or cluster contributes to it.",
+            "signalIds": [],
+            "clusterIds": [],
+            "factIds": [],
+            "evidenceIds": [],
+            "details": {
+              "observationCount": 0,
+              "negativeSignalCount": 0
+            }
+          },
+          {
+            "dimension": "RELATIONSHIP",
+            "score": null,
+            "status": "UNKNOWN",
+            "rule": "first_party_relationship_status_v1",
+            "explanation": "Relationship is unknown because no affirmative first-party relationship status was supplied.",
+            "signalIds": [],
+            "clusterIds": [],
+            "factIds": [],
+            "evidenceIds": [],
+            "details": {
+              "relationshipStatus": "NONE"
+            }
+          },
+          {
+            "dimension": "CONFIDENCE",
+            "score": null,
+            "status": "UNKNOWN",
+            "rule": "evidence_quality_confidence_v1",
+            "explanation": "Confidence is unknown because no supporting evidence is available.",
+            "signalIds": [],
+            "clusterIds": [],
+            "factIds": [],
+            "evidenceIds": [],
+            "details": {
+              "completeness": 0.3
+            }
+          }
+        ],
+        "model": {
+          "id": "02d72bd1-25e4-4ed2-8c99-26622998a11b",
+          "organizationId": "02d40c31-72e4-42d9-9d8d-fe676a369205",
+          "projectId": "b4c8a95a-eb1c-4a86-89d6-62d72097d820",
+          "version": 1,
+          "name": "Opportunity Model",
+          "weights": {
+            "fit": 30,
+            "need": 30,
+            "timing": 30,
+            "relationship": 10
+          },
+          "rules": {
+            "nextBestAction": {
+              "version": "NBA_V1",
+              "strongFit": 70,
+              "strongNeed": 60,
+              "weakTiming": 45,
+              "strongTiming": 60,
+              "minimumConfidence": 60,
+              "minimumNeedToWait": 45,
+              "directRelationships": [
+                "OPEN_OPPORTUNITY",
+                "EXISTING_CUSTOMER",
+                "PAST_CUSTOMER",
+                "PREVIOUS_CONTACT"
+              ],
+              "severeNegativeStrength": 70,
+              "severeNegativeFitImpact": -50,
+              "introductionRelationships": [
+                "KNOWN_CHAMPION",
+                "MEETING_HELD"
+              ],
+              "minimumIndependentSources": 2
+            },
+            "stateThresholds": {
+              "WATCH": 40,
+              "RISING": 70,
+              "DORMANT": 20,
+              "SURGING": 85,
+              "EMERGING": 55
+            },
+            "coolingScoreDrop": 15,
+            "minimumConfidence": 40,
+            "minimumFitForStrongState": 30,
+            "minimumNeedForStrongState": 25
+          },
+          "active": true,
+          "createdBy": "user_3IaemcwN9OMG4fylhZMmn9vr5ES",
+          "createdAt": "2026-08-30T06:04:54.487Z"
+        }
+      },
+      "why": {
+        "explanation": {
+          "id": "bc3c2373-0d4c-43d2-9770-e87004275947",
+          "opportunityId": "2a4023a4-64b6-4540-a773-a929e5e703eb",
+          "version": 2,
+          "status": "INSUFFICIENT_EVIDENCE",
+          "text": "Insufficient evidence to establish current urgency.",
+          "ruleVersion": "WHY_V1",
+          "generatedBy": "DETERMINISTIC",
+          "current": true,
+          "createdAt": "2026-08-31T19:35:35.721Z"
+        },
+        "claims": [
+          {
+            "ordinal": 1,
+            "claimText": "Insufficient evidence to establish current urgency.",
+            "claimType": "INSUFFICIENT_EVIDENCE",
+            "material": false,
+            "traceabilityStatus": "TRACED",
+            "signalIds": [],
+            "clusterIds": [],
+            "factIds": [],
+            "evidenceIds": [],
+            "sourceUrls": []
+          }
+        ]
+      },
+      "nba": {
+        "projectId": "b4c8a95a-eb1c-4a86-89d6-62d72097d820",
+        "projectCompanyId": "0c6e46fb-a2b6-4fe5-ba5d-80ce8266399c",
+        "companyId": "3cd73d96-37d1-4cf8-9dab-db596e019783",
+        "generatedAt": "2026-08-31T19:35:35.845Z",
+        "recommendationId": "15479034-25a8-41f7-9bdb-47fba1a363a5",
+        "recommendation": {
+          "action": "RESEARCH_MORE",
+          "label": "Research more",
+          "explanation": "The opportunity is not fully supported: Fit is 70, Need is unknown, and Confidence is unknown.",
+          "ruleVersion": "NBA_V1:OPPORTUNITY_MODEL_V1",
+          "factors": {
+            "opportunityState": "WATCH",
+            "fitScore": 70,
+            "needScore": null,
+            "timingScore": null,
+            "relationshipScore": null,
+            "confidenceScore": null,
+            "researchFreshness": "FRESH",
+            "relationshipStatus": "NONE",
+            "knownFirstPartyRelationship": false,
+            "independentSourceCount": 20,
+            "negativeSignalCount": 0,
+            "confirmedDisqualifier": false
+          }
+        }
+      }
+    },
+    {
+      "companyId": "3ec654e3-3bed-405a-a1aa-1405f28ffcba",
+      "projectCompanyId": "e1ff1142-08e2-4214-a4f6-f336ffb259a7",
+      "signalEvaluation": {
+        "packs": [
+          {
+            "id": "f91c7581-a46e-42df-988a-3ccfffc6743c",
+            "slug": "managed-soc",
+            "name": "Managed SOC provider",
+            "description": "Synthetic managed security operations selling context used to validate the generic engine.",
+            "version": "1.0",
+            "active": true,
+            "status": "APPROVED",
+            "applicableContext": {
+              "offeringFamily": "managed-soc"
+            },
+            "configuration": {},
+            "createdAt": "2026-08-29T10:05:08.038Z",
+            "updatedAt": "2026-08-29T10:06:29.111Z"
+          }
+        ],
+        "created": [],
+        "total": 0
+      },
+      "clusterEvaluation": {
+        "evaluated": 0,
+        "clusters": []
+      },
+      "opportunity": {
+        "opportunity": {
+          "id": "18e7b7f6-f869-4012-9f89-e92c3434b7cf",
+          "organizationId": "02d40c31-72e4-42d9-9d8d-fe676a369205",
+          "projectId": "b4c8a95a-eb1c-4a86-89d6-62d72097d820",
+          "projectCompanyId": "e1ff1142-08e2-4214-a4f6-f336ffb259a7",
+          "companyId": "3ec654e3-3bed-405a-a1aa-1405f28ffcba",
+          "modelVersionId": "02d72bd1-25e4-4ed2-8c99-26622998a11b",
+          "score": null,
+          "fitScore": 70,
+          "needScore": null,
+          "timingScore": null,
+          "relationshipScore": null,
+          "confidenceScore": null,
+          "state": "WATCH",
+          "assessmentStatus": "INSUFFICIENT_DATA",
+          "explanation": "NEEDS RESEARCH: an opportunity score cannot yet be calculated because Fit, Need, or Timing remains unknown. Confidence is unknown and is not included in that score. Gates: Need evidence is absent or weak; Confidence requires more research.",
+          "inputSnapshot": {
+            "signalIds": [],
+            "clusterIds": [],
+            "icpVersionId": "a7f0c79f-bf17-4b42-84cd-60a46c562f56",
+            "relationshipStatus": "NONE",
+            "intelligencePackVersionId": null
+          },
+          "assessedAt": "2026-08-31T19:35:35.938Z",
+          "createdAt": "2026-08-31T19:28:08.557Z",
+          "updatedAt": "2026-08-31T19:35:35.938Z"
+        },
+        "history": {
+          "id": "b2597ca9-dd30-4612-aaf8-6643c65d7ba9",
+          "opportunityId": "18e7b7f6-f869-4012-9f89-e92c3434b7cf",
+          "modelVersionId": "02d72bd1-25e4-4ed2-8c99-26622998a11b",
+          "score": null,
+          "state": "WATCH",
+          "assessmentStatus": "INSUFFICIENT_DATA",
+          "dimensionSnapshot": {
+            "FIT": 70,
+            "NEED": null,
+            "TIMING": null,
+            "CONFIDENCE": null,
+            "RELATIONSHIP": null
+          },
+          "explanation": "NEEDS RESEARCH: an opportunity score cannot yet be calculated because Fit, Need, or Timing remains unknown. Confidence is unknown and is not included in that score. Gates: Need evidence is absent or weak; Confidence requires more research.",
+          "previousState": "WATCH",
+          "assessedAt": "2026-08-31T19:35:35.938Z"
+        },
+        "components": [
+          {
+            "dimension": "FIT",
+            "score": 70,
+            "status": "KNOWN",
+            "rule": "accepted_scorable_icp_v1",
+            "explanation": "1 accepted ICP criterion result(s) were known; 3 remain unknown and were not treated as failures.",
+            "signalIds": [],
+            "clusterIds": [],
+            "factIds": [],
+            "evidenceIds": [],
+            "details": {
+              "criterionResults": [
+                {
+                  "id": "822adffd-389b-4e7b-a16d-c54cf31265df",
+                  "type": "MUST_HAVE",
+                  "weight": null,
+                  "result": "unknown"
+                },
+                {
+                  "id": "9c6b3e12-0327-47fd-b2a7-28972d29f961",
+                  "type": "MUST_HAVE",
+                  "weight": null,
+                  "result": "unknown"
+                },
+                {
+                  "id": "53b38bd9-d968-4dcf-8cf5-a9686727574e",
+                  "type": "PREFERRED",
+                  "weight": 10,
+                  "result": "unknown"
+                },
+                {
+                  "id": "0f7ce50f-26c1-4a04-b477-d013f3d97466",
+                  "type": "PREFERRED",
+                  "weight": 10,
+                  "result": "fail"
+                },
+                {
+                  "id": "2316d686-b545-4598-87fe-dec44dc10b37",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "6fce27dd-f1fd-4bf7-baea-60a0a4706cd1",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "a50f80af-e88d-43f9-964f-dd218a9f2315",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "42b57c9c-9805-478f-942d-5da9a0d5d0f0",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "c765036d-5f50-416d-ae3a-e59ee9886a71",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "4f24c710-e16d-4226-8d1b-6684fe75061c",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "e4a57a37-878a-4f64-81ef-abf9a32839f6",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "a30ab9d3-c730-4342-b75d-706e592537d0",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "50924419-9063-4f44-8996-52dd1f0eb4dd",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "fd1f2c80-e5b4-4072-8762-b1ec218b71ea",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "b1a55725-ee8a-4e01-a9bb-526943aa96c6",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "76636301-8f2f-423e-895a-2394fb2655d1",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "ea48bcbd-a61a-43a7-827c-2ca418c256d1",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "cd257de2-f4e1-4880-bcbf-4a45ff56d7d6",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "ba1e8213-62d4-4350-964a-74aa315e8192",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                }
+              ],
+              "knownCount": 1,
+              "unknownCount": 3,
+              "disqualified": false
+            }
+          },
+          {
+            "dimension": "NEED",
+            "score": null,
+            "status": "UNKNOWN",
+            "rule": "strength_weighted_need_impacts_v1",
+            "explanation": "NEED is unknown because no current evidence-backed signal or cluster contributes to it.",
+            "signalIds": [],
+            "clusterIds": [],
+            "factIds": [],
+            "evidenceIds": [],
+            "details": {
+              "observationCount": 0,
+              "negativeSignalCount": 0
+            }
+          },
+          {
+            "dimension": "TIMING",
+            "score": null,
+            "status": "UNKNOWN",
+            "rule": "strength_weighted_timing_impacts_v1",
+            "explanation": "TIMING is unknown because no current evidence-backed signal or cluster contributes to it.",
+            "signalIds": [],
+            "clusterIds": [],
+            "factIds": [],
+            "evidenceIds": [],
+            "details": {
+              "observationCount": 0,
+              "negativeSignalCount": 0
+            }
+          },
+          {
+            "dimension": "RELATIONSHIP",
+            "score": null,
+            "status": "UNKNOWN",
+            "rule": "first_party_relationship_status_v1",
+            "explanation": "Relationship is unknown because no affirmative first-party relationship status was supplied.",
+            "signalIds": [],
+            "clusterIds": [],
+            "factIds": [],
+            "evidenceIds": [],
+            "details": {
+              "relationshipStatus": "NONE"
+            }
+          },
+          {
+            "dimension": "CONFIDENCE",
+            "score": null,
+            "status": "UNKNOWN",
+            "rule": "evidence_quality_confidence_v1",
+            "explanation": "Confidence is unknown because no supporting evidence is available.",
+            "signalIds": [],
+            "clusterIds": [],
+            "factIds": [],
+            "evidenceIds": [],
+            "details": {
+              "completeness": 0.3
+            }
+          }
+        ],
+        "model": {
+          "id": "02d72bd1-25e4-4ed2-8c99-26622998a11b",
+          "organizationId": "02d40c31-72e4-42d9-9d8d-fe676a369205",
+          "projectId": "b4c8a95a-eb1c-4a86-89d6-62d72097d820",
+          "version": 1,
+          "name": "Opportunity Model",
+          "weights": {
+            "fit": 30,
+            "need": 30,
+            "timing": 30,
+            "relationship": 10
+          },
+          "rules": {
+            "nextBestAction": {
+              "version": "NBA_V1",
+              "strongFit": 70,
+              "strongNeed": 60,
+              "weakTiming": 45,
+              "strongTiming": 60,
+              "minimumConfidence": 60,
+              "minimumNeedToWait": 45,
+              "directRelationships": [
+                "OPEN_OPPORTUNITY",
+                "EXISTING_CUSTOMER",
+                "PAST_CUSTOMER",
+                "PREVIOUS_CONTACT"
+              ],
+              "severeNegativeStrength": 70,
+              "severeNegativeFitImpact": -50,
+              "introductionRelationships": [
+                "KNOWN_CHAMPION",
+                "MEETING_HELD"
+              ],
+              "minimumIndependentSources": 2
+            },
+            "stateThresholds": {
+              "WATCH": 40,
+              "RISING": 70,
+              "DORMANT": 20,
+              "SURGING": 85,
+              "EMERGING": 55
+            },
+            "coolingScoreDrop": 15,
+            "minimumConfidence": 40,
+            "minimumFitForStrongState": 30,
+            "minimumNeedForStrongState": 25
+          },
+          "active": true,
+          "createdBy": "user_3IaemcwN9OMG4fylhZMmn9vr5ES",
+          "createdAt": "2026-08-30T06:04:54.487Z"
+        }
+      },
+      "why": {
+        "explanation": {
+          "id": "0d8c341b-70ed-4908-a0ed-62efd92f721c",
+          "opportunityId": "18e7b7f6-f869-4012-9f89-e92c3434b7cf",
+          "version": 2,
+          "status": "INSUFFICIENT_EVIDENCE",
+          "text": "Insufficient evidence to establish current urgency.",
+          "ruleVersion": "WHY_V1",
+          "generatedBy": "DETERMINISTIC",
+          "current": true,
+          "createdAt": "2026-08-31T19:35:36.023Z"
+        },
+        "claims": [
+          {
+            "ordinal": 1,
+            "claimText": "Insufficient evidence to establish current urgency.",
+            "claimType": "INSUFFICIENT_EVIDENCE",
+            "material": false,
+            "traceabilityStatus": "TRACED",
+            "signalIds": [],
+            "clusterIds": [],
+            "factIds": [],
+            "evidenceIds": [],
+            "sourceUrls": []
+          }
+        ]
+      },
+      "nba": {
+        "projectId": "b4c8a95a-eb1c-4a86-89d6-62d72097d820",
+        "projectCompanyId": "e1ff1142-08e2-4214-a4f6-f336ffb259a7",
+        "companyId": "3ec654e3-3bed-405a-a1aa-1405f28ffcba",
+        "generatedAt": "2026-08-31T19:35:36.173Z",
+        "recommendationId": "b7c552f2-53c6-4dc9-8379-7d755b13c6fb",
+        "recommendation": {
+          "action": "RESEARCH_MORE",
+          "label": "Research more",
+          "explanation": "The opportunity is not fully supported: Fit is 70, Need is unknown, and Confidence is unknown.",
+          "ruleVersion": "NBA_V1:OPPORTUNITY_MODEL_V1",
+          "factors": {
+            "opportunityState": "WATCH",
+            "fitScore": 70,
+            "needScore": null,
+            "timingScore": null,
+            "relationshipScore": null,
+            "confidenceScore": null,
+            "researchFreshness": "FRESH",
+            "relationshipStatus": "NONE",
+            "knownFirstPartyRelationship": false,
+            "independentSourceCount": 12,
+            "negativeSignalCount": 0,
+            "confirmedDisqualifier": false
+          }
+        }
+      }
+    },
+    {
+      "companyId": "417409dc-ca3f-449f-90bb-f315f91f450a",
+      "projectCompanyId": "87c8ac67-bb3a-4a05-bd97-ce3df5b85083",
+      "signalEvaluation": {
+        "packs": [
+          {
+            "id": "f91c7581-a46e-42df-988a-3ccfffc6743c",
+            "slug": "managed-soc",
+            "name": "Managed SOC provider",
+            "description": "Synthetic managed security operations selling context used to validate the generic engine.",
+            "version": "1.0",
+            "active": true,
+            "status": "APPROVED",
+            "applicableContext": {
+              "offeringFamily": "managed-soc"
+            },
+            "configuration": {},
+            "createdAt": "2026-08-29T10:05:08.038Z",
+            "updatedAt": "2026-08-29T10:06:29.111Z"
+          }
+        ],
+        "created": [
+          {
+            "id": "3c0eb744-1328-425f-bcc1-5b30de6be3e9",
+            "organizationId": "02d40c31-72e4-42d9-9d8d-fe676a369205",
+            "projectId": "b4c8a95a-eb1c-4a86-89d6-62d72097d820",
+            "companyId": "417409dc-ca3f-449f-90bb-f315f91f450a",
+            "signalDefinitionId": "44029679-535f-4a11-8ac2-0acea2dda02a",
+            "supportingFactIds": [
+              "44238513-4a5b-4ac4-ab33-1e4f6149eb42",
+              "a4caf6a2-de85-44ba-8060-62129c20d8eb"
+            ],
+            "supportingEvidenceIds": [
+              "0488986c-21e7-4675-b161-edf2f9307156",
+              "048eba7d-9516-4522-b5d6-955a015e571c"
+            ],
+            "effectiveDate": "2026-06-09",
+            "originalStrength": 70,
+            "currentStrength": 4.81,
+            "confidence": 99,
+            "status": "ACTIVE",
+            "ruleVersion": "managed-soc-1.0:1.0:1788170074814",
+            "categorySnapshot": "LEADERSHIP",
+            "contextSnapshot": {
+              "pack": {
+                "id": "f91c7581-a46e-42df-988a-3ccfffc6743c",
+                "slug": "managed-soc",
+                "version": "1.0"
+              },
+              "offering": {
+                "name": "Managed SOC",
+                "offeringFamily": "managed-soc"
+              },
+              "definition": {
+                "id": "44029679-535f-4a11-8ac2-0acea2dda02a",
+                "code": "MSOC_SECURITY_LEADER",
+                "name": "Security leader change",
+                "version": "1.0",
+                "category": "LEADERSHIP",
+                "polarity": "POSITIVE",
+                "description": "Security leader change interpreted for this offering."
+              },
+              "offeringKey": "managed-soc",
+              "businessContext": {
+                "icpVersion": {
+                  "id": "584ac312-0d43-4f8a-b857-5db7249c6c2e",
+                  "mode": "EARLY_EVIDENCE_ICP",
+                  "version": 1,
+                  "sourceBusinessTwinVersionId": "a355a198-e9d3-449e-a9cf-c064fab4faa2"
+                },
+                "offeringFamily": "managed-soc",
+                "businessTwinVersion": {
+                  "id": "a355a198-e9d3-449e-a9cf-c064fab4faa2",
+                  "status": "ready",
+                  "version": 4
+                }
+              }
+            },
+            "generationMethod": "DETERMINISTIC",
+            "generatorVersion": "1.0",
+            "observedAt": "2026-08-31T19:35:36.191Z",
+            "needImpactSnapshot": 78,
+            "timingImpactSnapshot": 88,
+            "fitImpactSnapshot": 80,
+            "detectedAt": "2026-08-31T14:28:39.050Z",
+            "lastEvaluatedAt": "2026-08-31T19:35:36.191Z",
+            "createdAt": "2026-08-31T14:28:39.055Z",
+            "updatedAt": "2026-08-31T19:35:36.191Z"
+          }
+        ],
+        "total": 1
+      },
+      "clusterEvaluation": {
+        "evaluated": 0,
+        "clusters": []
+      },
+      "opportunity": {
+        "opportunity": {
+          "id": "5c9a720d-59f8-4174-8256-fb28d27d6b2e",
+          "organizationId": "02d40c31-72e4-42d9-9d8d-fe676a369205",
+          "projectId": "b4c8a95a-eb1c-4a86-89d6-62d72097d820",
+          "projectCompanyId": "87c8ac67-bb3a-4a05-bd97-ce3df5b85083",
+          "companyId": "417409dc-ca3f-449f-90bb-f315f91f450a",
+          "modelVersionId": "02d72bd1-25e4-4ed2-8c99-26622998a11b",
+          "score": 78.67,
+          "fitScore": 70,
+          "needScore": 78,
+          "timingScore": 88,
+          "relationshipScore": null,
+          "confidenceScore": 73.18,
+          "state": "RISING",
+          "assessmentStatus": "COMPLETE",
+          "explanation": "RISING: weighted opportunity strength is 78.67. Confidence is 73.18 and is not included in that score.",
+          "inputSnapshot": {
+            "signalIds": [
+              "3c0eb744-1328-425f-bcc1-5b30de6be3e9"
+            ],
+            "clusterIds": [],
+            "icpVersionId": "a7f0c79f-bf17-4b42-84cd-60a46c562f56",
+            "relationshipStatus": "NONE",
+            "intelligencePackVersionId": null
+          },
+          "assessedAt": "2026-08-31T19:35:36.225Z",
+          "createdAt": "2026-08-31T19:28:08.669Z",
+          "updatedAt": "2026-08-31T19:35:36.225Z"
+        },
+        "history": {
+          "id": "681e8f17-1a8b-497e-95c9-85fb3505f437",
+          "opportunityId": "5c9a720d-59f8-4174-8256-fb28d27d6b2e",
+          "modelVersionId": "02d72bd1-25e4-4ed2-8c99-26622998a11b",
+          "score": 78.67,
+          "state": "RISING",
+          "assessmentStatus": "COMPLETE",
+          "dimensionSnapshot": {
+            "FIT": 70,
+            "NEED": 78,
+            "TIMING": 88,
+            "CONFIDENCE": 73.18,
+            "RELATIONSHIP": null
+          },
+          "explanation": "RISING: weighted opportunity strength is 78.67. Confidence is 73.18 and is not included in that score.",
+          "previousState": "RISING",
+          "assessedAt": "2026-08-31T19:35:36.225Z"
+        },
+        "components": [
+          {
+            "dimension": "FIT",
+            "score": 70,
+            "status": "KNOWN",
+            "rule": "accepted_scorable_icp_v1",
+            "explanation": "2 accepted ICP criterion result(s) were known; 2 remain unknown and were not treated as failures.",
+            "signalIds": [],
+            "clusterIds": [],
+            "factIds": [],
+            "evidenceIds": [],
+            "details": {
+              "criterionResults": [
+                {
+                  "id": "822adffd-389b-4e7b-a16d-c54cf31265df",
+                  "type": "MUST_HAVE",
+                  "weight": null,
+                  "result": "unknown"
+                },
+                {
+                  "id": "9c6b3e12-0327-47fd-b2a7-28972d29f961",
+                  "type": "MUST_HAVE",
+                  "weight": null,
+                  "result": "unknown"
+                },
+                {
+                  "id": "53b38bd9-d968-4dcf-8cf5-a9686727574e",
+                  "type": "PREFERRED",
+                  "weight": 10,
+                  "result": "fail"
+                },
+                {
+                  "id": "0f7ce50f-26c1-4a04-b477-d013f3d97466",
+                  "type": "PREFERRED",
+                  "weight": 10,
+                  "result": "fail"
+                },
+                {
+                  "id": "2316d686-b545-4598-87fe-dec44dc10b37",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "6fce27dd-f1fd-4bf7-baea-60a0a4706cd1",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "a50f80af-e88d-43f9-964f-dd218a9f2315",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "42b57c9c-9805-478f-942d-5da9a0d5d0f0",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "c765036d-5f50-416d-ae3a-e59ee9886a71",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "4f24c710-e16d-4226-8d1b-6684fe75061c",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "e4a57a37-878a-4f64-81ef-abf9a32839f6",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "a30ab9d3-c730-4342-b75d-706e592537d0",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "50924419-9063-4f44-8996-52dd1f0eb4dd",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "fd1f2c80-e5b4-4072-8762-b1ec218b71ea",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "b1a55725-ee8a-4e01-a9bb-526943aa96c6",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "76636301-8f2f-423e-895a-2394fb2655d1",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "ea48bcbd-a61a-43a7-827c-2ca418c256d1",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "cd257de2-f4e1-4880-bcbf-4a45ff56d7d6",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "ba1e8213-62d4-4350-964a-74aa315e8192",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                }
+              ],
+              "knownCount": 2,
+              "unknownCount": 2,
+              "disqualified": false
+            }
+          },
+          {
+            "dimension": "NEED",
+            "score": 78,
+            "status": "KNOWN",
+            "rule": "strength_weighted_need_impacts_v1",
+            "explanation": "NEED combines 1 current signal(s) and 0 active cluster(s); stale observations do not contribute.",
+            "signalIds": [
+              "3c0eb744-1328-425f-bcc1-5b30de6be3e9"
+            ],
+            "clusterIds": [],
+            "factIds": [
+              "44238513-4a5b-4ac4-ab33-1e4f6149eb42",
+              "a4caf6a2-de85-44ba-8060-62129c20d8eb"
+            ],
+            "evidenceIds": [
+              "0488986c-21e7-4675-b161-edf2f9307156",
+              "048eba7d-9516-4522-b5d6-955a015e571c"
+            ],
+            "details": {
+              "observationCount": 1,
+              "negativeSignalCount": 0
+            }
+          },
+          {
+            "dimension": "TIMING",
+            "score": 88,
+            "status": "KNOWN",
+            "rule": "strength_weighted_timing_impacts_v1",
+            "explanation": "TIMING combines 1 current signal(s) and 0 active cluster(s); stale observations do not contribute.",
+            "signalIds": [
+              "3c0eb744-1328-425f-bcc1-5b30de6be3e9"
+            ],
+            "clusterIds": [],
+            "factIds": [
+              "44238513-4a5b-4ac4-ab33-1e4f6149eb42",
+              "a4caf6a2-de85-44ba-8060-62129c20d8eb"
+            ],
+            "evidenceIds": [
+              "0488986c-21e7-4675-b161-edf2f9307156",
+              "048eba7d-9516-4522-b5d6-955a015e571c"
+            ],
+            "details": {
+              "observationCount": 1,
+              "negativeSignalCount": 0
+            }
+          },
+          {
+            "dimension": "RELATIONSHIP",
+            "score": null,
+            "status": "UNKNOWN",
+            "rule": "first_party_relationship_status_v1",
+            "explanation": "Relationship is unknown because no affirmative first-party relationship status was supplied.",
+            "signalIds": [],
+            "clusterIds": [],
+            "factIds": [],
+            "evidenceIds": [],
+            "details": {
+              "relationshipStatus": "NONE"
+            }
+          },
+          {
+            "dimension": "CONFIDENCE",
+            "score": 73.18,
+            "status": "KNOWN",
+            "rule": "evidence_quality_confidence_v1",
+            "explanation": "Confidence is separate from opportunity strength and reflects 2 evidence item(s), 1 independent source domain(s), completeness, and 0 contradiction(s).",
+            "signalIds": [],
+            "clusterIds": [],
+            "factIds": [],
+            "evidenceIds": [
+              "0488986c-21e7-4675-b161-edf2f9307156",
+              "048eba7d-9516-4522-b5d6-955a015e571c"
+            ],
+            "details": {
+              "completeness": 0.9,
+              "independentSourceCount": 1,
+              "contradictions": 0
+            }
+          }
+        ],
+        "model": {
+          "id": "02d72bd1-25e4-4ed2-8c99-26622998a11b",
+          "organizationId": "02d40c31-72e4-42d9-9d8d-fe676a369205",
+          "projectId": "b4c8a95a-eb1c-4a86-89d6-62d72097d820",
+          "version": 1,
+          "name": "Opportunity Model",
+          "weights": {
+            "fit": 30,
+            "need": 30,
+            "timing": 30,
+            "relationship": 10
+          },
+          "rules": {
+            "nextBestAction": {
+              "version": "NBA_V1",
+              "strongFit": 70,
+              "strongNeed": 60,
+              "weakTiming": 45,
+              "strongTiming": 60,
+              "minimumConfidence": 60,
+              "minimumNeedToWait": 45,
+              "directRelationships": [
+                "OPEN_OPPORTUNITY",
+                "EXISTING_CUSTOMER",
+                "PAST_CUSTOMER",
+                "PREVIOUS_CONTACT"
+              ],
+              "severeNegativeStrength": 70,
+              "severeNegativeFitImpact": -50,
+              "introductionRelationships": [
+                "KNOWN_CHAMPION",
+                "MEETING_HELD"
+              ],
+              "minimumIndependentSources": 2
+            },
+            "stateThresholds": {
+              "WATCH": 40,
+              "RISING": 70,
+              "DORMANT": 20,
+              "SURGING": 85,
+              "EMERGING": 55
+            },
+            "coolingScoreDrop": 15,
+            "minimumConfidence": 40,
+            "minimumFitForStrongState": 30,
+            "minimumNeedForStrongState": 25
+          },
+          "active": true,
+          "createdBy": "user_3IaemcwN9OMG4fylhZMmn9vr5ES",
+          "createdAt": "2026-08-30T06:04:54.487Z"
+        }
+      },
+      "why": {
+        "explanation": {
+          "id": "1d72ab5d-e2b0-4d05-9253-14f0d9a02e2b",
+          "opportunityId": "5c9a720d-59f8-4174-8256-fb28d27d6b2e",
+          "version": 2,
+          "status": "INSUFFICIENT_EVIDENCE",
+          "text": "Insufficient evidence to establish current urgency.",
+          "ruleVersion": "WHY_V1",
+          "generatedBy": "DETERMINISTIC",
+          "current": true,
+          "createdAt": "2026-08-31T19:35:36.234Z"
+        },
+        "claims": [
+          {
+            "ordinal": 1,
+            "claimText": "Insufficient evidence to establish current urgency.",
+            "claimType": "INSUFFICIENT_EVIDENCE",
+            "material": false,
+            "traceabilityStatus": "TRACED",
+            "signalIds": [],
+            "clusterIds": [],
+            "factIds": [],
+            "evidenceIds": [],
+            "sourceUrls": []
+          }
+        ]
+      },
+      "nba": {
+        "projectId": "b4c8a95a-eb1c-4a86-89d6-62d72097d820",
+        "projectCompanyId": "87c8ac67-bb3a-4a05-bd97-ce3df5b85083",
+        "companyId": "417409dc-ca3f-449f-90bb-f315f91f450a",
+        "generatedAt": "2026-08-31T19:35:36.252Z",
+        "recommendationId": "ae9d7a8a-e850-42a8-b76a-ca478bd446c8",
+        "recommendation": {
+          "action": "CONTACT_NOW",
+          "label": "Contact now",
+          "explanation": "Strong Fit, Need, and Timing are supported by fresh independent evidence.",
+          "ruleVersion": "NBA_V1:OPPORTUNITY_MODEL_V1",
+          "factors": {
+            "opportunityState": "RISING",
+            "fitScore": 70,
+            "needScore": 78,
+            "timingScore": 88,
+            "relationshipScore": null,
+            "confidenceScore": 73.18,
+            "researchFreshness": "FRESH",
+            "relationshipStatus": "NONE",
+            "knownFirstPartyRelationship": false,
+            "independentSourceCount": 13,
+            "negativeSignalCount": 0,
+            "confirmedDisqualifier": false
+          }
+        }
+      }
+    },
+    {
+      "companyId": "408bc044-5be0-4118-b486-75c494e5cd8f",
+      "projectCompanyId": "3b5b98d9-c0f1-44f3-8d3b-8d0ba64b5a71",
+      "signalEvaluation": {
+        "packs": [
+          {
+            "id": "f91c7581-a46e-42df-988a-3ccfffc6743c",
+            "slug": "managed-soc",
+            "name": "Managed SOC provider",
+            "description": "Synthetic managed security operations selling context used to validate the generic engine.",
+            "version": "1.0",
+            "active": true,
+            "status": "APPROVED",
+            "applicableContext": {
+              "offeringFamily": "managed-soc"
+            },
+            "configuration": {},
+            "createdAt": "2026-08-29T10:05:08.038Z",
+            "updatedAt": "2026-08-29T10:06:29.111Z"
+          }
+        ],
+        "created": [
+          {
+            "id": "52c50105-cf55-4953-adda-6953ac4d8660",
+            "organizationId": "02d40c31-72e4-42d9-9d8d-fe676a369205",
+            "projectId": "b4c8a95a-eb1c-4a86-89d6-62d72097d820",
+            "companyId": "408bc044-5be0-4118-b486-75c494e5cd8f",
+            "signalDefinitionId": "44029679-535f-4a11-8ac2-0acea2dda02a",
+            "supportingFactIds": [
+              "f0ec9e39-c064-4a0b-bb12-015c84cc03d0"
+            ],
+            "supportingEvidenceIds": [
+              "aa0f0ca6-300a-4a2a-a4f2-5aa518c8d2f5"
+            ],
+            "effectiveDate": "2026-08-31",
+            "originalStrength": 70,
+            "currentStrength": 69.37,
+            "confidence": 98,
+            "status": "ACTIVE",
+            "ruleVersion": "managed-soc-1.0:1.0:1788170074814",
+            "categorySnapshot": "LEADERSHIP",
+            "contextSnapshot": {
+              "pack": {
+                "id": "f91c7581-a46e-42df-988a-3ccfffc6743c",
+                "slug": "managed-soc",
+                "version": "1.0"
+              },
+              "offering": {
+                "name": "Managed SOC",
+                "offeringFamily": "managed-soc"
+              },
+              "definition": {
+                "id": "44029679-535f-4a11-8ac2-0acea2dda02a",
+                "code": "MSOC_SECURITY_LEADER",
+                "name": "Security leader change",
+                "version": "1.0",
+                "category": "LEADERSHIP",
+                "polarity": "POSITIVE",
+                "description": "Security leader change interpreted for this offering."
+              },
+              "offeringKey": "managed-soc",
+              "businessContext": {
+                "icpVersion": {
+                  "id": "584ac312-0d43-4f8a-b857-5db7249c6c2e",
+                  "mode": "EARLY_EVIDENCE_ICP",
+                  "version": 1,
+                  "sourceBusinessTwinVersionId": "a355a198-e9d3-449e-a9cf-c064fab4faa2"
+                },
+                "offeringFamily": "managed-soc",
+                "businessTwinVersion": {
+                  "id": "a355a198-e9d3-449e-a9cf-c064fab4faa2",
+                  "status": "ready",
+                  "version": 4
+                }
+              }
+            },
+            "generationMethod": "DETERMINISTIC",
+            "generatorVersion": "1.0",
+            "observedAt": "2026-08-31T19:35:36.383Z",
+            "needImpactSnapshot": 78,
+            "timingImpactSnapshot": 88,
+            "fitImpactSnapshot": 80,
+            "detectedAt": "2026-08-31T14:31:37.201Z",
+            "lastEvaluatedAt": "2026-08-31T19:35:36.383Z",
+            "createdAt": "2026-08-31T14:31:37.204Z",
+            "updatedAt": "2026-08-31T19:35:36.383Z"
+          },
+          {
+            "id": "d8f2a8f8-b6a2-4145-944b-3c9a91451bd8",
+            "organizationId": "02d40c31-72e4-42d9-9d8d-fe676a369205",
+            "projectId": "b4c8a95a-eb1c-4a86-89d6-62d72097d820",
+            "companyId": "408bc044-5be0-4118-b486-75c494e5cd8f",
+            "signalDefinitionId": "dc1fc390-e3b1-465d-bc3d-1d04e08d95de",
+            "supportingFactIds": [
+              "a8b3aa97-5f73-44d3-9d10-d45427c58304"
+            ],
+            "supportingEvidenceIds": [
+              "c54779c1-3ba0-47ff-aaff-aecd48e30701"
+            ],
+            "effectiveDate": "2026-08-31",
+            "originalStrength": 70,
+            "currentStrength": 69.37,
+            "confidence": 93,
+            "status": "ACTIVE",
+            "ruleVersion": "managed-soc-1.0:1.0:1788170074814",
+            "categorySnapshot": "TECHNOLOGY",
+            "contextSnapshot": {
+              "pack": {
+                "id": "f91c7581-a46e-42df-988a-3ccfffc6743c",
+                "slug": "managed-soc",
+                "version": "1.0"
+              },
+              "offering": {
+                "name": "Managed SOC",
+                "offeringFamily": "managed-soc"
+              },
+              "definition": {
+                "id": "dc1fc390-e3b1-465d-bc3d-1d04e08d95de",
+                "code": "MSOC_SECURITY_STACK_CHANGE",
+                "name": "Security stack change",
+                "version": "1.0",
+                "category": "TECHNOLOGY",
+                "polarity": "POSITIVE",
+                "description": "Security stack change interpreted for this offering."
+              },
+              "offeringKey": "managed-soc",
+              "businessContext": {
+                "icpVersion": {
+                  "id": "584ac312-0d43-4f8a-b857-5db7249c6c2e",
+                  "mode": "EARLY_EVIDENCE_ICP",
+                  "version": 1,
+                  "sourceBusinessTwinVersionId": "a355a198-e9d3-449e-a9cf-c064fab4faa2"
+                },
+                "offeringFamily": "managed-soc",
+                "businessTwinVersion": {
+                  "id": "a355a198-e9d3-449e-a9cf-c064fab4faa2",
+                  "status": "ready",
+                  "version": 4
+                }
+              }
+            },
+            "generationMethod": "DETERMINISTIC",
+            "generatorVersion": "1.0",
+            "observedAt": "2026-08-31T19:35:36.383Z",
+            "needImpactSnapshot": 75,
+            "timingImpactSnapshot": 84,
+            "fitImpactSnapshot": 82,
+            "detectedAt": "2026-08-31T19:07:22.224Z",
+            "lastEvaluatedAt": "2026-08-31T19:35:36.383Z",
+            "createdAt": "2026-08-31T19:07:22.250Z",
+            "updatedAt": "2026-08-31T19:35:36.383Z"
+          }
+        ],
+        "total": 2
+      },
+      "clusterEvaluation": {
+        "evaluated": 0,
+        "clusters": []
+      },
+      "opportunity": {
+        "opportunity": {
+          "id": "594776ee-dbf0-4f1a-9498-199f67705898",
+          "organizationId": "02d40c31-72e4-42d9-9d8d-fe676a369205",
+          "projectId": "b4c8a95a-eb1c-4a86-89d6-62d72097d820",
+          "projectCompanyId": "3b5b98d9-c0f1-44f3-8d3b-8d0ba64b5a71",
+          "companyId": "408bc044-5be0-4118-b486-75c494e5cd8f",
+          "modelVersionId": "02d72bd1-25e4-4ed2-8c99-26622998a11b",
+          "score": 77.5,
+          "fitScore": 70,
+          "needScore": 76.5,
+          "timingScore": 86,
+          "relationshipScore": null,
+          "confidenceScore": 73.18,
+          "state": "RISING",
+          "assessmentStatus": "COMPLETE",
+          "explanation": "RISING: weighted opportunity strength is 77.5. Confidence is 73.18 and is not included in that score.",
+          "inputSnapshot": {
+            "signalIds": [
+              "52c50105-cf55-4953-adda-6953ac4d8660",
+              "d8f2a8f8-b6a2-4145-944b-3c9a91451bd8"
+            ],
+            "clusterIds": [],
+            "icpVersionId": "a7f0c79f-bf17-4b42-84cd-60a46c562f56",
+            "relationshipStatus": "NONE",
+            "intelligencePackVersionId": null
+          },
+          "assessedAt": "2026-08-31T19:35:36.432Z",
+          "createdAt": "2026-08-31T19:28:08.761Z",
+          "updatedAt": "2026-08-31T19:35:36.432Z"
+        },
+        "history": {
+          "id": "ceca3156-04f2-4d84-a718-3297f6ea1eed",
+          "opportunityId": "594776ee-dbf0-4f1a-9498-199f67705898",
+          "modelVersionId": "02d72bd1-25e4-4ed2-8c99-26622998a11b",
+          "score": 77.5,
+          "state": "RISING",
+          "assessmentStatus": "COMPLETE",
+          "dimensionSnapshot": {
+            "FIT": 70,
+            "NEED": 76.5,
+            "TIMING": 86,
+            "CONFIDENCE": 73.18,
+            "RELATIONSHIP": null
+          },
+          "explanation": "RISING: weighted opportunity strength is 77.5. Confidence is 73.18 and is not included in that score.",
+          "previousState": "RISING",
+          "assessedAt": "2026-08-31T19:35:36.432Z"
+        },
+        "components": [
+          {
+            "dimension": "FIT",
+            "score": 70,
+            "status": "KNOWN",
+            "rule": "accepted_scorable_icp_v1",
+            "explanation": "2 accepted ICP criterion result(s) were known; 2 remain unknown and were not treated as failures.",
+            "signalIds": [],
+            "clusterIds": [],
+            "factIds": [],
+            "evidenceIds": [],
+            "details": {
+              "criterionResults": [
+                {
+                  "id": "822adffd-389b-4e7b-a16d-c54cf31265df",
+                  "type": "MUST_HAVE",
+                  "weight": null,
+                  "result": "unknown"
+                },
+                {
+                  "id": "9c6b3e12-0327-47fd-b2a7-28972d29f961",
+                  "type": "MUST_HAVE",
+                  "weight": null,
+                  "result": "unknown"
+                },
+                {
+                  "id": "53b38bd9-d968-4dcf-8cf5-a9686727574e",
+                  "type": "PREFERRED",
+                  "weight": 10,
+                  "result": "fail"
+                },
+                {
+                  "id": "0f7ce50f-26c1-4a04-b477-d013f3d97466",
+                  "type": "PREFERRED",
+                  "weight": 10,
+                  "result": "fail"
+                },
+                {
+                  "id": "2316d686-b545-4598-87fe-dec44dc10b37",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "6fce27dd-f1fd-4bf7-baea-60a0a4706cd1",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "a50f80af-e88d-43f9-964f-dd218a9f2315",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "42b57c9c-9805-478f-942d-5da9a0d5d0f0",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "c765036d-5f50-416d-ae3a-e59ee9886a71",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "4f24c710-e16d-4226-8d1b-6684fe75061c",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "e4a57a37-878a-4f64-81ef-abf9a32839f6",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "a30ab9d3-c730-4342-b75d-706e592537d0",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "50924419-9063-4f44-8996-52dd1f0eb4dd",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "fd1f2c80-e5b4-4072-8762-b1ec218b71ea",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "b1a55725-ee8a-4e01-a9bb-526943aa96c6",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "76636301-8f2f-423e-895a-2394fb2655d1",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "ea48bcbd-a61a-43a7-827c-2ca418c256d1",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "cd257de2-f4e1-4880-bcbf-4a45ff56d7d6",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "ba1e8213-62d4-4350-964a-74aa315e8192",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                }
+              ],
+              "knownCount": 2,
+              "unknownCount": 2,
+              "disqualified": false
+            }
+          },
+          {
+            "dimension": "NEED",
+            "score": 76.5,
+            "status": "KNOWN",
+            "rule": "strength_weighted_need_impacts_v1",
+            "explanation": "NEED combines 2 current signal(s) and 0 active cluster(s); stale observations do not contribute.",
+            "signalIds": [
+              "52c50105-cf55-4953-adda-6953ac4d8660",
+              "d8f2a8f8-b6a2-4145-944b-3c9a91451bd8"
+            ],
+            "clusterIds": [],
+            "factIds": [
+              "f0ec9e39-c064-4a0b-bb12-015c84cc03d0",
+              "a8b3aa97-5f73-44d3-9d10-d45427c58304"
+            ],
+            "evidenceIds": [
+              "aa0f0ca6-300a-4a2a-a4f2-5aa518c8d2f5",
+              "c54779c1-3ba0-47ff-aaff-aecd48e30701"
+            ],
+            "details": {
+              "observationCount": 2,
+              "negativeSignalCount": 0
+            }
+          },
+          {
+            "dimension": "TIMING",
+            "score": 86,
+            "status": "KNOWN",
+            "rule": "strength_weighted_timing_impacts_v1",
+            "explanation": "TIMING combines 2 current signal(s) and 0 active cluster(s); stale observations do not contribute.",
+            "signalIds": [
+              "52c50105-cf55-4953-adda-6953ac4d8660",
+              "d8f2a8f8-b6a2-4145-944b-3c9a91451bd8"
+            ],
+            "clusterIds": [],
+            "factIds": [
+              "f0ec9e39-c064-4a0b-bb12-015c84cc03d0",
+              "a8b3aa97-5f73-44d3-9d10-d45427c58304"
+            ],
+            "evidenceIds": [
+              "aa0f0ca6-300a-4a2a-a4f2-5aa518c8d2f5",
+              "c54779c1-3ba0-47ff-aaff-aecd48e30701"
+            ],
+            "details": {
+              "observationCount": 2,
+              "negativeSignalCount": 0
+            }
+          },
+          {
+            "dimension": "RELATIONSHIP",
+            "score": null,
+            "status": "UNKNOWN",
+            "rule": "first_party_relationship_status_v1",
+            "explanation": "Relationship is unknown because no affirmative first-party relationship status was supplied.",
+            "signalIds": [],
+            "clusterIds": [],
+            "factIds": [],
+            "evidenceIds": [],
+            "details": {
+              "relationshipStatus": "NONE"
+            }
+          },
+          {
+            "dimension": "CONFIDENCE",
+            "score": 73.18,
+            "status": "KNOWN",
+            "rule": "evidence_quality_confidence_v1",
+            "explanation": "Confidence is separate from opportunity strength and reflects 2 evidence item(s), 1 independent source domain(s), completeness, and 0 contradiction(s).",
+            "signalIds": [],
+            "clusterIds": [],
+            "factIds": [],
+            "evidenceIds": [
+              "aa0f0ca6-300a-4a2a-a4f2-5aa518c8d2f5",
+              "c54779c1-3ba0-47ff-aaff-aecd48e30701"
+            ],
+            "details": {
+              "completeness": 0.9,
+              "independentSourceCount": 1,
+              "contradictions": 0
+            }
+          }
+        ],
+        "model": {
+          "id": "02d72bd1-25e4-4ed2-8c99-26622998a11b",
+          "organizationId": "02d40c31-72e4-42d9-9d8d-fe676a369205",
+          "projectId": "b4c8a95a-eb1c-4a86-89d6-62d72097d820",
+          "version": 1,
+          "name": "Opportunity Model",
+          "weights": {
+            "fit": 30,
+            "need": 30,
+            "timing": 30,
+            "relationship": 10
+          },
+          "rules": {
+            "nextBestAction": {
+              "version": "NBA_V1",
+              "strongFit": 70,
+              "strongNeed": 60,
+              "weakTiming": 45,
+              "strongTiming": 60,
+              "minimumConfidence": 60,
+              "minimumNeedToWait": 45,
+              "directRelationships": [
+                "OPEN_OPPORTUNITY",
+                "EXISTING_CUSTOMER",
+                "PAST_CUSTOMER",
+                "PREVIOUS_CONTACT"
+              ],
+              "severeNegativeStrength": 70,
+              "severeNegativeFitImpact": -50,
+              "introductionRelationships": [
+                "KNOWN_CHAMPION",
+                "MEETING_HELD"
+              ],
+              "minimumIndependentSources": 2
+            },
+            "stateThresholds": {
+              "WATCH": 40,
+              "RISING": 70,
+              "DORMANT": 20,
+              "SURGING": 85,
+              "EMERGING": 55
+            },
+            "coolingScoreDrop": 15,
+            "minimumConfidence": 40,
+            "minimumFitForStrongState": 30,
+            "minimumNeedForStrongState": 25
+          },
+          "active": true,
+          "createdBy": "user_3IaemcwN9OMG4fylhZMmn9vr5ES",
+          "createdAt": "2026-08-30T06:04:54.487Z"
+        }
+      },
+      "why": {
+        "explanation": {
+          "id": "b5741c12-1cd6-46a6-b94d-2a1deda69aac",
+          "opportunityId": "594776ee-dbf0-4f1a-9498-199f67705898",
+          "version": 2,
+          "status": "INSUFFICIENT_EVIDENCE",
+          "text": "Insufficient evidence to establish current urgency.",
+          "ruleVersion": "WHY_V1",
+          "generatedBy": "DETERMINISTIC",
+          "current": true,
+          "createdAt": "2026-08-31T19:35:36.441Z"
+        },
+        "claims": [
+          {
+            "ordinal": 1,
+            "claimText": "Insufficient evidence to establish current urgency.",
+            "claimType": "INSUFFICIENT_EVIDENCE",
+            "material": false,
+            "traceabilityStatus": "TRACED",
+            "signalIds": [],
+            "clusterIds": [],
+            "factIds": [],
+            "evidenceIds": [],
+            "sourceUrls": []
+          }
+        ]
+      },
+      "nba": {
+        "projectId": "b4c8a95a-eb1c-4a86-89d6-62d72097d820",
+        "projectCompanyId": "3b5b98d9-c0f1-44f3-8d3b-8d0ba64b5a71",
+        "companyId": "408bc044-5be0-4118-b486-75c494e5cd8f",
+        "generatedAt": "2026-08-31T19:35:36.466Z",
+        "recommendationId": "d62f7c2f-4137-454c-aa4a-5d2e12863d59",
+        "recommendation": {
+          "action": "CONTACT_NOW",
+          "label": "Contact now",
+          "explanation": "Strong Fit, Need, and Timing are supported by fresh independent evidence.",
+          "ruleVersion": "NBA_V1:OPPORTUNITY_MODEL_V1",
+          "factors": {
+            "opportunityState": "RISING",
+            "fitScore": 70,
+            "needScore": 76.5,
+            "timingScore": 86,
+            "relationshipScore": null,
+            "confidenceScore": 73.18,
+            "researchFreshness": "FRESH",
+            "relationshipStatus": "NONE",
+            "knownFirstPartyRelationship": false,
+            "independentSourceCount": 15,
+            "negativeSignalCount": 0,
+            "confirmedDisqualifier": false
+          }
+        }
+      }
+    },
+    {
+      "companyId": "0ba57746-1f8e-4691-a647-0921de1a971d",
+      "projectCompanyId": "88e7045b-fd3a-43ed-b098-dde03a408a90",
+      "signalEvaluation": {
+        "packs": [
+          {
+            "id": "f91c7581-a46e-42df-988a-3ccfffc6743c",
+            "slug": "managed-soc",
+            "name": "Managed SOC provider",
+            "description": "Synthetic managed security operations selling context used to validate the generic engine.",
+            "version": "1.0",
+            "active": true,
+            "status": "APPROVED",
+            "applicableContext": {
+              "offeringFamily": "managed-soc"
+            },
+            "configuration": {},
+            "createdAt": "2026-08-29T10:05:08.038Z",
+            "updatedAt": "2026-08-29T10:06:29.111Z"
+          }
+        ],
+        "created": [],
+        "total": 0
+      },
+      "clusterEvaluation": {
+        "evaluated": 0,
+        "clusters": []
+      },
+      "opportunity": {
+        "opportunity": {
+          "id": "281ca669-a5f7-435d-a837-925b864a1bf8",
+          "organizationId": "02d40c31-72e4-42d9-9d8d-fe676a369205",
+          "projectId": "b4c8a95a-eb1c-4a86-89d6-62d72097d820",
+          "projectCompanyId": "88e7045b-fd3a-43ed-b098-dde03a408a90",
+          "companyId": "0ba57746-1f8e-4691-a647-0921de1a971d",
+          "modelVersionId": "02d72bd1-25e4-4ed2-8c99-26622998a11b",
+          "score": null,
+          "fitScore": 70,
+          "needScore": null,
+          "timingScore": null,
+          "relationshipScore": null,
+          "confidenceScore": null,
+          "state": "WATCH",
+          "assessmentStatus": "INSUFFICIENT_DATA",
+          "explanation": "NEEDS RESEARCH: an opportunity score cannot yet be calculated because Fit, Need, or Timing remains unknown. Confidence is unknown and is not included in that score. Gates: Need evidence is absent or weak; Confidence requires more research.",
+          "inputSnapshot": {
+            "signalIds": [],
+            "clusterIds": [],
+            "icpVersionId": "a7f0c79f-bf17-4b42-84cd-60a46c562f56",
+            "relationshipStatus": "NONE",
+            "intelligencePackVersionId": null
+          },
+          "assessedAt": "2026-08-31T19:35:36.499Z",
+          "createdAt": "2026-08-31T19:28:08.828Z",
+          "updatedAt": "2026-08-31T19:35:36.499Z"
+        },
+        "history": {
+          "id": "6b0c537c-e04f-4682-863e-3e033714e7d9",
+          "opportunityId": "281ca669-a5f7-435d-a837-925b864a1bf8",
+          "modelVersionId": "02d72bd1-25e4-4ed2-8c99-26622998a11b",
+          "score": null,
+          "state": "WATCH",
+          "assessmentStatus": "INSUFFICIENT_DATA",
+          "dimensionSnapshot": {
+            "FIT": 70,
+            "NEED": null,
+            "TIMING": null,
+            "CONFIDENCE": null,
+            "RELATIONSHIP": null
+          },
+          "explanation": "NEEDS RESEARCH: an opportunity score cannot yet be calculated because Fit, Need, or Timing remains unknown. Confidence is unknown and is not included in that score. Gates: Need evidence is absent or weak; Confidence requires more research.",
+          "previousState": "WATCH",
+          "assessedAt": "2026-08-31T19:35:36.499Z"
+        },
+        "components": [
+          {
+            "dimension": "FIT",
+            "score": 70,
+            "status": "KNOWN",
+            "rule": "accepted_scorable_icp_v1",
+            "explanation": "2 accepted ICP criterion result(s) were known; 2 remain unknown and were not treated as failures.",
+            "signalIds": [],
+            "clusterIds": [],
+            "factIds": [],
+            "evidenceIds": [],
+            "details": {
+              "criterionResults": [
+                {
+                  "id": "822adffd-389b-4e7b-a16d-c54cf31265df",
+                  "type": "MUST_HAVE",
+                  "weight": null,
+                  "result": "unknown"
+                },
+                {
+                  "id": "9c6b3e12-0327-47fd-b2a7-28972d29f961",
+                  "type": "MUST_HAVE",
+                  "weight": null,
+                  "result": "unknown"
+                },
+                {
+                  "id": "53b38bd9-d968-4dcf-8cf5-a9686727574e",
+                  "type": "PREFERRED",
+                  "weight": 10,
+                  "result": "fail"
+                },
+                {
+                  "id": "0f7ce50f-26c1-4a04-b477-d013f3d97466",
+                  "type": "PREFERRED",
+                  "weight": 10,
+                  "result": "fail"
+                },
+                {
+                  "id": "2316d686-b545-4598-87fe-dec44dc10b37",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "6fce27dd-f1fd-4bf7-baea-60a0a4706cd1",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "a50f80af-e88d-43f9-964f-dd218a9f2315",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "42b57c9c-9805-478f-942d-5da9a0d5d0f0",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "c765036d-5f50-416d-ae3a-e59ee9886a71",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "4f24c710-e16d-4226-8d1b-6684fe75061c",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "e4a57a37-878a-4f64-81ef-abf9a32839f6",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "a30ab9d3-c730-4342-b75d-706e592537d0",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "50924419-9063-4f44-8996-52dd1f0eb4dd",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "fd1f2c80-e5b4-4072-8762-b1ec218b71ea",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "b1a55725-ee8a-4e01-a9bb-526943aa96c6",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "76636301-8f2f-423e-895a-2394fb2655d1",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "ea48bcbd-a61a-43a7-827c-2ca418c256d1",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "cd257de2-f4e1-4880-bcbf-4a45ff56d7d6",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "ba1e8213-62d4-4350-964a-74aa315e8192",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                }
+              ],
+              "knownCount": 2,
+              "unknownCount": 2,
+              "disqualified": false
+            }
+          },
+          {
+            "dimension": "NEED",
+            "score": null,
+            "status": "UNKNOWN",
+            "rule": "strength_weighted_need_impacts_v1",
+            "explanation": "NEED is unknown because no current evidence-backed signal or cluster contributes to it.",
+            "signalIds": [],
+            "clusterIds": [],
+            "factIds": [],
+            "evidenceIds": [],
+            "details": {
+              "observationCount": 0,
+              "negativeSignalCount": 0
+            }
+          },
+          {
+            "dimension": "TIMING",
+            "score": null,
+            "status": "UNKNOWN",
+            "rule": "strength_weighted_timing_impacts_v1",
+            "explanation": "TIMING is unknown because no current evidence-backed signal or cluster contributes to it.",
+            "signalIds": [],
+            "clusterIds": [],
+            "factIds": [],
+            "evidenceIds": [],
+            "details": {
+              "observationCount": 0,
+              "negativeSignalCount": 0
+            }
+          },
+          {
+            "dimension": "RELATIONSHIP",
+            "score": null,
+            "status": "UNKNOWN",
+            "rule": "first_party_relationship_status_v1",
+            "explanation": "Relationship is unknown because no affirmative first-party relationship status was supplied.",
+            "signalIds": [],
+            "clusterIds": [],
+            "factIds": [],
+            "evidenceIds": [],
+            "details": {
+              "relationshipStatus": "NONE"
+            }
+          },
+          {
+            "dimension": "CONFIDENCE",
+            "score": null,
+            "status": "UNKNOWN",
+            "rule": "evidence_quality_confidence_v1",
+            "explanation": "Confidence is unknown because no supporting evidence is available.",
+            "signalIds": [],
+            "clusterIds": [],
+            "factIds": [],
+            "evidenceIds": [],
+            "details": {
+              "completeness": 0.3
+            }
+          }
+        ],
+        "model": {
+          "id": "02d72bd1-25e4-4ed2-8c99-26622998a11b",
+          "organizationId": "02d40c31-72e4-42d9-9d8d-fe676a369205",
+          "projectId": "b4c8a95a-eb1c-4a86-89d6-62d72097d820",
+          "version": 1,
+          "name": "Opportunity Model",
+          "weights": {
+            "fit": 30,
+            "need": 30,
+            "timing": 30,
+            "relationship": 10
+          },
+          "rules": {
+            "nextBestAction": {
+              "version": "NBA_V1",
+              "strongFit": 70,
+              "strongNeed": 60,
+              "weakTiming": 45,
+              "strongTiming": 60,
+              "minimumConfidence": 60,
+              "minimumNeedToWait": 45,
+              "directRelationships": [
+                "OPEN_OPPORTUNITY",
+                "EXISTING_CUSTOMER",
+                "PAST_CUSTOMER",
+                "PREVIOUS_CONTACT"
+              ],
+              "severeNegativeStrength": 70,
+              "severeNegativeFitImpact": -50,
+              "introductionRelationships": [
+                "KNOWN_CHAMPION",
+                "MEETING_HELD"
+              ],
+              "minimumIndependentSources": 2
+            },
+            "stateThresholds": {
+              "WATCH": 40,
+              "RISING": 70,
+              "DORMANT": 20,
+              "SURGING": 85,
+              "EMERGING": 55
+            },
+            "coolingScoreDrop": 15,
+            "minimumConfidence": 40,
+            "minimumFitForStrongState": 30,
+            "minimumNeedForStrongState": 25
+          },
+          "active": true,
+          "createdBy": "user_3IaemcwN9OMG4fylhZMmn9vr5ES",
+          "createdAt": "2026-08-30T06:04:54.487Z"
+        }
+      },
+      "why": {
+        "explanation": {
+          "id": "3b39b3e2-4640-4b81-a697-aa4692562a2c",
+          "opportunityId": "281ca669-a5f7-435d-a837-925b864a1bf8",
+          "version": 2,
+          "status": "INSUFFICIENT_EVIDENCE",
+          "text": "Insufficient evidence to establish current urgency.",
+          "ruleVersion": "WHY_V1",
+          "generatedBy": "DETERMINISTIC",
+          "current": true,
+          "createdAt": "2026-08-31T19:35:36.507Z"
+        },
+        "claims": [
+          {
+            "ordinal": 1,
+            "claimText": "Insufficient evidence to establish current urgency.",
+            "claimType": "INSUFFICIENT_EVIDENCE",
+            "material": false,
+            "traceabilityStatus": "TRACED",
+            "signalIds": [],
+            "clusterIds": [],
+            "factIds": [],
+            "evidenceIds": [],
+            "sourceUrls": []
+          }
+        ]
+      },
+      "nba": {
+        "projectId": "b4c8a95a-eb1c-4a86-89d6-62d72097d820",
+        "projectCompanyId": "88e7045b-fd3a-43ed-b098-dde03a408a90",
+        "companyId": "0ba57746-1f8e-4691-a647-0921de1a971d",
+        "generatedAt": "2026-08-31T19:35:36.527Z",
+        "recommendationId": "a22fc99f-a99f-4692-8bb8-6913b0afdb5f",
+        "recommendation": {
+          "action": "RESEARCH_MORE",
+          "label": "Research more",
+          "explanation": "The opportunity is not fully supported: Fit is 70, Need is unknown, and Confidence is unknown.",
+          "ruleVersion": "NBA_V1:OPPORTUNITY_MODEL_V1",
+          "factors": {
+            "opportunityState": "WATCH",
+            "fitScore": 70,
+            "needScore": null,
+            "timingScore": null,
+            "relationshipScore": null,
+            "confidenceScore": null,
+            "researchFreshness": "FRESH",
+            "relationshipStatus": "NONE",
+            "knownFirstPartyRelationship": false,
+            "independentSourceCount": 14,
+            "negativeSignalCount": 0,
+            "confirmedDisqualifier": false
+          }
+        }
+      }
+    },
+    {
+      "companyId": "8ee8a9ce-dd62-4b03-bfb0-f9f9a3683f32",
+      "projectCompanyId": "49d0104b-4e24-4ff2-88ff-54c6e9fe7232",
+      "signalEvaluation": {
+        "packs": [
+          {
+            "id": "f91c7581-a46e-42df-988a-3ccfffc6743c",
+            "slug": "managed-soc",
+            "name": "Managed SOC provider",
+            "description": "Synthetic managed security operations selling context used to validate the generic engine.",
+            "version": "1.0",
+            "active": true,
+            "status": "APPROVED",
+            "applicableContext": {
+              "offeringFamily": "managed-soc"
+            },
+            "configuration": {},
+            "createdAt": "2026-08-29T10:05:08.038Z",
+            "updatedAt": "2026-08-29T10:06:29.111Z"
+          }
+        ],
+        "created": [],
+        "total": 0
+      },
+      "clusterEvaluation": {
+        "evaluated": 0,
+        "clusters": []
+      },
+      "opportunity": {
+        "opportunity": {
+          "id": "9d282226-bd82-44dc-99fe-a0868443ef1f",
+          "organizationId": "02d40c31-72e4-42d9-9d8d-fe676a369205",
+          "projectId": "b4c8a95a-eb1c-4a86-89d6-62d72097d820",
+          "projectCompanyId": "49d0104b-4e24-4ff2-88ff-54c6e9fe7232",
+          "companyId": "8ee8a9ce-dd62-4b03-bfb0-f9f9a3683f32",
+          "modelVersionId": "02d72bd1-25e4-4ed2-8c99-26622998a11b",
+          "score": null,
+          "fitScore": 70,
+          "needScore": null,
+          "timingScore": null,
+          "relationshipScore": null,
+          "confidenceScore": null,
+          "state": "WATCH",
+          "assessmentStatus": "INSUFFICIENT_DATA",
+          "explanation": "NEEDS RESEARCH: an opportunity score cannot yet be calculated because Fit, Need, or Timing remains unknown. Confidence is unknown and is not included in that score. Gates: Need evidence is absent or weak; Confidence requires more research.",
+          "inputSnapshot": {
+            "signalIds": [],
+            "clusterIds": [],
+            "icpVersionId": "a7f0c79f-bf17-4b42-84cd-60a46c562f56",
+            "relationshipStatus": "NONE",
+            "intelligencePackVersionId": null
+          },
+          "assessedAt": "2026-08-31T19:35:36.567Z",
+          "createdAt": "2026-08-31T19:28:08.890Z",
+          "updatedAt": "2026-08-31T19:35:36.567Z"
+        },
+        "history": {
+          "id": "fec39db6-43e3-43c9-8bd6-0472c8f4f1dc",
+          "opportunityId": "9d282226-bd82-44dc-99fe-a0868443ef1f",
+          "modelVersionId": "02d72bd1-25e4-4ed2-8c99-26622998a11b",
+          "score": null,
+          "state": "WATCH",
+          "assessmentStatus": "INSUFFICIENT_DATA",
+          "dimensionSnapshot": {
+            "FIT": 70,
+            "NEED": null,
+            "TIMING": null,
+            "CONFIDENCE": null,
+            "RELATIONSHIP": null
+          },
+          "explanation": "NEEDS RESEARCH: an opportunity score cannot yet be calculated because Fit, Need, or Timing remains unknown. Confidence is unknown and is not included in that score. Gates: Need evidence is absent or weak; Confidence requires more research.",
+          "previousState": "WATCH",
+          "assessedAt": "2026-08-31T19:35:36.567Z"
+        },
+        "components": [
+          {
+            "dimension": "FIT",
+            "score": 70,
+            "status": "KNOWN",
+            "rule": "accepted_scorable_icp_v1",
+            "explanation": "2 accepted ICP criterion result(s) were known; 2 remain unknown and were not treated as failures.",
+            "signalIds": [],
+            "clusterIds": [],
+            "factIds": [],
+            "evidenceIds": [],
+            "details": {
+              "criterionResults": [
+                {
+                  "id": "822adffd-389b-4e7b-a16d-c54cf31265df",
+                  "type": "MUST_HAVE",
+                  "weight": null,
+                  "result": "unknown"
+                },
+                {
+                  "id": "9c6b3e12-0327-47fd-b2a7-28972d29f961",
+                  "type": "MUST_HAVE",
+                  "weight": null,
+                  "result": "unknown"
+                },
+                {
+                  "id": "53b38bd9-d968-4dcf-8cf5-a9686727574e",
+                  "type": "PREFERRED",
+                  "weight": 10,
+                  "result": "fail"
+                },
+                {
+                  "id": "0f7ce50f-26c1-4a04-b477-d013f3d97466",
+                  "type": "PREFERRED",
+                  "weight": 10,
+                  "result": "fail"
+                },
+                {
+                  "id": "2316d686-b545-4598-87fe-dec44dc10b37",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "6fce27dd-f1fd-4bf7-baea-60a0a4706cd1",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "a50f80af-e88d-43f9-964f-dd218a9f2315",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "42b57c9c-9805-478f-942d-5da9a0d5d0f0",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "c765036d-5f50-416d-ae3a-e59ee9886a71",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "4f24c710-e16d-4226-8d1b-6684fe75061c",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "e4a57a37-878a-4f64-81ef-abf9a32839f6",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "a30ab9d3-c730-4342-b75d-706e592537d0",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "50924419-9063-4f44-8996-52dd1f0eb4dd",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "fd1f2c80-e5b4-4072-8762-b1ec218b71ea",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "b1a55725-ee8a-4e01-a9bb-526943aa96c6",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "76636301-8f2f-423e-895a-2394fb2655d1",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "ea48bcbd-a61a-43a7-827c-2ca418c256d1",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "cd257de2-f4e1-4880-bcbf-4a45ff56d7d6",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "ba1e8213-62d4-4350-964a-74aa315e8192",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                }
+              ],
+              "knownCount": 2,
+              "unknownCount": 2,
+              "disqualified": false
+            }
+          },
+          {
+            "dimension": "NEED",
+            "score": null,
+            "status": "UNKNOWN",
+            "rule": "strength_weighted_need_impacts_v1",
+            "explanation": "NEED is unknown because no current evidence-backed signal or cluster contributes to it.",
+            "signalIds": [],
+            "clusterIds": [],
+            "factIds": [],
+            "evidenceIds": [],
+            "details": {
+              "observationCount": 0,
+              "negativeSignalCount": 0
+            }
+          },
+          {
+            "dimension": "TIMING",
+            "score": null,
+            "status": "UNKNOWN",
+            "rule": "strength_weighted_timing_impacts_v1",
+            "explanation": "TIMING is unknown because no current evidence-backed signal or cluster contributes to it.",
+            "signalIds": [],
+            "clusterIds": [],
+            "factIds": [],
+            "evidenceIds": [],
+            "details": {
+              "observationCount": 0,
+              "negativeSignalCount": 0
+            }
+          },
+          {
+            "dimension": "RELATIONSHIP",
+            "score": null,
+            "status": "UNKNOWN",
+            "rule": "first_party_relationship_status_v1",
+            "explanation": "Relationship is unknown because no affirmative first-party relationship status was supplied.",
+            "signalIds": [],
+            "clusterIds": [],
+            "factIds": [],
+            "evidenceIds": [],
+            "details": {
+              "relationshipStatus": "NONE"
+            }
+          },
+          {
+            "dimension": "CONFIDENCE",
+            "score": null,
+            "status": "UNKNOWN",
+            "rule": "evidence_quality_confidence_v1",
+            "explanation": "Confidence is unknown because no supporting evidence is available.",
+            "signalIds": [],
+            "clusterIds": [],
+            "factIds": [],
+            "evidenceIds": [],
+            "details": {
+              "completeness": 0.3
+            }
+          }
+        ],
+        "model": {
+          "id": "02d72bd1-25e4-4ed2-8c99-26622998a11b",
+          "organizationId": "02d40c31-72e4-42d9-9d8d-fe676a369205",
+          "projectId": "b4c8a95a-eb1c-4a86-89d6-62d72097d820",
+          "version": 1,
+          "name": "Opportunity Model",
+          "weights": {
+            "fit": 30,
+            "need": 30,
+            "timing": 30,
+            "relationship": 10
+          },
+          "rules": {
+            "nextBestAction": {
+              "version": "NBA_V1",
+              "strongFit": 70,
+              "strongNeed": 60,
+              "weakTiming": 45,
+              "strongTiming": 60,
+              "minimumConfidence": 60,
+              "minimumNeedToWait": 45,
+              "directRelationships": [
+                "OPEN_OPPORTUNITY",
+                "EXISTING_CUSTOMER",
+                "PAST_CUSTOMER",
+                "PREVIOUS_CONTACT"
+              ],
+              "severeNegativeStrength": 70,
+              "severeNegativeFitImpact": -50,
+              "introductionRelationships": [
+                "KNOWN_CHAMPION",
+                "MEETING_HELD"
+              ],
+              "minimumIndependentSources": 2
+            },
+            "stateThresholds": {
+              "WATCH": 40,
+              "RISING": 70,
+              "DORMANT": 20,
+              "SURGING": 85,
+              "EMERGING": 55
+            },
+            "coolingScoreDrop": 15,
+            "minimumConfidence": 40,
+            "minimumFitForStrongState": 30,
+            "minimumNeedForStrongState": 25
+          },
+          "active": true,
+          "createdBy": "user_3IaemcwN9OMG4fylhZMmn9vr5ES",
+          "createdAt": "2026-08-30T06:04:54.487Z"
+        }
+      },
+      "why": {
+        "explanation": {
+          "id": "f09771ac-ba41-4966-8b91-6cb263cc0875",
+          "opportunityId": "9d282226-bd82-44dc-99fe-a0868443ef1f",
+          "version": 2,
+          "status": "INSUFFICIENT_EVIDENCE",
+          "text": "Insufficient evidence to establish current urgency.",
+          "ruleVersion": "WHY_V1",
+          "generatedBy": "DETERMINISTIC",
+          "current": true,
+          "createdAt": "2026-08-31T19:35:36.574Z"
+        },
+        "claims": [
+          {
+            "ordinal": 1,
+            "claimText": "Insufficient evidence to establish current urgency.",
+            "claimType": "INSUFFICIENT_EVIDENCE",
+            "material": false,
+            "traceabilityStatus": "TRACED",
+            "signalIds": [],
+            "clusterIds": [],
+            "factIds": [],
+            "evidenceIds": [],
+            "sourceUrls": []
+          }
+        ]
+      },
+      "nba": {
+        "projectId": "b4c8a95a-eb1c-4a86-89d6-62d72097d820",
+        "projectCompanyId": "49d0104b-4e24-4ff2-88ff-54c6e9fe7232",
+        "companyId": "8ee8a9ce-dd62-4b03-bfb0-f9f9a3683f32",
+        "generatedAt": "2026-08-31T19:35:36.587Z",
+        "recommendationId": "f7a5f818-2657-4f0e-adcd-a0e805fe7dbf",
+        "recommendation": {
+          "action": "RESEARCH_MORE",
+          "label": "Research more",
+          "explanation": "The opportunity is not fully supported: Fit is 70, Need is unknown, and Confidence is unknown.",
+          "ruleVersion": "NBA_V1:OPPORTUNITY_MODEL_V1",
+          "factors": {
+            "opportunityState": "WATCH",
+            "fitScore": 70,
+            "needScore": null,
+            "timingScore": null,
+            "relationshipScore": null,
+            "confidenceScore": null,
+            "researchFreshness": "FRESH",
+            "relationshipStatus": "NONE",
+            "knownFirstPartyRelationship": false,
+            "independentSourceCount": 18,
+            "negativeSignalCount": 0,
+            "confirmedDisqualifier": false
+          }
+        }
+      }
+    },
+    {
+      "companyId": "fafc40de-2c9e-4968-bc3c-602d7d3f23c6",
+      "projectCompanyId": "820dfd5b-d439-4117-b68e-d79abb74b283",
+      "signalEvaluation": {
+        "packs": [
+          {
+            "id": "f91c7581-a46e-42df-988a-3ccfffc6743c",
+            "slug": "managed-soc",
+            "name": "Managed SOC provider",
+            "description": "Synthetic managed security operations selling context used to validate the generic engine.",
+            "version": "1.0",
+            "active": true,
+            "status": "APPROVED",
+            "applicableContext": {
+              "offeringFamily": "managed-soc"
+            },
+            "configuration": {},
+            "createdAt": "2026-08-29T10:05:08.038Z",
+            "updatedAt": "2026-08-29T10:06:29.111Z"
+          }
+        ],
+        "created": [
+          {
+            "id": "94354b6d-c865-4555-b5d8-a3fdb839f710",
+            "organizationId": "02d40c31-72e4-42d9-9d8d-fe676a369205",
+            "projectId": "b4c8a95a-eb1c-4a86-89d6-62d72097d820",
+            "companyId": "fafc40de-2c9e-4968-bc3c-602d7d3f23c6",
+            "signalDefinitionId": "44029679-535f-4a11-8ac2-0acea2dda02a",
+            "supportingFactIds": [
+              "02d7c3ef-8c67-492b-9b0f-3fda92679253",
+              "962f776e-2bed-46cd-93b6-d7c0f3f9f40d"
+            ],
+            "supportingEvidenceIds": [
+              "036c327e-c766-451c-ae30-04e866622a66",
+              "525dea1a-8781-4f5d-bc1e-0618f3d3fd2c"
+            ],
+            "effectiveDate": "2026-04-09",
+            "originalStrength": 70,
+            "currentStrength": 0,
+            "confidence": 98,
+            "status": "STALE",
+            "ruleVersion": "managed-soc-1.0:1.0:1788170074814",
+            "categorySnapshot": "LEADERSHIP",
+            "contextSnapshot": {
+              "pack": {
+                "id": "f91c7581-a46e-42df-988a-3ccfffc6743c",
+                "slug": "managed-soc",
+                "version": "1.0"
+              },
+              "offering": {
+                "name": "Managed SOC",
+                "offeringFamily": "managed-soc"
+              },
+              "definition": {
+                "id": "44029679-535f-4a11-8ac2-0acea2dda02a",
+                "code": "MSOC_SECURITY_LEADER",
+                "name": "Security leader change",
+                "version": "1.0",
+                "category": "LEADERSHIP",
+                "polarity": "POSITIVE",
+                "description": "Security leader change interpreted for this offering."
+              },
+              "offeringKey": "managed-soc",
+              "businessContext": {
+                "icpVersion": {
+                  "id": "584ac312-0d43-4f8a-b857-5db7249c6c2e",
+                  "mode": "EARLY_EVIDENCE_ICP",
+                  "version": 1,
+                  "sourceBusinessTwinVersionId": "a355a198-e9d3-449e-a9cf-c064fab4faa2"
+                },
+                "offeringFamily": "managed-soc",
+                "businessTwinVersion": {
+                  "id": "a355a198-e9d3-449e-a9cf-c064fab4faa2",
+                  "status": "ready",
+                  "version": 4
+                }
+              }
+            },
+            "generationMethod": "DETERMINISTIC",
+            "generatorVersion": "1.0",
+            "observedAt": "2026-08-31T19:35:36.608Z",
+            "needImpactSnapshot": 78,
+            "timingImpactSnapshot": 88,
+            "fitImpactSnapshot": 80,
+            "detectedAt": "2026-08-31T19:14:40.280Z",
+            "lastEvaluatedAt": "2026-08-31T19:35:36.608Z",
+            "createdAt": "2026-08-31T19:14:40.283Z",
+            "updatedAt": "2026-08-31T19:35:36.608Z"
+          },
+          {
+            "id": "870a1394-d13e-498a-a6ec-cc168083e82c",
+            "organizationId": "02d40c31-72e4-42d9-9d8d-fe676a369205",
+            "projectId": "b4c8a95a-eb1c-4a86-89d6-62d72097d820",
+            "companyId": "fafc40de-2c9e-4968-bc3c-602d7d3f23c6",
+            "signalDefinitionId": "dc1fc390-e3b1-465d-bc3d-1d04e08d95de",
+            "supportingFactIds": [
+              "9f3128c6-41af-4d1a-9006-cc44a4322ecf",
+              "c082bc0e-c7cf-4b4d-84ba-7d68e8d618d2",
+              "e15df13e-5622-480d-8d36-c2c373dca56b"
+            ],
+            "supportingEvidenceIds": [
+              "1f964cc8-c674-4fbc-bead-b60a9a4230ef",
+              "57404b8f-b23d-4369-962f-d94b7ee81232",
+              "cdfad517-1340-4f19-911c-6128416af443"
+            ],
+            "effectiveDate": "2026-08-31",
+            "originalStrength": 70,
+            "currentStrength": 69.37,
+            "confidence": 93,
+            "status": "ACTIVE",
+            "ruleVersion": "managed-soc-1.0:1.0:1788170074814",
+            "categorySnapshot": "TECHNOLOGY",
+            "contextSnapshot": {
+              "pack": {
+                "id": "f91c7581-a46e-42df-988a-3ccfffc6743c",
+                "slug": "managed-soc",
+                "version": "1.0"
+              },
+              "offering": {
+                "name": "Managed SOC",
+                "offeringFamily": "managed-soc"
+              },
+              "definition": {
+                "id": "dc1fc390-e3b1-465d-bc3d-1d04e08d95de",
+                "code": "MSOC_SECURITY_STACK_CHANGE",
+                "name": "Security stack change",
+                "version": "1.0",
+                "category": "TECHNOLOGY",
+                "polarity": "POSITIVE",
+                "description": "Security stack change interpreted for this offering."
+              },
+              "offeringKey": "managed-soc",
+              "businessContext": {
+                "icpVersion": {
+                  "id": "584ac312-0d43-4f8a-b857-5db7249c6c2e",
+                  "mode": "EARLY_EVIDENCE_ICP",
+                  "version": 1,
+                  "sourceBusinessTwinVersionId": "a355a198-e9d3-449e-a9cf-c064fab4faa2"
+                },
+                "offeringFamily": "managed-soc",
+                "businessTwinVersion": {
+                  "id": "a355a198-e9d3-449e-a9cf-c064fab4faa2",
+                  "status": "ready",
+                  "version": 4
+                }
+              }
+            },
+            "generationMethod": "DETERMINISTIC",
+            "generatorVersion": "1.0",
+            "observedAt": "2026-08-31T19:35:36.608Z",
+            "needImpactSnapshot": 75,
+            "timingImpactSnapshot": 84,
+            "fitImpactSnapshot": 82,
+            "detectedAt": "2026-08-31T19:14:40.280Z",
+            "lastEvaluatedAt": "2026-08-31T19:35:36.608Z",
+            "createdAt": "2026-08-31T19:14:40.296Z",
+            "updatedAt": "2026-08-31T19:35:36.608Z"
+          }
+        ],
+        "total": 2
+      },
+      "clusterEvaluation": {
+        "evaluated": 0,
+        "clusters": []
+      },
+      "opportunity": {
+        "opportunity": {
+          "id": "6fa37a6c-2aeb-4eb1-9b42-817884a2c894",
+          "organizationId": "02d40c31-72e4-42d9-9d8d-fe676a369205",
+          "projectId": "b4c8a95a-eb1c-4a86-89d6-62d72097d820",
+          "projectCompanyId": "820dfd5b-d439-4117-b68e-d79abb74b283",
+          "companyId": "fafc40de-2c9e-4968-bc3c-602d7d3f23c6",
+          "modelVersionId": "02d72bd1-25e4-4ed2-8c99-26622998a11b",
+          "score": 76.33,
+          "fitScore": 70,
+          "needScore": 75,
+          "timingScore": 84,
+          "relationshipScore": null,
+          "confidenceScore": 74.72,
+          "state": "RISING",
+          "assessmentStatus": "COMPLETE",
+          "explanation": "RISING: weighted opportunity strength is 76.33. Confidence is 74.72 and is not included in that score.",
+          "inputSnapshot": {
+            "signalIds": [
+              "94354b6d-c865-4555-b5d8-a3fdb839f710",
+              "870a1394-d13e-498a-a6ec-cc168083e82c"
+            ],
+            "clusterIds": [],
+            "icpVersionId": "a7f0c79f-bf17-4b42-84cd-60a46c562f56",
+            "relationshipStatus": "NONE",
+            "intelligencePackVersionId": null
+          },
+          "assessedAt": "2026-08-31T19:35:36.647Z",
+          "createdAt": "2026-08-31T19:28:08.974Z",
+          "updatedAt": "2026-08-31T19:35:36.647Z"
+        },
+        "history": {
+          "id": "6688119d-cb60-404b-8e87-690ccb483e0c",
+          "opportunityId": "6fa37a6c-2aeb-4eb1-9b42-817884a2c894",
+          "modelVersionId": "02d72bd1-25e4-4ed2-8c99-26622998a11b",
+          "score": 76.33,
+          "state": "RISING",
+          "assessmentStatus": "COMPLETE",
+          "dimensionSnapshot": {
+            "FIT": 70,
+            "NEED": 75,
+            "TIMING": 84,
+            "CONFIDENCE": 74.72,
+            "RELATIONSHIP": null
+          },
+          "explanation": "RISING: weighted opportunity strength is 76.33. Confidence is 74.72 and is not included in that score.",
+          "previousState": "RISING",
+          "assessedAt": "2026-08-31T19:35:36.647Z"
+        },
+        "components": [
+          {
+            "dimension": "FIT",
+            "score": 70,
+            "status": "KNOWN",
+            "rule": "accepted_scorable_icp_v1",
+            "explanation": "1 accepted ICP criterion result(s) were known; 3 remain unknown and were not treated as failures.",
+            "signalIds": [],
+            "clusterIds": [],
+            "factIds": [],
+            "evidenceIds": [],
+            "details": {
+              "criterionResults": [
+                {
+                  "id": "822adffd-389b-4e7b-a16d-c54cf31265df",
+                  "type": "MUST_HAVE",
+                  "weight": null,
+                  "result": "unknown"
+                },
+                {
+                  "id": "9c6b3e12-0327-47fd-b2a7-28972d29f961",
+                  "type": "MUST_HAVE",
+                  "weight": null,
+                  "result": "unknown"
+                },
+                {
+                  "id": "53b38bd9-d968-4dcf-8cf5-a9686727574e",
+                  "type": "PREFERRED",
+                  "weight": 10,
+                  "result": "fail"
+                },
+                {
+                  "id": "0f7ce50f-26c1-4a04-b477-d013f3d97466",
+                  "type": "PREFERRED",
+                  "weight": 10,
+                  "result": "unknown"
+                },
+                {
+                  "id": "2316d686-b545-4598-87fe-dec44dc10b37",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "6fce27dd-f1fd-4bf7-baea-60a0a4706cd1",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "a50f80af-e88d-43f9-964f-dd218a9f2315",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "42b57c9c-9805-478f-942d-5da9a0d5d0f0",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "c765036d-5f50-416d-ae3a-e59ee9886a71",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "4f24c710-e16d-4226-8d1b-6684fe75061c",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "e4a57a37-878a-4f64-81ef-abf9a32839f6",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "a30ab9d3-c730-4342-b75d-706e592537d0",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "50924419-9063-4f44-8996-52dd1f0eb4dd",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "fd1f2c80-e5b4-4072-8762-b1ec218b71ea",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "b1a55725-ee8a-4e01-a9bb-526943aa96c6",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "76636301-8f2f-423e-895a-2394fb2655d1",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "ea48bcbd-a61a-43a7-827c-2ca418c256d1",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "cd257de2-f4e1-4880-bcbf-4a45ff56d7d6",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "ba1e8213-62d4-4350-964a-74aa315e8192",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                }
+              ],
+              "knownCount": 1,
+              "unknownCount": 3,
+              "disqualified": false
+            }
+          },
+          {
+            "dimension": "NEED",
+            "score": 75,
+            "status": "KNOWN",
+            "rule": "strength_weighted_need_impacts_v1",
+            "explanation": "NEED combines 1 current signal(s) and 0 active cluster(s); stale observations do not contribute.",
+            "signalIds": [
+              "870a1394-d13e-498a-a6ec-cc168083e82c"
+            ],
+            "clusterIds": [],
+            "factIds": [
+              "9f3128c6-41af-4d1a-9006-cc44a4322ecf",
+              "c082bc0e-c7cf-4b4d-84ba-7d68e8d618d2",
+              "e15df13e-5622-480d-8d36-c2c373dca56b"
+            ],
+            "evidenceIds": [
+              "1f964cc8-c674-4fbc-bead-b60a9a4230ef",
+              "57404b8f-b23d-4369-962f-d94b7ee81232",
+              "cdfad517-1340-4f19-911c-6128416af443"
+            ],
+            "details": {
+              "observationCount": 1,
+              "negativeSignalCount": 0
+            }
+          },
+          {
+            "dimension": "TIMING",
+            "score": 84,
+            "status": "KNOWN",
+            "rule": "strength_weighted_timing_impacts_v1",
+            "explanation": "TIMING combines 1 current signal(s) and 0 active cluster(s); stale observations do not contribute.",
+            "signalIds": [
+              "870a1394-d13e-498a-a6ec-cc168083e82c"
+            ],
+            "clusterIds": [],
+            "factIds": [
+              "9f3128c6-41af-4d1a-9006-cc44a4322ecf",
+              "c082bc0e-c7cf-4b4d-84ba-7d68e8d618d2",
+              "e15df13e-5622-480d-8d36-c2c373dca56b"
+            ],
+            "evidenceIds": [
+              "1f964cc8-c674-4fbc-bead-b60a9a4230ef",
+              "57404b8f-b23d-4369-962f-d94b7ee81232",
+              "cdfad517-1340-4f19-911c-6128416af443"
+            ],
+            "details": {
+              "observationCount": 1,
+              "negativeSignalCount": 0
+            }
+          },
+          {
+            "dimension": "RELATIONSHIP",
+            "score": null,
+            "status": "UNKNOWN",
+            "rule": "first_party_relationship_status_v1",
+            "explanation": "Relationship is unknown because no affirmative first-party relationship status was supplied.",
+            "signalIds": [],
+            "clusterIds": [],
+            "factIds": [],
+            "evidenceIds": [],
+            "details": {
+              "relationshipStatus": "NONE"
+            }
+          },
+          {
+            "dimension": "CONFIDENCE",
+            "score": 74.72,
+            "status": "KNOWN",
+            "rule": "evidence_quality_confidence_v1",
+            "explanation": "Confidence is separate from opportunity strength and reflects 5 evidence item(s), 2 independent source domain(s), completeness, and 0 contradiction(s).",
+            "signalIds": [],
+            "clusterIds": [],
+            "factIds": [],
+            "evidenceIds": [
+              "525dea1a-8781-4f5d-bc1e-0618f3d3fd2c",
+              "cdfad517-1340-4f19-911c-6128416af443",
+              "036c327e-c766-451c-ae30-04e866622a66",
+              "57404b8f-b23d-4369-962f-d94b7ee81232",
+              "1f964cc8-c674-4fbc-bead-b60a9a4230ef"
+            ],
+            "details": {
+              "completeness": 0.9,
+              "independentSourceCount": 2,
+              "contradictions": 0
+            }
+          }
+        ],
+        "model": {
+          "id": "02d72bd1-25e4-4ed2-8c99-26622998a11b",
+          "organizationId": "02d40c31-72e4-42d9-9d8d-fe676a369205",
+          "projectId": "b4c8a95a-eb1c-4a86-89d6-62d72097d820",
+          "version": 1,
+          "name": "Opportunity Model",
+          "weights": {
+            "fit": 30,
+            "need": 30,
+            "timing": 30,
+            "relationship": 10
+          },
+          "rules": {
+            "nextBestAction": {
+              "version": "NBA_V1",
+              "strongFit": 70,
+              "strongNeed": 60,
+              "weakTiming": 45,
+              "strongTiming": 60,
+              "minimumConfidence": 60,
+              "minimumNeedToWait": 45,
+              "directRelationships": [
+                "OPEN_OPPORTUNITY",
+                "EXISTING_CUSTOMER",
+                "PAST_CUSTOMER",
+                "PREVIOUS_CONTACT"
+              ],
+              "severeNegativeStrength": 70,
+              "severeNegativeFitImpact": -50,
+              "introductionRelationships": [
+                "KNOWN_CHAMPION",
+                "MEETING_HELD"
+              ],
+              "minimumIndependentSources": 2
+            },
+            "stateThresholds": {
+              "WATCH": 40,
+              "RISING": 70,
+              "DORMANT": 20,
+              "SURGING": 85,
+              "EMERGING": 55
+            },
+            "coolingScoreDrop": 15,
+            "minimumConfidence": 40,
+            "minimumFitForStrongState": 30,
+            "minimumNeedForStrongState": 25
+          },
+          "active": true,
+          "createdBy": "user_3IaemcwN9OMG4fylhZMmn9vr5ES",
+          "createdAt": "2026-08-30T06:04:54.487Z"
+        }
+      },
+      "why": {
+        "explanation": {
+          "id": "1845a712-291a-4f2e-915c-c2da7948ed94",
+          "opportunityId": "6fa37a6c-2aeb-4eb1-9b42-817884a2c894",
+          "version": 2,
+          "status": "INSUFFICIENT_EVIDENCE",
+          "text": "Insufficient evidence to establish current urgency.",
+          "ruleVersion": "WHY_V1",
+          "generatedBy": "DETERMINISTIC",
+          "current": true,
+          "createdAt": "2026-08-31T19:35:36.654Z"
+        },
+        "claims": [
+          {
+            "ordinal": 1,
+            "claimText": "Insufficient evidence to establish current urgency.",
+            "claimType": "INSUFFICIENT_EVIDENCE",
+            "material": false,
+            "traceabilityStatus": "TRACED",
+            "signalIds": [],
+            "clusterIds": [],
+            "factIds": [],
+            "evidenceIds": [],
+            "sourceUrls": []
+          }
+        ]
+      },
+      "nba": {
+        "projectId": "b4c8a95a-eb1c-4a86-89d6-62d72097d820",
+        "projectCompanyId": "820dfd5b-d439-4117-b68e-d79abb74b283",
+        "companyId": "fafc40de-2c9e-4968-bc3c-602d7d3f23c6",
+        "generatedAt": "2026-08-31T19:35:36.668Z",
+        "recommendationId": "76293104-96da-4cbb-8fd7-bd075dd01374",
+        "recommendation": {
+          "action": "CONTACT_NOW",
+          "label": "Contact now",
+          "explanation": "Strong Fit, Need, and Timing are supported by fresh independent evidence.",
+          "ruleVersion": "NBA_V1:OPPORTUNITY_MODEL_V1",
+          "factors": {
+            "opportunityState": "RISING",
+            "fitScore": 70,
+            "needScore": 75,
+            "timingScore": 84,
+            "relationshipScore": null,
+            "confidenceScore": 74.72,
+            "researchFreshness": "FRESH",
+            "relationshipStatus": "NONE",
+            "knownFirstPartyRelationship": false,
+            "independentSourceCount": 18,
+            "negativeSignalCount": 0,
+            "confirmedDisqualifier": false
+          }
+        }
+      }
+    },
+    {
+      "companyId": "4944433c-43a4-41bb-b3f4-24fe98d56a8b",
+      "projectCompanyId": "ed7f37c8-8434-4edc-bdf9-1aeaa52507f3",
+      "signalEvaluation": {
+        "packs": [
+          {
+            "id": "f91c7581-a46e-42df-988a-3ccfffc6743c",
+            "slug": "managed-soc",
+            "name": "Managed SOC provider",
+            "description": "Synthetic managed security operations selling context used to validate the generic engine.",
+            "version": "1.0",
+            "active": true,
+            "status": "APPROVED",
+            "applicableContext": {
+              "offeringFamily": "managed-soc"
+            },
+            "configuration": {},
+            "createdAt": "2026-08-29T10:05:08.038Z",
+            "updatedAt": "2026-08-29T10:06:29.111Z"
+          }
+        ],
+        "created": [],
+        "total": 0
+      },
+      "clusterEvaluation": {
+        "evaluated": 0,
+        "clusters": []
+      },
+      "opportunity": {
+        "opportunity": {
+          "id": "d9d8d150-784c-4135-beff-d050910bea87",
+          "organizationId": "02d40c31-72e4-42d9-9d8d-fe676a369205",
+          "projectId": "b4c8a95a-eb1c-4a86-89d6-62d72097d820",
+          "projectCompanyId": "ed7f37c8-8434-4edc-bdf9-1aeaa52507f3",
+          "companyId": "4944433c-43a4-41bb-b3f4-24fe98d56a8b",
+          "modelVersionId": "02d72bd1-25e4-4ed2-8c99-26622998a11b",
+          "score": null,
+          "fitScore": 70,
+          "needScore": null,
+          "timingScore": null,
+          "relationshipScore": null,
+          "confidenceScore": null,
+          "state": "WATCH",
+          "assessmentStatus": "INSUFFICIENT_DATA",
+          "explanation": "NEEDS RESEARCH: an opportunity score cannot yet be calculated because Fit, Need, or Timing remains unknown. Confidence is unknown and is not included in that score. Gates: Need evidence is absent or weak; Confidence requires more research.",
+          "inputSnapshot": {
+            "signalIds": [],
+            "clusterIds": [],
+            "icpVersionId": "a7f0c79f-bf17-4b42-84cd-60a46c562f56",
+            "relationshipStatus": "NONE",
+            "intelligencePackVersionId": null
+          },
+          "assessedAt": "2026-08-31T19:35:36.702Z",
+          "createdAt": "2026-08-31T19:28:09.113Z",
+          "updatedAt": "2026-08-31T19:35:36.702Z"
+        },
+        "history": {
+          "id": "50edb156-1667-4fcd-a9fd-11cabe9edcab",
+          "opportunityId": "d9d8d150-784c-4135-beff-d050910bea87",
+          "modelVersionId": "02d72bd1-25e4-4ed2-8c99-26622998a11b",
+          "score": null,
+          "state": "WATCH",
+          "assessmentStatus": "INSUFFICIENT_DATA",
+          "dimensionSnapshot": {
+            "FIT": 70,
+            "NEED": null,
+            "TIMING": null,
+            "CONFIDENCE": null,
+            "RELATIONSHIP": null
+          },
+          "explanation": "NEEDS RESEARCH: an opportunity score cannot yet be calculated because Fit, Need, or Timing remains unknown. Confidence is unknown and is not included in that score. Gates: Need evidence is absent or weak; Confidence requires more research.",
+          "previousState": "WATCH",
+          "assessedAt": "2026-08-31T19:35:36.702Z"
+        },
+        "components": [
+          {
+            "dimension": "FIT",
+            "score": 70,
+            "status": "KNOWN",
+            "rule": "accepted_scorable_icp_v1",
+            "explanation": "1 accepted ICP criterion result(s) were known; 3 remain unknown and were not treated as failures.",
+            "signalIds": [],
+            "clusterIds": [],
+            "factIds": [],
+            "evidenceIds": [],
+            "details": {
+              "criterionResults": [
+                {
+                  "id": "822adffd-389b-4e7b-a16d-c54cf31265df",
+                  "type": "MUST_HAVE",
+                  "weight": null,
+                  "result": "unknown"
+                },
+                {
+                  "id": "9c6b3e12-0327-47fd-b2a7-28972d29f961",
+                  "type": "MUST_HAVE",
+                  "weight": null,
+                  "result": "unknown"
+                },
+                {
+                  "id": "53b38bd9-d968-4dcf-8cf5-a9686727574e",
+                  "type": "PREFERRED",
+                  "weight": 10,
+                  "result": "unknown"
+                },
+                {
+                  "id": "0f7ce50f-26c1-4a04-b477-d013f3d97466",
+                  "type": "PREFERRED",
+                  "weight": 10,
+                  "result": "fail"
+                },
+                {
+                  "id": "2316d686-b545-4598-87fe-dec44dc10b37",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "6fce27dd-f1fd-4bf7-baea-60a0a4706cd1",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "a50f80af-e88d-43f9-964f-dd218a9f2315",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "42b57c9c-9805-478f-942d-5da9a0d5d0f0",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "c765036d-5f50-416d-ae3a-e59ee9886a71",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "4f24c710-e16d-4226-8d1b-6684fe75061c",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "e4a57a37-878a-4f64-81ef-abf9a32839f6",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "a30ab9d3-c730-4342-b75d-706e592537d0",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "50924419-9063-4f44-8996-52dd1f0eb4dd",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "fd1f2c80-e5b4-4072-8762-b1ec218b71ea",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "b1a55725-ee8a-4e01-a9bb-526943aa96c6",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "76636301-8f2f-423e-895a-2394fb2655d1",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "ea48bcbd-a61a-43a7-827c-2ca418c256d1",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "cd257de2-f4e1-4880-bcbf-4a45ff56d7d6",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "ba1e8213-62d4-4350-964a-74aa315e8192",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                }
+              ],
+              "knownCount": 1,
+              "unknownCount": 3,
+              "disqualified": false
+            }
+          },
+          {
+            "dimension": "NEED",
+            "score": null,
+            "status": "UNKNOWN",
+            "rule": "strength_weighted_need_impacts_v1",
+            "explanation": "NEED is unknown because no current evidence-backed signal or cluster contributes to it.",
+            "signalIds": [],
+            "clusterIds": [],
+            "factIds": [],
+            "evidenceIds": [],
+            "details": {
+              "observationCount": 0,
+              "negativeSignalCount": 0
+            }
+          },
+          {
+            "dimension": "TIMING",
+            "score": null,
+            "status": "UNKNOWN",
+            "rule": "strength_weighted_timing_impacts_v1",
+            "explanation": "TIMING is unknown because no current evidence-backed signal or cluster contributes to it.",
+            "signalIds": [],
+            "clusterIds": [],
+            "factIds": [],
+            "evidenceIds": [],
+            "details": {
+              "observationCount": 0,
+              "negativeSignalCount": 0
+            }
+          },
+          {
+            "dimension": "RELATIONSHIP",
+            "score": null,
+            "status": "UNKNOWN",
+            "rule": "first_party_relationship_status_v1",
+            "explanation": "Relationship is unknown because no affirmative first-party relationship status was supplied.",
+            "signalIds": [],
+            "clusterIds": [],
+            "factIds": [],
+            "evidenceIds": [],
+            "details": {
+              "relationshipStatus": "NONE"
+            }
+          },
+          {
+            "dimension": "CONFIDENCE",
+            "score": null,
+            "status": "UNKNOWN",
+            "rule": "evidence_quality_confidence_v1",
+            "explanation": "Confidence is unknown because no supporting evidence is available.",
+            "signalIds": [],
+            "clusterIds": [],
+            "factIds": [],
+            "evidenceIds": [],
+            "details": {
+              "completeness": 0.3
+            }
+          }
+        ],
+        "model": {
+          "id": "02d72bd1-25e4-4ed2-8c99-26622998a11b",
+          "organizationId": "02d40c31-72e4-42d9-9d8d-fe676a369205",
+          "projectId": "b4c8a95a-eb1c-4a86-89d6-62d72097d820",
+          "version": 1,
+          "name": "Opportunity Model",
+          "weights": {
+            "fit": 30,
+            "need": 30,
+            "timing": 30,
+            "relationship": 10
+          },
+          "rules": {
+            "nextBestAction": {
+              "version": "NBA_V1",
+              "strongFit": 70,
+              "strongNeed": 60,
+              "weakTiming": 45,
+              "strongTiming": 60,
+              "minimumConfidence": 60,
+              "minimumNeedToWait": 45,
+              "directRelationships": [
+                "OPEN_OPPORTUNITY",
+                "EXISTING_CUSTOMER",
+                "PAST_CUSTOMER",
+                "PREVIOUS_CONTACT"
+              ],
+              "severeNegativeStrength": 70,
+              "severeNegativeFitImpact": -50,
+              "introductionRelationships": [
+                "KNOWN_CHAMPION",
+                "MEETING_HELD"
+              ],
+              "minimumIndependentSources": 2
+            },
+            "stateThresholds": {
+              "WATCH": 40,
+              "RISING": 70,
+              "DORMANT": 20,
+              "SURGING": 85,
+              "EMERGING": 55
+            },
+            "coolingScoreDrop": 15,
+            "minimumConfidence": 40,
+            "minimumFitForStrongState": 30,
+            "minimumNeedForStrongState": 25
+          },
+          "active": true,
+          "createdBy": "user_3IaemcwN9OMG4fylhZMmn9vr5ES",
+          "createdAt": "2026-08-30T06:04:54.487Z"
+        }
+      },
+      "why": {
+        "explanation": {
+          "id": "52436d43-38a1-4dd8-9e08-4c5d4f673087",
+          "opportunityId": "d9d8d150-784c-4135-beff-d050910bea87",
+          "version": 2,
+          "status": "INSUFFICIENT_EVIDENCE",
+          "text": "Insufficient evidence to establish current urgency.",
+          "ruleVersion": "WHY_V1",
+          "generatedBy": "DETERMINISTIC",
+          "current": true,
+          "createdAt": "2026-08-31T19:35:36.709Z"
+        },
+        "claims": [
+          {
+            "ordinal": 1,
+            "claimText": "Insufficient evidence to establish current urgency.",
+            "claimType": "INSUFFICIENT_EVIDENCE",
+            "material": false,
+            "traceabilityStatus": "TRACED",
+            "signalIds": [],
+            "clusterIds": [],
+            "factIds": [],
+            "evidenceIds": [],
+            "sourceUrls": []
+          }
+        ]
+      },
+      "nba": {
+        "projectId": "b4c8a95a-eb1c-4a86-89d6-62d72097d820",
+        "projectCompanyId": "ed7f37c8-8434-4edc-bdf9-1aeaa52507f3",
+        "companyId": "4944433c-43a4-41bb-b3f4-24fe98d56a8b",
+        "generatedAt": "2026-08-31T19:35:36.728Z",
+        "recommendationId": "f8941d98-0453-44e2-a30b-b94b6b99fa0a",
+        "recommendation": {
+          "action": "RESEARCH_MORE",
+          "label": "Research more",
+          "explanation": "The opportunity is not fully supported: Fit is 70, Need is unknown, and Confidence is unknown.",
+          "ruleVersion": "NBA_V1:OPPORTUNITY_MODEL_V1",
+          "factors": {
+            "opportunityState": "WATCH",
+            "fitScore": 70,
+            "needScore": null,
+            "timingScore": null,
+            "relationshipScore": null,
+            "confidenceScore": null,
+            "researchFreshness": "FRESH",
+            "relationshipStatus": "NONE",
+            "knownFirstPartyRelationship": false,
+            "independentSourceCount": 13,
+            "negativeSignalCount": 0,
+            "confirmedDisqualifier": false
+          }
+        }
+      }
+    },
+    {
+      "companyId": "f757f1d3-fc2d-4086-8903-b4da90e166e3",
+      "projectCompanyId": "f1c69193-9910-4aba-9760-b0c7f877f8fd",
+      "signalEvaluation": {
+        "packs": [
+          {
+            "id": "f91c7581-a46e-42df-988a-3ccfffc6743c",
+            "slug": "managed-soc",
+            "name": "Managed SOC provider",
+            "description": "Synthetic managed security operations selling context used to validate the generic engine.",
+            "version": "1.0",
+            "active": true,
+            "status": "APPROVED",
+            "applicableContext": {
+              "offeringFamily": "managed-soc"
+            },
+            "configuration": {},
+            "createdAt": "2026-08-29T10:05:08.038Z",
+            "updatedAt": "2026-08-29T10:06:29.111Z"
+          }
+        ],
+        "created": [],
+        "total": 0
+      },
+      "clusterEvaluation": {
+        "evaluated": 0,
+        "clusters": []
+      },
+      "opportunity": {
+        "opportunity": {
+          "id": "5721a4c0-c3fd-4866-a0ec-eb254367c48e",
+          "organizationId": "02d40c31-72e4-42d9-9d8d-fe676a369205",
+          "projectId": "b4c8a95a-eb1c-4a86-89d6-62d72097d820",
+          "projectCompanyId": "f1c69193-9910-4aba-9760-b0c7f877f8fd",
+          "companyId": "f757f1d3-fc2d-4086-8903-b4da90e166e3",
+          "modelVersionId": "02d72bd1-25e4-4ed2-8c99-26622998a11b",
+          "score": null,
+          "fitScore": 70,
+          "needScore": null,
+          "timingScore": null,
+          "relationshipScore": null,
+          "confidenceScore": null,
+          "state": "WATCH",
+          "assessmentStatus": "INSUFFICIENT_DATA",
+          "explanation": "NEEDS RESEARCH: an opportunity score cannot yet be calculated because Fit, Need, or Timing remains unknown. Confidence is unknown and is not included in that score. Gates: Need evidence is absent or weak; Confidence requires more research.",
+          "inputSnapshot": {
+            "signalIds": [],
+            "clusterIds": [],
+            "icpVersionId": "a7f0c79f-bf17-4b42-84cd-60a46c562f56",
+            "relationshipStatus": "NONE",
+            "intelligencePackVersionId": null
+          },
+          "assessedAt": "2026-08-31T19:35:36.749Z",
+          "createdAt": "2026-08-31T19:28:09.163Z",
+          "updatedAt": "2026-08-31T19:35:36.749Z"
+        },
+        "history": {
+          "id": "6edae2a5-e8f3-40f5-a45a-13e8addd9ad8",
+          "opportunityId": "5721a4c0-c3fd-4866-a0ec-eb254367c48e",
+          "modelVersionId": "02d72bd1-25e4-4ed2-8c99-26622998a11b",
+          "score": null,
+          "state": "WATCH",
+          "assessmentStatus": "INSUFFICIENT_DATA",
+          "dimensionSnapshot": {
+            "FIT": 70,
+            "NEED": null,
+            "TIMING": null,
+            "CONFIDENCE": null,
+            "RELATIONSHIP": null
+          },
+          "explanation": "NEEDS RESEARCH: an opportunity score cannot yet be calculated because Fit, Need, or Timing remains unknown. Confidence is unknown and is not included in that score. Gates: Need evidence is absent or weak; Confidence requires more research.",
+          "previousState": "WATCH",
+          "assessedAt": "2026-08-31T19:35:36.749Z"
+        },
+        "components": [
+          {
+            "dimension": "FIT",
+            "score": 70,
+            "status": "KNOWN",
+            "rule": "accepted_scorable_icp_v1",
+            "explanation": "1 accepted ICP criterion result(s) were known; 3 remain unknown and were not treated as failures.",
+            "signalIds": [],
+            "clusterIds": [],
+            "factIds": [],
+            "evidenceIds": [],
+            "details": {
+              "criterionResults": [
+                {
+                  "id": "822adffd-389b-4e7b-a16d-c54cf31265df",
+                  "type": "MUST_HAVE",
+                  "weight": null,
+                  "result": "unknown"
+                },
+                {
+                  "id": "9c6b3e12-0327-47fd-b2a7-28972d29f961",
+                  "type": "MUST_HAVE",
+                  "weight": null,
+                  "result": "unknown"
+                },
+                {
+                  "id": "53b38bd9-d968-4dcf-8cf5-a9686727574e",
+                  "type": "PREFERRED",
+                  "weight": 10,
+                  "result": "fail"
+                },
+                {
+                  "id": "0f7ce50f-26c1-4a04-b477-d013f3d97466",
+                  "type": "PREFERRED",
+                  "weight": 10,
+                  "result": "unknown"
+                },
+                {
+                  "id": "2316d686-b545-4598-87fe-dec44dc10b37",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "6fce27dd-f1fd-4bf7-baea-60a0a4706cd1",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "a50f80af-e88d-43f9-964f-dd218a9f2315",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "42b57c9c-9805-478f-942d-5da9a0d5d0f0",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "c765036d-5f50-416d-ae3a-e59ee9886a71",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "4f24c710-e16d-4226-8d1b-6684fe75061c",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "e4a57a37-878a-4f64-81ef-abf9a32839f6",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "a30ab9d3-c730-4342-b75d-706e592537d0",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "50924419-9063-4f44-8996-52dd1f0eb4dd",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "fd1f2c80-e5b4-4072-8762-b1ec218b71ea",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "b1a55725-ee8a-4e01-a9bb-526943aa96c6",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "76636301-8f2f-423e-895a-2394fb2655d1",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "ea48bcbd-a61a-43a7-827c-2ca418c256d1",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "cd257de2-f4e1-4880-bcbf-4a45ff56d7d6",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "ba1e8213-62d4-4350-964a-74aa315e8192",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                }
+              ],
+              "knownCount": 1,
+              "unknownCount": 3,
+              "disqualified": false
+            }
+          },
+          {
+            "dimension": "NEED",
+            "score": null,
+            "status": "UNKNOWN",
+            "rule": "strength_weighted_need_impacts_v1",
+            "explanation": "NEED is unknown because no current evidence-backed signal or cluster contributes to it.",
+            "signalIds": [],
+            "clusterIds": [],
+            "factIds": [],
+            "evidenceIds": [],
+            "details": {
+              "observationCount": 0,
+              "negativeSignalCount": 0
+            }
+          },
+          {
+            "dimension": "TIMING",
+            "score": null,
+            "status": "UNKNOWN",
+            "rule": "strength_weighted_timing_impacts_v1",
+            "explanation": "TIMING is unknown because no current evidence-backed signal or cluster contributes to it.",
+            "signalIds": [],
+            "clusterIds": [],
+            "factIds": [],
+            "evidenceIds": [],
+            "details": {
+              "observationCount": 0,
+              "negativeSignalCount": 0
+            }
+          },
+          {
+            "dimension": "RELATIONSHIP",
+            "score": null,
+            "status": "UNKNOWN",
+            "rule": "first_party_relationship_status_v1",
+            "explanation": "Relationship is unknown because no affirmative first-party relationship status was supplied.",
+            "signalIds": [],
+            "clusterIds": [],
+            "factIds": [],
+            "evidenceIds": [],
+            "details": {
+              "relationshipStatus": "NONE"
+            }
+          },
+          {
+            "dimension": "CONFIDENCE",
+            "score": null,
+            "status": "UNKNOWN",
+            "rule": "evidence_quality_confidence_v1",
+            "explanation": "Confidence is unknown because no supporting evidence is available.",
+            "signalIds": [],
+            "clusterIds": [],
+            "factIds": [],
+            "evidenceIds": [],
+            "details": {
+              "completeness": 0.3
+            }
+          }
+        ],
+        "model": {
+          "id": "02d72bd1-25e4-4ed2-8c99-26622998a11b",
+          "organizationId": "02d40c31-72e4-42d9-9d8d-fe676a369205",
+          "projectId": "b4c8a95a-eb1c-4a86-89d6-62d72097d820",
+          "version": 1,
+          "name": "Opportunity Model",
+          "weights": {
+            "fit": 30,
+            "need": 30,
+            "timing": 30,
+            "relationship": 10
+          },
+          "rules": {
+            "nextBestAction": {
+              "version": "NBA_V1",
+              "strongFit": 70,
+              "strongNeed": 60,
+              "weakTiming": 45,
+              "strongTiming": 60,
+              "minimumConfidence": 60,
+              "minimumNeedToWait": 45,
+              "directRelationships": [
+                "OPEN_OPPORTUNITY",
+                "EXISTING_CUSTOMER",
+                "PAST_CUSTOMER",
+                "PREVIOUS_CONTACT"
+              ],
+              "severeNegativeStrength": 70,
+              "severeNegativeFitImpact": -50,
+              "introductionRelationships": [
+                "KNOWN_CHAMPION",
+                "MEETING_HELD"
+              ],
+              "minimumIndependentSources": 2
+            },
+            "stateThresholds": {
+              "WATCH": 40,
+              "RISING": 70,
+              "DORMANT": 20,
+              "SURGING": 85,
+              "EMERGING": 55
+            },
+            "coolingScoreDrop": 15,
+            "minimumConfidence": 40,
+            "minimumFitForStrongState": 30,
+            "minimumNeedForStrongState": 25
+          },
+          "active": true,
+          "createdBy": "user_3IaemcwN9OMG4fylhZMmn9vr5ES",
+          "createdAt": "2026-08-30T06:04:54.487Z"
+        }
+      },
+      "why": {
+        "explanation": {
+          "id": "84ea2381-0025-4ee4-bd7e-e8be4782a0be",
+          "opportunityId": "5721a4c0-c3fd-4866-a0ec-eb254367c48e",
+          "version": 2,
+          "status": "INSUFFICIENT_EVIDENCE",
+          "text": "Insufficient evidence to establish current urgency.",
+          "ruleVersion": "WHY_V1",
+          "generatedBy": "DETERMINISTIC",
+          "current": true,
+          "createdAt": "2026-08-31T19:35:36.760Z"
+        },
+        "claims": [
+          {
+            "ordinal": 1,
+            "claimText": "Insufficient evidence to establish current urgency.",
+            "claimType": "INSUFFICIENT_EVIDENCE",
+            "material": false,
+            "traceabilityStatus": "TRACED",
+            "signalIds": [],
+            "clusterIds": [],
+            "factIds": [],
+            "evidenceIds": [],
+            "sourceUrls": []
+          }
+        ]
+      },
+      "nba": {
+        "projectId": "b4c8a95a-eb1c-4a86-89d6-62d72097d820",
+        "projectCompanyId": "f1c69193-9910-4aba-9760-b0c7f877f8fd",
+        "companyId": "f757f1d3-fc2d-4086-8903-b4da90e166e3",
+        "generatedAt": "2026-08-31T19:35:36.772Z",
+        "recommendationId": "66168c7b-e295-4f26-88de-ccee25df50c6",
+        "recommendation": {
+          "action": "RESEARCH_MORE",
+          "label": "Research more",
+          "explanation": "The opportunity is not fully supported: Fit is 70, Need is unknown, and Confidence is unknown.",
+          "ruleVersion": "NBA_V1:OPPORTUNITY_MODEL_V1",
+          "factors": {
+            "opportunityState": "WATCH",
+            "fitScore": 70,
+            "needScore": null,
+            "timingScore": null,
+            "relationshipScore": null,
+            "confidenceScore": null,
+            "researchFreshness": "FRESH",
+            "relationshipStatus": "NONE",
+            "knownFirstPartyRelationship": false,
+            "independentSourceCount": 6,
+            "negativeSignalCount": 0,
+            "confirmedDisqualifier": false
+          }
+        }
+      }
+    },
+    {
+      "companyId": "94457ffa-bf97-426e-95b0-a1cf30250bd0",
+      "projectCompanyId": "a42186ed-22ce-4c34-9668-056dcd37fa4b",
+      "signalEvaluation": {
+        "packs": [
+          {
+            "id": "f91c7581-a46e-42df-988a-3ccfffc6743c",
+            "slug": "managed-soc",
+            "name": "Managed SOC provider",
+            "description": "Synthetic managed security operations selling context used to validate the generic engine.",
+            "version": "1.0",
+            "active": true,
+            "status": "APPROVED",
+            "applicableContext": {
+              "offeringFamily": "managed-soc"
+            },
+            "configuration": {},
+            "createdAt": "2026-08-29T10:05:08.038Z",
+            "updatedAt": "2026-08-29T10:06:29.111Z"
+          }
+        ],
+        "created": [
+          {
+            "id": "17f628a1-c885-4a82-8c1e-f1ef0f0720a1",
+            "organizationId": "02d40c31-72e4-42d9-9d8d-fe676a369205",
+            "projectId": "b4c8a95a-eb1c-4a86-89d6-62d72097d820",
+            "companyId": "94457ffa-bf97-426e-95b0-a1cf30250bd0",
+            "signalDefinitionId": "67781795-9bb1-46ff-a120-f9b6d79ae6a0",
+            "supportingFactIds": [
+              "5cb8284e-93a4-4dce-a699-5527d9663586",
+              "cd7d9f70-f160-4b91-925e-23d97c905a94"
+            ],
+            "supportingEvidenceIds": [
+              "1dbd847c-8821-4773-9703-ffc2134f66f8",
+              "80418a7d-91f6-4a26-a586-a24059cdb3fd"
+            ],
+            "effectiveDate": "2026-08-31",
+            "originalStrength": 70,
+            "currentStrength": 69.37,
+            "confidence": 78,
+            "status": "ACTIVE",
+            "ruleVersion": "managed-soc-1.0:1.0:1788170074814",
+            "categorySnapshot": "FUNDING",
+            "contextSnapshot": {
+              "pack": {
+                "id": "f91c7581-a46e-42df-988a-3ccfffc6743c",
+                "slug": "managed-soc",
+                "version": "1.0"
+              },
+              "offering": {
+                "name": "Managed SOC",
+                "offeringFamily": "managed-soc"
+              },
+              "definition": {
+                "id": "67781795-9bb1-46ff-a120-f9b6d79ae6a0",
+                "code": "MSOC_FUNDED_RISK_PROGRAM",
+                "name": "Funded risk program window",
+                "version": "1.0",
+                "category": "FUNDING",
+                "polarity": "POSITIVE",
+                "description": "Funded risk program window interpreted for this offering."
+              },
+              "offeringKey": "managed-soc",
+              "businessContext": {
+                "icpVersion": {
+                  "id": "584ac312-0d43-4f8a-b857-5db7249c6c2e",
+                  "mode": "EARLY_EVIDENCE_ICP",
+                  "version": 1,
+                  "sourceBusinessTwinVersionId": "a355a198-e9d3-449e-a9cf-c064fab4faa2"
+                },
+                "offeringFamily": "managed-soc",
+                "businessTwinVersion": {
+                  "id": "a355a198-e9d3-449e-a9cf-c064fab4faa2",
+                  "status": "ready",
+                  "version": 4
+                }
+              }
+            },
+            "generationMethod": "DETERMINISTIC",
+            "generatorVersion": "1.0",
+            "observedAt": "2026-08-31T19:35:36.788Z",
+            "needImpactSnapshot": 42,
+            "timingImpactSnapshot": 48,
+            "fitImpactSnapshot": 45,
+            "detectedAt": "2026-08-31T14:46:35.104Z",
+            "lastEvaluatedAt": "2026-08-31T19:35:36.788Z",
+            "createdAt": "2026-08-31T14:46:35.108Z",
+            "updatedAt": "2026-08-31T19:35:36.788Z"
+          }
+        ],
+        "total": 1
+      },
+      "clusterEvaluation": {
+        "evaluated": 0,
+        "clusters": []
+      },
+      "opportunity": {
+        "opportunity": {
+          "id": "20fa5846-724f-49b8-80e5-2cdadfb11ff7",
+          "organizationId": "02d40c31-72e4-42d9-9d8d-fe676a369205",
+          "projectId": "b4c8a95a-eb1c-4a86-89d6-62d72097d820",
+          "projectCompanyId": "a42186ed-22ce-4c34-9668-056dcd37fa4b",
+          "companyId": "94457ffa-bf97-426e-95b0-a1cf30250bd0",
+          "modelVersionId": "02d72bd1-25e4-4ed2-8c99-26622998a11b",
+          "score": 53.33,
+          "fitScore": 70,
+          "needScore": 42,
+          "timingScore": 48,
+          "relationshipScore": null,
+          "confidenceScore": 72.42,
+          "state": "EMERGING",
+          "assessmentStatus": "COMPLETE",
+          "explanation": "EMERGING: weighted opportunity strength is 53.33. Confidence is 72.42 and is not included in that score.",
+          "inputSnapshot": {
+            "signalIds": [
+              "17f628a1-c885-4a82-8c1e-f1ef0f0720a1"
+            ],
+            "clusterIds": [],
+            "icpVersionId": "a7f0c79f-bf17-4b42-84cd-60a46c562f56",
+            "relationshipStatus": "NONE",
+            "intelligencePackVersionId": null
+          },
+          "assessedAt": "2026-08-31T19:35:36.817Z",
+          "createdAt": "2026-08-31T19:28:09.223Z",
+          "updatedAt": "2026-08-31T19:35:36.817Z"
+        },
+        "history": {
+          "id": "c253311f-2a9f-4118-b18e-b544b926f7dc",
+          "opportunityId": "20fa5846-724f-49b8-80e5-2cdadfb11ff7",
+          "modelVersionId": "02d72bd1-25e4-4ed2-8c99-26622998a11b",
+          "score": 53.33,
+          "state": "EMERGING",
+          "assessmentStatus": "COMPLETE",
+          "dimensionSnapshot": {
+            "FIT": 70,
+            "NEED": 42,
+            "TIMING": 48,
+            "CONFIDENCE": 72.42,
+            "RELATIONSHIP": null
+          },
+          "explanation": "EMERGING: weighted opportunity strength is 53.33. Confidence is 72.42 and is not included in that score.",
+          "previousState": "EMERGING",
+          "assessedAt": "2026-08-31T19:35:36.817Z"
+        },
+        "components": [
+          {
+            "dimension": "FIT",
+            "score": 70,
+            "status": "KNOWN",
+            "rule": "accepted_scorable_icp_v1",
+            "explanation": "1 accepted ICP criterion result(s) were known; 3 remain unknown and were not treated as failures.",
+            "signalIds": [],
+            "clusterIds": [],
+            "factIds": [],
+            "evidenceIds": [],
+            "details": {
+              "criterionResults": [
+                {
+                  "id": "822adffd-389b-4e7b-a16d-c54cf31265df",
+                  "type": "MUST_HAVE",
+                  "weight": null,
+                  "result": "unknown"
+                },
+                {
+                  "id": "9c6b3e12-0327-47fd-b2a7-28972d29f961",
+                  "type": "MUST_HAVE",
+                  "weight": null,
+                  "result": "unknown"
+                },
+                {
+                  "id": "53b38bd9-d968-4dcf-8cf5-a9686727574e",
+                  "type": "PREFERRED",
+                  "weight": 10,
+                  "result": "fail"
+                },
+                {
+                  "id": "0f7ce50f-26c1-4a04-b477-d013f3d97466",
+                  "type": "PREFERRED",
+                  "weight": 10,
+                  "result": "unknown"
+                },
+                {
+                  "id": "2316d686-b545-4598-87fe-dec44dc10b37",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "6fce27dd-f1fd-4bf7-baea-60a0a4706cd1",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "a50f80af-e88d-43f9-964f-dd218a9f2315",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "42b57c9c-9805-478f-942d-5da9a0d5d0f0",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "c765036d-5f50-416d-ae3a-e59ee9886a71",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "4f24c710-e16d-4226-8d1b-6684fe75061c",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "e4a57a37-878a-4f64-81ef-abf9a32839f6",
+                  "type": "DISQUALIFIER",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "a30ab9d3-c730-4342-b75d-706e592537d0",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "50924419-9063-4f44-8996-52dd1f0eb4dd",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "fd1f2c80-e5b4-4072-8762-b1ec218b71ea",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "b1a55725-ee8a-4e01-a9bb-526943aa96c6",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "76636301-8f2f-423e-895a-2394fb2655d1",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "ea48bcbd-a61a-43a7-827c-2ca418c256d1",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "cd257de2-f4e1-4880-bcbf-4a45ff56d7d6",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                },
+                {
+                  "id": "ba1e8213-62d4-4350-964a-74aa315e8192",
+                  "type": "ADVISORY",
+                  "weight": null,
+                  "result": "not_applicable"
+                }
+              ],
+              "knownCount": 1,
+              "unknownCount": 3,
+              "disqualified": false
+            }
+          },
+          {
+            "dimension": "NEED",
+            "score": 42,
+            "status": "KNOWN",
+            "rule": "strength_weighted_need_impacts_v1",
+            "explanation": "NEED combines 1 current signal(s) and 0 active cluster(s); stale observations do not contribute.",
+            "signalIds": [
+              "17f628a1-c885-4a82-8c1e-f1ef0f0720a1"
+            ],
+            "clusterIds": [],
+            "factIds": [
+              "5cb8284e-93a4-4dce-a699-5527d9663586",
+              "cd7d9f70-f160-4b91-925e-23d97c905a94"
+            ],
+            "evidenceIds": [
+              "1dbd847c-8821-4773-9703-ffc2134f66f8",
+              "80418a7d-91f6-4a26-a586-a24059cdb3fd"
+            ],
+            "details": {
+              "observationCount": 1,
+              "negativeSignalCount": 0
+            }
+          },
+          {
+            "dimension": "TIMING",
+            "score": 48,
+            "status": "KNOWN",
+            "rule": "strength_weighted_timing_impacts_v1",
+            "explanation": "TIMING combines 1 current signal(s) and 0 active cluster(s); stale observations do not contribute.",
+            "signalIds": [
+              "17f628a1-c885-4a82-8c1e-f1ef0f0720a1"
+            ],
+            "clusterIds": [],
+            "factIds": [
+              "5cb8284e-93a4-4dce-a699-5527d9663586",
+              "cd7d9f70-f160-4b91-925e-23d97c905a94"
+            ],
+            "evidenceIds": [
+              "1dbd847c-8821-4773-9703-ffc2134f66f8",
+              "80418a7d-91f6-4a26-a586-a24059cdb3fd"
+            ],
+            "details": {
+              "observationCount": 1,
+              "negativeSignalCount": 0
+            }
+          },
+          {
+            "dimension": "RELATIONSHIP",
+            "score": null,
+            "status": "UNKNOWN",
+            "rule": "first_party_relationship_status_v1",
+            "explanation": "Relationship is unknown because no affirmative first-party relationship status was supplied.",
+            "signalIds": [],
+            "clusterIds": [],
+            "factIds": [],
+            "evidenceIds": [],
+            "details": {
+              "relationshipStatus": "NONE"
+            }
+          },
+          {
+            "dimension": "CONFIDENCE",
+            "score": 72.42,
+            "status": "KNOWN",
+            "rule": "evidence_quality_confidence_v1",
+            "explanation": "Confidence is separate from opportunity strength and reflects 2 evidence item(s), 2 independent source domain(s), completeness, and 0 contradiction(s).",
+            "signalIds": [],
+            "clusterIds": [],
+            "factIds": [],
+            "evidenceIds": [
+              "1dbd847c-8821-4773-9703-ffc2134f66f8",
+              "80418a7d-91f6-4a26-a586-a24059cdb3fd"
+            ],
+            "details": {
+              "completeness": 0.9,
+              "independentSourceCount": 2,
+              "contradictions": 0
+            }
+          }
+        ],
+        "model": {
+          "id": "02d72bd1-25e4-4ed2-8c99-26622998a11b",
+          "organizationId": "02d40c31-72e4-42d9-9d8d-fe676a369205",
+          "projectId": "b4c8a95a-eb1c-4a86-89d6-62d72097d820",
+          "version": 1,
+          "name": "Opportunity Model",
+          "weights": {
+            "fit": 30,
+            "need": 30,
+            "timing": 30,
+            "relationship": 10
+          },
+          "rules": {
+            "nextBestAction": {
+              "version": "NBA_V1",
+              "strongFit": 70,
+              "strongNeed": 60,
+              "weakTiming": 45,
+              "strongTiming": 60,
+              "minimumConfidence": 60,
+              "minimumNeedToWait": 45,
+              "directRelationships": [
+                "OPEN_OPPORTUNITY",
+                "EXISTING_CUSTOMER",
+                "PAST_CUSTOMER",
+                "PREVIOUS_CONTACT"
+              ],
+              "severeNegativeStrength": 70,
+              "severeNegativeFitImpact": -50,
+              "introductionRelationships": [
+                "KNOWN_CHAMPION",
+                "MEETING_HELD"
+              ],
+              "minimumIndependentSources": 2
+            },
+            "stateThresholds": {
+              "WATCH": 40,
+              "RISING": 70,
+              "DORMANT": 20,
+              "SURGING": 85,
+              "EMERGING": 55
+            },
+            "coolingScoreDrop": 15,
+            "minimumConfidence": 40,
+            "minimumFitForStrongState": 30,
+            "minimumNeedForStrongState": 25
+          },
+          "active": true,
+          "createdBy": "user_3IaemcwN9OMG4fylhZMmn9vr5ES",
+          "createdAt": "2026-08-30T06:04:54.487Z"
+        }
+      },
+      "why": {
+        "explanation": {
+          "id": "d3434b70-c5dd-4022-9fc1-fa10e2acb80b",
+          "opportunityId": "20fa5846-724f-49b8-80e5-2cdadfb11ff7",
+          "version": 2,
+          "status": "INSUFFICIENT_EVIDENCE",
+          "text": "Insufficient evidence to establish current urgency.",
+          "ruleVersion": "WHY_V1",
+          "generatedBy": "DETERMINISTIC",
+          "current": true,
+          "createdAt": "2026-08-31T19:35:36.824Z"
+        },
+        "claims": [
+          {
+            "ordinal": 1,
+            "claimText": "Insufficient evidence to establish current urgency.",
+            "claimType": "INSUFFICIENT_EVIDENCE",
+            "material": false,
+            "traceabilityStatus": "TRACED",
+            "signalIds": [],
+            "clusterIds": [],
+            "factIds": [],
+            "evidenceIds": [],
+            "sourceUrls": []
+          }
+        ]
+      },
+      "nba": {
+        "projectId": "b4c8a95a-eb1c-4a86-89d6-62d72097d820",
+        "projectCompanyId": "a42186ed-22ce-4c34-9668-056dcd37fa4b",
+        "companyId": "94457ffa-bf97-426e-95b0-a1cf30250bd0",
+        "generatedAt": "2026-08-31T19:35:36.844Z",
+        "recommendationId": "b7291720-0546-4054-956d-e73d6f07a13d",
+        "recommendation": {
+          "action": "MONITOR",
+          "label": "Monitor",
+          "explanation": "Fit is 70, Need is 42, and Timing is 48 do not support a stronger action yet.",
+          "ruleVersion": "NBA_V1:OPPORTUNITY_MODEL_V1",
+          "factors": {
+            "opportunityState": "EMERGING",
+            "fitScore": 70,
+            "needScore": 42,
+            "timingScore": 48,
+            "relationshipScore": null,
+            "confidenceScore": 72.42,
+            "researchFreshness": "FRESH",
+            "relationshipStatus": "NONE",
+            "knownFirstPartyRelationship": false,
+            "independentSourceCount": 19,
+            "negativeSignalCount": 0,
+            "confirmedDisqualifier": false
+          }
+        }
+      }
+    }
+  ]
+}
