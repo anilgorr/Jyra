@@ -1,0 +1,736 @@
+JYRA — REAL DATA TEST 14
+MANAGED SOC WHEN + WHY VALIDATION
+
+OBJECTIVE
+
+Validate whether JYRA can take the 5 companies classified as
+LIKELY_FIT in Real Data Test 13 and determine:
+
+WHEN:
+Is there evidence that a Managed SOC opportunity may be forming now?
+
+WHY:
+What specific evidence supports that conclusion?
+
+This is the first real validation of JYRA's opportunity-intelligence layer.
+
+DO NOT modify the WHO pipeline.
+DO NOT add new providers.
+DO NOT enrich contacts.
+
+==================================================
+1. TEST POPULATION
+==================================================
+
+Load ONLY the 5 companies classified as LIKELY_FIT in Test 13.
+
+Do not manually choose or substitute companies.
+
+For each company preserve the existing:
+
+canonical company
+domain
+verified LinkedIn
+firmographics
+ICP qualification
+provenance
+
+==================================================
+2. OFFERING
+==================================================
+
+Project:
+GTM-Q1
+
+Seller:
+Aadit Technologies
+
+Offering:
+Managed SOC
+
+Use the existing APPROVED Managed SOC Opportunity Intelligence Pack.
+
+Existing signal definitions include:
+
+MSOC_SECURITY_LEADER
+MSOC_SECURITY_HIRING
+MSOC_FUNDED_RISK_PROGRAM
+MSOC_SECURITY_STACK_CHANGE
+
+Do not modify the approved pack merely to generate more signals.
+
+==================================================
+3. RESEARCH QUESTIONS
+==================================================
+
+For each company, the Research Planner must investigate specific
+opportunity questions.
+
+QUESTION A — SECURITY HIRING
+
+Is the company currently/recently hiring for roles indicating expansion
+or investment in:
+
+SOC
+security operations
+cybersecurity
+information security
+SIEM
+incident response
+threat detection
+cloud security
+security engineering
+
+Do not treat generic IT hiring as security hiring.
+
+--------------------------------------------------
+
+QUESTION B — SECURITY LEADERSHIP
+
+Is there credible evidence of a recent:
+
+CISO appointment
+security head appointment
+security leadership change
+security leadership expansion
+
+A person merely existing in a security role is NOT a leadership-change
+signal.
+
+--------------------------------------------------
+
+QUESTION C — SECURITY STACK CHANGE
+
+Is there credible recent evidence that the company is:
+
+implementing
+migrating
+replacing
+expanding
+evaluating
+
+security infrastructure/platforms?
+
+Examples may include:
+
+SIEM
+SOC tooling
+Microsoft Sentinel
+Microsoft Defender
+Splunk
+CrowdStrike
+Palo Alto
+Fortinet
+Wiz
+SASE
+EDR/XDR
+SOAR
+
+A generic technology mention is NOT a stack-change signal.
+
+--------------------------------------------------
+
+QUESTION D — FUNDED RISK / COMPLIANCE PROGRAM
+
+Is there recent evidence of:
+
+security/compliance investment
+new regulatory requirement
+SOC 2 / ISO 27001 / PCI / HIPAA initiatives
+security transformation
+risk program
+cybersecurity program expansion
+security-related funding/budget
+
+Generic company funding alone is NOT sufficient.
+
+--------------------------------------------------
+
+QUESTION E — OTHER MATERIAL SECURITY TRIGGER
+
+Search for credible events such as:
+
+security incident
+breach
+major infrastructure expansion
+cloud migration with security implications
+new regulated-market expansion
+acquisition creating security complexity
+large enterprise/customer compliance requirements
+
+Do not automatically convert these into signals.
+
+They are candidate evidence requiring interpretation.
+
+==================================================
+4. RESEARCH PLANNER
+==================================================
+
+Do NOT perform generic broad company research.
+
+Research question by question.
+
+For every research action record:
+
+company
+research question
+provider capability
+provider
+query/purpose
+cost
+result count
+useful evidence count
+stop reason
+
+Use existing provider routing.
+
+Prefer lowest-cost appropriate source.
+
+Existing providers may include:
+
+Tavily → WEB_SEARCH
+Apify → WEBSITE_CRAWL
+
+Use only existing implemented capabilities.
+
+Do NOT integrate another provider during this test.
+
+==================================================
+5. RESEARCH ECONOMICS
+==================================================
+
+Do not research indefinitely.
+
+For each question stop when:
+
+sufficient credible evidence exists
+
+OR
+
+reasonable search attempts return no useful evidence
+
+OR
+
+additional research has low expected information value.
+
+Set a controlled research budget.
+
+Maximum:
+
+$0.10 research cost per company
+
+Maximum total:
+
+$0.50
+
+This is a ceiling, not a spending target.
+
+Stop earlier whenever possible.
+
+==================================================
+6. EVIDENCE
+==================================================
+
+Every material finding must preserve:
+
+canonical company
+source URL
+publisher
+retrieval provider
+title
+published date if available
+retrieved date
+evidence excerpt/summary
+research question
+entity-match confidence
+source authority
+content hash
+
+Raw evidence must remain immutable.
+
+Retrieval provider is NOT necessarily publisher.
+
+==================================================
+7. ENTITY SAFETY
+==================================================
+
+Evidence must actually refer to the canonical company.
+
+Reject evidence belonging to:
+
+similarly named companies
+subsidiaries when attribution is inappropriate
+customers
+vendors
+partners
+unrelated people
+generic industry articles
+
+Do not accept evidence merely because company keywords occur.
+
+==================================================
+8. TEMPORAL VALIDITY
+==================================================
+
+WHEN requires time.
+
+For every candidate event determine:
+
+published date
+event date where possible
+observation date
+freshness
+
+Prefer recent evidence.
+
+Classify evidence:
+
+CURRENT
+RECENT
+STALE
+UNKNOWN_DATE
+
+Do not use old evidence to imply current urgency.
+
+If existing signal-decay logic exists, use it.
+
+Do not invent dates.
+
+==================================================
+9. FACT EXTRACTION
+==================================================
+
+Convert accepted evidence into atomic facts.
+
+Examples:
+
+GOOD:
+
+"Company posted a Senior SOC Analyst role on 2026-08-12."
+
+"Company appointed Jane Doe as CISO in July 2026."
+
+"Company announced implementation of Microsoft Sentinel."
+
+BAD:
+
+"Company is serious about security."
+
+"Company probably needs a SOC."
+
+"Company appears ready to buy."
+
+Facts must remain observations.
+
+==================================================
+10. SIGNAL GENERATION
+==================================================
+
+Map facts only to APPROVED Managed SOC signal definitions.
+
+A signal requires evidence satisfying its definition.
+
+Do not create signals simply because the company is a strong ICP fit.
+
+No evidence → no signal.
+
+==================================================
+11. SIGNAL CLUSTERS
+==================================================
+
+Run the existing generic Signal Cluster Engine.
+
+Multiple related signals may strengthen an opportunity.
+
+Do not count duplicate articles describing the same underlying event as
+independent signals.
+
+Track:
+
+independent sources
+independent events
+supporting facts
+contradicting facts
+freshness
+
+==================================================
+12. WHEN
+==================================================
+
+Determine WHEN using evidence, not firmographic fit.
+
+Allowed assessment:
+
+NO_CURRENT_TRIGGER
+
+EARLY
+
+FORMING
+
+ACTIVE
+
+STRONG
+
+INSUFFICIENT_EVIDENCE
+
+Use existing opportunity-state logic where applicable.
+
+Do not force all companies into opportunity states.
+
+==================================================
+13. WHY
+==================================================
+
+Produce a concise evidence-backed WHY.
+
+Example structure:
+
+WHY:
+
+"Recent security-operations hiring and a newly announced SIEM
+modernization indicate increased investment in internal security
+operations."
+
+Every claim must trace:
+
+WHY
+→ signal/cluster
+→ fact
+→ evidence
+→ source
+
+If evidence is insufficient:
+
+WHY:
+"Insufficient recent evidence to establish a Managed SOC buying trigger."
+
+That is a valid result.
+
+==================================================
+14. IMPORTANT DISTINCTION
+==================================================
+
+The following are NOT equivalent:
+
+ICP FIT
+SECURITY ACTIVITY
+MANAGED SOC NEED
+PURCHASE INTENT
+
+Keep them separate.
+
+Example:
+
+Company has 1,000 employees
+→ FIT
+
+Company hires security engineer
+→ SECURITY ACTIVITY
+
+Security team expansion + SOC hiring + SIEM migration
+→ possible MANAGED SOC opportunity hypothesis
+
+None of these alone prove:
+
+"Company intends to buy Managed SOC."
+
+Do not claim purchase intent without direct evidence.
+
+==================================================
+15. OPPORTUNITY HYPOTHESIS
+==================================================
+
+For each company create/test:
+
+"Does current evidence support the hypothesis that a Managed SOC
+opportunity may be forming?"
+
+Return:
+
+SUPPORTED
+PARTIALLY_SUPPORTED
+NOT_SUPPORTED
+INSUFFICIENT_EVIDENCE
+
+Include:
+
+supporting evidence
+contradicting evidence
+missing evidence
+confidence
+
+==================================================
+16. CONFIDENCE
+==================================================
+
+Confidence must remain separate from opportunity strength.
+
+Use existing confidence logic.
+
+Consider:
+
+source authority
+entity confidence
+independent sources
+freshness
+evidence completeness
+contradictions
+
+Do not convert missing evidence into low opportunity score.
+
+==================================================
+17. NEXT BEST ACTION
+==================================================
+
+For each company return one evidence-based action:
+
+RESEARCH_MORE
+MONITOR
+PRIORITIZE_ACCOUNT
+NO_ACTION_NOW
+
+Do NOT generate outreach messaging yet.
+
+Do NOT enrich contacts.
+
+==================================================
+18. REQUIRED COMPANY OUTPUT
+==================================================
+
+For each of the 5 companies report:
+
+COMPANY
+
+ICP STATUS
+
+RESEARCH QUESTIONS ATTEMPTED
+
+PROVIDER CALLS
+
+RESEARCH COST
+
+ACCEPTED EVIDENCE
+
+REJECTED EVIDENCE
+
+FACTS
+
+SIGNALS
+
+SIGNAL CLUSTERS
+
+INDEPENDENT EVENTS
+
+FRESHEST MATERIAL EVENT
+
+WHEN
+
+WHY
+
+OPPORTUNITY HYPOTHESIS
+
+CONFIDENCE
+
+CONTRADICTING EVIDENCE
+
+MISSING EVIDENCE
+
+NEXT BEST ACTION
+
+==================================================
+19. FINAL RANKING
+==================================================
+
+After all five are researched, rank them by:
+
+1. evidence-backed opportunity strength
+2. freshness
+3. confidence
+4. ICP fit
+
+Do NOT rank purely by company size.
+
+Do NOT rank UNKNOWN as zero.
+
+Show:
+
+#1 Company
+WHEN
+WHY
+Confidence
+NBA
+
+through #5.
+
+==================================================
+20. SUCCESS CRITERIA
+==================================================
+
+This test is NOT successful merely because signals were found.
+
+PASS requires:
+
+Material WHY claims with provenance: 100%
+
+Unsupported buying-intent claims: 0
+
+Wrong-company evidence accepted: 0
+
+Duplicate event inflation: 0
+
+Missing evidence treated as negative: 0
+
+Research cost recorded: 100%
+
+Research questions traceable: 100%
+
+Production operations: 0
+
+It is acceptable for all 5 companies to have:
+
+INSUFFICIENT_EVIDENCE
+
+if that is what real evidence supports.
+
+==================================================
+21. COST REPORT
+==================================================
+
+Report:
+
+Companies researched
+
+Total provider calls
+
+Tavily calls
+
+Apify calls
+
+Other calls
+
+Cache hits
+
+Total research cost
+
+Average cost/company
+
+Cost/company with material signal
+
+Useful evidence/provider call
+
+==================================================
+22. DO NOT DO
+==================================================
+
+Do NOT:
+
+change ICP
+change Business Twin
+modify signal definitions to improve results
+add providers
+run Bright Data firmographics again
+run Exa discovery
+resolve LinkedIn profiles again
+enrich people
+find emails
+find phones
+generate outreach
+manufacture intent
+create fake facts
+use website tech as security-stack evidence
+treat M365 MX as Sentinel/Defender evidence
+
+==================================================
+23. DATABASE SAFETY
+==================================================
+
+DEVELOPMENT ONLY.
+
+Use ONLY development database.
+
+Production:
+0 operations.
+
+Do not migrate/reset/seed/truncate/modify production.
+
+==================================================
+24. REPORT
+==================================================
+
+Create:
+
+REAL_DATA_TEST_14.md
+
+and
+
+REAL_DATA_TEST_14_RESULT.json
+
+Final summary:
+
+COMPANIES:
+5
+
+RESEARCH QUESTIONS:
+
+TOTAL PROVIDER CALLS:
+
+TAVILY CALLS:
+
+APIFY CALLS:
+
+CACHE HITS:
+
+TOTAL COST:
+
+ACCEPTED EVIDENCE:
+
+REJECTED EVIDENCE:
+
+FACTS:
+
+SIGNALS:
+
+SIGNAL CLUSTERS:
+
+SUPPORTED HYPOTHESES:
+
+PARTIALLY SUPPORTED:
+
+NOT SUPPORTED:
+
+INSUFFICIENT:
+
+PRIORITIZE ACCOUNT:
+
+MONITOR:
+
+RESEARCH MORE:
+
+NO ACTION NOW:
+
+UNSUPPORTED INTENT CLAIMS:
+
+WRONG ENTITY EVIDENCE:
+
+DUPLICATE EVENT INFLATION:
+
+WHY PROVENANCE:
+
+PRODUCTION OPERATIONS:
+
+FINAL STATUS:
+PASS / FAIL
+
+==================================================
+25. STOP
+==================================================
+
+STOP after Test 14.
+
+Do NOT automatically begin contact enrichment.
+
+Do NOT modify the opportunity model based solely on this test.
+
+Do NOT start another provider integration.
+
+Return the complete results for review.
