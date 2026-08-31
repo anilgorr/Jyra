@@ -1,0 +1,871 @@
+JYRA — MVP FIX CYCLE 02
+8 MISSED-EVENT AUTOPSY + IDENTITY AUTOPSY
+
+PURPOSE
+
+Current validated state:
+
+Blind controls = 10
+Known events detected = 2
+Known-event detection recall = 20%
+Signals generated = 2
+Strict signal precision = 100%
+Unsupported signals = 0
+
+WHO ICP classification = 12/12
+Canonical identity accuracy = 8/10 adjudicable = 80%
+
+Tavily interruption audit:
+Decision D — INCONCLUSIVE
+35 valid research runs
+5 unresolved timeout slots
+0 proven credit failures
+
+Therefore:
+
+DO NOT assume Tavily credits caused the poor recall.
+DO NOT assume Tavily itself is the problem.
+DO NOT change JYRA yet.
+
+The objective of this cycle is to identify the FIRST BROKEN STAGE for
+each of the 8 missed known events and each incorrect canonical identity.
+
+Only after the complete autopsy may minimal fixes be proposed.
+
+==================================================
+1. DATABASE SAFETY
+==================================================
+
+DEVELOPMENT ONLY.
+
+Production operations = 0.
+
+Do not migrate/reset/seed/truncate/modify production.
+
+==================================================
+2. FREEZE PRODUCT BEHAVIOR
+==================================================
+
+During the AUTOPSY stage DO NOT CHANGE:
+
+queries
+research planner
+provider routing
+fact extraction
+fact validation
+fact ontology
+signal definitions
+signal mapping
+source classification
+entity matching
+ICP logic
+opportunity scoring
+ranking
+confidence
+contact logic
+
+No new providers.
+
+No new searches merely to make a missed control pass.
+
+First diagnose the existing run exactly as it occurred.
+
+==================================================
+3. LOAD EXACT FROZEN CONTROLS
+==================================================
+
+Use the exact 10-control manifest from MVP Fix Cycle 01.
+
+Identify:
+
+2 DETECTED controls
+
+8 MISSED controls.
+
+The known reference event may be used ONLY by the diagnostic evaluator
+to determine where JYRA lost the event.
+
+It must not be injected into JYRA research/extraction.
+
+==================================================
+4. TRACE ALL 8 MISSED EVENTS
+==================================================
+
+For EACH missed event reconstruct the complete pipeline:
+
+CONTROL COMPANY
+↓
+REFERENCE EVENT
+↓
+RESEARCH QUESTION
+↓
+QUERY
+↓
+PROVIDER ATTEMPT
+↓
+SEARCH RESULTS
+↓
+RAW EVIDENCE
+↓
+QUESTION RELEVANCE
+↓
+CONTENT AVAILABLE TO EXTRACTOR
+↓
+EXTRACTOR INVOCATION
+↓
+FACT PROPOSAL
+↓
+FACT VALIDATION
+↓
+APPROVED FACT
+↓
+SIGNAL EVALUATION
+↓
+SIGNAL
+↓
+FINAL DETECTION
+
+Do not summarize prematurely.
+
+Show the actual first broken stage.
+
+==================================================
+5. PER-MISS TRACE TABLE
+==================================================
+
+For every one of the 8 misses report:
+
+COMPANY
+
+REFERENCE EVENT
+
+REFERENCE EVENT CATEGORY
+
+REFERENCE EVENT DATE
+
+REFERENCE SOURCE
+
+EXPECTED APPROVED SIGNAL CLASS
+
+RESEARCH QUESTION GENERATED?
+
+QUERY
+
+PROVIDER ATTEMPTED?
+
+PROVIDER ATTEMPT VALID?
+
+TIMEOUT?
+
+RESULT COUNT
+
+REFERENCE SOURCE RETRIEVED?
+
+OTHER SOURCE CONTAINING SAME EVENT RETRIEVED?
+
+EVENT PRESENT IN SEARCH TITLE?
+
+EVENT PRESENT IN SEARCH SNIPPET?
+
+DESTINATION PAGE FETCHED?
+
+EVENT PRESENT IN FETCHED CONTENT?
+
+RAW EVIDENCE CREATED?
+
+QUESTION_RELEVANT?
+
+DIRECT_EVENT_EVIDENCE?
+
+EXTRACTOR INVOKED?
+
+EVENT TEXT PRESENT IN EXTRACTOR INPUT?
+
+FACT PROPOSAL CREATED?
+
+PROPOSED FACT TYPE
+
+FACT APPROVED?
+
+FACT REJECTION REASON
+
+SIGNAL EVALUATION EXECUTED?
+
+SIGNAL GENERATED?
+
+FINAL FIRST BROKEN STAGE
+
+==================================================
+6. FIRST BROKEN STAGE TAXONOMY
+==================================================
+
+Assign exactly ONE primary first-broken-stage classification:
+
+QUESTION_NOT_PLANNED
+
+PROVIDER_NOT_EXECUTED
+
+PROVIDER_TIMEOUT
+
+QUERY_RETRIEVAL_FAILURE
+
+SOURCE_NOT_FOUND
+
+SEARCH_RESULT_EVIDENCE_DROPPED
+
+PAGE_FETCH_FAILURE
+
+EVIDENCE_RELEVANCE_FAILURE
+
+DIRECT_EVENT_CLASSIFICATION_FAILURE
+
+EXTRACTOR_NOT_INVOKED
+
+EXTRACTOR_INPUT_MISSING_EVENT
+
+FACT_EXTRACTION_FAILURE
+
+FACT_ONTOLOGY_GAP
+
+FACT_VALIDATION_FAILURE
+
+ENTITY_ATTRIBUTION_FAILURE
+
+TEMPORAL_VALIDATION_FAILURE
+
+SIGNAL_MAPPING_FAILURE
+
+OTHER
+
+Use the EARLIEST stage where correct processing stopped.
+
+Do not label something FACT_EXTRACTION_FAILURE if the extractor never
+received text containing the event.
+
+==================================================
+7. RETRIEVAL VS UNDERSTANDING
+==================================================
+
+Group the 8 misses into three major buckets:
+
+A — RETRIEVAL FAILURE
+
+JYRA never obtained evidence containing the known event.
+
+B — EVIDENCE PIPELINE FAILURE
+
+Provider obtained evidence containing the event, but it was lost before
+reaching the extractor.
+
+C — UNDERSTANDING FAILURE
+
+Relevant event text reached extraction, but fact/validation/signal logic
+failed.
+
+Report:
+
+A = X/8
+B = X/8
+C = X/8
+
+This is the most important output of this test.
+
+==================================================
+8. TIMEOUT ANALYSIS
+==================================================
+
+Cross-reference the five unresolved Tavily timeout slots from the credit
+audit.
+
+For each of the 8 missed controls report whether its relevant research
+question was affected by a timeout.
+
+Do NOT automatically blame the timeout.
+
+Determine whether another valid search attempt for the same research
+area existed.
+
+Classify timeout impact:
+
+MATERIAL
+
+POSSIBLY_MATERIAL
+
+NON_MATERIAL
+
+==================================================
+9. SEARCH QUERY QUALITY
+==================================================
+
+For retrieval failures, inspect the exact frozen query.
+
+Determine whether the query was:
+
+APPROPRIATE
+
+TOO_BROAD
+
+TOO_NARROW
+
+WRONG_EVENT_SEMANTICS
+
+WRONG_ENTITY_TERMS
+
+MISSING_RECENCY_CONTEXT
+
+OTHER
+
+Do not rewrite queries yet.
+
+Show what was wrong.
+
+==================================================
+10. SEARCH RESULT EVIDENCE
+==================================================
+
+Check specifically whether Tavily returned titles/snippets containing
+the known event but JYRA discarded them because destination content was
+unavailable.
+
+If yes, identify:
+
+search result
+title
+snippet
+publisher
+URL
+published date if present
+reason evidence was dropped.
+
+Do not fabricate destination-page content.
+
+==================================================
+11. FACT EXTRACTION AUTOPSY
+==================================================
+
+For every case where event text reached the extractor, show:
+
+relevant input text
+
+expected atomic fact
+
+actual extractor output
+
+validation result
+
+rejection reason
+
+Do not expose hidden chain-of-thought or model reasoning.
+
+Show only structured inputs/outputs and validation diagnostics already
+available to the system.
+
+==================================================
+12. FACT ONTOLOGY
+==================================================
+
+Determine whether the current generic fact ontology can represent every
+reference event.
+
+Prefer reusable facts such as:
+
+PERSON_ROLE_CHANGE
+JOB_OPENING
+HIRING_EXPANSION
+TECHNOLOGY_IMPLEMENTATION
+TECHNOLOGY_MIGRATION
+TECHNOLOGY_REPLACEMENT
+COMPLIANCE_INITIATIVE
+SECURITY_INCIDENT
+PROGRAM_INVESTMENT
+MARKET_EXPANSION
+ACQUISITION
+FUNDING_EVENT
+
+For each missed event report:
+
+ONTOLOGY_SUPPORTED = YES / NO
+
+If NO:
+
+state exactly what generic observation cannot currently be represented.
+
+Do NOT add the type during autopsy.
+
+==================================================
+13. SIGNAL MAPPING
+==================================================
+
+For cases with an approved fact but no signal:
+
+show:
+
+FACT TYPE
+
+FACT ATTRIBUTES
+
+SIGNAL DEFINITION EVALUATED
+
+MATCHED CONDITIONS
+
+FAILED CONDITIONS
+
+FRESHNESS
+
+ENTITY RELATIONSHIP
+
+REASON SIGNAL DID NOT FIRE
+
+Do not change approved Managed SOC signals yet.
+
+==================================================
+14. POSITIVE CONTROL SANITY CHECK
+==================================================
+
+Also trace the 2 controls that DID work.
+
+Compare:
+
+successful path
+
+versus
+
+failed paths.
+
+Identify what characteristics allowed the two successful controls to
+survive:
+
+source type
+query
+event wording
+date
+extractor behavior
+fact type
+validation
+signal mapping.
+
+This prevents fixing the wrong layer.
+
+==================================================
+15. IDENTITY AUTOPSY
+==================================================
+
+Separately inspect the exact canonical identity failures from the
+12-company WHO adjudication sample.
+
+ICP classification is now 12/12.
+
+DO NOT change ICP qualification logic.
+
+Focus only on canonical identity.
+
+For every incorrect or unresolved identity trace:
+
+DISCOVERY CANDIDATE
+↓
+COMPANY NAME
+↓
+DISCOVERED DOMAIN
+↓
+PROFILE RESOLUTION
+↓
+LINKEDIN CANDIDATES
+↓
+VERIFICATION
+↓
+BRIGHT DATA PROFILE
+↓
+ENTITY VALIDATION
+↓
+CANONICAL ATTACHMENT
+
+==================================================
+16. IDENTITY TRACE TABLE
+==================================================
+
+Report:
+
+EXPECTED COMPANY
+
+DISCOVERED COMPANY NAME
+
+EXPECTED DOMAIN
+
+ATTACHED DOMAIN
+
+EXPECTED LINKEDIN
+
+ATTACHED LINKEDIN
+
+PROFILE RESOLUTION CANDIDATES
+
+VERIFICATION STATUS
+
+BRIGHT DATA COMPANY NAME
+
+BRIGHT DATA DOMAIN
+
+BRIGHT DATA LINKEDIN
+
+GEOGRAPHY
+
+INDUSTRY
+
+ENTITY MATCH SCORE / CONFIDENCE
+
+CONTRADICTIONS
+
+FINAL ATTACHMENT
+
+CORRECT / INCORRECT / AMBIGUOUS
+
+FIRST BROKEN STAGE
+
+==================================================
+17. IDENTITY FAILURE TAXONOMY
+==================================================
+
+Classify each failure:
+
+DISCOVERY_IDENTITY
+
+DOMAIN_RESOLUTION
+
+PROFILE_RESOLUTION
+
+LINKEDIN_VERIFICATION
+
+PROVIDER_IDENTITY
+
+ENTITY_MATCHING
+
+CANONICAL_MERGE
+
+PARENT_SUBSIDIARY
+
+LEGAL_NAME_VARIANT
+
+GENERIC_NAME_AMBIGUITY
+
+OTHER
+
+Do not loosen identity thresholds.
+
+==================================================
+18. AUTOPSY REPORT BEFORE FIX
+==================================================
+
+IMPORTANT:
+
+Generate an AUTOPSY SNAPSHOT before changing any code.
+
+Create:
+
+MVP_FIX_CYCLE_02_AUTOPSY.json
+
+MVP_FIX_CYCLE_02_AUTOPSY.md
+
+The snapshot must contain:
+
+8 miss traces
+
+2 successful control traces
+
+identity traces
+
+first-broken-stage counts
+
+retrieval/evidence-pipeline/understanding buckets
+
+timeout impact
+
+recommended minimal fixes
+
+Only after this snapshot is persisted may implementation begin.
+
+==================================================
+19. FIX DECISION
+==================================================
+
+After autopsy, rank the top causes.
+
+Example:
+
+1. Retrieval/query coverage — 4/8
+2. Fact extraction — 3/8
+3. Evidence pipeline — 1/8
+
+Do not assume these numbers.
+
+Use actual results.
+
+==================================================
+20. MINIMAL FIXES ONLY
+==================================================
+
+Implement fixes ONLY for demonstrated failures.
+
+Allowed examples:
+
+query construction correction
+
+search-result evidence preservation
+
+content handoff correction
+
+generic fact extraction improvement
+
+fact validation correction
+
+generic ontology addition
+
+signal mapping correction if clearly erroneous
+
+identity verification correction
+
+canonical merge correction
+
+timeout retry correctness
+
+Not allowed:
+
+loosening everything to increase recall
+
+changing scoring
+
+changing opportunity ranking
+
+changing ICP
+
+changing Managed SOC signal meaning
+
+adding providers
+
+contact enrichment
+
+UI changes
+
+outreach.
+
+==================================================
+21. IMPORTANT QUERY RULE
+==================================================
+
+If query generation is a major failure:
+
+fix GENERIC research-question query construction.
+
+Do NOT hardcode:
+
+control company names
+known event wording
+known source URLs
+reference events
+
+beyond the company identity that would naturally be available during
+normal research.
+
+The fix must generalize to unseen companies.
+
+==================================================
+22. RETEST
+==================================================
+
+After minimal fixes:
+
+rerun the exact 10 blind controls.
+
+Reference-event labels remain hidden from execution.
+
+Do not rerun the 50-company benchmark.
+
+Also rerun only the identity cases required to validate identity fixes.
+
+==================================================
+23. RETEST METRICS
+==================================================
+
+Report:
+
+KNOWN EVENTS = 10
+
+EVENTS DETECTED
+
+KNOWN-EVENT DETECTION RECALL
+
+TOTAL SIGNALS
+
+TRUE_SUPPORTED
+
+WEAKLY_SUPPORTED
+
+UNSUPPORTED
+
+WRONG_ENTITY
+
+DUPLICATE_EVENT
+
+STALE_AS_CURRENT
+
+SELLER_AS_BUYER_ERROR
+
+SIGNAL PRECISION
+
+UNSUPPORTED SIGNAL RATE
+
+==================================================
+24. IDENTITY RETEST
+==================================================
+
+Report:
+
+ADJUDICABLE IDENTITIES
+
+CORRECT
+
+INCORRECT
+
+AMBIGUOUS SAFELY BLOCKED
+
+CANONICAL IDENTITY ACCURACY
+
+WRONG ATTACHMENTS
+
+Do not count safely blocked ambiguity as a correct attachment.
+
+Report separately.
+
+==================================================
+25. TARGETS
+==================================================
+
+Do NOT force PASS.
+
+Targets:
+
+KNOWN-EVENT DETECTION RECALL >= 70%
+
+TRUE_SUPPORTED SIGNAL PRECISION >= 85%
+
+UNSUPPORTED SIGNAL RATE <= 5%
+
+WRONG-ENTITY SIGNALS = 0
+
+CANONICAL IDENTITY ACCURACY >= 95%
+
+WRONG CANONICAL ATTACHMENTS = 0
+
+PRODUCTION OPERATIONS = 0
+
+==================================================
+26. COST
+==================================================
+
+Report:
+
+Tavily calls
+
+Bright Data calls
+
+Exa calls
+
+other calls
+
+cache hits
+
+estimated cost
+
+actual reported cost
+
+Do not optimize for cost in this cycle.
+
+Accuracy first.
+
+==================================================
+27. FINAL DECISION
+==================================================
+
+Return exactly ONE:
+
+A — CORE INTELLIGENCE FIXED
+
+Recall, precision and identity now meet targets.
+Ready to rerun full MVP benchmark.
+
+B — RETRIEVAL IS PRIMARY BOTTLENECK
+
+JYRA processes retrieved evidence correctly, but current retrieval does
+not find enough known events.
+
+C — EXTRACTION / EVIDENCE PIPELINE IS PRIMARY BOTTLENECK
+
+Relevant information is being retrieved but JYRA still fails to convert
+it reliably into facts/signals.
+
+D — IDENTITY REMAINS PRIMARY BOTTLENECK
+
+Event intelligence improved but canonical identity remains unreliable.
+
+E — MULTIPLE CORE FAILURES REMAIN
+
+More than one major subsystem remains below target.
+
+==================================================
+28. STRATEGIC RECOMMENDATION
+==================================================
+
+If final decision = B:
+
+DO NOT automatically add providers.
+
+Report which event/source categories are missing and what provider
+capability would be required.
+
+If final decision = C:
+
+Do not add providers.
+Fix internal intelligence processing.
+
+If final decision = D:
+
+Do not expand WHEN/WHY.
+Fix entity resolution first.
+
+If final decision = A:
+
+STOP and recommend rerunning the frozen 50-company MVP Reality Test.
+
+==================================================
+29. REQUIRED ARTIFACTS
+==================================================
+
+Generate:
+
+MVP_FIX_CYCLE_02_AUTOPSY.md
+
+MVP_FIX_CYCLE_02_AUTOPSY.json
+
+MVP_FIX_CYCLE_02_RESULT.md
+
+MVP_FIX_CYCLE_02_RESULT.json
+
+MVP_FIX_CYCLE_02_EVENT_TRACES.json
+
+MVP_FIX_CYCLE_02_IDENTITY_TRACES.json
+
+==================================================
+30. STOP
+==================================================
+
+STOP after Fix Cycle 02.
+
+Do NOT:
+
+rerun 50-company benchmark
+build contacts
+change UI
+build outreach
+add providers
+modify production
+
+Return the results for human review.
