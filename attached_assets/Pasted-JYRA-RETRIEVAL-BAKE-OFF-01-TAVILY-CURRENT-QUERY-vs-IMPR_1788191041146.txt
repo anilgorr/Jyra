@@ -1,0 +1,802 @@
+JYRA — RETRIEVAL BAKE-OFF 01
+TAVILY CURRENT QUERY vs IMPROVED GENERIC QUERY vs EXA
+ON THE EXACT 7 RETRIEVAL FAILURES
+
+PURPOSE
+
+MVP Fix Cycle 02 established:
+
+Frozen controls = 10
+Detected events = 2
+Missed events = 8
+
+Miss attribution:
+- 7 retrieval / query-result relevance failures
+- 1 evidence/fact-extraction failure
+- 2 successful controls
+
+Therefore the dominant current bottleneck appears to be RETRIEVAL.
+
+Before changing JYRA's production research architecture, determine:
+
+1. Are the current JYRA research queries inadequate?
+2. Can better generic query construction materially improve Tavily recall?
+3. Does Exa retrieve materially better event evidence than Tavily?
+4. Or are the target events difficult for BOTH providers to retrieve?
+
+THIS IS A CONTROLLED PROVIDER/QUERY EXPLORATION.
+
+DO NOT integrate Exa into WEB_SEARCH.
+DO NOT modify production intelligence behavior.
+
+==================================================
+1. DATABASE SAFETY
+==================================================
+
+DEVELOPMENT ONLY.
+
+Use only development database.
+
+Production operations = 0.
+
+DO NOT:
+
+migrate production
+reset production
+seed production
+truncate production
+modify production customer data
+
+Prefer an isolated exploration runner.
+
+Do not mutate canonical company intelligence unless explicitly required
+for the experiment.
+
+==================================================
+2. FREEZE THE TEST POPULATION
+==================================================
+
+Use ONLY the exact 7 controls classified as RETRIEVAL failures in:
+
+MVP_FIX_CYCLE_02_AUTOPSY.json
+
+Do NOT include:
+
+- the 1 fact-extraction failure
+- the 2 successful controls
+- additional companies
+- the 50-company benchmark
+
+The exact frozen reference events must remain unchanged.
+
+==================================================
+3. CRITICAL BLINDNESS RULE
+==================================================
+
+The known/reference event MUST NOT be used to generate provider queries.
+
+The query generator may use ONLY information JYRA would normally know:
+
+company name
+canonical domain
+industry if known
+geography if known
+approved Managed SOC signal definition
+research-question category
+research objective
+normal temporal/freshness constraints
+
+DO NOT use:
+
+reference-event wording
+reference-event title
+known event source URL
+known person's name unless independently known by JYRA before research
+known job title from the reference event
+known technology from the reference event
+known event date except generic freshness window
+
+The frozen reference manifest may be used ONLY AFTER retrieval for
+evaluation.
+
+Any query contaminated by the reference event invalidates that company
+for the bake-off.
+
+==================================================
+4. THREE RETRIEVAL ARMS
+==================================================
+
+For each of the exact 7 retrieval misses execute three independent arms.
+
+ARM A — TAVILY CURRENT
+
+Use the exact current JYRA query/query-generation behavior that produced
+the original miss.
+
+Do not improve it.
+
+ARM B — TAVILY IMPROVED GENERIC QUERY
+
+Generate an improved query using generic research semantics.
+
+ARM C — EXA IMPROVED GENERIC QUERY
+
+Use the SAME generic research objective/query semantics as Arm B as
+closely as provider syntax allows.
+
+Do not optimize the Exa query using knowledge of the reference event.
+
+==================================================
+5. IMPORTANT — NO MAIN PIPELINE INTEGRATION
+==================================================
+
+This is NOT an Exa integration milestone.
+
+Do NOT:
+
+register Exa as JYRA WEB_SEARCH
+change normal provider routing
+change planner defaults
+change provider priority
+change production configuration
+replace Tavily
+remove Tavily
+
+Use a controlled exploration path.
+
+==================================================
+6. GENERIC QUERY IMPROVEMENT
+==================================================
+
+Arm B may improve query construction GENERICALLY.
+
+The query should be based on:
+
+COMPANY IDENTITY
++
+RESEARCH QUESTION
++
+SIGNAL CATEGORY
++
++ EVENT SEMANTICS
++
+TEMPORAL WINDOW
+
+Example concept:
+
+Instead of:
+
+"[company] cybersecurity"
+
+the query builder may construct research intents such as:
+
+SECURITY LEADERSHIP
+"[company] security CISO information security cybersecurity leadership"
+
+SECURITY HIRING
+"[company] cybersecurity security SOC SIEM hiring jobs"
+
+SECURITY PROGRAM / INVESTMENT
+"[company] cybersecurity security program investment initiative transformation"
+
+SECURITY STACK CHANGE
+"[company] SIEM SOC security platform migration implementation cybersecurity"
+
+These are illustrative.
+
+Do not hardcode them solely for the seven controls.
+
+The implementation must remain generic across unseen companies.
+
+==================================================
+7. QUERY VARIANT LIMIT
+==================================================
+
+Accuracy matters, but do not brute-force the benchmark.
+
+For each research question:
+
+Arm A:
+use current query behavior.
+
+Arm B:
+maximum 2 generic Tavily query variants.
+
+Arm C:
+maximum 2 generic Exa query variants.
+
+Do not generate dozens of queries until the reference event appears.
+
+Record every query.
+
+==================================================
+8. PROVIDER HEALTH CHECK
+==================================================
+
+Before starting:
+
+Perform ONE minimal Tavily health check.
+
+Perform ONE minimal Exa health check.
+
+Verify:
+
+authentication
+provider availability
+successful response
+
+Record:
+
+timestamp
+status
+latency
+estimated cost
+actual reported cost if available.
+
+If either provider is unavailable:
+
+STOP that provider arm.
+
+Do not silently compare a failed provider against a functioning one.
+
+==================================================
+9. RETRIEVAL ONLY
+==================================================
+
+This bake-off primarily evaluates RETRIEVAL.
+
+For every returned result preserve:
+
+provider
+query
+rank
+title
+URL
+publisher/domain
+snippet/highlight
+published date if available
+retrieved timestamp
+provider score if available
+canonical URL
+result identifier
+raw provider metadata needed for later forensic review
+
+Do not depend only on downstream normalized evidence.
+
+Persist enough raw retrieval payload information so future audits can
+reconstruct what the provider actually returned.
+
+Sanitize secrets.
+
+==================================================
+10. REFERENCE EVENT EVALUATION
+==================================================
+
+AFTER all retrieval for a company is complete, use the frozen reference
+manifest to adjudicate results.
+
+For every result classify:
+
+EXACT_EVENT
+
+SAME_EVENT_ALTERNATE_SOURCE
+
+RELATED_EVENT
+
+GENERIC_COMPANY_CONTENT
+
+WRONG_ENTITY
+
+IRRELEVANT
+
+EXACT_EVENT means the retrieved evidence directly represents the known
+reference event.
+
+SAME_EVENT_ALTERNATE_SOURCE means another trustworthy source reports
+the same event.
+
+RELATED_EVENT does NOT count as successful known-event retrieval.
+
+==================================================
+11. EVENT FOUND DEFINITION
+==================================================
+
+An arm counts as EVENT_FOUND only when at least one returned result is:
+
+EXACT_EVENT
+
+or
+
+SAME_EVENT_ALTERNATE_SOURCE
+
+and contains enough information to support the relevant atomic fact.
+
+A generic page about cybersecurity does not count.
+
+A company homepage does not count.
+
+A seller/service page does not count merely because it contains security
+terminology.
+
+==================================================
+12. SEARCH RESULT VS PAGE CONTENT
+==================================================
+
+Evaluate separately:
+
+EVENT_FOUND_IN_TITLE
+EVENT_FOUND_IN_SNIPPET
+EVENT_FOUND_IN_PAGE
+EVENT_FOUND_IN_MULTIPLE
+
+If a provider returns a title/snippet containing the event but the page
+cannot be fetched:
+
+still record the retrieval success.
+
+Do NOT fabricate page content.
+
+This distinction matters because Fix Cycle 02 showed historical provider
+payload preservation was inadequate.
+
+==================================================
+13. SOURCE QUALITY
+==================================================
+
+For each successful event retrieval classify source authority:
+
+TIER_1_DIRECT
+
+Examples:
+company announcement
+regulatory filing
+official careers page
+official leadership page
+official company post
+
+TIER_2_HIGH_AUTHORITY
+
+Examples:
+reputable news organization
+recognized industry publication
+
+TIER_3_SECONDARY
+
+Examples:
+credible aggregator/database/secondary reporting
+
+TIER_4_LOW_AUTHORITY
+
+Do not automatically reject Tier 3/4 during retrieval exploration.
+
+Report them separately.
+
+==================================================
+14. TEMPORAL QUALITY
+==================================================
+
+For every matching event report:
+
+published date
+event date if explicitly stated
+retrieval date
+
+Classify:
+
+CURRENT
+RECENT
+STALE
+UNKNOWN_DATE
+
+Use the existing Managed SOC signal freshness semantics where applicable.
+
+Do not make stale events appear current.
+
+==================================================
+15. PER-CONTROL COMPARISON
+==================================================
+
+For each of the 7 controls produce:
+
+COMPANY
+
+RESEARCH CATEGORY
+
+REFERENCE EVENT — evaluation only
+
+--------------------
+ARM A — TAVILY CURRENT
+--------------------
+
+QUERY / QUERIES
+CALL COUNT
+RESULT COUNT
+EVENT FOUND?
+MATCH TYPE
+MATCH RANK
+SOURCE
+SOURCE AUTHORITY
+TITLE MATCH?
+SNIPPET MATCH?
+PAGE MATCH?
+LATENCY
+ESTIMATED COST
+ACTUAL COST
+
+--------------------
+ARM B — TAVILY IMPROVED
+--------------------
+
+same fields
+
+--------------------
+ARM C — EXA IMPROVED
+--------------------
+
+same fields
+
+Then report:
+
+WINNER:
+
+TAVILY_CURRENT
+TAVILY_IMPROVED
+EXA
+TIE
+NONE
+
+and explain the winner using observable retrieval quality only.
+
+==================================================
+16. QUERY IMPROVEMENT ANALYSIS
+==================================================
+
+Compare Arm A vs Arm B.
+
+Calculate:
+
+TAVILY CURRENT EVENT RECALL
+
+TAVILY IMPROVED EVENT RECALL
+
+ABSOLUTE RECALL IMPROVEMENT
+
+ADDITIONAL CALLS
+
+ADDITIONAL COST
+
+Determine whether query construction is a material bottleneck.
+
+Classify:
+
+MAJOR_QUERY_PROBLEM
+
+MODERATE_QUERY_PROBLEM
+
+MINOR_QUERY_PROBLEM
+
+NO_QUERY_PROBLEM
+
+==================================================
+17. PROVIDER COMPARISON
+==================================================
+
+Compare:
+
+TAVILY IMPROVED
+
+vs
+
+EXA IMPROVED
+
+Calculate for each:
+
+events found / 7
+event retrieval recall
+Tier 1 sources found
+Tier 1 + Tier 2 sources found
+wrong entity results
+irrelevant results
+average useful-result rank
+average latency
+provider calls
+estimated cost
+actual reported cost
+
+==================================================
+18. COMPLEMENTARITY
+==================================================
+
+Report:
+
+FOUND BY BOTH
+
+FOUND ONLY BY TAVILY
+
+FOUND ONLY BY EXA
+
+FOUND BY NEITHER
+
+This is extremely important.
+
+If providers retrieve different events, JYRA may eventually benefit from
+capability routing rather than replacing one provider with another.
+
+Do NOT implement routing during this test.
+
+==================================================
+19. EVENT CATEGORY ANALYSIS
+==================================================
+
+Group results by reference-event category.
+
+Examples:
+
+leadership
+hiring
+security program
+technology change
+compliance
+incident
+expansion
+other
+
+For each category report:
+
+number of controls
+Tavily current recall
+Tavily improved recall
+Exa recall
+
+Do not generalize strongly from tiny samples.
+
+==================================================
+20. LINKEDIN SOURCE OPPORTUNITY
+==================================================
+
+For each of the 7 retrieval misses determine from the reference source
+and independently retrieved evidence whether the event appears to have
+been publicly observable through:
+
+LINKEDIN_COMPANY_PROFILE
+LINKEDIN_PERSON_PROFILE
+LINKEDIN_POST
+LINKEDIN_JOB
+LINKEDIN_SEARCH
+NONE_OBVIOUS
+UNKNOWN
+
+Set:
+
+LINKEDIN_SOURCE_OPPORTUNITY = YES / NO / UNKNOWN
+
+This is analysis only.
+
+DO NOT:
+
+integrate Unipile
+call Unipile
+change LinkedIn architecture
+
+We are preserving this information for a later provider decision.
+
+==================================================
+21. DO NOT TOUCH EXTRACTION
+==================================================
+
+Do NOT fix the Black Duck fact-extraction failure in this cycle.
+
+It is intentionally outside the seven-company retrieval bake-off.
+
+Do not change:
+
+fact extractor
+fact ontology
+fact validation
+signal mapping
+
+==================================================
+22. DO NOT TOUCH IDENTITY
+==================================================
+
+Do NOT fix:
+
+Digital Maelstrom
+Mandiant
+Managed Services - Monitoring 24/7
+Corsa
+
+in this cycle.
+
+Identity Fix will be a separate milestone.
+
+However, if a retrieval result clearly points to the wrong entity,
+record WRONG_ENTITY.
+
+==================================================
+23. RAW PAYLOAD RETENTION
+==================================================
+
+Fix Cycle 02 revealed that historical provider result payloads were not
+available for forensic review.
+
+For THIS EXPLORATION, retain sufficient raw provider responses to
+reconstruct:
+
+what query was sent
+what provider returned
+result ordering
+titles
+URLs
+snippets/highlights
+dates
+provider metadata
+
+This is test instrumentation.
+
+Do not redesign the entire production evidence model during this task.
+
+==================================================
+24. COST
+==================================================
+
+Report separately:
+
+TAVILY CURRENT CALLS
+TAVILY IMPROVED CALLS
+EXA CALLS
+
+TAVILY CURRENT ESTIMATED COST
+TAVILY IMPROVED ESTIMATED COST
+EXA ESTIMATED COST
+
+ACTUAL REPORTED COST where available
+
+COST PER EVENT FOUND
+
+Do not choose a provider solely because it is cheaper.
+
+Retrieval quality is the primary objective.
+
+==================================================
+25. REQUIRED SUMMARY
+==================================================
+
+Return:
+
+CONTROLS = 7
+
+TAVILY CURRENT:
+Events found = X/7
+Recall = X%
+
+TAVILY IMPROVED:
+Events found = X/7
+Recall = X%
+
+EXA IMPROVED:
+Events found = X/7
+Recall = X%
+
+FOUND BY BOTH = X
+
+ONLY TAVILY = X
+
+ONLY EXA = X
+
+FOUND BY NEITHER = X
+
+TIER 1 / 2 SOURCE COVERAGE:
+Tavily current =
+Tavily improved =
+Exa =
+
+WRONG ENTITY RESULTS:
+Tavily current =
+Tavily improved =
+Exa =
+
+COST:
+Tavily current =
+Tavily improved =
+Exa =
+
+LINKEDIN SOURCE OPPORTUNITY:
+YES = X
+NO = X
+UNKNOWN = X
+
+==================================================
+26. DECISION RULES
+==================================================
+
+Return exactly ONE primary decision:
+
+A — QUERY CONSTRUCTION IS PRIMARY BOTTLENECK
+
+Use when improved generic Tavily queries materially outperform current
+Tavily queries and Tavily reaches useful retrieval coverage.
+
+B — EXA MATERIALLY OUTPERFORMS TAVILY
+
+Use when equivalent generic research semantics produce materially better
+event retrieval from Exa.
+
+C — PROVIDERS ARE COMPLEMENTARY
+
+Use when Tavily and Exa each uniquely retrieve meaningful events and
+combined coverage materially exceeds either provider alone.
+
+D — BOTH PROVIDERS HAVE INSUFFICIENT COVERAGE
+
+Use when neither approach retrieves enough of the seven known events.
+
+E — TEST INVALID / INCONCLUSIVE
+
+Use when provider failures, contaminated queries, identity ambiguity or
+execution problems prevent a fair comparison.
+
+==================================================
+27. IMPORTANT — DO NOT AUTO-INTEGRATE
+==================================================
+
+Even if Exa wins:
+
+DO NOT integrate Exa as WEB_SEARCH.
+
+Even if improved Tavily wins:
+
+DO NOT change JYRA's production query generator.
+
+This experiment should produce evidence for the human decision.
+
+==================================================
+28. REQUIRED ARTIFACTS
+==================================================
+
+Generate:
+
+RETRIEVAL_BAKEOFF_01.md
+
+RETRIEVAL_BAKEOFF_01.json
+
+RETRIEVAL_BAKEOFF_01_RESULTS.json
+
+RETRIEVAL_BAKEOFF_01_RAW_INDEX.json
+
+RETRIEVAL_BAKEOFF_01_QUERY_COMPARISON.json
+
+==================================================
+29. VALIDATION
+==================================================
+
+Run:
+
+typecheck
+relevant provider tests
+report consistency checks
+
+Confirm:
+
+production operations = 0
+intelligence behavior changes = 0
+provider routing changes = 0
+fact/signal changes = 0
+contact enrichment = 0
+50-company rerun = 0
+
+==================================================
+30. STOP
+==================================================
+
+STOP after Retrieval Bake-off 01.
+
+Do not implement the winner.
+
+Do not start Identity Fix.
+
+Do not rerun the 10-control benchmark.
+
+Do not rerun the 50-company benchmark.
+
+Return the complete results for human review.
