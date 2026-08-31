@@ -3,17 +3,17 @@
   "kind": "BLIND_POSITIVE_CONTROL_EVALUATION",
   "manifestFile": "JYRA_MVP_REALITY_TEST_01_CONTROL_SET.json",
   "manifestSha256": "438ae22cc5f06ed16588d911541572fd0617dd608c6ad9bfc451462f5ff90931",
-  "executedAt": "2026-08-31T13:26:29.974Z",
+  "executedAt": "2026-08-31T15:40:00.611Z",
   "labelsExposedDuringProvisionOrResearch": false,
   "discoveryPath": "existing Exa COMPANY_DISCOVERY and canonicalization",
   "researchPath": "unchanged Managed SOC four-question WEB_SEARCH path",
   "controlsAttempted": 10,
   "controlsProvisioned": 8,
   "controlsEvaluated": 10,
-  "detectedCount": 0,
+  "detectedCount": 2,
   "terminalInvariantSatisfied": true,
   "evaluationStatus": "COMPLETE",
-  "knownEventDetectionRecall": 0,
+  "knownEventDetectionRecall": 0.2,
   "runs": [
     {
       "manifestIndex": 0,
@@ -421,10 +421,12 @@
         }
       ],
       "detected": false,
-      "matchedEvidenceIds": [],
+      "matchedEvidenceIds": [
+        "33ab1424-6091-4007-bb19-c76fb6d6afff"
+      ],
       "matchedFactIds": [],
       "matchedSignalIds": [],
-      "missedEventCause": "SOURCE_NOT_FOUND"
+      "missedEventCause": "FACT_EXTRACTION_FAILURE"
     },
     {
       "manifestIndex": 1,
@@ -470,13 +472,18 @@
           "jobId": "29ad345f-06ab-47f0-8cca-f11ebd6f0d3b"
         }
       ],
-      "detected": false,
+      "detected": true,
       "matchedEvidenceIds": [
         "0488986c-21e7-4675-b161-edf2f9307156"
       ],
-      "matchedFactIds": [],
-      "matchedSignalIds": [],
-      "missedEventCause": "FACT_EXTRACTION_FAILURE"
+      "matchedFactIds": [
+        "a4caf6a2-de85-44ba-8060-62129c20d8eb",
+        "44238513-4a5b-4ac4-ab33-1e4f6149eb42"
+      ],
+      "matchedSignalIds": [
+        "3c0eb744-1328-425f-bcc1-5b30de6be3e9"
+      ],
+      "missedEventCause": null
     },
     {
       "manifestIndex": 3,
@@ -511,14 +518,18 @@
           "jobId": "3e91c676-13d0-48d6-8a36-25729c948133"
         }
       ],
-      "detected": false,
+      "detected": true,
       "matchedEvidenceIds": [
         "df4597ec-3a1d-4a60-bb9e-eef8f8281bfa",
         "7d53db09-bddc-46a9-a9be-4bf51e625180"
       ],
-      "matchedFactIds": [],
-      "matchedSignalIds": [],
-      "missedEventCause": "FACT_EXTRACTION_FAILURE"
+      "matchedFactIds": [
+        "f0ec9e39-c064-4a0b-bb12-015c84cc03d0"
+      ],
+      "matchedSignalIds": [
+        "52c50105-cf55-4953-adda-6953ac4d8660"
+      ],
+      "missedEventCause": null
     },
     {
       "manifestIndex": 4,
@@ -653,11 +664,23 @@
         "457ad638-ba9f-4989-a15f-a44a78f68e63",
         "a782d3e0-e81d-4d9b-ac08-b4182e0499af",
         "6a0f6ba6-fede-4b75-a89b-d25aa7aee86b",
-        "aca282ad-138d-4e39-b5cd-d86d8519d475"
+        "aca282ad-138d-4e39-b5cd-d86d8519d475",
+        "22442261-8517-406d-baf3-91ac6ae34807",
+        "d904139d-d5a4-4352-a543-c3ecb11abf37",
+        "0550fbf1-f2ea-4167-b061-365196919520",
+        "91395bd5-1a4a-4aef-8cd6-2a5b0329b85e",
+        "087dc6b7-51da-49df-8252-1781e4a86ca3",
+        "1d38cbc6-7ab9-4bc7-88b2-6312a29f992c",
+        "ccbcd3f8-2fcc-4848-99ea-dcde1fe87f14",
+        "c1617a3a-d585-4c8e-aca6-3b70facd5b66",
+        "7ce16a46-5b2c-4081-b78d-eb2308d60223",
+        "058d6684-c606-409d-b684-377276832f77"
       ],
-      "matchedFactIds": [],
+      "matchedFactIds": [
+        "af019a59-c6bb-457e-8e38-d90109fa0eb6"
+      ],
       "matchedSignalIds": [],
-      "missedEventCause": "FACT_EXTRACTION_FAILURE"
+      "missedEventCause": "SIGNAL_MAPPING_FAILURE"
     },
     {
       "manifestIndex": 7,
@@ -1059,7 +1082,7 @@
       "associationMethod": "Exact scope, discovery provider request IDs, company IDs, research question/job provider request IDs, and the persisted control execution interval; control-associated rows are excluded from main.",
       "controlExecutionInterval": {
         "startedAt": "2026-08-31T12:26:10.095Z",
-        "completedAt": "2026-08-31T13:08:16.011Z"
+        "completedAt": "2026-08-31T14:45:56.724Z"
       },
       "MAIN_POPULATION": {
         "stages": {
@@ -1238,20 +1261,20 @@
             }
           },
           "WHEN_WHY_RESEARCH": {
-            "calls": 37,
+            "calls": 123,
             "estimated": {
               "status": "COMPLETE",
-              "total": 0.37000000000000016,
-              "knownSubtotal": 0.37000000000000016,
-              "knownRows": 37,
-              "totalRows": 37
+              "total": 1.2300000000000009,
+              "knownSubtotal": 1.2300000000000009,
+              "knownRows": 123,
+              "totalRows": 123
             },
             "actual": {
               "status": "PARTIAL_UNKNOWN",
               "total": null,
               "knownSubtotal": 0,
               "knownRows": 0,
-              "totalRows": 37
+              "totalRows": 123
             }
           },
           "CONTACT_ENRICHMENT": {
@@ -1290,20 +1313,20 @@
           }
         },
         "totals": {
-          "calls": 47,
+          "calls": 133,
           "estimated": {
             "status": "COMPLETE",
-            "total": 0.4400000000000003,
-            "knownSubtotal": 0.4400000000000003,
-            "knownRows": 47,
-            "totalRows": 47
+            "total": 1.300000000000001,
+            "knownSubtotal": 1.300000000000001,
+            "knownRows": 133,
+            "totalRows": 133
           },
           "actual": {
             "status": "PARTIAL_UNKNOWN",
             "total": null,
             "knownSubtotal": 0.07,
             "knownRows": 10,
-            "totalRows": 47
+            "totalRows": 133
           }
         }
       },
@@ -1361,20 +1384,20 @@
             }
           },
           "WHEN_WHY_RESEARCH": {
-            "calls": 501,
+            "calls": 587,
             "estimated": {
               "status": "COMPLETE",
-              "total": 5.009999999999938,
-              "knownSubtotal": 5.009999999999938,
-              "knownRows": 501,
-              "totalRows": 501
+              "total": 5.869999999999919,
+              "knownSubtotal": 5.869999999999919,
+              "knownRows": 587,
+              "totalRows": 587
             },
             "actual": {
               "status": "PARTIAL_UNKNOWN",
               "total": null,
               "knownSubtotal": 0,
               "knownRows": 0,
-              "totalRows": 501
+              "totalRows": 587
             }
           },
           "CONTACT_ENRICHMENT": {
@@ -1413,20 +1436,20 @@
           }
         },
         "totals": {
-          "calls": 813,
+          "calls": 899,
           "estimated": {
             "status": "COMPLETE",
-            "total": 6.921499999999896,
-            "knownSubtotal": 6.921499999999896,
-            "knownRows": 813,
-            "totalRows": 813
+            "total": 7.781499999999878,
+            "knownSubtotal": 7.781499999999878,
+            "knownRows": 899,
+            "totalRows": 899
           },
           "actual": {
             "status": "PARTIAL_UNKNOWN",
             "total": null,
             "knownSubtotal": 0.24500000000000016,
             "knownRows": 119,
-            "totalRows": 813
+            "totalRows": 899
           }
         }
       }

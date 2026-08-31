@@ -1,0 +1,45 @@
+{
+  "test": "MVP_FIX_CYCLE_02",
+  "phase": "FINAL",
+  "generatedAt": "2026-08-31T15:40:30.230Z",
+  "productionOperations": 0,
+  "providerAdditions": 0,
+  "productBehaviorChanges": [],
+  "fixDecision": {
+    "applied": false,
+    "reason": "The pre-fix snapshot demonstrated seven retrieval/result-relevance breaks and one extraction break, but rejected provider results and historical extractor output/rejection reasons were not persisted. No specific intelligence change was sufficiently evidenced."
+  },
+  "autopsy": {
+    "firstBrokenStageCounts": {
+      "QUERY_OR_RESULT_RELEVANCE": 7,
+      "NO_BREAK_DETECTED": 2,
+      "FACT_EXTRACTION": 1
+    },
+    "bucketCounts": {
+      "RETRIEVAL": 7,
+      "SUCCESS": 2,
+      "EVIDENCE_PIPELINE": 1
+    },
+    "timeoutImpactCounts": {
+      "NO_DEMONSTRATED_IMPACT": 8,
+      "CONTROL_INVALIDATED": 1,
+      "PARTIAL_COVERAGE_LOSS": 1
+    }
+  },
+  "controlRetest": {
+    "source": "JYRA_MVP_REALITY_TEST_01_CONTROL_RESULTS.json",
+    "controlsAttempted": 10,
+    "controlsProvisioned": 8,
+    "controlsEvaluated": 10,
+    "detectedCount": 2,
+    "knownEventDetectionRecall": 0.2,
+    "exactTenControlGateSatisfied": false
+  },
+  "identityRetest": {
+    "required": false,
+    "reason": "No canonical-identity behavior change was demonstrated or applied.",
+    "preFixCasesPreserved": 4
+  },
+  "finalDecision": "E — REQUIRED EXACT RETEST NOT SATISFIED",
+  "benchmarkRerunPermitted": false
+}
