@@ -389,6 +389,7 @@ export function parseBrightDataCompanyResponse(
         publisher: "LINKEDIN",
         sourceType: "SOCIAL_COMPANY_PROFILE",
         sourceUrl: attributes.linkedinCompanyUrl,
+        requestProfileUrl: normalizeLinkedInUrl(request.linkedinCompanyUrl),
         retrievedAt,
         providerRecordId: text(first(record, ["id", "record_id", "company_id"])),
         rawValue,

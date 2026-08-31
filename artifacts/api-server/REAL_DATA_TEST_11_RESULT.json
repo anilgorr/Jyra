@@ -1,0 +1,653 @@
+{
+  "test": "REAL DATA TEST 11",
+  "environment": "development",
+  "seller": "Aadit Technologies",
+  "project": "GTM-Q1",
+  "dataset": "gd_l1vikfnt1wgvvqz95w",
+  "provider": "Bright Data",
+  "capability": "COMPANY_FIRMOGRAPHICS",
+  "population": [
+    "Cloudflare",
+    "Panopta",
+    "Amazon Web Services (AWS)",
+    "Oracle Cloud",
+    "Alibaba Cloud",
+    "E2E Cloud",
+    "Cloud4C Services",
+    "Emergys",
+    "ENTUNE IT Consulting Pvt Ltd",
+    "Cloudi"
+  ],
+  "baseline": {
+    "source": "REAL_DATA_TEST_10_RESULT.json",
+    "companies": 10,
+    "externalQualificationCalls": 19,
+    "tavilyCalls": 19,
+    "apifyCalls": 0,
+    "exaCalls": 0,
+    "totalQualificationCost": 0.19,
+    "geographyResolved": 1,
+    "industryResolved": 2,
+    "employeeSizeResolved": 1,
+    "likelyFit": 0,
+    "possibleFit": 2,
+    "likelyNotFit": 1,
+    "insufficientData": 7,
+    "qualifiedForWhenWhy": 2
+  },
+  "companies": [
+    {
+      "company": "Cloudflare",
+      "snapshotIdentifier": "test-11:cloudflare",
+      "identifierStatus": "NO_LINKEDIN_URL",
+      "requestedLinkedInUrl": null,
+      "before": {
+        "domain": "cloudflare.com",
+        "geography": "United States",
+        "industry": "UNKNOWN",
+        "employeeSize": "4,200+",
+        "icpStatus": "LIKELY_NOT_FIT"
+      },
+      "after": {
+        "domain": "cloudflare.com",
+        "geography": "United States",
+        "industry": "UNKNOWN",
+        "employeeSize": "4,200+",
+        "icpStatus": "LIKELY_NOT_FIT"
+      },
+      "brightData": "BLOCKED",
+      "entityStatus": "NOT_RUN",
+      "entityConfidence": null,
+      "entityMatchReasons": [
+        "Bright Data lookup blocked because no LinkedIn company URL exists in the Test 10 identifier snapshot"
+      ],
+      "returnedLinkedInUrl": null,
+      "attributesReturned": [],
+      "attributeProvenancePass": true,
+      "missingAttributeReasons": {
+        "industry": "NO_LINKEDIN_IDENTIFIER",
+        "foundedYear": "NO_LINKEDIN_IDENTIFIER",
+        "description": "NO_LINKEDIN_IDENTIFIER"
+      },
+      "conflicts": [],
+      "requestId": null,
+      "latencyMs": 0,
+      "callCost": 0,
+      "qualifiedForWhenWhy": "NO",
+      "fitReasons": [
+        "Geography matches United States"
+      ],
+      "nonFitReasons": [
+        "Verified employee size 4,200+ is outside the target range"
+      ],
+      "unknownImportantAttributes": [
+        "primary industry"
+      ]
+    },
+    {
+      "company": "Panopta",
+      "snapshotIdentifier": "test-11:panopta",
+      "identifierStatus": "NO_LINKEDIN_URL",
+      "requestedLinkedInUrl": null,
+      "before": {
+        "domain": "fortinet.com",
+        "geography": "UNKNOWN",
+        "industry": "SaaS",
+        "employeeSize": "UNKNOWN",
+        "icpStatus": "POSSIBLE_FIT"
+      },
+      "after": {
+        "domain": "fortinet.com",
+        "geography": "UNKNOWN",
+        "industry": "SaaS",
+        "employeeSize": "UNKNOWN",
+        "icpStatus": "POSSIBLE_FIT"
+      },
+      "brightData": "BLOCKED",
+      "entityStatus": "NOT_RUN",
+      "entityConfidence": null,
+      "entityMatchReasons": [
+        "Bright Data lookup blocked because no LinkedIn company URL exists in the Test 10 identifier snapshot"
+      ],
+      "returnedLinkedInUrl": null,
+      "attributesReturned": [],
+      "attributeProvenancePass": true,
+      "missingAttributeReasons": {
+        "geography": "NO_LINKEDIN_IDENTIFIER",
+        "employeeSize": "NO_LINKEDIN_IDENTIFIER",
+        "foundedYear": "NO_LINKEDIN_IDENTIFIER",
+        "description": "NO_LINKEDIN_IDENTIFIER"
+      },
+      "conflicts": [],
+      "requestId": null,
+      "latencyMs": 0,
+      "callCost": 0,
+      "qualifiedForWhenWhy": "NO",
+      "fitReasons": [
+        "Industry matches SaaS"
+      ],
+      "nonFitReasons": [],
+      "unknownImportantAttributes": [
+        "headquarters geography",
+        "employee size"
+      ]
+    },
+    {
+      "company": "Amazon Web Services (AWS)",
+      "snapshotIdentifier": "test-11:amazon-web-services-aws",
+      "identifierStatus": "PROBABLE_LINKEDIN_URL",
+      "requestedLinkedInUrl": "https://linkedin.com/company/amazon-web-services",
+      "before": {
+        "domain": "UNKNOWN",
+        "geography": "UNKNOWN",
+        "industry": "UNKNOWN",
+        "employeeSize": "UNKNOWN",
+        "icpStatus": "INSUFFICIENT_DATA"
+      },
+      "after": {
+        "domain": "UNKNOWN",
+        "geography": "UNKNOWN",
+        "industry": "UNKNOWN",
+        "employeeSize": "UNKNOWN",
+        "icpStatus": "INSUFFICIENT_DATA"
+      },
+      "brightData": "CACHE_HIT",
+      "entityStatus": "PROBABLE",
+      "entityConfidence": 65,
+      "entityMatchReasons": [
+        "- Requested LinkedIn URL does not have strong provenance",
+        "- Bright Data did not echo the LinkedIn URL",
+        "+ Returned company name matches the requested company"
+      ],
+      "returnedLinkedInUrl": null,
+      "attributesReturned": [
+        "canonical domain",
+        "company name",
+        "industry",
+        "employee range",
+        "LinkedIn employee count",
+        "founded year",
+        "company description",
+        "followers",
+        "website"
+      ],
+      "attributeProvenancePass": true,
+      "missingAttributeReasons": {
+        "domain": "ENTITY_PROBABLE_UNSAFE_TO_ATTACH",
+        "geography": "FIELD_NOT_RETURNED",
+        "industry": "ENTITY_PROBABLE_UNSAFE_TO_ATTACH",
+        "employeeSize": "ENTITY_PROBABLE_UNSAFE_TO_ATTACH",
+        "foundedYear": "ENTITY_PROBABLE_UNSAFE_TO_ATTACH",
+        "description": "ENTITY_PROBABLE_UNSAFE_TO_ATTACH"
+      },
+      "conflicts": [],
+      "requestId": null,
+      "latencyMs": 0,
+      "callCost": 0,
+      "qualifiedForWhenWhy": "NO",
+      "fitReasons": [],
+      "nonFitReasons": [],
+      "unknownImportantAttributes": [
+        "headquarters geography",
+        "primary industry",
+        "employee size"
+      ]
+    },
+    {
+      "company": "Oracle Cloud",
+      "snapshotIdentifier": "test-11:oracle-cloud",
+      "identifierStatus": "NO_LINKEDIN_URL",
+      "requestedLinkedInUrl": null,
+      "before": {
+        "domain": "oracle.com",
+        "geography": "UNKNOWN",
+        "industry": "UNKNOWN",
+        "employeeSize": "UNKNOWN",
+        "icpStatus": "INSUFFICIENT_DATA"
+      },
+      "after": {
+        "domain": "oracle.com",
+        "geography": "UNKNOWN",
+        "industry": "UNKNOWN",
+        "employeeSize": "UNKNOWN",
+        "icpStatus": "INSUFFICIENT_DATA"
+      },
+      "brightData": "BLOCKED",
+      "entityStatus": "NOT_RUN",
+      "entityConfidence": null,
+      "entityMatchReasons": [
+        "Bright Data lookup blocked because no LinkedIn company URL exists in the Test 10 identifier snapshot"
+      ],
+      "returnedLinkedInUrl": null,
+      "attributesReturned": [],
+      "attributeProvenancePass": true,
+      "missingAttributeReasons": {
+        "geography": "NO_LINKEDIN_IDENTIFIER",
+        "industry": "NO_LINKEDIN_IDENTIFIER",
+        "employeeSize": "NO_LINKEDIN_IDENTIFIER",
+        "foundedYear": "NO_LINKEDIN_IDENTIFIER",
+        "description": "NO_LINKEDIN_IDENTIFIER"
+      },
+      "conflicts": [],
+      "requestId": null,
+      "latencyMs": 0,
+      "callCost": 0,
+      "qualifiedForWhenWhy": "NO",
+      "fitReasons": [],
+      "nonFitReasons": [],
+      "unknownImportantAttributes": [
+        "headquarters geography",
+        "primary industry",
+        "employee size"
+      ]
+    },
+    {
+      "company": "Alibaba Cloud",
+      "snapshotIdentifier": "test-11:alibaba-cloud",
+      "identifierStatus": "NO_LINKEDIN_URL",
+      "requestedLinkedInUrl": null,
+      "before": {
+        "domain": "alibabacloud.com",
+        "geography": "UNKNOWN",
+        "industry": "UNKNOWN",
+        "employeeSize": "UNKNOWN",
+        "icpStatus": "INSUFFICIENT_DATA"
+      },
+      "after": {
+        "domain": "alibabacloud.com",
+        "geography": "UNKNOWN",
+        "industry": "UNKNOWN",
+        "employeeSize": "UNKNOWN",
+        "icpStatus": "INSUFFICIENT_DATA"
+      },
+      "brightData": "BLOCKED",
+      "entityStatus": "NOT_RUN",
+      "entityConfidence": null,
+      "entityMatchReasons": [
+        "Bright Data lookup blocked because no LinkedIn company URL exists in the Test 10 identifier snapshot"
+      ],
+      "returnedLinkedInUrl": null,
+      "attributesReturned": [],
+      "attributeProvenancePass": true,
+      "missingAttributeReasons": {
+        "geography": "NO_LINKEDIN_IDENTIFIER",
+        "industry": "NO_LINKEDIN_IDENTIFIER",
+        "employeeSize": "NO_LINKEDIN_IDENTIFIER",
+        "foundedYear": "NO_LINKEDIN_IDENTIFIER",
+        "description": "NO_LINKEDIN_IDENTIFIER"
+      },
+      "conflicts": [],
+      "requestId": null,
+      "latencyMs": 0,
+      "callCost": 0,
+      "qualifiedForWhenWhy": "NO",
+      "fitReasons": [],
+      "nonFitReasons": [],
+      "unknownImportantAttributes": [
+        "headquarters geography",
+        "primary industry",
+        "employee size"
+      ]
+    },
+    {
+      "company": "E2E Cloud",
+      "snapshotIdentifier": "test-11:e2e-cloud",
+      "identifierStatus": "NO_LINKEDIN_URL",
+      "requestedLinkedInUrl": null,
+      "before": {
+        "domain": "e2enetworks.com",
+        "geography": "UNKNOWN",
+        "industry": "UNKNOWN",
+        "employeeSize": "UNKNOWN",
+        "icpStatus": "INSUFFICIENT_DATA"
+      },
+      "after": {
+        "domain": "e2enetworks.com",
+        "geography": "UNKNOWN",
+        "industry": "UNKNOWN",
+        "employeeSize": "UNKNOWN",
+        "icpStatus": "INSUFFICIENT_DATA"
+      },
+      "brightData": "BLOCKED",
+      "entityStatus": "NOT_RUN",
+      "entityConfidence": null,
+      "entityMatchReasons": [
+        "Bright Data lookup blocked because no LinkedIn company URL exists in the Test 10 identifier snapshot"
+      ],
+      "returnedLinkedInUrl": null,
+      "attributesReturned": [],
+      "attributeProvenancePass": true,
+      "missingAttributeReasons": {
+        "geography": "NO_LINKEDIN_IDENTIFIER",
+        "industry": "NO_LINKEDIN_IDENTIFIER",
+        "employeeSize": "NO_LINKEDIN_IDENTIFIER",
+        "foundedYear": "NO_LINKEDIN_IDENTIFIER",
+        "description": "NO_LINKEDIN_IDENTIFIER"
+      },
+      "conflicts": [],
+      "requestId": null,
+      "latencyMs": 0,
+      "callCost": 0,
+      "qualifiedForWhenWhy": "NO",
+      "fitReasons": [],
+      "nonFitReasons": [],
+      "unknownImportantAttributes": [
+        "headquarters geography",
+        "primary industry",
+        "employee size"
+      ]
+    },
+    {
+      "company": "Cloud4C Services",
+      "snapshotIdentifier": "test-11:cloud4c-services",
+      "identifierStatus": "NO_LINKEDIN_URL",
+      "requestedLinkedInUrl": null,
+      "before": {
+        "domain": "cloud4c.com",
+        "geography": "UNKNOWN",
+        "industry": "UNKNOWN",
+        "employeeSize": "UNKNOWN",
+        "icpStatus": "INSUFFICIENT_DATA"
+      },
+      "after": {
+        "domain": "cloud4c.com",
+        "geography": "UNKNOWN",
+        "industry": "UNKNOWN",
+        "employeeSize": "UNKNOWN",
+        "icpStatus": "INSUFFICIENT_DATA"
+      },
+      "brightData": "BLOCKED",
+      "entityStatus": "NOT_RUN",
+      "entityConfidence": null,
+      "entityMatchReasons": [
+        "Bright Data lookup blocked because no LinkedIn company URL exists in the Test 10 identifier snapshot"
+      ],
+      "returnedLinkedInUrl": null,
+      "attributesReturned": [],
+      "attributeProvenancePass": true,
+      "missingAttributeReasons": {
+        "geography": "NO_LINKEDIN_IDENTIFIER",
+        "industry": "NO_LINKEDIN_IDENTIFIER",
+        "employeeSize": "NO_LINKEDIN_IDENTIFIER",
+        "foundedYear": "NO_LINKEDIN_IDENTIFIER",
+        "description": "NO_LINKEDIN_IDENTIFIER"
+      },
+      "conflicts": [],
+      "requestId": null,
+      "latencyMs": 0,
+      "callCost": 0,
+      "qualifiedForWhenWhy": "NO",
+      "fitReasons": [],
+      "nonFitReasons": [],
+      "unknownImportantAttributes": [
+        "headquarters geography",
+        "primary industry",
+        "employee size"
+      ]
+    },
+    {
+      "company": "Emergys",
+      "snapshotIdentifier": "test-11:emergys",
+      "identifierStatus": "NO_LINKEDIN_URL",
+      "requestedLinkedInUrl": null,
+      "before": {
+        "domain": "emergys.com",
+        "geography": "UNKNOWN",
+        "industry": "UNKNOWN",
+        "employeeSize": "UNKNOWN",
+        "icpStatus": "INSUFFICIENT_DATA"
+      },
+      "after": {
+        "domain": "emergys.com",
+        "geography": "UNKNOWN",
+        "industry": "UNKNOWN",
+        "employeeSize": "UNKNOWN",
+        "icpStatus": "INSUFFICIENT_DATA"
+      },
+      "brightData": "BLOCKED",
+      "entityStatus": "NOT_RUN",
+      "entityConfidence": null,
+      "entityMatchReasons": [
+        "Bright Data lookup blocked because no LinkedIn company URL exists in the Test 10 identifier snapshot"
+      ],
+      "returnedLinkedInUrl": null,
+      "attributesReturned": [],
+      "attributeProvenancePass": true,
+      "missingAttributeReasons": {
+        "geography": "NO_LINKEDIN_IDENTIFIER",
+        "industry": "NO_LINKEDIN_IDENTIFIER",
+        "employeeSize": "NO_LINKEDIN_IDENTIFIER",
+        "foundedYear": "NO_LINKEDIN_IDENTIFIER",
+        "description": "NO_LINKEDIN_IDENTIFIER"
+      },
+      "conflicts": [],
+      "requestId": null,
+      "latencyMs": 0,
+      "callCost": 0,
+      "qualifiedForWhenWhy": "NO",
+      "fitReasons": [],
+      "nonFitReasons": [],
+      "unknownImportantAttributes": [
+        "headquarters geography",
+        "primary industry",
+        "employee size"
+      ]
+    },
+    {
+      "company": "ENTUNE IT Consulting Pvt Ltd",
+      "snapshotIdentifier": "test-11:entune-it-consulting-pvt-ltd",
+      "identifierStatus": "NO_LINKEDIN_URL",
+      "requestedLinkedInUrl": null,
+      "before": {
+        "domain": "entune.co",
+        "geography": "UNKNOWN",
+        "industry": "UNKNOWN",
+        "employeeSize": "UNKNOWN",
+        "icpStatus": "INSUFFICIENT_DATA"
+      },
+      "after": {
+        "domain": "entune.co",
+        "geography": "UNKNOWN",
+        "industry": "UNKNOWN",
+        "employeeSize": "UNKNOWN",
+        "icpStatus": "INSUFFICIENT_DATA"
+      },
+      "brightData": "BLOCKED",
+      "entityStatus": "NOT_RUN",
+      "entityConfidence": null,
+      "entityMatchReasons": [
+        "Bright Data lookup blocked because no LinkedIn company URL exists in the Test 10 identifier snapshot"
+      ],
+      "returnedLinkedInUrl": null,
+      "attributesReturned": [],
+      "attributeProvenancePass": true,
+      "missingAttributeReasons": {
+        "geography": "NO_LINKEDIN_IDENTIFIER",
+        "industry": "NO_LINKEDIN_IDENTIFIER",
+        "employeeSize": "NO_LINKEDIN_IDENTIFIER",
+        "foundedYear": "NO_LINKEDIN_IDENTIFIER",
+        "description": "NO_LINKEDIN_IDENTIFIER"
+      },
+      "conflicts": [],
+      "requestId": null,
+      "latencyMs": 0,
+      "callCost": 0,
+      "qualifiedForWhenWhy": "NO",
+      "fitReasons": [],
+      "nonFitReasons": [],
+      "unknownImportantAttributes": [
+        "headquarters geography",
+        "primary industry",
+        "employee size"
+      ]
+    },
+    {
+      "company": "Cloudi",
+      "snapshotIdentifier": "test-11:cloudi",
+      "identifierStatus": "NO_LINKEDIN_URL",
+      "requestedLinkedInUrl": null,
+      "before": {
+        "domain": "cloudi-infra.com",
+        "geography": "UNKNOWN",
+        "industry": "IT services",
+        "employeeSize": "UNKNOWN",
+        "icpStatus": "POSSIBLE_FIT"
+      },
+      "after": {
+        "domain": "cloudi-infra.com",
+        "geography": "UNKNOWN",
+        "industry": "IT services",
+        "employeeSize": "UNKNOWN",
+        "icpStatus": "POSSIBLE_FIT"
+      },
+      "brightData": "BLOCKED",
+      "entityStatus": "NOT_RUN",
+      "entityConfidence": null,
+      "entityMatchReasons": [
+        "Bright Data lookup blocked because no LinkedIn company URL exists in the Test 10 identifier snapshot"
+      ],
+      "returnedLinkedInUrl": null,
+      "attributesReturned": [],
+      "attributeProvenancePass": true,
+      "missingAttributeReasons": {
+        "geography": "NO_LINKEDIN_IDENTIFIER",
+        "employeeSize": "NO_LINKEDIN_IDENTIFIER",
+        "foundedYear": "NO_LINKEDIN_IDENTIFIER",
+        "description": "NO_LINKEDIN_IDENTIFIER"
+      },
+      "conflicts": [],
+      "requestId": null,
+      "latencyMs": 0,
+      "callCost": 0,
+      "qualifiedForWhenWhy": "NO",
+      "fitReasons": [
+        "Industry matches IT services"
+      ],
+      "nonFitReasons": [],
+      "unknownImportantAttributes": [
+        "headquarters geography",
+        "employee size"
+      ]
+    }
+  ],
+  "coverage": {
+    "all10": {
+      "linkedinUrlAvailable": 1,
+      "industryResolved": 2,
+      "geographyResolved": 1,
+      "employeeSizeResolved": 1,
+      "domainResolved": 9,
+      "domainResolvedOrSafelyUnknown": 10
+    },
+    "brightDataEligible": {
+      "eligible": 1,
+      "successfulProfiles": 1,
+      "confirmedEntities": 0,
+      "industryResolved": 0,
+      "geographyResolved": 0,
+      "employeeSizeResolved": 0,
+      "websiteDomainResolved": 0
+    }
+  },
+  "summary": {
+    "testPopulation": 10,
+    "linkedinCompanyUrlAvailable": 1,
+    "brightDataEligible": 1,
+    "brightDataRealCalls": 1,
+    "cacheHits": 1,
+    "firstRunBrightDataCalls": 1,
+    "secondRunBrightDataCalls": 0,
+    "idempotencyCacheHits": 1,
+    "successfulProfiles": 1,
+    "noResult": 0,
+    "partialProfiles": 0,
+    "confirmedEntities": 0,
+    "probable": 1,
+    "ambiguous": 0,
+    "wrong": 0,
+    "domainResolved": 9,
+    "geographyResolved": 1,
+    "industryResolved": 2,
+    "employeeSizeResolved": 1,
+    "foundedYearResolved": 0,
+    "descriptionResolved": 0,
+    "foundedYearReturned": 1,
+    "descriptionReturned": 1,
+    "likelyFit": 0,
+    "possibleFit": 2,
+    "likelyNotFit": 1,
+    "insufficientData": 7,
+    "qualifiedForWhenWhy": 0,
+    "totalEstimatedCost": 0.0015,
+    "averageCostPerCompany": 0.0002,
+    "averageCostPerSuccessfulProfile": 0.0015,
+    "averageCostPerConfirmedProfile": 0,
+    "averageCostPerQualifiedCompany": 0
+  },
+  "quality": {
+    "coverageImprovement": "FAIL",
+    "costEfficiency": "PASS",
+    "entitySafety": "PASS",
+    "attributeProvenance": "PASS",
+    "unsupportedAttributes": "NO",
+    "targets": {
+      "entityCorrectness": "0/1",
+      "successfulEligibleProfiles": "1/1",
+      "overallIndustry": "2/10",
+      "overallGeography": "1/10",
+      "overallEmployeeSize": "1/10",
+      "domainResolvedOrSafelyUnknown": "10/10"
+    }
+  },
+  "economics": {
+    "actualBrightDataCalls": 1,
+    "cacheHits": 1,
+    "recordsReturned": 1,
+    "estimatedProviderCost": 0.0015,
+    "costPerCompanyTested": 0.0002,
+    "costPerSuccessfulProfile": 0.0015,
+    "test10Cost": 0.19,
+    "latencyMs": 6155
+  },
+  "safety": {
+    "databaseDeltas": {
+      "researchJobs": 0,
+      "evidenceRows": 0,
+      "contactEnrichmentAttempts": 0,
+      "signals": 0,
+      "opportunityScores": 0,
+      "companies": 0,
+      "projectCompanies": 0
+    },
+    "externalQualificationCalls": 0,
+    "providerCallCounts": {
+      "bright_data": 1
+    },
+    "exaCalls": 0,
+    "tavilyCalls": 0,
+    "apifyCalls": 0,
+    "contactEnrichment": 0,
+    "signalsCreated": 0,
+    "opportunityScoresCreated": 0,
+    "buyingIntentCreated": 0,
+    "whenWhyResearch": 0,
+    "productionOperations": 0,
+    "unsupportedAttributesCreated": 0,
+    "testRouterProviderCount": 1,
+    "providerUsageEvents": 1,
+    "canonicalCompanyUpdates": 0
+  },
+  "idempotency": {
+    "persistedRerun": {
+      "priorRecordedBrightDataCalls": 1,
+      "rerunBrightDataCalls": 0,
+      "persistedCacheHits": 1,
+      "totalRecordedBrightDataCalls": 1,
+      "totalRecordedEstimatedCost": 0.0015,
+      "pass": true
+    }
+  },
+  "decision": "DECISION C: BRIGHT DATA COVERAGE/QUALITY IS INSUFFICIENT — ADD SECOND PROVIDER",
+  "finalStatus": "PASS",
+  "generatedAt": "2026-08-31T08:10:38.144Z"
+}

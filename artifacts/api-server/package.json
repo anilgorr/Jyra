@@ -20,6 +20,7 @@
     "hotfix:exa-path-proof": "NODE_ENV=development node ./scripts/run-hotfix-08.mjs",
     "test:real-data-09": "NODE_ENV=development node ./scripts/run-test-09.mjs",
     "test:real-data-10": "NODE_ENV=development node ./scripts/run-test-10.mjs",
+    "test:real-data-11": "NODE_ENV=development node ./scripts/run-test-11.mjs",
     "test:real-data-08": "NODE_ENV=development node ./scripts/run-test-08.mjs",
     "test:tavily": "node ./scripts/test-tavily-provider.mjs",
     "test:bright-data": "node ./scripts/test-bright-data-provider.mjs",

@@ -188,6 +188,7 @@ export type FirmographicAttributeProvenance = {
   publisher: string | null;
   sourceType: "SOCIAL_COMPANY_PROFILE";
   sourceUrl: string | null;
+  requestProfileUrl: string | null;
   retrievedAt: string;
   providerRecordId: string | null;
   rawValue: unknown;
