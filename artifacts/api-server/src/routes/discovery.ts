@@ -8,7 +8,7 @@ import { z } from "zod/v4";
 
 const router: IRouter = Router();
 const paramsSchema = z.object({ projectId: z.string().uuid() });
-const bodySchema = z.object({ limit: z.number().int().min(1).max(20).optional() }).default({});
+const bodySchema = z.object({ limit: z.number().int().min(1).max(50).optional() }).default({});
 type AsyncHandler = (...args: Parameters<RequestHandler>) => Promise<void>;
 const asyncRoute = (handler: AsyncHandler): RequestHandler =>
   (req, res, next) => void handler(req, res, next).catch(next);
@@ -21,7 +21,28 @@ router.post("/projects/:projectId/discovery", requireAuth, asyncRoute(async (req
   const params = paramsSchema.safeParse(req.params);
   const body = bodySchema.safeParse(req.body ?? {});
   if (!params.success || !body.success) {
-    res.status(400).json({ error: "Invalid discovery request" });
+    const issues = [
+      ...(!params.success ? params.error.issues : []),
+      ...(!body.success ? body.error.issues : []),
+    ];
+    res.status(400).json({
+      error: "Invalid discovery request",
+      code: "INVALID_REQUEST",
+      ...(process.env.NODE_ENV === "development"
+        ? {
+            diagnostics: {
+              field: issues[0]?.path.join(".") || "request",
+              reason: issues[0]?.code === "too_big"
+                ? "VALUE_ABOVE_MAXIMUM"
+                : issues[0]?.code === "invalid_type"
+                  ? "INVALID_TYPE"
+                  : "INVALID_VALUE",
+              received: req.body,
+              expected: { limit: "integer between 1 and 50, or omitted" },
+            },
+          }
+        : {}),
+    });
     return;
   }
   const userId = getAuthenticatedUserId(res);

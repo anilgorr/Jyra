@@ -1,0 +1,486 @@
+JYRA — FIND MY MARKET HOTFIX 01
+"INVALID DISCOVERY REQUEST"
+
+CURRENT USER-VISIBLE BUG
+
+Companies → Find My Market
+
+returns:
+
+"Invalid discovery request"
+
+This is NOT currently a zero-result discovery problem.
+
+The discovery request is being rejected before the normal Find My Market
+flow completes.
+
+GOAL
+
+Find exactly why the real Companies-tab request is invalid and repair
+the request contract with the smallest generic fix.
+
+Do NOT redesign market discovery.
+
+==================================================
+1. DATABASE SAFETY
+==================================================
+
+DEVELOPMENT ONLY.
+
+Use ONLY development database.
+
+Production operations = 0.
+
+Do not reset, seed, truncate, migrate, or modify production.
+
+==================================================
+2. REPRODUCE THROUGH THE REAL UI
+==================================================
+
+Use:
+
+Companies
+→ Find My Market
+
+Capture the exact:
+
+frontend handler
+API endpoint
+HTTP method
+request payload
+headers relevant to tenant/project context
+HTTP status
+response body
+validation error
+server logs
+
+Report the actual payload sent by the browser.
+
+Do not diagnose from code alone.
+
+==================================================
+3. TRACE REQUEST CONTRACT
+==================================================
+
+Compare THREE things side by side:
+
+A. FRONTEND PAYLOAD
+
+B. BACKEND REQUEST SCHEMA / VALIDATOR
+
+C. DISCOVERY SERVICE INPUT CONTRACT
+
+Produce a field matrix:
+
+FIELD
+FRONTEND VALUE
+FRONTEND TYPE
+BACKEND REQUIRED?
+BACKEND EXPECTED TYPE
+DISCOVERY SERVICE EXPECTATION
+VALID / INVALID
+NOTES
+
+Include every field.
+
+==================================================
+4. FIND THE EXACT VALIDATION FAILURE
+==================================================
+
+Determine which field or condition produces:
+
+"Invalid discovery request"
+
+Possible causes to investigate, not assume:
+
+missing projectId
+wrong projectId
+missing tenant/workspace context
+missing Business Twin
+missing approved ICP
+wrong ICP ID/version
+ICP status not approved
+missing offering
+empty geography array
+empty industry array
+company-size schema mismatch
+technology filter mismatch
+undefined/null serialization
+frontend using obsolete field names
+backend schema changed
+enum mismatch
+array/string mismatch
+request body nesting mismatch
+stale API client
+wrong endpoint
+capability mismatch
+
+Return the EXACT reason.
+
+==================================================
+5. IMPROVE SERVER DIAGNOSTICS FIRST
+==================================================
+
+If the backend currently collapses validation errors into only:
+
+"Invalid discovery request"
+
+improve DEVELOPMENT diagnostics so the underlying validation failure is
+visible.
+
+Example concept:
+
+INVALID_DISCOVERY_REQUEST
+
+field:
+icpId
+
+reason:
+REQUIRED_FIELD_MISSING
+
+Do not expose secrets or sensitive internal details.
+
+User-facing production errors may remain concise, but server diagnostics
+must be actionable.
+
+==================================================
+6. CHECK RECENT REGRESSIONS
+==================================================
+
+Inspect whether recent work accidentally broke the request contract,
+especially:
+
+Adaptive Retrieval Productionization
+Identity work
+Company discovery capability registration
+Research/provider routing changes
+
+Important distinction:
+
+Find My Market uses:
+
+COMPANY_DISCOVERY
+
+The research engine uses:
+
+WEB_SEARCH
+
+Exa now has separate functionality for both.
+
+Verify COMPANY_DISCOVERY remains registered and callable independently.
+
+==================================================
+7. VERIFY PROJECT / ICP STATE
+==================================================
+
+For the current Aadit Managed SOC project verify:
+
+project exists
+
+Business Twin exists
+
+offering exists
+
+ICP exists
+
+correct ICP version selected
+
+ICP is approved/usable
+
+signal pack state does NOT incorrectly block market discovery
+
+company discovery provider is available
+
+Report IDs/statuses in development diagnostics.
+
+Do not fabricate or silently create missing configuration.
+
+==================================================
+8. ICP PAYLOAD
+==================================================
+
+Inspect the actual approved ICP transformed into the discovery request.
+
+Verify expected values reach discovery, including where applicable:
+
+geographies
+industries
+employee/company-size range
+sweet spot
+technology preferences
+exclusions
+offering context
+
+Missing optional values must not make the entire request invalid.
+
+==================================================
+9. DO NOT OVER-VALIDATE OPTIONAL ICP DATA
+==================================================
+
+Find My Market should still be able to operate when some optional ICP
+dimensions are UNKNOWN or absent.
+
+Required configuration should be genuinely required.
+
+Do not require:
+
+revenue
+technologies
+funding
+complete firmographics
+
+merely to initiate discovery.
+
+==================================================
+10. FIX THE FIRST BROKEN CONTRACT
+==================================================
+
+Once the exact validation failure is known, implement the SMALLEST
+generic fix.
+
+Examples:
+
+frontend sends required field
+
+frontend uses correct field name
+
+correct payload nesting
+
+schema accepts valid optional UNKNOWN values
+
+stale API client updated
+
+project/ICP context correctly attached
+
+correct enum serialization
+
+Do NOT bypass validation entirely.
+
+Do NOT make every field optional just to remove the error.
+
+==================================================
+11. THEN TRACE DISCOVERY
+==================================================
+
+Only after the request is accepted, verify:
+
+UI request
+→ backend validation PASS
+→ COMPANY_DISCOVERY
+→ Exa company discovery
+→ raw candidates
+→ normalization
+→ persistence
+→ Companies API
+→ UI
+
+Report counts:
+
+REQUEST VALIDATED = YES
+
+DISCOVERY PROVIDER CALLS = X
+
+RAW RESULTS = X
+
+NORMALIZED CANDIDATES = X
+
+PERSISTED CANDIDATES = X
+
+COMPANIES RETURNED BY API = X
+
+COMPANIES DISPLAYED = X
+
+==================================================
+12. IMPORTANT — FIND MY MARKET ≠ WHEN/WHY RESEARCH
+==================================================
+
+Do not send Find My Market through:
+
+Tavily → Exa WEB_SEARCH fallback.
+
+Find My Market uses the existing:
+
+COMPANY_DISCOVERY capability.
+
+The frozen retrieval architecture:
+
+MVP_RETRIEVAL_V1_FROZEN
+
+is for research/event retrieval and must remain unchanged.
+
+==================================================
+13. REAL UI ACCEPTANCE TEST
+==================================================
+
+After the fix, execute the actual flow:
+
+Companies
+→ Find My Market
+
+using the existing development Aadit Managed SOC project.
+
+Required:
+
+No "Invalid discovery request"
+
+Request accepted
+
+Discovery begins
+
+Loading/progress visible
+
+Discovery completes
+
+At least the returned eligible candidates are visible in Companies
+
+No manual browser refresh required
+
+If discovery legitimately returns zero candidates, show an explicit
+zero-result state rather than an invalid-request error.
+
+==================================================
+14. FRONTEND ERROR STATES
+==================================================
+
+Differentiate:
+
+INVALID_REQUEST
+
+MISSING_CONFIGURATION
+
+PROVIDER_FAILURE
+
+DISCOVERY_COMPLETED_ZERO_RESULTS
+
+DISCOVERY_SUCCEEDED
+
+Do not display all failures as:
+
+"Invalid discovery request"
+
+==================================================
+15. REGRESSION TESTS
+==================================================
+
+Add tests for:
+
+A. Valid project + approved ICP → request accepted
+
+B. Missing required project → explicit validation error
+
+C. Missing required ICP → explicit configuration error
+
+D. Optional ICP fields missing → request still accepted where valid
+
+E. COMPANY_DISCOVERY uses correct capability
+
+F. WEB_SEARCH routing does not interfere with COMPANY_DISCOVERY
+
+G. Valid request reaches discovery service
+
+H. Returned candidates reach Companies API
+
+I. UI refreshes after completion
+
+==================================================
+16. DO NOT TOUCH OTHER INTELLIGENCE
+==================================================
+
+DO NOT CHANGE:
+
+MVP_RETRIEVAL_V1_FROZEN
+
+Tavily/Exa research routing
+
+fact extraction
+
+signals
+
+ICP scoring
+
+opportunity scoring
+
+identity thresholds
+
+contacts
+
+WHY/NBA
+
+Do not run frozen benchmarks.
+
+==================================================
+17. REQUIRED RESULT
+==================================================
+
+Return:
+
+ROOT CAUSE:
+
+INVALID FIELD / CONDITION:
+
+FRONTEND SENT:
+
+BACKEND EXPECTED:
+
+WHY IT REGRESSED:
+
+FIX IMPLEMENTED:
+
+REQUEST VALIDATION:
+PASS / FAIL
+
+COMPANY_DISCOVERY:
+PASS / FAIL
+
+Provider:
+Calls:
+Raw candidates:
+
+PERSISTENCE:
+Candidates persisted:
+
+COMPANIES API:
+Companies returned:
+
+UI:
+Companies displayed:
+Manual refresh required: YES / NO
+
+"Invalid discovery request" resolved:
+YES / NO
+
+Production operations:
+0 required
+
+Frozen retrieval changed:
+NO required
+
+==================================================
+18. FINAL DECISION
+==================================================
+
+Return exactly ONE:
+
+A — FIND MY MARKET REQUEST + FLOW FIXED
+
+B — REQUEST CONTRACT FIXED, DOWNSTREAM DISCOVERY FAILURE REMAINS
+
+C — PROJECT / ICP CONFIGURATION INVALID
+
+D — COMPANY_DISCOVERY CAPABILITY BROKEN
+
+E — INCONCLUSIVE
+
+==================================================
+19. STOP
+==================================================
+
+STOP once the real Companies → Find My Market flow has been tested.
+
+Do not continue Identity Fix 02.
+
+Do not run the 10-control benchmark.
+
+Do not run the 50-company benchmark.
+
+Return the result for review.

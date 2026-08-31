@@ -56,18 +56,33 @@ export default function CompaniesPage() {
       });
       const result = await response.json() as {
         status?: string;
+        code?: string;
         linked?: number;
         duplicatesRemoved?: number;
         possibleMatches?: number;
         blockedReason?: string | null;
         error?: string;
+        diagnostics?: { field?: string; reason?: string };
       };
       if (!response.ok) {
-        setDiscoveryMessage(result.blockedReason ?? result.error ?? "Market discovery is unavailable.");
+        if (result.code === "INVALID_REQUEST") {
+          const detail = result.diagnostics?.field
+            ? ` (${result.diagnostics.field}: ${result.diagnostics.reason ?? "invalid value"})`
+            : "";
+          setDiscoveryMessage(`Invalid discovery request${detail}.`);
+        } else {
+          setDiscoveryMessage(result.blockedReason ?? result.error ?? "Market discovery is unavailable.");
+        }
+        return;
+      }
+      if (result.status === "blocked") {
+        setDiscoveryMessage(`Market discovery is unavailable: ${result.blockedReason ?? "required configuration or provider is missing"}.`);
         return;
       }
       setDiscoveryMessage(
-        `Added ${result.linked ?? 0} candidates; removed ${result.duplicatesRemoved ?? 0} duplicates and held ${result.possibleMatches ?? 0} possible matches for review.`,
+        result.linked || result.possibleMatches
+          ? `Added ${result.linked ?? 0} candidates; removed ${result.duplicatesRemoved ?? 0} duplicates and held ${result.possibleMatches ?? 0} possible matches for review.`
+          : "Discovery completed with zero eligible candidates.",
       );
       await queryClient.invalidateQueries({ queryKey: getListProjectCompaniesQueryKey(projectId) });
     } catch {
