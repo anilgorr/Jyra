@@ -8,11 +8,12 @@ import {
 } from "@workspace/db";
 import { namesArePossibleDuplicates } from "../src/lib/company-identity";
 import { ensureDevelopmentBrightDataProvider } from "../src/lib/bright-data-provider-config";
+import { parseBrightDataProviderConfiguration } from "../src/lib/bright-data-provider";
+import { countControlledBrightDataCalls } from "../src/lib/bright-data-integration-report";
 import { ProviderRouter, type ProviderCatalogEntry } from "../src/lib/provider-router";
 
 const TEST10_RESULT = "REAL_DATA_TEST_10_RESULT.json";
 const REPORT_FILE = "BRIGHT_DATA_INTEGRATION_TEST.md";
-const DATASET_ID = "gd_l1vikfnt1wgvvqz95w";
 
 function yesNo(value: unknown): "YES" | "NO" {
   return value === null || value === undefined || value === "" ||
@@ -76,6 +77,9 @@ async function main(): Promise<void> {
     ))
     .limit(1);
   const credentials = process.env.BRIGHTDATA_API_KEY ? "AVAILABLE" : "MISSING";
+  const resolvedDatasetId = provider
+    ? parseBrightDataProviderConfiguration(provider.configuration).datasetId ?? "UNKNOWN"
+    : "UNKNOWN";
   if (!provider || credentials === "MISSING" || !company?.linkedinUrl) {
     report([
       "# Bright Data Integration Test",
@@ -84,7 +88,7 @@ async function main(): Promise<void> {
       `Capability: COMPANY_FIRMOGRAPHICS`,
       `Credentials: ${credentials}`,
       `Health: FAILING`,
-      `Dataset: ${DATASET_ID}`,
+      `Dataset: ${resolvedDatasetId}`,
       `Real API calls: 0`,
       `Companies tested: 0`,
       `Records returned: 0`,
@@ -134,6 +138,7 @@ async function main(): Promise<void> {
       test: "BRIGHT_DATA_INTEGRATION_TEST",
     },
   });
+  const cumulativeRealCalls = await countControlledBrightDataCalls(provider.id);
   const result = response.data;
   const attributes = result?.attributes;
   const pass = response.status === "success" &&
@@ -148,8 +153,8 @@ async function main(): Promise<void> {
     `Capability: COMPANY_FIRMOGRAPHICS`,
     `Credentials: ${credentials}`,
     `Health: ${pass ? "HEALTHY" : "FAILING"}`,
-    `Dataset: ${DATASET_ID}`,
-    `Real API calls: 1`,
+    `Dataset: ${String(response.metadata?.datasetId ?? resolvedDatasetId)}`,
+    `Real API calls: ${cumulativeRealCalls}`,
     `Companies tested: 1`,
     `Records returned: ${response.usage.resultCount}`,
     `Entity match: ${result?.entityMatchStatus ?? "UNKNOWN"}`,

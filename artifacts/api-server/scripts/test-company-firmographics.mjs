@@ -16,13 +16,16 @@ const {
   and,
   companiesTable,
   companyProvenanceTable,
+  countControlledBrightDataCalls,
   count,
+  dataProvidersTable,
   db,
   enrichCompanyFirmographics,
   eq,
   organizationsTable,
   projectCompaniesTable,
   projectsTable,
+  providerUsageTable,
   usersTable,
 } = require(output);
 
@@ -32,12 +35,13 @@ let organization;
 let project;
 let confirmedCompany;
 let reviewCompany;
+let provider;
 
 function firmographicsResponse(companyId, request, status) {
   const capturedAt = "2026-08-31T09:00:00.000Z";
   return {
     status: "success",
-    providerId: "bright-data-test",
+    providerId: provider.id,
     providerRequestId: request.requestId,
     data: {
       companyId,
@@ -57,7 +61,7 @@ function firmographicsResponse(companyId, request, status) {
         headquartersCity: "Pune",
         headquartersRegion: "Maharashtra",
         locations: ["Pune, India"],
-        companyDescription: "Observed description",
+        companyDescription: "é".repeat(200_000),
         foundedYear: 2016,
         companyType: null,
         specialties: [],
@@ -69,14 +73,27 @@ function firmographicsResponse(companyId, request, status) {
         logoUrl: null,
         rawProfileUrl: request.linkedinCompanyUrl,
       },
-      attributeProvenance: {},
+      attributeProvenance: {
+        companyDescription: {
+          retrievalProvider: "BRIGHT_DATA",
+          publisher: "LINKEDIN",
+          sourceType: "SOCIAL_COMPANY_PROFILE",
+          sourceUrl: request.linkedinCompanyUrl,
+          retrievedAt: capturedAt,
+          providerRecordId: `record-${companyId}`,
+          rawValue: "é".repeat(200_000),
+          normalizedValue: "é".repeat(200_000),
+          entityMatchConfidence: 100,
+          attributeConfidence: 100,
+        },
+      },
     },
     sources: [{ kind: "public_url", reference: request.linkedinCompanyUrl, capturedAt }],
     usage: { estimatedCost: 0.0015, actualCost: null, latencyMs: 10, runtimeMs: 10, resultCount: 1 },
     error: null,
     retryable: false,
     capturedAt,
-    metadata: { rawProviderResponse: { id: `record-${companyId}` } },
+    metadata: { rawProviderResponse: { id: `record-${companyId}`, raw: "é".repeat(200_000) } },
   };
 }
 
@@ -89,6 +106,10 @@ try {
   [project] = await db.insert(projectsTable).values({
     organizationId: organization.id,
     name: `Firmographics Test ${suffix}`,
+  }).returning();
+  [provider] = await db.insert(dataProvidersTable).values({
+    name: `bright-data-firmographics-test-${suffix}`,
+    providerType: "bright_data",
   }).returning();
   [confirmedCompany] = await db.insert(companiesTable).values({
     canonicalName: `Firmographics Test ${suffix}`,
@@ -129,6 +150,13 @@ try {
   assert.equal(updated.employeeRange, "201-500");
   assert.equal(updated.country, "India");
   assert.equal(updated.industry, "Existing User Industry", "existing values must not be overwritten");
+  assert.ok(Buffer.byteLength(updated.description, "utf8") <= 2_048);
+  const [storedSnapshot] = await db.select().from(companyProvenanceTable)
+    .where(and(
+      eq(companyProvenanceTable.companyId, confirmedCompany.id),
+      eq(companyProvenanceTable.sourceType, "COMPANY_FIRMOGRAPHICS"),
+    )).limit(1);
+  assert.ok(Buffer.byteLength(JSON.stringify(storedSnapshot.payload), "utf8") <= 250_000);
 
   const second = await enrichCompanyFirmographics({
     organizationId: organization.id,
@@ -141,6 +169,33 @@ try {
   assert.equal(second.response.metadata.cacheHit, true);
   assert.equal(second.response.usage.actualCost, 0);
   assert.equal(confirmedCalls, 1, "fresh cache must prevent a second provider call");
+  const [cacheUsage] = await db.select({ value: count() }).from(providerUsageTable)
+    .where(and(
+      eq(providerUsageTable.providerId, provider.id),
+      eq(providerUsageTable.capability, "COMPANY_FIRMOGRAPHICS"),
+    ));
+  assert.equal(Number(cacheUsage.value), 1, "cache hit must be represented in provider usage");
+  await db.insert(providerUsageTable).values([
+    {
+      providerId: provider.id,
+      capability: "COMPANY_FIRMOGRAPHICS",
+      requestId: `controlled-a-${suffix}`,
+      status: "failed",
+      metadata: { test: "BRIGHT_DATA_INTEGRATION_TEST" },
+      startedAt: new Date("2026-08-31T09:01:00.000Z"),
+      completedAt: new Date("2026-08-31T09:01:01.000Z"),
+    },
+    {
+      providerId: provider.id,
+      capability: "COMPANY_FIRMOGRAPHICS",
+      requestId: `controlled-b-${suffix}`,
+      status: "success",
+      metadata: { test: "BRIGHT_DATA_INTEGRATION_TEST" },
+      startedAt: new Date("2026-08-31T09:02:00.000Z"),
+      completedAt: new Date("2026-08-31T09:02:01.000Z"),
+    },
+  ]);
+  assert.equal(await countControlledBrightDataCalls(provider.id), 2);
 
   let reviewCalls = 0;
   const reviewRouter = {
@@ -149,6 +204,21 @@ try {
       return firmographicsResponse(reviewCompany.id, request, "AMBIGUOUS");
     },
   };
+  const wrongRouter = {
+    enrichCompany: async (request) => firmographicsResponse(reviewCompany.id, request, "WRONG"),
+  };
+  const wrongResult = await enrichCompanyFirmographics({
+    organizationId: organization.id,
+    projectId: project.id,
+    companyId: reviewCompany.id,
+    router: wrongRouter,
+    now: new Date("2026-08-31T08:00:00.000Z"),
+  });
+  assert.equal(wrongResult.canonicalUpdated, false);
+  const [wrongProvenance] = await db.select({ value: count() }).from(companyProvenanceTable)
+    .where(eq(companyProvenanceTable.companyId, reviewCompany.id));
+  assert.equal(Number(wrongProvenance.value), 0, "wrong entities must not create provenance");
+
   const review = await enrichCompanyFirmographics({
     organizationId: organization.id,
     projectId: project.id,
@@ -175,5 +245,7 @@ try {
   if (confirmedCompany) await db.delete(companiesTable).where(eq(companiesTable.id, confirmedCompany.id));
   if (reviewCompany) await db.delete(companiesTable).where(eq(companiesTable.id, reviewCompany.id));
   if (organization) await db.delete(organizationsTable).where(eq(organizationsTable.id, organization.id));
+  if (provider) await db.delete(providerUsageTable).where(eq(providerUsageTable.providerId, provider.id));
+  if (provider) await db.delete(dataProvidersTable).where(eq(dataProvidersTable.id, provider.id));
   await db.delete(usersTable).where(eq(usersTable.id, userId));
 }

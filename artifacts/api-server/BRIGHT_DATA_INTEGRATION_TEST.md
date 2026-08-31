@@ -4,8 +4,9 @@ Provider: Bright Data
 Capability: COMPANY_FIRMOGRAPHICS
 Credentials: AVAILABLE
 Health: FAILING
-Dataset: gd_l1vikfnt1wgvvqz95w
-Real API calls: 1
+Dataset attempted: gd_l1vikfnt1wgvvqz95d
+Required dataset now configured: gd_l1vikfnt1wgvvqz95w
+Real API calls: 2
 Companies tested: 1
 Records returned: 0
 Entity match: UNKNOWN
@@ -27,8 +28,8 @@ Production operations: 0
 
 ## Controlled Test Detail
 
-Company: E2E Cloud
-Input LinkedIn URL: https://www.linkedin.com/company/e2enetworks/
+Company: Emergys
+Input LinkedIn URL: https://www.linkedin.com/company/emergys-llc/
 HTTP status: failed
 Bright Data records: 0
 Returned company name: UNKNOWN
@@ -44,7 +45,7 @@ HQ country: UNKNOWN
 Founded year: UNKNOWN
 Description available: NO
 Other useful fields: NONE
-Latency: 665 ms
+Latency: 662 ms
 Estimated cost: $0.0015 (ESTIMATED)
 Canonical company updated: NO
 Why: This explicitly triggered health/data-quality test is report-only.
@@ -52,3 +53,11 @@ Why: This explicitly triggered health/data-quality test is report-only.
 FINAL STATUS: FAIL
 
 Provider error: NO_RESULT — Bright Data request failed
+
+## Validation drift
+
+Both authorized live requests used the pre-review dataset ID ending in `95d`.
+The configured adapter now uses the required LinkedIn Company Information dataset
+ending in `95w`, but no additional external request was made after correction.
+Therefore this report intentionally remains `FAIL`; it does not claim the required
+dataset returned a successful record.

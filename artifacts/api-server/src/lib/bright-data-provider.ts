@@ -13,7 +13,7 @@ import type {
   ProviderResponse,
 } from "./provider-contract";
 
-export const BRIGHT_DATA_DATASET_ID = "gd_l1vikfnt1wgvvqz95d";
+export const BRIGHT_DATA_DATASET_ID = "gd_l1vikfnt1wgvvqz95w";
 const DEFAULT_API_BASE_URL = "https://api.brightdata.com";
 const DEFAULT_TIMEOUT_MS = 30_000;
 const DEFAULT_ESTIMATED_COST = 0.0015;
@@ -161,20 +161,30 @@ function matchEntity(
 ): { status: FirmographicEntityMatchStatus; confidence: number; reason: string } {
   const requestedLinkedIn = normalizeLinkedInUrl(request.linkedinCompanyUrl);
   const returnedLinkedIn = normalizeLinkedInUrl(returned.linkedinCompanyUrl);
-  if (requestedLinkedIn && returnedLinkedIn && requestedLinkedIn === returnedLinkedIn) {
-    return { status: "CONFIRMED", confidence: 100, reason: "Requested and returned LinkedIn company URLs match." };
-  }
-
-  const nameMatch = Boolean(request.companyName && returned.companyName) &&
+  const hasRequestedName = Boolean(request.companyName?.trim());
+  const hasReturnedName = Boolean(returned.companyName?.trim());
+  const nameMatch = hasRequestedName && hasReturnedName &&
     namesArePossibleDuplicates(request.companyName!, returned.companyName!);
+  const nameContradiction = hasRequestedName && hasReturnedName && !nameMatch;
   const requestedDomain = text(request.canonicalDomain)?.toLowerCase().replace(/^www\./, "");
   const domainMatch = Boolean(requestedDomain && returned.canonicalDomain && (
     requestedDomain === returned.canonicalDomain || returned.canonicalDomain.endsWith(`.${requestedDomain}`)
   ));
+  const domainContradiction = Boolean(requestedDomain && returned.canonicalDomain && !domainMatch);
   const countryMatch = Boolean(request.country && returned.headquartersCountry &&
     request.country.trim().toLowerCase() === returned.headquartersCountry.trim().toLowerCase());
+  const countryContradiction = Boolean(request.country && returned.headquartersCountry && !countryMatch);
+  if (requestedLinkedIn && returnedLinkedIn && requestedLinkedIn === returnedLinkedIn) {
+    if (nameContradiction) {
+      return { status: "WRONG", confidence: 5, reason: "Returned name contradicts the requested company despite the echoed LinkedIn URL." };
+    }
+    if (domainContradiction || countryContradiction) {
+      return { status: "AMBIGUOUS", confidence: 50, reason: "LinkedIn URL matches, but returned identity attributes conflict with the requested company." };
+    }
+    return { status: "CONFIRMED", confidence: 100, reason: "Requested and returned LinkedIn company URLs match." };
+  }
 
-  if (nameMatch && (domainMatch || countryMatch || !returnedLinkedIn)) {
+  if (nameMatch && (domainMatch || countryMatch)) {
     return {
       status: "PROBABLE",
       confidence: domainMatch ? 90 : 75,
@@ -197,65 +207,92 @@ export function parseBrightDataCompanyResponse(
     ? payload as BrightDataRecord
     : {};
   const headquarters = nestedRecord(record, ["headquarters", "headquarters_location", "location"]);
-  const website = officialWebsite(first(record, ["website", "website_url", "company_website", "url"]));
-  const linkedinCompanyUrl = normalizeLinkedInUrl(first(record, [
+  const rawCompanyName = first(record, ["company_name", "name", "title"]);
+  const rawWebsite = first(record, ["website", "website_url", "company_website", "url"]);
+  const rawLinkedInUrl = first(record, [
     "linkedin_company_url",
     "company_linkedin_url",
     "linkedin_url",
     "linkedin",
     "raw_profile_url",
     "profile_url",
-  ])) ?? normalizeLinkedInUrl(request.linkedinCompanyUrl);
-  const employeeRange = text(first(record, [
+  ]);
+  const rawEmployeeRange = first(record, [
     "employee_range",
     "employee_range_text",
     "company_size",
     "size",
     "employees_range",
-  ]));
+  ]);
+  const rawHeadquartersCountry = first(headquarters, ["country", "country_name"]) ??
+    first(record, ["headquarters_country", "country"]);
+  const rawHeadquartersCity = first(headquarters, ["city", "city_name"]) ??
+    first(record, ["headquarters_city", "city"]);
+  const rawHeadquartersRegion = first(headquarters, ["region", "state", "state_name", "region_name"]) ??
+    first(record, ["headquarters_region", "headquarters_state", "state"]);
+  const rawByAttribute: Partial<Record<keyof CompanyFirmographicAttributes, unknown>> = {
+    companyName: rawCompanyName,
+    websiteUrl: rawWebsite,
+    canonicalDomain: rawWebsite,
+    linkedinCompanyUrl: rawLinkedInUrl,
+    industry: first(record, ["industry", "industries"]),
+    employeeCount: first(record, ["employee_count", "employees_count", "employeeCount"]),
+    employeeRange: rawEmployeeRange,
+    headquartersCountry: rawHeadquartersCountry,
+    headquartersCity: rawHeadquartersCity,
+    headquartersRegion: rawHeadquartersRegion,
+    locations: first(record, ["locations", "location_list"]),
+    companyDescription: first(record, ["company_description", "description", "about"]),
+    foundedYear: first(record, ["founded_year", "founded", "year_founded"]),
+    companyType: first(record, ["company_type", "type"]),
+    specialties: first(record, ["specialties", "specialities"]),
+    followers: first(record, ["followers", "follower_count"]),
+    employeesOnLinkedin: first(record, ["employees_on_linkedin", "linkedin_employee_count"]),
+    fundingTotal: first(record, ["funding_total", "total_funding"]),
+    fundingRounds: first(record, ["funding_rounds", "funding_round_count"]),
+    parentCompany: first(record, ["parent_company", "parent"]),
+    logoUrl: first(record, ["logo_url", "logo"]),
+    rawProfileUrl: first(record, ["raw_profile_url", "profile_url", "linkedin_company_url", "linkedin_url"]),
+  };
+  const website = officialWebsite(rawWebsite);
+  const linkedinCompanyUrl = normalizeLinkedInUrl(rawLinkedInUrl);
   const attributes = {
     ...emptyAttributes(),
-    companyName: text(first(record, ["company_name", "name", "title"])),
+    companyName: text(rawCompanyName),
     websiteUrl: website.url,
     canonicalDomain: website.domain,
     linkedinCompanyUrl,
-    industry: text(first(record, ["industry", "industries"])),
-    employeeCount: integer(first(record, ["employee_count", "employees_count", "employeeCount"])),
-    employeeRange,
-    headquartersCountry: text(first(headquarters, ["country", "country_name"])) ?? text(first(record, ["headquarters_country", "country"])),
-    headquartersCity: text(first(headquarters, ["city", "city_name"])) ?? text(first(record, ["headquarters_city", "city"])),
-    headquartersRegion: text(first(headquarters, ["region", "state", "state_name", "region_name"])) ?? text(first(record, ["headquarters_region", "headquarters_state", "state"])),
-    locations: strings(first(record, ["locations", "location_list"])),
-    companyDescription: text(first(record, ["company_description", "description", "about"])),
-    foundedYear: integer(first(record, ["founded_year", "founded", "year_founded"])),
-    companyType: text(first(record, ["company_type", "type"])),
-    specialties: strings(first(record, ["specialties", "specialities"])),
-    followers: integer(first(record, ["followers", "follower_count"])),
-    employeesOnLinkedin: integer(first(record, ["employees_on_linkedin", "linkedin_employee_count"])),
-    fundingTotal: number(first(record, ["funding_total", "total_funding"])),
-    fundingRounds: integer(first(record, ["funding_rounds", "funding_round_count"])),
-    parentCompany: text(first(record, ["parent_company", "parent"])),
-    logoUrl: normalizeUrl(first(record, ["logo_url", "logo"])),
-    rawProfileUrl: normalizeUrl(first(record, ["raw_profile_url", "profile_url", "linkedin_company_url", "linkedin_url"])),
+    industry: text(rawByAttribute.industry),
+    employeeCount: integer(rawByAttribute.employeeCount),
+    employeeRange: text(rawEmployeeRange),
+    headquartersCountry: text(rawHeadquartersCountry),
+    headquartersCity: text(rawHeadquartersCity),
+    headquartersRegion: text(rawHeadquartersRegion),
+    locations: strings(rawByAttribute.locations),
+    companyDescription: text(rawByAttribute.companyDescription),
+    foundedYear: integer(rawByAttribute.foundedYear),
+    companyType: text(rawByAttribute.companyType),
+    specialties: strings(rawByAttribute.specialties),
+    followers: integer(rawByAttribute.followers),
+    employeesOnLinkedin: integer(rawByAttribute.employeesOnLinkedin),
+    fundingTotal: number(rawByAttribute.fundingTotal),
+    fundingRounds: integer(rawByAttribute.fundingRounds),
+    parentCompany: text(rawByAttribute.parentCompany),
+    logoUrl: normalizeUrl(rawByAttribute.logoUrl),
+    rawProfileUrl: normalizeUrl(rawByAttribute.rawProfileUrl),
   } satisfies CompanyFirmographicAttributes;
   if (!attributes.companyName && !attributes.linkedinCompanyUrl && !attributes.websiteUrl) return null;
 
   const match = matchEntity(request, attributes);
   const attributeProvenance: Partial<Record<keyof CompanyFirmographicAttributes, FirmographicAttributeProvenance>> = {};
   for (const [key, normalizedValue] of Object.entries(attributes)) {
-    const rawValue = (key === "companyName"
-      ? first(record, ["company_name", "name", "title"])
-      : key === "websiteUrl"
-        ? first(record, ["website", "website_url", "company_website", "url"])
-        : key === "employeeCount"
-          ? first(record, ["employee_count", "employees_count", "employeeCount"])
-          : normalizedValue);
+    const rawValue = rawByAttribute[key as keyof CompanyFirmographicAttributes];
     if (normalizedValue !== null && !(Array.isArray(normalizedValue) && normalizedValue.length === 0)) {
       attributeProvenance[key as keyof CompanyFirmographicAttributes] = {
         retrievalProvider: "BRIGHT_DATA",
         publisher: "LINKEDIN",
         sourceType: "SOCIAL_COMPANY_PROFILE",
-        sourceUrl: attributes.linkedinCompanyUrl ?? request.linkedinCompanyUrl ?? null,
+        sourceUrl: attributes.linkedinCompanyUrl,
         retrievedAt,
         providerRecordId: text(first(record, ["id", "record_id", "company_id"])),
         rawValue,
@@ -280,8 +317,16 @@ export function parseBrightDataCompanyResponse(
 function boundedRaw(value: unknown): unknown {
   try {
     const serialized = JSON.stringify(value);
-    if (serialized.length <= MAX_RAW_RESPONSE_LENGTH) return value;
-    return { truncated: true, preview: serialized.slice(0, MAX_RAW_RESPONSE_LENGTH) };
+    if (Buffer.byteLength(serialized, "utf8") <= MAX_RAW_RESPONSE_LENGTH) return value;
+    let preview = Buffer.from(serialized, "utf8")
+      .subarray(0, MAX_RAW_RESPONSE_LENGTH - 1024)
+      .toString("utf8");
+    let bounded = { truncated: true, originalBytes: Buffer.byteLength(serialized, "utf8"), preview };
+    while (Buffer.byteLength(JSON.stringify(bounded), "utf8") > MAX_RAW_RESPONSE_LENGTH) {
+      preview = Buffer.from(preview, "utf8").subarray(0, Math.max(0, Buffer.byteLength(preview, "utf8") - 1024)).toString("utf8");
+      bounded = { ...bounded, preview };
+    }
+    return bounded;
   } catch {
     return { unavailable: true };
   }

@@ -25,5 +25,5 @@ channel = "stable-25_05"
 [userenv]
 
 [userenv.development]
-BRIGHTDATA_TEST_COMPANY_NAME = "E2E Cloud"
-BRIGHTDATA_TEST_LINKEDIN_URL = "https://www.linkedin.com/company/e2enetworks/"
+BRIGHTDATA_TEST_COMPANY_NAME = "Emergys"
+BRIGHTDATA_TEST_LINKEDIN_URL = "https://www.linkedin.com/company/emergys-llc/"

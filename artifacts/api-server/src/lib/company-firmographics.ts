@@ -4,6 +4,7 @@ import {
   companyProvenanceTable,
   db,
   projectCompaniesTable,
+  providerUsageTable,
   type Company,
 } from "@workspace/db";
 import { canonicalSourceIdentity } from "./evidence";
@@ -18,6 +19,33 @@ const DAY_MS = 86_400_000;
 const DEFAULT_FRESHNESS_DAYS = 30;
 const FIRMOGRAPHICS_SOURCE_TYPE = "COMPANY_FIRMOGRAPHICS";
 const FIRMOGRAPHICS_REVIEW_SOURCE_TYPE = "COMPANY_FIRMOGRAPHICS_REVIEW";
+const MAX_STORED_PAYLOAD_BYTES = 250_000;
+const MAX_STORED_STRING_BYTES = 2_048;
+const MAX_STORED_ARRAY_ITEMS = 25;
+
+function truncateUtf8(value: string, maxBytes: number): string {
+  if (Buffer.byteLength(value, "utf8") <= maxBytes) return value;
+  return Buffer.from(value, "utf8").subarray(0, maxBytes).toString("utf8");
+}
+
+function storageSafeValue(value: unknown, depth = 0): unknown {
+  if (typeof value === "string") return truncateUtf8(value, MAX_STORED_STRING_BYTES);
+  if (Array.isArray(value)) {
+    return value.slice(0, MAX_STORED_ARRAY_ITEMS).map((item) => storageSafeValue(item, depth + 1));
+  }
+  if (value && typeof value === "object") {
+    if (depth >= 8) return { truncated: true };
+    return Object.fromEntries(
+      Object.entries(value).slice(0, 100)
+        .map(([key, item]) => [key, storageSafeValue(item, depth + 1)]),
+    );
+  }
+  return value;
+}
+
+function payloadBytes(value: unknown): number {
+  return Buffer.byteLength(JSON.stringify(value), "utf8");
+}
 
 type FirmographicsCachePayload = {
   kind: "COMPANY_FIRMOGRAPHICS";
@@ -194,6 +222,27 @@ export async function enrichCompanyFirmographics(
   const cachedPayload = cachePayload(cached?.payload);
   if (cachedPayload?.cacheKey === cacheKey &&
     ["CONFIRMED", "PROBABLE"].includes(cachedPayload.result.entityMatchStatus)) {
+    await db.insert(providerUsageTable).values({
+      providerId: cachedPayload.providerId,
+      capability: "COMPANY_FIRMOGRAPHICS",
+      requestId: `cache:${cacheKey}:${now.toISOString()}`,
+      status: "success",
+      retryable: false,
+      latencyMs: 0,
+      runtimeMs: 0,
+      resultCount: 1,
+      estimatedCost: 0,
+      actualCost: 0,
+      metadata: {
+        organizationId: input.organizationId,
+        projectId: input.projectId,
+        companyId: company.id,
+        cacheHit: true,
+        originalProviderId: cachedPayload.providerId,
+      },
+      startedAt: now,
+      completedAt: now,
+    });
     return {
       response: cachedResponse(cachedPayload, now),
       cacheHit: true,
@@ -221,7 +270,7 @@ export async function enrichCompanyFirmographics(
     return { response, cacheHit: false, canonicalUpdated: false, conflicts: [] };
   }
 
-  const result = response.data;
+  const result = storageSafeValue(response.data) as CompanyFirmographicsResult;
   if (result.entityMatchStatus === "WRONG") {
     return { response, cacheHit: false, canonicalUpdated: false, conflicts: [] };
   }
@@ -229,7 +278,7 @@ export async function enrichCompanyFirmographics(
     (result.entityMatchStatus === "PROBABLE" && input.approveProbable === true);
   const { updates, conflicts } = canonicalUpdates(company, result.attributes);
   const canonicalUpdated = safeToUpdate && Object.keys(updates).length > 0;
-  const payload: FirmographicsCachePayload = {
+  let payload: FirmographicsCachePayload = {
     kind: "COMPANY_FIRMOGRAPHICS",
     cacheKey,
     providerId: response.providerId,
@@ -238,6 +287,15 @@ export async function enrichCompanyFirmographics(
     conflicts,
     canonicalUpdated,
   };
+  if (payloadBytes(payload) > MAX_STORED_PAYLOAD_BYTES) {
+    payload = {
+      ...payload,
+      rawProviderResponse: { omitted: true, reason: "PERSISTED_PAYLOAD_BYTE_LIMIT" },
+    };
+  }
+  if (payloadBytes(payload) > MAX_STORED_PAYLOAD_BYTES) {
+    throw new Error("Normalized firmographics payload exceeds the persistence byte limit");
+  }
   await db.transaction(async (tx) => {
     if (safeToUpdate) {
       await tx.insert(companyProvenanceTable).values({

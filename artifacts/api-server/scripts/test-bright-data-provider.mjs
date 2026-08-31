@@ -138,6 +138,44 @@ const wrong = parseBrightDataCompanyResponse({
 }, "bright-data-test", requestedAt.toISOString());
 assert.equal(wrong.entityMatchStatus, "WRONG");
 
+const omittedLinkedIn = parseBrightDataCompanyResponse({
+  name: "Unrelated Returned Record",
+  website: "https://unrelated.example",
+}, {
+  companyName: "Acme",
+  canonicalDomain: "acme.example",
+  linkedinCompanyUrl: "https://linkedin.com/company/acme",
+}, "bright-data-test", requestedAt.toISOString());
+assert.equal(omittedLinkedIn.attributes.linkedinCompanyUrl, null);
+assert.equal(omittedLinkedIn.entityMatchStatus, "WRONG");
+assert.equal(omittedLinkedIn.attributeProvenance.linkedinCompanyUrl, undefined);
+
+const echoedLinkedInWrongName = parseBrightDataCompanyResponse({
+  name: "Completely Different Company",
+  linkedin_url: "https://linkedin.com/company/acme",
+  website: "https://different.example",
+}, {
+  companyName: "Acme",
+  canonicalDomain: "acme.example",
+  linkedinCompanyUrl: "https://linkedin.com/company/acme",
+}, "bright-data-test", requestedAt.toISOString());
+assert.equal(echoedLinkedInWrongName.entityMatchStatus, "WRONG");
+
+const oversizedRaw = await createBrightDataFirmographicsAdapter({
+  providerId: "bright-data-large",
+  apiKey: "test",
+  fetchImpl: async () => new Response(JSON.stringify([{
+    name: "Acme",
+    linkedin_url: "https://linkedin.com/company/acme",
+    description: "é".repeat(200_000),
+  }]), { status: 200 }),
+}).execute({
+  companyName: "Acme",
+  linkedinCompanyUrl: "https://linkedin.com/company/acme",
+});
+assert.ok(Buffer.byteLength(JSON.stringify(oversizedRaw.metadata.rawProviderResponse), "utf8") <= 250_000);
+assert.equal(oversizedRaw.metadata.rawProviderResponse.truncated, true);
+
 const missingCredentials = await createBrightDataFirmographicsAdapter({
   providerId: "bright-data-missing",
   apiKey: "",
@@ -223,5 +261,24 @@ assert.deepEqual(parseBrightDataProviderConfiguration({
   timeoutMs: 5000,
   estimatedCost: 0.002,
 });
+
+let overrideUrl = "";
+const overrideResult = await createBrightDataFirmographicsAdapter({
+  providerId: "bright-data-custom-dataset",
+  apiKey: "test",
+  configuration: { datasetId: "custom-dataset" },
+  fetchImpl: async (url) => {
+    overrideUrl = String(url);
+    return new Response(JSON.stringify([{
+      name: "Acme",
+      linkedin_url: "https://linkedin.com/company/acme",
+    }]), { status: 200 });
+  },
+}).execute({
+  companyName: "Acme",
+  linkedinCompanyUrl: "https://linkedin.com/company/acme",
+});
+assert.equal(new URL(overrideUrl).searchParams.get("dataset_id"), "custom-dataset");
+assert.equal(overrideResult.metadata.datasetId, "custom-dataset");
 
 console.log("Bright Data routing, normalization, provenance, cost, and failure tests passed.");
