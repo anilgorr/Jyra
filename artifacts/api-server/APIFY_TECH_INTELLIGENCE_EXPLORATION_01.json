@@ -1,0 +1,973 @@
+{
+  "test": "APIFY_TECH_INTELLIGENCE_EXPLORATION_01",
+  "environment": "development",
+  "actor": {
+    "actorId": "technicaldost~company-intelligence-api",
+    "actorApiId": "3J0nx8JfpmgRyb86f",
+    "username": "technicaldost",
+    "name": "company-intelligence-api",
+    "modifiedAt": "2026-08-30T19:42:21.141Z",
+    "latestBuild": {
+      "buildId": "a864cy4neXfbii7cS",
+      "finishedAt": "2026-08-30T19:22:46.908Z",
+      "buildNumberInt": 100002,
+      "buildNumber": "0.1.2"
+    },
+    "inputSchemaInspection": {
+      "actorMetadataEndpoint": "/v2/acts/technicaldost~company-intelligence-api",
+      "formalSchemaEndpointsAttempted": [
+        "/v2/acts/technicaldost~company-intelligence-api/input-schema",
+        "/v2/acts/technicaldost~company-intelligence-api/versions/0.1/input-schema"
+      ],
+      "formalSchemaAvailable": false,
+      "liveExampleRunInput": {
+        "domains": [
+          "apify.com",
+          "github.com"
+        ],
+        "maxItems": 2
+      },
+      "inputUsed": {
+        "domains": [
+          "emergys.com",
+          "cloudflare.com",
+          "e2ecloud.com"
+        ],
+        "maxItems": 3
+      },
+      "source": "Actor metadata exampleRunInput; no guessed parameter names"
+    },
+    "pricing": {
+      "pricingModel": "PAY_PER_EVENT",
+      "actorStartUsd": 0.00005,
+      "datasetItemUsd": 0.01,
+      "source": "Live Actor metadata pricingInfos"
+    }
+  },
+  "companies": [
+    {
+      "company": "Emergys",
+      "requestedDomain": "emergys.com",
+      "returnedDomain": "emergys.com",
+      "returnedCompany": "Emergys",
+      "status": "SUCCESS",
+      "rawRowCount": 1,
+      "rawFieldNames": [
+        "approxEmployees",
+        "companyName",
+        "description",
+        "dns",
+        "dns.a",
+        "dns.a[]",
+        "dns.mx",
+        "dns.mx[]",
+        "domain",
+        "domainRegisteredYear",
+        "emailProvider",
+        "emails",
+        "fetched",
+        "fetchedAt",
+        "foundedYear",
+        "foundedYearSource",
+        "funding",
+        "fundingStage",
+        "headcountRange",
+        "headcountSource",
+        "industry",
+        "logoUrl",
+        "poweredBy",
+        "server",
+        "socials",
+        "socials.facebook",
+        "socials.instagram",
+        "socials.linkedin",
+        "socials.youtube",
+        "statusCode",
+        "techStack",
+        "techStack.analytics",
+        "techStack.analytics[]",
+        "techStack.cms",
+        "techStack.cms[]",
+        "techStack.framework",
+        "techStack.framework[]",
+        "techStack.hosting_cdn",
+        "techStack.hosting_cdn[]",
+        "techStack.marketing",
+        "techStack.marketing[]",
+        "techStack.security",
+        "techStack.security[]",
+        "techStack.ui",
+        "techStack.ui[]",
+        "technologies",
+        "technologies[]",
+        "title",
+        "url"
+      ],
+      "metrics": {
+        "totalTechnologyObservations": 12,
+        "publicWebObservations": 11,
+        "corporateItObservations": 1,
+        "productApplicationObservations": 0,
+        "cloudInfrastructureObservations": 0,
+        "securityStackObservations": 0,
+        "dataStackObservations": 0,
+        "devopsObservations": 0,
+        "unknownContextObservations": 0
+      },
+      "mxEmailProviderAvailable": true,
+      "observations": [
+        {
+          "technology": "jQuery",
+          "rawActorCategory": null,
+          "detectionBasis": "Actor public website intelligence output",
+          "jyraContext": "MARKETING_WEB",
+          "relationship": "DETECTED",
+          "confidence": "UNKNOWN",
+          "usefulForManagedSoc": "NO",
+          "reason": "The Actor reports public website or hosting evidence; this does not prove the company product stack.",
+          "path": "technologies",
+          "rawObservation": "jQuery"
+        },
+        {
+          "technology": "WordPress",
+          "rawActorCategory": "cms",
+          "detectionBasis": "Actor public website intelligence output",
+          "jyraContext": "MARKETING_WEB",
+          "relationship": "DETECTED",
+          "confidence": "UNKNOWN",
+          "usefulForManagedSoc": "NO",
+          "reason": "The Actor reports public website or hosting evidence; this does not prove the company product stack.",
+          "path": "techStack.cms",
+          "rawObservation": "WordPress"
+        },
+        {
+          "technology": "Google Analytics",
+          "rawActorCategory": "analytics",
+          "detectionBasis": "Actor public website intelligence output",
+          "jyraContext": "MARKETING_WEB",
+          "relationship": "DETECTED",
+          "confidence": "UNKNOWN",
+          "usefulForManagedSoc": "NO",
+          "reason": "The Actor reports public website or hosting evidence; this does not prove the company product stack.",
+          "path": "techStack.analytics",
+          "rawObservation": "Google Analytics"
+        },
+        {
+          "technology": "Google Tag Manager",
+          "rawActorCategory": "analytics",
+          "detectionBasis": "Actor public website intelligence output",
+          "jyraContext": "MARKETING_WEB",
+          "relationship": "DETECTED",
+          "confidence": "UNKNOWN",
+          "usefulForManagedSoc": "NO",
+          "reason": "The Actor reports public website or hosting evidence; this does not prove the company product stack.",
+          "path": "techStack.analytics",
+          "rawObservation": "Google Tag Manager"
+        },
+        {
+          "technology": "HubSpot",
+          "rawActorCategory": null,
+          "detectionBasis": "Actor public website intelligence output",
+          "jyraContext": "MARKETING_WEB",
+          "relationship": "DETECTED",
+          "confidence": "UNKNOWN",
+          "usefulForManagedSoc": "NO",
+          "reason": "The Actor reports public website or hosting evidence; this does not prove the company product stack.",
+          "path": "technologies",
+          "rawObservation": "HubSpot"
+        },
+        {
+          "technology": "Cloudflare",
+          "rawActorCategory": null,
+          "detectionBasis": "Actor public website intelligence output",
+          "jyraContext": "MARKETING_WEB",
+          "relationship": "DETECTED",
+          "confidence": "UNKNOWN",
+          "usefulForManagedSoc": "NO",
+          "reason": "The Actor reports public website or hosting evidence; this does not prove the company product stack.",
+          "path": "technologies",
+          "rawObservation": "Cloudflare"
+        },
+        {
+          "technology": "Bootstrap",
+          "rawActorCategory": null,
+          "detectionBasis": "Actor public website intelligence output",
+          "jyraContext": "MARKETING_WEB",
+          "relationship": "DETECTED",
+          "confidence": "UNKNOWN",
+          "usefulForManagedSoc": "NO",
+          "reason": "The Actor reports public website or hosting evidence; this does not prove the company product stack.",
+          "path": "technologies",
+          "rawObservation": "Bootstrap"
+        },
+        {
+          "technology": "Font Awesome",
+          "rawActorCategory": null,
+          "detectionBasis": "Actor public website intelligence output",
+          "jyraContext": "MARKETING_WEB",
+          "relationship": "DETECTED",
+          "confidence": "UNKNOWN",
+          "usefulForManagedSoc": "NO",
+          "reason": "The Actor reports public website or hosting evidence; this does not prove the company product stack.",
+          "path": "technologies",
+          "rawObservation": "Font Awesome"
+        },
+        {
+          "technology": "Google Fonts",
+          "rawActorCategory": null,
+          "detectionBasis": "Actor public website intelligence output",
+          "jyraContext": "MARKETING_WEB",
+          "relationship": "DETECTED",
+          "confidence": "UNKNOWN",
+          "usefulForManagedSoc": "NO",
+          "reason": "The Actor reports public website or hosting evidence; this does not prove the company product stack.",
+          "path": "technologies",
+          "rawObservation": "Google Fonts"
+        },
+        {
+          "technology": "reCAPTCHA",
+          "rawActorCategory": null,
+          "detectionBasis": "Actor public website intelligence output",
+          "jyraContext": "MARKETING_WEB",
+          "relationship": "DETECTED",
+          "confidence": "UNKNOWN",
+          "usefulForManagedSoc": "NO",
+          "reason": "The Actor reports public website or hosting evidence; this does not prove the company product stack.",
+          "path": "technologies",
+          "rawObservation": "reCAPTCHA"
+        },
+        {
+          "technology": "HSTS",
+          "rawActorCategory": null,
+          "detectionBasis": "Actor public website intelligence output",
+          "jyraContext": "MARKETING_WEB",
+          "relationship": "DETECTED",
+          "confidence": "UNKNOWN",
+          "usefulForManagedSoc": "NO",
+          "reason": "The Actor reports public website or hosting evidence; this does not prove the company product stack.",
+          "path": "technologies",
+          "rawObservation": "HSTS"
+        },
+        {
+          "technology": "Microsoft 365",
+          "rawActorCategory": null,
+          "detectionBasis": "DNS/MX/email output",
+          "jyraContext": "CORPORATE_IT",
+          "relationship": "DETECTED",
+          "confidence": "UNKNOWN",
+          "usefulForManagedSoc": "MAYBE",
+          "reason": "DNS/MX/email observation is kept separate from application infrastructure; it may indicate corporate IT only.",
+          "path": "emailProvider",
+          "rawObservation": "Microsoft 365"
+        }
+      ],
+      "rawResponse": {
+        "domain": "emergys.com",
+        "url": "https://emergys.com",
+        "companyName": "Emergys",
+        "description": "We are a mid-market digital transformation partner with service suites across enterprise management, data, analytics, modern applications to achieve business goals.",
+        "industry": null,
+        "foundedYear": 1998,
+        "foundedYearSource": "domain-registration",
+        "domainRegisteredYear": 1998,
+        "headcountRange": null,
+        "headcountSource": null,
+        "approxEmployees": null,
+        "fundingStage": null,
+        "funding": null,
+        "technologies": [
+          "jQuery",
+          "WordPress",
+          "Google Analytics",
+          "Google Tag Manager",
+          "HubSpot",
+          "Cloudflare",
+          "Bootstrap",
+          "Font Awesome",
+          "Google Fonts",
+          "reCAPTCHA",
+          "HSTS"
+        ],
+        "techStack": {
+          "framework": [
+            "jQuery"
+          ],
+          "cms": [
+            "WordPress"
+          ],
+          "analytics": [
+            "Google Analytics",
+            "Google Tag Manager"
+          ],
+          "marketing": [
+            "HubSpot"
+          ],
+          "hosting_cdn": [
+            "Cloudflare"
+          ],
+          "ui": [
+            "Bootstrap",
+            "Font Awesome",
+            "Google Fonts"
+          ],
+          "security": [
+            "reCAPTCHA",
+            "HSTS"
+          ]
+        },
+        "server": "cloudflare",
+        "poweredBy": null,
+        "logoUrl": "https://www.emergys.com/wp-content/uploads/2025/10/180x180.webp",
+        "socials": {
+          "facebook": "https://www.facebook.com/people/Emergys/61575287627799/",
+          "youtube": "https://www.youtube.com/@Emergys",
+          "linkedin": "https://www.linkedin.com/company/emergys-llc",
+          "instagram": "https://www.instagram.com/emergys_global/"
+        },
+        "emails": [],
+        "dns": {
+          "a": [
+            "162.159.137.54",
+            "162.159.136.54"
+          ],
+          "mx": [
+            "emergys-com.mail.protection.outlook.com"
+          ]
+        },
+        "emailProvider": "Microsoft 365",
+        "title": "Accelerating the Digital Enterprise | Inspiring Innovation | Emergys",
+        "fetched": true,
+        "statusCode": 200,
+        "fetchedAt": "2026-08-31T09:55:25.185Z"
+      }
+    },
+    {
+      "company": "Cloudflare",
+      "requestedDomain": "cloudflare.com",
+      "returnedDomain": "cloudflare.com",
+      "returnedCompany": "Cloudflare",
+      "status": "SUCCESS",
+      "rawRowCount": 1,
+      "rawFieldNames": [
+        "approxEmployees",
+        "companyName",
+        "description",
+        "dns",
+        "dns.a",
+        "dns.a[]",
+        "dns.mx",
+        "dns.mx[]",
+        "domain",
+        "domainRegisteredYear",
+        "emailProvider",
+        "emails",
+        "fetched",
+        "fetchedAt",
+        "foundedYear",
+        "foundedYearSource",
+        "funding",
+        "fundingStage",
+        "headcountRange",
+        "headcountSource",
+        "industry",
+        "logoUrl",
+        "poweredBy",
+        "server",
+        "socials",
+        "socials.github",
+        "socials.linkedin",
+        "socials.twitter",
+        "statusCode",
+        "techStack",
+        "techStack.analytics",
+        "techStack.analytics[]",
+        "techStack.framework",
+        "techStack.framework[]",
+        "techStack.hosting_cdn",
+        "techStack.hosting_cdn[]",
+        "techStack.marketing",
+        "techStack.marketing[]",
+        "techStack.security",
+        "techStack.security[]",
+        "techStack.ui",
+        "techStack.ui[]",
+        "technologies",
+        "technologies[]",
+        "title",
+        "url"
+      ],
+      "metrics": {
+        "totalTechnologyObservations": 8,
+        "publicWebObservations": 8,
+        "corporateItObservations": 0,
+        "productApplicationObservations": 0,
+        "cloudInfrastructureObservations": 0,
+        "securityStackObservations": 0,
+        "dataStackObservations": 0,
+        "devopsObservations": 0,
+        "unknownContextObservations": 0
+      },
+      "mxEmailProviderAvailable": true,
+      "observations": [
+        {
+          "technology": "Astro",
+          "rawActorCategory": null,
+          "detectionBasis": "Actor public website intelligence output",
+          "jyraContext": "MARKETING_WEB",
+          "relationship": "DETECTED",
+          "confidence": "UNKNOWN",
+          "usefulForManagedSoc": "NO",
+          "reason": "The Actor reports public website or hosting evidence; this does not prove the company product stack.",
+          "path": "technologies",
+          "rawObservation": "Astro"
+        },
+        {
+          "technology": "Google Analytics",
+          "rawActorCategory": "analytics",
+          "detectionBasis": "Actor public website intelligence output",
+          "jyraContext": "MARKETING_WEB",
+          "relationship": "DETECTED",
+          "confidence": "UNKNOWN",
+          "usefulForManagedSoc": "NO",
+          "reason": "The Actor reports public website or hosting evidence; this does not prove the company product stack.",
+          "path": "techStack.analytics",
+          "rawObservation": "Google Analytics"
+        },
+        {
+          "technology": "Google Tag Manager",
+          "rawActorCategory": "analytics",
+          "detectionBasis": "Actor public website intelligence output",
+          "jyraContext": "MARKETING_WEB",
+          "relationship": "DETECTED",
+          "confidence": "UNKNOWN",
+          "usefulForManagedSoc": "NO",
+          "reason": "The Actor reports public website or hosting evidence; this does not prove the company product stack.",
+          "path": "techStack.analytics",
+          "rawObservation": "Google Tag Manager"
+        },
+        {
+          "technology": "HubSpot",
+          "rawActorCategory": null,
+          "detectionBasis": "Actor public website intelligence output",
+          "jyraContext": "MARKETING_WEB",
+          "relationship": "DETECTED",
+          "confidence": "UNKNOWN",
+          "usefulForManagedSoc": "NO",
+          "reason": "The Actor reports public website or hosting evidence; this does not prove the company product stack.",
+          "path": "technologies",
+          "rawObservation": "HubSpot"
+        },
+        {
+          "technology": "Zendesk",
+          "rawActorCategory": null,
+          "detectionBasis": "Actor public website intelligence output",
+          "jyraContext": "MARKETING_WEB",
+          "relationship": "DETECTED",
+          "confidence": "UNKNOWN",
+          "usefulForManagedSoc": "NO",
+          "reason": "The Actor reports public website or hosting evidence; this does not prove the company product stack.",
+          "path": "technologies",
+          "rawObservation": "Zendesk"
+        },
+        {
+          "technology": "Cloudflare",
+          "rawActorCategory": null,
+          "detectionBasis": "Actor public website intelligence output",
+          "jyraContext": "MARKETING_WEB",
+          "relationship": "DETECTED",
+          "confidence": "UNKNOWN",
+          "usefulForManagedSoc": "NO",
+          "reason": "The Actor reports public website or hosting evidence; this does not prove the company product stack.",
+          "path": "technologies",
+          "rawObservation": "Cloudflare"
+        },
+        {
+          "technology": "Tailwind CSS",
+          "rawActorCategory": null,
+          "detectionBasis": "Actor public website intelligence output",
+          "jyraContext": "MARKETING_WEB",
+          "relationship": "DETECTED",
+          "confidence": "UNKNOWN",
+          "usefulForManagedSoc": "NO",
+          "reason": "The Actor reports public website or hosting evidence; this does not prove the company product stack.",
+          "path": "technologies",
+          "rawObservation": "Tailwind CSS"
+        },
+        {
+          "technology": "HSTS",
+          "rawActorCategory": null,
+          "detectionBasis": "Actor public website intelligence output",
+          "jyraContext": "MARKETING_WEB",
+          "relationship": "DETECTED",
+          "confidence": "UNKNOWN",
+          "usefulForManagedSoc": "NO",
+          "reason": "The Actor reports public website or hosting evidence; this does not prove the company product stack.",
+          "path": "technologies",
+          "rawObservation": "HSTS"
+        }
+      ],
+      "rawResponse": {
+        "domain": "cloudflare.com",
+        "url": "https://cloudflare.com",
+        "companyName": "Cloudflare",
+        "description": "Welcome to Cloudflare - Powering the next generation of applications",
+        "industry": null,
+        "foundedYear": 2009,
+        "foundedYearSource": "domain-registration",
+        "domainRegisteredYear": 2009,
+        "headcountRange": "11-50",
+        "headcountSource": "website-copy",
+        "approxEmployees": 50,
+        "fundingStage": null,
+        "funding": null,
+        "technologies": [
+          "Astro",
+          "Google Analytics",
+          "Google Tag Manager",
+          "HubSpot",
+          "Zendesk",
+          "Cloudflare",
+          "Tailwind CSS",
+          "HSTS"
+        ],
+        "techStack": {
+          "framework": [
+            "Astro"
+          ],
+          "analytics": [
+            "Google Analytics",
+            "Google Tag Manager"
+          ],
+          "marketing": [
+            "HubSpot",
+            "Zendesk"
+          ],
+          "hosting_cdn": [
+            "Cloudflare"
+          ],
+          "ui": [
+            "Tailwind CSS"
+          ],
+          "security": [
+            "HSTS"
+          ]
+        },
+        "server": "cloudflare",
+        "poweredBy": null,
+        "logoUrl": "https://www.cloudflare.com/preview.png",
+        "socials": {
+          "github": "https://github.com/cloudflare",
+          "linkedin": "https://www.linkedin.com/company/cloudflare",
+          "twitter": "https://x.com/cloudflare"
+        },
+        "emails": [],
+        "dns": {
+          "a": [
+            "104.16.132.229",
+            "104.16.133.229"
+          ],
+          "mx": [
+            "mxa-canary.global.inbound.cf-emailsecurity.net",
+            "mxb-canary.global.inbound.cf-emailsecurity.net",
+            "mxa.global.inbound.cf-emailsecurity.net",
+            "mxb.global.inbound.cf-emailsecurity.net"
+          ]
+        },
+        "emailProvider": null,
+        "title": "Cloudflare: Build for the agent era",
+        "fetched": true,
+        "statusCode": 200,
+        "fetchedAt": "2026-08-31T09:55:25.235Z"
+      }
+    },
+    {
+      "company": "E2E Cloud",
+      "requestedDomain": "e2ecloud.com",
+      "returnedDomain": "e2ecloud.com",
+      "returnedCompany": "E2ecloud",
+      "status": "SUCCESS",
+      "rawRowCount": 1,
+      "rawFieldNames": [
+        "approxEmployees",
+        "companyName",
+        "description",
+        "dns",
+        "dns.a",
+        "dns.a[]",
+        "dns.mx",
+        "domain",
+        "domainRegisteredYear",
+        "emailProvider",
+        "emails",
+        "fetched",
+        "fetchedAt",
+        "foundedYear",
+        "foundedYearSource",
+        "funding",
+        "fundingStage",
+        "headcountRange",
+        "headcountSource",
+        "industry",
+        "logoUrl",
+        "poweredBy",
+        "server",
+        "socials",
+        "statusCode",
+        "techStack",
+        "technologies",
+        "title",
+        "url"
+      ],
+      "metrics": {
+        "totalTechnologyObservations": 0,
+        "publicWebObservations": 0,
+        "corporateItObservations": 0,
+        "productApplicationObservations": 0,
+        "cloudInfrastructureObservations": 0,
+        "securityStackObservations": 0,
+        "dataStackObservations": 0,
+        "devopsObservations": 0,
+        "unknownContextObservations": 0
+      },
+      "mxEmailProviderAvailable": false,
+      "observations": [],
+      "rawResponse": {
+        "domain": "e2ecloud.com",
+        "url": "https://e2ecloud.com",
+        "companyName": "E2ecloud",
+        "description": null,
+        "industry": null,
+        "foundedYear": 2011,
+        "foundedYearSource": "domain-registration",
+        "domainRegisteredYear": 2011,
+        "headcountRange": null,
+        "headcountSource": null,
+        "approxEmployees": null,
+        "fundingStage": null,
+        "funding": null,
+        "technologies": [],
+        "techStack": {},
+        "server": null,
+        "poweredBy": null,
+        "logoUrl": "https://logo.clearbit.com/e2ecloud.com",
+        "socials": {},
+        "emails": [],
+        "dns": {
+          "a": [
+            "13.248.169.48",
+            "76.223.54.146"
+          ],
+          "mx": []
+        },
+        "emailProvider": null,
+        "title": null,
+        "fetched": true,
+        "statusCode": 200,
+        "fetchedAt": "2026-08-31T09:55:25.237Z"
+      }
+    }
+  ],
+  "response": {
+    "normalizedTechnologyResult": null,
+    "rawDatasetResponses": [
+      [
+        {
+          "domain": "emergys.com",
+          "url": "https://emergys.com",
+          "companyName": "Emergys",
+          "description": "We are a mid-market digital transformation partner with service suites across enterprise management, data, analytics, modern applications to achieve business goals.",
+          "industry": null,
+          "foundedYear": 1998,
+          "foundedYearSource": "domain-registration",
+          "domainRegisteredYear": 1998,
+          "headcountRange": null,
+          "headcountSource": null,
+          "approxEmployees": null,
+          "fundingStage": null,
+          "funding": null,
+          "technologies": [
+            "jQuery",
+            "WordPress",
+            "Google Analytics",
+            "Google Tag Manager",
+            "HubSpot",
+            "Cloudflare",
+            "Bootstrap",
+            "Font Awesome",
+            "Google Fonts",
+            "reCAPTCHA",
+            "HSTS"
+          ],
+          "techStack": {
+            "framework": [
+              "jQuery"
+            ],
+            "cms": [
+              "WordPress"
+            ],
+            "analytics": [
+              "Google Analytics",
+              "Google Tag Manager"
+            ],
+            "marketing": [
+              "HubSpot"
+            ],
+            "hosting_cdn": [
+              "Cloudflare"
+            ],
+            "ui": [
+              "Bootstrap",
+              "Font Awesome",
+              "Google Fonts"
+            ],
+            "security": [
+              "reCAPTCHA",
+              "HSTS"
+            ]
+          },
+          "server": "cloudflare",
+          "poweredBy": null,
+          "logoUrl": "https://www.emergys.com/wp-content/uploads/2025/10/180x180.webp",
+          "socials": {
+            "facebook": "https://www.facebook.com/people/Emergys/61575287627799/",
+            "youtube": "https://www.youtube.com/@Emergys",
+            "linkedin": "https://www.linkedin.com/company/emergys-llc",
+            "instagram": "https://www.instagram.com/emergys_global/"
+          },
+          "emails": [],
+          "dns": {
+            "a": [
+              "162.159.137.54",
+              "162.159.136.54"
+            ],
+            "mx": [
+              "emergys-com.mail.protection.outlook.com"
+            ]
+          },
+          "emailProvider": "Microsoft 365",
+          "title": "Accelerating the Digital Enterprise | Inspiring Innovation | Emergys",
+          "fetched": true,
+          "statusCode": 200,
+          "fetchedAt": "2026-08-31T09:55:25.185Z"
+        },
+        {
+          "domain": "cloudflare.com",
+          "url": "https://cloudflare.com",
+          "companyName": "Cloudflare",
+          "description": "Welcome to Cloudflare - Powering the next generation of applications",
+          "industry": null,
+          "foundedYear": 2009,
+          "foundedYearSource": "domain-registration",
+          "domainRegisteredYear": 2009,
+          "headcountRange": "11-50",
+          "headcountSource": "website-copy",
+          "approxEmployees": 50,
+          "fundingStage": null,
+          "funding": null,
+          "technologies": [
+            "Astro",
+            "Google Analytics",
+            "Google Tag Manager",
+            "HubSpot",
+            "Zendesk",
+            "Cloudflare",
+            "Tailwind CSS",
+            "HSTS"
+          ],
+          "techStack": {
+            "framework": [
+              "Astro"
+            ],
+            "analytics": [
+              "Google Analytics",
+              "Google Tag Manager"
+            ],
+            "marketing": [
+              "HubSpot",
+              "Zendesk"
+            ],
+            "hosting_cdn": [
+              "Cloudflare"
+            ],
+            "ui": [
+              "Tailwind CSS"
+            ],
+            "security": [
+              "HSTS"
+            ]
+          },
+          "server": "cloudflare",
+          "poweredBy": null,
+          "logoUrl": "https://www.cloudflare.com/preview.png",
+          "socials": {
+            "github": "https://github.com/cloudflare",
+            "linkedin": "https://www.linkedin.com/company/cloudflare",
+            "twitter": "https://x.com/cloudflare"
+          },
+          "emails": [],
+          "dns": {
+            "a": [
+              "104.16.132.229",
+              "104.16.133.229"
+            ],
+            "mx": [
+              "mxa-canary.global.inbound.cf-emailsecurity.net",
+              "mxb-canary.global.inbound.cf-emailsecurity.net",
+              "mxa.global.inbound.cf-emailsecurity.net",
+              "mxb.global.inbound.cf-emailsecurity.net"
+            ]
+          },
+          "emailProvider": null,
+          "title": "Cloudflare: Build for the agent era",
+          "fetched": true,
+          "statusCode": 200,
+          "fetchedAt": "2026-08-31T09:55:25.235Z"
+        },
+        {
+          "domain": "e2ecloud.com",
+          "url": "https://e2ecloud.com",
+          "companyName": "E2ecloud",
+          "description": null,
+          "industry": null,
+          "foundedYear": 2011,
+          "foundedYearSource": "domain-registration",
+          "domainRegisteredYear": 2011,
+          "headcountRange": null,
+          "headcountSource": null,
+          "approxEmployees": null,
+          "fundingStage": null,
+          "funding": null,
+          "technologies": [],
+          "techStack": {},
+          "server": null,
+          "poweredBy": null,
+          "logoUrl": "https://logo.clearbit.com/e2ecloud.com",
+          "socials": {},
+          "emails": [],
+          "dns": {
+            "a": [
+              "13.248.169.48",
+              "76.223.54.146"
+            ],
+            "mx": []
+          },
+          "emailProvider": null,
+          "title": null,
+          "fetched": true,
+          "statusCode": 200,
+          "fetchedAt": "2026-08-31T09:55:25.237Z"
+        }
+      ]
+    ],
+    "rawDatasetPaths": [
+      "/v2/datasets/CDVOij5KuP3kVllLg/items?format=json&clean=true&limit=3&offset=0"
+    ],
+    "allReturnedFieldNames": [
+      "approxEmployees",
+      "companyName",
+      "description",
+      "dns",
+      "dns.a",
+      "dns.a[]",
+      "dns.mx",
+      "dns.mx[]",
+      "domain",
+      "domainRegisteredYear",
+      "emailProvider",
+      "emails",
+      "fetched",
+      "fetchedAt",
+      "foundedYear",
+      "foundedYearSource",
+      "funding",
+      "fundingStage",
+      "headcountRange",
+      "headcountSource",
+      "industry",
+      "logoUrl",
+      "poweredBy",
+      "server",
+      "socials",
+      "socials.facebook",
+      "socials.github",
+      "socials.instagram",
+      "socials.linkedin",
+      "socials.twitter",
+      "socials.youtube",
+      "statusCode",
+      "techStack",
+      "techStack.analytics",
+      "techStack.analytics[]",
+      "techStack.cms",
+      "techStack.cms[]",
+      "techStack.framework",
+      "techStack.framework[]",
+      "techStack.hosting_cdn",
+      "techStack.hosting_cdn[]",
+      "techStack.marketing",
+      "techStack.marketing[]",
+      "techStack.security",
+      "techStack.security[]",
+      "techStack.ui",
+      "techStack.ui[]",
+      "technologies",
+      "technologies[]",
+      "title",
+      "url"
+    ]
+  },
+  "summary": {
+    "companiesTested": 3,
+    "successful": 3,
+    "failed": 0,
+    "totalTechnologyObservations": 20,
+    "publicWeb": 19,
+    "corporateIt": 1,
+    "productApplication": 0,
+    "cloudInfrastructure": 0,
+    "securityStack": 0,
+    "unknown": 0,
+    "mxEmailCoverage": 2,
+    "actualActorRuns": 1,
+    "domainsProcessed": 3,
+    "successfulDomains": 3,
+    "failedDomains": 0,
+    "latencyMs": 4679,
+    "actualCost": 0.0002,
+    "estimatedCost": null,
+    "totalCost": 0.0002,
+    "costBasis": "ACTUAL_APIFY_RUN_USAGE",
+    "costPerCompany": 0.00006666666666666667
+  },
+  "ratings": {
+    "publicWebTech": "STRONG",
+    "corporateIt": "WEAK",
+    "productApplicationStack": "WEAK",
+    "cloudInfrastructure": "WEAK",
+    "securityStack": "WEAK",
+    "managedSocRelevance": "WEAK",
+    "costEfficiency": "STRONG"
+  },
+  "safety": {
+    "brightDataCalls": 0,
+    "tavilyCalls": 0,
+    "exaCalls": 0,
+    "otherApifyActors": 0,
+    "databaseWrites": 0,
+    "canonicalCompanyUpdates": 0,
+    "factsCreated": 0,
+    "signalsCreated": 0,
+    "opportunitiesCreated": 0,
+    "icpChanges": 0,
+    "contactsCreated": 0,
+    "productionOperations": 0
+  },
+  "recommendation": "B",
+  "recommendationText": "Actor is useful only for public website technology / MX information. Use selectively.",
+  "generatedAt": "2026-08-31T09:55:28.459Z",
+  "reclassification": {
+    "replayedFromCapturedRawOutput": true,
+    "additionalActorRuns": 0,
+    "rule": "Deduplicate the flat technologies list against categorized techStack fields and do not promote public-site detections into enterprise contexts."
+  }
+}

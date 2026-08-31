@@ -14,6 +14,7 @@
     "test:discovery-queries": "node ./scripts/test-discovery-queries.mjs",
     "test:providers": "node ./scripts/test-provider-router.mjs",
     "test:apify": "node ./scripts/test-apify-provider.mjs",
+    "test:apify-tech-intelligence": "NODE_ENV=development node ./scripts/run-apify-tech-intelligence.mjs",
     "test:exa": "node ./scripts/test-exa-provider.mjs",
     "hotfix:exa-health": "NODE_ENV=development node ./scripts/run-hotfix-06.mjs",
     "hotfix:exa-zero-candidates": "NODE_ENV=development node ./scripts/run-hotfix-07.mjs",
