@@ -1,0 +1,700 @@
+JYRA — REAL DATA TEST 13
+END-TO-END WHO PIPELINE
+PROFILE RESOLUTION → BRIGHT DATA → ICP QUALIFICATION
+
+OBJECTIVE
+
+Validate JYRA's complete company qualification ("WHO") pipeline using
+the exact same 10-company population from Tests 10–12.
+
+The required pipeline is:
+
+Canonical Company
+→ existing VERIFIED LinkedIn profile
+→ COMPANY_FIRMOGRAPHICS
+→ Bright Data
+→ entity validation
+→ normalized firmographics
+→ provenance
+→ canonical company state
+→ existing ICP qualification
+→ WHO result
+
+Profile resolution has already passed Test 12.
+
+DO NOT rerun Tavily profile resolution unless an existing verified
+identifier is unexpectedly unavailable.
+
+==================================================
+1. TEST POPULATION
+==================================================
+
+Use exactly:
+
+1. Cloudflare
+2. Panopta
+3. Amazon Web Services (AWS)
+4. Oracle Cloud
+5. Alibaba Cloud
+6. E2E Cloud
+7. Cloud4C Services
+8. Emergys
+9. ENTUNE IT Consulting Pvt Ltd
+10. Cloudi
+
+Do not replace companies.
+
+==================================================
+2. EXPECTED IDENTIFIER STATE
+==================================================
+
+Test 12 produced:
+
+VERIFIED LinkedIn coverage:
+10/10
+
+9 newly verified
+1 verified existing
+
+Load these persisted identifiers.
+
+Expected Tavily calls:
+
+0
+
+Do NOT resolve them again.
+
+If any identifier is missing, report the invariant failure rather than
+silently performing another search.
+
+==================================================
+3. BRIGHT DATA
+==================================================
+
+Route all eligible companies through:
+
+Provider Router
+→ COMPANY_FIRMOGRAPHICS
+→ Bright Data
+
+Dataset:
+
+gd_l1vikfnt1wgvvqz95w
+
+Do not call Bright Data directly outside the normal provider architecture.
+
+Respect existing cache.
+
+==================================================
+4. ENTITY VALIDATION
+==================================================
+
+Apply Bright Data Hotfix 01 semantics.
+
+The requested verified LinkedIn profile is request provenance.
+
+Bright Data does NOT need to echo the LinkedIn URL.
+
+For each response compare:
+
+verified requested LinkedIn identity
+returned company name
+returned website
+returned domain
+canonical company name
+canonical domain
+geography
+aliases
+other identity evidence
+
+Classify:
+
+CONFIRMED
+PROBABLE
+AMBIGUOUS
+WRONG
+
+Do NOT weaken identity safety merely to achieve coverage.
+
+==================================================
+5. IMPORTANT AWS CASE
+==================================================
+
+AWS was previously PROBABLE because Test 11 lacked sufficient independent
+canonical identity evidence.
+
+Test 12 has now established a VERIFIED LinkedIn company profile.
+
+Re-evaluate AWS through the normal entity matcher.
+
+Do not force CONFIRMED.
+
+Report exactly which identity evidence causes the resulting classification.
+
+==================================================
+6. NORMALIZE FIRMOGRAPHICS
+==================================================
+
+Capture legitimate returned fields including:
+
+company name
+website
+canonical domain
+LinkedIn profile
+industry
+employee count
+employee range
+LinkedIn employee count
+HQ country
+HQ region/state
+HQ city
+founded year
+description
+company type
+specialties
+followers
+other useful legitimate firmographics
+
+Missing remains UNKNOWN.
+
+Never create zero from missing numeric data.
+
+==================================================
+7. PROVENANCE
+==================================================
+
+For every accepted attribute preserve:
+
+canonical company ID
+retrieval_provider = BRIGHT_DATA
+publisher/source = LINKEDIN where applicable
+requested profile URL
+returned source information
+retrieved_at
+raw value
+normalized value
+entity confidence
+attribute confidence
+
+Never represent requested LinkedIn URL as provider-returned URL unless
+Bright Data actually returns it.
+
+==================================================
+8. CANONICAL WRITES
+==================================================
+
+CONFIRMED:
+
+May update DEVELOPMENT canonical firmographic attributes according to
+existing conflict/provenance policy.
+
+PROBABLE:
+
+Do not automatically overwrite canonical state unless existing policy
+explicitly permits safe non-authoritative observations.
+
+AMBIGUOUS:
+
+Do not attach authoritative attributes.
+
+WRONG:
+
+Do not attach.
+
+Never overwrite user-confirmed values silently.
+
+==================================================
+9. ICP
+==================================================
+
+Use the existing approved GTM-Q1 Managed SOC ICP unchanged.
+
+Known target:
+
+Geographies:
+US
+India
+UAE
+UK
+Singapore
+
+Industries:
+SaaS
+Technology
+IT Services
+Fintech
+Financial Services
+Healthcare
+Professional Services
+
+Employee size:
+100–2,000
+
+Sweet spot:
+200–1,000
+
+Do NOT change ICP to improve results.
+
+==================================================
+10. COMPANY SIZE SEMANTICS
+==================================================
+
+Use legitimate company-size data.
+
+Preserve:
+
+provider employee range
+
+and
+
+LinkedIn employee count
+
+separately.
+
+Do not treat LinkedIn employee count as guaranteed exact workforce.
+
+If provider range is:
+
+1,001–5,000
+
+and ICP maximum is:
+
+2,000
+
+do NOT automatically classify exact fit/not-fit unless existing ICP logic
+correctly handles overlapping ranges.
+
+Example:
+
+1,001–5,000 overlaps target 100–2,000.
+
+Therefore size evidence may be PARTIAL/AMBIGUOUS rather than definitely
+inside or outside.
+
+This is important.
+
+==================================================
+11. ICP RESULT
+==================================================
+
+Allowed qualification states:
+
+LIKELY_FIT
+POSSIBLE_FIT
+LIKELY_NOT_FIT
+INSUFFICIENT_DATA
+
+Missing attributes do not count negatively.
+
+Firmographic fit is not buying intent.
+
+Do not create Need or Timing.
+
+==================================================
+12. BEFORE / AFTER
+==================================================
+
+Compare against Test 10 baseline:
+
+Geography:
+1/10
+
+Industry:
+2/10
+
+Employee size:
+1/10
+
+Likely Fit:
+0
+
+Possible Fit:
+2
+
+Likely Not Fit:
+1
+
+Insufficient:
+7
+
+For Test 13 calculate:
+
+Geography:
+X/10
+
+Industry:
+X/10
+
+Employee size:
+X/10
+
+Likely Fit:
+X
+
+Possible Fit:
+X
+
+Likely Not Fit:
+X
+
+Insufficient:
+X
+
+==================================================
+13. PER-COMPANY TABLE
+==================================================
+
+For each company report:
+
+COMPANY
+
+DOMAIN
+
+VERIFIED LINKEDIN
+
+BRIGHT DATA:
+CALL / CACHE
+
+PROVIDER RESULT:
+SUCCESS / PARTIAL / NO RESULT / ERROR
+
+ENTITY STATUS
+
+INDUSTRY
+
+EMPLOYEE RANGE
+
+LINKEDIN EMPLOYEE COUNT
+
+HQ COUNTRY
+
+FOUNDED
+
+ICP GEOGRAPHY MATCH
+
+ICP INDUSTRY MATCH
+
+ICP SIZE MATCH
+
+FINAL ICP STATUS
+
+REASON
+
+COST
+
+==================================================
+14. QUALITY TARGETS
+==================================================
+
+Do not force PASS.
+
+Targets:
+
+Bright Data successful profiles:
+>= 9/10
+
+Safe entity attribution:
+>= 9/10
+
+Industry resolved:
+>= 8/10
+
+Geography resolved:
+>= 8/10
+
+Employee size resolved:
+>= 7/10
+
+Unsupported attributes:
+0
+
+Wrong entities attached:
+0
+
+Attribute provenance:
+100%
+
+==================================================
+15. COST
+==================================================
+
+Track:
+
+Bright Data real calls
+
+cache hits
+
+successful profiles
+
+estimated/actual cost
+
+cost/successful profile
+
+cost/company
+
+cost/safely qualified company
+
+Also include previous profile-resolution cost:
+
+Test 12:
+$0.09 estimated
+
+But distinguish:
+
+PROFILE RESOLUTION COST
+
+from
+
+FIRMOGRAPHIC COST.
+
+Do not combine them invisibly.
+
+Calculate approximate complete WHO data acquisition cost for these 10
+companies.
+
+==================================================
+16. CACHE / IDEMPOTENCY
+==================================================
+
+After first run verify a second execution does not unnecessarily repeat:
+
+Tavily profile searches
+
+or
+
+fresh Bright Data calls
+
+when valid cached results exist.
+
+Report:
+
+second-run Tavily calls
+second-run Bright Data calls
+cache hits
+
+==================================================
+17. NO WHEN/WHY
+==================================================
+
+Do NOT research:
+
+security hiring
+leadership changes
+funding
+security stack
+cloud changes
+news
+breaches
+procurement
+Managed SOC need
+
+Do not create:
+
+signals
+signal clusters
+Need
+Timing
+Relationship
+opportunity score
+opportunity state
+buying intent
+
+This test ends at WHO.
+
+==================================================
+18. NO CONTACTS
+==================================================
+
+Do not enrich:
+
+people
+emails
+phones
+buying committees
+
+Contact enrichment:
+0
+
+==================================================
+19. NO OTHER PROVIDERS
+==================================================
+
+Expected:
+
+Tavily new calls:
+0
+
+Exa:
+0
+
+Apify:
+0
+
+Only Bright Data may make fresh provider calls.
+
+==================================================
+20. DATABASE SAFETY
+==================================================
+
+DEVELOPMENT ONLY.
+
+Use development database.
+
+Production operations:
+0
+
+Do not reset/migrate/seed/truncate/modify production.
+
+==================================================
+21. REQUIRED REPORT
+==================================================
+
+Create:
+
+REAL_DATA_TEST_13.md
+
+Report:
+
+COMPANIES:
+10
+
+VERIFIED LINKEDIN BEFORE TEST:
+10/10
+
+BRIGHT DATA ELIGIBLE:
+10/10
+
+BRIGHT DATA REAL CALLS:
+
+CACHE HITS:
+
+SUCCESSFUL PROFILES:
+
+PARTIAL:
+
+NO RESULT:
+
+ERROR:
+
+CONFIRMED ENTITIES:
+
+PROBABLE:
+
+AMBIGUOUS:
+
+WRONG:
+
+INDUSTRY RESOLVED:
+
+GEOGRAPHY RESOLVED:
+
+EMPLOYEE SIZE RESOLVED:
+
+DOMAIN RESOLVED:
+
+FOUNDED RESOLVED:
+
+DESCRIPTION RESOLVED:
+
+LIKELY FIT:
+
+POSSIBLE FIT:
+
+LIKELY NOT FIT:
+
+INSUFFICIENT:
+
+TEST 10 INDUSTRY:
+2/10
+
+TEST 13 INDUSTRY:
+X/10
+
+TEST 10 GEOGRAPHY:
+1/10
+
+TEST 13 GEOGRAPHY:
+X/10
+
+TEST 10 SIZE:
+1/10
+
+TEST 13 SIZE:
+X/10
+
+PROFILE RESOLUTION COST:
+$0.09 estimated from Test 12
+
+TEST 13 BRIGHT DATA COST:
+
+COMPLETE WHO COST:
+
+AVERAGE WHO COST/COMPANY:
+
+ATTRIBUTE PROVENANCE:
+PASS/FAIL
+
+ENTITY SAFETY:
+PASS/FAIL
+
+UNSUPPORTED ATTRIBUTES:
+YES/NO
+
+WRONG ENTITY ATTACHED:
+YES/NO
+
+TAVILY NEW CALLS:
+0
+
+EXA CALLS:
+0
+
+APIFY CALLS:
+0
+
+CONTACT CALLS:
+0
+
+SIGNALS:
+0
+
+BUYING INTENT:
+0
+
+PRODUCTION OPERATIONS:
+0
+
+FINAL STATUS:
+PASS/FAIL
+
+==================================================
+22. FINAL DECISION
+==================================================
+
+Return one:
+
+A.
+WHO PIPELINE PASSES.
+Firmographic qualification is sufficiently reliable for MVP.
+Move to WHEN/WHY.
+
+B.
+Bright Data coverage is insufficient despite verified identifiers.
+Evaluate second firmographic provider.
+
+C.
+Entity attribution remains unsafe.
+Fix entity resolution.
+
+D.
+ICP qualification semantics are producing incorrect decisions.
+Fix qualification logic.
+
+==================================================
+STOP
+==================================================
+
+STOP after complete WHO qualification for these 10 companies.
+
+Do NOT start WHEN/WHY automatically.
+Do NOT test Apify Company Intelligence yet.
