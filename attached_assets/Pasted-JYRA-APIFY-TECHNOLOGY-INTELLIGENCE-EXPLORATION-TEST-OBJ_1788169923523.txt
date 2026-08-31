@@ -1,0 +1,442 @@
+JYRA — APIFY TECHNOLOGY INTELLIGENCE EXPLORATION TEST
+
+OBJECTIVE
+
+Evaluate whether this Apify Actor is useful as a low-cost source of
+technology and infrastructure intelligence for JYRA:
+
+technicaldost/company-intelligence-api
+
+DO NOT integrate it into JYRA yet.
+
+We already have a working WHO pipeline:
+Profile Resolution → Bright Data → ICP Qualification.
+
+This test is ONLY to determine whether the Actor can provide useful
+technology/infrastructure observations for future WHEN/WHY research.
+
+==================================================
+TEST EXACTLY 3 COMPANIES
+==================================================
+
+1. emergys.com
+2. cloudflare.com
+3. e2ecloud.com
+
+Do not add more companies.
+
+==================================================
+USE EXISTING APIFY CREDENTIALS
+==================================================
+
+Use the existing Apify credential configured in JYRA.
+
+Never print, log, expose or hardcode the token.
+
+Use Actor:
+
+technicaldost/company-intelligence-api
+
+Inspect and use the Actor's actual current input schema.
+Do not guess parameter names.
+
+==================================================
+NO DATABASE WRITES
+==================================================
+
+Exploration only.
+
+Do NOT:
+
+update canonical companies
+create facts
+create signals
+create opportunities
+change ICP
+create contacts
+
+Preserve results only in the test report/output.
+
+==================================================
+CAPTURE RAW OUTPUT
+==================================================
+
+For each company capture the complete useful response.
+
+Specifically inspect:
+
+technologies
+technology categories
+frameworks
+CMS
+analytics
+CRM
+marketing tools
+cloud technologies
+hosting
+CDN
+security technologies
+DNS
+MX records
+email provider
+nameservers
+infrastructure information
+social URLs
+company information
+confidence/source information
+
+Also capture all actual returned field names.
+
+==================================================
+CRITICAL TECHNOLOGY CONTEXT RULE
+==================================================
+
+Do NOT treat "detected technology" as "company technology stack."
+
+Classify every useful technology observation into:
+
+MARKETING_WEB
+
+PRODUCT_APPLICATION
+
+CLOUD_INFRASTRUCTURE
+
+CORPORATE_IT
+
+SECURITY_STACK
+
+DATA_STACK
+
+DEVOPS
+
+UNKNOWN_CONTEXT
+
+==================================================
+PUBLIC WEBSITE DETECTIONS
+==================================================
+
+Technologies detected through:
+
+HTML
+JavaScript
+cookies
+headers
+website assets
+
+should default to:
+
+context = MARKETING_WEB
+relationship = DETECTED
+
+Example:
+
+WordPress detected from HTML
+
+→ MARKETING_WEB / DETECTED
+
+NOT:
+
+PRODUCT_APPLICATION / CURRENTLY_USED
+
+==================================================
+MX / EMAIL
+==================================================
+
+Treat MX/DNS separately.
+
+Example:
+
+Microsoft 365 MX evidence
+
+may support:
+
+Microsoft 365
+context = CORPORATE_IT
+relationship = DETECTED
+
+But it MUST NOT imply:
+
+Azure
+Sentinel
+Defender
+Intune
+
+Google Workspace MX MUST NOT imply GCP application infrastructure.
+
+==================================================
+CLOUD SAFETY
+==================================================
+
+If AWS/Azure/GCP is detected only because the public website is hosted
+there:
+
+classify as public website hosting evidence.
+
+Do NOT infer the company's product/application infrastructure.
+
+==================================================
+SECURITY SAFETY
+==================================================
+
+Cloudflare, security headers, CDN/WAF detections etc. do NOT automatically
+prove enterprise SECURITY_STACK usage.
+
+Only classify SECURITY_STACK when evidence actually supports that context.
+
+Otherwise use:
+
+MARKETING_WEB
+
+or:
+
+UNKNOWN_CONTEXT
+
+==================================================
+RELATIONSHIP
+==================================================
+
+For this Actor most observations will probably be:
+
+DETECTED
+
+Do not automatically classify:
+
+CURRENTLY_USED
+HIRING_FOR
+IMPLEMENTING
+MIGRATING_TO
+MIGRATING_FROM
+REPLACING
+
+unless actual evidence supports it.
+
+==================================================
+FOR EACH TECHNOLOGY REPORT
+==================================================
+
+TECHNOLOGY
+
+RAW ACTOR CATEGORY
+
+DETECTION BASIS
+
+JYRA CONTEXT
+
+RELATIONSHIP
+
+CONFIDENCE
+
+USEFUL FOR MANAGED SOC:
+YES / MAYBE / NO
+
+REASON
+
+==================================================
+IMPORTANT VALUE TEST
+==================================================
+
+Separate observations into:
+
+A. PUBLIC WEB TECH
+
+Examples:
+WordPress
+React on marketing website
+Google Analytics
+jQuery
+HubSpot tracking
+
+B. CORPORATE IT
+
+Examples:
+Microsoft 365
+Google Workspace
+
+C. PRODUCT/APPLICATION/CLOUD
+
+Only where evidence supports actual application/product infrastructure.
+
+D. SECURITY STACK
+
+Only where evidence supports actual enterprise/security usage.
+
+E. UNKNOWN
+
+==================================================
+METRICS
+==================================================
+
+For each company report:
+
+Total technologies detected
+
+Public-web observations
+
+Corporate-IT observations
+
+Product/application observations
+
+Cloud-infrastructure observations
+
+Security-stack observations
+
+Unknown-context observations
+
+MX/email-provider available:
+YES/NO
+
+==================================================
+COST
+==================================================
+
+Measure:
+
+actual Actor runs
+domains processed
+successful domains
+failed domains
+latency
+actual cost if available
+estimated cost if only estimate available
+cost/company
+
+Never fabricate cost.
+
+==================================================
+NO OTHER PROVIDERS
+==================================================
+
+Bright Data calls: 0
+Tavily calls: 0
+Exa calls: 0
+Other Apify Actors: 0
+
+==================================================
+DECISION CRITERIA
+==================================================
+
+Do NOT judge the Actor based simply on number of technologies.
+
+Judge whether it gives JYRA useful information beyond generic public
+website fingerprints.
+
+Return ratings:
+
+PUBLIC WEB TECH:
+STRONG / MODERATE / WEAK
+
+CORPORATE IT:
+STRONG / MODERATE / WEAK
+
+PRODUCT/APPLICATION STACK:
+STRONG / MODERATE / WEAK
+
+CLOUD INFRASTRUCTURE:
+STRONG / MODERATE / WEAK
+
+SECURITY STACK:
+STRONG / MODERATE / WEAK
+
+MANAGED SOC RELEVANCE:
+STRONG / MODERATE / WEAK
+
+COST EFFICIENCY:
+STRONG / MODERATE / WEAK
+
+==================================================
+FINAL RECOMMENDATION
+==================================================
+
+Choose ONE:
+
+A.
+Actor provides useful technology/infrastructure intelligence.
+Test on the full 10-company population.
+
+B.
+Actor is useful only for public website technology / MX information.
+Use selectively.
+
+C.
+Actor produces mostly low-value public website fingerprints.
+Do not integrate.
+
+D.
+Results are inconclusive.
+Run another controlled test.
+
+==================================================
+OUTPUT
+==================================================
+
+Create:
+
+APIFY_TECH_INTELLIGENCE_EXPLORATION_01.md
+
+and:
+
+APIFY_TECH_INTELLIGENCE_EXPLORATION_01.json
+
+Final summary must include:
+
+Companies tested: 3
+
+Successful:
+
+Total technology observations:
+
+Public-web:
+
+Corporate IT:
+
+Product/application:
+
+Cloud infrastructure:
+
+Security stack:
+
+Unknown:
+
+MX/email coverage:
+
+Total cost:
+
+Cost/company:
+
+Latency:
+
+PUBLIC WEB TECH:
+
+CORPORATE IT:
+
+PRODUCT/APPLICATION:
+
+CLOUD:
+
+SECURITY:
+
+MANAGED SOC RELEVANCE:
+
+COST EFFICIENCY:
+
+RECOMMENDATION:
+
+Production operations: 0
+
+==================================================
+DATABASE SAFETY
+==================================================
+
+DEVELOPMENT ONLY.
+
+Do not migrate/reset/seed/truncate/modify production.
+
+==================================================
+STOP
+==================================================
+
+STOP after the 3-company exploration.
+
+Do NOT integrate the Actor.
+Do NOT test all 10 companies.
+Do NOT start WHEN/WHY.
