@@ -1,0 +1,854 @@
+JYRA — QUERY ENGINE FIX 01
+IMPLEMENT VALIDATED GENERIC RESEARCH QUERY STRATEGY
+
+PURPOSE
+
+Retrieval Bake-off 01 established:
+
+Current Tavily:
+5/7 events found
+71.4% retrieval recall
+
+Improved generic Tavily:
+7/7 events found
+100% retrieval recall
+
+Improved generic Exa:
+7/7 events found
+100% retrieval recall
+
+Decision:
+A — QUERY CONSTRUCTION IS PRIMARY BOTTLENECK
+
+Exa produced cleaner/faster results but provided ZERO incremental event
+coverage over improved Tavily.
+
+Therefore:
+
+IMPLEMENT the validated generic query-construction improvement into
+JYRA's normal Tavily research path.
+
+DO NOT integrate Exa.
+DO NOT add Unipile.
+DO NOT change provider routing.
+
+IMPORTANT:
+
+The bake-off allowed up to 2 improved queries.
+
+Production behavior must NOT blindly execute 2 searches for every
+research question.
+
+Implement:
+
+QUERY 1
+→ evaluate retrieval sufficiency
+→ QUERY 2 only when necessary.
+
+==================================================
+1. DATABASE SAFETY
+==================================================
+
+DEVELOPMENT ONLY.
+
+Use ONLY development database during implementation and testing.
+
+Create/apply migrations to DEVELOPMENT only if genuinely required.
+
+DO NOT:
+
+migrate production
+reset production
+seed production
+truncate production
+modify production customer data
+test against production
+
+Production schema changes only through explicit production migration
+workflow.
+
+Prefer NO schema migration unless necessary.
+
+==================================================
+2. SCOPE
+==================================================
+
+Change ONLY:
+
+generic research query construction
+adaptive second-query execution
+query/retrieval diagnostics
+raw provider-result retention required for future forensic review
+
+DO NOT CHANGE:
+
+fact extraction
+fact ontology
+fact validation
+signal definitions
+signal mapping
+ICP logic
+entity resolution
+canonical identity
+opportunity scoring
+confidence logic
+ranking
+contacts
+UI
+outreach
+Exa routing
+provider priority
+
+==================================================
+3. USE THE VALIDATED BAKE-OFF STRATEGY
+==================================================
+
+Use the generic improved-query approach from:
+
+RETRIEVAL_BAKEOFF_01_QUERY_COMPARISON.json
+
+and related Retrieval Bake-off 01 artifacts.
+
+Do NOT invent an entirely new query strategy.
+
+Identify exactly what generic changes caused:
+
+Current Tavily 5/7
+→
+Improved Tavily 7/7
+
+Implement those GENERIC improvements in the normal research path.
+
+Do not hardcode the seven benchmark companies or their events.
+
+==================================================
+4. RESEARCH QUESTION IS THE UNIT
+==================================================
+
+Query generation must start from the ResearchQuestion.
+
+Inputs may include:
+
+company canonical name
+verified domain
+industry if known
+geography if useful
+research question category
+research objective
+approved signal-pack semantics
+freshness window
+known generic aliases already verified
+
+It must NOT depend on benchmark/reference-event knowledge.
+
+Conceptually:
+
+COMPANY IDENTITY
++
+RESEARCH OBJECTIVE
++
+EVENT SEMANTICS
++
+TEMPORAL CONTEXT
+
+==================================================
+5. QUERY STRATEGY
+==================================================
+
+For each research question generate:
+
+PRIMARY_QUERY
+
+and optionally:
+
+FALLBACK_QUERY
+
+PRIMARY_QUERY should maximize precision while covering the relevant
+event vocabulary.
+
+FALLBACK_QUERY should broaden or vary the generic event terminology
+without introducing unrelated research areas.
+
+Do not execute fallback automatically.
+
+==================================================
+6. GENERIC EVENT SEMANTICS
+==================================================
+
+Query construction must be driven by research category.
+
+For example:
+
+SECURITY LEADERSHIP
+
+Generic semantic vocabulary may include:
+
+security
+cybersecurity
+information security
+CISO
+Chief Information Security Officer
+security leadership
+Head of Security
+
+SECURITY HIRING
+
+May include:
+
+security
+cybersecurity
+SOC
+SIEM
+security engineer
+security analyst
+security hiring
+jobs
+
+FUNDED / RISK / SECURITY PROGRAM
+
+May include:
+
+security program
+cybersecurity initiative
+security investment
+risk program
+security transformation
+compliance
+security modernization
+
+SECURITY STACK CHANGE
+
+May include:
+
+SIEM
+SOC
+security platform
+security implementation
+security migration
+security replacement
+cybersecurity platform
+
+These are generic examples.
+
+Use the validated bake-off semantics wherever available.
+
+Do NOT overfit to the frozen controls.
+
+==================================================
+7. DO NOT CREATE INTENT-LADEN QUERIES
+==================================================
+
+Queries must search for observable events.
+
+Do NOT search for conclusions such as:
+
+"[company] needs managed SOC"
+
+"[company] buying cybersecurity"
+
+"[company] looking for managed security provider"
+
+"[company] purchase intent"
+
+"[company] likely to buy SOC"
+
+JYRA searches for EVENTS and FACTS.
+
+Opportunity interpretation happens downstream.
+
+==================================================
+8. PRIMARY QUERY EXECUTION
+==================================================
+
+Normal flow:
+
+ResearchQuestion
+↓
+build PRIMARY_QUERY
+↓
+Tavily WEB_SEARCH
+↓
+retain raw results
+↓
+evaluate RETRIEVAL SUFFICIENCY
+
+Do not immediately execute the fallback query.
+
+==================================================
+9. RETRIEVAL SUFFICIENCY GATE
+==================================================
+
+Implement a deterministic/conservative sufficiency assessment.
+
+The purpose is NOT to decide whether an opportunity exists.
+
+It only decides:
+
+"Do we have enough potentially relevant evidence to avoid another
+search?"
+
+Possible statuses:
+
+SUFFICIENT_RETRIEVAL
+
+INSUFFICIENT_RETRIEVAL
+
+PROVIDER_FAILURE
+
+AMBIGUOUS_RETRIEVAL
+
+==================================================
+10. WHAT COUNTS AS SUFFICIENT RETRIEVAL
+==================================================
+
+Retrieval can be considered sufficient when the primary search returns
+one or more credible results materially relevant to the research
+question.
+
+Consider observable characteristics such as:
+
+correct entity match
+
+question-category relevance
+
+event-oriented title/snippet/content
+
+credible source
+
+reasonable temporal relevance
+
+Do NOT require a signal to exist.
+
+Do NOT require a fact to be approved.
+
+Do NOT infer purchase intent.
+
+Example:
+
+Research question:
+Has Company X recently expanded cybersecurity hiring?
+
+Result:
+Official careers page containing security vacancies.
+
+That can be sufficient retrieval.
+
+==================================================
+11. WHAT DOES NOT COUNT AS SUFFICIENT
+==================================================
+
+Do not consider retrieval sufficient merely because Tavily returned
+results.
+
+Examples:
+
+company homepage
+
+generic About page
+
+generic security marketing page
+
+seller/vendor content
+
+wrong entity
+
+generic LinkedIn profile with no question-relevant event
+
+irrelevant result
+
+stale unrelated content
+
+keyword coincidence
+
+Result count > 0 is NOT sufficient by itself.
+
+==================================================
+12. FALLBACK QUERY TRIGGER
+==================================================
+
+Execute FALLBACK_QUERY only when:
+
+PRIMARY_QUERY completed successfully
+
+AND
+
+retrieval status is:
+
+INSUFFICIENT_RETRIEVAL
+or
+AMBIGUOUS_RETRIEVAL
+
+Do not use fallback to compensate for provider outage.
+
+Provider errors must follow existing retry/error behavior.
+
+==================================================
+13. FALLBACK QUERY BEHAVIOR
+==================================================
+
+Fallback must be a generic semantic variation.
+
+It may:
+
+broaden terminology
+use alternate role terminology
+use alternate event terminology
+reduce overly restrictive terms
+change query structure
+
+It must NOT:
+
+use benchmark labels
+use reference event text
+use known answer URLs
+use known event-specific person names
+brute-force many query variations
+
+Maximum:
+
+2 Tavily search queries per ResearchQuestion in this milestone.
+
+==================================================
+14. STOP CONDITION
+==================================================
+
+After fallback query:
+
+STOP retrieval for that ResearchQuestion.
+
+Do not recursively generate more queries.
+
+Maximum:
+
+PRIMARY = 1
+FALLBACK = 1
+
+TOTAL <= 2 Tavily calls per question.
+
+==================================================
+15. DEDUPLICATION
+==================================================
+
+Combine primary and fallback results using existing canonical evidence
+deduplication.
+
+Deduplicate using appropriate combinations of:
+
+canonical URL
+content hash
+event identity
+publisher
+normalized title
+
+Do not inflate evidence because the same source appeared in both
+queries.
+
+==================================================
+16. RAW PROVIDER RESULT RETENTION
+==================================================
+
+Fix Cycle 02 showed historical provider payloads were unavailable for
+forensic review.
+
+Retrieval Bake-off demonstrated useful raw-result retention.
+
+Implement appropriate development/production-safe retrieval diagnostics
+so future research can reconstruct:
+
+provider
+query
+timestamp
+result rank
+title
+URL
+publisher/domain
+snippet/highlight
+published date
+provider score if available
+retrieval disposition
+
+Do NOT store API keys.
+
+Do NOT store authorization headers.
+
+Apply credential redaction / DLP safeguards.
+
+Do not redesign the entire evidence architecture unnecessarily.
+
+==================================================
+17. PUBLISHER VS RETRIEVAL PROVIDER
+==================================================
+
+Preserve distinction:
+
+RETRIEVAL PROVIDER:
+Tavily
+
+PUBLISHER:
+company website
+LinkedIn
+Reuters
+industry publication
+etc.
+
+Never represent Tavily as the publisher of evidence.
+
+==================================================
+18. ENTITY SAFETY
+==================================================
+
+Improved Tavily produced wrong-entity results in the bake-off.
+
+Therefore query recall improvement MUST NOT weaken entity validation.
+
+Every retrieved result must retain entity-match evaluation.
+
+Wrong-entity results:
+
+may remain in raw retrieval diagnostics
+
+but MUST NOT become accepted buyer evidence.
+
+Do not change entity thresholds in this milestone.
+
+==================================================
+19. SELLER VS BUYER SAFETY
+==================================================
+
+Preserve existing rule:
+
+seller/vendor/service marketing content must not become buyer-event
+evidence.
+
+Example:
+
+A cybersecurity provider advertising Managed SOC does NOT mean that
+provider is buying Managed SOC.
+
+Query improvements must not weaken this protection.
+
+==================================================
+20. TEMPORAL SAFETY
+==================================================
+
+Preserve:
+
+published date
+event date if explicit
+retrieval date
+freshness classification
+
+Do not make historical events appear current.
+
+Missing publication date remains UNKNOWN unless defensibly derived.
+
+==================================================
+21. COST CONTROL
+==================================================
+
+The bake-off improved Tavily path used 2 queries/control.
+
+Production should be adaptive.
+
+Track:
+
+questions using 1 query
+
+questions using 2 queries
+
+fallback rate
+
+estimated cost
+
+actual provider cost when available
+
+event-relevant retrieval rate after primary
+
+event-relevant retrieval rate after fallback
+
+The objective is:
+
+retain recall improvement
+WITHOUT blindly doubling research cost.
+
+==================================================
+22. IMPLEMENTATION TEST — EXACT 7 RETRIEVAL CONTROLS
+==================================================
+
+After implementation, rerun ONLY the exact 7 retrieval-failure controls.
+
+This is NOT yet the full ten-control benchmark.
+
+Reference-event labels must remain hidden from execution.
+
+Use NORMAL JYRA research execution.
+
+Do not use the bake-off runner as the production execution path.
+
+The purpose is to verify the new normal query engine reproduces the
+bake-off retrieval improvement.
+
+==================================================
+23. IMPORTANT — RETRIEVAL TEST ONLY
+==================================================
+
+For this milestone measure retrieval before downstream extraction.
+
+For each control report:
+
+COMPANY
+
+RESEARCH QUESTION
+
+PRIMARY QUERY
+
+PRIMARY RESULTS
+
+PRIMARY RETRIEVAL STATUS
+
+FALLBACK REQUIRED?
+
+FALLBACK QUERY
+
+FALLBACK RESULTS
+
+FINAL UNIQUE RESULTS
+
+REFERENCE EVENT RETRIEVED?
+
+MATCH TYPE
+
+MATCH RANK
+
+SOURCE
+
+SOURCE AUTHORITY
+
+WRONG ENTITY RESULTS
+
+IRRELEVANT RESULTS
+
+CALL COUNT
+
+ESTIMATED COST
+
+ACTUAL COST
+
+==================================================
+24. TARGET
+==================================================
+
+Expected target based on bake-off:
+
+REFERENCE EVENTS RETRIEVED >= 7/7
+
+However:
+
+DO NOT manipulate queries to force 7/7.
+
+If normal production query generation does not reproduce the bake-off
+result, report failure honestly.
+
+==================================================
+25. PRIMARY VS FALLBACK ANALYSIS
+==================================================
+
+Report:
+
+EVENTS FOUND BY PRIMARY QUERY ONLY
+
+EVENTS REQUIRING FALLBACK
+
+EVENTS STILL MISSED
+
+QUESTIONS WITH 1 CALL
+
+QUESTIONS WITH 2 CALLS
+
+FALLBACK RATE
+
+This tells us the real cost impact.
+
+==================================================
+26. REGRESSION SAFETY
+==================================================
+
+Run regression tests proving:
+
+generic query generation works for unseen company names
+
+benchmark company/event names are not hardcoded
+
+reference event text is not used
+
+max 2 queries enforced
+
+fallback only runs after insufficient/ambiguous retrieval
+
+provider failure does not become "no evidence"
+
+wrong entity does not become accepted evidence
+
+seller content does not become buyer evidence
+
+duplicate results do not inflate evidence
+
+temporal rules remain unchanged
+
+==================================================
+27. DO NOT FIX BLACK DUCK
+==================================================
+
+Black Duck's fact-extraction failure is a SEPARATE issue.
+
+If retrieval succeeds for Black Duck during this test:
+
+record retrieval success.
+
+Do NOT modify fact extraction to make its signal fire.
+
+==================================================
+28. DO NOT FIX IDENTITY
+==================================================
+
+Do not modify the known identity issues:
+
+Digital Maelstrom
+
+Mandiant
+
+Managed Services - Monitoring 24/7
+
+Corsa
+
+Identity Fix is a separate milestone.
+
+==================================================
+29. DO NOT RUN FULL CONTROL RETEST
+==================================================
+
+Do NOT yet calculate the new final 10-control signal recall.
+
+Why:
+
+Query Engine Fix
++
+Black Duck Extraction Fix
++
+Identity Fix
+
+should be completed before the exact blind benchmark is rerun.
+
+This prevents repeated benchmark contamination.
+
+==================================================
+30. REQUIRED ARTIFACTS
+==================================================
+
+Generate:
+
+QUERY_ENGINE_FIX_01.md
+
+QUERY_ENGINE_FIX_01.json
+
+QUERY_ENGINE_FIX_01_RETRIEVAL_TEST.json
+
+QUERY_ENGINE_FIX_01_QUERY_TRACES.json
+
+==================================================
+31. REQUIRED SUMMARY
+==================================================
+
+Return:
+
+IMPLEMENTATION:
+PASS / FAIL
+
+RETRIEVAL CONTROLS:
+7
+
+EVENTS RETRIEVED:
+X/7
+
+RETRIEVAL RECALL:
+X%
+
+PRIMARY-ONLY EVENT RETRIEVAL:
+X/7
+
+EVENTS REQUIRING FALLBACK:
+X
+
+EVENTS STILL MISSED:
+X
+
+TOTAL TAVILY CALLS:
+
+AVERAGE CALLS PER CONTROL:
+
+FALLBACK RATE:
+
+ESTIMATED COST:
+
+ACTUAL REPORTED COST:
+
+WRONG ENTITY RESULTS:
+
+WRONG ENTITY ACCEPTED AS EVIDENCE:
+0 required
+
+SELLER CONTENT ACCEPTED AS BUYER SIGNAL:
+0 required
+
+PRODUCTION OPERATIONS:
+0 required
+
+==================================================
+32. FINAL DECISION
+==================================================
+
+Return exactly ONE:
+
+A — QUERY ENGINE FIX VALIDATED
+
+Normal JYRA research execution reproduces strong retrieval coverage
+without unacceptable safety regressions.
+
+B — QUERY IMPROVEMENT WORKS BUT FALLBACK COST IS TOO HIGH
+
+Retrieval improves but adaptive search requires refinement.
+
+C — BAKE-OFF RESULT NOT REPRODUCED
+
+Normal JYRA execution does not achieve comparable retrieval.
+
+D — QUERY ENGINE INTRODUCED QUALITY / ENTITY REGRESSIONS
+
+Recall increased but unsafe evidence acceptance increased.
+
+E — IMPLEMENTATION / TEST INCONCLUSIVE
+
+Execution problems prevent a valid conclusion.
+
+==================================================
+33. STOP
+==================================================
+
+STOP after Query Engine Fix 01.
+
+DO NOT:
+
+integrate Exa
+integrate Unipile
+change provider routing
+fix Black Duck extraction
+fix identity
+change ICP
+change signals
+change opportunity scoring
+run contacts
+change UI
+rerun full 10-control benchmark
+rerun 50-company benchmark
+
+Return the result for human review.
