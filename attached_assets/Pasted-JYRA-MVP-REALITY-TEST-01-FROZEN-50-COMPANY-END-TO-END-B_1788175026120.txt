@@ -1,0 +1,1494 @@
+JYRA — MVP REALITY TEST 01
+FROZEN 50-COMPANY END-TO-END BENCHMARK
+
+PURPOSE
+
+This is the first full product-level validation of JYRA.
+
+Do NOT treat this as another component test.
+
+We want to answer one question:
+
+"If a real customer gives JYRA their business/offering, can JYRA find
+the right companies, identify which ones deserve attention now, explain
+why with evidence, identify who should be approached, and produce a
+usable sales-priority list at economically viable cost?"
+
+Run the complete existing JYRA MVP pipeline.
+
+==================================================
+0. CRITICAL RULE — FREEZE THE PRODUCT
+==================================================
+
+Before execution:
+
+FREEZE the current intelligence behavior.
+
+During the benchmark DO NOT:
+
+fix algorithms
+change thresholds
+change signal definitions
+change ICP
+modify prompts because results look bad
+change provider routing
+add providers
+loosen entity matching
+loosen evidence standards
+change opportunity logic
+change ranking rules
+change confidence logic
+change research stop logic
+
+If something fails:
+
+RECORD THE FAILURE.
+
+Do not repair it during the benchmark.
+
+Engineering/runtime fixes are allowed ONLY if absolutely necessary to
+make an already-implemented path execute, and must be separately
+reported.
+
+No intelligence/business-logic tuning during the run.
+
+==================================================
+1. DATABASE SAFETY
+==================================================
+
+DEVELOPMENT ONLY.
+
+Use ONLY the development database.
+
+Do NOT:
+
+migrate production
+reset production
+seed production
+truncate production
+write test data to production
+modify production customer data
+
+Production operations must equal:
+
+0
+
+==================================================
+2. SELLER / PROJECT
+==================================================
+
+Use the existing:
+
+Seller:
+Aadit Technologies
+
+Project:
+GTM-Q1
+
+Offering:
+Managed SOC
+
+Use the existing approved:
+
+Business Twin
+ICP
+Managed SOC Opportunity Intelligence Pack
+signal definitions
+signal clustering
+opportunity engine
+research planner
+provider router
+WHY engine
+buying committee logic
+contact enrichment logic
+research economics logic
+
+Do not change them for this test.
+
+==================================================
+3. EXISTING ICP
+==================================================
+
+Use the currently approved GTM-Q1 ICP unchanged.
+
+Geographies:
+
+US
+India
+UAE
+UK
+Singapore
+
+Industries:
+
+SaaS
+Technology
+IT Services
+Fintech
+Financial Services
+Healthcare
+Professional Services
+
+Employee size:
+
+100–2,000
+
+Sweet spot:
+
+200–1,000
+
+Technology preferences/context already present in the approved ICP may
+be used according to existing semantics.
+
+Do not introduce new hard filters.
+
+==================================================
+4. BENCHMARK POPULATION — 50 COMPANIES
+==================================================
+
+Create a NEW benchmark population.
+
+Do NOT use the 10 companies from Tests 10–14A.
+
+Do NOT intentionally choose companies simply because prior JYRA tests
+already researched them.
+
+Target:
+
+50 unique canonical companies.
+
+The population must contain a realistic mixture of:
+
+strong ICP candidates
+borderline ICP candidates
+companies ultimately outside ICP
+companies with rich public information
+companies with sparse public information
+companies with potentially relevant recent events
+companies with no obvious current events
+companies that could create identity ambiguity
+companies that sell technology/security themselves
+companies that are actual potential buyers
+
+Do not make all 50 obvious winners.
+
+==================================================
+5. DISCOVERY
+==================================================
+
+Use the EXISTING COMPANY_DISCOVERY path.
+
+Expected primary provider:
+
+Exa
+
+Use the approved ICP as discovery context.
+
+Discovery must remain neutral.
+
+Do NOT search using phrases designed to select companies already showing
+Managed SOC buying signals.
+
+BAD discovery:
+
+"companies hiring cybersecurity teams and needing managed SOC"
+
+GOOD discovery:
+
+companies matching the ICP characteristics.
+
+Signals must be discovered AFTER candidate discovery.
+
+==================================================
+6. CANONICALIZATION
+==================================================
+
+Run normal:
+
+candidate discovery
+→ entity resolution
+→ canonical company resolution
+→ deduplication
+
+Reject:
+
+duplicate subsidiaries presented as independent entities when inappropriate
+platform URLs as domains
+ambiguous identities
+wrong-country same-name companies
+unresolvable entities
+
+Track every rejection.
+
+Target final benchmark:
+
+50 unique canonical companies.
+
+If more candidates are required to reach 50 after rejection, continue
+discovery within controlled limits.
+
+==================================================
+7. PROFILE RESOLUTION
+==================================================
+
+For companies missing a verified LinkedIn company profile:
+
+use existing:
+
+COMPANY_PROFILE_RESOLUTION
+→ Tavily
+
+Use Test 12 semantics unchanged.
+
+Do not guess LinkedIn URLs.
+
+Allowed:
+
+VERIFIED
+PROBABLE
+AMBIGUOUS
+NOT_FOUND
+WRONG
+
+Only safely resolved identifiers may drive authoritative downstream
+enrichment.
+
+==================================================
+8. FIRMOGRAPHICS
+==================================================
+
+For eligible companies run:
+
+COMPANY_FIRMOGRAPHICS
+→ Bright Data
+
+Use existing Test 13 logic.
+
+Preserve:
+
+industry
+geography
+employee range
+LinkedIn employee count
+domain
+founded year
+description
+other legitimate attributes
+
+Keep provider range and LinkedIn employee count separate.
+
+Missing remains UNKNOWN.
+
+Do not invent zero.
+
+Entity attribution safety must remain intact.
+
+==================================================
+9. WHO / ICP QUALIFICATION
+==================================================
+
+Qualify all 50 companies using existing logic.
+
+Allowed results:
+
+LIKELY_FIT
+POSSIBLE_FIT
+LIKELY_NOT_FIT
+INSUFFICIENT_DATA
+
+Missing information does not equal negative fit.
+
+WHO and WHEN remain separate.
+
+Report:
+
+Likely Fit
+Possible Fit
+Likely Not Fit
+Insufficient
+
+==================================================
+10. WHEN / WHY RESEARCH POPULATION
+==================================================
+
+Deep WHEN/WHY research should NOT automatically be performed equally
+across all 50.
+
+Use existing research economics.
+
+Research Planner should determine where deeper research has value.
+
+However:
+
+ALL LIKELY_FIT companies must receive an explicit WHEN/WHY research
+decision.
+
+POSSIBLE_FIT companies may be researched when expected information value
+supports it.
+
+LIKELY_NOT_FIT should normally not receive expensive deep research.
+
+INSUFFICIENT_DATA may trigger additional qualification research if
+economically justified.
+
+Record why research did or did not occur.
+
+==================================================
+11. TEST 14A SCHEDULING SEMANTICS
+==================================================
+
+Preserve the Test 14A fix.
+
+Approved Managed SOC research areas must schedule independently:
+
+SECURITY_LEADERSHIP
+
+SECURITY_HIRING
+
+FUNDED_RISK_PROGRAM
+
+SECURITY_STACK_CHANGE
+
+One research question must not incorrectly block another.
+
+Every planned question needs an explicit terminal disposition.
+
+==================================================
+12. MANAGED SOC SIGNAL RESEARCH
+==================================================
+
+Use the existing approved signal pack.
+
+Research evidence such as:
+
+recent security leadership appointment/change
+
+SOC/security/cybersecurity hiring
+
+security operations expansion
+
+SIEM implementation/migration
+
+EDR/XDR/security-platform change
+
+security transformation
+
+funded security/risk/compliance program
+
+ISO 27001 / SOC 2 / PCI / regulatory security program
+
+relevant breach/security incident
+
+security-related infrastructure expansion
+
+regulated-market expansion creating security requirements
+
+acquisition creating material security complexity
+
+Do not change signal definitions during the test.
+
+==================================================
+13. EVIDENCE CLASSIFICATION
+==================================================
+
+Preserve Test 14A classifications.
+
+Every retrieved item should be distinguishable as:
+
+RAW_RETRIEVED
+
+and classified as one of:
+
+DIRECT_EVENT_EVIDENCE
+SUPPORTING_CONTEXT
+GENERIC_COMPANY_CONTENT
+VENDOR_SELLER_CONTENT
+UNRELATED
+AMBIGUOUS
+
+Only defensible evidence may create facts.
+
+Only qualifying facts may create signals.
+
+==================================================
+14. SELLER VS BUYER
+==================================================
+
+Very important.
+
+A company advertising:
+
+Managed SOC
+cybersecurity services
+SIEM consulting
+managed security
+
+does NOT mean that company is looking to buy Aadit's Managed SOC.
+
+Preserve:
+
+COMPANY_AS_BUYER
+COMPANY_AS_SELLER
+COMPANY_AS_VENDOR
+COMPANY_AS_PARTNER
+UNKNOWN_RELATION
+
+Seller content must not generate buyer intent.
+
+==================================================
+15. TEMPORAL MODEL
+==================================================
+
+WHEN must be based on time.
+
+For each material event preserve:
+
+published_at
+event_at where possible
+retrieved_at
+freshness
+
+Classify using existing temporal semantics.
+
+Old content must not imply current urgency.
+
+Unknown date must not be silently converted into recent.
+
+Use signal decay if currently implemented.
+
+==================================================
+16. FACTS
+==================================================
+
+Facts must remain atomic observations.
+
+Examples:
+
+GOOD:
+
+"Company posted three SOC Analyst positions in August 2026."
+
+"Company appointed a new CISO in July 2026."
+
+"Company announced migration to Microsoft Sentinel."
+
+BAD:
+
+"Company is investing heavily in security."
+
+"Company needs Managed SOC."
+
+"Company is ready to purchase."
+
+No invented facts.
+
+==================================================
+17. SIGNALS
+==================================================
+
+Use ONLY approved Managed SOC signal definitions.
+
+No signal because:
+
+company is big
+company fits ICP
+company mentions cloud
+company mentions security
+company sells cybersecurity
+company has Microsoft 365
+company has a CISO
+company uses a CDN/WAF
+
+Signal requirements must actually be satisfied.
+
+==================================================
+18. SIGNAL CLUSTERS
+==================================================
+
+Run existing cluster logic.
+
+Do not count five articles discussing the same event as five independent
+events.
+
+Preserve:
+
+independent events
+independent sources
+supporting facts
+contradictions
+freshness
+
+==================================================
+19. OPPORTUNITY HYPOTHESIS
+==================================================
+
+For each researched qualified company evaluate:
+
+"Does current evidence support the hypothesis that a Managed SOC
+opportunity may be forming?"
+
+Allowed:
+
+SUPPORTED
+PARTIALLY_SUPPORTED
+NOT_SUPPORTED
+INSUFFICIENT_EVIDENCE
+
+Do NOT equate this to direct purchase intent.
+
+==================================================
+20. OPPORTUNITY STATE
+==================================================
+
+Use the currently implemented opportunity-state model.
+
+Do NOT modify thresholds during the benchmark.
+
+UNKNOWN must not numerically become zero.
+
+INSUFFICIENT evidence must not automatically become a negative
+opportunity.
+
+Record:
+
+state
+priority score if legitimately calculable
+confidence
+
+Confidence remains separate from opportunity strength.
+
+==================================================
+21. WHY
+==================================================
+
+Every material WHY must be traceable:
+
+WHY
+→ opportunity hypothesis
+→ signal / cluster
+→ fact
+→ evidence
+→ source
+
+No unsupported narrative.
+
+A perfectly valid WHY is:
+
+"Insufficient recent evidence to establish a current Managed SOC buying
+trigger."
+
+==================================================
+22. NEXT BEST ACTION
+==================================================
+
+Use existing Next Best Action logic.
+
+Examples:
+
+PRIORITIZE_ACCOUNT
+MONITOR
+RESEARCH_MORE
+NO_ACTION_NOW
+
+Do not prioritize accounts solely because they are strong ICP fits.
+
+==================================================
+23. FULL RANKING
+==================================================
+
+Produce a ranked market view across the 50 companies.
+
+Ranking should consider existing model semantics including:
+
+Fit
+Need
+Timing
+Relationship
+Confidence
+signal strength
+freshness
+research completeness
+
+Do not change ranking logic.
+
+UNKNOWN must not be treated as numeric zero merely for sorting.
+
+Separate:
+
+HIGH PRIORITY
+
+WATCH / MONITOR
+
+RESEARCH MORE
+
+LOW / NO ACTION
+
+according to existing semantics.
+
+==================================================
+24. CONTACT ENRICHMENT — ONLY AFTER QUALIFICATION
+==================================================
+
+This test must validate the contact layer too.
+
+But do not enrich contacts for all 50.
+
+Only perform buying-committee/contact enrichment for the:
+
+TOP 10 qualified accounts
+
+according to JYRA's frozen ranking.
+
+If fewer than 10 accounts legitimately deserve contact research, use
+only those accounts.
+
+Do NOT promote accounts merely to reach 10.
+
+==================================================
+25. BUYING COMMITTEE
+==================================================
+
+Use existing Buying Committee logic.
+
+For Managed SOC, identify relevant role hypotheses such as:
+
+CISO
+Head of Information Security
+VP Security
+Director Security
+SOC leader
+CIO
+CTO
+Head of Infrastructure
+Head of IT
+Cloud/Infrastructure leadership
+
+depending on company context.
+
+Do not assume every company has every role.
+
+Distinguish:
+
+ROLE_HYPOTHESIS
+
+from:
+
+IDENTIFIED_PERSON
+
+==================================================
+26. CONTACT ENRICHMENT
+==================================================
+
+Use only currently implemented contact-enrichment providers/capabilities.
+
+Do NOT add new providers during this benchmark.
+
+For each identified contact preserve:
+
+name
+title
+company
+source/provenance
+LinkedIn if available
+email if available
+phone if available
+verification/confidence
+
+Never fabricate missing contact information.
+
+UNKNOWN stays UNKNOWN.
+
+==================================================
+27. CONTACT QUALITY
+==================================================
+
+Classify contacts:
+
+CONFIRMED_ROLE_MATCH
+PROBABLE_ROLE_MATCH
+AMBIGUOUS
+WRONG
+
+Do not treat generic employees as buying committee members.
+
+Track:
+
+contacts attempted
+contacts found
+safe company matches
+verified/probable emails
+phones if available
+wrong contacts rejected
+
+==================================================
+28. SALES-READY OUTPUT
+==================================================
+
+For the TOP 10 accounts produce a salesperson-facing result.
+
+Example format:
+
+RANK
+
+COMPANY
+
+WHO:
+Why this company fits.
+
+WHEN:
+What appears to be happening now.
+
+WHY:
+Evidence-backed reason this account deserves or does not deserve
+attention.
+
+OPPORTUNITY STATE
+
+CONFIDENCE
+
+TOP EVIDENCE:
+2–5 strongest sources/events.
+
+BUYING COMMITTEE:
+roles and identified people if available.
+
+CONTACT:
+verified information only.
+
+NEXT BEST ACTION
+
+RESEARCH COST
+
+Do not hide UNKNOWN values.
+
+==================================================
+29. DO NOT GENERATE OUTREACH COPY
+==================================================
+
+This test ends before messaging.
+
+Do NOT generate:
+
+cold email copy
+LinkedIn message
+sales scripts
+automated campaigns
+
+We are validating intelligence first.
+
+==================================================
+30. BLIND POSITIVE-CONTROL BENCHMARK
+==================================================
+
+We also need to test whether JYRA can find real events.
+
+Create a separate VALIDATION CONTROL SET.
+
+This must NOT alter the 50-company ranking algorithm.
+
+Select approximately:
+
+10–15 companies
+
+with independently verifiable, recent events relevant to one or more of
+the approved Managed SOC signal classes.
+
+Examples:
+
+recent security leadership change
+current security hiring
+recent SIEM/security-platform change
+current compliance/security initiative
+
+IMPORTANT:
+
+The event labels must be stored separately from the main intelligence
+pipeline.
+
+The main JYRA opportunity engine must NOT be supplied:
+
+the known event
+the expected signal
+the expected answer
+
+before its own research.
+
+This is a blind detection test.
+
+==================================================
+31. CONTROL SET SELECTION SAFETY
+==================================================
+
+Do not select positives using JYRA's own output.
+
+The validator must independently establish the reference event from
+public evidence.
+
+Record:
+
+company
+reference event
+event category
+source
+event date
+validator confidence
+
+Then freeze this manifest BEFORE evaluating JYRA detection.
+
+The JYRA research/ranking stage must not consume the reference-event
+fields.
+
+==================================================
+32. IMPORTANT METRIC TERMINOLOGY
+==================================================
+
+Do NOT claim classical market-wide "purchase intent recall."
+
+Public web cannot prove all actual buying behavior.
+
+Instead calculate:
+
+KNOWN-EVENT DETECTION RECALL
+
+=
+
+known qualifying reference events detected by JYRA
+/
+total known qualifying reference events in validation set
+
+Also calculate:
+
+SIGNAL PRECISION REVIEW
+
+=
+
+manually/strictly validated JYRA signals
+/
+all JYRA signals emitted
+
+And:
+
+UNSUPPORTED SIGNAL RATE
+
+=
+
+unsupported emitted signals
+/
+all emitted signals
+
+Do not mislabel these metrics.
+
+==================================================
+33. FALSE-POSITIVE REVIEW
+==================================================
+
+Review every emitted material signal.
+
+For each classify:
+
+TRUE_SUPPORTED
+WEAKLY_SUPPORTED
+UNSUPPORTED
+WRONG_ENTITY
+DUPLICATE_EVENT
+STALE_AS_CURRENT
+SELLER_AS_BUYER_ERROR
+
+This provides signal precision.
+
+==================================================
+34. MISSED-EVENT REVIEW
+==================================================
+
+For each validator reference event that JYRA misses, determine WHY:
+
+DISCOVERY_FAILURE
+ENTITY_FAILURE
+QUERY_FAILURE
+PROVIDER_COVERAGE
+SOURCE_NOT_FOUND
+RESEARCH_STOPPED_TOO_EARLY
+FACT_EXTRACTION_FAILURE
+SIGNAL_MAPPING_FAILURE
+FRESHNESS_FAILURE
+OTHER
+
+Do NOT repair during benchmark.
+
+Record failure only.
+
+==================================================
+35. MARKET DISCOVERY QUALITY
+==================================================
+
+Report:
+
+Raw discovered candidates
+
+Canonical candidates
+
+Duplicates rejected
+
+Identity failures
+
+Final 50
+
+LIKELY_FIT
+
+POSSIBLE_FIT
+
+LIKELY_NOT_FIT
+
+INSUFFICIENT
+
+and manually review a sample for obvious ICP classification errors.
+
+==================================================
+36. ENTITY QUALITY
+==================================================
+
+Report:
+
+Correct canonical identities
+
+Wrong identity attached
+
+Ambiguous blocked
+
+Verified domains
+
+Verified LinkedIn URLs
+
+Firmographic provider matches
+
+Wrong-provider identities blocked
+
+Target:
+
+Wrong canonical attachment = 0
+
+==================================================
+37. WHO QUALITY
+==================================================
+
+Report:
+
+Industry coverage
+
+Geography coverage
+
+Employee-size coverage
+
+Firmographic provenance coverage
+
+ICP qualification coverage
+
+Number of obviously incorrect ICP classifications after review
+
+==================================================
+38. WHEN/WHY QUALITY
+==================================================
+
+Report:
+
+Companies researched
+
+Research questions planned
+
+Research questions investigated
+
+Deferred questions and reasons
+
+Provider calls
+
+Raw results
+
+Question-relevant results
+
+Direct event evidence
+
+Facts
+
+Signals
+
+Clusters
+
+Hypotheses supported
+
+Partially supported
+
+Not supported
+
+Insufficient
+
+WHY provenance %
+
+==================================================
+39. CONTACT QUALITY
+==================================================
+
+Report:
+
+Accounts eligible for contact research
+
+Accounts actually researched
+
+Role hypotheses
+
+People candidates
+
+Confirmed role matches
+
+Probable role matches
+
+Ambiguous rejected
+
+Wrong contacts rejected
+
+LinkedIn coverage
+
+Email coverage
+
+Verified/probable email coverage
+
+Phone coverage
+
+No fabricated contacts.
+
+==================================================
+40. COST ECONOMICS
+==================================================
+
+Track actual/estimated costs separately by stage:
+
+DISCOVERY
+
+PROFILE RESOLUTION
+
+FIRMOGRAPHICS
+
+WHEN/WHY RESEARCH
+
+CONTACT ENRICHMENT
+
+OTHER
+
+Then calculate:
+
+TOTAL TEST COST
+
+COST / DISCOVERED COMPANY
+
+COST / QUALIFIED COMPANY
+
+COST / RESEARCHED COMPANY
+
+COST / PRIORITIZED ACCOUNT
+
+COST / CONTACTABLE PRIORITIZED ACCOUNT
+
+COST / MATERIAL SUPPORTED OPPORTUNITY
+
+Do not fabricate provider costs.
+
+Distinguish:
+
+actual billed/reported
+
+from
+
+estimated.
+
+==================================================
+41. LATENCY
+==================================================
+
+Measure:
+
+total test duration
+
+average company WHO latency
+
+average research latency
+
+average contact-enrichment latency
+
+Approximate is acceptable only if clearly labelled.
+
+==================================================
+42. CACHING / IDEMPOTENCY
+==================================================
+
+After the full benchmark completes:
+
+perform a controlled replay.
+
+The replay must NOT unnecessarily repeat valid provider calls.
+
+Report second-run:
+
+Exa calls
+
+Tavily calls
+
+Bright Data calls
+
+Apify calls
+
+contact provider calls
+
+cache hits
+
+new evidence
+
+new facts
+
+new signals
+
+new contacts
+
+unexpected mutations
+
+==================================================
+43. NO SELF-IMPROVEMENT DURING TEST
+==================================================
+
+Absolutely do not:
+
+train thresholds from these results
+modify pack weights
+promote new signal definitions
+rewrite research queries after seeing outcomes
+change source authority rules
+change scoring after ranking is seen
+
+Benchmark first.
+
+Learning/tuning comes later.
+
+==================================================
+44. MANUAL SALES USEFULNESS REVIEW
+==================================================
+
+For the TOP 10 outputs, evaluate each using:
+
+ACTIONABLE
+PARTIALLY_ACTIONABLE
+NOT_ACTIONABLE
+
+Ask:
+
+Would a salesperson know:
+
+why this company is on the list?
+why now?
+what evidence exists?
+who they should approach?
+what they should do next?
+
+Do NOT judge based on visual appearance.
+
+Judge intelligence usefulness.
+
+==================================================
+45. MVP SUCCESS GATES
+==================================================
+
+Do NOT force PASS.
+
+Core safety gates:
+
+Wrong canonical company attachments:
+0
+
+Unsupported buying-intent claims:
+0
+
+Fabricated evidence:
+0
+
+Fabricated people/contact details:
+0
+
+Material WHY provenance:
+100%
+
+Production operations:
+0
+
+Desired quality targets:
+
+Canonical identity accuracy:
+>=95%
+
+Firmographic useful coverage:
+>=85%
+
+KNOWN-EVENT DETECTION RECALL:
+>=70%
+
+TRUE_SUPPORTED signal precision:
+>=85%
+
+Unsupported signal rate:
+<=5%
+
+Duplicate event inflation:
+0
+
+Seller-as-buyer false signals:
+0
+
+Top-10 ACTIONABLE or PARTIALLY_ACTIONABLE:
+>=8/10
+
+Cost per researched company:
+economically reasonable and reported
+
+These are evaluation targets.
+
+Do not manipulate outputs to achieve them.
+
+==================================================
+46. FINAL PRODUCT VERDICT
+==================================================
+
+Return exactly ONE primary verdict:
+
+A — MVP CORE VALIDATED
+
+JYRA reliably identifies, researches and explains useful opportunities
+with acceptable precision, recall, evidence quality and economics.
+
+B — PROMISING BUT DATA COVERAGE LIMITED
+
+Architecture works but missing/weak external data prevents sufficient
+WHEN/WHY recall.
+
+C — RESEARCH ENGINE NEEDS WORK
+
+Useful data exists but planner/query/evidence/fact/signal processing is
+missing too much of it.
+
+D — OPPORTUNITY LOGIC NEEDS WORK
+
+Evidence is being found correctly but signals/clusters/ranking/WHEN/WHY
+are producing poor decisions.
+
+E — ENTITY / WHO FOUNDATION NEEDS WORK
+
+Company identity, firmographics or ICP qualification remain unreliable.
+
+F — NOT YET PRODUCT-VIABLE
+
+End-to-end output is not sufficiently accurate/actionable to justify
+continuing current product direction without material redesign.
+
+Do not choose A simply because engineering tests pass.
+
+==================================================
+47. FAILURE ATTRIBUTION
+==================================================
+
+If verdict is not A, quantify the main bottleneck:
+
+DISCOVERY
+IDENTITY
+FIRMOGRAPHICS
+RESEARCH COVERAGE
+PUBLIC DATA AVAILABILITY
+FACT EXTRACTION
+SIGNAL DEFINITIONS
+CLUSTERING
+TEMPORAL LOGIC
+SCORING
+RANKING
+BUYING COMMITTEE
+CONTACT DATA
+COST
+OTHER
+
+Rank the top 3 bottlenecks.
+
+==================================================
+48. REQUIRED ARTIFACTS
+==================================================
+
+Generate:
+
+JYRA_MVP_REALITY_TEST_01.md
+
+JYRA_MVP_REALITY_TEST_01.json
+
+JYRA_MVP_REALITY_TEST_01_COMPANIES.csv
+
+JYRA_MVP_REALITY_TEST_01_TOP10.csv
+
+JYRA_MVP_REALITY_TEST_01_CONTROL_SET.json
+
+JYRA_MVP_REALITY_TEST_01_FAILURES.md
+
+==================================================
+49. EXECUTIVE SUMMARY
+==================================================
+
+The Markdown report must start with:
+
+JYRA MVP REALITY TEST 01
+
+FINAL VERDICT:
+
+A/B/C/D/E/F
+
+COMPANIES:
+50
+
+LIKELY FIT:
+
+POSSIBLE FIT:
+
+LIKELY NOT FIT:
+
+INSUFFICIENT:
+
+PRIORITIZED:
+
+MONITOR:
+
+RESEARCH MORE:
+
+NO ACTION:
+
+SUPPORTED OPPORTUNITIES:
+
+PARTIALLY SUPPORTED:
+
+KNOWN CONTROL EVENTS:
+
+CONTROL EVENTS DETECTED:
+
+KNOWN-EVENT DETECTION RECALL:
+
+TOTAL SIGNALS:
+
+TRUE SUPPORTED SIGNALS:
+
+WEAK SIGNALS:
+
+UNSUPPORTED SIGNALS:
+
+SIGNAL PRECISION:
+
+UNSUPPORTED SIGNAL RATE:
+
+WRONG ENTITY ATTACHMENTS:
+
+SELLER-AS-BUYER ERRORS:
+
+WHY PROVENANCE:
+
+TOP-10 ACTIONABLE:
+
+CONTACTABLE PRIORITY ACCOUNTS:
+
+TOTAL PROVIDER CALLS:
+
+TOTAL ESTIMATED COST:
+
+TOTAL ACTUAL REPORTED COST:
+
+COST / COMPANY:
+
+COST / PRIORITIZED ACCOUNT:
+
+COST / SUPPORTED OPPORTUNITY:
+
+IDEMPOTENT REPLAY:
+
+PRODUCTION OPERATIONS:
+
+TOP 3 BOTTLENECKS:
+
+==================================================
+50. TOP-10 SALES TABLE
+==================================================
+
+Include a clean final table:
+
+RANK
+
+COMPANY
+
+ICP FIT
+
+OPPORTUNITY STATE
+
+WHEN
+
+WHY
+
+CONFIDENCE
+
+STRONGEST SIGNAL
+
+FRESHEST EVENT
+
+BUYER ROLE
+
+PERSON
+
+CONTACT AVAILABLE
+
+NEXT BEST ACTION
+
+EVIDENCE COUNT
+
+RESEARCH COST
+
+This table should approximate what the customer ultimately experiences
+inside JYRA.
+
+==================================================
+51. IMPORTANT INTERPRETATION
+==================================================
+
+Do not confuse:
+
+COMPANY FIT
+
+with
+
+SECURITY ACTIVITY
+
+with
+
+MANAGED SOC NEED
+
+with
+
+BUYING INTENT.
+
+JYRA may infer an evidence-backed opportunity hypothesis.
+
+JYRA must not claim actual purchase intent unless direct evidence supports
+that assertion.
+
+==================================================
+52. STOP
+==================================================
+
+STOP after producing the complete benchmark and reports.
+
+DO NOT:
+
+fix failures
+change algorithms
+change providers
+change ICP
+change signal definitions
+start outreach
+send messages
+create campaigns
+modify production
+
+Return the complete benchmark results for human review.
