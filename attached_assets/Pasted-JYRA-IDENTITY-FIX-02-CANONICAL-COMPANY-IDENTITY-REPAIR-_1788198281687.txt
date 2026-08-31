@@ -1,0 +1,932 @@
+JYRA — IDENTITY FIX 02
+CANONICAL COMPANY IDENTITY REPAIR
+FOUR KNOWN FAILURE CASES ONLY
+
+PURPOSE
+
+Retrieval is now frozen:
+
+MVP_RETRIEVAL_V1_FROZEN
+
+Black Duck extraction is fixed and validated.
+
+The next remaining core defect is CANONICAL COMPANY IDENTITY.
+
+Known problematic identities from the prior WHO / MVP reality tests:
+
+1. Digital Maelstrom
+2. Mandiant
+3. Managed Services - Monitoring 24/7
+4. Corsa
+
+GOAL
+
+Trace each identity from original candidate input through:
+
+candidate creation
+→ canonical company resolution
+→ domain resolution
+→ LinkedIn/profile resolution
+→ firmographic retrieval
+→ entity validation
+→ canonical attach / rejection
+
+Then implement ONLY the smallest generic fixes demonstrated by those
+four cases.
+
+Primary target:
+
+CANONICAL IDENTITY ACCURACY >= 95%
+
+Do NOT alter ICP logic.
+Do NOT alter retrieval.
+Do NOT alter facts/signals/opportunity logic.
+
+==================================================
+1. DATABASE SAFETY
+==================================================
+
+DEVELOPMENT ONLY.
+
+Use ONLY development database.
+
+DO NOT:
+
+migrate production
+reset production
+seed production
+truncate production
+modify production customer data
+test against production
+
+Prefer no schema change.
+
+==================================================
+2. FREEZE EVERYTHING ELSE
+==================================================
+
+DO NOT CHANGE:
+
+Tavily / Exa adaptive retrieval
+research query construction
+research sufficiency
+fact extraction
+fact ontology
+fact validation
+signal definitions
+signal mapping
+ICP qualification
+opportunity scoring
+confidence
+ranking
+WHY
+NBA
+buying committee
+contacts
+UI
+outreach
+
+This milestone is ENTITY RESOLUTION ONLY.
+
+==================================================
+3. TEST POPULATION
+==================================================
+
+Use ONLY these four known problematic records:
+
+Digital Maelstrom
+Mandiant
+Managed Services - Monitoring 24/7
+Corsa
+
+Do NOT:
+
+rerun the 10-control benchmark
+rerun the 50-company benchmark
+add new benchmark companies
+
+==================================================
+4. RECONSTRUCT EACH FAILURE
+==================================================
+
+For each of the four cases trace:
+
+ORIGINAL INPUT
+
+INPUT SOURCE
+
+ORIGINAL COMPANY NAME
+
+ORIGINAL DOMAIN IF ANY
+
+ORIGINAL LINKEDIN URL IF ANY
+
+ORIGINAL DESCRIPTION
+
+ORIGINAL INDUSTRY
+
+ORIGINAL LOCATION
+
+DISCOVERY CANDIDATE
+
+CANONICAL COMPANY CREATED?
+
+DOMAIN RESOLUTION
+
+LINKEDIN PROFILE RESOLUTION
+
+PROFILE CANDIDATES
+
+VERIFICATION STATUS
+
+FIRMOGRAPHICS RESULT
+
+ENTITY VALIDATION
+
+CANONICAL ATTACH
+
+FINAL IDENTITY
+
+==================================================
+5. FIRST BROKEN STAGE TAXONOMY
+==================================================
+
+Assign exactly one primary cause per case:
+
+INVALID_COMPANY_INPUT
+
+SERVICE_DESCRIPTION_AS_COMPANY
+
+GENERIC_NAME_AMBIGUITY
+
+LEGAL_NAME_ALIAS_MISMATCH
+
+BRAND_PARENT_SUBSIDIARY_AMBIGUITY
+
+DOMAIN_RESOLUTION_FAILURE
+
+WRONG_DOMAIN_ACCEPTED
+
+LINKEDIN_PROFILE_RESOLUTION_FAILURE
+
+WRONG_LINKEDIN_PROFILE_ACCEPTED
+
+PROFILE_PROVIDER_WRONG_ENTITY
+
+CANONICAL_MERGE_ERROR
+
+ENTITY_VALIDATION_TOO_WEAK
+
+ENTITY_VALIDATION_TOO_STRICT
+
+CONFLICT_NOT_ESCALATED
+
+OTHER
+
+Do not implement fixes until all four traces are complete.
+
+==================================================
+6. CORE PRINCIPLE
+==================================================
+
+JYRA must distinguish:
+
+REAL COMPANY
+
+vs
+
+NON-COMPANY STRING
+
+vs
+
+AMBIGUOUS ENTITY
+
+vs
+
+RELATED ENTITY
+
+Do NOT force every imported/discovered string into a canonical company.
+
+Possible resolution states should support:
+
+CONFIRMED
+
+PROBABLE
+
+AMBIGUOUS
+
+NOT_A_COMPANY
+
+WRONG_ENTITY
+
+UNRESOLVED
+
+==================================================
+7. NON-COMPANY DETECTION
+==================================================
+
+"Managed Services - Monitoring 24/7" is a critical test.
+
+This looks like a service/category description rather than a legal or
+trade company name.
+
+Build GENERIC validation for company-likeness.
+
+Signals that may indicate NON-COMPANY include:
+
+service-description phrasing
+feature-description phrasing
+generic category phrases
+marketing copy fragments
+hours / availability phrases
+sentence-like strings
+job-title-like values
+department-like values
+technology/product descriptions
+
+Do NOT hardcode this exact phrase.
+
+The system should be able to reject similar future inputs.
+
+==================================================
+8. COMPANY-LIKENESS GATE
+==================================================
+
+Before expensive profile/firmographic research, perform a cheap
+company-likeness assessment.
+
+Inputs may include:
+
+raw name
+domain
+LinkedIn company URL
+description
+industry
+source column / provenance
+
+Possible results:
+
+LIKELY_COMPANY
+
+AMBIGUOUS_COMPANY
+
+LIKELY_NOT_COMPANY
+
+Rules must be conservative.
+
+If strong company identifiers exist, such as:
+
+verified corporate domain
+verified LinkedIn company page
+consistent firmographic profile
+
+they can override weak name-shape heuristics.
+
+==================================================
+9. DO NOT USE NAME SHAPE ALONE
+==================================================
+
+A short or unusual company name can still be valid.
+
+Examples like:
+
+Corsa
+
+Mandiant
+
+must not be rejected simply for being short or unfamiliar.
+
+Name heuristics are only one component.
+
+==================================================
+10. IDENTITY EVIDENCE HIERARCHY
+==================================================
+
+Use multiple independent identity attributes.
+
+Strong signals:
+
+verified canonical domain
+
+verified LinkedIn company URL
+
+exact/known company legal or trade name
+
+official company website identity
+
+provider profile matching same company
+
+consistent HQ / geography
+
+consistent industry
+
+consistent parent/subsidiary relationship
+
+Weak signals:
+
+name similarity alone
+
+search-result snippet alone
+
+generic keyword overlap
+
+Do not attach canonical identity from weak evidence alone.
+
+==================================================
+11. DOMAIN VERIFICATION
+==================================================
+
+For a candidate domain validate:
+
+company name consistency
+
+official website branding
+
+domain ownership context when available
+
+company description consistency
+
+LinkedIn/profile consistency
+
+Do NOT accept domains solely because a search result ranks highly.
+
+Domain states:
+
+VERIFIED
+
+PROBABLE
+
+AMBIGUOUS
+
+REJECTED
+
+UNKNOWN
+
+==================================================
+12. LINKEDIN PROFILE RESOLUTION
+==================================================
+
+Preserve the existing generic COMPANY_PROFILE_RESOLUTION capability.
+
+For candidate LinkedIn company URLs validate against:
+
+canonical name / known aliases
+
+verified domain
+
+company description
+
+industry if available
+
+geography if available
+
+parent/subsidiary context
+
+Do not accept the first LinkedIn result automatically.
+
+==================================================
+13. LEGAL / TRADE NAME ALIASES
+==================================================
+
+Support generic aliases such as:
+
+legal suffix removal
+
+Inc
+LLC
+Ltd
+Limited
+Pvt Ltd
+Private Limited
+Corp
+Corporation
+PLC
+
+Also allow known trade-name/legal-name relationships when supported by
+evidence.
+
+Do not treat fuzzy similarity alone as proof.
+
+==================================================
+14. BRAND / PARENT / SUBSIDIARY
+==================================================
+
+Mandiant is an important ambiguity case because brands may be acquired,
+subsidiaries may remain distinct, or parent-company profiles may appear.
+
+Model relationships explicitly where supported:
+
+SAME_ENTITY
+
+TRADE_NAME_OF
+
+SUBSIDIARY_OF
+
+PARENT_OF
+
+ACQUIRED_BRAND_OF
+
+RELATED_BUT_DISTINCT
+
+UNKNOWN_RELATIONSHIP
+
+Never silently merge RELATED_BUT_DISTINCT entities.
+
+==================================================
+15. MANDIANT RULE
+==================================================
+
+Do not create a benchmark-specific Mandiant rule.
+
+Instead, test whether generic parent/subsidiary/acquired-brand logic
+correctly resolves the observed Mandiant ambiguity.
+
+If the evidence cannot prove SAME_ENTITY:
+
+keep the entities distinct or AMBIGUOUS.
+
+==================================================
+16. CORSA / DIGITAL MAELSTROM
+==================================================
+
+For Corsa and Digital Maelstrom inspect whether prior failure came from:
+
+poor search result ranking
+
+ambiguous company name
+
+missing domain
+
+wrong LinkedIn result
+
+provider mismatch
+
+insufficient verification
+
+Do not simply add aliases manually unless they are derived from
+verified evidence and stored with provenance.
+
+==================================================
+17. CONFLICT DETECTION
+==================================================
+
+If identity attributes conflict, do NOT attach.
+
+Examples:
+
+name matches but domain conflicts
+
+LinkedIn matches name but website belongs to different company
+
+firmographic provider returns different HQ/industry/entity
+
+parent company profile returned for subsidiary
+
+Set:
+
+AMBIGUOUS
+
+or
+
+WRONG_ENTITY
+
+and require more evidence / manual review.
+
+==================================================
+18. CANONICAL ATTACH THRESHOLD
+==================================================
+
+Canonical attach should require high-confidence identity evidence.
+
+Conceptually:
+
+CONFIRMED
+→ safe automatic attach
+
+PROBABLE
+→ may remain unresolved / review depending on evidence
+
+AMBIGUOUS
+→ no automatic attach
+
+WRONG_ENTITY
+→ reject
+
+NOT_A_COMPANY
+→ reject before expensive research
+
+Do not lower the threshold to improve benchmark accuracy.
+
+==================================================
+19. PROVENANCE
+==================================================
+
+Every accepted canonical identity should retain:
+
+input source
+
+original name
+
+normalized name
+
+accepted canonical name
+
+domain
+
+LinkedIn URL
+
+identity evidence
+
+provider used
+
+verification method
+
+confidence
+
+timestamp
+
+aliases
+
+parent/subsidiary relationship if applicable
+
+==================================================
+20. DO NOT OVERWRITE SOURCE DATA
+==================================================
+
+Preserve original imported/discovered values.
+
+Example:
+
+original_company_name
+
+must remain available even if canonical identity becomes:
+
+canonical_company_name
+
+Never destroy the source value.
+
+==================================================
+21. IDENTITY DEDUPLICATION
+==================================================
+
+Prevent duplicate canonical companies caused by:
+
+legal suffix variants
+
+www/non-www domains
+
+http/https
+
+case differences
+
+trade-name aliases
+
+LinkedIn URL variants
+
+But do NOT merge companies merely because names are similar.
+
+==================================================
+22. COST CONTROL
+==================================================
+
+Identity resolution should be staged:
+
+1. existing identifiers
+2. cheap normalization
+3. company-likeness
+4. verified profile/domain resolution
+5. firmographic confirmation only where needed
+
+Do not invoke expensive research for:
+
+LIKELY_NOT_COMPANY
+
+unless a strong contradictory identifier exists.
+
+==================================================
+23. IMPLEMENT MINIMAL FIXES
+==================================================
+
+After all four autopsies:
+
+implement ONLY reusable fixes supported by evidence.
+
+Examples could include:
+
+company-likeness gate
+
+legal-name normalization
+
+better LinkedIn candidate verification
+
+parent/subsidiary ambiguity handling
+
+identity conflict escalation
+
+domain/profile corroboration
+
+Do not redesign the whole entity system.
+
+==================================================
+24. TARGETED RETEST — FOUR CASES
+==================================================
+
+After fixes, rerun only the exact four cases.
+
+For each report:
+
+ORIGINAL INPUT
+
+EXPECTED ENTITY TYPE
+
+FINAL RESOLUTION:
+
+CONFIRMED
+PROBABLE
+AMBIGUOUS
+NOT_A_COMPANY
+WRONG_ENTITY
+UNRESOLVED
+
+CANONICAL NAME
+
+CANONICAL DOMAIN
+
+LINKEDIN URL
+
+IDENTITY CONFIDENCE
+
+AUTO-ATTACHED?
+YES / NO
+
+WHY
+
+==================================================
+25. EXPECTED SAFETY BEHAVIOR
+==================================================
+
+Do NOT assume all four must become CONFIRMED.
+
+A correct result may be:
+
+NOT_A_COMPANY
+
+or
+
+AMBIGUOUS
+
+Safety is more important than forced resolution.
+
+The objective is:
+
+correct identity treatment
+
+not
+
+100% automatic attachment.
+
+==================================================
+26. REGRESSION TESTS
+==================================================
+
+Add generic tests at minimum:
+
+A. "Acme Technologies Pvt Ltd" vs "Acme Technologies"
+Expected:
+legal suffix normalization may identify same candidate when other
+evidence agrees.
+
+B. Generic phrase:
+"Managed Security Services 24/7"
+Expected:
+LIKELY_NOT_COMPANY unless strong identifiers prove otherwise.
+
+C. Short valid brand:
+"Corsa"
+Expected:
+not rejected based only on short name.
+
+D. Parent/subsidiary ambiguity
+Expected:
+no silent merge.
+
+E. Same name, different domain
+Expected:
+ambiguity / conflict.
+
+F. Verified domain + matching LinkedIn company page
+Expected:
+strong confirmation.
+
+G. Name matches but LinkedIn/domain conflict
+Expected:
+do not attach.
+
+H. Service description with LinkedIn company URL
+Expected:
+strong verified identifier can override weak name-likeness only if
+identity is genuinely corroborated.
+
+I. Duplicate legal-suffix forms
+Expected:
+no duplicate canonical account.
+
+J. Wrong provider profile
+Expected:
+rejected.
+
+==================================================
+27. HARD-CODING CHECK
+==================================================
+
+Search normal runtime logic for:
+
+Digital Maelstrom
+Mandiant
+Managed Services - Monitoring 24/7
+Corsa
+
+Required:
+
+0 benchmark-specific identity rules.
+
+Names may appear only in:
+
+tests
+fixtures
+artifacts
+benchmark manifests
+
+==================================================
+28. RETEST PREVIOUS WHO SAMPLE
+==================================================
+
+After the four targeted cases pass:
+
+Re-evaluate the SAME prior 12-company WHO identity sample using the
+updated identity logic.
+
+Do NOT research new companies unless existing preserved data is
+insufficient.
+
+Prefer replay/reprocessing from preserved evidence.
+
+Measure:
+
+ADJUDICABLE IDENTITIES
+
+CORRECT IDENTITIES
+
+WRONG IDENTITIES
+
+AMBIGUOUS / SAFE NON-ATTACHES
+
+CANONICAL IDENTITY ACCURACY
+
+FALSE AUTOMATIC ATTACH RATE
+
+==================================================
+29. TARGET
+==================================================
+
+Target:
+
+CANONICAL IDENTITY ACCURACY >= 95%
+
+WRONG AUTO-ATTACH = 0
+
+If sample size prevents exactly >=95% mathematically, report raw counts
+and confidence honestly.
+
+Do NOT manipulate classifications to pass.
+
+==================================================
+30. ICP LOGIC REMAINS FROZEN
+==================================================
+
+Previous Fix Cycle 01 achieved:
+
+WHO ICP classification = 12/12
+
+Therefore:
+
+DO NOT modify ICP qualification.
+
+If identity correction changes the underlying entity, recompute using
+existing ICP logic only.
+
+==================================================
+31. DO NOT RUN 10-CONTROL BENCHMARK
+==================================================
+
+Do NOT yet run the frozen 10-control end-to-end benchmark.
+
+The next task after a successful identity fix will be the clean
+10-control blind retest.
+
+==================================================
+32. REQUIRED ARTIFACTS
+==================================================
+
+Generate:
+
+IDENTITY_FIX_02.md
+
+IDENTITY_FIX_02.json
+
+IDENTITY_FIX_02_TRACES.json
+
+IDENTITY_FIX_02_FOUR_CASE_RETEST.json
+
+IDENTITY_FIX_02_WHO_REPLAY.json
+
+IDENTITY_FIX_02_TESTS.json
+
+==================================================
+33. REQUIRED SUMMARY
+==================================================
+
+Return:
+
+ROOT CAUSES:
+
+Digital Maelstrom =
+Mandiant =
+Managed Services - Monitoring 24/7 =
+Corsa =
+
+FIXES IMPLEMENTED:
+<generic fixes only>
+
+FOUR-CASE RESULT:
+
+Digital Maelstrom =
+Mandiant =
+Managed Services - Monitoring 24/7 =
+Corsa =
+
+WHO SAMPLE:
+
+Adjudicable =
+Correct =
+Wrong =
+Safe ambiguous/non-attached =
+
+Canonical identity accuracy =
+Wrong automatic attaches =
+
+ICP classification regression =
+PASS / FAIL
+
+Retrieval code changed =
+0 required
+
+Fact extraction changed =
+0 required
+
+Signal code changed =
+0 required
+
+Production operations =
+0 required
+
+==================================================
+34. FINAL DECISION
+==================================================
+
+Return exactly ONE:
+
+A — IDENTITY FIX VALIDATED
+
+Use when identity treatment is materially corrected, wrong auto-attach
+is zero, and canonical identity accuracy reaches the target or the
+sample demonstrates equivalent safe correctness.
+
+B — IDENTITY QUALITY IMPROVED BUT TARGET NOT REACHED
+
+C — NON-COMPANY FILTER FIXED BUT PROFILE RESOLUTION STILL FAILS
+
+D — ENTITY SAFETY REGRESSION
+
+E — INCONCLUSIVE
+
+==================================================
+35. STOP
+==================================================
+
+STOP after Identity Fix 02.
+
+DO NOT:
+
+change retrieval
+change extraction
+change signals
+change ICP
+change opportunity scoring
+run contacts
+change UI
+run 10-control benchmark
+run 50-company benchmark
+add providers
+
+Return the complete result for human review.
