@@ -1,0 +1,899 @@
+JYRA — BRIGHT DATA INTEGRATION
+CAPABILITY: COMPANY_FIRMOGRAPHICS
+
+OBJECTIVE
+
+Integrate Bright Data into JYRA as the first provider for:
+
+COMPANY_FIRMOGRAPHICS
+
+This integration must be generic and provider-independent.
+
+Do NOT hardcode Bright Data inside ICP logic.
+
+Correct architecture:
+
+ICP / Company Qualification
+→ Provider Router
+→ COMPANY_FIRMOGRAPHICS
+→ Bright Data Adapter
+→ normalized firmographic result
+→ provenance
+→ canonical company attributes
+
+==================================================
+1. DATABASE SAFETY
+==================================================
+
+THIS IS DEVELOPMENT WORK.
+
+Use ONLY the development database.
+
+DO NOT:
+
+migrate production
+reset production
+seed production
+modify production
+truncate production
+test against production
+
+Production schema changes must happen later through explicit production migration workflow.
+
+Never overwrite or destroy production customer data.
+
+==================================================
+2. SECRET
+==================================================
+
+Bright Data API key will exist in Replit Secrets as:
+
+BRIGHTDATA_API_KEY
+
+Read it only from environment variables.
+
+Never:
+
+print the key
+log the key
+store the key in database
+commit the key
+return the key in API responses
+
+==================================================
+3. PROVIDER CAPABILITY
+==================================================
+
+Add or confirm provider capability:
+
+COMPANY_FIRMOGRAPHICS
+
+The Provider Router must support selecting an enabled provider for this capability.
+
+Bright Data should register as:
+
+Provider:
+Bright Data
+
+Capability:
+COMPANY_FIRMOGRAPHICS
+
+Priority:
+10
+
+Enabled:
+true
+
+Do not modify existing:
+
+EXA → COMPANY_DISCOVERY
+TAVILY → WEB_SEARCH
+APIFY → WEBSITE_CRAWL
+
+==================================================
+4. BRIGHT DATA DATASET
+==================================================
+
+Use Bright Data LinkedIn Company Information dataset.
+
+Dataset ID:
+
+gd_l1vikfnt1wgvvqz95w
+
+Endpoint:
+
+POST
+https://api.brightdata.com/datasets/v3/scrape
+
+Query parameters:
+
+dataset_id=gd_l1vikfnt1wgvvqz95w
+notify=false
+include_errors=true
+
+Authorization:
+
+Bearer BRIGHTDATA_API_KEY
+
+Content-Type:
+
+application/json
+
+Request structure:
+
+{
+  "input": [
+    {
+      "url": "LINKEDIN_COMPANY_URL"
+    }
+  ],
+  "limit_per_input": null
+}
+
+==================================================
+5. IMPORTANT INPUT RULE
+==================================================
+
+This Bright Data dataset requires a LinkedIn company URL.
+
+Therefore Bright Data MUST NOT assume:
+
+company name
+domain
+website URL
+
+can be sent directly to this dataset.
+
+Preferred input:
+
+verified LinkedIn company URL
+
+Also allow:
+
+probable LinkedIn company URL
+
+but record entity confidence.
+
+If LinkedIn company URL is missing:
+
+return:
+
+IDENTIFIER_NOT_SUPPORTED
+
+or equivalent structured result.
+
+Do NOT fabricate a LinkedIn URL.
+
+Do NOT automatically search LinkedIn in this integration milestone.
+
+LinkedIn URL resolution can be added separately later.
+
+==================================================
+6. PLATFORM URL SAFETY
+==================================================
+
+Never treat:
+
+linkedin.com
+
+as the company's canonical domain.
+
+Example:
+
+https://linkedin.com/company/acme
+
+must be stored as:
+
+linkedin_company_url
+
+NOT:
+
+canonical_domain = linkedin.com
+
+If Bright Data returns an official company website:
+
+normalize that website and derive canonical domain from it.
+
+==================================================
+7. CREATE GENERIC ADAPTER INTERFACE
+==================================================
+
+Create/extend generic firmographic provider adapter interface.
+
+Example conceptual interface:
+
+CompanyFirmographicsProvider {
+  enrichCompany(input)
+}
+
+Input should support:
+
+company_id
+company_name
+canonical_domain
+website_url
+linkedin_company_url
+country
+existing provider identifiers
+
+Output should be provider-neutral.
+
+Do not expose Bright Data-specific schema to downstream ICP logic.
+
+==================================================
+8. NORMALIZED RESULT
+==================================================
+
+Normalize Bright Data response into a generic structure such as:
+
+provider
+provider_record_id
+
+company_name
+
+website_url
+canonical_domain
+
+linkedin_company_url
+
+industry
+
+employee_count
+employee_range
+
+headquarters_country
+headquarters_city
+headquarters_region
+
+locations
+
+company_description
+
+founded_year
+
+company_type
+
+specialties
+
+followers
+
+employees_on_linkedin
+
+funding_total
+funding_rounds
+
+parent_company
+
+logo_url
+
+raw_profile_url
+
+retrieved_at
+
+source_timestamp
+
+Do not invent fields Bright Data does not return.
+
+Missing fields remain:
+
+null / UNKNOWN
+
+Do not convert missing numbers to 0.
+
+==================================================
+9. PRESERVE RAW PROVIDER RESPONSE
+==================================================
+
+Preserve enough raw response for:
+
+debugging
+schema evolution
+provenance
+auditing
+
+Do NOT allow raw provider schema to become the canonical company model.
+
+Store provider response separately or within existing raw provider result architecture.
+
+Do not duplicate huge payloads unnecessarily if the platform already has provider-result storage.
+
+==================================================
+10. PROVENANCE
+==================================================
+
+For every normalized firmographic attribute preserve:
+
+retrieval_provider = BRIGHT_DATA
+
+publisher/source if identifiable
+
+source_url
+
+retrieved_at
+
+provider_record_id
+
+raw_value
+
+normalized_value
+
+entity_match_confidence
+
+attribute_confidence
+
+Do not label every field source as:
+
+Bright Data
+
+when the underlying source is LinkedIn.
+
+Conceptually:
+
+retrieval_provider:
+BRIGHT_DATA
+
+publisher:
+LINKEDIN
+
+source_type:
+SOCIAL_COMPANY_PROFILE
+
+==================================================
+11. ENTITY MATCHING
+==================================================
+
+Before attaching returned data to canonical company:
+
+compare:
+
+requested LinkedIn URL
+returned LinkedIn URL
+company name
+website/domain
+country/location
+other identity information
+
+Classify:
+
+CONFIRMED
+PROBABLE
+AMBIGUOUS
+WRONG
+
+Rules:
+
+CONFIRMED:
+strong LinkedIn URL match and identity consistent
+
+PROBABLE:
+strong identity but one identifier differs or is missing
+
+AMBIGUOUS:
+multiple plausible companies or weak identity
+
+WRONG:
+returned company clearly differs
+
+Only CONFIRMED and approved PROBABLE results may update canonical attributes.
+
+AMBIGUOUS must:
+
+not overwrite canonical attributes
+be stored for review
+
+WRONG must:
+
+not attach to canonical company
+
+==================================================
+12. FIELD CONFLICT POLICY
+==================================================
+
+Never silently overwrite existing firmographic data.
+
+If Bright Data conflicts with existing value:
+
+preserve both observations
+
+Evaluate based on:
+
+user-confirmed value
+source authority
+freshness
+entity confidence
+existing provenance
+
+User-confirmed values should not be silently replaced.
+
+==================================================
+13. DOMAIN NORMALIZATION
+==================================================
+
+If Bright Data returns official website:
+
+normalize:
+
+https://www.example.com/path/
+→ example.com
+
+Remove:
+
+scheme
+www
+path
+query
+fragment
+
+Do not use:
+
+linkedin.com
+facebook.com
+x.com
+twitter.com
+crunchbase.com
+github.com
+pitchbook.com
+
+as canonical company domain.
+
+These are profile/platform URLs.
+
+==================================================
+14. EMPLOYEE NORMALIZATION
+==================================================
+
+Preserve:
+
+exact employee count if returned
+employee range if returned
+
+Do not infer exact employee count from range.
+
+Examples:
+
+201-500
+
+must remain a range.
+
+If exact count = 327:
+
+store exact count and derive safe normalized band if required by ICP logic.
+
+==================================================
+15. PROVIDER DIAGNOSTICS
+==================================================
+
+Add Bright Data to Provider Diagnostics.
+
+Show:
+
+Provider:
+Bright Data
+
+Capability:
+COMPANY_FIRMOGRAPHICS
+
+Credentials:
+AVAILABLE / MISSING
+
+Health:
+HEALTHY / FAILING / UNKNOWN
+
+Enabled:
+YES/NO
+
+Priority
+
+Last success
+
+Last failure
+
+Success count
+
+Failure count
+
+Average latency
+
+Estimated spend
+
+Results returned
+
+Do not count development mock providers as production providers.
+
+==================================================
+16. HEALTH CHECK
+==================================================
+
+Implement a REAL health check.
+
+Do NOT merely check:
+
+BRIGHTDATA_API_KEY exists.
+
+Health check should make a controlled Bright Data request only when explicitly triggered.
+
+Use exactly ONE valid LinkedIn company URL.
+
+Prefer one existing canonical Test 10 company with a LinkedIn company URL.
+
+Do not create or update company data during health check.
+
+Health check reports:
+
+HTTP status
+
+request success
+
+record count
+
+latency
+
+provider error
+
+whether basic fields exist
+
+Never expose API key.
+
+==================================================
+17. COST TRACKING
+==================================================
+
+Record provider usage using existing Research Economics system.
+
+Track:
+
+provider = BRIGHT_DATA
+
+capability = COMPANY_FIRMOGRAPHICS
+
+company_id
+
+request timestamp
+
+latency
+
+success/failure
+
+records returned
+
+estimated cost
+
+cache hit
+
+Do not fabricate exact cost if Bright Data response does not provide billing cost.
+
+If exact cost unavailable:
+
+store provider pricing estimate separately and mark:
+
+ESTIMATED
+
+Current UI shows approximately:
+
+$1.50 / 1,000 records
+
+but architecture must not hardcode this forever.
+
+Provider pricing must be configurable.
+
+==================================================
+18. CACHE
+==================================================
+
+Firmographic information changes slower than news/signals.
+
+Add caching consistent with existing provider economics model.
+
+Do not call Bright Data repeatedly for same company unnecessarily.
+
+Suggested initial freshness:
+
+30 days
+
+but make configurable.
+
+Do not cache:
+
+errors
+ambiguous entity matches
+wrong entity matches
+
+as successful firmographic enrichment.
+
+==================================================
+19. FAILURE HANDLING
+==================================================
+
+Handle cleanly:
+
+401 unauthorized
+
+403 forbidden
+
+404/no result
+
+429 rate limit
+
+timeout
+
+Bright Data API error
+
+invalid LinkedIn URL
+
+unsupported identifier
+
+empty response
+
+partial profile
+
+unexpected schema
+
+multiple results
+
+Never crash company qualification pipeline.
+
+Return structured provider error.
+
+==================================================
+20. DO NOT IMPLEMENT YET
+==================================================
+
+Do NOT implement:
+
+LinkedIn people scraping
+
+LinkedIn job scraping
+
+LinkedIn posts
+
+contact enrichment
+
+email lookup
+
+phone lookup
+
+signal discovery
+
+buying intent
+
+opportunity scoring
+
+new Exa discovery
+
+Tavily fallback
+
+Apify fallback
+
+Bright Data company search
+
+automated LinkedIn URL discovery
+
+This milestone is ONLY:
+
+Bright Data
+→ COMPANY_FIRMOGRAPHICS
+
+==================================================
+21. TESTS
+==================================================
+
+Add tests for:
+
+provider registration
+
+capability routing
+
+missing API key
+
+valid LinkedIn company URL
+
+platform URL not becoming canonical domain
+
+normalization
+
+employee ranges
+
+missing fields remain UNKNOWN
+
+entity match classification
+
+ambiguous result does not overwrite company
+
+wrong entity does not attach
+
+user-confirmed field does not silently overwrite
+
+provider error handling
+
+cost tracking
+
+cache behavior
+
+API key never logged
+
+==================================================
+22. CONTROLLED REAL TEST
+==================================================
+
+After implementation:
+
+run ONE real Bright Data call.
+
+Use ONE existing Test 10 canonical company with a LinkedIn company URL.
+
+Do NOT select a random external company if a Test 10 company is available.
+
+Report:
+
+Company:
+
+Input LinkedIn URL:
+
+HTTP status:
+
+Bright Data records:
+
+Entity status:
+
+Returned company name:
+
+Returned LinkedIn URL:
+
+Website:
+
+Canonical domain:
+
+Industry:
+
+Employee count:
+
+Employee range:
+
+HQ city:
+
+HQ region/state:
+
+HQ country:
+
+Founded year:
+
+Description available:
+YES/NO
+
+Other useful fields:
+
+Latency:
+
+Estimated cost:
+
+Canonical company updated:
+YES/NO
+
+Why:
+
+==================================================
+23. REQUIRED PASS CONDITIONS
+==================================================
+
+PASS only if:
+
+Bright Data provider registered
+
+COMPANY_FIRMOGRAPHICS routes correctly
+
+real API request succeeds
+
+at least one company result returned
+
+entity identity validated
+
+LinkedIn URL is not treated as canonical domain
+
+firmographic data normalized
+
+missing values remain UNKNOWN
+
+provenance retained
+
+provider usage recorded
+
+API key not exposed
+
+production untouched
+
+==================================================
+24. REPORT
+==================================================
+
+Create:
+
+BRIGHT_DATA_INTEGRATION_TEST.md
+
+Include:
+
+Provider:
+Bright Data
+
+Capability:
+COMPANY_FIRMOGRAPHICS
+
+Credentials:
+AVAILABLE/MISSING
+
+Health:
+HEALTHY/FAILING
+
+Dataset:
+gd_l1vikfnt1wgvvqz95w
+
+Real API calls:
+N
+
+Companies tested:
+1
+
+Records returned:
+
+Entity match:
+CONFIRMED/PROBABLE/AMBIGUOUS/WRONG
+
+Industry returned:
+YES/NO
+
+Employee data returned:
+YES/NO
+
+Geography returned:
+YES/NO
+
+Website returned:
+YES/NO
+
+Canonical domain safely resolved:
+YES/NO
+
+Attribute provenance:
+PASS/FAIL
+
+Cost tracking:
+PASS/FAIL
+
+API key exposed:
+NO
+
+Exa calls:
+0
+
+Tavily calls:
+0
+
+Apify calls:
+0
+
+Contact enrichment:
+0
+
+Signals created:
+0
+
+Opportunity records created:
+0
+
+Production operations:
+0
+
+FINAL STATUS:
+PASS/FAIL
+
+==================================================
+STOP
+==================================================
+
+STOP after:
+
+Bright Data integration
+→ Provider Router
+→ diagnostics
+→ one real COMPANY_FIRMOGRAPHICS health/data-quality test
+
+Do NOT proceed into Test 11 qualification of all 10 companies.
