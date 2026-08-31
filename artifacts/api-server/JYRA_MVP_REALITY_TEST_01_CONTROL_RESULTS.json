@@ -1,0 +1,1435 @@
+{
+  "test": "JYRA_MVP_REALITY_TEST_01",
+  "kind": "BLIND_POSITIVE_CONTROL_EVALUATION",
+  "manifestFile": "JYRA_MVP_REALITY_TEST_01_CONTROL_SET.json",
+  "manifestSha256": "438ae22cc5f06ed16588d911541572fd0617dd608c6ad9bfc451462f5ff90931",
+  "executedAt": "2026-08-31T13:26:29.974Z",
+  "labelsExposedDuringProvisionOrResearch": false,
+  "discoveryPath": "existing Exa COMPANY_DISCOVERY and canonicalization",
+  "researchPath": "unchanged Managed SOC four-question WEB_SEARCH path",
+  "controlsAttempted": 10,
+  "controlsProvisioned": 8,
+  "controlsEvaluated": 10,
+  "detectedCount": 0,
+  "terminalInvariantSatisfied": true,
+  "evaluationStatus": "COMPLETE",
+  "knownEventDetectionRecall": 0,
+  "runs": [
+    {
+      "manifestIndex": 0,
+      "requestedCompany": "SolarWinds",
+      "provision": {
+        "discoveryRunId": "07ab2519-6c85-4ca1-b254-1eae65741f28",
+        "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+        "providerWasExa": true,
+        "rawResults": 10,
+        "canonicalized": 0,
+        "duplicatesRemoved": 0,
+        "rejected": 0,
+        "possibleMatches": 2,
+        "companyId": "3cd73d96-37d1-4cf8-9dab-db596e019783",
+        "status": "PROVISIONED"
+      },
+      "questions": [
+        {
+          "questionType": "LEADERSHIP",
+          "status": "SUCCEEDED",
+          "questionId": "24e2f54f-18bf-4338-bdc4-c42cc3af6d53",
+          "jobId": "e19b3a51-b803-486d-ac50-1e0b56c0f4f8"
+        },
+        {
+          "questionType": "HIRING",
+          "status": "SUCCEEDED",
+          "questionId": "b37fba97-d1bd-4bd6-9452-48199eff53bb",
+          "jobId": "c5bd2396-1295-4150-bd17-fc6029f570ab"
+        },
+        {
+          "questionType": "EXPANSION",
+          "status": "SUCCEEDED",
+          "questionId": "8083b764-b2c7-4788-ad1f-8c631f1110f6",
+          "jobId": "5f4fe89c-2438-4c0c-a78e-d3ff040012ac"
+        },
+        {
+          "questionType": "TECHNOLOGY",
+          "status": "SUCCEEDED",
+          "questionId": "eca3e77a-1b13-42c2-ace5-d3e027232b3d",
+          "jobId": "b34378f2-ed02-4cb3-9137-e8c0c90a19dd"
+        }
+      ]
+    },
+    {
+      "manifestIndex": 1,
+      "requestedCompany": "First Horizon",
+      "provision": {
+        "discoveryRunId": "eb382c28-aeeb-441d-a7ef-03b49af26865",
+        "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+        "providerWasExa": true,
+        "rawResults": 10,
+        "canonicalized": 0,
+        "duplicatesRemoved": 2,
+        "rejected": 0,
+        "possibleMatches": 2,
+        "companyId": null,
+        "status": "NOT_PROVISIONED"
+      },
+      "questions": []
+    },
+    {
+      "manifestIndex": 2,
+      "requestedCompany": "GitLab",
+      "provision": {
+        "discoveryRunId": "bdc4d960-854a-49a9-8f3b-fcc2d019d482",
+        "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+        "providerWasExa": true,
+        "rawResults": 10,
+        "canonicalized": 0,
+        "duplicatesRemoved": 0,
+        "rejected": 0,
+        "possibleMatches": 5,
+        "companyId": "417409dc-ca3f-449f-90bb-f315f91f450a",
+        "status": "PROVISIONED"
+      },
+      "questions": [
+        {
+          "questionType": "LEADERSHIP",
+          "status": "SUCCEEDED",
+          "questionId": "bd190926-02e1-4ff8-b881-82f181db00a2",
+          "jobId": "a9c3af99-7eb8-4036-8956-9d72f0b58bbc"
+        },
+        {
+          "questionType": "HIRING",
+          "status": "SUCCEEDED",
+          "questionId": "3a5a7952-5c64-4033-9e1e-91b3bfa0796a",
+          "jobId": "88d66338-3a31-4d27-93bc-a3a862857ff2"
+        },
+        {
+          "questionType": "EXPANSION",
+          "status": "SUCCEEDED",
+          "questionId": "69032b03-2ba8-473c-972b-85f0017d439b",
+          "jobId": "dc4c7e44-955f-4fee-86d5-9f414a4d9526"
+        },
+        {
+          "questionType": "TECHNOLOGY",
+          "status": "SUCCEEDED",
+          "questionId": "9a189399-1ab3-486d-8546-d4b692085169",
+          "jobId": "29ad345f-06ab-47f0-8cca-f11ebd6f0d3b"
+        }
+      ]
+    },
+    {
+      "manifestIndex": 3,
+      "requestedCompany": "Infoblox",
+      "provision": {
+        "discoveryRunId": "2fbf8d51-43d0-494e-ac71-c5b42d7adb4f",
+        "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+        "providerWasExa": true,
+        "rawResults": 10,
+        "canonicalized": 0,
+        "duplicatesRemoved": 0,
+        "rejected": 0,
+        "possibleMatches": 6,
+        "companyId": "408bc044-5be0-4118-b486-75c494e5cd8f",
+        "status": "PROVISIONED"
+      },
+      "questions": [
+        {
+          "questionType": "LEADERSHIP",
+          "status": "SUCCEEDED",
+          "questionId": "7f2108cf-16fc-4a30-97ad-b1a85c598be9",
+          "jobId": "24edad3e-6099-4087-a2c8-fc1bac3755eb"
+        },
+        {
+          "questionType": "HIRING",
+          "status": "SUCCEEDED",
+          "questionId": "9b63012f-e5be-444b-b3c7-d68477f33eee",
+          "jobId": "a6bf0632-91f7-4ffe-94a5-6ce31112e0d5"
+        },
+        {
+          "questionType": "EXPANSION",
+          "status": "SUCCEEDED",
+          "questionId": "d5aa9fd2-d125-4681-954c-bdba9e0f78fa",
+          "jobId": "e6757c82-4892-402b-a676-72c26623b354"
+        },
+        {
+          "questionType": "TECHNOLOGY",
+          "status": "SUCCEEDED",
+          "questionId": "aa12aa6d-c262-4967-8d70-d503a3c9310c",
+          "jobId": "3e91c676-13d0-48d6-8a36-25729c948133"
+        }
+      ]
+    },
+    {
+      "manifestIndex": 4,
+      "requestedCompany": "Teradata",
+      "provision": {
+        "discoveryRunId": "c2a37ce0-f5c2-4c50-82fb-207ff0d4b2ad",
+        "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+        "providerWasExa": true,
+        "rawResults": 10,
+        "canonicalized": 8,
+        "duplicatesRemoved": 0,
+        "rejected": 0,
+        "possibleMatches": 2,
+        "companyId": "0ba57746-1f8e-4691-a647-0921de1a971d",
+        "status": "PROVISIONED"
+      },
+      "questions": [
+        {
+          "questionType": "LEADERSHIP",
+          "status": "SUCCEEDED",
+          "questionId": "fbe0a8b3-eeb5-43bf-a3a7-b4273ba35c42",
+          "jobId": "de356920-6c77-459a-b5cc-6b0e8930385e"
+        },
+        {
+          "questionType": "HIRING",
+          "status": "SUCCEEDED",
+          "questionId": "799806ca-c9c0-4461-ba93-a21457f7250b",
+          "jobId": "0e4ba400-dce1-492a-967e-b8dc0e5a3869"
+        },
+        {
+          "questionType": "EXPANSION",
+          "status": "SUCCEEDED",
+          "questionId": "c3a71eb7-6511-46a3-bf51-33d04337b943",
+          "jobId": "d0d29ab2-53bd-4753-80ed-53fd02967090"
+        },
+        {
+          "questionType": "TECHNOLOGY",
+          "status": "SUCCEEDED",
+          "questionId": "9d40f5c4-b962-41bf-8975-3ccb51fbfddd",
+          "jobId": "c4d03260-fbed-4b1e-8ae6-70e8355e4b11"
+        }
+      ]
+    },
+    {
+      "manifestIndex": 5,
+      "requestedCompany": "Nubank",
+      "provision": {
+        "discoveryRunId": "bf161611-0369-4dea-80ae-2dc8ba73b01f",
+        "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+        "providerWasExa": true,
+        "rawResults": 10,
+        "canonicalized": 6,
+        "duplicatesRemoved": 0,
+        "rejected": 0,
+        "possibleMatches": 3,
+        "companyId": "8ee8a9ce-dd62-4b03-bfb0-f9f9a3683f32",
+        "status": "PROVISIONED"
+      },
+      "questions": [
+        {
+          "questionType": "LEADERSHIP",
+          "status": "SUCCEEDED",
+          "questionId": "2c57327a-8a7f-4629-9b60-2dbd03b7e400",
+          "jobId": "a0952cb2-f260-475f-8566-32c37a9e5775"
+        },
+        {
+          "questionType": "HIRING",
+          "status": "SUCCEEDED",
+          "questionId": "9fef5c5b-73e2-46a6-8ccb-0124d659a6e5",
+          "jobId": "0e6c8a3d-01cf-4b9f-9e34-225eca66f0a8"
+        },
+        {
+          "questionType": "EXPANSION",
+          "status": "SUCCEEDED",
+          "questionId": "5d693007-7ae7-461d-878b-3310a3cf8416",
+          "jobId": "91e0420e-f96c-4629-b10d-4d14d7fdf3c5"
+        },
+        {
+          "questionType": "TECHNOLOGY",
+          "status": "SUCCEEDED",
+          "questionId": "484f1d37-25ae-45b0-8e81-c7030da0217a",
+          "jobId": "81149799-b466-4317-a4b8-2fba9578cce0"
+        }
+      ]
+    },
+    {
+      "manifestIndex": 6,
+      "requestedCompany": "Black Duck",
+      "provision": {
+        "discoveryRunId": "1d11246f-84be-42e7-8ca8-82d78dd97e67",
+        "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+        "providerWasExa": true,
+        "rawResults": 10,
+        "canonicalized": 0,
+        "duplicatesRemoved": 0,
+        "rejected": 0,
+        "possibleMatches": 9,
+        "companyId": "fafc40de-2c9e-4968-bc3c-602d7d3f23c6",
+        "status": "PROVISIONED"
+      },
+      "questions": [
+        {
+          "questionType": "LEADERSHIP",
+          "status": "SUCCEEDED",
+          "questionId": "a1ce0837-ed29-4c30-bb4a-5e7ae4ba98ec",
+          "jobId": "b6a5a081-3617-427b-9326-5b456265796c"
+        },
+        {
+          "questionType": "HIRING",
+          "status": "SUCCEEDED",
+          "questionId": "905d31ee-714b-4e6b-8eb8-660b3dd6478a",
+          "jobId": "2c1ca0d1-f015-4613-a660-6ddb8567fdd8"
+        },
+        {
+          "questionType": "EXPANSION",
+          "status": "SUCCEEDED",
+          "questionId": "f8ebe294-a23d-46f4-9efa-de85ea7e024e",
+          "jobId": "74023070-ff92-444e-bcad-eeeb98defeac"
+        },
+        {
+          "questionType": "TECHNOLOGY",
+          "status": "SUCCEEDED",
+          "questionId": "5c5842e3-4178-46b5-801e-df24b5deb92a",
+          "jobId": "422d64b1-6743-4836-8eeb-d947bbcceb19"
+        }
+      ]
+    },
+    {
+      "manifestIndex": 7,
+      "requestedCompany": "OpenAssets",
+      "provision": {
+        "discoveryRunId": "d58c80c6-4132-4f0c-b272-88851e3015a4",
+        "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+        "providerWasExa": true,
+        "rawResults": 1,
+        "canonicalized": 1,
+        "duplicatesRemoved": 0,
+        "rejected": 0,
+        "possibleMatches": 0,
+        "companyId": "4944433c-43a4-41bb-b3f4-24fe98d56a8b",
+        "status": "PROVISIONED"
+      },
+      "questions": [
+        {
+          "questionType": "LEADERSHIP",
+          "status": "SUCCEEDED",
+          "questionId": "e5f5d0e4-4067-4ce2-947f-335586ab6423",
+          "jobId": "31d25aef-05f4-49ec-87f2-13ff90938074"
+        },
+        {
+          "questionType": "HIRING",
+          "status": "SUCCEEDED",
+          "questionId": "23530fbd-b972-4f52-befb-0393c98c71da",
+          "jobId": "74f338f0-0324-4708-962b-d48bee260682"
+        },
+        {
+          "questionType": "EXPANSION",
+          "status": "SUCCEEDED",
+          "questionId": "6e32d60c-e8f8-44c2-898d-5a900c35049b",
+          "jobId": "46d16988-3035-44a9-94d1-f8ea0d466ce7"
+        },
+        {
+          "questionType": "TECHNOLOGY",
+          "status": "SUCCEEDED",
+          "questionId": "64df2e23-c040-408a-a03d-59ee00c3cf81",
+          "jobId": "a7ec8ccb-3982-4eb5-81d4-26c43a44c20e"
+        }
+      ]
+    },
+    {
+      "manifestIndex": 8,
+      "requestedCompany": "Black & McDonald",
+      "provision": {
+        "discoveryRunId": "3099da87-01a7-4db1-8953-c808a09c8a2f",
+        "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+        "providerWasExa": true,
+        "rawResults": 9,
+        "canonicalized": 3,
+        "duplicatesRemoved": 0,
+        "rejected": 0,
+        "possibleMatches": 6,
+        "companyId": null,
+        "status": "NOT_PROVISIONED"
+      },
+      "questions": []
+    },
+    {
+      "manifestIndex": 9,
+      "requestedCompany": "RAKBANK",
+      "provision": {
+        "discoveryRunId": "e09b102c-0502-4f4f-9f1b-5713bee9d025",
+        "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+        "providerWasExa": true,
+        "rawResults": 10,
+        "canonicalized": 10,
+        "duplicatesRemoved": 0,
+        "rejected": 0,
+        "possibleMatches": 0,
+        "companyId": "94457ffa-bf97-426e-95b0-a1cf30250bd0",
+        "status": "PROVISIONED"
+      },
+      "questions": [
+        {
+          "questionType": "LEADERSHIP",
+          "status": "SUCCEEDED",
+          "questionId": "fe64ad8e-75ae-45e7-931c-fa28a2678f82",
+          "jobId": "d817f783-5489-43fb-84ce-a0724f2f57c3"
+        },
+        {
+          "questionType": "HIRING",
+          "status": "SUCCEEDED",
+          "questionId": "12f498ed-5bfe-4e85-9159-56eea1aea073",
+          "jobId": "d506f2c9-50c7-4aac-9f7d-9f212eb9bc51"
+        },
+        {
+          "questionType": "EXPANSION",
+          "status": "SUCCEEDED",
+          "questionId": "c48687ca-74c7-42c2-b5c6-0c552bc6038b",
+          "jobId": "a55e7b0e-ca04-47b8-9bb0-1b53cfd2e2f1"
+        },
+        {
+          "questionType": "TECHNOLOGY",
+          "status": "SUCCEEDED",
+          "questionId": "2f01903e-0a22-4f68-b6c3-48b986accc4f",
+          "jobId": "b065d796-17b6-44c1-af3c-3d6233e11209"
+        }
+      ]
+    }
+  ],
+  "evaluations": [
+    {
+      "manifestIndex": 0,
+      "company": "SolarWinds",
+      "provisionStatus": "PROVISIONED",
+      "companyId": "3cd73d96-37d1-4cf8-9dab-db596e019783",
+      "expectedCategory": "SECURITY_LEADERSHIP",
+      "expectedSignalCode": "MSOC_SECURITY_LEADER",
+      "terminalQuestionDispositions": [
+        {
+          "questionType": "LEADERSHIP",
+          "status": "SUCCEEDED",
+          "questionId": "24e2f54f-18bf-4338-bdc4-c42cc3af6d53",
+          "jobId": "e19b3a51-b803-486d-ac50-1e0b56c0f4f8"
+        },
+        {
+          "questionType": "HIRING",
+          "status": "SUCCEEDED",
+          "questionId": "b37fba97-d1bd-4bd6-9452-48199eff53bb",
+          "jobId": "c5bd2396-1295-4150-bd17-fc6029f570ab"
+        },
+        {
+          "questionType": "EXPANSION",
+          "status": "SUCCEEDED",
+          "questionId": "8083b764-b2c7-4788-ad1f-8c631f1110f6",
+          "jobId": "5f4fe89c-2438-4c0c-a78e-d3ff040012ac"
+        },
+        {
+          "questionType": "TECHNOLOGY",
+          "status": "SUCCEEDED",
+          "questionId": "eca3e77a-1b13-42c2-ace5-d3e027232b3d",
+          "jobId": "b34378f2-ed02-4cb3-9137-e8c0c90a19dd"
+        }
+      ],
+      "detected": false,
+      "matchedEvidenceIds": [],
+      "matchedFactIds": [],
+      "matchedSignalIds": [],
+      "missedEventCause": "SOURCE_NOT_FOUND"
+    },
+    {
+      "manifestIndex": 1,
+      "company": "First Horizon",
+      "provisionStatus": "NOT_PROVISIONED",
+      "terminalQuestionDispositions": [],
+      "detected": false,
+      "matchedEvidenceIds": [],
+      "matchedFactIds": [],
+      "matchedSignalIds": [],
+      "missedEventCause": "DISCOVERY_FAILURE"
+    },
+    {
+      "manifestIndex": 2,
+      "company": "GitLab",
+      "provisionStatus": "PROVISIONED",
+      "companyId": "417409dc-ca3f-449f-90bb-f315f91f450a",
+      "expectedCategory": "SECURITY_LEADERSHIP",
+      "expectedSignalCode": "MSOC_SECURITY_LEADER",
+      "terminalQuestionDispositions": [
+        {
+          "questionType": "LEADERSHIP",
+          "status": "SUCCEEDED",
+          "questionId": "bd190926-02e1-4ff8-b881-82f181db00a2",
+          "jobId": "a9c3af99-7eb8-4036-8956-9d72f0b58bbc"
+        },
+        {
+          "questionType": "HIRING",
+          "status": "SUCCEEDED",
+          "questionId": "3a5a7952-5c64-4033-9e1e-91b3bfa0796a",
+          "jobId": "88d66338-3a31-4d27-93bc-a3a862857ff2"
+        },
+        {
+          "questionType": "EXPANSION",
+          "status": "SUCCEEDED",
+          "questionId": "69032b03-2ba8-473c-972b-85f0017d439b",
+          "jobId": "dc4c7e44-955f-4fee-86d5-9f414a4d9526"
+        },
+        {
+          "questionType": "TECHNOLOGY",
+          "status": "SUCCEEDED",
+          "questionId": "9a189399-1ab3-486d-8546-d4b692085169",
+          "jobId": "29ad345f-06ab-47f0-8cca-f11ebd6f0d3b"
+        }
+      ],
+      "detected": false,
+      "matchedEvidenceIds": [
+        "0488986c-21e7-4675-b161-edf2f9307156"
+      ],
+      "matchedFactIds": [],
+      "matchedSignalIds": [],
+      "missedEventCause": "FACT_EXTRACTION_FAILURE"
+    },
+    {
+      "manifestIndex": 3,
+      "company": "Infoblox",
+      "provisionStatus": "PROVISIONED",
+      "companyId": "408bc044-5be0-4118-b486-75c494e5cd8f",
+      "expectedCategory": "SECURITY_LEADERSHIP",
+      "expectedSignalCode": "MSOC_SECURITY_LEADER",
+      "terminalQuestionDispositions": [
+        {
+          "questionType": "LEADERSHIP",
+          "status": "SUCCEEDED",
+          "questionId": "7f2108cf-16fc-4a30-97ad-b1a85c598be9",
+          "jobId": "24edad3e-6099-4087-a2c8-fc1bac3755eb"
+        },
+        {
+          "questionType": "HIRING",
+          "status": "SUCCEEDED",
+          "questionId": "9b63012f-e5be-444b-b3c7-d68477f33eee",
+          "jobId": "a6bf0632-91f7-4ffe-94a5-6ce31112e0d5"
+        },
+        {
+          "questionType": "EXPANSION",
+          "status": "SUCCEEDED",
+          "questionId": "d5aa9fd2-d125-4681-954c-bdba9e0f78fa",
+          "jobId": "e6757c82-4892-402b-a676-72c26623b354"
+        },
+        {
+          "questionType": "TECHNOLOGY",
+          "status": "SUCCEEDED",
+          "questionId": "aa12aa6d-c262-4967-8d70-d503a3c9310c",
+          "jobId": "3e91c676-13d0-48d6-8a36-25729c948133"
+        }
+      ],
+      "detected": false,
+      "matchedEvidenceIds": [
+        "df4597ec-3a1d-4a60-bb9e-eef8f8281bfa",
+        "7d53db09-bddc-46a9-a9be-4bf51e625180"
+      ],
+      "matchedFactIds": [],
+      "matchedSignalIds": [],
+      "missedEventCause": "FACT_EXTRACTION_FAILURE"
+    },
+    {
+      "manifestIndex": 4,
+      "company": "Teradata",
+      "provisionStatus": "PROVISIONED",
+      "companyId": "0ba57746-1f8e-4691-a647-0921de1a971d",
+      "expectedCategory": "SECURITY_LEADERSHIP",
+      "expectedSignalCode": "MSOC_SECURITY_LEADER",
+      "terminalQuestionDispositions": [
+        {
+          "questionType": "LEADERSHIP",
+          "status": "SUCCEEDED",
+          "questionId": "fbe0a8b3-eeb5-43bf-a3a7-b4273ba35c42",
+          "jobId": "de356920-6c77-459a-b5cc-6b0e8930385e"
+        },
+        {
+          "questionType": "HIRING",
+          "status": "SUCCEEDED",
+          "questionId": "799806ca-c9c0-4461-ba93-a21457f7250b",
+          "jobId": "0e4ba400-dce1-492a-967e-b8dc0e5a3869"
+        },
+        {
+          "questionType": "EXPANSION",
+          "status": "SUCCEEDED",
+          "questionId": "c3a71eb7-6511-46a3-bf51-33d04337b943",
+          "jobId": "d0d29ab2-53bd-4753-80ed-53fd02967090"
+        },
+        {
+          "questionType": "TECHNOLOGY",
+          "status": "SUCCEEDED",
+          "questionId": "9d40f5c4-b962-41bf-8975-3ccb51fbfddd",
+          "jobId": "c4d03260-fbed-4b1e-8ae6-70e8355e4b11"
+        }
+      ],
+      "detected": false,
+      "matchedEvidenceIds": [
+        "da37b7d0-cd3d-48ba-998c-ee6af7896e48",
+        "9fc73350-4e40-4bd3-9576-4dd6a5cb9ebb",
+        "6ae4f9dc-a52d-47ec-9888-d5bfc874f83d",
+        "a815796d-04a5-4a0f-9152-e8143585904e"
+      ],
+      "matchedFactIds": [],
+      "matchedSignalIds": [],
+      "missedEventCause": "FACT_EXTRACTION_FAILURE"
+    },
+    {
+      "manifestIndex": 5,
+      "company": "Nubank",
+      "provisionStatus": "PROVISIONED",
+      "companyId": "8ee8a9ce-dd62-4b03-bfb0-f9f9a3683f32",
+      "expectedCategory": "SECURITY_LEADERSHIP",
+      "expectedSignalCode": "MSOC_SECURITY_LEADER",
+      "terminalQuestionDispositions": [
+        {
+          "questionType": "LEADERSHIP",
+          "status": "SUCCEEDED",
+          "questionId": "2c57327a-8a7f-4629-9b60-2dbd03b7e400",
+          "jobId": "a0952cb2-f260-475f-8566-32c37a9e5775"
+        },
+        {
+          "questionType": "HIRING",
+          "status": "SUCCEEDED",
+          "questionId": "9fef5c5b-73e2-46a6-8ccb-0124d659a6e5",
+          "jobId": "0e6c8a3d-01cf-4b9f-9e34-225eca66f0a8"
+        },
+        {
+          "questionType": "EXPANSION",
+          "status": "SUCCEEDED",
+          "questionId": "5d693007-7ae7-461d-878b-3310a3cf8416",
+          "jobId": "91e0420e-f96c-4629-b10d-4d14d7fdf3c5"
+        },
+        {
+          "questionType": "TECHNOLOGY",
+          "status": "SUCCEEDED",
+          "questionId": "484f1d37-25ae-45b0-8e81-c7030da0217a",
+          "jobId": "81149799-b466-4317-a4b8-2fba9578cce0"
+        }
+      ],
+      "detected": false,
+      "matchedEvidenceIds": [
+        "911c6edc-99cc-4d23-b753-c210b09142d8"
+      ],
+      "matchedFactIds": [],
+      "matchedSignalIds": [],
+      "missedEventCause": "FACT_EXTRACTION_FAILURE"
+    },
+    {
+      "manifestIndex": 6,
+      "company": "Black Duck",
+      "provisionStatus": "PROVISIONED",
+      "companyId": "fafc40de-2c9e-4968-bc3c-602d7d3f23c6",
+      "expectedCategory": "SECURITY_LEADERSHIP",
+      "expectedSignalCode": "MSOC_SECURITY_LEADER",
+      "terminalQuestionDispositions": [
+        {
+          "questionType": "LEADERSHIP",
+          "status": "SUCCEEDED",
+          "questionId": "a1ce0837-ed29-4c30-bb4a-5e7ae4ba98ec",
+          "jobId": "b6a5a081-3617-427b-9326-5b456265796c"
+        },
+        {
+          "questionType": "HIRING",
+          "status": "SUCCEEDED",
+          "questionId": "905d31ee-714b-4e6b-8eb8-660b3dd6478a",
+          "jobId": "2c1ca0d1-f015-4613-a660-6ddb8567fdd8"
+        },
+        {
+          "questionType": "EXPANSION",
+          "status": "SUCCEEDED",
+          "questionId": "f8ebe294-a23d-46f4-9efa-de85ea7e024e",
+          "jobId": "74023070-ff92-444e-bcad-eeeb98defeac"
+        },
+        {
+          "questionType": "TECHNOLOGY",
+          "status": "SUCCEEDED",
+          "questionId": "5c5842e3-4178-46b5-801e-df24b5deb92a",
+          "jobId": "422d64b1-6743-4836-8eeb-d947bbcceb19"
+        }
+      ],
+      "detected": false,
+      "matchedEvidenceIds": [
+        "58ba43c3-3c52-4423-beac-8eb2750375e3",
+        "4a9fbc45-1012-440a-89a0-6c592f421761",
+        "09101ce7-ad5c-4621-819a-13ebf8433368",
+        "2c1c3ffa-df94-4c44-ac0e-6519cc8b9616",
+        "75cd76ca-83e6-4229-9855-2ea132360cd8",
+        "94cd090c-7ff7-434b-8775-e25359bd83f1",
+        "f62d23b9-d8e6-48af-a0ed-0c800fbf56a7",
+        "16713492-ccff-4861-8c43-e0de1b3061b0",
+        "a778a14b-2e85-4e67-abdf-0c394ea061d1",
+        "8f1c477d-6a09-46b0-9945-59bd641838d0",
+        "457ad638-ba9f-4989-a15f-a44a78f68e63",
+        "a782d3e0-e81d-4d9b-ac08-b4182e0499af",
+        "6a0f6ba6-fede-4b75-a89b-d25aa7aee86b",
+        "aca282ad-138d-4e39-b5cd-d86d8519d475"
+      ],
+      "matchedFactIds": [],
+      "matchedSignalIds": [],
+      "missedEventCause": "FACT_EXTRACTION_FAILURE"
+    },
+    {
+      "manifestIndex": 7,
+      "company": "OpenAssets",
+      "provisionStatus": "PROVISIONED",
+      "companyId": "4944433c-43a4-41bb-b3f4-24fe98d56a8b",
+      "expectedCategory": "FUNDED_RISK_PROGRAM",
+      "expectedSignalCode": "MSOC_FUNDED_RISK_PROGRAM",
+      "terminalQuestionDispositions": [
+        {
+          "questionType": "LEADERSHIP",
+          "status": "SUCCEEDED",
+          "questionId": "e5f5d0e4-4067-4ce2-947f-335586ab6423",
+          "jobId": "31d25aef-05f4-49ec-87f2-13ff90938074"
+        },
+        {
+          "questionType": "HIRING",
+          "status": "SUCCEEDED",
+          "questionId": "23530fbd-b972-4f52-befb-0393c98c71da",
+          "jobId": "74f338f0-0324-4708-962b-d48bee260682"
+        },
+        {
+          "questionType": "EXPANSION",
+          "status": "SUCCEEDED",
+          "questionId": "6e32d60c-e8f8-44c2-898d-5a900c35049b",
+          "jobId": "46d16988-3035-44a9-94d1-f8ea0d466ce7"
+        },
+        {
+          "questionType": "TECHNOLOGY",
+          "status": "SUCCEEDED",
+          "questionId": "64df2e23-c040-408a-a03d-59ee00c3cf81",
+          "jobId": "a7ec8ccb-3982-4eb5-81d4-26c43a44c20e"
+        }
+      ],
+      "detected": false,
+      "matchedEvidenceIds": [
+        "4e647bd0-6d4c-469a-80c4-21008e44f4d3",
+        "2bd2ce88-2582-4d2d-b1dc-810ab1c84cd6"
+      ],
+      "matchedFactIds": [],
+      "matchedSignalIds": [],
+      "missedEventCause": "FACT_EXTRACTION_FAILURE"
+    },
+    {
+      "manifestIndex": 8,
+      "company": "Black & McDonald",
+      "provisionStatus": "NOT_PROVISIONED",
+      "terminalQuestionDispositions": [],
+      "detected": false,
+      "matchedEvidenceIds": [],
+      "matchedFactIds": [],
+      "matchedSignalIds": [],
+      "missedEventCause": "DISCOVERY_FAILURE"
+    },
+    {
+      "manifestIndex": 9,
+      "company": "RAKBANK",
+      "provisionStatus": "PROVISIONED",
+      "companyId": "94457ffa-bf97-426e-95b0-a1cf30250bd0",
+      "expectedCategory": "SECURITY_STACK_CHANGE",
+      "expectedSignalCode": "MSOC_SECURITY_STACK_CHANGE",
+      "terminalQuestionDispositions": [
+        {
+          "questionType": "LEADERSHIP",
+          "status": "SUCCEEDED",
+          "questionId": "fe64ad8e-75ae-45e7-931c-fa28a2678f82",
+          "jobId": "d817f783-5489-43fb-84ce-a0724f2f57c3"
+        },
+        {
+          "questionType": "HIRING",
+          "status": "SUCCEEDED",
+          "questionId": "12f498ed-5bfe-4e85-9159-56eea1aea073",
+          "jobId": "d506f2c9-50c7-4aac-9f7d-9f212eb9bc51"
+        },
+        {
+          "questionType": "EXPANSION",
+          "status": "SUCCEEDED",
+          "questionId": "c48687ca-74c7-42c2-b5c6-0c552bc6038b",
+          "jobId": "a55e7b0e-ca04-47b8-9bb0-1b53cfd2e2f1"
+        },
+        {
+          "questionType": "TECHNOLOGY",
+          "status": "SUCCEEDED",
+          "questionId": "2f01903e-0a22-4f68-b6c3-48b986accc4f",
+          "jobId": "b065d796-17b6-44c1-af3c-3d6233e11209"
+        }
+      ],
+      "detected": false,
+      "matchedEvidenceIds": [],
+      "matchedFactIds": [],
+      "matchedSignalIds": [],
+      "missedEventCause": "SOURCE_NOT_FOUND"
+    }
+  ],
+  "mainDiscoveryAccounting": {
+    "source": "PERSISTED_DISCOVERY_RUNS_AND_PROVENANCE",
+    "runCount": 15,
+    "rawDiscoveredCandidates": 250,
+    "acceptedCandidates": 230,
+    "canonicalCandidates": 230,
+    "duplicatesRejected": 20,
+    "identityFailures": 0,
+    "rejectedCandidates": 0,
+    "persistedProvenanceRecords": 218,
+    "finalPopulation": 50,
+    "runs": [
+      {
+        "id": "85142dd3-94c0-40c1-afaa-591bedbcc959",
+        "status": "SUCCEEDED",
+        "rawResultCount": 20,
+        "acceptedCandidateCount": 18,
+        "duplicateCount": 2,
+        "rejectedCount": 0,
+        "queries": [
+          "SaaS companies that may be relevant buyers for Managed Soc",
+          "technology companies that may be relevant buyers for Managed Soc",
+          "IT services companies that may be relevant buyers for Managed Soc",
+          "fintech companies that may be relevant buyers for Managed Soc",
+          "financial services companies that may be relevant buyers for Managed Soc"
+        ]
+      },
+      {
+        "id": "5e096f35-2bb1-43b2-8c45-3f83a77b4e29",
+        "status": "SUCCEEDED",
+        "rawResultCount": 20,
+        "acceptedCandidateCount": 18,
+        "duplicateCount": 2,
+        "rejectedCount": 0,
+        "queries": [
+          "SaaS companies that may be relevant buyers for Managed Soc",
+          "technology companies that may be relevant buyers for Managed Soc",
+          "IT services companies that may be relevant buyers for Managed Soc",
+          "fintech companies that may be relevant buyers for Managed Soc",
+          "financial services companies that may be relevant buyers for Managed Soc"
+        ]
+      },
+      {
+        "id": "cc3f8640-6d3a-445f-9af6-b2590d59966a",
+        "status": "SUCCEEDED",
+        "rawResultCount": 20,
+        "acceptedCandidateCount": 18,
+        "duplicateCount": 2,
+        "rejectedCount": 0,
+        "queries": [
+          "SaaS companies that may be relevant buyers for Managed Soc",
+          "technology companies that may be relevant buyers for Managed Soc",
+          "IT services companies that may be relevant buyers for Managed Soc",
+          "fintech companies that may be relevant buyers for Managed Soc",
+          "financial services companies that may be relevant buyers for Managed Soc"
+        ]
+      },
+      {
+        "id": "9ccb1f07-1e57-4c12-8175-148c601ede70",
+        "status": "SUCCEEDED",
+        "rawResultCount": 20,
+        "acceptedCandidateCount": 18,
+        "duplicateCount": 2,
+        "rejectedCount": 0,
+        "queries": [
+          "SaaS companies that may be relevant buyers for Managed Soc",
+          "technology companies that may be relevant buyers for Managed Soc",
+          "IT services companies that may be relevant buyers for Managed Soc",
+          "fintech companies that may be relevant buyers for Managed Soc",
+          "financial services companies that may be relevant buyers for Managed Soc"
+        ]
+      },
+      {
+        "id": "efaf9bc1-814a-4967-9efa-1d0077727ac3",
+        "status": "SUCCEEDED",
+        "rawResultCount": 20,
+        "acceptedCandidateCount": 18,
+        "duplicateCount": 2,
+        "rejectedCount": 0,
+        "queries": [
+          "SaaS companies that may be relevant buyers for Managed Soc",
+          "technology companies that may be relevant buyers for Managed Soc",
+          "IT services companies that may be relevant buyers for Managed Soc",
+          "fintech companies that may be relevant buyers for Managed Soc",
+          "financial services companies that may be relevant buyers for Managed Soc"
+        ]
+      },
+      {
+        "id": "1a97ac56-c968-464f-a0de-a4a463f50cd5",
+        "status": "SUCCEEDED",
+        "rawResultCount": 20,
+        "acceptedCandidateCount": 18,
+        "duplicateCount": 2,
+        "rejectedCount": 0,
+        "queries": [
+          "SaaS companies that may be relevant buyers for Managed Soc",
+          "technology companies that may be relevant buyers for Managed Soc",
+          "IT services companies that may be relevant buyers for Managed Soc",
+          "fintech companies that may be relevant buyers for Managed Soc",
+          "financial services companies that may be relevant buyers for Managed Soc"
+        ]
+      },
+      {
+        "id": "f0bcdf0e-2270-4098-a8ef-42be1742f5c1",
+        "status": "SUCCEEDED",
+        "rawResultCount": 20,
+        "acceptedCandidateCount": 18,
+        "duplicateCount": 2,
+        "rejectedCount": 0,
+        "queries": [
+          "SaaS companies that may be relevant buyers for Managed Soc",
+          "technology companies that may be relevant buyers for Managed Soc",
+          "IT services companies that may be relevant buyers for Managed Soc",
+          "fintech companies that may be relevant buyers for Managed Soc",
+          "financial services companies that may be relevant buyers for Managed Soc"
+        ]
+      },
+      {
+        "id": "b728cc02-f61b-4653-8343-699bc6441a6e",
+        "status": "SUCCEEDED",
+        "rawResultCount": 20,
+        "acceptedCandidateCount": 18,
+        "duplicateCount": 2,
+        "rejectedCount": 0,
+        "queries": [
+          "SaaS companies that may be relevant buyers for Managed Soc",
+          "technology companies that may be relevant buyers for Managed Soc",
+          "IT services companies that may be relevant buyers for Managed Soc",
+          "fintech companies that may be relevant buyers for Managed Soc",
+          "financial services companies that may be relevant buyers for Managed Soc"
+        ]
+      },
+      {
+        "id": "b9a5cdbe-02a2-47a3-8d7c-d31e3bd32ff4",
+        "status": "SUCCEEDED",
+        "rawResultCount": 20,
+        "acceptedCandidateCount": 18,
+        "duplicateCount": 2,
+        "rejectedCount": 0,
+        "queries": [
+          "SaaS companies that may be relevant buyers for Managed Soc",
+          "technology companies that may be relevant buyers for Managed Soc",
+          "IT services companies that may be relevant buyers for Managed Soc",
+          "fintech companies that may be relevant buyers for Managed Soc",
+          "financial services companies that may be relevant buyers for Managed Soc"
+        ]
+      },
+      {
+        "id": "29e31547-4dfa-4f46-a309-d4686cae0a6c",
+        "status": "SUCCEEDED",
+        "rawResultCount": 20,
+        "acceptedCandidateCount": 18,
+        "duplicateCount": 2,
+        "rejectedCount": 0,
+        "queries": [
+          "SaaS companies that may be relevant buyers for Managed Soc",
+          "technology companies that may be relevant buyers for Managed Soc",
+          "IT services companies that may be relevant buyers for Managed Soc",
+          "fintech companies that may be relevant buyers for Managed Soc",
+          "financial services companies that may be relevant buyers for Managed Soc"
+        ]
+      },
+      {
+        "id": "4f5dd356-f4a0-426e-8787-40edd267ac5f",
+        "status": "SUCCEEDED",
+        "rawResultCount": 10,
+        "acceptedCandidateCount": 10,
+        "duplicateCount": 0,
+        "rejectedCount": 0,
+        "queries": [
+          "SaaS companies that may be relevant buyers for Managed Soc in Pune"
+        ]
+      },
+      {
+        "id": "311d49c6-5bde-4834-8ae8-475d06fb54ae",
+        "status": "SUCCEEDED",
+        "rawResultCount": 10,
+        "acceptedCandidateCount": 10,
+        "duplicateCount": 0,
+        "rejectedCount": 0,
+        "queries": [
+          "SaaS companies that may be relevant buyers for Managed Soc in Chennai"
+        ]
+      },
+      {
+        "id": "914746c6-657b-4293-98be-c147f514a95a",
+        "status": "SUCCEEDED",
+        "rawResultCount": 10,
+        "acceptedCandidateCount": 10,
+        "duplicateCount": 0,
+        "rejectedCount": 0,
+        "queries": [
+          "SaaS companies that may be relevant buyers for Managed Soc in cloud infrastructure"
+        ]
+      },
+      {
+        "id": "06987405-13b8-4ee1-ac7d-1b009e3d9679",
+        "status": "SUCCEEDED",
+        "rawResultCount": 10,
+        "acceptedCandidateCount": 10,
+        "duplicateCount": 0,
+        "rejectedCount": 0,
+        "queries": [
+          "SaaS companies that may be relevant buyers for Managed Soc in software services"
+        ]
+      },
+      {
+        "id": "383fb83f-633d-434f-9765-78257a4a5d1f",
+        "status": "SUCCEEDED",
+        "rawResultCount": 10,
+        "acceptedCandidateCount": 10,
+        "duplicateCount": 0,
+        "rejectedCount": 0,
+        "queries": [
+          "SaaS companies that may be relevant buyers for Managed Soc in financial technology"
+        ]
+      }
+    ]
+  },
+  "mainOperationalMeasurements": {
+    "source": "PERSISTED_DISCOVERY_RUN_PROVIDER_USAGE_RESEARCH_JOB_AND_CONTACT_ATTEMPT_RECORDS",
+    "benchmarkStartedAt": "2026-08-31T11:22:49.448Z",
+    "benchmarkCompletedAt": "2026-08-31T12:10:53.950Z",
+    "totalBenchmarkDurationMs": 2884502,
+    "discovery": {
+      "runs": 15,
+      "averageRunDurationMs": 1363.6666666666667,
+      "providerUsage": {
+        "calls": 25,
+        "estimated": {
+          "status": "COMPLETE",
+          "total": 0.1750000000000001,
+          "knownSubtotal": 0.1750000000000001,
+          "knownRows": 25,
+          "totalRows": 25
+        },
+        "actual": {
+          "status": "COMPLETE",
+          "total": 0.1750000000000001,
+          "knownSubtotal": 0.1750000000000001,
+          "knownRows": 25,
+          "totalRows": 25
+        }
+      }
+    },
+    "profileResolution": {
+      "attemptsWithPersistedUsage": 162,
+      "averageLatencyMs": 2068,
+      "providerUsage": {
+        "calls": 162,
+        "estimated": {
+          "status": "COMPLETE",
+          "total": 1.6200000000000012,
+          "knownSubtotal": 1.6200000000000012,
+          "knownRows": 162,
+          "totalRows": 162
+        },
+        "actual": {
+          "status": "PARTIAL_UNKNOWN",
+          "total": null,
+          "knownSubtotal": 0,
+          "knownRows": 0,
+          "totalRows": 162
+        }
+      }
+    },
+    "firmographics": {
+      "attemptsWithPersistedUsage": 115,
+      "averageLatencyMs": 1508.4521739130435,
+      "providerUsage": {
+        "calls": 115,
+        "estimated": {
+          "status": "COMPLETE",
+          "total": 0.04650000000000002,
+          "knownSubtotal": 0.04650000000000002,
+          "knownRows": 115,
+          "totalRows": 115
+        },
+        "actual": {
+          "status": "PARTIAL_UNKNOWN",
+          "total": null,
+          "knownSubtotal": 0,
+          "knownRows": 84,
+          "totalRows": 115
+        }
+      }
+    },
+    "who": {
+      "measuredProviderOperations": 277,
+      "averageAvailableProviderLatencyMs": 1835.6967509025271
+    },
+    "research": {
+      "jobs": 32,
+      "completedJobsWithTiming": 31,
+      "averageJobDurationMs": 3945.5806451612902
+    },
+    "contacts": {
+      "eligibleProjectCompanies": 50,
+      "attempts": 0,
+      "averageLatencyMs": null,
+      "averageLatencyDenominator": 0,
+      "latencyStatus": "N/A_DENOMINATOR_0"
+    },
+    "providerCostAccounting": {
+      "associationMethod": "Exact scope, discovery provider request IDs, company IDs, research question/job provider request IDs, and the persisted control execution interval; control-associated rows are excluded from main.",
+      "controlExecutionInterval": {
+        "startedAt": "2026-08-31T12:26:10.095Z",
+        "completedAt": "2026-08-31T13:08:16.011Z"
+      },
+      "MAIN_POPULATION": {
+        "stages": {
+          "DISCOVERY": {
+            "calls": 25,
+            "estimated": {
+              "status": "COMPLETE",
+              "total": 0.1750000000000001,
+              "knownSubtotal": 0.1750000000000001,
+              "knownRows": 25,
+              "totalRows": 25
+            },
+            "actual": {
+              "status": "COMPLETE",
+              "total": 0.1750000000000001,
+              "knownSubtotal": 0.1750000000000001,
+              "knownRows": 25,
+              "totalRows": 25
+            }
+          },
+          "PROFILE_RESOLUTION": {
+            "calls": 162,
+            "estimated": {
+              "status": "COMPLETE",
+              "total": 1.6200000000000012,
+              "knownSubtotal": 1.6200000000000012,
+              "knownRows": 162,
+              "totalRows": 162
+            },
+            "actual": {
+              "status": "PARTIAL_UNKNOWN",
+              "total": null,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 162
+            }
+          },
+          "FIRMOGRAPHICS": {
+            "calls": 115,
+            "estimated": {
+              "status": "COMPLETE",
+              "total": 0.04650000000000002,
+              "knownSubtotal": 0.04650000000000002,
+              "knownRows": 115,
+              "totalRows": 115
+            },
+            "actual": {
+              "status": "PARTIAL_UNKNOWN",
+              "total": null,
+              "knownSubtotal": 0,
+              "knownRows": 84,
+              "totalRows": 115
+            }
+          },
+          "WHEN_WHY_RESEARCH": {
+            "calls": 464,
+            "estimated": {
+              "status": "COMPLETE",
+              "total": 4.6399999999999455,
+              "knownSubtotal": 4.6399999999999455,
+              "knownRows": 464,
+              "totalRows": 464
+            },
+            "actual": {
+              "status": "PARTIAL_UNKNOWN",
+              "total": null,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 464
+            }
+          },
+          "CONTACT_ENRICHMENT": {
+            "calls": 0,
+            "estimated": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            },
+            "actual": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            }
+          },
+          "OTHER": {
+            "calls": 0,
+            "estimated": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            },
+            "actual": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            }
+          }
+        },
+        "totals": {
+          "calls": 766,
+          "estimated": {
+            "status": "COMPLETE",
+            "total": 6.481499999999907,
+            "knownSubtotal": 6.481499999999907,
+            "knownRows": 766,
+            "totalRows": 766
+          },
+          "actual": {
+            "status": "PARTIAL_UNKNOWN",
+            "total": null,
+            "knownSubtotal": 0.1750000000000001,
+            "knownRows": 109,
+            "totalRows": 766
+          }
+        }
+      },
+      "BLIND_CONTROLS": {
+        "stages": {
+          "DISCOVERY": {
+            "calls": 10,
+            "estimated": {
+              "status": "COMPLETE",
+              "total": 0.07,
+              "knownSubtotal": 0.07,
+              "knownRows": 10,
+              "totalRows": 10
+            },
+            "actual": {
+              "status": "COMPLETE",
+              "total": 0.07,
+              "knownSubtotal": 0.07,
+              "knownRows": 10,
+              "totalRows": 10
+            }
+          },
+          "PROFILE_RESOLUTION": {
+            "calls": 0,
+            "estimated": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            },
+            "actual": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            }
+          },
+          "FIRMOGRAPHICS": {
+            "calls": 0,
+            "estimated": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            },
+            "actual": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            }
+          },
+          "WHEN_WHY_RESEARCH": {
+            "calls": 37,
+            "estimated": {
+              "status": "COMPLETE",
+              "total": 0.37000000000000016,
+              "knownSubtotal": 0.37000000000000016,
+              "knownRows": 37,
+              "totalRows": 37
+            },
+            "actual": {
+              "status": "PARTIAL_UNKNOWN",
+              "total": null,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 37
+            }
+          },
+          "CONTACT_ENRICHMENT": {
+            "calls": 0,
+            "estimated": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            },
+            "actual": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            }
+          },
+          "OTHER": {
+            "calls": 0,
+            "estimated": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            },
+            "actual": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            }
+          }
+        },
+        "totals": {
+          "calls": 47,
+          "estimated": {
+            "status": "COMPLETE",
+            "total": 0.4400000000000003,
+            "knownSubtotal": 0.4400000000000003,
+            "knownRows": 47,
+            "totalRows": 47
+          },
+          "actual": {
+            "status": "PARTIAL_UNKNOWN",
+            "total": null,
+            "knownSubtotal": 0.07,
+            "knownRows": 10,
+            "totalRows": 47
+          }
+        }
+      },
+      "COMBINED_BENCHMARK": {
+        "stages": {
+          "DISCOVERY": {
+            "calls": 35,
+            "estimated": {
+              "status": "COMPLETE",
+              "total": 0.24500000000000016,
+              "knownSubtotal": 0.24500000000000016,
+              "knownRows": 35,
+              "totalRows": 35
+            },
+            "actual": {
+              "status": "COMPLETE",
+              "total": 0.24500000000000016,
+              "knownSubtotal": 0.24500000000000016,
+              "knownRows": 35,
+              "totalRows": 35
+            }
+          },
+          "PROFILE_RESOLUTION": {
+            "calls": 162,
+            "estimated": {
+              "status": "COMPLETE",
+              "total": 1.6200000000000012,
+              "knownSubtotal": 1.6200000000000012,
+              "knownRows": 162,
+              "totalRows": 162
+            },
+            "actual": {
+              "status": "PARTIAL_UNKNOWN",
+              "total": null,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 162
+            }
+          },
+          "FIRMOGRAPHICS": {
+            "calls": 115,
+            "estimated": {
+              "status": "COMPLETE",
+              "total": 0.04650000000000002,
+              "knownSubtotal": 0.04650000000000002,
+              "knownRows": 115,
+              "totalRows": 115
+            },
+            "actual": {
+              "status": "PARTIAL_UNKNOWN",
+              "total": null,
+              "knownSubtotal": 0,
+              "knownRows": 84,
+              "totalRows": 115
+            }
+          },
+          "WHEN_WHY_RESEARCH": {
+            "calls": 501,
+            "estimated": {
+              "status": "COMPLETE",
+              "total": 5.009999999999938,
+              "knownSubtotal": 5.009999999999938,
+              "knownRows": 501,
+              "totalRows": 501
+            },
+            "actual": {
+              "status": "PARTIAL_UNKNOWN",
+              "total": null,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 501
+            }
+          },
+          "CONTACT_ENRICHMENT": {
+            "calls": 0,
+            "estimated": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            },
+            "actual": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            }
+          },
+          "OTHER": {
+            "calls": 0,
+            "estimated": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            },
+            "actual": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            }
+          }
+        },
+        "totals": {
+          "calls": 813,
+          "estimated": {
+            "status": "COMPLETE",
+            "total": 6.921499999999896,
+            "knownSubtotal": 6.921499999999896,
+            "knownRows": 813,
+            "totalRows": 813
+          },
+          "actual": {
+            "status": "PARTIAL_UNKNOWN",
+            "total": null,
+            "knownSubtotal": 0.24500000000000016,
+            "knownRows": 119,
+            "totalRows": 813
+          }
+        }
+      }
+    }
+  }
+}

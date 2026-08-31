@@ -1,0 +1,114 @@
+{
+  "test": "JYRA_MVP_REALITY_TEST_01",
+  "reviewType": "MANUAL_STRATIFIED_FROZEN_RECORD_REVIEW",
+  "reviewer": "completion-review",
+  "reviewedAt": "2026-08-31T13:00:00.000Z",
+  "allowedEvidence": "Already-persisted company name, domain, resolved profile, firmographic provider result, and frozen qualification only",
+  "sampleDesign": {
+    "size": 12,
+    "strata": {
+      "LIKELY_FIT": 4,
+      "LIKELY_NOT_FIT": 4,
+      "INSUFFICIENT_DATA": 4
+    },
+    "selectionRationale": "Stratified across qualification outcomes, including verified name/domain/profile/provider agreement, unresolved identities, a parent/subsidiary label, and a non-company-like discovery label."
+  },
+  "rows": [
+    {
+      "companyId": "f6f7a0e7-9f05-45c6-b0c9-2abc91ec243e",
+      "company": "SecureSky",
+      "qualification": "LIKELY_FIT",
+      "canonicalIdentity": "CORRECT",
+      "icpClassification": "OBVIOUS_ERROR",
+      "rationale": "Persisted name, securesky.com domain, verified LinkedIn profile, and confirmed firmographic name/domain agree. The persisted 11-50 employee range is wholly below the frozen 100-2,000 range, so LIKELY_FIT is an obvious classification error."
+    },
+    {
+      "companyId": "42a7ff7c-5b09-42d6-9496-b7ac1275f4ac",
+      "company": "Nio Stars Technologies LLP",
+      "qualification": "LIKELY_FIT",
+      "canonicalIdentity": "CORRECT",
+      "icpClassification": "OBVIOUS_ERROR",
+      "rationale": "Persisted company/domain, verified LinkedIn profile, and confirmed provider identity agree. The persisted 11-50 employee range is wholly below the frozen minimum of 100, making LIKELY_FIT obviously incorrect."
+    },
+    {
+      "companyId": "d62bcf6a-9f3f-4bd4-b7c2-220e18c41782",
+      "company": "Prokopto",
+      "qualification": "LIKELY_FIT",
+      "canonicalIdentity": "CORRECT",
+      "icpClassification": "OBVIOUS_ERROR",
+      "rationale": "Persisted prokopto.io, verified profile, and confirmed provider name/domain agree. The persisted 11-50 employee range cannot overlap the frozen 100-2,000 range, so LIKELY_FIT is an obvious error."
+    },
+    {
+      "companyId": "e09efaf7-ceab-4091-a765-0e296df29565",
+      "company": "Acoru",
+      "qualification": "LIKELY_FIT",
+      "canonicalIdentity": "CORRECT",
+      "icpClassification": "OBVIOUS_ERROR",
+      "rationale": "Persisted acoru.com, verified profile, and confirmed provider identity agree. Persisted Spain geography is outside the frozen five geographies and 11-50 employees is below 100; LIKELY_FIT is obviously incorrect."
+    },
+    {
+      "companyId": "a0fc1f51-cd6f-42b1-858c-b0eba3ccf2bc",
+      "company": "Truvo Cyber",
+      "qualification": "LIKELY_NOT_FIT",
+      "canonicalIdentity": "CORRECT",
+      "icpClassification": "NO_OBVIOUS_ERROR",
+      "rationale": "Name/domain, verified profile, and confirmed firmographics agree. Persisted 2-10 size and Computer and Network Security industry support LIKELY_NOT_FIT despite the recorded geography dimension."
+    },
+    {
+      "companyId": "b7c7deb4-86e5-4568-96eb-5ef20977e083",
+      "company": "Simple IT Inc",
+      "qualification": "LIKELY_NOT_FIT",
+      "canonicalIdentity": "CORRECT",
+      "icpClassification": "NO_OBVIOUS_ERROR",
+      "rationale": "Name, simpleitindy.com, verified profile, and confirmed provider identity agree. Persisted 2-10 employees is below the frozen range, supporting LIKELY_NOT_FIT."
+    },
+    {
+      "companyId": "7e34484c-ab8d-4545-9cc6-7aef86675b43",
+      "company": "AMARU",
+      "qualification": "LIKELY_NOT_FIT",
+      "canonicalIdentity": "CORRECT",
+      "icpClassification": "NO_OBVIOUS_ERROR",
+      "rationale": "Name/domain, verified profile, and confirmed provider record agree. Persisted New Zealand geography and 11-50 size are outside the frozen ICP, supporting LIKELY_NOT_FIT."
+    },
+    {
+      "companyId": "56fb1931-9665-4d13-9402-24db1293ada2",
+      "company": "Socure",
+      "qualification": "LIKELY_NOT_FIT",
+      "canonicalIdentity": "CORRECT",
+      "icpClassification": "NO_OBVIOUS_ERROR",
+      "rationale": "socure.com, verified profile, and confirmed provider identity agree. Persisted Artificial Intelligence industry is outside the frozen industry list, so no obvious error is established."
+    },
+    {
+      "companyId": "42ed009d-c6bb-43b6-b985-1a45ffd79c50",
+      "company": "Digital Maelstrom",
+      "qualification": "INSUFFICIENT_DATA",
+      "canonicalIdentity": "NOT_ADJUDICABLE",
+      "icpClassification": "NO_OBVIOUS_ERROR",
+      "rationale": "A discovery name/domain exists, but profile resolution returned NOT_FOUND and no confirmed firmographics exist. Identity cannot be manually verified from allowed persisted evidence; INSUFFICIENT_DATA is appropriate."
+    },
+    {
+      "companyId": "e3622850-6588-44eb-a86e-938edf323339",
+      "company": "Mandiant (part of Google Cloud)",
+      "qualification": "INSUFFICIENT_DATA",
+      "canonicalIdentity": "INCORRECT_OR_AMBIGUOUS",
+      "icpClassification": "NO_OBVIOUS_ERROR",
+      "rationale": "The persisted label combines a company with its parent, has no domain, and profile resolution returned NOT_FOUND. It is not a safely resolved independent canonical identity; INSUFFICIENT_DATA does not overstate fit."
+    },
+    {
+      "companyId": "f85d8e05-8896-4712-a894-c664e32ca03c",
+      "company": "Managed Services - Monitoring 24/7",
+      "qualification": "INSUFFICIENT_DATA",
+      "canonicalIdentity": "INCORRECT_OR_AMBIGUOUS",
+      "icpClassification": "NO_OBVIOUS_ERROR",
+      "rationale": "The persisted value is a service description rather than a resolved company, with no domain and a NOT_FOUND profile. It is not a defensible canonical company; INSUFFICIENT_DATA avoids a false fit."
+    },
+    {
+      "companyId": "a12e0494-6189-4bef-99ee-060fc561f575",
+      "company": "Corsa",
+      "qualification": "INSUFFICIENT_DATA",
+      "canonicalIdentity": "NOT_ADJUDICABLE",
+      "icpClassification": "NO_OBVIOUS_ERROR",
+      "rationale": "corsa.finance is persisted, but profile resolution is NOT_FOUND and no confirmed provider firmographics exist. The allowed evidence cannot establish canonical accuracy; INSUFFICIENT_DATA is appropriate."
+    }
+  ]
+}

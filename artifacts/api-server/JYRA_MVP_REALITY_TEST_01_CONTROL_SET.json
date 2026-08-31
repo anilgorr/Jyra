@@ -1,0 +1,100 @@
+{
+  "test": "JYRA_MVP_REALITY_TEST_01",
+  "frozenAt": "2026-08-31T12:21:25.140Z",
+  "blindToPipeline": true,
+  "selectionSource": "Independent public-web validation; selected without using JYRA output",
+  "independentlyValidated": true,
+  "resultFile": "JYRA_MVP_REALITY_TEST_01_CONTROL_RESULTS.json",
+  "controls": [
+    {
+      "company": "SolarWinds",
+      "referenceEvent": "SolarWinds appointed Justin Henkel as Chief Information Security Officer.",
+      "eventCategory": "SECURITY_LEADERSHIP",
+      "eventDate": "2026-06-17",
+      "source": "https://www.solarwinds.com/company/newsroom/press-releases/solarwinds-appoints-justin-henkel-as-chief-information-security-officer",
+      "validatorConfidence": 0.99,
+      "validatorMethod": "INDEPENDENT_PUBLIC_WEB_REVIEW"
+    },
+    {
+      "company": "First Horizon",
+      "referenceEvent": "First Horizon appointed Leilani Farol as Chief Information Security Officer.",
+      "eventCategory": "SECURITY_LEADERSHIP",
+      "eventDate": "2026-02-11",
+      "source": "https://ir.firsthorizon.com/press-releases/press-release-details/2026/First-Horizon-Appoints-Leilani-Farol-as-Chief-Information-Security-Officer/default.aspx",
+      "validatorConfidence": 0.99,
+      "validatorMethod": "INDEPENDENT_PUBLIC_WEB_REVIEW"
+    },
+    {
+      "company": "GitLab",
+      "referenceEvent": "GitLab appointed Chaim Mazal as Chief Information Security Officer.",
+      "eventCategory": "SECURITY_LEADERSHIP",
+      "eventDate": "2026-06-09",
+      "source": "https://s204.q4cdn.com/984476563/files/doc_news/GitLab-Appoints-Chaim-Mazal-as-Chief-Information-Security-Officer-2026.pdf",
+      "validatorConfidence": 0.98,
+      "validatorMethod": "INDEPENDENT_PUBLIC_WEB_REVIEW"
+    },
+    {
+      "company": "Infoblox",
+      "referenceEvent": "Infoblox appointed Henrik Smith as Chief Information Security Officer.",
+      "eventCategory": "SECURITY_LEADERSHIP",
+      "eventDate": "2026-06-09",
+      "source": "https://www.infoblox.com/news/news-events/press-releases/infoblox-appoints-henrik-smith-as-chief-information-security-officer/",
+      "validatorConfidence": 0.99,
+      "validatorMethod": "INDEPENDENT_PUBLIC_WEB_REVIEW"
+    },
+    {
+      "company": "Teradata",
+      "referenceEvent": "Teradata appointed Ken Ricketts as Chief Information Security Officer.",
+      "eventCategory": "SECURITY_LEADERSHIP",
+      "eventDate": "2026-01-21",
+      "source": "https://www.teradata.com/press-releases/2026/teradata-appoints-ken-ricketts-as-ciso",
+      "validatorConfidence": 0.99,
+      "validatorMethod": "INDEPENDENT_PUBLIC_WEB_REVIEW"
+    },
+    {
+      "company": "Nubank",
+      "referenceEvent": "Nubank appointed John Walton as Chief Information Security Officer.",
+      "eventCategory": "SECURITY_LEADERSHIP",
+      "eventDate": "2026-06-08",
+      "source": "https://international.nubank.com.br/company/nubank-appoints-john-walton-as-chief-information-security-officer/",
+      "validatorConfidence": 0.99,
+      "validatorMethod": "INDEPENDENT_PUBLIC_WEB_REVIEW"
+    },
+    {
+      "company": "Black Duck",
+      "referenceEvent": "Black Duck appointed Dom Glavach as Chief Information Security Officer.",
+      "eventCategory": "SECURITY_LEADERSHIP",
+      "eventDate": "2026-04-09",
+      "source": "https://news.blackduck.com/2026-04-09-Black-Duck-Appoints-Dom-Glavach-as-Chief-Information-Security-Officer",
+      "validatorConfidence": 0.99,
+      "validatorMethod": "INDEPENDENT_PUBLIC_WEB_REVIEW"
+    },
+    {
+      "company": "OpenAssets",
+      "referenceEvent": "OpenAssets achieved SOC 2 Type 2 compliance and renewed ISO 27001 certification.",
+      "eventCategory": "FUNDED_RISK_PROGRAM",
+      "eventDate": "2026-08-03",
+      "source": "https://www.prnewswire.com/news-releases/openassets-achieves-soc-2-type-2-compliance-and-renews-iso-27001-certification-302840457.html",
+      "validatorConfidence": 0.97,
+      "validatorMethod": "INDEPENDENT_PUBLIC_WEB_REVIEW"
+    },
+    {
+      "company": "Black & McDonald",
+      "referenceEvent": "Black & McDonald achieved ISO 27001 certification and completed a SOC 2 Type II examination.",
+      "eventCategory": "FUNDED_RISK_PROGRAM",
+      "eventDate": "2026-05-08",
+      "source": "https://blackandmcdonald.com/news/bm-achieves-iso-27001-certification-and-completes-soc-2-type-ii-examination/",
+      "validatorConfidence": 0.99,
+      "validatorMethod": "INDEPENDENT_PUBLIC_WEB_REVIEW"
+    },
+    {
+      "company": "RAKBANK",
+      "referenceEvent": "RAKBANK replaced ArcSight with Securonix for security operations.",
+      "eventCategory": "SECURITY_STACK_CHANGE",
+      "eventDate": "2025-05-08",
+      "source": "https://www.securonix.com/resources/rakbank-replaces-arcsight-with-securonix-accelerates-threat-detection-and-data-retrieval-with-snowflake-integration/",
+      "validatorConfidence": 0.95,
+      "validatorMethod": "INDEPENDENT_PUBLIC_WEB_REVIEW"
+    }
+  ]
+}

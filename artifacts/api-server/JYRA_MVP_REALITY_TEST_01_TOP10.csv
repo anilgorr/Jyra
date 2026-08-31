@@ -1,0 +1,8 @@
+rank,company,icp_fit,opportunity_state,when,why,confidence,strongest_signal,freshest_event,buyer_role,person,contact_available,next_best_action,evidence_count,research_cost,usefulness
+"1","SecureSky","LIKELY_FIT","WATCH","UNKNOWN","Insufficient evidence to establish current urgency.","MEDIUM","UNKNOWN","UNKNOWN","UNKNOWN","UNKNOWN","N/A_DENOMINATOR_0","RESEARCH_MORE","0","0.04","NOT_ACTIONABLE"
+"2","Nio Stars Technologies LLP","LIKELY_FIT","WATCH","UNKNOWN","Insufficient evidence to establish current urgency.","MEDIUM","UNKNOWN","UNKNOWN","UNKNOWN","UNKNOWN","N/A_DENOMINATOR_0","RESEARCH_MORE","0","0.04","NOT_ACTIONABLE"
+"3","Incrux Technologies Private Limited","LIKELY_FIT","WATCH","UNKNOWN","Insufficient evidence to establish current urgency.","MEDIUM","UNKNOWN","UNKNOWN","UNKNOWN","UNKNOWN","N/A_DENOMINATOR_0","RESEARCH_MORE","0","0.04","NOT_ACTIONABLE"
+"4","IntellAxis AI","LIKELY_FIT","WATCH","UNKNOWN","Insufficient evidence to establish current urgency.","MEDIUM","UNKNOWN","UNKNOWN","UNKNOWN","UNKNOWN","N/A_DENOMINATOR_0","RESEARCH_MORE","0","0.04","NOT_ACTIONABLE"
+"5","CyboSec Technologies","LIKELY_FIT","WATCH","UNKNOWN","Insufficient evidence to establish current urgency.","MEDIUM","UNKNOWN","UNKNOWN","UNKNOWN","UNKNOWN","N/A_DENOMINATOR_0","RESEARCH_MORE","0","0.04","NOT_ACTIONABLE"
+"6","Prokopto","LIKELY_FIT","WATCH","UNKNOWN","Insufficient evidence to establish current urgency.","MEDIUM","UNKNOWN","UNKNOWN","UNKNOWN","UNKNOWN","N/A_DENOMINATOR_0","RESEARCH_MORE","0","0.04","NOT_ACTIONABLE"
+"7","Acoru","LIKELY_FIT","WATCH","UNKNOWN","Insufficient evidence to establish current urgency.","MEDIUM","UNKNOWN","UNKNOWN","UNKNOWN","UNKNOWN","N/A_DENOMINATOR_0","RESEARCH_MORE","0","0.08","NOT_ACTIONABLE"

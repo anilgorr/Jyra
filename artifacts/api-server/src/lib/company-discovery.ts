@@ -32,6 +32,7 @@ type DiscoveryInput = {
   router: Pick<ProviderOperations, "discoverCompanies" | "lookupCompany">;
   limit?: number;
   maxProviderCalls?: number;
+  queryOverrides?: string[];
   now?: Date;
 };
 type DbExecutor = typeof db | Parameters<Parameters<typeof db.transaction>[0]>[0];
@@ -396,7 +397,7 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
   const limit = Math.min(20, Math.max(1, input.limit ?? 20));
   const maxProviderCalls = Math.min(5, Math.max(1, input.maxProviderCalls ?? 5));
   const plan = await buildDiscoveryPlan(input.projectId);
-  const queries = plan.queries.slice(0, maxProviderCalls);
+  const queries = (input.queryOverrides?.length ? input.queryOverrides : plan.queries).slice(0, maxProviderCalls);
   const [run] = await db.insert(companyDiscoveryRunsTable).values({
     organizationId: input.organizationId,
     projectId: input.projectId,

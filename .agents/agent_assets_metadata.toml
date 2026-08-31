@@ -70,3 +70,111 @@ mtime_ms = 1788172817700
 storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/adaddd31-ff9d-418e-a31b-4477e9541710/47bbc7f8-8217-43fe-bb66-b4c081960042"
 storage_version_token = "1788172858761835"
 content_type = "application/octet-stream"
+
+[[outputs]]
+id = "2ZLjhTCVval-gKB52zfs9"
+uri = "file://artifacts/api-server/JYRA_MVP_REALITY_TEST_01.md"
+type = "text"
+title = "MVP Reality Test 01 Report"
+description = "Human-readable frozen benchmark with measured controls, manual adjudication, and population-separated provider cost completeness."
+logical_id = "611700e1-8beb-489c-95a2-8ea076c8fbc3"
+content_hash = "sha256:d0f158de2250cb4f8f8f0dc3818e91da49e6ad79e9dd01e3f307d4932251dd28"
+size = 15922
+mtime_ms = 1788182800000
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/611700e1-8beb-489c-95a2-8ea076c8fbc3/4c84f516-bb8d-40b0-b8a7-a01aa6168e22"
+storage_version_token = "1788176057149637"
+content_type = "text/markdown"
+
+[[outputs]]
+id = "xyKuXsCLYyJ6r3p2v4na8"
+uri = "file://artifacts/api-server/JYRA_MVP_REALITY_TEST_01.json"
+type = "unspecified"
+title = "MVP Reality Test 01 Full Results"
+description = "Machine-readable preserved benchmark with main, blind-control, and combined provider usage/cost accounting and row-level actual-cost completeness."
+logical_id = "36cf10b6-f807-401c-aad4-f4371a412674"
+content_hash = "sha256:6d4f8aa630645dda71da886f22daba3c39d9b9789208fde4cba55441e63f2b20"
+size = 1359926
+mtime_ms = 1788182800000
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/36cf10b6-f807-401c-aad4-f4371a412674/a1249577-2076-4f97-a261-34002d80b347"
+storage_version_token = "1788176058559197"
+content_type = "application/octet-stream"
+
+[[outputs]]
+id = "zUD0A9B9dOswJ9oHHG018"
+uri = "file://artifacts/api-server/JYRA_MVP_REALITY_TEST_01_COMPANIES.csv"
+type = "table"
+title = "MVP Reality Test 01 Companies"
+description = "Ranked per-company WHO, signal, cluster, opportunity, and sampled manual identity/ICP adjudication summary."
+logical_id = "5477742c-1b5b-4871-b05d-fff969016c1f"
+content_hash = "sha256:e6abf2fed91723e42ec85fac29b0003a1d48d9bba55df1822d3dcfdcf6f95e6d"
+size = 11610
+mtime_ms = 1788182800000
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/5477742c-1b5b-4871-b05d-fff969016c1f/66419029-29c6-42c3-b67c-6f9935749512"
+storage_version_token = "1788176059892022"
+content_type = "text/csv"
+
+[[outputs]]
+id = "V3lYQ73qHSLUuBjR9ib9v"
+uri = "file://artifacts/api-server/JYRA_MVP_REALITY_TEST_01_TOP10.csv"
+type = "table"
+title = "MVP Reality Test 01 Top Accounts"
+description = "Frozen qualified-account ranking with explicit denominator-zero N/A contact status."
+logical_id = "39567b34-5eec-4e01-8611-68008d12fc1c"
+content_hash = "sha256:021150104c1761fd6bef0e0d45d8e764bc68ac542cf632cfd7f731b480e7f702"
+size = 1735
+mtime_ms = 1788182800000
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/39567b34-5eec-4e01-8611-68008d12fc1c/9ef33576-e6dd-4fc5-a931-37d6ea182a9b"
+storage_version_token = "1788176061243065"
+content_type = "text/csv"
+
+[[outputs]]
+id = "xT1QvmG3WLLq5cFFvI8bG"
+uri = "file://artifacts/api-server/JYRA_MVP_REALITY_TEST_01_CONTROL_SET.json"
+type = "unspecified"
+title = "MVP Reality Test 01 Blind Control Set"
+description = "Frozen manifest of 10 independently validated positive controls, kept separate from measured pipeline results."
+logical_id = "50c1b65e-8e9d-464d-8568-a21323df30bb"
+content_hash = "sha256:438ae22cc5f06ed16588d911541572fd0617dd608c6ad9bfc451462f5ff90931"
+size = 4911
+mtime_ms = 1788179091000
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/50c1b65e-8e9d-464d-8568-a21323df30bb/738b1f4b-0908-4ec7-ad5d-2edb7f5a21e8"
+storage_version_token = "1788176062627364"
+content_type = "application/octet-stream"
+
+[[outputs]]
+id = "QzizdNoYw1KNSn-cNYDy7"
+uri = "file://artifacts/api-server/JYRA_MVP_REALITY_TEST_01_FAILURES.md"
+type = "text"
+title = "MVP Reality Test 01 Failures"
+description = "Measured benchmark gaps, including manual WHO/identity findings and blind-control miss attribution."
+logical_id = "22d37f77-c600-4d1b-b701-67ea20578efe"
+content_hash = "sha256:e74432190bfc0b5cbb9ed87cd4fa7268e88769d340958b1de6c334d68d4a0fbf"
+size = 994
+mtime_ms = 1788182800000
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/22d37f77-c600-4d1b-b701-67ea20578efe/a48e10c7-573b-4af3-a2af-0b1e4955faab"
+storage_version_token = "1788176064002551"
+content_type = "text/markdown"
+
+[[outputs]]
+id = "21892086-e91e-470a-b16c-11e388b5d029"
+uri = "file://artifacts/api-server/JYRA_MVP_REALITY_TEST_01_MANUAL_ADJUDICATION.json"
+type = "unspecified"
+title = "MVP Reality Test 01 Manual Adjudication"
+description = "Documented 12-company stratified review of canonical identity accuracy and obvious frozen-ICP classification errors using persisted evidence only."
+logical_id = "ba8f46db-a496-45e1-b120-96756670f411"
+content_hash = "sha256:dd7ff10c96062db096ba8d904b5dc4c7ec07cad9ff6adf794ae851f232bd29bb"
+size = 6175
+mtime_ms = 1788182007000
+content_type = "application/json"
+
+[[outputs]]
+id = "59b2ab1b-2270-4db5-8c18-4579cf6ac570"
+uri = "file://artifacts/api-server/JYRA_MVP_REALITY_TEST_01_COSTS.csv"
+type = "table"
+title = "MVP Reality Test 01 Provider Costs"
+description = "Stage-level MAIN_POPULATION, BLIND_CONTROLS, and COMBINED_BENCHMARK provider call and estimated/actual cost completeness accounting."
+logical_id = "604ede98-8db3-47a9-9c28-4ffe5446ae1c"
+content_hash = "sha256:97dc0c99ec2c5f05601077aad053ee2e39e4834d5e9e4880de998be7a391863b"
+size = 2890
+mtime_ms = 1788182800000
+content_type = "text/csv"
