@@ -7,4 +7,4 @@ Freeze the control population first, keep queries blind to the known event, recu
 
 **Why:** Provider comparisons become misleading when query quality differs, raw search content can itself contain credential-bearing URLs even when request credentials are removed, and a successful experimental fallback still needs separate human approval before production integration.
 
-**How to apply:** Before integrating another provider, compare equivalent blind query variants, report per-control evidence and cost completeness, recursively redact payloads, test repeatability, and keep experimental fallback code isolated until a separate routing milestone is approved.
+**How to apply:** Before integrating another provider, compare equivalent blind query variants, report per-control evidence and cost completeness, recursively redact payloads, test repeatability, and keep experimental fallback code isolated until a separate routing milestone is approved. Fallback reports must also separate Tavily-only, Exa-only recovery, both-provider, and neither-provider outcomes; provider-failure tests must exercise invocation and ensure failure is not treated as negative evidence.
