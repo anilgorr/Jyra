@@ -1,0 +1,930 @@
+JYRA — RETRIEVAL FALLBACK VALIDATION 01
+TAVILY PRIMARY → EXA FALLBACK
+
+PURPOSE
+
+We have now established:
+
+Retrieval Bake-off 01:
+- Current Tavily: 5/7
+- Improved Tavily: 7/7
+- Improved Exa: 7/7
+
+Query Engine Fix 01:
+- Normal adaptive Tavily execution: 5/7
+
+Query Engine Fix 01A:
+- Corrected production query semantics matched the successful bake-off
+- Black & McDonald: still missed
+- RAKBANK: still missed
+- Raw Tavily result sets differed materially from the successful bake-off
+- Cache/filter/entity/temporal issues were ruled out
+- Final diagnosis:
+  PROVIDER_RESULT_VARIABILITY
+
+Therefore:
+
+DO NOT keep tuning Tavily queries.
+
+Test whether a resilient retrieval strategy works:
+
+TAVILY PRIMARY
+→ evaluate retrieval sufficiency
+→ if insufficient/ambiguous
+→ EXA FALLBACK
+→ merge/dedupe evidence
+
+IMPORTANT:
+
+This is a CONTROLLED VALIDATION.
+
+Do NOT permanently integrate Exa into normal provider routing yet.
+
+Do NOT use Unipile.
+
+==================================================
+1. DATABASE SAFETY
+==================================================
+
+DEVELOPMENT ONLY.
+
+Use ONLY the development database.
+
+Production operations = 0.
+
+DO NOT:
+
+migrate production
+reset production
+seed production
+truncate production
+modify production customer data
+test against production
+
+Prefer no schema migration.
+
+==================================================
+2. FREEZE INTELLIGENCE LOGIC
+==================================================
+
+Do NOT change:
+
+ResearchQuestion definitions
+Managed SOC signal pack
+fact extraction
+fact ontology
+fact validation
+signal definitions
+signal mapping
+ICP logic
+entity resolution
+opportunity scoring
+confidence
+ranking
+contacts
+UI
+outreach
+
+Do not fix Black Duck extraction.
+
+Do not fix known identity cases.
+
+==================================================
+3. NO UNIPILE
+==================================================
+
+Unipile is explicitly OUT OF SCOPE.
+
+DO NOT:
+
+call Unipile
+integrate Unipile
+design Unipile routing
+add LinkedIn API logic
+add LinkedIn account connections
+
+Do not recommend it inside implementation.
+
+==================================================
+4. TEST POPULATION
+==================================================
+
+Use ONLY the exact 7 frozen retrieval-failure controls from:
+
+MVP_FIX_CYCLE_02_AUTOPSY.json
+
+Do NOT use:
+
+the full 10-control benchmark
+the 50-company benchmark
+new companies
+
+Reference events remain frozen.
+
+==================================================
+5. BLINDNESS
+==================================================
+
+Reference-event information must NEVER enter query generation.
+
+Queries may use only normal JYRA inputs:
+
+canonical company identity
+verified domain
+verified aliases
+research question
+research category
+Managed SOC signal semantics
+generic event vocabulary
+normal freshness window
+
+DO NOT use:
+
+reference-event title
+reference-event wording
+reference source
+reference URL
+known event-specific person
+known event-specific technology
+known event date
+
+Reference manifest is evaluation-only.
+
+==================================================
+6. USE THE FIXED QUERY ENGINE
+==================================================
+
+Use the corrected generic query semantics from:
+
+Query Engine Fix 01
++
+Query Engine Fix 01A
+
+Preserve the generic fixes already justified:
+
+legal-suffix normalization where appropriate
+verified domain retention
+validated category semantics
+validated fallback semantics
+
+Do NOT redesign queries again.
+
+==================================================
+7. VALIDATION ARCHITECTURE
+==================================================
+
+Test this retrieval architecture:
+
+ResearchQuestion
+↓
+TAVILY PRIMARY QUERY
+↓
+evaluate retrieval sufficiency
+↓
+if SUFFICIENT_RETRIEVAL
+    STOP
+↓
+if INSUFFICIENT_RETRIEVAL or AMBIGUOUS_RETRIEVAL
+    EXA FALLBACK
+↓
+merge
+↓
+canonical URL dedupe
+↓
+retrieval result
+
+For this validation:
+
+Do NOT execute a second Tavily query before Exa.
+
+We specifically want to measure:
+
+one Tavily attempt
++
+conditional Exa fallback
+
+against Tavily variability.
+
+==================================================
+8. WHY ONE TAVILY CALL
+==================================================
+
+Previous testing showed repeatedly querying Tavily does not guarantee
+deterministic recovery.
+
+Therefore compare a resilient cross-provider strategy rather than:
+
+Tavily
+→ Tavily again
+→ hope ranking changes.
+
+Maximum retrieval calls:
+
+1 Tavily
++
+1 Exa fallback
+
+per research question.
+
+==================================================
+9. EXA USAGE
+==================================================
+
+Use Exa regular Search only.
+
+DO NOT use:
+
+Exa Agent
+Exa Answer
+people search
+company discovery
+contact enrichment
+
+This is event/web retrieval only.
+
+Use the same generic research objective as Tavily.
+
+Do not optimize Exa using the known reference event.
+
+==================================================
+10. EXA IS EXPERIMENTAL IN THIS MILESTONE
+==================================================
+
+Do NOT register Exa permanently as WEB_SEARCH.
+
+Do NOT change provider priority.
+
+Do NOT modify production routing.
+
+Implement the smallest development-only validation path needed to test:
+
+Tavily → conditional Exa fallback.
+
+If validation passes, permanent capability routing will be a separate
+human-approved milestone.
+
+==================================================
+11. RETRIEVAL SUFFICIENCY
+==================================================
+
+Use the deterministic retrieval sufficiency semantics already created.
+
+Statuses:
+
+SUFFICIENT_RETRIEVAL
+
+INSUFFICIENT_RETRIEVAL
+
+AMBIGUOUS_RETRIEVAL
+
+PROVIDER_FAILURE
+
+A provider returning results does NOT automatically mean retrieval is
+sufficient.
+
+==================================================
+12. SUFFICIENT RETRIEVAL
+==================================================
+
+Retrieval is sufficient only when results contain credible,
+question-relevant evidence for the correct company.
+
+Consider:
+
+correct entity
+research-category relevance
+event-oriented evidence
+source authority
+temporal relevance
+
+Do NOT require:
+
+approved fact
+signal
+opportunity
+purchase intent
+
+This remains a retrieval-layer decision.
+
+==================================================
+13. EXA FALLBACK TRIGGER
+==================================================
+
+Call Exa when Tavily returns:
+
+INSUFFICIENT_RETRIEVAL
+
+or
+
+AMBIGUOUS_RETRIEVAL
+
+Also separately test/document the correct behavior for:
+
+PROVIDER_FAILURE
+
+For this validation, if Tavily has a genuine provider failure, Exa MAY
+be used as resilience fallback.
+
+Record the reason explicitly:
+
+FALLBACK_INSUFFICIENT
+
+FALLBACK_AMBIGUOUS
+
+FALLBACK_PROVIDER_FAILURE
+
+Do not convert provider failure into "no evidence."
+
+==================================================
+14. IMPORTANT FALSE-SUFFICIENCY AUDIT
+==================================================
+
+A major risk is:
+
+Tavily returns generic content
+→ sufficiency gate says SUFFICIENT
+→ Exa never runs
+→ actual event missed.
+
+Therefore for the frozen seven controls, after execution and before
+reference adjudication, preserve exactly WHY the sufficiency gate
+stopped or continued.
+
+For every Tavily stop decision record:
+
+result causing sufficiency
+entity match
+question relevance
+source type
+temporal relevance
+disposition
+
+After retrieval is complete, use the reference manifest to determine
+whether any:
+
+FALSE_SUFFICIENT_RETRIEVAL
+
+occurred.
+
+This metric is critical.
+
+==================================================
+15. RESULT RETENTION
+==================================================
+
+For BOTH providers preserve:
+
+provider
+exact query
+request timestamp
+request parameters
+latency
+result rank
+title
+URL
+canonical URL
+publisher/domain
+snippet/highlight
+published date
+provider score if available
+raw metadata required for forensic review
+estimated cost
+actual cost if available
+
+Secrets must be removed.
+
+Apply existing credential redaction/DLP protection.
+
+==================================================
+16. PUBLISHER ≠ PROVIDER
+==================================================
+
+Keep separate:
+
+RETRIEVAL PROVIDER:
+Tavily / Exa
+
+PUBLISHER:
+actual source website/publication
+
+Never present Tavily or Exa as the publisher.
+
+==================================================
+17. ENTITY SAFETY
+==================================================
+
+Retrieval Bake-off showed:
+
+Improved Tavily:
+6 wrong-entity results
+
+Improved Exa:
+0 wrong-entity results
+
+Therefore measure wrong-entity retrieval carefully.
+
+Wrong-entity results may remain in diagnostics.
+
+They MUST NOT become accepted evidence.
+
+Do NOT loosen entity matching.
+
+==================================================
+18. SELLER / BUYER SAFETY
+==================================================
+
+Preserve seller-vs-buyer rules.
+
+Security-provider marketing pages must not become buyer-event evidence.
+
+Required:
+
+SELLER_CONTENT_ACCEPTED_AS_BUYER_EVIDENCE = 0
+
+==================================================
+19. DEDUPLICATION
+==================================================
+
+Merge Tavily and Exa retrieval results.
+
+Deduplicate conservatively using:
+
+canonical URL
+content hash where available
+normalized title
+publisher
+event identity where defensible
+
+Do not double-count the same event because both providers found it.
+
+==================================================
+20. REFERENCE ADJUDICATION
+==================================================
+
+Only AFTER retrieval completes use the frozen reference event.
+
+Classify results:
+
+EXACT_EVENT
+
+SAME_EVENT_ALTERNATE_SOURCE
+
+RELATED_EVENT
+
+GENERIC_COMPANY_CONTENT
+
+WRONG_ENTITY
+
+IRRELEVANT
+
+EVENT_FOUND requires:
+
+EXACT_EVENT
+
+or
+
+SAME_EVENT_ALTERNATE_SOURCE
+
+with enough evidence to support the atomic event fact.
+
+==================================================
+21. SOURCE AUTHORITY
+==================================================
+
+Classify successful event evidence:
+
+TIER_1_DIRECT
+TIER_2_HIGH_AUTHORITY
+TIER_3_SECONDARY
+TIER_4_LOW_AUTHORITY
+
+Report source authority separately from retrieval recall.
+
+==================================================
+22. PER-CONTROL REPORT
+==================================================
+
+For each of the 7 controls report:
+
+COMPANY
+
+RESEARCH CATEGORY
+
+TAVILY QUERY
+
+TAVILY CALL STATUS
+
+TAVILY RESULT COUNT
+
+TAVILY RETRIEVAL STATUS
+
+WHY SUFFICIENT / INSUFFICIENT / AMBIGUOUS
+
+EXA FALLBACK REQUIRED?
+YES / NO
+
+FALLBACK REASON
+
+EXA QUERY
+
+EXA CALL STATUS
+
+EXA RESULT COUNT
+
+FINAL UNIQUE RESULT COUNT
+
+REFERENCE EVENT FOUND?
+
+FOUND BY:
+TAVILY
+EXA
+BOTH
+NONE
+
+MATCH RANK
+
+MATCH SOURCE
+
+SOURCE AUTHORITY
+
+WRONG ENTITY RESULTS
+
+IRRELEVANT RESULTS
+
+TOTAL CALLS
+
+LATENCY
+
+ESTIMATED COST
+
+ACTUAL COST
+
+==================================================
+23. BLACK & MCDONALD + RAKBANK
+==================================================
+
+Pay particular diagnostic attention to:
+
+Black & McDonald
+RAKBANK
+
+These are NOT to receive special queries.
+
+They use exactly the same generic logic.
+
+Report whether:
+
+Tavily missed
+→ Exa fallback recovered event
+
+If yes, this directly validates the resilience hypothesis.
+
+==================================================
+24. PROVIDER CONTRIBUTION
+==================================================
+
+Report:
+
+EVENTS FOUND BY TAVILY WITHOUT EXA
+
+EVENTS RECOVERED BY EXA AFTER TAVILY INSUFFICIENT
+
+EVENTS FOUND BY BOTH WHERE EXA WAS EXECUTED
+
+EVENTS FOUND BY NEITHER
+
+Do NOT call Exa when Tavily retrieval is genuinely sufficient merely to
+populate comparison statistics.
+
+This is an adaptive architecture test, not another full bake-off.
+
+==================================================
+25. KEY METRICS
+==================================================
+
+Calculate:
+
+TAVILY FIRST-PASS RETRIEVAL RECALL
+
+COMBINED ADAPTIVE RETRIEVAL RECALL
+
+EXA FALLBACK RATE
+
+EXA RECOVERY RATE
+
+FALSE-SUFFICIENT TAVILY RATE
+
+WRONG-ENTITY RETRIEVAL COUNT
+
+WRONG-ENTITY ACCEPTANCE COUNT
+
+AVERAGE PROVIDER CALLS PER CONTROL
+
+COST PER CONTROL
+
+COST PER EVENT RETRIEVED
+
+==================================================
+26. COST COMPARISON
+==================================================
+
+Compare adaptive strategy against:
+
+A — ONE TAVILY CALL PER QUESTION
+
+B — TWO TAVILY CALLS PER QUESTION
+
+C — ONE TAVILY + CONDITIONAL EXA
+
+Use observed costs where possible.
+
+Do not invent actual costs when provider does not report them.
+
+Show:
+
+estimated cost
+reported actual cost
+calls
+recall
+
+The goal is NOT simply cheapest.
+
+The goal is:
+
+high recall
++
+evidence quality
++
+reasonable cost.
+
+==================================================
+27. RELIABILITY
+==================================================
+
+Because provider variability is the issue, perform ONE controlled replay
+of the adaptive retrieval test after the first seven-control run.
+
+Important:
+
+This replay is allowed ONLY for reliability measurement.
+
+Do not change queries or logic between Run 1 and Run 2.
+
+Run:
+
+same 7 controls
+same generic query logic
+same sufficiency logic
+same routing logic
+
+Then compare:
+
+RUN 1 retrieval recall
+RUN 2 retrieval recall
+
+PER-CONTROL consistency
+
+provider contribution consistency
+
+==================================================
+28. RELIABILITY TARGET
+==================================================
+
+The important test is no longer simply:
+
+"Can we get 7/7 once?"
+
+We need:
+
+"Does the adaptive strategy remain strong when retrieval providers vary?"
+
+Target:
+
+Run 1 >= 6/7
+
+Run 2 >= 6/7
+
+AND
+
+combined unique controls retrieved across either run = 7/7
+
+Preferred:
+
+7/7 on both runs.
+
+Do NOT manipulate queries to meet this target.
+
+==================================================
+29. NO EXTRACTION
+==================================================
+
+STOP at retrieval.
+
+Do NOT execute:
+
+fact extraction
+fact approval
+signal generation
+clusters
+opportunity scoring
+WHY
+NBA
+
+This keeps retrieval validation isolated.
+
+==================================================
+30. REQUIRED SAFETY TESTS
+==================================================
+
+Regression tests must prove:
+
+Exa called only after Tavily fallback condition
+
+maximum 2 provider calls/question
+
+reference events not used in queries
+
+provider failure not treated as negative evidence
+
+wrong entity not accepted
+
+seller content not accepted
+
+dedupe works cross-provider
+
+publisher/provider separation preserved
+
+no benchmark-specific hardcoding
+
+no Unipile code/path/call introduced
+
+==================================================
+31. REQUIRED ARTIFACTS
+==================================================
+
+Generate:
+
+RETRIEVAL_FALLBACK_VALIDATION_01.md
+
+RETRIEVAL_FALLBACK_VALIDATION_01.json
+
+RETRIEVAL_FALLBACK_VALIDATION_01_RUN1.json
+
+RETRIEVAL_FALLBACK_VALIDATION_01_RUN2.json
+
+RETRIEVAL_FALLBACK_VALIDATION_01_TRACES.json
+
+RETRIEVAL_FALLBACK_VALIDATION_01_COST.json
+
+==================================================
+32. REQUIRED SUMMARY
+==================================================
+
+Return:
+
+CONTROLS:
+7
+
+-------------------
+RUN 1
+-------------------
+
+TAVILY FIRST-PASS EVENTS:
+X/7
+
+EXA FALLBACK CALLS:
+X
+
+EVENTS RECOVERED BY EXA:
+X
+
+FINAL EVENTS RETRIEVED:
+X/7
+
+FINAL RECALL:
+X%
+
+FALSE-SUFFICIENT TAVILY:
+X
+
+TOTAL PROVIDER CALLS:
+X
+
+ESTIMATED COST:
+$
+
+ACTUAL REPORTED COST:
+$
+
+-------------------
+RUN 2
+-------------------
+
+TAVILY FIRST-PASS EVENTS:
+X/7
+
+EXA FALLBACK CALLS:
+X
+
+EVENTS RECOVERED BY EXA:
+X
+
+FINAL EVENTS RETRIEVED:
+X/7
+
+FINAL RECALL:
+X%
+
+FALSE-SUFFICIENT TAVILY:
+X
+
+TOTAL PROVIDER CALLS:
+X
+
+ESTIMATED COST:
+$
+
+ACTUAL REPORTED COST:
+$
+
+-------------------
+RELIABILITY
+-------------------
+
+7/7 BOTH RUNS:
+YES / NO
+
+CONTROLS RETRIEVED IN BOTH RUNS:
+X/7
+
+CONTROLS RETRIEVED IN AT LEAST ONE RUN:
+X/7
+
+WRONG ENTITY ACCEPTED:
+0 required
+
+SELLER CONTENT ACCEPTED:
+0 required
+
+PRODUCTION OPERATIONS:
+0 required
+
+==================================================
+33. DECISION
+==================================================
+
+Return exactly ONE:
+
+A — ADAPTIVE TAVILY → EXA RETRIEVAL VALIDATED
+
+Use when adaptive retrieval provides strong, repeatable coverage with
+acceptable safety and cost.
+
+B — EXA FALLBACK IMPROVES RECALL BUT RELIABILITY STILL INSUFFICIENT
+
+Use when Exa helps materially but combined retrieval remains unstable.
+
+C — SUFFICIENCY GATE PREVENTS NECESSARY FALLBACKS
+
+Use when Tavily false-sufficiency is the major remaining issue.
+
+D — EXA DOES NOT MATERIALLY IMPROVE NORMAL RETRIEVAL
+
+Use when fallback provides little/no recovery.
+
+E — VALIDATION INCONCLUSIVE
+
+Use when provider failures/test execution prevent a valid result.
+
+==================================================
+34. IMPORTANT — DO NOT INTEGRATE AFTER PASS
+==================================================
+
+Even if Decision A:
+
+DO NOT automatically make Exa a permanent WEB_SEARCH fallback.
+
+Return results first.
+
+Permanent provider routing will be a separate controlled milestone.
+
+==================================================
+35. STOP
+==================================================
+
+STOP after Retrieval Fallback Validation 01.
+
+DO NOT:
+
+use Unipile
+fix Black Duck extraction
+fix identity
+change ICP
+change signals
+change opportunity scoring
+run contacts
+change UI
+rerun full 10-control benchmark
+rerun 50-company benchmark
+
+Return the complete result for human review.

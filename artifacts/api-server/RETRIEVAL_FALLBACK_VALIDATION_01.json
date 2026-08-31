@@ -1,0 +1,81 @@
+{
+  "test": "RETRIEVAL_FALLBACK_VALIDATION_01",
+  "generatedAt": "2026-08-31T16:52:36.321Z",
+  "controls": 7,
+  "developmentOnly": true,
+  "productionOperations": 0,
+  "databaseWrites": 0,
+  "schemaChanges": 0,
+  "providerRoutingChanges": 0,
+  "providerCallsDuringReprocessing": 0,
+  "architecture": "ONE_TAVILY_PRIMARY_THEN_CONDITIONAL_EXA_REGULAR_SEARCH",
+  "run1": {
+    "tavilyFirstPassEvents": 6,
+    "exaFallbackCalls": 6,
+    "eventsRecoveredByExa": 6,
+    "finalEventsRetrieved": 7,
+    "finalRecall": 1,
+    "falseSufficientTavily": 0,
+    "totalProviderCalls": 13,
+    "averageProviderCalls": 1.8571428571428572,
+    "exaFallbackRate": 0.8571428571428571,
+    "exaRecoveryRate": 1,
+    "providerContribution": {
+      "eventsFoundByTavilyWithoutExa": 1,
+      "eventsRecoveredByExaAfterTavilyInsufficient": 1,
+      "eventsFoundByBothWhereExaExecuted": 5,
+      "eventsFoundByNeither": 0
+    },
+    "wrongEntityRetrievalCount": 1,
+    "wrongEntityAcceptanceCount": 0,
+    "sellerContentAcceptanceCount": 0,
+    "estimatedCost": 0.11200000000000002,
+    "actualReportedCost": null,
+    "costPerControl": 0.016000000000000004,
+    "costPerEventRetrieved": 0.016000000000000004
+  },
+  "run2": {
+    "tavilyFirstPassEvents": 6,
+    "exaFallbackCalls": 6,
+    "eventsRecoveredByExa": 6,
+    "finalEventsRetrieved": 7,
+    "finalRecall": 1,
+    "falseSufficientTavily": 0,
+    "totalProviderCalls": 13,
+    "averageProviderCalls": 1.8571428571428572,
+    "exaFallbackRate": 0.8571428571428571,
+    "exaRecoveryRate": 1,
+    "providerContribution": {
+      "eventsFoundByTavilyWithoutExa": 1,
+      "eventsRecoveredByExaAfterTavilyInsufficient": 1,
+      "eventsFoundByBothWhereExaExecuted": 5,
+      "eventsFoundByNeither": 0
+    },
+    "wrongEntityRetrievalCount": 1,
+    "wrongEntityAcceptanceCount": 0,
+    "sellerContentAcceptanceCount": 0,
+    "estimatedCost": 0.11200000000000002,
+    "actualReportedCost": null,
+    "costPerControl": 0.016000000000000004,
+    "costPerEventRetrieved": 0.016000000000000004
+  },
+  "reliability": {
+    "sevenOfSevenBothRuns": true,
+    "controlsRetrievedBothRuns": 7,
+    "controlsRetrievedEitherRun": 7
+  },
+  "safety": {
+    "wrongEntityAcceptanceAttempts": 32,
+    "reconciledEntityAcceptanceCount": 68,
+    "wrongEntityAccepted": 0,
+    "sellerContentAccepted": 0,
+    "maximumCallsPerQuestion": 2,
+    "deterministicProviderFailureTest": "PASSED",
+    "providerFailureTreatedAsNegativeEvidence": false,
+    "deterministicSellerSafetyTest": "PASSED",
+    "deterministicWrongEntitySafetyTest": "PASSED",
+    "deterministicCrossProviderDedupeTest": "PASSED",
+    "passed": true
+  },
+  "decision": "A — ADAPTIVE TAVILY → EXA RETRIEVAL VALIDATED"
+}

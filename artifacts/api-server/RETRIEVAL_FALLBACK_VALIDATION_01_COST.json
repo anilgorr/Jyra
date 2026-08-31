@@ -1,0 +1,77 @@
+{
+  "observed": {
+    "run1": {
+      "tavilyFirstPassEvents": 6,
+      "exaFallbackCalls": 6,
+      "eventsRecoveredByExa": 6,
+      "finalEventsRetrieved": 7,
+      "finalRecall": 1,
+      "falseSufficientTavily": 0,
+      "totalProviderCalls": 13,
+      "averageProviderCalls": 1.8571428571428572,
+      "exaFallbackRate": 0.8571428571428571,
+      "exaRecoveryRate": 1,
+      "providerContribution": {
+        "eventsFoundByTavilyWithoutExa": 1,
+        "eventsRecoveredByExaAfterTavilyInsufficient": 1,
+        "eventsFoundByBothWhereExaExecuted": 5,
+        "eventsFoundByNeither": 0
+      },
+      "wrongEntityRetrievalCount": 1,
+      "wrongEntityAcceptanceCount": 0,
+      "sellerContentAcceptanceCount": 0,
+      "estimatedCost": 0.11200000000000002,
+      "actualReportedCost": null,
+      "costPerControl": 0.016000000000000004,
+      "costPerEventRetrieved": 0.016000000000000004
+    },
+    "run2": {
+      "tavilyFirstPassEvents": 6,
+      "exaFallbackCalls": 6,
+      "eventsRecoveredByExa": 6,
+      "finalEventsRetrieved": 7,
+      "finalRecall": 1,
+      "falseSufficientTavily": 0,
+      "totalProviderCalls": 13,
+      "averageProviderCalls": 1.8571428571428572,
+      "exaFallbackRate": 0.8571428571428571,
+      "exaRecoveryRate": 1,
+      "providerContribution": {
+        "eventsFoundByTavilyWithoutExa": 1,
+        "eventsRecoveredByExaAfterTavilyInsufficient": 1,
+        "eventsFoundByBothWhereExaExecuted": 5,
+        "eventsFoundByNeither": 0
+      },
+      "wrongEntityRetrievalCount": 1,
+      "wrongEntityAcceptanceCount": 0,
+      "sellerContentAcceptanceCount": 0,
+      "estimatedCost": 0.11200000000000002,
+      "actualReportedCost": null,
+      "costPerControl": 0.016000000000000004,
+      "costPerEventRetrieved": 0.016000000000000004
+    }
+  },
+  "comparison": {
+    "oneTavilyPerQuestion": {
+      "callsPerRun": 7,
+      "estimatedCostPerRun": 0.07,
+      "observedRun1Recall": 0.8571428571428571,
+      "observedRun2Recall": 0.8571428571428571
+    },
+    "twoTavilyPerQuestion": {
+      "callsPerRun": 14,
+      "estimatedCostPerRun": 0.14,
+      "historicalNormalPathRecall": 0.7142857142857143,
+      "source": "QUERY_ENGINE_FIX_01"
+    },
+    "oneTavilyConditionalExa": {
+      "run1Calls": 13,
+      "run2Calls": 13,
+      "run1EstimatedCost": 0.11200000000000002,
+      "run2EstimatedCost": 0.11200000000000002,
+      "run1Recall": 1,
+      "run2Recall": 1
+    }
+  },
+  "note": "Actual cost is null unless every attempted provider reported actual cost."
+}
