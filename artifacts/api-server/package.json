@@ -66,6 +66,7 @@
     ,"test:real-data-import": "node ./scripts/test-real-data-import.mjs"
     ,"test:semantic-idempotency": "node ./scripts/test-semantic-idempotency.mjs"
     ,"replay:semantic-idempotency-fix-01": "NODE_ENV=development node ./scripts/replay-semantic-idempotency-fix-01.mjs"
+    ,"test:known-company-provisioning-fix-03a": "NODE_ENV=development node ./scripts/run-known-company-provisioning-fix-03a.mjs"
   },
   "dependencies": {
     "@clerk/express": "^2.1.63",

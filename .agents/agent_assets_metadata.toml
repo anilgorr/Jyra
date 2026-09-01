@@ -500,3 +500,87 @@ mtime_ms = 1788255840515
 storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/fd3e93cc-fb08-4f63-8785-51a326dacf27/dcf15ac8-ef10-4343-b18c-375f8295cbc9"
 storage_version_token = "1788255929340751"
 content_type = "application/octet-stream"
+
+[[outputs]]
+id = "qFWYtEchD7-tJf4hWpyXm"
+uri = "file://artifacts/api-server/KNOWN_COMPANY_PROVISIONING_FIX_03A.md"
+type = "text"
+title = "Known Company Provisioning Fix 03A"
+description = "Implementation summary, pass gates, and final decision."
+logical_id = "075615f7-5a29-4f78-8167-a6fd72ce9a40"
+content_hash = "sha256:610f6e68257e0c0f6996e93994c77fe23072d5556854f4943384f5bb93198e57"
+size = 510
+mtime_ms = 1788256966372
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/075615f7-5a29-4f78-8167-a6fd72ce9a40/aaf52729-59df-461e-9ad0-3ffa57e8f265"
+storage_version_token = "1788257044607901"
+content_type = "text/markdown"
+
+[[outputs]]
+id = "aebKb7REZemSi-C46A7Vj"
+uri = "file://artifacts/api-server/KNOWN_COMPANY_PROVISIONING_FIX_03A.json"
+type = "unspecified"
+title = "Known Company Provisioning Fix 03A — Structured Result"
+description = "Machine-readable fix summary, metrics, provider accounting, and database safety."
+logical_id = "c64cdcdf-0cef-432e-b9fb-58026c55acdd"
+content_hash = "sha256:10c5d770e5ac429ff583e1e4addd8451446234f5a02ce9fa13e6a978170cf958"
+size = 3219
+mtime_ms = 1788256966372
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/c64cdcdf-0cef-432e-b9fb-58026c55acdd/9080d139-8d01-4aee-a8d7-b03cb093036f"
+storage_version_token = "1788257045935573"
+content_type = "application/octet-stream"
+
+[[outputs]]
+id = "_M2W09cO2JuhRlZ97Iwxg"
+uri = "file://artifacts/api-server/KNOWN_COMPANY_PROVISIONING_FIX_03A_TESTS.json"
+type = "unspecified"
+title = "Known Company Provisioning Fix 03A — Tests"
+description = "Generic A–J resolver tests, conflict guards, safety fixtures, and WHO regression results."
+logical_id = "071b666d-1f59-433e-96dd-71aa9f258682"
+content_hash = "sha256:6886f000bddc86e42e4460fdb87bc6987fef29485509cf50eb658b6285f9ba3c"
+size = 18201
+mtime_ms = 1788256966372
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/071b666d-1f59-433e-96dd-71aa9f258682/009a22f3-c3ab-4795-ab8e-a87352bffcf0"
+storage_version_token = "1788257047247483"
+content_type = "application/octet-stream"
+
+[[outputs]]
+id = "sEZ9JPIGSQbSCT7NEc9T0"
+uri = "file://artifacts/api-server/KNOWN_COMPANY_PROVISIONING_FIX_03A_10_CONTROL_RETEST.json"
+type = "unspecified"
+title = "Known Company Provisioning Fix 03A — 10-Control Retest"
+description = "Identity-only results for the exact frozen ten controls."
+logical_id = "e2561d08-43ea-400b-afdf-d5d9b343ddb9"
+content_hash = "sha256:0224ee26fa473e387c4db9f4027f6ebe6c18484e6229afa7fb5751d5f338bae5"
+size = 5825
+mtime_ms = 1788256966372
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/e2561d08-43ea-400b-afdf-d5d9b343ddb9/5cec7501-7b7f-4f92-9567-6c29d4a08a1a"
+storage_version_token = "1788257048707646"
+content_type = "application/octet-stream"
+
+[[outputs]]
+id = "x93jB6kFere9a9Kr4c458"
+uri = "file://artifacts/api-server/KNOWN_COMPANY_PROVISIONING_FIX_03A_PATH_COMPARISON.json"
+type = "unspecified"
+title = "Known Company Provisioning Fix 03A — Path Comparison"
+description = "Known-company production consumers and market-discovery separation."
+logical_id = "4f42085b-1a30-492e-8141-d2eeccd0ad1b"
+content_hash = "sha256:698e8196176ecd9fa5b60a3b91a9f950bc75546c359b491bd272963616a5939e"
+size = 789
+mtime_ms = 1788256966372
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/4f42085b-1a30-492e-8141-d2eeccd0ad1b/35376cfa-d8ae-4b61-b009-0e10d45e5b1c"
+storage_version_token = "1788257050037218"
+content_type = "application/octet-stream"
+
+[[outputs]]
+id = "LqFSHa-TkBMflF02YaLNz"
+uri = "file://artifacts/api-server/KNOWN_COMPANY_PROVISIONING_FIX_03A_PROVIDER_CALLS.json"
+type = "unspecified"
+title = "Known Company Provisioning Fix 03A — Provider Calls"
+description = "Per-capability zero-call and cost accounting for the identity-only retest."
+logical_id = "af743603-d086-4ead-b8dd-c1a180611377"
+content_hash = "sha256:dcfe5f79827ab56efe348f748a6f632676b8843d8cc35113f2aac6117e5a3b13"
+size = 1126
+mtime_ms = 1788256966372
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/af743603-d086-4ead-b8dd-c1a180611377/802d8e71-f6b3-4415-ac7c-2408abdb4330"
+storage_version_token = "1788257051461479"
+content_type = "application/octet-stream"

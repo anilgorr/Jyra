@@ -1,0 +1,212 @@
+{
+  "generatedAt": "2026-09-01T10:02:46.138Z",
+  "target": "Aadit Technologies/GTM-Q1",
+  "identityOnly": true,
+  "controls": [
+    {
+      "controlIndex": 1,
+      "inputIdentifiers": {
+        "company": "SolarWinds"
+      },
+      "existingCanonicalReused": true,
+      "state": "CONFIRMED",
+      "canonicalCompany": "SolarWinds",
+      "domain": "solarwinds.com",
+      "linkedin": null,
+      "autoAttach": false,
+      "researchEligible": true,
+      "capabilities": [],
+      "providerCalls": 0,
+      "blockReason": null,
+      "matchBasis": "EXACT_CANONICAL_NAME",
+      "companyId": "3cd73d96-37d1-4cf8-9dab-db596e019783"
+    },
+    {
+      "controlIndex": 2,
+      "inputIdentifiers": {
+        "company": "First Horizon"
+      },
+      "existingCanonicalReused": true,
+      "state": "PROBABLE",
+      "canonicalCompany": "First Horizon Bank",
+      "domain": "firsthorizon.com",
+      "linkedin": null,
+      "autoAttach": false,
+      "researchEligible": true,
+      "capabilities": [],
+      "providerCalls": 0,
+      "blockReason": null,
+      "matchBasis": "UNIQUE_PROJECT_NAME_MATCH",
+      "companyId": "3ec654e3-3bed-405a-a1aa-1405f28ffcba"
+    },
+    {
+      "controlIndex": 3,
+      "inputIdentifiers": {
+        "company": "GitLab"
+      },
+      "existingCanonicalReused": true,
+      "state": "CONFIRMED",
+      "canonicalCompany": "GitLab",
+      "domain": "about.gitlab.com",
+      "linkedin": null,
+      "autoAttach": false,
+      "researchEligible": true,
+      "capabilities": [],
+      "providerCalls": 0,
+      "blockReason": null,
+      "matchBasis": "EXACT_CANONICAL_NAME",
+      "companyId": "417409dc-ca3f-449f-90bb-f315f91f450a"
+    },
+    {
+      "controlIndex": 4,
+      "inputIdentifiers": {
+        "company": "Infoblox"
+      },
+      "existingCanonicalReused": true,
+      "state": "CONFIRMED",
+      "canonicalCompany": "Infoblox",
+      "domain": "infoblox.com",
+      "linkedin": null,
+      "autoAttach": false,
+      "researchEligible": true,
+      "capabilities": [],
+      "providerCalls": 0,
+      "blockReason": null,
+      "matchBasis": "EXACT_CANONICAL_NAME",
+      "companyId": "408bc044-5be0-4118-b486-75c494e5cd8f"
+    },
+    {
+      "controlIndex": 5,
+      "inputIdentifiers": {
+        "company": "Teradata"
+      },
+      "existingCanonicalReused": true,
+      "state": "CONFIRMED",
+      "canonicalCompany": "Teradata",
+      "domain": "teradata.com",
+      "linkedin": null,
+      "autoAttach": false,
+      "researchEligible": true,
+      "capabilities": [],
+      "providerCalls": 0,
+      "blockReason": null,
+      "matchBasis": "EXACT_CANONICAL_NAME",
+      "companyId": "0ba57746-1f8e-4691-a647-0921de1a971d"
+    },
+    {
+      "controlIndex": 6,
+      "inputIdentifiers": {
+        "company": "Nubank"
+      },
+      "existingCanonicalReused": true,
+      "state": "CONFIRMED",
+      "canonicalCompany": "Nubank",
+      "domain": "nubank.com.br",
+      "linkedin": null,
+      "autoAttach": false,
+      "researchEligible": true,
+      "capabilities": [],
+      "providerCalls": 0,
+      "blockReason": null,
+      "matchBasis": "EXACT_CANONICAL_NAME",
+      "companyId": "8ee8a9ce-dd62-4b03-bfb0-f9f9a3683f32"
+    },
+    {
+      "controlIndex": 7,
+      "inputIdentifiers": {
+        "company": "Black Duck"
+      },
+      "existingCanonicalReused": true,
+      "state": "CONFIRMED",
+      "canonicalCompany": "Black Duck",
+      "domain": "blackduck.com",
+      "linkedin": null,
+      "autoAttach": false,
+      "researchEligible": true,
+      "capabilities": [],
+      "providerCalls": 0,
+      "blockReason": null,
+      "matchBasis": "EXACT_CANONICAL_NAME",
+      "companyId": "fafc40de-2c9e-4968-bc3c-602d7d3f23c6"
+    },
+    {
+      "controlIndex": 8,
+      "inputIdentifiers": {
+        "company": "OpenAssets"
+      },
+      "existingCanonicalReused": true,
+      "state": "CONFIRMED",
+      "canonicalCompany": "OpenAssets",
+      "domain": "openassets.to",
+      "linkedin": null,
+      "autoAttach": false,
+      "researchEligible": true,
+      "capabilities": [],
+      "providerCalls": 0,
+      "blockReason": null,
+      "matchBasis": "EXACT_CANONICAL_NAME",
+      "companyId": "4944433c-43a4-41bb-b3f4-24fe98d56a8b"
+    },
+    {
+      "controlIndex": 9,
+      "inputIdentifiers": {
+        "company": "Black & McDonald"
+      },
+      "existingCanonicalReused": true,
+      "state": "CONFIRMED",
+      "canonicalCompany": "Black & McDonald Limited",
+      "domain": "blackandmcdonald.com",
+      "linkedin": null,
+      "autoAttach": false,
+      "researchEligible": true,
+      "capabilities": [],
+      "providerCalls": 0,
+      "blockReason": null,
+      "matchBasis": "EXACT_CANONICAL_NAME",
+      "companyId": "f757f1d3-fc2d-4086-8903-b4da90e166e3"
+    },
+    {
+      "controlIndex": 10,
+      "inputIdentifiers": {
+        "company": "RAKBANK"
+      },
+      "existingCanonicalReused": true,
+      "state": "CONFIRMED",
+      "canonicalCompany": "RAKBANK",
+      "domain": "rakbank.ae",
+      "linkedin": null,
+      "autoAttach": false,
+      "researchEligible": true,
+      "capabilities": [],
+      "providerCalls": 0,
+      "blockReason": null,
+      "matchBasis": "EXACT_CANONICAL_NAME",
+      "companyId": "94457ffa-bf97-426e-95b0-a1cf30250bd0"
+    }
+  ],
+  "metrics": {
+    "controls": 10,
+    "correctlyHandled": 10,
+    "researchEligible": 10,
+    "blocked": 0,
+    "confirmed": 9,
+    "probable": 1,
+    "ambiguous": 0,
+    "notACompany": 0,
+    "wrongEntity": 0,
+    "unresolved": 0,
+    "existingCanonicalReuse": 10,
+    "wrongAutomaticAttachments": 0,
+    "wrongResearchEligible": 0
+  },
+  "gates": {
+    "controls": true,
+    "identitySafety": true,
+    "providers": true,
+    "genericTests": true,
+    "safetyFixtures": true,
+    "whoRegression": true,
+    "duplicateCounts": true,
+    "databaseSafety": true
+  }
+}

@@ -36,6 +36,7 @@ import {
   type NormalizedCompanyInput,
   type RawCompanyInput,
 } from "../lib/company-identity";
+import { resolveKnownCompany } from "../lib/known-company-resolution";
 import {
   getAuthenticatedUserId,
   requireAuth,
@@ -513,8 +514,16 @@ router.post(
       res.status(400).json({ error: normalized.errors.join(". ") });
       return;
     }
-    const existing = await findExactCompany(normalized.value.domain);
-    if (!existing) {
+    const knownResolution = await resolveKnownCompany(body.data, {
+      projectId: access.project.id,
+    });
+    if (knownResolution.company && !knownResolution.canReuseCanonical) {
+      res.status(409).json({
+        error: knownResolution.blockReason ?? "Company identifiers conflict",
+      });
+      return;
+    }
+    if (!knownResolution.company) {
       const possible = await findPossibleCompanies(normalized.value.canonicalName);
       if (possible.length) {
         const preview = await previewRows(access.project.id, [
@@ -526,9 +535,12 @@ router.post(
     }
     const { company, linked } = await db.transaction(async (tx) => {
       const client = tx as unknown as DbClient;
-      const exact = await findExactCompany(normalized.value!.domain, client);
-      const canonical = exact
-        ? { company: exact, created: false }
+      const resolution = await resolveKnownCompany(body.data, {
+        projectId: access.project!.id,
+        executor: client,
+      });
+      const canonical = resolution.company && resolution.canReuseCanonical
+        ? { company: resolution.company, created: false }
         : await createCanonicalCompany(client, normalized.value!);
       if (!canonical.created) {
         await addAlias(client, canonical.company, normalized.value!, "manual");
@@ -696,7 +708,27 @@ router.post(
           continue;
       }
 
-      let company = await findExactCompany(normalized.value.domain, client);
+      const knownResolution = await resolveKnownCompany(row.company, {
+        projectId: access.project!.id,
+        executor: client,
+      });
+      if (knownResolution.company && !knownResolution.canReuseCanonical) {
+        results.push({
+          rowId: row.rowId,
+          input: row.company,
+          normalizedDomain: normalized.value.domain,
+          normalizedName,
+          decision: "needs_review",
+          errors: [knownResolution.blockReason ?? "Company identifiers conflict"],
+          exactMatch: matchPayload(knownResolution.company),
+          possibleMatches: [matchPayload(knownResolution.company)],
+          projectCompany: null,
+        });
+        continue;
+      }
+      let company = knownResolution.canReuseCanonical
+        ? knownResolution.company
+        : null;
       const possible = company
         ? []
         : await findPossibleCompanies(normalized.value.canonicalName, client);

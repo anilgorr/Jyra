@@ -1,0 +1,842 @@
+JYRA — KNOWN COMPANY PROVISIONING & IDENTITY HANDOFF FIX 03A
+
+PURPOSE
+
+Repair the 10-Control Acceptance Test identity/provisioning regression
+ONLY if IDENTITY_REGRESSION_AUTOPSY_03 demonstrates that known benchmark
+companies were incorrectly routed through broad COMPANY_DISCOVERY,
+existing canonical state was incorrectly bypassed, or safe-to-research
+identity states were incorrectly blocked by the provisioning handoff.
+
+IMPORTANT:
+
+Read IDENTITY_REGRESSION_AUTOPSY_03 artifacts first.
+
+Do not blindly implement this prompt.
+
+If the autopsy identifies a materially different root cause:
+
+STOP.
+
+Report the mismatch.
+
+Do not implement an unrelated fix.
+
+==================================================
+1. DATABASE SAFETY
+==================================================
+
+DEVELOPMENT ONLY.
+
+Use ONLY the approved development database fingerprint.
+
+Production operations = 0.
+
+No production migrations.
+No production writes.
+No production reconciliation.
+No destructive cleanup.
+
+==================================================
+2. FREEZE CORE INTELLIGENCE
+==================================================
+
+DO NOT CHANGE:
+
+Business Twin
+ICP logic
+Find My Market behavior
+COMPANY_DISCOVERY semantics
+company-likeness thresholds
+entity verification thresholds
+profile verification thresholds
+Bright Data firmographics
+Tavily retrieval
+Exa adaptive WEB_SEARCH retrieval
+query engine
+evidence
+fact extraction
+fact validation
+temporal semantics
+signal definitions
+signal mapping
+signal clusters
+opportunity logic
+WHY
+NBA
+semantic idempotency
+contacts
+UI.
+
+This task is ONLY:
+
+KNOWN COMPANY
+→ SAFE IDENTITY RESOLUTION
+→ RESEARCH ELIGIBILITY.
+
+==================================================
+3. ARCHITECTURAL DISTINCTION
+==================================================
+
+JYRA must distinguish two fundamentally different operations.
+
+A. MARKET DISCOVERY
+
+Question:
+
+"Which companies might exist that match this ICP?"
+
+Capability:
+
+COMPANY_DISCOVERY
+
+Example:
+
+Find My Market.
+
+B. KNOWN COMPANY RESOLUTION
+
+Question:
+
+"Resolve the identity of this specific company."
+
+Inputs may include:
+
+company name
+domain
+LinkedIn URL
+existing canonical company ID
+geography
+industry
+description
+trusted prior identity evidence.
+
+Known-company resolution MUST NOT automatically invoke broad
+COMPANY_DISCOVERY merely to establish that the company exists.
+
+==================================================
+4. GENERIC REQUIREMENT
+==================================================
+
+This is NOT benchmark-specific.
+
+The same path must support:
+
+CSV imports
+CRM imports
+API-imported accounts
+manually entered companies
+existing canonical companies
+benchmark fixtures
+future integrations.
+
+Do not add:
+
+benchmark company names
+control-specific aliases
+Managed-SOC-specific rules.
+
+==================================================
+5. KNOWN COMPANY RESOLUTION ENTRY POINT
+==================================================
+
+Create/reuse one generic runtime entry point conceptually equivalent to:
+
+resolveKnownCompany(input, context)
+
+Do not create duplicate identity architecture if an appropriate
+production service already exists.
+
+Prefer composing existing identity services.
+
+Input may include:
+
+companyId?
+companyName
+domain?
+linkedinCompanyUrl?
+geography?
+industry?
+description?
+source/provenance
+tenant/project context.
+
+==================================================
+6. RESOLUTION ORDER
+==================================================
+
+Use the cheapest and safest existing information first.
+
+Conceptual order:
+
+1. validate company-likeness
+2. exact existing canonical lookup
+3. trusted existing identifiers
+4. existing persisted identity evidence
+5. verified domain evidence
+6. verified LinkedIn/profile evidence
+7. existing generic profile-resolution capability if necessary
+8. existing company lookup/firmographics capability if necessary
+9. unresolved/review state.
+
+Do NOT start with broad market discovery.
+
+==================================================
+7. EXISTING CANONICAL REUSE
+==================================================
+
+If an exact canonical company already exists for the same tenant/entity
+and its identity evidence remains valid:
+
+reuse it.
+
+Do not:
+
+rediscover it
+duplicate it
+create another canonical company
+pay for unnecessary provider calls.
+
+Preserve provenance.
+
+==================================================
+8. IDENTITY SAFETY
+==================================================
+
+Retain current identity states:
+
+CONFIRMED
+PROBABLE
+AMBIGUOUS
+NOT_A_COMPANY
+WRONG_ENTITY
+UNRESOLVED.
+
+Do not weaken their meaning.
+
+Do not force PROBABLE → CONFIRMED.
+
+Do not guess domains.
+
+Do not guess LinkedIn profiles.
+
+Do not fuzzy-attach unrelated companies.
+
+==================================================
+9. SEPARATE TWO DECISIONS
+==================================================
+
+Explicitly separate:
+
+CAN_AUTO_ATTACH_CANONICAL
+
+from
+
+CAN_RESEARCH_ENTITY.
+
+These are not the same decision.
+
+Example:
+
+PROBABLE
+
+may be sufficiently supported to research safely while remaining
+insufficient for automatic canonical LinkedIn/domain attachment.
+
+Implement this distinction generically.
+
+==================================================
+10. RESEARCH ELIGIBILITY
+==================================================
+
+Define/reuse a deterministic research-eligibility decision.
+
+Conceptually:
+
+CONFIRMED
+→ normally researchable.
+
+PROBABLE
+→ researchable ONLY when evidence establishes the intended company with
+sufficient entity confidence and no material contradiction.
+
+AMBIGUOUS
+→ not researchable until resolved.
+
+WRONG_ENTITY
+→ blocked.
+
+NOT_A_COMPANY
+→ blocked.
+
+UNRESOLVED
+→ blocked or further identity resolution required.
+
+Do not change identity-state definitions to achieve this.
+
+==================================================
+11. RESEARCH SAFETY FOR PROBABLE
+==================================================
+
+A PROBABLE entity must not be researched if:
+
+multiple plausible companies remain
+
+domain conflicts
+
+parent/subsidiary ambiguity materially changes target
+
+wrong geography/company evidence
+
+generic short-name ambiguity
+
+service/product string rather than company
+
+candidate evidence points to different entity.
+
+Research eligibility must be evidence-based.
+
+==================================================
+12. PROVIDER CAPABILITY SEPARATION
+==================================================
+
+Keep capabilities separate:
+
+COMPANY_DISCOVERY
+!=
+COMPANY_PROFILE_RESOLUTION
+!=
+COMPANY_LOOKUP
+!=
+COMPANY_FIRMOGRAPHICS.
+
+Business logic must request a capability.
+
+It must not hardcode:
+
+Exa
+Tavily
+Bright Data
+
+as identity semantics.
+
+ProviderRouter selects provider.
+
+==================================================
+13. COMPANY_DISCOVERY GUARD
+==================================================
+
+Add a generic architectural guard:
+
+Known-company resolution must not invoke COMPANY_DISCOVERY unless an
+explicit workflow genuinely requests discovery.
+
+For:
+
+existing canonical account
+CSV company
+CRM account
+manual company input
+benchmark known company
+
+COMPANY_DISCOVERY should normally be:
+
+0 calls.
+
+Do not prohibit COMPANY_DISCOVERY globally.
+
+Find My Market still requires it.
+
+==================================================
+14. ACCEPTANCE CONTROL PROVISIONING
+==================================================
+
+Repair the benchmark provisioning layer to use the same generic
+known-company resolution entry point.
+
+The benchmark is allowed to know:
+
+which company is being tested.
+
+It must remain blind only to:
+
+reference event
+expected signal
+expected detection outcome.
+
+Do not treat company identity itself as hidden ground truth.
+
+==================================================
+15. DO NOT INJECT EVENT INFORMATION
+==================================================
+
+Control provisioning may pass legitimate company identifiers.
+
+It must NOT pass:
+
+reference event terms
+expected signal
+event date
+expected person
+expected event category
+known event URL.
+
+==================================================
+16. NORMAL PRODUCT PATH
+==================================================
+
+The acceptance runner must not contain a special identity algorithm.
+
+It should call the same production service that would handle:
+
+"Add Acme Corp"
+
+or:
+
+CSV imported company Acme Corp.
+
+Benchmark orchestration may provide fixtures/context.
+
+Identity semantics must remain production semantics.
+
+==================================================
+17. PROVIDER COST CONTROL
+==================================================
+
+Resolution should reuse existing safe state before provider calls.
+
+Record:
+
+existing canonical hit
+existing evidence hit
+profile-resolution call
+company-lookup call
+firmographics call
+reason provider was required.
+
+No unnecessary calls.
+
+==================================================
+18. IDEMPOTENCY
+==================================================
+
+Resolving the same known company again with unchanged identity evidence
+must not create:
+
+duplicate canonical company
+duplicate profile
+duplicate identity evidence
+duplicate domain
+duplicate LinkedIn attachment.
+
+==================================================
+19. TEST A — EXISTING CANONICAL
+==================================================
+
+Input:
+
+known company already safely canonicalized.
+
+Expected:
+
+existing canonical reused
+COMPANY_DISCOVERY calls = 0
+duplicate companies = 0
+research eligibility correct.
+
+==================================================
+20. TEST B — NAME + VERIFIED DOMAIN
+==================================================
+
+Input:
+
+legitimate company name + verified domain.
+
+Expected:
+
+normal known-company resolution.
+
+Do not invoke broad market discovery.
+
+==================================================
+21. TEST C — VERIFIED LINKEDIN
+==================================================
+
+Input:
+
+company name + verified LinkedIn company URL.
+
+Expected:
+
+reuse/resolve through existing profile path.
+
+COMPANY_DISCOVERY = 0 unless explicitly required by architecture and
+justified.
+
+==================================================
+22. TEST D — PROBABLE SAFE-TO-RESEARCH
+==================================================
+
+Input:
+
+legitimate company with strong evidence but not enough independent
+verification for canonical auto-attachment.
+
+Expected:
+
+identity = PROBABLE
+
+auto attach = NO
+
+research eligible = YES only if entity is sufficiently unambiguous.
+
+==================================================
+23. TEST E — AMBIGUOUS
+==================================================
+
+Input:
+
+multiple plausible companies.
+
+Expected:
+
+AMBIGUOUS
+
+auto attach = NO
+research eligible = NO.
+
+==================================================
+24. TEST F — SERVICE STRING
+==================================================
+
+Input equivalent to:
+
+"Managed Services - Monitoring 24/7"
+
+Expected:
+
+NOT_A_COMPANY
+
+provider identity calls = 0
+research eligible = NO.
+
+==================================================
+25. TEST G — PARENT / BRAND
+==================================================
+
+Input:
+
+brand/company where parent relationship exists.
+
+Expected:
+
+do not silently replace operating entity with parent.
+
+Preserve relationship.
+
+Research correct target only.
+
+==================================================
+26. TEST H — CSV STYLE INPUT
+==================================================
+
+Input:
+
+company name
+website/domain
+industry
+country
+
+as if imported from CSV.
+
+Expected:
+
+known-company resolution path.
+
+Not Find My Market discovery.
+
+==================================================
+27. TEST I — MANUAL COMPANY
+==================================================
+
+Input:
+
+user manually adds company by name/domain.
+
+Expected:
+
+same generic path.
+
+==================================================
+28. TEST J — FIND MY MARKET REGRESSION
+==================================================
+
+Verify Find My Market still uses:
+
+COMPANY_DISCOVERY.
+
+Do not break discovery while fixing known-company resolution.
+
+==================================================
+29. FOUR IDENTITY SAFETY FIXTURES
+==================================================
+
+Replay existing identity fixtures WITHOUT new provider calls where
+possible:
+
+Digital Maelstrom
+Mandiant
+Corsa
+Managed Services - Monitoring 24/7.
+
+Expected safety semantics from Profile Resolution Fix 02A must remain.
+
+Do not benchmark-tune.
+
+==================================================
+30. 12-COMPANY WHO REGRESSION
+==================================================
+
+Replay preserved 12-company WHO identity fixture.
+
+Required:
+
+wrong automatic attachments = 0
+
+wrong identities = 0
+
+safe legitimate-company resolution coverage must not regress.
+
+Do not change ICP.
+
+==================================================
+31. EXACT 10 CONTROL PROVISIONING RETEST
+==================================================
+
+After implementation:
+
+run ONLY identity/provisioning for the exact frozen 10 controls.
+
+DO NOT RUN:
+
+event retrieval
+research questions
+facts
+signals
+WHEN
+WHY
+opportunity
+NBA.
+
+This is an identity-only retest.
+
+Report per control:
+
+input identifiers
+existing canonical reused?
+identity state
+canonical company
+domain
+LinkedIn
+auto-attach decision
+research eligibility
+provider capabilities invoked
+provider calls
+block reason.
+
+==================================================
+32. EXPECTED CONTROL RESULT
+==================================================
+
+The objective is NOT:
+
+10 CONFIRMED.
+
+The objective is:
+
+10 correctly handled identities.
+
+A legitimate company may safely be:
+
+CONFIRMED
+
+or
+
+PROBABLE + RESEARCH_ELIGIBLE
+
+when justified.
+
+Do not inflate confidence merely to provision all 10.
+
+==================================================
+33. ZERO WRONG ENTITY GATE
+==================================================
+
+Required:
+
+wrong entity auto-attached = 0
+
+wrong entity research-eligible = 0.
+
+Safety is more important than achieving 10/10.
+
+==================================================
+34. PROVIDER CALL REPORT
+==================================================
+
+For the identity-only 10-control retest report:
+
+COMPANY_DISCOVERY calls =
+COMPANY_PROFILE_RESOLUTION calls =
+COMPANY_LOOKUP calls =
+COMPANY_FIRMOGRAPHICS calls =
+
+cached/reused resolutions =
+
+estimated cost =
+actual known cost =
+unknown cost =
+
+Explain every provider call.
+
+==================================================
+35. DATABASE SAFETY REPORT
+==================================================
+
+Report:
+
+development DB fingerprint validation =
+development writes =
+production writes =
+production migrations =
+production operations =
+
+==================================================
+36. REQUIRED ARTIFACTS
+==================================================
+
+Generate:
+
+KNOWN_COMPANY_PROVISIONING_FIX_03A.md
+
+KNOWN_COMPANY_PROVISIONING_FIX_03A.json
+
+KNOWN_COMPANY_PROVISIONING_FIX_03A_TESTS.json
+
+KNOWN_COMPANY_PROVISIONING_FIX_03A_10_CONTROL_RETEST.json
+
+KNOWN_COMPANY_PROVISIONING_FIX_03A_PATH_COMPARISON.json
+
+KNOWN_COMPANY_PROVISIONING_FIX_03A_PROVIDER_CALLS.json
+
+==================================================
+37. REQUIRED FINAL SUMMARY
+==================================================
+
+AUTOPSY ROOT CAUSE =
+
+FIX IMPLEMENTED =
+
+Known-company entry point =
+
+Market discovery separation =
+
+Auto-attach vs research eligibility separation =
+
+10 CONTROL IDENTITY RETEST:
+
+Controls = 10
+Correctly handled =
+Research eligible =
+Blocked =
+
+CONFIRMED =
+PROBABLE =
+AMBIGUOUS =
+NOT_A_COMPANY =
+WRONG_ENTITY =
+UNRESOLVED =
+
+Wrong automatic attachments =
+Wrong research-eligible entities =
+
+COMPANY_DISCOVERY calls =
+Other identity provider calls =
+
+Existing canonical reuse =
+
+12-company WHO regression =
+4-case safety regression =
+
+Find My Market discovery regression =
+
+Production operations = 0.
+
+==================================================
+38. PASS GATES
+==================================================
+
+Required:
+
+Autopsy root cause specifically repaired
+
+Known-company resolution no longer unnecessarily depends on
+COMPANY_DISCOVERY
+
+Find My Market COMPANY_DISCOVERY still works
+
+Identity thresholds not weakened
+
+Wrong auto-attachments = 0
+
+Wrong research-eligible entities = 0
+
+Profile Resolution Fix 02A safety preserved
+
+No ICP regression
+
+No retrieval/intelligence changes
+
+Production operations = 0.
+
+==================================================
+39. FINAL DECISION
+==================================================
+
+Return exactly ONE:
+
+A — KNOWN COMPANY PROVISIONING / IDENTITY HANDOFF REPAIRED
+
+B — KNOWN COMPANY STILL INCORRECTLY USES MARKET DISCOVERY
+
+C — RESEARCH ELIGIBILITY STILL BLOCKS SAFE ENTITIES
+
+D — IDENTITY SAFETY REGRESSED
+
+E — FIND MY MARKET DISCOVERY REGRESSED
+
+F — AUTOPSY ROOT CAUSE DOES NOT MATCH THIS FIX
+
+G — MULTIPLE DEFECTS REMAIN
+
+H — INCONCLUSIVE
+
+==================================================
+40. STOP
+==================================================
+
+STOP after the identity-only retest.
+
+DO NOT run the 10-control intelligence acceptance test yet.
+
+DO NOT run the 50-company benchmark.
+
+DO NOT modify retrieval.
+
+DO NOT modify facts.
+
+DO NOT modify signals.
+
+DO NOT modify opportunity logic.
+
+Return results for review.

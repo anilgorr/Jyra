@@ -8,7 +8,6 @@ import {
   companyFactsTable,
   companyProvenanceTable,
   contactEnrichmentAttemptsTable,
-  dataProvidersTable,
   db,
   organizationsTable,
   projectCompaniesTable,
@@ -21,9 +20,7 @@ import {
   signalPacksTable,
   signalsTable,
 } from "@workspace/db";
-import { discoverCompaniesForProject } from "../src/lib/company-discovery";
-import { namesArePossibleDuplicates } from "../src/lib/company-identity";
-import { ProviderRouter } from "../src/lib/provider-router";
+import { resolveKnownCompany } from "../src/lib/known-company-resolution";
 import { executeResearchNow, planSignalPackWebResearchQuestions } from "../src/lib/research";
 import { evaluateSignalsForCompany } from "../src/lib/signal-packs";
 
@@ -73,11 +70,6 @@ if (!selection) throw new Error("Approved active Managed SOC signal pack is requ
 const definitions = await db.select().from(signalDefinitionsTable)
   .where(and(eq(signalDefinitionsTable.signalPackId, selection.pack.id), eq(signalDefinitionsTable.status, "APPROVED")));
 if (definitions.length !== 4) throw new Error("Expected the unchanged four-question Managed SOC pack");
-const [exa] = await db.select().from(dataProvidersTable)
-  .where(and(eq(dataProvidersTable.providerType, "exa"), eq(dataProvidersTable.enabled, true))).limit(1);
-if (!exa) throw new Error("Enabled Exa provider required for normal company discovery");
-
-const router = new ProviderRouter();
 const priorState = (() => {
   for (const path of [stateFile, `${OUTPUT_TEST}_CONTROL_RESULTS.json`]) {
     try {
@@ -109,49 +101,32 @@ for (const identity of identities) {
   })) continue;
   const run: any = { manifestIndex: identity.manifestIndex, requestedCompany: identity.company, provision: null, questions: [] };
   try {
-    const discovery = await discoverCompaniesForProject({
-      organizationId: target.organization.id,
+    const resolution = await resolveKnownCompany({
+      canonicalName: identity.company,
+    }, {
       projectId: target.project.id,
-      userId: "system:jyra-mvp-reality-test-01-controls",
-      router,
-      limit: 10,
-      maxProviderCalls: 1,
-      queryOverrides: [`"${identity.company}" official company`],
     });
-    // Controls are provisioned independently of market-discovery rank.  An
-    // exact string equality incorrectly excludes safe legal-name variants
-    // such as "First Horizon Bank" and "Black and McDonald".  Preserve the
-    // existing conservative duplicate semantics rather than broad matching.
-    const candidate = discovery.candidates.find((item) =>
-      item.companyId && namesArePossibleDuplicates(item.name, identity.company));
     run.provision = {
-      discoveryRunId: discovery.runId,
-      providerId: discovery.providerId,
-      providerWasExa: discovery.providerId === exa.id,
-      rawResults: discovery.rawResults,
-      canonicalized: discovery.canonicalized,
-      duplicatesRemoved: discovery.duplicatesRemoved,
-      rejected: discovery.rejected,
-      possibleMatches: discovery.possibleMatches,
-      companyId: candidate?.companyId ?? null,
-      status: candidate?.companyId && discovery.providerId === exa.id ? "PROVISIONED" : "NOT_PROVISIONED",
+      resolutionPath: "KNOWN_COMPANY_RESOLUTION",
+      matchBasis: resolution.matchBasis,
+      existingCanonicalReused: resolution.existingCanonicalReused,
+      identityState: resolution.identity.identityState,
+      canAutoAttachCanonical: resolution.canAutoAttachCanonical,
+      canResearchEntity: resolution.canResearchEntity,
+      providerCapabilitiesInvoked: resolution.providerCapabilitiesInvoked,
+      providerCalls: resolution.providerCalls,
+      companyId: resolution.company?.id ?? null,
+      status: resolution.canResearchEntity ? "PROVISIONED" : "NOT_PROVISIONED",
+      blockReason: resolution.blockReason,
     };
-    if (!candidate?.companyId || discovery.providerId !== exa.id) {
+    if (!resolution.company || !resolution.projectCompany || !resolution.canResearchEntity) {
       checkpointRun(run);
       continue;
     }
-    const [linked] = await db.select({ company: companiesTable, projectCompany: projectCompaniesTable })
-      .from(projectCompaniesTable)
-      .innerJoin(companiesTable, eq(companiesTable.id, projectCompaniesTable.companyId))
-      .where(and(
-        eq(projectCompaniesTable.projectId, target.project.id),
-        eq(projectCompaniesTable.companyId, candidate.companyId),
-      )).limit(1);
-    if (!linked) {
-      run.provision.status = "NOT_PROVISIONED";
-      checkpointRun(run);
-      continue;
-    }
+    const linked = {
+      company: resolution.company,
+      projectCompany: resolution.projectCompany,
+    };
     const questions = planSignalPackWebResearchQuestions({
       company: linked.company,
       offeringName: "Managed SOC",

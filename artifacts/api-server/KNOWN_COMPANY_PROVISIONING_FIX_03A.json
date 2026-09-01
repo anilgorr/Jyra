@@ -1,0 +1,108 @@
+{
+  "milestone": "KNOWN_COMPANY_PROVISIONING_FIX_03A",
+  "generatedAt": "2026-09-01T10:02:46.138Z",
+  "decision": "A",
+  "decisionLabel": "KNOWN COMPANY PROVISIONING / IDENTITY HANDOFF REPAIRED",
+  "autopsyRootCause": "Known-company provisioning must reuse canonical identity and remain separate from market discovery.",
+  "fixImplemented": "Added a provider-free resolveKnownCompany runtime entry point and composed it into manual creation, CSV import commit, and acceptance-control provisioning.",
+  "knownCompanyEntryPoint": "resolveKnownCompany",
+  "marketDiscoverySeparation": "Known-company resolver reports providerCapabilitiesInvoked=[] and providerCalls=0.",
+  "autoAttachVsResearchEligibility": "Reported independently from resolver output.",
+  "metrics": {
+    "controls": 10,
+    "correctlyHandled": 10,
+    "researchEligible": 10,
+    "blocked": 0,
+    "confirmed": 9,
+    "probable": 1,
+    "ambiguous": 0,
+    "notACompany": 0,
+    "wrongEntity": 0,
+    "unresolved": 0,
+    "existingCanonicalReuse": 10,
+    "wrongAutomaticAttachments": 0,
+    "wrongResearchEligible": 0
+  },
+  "providerCalls": {
+    "generatedAt": "2026-09-01T10:02:46.138Z",
+    "before": {
+      "WEB_SEARCH": 959,
+      "COMPANY_FIRMOGRAPHICS": 181,
+      "COMPANY_DISCOVERY": 123,
+      "WEBSITE_CRAWL": 20
+    },
+    "after": {
+      "WEB_SEARCH": 959,
+      "COMPANY_FIRMOGRAPHICS": 181,
+      "COMPANY_DISCOVERY": 123,
+      "WEBSITE_CRAWL": 20
+    },
+    "deltas": {
+      "COMPANY_DISCOVERY": 0,
+      "COMPANY_FIRMOGRAPHICS": 0,
+      "WEBSITE_CRAWL": 0,
+      "WEB_SEARCH": 0
+    },
+    "COMPANY_DISCOVERY": 0,
+    "otherIdentityProviderCalls": 0,
+    "totalProviderCalls": 0,
+    "explanations": [],
+    "capabilities": {
+      "COMPANY_DISCOVERY": {
+        "calls": 0,
+        "reason": "Not permitted for known-company resolution."
+      },
+      "COMPANY_PROFILE_RESOLUTION": {
+        "calls": 0,
+        "reason": "Persisted verified profile reused."
+      },
+      "COMPANY_LOOKUP": {
+        "calls": 0,
+        "reason": "Existing canonical state satisfied all cases."
+      },
+      "COMPANY_FIRMOGRAPHICS": {
+        "calls": 0,
+        "reason": "Existing canonical state satisfied all cases."
+      }
+    },
+    "cachedOrReusedResolutions": 10,
+    "estimatedCost": 0,
+    "actualKnownCost": 0,
+    "unknownCost": 0
+  },
+  "databaseSafety": {
+    "approvedDevelopmentFingerprint": true,
+    "developmentWrites": 0,
+    "productionWrites": 0,
+    "productionMigrations": 0,
+    "productionOperations": 0,
+    "countsBefore": {
+      "companies": 456,
+      "projectCompanies": 425,
+      "duplicateCompanyDomains": 0,
+      "duplicateProjectCompanyLinks": 0
+    },
+    "countsAfter": {
+      "companies": 456,
+      "projectCompanies": 425,
+      "duplicateCompanyDomains": 0,
+      "duplicateProjectCompanyLinks": 0
+    },
+    "duplicateCountsUnchanged": true
+  },
+  "regressions": {
+    "fourCaseSafety": true,
+    "twelveCompanyWho": true,
+    "findMyMarketDiscovery": true
+  },
+  "gates": {
+    "controls": true,
+    "identitySafety": true,
+    "providers": true,
+    "genericTests": true,
+    "safetyFixtures": true,
+    "whoRegression": true,
+    "duplicateCounts": true,
+    "databaseSafety": true
+  }
+}

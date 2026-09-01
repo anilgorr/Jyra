@@ -1,0 +1,576 @@
+{
+  "generatedAt": "2026-09-01T10:02:46.138Z",
+  "genericTests": [
+    {
+      "id": "A",
+      "name": "EXISTING_CANONICAL",
+      "passed": true,
+      "detail": "All ten frozen controls reused an existing canonical without provider calls.",
+      "providerCalls": 0
+    },
+    {
+      "id": "B",
+      "name": "NAME_AND_VERIFIED_DOMAIN",
+      "passed": true,
+      "result": {
+        "status": "RESOLVED",
+        "company": {
+          "id": "3cd73d96-37d1-4cf8-9dab-db596e019783",
+          "canonicalName": "SolarWinds",
+          "domain": "solarwinds.com",
+          "website": "https://solarwinds.com",
+          "linkedinUrl": null,
+          "profileUrls": {},
+          "country": null,
+          "industry": null,
+          "employeeCount": null,
+          "employeeRange": null,
+          "description": null,
+          "createdAt": "2026-08-31T12:26:09.656Z",
+          "updatedAt": "2026-08-31T12:26:09.656Z"
+        },
+        "projectCompany": {
+          "id": "0c6e46fb-a2b6-4fe5-ba5d-80ce8266399c",
+          "projectId": "b4c8a95a-eb1c-4a86-89d6-62d72097d820",
+          "companyId": "3cd73d96-37d1-4cf8-9dab-db596e019783",
+          "status": "candidate",
+          "researchStatus": "complete",
+          "fitScore": 70,
+          "needScore": null,
+          "timingScore": null,
+          "relationshipScore": null,
+          "confidenceScore": null,
+          "opportunityState": null,
+          "relationshipStatus": "NONE",
+          "opportunityScore": null,
+          "opportunityAssessmentState": "WATCH",
+          "latestResearchAt": "2026-08-31T18:57:36.195Z",
+          "createdAt": "2026-08-31T12:26:09.656Z",
+          "updatedAt": "2026-09-01T07:29:09.912Z"
+        },
+        "identity": {
+          "companyLikeness": "LIKELY_COMPANY",
+          "identityState": "CONFIRMED",
+          "canonicalAttachAllowed": true,
+          "evidence": [
+            "EXACT_DOMAIN",
+            "EXISTING_PROJECT_LINK"
+          ],
+          "conflicts": []
+        },
+        "matchBasis": "EXACT_DOMAIN",
+        "existingCanonicalReused": true,
+        "canReuseCanonical": true,
+        "canAutoAttachCanonical": true,
+        "canResearchEntity": true,
+        "blockReason": null,
+        "providerCapabilitiesInvoked": [],
+        "providerCalls": 0,
+        "validationErrors": []
+      },
+      "providerCalls": 0
+    },
+    {
+      "id": "C",
+      "name": "VERIFIED_LINKEDIN",
+      "passed": true,
+      "result": {
+        "status": "RESOLVED",
+        "company": {
+          "id": "fa09b22b-4086-43b0-83be-de2920a1843e",
+          "canonicalName": "OverSOC",
+          "domain": "oversoc.com",
+          "website": "https://oversoc.com",
+          "linkedinUrl": "https://www.linkedin.com/company/oversoc",
+          "profileUrls": {
+            "linkedin": "https://www.linkedin.com/company/oversoc"
+          },
+          "country": null,
+          "industry": null,
+          "employeeCount": null,
+          "employeeRange": null,
+          "description": null,
+          "createdAt": "2026-09-01T05:39:50.837Z",
+          "updatedAt": "2026-09-01T05:39:50.837Z"
+        },
+        "projectCompany": {
+          "id": "c412e163-6e3e-44c4-bac6-026f0f3e6ada",
+          "projectId": "b4c8a95a-eb1c-4a86-89d6-62d72097d820",
+          "companyId": "fa09b22b-4086-43b0-83be-de2920a1843e",
+          "status": "candidate",
+          "researchStatus": "not_started",
+          "fitScore": null,
+          "needScore": null,
+          "timingScore": null,
+          "relationshipScore": null,
+          "confidenceScore": null,
+          "opportunityState": null,
+          "relationshipStatus": "NONE",
+          "opportunityScore": null,
+          "opportunityAssessmentState": null,
+          "latestResearchAt": null,
+          "createdAt": "2026-09-01T05:39:50.837Z",
+          "updatedAt": "2026-09-01T05:39:50.837Z"
+        },
+        "identity": {
+          "companyLikeness": "LIKELY_COMPANY",
+          "identityState": "CONFIRMED",
+          "canonicalAttachAllowed": true,
+          "evidence": [
+            "VERIFIED_LINKEDIN",
+            "EXISTING_PROJECT_LINK"
+          ],
+          "conflicts": []
+        },
+        "matchBasis": "VERIFIED_LINKEDIN",
+        "existingCanonicalReused": true,
+        "canReuseCanonical": true,
+        "canAutoAttachCanonical": true,
+        "canResearchEntity": true,
+        "blockReason": null,
+        "providerCapabilitiesInvoked": [],
+        "providerCalls": 0,
+        "validationErrors": []
+      },
+      "providerCalls": 0
+    },
+    {
+      "id": "D",
+      "name": "PROBABLE_SAFE_TO_RESEARCH",
+      "passed": true,
+      "result": {
+        "status": "RESOLVED",
+        "company": {
+          "id": "3ec654e3-3bed-405a-a1aa-1405f28ffcba",
+          "canonicalName": "First Horizon Bank",
+          "domain": "firsthorizon.com",
+          "website": "https://firsthorizon.com",
+          "linkedinUrl": null,
+          "profileUrls": {},
+          "country": null,
+          "industry": null,
+          "employeeCount": null,
+          "employeeRange": null,
+          "description": null,
+          "createdAt": "2026-08-31T12:30:00.380Z",
+          "updatedAt": "2026-08-31T12:30:00.380Z"
+        },
+        "projectCompany": {
+          "id": "e1ff1142-08e2-4214-a4f6-f336ffb259a7",
+          "projectId": "b4c8a95a-eb1c-4a86-89d6-62d72097d820",
+          "companyId": "3ec654e3-3bed-405a-a1aa-1405f28ffcba",
+          "status": "candidate",
+          "researchStatus": "complete",
+          "fitScore": 70,
+          "needScore": null,
+          "timingScore": null,
+          "relationshipScore": null,
+          "confidenceScore": null,
+          "opportunityState": null,
+          "relationshipStatus": "NONE",
+          "opportunityScore": null,
+          "opportunityAssessmentState": "WATCH",
+          "latestResearchAt": "2026-08-31T19:00:20.545Z",
+          "createdAt": "2026-08-31T12:30:00.380Z",
+          "updatedAt": "2026-09-01T07:29:10.098Z"
+        },
+        "identity": {
+          "companyLikeness": "LIKELY_COMPANY",
+          "identityState": "PROBABLE",
+          "canonicalAttachAllowed": false,
+          "evidence": [
+            "UNIQUE_PROJECT_NAME_MATCH",
+            "EXISTING_PROJECT_LINK"
+          ],
+          "conflicts": []
+        },
+        "matchBasis": "UNIQUE_PROJECT_NAME_MATCH",
+        "existingCanonicalReused": true,
+        "canReuseCanonical": true,
+        "canAutoAttachCanonical": false,
+        "canResearchEntity": true,
+        "blockReason": null,
+        "providerCapabilitiesInvoked": [],
+        "providerCalls": 0,
+        "validationErrors": []
+      },
+      "providerCalls": 0
+    },
+    {
+      "id": "E",
+      "name": "AMBIGUOUS",
+      "passed": true,
+      "result": {
+        "status": "NEEDS_REVIEW",
+        "company": null,
+        "projectCompany": null,
+        "identity": {
+          "companyLikeness": "AMBIGUOUS_COMPANY",
+          "identityState": "AMBIGUOUS",
+          "canonicalAttachAllowed": false,
+          "evidence": [],
+          "conflicts": [
+            "MULTIPLE_PLAUSIBLE_COMPANIES"
+          ]
+        },
+        "matchBasis": "NONE",
+        "existingCanonicalReused": false,
+        "canReuseCanonical": false,
+        "canAutoAttachCanonical": false,
+        "canResearchEntity": false,
+        "blockReason": "MULTIPLE_PLAUSIBLE_COMPANIES",
+        "providerCapabilitiesInvoked": [],
+        "providerCalls": 0,
+        "validationErrors": []
+      },
+      "providerCalls": 0
+    },
+    {
+      "id": "F",
+      "name": "SERVICE_STRING",
+      "passed": true,
+      "result": {
+        "status": "BLOCKED",
+        "company": null,
+        "projectCompany": null,
+        "identity": {
+          "companyLikeness": "LIKELY_NOT_COMPANY",
+          "identityState": "NOT_A_COMPANY",
+          "canonicalAttachAllowed": false,
+          "evidence": [],
+          "conflicts": [
+            "SERVICE_OR_FRAGMENT_NAME"
+          ]
+        },
+        "matchBasis": "NONE",
+        "existingCanonicalReused": false,
+        "canReuseCanonical": false,
+        "canAutoAttachCanonical": false,
+        "canResearchEntity": false,
+        "blockReason": "NOT_A_COMPANY",
+        "providerCapabilitiesInvoked": [],
+        "providerCalls": 0,
+        "validationErrors": []
+      },
+      "providerCalls": 0
+    },
+    {
+      "id": "G",
+      "name": "PARENT_BRAND",
+      "passed": true,
+      "result": {
+        "status": "BLOCKED",
+        "company": null,
+        "projectCompany": null,
+        "identity": {
+          "companyLikeness": "AMBIGUOUS_COMPANY",
+          "identityState": "AMBIGUOUS",
+          "canonicalAttachAllowed": false,
+          "evidence": [],
+          "conflicts": [
+            "RELATED_ENTITY_CONFLICT"
+          ]
+        },
+        "matchBasis": "NONE",
+        "existingCanonicalReused": false,
+        "canReuseCanonical": false,
+        "canAutoAttachCanonical": false,
+        "canResearchEntity": false,
+        "blockReason": "AMBIGUOUS",
+        "providerCapabilitiesInvoked": [],
+        "providerCalls": 0,
+        "validationErrors": []
+      },
+      "providerCalls": 0
+    },
+    {
+      "id": "H",
+      "name": "CSV_STYLE_INPUT",
+      "passed": true,
+      "result": {
+        "status": "RESOLVED",
+        "company": {
+          "id": "3cd73d96-37d1-4cf8-9dab-db596e019783",
+          "canonicalName": "SolarWinds",
+          "domain": "solarwinds.com",
+          "website": "https://solarwinds.com",
+          "linkedinUrl": null,
+          "profileUrls": {},
+          "country": null,
+          "industry": null,
+          "employeeCount": null,
+          "employeeRange": null,
+          "description": null,
+          "createdAt": "2026-08-31T12:26:09.656Z",
+          "updatedAt": "2026-08-31T12:26:09.656Z"
+        },
+        "projectCompany": {
+          "id": "0c6e46fb-a2b6-4fe5-ba5d-80ce8266399c",
+          "projectId": "b4c8a95a-eb1c-4a86-89d6-62d72097d820",
+          "companyId": "3cd73d96-37d1-4cf8-9dab-db596e019783",
+          "status": "candidate",
+          "researchStatus": "complete",
+          "fitScore": 70,
+          "needScore": null,
+          "timingScore": null,
+          "relationshipScore": null,
+          "confidenceScore": null,
+          "opportunityState": null,
+          "relationshipStatus": "NONE",
+          "opportunityScore": null,
+          "opportunityAssessmentState": "WATCH",
+          "latestResearchAt": "2026-08-31T18:57:36.195Z",
+          "createdAt": "2026-08-31T12:26:09.656Z",
+          "updatedAt": "2026-09-01T07:29:09.912Z"
+        },
+        "identity": {
+          "companyLikeness": "LIKELY_COMPANY",
+          "identityState": "CONFIRMED",
+          "canonicalAttachAllowed": true,
+          "evidence": [
+            "EXACT_DOMAIN",
+            "EXISTING_PROJECT_LINK"
+          ],
+          "conflicts": []
+        },
+        "matchBasis": "EXACT_DOMAIN",
+        "existingCanonicalReused": true,
+        "canReuseCanonical": true,
+        "canAutoAttachCanonical": true,
+        "canResearchEntity": true,
+        "blockReason": null,
+        "providerCapabilitiesInvoked": [],
+        "providerCalls": 0,
+        "validationErrors": []
+      },
+      "providerCalls": 0
+    },
+    {
+      "id": "I",
+      "name": "MANUAL_COMPANY",
+      "passed": true,
+      "result": {
+        "status": "RESOLVED",
+        "company": {
+          "id": "3cd73d96-37d1-4cf8-9dab-db596e019783",
+          "canonicalName": "SolarWinds",
+          "domain": "solarwinds.com",
+          "website": "https://solarwinds.com",
+          "linkedinUrl": null,
+          "profileUrls": {},
+          "country": null,
+          "industry": null,
+          "employeeCount": null,
+          "employeeRange": null,
+          "description": null,
+          "createdAt": "2026-08-31T12:26:09.656Z",
+          "updatedAt": "2026-08-31T12:26:09.656Z"
+        },
+        "projectCompany": {
+          "id": "0c6e46fb-a2b6-4fe5-ba5d-80ce8266399c",
+          "projectId": "b4c8a95a-eb1c-4a86-89d6-62d72097d820",
+          "companyId": "3cd73d96-37d1-4cf8-9dab-db596e019783",
+          "status": "candidate",
+          "researchStatus": "complete",
+          "fitScore": 70,
+          "needScore": null,
+          "timingScore": null,
+          "relationshipScore": null,
+          "confidenceScore": null,
+          "opportunityState": null,
+          "relationshipStatus": "NONE",
+          "opportunityScore": null,
+          "opportunityAssessmentState": "WATCH",
+          "latestResearchAt": "2026-08-31T18:57:36.195Z",
+          "createdAt": "2026-08-31T12:26:09.656Z",
+          "updatedAt": "2026-09-01T07:29:09.912Z"
+        },
+        "identity": {
+          "companyLikeness": "LIKELY_COMPANY",
+          "identityState": "CONFIRMED",
+          "canonicalAttachAllowed": true,
+          "evidence": [
+            "EXACT_DOMAIN",
+            "EXISTING_PROJECT_LINK"
+          ],
+          "conflicts": []
+        },
+        "matchBasis": "EXACT_DOMAIN",
+        "existingCanonicalReused": true,
+        "canReuseCanonical": true,
+        "canAutoAttachCanonical": true,
+        "canResearchEntity": true,
+        "blockReason": null,
+        "providerCapabilitiesInvoked": [],
+        "providerCalls": 0,
+        "validationErrors": []
+      },
+      "providerCalls": 0
+    },
+    {
+      "id": "J",
+      "name": "FIND_MY_MARKET_REGRESSION",
+      "passed": true,
+      "providerCalls": 0,
+      "method": "Static production-router assertion; no provider invoked."
+    },
+    {
+      "id": "IDENTIFIER_CONFLICT",
+      "name": "WRONG_COMPANY_ID_NAME",
+      "passed": true,
+      "result": {
+        "status": "NEEDS_REVIEW",
+        "company": {
+          "id": "3cd73d96-37d1-4cf8-9dab-db596e019783",
+          "canonicalName": "SolarWinds",
+          "domain": "solarwinds.com",
+          "website": "https://solarwinds.com",
+          "linkedinUrl": null,
+          "profileUrls": {},
+          "country": null,
+          "industry": null,
+          "employeeCount": null,
+          "employeeRange": null,
+          "description": null,
+          "createdAt": "2026-08-31T12:26:09.656Z",
+          "updatedAt": "2026-08-31T12:26:09.656Z"
+        },
+        "projectCompany": {
+          "id": "0c6e46fb-a2b6-4fe5-ba5d-80ce8266399c",
+          "projectId": "b4c8a95a-eb1c-4a86-89d6-62d72097d820",
+          "companyId": "3cd73d96-37d1-4cf8-9dab-db596e019783",
+          "status": "candidate",
+          "researchStatus": "complete",
+          "fitScore": 70,
+          "needScore": null,
+          "timingScore": null,
+          "relationshipScore": null,
+          "confidenceScore": null,
+          "opportunityState": null,
+          "relationshipStatus": "NONE",
+          "opportunityScore": null,
+          "opportunityAssessmentState": "WATCH",
+          "latestResearchAt": "2026-08-31T18:57:36.195Z",
+          "createdAt": "2026-08-31T12:26:09.656Z",
+          "updatedAt": "2026-09-01T07:29:09.912Z"
+        },
+        "identity": {
+          "companyLikeness": "AMBIGUOUS_COMPANY",
+          "identityState": "WRONG_ENTITY",
+          "canonicalAttachAllowed": false,
+          "evidence": [],
+          "conflicts": [
+            "IDENTIFIER_CONFLICT"
+          ]
+        },
+        "matchBasis": "EXISTING_COMPANY_ID",
+        "existingCanonicalReused": false,
+        "canReuseCanonical": false,
+        "canAutoAttachCanonical": false,
+        "canResearchEntity": false,
+        "blockReason": "IDENTITY_NOT_RESEARCH_ELIGIBLE",
+        "providerCapabilitiesInvoked": [],
+        "providerCalls": 0,
+        "validationErrors": []
+      },
+      "providerCalls": 0
+    },
+    {
+      "id": "MANUAL_CONFLICT_GUARD",
+      "name": "MANUAL_CONSUMER_REQUIRES_SAFE_REUSE",
+      "passed": true,
+      "providerCalls": 0
+    },
+    {
+      "id": "CSV_CONFLICT_GUARD",
+      "name": "CSV_CONSUMER_REQUIRES_SAFE_REUSE",
+      "passed": true,
+      "providerCalls": 0
+    },
+    {
+      "id": "SHORT_NAME_AMBIGUITY",
+      "name": "GENERIC_SHORT_NAME_REMAINS_BLOCKED",
+      "passed": true,
+      "result": {
+        "status": "NEEDS_REVIEW",
+        "company": null,
+        "projectCompany": null,
+        "identity": {
+          "companyLikeness": "AMBIGUOUS_COMPANY",
+          "identityState": "AMBIGUOUS",
+          "canonicalAttachAllowed": false,
+          "evidence": [],
+          "conflicts": [
+            "MULTIPLE_PLAUSIBLE_COMPANIES"
+          ]
+        },
+        "matchBasis": "NONE",
+        "existingCanonicalReused": false,
+        "canReuseCanonical": false,
+        "canAutoAttachCanonical": false,
+        "canResearchEntity": false,
+        "blockReason": "MULTIPLE_PLAUSIBLE_COMPANIES",
+        "providerCapabilitiesInvoked": [],
+        "providerCalls": 0,
+        "validationErrors": []
+      },
+      "providerCalls": 0
+    }
+  ],
+  "passed": 14,
+  "failed": 0,
+  "safetyFixtures": {
+    "passed": true,
+    "rows": [
+      {
+        "company": "Digital Maelstrom",
+        "identityState": "PROBABLE",
+        "automaticAttach": false,
+        "providerCalls": 0,
+        "preservedSafeDecision": true
+      },
+      {
+        "company": "Mandiant",
+        "identityState": "PROBABLE",
+        "automaticAttach": false,
+        "providerCalls": 0,
+        "preservedSafeDecision": true
+      },
+      {
+        "company": "Managed Services - Monitoring 24/7",
+        "identityState": "NOT_A_COMPANY",
+        "automaticAttach": false,
+        "providerCalls": 0,
+        "preservedSafeDecision": true
+      },
+      {
+        "company": "Corsa",
+        "identityState": "PROBABLE",
+        "automaticAttach": false,
+        "providerCalls": 0,
+        "preservedSafeDecision": true
+      }
+    ]
+  },
+  "whoRegression": {
+    "passed": true,
+    "population": 12,
+    "metrics": {
+      "confirmed": 8,
+      "probable": 3,
+      "safeAmbiguous": 0,
+      "safeUnresolved": 0,
+      "notACompany": 1,
+      "wrongIdentity": 0,
+      "wrongAutomaticAttach": 0,
+      "autoAttaches": 8,
+      "correctAutoAttaches": 8,
+      "identityPrecisionAmongAutoAttaches": 1,
+      "adjudicableLegitimateCompanies": 11,
+      "safelyResolvedLegitimateCompanies": 11,
+      "safeResolutionCoverage": 1,
+      "identityRegressions": 0,
+      "icpRegressions": 0
+    }
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "generatedAt": "2026-09-01T10:02:46.138Z",
+  "before": {
+    "WEB_SEARCH": 959,
+    "COMPANY_FIRMOGRAPHICS": 181,
+    "COMPANY_DISCOVERY": 123,
+    "WEBSITE_CRAWL": 20
+  },
+  "after": {
+    "WEB_SEARCH": 959,
+    "COMPANY_FIRMOGRAPHICS": 181,
+    "COMPANY_DISCOVERY": 123,
+    "WEBSITE_CRAWL": 20
+  },
+  "deltas": {
+    "COMPANY_DISCOVERY": 0,
+    "COMPANY_FIRMOGRAPHICS": 0,
+    "WEBSITE_CRAWL": 0,
+    "WEB_SEARCH": 0
+  },
+  "COMPANY_DISCOVERY": 0,
+  "otherIdentityProviderCalls": 0,
+  "totalProviderCalls": 0,
+  "explanations": [],
+  "capabilities": {
+    "COMPANY_DISCOVERY": {
+      "calls": 0,
+      "reason": "Not permitted for known-company resolution."
+    },
+    "COMPANY_PROFILE_RESOLUTION": {
+      "calls": 0,
+      "reason": "Persisted verified profile reused."
+    },
+    "COMPANY_LOOKUP": {
+      "calls": 0,
+      "reason": "Existing canonical state satisfied all cases."
+    },
+    "COMPANY_FIRMOGRAPHICS": {
+      "calls": 0,
+      "reason": "Existing canonical state satisfied all cases."
+    }
+  },
+  "cachedOrReusedResolutions": 10,
+  "estimatedCost": 0,
+  "actualKnownCost": 0,
+  "unknownCost": 0
+}

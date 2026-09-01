@@ -1,0 +1,28 @@
+{
+  "knownCompanyEntryPoint": "resolveKnownCompany",
+  "productionConsumers": [
+    "manual project-company creation",
+    "CSV project-company import commit",
+    "frozen acceptance-control provisioning"
+  ],
+  "resolverPayloadProjection": "canonicalName only from frozen control.company",
+  "marketDiscoverySeparation": "Known-company resolver reports providerCapabilitiesInvoked=[] and providerCalls=0.",
+  "findMyMarket": {
+    "id": "J",
+    "name": "FIND_MY_MARKET_REGRESSION",
+    "passed": true,
+    "providerCalls": 0,
+    "method": "Static production-router assertion; no provider invoked."
+  },
+  "forbiddenStages": [
+    "event retrieval",
+    "research planning/execution",
+    "facts",
+    "signals",
+    "WHEN",
+    "WHY",
+    "opportunity",
+    "NBA",
+    "contacts"
+  ]
+}
