@@ -1,4 +1,3 @@
-import { createHash } from "node:crypto";
 import { and, desc, eq, sql } from "drizzle-orm";
 import { z } from "zod/v4";
 import { openai } from "@workspace/integrations-openai-ai-server";
@@ -6,6 +5,7 @@ import { companiesTable, companyProvenanceTable, db } from "@workspace/db";
 import { CANONICAL_INDUSTRY_IDS, type BusinessModel, type CanonicalCompanyProfile } from "./canonical-company-profile";
 import { type BuyerRole, type BuyerRoleAssessment } from "./buyer-role-resolution";
 import { resolveProjectSellerContext, type SellerContext } from "./seller-context";
+import { companySemanticFingerprint } from "./company-semantic-fingerprint";
 
 export const COMPANY_UNDERSTANDING_MODEL = "gpt-5-mini";
 export const COMPANY_UNDERSTANDING_PROMPT_VERSION = "fix08-company-understanding-v4";
@@ -96,13 +96,23 @@ export function buildCandidateEvidence(_profile: CanonicalCompanyProfile, proven
   return seed.filter((item, index, all) => item.text.length >= 3 && all.findIndex((other) => other.id === item.id) === index).slice(0, 25);
 }
 
-export function semanticFingerprint(input: { projectId: string; companyId: string; sellerContextFingerprint: string; evidence: CandidateEvidence[]; model?: string; promptVersion?: string; normalizationVersion?: string }): string {
-  return createHash("sha256").update(JSON.stringify({
-    projectId: input.projectId, companyId: input.companyId, sellerContextFingerprint: input.sellerContextFingerprint,
-    evidence: input.evidence.map(({ id }) => id).sort(),
-    prompt: input.promptVersion ?? COMPANY_UNDERSTANDING_PROMPT_VERSION, model: input.model ?? COMPANY_UNDERSTANDING_MODEL,
-    normalization: input.normalizationVersion ?? COMPANY_UNDERSTANDING_NORMALIZATION_VERSION,
-  })).digest("hex");
+export function semanticFingerprint(input: {
+  projectId: string;
+  companyId: string;
+  sellerContextFingerprint: string;
+  canonicalName: string;
+  canonicalDomain: string | null;
+  evidence: CandidateEvidence[];
+  model?: string;
+  promptVersion?: string;
+  normalizationVersion?: string;
+}): string {
+  return companySemanticFingerprint({
+    ...input,
+    promptVersion: input.promptVersion ?? COMPANY_UNDERSTANDING_PROMPT_VERSION,
+    model: input.model ?? COMPANY_UNDERSTANDING_MODEL,
+    normalizationVersion: input.normalizationVersion ?? COMPANY_UNDERSTANDING_NORMALIZATION_VERSION,
+  });
 }
 
 export function validateSemanticOutput(value: unknown, evidence: CandidateEvidence[], sellerContextFingerprint: string, returnedFingerprint?: string): { ok: true; output: CompanySemanticOutput } | { ok: false; reason: UnknownReasonCode } {
@@ -121,9 +131,11 @@ function unknown(reason: UnknownReasonCode, seller: SellerContext): BuyerRoleAss
 
 async function persistNoCallDecision(input: {
   organizationId: string; projectId: string; companyId: string; seller: SellerContext;
+  profile: CanonicalCompanyProfile;
   evidence: CandidateEvidence[]; reason: UnknownReasonCode;
 }, executor: typeof db | Parameters<Parameters<typeof db.transaction>[0]>[0] = db) {
-  const fingerprint = semanticFingerprint({ projectId: input.projectId, companyId: input.companyId, sellerContextFingerprint: input.seller.fingerprint, evidence: input.evidence });
+  const fingerprint = semanticFingerprint({ projectId: input.projectId, companyId: input.companyId, sellerContextFingerprint: input.seller.fingerprint,
+    canonicalName: input.profile.canonicalName, canonicalDomain: input.profile.domain, evidence: input.evidence });
   const rows = await executor.select().from(companyProvenanceTable).where(and(
     eq(companyProvenanceTable.projectId, input.projectId), eq(companyProvenanceTable.companyId, input.companyId),
     eq(companyProvenanceTable.sourceType, "FIX08_COMPANY_UNDERSTANDING"),
@@ -156,24 +168,28 @@ export async function assessCompanySemantically(input: { organizationId: string;
   const { context: seller, sufficiency } = resolved;
   if (!input.identitySafe) {
     const evidence: CandidateEvidence[] = [];
-    const fp = semanticFingerprint({ projectId: input.projectId, companyId: input.companyId, sellerContextFingerprint: seller.fingerprint, evidence });
+    const fp = semanticFingerprint({ projectId: input.projectId, companyId: input.companyId, sellerContextFingerprint: seller.fingerprint,
+      canonicalName: input.profile.canonicalName, canonicalDomain: input.profile.domain, evidence });
     const decision = await withSemanticFingerprintLock(fp, (tx) => persistNoCallDecision({ ...input, seller, evidence, reason: "IDENTITY_INSUFFICIENT" }, tx));
     return { assessment: unknown("IDENTITY_INSUFFICIENT", seller), output: null, cacheHit: decision.cacheHit, llmInvoked: false, unknownReason: "IDENTITY_INSUFFICIENT", usage: null };
   }
   if (!sufficiency.sufficient) {
     const evidence: CandidateEvidence[] = [];
-    const fp = semanticFingerprint({ projectId: input.projectId, companyId: input.companyId, sellerContextFingerprint: seller.fingerprint, evidence });
+    const fp = semanticFingerprint({ projectId: input.projectId, companyId: input.companyId, sellerContextFingerprint: seller.fingerprint,
+      canonicalName: input.profile.canonicalName, canonicalDomain: input.profile.domain, evidence });
     const decision = await withSemanticFingerprintLock(fp, (tx) => persistNoCallDecision({ ...input, seller, evidence, reason: "SELLER_CONTEXT_INSUFFICIENT" }, tx));
     return { assessment: unknown("SELLER_CONTEXT_INSUFFICIENT", seller), output: null, cacheHit: decision.cacheHit, llmInvoked: false, unknownReason: "SELLER_CONTEXT_INSUFFICIENT", usage: null };
   }
   const provenance = await db.select().from(companyProvenanceTable).where(and(eq(companyProvenanceTable.projectId, input.projectId), eq(companyProvenanceTable.companyId, input.companyId)));
   const evidence = buildCandidateEvidence(input.profile, provenance);
   if (!evidence.length) {
-    const fp = semanticFingerprint({ projectId: input.projectId, companyId: input.companyId, sellerContextFingerprint: seller.fingerprint, evidence });
+    const fp = semanticFingerprint({ projectId: input.projectId, companyId: input.companyId, sellerContextFingerprint: seller.fingerprint,
+      canonicalName: input.profile.canonicalName, canonicalDomain: input.profile.domain, evidence });
     const decision = await withSemanticFingerprintLock(fp, (tx) => persistNoCallDecision({ ...input, seller, evidence, reason: "COMPANY_EVIDENCE_INSUFFICIENT" }, tx));
     return { assessment: unknown("COMPANY_EVIDENCE_INSUFFICIENT", seller), output: null, cacheHit: decision.cacheHit, llmInvoked: false, unknownReason: "COMPANY_EVIDENCE_INSUFFICIENT", usage: null };
   }
-  const fingerprint = semanticFingerprint({ projectId: input.projectId, companyId: input.companyId, sellerContextFingerprint: seller.fingerprint, evidence });
+  const fingerprint = semanticFingerprint({ projectId: input.projectId, companyId: input.companyId, sellerContextFingerprint: seller.fingerprint,
+    canonicalName: input.profile.canonicalName, canonicalDomain: input.profile.domain, evidence });
   return withSemanticFingerprintLock(fingerprint, async (tx) => {
   const lockedRows = await tx.select().from(companyProvenanceTable).where(and(eq(companyProvenanceTable.projectId, input.projectId), eq(companyProvenanceTable.companyId, input.companyId))).orderBy(desc(companyProvenanceTable.createdAt));
   const exactRows = lockedRows.filter((row) => row.sourceType === "FIX08_COMPANY_UNDERSTANDING"

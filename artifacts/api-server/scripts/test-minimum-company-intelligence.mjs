@@ -36,4 +36,47 @@ const conflicting = lib.deriveIdentityPermissions({ domain: "buyer.example", pro
 }] });
 assert.equal(conflicting.trustLevel, "UNSAFE");
 assert.equal(conflicting.canPublicProfileResearch, false);
+const profile = {
+  canonicalName: "Buyer Co",
+  domain: "buyer.example",
+  primaryBusinessDescription: "Makes industrial control equipment.",
+  canonicalIndustry: "MANUFACTURING",
+};
+const legacyAssessment = {
+  buyerRole: "POTENTIAL_BUYER",
+  confidence: "HIGH",
+  reason: "Operating manufacturer",
+  sellerOffering: "Managed SOC",
+  supportingInputs: [{ field: "description", excerpt: "industrial control equipment", source: "canonical_company" }],
+  assessedAt: "2026-09-02T00:00:00.000Z",
+  classifierVersion: "buyer-role-resolution-06a",
+};
+assert.equal(lib.assessmentFreshness({
+  assessment: legacyAssessment,
+  buyerRole: "POTENTIAL_BUYER",
+  fingerprint: "current",
+  sellerOffering: "Managed SOC",
+  profile,
+}), "STALE", "legacy role without an exact context fingerprint must be reassessed");
+assert.equal(lib.assessmentFreshness({
+  assessment: { ...legacyAssessment, controlPlaneFingerprint: "current", controlPlaneVersion: lib.COMPANY_INTELLIGENCE_CONTROL_PLANE_VERSION },
+  buyerRole: "POTENTIAL_BUYER",
+  fingerprint: "current",
+  sellerOffering: "Managed SOC",
+  profile,
+}), "FRESH", "exact current fingerprint is reused");
+assert.equal(lib.assessmentFreshness({
+  assessment: legacyAssessment,
+  buyerRole: "POTENTIAL_BUYER",
+  fingerprint: "changed",
+  sellerOffering: "AEO Platform",
+  profile,
+}), "STALE", "seller-context changes invalidate the role");
+assert.equal(lib.assessmentFreshness({
+  assessment: { ...legacyAssessment, buyerRole: "UNKNOWN", controlPlaneFingerprint: "current", controlPlaneVersion: lib.COMPANY_INTELLIGENCE_CONTROL_PLANE_VERSION },
+  buyerRole: "UNKNOWN",
+  fingerprint: "current",
+  sellerOffering: "Managed SOC",
+  profile,
+}), "STALE", "UNKNOWN is unresolved state, never a fresh terminal role");
 console.log("PASS minimum-company-intelligence policy, no-call, bounds, and role-stop coverage");

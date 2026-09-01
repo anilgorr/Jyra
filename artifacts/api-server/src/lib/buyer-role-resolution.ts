@@ -13,6 +13,8 @@ export type BuyerRoleAssessment = {
   supportingInputs: Array<{ field: "name" | "industry" | "description" | "website_profile"; excerpt: string; source: string }>;
   assessedAt: string;
   classifierVersion: "buyer-role-resolution-06a";
+  controlPlaneFingerprint?: string;
+  controlPlaneVersion?: string;
 };
 
 export type BuyerRoleAssessmentInput = {

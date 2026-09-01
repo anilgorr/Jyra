@@ -68,6 +68,7 @@ router.post("/projects/:projectId/discovery", requireAuth, asyncRoute(async (req
     userId,
     router: new ProviderRouter(),
     limit: body.data.limit,
+    orchestrateAcceptedCandidates: true,
   });
   res.status(result.status === "blocked" ? 424 : 200).json(result);
 }));

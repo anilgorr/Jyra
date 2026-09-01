@@ -66,6 +66,26 @@ const recommendation = (overrides = {}) => ({
 });
 
 const fp = (fn, value) => fn(value).fingerprint;
+const companySemanticInput = (overrides = {}) => ({
+  projectId: "project",
+  companyId: "company",
+  sellerContextFingerprint: "seller",
+  canonicalName: "Acme Corporation",
+  canonicalDomain: "acme.example",
+  evidence: [{ id: "evidence-a", sourceType: "JYRA_DISCOVERY", sourceUrl: "https://acme.example", text: "Industrial manufacturer" }],
+  ...overrides,
+});
+
+assert.notEqual(
+  h.companySemanticFingerprint(companySemanticInput()),
+  h.companySemanticFingerprint(companySemanticInput({ canonicalName: "Other Corporation" })),
+  "canonical-name changes must invalidate semantic reuse",
+);
+assert.notEqual(
+  h.companySemanticFingerprint(companySemanticInput()),
+  h.companySemanticFingerprint(companySemanticInput({ canonicalDomain: "other.example" })),
+  "canonical-domain changes must invalidate semantic reuse",
+);
 
 // Shared canonicalization is recursive, stable, and normalizes nullable/date/enum values.
 assert.deepEqual(

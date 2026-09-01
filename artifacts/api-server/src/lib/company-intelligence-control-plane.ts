@@ -1,13 +1,22 @@
-import { and, eq } from "drizzle-orm";
-import { companiesTable, db, projectCompaniesTable } from "@workspace/db";
+import { createHash } from "node:crypto";
+import { and, desc, eq } from "drizzle-orm";
+import { companiesTable, companyProvenanceTable, db, projectCompaniesTable } from "@workspace/db";
 import { getCanonicalCompanyProfile } from "./canonical-company-profile";
-import { assessCompanySemantically } from "./company-semantic-assessment";
+import {
+  assessCompanySemantically,
+  buildCandidateEvidence,
+  COMPANY_UNDERSTANDING_MODEL,
+  COMPANY_UNDERSTANDING_NORMALIZATION_VERSION,
+  COMPANY_UNDERSTANDING_PROMPT_VERSION,
+  semanticFingerprint,
+} from "./company-semantic-assessment";
 import { qualifyProjectCompanyForWho } from "./company-discovery";
 import { ensureMinimumCompanyIntelligence, type MinimumCompanyIntelligence } from "./minimum-company-intelligence";
 import type { ProviderOperations } from "./provider-contract";
 import { resolveProjectSellerContext } from "./seller-context";
+import type { BuyerRoleAssessment } from "./buyer-role-resolution";
 
-export const COMPANY_INTELLIGENCE_CONTROL_PLANE_VERSION = "architecture-v1-control-plane-v1";
+export const COMPANY_INTELLIGENCE_CONTROL_PLANE_VERSION = "architecture-v1-control-plane-v2";
 
 export type CompanyIntelligenceReasonCode =
   | "READY_FOR_SIGNAL_RESEARCH"
@@ -41,6 +50,9 @@ export type CompanyIntelligenceControlResult = {
     cacheHit: boolean;
     llmInvoked: boolean;
     unknownReason: string | null;
+    reusedPersistedAssessment: boolean;
+    output: unknown;
+    usage: Record<string, unknown> | null;
   } | null;
 };
 
@@ -48,6 +60,50 @@ function result(
   value: Omit<CompanyIntelligenceControlResult, "version">,
 ): CompanyIntelligenceControlResult {
   return { version: COMPANY_INTELLIGENCE_CONTROL_PLANE_VERSION, ...value };
+}
+
+function controlPlaneFingerprint(input: {
+  projectId: string;
+  companyId: string;
+  sellerContextFingerprint: string;
+  semanticInputFingerprint: string;
+  profile: Awaited<ReturnType<typeof getCanonicalCompanyProfile>>;
+}): string {
+  return createHash("sha256").update(JSON.stringify({
+    version: COMPANY_INTELLIGENCE_CONTROL_PLANE_VERSION,
+    projectId: input.projectId,
+    companyId: input.companyId,
+    sellerContextFingerprint: input.sellerContextFingerprint,
+    semanticInputFingerprint: input.semanticInputFingerprint,
+    profile: {
+      canonicalName: input.profile.canonicalName,
+      domain: input.profile.domain,
+      primaryBusinessDescription: input.profile.primaryBusinessDescription,
+      businessModel: input.profile.businessModel,
+      canonicalIndustry: input.profile.canonicalIndustry,
+      country: input.profile.country,
+      employeesExact: input.profile.employeesExact,
+      employeesMin: input.profile.employeesMin,
+      employeesMax: input.profile.employeesMax,
+      productsServices: input.profile.productsServices,
+    },
+  })).digest("hex");
+}
+
+export function assessmentFreshness(input: {
+  assessment: BuyerRoleAssessment | null;
+  buyerRole: string;
+  fingerprint: string;
+  sellerOffering: string;
+  profile: Awaited<ReturnType<typeof getCanonicalCompanyProfile>>;
+  exactCachedSemanticRole?: string | null;
+}): "FRESH" | "CACHED_SEMANTIC_MATCH" | "STALE" {
+  if (input.buyerRole === "UNKNOWN" || input.assessment?.buyerRole === "UNKNOWN") return "STALE";
+  if (input.assessment?.controlPlaneVersion === COMPANY_INTELLIGENCE_CONTROL_PLANE_VERSION &&
+    input.assessment.controlPlaneFingerprint === input.fingerprint &&
+    input.assessment.buyerRole === input.buyerRole) return "FRESH";
+  if (input.assessment && input.exactCachedSemanticRole === input.buyerRole) return "CACHED_SEMANTIC_MATCH";
+  return "STALE";
 }
 
 /** Authoritative deterministic prerequisite control plane for company
@@ -128,26 +184,83 @@ export async function orchestrateCompanyIntelligence(input: {
     .limit(1);
   if (!current) throw new Error("Company disappeared during intelligence orchestration");
   const profile = await getCanonicalCompanyProfile(input.projectId, current.company);
-  const semantic = await assessCompanySemantically({
-    organizationId: input.organizationId,
+  const provenance = await db.select().from(companyProvenanceTable)
+    .where(and(
+      eq(companyProvenanceTable.projectId, input.projectId),
+      eq(companyProvenanceTable.companyId, input.companyId),
+    ))
+    .orderBy(desc(companyProvenanceTable.createdAt));
+  const evidence = buildCandidateEvidence(profile, provenance);
+  const semanticInputFingerprint = semanticFingerprint({
     projectId: input.projectId,
     companyId: input.companyId,
-    profile,
-    identitySafe: minimum.identityPermissions.canRunCompanyUnderstanding,
+    sellerContextFingerprint: seller.context.fingerprint,
+    canonicalName: profile.canonicalName,
+    canonicalDomain: profile.domain,
+    evidence,
   });
+  const fingerprint = controlPlaneFingerprint({
+    projectId: input.projectId,
+    companyId: input.companyId,
+    sellerContextFingerprint: seller.context.fingerprint,
+    semanticInputFingerprint,
+    profile,
+  });
+  const exactSemantic = provenance.find((row) =>
+    row.sourceType === "FIX08_COMPANY_UNDERSTANDING" &&
+    row.sourceLabel === COMPANY_UNDERSTANDING_MODEL &&
+    row.payload.fingerprint === semanticInputFingerprint &&
+    row.payload.promptVersion === COMPANY_UNDERSTANDING_PROMPT_VERSION &&
+    row.payload.normalizationVersion === COMPANY_UNDERSTANDING_NORMALIZATION_VERSION);
+  const exactCachedSemanticRole = exactSemantic?.payload.validatedOutput &&
+    typeof exactSemantic.payload.validatedOutput === "object"
+    ? String((exactSemantic.payload.validatedOutput as Record<string, unknown>).commercial_role ?? "")
+    : null;
+  const freshness = assessmentFreshness({
+    assessment: current.membership.buyerRoleAssessment,
+    buyerRole: current.membership.buyerRole,
+    fingerprint,
+    sellerOffering: seller.context.offeringName ?? "",
+    profile,
+    exactCachedSemanticRole,
+  });
+  const semantic = freshness === "STALE"
+    ? await assessCompanySemantically({
+        organizationId: input.organizationId,
+        projectId: input.projectId,
+        companyId: input.companyId,
+        profile,
+        identitySafe: minimum.identityPermissions.canRunCompanyUnderstanding,
+      })
+    : {
+        assessment: current.membership.buyerRoleAssessment!,
+        output: exactSemantic?.payload.validatedOutput as never ?? null,
+        cacheHit: true,
+        llmInvoked: false,
+        unknownReason: null,
+        usage: null,
+      };
+  const stampedAssessment: BuyerRoleAssessment = {
+    ...semantic.assessment,
+    controlPlaneFingerprint: fingerprint,
+    controlPlaneVersion: COMPANY_INTELLIGENCE_CONTROL_PLANE_VERSION,
+  };
   await db.update(projectCompaniesTable).set({
-    buyerRole: semantic.assessment.buyerRole,
-    buyerRoleAssessment: semantic.assessment,
+    buyerRole: stampedAssessment.buyerRole,
+    buyerRoleAssessment: stampedAssessment,
     updatedAt: now,
   }).where(and(
     eq(projectCompaniesTable.id, current.membership.id),
     eq(projectCompaniesTable.projectId, input.projectId),
   ));
-  const buyerRole = semantic.assessment.buyerRole;
+  const buyerRole = stampedAssessment.buyerRole;
   const semanticSummary = {
     cacheHit: semantic.cacheHit,
     llmInvoked: semantic.llmInvoked,
     unknownReason: semantic.unknownReason,
+    reusedPersistedAssessment: freshness !== "STALE",
+    output: semantic.output,
+    usage: semantic.usage,
   };
   if (buyerRole === "UNKNOWN") {
     return result({
@@ -184,7 +297,7 @@ export async function orchestrateCompanyIntelligence(input: {
       semantic: semanticSummary,
     });
   }
-  const who = await qualifyProjectCompanyForWho({ projectId: input.projectId, company: current.company });
+  const who = await qualifyProjectCompanyForWho({ projectId: input.projectId, company: current.company, buyerRole });
   if (!who.eligible) {
     const missing = who.qualification === "INSUFFICIENT_DATA";
     return result({

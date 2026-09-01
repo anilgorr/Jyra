@@ -31,14 +31,14 @@ import { resolveCompanyProfileWithRouter } from "./company-profile-resolution";
 import { assessBuyerRole, sameBuyerRoleAssessment, trustedCanonicalDomainDescription, type BuyerRoleAssessment } from "./buyer-role-resolution";
 import { getCanonicalCompanyProfile } from "./canonical-company-profile";
 import { resolveProjectSellerContext, type ProjectSellerContext } from "./seller-context";
-import { assessCompanySemantically } from "./company-semantic-assessment";
 
 type DiscoveryInput = {
   organizationId: string;
   projectId: string;
   userId: string;
   router: Pick<ProviderOperations, "discoverCompanies" | "lookupCompany"> &
-    Partial<Pick<ProviderOperations, "searchWeb">>;
+    Partial<Pick<ProviderOperations, "searchWeb" | "enrichCompany">>;
+  orchestrateAcceptedCandidates?: boolean;
   limit?: number;
   maxProviderCalls?: number;
   queryOverrides?: string[];
@@ -76,6 +76,11 @@ export type DiscoveryCandidateReport = {
   } | null;
   relationshipAssertions: CompanyRelationshipAssertion[];
   buyerRole: "POTENTIAL_BUYER" | "SELLER_COMPETITOR" | "ADJACENT_VENDOR" | "PARTNER_POSSIBLE" | "UNKNOWN";
+  intelligence: {
+    status: "SUCCESS" | "PARTIAL" | "INSUFFICIENT" | "BLOCKED";
+    reasonCode: string;
+    nextRecommendedCapability: string | null;
+  } | null;
 };
 
 export type DiscoveryResult = {
@@ -382,41 +387,22 @@ export async function buildDiscoveryPlan(projectId: string, resolved?: ProjectSe
 /** Reassesses existing project memberships without discovery or provider calls.
  * Re-running with unchanged canonical/profile inputs is idempotent apart from
  * the explicit assessment timestamp. */
-export async function recomputeProjectBuyerRoles(input: { projectId: string; companyIds?: string[]; now?: Date }): Promise<{ assessed: number; changed: number }> {
-  const now = input.now ?? new Date();
-  const plan = await buildDiscoveryPlan(input.projectId);
-  const rows = await db.select({ membership: projectCompaniesTable, company: companiesTable })
-    .from(projectCompaniesTable)
-    .innerJoin(companiesTable, eq(projectCompaniesTable.companyId, companiesTable.id))
-    .where(input.companyIds?.length
-      ? and(eq(projectCompaniesTable.projectId, input.projectId), inArray(projectCompaniesTable.companyId, input.companyIds))
-      : eq(projectCompaniesTable.projectId, input.projectId));
-  let changed = 0;
-  for (const row of rows) {
-    const profile = await getCanonicalCompanyProfile(input.projectId, row.company);
-    const normalized = normalizeCompanyInput({
-      canonicalName: profile.canonicalName, domain: profile.domain, website: profile.website,
-      linkedinUrl: profile.linkedinCompanyUrl, profileUrls: profile.profileUrls, country: profile.country,
-      industry: profile.canonicalIndustry, employeeCount: profile.employeesExact,
-      employeeRange: profile.employeesMin !== null && profile.employeesMax !== null ? `${profile.employeesMin}-${profile.employeesMax}` : null,
-      description: profile.primaryBusinessDescription,
-    }).value;
-    if (!normalized) continue;
-    // Preserve an identical assessment verbatim: recomputation is idempotent
-    // and does not manufacture a new timestamp when no input changed.
-    const previous = row.membership.buyerRoleAssessment;
-    const stableAssessment = qualifyCandidate(normalized, plan.strategy, null, profile.primaryBusinessDescription ? { text: profile.primaryBusinessDescription, source: "canonical_company_profile" } : null);
-    const same = sameBuyerRoleAssessment(previous, stableAssessment.buyerRoleAssessment);
-    if (same && row.membership.buyerRole === stableAssessment.buyerRole) continue;
-    const assessment = stableAssessment;
-    if (row.membership.buyerRole !== assessment.buyerRole) changed += 1;
-    await db.update(projectCompaniesTable).set({
-      buyerRole: assessment.buyerRole,
-      buyerRoleAssessment: assessment.buyerRoleAssessment,
-      updatedAt: now,
-    }).where(eq(projectCompaniesTable.id, row.membership.id));
-  }
-  return { assessed: rows.length, changed };
+export async function recomputeProjectBuyerRoles(input: {
+  projectId: string;
+  companyIds?: string[];
+  now?: Date;
+  router?: Pick<ProviderOperations, "searchWeb" | "enrichCompany">;
+}): Promise<{ assessed: number; changed: number }> {
+  const context = await resolveProjectSellerContext(input.projectId);
+  if (!context.organizationId) throw new Error("PROJECT_NOT_FOUND");
+  const outcome = await reassessProjectCompanyRolesSemantically({
+    organizationId: context.organizationId,
+    projectId: input.projectId,
+    companyIds: input.companyIds,
+    now: input.now,
+    router: input.router,
+  });
+  return { assessed: outcome.assessed, changed: outcome.changed };
 }
 
 /** Fix08 project-relative semantic reassessment. It does not fetch profiles,
@@ -427,10 +413,10 @@ export async function reassessProjectCompanyRolesSemantically(input: {
   projectId: string;
   companyIds?: string[];
   now?: Date;
+  router?: Pick<ProviderOperations, "searchWeb" | "enrichCompany">;
 }): Promise<{ assessed: number; changed: number; cacheHits: number; outcomes: Array<{ companyId: string; llmInvoked: boolean; modelInvoked: boolean; cacheHit: boolean; unknownReason: string | null; output: unknown; usage: Record<string, unknown> | null }> }> {
   const projectContext = await resolveProjectSellerContext(input.projectId, input.organizationId);
   if (projectContext.organizationId !== input.organizationId) throw new Error("PROJECT_ORGANIZATION_MISMATCH");
-  const now = input.now ?? new Date();
   const rows = await db.select({ membership: projectCompaniesTable, company: companiesTable })
     .from(projectCompaniesTable).innerJoin(companiesTable, eq(projectCompaniesTable.companyId, companiesTable.id))
     .where(input.companyIds?.length
@@ -438,18 +424,30 @@ export async function reassessProjectCompanyRolesSemantically(input: {
       : eq(projectCompaniesTable.projectId, input.projectId));
   let changed = 0, cacheHits = 0;
   const outcomes: Array<{ companyId: string; llmInvoked: boolean; modelInvoked: boolean; cacheHit: boolean; unknownReason: string | null; output: unknown; usage: Record<string, unknown> | null }> = [];
+  const [{ orchestrateCompanyIntelligence }, { ProviderRouter }] = await Promise.all([
+    import("./company-intelligence-control-plane"),
+    import("./provider-router"),
+  ]);
+  const router = input.router ?? new ProviderRouter();
   for (const row of rows) {
-    const profile = await getCanonicalCompanyProfile(input.projectId, row.company);
-    const identitySafe = Boolean(row.company.domain) && await hasTrustedIdentityProvenance(row.company.id, row.company.domain!);
-    const result = await assessCompanySemantically({
-      organizationId: input.organizationId, projectId: input.projectId, companyId: row.company.id, profile, identitySafe,
+    const result = await orchestrateCompanyIntelligence({
+      organizationId: input.organizationId,
+      projectId: input.projectId,
+      companyId: row.company.id,
+      router,
+      now: input.now,
     });
-    if (result.cacheHit) cacheHits += 1;
-    outcomes.push({ companyId: row.company.id, llmInvoked: result.llmInvoked, modelInvoked: result.llmInvoked, cacheHit: result.cacheHit, unknownReason: result.unknownReason, output: result.output, usage: result.usage });
-    if (row.membership.buyerRole === result.assessment.buyerRole && sameBuyerRoleAssessment(row.membership.buyerRoleAssessment, result.assessment)) continue;
-    if (row.membership.buyerRole !== result.assessment.buyerRole) changed += 1;
-    await db.update(projectCompaniesTable).set({ buyerRole: result.assessment.buyerRole, buyerRoleAssessment: result.assessment, updatedAt: now })
-      .where(and(eq(projectCompaniesTable.id, row.membership.id), eq(projectCompaniesTable.projectId, input.projectId)));
+    if (result.semantic?.cacheHit) cacheHits += 1;
+    outcomes.push({
+      companyId: row.company.id,
+      llmInvoked: result.semantic?.llmInvoked ?? false,
+      modelInvoked: result.semantic?.llmInvoked ?? false,
+      cacheHit: result.semantic?.cacheHit ?? false,
+      unknownReason: result.semantic?.unknownReason ?? null,
+      output: result.semantic?.output ?? null,
+      usage: result.semantic?.usage ?? null,
+    });
+    if (row.membership.buyerRole !== result.buyerRole) changed += 1;
   }
   return { assessed: rows.length, changed, cacheHits, outcomes };
 }
@@ -651,6 +649,7 @@ function qualifyCandidate(
 export async function qualifyProjectCompanyForWho(input: {
   projectId: string;
   company: typeof companiesTable.$inferSelect;
+  buyerRole?: DiscoveryCandidateReport["buyerRole"];
 }): Promise<{ eligible: boolean; qualification: DiscoveryQualification }> {
   const plan = await buildDiscoveryPlan(input.projectId);
   const profile = await getCanonicalCompanyProfile(input.projectId, input.company);
@@ -665,7 +664,11 @@ export async function qualifyProjectCompanyForWho(input: {
   if (!normalized) return { eligible: false, qualification: "INSUFFICIENT_DATA" };
   const assessment = qualifyCandidate(normalized, plan.strategy, null,
     profile.primaryBusinessDescription ? { text: profile.primaryBusinessDescription, source: "canonical_company_profile" } : null);
-  return { eligible: isBuyerEvaluable(assessment) && assessment.classification !== "LIKELY_NOT_FIT", qualification: assessment.classification };
+  const buyerRole = input.buyerRole ?? assessment.buyerRole;
+  return {
+    eligible: buyerRole === "POTENTIAL_BUYER" && assessment.classification !== "LIKELY_NOT_FIT",
+    qualification: assessment.classification,
+  };
 }
 
 function researchPriority(assessment: CandidateAssessment, evidenceCount: number): number {
@@ -720,6 +723,7 @@ function candidateReport(
     } : null,
     relationshipAssertions: profileResolution?.relationships ?? [],
     buyerRole,
+    intelligence: null,
   };
 }
 
@@ -1353,6 +1357,32 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
         null,
         assessment.buyerRole,
       ));
+    }
+  }
+
+  if (input.orchestrateAcceptedCandidates) {
+    if (!input.router.searchWeb || !input.router.enrichCompany) {
+      throw new Error("COMPANY_INTELLIGENCE_CAPABILITIES_UNAVAILABLE");
+    }
+    const { orchestrateCompanyIntelligence } = await import("./company-intelligence-control-plane");
+    for (const report of reports) {
+      if (!report.companyId || report.existingOrNew === "NEEDS_REVIEW") continue;
+      const intelligence = await orchestrateCompanyIntelligence({
+        organizationId: input.organizationId,
+        projectId: input.projectId,
+        companyId: report.companyId,
+        router: {
+          searchWeb: input.router.searchWeb,
+          enrichCompany: input.router.enrichCompany,
+        },
+        now,
+      });
+      report.buyerRole = intelligence.buyerRole as DiscoveryCandidateReport["buyerRole"];
+      report.intelligence = {
+        status: intelligence.status,
+        reasonCode: intelligence.reasonCode,
+        nextRecommendedCapability: intelligence.nextRecommendedCapability,
+      };
     }
   }
 

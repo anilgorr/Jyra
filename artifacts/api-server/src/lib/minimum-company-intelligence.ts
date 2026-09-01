@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { and, desc, eq } from "drizzle-orm";
+import { and, desc, eq, sql } from "drizzle-orm";
 import { companiesTable, companyProvenanceTable, db, projectCompaniesTable } from "@workspace/db";
 import type { ProviderOperations } from "./provider-contract";
 import { getCanonicalCompanyProfile } from "./canonical-company-profile";
@@ -55,7 +55,7 @@ function claimsFor(profile: Awaited<ReturnType<typeof getCanonicalCompanyProfile
       sourceTypes: [...new Set(evidenceIds.map((id) => byId.get(id)!.sourceType))] }));
 }
 
-export async function ensureMinimumCompanyIntelligence(input: {
+async function ensureMinimumCompanyIntelligenceUnlocked(input: {
   organizationId: string;
   projectId: string;
   companyId: string;
@@ -166,4 +166,26 @@ export async function ensureMinimumCompanyIntelligence(input: {
   return { stage, cacheHit: false, identitySafe, attributionSafe: identityPermissions.canAttachCanonicalFacts,
     identityPermissions, reasonCode, missingRequirements, nextRecommendedCapability,
     evidenceIds: finalEvidence.map(({ id }) => id), attempts };
+}
+
+/** Serialize cache admission and bounded prerequisite provider work for one
+ * project/company. The second concurrent caller rechecks the durable cache only
+ * after the first has persisted its terminal MinimumCompanyIntelligence row. */
+export async function ensureMinimumCompanyIntelligence(input: {
+  organizationId: string;
+  projectId: string;
+  companyId: string;
+  router: Pick<ProviderOperations, "searchWeb" | "enrichCompany">;
+  now?: Date;
+}): Promise<MinimumCompanyIntelligence> {
+  const lockKey = [
+    MINIMUM_COMPANY_INTELLIGENCE_VERSION,
+    input.organizationId,
+    input.projectId,
+    input.companyId,
+  ].join(":");
+  return db.transaction(async (tx) => {
+    await tx.execute(sql`select pg_advisory_xact_lock(hashtextextended(${lockKey}, 0))`);
+    return ensureMinimumCompanyIntelligenceUnlocked(input);
+  });
 }

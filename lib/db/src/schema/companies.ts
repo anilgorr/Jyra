@@ -49,6 +49,10 @@ export type BuyerRoleAssessmentRecord = {
   supportingInputs: Array<{ field: "name" | "industry" | "description" | "website_profile"; excerpt: string; source: string }>;
   assessedAt: string;
   classifierVersion: "buyer-role-resolution-06a";
+  /** Additive control-plane metadata. Legacy assessments without these fields
+   * are revalidated from their recorded inputs before being upgraded. */
+  controlPlaneFingerprint?: string;
+  controlPlaneVersion?: string;
 };
 
 export const companiesTable = pgTable(

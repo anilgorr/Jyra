@@ -22,9 +22,9 @@ Provider failure is operational state, not a business conclusion.
 
 | Category | Component | Responsibility | Inputs / outputs | Calls provider or LLM | Persistence | Consolidation status |
 |---|---|---|---|---|---|---|
-| A Orchestrator | `orchestrateCompanyIntelligence` | Seller readiness → identity permissions → MinimumCompanyIntelligence → CompanyUnderstanding/CommercialRole → WHO | Project/company IDs, router → structured status, reason, missing requirements, next capability | Bounded providers and frozen semantic model through capabilities | Project role and provenance | Authoritative for unresolved Research Now flow |
-| A Workflow | `executeResearchNow` | Runs prerequisite control plane, then buyer-only research planning/execution | User intent and project company → stop result or research result | Provider capabilities after prerequisites | Jobs, requests, evidence, facts | Uses control plane for unresolved companies; resolved buyer compatibility path remains |
-| A Workflow | `discoverCompaniesForProject` | Buyer-market discovery, identity assessment, safe canonical linking | Seller/ICP context and provider router → discovery cohort | `COMPANY_DISCOVERY`, bounded identity lookup/profile search | Discovery run, project membership, discovery provenance | Remains a separate upstream workflow |
+| A Orchestrator | `orchestrateCompanyIntelligence` | Seller readiness → identity permissions → MinimumCompanyIntelligence → fresh/reassessed CompanyUnderstanding/CommercialRole → WHO | Project/company IDs, router → structured status, reason, missing requirements, next capability | Bounded providers and frozen semantic model through capabilities | Project role, freshness fingerprint, and provenance | Authoritative company-intelligence path |
+| A Workflow | `executeResearchNow` | Runs prerequisite control plane, then buyer-only research planning/execution | User intent and project company → stop result or research result | Provider capabilities after prerequisites | Jobs, requests, evidence, facts | All roles use the same control plane |
+| A Workflow | `discoverCompaniesForProject` | Buyer-market discovery, identity assessment, safe canonical linking, optional automatic intelligence handoff | Seller/ICP context and provider router → discovery cohort with control outcomes | `COMPANY_DISCOVERY`, bounded identity lookup/profile search, then control-plane capabilities | Discovery run, project membership, discovery provenance | Production discovery routes accepted candidates into the control plane |
 | B Resolver | `resolveProjectSellerContext` | Authoritative Business Twin, Offering, ICP, pack readiness | Project/organization → versioned context and missing requirements | No | Reads authoritative versions | Reused unchanged |
 | B Resolver | `resolveAndPersistCompanyProfile` | Bounded company-profile resolution with cache and verification | Project company, known identifiers, discovery evidence | `WEB_SEARCH`, maximum two calls | Verified result or project-scoped review evidence | Reused; now reachable for research-safe identity |
 | B Resolver | `enrichCompanyFirmographics` | Firmographic resolution after identity verification | Project company and router | `COMPANY_FIRMOGRAPHICS` | Scoped provenance and safe canonical updates | Reused unchanged |
@@ -41,8 +41,7 @@ Provider failure is operational state, not a business conclusion.
 | I Cache | Semantic fingerprint cache | Exact seller/evidence/model/prompt cache | Fingerprint → cached terminal decision | No on hit | Append-only semantic provenance | Reused unchanged |
 | J Outcome | Recommendation Ledger and outcome foundation | Snapshot recommendations and later outcomes | Versioned assessment → ledger | No | Append-only ledger | Reused unchanged |
 | K API/UI | Research routes and DigiSignal views | Send user intent; display progress and stop state | API request/response | No direct provider logic | No business-state ownership | Backend remains authoritative |
-| L Legacy/unclear | Direct semantic reassessment utility | Reassesses roles without running MinimumCompanyIntelligence | Company IDs → semantic outcomes | LLM on cache miss | Project role/provenance | Capability utility remains; must not become a competing workflow |
-| L Legacy/unclear | Resolved-buyer Research Now compatibility path | Preserves already-resolved buyer research behavior | Persisted role and WHO → research | Research provider | Normal research records | Deliberate compatibility path; stale-role policy still needs consolidation |
+| L Compatibility | Direct semantic reassessment utility | Preserves validation-script report shape | Company IDs → control-plane outcomes projected as semantic reports | Control plane decides | Project role/provenance | Wrapper over the authoritative orchestrator |
 
 ## 3. Anti-pattern findings
 
@@ -56,9 +55,7 @@ Provider failure is operational state, not a business conclusion.
 
 ### Remaining
 
-- **DUPLICATE ORCHESTRATION PATH:** Already-resolved buyers retain the compatibility Research Now path. A safe staleness/fingerprint rule is needed before every resolved role can be re-entered through the control plane without breaking research replay behavior.
-- **AUTOMATIC WORKFLOW GAP:** `discoverCompaniesForProject` remains an upstream discovery workflow and does not automatically invoke the company-intelligence control plane for every accepted member.
-- **WHO REASON GRANULARITY:** WHO returns `INSUFFICIENT_DATA`, but its current public result does not yet expose dimension-specific reason codes such as size, geography, or industry missing.
+- **WHO REASON GRANULARITY:** WHO reason detail is maintained by the focused ICP-evidence workstream.
 - **DURABLE RUN TRACE:** Capability decisions are reconstructable from existing provenance and cost records, but there is no single materialized control-plane execution record.
 
 ## 4. Control plane
@@ -70,9 +67,11 @@ The company-intelligence control plane is deterministic. It:
 3. runs bounded MinimumCompanyIntelligence only when public research is safe;
 4. reassesses identity after resolver evidence;
 5. runs frozen CompanyUnderstanding/CommercialRole only when permitted and grounded;
-6. persists the project-relative role;
-7. evaluates WHO separately;
-8. returns a structured status, reason code, missing requirements, retry/manual-review guidance, and next capability.
+6. reuses a resolved role only when its control-plane fingerprint still matches seller context, company profile, evidence, and policy versions;
+7. treats `UNKNOWN` as unresolved and therefore never freshness-reusable;
+8. persists the project-relative role and exact freshness fingerprint;
+9. evaluates WHO separately;
+10. returns a structured status, reason code, missing requirements, retry/manual-review guidance, and next capability.
 
 The control plane never asks an LLM which capability to run.
 
@@ -235,15 +234,16 @@ This architecture consolidation changed neither WHEN nor WHY.
 
 ## 12. Research Now
 
-The frontend sends intent. For an unresolved role, Research Now delegates
-prerequisite decisions to the company-intelligence control plane. Only a
+The frontend sends intent. Research Now always delegates prerequisite decisions
+to the company-intelligence control plane. Only a
 `POTENTIAL_BUYER` with eligible WHO proceeds into existing research planning.
 Provider failure remains a research/provider status and never becomes a
 negative buyer conclusion.
 
-Already-resolved buyers use the existing compatibility path. This is deliberate
-until a version/fingerprint staleness rule can re-enter them through the control
-plane without invalidating same-day research replay.
+Already-resolved roles are reused without another model call when their exact
+control-plane fingerprint is current. Seller, profile, evidence, or policy
+changes invalidate the fingerprint and re-enter semantic assessment, whose own
+exact fingerprint cache still prevents duplicate model spend.
 
 ## 13. Provider routing and cost
 
@@ -313,14 +313,12 @@ Current focused regressions verify:
 - CompanyUnderstanding/CommercialRole prompt and versions remain frozen.
 
 The required fresh 10 DigiPuush + 10 Managed SOC validation has **not** been
-run. It must not run until the remaining automatic-workflow and stale-role
-orchestration gaps are resolved and covered by architecture-level tests.
+run. It belongs to the separate bounded cross-domain validation workstream.
 
 ## 20. Current architecture verdict
 
-The progressive identity deadlock is corrected at the policy and unresolved
-Research Now layers, but one authoritative path does not yet own all automatic
-and already-resolved execution. Therefore the architecture is not ready for the
-50-company Reality Test.
+The progressive identity deadlock and duplicate orchestration paths are
+corrected. The architecture still requires its frozen cross-domain validation
+before the 50-company Reality Test.
 
-**B — CONTROL PLANE STILL HAS MATERIAL ORCHESTRATION GAPS**
+**C — READY FOR BOUNDED CROSS-DOMAIN VALIDATION**

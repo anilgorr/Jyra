@@ -45,7 +45,6 @@ import {
   type ProviderUsageRecord,
 } from "./provider-router";
 import { orchestrateCompanyIntelligence } from "./company-intelligence-control-plane";
-import { qualifyProjectCompanyForWho } from "./company-discovery";
 import { resolveProjectSellerContext } from "./seller-context";
 import {
   releaseResearchReservation,
@@ -999,48 +998,30 @@ export async function executeResearchNow(input: {
     .where(and(eq(projectCompaniesTable.id, input.projectCompanyId), eq(projectCompaniesTable.projectId, input.projectId)))
     .limit(1);
   if (!row) throw new Error("Project company not found");
-  if (row.projectCompany.buyerRole === "UNKNOWN") {
-    const intelligenceRouter = input.router ?? new ProviderRouter();
-    const controlRouter = "enrichCompany" in intelligenceRouter
-      ? intelligenceRouter
-      : new ProviderRouter();
-    const control = await orchestrateCompanyIntelligence({
-      organizationId: input.organizationId,
-      projectId: input.projectId,
-      companyId: row.company.id,
-      router: controlRouter as Parameters<typeof orchestrateCompanyIntelligence>[0]["router"],
-      now: input.now,
-    });
-    const [reloaded] = await db.select().from(projectCompaniesTable)
-      .where(and(eq(projectCompaniesTable.id, row.projectCompany.id), eq(projectCompaniesTable.projectId, input.projectId)))
-      .limit(1);
-    if (reloaded) row.projectCompany = reloaded;
-    if (control.reasonCode !== "READY_FOR_SIGNAL_RESEARCH" ||
-      !buyerRoleAllowsBuyerResearch(row.projectCompany.buyerRole)) {
-      return {
-        stopped: true,
-        reason: control.explanation,
-        buyerRole: control.buyerRole,
-        intelligenceStage: control.minimumIntelligence?.stage ?? "SELLER_CONTEXT_BLOCKED",
-        stopCode: control.reasonCode,
-        progress: control.status.toLowerCase(),
-        nextAction: control.nextRecommendedCapability
-          ? `Run ${control.nextRecommendedCapability.replace(/_/g, " ").toLowerCase()}.`
-          : control.manualReviewHelpful ? "Review the company evidence." : "No buyer research is available.",
-      };
-    }
-  }
-  if (!buyerRoleAllowsBuyerResearch(row.projectCompany.buyerRole)) {
-    return { stopped: true, reason: `Buyer research is gated for ${row.projectCompany.buyerRole}.`,
-      buyerRole: row.projectCompany.buyerRole, intelligenceStage: "NOT_REQUIRED", stopCode: "NON_BUYER",
-      progress: "buyer_research_gated", nextAction: "No buyer research is available for this commercial role." };
-  }
-  const who = await qualifyProjectCompanyForWho({ projectId: input.projectId, company: row.company });
-  if (!who.eligible) {
-    return { stopped: true, reason: `Company is not eligible for WHO research (${who.qualification}).`,
-      buyerRole: row.projectCompany.buyerRole, intelligenceStage: "WHO_QUALIFICATION_COMPLETE",
-      stopCode: "WHO_INELIGIBLE", progress: "who_qualification_complete",
-      nextAction: "Review ICP qualification evidence before buyer research." };
+  const intelligenceRouter = input.router ?? new ProviderRouter();
+  const controlRouter = "enrichCompany" in intelligenceRouter
+    ? intelligenceRouter
+    : new ProviderRouter();
+  const control = await orchestrateCompanyIntelligence({
+    organizationId: input.organizationId,
+    projectId: input.projectId,
+    companyId: row.company.id,
+    router: controlRouter as Parameters<typeof orchestrateCompanyIntelligence>[0]["router"],
+    now: input.now,
+  });
+  if (control.reasonCode !== "READY_FOR_SIGNAL_RESEARCH" ||
+    !buyerRoleAllowsBuyerResearch(control.buyerRole)) {
+    return {
+      stopped: true,
+      reason: control.explanation,
+      buyerRole: control.buyerRole,
+      intelligenceStage: control.minimumIntelligence?.stage ?? "SELLER_CONTEXT_BLOCKED",
+      stopCode: control.reasonCode,
+      progress: control.status.toLowerCase(),
+      nextAction: control.nextRecommendedCapability
+        ? `Run ${control.nextRecommendedCapability.replace(/_/g, " ").toLowerCase()}.`
+        : control.manualReviewHelpful ? "Review the company evidence." : "No buyer research is available.",
+    };
   }
   const now = input.now ?? new Date();
   const baseIdempotencyKey = `${input.projectCompanyId}:${input.idempotencyScope ?? "planner"}:${now.toISOString().slice(0, 10)}`;

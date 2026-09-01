@@ -38,3 +38,4 @@
 - [Semantic company-role boundary](semantic-company-role-boundary.md) — LLM company-role inference requires authoritative seller context and scoped provenance UUID citations.
 - [Semantic decision concurrency](semantic-decision-concurrency.md) — serialize exact fingerprints in PostgreSQL and canonicalize legacy decisions append-only to prevent duplicate spend.
 - [Progressive identity permissions](progressive-identity-permissions.md) — coherent probable identities may gather provisional evidence, but only attribution-safe identities unlock permanent/high-impact actions.
+- [Company-intelligence freshness](company-intelligence-freshness.md) — reuse resolved roles only under exact current context and model-input fingerprints; UNKNOWN is never fresh.

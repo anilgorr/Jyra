@@ -15,6 +15,8 @@ await build({
 });
 const harness = await import(`${pathToFileURL(output).href}?t=${Date.now()}`);
 const {
+  businessTwinsTable,
+  businessTwinVersionsTable,
   planResearchQuestion,
   buildResearchQueryPlan,
   assessWebSearchRetrieval,
@@ -23,15 +25,23 @@ const {
   boundedResearchBatchSize,
   ProviderRouter,
   executeResearchNow,
+  discoverCompaniesForProject,
+  orchestrateCompanyIntelligence,
+  setSemanticModelInvokerForTests,
   getResearchEconomics,
   upsertResearchBudget,
   companiesTable,
   companyEvidenceTable,
   companyFactsTable,
+  companyProvenanceTable,
   crawlPagesTable,
   dataProvidersTable,
   db,
   evidenceAttributionReviewsTable,
+  icpsTable,
+  icpVersionsTable,
+  intelligencePacksTable,
+  intelligencePackVersionsTable,
   organizationsTable,
   projectCompaniesTable,
   projectSignalPacksTable,
@@ -255,6 +265,136 @@ try {
   await db.insert(usersTable).values({ id: userId });
   [organization] = await db.insert(organizationsTable).values({ name: `Research Test ${suffix}`, createdByUserId: userId }).returning();
   const [project] = await db.insert(projectsTable).values({ organizationId: organization.id, name: "Research Test" }).returning();
+  const [businessTwin] = await db.insert(businessTwinsTable).values({
+    organizationId: organization.id,
+    projectId: project.id,
+    createdBy: userId,
+  }).returning();
+  const [businessTwinVersion] = await db.insert(businessTwinVersionsTable).values({
+    businessTwinId: businessTwin.id,
+    projectId: project.id,
+    version: 1,
+    rawAnswers: {
+      companyName: "Research Test Seller",
+      offeringName: "Research Test",
+      offeringDescription: "Research automation for software companies",
+    },
+    status: "ready",
+    createdBy: userId,
+  }).returning();
+  const [icp] = await db.insert(icpsTable).values({
+    organizationId: organization.id,
+    projectId: project.id,
+    createdBy: userId,
+  }).returning();
+  const [icpVersion] = await db.insert(icpVersionsTable).values({
+    icpId: icp.id,
+    projectId: project.id,
+    sourceBusinessTwinVersionId: businessTwinVersion.id,
+    version: 1,
+    createdBy: userId,
+  }).returning();
+  const [intelligencePack] = await db.insert(intelligencePacksTable).values({
+    organizationId: organization.id,
+    projectId: project.id,
+    offeringKey: "research-test",
+    sourceBusinessTwinVersionId: businessTwinVersion.id,
+    sourceIcpVersionId: icpVersion.id,
+    status: "ACTIVATED",
+    currentVersion: 1,
+    createdBy: userId,
+  }).returning();
+  await db.insert(intelligencePackVersionsTable).values({
+    intelligencePackId: intelligencePack.id,
+    version: 1,
+    status: "ACTIVATED",
+    offeringSnapshot: {
+      name: "Research Test",
+      description: "Research automation for software companies",
+    },
+    sourceBusinessTwinVersionId: businessTwinVersion.id,
+    sourceIcpVersionId: icpVersion.id,
+    createdBy: userId,
+    approvedBy: userId,
+    approvedAt: new Date(),
+    activatedAt: new Date(),
+  });
+  let discoveryResolutionCalls = 0;
+  let semanticModelCalls = 0;
+  setSemanticModelInvokerForTests(async (request) => {
+    semanticModelCalls += 1;
+    const userMessage = request.messages.find((message) => message.role === "user");
+    const body = JSON.parse(userMessage?.content ?? "{}");
+    const evidenceId = body.evidence?.[0]?.id;
+    return {
+      choices: [{
+        message: {
+          content: JSON.stringify({
+            primary_business: "Manufactures industrial pumps for factories.",
+            business_model: "MANUFACTURER",
+            canonical_industry: "MANUFACTURING",
+            products_services: ["Industrial pumps"],
+            commercial_role: "POTENTIAL_BUYER",
+            confidence: 0.92,
+            reason: "An operating manufacturer can consume the seller offering.",
+            evidence_ids: evidenceId ? [evidenceId] : [],
+            missing_information: [],
+          }),
+        },
+      }],
+      usage: { input_tokens: 1, output_tokens: 1 },
+    };
+  });
+  const automaticDiscovery = await discoverCompaniesForProject({
+    organizationId: organization.id,
+    projectId: project.id,
+    userId,
+    limit: 1,
+    maxProviderCalls: 1,
+    orchestrateAcceptedCandidates: true,
+    router: {
+      async discoverCompanies() {
+        const domain = `automatic-buyer-${suffix}.com`;
+        return {
+          status: "success",
+          providerId: "router",
+          providerRequestId: `automatic-${suffix}`,
+          data: {
+            companies: [{
+              name: `Automatic Buyer ${suffix}`,
+              domain,
+              website: `https://${domain}`,
+              sourceUrl: `https://${domain}`,
+              industry: "manufacturing",
+              description: "Manufactures industrial pumps for factories and does not sell software or research services",
+              providerMetadata: { discoveryCandidate: true, entityType: "ORGANIZATION" },
+            }],
+          },
+          sources: [{ kind: "public_url", reference: `https://${domain}`, capturedAt: new Date().toISOString() }],
+          usage: { estimatedCost: 0, actualCost: 0, latencyMs: 1, runtimeMs: 1, resultCount: 1 },
+          error: null,
+          retryable: false,
+          capturedAt: new Date().toISOString(),
+        };
+      },
+      async lookupCompany() {
+        throw new Error("identity lookup should not be required");
+      },
+      async searchWeb() {
+        discoveryResolutionCalls += 1;
+        throw new Error("profile resolution should not be required");
+      },
+      async enrichCompany() {
+        discoveryResolutionCalls += 1;
+        throw new Error("firmographics should not be required");
+      },
+    },
+  });
+  assert.equal(automaticDiscovery.candidates.length, 1);
+  assert.ok(automaticDiscovery.candidates[0].intelligence, "accepted discovery candidate must enter the control plane");
+  assert.equal(automaticDiscovery.candidates[0].intelligence.reasonCode, "READY_FOR_SIGNAL_RESEARCH");
+  assert.equal(discoveryResolutionCalls, 0, "sufficient discovery evidence must not force another provider call");
+  assert.equal(semanticModelCalls, 1, "an unresolved accepted candidate gets one semantic assessment");
   const signalPack = await ensureCybersecuritySignalPack();
   await db.insert(projectSignalPacksTable).values({
     organizationId: organization.id,
@@ -270,12 +410,56 @@ try {
     domain: `integration-${suffix}.example`,
     website: `https://integration-${suffix}.example`,
     industry: "software",
+    description: "Operating software company",
   }).returning();
+  const buyerAssessmentFor = (target) => ({
+    buyerRole: "POTENTIAL_BUYER",
+    confidence: "HIGH",
+    reason: "Operating software company",
+    sellerOffering: "Research Test",
+    supportingInputs: [{ field: "description", excerpt: "Operating software company", source: "canonical_company" }],
+    assessedAt: new Date().toISOString(),
+    classifierVersion: "buyer-role-resolution-06a",
+  });
+  const seedResolvedBuyer = async (target) => {
+    await db.insert(companyProvenanceTable).values({
+      organizationId: organization.id,
+      projectId: project.id,
+      companyId: target.id,
+      sourceType: "COMPANY_FIRMOGRAPHICS",
+      sourceLabel: "research-test",
+      sourceUrl: target.website,
+      payload: {
+        result: {
+          entityMatchStatus: "CONFIRMED",
+          attributes: {
+            canonicalDomain: target.domain,
+            description: "Operating software company",
+            industry: "software",
+          },
+        },
+      },
+      visibility: "PRIVATE",
+    });
+    const primed = await orchestrateCompanyIntelligence({
+      organizationId: organization.id,
+      projectId: project.id,
+      companyId: target.id,
+      router: {
+        async searchWeb() { throw new Error("profile resolution should not run for the sufficient fixture"); },
+        async enrichCompany() { throw new Error("firmographics should not run for the sufficient fixture"); },
+      },
+    });
+    assert.equal(primed.reasonCode, "READY_FOR_SIGNAL_RESEARCH");
+  };
   const [projectCompany] = await db.insert(projectCompaniesTable).values({
     projectId: project.id,
     companyId: company.id,
     buyerRole: "POTENTIAL_BUYER",
+    buyerRoleAssessment: buyerAssessmentFor(company),
   }).returning();
+  await seedResolvedBuyer(company);
+  const semanticCallsBeforeResearchReplay = semanticModelCalls;
   [provider] = await db.insert(dataProvidersTable).values({ name: `research-test-provider-${suffix}`, providerType: "mock" }).returning();
   [fallbackProvider] = await db.insert(dataProvidersTable).values({ name: `research-test-fallback-${suffix}`, providerType: "mock" }).returning();
   let providerCalls = 0;
@@ -328,6 +512,7 @@ try {
     extractFacts,
   });
   assert.equal(providerCalls, 1, "same-day replay must not invoke the provider twice");
+  assert.equal(semanticModelCalls, semanticCallsBeforeResearchReplay, "same-day replay must not invoke the semantic model");
   assert.equal(first.job.id, second.job.id, "same-day replay must return the original job");
   assert.equal(first.question.id, second.question.id, "same-day replay must return the original question");
   assert.equal(first.job.providerId, provider.id, "job must retain provider audit identity");
@@ -377,12 +562,15 @@ try {
     domain: `unavailable-${suffix}.example`,
     website: `https://unavailable-${suffix}.example`,
     industry: "software",
+    description: "Operating software company",
   }).returning();
   const [unavailableProjectCompany] = await db.insert(projectCompaniesTable).values({
     projectId: project.id,
     companyId: unavailableCompany.id,
     buyerRole: "POTENTIAL_BUYER",
+    buyerRoleAssessment: buyerAssessmentFor(unavailableCompany),
   }).returning();
+  await seedResolvedBuyer(unavailableCompany);
   const unavailable = async (request) => ({
     status: "failed",
     providerId: "router",
@@ -446,12 +634,15 @@ try {
     domain: `budget-${suffix}.example`,
     website: `https://budget-${suffix}.example`,
     industry: "software",
+    description: "Operating software company",
   }).returning();
   const [budgetProjectCompany] = await db.insert(projectCompaniesTable).values({
     projectId: project.id,
     companyId: budgetCompany.id,
     buyerRole: "POTENTIAL_BUYER",
+    buyerRoleAssessment: buyerAssessmentFor(budgetCompany),
   }).returning();
+  await seedResolvedBuyer(budgetCompany);
   await upsertResearchBudget({
     organizationId: organization.id,
     projectId: project.id,
@@ -503,12 +694,15 @@ try {
     domain: `waterfall-${suffix}.example`,
     website: `https://waterfall-${suffix}.example`,
     industry: "software",
+    description: "Operating software company",
   }).returning();
   const [waterfallProjectCompany] = await db.insert(projectCompaniesTable).values({
     projectId: project.id,
     companyId: waterfallCompany.id,
     buyerRole: "POTENTIAL_BUYER",
+    buyerRoleAssessment: buyerAssessmentFor(waterfallCompany),
   }).returning();
+  await seedResolvedBuyer(waterfallCompany);
   const responseFor = (providerId, status, retryable, actualCost) => async (request) => ({
     status,
     providerId,
@@ -531,7 +725,7 @@ try {
     ],
     usageWriter: async () => {},
   });
-  await executeResearchNow({
+  const waterfallExecution = await executeResearchNow({
     projectId: project.id,
     projectCompanyId: waterfallProjectCompany.id,
     organizationId: organization.id,
@@ -543,8 +737,10 @@ try {
     .where(eq(researchRequestCostsTable.companyId, waterfallCompany.id));
   assert.equal(waterfallCosts.length, 2, "every provider attempt in a fallback waterfall must be tenant-accounted");
   assert.deepEqual(waterfallCosts.map((row) => row.providerId), [provider.id, fallbackProvider.id]);
+  assert.equal(semanticModelCalls, 5, "only the unresolved discovery candidate and four explicit fixture priming calls invoke the model");
   console.log("Research execution integration and replay tests passed.");
 } finally {
+  setSemanticModelInvokerForTests(null);
   if (company) {
     await db.delete(signalsTable).where(eq(signalsTable.companyId, company.id));
     await db.delete(companyFactsTable).where(eq(companyFactsTable.companyId, company.id));
