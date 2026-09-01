@@ -1,0 +1,11 @@
+rank,company,domain,industry,employee_range,icp_fit,opportunity_priority,opportunity_state,when,why,signals,evidence_summary,nba,sales_usefulness,false_positive
+"1","Suronex","suronex.ai","UNKNOWN","UNKNOWN","NO","UNKNOWN","INSUFFICIENT_EVIDENCE","NONE","NO","","No research evidence generated","REVIEW","LOW","YES"
+"2","HarkX","harkx.ai","UNKNOWN","UNKNOWN","NO","UNKNOWN","INSUFFICIENT_EVIDENCE","NONE","NO","","No research evidence generated","REVIEW","LOW","YES"
+"3","Skysecure Technologies Private Limited","skysecure.ai","UNKNOWN","UNKNOWN","UNCERTAIN","UNKNOWN","INSUFFICIENT_EVIDENCE","NONE","NO","","No research evidence generated","REVIEW","LOW","NO"
+"4","Cyber Soldiers | Lab","cybersoldiers.in","UNKNOWN","UNKNOWN","NO","UNKNOWN","INSUFFICIENT_EVIDENCE","NONE","NO","","No research evidence generated","REVIEW","LOW","YES"
+"5","Aquila I","aquilai.io","UNKNOWN","UNKNOWN","UNCERTAIN","UNKNOWN","INSUFFICIENT_EVIDENCE","NONE","NO","","No research evidence generated","REVIEW","LOW","NO"
+"6","Cyber Evolve","cyberevolve.com","UNKNOWN","UNKNOWN","NO","UNKNOWN","INSUFFICIENT_EVIDENCE","NONE","NO","","No research evidence generated","REVIEW","LOW","YES"
+"7","Awwal Security","awwalsecurity.com","UNKNOWN","UNKNOWN","NO","UNKNOWN","INSUFFICIENT_EVIDENCE","NONE","NO","","No research evidence generated","REVIEW","LOW","YES"
+"8","SPYINT - Backed by IIMCIP","spyint.com","UNKNOWN","UNKNOWN","NO","UNKNOWN","INSUFFICIENT_EVIDENCE","NONE","NO","","No research evidence generated","REVIEW","LOW","YES"
+"9","360 SOC, Inc.","360soc.com","UNKNOWN","UNKNOWN","UNCERTAIN","UNKNOWN","INSUFFICIENT_EVIDENCE","NONE","NO","","No research evidence generated","REVIEW","LOW","NO"
+"10","XeneX SOC","xenexsoc.com","UNKNOWN","UNKNOWN","UNCERTAIN","UNKNOWN","INSUFFICIENT_EVIDENCE","NONE","NO","","No research evidence generated","REVIEW","LOW","NO"

@@ -63,14 +63,19 @@ import type {
 } from "../src/lib/provider-contract";
 
 const REALITY_TEST_02 = "JYRA_50_COMPANY_MVP_REALITY_TEST_02";
-const IS_REALITY_TEST_02 = process.env.JYRA_REALITY_TEST_NAME === REALITY_TEST_02;
-const TEST = IS_REALITY_TEST_02 ? REALITY_TEST_02 : "JYRA_MVP_REALITY_TEST_01";
+const REQUESTED_TEST = process.env.JYRA_REALITY_TEST_NAME ?? REALITY_TEST_02;
+const IS_REALITY_TEST_02 = REQUESTED_TEST === REALITY_TEST_02 ||
+  REQUESTED_TEST.startsWith(`${REALITY_TEST_02}_`);
+const TEST = IS_REALITY_TEST_02 ? REQUESTED_TEST : "JYRA_MVP_REALITY_TEST_01";
 const USER = IS_REALITY_TEST_02 ? "system:jyra-50-company-mvp-reality-test-02" : "system:jyra-mvp-reality-test-01";
 const RUN_ID = process.env.JYRA_REALITY_RUN_ID ?? randomUUID();
+const RESUME_RESERVED_RUN = process.env.JYRA_REALITY_RESUME_RESERVED_RUN === "true";
 const RUN_SCOPE = IS_REALITY_TEST_02
-  ? `jyra-50-company-mvp-reality-test-02:${RUN_ID}`
+  ? `jyra-50-company-mvp-reality-test-02:${TEST}:${RUN_ID}`
   : "jyra-mvp-reality-test-01";
-const RUN_STARTED_AT = new Date();
+const RUN_STARTED_AT = process.env.JYRA_REALITY_RUN_STARTED_AT
+  ? new Date(process.env.JYRA_REALITY_RUN_STARTED_AT)
+  : new Date();
 const CONTACT_ENRICHMENT_ENABLED = process.env.JYRA_REALITY_CONTACT_ENRICHMENT_ENABLED !== "false";
 const TARGET_COMPANIES = 50;
 const MAX_DISCOVERY_ROUNDS = 40;
@@ -233,7 +238,19 @@ async function main() {
   if (IS_REALITY_TEST_02 && existsSync(`${TEST}.json`)) {
     throw new Error(`${TEST} output already exists; refusing to overwrite a prior Reality Test 02 execution`);
   }
-  if (IS_REALITY_TEST_02) {
+  if (IS_REALITY_TEST_02 && RESUME_RESERVED_RUN) {
+    const lockPath = `${TEST}_RUN.lock/run.json`;
+    if (!existsSync(lockPath)) throw new Error(`${TEST} reserved-run lock is missing`);
+    const lock = JSON.parse(readFileSync(lockPath, "utf8"));
+    if (
+      lock.test !== TEST ||
+      lock.runId !== RUN_ID ||
+      lock.startedAt !== RUN_STARTED_AT.toISOString() ||
+      lock.status !== "RESERVED"
+    ) {
+      throw new Error(`${TEST} reserved-run lock does not match the requested recovery`);
+    }
+  } else if (IS_REALITY_TEST_02) {
     try {
       mkdirSync(`${TEST}_RUN.lock`);
     } catch (error) {

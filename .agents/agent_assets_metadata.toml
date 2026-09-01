@@ -822,3 +822,115 @@ mtime_ms = 1788261994274
 storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/82f9b924-5e3e-4a7f-b468-06ba8fa87dc4/2039520f-2c94-45ba-96f0-895c6ffc9694"
 storage_version_token = "1788262072175518"
 content_type = "application/octet-stream"
+
+[[outputs]]
+id = "LtGx4i1ITiMxkDWD1SXON"
+uri = "file://artifacts/api-server/JYRA_50_COMPANY_MVP_REALITY_TEST_02_RERUN.md"
+type = "text"
+title = "Reality Test 02 Fresh Rerun Report"
+description = "Authoritative verdict, funnel, actual Top 10, coverage, costs, defects, and three highest-impact repair areas."
+logical_id = "4837c69e-9751-4575-8e41-4a8e1dc2c8f2"
+content_hash = "sha256:c41cd0e642124ef37a02b626e647cf5951d1bee122a06456ed32533613268b7b"
+size = 6413
+mtime_ms = 1788263345012
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/4837c69e-9751-4575-8e41-4a8e1dc2c8f2/1d846ba1-33b9-426e-b17f-bf2448496bc6"
+storage_version_token = "1788263379885905"
+content_type = "text/markdown"
+
+[[outputs]]
+id = "airs4DYz-q6oYcxf0DfqM"
+uri = "file://artifacts/api-server/JYRA_50_COMPANY_MVP_REALITY_TEST_02_RERUN.json"
+type = "unspecified"
+title = "Reality Test 02 Fresh Rerun Data"
+description = "Complete structured run record and final adjudication for run e0f07200-08dc-4b41-8831-95be7df92616."
+logical_id = "21f9c641-d76f-4463-b248-9e76dc058cfd"
+content_hash = "sha256:75d768c80b5f14f20e578019977a31507a6e5c5ac7826d82cd4841808bc79d95"
+size = 1934366
+mtime_ms = 1788263345008
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/21f9c641-d76f-4463-b248-9e76dc058cfd/df2844ce-b149-4590-a27b-c237481e2eae"
+storage_version_token = "1788263381460326"
+content_type = "application/octet-stream"
+
+[[outputs]]
+id = "6z__CpTUtmBpO5lA62Hi_"
+uri = "file://artifacts/api-server/JYRA_50_COMPANY_MVP_REALITY_TEST_02_RERUN_COMPANIES.csv"
+type = "table"
+title = "Reality Test 02 Companies"
+description = "The complete fresh 50-company cohort with WHO and opportunity fields."
+logical_id = "928eb613-8985-4966-882c-ef36a4bd891f"
+content_hash = "sha256:6e8c3b5da4b341ec0420afb8c81165c09c964a7292764c2480467adf78fc79cd"
+size = 6256
+mtime_ms = 1788263139280
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/928eb613-8985-4966-882c-ef36a4bd891f/c3d3ffee-7e52-49dc-883c-844196a1b38f"
+storage_version_token = "1788263382774721"
+content_type = "text/csv"
+
+[[outputs]]
+id = "PRfM0SE7fO6TjiiYZlLh5"
+uri = "file://artifacts/api-server/JYRA_50_COMPANY_MVP_REALITY_TEST_02_RERUN_TOP10.csv"
+type = "table"
+title = "Reality Test 02 Actual Top 10"
+description = "The exact product-ranked Top 10 with ICP fit, timing, WHY, evidence, NBA, usefulness, and false-positive adjudication."
+logical_id = "a05a4705-3e4e-4060-a55d-554ee90ee3ff"
+content_hash = "sha256:8e01cd4ccb27f5096c464cf06e264cb1c5a114128542b8870ecad784aa207d7d"
+size = 1837
+mtime_ms = 1788263345012
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/a05a4705-3e4e-4060-a55d-554ee90ee3ff/5f06aed8-eabb-4467-8a68-4d2f70ab1e9c"
+storage_version_token = "1788263384172840"
+content_type = "text/csv"
+
+[[outputs]]
+id = "Uy9I9fcP5LimdNUj1vuqG"
+uri = "file://artifacts/api-server/JYRA_50_COMPANY_MVP_REALITY_TEST_02_RERUN_SIGNALS.csv"
+type = "table"
+title = "Reality Test 02 Signals"
+description = "Signal ledger; no material signals were generated because no company became research eligible."
+logical_id = "76f2a402-07b4-4b70-a534-9ade9dfde897"
+content_hash = "sha256:cd708c31f045ea649dd3066f459077f49665a9da964eb22ac509a342c0aa0a4d"
+size = 92
+mtime_ms = 1788263139443
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/76f2a402-07b4-4b70-a534-9ade9dfde897/2f71df39-c16f-4ad8-a855-c72198a2acdd"
+storage_version_token = "1788263385642423"
+content_type = "text/csv"
+
+[[outputs]]
+id = "wy3rK52qOyCaGkhvwKvuU"
+uri = "file://artifacts/api-server/JYRA_50_COMPANY_MVP_REALITY_TEST_02_RERUN_DEFECTS.csv"
+type = "table"
+title = "Reality Test 02 Defects"
+description = "Complete P1/P2 defect ledger from the fresh run."
+logical_id = "f3547f6b-7b64-4e95-a808-c39c48d21dee"
+content_hash = "sha256:cc56dc8f77d55367fe603da7ca1f59f8dd94ff310daf61d1578daf46c9488a37"
+size = 654
+mtime_ms = 1788263345012
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/f3547f6b-7b64-4e95-a808-c39c48d21dee/22e724a4-a729-4fce-b4fb-a52fe31449c4"
+storage_version_token = "1788263387258209"
+content_type = "text/csv"
+
+[[outputs]]
+id = "QpbJovYI6If5NIEfdcW0M"
+uri = "file://artifacts/api-server/JYRA_50_COMPANY_MVP_REALITY_TEST_02_RERUN_COSTS.json"
+type = "unspecified"
+title = "Reality Test 02 Costs"
+description = "Discovery-provider usage, known cost, and unit-cost calculations."
+logical_id = "a625e4ce-7b49-4c73-b2ad-f210b29acf16"
+content_hash = "sha256:3f2e5d15c1e8e2dd89dfc200fee51fa2d46049d46d8540ca17d6f06d662bada3"
+size = 794
+mtime_ms = 1788263345012
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/a625e4ce-7b49-4c73-b2ad-f210b29acf16/8dd9c861-b9b6-44c4-9f7a-6328506e1d8b"
+storage_version_token = "1788263388592188"
+content_type = "application/octet-stream"
+
+[[outputs]]
+id = "Ttc9f573tTEBoT52dEwq8"
+uri = "file://artifacts/api-server/JYRA_50_COMPANY_MVP_REALITY_TEST_02_RERUN_PERFORMANCE.json"
+type = "unspecified"
+title = "Reality Test 02 Performance"
+description = "Run timing, discovery rounds, provider calls, timeouts, and failures."
+logical_id = "a9c3eb94-5363-44b2-a085-449e7512fbe8"
+content_hash = "sha256:5d25e53ada3240c95ea82a34022cdd054946931db49536b85ffb9ed581a3a43d"
+size = 487
+mtime_ms = 1788263345012
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/a9c3eb94-5363-44b2-a085-449e7512fbe8/1d6178fb-ec17-4dcc-a011-4c353c215d46"
+storage_version_token = "1788263389907333"
+content_type = "application/octet-stream"

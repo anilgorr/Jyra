@@ -1,0 +1,5 @@
+id,category,severity,company,summary,status
+"RT02R-1","DISCOVERY","P1","","0/50 final-cohort companies were LIKELY_FIT; 33/50 were LIKELY_NOT_FIT and many were undersized security vendors","OPEN"
+"RT02R-2","FIRMOGRAPHICS","P1","","10/50 companies had insufficient WHO data; 7 profile resolutions were ambiguous and 2 firmographic matches were wrong","OPEN"
+"RT02R-3","RESEARCH_PLANNER","P1","","0 companies became research eligible, preventing Evidence, Facts, WHEN, WHY, Opportunity Priority, and NBA execution","OPEN"
+"RT02R-4","OPPORTUNITY_RANKING","P2","","Top 10 contained no supported opportunity evidence and no sales-useful opportunities","OPEN"

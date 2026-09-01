@@ -30,6 +30,7 @@
     "test:real-data-01-replay": "NODE_ENV=development JYRA_TEST_01_REPLAY_ONLY=1 node ./scripts/run-test-01.mjs",
     "prepare:reality-test-02": "NODE_ENV=development node ./scripts/run-reality-test-02-harness-preparation.mjs",
     "run:reality-test-02": "NODE_ENV=development JYRA_REALITY_TEST_NAME=JYRA_50_COMPANY_MVP_REALITY_TEST_02 JYRA_REALITY_CONTACT_ENRICHMENT_ENABLED=false node ./scripts/run-test-01.mjs",
+    "run:reality-test-02-rerun": "NODE_ENV=development JYRA_REALITY_TEST_NAME=JYRA_50_COMPANY_MVP_REALITY_TEST_02_RERUN JYRA_REALITY_CONTACT_ENRICHMENT_ENABLED=false node ./scripts/run-test-01.mjs",
     "report:reality-test-02": "NODE_ENV=development node ./scripts/report-reality-test-02.mjs",
     "finalize:reality-test-02": "NODE_ENV=development node ./scripts/finalize-reality-test-02-report.mjs",
     "test:real-data-01-controls": "NODE_ENV=development node ./scripts/run-test-01-controls.mjs",

@@ -1,0 +1,19 @@
+{
+  "test": "JYRA_50_COMPANY_MVP_REALITY_TEST_02_RERUN",
+  "runId": "e0f07200-08dc-4b41-8831-95be7df92616",
+  "startedAt": "2026-09-01T11:30:20.372Z",
+  "completedAt": "2026-09-01T11:45:39.086Z",
+  "runtimeMs": 918714,
+  "discoveryRounds": 7,
+  "companiesEvaluated": 50,
+  "researchQuestions": 0,
+  "providerCalls": 7,
+  "providerTimeouts": 0,
+  "providerFailures": 0,
+  "stageRuntimeMs": {
+    "discovery": null,
+    "who": null,
+    "research": 0,
+    "opportunityProcessing": 0
+  }
+}
