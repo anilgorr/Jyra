@@ -1,0 +1,814 @@
+JYRA — FIX 09
+AUTHORITATIVE SELLER CONTEXT RESTORATION + PROJECT ASSOCIATION
+
+OBJECTIVE
+
+Fix the current proven blocker from Fix 08.
+
+Fix 08 results:
+
+Business Twin = MISSING
+Actual seller offering received = NONE
+Activated Opportunity Pack snapshot = MISSING
+ICP = MISSING
+Context propagation = FAIL
+
+LLM foundation:
+PASS
+
+CompanyUnderstanding:
+PASS
+
+CommercialRoleAssessment:
+PASS
+
+Evidence grounding:
+PASS
+
+Deterministic guardrails:
+PASS
+
+Caching:
+PASS
+
+18-company replay:
+Identity-safe = 7
+Meaningful evidence available = 7
+Seller-context sufficient = 0
+LLM assessments = 0
+
+Therefore:
+
+DO NOT modify the LLM layer.
+
+DO NOT modify buyer-role classification.
+
+DO NOT modify normalization.
+
+DO NOT weaken identity.
+
+The current task is ONLY to repair authoritative seller-context existence,
+association, persistence, and propagation.
+
+==================================================
+0. DATABASE SAFETY
+==================================================
+
+DEVELOPMENT ONLY.
+
+Use only the development database.
+
+Production operations MUST remain 0.
+
+Do not migrate/reset/seed/modify/truncate/test production.
+
+==================================================
+1. PRESERVE ALL WORKING SUBSYSTEMS
+==================================================
+
+Preserve:
+
+Fix 04
+Fix 05 logic
+Cycle 06
+Fix 07
+Fix 08 LLM foundation
+identity resolution
+firmographics
+normalization
+evidence grounding
+facts/signals
+WHEN/WHY
+opportunity scoring
+NBA
+semantic idempotency
+activation concurrency.
+
+Do not rewrite working architecture.
+
+==================================================
+2. FIRST DETERMINE WHY CONTEXT IS MISSING
+==================================================
+
+Trace the exact development data model and associations for the project /
+cohort used by the Fix 08 replay.
+
+Inspect:
+
+User / tenant / organization
+Business Twin
+Business Twin version/status
+Offering
+Offering version/status
+ICP
+ICP version/status
+Opportunity Intelligence Pack
+Opportunity Pack version
+Pack activation
+Project / GTM project
+project seller/business-twin association
+project offering association
+project ICP association
+project active-pack association
+benchmark / replay namespace
+cohort association.
+
+Return an autopsy BEFORE making changes.
+
+For every expected object report:
+
+exists?
+record ID
+status
+approved/active?
+tenant/project ownership
+created_at
+updated_at
+
+Report relationship chain:
+
+PROJECT
+→ BUSINESS TWIN
+→ OFFERING
+→ ICP
+→ ACTIVE OPPORTUNITY PACK
+
+Identify EXACTLY where the chain breaks.
+
+Classify the root cause as one or more:
+
+REPLAY_PROJECT_ORPHANED
+BUSINESS_TWIN_NOT_CREATED
+BUSINESS_TWIN_NOT_LINKED
+OFFERING_NOT_CREATED
+OFFERING_NOT_LINKED
+ICP_NOT_CREATED
+ICP_NOT_LINKED
+PACK_NOT_CREATED
+PACK_NOT_ACTIVATED
+PACK_NOT_LINKED
+WRONG_PROJECT_NAMESPACE
+WRONG_TENANT
+LEGACY_TEST_DATA
+ASSOCIATION_LOST_DURING_COPY
+FIXTURE_CREATION_DEFECT
+READ_PATH_DEFECT
+OTHER.
+
+==================================================
+3. IMPORTANT — DO NOT INVENT SELLER DATA
+==================================================
+
+Do not create fake seller context merely to make the test pass.
+
+First search the DEVELOPMENT database for the actual existing approved seller
+configuration used in previous successful JYRA Managed SOC validations.
+
+Look for existing approved:
+
+Business Twin
+Offering
+ICP
+Opportunity Intelligence Pack.
+
+Use authoritative persisted data where it exists.
+
+Do not hardcode Aadit or Managed SOC in production code.
+
+The development validation may reuse an existing real development fixture,
+but the association mechanism must be generic.
+
+==================================================
+4. RESOLVE THE CORRECT AUTHORITATIVE CONTEXT
+==================================================
+
+If a valid existing seller context exists elsewhere in development:
+
+link the current project/replay to the correct authoritative records using the
+normal application association path.
+
+Do NOT duplicate Business Twin / Offering / ICP / Pack records unless the
+architecture requires a versioned snapshot.
+
+If context genuinely does not exist:
+
+STOP and report which authoritative object is missing.
+
+Do not silently synthesize it.
+
+==================================================
+5. DEFINE ONE AUTHORITATIVE PROJECT SELLER CONTEXT RESOLVER
+==================================================
+
+Create/reuse one deterministic function/service such as conceptually:
+
+resolveProjectSellerContext(projectId)
+
+It should resolve:
+
+tenant/org
+Business Twin
+approved Business Twin version
+Offering
+approved Offering version
+ICP
+approved ICP version
+active Opportunity Intelligence Pack
+active Pack version.
+
+Return a structured result.
+
+Conceptually:
+
+ProjectSellerContext {
+  projectId
+  tenantId
+
+  businessTwinId
+  businessTwinVersionId
+  sellerCompanyName
+  sellerBusinessDescription
+
+  offeringId
+  offeringVersionId
+  offeringName
+  offeringCategory
+  offeringDescription
+  offeringCapabilities[]
+
+  icpId
+  icpVersionId
+
+  opportunityPackId
+  opportunityPackVersionId
+
+  contextStatus
+  missingRequirements[]
+}
+
+Do not duplicate the authoritative data itself.
+
+==================================================
+6. FAIL LOUDLY ON INCOMPLETE CONTEXT
+==================================================
+
+The resolver must not silently return:
+
+"the seller offering"
+
+or equivalent placeholder data.
+
+If required context is incomplete:
+
+contextStatus = INSUFFICIENT
+
+with explicit missingRequirements such as:
+
+BUSINESS_TWIN_MISSING
+OFFERING_MISSING
+ICP_MISSING
+ACTIVE_PACK_MISSING.
+
+Buyer Role should continue returning UNKNOWN when this occurs.
+
+==================================================
+7. PROJECT CREATION / MARKET WORKFLOW INVARIANT
+==================================================
+
+Fix the generic workflow so a project intended for:
+
+Find My Market
+WHO
+WHEN
+WHY
+Buyer Role
+
+cannot become operational without required seller context.
+
+Define a validation state such as:
+
+DRAFT
+CONTEXT_INCOMPLETE
+READY_FOR_MARKET_DISCOVERY
+ACTIVE
+
+or reuse existing states.
+
+Before market discovery/research:
+
+require:
+
+approved Business Twin
+approved Offering
+approved ICP
+
+and where downstream signal intelligence is needed:
+
+activated Opportunity Intelligence Pack.
+
+Do not allow an orphan project to silently proceed.
+
+==================================================
+8. IMPORTANT DISTINCTION: PACK REQUIREMENT
+==================================================
+
+Buyer Role itself fundamentally needs:
+
+Business Twin
++
+Offering.
+
+WHO needs:
+
+Business Twin / Offering context
++
+ICP.
+
+WHEN/WHY / signal interpretation needs:
+
+active Opportunity Intelligence Pack.
+
+Do not unnecessarily require the Pack just to understand whether a company
+could buy the offering.
+
+However the full project readiness check should expose whether the pack is
+missing.
+
+==================================================
+9. REPLAY / BENCHMARK CONTEXT INHERITANCE
+==================================================
+
+The current defect may be caused by test/replay namespace creation.
+
+Audit how:
+
+benchmark projects
+replay cohorts
+test namespaces
+copied projects
+temporary runs
+
+inherit seller context.
+
+A replay of an existing project's companies must not lose:
+
+businessTwinId
+offeringId
+icpId
+activePackVersionId
+
+unless intentionally testing missing context.
+
+Fix this generically.
+
+Do not special-case Fix08 or the 18 companies.
+
+==================================================
+10. SNAPSHOT VS LIVE REFERENCE
+==================================================
+
+Determine whether benchmark/research runs should use:
+
+A. immutable seller-context snapshot at run start
+
+or
+
+B. versioned authoritative references.
+
+Use the architecture already closest to current JYRA.
+
+Recommended:
+
+run records store the exact version IDs used:
+
+businessTwinVersionId
+offeringVersionId
+icpVersionId
+opportunityPackVersionId
+
+so a historical run remains reproducible.
+
+Do not copy arbitrary text fields and detach them from source records.
+
+==================================================
+11. ACTIVATED PACK SNAPSHOT
+==================================================
+
+Fix 08 reported:
+
+Activated Opportunity Pack snapshot = MISSING.
+
+Trace whether:
+
+pack exists but project association missing
+pack is active but resolver not reading it
+activation created definitions but did not bind project selection
+benchmark namespace lost selection
+or no active pack exists.
+
+Do not reactivate or duplicate pack definitions unnecessarily.
+
+Use the existing activation concurrency-safe logic.
+
+==================================================
+12. FIX 05 REGRESSION
+==================================================
+
+Fix 08 reported:
+
+Fix05 = FAIL
+Managed SOC buyer fixture remains UNKNOWN.
+
+Inspect the fixture.
+
+If the fixture lost seller context due to the same association problem,
+repair the fixture/project creation path generically.
+
+Do not weaken Buyer Role.
+
+After context restoration:
+
+Fix05 MUST receive the actual seller offering.
+
+==================================================
+13. SIGNAL FIXTURE
+==================================================
+
+Current signal fixture fails because buyer-role membership remains UNKNOWN.
+
+Do not bypass membership gates.
+
+Repair the fixture's project seller context if missing.
+
+Then rerun.
+
+If it still fails after correct context is present, report separately.
+
+Do not modify signal definitions in this task.
+
+==================================================
+14. CONTEXT PROPAGATION TESTS
+==================================================
+
+Add tests proving:
+
+1. Project with complete context resolves actual Offering.
+2. Placeholder offering is never generated.
+3. Missing Offering causes INSUFFICIENT context.
+4. Missing ICP prevents WHO readiness.
+5. Missing Pack prevents WHEN/WHY readiness but does not necessarily prevent
+   Buyer Role.
+6. Benchmark/replay preserves exact context version IDs.
+7. Cross-tenant context cannot attach.
+8. Old project context remains reproducible after newer versions are created.
+9. Pack activation concurrency remains safe.
+10. Seller context resolver produces identical result across API/service path.
+
+==================================================
+15. CROSS-INDUSTRY GENERIC TEST
+==================================================
+
+Test context propagation using generic fixture projects:
+
+Managed SOC
+Recruitment
+ERP implementation
+Solar installation.
+
+Verify the resolver passes the correct offering to the existing LLM
+CommercialRoleAssessment.
+
+No hardcoded category branches.
+
+==================================================
+16. REPLAY SAME 18 AFTER CONTEXT FIX
+==================================================
+
+ONLY after authoritative seller context is restored.
+
+Replay the SAME 18 companies.
+
+Do not replace them.
+
+Do not run Find My Market.
+
+Do not run WHEN/WHY.
+
+Do not run contacts.
+
+Now run:
+
+Identity
+→ available profile evidence
+→ existing Fix08 LLM CompanyUnderstanding
+→ CommercialRoleAssessment.
+
+For each identity-safe company report:
+
+company
+domain
+
+Business Twin ID/version
+Offering ID/version
+actual offering name received
+ICP ID/version
+Pack ID/version if available
+
+meaningful company evidence
+LLM invoked
+commercial role
+confidence
+reason
+evidence IDs.
+
+==================================================
+17. SUCCESS GATE FOR 18
+==================================================
+
+Required:
+
+Seller context sufficient for Buyer Role = YES
+
+For all identity-safe + meaningful-evidence companies:
+
+actual offering must be present.
+
+No placeholder.
+
+LLM assessment should execute unless a legitimate deterministic gate blocks
+it.
+
+Target:
+
+commercial-role resolution coverage among eligible >=90%
+
+buyer-role precision >=90%
+
+seller incorrectly classified POTENTIAL_BUYER = 0.
+
+Do not require unsafe identity companies to resolve.
+
+==================================================
+18. FRESH 20-COMPANY VALIDATION
+==================================================
+
+ONLY if the 18-company gate passes.
+
+Run ONE fresh normal 20-company validation:
+
+Business Twin
+→ Offering
+→ ICP
+→ Find My Market
+→ Identity
+→ Company profile/evidence
+→ LLM CompanyUnderstanding
+→ Commercial Role
+→ WHO.
+
+Do not run WHEN/WHY.
+
+Do not run contacts.
+
+==================================================
+19. FRESH 20 REPORT
+==================================================
+
+Report:
+
+Project seller context complete =
+Business Twin =
+Offering =
+ICP =
+Pack active =
+
+Raw candidates =
+Canonical companies =
+Identity-safe =
+Meaningful evidence =
+LLM assessments =
+
+POTENTIAL_BUYER =
+SELLER_COMPETITOR =
+ADJACENT_VENDOR =
+PARTNER_POSSIBLE =
+UNKNOWN =
+
+LIKELY_FIT =
+POSSIBLE_FIT =
+LIKELY_NOT_FIT =
+INSUFFICIENT_DATA =
+
+Identity precision =
+Commercial-role precision =
+WHO agreement =
+
+Profile cost =
+LLM cost =
+Discovery cost =
+Total known cost =
+
+==================================================
+20. DO NOT TOUCH THESE
+==================================================
+
+Do NOT:
+
+rewrite LLM CompanyUnderstanding
+rewrite CommercialRoleAssessment
+modify industry taxonomy
+modify business-model taxonomy
+modify identity thresholds
+modify Managed SOC signal definitions
+modify Tavily/Exa retrieval
+optimize control recall
+modify WHEN/WHY
+modify Opportunity scoring
+modify NBA
+integrate contacts
+integrate Explee
+build outreach
+run 50-company Reality Test.
+
+==================================================
+21. REGRESSION SUITE
+==================================================
+
+Run:
+
+06A buyer-role
+Fix04
+Fix05
+Cycle06
+Fix07
+Fix08 LLM tests
+Identity
+Firmographics
+Normalization
+Company profile
+Cross-industry
+Activation concurrency
+Signal fixture
+
+New Fix09 tests:
+seller-context resolver
+project associations
+context readiness
+placeholder rejection
+version preservation
+replay inheritance
+cross-tenant isolation.
+
+Then:
+
+typecheck
+build
+API restart.
+
+Production operations = 0.
+
+==================================================
+22. FINAL REPORT
+==================================================
+
+Return:
+
+FIX 09 — AUTHORITATIVE SELLER CONTEXT RESTORATION
+
+AUTOPSY
+
+Root cause =
+Broken relationship =
+
+Business Twin authoritative record =
+Offering authoritative record =
+ICP authoritative record =
+Opportunity Pack authoritative record =
+
+Project association defect =
+Replay/fixture defect =
+Read-path defect =
+
+--------------------------------
+
+CONTEXT RESTORATION
+
+Project → Business Twin =
+PASS / FAIL
+
+Project → Offering =
+PASS / FAIL
+
+Project → ICP =
+PASS / FAIL
+
+Project → Active Pack =
+PASS / FAIL / NOT REQUIRED FOR BUYER ROLE
+
+Actual offering propagated =
+PASS / FAIL
+
+Placeholder eliminated =
+PASS / FAIL
+
+Versioned run context =
+PASS / FAIL
+
+--------------------------------
+
+18-COMPANY REPLAY
+
+Identity-safe =
+Meaningful evidence =
+Seller-context sufficient =
+
+LLM assessments =
+
+Potential buyer =
+Seller competitor =
+Adjacent vendor =
+Partner possible =
+Unknown =
+
+Unknown due identity =
+Unknown due evidence =
+Unknown due seller context =
+Other unknown =
+
+Commercial-role resolution coverage among eligible =
+Commercial-role precision =
+Seller→buyer errors =
+
+Provider calls =
+LLM calls =
+Known cost =
+
+--------------------------------
+
+FRESH 20
+
+Executed = YES / NO
+
+Potential buyer =
+Seller competitor =
+Adjacent vendor =
+Partner possible =
+Unknown =
+
+Likely fit =
+Possible fit =
+Likely not fit =
+Insufficient data =
+
+Identity precision =
+Commercial-role precision =
+WHO agreement =
+
+--------------------------------
+
+REGRESSIONS
+
+06A =
+Fix04 =
+Fix05 =
+Cycle06 =
+Fix07 =
+Fix08 =
+Identity =
+Firmographics =
+Normalization =
+Activation concurrency =
+Signal fixture =
+
+Fix09 context tests =
+Cross-industry context =
+Replay inheritance =
+Cross-tenant safety =
+
+Typecheck =
+Build =
+API restart =
+
+Production operations = MUST BE 0
+
+--------------------------------
+
+VERDICT
+
+Return EXACTLY ONE:
+
+A — AUTHORITATIVE SELLER CONTEXT RESTORED
+
+B — AUTHORITATIVE BUSINESS TWIN / OFFERING DATA DOES NOT EXIST
+
+C — PROJECT ASSOCIATION STILL BROKEN
+
+D — REPLAY / FIXTURE CONTEXT PROPAGATION STILL BROKEN
+
+E — CONTEXT RESTORED BUT BUYER-ROLE LAYER NOW FAILS
+
+F — MULTIPLE MATERIAL DEFECTS REMAIN
+
+STOP.
+
+Do not run the 50-company Reality Test.
