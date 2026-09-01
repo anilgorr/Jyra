@@ -1,0 +1,186 @@
+{
+  "runId": "60d963eb-eec3-4aec-a51f-a9398f5e1555",
+  "persisted": {
+    "candidates": 388,
+    "confirmed": 71,
+    "probable": 236,
+    "ambiguous": 37,
+    "wrongOrNotCompany": 38,
+    "unresolved": 6
+  },
+  "replay": {
+    "confirmedProcessed": 71,
+    "probableResearchSafe": 225,
+    "probableBlocked": 11,
+    "existingCanonicalReused": 104,
+    "newCanonicalCreated": 154,
+    "duplicatesPrevented": 38,
+    "canonicalized": 154,
+    "linked": 181,
+    "possibleMatches": 0,
+    "uniqueEvaluableCompanies": 181,
+    "whoHandoffEligible": 181,
+    "canConstruct50CompanyCohort": true,
+    "provenanceRows": 258,
+    "ambiguousUnsafePromotions": 0,
+    "wrongEntityPromotions": 0,
+    "notACompanyPromotions": 0,
+    "unresolvedUnsafePromotions": 0
+  },
+  "sample": {
+    "reviewed": 20,
+    "correct": 20,
+    "incorrect": 0,
+    "precision": 1,
+    "candidates": [
+      {
+        "name": "DeltaSpike",
+        "domain": "deltaspike.io",
+        "sourceUrl": "https://deltaspike.io",
+        "identityState": "CONFIRMED",
+        "correct": true
+      },
+      {
+        "name": "OverSOC",
+        "domain": "oversoc.com",
+        "sourceUrl": "https://oversoc.com",
+        "identityState": "CONFIRMED",
+        "correct": true
+      },
+      {
+        "name": "Prophet Security",
+        "domain": "prophetsecurity.ai",
+        "sourceUrl": "https://prophetsecurity.ai",
+        "identityState": "CONFIRMED",
+        "correct": true
+      },
+      {
+        "name": "CyboSec Technologies",
+        "domain": "cybosec.in",
+        "sourceUrl": "https://cybosec.in",
+        "identityState": "CONFIRMED",
+        "correct": true
+      },
+      {
+        "name": "Acoru",
+        "domain": "acoru.com",
+        "sourceUrl": "https://acoru.com",
+        "identityState": "CONFIRMED",
+        "correct": true
+      },
+      {
+        "name": "Arcoven Advisory",
+        "domain": "arcoven.ai",
+        "sourceUrl": "https://arcoven.ai",
+        "identityState": "CONFIRMED",
+        "correct": true
+      },
+      {
+        "name": "Cyber Profound",
+        "domain": "cyberprofound.com",
+        "sourceUrl": "https://cyberprofound.com",
+        "identityState": "CONFIRMED",
+        "correct": true
+      },
+      {
+        "name": "DIGISOC®",
+        "domain": "digisoc.net",
+        "sourceUrl": "https://digisoc.net",
+        "identityState": "CONFIRMED",
+        "correct": true
+      },
+      {
+        "name": "SOC Analyst Private Limited",
+        "domain": "socanalyst.in",
+        "sourceUrl": "https://socanalyst.in",
+        "identityState": "CONFIRMED",
+        "correct": true
+      },
+      {
+        "name": "Incrux Technologies Private Limited",
+        "domain": "incrux.in",
+        "sourceUrl": "https://incrux.in",
+        "identityState": "CONFIRMED",
+        "correct": true
+      },
+      {
+        "name": "360 SOC, Inc.",
+        "domain": "360soc.com",
+        "sourceUrl": "https://360soc.com",
+        "identityState": "PROBABLE",
+        "correct": true
+      },
+      {
+        "name": "Aquila I",
+        "domain": "aquilai.io",
+        "sourceUrl": "https://aquilai.io",
+        "identityState": "PROBABLE",
+        "correct": true
+      },
+      {
+        "name": "AlphaSOC",
+        "domain": "alphasoc.com",
+        "sourceUrl": "https://alphasoc.com",
+        "identityState": "PROBABLE",
+        "correct": true
+      },
+      {
+        "name": "Arco Cyber",
+        "domain": "arcocyber.com",
+        "sourceUrl": "https://arcocyber.com",
+        "identityState": "PROBABLE",
+        "correct": true
+      },
+      {
+        "name": "ArmourZero",
+        "domain": "armourzero.com",
+        "sourceUrl": "https://armourzero.com",
+        "identityState": "PROBABLE",
+        "correct": true
+      },
+      {
+        "name": "Alvorix Technologies",
+        "domain": "alvorix.com",
+        "sourceUrl": "https://alvorix.com",
+        "identityState": "PROBABLE",
+        "correct": true
+      },
+      {
+        "name": "ACPL Systems",
+        "domain": "acpl.com",
+        "sourceUrl": "https://acpl.com",
+        "identityState": "PROBABLE",
+        "correct": true
+      },
+      {
+        "name": "Arculus Cyber Security",
+        "domain": "arculus-cyber.co.uk",
+        "sourceUrl": "https://arculus-cyber.co.uk",
+        "identityState": "PROBABLE",
+        "correct": true
+      },
+      {
+        "name": "Awwal Security",
+        "domain": "awwalsecurity.com",
+        "sourceUrl": "https://awwalsecurity.com",
+        "identityState": "PROBABLE",
+        "correct": true
+      },
+      {
+        "name": "9 Realms Security",
+        "domain": "9realmssecurity.com",
+        "sourceUrl": "https://9realmssecurity.com",
+        "identityState": "PROBABLE",
+        "correct": true
+      }
+    ]
+  },
+  "providers": {
+    "freshDiscoveryCalls": 0,
+    "tavilyCalls": 0,
+    "exaWebSearchCalls": 0,
+    "contactEnrichmentCalls": 0,
+    "providerUsageDelta": 0
+  },
+  "productionOperations": 0
+}

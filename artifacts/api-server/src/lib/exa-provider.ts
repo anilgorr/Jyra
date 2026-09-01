@@ -146,6 +146,7 @@ function normalizeResult(result: ExaResult) {
     relevanceScore: numberValue(result.score),
     providerMetadata: {
       resultId: stringValue(result.id),
+      discoveryCandidate: true,
       title: stringValue(result.title),
       author: stringValue(result.author),
       publishedDate: stringValue(result.publishedDate),

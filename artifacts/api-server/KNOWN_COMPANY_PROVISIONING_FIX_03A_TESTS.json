@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-01T10:02:46.138Z",
+  "generatedAt": "2026-09-01T11:26:45.157Z",
   "genericTests": [
     {
       "id": "A",
@@ -44,9 +44,9 @@
           "relationshipStatus": "NONE",
           "opportunityScore": null,
           "opportunityAssessmentState": "WATCH",
-          "latestResearchAt": "2026-08-31T18:57:36.195Z",
+          "latestResearchAt": "2026-09-01T10:27:22.134Z",
           "createdAt": "2026-08-31T12:26:09.656Z",
-          "updatedAt": "2026-09-01T07:29:09.912Z"
+          "updatedAt": "2026-09-01T10:27:22.134Z"
         },
         "identity": {
           "companyLikeness": "LIKELY_COMPANY",
@@ -170,9 +170,9 @@
           "relationshipStatus": "NONE",
           "opportunityScore": null,
           "opportunityAssessmentState": "WATCH",
-          "latestResearchAt": "2026-08-31T19:00:20.545Z",
+          "latestResearchAt": "2026-09-01T10:30:09.635Z",
           "createdAt": "2026-08-31T12:30:00.380Z",
-          "updatedAt": "2026-09-01T07:29:10.098Z"
+          "updatedAt": "2026-09-01T10:30:09.635Z"
         },
         "identity": {
           "companyLikeness": "LIKELY_COMPANY",
@@ -319,9 +319,9 @@
           "relationshipStatus": "NONE",
           "opportunityScore": null,
           "opportunityAssessmentState": "WATCH",
-          "latestResearchAt": "2026-08-31T18:57:36.195Z",
+          "latestResearchAt": "2026-09-01T10:27:22.134Z",
           "createdAt": "2026-08-31T12:26:09.656Z",
-          "updatedAt": "2026-09-01T07:29:09.912Z"
+          "updatedAt": "2026-09-01T10:27:22.134Z"
         },
         "identity": {
           "companyLikeness": "LIKELY_COMPANY",
@@ -381,9 +381,9 @@
           "relationshipStatus": "NONE",
           "opportunityScore": null,
           "opportunityAssessmentState": "WATCH",
-          "latestResearchAt": "2026-08-31T18:57:36.195Z",
+          "latestResearchAt": "2026-09-01T10:27:22.134Z",
           "createdAt": "2026-08-31T12:26:09.656Z",
-          "updatedAt": "2026-09-01T07:29:09.912Z"
+          "updatedAt": "2026-09-01T10:27:22.134Z"
         },
         "identity": {
           "companyLikeness": "LIKELY_COMPANY",
@@ -450,9 +450,9 @@
           "relationshipStatus": "NONE",
           "opportunityScore": null,
           "opportunityAssessmentState": "WATCH",
-          "latestResearchAt": "2026-08-31T18:57:36.195Z",
+          "latestResearchAt": "2026-09-01T10:27:22.134Z",
           "createdAt": "2026-08-31T12:26:09.656Z",
-          "updatedAt": "2026-09-01T07:29:09.912Z"
+          "updatedAt": "2026-09-01T10:27:22.134Z"
         },
         "identity": {
           "companyLikeness": "AMBIGUOUS_COMPANY",

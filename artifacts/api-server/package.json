@@ -72,6 +72,8 @@
     ,"replay:semantic-idempotency-fix-01": "NODE_ENV=development node ./scripts/replay-semantic-idempotency-fix-01.mjs"
      ,"test:known-company-provisioning-fix-03a": "NODE_ENV=development node ./scripts/run-known-company-provisioning-fix-03a.mjs"
      ,"test:acceptance-runner-preflight-hotfix-02a": "NODE_ENV=development node ./scripts/run-acceptance-runner-preflight-02a.mjs"
+     ,"test:discovery-canonical-handoff-fix-04": "NODE_ENV=development node ./scripts/test-discovery-canonical-handoff-fix-04.mjs"
+     ,"replay:discovery-canonical-handoff-fix-04": "NODE_ENV=development node ./scripts/run-discovery-canonical-handoff-fix-04.mjs"
   },
   "dependencies": {
     "@clerk/express": "^2.1.63",

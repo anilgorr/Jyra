@@ -19,6 +19,7 @@ import {
   normalizeCompanyName,
   parseCompanyRelationshipLabel,
   type NormalizedCompanyInput,
+  type CompanyIdentityAssessment,
 } from "./company-identity";
 import type {
   CompanyDiscoveryStrategy,
@@ -93,6 +94,34 @@ export type DiscoveryResult = {
   blockedReason: string | null;
   candidates: DiscoveryCandidateReport[];
 };
+
+/**
+ * Market discovery needs a canonical object before WHO/research can run, but a
+ * PROBABLE discovery identity must not become a general-purpose confirmed
+ * attachment. This gate only permits a new/reused research canonical when the
+ * discovery result supplies three independent, mutually consistent signals:
+ * a traceable COMPANY_DISCOVERY candidate, an official URL on the exact
+ * candidate domain, and name/domain agreement. The provider marker is not
+ * treated as organization proof. Ambiguous or conflicting identities fail
+ * closed.
+ */
+export function canPersistResearchCanonicalCandidate(
+  value: NormalizedCompanyInput,
+  identity: CompanyIdentityAssessment,
+): boolean {
+  if (
+    identity.identityState !== "PROBABLE" ||
+    identity.companyLikeness !== "LIKELY_COMPANY" ||
+    identity.conflicts.length > 0 ||
+    !value.domain
+  ) {
+    return false;
+  }
+  const evidence = new Set(identity.evidence);
+  return evidence.has("NAME_DOMAIN_AGREEMENT") &&
+    evidence.has("OFFICIAL_SOURCE_DOMAIN") &&
+    evidence.has("PROVIDER_DISCOVERY_CANDIDATE");
+}
 
 export function buildHighRecallDiscoveryQueries(
   targetIndustries: string[],
@@ -639,7 +668,8 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
     let profileResolutionResult: Awaited<ReturnType<typeof resolveCompanyProfileWithRouter>>["response"]["data"] = null;
     let candidateIdentity = assessCompanyIdentity(value, {
       sourceUrl: sourceUrlForCandidate(candidate, response.sources) ?? candidate.sourceUrl ?? candidate.website ?? null,
-      providerOrganizationResult: Boolean(candidate.providerMetadata?.resultId),
+      providerOrganizationResult: candidate.providerMetadata?.entityType === "ORGANIZATION",
+      providerDiscoveryCandidate: candidate.providerMetadata?.discoveryCandidate === true,
     });
     const preexisting = value.domain ? await findCompanyByDomain(value.domain) : null;
     if (!preexisting &&
@@ -680,7 +710,7 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
             sourceType: "JYRA_DISCOVERY",
             sourceUrl: sourceUrlForCandidate(candidate, response.sources) ?? candidate.sourceUrl ?? candidate.website ?? null,
             observedAt: response.capturedAt,
-            providerOrganizationResult: Boolean(candidate.providerMetadata?.resultId),
+            providerOrganizationResult: candidate.providerMetadata?.entityType === "ORGANIZATION",
             providerResultId: typeof candidate.providerMetadata?.resultId === "string"
               ? candidate.providerMetadata.resultId
               : null,
@@ -716,7 +746,8 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
         value.profileUrls = { ...value.profileUrls, linkedin: profile!.normalizedProfileUrl! };
         candidateIdentity = assessCompanyIdentity(value, {
           sourceUrl: sourceUrlForCandidate(candidate, response.sources) ?? candidate.sourceUrl ?? candidate.website ?? null,
-          providerOrganizationResult: Boolean(candidate.providerMetadata?.resultId),
+          providerOrganizationResult: candidate.providerMetadata?.entityType === "ORGANIZATION",
+          providerDiscoveryCandidate: candidate.providerMetadata?.discoveryCandidate === true,
           verifiedLinkedin: true,
           verifiedDomain: profile!.supportingEvidence.some((item) =>
             item.kind === "DOMAIN_MATCH" || item.kind === "OFFICIAL_WEBSITE_LINK"),
@@ -726,14 +757,16 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
         profile.contradictingEvidence.length === 0) {
         candidateIdentity = assessCompanyIdentity(value, {
           sourceUrl: sourceUrlForCandidate(candidate, response.sources) ?? candidate.sourceUrl ?? candidate.website ?? null,
-          providerOrganizationResult: Boolean(candidate.providerMetadata?.resultId),
+          providerOrganizationResult: candidate.providerMetadata?.entityType === "ORGANIZATION",
+          providerDiscoveryCandidate: candidate.providerMetadata?.discoveryCandidate === true,
           probableLinkedin: true,
         });
       } else if (profile?.resolutionStatus === "WRONG" &&
         profile.contradictingEvidence.length > 0) {
         candidateIdentity = assessCompanyIdentity(value, {
           sourceUrl: sourceUrlForCandidate(candidate, response.sources) ?? candidate.sourceUrl ?? candidate.website ?? null,
-          providerOrganizationResult: Boolean(candidate.providerMetadata?.resultId),
+          providerOrganizationResult: candidate.providerMetadata?.entityType === "ORGANIZATION",
+          providerDiscoveryCandidate: candidate.providerMetadata?.discoveryCandidate === true,
           identifierConflict: true,
         });
       } else if (profile?.resolutionStatus === "AMBIGUOUS") {
@@ -774,7 +807,21 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
               identifierConflict: !exactName,
             })
         : candidateIdentity;
-      if (!identity.canonicalAttachAllowed) {
+      const researchCanonicalAllowed = canPersistResearchCanonicalCandidate(value, identity);
+      const researchCanonicalReuseAllowed = Boolean(
+        existing &&
+        exactName &&
+        researchCanonicalAllowed,
+      );
+      if (!identity.canonicalAttachAllowed && !researchCanonicalAllowed) {
+        return {
+          outcome: identity.identityState === "WRONG_ENTITY" ? "rejected" as const : "possible" as const,
+          company: null,
+          priority: researchPriority(assessment, 0),
+          identity,
+        };
+      }
+      if (existing && !identity.canonicalAttachAllowed && !researchCanonicalReuseAllowed) {
         return {
           outcome: identity.identityState === "WRONG_ENTITY" ? "rejected" as const : "possible" as const,
           company: null,
@@ -851,6 +898,8 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
           retrievalTimestamp: response.capturedAt,
           providerRequestId: response.providerRequestId,
           providerMetadata: candidate.providerMetadata ?? {},
+           providerDiscoveryCandidate: candidate.providerMetadata?.discoveryCandidate === true,
+           providerOrganizationAssertion: candidate.providerMetadata?.entityType === "ORGANIZATION",
           providerRelevance: candidate.relevanceScore ?? null,
           name: candidate.name,
           originalResultUrl: candidate.sourceUrl ?? candidate.website ?? null,
@@ -876,6 +925,19 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
             verifiedSameEntity: false,
           }] : [],
           profileResolution: profileResolutionResult,
+           canonicalization: {
+             decision: existing ? "REUSED" : "CREATED",
+             researchCanonical: !identity.canonicalAttachAllowed && researchCanonicalAllowed,
+             identityState: identity.identityState,
+             originalCandidate: {
+               name: candidate.name,
+               domain: candidate.domain ?? null,
+               website: candidate.website ?? null,
+               linkedinUrl: candidate.linkedinUrl ?? null,
+               sourceUrl: candidate.sourceUrl ?? null,
+             },
+             decidedAt: now.toISOString(),
+           },
         },
         visibility: "PUBLIC",
       });

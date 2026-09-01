@@ -1,0 +1,806 @@
+JYRA — DISCOVERY TO CANONICAL COMPANY HANDOFF FIX 04
+GENERIC PRODUCT FIX
+
+PURPOSE
+
+Fix the concrete product defect exposed by:
+
+JYRA — 50-COMPANY MVP REALITY TEST 02
+
+Authoritative run:
+
+Run ID:
+60d963eb-eec3-4aec-a51f-a9398f5e1555
+
+Observed funnel:
+
+Raw candidates = 400
+Candidate records = 388
+
+Identity states:
+
+CONFIRMED = 71
+PROBABLE = 236
+AMBIGUOUS = 37
+WRONG_ENTITY / NOT_A_COMPANY = 38
+UNRESOLVED = 6
+
+But:
+
+Unique canonical companies = 0
+Final cohort = 0/50
+WHO evaluated = 0
+Research = 0
+Signals = 0
+Opportunities = 0
+
+All 40 COMPANY_DISCOVERY calls succeeded.
+
+Therefore the primary defect is NOT provider discovery.
+
+The product is failing at the handoff:
+
+DISCOVERED CANDIDATE
+→ IDENTITY RESOLUTION
+→ CANONICAL COMPANY
+→ EVALUABLE COMPANY
+→ WHO.
+
+Fix this GENERICALLY.
+
+Do not optimize for Aadit or these specific candidates.
+
+==================================================
+1. DATABASE SAFETY
+==================================================
+
+DEVELOPMENT ONLY.
+
+Use only the development database.
+
+DO NOT:
+
+modify production
+migrate production
+reset production
+seed production
+truncate production.
+
+Production operations must remain:
+
+0.
+
+==================================================
+2. SCOPE
+==================================================
+
+Allowed repair scope:
+
+Find My Market candidate persistence
+candidate → canonical company resolution
+canonical company creation/reuse
+identity-state handoff
+research eligibility handoff
+WHO eligibility handoff
+transaction/idempotency around this handoff.
+
+DO NOT MODIFY:
+
+Business Twin
+ICP
+Opportunity Intelligence Pack
+Research Planner
+question generation
+query generation
+Tavily
+Exa retrieval behavior
+retrieval fallback
+fact extraction
+fact validation
+temporal logic
+signal definitions
+signal mapping
+WHEN
+WHY
+opportunity scoring
+NBA
+contact enrichment.
+
+==================================================
+3. FIRST REPRODUCE THE DEFECT
+==================================================
+
+Using persisted data from Reality Test 02 run:
+
+60d963eb-eec3-4aec-a51f-a9398f5e1555
+
+trace representative candidates from:
+
+CONFIRMED
+PROBABLE
+AMBIGUOUS
+WRONG_ENTITY
+UNRESOLVED.
+
+Determine exactly why:
+
+71 CONFIRMED candidates
+
+and
+
+236 PROBABLE candidates
+
+produced:
+
+0 canonical evaluable companies.
+
+Identify the earliest broken function/state transition.
+
+Do not make provider calls for this diagnosis.
+
+==================================================
+4. EXPECTED GENERIC BEHAVIOR
+==================================================
+
+Find My Market should follow:
+
+DISCOVERY CANDIDATE
+
+→ COMPANY-LIKENESS CHECK
+
+→ IDENTITY RESOLUTION
+
+→ CANONICAL COMPANY REUSE OR SAFE CREATION
+
+→ CANDIDATE ↔ CANONICAL COMPANY LINK
+
+→ WHO ELIGIBILITY
+
+→ RESEARCH ELIGIBILITY.
+
+A valid discovered company must not disappear between identity resolution
+and canonical company persistence.
+
+==================================================
+5. IDENTITY SAFETY MUST REMAIN
+==================================================
+
+Do NOT solve this by weakening identity safety.
+
+Existing safety principles remain:
+
+No fuzzy auto-attachment.
+
+No wrong-entity attachment.
+
+No parent/brand confusion.
+
+No service/product strings promoted as companies.
+
+No ambiguous entity auto-attachment.
+
+No unsupported canonical identity.
+
+Safety remains more important than coverage.
+
+==================================================
+6. CONFIRMED CANDIDATES
+==================================================
+
+A discovered candidate classified:
+
+CONFIRMED
+
+should normally result in one of:
+
+A. reuse an existing canonical company
+
+or
+
+B. safely create a canonical company
+
+and then establish the candidate → canonical-company relationship.
+
+A CONFIRMED candidate must not silently terminate before canonicalization.
+
+If current code prevents this, repair it.
+
+==================================================
+7. PROBABLE CANDIDATES
+==================================================
+
+Do NOT automatically treat every PROBABLE candidate as CONFIRMED.
+
+Instead determine whether existing identity semantics already distinguish:
+
+safe for research
+
+versus
+
+safe for permanent automatic attachment.
+
+Preserve that distinction.
+
+A PROBABLE company that passes existing research-eligibility safety rules
+should be allowed to participate in WHO/research without requiring an unsafe
+fuzzy identity attachment.
+
+If architecture requires a canonical company object for downstream processing,
+implement the safest generic representation consistent with current identity
+semantics.
+
+Do NOT lower identity thresholds merely to increase cohort size.
+
+==================================================
+8. AMBIGUOUS CANDIDATES
+==================================================
+
+AMBIGUOUS candidates must remain blocked from unsafe automatic attachment.
+
+They may remain:
+
+AMBIGUOUS
+INSUFFICIENT_IDENTITY
+REQUIRES_RESOLUTION
+
+or equivalent.
+
+Do not promote them merely to reach 50.
+
+==================================================
+9. INVALID CANDIDATES
+==================================================
+
+These should remain blocked:
+
+WRONG_ENTITY
+NOT_A_COMPANY.
+
+Do not change existing company-likeness safety.
+
+==================================================
+10. UNRESOLVED CANDIDATES
+==================================================
+
+UNRESOLVED must remain UNKNOWN/UNRESOLVED.
+
+Do not interpret unresolved as:
+
+bad company
+not ICP
+negative opportunity.
+
+==================================================
+11. CANONICAL COMPANY CREATION
+==================================================
+
+Audit whether Find My Market currently assumes canonical companies must
+already exist.
+
+That assumption would be incorrect for market discovery.
+
+Find My Market discovers NEW companies.
+
+Therefore the normal product must safely support:
+
+new discovered company
+→ validated identity
+→ canonical company creation.
+
+Creation must be:
+
+tenant-safe
+idempotent
+deduplicated
+provenance-aware.
+
+==================================================
+12. CANONICAL REUSE
+==================================================
+
+Before creating a new company, check existing canonical identities using
+normal deterministic identifiers such as supported:
+
+canonical domain
+verified domain
+known external profile
+existing identity mappings
+other existing safe identity keys.
+
+If a safe existing canonical company exists:
+
+reuse it.
+
+Do not create duplicates.
+
+==================================================
+13. PROVENANCE
+==================================================
+
+New canonical companies created from market discovery must retain provenance.
+
+Record at minimum:
+
+source = FIND_MY_MARKET
+
+discovery run ID
+
+provider
+
+original candidate identity
+
+identity state
+
+identity evidence
+
+created/reused decision
+
+timestamp.
+
+Do not lose the discovery lineage.
+
+==================================================
+14. IDEMPOTENCY
+==================================================
+
+Repeated discovery of the same company must not create duplicate canonical
+companies.
+
+Test:
+
+same candidate twice
+
+same domain with name variation
+
+same company from different discovery queries
+
+same company from different discovery rounds
+
+existing canonical company rediscovered.
+
+Expected:
+
+one canonical company.
+
+==================================================
+15. TENANT ISOLATION
+==================================================
+
+Canonical company reuse must respect existing tenant/data architecture.
+
+Do not accidentally attach another tenant's private company state.
+
+If canonical entity identity is global while opportunity/customer state is
+tenant-specific, preserve that architecture.
+
+Do not redesign tenancy unless required.
+
+==================================================
+16. WHO HANDOFF
+==================================================
+
+After successful canonicalization:
+
+the company must become eligible for normal WHO processing.
+
+Verify the actual path:
+
+Canonical Company
+→ Firmographics
+→ ICP Evaluation
+→ LIKELY_FIT / LIKELY_NOT_FIT / INSUFFICIENT_DATA.
+
+Do not modify ICP logic.
+
+==================================================
+17. RESEARCH HANDOFF
+==================================================
+
+A WHO-qualified/research-eligible company must then be available to the normal
+Research Planner.
+
+Do not run full research during the fix validation.
+
+Only verify that the handoff exists and would permit normal processing.
+
+==================================================
+18. NO MAGIC 50
+==================================================
+
+Do NOT write logic such as:
+
+promote until cohort reaches 50
+
+or
+
+accept first 50 probable companies.
+
+The product fix must work regardless of requested discovery size:
+
+10
+20
+50
+100
+etc.
+
+The 50-company benchmark is exposing a generic product defect.
+
+It is not the product rule.
+
+==================================================
+19. USE PERSISTED REALITY TEST DATA FOR VALIDATION
+==================================================
+
+After implementing the fix, replay the DISCOVERY → IDENTITY →
+CANONICALIZATION → WHO-HANDOFF portion using the persisted candidate set from:
+
+60d963eb-eec3-4aec-a51f-a9398f5e1555
+
+Do NOT perform fresh COMPANY_DISCOVERY calls.
+
+We want to know what would have happened to the same 388 candidate records
+after the repair.
+
+==================================================
+20. REQUIRED REPLAY FUNNEL
+==================================================
+
+Report:
+
+Persisted candidates =
+388
+
+Confirmed =
+71
+
+Probable =
+236
+
+Ambiguous =
+37
+
+Wrong entity/not company =
+38
+
+Unresolved =
+6
+
+Then after repair:
+
+Existing canonical reused =
+New canonical safely created =
+Canonical duplicates prevented =
+
+Confirmed candidates canonicalized =
+Confirmed candidates blocked =
+Reasons blocked =
+
+Probable candidates research-safe =
+Probable candidates blocked =
+Reasons blocked =
+
+Ambiguous promoted =
+MUST BE 0 unless existing exact canonical identity independently resolves
+ambiguity safely.
+
+Wrong entity promoted =
+MUST BE 0.
+
+Not-a-company promoted =
+MUST BE 0.
+
+Unresolved promoted =
+MUST BE 0 unless normal deterministic identity resolution independently
+resolves them.
+
+Unique evaluable companies =
+
+WHO handoff eligible =
+
+Could normal runner construct a 50-company cohort =
+YES / NO.
+
+==================================================
+21. SAFETY SAMPLE
+==================================================
+
+Manually/independently inspect a useful sample of canonicalized companies.
+
+At minimum:
+
+10 CONFIRMED
+
+10 PROBABLE that became research-safe
+
+all unusual/conflict cases encountered.
+
+Verify:
+
+real company
+correct name
+correct domain where available
+correct entity
+no obvious parent/brand mismatch
+no service/product string
+no duplicate canonical company.
+
+Report:
+
+sample reviewed =
+correct identities =
+wrong identities =
+identity precision =.
+
+Target:
+
+100% in this validation sample.
+
+==================================================
+22. REGRESSION TESTS
+==================================================
+
+Run existing identity safety regressions.
+
+Must continue to PASS:
+
+known-company provisioning
+12-company WHO identity regression
+four-case identity safety regression
+Find My Market discovery regression.
+
+Also add tests for:
+
+1. New CONFIRMED discovered company creates canonical company.
+
+2. Existing CONFIRMED discovered company reuses canonical company.
+
+3. Same company discovered twice does not duplicate.
+
+4. Same domain/name variation does not duplicate.
+
+5. PROBABLE research-safe candidate can continue according to current safe
+   semantics.
+
+6. AMBIGUOUS candidate is not unsafely attached.
+
+7. WRONG_ENTITY is blocked.
+
+8. NOT_A_COMPANY is blocked.
+
+9. UNRESOLVED is not treated as negative evidence.
+
+10. Candidate retains discovery provenance.
+
+11. Canonicalized company reaches WHO handoff.
+
+12. Requested cohort size does not influence identity safety.
+
+==================================================
+23. PRODUCT ARCHITECTURE PRINCIPLE
+==================================================
+
+There are two different workflows:
+
+KNOWN COMPANY INPUT
+
+CSV/manual/existing customer company
+→ resolveKnownCompany
+→ canonical company.
+
+MARKET DISCOVERY
+
+unknown market candidate
+→ discovery
+→ identity validation
+→ canonical company reuse/create
+→ WHO.
+
+Do NOT force market discovery through assumptions designed only for known
+company input.
+
+Both workflows must converge into the same canonical company model after
+safe identity resolution.
+
+==================================================
+24. DO NOT TOUCH THE 40% RECALL ISSUE
+==================================================
+
+The previous 10-control acceptance had:
+
+40% known-event recall.
+
+Ignore that during this fix.
+
+Do not modify:
+
+queries
+providers
+facts
+signals.
+
+We will evaluate those naturally after companies can actually enter the
+50-company funnel.
+
+==================================================
+25. NO CONTACT ENRICHMENT
+==================================================
+
+Contact enrichment remains out of scope.
+
+Explee calls = 0
+person search = 0
+email lookup = 0
+phone lookup = 0
+outreach = 0.
+
+==================================================
+26. PROVIDER CALLS
+==================================================
+
+Use persisted Test 02 candidate data for validation.
+
+Fresh COMPANY_DISCOVERY calls = 0.
+
+Tavily calls = 0.
+
+Exa WEB_SEARCH calls = 0.
+
+Contact provider calls = 0.
+
+If identity/profile resolution absolutely requires an existing normal provider
+call to validate a candidate, first determine whether persisted evidence is
+sufficient.
+
+Prefer zero fresh provider calls for this fix validation.
+
+==================================================
+27. REQUIRED ARTIFACT
+==================================================
+
+Generate:
+
+JYRA_DISCOVERY_CANONICAL_HANDOFF_FIX_04.md
+
+Include:
+
+root cause
+files changed
+state transition before fix
+state transition after fix
+canonicalization rules
+PROBABLE handling
+safety rules
+replay funnel
+identity sample
+regression tests
+database safety
+remaining limitations.
+
+==================================================
+28. REQUIRED FINAL REPORT
+==================================================
+
+ROOT CAUSE
+
+Earliest broken function/stage =
+
+Why CONFIRMED produced zero canonical companies =
+
+Why PROBABLE produced zero evaluable companies =
+
+FIX
+
+Product files changed =
+Harness files changed =
+
+Canonical reuse implemented/fixed =
+YES / NO
+
+Safe canonical creation implemented/fixed =
+YES / NO
+
+Probable research-safe handoff implemented/fixed =
+YES / NO
+
+Identity safety weakened =
+MUST BE NO
+
+REPLAY
+
+Persisted candidates = 388
+
+Confirmed = 71
+Probable = 236
+Ambiguous = 37
+Wrong/not-company = 38
+Unresolved = 6
+
+Existing canonical reused =
+New canonical created =
+Duplicates prevented =
+
+Unique evaluable companies =
+WHO handoff eligible =
+
+Can construct 50-company cohort =
+YES / NO
+
+SAFETY
+
+Ambiguous unsafe promotions =
+Wrong-entity promotions =
+Not-a-company promotions =
+Unresolved unsafe promotions =
+
+Identity sample reviewed =
+Correct =
+Incorrect =
+Precision =
+
+REGRESSIONS
+
+Known-company provisioning =
+PASS / FAIL
+
+12-company WHO =
+PASS / FAIL
+
+Four-case identity safety =
+PASS / FAIL
+
+Find My Market =
+PASS / FAIL
+
+New handoff tests =
+X / 12
+
+Typecheck =
+PASS / FAIL
+
+Build =
+PASS / FAIL
+
+PROVIDERS
+
+Fresh discovery calls =
+Tavily calls =
+Exa WEB_SEARCH calls =
+Contact enrichment calls =
+
+Production operations =
+
+==================================================
+29. FINAL VERDICT
+==================================================
+
+Return EXACTLY ONE:
+
+A — DISCOVERY → CANONICAL HANDOFF REPAIRED
+
+B — HANDOFF PARTIALLY REPAIRED
+
+C — IDENTITY SAFETY REGRESSION
+
+D — CANONICAL DEDUPLICATION REGRESSION
+
+E — WHO HANDOFF STILL BLOCKED
+
+F — ARCHITECTURAL CHANGE REQUIRED
+
+==================================================
+30. STOP
+==================================================
+
+Do NOT rerun the full 50-company Reality Test 02 automatically.
+
+If verdict = A:
+
+STOP.
+
+State:
+
+"Discovery → Canonical Company handoff repaired.
+
+Next step: rerun 50-Company MVP Reality Test 02 using a fresh run."
+
+We will explicitly start the fresh benchmark after reviewing this result.

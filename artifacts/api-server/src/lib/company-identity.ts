@@ -284,6 +284,7 @@ export function parseCompanyRelationshipLabel(value: unknown): ParsedCompanyRela
 export function assessCompanyIdentity(input: NormalizedCompanyInput, context: {
   sourceUrl?: string | null;
   providerOrganizationResult?: boolean;
+  providerDiscoveryCandidate?: boolean;
   verifiedDomain?: boolean;
   verifiedLinkedin?: boolean;
   probableLinkedin?: boolean;
@@ -314,6 +315,7 @@ export function assessCompanyIdentity(input: NormalizedCompanyInput, context: {
   if (context.verifiedDomain) evidence.push("VERIFIED_DOMAIN");
   if (context.knownAliasMatch) evidence.push("KNOWN_ALIAS");
   if (context.providerOrganizationResult) evidence.push("PROVIDER_ORGANIZATION_RESULT");
+  if (context.providerDiscoveryCandidate) evidence.push("PROVIDER_DISCOVERY_CANDIDATE");
   if (context.identifierConflict) conflicts.push("IDENTIFIER_CONFLICT");
   if (context.relatedEntityConflict || hasRelatedEntityQualifier(input.canonicalName)) {
     conflicts.push("RELATED_ENTITY_CONFLICT");
@@ -351,7 +353,8 @@ export function assessCompanyIdentity(input: NormalizedCompanyInput, context: {
       conflicts,
     };
   }
-  if (domainAgrees && officialSourceAgrees && context.providerOrganizationResult) {
+  if (domainAgrees && officialSourceAgrees &&
+    (context.providerOrganizationResult || context.providerDiscoveryCandidate)) {
     return {
       companyLikeness: "LIKELY_COMPANY",
       identityState: "PROBABLE",
@@ -360,7 +363,8 @@ export function assessCompanyIdentity(input: NormalizedCompanyInput, context: {
       conflicts,
     };
   }
-  if (context.probableLinkedin && context.providerOrganizationResult) {
+  if (context.probableLinkedin &&
+    (context.providerOrganizationResult || context.providerDiscoveryCandidate)) {
     return {
       companyLikeness: "LIKELY_COMPANY",
       identityState: "PROBABLE",

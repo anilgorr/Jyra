@@ -794,3 +794,31 @@ mtime_ms = 1788261201519
 storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/0c6a71c5-26db-4283-be92-ebafbd34588a/4aff42be-2e84-4c55-a768-c6fcd554a559"
 storage_version_token = "1788261227866317"
 content_type = "text/csv"
+
+[[outputs]]
+id = "x_YWb9wdILCKL_ogqjge0"
+uri = "file://artifacts/api-server/JYRA_DISCOVERY_CANONICAL_HANDOFF_FIX_04.md"
+type = "text"
+title = "Discovery to Canonical Handoff Fix 04"
+description = "Root cause, generic product repair, safety rules, persisted replay funnel, regressions, and final verdict."
+logical_id = "8a406004-624f-4008-9a93-687b96b74d99"
+content_hash = "sha256:6f4983618fa2df8e2a109bd5228edddb042f9ecf5341f023f650c2c6ada38e1b"
+size = 5274
+mtime_ms = 1788262039622
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/8a406004-624f-4008-9a93-687b96b74d99/45dce5d5-63c2-4ecc-bfb1-2f53ef17685e"
+storage_version_token = "1788262070867856"
+content_type = "text/markdown"
+
+[[outputs]]
+id = "gkfIDFJShZ6qmdbDgKXQw"
+uri = "file://artifacts/api-server/JYRA_DISCOVERY_CANONICAL_HANDOFF_FIX_04_REPLAY.json"
+type = "unspecified"
+title = "Fix 04 Persisted Replay Evidence"
+description = "Structured replay of the 388 immutable Reality Test 02 candidates with handoff, safety, sample, provider, and production-operation metrics."
+logical_id = "82f9b924-5e3e-4a7f-b468-06ba8fa87dc4"
+content_hash = "sha256:4a2742abe373b5a70d76537cec0fbceba22317f8cdbbf4c29c264d265871666c"
+size = 4948
+mtime_ms = 1788261994274
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/82f9b924-5e3e-4a7f-b468-06ba8fa87dc4/2039520f-2c94-45ba-96f0-895c6ffc9694"
+storage_version_token = "1788262072175518"
+content_type = "application/octet-stream"

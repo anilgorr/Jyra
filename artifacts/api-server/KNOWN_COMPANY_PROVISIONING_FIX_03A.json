@@ -1,6 +1,6 @@
 {
   "milestone": "KNOWN_COMPANY_PROVISIONING_FIX_03A",
-  "generatedAt": "2026-09-01T10:02:46.138Z",
+  "generatedAt": "2026-09-01T11:26:45.157Z",
   "decision": "A",
   "decisionLabel": "KNOWN COMPANY PROVISIONING / IDENTITY HANDOFF REPAIRED",
   "autopsyRootCause": "Known-company provisioning must reuse canonical identity and remain separate from market discovery.",
@@ -24,17 +24,17 @@
     "wrongResearchEligible": 0
   },
   "providerCalls": {
-    "generatedAt": "2026-09-01T10:02:46.138Z",
+    "generatedAt": "2026-09-01T11:26:45.157Z",
     "before": {
-      "WEB_SEARCH": 959,
+      "WEB_SEARCH": 1021,
       "COMPANY_FIRMOGRAPHICS": 181,
-      "COMPANY_DISCOVERY": 123,
+      "COMPANY_DISCOVERY": 165,
       "WEBSITE_CRAWL": 20
     },
     "after": {
-      "WEB_SEARCH": 959,
+      "WEB_SEARCH": 1021,
       "COMPANY_FIRMOGRAPHICS": 181,
-      "COMPANY_DISCOVERY": 123,
+      "COMPANY_DISCOVERY": 165,
       "WEBSITE_CRAWL": 20
     },
     "deltas": {
@@ -77,14 +77,14 @@
     "productionMigrations": 0,
     "productionOperations": 0,
     "countsBefore": {
-      "companies": 456,
-      "projectCompanies": 425,
+      "companies": 457,
+      "projectCompanies": 426,
       "duplicateCompanyDomains": 0,
       "duplicateProjectCompanyLinks": 0
     },
     "countsAfter": {
-      "companies": 456,
-      "projectCompanies": 425,
+      "companies": 457,
+      "projectCompanies": 426,
       "duplicateCompanyDomains": 0,
       "duplicateProjectCompanyLinks": 0
     },

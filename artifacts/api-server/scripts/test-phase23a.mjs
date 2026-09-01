@@ -36,6 +36,7 @@ let organization;
 let project;
 let company;
 let fuzzyCompany;
+let discoveredCompanyId;
 try {
   await db.insert(usersTable).values({ id: userId });
   [organization] = await db.insert(organizationsTable).values({ name: `Phase 23A ${suffix}`, createdByUserId: userId }).returning();
@@ -72,14 +73,15 @@ try {
       async discoverCompanies() {
         return {
           status: "success",
-          providerId: "controlled-provider",
+          providerId: "router",
           providerRequestId: `discovery-${suffix}`,
           data: {
             companies: [{
-              name: "Acme Technologies",
+              name: "ACME",
               domain: company.domain,
               website: company.website,
               description: "Controlled independent discovery candidate",
+              providerMetadata: { resultId: `existing-result-${suffix}`, discoveryCandidate: true },
             }],
           },
           sources: [{ kind: "public_url", reference: company.website, capturedAt: new Date().toISOString() }],
@@ -122,7 +124,7 @@ try {
       async discoverCompanies() {
         return {
           status: "success",
-          providerId: "controlled-provider",
+          providerId: "router",
           providerRequestId: `fuzzy-${suffix}`,
           data: {
             companies: [{
@@ -147,6 +149,70 @@ try {
     0,
     "a new domain with a fuzzy existing name must be held for review",
   );
+
+  const researchName = `Fix04${suffix}`;
+  const researchDomain = `fix04${suffix}.example`;
+  const researchWebsite = `https://${researchDomain}`;
+  const researchDiscovery = await discoverCompaniesForProject({
+    organizationId: organization.id,
+    projectId: project.id,
+    userId,
+    limit: 2,
+    maxProviderCalls: 1,
+    router: {
+      async discoverCompanies() {
+        const candidate = {
+          name: researchName,
+          domain: researchDomain,
+          website: researchWebsite,
+          sourceUrl: researchWebsite,
+          description: "Controlled evidence-backed probable market candidate",
+          providerMetadata: { resultId: `result-${suffix}`, discoveryCandidate: true },
+        };
+        return {
+          status: "success",
+          providerId: "router",
+          providerRequestId: `research-canonical-${suffix}`,
+          data: { companies: [candidate, candidate] },
+          sources: [{ kind: "public_url", reference: researchWebsite, capturedAt: new Date().toISOString() }],
+          usage: { estimatedCost: 0, actualCost: 0, latencyMs: 1, runtimeMs: 1, resultCount: 2 },
+          error: null,
+          retryable: false,
+          capturedAt: new Date().toISOString(),
+        };
+      },
+    },
+  });
+  assert.equal(researchDiscovery.canonicalized, 1, "research-safe discovery must create one canonical company");
+  assert.equal(researchDiscovery.duplicatesRemoved, 1, "repeated discovery must be deduplicated");
+  assert.equal(researchDiscovery.candidates[0]?.identityState, "PROBABLE");
+  assert.equal(researchDiscovery.candidates[0]?.existingOrNew, "NEW");
+  assert.ok(researchDiscovery.candidates[0]?.companyId);
+  discoveredCompanyId = researchDiscovery.candidates[0].companyId;
+  const researchLinks = await db.select().from(projectCompaniesTable).where(and(
+    eq(projectCompaniesTable.projectId, project.id),
+    eq(projectCompaniesTable.companyId, discoveredCompanyId),
+  ));
+  assert.equal(researchLinks.length, 1, "research canonical must reach the normal project-company handoff");
+  assert.equal(researchLinks[0]?.researchStatus, "not_started");
+  const researchProvenance = await db.select().from(companyProvenanceTable).where(and(
+    eq(companyProvenanceTable.projectId, project.id),
+    eq(companyProvenanceTable.companyId, discoveredCompanyId),
+  ));
+  assert.equal(researchProvenance.length, 1);
+  assert.deepEqual(researchProvenance[0]?.payload?.canonicalization, {
+    decision: "CREATED",
+    researchCanonical: true,
+    identityState: "PROBABLE",
+    originalCandidate: {
+      name: researchName,
+      domain: researchDomain,
+      website: researchWebsite,
+      linkedinUrl: null,
+      sourceUrl: researchWebsite,
+    },
+    decidedAt: researchProvenance[0]?.payload?.canonicalization?.decidedAt,
+  });
 
   const blocked = await discoverCompaniesForProject({
     organizationId: organization.id,
@@ -175,5 +241,6 @@ try {
   if (organization) await db.delete(organizationsTable).where(eq(organizationsTable.id, organization.id));
   if (company) await db.delete(companiesTable).where(eq(companiesTable.id, company.id));
   if (fuzzyCompany) await db.delete(companiesTable).where(eq(companiesTable.id, fuzzyCompany.id));
+  if (discoveredCompanyId) await db.delete(companiesTable).where(eq(companiesTable.id, discoveredCompanyId));
   await db.delete(usersTable).where(eq(usersTable.id, userId));
 }
