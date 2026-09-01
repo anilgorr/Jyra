@@ -259,7 +259,9 @@ function CompanyDetailPane({ company, activeProjectId }: { company: ResearchWork
         queryClient.invalidateQueries({ queryKey: getListResearchWorkspaceQueryKey(activeProjectId) });
         
         if (data.stopped) {
-          toast.error("Research stopped", { description: data.reason || "Unknown reason" });
+          toast.info(data.stopCode === "STILL_UNKNOWN" ? "Company research completed" : "Research paused safely", {
+            description: data.reason || data.nextAction,
+          });
         } else {
           toast.success("Sweep complete", {
             description: `Gathered ${data.evidenceCount} evidence items.`
@@ -288,10 +290,14 @@ function CompanyDetailPane({ company, activeProjectId }: { company: ResearchWork
             <Search className="h-10 w-10 text-accent animate-pulse" />
           </div>
           <h3 className="mt-8 font-display text-2xl font-medium tracking-tight text-foreground">
-            Gathering Intelligence
+            {company.intelligenceStage === "NEEDS_MINIMUM_INTELLIGENCE"
+              ? "Understanding Company"
+              : "Researching Opportunity"}
           </h3>
           <p className="mt-3 text-muted-foreground text-center max-w-sm">
-            Scanning public sources, extracting structured facts, and assembling provenance.
+            {company.intelligenceStage === "NEEDS_MINIMUM_INTELLIGENCE"
+              ? "Evaluating the company, its buyer relationship, and ICP fit before any opportunity research."
+              : "Scanning public sources, extracting structured facts, and assembling provenance."}
           </p>
         </div>
       )}

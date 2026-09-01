@@ -1,0 +1,1 @@
+export * from "../src/lib/minimum-company-intelligence-policy";

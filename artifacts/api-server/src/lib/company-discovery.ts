@@ -646,6 +646,28 @@ function qualifyCandidate(
   return { classification, checks, knownCriteria, matchedCriteria, missingCriteria, buyerRole, buyerRoleAssessment };
 }
 
+/** Existing project-company WHO qualification, shared by Research Now rather
+ * than recreating a second eligibility policy in a route or client. */
+export async function qualifyProjectCompanyForWho(input: {
+  projectId: string;
+  company: typeof companiesTable.$inferSelect;
+}): Promise<{ eligible: boolean; qualification: DiscoveryQualification }> {
+  const plan = await buildDiscoveryPlan(input.projectId);
+  const profile = await getCanonicalCompanyProfile(input.projectId, input.company);
+  const normalized = normalizeCompanyInput({
+    canonicalName: profile.canonicalName, domain: profile.domain, website: profile.website,
+    linkedinUrl: profile.linkedinCompanyUrl, profileUrls: profile.profileUrls, country: profile.country,
+    industry: profile.canonicalIndustry, employeeCount: profile.employeesExact,
+    employeeRange: profile.employeesMin !== null && profile.employeesMax !== null
+      ? `${profile.employeesMin}-${profile.employeesMax}` : null,
+    description: profile.primaryBusinessDescription,
+  }).value;
+  if (!normalized) return { eligible: false, qualification: "INSUFFICIENT_DATA" };
+  const assessment = qualifyCandidate(normalized, plan.strategy, null,
+    profile.primaryBusinessDescription ? { text: profile.primaryBusinessDescription, source: "canonical_company_profile" } : null);
+  return { eligible: isBuyerEvaluable(assessment) && assessment.classification !== "LIKELY_NOT_FIT", qualification: assessment.classification };
+}
+
 function researchPriority(assessment: CandidateAssessment, evidenceCount: number): number {
   const base = assessment.classification === "LIKELY_FIT"
     ? 90

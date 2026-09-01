@@ -83,8 +83,8 @@ export function MarketCard({ card, projectId }: MarketCardProps) {
       {
         onSuccess: (result) => {
           if (result.stopped) {
-            toast.info("No research was started", {
-              description: result.reason ?? `No due research question is available for ${card.company.name}.`,
+            toast.info(result.stopCode === "STILL_UNKNOWN" ? "Company research completed" : "Research paused safely", {
+              description: result.reason ?? result.nextAction,
             });
           } else {
             toast.success("Research completed", {
@@ -297,7 +297,7 @@ export function MarketCard({ card, projectId }: MarketCardProps) {
               className="gap-1.5"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${executeResearch.isPending ? 'animate-spin' : ''}`} />
-              Research Now
+              {executeResearch.isPending ? "Investigating company..." : "Research Now"}
             </Button>
           )}
 

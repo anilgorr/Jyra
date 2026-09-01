@@ -5,6 +5,7 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+import type { ResearchExecutionResponseBuyerRole } from './researchExecutionResponseBuyerRole';
 import type { ResearchJob } from './researchJob';
 import type { ResearchQuestion } from './researchQuestion';
 
@@ -12,6 +13,12 @@ export interface ResearchExecutionResponse {
   stopped: boolean;
   /** @nullable */
   reason: string | null;
+  buyerRole: ResearchExecutionResponseBuyerRole;
+  intelligenceStage: string;
+  /** @nullable */
+  stopCode: string | null;
+  progress: string;
+  nextAction: string;
   question: ResearchQuestion | null;
   job: ResearchJob | null;
   evidenceCount: number;

@@ -1,0 +1,1608 @@
+JYRA — COMPANY INTELLIGENCE + RESEARCH ORCHESTRATION FIX 11
+
+MODE:
+TARGETED PRODUCT REPAIR + BOUNDED VALIDATION
+
+OBJECTIVE:
+
+Fix the current upstream intelligence deadlock:
+
+DISCOVER COMPANY
+→ insufficient company information
+→ Commercial Role = UNKNOWN
+→ buyer research gated
+→ no additional company information acquired
+→ company remains UNKNOWN forever
+
+This is the primary problem identified by the DigiPuush blind test.
+
+LATEST DIGIPUUSH TEST:
+
+Requested companies = 20
+Final cohort = 20
+Plausible market = 20/20
+Identity precision = 95%
+
+BUT:
+
+JYRA profile sufficient = 1/20
+Independent public profile sufficient = 19/20
+
+JYRA roles:
+POTENTIAL_BUYER = 1
+UNKNOWN = 19
+
+Profile calls = 0
+Firmographic calls = 0
+LLM calls = 1
+
+Primary error:
+PROFILE_EVIDENCE_INSUFFICIENT = 18
+
+There is also a visible UI/product defect:
+
+When the user clicks:
+
+Research Now
+
+on an UNKNOWN company, JYRA currently returns:
+
+"No research was started.
+Buyer research is gated for UNKNOWN."
+
+This creates a circular dependency.
+
+Fix BOTH problems in this cycle.
+
+DO NOT redesign JYRA.
+
+==================================================
+0. DATABASE SAFETY
+==================================================
+
+THIS IS DEVELOPMENT WORK.
+
+Use ONLY the development database.
+
+Create/apply migrations to DEVELOPMENT only.
+
+DO NOT:
+
+- migrate production
+- reset production
+- seed production
+- modify production data
+- truncate production
+- test against production
+
+PRODUCTION OPERATIONS MUST REMAIN 0.
+
+==================================================
+1. PRESERVE WORKING ARCHITECTURE
+==================================================
+
+Do not replace or redesign working systems.
+
+Preserve:
+
+Business Twin
+Offering
+ICP
+Opportunity Intelligence Pack
+Find My Market
+market discovery
+canonical company identity
+identity safety
+provider router
+provider adapters
+normalization
+evidence provenance
+CompanyUnderstanding
+CommercialRoleAssessment
+WHO
+Research Planner
+adaptive Tavily → Exa retrieval
+fact extraction
+signal engine
+signal clusters
+WHEN
+WHY
+opportunity engine
+NBA
+Recommendation Ledger
+Outcomes
+Continuous Learning foundation
+research economics
+caching
+semantic idempotency
+cross-tenant isolation
+
+FREEZE for this cycle:
+
+CompanyUnderstanding version:
+fix08-company-understanding-v4
+
+CommercialRole version:
+buyer-role-resolution-06a
+
+Model:
+gpt-5-mini
+
+Do NOT tune these prompts yet.
+
+We need to measure them after they receive sufficient evidence.
+
+Do NOT:
+
+- change ICP to improve benchmark
+- tune discovery around known test companies
+- add DigiPuush-specific rules
+- add Managed-SOC-specific rules
+- add company-name exceptions
+- add buyer keyword lists
+- modify signal definitions
+- optimize WHEN/WHY recall
+- integrate contacts
+- integrate outreach
+- integrate Explee
+
+==================================================
+2. FIRST: ROOT CAUSE AUTOPSY
+==================================================
+
+Before changing code, trace the exact normal execution path:
+
+Find My Market
+→ Discovery Candidate
+→ Canonical Company
+→ Identity Resolution
+→ Canonical Profile
+→ Profile Evidence
+→ CompanyUnderstanding
+→ CommercialRoleAssessment
+→ WHO
+→ Research Eligibility
+
+Determine exactly why the DigiPuush test produced:
+
+profile calls = 0
+firmographic calls = 0
+LLM calls = 1
+profile sufficient = 1/20
+UNKNOWN = 19/20
+
+Classify every material root cause using:
+
+PROFILE_RESOLVER_NOT_INVOKED
+PROFILE_RESOLVER_GATED_INCORRECTLY
+DISCOVERY_DATA_NOT_PROJECTED
+CANONICAL_PROFILE_NOT_POPULATED
+EXISTING_PROFILE_NOT_READ
+PROFILE_SUFFICIENCY_CHECK_TOO_EARLY
+PROFILE_SUFFICIENCY_CHECK_TOO_STRICT
+PROVIDER_ROUTING_NOT_TRIGGERED
+PROFILE_EVIDENCE_NOT_PERSISTED
+PROFILE_EVIDENCE_NOT_LINKED
+PROFILE_CACHE_NOT_READ
+IDENTITY_GATE_BLOCKED
+COMPANYUNDERSTANDING_NOT_TRIGGERED
+COMMERCIAL_ROLE_NOT_TRIGGERED
+RESEARCH_GATE_DEADLOCK
+OTHER
+
+Inspect actual persisted records and execution paths.
+
+DO NOT guess.
+
+Report the root cause before implementing the fix.
+
+==================================================
+3. INTRODUCE MINIMUM COMPANY INTELLIGENCE
+==================================================
+
+Introduce one generic product concept:
+
+MinimumCompanyIntelligence
+
+Purpose:
+
+Obtain enough grounded information to answer:
+
+"What does this company actually do?"
+
+This is NOT opportunity research.
+
+This is NOT intent research.
+
+This is NOT WHEN/WHY research.
+
+MinimumCompanyIntelligence should attempt to resolve:
+
+HIGH-VALUE CORE:
+
+- canonical company name
+- canonical domain
+- primary business description
+- products/services summary
+
+USEFUL WHEN AVAILABLE:
+
+- normalized industry
+- business model
+- approximate employee count/range
+- geography
+- company type/category
+
+Every field must preserve provenance.
+
+Do NOT require all optional fields.
+
+==================================================
+4. PROFILE SUFFICIENCY MUST BE SEMANTIC
+==================================================
+
+Do NOT define profile sufficiency as:
+
+"Every normalized field is populated."
+
+Instead ask:
+
+Does JYRA have enough grounded information to reasonably answer:
+
+1. What does this company primarily do?
+2. What products/services does it provide?
+3. What kind of organization is it?
+
+If YES:
+
+MinimumCompanyIntelligence = SUFFICIENT
+
+Proceed to CompanyUnderstanding.
+
+If NO:
+
+MinimumCompanyIntelligence = INSUFFICIENT
+
+Trigger bounded profile resolution.
+
+Example:
+
+Evidence:
+
+"Acme provides cloud payroll and workforce management software
+for mid-market businesses."
+
+This may already be sufficient for CompanyUnderstanding even if:
+
+employee count = UNKNOWN
+exact geography = UNKNOWN
+taxonomy classification incomplete
+
+WHO can separately handle missing firmographics.
+
+==================================================
+5. REUSE INFORMATION WE ALREADY HAVE
+==================================================
+
+Before making ANY provider call:
+
+Read:
+
+1. canonical company profile
+2. existing valid profile evidence
+3. discovery provider response
+4. discovery description/snippets
+5. existing normalized observations
+6. existing firmographic evidence
+7. existing cached company intelligence
+
+Do NOT throw away useful discovery information.
+
+If discovery already tells us:
+
+what the company does
+what it sells
+its category/business description
+
+project this into normalized company observations with provenance.
+
+Then reevaluate sufficiency.
+
+Only call another provider if still insufficient.
+
+==================================================
+6. BOUNDED PROFILE RESOLUTION
+==================================================
+
+If MinimumCompanyIntelligence remains insufficient:
+
+run bounded COMPANY PROFILE resolution.
+
+Use the existing provider router.
+
+Prefer the cheapest existing source capable of retrieving:
+
+- official company website
+- company description
+- About information
+- products/services
+- industry/category
+- business model context
+- basic size/geography when easily available
+
+Maximum normal path:
+
+1 primary profile-resolution attempt
+
+PLUS
+
+1 fallback attempt ONLY if the primary attempt remains insufficient.
+
+Target:
+
+0–2 provider calls/company.
+
+NO uncontrolled loops.
+
+NO deep opportunity research.
+
+NO hiring search.
+
+NO funding search.
+
+NO leadership-event search.
+
+NO compliance-event search.
+
+NO technology-change search.
+
+NO security-event search.
+
+NO buying-intent search.
+
+This stage exists ONLY to understand the company.
+
+==================================================
+7. COMPANY PROFILE SOURCE PRIORITY
+==================================================
+
+Use existing configured providers/capabilities.
+
+Prefer evidence quality roughly in this order when available:
+
+1. official company website/about/product pages
+2. trusted structured company profile source
+3. trusted firmographic source
+4. high-confidence public profile
+5. web search evidence
+
+Do not hardcode a vendor.
+
+Use provider capabilities.
+
+Potential capability names should remain generic, e.g.:
+
+COMPANY_PROFILE_RESOLUTION
+COMPANY_FIRMOGRAPHICS
+WEBSITE_CRAWL
+WEB_SEARCH
+
+Do not leak provider-specific fields beyond adapters.
+
+==================================================
+8. EVIDENCE / PROVENANCE
+==================================================
+
+Every company claim used downstream must trace to evidence.
+
+Preserve:
+
+provider
+source_type
+publisher/domain
+source_url
+retrieved_at
+published_at where relevant
+raw_value
+normalized_value
+normalization_method
+entity_match_confidence
+freshness
+canonical_company_id
+
+CompanyUnderstanding must receive evidence IDs.
+
+LLM output cannot invent facts.
+
+Example:
+
+If CompanyUnderstanding says:
+
+"Company provides payroll software"
+
+there must be supporting evidence.
+
+No supporting evidence:
+do not persist the claim as grounded understanding.
+
+==================================================
+9. IDENTITY SAFETY REMAINS FROZEN
+==================================================
+
+Do NOT weaken identity resolution to improve coverage.
+
+Existing identity states and safety rules remain authoritative.
+
+Unsafe identities must NOT proceed to profile enrichment.
+
+Examples:
+
+WRONG_ENTITY
+NOT_A_COMPANY
+unsafe AMBIGUOUS
+unsafe UNRESOLVED
+
+must stop.
+
+PROBABLE may proceed only under existing research-safe rules.
+
+No fuzzy automatic attachment.
+
+==================================================
+10. COMPANY UNDERSTANDING
+==================================================
+
+When MinimumCompanyIntelligence becomes sufficient:
+
+invoke the EXISTING frozen CompanyUnderstanding.
+
+DO NOT change its prompt.
+
+Conceptual output remains:
+
+company_id
+primary_business
+business_model
+industry
+products_services
+confidence
+evidence_ids
+model
+prompt_version
+created_at
+
+Every semantic claim must be grounded.
+
+If MinimumCompanyIntelligence is sufficient but CompanyUnderstanding
+still fails:
+
+record:
+
+COMPANY_UNDERSTANDING_FAILURE
+
+Do NOT incorrectly report:
+
+PROFILE_EVIDENCE_INSUFFICIENT.
+
+==================================================
+11. COMMERCIAL ROLE
+==================================================
+
+After CompanyUnderstanding:
+
+invoke the EXISTING frozen CommercialRoleAssessment.
+
+Commercial role remains PROJECT/OFFERING RELATIVE.
+
+Input:
+
+Seller Business Twin
++
+Seller Offering
++
+Candidate CompanyUnderstanding
++
+supporting evidence
+
+Allowed roles:
+
+POTENTIAL_BUYER
+SELLER_COMPETITOR
+ADJACENT_VENDOR
+PARTNER_POSSIBLE
+UNKNOWN
+
+Do NOT change these definitions during this cycle.
+
+CommercialRole answers:
+
+"What commercial relationship can this organization reasonably have
+to this seller/offering?"
+
+It does NOT answer:
+
+"Will they buy?"
+
+It does NOT answer:
+
+"Will they buy now?"
+
+==================================================
+12. WHO REMAINS SEPARATE
+==================================================
+
+After CommercialRoleAssessment:
+
+run existing WHO qualification.
+
+Preserve separation:
+
+COMMERCIAL ROLE
+=
+Can this organization reasonably buy/compete/partner?
+
+WHO
+=
+Does this organization fit the ICP?
+
+WHEN / WHY
+=
+Is there evidence that an opportunity is forming now?
+
+A POTENTIAL_BUYER can still be:
+
+LIKELY_FIT
+POSSIBLE_FIT
+LIKELY_NOT_FIT
+INSUFFICIENT_DATA
+
+Do not collapse these layers.
+
+==================================================
+13. FIX THE RESEARCH NOW DEADLOCK
+==================================================
+
+Current UI behavior:
+
+Research Now
+→ role UNKNOWN
+→ "Buyer research is gated for UNKNOWN."
+→ stop
+
+This is incorrect when UNKNOWN is caused by insufficient company
+understanding.
+
+There must now be TWO conceptually distinct research stages.
+
+----------------------------------------
+A. COMPANY UNDERSTANDING RESEARCH
+----------------------------------------
+
+Allowed when role = UNKNOWN.
+
+Purpose:
+
+"What does this company do and what is its commercial relationship
+to the seller?"
+
+Uses:
+
+MinimumCompanyIntelligence
+CompanyUnderstanding
+CommercialRoleAssessment
+WHO
+
+This stage may retrieve:
+
+company description
+website
+products/services
+industry
+business model
+size
+geography
+
+This stage MUST NOT research:
+
+buying signals
+intent
+hiring events
+funding events
+leadership events
+security events
+compliance activity
+technology changes
+WHEN
+WHY
+
+----------------------------------------
+B. BUYER / OPPORTUNITY RESEARCH
+----------------------------------------
+
+Purpose:
+
+"Why might this company need this offering, and why now?"
+
+This remains gated.
+
+Normal conceptual eligibility:
+
+CommercialRole = POTENTIAL_BUYER
+
+PLUS
+
+existing WHO/research eligibility requirements
+
+→ Buyer Research may proceed.
+
+Do NOT weaken seller/competitor/adjacent safety gates.
+
+==================================================
+14. RESEARCH NOW BECOMES AN ORCHESTRATOR
+==================================================
+
+The Research Now button must NOT directly mean:
+
+"Start Buyer Research."
+
+It should mean:
+
+"Investigate this company as far as JYRA can safely proceed."
+
+Implement backend orchestration conceptually as:
+
+researchNow(company, project)
+
+STEP 1
+Resolve project/seller context.
+
+Require valid:
+
+Business Twin
+Offering
+ICP
+
+Use existing lifecycle/readiness rules.
+
+STEP 2
+Resolve identity safety.
+
+If unsafe:
+
+STOP.
+
+Return clear identity reason.
+
+STEP 3
+Load current CommercialRoleAssessment.
+
+STEP 4
+Evaluate MinimumCompanyIntelligence.
+
+If insufficient:
+
+run bounded Company Understanding Research.
+
+STEP 5
+Run/reuse:
+
+CompanyUnderstanding
+→ CommercialRoleAssessment
+→ WHO
+
+STEP 6
+RE-READ the NEW role.
+
+Do not continue using the stale pre-research UNKNOWN role.
+
+STEP 7
+
+If new role = POTENTIAL_BUYER:
+
+evaluate existing Buyer Research eligibility.
+
+If eligible:
+
+continue automatically into the EXISTING Buyer/Opportunity Research.
+
+If not eligible:
+
+stop with exact eligibility reason.
+
+STEP 8
+
+If role becomes:
+
+SELLER_COMPETITOR
+ADJACENT_VENDOR
+PARTNER_POSSIBLE
+
+STOP Buyer Research.
+
+Return the role and explanation.
+
+STEP 9
+
+If role remains UNKNOWN after bounded company research:
+
+STOP.
+
+Return:
+
+"JYRA researched this company but still does not have enough evidence
+to determine its commercial relationship."
+
+Do not loop.
+
+==================================================
+15. RESEARCH NOW UX
+==================================================
+
+Remove the misleading dead-end behavior:
+
+"No research was started.
+Buyer research is gated for UNKNOWN."
+
+when company-understanding research has not yet been attempted.
+
+Suggested progress states:
+
+Understanding company...
+
+Evaluating buyer relationship...
+
+Evaluating ICP fit...
+
+Then, when applicable:
+
+Researching opportunity...
+
+Possible outcomes:
+
+CASE A
+
+Company understood.
+Potential buyer identified.
+Opportunity research completed.
+
+CASE B
+
+Company understood.
+Potential buyer identified.
+Opportunity research is not currently eligible because: <reason>.
+
+CASE C
+
+Company understood.
+JYRA classified this company as an adjacent vendor.
+Buyer research was not started.
+
+CASE D
+
+Company understood.
+JYRA classified this company as a seller/competitor.
+Buyer research was not started.
+
+CASE E
+
+Company understood.
+JYRA classified this company as a possible partner.
+Buyer research was not started.
+
+CASE F
+
+Company research completed, but JYRA still has insufficient evidence
+to determine the commercial relationship.
+
+CASE G
+
+Company identity could not be safely resolved.
+Research was not started.
+
+Do not expose technical/internal jargon unnecessarily in normal UI.
+
+==================================================
+16. AUTOMATIC PIPELINE MUST USE SAME LOGIC
+==================================================
+
+Do not create separate buyer intelligence logic for the UI.
+
+The same backend orchestration/services must support:
+
+Find My Market processing
+Research Now
+future scheduled refresh
+future continuous monitoring
+
+Frontend must NOT contain duplicate buyer-role logic.
+
+Backend owns:
+
+identity
+MinimumCompanyIntelligence
+CompanyUnderstanding
+CommercialRole
+WHO
+research eligibility
+Buyer Research
+
+==================================================
+17. UNKNOWN SEMANTICS
+==================================================
+
+UNKNOWN remains a legitimate outcome.
+
+But UNKNOWN must mean:
+
+"JYRA attempted the allowed bounded understanding process and still
+cannot safely determine the relationship."
+
+UNKNOWN must NOT mean:
+
+"We never tried to understand the company."
+
+Persist reason codes:
+
+IDENTITY_UNSAFE
+PROFILE_EVIDENCE_INSUFFICIENT
+COMPANY_UNDERSTANDING_INSUFFICIENT
+COMMERCIAL_RELATIONSHIP_AMBIGUOUS
+SELLER_CONTEXT_INSUFFICIENT
+OTHER
+
+This distinction must be visible in diagnostics.
+
+==================================================
+18. COST CONTROL
+==================================================
+
+This layer may run on hundreds/thousands of companies.
+
+It must remain inexpensive.
+
+Desired architecture:
+
+CHEAP DISCOVERY
+→ REUSE DISCOVERY EVIDENCE
+→ MINIMUM PROFILE RESOLUTION IF REQUIRED
+→ ONE COMPANY UNDERSTANDING
+→ ONE COMMERCIAL ROLE ASSESSMENT
+→ WHO
+
+Only qualified/interesting companies later receive expensive
+WHEN/WHY research.
+
+Track:
+
+discovery calls
+profile-resolution calls
+firmographic calls
+CompanyUnderstanding calls
+CommercialRole calls
+cache hits
+input tokens
+output tokens
+total tokens
+provider cost
+LLM cost
+unknown cost
+
+Unknown billing must NEVER be represented as $0.
+
+==================================================
+19. CACHE + IDEMPOTENCY
+==================================================
+
+MinimumCompanyIntelligence must be reusable.
+
+Use stable fingerprints.
+
+Conceptually:
+
+MinimumCompanyIntelligence fingerprint:
+canonical company
++
+relevant evidence set
++
+normalization version
+
+CompanyUnderstanding fingerprint:
+company evidence
++
+prompt version
++
+model version
+
+CommercialRole fingerprint:
+CompanyUnderstanding
++
+Business Twin
++
+Offering
++
+prompt version
++
+model version
+
+Exact replay should create:
+
+0 unnecessary provider calls
+0 unnecessary LLM calls
+0 duplicate evidence
+0 duplicate observations
+0 duplicate CompanyUnderstanding
+0 duplicate CommercialRoleAssessment
+0 duplicate WHO history
+0 duplicate research rows
+
+Preserve legitimate A → B → A material history behavior where
+appropriate.
+
+==================================================
+20. OFFLINE DIGIPUUSH AUTOPSY
+==================================================
+
+Before fresh provider calls:
+
+Use the persisted cohort from:
+
+DIGIPUUSH BLIND GENERALIZATION TEST 01
+
+20 companies.
+
+Make:
+
+0 provider calls
+0 LLM calls
+
+Determine for each company:
+
+A.
+Did discovery already contain enough description/profile information?
+
+B.
+Did canonical company storage already contain enough evidence?
+
+C.
+Was useful discovery evidence discarded/not projected?
+
+D.
+Would a profile-resolution call genuinely have been necessary?
+
+E.
+Was identity responsible for blocking it?
+
+Report totals:
+
+existing profile sufficient
+discovery evidence recoverable
+canonical evidence recoverable
+profile resolution genuinely required
+identity blocked
+other
+
+Also explain exactly why:
+
+profile calls = 0
+firmographic calls = 0
+LLM calls = 1
+
+in the previous test.
+
+Do NOT modify the previous test's stored predictions.
+
+==================================================
+21. IMPLEMENTATION
+==================================================
+
+After the autopsy:
+
+implement the generic fix.
+
+NO:
+
+DigiPuush-specific production logic
+Managed-SOC-specific production logic
+company-name exceptions
+known-test-company exceptions
+hardcoded buyer lists
+benchmark shortcuts
+
+The same implementation must work for:
+
+AEO/GEO services
+Managed SOC
+recruitment
+ERP
+solar
+other future offerings
+
+==================================================
+22. FOCUSED REGRESSION TESTS
+==================================================
+
+Add tests for:
+
+1.
+Discovery description already sufficient
+→ no profile provider call
+→ CompanyUnderstanding runs.
+
+2.
+Canonical cached profile sufficient
+→ no provider call.
+
+3.
+Insufficient profile
+→ primary profile resolution runs.
+
+4.
+Primary profile resolution succeeds
+→ fallback does not run.
+
+5.
+Primary remains insufficient
+→ one fallback allowed.
+
+6.
+Both fail
+→ UNKNOWN/insufficient
+→ no infinite retry.
+
+7.
+Provider failure
+→ does not become negative buyer classification.
+
+8.
+Unsafe identity
+→ no enrichment.
+
+9.
+Evidence IDs required for CompanyUnderstanding.
+
+10.
+CompanyUnderstanding cannot persist unsupported semantic claims.
+
+11.
+Sufficient understanding
+→ CommercialRole runs.
+
+12.
+UNKNOWN + insufficient profile + Research Now
+→ Company Understanding Research runs.
+
+13.
+UNKNOWN
+→ understanding
+→ POTENTIAL_BUYER
+→ normal Buyer Research eligibility evaluated.
+
+14.
+UNKNOWN
+→ understanding
+→ ADJACENT_VENDOR
+→ Buyer Research blocked safely.
+
+15.
+UNKNOWN
+→ understanding
+→ SELLER_COMPETITOR
+→ Buyer Research blocked safely.
+
+16.
+UNKNOWN
+→ understanding
+→ PARTNER_POSSIBLE
+→ Buyer Research blocked safely.
+
+17.
+UNKNOWN
+→ bounded research
+→ still UNKNOWN
+→ clear insufficient-evidence response.
+
+18.
+Already-understood POTENTIAL_BUYER
+→ Research Now skips unnecessary profile resolution.
+
+19.
+Cached CompanyUnderstanding
+→ no unnecessary semantic call.
+
+20.
+Repeated Research Now
+→ no duplicate evidence/semantic/research rows.
+
+21.
+Frontend contains no duplicated commercial-role business logic.
+
+22.
+No DigiPuush-specific production branches.
+
+23.
+Generic recruitment fixture works.
+
+24.
+Generic ERP fixture works.
+
+25.
+Generic Managed SOC fixture works.
+
+26.
+Cross-tenant isolation remains intact.
+
+27.
+Production operations = 0.
+
+==================================================
+23. EXISTING REGRESSIONS
+==================================================
+
+Run all relevant existing regression suites:
+
+canonical identity
+Identity Fix 02
+Identity Fix 02A
+Profile Resolution Fix 02A
+Discovery Handoff Fix04
+Buyer Market Discovery Fix05
+Cycle06 lifecycle
+Buyer Role 06A
+Fix07 canonical profile
+Fix08 CompanyUnderstanding
+Fix09/10 seller-context/readiness
+pack activation concurrency
+firmographic persistence
+semantic idempotency
+provider accounting
+cross-tenant isolation
+typecheck
+build
+API startup
+
+Do NOT weaken tests merely to obtain PASS.
+
+==================================================
+24. FRESH DIGIPUUSH BLIND VALIDATION
+==================================================
+
+ONLY after implementation and regressions pass:
+
+Run ONE fresh normal-path DigiPuush test.
+
+Seller:
+DigiPuush
+
+Offering:
+actual existing AEO/GEO / AI Visibility offering
+
+Business Twin:
+actual valid current Twin
+
+ICP:
+actual approved/usable current ICP
+
+Requested companies:
+20
+
+Do NOT:
+
+seed companies
+handpick companies
+remove difficult companies
+change ICP
+change discovery queries after seeing results
+change CompanyUnderstanding prompt
+change CommercialRole prompt
+change thresholds
+add exclusions
+add buyer rules
+
+Pipeline:
+
+Find My Market
+→ Discovery
+→ Canonical
+→ Identity
+→ MinimumCompanyIntelligence
+→ CompanyUnderstanding
+→ CommercialRole
+→ WHO
+
+STOP.
+
+For this blind validation:
+
+DO NOT run:
+WHEN
+WHY
+signals
+opportunities
+NBA
+contacts
+outreach
+Explee
+
+Research Now functionality should be separately covered by regression/
+integration tests, not used to manipulate the blind cohort.
+
+==================================================
+25. FREEZE BEFORE TEST
+==================================================
+
+Before fresh discovery begins, record:
+
+Business Twin ID/version
+Offering fingerprint
+ICP ID/version
+CompanyUnderstanding prompt version
+CommercialRole prompt version
+model
+normalization version
+discovery strategy/version
+MinimumCompanyIntelligence version
+
+Once recorded:
+
+NO tuning.
+
+Persist JYRA results BEFORE independent adjudication.
+
+==================================================
+26. INDEPENDENT ADJUDICATION
+==================================================
+
+Independently adjudicate all 20 companies.
+
+Do not simply use the same JYRA model/prompt to judge itself.
+
+For each company determine:
+
+IDENTITY
+CORRECT
+WRONG
+UNCERTAIN
+
+MARKET
+PLAUSIBLE
+WRONG
+UNCLEAR
+
+PROFILE EVIDENCE
+SUFFICIENT
+INSUFFICIENT
+
+COMPANY UNDERSTANDING
+CORRECT
+PARTIAL
+WRONG
+INSUFFICIENT
+
+COMMERCIAL ROLE
+POTENTIAL_BUYER
+SELLER_COMPETITOR
+ADJACENT_VENDOR
+PARTNER_POSSIBLE
+UNKNOWN
+
+WHO
+LIKELY_FIT
+POSSIBLE_FIT
+LIKELY_NOT_FIT
+INSUFFICIENT_DATA
+
+PRIMARY ERROR
+DISCOVERY_WRONG_MARKET
+IDENTITY_WRONG
+PROFILE_EVIDENCE_INSUFFICIENT
+COMPANY_UNDERSTANDING_WRONG
+BUSINESS_MODEL_WRONG
+INDUSTRY_WRONG
+COMMERCIAL_RELATIONSHIP_REASONING_WRONG
+ICP_QUALIFICATION_WRONG
+LOW_CONFIDENCE_SHOULD_HAVE_BEEN_UNKNOWN
+OTHER
+
+==================================================
+27. REPORT FULL FUNNEL
+==================================================
+
+Report:
+
+DISCOVERY
+
+requested
+raw candidates
+canonical candidates
+final cohort
+plausible market
+wrong market
+unclear
+plausible market rate
+
+IDENTITY
+
+correct
+wrong
+uncertain
+identity precision
+
+MINIMUM COMPANY INTELLIGENCE
+
+sufficient before enrichment
+required enrichment
+primary profile attempts
+fallback attempts
+successful resolutions
+failed resolutions
+sufficient after enrichment
+profile sufficiency rate
+average provider calls/company
+cache hits
+
+COMPANY UNDERSTANDING
+
+eligible
+attempted
+successful
+correct
+partial
+wrong
+insufficient
+accuracy
+LLM calls
+cache hits
+
+COMMERCIAL ROLE
+
+POTENTIAL_BUYER
+SELLER_COMPETITOR
+ADJACENT_VENDOR
+PARTNER_POSSIBLE
+UNKNOWN
+
+independent role distribution
+
+exact agreement
+buyer precision
+buyer recall
+seller/competitor → buyer errors
+adjacent-vendor → buyer errors
+confusion matrix
+
+WHO
+
+JYRA distribution
+independent distribution
+exact agreement
+
+UNKNOWN ANALYSIS
+
+identity unsafe
+profile insufficient
+understanding insufficient
+commercial relationship ambiguous
+seller context insufficient
+other
+
+COST
+
+discovery calls/cost
+profile calls/cost
+firmographic calls/cost
+CompanyUnderstanding calls
+CommercialRole calls
+input tokens
+output tokens
+total tokens
+cache hits
+known provider cost
+known LLM cost
+unknown costs
+cost/final company
+
+==================================================
+28. SUCCESS CRITERIA
+==================================================
+
+PRIMARY FIX SUCCESS CRITERIA:
+
+Identity precision >= 95%
+
+Plausible market rate >= 70%
+
+Profile sufficiency after bounded resolution >= 90%
+
+>= 90% of identity-safe companies reach CompanyUnderstanding unless
+genuinely evidence-insufficient.
+
+CompanyUnderstanding provenance = 100%
+
+Seller/competitor → buyer errors = 0
+
+Research Now UNKNOWN deadlock eliminated.
+
+Repeated Research Now is idempotent.
+
+Production operations = 0.
+
+==================================================
+29. BUYER ACCURACY PHILOSOPHY
+==================================================
+
+IMPORTANT:
+
+Do NOT treat this product as requiring perfect buyer prediction.
+
+JYRA is a MARKET PRIORITIZATION SYSTEM.
+
+The commercial objective is:
+
+Reduce a large possible market into a substantially better set of
+accounts for sales outreach.
+
+The long-term success metric is not:
+
+"Can JYRA predict purchasing with 100% accuracy?"
+
+It is:
+
+"Does contacting JYRA-prioritized accounts produce materially better
+positive replies, meetings, opportunities and wins than conventional
+high-volume outbound?"
+
+Therefore for this cycle:
+
+Buyer precision is MEASURED.
+
+Do NOT tune it during the blind test.
+
+Interpretation:
+
+< 60%
+commercial-role reasoning likely still materially weak
+
+60–70%
+useful but requires improvement
+
+70–80%
+acceptable early MVP territory if false positives are safe
+
+80–85%
+strong cold-start performance
+
+>= 85%
+excellent cold-start performance
+
+Buyer recall should also be reported.
+
+Do NOT optimize precision by simply returning UNKNOWN for everything.
+
+Coverage matters.
+
+==================================================
+30. LEARNING FOUNDATION
+==================================================
+
+Do NOT build a new ML learning system in this cycle.
+
+However, ensure this fix does not break the existing ability to
+eventually learn from:
+
+recommended
+contacted
+rejected
+wrong ICP
+competitor
+adjacent vendor
+positive reply
+negative reply
+meeting booked
+opportunity created
+won
+lost
+
+Future JYRA should improve per:
+
+Business Twin
++
+Offering
++
+ICP
++
+historical recommendations
++
+real sales outcomes
+
+But cold-start quality must first be useful.
+
+==================================================
+31. DO NOT RUN FINAL 50-COMPANY TEST
+==================================================
+
+Do NOT run the final 50-company Reality Test.
+
+Do NOT integrate Explee.
+
+Do NOT build outreach.
+
+Do NOT change WHEN/WHY.
+
+Do NOT change signals.
+
+Do NOT optimize the old 10-control benchmark.
+
+First prove:
+
+Discovery
+→ Identity
+→ Minimum Company Intelligence
+→ CompanyUnderstanding
+→ CommercialRole
+→ WHO
+
+works as a coherent pipeline.
+
+==================================================
+32. FINAL VERDICT
+==================================================
+
+Return EXACTLY ONE primary verdict:
+
+A — COMPANY INTELLIGENCE + RESEARCH ORCHESTRATION REPAIRED
+
+B — PROFILE RESOLUTION COVERAGE STILL INSUFFICIENT
+
+C — COMPANY UNDERSTANDING FAILS DESPITE SUFFICIENT EVIDENCE
+
+D — COMMERCIAL ROLE QUALITY IS NOW THE PRIMARY BOTTLENECK
+
+E — RESEARCH NOW ORCHESTRATION STILL DEFECTIVE
+
+F — IDENTITY / ENTITY SAFETY REGRESSED
+
+G — MULTIPLE MATERIAL DEFECTS
+
+Important:
+
+If:
+
+profile sufficiency >= 90%
+AND
+CompanyUnderstanding executes normally
+AND
+Research Now UNKNOWN deadlock is repaired
+
+but buyer-role accuracy remains weak,
+
+return:
+
+D — COMMERCIAL ROLE QUALITY IS NOW THE PRIMARY BOTTLENECK
+
+That means Fix 11 succeeded in exposing the next genuine problem.
+
+==================================================
+33. STOP
+==================================================
+
+After:
+
+implementation
+regressions
+fresh 20-company blind validation
+cost report
+verdict
+
+STOP.
+
+DO NOT:
+
+automatically repair the next problem
+change prompts
+rerun the blind test
+run 50-company Reality Test
+integrate contacts
+integrate outreach
+integrate Explee
+
+Wait for review.

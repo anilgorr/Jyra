@@ -7,6 +7,7 @@
  */
 import type { ResearchJob } from './researchJob';
 import type { ResearchQuestion } from './researchQuestion';
+import type { ResearchWorkspaceCompanyBuyerRole } from './researchWorkspaceCompanyBuyerRole';
 
 export interface ResearchWorkspaceCompany {
   projectCompanyId: string;
@@ -15,6 +16,9 @@ export interface ResearchWorkspaceCompany {
   /** @nullable */
   domain: string | null;
   researchStatus: string;
+  buyerRole: ResearchWorkspaceCompanyBuyerRole;
+  intelligenceStage: string;
+  nextAction: string;
   /** @nullable */
   latestResearchAt: Date | null;
   evidenceCount: number;

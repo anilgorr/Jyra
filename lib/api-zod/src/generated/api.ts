@@ -3229,7 +3229,6 @@ export const ListProjectCompaniesResponseItem = zod.object({
   "domain": zod.string().nullable(),
   "website": zod.string().nullable(),
   "linkedinUrl": zod.string().nullable(),
-  "profileUrls": zod.record(zod.string(), zod.string()),
   "country": zod.string().nullable(),
   "industry": zod.string().nullable(),
   "employeeCount": zod.number().nullable(),
@@ -3247,8 +3246,6 @@ export const ListProjectCompaniesResponseItem = zod.object({
   "confidenceScore": zod.number().nullable(),
   "opportunityState": zod.union([zod.literal('none'),zod.literal('potential'),zod.literal('active'),zod.literal('won'),zod.literal('lost'),zod.literal(null)]).nullable(),
   "relationshipStatus": zod.enum(['NONE', 'PREVIOUS_CONTACT', 'MEETING_HELD', 'KNOWN_CHAMPION', 'EXISTING_CUSTOMER', 'PAST_CUSTOMER', 'OPEN_OPPORTUNITY', 'LOST_OPPORTUNITY']),
-  "buyerRole": zod.enum(['POTENTIAL_BUYER','SELLER_COMPETITOR','ADJACENT_VENDOR','PARTNER_POSSIBLE','UNKNOWN']),
-  "buyerRoleAssessment": zod.any().nullable(),
   "opportunityScore": zod.number().nullable(),
   "opportunityAssessmentState": zod.union([zod.literal('DORMANT'),zod.literal('WATCH'),zod.literal('EMERGING'),zod.literal('RISING'),zod.literal('SURGING'),zod.literal('ACTIVE'),zod.literal('COOLING'),zod.literal(null)]).nullable(),
   "latestResearchAt": zod.coerce.date().nullable(),
@@ -4192,6 +4189,9 @@ export const ListResearchWorkspaceResponseItem = zod.object({
   "companyName": zod.string(),
   "domain": zod.string().nullable(),
   "researchStatus": zod.string(),
+  "buyerRole": zod.enum(['POTENTIAL_BUYER', 'SELLER_COMPETITOR', 'ADJACENT_VENDOR', 'PARTNER_POSSIBLE', 'UNKNOWN']),
+  "intelligenceStage": zod.string(),
+  "nextAction": zod.string(),
   "latestResearchAt": zod.coerce.date().nullable(),
   "evidenceCount": zod.number(),
   "question": zod.union([zod.object({
@@ -4288,6 +4288,11 @@ export const ExecuteCompanyResearchParams = zod.object({
 export const ExecuteCompanyResearchResponse = zod.object({
   "stopped": zod.boolean(),
   "reason": zod.string().nullable(),
+  "buyerRole": zod.enum(['POTENTIAL_BUYER', 'SELLER_COMPETITOR', 'ADJACENT_VENDOR', 'PARTNER_POSSIBLE', 'UNKNOWN']),
+  "intelligenceStage": zod.string(),
+  "stopCode": zod.string().nullable(),
+  "progress": zod.string(),
+  "nextAction": zod.string(),
   "question": zod.union([zod.object({
   "id": zod.string(),
   "questionType": zod.string(),

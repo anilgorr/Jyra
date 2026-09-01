@@ -312,7 +312,9 @@ function ResearchPanel({
         queryClient.invalidateQueries({ queryKey: getNextBestActionQueryKey(projectId, projectCompanyId) });
         queryClient.invalidateQueries({ queryKey: getGetMarketTodayQueryKey(projectId) });
         if (result.stopped) {
-          toast.error("Research stopped", { description: result.reason ?? "No new research was completed." });
+          toast.info(result.stopCode === "STILL_UNKNOWN" ? "Company research completed" : "Research paused safely", {
+            description: result.reason ?? result.nextAction,
+          });
         } else if (result.resultStatus === "SUCCEEDED") {
           toast.success("Fresh research complete", {
             description: result.evidenceCount > 0
@@ -339,8 +341,15 @@ function ResearchPanel({
           <div>
             <h3 className="font-semibold text-foreground">{company?.latestResearchAt ? "Continue company research" : "Research this company"}</h3>
             <p className="mt-1 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-              RESEARCH NOW requests a new bounded public-source sweep when research is due. It does not reprocess the existing evidence set.
+              RESEARCH NOW first establishes what the company does, evaluates its buyer relationship and ICP fit, then continues into opportunity research only when safe.
             </p>
+            {research.isPending && (
+              <p className="mt-2 text-xs font-medium text-accent">
+                {company?.intelligenceStage === "NEEDS_MINIMUM_INTELLIGENCE"
+                  ? "Understanding company and evaluating buyer relationship..."
+                  : "Evaluating ICP fit and researching the opportunity..."}
+              </p>
+            )}
             <div className="mt-3 flex items-center gap-4 text-xs font-medium">
               {company?.latestResearchAt && (
                 <span className="text-muted-foreground flex items-center gap-1.5">
@@ -372,7 +381,7 @@ function ResearchPanel({
           data-testid="button-research-now"
         >
           {research.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}
-          {company?.latestResearchAt ? "CONTINUE RESEARCH" : "RESEARCH COMPANY"}
+          {research.isPending ? "INVESTIGATING..." : company?.latestResearchAt ? "CONTINUE RESEARCH" : "RESEARCH COMPANY"}
         </Button>
       </CardContent>
     </Card>

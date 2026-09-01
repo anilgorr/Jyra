@@ -3481,23 +3481,31 @@ components:
         companyName: { type: string }
         domain: { type: ["string", "null"] }
         researchStatus: { type: string }
+        buyerRole: { type: string, enum: [POTENTIAL_BUYER, SELLER_COMPETITOR, ADJACENT_VENDOR, PARTNER_POSSIBLE, UNKNOWN] }
+        intelligenceStage: { type: string }
+        nextAction: { type: string }
         latestResearchAt: { type: ["string", "null"], format: date-time }
         evidenceCount: { type: number }
         question: { oneOf: [{ $ref: "#/components/schemas/ResearchQuestion" }, { type: "null" }] }
         job: { oneOf: [{ $ref: "#/components/schemas/ResearchJob" }, { type: "null" }] }
-      required: [projectCompanyId, companyId, companyName, domain, researchStatus, latestResearchAt, evidenceCount, question, job]
+      required: [projectCompanyId, companyId, companyName, domain, researchStatus, buyerRole, intelligenceStage, nextAction, latestResearchAt, evidenceCount, question, job]
     ResearchExecutionResponse:
       type: object
       properties:
         stopped: { type: boolean }
         reason: { type: ["string", "null"] }
+        buyerRole: { type: string, enum: [POTENTIAL_BUYER, SELLER_COMPETITOR, ADJACENT_VENDOR, PARTNER_POSSIBLE, UNKNOWN] }
+        intelligenceStage: { type: string }
+        stopCode: { type: ["string", "null"] }
+        progress: { type: string }
+        nextAction: { type: string }
         question: { oneOf: [{ $ref: "#/components/schemas/ResearchQuestion" }, { type: "null" }] }
         job: { oneOf: [{ $ref: "#/components/schemas/ResearchJob" }, { type: "null" }] }
         evidenceCount: { type: number }
         factProposalCount: { type: number }
         factRejectionCount: { type: number }
         resultStatus: { type: string }
-      required: [stopped, reason, question, job, evidenceCount, factProposalCount, factRejectionCount, resultStatus]
+      required: [stopped, reason, buyerRole, intelligenceStage, stopCode, progress, nextAction, question, job, evidenceCount, factProposalCount, factRejectionCount, resultStatus]
     ResearchBudgetInput:
       type: object
       properties:

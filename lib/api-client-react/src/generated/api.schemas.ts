@@ -2478,6 +2478,17 @@ export interface ResearchJob {
   completedAt: string | null;
 }
 
+export type ResearchWorkspaceCompanyBuyerRole = typeof ResearchWorkspaceCompanyBuyerRole[keyof typeof ResearchWorkspaceCompanyBuyerRole];
+
+
+export const ResearchWorkspaceCompanyBuyerRole = {
+  POTENTIAL_BUYER: 'POTENTIAL_BUYER',
+  SELLER_COMPETITOR: 'SELLER_COMPETITOR',
+  ADJACENT_VENDOR: 'ADJACENT_VENDOR',
+  PARTNER_POSSIBLE: 'PARTNER_POSSIBLE',
+  UNKNOWN: 'UNKNOWN',
+} as const;
+
 export interface ResearchWorkspaceCompany {
   projectCompanyId: string;
   companyId: string;
@@ -2485,6 +2496,9 @@ export interface ResearchWorkspaceCompany {
   /** @nullable */
   domain: string | null;
   researchStatus: string;
+  buyerRole: ResearchWorkspaceCompanyBuyerRole;
+  intelligenceStage: string;
+  nextAction: string;
   /** @nullable */
   latestResearchAt: string | null;
   evidenceCount: number;
@@ -2492,10 +2506,27 @@ export interface ResearchWorkspaceCompany {
   job: ResearchJob | null;
 }
 
+export type ResearchExecutionResponseBuyerRole = typeof ResearchExecutionResponseBuyerRole[keyof typeof ResearchExecutionResponseBuyerRole];
+
+
+export const ResearchExecutionResponseBuyerRole = {
+  POTENTIAL_BUYER: 'POTENTIAL_BUYER',
+  SELLER_COMPETITOR: 'SELLER_COMPETITOR',
+  ADJACENT_VENDOR: 'ADJACENT_VENDOR',
+  PARTNER_POSSIBLE: 'PARTNER_POSSIBLE',
+  UNKNOWN: 'UNKNOWN',
+} as const;
+
 export interface ResearchExecutionResponse {
   stopped: boolean;
   /** @nullable */
   reason: string | null;
+  buyerRole: ResearchExecutionResponseBuyerRole;
+  intelligenceStage: string;
+  /** @nullable */
+  stopCode: string | null;
+  progress: string;
+  nextAction: string;
   question: ResearchQuestion | null;
   job: ResearchJob | null;
   evidenceCount: number;
