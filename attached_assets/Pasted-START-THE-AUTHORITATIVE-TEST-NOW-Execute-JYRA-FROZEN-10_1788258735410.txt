@@ -1,0 +1,109 @@
+START THE AUTHORITATIVE TEST NOW.
+
+Execute:
+
+JYRA — FROZEN 10-CONTROL CORE INTELLIGENCE ACCEPTANCE TEST 02
+
+using the complete acceptance specification already provided.
+
+IMPORTANT:
+
+Do not only inspect the implementation.
+Do not only generate a status report.
+Do not tell me the test is running unless an actual execution has started.
+Do not stop after preflight.
+
+Preflight has already been repaired and validated.
+
+Required execution:
+
+1. Run preflight.
+2. If PASS, immediately provision all 10 frozen controls through resolveKnownCompany.
+3. Execute the complete normal intelligence pipeline for all 10 controls:
+   Identity
+   → Research Planner
+   → Research Questions
+   → Tavily primary retrieval
+   → Exa fallback where required
+   → Evidence
+   → Facts
+   → Temporal validation
+   → Signals
+   → WHEN
+   → WHY
+   → Opportunity assessment
+   → NBA
+   → Persistence.
+4. Complete the first execution.
+5. Run the unchanged semantic replay.
+6. Calculate recall, precision, safety metrics, provenance and idempotency.
+7. Generate all seven required acceptance artifacts.
+8. Return the final acceptance verdict.
+
+FRESH RETRIEVAL IS REQUIRED.
+
+Provider calls are therefore expected during the first execution.
+
+Do not use cached benchmark outputs as a substitute for executing the test.
+
+Do not modify or tune code during execution.
+
+Do not run contact enrichment.
+
+Do not run the 50-company benchmark.
+
+DATABASE SAFETY:
+
+Use DEVELOPMENT database only.
+Production operations must remain 0.
+
+CRITICAL EXECUTION PROOF:
+
+Before claiming the benchmark executed, report actual runtime evidence:
+
+- execution/run ID
+- start timestamp
+- end timestamp
+- controls attempted
+- controls completed
+- research questions executed
+- Tavily calls
+- Exa fallback calls
+- provider request IDs/statuses where available
+- raw evidence retrieved
+- facts produced
+- signals produced.
+
+If no actual provider/research execution occurs, DO NOT report the benchmark
+as running or completed.
+
+Instead return:
+
+EXECUTION_NOT_STARTED
+
+and state the exact reason the runner was not invoked.
+
+Do not return an interim "still running" response.
+
+Actually invoke and complete the acceptance runner now, then return the
+final results.
+
+FINAL VERDICT MUST BE EXACTLY ONE OF:
+
+A — CORE INTELLIGENCE ACCEPTED
+B — RECALL BELOW ACCEPTANCE TARGET
+C — PRECISION / SAFETY BELOW ACCEPTANCE TARGET
+D — RETRIEVAL REGRESSION
+E — FACT / TEMPORAL REGRESSION
+F — SIGNAL MAPPING REGRESSION
+G — IDENTITY REGRESSION
+H — IDEMPOTENCY REGRESSION
+I — INCONCLUSIVE PROVIDER / SYSTEM FAILURE
+J — MULTIPLE CORE REGRESSIONS
+
+If A:
+
+STOP narrow 10-control testing and state that the next milestone is
+50-COMPANY MVP REALITY TEST 02.
+
+Do not automatically run it.
