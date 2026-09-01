@@ -1,0 +1,1518 @@
+{
+  "test": "JYRA_MVP_REALITY_TEST_01",
+  "kind": "BLIND_POSITIVE_CONTROL_EVALUATION",
+  "manifestFile": "JYRA_MVP_REALITY_TEST_01_CONTROL_SET.json",
+  "manifestSha256": "438ae22cc5f06ed16588d911541572fd0617dd608c6ad9bfc451462f5ff90931",
+  "executedAt": "2026-09-01T10:50:32.916Z",
+  "labelsExposedDuringProvisionOrResearch": false,
+  "discoveryPath": "separate persisted market-discovery accounting; controls use KNOWN_COMPANY_RESOLUTION",
+  "researchPath": "normal Managed SOC WEB_SEARCH Research Planner path",
+  "controlsAttempted": 10,
+  "controlsProvisioned": 10,
+  "controlsEvaluated": 10,
+  "detectedCount": 4,
+  "terminalInvariantSatisfied": true,
+  "evaluationStatus": "COMPLETE",
+  "knownEventDetectionRecall": 0.4,
+  "runs": [
+    {
+      "manifestIndex": 0,
+      "requestedCompany": "SolarWinds",
+      "provision": {
+        "resolutionPath": "KNOWN_COMPANY_RESOLUTION",
+        "matchBasis": "EXACT_CANONICAL_NAME",
+        "existingCanonicalReused": true,
+        "identityState": "CONFIRMED",
+        "canAutoAttachCanonical": false,
+        "canResearchEntity": true,
+        "providerCapabilitiesInvoked": [],
+        "providerCalls": 0,
+        "companyId": "3cd73d96-37d1-4cf8-9dab-db596e019783",
+        "status": "PROVISIONED",
+        "blockReason": null
+      },
+      "questions": [
+        {
+          "questionType": "LEADERSHIP",
+          "status": "SUCCEEDED",
+          "questionId": "24e2f54f-18bf-4338-bdc4-c42cc3af6d53",
+          "jobId": "9ce63512-c18c-4763-9150-f8c16086180b"
+        },
+        {
+          "questionType": "HIRING",
+          "status": "SUCCEEDED",
+          "questionId": "b37fba97-d1bd-4bd6-9452-48199eff53bb",
+          "jobId": "4f781203-61e7-46d9-849b-8c3bb0b6a6ec"
+        },
+        {
+          "questionType": "EXPANSION",
+          "status": "SUCCEEDED",
+          "questionId": "8083b764-b2c7-4788-ad1f-8c631f1110f6",
+          "jobId": "568d3d1c-a04d-4e57-9d9d-4549985e8dcf"
+        },
+        {
+          "questionType": "TECHNOLOGY",
+          "status": "TIMED_OUT",
+          "reason": "No terminal research disposition persisted within 150000ms"
+        }
+      ]
+    },
+    {
+      "manifestIndex": 1,
+      "requestedCompany": "First Horizon",
+      "provision": {
+        "resolutionPath": "KNOWN_COMPANY_RESOLUTION",
+        "matchBasis": "UNIQUE_PROJECT_NAME_MATCH",
+        "existingCanonicalReused": true,
+        "identityState": "PROBABLE",
+        "canAutoAttachCanonical": false,
+        "canResearchEntity": true,
+        "providerCapabilitiesInvoked": [],
+        "providerCalls": 0,
+        "companyId": "3ec654e3-3bed-405a-a1aa-1405f28ffcba",
+        "status": "PROVISIONED",
+        "blockReason": null
+      },
+      "questions": [
+        {
+          "questionType": "LEADERSHIP",
+          "status": "SUCCEEDED",
+          "questionId": "30d04ff3-9705-472c-bc45-947475102571",
+          "jobId": "9a8c0df4-b54a-4191-bc84-a7bc35861c57"
+        },
+        {
+          "questionType": "HIRING",
+          "status": "SUCCEEDED",
+          "questionId": "5bb2669f-06e9-4418-8b61-ed332895ecbf",
+          "jobId": "a89388eb-3913-4bd9-b9e8-0a1062fb5a0c"
+        },
+        {
+          "questionType": "EXPANSION",
+          "status": "SUCCEEDED",
+          "questionId": "36b674d4-47bb-4c98-a4bb-ae3cc1891f05",
+          "jobId": "e858e0b3-6017-4328-b1c8-b1780d86e944"
+        },
+        {
+          "questionType": "TECHNOLOGY",
+          "status": "SUCCEEDED",
+          "questionId": "faf47884-2727-4315-a4ef-e7424bd7d749",
+          "jobId": "8eef8ce5-3335-4afc-bbf9-2f4f14ffb07e"
+        }
+      ]
+    },
+    {
+      "manifestIndex": 2,
+      "requestedCompany": "GitLab",
+      "provision": {
+        "resolutionPath": "KNOWN_COMPANY_RESOLUTION",
+        "matchBasis": "EXACT_CANONICAL_NAME",
+        "existingCanonicalReused": true,
+        "identityState": "CONFIRMED",
+        "canAutoAttachCanonical": false,
+        "canResearchEntity": true,
+        "providerCapabilitiesInvoked": [],
+        "providerCalls": 0,
+        "companyId": "417409dc-ca3f-449f-90bb-f315f91f450a",
+        "status": "PROVISIONED",
+        "blockReason": null
+      },
+      "questions": [
+        {
+          "questionType": "LEADERSHIP",
+          "status": "SUCCEEDED",
+          "questionId": "bd190926-02e1-4ff8-b881-82f181db00a2",
+          "jobId": "98f8a7f1-4025-4b74-be28-1c8ac3313b39"
+        },
+        {
+          "questionType": "HIRING",
+          "status": "SUCCEEDED",
+          "questionId": "3a5a7952-5c64-4033-9e1e-91b3bfa0796a",
+          "jobId": "03757c72-7b35-4cac-8d20-b37e5554af26"
+        },
+        {
+          "questionType": "EXPANSION",
+          "status": "SUCCEEDED",
+          "questionId": "69032b03-2ba8-473c-972b-85f0017d439b",
+          "jobId": "fdce27a9-3e91-46a9-8ff4-07eb8c3f7012"
+        },
+        {
+          "questionType": "TECHNOLOGY",
+          "status": "TIMED_OUT",
+          "reason": "No terminal research disposition persisted within 150000ms"
+        }
+      ]
+    },
+    {
+      "manifestIndex": 3,
+      "requestedCompany": "Infoblox",
+      "provision": {
+        "resolutionPath": "KNOWN_COMPANY_RESOLUTION",
+        "matchBasis": "EXACT_CANONICAL_NAME",
+        "existingCanonicalReused": true,
+        "identityState": "CONFIRMED",
+        "canAutoAttachCanonical": false,
+        "canResearchEntity": true,
+        "providerCapabilitiesInvoked": [],
+        "providerCalls": 0,
+        "companyId": "408bc044-5be0-4118-b486-75c494e5cd8f",
+        "status": "PROVISIONED",
+        "blockReason": null
+      },
+      "questions": [
+        {
+          "questionType": "LEADERSHIP",
+          "status": "SUCCEEDED",
+          "questionId": "7f2108cf-16fc-4a30-97ad-b1a85c598be9",
+          "jobId": "cd759b5d-b6bb-4a1f-9c29-c56696e9c6af"
+        },
+        {
+          "questionType": "HIRING",
+          "status": "SUCCEEDED",
+          "questionId": "9b63012f-e5be-444b-b3c7-d68477f33eee",
+          "jobId": "b3905c75-f136-4ff1-a634-974d4f133be3"
+        },
+        {
+          "questionType": "EXPANSION",
+          "status": "SUCCEEDED",
+          "questionId": "d5aa9fd2-d125-4681-954c-bdba9e0f78fa",
+          "jobId": "9bdb4346-17ee-4eac-b6f7-1b5fef89980c"
+        },
+        {
+          "questionType": "TECHNOLOGY",
+          "status": "TIMED_OUT",
+          "reason": "No terminal research disposition persisted within 150000ms"
+        }
+      ]
+    },
+    {
+      "manifestIndex": 4,
+      "requestedCompany": "Teradata",
+      "provision": {
+        "resolutionPath": "KNOWN_COMPANY_RESOLUTION",
+        "matchBasis": "EXACT_CANONICAL_NAME",
+        "existingCanonicalReused": true,
+        "identityState": "CONFIRMED",
+        "canAutoAttachCanonical": false,
+        "canResearchEntity": true,
+        "providerCapabilitiesInvoked": [],
+        "providerCalls": 0,
+        "companyId": "0ba57746-1f8e-4691-a647-0921de1a971d",
+        "status": "PROVISIONED",
+        "blockReason": null
+      },
+      "questions": [
+        {
+          "questionType": "LEADERSHIP",
+          "status": "SUCCEEDED",
+          "questionId": "fbe0a8b3-eeb5-43bf-a3a7-b4273ba35c42",
+          "jobId": "684fbad2-e7ac-4973-85df-300463790985"
+        },
+        {
+          "questionType": "HIRING",
+          "status": "SUCCEEDED",
+          "questionId": "799806ca-c9c0-4461-ba93-a21457f7250b",
+          "jobId": "fc0eea90-999d-4c37-90e0-b182879d2f77"
+        },
+        {
+          "questionType": "EXPANSION",
+          "status": "SUCCEEDED",
+          "questionId": "c3a71eb7-6511-46a3-bf51-33d04337b943",
+          "jobId": "a33ca2e3-0c23-45c5-bd99-a9db18662a9e"
+        },
+        {
+          "questionType": "TECHNOLOGY",
+          "status": "TIMED_OUT",
+          "reason": "No terminal research disposition persisted within 150000ms"
+        }
+      ]
+    },
+    {
+      "manifestIndex": 5,
+      "requestedCompany": "Nubank",
+      "provision": {
+        "resolutionPath": "KNOWN_COMPANY_RESOLUTION",
+        "matchBasis": "EXACT_CANONICAL_NAME",
+        "existingCanonicalReused": true,
+        "identityState": "CONFIRMED",
+        "canAutoAttachCanonical": false,
+        "canResearchEntity": true,
+        "providerCapabilitiesInvoked": [],
+        "providerCalls": 0,
+        "companyId": "8ee8a9ce-dd62-4b03-bfb0-f9f9a3683f32",
+        "status": "PROVISIONED",
+        "blockReason": null
+      },
+      "questions": [
+        {
+          "questionType": "LEADERSHIP",
+          "status": "SUCCEEDED",
+          "questionId": "2c57327a-8a7f-4629-9b60-2dbd03b7e400",
+          "jobId": "67c0f4b1-57c1-49a0-aba6-12b0422a6e42"
+        },
+        {
+          "questionType": "HIRING",
+          "status": "SUCCEEDED",
+          "questionId": "9fef5c5b-73e2-46a6-8ccb-0124d659a6e5",
+          "jobId": "fa52ffd0-da2e-413d-83b5-966753523f74"
+        },
+        {
+          "questionType": "EXPANSION",
+          "status": "SUCCEEDED",
+          "questionId": "5d693007-7ae7-461d-878b-3310a3cf8416",
+          "jobId": "85327c1f-d343-423d-b84c-9811029d0913"
+        },
+        {
+          "questionType": "TECHNOLOGY",
+          "status": "SUCCEEDED",
+          "questionId": "484f1d37-25ae-45b0-8e81-c7030da0217a",
+          "jobId": "86439c9a-dea7-4c2c-b353-79380ede0e08"
+        }
+      ]
+    },
+    {
+      "manifestIndex": 6,
+      "requestedCompany": "Black Duck",
+      "provision": {
+        "resolutionPath": "KNOWN_COMPANY_RESOLUTION",
+        "matchBasis": "EXACT_CANONICAL_NAME",
+        "existingCanonicalReused": true,
+        "identityState": "CONFIRMED",
+        "canAutoAttachCanonical": false,
+        "canResearchEntity": true,
+        "providerCapabilitiesInvoked": [],
+        "providerCalls": 0,
+        "companyId": "fafc40de-2c9e-4968-bc3c-602d7d3f23c6",
+        "status": "PROVISIONED",
+        "blockReason": null
+      },
+      "questions": [
+        {
+          "questionType": "LEADERSHIP",
+          "status": "SUCCEEDED",
+          "questionId": "a1ce0837-ed29-4c30-bb4a-5e7ae4ba98ec",
+          "jobId": "765dcaaa-ab54-479e-99ee-a7aaeb3bc46f"
+        },
+        {
+          "questionType": "HIRING",
+          "status": "SUCCEEDED",
+          "questionId": "905d31ee-714b-4e6b-8eb8-660b3dd6478a",
+          "jobId": "059723d1-bfef-403b-83b3-33b569a2ebb2"
+        },
+        {
+          "questionType": "EXPANSION",
+          "status": "SUCCEEDED",
+          "questionId": "f8ebe294-a23d-46f4-9efa-de85ea7e024e",
+          "jobId": "d6abd81d-849f-461b-affb-35bc561f5b9a"
+        },
+        {
+          "questionType": "TECHNOLOGY",
+          "status": "TIMED_OUT",
+          "reason": "No terminal research disposition persisted within 150000ms"
+        }
+      ]
+    },
+    {
+      "manifestIndex": 7,
+      "requestedCompany": "OpenAssets",
+      "provision": {
+        "resolutionPath": "KNOWN_COMPANY_RESOLUTION",
+        "matchBasis": "EXACT_CANONICAL_NAME",
+        "existingCanonicalReused": true,
+        "identityState": "CONFIRMED",
+        "canAutoAttachCanonical": false,
+        "canResearchEntity": true,
+        "providerCapabilitiesInvoked": [],
+        "providerCalls": 0,
+        "companyId": "4944433c-43a4-41bb-b3f4-24fe98d56a8b",
+        "status": "PROVISIONED",
+        "blockReason": null
+      },
+      "questions": [
+        {
+          "questionType": "LEADERSHIP",
+          "status": "SUCCEEDED",
+          "questionId": "e5f5d0e4-4067-4ce2-947f-335586ab6423",
+          "jobId": "eabbc917-3dbc-4a91-ad17-286acb3677b0"
+        },
+        {
+          "questionType": "HIRING",
+          "status": "TIMED_OUT",
+          "reason": "No terminal research disposition persisted within 150000ms"
+        },
+        {
+          "questionType": "EXPANSION",
+          "status": "SUCCEEDED",
+          "questionId": "6e32d60c-e8f8-44c2-898d-5a900c35049b",
+          "jobId": "8a93e3f9-cbfc-485c-a903-9b57a25ef33d"
+        },
+        {
+          "questionType": "TECHNOLOGY",
+          "status": "TIMED_OUT",
+          "reason": "No terminal research disposition persisted within 150000ms"
+        }
+      ]
+    },
+    {
+      "manifestIndex": 8,
+      "requestedCompany": "Black & McDonald",
+      "provision": {
+        "resolutionPath": "KNOWN_COMPANY_RESOLUTION",
+        "matchBasis": "EXACT_CANONICAL_NAME",
+        "existingCanonicalReused": true,
+        "identityState": "CONFIRMED",
+        "canAutoAttachCanonical": false,
+        "canResearchEntity": true,
+        "providerCapabilitiesInvoked": [],
+        "providerCalls": 0,
+        "companyId": "f757f1d3-fc2d-4086-8903-b4da90e166e3",
+        "status": "PROVISIONED",
+        "blockReason": null
+      },
+      "questions": [
+        {
+          "questionType": "LEADERSHIP",
+          "status": "SUCCEEDED",
+          "questionId": "8387e12d-b79c-4d86-8b83-7d5f775bb849",
+          "jobId": "e648b0b0-2713-4370-97fc-f99ba170485d"
+        },
+        {
+          "questionType": "HIRING",
+          "status": "SUCCEEDED",
+          "questionId": "f0b7536f-3e25-43d3-86ea-351d57e339b8",
+          "jobId": "0f2d2e7d-3b36-4e1e-ab9f-219b9bb69b36"
+        },
+        {
+          "questionType": "EXPANSION",
+          "status": "SUCCEEDED",
+          "questionId": "77c31679-be25-4411-ad9f-b5fe6ea3b398",
+          "jobId": "05428822-6cdc-43e3-9f3b-30c18ab8eccc"
+        },
+        {
+          "questionType": "TECHNOLOGY",
+          "status": "TIMED_OUT",
+          "reason": "No terminal research disposition persisted within 150000ms"
+        }
+      ]
+    },
+    {
+      "manifestIndex": 9,
+      "requestedCompany": "RAKBANK",
+      "provision": {
+        "resolutionPath": "KNOWN_COMPANY_RESOLUTION",
+        "matchBasis": "EXACT_CANONICAL_NAME",
+        "existingCanonicalReused": true,
+        "identityState": "CONFIRMED",
+        "canAutoAttachCanonical": false,
+        "canResearchEntity": true,
+        "providerCapabilitiesInvoked": [],
+        "providerCalls": 0,
+        "companyId": "94457ffa-bf97-426e-95b0-a1cf30250bd0",
+        "status": "PROVISIONED",
+        "blockReason": null
+      },
+      "questions": [
+        {
+          "questionType": "LEADERSHIP",
+          "status": "SUCCEEDED",
+          "questionId": "fe64ad8e-75ae-45e7-931c-fa28a2678f82",
+          "jobId": "05c0976a-3191-4ab2-ad30-ac955c003c1e"
+        },
+        {
+          "questionType": "HIRING",
+          "status": "SUCCEEDED",
+          "questionId": "12f498ed-5bfe-4e85-9159-56eea1aea073",
+          "jobId": "3c8b398c-f79c-4495-b012-294a78d1dfca"
+        },
+        {
+          "questionType": "EXPANSION",
+          "status": "SUCCEEDED",
+          "questionId": "c48687ca-74c7-42c2-b5c6-0c552bc6038b",
+          "jobId": "389d7694-2df2-4043-b81b-15398a6fefd0"
+        },
+        {
+          "questionType": "TECHNOLOGY",
+          "status": "SUCCEEDED",
+          "questionId": "2f01903e-0a22-4f68-b6c3-48b986accc4f",
+          "jobId": "4f938a2e-b123-4bb4-b1f4-dfe91ceb8dd7"
+        }
+      ]
+    }
+  ],
+  "evaluations": [
+    {
+      "manifestIndex": 0,
+      "company": "SolarWinds",
+      "provisionStatus": "PROVISIONED",
+      "companyId": "3cd73d96-37d1-4cf8-9dab-db596e019783",
+      "expectedCategory": "SECURITY_LEADERSHIP",
+      "expectedSignalCode": "MSOC_SECURITY_LEADER",
+      "terminalQuestionDispositions": [
+        {
+          "questionType": "LEADERSHIP",
+          "status": "SUCCEEDED",
+          "questionId": "24e2f54f-18bf-4338-bdc4-c42cc3af6d53",
+          "jobId": "9ce63512-c18c-4763-9150-f8c16086180b"
+        },
+        {
+          "questionType": "HIRING",
+          "status": "SUCCEEDED",
+          "questionId": "b37fba97-d1bd-4bd6-9452-48199eff53bb",
+          "jobId": "4f781203-61e7-46d9-849b-8c3bb0b6a6ec"
+        },
+        {
+          "questionType": "EXPANSION",
+          "status": "SUCCEEDED",
+          "questionId": "8083b764-b2c7-4788-ad1f-8c631f1110f6",
+          "jobId": "568d3d1c-a04d-4e57-9d9d-4549985e8dcf"
+        },
+        {
+          "questionType": "TECHNOLOGY",
+          "status": "TIMED_OUT",
+          "reason": "No terminal research disposition persisted within 150000ms"
+        }
+      ],
+      "detected": true,
+      "matchedEvidenceIds": [
+        "33ab1424-6091-4007-bb19-c76fb6d6afff"
+      ],
+      "matchedFactIds": [
+        "c7ce2c38-48e7-4fe5-ab99-b72a2041fe44",
+        "984e3047-032f-4f2b-9210-5feb79f53cce",
+        "bf46ad76-dad5-43b8-91af-0f113a0a4896",
+        "a201febb-080c-439c-8d58-5bdfa7e6fdbf"
+      ],
+      "matchedSignalIds": [
+        "5f078cba-9dbf-423d-8d4f-0be3b6e9935c"
+      ],
+      "missedEventCause": null
+    },
+    {
+      "manifestIndex": 1,
+      "company": "First Horizon",
+      "provisionStatus": "PROVISIONED",
+      "companyId": "3ec654e3-3bed-405a-a1aa-1405f28ffcba",
+      "expectedCategory": "SECURITY_LEADERSHIP",
+      "expectedSignalCode": "MSOC_SECURITY_LEADER",
+      "terminalQuestionDispositions": [
+        {
+          "questionType": "LEADERSHIP",
+          "status": "SUCCEEDED",
+          "questionId": "30d04ff3-9705-472c-bc45-947475102571",
+          "jobId": "9a8c0df4-b54a-4191-bc84-a7bc35861c57"
+        },
+        {
+          "questionType": "HIRING",
+          "status": "SUCCEEDED",
+          "questionId": "5bb2669f-06e9-4418-8b61-ed332895ecbf",
+          "jobId": "a89388eb-3913-4bd9-b9e8-0a1062fb5a0c"
+        },
+        {
+          "questionType": "EXPANSION",
+          "status": "SUCCEEDED",
+          "questionId": "36b674d4-47bb-4c98-a4bb-ae3cc1891f05",
+          "jobId": "e858e0b3-6017-4328-b1c8-b1780d86e944"
+        },
+        {
+          "questionType": "TECHNOLOGY",
+          "status": "SUCCEEDED",
+          "questionId": "faf47884-2727-4315-a4ef-e7424bd7d749",
+          "jobId": "8eef8ce5-3335-4afc-bbf9-2f4f14ffb07e"
+        }
+      ],
+      "detected": false,
+      "matchedEvidenceIds": [
+        "4ec7b5c0-2fe9-4cc9-8876-647b39c4ebd5",
+        "5b593a01-5853-41e3-8df7-a24eec9be7bb",
+        "d5fc2662-6866-481a-b4d7-314b8823e9aa",
+        "b2f46000-2ca1-4f0c-a2fc-eaa5a389b8ce",
+        "a61a61e9-dd99-4a8e-8c1e-70d5c4e0ed51",
+        "0c292009-dc2d-480e-9f5e-9d238abc99db",
+        "59f846c8-f590-4d10-a70e-4c1e0eb0fc5c",
+        "49435b3a-6eff-4aca-8af1-c03277a07098",
+        "405ed64a-4ed7-4081-9152-90eae835f5ec",
+        "d8ca2057-47cd-48bd-bfa9-942350566ee4",
+        "cab5a7c1-78b0-4b9d-8dac-59421f7063e7",
+        "8cfd0080-ca2f-45a6-b2dc-4135c284ef26",
+        "29e9ec91-d6b0-4ef3-ba4f-69c2da0b94b9",
+        "f57502ac-7e13-4c74-852c-96ea6e7d84ec",
+        "a2a7445c-0763-41d1-a347-5375d04fb4c8",
+        "4ea37633-5a11-47fa-ba4c-c4e526e5ad9c",
+        "647dc248-557f-4239-bc76-e6482f7e8fcb",
+        "405f601b-bc1f-4e6f-bb9c-6b9c73c5d713",
+        "427d0152-89f8-4454-bdea-a992a14b2aa6",
+        "c492c233-6623-4dcf-beec-1b847a07c0dc",
+        "0bd7b822-dd99-4ca9-9f1e-93777dbbfc15",
+        "c60067b9-e9a2-43b0-8bb8-e5103754dbd5",
+        "30e13583-94e2-4825-b081-a4124d1c85d3",
+        "0cc429ec-9c19-46a2-8589-d170648d907f",
+        "30ad0a37-4a6e-4232-86cc-7053e2b70787",
+        "07f18d9d-0bd4-4494-bd7b-7ce1d4482fb4",
+        "6d812673-5c21-4f2c-bd4f-e10f87d59496",
+        "6927aa32-a271-46b6-bba2-9fae44bab287",
+        "bab4c750-b9bf-4457-b20c-11b1983cd526",
+        "9d80f521-2bed-45bc-b8d4-8c98ec832dfd",
+        "40707b83-8533-4dfa-9442-d4c12cd84034",
+        "5d64a4ef-bccf-4eaa-bcef-12ee44f87c23",
+        "e50858a6-7986-4223-b5de-2d2c68e26868",
+        "55d104cc-7196-4895-9941-1b934fb66d54"
+      ],
+      "matchedFactIds": [
+        "78e848cd-359e-48dc-bd45-0b3b954fd3e4",
+        "d5305fa1-21d1-48a9-94e1-f22a8abda149",
+        "dfbb9970-deb8-42d4-bc54-66d372f1cf4e",
+        "683f3577-847d-4dbb-a506-bdc38a24de7e",
+        "d79f6f66-e650-4bd0-9720-2cbf076460d7",
+        "d38be822-6960-42f5-b951-a7d3b8acdebf",
+        "139ea80b-b291-43fb-b39b-db0af0810a3f",
+        "3cb01413-dd65-451e-bf03-1c75cd0e4d75",
+        "e40d6b4f-0ddf-49b0-beb5-cf70f785f1d6",
+        "f73c7c8a-656c-403d-87e1-1d4954a34415",
+        "71929c05-d5e7-4232-8a30-d98609d12dda",
+        "398933c6-5e9f-4c0b-ac8c-cbef9565d6e2"
+      ],
+      "matchedSignalIds": [],
+      "missedEventCause": "SIGNAL_MAPPING_FAILURE"
+    },
+    {
+      "manifestIndex": 2,
+      "company": "GitLab",
+      "provisionStatus": "PROVISIONED",
+      "companyId": "417409dc-ca3f-449f-90bb-f315f91f450a",
+      "expectedCategory": "SECURITY_LEADERSHIP",
+      "expectedSignalCode": "MSOC_SECURITY_LEADER",
+      "terminalQuestionDispositions": [
+        {
+          "questionType": "LEADERSHIP",
+          "status": "SUCCEEDED",
+          "questionId": "bd190926-02e1-4ff8-b881-82f181db00a2",
+          "jobId": "98f8a7f1-4025-4b74-be28-1c8ac3313b39"
+        },
+        {
+          "questionType": "HIRING",
+          "status": "SUCCEEDED",
+          "questionId": "3a5a7952-5c64-4033-9e1e-91b3bfa0796a",
+          "jobId": "03757c72-7b35-4cac-8d20-b37e5554af26"
+        },
+        {
+          "questionType": "EXPANSION",
+          "status": "SUCCEEDED",
+          "questionId": "69032b03-2ba8-473c-972b-85f0017d439b",
+          "jobId": "fdce27a9-3e91-46a9-8ff4-07eb8c3f7012"
+        },
+        {
+          "questionType": "TECHNOLOGY",
+          "status": "TIMED_OUT",
+          "reason": "No terminal research disposition persisted within 150000ms"
+        }
+      ],
+      "detected": true,
+      "matchedEvidenceIds": [
+        "0488986c-21e7-4675-b161-edf2f9307156"
+      ],
+      "matchedFactIds": [
+        "a4caf6a2-de85-44ba-8060-62129c20d8eb",
+        "44238513-4a5b-4ac4-ab33-1e4f6149eb42",
+        "72c119d7-1e06-4aa3-b795-f5d51072f2a5",
+        "2cee4eeb-741e-498e-ac49-51b8a82eba26",
+        "77c6d7e7-cd9e-4daa-a0e1-1faab67d41b0"
+      ],
+      "matchedSignalIds": [
+        "3c0eb744-1328-425f-bcc1-5b30de6be3e9"
+      ],
+      "missedEventCause": null
+    },
+    {
+      "manifestIndex": 3,
+      "company": "Infoblox",
+      "provisionStatus": "PROVISIONED",
+      "companyId": "408bc044-5be0-4118-b486-75c494e5cd8f",
+      "expectedCategory": "SECURITY_LEADERSHIP",
+      "expectedSignalCode": "MSOC_SECURITY_LEADER",
+      "terminalQuestionDispositions": [
+        {
+          "questionType": "LEADERSHIP",
+          "status": "SUCCEEDED",
+          "questionId": "7f2108cf-16fc-4a30-97ad-b1a85c598be9",
+          "jobId": "cd759b5d-b6bb-4a1f-9c29-c56696e9c6af"
+        },
+        {
+          "questionType": "HIRING",
+          "status": "SUCCEEDED",
+          "questionId": "9b63012f-e5be-444b-b3c7-d68477f33eee",
+          "jobId": "b3905c75-f136-4ff1-a634-974d4f133be3"
+        },
+        {
+          "questionType": "EXPANSION",
+          "status": "SUCCEEDED",
+          "questionId": "d5aa9fd2-d125-4681-954c-bdba9e0f78fa",
+          "jobId": "9bdb4346-17ee-4eac-b6f7-1b5fef89980c"
+        },
+        {
+          "questionType": "TECHNOLOGY",
+          "status": "TIMED_OUT",
+          "reason": "No terminal research disposition persisted within 150000ms"
+        }
+      ],
+      "detected": true,
+      "matchedEvidenceIds": [
+        "df4597ec-3a1d-4a60-bb9e-eef8f8281bfa",
+        "7d53db09-bddc-46a9-a9be-4bf51e625180"
+      ],
+      "matchedFactIds": [
+        "f0ec9e39-c064-4a0b-bb12-015c84cc03d0",
+        "4edbaec1-8bd9-4411-9c7c-8e2041891911",
+        "af64ce79-021d-4cea-b63b-c6ce82f30d61",
+        "463cf788-baa2-47d4-8966-faa41e2a6889"
+      ],
+      "matchedSignalIds": [
+        "52c50105-cf55-4953-adda-6953ac4d8660"
+      ],
+      "missedEventCause": null
+    },
+    {
+      "manifestIndex": 4,
+      "company": "Teradata",
+      "provisionStatus": "PROVISIONED",
+      "companyId": "0ba57746-1f8e-4691-a647-0921de1a971d",
+      "expectedCategory": "SECURITY_LEADERSHIP",
+      "expectedSignalCode": "MSOC_SECURITY_LEADER",
+      "terminalQuestionDispositions": [
+        {
+          "questionType": "LEADERSHIP",
+          "status": "SUCCEEDED",
+          "questionId": "fbe0a8b3-eeb5-43bf-a3a7-b4273ba35c42",
+          "jobId": "684fbad2-e7ac-4973-85df-300463790985"
+        },
+        {
+          "questionType": "HIRING",
+          "status": "SUCCEEDED",
+          "questionId": "799806ca-c9c0-4461-ba93-a21457f7250b",
+          "jobId": "fc0eea90-999d-4c37-90e0-b182879d2f77"
+        },
+        {
+          "questionType": "EXPANSION",
+          "status": "SUCCEEDED",
+          "questionId": "c3a71eb7-6511-46a3-bf51-33d04337b943",
+          "jobId": "a33ca2e3-0c23-45c5-bd99-a9db18662a9e"
+        },
+        {
+          "questionType": "TECHNOLOGY",
+          "status": "TIMED_OUT",
+          "reason": "No terminal research disposition persisted within 150000ms"
+        }
+      ],
+      "detected": false,
+      "matchedEvidenceIds": [
+        "da37b7d0-cd3d-48ba-998c-ee6af7896e48",
+        "9fc73350-4e40-4bd3-9576-4dd6a5cb9ebb",
+        "6ae4f9dc-a52d-47ec-9888-d5bfc874f83d",
+        "a815796d-04a5-4a0f-9152-e8143585904e"
+      ],
+      "matchedFactIds": [
+        "0f65c489-da0f-49c7-aeac-d2910de7506a",
+        "d029bd9d-cd98-49cc-96fd-868250fe5321",
+        "48aa9b83-4faf-477d-88d8-080865342531",
+        "a3828f4e-9a6b-4443-8370-1bc3be61a724",
+        "4fad1a20-6a29-4921-b9e5-ecc1aabc8d7d",
+        "3fbdcafc-022a-4db5-8a9d-46ed12de6860",
+        "898c1b97-40be-4333-9767-5b7daecdd5d1",
+        "834bb1ca-4448-4311-b9c5-ab6b4af18cd0",
+        "6f2c9e51-743c-4bbe-b950-c669dc9842cb",
+        "998995c6-148c-4e1f-96f4-7bf75160f49a",
+        "907f8955-6090-49c2-98c6-5174599a7bd8"
+      ],
+      "matchedSignalIds": [],
+      "missedEventCause": "QUERY_FAILURE"
+    },
+    {
+      "manifestIndex": 5,
+      "company": "Nubank",
+      "provisionStatus": "PROVISIONED",
+      "companyId": "8ee8a9ce-dd62-4b03-bfb0-f9f9a3683f32",
+      "expectedCategory": "SECURITY_LEADERSHIP",
+      "expectedSignalCode": "MSOC_SECURITY_LEADER",
+      "terminalQuestionDispositions": [
+        {
+          "questionType": "LEADERSHIP",
+          "status": "SUCCEEDED",
+          "questionId": "2c57327a-8a7f-4629-9b60-2dbd03b7e400",
+          "jobId": "67c0f4b1-57c1-49a0-aba6-12b0422a6e42"
+        },
+        {
+          "questionType": "HIRING",
+          "status": "SUCCEEDED",
+          "questionId": "9fef5c5b-73e2-46a6-8ccb-0124d659a6e5",
+          "jobId": "fa52ffd0-da2e-413d-83b5-966753523f74"
+        },
+        {
+          "questionType": "EXPANSION",
+          "status": "SUCCEEDED",
+          "questionId": "5d693007-7ae7-461d-878b-3310a3cf8416",
+          "jobId": "85327c1f-d343-423d-b84c-9811029d0913"
+        },
+        {
+          "questionType": "TECHNOLOGY",
+          "status": "SUCCEEDED",
+          "questionId": "484f1d37-25ae-45b0-8e81-c7030da0217a",
+          "jobId": "86439c9a-dea7-4c2c-b353-79380ede0e08"
+        }
+      ],
+      "detected": true,
+      "matchedEvidenceIds": [
+        "911c6edc-99cc-4d23-b753-c210b09142d8"
+      ],
+      "matchedFactIds": [
+        "f14b526c-310a-4c18-b21a-6cf5ced0953a",
+        "1d0d3727-4a7c-4d41-bf2f-c54459b62d9a",
+        "9adedf3d-7a09-42af-98e1-7a5fc42b5288",
+        "ef960c8e-ba88-43a9-83df-1fb3326dfa94"
+      ],
+      "matchedSignalIds": [
+        "e85d101d-9b9e-42f8-806b-1845e13a1aea"
+      ],
+      "missedEventCause": null
+    },
+    {
+      "manifestIndex": 6,
+      "company": "Black Duck",
+      "provisionStatus": "PROVISIONED",
+      "companyId": "fafc40de-2c9e-4968-bc3c-602d7d3f23c6",
+      "expectedCategory": "SECURITY_LEADERSHIP",
+      "expectedSignalCode": "MSOC_SECURITY_LEADER",
+      "terminalQuestionDispositions": [
+        {
+          "questionType": "LEADERSHIP",
+          "status": "SUCCEEDED",
+          "questionId": "a1ce0837-ed29-4c30-bb4a-5e7ae4ba98ec",
+          "jobId": "765dcaaa-ab54-479e-99ee-a7aaeb3bc46f"
+        },
+        {
+          "questionType": "HIRING",
+          "status": "SUCCEEDED",
+          "questionId": "905d31ee-714b-4e6b-8eb8-660b3dd6478a",
+          "jobId": "059723d1-bfef-403b-83b3-33b569a2ebb2"
+        },
+        {
+          "questionType": "EXPANSION",
+          "status": "SUCCEEDED",
+          "questionId": "f8ebe294-a23d-46f4-9efa-de85ea7e024e",
+          "jobId": "d6abd81d-849f-461b-affb-35bc561f5b9a"
+        },
+        {
+          "questionType": "TECHNOLOGY",
+          "status": "TIMED_OUT",
+          "reason": "No terminal research disposition persisted within 150000ms"
+        }
+      ],
+      "detected": false,
+      "matchedEvidenceIds": [
+        "58ba43c3-3c52-4423-beac-8eb2750375e3",
+        "4a9fbc45-1012-440a-89a0-6c592f421761",
+        "09101ce7-ad5c-4621-819a-13ebf8433368",
+        "2c1c3ffa-df94-4c44-ac0e-6519cc8b9616",
+        "75cd76ca-83e6-4229-9855-2ea132360cd8",
+        "94cd090c-7ff7-434b-8775-e25359bd83f1",
+        "f62d23b9-d8e6-48af-a0ed-0c800fbf56a7",
+        "16713492-ccff-4861-8c43-e0de1b3061b0",
+        "a778a14b-2e85-4e67-abdf-0c394ea061d1",
+        "8f1c477d-6a09-46b0-9945-59bd641838d0",
+        "457ad638-ba9f-4989-a15f-a44a78f68e63",
+        "a782d3e0-e81d-4d9b-ac08-b4182e0499af",
+        "6a0f6ba6-fede-4b75-a89b-d25aa7aee86b",
+        "aca282ad-138d-4e39-b5cd-d86d8519d475",
+        "22442261-8517-406d-baf3-91ac6ae34807",
+        "d904139d-d5a4-4352-a543-c3ecb11abf37",
+        "0550fbf1-f2ea-4167-b061-365196919520",
+        "91395bd5-1a4a-4aef-8cd6-2a5b0329b85e",
+        "087dc6b7-51da-49df-8252-1781e4a86ca3",
+        "1d38cbc6-7ab9-4bc7-88b2-6312a29f992c",
+        "ccbcd3f8-2fcc-4848-99ea-dcde1fe87f14",
+        "c1617a3a-d585-4c8e-aca6-3b70facd5b66",
+        "7ce16a46-5b2c-4081-b78d-eb2308d60223",
+        "058d6684-c606-409d-b684-377276832f77",
+        "cab8f518-f8e1-468d-b5df-086b0fcb90a1",
+        "ad65b06e-6204-4a26-a106-2820579f9eb0",
+        "cdfad517-1340-4f19-911c-6128416af443",
+        "ebed4a25-e472-4cc1-a168-8e6b3a824f2f",
+        "b80970e2-605e-42ef-afc2-de6c112e5e0b",
+        "30d69fed-bef0-4829-a737-fc43887a21dc",
+        "816756ed-4d5a-42ff-85e6-3b7b37442eb4",
+        "57404b8f-b23d-4369-962f-d94b7ee81232",
+        "f0ebf2b2-f894-4ad7-9daf-7600358d9e87",
+        "134c6552-0c27-4d96-9d66-32999df758df",
+        "d7f6e9a2-a308-4b4c-a6e5-9f37e477adaa",
+        "3c9af17c-43ee-405c-ab00-61c748c636e7",
+        "07d3626b-eb05-4745-80d4-8d0f17cbc93d",
+        "bf2c7cd0-b75e-4a2f-b8a4-9fd7cec46755",
+        "a3d5836d-3376-4437-8c5f-a792a7a30671",
+        "6a4ee2b4-3eb0-42cf-bc18-3a35e4b5b408",
+        "1f964cc8-c674-4fbc-bead-b60a9a4230ef",
+        "83936c96-977e-454a-a937-d3901c93061c",
+        "e9338427-9a1b-4f02-9bc2-ddfb279ad9b6",
+        "2b85d390-7087-4c30-b9b6-cf241f59354f",
+        "3a2b0043-9fb5-45f2-8b4d-9de32e704c9b",
+        "8b6a56ea-8799-4400-862c-e3c6b0bc74ca",
+        "3fd3f76a-02f7-4b28-8188-1cc3c167669f"
+      ],
+      "matchedFactIds": [
+        "af019a59-c6bb-457e-8e38-d90109fa0eb6",
+        "e15df13e-5622-480d-8d36-c2c373dca56b",
+        "02d7c3ef-8c67-492b-9b0f-3fda92679253",
+        "9f3128c6-41af-4d1a-9006-cc44a4322ecf",
+        "962f776e-2bed-46cd-93b6-d7c0f3f9f40d",
+        "c082bc0e-c7cf-4b4d-84ba-7d68e8d618d2",
+        "90f930dc-1d4e-44af-bc8c-2b5dd8f32410",
+        "917b84ff-96c3-42fa-87f2-5fb7b5d2779a",
+        "8086ac2e-4fd9-4223-9046-71f1658ddabb",
+        "9f6cdf53-44e5-4588-8717-d85faabb2e84",
+        "d571f6b9-179e-47cd-8f4b-1046a4fe83da",
+        "d803aaf3-185e-4972-82d4-23ddad02e218",
+        "a817773a-65b1-4553-83d6-8f0f76de195c",
+        "f6ea7912-3655-42d2-88e5-694dcabc6688",
+        "1e190610-657e-4c50-8401-5b7f7c0b7985",
+        "9a750b81-5d8f-4f0e-814c-461a8b444b00",
+        "d68cd8e3-1015-4cf9-a11d-d6a2df7a9cf4",
+        "144e2f61-d144-45ed-bc33-7a83375c6b1d"
+      ],
+      "matchedSignalIds": [],
+      "missedEventCause": "QUERY_FAILURE"
+    },
+    {
+      "manifestIndex": 7,
+      "company": "OpenAssets",
+      "provisionStatus": "PROVISIONED",
+      "companyId": "4944433c-43a4-41bb-b3f4-24fe98d56a8b",
+      "expectedCategory": "FUNDED_RISK_PROGRAM",
+      "expectedSignalCode": "MSOC_FUNDED_RISK_PROGRAM",
+      "terminalQuestionDispositions": [
+        {
+          "questionType": "LEADERSHIP",
+          "status": "SUCCEEDED",
+          "questionId": "e5f5d0e4-4067-4ce2-947f-335586ab6423",
+          "jobId": "eabbc917-3dbc-4a91-ad17-286acb3677b0"
+        },
+        {
+          "questionType": "HIRING",
+          "status": "TIMED_OUT",
+          "reason": "No terminal research disposition persisted within 150000ms"
+        },
+        {
+          "questionType": "EXPANSION",
+          "status": "SUCCEEDED",
+          "questionId": "6e32d60c-e8f8-44c2-898d-5a900c35049b",
+          "jobId": "8a93e3f9-cbfc-485c-a903-9b57a25ef33d"
+        },
+        {
+          "questionType": "TECHNOLOGY",
+          "status": "TIMED_OUT",
+          "reason": "No terminal research disposition persisted within 150000ms"
+        }
+      ],
+      "detected": false,
+      "matchedEvidenceIds": [
+        "4e647bd0-6d4c-469a-80c4-21008e44f4d3",
+        "2bd2ce88-2582-4d2d-b1dc-810ab1c84cd6"
+      ],
+      "matchedFactIds": [
+        "ac0f77f0-ef71-40a7-96b5-7a2b3301edb7",
+        "10f6ac45-2b7c-4df7-9683-9edf12353458",
+        "5a71b49d-badb-4d47-9a41-96658606ddf1",
+        "cc59ab86-a59e-464f-8e55-3274dc67ed4a",
+        "d14d7f49-8120-4b61-b03e-3cdb6033e0a9",
+        "5d6e3929-4457-4cc8-b840-2646ba1a2008",
+        "8e23f62a-616d-44c2-81a0-72a9f55ced8d",
+        "9f7c5622-6a1a-4266-bd37-030cf4d82902",
+        "9ca571c3-a2dc-4da0-99a2-9edf1e40a5b2",
+        "459b069f-38e3-47fa-bfa8-32b53ef8acca",
+        "e7fd0317-f96a-4047-9a2c-d9df57e79b04"
+      ],
+      "matchedSignalIds": [],
+      "missedEventCause": "QUERY_FAILURE"
+    },
+    {
+      "manifestIndex": 8,
+      "company": "Black & McDonald",
+      "provisionStatus": "PROVISIONED",
+      "companyId": "f757f1d3-fc2d-4086-8903-b4da90e166e3",
+      "expectedCategory": "FUNDED_RISK_PROGRAM",
+      "expectedSignalCode": "MSOC_FUNDED_RISK_PROGRAM",
+      "terminalQuestionDispositions": [
+        {
+          "questionType": "LEADERSHIP",
+          "status": "SUCCEEDED",
+          "questionId": "8387e12d-b79c-4d86-8b83-7d5f775bb849",
+          "jobId": "e648b0b0-2713-4370-97fc-f99ba170485d"
+        },
+        {
+          "questionType": "HIRING",
+          "status": "SUCCEEDED",
+          "questionId": "f0b7536f-3e25-43d3-86ea-351d57e339b8",
+          "jobId": "0f2d2e7d-3b36-4e1e-ab9f-219b9bb69b36"
+        },
+        {
+          "questionType": "EXPANSION",
+          "status": "SUCCEEDED",
+          "questionId": "77c31679-be25-4411-ad9f-b5fe6ea3b398",
+          "jobId": "05428822-6cdc-43e3-9f3b-30c18ab8eccc"
+        },
+        {
+          "questionType": "TECHNOLOGY",
+          "status": "TIMED_OUT",
+          "reason": "No terminal research disposition persisted within 150000ms"
+        }
+      ],
+      "detected": false,
+      "matchedEvidenceIds": [
+        "847b2574-872b-45b6-9c64-776ee87d4eaf",
+        "a884cce8-fd58-4b24-9e92-591b75b72919",
+        "a0d7edf6-b579-4469-a266-7a96cecd3279",
+        "8bcb7652-0ba0-49f6-979d-688cd48ea5cf",
+        "95043c3c-9fcc-435f-a10a-53736cbd2e0c",
+        "53cddfd5-6e4c-4223-993c-2661024a13ab",
+        "218f79eb-a79a-403e-8771-b2bd5f3e64bd",
+        "527dfc9a-fbbb-4fe3-a6c9-8094f392fdae"
+      ],
+      "matchedFactIds": [
+        "a98f1ff3-97fb-425f-b37a-1933b4d3c008",
+        "d0e17c9e-c664-455c-8726-d157fcfd51aa",
+        "e15cb4b6-581b-4fa3-922d-284f4748ae15",
+        "47591de7-6eb1-4f33-b366-38a04b5e199b",
+        "c7666bd4-5696-476a-9f73-b21c0a68dd88",
+        "3834aeab-2e3f-4aa8-b4b4-686d71e65e6b",
+        "bb0e4e36-dcd6-4b4e-abbf-5ccd62f6e998",
+        "5665dceb-2927-40bf-ac27-7966cbfba12b"
+      ],
+      "matchedSignalIds": [],
+      "missedEventCause": "QUERY_FAILURE"
+    },
+    {
+      "manifestIndex": 9,
+      "company": "RAKBANK",
+      "provisionStatus": "PROVISIONED",
+      "companyId": "94457ffa-bf97-426e-95b0-a1cf30250bd0",
+      "expectedCategory": "SECURITY_STACK_CHANGE",
+      "expectedSignalCode": "MSOC_SECURITY_STACK_CHANGE",
+      "terminalQuestionDispositions": [
+        {
+          "questionType": "LEADERSHIP",
+          "status": "SUCCEEDED",
+          "questionId": "fe64ad8e-75ae-45e7-931c-fa28a2678f82",
+          "jobId": "05c0976a-3191-4ab2-ad30-ac955c003c1e"
+        },
+        {
+          "questionType": "HIRING",
+          "status": "SUCCEEDED",
+          "questionId": "12f498ed-5bfe-4e85-9159-56eea1aea073",
+          "jobId": "3c8b398c-f79c-4495-b012-294a78d1dfca"
+        },
+        {
+          "questionType": "EXPANSION",
+          "status": "SUCCEEDED",
+          "questionId": "c48687ca-74c7-42c2-b5c6-0c552bc6038b",
+          "jobId": "389d7694-2df2-4043-b81b-15398a6fefd0"
+        },
+        {
+          "questionType": "TECHNOLOGY",
+          "status": "SUCCEEDED",
+          "questionId": "2f01903e-0a22-4f68-b6c3-48b986accc4f",
+          "jobId": "4f938a2e-b123-4bb4-b1f4-dfe91ceb8dd7"
+        }
+      ],
+      "detected": false,
+      "matchedEvidenceIds": [
+        "07790919-bdbe-4061-93c5-fced044ebfaf"
+      ],
+      "matchedFactIds": [],
+      "matchedSignalIds": [],
+      "missedEventCause": "FACT_EXTRACTION_FAILURE"
+    }
+  ],
+  "mainDiscoveryAccounting": {
+    "source": "PERSISTED_DISCOVERY_RUNS_AND_PROVENANCE",
+    "runCount": 1,
+    "rawDiscoveredCandidates": 20,
+    "acceptedCandidates": 14,
+    "canonicalCandidates": 14,
+    "duplicatesRejected": 5,
+    "identityFailures": 4,
+    "rejectedCandidates": 4,
+    "persistedProvenanceRecords": 3,
+    "finalPopulation": 50,
+    "runs": [
+      {
+        "id": "e70722f7-1939-4f6f-b755-fba06d5e5285",
+        "status": "SUCCEEDED",
+        "rawResultCount": 20,
+        "acceptedCandidateCount": 14,
+        "duplicateCount": 5,
+        "rejectedCount": 4,
+        "queries": [
+          "saas companies that may be relevant buyers for Managed Soc",
+          "it companies that may be relevant buyers for Managed Soc",
+          "technology companies that may be relevant buyers for Managed Soc"
+        ]
+      }
+    ]
+  },
+  "mainOperationalMeasurements": {
+    "source": "PERSISTED_DISCOVERY_RUN_PROVIDER_USAGE_RESEARCH_JOB_AND_CONTACT_ATTEMPT_RECORDS",
+    "benchmarkStartedAt": "2026-08-31T11:28:40.798Z",
+    "benchmarkCompletedAt": "2026-09-01T10:38:38.476Z",
+    "totalBenchmarkDurationMs": 83397678,
+    "discovery": {
+      "runs": 1,
+      "averageRunDurationMs": 28099,
+      "providerUsage": {
+        "calls": 0,
+        "estimated": {
+          "status": "COMPLETE",
+          "total": 0,
+          "knownSubtotal": 0,
+          "knownRows": 0,
+          "totalRows": 0
+        },
+        "actual": {
+          "status": "COMPLETE",
+          "total": 0,
+          "knownSubtotal": 0,
+          "knownRows": 0,
+          "totalRows": 0
+        }
+      }
+    },
+    "profileResolution": {
+      "attemptsWithPersistedUsage": 0,
+      "averageLatencyMs": null,
+      "providerUsage": {
+        "calls": 0,
+        "estimated": {
+          "status": "COMPLETE",
+          "total": 0,
+          "knownSubtotal": 0,
+          "knownRows": 0,
+          "totalRows": 0
+        },
+        "actual": {
+          "status": "COMPLETE",
+          "total": 0,
+          "knownSubtotal": 0,
+          "knownRows": 0,
+          "totalRows": 0
+        }
+      }
+    },
+    "firmographics": {
+      "attemptsWithPersistedUsage": 0,
+      "averageLatencyMs": null,
+      "providerUsage": {
+        "calls": 0,
+        "estimated": {
+          "status": "COMPLETE",
+          "total": 0,
+          "knownSubtotal": 0,
+          "knownRows": 0,
+          "totalRows": 0
+        },
+        "actual": {
+          "status": "COMPLETE",
+          "total": 0,
+          "knownSubtotal": 0,
+          "knownRows": 0,
+          "totalRows": 0
+        }
+      }
+    },
+    "who": {
+      "measuredProviderOperations": 0,
+      "averageAvailableProviderLatencyMs": null
+    },
+    "research": {
+      "jobs": 32,
+      "completedJobsWithTiming": 31,
+      "averageJobDurationMs": 3945.5806451612902
+    },
+    "contacts": {
+      "eligibleProjectCompanies": 50,
+      "attempts": 0,
+      "averageLatencyMs": null,
+      "averageLatencyDenominator": 0,
+      "latencyStatus": "N/A_DENOMINATOR_0"
+    },
+    "providerCostAccounting": {
+      "associationMethod": "Exact scope, discovery provider request IDs, company IDs, research question/job provider request IDs, and the persisted control execution interval; control-associated rows are excluded from main.",
+      "controlExecutionInterval": {
+        "startedAt": "2026-08-31T12:26:10.095Z",
+        "completedAt": "2026-09-01T10:49:35.522Z"
+      },
+      "MAIN_POPULATION": {
+        "stages": {
+          "DISCOVERY": {
+            "calls": 0,
+            "estimated": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            },
+            "actual": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            }
+          },
+          "PROFILE_RESOLUTION": {
+            "calls": 0,
+            "estimated": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            },
+            "actual": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            }
+          },
+          "FIRMOGRAPHICS": {
+            "calls": 0,
+            "estimated": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            },
+            "actual": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            }
+          },
+          "WHEN_WHY_RESEARCH": {
+            "calls": 0,
+            "estimated": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            },
+            "actual": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            }
+          },
+          "CONTACT_ENRICHMENT": {
+            "calls": 0,
+            "estimated": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            },
+            "actual": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            }
+          },
+          "OTHER": {
+            "calls": 0,
+            "estimated": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            },
+            "actual": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            }
+          }
+        },
+        "totals": {
+          "calls": 0,
+          "estimated": {
+            "status": "COMPLETE",
+            "total": 0,
+            "knownSubtotal": 0,
+            "knownRows": 0,
+            "totalRows": 0
+          },
+          "actual": {
+            "status": "COMPLETE",
+            "total": 0,
+            "knownSubtotal": 0,
+            "knownRows": 0,
+            "totalRows": 0
+          }
+        }
+      },
+      "BLIND_CONTROLS": {
+        "stages": {
+          "DISCOVERY": {
+            "calls": 0,
+            "estimated": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            },
+            "actual": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            }
+          },
+          "PROFILE_RESOLUTION": {
+            "calls": 0,
+            "estimated": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            },
+            "actual": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            }
+          },
+          "FIRMOGRAPHICS": {
+            "calls": 0,
+            "estimated": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            },
+            "actual": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            }
+          },
+          "WHEN_WHY_RESEARCH": {
+            "calls": 43,
+            "estimated": {
+              "status": "COMPLETE",
+              "total": 0.39700000000000024,
+              "knownSubtotal": 0.39700000000000024,
+              "knownRows": 43,
+              "totalRows": 43
+            },
+            "actual": {
+              "status": "PARTIAL_UNKNOWN",
+              "total": null,
+              "knownSubtotal": 0.18600000000000005,
+              "knownRows": 11,
+              "totalRows": 43
+            }
+          },
+          "CONTACT_ENRICHMENT": {
+            "calls": 0,
+            "estimated": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            },
+            "actual": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            }
+          },
+          "OTHER": {
+            "calls": 0,
+            "estimated": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            },
+            "actual": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            }
+          }
+        },
+        "totals": {
+          "calls": 43,
+          "estimated": {
+            "status": "COMPLETE",
+            "total": 0.39700000000000024,
+            "knownSubtotal": 0.39700000000000024,
+            "knownRows": 43,
+            "totalRows": 43
+          },
+          "actual": {
+            "status": "PARTIAL_UNKNOWN",
+            "total": null,
+            "knownSubtotal": 0.18600000000000005,
+            "knownRows": 11,
+            "totalRows": 43
+          }
+        }
+      },
+      "COMBINED_BENCHMARK": {
+        "stages": {
+          "DISCOVERY": {
+            "calls": 0,
+            "estimated": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            },
+            "actual": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            }
+          },
+          "PROFILE_RESOLUTION": {
+            "calls": 0,
+            "estimated": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            },
+            "actual": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            }
+          },
+          "FIRMOGRAPHICS": {
+            "calls": 0,
+            "estimated": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            },
+            "actual": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            }
+          },
+          "WHEN_WHY_RESEARCH": {
+            "calls": 43,
+            "estimated": {
+              "status": "COMPLETE",
+              "total": 0.39700000000000024,
+              "knownSubtotal": 0.39700000000000024,
+              "knownRows": 43,
+              "totalRows": 43
+            },
+            "actual": {
+              "status": "PARTIAL_UNKNOWN",
+              "total": null,
+              "knownSubtotal": 0.18600000000000005,
+              "knownRows": 11,
+              "totalRows": 43
+            }
+          },
+          "CONTACT_ENRICHMENT": {
+            "calls": 0,
+            "estimated": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            },
+            "actual": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            }
+          },
+          "OTHER": {
+            "calls": 0,
+            "estimated": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            },
+            "actual": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            }
+          }
+        },
+        "totals": {
+          "calls": 43,
+          "estimated": {
+            "status": "COMPLETE",
+            "total": 0.39700000000000024,
+            "knownSubtotal": 0.39700000000000024,
+            "knownRows": 43,
+            "totalRows": 43
+          },
+          "actual": {
+            "status": "PARTIAL_UNKNOWN",
+            "total": null,
+            "knownSubtotal": 0.18600000000000005,
+            "knownRows": 11,
+            "totalRows": 43
+          }
+        }
+      }
+    }
+  }
+}

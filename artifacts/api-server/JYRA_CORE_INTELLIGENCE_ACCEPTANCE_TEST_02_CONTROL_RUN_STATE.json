@@ -379,6 +379,49 @@
           "reason": "No terminal research disposition persisted within 150000ms"
         }
       ]
+    },
+    {
+      "manifestIndex": 9,
+      "requestedCompany": "RAKBANK",
+      "provision": {
+        "resolutionPath": "KNOWN_COMPANY_RESOLUTION",
+        "matchBasis": "EXACT_CANONICAL_NAME",
+        "existingCanonicalReused": true,
+        "identityState": "CONFIRMED",
+        "canAutoAttachCanonical": false,
+        "canResearchEntity": true,
+        "providerCapabilitiesInvoked": [],
+        "providerCalls": 0,
+        "companyId": "94457ffa-bf97-426e-95b0-a1cf30250bd0",
+        "status": "PROVISIONED",
+        "blockReason": null
+      },
+      "questions": [
+        {
+          "questionType": "LEADERSHIP",
+          "status": "SUCCEEDED",
+          "questionId": "fe64ad8e-75ae-45e7-931c-fa28a2678f82",
+          "jobId": "05c0976a-3191-4ab2-ad30-ac955c003c1e"
+        },
+        {
+          "questionType": "HIRING",
+          "status": "SUCCEEDED",
+          "questionId": "12f498ed-5bfe-4e85-9159-56eea1aea073",
+          "jobId": "3c8b398c-f79c-4495-b012-294a78d1dfca"
+        },
+        {
+          "questionType": "EXPANSION",
+          "status": "SUCCEEDED",
+          "questionId": "c48687ca-74c7-42c2-b5c6-0c552bc6038b",
+          "jobId": "389d7694-2df2-4043-b81b-15398a6fefd0"
+        },
+        {
+          "questionType": "TECHNOLOGY",
+          "status": "SUCCEEDED",
+          "questionId": "2f01903e-0a22-4f68-b6c3-48b986accc4f",
+          "jobId": "4f938a2e-b123-4bb4-b1f4-dfe91ceb8dd7"
+        }
+      ]
     }
   ]
 }
