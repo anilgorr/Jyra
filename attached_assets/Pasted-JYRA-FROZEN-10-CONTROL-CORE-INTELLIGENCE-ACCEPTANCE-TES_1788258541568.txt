@@ -1,0 +1,1389 @@
+JYRA — FROZEN 10-CONTROL CORE INTELLIGENCE ACCEPTANCE TEST 02
+FINAL AUTHORITATIVE FRESH EXECUTION
+
+PURPOSE
+
+Run the FINAL frozen 10-control core-intelligence acceptance test through
+JYRA's normal production-path intelligence flow.
+
+This is an ACCEPTANCE TEST.
+
+It is NOT:
+- a repair task
+- a tuning task
+- a provider experiment
+- a signal-development task
+- a benchmark-optimization task.
+
+NO FIXES DURING THE RUN.
+
+If a defect occurs:
+record it,
+classify it,
+continue where safe,
+and return the appropriate verdict.
+
+==================================================
+1. FINAL PRECONDITION STATUS
+==================================================
+
+Two previous acceptance attempts were INVALID before intelligence
+execution.
+
+Those harness/provisioning defects are now repaired.
+
+------------------------------------------
+KNOWN COMPANY PROVISIONING
+------------------------------------------
+
+KNOWN_COMPANY_PROVISIONING_FIX_03A = PASS
+
+10-control identity-only retest:
+
+Controls = 10
+Correctly handled = 10
+Research eligible = 10
+Blocked = 0
+Existing canonical reuse = 10
+
+CONFIRMED = 9
+PROBABLE = 1
+AMBIGUOUS = 0
+NOT_A_COMPANY = 0
+WRONG_ENTITY = 0
+UNRESOLVED = 0
+
+Wrong automatic attachments = 0
+Wrong research-eligible entities = 0
+
+COMPANY_DISCOVERY calls = 0
+Other identity provider calls = 0
+
+12-company WHO regression = PASS
+Four-case identity safety regression = PASS
+Find My Market discovery regression = PASS.
+
+------------------------------------------
+SIGNAL PACK PREFLIGHT
+------------------------------------------
+
+ACCEPTANCE_RUNNER_SIGNAL_PACK_PREFLIGHT_HOTFIX_02A = PASS
+
+Current frozen Managed SOC signal definitions:
+
+1. MSOC_SECURITY_LEADER
+2. MSOC_SECURITY_HIRING
+3. MSOC_FUNDED_RISK_PROGRAM
+4. MSOC_SECURITY_STACK_CHANGE
+5. MSOC_SECURITY_COMPLIANCE_ACTIVITY
+
+Required signal IDs validated = 5/5
+
+Pack preflight = PASS
+
+Question-count cardinality assumption removed = YES
+
+Other stale assumptions in current control runner = NONE
+
+Regression tests = 9/9 PASS
+
+Typecheck/build = PASS
+
+Architecture review = PASS.
+
+Therefore:
+
+This execution is the authoritative fresh execution of:
+
+FROZEN 10-CONTROL CORE INTELLIGENCE ACCEPTANCE TEST 02.
+
+Do NOT count previous INVALID_RUN executions as intelligence results.
+
+==================================================
+2. DATABASE SAFETY
+==================================================
+
+DEVELOPMENT ONLY.
+
+Use ONLY the approved development database fingerprint.
+
+Before execution verify:
+
+development DB fingerprint
+tenant
+Business Twin
+project
+offering
+active signal pack
+provider configuration.
+
+DO NOT:
+
+access production
+write production
+migrate production
+reset production
+seed production
+truncate production
+modify production configuration.
+
+Production operations must equal:
+
+0.
+
+==================================================
+3. FREEZE ALL PRODUCT INTELLIGENCE
+==================================================
+
+DO NOT CHANGE:
+
+Business Twin
+ICP
+Find My Market
+company discovery
+resolveKnownCompany
+identity states
+identity thresholds
+research eligibility
+profile resolution
+Bright Data
+Research Planner
+research-question semantics
+Tavily query generation
+Exa fallback routing
+retrieval sufficiency rules
+evidence acceptance
+entity validation
+source classification
+fact ontology
+fact extraction
+fact validation
+temporal rules
+signal definitions
+signal mapping
+signal clusters
+opportunity logic
+confidence logic
+WHY
+NBA
+semantic idempotency
+cost engine
+contacts
+UI.
+
+NO CODE MODIFICATIONS TO IMPROVE RESULTS.
+
+==================================================
+4. FROZEN COMPONENTS
+==================================================
+
+Treat these components as frozen:
+
+KNOWN_COMPANY_PROVISIONING_FIX_03A
+
+PROFILE_RESOLUTION_FIX_02A
+
+MVP_RETRIEVAL_V1_FROZEN
+
+FACT_AND_TEMPORAL_SAFETY_FIX_03
+
+MANAGED_SOC_SIGNAL_MAPPING_GAP_VALIDATION_01
+
+DOWNSTREAM_SEMANTIC_IDEMPOTENCY_FIX_01
+
+ACCEPTANCE_RUNNER_SIGNAL_PACK_PREFLIGHT_HOTFIX_02A.
+
+Do not reopen them during this test.
+
+==================================================
+5. EXACT FROZEN CONTROL SET
+==================================================
+
+Use the EXACT SAME frozen 10 blind control companies and reference
+events used in the previous benchmark cycles.
+
+Do NOT:
+
+replace controls
+remove difficult controls
+add easier controls
+change companies
+change reference events
+change reference dates
+change expected event categories.
+
+The benchmark set is immutable.
+
+==================================================
+6. BLINDNESS
+==================================================
+
+Runtime intelligence MUST NOT receive:
+
+reference event
+expected signal
+expected outcome
+expected event date
+expected person
+reference event URL
+benchmark labels
+expected query terms.
+
+The benchmark evaluator may use the frozen reference information only
+AFTER normal pipeline execution for adjudication.
+
+Company identity itself is NOT hidden.
+
+The system is allowed to know which company it is researching.
+
+==================================================
+7. PRECHECK
+==================================================
+
+Run the already-repaired benchmark preflight.
+
+Verify:
+
+correct development environment
+correct Business Twin
+correct offering
+correct active pack
+required signal IDs = 5/5
+known-company provisioning available.
+
+If preflight passes:
+
+PROCEED IMMEDIATELY TO INTELLIGENCE EXECUTION.
+
+Do NOT introduce additional preflight requirements.
+
+Do NOT repair anything.
+
+==================================================
+8. NORMAL END-TO-END PATH
+==================================================
+
+Execute each control through:
+
+Known Control Company
+→ resolveKnownCompany
+→ Canonical Identity
+→ Research Planner
+→ Research Questions
+→ Tavily Primary Retrieval
+→ Retrieval Sufficiency
+→ Exa Adaptive Fallback when required
+→ Cross-provider Merge/Dedupe
+→ Evidence
+→ Entity Validation
+→ Seller/Buyer Classification
+→ Fact Extraction
+→ Fact Validation
+→ Temporal Validation
+→ Approved Facts
+→ Signals
+→ Signal Clusters
+→ WHEN
+→ WHY
+→ Opportunity Assessment
+→ Next Best Action
+→ Semantic Persistence.
+
+After all 10:
+
+run unchanged semantic replay.
+
+==================================================
+9. CONTROL PROVISIONING
+==================================================
+
+Provision controls independently of Find My Market.
+
+Use:
+
+resolveKnownCompany.
+
+Reuse existing canonical companies where valid.
+
+Do NOT use COMPANY_DISCOVERY simply to establish identity for a known
+benchmark company.
+
+Report:
+
+existing canonical reused
+identity state
+research eligibility
+domain
+LinkedIn identity
+identity provenance.
+
+==================================================
+10. IDENTITY SAFETY
+==================================================
+
+Required:
+
+wrong automatic attachments = 0
+wrong research-eligible entities = 0.
+
+CONFIRMED may proceed normally.
+
+PROBABLE may proceed ONLY according to the already-frozen production
+research-eligibility rules.
+
+Do not require CONFIRMED simply because this is a benchmark.
+
+Do not loosen identity rules.
+
+==================================================
+11. RESEARCH QUESTION GENERATION
+==================================================
+
+Generate questions through normal:
+
+Business Twin
+→ Offering
+→ approved Managed SOC pack
+→ Research Planner
+
+logic.
+
+Do not derive questions from benchmark reference events.
+
+Do not force question count to equal signal-definition count.
+
+Persist exact generated questions.
+
+==================================================
+12. FROZEN MANAGED SOC SIGNAL PACK
+==================================================
+
+Current approved signal definitions:
+
+MSOC_SECURITY_LEADER
+
+MSOC_SECURITY_HIRING
+
+MSOC_FUNDED_RISK_PROGRAM
+
+MSOC_SECURITY_STACK_CHANGE
+
+MSOC_SECURITY_COMPLIANCE_ACTIVITY.
+
+Do NOT:
+
+add signals
+remove signals
+broaden signals
+weaken signals
+rename signals
+change thresholds
+change mapping.
+
+==================================================
+13. COMPLIANCE SIGNAL SAFETY
+==================================================
+
+MSOC_SECURITY_COMPLIANCE_ACTIVITY means:
+
+recent evidence-backed security/compliance program activity.
+
+It does NOT mean:
+
+Managed SOC buying intent
+vendor evaluation
+budget availability
+purchase readiness
+active buying process.
+
+Maintain the validated narrow semantics.
+
+==================================================
+14. RETRIEVAL
+==================================================
+
+Use frozen adaptive retrieval:
+
+Tavily = primary WEB_SEARCH.
+
+After Tavily evaluate retrieval sufficiency.
+
+Use Exa regular WEB_SEARCH fallback ONLY when Tavily is:
+
+INSUFFICIENT_RETRIEVAL
+
+AMBIGUOUS_RETRIEVAL
+
+or
+
+PROVIDER_FAILURE.
+
+Do NOT use Exa COMPANY_DISCOVERY for event research.
+
+Maximum logical retrieval per question:
+
+1 Tavily primary
++
+1 Exa fallback when justified.
+
+==================================================
+15. PROVIDER FAILURE SEMANTICS
+==================================================
+
+Provider failure must NEVER become:
+
+no event
+negative evidence
+weak opportunity
+DORMANT
+no need.
+
+Provider/system failure remains an execution failure.
+
+If a control cannot be validly evaluated because of provider/system
+failure:
+
+mark INVALID_RUN where appropriate.
+
+Do not count an invalid control as a strict miss.
+
+==================================================
+16. RETRIEVAL DIAGNOSTICS
+==================================================
+
+For each research question preserve:
+
+company
+question ID
+question category
+query
+provider
+provider role
+fallback reason
+result rank
+title
+URL
+publisher
+published date if available
+retrieval date
+snippet
+provider score if available
+entity relevance
+seller/buyer classification
+temporal relevance
+accept/reject disposition
+estimated cost
+actual cost if reported
+request ID
+error/status.
+
+Redact credentials and tokens.
+
+==================================================
+17. PUBLISHER VS PROVIDER
+==================================================
+
+Preserve:
+
+retrieval provider
+
+separately from:
+
+publisher/source.
+
+Example:
+
+retrieved by Exa
+published by Reuters.
+
+Never treat Tavily or Exa as the publisher unless they actually are the
+source.
+
+==================================================
+18. EVIDENCE SAFETY
+==================================================
+
+Only accepted evidence may feed facts.
+
+Evidence must be attributable to the intended entity.
+
+Do not accept evidence solely because company-name text appears.
+
+Consider:
+
+entity identity
+publisher
+source context
+relationship
+event subject
+date
+buyer/seller role.
+
+==================================================
+19. SELLER-AS-BUYER SAFETY
+==================================================
+
+Vendor/seller marketing must not become buyer evidence.
+
+Example:
+
+A cybersecurity company advertising Managed SOC
+
+does NOT mean:
+
+the company is looking to purchase Managed SOC.
+
+Required:
+
+seller-as-buyer signals = 0.
+
+==================================================
+20. WRONG ENTITY SAFETY
+==================================================
+
+Do not accept material event evidence for:
+
+similar-name company
+wrong subsidiary
+wrong parent
+partner
+customer
+vendor
+unrelated organization.
+
+Required:
+
+wrong-entity signals = 0.
+
+==================================================
+21. FACT EXTRACTION
+==================================================
+
+Use the frozen generic fact extractor.
+
+Extract EVERY independently supported atomic material fact from accepted
+evidence.
+
+Do not select only one interesting fact if multiple independent facts
+are supported.
+
+Relevant generic fact families include where supported:
+
+PERSON_ROLE_CHANGE / LEADERSHIP_CHANGE
+
+JOB_OPENING
+
+HIRING_EXPANSION
+
+TECHNOLOGY_IMPLEMENTATION
+
+TECHNOLOGY_MIGRATION
+
+TECHNOLOGY_REPLACEMENT
+
+COMPLIANCE / CERTIFICATION ACTIVITY
+
+SECURITY_INCIDENT
+
+PROGRAM_INVESTMENT
+
+MARKET_EXPANSION
+
+ACQUISITION
+
+FUNDING_EVENT.
+
+Facts are observations.
+
+Facts are NOT purchase intent.
+
+==================================================
+22. FACT VALIDATION
+==================================================
+
+Every approved fact must pass:
+
+entity support
+claim support
+fact-type support
+temporal support when required
+relationship support
+source support.
+
+Do not approve generic company marketing text as an event fact.
+
+Do not approve unsupported inference.
+
+==================================================
+23. TEMPORAL SAFETY
+==================================================
+
+Strictly distinguish:
+
+EVENT DATE
+
+PUBLICATION DATE
+
+RETRIEVAL / OBSERVATION DATE.
+
+Never use retrieval date as event date.
+
+Static pages observed today do not imply the event occurred today.
+
+If event timing cannot be established:
+
+do not fabricate an event date.
+
+Required:
+
+temporally invalid signals = 0.
+
+==================================================
+24. FUNDING SAFETY
+==================================================
+
+Generic funding does NOT mean:
+
+security funding
+risk-program funding
+Managed SOC budget
+security initiative
+purchase intent.
+
+MSOC_FUNDED_RISK_PROGRAM requires explicit evidence connecting
+funding/investment/program activity to relevant security/risk activity.
+
+Required:
+
+generic-funding false security signals = 0.
+
+==================================================
+25. TECHNOLOGY SAFETY
+==================================================
+
+Generic technology mentions must not automatically become security-stack
+changes.
+
+Where evidence supports it distinguish:
+
+MARKETING_WEB
+PRODUCT_APPLICATION
+CLOUD_INFRASTRUCTURE
+CORPORATE_IT
+SECURITY_STACK
+DATA_STACK
+DEVOPS
+UNKNOWN_CONTEXT.
+
+Relationship may include:
+
+CURRENTLY_USED
+HIRING_FOR
+IMPLEMENTING
+MIGRATING_TO
+MIGRATING_FROM
+REPLACING
+HISTORICAL
+UNKNOWN_RELATIONSHIP.
+
+Security-stack change signals require the frozen signal semantics.
+
+==================================================
+26. SIGNAL GENERATION
+==================================================
+
+Signals may be generated ONLY from approved facts.
+
+Every signal must trace:
+
+SIGNAL
+→ FACT
+→ EVIDENCE
+→ SOURCE.
+
+No direct signal from:
+
+search-result intuition
+LLM hypothesis
+company description
+marketing copy
+unsupported inference.
+
+==================================================
+27. SIGNAL ADJUDICATION
+==================================================
+
+After execution classify every generated material signal as:
+
+SUPPORTED
+
+UNSUPPORTED_FACT
+
+UNSUPPORTED_INFERENCE
+
+SELLER_AS_BUYER
+
+WRONG_ENTITY
+
+TEMPORALLY_INVALID
+
+GENERIC_FUNDING_INFERENCE
+
+OTHER_INVALID.
+
+Strict signal precision:
+
+SUPPORTED SIGNALS
+/
+ALL GENERATED MATERIAL SIGNALS.
+
+If zero signals:
+
+precision = NOT EVALUABLE.
+
+Never report zero-signal precision as 100%.
+
+==================================================
+28. EVENT DETECTION CLASSIFICATION
+==================================================
+
+For each frozen reference event classify:
+
+STRICT_DETECTION
+
+PARTIAL_DETECTION
+
+MISS
+
+INVALID_RUN.
+
+STRICT_DETECTION requires:
+
+correct company
+correct material event
+supported approved fact
+correct relevant signal
+valid temporal semantics.
+
+PARTIAL_DETECTION may include:
+
+correct event/fact captured
+but legitimate downstream mapping limitation
+
+or
+
+materially correct event with incomplete non-critical attributes.
+
+Do not count PARTIAL as strict recall.
+
+==================================================
+29. STRICT EVENT RECALL
+==================================================
+
+Calculate:
+
+STRICT DETECTIONS
+/
+VALID CONTROLS.
+
+Acceptance target:
+
+>= 70%.
+
+Report:
+
+strict detections
+partial detections
+misses
+invalid runs.
+
+Also calculate:
+
+STRICT + PARTIAL COVERAGE
+
+for information only.
+
+Do NOT substitute strict+partial coverage for strict recall.
+
+==================================================
+30. MISS ATTRIBUTION
+==================================================
+
+For every MISS identify the EARLIEST broken stage:
+
+IDENTITY
+
+QUESTION_GENERATION
+
+QUERY_GENERATION
+
+TAVILY_RETRIEVAL
+
+SUFFICIENCY_GATE
+
+EXA_FALLBACK
+
+EVIDENCE_ACCEPTANCE
+
+ENTITY_VALIDATION
+
+SELLER_BUYER_CLASSIFICATION
+
+FACT_EXTRACTION
+
+FACT_VALIDATION
+
+TEMPORAL_VALIDATION
+
+SIGNAL_MAPPING
+
+CLUSTERING
+
+OPPORTUNITY_LOGIC
+
+OTHER.
+
+Do not repair misses during this task.
+
+==================================================
+31. WHEN
+==================================================
+
+WHEN must reflect only supported temporal opportunity evidence.
+
+Do not manufacture urgency.
+
+WHEN may legitimately remain:
+
+UNKNOWN.
+
+A detected signal does not automatically imply immediate purchase
+timing.
+
+==================================================
+32. WHY
+==================================================
+
+Every material WHY claim must trace:
+
+WHY
+→ SIGNAL
+→ FACT
+→ EVIDENCE
+→ SOURCE.
+
+If evidence is insufficient:
+
+say so.
+
+Required:
+
+WHY provenance = 100%.
+
+Do not claim:
+
+actively buying
+looking for vendor
+has budget
+needs SOC
+evaluating Managed SOC
+ready to purchase
+
+unless directly supported.
+
+==================================================
+33. OPPORTUNITY ASSESSMENT
+==================================================
+
+Missing evidence is not negative evidence.
+
+UNKNOWN is not zero.
+
+Do not turn insufficient evidence into DORMANT merely because no signal
+exists.
+
+Use existing frozen opportunity semantics.
+
+==================================================
+34. NEXT BEST ACTION
+==================================================
+
+NBA must follow supported intelligence.
+
+Possible outcomes may include:
+
+RESEARCH_MORE
+MONITOR
+REVIEW
+CONTACT
+
+only when justified by existing normal logic.
+
+Do not force CONTACT because a benchmark event exists.
+
+==================================================
+35. NO CONTACT / OUTREACH
+==================================================
+
+DO NOT:
+
+run contact enrichment
+run person search
+run email lookup
+run phone lookup
+integrate Explee
+send email
+create campaigns
+run outreach.
+
+This test covers core opportunity intelligence only.
+
+==================================================
+36. COST ACCOUNTING
+==================================================
+
+Record:
+
+Tavily calls
+Exa fallback calls
+other provider calls
+estimated cost
+actual known cost
+actual unknown cost
+cost per valid control
+cost per strict detection.
+
+Do not fabricate missing provider costs.
+
+==================================================
+37. PER-CONTROL REPORT
+==================================================
+
+For every control report:
+
+company
+
+canonical company ID
+
+identity state
+
+existing canonical reused
+
+research eligibility
+
+questions generated
+
+Tavily calls
+
+Exa fallback calls
+
+raw results
+
+accepted evidence
+
+approved facts
+
+rejected facts
+
+generated signals
+
+supported signals
+
+clusters
+
+WHEN
+
+WHY
+
+opportunity assessment
+
+NBA
+
+reference-event classification
+
+earliest miss stage if applicable
+
+estimated cost
+
+actual known cost.
+
+==================================================
+38. SAFETY COUNTS
+==================================================
+
+Explicitly report:
+
+unsupported signals
+
+seller-as-buyer signals
+
+wrong-entity signals
+
+temporally invalid signals
+
+generic-funding false security signals
+
+facts without evidence
+
+signals without facts
+
+WHY claims without provenance.
+
+Report zero explicitly where applicable.
+
+==================================================
+39. FIRST RUN MUST COMPLETE BEFORE REPLAY
+==================================================
+
+Complete and persist the first valid 10-control run.
+
+Only then perform unchanged semantic replay.
+
+Do not mix first-run and replay results.
+
+==================================================
+40. UNCHANGED REPLAY
+==================================================
+
+Replay unchanged material intelligence state through normal runtime
+behavior.
+
+Measure:
+
+provider calls
+
+new companies
+
+new evidence
+
+new facts
+
+new signals
+
+new clusters
+
+new opportunity-history rows
+
+new WHY versions
+
+new recommendation-ledger rows.
+
+==================================================
+41. IDEMPOTENCY ACCEPTANCE
+==================================================
+
+For unchanged material state:
+
+new opportunity-history = 0
+
+new WHY versions = 0
+
+new recommendation-ledger rows = 0
+
+duplicate companies = 0
+
+duplicate evidence = 0
+
+duplicate facts = 0
+
+duplicate signals = 0.
+
+Provider calls should also be avoided where valid freshness/cache
+semantics permit.
+
+If normal freshness semantics genuinely require a call:
+
+report and justify it.
+
+==================================================
+42. DO NOT CLEAN HISTORY
+==================================================
+
+Do not delete previous benchmark records or historical duplicates.
+
+This test measures whether NEW duplicates are created.
+
+No destructive cleanup.
+
+==================================================
+43. ACCEPTANCE GATES
+==================================================
+
+A — CORE INTELLIGENCE ACCEPTED requires:
+
+sufficient valid controls to evaluate benchmark
+
+STRICT EVENT RECALL >= 70%
+
+STRICT SIGNAL PRECISION >= 85%
+
+UNSUPPORTED / NON-VALID SIGNAL RATE <= 5%
+
+WRONG-ENTITY SIGNALS = 0
+
+SELLER-AS-BUYER SIGNALS = 0
+
+TEMPORALLY INVALID SIGNALS = 0
+
+GENERIC-FUNDING FALSE SECURITY SIGNALS = 0
+
+WHY PROVENANCE = 100%
+
+IDENTITY PRECISION = 100%
+
+WRONG RESEARCH-ELIGIBLE ENTITIES = 0
+
+PROVIDER FAILURES NOT TREATED AS NEGATIVE EVIDENCE
+
+UNCHANGED REPLAY SEMANTIC DUPLICATES = 0
+
+PRODUCTION OPERATIONS = 0.
+
+==================================================
+44. SAFETY OVERRIDES RECALL
+==================================================
+
+Safety and precision cannot be sacrificed for recall.
+
+Example:
+
+8/10 recall with unsafe signals = FAIL.
+
+6/10 recall with perfect precision = below recall target.
+
+Do not weaken evidence standards to reach 70%.
+
+==================================================
+45. NO REPAIR DURING ACCEPTANCE
+==================================================
+
+If a problem appears:
+
+DO NOT FIX IT.
+
+DO NOT change code.
+
+DO NOT change queries.
+
+DO NOT change providers.
+
+DO NOT change signal definitions.
+
+DO NOT change thresholds.
+
+DO NOT selectively rerun after changing behavior.
+
+Record the defect.
+
+Return the appropriate verdict.
+
+==================================================
+46. REQUIRED ARTIFACTS
+==================================================
+
+Generate:
+
+JYRA_CORE_INTELLIGENCE_ACCEPTANCE_TEST_02.md
+
+JYRA_CORE_INTELLIGENCE_ACCEPTANCE_TEST_02.json
+
+JYRA_CORE_INTELLIGENCE_ACCEPTANCE_TEST_02_CONTROLS.csv
+
+JYRA_CORE_INTELLIGENCE_ACCEPTANCE_TEST_02_SIGNALS.csv
+
+JYRA_CORE_INTELLIGENCE_ACCEPTANCE_TEST_02_MISSES.json
+
+JYRA_CORE_INTELLIGENCE_ACCEPTANCE_TEST_02_COSTS.json
+
+JYRA_CORE_INTELLIGENCE_ACCEPTANCE_TEST_02_REPLAY.json
+
+==================================================
+47. REQUIRED FINAL SUMMARY
+==================================================
+
+Controls expected =
+Controls attempted =
+Controls provisioned =
+Controls blocked at identity =
+Valid controls =
+
+INTELLIGENCE EXECUTION STARTED =
+YES / NO
+
+Identity:
+
+CONFIRMED =
+PROBABLE =
+AMBIGUOUS =
+WRONG_ENTITY =
+UNRESOLVED =
+
+Existing canonical reuse =
+
+COMPANY_DISCOVERY calls for provisioning =
+
+Research:
+
+Questions generated =
+Tavily calls =
+Exa fallback calls =
+Other provider calls =
+Provider failures =
+
+Evidence:
+
+Raw results =
+Accepted evidence =
+Wrong-entity evidence accepted =
+Seller-as-buyer evidence accepted =
+
+Facts:
+
+Approved facts =
+Rejected facts =
+Signal-feeding facts =
+Supported signal-feeding facts =
+Fact precision for signal-feeding facts =
+
+Events:
+
+Strict detections =
+Partial detections =
+Misses =
+Invalid runs =
+
+STRICT EVENT RECALL =
+
+STRICT + PARTIAL COVERAGE =
+
+Signals:
+
+Generated material signals =
+Supported signals =
+Unsupported-fact signals =
+Unsupported-inference signals =
+Seller-as-buyer signals =
+Wrong-entity signals =
+Temporally invalid signals =
+Generic-funding false security signals =
+Other invalid signals =
+
+STRICT SIGNAL PRECISION =
+
+UNSUPPORTED / NON-VALID SIGNAL RATE =
+
+WHY:
+
+Material WHY claims =
+WHY claims with provenance =
+WHY provenance percentage =
+
+Opportunity:
+
+Supported actionable =
+Partially supported =
+Insufficient evidence =
+
+Replay:
+
+Provider calls =
+New companies =
+New evidence =
+New facts =
+New signals =
+New clusters =
+New opportunity-history =
+New WHY versions =
+New recommendation-ledger rows =
+
+Costs:
+
+Estimated total =
+Actual known =
+Actual unknown =
+Cost per valid control =
+Cost per strict detection =
+
+Production operations = 0.
+
+==================================================
+48. FINAL DECISION
+==================================================
+
+Return EXACTLY ONE:
+
+A — CORE INTELLIGENCE ACCEPTED
+
+B — RECALL BELOW ACCEPTANCE TARGET
+
+C — PRECISION / SAFETY BELOW ACCEPTANCE TARGET
+
+D — RETRIEVAL REGRESSION
+
+E — FACT / TEMPORAL REGRESSION
+
+F — SIGNAL MAPPING REGRESSION
+
+G — IDENTITY REGRESSION
+
+H — IDEMPOTENCY REGRESSION
+
+I — INCONCLUSIVE PROVIDER / SYSTEM FAILURE
+
+J — MULTIPLE CORE REGRESSIONS
+
+==================================================
+49. NEXT STEP RULE
+==================================================
+
+IF AND ONLY IF final decision is:
+
+A — CORE INTELLIGENCE ACCEPTED
+
+state:
+
+"Core intelligence acceptance gate passed.
+
+Stop narrow 10-control testing.
+
+Next milestone:
+
+50-COMPANY MVP REALITY TEST 02."
+
+DO NOT automatically run the 50-company test.
+
+If the result is anything other than A:
+
+STOP.
+
+Report:
+
+the failing acceptance gate
+
+the affected controls
+
+the earliest broken stage
+
+and supporting evidence.
+
+Do NOT fix it inside this task.
+
+==================================================
+50. STOP
+==================================================
+
+After generating the seven required artifacts and final decision:
+
+STOP.
+
+Do not modify code.
+
+Do not run another benchmark.
+
+Do not run the 50-company test.
+
+Do not run contact enrichment.
+
+Do not integrate outreach.
+
+Return the acceptance result for review.
