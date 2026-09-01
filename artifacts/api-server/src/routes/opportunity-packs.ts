@@ -137,7 +137,7 @@ router.post("/projects/:projectId/opportunity-packs/versions/:versionId/duplicat
   const access = await projectAccess(getAuthenticatedUserId(res), params.data.projectId);
   if (access.status !== 200) return void fail(res, access.status, access.status === 403 ? "Project access denied" : "Project not found");
   if (!await ownsVersion(params.data.projectId, params.data.versionId)) return void fail(res, 404, "Pack version not found");
-  const result = await cloneOpportunityPackVersion(params.data.versionId, getAuthenticatedUserId(res));
+  const result = await cloneOpportunityPackVersion({ versionId: params.data.versionId, projectId: params.data.projectId, organizationId: access.project.organizationId, userId: getAuthenticatedUserId(res) });
   res.status(201).json(result);
 }));
 
@@ -149,7 +149,7 @@ router.patch("/projects/:projectId/opportunity-packs/signals/:signalId", require
   if (!await ownsSignal(params.data.projectId, params.data.signalId)) return void fail(res, 404, "Signal proposal not found");
   const body = opportunitySignalProposalSchema.partial().strict().safeParse(req.body);
   if (!body.success) return void fail(res, 400, "Invalid signal proposal edit");
-  res.json(await updateOpportunitySignal(params.data.signalId, body.data));
+  res.json(await updateOpportunitySignal({ signalId: params.data.signalId, changes: body.data, projectId: params.data.projectId, organizationId: access.project.organizationId, userId: getAuthenticatedUserId(res) }));
 }));
 
 router.post("/projects/:projectId/opportunity-packs/versions/:versionId/signals", requireAuth, asyncRoute(async (req, res) => {
@@ -159,7 +159,7 @@ router.post("/projects/:projectId/opportunity-packs/versions/:versionId/signals"
   const access = await projectAccess(getAuthenticatedUserId(res), params.data.projectId);
   if (access.status !== 200) return void fail(res, access.status, access.status === 403 ? "Project access denied" : "Project not found");
   if (!await ownsVersion(params.data.projectId, params.data.versionId)) return void fail(res, 404, "Pack version not found");
-  res.status(201).json(await addOpportunitySignal(params.data.versionId, body.data));
+  res.status(201).json(await addOpportunitySignal({ versionId: params.data.versionId, signal: body.data, projectId: params.data.projectId, organizationId: access.project.organizationId, userId: getAuthenticatedUserId(res) }));
 }));
 
 router.post("/projects/:projectId/opportunity-packs/signals/:signalId/review", requireAuth, asyncRoute(async (req, res) => {
@@ -169,7 +169,7 @@ router.post("/projects/:projectId/opportunity-packs/signals/:signalId/review", r
   const access = await projectAccess(getAuthenticatedUserId(res), params.data.projectId);
   if (access.status !== 200) return void fail(res, access.status, access.status === 403 ? "Project access denied" : "Project not found");
   if (!await ownsSignal(params.data.projectId, params.data.signalId)) return void fail(res, 404, "Signal proposal not found");
-  res.json(await setOpportunitySignalReview(params.data.signalId, body.data.reviewStatus));
+  res.json(await setOpportunitySignalReview({ signalId: params.data.signalId, reviewStatus: body.data.reviewStatus, projectId: params.data.projectId, organizationId: access.project.organizationId, userId: getAuthenticatedUserId(res) }));
 }));
 
 router.post("/projects/:projectId/opportunity-packs/questions/:questionId/review", requireAuth, asyncRoute(async (req, res) => {
@@ -179,7 +179,7 @@ router.post("/projects/:projectId/opportunity-packs/questions/:questionId/review
   const access = await projectAccess(getAuthenticatedUserId(res), params.data.projectId);
   if (access.status !== 200) return void fail(res, access.status, access.status === 403 ? "Project access denied" : "Project not found");
   if (!await ownsQuestion(params.data.projectId, params.data.questionId)) return void fail(res, 404, "Research question proposal not found");
-  res.json(await setOpportunityQuestionReview(params.data.questionId, body.data.reviewStatus));
+  res.json(await setOpportunityQuestionReview({ questionId: params.data.questionId, reviewStatus: body.data.reviewStatus, projectId: params.data.projectId, organizationId: access.project.organizationId, userId: getAuthenticatedUserId(res) }));
 }));
 
 router.post("/projects/:projectId/opportunity-packs/clusters/:clusterId/review", requireAuth, asyncRoute(async (req, res) => {
@@ -189,7 +189,7 @@ router.post("/projects/:projectId/opportunity-packs/clusters/:clusterId/review",
   const access = await projectAccess(getAuthenticatedUserId(res), params.data.projectId);
   if (access.status !== 200) return void fail(res, access.status, access.status === 403 ? "Project access denied" : "Project not found");
   if (!await ownsCluster(params.data.projectId, params.data.clusterId)) return void fail(res, 404, "Cluster proposal not found");
-  res.json(await setOpportunityClusterReview(params.data.clusterId, body.data.reviewStatus));
+  res.json(await setOpportunityClusterReview({ clusterId: params.data.clusterId, reviewStatus: body.data.reviewStatus, projectId: params.data.projectId, organizationId: access.project.organizationId, userId: getAuthenticatedUserId(res) }));
 }));
 
 router.patch("/projects/:projectId/opportunity-packs/questions/:questionId", requireAuth, asyncRoute(async (req, res) => {
@@ -199,7 +199,7 @@ router.patch("/projects/:projectId/opportunity-packs/questions/:questionId", req
   const access = await projectAccess(getAuthenticatedUserId(res), params.data.projectId);
   if (access.status !== 200) return void fail(res, access.status, access.status === 403 ? "Project access denied" : "Project not found");
   if (!await ownsQuestion(params.data.projectId, params.data.questionId)) return void fail(res, 404, "Research question proposal not found");
-  res.json(await updateOpportunityQuestion(params.data.questionId, body.data));
+  res.json(await updateOpportunityQuestion({ questionId: params.data.questionId, changes: body.data, projectId: params.data.projectId, organizationId: access.project.organizationId, userId: getAuthenticatedUserId(res) }));
 }));
 
 router.post("/projects/:projectId/opportunity-packs/questions/:questionId/companies/:projectCompanyId/execute", requireAuth, asyncRoute(async (req, res) => {
@@ -259,7 +259,7 @@ router.post("/projects/:projectId/opportunity-packs/versions/:versionId/question
   const access = await projectAccess(getAuthenticatedUserId(res), params.data.projectId);
   if (access.status !== 200) return void fail(res, access.status, access.status === 403 ? "Project access denied" : "Project not found");
   if (!await ownsVersion(params.data.projectId, params.data.versionId)) return void fail(res, 404, "Pack version not found");
-  res.status(201).json(await addOpportunityQuestion(params.data.versionId, body.data));
+  res.status(201).json(await addOpportunityQuestion({ versionId: params.data.versionId, question: body.data, projectId: params.data.projectId, organizationId: access.project.organizationId, userId: getAuthenticatedUserId(res) }));
 }));
 
 router.post("/projects/:projectId/opportunity-packs/versions/:versionId/approve", requireAuth, asyncRoute(async (req, res) => {
@@ -268,7 +268,7 @@ router.post("/projects/:projectId/opportunity-packs/versions/:versionId/approve"
   const access = await projectAccess(getAuthenticatedUserId(res), params.data.projectId);
   if (access.status !== 200) return void fail(res, access.status, access.status === 403 ? "Project access denied" : "Project not found");
   if (!await ownsVersion(params.data.projectId, params.data.versionId)) return void fail(res, 404, "Pack version not found");
-  res.json(await approveOpportunityPackVersion(params.data.versionId, getAuthenticatedUserId(res)));
+  res.json(await approveOpportunityPackVersion({ versionId: params.data.versionId, projectId: params.data.projectId, organizationId: access.project.organizationId, userId: getAuthenticatedUserId(res) }));
 }));
 
 router.post("/projects/:projectId/opportunity-packs/versions/:versionId/activate", requireAuth, asyncRoute(async (req, res) => {
@@ -277,7 +277,7 @@ router.post("/projects/:projectId/opportunity-packs/versions/:versionId/activate
   const access = await projectAccess(getAuthenticatedUserId(res), params.data.projectId);
   if (access.status !== 200) return void fail(res, access.status, access.status === 403 ? "Project access denied" : "Project not found");
   if (!await ownsVersion(params.data.projectId, params.data.versionId)) return void fail(res, 404, "Pack version not found");
-  res.json(await activateOpportunityPackVersion(params.data.versionId, getAuthenticatedUserId(res)));
+  res.json(await activateOpportunityPackVersion({ versionId: params.data.versionId, projectId: params.data.projectId, organizationId: access.project.organizationId, userId: getAuthenticatedUserId(res) }));
 }));
 
 export default router;

@@ -1,0 +1,493 @@
+{
+  "run": {
+    "id": "63776de4-d246-432e-b9f1-d4a714fadeea",
+    "organizationId": "02d40c31-72e4-42d9-9d8d-fe676a369205",
+    "projectId": "b4c8a95a-eb1c-4a86-89d6-62d72097d820",
+    "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+    "businessTwinVersionId": "a355a198-e9d3-449e-a9cf-c064fab4faa2",
+    "icpVersionId": "a7f0c79f-bf17-4b42-84cd-60a46c562f56",
+    "status": "SUCCEEDED",
+    "strategy": {
+      "exclusions": [],
+      "geographies": [
+        "United States",
+        "India",
+        "UAE",
+        "United Kingdom",
+        "Singapore"
+      ],
+      "hardFilters": [
+        "Geography: United States, India, UAE, United Kingdom, Singapore",
+        "Industries: saas, it, technology, fintech, healthcare, professional services, SaaS, IT services, financial services",
+        "Employees: 100–2000",
+        "Target customer operates in a stated target industry.",
+        "Company is located in a stated target geography."
+      ],
+      "softCriteria": [
+        "We believe Mid-market and growing organizations with significant cloud and IT infrastructure that need continuous cybersecurity monitoring but do not have a fully staffed 24/7 internal SOC. Ideal customers typically use Microsoft 365/Azure or other cloud platforms, have 100+ employees, handle sensitive customer or business data, serve enterprise customers, and have security or compliance requirements such as ISO 27001, SOC 2, customer security assessments or cyber-insurance. Strong industries include SaaS, technology, IT services, fintech, financial services, healthcare and professional services..",
+        "We believe companies with 100–2,000 employees; sweet spot: 200–1,000 employees employees are a strong fit.",
+        "Technology pattern suggested by the Business Twin interpretation.",
+        "Compliance context may improve commercial fit but is not mandatory."
+      ],
+      "employeeRange": {
+        "maximum": 2000,
+        "minimum": 100,
+        "sweetSpotMaximum": 1000,
+        "sweetSpotMinimum": 200
+      },
+      "icpDescription": "We believe Mid-market and growing organizations with significant cloud and IT infrastructure that need continuous cybersecurity monitoring but do not have a fully staffed 24/7 internal SOC. Ideal customers typically use Microsoft 365/Azure or other cloud platforms, have 100+ employees, handle sensitive customer or business data, serve enterprise customers, and have security or compliance requirements such as ISO 27001, SOC 2, customer security assessments or cyber-insurance. Strong industries include SaaS, technology, IT services, fintech, financial services, healthcare and professional services.. We believe companies with 100–2,000 employees; sweet spot: 200–1,000 employees employees are a strong fit.",
+      "targetIndustries": [
+        "saas",
+        "it",
+        "technology",
+        "fintech",
+        "healthcare",
+        "professional services",
+        "SaaS",
+        "IT services",
+        "financial services"
+      ],
+      "marketDiscoveryIntent": {
+        "confidence": "HIGH",
+        "provenance": [
+          "ICP:822adffd-389b-4e7b-a16d-c54cf31265df",
+          "ICP:9c6b3e12-0327-47fd-b2a7-28972d29f961",
+          "ICP:53b38bd9-d968-4dcf-8cf5-a9686727574e",
+          "ICP:0f7ce50f-26c1-4a04-b477-d013f3d97466",
+          "BUSINESS_TWIN:a355a198-e9d3-449e-a9cf-c064fab4faa2"
+        ],
+        "employeeRange": {
+          "maximum": 2000,
+          "minimum": 100,
+          "sweetSpotMaximum": 1000,
+          "sweetSpotMinimum": 200
+        },
+        "searchConcepts": [
+          "saas",
+          "it",
+          "technology",
+          "fintech",
+          "healthcare",
+          "professional services",
+          "SaaS",
+          "IT services",
+          "financial services"
+        ],
+        "negativeConcepts": [
+          "companies primarily selling in Cybersecurity",
+          "providers or vendors of Managed Soc"
+        ],
+        "targetIndustries": [
+          "saas",
+          "it",
+          "technology",
+          "fintech",
+          "healthcare",
+          "professional services",
+          "SaaS",
+          "IT services",
+          "financial services"
+        ],
+        "buyerCompanyTypes": [
+          "operating company",
+          "employer",
+          "facility owner",
+          "commercial buyer"
+        ],
+        "targetGeographies": [
+          "United States",
+          "India",
+          "UAE",
+          "United Kingdom",
+          "Singapore"
+        ],
+        "excludedCompanyTypes": [],
+        "requiredCharacteristics": [
+          "Geography: United States, India, UAE, United Kingdom, Singapore",
+          "Industries: saas, it, technology, fintech, healthcare, professional services, SaaS, IT services, financial services",
+          "Employees: 100–2000",
+          "Target customer operates in a stated target industry.",
+          "Company is located in a stated target geography."
+        ],
+        "preferredCharacteristics": [
+          "We believe Mid-market and growing organizations with significant cloud and IT infrastructure that need continuous cybersecurity monitoring but do not have a fully staffed 24/7 internal SOC. Ideal customers typically use Microsoft 365/Azure or other cloud platforms, have 100+ employees, handle sensitive customer or business data, serve enterprise customers, and have security or compliance requirements such as ISO 27001, SOC 2, customer security assessments or cyber-insurance. Strong industries include SaaS, technology, IT services, fintech, financial services, healthcare and professional services..",
+          "We believe companies with 100–2,000 employees; sweet spot: 200–1,000 employees employees are a strong fit."
+        ],
+        "sellerCategoryExclusions": [
+          "Cybersecurity"
+        ],
+        "offeringCategoryExclusions": [
+          "Managed Soc"
+        ]
+      },
+      "identityCandidateReviews": [
+        {
+          "name": "Ahana Systems and Solutions Pvt. Ltd.",
+          "domain": "ahanait.com",
+          "sourceUrl": "https://ahanait.com",
+          "recordedAt": "2026-09-01T16:33:54.065Z",
+          "identityState": "NOT_A_COMPANY",
+          "qualification": "INSUFFICIENT_DATA",
+          "profileResolution": null,
+          "relationshipAssertions": []
+        },
+        {
+          "name": "Microland Limited",
+          "domain": "microland.com",
+          "sourceUrl": "https://microland.com",
+          "recordedAt": "2026-09-01T16:33:54.065Z",
+          "identityState": "AMBIGUOUS",
+          "qualification": "INSUFFICIENT_DATA",
+          "profileResolution": {
+            "status": "AMBIGUOUS",
+            "confidence": 85,
+            "profileUrl": "https://www.linkedin.com/company/microland",
+            "supportingEvidence": [
+              {
+                "kind": "NAME_MATCH",
+                "detail": "Candidate title or slug agrees with \"Microland Limited\"",
+                "strength": "strong",
+                "sourceUrl": "https://in.linkedin.com/company/microland"
+              },
+              {
+                "kind": "DOMAIN_MATCH",
+                "detail": "The indexed candidate evidence references canonical domain \"microland.com\"",
+                "strength": "strong",
+                "sourceUrl": "https://in.linkedin.com/company/microland"
+              }
+            ],
+            "contradictingEvidence": [],
+            "missingVerificationRequirement": null
+          },
+          "relationshipAssertions": []
+        }
+      ],
+      "technologyCharacteristics": [
+        "Microsoft 365",
+        "Azure",
+        "significant cloud/IT infrastructure",
+        "other cloud platforms"
+      ]
+    },
+    "queries": [
+      "saas operating companies in United States with 100-2000 employees",
+      "it operating companies in India with 100-2000 employees",
+      "technology operating companies in UAE with 100-2000 employees"
+    ],
+    "maxProviderCalls": 5,
+    "maxCandidates": 20,
+    "providerCalls": 4,
+    "rawResultCount": 20,
+    "acceptedCandidateCount": 20,
+    "duplicateCount": 0,
+    "rejectedCount": 1,
+    "estimatedCost": 0.028,
+    "actualCost": 0.048,
+    "errorCode": null,
+    "errorMessage": null,
+    "requestedAt": "2026-09-01T16:33:54.065Z",
+    "completedAt": "2026-09-01T16:34:10.883Z",
+    "createdAt": "2026-09-01T16:33:54.075Z"
+  },
+  "cohort": [
+    {
+      "id": "2d77c355-3536-49fb-a68e-9008e708b058",
+      "name": "Ironclad",
+      "domain": "ironcladapp.com",
+      "assessedAt": {
+        "reason": "LLM_OUTPUT_INVALID",
+        "buyerRole": "UNKNOWN",
+        "assessedAt": "2026-09-01T16:34:32.532Z",
+        "confidence": "LOW",
+        "sellerOffering": "Managed Soc",
+        "supportingInputs": [],
+        "classifierVersion": "buyer-role-resolution-06a"
+      }
+    },
+    {
+      "id": "40f8c20c-bc6c-424b-bcb5-5c8076f90c00",
+      "name": "Espire Infolabs",
+      "domain": "espire.com",
+      "assessedAt": {
+        "reason": "IDENTITY_INSUFFICIENT",
+        "buyerRole": "UNKNOWN",
+        "assessedAt": "2026-09-01T16:34:32.555Z",
+        "confidence": "LOW",
+        "sellerOffering": "Managed Soc",
+        "supportingInputs": [],
+        "classifierVersion": "buyer-role-resolution-06a"
+      }
+    },
+    {
+      "id": "7607828d-15ef-49ff-bcbb-14f0305433da",
+      "name": "Zapier",
+      "domain": "zapier.com",
+      "assessedAt": {
+        "reason": "No usable primary-business description or website/profile evidence is available.",
+        "buyerRole": "UNKNOWN",
+        "assessedAt": "2026-09-01T16:33:58.718Z",
+        "confidence": "LOW",
+        "sellerOffering": "Managed Soc",
+        "supportingInputs": [
+          {
+            "field": "name",
+            "source": "canonical_company",
+            "excerpt": "Zapier"
+          }
+        ],
+        "classifierVersion": "buyer-role-resolution-06a"
+      }
+    },
+    {
+      "id": "05bfab22-1ba1-4673-bfa3-e9d42386c012",
+      "name": "bswift",
+      "domain": "bswift.com",
+      "assessedAt": {
+        "reason": "IDENTITY_INSUFFICIENT",
+        "buyerRole": "UNKNOWN",
+        "assessedAt": "2026-09-01T16:34:32.583Z",
+        "confidence": "LOW",
+        "sellerOffering": "Managed Soc",
+        "supportingInputs": [],
+        "classifierVersion": "buyer-role-resolution-06a"
+      }
+    },
+    {
+      "id": "ed4975df-b4c9-4bd2-9e4b-c526985348d2",
+      "name": "ESSPL",
+      "domain": "esspl.com",
+      "assessedAt": {
+        "reason": "LLM_OUTPUT_INVALID",
+        "buyerRole": "UNKNOWN",
+        "assessedAt": "2026-09-01T16:34:56.865Z",
+        "confidence": "LOW",
+        "sellerOffering": "Managed Soc",
+        "supportingInputs": [],
+        "classifierVersion": "buyer-role-resolution-06a"
+      }
+    },
+    {
+      "id": "4ab85c5b-baf0-4f21-a64d-e43f4d1e1570",
+      "name": "SRIT India Limited",
+      "domain": "sritindia.com",
+      "assessedAt": {
+        "reason": "LLM_OUTPUT_INVALID",
+        "buyerRole": "UNKNOWN",
+        "assessedAt": "2026-09-01T16:35:18.784Z",
+        "confidence": "LOW",
+        "sellerOffering": "Managed Soc",
+        "supportingInputs": [],
+        "classifierVersion": "buyer-role-resolution-06a"
+      }
+    },
+    {
+      "id": "0bb315a1-94e3-4f80-bb47-c20b16224903",
+      "name": "Gainsight",
+      "domain": "gainsight.com",
+      "assessedAt": {
+        "reason": "IDENTITY_INSUFFICIENT",
+        "buyerRole": "UNKNOWN",
+        "assessedAt": "2026-09-01T16:34:32.568Z",
+        "confidence": "LOW",
+        "sellerOffering": "Managed Soc",
+        "supportingInputs": [],
+        "classifierVersion": "buyer-role-resolution-06a"
+      }
+    },
+    {
+      "id": "9ad7fe84-44c1-46c3-b93e-6fc2bd940370",
+      "name": "EPPS Infotech Ltd",
+      "domain": "epps-erp.com",
+      "assessedAt": {
+        "reason": "LLM_OUTPUT_INVALID",
+        "buyerRole": "UNKNOWN",
+        "assessedAt": "2026-09-01T16:35:33.289Z",
+        "confidence": "LOW",
+        "sellerOffering": "Managed Soc",
+        "supportingInputs": [],
+        "classifierVersion": "buyer-role-resolution-06a"
+      }
+    },
+    {
+      "id": "8a4ac58f-98cd-4a27-b684-ac1bf81293cb",
+      "name": "3LOCKS",
+      "domain": null,
+      "assessedAt": {
+        "reason": "IDENTITY_INSUFFICIENT",
+        "buyerRole": "UNKNOWN",
+        "assessedAt": "2026-09-01T16:35:33.310Z",
+        "confidence": "LOW",
+        "sellerOffering": "Managed Soc",
+        "supportingInputs": [],
+        "classifierVersion": "buyer-role-resolution-06a"
+      }
+    },
+    {
+      "id": "d5cd1d7c-5dbe-47b3-87b5-c2fb3642c8df",
+      "name": "Vercel",
+      "domain": "vercel.com",
+      "assessedAt": {
+        "reason": "LLM_OUTPUT_INVALID",
+        "buyerRole": "UNKNOWN",
+        "assessedAt": "2026-09-01T16:35:51.583Z",
+        "confidence": "LOW",
+        "sellerOffering": "Managed Soc",
+        "supportingInputs": [],
+        "classifierVersion": "buyer-role-resolution-06a"
+      }
+    },
+    {
+      "id": "91a259c2-9c1b-4713-8553-34b2265e9b17",
+      "name": "LaunchDarkly",
+      "domain": "launchdarkly.com",
+      "assessedAt": {
+        "reason": "LLM_OUTPUT_INVALID",
+        "buyerRole": "UNKNOWN",
+        "assessedAt": "2026-09-01T16:36:22.255Z",
+        "confidence": "LOW",
+        "sellerOffering": "Managed Soc",
+        "supportingInputs": [],
+        "classifierVersion": "buyer-role-resolution-06a"
+      }
+    },
+    {
+      "id": "82884c7a-9955-4fbf-a192-45305ba82d77",
+      "name": "Zylo",
+      "domain": "zylo.com",
+      "assessedAt": {
+        "reason": "LLM_OUTPUT_INVALID",
+        "buyerRole": "UNKNOWN",
+        "assessedAt": "2026-09-01T16:36:44.711Z",
+        "confidence": "LOW",
+        "sellerOffering": "Managed Soc",
+        "supportingInputs": [],
+        "classifierVersion": "buyer-role-resolution-06a"
+      }
+    },
+    {
+      "id": "e325000f-f90b-4b83-80c2-74cb0d2223b6",
+      "name": "Onit",
+      "domain": "onit.com",
+      "assessedAt": {
+        "reason": "LLM_OUTPUT_INVALID",
+        "buyerRole": "UNKNOWN",
+        "assessedAt": "2026-09-01T16:37:04.426Z",
+        "confidence": "LOW",
+        "sellerOffering": "Managed Soc",
+        "supportingInputs": [],
+        "classifierVersion": "buyer-role-resolution-06a"
+      }
+    },
+    {
+      "id": "5e18e6e4-eb04-4b63-a529-3aa3b010cb4c",
+      "name": "Senrysa Technologies Limited",
+      "domain": "senrysa.com",
+      "assessedAt": {
+        "reason": "LLM_OUTPUT_INVALID",
+        "buyerRole": "UNKNOWN",
+        "assessedAt": "2026-09-01T16:37:23.110Z",
+        "confidence": "LOW",
+        "sellerOffering": "Managed Soc",
+        "supportingInputs": [],
+        "classifierVersion": "buyer-role-resolution-06a"
+      }
+    },
+    {
+      "id": "5f343c37-2886-4dba-b17e-13d47a20f195",
+      "name": "Mindteck",
+      "domain": "mindteck.com",
+      "assessedAt": {
+        "reason": "LLM_OUTPUT_INVALID",
+        "buyerRole": "UNKNOWN",
+        "assessedAt": "2026-09-01T16:37:51.549Z",
+        "confidence": "LOW",
+        "sellerOffering": "Managed Soc",
+        "supportingInputs": [],
+        "classifierVersion": "buyer-role-resolution-06a"
+      }
+    },
+    {
+      "id": "7ff24a8d-75ff-4313-b91e-47795656bde6",
+      "name": "enreap",
+      "domain": "enreap.com",
+      "assessedAt": {
+        "reason": "LLM_OUTPUT_INVALID",
+        "buyerRole": "UNKNOWN",
+        "assessedAt": "2026-09-01T16:38:07.846Z",
+        "confidence": "LOW",
+        "sellerOffering": "Managed Soc",
+        "supportingInputs": [],
+        "classifierVersion": "buyer-role-resolution-06a"
+      }
+    },
+    {
+      "id": "99bba7d2-e849-4927-9873-0c8f999a3724",
+      "name": "Sagarsoft (India) Ltd",
+      "domain": "sagarsoft.in",
+      "assessedAt": {
+        "reason": "LLM_OUTPUT_INVALID",
+        "buyerRole": "UNKNOWN",
+        "assessedAt": "2026-09-01T16:38:30.556Z",
+        "confidence": "LOW",
+        "sellerOffering": "Managed Soc",
+        "supportingInputs": [],
+        "classifierVersion": "buyer-role-resolution-06a"
+      }
+    },
+    {
+      "id": "d06eca6f-4775-4185-9e52-f06b9a72807c",
+      "name": "ClearCo",
+      "domain": "clearcompany.com",
+      "assessedAt": {
+        "reason": "LLM_OUTPUT_INVALID",
+        "buyerRole": "UNKNOWN",
+        "assessedAt": "2026-09-01T16:38:50.727Z",
+        "confidence": "LOW",
+        "sellerOffering": "Managed Soc",
+        "supportingInputs": [],
+        "classifierVersion": "buyer-role-resolution-06a"
+      }
+    },
+    {
+      "id": "745595e0-3ab3-4f87-b95d-8debe4187ab4",
+      "name": "TeamSnap",
+      "domain": "teamsnap.com",
+      "assessedAt": {
+        "reason": "No usable primary-business description or website/profile evidence is available.",
+        "buyerRole": "UNKNOWN",
+        "assessedAt": "2026-09-01T16:33:58.771Z",
+        "confidence": "LOW",
+        "sellerOffering": "Managed Soc",
+        "supportingInputs": [
+          {
+            "field": "name",
+            "source": "canonical_company",
+            "excerpt": "TeamSnap"
+          }
+        ],
+        "classifierVersion": "buyer-role-resolution-06a"
+      }
+    },
+    {
+      "id": "50ceadee-afc9-41a1-b7c7-f6334e213df8",
+      "name": "CData Virtuality",
+      "domain": null,
+      "assessedAt": {
+        "reason": "No usable primary-business description or website/profile evidence is available.",
+        "buyerRole": "UNKNOWN",
+        "assessedAt": "2026-09-01T16:34:10.877Z",
+        "confidence": "LOW",
+        "sellerOffering": "Managed Soc",
+        "supportingInputs": [
+          {
+            "field": "name",
+            "source": "canonical_company",
+            "excerpt": "CData Virtuality"
+          }
+        ],
+        "classifierVersion": "buyer-role-resolution-06a"
+      }
+    }
+  ],
+  "sha256": "aca62d9e8f5e1cc46aa37bc3896b2b309ea454a3da2eab9290aae29a2cdd67e4"
+}

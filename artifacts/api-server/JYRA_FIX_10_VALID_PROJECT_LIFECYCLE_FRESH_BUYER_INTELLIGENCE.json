@@ -1,0 +1,1988 @@
+{
+  "title": "FIX 10 — VALID PROJECT LIFECYCLE + FRESH BUYER INTELLIGENCE",
+  "executed": true,
+  "gate": "COMPLETED",
+  "run": {
+    "id": "63776de4-d246-432e-b9f1-d4a714fadeea",
+    "organizationId": "02d40c31-72e4-42d9-9d8d-fe676a369205",
+    "projectId": "b4c8a95a-eb1c-4a86-89d6-62d72097d820",
+    "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+    "businessTwinVersionId": "a355a198-e9d3-449e-a9cf-c064fab4faa2",
+    "icpVersionId": "a7f0c79f-bf17-4b42-84cd-60a46c562f56",
+    "status": "SUCCEEDED",
+    "strategy": {
+      "exclusions": [],
+      "geographies": [
+        "United States",
+        "India",
+        "UAE",
+        "United Kingdom",
+        "Singapore"
+      ],
+      "hardFilters": [
+        "Geography: United States, India, UAE, United Kingdom, Singapore",
+        "Industries: saas, it, technology, fintech, healthcare, professional services, SaaS, IT services, financial services",
+        "Employees: 100–2000",
+        "Target customer operates in a stated target industry.",
+        "Company is located in a stated target geography."
+      ],
+      "softCriteria": [
+        "We believe Mid-market and growing organizations with significant cloud and IT infrastructure that need continuous cybersecurity monitoring but do not have a fully staffed 24/7 internal SOC. Ideal customers typically use Microsoft 365/Azure or other cloud platforms, have 100+ employees, handle sensitive customer or business data, serve enterprise customers, and have security or compliance requirements such as ISO 27001, SOC 2, customer security assessments or cyber-insurance. Strong industries include SaaS, technology, IT services, fintech, financial services, healthcare and professional services..",
+        "We believe companies with 100–2,000 employees; sweet spot: 200–1,000 employees employees are a strong fit.",
+        "Technology pattern suggested by the Business Twin interpretation.",
+        "Compliance context may improve commercial fit but is not mandatory."
+      ],
+      "employeeRange": {
+        "maximum": 2000,
+        "minimum": 100,
+        "sweetSpotMaximum": 1000,
+        "sweetSpotMinimum": 200
+      },
+      "icpDescription": "We believe Mid-market and growing organizations with significant cloud and IT infrastructure that need continuous cybersecurity monitoring but do not have a fully staffed 24/7 internal SOC. Ideal customers typically use Microsoft 365/Azure or other cloud platforms, have 100+ employees, handle sensitive customer or business data, serve enterprise customers, and have security or compliance requirements such as ISO 27001, SOC 2, customer security assessments or cyber-insurance. Strong industries include SaaS, technology, IT services, fintech, financial services, healthcare and professional services.. We believe companies with 100–2,000 employees; sweet spot: 200–1,000 employees employees are a strong fit.",
+      "targetIndustries": [
+        "saas",
+        "it",
+        "technology",
+        "fintech",
+        "healthcare",
+        "professional services",
+        "SaaS",
+        "IT services",
+        "financial services"
+      ],
+      "marketDiscoveryIntent": {
+        "confidence": "HIGH",
+        "provenance": [
+          "ICP:822adffd-389b-4e7b-a16d-c54cf31265df",
+          "ICP:9c6b3e12-0327-47fd-b2a7-28972d29f961",
+          "ICP:53b38bd9-d968-4dcf-8cf5-a9686727574e",
+          "ICP:0f7ce50f-26c1-4a04-b477-d013f3d97466",
+          "BUSINESS_TWIN:a355a198-e9d3-449e-a9cf-c064fab4faa2"
+        ],
+        "employeeRange": {
+          "maximum": 2000,
+          "minimum": 100,
+          "sweetSpotMaximum": 1000,
+          "sweetSpotMinimum": 200
+        },
+        "searchConcepts": [
+          "saas",
+          "it",
+          "technology",
+          "fintech",
+          "healthcare",
+          "professional services",
+          "SaaS",
+          "IT services",
+          "financial services"
+        ],
+        "negativeConcepts": [
+          "companies primarily selling in Cybersecurity",
+          "providers or vendors of Managed Soc"
+        ],
+        "targetIndustries": [
+          "saas",
+          "it",
+          "technology",
+          "fintech",
+          "healthcare",
+          "professional services",
+          "SaaS",
+          "IT services",
+          "financial services"
+        ],
+        "buyerCompanyTypes": [
+          "operating company",
+          "employer",
+          "facility owner",
+          "commercial buyer"
+        ],
+        "targetGeographies": [
+          "United States",
+          "India",
+          "UAE",
+          "United Kingdom",
+          "Singapore"
+        ],
+        "excludedCompanyTypes": [],
+        "requiredCharacteristics": [
+          "Geography: United States, India, UAE, United Kingdom, Singapore",
+          "Industries: saas, it, technology, fintech, healthcare, professional services, SaaS, IT services, financial services",
+          "Employees: 100–2000",
+          "Target customer operates in a stated target industry.",
+          "Company is located in a stated target geography."
+        ],
+        "preferredCharacteristics": [
+          "We believe Mid-market and growing organizations with significant cloud and IT infrastructure that need continuous cybersecurity monitoring but do not have a fully staffed 24/7 internal SOC. Ideal customers typically use Microsoft 365/Azure or other cloud platforms, have 100+ employees, handle sensitive customer or business data, serve enterprise customers, and have security or compliance requirements such as ISO 27001, SOC 2, customer security assessments or cyber-insurance. Strong industries include SaaS, technology, IT services, fintech, financial services, healthcare and professional services..",
+          "We believe companies with 100–2,000 employees; sweet spot: 200–1,000 employees employees are a strong fit."
+        ],
+        "sellerCategoryExclusions": [
+          "Cybersecurity"
+        ],
+        "offeringCategoryExclusions": [
+          "Managed Soc"
+        ]
+      },
+      "identityCandidateReviews": [
+        {
+          "name": "Ahana Systems and Solutions Pvt. Ltd.",
+          "domain": "ahanait.com",
+          "sourceUrl": "https://ahanait.com",
+          "recordedAt": "2026-09-01T16:33:54.065Z",
+          "identityState": "NOT_A_COMPANY",
+          "qualification": "INSUFFICIENT_DATA",
+          "profileResolution": null,
+          "relationshipAssertions": []
+        },
+        {
+          "name": "Microland Limited",
+          "domain": "microland.com",
+          "sourceUrl": "https://microland.com",
+          "recordedAt": "2026-09-01T16:33:54.065Z",
+          "identityState": "AMBIGUOUS",
+          "qualification": "INSUFFICIENT_DATA",
+          "profileResolution": {
+            "status": "AMBIGUOUS",
+            "confidence": 85,
+            "profileUrl": "https://www.linkedin.com/company/microland",
+            "supportingEvidence": [
+              {
+                "kind": "NAME_MATCH",
+                "detail": "Candidate title or slug agrees with \"Microland Limited\"",
+                "strength": "strong",
+                "sourceUrl": "https://in.linkedin.com/company/microland"
+              },
+              {
+                "kind": "DOMAIN_MATCH",
+                "detail": "The indexed candidate evidence references canonical domain \"microland.com\"",
+                "strength": "strong",
+                "sourceUrl": "https://in.linkedin.com/company/microland"
+              }
+            ],
+            "contradictingEvidence": [],
+            "missingVerificationRequirement": null
+          },
+          "relationshipAssertions": []
+        }
+      ],
+      "technologyCharacteristics": [
+        "Microsoft 365",
+        "Azure",
+        "significant cloud/IT infrastructure",
+        "other cloud platforms"
+      ]
+    },
+    "queries": [
+      "saas operating companies in United States with 100-2000 employees",
+      "it operating companies in India with 100-2000 employees",
+      "technology operating companies in UAE with 100-2000 employees"
+    ],
+    "maxProviderCalls": 5,
+    "maxCandidates": 20,
+    "providerCalls": 4,
+    "rawResultCount": 20,
+    "acceptedCandidateCount": 20,
+    "duplicateCount": 0,
+    "rejectedCount": 1,
+    "estimatedCost": 0.028,
+    "actualCost": 0.048,
+    "errorCode": null,
+    "errorMessage": null,
+    "requestedAt": "2026-09-01T16:33:54.065Z",
+    "completedAt": "2026-09-01T16:34:10.883Z",
+    "createdAt": "2026-09-01T16:33:54.075Z"
+  },
+  "readiness": {
+    "businessTwinVersionId": "a355a198-e9d3-449e-a9cf-c064fab4faa2",
+    "icpVersionId": "a7f0c79f-bf17-4b42-84cd-60a46c562f56",
+    "buyerRoleReady": true,
+    "marketDiscoveryReady": true,
+    "whoReady": true,
+    "whenWhyReady": true
+  },
+  "context": {
+    "projectId": "b4c8a95a-eb1c-4a86-89d6-62d72097d820",
+    "organizationId": "02d40c31-72e4-42d9-9d8d-fe676a369205",
+    "businessTwinId": "c16a03fc-a422-4732-82d1-a12ec6aff0dd",
+    "businessTwinVersionId": "a355a198-e9d3-449e-a9cf-c064fab4faa2",
+    "businessTwinVersion": 4,
+    "businessTwinStatus": "ready",
+    "businessTwinCreatedAt": "2026-08-30T06:00:49.684Z",
+    "businessTwinRawAnswers": {
+      "website": "https://aadit.net/",
+      "industry": "Cybersecurity",
+      "betaUsers": "",
+      "pilotUsers": "",
+      "companyName": "Aadit Technologies",
+      "offeringName": "Managed Soc",
+      "bestCustomers": [
+        {
+          "name": "Alphastream.ai — AI / FinTech / Financial Data Platform",
+          "whyBoughtThen": "As the platform and enterprise relationships grew, security requirements increased. 24/7 monitoring provided continuous security oversight and threat investigation without requiring a complete internal SOC.",
+          "whyGoodCustomer": "Operates a cloud-based AI platform handling sensitive financial, legal and investment information for financial institutions. Enterprise financial customers, sensitive data and security/compliance requirements make continuous monitoring particularly important."
+        },
+        {
+          "name": "Altoura — Enterprise SaaS / AI Technology",
+          "whyBoughtThen": "Growth in enterprise deployments increased the importance of continuous security monitoring and meeting customer security expectations. Outsourced SOC monitoring provided round-the-clock coverage without building a dedicated internal 24/7 SOC.",
+          "whyGoodCustomer": "Operates an enterprise cloud platform used by large organizations. Its cloud infrastructure, enterprise customer base, Microsoft-oriented technology environment and security/compliance requirements make it suitable for Aadit's Managed SOC."
+        },
+        {
+          "name": "Aditi Consulting — Digital Engineering / IT Services",
+          "whyBoughtThen": "Increasing infrastructure, workforce and enterprise-client security requirements created a need for dedicated 24/7 security oversight. Aadit's Managed SOC provided continuous monitoring and investigation without the complexity of expanding an internal round-the-clock SOC.",
+          "whyGoodCustomer": "A large technology services organization with 2,000+ employees, distributed operations, substantial cloud/IT infrastructure and major enterprise customers. Its scale and infrastructure complexity create a strong requirement for continuous security monitoring."
+        }
+      ],
+      "customerCount": "3+ Managed SOC customers",
+      "costOfInaction": "Without continuous security monitoring, suspicious activity can remain undetected for hours or days, allowing attackers more time to compromise accounts, move across systems, steal information or deploy ransomware.\n\nA successful security incident can result in business downtime, data loss, financial losses, customer impact, regulatory exposure, failed security audits and reputational damage.\n\nCompanies may also lose or delay enterprise contracts when they cannot demonstrate adequate security monitoring and incident-response capabilities.\n\nBuilding an equivalent 24/7 internal SOC requires recruiting and retaining multiple cybersecurity professionals, implementing processes and maintaining round-the-clock coverage, making it expensive and operationally difficult for many mid-market organizations.",
+      "designPartners": "",
+      "pilotCustomers": "",
+      "problemsSolved": "Organizations often have multiple cybersecurity tools generating large volumes of alerts but lack dedicated security analysts to continuously review and investigate them.\n\nInternal IT teams are typically focused on infrastructure and business operations and cannot monitor security events 24/7. This creates gaps during nights, weekends and holidays and increases the possibility of critical alerts being missed.\n\nAadit's Managed SOC solves:\n\n24/7 security monitoring gaps; shortage of skilled cybersecurity analysts; excessive security alerts and alert fatigue; slow threat detection and investigation; lack of centralized visibility across cloud, endpoints, identities and networks; limited internal incident-response capability; and security monitoring requirements arising from ISO 27001, SOC 2, customer security assessments and other compliance obligations.",
+      "activeProspects": "",
+      "dealSizeHistory": "Managed SOC engagements are generally recurring annual contracts, with value increasing according to the number of users/endpoints, infrastructure complexity, cloud workloads, monitoring scope and additional security services required.\n\nTypical target contract value is approximately $30,000–$60,000 annually, with ~$45,000 representing a useful target deal size. Larger organizations and expanded monitoring scopes can result in higher contract values.\n\nExpansion can occur as customers add employees, endpoints, cloud workloads, locations or additional cybersecurity/compliance services.",
+      "payingCustomers": "",
+      "typicalDealSize": "$30,000–$60,000 per year; typical target ~$45,000 annually",
+      "validationNotes": "",
+      "commonBuyerRoles": "",
+      "commonObjections": "",
+      "currentCustomers": "Current Managed SOC customers include technology, AI/SaaS and digital engineering companies operating cloud-based environments and serving enterprise customers. Examples include Alphastream.ai, Altoura and Aditi Consulting. These organizations depend heavily on technology infrastructure, handle sensitive business/customer data, and require strong security monitoring. Customers range from growing technology companies to large global organizations, demonstrating that the service can support different levels of infrastructure complexity.",
+      "customerProblems": "",
+      "marketHypotheses": "",
+      "objectionHistory": "Common objections include:\n\n“We already have security tools in place.”\n“Our internal IT/security team monitors this.”\n“We don't need 24/7 monitoring yet.”\n“We haven't had a major security incident.”\n“Our current MSP already handles security.”\n“The budget is too high.”\n“We are comparing other MDR/MSSP providers.”\n“We can build this capability internally.”\n“We don't generate enough security alerts to justify a SOC.”\n“We can revisit this during the next budget cycle.”\n\nOther delays occur because of procurement, vendor onboarding, management approval or uncertainty about the immediate ROI of security monitoring.",
+      "primaryGeography": "india",
+      "wonOpportunities": "Won opportunities typically involve companies with established IT/cloud environments but without sufficient internal resources for true 24/7 security monitoring. Common characteristics include cloud adoption, Microsoft-centric environments, distributed users, enterprise customers, sensitive data, growing security complexity and compliance requirements.\n\nDeals become stronger when there is a clear trigger: an upcoming ISO 27001/SOC 2 or customer audit, enterprise customer security requirements, a recent security concern, rapid growth, increasing endpoints/cloud workloads, or management realizing that the existing IT team cannot effectively monitor security around the clock.\n\nAadit wins when customers value human-led 24/7 monitoring, manual investigation of alerts, direct access to experienced analysts, flexibility and cost-effectiveness compared with building an internal SOC.",
+      "competitorHistory": "Managed SOC/MSSP/MDR providers, regional cybersecurity service providers, Microsoft security partners, and customers' incumbent MSPs.\n\nThe most common competitive alternatives are often not another SOC provider, but the customer's existing internal IT/security team, automated security tools, an existing MSP providing basic security monitoring, or the customer considering building an internal SOC.\n\nWhere formal vendor comparisons occur, alternatives may include providers such as Arctic Wolf, Sophos MDR, Rapid7 MDR, eSentire, Secureworks and similar managed security providers.",
+      "customerApprovers": "",
+      "expansionPatterns": "Customers can initially engage Aadit for 24/7 security monitoring and subsequently expand the relationship as their infrastructure, employee base and security requirements grow. Expansion opportunities include adding more endpoints, cloud workloads, business units or geographic locations to SOC coverage; vulnerability assessment and penetration testing (VAPT); ISO 27001 and SOC 2 readiness; security assessments; incident response; cloud security; endpoint and identity security; and broader managed IT/security services.\n\nGrowth, acquisitions, new offices, cloud migrations, compliance initiatives, major enterprise customers and increased employee counts can all create natural opportunities to expand the engagement.",
+      "lostOpportunities": "Opportunities are more likely to be lost or delayed when cybersecurity monitoring is viewed as non-urgent, there is no immediate compliance/customer requirement, management believes existing security tools are sufficient, or the internal IT team believes it can continue handling security monitoring.\n\nOther common barriers include budget constraints, comparison with lower-cost automated MDR/MSSP offerings, preference for an incumbent IT/security provider, long procurement processes and organizations deciding to postpone the project.",
+      "salesCycleHistory": "Typical Managed SOC opportunities can take approximately 30–90 days from qualified opportunity to closure.\n\nSales cycles tend to be considerably shorter when there is a strong buying trigger such as an upcoming audit, enterprise customer security requirement, security incident, compliance deadline or immediate requirement for 24/7 monitoring.\n\nSales cycles become longer when the requirement is exploratory, there is no defined security deadline, multiple stakeholders are involved, budget approval is pending, or the customer is comparing an outsourced SOC against building capabilities internally.",
+      "targetGeographies": "United States, India, UAE, United Kingdom, Singapore",
+      "typicalSalesCycle": "30–90 days; can shorten to 2–4 weeks when there is an active security incident, audit deadline, compliance requirement or enterprise customer security demand.",
+      "customerInitiators": "",
+      "economicBuyerRoles": "CIO, CTO, CISO, VP/Head of IT, CFO, COO and, particularly in smaller/mid-market organizations, CEO/Founder.\n\nFor larger organizations, the CIO/CISO/CTO will typically own or strongly influence the security budget. For smaller companies, final approval may come from the CEO, COO or CFO.",
+      "commonChampionRoles": "",
+      "historicalChampions": "IT Manager, Security Manager, Information Security Manager, SOC/Security Lead, Infrastructure Manager, Cloud/Infrastructure Lead, Head of IT, Compliance/GRC Manager.\n\nThe strongest internal champions are typically people who experience the operational problem directly: too many security alerts, insufficient security staff, lack of night/weekend monitoring, increasing compliance requirements, or pressure from enterprise customers.\n\nThey understand the security gap and help build the internal case for outsourcing 24/7 monitoring.",
+      "typicalRevenueRange": "$10M–$250M annual revenue; sweet spot: $20M–$100M",
+      "bestCustomerPatterns": "The strongest customers typically have cloud-based infrastructure, 100+ employees, enterprise or regulated customers, sensitive business/customer data, and an internal IT team but no complete 24/7 SOC capability. They often already invest in cybersecurity tools but need skilled analysts to continuously monitor and investigate alerts. Strong indicators include Microsoft/Azure environments, distributed workforces, rapid growth, ISO 27001 or SOC 2 requirements, enterprise customer security assessments, increasing security complexity, and a need for round-the-clock monitoring without building an expensive internal SOC.",
+      "historicalBuyerRoles": "CISO, Head of Information Security, Director of Information Security, VP/Head of IT, IT Director, Head of Infrastructure, CIO, CTO, Security Manager, IT Security Manager, Infrastructure Manager, and in smaller technology companies, Founder/CEO or COO.\n\nThe primary buyer is usually the person responsible for security operations, IT infrastructure, risk and continuous monitoring.",
+      "historicalIndustries": "Technology and IT Services; SaaS / Enterprise Software; Artificial Intelligence; FinTech / Financial Technology; Financial Data and Analytics; Digital Engineering and Technology Consulting.\n\nExisting Managed SOC customer examples include Alphastream.ai (AI/financial technology), Altoura (enterprise SaaS/AI technology), and Aditi Consulting (digital engineering/IT services).\n\nThe strongest historical pattern is therefore technology-dependent B2B organizations operating cloud infrastructure and serving enterprise customers.",
+      "majorDifferentiators": "Aadit provides human-led 24/7 security monitoring, rather than simply deploying another security tool or forwarding automated alerts.\n\nSecurity analysts investigate and validate alerts before escalation, helping customers focus on genuine security incidents rather than large volumes of raw alerts.\n\nAadit works alongside the customer's existing IT and security infrastructure, allowing organizations to strengthen their security operations without replacing their existing technology investments.\n\nKey differentiators include 24/7 human monitoring, manual investigation and validation of security events, experienced security analysts, rapid escalation of genuine threats, integration with existing security infrastructure, personalized support, and a cost-effective alternative to building an internal SOC.",
+      "typicalEmployeeRange": "100–2,000 employees; sweet spot: 200–1,000 employees",
+      "businessMaturityStage": "REPEATABLE_SALES",
+      "customerBuyingReasons": "",
+      "historicalGeographies": "India and United States / North America, including organizations with distributed and global operations.\n\nExisting Managed SOC customers operate across multiple locations and serve customers internationally, so Aadit has experience supporting security environments that are not limited to a single office or geography.",
+      "historicalCompanySizes": "Aadit's Managed SOC customers range from growing technology companies to large global technology/service organizations.\n\nBased on the existing customer set, the historical footprint spans approximately:\n\n50 to 2,000+ employees\n\nRather than treating company size as a strict requirement, the stronger historical indicator is organizations with sufficiently complex cloud/IT environments, enterprise customers, sensitive data and a requirement for continuous security monitoring.",
+      "typicalCustomerProfile": "Mid-market and growing organizations with significant cloud and IT infrastructure that need continuous cybersecurity monitoring but do not have a fully staffed 24/7 internal SOC. Ideal customers typically use Microsoft 365/Azure or other cloud platforms, have 100+ employees, handle sensitive customer or business data, serve enterprise customers, and have security or compliance requirements such as ISO 27001, SOC 2, customer security assessments or cyber-insurance. Strong industries include SaaS, technology, IT services, fintech, financial services, healthcare and professional services.",
+      "typicalUrgencyTriggers": "",
+      "customerInterestTriggers": "",
+      "competitorsOrAlternatives": "Other Managed SOC, MSSP and MDR providers; Arctic Wolf, Expel, Red Canary, eSentire, Sophos MDR, Rapid7 MDR, Secureworks and regional cybersecurity providers. Alternatives also include monitoring security internally through the existing IT team, relying primarily on automated security tools, using an existing MSP for security, or building an internal SOC.",
+      "waitlistOrLettersOfIntent": "",
+      "badCustomerCharacteristics": "",
+      "productOrServiceDescription": "Aadit provides a fully managed 24/7 Security Operations Center (SOC) for organizations that need continuous cybersecurity monitoring without the cost and complexity of building an internal SOC.\n\nAadit's security analysts continuously monitor the customer's IT and cloud environment, investigate security alerts, identify genuine threats, prioritize incidents, and coordinate with the customer's IT team for response and remediation.\n\nThe service provides continuous human security oversight across endpoints, identities, cloud infrastructure, networks and security systems, helping organizations detect and respond to threats before they become serious security incidents.",
+      "prospectiveCustomerEvidence": "",
+      "commonTechnicalEvaluatorRoles": ""
+    },
+    "businessTwinAiInterpretation": {
+      "claims": [
+        {
+          "key": "target_customer",
+          "evidence": "Mid-market and growing organizations with significant cloud and IT infrastructure that need continuous cybersecurity monitoring but do not have a fully staffed 24/7 internal SOC. Ideal customers typically use Microsoft 365/Azure or other cloud platforms, have 100+ employees, handle sensitive customer or business data, serve enterprise customers, and have security or compliance requirements such as ISO 27001, SOC 2, customer security assessments or cyber-insurance. Strong industries include SaaS, technology, IT services, fintech, financial services, healthcare and professional services.",
+          "statement": "Mid-market and growing organizations with significant cloud and IT infrastructure that need continuous cybersecurity monitoring but do not have a fully staffed 24/7 internal SOC. Ideal customers typically use Microsoft 365/Azure or other cloud platforms, have 100+ employees, handle sensitive customer or business data, serve enterprise customers, and have security or compliance requirements such as ISO 27001, SOC 2, customer security assessments or cyber-insurance. Strong industries include SaaS, technology, IT services, fintech, financial services, healthcare and professional services.",
+          "provenance": "FOUNDER_HYPOTHESIS",
+          "isAssumption": true,
+          "validationStatus": "UNTESTED"
+        },
+        {
+          "key": "target_company_size",
+          "evidence": "100–2,000 employees; sweet spot: 200–1,000 employees",
+          "statement": "100–2,000 employees; sweet spot: 200–1,000 employees",
+          "provenance": "FOUNDER_HYPOTHESIS",
+          "isAssumption": true,
+          "validationStatus": "UNTESTED"
+        },
+        {
+          "key": "customers",
+          "evidence": "Current Managed SOC customers include technology, AI/SaaS and digital engineering companies operating cloud-based environments and serving enterprise customers. Examples include Alphastream.ai, Altoura and Aditi Consulting. These organizations depend heavily on technology infrastructure, handle sensitive business/customer data, and require strong security monitoring. Customers range from growing technology companies to large global organizations, demonstrating that the service can support different levels of infrastructure complexity.",
+          "statement": "Current Managed SOC customers include technology, AI/SaaS and digital engineering companies operating cloud-based environments and serving enterprise customers. Examples include Alphastream.ai, Altoura and Aditi Consulting. These organizations depend heavily on technology infrastructure, handle sensitive business/customer data, and require strong security monitoring. Customers range from growing technology companies to large global organizations, demonstrating that the service can support different levels of infrastructure complexity.",
+          "provenance": "CUSTOMER",
+          "isAssumption": false,
+          "validationStatus": "PARTIALLY_VALIDATED"
+        },
+        {
+          "key": "won_opportunities",
+          "evidence": "Won opportunities typically involve companies with established IT/cloud environments but without sufficient internal resources for true 24/7 security monitoring. Common characteristics include cloud adoption, Microsoft-centric environments, distributed users, enterprise customers, sensitive data, growing security complexity and compliance requirements.\n\nDeals become stronger when there is a clear trigger: an upcoming ISO 27001/SOC 2 or customer audit, enterprise customer security requirements, a recent security concern, rapid growth, increasing endpoints/cloud workloads, or management realizing that the existing IT team cannot effectively monitor security around the clock.\n\nAadit wins when customers value human-led 24/7 monitoring, manual investigation of alerts, direct access to experienced analysts, flexibility and cost-effectiveness compared with building an internal SOC.",
+          "statement": "Won opportunities typically involve companies with established IT/cloud environments but without sufficient internal resources for true 24/7 security monitoring. Common characteristics include cloud adoption, Microsoft-centric environments, distributed users, enterprise customers, sensitive data, growing security complexity and compliance requirements.\n\nDeals become stronger when there is a clear trigger: an upcoming ISO 27001/SOC 2 or customer audit, enterprise customer security requirements, a recent security concern, rapid growth, increasing endpoints/cloud workloads, or management realizing that the existing IT team cannot effectively monitor security around the clock.\n\nAadit wins when customers value human-led 24/7 monitoring, manual investigation of alerts, direct access to experienced analysts, flexibility and cost-effectiveness compared with building an internal SOC.",
+          "provenance": "SALES_OUTCOME",
+          "isAssumption": false,
+          "validationStatus": "PARTIALLY_VALIDATED"
+        },
+        {
+          "key": "lost_opportunities",
+          "evidence": "Opportunities are more likely to be lost or delayed when cybersecurity monitoring is viewed as non-urgent, there is no immediate compliance/customer requirement, management believes existing security tools are sufficient, or the internal IT team believes it can continue handling security monitoring.\n\nOther common barriers include budget constraints, comparison with lower-cost automated MDR/MSSP offerings, preference for an incumbent IT/security provider, long procurement processes and organizations deciding to postpone the project.",
+          "statement": "Opportunities are more likely to be lost or delayed when cybersecurity monitoring is viewed as non-urgent, there is no immediate compliance/customer requirement, management believes existing security tools are sufficient, or the internal IT team believes it can continue handling security monitoring.\n\nOther common barriers include budget constraints, comparison with lower-cost automated MDR/MSSP offerings, preference for an incumbent IT/security provider, long procurement processes and organizations deciding to postpone the project.",
+          "provenance": "SALES_OUTCOME",
+          "isAssumption": false,
+          "validationStatus": "PARTIALLY_VALIDATED"
+        }
+      ],
+      "unknowns": [
+        "Specific onboarding process, implementation timeline, and service-level commitments are unknown.",
+        "Exact pricing structure, minimum contract terms, and how pricing varies by users, endpoints, workloads, or scope are unknown.",
+        "Named technical integrations and supported security-tool vendors beyond Microsoft 365, Azure, cloud platforms, and existing customer infrastructure are unknown.",
+        "Specific customer retention, renewal, expansion, or satisfaction history is unknown.",
+        "Specific win rates, loss rates, and competitive win/loss results are unknown.",
+        "Specific measurable customer outcomes, such as incident-response time improvements or alert-volume reductions, are unknown.",
+        "The precise division of responsibilities between Aadit and customer IT teams during incident response and remediation is unknown.",
+        "The full set of compliance frameworks supported beyond ISO 27001, SOC 2, customer security assessments, cyber-insurance, and other unspecified obligations is unknown."
+      ],
+      "industries": [
+        "Technology and IT services.",
+        "SaaS and enterprise software.",
+        "Artificial intelligence.",
+        "FinTech and financial technology.",
+        "Financial data and analytics.",
+        "Digital engineering and technology consulting.",
+        "Healthcare.",
+        "Professional services."
+      ],
+      "buyer_roles": [
+        "CISO.",
+        "Head of Information Security.",
+        "Director of Information Security.",
+        "VP or Head of IT.",
+        "IT Director.",
+        "Head of Infrastructure.",
+        "CIO.",
+        "CTO.",
+        "Security Manager.",
+        "IT Security Manager.",
+        "Infrastructure Manager.",
+        "Founder, CEO, or COO in smaller technology companies.",
+        "CFO or COO as economic buyers."
+      ],
+      "geographies": [
+        "India.",
+        "United States and North America.",
+        "United Arab Emirates.",
+        "United Kingdom.",
+        "Singapore.",
+        "Organizations with distributed or global operations."
+      ],
+      "champion_roles": [
+        "IT Manager.",
+        "Security Manager.",
+        "Information Security Manager.",
+        "SOC or Security Lead.",
+        "Infrastructure Manager.",
+        "Cloud or Infrastructure Lead.",
+        "Head of IT.",
+        "Compliance or GRC Manager."
+      ],
+      "buying_triggers": [
+        "Upcoming ISO 27001, SOC 2, or customer audit.",
+        "Enterprise customer security requirements or security assessments.",
+        "A recent security concern or active security incident.",
+        "A compliance deadline.",
+        "Rapid growth, increasing infrastructure, or expanding enterprise deployments.",
+        "Increasing endpoints, cloud workloads, locations, or workforce size.",
+        "Management recognizing that the existing IT team cannot provide effective 24/7 security monitoring.",
+        "An immediate need for 24/7 monitoring."
+      ],
+      "differentiators": [
+        "Human-led 24/7 security monitoring rather than only deploying tools or forwarding automated alerts.",
+        "Security analysts manually investigate and validate alerts before escalation.",
+        "Focus on genuine threats rather than large volumes of raw alerts.",
+        "Works alongside existing IT and security infrastructure without requiring replacement of current technology investments.",
+        "Direct access to experienced security analysts.",
+        "Rapid escalation of genuine threats.",
+        "Personalized support.",
+        "Cost-effective alternative to building and maintaining an internal round-the-clock SOC."
+      ],
+      "problems_solved": [
+        "Gaps in 24/7 security monitoring, including nights, weekends, and holidays.",
+        "Shortage of skilled cybersecurity analysts for continuous alert review and investigation.",
+        "Excessive security alerts and alert fatigue.",
+        "Slow threat detection and investigation.",
+        "Lack of centralized visibility across cloud, endpoints, identities, networks, and security systems.",
+        "Limited internal incident-response capability.",
+        "Difficulty meeting security-monitoring expectations associated with ISO 27001, SOC 2, customer security assessments, and other compliance obligations."
+      ],
+      "technical_roles": [
+        "Security Manager.",
+        "IT Security Manager.",
+        "SOC or Security Lead.",
+        "Head of Infrastructure.",
+        "Infrastructure Manager.",
+        "Cloud or Infrastructure Lead.",
+        "IT Manager.",
+        "Information Security Manager."
+      ],
+      "offering_summary": "Managed SOC: a fully managed, human-led 24/7 Security Operations Center that continuously monitors customer IT and cloud environments, investigates and validates alerts, identifies and prioritizes threats, and coordinates response and remediation with customer IT teams.",
+      "urgency_patterns": [
+        "Active security incidents can shorten sales cycles to 2–4 weeks.",
+        "Audit deadlines, compliance requirements, and enterprise customer security demands increase urgency.",
+        "Recent security concerns and an immediate need for 24/7 monitoring increase urgency.",
+        "Exploratory projects without a defined deadline tend to have longer sales cycles.",
+        "Pending budget approval, multiple stakeholders, and outsourced-SOC-versus-internal-build comparisons can extend sales cycles."
+      ],
+      "business_outcomes": [
+        "Continuous security oversight across endpoints, identities, cloud infrastructure, networks, and security systems.",
+        "Investigation and validation of alerts before escalation, helping teams focus on genuine security incidents rather than raw alert volume.",
+        "Round-the-clock monitoring without building and staffing an internal 24/7 SOC.",
+        "Support for demonstrating security monitoring and incident-response capabilities to enterprise customers and during security assessments or audits.",
+        "Ability to expand SOC coverage as employees, endpoints, cloud workloads, locations, or security requirements grow."
+      ],
+      "common_objections": [
+        "We already have security tools in place.",
+        "Our internal IT or security team monitors this.",
+        "We do not need 24/7 monitoring yet.",
+        "We have not had a major security incident.",
+        "Our current MSP already handles security.",
+        "The budget is too high.",
+        "We are comparing other MDR or MSSP providers.",
+        "We can build this capability internally.",
+        "We do not generate enough security alerts to justify a SOC.",
+        "We can revisit this during the next budget cycle.",
+        "Uncertainty about the immediate ROI of security monitoring."
+      ],
+      "compliance_patterns": [
+        "ISO 27001 requirements or audit preparation.",
+        "SOC 2 requirements or readiness.",
+        "Enterprise customer security requirements and security assessments.",
+        "Cyber-insurance requirements.",
+        "Security monitoring and incident-response capability expectations."
+      ],
+      "technology_patterns": [
+        "Microsoft 365 and Azure environments.",
+        "Other cloud platforms.",
+        "Cloud-based infrastructure and cloud workloads.",
+        "Endpoints, identities, networks, and security systems requiring centralized monitoring.",
+        "Microsoft-centric environments.",
+        "Existing cybersecurity tools and security infrastructure that customers want to retain."
+      ],
+      "company_size_patterns": [
+        "Typical target range: 100–2,000 employees.",
+        "Stated sweet spot: 200–1,000 employees.",
+        "Historical customer footprint: approximately 50 to 2,000+ employees.",
+        "Infrastructure complexity, enterprise customers, sensitive data, and continuous-monitoring needs are stronger indicators than company size alone."
+      ],
+      "disqualifier_hypotheses": [
+        "No immediate need or urgency for continuous security monitoring.",
+        "Belief that existing security tools, an internal IT team, or an existing MSP sufficiently cover security monitoring.",
+        "Insufficient budget for managed security monitoring.",
+        "Preference for a lower-cost automated MDR/MSSP option.",
+        "Decision to build an internal SOC instead of outsourcing.",
+        "Long procurement, vendor onboarding, or management-approval processes.",
+        "Decision to postpone until a future budget cycle."
+      ],
+      "ideal_customer_patterns": [
+        "Organizations with significant cloud and IT infrastructure that need continuous monitoring but do not have a fully staffed internal 24/7 SOC.",
+        "Organizations with 100–2,000 employees, with a stated sweet spot of 200–1,000 employees.",
+        "Organizations with $10M–$250M annual revenue, with a stated sweet spot of $20M–$100M.",
+        "Technology-dependent B2B organizations serving enterprise customers.",
+        "Organizations handling sensitive customer or business data.",
+        "Organizations with an internal IT team that cannot effectively monitor security around the clock.",
+        "Organizations that already use cybersecurity tools but need analysts to continuously monitor and investigate alerts.",
+        "Organizations with distributed users or workforces, growing endpoints or cloud workloads, and increasing security complexity.",
+        "Organizations facing ISO 27001, SOC 2, cyber-insurance, enterprise customer-security, or customer-assessment requirements."
+      ],
+      "negative_customer_patterns": [
+        "Organizations where cybersecurity monitoring is viewed as non-urgent.",
+        "Organizations with no immediate compliance, audit, or enterprise-customer security requirement.",
+        "Organizations whose management believes existing security tools are sufficient.",
+        "Organizations whose internal IT team believes it can continue handling security monitoring.",
+        "Organizations with budget constraints or a preference for lower-cost automated MDR/MSSP offerings.",
+        "Organizations committed to an incumbent IT, security, or MSP provider.",
+        "Organizations that choose to postpone the project or revisit it during a later budget cycle."
+      ]
+    },
+    "icpId": "a059f1c0-9fb5-43e7-9a3f-1f5976fe8474",
+    "icpVersionId": "a7f0c79f-bf17-4b42-84cd-60a46c562f56",
+    "icpVersion": 5,
+    "icpCreatedAt": "2026-08-31T17:47:26.961Z",
+    "icpAssumptions": [
+      "We believe Mid-market and growing organizations with significant cloud and IT infrastructure that need continuous cybersecurity monitoring but do not have a fully staffed 24/7 internal SOC. Ideal customers typically use Microsoft 365/Azure or other cloud platforms, have 100+ employees, handle sensitive customer or business data, serve enterprise customers, and have security or compliance requirements such as ISO 27001, SOC 2, customer security assessments or cyber-insurance. Strong industries include SaaS, technology, IT services, fintech, financial services, healthcare and professional services..",
+      "We believe companies with 100–2,000 employees; sweet spot: 200–1,000 employees employees are a strong fit."
+    ],
+    "opportunityPackId": "d8bcf8dc-df24-4c14-abc9-6ffc816adc28",
+    "opportunityPackVersionId": "29c6317f-a5e7-4de6-9a6e-d7cf7e558599",
+    "opportunityPackVersion": 2,
+    "opportunityPackStatus": "ACTIVATED",
+    "opportunityPackCreatedAt": "2026-09-01T16:33:15.177Z",
+    "context": {
+      "businessTwinId": "c16a03fc-a422-4732-82d1-a12ec6aff0dd",
+      "businessTwinVersionId": "a355a198-e9d3-449e-a9cf-c064fab4faa2",
+      "icpId": "a7f0c79f-bf17-4b42-84cd-60a46c562f56",
+      "offeringId": "d8bcf8dc-df24-4c14-abc9-6ffc816adc28",
+      "offeringKey": "managed-soc",
+      "sellerCompanyName": "Aadit Technologies",
+      "sellerBusinessDescription": null,
+      "sellerBusinessModel": null,
+      "offeringName": "Managed Soc",
+      "offeringCategory": null,
+      "offeringDescription": "Aadit provides a fully managed 24/7 Security Operations Center (SOC) for organizations that need continuous cybersecurity monitoring without the cost and complexity of building an internal SOC.\n\nAadit's security analysts continuously monitor the customer's IT and cloud environment, investigate security alerts, identify genuine threats, prioritize incidents, and coordinate with the customer's IT team for response and remediation.\n\nThe service provides continuous human security oversight across endpoints, identities, cloud infrastructure, networks and security systems, helping organizations detect and respond to threats before they become serious security incidents.",
+      "offeringCapabilities": [],
+      "offeringExclusions": [],
+      "source": "INTELLIGENCE_PACK",
+      "fingerprint": "aa8a6864e2953a132b1eb9ff9d7893cc486ce93171478c7798b7fba3c33468c2"
+    },
+    "sufficiency": {
+      "sufficient": true,
+      "reason": "SUFFICIENT"
+    },
+    "businessTwinReady": true,
+    "offeringReady": true,
+    "icpReady": true,
+    "opportunityPackReady": true,
+    "buyerRoleReady": true,
+    "marketDiscoveryReady": true,
+    "whoReady": true,
+    "whenWhyReady": true,
+    "contextStatus": "READY",
+    "missingRequirements": []
+  },
+  "manifestHash": "aca62d9e8f5e1cc46aa37bc3896b2b309ea454a3da2eab9290aae29a2cdd67e4",
+  "semantic": {
+    "assessed": 20,
+    "changed": 0,
+    "cacheHits": 20,
+    "outcomes": [
+      {
+        "companyId": "2d77c355-3536-49fb-a68e-9008e708b058",
+        "llmInvoked": false,
+        "modelInvoked": false,
+        "cacheHit": true,
+        "unknownReason": null,
+        "output": {
+          "primary_business": "Contract lifecycle management SaaS (legal tech)",
+          "business_model": "SAAS",
+          "canonical_industry": "SOFTWARE",
+          "products_services": [
+            "Contract lifecycle management platform",
+            "Contract management software",
+            "Workflow automation for contracts",
+            "Legal operations tools",
+            "AI-enabled contract analytics"
+          ],
+          "commercial_role": "POTENTIAL_BUYER",
+          "confidence": 0.8,
+          "reason": "Ironclad is a SaaS vendor focused on contract lifecycle management and legal-tech (not a cybersecurity vendor). As an enterprise-facing SaaS provider operating on cloud infrastructure and handling sensitive contract data, it is plausibly a buyer for a managed 24/7 SOC rather than a competitor or obvious integration partner. Evidence shows Ironclad is a technology/SaaS company serving large enterprises.",
+          "evidence_ids": [
+            "78f6e971-bcae-4f52-8724-fec0823b1a97",
+            "6f159cd7-9667-4b5b-8d3f-948eb9a0dcc8"
+          ],
+          "missing_information": [
+            "Whether Ironclad currently uses an external SOC or managed security provider",
+            "Details on Ironclad’s security posture, cloud infrastructure, or sensitive data volume",
+            "Procurement intent, budget, or timeline for security services",
+            "Existing vendor relationships for cybersecurity or compliance",
+            "Company size and geographic distribution beyond the provided follower/employer signals"
+          ]
+        },
+        "usage": null
+      },
+      {
+        "companyId": "40f8c20c-bc6c-424b-bcb5-5c8076f90c00",
+        "llmInvoked": false,
+        "modelInvoked": false,
+        "cacheHit": true,
+        "unknownReason": "IDENTITY_INSUFFICIENT",
+        "output": null,
+        "usage": null
+      },
+      {
+        "companyId": "7607828d-15ef-49ff-bcbb-14f0305433da",
+        "llmInvoked": false,
+        "modelInvoked": false,
+        "cacheHit": true,
+        "unknownReason": null,
+        "output": {
+          "primary_business": "Workflow automation and integrations platform (SaaS)",
+          "business_model": "SAAS",
+          "canonical_industry": "SOFTWARE",
+          "products_services": [
+            "Workflow automation platform",
+            "Integrations and connectors",
+            "APIs for business application automation",
+            "Cloud-based SaaS for automating web apps"
+          ],
+          "commercial_role": "POTENTIAL_BUYER",
+          "confidence": 0.8,
+          "reason": "Zapier is identified in the supplied evidence as a software development/SaaS company focused on integrations, APIs, and automation with a sizable distributed workforce. Organizations of this type plausibly consume third-party managed SOC services to provide continuous cybersecurity monitoring and incident response, so Zapier fits the seller-relative role of a potential buyer for Aadit Technologies' Managed SOC offering.",
+          "evidence_ids": [
+            "f5318f9a-6ec0-49b1-8532-5d1e1d986a4d",
+            "c2176d41-9a23-4559-aacb-9e4506e8e556"
+          ],
+          "missing_information": [
+            "No explicit evidence of Zapier's current security operations model or whether it already uses a managed SOC",
+            "No public information in the supplied evidence about Zapier's security budget, procurement intent, or vendor relationships",
+            "No direct statement of security requirements, compliance obligations, or incident history in the supplied evidence"
+          ]
+        },
+        "usage": null
+      },
+      {
+        "companyId": "ed4975df-b4c9-4bd2-9e4b-c526985348d2",
+        "llmInvoked": false,
+        "modelInvoked": false,
+        "cacheHit": true,
+        "unknownReason": null,
+        "output": {
+          "primary_business": "IT services and IT consulting specializing in supply chain and logistics software, automation, integration and analytics",
+          "business_model": "PROFESSIONAL_SERVICES",
+          "canonical_industry": "IT_SERVICES",
+          "products_services": [
+            "Supply chain & logistics software",
+            "Warehouse management systems",
+            "Transport management services",
+            "EDI and B2B data integration",
+            "Digital transformation services",
+            "Automation & RPA",
+            "Integration & platform re-engineering",
+            "BI & analytics",
+            "IoT enablement",
+            "Intelligent automation"
+          ],
+          "commercial_role": "POTENTIAL_BUYER",
+          "confidence": 0.8,
+          "reason": "Evidence describes ESSPL as an IT services and consulting company focused on supply chain and logistics software, digital transformation, integration and managed application services (evidence IDs indicate service offerings and domain). They do not appear to sell a managed SOC product, so they plausibly could consume Aadit Technologies' Managed SOC for protecting their own IT/cloud environments.",
+          "evidence_ids": [
+            "e68c93f0-ef0a-4bf6-b19f-91405e2afe49",
+            "e80cf9c2-b99a-4eb9-b0c9-b90c24e19613"
+          ],
+          "missing_information": [
+            "No explicit evidence of ESSPL offering security or managed SOC/MSSP services",
+            "No public information about ESSPL's internal security posture, cloud footprint, or SOC requirements",
+            "No evidence of existing partnerships, reseller activity, or channel relationships with security vendors"
+          ]
+        },
+        "usage": null
+      },
+      {
+        "companyId": "05bfab22-1ba1-4673-bfa3-e9d42386c012",
+        "llmInvoked": false,
+        "modelInvoked": false,
+        "cacheHit": true,
+        "unknownReason": "IDENTITY_INSUFFICIENT",
+        "output": null,
+        "usage": null
+      },
+      {
+        "companyId": "9ad7fe84-44c1-46c3-b93e-6fc2bd940370",
+        "llmInvoked": false,
+        "modelInvoked": false,
+        "cacheHit": true,
+        "unknownReason": null,
+        "output": {
+          "primary_business": "Software development company providing ERP software for small and medium businesses",
+          "business_model": "SOFTWARE_VENDOR",
+          "canonical_industry": "SOFTWARE",
+          "products_services": [
+            "ERP software for small and medium businesses",
+            "Software development services"
+          ],
+          "commercial_role": "POTENTIAL_BUYER",
+          "confidence": 0.82,
+          "reason": "LinkedIn company profile identifies EPPS Infotech Ltd as a software development firm that provides ERP software for SMBs. As an ERP/software vendor operating IT systems and software products, it fits the profile of an organization that could consume Aadit Technologies' Managed SOC for continuous cybersecurity monitoring of its IT and product environments.",
+          "evidence_ids": [
+            "8587b694-dbd6-4931-ad7b-086dfe6e9178"
+          ],
+          "missing_information": [
+            "Whether EPPS delivers its ERP as a cloud/SaaS offering (affects scope of monitoring needed)",
+            "Whether EPPS currently has an internal SOC or outsourced security operations",
+            "Whether EPPS hosts or processes sensitive customer data and applicable compliance requirements",
+            "Details about EPPS's infrastructure (on-prem, cloud providers, hybrid) and security tooling in use"
+          ]
+        },
+        "usage": null
+      },
+      {
+        "companyId": "0bb315a1-94e3-4f80-bb47-c20b16224903",
+        "llmInvoked": false,
+        "modelInvoked": false,
+        "cacheHit": true,
+        "unknownReason": "IDENTITY_INSUFFICIENT",
+        "output": null,
+        "usage": null
+      },
+      {
+        "companyId": "8a4ac58f-98cd-4a27-b684-ac1bf81293cb",
+        "llmInvoked": false,
+        "modelInvoked": false,
+        "cacheHit": true,
+        "unknownReason": "IDENTITY_INSUFFICIENT",
+        "output": null,
+        "usage": null
+      },
+      {
+        "companyId": "d5cd1d7c-5dbe-47b3-87b5-c2fb3642c8df",
+        "llmInvoked": false,
+        "modelInvoked": false,
+        "cacheHit": true,
+        "unknownReason": null,
+        "output": {
+          "primary_business": "Software development platform / developer tooling and hosting",
+          "business_model": "SAAS",
+          "canonical_industry": "SOFTWARE",
+          "products_services": [
+            "Hosting and deployment platform for web applications",
+            "Next.js framework",
+            "Developer tools (Turborepo, AI SDK, v0)",
+            "Developer workflows and infrastructure"
+          ],
+          "commercial_role": "POTENTIAL_BUYER",
+          "confidence": 0.78,
+          "reason": "Evidence describes Vercel as a software development platform and developer-hosting provider (SaaS) that operates developer infrastructure and tools. Such organizations typically operate cloud infrastructure and developer workflows where a managed 24/7 SOC could be a relevant outsourced security service. There is no evidence that Vercel offers a managed SOC itself or that it would be a direct competitor, so the seller-relative role is best classified as a potential buyer.",
+          "evidence_ids": [
+            "bb070099-856a-4b0b-8a4b-d58bbcd9b20c",
+            "34977c90-b0e1-4d76-bb50-139159aeea01"
+          ],
+          "missing_information": [
+            "No explicit information about Vercel's current security operations or whether they already operate an internal SOC",
+            "No public indication of procurement intent or timelines for acquiring managed security services",
+            "No details on Vercel's specific security requirements, compliance obligations, or existing vendor relationships for SOC/MDR",
+            "No evidence of prior partnership or integration with managed SOC vendors"
+          ]
+        },
+        "usage": null
+      },
+      {
+        "companyId": "91a259c2-9c1b-4713-8553-34b2265e9b17",
+        "llmInvoked": false,
+        "modelInvoked": false,
+        "cacheHit": true,
+        "unknownReason": null,
+        "output": {
+          "primary_business": "Runtime control and feature-flagging platform for software deployments",
+          "business_model": "SAAS",
+          "canonical_industry": "SOFTWARE",
+          "products_services": [
+            "Feature flags / feature management",
+            "Progressive delivery",
+            "Automated rollback",
+            "Runtime control for software and AI deployments",
+            "CodeControl",
+            "AgentControl",
+            "Experimentation / continuous delivery tooling"
+          ],
+          "commercial_role": "POTENTIAL_BUYER",
+          "confidence": 0.77,
+          "reason": "LaunchDarkly is a SaaS software development company providing feature-flagging and runtime control (CodeControl, AgentControl) and does not offer managed SOC services; as an operating technology company it plausibly could consume a 24/7 managed SOC for continuous security monitoring rather than being a substitute.",
+          "evidence_ids": [
+            "659e97bf-5a83-403d-bc2c-7241cca8cd09",
+            "a8ec8a82-d368-4900-82dd-2d8724ab6d59"
+          ],
+          "missing_information": [
+            "No explicit evidence of LaunchDarkly's current security operations needs or SOC purchasing behavior",
+            "No information on whether LaunchDarkly already uses an internal SOC or a managed security provider",
+            "No details on their cloud/IT infrastructure footprint, compliance requirements, or security team size"
+          ]
+        },
+        "usage": null
+      },
+      {
+        "companyId": "e325000f-f90b-4b83-80c2-74cb0d2223b6",
+        "llmInvoked": false,
+        "modelInvoked": false,
+        "cacheHit": true,
+        "unknownReason": null,
+        "output": {
+          "primary_business": "AI-native legal operations and contract lifecycle management software",
+          "business_model": "SAAS",
+          "canonical_industry": "SOFTWARE",
+          "products_services": [
+            "Contract Lifecycle Management (CLM)",
+            "Legal operations platform / matter management",
+            "Legal spend tracking / e‑billing",
+            "Workflow and business process automation for legal teams",
+            "Contract review and approval",
+            "NDA management",
+            "Legal service requests and legal holds",
+            "AI-enabled legal automation"
+          ],
+          "commercial_role": "POTENTIAL_BUYER",
+          "confidence": 0.8,
+          "reason": "Evidence describes Onit as a software development company and provider of AI-native legal operations and contract lifecycle management products and related legal workflow automation (e.g., CLM, matter management, legal spend tracking). These offerings are not cybersecurity substitutes for Aadit's Managed SOC, and as a software/legal-technology provider handling contracts and legal data, Onit fits the profile of an organization that could consume a managed SOC for its own security operations.",
+          "evidence_ids": [
+            "8d3901df-77c4-43ec-abbd-f036d68e3138",
+            "a34db70b-f008-40cf-9c1d-3a114e06dbb7"
+          ],
+          "missing_information": [
+            "No explicit evidence of Onit's internal security operations maturity or whether they already operate an internal SOC",
+            "No direct statements about Onit's cloud infrastructure or hosting model (extent of cloud workloads)",
+            "No procurement intent, security budget, or any past/current use of managed security services documented",
+            "No information about compliance or regulatory drivers that would create SOC demand"
+          ]
+        },
+        "usage": null
+      },
+      {
+        "companyId": "82884c7a-9955-4fbf-a192-45305ba82d77",
+        "llmInvoked": false,
+        "modelInvoked": false,
+        "cacheHit": true,
+        "unknownReason": null,
+        "output": {
+          "primary_business": "SaaS management platform",
+          "business_model": "SAAS",
+          "canonical_industry": "SOFTWARE",
+          "products_services": [
+            "SaaS management platform",
+            "SaaS spend optimization",
+            "SaaS analytics and visibility",
+            "Software asset management (SAM) / ITAM",
+            "SaaS license and inventory management",
+            "SaaS renewal and contract management",
+            "SaaS procurement and negotiation services",
+            "FinOps and spend benchmarking"
+          ],
+          "commercial_role": "POTENTIAL_BUYER",
+          "confidence": 0.7,
+          "reason": "Evidence describes Zylo as a SaaS management software company that provides visibility, optimization, and governance for SaaS spend and licenses (e.g., SAM/ITAM, spend analytics). Aadit's Managed SOC is a 24/7 security monitoring and incident response service for organizations operating IT and cloud environments. Zylo, as an operating SaaS provider, is plausibly a consumer of a managed SOC rather than a substitute or clear integration partner based on the supplied evidence.",
+          "evidence_ids": [
+            "48d3be89-ec7d-4777-b573-2a0540d70918",
+            "2369756a-6c25-4db6-92d1-367d5e3213a5"
+          ],
+          "missing_information": [
+            "Zylo's current security operations posture (in-house SOC or existing managed SOC vendor)",
+            "Details on Zylo's cloud and infrastructure footprint and sensitivity of hosted data",
+            "Compliance, regulatory, or industry security requirements Zylo must meet",
+            "Security staffing levels and budget for outsourced security services",
+            "Any existing partnerships or integrations with security vendors"
+          ]
+        },
+        "usage": null
+      },
+      {
+        "companyId": "5e18e6e4-eb04-4b63-a529-3aa3b010cb4c",
+        "llmInvoked": false,
+        "modelInvoked": false,
+        "cacheHit": true,
+        "unknownReason": null,
+        "output": {
+          "primary_business": "IT services and IT consulting",
+          "business_model": "PROFESSIONAL_SERVICES",
+          "canonical_industry": "IT_SERVICES",
+          "products_services": [
+            "IT Services",
+            "IT Consulting",
+            "Fintech solutions (payment systems, MicroATM)",
+            "GovTech / eGovernance",
+            "AI / Cognitive Technologies",
+            "D2I Commerce / eCommerce",
+            "MSME Digitization",
+            "Digital Branding & Marketing",
+            "BFSI solutions",
+            "Application Development",
+            "Mobility",
+            "Data Management & Business Intelligence",
+            "IT Infrastructure Management",
+            "Internet of Things (IoT)"
+          ],
+          "commercial_role": "POTENTIAL_BUYER",
+          "confidence": 0.78,
+          "reason": "Senrysa is an IT services and IT consulting firm that provides IT infrastructure management, application development, data management, and industry solutions (BFSI, GovTech, Fintech). Those capabilities and customer-facing infrastructure imply Senrysa could consume a managed 24/7 SOC to protect its own operations or client environments. There is no supplied evidence of an existing reseller/partner relationship or that Senrysa offers a direct substitute SOC service, so POTENTIAL_BUYER is the most supported seller-relative role.",
+          "evidence_ids": [
+            "1f054fdf-10b3-4153-8126-c10af7b44fbb",
+            "4a0ac039-538c-4ab3-9b39-f64e1436636f"
+          ],
+          "missing_information": [
+            "No public evidence of Senrysa offering managed SOC or security operations as a product (would indicate SELLER_COMPETITOR).",
+            "No explicit statements of partnership, channel, or integration activity with MSSPs (would support PARTNER_POSSIBLE).",
+            "No information on Senrysa's current cybersecurity posture, use of external SOC services, or purchase intent/budget for managed security."
+          ]
+        },
+        "usage": null
+      },
+      {
+        "companyId": "7ff24a8d-75ff-4313-b91e-47795656bde6",
+        "llmInvoked": false,
+        "modelInvoked": false,
+        "cacheHit": true,
+        "unknownReason": null,
+        "output": {
+          "primary_business": "IT Services and IT Consulting (enterprise ITSM, Cloud, DevOps, managed services)",
+          "business_model": "PROFESSIONAL_SERVICES",
+          "canonical_industry": "IT_SERVICES",
+          "products_services": [
+            "Enterprise ITSM",
+            "Cloud migration & adoption",
+            "DevOps transformation (CI/CD, build & release automation)",
+            "Atlassian solutions and support",
+            "Managed services",
+            "AWS migrations / implementation / support",
+            "ITSM / Helpdesk solutions",
+            "PPM & Business Support Operations",
+            "Plugin development",
+            "DevOps / Agile consulting"
+          ],
+          "commercial_role": "POTENTIAL_BUYER",
+          "confidence": 0.67,
+          "reason": "enreap is an IT services and consulting firm offering managed services, cloud migrations, AWS support and ITSM (evidence IDs b23ac9b1-194f-491e-86a0-58e4d7a0ec25 and 6cfbce02-5782-461c-b158-37d04db01095). That profile fits an organization that could consume a third-party Managed SOC for continuous security monitoring of its own infrastructure or to complement client engagements. There is no supplied evidence that enreap itself operates a SOC or explicitly resells SOC services, so classification as a buyer (rather than competitor or confirmed partner) is most supported by the provided evidence.",
+          "evidence_ids": [
+            "b23ac9b1-194f-491e-86a0-58e4d7a0ec25",
+            "6cfbce02-5782-461c-b158-37d04db01095"
+          ],
+          "missing_information": [
+            "Explicit statements that enreap offers cybersecurity or SOC services (to assess competitor vs partner)",
+            "Any public evidence of channel/partner relationships or co-delivery with MSSPs",
+            "Explicit purchase intent or security requirements from enreap",
+            "Details about enreap's internal security posture or whether they outsource security monitoring"
+          ]
+        },
+        "usage": null
+      },
+      {
+        "companyId": "745595e0-3ab3-4f87-b95d-8debe4187ab4",
+        "llmInvoked": false,
+        "modelInvoked": false,
+        "cacheHit": true,
+        "unknownReason": null,
+        "output": {
+          "primary_business": "Youth sports management software / platform",
+          "business_model": "SAAS",
+          "canonical_industry": "SOFTWARE",
+          "products_services": [
+            "Youth sports management app/platform",
+            "Program management",
+            "Registration and payments",
+            "Website builder",
+            "Scheduling (games and practices)",
+            "Automated games and practices",
+            "Messaging and team communication",
+            "Live streaming"
+          ],
+          "commercial_role": "POTENTIAL_BUYER",
+          "confidence": 0.88,
+          "reason": "TeamSnap is a SaaS provider of a youth sports management platform (registration, payments, scheduling, communications, etc.). As an operating software business managing customer data and cloud/IT infrastructure, it is a plausible consumer of a managed 24/7 SOC rather than a competitor or proved partner.",
+          "evidence_ids": [
+            "3f9e6332-a95e-4035-a72a-62d283f82dfd",
+            "401bf566-2777-4dcb-81d6-40abe6dccde7"
+          ],
+          "missing_information": [
+            "No supplied evidence of TeamSnap's internal security posture, existing SOC, or cybersecurity vendor relationships",
+            "No details on TeamSnap's infrastructure (cloud providers, on-prem footprint, endpoint scale)",
+            "No explicit public indication of interest in purchasing managed SOC services or partnering with Aadit"
+          ]
+        },
+        "usage": null
+      },
+      {
+        "companyId": "50ceadee-afc9-41a1-b7c7-f6334e213df8",
+        "llmInvoked": false,
+        "modelInvoked": false,
+        "cacheHit": true,
+        "unknownReason": "IDENTITY_INSUFFICIENT",
+        "output": null,
+        "usage": null
+      },
+      {
+        "companyId": "4ab85c5b-baf0-4f21-a64d-e43f4d1e1570",
+        "llmInvoked": false,
+        "modelInvoked": false,
+        "cacheHit": true,
+        "unknownReason": null,
+        "output": {
+          "primary_business": "IT Services & IT Consulting",
+          "business_model": "OTHER",
+          "canonical_industry": "IT_SERVICES",
+          "products_services": [
+            "Off-shore development",
+            "Healthcare software solutions",
+            "Enterprise Resource Planning (ERP)",
+            "Customer Relationship Management (CRM)",
+            "Medical transcription",
+            "e-Governance",
+            "Telecommunications services",
+            "IT consulting"
+          ],
+          "commercial_role": "POTENTIAL_BUYER",
+          "confidence": 0.7,
+          "reason": "SRIT India Limited is an IT services and consulting company offering off-shore development, healthcare software, ERP/CRM, e‑Governance and telecom solutions. As an operating IT services provider with distributed operations and infrastructure, SRIT plausibly fits as a potential buyer of a fully managed 24/7 SOC to support its own security monitoring needs or those of its clients. There is no supplied evidence that SRIT currently sells a directly competing managed SOC service or that it already has partner/reseller arrangements with SOC providers.",
+          "evidence_ids": [
+            "b98aee48-2974-4380-bace-ed80f5eb824c",
+            "141c53ad-44ae-4215-99b5-a135a0b63b15"
+          ],
+          "missing_information": [
+            "Explicit evidence of SRIT offering cybersecurity or managed security (MSSP) services",
+            "Information about SRIT's internal security operations, existing SOC or third-party SOC relationships",
+            "Security/compliance requirements or maturity level of SRIT",
+            "Budget, procurement intent, or timeline for security services",
+            "Client base details that might drive SOC needs (industry/regulatory exposure)"
+          ]
+        },
+        "usage": null
+      },
+      {
+        "companyId": "5f343c37-2886-4dba-b17e-13d47a20f195",
+        "llmInvoked": false,
+        "modelInvoked": false,
+        "cacheHit": true,
+        "unknownReason": null,
+        "output": {
+          "primary_business": "IT services and IT consulting focused on product engineering, cloud services and digital transformation",
+          "business_model": "PROFESSIONAL_SERVICES",
+          "canonical_industry": "IT_SERVICES",
+          "products_services": [
+            "Product engineering",
+            "Artificial intelligence (AI) solutions",
+            "IoT solutions",
+            "Embedded systems",
+            "Cloud services",
+            "Digital transformation",
+            "Quality engineering",
+            "Life sciences / Healthcare technology",
+            "Semiconductor and data storage engineering",
+            "Data analytics",
+            "BPM services"
+          ],
+          "commercial_role": "POTENTIAL_BUYER",
+          "confidence": 0.84,
+          "reason": "Evidence describes Mindteck as an IT services and consulting firm offering cloud services, product engineering and related technology services. Such an organization could plausibly consume a managed 24/7 SOC to monitor and protect its own infrastructure or client-managed environments.",
+          "evidence_ids": [
+            "5a014d88-90ef-4f32-8229-a5ffb2bfcfcd",
+            "978bd033-b019-421b-b0eb-dd8966386cb8"
+          ],
+          "missing_information": [
+            "Explicit evidence that Mindteck purchases or operates third-party managed security services",
+            "Any public listing of Mindteck’s cybersecurity or managed security offerings",
+            "Information about Mindteck’s internal security operations (does it already run a SOC?)",
+            "Geographic or account-level fit for Aadit Technologies (target regions, procurement authority)"
+          ]
+        },
+        "usage": null
+      },
+      {
+        "companyId": "d06eca6f-4775-4185-9e52-f06b9a72807c",
+        "llmInvoked": false,
+        "modelInvoked": false,
+        "cacheHit": true,
+        "unknownReason": null,
+        "output": {
+          "primary_business": "Talent management software (ATS, onboarding, learning, performance, compensation)",
+          "business_model": "SAAS",
+          "canonical_industry": "SOFTWARE",
+          "products_services": [
+            "Applicant Tracking System (ATS)",
+            "New hire onboarding",
+            "Learning / LMS",
+            "Performance management",
+            "Compensation management",
+            "Goal alignment and employee engagement",
+            "Talent analytics",
+            "Recruiting / candidate relationship management"
+          ],
+          "commercial_role": "POTENTIAL_BUYER",
+          "confidence": 0.86,
+          "reason": "ClearCo (ClearCompany) is described in the supplied evidence as a software development company providing talent management SaaS (ATS, onboarding, learning, performance, compensation and related HR modules). As a SaaS software vendor that operates HR systems and likely manages customer and employee data, it is plausibly a potential buyer of a managed SOC service rather than a competitor or adjacent security vendor.",
+          "evidence_ids": [
+            "36bf2dd0-af9e-4d14-b8a9-3e3d691a8f48",
+            "77c74773-f7aa-446a-a430-9ba6ee4eba29"
+          ],
+          "missing_information": [
+            "Whether ClearCo currently operates an internal SOC or uses managed security services",
+            "Details about ClearCo's cloud infrastructure, hosting providers, and security architecture",
+            "Explicit security needs, budgets, or intent to purchase managed SOC services",
+            "Existing security vendors or tools in use"
+          ]
+        },
+        "usage": null
+      },
+      {
+        "companyId": "99bba7d2-e849-4927-9873-0c8f999a3724",
+        "llmInvoked": false,
+        "modelInvoked": false,
+        "cacheHit": true,
+        "unknownReason": null,
+        "output": {
+          "primary_business": "Technology solutions and global IT services provider offering application development, cloud, data engineering, DevSecOps and digital transformation services",
+          "business_model": "PROFESSIONAL_SERVICES",
+          "canonical_industry": "IT_SERVICES",
+          "products_services": [
+            "Application development, maintenance & support",
+            "Data engineering & data science",
+            "Cloud services and migration (cloud-first applications)",
+            "DevSecOps",
+            "QA and database administration",
+            "Platform and product development",
+            "CRM and ERP Cloud/SaaS implementations",
+            "Automation, AI & ML"
+          ],
+          "commercial_role": "PARTNER_POSSIBLE",
+          "confidence": 0.78,
+          "reason": "Sagarsoft is an established IT services and technology solutions provider with offerings in cloud, DevSecOps, data engineering and application development (evidence shows broad services across cloud, DevSecOps and enterprise solutions). Aadit’s Managed SOC is a complementary managed security offering that could be integrated or co-delivered with Sagarsoft’s cloud and DevSecOps services, making a channel/partner relationship plausible. There is no supplied evidence that Sagarsoft itself sells a managed SOC or directly competes on this specific managed security service.",
+          "evidence_ids": [
+            "2470dac1-8c7e-46b0-88d4-2623745f4e1b",
+            "2f22dd17-8bd5-4171-9ada-4d5dc67cf03b"
+          ],
+          "missing_information": [
+            "Explicit evidence that Sagarsoft offers managed security services or a SOC",
+            "Public records of any existing partnerships, reseller agreements, or channel activity between Sagarsoft and cybersecurity/MSSP vendors",
+            "Customer use-cases showing integration of managed security into Sagarsoft engagements",
+            "Information on Sagarsoft’s security certifications, security practice size, or dedicated security staffing"
+          ]
+        },
+        "usage": null
+      }
+    ]
+  },
+  "companies": [
+    {
+      "companyId": "2d77c355-3536-49fb-a68e-9008e708b058",
+      "name": "Ironclad",
+      "domain": "ironcladapp.com",
+      "identity": "DERIVABLE_DOMAIN",
+      "role": "POTENTIAL_BUYER",
+      "confidence": "MEDIUM",
+      "reason": "Ironclad is a SaaS vendor focused on contract lifecycle management and legal-tech (not a cybersecurity vendor). As an enterprise-facing SaaS provider operating on cloud infrastructure and handling sensitive contract data, it is plausibly a buyer for a managed 24/7 SOC rather than a competitor or obvious integration partner. Evidence shows Ironclad is a technology/SaaS company serving large enterprises.",
+      "semanticFingerprint": "679c749cbc6183229742e4caabe26c188c4f1879a9cec1f350a7ad5048303d20",
+      "model": "gpt-5-mini",
+      "promptVersion": "fix08-company-understanding-v4",
+      "normalizationVersion": "fix07-v1",
+      "sellerContextFingerprint": "aa8a6864e2953a132b1eb9ff9d7893cc486ce93171478c7798b7fba3c33468c2",
+      "citations": [
+        "78f6e971-bcae-4f52-8724-fec0823b1a97",
+        "6f159cd7-9667-4b5b-8d3f-948eb9a0dcc8"
+      ],
+      "provenanceId": "abdfb66d-3b61-4aab-b81b-6dffafbc40b0",
+      "modelInvoked": true,
+      "cacheHit": true,
+      "unknownReason": null,
+      "independentAdjudication": {
+        "status": "ADJUDICATED",
+        "role": "POTENTIAL_BUYER",
+        "confidence": "HIGH",
+        "identityConfidence": "HIGH",
+        "primaryBusiness": "Contract lifecycle management (CLM) software for creating, managing, and analyzing business contracts.",
+        "employeeMarketFit": "Public company materials position it as an enterprise SaaS provider; third-party company profiles commonly place it in the hundreds of employees, making it plausibly within the 200–1000 sweet spot. Its cloud SaaS platform and contract/customer data create a credible need for continuous security monitoring.",
+        "rationale": "Ironclad is a cloud software company handling sensitive commercial and customer information, not a security-services seller. A fully managed SOC could address security operations needs without requiring Ironclad to staff the capability internally.",
+        "sourceUrls": [
+          "https://ironcladapp.com/",
+          "https://ironcladapp.com/platform/",
+          "https://www.linkedin.com/company/ironclad-inc/"
+        ],
+        "agreesWithJYRA": true
+      }
+    },
+    {
+      "companyId": "40f8c20c-bc6c-424b-bcb5-5c8076f90c00",
+      "name": "Espire Infolabs",
+      "domain": "espire.com",
+      "identity": "DERIVABLE_DOMAIN",
+      "role": "UNKNOWN",
+      "confidence": "LOW",
+      "reason": "IDENTITY_INSUFFICIENT",
+      "semanticFingerprint": "1a3cdc9bf85371987fd91d0b012096fc15d78c061bdaf182b348ad7b3935a130",
+      "model": "gpt-5-mini",
+      "promptVersion": "fix08-company-understanding-v4",
+      "normalizationVersion": "fix07-v1",
+      "sellerContextFingerprint": "aa8a6864e2953a132b1eb9ff9d7893cc486ce93171478c7798b7fba3c33468c2",
+      "citations": [],
+      "provenanceId": "e4d4bf6b-9b7b-4eb0-adfa-f4e797f9d030",
+      "modelInvoked": false,
+      "cacheHit": true,
+      "unknownReason": "IDENTITY_INSUFFICIENT",
+      "independentAdjudication": {
+        "status": "ADJUDICATED",
+        "role": "PARTNER_POSSIBLE",
+        "confidence": "MEDIUM",
+        "identityConfidence": "HIGH",
+        "primaryBusiness": "IT and digital-transformation services, including cloud, data/analytics, application services, and cybersecurity/managed technology capabilities.",
+        "employeeMarketFit": "The company publicly serves enterprises and operates across the US, UK, India, and other markets; public company-profile evidence places it roughly in the 500–1000 employee range, within the stated ICP band.",
+        "rationale": "Espire is an IT-services integrator rather than an ordinary end-customer. Its public cloud and cybersecurity services indicate possible channel, subcontracting, or complementary SOC partnership, but the available evidence does not establish that it resells or lacks its own 24/7 SOC.",
+        "sourceUrls": [
+          "https://www.espire.com/",
+          "https://www.espire.com/services/cyber-security/",
+          "https://www.linkedin.com/company/espire-infolabs/"
+        ],
+        "agreesWithJYRA": false
+      }
+    },
+    {
+      "companyId": "7607828d-15ef-49ff-bcbb-14f0305433da",
+      "name": "Zapier",
+      "domain": "zapier.com",
+      "identity": "DERIVABLE_DOMAIN",
+      "role": "POTENTIAL_BUYER",
+      "confidence": "MEDIUM",
+      "reason": "Zapier is identified in the supplied evidence as a software development/SaaS company focused on integrations, APIs, and automation with a sizable distributed workforce. Organizations of this type plausibly consume third-party managed SOC services to provide continuous cybersecurity monitoring and incident response, so Zapier fits the seller-relative role of a potential buyer for Aadit Technologies' Managed SOC offering.",
+      "semanticFingerprint": "5662bac11d9a1f17869fb57ee910d7d6fd5de1f7da5bfca7c003e45e59aa87b0",
+      "model": "gpt-5-mini",
+      "promptVersion": "fix08-company-understanding-v4",
+      "normalizationVersion": "fix07-v1",
+      "sellerContextFingerprint": "aa8a6864e2953a132b1eb9ff9d7893cc486ce93171478c7798b7fba3c33468c2",
+      "citations": [
+        "f5318f9a-6ec0-49b1-8532-5d1e1d986a4d",
+        "c2176d41-9a23-4559-aacb-9e4506e8e556"
+      ],
+      "provenanceId": "148ab232-5e4d-4b00-947a-e781132fdc40",
+      "modelInvoked": true,
+      "cacheHit": true,
+      "unknownReason": null,
+      "independentAdjudication": {
+        "status": "ADJUDICATED",
+        "role": "POTENTIAL_BUYER",
+        "confidence": "HIGH",
+        "identityConfidence": "HIGH",
+        "primaryBusiness": "Cloud automation and integration SaaS connecting applications and automating business workflows, increasingly positioned as an AI-automation platform.",
+        "employeeMarketFit": "Zapier markets to businesses and enterprise teams and has publicly reported a workforce in the low-thousands; this is at or near the ICP upper boundary. Its multi-tenant cloud platform processes customer workflow and integration data.",
+        "rationale": "Zapier is a technology SaaS operator with sensitive connected-system data and continuous availability requirements. Nothing in its primary public positioning makes it a SOC provider or security-services competitor.",
+        "sourceUrls": [
+          "https://zapier.com/",
+          "https://zapier.com/enterprise",
+          "https://www.linkedin.com/company/zapier/"
+        ],
+        "agreesWithJYRA": true
+      }
+    },
+    {
+      "companyId": "ed4975df-b4c9-4bd2-9e4b-c526985348d2",
+      "name": "ESSPL",
+      "domain": "esspl.com",
+      "identity": "DERIVABLE_DOMAIN",
+      "role": "POTENTIAL_BUYER",
+      "confidence": "MEDIUM",
+      "reason": "Evidence describes ESSPL as an IT services and consulting company focused on supply chain and logistics software, digital transformation, integration and managed application services (evidence IDs indicate service offerings and domain). They do not appear to sell a managed SOC product, so they plausibly could consume Aadit Technologies' Managed SOC for protecting their own IT/cloud environments.",
+      "semanticFingerprint": "fac1e0fff580c13fbefb38485f3cd229aeaaa2bba5d2f170fe7d5b210d642d05",
+      "model": "gpt-5-mini",
+      "promptVersion": "fix08-company-understanding-v4",
+      "normalizationVersion": "fix07-v1",
+      "sellerContextFingerprint": "aa8a6864e2953a132b1eb9ff9d7893cc486ce93171478c7798b7fba3c33468c2",
+      "citations": [
+        "e68c93f0-ef0a-4bf6-b19f-91405e2afe49",
+        "e80cf9c2-b99a-4eb9-b0c9-b90c24e19613"
+      ],
+      "provenanceId": "e328ec77-c5be-49df-91ca-3d84ffc1118d",
+      "modelInvoked": true,
+      "cacheHit": true,
+      "unknownReason": null,
+      "independentAdjudication": {
+        "status": "ADJUDICATED",
+        "role": "PARTNER_POSSIBLE",
+        "confidence": "MEDIUM",
+        "identityConfidence": "HIGH",
+        "primaryBusiness": "Custom software development and IT consulting, with cloud solutions, cybersecurity, and related technology services.",
+        "employeeMarketFit": "ESSPL publicly presents a distributed India/US-oriented delivery model and enterprise technology clientele; third-party company-profile evidence generally places it in the 200–500 employee band, matching the sweet spot.",
+        "rationale": "ESSPL explicitly advertises cybersecurity alongside software, cloud, and IT consulting, so it may have complementary customers or need white-label/overflow monitoring. Public homepage evidence does not prove that it operates a 24/7 managed SOC; therefore partner possibility is safer than competitor classification.",
+        "sourceUrls": [
+          "https://www.esspl.com/",
+          "https://www.esspl.com/services/cybersecurity/",
+          "https://www.linkedin.com/company/esspl/"
+        ],
+        "agreesWithJYRA": false
+      }
+    },
+    {
+      "companyId": "05bfab22-1ba1-4673-bfa3-e9d42386c012",
+      "name": "bswift",
+      "domain": "bswift.com",
+      "identity": "DERIVABLE_DOMAIN",
+      "role": "UNKNOWN",
+      "confidence": "LOW",
+      "reason": "IDENTITY_INSUFFICIENT",
+      "semanticFingerprint": "2b3777444a21237765a02c7d05e556a4a04b66f4b3085b60ca9f022bac4cb78f",
+      "model": "gpt-5-mini",
+      "promptVersion": "fix08-company-understanding-v4",
+      "normalizationVersion": "fix07-v1",
+      "sellerContextFingerprint": "aa8a6864e2953a132b1eb9ff9d7893cc486ce93171478c7798b7fba3c33468c2",
+      "citations": [],
+      "provenanceId": "eb07f26a-19e2-4eac-bf2a-89ea3f014992",
+      "modelInvoked": false,
+      "cacheHit": true,
+      "unknownReason": "IDENTITY_INSUFFICIENT",
+      "independentAdjudication": {
+        "status": "ADJUDICATED",
+        "role": "POTENTIAL_BUYER",
+        "confidence": "HIGH",
+        "identityConfidence": "HIGH",
+        "primaryBusiness": "Benefits administration technology and services, including a cloud platform and AI-supported employee/HR benefits administration.",
+        "employeeMarketFit": "bswift serves employers and health/benefits stakeholders and is part of the large Francisco Partners portfolio; public profiles place it at roughly 1000+ employees (or near that range). It handles highly sensitive employee benefits and healthcare-related data, strongly matching the security-risk profile.",
+        "rationale": "This is a benefits-platform operator, not a cybersecurity vendor. Its cloud infrastructure and sensitive personal/health-benefits data make outsourced 24/7 monitoring a credible requirement.",
+        "sourceUrls": [
+          "https://www.bswift.com/",
+          "https://www.bswift.com/solutions/",
+          "https://www.linkedin.com/company/bswift/"
+        ],
+        "agreesWithJYRA": false
+      }
+    },
+    {
+      "companyId": "9ad7fe84-44c1-46c3-b93e-6fc2bd940370",
+      "name": "EPPS Infotech Ltd",
+      "domain": "epps-erp.com",
+      "identity": "DERIVABLE_DOMAIN",
+      "role": "POTENTIAL_BUYER",
+      "confidence": "MEDIUM",
+      "reason": "LinkedIn company profile identifies EPPS Infotech Ltd as a software development firm that provides ERP software for SMBs. As an ERP/software vendor operating IT systems and software products, it fits the profile of an organization that could consume Aadit Technologies' Managed SOC for continuous cybersecurity monitoring of its IT and product environments.",
+      "semanticFingerprint": "8bfe11cc78005db16255275a1b1e4655d2eae55a8437dfc42be76aa85a40857a",
+      "model": "gpt-5-mini",
+      "promptVersion": "fix08-company-understanding-v4",
+      "normalizationVersion": "fix07-v1",
+      "sellerContextFingerprint": "aa8a6864e2953a132b1eb9ff9d7893cc486ce93171478c7798b7fba3c33468c2",
+      "citations": [
+        "8587b694-dbd6-4931-ad7b-086dfe6e9178"
+      ],
+      "provenanceId": "1ae0f9d2-6c0d-42a6-8d93-7ad1db12804b",
+      "modelInvoked": true,
+      "cacheHit": true,
+      "unknownReason": null,
+      "independentAdjudication": {
+        "status": "ADJUDICATED",
+        "role": "ADJACENT_VENDOR",
+        "confidence": "MEDIUM",
+        "identityConfidence": "HIGH",
+        "primaryBusiness": "ERP and business-management software provider, including ERP, sales/CRM, accounting, and cloud software offerings.",
+        "employeeMarketFit": "The official site confirms cloud ERP software, but a reliable current employee count and target-market scale were not established from the reviewed public evidence.",
+        "rationale": "EPPS sells business software rather than publicly documented managed security services. Its cloud ERP platform may have security-monitoring needs, but the available evidence is insufficient to establish target-size fit or make buyer intent the primary classification.",
+        "sourceUrls": [
+          "https://epps-erp.com/",
+          "https://www.linkedin.com/company/epps-infotech-ltd/"
+        ],
+        "agreesWithJYRA": false
+      }
+    },
+    {
+      "companyId": "0bb315a1-94e3-4f80-bb47-c20b16224903",
+      "name": "Gainsight",
+      "domain": "gainsight.com",
+      "identity": "DERIVABLE_DOMAIN",
+      "role": "UNKNOWN",
+      "confidence": "LOW",
+      "reason": "IDENTITY_INSUFFICIENT",
+      "semanticFingerprint": "6463ed6763e800ffd9ac705c867ef86c6557a2cd277c3b9a36156df876a9b79e",
+      "model": "gpt-5-mini",
+      "promptVersion": "fix08-company-understanding-v4",
+      "normalizationVersion": "fix07-v1",
+      "sellerContextFingerprint": "aa8a6864e2953a132b1eb9ff9d7893cc486ce93171478c7798b7fba3c33468c2",
+      "citations": [],
+      "provenanceId": "ff2d4970-8d03-4214-9267-c96c692311f5",
+      "modelInvoked": false,
+      "cacheHit": true,
+      "unknownReason": "IDENTITY_INSUFFICIENT",
+      "independentAdjudication": {
+        "status": "ADJUDICATED",
+        "role": "POTENTIAL_BUYER",
+        "confidence": "HIGH",
+        "identityConfidence": "HIGH",
+        "primaryBusiness": "B2B customer-success, retention, product-experience, and customer-community software platform.",
+        "employeeMarketFit": "Public company-profile evidence places Gainsight in the several-hundred-to-roughly-1,000-employee range (within the stated sweet spot); it is a cloud SaaS company handling enterprise customer and product data.",
+        "rationale": "Gainsight is a clear enterprise SaaS operator with cloud infrastructure and data-security requirements. A fully managed 24/7 SOC is directly relevant where it needs continuous monitoring without expanding an internal security-operations team.",
+        "sourceUrls": [
+          "https://www.gainsight.com/",
+          "https://www.linkedin.com/company/gainsight/",
+          "https://www.crunchbase.com/organization/gainsight"
+        ],
+        "agreesWithJYRA": false
+      }
+    },
+    {
+      "companyId": "8a4ac58f-98cd-4a27-b684-ac1bf81293cb",
+      "name": "3LOCKS",
+      "domain": null,
+      "identity": "UNKNOWN",
+      "role": "UNKNOWN",
+      "confidence": "LOW",
+      "reason": "IDENTITY_INSUFFICIENT",
+      "semanticFingerprint": "eb559f070a7201e515f4effd25bb0aa35af132ae42f4f3e1b6a47cfc66e97119",
+      "model": "gpt-5-mini",
+      "promptVersion": "fix08-company-understanding-v4",
+      "normalizationVersion": "fix07-v1",
+      "sellerContextFingerprint": "aa8a6864e2953a132b1eb9ff9d7893cc486ce93171478c7798b7fba3c33468c2",
+      "citations": [],
+      "provenanceId": "e05fe738-beff-4b13-b900-7d11c437d59c",
+      "modelInvoked": false,
+      "cacheHit": true,
+      "unknownReason": "IDENTITY_INSUFFICIENT",
+      "independentAdjudication": {
+        "status": "ADJUDICATED",
+        "role": "UNKNOWN",
+        "confidence": "HIGH",
+        "identityConfidence": "LOW",
+        "primaryBusiness": "Not reliably identifiable from the supplied name; no trusted domain was provided.",
+        "employeeMarketFit": "Not evidenced.",
+        "rationale": "Without a trusted domain or corroborating public identity, the entity, business model, employee scale, geography, and cybersecurity relevance cannot be independently verified.",
+        "sourceUrls": [],
+        "agreesWithJYRA": true
+      }
+    },
+    {
+      "companyId": "d5cd1d7c-5dbe-47b3-87b5-c2fb3642c8df",
+      "name": "Vercel",
+      "domain": "vercel.com",
+      "identity": "DERIVABLE_DOMAIN",
+      "role": "POTENTIAL_BUYER",
+      "confidence": "MEDIUM",
+      "reason": "Evidence describes Vercel as a software development platform and developer-hosting provider (SaaS) that operates developer infrastructure and tools. Such organizations typically operate cloud infrastructure and developer workflows where a managed 24/7 SOC could be a relevant outsourced security service. There is no evidence that Vercel offers a managed SOC itself or that it would be a direct competitor, so the seller-relative role is best classified as a potential buyer.",
+      "semanticFingerprint": "58807df7f2bc2ca475fba0e54738b3e22e1cf05ced84c777f9e61ecc4b42b625",
+      "model": "gpt-5-mini",
+      "promptVersion": "fix08-company-understanding-v4",
+      "normalizationVersion": "fix07-v1",
+      "sellerContextFingerprint": "aa8a6864e2953a132b1eb9ff9d7893cc486ce93171478c7798b7fba3c33468c2",
+      "citations": [
+        "bb070099-856a-4b0b-8a4b-d58bbcd9b20c",
+        "34977c90-b0e1-4d76-bb50-139159aeea01"
+      ],
+      "provenanceId": "b16a750e-0a73-4df3-b4f5-419c206d0dfa",
+      "modelInvoked": true,
+      "cacheHit": true,
+      "unknownReason": null,
+      "independentAdjudication": {
+        "status": "ADJUDICATED",
+        "role": "POTENTIAL_BUYER",
+        "confidence": "HIGH",
+        "identityConfidence": "HIGH",
+        "primaryBusiness": "Developer tools and cloud infrastructure platform for building, deploying, scaling, and securing web applications and AI agents.",
+        "employeeMarketFit": "Public company-profile evidence places Vercel at roughly 1,000+ employees, at or above the stated sweet spot but within the broader 100-2,000 ICP. Its platform is cloud-native and serves enterprise customers worldwide.",
+        "rationale": "Vercel operates critical cloud/developer infrastructure and explicitly markets platform security, WAF, bot management, and enterprise capabilities. Those facts strongly support continuous SOC monitoring as a buyer use case, even though Vercel also sells security features rather than managed SOC services.",
+        "sourceUrls": [
+          "https://vercel.com/",
+          "https://vercel.com/security",
+          "https://www.linkedin.com/company/vercel/"
+        ],
+        "agreesWithJYRA": true
+      }
+    },
+    {
+      "companyId": "91a259c2-9c1b-4713-8553-34b2265e9b17",
+      "name": "LaunchDarkly",
+      "domain": "launchdarkly.com",
+      "identity": "DERIVABLE_DOMAIN",
+      "role": "POTENTIAL_BUYER",
+      "confidence": "MEDIUM",
+      "reason": "LaunchDarkly is a SaaS software development company providing feature-flagging and runtime control (CodeControl, AgentControl) and does not offer managed SOC services; as an operating technology company it plausibly could consume a 24/7 managed SOC for continuous security monitoring rather than being a substitute.",
+      "semanticFingerprint": "cfeab0d7bcb8d8ad88b6d3a6b8cbb4dc061f0fc4f39f81414a0f22a15c48dc52",
+      "model": "gpt-5-mini",
+      "promptVersion": "fix08-company-understanding-v4",
+      "normalizationVersion": "fix07-v1",
+      "sellerContextFingerprint": "aa8a6864e2953a132b1eb9ff9d7893cc486ce93171478c7798b7fba3c33468c2",
+      "citations": [
+        "659e97bf-5a83-403d-bc2c-7241cca8cd09",
+        "a8ec8a82-d368-4900-82dd-2d8724ab6d59"
+      ],
+      "provenanceId": "68443d0f-389b-4d3f-82df-86f99b1a9ba5",
+      "modelInvoked": true,
+      "cacheHit": true,
+      "unknownReason": null,
+      "independentAdjudication": {
+        "status": "ADJUDICATED",
+        "role": "POTENTIAL_BUYER",
+        "confidence": "HIGH",
+        "identityConfidence": "HIGH",
+        "primaryBusiness": "Software platform for feature flags/runtime control, experimentation, and AI-agent/application release management.",
+        "employeeMarketFit": "Enterprise-facing cloud software company; official site advertises enterprise uptime/SOC 2 and ISO certifications and serves development, DevOps/SRE, and product teams. Publicly cited sources do not establish a precise current employee count.",
+        "rationale": "A cloud software vendor with enterprise customers and explicitly documented security/compliance requirements is a strong fit for outsourced continuous SOC monitoring; it is not itself presented as a security-monitoring provider.",
+        "sourceUrls": [
+          "https://launchdarkly.com/",
+          "https://launchdarkly.com/platform/",
+          "https://launchdarkly.com/customers/"
+        ],
+        "agreesWithJYRA": true
+      }
+    },
+    {
+      "companyId": "e325000f-f90b-4b83-80c2-74cb0d2223b6",
+      "name": "Onit",
+      "domain": "onit.com",
+      "identity": "DERIVABLE_DOMAIN",
+      "role": "POTENTIAL_BUYER",
+      "confidence": "MEDIUM",
+      "reason": "Evidence describes Onit as a software development company and provider of AI-native legal operations and contract lifecycle management products and related legal workflow automation (e.g., CLM, matter management, legal spend tracking). These offerings are not cybersecurity substitutes for Aadit's Managed SOC, and as a software/legal-technology provider handling contracts and legal data, Onit fits the profile of an organization that could consume a managed SOC for its own security operations.",
+      "semanticFingerprint": "d2e4bb594a70db692c98a54f957e2632755ebb9c52bef9cbec5c589c2dde8a99",
+      "model": "gpt-5-mini",
+      "promptVersion": "fix08-company-understanding-v4",
+      "normalizationVersion": "fix07-v1",
+      "sellerContextFingerprint": "aa8a6864e2953a132b1eb9ff9d7893cc486ce93171478c7798b7fba3c33468c2",
+      "citations": [
+        "8d3901df-77c4-43ec-abbd-f036d68e3138",
+        "a34db70b-f008-40cf-9c1d-3a114e06dbb7"
+      ],
+      "provenanceId": "42f70034-4218-459f-a20d-03814f988e9e",
+      "modelInvoked": true,
+      "cacheHit": true,
+      "unknownReason": null,
+      "independentAdjudication": {
+        "status": "ADJUDICATED",
+        "role": "POTENTIAL_BUYER",
+        "confidence": "HIGH",
+        "identityConfidence": "HIGH",
+        "primaryBusiness": "Enterprise legal-management and workflow-automation software, including contract lifecycle management, legal operations, sales/revenue workflows, and compliance/risk.",
+        "employeeMarketFit": "Official site clearly targets enterprise legal departments and advertises a dedicated security program/page; employee count is not reliably established by the cited sources.",
+        "rationale": "An enterprise legal-tech SaaS provider processes sensitive legal, contract, compliance, and customer information and has a cloud/security posture that supports a managed-SOC need. It is not publicly positioned as a SOC provider.",
+        "sourceUrls": [
+          "https://www.onit.com/",
+          "https://www.onit.com/security/",
+          "https://www.onit.com/solutions/enterprise-legal-management/"
+        ],
+        "agreesWithJYRA": true
+      }
+    },
+    {
+      "companyId": "82884c7a-9955-4fbf-a192-45305ba82d77",
+      "name": "Zylo",
+      "domain": "zylo.com",
+      "identity": "DERIVABLE_DOMAIN",
+      "role": "POTENTIAL_BUYER",
+      "confidence": "MEDIUM",
+      "reason": "Evidence describes Zylo as a SaaS management software company that provides visibility, optimization, and governance for SaaS spend and licenses (e.g., SAM/ITAM, spend analytics). Aadit's Managed SOC is a 24/7 security monitoring and incident response service for organizations operating IT and cloud environments. Zylo, as an operating SaaS provider, is plausibly a consumer of a managed SOC rather than a substitute or clear integration partner based on the supplied evidence.",
+      "semanticFingerprint": "c0549aa060137053f3c31839097519578e1c7fe69bf973b03440a5b72fc14b2f",
+      "model": "gpt-5-mini",
+      "promptVersion": "fix08-company-understanding-v4",
+      "normalizationVersion": "fix07-v1",
+      "sellerContextFingerprint": "aa8a6864e2953a132b1eb9ff9d7893cc486ce93171478c7798b7fba3c33468c2",
+      "citations": [
+        "48d3be89-ec7d-4777-b573-2a0540d70918",
+        "2369756a-6c25-4db6-92d1-367d5e3213a5"
+      ],
+      "provenanceId": "83e8c078-6b55-4566-959c-fbf84888b9df",
+      "modelInvoked": true,
+      "cacheHit": true,
+      "unknownReason": null,
+      "independentAdjudication": {
+        "status": "ADJUDICATED",
+        "role": "POTENTIAL_BUYER",
+        "confidence": "HIGH",
+        "identityConfidence": "HIGH",
+        "primaryBusiness": "Enterprise SaaS spend-management/SaaS operations platform providing SaaS visibility, cost control, optimization, and AI spend management.",
+        "employeeMarketFit": "Official site positions the product for enterprise IT, software asset management, FinOps, and procurement teams and lists enterprise use cases; a precise employee count is not established by the cited public sources.",
+        "rationale": "Zylo is an enterprise cloud-software company handling customers' application/spend data, making ongoing security monitoring relevant; its public offering is SaaS management, not SOC/MDR services.",
+        "sourceUrls": [
+          "https://zylo.com/",
+          "https://zylo.com/solutions/zylo-for-it",
+          "https://zylo.com/about-us/company"
+        ],
+        "agreesWithJYRA": true
+      }
+    },
+    {
+      "companyId": "5e18e6e4-eb04-4b63-a529-3aa3b010cb4c",
+      "name": "Senrysa Technologies Limited",
+      "domain": "senrysa.com",
+      "identity": "DERIVABLE_DOMAIN",
+      "role": "POTENTIAL_BUYER",
+      "confidence": "MEDIUM",
+      "reason": "Senrysa is an IT services and IT consulting firm that provides IT infrastructure management, application development, data management, and industry solutions (BFSI, GovTech, Fintech). Those capabilities and customer-facing infrastructure imply Senrysa could consume a managed 24/7 SOC to protect its own operations or client environments. There is no supplied evidence of an existing reseller/partner relationship or that Senrysa offers a direct substitute SOC service, so POTENTIAL_BUYER is the most supported seller-relative role.",
+      "semanticFingerprint": "6f3c87b8d9236a8e6a2f5f2c1cfc589ea395c8da2330fcc13826fb6cd3d6af92",
+      "model": "gpt-5-mini",
+      "promptVersion": "fix08-company-understanding-v4",
+      "normalizationVersion": "fix07-v1",
+      "sellerContextFingerprint": "aa8a6864e2953a132b1eb9ff9d7893cc486ce93171478c7798b7fba3c33468c2",
+      "citations": [
+        "1f054fdf-10b3-4153-8126-c10af7b44fbb",
+        "4a0ac039-538c-4ab3-9b39-f64e1436636f"
+      ],
+      "provenanceId": "ee54b78f-e252-4796-9ef6-42912b1f304c",
+      "modelInvoked": true,
+      "cacheHit": true,
+      "unknownReason": null,
+      "independentAdjudication": {
+        "status": "ADJUDICATED",
+        "role": "ADJACENT_VENDOR",
+        "confidence": "MEDIUM",
+        "identityConfidence": "HIGH",
+        "primaryBusiness": "AI solutions and technology services company offering computer vision, conversational/generative/agentic AI, data analytics, banking/financial-services solutions, and security intelligence.",
+        "employeeMarketFit": "The official site evidences technology-services delivery and financial-services/security solution areas, but does not establish employee count or clearly document a 24/7 managed SOC/MDR operation.",
+        "rationale": "Its public security-intelligence and AI-services offerings overlap the cybersecurity/technology ecosystem, so it is adjacent rather than a clear buyer. No public evidence found that it resells or operates a fully managed 24/7 SOC, so PARTNER_POSSIBLE would be speculative.",
+        "sourceUrls": [
+          "https://senrysa.com/",
+          "https://senrysa.com/security-intelligence/",
+          "https://senrysa.com/about-us/"
+        ],
+        "agreesWithJYRA": false
+      }
+    },
+    {
+      "companyId": "7ff24a8d-75ff-4313-b91e-47795656bde6",
+      "name": "enreap",
+      "domain": "enreap.com",
+      "identity": "DERIVABLE_DOMAIN",
+      "role": "POTENTIAL_BUYER",
+      "confidence": "MEDIUM",
+      "reason": "enreap is an IT services and consulting firm offering managed services, cloud migrations, AWS support and ITSM (evidence IDs b23ac9b1-194f-491e-86a0-58e4d7a0ec25 and 6cfbce02-5782-461c-b158-37d04db01095). That profile fits an organization that could consume a third-party Managed SOC for continuous security monitoring of its own infrastructure or to complement client engagements. There is no supplied evidence that enreap itself operates a SOC or explicitly resells SOC services, so classification as a buyer (rather than competitor or confirmed partner) is most supported by the provided evidence.",
+      "semanticFingerprint": "fe2f0ab9375cf34d186cf642decb6c099c5012c6ca5a15cd1d07fd01b901b0b4",
+      "model": "gpt-5-mini",
+      "promptVersion": "fix08-company-understanding-v4",
+      "normalizationVersion": "fix07-v1",
+      "sellerContextFingerprint": "aa8a6864e2953a132b1eb9ff9d7893cc486ce93171478c7798b7fba3c33468c2",
+      "citations": [
+        "b23ac9b1-194f-491e-86a0-58e4d7a0ec25",
+        "6cfbce02-5782-461c-b158-37d04db01095"
+      ],
+      "provenanceId": "69f17454-c303-4d17-b73a-d270d666e6cb",
+      "modelInvoked": true,
+      "cacheHit": true,
+      "unknownReason": null,
+      "independentAdjudication": {
+        "status": "ADJUDICATED",
+        "role": "PARTNER_POSSIBLE",
+        "confidence": "HIGH",
+        "identityConfidence": "HIGH",
+        "primaryBusiness": "Enterprise ITSM, cloud consulting, DevOps transformation, and managed services, including AWS, DevOps, and Atlassian managed services.",
+        "employeeMarketFit": "Public company materials establish an enterprise technology-services focus and cloud infrastructure exposure; employee count was not independently established. Its service-business profile is compatible with a technology partner evaluation rather than a straightforward end-customer classification.",
+        "rationale": "enreap publicly sells managed cloud, DevOps, and IT services. Those offerings create a plausible channel or delivery-partner relationship for a fully managed SOC, but the reviewed public evidence does not establish that enreap itself needs Aadit as a buyer or lacks competing security capabilities.",
+        "sourceUrls": [
+          "https://enreap.com/",
+          "https://enreap.com/services/",
+          "https://enreap.com/about-us/"
+        ],
+        "agreesWithJYRA": false
+      }
+    },
+    {
+      "companyId": "745595e0-3ab3-4f87-b95d-8debe4187ab4",
+      "name": "TeamSnap",
+      "domain": "teamsnap.com",
+      "identity": "DERIVABLE_DOMAIN",
+      "role": "POTENTIAL_BUYER",
+      "confidence": "HIGH",
+      "reason": "TeamSnap is a SaaS provider of a youth sports management platform (registration, payments, scheduling, communications, etc.). As an operating software business managing customer data and cloud/IT infrastructure, it is a plausible consumer of a managed 24/7 SOC rather than a competitor or proved partner.",
+      "semanticFingerprint": "37b127ad26fb156354910b07074390d89abec38e6d91680c5726fb33fc1f74c6",
+      "model": "gpt-5-mini",
+      "promptVersion": "fix08-company-understanding-v4",
+      "normalizationVersion": "fix07-v1",
+      "sellerContextFingerprint": "aa8a6864e2953a132b1eb9ff9d7893cc486ce93171478c7798b7fba3c33468c2",
+      "citations": [
+        "3f9e6332-a95e-4035-a72a-62d283f82dfd",
+        "401bf566-2777-4dcb-81d6-40abe6dccde7"
+      ],
+      "provenanceId": "872f523c-b45d-4353-b837-f3d8b8c1611f",
+      "modelInvoked": true,
+      "cacheHit": true,
+      "unknownReason": null,
+      "independentAdjudication": {
+        "status": "ADJUDICATED",
+        "role": "POTENTIAL_BUYER",
+        "confidence": "MEDIUM",
+        "identityConfidence": "HIGH",
+        "primaryBusiness": "Youth sports technology platform for team, club, and league registration, scheduling, communication, and related sports-organization management.",
+        "employeeMarketFit": "TeamSnap's official company page reports more than 30 million parents, players, and coaches and 19,000+ sports organizations using its platform, demonstrating substantial SaaS scale and customer/data exposure. Employee count was not independently verified, so exact ICP headcount fit is uncertain.",
+        "rationale": "TeamSnap is a data-intensive SaaS company operating a connected platform for a large user base and sports organizations. That profile is consistent with a need for continuous security monitoring, while no public evidence reviewed identifies it as a SOC provider or security-services competitor.",
+        "sourceUrls": [
+          "https://www.teamsnap.com/",
+          "https://www.teamsnap.com/company",
+          "https://www.linkedin.com/company/teamsnap/"
+        ],
+        "agreesWithJYRA": true
+      }
+    },
+    {
+      "companyId": "50ceadee-afc9-41a1-b7c7-f6334e213df8",
+      "name": "CData Virtuality",
+      "domain": null,
+      "identity": "UNKNOWN",
+      "role": "UNKNOWN",
+      "confidence": "LOW",
+      "reason": "IDENTITY_INSUFFICIENT",
+      "semanticFingerprint": "50b542d18096bbc6fd73e620f917ab4c0da5b780acc371912d04cd1a769fcff8",
+      "model": "gpt-5-mini",
+      "promptVersion": "fix08-company-understanding-v4",
+      "normalizationVersion": "fix07-v1",
+      "sellerContextFingerprint": "aa8a6864e2953a132b1eb9ff9d7893cc486ce93171478c7798b7fba3c33468c2",
+      "citations": [],
+      "provenanceId": "da849f52-4cdf-41a0-a7f7-4231df49d62f",
+      "modelInvoked": false,
+      "cacheHit": true,
+      "unknownReason": "IDENTITY_INSUFFICIENT",
+      "independentAdjudication": {
+        "status": "ADJUDICATED",
+        "role": "UNKNOWN",
+        "confidence": "LOW",
+        "identityConfidence": "LOW",
+        "primaryBusiness": "Identity cannot be confirmed reliably from the supplied information because no trusted domain was provided. The name may refer to CData's data-integration/virtualization product or business, but that attribution is not treated as established.",
+        "employeeMarketFit": "Not established. No trusted company domain or sufficiently reliable public evidence was supplied to verify the legal entity, operating geography, employee count, or infrastructure profile.",
+        "rationale": "The absence of a trusted domain prevents dependable entity resolution. It would be inappropriate to classify the record as a buyer, competitor, adjacent vendor, or partner without first confirming which organization or product the name denotes.",
+        "sourceUrls": [
+          "https://www.cdata.com/"
+        ],
+        "agreesWithJYRA": true
+      }
+    },
+    {
+      "companyId": "4ab85c5b-baf0-4f21-a64d-e43f4d1e1570",
+      "name": "SRIT India Limited",
+      "domain": "sritindia.com",
+      "identity": "DERIVABLE_DOMAIN",
+      "role": "POTENTIAL_BUYER",
+      "confidence": "MEDIUM",
+      "reason": "SRIT India Limited is an IT services and consulting company offering off-shore development, healthcare software, ERP/CRM, e‑Governance and telecom solutions. As an operating IT services provider with distributed operations and infrastructure, SRIT plausibly fits as a potential buyer of a fully managed 24/7 SOC to support its own security monitoring needs or those of its clients. There is no supplied evidence that SRIT currently sells a directly competing managed SOC service or that it already has partner/reseller arrangements with SOC providers.",
+      "semanticFingerprint": "6466c4226a095784724c6452ea71b60dd96024f23bd00c7ec4cf3d41c76d6212",
+      "model": "gpt-5-mini",
+      "promptVersion": "fix08-company-understanding-v4",
+      "normalizationVersion": "fix07-v1",
+      "sellerContextFingerprint": "aa8a6864e2953a132b1eb9ff9d7893cc486ce93171478c7798b7fba3c33468c2",
+      "citations": [
+        "b98aee48-2974-4380-bace-ed80f5eb824c",
+        "141c53ad-44ae-4215-99b5-a135a0b63b15"
+      ],
+      "provenanceId": "dfcb4ac7-a8a1-4e0b-bc2b-0c772cf930ec",
+      "modelInvoked": true,
+      "cacheHit": true,
+      "unknownReason": null,
+      "independentAdjudication": {
+        "status": "ADJUDICATED",
+        "role": "PARTNER_POSSIBLE",
+        "confidence": "MEDIUM",
+        "identityConfidence": "HIGH",
+        "primaryBusiness": "Enterprise software and IT services focused on healthcare, e-governance, telecommunications, insurance, ERP implementation, application management, and related enterprise solutions.",
+        "employeeMarketFit": "Employee count was not independently established from the reviewed public sources. Its enterprise-sector and application-management work indicate cloud/IT-infrastructure exposure and sensitive-data relevance, but organizational-size fit is unverified.",
+        "rationale": "The official site explicitly describes end-to-end enterprise implementation and application management. That creates a plausible referral/delivery partnership for a managed SOC, but the public evidence does not establish that SRIT itself provides security operations or that it fits the target employee band.",
+        "sourceUrls": [
+          "https://www.sritindia.com/",
+          "https://www.sritindia.com/solutions"
+        ],
+        "agreesWithJYRA": false
+      }
+    },
+    {
+      "companyId": "5f343c37-2886-4dba-b17e-13d47a20f195",
+      "name": "Mindteck",
+      "domain": "mindteck.com",
+      "identity": "DERIVABLE_DOMAIN",
+      "role": "POTENTIAL_BUYER",
+      "confidence": "MEDIUM",
+      "reason": "Evidence describes Mindteck as an IT services and consulting firm offering cloud services, product engineering and related technology services. Such an organization could plausibly consume a managed 24/7 SOC to monitor and protect its own infrastructure or client-managed environments.",
+      "semanticFingerprint": "a06d0c366eddafba3ba5ddd0d481294c3b8945eca094346d6ae34e805560d133",
+      "model": "gpt-5-mini",
+      "promptVersion": "fix08-company-understanding-v4",
+      "normalizationVersion": "fix07-v1",
+      "sellerContextFingerprint": "aa8a6864e2953a132b1eb9ff9d7893cc486ce93171478c7798b7fba3c33468c2",
+      "citations": [
+        "5a014d88-90ef-4f32-8229-a5ffb2bfcfcd",
+        "978bd033-b019-421b-b0eb-dd8966386cb8"
+      ],
+      "provenanceId": "403b8293-05cd-4e10-8a7c-e0bb83dc0272",
+      "modelInvoked": true,
+      "cacheHit": true,
+      "unknownReason": null,
+      "independentAdjudication": {
+        "status": "ADJUDICATED",
+        "role": "PARTNER_POSSIBLE",
+        "confidence": "MEDIUM",
+        "identityConfidence": "HIGH",
+        "primaryBusiness": "Global IT services and product-engineering company delivering AI/ML, cloud, data, embedded/IoT, digital transformation, BPM, and infrastructure/data-centre-related services.",
+        "employeeMarketFit": "Official site describes global enterprise clients and lists cloud services plus IT infrastructure/data-centre transformation; exact current headcount is not established by the cited sources.",
+        "rationale": "Mindteck has documented cloud and infrastructure transformation services and could plausibly complement or refer a managed SOC offering for its enterprise clients. However, its public service catalog does not clearly show SOC/MDR operations, so it should not be labeled a direct competitor.",
+        "sourceUrls": [
+          "https://mindteck.com/",
+          "https://mindteck.com/cloud-service",
+          "https://mindteck.com/about-us"
+        ],
+        "agreesWithJYRA": false
+      }
+    },
+    {
+      "companyId": "d06eca6f-4775-4185-9e52-f06b9a72807c",
+      "name": "ClearCo",
+      "domain": "clearcompany.com",
+      "identity": "DERIVABLE_DOMAIN",
+      "role": "POTENTIAL_BUYER",
+      "confidence": "HIGH",
+      "reason": "ClearCo (ClearCompany) is described in the supplied evidence as a software development company providing talent management SaaS (ATS, onboarding, learning, performance, compensation and related HR modules). As a SaaS software vendor that operates HR systems and likely manages customer and employee data, it is plausibly a potential buyer of a managed SOC service rather than a competitor or adjacent security vendor.",
+      "semanticFingerprint": "584a8ab22638bbb494439bb8d0ed03e0a1ea89a4ba95ef1a8d174c4c5146e8b0",
+      "model": "gpt-5-mini",
+      "promptVersion": "fix08-company-understanding-v4",
+      "normalizationVersion": "fix07-v1",
+      "sellerContextFingerprint": "aa8a6864e2953a132b1eb9ff9d7893cc486ce93171478c7798b7fba3c33468c2",
+      "citations": [
+        "36bf2dd0-af9e-4d14-b8a9-3e3d691a8f48",
+        "77c74773-f7aa-446a-a430-9ba6ee4eba29"
+      ],
+      "provenanceId": "9113badb-d3c1-4665-82df-030e21758c4d",
+      "modelInvoked": true,
+      "cacheHit": true,
+      "unknownReason": null,
+      "independentAdjudication": {
+        "status": "ADJUDICATED",
+        "role": "POTENTIAL_BUYER",
+        "confidence": "MEDIUM",
+        "identityConfidence": "HIGH",
+        "primaryBusiness": "Cloud-based applicant tracking, recruiting, talent management, and hiring software for employers.",
+        "employeeMarketFit": "The company operates a SaaS platform handling employer and candidate information, making it a plausible sensitive-data and cloud-infrastructure prospect. Current employee count was not confirmed from a trusted public source, so fit within the 100-2000 employee range remains unverified.",
+        "rationale": "ClearCompany is a technology/SaaS business with privacy and security obligations and likely continuous cloud-service monitoring needs. No evidence reviewed indicates that it sells managed SOC services, so it is better classified as a prospective customer than a competitor.",
+        "sourceUrls": [
+          "https://clearcompany.com/",
+          "https://clearcompany.com/about-us/",
+          "https://clearcompany.com/security/"
+        ],
+        "agreesWithJYRA": true
+      }
+    },
+    {
+      "companyId": "99bba7d2-e849-4927-9873-0c8f999a3724",
+      "name": "Sagarsoft (India) Ltd",
+      "domain": "sagarsoft.in",
+      "identity": "DERIVABLE_DOMAIN",
+      "role": "PARTNER_POSSIBLE",
+      "confidence": "MEDIUM",
+      "reason": "Sagarsoft is an established IT services and technology solutions provider with offerings in cloud, DevSecOps, data engineering and application development (evidence shows broad services across cloud, DevSecOps and enterprise solutions). Aadit’s Managed SOC is a complementary managed security offering that could be integrated or co-delivered with Sagarsoft’s cloud and DevSecOps services, making a channel/partner relationship plausible. There is no supplied evidence that Sagarsoft itself sells a managed SOC or directly competes on this specific managed security service.",
+      "semanticFingerprint": "ba2620d5eac77e697326680ac72bf91bbd9034f7dec604207aafa998692a78ca",
+      "model": "gpt-5-mini",
+      "promptVersion": "fix08-company-understanding-v4",
+      "normalizationVersion": "fix07-v1",
+      "sellerContextFingerprint": "aa8a6864e2953a132b1eb9ff9d7893cc486ce93171478c7798b7fba3c33468c2",
+      "citations": [
+        "2470dac1-8c7e-46b0-88d4-2623745f4e1b",
+        "2f22dd17-8bd5-4171-9ada-4d5dc67cf03b"
+      ],
+      "provenanceId": "515d4303-86e6-4939-bf54-68d12199fefb",
+      "modelInvoked": true,
+      "cacheHit": true,
+      "unknownReason": null,
+      "independentAdjudication": {
+        "status": "ADJUDICATED",
+        "role": "PARTNER_POSSIBLE",
+        "confidence": "MEDIUM",
+        "identityConfidence": "HIGH",
+        "primaryBusiness": "India-based software and IT services company providing application development, cloud/SaaS-related services, consulting, and technology solutions.",
+        "employeeMarketFit": "The official site supports an IT-services and cloud/software profile, but reliable current employee-count evidence was not established. It may fit as a services ecosystem company, though the 100-2000 employee ICP range was not verified.",
+        "rationale": "Sagarsoft is an IT/software-services provider rather than an obvious end-customer. Its cloud and application-services orientation could support referrals, subcontracting, or joint delivery of SOC services, but public evidence reviewed does not demonstrate a specific cybersecurity partnership need.",
+        "sourceUrls": [
+          "https://sagarsoft.in/",
+          "https://sagarsoft.in/about-us/",
+          "https://sagarsoft.in/services/"
+        ],
+        "agreesWithJYRA": true
+      }
+    }
+  ],
+  "distributions": {
+    "POTENTIAL_BUYER": 14,
+    "SELLER_COMPETITOR": 0,
+    "ADJACENT_VENDOR": 0,
+    "PARTNER_POSSIBLE": 1,
+    "UNKNOWN": 5
+  },
+  "unknownRate": 0.25,
+  "buyerCount": 14,
+  "sellerCompetitorCount": 0,
+  "duplicateLeakage": 0,
+  "legacyOverlap": {
+    "matches": [],
+    "note": "exact legacy overlap not computed by this provider-free resume"
+  },
+  "profileResolution": {
+    "status": "NOT_SEPARATELY_QUERIED",
+    "confidence": "NOT_SEPARATELY_QUERIED"
+  },
+  "firmographicCoverage": {
+    "resolved": 13,
+    "total": 20,
+    "percent": 65,
+    "missing": [
+      "Espire Infolabs",
+      "EPPS Infotech Ltd",
+      "bswift",
+      "Gainsight",
+      "3LOCKS",
+      "CData Virtuality"
+    ]
+  },
+  "costs": {
+    "packGenerationDollar": "UNKNOWN",
+    "discoveryActual": 0.048,
+    "profileSearch": "BUNDLED_NOT_SEPARATELY_ATTRIBUTABLE",
+    "firmographics": "UNKNOWN",
+    "semanticDollar": "UNKNOWN",
+    "contacts": 0,
+    "whenWhy": 0
+  },
+  "semanticTokenUsage": [],
+  "currentReplayModelCalls": 0,
+  "provenanceBackedModelDecisions": 15,
+  "noCallDecisions": 5,
+  "currentPromptDecisionComposition": {
+    "promptVersion": "fix08-company-understanding-v4",
+    "modelBacked": 15,
+    "noCall": 5,
+    "total": 20
+  },
+  "historicalPromptVersionProvenanceCounts": {
+    "fix08-company-understanding-v4": 35,
+    "fix08-company-understanding-v2": 15,
+    "fix08-company-understanding-v3": 15,
+    "fix08-company-understanding-v1": 13
+  },
+  "cacheHits": 20,
+  "independentAdjudication": {
+    "status": "COMPLETED",
+    "method": "Four independent public-web review batches; reviewers received seller offering and ICP but not JYRA labels.",
+    "distribution": {
+      "POTENTIAL_BUYER": 10,
+      "SELLER_COMPETITOR": 0,
+      "ADJACENT_VENDOR": 2,
+      "PARTNER_POSSIBLE": 6,
+      "UNKNOWN": 2
+    },
+    "quality": {
+      "status": "BLOCKED",
+      "reasons": [
+        "Buyer precision is 57.1%, below the 80% validation bar.",
+        "Exact five-class agreement is 55%, below the 70% validation bar.",
+        "Three independently identifiable companies remained UNKNOWN because trusted profile evidence was not resolved in the normal run."
+      ],
+      "exactRoleAgreement": {
+        "count": 11,
+        "total": 20,
+        "percent": 55
+      },
+      "buyerPrecision": {
+        "truePositive": 8,
+        "predictedBuyer": 14,
+        "percent": 57.1
+      },
+      "buyerRecall": {
+        "truePositive": 8,
+        "independentBuyer": 10,
+        "percent": 80
+      },
+      "confusion": {
+        "POTENTIAL_BUYER -> POTENTIAL_BUYER": 8,
+        "UNKNOWN -> PARTNER_POSSIBLE": 1,
+        "POTENTIAL_BUYER -> PARTNER_POSSIBLE": 4,
+        "UNKNOWN -> POTENTIAL_BUYER": 2,
+        "POTENTIAL_BUYER -> ADJACENT_VENDOR": 2,
+        "UNKNOWN -> UNKNOWN": 2,
+        "PARTNER_POSSIBLE -> PARTNER_POSSIBLE": 1
+      }
+    }
+  },
+  "profileCoverage": {
+    "resolved": 15,
+    "total": 20,
+    "percent": 75,
+    "missing": [
+      "Espire Infolabs",
+      "bswift",
+      "Gainsight",
+      "3LOCKS",
+      "CData Virtuality"
+    ]
+  },
+  "modelAttempts": {
+    "totalCalls": 58,
+    "totalPromptTokens": 78853,
+    "totalCompletionTokens": 72280,
+    "totalTokens": 151133,
+    "byVersion": {
+      "v1": {
+        "calls": 13,
+        "valid": 0,
+        "tokens": 33362
+      },
+      "v2": {
+        "calls": 15,
+        "valid": 13,
+        "tokens": 39515
+      },
+      "v3": {
+        "calls": 15,
+        "valid": 15,
+        "tokens": 39789
+      },
+      "v4": {
+        "calls": 15,
+        "valid": 15,
+        "tokens": 38467
+      }
+    }
+  },
+  "finalVerdict": "BLOCKED"
+}

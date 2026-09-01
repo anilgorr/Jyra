@@ -1,5 +1,6 @@
 import { openai } from "@workspace/integrations-openai-ai-server";
-import { and, desc, eq, like, sql } from "drizzle-orm";
+import { and, asc, desc, eq, like, sql } from "drizzle-orm";
+import { createHash } from "node:crypto";
 import { z } from "zod/v4";
 import {
   businessTwinVersionsTable,
@@ -11,6 +12,8 @@ import {
   intelligencePackSignalsTable,
   intelligencePackVersionsTable,
   intelligencePacksTable,
+  organizationMembersTable,
+  projectsTable,
   projectSignalPacksTable,
   signalDefinitionsTable,
   signalPacksTable,
@@ -19,11 +22,25 @@ import {
 } from "@workspace/db";
 import { PROVIDER_CAPABILITIES, type ProviderCapability } from "./provider-contract";
 import { SIGNAL_PACK_FIXTURES } from "./signal-pack-fixtures";
+import { assembleSellerContext, resolveProjectSellerContext } from "./seller-context";
 
 export const OPPORTUNITY_PACK_MODEL = "gpt-5.6-terra";
 export const OPPORTUNITY_PACK_PROMPT_VERSION = "opportunity-pack-v1";
 
 const capabilitySchema = z.enum(PROVIDER_CAPABILITIES);
+type PackDb = typeof db | Parameters<Parameters<typeof db.transaction>[0]>[0];
+async function requirePackWriteAccess(input: { projectId: string; organizationId: string; userId: string }, executor: PackDb = db) {
+  const [access] = await executor.select({ role: organizationMembersTable.role }).from(projectsTable)
+    .innerJoin(organizationMembersTable, and(
+      eq(organizationMembersTable.organizationId, projectsTable.organizationId),
+      eq(organizationMembersTable.userId, input.userId),
+    )).where(and(eq(projectsTable.id, input.projectId), eq(projectsTable.organizationId, input.organizationId))).limit(1);
+  if (!access) throw new Error("OPPORTUNITY_PACK_ACCESS_DENIED");
+  // Current route policy permits owner/admin/member writes; retain that exact
+  // policy rather than introducing a different service-level role hierarchy.
+  if (!["owner", "admin", "member"].includes(access.role)) throw new Error("OPPORTUNITY_PACK_ACCESS_DENIED");
+  return access;
+}
 const boundedText = (max: number) => z.string().trim().min(1).max(max);
 
 export const opportunitySignalProposalSchema = z.object({
@@ -82,14 +99,24 @@ export type OpportunityPackProposal = z.infer<typeof opportunityPackProposalSche
 type Context = {
   twin: typeof businessTwinVersionsTable.$inferSelect;
   icp: typeof icpVersionsTable.$inferSelect;
-  criteria: Array<{
-    dimension: string;
-    operator: string;
-    value: unknown;
-    criterionType: string;
-    description: string;
-  }>;
+  criteria: Array<typeof icpCriteriaTable.$inferSelect>;
 };
+
+function stable(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(stable);
+  if (value instanceof Date) return value.toISOString();
+  if (value && typeof value === "object") return Object.fromEntries(Object.entries(value as Record<string, unknown>).sort(([a], [b]) => a.localeCompare(b)).map(([key, item]) => [key, stable(item)]));
+  return value;
+}
+export function opportunityContextSnapshot(context: Context, existingDefinitions: unknown[] = []) {
+  const criteria = [...context.criteria].sort((a, b) => a.id.localeCompare(b.id));
+  const snapshot = stable({
+    twin: { ...context.twin, effectiveInterpretation: context.twin.manualInterpretation ?? context.twin.aiInterpretation },
+    icp: context.icp,
+    criteria, existingDefinitions: [...existingDefinitions].sort((a, b) => String((a as { id?: string; code?: string }).id ?? (a as { code?: string }).code).localeCompare(String((b as { id?: string; code?: string }).id ?? (b as { code?: string }).code))),
+  });
+  return { snapshot, fingerprint: createHash("sha256").update(JSON.stringify(snapshot)).digest("hex") };
+}
 
 async function loadContext(projectId: string): Promise<Context> {
   const [twin] = await db.select().from(businessTwinVersionsTable)
@@ -99,13 +126,7 @@ async function loadContext(projectId: string): Promise<Context> {
     .where(eq(icpVersionsTable.projectId, projectId))
     .orderBy(desc(icpVersionsTable.version)).limit(1);
   if (!twin || !icp) throw new Error("Create a Business Twin and ICP before proposing an Opportunity Intelligence Pack");
-  const criteria = await db.select({
-    dimension: icpCriteriaTable.dimension,
-    operator: icpCriteriaTable.operator,
-    value: icpCriteriaTable.value,
-    criterionType: icpCriteriaTable.criterionType,
-    description: icpCriteriaTable.description,
-  }).from(icpCriteriaTable).where(eq(icpCriteriaTable.icpVersionId, icp.id));
+  const criteria = await db.select().from(icpCriteriaTable).where(eq(icpCriteriaTable.icpVersionId, icp.id)).orderBy(asc(icpCriteriaTable.id));
   return { twin, icp, criteria };
 }
 
@@ -159,22 +180,68 @@ export async function generateOpportunityPackProposal(input: {
   offering: Record<string, unknown>;
   assumptions: string[];
 }) {
+  await requirePackWriteAccess(input);
+  const resolved = await resolveProjectSellerContext(input.projectId, input.organizationId);
+  if (resolved.organizationId !== input.organizationId) throw new Error("PROJECT_ORGANIZATION_MISMATCH");
+  if (!resolved.marketDiscoveryReady || !resolved.context.offeringName || !resolved.context.offeringDescription) {
+    throw new Error("Current authoritative Business Twin, offering, and ICP are required");
+  }
+  const offeringName = resolved.context.offeringName.trim();
+  const authoritativeOffering: Record<string, unknown> = {
+    key: offeringName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""),
+    name: offeringName,
+    category: resolved.context.offeringCategory,
+    description: resolved.context.offeringDescription.trim(),
+    capabilities: resolved.context.offeringCapabilities,
+    exclusions: resolved.context.offeringExclusions,
+    ...(resolved.context.sellerCompanyName ? { sellerCompanyName: resolved.context.sellerCompanyName } : {}),
+    ...(resolved.context.sellerBusinessDescription ? { sellerBusinessDescription: resolved.context.sellerBusinessDescription } : {}),
+  };
+  if (!authoritativeOffering.key || ["offering", "service", "services", "solution", "product"].includes(String(authoritativeOffering.key))) {
+    throw new Error("A non-generic authoritative offering is required");
+  }
   const context = await loadContext(input.projectId);
+  if (context.twin.id !== resolved.businessTwinVersionId || context.icp.id !== resolved.icpVersionId
+      || context.icp.sourceBusinessTwinVersionId !== context.twin.id) {
+    throw new Error("Authoritative Business Twin and ICP versions changed during proposal preparation");
+  }
+  // Proposal authority is always the exact current Twin. An already activated
+  // pack may override runtime seller context, but can never seed its successor.
+  const twinSeller = assembleSellerContext({ twin: context.twin, icp: context.icp });
+  if (!twinSeller.offeringName || !twinSeller.offeringDescription) throw new Error("Current Business Twin offering is incomplete");
+  const twinName = twinSeller.offeringName.trim();
+  const twinOffering: Record<string, unknown> = {
+    key: twinName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""),
+    name: twinName, category: twinSeller.offeringCategory, description: twinSeller.offeringDescription.trim(),
+    capabilities: twinSeller.offeringCapabilities, exclusions: twinSeller.offeringExclusions,
+    ...(twinSeller.sellerCompanyName ? { sellerCompanyName: twinSeller.sellerCompanyName } : {}),
+    ...(twinSeller.sellerBusinessDescription ? { sellerBusinessDescription: twinSeller.sellerBusinessDescription } : {}),
+  };
+  Object.assign(authoritativeOffering, twinOffering);
+  if (!authoritativeOffering.key || ["offering", "service", "services", "solution", "product"].includes(String(authoritativeOffering.key))) {
+    throw new Error("A non-generic authoritative Business Twin offering is required");
+  }
   const publicPackSlugs = SIGNAL_PACK_FIXTURES.map((fixture) => fixture.slug);
   const existingRows = await db.select({
+    id: signalDefinitionsTable.id,
     code: signalDefinitionsTable.code,
     name: signalDefinitionsTable.name,
     description: signalDefinitionsTable.description,
     category: signalDefinitionsTable.category,
     factRequirements: signalDefinitionsTable.factRequirements,
     sourcePreferences: signalDefinitionsTable.sourcePreferences,
+    definitionStatus: signalDefinitionsTable.status,
+    packStatus: signalPacksTable.status,
+    packActive: signalPacksTable.active,
     packSlug: signalPacksTable.slug,
   }).from(signalDefinitionsTable)
     .innerJoin(signalPacksTable, eq(signalDefinitionsTable.signalPackId, signalPacksTable.id))
     .where(and(eq(signalDefinitionsTable.status, "APPROVED"), eq(signalPacksTable.status, "APPROVED")));
   const existingDefinitions = existingRows
     .filter((definition) => publicPackSlugs.includes(definition.packSlug))
-    .map(({ packSlug: _packSlug, ...definition }) => definition);
+    .map(({ packSlug: _packSlug, ...definition }) => definition)
+    .sort((a, b) => a.id.localeCompare(b.id));
+  const authoritativeSnapshot = opportunityContextSnapshot(context, existingDefinitions);
   let lastError: unknown;
   for (let attempt = 1; attempt <= 2; attempt += 1) {
     try {
@@ -199,7 +266,7 @@ export async function generateOpportunityPackProposal(input: {
               })}`,
             ].join("\n"),
           },
-          { role: "user", content: JSON.stringify(promptContext(context, input.offering, input.assumptions, existingDefinitions)) },
+          { role: "user", content: JSON.stringify(promptContext(context, authoritativeOffering, input.assumptions, existingDefinitions)) },
         ],
       });
       const content = response.choices[0]?.message?.content;
@@ -221,10 +288,31 @@ export async function generateOpportunityPackProposal(input: {
         throw new Error("Every proposed cluster must reference proposed signals and a valid independence threshold");
       }
       const validQuestions = proposal.researchQuestions;
-      const [pack] = await db.insert(intelligencePacksTable).values({
+      return db.transaction(async (tx) => {
+      await tx.execute(sql`set transaction isolation level serializable`);
+      const [freshTwin] = await tx.select().from(businessTwinVersionsTable).where(eq(businessTwinVersionsTable.projectId, input.projectId)).orderBy(desc(businessTwinVersionsTable.version)).limit(1);
+      const [freshIcp] = await tx.select().from(icpVersionsTable).where(eq(icpVersionsTable.projectId, input.projectId)).orderBy(desc(icpVersionsTable.version)).limit(1);
+      const freshCriteria = freshIcp ? await tx.select().from(icpCriteriaTable).where(eq(icpCriteriaTable.icpVersionId, freshIcp.id)).orderBy(asc(icpCriteriaTable.id)) : [];
+      const freshRows = await tx.select({
+        id: signalDefinitionsTable.id, code: signalDefinitionsTable.code, name: signalDefinitionsTable.name,
+        description: signalDefinitionsTable.description, category: signalDefinitionsTable.category,
+        factRequirements: signalDefinitionsTable.factRequirements, sourcePreferences: signalDefinitionsTable.sourcePreferences,
+        definitionStatus: signalDefinitionsTable.status, packStatus: signalPacksTable.status,
+        packActive: signalPacksTable.active, packSlug: signalPacksTable.slug,
+      }).from(signalDefinitionsTable).innerJoin(signalPacksTable, eq(signalDefinitionsTable.signalPackId, signalPacksTable.id))
+        .where(and(eq(signalDefinitionsTable.status, "APPROVED"), eq(signalPacksTable.status, "APPROVED")));
+      const freshDefinitions = freshRows.filter((definition) => publicPackSlugs.includes(definition.packSlug))
+        .map(({ packSlug: _packSlug, ...definition }) => definition).sort((a, b) => a.id.localeCompare(b.id));
+      const freshSnapshot = freshTwin && freshIcp ? opportunityContextSnapshot({ twin: freshTwin, icp: freshIcp, criteria: freshCriteria }, freshDefinitions) : null;
+      if (!freshTwin || !freshIcp || freshTwin.id !== context.twin.id || freshIcp.id !== context.icp.id
+          || freshIcp.sourceBusinessTwinVersionId !== freshTwin.id
+          || freshSnapshot?.fingerprint !== authoritativeSnapshot.fingerprint) {
+        throw new Error("PROJECT_CONTEXT_CHANGED_DURING_PACK_GENERATION");
+      }
+      const [pack] = await tx.insert(intelligencePacksTable).values({
         organizationId: input.organizationId,
         projectId: input.projectId,
-        offeringKey: String(input.offering.key ?? input.offering.name ?? "offering").toLowerCase().replace(/[^a-z0-9]+/g, "-").slice(0, 160),
+        offeringKey: String(authoritativeOffering.key).slice(0, 160),
         sourceBusinessTwinVersionId: context.twin.id,
         sourceIcpVersionId: context.icp.id,
         status: "DRAFT",
@@ -234,20 +322,20 @@ export async function generateOpportunityPackProposal(input: {
         set: { sourceBusinessTwinVersionId: context.twin.id, sourceIcpVersionId: context.icp.id, updatedAt: new Date() },
       }).returning();
       if (!pack) throw new Error("Opportunity Intelligence Pack could not be created");
-      const [latest] = await db.select({ version: intelligencePackVersionsTable.version })
+      const [latest] = await tx.select({ version: intelligencePackVersionsTable.version })
         .from(intelligencePackVersionsTable).where(eq(intelligencePackVersionsTable.intelligencePackId, pack.id))
         .orderBy(desc(intelligencePackVersionsTable.version)).limit(1);
       const icpAssumptions = Array.isArray(context.icp.assumptions)
         ? context.icp.assumptions.filter((value): value is string => typeof value === "string")
         : [];
       const combinedAssumptions = [...new Set([...icpAssumptions, ...input.assumptions])].slice(0, 20);
-      const [version] = await db.insert(intelligencePackVersionsTable).values({
+      const [version] = await tx.insert(intelligencePackVersionsTable).values({
         intelligencePackId: pack.id,
         version: (latest?.version ?? 0) + 1,
         status: "PROPOSED",
         lifecycleLabel: lifecycleLabel(context),
-        offeringSnapshot: input.offering,
-        businessContextSnapshot: contextPayload(context, input.offering, combinedAssumptions),
+        offeringSnapshot: authoritativeOffering,
+        businessContextSnapshot: { ...contextPayload(context, authoritativeOffering, combinedAssumptions), authoritativeContext: authoritativeSnapshot.snapshot, authoritativeContextFingerprint: authoritativeSnapshot.fingerprint },
         assumptions: combinedAssumptions,
         sourceBusinessTwinVersionId: context.twin.id,
         sourceIcpVersionId: context.icp.id,
@@ -257,7 +345,7 @@ export async function generateOpportunityPackProposal(input: {
         createdBy: input.userId,
       }).returning();
       if (!version) throw new Error("Opportunity Intelligence Pack version could not be created");
-      const signalRows = await db.insert(intelligencePackSignalsTable).values(proposal.signals.map((signal) => ({
+      const signalRows = await tx.insert(intelligencePackSignalsTable).values(proposal.signals.map((signal) => ({
         versionId: version.id,
         ...signal,
         matchingConfiguration: signal.matchingConfiguration,
@@ -266,7 +354,7 @@ export async function generateOpportunityPackProposal(input: {
       }))).returning();
       const signalByCode = new Map(signalRows.map((signal) => [signal.code, signal.id]));
       if (validQuestions.length) {
-        await db.insert(intelligencePackQuestionsTable).values(validQuestions.map((question) => ({
+        await tx.insert(intelligencePackQuestionsTable).values(validQuestions.map((question) => ({
           versionId: version.id,
           signalId: signalByCode.get(question.signalCode) ?? null,
           ...question,
@@ -274,7 +362,7 @@ export async function generateOpportunityPackProposal(input: {
         })));
       }
       if (proposal.clusters.length) {
-        await db.insert(intelligencePackClustersTable).values(proposal.clusters.map((cluster) => ({
+        await tx.insert(intelligencePackClustersTable).values(proposal.clusters.map((cluster) => ({
           versionId: version.id,
           ...cluster,
           reviewStatus: "PROPOSED",
@@ -282,6 +370,7 @@ export async function generateOpportunityPackProposal(input: {
         })));
       }
       return { pack, version, signals: signalRows, questionCount: validQuestions.length, clusterCount: proposal.clusters.length };
+      });
     } catch (error) {
       lastError = error;
       if (attempt < 2) await new Promise((resolve) => setTimeout(resolve, 400));
@@ -309,37 +398,49 @@ export async function getOpportunityPackDetail(projectId: string, packId: string
   return { pack, version, signals, questions, clusters };
 }
 
-export async function updateOpportunitySignal(signalId: string, input: Partial<Pick<IntelligencePackSignal, "name" | "description" | "whyItMatters" | "category" | "polarity" | "needImpact" | "timingImpact" | "fitImpact" | "likelyEvidence" | "sourceCapabilities" | "lifetimeDays" | "suggestedStrength" | "minimumConfidence" | "potentialFalsePositives">>) {
+export async function updateOpportunitySignal(input: PackMutationContext & { signalId: string; changes: Partial<Pick<IntelligencePackSignal, "name" | "description" | "whyItMatters" | "category" | "polarity" | "needImpact" | "timingImpact" | "fitImpact" | "likelyEvidence" | "sourceCapabilities" | "lifetimeDays" | "suggestedStrength" | "minimumConfidence" | "potentialFalsePositives">> }) {
+  await requirePackWriteAccess(input);
+  const { signalId, changes } = input;
   const [current] = await db.select({ signal: intelligencePackSignalsTable, version: intelligencePackVersionsTable })
     .from(intelligencePackSignalsTable).innerJoin(intelligencePackVersionsTable, eq(intelligencePackSignalsTable.versionId, intelligencePackVersionsTable.id))
-    .where(eq(intelligencePackSignalsTable.id, signalId)).limit(1);
+    .innerJoin(intelligencePacksTable, eq(intelligencePackVersionsTable.intelligencePackId, intelligencePacksTable.id)).where(and(eq(intelligencePackSignalsTable.id, signalId), eq(intelligencePacksTable.projectId, input.projectId), eq(intelligencePacksTable.organizationId, input.organizationId))).limit(1);
   if (!current || ["APPROVED", "ACTIVATED"].includes(current.version.status) || current.version.generationMethod !== "CUSTOMER_REVISION") throw new Error("Create a customer review revision before editing");
-  const [updated] = await db.update(intelligencePackSignalsTable).set({ ...input, updatedAt: new Date() }).where(eq(intelligencePackSignalsTable.id, signalId)).returning();
+  const [updated] = await db.update(intelligencePackSignalsTable).set({ ...changes, updatedAt: new Date() }).where(eq(intelligencePackSignalsTable.id, signalId)).returning();
   return updated;
 }
 
-export async function setOpportunitySignalReview(signalId: string, reviewStatus: "APPROVED" | "DISABLED" | "REMOVED") {
+type PackMutationContext = { projectId: string; organizationId: string; userId: string };
+export async function setOpportunitySignalReview(input: PackMutationContext & { signalId: string; reviewStatus: "APPROVED" | "DISABLED" | "REMOVED" }) {
+  await requirePackWriteAccess(input);
+  const { signalId, reviewStatus } = input;
   const [current] = await db.select({ signal: intelligencePackSignalsTable, version: intelligencePackVersionsTable })
     .from(intelligencePackSignalsTable).innerJoin(intelligencePackVersionsTable, eq(intelligencePackSignalsTable.versionId, intelligencePackVersionsTable.id))
-    .where(eq(intelligencePackSignalsTable.id, signalId)).limit(1);
+    .innerJoin(intelligencePacksTable, eq(intelligencePackVersionsTable.intelligencePackId, intelligencePacksTable.id))
+    .where(and(eq(intelligencePackSignalsTable.id, signalId), eq(intelligencePacksTable.projectId, input.projectId), eq(intelligencePacksTable.organizationId, input.organizationId))).limit(1);
   if (!current || ["APPROVED", "ACTIVATED"].includes(current.version.status) || current.version.generationMethod !== "CUSTOMER_REVISION") throw new Error("Create a customer review revision before changing disposition");
   const [updated] = await db.update(intelligencePackSignalsTable).set({ reviewStatus, updatedAt: new Date() }).where(eq(intelligencePackSignalsTable.id, signalId)).returning();
   return updated;
 }
 
-export async function setOpportunityQuestionReview(questionId: string, reviewStatus: "APPROVED" | "DISABLED" | "REMOVED") {
+export async function setOpportunityQuestionReview(input: PackMutationContext & { questionId: string; reviewStatus: "APPROVED" | "DISABLED" | "REMOVED" }) {
+  await requirePackWriteAccess(input);
+  const { questionId, reviewStatus } = input;
   const [current] = await db.select({ question: intelligencePackQuestionsTable, version: intelligencePackVersionsTable })
     .from(intelligencePackQuestionsTable).innerJoin(intelligencePackVersionsTable, eq(intelligencePackQuestionsTable.versionId, intelligencePackVersionsTable.id))
-    .where(eq(intelligencePackQuestionsTable.id, questionId)).limit(1);
+    .innerJoin(intelligencePacksTable, eq(intelligencePackVersionsTable.intelligencePackId, intelligencePacksTable.id))
+    .where(and(eq(intelligencePackQuestionsTable.id, questionId), eq(intelligencePacksTable.projectId, input.projectId), eq(intelligencePacksTable.organizationId, input.organizationId))).limit(1);
   if (!current || ["APPROVED", "ACTIVATED"].includes(current.version.status) || current.version.generationMethod !== "CUSTOMER_REVISION") throw new Error("Create a customer review revision before changing disposition");
   const [updated] = await db.update(intelligencePackQuestionsTable).set({ reviewStatus, updatedAt: new Date() }).where(eq(intelligencePackQuestionsTable.id, questionId)).returning();
   return updated;
 }
 
-export async function setOpportunityClusterReview(clusterId: string, reviewStatus: "APPROVED" | "DISABLED" | "REMOVED") {
+export async function setOpportunityClusterReview(input: PackMutationContext & { clusterId: string; reviewStatus: "APPROVED" | "DISABLED" | "REMOVED" }) {
+  await requirePackWriteAccess(input);
+  const { clusterId, reviewStatus } = input;
   const [current] = await db.select({ cluster: intelligencePackClustersTable, version: intelligencePackVersionsTable })
     .from(intelligencePackClustersTable).innerJoin(intelligencePackVersionsTable, eq(intelligencePackClustersTable.versionId, intelligencePackVersionsTable.id))
-    .where(eq(intelligencePackClustersTable.id, clusterId)).limit(1);
+    .innerJoin(intelligencePacksTable, eq(intelligencePackVersionsTable.intelligencePackId, intelligencePacksTable.id))
+    .where(and(eq(intelligencePackClustersTable.id, clusterId), eq(intelligencePacksTable.projectId, input.projectId), eq(intelligencePacksTable.organizationId, input.organizationId))).limit(1);
   if (!current || current.version.status !== "PROPOSED" || current.version.generationMethod !== "CUSTOMER_REVISION") {
     throw new Error("Create a customer review revision before changing cluster disposition");
   }
@@ -349,20 +450,24 @@ export async function setOpportunityClusterReview(clusterId: string, reviewStatu
   return updated;
 }
 
-export async function updateOpportunityQuestion(questionId: string, input: Partial<Pick<typeof intelligencePackQuestionsTable.$inferSelect, "questionText" | "reason" | "sourceCapabilities" | "priority" | "expectedInformationGain" | "estimatedCost">>) {
+export async function updateOpportunityQuestion(input: PackMutationContext & { questionId: string; changes: Partial<Pick<typeof intelligencePackQuestionsTable.$inferSelect, "questionText" | "reason" | "sourceCapabilities" | "priority" | "expectedInformationGain" | "estimatedCost">> }) {
+  await requirePackWriteAccess(input);
+  const { questionId, changes } = input;
   const [current] = await db.select({ question: intelligencePackQuestionsTable, version: intelligencePackVersionsTable })
     .from(intelligencePackQuestionsTable).innerJoin(intelligencePackVersionsTable, eq(intelligencePackQuestionsTable.versionId, intelligencePackVersionsTable.id))
-    .where(eq(intelligencePackQuestionsTable.id, questionId)).limit(1);
+    .innerJoin(intelligencePacksTable, eq(intelligencePackVersionsTable.intelligencePackId, intelligencePacksTable.id)).where(and(eq(intelligencePackQuestionsTable.id, questionId), eq(intelligencePacksTable.projectId, input.projectId), eq(intelligencePacksTable.organizationId, input.organizationId))).limit(1);
   if (!current || current.version.status !== "PROPOSED" || current.version.generationMethod !== "CUSTOMER_REVISION") {
     throw new Error("Create a customer review revision before editing questions");
   }
-  const [updated] = await db.update(intelligencePackQuestionsTable).set({ ...input, updatedAt: new Date() })
+  const [updated] = await db.update(intelligencePackQuestionsTable).set({ ...changes, updatedAt: new Date() })
     .where(eq(intelligencePackQuestionsTable.id, questionId)).returning();
   return updated;
 }
 
-export async function addOpportunitySignal(versionId: string, signal: z.infer<typeof opportunitySignalProposalSchema>) {
-  const [version] = await db.select().from(intelligencePackVersionsTable).where(eq(intelligencePackVersionsTable.id, versionId)).limit(1);
+export async function addOpportunitySignal(input: PackMutationContext & { versionId: string; signal: z.infer<typeof opportunitySignalProposalSchema> }) {
+  await requirePackWriteAccess(input);
+  const { versionId, signal } = input;
+  const [owned] = await db.select({ version: intelligencePackVersionsTable }).from(intelligencePackVersionsTable).innerJoin(intelligencePacksTable, eq(intelligencePackVersionsTable.intelligencePackId, intelligencePacksTable.id)).where(and(eq(intelligencePackVersionsTable.id, versionId), eq(intelligencePacksTable.projectId, input.projectId), eq(intelligencePacksTable.organizationId, input.organizationId))).limit(1); const version=owned?.version;
   if (!version || ["APPROVED", "ACTIVATED"].includes(version.status) || version.generationMethod !== "CUSTOMER_REVISION") throw new Error("Create a customer review revision before adding signals");
   const [created] = await db.insert(intelligencePackSignalsTable).values({
     versionId,
@@ -372,9 +477,19 @@ export async function addOpportunitySignal(versionId: string, signal: z.infer<ty
   return created;
 }
 
-export async function addOpportunityQuestion(versionId: string, question: Omit<z.infer<typeof opportunityQuestionProposalSchema>, "signalCode"> & { signalId?: string }) {
-  const [version] = await db.select().from(intelligencePackVersionsTable).where(eq(intelligencePackVersionsTable.id, versionId)).limit(1);
+export async function addOpportunityQuestion(input: PackMutationContext & { versionId: string; question: Omit<z.infer<typeof opportunityQuestionProposalSchema>, "signalCode"> & { signalId?: string } }) {
+  await requirePackWriteAccess(input);
+  const { versionId, question } = input;
+  const [owned] = await db.select({ version: intelligencePackVersionsTable }).from(intelligencePackVersionsTable).innerJoin(intelligencePacksTable, eq(intelligencePackVersionsTable.intelligencePackId, intelligencePacksTable.id)).where(and(eq(intelligencePackVersionsTable.id, versionId), eq(intelligencePacksTable.projectId, input.projectId), eq(intelligencePacksTable.organizationId, input.organizationId))).limit(1); const version=owned?.version;
   if (!version || ["APPROVED", "ACTIVATED"].includes(version.status) || version.generationMethod !== "CUSTOMER_REVISION") throw new Error("Create a customer review revision before adding questions");
+  if (question.signalId) {
+    const [ownedSignal] = await db.select({ id: intelligencePackSignalsTable.id }).from(intelligencePackSignalsTable)
+      .innerJoin(intelligencePackVersionsTable, eq(intelligencePackSignalsTable.versionId, intelligencePackVersionsTable.id))
+      .innerJoin(intelligencePacksTable, eq(intelligencePackVersionsTable.intelligencePackId, intelligencePacksTable.id))
+      .where(and(eq(intelligencePackSignalsTable.id, question.signalId), eq(intelligencePackSignalsTable.versionId, versionId),
+        eq(intelligencePacksTable.projectId, input.projectId), eq(intelligencePacksTable.organizationId, input.organizationId))).limit(1);
+    if (!ownedSignal) throw new Error("Question signal must belong to the exact authorized pack version");
+  }
   const [created] = await db.insert(intelligencePackQuestionsTable).values({
     versionId,
     signalId: question.signalId ?? null,
@@ -389,9 +504,12 @@ export async function addOpportunityQuestion(versionId: string, question: Omit<z
   return created;
 }
 
-export async function cloneOpportunityPackVersion(versionId: string, userId: string) {
+export async function cloneOpportunityPackVersion(input: PackMutationContext & { versionId: string }) {
+  const { versionId, userId } = input;
   return db.transaction(async (tx) => {
-    const [source] = await tx.select().from(intelligencePackVersionsTable).where(eq(intelligencePackVersionsTable.id, versionId)).limit(1);
+    await requirePackWriteAccess(input, tx);
+    const [owned] = await tx.select({ version: intelligencePackVersionsTable }).from(intelligencePackVersionsTable).innerJoin(intelligencePacksTable, eq(intelligencePackVersionsTable.intelligencePackId, intelligencePacksTable.id)).where(and(eq(intelligencePackVersionsTable.id, versionId), eq(intelligencePacksTable.projectId, input.projectId), eq(intelligencePacksTable.organizationId, input.organizationId))).limit(1);
+    const source = owned?.version;
     if (!source) throw new Error("Opportunity Intelligence Pack version not found");
     const [latest] = await tx.select({ version: intelligencePackVersionsTable.version }).from(intelligencePackVersionsTable)
       .where(eq(intelligencePackVersionsTable.intelligencePackId, source.intelligencePackId))
@@ -471,8 +589,11 @@ export async function cloneOpportunityPackVersion(versionId: string, userId: str
   });
 }
 
-export async function approveOpportunityPackVersion(versionId: string, userId: string) {
-  const [version] = await db.select().from(intelligencePackVersionsTable).where(eq(intelligencePackVersionsTable.id, versionId)).limit(1);
+export async function approveOpportunityPackVersion(input: PackMutationContext & { versionId: string }) {
+  await requirePackWriteAccess(input);
+  const { versionId, userId } = input;
+  const [owned] = await db.select({ version: intelligencePackVersionsTable }).from(intelligencePackVersionsTable).innerJoin(intelligencePacksTable, eq(intelligencePackVersionsTable.intelligencePackId, intelligencePacksTable.id)).where(and(eq(intelligencePackVersionsTable.id, versionId), eq(intelligencePacksTable.projectId, input.projectId), eq(intelligencePacksTable.organizationId, input.organizationId))).limit(1);
+  const version = owned?.version;
   if (!version || version.status === "ACTIVATED") throw new Error("Opportunity Intelligence Pack version is unavailable");
   if (version.generationMethod !== "CUSTOMER_REVISION") throw new Error("Create and review a customer revision before approval");
   const signals = await db.select().from(intelligencePackSignalsTable).where(eq(intelligencePackSignalsTable.versionId, version.id));
@@ -501,13 +622,17 @@ export async function approveOpportunityPackVersion(versionId: string, userId: s
   return approved;
 }
 
-export async function activateOpportunityPackVersion(versionId: string, userId: string) {
+export async function activateOpportunityPackVersion(input: PackMutationContext & { versionId: string }) {
+  const { versionId, userId } = input;
   return db.transaction(async (tx) => {
+    await requirePackWriteAccess(input, tx);
     // Serialize reviewers activating the same frozen version. Without the row
     // lock, concurrent requests can both observe APPROVED and create duplicate
     // downstream definitions before either request marks the version active.
-    const [version] = await tx.select().from(intelligencePackVersionsTable)
-      .where(eq(intelligencePackVersionsTable.id, versionId)).limit(1).for("update");
+    const [owned] = await tx.select({ version: intelligencePackVersionsTable }).from(intelligencePackVersionsTable)
+      .innerJoin(intelligencePacksTable, eq(intelligencePackVersionsTable.intelligencePackId, intelligencePacksTable.id))
+      .where(and(eq(intelligencePackVersionsTable.id, versionId), eq(intelligencePacksTable.projectId, input.projectId), eq(intelligencePacksTable.organizationId, input.organizationId))).limit(1).for("update");
+    const version = owned?.version;
     if (!version || version.status === "ACTIVATED") return version;
     if (version.status !== "APPROVED") throw new Error("Approve the Opportunity Intelligence Pack before activating it");
     const signals = await tx.select().from(intelligencePackSignalsTable).where(and(

@@ -114,6 +114,11 @@ let activatedPackId;
 try {
   await h.db.insert(h.usersTable).values([{ id: userId }, { id: reviewerAId }, { id: reviewerBId }]);
   [organization] = await h.db.insert(h.organizationsTable).values({ name: `Signal Test ${suffix}`, createdByUserId: userId }).returning();
+  await h.db.insert(h.organizationMembersTable).values([
+    { organizationId: organization.id, userId, role: "owner" },
+    { organizationId: organization.id, userId: reviewerAId, role: "admin" },
+    { organizationId: organization.id, userId: reviewerBId, role: "admin" },
+  ]);
   const [projectA] = await h.db.insert(h.projectsTable).values({ organizationId: organization.id, name: "Project A" }).returning();
   const [projectB] = await h.db.insert(h.projectsTable).values({ organizationId: organization.id, name: "Project B" }).returning();
   const [projectC] = await h.db.insert(h.projectsTable).values({ organizationId: organization.id, name: "Project C" }).returning();
@@ -365,20 +370,21 @@ try {
     estimatedCost: 1,
     reviewStatus: "PROPOSED",
   });
-  await assert.rejects(() => h.activateOpportunityPackVersion(sourceVersion.id, userId), /Approve/);
-  const revision = await h.cloneOpportunityPackVersion(sourceVersion.id, userId);
+  const auth = { projectId: projectA.id, organizationId: organization.id };
+  await assert.rejects(() => h.activateOpportunityPackVersion({ ...auth, versionId: sourceVersion.id, userId }), /Approve/);
+  const revision = await h.cloneOpportunityPackVersion({ ...auth, versionId: sourceVersion.id, userId });
   const [revisionSignal] = await h.db.select().from(h.intelligencePackSignalsTable).where(h.eq(h.intelligencePackSignalsTable.versionId, revision.id));
   const [revisionQuestion] = await h.db.select().from(h.intelligencePackQuestionsTable).where(h.eq(h.intelligencePackQuestionsTable.versionId, revision.id));
   const [revisionCluster] = await h.db.select().from(h.intelligencePackClustersTable).where(h.eq(h.intelligencePackClustersTable.versionId, revision.id));
   await h.db.update(h.intelligencePackSignalsTable).set({ reviewStatus: "APPROVED" }).where(h.eq(h.intelligencePackSignalsTable.id, revisionSignal.id));
-  await assert.rejects(() => h.approveOpportunityPackVersion(revision.id, userId), /research question/);
+  await assert.rejects(() => h.approveOpportunityPackVersion({ ...auth, versionId: revision.id, userId }), /research question/);
   await h.db.update(h.intelligencePackQuestionsTable).set({ reviewStatus: "APPROVED" }).where(h.eq(h.intelligencePackQuestionsTable.id, revisionQuestion.id));
   await h.db.update(h.intelligencePackClustersTable).set({ reviewStatus: "APPROVED" }).where(h.eq(h.intelligencePackClustersTable.id, revisionCluster.id));
-  const approved = await h.approveOpportunityPackVersion(revision.id, userId);
+  const approved = await h.approveOpportunityPackVersion({ ...auth, versionId: revision.id, userId });
   assert.equal(approved.status, "APPROVED");
   const [activationA, activationB] = await Promise.all([
-    h.activateOpportunityPackVersion(revision.id, reviewerAId),
-    h.activateOpportunityPackVersion(revision.id, reviewerBId),
+    h.activateOpportunityPackVersion({ ...auth, versionId: revision.id, userId: reviewerAId }),
+    h.activateOpportunityPackVersion({ ...auth, versionId: revision.id, userId: reviewerBId }),
   ]);
   assert.equal(activationA.version?.status ?? activationA.status, "ACTIVATED");
   assert.equal(activationB.version?.status ?? activationB.status, "ACTIVATED");

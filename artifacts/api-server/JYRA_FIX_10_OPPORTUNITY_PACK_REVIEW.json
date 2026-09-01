@@ -1,0 +1,1819 @@
+{
+  "proposalFingerprint": "e0116001177fb257ad5bd7d5428b677f51888f96434bca1caae0015318f1f1d8",
+  "context": {
+    "projectId": "b4c8a95a-eb1c-4a86-89d6-62d72097d820",
+    "organizationId": "02d40c31-72e4-42d9-9d8d-fe676a369205",
+    "businessTwinId": "c16a03fc-a422-4732-82d1-a12ec6aff0dd",
+    "businessTwinVersionId": "a355a198-e9d3-449e-a9cf-c064fab4faa2",
+    "businessTwinVersion": 4,
+    "businessTwinStatus": "ready",
+    "businessTwinCreatedAt": "2026-08-30T06:00:49.684Z",
+    "businessTwinRawAnswers": {
+      "website": "https://aadit.net/",
+      "industry": "Cybersecurity",
+      "betaUsers": "",
+      "pilotUsers": "",
+      "companyName": "Aadit Technologies",
+      "offeringName": "Managed Soc",
+      "bestCustomers": [
+        {
+          "name": "Alphastream.ai — AI / FinTech / Financial Data Platform",
+          "whyBoughtThen": "As the platform and enterprise relationships grew, security requirements increased. 24/7 monitoring provided continuous security oversight and threat investigation without requiring a complete internal SOC.",
+          "whyGoodCustomer": "Operates a cloud-based AI platform handling sensitive financial, legal and investment information for financial institutions. Enterprise financial customers, sensitive data and security/compliance requirements make continuous monitoring particularly important."
+        },
+        {
+          "name": "Altoura — Enterprise SaaS / AI Technology",
+          "whyBoughtThen": "Growth in enterprise deployments increased the importance of continuous security monitoring and meeting customer security expectations. Outsourced SOC monitoring provided round-the-clock coverage without building a dedicated internal 24/7 SOC.",
+          "whyGoodCustomer": "Operates an enterprise cloud platform used by large organizations. Its cloud infrastructure, enterprise customer base, Microsoft-oriented technology environment and security/compliance requirements make it suitable for Aadit's Managed SOC."
+        },
+        {
+          "name": "Aditi Consulting — Digital Engineering / IT Services",
+          "whyBoughtThen": "Increasing infrastructure, workforce and enterprise-client security requirements created a need for dedicated 24/7 security oversight. Aadit's Managed SOC provided continuous monitoring and investigation without the complexity of expanding an internal round-the-clock SOC.",
+          "whyGoodCustomer": "A large technology services organization with 2,000+ employees, distributed operations, substantial cloud/IT infrastructure and major enterprise customers. Its scale and infrastructure complexity create a strong requirement for continuous security monitoring."
+        }
+      ],
+      "customerCount": "3+ Managed SOC customers",
+      "costOfInaction": "Without continuous security monitoring, suspicious activity can remain undetected for hours or days, allowing attackers more time to compromise accounts, move across systems, steal information or deploy ransomware.\n\nA successful security incident can result in business downtime, data loss, financial losses, customer impact, regulatory exposure, failed security audits and reputational damage.\n\nCompanies may also lose or delay enterprise contracts when they cannot demonstrate adequate security monitoring and incident-response capabilities.\n\nBuilding an equivalent 24/7 internal SOC requires recruiting and retaining multiple cybersecurity professionals, implementing processes and maintaining round-the-clock coverage, making it expensive and operationally difficult for many mid-market organizations.",
+      "designPartners": "",
+      "pilotCustomers": "",
+      "problemsSolved": "Organizations often have multiple cybersecurity tools generating large volumes of alerts but lack dedicated security analysts to continuously review and investigate them.\n\nInternal IT teams are typically focused on infrastructure and business operations and cannot monitor security events 24/7. This creates gaps during nights, weekends and holidays and increases the possibility of critical alerts being missed.\n\nAadit's Managed SOC solves:\n\n24/7 security monitoring gaps; shortage of skilled cybersecurity analysts; excessive security alerts and alert fatigue; slow threat detection and investigation; lack of centralized visibility across cloud, endpoints, identities and networks; limited internal incident-response capability; and security monitoring requirements arising from ISO 27001, SOC 2, customer security assessments and other compliance obligations.",
+      "activeProspects": "",
+      "dealSizeHistory": "Managed SOC engagements are generally recurring annual contracts, with value increasing according to the number of users/endpoints, infrastructure complexity, cloud workloads, monitoring scope and additional security services required.\n\nTypical target contract value is approximately $30,000–$60,000 annually, with ~$45,000 representing a useful target deal size. Larger organizations and expanded monitoring scopes can result in higher contract values.\n\nExpansion can occur as customers add employees, endpoints, cloud workloads, locations or additional cybersecurity/compliance services.",
+      "payingCustomers": "",
+      "typicalDealSize": "$30,000–$60,000 per year; typical target ~$45,000 annually",
+      "validationNotes": "",
+      "commonBuyerRoles": "",
+      "commonObjections": "",
+      "currentCustomers": "Current Managed SOC customers include technology, AI/SaaS and digital engineering companies operating cloud-based environments and serving enterprise customers. Examples include Alphastream.ai, Altoura and Aditi Consulting. These organizations depend heavily on technology infrastructure, handle sensitive business/customer data, and require strong security monitoring. Customers range from growing technology companies to large global organizations, demonstrating that the service can support different levels of infrastructure complexity.",
+      "customerProblems": "",
+      "marketHypotheses": "",
+      "objectionHistory": "Common objections include:\n\n“We already have security tools in place.”\n“Our internal IT/security team monitors this.”\n“We don't need 24/7 monitoring yet.”\n“We haven't had a major security incident.”\n“Our current MSP already handles security.”\n“The budget is too high.”\n“We are comparing other MDR/MSSP providers.”\n“We can build this capability internally.”\n“We don't generate enough security alerts to justify a SOC.”\n“We can revisit this during the next budget cycle.”\n\nOther delays occur because of procurement, vendor onboarding, management approval or uncertainty about the immediate ROI of security monitoring.",
+      "primaryGeography": "india",
+      "wonOpportunities": "Won opportunities typically involve companies with established IT/cloud environments but without sufficient internal resources for true 24/7 security monitoring. Common characteristics include cloud adoption, Microsoft-centric environments, distributed users, enterprise customers, sensitive data, growing security complexity and compliance requirements.\n\nDeals become stronger when there is a clear trigger: an upcoming ISO 27001/SOC 2 or customer audit, enterprise customer security requirements, a recent security concern, rapid growth, increasing endpoints/cloud workloads, or management realizing that the existing IT team cannot effectively monitor security around the clock.\n\nAadit wins when customers value human-led 24/7 monitoring, manual investigation of alerts, direct access to experienced analysts, flexibility and cost-effectiveness compared with building an internal SOC.",
+      "competitorHistory": "Managed SOC/MSSP/MDR providers, regional cybersecurity service providers, Microsoft security partners, and customers' incumbent MSPs.\n\nThe most common competitive alternatives are often not another SOC provider, but the customer's existing internal IT/security team, automated security tools, an existing MSP providing basic security monitoring, or the customer considering building an internal SOC.\n\nWhere formal vendor comparisons occur, alternatives may include providers such as Arctic Wolf, Sophos MDR, Rapid7 MDR, eSentire, Secureworks and similar managed security providers.",
+      "customerApprovers": "",
+      "expansionPatterns": "Customers can initially engage Aadit for 24/7 security monitoring and subsequently expand the relationship as their infrastructure, employee base and security requirements grow. Expansion opportunities include adding more endpoints, cloud workloads, business units or geographic locations to SOC coverage; vulnerability assessment and penetration testing (VAPT); ISO 27001 and SOC 2 readiness; security assessments; incident response; cloud security; endpoint and identity security; and broader managed IT/security services.\n\nGrowth, acquisitions, new offices, cloud migrations, compliance initiatives, major enterprise customers and increased employee counts can all create natural opportunities to expand the engagement.",
+      "lostOpportunities": "Opportunities are more likely to be lost or delayed when cybersecurity monitoring is viewed as non-urgent, there is no immediate compliance/customer requirement, management believes existing security tools are sufficient, or the internal IT team believes it can continue handling security monitoring.\n\nOther common barriers include budget constraints, comparison with lower-cost automated MDR/MSSP offerings, preference for an incumbent IT/security provider, long procurement processes and organizations deciding to postpone the project.",
+      "salesCycleHistory": "Typical Managed SOC opportunities can take approximately 30–90 days from qualified opportunity to closure.\n\nSales cycles tend to be considerably shorter when there is a strong buying trigger such as an upcoming audit, enterprise customer security requirement, security incident, compliance deadline or immediate requirement for 24/7 monitoring.\n\nSales cycles become longer when the requirement is exploratory, there is no defined security deadline, multiple stakeholders are involved, budget approval is pending, or the customer is comparing an outsourced SOC against building capabilities internally.",
+      "targetGeographies": "United States, India, UAE, United Kingdom, Singapore",
+      "typicalSalesCycle": "30–90 days; can shorten to 2–4 weeks when there is an active security incident, audit deadline, compliance requirement or enterprise customer security demand.",
+      "customerInitiators": "",
+      "economicBuyerRoles": "CIO, CTO, CISO, VP/Head of IT, CFO, COO and, particularly in smaller/mid-market organizations, CEO/Founder.\n\nFor larger organizations, the CIO/CISO/CTO will typically own or strongly influence the security budget. For smaller companies, final approval may come from the CEO, COO or CFO.",
+      "commonChampionRoles": "",
+      "historicalChampions": "IT Manager, Security Manager, Information Security Manager, SOC/Security Lead, Infrastructure Manager, Cloud/Infrastructure Lead, Head of IT, Compliance/GRC Manager.\n\nThe strongest internal champions are typically people who experience the operational problem directly: too many security alerts, insufficient security staff, lack of night/weekend monitoring, increasing compliance requirements, or pressure from enterprise customers.\n\nThey understand the security gap and help build the internal case for outsourcing 24/7 monitoring.",
+      "typicalRevenueRange": "$10M–$250M annual revenue; sweet spot: $20M–$100M",
+      "bestCustomerPatterns": "The strongest customers typically have cloud-based infrastructure, 100+ employees, enterprise or regulated customers, sensitive business/customer data, and an internal IT team but no complete 24/7 SOC capability. They often already invest in cybersecurity tools but need skilled analysts to continuously monitor and investigate alerts. Strong indicators include Microsoft/Azure environments, distributed workforces, rapid growth, ISO 27001 or SOC 2 requirements, enterprise customer security assessments, increasing security complexity, and a need for round-the-clock monitoring without building an expensive internal SOC.",
+      "historicalBuyerRoles": "CISO, Head of Information Security, Director of Information Security, VP/Head of IT, IT Director, Head of Infrastructure, CIO, CTO, Security Manager, IT Security Manager, Infrastructure Manager, and in smaller technology companies, Founder/CEO or COO.\n\nThe primary buyer is usually the person responsible for security operations, IT infrastructure, risk and continuous monitoring.",
+      "historicalIndustries": "Technology and IT Services; SaaS / Enterprise Software; Artificial Intelligence; FinTech / Financial Technology; Financial Data and Analytics; Digital Engineering and Technology Consulting.\n\nExisting Managed SOC customer examples include Alphastream.ai (AI/financial technology), Altoura (enterprise SaaS/AI technology), and Aditi Consulting (digital engineering/IT services).\n\nThe strongest historical pattern is therefore technology-dependent B2B organizations operating cloud infrastructure and serving enterprise customers.",
+      "majorDifferentiators": "Aadit provides human-led 24/7 security monitoring, rather than simply deploying another security tool or forwarding automated alerts.\n\nSecurity analysts investigate and validate alerts before escalation, helping customers focus on genuine security incidents rather than large volumes of raw alerts.\n\nAadit works alongside the customer's existing IT and security infrastructure, allowing organizations to strengthen their security operations without replacing their existing technology investments.\n\nKey differentiators include 24/7 human monitoring, manual investigation and validation of security events, experienced security analysts, rapid escalation of genuine threats, integration with existing security infrastructure, personalized support, and a cost-effective alternative to building an internal SOC.",
+      "typicalEmployeeRange": "100–2,000 employees; sweet spot: 200–1,000 employees",
+      "businessMaturityStage": "REPEATABLE_SALES",
+      "customerBuyingReasons": "",
+      "historicalGeographies": "India and United States / North America, including organizations with distributed and global operations.\n\nExisting Managed SOC customers operate across multiple locations and serve customers internationally, so Aadit has experience supporting security environments that are not limited to a single office or geography.",
+      "historicalCompanySizes": "Aadit's Managed SOC customers range from growing technology companies to large global technology/service organizations.\n\nBased on the existing customer set, the historical footprint spans approximately:\n\n50 to 2,000+ employees\n\nRather than treating company size as a strict requirement, the stronger historical indicator is organizations with sufficiently complex cloud/IT environments, enterprise customers, sensitive data and a requirement for continuous security monitoring.",
+      "typicalCustomerProfile": "Mid-market and growing organizations with significant cloud and IT infrastructure that need continuous cybersecurity monitoring but do not have a fully staffed 24/7 internal SOC. Ideal customers typically use Microsoft 365/Azure or other cloud platforms, have 100+ employees, handle sensitive customer or business data, serve enterprise customers, and have security or compliance requirements such as ISO 27001, SOC 2, customer security assessments or cyber-insurance. Strong industries include SaaS, technology, IT services, fintech, financial services, healthcare and professional services.",
+      "typicalUrgencyTriggers": "",
+      "customerInterestTriggers": "",
+      "competitorsOrAlternatives": "Other Managed SOC, MSSP and MDR providers; Arctic Wolf, Expel, Red Canary, eSentire, Sophos MDR, Rapid7 MDR, Secureworks and regional cybersecurity providers. Alternatives also include monitoring security internally through the existing IT team, relying primarily on automated security tools, using an existing MSP for security, or building an internal SOC.",
+      "waitlistOrLettersOfIntent": "",
+      "badCustomerCharacteristics": "",
+      "productOrServiceDescription": "Aadit provides a fully managed 24/7 Security Operations Center (SOC) for organizations that need continuous cybersecurity monitoring without the cost and complexity of building an internal SOC.\n\nAadit's security analysts continuously monitor the customer's IT and cloud environment, investigate security alerts, identify genuine threats, prioritize incidents, and coordinate with the customer's IT team for response and remediation.\n\nThe service provides continuous human security oversight across endpoints, identities, cloud infrastructure, networks and security systems, helping organizations detect and respond to threats before they become serious security incidents.",
+      "prospectiveCustomerEvidence": "",
+      "commonTechnicalEvaluatorRoles": ""
+    },
+    "businessTwinAiInterpretation": {
+      "claims": [
+        {
+          "key": "target_customer",
+          "evidence": "Mid-market and growing organizations with significant cloud and IT infrastructure that need continuous cybersecurity monitoring but do not have a fully staffed 24/7 internal SOC. Ideal customers typically use Microsoft 365/Azure or other cloud platforms, have 100+ employees, handle sensitive customer or business data, serve enterprise customers, and have security or compliance requirements such as ISO 27001, SOC 2, customer security assessments or cyber-insurance. Strong industries include SaaS, technology, IT services, fintech, financial services, healthcare and professional services.",
+          "statement": "Mid-market and growing organizations with significant cloud and IT infrastructure that need continuous cybersecurity monitoring but do not have a fully staffed 24/7 internal SOC. Ideal customers typically use Microsoft 365/Azure or other cloud platforms, have 100+ employees, handle sensitive customer or business data, serve enterprise customers, and have security or compliance requirements such as ISO 27001, SOC 2, customer security assessments or cyber-insurance. Strong industries include SaaS, technology, IT services, fintech, financial services, healthcare and professional services.",
+          "provenance": "FOUNDER_HYPOTHESIS",
+          "isAssumption": true,
+          "validationStatus": "UNTESTED"
+        },
+        {
+          "key": "target_company_size",
+          "evidence": "100–2,000 employees; sweet spot: 200–1,000 employees",
+          "statement": "100–2,000 employees; sweet spot: 200–1,000 employees",
+          "provenance": "FOUNDER_HYPOTHESIS",
+          "isAssumption": true,
+          "validationStatus": "UNTESTED"
+        },
+        {
+          "key": "customers",
+          "evidence": "Current Managed SOC customers include technology, AI/SaaS and digital engineering companies operating cloud-based environments and serving enterprise customers. Examples include Alphastream.ai, Altoura and Aditi Consulting. These organizations depend heavily on technology infrastructure, handle sensitive business/customer data, and require strong security monitoring. Customers range from growing technology companies to large global organizations, demonstrating that the service can support different levels of infrastructure complexity.",
+          "statement": "Current Managed SOC customers include technology, AI/SaaS and digital engineering companies operating cloud-based environments and serving enterprise customers. Examples include Alphastream.ai, Altoura and Aditi Consulting. These organizations depend heavily on technology infrastructure, handle sensitive business/customer data, and require strong security monitoring. Customers range from growing technology companies to large global organizations, demonstrating that the service can support different levels of infrastructure complexity.",
+          "provenance": "CUSTOMER",
+          "isAssumption": false,
+          "validationStatus": "PARTIALLY_VALIDATED"
+        },
+        {
+          "key": "won_opportunities",
+          "evidence": "Won opportunities typically involve companies with established IT/cloud environments but without sufficient internal resources for true 24/7 security monitoring. Common characteristics include cloud adoption, Microsoft-centric environments, distributed users, enterprise customers, sensitive data, growing security complexity and compliance requirements.\n\nDeals become stronger when there is a clear trigger: an upcoming ISO 27001/SOC 2 or customer audit, enterprise customer security requirements, a recent security concern, rapid growth, increasing endpoints/cloud workloads, or management realizing that the existing IT team cannot effectively monitor security around the clock.\n\nAadit wins when customers value human-led 24/7 monitoring, manual investigation of alerts, direct access to experienced analysts, flexibility and cost-effectiveness compared with building an internal SOC.",
+          "statement": "Won opportunities typically involve companies with established IT/cloud environments but without sufficient internal resources for true 24/7 security monitoring. Common characteristics include cloud adoption, Microsoft-centric environments, distributed users, enterprise customers, sensitive data, growing security complexity and compliance requirements.\n\nDeals become stronger when there is a clear trigger: an upcoming ISO 27001/SOC 2 or customer audit, enterprise customer security requirements, a recent security concern, rapid growth, increasing endpoints/cloud workloads, or management realizing that the existing IT team cannot effectively monitor security around the clock.\n\nAadit wins when customers value human-led 24/7 monitoring, manual investigation of alerts, direct access to experienced analysts, flexibility and cost-effectiveness compared with building an internal SOC.",
+          "provenance": "SALES_OUTCOME",
+          "isAssumption": false,
+          "validationStatus": "PARTIALLY_VALIDATED"
+        },
+        {
+          "key": "lost_opportunities",
+          "evidence": "Opportunities are more likely to be lost or delayed when cybersecurity monitoring is viewed as non-urgent, there is no immediate compliance/customer requirement, management believes existing security tools are sufficient, or the internal IT team believes it can continue handling security monitoring.\n\nOther common barriers include budget constraints, comparison with lower-cost automated MDR/MSSP offerings, preference for an incumbent IT/security provider, long procurement processes and organizations deciding to postpone the project.",
+          "statement": "Opportunities are more likely to be lost or delayed when cybersecurity monitoring is viewed as non-urgent, there is no immediate compliance/customer requirement, management believes existing security tools are sufficient, or the internal IT team believes it can continue handling security monitoring.\n\nOther common barriers include budget constraints, comparison with lower-cost automated MDR/MSSP offerings, preference for an incumbent IT/security provider, long procurement processes and organizations deciding to postpone the project.",
+          "provenance": "SALES_OUTCOME",
+          "isAssumption": false,
+          "validationStatus": "PARTIALLY_VALIDATED"
+        }
+      ],
+      "unknowns": [
+        "Specific onboarding process, implementation timeline, and service-level commitments are unknown.",
+        "Exact pricing structure, minimum contract terms, and how pricing varies by users, endpoints, workloads, or scope are unknown.",
+        "Named technical integrations and supported security-tool vendors beyond Microsoft 365, Azure, cloud platforms, and existing customer infrastructure are unknown.",
+        "Specific customer retention, renewal, expansion, or satisfaction history is unknown.",
+        "Specific win rates, loss rates, and competitive win/loss results are unknown.",
+        "Specific measurable customer outcomes, such as incident-response time improvements or alert-volume reductions, are unknown.",
+        "The precise division of responsibilities between Aadit and customer IT teams during incident response and remediation is unknown.",
+        "The full set of compliance frameworks supported beyond ISO 27001, SOC 2, customer security assessments, cyber-insurance, and other unspecified obligations is unknown."
+      ],
+      "industries": [
+        "Technology and IT services.",
+        "SaaS and enterprise software.",
+        "Artificial intelligence.",
+        "FinTech and financial technology.",
+        "Financial data and analytics.",
+        "Digital engineering and technology consulting.",
+        "Healthcare.",
+        "Professional services."
+      ],
+      "buyer_roles": [
+        "CISO.",
+        "Head of Information Security.",
+        "Director of Information Security.",
+        "VP or Head of IT.",
+        "IT Director.",
+        "Head of Infrastructure.",
+        "CIO.",
+        "CTO.",
+        "Security Manager.",
+        "IT Security Manager.",
+        "Infrastructure Manager.",
+        "Founder, CEO, or COO in smaller technology companies.",
+        "CFO or COO as economic buyers."
+      ],
+      "geographies": [
+        "India.",
+        "United States and North America.",
+        "United Arab Emirates.",
+        "United Kingdom.",
+        "Singapore.",
+        "Organizations with distributed or global operations."
+      ],
+      "champion_roles": [
+        "IT Manager.",
+        "Security Manager.",
+        "Information Security Manager.",
+        "SOC or Security Lead.",
+        "Infrastructure Manager.",
+        "Cloud or Infrastructure Lead.",
+        "Head of IT.",
+        "Compliance or GRC Manager."
+      ],
+      "buying_triggers": [
+        "Upcoming ISO 27001, SOC 2, or customer audit.",
+        "Enterprise customer security requirements or security assessments.",
+        "A recent security concern or active security incident.",
+        "A compliance deadline.",
+        "Rapid growth, increasing infrastructure, or expanding enterprise deployments.",
+        "Increasing endpoints, cloud workloads, locations, or workforce size.",
+        "Management recognizing that the existing IT team cannot provide effective 24/7 security monitoring.",
+        "An immediate need for 24/7 monitoring."
+      ],
+      "differentiators": [
+        "Human-led 24/7 security monitoring rather than only deploying tools or forwarding automated alerts.",
+        "Security analysts manually investigate and validate alerts before escalation.",
+        "Focus on genuine threats rather than large volumes of raw alerts.",
+        "Works alongside existing IT and security infrastructure without requiring replacement of current technology investments.",
+        "Direct access to experienced security analysts.",
+        "Rapid escalation of genuine threats.",
+        "Personalized support.",
+        "Cost-effective alternative to building and maintaining an internal round-the-clock SOC."
+      ],
+      "problems_solved": [
+        "Gaps in 24/7 security monitoring, including nights, weekends, and holidays.",
+        "Shortage of skilled cybersecurity analysts for continuous alert review and investigation.",
+        "Excessive security alerts and alert fatigue.",
+        "Slow threat detection and investigation.",
+        "Lack of centralized visibility across cloud, endpoints, identities, networks, and security systems.",
+        "Limited internal incident-response capability.",
+        "Difficulty meeting security-monitoring expectations associated with ISO 27001, SOC 2, customer security assessments, and other compliance obligations."
+      ],
+      "technical_roles": [
+        "Security Manager.",
+        "IT Security Manager.",
+        "SOC or Security Lead.",
+        "Head of Infrastructure.",
+        "Infrastructure Manager.",
+        "Cloud or Infrastructure Lead.",
+        "IT Manager.",
+        "Information Security Manager."
+      ],
+      "offering_summary": "Managed SOC: a fully managed, human-led 24/7 Security Operations Center that continuously monitors customer IT and cloud environments, investigates and validates alerts, identifies and prioritizes threats, and coordinates response and remediation with customer IT teams.",
+      "urgency_patterns": [
+        "Active security incidents can shorten sales cycles to 2–4 weeks.",
+        "Audit deadlines, compliance requirements, and enterprise customer security demands increase urgency.",
+        "Recent security concerns and an immediate need for 24/7 monitoring increase urgency.",
+        "Exploratory projects without a defined deadline tend to have longer sales cycles.",
+        "Pending budget approval, multiple stakeholders, and outsourced-SOC-versus-internal-build comparisons can extend sales cycles."
+      ],
+      "business_outcomes": [
+        "Continuous security oversight across endpoints, identities, cloud infrastructure, networks, and security systems.",
+        "Investigation and validation of alerts before escalation, helping teams focus on genuine security incidents rather than raw alert volume.",
+        "Round-the-clock monitoring without building and staffing an internal 24/7 SOC.",
+        "Support for demonstrating security monitoring and incident-response capabilities to enterprise customers and during security assessments or audits.",
+        "Ability to expand SOC coverage as employees, endpoints, cloud workloads, locations, or security requirements grow."
+      ],
+      "common_objections": [
+        "We already have security tools in place.",
+        "Our internal IT or security team monitors this.",
+        "We do not need 24/7 monitoring yet.",
+        "We have not had a major security incident.",
+        "Our current MSP already handles security.",
+        "The budget is too high.",
+        "We are comparing other MDR or MSSP providers.",
+        "We can build this capability internally.",
+        "We do not generate enough security alerts to justify a SOC.",
+        "We can revisit this during the next budget cycle.",
+        "Uncertainty about the immediate ROI of security monitoring."
+      ],
+      "compliance_patterns": [
+        "ISO 27001 requirements or audit preparation.",
+        "SOC 2 requirements or readiness.",
+        "Enterprise customer security requirements and security assessments.",
+        "Cyber-insurance requirements.",
+        "Security monitoring and incident-response capability expectations."
+      ],
+      "technology_patterns": [
+        "Microsoft 365 and Azure environments.",
+        "Other cloud platforms.",
+        "Cloud-based infrastructure and cloud workloads.",
+        "Endpoints, identities, networks, and security systems requiring centralized monitoring.",
+        "Microsoft-centric environments.",
+        "Existing cybersecurity tools and security infrastructure that customers want to retain."
+      ],
+      "company_size_patterns": [
+        "Typical target range: 100–2,000 employees.",
+        "Stated sweet spot: 200–1,000 employees.",
+        "Historical customer footprint: approximately 50 to 2,000+ employees.",
+        "Infrastructure complexity, enterprise customers, sensitive data, and continuous-monitoring needs are stronger indicators than company size alone."
+      ],
+      "disqualifier_hypotheses": [
+        "No immediate need or urgency for continuous security monitoring.",
+        "Belief that existing security tools, an internal IT team, or an existing MSP sufficiently cover security monitoring.",
+        "Insufficient budget for managed security monitoring.",
+        "Preference for a lower-cost automated MDR/MSSP option.",
+        "Decision to build an internal SOC instead of outsourcing.",
+        "Long procurement, vendor onboarding, or management-approval processes.",
+        "Decision to postpone until a future budget cycle."
+      ],
+      "ideal_customer_patterns": [
+        "Organizations with significant cloud and IT infrastructure that need continuous monitoring but do not have a fully staffed internal 24/7 SOC.",
+        "Organizations with 100–2,000 employees, with a stated sweet spot of 200–1,000 employees.",
+        "Organizations with $10M–$250M annual revenue, with a stated sweet spot of $20M–$100M.",
+        "Technology-dependent B2B organizations serving enterprise customers.",
+        "Organizations handling sensitive customer or business data.",
+        "Organizations with an internal IT team that cannot effectively monitor security around the clock.",
+        "Organizations that already use cybersecurity tools but need analysts to continuously monitor and investigate alerts.",
+        "Organizations with distributed users or workforces, growing endpoints or cloud workloads, and increasing security complexity.",
+        "Organizations facing ISO 27001, SOC 2, cyber-insurance, enterprise customer-security, or customer-assessment requirements."
+      ],
+      "negative_customer_patterns": [
+        "Organizations where cybersecurity monitoring is viewed as non-urgent.",
+        "Organizations with no immediate compliance, audit, or enterprise-customer security requirement.",
+        "Organizations whose management believes existing security tools are sufficient.",
+        "Organizations whose internal IT team believes it can continue handling security monitoring.",
+        "Organizations with budget constraints or a preference for lower-cost automated MDR/MSSP offerings.",
+        "Organizations committed to an incumbent IT, security, or MSP provider.",
+        "Organizations that choose to postpone the project or revisit it during a later budget cycle."
+      ]
+    },
+    "icpId": "a059f1c0-9fb5-43e7-9a3f-1f5976fe8474",
+    "icpVersionId": "a7f0c79f-bf17-4b42-84cd-60a46c562f56",
+    "icpVersion": 5,
+    "icpCreatedAt": "2026-08-31T17:47:26.961Z",
+    "icpAssumptions": [
+      "We believe Mid-market and growing organizations with significant cloud and IT infrastructure that need continuous cybersecurity monitoring but do not have a fully staffed 24/7 internal SOC. Ideal customers typically use Microsoft 365/Azure or other cloud platforms, have 100+ employees, handle sensitive customer or business data, serve enterprise customers, and have security or compliance requirements such as ISO 27001, SOC 2, customer security assessments or cyber-insurance. Strong industries include SaaS, technology, IT services, fintech, financial services, healthcare and professional services..",
+      "We believe companies with 100–2,000 employees; sweet spot: 200–1,000 employees employees are a strong fit."
+    ],
+    "opportunityPackId": null,
+    "opportunityPackVersionId": null,
+    "opportunityPackVersion": null,
+    "opportunityPackStatus": null,
+    "opportunityPackCreatedAt": null,
+    "context": {
+      "businessTwinId": "c16a03fc-a422-4732-82d1-a12ec6aff0dd",
+      "businessTwinVersionId": "a355a198-e9d3-449e-a9cf-c064fab4faa2",
+      "icpId": "a7f0c79f-bf17-4b42-84cd-60a46c562f56",
+      "offeringId": null,
+      "offeringKey": null,
+      "sellerCompanyName": "Aadit Technologies",
+      "sellerBusinessDescription": null,
+      "sellerBusinessModel": null,
+      "offeringName": "Managed Soc",
+      "offeringCategory": null,
+      "offeringDescription": "Aadit provides a fully managed 24/7 Security Operations Center (SOC) for organizations that need continuous cybersecurity monitoring without the cost and complexity of building an internal SOC.\n\nAadit's security analysts continuously monitor the customer's IT and cloud environment, investigate security alerts, identify genuine threats, prioritize incidents, and coordinate with the customer's IT team for response and remediation.\n\nThe service provides continuous human security oversight across endpoints, identities, cloud infrastructure, networks and security systems, helping organizations detect and respond to threats before they become serious security incidents.",
+      "offeringCapabilities": [],
+      "offeringExclusions": [],
+      "source": "BUSINESS_TWIN",
+      "fingerprint": "b4c3aa45cc02901dac663e2a35a672d58511e13a1959f72ba27cdf74532b7c0f"
+    },
+    "sufficiency": {
+      "sufficient": true,
+      "reason": "SUFFICIENT"
+    },
+    "businessTwinReady": true,
+    "offeringReady": true,
+    "icpReady": true,
+    "opportunityPackReady": false,
+    "buyerRoleReady": true,
+    "marketDiscoveryReady": true,
+    "whoReady": true,
+    "whenWhyReady": false,
+    "contextStatus": "READY",
+    "missingRequirements": [
+      "OPPORTUNITY_PACK_MISSING"
+    ]
+  },
+  "pack": {
+    "pack": {
+      "id": "d8bcf8dc-df24-4c14-abc9-6ffc816adc28",
+      "organizationId": "02d40c31-72e4-42d9-9d8d-fe676a369205",
+      "projectId": "b4c8a95a-eb1c-4a86-89d6-62d72097d820",
+      "offeringKey": "managed-soc",
+      "sourceBusinessTwinVersionId": "a355a198-e9d3-449e-a9cf-c064fab4faa2",
+      "sourceIcpVersionId": "a7f0c79f-bf17-4b42-84cd-60a46c562f56",
+      "status": "DRAFT",
+      "currentVersion": 0,
+      "createdBy": "user_3IaemcwN9OMG4fylhZMmn9vr5ES",
+      "createdAt": "2026-09-01T16:31:17.329Z",
+      "updatedAt": "2026-09-01T16:31:17.329Z"
+    },
+    "version": {
+      "id": "871a0bbb-b308-4dfd-b285-fe19b7e72dc5",
+      "intelligencePackId": "d8bcf8dc-df24-4c14-abc9-6ffc816adc28",
+      "version": 1,
+      "status": "PROPOSED",
+      "lifecycleLabel": "EVIDENCE-INFORMED",
+      "offeringSnapshot": {
+        "key": "managed-soc",
+        "name": "Managed Soc",
+        "exclusions": [],
+        "description": "Aadit provides a fully managed 24/7 Security Operations Center (SOC) for organizations that need continuous cybersecurity monitoring without the cost and complexity of building an internal SOC.\n\nAadit's security analysts continuously monitor the customer's IT and cloud environment, investigate security alerts, identify genuine threats, prioritize incidents, and coordinate with the customer's IT team for response and remediation.\n\nThe service provides continuous human security oversight across endpoints, identities, cloud infrastructure, networks and security systems, helping organizations detect and respond to threats before they become serious security incidents.",
+        "capabilities": [],
+        "sellerCompanyName": "Aadit Technologies"
+      },
+      "businessContextSnapshot": {
+        "icp": {
+          "id": "a7f0c79f-bf17-4b42-84cd-60a46c562f56",
+          "mode": "EARLY_EVIDENCE_ICP",
+          "version": 5,
+          "criteria": [
+            {
+              "value": [
+                "saas",
+                "it",
+                "technology",
+                "fintech",
+                "healthcare",
+                "professional services"
+              ],
+              "operator": "IN",
+              "dimension": "industry",
+              "description": "Target customer operates in a stated target industry.",
+              "criterionType": "MUST_HAVE"
+            },
+            {
+              "value": [
+                "United States",
+                "India",
+                "UAE",
+                "United Kingdom",
+                "Singapore"
+              ],
+              "operator": "IN",
+              "dimension": "geography",
+              "description": "Company is located in a stated target geography.",
+              "criterionType": "MUST_HAVE"
+            },
+            {
+              "value": [
+                "Microsoft 365 and Azure environments.",
+                "Other cloud platforms.",
+                "Cloud-based infrastructure and cloud workloads.",
+                "Endpoints, identities, networks, and security systems requiring centralized monitoring.",
+                "Microsoft-centric environments.",
+                "Existing cybersecurity tools and security infrastructure that customers want to retain."
+              ],
+              "operator": "IN",
+              "dimension": "technology",
+              "description": "Technology pattern suggested by the Business Twin interpretation.",
+              "criterionType": "PREFERRED"
+            },
+            {
+              "value": [
+                "ISO 27001 requirements or audit preparation.",
+                "SOC 2 requirements or readiness.",
+                "Enterprise customer security requirements and security assessments.",
+                "Cyber-insurance requirements.",
+                "Security monitoring and incident-response capability expectations."
+              ],
+              "operator": "IN",
+              "dimension": "compliance",
+              "description": "Compliance context may improve commercial fit but is not mandatory.",
+              "criterionType": "PREFERRED"
+            },
+            {
+              "value": "Organizations where cybersecurity monitoring is viewed as non-urgent.",
+              "operator": "CONTAINS",
+              "dimension": "negative_indicator",
+              "description": "Suggested negative customer pattern. Review and accept it before it can affect objective fit.",
+              "criterionType": "DISQUALIFIER"
+            },
+            {
+              "value": "Organizations with no immediate compliance, audit, or enterprise-customer security requirement.",
+              "operator": "CONTAINS",
+              "dimension": "negative_indicator",
+              "description": "Suggested negative customer pattern. Review and accept it before it can affect objective fit.",
+              "criterionType": "DISQUALIFIER"
+            },
+            {
+              "value": "Organizations whose management believes existing security tools are sufficient.",
+              "operator": "CONTAINS",
+              "dimension": "negative_indicator",
+              "description": "Suggested negative customer pattern. Review and accept it before it can affect objective fit.",
+              "criterionType": "DISQUALIFIER"
+            },
+            {
+              "value": "Organizations whose internal IT team believes it can continue handling security monitoring.",
+              "operator": "CONTAINS",
+              "dimension": "negative_indicator",
+              "description": "Suggested negative customer pattern. Review and accept it before it can affect objective fit.",
+              "criterionType": "DISQUALIFIER"
+            },
+            {
+              "value": "Organizations with budget constraints or a preference for lower-cost automated MDR/MSSP offerings.",
+              "operator": "CONTAINS",
+              "dimension": "negative_indicator",
+              "description": "Suggested negative customer pattern. Review and accept it before it can affect objective fit.",
+              "criterionType": "DISQUALIFIER"
+            },
+            {
+              "value": "Organizations committed to an incumbent IT, security, or MSP provider.",
+              "operator": "CONTAINS",
+              "dimension": "negative_indicator",
+              "description": "Suggested negative customer pattern. Review and accept it before it can affect objective fit.",
+              "criterionType": "DISQUALIFIER"
+            },
+            {
+              "value": "Organizations that choose to postpone the project or revisit it during a later budget cycle.",
+              "operator": "CONTAINS",
+              "dimension": "negative_indicator",
+              "description": "Suggested negative customer pattern. Review and accept it before it can affect objective fit.",
+              "criterionType": "DISQUALIFIER"
+            },
+            {
+              "value": "No immediate need or urgency for continuous security monitoring.",
+              "operator": "CONTAINS",
+              "dimension": "negative_indicator",
+              "description": "A Business Twin hypothesis that requires human validation before becoming a disqualifier.",
+              "criterionType": "ADVISORY"
+            },
+            {
+              "value": "Belief that existing security tools, an internal IT team, or an existing MSP sufficiently cover security monitoring.",
+              "operator": "CONTAINS",
+              "dimension": "negative_indicator",
+              "description": "A Business Twin hypothesis that requires human validation before becoming a disqualifier.",
+              "criterionType": "ADVISORY"
+            },
+            {
+              "value": "Insufficient budget for managed security monitoring.",
+              "operator": "CONTAINS",
+              "dimension": "negative_indicator",
+              "description": "A Business Twin hypothesis that requires human validation before becoming a disqualifier.",
+              "criterionType": "ADVISORY"
+            },
+            {
+              "value": "Preference for a lower-cost automated MDR/MSSP option.",
+              "operator": "CONTAINS",
+              "dimension": "negative_indicator",
+              "description": "A Business Twin hypothesis that requires human validation before becoming a disqualifier.",
+              "criterionType": "ADVISORY"
+            },
+            {
+              "value": "Decision to build an internal SOC instead of outsourcing.",
+              "operator": "CONTAINS",
+              "dimension": "negative_indicator",
+              "description": "A Business Twin hypothesis that requires human validation before becoming a disqualifier.",
+              "criterionType": "ADVISORY"
+            },
+            {
+              "value": "Long procurement, vendor onboarding, or management-approval processes.",
+              "operator": "CONTAINS",
+              "dimension": "negative_indicator",
+              "description": "A Business Twin hypothesis that requires human validation before becoming a disqualifier.",
+              "criterionType": "ADVISORY"
+            },
+            {
+              "value": "Decision to postpone until a future budget cycle.",
+              "operator": "CONTAINS",
+              "dimension": "negative_indicator",
+              "description": "A Business Twin hypothesis that requires human validation before becoming a disqualifier.",
+              "criterionType": "ADVISORY"
+            },
+            {
+              "value": "Aadit provides human-led 24/7 security monitoring, rather than simply deploying another security tool or forwarding automated alerts.\n\nSecurity analysts investigate and validate alerts before escalation, helping customers focus on genuine security incidents rather than large volumes of raw alerts.\n\nAadit works alongside the customer's existing IT and security infrastructure, allowing organizations to strengthen their security operations without replacing their existing technology investments.\n\nKey differentiators include 24/7 human monitoring, manual investigation and validation of security events, experienced security analysts, rapid escalation of genuine threats, integration with existing security infrastructure, personalized support, and a cost-effective alternative to building an internal SOC.",
+              "operator": "CONTAINS",
+              "dimension": "positive_indicator",
+              "description": "Commercially meaningful indicator that requires research before it can be scored.",
+              "criterionType": "ADVISORY"
+            }
+          ],
+          "assumptions": [
+            "We believe Mid-market and growing organizations with significant cloud and IT infrastructure that need continuous cybersecurity monitoring but do not have a fully staffed 24/7 internal SOC. Ideal customers typically use Microsoft 365/Azure or other cloud platforms, have 100+ employees, handle sensitive customer or business data, serve enterprise customers, and have security or compliance requirements such as ISO 27001, SOC 2, customer security assessments or cyber-insurance. Strong industries include SaaS, technology, IT services, fintech, financial services, healthcare and professional services..",
+            "We believe companies with 100–2,000 employees; sweet spot: 200–1,000 employees employees are a strong fit."
+          ]
+        },
+        "offering": {
+          "key": "managed-soc",
+          "name": "Managed Soc",
+          "exclusions": [],
+          "description": "Aadit provides a fully managed 24/7 Security Operations Center (SOC) for organizations that need continuous cybersecurity monitoring without the cost and complexity of building an internal SOC.\n\nAadit's security analysts continuously monitor the customer's IT and cloud environment, investigate security alerts, identify genuine threats, prioritize incidents, and coordinate with the customer's IT team for response and remediation.\n\nThe service provides continuous human security oversight across endpoints, identities, cloud infrastructure, networks and security systems, helping organizations detect and respond to threats before they become serious security incidents.",
+          "capabilities": [],
+          "sellerCompanyName": "Aadit Technologies"
+        },
+        "businessTwin": {
+          "id": "a355a198-e9d3-449e-a9cf-c064fab4faa2",
+          "status": "ready",
+          "version": 4,
+          "rawAnswers": {
+            "website": "https://aadit.net/",
+            "industry": "Cybersecurity",
+            "betaUsers": "",
+            "pilotUsers": "",
+            "companyName": "Aadit Technologies",
+            "offeringName": "Managed Soc",
+            "bestCustomers": [
+              {
+                "name": "Alphastream.ai — AI / FinTech / Financial Data Platform",
+                "whyBoughtThen": "As the platform and enterprise relationships grew, security requirements increased. 24/7 monitoring provided continuous security oversight and threat investigation without requiring a complete internal SOC.",
+                "whyGoodCustomer": "Operates a cloud-based AI platform handling sensitive financial, legal and investment information for financial institutions. Enterprise financial customers, sensitive data and security/compliance requirements make continuous monitoring particularly important."
+              },
+              {
+                "name": "Altoura — Enterprise SaaS / AI Technology",
+                "whyBoughtThen": "Growth in enterprise deployments increased the importance of continuous security monitoring and meeting customer security expectations. Outsourced SOC monitoring provided round-the-clock coverage without building a dedicated internal 24/7 SOC.",
+                "whyGoodCustomer": "Operates an enterprise cloud platform used by large organizations. Its cloud infrastructure, enterprise customer base, Microsoft-oriented technology environment and security/compliance requirements make it suitable for Aadit's Managed SOC."
+              },
+              {
+                "name": "Aditi Consulting — Digital Engineering / IT Services",
+                "whyBoughtThen": "Increasing infrastructure, workforce and enterprise-client security requirements created a need for dedicated 24/7 security oversight. Aadit's Managed SOC provided continuous monitoring and investigation without the complexity of expanding an internal round-the-clock SOC.",
+                "whyGoodCustomer": "A large technology services organization with 2,000+ employees, distributed operations, substantial cloud/IT infrastructure and major enterprise customers. Its scale and infrastructure complexity create a strong requirement for continuous security monitoring."
+              }
+            ],
+            "customerCount": "3+ Managed SOC customers",
+            "costOfInaction": "Without continuous security monitoring, suspicious activity can remain undetected for hours or days, allowing attackers more time to compromise accounts, move across systems, steal information or deploy ransomware.\n\nA successful security incident can result in business downtime, data loss, financial losses, customer impact, regulatory exposure, failed security audits and reputational damage.\n\nCompanies may also lose or delay enterprise contracts when they cannot demonstrate adequate security monitoring and incident-response capabilities.\n\nBuilding an equivalent 24/7 internal SOC requires recruiting and retaining multiple cybersecurity professionals, implementing processes and maintaining round-the-clock coverage, making it expensive and operationally difficult for many mid-market organizations.",
+            "designPartners": "",
+            "pilotCustomers": "",
+            "problemsSolved": "Organizations often have multiple cybersecurity tools generating large volumes of alerts but lack dedicated security analysts to continuously review and investigate them.\n\nInternal IT teams are typically focused on infrastructure and business operations and cannot monitor security events 24/7. This creates gaps during nights, weekends and holidays and increases the possibility of critical alerts being missed.\n\nAadit's Managed SOC solves:\n\n24/7 security monitoring gaps; shortage of skilled cybersecurity analysts; excessive security alerts and alert fatigue; slow threat detection and investigation; lack of centralized visibility across cloud, endpoints, identities and networks; limited internal incident-response capability; and security monitoring requirements arising from ISO 27001, SOC 2, customer security assessments and other compliance obligations.",
+            "activeProspects": "",
+            "dealSizeHistory": "Managed SOC engagements are generally recurring annual contracts, with value increasing according to the number of users/endpoints, infrastructure complexity, cloud workloads, monitoring scope and additional security services required.\n\nTypical target contract value is approximately $30,000–$60,000 annually, with ~$45,000 representing a useful target deal size. Larger organizations and expanded monitoring scopes can result in higher contract values.\n\nExpansion can occur as customers add employees, endpoints, cloud workloads, locations or additional cybersecurity/compliance services.",
+            "payingCustomers": "",
+            "typicalDealSize": "$30,000–$60,000 per year; typical target ~$45,000 annually",
+            "validationNotes": "",
+            "commonBuyerRoles": "",
+            "commonObjections": "",
+            "currentCustomers": "Current Managed SOC customers include technology, AI/SaaS and digital engineering companies operating cloud-based environments and serving enterprise customers. Examples include Alphastream.ai, Altoura and Aditi Consulting. These organizations depend heavily on technology infrastructure, handle sensitive business/customer data, and require strong security monitoring. Customers range from growing technology companies to large global organizations, demonstrating that the service can support different levels of infrastructure complexity.",
+            "customerProblems": "",
+            "marketHypotheses": "",
+            "objectionHistory": "Common objections include:\n\n“We already have security tools in place.”\n“Our internal IT/security team monitors this.”\n“We don't need 24/7 monitoring yet.”\n“We haven't had a major security incident.”\n“Our current MSP already handles security.”\n“The budget is too high.”\n“We are comparing other MDR/MSSP providers.”\n“We can build this capability internally.”\n“We don't generate enough security alerts to justify a SOC.”\n“We can revisit this during the next budget cycle.”\n\nOther delays occur because of procurement, vendor onboarding, management approval or uncertainty about the immediate ROI of security monitoring.",
+            "primaryGeography": "india",
+            "wonOpportunities": "Won opportunities typically involve companies with established IT/cloud environments but without sufficient internal resources for true 24/7 security monitoring. Common characteristics include cloud adoption, Microsoft-centric environments, distributed users, enterprise customers, sensitive data, growing security complexity and compliance requirements.\n\nDeals become stronger when there is a clear trigger: an upcoming ISO 27001/SOC 2 or customer audit, enterprise customer security requirements, a recent security concern, rapid growth, increasing endpoints/cloud workloads, or management realizing that the existing IT team cannot effectively monitor security around the clock.\n\nAadit wins when customers value human-led 24/7 monitoring, manual investigation of alerts, direct access to experienced analysts, flexibility and cost-effectiveness compared with building an internal SOC.",
+            "competitorHistory": "Managed SOC/MSSP/MDR providers, regional cybersecurity service providers, Microsoft security partners, and customers' incumbent MSPs.\n\nThe most common competitive alternatives are often not another SOC provider, but the customer's existing internal IT/security team, automated security tools, an existing MSP providing basic security monitoring, or the customer considering building an internal SOC.\n\nWhere formal vendor comparisons occur, alternatives may include providers such as Arctic Wolf, Sophos MDR, Rapid7 MDR, eSentire, Secureworks and similar managed security providers.",
+            "customerApprovers": "",
+            "expansionPatterns": "Customers can initially engage Aadit for 24/7 security monitoring and subsequently expand the relationship as their infrastructure, employee base and security requirements grow. Expansion opportunities include adding more endpoints, cloud workloads, business units or geographic locations to SOC coverage; vulnerability assessment and penetration testing (VAPT); ISO 27001 and SOC 2 readiness; security assessments; incident response; cloud security; endpoint and identity security; and broader managed IT/security services.\n\nGrowth, acquisitions, new offices, cloud migrations, compliance initiatives, major enterprise customers and increased employee counts can all create natural opportunities to expand the engagement.",
+            "lostOpportunities": "Opportunities are more likely to be lost or delayed when cybersecurity monitoring is viewed as non-urgent, there is no immediate compliance/customer requirement, management believes existing security tools are sufficient, or the internal IT team believes it can continue handling security monitoring.\n\nOther common barriers include budget constraints, comparison with lower-cost automated MDR/MSSP offerings, preference for an incumbent IT/security provider, long procurement processes and organizations deciding to postpone the project.",
+            "salesCycleHistory": "Typical Managed SOC opportunities can take approximately 30–90 days from qualified opportunity to closure.\n\nSales cycles tend to be considerably shorter when there is a strong buying trigger such as an upcoming audit, enterprise customer security requirement, security incident, compliance deadline or immediate requirement for 24/7 monitoring.\n\nSales cycles become longer when the requirement is exploratory, there is no defined security deadline, multiple stakeholders are involved, budget approval is pending, or the customer is comparing an outsourced SOC against building capabilities internally.",
+            "targetGeographies": "United States, India, UAE, United Kingdom, Singapore",
+            "typicalSalesCycle": "30–90 days; can shorten to 2–4 weeks when there is an active security incident, audit deadline, compliance requirement or enterprise customer security demand.",
+            "customerInitiators": "",
+            "economicBuyerRoles": "CIO, CTO, CISO, VP/Head of IT, CFO, COO and, particularly in smaller/mid-market organizations, CEO/Founder.\n\nFor larger organizations, the CIO/CISO/CTO will typically own or strongly influence the security budget. For smaller companies, final approval may come from the CEO, COO or CFO.",
+            "commonChampionRoles": "",
+            "historicalChampions": "IT Manager, Security Manager, Information Security Manager, SOC/Security Lead, Infrastructure Manager, Cloud/Infrastructure Lead, Head of IT, Compliance/GRC Manager.\n\nThe strongest internal champions are typically people who experience the operational problem directly: too many security alerts, insufficient security staff, lack of night/weekend monitoring, increasing compliance requirements, or pressure from enterprise customers.\n\nThey understand the security gap and help build the internal case for outsourcing 24/7 monitoring.",
+            "typicalRevenueRange": "$10M–$250M annual revenue; sweet spot: $20M–$100M",
+            "bestCustomerPatterns": "The strongest customers typically have cloud-based infrastructure, 100+ employees, enterprise or regulated customers, sensitive business/customer data, and an internal IT team but no complete 24/7 SOC capability. They often already invest in cybersecurity tools but need skilled analysts to continuously monitor and investigate alerts. Strong indicators include Microsoft/Azure environments, distributed workforces, rapid growth, ISO 27001 or SOC 2 requirements, enterprise customer security assessments, increasing security complexity, and a need for round-the-clock monitoring without building an expensive internal SOC.",
+            "historicalBuyerRoles": "CISO, Head of Information Security, Director of Information Security, VP/Head of IT, IT Director, Head of Infrastructure, CIO, CTO, Security Manager, IT Security Manager, Infrastructure Manager, and in smaller technology companies, Founder/CEO or COO.\n\nThe primary buyer is usually the person responsible for security operations, IT infrastructure, risk and continuous monitoring.",
+            "historicalIndustries": "Technology and IT Services; SaaS / Enterprise Software; Artificial Intelligence; FinTech / Financial Technology; Financial Data and Analytics; Digital Engineering and Technology Consulting.\n\nExisting Managed SOC customer examples include Alphastream.ai (AI/financial technology), Altoura (enterprise SaaS/AI technology), and Aditi Consulting (digital engineering/IT services).\n\nThe strongest historical pattern is therefore technology-dependent B2B organizations operating cloud infrastructure and serving enterprise customers.",
+            "majorDifferentiators": "Aadit provides human-led 24/7 security monitoring, rather than simply deploying another security tool or forwarding automated alerts.\n\nSecurity analysts investigate and validate alerts before escalation, helping customers focus on genuine security incidents rather than large volumes of raw alerts.\n\nAadit works alongside the customer's existing IT and security infrastructure, allowing organizations to strengthen their security operations without replacing their existing technology investments.\n\nKey differentiators include 24/7 human monitoring, manual investigation and validation of security events, experienced security analysts, rapid escalation of genuine threats, integration with existing security infrastructure, personalized support, and a cost-effective alternative to building an internal SOC.",
+            "typicalEmployeeRange": "100–2,000 employees; sweet spot: 200–1,000 employees",
+            "businessMaturityStage": "REPEATABLE_SALES",
+            "customerBuyingReasons": "",
+            "historicalGeographies": "India and United States / North America, including organizations with distributed and global operations.\n\nExisting Managed SOC customers operate across multiple locations and serve customers internationally, so Aadit has experience supporting security environments that are not limited to a single office or geography.",
+            "historicalCompanySizes": "Aadit's Managed SOC customers range from growing technology companies to large global technology/service organizations.\n\nBased on the existing customer set, the historical footprint spans approximately:\n\n50 to 2,000+ employees\n\nRather than treating company size as a strict requirement, the stronger historical indicator is organizations with sufficiently complex cloud/IT environments, enterprise customers, sensitive data and a requirement for continuous security monitoring.",
+            "typicalCustomerProfile": "Mid-market and growing organizations with significant cloud and IT infrastructure that need continuous cybersecurity monitoring but do not have a fully staffed 24/7 internal SOC. Ideal customers typically use Microsoft 365/Azure or other cloud platforms, have 100+ employees, handle sensitive customer or business data, serve enterprise customers, and have security or compliance requirements such as ISO 27001, SOC 2, customer security assessments or cyber-insurance. Strong industries include SaaS, technology, IT services, fintech, financial services, healthcare and professional services.",
+            "typicalUrgencyTriggers": "",
+            "customerInterestTriggers": "",
+            "competitorsOrAlternatives": "Other Managed SOC, MSSP and MDR providers; Arctic Wolf, Expel, Red Canary, eSentire, Sophos MDR, Rapid7 MDR, Secureworks and regional cybersecurity providers. Alternatives also include monitoring security internally through the existing IT team, relying primarily on automated security tools, using an existing MSP for security, or building an internal SOC.",
+            "waitlistOrLettersOfIntent": "",
+            "badCustomerCharacteristics": "",
+            "productOrServiceDescription": "Aadit provides a fully managed 24/7 Security Operations Center (SOC) for organizations that need continuous cybersecurity monitoring without the cost and complexity of building an internal SOC.\n\nAadit's security analysts continuously monitor the customer's IT and cloud environment, investigate security alerts, identify genuine threats, prioritize incidents, and coordinate with the customer's IT team for response and remediation.\n\nThe service provides continuous human security oversight across endpoints, identities, cloud infrastructure, networks and security systems, helping organizations detect and respond to threats before they become serious security incidents.",
+            "prospectiveCustomerEvidence": "",
+            "commonTechnicalEvaluatorRoles": ""
+          },
+          "interpretation": {
+            "claims": [
+              {
+                "key": "target_customer",
+                "evidence": "Mid-market and growing organizations with significant cloud and IT infrastructure that need continuous cybersecurity monitoring but do not have a fully staffed 24/7 internal SOC. Ideal customers typically use Microsoft 365/Azure or other cloud platforms, have 100+ employees, handle sensitive customer or business data, serve enterprise customers, and have security or compliance requirements such as ISO 27001, SOC 2, customer security assessments or cyber-insurance. Strong industries include SaaS, technology, IT services, fintech, financial services, healthcare and professional services.",
+                "statement": "Mid-market and growing organizations with significant cloud and IT infrastructure that need continuous cybersecurity monitoring but do not have a fully staffed 24/7 internal SOC. Ideal customers typically use Microsoft 365/Azure or other cloud platforms, have 100+ employees, handle sensitive customer or business data, serve enterprise customers, and have security or compliance requirements such as ISO 27001, SOC 2, customer security assessments or cyber-insurance. Strong industries include SaaS, technology, IT services, fintech, financial services, healthcare and professional services.",
+                "provenance": "FOUNDER_HYPOTHESIS",
+                "isAssumption": true,
+                "validationStatus": "UNTESTED"
+              },
+              {
+                "key": "target_company_size",
+                "evidence": "100–2,000 employees; sweet spot: 200–1,000 employees",
+                "statement": "100–2,000 employees; sweet spot: 200–1,000 employees",
+                "provenance": "FOUNDER_HYPOTHESIS",
+                "isAssumption": true,
+                "validationStatus": "UNTESTED"
+              },
+              {
+                "key": "customers",
+                "evidence": "Current Managed SOC customers include technology, AI/SaaS and digital engineering companies operating cloud-based environments and serving enterprise customers. Examples include Alphastream.ai, Altoura and Aditi Consulting. These organizations depend heavily on technology infrastructure, handle sensitive business/customer data, and require strong security monitoring. Customers range from growing technology companies to large global organizations, demonstrating that the service can support different levels of infrastructure complexity.",
+                "statement": "Current Managed SOC customers include technology, AI/SaaS and digital engineering companies operating cloud-based environments and serving enterprise customers. Examples include Alphastream.ai, Altoura and Aditi Consulting. These organizations depend heavily on technology infrastructure, handle sensitive business/customer data, and require strong security monitoring. Customers range from growing technology companies to large global organizations, demonstrating that the service can support different levels of infrastructure complexity.",
+                "provenance": "CUSTOMER",
+                "isAssumption": false,
+                "validationStatus": "PARTIALLY_VALIDATED"
+              },
+              {
+                "key": "won_opportunities",
+                "evidence": "Won opportunities typically involve companies with established IT/cloud environments but without sufficient internal resources for true 24/7 security monitoring. Common characteristics include cloud adoption, Microsoft-centric environments, distributed users, enterprise customers, sensitive data, growing security complexity and compliance requirements.\n\nDeals become stronger when there is a clear trigger: an upcoming ISO 27001/SOC 2 or customer audit, enterprise customer security requirements, a recent security concern, rapid growth, increasing endpoints/cloud workloads, or management realizing that the existing IT team cannot effectively monitor security around the clock.\n\nAadit wins when customers value human-led 24/7 monitoring, manual investigation of alerts, direct access to experienced analysts, flexibility and cost-effectiveness compared with building an internal SOC.",
+                "statement": "Won opportunities typically involve companies with established IT/cloud environments but without sufficient internal resources for true 24/7 security monitoring. Common characteristics include cloud adoption, Microsoft-centric environments, distributed users, enterprise customers, sensitive data, growing security complexity and compliance requirements.\n\nDeals become stronger when there is a clear trigger: an upcoming ISO 27001/SOC 2 or customer audit, enterprise customer security requirements, a recent security concern, rapid growth, increasing endpoints/cloud workloads, or management realizing that the existing IT team cannot effectively monitor security around the clock.\n\nAadit wins when customers value human-led 24/7 monitoring, manual investigation of alerts, direct access to experienced analysts, flexibility and cost-effectiveness compared with building an internal SOC.",
+                "provenance": "SALES_OUTCOME",
+                "isAssumption": false,
+                "validationStatus": "PARTIALLY_VALIDATED"
+              },
+              {
+                "key": "lost_opportunities",
+                "evidence": "Opportunities are more likely to be lost or delayed when cybersecurity monitoring is viewed as non-urgent, there is no immediate compliance/customer requirement, management believes existing security tools are sufficient, or the internal IT team believes it can continue handling security monitoring.\n\nOther common barriers include budget constraints, comparison with lower-cost automated MDR/MSSP offerings, preference for an incumbent IT/security provider, long procurement processes and organizations deciding to postpone the project.",
+                "statement": "Opportunities are more likely to be lost or delayed when cybersecurity monitoring is viewed as non-urgent, there is no immediate compliance/customer requirement, management believes existing security tools are sufficient, or the internal IT team believes it can continue handling security monitoring.\n\nOther common barriers include budget constraints, comparison with lower-cost automated MDR/MSSP offerings, preference for an incumbent IT/security provider, long procurement processes and organizations deciding to postpone the project.",
+                "provenance": "SALES_OUTCOME",
+                "isAssumption": false,
+                "validationStatus": "PARTIALLY_VALIDATED"
+              }
+            ],
+            "unknowns": [
+              "Specific onboarding process, implementation timeline, and service-level commitments are unknown.",
+              "Exact pricing structure, minimum contract terms, and how pricing varies by users, endpoints, workloads, or scope are unknown.",
+              "Named technical integrations and supported security-tool vendors beyond Microsoft 365, Azure, cloud platforms, and existing customer infrastructure are unknown.",
+              "Specific customer retention, renewal, expansion, or satisfaction history is unknown.",
+              "Specific win rates, loss rates, and competitive win/loss results are unknown.",
+              "Specific measurable customer outcomes, such as incident-response time improvements or alert-volume reductions, are unknown.",
+              "The precise division of responsibilities between Aadit and customer IT teams during incident response and remediation is unknown.",
+              "The full set of compliance frameworks supported beyond ISO 27001, SOC 2, customer security assessments, cyber-insurance, and other unspecified obligations is unknown."
+            ],
+            "industries": [
+              "Technology and IT services.",
+              "SaaS and enterprise software.",
+              "Artificial intelligence.",
+              "FinTech and financial technology.",
+              "Financial data and analytics.",
+              "Digital engineering and technology consulting.",
+              "Healthcare.",
+              "Professional services."
+            ],
+            "buyer_roles": [
+              "CISO.",
+              "Head of Information Security.",
+              "Director of Information Security.",
+              "VP or Head of IT.",
+              "IT Director.",
+              "Head of Infrastructure.",
+              "CIO.",
+              "CTO.",
+              "Security Manager.",
+              "IT Security Manager.",
+              "Infrastructure Manager.",
+              "Founder, CEO, or COO in smaller technology companies.",
+              "CFO or COO as economic buyers."
+            ],
+            "geographies": [
+              "India.",
+              "United States and North America.",
+              "United Arab Emirates.",
+              "United Kingdom.",
+              "Singapore.",
+              "Organizations with distributed or global operations."
+            ],
+            "champion_roles": [
+              "IT Manager.",
+              "Security Manager.",
+              "Information Security Manager.",
+              "SOC or Security Lead.",
+              "Infrastructure Manager.",
+              "Cloud or Infrastructure Lead.",
+              "Head of IT.",
+              "Compliance or GRC Manager."
+            ],
+            "buying_triggers": [
+              "Upcoming ISO 27001, SOC 2, or customer audit.",
+              "Enterprise customer security requirements or security assessments.",
+              "A recent security concern or active security incident.",
+              "A compliance deadline.",
+              "Rapid growth, increasing infrastructure, or expanding enterprise deployments.",
+              "Increasing endpoints, cloud workloads, locations, or workforce size.",
+              "Management recognizing that the existing IT team cannot provide effective 24/7 security monitoring.",
+              "An immediate need for 24/7 monitoring."
+            ],
+            "differentiators": [
+              "Human-led 24/7 security monitoring rather than only deploying tools or forwarding automated alerts.",
+              "Security analysts manually investigate and validate alerts before escalation.",
+              "Focus on genuine threats rather than large volumes of raw alerts.",
+              "Works alongside existing IT and security infrastructure without requiring replacement of current technology investments.",
+              "Direct access to experienced security analysts.",
+              "Rapid escalation of genuine threats.",
+              "Personalized support.",
+              "Cost-effective alternative to building and maintaining an internal round-the-clock SOC."
+            ],
+            "problems_solved": [
+              "Gaps in 24/7 security monitoring, including nights, weekends, and holidays.",
+              "Shortage of skilled cybersecurity analysts for continuous alert review and investigation.",
+              "Excessive security alerts and alert fatigue.",
+              "Slow threat detection and investigation.",
+              "Lack of centralized visibility across cloud, endpoints, identities, networks, and security systems.",
+              "Limited internal incident-response capability.",
+              "Difficulty meeting security-monitoring expectations associated with ISO 27001, SOC 2, customer security assessments, and other compliance obligations."
+            ],
+            "technical_roles": [
+              "Security Manager.",
+              "IT Security Manager.",
+              "SOC or Security Lead.",
+              "Head of Infrastructure.",
+              "Infrastructure Manager.",
+              "Cloud or Infrastructure Lead.",
+              "IT Manager.",
+              "Information Security Manager."
+            ],
+            "offering_summary": "Managed SOC: a fully managed, human-led 24/7 Security Operations Center that continuously monitors customer IT and cloud environments, investigates and validates alerts, identifies and prioritizes threats, and coordinates response and remediation with customer IT teams.",
+            "urgency_patterns": [
+              "Active security incidents can shorten sales cycles to 2–4 weeks.",
+              "Audit deadlines, compliance requirements, and enterprise customer security demands increase urgency.",
+              "Recent security concerns and an immediate need for 24/7 monitoring increase urgency.",
+              "Exploratory projects without a defined deadline tend to have longer sales cycles.",
+              "Pending budget approval, multiple stakeholders, and outsourced-SOC-versus-internal-build comparisons can extend sales cycles."
+            ],
+            "business_outcomes": [
+              "Continuous security oversight across endpoints, identities, cloud infrastructure, networks, and security systems.",
+              "Investigation and validation of alerts before escalation, helping teams focus on genuine security incidents rather than raw alert volume.",
+              "Round-the-clock monitoring without building and staffing an internal 24/7 SOC.",
+              "Support for demonstrating security monitoring and incident-response capabilities to enterprise customers and during security assessments or audits.",
+              "Ability to expand SOC coverage as employees, endpoints, cloud workloads, locations, or security requirements grow."
+            ],
+            "common_objections": [
+              "We already have security tools in place.",
+              "Our internal IT or security team monitors this.",
+              "We do not need 24/7 monitoring yet.",
+              "We have not had a major security incident.",
+              "Our current MSP already handles security.",
+              "The budget is too high.",
+              "We are comparing other MDR or MSSP providers.",
+              "We can build this capability internally.",
+              "We do not generate enough security alerts to justify a SOC.",
+              "We can revisit this during the next budget cycle.",
+              "Uncertainty about the immediate ROI of security monitoring."
+            ],
+            "compliance_patterns": [
+              "ISO 27001 requirements or audit preparation.",
+              "SOC 2 requirements or readiness.",
+              "Enterprise customer security requirements and security assessments.",
+              "Cyber-insurance requirements.",
+              "Security monitoring and incident-response capability expectations."
+            ],
+            "technology_patterns": [
+              "Microsoft 365 and Azure environments.",
+              "Other cloud platforms.",
+              "Cloud-based infrastructure and cloud workloads.",
+              "Endpoints, identities, networks, and security systems requiring centralized monitoring.",
+              "Microsoft-centric environments.",
+              "Existing cybersecurity tools and security infrastructure that customers want to retain."
+            ],
+            "company_size_patterns": [
+              "Typical target range: 100–2,000 employees.",
+              "Stated sweet spot: 200–1,000 employees.",
+              "Historical customer footprint: approximately 50 to 2,000+ employees.",
+              "Infrastructure complexity, enterprise customers, sensitive data, and continuous-monitoring needs are stronger indicators than company size alone."
+            ],
+            "disqualifier_hypotheses": [
+              "No immediate need or urgency for continuous security monitoring.",
+              "Belief that existing security tools, an internal IT team, or an existing MSP sufficiently cover security monitoring.",
+              "Insufficient budget for managed security monitoring.",
+              "Preference for a lower-cost automated MDR/MSSP option.",
+              "Decision to build an internal SOC instead of outsourcing.",
+              "Long procurement, vendor onboarding, or management-approval processes.",
+              "Decision to postpone until a future budget cycle."
+            ],
+            "ideal_customer_patterns": [
+              "Organizations with significant cloud and IT infrastructure that need continuous monitoring but do not have a fully staffed internal 24/7 SOC.",
+              "Organizations with 100–2,000 employees, with a stated sweet spot of 200–1,000 employees.",
+              "Organizations with $10M–$250M annual revenue, with a stated sweet spot of $20M–$100M.",
+              "Technology-dependent B2B organizations serving enterprise customers.",
+              "Organizations handling sensitive customer or business data.",
+              "Organizations with an internal IT team that cannot effectively monitor security around the clock.",
+              "Organizations that already use cybersecurity tools but need analysts to continuously monitor and investigate alerts.",
+              "Organizations with distributed users or workforces, growing endpoints or cloud workloads, and increasing security complexity.",
+              "Organizations facing ISO 27001, SOC 2, cyber-insurance, enterprise customer-security, or customer-assessment requirements."
+            ],
+            "negative_customer_patterns": [
+              "Organizations where cybersecurity monitoring is viewed as non-urgent.",
+              "Organizations with no immediate compliance, audit, or enterprise-customer security requirement.",
+              "Organizations whose management believes existing security tools are sufficient.",
+              "Organizations whose internal IT team believes it can continue handling security monitoring.",
+              "Organizations with budget constraints or a preference for lower-cost automated MDR/MSSP offerings.",
+              "Organizations committed to an incumbent IT, security, or MSP provider.",
+              "Organizations that choose to postpone the project or revisit it during a later budget cycle."
+            ]
+          }
+        },
+        "customerAssumptions": [
+          "We believe Mid-market and growing organizations with significant cloud and IT infrastructure that need continuous cybersecurity monitoring but do not have a fully staffed 24/7 internal SOC. Ideal customers typically use Microsoft 365/Azure or other cloud platforms, have 100+ employees, handle sensitive customer or business data, serve enterprise customers, and have security or compliance requirements such as ISO 27001, SOC 2, customer security assessments or cyber-insurance. Strong industries include SaaS, technology, IT services, fintech, financial services, healthcare and professional services..",
+          "We believe companies with 100–2,000 employees; sweet spot: 200–1,000 employees employees are a strong fit."
+        ]
+      },
+      "assumptions": [
+        "We believe Mid-market and growing organizations with significant cloud and IT infrastructure that need continuous cybersecurity monitoring but do not have a fully staffed 24/7 internal SOC. Ideal customers typically use Microsoft 365/Azure or other cloud platforms, have 100+ employees, handle sensitive customer or business data, serve enterprise customers, and have security or compliance requirements such as ISO 27001, SOC 2, customer security assessments or cyber-insurance. Strong industries include SaaS, technology, IT services, fintech, financial services, healthcare and professional services..",
+        "We believe companies with 100–2,000 employees; sweet spot: 200–1,000 employees employees are a strong fit."
+      ],
+      "sourceBusinessTwinVersionId": "a355a198-e9d3-449e-a9cf-c064fab4faa2",
+      "sourceIcpVersionId": "a7f0c79f-bf17-4b42-84cd-60a46c562f56",
+      "generationMethod": "AI_PROPOSAL",
+      "modelUsed": "gpt-5.6-terra",
+      "promptVersion": "opportunity-pack-v1",
+      "createdBy": "user_3IaemcwN9OMG4fylhZMmn9vr5ES",
+      "approvedBy": null,
+      "approvedAt": null,
+      "activatedAt": null,
+      "createdAt": "2026-09-01T16:31:17.434Z"
+    },
+    "signals": [
+      {
+        "id": "ca7c2d35-0880-413a-aa57-bccd86ede0c1",
+        "versionId": "871a0bbb-b308-4dfd-b285-fe19b7e72dc5",
+        "code": "ISO27001_ACTIVITY",
+        "name": "ISO 27001 activity",
+        "description": "Public evidence that the company is pursuing, renewing, announcing, or maintaining ISO 27001 certification or audit-related activity.",
+        "whyItMatters": "ISO 27001 activity may create a need to evidence continuous security monitoring and incident-response processes. Aadit's human-led monitoring can be positioned as complementary to existing security controls, subject to validating scope and ownership.",
+        "category": "COMPLIANCE",
+        "polarity": "POSITIVE",
+        "needImpact": 85,
+        "timingImpact": 80,
+        "fitImpact": 75,
+        "likelyEvidence": [
+          "Certification announcement or trust-center update",
+          "ISO 27001 scope statement",
+          "Audit, compliance, GRC, or information-security job posting",
+          "Customer-facing security documentation"
+        ],
+        "sourceCapabilities": [
+          "WEB_SEARCH"
+        ],
+        "lifetimeDays": 180,
+        "suggestedStrength": 82,
+        "minimumConfidence": 75,
+        "potentialFalsePositives": [
+          "Certification may already be complete and operationally mature.",
+          "Certification scope may exclude the systems relevant to Managed SOC.",
+          "The company may already have an internal or incumbent managed 24/7 monitoring service."
+        ],
+        "factTypes": [
+          "CERTIFICATION"
+        ],
+        "matchingConfiguration": {
+          "keywords": [
+            "ISO 27001",
+            "ISO/IEC 27001",
+            "ISMS",
+            "information security management system"
+          ],
+          "recencyDays": 180,
+          "requireCurrentOrDatedEvidence": true
+        },
+        "reviewStatus": "PROPOSED",
+        "hypothesis": true,
+        "activatedSignalDefinitionId": null,
+        "createdAt": "2026-09-01T16:31:17.455Z",
+        "updatedAt": "2026-09-01T16:31:17.455Z"
+      },
+      {
+        "id": "eae34dc4-1f0f-4b93-b8c1-bfcf5e5d09d4",
+        "versionId": "871a0bbb-b308-4dfd-b285-fe19b7e72dc5",
+        "code": "SOC2_ACTIVITY",
+        "name": "SOC 2 activity",
+        "description": "Public evidence that the company is preparing for, completing, renewing, or communicating SOC 2 assurance activity.",
+        "whyItMatters": "SOC 2 activity can create a research path around monitoring, alert investigation, incident response, and customer security-assessment expectations; it does not prove a Managed SOC requirement.",
+        "category": "COMPLIANCE",
+        "polarity": "POSITIVE",
+        "needImpact": 82,
+        "timingImpact": 78,
+        "fitImpact": 78,
+        "likelyEvidence": [
+          "SOC 2 report announcement",
+          "Trust-center security or compliance page",
+          "SOC 2 readiness or compliance job posting",
+          "Customer security documentation"
+        ],
+        "sourceCapabilities": [
+          "WEB_SEARCH"
+        ],
+        "lifetimeDays": 180,
+        "suggestedStrength": 80,
+        "minimumConfidence": 75,
+        "potentialFalsePositives": [
+          "The company may have completed SOC 2 previously with established controls.",
+          "SOC 2 scope may cover only a subset of products or infrastructure.",
+          "An existing MSP, MSSP, MDR provider, or internal team may already provide monitoring."
+        ],
+        "factTypes": [
+          "CERTIFICATION"
+        ],
+        "matchingConfiguration": {
+          "keywords": [
+            "SOC 2",
+            "SOC2",
+            "System and Organization Controls",
+            "trust center"
+          ],
+          "recencyDays": 180,
+          "requireCurrentOrDatedEvidence": true
+        },
+        "reviewStatus": "PROPOSED",
+        "hypothesis": true,
+        "activatedSignalDefinitionId": null,
+        "createdAt": "2026-09-01T16:31:17.455Z",
+        "updatedAt": "2026-09-01T16:31:17.455Z"
+      },
+      {
+        "id": "39aa55ca-4000-4158-95ff-18c86d53f517",
+        "versionId": "871a0bbb-b308-4dfd-b285-fe19b7e72dc5",
+        "code": "NEW_ENTERPRISE_CUSTOMERS",
+        "name": "New enterprise customers",
+        "description": "A public announcement, case study, or credible report that the company has won, expanded with, or launched for enterprise customers.",
+        "whyItMatters": "New enterprise relationships may increase customer-security questionnaire volume, data-protection scrutiny, and expectations for operational security coverage, especially for cloud-based B2B firms.",
+        "category": "CUSTOMER",
+        "polarity": "POSITIVE",
+        "needImpact": 72,
+        "timingImpact": 70,
+        "fitImpact": 82,
+        "likelyEvidence": [
+          "Enterprise customer win announcement",
+          "Enterprise partnership or deployment announcement",
+          "Named enterprise customer case study",
+          "Press release describing an enterprise rollout"
+        ],
+        "sourceCapabilities": [
+          "WEB_SEARCH"
+        ],
+        "lifetimeDays": 120,
+        "suggestedStrength": 74,
+        "minimumConfidence": 75,
+        "potentialFalsePositives": [
+          "The customer relationship may not involve sensitive data or production-system access.",
+          "The announcement may concern a pilot rather than a material deployment.",
+          "Enterprise security obligations may already be fully covered by existing controls or providers."
+        ],
+        "factTypes": [
+          "ENTERPRISE_CUSTOMER"
+        ],
+        "matchingConfiguration": {
+          "keywords": [
+            "enterprise customer",
+            "selected by",
+            "customer deployment",
+            "strategic customer",
+            "enterprise rollout"
+          ],
+          "recencyDays": 120,
+          "requireNamedOrClearlyEnterpriseCustomer": true
+        },
+        "reviewStatus": "PROPOSED",
+        "hypothesis": true,
+        "activatedSignalDefinitionId": null,
+        "createdAt": "2026-09-01T16:31:17.455Z",
+        "updatedAt": "2026-09-01T16:31:17.455Z"
+      },
+      {
+        "id": "bb3b9b00-7e92-42b8-be24-3b83d546af95",
+        "versionId": "871a0bbb-b308-4dfd-b285-fe19b7e72dc5",
+        "code": "CLOUD_EXPANSION",
+        "name": "Cloud expansion",
+        "description": "Public evidence of an expanding cloud footprint, new cloud workload, cloud migration, platform scaling, or infrastructure modernization.",
+        "whyItMatters": "Growing cloud workloads can increase the number and variety of environments requiring visibility. This is a fit and discovery signal, not evidence that monitoring is inadequate.",
+        "category": "EXPANSION",
+        "polarity": "POSITIVE",
+        "needImpact": 70,
+        "timingImpact": 65,
+        "fitImpact": 84,
+        "likelyEvidence": [
+          "Cloud migration announcement",
+          "New cloud region or production environment announcement",
+          "Platform-scale or infrastructure modernization announcement",
+          "Engineering or infrastructure expansion statement"
+        ],
+        "sourceCapabilities": [
+          "WEB_SEARCH"
+        ],
+        "lifetimeDays": 180,
+        "suggestedStrength": 72,
+        "minimumConfidence": 70,
+        "potentialFalsePositives": [
+          "The change may be small, non-production, or already complete.",
+          "The organization may have an established cloud security operations team.",
+          "The workload may be fully managed by a third party with separate security operations."
+        ],
+        "factTypes": [
+          "COMPANY_EXPANSION"
+        ],
+        "matchingConfiguration": {
+          "keywords": [
+            "cloud migration",
+            "cloud infrastructure",
+            "cloud workloads",
+            "new region",
+            "platform expansion",
+            "infrastructure modernization"
+          ],
+          "recencyDays": 180,
+          "requireCurrentOrDatedEvidence": true
+        },
+        "reviewStatus": "PROPOSED",
+        "hypothesis": true,
+        "activatedSignalDefinitionId": null,
+        "createdAt": "2026-09-01T16:31:17.455Z",
+        "updatedAt": "2026-09-01T16:31:17.455Z"
+      },
+      {
+        "id": "dc7a8aa8-3c03-48fc-b383-65c8ed6e84d1",
+        "versionId": "871a0bbb-b308-4dfd-b285-fe19b7e72dc5",
+        "code": "GEOGRAPHIC_EXPANSION",
+        "name": "Geographic expansion",
+        "description": "Public evidence of entry into a new market, new office, expanded delivery location, or cross-border operating expansion.",
+        "whyItMatters": "Distributed operations may add identities, endpoints, users, and infrastructure to the security environment, making round-the-clock oversight a useful discovery topic.",
+        "category": "EXPANSION",
+        "polarity": "POSITIVE",
+        "needImpact": 68,
+        "timingImpact": 68,
+        "fitImpact": 76,
+        "likelyEvidence": [
+          "New-country or new-market announcement",
+          "New office or delivery-center announcement",
+          "International expansion press release",
+          "Regional hiring tied to a new location"
+        ],
+        "sourceCapabilities": [
+          "WEB_SEARCH"
+        ],
+        "lifetimeDays": 180,
+        "suggestedStrength": 70,
+        "minimumConfidence": 72,
+        "potentialFalsePositives": [
+          "The expansion may be a sales presence with little operational infrastructure.",
+          "Security operations may be centrally managed and already adequately staffed.",
+          "The new location may not materially increase monitored assets."
+        ],
+        "factTypes": [
+          "NEW_MARKET",
+          "COMPANY_EXPANSION"
+        ],
+        "matchingConfiguration": {
+          "keywords": [
+            "expands to",
+            "new market",
+            "new office",
+            "new delivery center",
+            "global expansion",
+            "international expansion"
+          ],
+          "recencyDays": 180,
+          "requireCurrentOrDatedEvidence": true
+        },
+        "reviewStatus": "PROPOSED",
+        "hypothesis": true,
+        "activatedSignalDefinitionId": null,
+        "createdAt": "2026-09-01T16:31:17.455Z",
+        "updatedAt": "2026-09-01T16:31:17.455Z"
+      },
+      {
+        "id": "18e49a48-0c5c-45db-afd7-d265109d7a63",
+        "versionId": "871a0bbb-b308-4dfd-b285-fe19b7e72dc5",
+        "code": "SECURITY_HIRING",
+        "name": "Security hiring",
+        "description": "A public job opening for security, information security, security engineering, incident response, or security operations responsibilities.",
+        "whyItMatters": "Security hiring may reveal an expanding security program or an operational workload that merits discovery. A single hire does not show that the company needs outsourced coverage.",
+        "category": "HIRING",
+        "polarity": "POSITIVE",
+        "needImpact": 64,
+        "timingImpact": 58,
+        "fitImpact": 74,
+        "likelyEvidence": [
+          "Security analyst job opening",
+          "Information security engineer opening",
+          "Incident response or security operations opening",
+          "Security manager opening with monitoring responsibilities"
+        ],
+        "sourceCapabilities": [
+          "WEB_SEARCH"
+        ],
+        "lifetimeDays": 90,
+        "suggestedStrength": 65,
+        "minimumConfidence": 72,
+        "potentialFalsePositives": [
+          "The role may be a backfill.",
+          "The hire may strengthen an already mature internal SOC.",
+          "The role may be focused on product security rather than operational monitoring."
+        ],
+        "factTypes": [
+          "JOB_OPENING"
+        ],
+        "matchingConfiguration": {
+          "keywords": [
+            "security analyst",
+            "information security",
+            "security operations",
+            "incident response",
+            "security engineer",
+            "SIEM"
+          ],
+          "recencyDays": 90,
+          "requireActiveJobPosting": true
+        },
+        "reviewStatus": "PROPOSED",
+        "hypothesis": true,
+        "activatedSignalDefinitionId": null,
+        "createdAt": "2026-09-01T16:31:17.455Z",
+        "updatedAt": "2026-09-01T16:31:17.455Z"
+      },
+      {
+        "id": "129fa303-e3a4-4cca-9775-4632c993cace",
+        "versionId": "871a0bbb-b308-4dfd-b285-fe19b7e72dc5",
+        "code": "GRC_HIRING",
+        "name": "GRC hiring",
+        "description": "A public job opening for governance, risk, compliance, audit, privacy, or security assurance responsibilities.",
+        "whyItMatters": "GRC hiring may coincide with audit preparation, customer assurance work, or formalization of security controls, creating a reason to ask how continuous monitoring evidence is maintained.",
+        "category": "HIRING",
+        "polarity": "POSITIVE",
+        "needImpact": 70,
+        "timingImpact": 68,
+        "fitImpact": 76,
+        "likelyEvidence": [
+          "GRC manager job opening",
+          "Compliance or risk analyst opening",
+          "Security assurance role",
+          "Internal audit or privacy role with security-control responsibilities"
+        ],
+        "sourceCapabilities": [
+          "WEB_SEARCH"
+        ],
+        "lifetimeDays": 90,
+        "suggestedStrength": 69,
+        "minimumConfidence": 72,
+        "potentialFalsePositives": [
+          "The role may address non-security compliance only.",
+          "The company may already have mature monitoring and evidence-collection processes.",
+          "The hiring need may be unrelated to a current audit deadline."
+        ],
+        "factTypes": [
+          "JOB_OPENING"
+        ],
+        "matchingConfiguration": {
+          "keywords": [
+            "GRC",
+            "governance risk compliance",
+            "security compliance",
+            "security assurance",
+            "ISO 27001",
+            "SOC 2",
+            "audit"
+          ],
+          "recencyDays": 90,
+          "requireActiveJobPosting": true
+        },
+        "reviewStatus": "PROPOSED",
+        "hypothesis": true,
+        "activatedSignalDefinitionId": null,
+        "createdAt": "2026-09-01T16:31:17.455Z",
+        "updatedAt": "2026-09-01T16:31:17.455Z"
+      },
+      {
+        "id": "a7699da8-e59a-4580-bccf-9f7c50dbd4e8",
+        "versionId": "871a0bbb-b308-4dfd-b285-fe19b7e72dc5",
+        "code": "SECURITY_LEADERSHIP_CHANGE",
+        "name": "Security leadership change",
+        "description": "A public appointment or transition involving a senior security, information-security, risk, IT-security, CIO, or CISO leader.",
+        "whyItMatters": "A leadership transition can create a window to understand security operating-model priorities, current monitoring coverage, and the balance between internal teams and service partners.",
+        "category": "LEADERSHIP",
+        "polarity": "POSITIVE",
+        "needImpact": 58,
+        "timingImpact": 66,
+        "fitImpact": 68,
+        "likelyEvidence": [
+          "New CISO or security leader announcement",
+          "Leadership bio showing a recent start date",
+          "Company announcement of security, risk, or IT leadership appointment",
+          "Professional profile update corroborated by company information"
+        ],
+        "sourceCapabilities": [
+          "WEB_SEARCH"
+        ],
+        "lifetimeDays": 120,
+        "suggestedStrength": 64,
+        "minimumConfidence": 75,
+        "potentialFalsePositives": [
+          "The leader may inherit a mature security operations function.",
+          "The appointment may be interim or unrelated to security operations.",
+          "A leadership change does not indicate budget or a planned vendor evaluation."
+        ],
+        "factTypes": [
+          "LEADERSHIP_CHANGE"
+        ],
+        "matchingConfiguration": {
+          "keywords": [
+            "Chief Information Security Officer",
+            "CISO",
+            "Head of Information Security",
+            "VP Security",
+            "security leader",
+            "information security leader"
+          ],
+          "recencyDays": 120,
+          "requireNamedLeaderAndRole": true
+        },
+        "reviewStatus": "PROPOSED",
+        "hypothesis": true,
+        "activatedSignalDefinitionId": null,
+        "createdAt": "2026-09-01T16:31:17.455Z",
+        "updatedAt": "2026-09-01T16:31:17.455Z"
+      },
+      {
+        "id": "fee47eaf-990c-43b5-bc98-ef9cd72f648e",
+        "versionId": "871a0bbb-b308-4dfd-b285-fe19b7e72dc5",
+        "code": "RAPID_COMPANY_GROWTH",
+        "name": "Rapid company growth",
+        "description": "Public evidence of material workforce growth over a defined recent period.",
+        "whyItMatters": "Workforce growth can increase endpoints, identities, SaaS access, and distributed-user complexity. It is a context signal for assessing whether security monitoring coverage has scaled accordingly.",
+        "category": "GROWTH",
+        "polarity": "POSITIVE",
+        "needImpact": 66,
+        "timingImpact": 62,
+        "fitImpact": 78,
+        "likelyEvidence": [
+          "Reported employee-growth metric",
+          "Company announcement of hiring expansion",
+          "Credible business profile documenting headcount increase",
+          "Annual report or press release describing workforce growth"
+        ],
+        "sourceCapabilities": [
+          "WEB_SEARCH"
+        ],
+        "lifetimeDays": 180,
+        "suggestedStrength": 68,
+        "minimumConfidence": 75,
+        "potentialFalsePositives": [
+          "Headcount growth may be concentrated in non-technical functions.",
+          "The organization may have already scaled internal security operations.",
+          "Growth figures may be stale or reflect acquisitions rather than organic expansion."
+        ],
+        "factTypes": [
+          "EMPLOYEE_GROWTH"
+        ],
+        "matchingConfiguration": {
+          "keywords": [
+            "headcount growth",
+            "employee growth",
+            "hiring plan",
+            "team grew",
+            "workforce expansion"
+          ],
+          "recencyDays": 180,
+          "requireQuantifiedOrComparativeGrowth": true
+        },
+        "reviewStatus": "PROPOSED",
+        "hypothesis": true,
+        "activatedSignalDefinitionId": null,
+        "createdAt": "2026-09-01T16:31:17.455Z",
+        "updatedAt": "2026-09-01T16:31:17.455Z"
+      },
+      {
+        "id": "44c1a2ae-ff71-4c76-a85b-a2dbff799f1d",
+        "versionId": "871a0bbb-b308-4dfd-b285-fe19b7e72dc5",
+        "code": "FUNDING_EVENT",
+        "name": "Funding event",
+        "description": "A public equity or debt funding announcement for a company that otherwise matches the target profile.",
+        "whyItMatters": "Funding can support growth in infrastructure, customers, and security programs, but should only be used as a contextual prioritization input and paired with a security, compliance, customer, or expansion signal.",
+        "category": "FUNDING",
+        "polarity": "POSITIVE",
+        "needImpact": 45,
+        "timingImpact": 52,
+        "fitImpact": 60,
+        "likelyEvidence": [
+          "Funding announcement",
+          "Investor or company press release",
+          "Credible funding report",
+          "Company statement on planned expansion following funding"
+        ],
+        "sourceCapabilities": [
+          "WEB_SEARCH"
+        ],
+        "lifetimeDays": 120,
+        "suggestedStrength": 55,
+        "minimumConfidence": 80,
+        "potentialFalsePositives": [
+          "Funds may be allocated primarily to non-operational uses.",
+          "The company may not match the ICP despite receiving funding.",
+          "Funding does not establish a security initiative, need, or purchasing timeline."
+        ],
+        "factTypes": [
+          "FUNDING_EVENT"
+        ],
+        "matchingConfiguration": {
+          "keywords": [
+            "funding",
+            "raised",
+            "Series A",
+            "Series B",
+            "investment",
+            "financing"
+          ],
+          "recencyDays": 120,
+          "requireNamedRoundOrAmount": true
+        },
+        "reviewStatus": "PROPOSED",
+        "hypothesis": true,
+        "activatedSignalDefinitionId": null,
+        "createdAt": "2026-09-01T16:31:17.455Z",
+        "updatedAt": "2026-09-01T16:31:17.455Z"
+      },
+      {
+        "id": "727e8218-c033-4ebf-8aef-8dc6229162f0",
+        "versionId": "871a0bbb-b308-4dfd-b285-fe19b7e72dc5",
+        "code": "SECURITY_INCIDENT",
+        "name": "Security incident",
+        "description": "A publicly reported security incident, breach, ransomware event, unauthorized-access event, or material security concern involving the organization.",
+        "whyItMatters": "A verified incident may make monitoring coverage, alert investigation, escalation, and response coordination relevant topics. Outreach must be factual, respectful, and never imply knowledge of non-public events.",
+        "category": "NEGATIVE",
+        "polarity": "POSITIVE",
+        "needImpact": 95,
+        "timingImpact": 95,
+        "fitImpact": 72,
+        "likelyEvidence": [
+          "Company security notice",
+          "Regulatory disclosure",
+          "Customer notification page",
+          "Credible news report citing the company or an authority"
+        ],
+        "sourceCapabilities": [
+          "WEB_SEARCH"
+        ],
+        "lifetimeDays": 90,
+        "suggestedStrength": 90,
+        "minimumConfidence": 85,
+        "potentialFalsePositives": [
+          "Reports may concern a vendor rather than the prospect's own environment.",
+          "The event may be inaccurately attributed or no longer operationally relevant.",
+          "The company may have already remediated the issue and expanded internal or incumbent-provider coverage."
+        ],
+        "factTypes": [
+          "SECURITY_INCIDENT"
+        ],
+        "matchingConfiguration": {
+          "keywords": [
+            "security incident",
+            "data breach",
+            "unauthorized access",
+            "ransomware",
+            "security notice",
+            "incident update"
+          ],
+          "recencyDays": 90,
+          "requirePrimaryDisclosureOrMultipleCredibleSources": true
+        },
+        "reviewStatus": "PROPOSED",
+        "hypothesis": true,
+        "activatedSignalDefinitionId": null,
+        "createdAt": "2026-09-01T16:31:17.455Z",
+        "updatedAt": "2026-09-01T16:31:17.455Z"
+      },
+      {
+        "id": "c08aee4d-7515-4596-8b52-845d7a0dcd5a",
+        "versionId": "871a0bbb-b308-4dfd-b285-fe19b7e72dc5",
+        "code": "SOC_HIRING",
+        "name": "SOC hiring",
+        "description": "A public job opening specifically for SOC analyst, security operations analyst, SIEM monitoring, or 24/7 security-monitoring responsibilities.",
+        "whyItMatters": "SOC-specific hiring may indicate that alert monitoring is becoming a recognized operational requirement. It can also indicate an internal-build path, so the seller should validate whether coverage gaps remain and whether external support is considered.",
+        "category": "HIRING",
+        "polarity": "NEGATIVE",
+        "needImpact": 72,
+        "timingImpact": 64,
+        "fitImpact": 45,
+        "likelyEvidence": [
+          "SOC analyst job opening",
+          "Security operations center job opening",
+          "SIEM monitoring role",
+          "Shift-based security-monitoring requirement"
+        ],
+        "sourceCapabilities": [
+          "WEB_SEARCH"
+        ],
+        "lifetimeDays": 90,
+        "suggestedStrength": 70,
+        "minimumConfidence": 78,
+        "potentialFalsePositives": [
+          "The company may be hiring one role while retaining a need for outsourced night or weekend coverage.",
+          "The posting may be a replacement role.",
+          "The role may be for a customer-facing managed-security business rather than internal operations."
+        ],
+        "factTypes": [
+          "JOB_OPENING"
+        ],
+        "matchingConfiguration": {
+          "keywords": [
+            "SOC analyst",
+            "security operations center",
+            "security operations analyst",
+            "24x7 security",
+            "SIEM analyst",
+            "shift monitoring"
+          ],
+          "recencyDays": 90,
+          "requireActiveJobPosting": true
+        },
+        "reviewStatus": "PROPOSED",
+        "hypothesis": true,
+        "activatedSignalDefinitionId": null,
+        "createdAt": "2026-09-01T16:31:17.455Z",
+        "updatedAt": "2026-09-01T16:31:17.455Z"
+      }
+    ],
+    "questions": [
+      {
+        "id": "03e82e02-c3e6-4dec-9fa7-0b16f815c25f",
+        "versionId": "871a0bbb-b308-4dfd-b285-fe19b7e72dc5",
+        "signalId": "ca7c2d35-0880-413a-aa57-bccd86ede0c1",
+        "questionText": "What ISO 27001 milestone, certification scope, or audit date is publicly indicated, and which teams own monitoring evidence and incident-response controls?",
+        "reason": "Distinguishes a current assurance initiative from a historic certification and identifies whether continuous monitoring is in scope.",
+        "sourceCapabilities": [
+          "WEB_SEARCH"
+        ],
+        "priority": 92,
+        "expectedInformationGain": 82,
+        "estimatedCost": 2,
+        "reviewStatus": "PROPOSED",
+        "createdAt": "2026-09-01T16:31:17.463Z",
+        "updatedAt": "2026-09-01T16:31:17.463Z"
+      },
+      {
+        "id": "f351ab9e-aacd-4832-8fd5-1325eecc5d1d",
+        "versionId": "871a0bbb-b308-4dfd-b285-fe19b7e72dc5",
+        "signalId": "eae34dc4-1f0f-4b93-b8c1-bfcf5e5d09d4",
+        "questionText": "Is the SOC 2 activity a first-time readiness effort, renewal, or completed report, and what systems or products are included in scope?",
+        "reason": "Clarifies timing and whether the monitored environment is relevant to Aadit's service.",
+        "sourceCapabilities": [
+          "WEB_SEARCH"
+        ],
+        "priority": 90,
+        "expectedInformationGain": 80,
+        "estimatedCost": 2,
+        "reviewStatus": "PROPOSED",
+        "createdAt": "2026-09-01T16:31:17.463Z",
+        "updatedAt": "2026-09-01T16:31:17.463Z"
+      },
+      {
+        "id": "1f249031-cde9-45e4-a38a-1947825a869c",
+        "versionId": "871a0bbb-b308-4dfd-b285-fe19b7e72dc5",
+        "signalId": "39aa55ca-4000-4158-95ff-18c86d53f517",
+        "questionText": "Which enterprise customer deployment was announced, and does the public description suggest handling of sensitive customer data or a production cloud environment?",
+        "reason": "Tests whether the customer event plausibly increases security-assessment or monitoring expectations.",
+        "sourceCapabilities": [
+          "WEB_SEARCH"
+        ],
+        "priority": 78,
+        "expectedInformationGain": 72,
+        "estimatedCost": 2,
+        "reviewStatus": "PROPOSED",
+        "createdAt": "2026-09-01T16:31:17.463Z",
+        "updatedAt": "2026-09-01T16:31:17.463Z"
+      },
+      {
+        "id": "917e454f-9e34-4e66-a853-7897e3288bf3",
+        "versionId": "871a0bbb-b308-4dfd-b285-fe19b7e72dc5",
+        "signalId": "bb3b9b00-7e92-42b8-be24-3b83d546af95",
+        "questionText": "What cloud environment, workload, region, or migration phase is expanding, and is there public evidence of the security or operations model supporting it?",
+        "reason": "Separates a material production expansion from a general cloud-marketing statement.",
+        "sourceCapabilities": [
+          "WEB_SEARCH"
+        ],
+        "priority": 80,
+        "expectedInformationGain": 76,
+        "estimatedCost": 2,
+        "reviewStatus": "PROPOSED",
+        "createdAt": "2026-09-01T16:31:17.463Z",
+        "updatedAt": "2026-09-01T16:31:17.463Z"
+      },
+      {
+        "id": "010eae7f-b444-49b0-8f55-dbe2dcc4f4cd",
+        "versionId": "871a0bbb-b308-4dfd-b285-fe19b7e72dc5",
+        "signalId": "dc7a8aa8-3c03-48fc-b383-65c8ed6e84d1",
+        "questionText": "Does the new geography add delivery operations, employees, endpoints, or production infrastructure, rather than only a sales presence?",
+        "reason": "Determines whether the expansion is likely to add meaningful monitoring complexity.",
+        "sourceCapabilities": [
+          "WEB_SEARCH"
+        ],
+        "priority": 70,
+        "expectedInformationGain": 67,
+        "estimatedCost": 2,
+        "reviewStatus": "PROPOSED",
+        "createdAt": "2026-09-01T16:31:17.463Z",
+        "updatedAt": "2026-09-01T16:31:17.463Z"
+      },
+      {
+        "id": "59ff9155-13c5-41f6-a4a5-2ecb5181e1e4",
+        "versionId": "871a0bbb-b308-4dfd-b285-fe19b7e72dc5",
+        "signalId": "18e49a48-0c5c-45db-afd7-d265109d7a63",
+        "questionText": "What responsibilities, shift coverage, tooling, and reporting line are specified in the security role?",
+        "reason": "Clarifies whether the opening reflects general security investment, a monitoring gap, or a fully internalized operations model.",
+        "sourceCapabilities": [
+          "WEB_SEARCH"
+        ],
+        "priority": 74,
+        "expectedInformationGain": 74,
+        "estimatedCost": 1,
+        "reviewStatus": "PROPOSED",
+        "createdAt": "2026-09-01T16:31:17.463Z",
+        "updatedAt": "2026-09-01T16:31:17.463Z"
+      },
+      {
+        "id": "c15caa55-816c-4ac6-a66d-871008bd1c38",
+        "versionId": "871a0bbb-b308-4dfd-b285-fe19b7e72dc5",
+        "signalId": "129fa303-e3a4-4cca-9775-4632c993cace",
+        "questionText": "Which frameworks, audits, customer assessments, or control-evidence responsibilities are named in the GRC role?",
+        "reason": "Identifies whether a concrete compliance or enterprise-assurance context exists.",
+        "sourceCapabilities": [
+          "WEB_SEARCH"
+        ],
+        "priority": 82,
+        "expectedInformationGain": 78,
+        "estimatedCost": 1,
+        "reviewStatus": "PROPOSED",
+        "createdAt": "2026-09-01T16:31:17.463Z",
+        "updatedAt": "2026-09-01T16:31:17.463Z"
+      },
+      {
+        "id": "18170c9c-d760-430e-8fff-d6cf88353c9d",
+        "versionId": "871a0bbb-b308-4dfd-b285-fe19b7e72dc5",
+        "signalId": "a7699da8-e59a-4580-bccf-9f7c50dbd4e8",
+        "questionText": "What mandate, priorities, and prior operating-model experience are publicly associated with the incoming security leader?",
+        "reason": "Helps tailor a relevant hypothesis around existing tooling, analyst capacity, and 24/7 coverage without assuming a project.",
+        "sourceCapabilities": [
+          "WEB_SEARCH"
+        ],
+        "priority": 65,
+        "expectedInformationGain": 62,
+        "estimatedCost": 2,
+        "reviewStatus": "PROPOSED",
+        "createdAt": "2026-09-01T16:31:17.463Z",
+        "updatedAt": "2026-09-01T16:31:17.463Z"
+      },
+      {
+        "id": "8389d0cc-1bc3-4482-8871-ca1c01121c86",
+        "versionId": "871a0bbb-b308-4dfd-b285-fe19b7e72dc5",
+        "signalId": "fee47eaf-990c-43b5-bc98-ef9cd72f648e",
+        "questionText": "What is the reported scale and location of employee growth, and is it accompanied by cloud, enterprise-customer, or compliance expansion?",
+        "reason": "Tests whether workforce growth likely changes the monitored attack surface or simply reflects a non-technical expansion.",
+        "sourceCapabilities": [
+          "WEB_SEARCH"
+        ],
+        "priority": 68,
+        "expectedInformationGain": 68,
+        "estimatedCost": 2,
+        "reviewStatus": "PROPOSED",
+        "createdAt": "2026-09-01T16:31:17.463Z",
+        "updatedAt": "2026-09-01T16:31:17.463Z"
+      },
+      {
+        "id": "8ef6185a-9887-4dfb-b121-36da816f5104",
+        "versionId": "871a0bbb-b308-4dfd-b285-fe19b7e72dc5",
+        "signalId": "44c1a2ae-ff71-4c76-a85b-a2dbff799f1d",
+        "questionText": "What operational growth plans, target markets, customer segments, or infrastructure investments were stated alongside the funding event?",
+        "reason": "Funding is weak alone; this identifies whether it pairs with a more relevant security-complexity trigger.",
+        "sourceCapabilities": [
+          "WEB_SEARCH"
+        ],
+        "priority": 50,
+        "expectedInformationGain": 55,
+        "estimatedCost": 1,
+        "reviewStatus": "PROPOSED",
+        "createdAt": "2026-09-01T16:31:17.463Z",
+        "updatedAt": "2026-09-01T16:31:17.463Z"
+      },
+      {
+        "id": "a33926d7-d9b3-4f6b-adfe-8f57034159e9",
+        "versionId": "871a0bbb-b308-4dfd-b285-fe19b7e72dc5",
+        "signalId": "727e8218-c033-4ebf-8aef-8dc6229162f0",
+        "questionText": "Is there a primary public disclosure describing the incident date, affected scope, and stated remediation actions?",
+        "reason": "Verifies attribution and allows respectful, factual engagement only where public evidence is clear.",
+        "sourceCapabilities": [
+          "WEB_SEARCH"
+        ],
+        "priority": 98,
+        "expectedInformationGain": 88,
+        "estimatedCost": 3,
+        "reviewStatus": "PROPOSED",
+        "createdAt": "2026-09-01T16:31:17.463Z",
+        "updatedAt": "2026-09-01T16:31:17.463Z"
+      },
+      {
+        "id": "b07e5c89-c07c-4835-8d38-7d8647bd313b",
+        "versionId": "871a0bbb-b308-4dfd-b285-fe19b7e72dc5",
+        "signalId": "c08aee4d-7515-4596-8b52-845d7a0dcd5a",
+        "questionText": "Does the SOC hiring post specify 24/7 shifts, in-house buildout, outsourced-provider coordination, or a limited daytime monitoring role?",
+        "reason": "Distinguishes an internal-build alternative from a potential co-managed or coverage-gap discussion.",
+        "sourceCapabilities": [
+          "WEB_SEARCH"
+        ],
+        "priority": 76,
+        "expectedInformationGain": 80,
+        "estimatedCost": 1,
+        "reviewStatus": "PROPOSED",
+        "createdAt": "2026-09-01T16:31:17.463Z",
+        "updatedAt": "2026-09-01T16:31:17.463Z"
+      }
+    ],
+    "clusters": [
+      {
+        "id": "d375af41-2c18-4eee-9a78-1ae1b303d918",
+        "versionId": "871a0bbb-b308-4dfd-b285-fe19b7e72dc5",
+        "name": "Audit and assurance coverage window",
+        "description": "A compliance initiative paired with GRC activity or enterprise-customer expansion may justify discovery on how monitoring and incident-response evidence is maintained.",
+        "requiredSignalCodes": [
+          "ISO27001_ACTIVITY"
+        ],
+        "optionalSignalCodes": [
+          "SOC2_ACTIVITY",
+          "GRC_HIRING",
+          "NEW_ENTERPRISE_CUSTOMERS"
+        ],
+        "negativeSignalCodes": [],
+        "minimumIndependentSignals": 2,
+        "timeWindowDays": 90,
+        "defaultStrength": 86,
+        "needImpact": 84,
+        "timingImpact": 82,
+        "reviewStatus": "PROPOSED",
+        "hypothesis": false,
+        "activatedDefinitionId": null,
+        "createdAt": "2026-09-01T16:31:17.733Z",
+        "updatedAt": "2026-09-01T16:31:17.733Z"
+      },
+      {
+        "id": "6a584856-c63c-4836-b4c7-30f1555165a8",
+        "versionId": "871a0bbb-b308-4dfd-b285-fe19b7e72dc5",
+        "name": "Scaling cloud security operations",
+        "description": "Cloud, workforce, or geographic growth paired with security investment may indicate a need to review whether monitoring coverage has scaled across identities, endpoints, and cloud workloads.",
+        "requiredSignalCodes": [
+          "CLOUD_EXPANSION"
+        ],
+        "optionalSignalCodes": [
+          "RAPID_COMPANY_GROWTH",
+          "GEOGRAPHIC_EXPANSION",
+          "SECURITY_HIRING",
+          "NEW_ENTERPRISE_CUSTOMERS"
+        ],
+        "negativeSignalCodes": [],
+        "minimumIndependentSignals": 2,
+        "timeWindowDays": 120,
+        "defaultStrength": 80,
+        "needImpact": 76,
+        "timingImpact": 72,
+        "reviewStatus": "PROPOSED",
+        "hypothesis": false,
+        "activatedDefinitionId": null,
+        "createdAt": "2026-09-01T16:31:17.733Z",
+        "updatedAt": "2026-09-01T16:31:17.733Z"
+      },
+      {
+        "id": "25cf7317-3158-42d7-af9e-386d17e3184f",
+        "versionId": "871a0bbb-b308-4dfd-b285-fe19b7e72dc5",
+        "name": "Enterprise assurance expansion",
+        "description": "Enterprise-customer momentum paired with compliance or cloud-expansion evidence may create a context for discussing customer security expectations and operational monitoring evidence.",
+        "requiredSignalCodes": [
+          "NEW_ENTERPRISE_CUSTOMERS"
+        ],
+        "optionalSignalCodes": [
+          "SOC2_ACTIVITY",
+          "ISO27001_ACTIVITY",
+          "CLOUD_EXPANSION",
+          "GRC_HIRING"
+        ],
+        "negativeSignalCodes": [],
+        "minimumIndependentSignals": 2,
+        "timeWindowDays": 120,
+        "defaultStrength": 82,
+        "needImpact": 78,
+        "timingImpact": 76,
+        "reviewStatus": "PROPOSED",
+        "hypothesis": false,
+        "activatedDefinitionId": null,
+        "createdAt": "2026-09-01T16:31:17.733Z",
+        "updatedAt": "2026-09-01T16:31:17.733Z"
+      },
+      {
+        "id": "1ea233b5-0c8a-4415-ba2e-fc09aeaedea1",
+        "versionId": "871a0bbb-b308-4dfd-b285-fe19b7e72dc5",
+        "name": "Security operations build-versus-partner review",
+        "description": "SOC-specific hiring alongside security leadership or growth evidence may indicate an evolving operating model; validate whether the organization is building internally, seeking supplemental coverage, or already covered by an incumbent.",
+        "requiredSignalCodes": [
+          "SOC_HIRING"
+        ],
+        "optionalSignalCodes": [
+          "SECURITY_LEADERSHIP_CHANGE",
+          "SECURITY_HIRING",
+          "RAPID_COMPANY_GROWTH",
+          "CLOUD_EXPANSION"
+        ],
+        "negativeSignalCodes": [
+          "SOC_HIRING"
+        ],
+        "minimumIndependentSignals": 2,
+        "timeWindowDays": 90,
+        "defaultStrength": 74,
+        "needImpact": 70,
+        "timingImpact": 68,
+        "reviewStatus": "PROPOSED",
+        "hypothesis": false,
+        "activatedDefinitionId": null,
+        "createdAt": "2026-09-01T16:31:17.733Z",
+        "updatedAt": "2026-09-01T16:31:17.733Z"
+      },
+      {
+        "id": "0bb0f837-2d0f-4b13-b65a-65bdd9d2fc3f",
+        "versionId": "871a0bbb-b308-4dfd-b285-fe19b7e72dc5",
+        "name": "Public incident response context",
+        "description": "A verified public security incident plus a current compliance, hiring, or leadership signal may warrant respectful discovery about future-state monitoring and response operations, without exploiting the incident or assuming unmet needs.",
+        "requiredSignalCodes": [
+          "SECURITY_INCIDENT"
+        ],
+        "optionalSignalCodes": [
+          "SECURITY_HIRING",
+          "GRC_HIRING",
+          "SECURITY_LEADERSHIP_CHANGE",
+          "ISO27001_ACTIVITY"
+        ],
+        "negativeSignalCodes": [],
+        "minimumIndependentSignals": 2,
+        "timeWindowDays": 90,
+        "defaultStrength": 92,
+        "needImpact": 94,
+        "timingImpact": 94,
+        "reviewStatus": "PROPOSED",
+        "hypothesis": false,
+        "activatedDefinitionId": null,
+        "createdAt": "2026-09-01T16:31:17.733Z",
+        "updatedAt": "2026-09-01T16:31:17.733Z"
+      }
+    ]
+  },
+  "reviewFindings": [
+    {
+      "clusterId": "d375af41-2c18-4eee-9a78-1ae1b303d918",
+      "invalid": false,
+      "overlap": []
+    },
+    {
+      "clusterId": "6a584856-c63c-4836-b4c7-30f1555165a8",
+      "invalid": false,
+      "overlap": []
+    },
+    {
+      "clusterId": "25cf7317-3158-42d7-af9e-386d17e3184f",
+      "invalid": false,
+      "overlap": []
+    },
+    {
+      "clusterId": "1ea233b5-0c8a-4415-ba2e-fc09aeaedea1",
+      "invalid": true,
+      "overlap": [
+        "SOC_HIRING"
+      ]
+    },
+    {
+      "clusterId": "0bb0f837-2d0f-4b13-b65a-65bdd9d2fc3f",
+      "invalid": false,
+      "overlap": []
+    }
+  ]
+}

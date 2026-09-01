@@ -9,6 +9,7 @@ export {
   crawlPagesTable,
   db,
   organizationsTable,
+  organizationMembersTable,
   projectCompaniesTable,
   projectsTable,
   projectSignalPacksTable,

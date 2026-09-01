@@ -1,0 +1,943 @@
+JYRA — FIX 10
+VALID PROJECT LIFECYCLE + FRESH BUYER INTELLIGENCE VALIDATION
+
+OBJECTIVE
+
+Fix the underlying project lifecycle defect discovered by Fix 09 and then
+perform a fresh real-world Buyer Role + WHO validation using a correctly
+configured project.
+
+Fix 09 proved that the previous 18-company cohort is NOT a valid intelligence
+benchmark.
+
+Its project was orphaned:
+
+Business Twin = MISSING
+Offering = MISSING
+ICP = MISSING
+Opportunity Pack = MISSING
+
+Its discovery runs persisted:
+
+businessTwinVersionId = NULL
+icpVersionId = NULL
+
+The only valid Managed SOC Business Twin / ICP found belongs to another
+organization.
+
+Cross-tenant isolation correctly prevented reuse.
+
+THEREFORE:
+
+DO NOT repair, backfill, relink, or continue optimizing the old 18-company
+cohort.
+
+Retain it only as evidence of a lifecycle defect.
+
+The goal now is:
+
+1. Prevent invalid projects/runs from being created again.
+2. Use a legitimate existing seller project with authoritative context.
+3. Ensure an Opportunity Intelligence Pack exists and is activated where
+   required.
+4. Run a fresh normal 20-company validation.
+5. Test the existing Fix08 LLM CompanyUnderstanding + CommercialRoleAssessment
+   on real fresh companies.
+
+==================================================
+0. DATABASE SAFETY
+==================================================
+
+DEVELOPMENT ONLY.
+
+Use ONLY development database.
+
+Production operations MUST remain 0.
+
+Never:
+
+modify production
+migrate production
+seed production
+reset production
+truncate production
+test production.
+
+==================================================
+1. FREEZE THE OLD 18-COMPANY COHORT
+==================================================
+
+The old project:
+
+9f852021-345c-45aa-8a41-0be08ca1b494
+
+is INVALID as an intelligence benchmark because it lacks authoritative seller
+context.
+
+Do NOT:
+
+attach foreign-tenant context
+synthesize seller context
+backfill Business Twin
+backfill ICP
+backfill Offering
+backfill Pack
+replace its companies
+rerun Buyer Role on it.
+
+Mark/report it conceptually as:
+
+INVALID_CONTEXT / LEGACY_INVALID_BENCHMARK
+
+using existing metadata/status architecture if an appropriate field exists.
+
+Do not introduce a large migration solely for this label.
+
+Historical records must remain intact.
+
+==================================================
+2. FIX THE PRODUCT LIFECYCLE DEFECT
+==================================================
+
+The important product bug is:
+
+JYRA allowed market discovery to execute successfully for a project with:
+
+Business Twin = NULL
+ICP = NULL.
+
+That must no longer be possible through the normal product workflow.
+
+Implement/reuse a central readiness validator.
+
+Conceptually:
+
+resolveProjectReadiness(projectId)
+
+Return:
+
+businessTwinReady
+offeringReady
+icpReady
+opportunityPackReady
+
+buyerRoleReady
+marketDiscoveryReady
+whoReady
+whenWhyReady
+
+missingRequirements[]
+
+==================================================
+3. READINESS SEMANTICS
+==================================================
+
+BUYER ROLE requires:
+
+approved Business Twin
++
+real Offering.
+
+MARKET DISCOVERY requires:
+
+approved Business Twin
++
+Offering
++
+approved ICP.
+
+WHO requires:
+
+approved Business Twin
++
+Offering
++
+approved ICP.
+
+WHEN / WHY requires:
+
+approved Business Twin
++
+Offering
++
+approved ICP
++
+activated Opportunity Intelligence Pack.
+
+Do not collapse these into one boolean.
+
+==================================================
+4. FAIL CLOSED BEFORE EXPENSIVE WORK
+==================================================
+
+Before Find My Market / discovery makes ANY external provider call:
+
+validate project readiness.
+
+If required context is missing:
+
+STOP.
+
+Return structured error such as:
+
+PROJECT_CONTEXT_INCOMPLETE
+
+with:
+
+missingRequirements[].
+
+Provider calls MUST equal 0.
+
+This is important because invalid projects should not consume Exa/Tavily/
+firmographic/LLM credits.
+
+==================================================
+5. RUN CONTEXT SNAPSHOT
+==================================================
+
+Every new market-discovery / intelligence run must persist the exact
+authoritative context versions used.
+
+At minimum:
+
+organizationId
+projectId
+
+businessTwinId
+businessTwinVersionId
+
+offering identity/version if separately versioned
+
+icpId
+icpVersionId
+
+opportunityPackId
+opportunityPackVersionId
+when applicable.
+
+Never again allow a successful market discovery run with required context IDs
+NULL.
+
+==================================================
+6. DATABASE INVARIANT / SERVICE INVARIANT
+==================================================
+
+Enforce this at the service/business-logic layer.
+
+If appropriate and safe with current architecture, also add database-level
+constraints for NEW valid run types.
+
+Do not break historical legacy rows containing NULL.
+
+Historical invalid runs may remain readable.
+
+New normal runs must not reproduce them.
+
+==================================================
+7. USE THE VALID EXISTING MANAGED SOC PROJECT
+==================================================
+
+Fix 09 found an existing valid Managed SOC context:
+
+Project:
+b4c8a95a-eb1c-4a86-89d6-62d72097d820
+
+Organization:
+02d40c31-72e4-42d9-9d8d-fe676a369205
+
+Business Twin:
+c16a03fc-a422-4732-82d1-a12ec6aff0dd
+
+Business Twin version:
+a355a198-e9d3-449e-a9cf-c064fab4faa2
+version 4
+status ready
+
+Actual Offering:
+Managed Soc
+
+ICP:
+a059f1c0-9fb5-43e7-9a3f-1f5976fe8474
+
+ICP version:
+a7f0c79f-bf17-4b42-84cd-60a46c562f56
+version 5
+
+This is the legitimate development context identified by Fix 09.
+
+VERIFY these records still exist and remain valid before using them.
+
+Do not blindly trust IDs from the report.
+
+Do not copy them to another tenant.
+
+Run the validation INSIDE their legitimate organization/project context.
+
+==================================================
+8. OPPORTUNITY PACK
+==================================================
+
+Fix 09 found:
+
+Opportunity Pack = MISSING.
+
+Inspect whether:
+
+A. an approved Managed SOC pack already exists for this SAME tenant/project
+   but is not associated,
+
+B. a pack version exists but is not activated,
+
+C. the current project genuinely never generated one.
+
+Do not copy a pack across tenants.
+
+If a valid same-tenant approved pack exists:
+
+use the normal association/activation workflow.
+
+If no pack exists:
+
+use JYRA's NORMAL Opportunity Intelligence Pack generation workflow from:
+
+Business Twin
++
+Offering
++
+ICP.
+
+Generate the pack as the product normally would.
+
+Do NOT manually hardcode signal definitions.
+
+Do NOT manually create database rows to mimic a pack.
+
+Use normal application workflow.
+
+==================================================
+9. PACK REVIEW / ACTIVATION
+==================================================
+
+If normal JYRA workflow requires review/approval:
+
+perform the normal development validation workflow.
+
+The generated pack must remain generic architecture with seller-specific
+configuration.
+
+For this Managed SOC validation, confirm the expected existing signal
+semantics remain represented appropriately.
+
+Do not alter the frozen signal engine merely to make this test pass.
+
+Use existing activation concurrency-safe logic.
+
+==================================================
+10. VERIFY SELLER CONTEXT BEFORE DISCOVERY
+==================================================
+
+Before ANY discovery call, print:
+
+Organization =
+Project =
+
+Business Twin =
+Business Twin Version =
+
+Seller =
+Actual Offering =
+Offering Description =
+
+ICP =
+ICP Version =
+
+Opportunity Pack =
+Pack Version =
+Pack Status =
+
+BuyerRoleReady =
+MarketDiscoveryReady =
+WhoReady =
+WhenWhyReady =
+
+MissingRequirements =
+
+For the fresh validation:
+
+MarketDiscoveryReady MUST = TRUE
+WhoReady MUST = TRUE.
+
+If not:
+
+STOP.
+
+Do not spend provider credits.
+
+==================================================
+11. VERIFY FIX08 LLM INPUT
+==================================================
+
+Before market validation, perform ONE controlled dry-run fixture through the
+existing Fix08 CommercialRoleAssessment.
+
+Use legitimate same-project seller context.
+
+Verify the LLM receives:
+
+actual seller
+actual offering
+actual offering description
+
+and not:
+
+"the seller offering".
+
+Do not change Fix08 architecture unless a concrete implementation defect is
+found.
+
+==================================================
+12. DO NOT OVER-REQUIRE PACK FOR BUYER ROLE
+==================================================
+
+Remember:
+
+Buyer Role does not require WHEN/WHY signals.
+
+Therefore Buyer Role should function with:
+
+Business Twin
++
+Offering
++
+company evidence.
+
+WHO additionally uses ICP.
+
+Pack is required for the subsequent WHEN/WHY intelligence pipeline.
+
+We want the valid project fully prepared now, but keep these semantic
+boundaries intact.
+
+==================================================
+13. FRESH 20-COMPANY REAL-WORLD VALIDATION
+==================================================
+
+Once readiness passes, run ONE fresh normal Find My Market request for:
+
+20 companies.
+
+Do not:
+
+handpick companies
+seed expected buyers
+use the old 18
+use named control companies
+tell discovery what companies we expect.
+
+Use the actual:
+
+Business Twin
+Offering
+ICP
+
+through the normal application path.
+
+Flow:
+
+Business Twin
+        ↓
+Offering
+        ↓
+ICP
+        ↓
+Buyer Market Discovery
+        ↓
+Canonical Company
+        ↓
+Identity Resolution
+        ↓
+Company Profile / Evidence
+        ↓
+Fix08 LLM CompanyUnderstanding
+        ↓
+CommercialRoleAssessment
+        ↓
+WHO
+
+STOP THERE.
+
+Do not run WHEN/WHY yet.
+
+==================================================
+14. COMPANY UNDERSTANDING
+==================================================
+
+For identity-safe candidates, use the existing Fix08 architecture.
+
+LLM may interpret:
+
+company description
+website/about evidence
+firmographic description
+products/services
+normalized industry
+other legitimate company-profile evidence.
+
+LLM must remain evidence-grounded.
+
+No evidence:
+UNKNOWN.
+
+Unsafe identity:
+UNKNOWN.
+
+No seller context:
+UNKNOWN.
+
+==================================================
+15. COMMERCIAL ROLE
+==================================================
+
+Allowed:
+
+POTENTIAL_BUYER
+SELLER_COMPETITOR
+ADJACENT_VENDOR
+PARTNER_POSSIBLE
+UNKNOWN.
+
+Do not force a particular distribution.
+
+Do not convert UNKNOWN merely to improve coverage.
+
+Do not treat ICP industry membership as proof of buyer status.
+
+==================================================
+16. WHO
+==================================================
+
+Only after Commercial Role.
+
+WHO should use normalized:
+
+industry
+geography
+company size
+other approved ICP dimensions.
+
+Keep:
+
+Buyer Role
+
+separate from:
+
+ICP Fit.
+
+A POTENTIAL_BUYER may still be LIKELY_NOT_FIT.
+
+A seller/competitor must not become a sales opportunity merely because its
+firmographics match the ICP.
+
+==================================================
+17. INDEPENDENT 20-COMPANY ADJUDICATION
+==================================================
+
+After the run, independently inspect all 20.
+
+Do not judge them using JYRA's own classification as ground truth.
+
+For each company report:
+
+Company
+Domain
+
+Identity correct?
+Primary business reasonable?
+Industry reasonable?
+Business model reasonable?
+
+Commercial role:
+JYRA result
+Independent result
+
+WHO:
+JYRA result
+Independent result
+
+Reason for disagreement.
+
+==================================================
+18. METRICS
+==================================================
+
+Calculate:
+
+Identity precision
+
+Company-understanding accuracy
+
+Industry accuracy
+
+Business-model accuracy
+
+Commercial-role precision
+
+Commercial-role coverage among eligible companies
+
+Seller→POTENTIAL_BUYER errors
+
+WHO agreement
+
+Profile sufficiency rate.
+
+Targets:
+
+Identity precision >=95%
+
+Commercial-role precision >=90%
+
+Seller→POTENTIAL_BUYER errors = 0
+
+WHO agreement >=85%.
+
+Do not create a target for number of buyers.
+
+==================================================
+19. COST REPORT
+==================================================
+
+Report separately:
+
+Discovery provider calls/cost
+
+Profile-resolution calls/cost
+
+Firmographic calls/cost
+
+LLM calls/cost
+
+Cache hits
+
+Total known cost
+
+Unknown cost.
+
+No contacts.
+
+==================================================
+20. INVALID PROJECT REGRESSION
+==================================================
+
+Create a test project/fixture intentionally missing:
+
+Business Twin and/or ICP.
+
+Attempt Find My Market.
+
+Required:
+
+request rejected before provider execution
+
+Provider calls = 0
+
+LLM calls = 0
+
+No successful discovery run created with NULL required context.
+
+This regression is mandatory.
+
+==================================================
+21. CONTEXT VERSION REGRESSION
+==================================================
+
+Create/use a valid test context.
+
+Start a run.
+
+Verify run stores exact:
+
+Business Twin version
+ICP version
+Pack version where applicable.
+
+Then create a newer version in fixture/test context.
+
+Historical run must still reference the original versions.
+
+Do not mutate historical run context.
+
+==================================================
+22. CROSS-TENANT REGRESSION
+==================================================
+
+Attempt to resolve:
+
+Business Twin / ICP / Pack
+
+from another organization.
+
+Required:
+
+BLOCKED.
+
+No cross-tenant attachment.
+
+No provider calls.
+
+==================================================
+23. CROSS-INDUSTRY LIFECYCLE TEST
+==================================================
+
+Using fixtures only, prove the readiness/context mechanism works for:
+
+Managed SOC
+Recruitment
+ERP implementation
+Solar installation.
+
+Do not test hardcoded commercial outcomes here.
+
+Test that each project passes its own actual offering into the existing
+CommercialRoleAssessment.
+
+==================================================
+24. FIX05 AND SIGNAL FIXTURE
+==================================================
+
+Rerun Fix05 under VALID project context.
+
+If its previous failure was caused by missing seller context, it should now
+pass.
+
+Rerun affected signal fixture with legitimate buyer membership/context.
+
+Do not bypass Buyer Role.
+
+Do not modify signal definitions.
+
+If either still fails:
+
+report the exact remaining defect.
+
+==================================================
+25. FULL REGRESSION SET
+==================================================
+
+Run:
+
+06A
+Fix04
+Fix05
+Cycle06
+Fix07
+Fix08
+Identity
+Firmographics
+Normalization
+Company profile
+Activation concurrency
+Signal fixture
+
+New Fix10:
+
+project readiness
+pre-provider fail-closed
+context snapshot
+version reproducibility
+cross-tenant isolation
+LLM seller-context propagation
+cross-industry lifecycle.
+
+Then:
+
+typecheck
+build
+API restart.
+
+==================================================
+26. DO NOT RUN 50-COMPANY TEST
+==================================================
+
+Do NOT run the 50-company Reality Test.
+
+Do NOT modify:
+
+retrieval
+fact extraction
+signals
+WHEN/WHY
+Opportunity scoring
+NBA
+contacts
+Explee
+outreach.
+
+The next decision depends on whether the fresh 20-company WHO layer is now
+trustworthy.
+
+==================================================
+27. FINAL REPORT
+==================================================
+
+Return:
+
+FIX 10 — VALID PROJECT LIFECYCLE + FRESH BUYER INTELLIGENCE
+
+LEGACY INVALID PROJECT
+
+Old 18-company benchmark =
+INVALID / OTHER
+
+Reason =
+
+Historical data modified =
+YES / NO
+
+--------------------------------
+
+PROJECT LIFECYCLE
+
+Invalid discovery blocked =
+PASS / FAIL
+
+Pre-provider readiness gate =
+PASS / FAIL
+
+Versioned run context =
+PASS / FAIL
+
+Cross-tenant isolation =
+PASS / FAIL
+
+--------------------------------
+
+VALID MANAGED SOC PROJECT
+
+Organization =
+Project =
+
+Business Twin =
+Business Twin Version =
+
+Actual Offering =
+Offering Description =
+
+ICP =
+ICP Version =
+
+Opportunity Pack =
+Pack Version =
+Pack Status =
+
+BuyerRoleReady =
+MarketDiscoveryReady =
+WhoReady =
+WhenWhyReady =
+
+--------------------------------
+
+FRESH 20
+
+Executed = YES / NO
+
+Raw candidates =
+Canonical companies =
+Identity-safe =
+Profile-sufficient =
+LLM assessments =
+
+POTENTIAL_BUYER =
+SELLER_COMPETITOR =
+ADJACENT_VENDOR =
+PARTNER_POSSIBLE =
+UNKNOWN =
+
+LIKELY_FIT =
+POSSIBLE_FIT =
+LIKELY_NOT_FIT =
+INSUFFICIENT_DATA =
+
+--------------------------------
+
+QUALITY
+
+Identity precision =
+Company-understanding accuracy =
+Industry accuracy =
+Business-model accuracy =
+Commercial-role precision =
+Commercial-role coverage =
+Seller→buyer errors =
+WHO agreement =
+Profile sufficiency =
+
+--------------------------------
+
+COST
+
+Discovery calls =
+Profile calls =
+Firmographic calls =
+LLM calls =
+Cache hits =
+
+Discovery cost =
+Profile cost =
+Firmographic cost =
+LLM cost =
+
+Total known cost =
+Unknown cost =
+
+--------------------------------
+
+REGRESSIONS
+
+06A =
+Fix04 =
+Fix05 =
+Cycle06 =
+Fix07 =
+Fix08 =
+Identity =
+Firmographics =
+Normalization =
+Company profile =
+Activation concurrency =
+Signal fixture =
+
+Project readiness =
+Invalid-project fail-closed =
+Context snapshot =
+Version reproducibility =
+Cross-tenant =
+LLM context propagation =
+Cross-industry lifecycle =
+
+Typecheck =
+Build =
+API restart =
+
+Production operations = MUST BE 0
+
+--------------------------------
+
+VERDICT
+
+Return EXACTLY ONE:
+
+A — BUYER INTELLIGENCE FOUNDATION PASSED
+
+B — PROJECT LIFECYCLE STILL BROKEN
+
+C — FRESH DISCOVERY / PROFILE COVERAGE INSUFFICIENT
+
+D — LLM COMMERCIAL ROLE QUALITY INSUFFICIENT
+
+E — WHO QUALITY INSUFFICIENT
+
+F — MULTIPLE MATERIAL DEFECTS REMAIN
+
+STOP.
+
+Do not run the 50-company Reality Test.

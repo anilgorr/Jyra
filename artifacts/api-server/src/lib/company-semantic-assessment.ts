@@ -1,14 +1,14 @@
 import { createHash } from "node:crypto";
-import { and, desc, eq } from "drizzle-orm";
+import { and, desc, eq, sql } from "drizzle-orm";
 import { z } from "zod/v4";
 import { openai } from "@workspace/integrations-openai-ai-server";
 import { companiesTable, companyProvenanceTable, db } from "@workspace/db";
 import { CANONICAL_INDUSTRY_IDS, type BusinessModel, type CanonicalCompanyProfile } from "./canonical-company-profile";
 import { type BuyerRole, type BuyerRoleAssessment } from "./buyer-role-resolution";
-import { resolveSellerContext, type SellerContext } from "./seller-context";
+import { resolveProjectSellerContext, type SellerContext } from "./seller-context";
 
 export const COMPANY_UNDERSTANDING_MODEL = "gpt-5-mini";
-export const COMPANY_UNDERSTANDING_PROMPT_VERSION = "fix08-company-understanding-v1";
+export const COMPANY_UNDERSTANDING_PROMPT_VERSION = "fix08-company-understanding-v4";
 export const COMPANY_UNDERSTANDING_NORMALIZATION_VERSION = "fix07-v1";
 export const UNKNOWN_REASON_CODES = ["IDENTITY_INSUFFICIENT", "SELLER_CONTEXT_INSUFFICIENT", "COMPANY_EVIDENCE_INSUFFICIENT", "LLM_LOW_CONFIDENCE", "LLM_OUTPUT_INVALID", "GENUINELY_AMBIGUOUS", "OTHER"] as const;
 export type UnknownReasonCode = typeof UNKNOWN_REASON_CODES[number];
@@ -29,6 +29,40 @@ export const companySemanticOutputSchema = z.object({
 }).strict();
 export type CompanySemanticOutput = z.infer<typeof companySemanticOutputSchema>;
 export type CandidateEvidence = { id: string; sourceType: string; sourceUrl: string | null; text: string };
+/** OpenAI strict-mode schema mirrors the Zod validator; validation remains the
+ * authority after parsing. */
+export const companySemanticResponseSchema = {
+  name: "company_semantic_output", strict: true, schema: {
+    type: "object", additionalProperties: false,
+    required: ["primary_business", "business_model", "canonical_industry", "products_services", "commercial_role", "confidence", "reason", "evidence_ids", "missing_information"],
+    properties: {
+      primary_business: { type: "string", minLength: 1, maxLength: 1000 },
+      business_model: { type: "string", enum: models },
+      canonical_industry: { type: "string", enum: [...CANONICAL_INDUSTRY_IDS, "UNKNOWN"] },
+      products_services: { type: "array", maxItems: 20, items: { type: "string", minLength: 1, maxLength: 240 } },
+      commercial_role: { type: "string", enum: roles },
+      confidence: { type: "number", minimum: 0, maximum: 1 },
+      reason: { type: "string", minLength: 1, maxLength: 600 },
+      evidence_ids: { type: "array", maxItems: 30, items: { type: "string", format: "uuid" } },
+      missing_information: { type: "array", maxItems: 15, items: { type: "string", minLength: 1, maxLength: 240 } },
+    },
+  },
+} as const;
+export const COMPANY_SEMANTIC_SYSTEM_PROMPT = `Use only supplied seller context and evidence. Do not infer timing, intent, contacts, or cite sources not supplied. Classification is based on the candidate's primary business plus its seller-relative relationship.
+POTENTIAL_BUYER means an operating organization that fits the supplied context and could consume the described seller offering for its own operations; explicit purchase intent is not required.
+SELLER_COMPETITOR means it offers a substantial substitute to the described seller offering.
+ADJACENT_VENDOR means it sells complementary products or services in the same buyer workflow, not merely any software or IT vendor.
+PARTNER_POSSIBLE means public evidence supports a plausible channel, referral, integration, or co-delivery relationship; generic IT-services status alone is insufficient.
+UNKNOWN means evidence cannot safely determine the role. SaaS and technology firms may be buyers when they operate cloud infrastructure or sensitive data and do not sell substitutes.
+commercial_role is seller-relative and exactly one of ${roles.join(", ")}. business_model and canonical_industry must use the supplied exact enums. confidence is numeric 0..1. evidence_ids may contain only supplied evidence UUIDs. Return only strict JSON.`;
+type SemanticModelResponse = { choices: Array<{ message: { content?: string | null } }>; usage?: unknown };
+let semanticModelInvoker = async (request: Parameters<typeof openai.chat.completions.create>[0]): Promise<SemanticModelResponse> =>
+  openai.chat.completions.create(request) as unknown as Promise<SemanticModelResponse>;
+/** Focused concurrency-test seam; production callers use the default SDK path. */
+export function setSemanticModelInvokerForTests(invoker: typeof semanticModelInvoker | null) {
+  if (process.env.NODE_ENV === "production") throw new Error("Semantic model test invoker is unavailable in production");
+  semanticModelInvoker = invoker ?? (async (request) => openai.chat.completions.create(request) as unknown as Promise<SemanticModelResponse>);
+}
 
 const prohibitedSource = /WHEN|WHY|SIGNAL|OPPORTUNITY|CONTACT|OUTREACH/i;
 const trim = (value: unknown, max = 900) => typeof value === "string" ? value.replace(/\s+/g, " ").trim().slice(0, max) : "";
@@ -85,36 +119,128 @@ function unknown(reason: UnknownReasonCode, seller: SellerContext): BuyerRoleAss
   return { buyerRole: "UNKNOWN", confidence: "LOW", reason, sellerOffering: seller.offeringName ?? "", supportingInputs: [], assessedAt: new Date().toISOString(), classifierVersion: "buyer-role-resolution-06a" };
 }
 
+async function persistNoCallDecision(input: {
+  organizationId: string; projectId: string; companyId: string; seller: SellerContext;
+  evidence: CandidateEvidence[]; reason: UnknownReasonCode;
+}, executor: typeof db | Parameters<Parameters<typeof db.transaction>[0]>[0] = db) {
+  const fingerprint = semanticFingerprint({ projectId: input.projectId, companyId: input.companyId, sellerContextFingerprint: input.seller.fingerprint, evidence: input.evidence });
+  const rows = await executor.select().from(companyProvenanceTable).where(and(
+    eq(companyProvenanceTable.projectId, input.projectId), eq(companyProvenanceTable.companyId, input.companyId),
+    eq(companyProvenanceTable.sourceType, "FIX08_COMPANY_UNDERSTANDING"),
+  ));
+  const existing = rows.find((row) => row.payload.fingerprint === fingerprint
+    && row.payload.promptVersion === COMPANY_UNDERSTANDING_PROMPT_VERSION
+    && row.payload.unknownReason === input.reason && row.payload.modelInvoked === false);
+  if (existing) return { row: existing, cacheHit: true };
+  const [created] = await executor.insert(companyProvenanceTable).values({
+    organizationId: input.organizationId, projectId: input.projectId, companyId: input.companyId,
+    sourceType: "FIX08_COMPANY_UNDERSTANDING", sourceLabel: COMPANY_UNDERSTANDING_MODEL,
+    payload: { fingerprint, sellerContextFingerprint: input.seller.fingerprint, sellerContext: input.seller,
+      evidenceIds: input.evidence.map((item) => item.id), output: null, validatedOutput: null,
+      unknownReason: input.reason, modelInvoked: false, promptVersion: COMPANY_UNDERSTANDING_PROMPT_VERSION,
+      normalizationVersion: COMPANY_UNDERSTANDING_NORMALIZATION_VERSION },
+  }).returning();
+  return { row: created, cacheHit: false };
+}
+
+async function withSemanticFingerprintLock<T>(fingerprint: string, work: (tx: Parameters<Parameters<typeof db.transaction>[0]>[0]) => Promise<T>): Promise<T> {
+  return db.transaction(async (tx) => {
+    await tx.execute(sql`select pg_advisory_xact_lock(hashtextextended(${fingerprint}, 0))`);
+    return work(tx);
+  });
+}
+
 export async function assessCompanySemantically(input: { organizationId: string; projectId: string; companyId: string; profile: CanonicalCompanyProfile; identitySafe: boolean }): Promise<{ assessment: BuyerRoleAssessment; output: CompanySemanticOutput | null; cacheHit: boolean; llmInvoked: boolean; unknownReason: UnknownReasonCode | null; usage: Record<string, unknown> | null }> {
-  const { context: seller, sufficiency } = await resolveSellerContext(input.projectId);
-  if (!input.identitySafe) return { assessment: unknown("IDENTITY_INSUFFICIENT", seller), output: null, cacheHit: false, llmInvoked: false, unknownReason: "IDENTITY_INSUFFICIENT", usage: null };
-  if (!sufficiency.sufficient) return { assessment: unknown("SELLER_CONTEXT_INSUFFICIENT", seller), output: null, cacheHit: false, llmInvoked: false, unknownReason: "SELLER_CONTEXT_INSUFFICIENT", usage: null };
+  const resolved = await resolveProjectSellerContext(input.projectId, input.organizationId);
+  if (resolved.organizationId !== input.organizationId) throw new Error("PROJECT_ORGANIZATION_MISMATCH");
+  const { context: seller, sufficiency } = resolved;
+  if (!input.identitySafe) {
+    const evidence: CandidateEvidence[] = [];
+    const fp = semanticFingerprint({ projectId: input.projectId, companyId: input.companyId, sellerContextFingerprint: seller.fingerprint, evidence });
+    const decision = await withSemanticFingerprintLock(fp, (tx) => persistNoCallDecision({ ...input, seller, evidence, reason: "IDENTITY_INSUFFICIENT" }, tx));
+    return { assessment: unknown("IDENTITY_INSUFFICIENT", seller), output: null, cacheHit: decision.cacheHit, llmInvoked: false, unknownReason: "IDENTITY_INSUFFICIENT", usage: null };
+  }
+  if (!sufficiency.sufficient) {
+    const evidence: CandidateEvidence[] = [];
+    const fp = semanticFingerprint({ projectId: input.projectId, companyId: input.companyId, sellerContextFingerprint: seller.fingerprint, evidence });
+    const decision = await withSemanticFingerprintLock(fp, (tx) => persistNoCallDecision({ ...input, seller, evidence, reason: "SELLER_CONTEXT_INSUFFICIENT" }, tx));
+    return { assessment: unknown("SELLER_CONTEXT_INSUFFICIENT", seller), output: null, cacheHit: decision.cacheHit, llmInvoked: false, unknownReason: "SELLER_CONTEXT_INSUFFICIENT", usage: null };
+  }
   const provenance = await db.select().from(companyProvenanceTable).where(and(eq(companyProvenanceTable.projectId, input.projectId), eq(companyProvenanceTable.companyId, input.companyId)));
   const evidence = buildCandidateEvidence(input.profile, provenance);
-  if (!evidence.length) return { assessment: unknown("COMPANY_EVIDENCE_INSUFFICIENT", seller), output: null, cacheHit: false, llmInvoked: false, unknownReason: "COMPANY_EVIDENCE_INSUFFICIENT", usage: null };
+  if (!evidence.length) {
+    const fp = semanticFingerprint({ projectId: input.projectId, companyId: input.companyId, sellerContextFingerprint: seller.fingerprint, evidence });
+    const decision = await withSemanticFingerprintLock(fp, (tx) => persistNoCallDecision({ ...input, seller, evidence, reason: "COMPANY_EVIDENCE_INSUFFICIENT" }, tx));
+    return { assessment: unknown("COMPANY_EVIDENCE_INSUFFICIENT", seller), output: null, cacheHit: decision.cacheHit, llmInvoked: false, unknownReason: "COMPANY_EVIDENCE_INSUFFICIENT", usage: null };
+  }
   const fingerprint = semanticFingerprint({ projectId: input.projectId, companyId: input.companyId, sellerContextFingerprint: seller.fingerprint, evidence });
-  const cached = provenance.find((row) => row.sourceType === "FIX08_COMPANY_UNDERSTANDING" && row.payload.fingerprint === fingerprint);
-  const cachedOutput = cached?.payload.output;
-  if (cachedOutput) {
-    const checked = validateSemanticOutput(cachedOutput, evidence, seller.fingerprint, String(cached.payload.sellerContextFingerprint ?? ""));
-    if (checked.ok) return { assessment: assessmentFromOutput(checked.output, seller), output: checked.output, cacheHit: true, llmInvoked: false, unknownReason: checked.output.commercial_role === "UNKNOWN" ? "GENUINELY_AMBIGUOUS" : null, usage: null };
+  return withSemanticFingerprintLock(fingerprint, async (tx) => {
+  const lockedRows = await tx.select().from(companyProvenanceTable).where(and(eq(companyProvenanceTable.projectId, input.projectId), eq(companyProvenanceTable.companyId, input.companyId))).orderBy(desc(companyProvenanceTable.createdAt));
+  const exactRows = lockedRows.filter((row) => row.sourceType === "FIX08_COMPANY_UNDERSTANDING"
+    && row.payload.fingerprint === fingerprint && row.payload.promptVersion === COMPANY_UNDERSTANDING_PROMPT_VERSION
+    && row.payload.normalizationVersion === COMPANY_UNDERSTANDING_NORMALIZATION_VERSION
+    && row.sourceLabel === COMPANY_UNDERSTANDING_MODEL);
+  let cached = exactRows.find((row) => typeof row.payload.modelInvoked === "boolean") ?? exactRows[0];
+  if (cached && typeof cached.payload.modelInvoked !== "boolean") {
+    const checkedLegacy = validateSemanticOutput(cached.payload.validatedOutput, evidence, seller.fingerprint, String(cached.payload.sellerContextFingerprint ?? ""));
+    const noCallReasons = ["IDENTITY_INSUFFICIENT", "SELLER_CONTEXT_INSUFFICIENT", "COMPANY_EVIDENCE_INSUFFICIENT"];
+    const legacyNoCall = cached.payload.validatedOutput == null && cached.payload.output == null && noCallReasons.includes(String(cached.payload.unknownReason));
+    if (checkedLegacy.ok || legacyNoCall) {
+      const existingReplacement = exactRows.find((row) => row.payload.sourceProvenanceId === cached!.id && typeof row.payload.modelInvoked === "boolean");
+      if (existingReplacement) cached = existingReplacement;
+      else {
+        const [replacement] = await tx.insert(companyProvenanceTable).values({
+          organizationId: input.organizationId, projectId: input.projectId, companyId: input.companyId,
+          sourceType: "FIX08_COMPANY_UNDERSTANDING", sourceLabel: COMPANY_UNDERSTANDING_MODEL,
+          sourceUrl: cached.sourceUrl,
+          payload: { ...cached.payload, modelInvoked: checkedLegacy.ok, terminalValidationStatus: checkedLegacy.ok
+            ? (checkedLegacy.output.commercial_role === "UNKNOWN" ? "GENUINELY_AMBIGUOUS" : "VALIDATED")
+            : cached.payload.unknownReason, supersedesProvenanceId: cached.id, sourceProvenanceId: cached.id },
+        }).returning();
+        cached = replacement;
+      }
+    } else {
+      return { assessment: unknown("LLM_OUTPUT_INVALID", seller), output: null, cacheHit: true, llmInvoked: false, unknownReason: "LLM_OUTPUT_INVALID", usage: null };
+    }
+  }
+  if (cached) {
+    const checked = validateSemanticOutput(cached.payload.validatedOutput ?? cached.payload.output, evidence, seller.fingerprint, String(cached.payload.sellerContextFingerprint ?? ""));
+    if (checked.ok) return { assessment: assessmentFromOutput(checked.output, seller), output: checked.output, cacheHit: true, llmInvoked: false, unknownReason: checked.output.commercial_role === "UNKNOWN" ? "GENUINELY_AMBIGUOUS" as const : null, usage: null };
+    if (cached.payload.modelInvoked === false) return { assessment: unknown(String(cached.payload.unknownReason) as UnknownReasonCode, seller), output: null, cacheHit: true, llmInvoked: false, unknownReason: String(cached.payload.unknownReason) as UnknownReasonCode, usage: null };
+    const terminal = String(cached.payload.unknownReason ?? "");
+    if (cached.payload.modelInvoked === true && ["LLM_OUTPUT_INVALID", "LLM_LOW_CONFIDENCE", "GENUINELY_AMBIGUOUS"].includes(terminal)) {
+      return { assessment: unknown(terminal as UnknownReasonCode, seller), output: null, cacheHit: true, llmInvoked: false, unknownReason: terminal as UnknownReasonCode, usage: null };
+    }
   }
   const started = Date.now();
   let raw: unknown;
+  let response: SemanticModelResponse | null = null;
   try {
-    const response = await openai.chat.completions.create({ model: COMPANY_UNDERSTANDING_MODEL, max_completion_tokens: 8192, response_format: { type: "json_object" }, messages: [
-      { role: "system", content: "Use only supplied seller context and evidence. Do not infer timing, intent, contacts, or cite sources not supplied. Return only the requested strict JSON." },
+    response = await semanticModelInvoker({ model: COMPANY_UNDERSTANDING_MODEL, max_completion_tokens: 8192, response_format: { type: "json_schema", json_schema: companySemanticResponseSchema }, messages: [
+      { role: "system", content: COMPANY_SEMANTIC_SYSTEM_PROMPT },
       { role: "user", content: JSON.stringify({ sellerContext: seller, candidate: { name: input.profile.canonicalName, domain: input.profile.domain }, evidence, allowedIndustryIds: [...CANONICAL_INDUSTRY_IDS, "UNKNOWN"], required: "primary_business,business_model,canonical_industry,products_services,commercial_role,confidence,reason,evidence_ids,missing_information" }) },
     ] });
     raw = JSON.parse(response.choices[0]?.message?.content ?? "");
     const checked = validateSemanticOutput(raw, evidence, seller.fingerprint);
     const output = checked.ok ? checked.output : null;
     const reason = checked.ok ? (checked.output.commercial_role === "UNKNOWN" ? "GENUINELY_AMBIGUOUS" : null) : checked.reason;
-    await db.insert(companyProvenanceTable).values({ organizationId: input.organizationId, projectId: input.projectId, companyId: input.companyId, sourceType: "FIX08_COMPANY_UNDERSTANDING", sourceLabel: COMPANY_UNDERSTANDING_MODEL, payload: { fingerprint, sellerContextFingerprint: seller.fingerprint, sellerContext: seller, evidenceIds: evidence.map((item) => item.id), output: raw, validatedOutput: output, promptVersion: COMPANY_UNDERSTANDING_PROMPT_VERSION, normalizationVersion: COMPANY_UNDERSTANDING_NORMALIZATION_VERSION, latencyMs: Date.now() - started, usage: response.usage ?? null } });
+    await tx.insert(companyProvenanceTable).values({ organizationId: input.organizationId, projectId: input.projectId, companyId: input.companyId, sourceType: "FIX08_COMPANY_UNDERSTANDING", sourceLabel: COMPANY_UNDERSTANDING_MODEL, payload: { fingerprint, sellerContextFingerprint: seller.fingerprint, sellerContext: seller, evidenceIds: evidence.map((item) => item.id), output: raw, validatedOutput: output, unknownReason: reason, modelInvoked: true, promptVersion: COMPANY_UNDERSTANDING_PROMPT_VERSION, normalizationVersion: COMPANY_UNDERSTANDING_NORMALIZATION_VERSION, latencyMs: Date.now() - started, usage: response.usage ?? null } });
     return { assessment: output ? assessmentFromOutput(output, seller) : unknown(reason!, seller), output, cacheHit: false, llmInvoked: true, unknownReason: reason, usage: response.usage as unknown as Record<string, unknown> ?? null };
-  } catch {
+  } catch (error) {
+    // Transport/API failures received no model decision and remain retryable.
+    // Parse/validation failures after a response are terminal and cacheable.
+    if (response) await tx.insert(companyProvenanceTable).values({
+      organizationId: input.organizationId, projectId: input.projectId, companyId: input.companyId,
+      sourceType: "FIX08_COMPANY_UNDERSTANDING", sourceLabel: COMPANY_UNDERSTANDING_MODEL,
+      payload: { fingerprint, sellerContextFingerprint: seller.fingerprint, sellerContext: seller,
+        evidenceIds: evidence.map((item) => item.id), output: raw ?? null, validatedOutput: null,
+        unknownReason: "LLM_OUTPUT_INVALID", modelInvoked: true, promptVersion: COMPANY_UNDERSTANDING_PROMPT_VERSION,
+        normalizationVersion: COMPANY_UNDERSTANDING_NORMALIZATION_VERSION,
+        validationError: error instanceof Error ? error.message : "MODEL_OR_OUTPUT_ERROR" },
+    });
     return { assessment: unknown("LLM_OUTPUT_INVALID", seller), output: null, cacheHit: false, llmInvoked: true, unknownReason: "LLM_OUTPUT_INVALID", usage: null };
   }
+  });
 }
 
 function assessmentFromOutput(output: CompanySemanticOutput, seller: SellerContext): BuyerRoleAssessment {

@@ -25,6 +25,7 @@ try {
   const [project] = await h.db.insert(h.projectsTable)
     .values({ organizationId: organization.id, name: "Concurrency Test" })
     .returning();
+  await h.db.insert(h.organizationMembersTable).values({ organizationId: organization.id, userId, role: "owner" });
   const [pack] = await h.db.insert(h.intelligencePacksTable).values({
     organizationId: organization.id,
     projectId: project.id,
@@ -75,8 +76,8 @@ try {
   });
 
   const [activationA, activationB] = await Promise.all([
-    h.activateOpportunityPackVersion(version.id, userId),
-    h.activateOpportunityPackVersion(version.id, userId),
+    h.activateOpportunityPackVersion({ versionId: version.id, userId, projectId: project.id, organizationId: organization.id }),
+    h.activateOpportunityPackVersion({ versionId: version.id, userId, projectId: project.id, organizationId: organization.id }),
   ]);
 
   assert.equal(activationA.version?.status ?? activationA.status, "ACTIVATED");

@@ -1,6 +1,5 @@
 import { and, desc, eq, inArray, sql } from "drizzle-orm";
 import {
-  businessTwinVersionsTable,
   companiesTable,
   companyAliasesTable,
   companyDiscoveryRunsTable,
@@ -8,7 +7,6 @@ import {
   companyProvenanceTable,
   db,
   icpCriteriaTable,
-  icpVersionsTable,
   projectCompaniesTable,
 } from "@workspace/db";
 import {
@@ -32,7 +30,7 @@ import type {
 import { resolveCompanyProfileWithRouter } from "./company-profile-resolution";
 import { assessBuyerRole, sameBuyerRoleAssessment, trustedCanonicalDomainDescription, type BuyerRoleAssessment } from "./buyer-role-resolution";
 import { getCanonicalCompanyProfile } from "./canonical-company-profile";
-import { resolveSellerContext } from "./seller-context";
+import { resolveProjectSellerContext, type ProjectSellerContext } from "./seller-context";
 import { assessCompanySemantically } from "./company-semantic-assessment";
 
 type DiscoveryInput = {
@@ -97,6 +95,9 @@ export type DiscoveryResult = {
   possibleMatches: number;
   rejected: number;
   blockedReason: string | null;
+  code?: "PROJECT_CONTEXT_INCOMPLETE";
+  missingRequirements?: string[];
+  readiness?: ProjectSellerContext;
   candidates: DiscoveryCandidateReport[];
 };
 
@@ -287,26 +288,13 @@ export type DiscoveryPlan = {
   queries: string[];
 };
 
-export async function buildDiscoveryPlan(projectId: string): Promise<DiscoveryPlan> {
-  const sellerContext = await resolveSellerContext(projectId);
-  const [twin] = await db
-    .select()
-    .from(businessTwinVersionsTable)
-    .where(eq(businessTwinVersionsTable.projectId, projectId))
-    .orderBy(desc(businessTwinVersionsTable.version))
-    .limit(1);
-  const [icp] = await db
-    .select()
-    .from(icpVersionsTable)
-    .where(eq(icpVersionsTable.projectId, projectId))
-    .orderBy(desc(icpVersionsTable.version))
-    .limit(1);
-  const criteria = icp
-    ? await db.select().from(icpCriteriaTable).where(eq(icpCriteriaTable.icpVersionId, icp.id))
+export async function buildDiscoveryPlan(projectId: string, resolved?: ProjectSellerContext): Promise<DiscoveryPlan> {
+  const sellerContext = resolved ?? await resolveProjectSellerContext(projectId);
+  const criteria = sellerContext.icpVersionId
+    ? await db.select().from(icpCriteriaTable).where(eq(icpCriteriaTable.icpVersionId, sellerContext.icpVersionId))
     : [];
-  const raw = (twin?.rawAnswers ?? {}) as Record<string, unknown>;
-  const interpretation = (twin?.aiInterpretation ?? {}) as Record<string, unknown>;
-  const assumptions = textArray(icp?.assumptions);
+  const raw = sellerContext.businessTwinRawAnswers as Record<string, unknown>;
+  const assumptions = textArray(sellerContext.icpAssumptions);
   const assumptionText = assumptions.join(" ");
   // Never manufacture generic seller context: an absent offering remains empty
   // and downstream semantic assessment fail-closes.
@@ -378,14 +366,14 @@ export async function buildDiscoveryPlan(projectId: string): Promise<DiscoveryPl
       confidence: targetIndustries.length && geographies.length ? "HIGH" : "MEDIUM",
       provenance: [
         ...acceptedCriteria.map((criterion) => `ICP:${criterion.id}`),
-        twin?.id ? `BUSINESS_TWIN:${twin.id}` : "",
+        sellerContext.businessTwinVersionId ? `BUSINESS_TWIN:${sellerContext.businessTwinVersionId}` : "",
       ].filter(Boolean),
     },
   };
   const queries = buildBuyerMarketDiscoveryQueries(strategy);
   return {
-    businessTwinVersionId: twin?.id ?? null,
-    icpVersionId: icp?.id ?? null,
+    businessTwinVersionId: sellerContext.businessTwinVersionId,
+    icpVersionId: sellerContext.icpVersionId,
     strategy,
     queries,
   };
@@ -439,7 +427,9 @@ export async function reassessProjectCompanyRolesSemantically(input: {
   projectId: string;
   companyIds?: string[];
   now?: Date;
-}): Promise<{ assessed: number; changed: number; cacheHits: number; outcomes: Array<{ companyId: string; llmInvoked: boolean; cacheHit: boolean; unknownReason: string | null; output: unknown; usage: Record<string, unknown> | null }> }> {
+}): Promise<{ assessed: number; changed: number; cacheHits: number; outcomes: Array<{ companyId: string; llmInvoked: boolean; modelInvoked: boolean; cacheHit: boolean; unknownReason: string | null; output: unknown; usage: Record<string, unknown> | null }> }> {
+  const projectContext = await resolveProjectSellerContext(input.projectId, input.organizationId);
+  if (projectContext.organizationId !== input.organizationId) throw new Error("PROJECT_ORGANIZATION_MISMATCH");
   const now = input.now ?? new Date();
   const rows = await db.select({ membership: projectCompaniesTable, company: companiesTable })
     .from(projectCompaniesTable).innerJoin(companiesTable, eq(projectCompaniesTable.companyId, companiesTable.id))
@@ -447,7 +437,7 @@ export async function reassessProjectCompanyRolesSemantically(input: {
       ? and(eq(projectCompaniesTable.projectId, input.projectId), inArray(projectCompaniesTable.companyId, input.companyIds))
       : eq(projectCompaniesTable.projectId, input.projectId));
   let changed = 0, cacheHits = 0;
-  const outcomes: Array<{ companyId: string; llmInvoked: boolean; cacheHit: boolean; unknownReason: string | null; output: unknown; usage: Record<string, unknown> | null }> = [];
+  const outcomes: Array<{ companyId: string; llmInvoked: boolean; modelInvoked: boolean; cacheHit: boolean; unknownReason: string | null; output: unknown; usage: Record<string, unknown> | null }> = [];
   for (const row of rows) {
     const profile = await getCanonicalCompanyProfile(input.projectId, row.company);
     const identitySafe = Boolean(row.company.domain) && await hasTrustedIdentityProvenance(row.company.id, row.company.domain!);
@@ -455,7 +445,7 @@ export async function reassessProjectCompanyRolesSemantically(input: {
       organizationId: input.organizationId, projectId: input.projectId, companyId: row.company.id, profile, identitySafe,
     });
     if (result.cacheHit) cacheHits += 1;
-    outcomes.push({ companyId: row.company.id, llmInvoked: result.llmInvoked, cacheHit: result.cacheHit, unknownReason: result.unknownReason, output: result.output, usage: result.usage });
+    outcomes.push({ companyId: row.company.id, llmInvoked: result.llmInvoked, modelInvoked: result.llmInvoked, cacheHit: result.cacheHit, unknownReason: result.unknownReason, output: result.output, usage: result.usage });
     if (row.membership.buyerRole === result.assessment.buyerRole && sameBuyerRoleAssessment(row.membership.buyerRoleAssessment, result.assessment)) continue;
     if (row.membership.buyerRole !== result.assessment.buyerRole) changed += 1;
     await db.update(projectCompaniesTable).set({ buyerRole: result.assessment.buyerRole, buyerRoleAssessment: result.assessment, updatedAt: now })
@@ -715,7 +705,21 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
   const now = input.now ?? new Date();
   const limit = Math.min(50, Math.max(1, input.limit ?? 20));
   const maxProviderCalls = Math.min(10, Math.max(1, input.maxProviderCalls ?? 5));
-  const plan = await buildDiscoveryPlan(input.projectId);
+  // Resolve once before a run row or provider request. A caller cannot borrow
+  // context from another tenant, and legacy NULL-context runs remain read-only.
+  const readiness = await resolveProjectSellerContext(input.projectId, input.organizationId);
+  if (!readiness.marketDiscoveryReady) {
+    return {
+      status: "blocked", code: "PROJECT_CONTEXT_INCOMPLETE",
+      missingRequirements: readiness.missingRequirements,
+      readiness, runId: null, providerId: null, query: "", queries: [],
+      providerCalls: 0, estimatedCost: 0, actualCost: null, rawResults: 0,
+      discovered: 0, canonicalized: 0, duplicatesRemoved: 0, linked: 0,
+      possibleMatches: 0, rejected: 0,
+      blockedReason: "PROJECT_CONTEXT_INCOMPLETE", candidates: [],
+    };
+  }
+  const plan = await buildDiscoveryPlan(input.projectId, readiness);
   const discoveryCallLimit = Math.max(1, Math.min(5, Math.ceil(maxProviderCalls / 2)));
   const queries = (input.queryOverrides?.length ? input.queryOverrides : plan.queries).slice(0, discoveryCallLimit);
   const [run] = await db.insert(companyDiscoveryRunsTable).values({
@@ -791,6 +795,7 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
       : error?.message ?? "Discovery provider did not return candidates.";
     return {
       status: "blocked",
+      readiness,
       runId: run.id,
       providerId,
       query: queries[0] ?? "",
@@ -1361,6 +1366,7 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
   }).where(eq(companyDiscoveryRunsTable.id, run.id));
   return {
     status: "completed",
+    readiness,
     runId: run.id,
     providerId,
     query: queries[0] ?? "",
