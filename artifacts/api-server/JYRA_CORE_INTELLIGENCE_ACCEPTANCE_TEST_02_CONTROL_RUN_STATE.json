@@ -127,6 +127,48 @@
           "reason": "No terminal research disposition persisted within 150000ms"
         }
       ]
+    },
+    {
+      "manifestIndex": 3,
+      "requestedCompany": "Infoblox",
+      "provision": {
+        "resolutionPath": "KNOWN_COMPANY_RESOLUTION",
+        "matchBasis": "EXACT_CANONICAL_NAME",
+        "existingCanonicalReused": true,
+        "identityState": "CONFIRMED",
+        "canAutoAttachCanonical": false,
+        "canResearchEntity": true,
+        "providerCapabilitiesInvoked": [],
+        "providerCalls": 0,
+        "companyId": "408bc044-5be0-4118-b486-75c494e5cd8f",
+        "status": "PROVISIONED",
+        "blockReason": null
+      },
+      "questions": [
+        {
+          "questionType": "LEADERSHIP",
+          "status": "SUCCEEDED",
+          "questionId": "7f2108cf-16fc-4a30-97ad-b1a85c598be9",
+          "jobId": "cd759b5d-b6bb-4a1f-9c29-c56696e9c6af"
+        },
+        {
+          "questionType": "HIRING",
+          "status": "SUCCEEDED",
+          "questionId": "9b63012f-e5be-444b-b3c7-d68477f33eee",
+          "jobId": "b3905c75-f136-4ff1-a634-974d4f133be3"
+        },
+        {
+          "questionType": "EXPANSION",
+          "status": "SUCCEEDED",
+          "questionId": "d5aa9fd2-d125-4681-954c-bdba9e0f78fa",
+          "jobId": "9bdb4346-17ee-4eac-b6f7-1b5fef89980c"
+        },
+        {
+          "questionType": "TECHNOLOGY",
+          "status": "TIMED_OUT",
+          "reason": "No terminal research disposition persisted within 150000ms"
+        }
+      ]
     }
   ]
 }
