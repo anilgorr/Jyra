@@ -51,6 +51,7 @@
     ,"smoke:adaptive-retrieval-productionization": "NODE_ENV=development node ./scripts/run-adaptive-retrieval-productionization-smoke.mjs"
     ,"test:black-duck-extraction-fix": "NODE_ENV=development node ./scripts/run-black-duck-extraction-fix.mjs"
     ,"test:fact-temporal-safety-fix-03": "NODE_ENV=development node ./scripts/run-fact-temporal-safety-fix-03.mjs"
+    ,"test:managed-soc-signal-mapping-gap-validation-01": "NODE_ENV=development node ./scripts/run-managed-soc-signal-mapping-gap-validation-01.mjs"
     ,"test:icp-qualification": "node ./scripts/test-icp-qualification.mjs"
     ,"test:signals": "node ./scripts/test-signals.mjs"
     ,"test:opportunities": "node ./scripts/test-opportunity-engine.mjs"

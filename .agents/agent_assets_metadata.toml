@@ -262,3 +262,31 @@ mtime_ms = 1788242356497
 storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/0f8933c1-eb8c-4fdb-b472-781eacaf46a7/726494c2-f579-4266-8455-2666ecda7c4f"
 storage_version_token = "1788242441849103"
 content_type = "application/octet-stream"
+
+[[outputs]]
+id = "eVpgIsOSxRrba9YgZXngM"
+uri = "file://artifacts/api-server/MANAGED_SOC_SIGNAL_MAPPING_GAP_VALIDATION_01.md"
+type = "text"
+title = "Managed SOC Signal Mapping Gap Validation 01"
+description = "Primary semantic audit, safety validation, preserved-control retest, and final decision."
+logical_id = "eb5dd309-67e5-4696-978a-c5a16f01f2a0"
+content_hash = "sha256:2ca37299a1321f0b2e58affe7562e10449feac328410d53082b1b402caf8755c"
+size = 1681
+mtime_ms = 1788244182824
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/eb5dd309-67e5-4696-978a-c5a16f01f2a0/c930d88a-7168-4c7c-8a24-04b4ce94a47f"
+storage_version_token = "1788244342804396"
+content_type = "text/markdown"
+
+[[outputs]]
+id = "fXuON80vgvyzHt-4-gFAm"
+uri = "file://artifacts/api-server/MANAGED_SOC_SIGNAL_MAPPING_GAP_VALIDATION_01.json"
+type = "unspecified"
+title = "Managed SOC Mapping Validation — Structured Result"
+description = "Machine-readable before/after metrics, invariants, definition details, and final decision."
+logical_id = "23142f48-5063-4d18-ac63-861ff28776c3"
+content_hash = "sha256:b0ac1d9d67d2152bfdb4e32df5de98cf9f54251bafa8ec3004a1ea13d2b88cfb"
+size = 3874
+mtime_ms = 1788244182824
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/23142f48-5063-4d18-ac63-861ff28776c3/bce26227-b900-4680-ab4e-d9e6ddf1e43d"
+storage_version_token = "1788244344192458"
+content_type = "application/octet-stream"

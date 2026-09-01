@@ -1,0 +1,89 @@
+{
+  "test": "MANAGED_SOC_SIGNAL_MAPPING_GAP_VALIDATION_01",
+  "partialControlsInspected": 2,
+  "controls": [
+    {
+      "manifestIndex": 7,
+      "company": "OpenAssets",
+      "beforeOutcome": "PARTIAL",
+      "afterOutcome": "STRICT_DETECTED",
+      "recoveredReferenceFactIds": [
+        "ephemeral-e993a6cfe50a83ca131493e4",
+        "ephemeral-5e88d97f1b799185080aba63",
+        "ephemeral-26f6b74fd793e9ce3ca0cfb5"
+      ],
+      "approvedFactIds": [
+        "ephemeral-e993a6cfe50a83ca131493e4",
+        "ephemeral-8588b059354f9e71a652a3a9",
+        "ephemeral-5e88d97f1b799185080aba63",
+        "ephemeral-26f6b74fd793e9ce3ca0cfb5",
+        "ephemeral-7d91937dcb8bdd8bf71db5f3"
+      ],
+      "candidates": [
+        {
+          "code": "MSOC_SECURITY_COMPLIANCE_ACTIVITY",
+          "effectiveDate": "2026-08-03",
+          "confidence": 98,
+          "decayStatus": "ACTIVE",
+          "currentStrength": 50.33,
+          "factIds": [
+            "ephemeral-26f6b74fd793e9ce3ca0cfb5",
+            "ephemeral-5e88d97f1b799185080aba63",
+            "ephemeral-7d91937dcb8bdd8bf71db5f3",
+            "ephemeral-8588b059354f9e71a652a3a9",
+            "ephemeral-e993a6cfe50a83ca131493e4"
+          ],
+          "evidenceIds": [
+            "2bd2ce88-2582-4d2d-b1dc-810ab1c84cd6",
+            "4e647bd0-6d4c-469a-80c4-21008e44f4d3"
+          ],
+          "supported": true,
+          "provenance": true,
+          "supportBasis": "Previously partial certification control intersects recovered reference facts",
+          "provenanceBasis": "All nonempty fact/evidence IDs resolve exactly to selected approved facts",
+          "classification": "SECURITY_PROGRAM_ACTIVITY",
+          "strength": "MODERATE",
+          "intentClassification": "NOT_PURCHASE_INTENT"
+        }
+      ]
+    },
+    {
+      "manifestIndex": 8,
+      "company": "Black & McDonald",
+      "beforeOutcome": "PARTIAL",
+      "afterOutcome": "STRICT_DETECTED",
+      "recoveredReferenceFactIds": [
+        "ephemeral-2973451851e3e00f3481fd0d",
+        "ephemeral-e4960b16ba3d7232f67f1dee"
+      ],
+      "approvedFactIds": [
+        "ephemeral-2973451851e3e00f3481fd0d",
+        "ephemeral-e4960b16ba3d7232f67f1dee"
+      ],
+      "candidates": [
+        {
+          "code": "MSOC_SECURITY_COMPLIANCE_ACTIVITY",
+          "effectiveDate": "2026-05-08",
+          "confidence": 98,
+          "decayStatus": "ACTIVE",
+          "currentStrength": 21.33,
+          "factIds": [
+            "ephemeral-2973451851e3e00f3481fd0d",
+            "ephemeral-e4960b16ba3d7232f67f1dee"
+          ],
+          "evidenceIds": [
+            "53cddfd5-6e4c-4223-993c-2661024a13ab",
+            "8bcb7652-0ba0-49f6-979d-688cd48ea5cf"
+          ],
+          "supported": true,
+          "provenance": true,
+          "supportBasis": "Previously partial certification control intersects recovered reference facts",
+          "provenanceBasis": "All nonempty fact/evidence IDs resolve exactly to selected approved facts",
+          "classification": "SECURITY_PROGRAM_ACTIVITY",
+          "strength": "MODERATE",
+          "intentClassification": "NOT_PURCHASE_INTENT"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,113 @@
+{
+  "test": "MANAGED_SOC_SIGNAL_MAPPING_GAP_VALIDATION_01",
+  "partialControlsInspected": 2,
+  "certificationComplianceFactsValid": 2,
+  "fitExistingSignalDefinition": 0,
+  "requireNewSignal": 2,
+  "shouldRemainContextualOnly": 0,
+  "newSignalImplemented": true,
+  "reason": "Two valid current certification controls do not fit the frozen four definitions and safely map to the narrow seller-specific security/compliance activity definition without implying purchase intent.",
+  "before": {
+    "strictDetected": 6,
+    "partial": 2,
+    "missed": 2,
+    "strictRecall": 0.6,
+    "signals": 6,
+    "supportedSignals": 6,
+    "unsupportedSignals": 0,
+    "signalPrecision": 1
+  },
+  "after": {
+    "strictDetected": 8,
+    "partial": 0,
+    "missed": 2,
+    "strictRecall": 0.8,
+    "signals": 8,
+    "activeCandidates": 5,
+    "staleCandidates": 3,
+    "supportedSignals": 8,
+    "unsupportedSignals": 0,
+    "signalPrecision": 1,
+    "sellerAsBuyer": 0,
+    "temporallyInvalid": 0,
+    "wrongEntity": 0,
+    "whyProvenance": 1
+  },
+  "providerCalls": 0,
+  "productionOperations": 0,
+  "finalDecision": "A — MISSING SIGNAL MAPPING VALIDATED AND SAFELY REPAIRED",
+  "reconciliation": "NO_OP",
+  "hardSafetyGatesPassed": true,
+  "complianceSignals": 2,
+  "proposedDefinition": {
+    "code": "MSOC_SECURITY_COMPLIANCE_ACTIVITY",
+    "description": "Recent material security/compliance program activity relevant to Managed SOC; this is SECURITY_PROGRAM_ACTIVITY and explicitly does not mean purchase intent or Managed SOC procurement.",
+    "configuration": {
+      "mode": "single",
+      "matchAll": [
+        "\"eventType\":\"(?:has achieved|achieved|achieves|renewed|has renewed|completed|completes|has completed|have completed|received|earned|obtained|are now|is now|started|initiated|launched|expanded)\"",
+        "(?:iso(?:/iec)?\\s*27001|soc\\s*2|security.{0,30}(?:audit|assessment|certification)|(?:audit|assessment|certification).{0,30}security)"
+      ],
+      "matchAny": [],
+      "minFacts": 1,
+      "factTypes": [
+        "CERTIFICATION"
+      ],
+      "excludeAny": [
+        "(?:sell|provide|offer|deliver)(?:s|ed|ing)?\\s+(?:iso|soc|security|compliance|audit|assessment|certification).{0,40}(?:consulting|service)",
+        "(?:iso|soc|security|compliance|audit|assessment|certification).{0,40}(?:consulting|certification services)",
+        "(?:customer|client)(?:'s|s')?\\s+(?:case|story|certification|compliance|audit|assessment)",
+        "(?:customer|client)\\s+case(?:\\s+study)?"
+      ]
+    },
+    "classification": "SECURITY_PROGRAM_ACTIVITY",
+    "strength": "MODERATE",
+    "intentClassification": "NOT_PURCHASE_INTENT"
+  },
+  "metrics": {
+    "controls": 10,
+    "strictDetected": 8,
+    "partial": 0,
+    "missed": 2,
+    "strictRecall": 0.8,
+    "signals": 8,
+    "activeCandidates": 5,
+    "staleCandidates": 3,
+    "supportedSignals": 8,
+    "unsupportedSignals": 0,
+    "signalPrecision": 1,
+    "unsupportedSignalRate": 0,
+    "sellerAsBuyer": 0,
+    "temporallyInvalid": 0,
+    "wrongEntity": 0,
+    "whyProvenance": 1
+  },
+  "invariants": {
+    "before": {
+      "providerUsage": 1273,
+      "evidence": 761,
+      "facts": 70,
+      "proposals": 169,
+      "signals": 7,
+      "definitions": 41
+    },
+    "after": {
+      "providerUsage": 1273,
+      "evidence": 761,
+      "facts": 70,
+      "proposals": 169,
+      "signals": 7,
+      "definitions": 41
+    },
+    "providerUsageDelta": 0,
+    "databaseWrites": 0,
+    "definitionCountDelta": 0,
+    "reconciliation": "NO_OP",
+    "existingFourDefinitionFingerprint": "75c767c4fd5e8a03127125d0cfb9d71ef92b45ca1a77c9f93d69aba64ad4c747",
+    "definitionFingerprintVerified": true,
+    "providerCalls": 0,
+    "productionOperations": 0,
+    "frozenReportSha256": "db458f2f153a5f0da4df76065a8b99f27fe0a522c477f71f845dc061c804979a",
+    "tableCountsIdenticalExceptDefinition": true
+  }
+}

@@ -1,0 +1,587 @@
+JYRA — MANAGED SOC SIGNAL MAPPING GAP VALIDATION 01
+
+PURPOSE
+
+Fact & Temporal Safety Fix 03 produced:
+
+Reference facts recovered = 8/10
+Strict detections = 6/10
+Partial = 2/10
+Missed = 2/10
+
+Signal-feeding fact precision = 100% (22/22)
+Signal precision = 100% (6/6)
+
+Seller-as-buyer = 0
+Temporally invalid = 0
+Wrong entity = 0
+Generic funding false inference = 0
+
+Retrieval unchanged.
+Identity unchanged.
+ICP unchanged.
+Providers unchanged.
+
+The two PARTIAL controls contain valid certification/compliance facts,
+but the frozen Managed SOC signal definitions do not map those facts
+into signals.
+
+Final diagnosis:
+
+E — SIGNAL MAPPING DEFECT EXPOSED
+
+GOAL
+
+Determine whether certification/compliance facts should legitimately
+create or contribute to Managed SOC opportunity signals.
+
+Do NOT assume:
+
+CERTIFICATION = BUYING INTENT.
+
+First establish the correct generic semantic mapping.
+
+==================================================
+1. DATABASE SAFETY
+==================================================
+
+DEVELOPMENT ONLY.
+
+Production operations = 0.
+
+No production migrations, writes, resets, seeds, or tests.
+
+==================================================
+2. FREEZE EVERYTHING ELSE
+==================================================
+
+DO NOT CHANGE:
+
+retrieval
+Tavily
+Exa
+query generation
+identity
+profile resolution
+ICP
+fact extraction
+fact validation
+temporal semantics
+opportunity scoring
+ranking
+WHY
+NBA
+contacts
+UI
+providers.
+
+Fact & Temporal Safety Fix 03 is now FROZEN unless this task exposes a
+specific regression.
+
+==================================================
+3. USE EXISTING EVIDENCE ONLY
+==================================================
+
+Use the exact persisted evidence/facts from the frozen 10-control
+benchmark.
+
+Provider calls = 0.
+
+Do not retrieve new information.
+
+==================================================
+4. INSPECT THE TWO PARTIAL CONTROLS
+==================================================
+
+For each partial control reconstruct:
+
+company
+source
+evidence
+fact
+fact type
+certification/compliance standard
+event/action
+event date
+publisher
+subject entity
+fact confidence
+current signal mapping result.
+
+Determine exactly what happened.
+
+==================================================
+5. DISTINGUISH CERTIFICATION SEMANTICS
+==================================================
+
+Certification/compliance facts must distinguish at least:
+
+CERTIFICATION_ACHIEVED
+
+CERTIFICATION_RENEWED
+
+CERTIFICATION_IN_PROGRESS
+
+CERTIFICATION_SCOPE_EXPANDED
+
+COMPLIANCE_REQUIREMENT_ANNOUNCED
+
+AUDIT_OR_ASSESSMENT_INITIATED
+
+COMPLIANCE_PROGRAM_LAUNCHED
+
+CERTIFICATION_MENTION_ONLY
+
+HISTORICAL_CERTIFICATION
+
+Where the existing ontology can represent these semantics without new
+fact types, prefer existing ontology + structured attributes.
+
+Do not create unnecessary ontology proliferation.
+
+==================================================
+6. MANAGED SOC RELEVANCE
+==================================================
+
+For each semantic category determine whether it represents:
+
+DIRECT_MANAGED_SOC_NEED
+
+SECURITY_PROGRAM_ACTIVITY
+
+COMPLIANCE_PRESSURE
+
+WEAK_CONTEXT
+
+NO_RELEVANCE.
+
+Important:
+
+Security/compliance activity may be a useful opportunity signal without
+being direct purchase intent.
+
+==================================================
+7. DO NOT CONFLATE SIGNAL WITH INTENT
+==================================================
+
+Example:
+
+"Company begins SOC 2 certification program."
+
+Potentially valid:
+
+Compliance/security program activity.
+
+Not valid:
+
+"Company intends to buy Managed SOC."
+
+Likewise:
+
+"Company achieved ISO 27001 certification."
+
+may establish security/compliance maturity/activity.
+
+It does NOT by itself establish:
+
+active Managed SOC procurement.
+
+==================================================
+8. SELLER-SPECIFIC RELEVANCE
+==================================================
+
+Mapping must remain seller/offering specific.
+
+A compliance event could have different relevance for:
+
+Managed SOC
+
+ISO consulting
+
+GRC software
+
+cybersecurity audit
+
+general SaaS.
+
+Do not create a universal intent signal.
+
+==================================================
+9. EXISTING SIGNAL PACK AUDIT
+==================================================
+
+Audit the current approved Managed SOC pack:
+
+MSOC_SECURITY_LEADER
+
+MSOC_SECURITY_HIRING
+
+MSOC_FUNDED_RISK_PROGRAM
+
+MSOC_SECURITY_STACK_CHANGE
+
+Determine whether the certification facts:
+
+A. legitimately fit an existing definition,
+
+B. require a new generic Managed SOC signal definition,
+
+or
+
+C. should remain contextual facts only.
+
+Do not force them into an existing signal.
+
+==================================================
+10. POSSIBLE NEW SIGNAL
+==================================================
+
+If justified by evidence and seller semantics, evaluate a generic
+concept such as:
+
+MSOC_SECURITY_COMPLIANCE_ACTIVITY
+
+or equivalent.
+
+Do not use this exact name unless it fits current architecture.
+
+Its meaning should be approximately:
+
+Recent evidence of material security/compliance program activity that
+may increase relevance of Managed SOC for this seller.
+
+It must NOT mean:
+
+company is buying Managed SOC.
+
+==================================================
+11. ACTIVATION CONDITIONS
+==================================================
+
+If a new signal is justified, define explicit activation requirements.
+
+Potential positive evidence:
+
+new security certification initiative
+
+certification currently in progress
+
+material certification scope expansion
+
+new regulatory/security compliance requirement
+
+new security audit/assessment program
+
+recent achievement of security certification when it evidences
+material current security-program activity.
+
+Potential insufficient evidence:
+
+generic certification badge
+
+undated ISO logo
+
+historical certification
+
+generic "we are compliant"
+
+old certification with no current activity
+
+certification belonging to another entity
+
+vendor discussing customer's certification without clear attribution.
+
+==================================================
+12. TEMPORAL REQUIREMENT
+==================================================
+
+Any event-style compliance signal requires defensible temporal
+evidence.
+
+Observation date alone cannot make an old certification recent.
+
+Use the repaired temporal semantics unchanged.
+
+==================================================
+13. SIGNAL STRENGTH
+==================================================
+
+If supported by architecture, classify compliance signal strength
+conservatively.
+
+For example:
+
+STRONG:
+active/new compliance program with security operational implications.
+
+MODERATE:
+recent certification achievement or scope expansion.
+
+WEAK:
+certification context without evidence of current change.
+
+WEAK context should not necessarily activate an opportunity signal.
+
+Do not change global scoring in this task.
+
+==================================================
+14. SIGNAL CLUSTER ROLE
+==================================================
+
+Determine whether compliance activity should become more meaningful
+when clustered with:
+
+security leadership change
+
+security hiring
+
+security stack change
+
+funded risk/security program.
+
+Example:
+
+ISO 27001 initiative
++
+new CISO
++
+security hiring
+
+is materially stronger than:
+
+ISO 27001 badge alone.
+
+Document this interaction.
+
+Do not modify scoring unless existing cluster architecture already
+supports the relationship safely.
+
+==================================================
+15. VALIDATE AGAINST FALSE POSITIVES
+==================================================
+
+Create generic negative cases:
+
+A.
+Company has ISO 27001 logo in website footer with no date.
+
+B.
+Company was certified five years ago.
+
+C.
+Company sells ISO consulting services.
+
+D.
+Company writes an article explaining SOC 2.
+
+E.
+Customer case study mentions certification but subject attribution is
+unclear.
+
+F.
+Parent company certified but target subsidiary is not.
+
+None should automatically create current Managed SOC opportunity
+activity.
+
+==================================================
+16. POSITIVE CASES
+==================================================
+
+Create generic positive cases:
+
+G.
+Company announces it has started SOC 2 certification.
+
+H.
+Company announces new ISO 27001 certification after a current security
+program.
+
+I.
+Company expands ISO 27001 certification to additional operations.
+
+J.
+Company announces compliance/security audit initiative.
+
+K.
+Company faces a new explicit security compliance requirement and
+launches remediation/program activity.
+
+Determine which should activate the proposed signal and why.
+
+==================================================
+17. IMPLEMENT ONLY IF JUSTIFIED
+==================================================
+
+After the semantic audit:
+
+If the two benchmark facts and generic cases justify a missing signal,
+implement the smallest generic signal mapping.
+
+If not:
+
+leave them as contextual facts.
+
+Do not optimize merely to turn 6/10 into 8/10.
+
+==================================================
+18. RETEST PRESERVED TEN CONTROLS
+==================================================
+
+If a mapping change is implemented:
+
+reprocess the exact frozen 10 controls from persisted facts.
+
+NO provider calls.
+
+NO new retrieval.
+
+NO fact re-extraction unless required by the normal signal evaluation
+path.
+
+Measure:
+
+strict detections
+partials
+misses
+signals
+supported signals
+unsupported signals
+seller-as-buyer
+temporal invalid
+wrong entity
+signal precision.
+
+==================================================
+19. HARD SAFETY GATES
+==================================================
+
+Required:
+
+Signal precision >= 90%
+
+Unsupported signal rate <= 5%
+
+Seller-as-buyer = 0
+
+Temporally invalid = 0
+
+Wrong entity = 0
+
+WHY provenance = 100%
+
+No certification/compliance signal may claim purchase intent without
+purchase-intent evidence.
+
+==================================================
+20. TARGET OUTCOME
+==================================================
+
+If both partial controls legitimately represent current material
+security/compliance activity:
+
+target strict detection may improve:
+
+6/10 → 8/10
+
+strict recall:
+
+60% → 80%.
+
+But DO NOT force this result.
+
+A safe 6/10 is better than an unsupported 8/10.
+
+==================================================
+21. ARTIFACTS
+==================================================
+
+Generate:
+
+MANAGED_SOC_SIGNAL_MAPPING_GAP_VALIDATION_01.md
+
+MANAGED_SOC_SIGNAL_MAPPING_GAP_VALIDATION_01.json
+
+MANAGED_SOC_SIGNAL_MAPPING_GAP_VALIDATION_01_PARTIALS.json
+
+MANAGED_SOC_SIGNAL_MAPPING_GAP_VALIDATION_01_CASES.json
+
+MANAGED_SOC_SIGNAL_MAPPING_GAP_VALIDATION_01_RETEST.json
+
+==================================================
+22. FINAL REPORT
+==================================================
+
+Partial controls inspected = 2
+
+Certification/compliance facts valid =
+
+Fit existing signal definition =
+
+Require new signal =
+
+Should remain contextual only =
+
+New signal implemented = YES/NO
+
+Reason =
+
+BEFORE:
+
+Strict detections = 6/10
+Partial = 2/10
+Missed = 2/10
+Signal precision = 100%
+
+AFTER:
+
+Strict detections =
+Partial =
+Missed =
+Strict recall =
+
+Signals =
+Supported signals =
+Unsupported signals =
+Signal precision =
+
+Seller-as-buyer =
+Temporal invalid =
+Wrong entity =
+
+Provider calls =
+Production operations =
+
+==================================================
+23. FINAL DECISION
+==================================================
+
+Return exactly ONE:
+
+A — MISSING SIGNAL MAPPING VALIDATED AND SAFELY REPAIRED
+
+B — CERTIFICATION FACTS SHOULD REMAIN CONTEXT ONLY
+
+C — EXISTING SIGNAL DEFINITION SHOULD HAVE MATCHED
+
+D — SIGNAL MODEL NEEDS BROADER ARCHITECTURAL CHANGE
+
+E — SAFETY REGRESSION
+
+F — INCONCLUSIVE
+
+==================================================
+24. STOP
+==================================================
+
+STOP.
+
+Do not run fresh retrieval.
+
+Do not run the full 10-control end-to-end benchmark.
+
+Do not run the 50-company benchmark.
+
+Do not fix idempotency.
+
+Return results for review.

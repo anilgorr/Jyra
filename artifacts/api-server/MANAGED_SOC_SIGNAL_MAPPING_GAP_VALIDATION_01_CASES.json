@@ -1,0 +1,197 @@
+{
+  "test": "MANAGED_SOC_SIGNAL_MAPPING_GAP_VALIDATION_01",
+  "cases": [
+    {
+      "id": "A",
+      "expected": "NO_SIGNAL",
+      "actual": "NO_SIGNAL",
+      "passed": true,
+      "detail": "Undated/footer-style mention rejects before mapping.",
+      "acceptedInputFactCount": 1,
+      "validation": {
+        "valid": false,
+        "codes": [
+          "UNSUPPORTED_CLAIM",
+          "EVENT_DATE_NOT_EXPLICIT"
+        ]
+      },
+      "signal": null
+    },
+    {
+      "id": "B",
+      "expected": "STALE_AUDIT_CANDIDATE",
+      "actual": "STALE_AUDIT_CANDIDATE",
+      "passed": true,
+      "detail": "Five-year-old explicit event decays stale.",
+      "acceptedInputFactCount": 1,
+      "validation": null,
+      "signal": {
+        "code": "MSOC_SECURITY_COMPLIANCE_ACTIVITY",
+        "effectiveDate": "2021-08-31",
+        "status": "STALE",
+        "classification": "SECURITY_PROGRAM_ACTIVITY",
+        "strength": "MODERATE",
+        "intentClassification": "NOT_PURCHASE_INTENT"
+      }
+    },
+    {
+      "id": "C",
+      "expected": "NO_SIGNAL",
+      "actual": "NO_SIGNAL",
+      "passed": true,
+      "detail": "Accepted adversarial input proves mapping-level seller exclusion.",
+      "acceptedInputFactCount": 1,
+      "validation": null,
+      "signal": null
+    },
+    {
+      "id": "D",
+      "expected": "NO_SIGNAL",
+      "actual": "NO_SIGNAL",
+      "passed": true,
+      "detail": "Explanatory article rejects before mapping.",
+      "acceptedInputFactCount": 1,
+      "validation": {
+        "valid": false,
+        "codes": [
+          "UNSUPPORTED_CLAIM",
+          "EVENT_DATE_NOT_EXPLICIT",
+          "FACT_TYPE_NOT_SUPPORTED"
+        ]
+      },
+      "signal": null
+    },
+    {
+      "id": "E",
+      "expected": "BLOCKED_BEFORE_MAPPING",
+      "actual": "BLOCKED_BEFORE_MAPPING",
+      "passed": true,
+      "detail": "Customer attribution validation produces WRONG_ENTITY.",
+      "acceptedInputFactCount": 0,
+      "validation": {
+        "valid": false,
+        "codes": [
+          "WRONG_ENTITY"
+        ]
+      },
+      "signal": null
+    },
+    {
+      "id": "F",
+      "expected": "BLOCKED_BEFORE_MAPPING",
+      "actual": "BLOCKED_BEFORE_MAPPING",
+      "passed": true,
+      "detail": "Parent/subsidiary validation produces WRONG_ENTITY.",
+      "acceptedInputFactCount": 0,
+      "validation": {
+        "valid": false,
+        "codes": [
+          "WRONG_ENTITY"
+        ]
+      },
+      "signal": null
+    },
+    {
+      "id": "G",
+      "expected": "ACTIVE",
+      "actual": "ACTIVE",
+      "passed": true,
+      "detail": "Hypothetical accepted ontology semantic.",
+      "acceptedInputFactCount": 1,
+      "validation": null,
+      "signal": {
+        "code": "MSOC_SECURITY_COMPLIANCE_ACTIVITY",
+        "effectiveDate": "2026-08-01",
+        "status": "ACTIVE",
+        "classification": "SECURITY_PROGRAM_ACTIVITY",
+        "strength": "MODERATE",
+        "intentClassification": "NOT_PURCHASE_INTENT"
+      }
+    },
+    {
+      "id": "H",
+      "expected": "ACTIVE",
+      "actual": "ACTIVE",
+      "passed": true,
+      "detail": "Hypothetical accepted ontology semantic.",
+      "acceptedInputFactCount": 1,
+      "validation": null,
+      "signal": {
+        "code": "MSOC_SECURITY_COMPLIANCE_ACTIVITY",
+        "effectiveDate": "2026-08-01",
+        "status": "ACTIVE",
+        "classification": "SECURITY_PROGRAM_ACTIVITY",
+        "strength": "MODERATE",
+        "intentClassification": "NOT_PURCHASE_INTENT"
+      }
+    },
+    {
+      "id": "I",
+      "expected": "ACTIVE",
+      "actual": "ACTIVE",
+      "passed": true,
+      "detail": "Hypothetical accepted ontology semantic.",
+      "acceptedInputFactCount": 1,
+      "validation": null,
+      "signal": {
+        "code": "MSOC_SECURITY_COMPLIANCE_ACTIVITY",
+        "effectiveDate": "2026-08-01",
+        "status": "ACTIVE",
+        "classification": "SECURITY_PROGRAM_ACTIVITY",
+        "strength": "MODERATE",
+        "intentClassification": "NOT_PURCHASE_INTENT"
+      }
+    },
+    {
+      "id": "J",
+      "expected": "ACTIVE",
+      "actual": "ACTIVE",
+      "passed": true,
+      "detail": "Hypothetical accepted ontology semantic.",
+      "acceptedInputFactCount": 1,
+      "validation": null,
+      "signal": {
+        "code": "MSOC_SECURITY_COMPLIANCE_ACTIVITY",
+        "effectiveDate": "2026-08-01",
+        "status": "ACTIVE",
+        "classification": "SECURITY_PROGRAM_ACTIVITY",
+        "strength": "MODERATE",
+        "intentClassification": "NOT_PURCHASE_INTENT"
+      }
+    },
+    {
+      "id": "K",
+      "expected": "CONTEXT_ONLY",
+      "actual": "CONTEXT_ONLY",
+      "passed": true,
+      "detail": "No broad COMPLIANCE_MENTION mapping under frozen temporal semantics.",
+      "acceptedInputFactCount": 1,
+      "validation": null,
+      "signal": null
+    }
+  ],
+  "allowedForms": [
+    "has achieved",
+    "achieved",
+    "achieves",
+    "renewed",
+    "has renewed",
+    "completed",
+    "completes",
+    "has completed",
+    "have completed",
+    "received",
+    "earned",
+    "obtained",
+    "are now",
+    "is now",
+    "started",
+    "initiated",
+    "launched",
+    "expanded"
+  ],
+  "deniedForms": [
+    "is certified",
+    "certified"
+  ]
+}

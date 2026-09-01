@@ -1,0 +1,503 @@
+{
+  "test": "MANAGED_SOC_SIGNAL_MAPPING_GAP_VALIDATION_01",
+  "mode": "DEVELOPMENT_ONLY_DB_GUARDED_EXACT_FROZEN_APPROVED_FACTS_LIKE_FOR_LIKE_DETECTION",
+  "retestDate": "2026-08-31T23:59:59.999Z",
+  "reconciliation": "NO_OP",
+  "definitions": [
+    {
+      "id": "67781795-9bb1-46ff-a120-f9b6d79ae6a0",
+      "code": "MSOC_FUNDED_RISK_PROGRAM",
+      "configuration": {
+        "mode": "single",
+        "matchAny": [],
+        "minFacts": 1,
+        "factTypes": [
+          "FUNDING_EVENT"
+        ]
+      }
+    },
+    {
+      "id": "8e99ec59-e03f-49e6-8398-1d8a51a1a748",
+      "code": "MSOC_SECURITY_COMPLIANCE_ACTIVITY",
+      "configuration": {
+        "mode": "single",
+        "matchAll": [
+          "\"eventType\":\"(?:has achieved|achieved|achieves|renewed|has renewed|completed|completes|has completed|have completed|received|earned|obtained|are now|is now|started|initiated|launched|expanded)\"",
+          "(?:iso(?:/iec)?\\s*27001|soc\\s*2|security.{0,30}(?:audit|assessment|certification)|(?:audit|assessment|certification).{0,30}security)"
+        ],
+        "matchAny": [],
+        "minFacts": 1,
+        "factTypes": [
+          "CERTIFICATION"
+        ],
+        "excludeAny": [
+          "(?:sell|provide|offer|deliver)(?:s|ed|ing)?\\s+(?:iso|soc|security|compliance|audit|assessment|certification).{0,40}(?:consulting|service)",
+          "(?:iso|soc|security|compliance|audit|assessment|certification).{0,40}(?:consulting|certification services)",
+          "(?:customer|client)(?:'s|s')?\\s+(?:case|story|certification|compliance|audit|assessment)",
+          "(?:customer|client)\\s+case(?:\\s+study)?"
+        ]
+      }
+    },
+    {
+      "id": "3d650a92-a92e-4047-934e-a1f083db0de3",
+      "code": "MSOC_SECURITY_HIRING",
+      "configuration": {
+        "mode": "single",
+        "matchAny": [
+          "security",
+          "soc",
+          "cyber"
+        ],
+        "minFacts": 1,
+        "factTypes": [
+          "JOB_OPENING",
+          "HIRING_COUNT"
+        ]
+      }
+    },
+    {
+      "id": "44029679-535f-4a11-8ac2-0acea2dda02a",
+      "code": "MSOC_SECURITY_LEADER",
+      "configuration": {
+        "mode": "single",
+        "matchAny": [
+          "security",
+          "ciso"
+        ],
+        "minFacts": 1,
+        "factTypes": [
+          "LEADERSHIP_CHANGE"
+        ]
+      }
+    },
+    {
+      "id": "dc1fc390-e3b1-465d-bc3d-1d04e08d95de",
+      "code": "MSOC_SECURITY_STACK_CHANGE",
+      "configuration": {
+        "mode": "single",
+        "matchAny": [
+          "security",
+          "siem",
+          "endpoint",
+          "iam"
+        ],
+        "minFacts": 1,
+        "factTypes": [
+          "TECHNOLOGY_MENTION"
+        ]
+      }
+    }
+  ],
+  "controls": [
+    {
+      "manifestIndex": 0,
+      "company": "SolarWinds",
+      "beforeOutcome": "STRICT_DETECTED",
+      "afterOutcome": "STRICT_DETECTED",
+      "recoveredReferenceFactIds": [
+        "ephemeral-803f4e9f3f90f8e7e761b637",
+        "ephemeral-ba5fcd1e0c4b9542a1f2d870",
+        "ephemeral-3db61ac7055ca1f66c7a0267"
+      ],
+      "approvedFactIds": [
+        "ephemeral-803f4e9f3f90f8e7e761b637",
+        "ephemeral-ba5fcd1e0c4b9542a1f2d870",
+        "ephemeral-3db61ac7055ca1f66c7a0267"
+      ],
+      "candidates": [
+        {
+          "code": "MSOC_SECURITY_LEADER",
+          "effectiveDate": "2026-06-17",
+          "confidence": 98,
+          "decayStatus": "ACTIVE",
+          "currentStrength": 10.89,
+          "factIds": [
+            "ephemeral-3db61ac7055ca1f66c7a0267",
+            "ephemeral-803f4e9f3f90f8e7e761b637",
+            "ephemeral-ba5fcd1e0c4b9542a1f2d870"
+          ],
+          "evidenceIds": [
+            "33ab1424-6091-4007-bb19-c76fb6d6afff"
+          ],
+          "supported": true,
+          "provenance": true,
+          "supportBasis": "Expected frozen code intersects recovered reference facts",
+          "provenanceBasis": "All nonempty fact/evidence IDs resolve exactly to selected approved facts",
+          "classification": "EXISTING_SIGNAL",
+          "strength": null,
+          "intentClassification": null
+        }
+      ]
+    },
+    {
+      "manifestIndex": 1,
+      "company": "First Horizon",
+      "beforeOutcome": "STRICT_DETECTED",
+      "afterOutcome": "STRICT_DETECTED",
+      "recoveredReferenceFactIds": [
+        "ephemeral-ff795fcc337ce0c87a4c96ed",
+        "ephemeral-21a9e3ce384d17e295039722",
+        "ephemeral-0b02e4ce96652c3f8e60f3d7"
+      ],
+      "approvedFactIds": [
+        "ephemeral-ff795fcc337ce0c87a4c96ed",
+        "ephemeral-6fd3c53fca014b4e879b9665",
+        "ephemeral-a3081cf8e3cf06e1e38f45e8",
+        "ephemeral-21a9e3ce384d17e295039722",
+        "ephemeral-84ad0f915ea0b703700c3082",
+        "ephemeral-905599530208a17df0a8af2a",
+        "ephemeral-0b02e4ce96652c3f8e60f3d7"
+      ],
+      "candidates": [
+        {
+          "code": "MSOC_SECURITY_LEADER",
+          "effectiveDate": "2026-02-11",
+          "confidence": 98,
+          "decayStatus": "STALE",
+          "currentStrength": 0,
+          "factIds": [
+            "ephemeral-0b02e4ce96652c3f8e60f3d7",
+            "ephemeral-21a9e3ce384d17e295039722",
+            "ephemeral-ff795fcc337ce0c87a4c96ed"
+          ],
+          "evidenceIds": [
+            "30ad0a37-4a6e-4232-86cc-7053e2b70787",
+            "4ec7b5c0-2fe9-4cc9-8876-647b39c4ebd5",
+            "6d812673-5c21-4f2c-bd4f-e10f87d59496"
+          ],
+          "supported": true,
+          "provenance": true,
+          "supportBasis": "Expected frozen code intersects recovered reference facts",
+          "provenanceBasis": "All nonempty fact/evidence IDs resolve exactly to selected approved facts",
+          "classification": "EXISTING_SIGNAL",
+          "strength": null,
+          "intentClassification": null
+        }
+      ]
+    },
+    {
+      "manifestIndex": 2,
+      "company": "GitLab",
+      "beforeOutcome": "STRICT_DETECTED",
+      "afterOutcome": "STRICT_DETECTED",
+      "recoveredReferenceFactIds": [
+        "ephemeral-49da63bfa198351713fb6427",
+        "ephemeral-70d615826ff7ac9ba2fd50db",
+        "ephemeral-c7f3f9d5000299f9a7579235",
+        "ephemeral-4f940db72262af288892908d"
+      ],
+      "approvedFactIds": [
+        "ephemeral-49da63bfa198351713fb6427",
+        "ephemeral-70d615826ff7ac9ba2fd50db",
+        "ephemeral-c7f3f9d5000299f9a7579235",
+        "ephemeral-4f940db72262af288892908d"
+      ],
+      "candidates": [
+        {
+          "code": "MSOC_SECURITY_LEADER",
+          "effectiveDate": "2026-06-09",
+          "confidence": 98,
+          "decayStatus": "ACTIVE",
+          "currentStrength": 4.67,
+          "factIds": [
+            "ephemeral-49da63bfa198351713fb6427",
+            "ephemeral-4f940db72262af288892908d",
+            "ephemeral-70d615826ff7ac9ba2fd50db",
+            "ephemeral-c7f3f9d5000299f9a7579235"
+          ],
+          "evidenceIds": [
+            "0488986c-21e7-4675-b161-edf2f9307156"
+          ],
+          "supported": true,
+          "provenance": true,
+          "supportBasis": "Expected frozen code intersects recovered reference facts",
+          "provenanceBasis": "All nonempty fact/evidence IDs resolve exactly to selected approved facts",
+          "classification": "EXISTING_SIGNAL",
+          "strength": null,
+          "intentClassification": null
+        }
+      ]
+    },
+    {
+      "manifestIndex": 3,
+      "company": "Infoblox",
+      "beforeOutcome": "STRICT_DETECTED",
+      "afterOutcome": "STRICT_DETECTED",
+      "recoveredReferenceFactIds": [
+        "ephemeral-9461e5c40c101a6a40846350",
+        "ephemeral-4c4c1c876e6974671abf08a7"
+      ],
+      "approvedFactIds": [
+        "ephemeral-9461e5c40c101a6a40846350",
+        "ephemeral-4c4c1c876e6974671abf08a7"
+      ],
+      "candidates": [
+        {
+          "code": "MSOC_SECURITY_LEADER",
+          "effectiveDate": "2026-06-09",
+          "confidence": 98,
+          "decayStatus": "ACTIVE",
+          "currentStrength": 4.67,
+          "factIds": [
+            "ephemeral-4c4c1c876e6974671abf08a7",
+            "ephemeral-9461e5c40c101a6a40846350"
+          ],
+          "evidenceIds": [
+            "df4597ec-3a1d-4a60-bb9e-eef8f8281bfa"
+          ],
+          "supported": true,
+          "provenance": true,
+          "supportBasis": "Expected frozen code intersects recovered reference facts",
+          "provenanceBasis": "All nonempty fact/evidence IDs resolve exactly to selected approved facts",
+          "classification": "EXISTING_SIGNAL",
+          "strength": null,
+          "intentClassification": null
+        }
+      ]
+    },
+    {
+      "manifestIndex": 4,
+      "company": "Teradata",
+      "beforeOutcome": "STRICT_DETECTED",
+      "afterOutcome": "STRICT_DETECTED",
+      "recoveredReferenceFactIds": [
+        "ephemeral-6560af66da05ad8555113b22",
+        "ephemeral-afcf49a4f9e4284437ec31d3",
+        "ephemeral-3bc9866e22dbe8e43a572e4f",
+        "ephemeral-3e949a705bd874ee4e414737",
+        "ephemeral-a57c87541fd02d1f093239e9"
+      ],
+      "approvedFactIds": [
+        "ephemeral-6560af66da05ad8555113b22",
+        "ephemeral-afcf49a4f9e4284437ec31d3",
+        "ephemeral-3bc9866e22dbe8e43a572e4f",
+        "ephemeral-3e949a705bd874ee4e414737",
+        "ephemeral-a57c87541fd02d1f093239e9"
+      ],
+      "candidates": [
+        {
+          "code": "MSOC_SECURITY_LEADER",
+          "effectiveDate": "2026-01-21",
+          "confidence": 98,
+          "decayStatus": "STALE",
+          "currentStrength": 0,
+          "factIds": [
+            "ephemeral-3bc9866e22dbe8e43a572e4f",
+            "ephemeral-3e949a705bd874ee4e414737",
+            "ephemeral-6560af66da05ad8555113b22",
+            "ephemeral-a57c87541fd02d1f093239e9",
+            "ephemeral-afcf49a4f9e4284437ec31d3"
+          ],
+          "evidenceIds": [
+            "6ae4f9dc-a52d-47ec-9888-d5bfc874f83d",
+            "9fc73350-4e40-4bd3-9576-4dd6a5cb9ebb",
+            "da37b7d0-cd3d-48ba-998c-ee6af7896e48"
+          ],
+          "supported": true,
+          "provenance": true,
+          "supportBasis": "Expected frozen code intersects recovered reference facts",
+          "provenanceBasis": "All nonempty fact/evidence IDs resolve exactly to selected approved facts",
+          "classification": "EXISTING_SIGNAL",
+          "strength": null,
+          "intentClassification": null
+        }
+      ]
+    },
+    {
+      "manifestIndex": 5,
+      "company": "Nubank",
+      "beforeOutcome": "MISSED",
+      "afterOutcome": "MISSED",
+      "recoveredReferenceFactIds": [],
+      "approvedFactIds": [],
+      "candidates": []
+    },
+    {
+      "manifestIndex": 6,
+      "company": "Black Duck",
+      "beforeOutcome": "STRICT_DETECTED",
+      "afterOutcome": "STRICT_DETECTED",
+      "recoveredReferenceFactIds": [
+        "ephemeral-fcb8bd720d4d27dc33f475bf",
+        "ephemeral-ce6b7df52d9c37066f873833",
+        "ephemeral-c3f30226aa1313575a4c2be0",
+        "ephemeral-12ca44bfcb0eab1635d59cd4",
+        "ephemeral-51136ff9f181daf226401452"
+      ],
+      "approvedFactIds": [
+        "ephemeral-3d26f3fa061dcc2b594671e7",
+        "ephemeral-fcb8bd720d4d27dc33f475bf",
+        "ephemeral-ce6b7df52d9c37066f873833",
+        "ephemeral-c3f30226aa1313575a4c2be0",
+        "ephemeral-12ca44bfcb0eab1635d59cd4",
+        "ephemeral-51136ff9f181daf226401452"
+      ],
+      "candidates": [
+        {
+          "code": "MSOC_SECURITY_LEADER",
+          "effectiveDate": "2026-04-09",
+          "confidence": 98,
+          "decayStatus": "STALE",
+          "currentStrength": 0,
+          "factIds": [
+            "ephemeral-12ca44bfcb0eab1635d59cd4",
+            "ephemeral-51136ff9f181daf226401452",
+            "ephemeral-c3f30226aa1313575a4c2be0",
+            "ephemeral-ce6b7df52d9c37066f873833",
+            "ephemeral-fcb8bd720d4d27dc33f475bf"
+          ],
+          "evidenceIds": [
+            "09101ce7-ad5c-4621-819a-13ebf8433368",
+            "2c1c3ffa-df94-4c44-ac0e-6519cc8b9616"
+          ],
+          "supported": true,
+          "provenance": true,
+          "supportBasis": "Expected frozen code intersects recovered reference facts",
+          "provenanceBasis": "All nonempty fact/evidence IDs resolve exactly to selected approved facts",
+          "classification": "EXISTING_SIGNAL",
+          "strength": null,
+          "intentClassification": null
+        }
+      ]
+    },
+    {
+      "manifestIndex": 7,
+      "company": "OpenAssets",
+      "beforeOutcome": "PARTIAL",
+      "afterOutcome": "STRICT_DETECTED",
+      "recoveredReferenceFactIds": [
+        "ephemeral-e993a6cfe50a83ca131493e4",
+        "ephemeral-5e88d97f1b799185080aba63",
+        "ephemeral-26f6b74fd793e9ce3ca0cfb5"
+      ],
+      "approvedFactIds": [
+        "ephemeral-e993a6cfe50a83ca131493e4",
+        "ephemeral-8588b059354f9e71a652a3a9",
+        "ephemeral-5e88d97f1b799185080aba63",
+        "ephemeral-26f6b74fd793e9ce3ca0cfb5",
+        "ephemeral-7d91937dcb8bdd8bf71db5f3"
+      ],
+      "candidates": [
+        {
+          "code": "MSOC_SECURITY_COMPLIANCE_ACTIVITY",
+          "effectiveDate": "2026-08-03",
+          "confidence": 98,
+          "decayStatus": "ACTIVE",
+          "currentStrength": 50.33,
+          "factIds": [
+            "ephemeral-26f6b74fd793e9ce3ca0cfb5",
+            "ephemeral-5e88d97f1b799185080aba63",
+            "ephemeral-7d91937dcb8bdd8bf71db5f3",
+            "ephemeral-8588b059354f9e71a652a3a9",
+            "ephemeral-e993a6cfe50a83ca131493e4"
+          ],
+          "evidenceIds": [
+            "2bd2ce88-2582-4d2d-b1dc-810ab1c84cd6",
+            "4e647bd0-6d4c-469a-80c4-21008e44f4d3"
+          ],
+          "supported": true,
+          "provenance": true,
+          "supportBasis": "Previously partial certification control intersects recovered reference facts",
+          "provenanceBasis": "All nonempty fact/evidence IDs resolve exactly to selected approved facts",
+          "classification": "SECURITY_PROGRAM_ACTIVITY",
+          "strength": "MODERATE",
+          "intentClassification": "NOT_PURCHASE_INTENT"
+        }
+      ]
+    },
+    {
+      "manifestIndex": 8,
+      "company": "Black & McDonald",
+      "beforeOutcome": "PARTIAL",
+      "afterOutcome": "STRICT_DETECTED",
+      "recoveredReferenceFactIds": [
+        "ephemeral-2973451851e3e00f3481fd0d",
+        "ephemeral-e4960b16ba3d7232f67f1dee"
+      ],
+      "approvedFactIds": [
+        "ephemeral-2973451851e3e00f3481fd0d",
+        "ephemeral-e4960b16ba3d7232f67f1dee"
+      ],
+      "candidates": [
+        {
+          "code": "MSOC_SECURITY_COMPLIANCE_ACTIVITY",
+          "effectiveDate": "2026-05-08",
+          "confidence": 98,
+          "decayStatus": "ACTIVE",
+          "currentStrength": 21.33,
+          "factIds": [
+            "ephemeral-2973451851e3e00f3481fd0d",
+            "ephemeral-e4960b16ba3d7232f67f1dee"
+          ],
+          "evidenceIds": [
+            "53cddfd5-6e4c-4223-993c-2661024a13ab",
+            "8bcb7652-0ba0-49f6-979d-688cd48ea5cf"
+          ],
+          "supported": true,
+          "provenance": true,
+          "supportBasis": "Previously partial certification control intersects recovered reference facts",
+          "provenanceBasis": "All nonempty fact/evidence IDs resolve exactly to selected approved facts",
+          "classification": "SECURITY_PROGRAM_ACTIVITY",
+          "strength": "MODERATE",
+          "intentClassification": "NOT_PURCHASE_INTENT"
+        }
+      ]
+    },
+    {
+      "manifestIndex": 9,
+      "company": "RAKBANK",
+      "beforeOutcome": "MISSED",
+      "afterOutcome": "MISSED",
+      "recoveredReferenceFactIds": [],
+      "approvedFactIds": [],
+      "candidates": []
+    }
+  ],
+  "metrics": {
+    "controls": 10,
+    "strictDetected": 8,
+    "partial": 0,
+    "missed": 2,
+    "strictRecall": 0.8,
+    "signals": 8,
+    "activeCandidates": 5,
+    "staleCandidates": 3,
+    "supportedSignals": 8,
+    "unsupportedSignals": 0,
+    "signalPrecision": 1,
+    "unsupportedSignalRate": 0,
+    "sellerAsBuyer": 0,
+    "temporallyInvalid": 0,
+    "wrongEntity": 0,
+    "whyProvenance": 1
+  },
+  "invariants": {
+    "before": {
+      "providerUsage": 1273,
+      "evidence": 761,
+      "facts": 70,
+      "proposals": 169,
+      "signals": 7,
+      "definitions": 41
+    },
+    "after": {
+      "providerUsage": 1273,
+      "evidence": 761,
+      "facts": 70,
+      "proposals": 169,
+      "signals": 7,
+      "definitions": 41
+    },
+    "providerUsageDelta": 0,
+    "databaseWrites": 0,
+    "definitionCountDelta": 0,
+    "reconciliation": "NO_OP",
+    "existingFourDefinitionFingerprint": "75c767c4fd5e8a03127125d0cfb9d71ef92b45ca1a77c9f93d69aba64ad4c747",
+    "definitionFingerprintVerified": true,
+    "providerCalls": 0,
+    "productionOperations": 0,
+    "frozenReportSha256": "db458f2f153a5f0da4df76065a8b99f27fe0a522c477f71f845dc061c804979a",
+    "tableCountsIdenticalExceptDefinition": true
+  },
+  "finalDecision": "A — MISSING SIGNAL MAPPING VALIDATED AND SAFELY REPAIRED"
+}

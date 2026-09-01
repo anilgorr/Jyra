@@ -1,5 +1,6 @@
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import {
+  assertApprovedDevelopmentDatabase,
   db,
   signalDefinitionsTable,
   signalPacksTable,
@@ -14,6 +15,8 @@ type FixtureDefinition = Pick<
 > & {
   factTypes: string[];
   matchAny?: string[];
+  matchAll?: string[];
+  excludeAny?: string[];
   mode?: "single" | "increasing_count";
   minFacts?: number;
 };
@@ -51,6 +54,8 @@ const definition = (
   sourcePreferences: options.sourcePreferences ?? [],
   version: options.version ?? "1.0",
   matchAny: options.matchAny,
+  matchAll: options.matchAll,
+  excludeAny: options.excludeAny,
   mode: options.mode ?? "single",
   minFacts: options.minFacts ?? 1,
 });
@@ -77,6 +82,31 @@ const CYBER_DEFINITIONS: FixtureDefinition[] = [
   definition("NEW_ENTERPRISE_CUSTOMERS", "New enterprise customers", "CUSTOMER", ["ENTERPRISE_CUSTOMER"], [55, 70, 55]),
   definition("SECURITY_TOOL_CHANGE", "Security tool change", "TECHNOLOGY", ["TECHNOLOGY_MENTION"], [65, 75, 72], { matchAny: ["security", "siem", "iam", "endpoint", "cloud"] }),
 ];
+
+export const MANAGED_SOC_SECURITY_COMPLIANCE_ACTIVITY_DEFINITION = definition(
+  "MSOC_SECURITY_COMPLIANCE_ACTIVITY",
+  "Security/compliance program activity",
+  "COMPLIANCE",
+  ["CERTIFICATION"],
+  [45, 38, 55],
+  {
+    description: "Recent material security/compliance program activity relevant to Managed SOC; this is SECURITY_PROGRAM_ACTIVITY and explicitly does not mean purchase intent or Managed SOC procurement.",
+    defaultStrength: 60,
+    minimumConfidence: 70,
+    lifetimeDays: 180,
+    decayRule: "LINEAR",
+    matchAll: [
+      "\"eventType\":\"(?:has achieved|achieved|achieves|renewed|has renewed|completed|completes|has completed|have completed|received|earned|obtained|are now|is now|started|initiated|launched|expanded)\"",
+      "(?:iso(?:/iec)?\\s*27001|soc\\s*2|security.{0,30}(?:audit|assessment|certification)|(?:audit|assessment|certification).{0,30}security)",
+    ],
+    excludeAny: [
+      "(?:sell|provide|offer|deliver)(?:s|ed|ing)?\\s+(?:iso|soc|security|compliance|audit|assessment|certification).{0,40}(?:consulting|service)",
+      "(?:iso|soc|security|compliance|audit|assessment|certification).{0,40}(?:consulting|certification services)",
+      "(?:customer|client)(?:'s|s')?\\s+(?:case|story|certification|compliance|audit|assessment)",
+      "(?:customer|client)\\s+case(?:\\s+study)?",
+    ],
+  },
+);
 
 export const SIGNAL_PACK_FIXTURES: PackFixture[] = [
   {
@@ -154,6 +184,80 @@ export const SIGNAL_PACK_FIXTURES: PackFixture[] = [
   },
 ];
 
+/**
+ * Opt-in, narrow reconciliation for the only post-fixture Managed SOC addition.
+ * It intentionally never touches the four frozen definitions.
+ */
+export async function reconcileManagedSocSecurityComplianceActivity() {
+  assertApprovedDevelopmentDatabase("Managed SOC compliance reconciliation");
+  const fixture = SIGNAL_PACK_FIXTURES.find((pack) => pack.slug === "managed-soc");
+  const item = MANAGED_SOC_SECURITY_COMPLIANCE_ACTIVITY_DEFINITION;
+  if (!fixture) throw new Error("Managed SOC fixture is missing");
+  const [pack] = await db.select().from(signalPacksTable).where(eq(signalPacksTable.slug, fixture.slug)).limit(1);
+  if (!pack || !pack.active || pack.status !== "APPROVED") {
+    throw new Error("Approved Managed SOC pack is required for scoped reconciliation");
+  }
+  const configuration = {
+    mode: item.mode,
+    factTypes: item.factTypes,
+    matchAny: item.matchAny ?? [],
+    matchAll: item.matchAll ?? [],
+    excludeAny: item.excludeAny ?? [],
+    minFacts: item.minFacts,
+  };
+  const values = {
+    signalPackId: pack.id,
+    code: item.code,
+    name: item.name,
+    description: item.description,
+    category: item.category,
+    applicableContext: fixture.applicableContext,
+    polarity: item.polarity,
+    evidenceRequirements: { required: true, deterministic: true },
+    factRequirements: { factTypes: item.factTypes, minFacts: item.minFacts },
+    defaultStrength: item.defaultStrength,
+    minimumConfidence: item.minimumConfidence,
+    lifetimeDays: item.lifetimeDays,
+    decayRule: item.decayRule,
+    needImpact: item.needImpact,
+    timingImpact: item.timingImpact,
+    fitImpact: item.fitImpact,
+    sourcePreferences: item.sourcePreferences,
+    status: "APPROVED",
+    version: item.version,
+    configuration,
+  };
+  const [existing] = await db.select().from(signalDefinitionsTable).where(and(
+    eq(signalDefinitionsTable.signalPackId, pack.id),
+    eq(signalDefinitionsTable.code, item.code),
+  )).limit(1);
+  if (!existing) {
+    const [definition] = await db.insert(signalDefinitionsTable).values(values).returning();
+    return { action: "INSERTED" as const, pack, definition };
+  }
+  const stableJson = (value: unknown): string => {
+    if (Array.isArray(value)) return `[${value.map(stableJson).join(",")}]`;
+    if (value && typeof value === "object") {
+      return `{${Object.entries(value as Record<string, unknown>).sort(([left], [right]) => left.localeCompare(right))
+        .map(([key, child]) => `${JSON.stringify(key)}:${stableJson(child)}`).join(",")}}`;
+    }
+    return JSON.stringify(value);
+  };
+  const comparable = (definition: typeof existing | typeof values) => stableJson({
+    name: definition.name, description: definition.description, category: definition.category,
+    applicableContext: definition.applicableContext, polarity: definition.polarity,
+    evidenceRequirements: definition.evidenceRequirements, factRequirements: definition.factRequirements,
+    defaultStrength: definition.defaultStrength, minimumConfidence: definition.minimumConfidence,
+    lifetimeDays: definition.lifetimeDays, decayRule: definition.decayRule,
+    needImpact: definition.needImpact, timingImpact: definition.timingImpact, fitImpact: definition.fitImpact,
+    sourcePreferences: definition.sourcePreferences, status: definition.status, version: definition.version,
+    configuration: definition.configuration,
+  });
+  if (comparable(existing) === comparable(values)) return { action: "NO_OP" as const, pack, definition: existing };
+  const [definition] = await db.update(signalDefinitionsTable).set(values).where(eq(signalDefinitionsTable.id, existing.id)).returning();
+  return { action: "UPDATED" as const, pack, definition };
+}
+
 export async function ensureSignalPackFixtures() {
   const packs = [];
   for (const fixture of SIGNAL_PACK_FIXTURES) {
@@ -176,6 +280,8 @@ export async function ensureSignalPackFixtures() {
         mode: item.mode,
         factTypes: item.factTypes,
         matchAny: item.matchAny ?? [],
+        matchAll: item.matchAll ?? [],
+        excludeAny: item.excludeAny ?? [],
         minFacts: item.minFacts,
       };
       await db.insert(signalDefinitionsTable).values({
@@ -202,6 +308,9 @@ export async function ensureSignalPackFixtures() {
       }).onConflictDoNothing();
     }
     packs.push(pack);
+  }
+  if (process.env.NODE_ENV === "development" && process.env.REPLIT_DEPLOYMENT !== "1") {
+    await reconcileManagedSocSecurityComplianceActivity();
   }
   return packs;
 }
