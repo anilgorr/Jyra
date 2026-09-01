@@ -1,0 +1,11 @@
+manifestIndex,company,status,earliestBrokenStage,reason
+0,"SolarWinds",INVALID_RUN,OTHER,"Acceptance preflight aborted before control provisioning: runner requires exactly four approved Managed SOC definitions, but the active approved pack contains five."
+1,"SentinelOne",INVALID_RUN,OTHER,"Acceptance preflight aborted before control provisioning: runner requires exactly four approved Managed SOC definitions, but the active approved pack contains five."
+2,"CrowdStrike",INVALID_RUN,OTHER,"Acceptance preflight aborted before control provisioning: runner requires exactly four approved Managed SOC definitions, but the active approved pack contains five."
+3,"Palo Alto Networks",INVALID_RUN,OTHER,"Acceptance preflight aborted before control provisioning: runner requires exactly four approved Managed SOC definitions, but the active approved pack contains five."
+4,"Zscaler",INVALID_RUN,OTHER,"Acceptance preflight aborted before control provisioning: runner requires exactly four approved Managed SOC definitions, but the active approved pack contains five."
+5,"Okta",INVALID_RUN,OTHER,"Acceptance preflight aborted before control provisioning: runner requires exactly four approved Managed SOC definitions, but the active approved pack contains five."
+6,"Snyk",INVALID_RUN,OTHER,"Acceptance preflight aborted before control provisioning: runner requires exactly four approved Managed SOC definitions, but the active approved pack contains five."
+7,"Wiz",INVALID_RUN,OTHER,"Acceptance preflight aborted before control provisioning: runner requires exactly four approved Managed SOC definitions, but the active approved pack contains five."
+8,"Cloudflare",INVALID_RUN,OTHER,"Acceptance preflight aborted before control provisioning: runner requires exactly four approved Managed SOC definitions, but the active approved pack contains five."
+9,"GitLab",INVALID_RUN,OTHER,"Acceptance preflight aborted before control provisioning: runner requires exactly four approved Managed SOC definitions, but the active approved pack contains five."

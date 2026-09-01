@@ -584,3 +584,101 @@ mtime_ms = 1788256966372
 storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/af743603-d086-4ead-b8dd-c1a180611377/802d8e71-f6b3-4415-ac7c-2408abdb4330"
 storage_version_token = "1788257051461479"
 content_type = "application/octet-stream"
+
+[[outputs]]
+id = "OgoLf2zfbfzwIkSffUnNr"
+uri = "file://artifacts/api-server/JYRA_CORE_INTELLIGENCE_ACCEPTANCE_TEST_02.md"
+type = "text"
+title = "Core Intelligence Acceptance Test 02 — Invalid Run"
+description = "Diagnostic acceptance report for the fresh preflight-aborted execution."
+logical_id = "e2357846-9dd5-41a5-b0d2-8aa6ca27c3f1"
+content_hash = "sha256:477659f65bbb6c0f2826f379df0c4856b93e492310d5ef945e27bbcfe21b05fd"
+size = 766
+mtime_ms = 1788257287130
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/e2357846-9dd5-41a5-b0d2-8aa6ca27c3f1/987ed3e0-7fd8-4f45-a192-8962e21978c3"
+storage_version_token = "1788257300006319"
+content_type = "text/markdown"
+
+[[outputs]]
+id = "3buuor0cxQxCWkj1oVZK8"
+uri = "file://artifacts/api-server/JYRA_CORE_INTELLIGENCE_ACCEPTANCE_TEST_02.json"
+type = "unspecified"
+title = "Core Intelligence Acceptance Test 02 — Structured Invalid Run"
+description = "Structured invalid-run classification and preflight evidence."
+logical_id = "cace1b4e-d579-4541-91b6-0bb32e8ae21e"
+content_hash = "sha256:4ed05de789d4847cb61b2c338f5414f3cc4c8bc2d20916e7fa86031de3814631"
+size = 6980
+mtime_ms = 1788257286824
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/cace1b4e-d579-4541-91b6-0bb32e8ae21e/0b4b981c-8b00-446b-b255-cdb34c79368a"
+storage_version_token = "1788257301514928"
+content_type = "application/octet-stream"
+
+[[outputs]]
+id = "lGWfcZ_roUZxUOUjF-alb"
+uri = "file://artifacts/api-server/JYRA_CORE_INTELLIGENCE_ACCEPTANCE_TEST_02_CONTROLS.csv"
+type = "table"
+title = "Core Intelligence Acceptance Test 02 — Controls"
+description = "Per-control invalid-run records; no control reached intelligence execution."
+logical_id = "eb07e69a-721d-4a05-a4f8-46b2e3e67e5d"
+content_hash = "sha256:307b7ae8cc96eb04d3cedbc6800389324ab5f27e02e6e021ca0bf83dfad9bca0"
+size = 2040
+mtime_ms = 1788257287378
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/eb07e69a-721d-4a05-a4f8-46b2e3e67e5d/64e2c876-5aa9-4a4b-baf0-a361c190ed1d"
+storage_version_token = "1788257302862725"
+content_type = "text/csv"
+
+[[outputs]]
+id = "z0riUMcOcOC9i05ZFcWLD"
+uri = "file://artifacts/api-server/JYRA_CORE_INTELLIGENCE_ACCEPTANCE_TEST_02_SIGNALS.csv"
+type = "table"
+title = "Core Intelligence Acceptance Test 02 — Signals"
+description = "Empty signal ledger because intelligence execution did not start."
+logical_id = "3ffb06dd-5211-4f17-ba1f-8625e44f31b4"
+content_hash = "sha256:7ab425f1e057cebe23d4cdbe8abaf6ff19fca5d045bb696e14d6b5e299966e93"
+size = 64
+mtime_ms = 1788257287582
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/3ffb06dd-5211-4f17-ba1f-8625e44f31b4/d6426f34-c540-4016-9a90-601e15824bca"
+storage_version_token = "1788257304185685"
+content_type = "text/csv"
+
+[[outputs]]
+id = "rzXFeIHFM16oWV3Si2HVZ"
+uri = "file://artifacts/api-server/JYRA_CORE_INTELLIGENCE_ACCEPTANCE_TEST_02_MISSES.json"
+type = "unspecified"
+title = "Core Intelligence Acceptance Test 02 — Misses"
+description = "Invalid-run evidence; no event misses adjudicated."
+logical_id = "655fc6c0-eff1-4c76-ab6b-92de1066ebb7"
+content_hash = "sha256:106a51ecf137d276d0b7f54e879253d00ce1ff470a907bf1b6bcdd22594b519a"
+size = 3547
+mtime_ms = 1788257287836
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/655fc6c0-eff1-4c76-ab6b-92de1066ebb7/5cffc3f5-9fd1-4a16-8f30-075bb97d2762"
+storage_version_token = "1788257305492016"
+content_type = "application/octet-stream"
+
+[[outputs]]
+id = "KwP-NKiU34OBUt4nstiqe"
+uri = "file://artifacts/api-server/JYRA_CORE_INTELLIGENCE_ACCEPTANCE_TEST_02_COSTS.json"
+type = "unspecified"
+title = "Core Intelligence Acceptance Test 02 — Costs"
+description = "Preflight cost and provider-call accounting."
+logical_id = "9cb6929c-f3ff-42a0-87b2-2579efac3d27"
+content_hash = "sha256:a6ae97836b0c2e857bc08110751523ff17b8bec8a2009850418294caaf4b0970"
+size = 359
+mtime_ms = 1788257288024
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/9cb6929c-f3ff-42a0-87b2-2579efac3d27/55988888-44f1-4ab2-8cf6-27b87691c25d"
+storage_version_token = "1788257306993476"
+content_type = "application/octet-stream"
+
+[[outputs]]
+id = "TxPh6EKkYZB34gE868HIi"
+uri = "file://artifacts/api-server/JYRA_CORE_INTELLIGENCE_ACCEPTANCE_TEST_02_REPLAY.json"
+type = "unspecified"
+title = "Core Intelligence Acceptance Test 02 — Replay"
+description = "Replay not run because no valid first intelligence execution exists."
+logical_id = "086db435-024b-4e65-8947-a4c56b39e8e3"
+content_hash = "sha256:8956cafe942aa2d155274c39435c97e34ed5eb421dbbd6c715a77d0b1c8dc4bb"
+size = 464
+mtime_ms = 1788257288176
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/086db435-024b-4e65-8947-a4c56b39e8e3/d0150c9b-52dd-4ae9-a92e-9bf0e6b55b63"
+storage_version_token = "1788257308351357"
+content_type = "application/octet-stream"

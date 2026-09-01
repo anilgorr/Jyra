@@ -1,0 +1,79 @@
+{
+  "test": "JYRA_CORE_INTELLIGENCE_ACCEPTANCE_TEST_02",
+  "status": "INVALID_RUN",
+  "previousInvalidRunExcluded": true,
+  "invalidRuns": [
+    {
+      "manifestIndex": 0,
+      "company": "SolarWinds",
+      "classification": "INVALID_RUN",
+      "earliestBrokenStage": "OTHER",
+      "reason": "Acceptance preflight aborted before control provisioning: runner requires exactly four approved Managed SOC definitions, but the active approved pack contains five."
+    },
+    {
+      "manifestIndex": 1,
+      "company": "SentinelOne",
+      "classification": "INVALID_RUN",
+      "earliestBrokenStage": "OTHER",
+      "reason": "Acceptance preflight aborted before control provisioning: runner requires exactly four approved Managed SOC definitions, but the active approved pack contains five."
+    },
+    {
+      "manifestIndex": 2,
+      "company": "CrowdStrike",
+      "classification": "INVALID_RUN",
+      "earliestBrokenStage": "OTHER",
+      "reason": "Acceptance preflight aborted before control provisioning: runner requires exactly four approved Managed SOC definitions, but the active approved pack contains five."
+    },
+    {
+      "manifestIndex": 3,
+      "company": "Palo Alto Networks",
+      "classification": "INVALID_RUN",
+      "earliestBrokenStage": "OTHER",
+      "reason": "Acceptance preflight aborted before control provisioning: runner requires exactly four approved Managed SOC definitions, but the active approved pack contains five."
+    },
+    {
+      "manifestIndex": 4,
+      "company": "Zscaler",
+      "classification": "INVALID_RUN",
+      "earliestBrokenStage": "OTHER",
+      "reason": "Acceptance preflight aborted before control provisioning: runner requires exactly four approved Managed SOC definitions, but the active approved pack contains five."
+    },
+    {
+      "manifestIndex": 5,
+      "company": "Okta",
+      "classification": "INVALID_RUN",
+      "earliestBrokenStage": "OTHER",
+      "reason": "Acceptance preflight aborted before control provisioning: runner requires exactly four approved Managed SOC definitions, but the active approved pack contains five."
+    },
+    {
+      "manifestIndex": 6,
+      "company": "Snyk",
+      "classification": "INVALID_RUN",
+      "earliestBrokenStage": "OTHER",
+      "reason": "Acceptance preflight aborted before control provisioning: runner requires exactly four approved Managed SOC definitions, but the active approved pack contains five."
+    },
+    {
+      "manifestIndex": 7,
+      "company": "Wiz",
+      "classification": "INVALID_RUN",
+      "earliestBrokenStage": "OTHER",
+      "reason": "Acceptance preflight aborted before control provisioning: runner requires exactly four approved Managed SOC definitions, but the active approved pack contains five."
+    },
+    {
+      "manifestIndex": 8,
+      "company": "Cloudflare",
+      "classification": "INVALID_RUN",
+      "earliestBrokenStage": "OTHER",
+      "reason": "Acceptance preflight aborted before control provisioning: runner requires exactly four approved Managed SOC definitions, but the active approved pack contains five."
+    },
+    {
+      "manifestIndex": 9,
+      "company": "GitLab",
+      "classification": "INVALID_RUN",
+      "earliestBrokenStage": "OTHER",
+      "reason": "Acceptance preflight aborted before control provisioning: runner requires exactly four approved Managed SOC definitions, but the active approved pack contains five."
+    }
+  ],
+  "misses": [],
+  "note": "No controls reached intelligence execution; therefore no event misses were adjudicated."
+}

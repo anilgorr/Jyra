@@ -1,0 +1,15 @@
+{
+  "test": "JYRA_CORE_INTELLIGENCE_ACCEPTANCE_TEST_02",
+  "status": "NOT_RUN_INVALID_FIRST_EXECUTION",
+  "firstRunStatus": "INVALID_RUN",
+  "reason": "Unchanged replay is not valid without a completed first intelligence run.",
+  "providerCalls": null,
+  "newCompanies": null,
+  "newEvidence": null,
+  "newFacts": null,
+  "newSignals": null,
+  "newClusters": null,
+  "newOpportunityHistory": null,
+  "newWhyVersions": null,
+  "newRecommendationLedgerRows": null
+}

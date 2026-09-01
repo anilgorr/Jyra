@@ -1,0 +1,16 @@
+{
+  "test": "JYRA_CORE_INTELLIGENCE_ACCEPTANCE_TEST_02",
+  "status": "INVALID_RUN",
+  "providerCalls": {
+    "total": 0,
+    "tavily": 0,
+    "exaFallback": 0,
+    "other": 0
+  },
+  "estimatedTotal": 0,
+  "actualKnown": 0,
+  "actualUnknown": 0,
+  "costPerValidControl": null,
+  "costPerStrictDetection": null,
+  "note": "Preflight aborted before research."
+}

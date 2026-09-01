@@ -1,0 +1,196 @@
+{
+  "test": "JYRA_CORE_INTELLIGENCE_ACCEPTANCE_TEST_02",
+  "status": "INVALID_RUN",
+  "decision": "I — INCONCLUSIVE PROVIDER / SYSTEM FAILURE",
+  "classification": "ACCEPTANCE_RUNNER_PREFLIGHT_CONFIGURATION_FAILURE",
+  "generatedAt": "2026-09-01T10:08:05.677Z",
+  "previousInvalidRunExcluded": true,
+  "intelligenceExecutionStarted": false,
+  "validBenchmarkResult": false,
+  "execution": {
+    "startedAt": "2026-09-01T10:07:13.000Z",
+    "completedAt": "2026-09-01T10:08:05.677Z",
+    "command": "test:real-data-01-controls",
+    "freshOutputNamespace": "JYRA_CORE_INTELLIGENCE_ACCEPTANCE_TEST_02",
+    "forcedFreshRetrieval": true,
+    "noCodeChangesDuringRun": true
+  },
+  "preflightFailure": {
+    "stage": "SIGNAL_PACK_PREFLIGHT",
+    "runnerError": "Expected the unchanged four-question Managed SOC pack",
+    "activePack": {
+      "slug": "managed-soc",
+      "status": "APPROVED",
+      "active": true,
+      "approvedDefinitionCount": 5,
+      "approvedDefinitions": [
+        "Funded risk program window",
+        "Security leader change",
+        "Security operations hiring",
+        "Security stack change",
+        "Security/compliance program activity"
+      ]
+    },
+    "providerCallsObservedSinceStart": 0
+  },
+  "controls": {
+    "expected": 10,
+    "attempted": 0,
+    "provisioned": 0,
+    "blockedAtIdentity": 0,
+    "valid": 0,
+    "invalidRuns": 1,
+    "perControl": [
+      {
+        "manifestIndex": 0,
+        "company": "SolarWinds",
+        "classification": "INVALID_RUN",
+        "earliestBrokenStage": "OTHER",
+        "reason": "Acceptance preflight aborted before control provisioning: runner requires exactly four approved Managed SOC definitions, but the active approved pack contains five."
+      },
+      {
+        "manifestIndex": 1,
+        "company": "SentinelOne",
+        "classification": "INVALID_RUN",
+        "earliestBrokenStage": "OTHER",
+        "reason": "Acceptance preflight aborted before control provisioning: runner requires exactly four approved Managed SOC definitions, but the active approved pack contains five."
+      },
+      {
+        "manifestIndex": 2,
+        "company": "CrowdStrike",
+        "classification": "INVALID_RUN",
+        "earliestBrokenStage": "OTHER",
+        "reason": "Acceptance preflight aborted before control provisioning: runner requires exactly four approved Managed SOC definitions, but the active approved pack contains five."
+      },
+      {
+        "manifestIndex": 3,
+        "company": "Palo Alto Networks",
+        "classification": "INVALID_RUN",
+        "earliestBrokenStage": "OTHER",
+        "reason": "Acceptance preflight aborted before control provisioning: runner requires exactly four approved Managed SOC definitions, but the active approved pack contains five."
+      },
+      {
+        "manifestIndex": 4,
+        "company": "Zscaler",
+        "classification": "INVALID_RUN",
+        "earliestBrokenStage": "OTHER",
+        "reason": "Acceptance preflight aborted before control provisioning: runner requires exactly four approved Managed SOC definitions, but the active approved pack contains five."
+      },
+      {
+        "manifestIndex": 5,
+        "company": "Okta",
+        "classification": "INVALID_RUN",
+        "earliestBrokenStage": "OTHER",
+        "reason": "Acceptance preflight aborted before control provisioning: runner requires exactly four approved Managed SOC definitions, but the active approved pack contains five."
+      },
+      {
+        "manifestIndex": 6,
+        "company": "Snyk",
+        "classification": "INVALID_RUN",
+        "earliestBrokenStage": "OTHER",
+        "reason": "Acceptance preflight aborted before control provisioning: runner requires exactly four approved Managed SOC definitions, but the active approved pack contains five."
+      },
+      {
+        "manifestIndex": 7,
+        "company": "Wiz",
+        "classification": "INVALID_RUN",
+        "earliestBrokenStage": "OTHER",
+        "reason": "Acceptance preflight aborted before control provisioning: runner requires exactly four approved Managed SOC definitions, but the active approved pack contains five."
+      },
+      {
+        "manifestIndex": 8,
+        "company": "Cloudflare",
+        "classification": "INVALID_RUN",
+        "earliestBrokenStage": "OTHER",
+        "reason": "Acceptance preflight aborted before control provisioning: runner requires exactly four approved Managed SOC definitions, but the active approved pack contains five."
+      },
+      {
+        "manifestIndex": 9,
+        "company": "GitLab",
+        "classification": "INVALID_RUN",
+        "earliestBrokenStage": "OTHER",
+        "reason": "Acceptance preflight aborted before control provisioning: runner requires exactly four approved Managed SOC definitions, but the active approved pack contains five."
+      }
+    ]
+  },
+  "identity": {
+    "confirmed": null,
+    "probable": null,
+    "ambiguous": null,
+    "wrongEntity": null,
+    "unresolved": null,
+    "existingCanonicalReuse": null,
+    "companyDiscoveryCallsForProvisioning": 0,
+    "note": "The approved identity-only precondition passed separately; this acceptance execution did not reach provisioning."
+  },
+  "research": {
+    "questionsGenerated": 0,
+    "tavilyCalls": 0,
+    "exaFallbackCalls": 0,
+    "providerFailures": 0
+  },
+  "evidence": {
+    "rawResults": 0,
+    "accepted": 0,
+    "wrongEntityAccepted": 0,
+    "sellerAsBuyerAccepted": 0
+  },
+  "facts": {
+    "approved": 0,
+    "rejected": 0,
+    "signalFeedingPrecision": null
+  },
+  "events": {
+    "strictDetections": 0,
+    "partialDetections": 0,
+    "misses": 0,
+    "invalidRuns": 1,
+    "strictRecall": null,
+    "strictPartialCoverage": null
+  },
+  "signals": {
+    "generated": 0,
+    "supported": 0,
+    "unsupported": 0,
+    "sellerAsBuyer": 0,
+    "wrongEntity": 0,
+    "temporallyInvalid": 0,
+    "genericFundingFalseSecurity": 0,
+    "strictPrecision": null,
+    "unsupportedRate": null
+  },
+  "whyProvenance": null,
+  "opportunityOutputs": {
+    "supportedActionable": 0,
+    "partiallySupported": 0,
+    "insufficientEvidence": 0
+  },
+  "replay": {
+    "executed": false,
+    "reason": "No valid first run existed; unchanged replay not applicable.",
+    "providerCalls": null,
+    "newCompanies": null,
+    "newEvidence": null,
+    "newFacts": null,
+    "newSignals": null,
+    "newClusters": null,
+    "newOpportunityHistory": null,
+    "newWhyVersions": null,
+    "newRecommendationLedgerRows": null
+  },
+  "costs": {
+    "estimatedTotal": 0,
+    "actualKnown": 0,
+    "actualUnknown": 0,
+    "costPerValidControl": null,
+    "costPerStrictDetection": null
+  },
+  "databaseSafety": {
+    "environment": "development",
+    "productionOperations": 0,
+    "productionWrites": 0,
+    "productionMigrations": 0,
+    "developmentWrites": 0
+  },
+  "nextStep": "STOP — acceptance runner preflight must be reconciled with the active frozen pack before a valid acceptance execution can occur. No fix or rerun performed in this task."
+}
