@@ -1,0 +1,950 @@
+JYRA — 50-COMPANY MVP REALITY TEST 02
+AUTHORITATIVE FRESH RERUN AFTER FIX 05
+
+PURPOSE
+
+Execute a completely fresh real-world 50-company validation after:
+
+Fix 04 — Discovery → Canonical Company Handoff
+
+and
+
+Fix 05 — Buyer Market Discovery + WHO Qualification.
+
+Do NOT perform another preparation cycle.
+
+Do NOT perform another bounded 20-company validation.
+
+Do NOT replay previous candidate sets.
+
+Do NOT modify product intelligence before or during this run.
+
+Actually execute:
+
+Business Twin
+→ Offering
+→ ICP
+→ Find My Market
+→ Buyer Discovery
+→ Identity
+→ Canonical Company
+→ WHO
+→ Research Eligibility
+→ Research Planner
+→ Retrieval
+→ Evidence
+→ Facts
+→ Signals
+→ WHEN
+→ WHY
+→ Opportunity Priority
+→ Ranking
+→ NBA.
+
+==================================================
+1. DEVELOPMENT SAFETY
+==================================================
+
+DEVELOPMENT ONLY.
+
+Production operations = 0.
+
+Do not:
+
+modify production
+migrate production
+reset production
+seed production
+truncate production.
+
+==================================================
+2. TEST FIXTURE
+==================================================
+
+Use the existing approved:
+
+Aadit Technologies Business Twin
+
+Offering:
+Managed SOC
+
+Use the current approved ICP.
+
+Use the current approved Opportunity Intelligence Pack.
+
+Do not alter any of them.
+
+==================================================
+3. CURRENT VALIDATED STATE
+==================================================
+
+Fix 04 validation:
+
+388 persisted candidates
+181 unique evaluable companies
+WHO/research handoff eligible = 181
+Identity safety weakened = NO
+20/20 sampled identities correct.
+
+Fix 05 bounded fresh validation:
+
+20-company cohort
+12/20 independently judged plausible buyers
+0/20 direct Managed SOC sellers
+
+JYRA WHO:
+
+LIKELY_FIT = 7
+POSSIBLE_FIT = 8
+INSUFFICIENT_DATA = 5
+LIKELY_NOT_FIT = 0
+
+15 confirmed firmographic matches
+1 wrong-entity firmographic result independently rejected
+
+Discovery calls = 3
+Known discovery cost = $0.021
+Profile searches = 20
+Known profile cost = $0.302
+
+Fix 05 regressions = 20/20 PASS
+Fix 04 regressions = 12/12 PASS.
+
+Do not change these systems before the benchmark.
+
+==================================================
+4. FRESH DISCOVERY
+==================================================
+
+Start a brand-new Find My Market run.
+
+Do NOT:
+
+reuse previous Reality Test companies
+reuse the bounded 20-company cohort
+seed benchmark companies
+seed known-event companies
+manually choose companies
+manually choose industries
+manually choose promising buyers.
+
+Use normal JYRA buyer-market discovery.
+
+==================================================
+5. FINAL COHORT
+==================================================
+
+Construct:
+
+50 UNIQUE EVALUABLE COMPANIES.
+
+Use normal product ranking/prequalification.
+
+If more than 50 qualify, select the cohort using current product behavior.
+
+Do not cherry-pick.
+
+==================================================
+6. BUYER QUALITY
+==================================================
+
+For discovered companies record:
+
+POTENTIAL_BUYER
+SELLER_COMPETITOR
+ADJACENT_VENDOR
+UNKNOWN
+
+or current equivalent.
+
+Seller/competitor contamination should be measured.
+
+Do not automatically exclude a company solely because its industry is
+technology/security if normal buyer-role logic identifies it as a legitimate
+buyer.
+
+==================================================
+7. WHO
+==================================================
+
+Classify the cohort:
+
+LIKELY_FIT
+POSSIBLE_FIT
+LIKELY_NOT_FIT
+INSUFFICIENT_DATA.
+
+Maintain the Fix 05 semantics:
+
+FIT ≠ DATA COMPLETENESS.
+
+Missing information remains UNKNOWN.
+
+Do not automatically turn missing data into NOT_FIT.
+
+Record:
+
+industry
+geography
+employee range
+buyer role
+fit
+fit confidence
+missing information.
+
+==================================================
+8. FIRMOGRAPHIC SAFETY
+==================================================
+
+Every firmographic response must match the canonical company identity.
+
+Do not attach mismatched firmographics.
+
+Track:
+
+wrong firmographic attachments
+rejected identity conflicts
+profile ambiguity.
+
+Wrong data is worse than UNKNOWN.
+
+==================================================
+9. RESEARCH ELIGIBILITY
+==================================================
+
+This run must now continue beyond WHO.
+
+Use normal research-eligibility logic.
+
+Do NOT manually force all 50 into research.
+
+Report research eligibility separately for:
+
+LIKELY_FIT
+POSSIBLE_FIT
+LIKELY_NOT_FIT
+INSUFFICIENT_DATA.
+
+If legitimate LIKELY_FIT companies exist but still cannot enter research,
+record a distinct P1 Research Eligibility defect.
+
+==================================================
+10. RESEARCH
+==================================================
+
+Execute current frozen:
+
+Research Planner
+→ questions
+→ Tavily primary
+→ Exa fallback where triggered
+→ evidence.
+
+Do not tune retrieval.
+
+Do not manually search companies.
+
+Do not optimize known misses.
+
+Provider failures must not become negative evidence.
+
+==================================================
+11. KNOWN TECHNICAL DEBT
+==================================================
+
+The earlier 10-control test produced:
+
+4/10 strict known-event detections
+40% recall.
+
+Do not optimize against those controls here.
+
+Instead observe whether retrieval/fact/signal weaknesses materially reduce
+real-world opportunity usefulness.
+
+==================================================
+12. EVIDENCE
+==================================================
+
+For every accepted evidence item preserve:
+
+company
+research question
+query
+provider
+publisher
+URL
+title
+published date
+retrieved date
+snippet/content
+entity relevance
+seller/buyer role
+accept/reject decision
+reason
+cost where available.
+
+==================================================
+13. FACTS
+==================================================
+
+Extract atomic factual claims only.
+
+Do not infer purchase intent at the fact layer.
+
+Each approved fact must retain provenance.
+
+==================================================
+14. SIGNALS
+==================================================
+
+Use ONLY the current approved Managed SOC signals:
+
+MSOC_SECURITY_LEADER
+MSOC_SECURITY_HIRING
+MSOC_FUNDED_RISK_PROGRAM
+MSOC_SECURITY_STACK_CHANGE
+MSOC_SECURITY_COMPLIANCE_ACTIVITY.
+
+Do not add or broaden signals.
+
+Every signal:
+
+Signal
+→ Fact
+→ Evidence
+→ Source.
+
+==================================================
+15. SIGNAL SAFETY
+==================================================
+
+Independently adjudicate every material signal.
+
+Classifications:
+
+SUPPORTED
+PARTIALLY_SUPPORTED
+UNSUPPORTED_FACT
+UNSUPPORTED_INFERENCE
+SELLER_AS_BUYER
+WRONG_ENTITY
+TEMPORALLY_INVALID
+GENERIC_FUNDING_INFERENCE
+OTHER_INVALID.
+
+Calculate strict signal precision.
+
+==================================================
+16. WHEN
+==================================================
+
+WHEN must describe why timing may matter now.
+
+Do not manufacture urgency.
+
+No valid temporal evidence =
+no strong timing claim.
+
+==================================================
+17. WHY
+==================================================
+
+WHY must explain:
+
+Why should a salesperson care about this company for this offering?
+
+Every material WHY claim must trace:
+
+WHY
+→ Signal
+→ Fact
+→ Evidence
+→ Source.
+
+Do not claim:
+
+actively buying
+has budget
+evaluating SOC vendors
+ready to buy
+looking for a provider
+
+without direct evidence.
+
+==================================================
+18. OPPORTUNITY PRIORITY
+==================================================
+
+Run normal opportunity scoring.
+
+Call it:
+
+Opportunity Priority
+
+not Purchase Probability.
+
+Preserve:
+
+UNKNOWN
+INSUFFICIENT_EVIDENCE
+
+semantics.
+
+==================================================
+19. NEXT BEST ACTION
+==================================================
+
+Generate normal NBA.
+
+Possible outcomes may include:
+
+CONTACT
+MONITOR
+RESEARCH_MORE
+REVIEW
+
+or current equivalents.
+
+Do not force CONTACT.
+
+==================================================
+20. TOP 10 — CRITICAL OUTPUT
+==================================================
+
+Select the Top 10 strictly from JYRA ranking.
+
+Do not manually substitute companies.
+
+For each show:
+
+Rank
+Company
+Domain
+Industry
+Employee range
+Buyer role
+WHO classification
+WHO confidence
+Opportunity Priority
+Opportunity State
+Signals
+WHEN
+WHY
+Evidence summary
+NBA.
+
+Then independently adjudicate:
+
+ICP FIT
+YES / NO / UNCERTAIN
+
+SIGNAL VALIDITY
+SUPPORTED / PARTIAL / UNSUPPORTED
+
+TIMING
+STRONG / MODERATE / WEAK / NONE
+
+WHY QUALITY
+YES / PARTIAL / NO
+
+SALES USEFULNESS
+HIGH / MEDIUM / LOW
+
+FALSE POSITIVE
+YES / NO.
+
+==================================================
+21. TOP-10 PRODUCT TEST
+==================================================
+
+This is the most important commercial test.
+
+Ask:
+
+"If a salesperson received these 10 accounts this morning,
+would this list materially help them decide where to spend time?"
+
+Calculate:
+
+HIGH usefulness
+MEDIUM usefulness
+LOW usefulness
+
+Useful Top 10 =
+HIGH + MEDIUM.
+
+Top-10 useful opportunity rate =
+Useful / 10.
+
+==================================================
+22. FALSE POSITIVES
+==================================================
+
+A Top-10 company is a clear false positive if the recommendation is materially
+misleading because of:
+
+wrong company
+clearly wrong ICP
+seller/competitor mistaken as buyer
+unsupported signal
+invalid timing
+unsupported WHY
+other major evidence failure.
+
+Calculate:
+
+Top-10 false-positive rate.
+
+==================================================
+23. COVERAGE
+==================================================
+
+Report:
+
+Companies researched
+Companies with approved facts
+Companies with supported signals
+Companies with supported opportunity evidence
+Useful Top-10.
+
+Classify:
+
+STRONG
+ADEQUATE
+WEAK
+UNUSABLE.
+
+Perfect precision with negligible output does NOT count as success.
+
+==================================================
+24. MANUAL WHO REVIEW
+==================================================
+
+Independently review:
+
+all Top-10 companies
+
+plus
+
+10 additional deterministic/random cohort companies.
+
+Evaluate:
+
+real company
+buyer role
+industry
+geography
+size
+ICP compatibility
+WHO correctness.
+
+Calculate approximate WHO useful agreement.
+
+Do not change product results after review.
+
+==================================================
+25. DEFECT LEDGER
+==================================================
+
+Record defects without fixing them.
+
+Categories:
+
+DISCOVERY
+IDENTITY
+FIRMOGRAPHICS
+ICP_CLASSIFICATION
+BUYER_ROLE
+RESEARCH_ELIGIBILITY
+RESEARCH_PLANNER
+QUERY_GENERATION
+PROVIDER_TIMEOUT
+PROVIDER_COVERAGE
+FALLBACK_ORCHESTRATION
+EVIDENCE_ACCEPTANCE
+ENTITY_VALIDATION
+FACT_EXTRACTION
+FACT_VALIDATION
+TEMPORAL
+SIGNAL_MAPPING
+SIGNAL_PRECISION
+WHEN
+WHY
+OPPORTUNITY_RANKING
+NBA
+COST
+PERFORMANCE
+UI
+OTHER.
+
+Severity:
+
+P0
+P1
+P2
+P3.
+
+Continue execution unless catastrophic.
+
+==================================================
+26. COST
+==================================================
+
+Record:
+
+COMPANY_DISCOVERY calls
+profile resolution calls
+firmographic calls
+Tavily calls
+Exa fallback calls
+other provider calls.
+
+Report:
+
+known cost
+unknown cost
+
+cost per final cohort company
+cost per researched company
+cost per supported signal
+cost per useful Top-10 account.
+
+==================================================
+27. PERFORMANCE
+==================================================
+
+Record:
+
+Run ID
+Start
+End
+Total runtime
+
+Discovery runtime
+WHO runtime
+Research runtime
+Opportunity-processing runtime
+
+Timeouts
+Provider failures.
+
+==================================================
+28. NO CONTACT ENRICHMENT
+==================================================
+
+Contact enrichment remains disabled.
+
+Person search = 0
+Email lookup = 0
+Phone lookup = 0
+Explee = 0
+Campaigns = 0
+Outreach = 0.
+
+==================================================
+29. PASS GATES
+==================================================
+
+PASS requires:
+
+Identity precision >= 95%
+
+Wrong firmographic attachments = 0
+
+Strict signal precision >= 85%
+
+WHY provenance = 100%
+
+Seller-as-buyer false signals = 0
+
+Wrong-entity false signals = 0
+
+Temporally invalid signals = 0
+
+Top-10 useful opportunity rate >= 70%
+
+Top-10 false-positive rate <= 10%
+
+Coverage >= ADEQUATE
+
+No unresolved P0
+
+Production operations = 0.
+
+The historical 70% known-event recall target does not apply to this test.
+
+==================================================
+30. REQUIRED FUNNEL
+==================================================
+
+Show:
+
+Raw Candidates
+
+→ Candidate Records
+
+→ Potential Buyers
+
+→ Unique Evaluable Companies
+
+→ Final 50
+
+→ LIKELY_FIT
+
+→ POSSIBLE_FIT
+
+→ Research Eligible
+
+→ Researched
+
+→ Companies With Approved Facts
+
+→ Companies With Supported Signals
+
+→ Companies With Supported Opportunities
+
+→ Top 10
+
+→ Useful Top 10.
+
+==================================================
+31. REQUIRED ARTIFACTS
+==================================================
+
+Generate NEW artifacts.
+
+Do not overwrite previous Reality Test artifacts.
+
+JYRA_50_COMPANY_MVP_REALITY_TEST_02_POST_FIX05.md
+
+JYRA_50_COMPANY_MVP_REALITY_TEST_02_POST_FIX05.json
+
+JYRA_50_COMPANY_MVP_REALITY_TEST_02_POST_FIX05_COMPANIES.csv
+
+JYRA_50_COMPANY_MVP_REALITY_TEST_02_POST_FIX05_TOP10.csv
+
+JYRA_50_COMPANY_MVP_REALITY_TEST_02_POST_FIX05_SIGNALS.csv
+
+JYRA_50_COMPANY_MVP_REALITY_TEST_02_POST_FIX05_DEFECTS.csv
+
+JYRA_50_COMPANY_MVP_REALITY_TEST_02_POST_FIX05_COSTS.json
+
+JYRA_50_COMPANY_MVP_REALITY_TEST_02_POST_FIX05_PERFORMANCE.json.
+
+==================================================
+32. REQUIRED FINAL SUMMARY
+==================================================
+
+EXECUTION
+
+Run ID =
+Start =
+End =
+Runtime =
+Process exit =
+Production operations =
+
+DISCOVERY
+
+Raw candidates =
+Candidate records =
+
+Potential buyers =
+Seller/competitors =
+Adjacent vendors =
+Unknown buyer role =
+
+Confirmed =
+Probable =
+Ambiguous =
+Wrong/not-company =
+Unresolved =
+
+Existing canonical reused =
+New canonical created =
+Duplicates prevented =
+
+Unique evaluable =
+Final cohort =
+
+WHO
+
+Likely fit =
+Possible fit =
+Likely not fit =
+Insufficient =
+
+WHO useful agreement =
+Wrong firmographic attachments =
+
+RESEARCH
+
+Research eligible =
+Companies researched =
+
+Questions generated =
+Succeeded =
+Timed out =
+Failed =
+
+Question success rate =
+
+Tavily calls =
+Exa fallback calls =
+Other research calls =
+
+EVIDENCE
+
+Retrieved =
+Accepted =
+
+FACTS
+
+Extracted =
+Approved =
+Rejected =
+Companies with approved facts =
+
+SIGNALS
+
+Material signals =
+Supported =
+Partial =
+Unsupported =
+
+Seller-as-buyer =
+Wrong entity =
+Temporally invalid =
+Generic funding inference =
+
+Strict signal precision =
+Companies with supported signals =
+
+OPPORTUNITIES
+
+Companies with supported opportunity evidence =
+
+CONTACT =
+MONITOR =
+RESEARCH_MORE =
+REVIEW =
+INSUFFICIENT_EVIDENCE =
+
+TOP 10
+
+High usefulness =
+Medium usefulness =
+Low usefulness =
+
+Useful =
+Useful opportunity rate =
+
+False positives =
+False-positive rate =
+
+WHY
+
+Material claims =
+Complete provenance =
+WHY provenance =
+
+COVERAGE
+
+STRONG / ADEQUATE / WEAK / UNUSABLE
+
+COST
+
+Known total =
+Unknown total =
+
+Cost/final cohort =
+Cost/researched company =
+Cost/supported signal =
+Cost/useful Top-10 =
+
+PERFORMANCE
+
+Runtime =
+Timeouts =
+Provider failures =
+
+DEFECTS
+
+P0 =
+P1 =
+P2 =
+P3 =
+
+Top five defects =
+
+Contact enrichment calls = 0
+Production operations = 0
+
+==================================================
+33. FINAL VERDICT
+==================================================
+
+Return EXACTLY ONE:
+
+A — MVP REALITY TEST PASSED
+
+B — USEFUL BUT COVERAGE NEEDS IMPROVEMENT
+
+C — OPPORTUNITY QUALITY / PRECISION NEEDS IMPROVEMENT
+
+D — MARKET DISCOVERY / WHO NEEDS IMPROVEMENT
+
+E — RESEARCH RELIABILITY NEEDS IMPROVEMENT
+
+F — PRODUCT OUTPUT NOT YET USEFUL
+
+G — MULTIPLE MATERIAL MVP DEFECTS
+
+H — INCONCLUSIVE SYSTEM / PROVIDER FAILURE
+
+==================================================
+34. IF NOT A
+==================================================
+
+Do NOT fix anything.
+
+Return maximum:
+
+3 highest-impact repair areas.
+
+Only choose issues materially affecting:
+
+safety
+sales usefulness
+coverage
+research reliability.
+
+Do not list every defect.
+
+==================================================
+35. IF A
+==================================================
+
+State:
+
+"50-Company MVP Reality Test passed.
+
+Next milestone:
+Final MVP Acceptance and Launch Readiness."
+
+Do not automatically start Final MVP Acceptance.
+
+==================================================
+36. EXECUTE NOW
+==================================================
+
+Actually execute this benchmark.
+
+Do not respond with:
+
+READY
+PREPARED
+PLAN COMPLETE.
+
+Run it end-to-end and return the authoritative results.

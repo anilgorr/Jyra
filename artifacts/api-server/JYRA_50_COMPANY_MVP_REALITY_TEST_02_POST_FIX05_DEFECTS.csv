@@ -1,0 +1,6 @@
+"id","category","severity","company","summary","status"
+"DISCOVERY-COVERAGE","DISCOVERY","P1","","Only 8/50 new non-excluded companies were collected after 40 rounds","OPEN"
+"SELLER-AS-BUYER","BUYER_ROLE","P1","SEQURETEK","Security seller became the only active signal and top-ranked account","OPEN"
+"EVIDENCE-LIFECYCLE","EVIDENCE_ACCEPTANCE","P1","","117 RAW evidence items led to 14 facts, one signal, and four opportunities with zero accepted evidence","OPEN"
+"PROVIDER-ACCOUNTING","RESEARCH_ELIGIBILITY","P1","","18/18 questions report SUCCEEDED while the cost ledger classifies all 35 provider requests as failed","OPEN"
+"RAW-CONTENT-LIMIT","WHEN","P2","Mindteck","Raw content exceeded the 500000-character processing limit","OPEN"

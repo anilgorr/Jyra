@@ -1,0 +1,13 @@
+{
+  "test": "JYRA_50_COMPANY_MVP_REALITY_TEST_02_POST_FIX05",
+  "runId": "4d1f4980-e17b-4251-a5b7-cddbb10ab8ae",
+  "startedAt": "2026-09-01T12:40:38.653Z",
+  "completedAt": "2026-09-01T13:15:20.624Z",
+  "runtimeMs": 2081971,
+  "discoveryRounds": 40,
+  "companiesEvaluated": 8,
+  "researchQuestions": 18,
+  "providerCalls": 35,
+  "providerTimeouts": 0,
+  "providerFailures": 35
+}

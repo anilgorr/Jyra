@@ -1,0 +1,35 @@
+{
+  "test": "JYRA_50_COMPANY_MVP_REALITY_TEST_02_POST_FIX05",
+  "runId": "4d1f4980-e17b-4251-a5b7-cddbb10ab8ae",
+  "generatedAt": "2026-09-01T13:15:20.624Z",
+  "providers": [
+    {
+      "provider": "Tavily",
+      "capability": "WEB_SEARCH",
+      "requests": 19,
+      "succeeded": 0,
+      "timedOut": 0,
+      "failed": 19,
+      "estimatedCost": 0.19000000000000003,
+      "actualKnownCost": 0,
+      "actualUnknown": 19
+    },
+    {
+      "provider": "Exa",
+      "capability": "WEB_SEARCH",
+      "requests": 16,
+      "succeeded": 0,
+      "timedOut": 0,
+      "failed": 16,
+      "estimatedCost": 0.11200000000000004,
+      "actualKnownCost": 0.2680000000000001,
+      "actualUnknown": 0
+    }
+  ],
+  "totals": {
+    "requests": 35,
+    "estimatedCost": 0.30200000000000016,
+    "actualKnownCost": 0.2680000000000001,
+    "actualUnknown": 19
+  }
+}

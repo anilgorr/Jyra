@@ -1,0 +1,2 @@
+company,signal_code,product_status,independent_classification,reason
+"SEQURETEK","MSOC_SECURITY_STACK_CHANGE","ACTIVE","SELLER_AS_BUYER","Security seller was treated as a Managed SOC buyer opportunity."

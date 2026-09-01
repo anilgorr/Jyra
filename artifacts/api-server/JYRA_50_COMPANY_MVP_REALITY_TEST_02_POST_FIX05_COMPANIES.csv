@@ -1,0 +1,9 @@
+rank,company,domain,buyer_role,qualification,confidence,geography,industry,employee_size,profile_status,firmographics_status,research_questions,raw_evidence,facts,material_signals,opportunity_state,nba
+"1","SEQURETEK","sequretek.com","SELLER_COMPETITOR","LIKELY_FIT","HIGH","pass","pass","pass","VERIFIED","CONFIRMED","4","19","5","1","WATCH","MONITOR"
+"2","enreap","enreap.com","ADJACENT_VENDOR","POSSIBLE_FIT","MEDIUM","pass","pass","partial","VERIFIED","CONFIRMED","0","0","0","0","",""
+"3","Espire Infolabs","espire.com","ADJACENT_VENDOR","INSUFFICIENT_DATA","LOW","unknown","unknown","unknown","AMBIGUOUS","","0","0","0","0","",""
+"4","ESSPL","esspl.com","ADJACENT_VENDOR","LIKELY_FIT","HIGH","pass","pass","pass","VERIFIED","CONFIRMED","4","28","2","0","WATCH","RESEARCH_MORE"
+"5","Mindteck","mindteck.com","ADJACENT_VENDOR","LIKELY_FIT","HIGH","pass","pass","pass","VERIFIED","CONFIRMED","2","14","0","0","",""
+"6","Sagarsoft (India) Ltd","sagarsoft.in","ADJACENT_VENDOR","LIKELY_FIT","HIGH","pass","pass","pass","VERIFIED","CONFIRMED","4","32","6","0","WATCH","RESEARCH_MORE"
+"7","Senrysa Technologies Limited","senrysa.com","ADJACENT_VENDOR","LIKELY_FIT","HIGH","pass","pass","pass","VERIFIED","CONFIRMED","4","24","1","0","WATCH","RESEARCH_MORE"
+"8","SRIT India Limited","sritindia.com","ADJACENT_VENDOR","POSSIBLE_FIT","MEDIUM","pass","pass","partial","VERIFIED","CONFIRMED","0","0","0","0","",""
