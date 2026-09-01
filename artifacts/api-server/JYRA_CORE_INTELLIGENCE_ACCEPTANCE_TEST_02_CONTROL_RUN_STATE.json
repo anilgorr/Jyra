@@ -85,6 +85,48 @@
           "jobId": "8eef8ce5-3335-4afc-bbf9-2f4f14ffb07e"
         }
       ]
+    },
+    {
+      "manifestIndex": 2,
+      "requestedCompany": "GitLab",
+      "provision": {
+        "resolutionPath": "KNOWN_COMPANY_RESOLUTION",
+        "matchBasis": "EXACT_CANONICAL_NAME",
+        "existingCanonicalReused": true,
+        "identityState": "CONFIRMED",
+        "canAutoAttachCanonical": false,
+        "canResearchEntity": true,
+        "providerCapabilitiesInvoked": [],
+        "providerCalls": 0,
+        "companyId": "417409dc-ca3f-449f-90bb-f315f91f450a",
+        "status": "PROVISIONED",
+        "blockReason": null
+      },
+      "questions": [
+        {
+          "questionType": "LEADERSHIP",
+          "status": "SUCCEEDED",
+          "questionId": "bd190926-02e1-4ff8-b881-82f181db00a2",
+          "jobId": "98f8a7f1-4025-4b74-be28-1c8ac3313b39"
+        },
+        {
+          "questionType": "HIRING",
+          "status": "SUCCEEDED",
+          "questionId": "3a5a7952-5c64-4033-9e1e-91b3bfa0796a",
+          "jobId": "03757c72-7b35-4cac-8d20-b37e5554af26"
+        },
+        {
+          "questionType": "EXPANSION",
+          "status": "SUCCEEDED",
+          "questionId": "69032b03-2ba8-473c-972b-85f0017d439b",
+          "jobId": "fdce27a9-3e91-46a9-8ff4-07eb8c3f7012"
+        },
+        {
+          "questionType": "TECHNOLOGY",
+          "status": "TIMED_OUT",
+          "reason": "No terminal research disposition persisted within 150000ms"
+        }
+      ]
     }
   ]
 }
