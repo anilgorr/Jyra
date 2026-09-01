@@ -1,0 +1,547 @@
+JYRA — DIGIPUUSH BLIND GENERALIZATION TEST 01
+
+PURPOSE
+
+Perform a clean blind generalization test of JYRA using the newly added
+DigiPuush business.
+
+This is an EVALUATION, not a repair cycle.
+
+The existing CommercialRoleAssessment and CompanyUnderstanding architecture
+must be treated as FROZEN for this test.
+
+DO NOT tune prompts, thresholds, role definitions, discovery queries, ICP,
+normalization, or classification logic after seeing the companies.
+
+We are testing whether the CURRENT generic JYRA architecture generalizes from
+the previous Managed SOC work to a substantially different seller/offering.
+
+DATABASE SAFETY:
+Development only.
+Production operations = 0.
+
+==================================================
+1. INSPECT DIGIPUUSH
+==================================================
+
+Locate the DigiPuush Business Twin/project created by the user.
+
+Report:
+
+Organization
+Project
+Business Twin
+Business Twin version
+
+Actual seller name
+Actual offering name
+Offering description
+Offering category
+
+ICP
+ICP version
+ICP status
+
+Opportunity Pack
+Pack version
+Pack status
+
+Do not make provider calls during inspection.
+
+==================================================
+2. READINESS
+==================================================
+
+For this test require:
+
+Business Twin = valid
+Offering = real and non-placeholder
+ICP = approved/usable
+
+BuyerRoleReady = TRUE
+MarketDiscoveryReady = TRUE
+WhoReady = TRUE
+
+Opportunity Pack is NOT required because WHEN/WHY is not being tested.
+
+If the required context is incomplete:
+
+STOP.
+
+Return:
+
+B — DIGIPUUSH CONFIGURATION INCOMPLETE
+
+Do not automatically repair it during this test.
+
+==================================================
+3. FREEZE TEST CONFIGURATION
+==================================================
+
+Before discovery begins persist/report:
+
+Business Twin version
+Offering context/fingerprint
+ICP version
+CompanyUnderstanding prompt version
+CommercialRoleAssessment prompt version
+Model version
+Normalization version
+Discovery strategy version
+
+After this point:
+
+NO tuning.
+
+NO prompt changes.
+
+NO threshold changes.
+
+NO query changes.
+
+NO ICP changes.
+
+NO manual company exclusions.
+
+NO role-rule changes.
+
+==================================================
+4. GENERICITY CHECK
+==================================================
+
+Search production code/configuration paths used by the intelligence engine.
+
+Confirm there are no production branches specifically for:
+
+DigiPuush
+AEO
+GEO
+AI visibility
+
+and no new DigiPuush-specific buyer rules.
+
+Fixture/configuration data is allowed.
+
+Production intelligence logic must remain seller-independent.
+
+Report:
+
+DigiPuush-specific production logic = 0 / non-zero
+
+If non-zero, identify it.
+
+==================================================
+5. FRESH MARKET DISCOVERY
+==================================================
+
+Run ONE fresh normal Find My Market operation requesting:
+
+20 companies.
+
+Use only the actual:
+
+DigiPuush Business Twin
+Offering
+ICP
+
+through the normal application workflow.
+
+Do NOT:
+
+seed companies
+handpick companies
+use old benchmark companies intentionally
+provide expected buyers
+provide hidden target accounts
+modify results after discovery.
+
+The system must discover the market itself.
+
+==================================================
+6. RUN CURRENT INTELLIGENCE PIPELINE
+==================================================
+
+For the resulting companies run:
+
+Discovery
+→ Canonical Company
+→ Identity Resolution
+→ Company Profile Evidence
+→ CompanyUnderstanding
+→ CommercialRoleAssessment
+→ WHO
+
+STOP THERE.
+
+Do NOT run:
+
+WHEN
+WHY
+signals
+Opportunity Priority
+NBA
+contacts
+outreach
+Explee.
+
+==================================================
+7. PRESERVE RAW JYRA RESULTS
+==================================================
+
+Before independent adjudication, persist the exact JYRA output for every
+company.
+
+For each company:
+
+company
+domain
+identity state
+
+primary business
+business model
+canonical industry
+company-understanding confidence
+
+commercial role
+commercial-role confidence
+commercial-role reason
+supporting evidence IDs
+
+WHO classification
+WHO reason.
+
+Do not alter these after adjudication starts.
+
+==================================================
+8. INDEPENDENT ADJUDICATION
+==================================================
+
+Now independently review ALL companies.
+
+The adjudicator must NOT use JYRA's classification as ground truth.
+
+For each company independently determine:
+
+IDENTITY:
+CORRECT
+WRONG
+UNCERTAIN
+
+MARKET RELEVANCE:
+PLAUSIBLE_MARKET_CANDIDATE
+OBVIOUSLY_WRONG_MARKET
+UNCLEAR
+
+COMPANY UNDERSTANDING:
+CORRECT
+PARTIAL
+WRONG
+INSUFFICIENT
+
+COMMERCIAL ROLE:
+POTENTIAL_BUYER
+SELLER_COMPETITOR
+ADJACENT_VENDOR
+PARTNER_POSSIBLE
+UNKNOWN
+
+WHO:
+LIKELY_FIT
+POSSIBLE_FIT
+LIKELY_NOT_FIT
+INSUFFICIENT_DATA
+
+Provide a short independent reason.
+
+Do not change JYRA output based on this review.
+
+==================================================
+9. ERROR TAXONOMY
+==================================================
+
+For every disagreement identify the PRIMARY cause:
+
+DISCOVERY_WRONG_MARKET
+
+IDENTITY_WRONG
+
+PROFILE_EVIDENCE_INSUFFICIENT
+
+COMPANY_UNDERSTANDING_WRONG
+
+BUSINESS_MODEL_WRONG
+
+INDUSTRY_WRONG
+
+COMMERCIAL_RELATIONSHIP_REASONING_WRONG
+
+ICP_QUALIFICATION_WRONG
+
+LOW_CONFIDENCE_SHOULD_HAVE_BEEN_UNKNOWN
+
+OTHER.
+
+This is critical.
+
+Do not immediately fix these errors.
+
+We first need to know WHERE the architecture fails.
+
+==================================================
+10. METRICS
+==================================================
+
+Calculate:
+
+Identity precision
+
+Plausible market candidate rate
+
+Profile sufficiency rate
+
+Company-understanding accuracy
+
+Commercial-role exact agreement
+
+POTENTIAL_BUYER precision
+
+POTENTIAL_BUYER recall
+
+Seller/competitor classified as POTENTIAL_BUYER count
+
+WHO agreement
+
+UNKNOWN rate.
+
+Also provide confusion matrix for Commercial Role:
+
+JYRA role × independently adjudicated role.
+
+==================================================
+11. ACCEPTANCE TARGETS
+==================================================
+
+Targets:
+
+Identity precision >=95%
+
+Plausible market candidate rate >=70%
+
+Company-understanding accuracy >=90%
+
+Commercial-role exact agreement >=80%
+
+POTENTIAL_BUYER precision >=85%
+
+Seller/competitor → POTENTIAL_BUYER = 0
+
+WHO agreement >=85%.
+
+UNKNOWN rate is diagnostic only.
+
+Do NOT lower thresholds after seeing results.
+
+==================================================
+12. COST
+==================================================
+
+Report:
+
+Discovery calls
+Profile calls
+Firmographic calls
+LLM calls
+Cache hits
+
+Input tokens
+Output tokens
+Total tokens
+
+Discovery cost
+Profile cost
+Firmographic cost
+LLM cost
+Total known cost
+Unknown cost.
+
+If LLM billing amounts are unavailable:
+
+report that explicitly.
+
+Do not represent unknown cost as $0.
+
+==================================================
+13. NO REPAIR DURING TEST
+==================================================
+
+This is mandatory.
+
+If something fails:
+
+DO NOT fix it.
+
+DO NOT rerun with improved prompts.
+
+DO NOT modify discovery queries.
+
+DO NOT add rules.
+
+DO NOT adjust confidence thresholds.
+
+DO NOT modify ICP.
+
+DO NOT rerun individual failures.
+
+Preserve the failure.
+
+We want an unbiased diagnostic.
+
+==================================================
+14. FINAL REPORT
+==================================================
+
+Return:
+
+DIGIPUUSH BLIND GENERALIZATION TEST 01
+
+CONFIGURATION
+
+Seller =
+Offering =
+Business Twin Version =
+ICP Version =
+
+CompanyUnderstanding Version =
+CommercialRole Version =
+Model =
+Normalization Version =
+Discovery Version =
+
+Genericity check =
+
+--------------------------------
+
+DISCOVERY
+
+Requested =
+Raw candidates =
+Canonical candidates =
+Final cohort =
+
+Plausible market =
+Wrong market =
+Unclear =
+
+Plausible market rate =
+
+--------------------------------
+
+INTELLIGENCE
+
+Identity correct =
+Identity wrong =
+Identity uncertain =
+
+Profile sufficient =
+
+JYRA roles:
+
+Potential buyer =
+Seller competitor =
+Adjacent vendor =
+Partner possible =
+Unknown =
+
+Independent roles:
+
+Potential buyer =
+Seller competitor =
+Adjacent vendor =
+Partner possible =
+Unknown =
+
+--------------------------------
+
+QUALITY
+
+Identity precision =
+
+Company-understanding accuracy =
+
+Commercial-role exact agreement =
+
+Potential-buyer precision =
+Potential-buyer recall =
+
+Seller/competitor → buyer errors =
+
+WHO agreement =
+
+UNKNOWN rate =
+
+--------------------------------
+
+COMMERCIAL ROLE CONFUSION MATRIX
+
+Print complete matrix.
+
+--------------------------------
+
+ERROR ATTRIBUTION
+
+Discovery wrong market =
+Identity wrong =
+Profile evidence insufficient =
+Company understanding wrong =
+Business model wrong =
+Industry wrong =
+Commercial relationship reasoning wrong =
+ICP qualification wrong =
+Low confidence should have been UNKNOWN =
+Other =
+
+--------------------------------
+
+COST
+
+Discovery calls =
+Profile calls =
+Firmographic calls =
+LLM calls =
+Cache hits =
+
+Input tokens =
+Output tokens =
+Total tokens =
+
+Known cost =
+Unknown cost =
+
+--------------------------------
+
+PRODUCTION OPERATIONS = 0
+
+--------------------------------
+
+VERDICT
+
+Return EXACTLY ONE:
+
+A — CROSS-BUSINESS GENERALIZATION PASSED
+
+B — DIGIPUUSH CONFIGURATION INVALID
+
+C — MARKET DISCOVERY IS PRIMARY FAILURE
+
+D — COMPANY UNDERSTANDING IS PRIMARY FAILURE
+
+E — COMMERCIAL ROLE REASONING IS PRIMARY FAILURE
+
+F — WHO QUALIFICATION IS PRIMARY FAILURE
+
+G — MULTIPLE MATERIAL FAILURES
+
+STOP.
+
+DO NOT FIX ANY FAILURE.
+DO NOT RUN 50-COMPANY TEST.

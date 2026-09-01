@@ -934,3 +934,45 @@ mtime_ms = 1788263345012
 storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/a9c3eb94-5363-44b2-a085-449e7512fbe8/1d6178fb-ec17-4dcc-a011-4c353c215d46"
 storage_version_token = "1788263389907333"
 content_type = "application/octet-stream"
+
+[[outputs]]
+id = "nctwhAzkJKIJhf9U76WlB"
+uri = "file://artifacts/api-server/JYRA_DIGIPUUSH_BLIND_GENERALIZATION_TEST_01.md"
+type = "text"
+title = "DigiPuush Blind Generalization Test 01"
+description = "Human-readable final evaluation with metrics, confusion matrix, error attribution, cost, safety proof, and final verdict."
+logical_id = "6e9616c8-8b32-4dd8-8c98-058f7b8e80ad"
+content_hash = "sha256:7bf069c115b3fa2e567f3c1d0a90581ef1d2ae6f24b30f73dbbfa12cccd57646"
+size = 7013
+mtime_ms = 1788286276028
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/6e9616c8-8b32-4dd8-8c98-058f7b8e80ad/7cd0c933-0983-4346-b3a9-303727517355"
+storage_version_token = "1788286318880484"
+content_type = "text/markdown"
+
+[[outputs]]
+id = "vYF4bF0wnFhBXR0nXe8Vh"
+uri = "file://artifacts/api-server/JYRA_DIGIPUUSH_BLIND_GENERALIZATION_TEST_01.json"
+type = "unspecified"
+title = "DigiPuush Test 01 — Structured Results"
+description = "Machine-readable 20-company results, independent adjudication comparisons, metrics, costs, and verdict."
+logical_id = "3a1837e5-37df-4aca-8353-2dd8ffb01484"
+content_hash = "sha256:0ba02f703ba24e606e55db50b644312fe8c1b1e1b031f612804bab9516a846dc"
+size = 36957
+mtime_ms = 1788286276028
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/3a1837e5-37df-4aca-8353-2dd8ffb01484/75b414b5-592a-45f4-9e46-6e7eb63499d5"
+storage_version_token = "1788286320223200"
+content_type = "application/octet-stream"
+
+[[outputs]]
+id = "4nUDe-lbTDwnd8Fy_HcZc"
+uri = "file://artifacts/api-server/JYRA_DIGIPUUSH_BLIND_GENERALIZATION_TEST_01_RAW.json"
+type = "unspecified"
+title = "DigiPuush Test 01 — Raw JYRA Snapshot"
+description = "Immutable raw discovery, semantic, role, WHO, provenance, and membership snapshot captured before independent adjudication."
+logical_id = "9a494b25-defd-4496-8a11-0a19150a4195"
+content_hash = "sha256:2267cf2abbeba140df86aea46343736d9230c1506df2ed1334d9da2b88ceb776"
+size = 196691
+mtime_ms = 1788285894097
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/9a494b25-defd-4496-8a11-0a19150a4195/0b3881ff-87b8-42b1-9e6e-48c54be3d017"
+storage_version_token = "1788286321568546"
+content_type = "application/octet-stream"

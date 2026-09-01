@@ -1,0 +1,69 @@
+{
+  "test": "JYRA — DIGIPUUSH BLIND GENERALIZATION TEST 01",
+  "environment": "development",
+  "productionOperations": 0,
+  "configuration": {
+    "organization": {
+      "id": "02d40c31-72e4-42d9-9d8d-fe676a369205",
+      "name": "Aadit Technologies"
+    },
+    "project": {
+      "id": "5ca11b69-e296-4e79-b3da-ee127f16ab55",
+      "name": "Digipuush",
+      "status": "active"
+    },
+    "seller": "Digipuush",
+    "offering": {
+      "name": "AEO & GEO / AI Visibility Services",
+      "description": "DigiPuush helps businesses become visible and cited in AI-generated answers across ChatGPT, Perplexity, Gemini and Google AI Overviews, while also improving traditional Google search visibility.",
+      "category": "Marketing",
+      "contextFingerprint": "d312a81ac1c9ef9e84b8e30266713947b78e5717b22d6dd3cf570edc26a08528"
+    },
+    "businessTwin": {
+      "id": "cb40e2b3-0330-4ce8-afc4-a9ab08f0bcd4",
+      "versionId": "48d80510-1f54-41b2-bdcd-2e82a0eb9913",
+      "version": 1,
+      "status": "ready"
+    },
+    "icp": {
+      "id": "5731bd2f-8951-40d5-a4e1-847ee0ea3564",
+      "versionId": "e7b9a805-f690-449f-8958-e35cd301e366",
+      "version": 7,
+      "mode": "EARLY_EVIDENCE_ICP",
+      "acceptedCriteria": 6,
+      "totalCriteria": 22
+    },
+    "opportunityPack": {
+      "required": false,
+      "status": "NOT_REQUIRED_FOR_TEST"
+    }
+  },
+  "readiness": {
+    "businessTwinReady": true,
+    "offeringReady": true,
+    "icpReady": true,
+    "buyerRoleReady": true,
+    "marketDiscoveryReady": true,
+    "whoReady": true,
+    "whenWhyReady": false
+  },
+  "frozenVersions": {
+    "companyUnderstandingPrompt": "fix08-company-understanding-v4",
+    "commercialRoleAssessment": "buyer-role-resolution-06a",
+    "model": "gpt-5-mini",
+    "normalization": "fix07-v1",
+    "discoveryStrategy": "buildDiscoveryPlan-derived; no explicit production strategy-version constant",
+    "discoveryStrategySha256": "d04ed4215fc5098fd3a350ea4b2791c94502c53e98dcccc1a6f8ce223ad2b3cc"
+  },
+  "genericityCheck": {
+    "digipuushSpecificProductionLogic": "0",
+    "searchedTerms": [
+      "DigiPuush",
+      "AEO",
+      "GEO",
+      "AI visibility"
+    ],
+    "note": "No exact seller-specific production branches found; fixture/test data was excluded."
+  },
+  "freezeRule": "No prompt, threshold, role, discovery query, ICP, normalization, or classification changes after this record."
+}

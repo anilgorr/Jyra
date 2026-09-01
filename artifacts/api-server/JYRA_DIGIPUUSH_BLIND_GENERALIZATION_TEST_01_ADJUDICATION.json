@@ -1,0 +1,326 @@
+{
+  "adjudicatedAt": "2026-09-01T18:09:56.097Z",
+  "independence": "JYRA labels and evidence not supplied",
+  "companies": [
+    {
+      "businessModel": "Service-based IT project support",
+      "canonicalIndustry": "IT Services",
+      "commercialRole": "ADJACENT_VENDOR",
+      "company": "3LOCKS",
+      "companyUnderstanding": "CORRECT",
+      "identity": "CORRECT",
+      "marketRelevance": "PLAUSIBLE_MARKET_CANDIDATE",
+      "primaryBusiness": "IT consulting and privileged access management services",
+      "profileSufficient": true,
+      "reason": "IT services provider; could potentially benefit from AEO services for their own market positioning.",
+      "sourceUrls": [
+        "https://3locks.ch/"
+      ],
+      "who": "POSSIBLE_FIT"
+    },
+    {
+      "businessModel": "SaaS and AI-platform licensing",
+      "canonicalIndustry": "Artificial Intelligence",
+      "commercialRole": "PARTNER_POSSIBLE",
+      "company": "Avataar",
+      "companyUnderstanding": "CORRECT",
+      "identity": "CORRECT",
+      "marketRelevance": "PLAUSIBLE_MARKET_CANDIDATE",
+      "primaryBusiness": "Agentic AI platform for enterprise transformation",
+      "profileSufficient": true,
+      "reason": "Highly sophisticated AI enterprise company; potential partner for visibility and integration services.",
+      "sourceUrls": [
+        "https://www.avataar.ai/about"
+      ],
+      "who": "LIKELY_FIT"
+    },
+    {
+      "businessModel": "SaaS for HR and operations",
+      "canonicalIndustry": "HR Technology",
+      "commercialRole": "POTENTIAL_BUYER",
+      "company": "BetterPlace",
+      "companyUnderstanding": "CORRECT",
+      "identity": "CORRECT",
+      "marketRelevance": "PLAUSIBLE_MARKET_CANDIDATE",
+      "primaryBusiness": "Frontline workforce management SaaS platform",
+      "profileSufficient": true,
+      "reason": "Large-scale human capital SaaS platform in India, relevant for growth and visibility services.",
+      "sourceUrls": [
+        "https://www.betterplace.co.in/about-us-new/"
+      ],
+      "who": "LIKELY_FIT"
+    },
+    {
+      "businessModel": "SaaS and B2B software solutions",
+      "canonicalIndustry": "Travel Technology",
+      "commercialRole": "POTENTIAL_BUYER",
+      "company": "Bitla Software",
+      "companyUnderstanding": "CORRECT",
+      "identity": "CORRECT",
+      "marketRelevance": "PLAUSIBLE_MARKET_CANDIDATE",
+      "primaryBusiness": "Technology and SaaS solutions for the bus industry",
+      "profileSufficient": true,
+      "reason": "Established SaaS company serving specialized industrial needs; valid candidate for visibility services.",
+      "sourceUrls": [
+        "https://www.bitlasoft.com/about-us"
+      ],
+      "who": "LIKELY_FIT"
+    },
+    {
+      "businessModel": "Software licensing/SaaS",
+      "canonicalIndustry": "Data Software",
+      "commercialRole": "ADJACENT_VENDOR",
+      "company": "CData Virtuality",
+      "companyUnderstanding": "CORRECT",
+      "identity": "CORRECT",
+      "marketRelevance": "PLAUSIBLE_MARKET_CANDIDATE",
+      "primaryBusiness": "Data virtualization software",
+      "profileSufficient": true,
+      "reason": "Data software provider; could serve as a partner or client for technical visibility projects.",
+      "sourceUrls": [
+        "https://docs.datavirtuality.com/v25/overview-of-cdata-virtuality"
+      ],
+      "who": "POSSIBLE_FIT"
+    },
+    {
+      "businessModel": "SaaS/CRM",
+      "canonicalIndustry": "Software/CRM",
+      "commercialRole": "PARTNER_POSSIBLE",
+      "company": "Corefactors",
+      "companyUnderstanding": "CORRECT",
+      "identity": "CORRECT",
+      "marketRelevance": "PLAUSIBLE_MARKET_CANDIDATE",
+      "primaryBusiness": "RevOps CRM platform",
+      "profileSufficient": true,
+      "reason": "CRM and RevOps platform for SMBs; aligns well with digital visibility needs.",
+      "sourceUrls": [
+        "https://www.corefactors.ai/about-us"
+      ],
+      "who": "LIKELY_FIT"
+    },
+    {
+      "businessModel": "Service-based security firm",
+      "canonicalIndustry": "Cybersecurity",
+      "commercialRole": "ADJACENT_VENDOR",
+      "company": "Cyber Security Operations",
+      "companyUnderstanding": "CORRECT",
+      "identity": "CORRECT",
+      "marketRelevance": "PLAUSIBLE_MARKET_CANDIDATE",
+      "primaryBusiness": "Cybersecurity consulting and managed services",
+      "profileSufficient": true,
+      "reason": "Specialized service firm; alignment potential in digital strategy/visibility.",
+      "sourceUrls": [
+        "https://cybersecop.com/what-we-do"
+      ],
+      "who": "POSSIBLE_FIT"
+    },
+    {
+      "businessModel": "API-based financial infrastructure",
+      "canonicalIndustry": "Fintech",
+      "commercialRole": "POTENTIAL_BUYER",
+      "company": "Decentro",
+      "companyUnderstanding": "CORRECT",
+      "identity": "CORRECT",
+      "marketRelevance": "PLAUSIBLE_MARKET_CANDIDATE",
+      "primaryBusiness": "Fintech infrastructure and Banking-as-a-Service APIs",
+      "profileSufficient": true,
+      "reason": "High-growth fintech infrastructure company in India; relevant for SEO/AEO optimization.",
+      "sourceUrls": [
+        "https://decentro.tech/about"
+      ],
+      "who": "LIKELY_FIT"
+    },
+    {
+      "businessModel": "SaaS platform",
+      "canonicalIndustry": "Health Technology",
+      "commercialRole": "POTENTIAL_BUYER",
+      "company": "ekincare",
+      "companyUnderstanding": "CORRECT",
+      "identity": "CORRECT",
+      "marketRelevance": "PLAUSIBLE_MARKET_CANDIDATE",
+      "primaryBusiness": "Corporate wellness and employee benefits software",
+      "profileSufficient": true,
+      "reason": "Established SaaS health platform with large customer base; candidate for digital visibility services.",
+      "sourceUrls": [
+        "https://www.ekincare.com/"
+      ],
+      "who": "LIKELY_FIT"
+    },
+    {
+      "businessModel": "B2B SaaS",
+      "canonicalIndustry": "Industrial Software",
+      "commercialRole": "POTENTIAL_BUYER",
+      "company": "Jaza Software",
+      "companyUnderstanding": "CORRECT",
+      "identity": "CORRECT",
+      "marketRelevance": "PLAUSIBLE_MARKET_CANDIDATE",
+      "primaryBusiness": "Manufacturing intelligence software for the apparel industry",
+      "profileSufficient": true,
+      "reason": "Specialized SaaS company needing niche visibility in manufacturing intelligence.",
+      "sourceUrls": [
+        "https://jazasoft.com/demo"
+      ],
+      "who": "POSSIBLE_FIT"
+    },
+    {
+      "businessModel": "SaaS/Desktop Software",
+      "canonicalIndustry": "Fintech/Tax Software",
+      "commercialRole": "POTENTIAL_BUYER",
+      "company": "KDK Software",
+      "companyUnderstanding": "CORRECT",
+      "identity": "CORRECT",
+      "marketRelevance": "PLAUSIBLE_MARKET_CANDIDATE",
+      "primaryBusiness": "Tax compliance and ITR software",
+      "profileSufficient": true,
+      "reason": "Large user base and long-standing experience; significant potential for digital visibility enhancement.",
+      "sourceUrls": [
+        "https://www.kdksoftware.com/"
+      ],
+      "who": "LIKELY_FIT"
+    },
+    {
+      "businessModel": "Professional services/Outsourced development",
+      "canonicalIndustry": "IT Services",
+      "commercialRole": "PARTNER_POSSIBLE",
+      "company": "KeyValue",
+      "companyUnderstanding": "CORRECT",
+      "identity": "CORRECT",
+      "marketRelevance": "PLAUSIBLE_MARKET_CANDIDATE",
+      "primaryBusiness": "Product engineering and development services",
+      "profileSufficient": true,
+      "reason": "Product engineering partner; complementary skills in development and implementation.",
+      "sourceUrls": [
+        "https://www.keyvalue.systems/about-us/"
+      ],
+      "who": "POSSIBLE_FIT"
+    },
+    {
+      "businessModel": "Outsourced services",
+      "canonicalIndustry": "IT Services",
+      "commercialRole": "ADJACENT_VENDOR",
+      "company": "Meander Software",
+      "companyUnderstanding": "CORRECT",
+      "identity": "CORRECT",
+      "marketRelevance": "PLAUSIBLE_MARKET_CANDIDATE",
+      "primaryBusiness": "IT services, app development, and e-learning solutions",
+      "profileSufficient": true,
+      "reason": "IT services provider with potential overlap in digital transformation offerings.",
+      "sourceUrls": [
+        "https://do.meanderapps.com/"
+      ],
+      "who": "POSSIBLE_FIT"
+    },
+    {
+      "businessModel": "SaaS",
+      "canonicalIndustry": "CRM/Software",
+      "commercialRole": "UNKNOWN",
+      "company": "NeoDove",
+      "companyUnderstanding": "INSUFFICIENT",
+      "identity": "UNCERTAIN",
+      "marketRelevance": "PLAUSIBLE_MARKET_CANDIDATE",
+      "primaryBusiness": "Sales automation/telecalling CRM",
+      "profileSufficient": false,
+      "reason": "Data retrieval for the specific entity profile failed during search.",
+      "sourceUrls": [
+        "https://neodove.com/about-us/"
+      ],
+      "who": "INSUFFICIENT_DATA"
+    },
+    {
+      "businessModel": "AI infrastructure services",
+      "canonicalIndustry": "AI/Cloud Computing",
+      "commercialRole": "PARTNER_POSSIBLE",
+      "company": "Neysa",
+      "companyUnderstanding": "CORRECT",
+      "identity": "CORRECT",
+      "marketRelevance": "PLAUSIBLE_MARKET_CANDIDATE",
+      "primaryBusiness": "AI infrastructure and acceleration cloud",
+      "profileSufficient": true,
+      "reason": "High-growth AI company; strong potential as a partner or buyer for visibility services.",
+      "sourceUrls": [
+        "https://neysa.ai/about-us/"
+      ],
+      "who": "LIKELY_FIT"
+    },
+    {
+      "businessModel": "Professional services/Consulting",
+      "canonicalIndustry": "IT Services",
+      "commercialRole": "ADJACENT_VENDOR",
+      "company": "One2N",
+      "companyUnderstanding": "CORRECT",
+      "identity": "CORRECT",
+      "marketRelevance": "PLAUSIBLE_MARKET_CANDIDATE",
+      "primaryBusiness": "Backend and reliability engineering services",
+      "profileSufficient": true,
+      "reason": "Reliability engineering specialist; could be a collaborative partner.",
+      "sourceUrls": [
+        "https://one2n.io/about"
+      ],
+      "who": "POSSIBLE_FIT"
+    },
+    {
+      "businessModel": "SaaS",
+      "canonicalIndustry": "HR/Fintech",
+      "commercialRole": "POTENTIAL_BUYER",
+      "company": "PagarBook",
+      "companyUnderstanding": "CORRECT",
+      "identity": "CORRECT",
+      "marketRelevance": "PLAUSIBLE_MARKET_CANDIDATE",
+      "primaryBusiness": "HRMS for SMBs (attendance and payroll)",
+      "profileSufficient": true,
+      "reason": "Large SME user base; potential for optimization in digital visibility and presence.",
+      "sourceUrls": [
+        "https://pagarbook.com/lp/hrms-software"
+      ],
+      "who": "LIKELY_FIT"
+    },
+    {
+      "businessModel": "Product studio/Tech services",
+      "canonicalIndustry": "IT Services/Enterprise Tech",
+      "commercialRole": "PARTNER_POSSIBLE",
+      "company": "Pramati",
+      "companyUnderstanding": "CORRECT",
+      "identity": "CORRECT",
+      "marketRelevance": "PLAUSIBLE_MARKET_CANDIDATE",
+      "primaryBusiness": "Enterprise software and corporate incubation",
+      "profileSufficient": true,
+      "reason": "Legacy company with incubation model; strong candidate for visibility partnerships.",
+      "sourceUrls": [
+        "https://pramati.com/about/"
+      ],
+      "who": "LIKELY_FIT"
+    },
+    {
+      "businessModel": "SaaS",
+      "canonicalIndustry": "Legal Technology",
+      "commercialRole": "POTENTIAL_BUYER",
+      "company": "RazorSign",
+      "companyUnderstanding": "CORRECT",
+      "identity": "CORRECT",
+      "marketRelevance": "PLAUSIBLE_MARKET_CANDIDATE",
+      "primaryBusiness": "AI-powered contract lifecycle management (CLM)",
+      "profileSufficient": true,
+      "reason": "AI-focused software provider; high alignment with digital transformation and visibility needs.",
+      "sourceUrls": [
+        "https://razorsign.com/"
+      ],
+      "who": "LIKELY_FIT"
+    },
+    {
+      "businessModel": "API/Infrastructure as a Service",
+      "canonicalIndustry": "Fintech",
+      "commercialRole": "POTENTIAL_BUYER",
+      "company": "Setu",
+      "companyUnderstanding": "CORRECT",
+      "identity": "CORRECT",
+      "marketRelevance": "PLAUSIBLE_MARKET_CANDIDATE",
+      "primaryBusiness": "Fintech API platform (payments, KYC, data)",
+      "profileSufficient": true,
+      "reason": "Significant player in India's API infrastructure; strong potential candidate.",
+      "sourceUrls": [
+        "https://setu.co/"
+      ],
+      "who": "LIKELY_FIT"
+    }
+  ]
+}
