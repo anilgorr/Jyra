@@ -35,3 +35,4 @@
 - [Acceptance pack preflight](acceptance-pack-preflight.md) — validate frozen packs by stable identity/version/configuration, never raw definition or question cardinality.
 - [Discovery provider identity evidence](discovery-provider-identity-evidence.md) — generic provider result IDs are trace identifiers, never organization-type assertions.
 - [Buyer-market discovery intent](buyer-market-discovery-intent.md) — positive discovery starts from buyer ICP constraints; seller offering/category is negative relationship context.
+- [Semantic company-role boundary](semantic-company-role-boundary.md) — LLM company-role inference requires authoritative seller context and scoped provenance UUID citations.

@@ -14,6 +14,7 @@ const INDUSTRIES: Array<IndustryNormalization & { aliases: RegExp }> = [
   { canonicalId: "RETAIL", canonicalName: "Retail", parent: "Consumer", confidence: .9, aliases: /\bretail\b/i },
   { canonicalId: "TELECOMMUNICATIONS", canonicalName: "Telecommunications", parent: "Communications", confidence: .9, aliases: /\btelecommunications?|telecom\b/i },
 ];
+export const CANONICAL_INDUSTRY_IDS = INDUSTRIES.map((industry) => industry.canonicalId) as readonly string[];
 export function normalizeIndustry(value: string | null | undefined): IndustryNormalization | null {
   const text = value?.trim();
   if (!text) return null;

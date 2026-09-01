@@ -8,6 +8,8 @@
     "build": "node ./build.mjs",
     "start": "node --enable-source-maps ./dist/index.mjs",
     "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test:fix-08": "node ./scripts/test-fix-08.mjs",
+    "replay:fix-08": "NODE_ENV=development JYRA_FIX_08_REPLAY=YES JYRA_FIX_08_CONTACTS_ENABLED=false node ./scripts/run-fix-08-replay.mjs",
     "test:icp": "node ./scripts/test-icp-engine.mjs",
     "test:business-twin": "node ./scripts/test-business-twin-maturity.mjs",
     "test:companies": "node ./scripts/test-company-identity.mjs",

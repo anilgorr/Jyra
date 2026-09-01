@@ -32,6 +32,8 @@ import type {
 import { resolveCompanyProfileWithRouter } from "./company-profile-resolution";
 import { assessBuyerRole, sameBuyerRoleAssessment, trustedCanonicalDomainDescription, type BuyerRoleAssessment } from "./buyer-role-resolution";
 import { getCanonicalCompanyProfile } from "./canonical-company-profile";
+import { resolveSellerContext } from "./seller-context";
+import { assessCompanySemantically } from "./company-semantic-assessment";
 
 type DiscoveryInput = {
   organizationId: string;
@@ -286,6 +288,7 @@ export type DiscoveryPlan = {
 };
 
 export async function buildDiscoveryPlan(projectId: string): Promise<DiscoveryPlan> {
+  const sellerContext = await resolveSellerContext(projectId);
   const [twin] = await db
     .select()
     .from(businessTwinVersionsTable)
@@ -305,10 +308,11 @@ export async function buildDiscoveryPlan(projectId: string): Promise<DiscoveryPl
   const interpretation = (twin?.aiInterpretation ?? {}) as Record<string, unknown>;
   const assumptions = textArray(icp?.assumptions);
   const assumptionText = assumptions.join(" ");
-  const offeringLabel = textValue(raw.offeringName)
-    || textValue(raw.offering)
-    || textValue(interpretation.offering_name)
-    || "the seller offering";
+  // Never manufacture generic seller context: an absent offering remains empty
+  // and downstream semantic assessment fail-closes.
+  const offeringLabel = sellerContext.sufficiency.sufficient
+    ? sellerContext.context.offeringName ?? ""
+    : "";
   const targetDescription = [
     textValue(raw.targetCustomer),
     textValue(raw.targetCustomerDescription),
@@ -425,6 +429,39 @@ export async function recomputeProjectBuyerRoles(input: { projectId: string; com
     }).where(eq(projectCompaniesTable.id, row.membership.id));
   }
   return { assessed: rows.length, changed };
+}
+
+/** Fix08 project-relative semantic reassessment. It does not fetch profiles,
+ * contact data, signals, or timing evidence; only validated results update the
+ * existing 06A-compatible membership assessment. */
+export async function reassessProjectCompanyRolesSemantically(input: {
+  organizationId: string;
+  projectId: string;
+  companyIds?: string[];
+  now?: Date;
+}): Promise<{ assessed: number; changed: number; cacheHits: number; outcomes: Array<{ companyId: string; llmInvoked: boolean; cacheHit: boolean; unknownReason: string | null; output: unknown; usage: Record<string, unknown> | null }> }> {
+  const now = input.now ?? new Date();
+  const rows = await db.select({ membership: projectCompaniesTable, company: companiesTable })
+    .from(projectCompaniesTable).innerJoin(companiesTable, eq(projectCompaniesTable.companyId, companiesTable.id))
+    .where(input.companyIds?.length
+      ? and(eq(projectCompaniesTable.projectId, input.projectId), inArray(projectCompaniesTable.companyId, input.companyIds))
+      : eq(projectCompaniesTable.projectId, input.projectId));
+  let changed = 0, cacheHits = 0;
+  const outcomes: Array<{ companyId: string; llmInvoked: boolean; cacheHit: boolean; unknownReason: string | null; output: unknown; usage: Record<string, unknown> | null }> = [];
+  for (const row of rows) {
+    const profile = await getCanonicalCompanyProfile(input.projectId, row.company);
+    const identitySafe = Boolean(row.company.domain) && await hasTrustedIdentityProvenance(row.company.id, row.company.domain!);
+    const result = await assessCompanySemantically({
+      organizationId: input.organizationId, projectId: input.projectId, companyId: row.company.id, profile, identitySafe,
+    });
+    if (result.cacheHit) cacheHits += 1;
+    outcomes.push({ companyId: row.company.id, llmInvoked: result.llmInvoked, cacheHit: result.cacheHit, unknownReason: result.unknownReason, output: result.output, usage: result.usage });
+    if (row.membership.buyerRole === result.assessment.buyerRole && sameBuyerRoleAssessment(row.membership.buyerRoleAssessment, result.assessment)) continue;
+    if (row.membership.buyerRole !== result.assessment.buyerRole) changed += 1;
+    await db.update(projectCompaniesTable).set({ buyerRole: result.assessment.buyerRole, buyerRoleAssessment: result.assessment, updatedAt: now })
+      .where(and(eq(projectCompaniesTable.id, row.membership.id), eq(projectCompaniesTable.projectId, input.projectId)));
+  }
+  return { assessed: rows.length, changed, cacheHits, outcomes };
 }
 
 async function findCompanyByDomain(domain: string, executor: DbExecutor = db) {

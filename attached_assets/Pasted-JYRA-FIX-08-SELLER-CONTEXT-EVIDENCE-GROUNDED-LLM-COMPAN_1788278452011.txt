@@ -1,0 +1,1187 @@
+JYRA — FIX 08
+SELLER CONTEXT + EVIDENCE-GROUNDED LLM COMPANY UNDERSTANDING + BUYER ROLE
+
+OBJECTIVE
+
+Fix the current proven JYRA blocker.
+
+Latest Fix 07 results:
+
+18 real evaluable companies
+Profiles sufficiently resolved = 0
+Profiles insufficient = 18
+
+POTENTIAL_BUYER = 0
+SELLER_COMPETITOR = 0
+ADJACENT_VENDOR = 0
+PARTNER_POSSIBLE = 0
+UNKNOWN = 18
+
+Buyer-role classifier regression = PASS 20/20.
+
+Fix 07 proved two major upstream problems:
+
+1. The actual seller/offering context is not reaching Buyer Role.
+   Runtime context contains the generic placeholder:
+
+   "the seller offering"
+
+2. Real company evidence is not being converted into sufficiently useful
+   company understanding.
+
+DO NOT respond by adding more deterministic keyword rules.
+
+Introduce an evidence-grounded LLM reasoning layer for:
+
+COMPANY UNDERSTANDING
++
+SELLER-RELATIVE COMMERCIAL ROLE
+
+while preserving deterministic safety gates.
+
+==================================================
+0. DATABASE SAFETY
+==================================================
+
+DEVELOPMENT ONLY.
+
+Use ONLY development database.
+
+Production operations MUST remain 0.
+
+Do not:
+
+migrate production
+reset production
+seed production
+modify production
+truncate production
+test against production.
+
+==================================================
+1. PRESERVE WORKING ARCHITECTURE
+==================================================
+
+Preserve:
+
+Fix 04 discovery → canonical handoff
+Fix 05 buyer-market discovery
+Cycle 06 safety architecture
+06A buyer-role semantics
+Fix 07 normalization
+identity resolution
+firmographic conflict protection
+industry normalization
+size normalization
+geography normalization
+provenance
+evidence lifecycle
+fact/signal safety
+temporal safety
+semantic idempotency
+activation concurrency fix.
+
+Do NOT modify:
+
+Managed SOC signal definitions
+WHEN/WHY
+Opportunity scoring
+NBA
+contact enrichment
+outreach
+Explee.
+
+==================================================
+2. ARCHITECTURAL PRINCIPLE
+==================================================
+
+JYRA should use:
+
+DETERMINISTIC SYSTEM
++
+LLM SEMANTIC REASONING
++
+DETERMINISTIC VALIDATION.
+
+Target architecture:
+
+Business Twin
+      ↓
+Actual Offering
+      ↓
+Structured Seller Context
+      ↓
+
+Candidate Company
+      ↓
+Identity Resolution
+      ↓
+Profile / Website / Firmographic Evidence
+      ↓
+Normalized Observations
+      ↓
+
+EVIDENCE-GROUNDED LLM
+      ↓
+Company Understanding
+      ↓
+Commercial Role Assessment
+      ↓
+
+Deterministic Guardrails
+      ↓
+
+POTENTIAL_BUYER
+SELLER_COMPETITOR
+ADJACENT_VENDOR
+PARTNER_POSSIBLE
+UNKNOWN
+      ↓
+WHO
+
+The LLM may INTERPRET evidence.
+
+The LLM may NOT invent evidence.
+
+==================================================
+3. FIRST FIX SELLER CONTEXT
+==================================================
+
+Before implementing LLM reasoning, trace:
+
+Business Twin
+→ Offering
+→ ICP
+→ Project
+→ Buyer Role input.
+
+Find exactly where the real approved offering becomes:
+
+"the seller offering".
+
+Report before changing:
+
+Business Twin exists =
+Offering exists =
+Project → Business Twin =
+Project → Offering =
+Offering name =
+Offering description =
+Offering category =
+Seller business description =
+Context-loss location =
+
+Then repair this generically.
+
+Do NOT hardcode Aadit.
+Do NOT hardcode Managed SOC.
+
+==================================================
+4. STRUCTURED SELLER CONTEXT
+==================================================
+
+Create/reuse a structured resolved SellerContext.
+
+Conceptually:
+
+SellerContext {
+    businessTwinId
+
+    sellerCompanyName
+    sellerBusinessDescription
+    sellerBusinessModel
+
+    offeringId
+    offeringName
+    offeringCategory
+    offeringDescription
+
+    offeringCapabilities[]
+    offeringExclusions[]
+
+    icpId
+}
+
+Prefer assembling this from authoritative existing:
+
+Business Twin
+Offering
+ICP
+
+records.
+
+Do not duplicate authoritative data unnecessarily.
+
+==================================================
+5. PLACEHOLDER SAFETY
+==================================================
+
+Generic placeholders such as:
+
+"the seller offering"
+"seller services"
+"our solution"
+"the product"
+
+must NOT count as sufficient seller context.
+
+If seller context is insufficient:
+
+return:
+
+UNKNOWN
+
+reason_code:
+
+SELLER_CONTEXT_INSUFFICIENT.
+
+Do not call the LLM with meaningless seller context.
+
+==================================================
+6. COMPANY EVIDENCE INPUT
+==================================================
+
+For an identity-safe candidate, gather existing company profile information
+using the cheapest available sources first:
+
+1. persisted canonical profile
+2. normalized observations
+3. firmographics
+4. accepted website/profile evidence
+5. provider cache
+6. bounded company-profile resolution
+7. bounded company website profile fetch if necessary.
+
+This is PROFILE RESOLUTION.
+
+It is NOT WHEN/WHY research.
+
+Question being answered:
+
+"What does this company actually do?"
+
+==================================================
+7. DO NOT REQUIRE PERFECT STRUCTURED DATA BEFORE LLM
+==================================================
+
+This is an important change.
+
+Do not require:
+
+normalized industry
++
+business model
++
+employee size
++
+geography
+
+all to exist before Company Understanding.
+
+If identity is safe and there is meaningful evidence such as:
+
+website description
+about text
+company profile description
+products/services text
+firmographic description
+industry
+specialties
+
+the LLM can interpret that evidence.
+
+==================================================
+8. COMPANY UNDERSTANDING OBJECT
+==================================================
+
+Create a versioned CompanyUnderstanding inference.
+
+Conceptually:
+
+CompanyUnderstanding {
+    companyId
+
+    primaryBusinessDescription
+
+    businessModel
+
+    canonicalIndustry
+    industryConfidence
+
+    productsServices[]
+
+    customerTypes[]
+    if explicitly supported or safely inferred
+
+    companyType
+
+    confidence
+
+    evidenceIds[]
+
+    model
+    promptVersion
+
+    createdAt
+}
+
+This is an INFERENCE derived from evidence.
+
+Do not confuse it with raw evidence.
+
+==================================================
+9. BUSINESS MODEL
+==================================================
+
+Use existing normalized business-model families where possible:
+
+SAAS
+SOFTWARE_VENDOR
+PROFESSIONAL_SERVICES
+CONSULTING
+MSP
+MSSP
+FINANCIAL_INSTITUTION
+INSURANCE
+HEALTHCARE_PROVIDER
+MANUFACTURER
+RETAILER
+MARKETPLACE
+TELECOMMUNICATIONS
+GOVERNMENT
+NONPROFIT
+OTHER
+UNKNOWN.
+
+The LLM may choose the best normalized family.
+
+It must also produce:
+
+primaryBusinessDescription.
+
+Do not force a family if evidence is insufficient.
+
+==================================================
+10. INDUSTRY
+==================================================
+
+Continue using Fix 07 canonical industry normalization.
+
+The LLM may help resolve ambiguous textual industry descriptions into the
+existing canonical taxonomy.
+
+Do NOT let the LLM create arbitrary new industry IDs.
+
+It must select:
+
+existing canonical industry
+
+or:
+
+UNKNOWN.
+
+Preserve raw provider values.
+
+==================================================
+11. EVIDENCE-GROUNDED LLM INPUT
+==================================================
+
+The LLM must receive ONLY relevant evidence and structured context.
+
+Example conceptual input:
+
+SELLER:
+
+Company:
+<seller>
+
+Offering:
+<actual persisted offering>
+
+Offering Description:
+<actual description>
+
+
+CANDIDATE:
+
+Company:
+<candidate>
+
+Domain:
+<domain>
+
+Industry observations:
+[...]
+
+Profile descriptions:
+[...]
+
+Website evidence:
+[...]
+
+Products/services:
+[...]
+
+Firmographics:
+[...]
+
+The LLM must reason only from this supplied material.
+
+==================================================
+12. STRUCTURED LLM OUTPUT
+==================================================
+
+Require strict structured output.
+
+Conceptually:
+
+{
+  "primary_business": "...",
+
+  "business_model": "MSSP",
+
+  "canonical_industry": "CYBERSECURITY",
+
+  "products_services": [...],
+
+  "commercial_role": "SELLER_COMPETITOR",
+
+  "confidence": 0.94,
+
+  "reason": "...",
+
+  "evidence_ids": [
+      "..."
+  ],
+
+  "missing_information": []
+}
+
+Allowed commercial_role values ONLY:
+
+POTENTIAL_BUYER
+SELLER_COMPETITOR
+ADJACENT_VENDOR
+PARTNER_POSSIBLE
+UNKNOWN.
+
+==================================================
+13. BUYER ROLE BUSINESS QUESTION
+==================================================
+
+The LLM should answer:
+
+"Relative to THIS seller and THIS specific offering, what commercial role
+does this candidate company most plausibly play?"
+
+Not:
+
+"Is this a good company?"
+
+Not:
+
+"Does this company match keywords?"
+
+Not:
+
+"Is this company in the ICP industry?"
+
+==================================================
+14. COMMERCIAL ROLE SEMANTICS
+==================================================
+
+POTENTIAL_BUYER:
+
+The candidate primarily operates a business that could reasonably consume
+the seller's offering and does not materially sell the same offering.
+
+SELLER_COMPETITOR:
+
+The candidate materially sells substantially the same offering/capability to
+customers.
+
+ADJACENT_VENDOR:
+
+The candidate sells a related/complementary product or service but is not
+primarily a normal end buyer for this offering.
+
+PARTNER_POSSIBLE:
+
+Use only where evidence strongly supports a plausible partner/channel/
+complementary commercial relationship.
+
+Do NOT force partner detection for MVP.
+
+UNKNOWN:
+
+Evidence is insufficient or relationship is genuinely ambiguous.
+
+==================================================
+15. CRITICAL DISTINCTION
+==================================================
+
+Industry ≠ Buyer Role.
+
+ICP Fit ≠ Buyer Role.
+
+Technology ≠ Buyer Role.
+
+Semantic similarity ≠ Buyer Role.
+
+Example:
+
+Cybersecurity company
+does NOT automatically mean Managed SOC buyer.
+
+The LLM must reason about:
+
+WHAT SELLER SELLS
+
+versus
+
+WHAT CANDIDATE DOES.
+
+==================================================
+16. DETERMINISTIC SAFETY GATES
+==================================================
+
+The LLM must NOT override deterministic safety.
+
+BEFORE LLM:
+
+If identity unsafe:
+    UNKNOWN
+
+If seller context insufficient:
+    UNKNOWN
+
+If no meaningful candidate evidence:
+    UNKNOWN.
+
+AFTER LLM:
+
+Validate:
+
+output schema
+allowed enums
+evidence IDs exist
+evidence belongs to candidate
+seller context correct
+confidence valid
+no unsupported source references.
+
+If validation fails:
+
+UNKNOWN.
+
+==================================================
+17. EVIDENCE CITATION REQUIREMENT
+==================================================
+
+Every non-UNKNOWN classification MUST reference at least one supporting
+evidence/observation ID.
+
+If:
+
+commercial_role = SELLER_COMPETITOR
+
+then evidence must support the overlapping business/service.
+
+If:
+
+commercial_role = POTENTIAL_BUYER
+
+evidence must support what the company actually does.
+
+The LLM cannot fabricate evidence IDs.
+
+==================================================
+18. CONFIDENCE
+==================================================
+
+Keep confidence separate from classification.
+
+Do not use fake precision.
+
+Use current JYRA confidence conventions if already implemented.
+
+Conceptually:
+
+HIGH
+MEDIUM
+LOW
+
+or normalized numeric equivalent.
+
+Low-confidence interpretation should normally remain UNKNOWN unless existing
+policy explicitly supports otherwise.
+
+==================================================
+19. CACHE THE INFERENCE
+==================================================
+
+Do not call the LLM repeatedly for unchanged evidence.
+
+Create a stable input fingerprint based on:
+
+company
+seller/offering
+evidence set
+normalization version
+prompt version
+model version.
+
+If unchanged:
+
+reuse CompanyUnderstanding / CommercialRoleAssessment.
+
+If evidence materially changes:
+
+re-evaluate.
+
+==================================================
+20. COST CONTROL
+==================================================
+
+Use the cheapest capable model already available inside JYRA.
+
+Do NOT introduce a new AI provider unless absolutely necessary.
+
+Record:
+
+model
+tokens/input cost if available
+tokens/output cost if available
+estimated/actual cost
+latency
+cache hit/miss.
+
+Do not send huge raw pages to the model.
+
+Extract/trim relevant company profile content first.
+
+==================================================
+21. DO NOT USE LLM FOR THESE
+==================================================
+
+LLM must NOT determine:
+
+canonical entity identity
+domain ownership
+whether evidence exists
+published date
+retrieved date
+provider success
+cost accounting
+duplicate company resolution
+database state
+tenant isolation.
+
+Those remain deterministic.
+
+==================================================
+22. KEEP WHO SEPARATE
+==================================================
+
+Buyer Role asks:
+
+"Could this company plausibly BUY what we sell?"
+
+WHO asks:
+
+"Does this company fit our ICP?"
+
+Therefore:
+
+Company Understanding
+        ↓
+Buyer Role
+        ↓
+WHO.
+
+A POTENTIAL_BUYER may still be:
+
+LIKELY_NOT_FIT
+
+because:
+
+too small
+wrong geography
+wrong industry
+etc.
+
+Likewise:
+
+good ICP fit does not automatically mean POTENTIAL_BUYER.
+
+==================================================
+23. KEEP WHEN/WHY SEPARATE
+==================================================
+
+Do NOT use this LLM call to determine:
+
+intent
+timing
+urgency
+budget
+current need
+purchase probability.
+
+Those belong to WHEN/WHY later.
+
+This LLM is for:
+
+WHAT DOES THE COMPANY DO?
+
+and:
+
+WHAT IS ITS COMMERCIAL RELATIONSHIP TO THE SELLER'S OFFERING?
+
+==================================================
+24. CROSS-INDUSTRY TESTS
+==================================================
+
+Test generic fixtures.
+
+Managed SOC seller:
+
+Bank
+→ POTENTIAL_BUYER
+
+SaaS company
+→ POTENTIAL_BUYER
+
+MSSP
+→ SELLER_COMPETITOR
+
+Security product vendor
+→ ADJACENT_VENDOR where supported.
+
+
+Recruitment seller:
+
+Software employer
+→ POTENTIAL_BUYER
+
+Recruitment agency
+→ SELLER_COMPETITOR
+
+HR-tech vendor
+→ ADJACENT_VENDOR where supported.
+
+
+ERP implementation seller:
+
+Manufacturer
+→ POTENTIAL_BUYER
+
+ERP consultancy
+→ SELLER_COMPETITOR
+
+ERP software vendor
+→ ADJACENT_VENDOR where supported.
+
+
+Solar installation seller:
+
+Factory
+→ POTENTIAL_BUYER
+
+Solar EPC
+→ SELLER_COMPETITOR
+
+Solar equipment manufacturer
+→ ADJACENT_VENDOR where supported.
+
+Fixtures must contain evidence.
+
+Do not hardcode these results in production logic.
+
+==================================================
+25. REPLAY SAME 18 COMPANIES
+==================================================
+
+After implementation replay EXACTLY the existing 18.
+
+Do not replace companies.
+
+Do not run Find My Market yet.
+
+Do not run WHEN/WHY.
+
+Do not run contacts.
+
+Profile resolution calls are allowed where necessary.
+
+For every company report:
+
+company
+domain
+identity state
+
+actual seller offering received
+
+profile evidence available
+
+primary business
+
+business model
+
+canonical industry
+
+LLM invoked YES/NO
+
+LLM cache hit YES/NO
+
+commercial role
+
+confidence
+
+reason
+
+evidence IDs.
+
+==================================================
+26. BREAK DOWN UNKNOWN
+==================================================
+
+For UNKNOWN classifications report reason:
+
+IDENTITY_INSUFFICIENT
+SELLER_CONTEXT_INSUFFICIENT
+COMPANY_EVIDENCE_INSUFFICIENT
+LLM_LOW_CONFIDENCE
+LLM_OUTPUT_INVALID
+GENUINELY_AMBIGUOUS
+OTHER.
+
+This is mandatory.
+
+==================================================
+27. 18-COMPANY SUCCESS GATE
+==================================================
+
+Among companies where:
+
+identity is safe
+seller context is sufficient
+meaningful company evidence exists
+
+target:
+
+Buyer-role resolution coverage >=90%.
+
+Independently review all resolved classifications.
+
+Buyer-role precision target >=90%.
+
+Seller competitor → POTENTIAL_BUYER errors = 0.
+
+Do NOT require all 18 to resolve.
+
+Unsafe identity must remain fail-closed.
+
+==================================================
+28. FIX05 REGRESSION
+==================================================
+
+Fix 07 reported:
+
+Fix05 = FAIL
+
+because expected buyer fixture became UNKNOWN.
+
+Rerun after seller-context repair.
+
+It must receive the actual offering context.
+
+If it still fails, report exact:
+
+seller context
+candidate evidence
+CompanyUnderstanding
+CommercialRoleAssessment.
+
+Do not weaken safety to make it pass.
+
+==================================================
+29. SIGNAL FIXTURE
+==================================================
+
+The broader signal-suite failure was classified as FIXTURE_PROBLEM because
+buyer memberships remained UNKNOWN.
+
+Update fixture context only if the fixture legitimately lacks the seller /
+company information now required by the architecture.
+
+Do NOT bypass buyer-role gates.
+
+Do NOT modify signal definitions.
+
+==================================================
+30. FRESH 20-COMPANY VALIDATION
+==================================================
+
+ONLY if the 18-company gate passes:
+
+run ONE fresh normal 20-company Find My Market validation.
+
+Normal path:
+
+Business Twin
+→ Actual Offering
+→ ICP
+→ Discovery
+→ Identity
+→ Company Evidence
+→ LLM Company Understanding
+→ Buyer Role
+→ WHO.
+
+No WHEN/WHY.
+No contacts.
+
+==================================================
+31. 20-COMPANY REPORT
+==================================================
+
+Report:
+
+Raw candidates =
+Canonical companies =
+Identity-safe =
+Meaningful profile evidence =
+LLM assessments =
+Cache hits =
+
+POTENTIAL_BUYER =
+SELLER_COMPETITOR =
+ADJACENT_VENDOR =
+PARTNER_POSSIBLE =
+UNKNOWN =
+
+LIKELY_FIT =
+POSSIBLE_FIT =
+LIKELY_NOT_FIT =
+INSUFFICIENT_DATA =
+
+LLM cost =
+Profile resolution cost =
+Total cost =
+
+==================================================
+32. INDEPENDENT 20-COMPANY REVIEW
+==================================================
+
+Review all 20 independently.
+
+Measure:
+
+Identity precision
+Company-understanding accuracy
+Industry accuracy
+Business-model accuracy
+Buyer-role precision
+WHO agreement.
+
+Targets:
+
+Identity precision >=95%
+
+Buyer-role precision >=90%
+
+Seller-as-buyer classification errors = 0.
+
+==================================================
+33. REGRESSIONS
+==================================================
+
+Run:
+
+06A
+Fix04
+Fix05
+Cycle06
+Identity
+Firmographics
+Fix07 normalization
+Company profile
+Cross-industry
+Activation concurrency
+Affected signal fixture
+
+New tests:
+
+seller-context propagation
+placeholder rejection
+LLM schema validation
+LLM evidence-ID validation
+LLM unsupported evidence rejection
+LLM caching
+LLM low-confidence fail-closed
+buyer-role relativity
+cross-industry commercial role.
+
+Then:
+
+typecheck
+build
+API restart.
+
+Production operations = 0.
+
+==================================================
+34. DO NOT RUN FINAL 50
+==================================================
+
+Do NOT run the 50-company Reality Test.
+
+We need to prove this layer first.
+
+Do NOT modify:
+
+WHEN/WHY
+signals
+Opportunity scoring
+NBA
+contacts
+outreach.
+
+==================================================
+35. FINAL REPORT
+==================================================
+
+Return:
+
+FIX 08 — EVIDENCE-GROUNDED COMPANY UNDERSTANDING
+
+SELLER CONTEXT
+
+Business Twin =
+Actual Offering =
+Placeholder removed =
+Context propagation =
+PASS / FAIL
+
+LLM LAYER
+
+CompanyUnderstanding =
+PASS / FAIL
+
+CommercialRoleAssessment =
+PASS / FAIL
+
+Evidence grounding =
+PASS / FAIL
+
+Deterministic guardrails =
+PASS / FAIL
+
+Caching =
+PASS / FAIL
+
+--------------------------------
+
+18-COMPANY REPLAY
+
+Identity-safe =
+Seller-context sufficient =
+Meaningful evidence available =
+LLM assessments =
+
+Potential buyer =
+Seller competitor =
+Adjacent vendor =
+Partner possible =
+Unknown =
+
+UNKNOWN:
+
+Identity =
+Seller context =
+Evidence insufficient =
+Low confidence =
+Invalid output =
+Ambiguous =
+Other =
+
+Resolution coverage among eligible =
+Buyer-role precision =
+Seller→buyer errors =
+
+Profile calls =
+LLM calls =
+Cache hits =
+Known cost =
+Unknown cost =
+
+--------------------------------
+
+FRESH 20
+
+Executed = YES / NO
+
+Potential buyer =
+Seller competitor =
+Adjacent vendor =
+Partner possible =
+Unknown =
+
+Likely fit =
+Possible fit =
+Likely not fit =
+Insufficient data =
+
+Identity precision =
+Company-understanding accuracy =
+Industry accuracy =
+Business-model accuracy =
+Buyer-role precision =
+WHO agreement =
+
+--------------------------------
+
+REGRESSIONS
+
+06A =
+Fix04 =
+Fix05 =
+Cycle06 =
+Identity =
+Firmographics =
+Fix07 =
+Activation concurrency =
+Signal fixture =
+
+Seller context tests =
+LLM grounding tests =
+LLM cache tests =
+Cross-industry tests =
+
+Typecheck =
+Build =
+API restart =
+
+Production operations = MUST BE 0
+
+--------------------------------
+
+VERDICT
+
+Return EXACTLY ONE:
+
+A — LLM COMPANY UNDERSTANDING + BUYER ROLE PASSED
+
+B — SELLER CONTEXT STILL BROKEN
+
+C — COMPANY EVIDENCE COVERAGE STILL INSUFFICIENT
+
+D — LLM BUYER ROLE PRECISION INSUFFICIENT
+
+E — IDENTITY COVERAGE IS PRIMARY BLOCKER
+
+F — MULTIPLE MATERIAL DEFECTS REMAIN
+
+STOP.
+
+Do not run the 50-company Reality Test.
