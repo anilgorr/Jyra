@@ -33,6 +33,9 @@ export const DEFAULT_OPPORTUNITY_RULES = {
   minimumNeedForStrongState: 25,
   coolingScoreDrop: 15,
 } as const;
+export function buyerRoleAllowsBuyerOpportunity(role: string): boolean {
+  return role !== "SELLER_COMPETITOR" && role !== "ADJACENT_VENDOR";
+}
 type OpportunityAssessmentState = typeof opportunitiesTable.$inferSelect["state"];
 
 type Dimension = "FIT" | "NEED" | "TIMING" | "RELATIONSHIP" | "CONFIDENCE";
@@ -264,6 +267,7 @@ export async function evaluateOpportunity(input: { organizationId: string; proje
     .from(projectCompaniesTable).innerJoin(companiesTable, eq(projectCompaniesTable.companyId, companiesTable.id))
     .where(and(eq(projectCompaniesTable.id, input.projectCompanyId), eq(projectCompaniesTable.projectId, input.projectId))).limit(1);
   if (!row) throw new Error("Project company not found");
+  const buyerOpportunityAllowed = buyerRoleAllowsBuyerOpportunity(row.projectCompany.buyerRole);
   const [icpVersion] = await tx.select().from(icpVersionsTable).where(eq(icpVersionsTable.projectId, input.projectId)).orderBy(desc(icpVersionsTable.version)).limit(1);
   const [activePackVersion] = icpVersion
     ? await tx.select({ version: intelligencePackVersionsTable }).from(intelligencePackVersionsTable)
@@ -304,10 +308,10 @@ export async function evaluateOpportunity(input: { organizationId: string; proje
     : [[], []];
   const packSignalDefinitionIds = new Set(packSignals.flatMap((item) => item.definitionId ? [item.definitionId] : []));
   const packClusterDefinitionIds = new Set(packClusters.flatMap((item) => item.definitionId ? [item.definitionId] : []));
-  const signalRows = activePackVersion
+   const signalRows = !buyerOpportunityAllowed ? [] : activePackVersion
     ? allSignalRows.filter(({ definition }) => packSignalDefinitionIds.has(definition.id))
     : allSignalRows;
-  const clusters = activePackVersion
+   const clusters = !buyerOpportunityAllowed ? [] : activePackVersion
     ? allClusters.filter((cluster) => packClusterDefinitionIds.has(cluster.definitionId))
     : allClusters;
   const evidenceIds = unique([
@@ -319,7 +323,7 @@ export async function evaluateOpportunity(input: { organizationId: string; proje
     .where(eq(companyEvidenceTable.companyId, row.company.id));
   const [previousOpportunity] = await tx.select().from(opportunitiesTable)
     .where(and(eq(opportunitiesTable.projectId, input.projectId), eq(opportunitiesTable.projectCompanyId, row.projectCompany.id))).limit(1);
-  const calculation = calculateOpportunityAssessment({
+   const calculation = calculateOpportunityAssessment({
     weights: model.weights,
     rules: model.rules as Partial<typeof DEFAULT_OPPORTUNITY_RULES>,
     fitResults,
@@ -342,6 +346,12 @@ export async function evaluateOpportunity(input: { organizationId: string; proje
       state: previousOpportunity.state, score: previousOpportunity.score, timingScore: previousOpportunity.timingScore,
     } : null,
   });
+   if (!buyerOpportunityAllowed) {
+     calculation.score = null;
+     calculation.state = "WATCH";
+     calculation.assessmentStatus = "INSUFFICIENT_DATA";
+     calculation.explanation = `Buyer opportunity ranking is gated for project buyer role ${row.projectCompany.buyerRole}.`;
+   }
   const now = input.now ?? new Date();
     const [currentOpportunity] = await tx.select().from(opportunitiesTable)
       .where(and(eq(opportunitiesTable.projectId, input.projectId), eq(opportunitiesTable.projectCompanyId, row.projectCompany.id)))

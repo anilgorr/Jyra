@@ -1,4 +1,4 @@
-import { desc, eq, sql } from "drizzle-orm";
+import { and, desc, eq, sql } from "drizzle-orm";
 import {
   businessTwinVersionsTable,
   companiesTable,
@@ -95,6 +95,73 @@ export type DiscoveryResult = {
   blockedReason: string | null;
   candidates: DiscoveryCandidateReport[];
 };
+
+/** Pure run-local identity gate. Historical canonical presence is never a
+ * reason to reject a candidate; only a duplicate in this execution is. */
+export function acceptCurrentRunIdentity(
+  seen: Set<string>,
+  identity: string,
+): boolean {
+  if (seen.has(identity)) return false;
+  seen.add(identity);
+  return true;
+}
+
+export type DiscoveryCoverageValidation = {
+  rawCandidates: number;
+  existingCanonicalReused: number;
+  newCanonicalCreated: number;
+  currentRunDuplicatesRejected: number;
+  sellerCompetitorsRejected: number;
+  uniqueEvaluable: number;
+  canConstructTarget: boolean;
+};
+
+/** Pure bounded-validation summary; it never calls providers or changes data. */
+export function summarizeDiscoveryCoverage(
+  result: DiscoveryResult,
+  target = 50,
+): DiscoveryCoverageValidation {
+  // Seller/adjacent identities may be retained as auditable discovery reports,
+  // but are not evaluable buyer-cohort members.
+  const unique = result.candidates.filter((candidate) => candidate.companyId !== null
+    && candidate.buyerRole !== "SELLER_COMPETITOR"
+    && candidate.buyerRole !== "ADJACENT_VENDOR");
+  return {
+    rawCandidates: result.rawResults,
+    existingCanonicalReused: unique.filter((candidate) => candidate.existingOrNew === "EXISTING").length,
+    newCanonicalCreated: unique.filter((candidate) => candidate.existingOrNew === "NEW").length,
+    currentRunDuplicatesRejected: result.duplicatesRemoved,
+    sellerCompetitorsRejected: result.candidates.filter((candidate) =>
+      candidate.buyerRole === "SELLER_COMPETITOR" || candidate.buyerRole === "ADJACENT_VENDOR").length,
+    uniqueEvaluable: unique.length,
+    canConstructTarget: unique.length >= target,
+  };
+}
+
+function isBuyerEvaluable(assessment: CandidateAssessment): boolean {
+  return assessment.buyerRole !== "SELLER_COMPETITOR"
+    && assessment.buyerRole !== "ADJACENT_VENDOR";
+}
+
+/** Pure cache-admission seam. Cache provenance must be globally PUBLIC, while
+ * eligibility is always recalculated against the requesting project's strategy. */
+export function canReusePublicDiscoveryCanonical(input: {
+  visibility: string;
+  companyId: string;
+  identityKey: string;
+  seenCompanyIds: Set<string>;
+  seenIdentities: Set<string>;
+  identityState: DiscoveryCandidateReport["identityState"];
+  assessment: Pick<CandidateAssessment, "classification" | "buyerRole">;
+}): boolean {
+  return input.visibility === "PUBLIC"
+    && !input.seenCompanyIds.has(input.companyId)
+    && !input.seenIdentities.has(input.identityKey)
+    && !["WRONG_ENTITY", "NOT_A_COMPANY", "AMBIGUOUS"].includes(input.identityState)
+    && input.assessment.buyerRole !== "SELLER_COMPETITOR"
+    && input.assessment.buyerRole !== "ADJACENT_VENDOR";
+}
 
 /**
  * Market discovery needs a canonical object before WHO/research can run, but a
@@ -575,10 +642,10 @@ function candidateReport(
 
 export async function discoverCompaniesForProject(input: DiscoveryInput): Promise<DiscoveryResult> {
   const now = input.now ?? new Date();
-  const limit = Math.min(20, Math.max(1, input.limit ?? 20));
-  const maxProviderCalls = Math.min(5, Math.max(1, input.maxProviderCalls ?? 5));
+  const limit = Math.min(50, Math.max(1, input.limit ?? 20));
+  const maxProviderCalls = Math.min(10, Math.max(1, input.maxProviderCalls ?? 5));
   const plan = await buildDiscoveryPlan(input.projectId);
-  const discoveryCallLimit = Math.max(1, Math.ceil(maxProviderCalls / 2));
+  const discoveryCallLimit = Math.max(1, Math.min(5, Math.ceil(maxProviderCalls / 2)));
   const queries = (input.queryOverrides?.length ? input.queryOverrides : plan.queries).slice(0, discoveryCallLimit);
   const [run] = await db.insert(companyDiscoveryRunsTable).values({
     organizationId: input.organizationId,
@@ -864,11 +931,10 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
     const identityKey = value.domain
       ?? value.linkedinUrl
       ?? `name:${canonicalCompanyNameKey(value.canonicalName)}`;
-    if (seenIdentities.has(identityKey)) {
+    if (!acceptCurrentRunIdentity(seenIdentities, identityKey)) {
       duplicatesRemoved += 1;
       continue;
     }
-    seenIdentities.add(identityKey);
     const assessment = qualifyCandidate(value, plan.strategy);
     const result = await db.transaction(async (tx) => {
       const domain = value.domain;
@@ -959,9 +1025,10 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
         }).onConflictDoNothing();
       }
       const [projectCompany] = await tx.insert(projectCompaniesTable)
-        .values({ projectId: input.projectId, companyId: company.id })
-        .onConflictDoNothing({
+        .values({ projectId: input.projectId, companyId: company.id, buyerRole: assessment.buyerRole })
+        .onConflictDoUpdate({
           target: [projectCompaniesTable.projectId, projectCompaniesTable.companyId],
+          set: { buyerRole: assessment.buyerRole, updatedAt: now },
         })
         .returning();
       await tx.insert(companyProvenanceTable).values({
@@ -1090,13 +1157,90 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
     }
   }
 
+  // Public discovery provenance is a reusable market cache, not a permanent
+  // exclusion list.  It contains only canonical identities already surfaced
+  // by public COMPANY_DISCOVERY; never copy or alter their global profile.
+  const seenCompanyIds = new Set(reports.flatMap((report) => report.companyId ? [report.companyId] : []));
+  const evaluableCount = () => reports.filter((report) =>
+    report.companyId !== null
+    && report.buyerRole !== "SELLER_COMPETITOR"
+    && report.buyerRole !== "ADJACENT_VENDOR").length;
+  if (evaluableCount() < limit) {
+    const publicCacheRows = await db.select({ company: companiesTable, visibility: companyProvenanceTable.visibility })
+      .from(companyProvenanceTable)
+      .innerJoin(companiesTable, eq(companyProvenanceTable.companyId, companiesTable.id))
+      .where(and(
+        eq(companyProvenanceTable.sourceType, "JYRA_DISCOVERY"),
+        eq(companyProvenanceTable.visibility, "PUBLIC"),
+      ));
+    const uniqueCacheRows = new Map<string, typeof publicCacheRows[number]>();
+    for (const cacheRow of publicCacheRows) {
+      if (!uniqueCacheRows.has(cacheRow.company.id)) uniqueCacheRows.set(cacheRow.company.id, cacheRow);
+    }
+    for (const { company, visibility } of [...uniqueCacheRows.values()]
+      .sort((left, right) => left.company.canonicalName.localeCompare(right.company.canonicalName))) {
+      if (evaluableCount() >= limit) break;
+      const normalized = normalizeCompanyInput(company);
+      if (!normalized.value) continue;
+      const identity = assessCompanyIdentity(normalized.value);
+      const identityKey = normalized.value.domain
+        ?? normalized.value.linkedinUrl
+        ?? `name:${canonicalCompanyNameKey(normalized.value.canonicalName)}`;
+      const assessment = qualifyCandidate(normalized.value, plan.strategy);
+      if (!canReusePublicDiscoveryCanonical({
+        visibility,
+        companyId: company.id,
+        identityKey,
+        seenCompanyIds,
+        seenIdentities,
+        identityState: identity.identityState,
+        assessment,
+      })) continue;
+      const [membership] = await db.insert(projectCompaniesTable)
+        .values({ projectId: input.projectId, companyId: company.id, buyerRole: assessment.buyerRole })
+        .onConflictDoUpdate({
+          target: [projectCompaniesTable.projectId, projectCompaniesTable.companyId],
+          set: { buyerRole: assessment.buyerRole, updatedAt: now },
+        }).returning();
+      if (!membership) continue;
+      seenCompanyIds.add(company.id);
+      seenIdentities.add(identityKey);
+      linked += 1;
+      reports.push(candidateReport(
+        {
+          name: company.canonicalName,
+          domain: company.domain,
+          website: company.website,
+          linkedinUrl: company.linkedinUrl,
+          profileUrls: company.profileUrls,
+          location: company.country,
+          industry: company.industry,
+          employeeCount: company.employeeCount,
+          employeeRange: company.employeeRange,
+          description: company.description,
+          sourceUrl: company.website,
+        } as CompanyDiscoveryResult["companies"][number],
+        normalized.value,
+        "JYRA_DISCOVERY_PUBLIC_CACHE",
+        assessment.classification,
+        normalized.value.domain ? "HIGH_CONFIDENCE" : "UNKNOWN",
+        "EXISTING",
+        researchPriority(assessment, 0),
+        company.id,
+        identity.identityState,
+        null,
+        assessment.buyerRole,
+      ));
+    }
+  }
+
   const status = reports.length ? "SUCCEEDED" : "EMPTY";
   await db.update(companyDiscoveryRunsTable).set({
     providerId,
     status,
     providerCalls: providerCalls + identityProviderCalls,
     rawResultCount: rawCandidates.length,
-    acceptedCandidateCount: reports.length,
+    acceptedCandidateCount: evaluableCount(),
     duplicateCount: duplicatesRemoved,
     rejectedCount: rejected,
     estimatedCost: estimatedCost + identityEstimatedCost,
@@ -1132,7 +1276,7 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
       ? null
       : actualCost + identityActualCost,
     rawResults: rawCandidates.length,
-    discovered: reports.length,
+    discovered: evaluableCount(),
     canonicalized,
     duplicatesRemoved,
     linked,

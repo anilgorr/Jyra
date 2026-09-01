@@ -3,6 +3,7 @@ import {
   companyFactsTable,
   db,
   projectSignalPacksTable,
+  projectCompaniesTable,
   signalEvidenceTable,
   signalFactsTable,
   signalDefinitionsTable,
@@ -71,6 +72,13 @@ export function recalculateSignalStrength(originalStrength: number, effectiveDat
 }
 
 export async function evaluateSignalsForCompany(input: { organizationId: string; projectId: string; companyId: string; now?: Date }, executor: DbExecutor = db) {
+  const [membership] = await executor.select({ buyerRole: projectCompaniesTable.buyerRole })
+    .from(projectCompaniesTable)
+    .where(and(eq(projectCompaniesTable.projectId, input.projectId), eq(projectCompaniesTable.companyId, input.companyId)))
+    .limit(1);
+  if (!membership || ["SELLER_COMPETITOR", "ADJACENT_VENDOR"].includes(membership.buyerRole)) {
+    return { packs: [], created: [], total: 0 };
+  }
   const selections = await executor.select().from(projectSignalPacksTable).where(and(
     eq(projectSignalPacksTable.projectId, input.projectId),
     eq(projectSignalPacksTable.active, true),

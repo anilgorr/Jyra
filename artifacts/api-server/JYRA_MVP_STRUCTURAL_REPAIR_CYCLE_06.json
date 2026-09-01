@@ -1,0 +1,132 @@
+{
+  "name": "JYRA_MVP_STRUCTURAL_REPAIR_CYCLE_06_BOUNDED_VALIDATION",
+  "status": "ADJUDICATED_PARTIAL_PASS",
+  "verdict": "B — PARTIAL PASS WITH ONE ISOLATED MATERIAL DEFECT",
+  "isolatedMaterialDefect": "Discovery coverage and eligible-buyer yield remain below the required 50-company cohort and five-company POTENTIAL_BUYER mini sample.",
+  "discovery": {
+    "runId": "b538c7c9-961a-4466-b8eb-240e2fdd95c0",
+    "status": "SUCCEEDED",
+    "createdAt": "2026-09-01T14:19:57.532Z",
+    "completedAt": "2026-09-01T14:19:59.739Z",
+    "providerCalls": 6,
+    "rawCandidates": 10,
+    "acceptedCandidateCount": 18,
+    "historicalCanonicalReused": null,
+    "historicalCanonicalReusedNote": "Not separately persisted in the adjudicated run aggregate; not inferred from the 10-to-18 increase.",
+    "newCanonicalCreated": null,
+    "newCanonicalCreatedNote": "Not separately persisted in the adjudicated run aggregate.",
+    "currentRunDuplicates": 0,
+    "rejectedCandidates": 0,
+    "sellerCompetitorsRejected": 0,
+    "adjacentVendorHandling": {
+      "observedCount": 0,
+      "policy": "Persist role when observed and exclude from buyer research, signals, and ranking."
+    },
+    "uniqueEvaluable": 18,
+    "finalCohort": 18,
+    "target": 50,
+    "canConstruct50": false,
+    "estimatedCost": 0.042,
+    "actualCost": 0.088,
+    "coverageHistory": {
+      "preCacheRepairEvaluable": 6,
+      "firstCacheRepairEvaluable": 18,
+      "finalSemanticsAlignedEvaluable": 18
+    }
+  },
+  "persistedProjectMembership": {
+    "total": 18,
+    "byBuyerRole": {
+      "POTENTIAL_BUYER": 0,
+      "SELLER_COMPETITOR": 0,
+      "ADJACENT_VENDOR": 0,
+      "PARTNER_POSSIBLE": 0,
+      "UNKNOWN": 18
+    }
+  },
+  "miniResearch": {
+    "status": "NOT_EXECUTED",
+    "reason": "The final cohort contained zero research-eligible POTENTIAL_BUYER memberships, so exactly five deterministic eligible companies could not be selected.",
+    "companies": 0,
+    "questions": 0,
+    "questionSucceeded": 0,
+    "questionFailed": 0,
+    "providerAttempts": 0,
+    "rawEvidence": 0,
+    "acceptedEvidence": 0,
+    "candidateFacts": 0,
+    "approvedFacts": 0,
+    "supportedSignals": 0,
+    "supportedOpportunityEvidence": 0,
+    "supportedOpportunities": 0,
+    "accountingReconciliation": {
+      "persistedAttempts": 0,
+      "costRows": 0,
+      "performanceAttempts": 0,
+      "equal": true,
+      "qualification": "Vacuous 0=0 reconciliation only; no permitted live mini-research attempt occurred."
+    }
+  },
+  "structuralRepairs": {
+    "historicalCanonicalReuseImplemented": true,
+    "priorRunGlobalExclusionRemoved": true,
+    "singleAuthoritativeQuestionStatus": true,
+    "providerAttemptLedger": true,
+    "explicitAcceptedEvidenceGate": true,
+    "approvedFactGate": true,
+    "supportedSignalGate": true,
+    "supportedOpportunityEvidenceGate": true,
+    "costPerformanceFromPersistedAttempts": true,
+    "buyerRolePersisted": true,
+    "sellerCompetitorDownstreamGate": true,
+    "adjacentVendorDownstreamGate": true,
+    "unknownNotCoercedToBuyer": true,
+    "liveMiniValidationAvailable": false
+  },
+  "safety": {
+    "supportedSignalsWithZeroApprovedFacts": 0,
+    "approvedFactsWithZeroAcceptedEvidence": 0,
+    "sellerAsBuyerSignals": 0,
+    "wrongEntityFirmographicAttachments": 0,
+    "productionOperations": 0,
+    "contactEnrichmentEnabled": false,
+    "fullRealityTestInvoked": false,
+    "providersInvokedDuringFinalization": false
+  },
+  "regressions": {
+    "cycle06": {
+      "passed": 24,
+      "total": 24,
+      "status": "PASS"
+    },
+    "fix04": {
+      "passed": 12,
+      "total": 12,
+      "status": "PASS"
+    },
+    "fix05": {
+      "passed": 20,
+      "total": 20,
+      "status": "PASS"
+    },
+    "identity": "PASS",
+    "firmographics": "PASS",
+    "semanticIdempotency": "PASS",
+    "typechecks": "PASS",
+    "build": "PASS",
+    "developmentSchemaPush": "PASS"
+  },
+  "scopeControl": {
+    "queryTuningChanged": false,
+    "providersChanged": false,
+    "newProvidersAdded": false,
+    "signalDefinitionsChanged": false,
+    "signalScoringWeightsChanged": false,
+    "nbaChanged": false
+  },
+  "remainingLimitations": [
+    "Only 18 of 50 required evaluable companies were constructed.",
+    "All 18 memberships remained UNKNOWN; zero were eligible POTENTIAL_BUYER companies.",
+    "The five-company live mini-research lifecycle could not be executed."
+  ]
+}

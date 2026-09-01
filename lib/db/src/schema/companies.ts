@@ -35,6 +35,10 @@ export const projectCompanyRelationshipStatusEnum = pgEnum(
   "project_company_relationship_status",
   ["NONE", "PREVIOUS_CONTACT", "MEETING_HELD", "KNOWN_CHAMPION", "EXISTING_CUSTOMER", "PAST_CUSTOMER", "OPEN_OPPORTUNITY", "LOST_OPPORTUNITY"],
 );
+export const projectCompanyBuyerRoleEnum = pgEnum(
+  "project_company_buyer_role",
+  ["POTENTIAL_BUYER", "SELLER_COMPETITOR", "ADJACENT_VENDOR", "PARTNER_POSSIBLE", "UNKNOWN"],
+);
 
 export const companiesTable = pgTable(
   "companies",
@@ -110,6 +114,9 @@ export const projectCompaniesTable = pgTable(
     confidenceScore: real("confidence_score"),
     opportunityState: projectCompanyOpportunityStateEnum("opportunity_state"),
     relationshipStatus: projectCompanyRelationshipStatusEnum("relationship_status").notNull().default("NONE"),
+    // This is intentionally project-relative: the same canonical company can
+    // be a buyer for one seller and a partner/competitor for another.
+    buyerRole: projectCompanyBuyerRoleEnum("buyer_role").notNull().default("UNKNOWN"),
     opportunityScore: real("opportunity_score"),
     opportunityAssessmentState: text("opportunity_assessment_state"),
     latestResearchAt: timestamp("latest_research_at", { withTimezone: true }),

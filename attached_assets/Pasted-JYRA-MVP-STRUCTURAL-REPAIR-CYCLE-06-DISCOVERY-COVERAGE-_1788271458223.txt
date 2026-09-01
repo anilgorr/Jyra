@@ -1,0 +1,902 @@
+JYRA — MVP STRUCTURAL REPAIR CYCLE 06
+DISCOVERY COVERAGE + RESEARCH LIFECYCLE CONSISTENCY + BUYER-ROLE GATING
+
+PURPOSE
+
+Repair ONLY the three material MVP defects exposed by:
+
+JYRA — 50-COMPANY MVP REALITY TEST 02 POST FIX 05
+
+Run ID:
+4d1f4980-e17b-4251-a5b7-cddbb10ab8ae
+
+Observed funnel:
+
+400 raw candidates
+→ 400 candidate records
+→ 8 unique evaluable companies
+→ 8 final companies
+→ 5 LIKELY_FIT
+→ 2 POSSIBLE_FIT
+→ 5 research eligible
+→ 5 researched
+→ 0 approved facts
+→ 0 supported signals
+→ 0 supported opportunities
+→ 0 useful Top-10 accounts.
+
+Defects to repair:
+
+1. Fresh-market discovery coverage exhausted 40 rounds but produced only 8
+   unique evaluable companies.
+
+2. Provider/evidence/fact/signal lifecycle is internally contradictory:
+   - product questions: 18/18 succeeded
+   - evidence retrieved: 117
+   - accepted evidence: 0
+   - facts extracted: 14
+   - approved facts: 0
+   - signal still generated
+   - opportunities still created
+   - cost ledger says Tavily/Exa failed
+   - performance artifact says 35 provider failures.
+
+3. Buyer-role safety failed:
+   SEQURETEK, a security seller, reached LIKELY_FIT, produced
+   MSOC_SECURITY_STACK_CHANGE, ranked first, and became a seller-as-buyer
+   false positive.
+
+Do NOT touch unrelated product areas.
+
+==================================================
+1. DATABASE SAFETY
+==================================================
+
+DEVELOPMENT ONLY.
+
+Production operations = 0.
+
+Do not migrate/reset/seed/modify/truncate production.
+
+==================================================
+2. ALLOWED PRODUCT SCOPE
+==================================================
+
+Allowed:
+
+A. Find My Market fresh-discovery novelty / exhaustion logic
+B. candidate dedupe/reuse/exclusion semantics during market discovery
+C. buyer-role persistence and gating
+D. research execution status model
+E. provider result status normalization
+F. evidence acceptance lifecycle
+G. fact eligibility from evidence
+H. signal eligibility from facts
+I. opportunity eligibility from supported intelligence
+J. cost/performance accounting consistency
+
+Do NOT modify:
+
+Business Twin
+approved ICP
+approved five-signal pack definitions
+signal meaning
+WHEN semantics
+WHY semantics
+opportunity scoring weights
+NBA logic
+contact enrichment
+outreach
+10-control benchmark expectations.
+
+==================================================
+3. REPAIR AREA A — FRESH MARKET DISCOVERY COVERAGE
+==================================================
+
+The failed run made:
+
+40 discovery rounds
+400 raw candidates
+but only 8 unique evaluable companies.
+
+This happened after earlier discovery runs had already populated many
+canonical companies.
+
+Determine whether fresh Find My Market is incorrectly treating:
+
+already-known canonical companies
+previous benchmark cohort membership
+previously discovered companies
+cached discovery candidates
+
+as unusable for a NEW customer market run.
+
+Important product principle:
+
+"Fresh benchmark run" means fresh RUN METRICS and fresh DISCOVERY EXECUTION.
+
+It does NOT mean every company must be globally new to JYRA.
+
+A real customer using Find My Market should be allowed to rediscover and reuse
+a valid existing canonical company if that company is still a plausible
+member of the requested market.
+
+Do NOT require 50 globally never-seen-before companies.
+
+==================================================
+4. CANONICAL REUSE IN FIND MY MARKET
+==================================================
+
+A fresh market run should support:
+
+provider candidate
+→ identity resolution
+→ existing canonical match
+→ reuse canonical company
+→ evaluate for this Business Twin / ICP / run
+→ include in cohort if eligible.
+
+Do not exclude a company simply because:
+
+it was discovered in a prior run
+it already exists in canonical storage
+it appeared in another benchmark
+it was evaluated previously for the same seller.
+
+Run-level membership must be separate from global company identity.
+
+==================================================
+5. DISCOVERY DEDUPE SEMANTICS
+==================================================
+
+Dedupe should prevent duplicate entries WITHIN the current candidate/cohort
+set.
+
+It should not destroy legitimate market coverage by treating historical
+presence as a permanent exclusion.
+
+Audit:
+
+global canonical dedupe
+run-level candidate dedupe
+tenant-level market membership
+historical benchmark exclusion
+cache semantics.
+
+Identify the exact source of the 8/50 exhaustion.
+
+==================================================
+6. DISCOVERY NOVELTY
+==================================================
+
+If the current discovery planner intentionally asks providers only for
+"new/unseen" companies after previous runs, remove that requirement from normal
+Find My Market behavior unless explicitly requested by a user mode such as:
+
+NEW_ACCOUNTS_ONLY.
+
+Default market discovery should optimize for:
+
+BEST PLAUSIBLE BUYERS
+
+not:
+
+NEVER-SEEN-BEFORE COMPANIES.
+
+Do not weaken buyer-quality logic.
+
+==================================================
+7. DISCOVERY VALIDATION
+==================================================
+
+Using the normal existing market universe and caches where appropriate, prove
+that a fresh run can construct 50 evaluable companies without requiring
+globally new identities.
+
+Do not run full research.
+
+A bounded validation may use normal COMPANY_DISCOVERY if required.
+
+Report:
+
+raw candidates
+existing canonical reused
+new canonical created
+historical canonical candidates accepted
+run-level duplicates rejected
+seller/competitors rejected
+unique evaluable
+can construct 50 = YES/NO.
+
+==================================================
+8. REPAIR AREA B — SINGLE RESEARCH LIFECYCLE MODEL
+==================================================
+
+Create/repair one authoritative lifecycle for each ResearchQuestion execution.
+
+The same request must not be:
+
+SUCCESS in one table
+FAILED in cost ledger
+FAILED in performance
+while producing evidence/facts elsewhere.
+
+Define one normalized execution result model such as:
+
+REQUESTED
+IN_PROGRESS
+SUCCEEDED
+TIMED_OUT
+PROVIDER_ERROR
+NO_RESULTS
+INSUFFICIENT_RESULTS
+CANCELLED
+
+Use existing naming where possible.
+
+There must be ONE authoritative terminal status.
+
+Derived ledgers/artifacts must consume it.
+
+==================================================
+9. PROVIDER ATTEMPT VS QUESTION RESULT
+==================================================
+
+Separate:
+
+ResearchQuestion result
+
+from
+
+individual ProviderAttempt result.
+
+Example:
+
+Question:
+SUCCEEDED
+
+Provider attempts:
+Tavily = PROVIDER_ERROR
+Exa = SUCCEEDED
+
+This is valid.
+
+But reporting:
+
+question succeeded
+Tavily failed
+Exa failed
+
+with accepted output is impossible.
+
+Model explicitly:
+
+ResearchQuestion
+→ one or more ProviderAttempts
+→ merged retrieval result
+→ final question status.
+
+==================================================
+10. PROVIDER SUCCESS SEMANTICS
+==================================================
+
+Provider HTTP/request success is NOT equivalent to evidence acceptance.
+
+Track separately:
+
+request status
+provider result count
+retrieval sufficiency
+evidence acceptance.
+
+A provider can successfully return 10 results while zero evidence items are
+accepted.
+
+That should be represented coherently.
+
+==================================================
+11. EVIDENCE LIFECYCLE
+==================================================
+
+Define/repair evidence states.
+
+At minimum distinguish:
+
+RAW
+REJECTED
+ACCEPTED
+
+or current equivalents.
+
+Every evidence item used for downstream intelligence must be ACCEPTED.
+
+RAW evidence must not directly feed approved facts/signals.
+
+If a fact extractor may inspect RAW evidence, extracted candidate facts must
+remain unapproved until their source evidence passes acceptance.
+
+==================================================
+12. FACT ELIGIBILITY
+==================================================
+
+Enforce:
+
+APPROVED FACT
+requires
+ACCEPTED EVIDENCE.
+
+No approved fact may exist if every supporting evidence item is RAW or
+REJECTED.
+
+Candidate/extracted facts may exist separately but must not feed signals.
+
+==================================================
+13. SIGNAL ELIGIBILITY
+==================================================
+
+Enforce:
+
+SIGNAL
+requires
+APPROVED FACT
+requires
+ACCEPTED EVIDENCE.
+
+If:
+
+approved facts = 0
+
+then:
+
+supported material signals must = 0.
+
+No bypass path.
+
+==================================================
+14. OPPORTUNITY ELIGIBILITY
+==================================================
+
+An opportunity record may exist for lifecycle/state tracking, but a positive
+supported opportunity / ranking boost / strong WHEN/WHY must not be created
+from unsupported intelligence.
+
+Separate:
+
+Opportunity shell/state
+
+from
+
+Supported Opportunity Evidence.
+
+If there are no approved facts/signals, the product should normally yield:
+
+INSUFFICIENT_EVIDENCE
+RESEARCH_MORE
+MONITOR
+
+rather than a positive ranked opportunity.
+
+==================================================
+15. COST/PERFORMANCE ACCOUNTING
+==================================================
+
+Make:
+
+question metrics
+provider attempt metrics
+cost ledger
+performance artifact
+
+derive from the same persisted provider-attempt records.
+
+For every provider attempt record:
+
+provider
+capability
+request ID
+question ID
+start
+end
+terminal status
+result count
+cost known/unknown
+error type
+fallback relationship.
+
+Then derive totals.
+
+No separate contradictory counters.
+
+==================================================
+16. REPAIR AREA C — BUYER ROLE MUST GATE SIGNALS
+==================================================
+
+Fix 05 introduced buyer-role concepts, but the production benchmark showed:
+
+SEQURETEK
+= seller
+→ LIKELY_FIT
+→ researched
+→ security-stack-change signal
+→ rank #1.
+
+This must be impossible under normal buyer-market semantics.
+
+==================================================
+17. BUYER-ROLE PERSISTENCE
+==================================================
+
+Ensure candidate buyer-role classification survives:
+
+discovery
+→ canonicalization
+→ WHO
+→ research
+→ fact validation
+→ signal activation
+→ opportunity ranking.
+
+Do not calculate buyer role only in a temporary discovery object and then lose
+it downstream.
+
+Persist or deterministically recompute it using normal architecture.
+
+==================================================
+18. BUYER-ROLE STATES
+==================================================
+
+Use existing equivalents or support:
+
+POTENTIAL_BUYER
+SELLER_COMPETITOR
+ADJACENT_VENDOR
+PARTNER_POSSIBLE
+UNKNOWN.
+
+Do not force UNKNOWN into POTENTIAL_BUYER.
+
+==================================================
+19. WHO + BUYER ROLE
+==================================================
+
+Buyer role and ICP fit are different dimensions.
+
+A security seller might match:
+
+industry
+geography
+employee size
+
+but still be structurally the wrong commercial role.
+
+Therefore:
+
+high firmographic ICP fit
+does NOT override
+SELLER_COMPETITOR.
+
+For the current offering, a SELLER_COMPETITOR should not become a normal
+LIKELY_FIT buyer unless Business Twin/ICP explicitly permits it.
+
+==================================================
+20. SIGNAL GATE
+==================================================
+
+Before activating a seller-relevant buying signal, validate the candidate's
+commercial role.
+
+A fact such as:
+
+"company launched a security product"
+
+for a security vendor
+
+must not become:
+
+buyer security stack change.
+
+The same fact may be true but commercially irrelevant or seller-side.
+
+Signal mapping must respect:
+
+subject entity
+commercial role
+event relationship.
+
+Do not change signal definitions themselves.
+
+==================================================
+21. SELLER CONTENT VS BUYER ACTIVITY
+==================================================
+
+Preserve the existing seller-as-buyer safety principle.
+
+Examples:
+
+security vendor launches SOC platform
+≠ buyer changed security stack.
+
+ERP vendor releases ERP product
+≠ buyer implementing ERP.
+
+Recruitment agency announces recruiting capability
+≠ employer expanding hiring.
+
+Solar vendor launches panels
+≠ facility owner investing in solar.
+
+This must remain generic.
+
+==================================================
+22. RANKING GATE
+==================================================
+
+SELLER_COMPETITOR / ADJACENT_VENDOR must not receive positive opportunity
+ranking from buyer-only signals unless an explicit partner/competitor use case
+exists.
+
+Do not simply set their score to zero globally.
+
+Respect Business Twin market intent.
+
+But for a normal buyer-acquisition project, they should not surface as buyer
+opportunities.
+
+==================================================
+23. VALIDATION — LIFECYCLE CONSISTENCY
+==================================================
+
+Construct deterministic fixtures for:
+
+A. Tavily succeeds, evidence accepted
+B. Tavily fails, Exa succeeds
+C. both providers fail
+D. provider succeeds, results irrelevant → evidence rejected
+E. provider succeeds, accepted evidence → candidate fact → approved fact
+F. RAW evidence only
+G. rejected evidence only.
+
+Assert exact expected:
+
+question status
+provider attempt statuses
+accepted evidence
+approved facts
+signals
+opportunity evidence
+cost/performance totals.
+
+==================================================
+24. VALIDATION — BUYER ROLE
+==================================================
+
+Test generic fixtures:
+
+Managed SOC seller vs security vendor
+Recruitment seller vs recruitment agency
+ERP seller vs ERP consultancy/vendor
+Solar installer vs solar vendor.
+
+Seller-side product/activity facts must not activate buyer opportunity signals.
+
+==================================================
+25. VALIDATION — DISCOVERY COVERAGE
+==================================================
+
+Run a bounded Find My Market validation after repair.
+
+Target:
+
+50 evaluable companies
+
+using normal market discovery.
+
+Existing valid canonical companies MAY be reused.
+
+Do not require globally new companies.
+
+Report:
+
+provider calls
+raw candidates
+historical canonical reused
+new canonical created
+seller/competitor rejected
+adjacent vendor handling
+unique evaluable
+final cohort.
+
+Do NOT run WHEN/WHY deep research for all 50 in this repair task.
+
+==================================================
+26. VALIDATION — MINI RESEARCH SAMPLE
+==================================================
+
+From the resulting 50-company cohort choose:
+
+5 normal research-eligible potential buyers
+
+using deterministic product selection.
+
+Run the normal research pipeline for those 5 ONLY.
+
+Purpose:
+
+verify lifecycle consistency.
+
+Do not optimize their queries/signals.
+
+Report per company:
+
+questions
+provider attempts
+question status
+raw evidence
+accepted evidence
+candidate facts
+approved facts
+signals
+supported opportunity evidence.
+
+==================================================
+27. REQUIRED SAFETY INVARIANTS
+==================================================
+
+Must all hold:
+
+A. No supported signal from zero approved facts.
+
+B. No approved fact from zero accepted evidence.
+
+C. No buyer signal from explicit SELLER_COMPETITOR activity.
+
+D. Provider status totals reconcile exactly across:
+   question results
+   attempt ledger
+   cost ledger
+   performance artifact.
+
+E. Historical canonical company reuse does not create duplicate company
+   records.
+
+F. Previous benchmark/run membership does not permanently exclude a valid
+   company from future Find My Market runs.
+
+==================================================
+28. DO NOT FIX RECALL YET
+==================================================
+
+Do not touch the historical 40% known-event recall issue.
+
+No query tuning.
+
+No new signals.
+
+No broader extraction.
+
+No provider changes.
+
+This repair is structural consistency only.
+
+==================================================
+29. REGRESSION TESTS
+==================================================
+
+Run:
+
+Fix 04 handoff suite
+Fix 05 buyer discovery/WHO suite
+identity suite
+firmographic conflict suite
+semantic idempotency suite.
+
+Add at minimum:
+
+1 historical canonical reusable in fresh market run
+2 current-run duplicate prevented
+3 prior-run membership does not exclude company
+4 seller role persists through canonicalization
+5 seller role persists through WHO
+6 seller role persists through research
+7 seller role gates signal
+8 RAW evidence cannot approve fact
+9 rejected evidence cannot approve fact
+10 accepted evidence can approve supported fact
+11 zero approved facts → zero supported signals
+12 provider fallback statuses reconcile
+13 question status reconciles provider attempts
+14 cost ledger reconciles attempts
+15 performance ledger reconciles attempts
+16 opportunity positive evidence requires supported intelligence
+17 seller competitor cannot rank as buyer opportunity
+18 adjacent vendor handling preserved
+19 unknown role does not become buyer automatically
+20 50-company market cohort can be constructed.
+
+==================================================
+30. REQUIRED ARTIFACT
+==================================================
+
+Generate:
+
+JYRA_MVP_STRUCTURAL_REPAIR_CYCLE_06.md
+
+Include:
+
+root causes
+files changed
+state diagrams before/after
+discovery reuse semantics
+research lifecycle model
+provider-attempt model
+evidence/fact/signal gating
+buyer-role propagation
+validation results
+mini research sample
+regressions
+cost consistency
+remaining limitations.
+
+==================================================
+31. REQUIRED FINAL REPORT
+==================================================
+
+ROOT CAUSES
+
+Discovery exhaustion root cause =
+
+Lifecycle inconsistency root cause =
+
+Seller-as-buyer root cause =
+
+FIX A — DISCOVERY
+
+Historical canonical reuse repaired =
+YES / NO
+
+Prior-run exclusion removed/fixed =
+YES / NO
+
+Fresh 50-company cohort constructable =
+YES / NO
+
+Raw candidates =
+Existing canonical reused =
+New canonical created =
+Current-run duplicates prevented =
+Seller/competitors rejected =
+Unique evaluable =
+Final cohort =
+
+FIX B — RESEARCH LIFECYCLE
+
+Single authoritative question status =
+YES / NO
+
+Provider attempt ledger =
+YES / NO
+
+Evidence acceptance gating =
+YES / NO
+
+Approved-fact gating =
+YES / NO
+
+Signal gating =
+YES / NO
+
+Opportunity evidence gating =
+YES / NO
+
+Cost/performance reconciliation =
+YES / NO
+
+Mini research:
+
+Companies = 5
+Questions =
+Question succeeded =
+Question failed =
+Provider attempts =
+Accepted evidence =
+Approved facts =
+Supported signals =
+Supported opportunities =
+
+Accounting reconciliation =
+PASS / FAIL
+
+FIX C — BUYER ROLE
+
+Buyer role persisted =
+YES / NO
+
+SELLER_COMPETITOR WHO protection =
+YES / NO
+
+Seller-as-buyer signal gate =
+YES / NO
+
+Seller opportunity ranking gate =
+YES / NO
+
+Generic fixtures =
+4/4 PASS / FAIL
+
+SAFETY
+
+Supported signals with zero approved facts =
+MUST BE 0
+
+Approved facts with zero accepted evidence =
+MUST BE 0
+
+Seller-as-buyer signals =
+MUST BE 0
+
+Wrong-entity firmographic attachments =
+MUST BE 0
+
+Production operations =
+MUST BE 0
+
+REGRESSIONS
+
+Fix 04 =
+PASS / FAIL
+
+Fix 05 =
+PASS / FAIL
+
+Identity =
+PASS / FAIL
+
+Firmographics =
+PASS / FAIL
+
+Idempotency =
+PASS / FAIL
+
+New tests =
+X/20
+
+Typecheck =
+PASS / FAIL
+
+Build =
+PASS / FAIL
+
+==================================================
+32. FINAL VERDICT
+==================================================
+
+Return EXACTLY ONE:
+
+A — STRUCTURAL MVP DEFECTS REPAIRED
+
+B — DISCOVERY COVERAGE STILL BLOCKED
+
+C — RESEARCH LIFECYCLE STILL INCONSISTENT
+
+D — BUYER-ROLE SAFETY STILL FAILING
+
+E — MULTIPLE MATERIAL STRUCTURAL DEFECTS REMAIN
+
+F — ARCHITECTURAL REDESIGN REQUIRED
+
+==================================================
+33. STOP
+==================================================
+
+Do NOT run the full 50-company Reality Test automatically.
+
+If verdict = A:
+
+state:
+
+"Structural MVP defects repaired.
+
+Next step:
+one fresh 50-Company MVP Reality Test."
+
+Stop there.

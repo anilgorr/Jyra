@@ -107,6 +107,30 @@ export type RetrievalStatus =
   | "PROVIDER_FAILURE"
   | "AMBIGUOUS_RETRIEVAL";
 
+export type ResearchTerminalStatus =
+  | "SUCCEEDED"
+  | "NO_RESULTS"
+  | "INSUFFICIENT_RESULTS"
+  | "PROVIDER_ERROR";
+
+/** Pure authoritative terminal-result mapping. Attempt success is independent
+ * of evidence acceptance and is derived before ledgers are written. */
+export function terminalStatusForResponse(
+  status: ProviderResponse<unknown>["status"],
+  assessment?: RetrievalStatus | null,
+): ResearchTerminalStatus {
+  if (status === "failed") return "PROVIDER_ERROR";
+  if (status === "empty") return "NO_RESULTS";
+  if (assessment === "INSUFFICIENT_RETRIEVAL" || assessment === "AMBIGUOUS_RETRIEVAL") {
+    return "INSUFFICIENT_RESULTS";
+  }
+  return "SUCCEEDED";
+}
+
+export function buyerRoleAllowsBuyerResearch(role: string): boolean {
+  return role !== "SELLER_COMPETITOR" && role !== "ADJACENT_VENDOR";
+}
+
 export type ResearchQueryPlan = {
   primaryQuery: string;
   fallbackQuery: string | null;
@@ -829,7 +853,9 @@ async function preserveResearchEvidence(input: {
       rawContentReference: crawlPage.rawContentReference,
       extractedClaim: `Fresh public research captured from ${sourceUrl}`,
       ...scores,
-      status: "RAW",
+       // Keep raw/rejected sources inspectable, but only accepted attribution
+       // produces VERIFIED evidence eligible for facts and signals.
+       status: input.attribution.acceptedAsEvidence ? "VERIFIED" : "CONFLICTING",
     }).returning();
     await tx.insert(evidenceAttributionReviewsTable).values({
       crawlPageId,
@@ -968,6 +994,9 @@ export async function executeResearchNow(input: {
     .where(and(eq(projectCompaniesTable.id, input.projectCompanyId), eq(projectCompaniesTable.projectId, input.projectId)))
     .limit(1);
   if (!row) throw new Error("Project company not found");
+  if (!buyerRoleAllowsBuyerResearch(row.projectCompany.buyerRole)) {
+    return { stopped: true, reason: `Buyer research is gated for ${row.projectCompany.buyerRole}.` };
+  }
   const now = input.now ?? new Date();
   const baseIdempotencyKey = `${input.projectCompanyId}:${input.idempotencyScope ?? "planner"}:${now.toISOString().slice(0, 10)}`;
   let idempotencyKey = baseIdempotencyKey;
@@ -1268,6 +1297,11 @@ export async function executeResearchNow(input: {
       const adaptiveAttempt = adaptiveSearch?.attempts.find(
         (attempt) => attempt.response.providerRequestId === record.requestId,
       );
+      // The router observer is diagnostic only.  For an adaptive query its
+      // persisted response is authoritative; using a stale observer callback
+      // here was able to write FAILED costs for an accepted merged response.
+      const attemptStatus = adaptiveAttempt?.response.status
+        ?? (record.status === "timeout" ? "failed" : record.status);
       await recordResearchRequest({
         organizationId: input.organizationId,
         projectId: input.projectId,
@@ -1278,8 +1312,8 @@ export async function executeResearchNow(input: {
         providerCapability: record.capability,
         providerId: record.providerId,
         providerRequestId: record.requestId,
-        status: record.status === "timeout" ? "failed" : record.status,
-        success: record.status === "success",
+        status: attemptStatus,
+        success: attemptStatus === "success",
         latencyMs: record.latencyMs,
         estimatedCost: record.estimatedCost,
         actualCost: record.actualCost,
@@ -1341,10 +1375,6 @@ export async function executeResearchNow(input: {
               acceptedAsEvidence: true,
             };
           })();
-      if (!attribution.acceptedAsEvidence) {
-        ambiguousResultCount += 1;
-        continue;
-      }
       const preserved = await preserveResearchEvidence({
         company: row.company,
         organizationId: input.organizationId,
@@ -1368,6 +1398,7 @@ export async function executeResearchNow(input: {
           eq(evidenceAttributionReviewsTable.acceptedAsEvidence, true),
         )).limit(1);
       if (!acceptedAttribution) {
+        ambiguousResultCount += 1;
         factRejectionCount += 1;
         factRejectionReasons.add("Preserved evidence does not have accepted entity attribution");
         continue;
@@ -1471,7 +1502,8 @@ export async function executeResearchNow(input: {
       }
     }
   }
-  const status = response.status === "failed" ? "FAILED" : response.status === "empty" ? "EMPTY" : "SUCCEEDED";
+  const terminalStatus = terminalStatusForResponse(response.status, adaptiveSearch?.finalAssessment.status);
+  const status = terminalStatus === "PROVIDER_ERROR" ? "FAILED" : terminalStatus === "NO_RESULTS" ? "EMPTY" : "SUCCEEDED";
   const summary = response.status === "failed"
     ? response.error?.message ?? "Provider request failed"
     : `${evidenceCount} new evidence record(s), ${duplicateEvidenceCount} duplicate(s), ${ambiguousResultCount} ambiguous result(s) rejected, ${factProposalCount} validated fact proposal(s), ${factRejectionCount} rejected proposal(s), ${factExtractionFailureCount} extraction failure(s)${factRejectionReasons.size ? `; reasons: ${[...factRejectionReasons].slice(0, 5).join(" | ")}` : ""}.`;
@@ -1487,14 +1519,14 @@ export async function executeResearchNow(input: {
     completedAt,
   }).where(eq(researchJobsTable.id, job.id)).returning();
   const [updatedQuestion] = await db.update(researchQuestionsTable).set({
-    status: response.status === "failed" ? "BLOCKED" : "ANSWERED",
-    answeredAt: response.status === "failed" ? null : completedAt,
+    status: terminalStatus === "PROVIDER_ERROR" ? "BLOCKED" : "ANSWERED",
+    answeredAt: terminalStatus === "PROVIDER_ERROR" ? null : completedAt,
     lastResultSummary: summary,
     nextRefreshAt: new Date(completedAt.getTime() + RESEARCH_INTERVAL_DAYS * 86_400_000),
     updatedAt: completedAt,
   }).where(eq(researchQuestionsTable.id, selectedQuestion.id)).returning();
   await db.update(projectCompaniesTable).set({
-    researchStatus: response.status === "failed" ? "in_progress" : "complete",
+    researchStatus: terminalStatus === "PROVIDER_ERROR" ? "in_progress" : "complete",
     latestResearchAt: completedAt,
     updatedAt: completedAt,
   }).where(eq(projectCompaniesTable.id, row.projectCompany.id));

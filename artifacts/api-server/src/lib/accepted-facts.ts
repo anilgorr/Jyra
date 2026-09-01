@@ -1,4 +1,4 @@
-import { and, eq, inArray, isNull, or } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 import {
   companyEvidenceTable,
   companyFactsTable,
@@ -8,13 +8,6 @@ import {
 } from "@workspace/db";
 
 type DbExecutor = typeof db | Parameters<Parameters<typeof db.transaction>[0]>[0];
-
-function acceptedReviewCondition() {
-  return or(
-    isNull(evidenceAttributionReviewsTable.crawlPageId),
-    eq(evidenceAttributionReviewsTable.acceptedAsEvidence, true),
-  );
-}
 
 function acceptedFactsQuery(executor: DbExecutor) {
   return executor
@@ -28,7 +21,7 @@ function acceptedFactsQuery(executor: DbExecutor) {
       crawlPagesTable,
       eq(companyEvidenceTable.crawlPageId, crawlPagesTable.id),
     )
-    .leftJoin(
+    .innerJoin(
       evidenceAttributionReviewsTable,
       eq(evidenceAttributionReviewsTable.crawlPageId, crawlPagesTable.id),
     );
@@ -40,7 +33,8 @@ export async function selectAcceptedFactsForCompany(
 ) {
   const rows = await acceptedFactsQuery(executor).where(and(
     eq(companyFactsTable.companyId, companyId),
-    acceptedReviewCondition(),
+      eq(companyEvidenceTable.status, "VERIFIED"),
+      eq(evidenceAttributionReviewsTable.acceptedAsEvidence, true),
   ));
   return rows.map((row) => row.fact);
 }
@@ -52,7 +46,8 @@ export async function selectAcceptedFactsByIds(
   if (!factIds.length) return [];
   const rows = await acceptedFactsQuery(executor).where(and(
     inArray(companyFactsTable.id, factIds),
-    acceptedReviewCondition(),
+      eq(companyEvidenceTable.status, "VERIFIED"),
+      eq(evidenceAttributionReviewsTable.acceptedAsEvidence, true),
   ));
   return rows.map((row) => row.fact);
 }

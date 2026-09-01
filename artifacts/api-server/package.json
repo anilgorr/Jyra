@@ -76,7 +76,9 @@
      ,"test:discovery-canonical-handoff-fix-04": "NODE_ENV=development node ./scripts/test-discovery-canonical-handoff-fix-04.mjs"
      ,"test:buyer-market-who-fix-05": "NODE_ENV=development node ./scripts/test-buyer-market-who-fix-05.mjs"
      ,"run:buyer-market-who-fix-05": "NODE_ENV=development JYRA_REALITY_TEST_NAME=JYRA_50_COMPANY_MVP_REALITY_TEST_02_FIX_05_20 JYRA_REALITY_TARGET_COMPANIES=20 JYRA_REALITY_WHO_ONLY=true JYRA_REALITY_CONTACT_ENRICHMENT_ENABLED=false node ./scripts/run-test-01.mjs"
-     ,"replay:discovery-canonical-handoff-fix-04": "NODE_ENV=development node ./scripts/run-discovery-canonical-handoff-fix-04.mjs"
+      ,"replay:discovery-canonical-handoff-fix-04": "NODE_ENV=development node ./scripts/run-discovery-canonical-handoff-fix-04.mjs"
+      ,"test:cycle-06-structural-repair": "node ./scripts/test-cycle-06-structural-repair.mjs"
+      ,"validate:cycle-06": "NODE_ENV=development JYRA_REALITY_CONTACT_ENRICHMENT_ENABLED=false node ./scripts/run-cycle-06-validation.mjs"
   },
   "dependencies": {
     "@clerk/express": "^2.1.63",
