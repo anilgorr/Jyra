@@ -11,6 +11,7 @@ import {
   whyExplanationsTable,
 } from "@workspace/db";
 import { selectAcceptedFactsByIds } from "./accepted-facts";
+import { whySemanticFingerprint } from "./semantic-fingerprint";
 
 const FORBIDDEN_INTENT = {
   BUDGET: /\b(?:(?:has|have|approved|allocated|secured|confirmed)\s+(?:an?\s+|the\s+)?budget|(?:the\s+)?budget\s+(?:has\s+been\s+|is\s+)?(?:approved|allocated|secured|confirmed|available))\b/i,
@@ -45,6 +46,8 @@ export type WhyClaim = {
   evidenceIds: string[];
   sourceUrls: string[];
 };
+
+export { whySemanticFingerprint } from "./semantic-fingerprint";
 
 function unique(values: string[]) { return [...new Set(values)]; }
 function forbiddenIntentKinds(text: string) {
@@ -211,8 +214,25 @@ export async function generateWhyForOpportunity(opportunityId: string, projectId
         confidence: item.confidence, freshness: item.freshnessScore, directness: item.directnessScore,
       })),
     });
-    const [latest] = await tx.select({ version: whyExplanationsTable.version }).from(whyExplanationsTable)
+    const [latest] = await tx.select().from(whyExplanationsTable)
       .where(eq(whyExplanationsTable.opportunityId, opportunity.id)).orderBy(desc(whyExplanationsTable.version)).limit(1);
+    const latestClaims = latest
+      ? await tx.select().from(whyClaimsTable).where(eq(whyClaimsTable.explanationId, latest.id))
+      : [];
+    const candidateIdentity = {
+      opportunityId: opportunity.id, status: result.status, ruleVersion: "WHY_V1",
+      generatedBy: "DETERMINISTIC", claims: result.claims,
+    };
+    const candidateFingerprint = whySemanticFingerprint(candidateIdentity).fingerprint;
+    const unchanged = latest && whySemanticFingerprint({
+      opportunityId: opportunity.id, status: latest.status, ruleVersion: latest.ruleVersion,
+      generatedBy: latest.generatedBy, claims: latestClaims,
+    }).fingerprint === candidateFingerprint;
+    if (unchanged) {
+      console.info("WHY_UNCHANGED", { opportunityId: opportunity.id, semanticFingerprint: candidateFingerprint });
+      console.info("IDEMPOTENT_REPLAY_SKIPPED", { recordType: "WHY_VERSION", opportunityId: opportunity.id });
+      return { explanation: latest, claims: latestClaims, semanticChange: false };
+    }
     await tx.update(whyExplanationsTable).set({ current: false }).where(and(
       eq(whyExplanationsTable.opportunityId, opportunity.id), eq(whyExplanationsTable.current, true),
     ));
@@ -221,7 +241,8 @@ export async function generateWhyForOpportunity(opportunityId: string, projectId
       status: result.status, text: result.text, current: true,
     }).returning();
     await tx.insert(whyClaimsTable).values(result.claims.map((claim) => ({ explanationId: explanation.id, ...claim })));
-    return { explanation, claims: result.claims };
+    console.info("WHY_MATERIAL_CHANGE", { opportunityId: opportunity.id, semanticFingerprint: candidateFingerprint });
+    return { explanation, claims: result.claims, semanticChange: true };
   }, { isolationLevel: "serializable" });
   for (let attempt = 0; attempt < 3; attempt += 1) {
     try {

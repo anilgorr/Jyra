@@ -9,6 +9,7 @@ import {
   recommendationLedgerTable,
 } from "@workspace/db";
 import { getNextBestActionForCompany } from "../src/lib/next-best-action-service";
+import { evaluateOpportunity } from "../src/lib/opportunity-engine";
 import {
   appendRecommendationOutcome,
   getRecommendationLedgerEntry,
@@ -20,6 +21,7 @@ import {
 export {
   appendRecommendationOutcome,
   getNextBestActionForCompany,
+  evaluateOpportunity,
   getRecommendationLedgerEntry,
   listRecommendationLedger,
   RECOMMENDATION_OUTCOME_REASONS,

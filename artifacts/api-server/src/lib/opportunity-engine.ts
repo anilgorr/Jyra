@@ -1,5 +1,6 @@
-import { and, desc, eq, inArray } from "drizzle-orm";
+import { and, desc, eq, inArray, sql } from "drizzle-orm";
 import {
+  businessTwinVersionsTable,
   companiesTable,
   companyEvidenceTable,
   companyFactsTable,
@@ -22,6 +23,7 @@ import {
 import { selectAcceptedFactsForCompany } from "./accepted-facts";
 import { evaluateIcpCriterion, type CriterionResult } from "./icp-engine";
 import { DEFAULT_NEXT_BEST_ACTION_RULES } from "./next-best-action";
+import { opportunitySemanticFingerprint } from "./semantic-fingerprint";
 
 export const DEFAULT_OPPORTUNITY_WEIGHTS = { fit: 30, need: 30, timing: 30, relationship: 10 } as const;
 export const DEFAULT_OPPORTUNITY_RULES = {
@@ -59,6 +61,8 @@ export type OpportunityCalculationInput = {
 
 const round = (value: number) => Math.round(Math.max(0, Math.min(100, value)) * 100) / 100;
 const unique = (values: string[]) => [...new Set(values)];
+
+export { opportunitySemanticFingerprint } from "./semantic-fingerprint";
 
 function fitComponent(input: OpportunityCalculationInput): ScoreComponent {
   const relevant = input.fitResults.filter((item) => item.type !== "ADVISORY" && item.result !== "not_applicable");
@@ -251,14 +255,18 @@ export async function ensureOpportunityModel(organizationId: string, projectId: 
 }
 
 export async function evaluateOpportunity(input: { organizationId: string; projectId: string; projectCompanyId: string; userId: string; now?: Date }) {
-  const [row] = await db.select({ projectCompany: projectCompaniesTable, company: companiesTable })
+  const model = await ensureOpportunityModel(input.organizationId, input.projectId, input.userId);
+  return db.transaction(async (tx) => {
+  // This lock precedes every mutable assessment read; a retried worker cannot
+  // calculate from stale facts, signals, relationship state, or prior score.
+  await tx.execute(sql`SELECT pg_advisory_xact_lock(hashtextextended(${`opportunity:${input.projectId}:${input.projectCompanyId}`}, 0))`);
+  const [row] = await tx.select({ projectCompany: projectCompaniesTable, company: companiesTable })
     .from(projectCompaniesTable).innerJoin(companiesTable, eq(projectCompaniesTable.companyId, companiesTable.id))
     .where(and(eq(projectCompaniesTable.id, input.projectCompanyId), eq(projectCompaniesTable.projectId, input.projectId))).limit(1);
   if (!row) throw new Error("Project company not found");
-  const model = await ensureOpportunityModel(input.organizationId, input.projectId, input.userId);
-  const [icpVersion] = await db.select().from(icpVersionsTable).where(eq(icpVersionsTable.projectId, input.projectId)).orderBy(desc(icpVersionsTable.version)).limit(1);
+  const [icpVersion] = await tx.select().from(icpVersionsTable).where(eq(icpVersionsTable.projectId, input.projectId)).orderBy(desc(icpVersionsTable.version)).limit(1);
   const [activePackVersion] = icpVersion
-    ? await db.select({ version: intelligencePackVersionsTable }).from(intelligencePackVersionsTable)
+    ? await tx.select({ version: intelligencePackVersionsTable }).from(intelligencePackVersionsTable)
       .innerJoin(intelligencePacksTable, eq(intelligencePackVersionsTable.intelligencePackId, intelligencePacksTable.id))
       .where(and(
         eq(intelligencePacksTable.projectId, input.projectId),
@@ -268,24 +276,28 @@ export async function evaluateOpportunity(input: { organizationId: string; proje
       .orderBy(desc(intelligencePackVersionsTable.activatedAt), desc(intelligencePackVersionsTable.version))
       .limit(1)
     : [];
-  const criteria = icpVersion ? await db.select().from(icpCriteriaTable).where(eq(icpCriteriaTable.icpVersionId, icpVersion.id)) : [];
-  const facts = await selectAcceptedFactsForCompany(row.company.id);
+  const [businessTwinVersion] = icpVersion?.sourceBusinessTwinVersionId
+    ? await tx.select().from(businessTwinVersionsTable)
+      .where(eq(businessTwinVersionsTable.id, icpVersion.sourceBusinessTwinVersionId)).limit(1)
+    : [];
+  const criteria = icpVersion ? await tx.select().from(icpCriteriaTable).where(eq(icpCriteriaTable.icpVersionId, icpVersion.id)) : [];
+  const facts = await selectAcceptedFactsForCompany(row.company.id, tx);
   const factsForIcp = companyFacts(row.company, facts);
   const fitResults = criteria.map((criterion) => ({
     id: criterion.id, type: criterion.criterionType, weight: criterion.weight,
     result: evaluateIcpCriterion(criterion, factsForIcp, criterion.dimension),
   }));
-  const allSignalRows = await db.select({ signal: signalsTable, definition: signalDefinitionsTable }).from(signalsTable)
+  const allSignalRows = await tx.select({ signal: signalsTable, definition: signalDefinitionsTable }).from(signalsTable)
     .innerJoin(signalDefinitionsTable, eq(signalsTable.signalDefinitionId, signalDefinitionsTable.id))
     .where(and(eq(signalsTable.projectId, input.projectId), eq(signalsTable.companyId, row.company.id)));
-  const allClusters = await db.select().from(signalClustersTable)
+  const allClusters = await tx.select().from(signalClustersTable)
     .where(and(eq(signalClustersTable.projectId, input.projectId), eq(signalClustersTable.companyId, row.company.id)));
   const [packSignals, packClusters] = activePackVersion
     ? await Promise.all([
-      db.select({ definitionId: intelligencePackSignalsTable.activatedSignalDefinitionId })
+      tx.select({ definitionId: intelligencePackSignalsTable.activatedSignalDefinitionId })
         .from(intelligencePackSignalsTable)
         .where(eq(intelligencePackSignalsTable.versionId, activePackVersion.version.id)),
-      db.select({ definitionId: intelligencePackClustersTable.activatedDefinitionId })
+      tx.select({ definitionId: intelligencePackClustersTable.activatedDefinitionId })
         .from(intelligencePackClustersTable)
         .where(eq(intelligencePackClustersTable.versionId, activePackVersion.version.id)),
     ])
@@ -302,8 +314,10 @@ export async function evaluateOpportunity(input: { organizationId: string; proje
     ...signalRows.flatMap(({ signal }) => signal.supportingEvidenceIds),
     ...clusters.flatMap((cluster) => cluster.supportingEvidenceIds),
   ]);
-  const evidence = evidenceIds.length ? await db.select().from(companyEvidenceTable).where(inArray(companyEvidenceTable.id, evidenceIds)) : [];
-  const [previousOpportunity] = await db.select().from(opportunitiesTable)
+  const evidence = evidenceIds.length ? await tx.select().from(companyEvidenceTable).where(inArray(companyEvidenceTable.id, evidenceIds)) : [];
+  const recommendationEvidence = await tx.select().from(companyEvidenceTable)
+    .where(eq(companyEvidenceTable.companyId, row.company.id));
+  const [previousOpportunity] = await tx.select().from(opportunitiesTable)
     .where(and(eq(opportunitiesTable.projectId, input.projectId), eq(opportunitiesTable.projectCompanyId, row.projectCompany.id))).limit(1);
   const calculation = calculateOpportunityAssessment({
     weights: model.weights,
@@ -329,8 +343,95 @@ export async function evaluateOpportunity(input: { organizationId: string; proje
     } : null,
   });
   const now = input.now ?? new Date();
-  return db.transaction(async (tx) => {
+    const [currentOpportunity] = await tx.select().from(opportunitiesTable)
+      .where(and(eq(opportunitiesTable.projectId, input.projectId), eq(opportunitiesTable.projectCompanyId, row.projectCompany.id)))
+      .limit(1);
     const dimensions = Object.fromEntries(calculation.components.map((component) => [component.dimension, component.score]));
+    const fitDetails = calculation.components.find((component) => component.dimension === "FIT")?.details;
+    const recommendationContext = {
+      company: { employeeRange: row.company.employeeRange },
+      projectCompany: {
+        relationshipStatus: row.projectCompany.relationshipStatus,
+        latestResearchAt: row.projectCompany.latestResearchAt,
+      },
+      evidence: recommendationEvidence.map((item) => ({
+        id: item.id,
+        sourceUrl: item.sourceUrl,
+        sourceDomain: item.sourceDomain,
+        sourceType: item.sourceType,
+        provider: item.provider,
+        publisher: item.publisher,
+        publishedAt: item.publishedAt,
+        observedAt: item.observedAt,
+        extractedClaim: item.extractedClaim,
+        authorityScore: item.authorityScore,
+        directnessScore: item.directnessScore,
+        freshnessScore: item.freshnessScore,
+        corroborationScore: item.corroborationScore,
+        confidence: item.confidence,
+        status: item.status,
+      })),
+      signals: allSignalRows.map(({ signal, definition }) => ({
+        id: signal.id,
+        definitionId: definition.id,
+        name: definition.name,
+        status: signal.status,
+        polarity: definition.polarity,
+        strength: signal.currentStrength,
+        confidence: signal.confidence,
+        fitImpact: signal.fitImpactSnapshot ?? definition.fitImpact,
+        needImpact: signal.needImpactSnapshot ?? definition.needImpact,
+        timingImpact: signal.timingImpactSnapshot ?? definition.timingImpact,
+        supportingEvidenceIds: signal.supportingEvidenceIds,
+      })),
+      clusters: allClusters.map((cluster) => ({
+        id: cluster.id,
+        definitionId: cluster.definitionId,
+        status: cluster.status,
+        strength: cluster.currentStrength,
+        confidence: cluster.confidence,
+        needImpact: cluster.needImpact,
+        timingImpact: cluster.timingImpact,
+        triggeredSignalIds: cluster.triggeredSignalIds,
+        supportingEvidenceIds: cluster.supportingEvidenceIds,
+        explanation: cluster.explanation,
+      })),
+      model: { id: model.id, version: model.version, rules: model.rules },
+      icpVersion: icpVersion ? { id: icpVersion.id, version: icpVersion.version } : null,
+      businessTwinVersion: businessTwinVersion ? { id: businessTwinVersion.id, version: businessTwinVersion.version } : null,
+      intelligencePackVersion: activePackVersion
+        ? { id: activePackVersion.version.id, version: activePackVersion.version.version }
+        : null,
+      confirmedDisqualifier: Boolean(
+        fitDetails && typeof fitDetails === "object" && fitDetails.disqualified === true,
+      ),
+    };
+    const inputSnapshot = {
+      icpVersionId: icpVersion?.id ?? null,
+      intelligencePackVersionId: activePackVersion?.version.id ?? null,
+      signalIds: signalRows.map(({ signal }) => signal.id),
+      clusterIds: clusters.map((cluster) => cluster.id),
+      relationshipStatus: row.projectCompany.relationshipStatus,
+      signalStates: signalRows.map(({ signal, definition }) => ({
+        id: signal.id, definitionId: definition.id, status: signal.status, effectiveDate: signal.effectiveDate,
+        ruleVersion: signal.ruleVersion, strength: signal.currentStrength, confidence: signal.confidence,
+        needImpact: signal.needImpactSnapshot ?? definition.needImpact,
+        timingImpact: signal.timingImpactSnapshot ?? definition.timingImpact,
+        fitImpact: signal.fitImpactSnapshot ?? definition.fitImpact,
+        factIds: signal.supportingFactIds, evidenceIds: signal.supportingEvidenceIds,
+      })),
+      clusterStates: clusters.map((cluster) => ({
+        id: cluster.id, definitionId: cluster.definitionId, status: cluster.status, ruleVersion: cluster.ruleVersion,
+        strength: cluster.currentStrength, confidence: cluster.confidence, needImpact: cluster.needImpact,
+        timingImpact: cluster.timingImpact, signalIds: cluster.triggeredSignalIds,
+        evidenceIds: cluster.supportingEvidenceIds,
+      })),
+      evidenceStates: evidence.map((item) => ({
+        id: item.id, status: item.status, authority: item.authorityScore, directness: item.directnessScore,
+        freshness: item.freshnessScore, corroboration: item.corroborationScore,
+      })),
+      recommendationContext,
+    };
     const [opportunity] = await tx.insert(opportunitiesTable).values({
       organizationId: input.organizationId, projectId: input.projectId, projectCompanyId: row.projectCompany.id,
       companyId: row.company.id, modelVersionId: model.id, score: calculation.score,
@@ -338,7 +439,7 @@ export async function evaluateOpportunity(input: { organizationId: string; proje
       relationshipScore: dimensions.RELATIONSHIP, confidenceScore: dimensions.CONFIDENCE,
       state: calculation.state, assessmentStatus: calculation.assessmentStatus,
       explanation: calculation.explanation,
-      inputSnapshot: { icpVersionId: icpVersion?.id ?? null, intelligencePackVersionId: activePackVersion?.version.id ?? null, signalIds: signalRows.map(({ signal }) => signal.id), clusterIds: clusters.map((cluster) => cluster.id), relationshipStatus: row.projectCompany.relationshipStatus },
+      inputSnapshot,
       assessedAt: now,
     }).onConflictDoUpdate({
       target: [opportunitiesTable.projectId, opportunitiesTable.projectCompanyId],
@@ -346,35 +447,66 @@ export async function evaluateOpportunity(input: { organizationId: string; proje
         modelVersionId: model.id, score: calculation.score, fitScore: dimensions.FIT, needScore: dimensions.NEED,
         timingScore: dimensions.TIMING, relationshipScore: dimensions.RELATIONSHIP, confidenceScore: dimensions.CONFIDENCE,
         state: calculation.state, assessmentStatus: calculation.assessmentStatus, explanation: calculation.explanation,
-        inputSnapshot: { icpVersionId: icpVersion?.id ?? null, intelligencePackVersionId: activePackVersion?.version.id ?? null, signalIds: signalRows.map(({ signal }) => signal.id), clusterIds: clusters.map((cluster) => cluster.id), relationshipStatus: row.projectCompany.relationshipStatus },
+        inputSnapshot,
         assessedAt: now, updatedAt: now,
       },
     }).returning();
-    const [history] = await tx.insert(opportunityHistoryTable).values({
-      opportunityId: opportunity.id, modelVersionId: model.id, score: calculation.score, state: calculation.state,
-      assessmentStatus: calculation.assessmentStatus, dimensionSnapshot: dimensions, explanation: calculation.explanation,
-      previousState: previousOpportunity?.state ?? null, assessedAt: now,
-    }).returning();
-    await tx.insert(opportunityScoreComponentsTable).values(calculation.components.map((component) => ({
-      historyId: history.id, ...component,
-    })));
+    const [latestHistory] = await tx.select().from(opportunityHistoryTable)
+      .where(eq(opportunityHistoryTable.opportunityId, opportunity.id))
+      .orderBy(desc(opportunityHistoryTable.assessedAt), desc(opportunityHistoryTable.id)).limit(1);
+    const latestComponents = latestHistory
+      ? await tx.select().from(opportunityScoreComponentsTable).where(eq(opportunityScoreComponentsTable.historyId, latestHistory.id))
+      : [];
+    const candidateSemantic = {
+      organizationId: input.organizationId, projectId: input.projectId, projectCompanyId: row.projectCompany.id,
+      companyId: row.company.id, modelVersionId: model.id, score: calculation.score, state: calculation.state,
+      assessmentStatus: calculation.assessmentStatus, dimensions, inputSnapshot, components: calculation.components,
+    };
+    const currentSemantic = latestHistory ? {
+      organizationId: input.organizationId, projectId: input.projectId, projectCompanyId: row.projectCompany.id,
+      companyId: row.company.id, modelVersionId: latestHistory.modelVersionId, score: latestHistory.score,
+      state: latestHistory.state, assessmentStatus: latestHistory.assessmentStatus,
+      dimensions: latestHistory.dimensionSnapshot, inputSnapshot: currentOpportunity?.inputSnapshot ?? {},
+      components: latestComponents,
+    } : null;
+    const candidateFingerprint = opportunitySemanticFingerprint(candidateSemantic).fingerprint;
+    const unchanged = currentSemantic !== null &&
+      opportunitySemanticFingerprint(currentSemantic).fingerprint === candidateFingerprint;
+    let history = latestHistory;
+    if (unchanged) {
+      console.info("UNCHANGED_SEMANTIC_STATE", { opportunityId: opportunity.id, semanticFingerprint: candidateFingerprint });
+      console.info("IDEMPOTENT_REPLAY_SKIPPED", { recordType: "OPPORTUNITY_HISTORY", opportunityId: opportunity.id });
+    } else {
+      [history] = await tx.insert(opportunityHistoryTable).values({
+        opportunityId: opportunity.id, modelVersionId: model.id, score: calculation.score, state: calculation.state,
+        assessmentStatus: calculation.assessmentStatus, dimensionSnapshot: dimensions, explanation: calculation.explanation,
+        previousState: currentOpportunity?.state ?? null, assessedAt: now,
+      }).returning();
+      await tx.insert(opportunityScoreComponentsTable).values(calculation.components.map((component) => ({
+        historyId: history!.id, ...component,
+      })));
+      console.info("SEMANTIC_CHANGE_DETECTED", { opportunityId: opportunity.id, semanticFingerprint: candidateFingerprint });
+    }
     await tx.update(projectCompaniesTable).set({
       fitScore: dimensions.FIT, needScore: dimensions.NEED, timingScore: dimensions.TIMING,
       relationshipScore: dimensions.RELATIONSHIP, confidenceScore: dimensions.CONFIDENCE,
       opportunityScore: calculation.score, opportunityAssessmentState: calculation.state, updatedAt: now,
     }).where(eq(projectCompaniesTable.id, row.projectCompany.id));
-    return { opportunity, history, components: calculation.components, model };
+    if (!history) throw new Error("Opportunity history could not be resolved");
+    return { opportunity, history, components: calculation.components, model, semanticChange: !unchanged };
   });
 }
 
-export async function getOpportunityDetail(projectId: string, projectCompanyId: string) {
-  const [opportunity] = await db.select().from(opportunitiesTable).where(and(
+type OpportunityDbExecutor = typeof db | Parameters<Parameters<typeof db.transaction>[0]>[0];
+
+export async function getOpportunityDetail(projectId: string, projectCompanyId: string, executor: OpportunityDbExecutor = db) {
+  const [opportunity] = await executor.select().from(opportunitiesTable).where(and(
     eq(opportunitiesTable.projectId, projectId), eq(opportunitiesTable.projectCompanyId, projectCompanyId),
   )).limit(1);
   if (!opportunity) return null;
-  const history = await db.select().from(opportunityHistoryTable).where(eq(opportunityHistoryTable.opportunityId, opportunity.id))
+  const history = await executor.select().from(opportunityHistoryTable).where(eq(opportunityHistoryTable.opportunityId, opportunity.id))
     .orderBy(desc(opportunityHistoryTable.assessedAt));
-  const components = history[0] ? await db.select().from(opportunityScoreComponentsTable).where(eq(opportunityScoreComponentsTable.historyId, history[0].id)) : [];
-  const [model] = await db.select().from(opportunityModelVersionsTable).where(eq(opportunityModelVersionsTable.id, opportunity.modelVersionId)).limit(1);
+  const components = history[0] ? await executor.select().from(opportunityScoreComponentsTable).where(eq(opportunityScoreComponentsTable.historyId, history[0].id)) : [];
+  const [model] = await executor.select().from(opportunityModelVersionsTable).where(eq(opportunityModelVersionsTable.id, opportunity.modelVersionId)).limit(1);
   return { opportunity, model, components, history };
 }

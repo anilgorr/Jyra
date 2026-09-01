@@ -1,0 +1,130 @@
+{
+  "test": "SEMANTIC_IDEMPOTENCY_FIX_01",
+  "mode": "GUARDED_DEVELOPMENT_ONLY_EXACT_PERSISTED_TEN_CONTROL_ZERO_PROVIDER_REPLAY",
+  "frozenInput": {
+    "file": "MANAGED_SOC_SIGNAL_MAPPING_GAP_VALIDATION_01_RETEST.json",
+    "sha256": "2547d5717da2c7d295e1f220fd9cb17bb1d906dbbeee31aeff9ae21c6d81de5c",
+    "controlSourceFile": "FACT_TEMPORAL_SAFETY_FIX_03_RETEST.json",
+    "controlSourceSha256": "db458f2f153a5f0da4df76065a8b99f27fe0a522c477f71f845dc061c804979a",
+    "manifestSha256": "438ae22cc5f06ed16588d911541572fd0617dd608c6ad9bfc451462f5ff90931",
+    "controls": 10,
+    "strictDetections": 8,
+    "strictRecall": 0.8,
+    "signals": 8,
+    "supportedSignals": 8,
+    "signalPrecision": 1,
+    "whyProvenance": 1
+  },
+  "counts": {
+    "before": {
+      "providerUsage": 1273,
+      "companies": 10,
+      "evidence": 552,
+      "facts": 64,
+      "signals": 6,
+      "opportunityHistory": 24,
+      "whyVersions": 20,
+      "recommendations": 36
+    },
+    "afterFirst": {
+      "providerUsage": 1273,
+      "companies": 10,
+      "evidence": 552,
+      "facts": 64,
+      "signals": 6,
+      "opportunityHistory": 24,
+      "whyVersions": 20,
+      "recommendations": 36
+    },
+    "afterReplay": {
+      "providerUsage": 1273,
+      "companies": 10,
+      "evidence": 552,
+      "facts": 64,
+      "signals": 6,
+      "opportunityHistory": 24,
+      "whyVersions": 20,
+      "recommendations": 36
+    },
+    "exactReplayDelta": {
+      "providerUsage": 0,
+      "companies": 0,
+      "evidence": 0,
+      "facts": 0,
+      "signals": 0,
+      "opportunityHistory": 0,
+      "whyVersions": 0,
+      "recommendations": 0
+    },
+    "beforeConcurrency": {
+      "providerUsage": 1273,
+      "companies": 10,
+      "evidence": 552,
+      "facts": 64,
+      "signals": 6,
+      "opportunityHistory": 24,
+      "whyVersions": 20,
+      "recommendations": 36
+    },
+    "afterConcurrency": {
+      "providerUsage": 1273,
+      "companies": 10,
+      "evidence": 552,
+      "facts": 64,
+      "signals": 6,
+      "opportunityHistory": 24,
+      "whyVersions": 20,
+      "recommendations": 36
+    },
+    "concurrencyDelta": {
+      "providerUsage": 0,
+      "companies": 0,
+      "evidence": 0,
+      "facts": 0,
+      "signals": 0,
+      "opportunityHistory": 0,
+      "whyVersions": 0,
+      "recommendations": 0
+    }
+  },
+  "afterExactReplay": {
+    "newProviderCalls": 0,
+    "newOpportunityHistory": 0,
+    "newWhyVersions": 0,
+    "newRecommendationRecords": 0,
+    "duplicateCompanies": 0,
+    "duplicateEvidence": 0,
+    "duplicateFacts": 0,
+    "duplicateSignals": 0
+  },
+  "realChangeTest": {
+    "materialChangeDetected": true,
+    "correctHistoryCreated": 4,
+    "correctWhyVersionBehavior": "UNCHANGED_RELATIONSHIP_ONLY_WHY_PLUS_0",
+    "correctRecommendationBehavior": 5,
+    "aToBToAHistoryPreserved": true,
+    "aToBToARecommendationLifecyclePreserved": true
+  },
+  "timestampOnlyTest": {
+    "newSemanticRecords": 0
+  },
+  "retryTest": {
+    "duplicateSemanticRecords": 0
+  },
+  "recommendationStaleReadRace": {
+    "workerStartedBeforeMaterialUpdate": true,
+    "workerReadAfterLockRelease": true,
+    "currentRelationshipStatus": "OPEN_OPPORTUNITY",
+    "currentRelationshipScore": 80,
+    "obsoleteTrailingRecommendations": 0
+  },
+  "atomicOpportunityAssessmentBoundary": {
+    "nbaLocksAFirst": "A_LEDGER_COMMITTED_BEFORE_B_ASSESSMENT_COMMITTED",
+    "evaluationCommitsBFirst": "NBA_READS_COMMITTED_B_CONTEXT",
+    "mixedContexts": 0,
+    "serializedTailOrderCorrect": true
+  },
+  "providerCalls": 0,
+  "productionOperations": 0,
+  "finalDecision": "A — DOWNSTREAM SEMANTIC IDEMPOTENCY VALIDATED"
+}

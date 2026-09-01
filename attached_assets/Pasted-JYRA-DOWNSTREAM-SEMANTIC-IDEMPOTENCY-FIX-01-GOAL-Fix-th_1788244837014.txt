@@ -1,0 +1,763 @@
+JYRA — DOWNSTREAM SEMANTIC IDEMPOTENCY FIX 01
+
+GOAL
+
+Fix the known replay/idempotency defect in the downstream opportunity
+pipeline.
+
+The previous frozen 10-control replay correctly reused research state
+with ZERO new provider calls, stable facts, stable signals and stable
+clusters.
+
+However, unchanged intelligence produced:
+
+10 new opportunity-history rows
+10 new WHY versions
+10 new recommendation-ledger rows.
+
+This is incorrect.
+
+Expected behavior:
+
+UNCHANGED MATERIAL INTELLIGENCE
+→ NO NEW SEMANTIC HISTORY EVENT
+→ NO NEW WHY VERSION
+→ NO DUPLICATE RECOMMENDATION
+
+This task is ONLY about semantic idempotency.
+
+==================================================
+1. DATABASE SAFETY
+==================================================
+
+DEVELOPMENT ONLY.
+
+Use ONLY the approved development database fingerprint.
+
+Production operations = 0.
+
+Do not migrate, modify, seed, reset or test production.
+
+==================================================
+2. FREEZE INTELLIGENCE
+==================================================
+
+DO NOT CHANGE:
+
+Business Twin
+ICP
+Find My Market
+company discovery
+identity
+profile resolution
+retrieval
+Tavily
+Exa
+query generation
+evidence
+fact extraction
+fact validation
+temporal semantics
+signal definitions
+signal mapping
+signal clusters
+opportunity scoring semantics
+WHY content logic
+NBA decision logic
+contacts
+UI
+providers.
+
+The current intelligence stack is FROZEN.
+
+==================================================
+3. CURRENT VALIDATED STATE
+==================================================
+
+Latest persisted-evidence validation:
+
+Strict detections = 8/10
+Strict recall = 80%
+
+Signals = 8
+Supported signals = 8/8
+Signal precision = 100%
+
+Seller-as-buyer = 0
+Temporal invalid = 0
+Wrong entity = 0
+WHY provenance = 100%.
+
+Do not alter these outcomes.
+
+==================================================
+4. ROOT CAUSES FROM AUTOPSY
+==================================================
+
+Known replay defects:
+
+OPPORTUNITY HISTORY:
+missing semantic idempotency/change detection.
+
+WHY VERSION:
+unconditional version creation.
+
+RECOMMENDATION LEDGER:
+unstable fingerprint / timestamps included in recommendation identity.
+
+Verify these against runtime code before implementing.
+
+Do not assume the autopsy diagnosis is correct if implementation
+evidence contradicts it.
+
+==================================================
+5. SEMANTIC IDEMPOTENCY PRINCIPLE
+==================================================
+
+Database write identity must represent:
+
+WHAT MATERIALLY CHANGED
+
+not:
+
+WHEN THE PIPELINE RAN.
+
+Two evaluations with identical material inputs must produce the same
+semantic fingerprint.
+
+Runtime timestamps must not cause false changes.
+
+==================================================
+6. MATERIAL INTELLIGENCE STATE
+==================================================
+
+Define a deterministic canonical material-state representation for an
+account/opportunity.
+
+Include only fields that materially affect the intelligence output.
+
+Examples may include:
+
+company/account ID
+seller/business twin ID
+offering ID
+ICP/project ID
+active signal IDs
+signal versions
+signal states
+signal event dates
+cluster IDs/states
+dimension states
+confidence state
+opportunity state
+material score inputs
+relevant evidence/fact versions
+NBA/action type
+WHY-supporting intelligence references.
+
+Do not include incidental execution metadata.
+
+==================================================
+7. EXCLUDE VOLATILE FIELDS
+==================================================
+
+Semantic fingerprints must NOT change merely because of:
+
+evaluatedAt
+createdAt
+updatedAt
+retrievedAt when evidence itself is unchanged
+job ID
+run ID
+request ID
+processing duration
+database insertion timestamp
+random UUID
+array ordering
+provider latency
+provider request metadata
+cost-record timestamp.
+
+==================================================
+8. CANONICALIZATION
+==================================================
+
+Before hashing/fingerprinting:
+
+sort unordered ID arrays
+
+normalize null/undefined consistently
+
+normalize enum/string representation
+
+normalize date representation
+
+exclude volatile metadata
+
+use stable object-key ordering.
+
+Same semantic state must always produce the same fingerprint.
+
+==================================================
+9. OPPORTUNITY HISTORY
+==================================================
+
+Opportunity history should represent a MATERIAL CHANGE.
+
+Examples of legitimate new history:
+
+WATCH → RISING
+
+RISING → SURGING
+
+new material signal
+
+material signal expires
+
+confidence materially changes
+
+meaningful opportunity score/state change
+
+material contradiction appears
+
+material opportunity hypothesis changes.
+
+Examples that should NOT create history:
+
+same evaluation reruns
+
+same facts/signals reprocessed
+
+page refresh
+
+worker retry
+
+same research replay
+
+timestamp-only changes.
+
+==================================================
+10. OPPORTUNITY HISTORY KEY
+==================================================
+
+Implement/reuse a stable semantic fingerprint for the opportunity
+snapshot.
+
+Conceptually:
+
+opportunitySemanticFingerprint(
+  seller,
+  offering,
+  account,
+  material intelligence state
+)
+
+Before inserting history:
+
+compare against latest semantic snapshot/fingerprint.
+
+If unchanged:
+
+SKIP WRITE.
+
+Record diagnostic:
+
+UNCHANGED_SEMANTIC_STATE.
+
+==================================================
+11. WHY VERSIONING
+==================================================
+
+WHY versions should represent a material explanation change.
+
+Do NOT create a new WHY version because the WHY generator ran again.
+
+Canonical WHY identity should depend on material content/support such as:
+
+opportunity/account
+WHY semantic content
+supporting signal IDs
+supporting fact IDs
+supporting evidence IDs
+confidence/material state
+WHY classification/state.
+
+Do not depend on generation timestamp.
+
+==================================================
+12. WHY CONTENT NORMALIZATION
+==================================================
+
+Avoid false versions from harmless formatting differences where safe.
+
+At minimum normalize deterministic structured WHY representation before
+fingerprinting.
+
+Prefer structured semantic fingerprint over hashing display prose alone.
+
+==================================================
+13. WHY WRITE RULE
+==================================================
+
+If the new WHY semantic fingerprint equals the current WHY version:
+
+DO NOT CREATE NEW VERSION.
+
+If supporting intelligence or material explanation changes:
+
+CREATE NEW VERSION.
+
+==================================================
+14. RECOMMENDATION LEDGER
+==================================================
+
+Recommendation ledger must not duplicate the same recommendation merely
+because the pipeline reevaluated the account.
+
+A recommendation identity should represent something like:
+
+seller
+offering
+account
+recommendation type
+material rationale/intelligence state.
+
+Execution timestamp must not define recommendation identity.
+
+==================================================
+15. RECOMMENDATION LIFECYCLE
+==================================================
+
+Distinguish:
+
+same recommendation re-observed
+
+from
+
+new recommendation
+
+from
+
+materially changed recommendation
+
+from
+
+recommendation withdrawn/expired.
+
+Do not create a new recommendation ledger entry for unchanged
+recommendation state.
+
+==================================================
+16. TIMESTAMPS
+==================================================
+
+Timestamps may remain metadata.
+
+They must not determine semantic uniqueness.
+
+For example:
+
+lastEvaluatedAt
+
+may update if architecture requires it.
+
+But that alone must not create:
+
+new history
+new WHY version
+new recommendation.
+
+==================================================
+17. CONCURRENCY SAFETY
+==================================================
+
+Prevent two simultaneous/retried workers from creating duplicate
+semantic records.
+
+Where appropriate use:
+
+database uniqueness constraint
+
+transaction
+
+upsert
+
+compare-and-insert
+
+or existing safe architecture.
+
+Do not rely solely on an in-memory pre-check.
+
+==================================================
+18. RETRY SAFETY
+==================================================
+
+Simulate:
+
+worker starts
+writes some downstream state
+worker retries.
+
+The retry must not duplicate already-created semantic records.
+
+==================================================
+19. TEST CASE A — EXACT REPLAY
+==================================================
+
+Take persisted state from the 10-control benchmark.
+
+Run downstream evaluation once.
+
+Capture counts.
+
+Run exact downstream evaluation again with unchanged intelligence.
+
+Expected second run:
+
+new opportunity-history rows = 0
+
+new WHY versions = 0
+
+new recommendation-ledger rows = 0.
+
+==================================================
+20. TEST CASE B — REAL OPPORTUNITY CHANGE
+==================================================
+
+Using synthetic/dev fixture only:
+
+change one material signal/opportunity state.
+
+Expected:
+
+appropriate opportunity history = +1
+
+WHY version = +1 only if explanation materially changes
+
+recommendation = new/updated only if NBA materially changes.
+
+==================================================
+21. TEST CASE C — TIMESTAMP-ONLY CHANGE
+==================================================
+
+Change only execution/evaluation timestamps.
+
+Expected:
+
+opportunity history +0
+WHY versions +0
+recommendation semantic records +0.
+
+==================================================
+22. TEST CASE D — SIGNAL ORDER
+==================================================
+
+Same signals in different array/order.
+
+Expected:
+
+same semantic fingerprint.
+
+No new downstream records.
+
+==================================================
+23. TEST CASE E — RETRY
+==================================================
+
+Replay same processing attempt as a retry.
+
+Expected:
+
+no duplicate semantic writes.
+
+==================================================
+24. TEST CASE F — WHY SUPPORT CHANGE
+==================================================
+
+Keep opportunity state same but add/remove a material supporting signal.
+
+Expected:
+
+new WHY version if explanation/support materially changes.
+
+History behavior should follow existing semantics only if the material
+opportunity snapshot changed.
+
+==================================================
+25. TEST CASE G — NBA CHANGE
+==================================================
+
+Example:
+
+RESEARCH_MORE → PREPARE_OUTREACH
+
+because material intelligence changed.
+
+Expected:
+
+recommendation lifecycle records the meaningful change exactly once.
+
+==================================================
+26. TEST CASE H — SAME NBA
+==================================================
+
+Same NBA and same rationale after reevaluation.
+
+Expected:
+
+no duplicate recommendation.
+
+==================================================
+27. PRESERVE AUDITABILITY
+==================================================
+
+Do not solve idempotency by deleting history.
+
+History/version/ledger remain append-only where intended.
+
+The goal is:
+
+append only on SEMANTIC CHANGE.
+
+==================================================
+28. DO NOT OVER-DEDUPE
+==================================================
+
+Real changes must remain historically visible.
+
+Test:
+
+A → B → A
+
+If opportunity genuinely moves:
+
+WATCH → RISING → WATCH
+
+both transitions must be preserved.
+
+Do not globally suppress a state merely because that state existed in
+older history.
+
+Compare to CURRENT/latest semantic state.
+
+==================================================
+29. DATABASE CHANGES
+==================================================
+
+Prefer minimal schema changes.
+
+If a schema/index migration is genuinely required:
+
+create/apply DEVELOPMENT migration only.
+
+Do not touch production.
+
+Document required future production migration separately.
+
+==================================================
+30. EXISTING DUPLICATES
+==================================================
+
+Do not destructively clean production or historical data.
+
+For development benchmark duplicates:
+
+identify them.
+
+Do not delete unless necessary for controlled dev testing and explicitly
+documented.
+
+The fix must prevent FUTURE duplicates.
+
+==================================================
+31. OBSERVABILITY
+==================================================
+
+Add safe diagnostics such as:
+
+SEMANTIC_CHANGE_DETECTED
+
+UNCHANGED_SEMANTIC_STATE
+
+WHY_UNCHANGED
+
+WHY_MATERIAL_CHANGE
+
+RECOMMENDATION_UNCHANGED
+
+RECOMMENDATION_CHANGED
+
+IDEMPOTENT_REPLAY_SKIPPED.
+
+Do not log sensitive provider credentials/content unnecessarily.
+
+==================================================
+32. HARD-CODING AUDIT
+==================================================
+
+No benchmark company names.
+
+No 10-control-specific logic.
+
+No Managed-SOC-specific idempotency.
+
+This is generic platform infrastructure.
+
+==================================================
+33. REQUIRED VALIDATION
+==================================================
+
+Run:
+
+focused unit tests
+
+integration tests
+
+downstream replay test
+
+concurrency/retry test if supported
+
+typecheck
+
+build
+
+code review
+
+API restart
+
+health check.
+
+==================================================
+34. REQUIRED ARTIFACTS
+==================================================
+
+Generate:
+
+SEMANTIC_IDEMPOTENCY_FIX_01.md
+
+SEMANTIC_IDEMPOTENCY_FIX_01.json
+
+SEMANTIC_IDEMPOTENCY_FIX_01_REPLAY.json
+
+SEMANTIC_IDEMPOTENCY_FIX_01_TESTS.json
+
+SEMANTIC_IDEMPOTENCY_FIX_01_FINGERPRINTS.json
+
+==================================================
+35. REQUIRED FINAL SUMMARY
+==================================================
+
+BEFORE:
+
+Duplicate opportunity history = 10
+Duplicate WHY versions = 10
+Duplicate recommendations = 10
+
+ROOT CAUSE:
+
+Opportunity history =
+WHY versions =
+Recommendation ledger =
+
+IMPLEMENTED:
+
+Opportunity semantic fingerprint =
+WHY semantic fingerprint =
+Recommendation semantic fingerprint =
+
+Volatile timestamp fields excluded =
+
+Concurrency protection =
+
+AFTER EXACT REPLAY:
+
+New provider calls =
+New opportunity history =
+New WHY versions =
+New recommendation records =
+Duplicate companies =
+Duplicate evidence =
+Duplicate facts =
+Duplicate signals =
+
+REAL CHANGE TEST:
+
+Material change detected =
+Correct history created =
+Correct WHY version behavior =
+Correct recommendation behavior =
+
+TIMESTAMP-ONLY TEST:
+
+New semantic records =
+
+RETRY TEST:
+
+Duplicate semantic records =
+
+Production operations =
+
+==================================================
+36. PASS GATES
+==================================================
+
+Required:
+
+Exact unchanged replay:
+new opportunity history = 0
+new WHY versions = 0
+new recommendation records = 0
+
+Timestamp-only replay:
+new semantic records = 0
+
+Retry:
+duplicate semantic records = 0
+
+Real material changes:
+preserved correctly
+
+A → B → A:
+history preserved correctly
+
+Production operations = 0.
+
+==================================================
+37. FINAL DECISION
+==================================================
+
+Return exactly ONE:
+
+A — DOWNSTREAM SEMANTIC IDEMPOTENCY VALIDATED
+
+B — OPPORTUNITY HISTORY STILL DUPLICATES
+
+C — WHY VERSIONING STILL DUPLICATES
+
+D — RECOMMENDATION LEDGER STILL DUPLICATES
+
+E — REAL CHANGES ARE OVER-DE-DUPLICATED
+
+F — CONCURRENCY/RETRY SAFETY FAILED
+
+G — INCONCLUSIVE
+
+==================================================
+38. STOP
+==================================================
+
+STOP after this milestone.
+
+DO NOT:
+
+rerun providers
+change intelligence
+change signals
+change retrieval
+change identity
+run the fresh 10-control E2E benchmark
+run the 50-company benchmark
+work on contacts
+work on UI.
+
+Return results for review.

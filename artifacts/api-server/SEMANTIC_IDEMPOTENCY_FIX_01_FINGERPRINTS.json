@@ -1,0 +1,114 @@
+{
+  "test": "SEMANTIC_IDEMPOTENCY_FIX_01",
+  "algorithm": "SHA-256",
+  "canonicalization": "ALLOWLISTED_RECURSIVE_STABLE_KEYS_NORMALIZED_NULL_DATE_ENUM_UNORDERED_REFERENCES",
+  "excludedVolatileFields": [
+    "opportunityAssessedAt",
+    "evidenceReferences.observedAt",
+    "createdAt",
+    "updatedAt",
+    "retrievedAt"
+  ],
+  "controls": [
+    {
+      "companyId": "3ec654e3-3bed-405a-a1aa-1405f28ffcba",
+      "projectCompanyId": "e1ff1142-08e2-4214-a4f6-f336ffb259a7",
+      "opportunityId": "18e7b7f6-f869-4012-9f89-e92c3434b7cf",
+      "opportunity": "d585ae323c2354404c437e76507a87fd3aa399929598d90b5c290af4c9f53dfc",
+      "why": "1cb223fa077d823c12b7ad836563acc27e8b44169ddf8275c99125f08540b1a1",
+      "recommendation": "25979858050c4f8004539a7c2e52abd2d707827f98ea0c8ca84cb0a95c739c38",
+      "recommendationBase": "25979858050c4f8004539a7c2e52abd2d707827f98ea0c8ca84cb0a95c739c38",
+      "recommendationKeyFormat": "LEGACY_GLOBAL_STATE_KEY"
+    },
+    {
+      "companyId": "417409dc-ca3f-449f-90bb-f315f91f450a",
+      "projectCompanyId": "87c8ac67-bb3a-4a05-bd97-ce3df5b85083",
+      "opportunityId": "5c9a720d-59f8-4174-8256-fb28d27d6b2e",
+      "opportunity": "09d3fe9b801f60914459c3afd3f883f468b2350e8393885a8394ddabd595b954",
+      "why": "0320d8bc0ef926c0008bf6c6160f9da0f809b0f30857390348f397b4253a7d3b",
+      "recommendation": "2630fd96d610f1155dd2030dc0da5302d3e5183083b034e27a8cd8592e3f3fb8",
+      "recommendationBase": "2630fd96d610f1155dd2030dc0da5302d3e5183083b034e27a8cd8592e3f3fb8",
+      "recommendationKeyFormat": "LEGACY_GLOBAL_STATE_KEY"
+    },
+    {
+      "companyId": "fafc40de-2c9e-4968-bc3c-602d7d3f23c6",
+      "projectCompanyId": "820dfd5b-d439-4117-b68e-d79abb74b283",
+      "opportunityId": "6fa37a6c-2aeb-4eb1-9b42-817884a2c894",
+      "opportunity": "32423be17ebff9e1d22e949b1ba6a1c77a0cd95ebfb527d7f89f1aa99cbff688",
+      "why": "803e425ff34cfa7c71c1cc47e47d8d74486a1e13351a6f1cdbedb91c0427d0e0",
+      "recommendation": "8b1311712c2fdd205e5a0b33b7e4f54c7a419fc55b560183f664891725df2ece",
+      "recommendationBase": "8b1311712c2fdd205e5a0b33b7e4f54c7a419fc55b560183f664891725df2ece",
+      "recommendationKeyFormat": "LEGACY_GLOBAL_STATE_KEY"
+    },
+    {
+      "companyId": "94457ffa-bf97-426e-95b0-a1cf30250bd0",
+      "projectCompanyId": "a42186ed-22ce-4c34-9668-056dcd37fa4b",
+      "opportunityId": "20fa5846-724f-49b8-80e5-2cdadfb11ff7",
+      "opportunity": "2f0d61347219b29463aeb1e24460d4d6ed30b90e652d306b104ad11f0e61b7c1",
+      "why": "d0bc1c651b85b039078671c3c365aab585f0bb12e228d236c63e49074440f2be",
+      "recommendation": "0fc30163c764864aea7915dfd7f998944db7447d09b9b48b0d1e19992f4b3dd9",
+      "recommendationBase": "0fc30163c764864aea7915dfd7f998944db7447d09b9b48b0d1e19992f4b3dd9",
+      "recommendationKeyFormat": "LEGACY_GLOBAL_STATE_KEY"
+    },
+    {
+      "companyId": "4944433c-43a4-41bb-b3f4-24fe98d56a8b",
+      "projectCompanyId": "ed7f37c8-8434-4edc-bdf9-1aeaa52507f3",
+      "opportunityId": "d9d8d150-784c-4135-beff-d050910bea87",
+      "opportunity": "02afd38727bb79b094ce6ea2ae5a8af0909d6b3d804931b00e59a250d5975347",
+      "why": "d27eea02e783e91f3c2b9f6652ff2cc937be71abfe5c20cff49b7f32c4a0e800",
+      "recommendation": "f15eb76f6d0afe67a513c0bf650a9195136bb03b3181af550c3186ffeec8afc1",
+      "recommendationBase": "f15eb76f6d0afe67a513c0bf650a9195136bb03b3181af550c3186ffeec8afc1",
+      "recommendationKeyFormat": "LEGACY_GLOBAL_STATE_KEY"
+    },
+    {
+      "companyId": "8ee8a9ce-dd62-4b03-bfb0-f9f9a3683f32",
+      "projectCompanyId": "49d0104b-4e24-4ff2-88ff-54c6e9fe7232",
+      "opportunityId": "9d282226-bd82-44dc-99fe-a0868443ef1f",
+      "opportunity": "4144ab70d6e0b284043c2666cde85ba69af9b3905cefb43bb414a4712dd5f7ad",
+      "why": "14f3448bd3fb3bd272834d36afd3cdbde644f9616a95999d591e34aff62a70df",
+      "recommendation": "7326081eed26ce27270bc0e87dcf4a51459282e92a38e3a185fb39dbf060d72b",
+      "recommendationBase": "7326081eed26ce27270bc0e87dcf4a51459282e92a38e3a185fb39dbf060d72b",
+      "recommendationKeyFormat": "LEGACY_GLOBAL_STATE_KEY"
+    },
+    {
+      "companyId": "3cd73d96-37d1-4cf8-9dab-db596e019783",
+      "projectCompanyId": "0c6e46fb-a2b6-4fe5-ba5d-80ce8266399c",
+      "opportunityId": "2a4023a4-64b6-4540-a773-a929e5e703eb",
+      "opportunity": "90e8c2db61f729c4645de6ab496551c88cc7cd1ec95a3c17b6dfcb63c5536c41",
+      "why": "93f8becde51aad508def7a2c4eb8cd9b156e1a074bca58664a1360ec867fa089",
+      "recommendation": "f75868727492f78193af234730d85b91843dc48a0454a2b2ef84d3a47b1b4102",
+      "recommendationBase": "f75868727492f78193af234730d85b91843dc48a0454a2b2ef84d3a47b1b4102",
+      "recommendationKeyFormat": "LEGACY_GLOBAL_STATE_KEY"
+    },
+    {
+      "companyId": "408bc044-5be0-4118-b486-75c494e5cd8f",
+      "projectCompanyId": "3b5b98d9-c0f1-44f3-8d3b-8d0ba64b5a71",
+      "opportunityId": "594776ee-dbf0-4f1a-9498-199f67705898",
+      "opportunity": "ff462234f9ac678bed0d2b2ff9945ea90d972a3427df14d531e7098d1f389930",
+      "why": "4be9f641786b917aae636faa9f85ebe5f5b9304400a8d5b47fe19a86b69b0dde",
+      "recommendation": "f309e0cfb630b958dabf3942ef2095acc9f279ec2e746f14f9223c828b54cf06",
+      "recommendationBase": "f309e0cfb630b958dabf3942ef2095acc9f279ec2e746f14f9223c828b54cf06",
+      "recommendationKeyFormat": "LEGACY_GLOBAL_STATE_KEY"
+    },
+    {
+      "companyId": "0ba57746-1f8e-4691-a647-0921de1a971d",
+      "projectCompanyId": "88e7045b-fd3a-43ed-b098-dde03a408a90",
+      "opportunityId": "281ca669-a5f7-435d-a837-925b864a1bf8",
+      "opportunity": "f351fc1bd32367d148b2b310bd42e4d728c4370b3dae36ee4e8b75a06ebfd0c1",
+      "why": "0bea3a7b1b6d6d6c7938b0a60fdc130e355d6a39f0d7b2917d3f923e8fc16618",
+      "recommendation": "eb09500f8367cb784d6992fc75d73fe3b075c5cc8182d18f3e317a43f0bdb783",
+      "recommendationBase": "eb09500f8367cb784d6992fc75d73fe3b075c5cc8182d18f3e317a43f0bdb783",
+      "recommendationKeyFormat": "LEGACY_GLOBAL_STATE_KEY"
+    },
+    {
+      "companyId": "f757f1d3-fc2d-4086-8903-b4da90e166e3",
+      "projectCompanyId": "f1c69193-9910-4aba-9760-b0c7f877f8fd",
+      "opportunityId": "5721a4c0-c3fd-4866-a0ec-eb254367c48e",
+      "opportunity": "3a209306dfe8020a4d344efb505415a908a35a72f4ed81c31b9e22ae9f337f74",
+      "why": "fde53c98b8ed974eaf7fedf5eec9b4dc1122a95c57aaad46d34387129ff9549c",
+      "recommendation": "7ac7c9908661b2115464e955d77c1183322770099ddd132a10c72b89e8aedfcf",
+      "recommendationBase": "7ac7c9908661b2115464e955d77c1183322770099ddd132a10c72b89e8aedfcf",
+      "recommendationKeyFormat": "LEGACY_GLOBAL_STATE_KEY"
+    }
+  ]
+}

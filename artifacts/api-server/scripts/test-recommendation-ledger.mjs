@@ -18,6 +18,7 @@ const {
   appendRecommendationOutcome,
   assertLedgerUpdateRejected,
   findLedgerTestTarget,
+  evaluateOpportunity,
   getNextBestActionForCompany,
   getRecommendationLedgerEntry,
   listRecommendationLedger,
@@ -37,6 +38,12 @@ assert.equal(RECOMMENDATION_OUTCOME_REASONS.includes("COMPETITOR"), true);
 
 const target = await findLedgerTestTarget();
 assert.ok(target, "A persisted opportunity and organization member are required for the ledger integration test");
+await evaluateOpportunity({
+  organizationId: target.organizationId,
+  projectId: target.projectId,
+  projectCompanyId: target.projectCompanyId,
+  userId: target.userId,
+});
 
 const first = await getNextBestActionForCompany(target.projectId, target.projectCompanyId);
 const second = await getNextBestActionForCompany(target.projectId, target.projectCompanyId);

@@ -290,3 +290,45 @@ mtime_ms = 1788244182824
 storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/23142f48-5063-4d18-ac63-861ff28776c3/bce26227-b900-4680-ab4e-d9e6ddf1e43d"
 storage_version_token = "1788244344192458"
 content_type = "application/octet-stream"
+
+[[outputs]]
+id = "19FpzwnK05O7lO7QizUp8"
+uri = "file://artifacts/api-server/SEMANTIC_IDEMPOTENCY_FIX_01.md"
+type = "text"
+title = "Downstream Semantic Idempotency Fix 01"
+description = "Primary audit report covering root causes, implementation, replay results, real-change behavior, and final decision."
+logical_id = "063179a1-2214-4b23-9bfd-0a3be481b0a9"
+content_hash = "sha256:76798c99ea9846be5d6d0cf475231a51460ad214633b38f27eb9038eccce18dc"
+size = 1771
+mtime_ms = 1788247750155
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/063179a1-2214-4b23-9bfd-0a3be481b0a9/ec126255-c036-4eda-8ea4-ada3d16cba9b"
+storage_version_token = "1788247889581634"
+content_type = "text/markdown"
+
+[[outputs]]
+id = "4jTKDii776aY-VQNSowoE"
+uri = "file://artifacts/api-server/SEMANTIC_IDEMPOTENCY_FIX_01.json"
+type = "unspecified"
+title = "Semantic Idempotency — Structured Result"
+description = "Machine-readable pass gates, exact replay deltas, concurrency results, and material-change validation."
+logical_id = "89edddab-dca4-4eaf-86f2-f194511c2720"
+content_hash = "sha256:9c1350fad2c832f6246fbc3072168dfed22cb1bd592585218572be159e606806"
+size = 5206
+mtime_ms = 1788247750155
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/89edddab-dca4-4eaf-86f2-f194511c2720/b7275b16-7c6c-4812-affd-7fb291d22afe"
+storage_version_token = "1788247890958774"
+content_type = "application/octet-stream"
+
+[[outputs]]
+id = "nmd1-OksZEBv2069Vn9ml"
+uri = "file://artifacts/api-server/SEMANTIC_IDEMPOTENCY_FIX_01_REPLAY.json"
+type = "unspecified"
+title = "Semantic Idempotency — Replay Evidence"
+description = "Guarded ten-control replay counts and zero-duplicate downstream deltas."
+logical_id = "88373ed9-3390-4ee2-9cac-96057f322c14"
+content_hash = "sha256:b4d035114e22e980d2a5445ec288e9a88fa5b76c03aaadbc076dd577f60a0c32"
+size = 3626
+mtime_ms = 1788247750155
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/88373ed9-3390-4ee2-9cac-96057f322c14/0131ac78-059b-496d-be6d-2f3ab3a1f160"
+storage_version_token = "1788247892272938"
+content_type = "application/octet-stream"

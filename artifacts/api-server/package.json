@@ -64,6 +64,8 @@
     ,"test:admin-quality": "node ./scripts/test-admin-quality.mjs"
     ,"test:admin-quality-db": "node ./scripts/test-admin-quality-db.mjs"
     ,"test:real-data-import": "node ./scripts/test-real-data-import.mjs"
+    ,"test:semantic-idempotency": "node ./scripts/test-semantic-idempotency.mjs"
+    ,"replay:semantic-idempotency-fix-01": "NODE_ENV=development node ./scripts/replay-semantic-idempotency-fix-01.mjs"
   },
   "dependencies": {
     "@clerk/express": "^2.1.63",

@@ -1,0 +1,63 @@
+{
+  "test": "SEMANTIC_IDEMPOTENCY_FIX_01",
+  "cases": {
+    "exactReplay": "PASS",
+    "materialChange": "PERSISTED_INTEGRATION_TEST_PASS",
+    "timestampOnly": "PERSISTED_INTEGRATION_TEST_PASS",
+    "signalOrder": "UNIT_TEST_PASS",
+    "retry": "PASS",
+    "whySupportChange": "UNIT_TEST_PASS_STRUCTURED_SUPPORT_FINGERPRINT",
+    "nbaChangeAndSame": "PERSISTED_INTEGRATION_TEST_PASS",
+    "concurrency": "PASS",
+    "aToBToA": "PERSISTED_INTEGRATION_TEST_PASS"
+  },
+  "realChangeTest": {
+    "materialChangeDetected": true,
+    "correctHistoryCreated": 4,
+    "correctWhyVersionBehavior": "UNCHANGED_RELATIONSHIP_ONLY_WHY_PLUS_0",
+    "correctRecommendationBehavior": 5,
+    "aToBToAHistoryPreserved": true,
+    "aToBToARecommendationLifecyclePreserved": true
+  },
+  "timestampOnlyTest": {
+    "newSemanticRecords": 0
+  },
+  "retryTest": {
+    "duplicateSemanticRecords": 0
+  },
+  "recommendationStaleReadRace": {
+    "workerStartedBeforeMaterialUpdate": true,
+    "workerReadAfterLockRelease": true,
+    "currentRelationshipStatus": "OPEN_OPPORTUNITY",
+    "currentRelationshipScore": 80,
+    "obsoleteTrailingRecommendations": 0
+  },
+  "atomicOpportunityAssessmentBoundary": {
+    "nbaLocksAFirst": "A_LEDGER_COMMITTED_BEFORE_B_ASSESSMENT_COMMITTED",
+    "evaluationCommitsBFirst": "NBA_READS_COMMITTED_B_CONTEXT",
+    "mixedContexts": 0,
+    "serializedTailOrderCorrect": true
+  },
+  "exactReplayDelta": {
+    "providerUsage": 0,
+    "companies": 0,
+    "evidence": 0,
+    "facts": 0,
+    "signals": 0,
+    "opportunityHistory": 0,
+    "whyVersions": 0,
+    "recommendations": 0
+  },
+  "concurrencyDelta": {
+    "providerUsage": 0,
+    "companies": 0,
+    "evidence": 0,
+    "facts": 0,
+    "signals": 0,
+    "opportunityHistory": 0,
+    "whyVersions": 0,
+    "recommendations": 0
+  },
+  "allGatesPass": true,
+  "finalDecision": "A — DOWNSTREAM SEMANTIC IDEMPOTENCY VALIDATED"
+}
