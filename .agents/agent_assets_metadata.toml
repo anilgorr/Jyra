@@ -430,3 +430,73 @@ mtime_ms = 1788255139048
 storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/91aea97f-9781-48bb-b353-a66786c372c3/1e9c4129-4700-4b87-81dd-9bccf2ddbe4a"
 storage_version_token = "1788255223258472"
 content_type = "application/octet-stream"
+
+[[outputs]]
+id = "VgJ9dpS-_8lQjIVIuAyM9"
+uri = "file://artifacts/api-server/IDENTITY_REGRESSION_AUTOPSY_03.md"
+type = "text"
+title = "Identity Regression Autopsy 03"
+description = "Primary diagnosis of the acceptance-runner provisioning failure and earliest broken stage."
+logical_id = "0980db46-5ffc-43bf-adca-9c3e2357d130"
+content_hash = "sha256:0aadf3cc49f9f50e74f1f361582d9c54d0fc17445f9068e66e801a67c1cfa7d6"
+size = 6845
+mtime_ms = 1788255839812
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/0980db46-5ffc-43bf-adca-9c3e2357d130/73407369-b952-41a3-af3f-1e910cb6e5df"
+storage_version_token = "1788255924054969"
+content_type = "text/markdown"
+
+[[outputs]]
+id = "1DCzmLO0yZzDfY5jYSPLR"
+uri = "file://artifacts/api-server/IDENTITY_REGRESSION_AUTOPSY_03.json"
+type = "unspecified"
+title = "Identity Autopsy 03 — Structured Result"
+description = "Machine-readable summary, per-control traces, safety boundaries, and final decision."
+logical_id = "51046263-dfd5-4a1e-985a-179e45e5fad4"
+content_hash = "sha256:d90a69214182e955d38e95631ba75f49f4609544bb29244884db3987337c2488"
+size = 43365
+mtime_ms = 1788255840038
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/51046263-dfd5-4a1e-985a-179e45e5fad4/4c4cfcbb-6de7-4c57-bfe0-df11e8afadc3"
+storage_version_token = "1788255925355423"
+content_type = "application/octet-stream"
+
+[[outputs]]
+id = "e1ZuF0YQAhcH2Tgsl5rPM"
+uri = "file://artifacts/api-server/IDENTITY_REGRESSION_AUTOPSY_03_CONTROLS.csv"
+type = "table"
+title = "Identity Autopsy 03 — Controls"
+description = "Detailed ten-control canonical-state, candidate, identity, and blocking audit."
+logical_id = "05673a31-f49e-4eea-8b16-6d23cca597d7"
+content_hash = "sha256:5950b9c91a314461945e59d4bb13aeed5c9cee584d4ce57fa283cf4c03f80f7d"
+size = 13285
+mtime_ms = 1788255840203
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/05673a31-f49e-4eea-8b16-6d23cca597d7/fcd8c83c-b578-48fa-8045-ec1ce91d31f1"
+storage_version_token = "1788255926699052"
+content_type = "text/csv"
+
+[[outputs]]
+id = "mXJg982LMz6bhfUXM_KUa"
+uri = "file://artifacts/api-server/IDENTITY_REGRESSION_AUTOPSY_03_PATH_DIFF.json"
+type = "unspecified"
+title = "Identity Autopsy 03 — Path Difference"
+description = "Acceptance-runner versus known-company identity-path comparison."
+logical_id = "7ff60703-581b-43d1-b150-9fed337413b4"
+content_hash = "sha256:45dc92278555d6756514aba3b945b3e5d8e8292469e96f9345c47611847cb80d"
+size = 4910
+mtime_ms = 1788255840380
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/7ff60703-581b-43d1-b150-9fed337413b4/778d2667-4d56-49fd-92ea-f1f3ddbecc5f"
+storage_version_token = "1788255928069062"
+content_type = "application/octet-stream"
+
+[[outputs]]
+id = "QYZ6fB43Om_kvGU7rJe6_"
+uri = "file://artifacts/api-server/IDENTITY_REGRESSION_AUTOPSY_03_RAW_RESULT_AUDIT.json"
+type = "unspecified"
+title = "Identity Autopsy 03 — Raw Result Audit"
+description = "Persisted discovery-run and rank-one candidate review audit for all ten controls."
+logical_id = "fd3e93cc-fb08-4f63-8785-51a326dacf27"
+content_hash = "sha256:8194fdc8b5e39c831170146e0b127c6a83357a2e963f76b88829272867d0145b"
+size = 13774
+mtime_ms = 1788255840515
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/fd3e93cc-fb08-4f63-8785-51a326dacf27/dcf15ac8-ef10-4343-b18c-375f8295cbc9"
+storage_version_token = "1788255929340751"
+content_type = "application/octet-stream"

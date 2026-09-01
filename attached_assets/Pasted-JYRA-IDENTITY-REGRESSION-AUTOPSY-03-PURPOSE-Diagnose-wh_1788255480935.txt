@@ -1,0 +1,640 @@
+JYRA — IDENTITY REGRESSION AUTOPSY 03
+
+PURPOSE
+
+Diagnose why:
+
+FROZEN 10-CONTROL CORE INTELLIGENCE ACCEPTANCE TEST 02
+
+failed before intelligence execution with:
+
+Controls expected = 10
+Controls attempted = 10
+Controls provisioned = 0
+Blocked at identity = 10
+Valid controls = 0
+INVALID_RUN = 10
+
+Exa COMPANY_DISCOVERY calls = 10
+Raw discovery results = 90
+Canonical identities produced = 0
+Provider failures = 0
+
+Final benchmark result:
+
+G — IDENTITY REGRESSION
+
+THIS TASK IS DIAGNOSIS ONLY.
+
+DO NOT FIX ANYTHING.
+
+==================================================
+1. DATABASE SAFETY
+==================================================
+
+DEVELOPMENT ONLY.
+
+Use only the approved development database fingerprint.
+
+Production operations = 0.
+
+No migrations.
+No schema changes.
+No production reconciliation.
+
+==================================================
+2. FREEZE ALL PRODUCT LOGIC
+==================================================
+
+DO NOT CHANGE:
+
+Business Twin
+ICP
+Find My Market
+company discovery
+identity logic
+company-likeness logic
+profile resolution
+Bright Data
+Tavily
+Exa
+adaptive retrieval
+query generation
+evidence
+facts
+temporal logic
+signals
+clusters
+opportunity logic
+WHY
+NBA
+idempotency
+contacts
+UI.
+
+NO CODE FIXES.
+
+==================================================
+3. IMPORTANT PRIOR VALIDATION
+==================================================
+
+Profile Resolution Fix 02A previously validated:
+
+Legitimate companies safe resolution coverage = 100%
+
+Preserved WHO replay:
+
+CONFIRMED = 8
+PROBABLE = 3
+NOT_A_COMPANY = 1
+AMBIGUOUS/UNRESOLVED = 0
+WRONG identities = 0
+Wrong automatic attachments = 0
+
+Identity precision for automatic attachments = 100%.
+
+The acceptance benchmark now produced:
+
+0/10 canonical identities.
+
+Determine exactly why.
+
+==================================================
+4. PRIMARY QUESTION
+==================================================
+
+Identify the FIRST broken stage between:
+
+CONTROL INPUT
+
+→ CONTROL PROVISIONING
+
+→ EXISTING CANONICAL LOOKUP
+
+→ COMPANY-LIKENESS
+
+→ ENTITY RESOLUTION
+
+→ COMPANY DISCOVERY
+
+→ DISCOVERY CANDIDATE MATCHING
+
+→ DOMAIN RESOLUTION
+
+→ LINKEDIN PROFILE RESOLUTION
+
+→ PROVIDER FIRMOGRAPHICS
+
+→ ENTITY VALIDATION
+
+→ CANONICAL ATTACHMENT
+
+→ ACCEPTANCE-RUNNER ELIGIBILITY.
+
+Do not diagnose merely as:
+
+"identity failed."
+
+Find the earliest specific break.
+
+==================================================
+5. CONTROL PROVISIONING SEMANTICS
+==================================================
+
+The frozen acceptance test explicitly required:
+
+"Provision the exact 10 benchmark companies independently of Find My
+Market discovery."
+
+Determine how the runner interpreted this.
+
+For each control answer:
+
+Was the benchmark company already known by:
+
+legal/company name?
+canonical company ID?
+domain?
+verified LinkedIn?
+previous identity evidence?
+
+Did the runner attempt to reuse an existing canonical company?
+
+Did it instead invoke COMPANY_DISCOVERY?
+
+Why?
+
+Was COMPANY_DISCOVERY actually necessary?
+
+==================================================
+6. KNOWN ENTITY VS MARKET DISCOVERY
+==================================================
+
+Explicitly inspect whether two distinct operations have been conflated:
+
+A. RESOLVE THIS KNOWN COMPANY
+
+versus
+
+B. DISCOVER COMPANIES THAT MAY MATCH AN ICP.
+
+A frozen benchmark control is a known target entity.
+
+It should not automatically require broad market discovery merely to
+begin identity resolution.
+
+Determine whether acceptance code incorrectly used:
+
+COMPANY_DISCOVERY
+
+where normal known-company resolution should use:
+
+existing canonical lookup
+company lookup
+domain/profile resolution
+or equivalent existing identity path.
+
+DIAGNOSE ONLY.
+
+==================================================
+7. TRACE ALL 10 CONTROLS
+==================================================
+
+For every control produce:
+
+control reference
+input company name
+input domain if present
+input LinkedIn if present
+existing canonical company ID if any
+
+existing company lookup attempted?
+result?
+
+company-likeness state
+
+COMPANY_DISCOVERY invoked?
+why?
+
+exact Exa discovery query
+
+raw result count
+
+top candidates
+
+candidate names
+candidate domains
+candidate LinkedIn URLs
+candidate scores if available
+
+correct entity present in raw results?
+YES / NO
+
+if YES:
+rank
+
+candidate normalization result
+
+candidate identity state
+
+why candidate rejected
+
+domain resolution attempted?
+result?
+
+profile resolution attempted?
+result?
+
+firmographics attempted?
+result?
+
+canonical attachment attempted?
+result?
+
+final block reason.
+
+==================================================
+8. RAW RESULT AUDIT
+==================================================
+
+There were:
+
+90 Exa raw results.
+
+Audit them.
+
+For each control determine:
+
+REFERENCE_ENTITY_PRESENT_IN_RAW_RESULTS
+
+or
+
+REFERENCE_ENTITY_ABSENT_FROM_RAW_RESULTS.
+
+If present but rejected:
+
+this is NOT primarily a provider discovery failure.
+
+Trace the rejection.
+
+If absent:
+
+trace whether the discovery query was appropriate for resolving a
+known company.
+
+==================================================
+9. EXISTING CANONICAL REUSE
+==================================================
+
+Determine whether any of the 10 controls already existed in development
+canonical state before the acceptance run.
+
+For each:
+
+existing record = YES/NO
+
+existing canonical domain
+
+existing LinkedIn
+
+existing identity provenance
+
+existing identity status
+
+reason it was or was not reused.
+
+A benchmark runner must not silently bypass valid canonical state unless
+the benchmark explicitly requires fresh identity resolution.
+
+==================================================
+10. PROFILE RESOLUTION FIX 02A REGRESSION CHECK
+==================================================
+
+Verify whether the normal production identity path still behaves as
+validated by Profile Resolution Fix 02A.
+
+Do NOT execute external provider calls.
+
+Using existing fixtures/tests/persisted state only, determine whether:
+
+company-likeness gate still works
+
+CONFIRMED/PROBABLE semantics still work
+
+safe discovery-evidence reuse still works
+
+canonical attachment protections still work
+
+service-shaped labels still become NOT_A_COMPANY
+
+parent/brand protections still work.
+
+If these still pass:
+
+classify this as likely benchmark/provisioning integration regression,
+not identity-engine regression.
+
+==================================================
+11. ACCEPTANCE RUNNER VS NORMAL PRODUCT PATH
+==================================================
+
+Compare:
+
+Acceptance Test 02 provisioning path
+
+against
+
+normal JYRA company-resolution path.
+
+Identify any divergence in:
+
+function called
+input structure
+required identifiers
+identity thresholds
+provider capability
+canonical lookup
+profile resolution
+candidate validation
+company creation/attachment
+transaction scope
+database scope.
+
+==================================================
+12. PROVIDER CAPABILITY CHECK
+==================================================
+
+The failed run made:
+
+10 Exa COMPANY_DISCOVERY calls.
+
+Verify capability routing.
+
+Was this:
+
+COMPANY_DISCOVERY
+
+or
+
+COMPANY_PROFILE_RESOLUTION
+
+or
+
+COMPANY_LOOKUP?
+
+Do not treat these as interchangeable.
+
+Report exact runtime capability invoked.
+
+==================================================
+13. CANONICAL CREATION RULE
+==================================================
+
+Determine whether acceptance runner required:
+
+CONFIRMED identity only
+
+when normal runtime permits safe:
+
+PROBABLE
+
+for research without automatic canonical attachment.
+
+This is important.
+
+A company may be safe enough to research while remaining PROBABLE.
+
+Determine whether acceptance runner incorrectly equated:
+
+NOT CONFIRMED
+
+with
+
+INVALID / BLOCKED.
+
+Do not change threshold.
+
+Diagnose only.
+
+==================================================
+14. RESEARCH ELIGIBILITY VS CANONICAL ATTACHMENT
+==================================================
+
+Audit whether JYRA currently distinguishes:
+
+SAFE TO AUTO-ATTACH
+
+from
+
+SAFE TO RESEARCH.
+
+Example:
+
+PROBABLE identity
+with correct entity evidence
+but insufficient independent verification
+
+may legitimately be:
+
+not safe to auto-attach canonical LinkedIn
+
+but potentially safe to research.
+
+Determine whether the acceptance runner blocked all such entities.
+
+==================================================
+15. DATABASE FINGERPRINT / ENVIRONMENT
+==================================================
+
+Confirm:
+
+acceptance runner used correct development DB
+
+same expected development environment
+
+correct tenant/project
+
+correct Aadit test Business Twin/project
+
+expected provider configuration.
+
+Check whether identity records existed in a different development DB or
+test namespace.
+
+No writes.
+
+==================================================
+16. COMPANY-LIKENESS CHECK
+==================================================
+
+Determine whether any legitimate controls were incorrectly classified:
+
+NOT_A_COMPANY.
+
+If so report exact rule/reason.
+
+Do not weaken the gate.
+
+==================================================
+17. ERROR / BLOCK REASON AUDIT
+==================================================
+
+For all 10 blocked controls extract the exact persisted/runtime reason.
+
+Do not summarize ten distinct failures into one generic reason if they
+differ.
+
+Group identical root causes only after tracing individually.
+
+==================================================
+18. FAILURE TAXONOMY
+==================================================
+
+Classify each control by EARLIEST broken stage:
+
+BENCHMARK_INPUT_INVALID
+
+WRONG_DATABASE_OR_SCOPE
+
+EXISTING_CANONICAL_NOT_REUSED
+
+KNOWN_ENTITY_SENT_TO_DISCOVERY
+
+DISCOVERY_QUERY_FAILURE
+
+PROVIDER_DISCOVERY_MISS
+
+CANDIDATE_NORMALIZATION_FAILURE
+
+CANDIDATE_MATCH_FAILURE
+
+COMPANY_LIKENESS_FALSE_REJECTION
+
+DOMAIN_RESOLUTION_FAILURE
+
+PROFILE_RESOLUTION_FAILURE
+
+ENTITY_VALIDATION_TOO_STRICT
+
+PROBABLE_INCORRECTLY_BLOCKED
+
+CANONICAL_ATTACHMENT_FAILURE
+
+RESEARCH_ELIGIBILITY_FAILURE
+
+ACCEPTANCE_RUNNER_INTEGRATION_FAILURE
+
+OTHER.
+
+==================================================
+19. NO NEW PROVIDER CALLS
+==================================================
+
+Use:
+
+persisted benchmark traces
+raw Exa responses
+existing database state
+existing identity fixtures
+existing tests
+application logs.
+
+New provider calls = 0.
+
+==================================================
+20. REQUIRED ARTIFACTS
+==================================================
+
+Generate:
+
+IDENTITY_REGRESSION_AUTOPSY_03.md
+
+IDENTITY_REGRESSION_AUTOPSY_03.json
+
+IDENTITY_REGRESSION_AUTOPSY_03_CONTROLS.csv
+
+IDENTITY_REGRESSION_AUTOPSY_03_PATH_DIFF.json
+
+IDENTITY_REGRESSION_AUTOPSY_03_RAW_RESULT_AUDIT.json
+
+==================================================
+21. REQUIRED SUMMARY
+==================================================
+
+Controls = 10
+
+Existing canonical companies found =
+Existing canonical companies reused =
+
+COMPANY_DISCOVERY calls in failed run = 10
+Raw results audited = 90
+
+Reference entities present in raw results =
+Reference entities absent =
+
+Rejected after retrieval =
+
+CONFIRMED =
+PROBABLE =
+AMBIGUOUS =
+NOT_A_COMPANY =
+WRONG_ENTITY =
+UNRESOLVED =
+
+Safe-to-research but blocked =
+
+Normal identity regression reproduced =
+YES / NO
+
+Acceptance-runner path divergence =
+YES / NO
+
+Primary earliest broken stage =
+
+Secondary issues =
+
+New provider calls = 0
+
+Production operations = 0
+
+==================================================
+22. FINAL DECISION
+==================================================
+
+Return exactly ONE:
+
+A — ACCEPTANCE RUNNER / PROVISIONING REGRESSION
+
+B — EXISTING CANONICAL REUSE REGRESSION
+
+C — KNOWN-ENTITY RESOLUTION INCORRECTLY USES MARKET DISCOVERY
+
+D — PROFILE RESOLUTION REGRESSION
+
+E — ENTITY VALIDATION / RESEARCH ELIGIBILITY REGRESSION
+
+F — COMPANY-LIKENESS REGRESSION
+
+G — PROVIDER DISCOVERY FAILURE
+
+H — DATABASE / ENVIRONMENT MISMATCH
+
+I — MULTIPLE IDENTITY DEFECTS
+
+J — INCONCLUSIVE
+
+==================================================
+23. STOP
+==================================================
+
+STOP AFTER DIAGNOSIS.
+
+DO NOT FIX.
+
+DO NOT RERUN ACCEPTANCE TEST.
+
+DO NOT RERUN PROVIDERS.
+
+DO NOT RUN 50-COMPANY TEST.
+
+Return the autopsy for review.
