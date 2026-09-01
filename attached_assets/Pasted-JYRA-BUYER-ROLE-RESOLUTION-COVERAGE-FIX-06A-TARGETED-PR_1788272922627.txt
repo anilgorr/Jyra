@@ -1,0 +1,914 @@
+JYRA — BUYER ROLE RESOLUTION COVERAGE FIX 06A
+TARGETED PRODUCT FIX
+
+PURPOSE
+
+Fix the single remaining material defect from:
+
+JYRA — MVP STRUCTURAL REPAIR CYCLE 06
+
+Cycle 06 successfully repaired:
+
+- evidence → fact → signal gating
+- provider/question lifecycle consistency
+- cost/performance reconciliation
+- historical canonical reuse
+- seller/adjacent-vendor research gates
+- seller/adjacent-vendor signal gates
+- seller/adjacent-vendor opportunity ranking gates.
+
+All structural regressions passed.
+
+Remaining blocker:
+
+Final bounded discovery validation:
+
+18 evaluable companies
+0 POTENTIAL_BUYER
+18 UNKNOWN buyer role
+0 eligible potential buyers
+
+Therefore the 5-company mini research correctly did not execute.
+
+The problem is now specifically:
+
+COMPANY
+→ BUYER ROLE RESOLUTION
+
+not:
+
+buyer-role safety
+research
+signals
+ranking.
+
+Fix buyer-role RESOLUTION COVERAGE GENERICALLY.
+
+Do NOT weaken the gates.
+
+==================================================
+1. DATABASE SAFETY
+==================================================
+
+DEVELOPMENT ONLY.
+
+Production operations = 0.
+
+Do not:
+
+modify production
+migrate production
+reset production
+seed production
+truncate production.
+
+==================================================
+2. SCOPE
+==================================================
+
+Allowed:
+
+buyer-role classification inputs
+buyer-role classification execution
+buyer-role evidence/provenance
+buyer-role persistence
+buyer-role confidence
+buyer-role refresh/recomputation
+buyer-role handoff from discovery/profile/firmographics
+buyer-role classification fallback when sufficient company information exists.
+
+Do NOT modify:
+
+Business Twin
+ICP
+Find My Market query strategy
+COMPANY_DISCOVERY provider
+discovery ranking
+canonical identity rules
+firmographic safety rules
+Research Planner
+Tavily/Exa research retrieval
+evidence lifecycle
+fact extraction
+signal definitions
+signal mapping
+WHEN
+WHY
+opportunity scoring
+NBA
+contact enrichment.
+
+==================================================
+3. CORE PRINCIPLE
+==================================================
+
+UNKNOWN must remain safe.
+
+Do NOT change:
+
+UNKNOWN → POTENTIAL_BUYER.
+
+Instead:
+
+resolve UNKNOWN when sufficient evidence exists.
+
+Expected:
+
+company identity
++ company business description
++ website/profile evidence
++ ICP/offering relationship
+
+→ buyer-role classification.
+
+Buyer role is RELATIVE TO:
+
+Seller Business Twin
++
+Offering.
+
+It is not a universal property of the company.
+
+Example:
+
+Microsoft may be:
+
+POTENTIAL_BUYER for one seller
+PARTNER_POSSIBLE for another
+SELLER_COMPETITOR for another.
+
+==================================================
+4. FIRST DIAGNOSE THE 18 UNKNOWN COMPANIES
+==================================================
+
+Use the persisted Cycle 06 bounded validation.
+
+Do NOT make provider calls initially.
+
+For all 18 UNKNOWN companies inspect:
+
+canonical company
+domain
+company name
+website/profile
+industry
+company description
+firmographics
+discovery candidate payload
+existing provider metadata
+ICP relationship
+offering relationship
+buyer-role record
+buyer-role confidence
+buyer-role provenance.
+
+Determine why each remained UNKNOWN.
+
+Classify root cause into:
+
+A. CLASSIFIER_NOT_INVOKED
+
+B. CLASSIFIER_INPUT_NOT_PASSED
+
+C. COMPANY_DESCRIPTION_MISSING
+
+D. WEBSITE/PROFILE DATA_NOT_AVAILABLE
+
+E. RELATIONSHIP_REASONING_NOT_EXECUTED
+
+F. RESULT_NOT_PERSISTED
+
+G. RESULT_PERSISTED_BUT_NOT_READ
+
+H. CONFIDENCE_THRESHOLD_TOO_STRICT
+
+I. GENUINELY_AMBIGUOUS
+
+J. OTHER.
+
+Report counts.
+
+==================================================
+5. CHECK FOR FLOW REGRESSION
+==================================================
+
+Fix 05 fresh validation previously produced:
+
+12/20 plausible buyers
+0/20 direct Managed SOC sellers.
+
+Cycle 06 fresh validation produced:
+
+18/18 UNKNOWN.
+
+Determine whether Cycle 06 accidentally changed:
+
+buyer-role classifier invocation
+buyer-role inputs
+role persistence
+role lookup
+market-project scoping
+
+even though the safety gates themselves are correct.
+
+If yes:
+
+repair the regression.
+
+Do NOT revert Cycle 06 safety protections.
+
+==================================================
+6. BUYER-ROLE INPUT MODEL
+==================================================
+
+Buyer-role resolution should use existing trustworthy information such as:
+
+Business Twin offering
+approved ICP
+candidate primary business description
+website description
+company profile description
+industry
+products/services
+company category
+known company type
+firmographics.
+
+Do NOT require WHEN/WHY research.
+
+Buyer-role classification belongs before deep opportunity research.
+
+==================================================
+7. GENERIC ROLE QUESTION
+==================================================
+
+The classifier should answer:
+
+"Relative to THIS seller and THIS offering, what is this company's likely
+commercial role?"
+
+Allowed outputs:
+
+POTENTIAL_BUYER
+SELLER_COMPETITOR
+ADJACENT_VENDOR
+PARTNER_POSSIBLE
+UNKNOWN.
+
+Examples are conceptual only.
+
+Managed SOC seller:
+
+Operating SaaS company
+→ potentially POTENTIAL_BUYER.
+
+MSSP selling Managed SOC
+→ SELLER_COMPETITOR.
+
+Cybersecurity software vendor
+→ could be ADJACENT_VENDOR or SELLER_COMPETITOR depending on business.
+
+Recruitment seller:
+
+Operating manufacturer hiring staff
+→ POTENTIAL_BUYER.
+
+Recruitment agency
+→ SELLER_COMPETITOR.
+
+ERP implementation seller:
+
+Manufacturer/distributor
+→ POTENTIAL_BUYER.
+
+ERP consultancy
+→ SELLER_COMPETITOR.
+
+Solar installer:
+
+Factory/hotel/warehouse operator
+→ POTENTIAL_BUYER.
+
+Solar EPC/vendor
+→ SELLER_COMPETITOR.
+
+Keep this generic.
+
+==================================================
+8. DO NOT USE KEYWORD-ONLY CLASSIFICATION
+==================================================
+
+Do not decide:
+
+security keyword = seller
+
+or
+
+technology company = buyer.
+
+Use company BUSINESS MODEL / PRIMARY ACTIVITY.
+
+Examples:
+
+Cybersecurity-heavy bank
+can still be a buyer.
+
+Security software vendor
+may not be.
+
+Cloud services company
+may be buyer, partner, or seller depending on offering relationship.
+
+==================================================
+9. EVIDENCE-BACKED ROLE CLASSIFICATION
+==================================================
+
+Buyer-role result must retain:
+
+role
+confidence
+reason
+seller offering
+supporting company facts/description
+source/provenance
+classification timestamp
+classifier/version.
+
+Do not fabricate rationale.
+
+If information is insufficient:
+
+UNKNOWN.
+
+==================================================
+10. CONFIDENCE
+==================================================
+
+Separate role from confidence.
+
+For example:
+
+role = POTENTIAL_BUYER
+confidence = MEDIUM
+
+is valid if the company's primary business is clearly an operating company
+that fits the buyer market, even if some details are missing.
+
+Do not require unrealistic certainty.
+
+But explicit ambiguity should remain UNKNOWN.
+
+==================================================
+11. PRIMARY BUSINESS DESCRIPTION
+==================================================
+
+Audit whether the role classifier has a normalized:
+
+primary_business_description
+
+or equivalent.
+
+It should answer what the company mainly does.
+
+Examples:
+
+"Provides MDR and managed SOC services"
+→ seller-side.
+
+"Cloud-based accounting software company"
+→ operating company / possible buyer.
+
+"Commercial bank"
+→ operating company / possible buyer.
+
+If existing firmographic/profile data can support this, use it.
+
+Do not build a large taxonomy.
+
+==================================================
+12. USE EXISTING DATA BEFORE NEW PROVIDER CALLS
+==================================================
+
+For the persisted 18:
+
+first classify using existing saved:
+
+company profiles
+website descriptions
+firmographics
+discovery evidence.
+
+Fresh provider calls = 0 for initial replay.
+
+Determine how many UNKNOWN can safely resolve.
+
+==================================================
+13. OPTIONAL CHEAP ROLE-RESOLUTION FALLBACK
+==================================================
+
+ONLY if existing data is insufficient for a company that would otherwise be
+valuable:
+
+use the existing normal COMPANY_PROFILE_RESOLUTION / WEBSITE information path
+if already part of the product.
+
+Do NOT introduce a new provider.
+
+Do NOT perform deep WHEN/WHY research.
+
+The purpose is only:
+
+"What does this company primarily do?"
+
+Keep provider usage bounded.
+
+==================================================
+14. SELLER SAFETY MUST NOT WEAKEN
+==================================================
+
+These must remain blocked:
+
+clear same-service seller
+clear competing service provider
+vendor product activity masquerading as buyer activity.
+
+Do not promote known sellers merely to create research volume.
+
+==================================================
+15. ADJACENT VENDOR SEMANTICS
+==================================================
+
+Do not automatically treat every ADJACENT_VENDOR as ineligible forever.
+
+Preserve current project semantics.
+
+But for a normal buyer-acquisition project:
+
+ADJACENT_VENDOR should not become a buyer opportunity unless explicitly
+permitted by the Business Twin/ICP.
+
+Do not change existing Cycle 06 gate behavior.
+
+==================================================
+16. UNKNOWN SEMANTICS
+==================================================
+
+UNKNOWN means:
+
+role cannot currently be determined.
+
+It must not mean:
+
+not fit
+seller
+buyer
+negative opportunity.
+
+UNKNOWN companies may be eligible only for cheap ROLE-RESOLUTION work,
+not buyer opportunity research.
+
+==================================================
+17. OFFLINE REPLAY
+==================================================
+
+After repair, replay all 18 Cycle 06 UNKNOWN companies using persisted data.
+
+Report:
+
+Original UNKNOWN = 18
+
+After resolution:
+
+POTENTIAL_BUYER =
+SELLER_COMPETITOR =
+ADJACENT_VENDOR =
+PARTNER_POSSIBLE =
+UNKNOWN =
+
+For every resolved company provide:
+
+Company
+Domain
+Role
+Confidence
+Reason
+Evidence source.
+
+Independently review all resolved results.
+
+==================================================
+18. OFFLINE SAFETY TARGET
+==================================================
+
+Do NOT set a numeric target that forces promotion.
+
+But:
+
+if obviously operating companies with valid buyer characteristics remain
+UNKNOWN despite sufficient stored evidence, the fix is incomplete.
+
+If clearly ambiguous companies remain UNKNOWN, that is correct.
+
+==================================================
+19. FRESH BOUNDED VALIDATION
+==================================================
+
+After offline replay passes, perform ONE fresh bounded Find My Market
+validation.
+
+Target:
+
+20 evaluable companies.
+
+This is NOT a full 50-company Reality Test.
+
+Use normal current product discovery.
+
+No handpicking.
+
+No known companies seeded.
+
+==================================================
+20. FRESH 20 BUYER-ROLE REVIEW
+==================================================
+
+For every company report:
+
+Company
+Domain
+Primary business
+JYRA buyer role
+Role confidence
+Role evidence
+Independent reviewer role
+Agreement.
+
+Reviewer roles:
+
+POTENTIAL_BUYER
+SELLER_COMPETITOR
+ADJACENT_VENDOR
+PARTNER_POSSIBLE
+UNKNOWN.
+
+==================================================
+21. VALIDATION EXPECTATION
+==================================================
+
+For a healthy buyer-market discovery run:
+
+we should no longer see:
+
+100% UNKNOWN
+
+unless provider/company data genuinely contains no business descriptions.
+
+Do not fabricate a target distribution.
+
+However report:
+
+buyer-role resolution coverage =
+non-UNKNOWN / evaluable companies.
+
+Buyer-role precision =
+correct resolved roles / independently reviewed resolved roles.
+
+Target safety:
+
+buyer-role precision >= 90%.
+
+Seller classified as POTENTIAL_BUYER =
+0.
+
+==================================================
+22. RESEARCH ELIGIBILITY CHECK
+==================================================
+
+After role resolution, apply current Cycle 06 gates.
+
+Report:
+
+POTENTIAL_BUYER =
+Research eligible =
+
+SELLER_COMPETITOR research eligible =
+MUST BE 0 unless explicit project configuration permits.
+
+ADJACENT_VENDOR buyer research eligible =
+according to current gate semantics.
+
+UNKNOWN buyer research eligible =
+MUST BE 0 for deep buyer research.
+
+==================================================
+23. MINI RESEARCH VALIDATION
+==================================================
+
+ONLY if at least 5 legitimate POTENTIAL_BUYER companies are research eligible:
+
+select 5 deterministically.
+
+Run the previously blocked Cycle 06 mini research validation.
+
+Do NOT tune research.
+
+Purpose is only to verify the already-repaired lifecycle.
+
+Report:
+
+Companies = 5
+Questions =
+Provider attempts =
+Question succeeded =
+Question failed =
+RAW evidence =
+VERIFIED/accepted evidence =
+Candidate facts =
+Approved facts =
+Supported signals =
+Supported opportunity evidence.
+
+Confirm:
+
+approved facts require accepted evidence
+
+supported signals require approved facts
+
+seller-as-buyer signals = 0
+
+accounting reconciliation = PASS.
+
+If fewer than 5 legitimate potential buyers exist:
+
+do not force the mini run.
+
+Report why.
+
+==================================================
+24. DO NOT OPTIMIZE OPPORTUNITY RECALL
+==================================================
+
+No:
+
+new signals
+query tuning
+provider changes
+fact extraction broadening
+WHEN changes
+WHY changes.
+
+The historical 40% recall remains technical debt.
+
+Not part of this fix.
+
+==================================================
+25. REGRESSION TESTS
+==================================================
+
+Preserve:
+
+Cycle 06 = PASS
+Fix 05 = PASS
+Fix 04 = PASS
+identity = PASS
+firmographics = PASS
+idempotency = PASS.
+
+Add tests:
+
+1 classifier invoked for discovered canonical company
+
+2 Business Twin/offering passed to classifier
+
+3 company description passed to classifier
+
+4 role result persisted project-relative
+
+5 persisted result read downstream
+
+6 potential buyer example classified correctly
+
+7 same-service seller classified seller/competitor
+
+8 adjacent vendor remains distinct
+
+9 genuinely ambiguous remains UNKNOWN
+
+10 missing description remains UNKNOWN
+
+11 technology/security keyword alone does not classify seller
+
+12 operating tech company can be potential buyer
+
+13 buyer-role confidence stored separately
+
+14 buyer-role provenance stored
+
+15 buyer-role result survives canonical reuse
+
+16 role recomputation is idempotent
+
+17 seller cannot become potential buyer through missing data
+
+18 UNKNOWN cannot enter deep buyer research
+
+19 potential buyer can reach research eligibility
+
+20 fresh 20-company role coverage measurable.
+
+==================================================
+26. REQUIRED ARTIFACT
+==================================================
+
+Generate:
+
+JYRA_BUYER_ROLE_RESOLUTION_FIX_06A.md
+
+Include:
+
+root cause
+whether Cycle 06 caused regression
+18-company diagnosis
+classifier data flow before/after
+role evidence model
+offline replay
+fresh 20-company validation
+manual adjudication
+mini research if eligible
+provider cost
+regressions
+remaining limitations.
+
+==================================================
+27. REQUIRED FINAL REPORT
+==================================================
+
+ROOT CAUSE
+
+Why 18/18 were UNKNOWN =
+
+Cycle 06 regression =
+YES / NO
+
+Earliest broken stage =
+
+FIX
+
+Buyer-role classifier invocation repaired =
+YES / NO
+
+Buyer-role inputs repaired =
+YES / NO
+
+Buyer-role persistence repaired =
+YES / NO
+
+Buyer-role downstream read repaired =
+YES / NO
+
+Safety thresholds weakened =
+MUST BE NO
+
+OFFLINE 18 REPLAY
+
+Companies = 18
+
+Potential buyer =
+Seller/competitor =
+Adjacent vendor =
+Partner possible =
+Unknown =
+
+Resolution coverage =
+
+Reviewer correct resolved roles =
+Reviewer incorrect resolved roles =
+Resolved-role precision =
+
+Seller incorrectly classified as buyer =
+MUST BE 0
+
+FRESH 20 VALIDATION
+
+Raw candidates =
+Evaluable = 20
+
+Potential buyer =
+Seller/competitor =
+Adjacent vendor =
+Partner possible =
+Unknown =
+
+Buyer-role resolution coverage =
+
+Reviewer agreement =
+Buyer-role precision =
+
+Seller-as-buyer classification errors =
+
+RESEARCH HANDOFF
+
+Potential buyers =
+Research eligible =
+
+Unknown deep-research eligible =
+MUST BE 0
+
+Seller deep-research eligible =
+MUST BE 0 unless explicitly permitted
+
+MINI RESEARCH
+
+Executed =
+YES / NO
+
+If YES:
+
+Companies = 5
+Questions =
+Provider attempts =
+Accepted evidence =
+Approved facts =
+Supported signals =
+Supported opportunities =
+Accounting reconciliation =
+PASS / FAIL
+
+Supported signal with zero approved facts =
+MUST BE 0
+
+Approved fact with zero accepted evidence =
+MUST BE 0
+
+REGRESSIONS
+
+Cycle 06 =
+PASS / FAIL
+
+Fix 05 =
+PASS / FAIL
+
+Fix 04 =
+PASS / FAIL
+
+Identity =
+PASS / FAIL
+
+Firmographics =
+PASS / FAIL
+
+Idempotency =
+PASS / FAIL
+
+New tests =
+X / 20
+
+Typecheck =
+PASS / FAIL
+
+Build =
+PASS / FAIL
+
+Provider calls =
+Known cost =
+Unknown cost =
+
+Production operations =
+MUST BE 0
+
+==================================================
+28. FINAL VERDICT
+==================================================
+
+Return EXACTLY ONE:
+
+A — BUYER ROLE RESOLUTION REPAIRED
+
+B — BUYER ROLE COVERAGE STILL TOO LOW
+
+C — BUYER ROLE PRECISION / SAFETY FAILED
+
+D — ROLE PERSISTENCE / HANDOFF STILL BROKEN
+
+E — COMPANY PROFILE DATA INSUFFICIENT
+
+F — MULTIPLE MATERIAL DEFECTS REMAIN
+
+==================================================
+29. STOP
+==================================================
+
+Do NOT run the full 50-company benchmark.
+
+If verdict = A:
+
+state:
+
+"Buyer-role resolution repaired.
+
+Cycle 06 structural invariants remain intact.
+
+Next step:
+one final fresh 50-Company MVP Reality Test."
+
+STOP.

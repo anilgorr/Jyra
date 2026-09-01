@@ -128,7 +128,9 @@ export function terminalStatusForResponse(
 }
 
 export function buyerRoleAllowsBuyerResearch(role: string): boolean {
-  return role !== "SELLER_COMPETITOR" && role !== "ADJACENT_VENDOR";
+  // Research is a buyer-only handoff.  Unknown is deliberately fail-closed;
+  // role resolution must produce a persisted POTENTIAL_BUYER first.
+  return role === "POTENTIAL_BUYER";
 }
 
 export type ResearchQueryPlan = {
@@ -1012,6 +1014,17 @@ export async function executeResearchNow(input: {
     && replay.job.startedAt.getTime() <= now.getTime() - 120_000
     ? replay
     : null;
+  if (interruptedAttempt) {
+    await db.update(researchJobsTable).set({
+      status: "FAILED",
+      errorCode: "INTERRUPTED_ATTEMPT",
+      errorMessage: "The prior research worker stopped before recording a terminal provider response.",
+      completedAt: now,
+    }).where(and(
+      eq(researchJobsTable.id, interruptedAttempt.job.id),
+      eq(researchJobsTable.status, "RUNNING"),
+    ));
+  }
   const failedAttempt = replay?.job.status === "FAILED" || interruptedAttempt ? replay : null;
   if (failedAttempt) {
     idempotencyKey = `${baseIdempotencyKey}:retry:${failedAttempt.job.id}`;

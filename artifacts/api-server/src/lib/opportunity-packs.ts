@@ -503,7 +503,11 @@ export async function approveOpportunityPackVersion(versionId: string, userId: s
 
 export async function activateOpportunityPackVersion(versionId: string, userId: string) {
   return db.transaction(async (tx) => {
-    const [version] = await tx.select().from(intelligencePackVersionsTable).where(eq(intelligencePackVersionsTable.id, versionId)).limit(1);
+    // Serialize reviewers activating the same frozen version. Without the row
+    // lock, concurrent requests can both observe APPROVED and create duplicate
+    // downstream definitions before either request marks the version active.
+    const [version] = await tx.select().from(intelligencePackVersionsTable)
+      .where(eq(intelligencePackVersionsTable.id, versionId)).limit(1).for("update");
     if (!version || version.status === "ACTIVATED") return version;
     if (version.status !== "APPROVED") throw new Error("Approve the Opportunity Intelligence Pack before activating it");
     const signals = await tx.select().from(intelligencePackSignalsTable).where(and(

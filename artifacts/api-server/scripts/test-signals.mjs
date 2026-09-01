@@ -106,11 +106,13 @@ assert.equal(weakened[0].strength < independentCluster[0].strength, true);
 
 const suffix = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 const userId = `signal-test-${suffix}`;
+const reviewerAId = `signal-reviewer-a-${suffix}`;
+const reviewerBId = `signal-reviewer-b-${suffix}`;
 let organization;
 let company;
 let activatedPackId;
 try {
-  await h.db.insert(h.usersTable).values({ id: userId });
+  await h.db.insert(h.usersTable).values([{ id: userId }, { id: reviewerAId }, { id: reviewerBId }]);
   [organization] = await h.db.insert(h.organizationsTable).values({ name: `Signal Test ${suffix}`, createdByUserId: userId }).returning();
   const [projectA] = await h.db.insert(h.projectsTable).values({ organizationId: organization.id, name: "Project A" }).returning();
   const [projectB] = await h.db.insert(h.projectsTable).values({ organizationId: organization.id, name: "Project B" }).returning();
@@ -374,10 +376,19 @@ try {
   await h.db.update(h.intelligencePackClustersTable).set({ reviewStatus: "APPROVED" }).where(h.eq(h.intelligencePackClustersTable.id, revisionCluster.id));
   const approved = await h.approveOpportunityPackVersion(revision.id, userId);
   assert.equal(approved.status, "APPROVED");
-  const activation = await h.activateOpportunityPackVersion(revision.id, userId);
-  activatedPackId = activation.signalPack.id;
-  assert.equal(activation.version.status, "ACTIVATED");
-  const [activatedClusterDefinition] = await h.db.select().from(h.signalClusterDefinitionsTable).where(h.eq(h.signalClusterDefinitionsTable.intelligencePackId, intelligencePack.id));
+  const [activationA, activationB] = await Promise.all([
+    h.activateOpportunityPackVersion(revision.id, reviewerAId),
+    h.activateOpportunityPackVersion(revision.id, reviewerBId),
+  ]);
+  assert.equal(activationA.version?.status ?? activationA.status, "ACTIVATED");
+  assert.equal(activationB.version?.status ?? activationB.status, "ACTIVATED");
+  activatedPackId = activationA.signalPack?.id ?? activationB.signalPack?.id;
+  assert.ok(activatedPackId);
+  const activatedDefinitions = await h.db.select().from(h.signalDefinitionsTable).where(h.eq(h.signalDefinitionsTable.signalPackId, activatedPackId));
+  assert.equal(activatedDefinitions.length, 1, "concurrent activation must create one signal definition");
+  const activatedClusterDefinitions = await h.db.select().from(h.signalClusterDefinitionsTable).where(h.eq(h.signalClusterDefinitionsTable.intelligencePackId, intelligencePack.id));
+  assert.equal(activatedClusterDefinitions.length, 1, "concurrent activation must create one cluster definition");
+  const [activatedClusterDefinition] = activatedClusterDefinitions;
   assert.equal(activatedClusterDefinition.active, true);
   assert.deepEqual(activatedClusterDefinition.requiredSignalCodes, [sourceSignal.code]);
   console.log("Signal detection, decay, provenance, and project-isolation tests passed.");
@@ -396,5 +407,5 @@ try {
     await h.db.delete(h.signalPacksTable).where(h.eq(h.signalPacksTable.id, activatedPackId));
   }
   if (company) await h.db.delete(h.companiesTable).where(h.eq(h.companiesTable.id, company.id));
-  await h.db.delete(h.usersTable).where(h.eq(h.usersTable.id, userId));
+  await h.db.delete(h.usersTable).where(h.sql`${h.usersTable.id} IN (${userId}, ${reviewerAId}, ${reviewerBId})`);
 }

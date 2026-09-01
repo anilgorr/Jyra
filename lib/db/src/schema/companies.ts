@@ -39,6 +39,17 @@ export const projectCompanyBuyerRoleEnum = pgEnum(
   "project_company_buyer_role",
   ["POTENTIAL_BUYER", "SELLER_COMPETITOR", "ADJACENT_VENDOR", "PARTNER_POSSIBLE", "UNKNOWN"],
 );
+/** DB-owned mirror of the API assessment contract; db cannot import the API
+ * type without creating a workspace dependency cycle. */
+export type BuyerRoleAssessmentRecord = {
+  buyerRole: "POTENTIAL_BUYER" | "SELLER_COMPETITOR" | "ADJACENT_VENDOR" | "PARTNER_POSSIBLE" | "UNKNOWN";
+  confidence: "HIGH" | "MEDIUM" | "LOW";
+  reason: string;
+  sellerOffering: string;
+  supportingInputs: Array<{ field: "name" | "industry" | "description" | "website_profile"; excerpt: string; source: string }>;
+  assessedAt: string;
+  classifierVersion: "buyer-role-resolution-06a";
+};
 
 export const companiesTable = pgTable(
   "companies",
@@ -117,6 +128,9 @@ export const projectCompaniesTable = pgTable(
     // This is intentionally project-relative: the same canonical company can
     // be a buyer for one seller and a partner/competitor for another.
     buyerRole: projectCompanyBuyerRoleEnum("buyer_role").notNull().default("UNKNOWN"),
+    // Additive project-relative audit record.  Kept separate from the enum so
+    // role confidence and the exact inputs can evolve without weakening gates.
+    buyerRoleAssessment: jsonb("buyer_role_assessment").$type<BuyerRoleAssessmentRecord | null>(),
     opportunityScore: real("opportunity_score"),
     opportunityAssessmentState: text("opportunity_assessment_state"),
     latestResearchAt: timestamp("latest_research_at", { withTimezone: true }),

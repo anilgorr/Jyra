@@ -1,0 +1,252 @@
+{
+  "status": "EXECUTED",
+  "providerCalls": 0,
+  "projectId": "9f852021-345c-45aa-8a41-0be08ca1b494",
+  "cohort": 18,
+  "firstRecomputation": {
+    "assessed": 18,
+    "changed": 0
+  },
+  "secondRecomputation": {
+    "assessed": 18,
+    "changed": 0
+  },
+  "idempotent": true,
+  "rootCauseAJ": {
+    "A": 18,
+    "B": 0,
+    "C": 0,
+    "D": 0,
+    "E": 0,
+    "F": 0,
+    "G": 0,
+    "H": 0,
+    "I": 0,
+    "J": 0
+  },
+  "outcomes": [
+    {
+      "company": "Team Operating, LLC",
+      "domain": "teamoperating.com",
+      "originalRole": "UNKNOWN",
+      "resultingRole": "UNKNOWN",
+      "confidence": "LOW",
+      "reason": "No usable primary-business description or website/profile evidence is available.",
+      "evidenceSource": [
+        "canonical_company"
+      ],
+      "rootCause": "A"
+    },
+    {
+      "company": "King Operating Corporation",
+      "domain": "kingoperating.com",
+      "originalRole": "UNKNOWN",
+      "resultingRole": "UNKNOWN",
+      "confidence": "LOW",
+      "reason": "No usable primary-business description or website/profile evidence is available.",
+      "evidenceSource": [
+        "canonical_company"
+      ],
+      "rootCause": "A"
+    },
+    {
+      "company": "Andes Operating Company",
+      "domain": "andesoperating.com",
+      "originalRole": "UNKNOWN",
+      "resultingRole": "UNKNOWN",
+      "confidence": "LOW",
+      "reason": "No usable primary-business description or website/profile evidence is available.",
+      "evidenceSource": [
+        "canonical_company"
+      ],
+      "rootCause": "A"
+    },
+    {
+      "company": "Cypress Operating Inc",
+      "domain": "cypressop.com",
+      "originalRole": "UNKNOWN",
+      "resultingRole": "UNKNOWN",
+      "confidence": "LOW",
+      "reason": "No usable primary-business description or website/profile evidence is available.",
+      "evidenceSource": [
+        "canonical_company"
+      ],
+      "rootCause": "A"
+    },
+    {
+      "company": "CData Virtuality",
+      "domain": null,
+      "originalRole": "UNKNOWN",
+      "resultingRole": "UNKNOWN",
+      "confidence": "LOW",
+      "reason": "No usable primary-business description or website/profile evidence is available.",
+      "evidenceSource": [
+        "canonical_company"
+      ],
+      "rootCause": "A"
+    },
+    {
+      "company": "Madlabs Global LLC",
+      "domain": null,
+      "originalRole": "UNKNOWN",
+      "resultingRole": "UNKNOWN",
+      "confidence": "LOW",
+      "reason": "No usable primary-business description or website/profile evidence is available.",
+      "evidenceSource": [
+        "canonical_company"
+      ],
+      "rootCause": "A"
+    },
+    {
+      "company": "Vyntra Global - Transaction Observability",
+      "domain": null,
+      "originalRole": "UNKNOWN",
+      "resultingRole": "UNKNOWN",
+      "confidence": "LOW",
+      "reason": "No usable primary-business description or website/profile evidence is available.",
+      "evidenceSource": [
+        "canonical_company"
+      ],
+      "rootCause": "A"
+    },
+    {
+      "company": "J H Operating Company",
+      "domain": "jheandp.com",
+      "originalRole": "UNKNOWN",
+      "resultingRole": "UNKNOWN",
+      "confidence": "LOW",
+      "reason": "No usable primary-business description or website/profile evidence is available.",
+      "evidenceSource": [
+        "canonical_company"
+      ],
+      "rootCause": "A"
+    },
+    {
+      "company": "K&R Operating LLC.",
+      "domain": "krollc.com",
+      "originalRole": "UNKNOWN",
+      "resultingRole": "UNKNOWN",
+      "confidence": "LOW",
+      "reason": "No usable primary-business description or website/profile evidence is available.",
+      "evidenceSource": [
+        "canonical_company"
+      ],
+      "rootCause": "A"
+    },
+    {
+      "company": "3LOCKS",
+      "domain": null,
+      "originalRole": "UNKNOWN",
+      "resultingRole": "UNKNOWN",
+      "confidence": "LOW",
+      "reason": "No usable primary-business description or website/profile evidence is available.",
+      "evidenceSource": [
+        "canonical_company"
+      ],
+      "rootCause": "A"
+    },
+    {
+      "company": "Cyber Security Operations",
+      "domain": null,
+      "originalRole": "UNKNOWN",
+      "resultingRole": "UNKNOWN",
+      "confidence": "LOW",
+      "reason": "No usable primary-business description or website/profile evidence is available.",
+      "evidenceSource": [
+        "canonical_company"
+      ],
+      "rootCause": "A"
+    },
+    {
+      "company": "First Horizon Commercial & Specialty Banking",
+      "domain": null,
+      "originalRole": "UNKNOWN",
+      "resultingRole": "UNKNOWN",
+      "confidence": "LOW",
+      "reason": "No usable primary-business description or website/profile evidence is available.",
+      "evidenceSource": [
+        "canonical_company"
+      ],
+      "rootCause": "A"
+    },
+    {
+      "company": "IBERIABANK",
+      "domain": null,
+      "originalRole": "UNKNOWN",
+      "resultingRole": "UNKNOWN",
+      "confidence": "LOW",
+      "reason": "No usable primary-business description or website/profile evidence is available.",
+      "evidenceSource": [
+        "canonical_company"
+      ],
+      "rootCause": "A"
+    },
+    {
+      "company": "Juntos Global",
+      "domain": null,
+      "originalRole": "UNKNOWN",
+      "resultingRole": "UNKNOWN",
+      "confidence": "LOW",
+      "reason": "No usable primary-business description or website/profile evidence is available.",
+      "evidenceSource": [
+        "canonical_company"
+      ],
+      "rootCause": "A"
+    },
+    {
+      "company": "Netcordia, Inc.",
+      "domain": null,
+      "originalRole": "UNKNOWN",
+      "resultingRole": "UNKNOWN",
+      "confidence": "LOW",
+      "reason": "No usable primary-business description or website/profile evidence is available.",
+      "evidenceSource": [
+        "canonical_company"
+      ],
+      "rootCause": "A"
+    },
+    {
+      "company": "Oprion",
+      "domain": null,
+      "originalRole": "UNKNOWN",
+      "resultingRole": "UNKNOWN",
+      "confidence": "LOW",
+      "reason": "No usable primary-business description or website/profile evidence is available.",
+      "evidenceSource": [
+        "canonical_company"
+      ],
+      "rootCause": "A"
+    },
+    {
+      "company": "Secov",
+      "domain": null,
+      "originalRole": "UNKNOWN",
+      "resultingRole": "UNKNOWN",
+      "confidence": "LOW",
+      "reason": "No usable primary-business description or website/profile evidence is available.",
+      "evidenceSource": [
+        "canonical_company"
+      ],
+      "rootCause": "A"
+    },
+    {
+      "company": "Jetta Operating Company, Inc.",
+      "domain": "jettaoperating.com",
+      "originalRole": "UNKNOWN",
+      "resultingRole": "UNKNOWN",
+      "confidence": "LOW",
+      "reason": "No usable primary-business description or website/profile evidence is available.",
+      "evidenceSource": [
+        "canonical_company"
+      ],
+      "rootCause": "A"
+    }
+  ],
+  "roleCounts": {
+    "POTENTIAL_BUYER": 0,
+    "SELLER_COMPETITOR": 0,
+    "ADJACENT_VENDOR": 0,
+    "PARTNER_POSSIBLE": 0,
+    "UNKNOWN": 18
+  }
+}

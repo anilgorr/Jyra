@@ -1,4 +1,4 @@
-import { and, desc, eq, sql } from "drizzle-orm";
+import { and, desc, eq, inArray, sql } from "drizzle-orm";
 import {
   businessTwinVersionsTable,
   companiesTable,
@@ -30,6 +30,7 @@ import type {
   ProviderResponse,
 } from "./provider-contract";
 import { resolveCompanyProfileWithRouter } from "./company-profile-resolution";
+import { assessBuyerRole, sameBuyerRoleAssessment, trustedCanonicalDomainDescription, type BuyerRoleAssessment } from "./buyer-role-resolution";
 
 type DiscoveryInput = {
   organizationId: string;
@@ -202,14 +203,6 @@ export function buildHighRecallDiscoveryQueries(
   return industries.map((industry) => `${industry} operating companies`.slice(0, 500));
 }
 
-const SELLER_MARKERS = /\b(provider|vendor|agency|consultancy|consulting|implementation|installer|integrator|outsourcing|managed services?)\b/i;
-const TOKEN_STOPWORDS = new Set(["the", "and", "for", "with", "from", "that", "this", "managed", "service", "services", "solution", "solutions"]);
-
-function conceptTokens(value: string): string[] {
-  return [...new Set(value.toLowerCase().split(/[^a-z0-9]+/)
-    .filter((token) => token.length >= 3 && !TOKEN_STOPWORDS.has(token)))];
-}
-
 export function classifyCandidateBuyerRole(input: {
   name: string;
   industry?: string | null;
@@ -218,18 +211,7 @@ export function classifyCandidateBuyerRole(input: {
   sellerIndustry?: string | null;
   targetIndustries: string[];
 }): DiscoveryCandidateReport["buyerRole"] {
-  const text = [input.name, input.industry, input.description].filter(Boolean).join(" ").toLowerCase();
-  const offeringTokens = conceptTokens(input.offeringLabel);
-  const categoryOverlap = offeringTokens.filter((token) => text.includes(token)).length;
-  const sellerIndustry = input.sellerIndustry?.trim() || null;
-  const sellerIndustryMatch = sellerIndustry ? textMatchesAny(input.industry ?? null, [sellerIndustry]) === true : false;
-  const sellerIndustryExplicitlyTargeted = sellerIndustry
-    ? input.targetIndustries.some((target) => normalizedComparison(target) === normalizedComparison(sellerIndustry))
-    : false;
-  if (SELLER_MARKERS.test(text) && categoryOverlap > 0) return "SELLER_COMPETITOR";
-  if (sellerIndustryMatch && !sellerIndustryExplicitlyTargeted) return "ADJACENT_VENDOR";
-  if (textMatchesAny(input.industry ?? null, input.targetIndustries) === true) return "POTENTIAL_BUYER";
-  return "UNKNOWN";
+  return assessBuyerRole(input).buyerRole;
 }
 
 export function buildBuyerMarketDiscoveryQueries(
@@ -404,6 +386,39 @@ export async function buildDiscoveryPlan(projectId: string): Promise<DiscoveryPl
   };
 }
 
+/** Reassesses existing project memberships without discovery or provider calls.
+ * Re-running with unchanged canonical/profile inputs is idempotent apart from
+ * the explicit assessment timestamp. */
+export async function recomputeProjectBuyerRoles(input: { projectId: string; companyIds?: string[]; now?: Date }): Promise<{ assessed: number; changed: number }> {
+  const now = input.now ?? new Date();
+  const plan = await buildDiscoveryPlan(input.projectId);
+  const rows = await db.select({ membership: projectCompaniesTable, company: companiesTable })
+    .from(projectCompaniesTable)
+    .innerJoin(companiesTable, eq(projectCompaniesTable.companyId, companiesTable.id))
+    .where(input.companyIds?.length
+      ? and(eq(projectCompaniesTable.projectId, input.projectId), inArray(projectCompaniesTable.companyId, input.companyIds))
+      : eq(projectCompaniesTable.projectId, input.projectId));
+  let changed = 0;
+  for (const row of rows) {
+    const normalized = normalizeCompanyInput(row.company).value;
+    if (!normalized) continue;
+    // Preserve an identical assessment verbatim: recomputation is idempotent
+    // and does not manufacture a new timestamp when no input changed.
+    const previous = row.membership.buyerRoleAssessment;
+    const stableAssessment = qualifyCandidate(normalized, plan.strategy);
+    const same = sameBuyerRoleAssessment(previous, stableAssessment.buyerRoleAssessment);
+    if (same && row.membership.buyerRole === stableAssessment.buyerRole) continue;
+    const assessment = qualifyCandidate(normalized, plan.strategy);
+    if (row.membership.buyerRole !== assessment.buyerRole) changed += 1;
+    await db.update(projectCompaniesTable).set({
+      buyerRole: assessment.buyerRole,
+      buyerRoleAssessment: assessment.buyerRoleAssessment,
+      updatedAt: now,
+    }).where(eq(projectCompaniesTable.id, row.membership.id));
+  }
+  return { assessed: rows.length, changed };
+}
+
 async function findCompanyByDomain(domain: string, executor: DbExecutor = db) {
   const [alias] = await executor
     .select({ company: companiesTable })
@@ -519,6 +534,7 @@ type CandidateAssessment = {
   matchedCriteria: number;
   missingCriteria: number;
   buyerRole: DiscoveryCandidateReport["buyerRole"];
+  buyerRoleAssessment: BuyerRoleAssessment;
 };
 
 function normalizedComparison(value: string): string {
@@ -541,6 +557,8 @@ function textMatchesAny(value: string | null, targets: string[] | undefined): bo
 function qualifyCandidate(
   company: NormalizedCompanyInput,
   strategy: CompanyDiscoveryStrategy,
+  profileResolution?: CompanyProfileResolutionResult | null,
+  roleDescription?: { text: string; source: string } | null,
 ): CandidateAssessment {
   const employeeRange = strategy.employeeRange;
   const employeeCheck = company.employeeCount === null
@@ -556,14 +574,22 @@ function qualifyCandidate(
       ? true
       : null;
   const intent = strategy.marketDiscoveryIntent;
-  const buyerRole = classifyCandidateBuyerRole({
+  const buyerRoleAssessment = assessBuyerRole({
     name: company.canonicalName,
     industry: company.industry,
     description: company.description,
+    websiteProfile: roleDescription?.text ?? null,
     offeringLabel: intent?.offeringCategoryExclusions[0] ?? "",
     sellerIndustry: intent?.sellerCategoryExclusions[0] ?? null,
     targetIndustries: strategy.targetIndustries ?? [],
+    sources: {
+      name: "canonical_company",
+      industry: "canonical_company",
+      description: "JYRA_DISCOVERY_OR_CANONICAL_COMPANY",
+      website_profile: roleDescription?.source ?? "canonical_company",
+    },
   });
+  const buyerRole = buyerRoleAssessment.buyerRole;
   const checks = {
     geography: textMatchesAny(company.country, strategy.geographies),
     industry: textMatchesAny(company.industry, strategy.targetIndustries),
@@ -582,7 +608,7 @@ function qualifyCandidate(
       : matchedCriteria === 1
         ? "POSSIBLE_FIT"
         : "INSUFFICIENT_DATA";
-  return { classification, checks, knownCriteria, matchedCriteria, missingCriteria, buyerRole };
+  return { classification, checks, knownCriteria, matchedCriteria, missingCriteria, buyerRole, buyerRoleAssessment };
 }
 
 function researchPriority(assessment: CandidateAssessment, evidenceCount: number): number {
@@ -935,7 +961,31 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
       duplicatesRemoved += 1;
       continue;
     }
-    const assessment = qualifyCandidate(value, plan.strategy);
+    let roleDescription: { text: string; source: string } | null = null;
+    // Fresh discovery cohort only: a bounded, domain-restricted role question.
+    // It does not write the text to the global canonical company record.
+    if (!value.description?.trim() && value.domain && candidateIdentity.canonicalAttachAllowed && input.router.searchWeb && remainingProviderCalls > 0) {
+      remainingProviderCalls -= 1;
+      const response = await input.router.searchWeb({
+        query: `What does ${value.canonicalName} primarily do?`,
+        domains: [value.domain],
+        limit: 2,
+        searchDepth: "basic",
+        includeRawContent: true,
+        requestId: `buyer-role-description:${run.id}:${reports.length + 1}`,
+        metadata: { organizationId: input.organizationId, projectId: input.projectId, discoveryRunId: run.id },
+      });
+      identityProviderCalls += 1;
+      identityEstimatedCost += response.usage.estimatedCost;
+      if (identityActualCost !== null) identityActualCost = response.usage.actualCost === null ? null : identityActualCost + response.usage.actualCost;
+      if (response.status === "success") {
+        for (const item of response.data?.results ?? []) {
+          const accepted = trustedCanonicalDomainDescription(item, value.domain);
+          if (accepted) { roleDescription = { text: accepted.text, source: `${response.providerId}:${accepted.source}` }; break; }
+        }
+      }
+    }
+    const assessment = qualifyCandidate(value, plan.strategy, profileResolutionResult, roleDescription);
     const result = await db.transaction(async (tx) => {
       const domain = value.domain;
       const nameKey = `company-name:${canonicalCompanyNameKey(value.canonicalName)}`;
@@ -1025,10 +1075,10 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
         }).onConflictDoNothing();
       }
       const [projectCompany] = await tx.insert(projectCompaniesTable)
-        .values({ projectId: input.projectId, companyId: company.id, buyerRole: assessment.buyerRole })
+        .values({ projectId: input.projectId, companyId: company.id, buyerRole: assessment.buyerRole, buyerRoleAssessment: assessment.buyerRoleAssessment })
         .onConflictDoUpdate({
           target: [projectCompaniesTable.projectId, projectCompaniesTable.companyId],
-          set: { buyerRole: assessment.buyerRole, updatedAt: now },
+          set: { buyerRole: assessment.buyerRole, buyerRoleAssessment: assessment.buyerRoleAssessment, updatedAt: now },
         })
         .returning();
       await tx.insert(companyProvenanceTable).values({
@@ -1197,10 +1247,10 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
         assessment,
       })) continue;
       const [membership] = await db.insert(projectCompaniesTable)
-        .values({ projectId: input.projectId, companyId: company.id, buyerRole: assessment.buyerRole })
+        .values({ projectId: input.projectId, companyId: company.id, buyerRole: assessment.buyerRole, buyerRoleAssessment: assessment.buyerRoleAssessment })
         .onConflictDoUpdate({
           target: [projectCompaniesTable.projectId, projectCompaniesTable.companyId],
-          set: { buyerRole: assessment.buyerRole, updatedAt: now },
+          set: { buyerRole: assessment.buyerRole, buyerRoleAssessment: assessment.buyerRoleAssessment, updatedAt: now },
         }).returning();
       if (!membership) continue;
       seenCompanyIds.add(company.id);
@@ -1284,6 +1334,6 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
     rejected,
     blockedReason: null,
     candidates: reports.sort((left, right) =>
-      right.researchPriority - left.researchPriority || left.name.localeCompare(right.name)),
+      right.researchPriority - left.researchPriority || left.name.localeCompare(right.name)).slice(0, limit),
   };
 }
