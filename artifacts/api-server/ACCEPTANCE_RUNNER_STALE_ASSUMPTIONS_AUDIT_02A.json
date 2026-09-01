@@ -1,0 +1,8 @@
+{
+  "scope": "Acceptance Test 02 control runner only",
+  "staleAssumptions": [],
+  "excludedProductFiles": true,
+  "otherTest01RunnerCardinality": "Not modified; outside the current controls runner hotfix scope.",
+  "directCompanyDiscoveryProvisioning": false,
+  "directIntelligenceChanges": 0
+}

@@ -32,3 +32,4 @@
 - [Canonical identifier trust](canonical-identifier-trust.md) — stored domains cannot verify themselves; automatic reuse needs trusted provenance and exact identity agreement.
 - [Downstream replay idempotency](downstream-replay-idempotency.md) — stable signals/opportunities can still hide duplicate history, WHY, and recommendation events on replay.
 - [Known-target provisioning](known-target-provisioning.md) — resolve fixed benchmark targets from canonical project state before considering market discovery.
+- [Acceptance pack preflight](acceptance-pack-preflight.md) — validate frozen packs by stable identity/version/configuration, never raw definition or question cardinality.

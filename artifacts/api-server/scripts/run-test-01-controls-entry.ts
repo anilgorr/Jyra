@@ -20,6 +20,7 @@ import {
   signalPacksTable,
   signalsTable,
 } from "@workspace/db";
+import { validateManagedSocSignalPackPreflight } from "../src/lib/acceptance-runner-preflight";
 import { resolveKnownCompany } from "../src/lib/known-company-resolution";
 import { executeResearchNow, planSignalPackWebResearchQuestions } from "../src/lib/research";
 import { evaluateSignalsForCompany } from "../src/lib/signal-packs";
@@ -67,9 +68,13 @@ const [selection] = await db.select({ pack: signalPacksTable })
     eq(signalPacksTable.status, "APPROVED"),
   )).limit(1);
 if (!selection) throw new Error("Approved active Managed SOC signal pack is required");
-const definitions = await db.select().from(signalDefinitionsTable)
-  .where(and(eq(signalDefinitionsTable.signalPackId, selection.pack.id), eq(signalDefinitionsTable.status, "APPROVED")));
-if (definitions.length !== 4) throw new Error("Expected the unchanged four-question Managed SOC pack");
+const allDefinitions = await db.select().from(signalDefinitionsTable)
+  .where(eq(signalDefinitionsTable.signalPackId, selection.pack.id));
+const signalPackPreflight = validateManagedSocSignalPackPreflight(selection.pack, allDefinitions);
+if (!signalPackPreflight.passed) {
+  throw new Error(`Managed SOC signal-pack preflight failed: ${signalPackPreflight.errors.join(", ")}`);
+}
+const definitions = allDefinitions.filter((definition) => definition.status === "APPROVED");
 const priorState = (() => {
   for (const path of [stateFile, `${OUTPUT_TEST}_CONTROL_RESULTS.json`]) {
     try {
@@ -96,7 +101,7 @@ for (const identity of identities) {
   if (blindRuns.some((item: any) => {
     if (item.manifestIndex !== identity.manifestIndex) return false;
     if (item.provision?.status !== "PROVISIONED") return true;
-    return item.questions?.length === 4 &&
+    return Boolean(item.questions?.length) &&
       item.questions.every((question: any) => TERMINAL_STATUSES.has(question.status));
   })) continue;
   const run: any = { manifestIndex: identity.manifestIndex, requestedCompany: identity.company, provision: null, questions: [] };
@@ -136,10 +141,9 @@ for (const identity of identities) {
         factRequirements: definition.factRequirements,
         configuration: definition.configuration,
       })),
-      maxQuestions: 4,
     });
-    if (questions.length !== 4 || questions.some((question) => question.providerCapability !== "WEB_SEARCH")) {
-      throw new Error("Control question plan differs from unchanged Managed SOC four-question path");
+    if (!questions.length || questions.some((question) => question.providerCapability !== "WEB_SEARCH")) {
+      throw new Error("Control question plan must contain at least one normal WEB_SEARCH question");
     }
     run.questions = await Promise.all(questions.map(async (question, questionIndex) => {
       const startedAt = Date.now();
@@ -519,7 +523,7 @@ const detectedCount = evaluations.filter((evaluation) => evaluation.detected).le
 const terminalInvariantSatisfied = blindRuns
   .filter((run: any) => run.provision?.status === "PROVISIONED")
   .every((run: any) =>
-    run.questions?.length === 4 &&
+    Boolean(run.questions?.length) &&
     run.questions.every((question: any) => TERMINAL_STATUSES.has(question.status)));
 const output = {
   test: TEST,
@@ -528,8 +532,8 @@ const output = {
   manifestSha256: manifestHash,
   executedAt: new Date().toISOString(),
   labelsExposedDuringProvisionOrResearch: false,
-  discoveryPath: "existing Exa COMPANY_DISCOVERY and canonicalization",
-  researchPath: "unchanged Managed SOC four-question WEB_SEARCH path",
+  discoveryPath: "separate persisted market-discovery accounting; controls use KNOWN_COMPANY_RESOLUTION",
+  researchPath: "normal Managed SOC WEB_SEARCH Research Planner path",
   controlsAttempted: controls.length,
   controlsProvisioned: blindRuns.filter((run: any) => run.provision?.status === "PROVISIONED").length,
   controlsEvaluated: evaluations.length,
@@ -545,7 +549,7 @@ const output = {
 };
 if (!terminalInvariantSatisfied) {
   writeFileSync(`${TEST}_CONTROL_INCOMPLETE.json`, JSON.stringify(output, null, 2) + "\n");
-  throw new Error("Blind-control evaluation incomplete: every provisioned control must have four terminal question dispositions");
+  throw new Error("Blind-control evaluation incomplete: every provisioned control must have at least one terminal question disposition");
 }
 writeFileSync(`${OUTPUT_TEST}_CONTROL_RESULTS.json`, JSON.stringify(output, null, 2) + "\n");
 console.log(JSON.stringify({

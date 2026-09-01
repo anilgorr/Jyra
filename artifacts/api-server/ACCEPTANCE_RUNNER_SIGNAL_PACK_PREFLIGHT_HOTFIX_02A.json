@@ -1,0 +1,62 @@
+{
+  "milestone": "ACCEPTANCE_RUNNER_SIGNAL_PACK_PREFLIGHT_HOTFIX_02A",
+  "generatedAt": "2026-09-01T10:24:14.696Z",
+  "originalFailureStage": "SIGNAL_PACK_PREFLIGHT",
+  "originalExpectedDefinitions": 4,
+  "currentApprovedDefinitions": 5,
+  "currentRequiredSignalIds": "5/5",
+  "currentPackPreflight": "PASS",
+  "staleCardinalityRequirementRemoved": true,
+  "questionCountCardinalityAssumptionRemoved": "YES",
+  "otherStaleAcceptanceRunnerAssumptionsFound": [],
+  "productIntelligenceChanges": 0,
+  "signalDefinitionChanges": 0,
+  "providerCalls": 0,
+  "productionOperations": 0,
+  "tests": "PASS",
+  "pack": {
+    "passed": true,
+    "expectedPack": {
+      "slug": "managed-soc",
+      "name": "Managed SOC provider",
+      "version": "1.0"
+    },
+    "observedPack": {
+      "id": "f91c7581-a46e-42df-988a-3ccfffc6743c",
+      "slug": "managed-soc",
+      "name": "Managed SOC provider",
+      "description": "Synthetic managed security operations selling context used to validate the generic engine.",
+      "version": "1.0",
+      "active": true,
+      "status": "APPROVED",
+      "applicableContext": {
+        "offeringFamily": "managed-soc"
+      },
+      "configuration": {},
+      "createdAt": "2026-08-29T10:05:08.038Z",
+      "updatedAt": "2026-08-29T10:06:29.111Z"
+    },
+    "expectedCodes": [
+      "MSOC_SECURITY_LEADER",
+      "MSOC_SECURITY_HIRING",
+      "MSOC_FUNDED_RISK_PROGRAM",
+      "MSOC_SECURITY_STACK_CHANGE",
+      "MSOC_SECURITY_COMPLIANCE_ACTIVITY"
+    ],
+    "observedCodes": [
+      "MSOC_SECURITY_LEADER",
+      "MSOC_SECURITY_HIRING",
+      "MSOC_FUNDED_RISK_PROGRAM",
+      "MSOC_SECURITY_STACK_CHANGE",
+      "MSOC_SECURITY_COMPLIANCE_ACTIVITY"
+    ],
+    "missingCodes": [],
+    "unapprovedCodes": [],
+    "duplicateCodes": [],
+    "versionMismatches": [],
+    "configurationMismatches": [],
+    "packErrors": [],
+    "unexpectedActiveCodes": [],
+    "errors": []
+  }
+}

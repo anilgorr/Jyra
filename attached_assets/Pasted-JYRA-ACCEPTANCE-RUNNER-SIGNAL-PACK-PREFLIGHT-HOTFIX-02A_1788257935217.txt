@@ -1,0 +1,503 @@
+JYRA — ACCEPTANCE RUNNER SIGNAL PACK PREFLIGHT HOTFIX 02A
+
+PURPOSE
+
+Fix ONLY the stale acceptance-runner preflight that caused:
+
+FROZEN 10-CONTROL CORE INTELLIGENCE ACCEPTANCE TEST 02
+
+to terminate INVALID_RUN before provisioning.
+
+This is a TEST-HARNESS / PREFLIGHT FIX ONLY.
+
+Do NOT modify JYRA intelligence behavior.
+
+==================================================
+1. CONFIRMED FAILURE
+==================================================
+
+The fresh acceptance execution stopped at:
+
+SIGNAL_PACK_PREFLIGHT
+
+because the runner required:
+
+exactly 4 approved Managed SOC signal definitions
+
+while the currently approved Managed SOC Opportunity Intelligence Pack
+contains 5 definitions.
+
+Current approved definitions:
+
+1. MSOC_SECURITY_LEADER
+2. MSOC_SECURITY_HIRING
+3. MSOC_FUNDED_RISK_PROGRAM
+4. MSOC_SECURITY_STACK_CHANGE
+5. MSOC_SECURITY_COMPLIANCE_ACTIVITY
+
+The fifth definition was intentionally added and validated by:
+
+MANAGED_SOC_SIGNAL_MAPPING_GAP_VALIDATION_01
+
+Final result of that validation:
+
+A — MISSING SIGNAL MAPPING VALIDATED AND SAFELY REPAIRED
+
+Therefore the acceptance runner's four-definition expectation is stale.
+
+==================================================
+2. DATABASE SAFETY
+==================================================
+
+DEVELOPMENT ONLY.
+
+Use ONLY the approved development database fingerprint.
+
+Production operations = 0.
+
+No migrations.
+No schema changes.
+No production writes.
+No production reconciliation.
+
+==================================================
+3. FREEZE PRODUCT INTELLIGENCE
+==================================================
+
+DO NOT CHANGE:
+
+Business Twin
+ICP
+Opportunity Intelligence Pack generation
+signal definitions
+signal semantics
+signal mapping
+signal thresholds
+identity
+known-company resolution
+research eligibility
+Research Planner
+Tavily
+Exa
+adaptive retrieval
+queries
+evidence
+facts
+fact validation
+temporal logic
+clusters
+opportunity logic
+WHY
+NBA
+idempotency
+contacts
+UI.
+
+This task changes ONLY acceptance-runner validation.
+
+==================================================
+4. DO NOT CHANGE THE ACTIVE PACK
+==================================================
+
+DO NOT:
+
+delete the fifth signal
+disable the fifth signal
+downgrade it
+rename it
+change its definition
+change its temporal rules
+change its mapping
+change its confidence behavior
+restore the old four-signal pack.
+
+The active five-definition pack is the expected current product state.
+
+==================================================
+5. REMOVE STALE CARDINALITY ASSUMPTION
+==================================================
+
+Find the acceptance-runner logic requiring:
+
+exactly 4 Managed SOC definitions
+
+or equivalent logic such as:
+
+definitions.length === 4
+
+expectedQuestionCount === 4
+
+UNCHANGED_FOUR_QUESTION_PACK
+
+hardcoded four-definition arrays
+
+hardcoded four-category expectations.
+
+Remove the stale assumption.
+
+==================================================
+6. PREFLIGHT MUST VALIDATE IDENTITY, NOT COUNT
+==================================================
+
+The runner should validate the expected frozen pack by stable signal
+identity/version/configuration.
+
+For this benchmark the expected approved signals are:
+
+MSOC_SECURITY_LEADER
+MSOC_SECURITY_HIRING
+MSOC_FUNDED_RISK_PROGRAM
+MSOC_SECURITY_STACK_CHANGE
+MSOC_SECURITY_COMPLIANCE_ACTIVITY
+
+Preflight should verify:
+
+all required definitions exist
+all are APPROVED
+correct pack is active for the project/offering
+no unexpected replacement definition silently substituted
+expected version/configuration is being tested.
+
+Do NOT use raw definition count as the primary correctness check.
+
+==================================================
+7. FUTURE-SAFE PREFLIGHT
+==================================================
+
+Make preflight validation generic.
+
+Conceptually validate:
+
+expected signal IDs
+expected pack identity/version
+approval status
+activation state
+
+rather than:
+
+number of signals == N.
+
+If the frozen benchmark explicitly records expected signal IDs, compare
+those IDs.
+
+This prevents future legitimate pack evolution from failing because of
+a stale numeric constant.
+
+==================================================
+8. QUESTION COUNT MUST NOT EQUAL SIGNAL COUNT
+==================================================
+
+Audit whether the acceptance runner assumes:
+
+one signal definition = one research question.
+
+If so, remove that assumption.
+
+Research Planner may generate the appropriate questions according to
+normal runtime behavior.
+
+The acceptance harness must observe the generated questions.
+
+It must not force exactly:
+
+4 questions
+or
+5 questions
+
+merely because there are 4 or 5 signal definitions.
+
+==================================================
+9. PRESERVE BENCHMARK BLINDNESS
+==================================================
+
+The acceptance harness may know:
+
+expected approved signal definitions
+
+for environment/preflight validation.
+
+It must NOT expose to runtime:
+
+reference events
+expected detected signals per company
+expected event dates
+reference URLs
+expected people
+expected benchmark outcomes.
+
+==================================================
+10. REGRESSION TEST — CURRENT FIVE SIGNAL PACK
+==================================================
+
+Create deterministic test:
+
+Active pack contains exactly the current approved five definitions.
+
+Expected:
+
+SIGNAL_PACK_PREFLIGHT = PASS.
+
+==================================================
+11. REGRESSION TEST — MISSING SIGNAL
+==================================================
+
+Simulate pack missing one required definition.
+
+Expected:
+
+PREFLIGHT FAIL.
+
+Report:
+
+missing definition ID.
+
+==================================================
+12. REGRESSION TEST — UNAPPROVED SIGNAL
+==================================================
+
+Required definition exists but is not APPROVED.
+
+Expected:
+
+PREFLIGHT FAIL.
+
+==================================================
+13. REGRESSION TEST — WRONG PACK
+==================================================
+
+Definitions exist but wrong pack/offering is active.
+
+Expected:
+
+PREFLIGHT FAIL.
+
+==================================================
+14. REGRESSION TEST — EXTRA UNRELATED DEFINITION
+==================================================
+
+If an unrelated definition exists elsewhere but is not part of the
+active frozen Managed SOC pack:
+
+it must not affect benchmark preflight.
+
+==================================================
+15. REGRESSION TEST — SIGNAL ORDER
+==================================================
+
+Reordering the same approved signal definitions must not fail preflight.
+
+Signal identity matters.
+
+Array order does not.
+
+==================================================
+16. REGRESSION TEST — QUESTION COUNT
+==================================================
+
+Verify acceptance harness does not require research question count to
+equal signal-definition count.
+
+Research questions must come from normal Research Planner behavior.
+
+==================================================
+17. VERIFY CURRENT ACTIVE PACK
+==================================================
+
+Using current development state verify:
+
+pack =
+Managed SOC approved active pack
+
+required signal definitions found = 5/5
+
+MSOC_SECURITY_LEADER = APPROVED
+
+MSOC_SECURITY_HIRING = APPROVED
+
+MSOC_FUNDED_RISK_PROGRAM = APPROVED
+
+MSOC_SECURITY_STACK_CHANGE = APPROVED
+
+MSOC_SECURITY_COMPLIANCE_ACTIVITY = APPROVED
+
+preflight result = PASS.
+
+==================================================
+18. NO PROVIDER CALLS
+==================================================
+
+This hotfix requires:
+
+Tavily calls = 0
+Exa calls = 0
+Bright Data calls = 0
+COMPANY_DISCOVERY calls = 0
+other provider calls = 0.
+
+==================================================
+19. NO ACCEPTANCE EXECUTION YET
+==================================================
+
+After fixing preflight:
+
+DO NOT run the complete 10-control acceptance benchmark in this task.
+
+Only run:
+
+unit/regression tests
+preflight validation.
+
+We need to prove the runner can start correctly before spending another
+benchmark run.
+
+==================================================
+20. CHECK FOR OTHER STALE BENCHMARK CONSTANTS
+==================================================
+
+Because this stale four-signal assumption existed, perform a READ-ONLY
+audit of the Acceptance Test 02 runner for other obsolete constants.
+
+Look specifically for:
+
+exactly 4 signals
+exactly 4 questions
+old signal IDs
+old pack version
+old identity provisioning path
+direct COMPANY_DISCOVERY provisioning
+old four-question wording
+old pre-Profile-Resolution assumptions
+old pre-Adaptive-Retrieval assumptions
+old pre-Fact-Safety assumptions
+old pre-Compliance-Signal assumptions
+old pre-Idempotency assumptions.
+
+DO NOT modify unrelated behavior unless it is clearly a stale
+acceptance-harness assumption that conflicts with already-approved,
+already-frozen current architecture.
+
+Report every stale assumption found.
+
+==================================================
+21. IMPORTANT SCOPE RULE
+==================================================
+
+If the audit discovers a stale assumption in PRODUCT CODE rather than
+acceptance-harness code:
+
+DO NOT FIX IT.
+
+Report it separately.
+
+This task is allowed to modify only:
+
+acceptance runner
+benchmark preflight
+benchmark validation/helpers/tests.
+
+==================================================
+22. REQUIRED ARTIFACTS
+==================================================
+
+Generate:
+
+ACCEPTANCE_RUNNER_SIGNAL_PACK_PREFLIGHT_HOTFIX_02A.md
+
+ACCEPTANCE_RUNNER_SIGNAL_PACK_PREFLIGHT_HOTFIX_02A.json
+
+ACCEPTANCE_RUNNER_SIGNAL_PACK_PREFLIGHT_HOTFIX_02A_TESTS.json
+
+ACCEPTANCE_RUNNER_STALE_ASSUMPTIONS_AUDIT_02A.json
+
+==================================================
+23. REQUIRED FINAL SUMMARY
+==================================================
+
+Original failure stage =
+SIGNAL_PACK_PREFLIGHT
+
+Original expected definitions =
+4
+
+Current approved definitions =
+5
+
+Stale cardinality requirement removed =
+YES / NO
+
+Current required signal IDs validated =
+5/5 or result
+
+Current pack preflight =
+PASS / FAIL
+
+Question-count cardinality assumption removed =
+YES / NO / NOT PRESENT
+
+Other stale acceptance-runner assumptions found =
+
+Product intelligence changes =
+0
+
+Signal definition changes =
+0
+
+Provider calls =
+0
+
+Production operations =
+0
+
+Tests =
+PASS / FAIL
+
+==================================================
+24. FINAL DECISION
+==================================================
+
+Return exactly ONE:
+
+A — ACCEPTANCE RUNNER PREFLIGHT REPAIRED
+
+B — ADDITIONAL STALE ACCEPTANCE-RUNNER ASSUMPTIONS REMAIN
+
+C — ACTIVE SIGNAL PACK DOES NOT MATCH APPROVED FROZEN STATE
+
+D — PRODUCT-CODE ISSUE DISCOVERED; NOT MODIFIED
+
+E — MULTIPLE HARNESS DEFECTS REMAIN
+
+F — INCONCLUSIVE
+
+==================================================
+25. NEXT STEP
+==================================================
+
+IF AND ONLY IF:
+
+Final decision =
+A — ACCEPTANCE RUNNER PREFLIGHT REPAIRED
+
+state:
+
+"Acceptance runner is aligned with the current frozen five-signal
+Managed SOC pack.
+
+Next step: rerun the Frozen 10-Control Core Intelligence Acceptance
+Test 02."
+
+DO NOT automatically run it.
+
+==================================================
+26. STOP
+==================================================
+
+STOP after preflight repair and validation.
+
+Do not run the 10-control benchmark.
+
+Do not run the 50-company benchmark.
+
+Do not modify JYRA intelligence.
+
+Return the result for review.

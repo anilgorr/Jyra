@@ -682,3 +682,59 @@ mtime_ms = 1788257288176
 storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/086db435-024b-4e65-8947-a4c56b39e8e3/d0150c9b-52dd-4ae9-a92e-9bf0e6b55b63"
 storage_version_token = "1788257308351357"
 content_type = "application/octet-stream"
+
+[[outputs]]
+id = "NuKbeqfSyqBpjviOh7-us"
+uri = "file://artifacts/api-server/ACCEPTANCE_RUNNER_SIGNAL_PACK_PREFLIGHT_HOTFIX_02A.md"
+type = "text"
+title = "Acceptance Runner Preflight Hotfix 02A"
+description = "Final hotfix summary and decision."
+logical_id = "326a33b9-1c5e-4bcb-9fcc-ded597d6c4f8"
+content_hash = "sha256:74ef410858e3be2830993830dbac4b8144a5437ccc05f3345864b13a45a0b8fb"
+size = 633
+mtime_ms = 1788258254691
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/326a33b9-1c5e-4bcb-9fcc-ded597d6c4f8/5c01a559-bb7b-4192-9e8a-9abb778cd3a8"
+storage_version_token = "1788258362514538"
+content_type = "text/markdown"
+
+[[outputs]]
+id = "CenFZCctQ_LReWsgWihGb"
+uri = "file://artifacts/api-server/ACCEPTANCE_RUNNER_SIGNAL_PACK_PREFLIGHT_HOTFIX_02A.json"
+type = "unspecified"
+title = "Acceptance Runner Preflight Hotfix 02A — Structured Result"
+description = "Machine-readable preflight validation and safety summary."
+logical_id = "15ed9d61-6562-4443-b39b-07cf65333770"
+content_hash = "sha256:af620572792a72386f118c4cdde85ae06d8319b192e23d22f29ba3b03feced35"
+size = 1907
+mtime_ms = 1788258254691
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/15ed9d61-6562-4443-b39b-07cf65333770/73d7952d-ba29-4437-87e2-29705ecf8a95"
+storage_version_token = "1788258363957275"
+content_type = "application/octet-stream"
+
+[[outputs]]
+id = "DhpJfm8kDYHceV_HkhYzM"
+uri = "file://artifacts/api-server/ACCEPTANCE_RUNNER_SIGNAL_PACK_PREFLIGHT_HOTFIX_02A_TESTS.json"
+type = "unspecified"
+title = "Acceptance Runner Preflight Hotfix 02A — Tests"
+description = "Nine deterministic current-pack, failure, ordering, configuration, and question-cardinality regressions."
+logical_id = "502b773d-8c49-4d92-a081-6b107069a701"
+content_hash = "sha256:fc60b0a2718404fc9ddafbd30a2c1967a45224340f13866ead71977aaacf48db"
+size = 11345
+mtime_ms = 1788258254691
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/502b773d-8c49-4d92-a081-6b107069a701/057a8bbc-be9e-4d92-b77b-22d28c7e5464"
+storage_version_token = "1788258365313928"
+content_type = "application/octet-stream"
+
+[[outputs]]
+id = "Bt2PXkl7b9ggF97EIT2De"
+uri = "file://artifacts/api-server/ACCEPTANCE_RUNNER_STALE_ASSUMPTIONS_AUDIT_02A.json"
+type = "unspecified"
+title = "Acceptance Runner Stale-Assumptions Audit 02A"
+description = "Read-only audit of the current controls acceptance runner."
+logical_id = "64a821ed-f465-417a-adb2-18c786eb5e89"
+content_hash = "sha256:85ef832e9b0263387aa1f2fcd1cf93c6d617a9fc99847f200808a57376c2666d"
+size = 296
+mtime_ms = 1788258254691
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/64a821ed-f465-417a-adb2-18c786eb5e89/7225ab24-9abd-4134-9d8a-bc1954d10cca"
+storage_version_token = "1788258366783009"
+content_type = "application/octet-stream"
