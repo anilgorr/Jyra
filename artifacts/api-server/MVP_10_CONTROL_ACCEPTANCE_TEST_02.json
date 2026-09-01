@@ -1,0 +1,112 @@
+{
+  "report": "MVP_10_CONTROL_ACCEPTANCE_TEST_02",
+  "run": {
+    "date": "2026-09-01",
+    "mode": "FRESH_NORMAL_PATH_ATTEMPT",
+    "database": "APPROVED_DEVELOPMENT",
+    "productionOperations": 0,
+    "labelsExposedDuringRuntime": false,
+    "contactsEnabled": false,
+    "intelligenceCodeConfigDataChanged": false,
+    "workspaceCodeChanged": false,
+    "runnerCompatibilityAdjustment": {
+      "location": "/tmp only",
+      "change": "stale expected Managed SOC definition count assertion 4->5",
+      "questionPlannerFrozenMaximum": 4
+    }
+  },
+  "source": {
+    "manifestSha256": "438ae22cc5f06ed16588d911541572fd0617dd608c6ad9bfc451462f5ff90931",
+    "firstRunExecutedAt": "2026-09-01T09:28:47.955Z",
+    "firstRunProviderAccountingInterval": {
+      "startedAt": "2026-09-01T09:28:31.556Z",
+      "completedAt": "2026-09-01T09:28:47.880Z"
+    }
+  },
+  "controls": {
+    "expected": 10,
+    "attempted": 10,
+    "provisioned": 0,
+    "blocked": 10,
+    "valid": 0,
+    "invalidRun": 10,
+    "strictDetections": 0,
+    "partialDetections": 0,
+    "misses": 0,
+    "strictRecall": null,
+    "strictRecallStatus": "N/A_VALID_DENOMINATOR_0",
+    "strictPlusPartialCoverage": null,
+    "strictPlusPartialCoverageStatus": "N/A_VALID_DENOMINATOR_0"
+  },
+  "identity": {
+    "earliestFailureStage": "IDENTITY",
+    "state": "UNRESOLVED",
+    "confidence": null,
+    "confidenceStatus": "NOT_ESTABLISHED",
+    "autoAttachments": 0,
+    "precision": null,
+    "precisionStatus": "N/A_DENOMINATOR_0",
+    "safeCoverage": 0,
+    "safeCoverageUnit": "fraction",
+    "canonicalized": 0
+  },
+  "provider": {
+    "healthy": true,
+    "failures": 0,
+    "exaCompanyDiscoveryCalls": 10,
+    "rawResults": 90,
+    "rawResultsByCompany": {
+      "SolarWinds": 10,
+      "First Horizon": 10,
+      "GitLab": 10,
+      "Infoblox": 10,
+      "Teradata": 10,
+      "Nubank": 10,
+      "Black Duck": 10,
+      "OpenAssets": 1,
+      "Black & McDonald": 9,
+      "RAKBANK": 10
+    }
+  },
+  "downstream": {
+    "ran": false,
+    "signalFeedingFacts": 0,
+    "supportedSignalFeedingFacts": 0,
+    "factPrecision": null,
+    "signals": 0,
+    "supportedSignals": 0,
+    "unsupportedSignals": 0,
+    "signalPrecision": null,
+    "whyCount": 0,
+    "whyProvenance": null,
+    "opportunities": 0,
+    "nextBestActions": 0,
+    "notEvaluatedReason": "No control was provisioned after identity canonicalization."
+  },
+  "safety": {
+    "wrongEntityFacts": 0,
+    "wrongEntitySignals": 0,
+    "sellerAsBuyerFacts": 0,
+    "sellerAsBuyerSignals": 0,
+    "temporallyInvalidFacts": 0,
+    "temporallyInvalidSignals": 0,
+    "unsupportedSignals": 0,
+    "genericFundingFalseSecuritySignals": 0,
+    "interpretation": "Observed zero because downstream did not run; not evidence that downstream safety layers passed."
+  },
+  "acceptanceGates": {
+    "pass": false,
+    "identity": "FAIL",
+    "recall": "NOT_EVALUABLE",
+    "signalPrecision": "NOT_EVALUABLE",
+    "unsupportedRate": "NOT_EVALUABLE",
+    "whyProvenance": "NOT_EVALUABLE"
+  },
+  "finalDecision": "G — IDENTITY REGRESSION",
+  "whyNotProviderSystemFailure": "All ten Exa COMPANY_DISCOVERY calls completed with raw results and no provider failure, but normal identity canonicalization provisioned none.",
+  "stop": {
+    "fixesApplied": 0,
+    "recommendationsMade": 0,
+    "nextHumanReviewTarget": "Normal identity canonicalization/provisioning path"
+  }
+}

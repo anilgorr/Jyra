@@ -1,0 +1,775 @@
+{
+  "test": "JYRA_MVP_REALITY_TEST_01",
+  "kind": "BLIND_POSITIVE_CONTROL_EVALUATION",
+  "manifestFile": "JYRA_MVP_REALITY_TEST_01_CONTROL_SET.json",
+  "manifestSha256": "438ae22cc5f06ed16588d911541572fd0617dd608c6ad9bfc451462f5ff90931",
+  "executedAt": "2026-09-01T09:29:40.807Z",
+  "labelsExposedDuringProvisionOrResearch": false,
+  "discoveryPath": "existing Exa COMPANY_DISCOVERY and canonicalization",
+  "researchPath": "unchanged Managed SOC four-question WEB_SEARCH path",
+  "controlsAttempted": 10,
+  "controlsProvisioned": 0,
+  "controlsEvaluated": 10,
+  "detectedCount": 0,
+  "terminalInvariantSatisfied": true,
+  "evaluationStatus": "COMPLETE",
+  "knownEventDetectionRecall": 0,
+  "runs": [
+    {
+      "manifestIndex": 0,
+      "requestedCompany": "SolarWinds",
+      "provision": {
+        "discoveryRunId": "0adf6b9f-6bcb-41a5-8633-b67b5d8276a7",
+        "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+        "providerWasExa": true,
+        "rawResults": 10,
+        "canonicalized": 0,
+        "duplicatesRemoved": 0,
+        "rejected": 1,
+        "possibleMatches": 9,
+        "companyId": null,
+        "status": "NOT_PROVISIONED"
+      },
+      "questions": []
+    },
+    {
+      "manifestIndex": 1,
+      "requestedCompany": "First Horizon",
+      "provision": {
+        "discoveryRunId": "219c2c73-b42a-43ae-b397-7bc623ccf191",
+        "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+        "providerWasExa": true,
+        "rawResults": 10,
+        "canonicalized": 0,
+        "duplicatesRemoved": 2,
+        "rejected": 1,
+        "possibleMatches": 7,
+        "companyId": null,
+        "status": "NOT_PROVISIONED"
+      },
+      "questions": []
+    },
+    {
+      "manifestIndex": 2,
+      "requestedCompany": "GitLab",
+      "provision": {
+        "discoveryRunId": "113f2a47-fe16-4fca-95c5-5c15aa9fdca4",
+        "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+        "providerWasExa": true,
+        "rawResults": 10,
+        "canonicalized": 0,
+        "duplicatesRemoved": 0,
+        "rejected": 0,
+        "possibleMatches": 10,
+        "companyId": null,
+        "status": "NOT_PROVISIONED"
+      },
+      "questions": []
+    },
+    {
+      "manifestIndex": 3,
+      "requestedCompany": "Infoblox",
+      "provision": {
+        "discoveryRunId": "53ac2d34-d51b-4c69-b642-bd3af526e885",
+        "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+        "providerWasExa": true,
+        "rawResults": 10,
+        "canonicalized": 0,
+        "duplicatesRemoved": 0,
+        "rejected": 1,
+        "possibleMatches": 9,
+        "companyId": null,
+        "status": "NOT_PROVISIONED"
+      },
+      "questions": []
+    },
+    {
+      "manifestIndex": 4,
+      "requestedCompany": "Teradata",
+      "provision": {
+        "discoveryRunId": "ffb758dc-f552-45d3-a39a-edfb3940f42c",
+        "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+        "providerWasExa": true,
+        "rawResults": 10,
+        "canonicalized": 0,
+        "duplicatesRemoved": 0,
+        "rejected": 1,
+        "possibleMatches": 9,
+        "companyId": null,
+        "status": "NOT_PROVISIONED"
+      },
+      "questions": []
+    },
+    {
+      "manifestIndex": 5,
+      "requestedCompany": "Nubank",
+      "provision": {
+        "discoveryRunId": "8c4fa409-6bf8-4455-a16a-814b7f7e8a81",
+        "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+        "providerWasExa": true,
+        "rawResults": 10,
+        "canonicalized": 0,
+        "duplicatesRemoved": 0,
+        "rejected": 0,
+        "possibleMatches": 10,
+        "companyId": null,
+        "status": "NOT_PROVISIONED"
+      },
+      "questions": []
+    },
+    {
+      "manifestIndex": 6,
+      "requestedCompany": "Black Duck",
+      "provision": {
+        "discoveryRunId": "3947c948-cfa3-4e6a-87cd-05250b722dcd",
+        "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+        "providerWasExa": true,
+        "rawResults": 10,
+        "canonicalized": 0,
+        "duplicatesRemoved": 0,
+        "rejected": 0,
+        "possibleMatches": 10,
+        "companyId": null,
+        "status": "NOT_PROVISIONED"
+      },
+      "questions": []
+    },
+    {
+      "manifestIndex": 7,
+      "requestedCompany": "OpenAssets",
+      "provision": {
+        "discoveryRunId": "c14cb48d-3e0b-47ef-82e2-266da0cc09dd",
+        "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+        "providerWasExa": true,
+        "rawResults": 1,
+        "canonicalized": 0,
+        "duplicatesRemoved": 0,
+        "rejected": 0,
+        "possibleMatches": 1,
+        "companyId": null,
+        "status": "NOT_PROVISIONED"
+      },
+      "questions": []
+    },
+    {
+      "manifestIndex": 8,
+      "requestedCompany": "Black & McDonald",
+      "provision": {
+        "discoveryRunId": "1f8a21db-ae53-48d7-b0d6-e54ea3105f3a",
+        "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+        "providerWasExa": true,
+        "rawResults": 9,
+        "canonicalized": 0,
+        "duplicatesRemoved": 0,
+        "rejected": 0,
+        "possibleMatches": 9,
+        "companyId": null,
+        "status": "NOT_PROVISIONED"
+      },
+      "questions": []
+    },
+    {
+      "manifestIndex": 9,
+      "requestedCompany": "RAKBANK",
+      "provision": {
+        "discoveryRunId": "9ca5bf6e-cb1a-436e-9444-fa9a0472f956",
+        "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+        "providerWasExa": true,
+        "rawResults": 10,
+        "canonicalized": 0,
+        "duplicatesRemoved": 0,
+        "rejected": 1,
+        "possibleMatches": 9,
+        "companyId": null,
+        "status": "NOT_PROVISIONED"
+      },
+      "questions": []
+    }
+  ],
+  "evaluations": [
+    {
+      "manifestIndex": 0,
+      "company": "SolarWinds",
+      "provisionStatus": "NOT_PROVISIONED",
+      "terminalQuestionDispositions": [],
+      "detected": false,
+      "matchedEvidenceIds": [],
+      "matchedFactIds": [],
+      "matchedSignalIds": [],
+      "missedEventCause": "DISCOVERY_FAILURE"
+    },
+    {
+      "manifestIndex": 1,
+      "company": "First Horizon",
+      "provisionStatus": "NOT_PROVISIONED",
+      "terminalQuestionDispositions": [],
+      "detected": false,
+      "matchedEvidenceIds": [],
+      "matchedFactIds": [],
+      "matchedSignalIds": [],
+      "missedEventCause": "DISCOVERY_FAILURE"
+    },
+    {
+      "manifestIndex": 2,
+      "company": "GitLab",
+      "provisionStatus": "NOT_PROVISIONED",
+      "terminalQuestionDispositions": [],
+      "detected": false,
+      "matchedEvidenceIds": [],
+      "matchedFactIds": [],
+      "matchedSignalIds": [],
+      "missedEventCause": "DISCOVERY_FAILURE"
+    },
+    {
+      "manifestIndex": 3,
+      "company": "Infoblox",
+      "provisionStatus": "NOT_PROVISIONED",
+      "terminalQuestionDispositions": [],
+      "detected": false,
+      "matchedEvidenceIds": [],
+      "matchedFactIds": [],
+      "matchedSignalIds": [],
+      "missedEventCause": "DISCOVERY_FAILURE"
+    },
+    {
+      "manifestIndex": 4,
+      "company": "Teradata",
+      "provisionStatus": "NOT_PROVISIONED",
+      "terminalQuestionDispositions": [],
+      "detected": false,
+      "matchedEvidenceIds": [],
+      "matchedFactIds": [],
+      "matchedSignalIds": [],
+      "missedEventCause": "DISCOVERY_FAILURE"
+    },
+    {
+      "manifestIndex": 5,
+      "company": "Nubank",
+      "provisionStatus": "NOT_PROVISIONED",
+      "terminalQuestionDispositions": [],
+      "detected": false,
+      "matchedEvidenceIds": [],
+      "matchedFactIds": [],
+      "matchedSignalIds": [],
+      "missedEventCause": "DISCOVERY_FAILURE"
+    },
+    {
+      "manifestIndex": 6,
+      "company": "Black Duck",
+      "provisionStatus": "NOT_PROVISIONED",
+      "terminalQuestionDispositions": [],
+      "detected": false,
+      "matchedEvidenceIds": [],
+      "matchedFactIds": [],
+      "matchedSignalIds": [],
+      "missedEventCause": "DISCOVERY_FAILURE"
+    },
+    {
+      "manifestIndex": 7,
+      "company": "OpenAssets",
+      "provisionStatus": "NOT_PROVISIONED",
+      "terminalQuestionDispositions": [],
+      "detected": false,
+      "matchedEvidenceIds": [],
+      "matchedFactIds": [],
+      "matchedSignalIds": [],
+      "missedEventCause": "DISCOVERY_FAILURE"
+    },
+    {
+      "manifestIndex": 8,
+      "company": "Black & McDonald",
+      "provisionStatus": "NOT_PROVISIONED",
+      "terminalQuestionDispositions": [],
+      "detected": false,
+      "matchedEvidenceIds": [],
+      "matchedFactIds": [],
+      "matchedSignalIds": [],
+      "missedEventCause": "DISCOVERY_FAILURE"
+    },
+    {
+      "manifestIndex": 9,
+      "company": "RAKBANK",
+      "provisionStatus": "NOT_PROVISIONED",
+      "terminalQuestionDispositions": [],
+      "detected": false,
+      "matchedEvidenceIds": [],
+      "matchedFactIds": [],
+      "matchedSignalIds": [],
+      "missedEventCause": "DISCOVERY_FAILURE"
+    }
+  ],
+  "mainDiscoveryAccounting": {
+    "source": "PERSISTED_DISCOVERY_RUNS_AND_PROVENANCE",
+    "runCount": 0,
+    "rawDiscoveredCandidates": 0,
+    "acceptedCandidates": 0,
+    "canonicalCandidates": 0,
+    "duplicatesRejected": 0,
+    "identityFailures": 0,
+    "rejectedCandidates": 0,
+    "persistedProvenanceRecords": 0,
+    "finalPopulation": 50,
+    "runs": []
+  },
+  "mainOperationalMeasurements": {
+    "source": "PERSISTED_DISCOVERY_RUN_PROVIDER_USAGE_RESEARCH_JOB_AND_CONTACT_ATTEMPT_RECORDS",
+    "benchmarkStartedAt": "2026-08-31T11:28:40.798Z",
+    "benchmarkCompletedAt": "2026-08-31T12:10:53.950Z",
+    "totalBenchmarkDurationMs": 2533152,
+    "discovery": {
+      "runs": 0,
+      "averageRunDurationMs": null,
+      "providerUsage": {
+        "calls": 0,
+        "estimated": {
+          "status": "COMPLETE",
+          "total": 0,
+          "knownSubtotal": 0,
+          "knownRows": 0,
+          "totalRows": 0
+        },
+        "actual": {
+          "status": "COMPLETE",
+          "total": 0,
+          "knownSubtotal": 0,
+          "knownRows": 0,
+          "totalRows": 0
+        }
+      }
+    },
+    "profileResolution": {
+      "attemptsWithPersistedUsage": 0,
+      "averageLatencyMs": null,
+      "providerUsage": {
+        "calls": 0,
+        "estimated": {
+          "status": "COMPLETE",
+          "total": 0,
+          "knownSubtotal": 0,
+          "knownRows": 0,
+          "totalRows": 0
+        },
+        "actual": {
+          "status": "COMPLETE",
+          "total": 0,
+          "knownSubtotal": 0,
+          "knownRows": 0,
+          "totalRows": 0
+        }
+      }
+    },
+    "firmographics": {
+      "attemptsWithPersistedUsage": 0,
+      "averageLatencyMs": null,
+      "providerUsage": {
+        "calls": 0,
+        "estimated": {
+          "status": "COMPLETE",
+          "total": 0,
+          "knownSubtotal": 0,
+          "knownRows": 0,
+          "totalRows": 0
+        },
+        "actual": {
+          "status": "COMPLETE",
+          "total": 0,
+          "knownSubtotal": 0,
+          "knownRows": 0,
+          "totalRows": 0
+        }
+      }
+    },
+    "who": {
+      "measuredProviderOperations": 0,
+      "averageAvailableProviderLatencyMs": null
+    },
+    "research": {
+      "jobs": 32,
+      "completedJobsWithTiming": 31,
+      "averageJobDurationMs": 3945.5806451612902
+    },
+    "contacts": {
+      "eligibleProjectCompanies": 50,
+      "attempts": 0,
+      "averageLatencyMs": null,
+      "averageLatencyDenominator": 0,
+      "latencyStatus": "N/A_DENOMINATOR_0"
+    },
+    "providerCostAccounting": {
+      "associationMethod": "Exact scope, discovery provider request IDs, company IDs, research question/job provider request IDs, and the persisted control execution interval; control-associated rows are excluded from main.",
+      "controlExecutionInterval": {
+        "startedAt": "2026-09-01T09:28:31.556Z",
+        "completedAt": "2026-09-01T09:28:47.880Z"
+      },
+      "MAIN_POPULATION": {
+        "stages": {
+          "DISCOVERY": {
+            "calls": 0,
+            "estimated": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            },
+            "actual": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            }
+          },
+          "PROFILE_RESOLUTION": {
+            "calls": 0,
+            "estimated": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            },
+            "actual": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            }
+          },
+          "FIRMOGRAPHICS": {
+            "calls": 0,
+            "estimated": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            },
+            "actual": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            }
+          },
+          "WHEN_WHY_RESEARCH": {
+            "calls": 0,
+            "estimated": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            },
+            "actual": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            }
+          },
+          "CONTACT_ENRICHMENT": {
+            "calls": 0,
+            "estimated": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            },
+            "actual": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            }
+          },
+          "OTHER": {
+            "calls": 0,
+            "estimated": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            },
+            "actual": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            }
+          }
+        },
+        "totals": {
+          "calls": 0,
+          "estimated": {
+            "status": "COMPLETE",
+            "total": 0,
+            "knownSubtotal": 0,
+            "knownRows": 0,
+            "totalRows": 0
+          },
+          "actual": {
+            "status": "COMPLETE",
+            "total": 0,
+            "knownSubtotal": 0,
+            "knownRows": 0,
+            "totalRows": 0
+          }
+        }
+      },
+      "BLIND_CONTROLS": {
+        "stages": {
+          "DISCOVERY": {
+            "calls": 10,
+            "estimated": {
+              "status": "COMPLETE",
+              "total": 0.07,
+              "knownSubtotal": 0.07,
+              "knownRows": 10,
+              "totalRows": 10
+            },
+            "actual": {
+              "status": "COMPLETE",
+              "total": 0.07,
+              "knownSubtotal": 0.07,
+              "knownRows": 10,
+              "totalRows": 10
+            }
+          },
+          "PROFILE_RESOLUTION": {
+            "calls": 0,
+            "estimated": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            },
+            "actual": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            }
+          },
+          "FIRMOGRAPHICS": {
+            "calls": 0,
+            "estimated": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            },
+            "actual": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            }
+          },
+          "WHEN_WHY_RESEARCH": {
+            "calls": 0,
+            "estimated": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            },
+            "actual": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            }
+          },
+          "CONTACT_ENRICHMENT": {
+            "calls": 0,
+            "estimated": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            },
+            "actual": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            }
+          },
+          "OTHER": {
+            "calls": 0,
+            "estimated": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            },
+            "actual": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            }
+          }
+        },
+        "totals": {
+          "calls": 10,
+          "estimated": {
+            "status": "COMPLETE",
+            "total": 0.07,
+            "knownSubtotal": 0.07,
+            "knownRows": 10,
+            "totalRows": 10
+          },
+          "actual": {
+            "status": "COMPLETE",
+            "total": 0.07,
+            "knownSubtotal": 0.07,
+            "knownRows": 10,
+            "totalRows": 10
+          }
+        }
+      },
+      "COMBINED_BENCHMARK": {
+        "stages": {
+          "DISCOVERY": {
+            "calls": 10,
+            "estimated": {
+              "status": "COMPLETE",
+              "total": 0.07,
+              "knownSubtotal": 0.07,
+              "knownRows": 10,
+              "totalRows": 10
+            },
+            "actual": {
+              "status": "COMPLETE",
+              "total": 0.07,
+              "knownSubtotal": 0.07,
+              "knownRows": 10,
+              "totalRows": 10
+            }
+          },
+          "PROFILE_RESOLUTION": {
+            "calls": 0,
+            "estimated": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            },
+            "actual": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            }
+          },
+          "FIRMOGRAPHICS": {
+            "calls": 0,
+            "estimated": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            },
+            "actual": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            }
+          },
+          "WHEN_WHY_RESEARCH": {
+            "calls": 0,
+            "estimated": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            },
+            "actual": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            }
+          },
+          "CONTACT_ENRICHMENT": {
+            "calls": 0,
+            "estimated": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            },
+            "actual": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            }
+          },
+          "OTHER": {
+            "calls": 0,
+            "estimated": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            },
+            "actual": {
+              "status": "COMPLETE",
+              "total": 0,
+              "knownSubtotal": 0,
+              "knownRows": 0,
+              "totalRows": 0
+            }
+          }
+        },
+        "totals": {
+          "calls": 10,
+          "estimated": {
+            "status": "COMPLETE",
+            "total": 0.07,
+            "knownSubtotal": 0.07,
+            "knownRows": 10,
+            "totalRows": 10
+          },
+          "actual": {
+            "status": "COMPLETE",
+            "total": 0.07,
+            "knownSubtotal": 0.07,
+            "knownRows": 10,
+            "totalRows": 10
+          }
+        }
+      }
+    }
+  }
+}

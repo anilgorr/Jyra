@@ -1,0 +1,39 @@
+{
+  "report": "MVP_10_CONTROL_ACCEPTANCE_TEST_02",
+  "replayType": "UNCHANGED_REPLAY",
+  "interval": {
+    "startedAt": "2026-09-01T09:29:40.508Z",
+    "completedAt": "2026-09-01T09:29:50.819Z"
+  },
+  "stateComparison": {
+    "exactRunStateUnchanged": true,
+    "runStateSha256Before": "25cdcdc4bbf8de4f7660fc09bf91451cedfb1dc648e81eaa7bd4e070ed7c2296",
+    "runStateSha256After": "25cdcdc4bbf8de4f7660fc09bf91451cedfb1dc648e81eaa7bd4e070ed7c2296",
+    "exactRunsUnchanged": true,
+    "runsSha256Before": "50018c581cfc0e689200bb2fe4600c293566d4ca7ca1665b6b4becfb4bca552c",
+    "runsSha256After": "50018c581cfc0e689200bb2fe4600c293566d4ca7ca1665b6b4becfb4bca552c"
+  },
+  "persistedAccounting": {
+    "providerCalls": 0,
+    "webSearchCalls": 0,
+    "companyDiscoveryCalls": 0,
+    "providerFailures": 0,
+    "estimatedCost": 0,
+    "actualKnownCost": 0
+  },
+  "downstreamChanges": {
+    "duplicateCompanies": 0,
+    "duplicateEvidence": 0,
+    "duplicateFacts": 0,
+    "duplicateSignals": 0,
+    "newOpportunityHistory": 0,
+    "newWhyVersions": 0,
+    "newRecommendationRecords": 0,
+    "context": "No control was provisioned, so no downstream entities existed for these control runs."
+  },
+  "idempotency": {
+    "terminalBlockedStatePassed": true,
+    "fullPipelineValidated": false,
+    "interpretation": "Replay idempotency passed only for the terminal blocked state and does not validate full pipeline idempotency in this acceptance run."
+  }
+}

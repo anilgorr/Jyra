@@ -1,0 +1,96 @@
+{
+  "report": "MVP_10_CONTROL_ACCEPTANCE_TEST_02",
+  "contentPolicy": "Stage trace and accounting only; full raw provider content is not duplicated.",
+  "sourceAccounting": {
+    "provider": "Exa",
+    "operation": "COMPANY_DISCOVERY",
+    "calls": 10,
+    "successfulCalls": 10,
+    "providerFailures": 0,
+    "rawResults": 90,
+    "canonicalized": 0,
+    "provisioned": 0
+  },
+  "controls": [
+    {
+      "controlIndex": 0,
+      "company": "SolarWinds",
+      "discoveryRunId": "0adf6b9f-6bcb-41a5-8633-b67b5d8276a7",
+      "providerAccounting": {"calls": 1, "rawResults": 10, "canonicalized": 0, "duplicatesRemoved": 0, "rejected": 1, "possibleMatches": 9, "providerFailure": false},
+      "runtimeTrace": [{"stage": "COMPANY_DISCOVERY", "status": "COMPLETED"}, {"stage": "IDENTITY", "status": "UNRESOLVED"}, {"stage": "PROVISIONING", "status": "NOT_PROVISIONED"}, {"stage": "DOWNSTREAM", "status": "NOT_RUN"}],
+      "adjudicationTrace": {"labelsUsedOnlyPostProcessing": true, "classification": "INVALID_RUN", "earliestFailureStage": "IDENTITY", "referenceCategory": "SECURITY_LEADERSHIP", "referenceDate": "2026-06-17"}
+    },
+    {
+      "controlIndex": 1,
+      "company": "First Horizon",
+      "discoveryRunId": "219c2c73-b42a-43ae-b397-7bc623ccf191",
+      "providerAccounting": {"calls": 1, "rawResults": 10, "canonicalized": 0, "duplicatesRemoved": 2, "rejected": 1, "possibleMatches": 7, "providerFailure": false},
+      "runtimeTrace": [{"stage": "COMPANY_DISCOVERY", "status": "COMPLETED"}, {"stage": "IDENTITY", "status": "UNRESOLVED"}, {"stage": "PROVISIONING", "status": "NOT_PROVISIONED"}, {"stage": "DOWNSTREAM", "status": "NOT_RUN"}],
+      "adjudicationTrace": {"labelsUsedOnlyPostProcessing": true, "classification": "INVALID_RUN", "earliestFailureStage": "IDENTITY", "referenceCategory": "SECURITY_LEADERSHIP", "referenceDate": "2026-02-11"}
+    },
+    {
+      "controlIndex": 2,
+      "company": "GitLab",
+      "discoveryRunId": "113f2a47-fe16-4fca-95c5-5c15aa9fdca4",
+      "providerAccounting": {"calls": 1, "rawResults": 10, "canonicalized": 0, "duplicatesRemoved": 0, "rejected": 0, "possibleMatches": 10, "providerFailure": false},
+      "runtimeTrace": [{"stage": "COMPANY_DISCOVERY", "status": "COMPLETED"}, {"stage": "IDENTITY", "status": "UNRESOLVED"}, {"stage": "PROVISIONING", "status": "NOT_PROVISIONED"}, {"stage": "DOWNSTREAM", "status": "NOT_RUN"}],
+      "adjudicationTrace": {"labelsUsedOnlyPostProcessing": true, "classification": "INVALID_RUN", "earliestFailureStage": "IDENTITY", "referenceCategory": "SECURITY_LEADERSHIP", "referenceDate": "2026-06-09"}
+    },
+    {
+      "controlIndex": 3,
+      "company": "Infoblox",
+      "discoveryRunId": "53ac2d34-d51b-4c69-b642-bd3af526e885",
+      "providerAccounting": {"calls": 1, "rawResults": 10, "canonicalized": 0, "duplicatesRemoved": 0, "rejected": 1, "possibleMatches": 9, "providerFailure": false},
+      "runtimeTrace": [{"stage": "COMPANY_DISCOVERY", "status": "COMPLETED"}, {"stage": "IDENTITY", "status": "UNRESOLVED"}, {"stage": "PROVISIONING", "status": "NOT_PROVISIONED"}, {"stage": "DOWNSTREAM", "status": "NOT_RUN"}],
+      "adjudicationTrace": {"labelsUsedOnlyPostProcessing": true, "classification": "INVALID_RUN", "earliestFailureStage": "IDENTITY", "referenceCategory": "SECURITY_LEADERSHIP", "referenceDate": "2026-06-09"}
+    },
+    {
+      "controlIndex": 4,
+      "company": "Teradata",
+      "discoveryRunId": "ffb758dc-f552-45d3-a39a-edfb3940f42c",
+      "providerAccounting": {"calls": 1, "rawResults": 10, "canonicalized": 0, "duplicatesRemoved": 0, "rejected": 1, "possibleMatches": 9, "providerFailure": false},
+      "runtimeTrace": [{"stage": "COMPANY_DISCOVERY", "status": "COMPLETED"}, {"stage": "IDENTITY", "status": "UNRESOLVED"}, {"stage": "PROVISIONING", "status": "NOT_PROVISIONED"}, {"stage": "DOWNSTREAM", "status": "NOT_RUN"}],
+      "adjudicationTrace": {"labelsUsedOnlyPostProcessing": true, "classification": "INVALID_RUN", "earliestFailureStage": "IDENTITY", "referenceCategory": "SECURITY_LEADERSHIP", "referenceDate": "2026-01-21"}
+    },
+    {
+      "controlIndex": 5,
+      "company": "Nubank",
+      "discoveryRunId": "8c4fa409-6bf8-4455-a16a-814b7f7e8a81",
+      "providerAccounting": {"calls": 1, "rawResults": 10, "canonicalized": 0, "duplicatesRemoved": 0, "rejected": 0, "possibleMatches": 10, "providerFailure": false},
+      "runtimeTrace": [{"stage": "COMPANY_DISCOVERY", "status": "COMPLETED"}, {"stage": "IDENTITY", "status": "UNRESOLVED"}, {"stage": "PROVISIONING", "status": "NOT_PROVISIONED"}, {"stage": "DOWNSTREAM", "status": "NOT_RUN"}],
+      "adjudicationTrace": {"labelsUsedOnlyPostProcessing": true, "classification": "INVALID_RUN", "earliestFailureStage": "IDENTITY", "referenceCategory": "SECURITY_LEADERSHIP", "referenceDate": "2026-06-08"}
+    },
+    {
+      "controlIndex": 6,
+      "company": "Black Duck",
+      "discoveryRunId": "3947c948-cfa3-4e6a-87cd-05250b722dcd",
+      "providerAccounting": {"calls": 1, "rawResults": 10, "canonicalized": 0, "duplicatesRemoved": 0, "rejected": 0, "possibleMatches": 10, "providerFailure": false},
+      "runtimeTrace": [{"stage": "COMPANY_DISCOVERY", "status": "COMPLETED"}, {"stage": "IDENTITY", "status": "UNRESOLVED"}, {"stage": "PROVISIONING", "status": "NOT_PROVISIONED"}, {"stage": "DOWNSTREAM", "status": "NOT_RUN"}],
+      "adjudicationTrace": {"labelsUsedOnlyPostProcessing": true, "classification": "INVALID_RUN", "earliestFailureStage": "IDENTITY", "referenceCategory": "SECURITY_LEADERSHIP", "referenceDate": "2026-04-09"}
+    },
+    {
+      "controlIndex": 7,
+      "company": "OpenAssets",
+      "discoveryRunId": "c14cb48d-3e0b-47ef-82e2-266da0cc09dd",
+      "providerAccounting": {"calls": 1, "rawResults": 1, "canonicalized": 0, "duplicatesRemoved": 0, "rejected": 0, "possibleMatches": 1, "providerFailure": false},
+      "runtimeTrace": [{"stage": "COMPANY_DISCOVERY", "status": "COMPLETED"}, {"stage": "IDENTITY", "status": "UNRESOLVED"}, {"stage": "PROVISIONING", "status": "NOT_PROVISIONED"}, {"stage": "DOWNSTREAM", "status": "NOT_RUN"}],
+      "adjudicationTrace": {"labelsUsedOnlyPostProcessing": true, "classification": "INVALID_RUN", "earliestFailureStage": "IDENTITY", "referenceCategory": "FUNDED_RISK_PROGRAM", "referenceDate": "2026-08-03"}
+    },
+    {
+      "controlIndex": 8,
+      "company": "Black & McDonald",
+      "discoveryRunId": "1f8a21db-ae53-48d7-b0d6-e54ea3105f3a",
+      "providerAccounting": {"calls": 1, "rawResults": 9, "canonicalized": 0, "duplicatesRemoved": 0, "rejected": 0, "possibleMatches": 9, "providerFailure": false},
+      "runtimeTrace": [{"stage": "COMPANY_DISCOVERY", "status": "COMPLETED"}, {"stage": "IDENTITY", "status": "UNRESOLVED"}, {"stage": "PROVISIONING", "status": "NOT_PROVISIONED"}, {"stage": "DOWNSTREAM", "status": "NOT_RUN"}],
+      "adjudicationTrace": {"labelsUsedOnlyPostProcessing": true, "classification": "INVALID_RUN", "earliestFailureStage": "IDENTITY", "referenceCategory": "FUNDED_RISK_PROGRAM", "referenceDate": "2026-05-08"}
+    },
+    {
+      "controlIndex": 9,
+      "company": "RAKBANK",
+      "discoveryRunId": "9ca5bf6e-cb1a-436e-9444-fa9a0472f956",
+      "providerAccounting": {"calls": 1, "rawResults": 10, "canonicalized": 0, "duplicatesRemoved": 0, "rejected": 1, "possibleMatches": 9, "providerFailure": false},
+      "runtimeTrace": [{"stage": "COMPANY_DISCOVERY", "status": "COMPLETED"}, {"stage": "IDENTITY", "status": "UNRESOLVED"}, {"stage": "PROVISIONING", "status": "NOT_PROVISIONED"}, {"stage": "DOWNSTREAM", "status": "NOT_RUN"}],
+      "adjudicationTrace": {"labelsUsedOnlyPostProcessing": true, "classification": "INVALID_RUN", "earliestFailureStage": "IDENTITY", "referenceCategory": "SECURITY_STACK_CHANGE", "referenceDate": "2025-05-08"}
+    }
+  ]
+}

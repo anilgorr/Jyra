@@ -1,0 +1,41 @@
+{
+  "report": "MVP_10_CONTROL_ACCEPTANCE_TEST_02",
+  "unit": "provider-accounting units",
+  "currency": null,
+  "currencyStatus": "NOT_EXPLICITLY_ESTABLISHED_AS_USD",
+  "firstRun": {
+    "tavilyWebSearch": {
+      "calls": 0,
+      "estimatedCost": 0,
+      "actualKnownCost": 0
+    },
+    "exaWebSearchFallback": {
+      "calls": 0,
+      "estimatedCost": 0,
+      "actualKnownCost": 0
+    },
+    "otherProviderCalls": {
+      "calls": 10,
+      "provider": "Exa",
+      "operation": "COMPANY_DISCOVERY",
+      "estimatedCost": 0.07,
+      "actualKnownCost": 0.07
+    },
+    "providerFailures": 0,
+    "totals": {
+      "calls": 10,
+      "estimatedCost": 0.07,
+      "actualKnownCost": 0.07,
+      "unknownCost": 0
+    }
+  },
+  "replay": {
+    "providerCalls": 0,
+    "webSearchCalls": 0,
+    "companyDiscoveryCalls": 0,
+    "providerFailures": 0,
+    "estimatedCost": 0,
+    "actualKnownCost": 0,
+    "unknownCost": 0
+  }
+}

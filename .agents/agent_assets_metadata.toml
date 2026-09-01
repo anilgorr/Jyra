@@ -332,3 +332,101 @@ mtime_ms = 1788247750155
 storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/88373ed9-3390-4ee2-9cac-96057f322c14/0131ac78-059b-496d-be6d-2f3ab3a1f160"
 storage_version_token = "1788247892272938"
 content_type = "application/octet-stream"
+
+[[outputs]]
+id = "0WrSYi6iSulv92m_oZMBP"
+uri = "file://artifacts/api-server/MVP_10_CONTROL_ACCEPTANCE_TEST_02.md"
+type = "text"
+title = "10-Control Acceptance Test 02"
+description = "Primary human-review report with gates, metrics, failure attribution, and final decision."
+logical_id = "1c376b38-8772-4ddb-a209-6fb1fb79fce5"
+content_hash = "sha256:f69abf3633d028113646c597761c1973c1fcfb58009f1d63312add59d8efd91f"
+size = 4642
+mtime_ms = 1788255089948
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/1c376b38-8772-4ddb-a209-6fb1fb79fce5/2cba6290-2a09-48d8-9d19-2e9ae6afb88c"
+storage_version_token = "1788255215110311"
+content_type = "text/markdown"
+
+[[outputs]]
+id = "JbMz9fWfYQKGb6fHt972E"
+uri = "file://artifacts/api-server/MVP_10_CONTROL_ACCEPTANCE_TEST_02.json"
+type = "unspecified"
+title = "Acceptance Test 02 — Structured Result"
+description = "Machine-readable acceptance metrics, identity failure, safety interpretation, and decision."
+logical_id = "78aaed21-23bb-4619-bcf5-71e9b230b395"
+content_hash = "sha256:626c884863d0c9f75620c30570aba8ad5cdba07f40b84d773d9338b55bbecc55"
+size = 3390
+mtime_ms = 1788255098441
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/78aaed21-23bb-4619-bcf5-71e9b230b395/ef358c5e-a54c-4323-b8a6-5810fe3c98e2"
+storage_version_token = "1788255216468258"
+content_type = "application/octet-stream"
+
+[[outputs]]
+id = "UcjGf1_3kVx9wgcjtt1Vf"
+uri = "file://artifacts/api-server/MVP_10_CONTROL_ACCEPTANCE_TEST_02_CONTROLS.csv"
+type = "table"
+title = "Acceptance Test 02 — Controls"
+description = "One-row-per-control provisioning, adjudication, and identity-stage failure results."
+logical_id = "9147967e-e576-4b91-9840-67a25fff6408"
+content_hash = "sha256:c0903d246e5d831184997007016b6fa2208558bd1ab42da625e862e8d9058aa7"
+size = 2728
+mtime_ms = 1788255104435
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/9147967e-e576-4b91-9840-67a25fff6408/65512f95-d457-4a77-9330-bc898039191e"
+storage_version_token = "1788255217884821"
+content_type = "text/csv"
+
+[[outputs]]
+id = "cL5eQoVlc1NhOniceUYWX"
+uri = "file://artifacts/api-server/MVP_10_CONTROL_ACCEPTANCE_TEST_02_TRACES.json"
+type = "unspecified"
+title = "Acceptance Test 02 — Traces"
+description = "Per-control runtime and post-processing traces without full provider payloads."
+logical_id = "69fb7dff-5486-479c-80d8-ab4e0a5005b7"
+content_hash = "sha256:1c7258d9e85243bc60eda81fdfd43b834f61a341ab6bf979f44ee042a69aa444"
+size = 7776
+mtime_ms = 1788255131229
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/69fb7dff-5486-479c-80d8-ab4e0a5005b7/7b15472a-f7a7-406e-8d90-8327ad7410ca"
+storage_version_token = "1788255219266676"
+content_type = "application/octet-stream"
+
+[[outputs]]
+id = "7sMZibYFEI0Pagx2QKK-o"
+uri = "file://artifacts/api-server/MVP_10_CONTROL_ACCEPTANCE_TEST_02_FAILURES.md"
+type = "text"
+title = "Acceptance Test 02 — Failures"
+description = "Human-readable list of all ten identity-stage invalid runs."
+logical_id = "24b8f553-fba7-4bf2-a0e3-8556d4a280f6"
+content_hash = "sha256:92fb62e5e25c9ccca875999c8560bcd346fdfde738f7006b8597cce9de7c6d8f"
+size = 1569
+mtime_ms = 1788255138222
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/24b8f553-fba7-4bf2-a0e3-8556d4a280f6/872325e6-975f-4f32-bb82-898f9d825fd3"
+storage_version_token = "1788255220625634"
+content_type = "text/markdown"
+
+[[outputs]]
+id = "1JF2oPtYOgvRMY8jFw28T"
+uri = "file://artifacts/api-server/MVP_10_CONTROL_ACCEPTANCE_TEST_02_COSTS.json"
+type = "unspecified"
+title = "Acceptance Test 02 — Costs"
+description = "Separated Tavily, Exa fallback, provisioning-provider, actual, estimated, and replay costs."
+logical_id = "0e75b05f-8067-4b70-87d7-fbb532f2b3c7"
+content_hash = "sha256:e0584482d074f7b779f8c36d51319c2474c87a5f444110bab48a9d9ca219f49a"
+size = 926
+mtime_ms = 1788255138584
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/0e75b05f-8067-4b70-87d7-fbb532f2b3c7/3cbadbda-7958-4bbd-a6e1-710ec61c198b"
+storage_version_token = "1788255221912129"
+content_type = "application/octet-stream"
+
+[[outputs]]
+id = "AABj7O-mqUi1WJDGGY_Ty"
+uri = "file://artifacts/api-server/MVP_10_CONTROL_ACCEPTANCE_TEST_02_REPLAY.json"
+type = "unspecified"
+title = "Acceptance Test 02 — Replay"
+description = "Unchanged blocked-state replay accounting and zero-delta results."
+logical_id = "91aea97f-9781-48bb-b353-a66786c372c3"
+content_hash = "sha256:d6489e13538b870505d390a6dfcf687565b549a6ba1ecc78ff8e013184b9477c"
+size = 1449
+mtime_ms = 1788255139048
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/91aea97f-9781-48bb-b353-a66786c372c3/1e9c4129-4700-4b87-81dd-9bccf2ddbe4a"
+storage_version_token = "1788255223258472"
+content_type = "application/octet-stream"
