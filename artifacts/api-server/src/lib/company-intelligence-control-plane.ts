@@ -10,11 +10,15 @@ import {
   COMPANY_UNDERSTANDING_PROMPT_VERSION,
   semanticFingerprint,
 } from "./company-semantic-assessment";
-import { qualifyProjectCompanyForWho } from "./company-discovery";
 import { ensureMinimumCompanyIntelligence, type MinimumCompanyIntelligence } from "./minimum-company-intelligence";
 import type { ProviderOperations } from "./provider-contract";
 import { resolveProjectSellerContext } from "./seller-context";
 import type { BuyerRoleAssessment } from "./buyer-role-resolution";
+import {
+  qualifyProjectCompanyForWho,
+  type IcpMissingDimension,
+  type IcpMissingReasonCode,
+} from "./company-discovery";
 
 export const COMPANY_INTELLIGENCE_CONTROL_PLANE_VERSION = "architecture-v1-control-plane-v2";
 
@@ -41,6 +45,8 @@ export type CompanyIntelligenceControlResult = {
   explanation: string;
   missingRequirements: string[];
   nextRecommendedCapability: string | null;
+  missingIcpDimensions: IcpMissingDimension[];
+  missingIcpReasonCodes: IcpMissingReasonCode[];
   retrySensible: boolean;
   manualReviewHelpful: boolean;
   minimumIntelligence: MinimumCompanyIntelligence | null;
@@ -56,10 +62,24 @@ export type CompanyIntelligenceControlResult = {
   } | null;
 };
 
-function result(
-  value: Omit<CompanyIntelligenceControlResult, "version">,
-): CompanyIntelligenceControlResult {
-  return { version: COMPANY_INTELLIGENCE_CONTROL_PLANE_VERSION, ...value };
+type ControlResultInput = Omit<
+  CompanyIntelligenceControlResult,
+  "version" | "missingIcpDimensions" | "missingIcpReasonCodes"
+> & Partial<Pick<CompanyIntelligenceControlResult, "missingIcpDimensions" | "missingIcpReasonCodes">>;
+function result(value: ControlResultInput): CompanyIntelligenceControlResult {
+  return {
+    version: COMPANY_INTELLIGENCE_CONTROL_PLANE_VERSION,
+    missingIcpDimensions: [],
+    missingIcpReasonCodes: [],
+    ...value,
+  };
+}
+
+export function shouldRecommendCompanyFirmographics(who: Pick<
+  NonNullable<CompanyIntelligenceControlResult["who"]>,
+  "qualification" | "firmographicResolutionAvailable"
+>): boolean {
+  return who.qualification === "INSUFFICIENT_DATA" && who.firmographicResolutionAvailable;
 }
 
 function controlPlaneFingerprint(input: {
@@ -300,15 +320,18 @@ export async function orchestrateCompanyIntelligence(input: {
   const who = await qualifyProjectCompanyForWho({ projectId: input.projectId, company: current.company, buyerRole });
   if (!who.eligible) {
     const missing = who.qualification === "INSUFFICIENT_DATA";
+    const canResolveWithFirmographics = shouldRecommendCompanyFirmographics(who);
     return result({
       status: missing ? "PARTIAL" : "SUCCESS",
       reasonCode: missing ? "ICP_REQUIREMENTS_MISSING" : "ICP_NOT_FIT",
       explanation: missing
         ? "Commercial role is resolved, but WHO lacks required ICP evidence."
         : "Commercial role is resolved, but the company does not satisfy the current ICP.",
-      missingRequirements: missing ? ["required ICP dimensions"] : [],
-      nextRecommendedCapability: missing ? "COMPANY_FIRMOGRAPHICS" : null,
-      retrySensible: missing,
+      missingRequirements: missing ? who.missingRequirements : [],
+      nextRecommendedCapability: canResolveWithFirmographics ? "COMPANY_FIRMOGRAPHICS" : null,
+      missingIcpDimensions: missing ? who.missingDimensions : [],
+      missingIcpReasonCodes: missing ? who.missingReasonCodes : [],
+      retrySensible: canResolveWithFirmographics,
       manualReviewHelpful: missing,
       minimumIntelligence: minimum,
       buyerRole,

@@ -335,7 +335,15 @@ export async function buildDiscoveryPlan(projectId: string, resolved?: ProjectSe
     ...industriesFromText(assumptionText),
   ])];
   const employeeRange = employeeRangeFromText(assumptionText);
-  const technologyCharacteristics = technologiesFromText(targetDescription);
+  const acceptedTechnologyValues = acceptedCriteria
+    .filter((criterion) => criterion.dimension === "technology")
+    .flatMap((criterion) => Array.isArray(criterion.value)
+      ? criterion.value.map(String)
+      : splitList(String(criterion.value)));
+  const technologyCharacteristics = [...new Set([
+    ...acceptedTechnologyValues,
+    ...technologiesFromText(targetDescription),
+  ])];
   const exclusions = acceptedCriteria
     .filter((criterion) => criterion.criterionType === "DISQUALIFIER")
     .map((criterion) => criterion.description);
@@ -566,7 +574,7 @@ function sourceUrlForCandidate(
   return match?.kind === "public_url" ? match.reference : null;
 }
 
-type CandidateAssessment = {
+export type CandidateAssessment = {
   classification: DiscoveryQualification;
   checks: {
     geography: boolean | null;
@@ -577,10 +585,20 @@ type CandidateAssessment = {
   knownCriteria: number;
   matchedCriteria: number;
   missingCriteria: number;
+  missingDimensions: IcpMissingDimension[];
+  missingReasonCodes: IcpMissingReasonCode[];
+  missingReasonCode: IcpMissingReasonCode | null;
   buyerRole: DiscoveryCandidateReport["buyerRole"];
   buyerRoleAssessment: BuyerRoleAssessment;
 };
 
+export const ICP_MISSING_DIMENSION_REASON_CODES = {
+  geography: "ICP_MISSING_GEOGRAPHY",
+  industry: "ICP_MISSING_INDUSTRY",
+  employee_count: "ICP_MISSING_EMPLOYEE_SIZE",
+  technology: "ICP_MISSING_TECHNOLOGY",
+  multiple: "ICP_MISSING_MULTIPLE_DIMENSIONS",
+} as const;
 function normalizedComparison(value: string): string {
   return normalizeCompanyName(value)
     .replace(/\bunited states of america\b/g, "united states")
@@ -598,18 +616,26 @@ function textMatchesAny(value: string | null, targets: string[] | undefined): bo
   });
 }
 
-function qualifyCandidate(
+export function qualifyCandidate(
   company: NormalizedCompanyInput,
   strategy: CompanyDiscoveryStrategy,
   profileResolution?: CompanyProfileResolutionResult | null,
   roleDescription?: { text: string; source: string } | null,
 ): CandidateAssessment {
   const employeeRange = strategy.employeeRange;
-  const employeeCheck = company.employeeCount === null
-    || (employeeRange?.minimum === undefined && employeeRange?.maximum === undefined)
+  const hasEmployeeTarget = employeeRange?.minimum !== undefined || employeeRange?.maximum !== undefined;
+  const observedEmployeeRange = parseObservedEmployeeRange(company.employeeRange);
+  const observedEmployeeMinimum = company.employeeCount
+    ?? observedEmployeeRange?.minimum
+    ?? null;
+  const observedEmployeeMaximum = company.employeeCount
+    ?? observedEmployeeRange?.maximum
+    ?? null;
+  const employeeCheck = !hasEmployeeTarget || observedEmployeeMinimum === null
     ? null
-    : (employeeRange.minimum === undefined || company.employeeCount >= employeeRange.minimum)
-      && (employeeRange.maximum === undefined || company.employeeCount <= employeeRange.maximum);
+    : (employeeMaximumIsOutsideTarget(observedEmployeeMinimum, observedEmployeeMaximum, employeeRange)
+      ? false
+      : true);
   const technologyText = [company.description, company.industry].filter(Boolean).join(" ");
   const technologyCheck = !technologyText || !strategy.technologyCharacteristics?.length
     ? null
@@ -644,6 +670,17 @@ function qualifyCandidate(
   const knownCriteria = values.filter((value) => value !== null).length;
   const matchedCriteria = values.filter((value) => value === true).length;
   const missingCriteria = values.filter((value) => value === null).length;
+  const missingDimensions: IcpMissingDimension[] = [
+    Boolean(strategy.geographies?.length) && checks.geography === null ? "geography" : null,
+    Boolean(strategy.targetIndustries?.length) && checks.industry === null ? "industry" : null,
+    hasEmployeeTarget && checks.employeeRange === null ? "employee_count" : null,
+    Boolean(strategy.technologyCharacteristics?.length) && checks.technology === null ? "technology" : null,
+  ].filter((dimension): dimension is IcpMissingDimension => dimension !== null);
+  const dimensionReasonCodes = missingDimensions.map((dimension) =>
+    ICP_MISSING_DIMENSION_REASON_CODES[dimension]);
+  const missingReasonCode = missingDimensions.length > 1
+    ? ICP_MISSING_DIMENSION_REASON_CODES.multiple
+    : dimensionReasonCodes[0] ?? null;
   const structurallyExcluded = buyerRole === "SELLER_COMPETITOR" || buyerRole === "ADJACENT_VENDOR";
   const classification: DiscoveryQualification = structurallyExcluded || values.some((value) => value === false)
     ? "LIKELY_NOT_FIT"
@@ -652,33 +689,86 @@ function qualifyCandidate(
       : matchedCriteria === 1
         ? "POSSIBLE_FIT"
         : "INSUFFICIENT_DATA";
-  return { classification, checks, knownCriteria, matchedCriteria, missingCriteria, buyerRole, buyerRoleAssessment };
+  return {
+    classification, checks, knownCriteria, matchedCriteria, missingCriteria,
+    missingDimensions,
+    missingReasonCodes: missingReasonCode === ICP_MISSING_DIMENSION_REASON_CODES.multiple
+      ? [...dimensionReasonCodes, missingReasonCode]
+      : dimensionReasonCodes,
+    missingReasonCode,
+    buyerRole, buyerRoleAssessment,
+  };
 }
 
+function parseObservedEmployeeRange(value: string | null): { minimum: number; maximum: number | null } | null {
+  if (!value?.trim()) return null;
+  const raw = value.replace(/,/g, "").trim();
+  const band = raw.match(/^(\d+)\s*(?:[-–—]|to)\s*(\d+)$/i);
+  if (band) return { minimum: Number(band[1]), maximum: Number(band[2]) };
+  const plus = raw.match(/^(\d+)\s*\+$/);
+  if (plus) return { minimum: Number(plus[1]), maximum: null };
+  const exact = raw.match(/^(\d+)$/);
+  return exact ? { minimum: Number(exact[1]), maximum: Number(exact[1]) } : null;
+}
+
+export function canonicalEmployeeRangeLabel(
+  minimum: number | null,
+  maximum: number | null,
+): string | null {
+  if (minimum !== null && maximum !== null) return `${minimum}-${maximum}`;
+  if (minimum !== null) return `${minimum}+`;
+  if (maximum !== null) return `0-${maximum}`;
+  return null;
+}
 /** Existing project-company WHO qualification, shared by Research Now rather
  * than recreating a second eligibility policy in a route or client. */
 export async function qualifyProjectCompanyForWho(input: {
   projectId: string;
   company: typeof companiesTable.$inferSelect;
   buyerRole?: DiscoveryCandidateReport["buyerRole"];
-}): Promise<{ eligible: boolean; qualification: DiscoveryQualification }> {
+}): Promise<{
+  eligible: boolean;
+  qualification: DiscoveryQualification;
+  checks: CandidateAssessment["checks"] | null;
+  missingDimensions: IcpMissingDimension[];
+  missingReasonCodes: IcpMissingReasonCode[];
+  missingReasonCode: IcpMissingReasonCode | null;
+  missingRequirements: string[];
+  firmographicResolutionAvailable: boolean;
+}> {
   const plan = await buildDiscoveryPlan(input.projectId);
   const profile = await getCanonicalCompanyProfile(input.projectId, input.company);
   const normalized = normalizeCompanyInput({
     canonicalName: profile.canonicalName, domain: profile.domain, website: profile.website,
     linkedinUrl: profile.linkedinCompanyUrl, profileUrls: profile.profileUrls, country: profile.country,
     industry: profile.canonicalIndustry, employeeCount: profile.employeesExact,
-    employeeRange: profile.employeesMin !== null && profile.employeesMax !== null
-      ? `${profile.employeesMin}-${profile.employeesMax}` : null,
+    employeeRange: canonicalEmployeeRangeLabel(profile.employeesMin, profile.employeesMax),
     description: profile.primaryBusinessDescription,
   }).value;
-  if (!normalized) return { eligible: false, qualification: "INSUFFICIENT_DATA" };
+  if (!normalized) {
+    return {
+      eligible: false, qualification: "INSUFFICIENT_DATA", checks: null,
+      missingDimensions: [], missingReasonCodes: [], missingReasonCode: null,
+      missingRequirements: ["ICP evidence"], firmographicResolutionAvailable: false,
+    };
+  }
   const assessment = qualifyCandidate(normalized, plan.strategy, null,
     profile.primaryBusinessDescription ? { text: profile.primaryBusinessDescription, source: "canonical_company_profile" } : null);
   const buyerRole = input.buyerRole ?? assessment.buyerRole;
+  const evidenceIncomplete = assessment.classification === "INSUFFICIENT_DATA"
+    && assessment.missingDimensions.length > 0;
   return {
-    eligible: buyerRole === "POTENTIAL_BUYER" && assessment.classification !== "LIKELY_NOT_FIT",
+    eligible: buyerRole === "POTENTIAL_BUYER"
+      && assessment.classification !== "LIKELY_NOT_FIT"
+      && !evidenceIncomplete,
     qualification: assessment.classification,
+    checks: assessment.checks,
+    missingDimensions: assessment.missingDimensions,
+    missingReasonCodes: assessment.missingReasonCodes,
+    missingReasonCode: assessment.missingReasonCode,
+    missingRequirements: assessment.missingDimensions.map((dimension) => ICP_MISSING_DIMENSION_LABELS[dimension]),
+    firmographicResolutionAvailable: assessment.missingDimensions.some((dimension) =>
+      FIRMOGRAPHIC_ICP_DIMENSIONS.has(dimension)),
   };
 }
 
@@ -1452,3 +1542,30 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
       right.researchPriority - left.researchPriority || left.name.localeCompare(right.name)).slice(0, limit),
   };
 }
+
+export type IcpMissingDimension = "geography" | "industry" | "employee_count" | "technology";
+
+const FIRMOGRAPHIC_ICP_DIMENSIONS = new Set<IcpMissingDimension>([
+  "geography",
+  "industry",
+  "employee_count",
+]);
+
+const ICP_MISSING_DIMENSION_LABELS: Record<IcpMissingDimension, string> = {
+  geography: "target geography evidence",
+  industry: "target industry evidence",
+  employee_count: "employee-size evidence",
+  technology: "technology evidence",
+};
+
+function employeeMaximumIsOutsideTarget(
+  observedMinimum: number,
+  observedMaximum: number | null,
+  target: CompanyDiscoveryStrategy["employeeRange"],
+): boolean {
+  return (target?.maximum !== undefined && observedMinimum > target.maximum)
+    || (target?.minimum !== undefined && observedMaximum !== null && observedMaximum < target.minimum);
+}
+
+export type IcpMissingReasonCode =
+  typeof ICP_MISSING_DIMENSION_REASON_CODES[keyof typeof ICP_MISSING_DIMENSION_REASON_CODES];

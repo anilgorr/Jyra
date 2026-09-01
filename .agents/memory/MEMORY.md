@@ -40,3 +40,4 @@
 - [Progressive identity permissions](progressive-identity-permissions.md) — coherent probable identities may gather provisional evidence, but only attribution-safe identities unlock permanent/high-impact actions.
 - [Company-intelligence freshness](company-intelligence-freshness.md) — reuse resolved roles only under exact current context and model-input fingerprints; UNKNOWN is never fresh.
 - [Stateful capability handoffs](stateful-capability-handoffs.md) — bind router methods when projecting capabilities across orchestration boundaries.
+- [ICP evidence gaps](icp-evidence-gaps.md) — WHO unknowns name configured missing dimensions; enrich only gaps that firmographics can resolve.

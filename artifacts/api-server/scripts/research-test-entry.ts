@@ -1,4 +1,5 @@
 export * from "../src/lib/research";
+export { qualifyProjectCompanyForWho } from "../src/lib/company-discovery";
 export * from "../src/lib/research-economics";
 export * from "../src/lib/provider-router";
 export { bindControlPlaneProviderOperations, discoverCompaniesForProject } from "../src/lib/company-discovery";
@@ -10,6 +11,8 @@ export {
   businessTwinsTable,
   businessTwinVersionsTable,
   companiesTable,
+  icpsTable,
+  icpVersionsTable,
   companyEvidenceTable,
   companyFactsTable,
   companyProvenanceTable,
@@ -17,8 +20,6 @@ export {
   dataProvidersTable,
   db,
   evidenceAttributionReviewsTable,
-  icpsTable,
-  icpVersionsTable,
   intelligencePacksTable,
   intelligencePackVersionsTable,
   organizationsTable,

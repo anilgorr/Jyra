@@ -73,6 +73,154 @@ check("possible fit semantics preserved", () =>
   assert.equal(lib.classifyIcpFit({ geography: "pass", industry: "pass", employeeSize: "partial" }).status, "POSSIBLE_FIT"));
 check("insufficient data is not negative fit", () =>
   assert.equal(lib.classifyIcpFit({ geography: "unknown", industry: "unknown", employeeSize: "unknown" }).status, "INSUFFICIENT_DATA"));
+const normalizeFixture = (fixture) => {
+  const normalized = lib.normalizeCompanyInput(fixture);
+  assert.ok(normalized.value, `Expected a valid company fixture: ${fixture.canonicalName}`);
+  return normalized.value;
+};
+const domainStrategy = (overrides) => ({
+  targetIndustries: [],
+  geographies: [],
+  marketDiscoveryIntent: {
+    buyerCompanyTypes: ["operating company"],
+    targetIndustries: [],
+    targetGeographies: [],
+    requiredCharacteristics: [],
+    preferredCharacteristics: [],
+    excludedCompanyTypes: [],
+    sellerCategoryExclusions: [],
+    offeringCategoryExclusions: [],
+    searchConcepts: [],
+    negativeConcepts: [],
+    confidence: "HIGH",
+    provenance: ["fixture"],
+  },
+  ...overrides,
+});
+check("Managed SOC WHO explains missing geography without a negative conclusion", () => {
+  const assessment = lib.qualifyCandidate(normalizeFixture({
+    canonicalName: "Cloud Payroll",
+    domain: "cloudpayroll.example",
+    industry: "SaaS",
+    description: "Cloud payroll software company serving operating businesses",
+  }), domainStrategy({
+    geographies: ["United States"],
+    marketDiscoveryIntent: {
+      ...domainStrategy({}).marketDiscoveryIntent,
+      sellerCategoryExclusions: ["Computer and Network Security"],
+      offeringCategoryExclusions: ["Managed SOC"],
+    },
+  }));
+  assert.equal(assessment.classification, "INSUFFICIENT_DATA");
+  assert.deepEqual(assessment.missingDimensions, ["geography"]);
+  assert.deepEqual(assessment.missingReasonCodes, [lib.ICP_MISSING_DIMENSION_REASON_CODES.geography]);
+  assert.equal(lib.shouldRecommendCompanyFirmographics({
+    qualification: assessment.classification,
+    firmographicResolutionAvailable: assessment.missingDimensions.length > 0,
+  }), true);
+});
+check("AEO/GEO WHO explains missing industry without a negative conclusion", () => {
+  const assessment = lib.qualifyCandidate(normalizeFixture({
+    canonicalName: "Search Commerce",
+    domain: "searchcommerce.example",
+    description: "Consumer marketplace operating an online commerce platform",
+  }), domainStrategy({
+    targetIndustries: ["Ecommerce"],
+    marketDiscoveryIntent: {
+      ...domainStrategy({}).marketDiscoveryIntent,
+      targetIndustries: ["Ecommerce"],
+      sellerCategoryExclusions: ["Marketing Services"],
+      offeringCategoryExclusions: ["AEO/GEO consulting"],
+    },
+  }));
+  assert.equal(assessment.classification, "INSUFFICIENT_DATA");
+  assert.deepEqual(assessment.missingDimensions, ["industry"]);
+  assert.equal(assessment.missingReasonCode, lib.ICP_MISSING_DIMENSION_REASON_CODES.industry);
+});
+check("recruitment WHO explains missing employee size without a negative conclusion", () => {
+  const assessment = lib.qualifyCandidate(normalizeFixture({
+    canonicalName: "FactoryCo",
+    domain: "factoryco.example",
+    industry: "Manufacturing",
+    description: "Manufacturing company that operates industrial production facilities",
+  }), domainStrategy({
+    employeeRange: { minimum: 100, maximum: 2000 },
+    marketDiscoveryIntent: {
+      ...domainStrategy({}).marketDiscoveryIntent,
+      sellerCategoryExclusions: ["Staffing and Recruiting"],
+      offeringCategoryExclusions: ["Recruitment services"],
+    },
+  }));
+  assert.equal(assessment.classification, "INSUFFICIENT_DATA");
+  assert.deepEqual(assessment.missingDimensions, ["employee_count"]);
+  assert.equal(assessment.missingReasonCode, lib.ICP_MISSING_DIMENSION_REASON_CODES.employee_count);
+});
+check("ERP WHO emits exact dimensions plus the multiple-requirements code", () => {
+  const assessment = lib.qualifyCandidate(normalizeFixture({
+    canonicalName: "Food Distribution Co",
+    domain: "fooddistribution.example",
+    description: "Regional distributor serving commercial customers",
+  }), domainStrategy({
+    targetIndustries: ["Wholesale"],
+    geographies: ["United Kingdom"],
+    employeeRange: { minimum: 50, maximum: 1000 },
+    marketDiscoveryIntent: {
+      ...domainStrategy({}).marketDiscoveryIntent,
+      targetIndustries: ["Wholesale"],
+      targetGeographies: ["United Kingdom"],
+      employeeRange: { minimum: 50, maximum: 1000 },
+      sellerCategoryExclusions: ["IT Services"],
+      offeringCategoryExclusions: ["ERP implementation"],
+    },
+  }));
+  assert.equal(assessment.classification, "INSUFFICIENT_DATA");
+  assert.deepEqual(assessment.missingDimensions, ["geography", "industry", "employee_count"]);
+  assert.equal(assessment.missingReasonCode, lib.ICP_MISSING_DIMENSION_REASON_CODES.multiple);
+  assert.deepEqual(assessment.missingReasonCodes, [
+    lib.ICP_MISSING_DIMENSION_REASON_CODES.geography,
+    lib.ICP_MISSING_DIMENSION_REASON_CODES.industry,
+    lib.ICP_MISSING_DIMENSION_REASON_CODES.employee_count,
+    lib.ICP_MISSING_DIMENSION_REASON_CODES.multiple,
+  ]);
+});
+check("firmographics are not recommended for a non-resolvable WHO gap", () =>
+  assert.equal(lib.shouldRecommendCompanyFirmographics({
+    qualification: "INSUFFICIENT_DATA",
+    firmographicResolutionAvailable: false,
+  }), false));
+check("technology gaps are explicit but do not recommend firmographics", () => {
+  const assessment = lib.qualifyCandidate(normalizeFixture({
+    canonicalName: "Opaque Stack Co",
+    domain: "opaquestack.example",
+  }), domainStrategy({ technologyCharacteristics: ["Microsoft 365"] }));
+  assert.equal(assessment.classification, "INSUFFICIENT_DATA");
+  assert.deepEqual(assessment.missingDimensions, ["technology"]);
+  assert.equal(assessment.missingReasonCode, lib.ICP_MISSING_DIMENSION_REASON_CODES.technology);
+  assert.equal(lib.shouldRecommendCompanyFirmographics({
+    qualification: assessment.classification,
+    firmographicResolutionAvailable: false,
+  }), false);
+});
+check("canonical employee bands count as evidence rather than missing data", () => {
+  const assessment = lib.qualifyCandidate(normalizeFixture({
+    canonicalName: "Regional Employer",
+    domain: "regionalemployer.example",
+    employeeRange: "201-500",
+    description: "Operating company employing a regional workforce",
+  }), domainStrategy({ employeeRange: { minimum: 100, maximum: 1000 } }));
+  assert.deepEqual(assessment.missingDimensions, []);
+  assert.equal(assessment.checks.employeeRange, true);
+});
+check("one-sided employee minimums accept supported size evidence", () => {
+  const assessment = lib.qualifyCandidate(normalizeFixture({
+    canonicalName: "Growth Employer",
+    domain: "growthemployer.example",
+    employeeRange: "500+",
+    description: "Operating company with a growing workforce",
+  }), domainStrategy({ employeeRange: { minimum: 100 } }));
+  assert.deepEqual(assessment.missingDimensions, []);
+  assert.equal(assessment.checks.employeeRange, true);
+});
 check("Managed SOC buyer fixture passes", () => assert.equal(lib.classifyCandidateBuyerRole({
   // The current 06A contract needs an explicit primary-business statement;
   // a bare company-type noun phrase is not sufficient evidence.
@@ -102,4 +250,4 @@ check("known identity safety remains fail closed", () => {
   assert.equal(identity.canonicalAttachAllowed, false);
 });
 
-console.log(JSON.stringify({ passed: tests.length, total: 20, tests }, null, 2));
+console.log(JSON.stringify({ passed: tests.length, total: tests.length, tests }, null, 2));

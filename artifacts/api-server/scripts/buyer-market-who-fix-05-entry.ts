@@ -3,7 +3,10 @@ export {
   buildHighRecallDiscoveryQueries,
   canPersistResearchCanonicalCandidate,
   classifyCandidateBuyerRole,
+  ICP_MISSING_DIMENSION_REASON_CODES,
+  qualifyCandidate,
 } from "../src/lib/company-discovery";
+export { shouldRecommendCompanyFirmographics } from "../src/lib/company-intelligence-control-plane";
 export {
   classifyIcpFit,
   employeeRangeDecision,

@@ -45,6 +45,7 @@ import {
   type ProviderUsageRecord,
 } from "./provider-router";
 import { orchestrateCompanyIntelligence } from "./company-intelligence-control-plane";
+import type { IcpMissingDimension, IcpMissingReasonCode } from "./company-discovery";
 import { resolveProjectSellerContext } from "./seller-context";
 import {
   releaseResearchReservation,
@@ -978,6 +979,20 @@ export type ResearchExecutionResult = {
   resultStatus: string;
 };
 
+export type ResearchStoppedResult = {
+  stopped: true;
+  reason: string;
+  buyerRole?: string;
+  intelligenceStage?: string;
+  stopCode?: string;
+  progress?: string;
+  nextAction?: string;
+  missingRequirements?: string[];
+  missingIcpDimensions?: IcpMissingDimension[];
+  missingIcpReasonCodes?: IcpMissingReasonCode[];
+  nextRecommendedCapability?: string | null;
+};
+
 export async function executeResearchNow(input: {
   projectId: string;
   projectCompanyId: string;
@@ -989,7 +1004,7 @@ export async function executeResearchNow(input: {
   plannedQuestion?: NonNullable<ResearchPlanDecision>;
   idempotencyScope?: string;
   forceRefresh?: boolean;
-}): Promise<ResearchExecutionResult | { stopped: true; reason: string; buyerRole?: string; intelligenceStage?: string; stopCode?: string; progress?: string; nextAction?: string }> {
+}): Promise<ResearchExecutionResult | ResearchStoppedResult> {
   const [row] = await db.select({
     projectCompany: projectCompaniesTable,
     company: companiesTable,
@@ -1018,6 +1033,10 @@ export async function executeResearchNow(input: {
       intelligenceStage: control.minimumIntelligence?.stage ?? "SELLER_CONTEXT_BLOCKED",
       stopCode: control.reasonCode,
       progress: control.status.toLowerCase(),
+      missingRequirements: control.missingRequirements,
+      missingIcpDimensions: control.missingIcpDimensions,
+      missingIcpReasonCodes: control.missingIcpReasonCodes,
+      nextRecommendedCapability: control.nextRecommendedCapability,
       nextAction: control.nextRecommendedCapability
         ? `Run ${control.nextRecommendedCapability.replace(/_/g, " ").toLowerCase()}.`
         : control.manualReviewHelpful ? "Review the company evidence." : "No buyer research is available.",
