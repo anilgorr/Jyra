@@ -1,0 +1,633 @@
+JYRA — 50-COMPANY REALITY TEST 02 HARNESS PREPARATION
+
+PURPOSE
+
+Prepare the existing full-product benchmark runner so it can execute:
+
+JYRA — 50-COMPANY MVP REALITY TEST 02
+
+This is HARNESS PREPARATION ONLY.
+
+The previous execution returned:
+
+EXECUTION_NOT_STARTED
+
+because the existing full-product runner is incompatible with the current
+frozen JYRA architecture.
+
+Confirmed blockers:
+
+1. Runner requires exactly 4 approved Managed SOC signal definitions,
+   but the active frozen pack contains 5.
+
+2. Runner assumes exactly 4 research questions.
+
+3. Runner automatically performs contact enrichment for top opportunities,
+   but Reality Test 02 explicitly forbids contact enrichment.
+
+4. Runner uses the old JYRA_MVP_REALITY_TEST_01 namespace/data and therefore
+   cannot produce a clean fresh Reality Test 02 execution.
+
+Fix ONLY these benchmark/harness issues.
+
+DO NOT modify product intelligence.
+
+==================================================
+1. DATABASE SAFETY
+==================================================
+
+DEVELOPMENT ONLY.
+
+Use only development database.
+
+DO NOT:
+
+modify production
+migrate production
+reset production
+seed production
+truncate production.
+
+Production operations = 0.
+
+==================================================
+2. PRODUCT STACK REMAINS FROZEN
+==================================================
+
+DO NOT MODIFY:
+
+Business Twin
+Offering
+ICP
+Find My Market product logic
+company discovery logic
+identity
+resolveKnownCompany
+profile resolution
+firmographics
+Research Planner
+question generation
+query generation
+Tavily
+Exa
+retrieval routing
+fallback logic
+evidence processing
+fact extraction
+fact validation
+temporal logic
+signal definitions
+signal mapping
+signal clusters
+opportunity scoring
+opportunity states
+WHEN
+WHY
+NBA
+cost engine
+semantic persistence
+idempotency.
+
+This task modifies ONLY the benchmark harness.
+
+==================================================
+3. FIX STALE SIGNAL-PACK PREFLIGHT
+==================================================
+
+Remove the hardcoded assumption that the Managed SOC pack contains exactly:
+
+4 signal definitions.
+
+The current approved frozen pack contains:
+
+MSOC_SECURITY_LEADER
+MSOC_SECURITY_HIRING
+MSOC_FUNDED_RISK_PROGRAM
+MSOC_SECURITY_STACK_CHANGE
+MSOC_SECURITY_COMPLIANCE_ACTIVITY
+
+The harness must validate:
+
+correct pack identity
+correct version where applicable
+approved status
+active status
+required signal IDs
+valid configuration.
+
+Do NOT validate signal-pack correctness using raw cardinality.
+
+Do NOT change the signal pack.
+
+Do NOT add/remove/edit signals.
+
+==================================================
+4. REMOVE FOUR-QUESTION ASSUMPTION
+==================================================
+
+Remove all benchmark-runner assumptions that:
+
+signal count = question count
+
+or
+
+Managed SOC research must generate exactly 4 questions.
+
+Research question count must be determined by the NORMAL production:
+
+Research Planner
++
+Opportunity Intelligence Pack
++
+company evidence gaps.
+
+The harness must accept variable question counts.
+
+Do NOT change Research Planner behavior.
+
+==================================================
+5. DISABLE CONTACT ENRICHMENT FOR REALITY TEST 02
+==================================================
+
+The Reality Test 02 runner must stop at:
+
+Opportunity Intelligence
+→ Ranking
+→ Next Best Action.
+
+It must NOT execute:
+
+Buying Committee enrichment
+person search
+contact enrichment
+email lookup
+phone lookup
+Explee
+campaign creation
+outreach.
+
+IMPORTANT:
+
+Do not remove contact enrichment from the product.
+
+Only disable/bypass it in this benchmark mode.
+
+Implement an explicit benchmark configuration such as:
+
+contactEnrichmentEnabled = false
+
+or equivalent clean configuration.
+
+Do NOT implement brittle code based on company names or benchmark records.
+
+==================================================
+6. CREATE FRESH TEST 02 NAMESPACE
+==================================================
+
+Do NOT reuse:
+
+JYRA_MVP_REALITY_TEST_01
+
+as the active benchmark namespace.
+
+Create/use a clean Reality Test 02 namespace such as:
+
+JYRA_50_COMPANY_MVP_REALITY_TEST_02
+
+or equivalent.
+
+The new run must have its own:
+
+run ID
+test identity
+timestamps
+candidate cohort
+research execution
+metrics
+defect ledger
+cost accounting
+artifacts.
+
+Do NOT delete Reality Test 01 history.
+
+Do NOT overwrite historical benchmark results.
+
+==================================================
+7. FRESH RUN SEMANTICS
+==================================================
+
+Reality Test 02 must represent a new customer-like execution.
+
+The harness must NOT reuse prior benchmark outcomes as current results.
+
+It may reuse normal persistent product data where the actual product would
+legitimately reuse it, such as:
+
+canonical company identity
+normal product caches
+existing approved configuration
+
+ONLY if that is normal production behavior.
+
+However:
+
+test-run metrics
+test cohort
+benchmark adjudication
+benchmark artifacts
+benchmark defect ledger
+
+must be fresh and scoped to Test 02.
+
+==================================================
+8. FIND MY MARKET
+==================================================
+
+Reality Test 02 must start through the normal:
+
+Business Twin
+→ Offering
+→ ICP
+→ Find My Market
+
+workflow.
+
+Do not seed the 50 companies.
+
+Do not use the previous 10 benchmark controls.
+
+Do not use known-event companies.
+
+Do not manually choose companies.
+
+The harness must allow normal discovery to create the cohort.
+
+==================================================
+9. 50-COMPANY COHORT
+==================================================
+
+Support:
+
+50 unique evaluable companies.
+
+Do not reintroduce the old frontend/backend 20/25 company limit.
+
+Confirm the relevant backend/harness path accepts 50.
+
+Do NOT change Find My Market ranking/discovery logic merely to reach 50.
+
+If normal discovery cannot generate 50, that must become a benchmark result,
+not something the harness hides.
+
+==================================================
+10. NO BENCHMARK-SPECIFIC PRODUCT LOGIC
+==================================================
+
+Absolutely no:
+
+company-specific queries
+known-event hints
+special signal mappings
+hardcoded expected companies
+benchmark-specific retrieval behavior
+manual opportunity boosting
+special ICP handling.
+
+The harness observes the product.
+
+It must not teach the product how to pass the test.
+
+==================================================
+11. EXECUTION CONTROL
+==================================================
+
+The harness must support:
+
+PREPARE
+RUN
+REPORT
+
+as distinct concepts.
+
+This task is PREPARE ONLY.
+
+DO NOT execute the actual 50-company benchmark during this preparation task.
+
+We will explicitly start it after harness validation passes.
+
+==================================================
+12. FAILURE BEHAVIOR
+==================================================
+
+During the actual Reality Test 02:
+
+individual company failures must NOT abort the entire benchmark.
+
+Record them and continue.
+
+Only abort for:
+
+database safety risk
+production access
+corruption risk
+catastrophic runner failure.
+
+This allows us to collect multiple real-world defects in one execution.
+
+==================================================
+13. DEFECT LEDGER SUPPORT
+==================================================
+
+Confirm the harness can record defects across:
+
+DISCOVERY
+IDENTITY
+FIRMOGRAPHICS
+ICP_CLASSIFICATION
+RESEARCH_PLANNER
+QUERY_GENERATION
+PROVIDER_TIMEOUT
+PROVIDER_COVERAGE
+FALLBACK_ORCHESTRATION
+EVIDENCE_ACCEPTANCE
+ENTITY_VALIDATION
+FACT_EXTRACTION
+FACT_VALIDATION
+TEMPORAL
+SIGNAL_MAPPING
+SIGNAL_PRECISION
+WHEN
+WHY
+OPPORTUNITY_RANKING
+NBA
+COST
+PERFORMANCE
+UI
+OTHER.
+
+Do not modify product behavior to avoid defects.
+
+==================================================
+14. COST/PERFORMANCE INSTRUMENTATION
+==================================================
+
+Confirm the harness can record:
+
+provider
+capability
+request count
+success
+timeout
+failure
+estimated cost
+actual known cost where available
+duration.
+
+Required provider categories include at least:
+
+company discovery
+firmographics/profile resolution
+Tavily
+Exa
+other providers actually used.
+
+Do not call providers during harness preparation.
+
+==================================================
+15. REQUIRED REGRESSION TESTS
+==================================================
+
+Add/run HARNESS tests proving:
+
+TEST 1
+Current five-signal Managed SOC pack passes preflight.
+
+TEST 2
+Missing required signal fails preflight.
+
+TEST 3
+Unapproved required signal fails preflight.
+
+TEST 4
+Signal ordering does not matter.
+
+TEST 5
+Question count can be 3, 4, 5, 6 or another valid planner result without
+harness failure.
+
+TEST 6
+Question count is not inferred from signal count.
+
+TEST 7
+Reality Test 02 contact enrichment = disabled.
+
+TEST 8
+Normal product contact enrichment capability remains unchanged.
+
+TEST 9
+Reality Test 02 uses a fresh namespace/run identity.
+
+TEST 10
+Reality Test 01 history remains untouched.
+
+TEST 11
+50-company cohort size is accepted by runner.
+
+TEST 12
+No known-control provisioning is used.
+
+TEST 13
+No benchmark-specific company/event hints reach production intelligence.
+
+TEST 14
+Individual company failure can be recorded without terminating the whole
+benchmark.
+
+TEST 15
+Production database operations remain zero.
+
+==================================================
+16. AUDIT FOR OTHER STALE TEST-01 ASSUMPTIONS
+==================================================
+
+Inspect the Reality Test 01 runner for other assumptions that could invalidate
+Reality Test 02.
+
+Specifically look for:
+
+hardcoded company counts
+hardcoded company names
+hardcoded signal counts
+hardcoded question counts
+old signal IDs
+old pack versions
+old output namespaces
+old run IDs
+old expected opportunity counts
+forced contact enrichment
+forced buying committee execution
+known-event labels
+benchmark-specific retrieval
+stale cost assumptions
+stale acceptance thresholds.
+
+Report everything found.
+
+Fix ONLY harness assumptions necessary to allow Reality Test 02 to observe
+the current product correctly.
+
+Do not alter product logic.
+
+==================================================
+17. INDEPENDENT ARCHITECTURE CHECK
+==================================================
+
+After implementation verify:
+
+Product intelligence files changed = 0
+Signal definitions changed = 0
+Research Planner changed = 0
+Query generation changed = 0
+Provider routing changed = 0
+Fact extraction changed = 0
+Opportunity logic changed = 0
+Contact product functionality removed = 0.
+
+Only benchmark/harness code and benchmark-specific tests/configuration should
+change.
+
+If product intelligence must be modified to make the benchmark executable:
+
+STOP.
+
+Return:
+
+PRODUCT_CHANGE_REQUIRED
+
+and explain why.
+
+Do not make the change.
+
+==================================================
+18. NO PROVIDER CALLS
+==================================================
+
+During this harness-preparation task:
+
+Find My Market calls = 0
+COMPANY_DISCOVERY calls = 0
+Tavily calls = 0
+Exa calls = 0
+Bright Data calls = 0
+contact enrichment calls = 0
+Explee calls = 0.
+
+This task should not consume external research credits.
+
+==================================================
+19. REQUIRED OUTPUT
+==================================================
+
+Return:
+
+Original blocker 1 =
+Fixed / Not Fixed
+
+Original blocker 2 =
+Fixed / Not Fixed
+
+Original blocker 3 =
+Fixed / Not Fixed
+
+Original blocker 4 =
+Fixed / Not Fixed
+
+Current approved signal definitions detected =
+
+Hardcoded signal cardinality remaining =
+YES / NO
+
+Hardcoded research-question cardinality remaining =
+YES / NO
+
+Reality Test 02 contact enrichment =
+ENABLED / DISABLED
+
+Normal product contact enrichment changed =
+YES / NO
+
+Reality Test 02 namespace =
+
+Reality Test 01 history preserved =
+YES / NO
+
+50-company runner support =
+PASS / FAIL
+
+Known-control provisioning in Reality Test 02 =
+YES / NO
+
+Provider calls during preparation =
+
+Product intelligence changes =
+
+Production operations =
+
+Harness regression tests passed =
+X / 15
+
+Typecheck =
+PASS / FAIL
+
+Build =
+PASS / FAIL
+
+Additional stale assumptions found =
+[list]
+
+==================================================
+20. REQUIRED ARTIFACT
+==================================================
+
+Generate:
+
+JYRA_50_COMPANY_REALITY_TEST_02_HARNESS_PREPARATION.md
+
+Document:
+
+original blockers
+changes made
+files changed
+tests
+architecture verification
+remaining blockers.
+
+==================================================
+21. FINAL VERDICT
+==================================================
+
+Return EXACTLY ONE:
+
+A — 50-COMPANY REALITY TEST 02 HARNESS READY
+
+B — HARNESS STILL BLOCKED
+
+C — PRODUCT CHANGE REQUIRED
+
+D — DATABASE / SAFETY BLOCKER
+
+==================================================
+22. IMPORTANT
+==================================================
+
+DO NOT RUN THE 50-COMPANY REALITY TEST YET.
+
+This task only prepares and validates the harness.
+
+If verdict = A:
+
+STOP and report:
+
+"50-Company Reality Test 02 harness is ready for authoritative execution."
+
+Do not start the benchmark automatically.

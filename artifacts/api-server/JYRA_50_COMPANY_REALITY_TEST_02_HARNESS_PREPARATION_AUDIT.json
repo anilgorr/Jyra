@@ -1,0 +1,47 @@
+{
+  "milestone": "JYRA_50_COMPANY_REALITY_TEST_02_HARNESS_PREPARATION",
+  "generatedAt": "2026-09-01T11:05:11.289Z",
+  "verdict": "A — 50-COMPANY REALITY TEST 02 HARNESS READY",
+  "originalBlockers": {
+    "staleFourSignalDefinitionRequirement": "Fixed",
+    "staleFourQuestionRequirement": "Fixed",
+    "forcedContactEnrichment": "Fixed",
+    "reusedTest01Namespace": "Fixed"
+  },
+  "currentApprovedSignalDefinitions": [
+    "MSOC_FUNDED_RISK_PROGRAM",
+    "MSOC_SECURITY_COMPLIANCE_ACTIVITY",
+    "MSOC_SECURITY_HIRING",
+    "MSOC_SECURITY_LEADER",
+    "MSOC_SECURITY_STACK_CHANGE"
+  ],
+  "hardcodedSignalCardinalityRemaining": false,
+  "hardcodedResearchQuestionCardinalityRemaining": false,
+  "realityTest02ContactEnrichment": "DISABLED",
+  "normalProductContactEnrichmentChanged": false,
+  "realityTest02Namespace": "JYRA_50_COMPANY_MVP_REALITY_TEST_02",
+  "realityTest01HistoryPreserved": true,
+  "fiftyCompanyRunnerSupport": "PASS",
+  "knownControlProvisioning": false,
+  "requiredArtifactWriters": true,
+  "providerCallsDuringPreparation": 0,
+  "productIntelligenceChanges": [],
+  "productionOperations": 0,
+  "harnessRegressionTestsPassed": "15 / 15",
+  "staleAssumptions": [
+    "Test 01 blind-control metadata retained only in the Test 01 conditional branch",
+    "Test 01 replay mode retained only for historical Test 01 compatibility"
+  ],
+  "changedFiles": [
+    "artifacts/api-server/package.json",
+    "artifacts/api-server/scripts/run-test-01-entry.ts",
+    "artifacts/api-server/JYRA_50_COMPANY_REALITY_TEST_02_HARNESS_PREPARATION.md",
+    "artifacts/api-server/JYRA_50_COMPANY_REALITY_TEST_02_HARNESS_PREPARATION_AUDIT.json",
+    "artifacts/api-server/JYRA_50_COMPANY_REALITY_TEST_02_HARNESS_PREPARATION_TESTS.json",
+    "artifacts/api-server/scripts/reality-test-02-artifacts.ts",
+    "artifacts/api-server/scripts/report-reality-test-02.mjs",
+    "artifacts/api-server/scripts/run-reality-test-02-harness-preparation.mjs",
+    "artifacts/api-server/scripts/test-reality-test-02-harness-preparation-entry.ts",
+    "attached_assets/Pasted-JYRA-50-COMPANY-REALITY-TEST-02-HARNESS-PREPARATION-PUR_1788260294248.txt"
+  ]
+}

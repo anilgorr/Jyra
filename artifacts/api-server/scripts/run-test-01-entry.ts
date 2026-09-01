@@ -1,4 +1,5 @@
-import { readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { randomUUID } from "node:crypto";
 import { and, count, desc, eq, inArray, like, sql } from "drizzle-orm";
 import {
   companiesTable,
@@ -30,6 +31,9 @@ import {
   projectsTable,
 } from "@workspace/db";
 import { ProviderRouter } from "../src/lib/provider-router";
+import {
+  validateManagedSocSignalPackPreflight,
+} from "../src/lib/acceptance-runner-preflight";
 import { buildDiscoveryPlan, discoverCompaniesForProject } from "../src/lib/company-discovery";
 import {
   classifyIcpFit,
@@ -52,18 +56,28 @@ import { evaluateClustersForCompany } from "../src/lib/signal-clusters";
 import { evaluateOpportunity } from "../src/lib/opportunity-engine";
 import { generateWhyForOpportunity } from "../src/lib/opportunity-why";
 import { getNextBestActionForCompany } from "../src/lib/next-best-action-service";
+import { writeRealityTest02Artifacts } from "./reality-test-02-artifacts";
 import type {
   CompanyFirmographicAttributes,
   CompanyFirmographicsResult,
 } from "../src/lib/provider-contract";
 
-const TEST = "JYRA_MVP_REALITY_TEST_01";
-const USER = "system:jyra-mvp-reality-test-01";
-const RUN_SCOPE = "jyra-mvp-reality-test-01";
+const REALITY_TEST_02 = "JYRA_50_COMPANY_MVP_REALITY_TEST_02";
+const IS_REALITY_TEST_02 = process.env.JYRA_REALITY_TEST_NAME === REALITY_TEST_02;
+const TEST = IS_REALITY_TEST_02 ? REALITY_TEST_02 : "JYRA_MVP_REALITY_TEST_01";
+const USER = IS_REALITY_TEST_02 ? "system:jyra-50-company-mvp-reality-test-02" : "system:jyra-mvp-reality-test-01";
+const RUN_ID = process.env.JYRA_REALITY_RUN_ID ?? randomUUID();
+const RUN_SCOPE = IS_REALITY_TEST_02
+  ? `jyra-50-company-mvp-reality-test-02:${RUN_ID}`
+  : "jyra-mvp-reality-test-01";
+const RUN_STARTED_AT = new Date();
+const CONTACT_ENRICHMENT_ENABLED = process.env.JYRA_REALITY_CONTACT_ENRICHMENT_ENABLED !== "false";
 const TARGET_COMPANIES = 50;
 const MAX_DISCOVERY_ROUNDS = 40;
-const MAX_QUESTIONS_PER_COMPANY = 4;
-const RESUME_SINCE = new Date(process.env.JYRA_TEST_01_RESUME_SINCE ?? "2026-08-31T11:20:00.000Z");
+const RESUME_SINCE = new Date(
+  process.env.JYRA_TEST_01_RESUME_SINCE ??
+    (IS_REALITY_TEST_02 ? RUN_STARTED_AT.toISOString() : "2026-08-31T11:20:00.000Z"),
+);
 const EXCLUDED_REPORTS = [
   "REAL_DATA_TEST_10_RESULT.json",
   "REAL_DATA_TEST_11_RESULT.json",
@@ -71,6 +85,7 @@ const EXCLUDED_REPORTS = [
   "REAL_DATA_TEST_13_RESULT.json",
   "REAL_DATA_TEST_14_RESULT.json",
   "REAL_DATA_TEST_14A_RESULT.json",
+  ...(IS_REALITY_TEST_02 ? ["JYRA_MVP_REALITY_TEST_01.json"] : []),
 ];
 
 type FitStatus = "LIKELY_FIT" | "POSSIBLE_FIT" | "LIKELY_NOT_FIT" | "INSUFFICIENT_DATA";
@@ -215,6 +230,25 @@ async function tableCounts(projectId: string, companyIds: string[]) {
 
 async function main() {
   if (process.env.NODE_ENV !== "development") throw new Error(`${TEST} requires NODE_ENV=development`);
+  if (IS_REALITY_TEST_02 && existsSync(`${TEST}.json`)) {
+    throw new Error(`${TEST} output already exists; refusing to overwrite a prior Reality Test 02 execution`);
+  }
+  if (IS_REALITY_TEST_02) {
+    try {
+      mkdirSync(`${TEST}_RUN.lock`);
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code === "EEXIST") {
+        throw new Error(`${TEST} already has a reserved or completed run; refusing a concurrent or resumed execution`);
+      }
+      throw error;
+    }
+    writeFileSync(`${TEST}_RUN.lock/run.json`, JSON.stringify({
+      test: TEST,
+      runId: RUN_ID,
+      startedAt: RUN_STARTED_AT.toISOString(),
+      status: "RESERVED",
+    }, null, 2) + "\n");
+  }
   const excludedNames = parseJsonReports();
   const [target] = await db.select({ project: projectsTable, organization: organizationsTable })
     .from(projectsTable).innerJoin(organizationsTable, eq(projectsTable.organizationId, organizationsTable.id))
@@ -225,9 +259,13 @@ async function main() {
     .where(and(eq(projectSignalPacksTable.projectId, target.project.id), eq(signalPacksTable.slug, "managed-soc"),
       eq(projectSignalPacksTable.active, true), eq(signalPacksTable.active, true), eq(signalPacksTable.status, "APPROVED"))).limit(1);
   if (!selection) throw new Error("Approved active Managed SOC signal pack is required");
-  const definitions = await db.select().from(signalDefinitionsTable)
-    .where(and(eq(signalDefinitionsTable.signalPackId, selection.pack.id), eq(signalDefinitionsTable.status, "APPROVED")));
-  if (definitions.length !== 4) throw new Error("Expected exactly four approved Managed SOC signal definitions");
+  const allDefinitions = await db.select().from(signalDefinitionsTable)
+    .where(eq(signalDefinitionsTable.signalPackId, selection.pack.id));
+  const signalPackPreflight = validateManagedSocSignalPackPreflight(selection.pack, allDefinitions);
+  if (!signalPackPreflight.passed) {
+    throw new Error(`Managed SOC signal-pack preflight failed: ${signalPackPreflight.errors.join(", ")}`);
+  }
+  const definitions = allDefinitions.filter((definition) => definition.status === "APPROVED");
   const [tavily] = await db.select().from(dataProvidersTable)
     .where(and(eq(dataProvidersTable.providerType, "tavily"), eq(dataProvidersTable.enabled, true))).limit(1);
   const [exa] = await db.select().from(dataProvidersTable)
@@ -331,7 +369,6 @@ async function main() {
           name: definition.name, category: definition.category,
           factRequirements: definition.factRequirements, configuration: definition.configuration,
         })),
-        maxQuestions: MAX_QUESTIONS_PER_COMPANY,
       });
       for (const [index, question] of questions.entries()) {
         try {
@@ -395,6 +432,7 @@ async function main() {
       errors: [], qualification: null, profile: null, firmographics: null, questions: [], providerCalls: [],
       evidence: [], facts: [], signals: [], clusters: [], opportunity: null, why: null, nextBestAction: null,
     };
+    let whoStage = "IDENTITY";
     try {
       const profileExecution = await resolveAndPersistCompanyProfile({
         organizationId: target.organization.id, projectId: target.project.id, companyId: row.company.id,
@@ -412,6 +450,7 @@ async function main() {
         report.firmographics = { blocked: true, reason: "NO_VERIFIED_LINKEDIN_PROFILE" };
         report.qualification = { status: "INSUFFICIENT_DATA", confidence: "LOW", reason: "Verified profile resolution did not succeed" };
       } else {
+        whoStage = "FIRMOGRAPHICS";
         const firmo = await enrichCompanyFirmographics({
           organizationId: target.organization.id, projectId: target.project.id, companyId: row.company.id,
           router, linkedinCompanyUrl: profileUrl, linkedinCompanyUrlProvenance: "RESOLVER_VERIFIED", now: new Date(),
@@ -423,6 +462,7 @@ async function main() {
           attributesReturned: attributesReturned(firmo.response.data?.attributes ?? null),
           rawResult: firmo.response.data,
         });
+        whoStage = "ICP_CLASSIFICATION";
         const safeAttributes = firmo.response.data?.entityMatchStatus === "CONFIRMED" ? firmo.response.data.attributes : null;
         const dimensions = evaluateDimensions(strategy, safeAttributes);
         const fit = classifyFit(dimensions);
@@ -433,7 +473,7 @@ async function main() {
         };
       }
     } catch (error) {
-      report.errors.push({ stage: "WHO", error: String(error) });
+      report.errors.push({ stage: whoStage, error: String(error) });
       report.qualification = { status: "INSUFFICIENT_DATA", confidence: "LOW", reason: "WHO pipeline error" };
     }
     companyReports.push(report);
@@ -443,6 +483,7 @@ async function main() {
   const whenWhyErrors: any[] = [];
   for (const report of companyReports) {
     if (report.qualification?.status !== "LIKELY_FIT") continue;
+    let intelligenceStage = "RESEARCH_PLANNER";
     try {
       const questions = planSignalPackWebResearchQuestions({
         company: population.find((row) => row.company.id === report.companyId)!.company,
@@ -451,12 +492,12 @@ async function main() {
           name: definition.name, category: definition.category,
           factRequirements: definition.factRequirements, configuration: definition.configuration,
         })),
-        maxQuestions: MAX_QUESTIONS_PER_COMPANY,
       });
-      if (questions.length !== MAX_QUESTIONS_PER_COMPANY || questions.some((question) => question.providerCapability !== "WEB_SEARCH")) {
-        throw new Error("Question plan violated the frozen four-question WEB_SEARCH bound");
+      if (!questions.length || questions.some((question) => question.providerCapability !== "WEB_SEARCH")) {
+        throw new Error("Question plan must contain at least one normal WEB_SEARCH question");
       }
       report.plannedQuestions = safeJson(questions);
+      intelligenceStage = "WHEN";
       for (const [index, question] of questions.entries()) {
         const result = await executeResearchNow({
           projectId: target.project.id, projectCompanyId: report.projectCompanyId,
@@ -467,18 +508,22 @@ async function main() {
           ? { type: question.questionType, status: "DEFERRED", reason: result.reason }
           : { type: question.questionType, status: result.resultStatus, questionId: result.question.id, jobId: result.job.id });
       }
+      intelligenceStage = "SIGNAL_MAPPING";
       await evaluateSignalsForCompany({ organizationId: target.organization.id, projectId: target.project.id, companyId: report.companyId });
       await evaluateClustersForCompany({ organizationId: target.organization.id, projectId: target.project.id, companyId: report.companyId });
+      intelligenceStage = "OPPORTUNITY_RANKING";
       const evaluation = await evaluateOpportunity({
         organizationId: target.organization.id, projectId: target.project.id,
         projectCompanyId: report.projectCompanyId, userId: USER,
       });
       report.opportunity = safeJson(evaluation.opportunity);
+      intelligenceStage = "WHY";
       report.why = safeJson(await generateWhyForOpportunity(evaluation.opportunity.id, target.project.id));
+      intelligenceStage = "NBA";
       report.nextBestAction = safeJson(await getNextBestActionForCompany(target.project.id, report.projectCompanyId));
     } catch (error) {
-      report.errors.push({ stage: "WHEN_WHY", error: String(error) });
-      whenWhyErrors.push({ companyId: report.companyId, error: String(error) });
+      report.errors.push({ stage: intelligenceStage, error: String(error) });
+      whenWhyErrors.push({ companyId: report.companyId, stage: intelligenceStage, error: String(error) });
     }
   }
 
@@ -487,24 +532,26 @@ async function main() {
     (b.opportunity?.confidenceScore ?? b.opportunity?.confidence ?? -1) - (a.opportunity?.confidenceScore ?? a.opportunity?.confidence ?? -1));
   const top10 = ranked.filter((row) => row.qualification?.status === "LIKELY_FIT" || row.qualification?.status === "POSSIBLE_FIT").slice(0, 10);
   const contactReports: any[] = [];
-  for (const report of top10) {
-    try {
-      const people = await listProjectPeople(target.project.id, report.projectCompanyId);
-      const eligible = people.filter((person: any) => person.context.priority === "HIGH");
-      const enriched: any[] = [];
-      for (const person of eligible) {
-        const targetPerson = await db.select({ person: peopleTable, context: projectPersonContextTable })
-          .from(projectPersonContextTable).innerJoin(peopleTable, eq(peopleTable.id, projectPersonContextTable.personId))
-          .where(and(eq(projectPersonContextTable.projectId, target.project.id), eq(projectPersonContextTable.projectCompanyId, report.projectCompanyId), eq(projectPersonContextTable.personId, person.person.id))).limit(1);
-        if (!targetPerson[0]) continue;
-        enriched.push(await enrichPersonContact({
-          organizationId: target.organization.id, projectId: target.project.id, projectCompanyId: report.projectCompanyId,
-          personId: person.person.id, requestedExplicitly: false, includePhone: false, router, now: new Date(),
-        }));
+  if (CONTACT_ENRICHMENT_ENABLED) {
+    for (const report of top10) {
+      try {
+        const people = await listProjectPeople(target.project.id, report.projectCompanyId);
+        const eligible = people.filter((person: any) => person.context.priority === "HIGH");
+        const enriched: any[] = [];
+        for (const person of eligible) {
+          const targetPerson = await db.select({ person: peopleTable, context: projectPersonContextTable })
+            .from(projectPersonContextTable).innerJoin(peopleTable, eq(peopleTable.id, projectPersonContextTable.personId))
+            .where(and(eq(projectPersonContextTable.projectId, target.project.id), eq(projectPersonContextTable.projectCompanyId, report.projectCompanyId), eq(projectPersonContextTable.personId, person.person.id))).limit(1);
+          if (!targetPerson[0]) continue;
+          enriched.push(await enrichPersonContact({
+            organizationId: target.organization.id, projectId: target.project.id, projectCompanyId: report.projectCompanyId,
+            personId: person.person.id, requestedExplicitly: false, includePhone: false, router, now: new Date(),
+          }));
+        }
+        contactReports.push({ companyId: report.companyId, people: people.length, eligible: eligible.length, enriched });
+      } catch (error) {
+        contactReports.push({ companyId: report.companyId, error: String(error) });
       }
-      contactReports.push({ companyId: report.companyId, people: people.length, eligible: eligible.length, enriched });
-    } catch (error) {
-      contactReports.push({ companyId: report.companyId, error: String(error) });
     }
   }
 
@@ -561,7 +608,7 @@ async function main() {
     unsupportedSignalRate,
     entityQuality: wrongEntityEvidence.length === 0 ? "PASS" : "FAIL",
     whoQuality: companyReports.length === TARGET_COMPANIES && companyReports.every((report) => report.qualification) ? "PASS" : "FAIL",
-    whenQuality: likelyFit.every((report) => report.questions?.length === MAX_QUESTIONS_PER_COMPANY) ? "PASS" : "FAIL",
+    whenQuality: likelyFit.every((report) => report.questions?.length > 0) ? "PASS" : "FAIL",
     whyQuality: companyReports.filter((report) => report.qualification?.status === "LIKELY_FIT").every((report) =>
       !report.why || (report.why.claims ?? []).every((claim: any) => !claim.material || (claim.traceabilityStatus === "TRACED" && claim.evidenceIds?.length))) ? "PASS" : "FAIL",
     contactQuality: "TOP10_ONLY_OR_NO_ELIGIBLE_PROJECT_PERSON",
@@ -576,16 +623,30 @@ async function main() {
   const safety = {
     environment: process.env.NODE_ENV, deployment: process.env.REPLIT_DEPLOYMENT ?? "0",
     productionOperations: 0, excludedPriorCompaniesInPopulation: population.filter((row) => excludedNames.has(row.company.canonicalName.toLowerCase())).length,
-    unexpectedContactAttempts: Math.max(0, (delta.contacts ?? 0) - contactReports.reduce((total, report) => total + (report.enriched?.length ?? 0), 0)),
+    unexpectedContactAttempts: CONTACT_ENRICHMENT_ENABLED
+      ? Math.max(0, (delta.contacts ?? 0) - contactReports.reduce((total, report) => total + (report.enriched?.length ?? 0), 0))
+      : Math.max(0, delta.contacts ?? 0),
     before, after, delta, discoveryRuns: n(priorRunCount?.count) + discoveryRuns.length,
   };
   const hardSafetyFailure = safety.productionOperations !== 0 || safety.excludedPriorCompaniesInPopulation !== 0 || safety.unexpectedContactAttempts !== 0;
-  const verdict = hardSafetyFailure ? "F"
+  const test01Verdict = hardSafetyFailure ? "F"
     : population.length < TARGET_COMPANIES ? "E"
       : quality.entityQuality === "FAIL" || quality.whyQuality === "FAIL" ? "C"
           : (controlRecall ?? 0) >= 0.8 && signalPrecision >= 0.8 && unsupportedSignalRate === 0 && quality.whoQuality === "PASS" && quality.whenQuality === "PASS" ? "A" : "B";
+  const verdict = IS_REALITY_TEST_02 ? "PENDING_REPORT_ADJUDICATION" : test01Verdict;
+  const runCompletedAt = new Date();
   const report = {
-    test: TEST, verdict, generatedAt: new Date().toISOString(), environment: "development",
+    test: TEST, runId: RUN_ID, verdict, generatedAt: runCompletedAt.toISOString(), environment: "development",
+    execution: {
+      phase: "RUN",
+      runId: RUN_ID,
+      startedAt: RUN_STARTED_AT.toISOString(),
+      completedAt: runCompletedAt.toISOString(),
+      runtimeMs: runCompletedAt.getTime() - RUN_STARTED_AT.getTime(),
+      resumeSince: RESUME_SINCE.toISOString(),
+      freshTestMetrics: IS_REALITY_TEST_02,
+      contactEnrichmentEnabled: CONTACT_ENRICHMENT_ENABLED,
+    },
     seller: "Aadit Technologies", project: "GTM-Q1", offering: "Managed SOC",
     configuration: {
       discovery: "existing neutral COMPANY_DISCOVERY path", profileResolution: "existing Tavily-backed COMPANY_PROFILE_RESOLUTION path",
@@ -593,9 +654,17 @@ async function main() {
       signalPackVersion: selection.pack.version, signalDefinitions: definitions.map((definition) => ({ code: definition.code, name: definition.name })),
       frozenProductIntelligence: true, noAutomaticPromotion: true,
     },
-    bounds: { targetCompanies: TARGET_COMPANIES, maxDiscoveryRounds: MAX_DISCOVERY_ROUNDS, maxQuestionsPerCompany: MAX_QUESTIONS_PER_COMPANY, contactScope: "frozen top 10 qualified accounts only" },
+    bounds: {
+      targetCompanies: TARGET_COMPANIES,
+      maxDiscoveryRounds: MAX_DISCOVERY_ROUNDS,
+      questionCount: "NORMAL_RESEARCH_PLANNER_OUTPUT",
+      contactEnrichmentEnabled: CONTACT_ENRICHMENT_ENABLED,
+      contactScope: CONTACT_ENRICHMENT_ENABLED ? "frozen top 10 qualified accounts only" : "disabled for Reality Test 02",
+    },
     discovery: { rounds: discoveryRuns, persistedRunCount: n(priorRunCount?.count) + discoveryRuns.length, rejectedCandidates, collected: population.length },
-    blindControlSet: { file: `${TEST}_CONTROL_SET.json`, resultFile: `${TEST}_CONTROL_RESULTS.json`, suppliedToMainPipeline: false },
+    ...(IS_REALITY_TEST_02
+      ? { realityTestControls: { knownControlProvisioningUsed: false, knownEventLabelsSuppliedToIntelligence: false } }
+      : { blindControlSet: { file: `${TEST}_CONTROL_SET.json`, resultFile: `${TEST}_CONTROL_RESULTS.json`, suppliedToMainPipeline: false } }),
     companies: companyReports,
     ranking: ranked.slice(0, 10).map((report, index) => ({ rank: index + 1, company: report.company, qualification: report.qualification, opportunity: report.opportunity, nextBestAction: report.nextBestAction })),
     top10Contacts: contactReports,
@@ -653,6 +722,7 @@ async function main() {
   writeFileSync(`${TEST}.md`, `# ${TEST}\n\n## Verdict\n\n**${verdict}**\n\n` +
     `Development-only frozen benchmark for the existing Aadit Technologies / GTM-Q1 / Managed SOC configuration.\n\n` +
     `## Summary\n\n- Population: ${population.length}/${TARGET_COMPANIES}\n- Blind controls: separate persisted evaluation\n- LIKELY_FIT: ${likelyFit.length}\n- Research questions: ${report.metrics.researchQuestions}\n- Estimated research cost: $${report.metrics.estimatedResearchCost.toFixed(4)}\n- Active signals: ${activeSignals.length}\n- Control recall: measured separately\n- Signal precision: ${(signalPrecision * 100).toFixed(1)}%\n- Unsupported signal rate: ${(unsupportedSignalRate * 100).toFixed(1)}%\n- Production operations: 0\n\n## Top 10\n\n${report.ranking.map((row: any) => `${row.rank}. **${row.company}** — ${row.qualification?.status ?? "UNKNOWN"}; score ${row.opportunity?.score ?? "UNKNOWN"}; ${row.opportunity?.state ?? "UNKNOWN"}`).join("\n")}\n\n## Top bottlenecks\n\n${bottlenecks.map((item, index) => `${index + 1}. **${item.name}** — ${item.value}; ${item.detail}`).join("\n")}\n\n## Safety and quality\n\n\`\`\`json\n${JSON.stringify({ quality, safety }, null, 2)}\n\`\`\`\n`);
+  if (IS_REALITY_TEST_02) writeRealityTest02Artifacts(report);
   console.log(JSON.stringify({ verdict, population: population.length, likelyFit: likelyFit.length, activeSignals: activeSignals.length, quality, safety }, null, 2));
 }
 

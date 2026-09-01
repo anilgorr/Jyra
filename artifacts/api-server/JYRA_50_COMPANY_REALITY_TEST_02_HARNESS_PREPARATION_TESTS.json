@@ -1,0 +1,206 @@
+{
+  "tests": {
+    "test01CurrentFiveSignalPackPasses": true,
+    "test02MissingRequiredSignalFails": true,
+    "test03UnapprovedRequiredSignalFails": true,
+    "test04SignalOrderingDoesNotMatter": true,
+    "test05VariableQuestionCountsAccepted": true,
+    "test06QuestionCountNotInferredFromSignalCount": true,
+    "test07RealityTest02ContactEnrichmentDisabled": true,
+    "test08NormalProductContactCapabilityUnchanged": true,
+    "test09FreshNamespaceAndRunIdentity": true,
+    "test10RealityTest01HistoryUntouched": true,
+    "test11FiftyCompanyCohortAccepted": true,
+    "test12NoKnownControlProvisioning": true,
+    "test13NoBenchmarkSpecificCompanyOrEventHints": true,
+    "test14IndividualCompanyFailureContinues": true,
+    "test15DevelopmentOnlyAndProductionOperationsZero": true
+  },
+  "current": {
+    "passed": true,
+    "expectedPack": {
+      "slug": "managed-soc",
+      "name": "Managed SOC provider",
+      "version": "1.0"
+    },
+    "observedPack": {
+      "id": "f91c7581-a46e-42df-988a-3ccfffc6743c",
+      "slug": "managed-soc",
+      "name": "Managed SOC provider",
+      "description": "Synthetic managed security operations selling context used to validate the generic engine.",
+      "version": "1.0",
+      "active": true,
+      "status": "APPROVED",
+      "applicableContext": {
+        "offeringFamily": "managed-soc"
+      },
+      "configuration": {},
+      "createdAt": "2026-08-29T10:05:08.038Z",
+      "updatedAt": "2026-08-29T10:06:29.111Z"
+    },
+    "expectedCodes": [
+      "MSOC_SECURITY_LEADER",
+      "MSOC_SECURITY_HIRING",
+      "MSOC_FUNDED_RISK_PROGRAM",
+      "MSOC_SECURITY_STACK_CHANGE",
+      "MSOC_SECURITY_COMPLIANCE_ACTIVITY"
+    ],
+    "observedCodes": [
+      "MSOC_SECURITY_LEADER",
+      "MSOC_SECURITY_HIRING",
+      "MSOC_FUNDED_RISK_PROGRAM",
+      "MSOC_SECURITY_STACK_CHANGE",
+      "MSOC_SECURITY_COMPLIANCE_ACTIVITY"
+    ],
+    "missingCodes": [],
+    "unapprovedCodes": [],
+    "duplicateCodes": [],
+    "versionMismatches": [],
+    "configurationMismatches": [],
+    "packErrors": [],
+    "unexpectedActiveCodes": [],
+    "errors": []
+  },
+  "missing": {
+    "passed": false,
+    "expectedPack": {
+      "slug": "managed-soc",
+      "name": "Managed SOC provider",
+      "version": "1.0"
+    },
+    "observedPack": {
+      "id": "f91c7581-a46e-42df-988a-3ccfffc6743c",
+      "slug": "managed-soc",
+      "name": "Managed SOC provider",
+      "description": "Synthetic managed security operations selling context used to validate the generic engine.",
+      "version": "1.0",
+      "active": true,
+      "status": "APPROVED",
+      "applicableContext": {
+        "offeringFamily": "managed-soc"
+      },
+      "configuration": {},
+      "createdAt": "2026-08-29T10:05:08.038Z",
+      "updatedAt": "2026-08-29T10:06:29.111Z"
+    },
+    "expectedCodes": [
+      "MSOC_SECURITY_LEADER",
+      "MSOC_SECURITY_HIRING",
+      "MSOC_FUNDED_RISK_PROGRAM",
+      "MSOC_SECURITY_STACK_CHANGE",
+      "MSOC_SECURITY_COMPLIANCE_ACTIVITY"
+    ],
+    "observedCodes": [
+      "MSOC_SECURITY_LEADER",
+      "MSOC_SECURITY_HIRING",
+      "MSOC_FUNDED_RISK_PROGRAM",
+      "MSOC_SECURITY_STACK_CHANGE"
+    ],
+    "missingCodes": [
+      "MSOC_SECURITY_COMPLIANCE_ACTIVITY"
+    ],
+    "unapprovedCodes": [],
+    "duplicateCodes": [],
+    "versionMismatches": [],
+    "configurationMismatches": [],
+    "packErrors": [],
+    "unexpectedActiveCodes": [],
+    "errors": [
+      "MISSING_DEFINITION:MSOC_SECURITY_COMPLIANCE_ACTIVITY"
+    ]
+  },
+  "unapproved": {
+    "passed": false,
+    "expectedPack": {
+      "slug": "managed-soc",
+      "name": "Managed SOC provider",
+      "version": "1.0"
+    },
+    "observedPack": {
+      "id": "f91c7581-a46e-42df-988a-3ccfffc6743c",
+      "slug": "managed-soc",
+      "name": "Managed SOC provider",
+      "description": "Synthetic managed security operations selling context used to validate the generic engine.",
+      "version": "1.0",
+      "active": true,
+      "status": "APPROVED",
+      "applicableContext": {
+        "offeringFamily": "managed-soc"
+      },
+      "configuration": {},
+      "createdAt": "2026-08-29T10:05:08.038Z",
+      "updatedAt": "2026-08-29T10:06:29.111Z"
+    },
+    "expectedCodes": [
+      "MSOC_SECURITY_LEADER",
+      "MSOC_SECURITY_HIRING",
+      "MSOC_FUNDED_RISK_PROGRAM",
+      "MSOC_SECURITY_STACK_CHANGE",
+      "MSOC_SECURITY_COMPLIANCE_ACTIVITY"
+    ],
+    "observedCodes": [
+      "MSOC_SECURITY_LEADER",
+      "MSOC_SECURITY_HIRING",
+      "MSOC_FUNDED_RISK_PROGRAM",
+      "MSOC_SECURITY_STACK_CHANGE",
+      "MSOC_SECURITY_COMPLIANCE_ACTIVITY"
+    ],
+    "missingCodes": [],
+    "unapprovedCodes": [
+      "MSOC_SECURITY_LEADER"
+    ],
+    "duplicateCodes": [],
+    "versionMismatches": [],
+    "configurationMismatches": [],
+    "packErrors": [],
+    "unexpectedActiveCodes": [],
+    "errors": [
+      "UNAPPROVED_DEFINITION:MSOC_SECURITY_LEADER"
+    ]
+  },
+  "reordered": {
+    "passed": true,
+    "expectedPack": {
+      "slug": "managed-soc",
+      "name": "Managed SOC provider",
+      "version": "1.0"
+    },
+    "observedPack": {
+      "id": "f91c7581-a46e-42df-988a-3ccfffc6743c",
+      "slug": "managed-soc",
+      "name": "Managed SOC provider",
+      "description": "Synthetic managed security operations selling context used to validate the generic engine.",
+      "version": "1.0",
+      "active": true,
+      "status": "APPROVED",
+      "applicableContext": {
+        "offeringFamily": "managed-soc"
+      },
+      "configuration": {},
+      "createdAt": "2026-08-29T10:05:08.038Z",
+      "updatedAt": "2026-08-29T10:06:29.111Z"
+    },
+    "expectedCodes": [
+      "MSOC_SECURITY_LEADER",
+      "MSOC_SECURITY_HIRING",
+      "MSOC_FUNDED_RISK_PROGRAM",
+      "MSOC_SECURITY_STACK_CHANGE",
+      "MSOC_SECURITY_COMPLIANCE_ACTIVITY"
+    ],
+    "observedCodes": [
+      "MSOC_SECURITY_COMPLIANCE_ACTIVITY",
+      "MSOC_SECURITY_STACK_CHANGE",
+      "MSOC_FUNDED_RISK_PROGRAM",
+      "MSOC_SECURITY_HIRING",
+      "MSOC_SECURITY_LEADER"
+    ],
+    "missingCodes": [],
+    "unapprovedCodes": [],
+    "duplicateCodes": [],
+    "versionMismatches": [],
+    "configurationMismatches": [],
+    "packErrors": [],
+    "unexpectedActiveCodes": [],
+    "errors": []
+  }
+}
