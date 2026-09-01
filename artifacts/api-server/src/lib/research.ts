@@ -44,9 +44,7 @@ import {
   ProviderRouter,
   type ProviderUsageRecord,
 } from "./provider-router";
-import { getCanonicalCompanyProfile } from "./canonical-company-profile";
-import { assessCompanySemantically } from "./company-semantic-assessment";
-import { ensureMinimumCompanyIntelligence } from "./minimum-company-intelligence";
+import { orchestrateCompanyIntelligence } from "./company-intelligence-control-plane";
 import { qualifyProjectCompanyForWho } from "./company-discovery";
 import { resolveProjectSellerContext } from "./seller-context";
 import {
@@ -1001,46 +999,36 @@ export async function executeResearchNow(input: {
     .where(and(eq(projectCompaniesTable.id, input.projectCompanyId), eq(projectCompaniesTable.projectId, input.projectId)))
     .limit(1);
   if (!row) throw new Error("Project company not found");
-  const seller = await resolveProjectSellerContext(input.projectId, input.organizationId);
-  if (!seller.sufficiency.sufficient) {
-    return { stopped: true, reason: "Seller context is insufficient for safe research.", buyerRole: row.projectCompany.buyerRole,
-      intelligenceStage: "SELLER_CONTEXT_BLOCKED", stopCode: "SELLER_CONTEXT_INSUFFICIENT",
-      progress: "readiness_blocked", nextAction: "Complete the seller context and ICP before research." };
-  }
-  // Research Now is the single buyer-research handoff. An unresolved role first
-  // gets minimum, project-scoped company intelligence and then the unchanged
-  // CompanyUnderstanding classifier; no buyer retrieval happens before reload.
   if (row.projectCompany.buyerRole === "UNKNOWN") {
     const intelligenceRouter = input.router ?? new ProviderRouter();
-    // Older research test/router seams expose only research capabilities. Use a
-    // full router for the explicitly separate firmographics capability.
-    const minimumRouter = "enrichCompany" in intelligenceRouter
+    const controlRouter = "enrichCompany" in intelligenceRouter
       ? intelligenceRouter
       : new ProviderRouter();
-    const intelligence = await ensureMinimumCompanyIntelligence({
-      organizationId: input.organizationId, projectId: input.projectId, companyId: row.company.id,
-      router: minimumRouter as Parameters<typeof ensureMinimumCompanyIntelligence>[0]["router"], now: input.now,
+    const control = await orchestrateCompanyIntelligence({
+      organizationId: input.organizationId,
+      projectId: input.projectId,
+      companyId: row.company.id,
+      router: controlRouter as Parameters<typeof orchestrateCompanyIntelligence>[0]["router"],
+      now: input.now,
     });
-    if (!intelligence.identitySafe) {
-      return { stopped: true, reason: "Buyer research requires trusted company identity.", buyerRole: "UNKNOWN",
-        intelligenceStage: intelligence.stage, stopCode: "UNSAFE_IDENTITY", progress: "identity_blocked", nextAction: "Verify the company identity before research." };
+    const [reloaded] = await db.select().from(projectCompaniesTable)
+      .where(and(eq(projectCompaniesTable.id, row.projectCompany.id), eq(projectCompaniesTable.projectId, input.projectId)))
+      .limit(1);
+    if (reloaded) row.projectCompany = reloaded;
+    if (control.reasonCode !== "READY_FOR_SIGNAL_RESEARCH" ||
+      !buyerRoleAllowsBuyerResearch(row.projectCompany.buyerRole)) {
+      return {
+        stopped: true,
+        reason: control.explanation,
+        buyerRole: control.buyerRole,
+        intelligenceStage: control.minimumIntelligence?.stage ?? "SELLER_CONTEXT_BLOCKED",
+        stopCode: control.reasonCode,
+        progress: control.status.toLowerCase(),
+        nextAction: control.nextRecommendedCapability
+          ? `Run ${control.nextRecommendedCapability.replace(/_/g, " ").toLowerCase()}.`
+          : control.manualReviewHelpful ? "Review the company evidence." : "No buyer research is available.",
+      };
     }
-    const profile = await getCanonicalCompanyProfile(input.projectId, row.company);
-    const semantic = await assessCompanySemantically({
-      organizationId: input.organizationId, projectId: input.projectId, companyId: row.company.id, profile, identitySafe: true,
-    });
-    await db.update(projectCompaniesTable).set({
-      buyerRole: semantic.assessment.buyerRole, buyerRoleAssessment: semantic.assessment, updatedAt: input.now ?? new Date(),
-    }).where(and(eq(projectCompaniesTable.id, row.projectCompany.id), eq(projectCompaniesTable.projectId, input.projectId)));
-    const [reloaded] = await db.select().from(projectCompaniesTable).where(eq(projectCompaniesTable.id, row.projectCompany.id)).limit(1);
-    if (!reloaded || reloaded.buyerRole !== "POTENTIAL_BUYER") {
-      const stillUnknown = !reloaded || reloaded.buyerRole === "UNKNOWN";
-      return { stopped: true, reason: stillUnknown ? "Company understanding remains insufficient for buyer research." : `Buyer research is gated for ${reloaded.buyerRole}.`,
-        buyerRole: reloaded?.buyerRole ?? "UNKNOWN", intelligenceStage: intelligence.stage,
-        stopCode: stillUnknown ? "STILL_UNKNOWN" : "NON_BUYER", progress: "company_understanding_complete",
-        nextAction: stillUnknown ? "Add trusted company profile evidence." : "No buyer research is available for this commercial role." };
-    }
-    row.projectCompany = reloaded;
   }
   if (!buyerRoleAllowsBuyerResearch(row.projectCompany.buyerRole)) {
     return { stopped: true, reason: `Buyer research is gated for ${row.projectCompany.buyerRole}.`,

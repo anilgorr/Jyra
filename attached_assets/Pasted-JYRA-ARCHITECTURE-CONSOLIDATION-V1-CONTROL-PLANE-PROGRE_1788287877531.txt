@@ -1,0 +1,1671 @@
+JYRA — ARCHITECTURE CONSOLIDATION V1
+CONTROL PLANE + PROGRESSIVE IDENTITY TRUST + CAPABILITY-DRIVEN INTELLIGENCE
+
+MODE:
+ARCHITECTURE AUDIT → CONTROLLED REFACTOR → CROSS-DOMAIN VALIDATION
+
+THIS IS NOT:
+- another benchmark-specific fix
+- a threshold tuning exercise
+- a prompt tuning exercise
+- a rewrite from scratch
+- a multi-agent swarm project
+- a final 50-company Reality Test
+- an outreach/Explee project
+
+PURPOSE:
+
+JYRA has accumulated several individually correct systems, but repeated
+validation has exposed a recurring architectural pattern:
+
+1. information is missing
+2. a downstream status becomes UNKNOWN / INSUFFICIENT
+3. a safety gate stops execution
+4. the resolution capability that could obtain the missing information
+   is never invoked
+5. the object remains UNKNOWN forever
+
+Examples already observed:
+
+UNKNOWN commercial role
+→ buyer research blocked
+→ company could not be understood
+
+Then:
+
+identity considered unsafe
+→ company profile research blocked
+→ evidence capable of strengthening identity was never acquired
+
+The architecture must now distinguish:
+
+RESOLVABLE UNCERTAINTY
+from
+GENUINE AMBIGUITY
+from
+UNSAFE CONDITIONS.
+
+The core architectural principle is:
+
+JYRA MUST ROUTE BASED ON
+"WHAT INFORMATION IS MISSING AND WHAT ACTION IS SAFE NEXT?"
+
+NOT merely:
+
+"WHAT STATUS IS CURRENTLY STORED?"
+
+==================================================
+0. DATABASE SAFETY
+==================================================
+
+Development only.
+
+Use ONLY the development database.
+
+DO NOT:
+
+- migrate production
+- reset production
+- seed production
+- modify production
+- truncate production
+- test against production
+
+PRODUCTION OPERATIONS = 0.
+
+Use migrations only when genuinely required.
+
+Do not perform destructive schema redesign.
+
+==================================================
+1. PRIMARY ARCHITECTURAL DECISION
+==================================================
+
+JYRA V1 architecture must follow:
+
+DETERMINISTIC CONTROL PLANE
++
+SPECIALIST SEMANTIC CAPABILITIES
++
+DETERMINISTIC DATA/VALIDATION SERVICES
++
+CANONICAL EVIDENCE/INTELLIGENCE STORE
+
+Do NOT implement a free-form multi-agent swarm.
+
+Do NOT create an LLM agent for every data field.
+
+The orchestrator is the controlling system.
+
+LLMs perform bounded semantic reasoning.
+
+Deterministic services perform:
+
+identity
+normalization
+validation
+state transitions
+cost control
+routing
+authorization
+tenant isolation
+provenance
+idempotency
+caching
+temporal validation.
+
+==================================================
+2. BEFORE CHANGING CODE: ARCHITECTURE INVENTORY
+==================================================
+
+Audit the current codebase.
+
+Classify every material existing component into exactly one primary
+architecture category:
+
+A. ORCHESTRATOR / WORKFLOW
+B. RESOLVER
+C. PROVIDER ADAPTER
+D. NORMALIZER
+E. SEMANTIC REASONING CAPABILITY
+F. VALIDATOR / GUARDRAIL
+G. DECISION / QUALIFICATION ENGINE
+H. INTELLIGENCE DATA MODEL / STORE
+I. COST / CACHE / OBSERVABILITY
+J. OUTCOME / LEARNING
+K. UI / API
+L. LEGACY / DUPLICATE / UNCLEAR
+
+Produce an architecture inventory before refactoring.
+
+For each component report:
+
+- name
+- responsibility
+- inputs
+- outputs
+- callers
+- dependencies
+- whether LLM is used
+- whether provider calls occur
+- whether state is persisted
+- whether evidence is required
+- whether duplicated responsibility exists
+- whether the component should remain unchanged
+- whether consolidation is recommended
+
+Do NOT delete working systems merely because they could be redesigned.
+
+==================================================
+3. IDENTIFY ARCHITECTURAL ANTI-PATTERNS
+==================================================
+
+Search specifically for:
+
+STATUS_AS_TERMINAL_GATE
+BOOLEAN_IDENTITY_GATE
+MISSING_REASON_CODE
+DUPLICATE_BUSINESS_LOGIC
+FRONTEND_BUSINESS_LOGIC
+LLM_USED_FOR_DETERMINISTIC_TASK
+DETERMINISTIC_RULE_USED_FOR_SEMANTIC_TASK
+PROVIDER_SPECIFIC_LOGIC_LEAK
+EVIDENCE_NOT_PROPAGATED
+STALE_STATE_USED_AFTER_RESEARCH
+RESOLUTION_CAPABILITY_NOT_INVOKED
+UNKNOWN_WITHOUT_REASON
+INSUFFICIENT_WITHOUT_REASON
+PROVIDER_FAILURE_TREATED_AS_NEGATIVE
+MISSING_DATA_TREATED_AS_NEGATIVE
+CROSS_TENANT_CONTEXT_RISK
+UNBOUNDED_PROVIDER_LOOP
+UNVERSIONED_SEMANTIC_RESULT
+DUPLICATE_SEMANTIC_CALL
+DUPLICATE_PROVIDER_CALL
+DUPLICATE_STATE_HISTORY
+BENCHMARK_SPECIFIC_PRODUCTION_LOGIC
+
+Report findings.
+
+==================================================
+4. FREEZE WORKING CORE LOGIC
+==================================================
+
+Unless architectural wiring requires adapting interfaces, preserve:
+
+- Business Twin
+- Offering
+- ICP
+- Opportunity Intelligence Pack
+- canonical company storage
+- current identity states
+- identity-resolution evidence
+- provider router
+- current provider adapters
+- normalization
+- MinimumCompanyIntelligence
+- CompanyUnderstanding
+- CommercialRoleAssessment
+- WHO
+- adaptive research retrieval
+- fact validation
+- signal definitions
+- signal clusters
+- WHEN/WHY
+- opportunity engine
+- NBA
+- Recommendation Ledger
+- Outcome/Learning foundation
+- semantic idempotency
+- cost accounting
+- cross-tenant isolation
+
+Do NOT tune:
+
+CompanyUnderstanding prompts
+CommercialRole prompts
+buyer thresholds
+ICP
+Managed SOC signals
+DigiPuush rules
+discovery queries
+
+in order to improve benchmarks.
+
+==================================================
+5. CONTROL PLANE
+==================================================
+
+Create or consolidate ONE authoritative backend intelligence
+orchestrator.
+
+Conceptual responsibility:
+
+Given:
+
+project
+seller context
+company/candidate
+requested operation
+
+determine:
+
+WHAT IS KNOWN?
+WHAT IS MISSING?
+WHAT IS SAFE?
+WHAT CAPABILITY SHOULD RUN NEXT?
+WHAT SHOULD BE SKIPPED?
+WHAT SHOULD STOP?
+WHAT SHOULD BE CACHED?
+WHAT IS THE MAXIMUM COST/BUDGET?
+WHAT STATE SHOULD BE PERSISTED?
+
+The orchestrator must be deterministic.
+
+Do NOT use an LLM to decide core workflow execution.
+
+==================================================
+6. CAPABILITY-DRIVEN EXECUTION
+==================================================
+
+Define capabilities independently from vendors.
+
+At minimum support architecture-level capabilities such as:
+
+ENTITY_RESOLUTION
+DOMAIN_RESOLUTION
+COMPANY_PROFILE_RESOLUTION
+COMPANY_FIRMOGRAPHICS
+COMPANY_UNDERSTANDING
+COMMERCIAL_RELATIONSHIP_ASSESSMENT
+WHO_QUALIFICATION
+WEB_SEARCH
+WEBSITE_CRAWL
+NEWS_SEARCH
+JOB_SEARCH
+TECH_STACK_RESEARCH
+SIGNAL_RESEARCH
+FACT_VALIDATION
+OPPORTUNITY_REASONING
+
+Future capabilities may include:
+
+PERSON_SEARCH
+BUYING_COMMITTEE_REASONING
+EMAIL_LOOKUP
+OUTREACH_SEND
+OUTREACH_THREAD
+
+But DO NOT build future outreach capabilities now.
+
+Providers satisfy capabilities.
+
+Business logic must not depend directly on:
+
+Tavily
+Exa
+Bright Data
+Apify
+Explee
+or any other specific provider.
+
+==================================================
+7. STANDARD CAPABILITY CONTRACT
+==================================================
+
+All important resolution/reasoning capabilities should conceptually
+follow a standard contract.
+
+INPUT:
+- entity/project identifiers
+- known context
+- existing evidence IDs
+- capability-specific options
+
+PREREQUISITES:
+- what must exist before execution
+
+RESULT:
+
+status:
+SUCCESS
+PARTIAL
+INSUFFICIENT
+FAILED
+BLOCKED
+
+reason_code
+
+confidence where applicable
+
+output
+strict structured schema
+
+evidence_ids[]
+
+missing_requirements[]
+
+next_recommended_capability if appropriate
+
+provider/model metadata
+
+version
+
+cost metadata
+
+created_at
+
+Do not require every existing subsystem to use one physical table.
+
+The goal is architectural consistency, not unnecessary database
+abstraction.
+
+==================================================
+8. REASON-FIRST STATE MODEL
+==================================================
+
+Critical architecture change:
+
+States such as:
+
+UNKNOWN
+INSUFFICIENT_DATA
+BLOCKED
+
+must no longer be actionable by themselves.
+
+They require a machine-readable reason.
+
+Examples:
+
+UNKNOWN
+reason = COMPANY_PROFILE_MISSING
+
+UNKNOWN
+reason = COMMERCIAL_RELATIONSHIP_AMBIGUOUS
+
+INSUFFICIENT_DATA
+reason = EMPLOYEE_SIZE_MISSING
+
+BLOCKED
+reason = IDENTITY_CONFLICT
+
+These states have completely different next actions.
+
+Introduce/consolidate stable reason codes.
+
+Do not use free-text reason as workflow logic.
+
+==================================================
+9. THREE TYPES OF UNCERTAINTY
+==================================================
+
+Every unresolved prerequisite should conceptually fall into:
+
+A. RESOLVABLE
+
+Example:
+primary business missing.
+
+Action:
+run Company Profile / Minimum Intelligence.
+
+B. GENUINELY AMBIGUOUS
+
+Example:
+evidence exists, but commercial relationship cannot be determined.
+
+Action:
+remain UNKNOWN / monitor / human review if appropriate.
+
+C. UNSAFE
+
+Example:
+two contradictory domains map to different companies.
+
+Action:
+stop attribution-sensitive operations.
+
+The orchestrator must not treat A, B and C the same way.
+
+==================================================
+10. PROGRESSIVE IDENTITY TRUST
+==================================================
+
+Do NOT simply lower current identity thresholds.
+
+Do NOT weaken wrong-entity protection.
+
+Instead distinguish identity trust by ACTION RISK.
+
+Current problem:
+
+identity safety is effectively too binary.
+
+JYRA needs conceptual separation between:
+
+RESEARCH-SAFE IDENTITY
+
+and
+
+ATTRIBUTION-SAFE IDENTITY
+
+and, later:
+
+OUTREACH-SAFE IDENTITY.
+
+A candidate may have enough identity confidence to:
+
+- inspect its apparent official website
+- collect public profile evidence
+- build a provisional company profile
+- strengthen identity resolution
+
+without yet having enough certainty to:
+
+- attach permanent canonical facts
+- generate buyer signals
+- rank the company as an opportunity
+- enrich/contact people
+- initiate outreach
+
+==================================================
+11. IDENTITY PERMISSIONS
+==================================================
+
+Implement or derive action permissions from identity state.
+
+Conceptually:
+
+CAN_PUBLIC_PROFILE_RESEARCH
+CAN_BUILD_PROVISIONAL_PROFILE
+CAN_RUN_COMPANY_UNDERSTANDING
+CAN_RUN_COMMERCIAL_ROLE
+CAN_ATTACH_CANONICAL_FACTS
+CAN_GENERATE_SIGNALS
+CAN_RANK_OPPORTUNITY
+CAN_ENRICH_CONTACTS
+
+Do not necessarily create eight boolean DB columns.
+
+Prefer a policy/resolver function based on:
+
+identity state
+confidence
+evidence
+conflict state
+requested action.
+
+Example:
+
+CONFIRMED
+→ all normal intelligence actions allowed.
+
+PROBABLE with coherent domain evidence
+→ public profile research allowed
+→ provisional understanding allowed
+→ permanent high-impact attribution only if current policy allows.
+
+AMBIGUOUS with multiple conflicting entities
+→ research may be restricted or blocked depending on resolvability.
+
+WRONG_ENTITY
+→ blocked.
+
+NOT_A_COMPANY
+→ blocked.
+
+==================================================
+12. PROVISIONAL ENTITY / EVIDENCE WORKSPACE
+==================================================
+
+JYRA must be capable of researching a candidate BEFORE irreversible
+canonical attribution when necessary.
+
+Do NOT force every public research result immediately onto a canonical
+company.
+
+Support the concept of:
+
+CandidateEntity
+or equivalent existing discovery candidate
+
+with provisional evidence.
+
+Conceptually:
+
+DISCOVERY RESULT
+↓
+PROVISIONAL ENTITY CONTEXT
+↓
+PUBLIC PROFILE EVIDENCE
+↓
+IDENTITY STRENGTHENING
+↓
+CANONICAL CONFIRMATION
+↓
+PROMOTE / LINK SAFE EVIDENCE
+
+Do not duplicate canonical companies unnecessarily.
+
+Reuse existing candidate/discovery structures if they can safely support
+this.
+
+Do NOT create a second parallel company database unless genuinely
+necessary.
+
+==================================================
+13. IDENTITY RESOLUTION SHOULD BE ITERATIVE
+==================================================
+
+Identity should not always be a single one-time gate.
+
+Allow this pattern:
+
+discovered candidate
+↓
+initial identity assessment
+↓
+research-safe but not attribution-safe
+↓
+profile resolution
+↓
+new evidence
+↓
+identity reassessment
+↓
+confirmed / probable / ambiguous / wrong
+
+But strictly bound this process.
+
+No infinite loops.
+
+Recommended maximum normal resolution cycle:
+
+initial assessment
++
+one profile-resolution stage
++
+one identity reassessment
+
+Additional attempts require explicit reason.
+
+==================================================
+14. MINIMUM COMPANY INTELLIGENCE
+==================================================
+
+Keep Fix 11's MinimumCompanyIntelligence.
+
+Its ownership should become explicit:
+
+Question:
+
+"Do we know enough about this organization to understand what it
+actually does?"
+
+Inputs may include:
+
+discovery evidence
+canonical profile
+provisional evidence
+website evidence
+firmographic evidence
+
+Output should capture:
+
+primary business
+products/services
+business model when supportable
+industry when supportable
+size/geography when available
+evidence IDs
+confidence
+missing fields
+
+Do NOT require complete firmographics to proceed to semantic company
+understanding.
+
+==================================================
+15. SEMANTIC CAPABILITIES: KEEP SMALL
+==================================================
+
+Do NOT create dozens of agents.
+
+Architecturally treat these as the primary semantic reasoning
+capabilities for MVP:
+
+1. COMPANY UNDERSTANDING
+
+Question:
+What does this company actually do?
+
+2. COMMERCIAL RELATIONSHIP ASSESSMENT
+
+Question:
+Relative to THIS seller and THIS offering, is the company:
+
+POTENTIAL_BUYER
+SELLER_COMPETITOR
+ADJACENT_VENDOR
+PARTNER_POSSIBLE
+UNKNOWN
+
+3. SIGNAL / EVENT RESEARCH
+
+Question:
+What offering-relevant events or conditions are occurring?
+
+4. OPPORTUNITY REASONING
+
+Question:
+Given WHO + validated evidence/signals, does the account deserve
+attention now and why?
+
+Later:
+
+5. BUYING COMMITTEE REASONING
+
+Do NOT build it in this consolidation unless already working.
+
+==================================================
+16. DO NOT TURN NORMALIZERS INTO AGENTS
+==================================================
+
+Keep deterministic/services for:
+
+geography
+country
+location
+employee-range normalization
+industry taxonomy mapping
+domain normalization
+URLs
+dates
+source classification
+evidence deduplication
+temporal validation
+entity linking
+provider selection
+cache
+cost
+permissions
+tenant isolation
+
+LLMs may assist ambiguous semantic classification but should not own
+basic deterministic normalization.
+
+==================================================
+17. COMPANY UNDERSTANDING CONTRACT
+==================================================
+
+Preserve current frozen CompanyUnderstanding logic.
+
+Architecturally require:
+
+company_id or provisional entity reference
+
+primary_business
+
+products_services[]
+
+business_model where supportable
+
+industry where supportable
+
+target_customer/context where supportable
+
+evidence_ids[]
+
+confidence
+
+missing_fields[]
+
+model
+
+prompt_version
+
+Do NOT permit unsupported claims.
+
+==================================================
+18. COMMERCIAL RELATIONSHIP CONTRACT
+==================================================
+
+Commercial relationship must remain offering-relative.
+
+Never persist universal:
+
+company.isBuyer = true
+
+Instead:
+
+CommercialRoleAssessment(
+candidate_company,
+business_twin,
+offering
+)
+
+Output:
+
+role
+
+confidence
+
+reason
+
+evidence_ids[]
+
+missing_requirements[]
+
+UNKNOWN reason when applicable
+
+model/prompt version
+
+==================================================
+19. WHO CONTRACT
+==================================================
+
+WHO remains distinct from commercial role.
+
+Commercial role:
+
+Can this organization reasonably have this relationship to what the
+seller sells?
+
+WHO:
+
+Does the organization fit the seller's ICP?
+
+WHO should evaluate:
+
+industry
+size
+geography
+business model
+technology requirements when relevant
+commercial role
+exclusions
+
+Missing data ≠ negative.
+
+WHO result remains:
+
+LIKELY_FIT
+POSSIBLE_FIT
+LIKELY_NOT_FIT
+INSUFFICIENT_DATA
+
+But INSUFFICIENT_DATA must include reason codes such as:
+
+SIZE_MISSING
+GEOGRAPHY_MISSING
+INDUSTRY_MISSING
+MULTIPLE_REQUIREMENTS_MISSING
+OTHER
+
+The orchestrator may then decide whether resolving the missing
+firmographic field is worth the cost.
+
+==================================================
+20. INTELLIGENCE FUNNEL
+==================================================
+
+Do not deeply research every discovered company.
+
+Architecture should support progressive cost escalation.
+
+Conceptually:
+
+LARGE MARKET
+↓ cheap discovery
+
+PLAUSIBLE MARKET
+↓ cheap identity/profile
+
+POTENTIAL BUYERS
+↓ WHO
+
+GOOD WHO FIT
+↓ monitor/research
+
+MEANINGFUL ACTIVITY
+↓ deeper evidence
+
+SUPPORTED OPPORTUNITIES
+↓ people/contact research
+
+The architecture must preserve this economic funnel.
+
+Do not accidentally turn MinimumCompanyIntelligence into full
+opportunity research.
+
+==================================================
+21. SIGNAL RESEARCH
+==================================================
+
+Signal research only runs when justified by upstream intelligence.
+
+It should consume:
+
+company
+CompanyUnderstanding
+CommercialRole
+WHO
+Offering
+Opportunity Intelligence Pack
+
+Research questions may vary by offering.
+
+Keep current generic evidence/event model.
+
+Do NOT hardcode Managed SOC signals into generic architecture.
+
+Do NOT modify existing five Managed SOC definitions during this task.
+
+==================================================
+22. EVIDENCE IS THE SYSTEM OF RECORD
+==================================================
+
+Architect the permanent intelligence chain as:
+
+SOURCE
+↓
+EVIDENCE
+↓
+OBSERVATION
+↓
+FACT
+↓
+EVENT
+↓
+ASSESSMENT
+↓
+SIGNAL
+↓
+OPPORTUNITY HYPOTHESIS
+
+Not every layer must be mandatory for every simple company-profile
+attribute.
+
+But any material claim that affects:
+
+buyer role
+WHO
+signal
+WHY
+opportunity
+
+must remain traceable.
+
+Agents/models are replaceable.
+
+Providers are replaceable.
+
+Evidence/provenance/history should survive both.
+
+==================================================
+23. PROVISIONAL VS CANONICAL ATTRIBUTION
+==================================================
+
+Public evidence collected while identity is not attribution-safe must
+remain distinguishable from fully canonicalized evidence.
+
+When identity becomes attribution-safe:
+
+promote/link evidence using an idempotent operation.
+
+Do not duplicate evidence.
+
+If identity is later determined WRONG:
+
+do not contaminate the wrong canonical company.
+
+Preserve diagnostic history where appropriate.
+
+==================================================
+24. RESEARCH NOW
+==================================================
+
+Research Now should use the SAME orchestrator as automated workflows.
+
+Frontend sends intent:
+
+RESEARCH_COMPANY
+
+Backend determines next capability.
+
+Possible path:
+
+identity unresolved but research-safe
+→ profile research
+→ identity reassessment
+
+company not understood
+→ MinimumCompanyIntelligence
+→ CompanyUnderstanding
+
+commercial role missing
+→ CommercialRole
+
+WHO insufficient because one valuable field missing
+→ optionally resolve firmographics
+
+potential buyer + WHO eligible
+→ Signal Research
+
+signals supported
+→ Opportunity Reasoning
+
+competitor/adjacent
+→ stop opportunity research
+
+genuinely ambiguous
+→ stop with reason
+
+Frontend must not duplicate this logic.
+
+==================================================
+25. STOP CODES + NEXT ACTION
+==================================================
+
+Every orchestrated stop should return:
+
+status
+
+reason_code
+
+user-friendly explanation
+
+recommended_next_action
+
+whether retry is sensible
+
+whether manual review could help
+
+whether scheduled monitoring could help
+
+Examples:
+
+IDENTITY_CONFLICT
+PROFILE_EVIDENCE_INSUFFICIENT
+COMMERCIAL_RELATIONSHIP_AMBIGUOUS
+ICP_SIZE_MISSING
+COMPETITOR_NOT_ELIGIBLE
+ADJACENT_VENDOR_NOT_ELIGIBLE
+NO_SUPPORTED_SIGNAL
+RESEARCH_BUDGET_EXHAUSTED
+PROVIDER_TEMPORARILY_FAILED
+
+Provider failure must not masquerade as business conclusion.
+
+==================================================
+26. PROVIDER ROUTER
+==================================================
+
+Keep providers behind capabilities.
+
+The orchestrator/capability requests:
+
+COMPANY_PROFILE_RESOLUTION
+
+not:
+
+CALL_TAVILY
+
+Router determines:
+
+cache
+existing evidence
+preferred provider
+fallback
+cost
+limits.
+
+Do not change provider order unless required by an existing proven
+contract.
+
+Do not tune provider queries in this architecture cycle.
+
+==================================================
+27. COST / BUDGET POLICY
+==================================================
+
+Every orchestrated workflow must support:
+
+per-capability budget
+per-company budget
+per-run budget
+
+Track:
+
+provider calls
+provider success/failure
+tokens
+known cost
+unknown cost
+cache hits
+retry count
+
+Unknown cost must remain UNKNOWN, not $0.
+
+Architecture should enable future expected-information-value routing,
+but do NOT build an elaborate optimization model unless already present.
+
+==================================================
+28. DURABLE EXECUTION
+==================================================
+
+Audit whether current Replit/Postgres job architecture adequately
+supports:
+
+checkpoint
+resume
+retry
+timeout
+cancel
+partial success
+idempotency
+locking
+concurrency limits
+
+Do NOT introduce Temporal/LangGraph merely because they are fashionable.
+
+If current architecture can support MVP durability safely, retain it.
+
+Only recommend a dedicated workflow engine if a concrete current
+limitation requires it.
+
+If recommending one, document the reason but DO NOT migrate to it in
+this task.
+
+==================================================
+29. OBSERVABILITY
+==================================================
+
+For each company intelligence run, JYRA should eventually be able to
+reconstruct:
+
+which capability ran
+why it ran
+input state
+missing requirement
+provider/model used
+evidence produced
+result
+confidence
+reason
+cost
+duration
+cache hit
+next action
+version
+
+Use existing tables/logging where possible.
+
+Do not create unnecessary duplicate observability infrastructure.
+
+==================================================
+30. LEARNING BOUNDARY
+==================================================
+
+Do NOT let live agents self-modify.
+
+Preserve a future learning flow:
+
+recommendation snapshot
+↓
+salesperson action
+↓
+reply
+↓
+meeting
+↓
+opportunity
+↓
+won/lost/rejected
+↓
+outcome ledger
+↓
+offline evaluation
+↓
+versioned improvement
+↓
+controlled deployment
+
+Learning should eventually be scoped by:
+
+global generic learning
++
+Business Twin
++
+Offering
++
+ICP
++
+historical outcomes.
+
+Do NOT implement new learning algorithms now.
+
+==================================================
+31. ARCHITECTURE CONSOLIDATION RULE
+==================================================
+
+Prefer adapting existing components over rewriting.
+
+Examples:
+
+If an existing CandidateCompany model can support provisional identity,
+extend/reuse it.
+
+Do NOT introduce ProvisionalCompany if CandidateCompany already
+correctly serves that role.
+
+If existing research planner can become part of the orchestrator,
+reuse it.
+
+If CompanyUnderstanding already has correct schema/provenance,
+keep it.
+
+If provider router already satisfies capability abstraction,
+do not rewrite it.
+
+The objective is:
+
+CLEAR RESPONSIBILITY
+
+not:
+
+MAXIMUM NEW CODE.
+
+==================================================
+32. REMOVE OR DEPRECATE DUPLICATE PATHS
+==================================================
+
+After the authoritative orchestration path exists:
+
+identify legacy paths that:
+
+bypass MinimumCompanyIntelligence
+call CommercialRole directly without prerequisites
+apply different identity rules
+duplicate Research Now business logic
+attach evidence without current attribution policy
+use stale commercial role after enrichment
+
+Where safe:
+
+route them through the authoritative services.
+
+Do not silently delete APIs used by working UI.
+
+Preserve backward compatibility or migrate callers deliberately.
+
+==================================================
+33. ARCHITECTURE INVARIANTS
+==================================================
+
+Add tests/invariants for:
+
+1. Missing information does not automatically become negative evidence.
+
+2. Provider failure does not become negative business conclusion.
+
+3. RESOLVABLE uncertainty routes to a resolution capability.
+
+4. UNSAFE identity blocks attribution-sensitive actions.
+
+5. Research-safe identity may perform bounded public profile resolution.
+
+6. Provisional evidence cannot contaminate an incorrect canonical
+   company.
+
+7. Identity can be reassessed after new profile evidence.
+
+8. No infinite identity/profile loop.
+
+9. MinimumCompanyIntelligence can use provisional evidence.
+
+10. CompanyUnderstanding requires sufficient grounded evidence.
+
+11. CommercialRole requires seller/offering context.
+
+12. CommercialRole is offering-relative.
+
+13. WHO is separate from CommercialRole.
+
+14. WHO missing firmographics remain unknown, not negative.
+
+15. Signal Research does not run for seller/competitor unless explicitly
+    supported by a future use case.
+
+16. Signal Research does not run merely because company exists.
+
+17. Research Now and automatic processing use the same backend
+    orchestrator.
+
+18. Frontend contains no commercial-role or research gating logic.
+
+19. Evidence provenance persists across reasoning layers.
+
+20. Replays remain idempotent.
+
+21. Cross-tenant data never leaks.
+
+22. Provider-specific fields do not leak past adapters.
+
+23. Cost ledger remains consistent.
+
+24. Cached semantic results require correct fingerprints.
+
+25. Production operations = 0.
+
+==================================================
+34. CROSS-DOMAIN FIXTURES
+==================================================
+
+Architectural regressions must include at least:
+
+A. MANAGED SOC
+
+Example buyer:
+bank / SaaS / enterprise organization
+
+competitor:
+MSSP / MDR / Managed SOC provider
+
+adjacent:
+security software vendor
+
+B. AEO/GEO
+
+buyer:
+brand / SaaS / education / service company that could consume AI
+visibility services
+
+competitor:
+AEO/GEO agency
+
+adjacent:
+SEO / marketing technology / related service provider where
+relationship is not direct competition
+
+C. RECRUITMENT / IT STAFFING
+
+buyer:
+technology company hiring employees
+
+competitor:
+recruitment/staffing firm
+
+adjacent:
+HR-tech provider
+
+D. ERP
+
+buyer:
+manufacturer/distributor/operating company
+
+competitor:
+ERP consulting/implementation firm
+
+adjacent:
+ERP software vendor where appropriate
+
+These are fixture categories only.
+
+Do NOT hardcode them into production rules.
+
+==================================================
+35. ARCHITECTURE VALIDATION BEFORE REAL PROVIDER TESTS
+==================================================
+
+First run offline/fixture tests.
+
+Then use persisted DigiPuush failing cohort to verify:
+
+Previous behavior:
+18/20 stopped as identity unsafe.
+
+New architectural behavior should distinguish:
+
+- genuinely unsafe
+- research-safe but not attribution-safe
+- already attribution-safe
+
+Do NOT assume 19/20 must be accepted because independent adjudication
+matched 19/20.
+
+Evaluate according to evidence and policy.
+
+For research-safe candidates:
+
+prove that bounded profile resolution can execute.
+
+Prove that evidence can strengthen identity.
+
+Prove unsafe evidence cannot contaminate canonical records.
+
+This diagnostic may use existing persisted evidence first.
+
+==================================================
+36. BOUNDED LIVE VALIDATION
+==================================================
+
+Only after architecture tests pass:
+
+run ONE bounded fresh cross-domain validation.
+
+Do NOT start with 50 companies.
+
+Use:
+
+10 fresh DigiPuush companies
+
+and
+
+10 fresh Managed SOC companies
+
+through normal production paths in DEVELOPMENT.
+
+Total 20.
+
+No manual company seeding.
+
+No hand selection.
+
+No query tuning after the run starts.
+
+Pipeline should test:
+
+Discovery
+→ initial identity
+→ progressive identity policy
+→ MinimumCompanyIntelligence
+→ CompanyUnderstanding
+→ CommercialRole
+→ WHO
+
+STOP BEFORE:
+
+WHEN
+WHY
+signals
+opportunity priority
+contacts
+outreach
+Explee
+
+The purpose is architecture, not opportunity recall.
+
+==================================================
+37. REPORT FUNNEL BY DOMAIN
+==================================================
+
+For each domain report:
+
+requested
+
+discovered
+
+identity:
+CONFIRMED
+PROBABLE
+AMBIGUOUS
+WRONG
+UNRESOLVED
+
+research-safe count
+
+attribution-safe count
+
+profile research attempted
+
+identity strengthened after research
+
+identity remained ambiguous
+
+minimum intelligence sufficient
+
+CompanyUnderstanding executed
+
+CommercialRole distribution
+
+WHO distribution
+
+UNKNOWN reason distribution
+
+provider calls
+
+LLM calls
+
+cache hits
+
+known cost
+
+unknown cost
+
+No accuracy tuning in this run.
+
+==================================================
+38. INDEPENDENT QUALITY CHECK
+==================================================
+
+Independently adjudicate the 20-company validation after JYRA outputs
+are frozen.
+
+Measure:
+
+identity precision
+
+plausible-market rate
+
+company-understanding accuracy
+
+commercial-role agreement
+
+potential-buyer precision
+
+potential-buyer recall
+
+competitor→buyer errors
+
+WHO agreement
+
+But DO NOT tune during this architecture cycle.
+
+The main architecture questions are:
+
+Did correct candidates progress?
+
+Did unsafe candidates stop safely?
+
+Did resolvable uncertainty trigger resolution?
+
+Did genuine ambiguity remain UNKNOWN?
+
+Did the system avoid wrong canonical attribution?
+
+==================================================
+39. ARCHITECTURE SUCCESS GATES
+==================================================
+
+Required:
+
+A. One authoritative orchestration path exists.
+
+B. Major UNKNOWN/INSUFFICIENT/BLOCKED states expose stable reasons.
+
+C. Resolvable missing profile evidence can trigger profile resolution.
+
+D. Identity is no longer treated as one universal binary action gate.
+
+E. Research-safe vs attribution-safe behavior exists.
+
+F. No weakening of wrong-entity protection.
+
+G. Provisional research cannot pollute canonical evidence.
+
+H. Research Now uses authoritative orchestrator.
+
+I. Automatic workflows use authoritative orchestrator.
+
+J. No benchmark/company-specific production logic.
+
+K. Cross-tenant isolation passes.
+
+L. Idempotency passes.
+
+M. Cost accounting passes.
+
+N. Typecheck/build/API startup pass.
+
+O. Production operations = 0.
+
+==================================================
+40. WHAT NOT TO BUILD
+==================================================
+
+Do NOT:
+
+- create 20+ agents
+- create a peer-to-peer agent network
+- create an LLM location agent
+- create an LLM employee-count agent
+- migrate databases unnecessarily
+- migrate to Neo4j
+- migrate to Temporal
+- migrate to LangGraph
+- add vector DB merely for architecture
+- add new providers
+- add Explee
+- add outreach
+- add contact enrichment
+- modify WHEN/WHY
+- modify Managed SOC signals
+- optimize the old 10-control benchmark
+- run the final 50-company benchmark
+- self-tune prompts after seeing test results
+
+==================================================
+41. ARCHITECTURE DOCUMENT
+==================================================
+
+Create/update an internal architecture document:
+
+docs/JYRA_ARCHITECTURE_V1.md
+
+It must describe:
+
+1. architectural principles
+2. control plane
+3. data/evidence plane
+4. semantic intelligence plane
+5. capability contracts
+6. progressive identity trust
+7. provisional vs canonical evidence
+8. state + reason + next-action semantics
+9. company intelligence flow
+10. WHO / WHEN / WHY separation
+11. Research Now orchestration
+12. provider routing
+13. cost control
+14. idempotency
+15. observability
+16. tenant isolation
+17. learning boundary
+18. intentional MVP exclusions
+19. architecture diagrams in Mermaid
+20. major invariants
+
+Document actual implementation, not aspirational architecture that was
+not built.
+
+==================================================
+42. FINAL REPORT
+==================================================
+
+Report:
+
+A. ARCHITECTURE INVENTORY
+
+B. ANTI-PATTERNS FOUND
+
+C. COMPONENTS REUSED UNCHANGED
+
+D. COMPONENTS MODIFIED
+
+E. DUPLICATE PATHS CONSOLIDATED
+
+F. NEW/UPDATED DATA MODELS
+
+G. PROGRESSIVE IDENTITY POLICY
+
+H. AUTHORITATIVE ORCHESTRATION FLOW
+
+I. REASON-CODE MODEL
+
+J. PROVISIONAL EVIDENCE BEHAVIOR
+
+K. RESEARCH NOW FLOW
+
+L. TEST RESULTS
+
+M. 20-COMPANY CROSS-DOMAIN VALIDATION
+
+N. COST
+
+O. REMAINING TECHNICAL DEBT
+
+P. WHETHER ARCHITECTURE IS READY FOR A 50-COMPANY REALITY TEST
+
+==================================================
+43. FINAL VERDICT
+==================================================
+
+Return exactly one:
+
+A — JYRA ARCHITECTURE V1 CONSOLIDATED AND READY FOR PRODUCT VALIDATION
+
+B — CONTROL PLANE STILL HAS MATERIAL ORCHESTRATION GAPS
+
+C — PROGRESSIVE IDENTITY TRUST IS NOT SAFE ENOUGH
+
+D — INTELLIGENCE CAPABILITY CONTRACTS REMAIN INCONSISTENT
+
+E — EXISTING ARCHITECTURE REQUIRES A LARGER REFACTOR BEFORE VALIDATION
+
+F — MULTIPLE MATERIAL ARCHITECTURAL DEFECTS
+
+Do NOT return A merely because tests compile.
+
+A requires:
+
+- architecture invariants pass
+- progressive identity behaves safely
+- resolvable uncertainty progresses
+- unsafe identity stops
+- no canonical contamination
+- bounded cross-domain validation completes coherently
+
+==================================================
+44. STOP
+==================================================
+
+After architecture consolidation,
+tests,
+documentation,
+20-company cross-domain validation,
+and verdict:
+
+STOP.
+
+DO NOT:
+
+run 50-company Reality Test
+change buyer prompts
+change signal definitions
+optimize benchmark accuracy
+build contact enrichment
+build outreach
+integrate Explee
+
+Wait for architecture review.

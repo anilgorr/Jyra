@@ -271,7 +271,11 @@ try {
     website: `https://integration-${suffix}.example`,
     industry: "software",
   }).returning();
-  const [projectCompany] = await db.insert(projectCompaniesTable).values({ projectId: project.id, companyId: company.id }).returning();
+  const [projectCompany] = await db.insert(projectCompaniesTable).values({
+    projectId: project.id,
+    companyId: company.id,
+    buyerRole: "POTENTIAL_BUYER",
+  }).returning();
   [provider] = await db.insert(dataProvidersTable).values({ name: `research-test-provider-${suffix}`, providerType: "mock" }).returning();
   [fallbackProvider] = await db.insert(dataProvidersTable).values({ name: `research-test-fallback-${suffix}`, providerType: "mock" }).returning();
   let providerCalls = 0;
@@ -377,6 +381,7 @@ try {
   const [unavailableProjectCompany] = await db.insert(projectCompaniesTable).values({
     projectId: project.id,
     companyId: unavailableCompany.id,
+    buyerRole: "POTENTIAL_BUYER",
   }).returning();
   const unavailable = async (request) => ({
     status: "failed",
@@ -445,6 +450,7 @@ try {
   const [budgetProjectCompany] = await db.insert(projectCompaniesTable).values({
     projectId: project.id,
     companyId: budgetCompany.id,
+    buyerRole: "POTENTIAL_BUYER",
   }).returning();
   await upsertResearchBudget({
     organizationId: organization.id,
@@ -501,6 +507,7 @@ try {
   const [waterfallProjectCompany] = await db.insert(projectCompaniesTable).values({
     projectId: project.id,
     companyId: waterfallCompany.id,
+    buyerRole: "POTENTIAL_BUYER",
   }).returning();
   const responseFor = (providerId, status, retryable, actualCost) => async (request) => ({
     status,

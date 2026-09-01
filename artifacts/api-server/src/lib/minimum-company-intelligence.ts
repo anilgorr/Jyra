@@ -7,40 +7,28 @@ import { enrichCompanyFirmographics } from "./company-firmographics";
 import { resolveAndPersistCompanyProfile } from "./company-profile-resolution";
 import { buildCandidateEvidence } from "./company-semantic-assessment";
 import { minimumIntelligenceSufficient } from "./minimum-company-intelligence-policy";
+import { deriveIdentityPermissions, type IdentityPermissions } from "./identity-action-policy";
 
 /** This contract is deliberately small and frozen: it establishes only enough
  * company context to safely run the existing CompanyUnderstanding classifier. */
-export const MINIMUM_COMPANY_INTELLIGENCE_VERSION = "fix11-minimum-company-intelligence-v1";
+export const MINIMUM_COMPANY_INTELLIGENCE_VERSION = "architecture-v1-minimum-company-intelligence-v2";
 const SOURCE_TYPE = "MINIMUM_COMPANY_INTELLIGENCE";
 
 export type MinimumCompanyIntelligence = {
   stage: "SUFFICIENT" | "INSUFFICIENT" | "UNSAFE_IDENTITY";
   cacheHit: boolean;
   identitySafe: boolean;
+  attributionSafe: boolean;
+  identityPermissions: IdentityPermissions;
+  reasonCode: string | null;
+  missingRequirements: string[];
+  nextRecommendedCapability: string | null;
   evidenceIds: string[];
   attempts: { profileResolution: number; firmographics: number };
 };
 
 function usableText(value: unknown): boolean {
   return typeof value === "string" && value.replace(/\s+/g, " ").trim().length >= 12;
-}
-
-function hasTrustedIdentity(rows: Array<{ sourceType: string; payload: Record<string, unknown> }>, domain: string | null): boolean {
-  if (!domain) return false;
-  return rows.some(({ sourceType, payload }) => {
-    const result = payload.result as Record<string, unknown> | undefined;
-    if (sourceType === "COMPANY_FIRMOGRAPHICS") {
-      const attrs = result?.attributes as Record<string, unknown> | undefined;
-      return result?.entityMatchStatus === "CONFIRMED" &&
-        String(attrs?.canonicalDomain ?? "").toLowerCase() === domain.toLowerCase();
-    }
-    if (sourceType !== "COMPANY_PROFILE_RESOLUTION") return false;
-    const evidence = Array.isArray(result?.supportingEvidence) ? result.supportingEvidence : [];
-    return ["VERIFIED", "VERIFIED_EXISTING"].includes(String(result?.resolutionStatus)) &&
-      evidence.some((item) => item && typeof item === "object" &&
-        ["DOMAIN_MATCH", "OFFICIAL_WEBSITE_LINK"].includes(String((item as Record<string, unknown>).kind)) &&
-        String((item as Record<string, unknown>).detail ?? "").toLowerCase().includes(domain.toLowerCase()));
-  });
 }
 
 function sufficient(profile: Awaited<ReturnType<typeof getCanonicalCompanyProfile>>, rows: Array<{ id: string; sourceType: string; sourceUrl: string | null; payload: Record<string, unknown> }>): boolean {
@@ -85,7 +73,8 @@ export async function ensureMinimumCompanyIntelligence(input: {
   )).orderBy(desc(companyProvenanceTable.createdAt));
   const profile = await getCanonicalCompanyProfile(input.projectId, company);
   const evidence = buildCandidateEvidence(profile, rows);
-  const identitySafe = hasTrustedIdentity(rows, company.domain);
+  let identityPermissions = deriveIdentityPermissions({ domain: company.domain, provenance: rows });
+  let identitySafe = identityPermissions.canRunCompanyUnderstanding;
   const fingerprint = createHash("sha256").update(JSON.stringify({
     version: MINIMUM_COMPANY_INTELLIGENCE_VERSION, companyId: company.id, identitySafe,
     evidenceIds: evidence.map(({ id }) => id).sort(), description: profile.primaryBusinessDescription,
@@ -95,19 +84,37 @@ export async function ensureMinimumCompanyIntelligence(input: {
     row.payload.version === MINIMUM_COMPANY_INTELLIGENCE_VERSION && row.payload.fingerprint === fingerprint);
   if (prior) return {
     stage: String(prior.payload.stage) as MinimumCompanyIntelligence["stage"], cacheHit: true, identitySafe,
+    attributionSafe: identityPermissions.canAttachCanonicalFacts, identityPermissions,
+    reasonCode: typeof prior.payload.reasonCode === "string" ? prior.payload.reasonCode : null,
+    missingRequirements: Array.isArray(prior.payload.missingRequirements) ? prior.payload.missingRequirements.map(String) : [],
+    nextRecommendedCapability: typeof prior.payload.nextRecommendedCapability === "string" ? prior.payload.nextRecommendedCapability : null,
     evidenceIds: evidence.map(({ id }) => id), attempts: (prior.payload.attempts as MinimumCompanyIntelligence["attempts"]) ?? { profileResolution: 0, firmographics: 0 },
   };
   let attempts = { profileResolution: 0, firmographics: 0 };
   let stage: MinimumCompanyIntelligence["stage"] = identitySafe ? (sufficient(profile, rows) ? "SUFFICIENT" : "INSUFFICIENT") : "UNSAFE_IDENTITY";
-  // A resolver has its own project-scoped cache and its bounded primary/fallback
-  // search implementation. It is only reached when identity has a domain but
-  // lacks trusted provenance; unsafe identities never trigger provider work.
+  // Research-safe identities may gather project-scoped provisional evidence.
+  // Only a verified resolution may update canonical identifiers or unlock
+  // attribution-sensitive downstream actions.
   if (stage === "INSUFFICIENT") {
+    const discovery = rows.find((row) => row.sourceType === "JYRA_DISCOVERY");
     const resolution = await resolveAndPersistCompanyProfile({
       organizationId: input.organizationId, projectId: input.projectId, companyId: company.id, router: input.router,
       request: { companyId: company.id, companyName: company.canonicalName, canonicalDomain: company.domain,
         websiteUrl: company.website, country: company.country, industry: company.industry, existingProfileUrls: company.profileUrls ?? {},
-        existingProfileVerified: false, requestId: `minimum-intelligence:${company.id}:${now.toISOString()}` },
+        existingProfileVerified: false,
+        discoveryEvidence: discovery ? {
+          sourceType: "JYRA_DISCOVERY",
+          sourceUrl: discovery.sourceUrl,
+          observedAt: (discovery.observedAt ?? discovery.createdAt).toISOString(),
+          providerOrganizationResult: discovery.payload.providerOrganizationAssertion === true,
+          providerResultId: typeof discovery.payload.providerRequestId === "string" ? discovery.payload.providerRequestId : null,
+          suppliedName: String(discovery.payload.name ?? company.canonicalName),
+          canonicalDomain: typeof discovery.payload.domain === "string" ? discovery.payload.domain : company.domain,
+          websiteUrl: typeof discovery.payload.website === "string" ? discovery.payload.website : company.website,
+          profileUrls: discovery.payload.profileUrls && typeof discovery.payload.profileUrls === "object"
+            ? discovery.payload.profileUrls as Record<string, string> : {},
+        } : undefined,
+        requestId: `minimum-intelligence:${company.id}:${now.toISOString()}` },
       now,
     });
     attempts.profileResolution = resolution.searchCalls;
@@ -123,13 +130,26 @@ export async function ensureMinimumCompanyIntelligence(input: {
     }
     const refreshed = await db.select().from(companyProvenanceTable).where(and(
       eq(companyProvenanceTable.projectId, input.projectId), eq(companyProvenanceTable.companyId, company.id),
-    ));
+    )).orderBy(desc(companyProvenanceTable.createdAt));
+    identityPermissions = deriveIdentityPermissions({ domain: company.domain, provenance: refreshed });
+    identitySafe = identityPermissions.canRunCompanyUnderstanding;
     const refreshedProfile = await getCanonicalCompanyProfile(input.projectId, company);
     stage = sufficient(refreshedProfile, refreshed) ? "SUFFICIENT" : "INSUFFICIENT";
   }
-  const finalRows = await db.select().from(companyProvenanceTable).where(and(eq(companyProvenanceTable.projectId, input.projectId), eq(companyProvenanceTable.companyId, company.id)));
+  const finalRows = await db.select().from(companyProvenanceTable)
+    .where(and(eq(companyProvenanceTable.projectId, input.projectId), eq(companyProvenanceTable.companyId, company.id)))
+    .orderBy(desc(companyProvenanceTable.createdAt));
   const finalProfile = await getCanonicalCompanyProfile(input.projectId, company);
   const finalEvidence = buildCandidateEvidence(finalProfile, finalRows);
+  identityPermissions = deriveIdentityPermissions({ domain: company.domain, provenance: finalRows });
+  identitySafe = identityPermissions.canRunCompanyUnderstanding;
+  const reasonCode = stage === "SUFFICIENT" ? null
+    : stage === "UNSAFE_IDENTITY" ? identityPermissions.reasonCode
+    : "COMPANY_PROFILE_MISSING";
+  const missingRequirements = stage === "SUFFICIENT" ? [] : [stage === "UNSAFE_IDENTITY" ? "safe company identity" : "primary business evidence"];
+  const nextRecommendedCapability = stage === "UNSAFE_IDENTITY"
+    ? (identityPermissions.reasonCode === "DOMAIN_MISSING" ? "DOMAIN_RESOLUTION" : null)
+    : stage === "INSUFFICIENT" ? "COMPANY_PROFILE_RESOLUTION" : null;
   const finalFingerprint = createHash("sha256").update(JSON.stringify({
     version: MINIMUM_COMPANY_INTELLIGENCE_VERSION, companyId: company.id, identitySafe,
     evidenceIds: finalEvidence.map(({ id }) => id).sort(), description: finalProfile.primaryBusinessDescription,
@@ -139,7 +159,11 @@ export async function ensureMinimumCompanyIntelligence(input: {
     organizationId: input.organizationId, projectId: input.projectId, companyId: company.id,
     sourceType: SOURCE_TYPE, sourceLabel: MINIMUM_COMPANY_INTELLIGENCE_VERSION, observedAt: now,
     payload: { version: MINIMUM_COMPANY_INTELLIGENCE_VERSION, fingerprint: finalFingerprint, stage, identitySafe,
+      attributionSafe: identityPermissions.canAttachCanonicalFacts, identityPermissions, reasonCode,
+      missingRequirements, nextRecommendedCapability,
       attempts, evidenceIds: finalEvidence.map(({ id }) => id), claims: claimsFor(finalProfile, finalEvidence) },
   });
-  return { stage, cacheHit: false, identitySafe, evidenceIds: finalEvidence.map(({ id }) => id), attempts };
+  return { stage, cacheHit: false, identitySafe, attributionSafe: identityPermissions.canAttachCanonicalFacts,
+    identityPermissions, reasonCode, missingRequirements, nextRecommendedCapability,
+    evidenceIds: finalEvidence.map(({ id }) => id), attempts };
 }

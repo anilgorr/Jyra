@@ -70,7 +70,7 @@ const trim = (value: unknown, max = 900) => typeof value === "string" ? value.re
 export function buildCandidateEvidence(_profile: CanonicalCompanyProfile, provenance: Array<{ id: string; sourceType: string; sourceUrl: string | null; payload: Record<string, unknown> }>): CandidateEvidence[] {
   const seed: CandidateEvidence[] = [];
   for (const item of provenance) {
-    if (prohibitedSource.test(item.sourceType) || !["COMPANY_FIRMOGRAPHICS", "JYRA_DISCOVERY", "COMPANY_PROFILE_RESOLUTION"].includes(item.sourceType)) continue;
+    if (prohibitedSource.test(item.sourceType) || !["COMPANY_FIRMOGRAPHICS", "JYRA_DISCOVERY", "COMPANY_PROFILE_RESOLUTION", "COMPANY_PROFILE_RESOLUTION_REVIEW"].includes(item.sourceType)) continue;
     const result = item.payload.result as Record<string, unknown> | undefined;
     const attrs = result?.attributes as Record<string, unknown> | undefined;
     const p = { ...item.payload, ...(attrs ?? {}) };

@@ -15,4 +15,25 @@ assert.equal(lib.researchStopCode("UNKNOWN"), "STILL_UNKNOWN");
 assert.equal(lib.researchStopCode("POTENTIAL_BUYER"), null);
 assert.equal(lib.researchStopCode("SELLER_COMPETITOR"), "NON_BUYER");
 assert.equal(lib.researchStopCode("UNKNOWN", false), "UNSAFE_IDENTITY");
+const probable = lib.deriveIdentityPermissions({ domain: "buyer.example", provenance: [{
+  sourceType: "JYRA_DISCOVERY",
+  payload: {
+    domain: "buyer.example",
+    identityAssessment: { identityState: "PROBABLE", conflicts: [] },
+    canonicalization: { researchCanonical: true },
+  },
+}] });
+assert.equal(probable.trustLevel, "RESEARCH_SAFE");
+assert.equal(probable.canPublicProfileResearch, true);
+assert.equal(probable.canAttachCanonicalFacts, false);
+const conflicting = lib.deriveIdentityPermissions({ domain: "buyer.example", provenance: [{
+  sourceType: "JYRA_DISCOVERY",
+  payload: {
+    domain: "buyer.example",
+    identityAssessment: { identityState: "AMBIGUOUS", conflicts: ["domain conflict"] },
+    canonicalization: { researchCanonical: false },
+  },
+}] });
+assert.equal(conflicting.trustLevel, "UNSAFE");
+assert.equal(conflicting.canPublicProfileResearch, false);
 console.log("PASS minimum-company-intelligence policy, no-call, bounds, and role-stop coverage");

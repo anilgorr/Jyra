@@ -37,3 +37,4 @@
 - [Buyer-market discovery intent](buyer-market-discovery-intent.md) — positive discovery starts from buyer ICP constraints; seller offering/category is negative relationship context.
 - [Semantic company-role boundary](semantic-company-role-boundary.md) — LLM company-role inference requires authoritative seller context and scoped provenance UUID citations.
 - [Semantic decision concurrency](semantic-decision-concurrency.md) — serialize exact fingerprints in PostgreSQL and canonicalize legacy decisions append-only to prevent duplicate spend.
+- [Progressive identity permissions](progressive-identity-permissions.md) — coherent probable identities may gather provisional evidence, but only attribution-safe identities unlock permanent/high-impact actions.
