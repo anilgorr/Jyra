@@ -1,0 +1,18 @@
+{
+  "test": "JYRA_50_COMPANY_MVP_REALITY_TEST_02",
+  "runId": "60d963eb-eec3-4aec-a51f-a9398f5e1555",
+  "startedAt": "2026-09-01T11:10:00.329Z",
+  "completedAt": "2026-09-01T11:11:16.505Z",
+  "runtimeMs": 76176,
+  "processExit": 0,
+  "discoveryRuntimeMs": 76176,
+  "whoRuntimeMs": 0,
+  "researchRuntimeMs": 0,
+  "opportunityRuntimeMs": 0,
+  "discoveryRounds": 40,
+  "companiesEvaluated": 0,
+  "researchQuestions": 0,
+  "providerCalls": 40,
+  "providerTimeouts": 0,
+  "providerFailures": 0
+}

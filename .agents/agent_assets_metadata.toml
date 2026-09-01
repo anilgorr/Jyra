@@ -752,3 +752,45 @@ mtime_ms = 1788260711283
 storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/79c34fbf-a3e2-40bf-961c-ecea1b35d48c/4ed4acf5-34d7-40bd-bced-68e8114d3184"
 storage_version_token = "1788260786946089"
 content_type = "text/markdown"
+
+[[outputs]]
+id = "rD9zAPDFdi1u18bqqb3T1"
+uri = "file://artifacts/api-server/JYRA_50_COMPANY_MVP_REALITY_TEST_02.md"
+type = "text"
+title = "50-Company Reality Test 02 Report"
+description = "Authoritative execution report with final verdict, discovery funnel, provider cost, safety proof, and defect summary."
+logical_id = "ca36e8d7-a329-4b09-a047-7b6f4d3e5718"
+content_hash = "sha256:92924a47999e3f39da055535bae51c26334ab3202378baac61178403ea591453"
+size = 2254
+mtime_ms = 1788261201519
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/ca36e8d7-a329-4b09-a047-7b6f4d3e5718/269f243c-0a22-4719-9c58-8260443eb680"
+storage_version_token = "1788261225130349"
+content_type = "text/markdown"
+
+[[outputs]]
+id = "i18uhQLxUsgO7Sjvrr5Hh"
+uri = "file://artifacts/api-server/JYRA_50_COMPANY_MVP_REALITY_TEST_02.json"
+type = "unspecified"
+title = "Reality Test 02 Structured Results"
+description = "Complete fresh run data and authoritative structured summary for run 60d963eb-eec3-4aec-a51f-a9398f5e1555."
+logical_id = "e1184653-9fc2-4662-b594-5b1eb8dcdaa0"
+content_hash = "sha256:97f8f378654804f1dd7af3762518afae0549ed8ad0950d6ce919b76ab1221dc0"
+size = 321018
+mtime_ms = 1788261201519
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/e1184653-9fc2-4662-b594-5b1eb8dcdaa0/a3cecafa-dafb-4936-8788-1da8d187d327"
+storage_version_token = "1788261226564011"
+content_type = "application/octet-stream"
+
+[[outputs]]
+id = "m9Ha86zryGdsh804tPvlF"
+uri = "file://artifacts/api-server/JYRA_50_COMPANY_MVP_REALITY_TEST_02_DEFECTS.csv"
+type = "table"
+title = "Reality Test 02 Defect Ledger"
+description = "Prioritized discovery and identity defects observed during the frozen authoritative execution."
+logical_id = "0c6a71c5-26db-4283-be92-ebafbd34588a"
+content_hash = "sha256:849a774c1009c33b54e6a900e91872f432b217221a395c367a64539d29fd1f95"
+size = 419
+mtime_ms = 1788261201519
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/0c6a71c5-26db-4283-be92-ebafbd34588a/4aff42be-2e84-4c55-a768-c6fcd554a559"
+storage_version_token = "1788261227866317"
+content_type = "text/csv"

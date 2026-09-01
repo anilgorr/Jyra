@@ -1,0 +1,3 @@
+id,category,severity,company,summary,status
+"DISCOVERY-001","DISCOVERY","P1","","Normal discovery returned 400 raw candidates but produced 0 canonical evaluable companies after 40 rounds; final cohort target was 50.","OPEN"
+"IDENTITY-001","IDENTITY","P1","","236 probable and 37 ambiguous candidates had no canonical company link in the customer flow; downstream WHO and intelligence stages received no cohort.","OPEN"

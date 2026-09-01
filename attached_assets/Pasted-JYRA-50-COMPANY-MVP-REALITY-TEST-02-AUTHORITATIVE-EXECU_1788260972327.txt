@@ -1,0 +1,793 @@
+JYRA — 50-COMPANY MVP REALITY TEST 02
+AUTHORITATIVE EXECUTION
+
+The Reality Test 02 harness has passed preparation:
+
+- Harness verdict: A — READY
+- 15/15 harness regression tests PASS
+- Five-signal Managed SOC pack recognized
+- No hardcoded signal cardinality
+- No hardcoded research-question cardinality
+- Contact enrichment disabled for this benchmark
+- Fresh namespace:
+  JYRA_50_COMPANY_MVP_REALITY_TEST_02
+- Reality Test 01 history preserved
+- 50-company runner support PASS
+- Product intelligence changes = 0
+- Production operations = 0
+
+START THE AUTHORITATIVE 50-COMPANY REALITY TEST 02 NOW.
+
+Do not perform another harness review.
+Do not perform another planning phase.
+Do not modify product code.
+Do not tune intelligence during execution.
+
+==================================================
+1. EXECUTE REAL CUSTOMER FLOW
+==================================================
+
+Use the existing Aadit Technologies Business Twin.
+
+Offering:
+Managed SOC
+
+Execute the normal product path:
+
+Business Twin
+→ Offering
+→ Approved ICP
+→ Find My Market
+→ Candidate Discovery
+→ Canonical Identity
+→ WHO Qualification
+→ Research Eligibility
+→ Research Planner
+→ Research Questions
+→ Tavily Primary
+→ Exa Fallback When Required
+→ Evidence
+→ Facts
+→ Temporal Validation
+→ Signals
+→ WHEN
+→ WHY
+→ Opportunity Priority
+→ Ranking
+→ Next Best Action.
+
+==================================================
+2. DISCOVER THE MARKET BLIND
+==================================================
+
+Generate the cohort through normal Find My Market.
+
+Do NOT:
+
+seed benchmark companies
+reuse the 10-control cohort
+inject known events
+manually select companies
+manually search for promising companies
+use benchmark labels.
+
+Target:
+
+50 UNIQUE evaluable companies.
+
+Preserve the complete discovery funnel.
+
+==================================================
+3. USE FROZEN PRODUCT LOGIC
+==================================================
+
+Use the current product exactly as implemented.
+
+NO CHANGES to:
+
+Business Twin
+ICP
+Opportunity Intelligence Pack
+discovery
+identity
+firmographics
+Research Planner
+question generation
+query generation
+Tavily
+Exa
+fallback
+evidence processing
+fact extraction
+fact validation
+temporal logic
+signal definitions
+signal mapping
+opportunity scoring
+WHEN
+WHY
+NBA
+cost logic.
+
+Known weaknesses from the previous 10-control benchmark are technical debt.
+
+DO NOT repair them during this execution.
+
+==================================================
+4. SIGNAL PACK
+==================================================
+
+Use the current approved five-signal Managed SOC pack:
+
+MSOC_SECURITY_LEADER
+MSOC_SECURITY_HIRING
+MSOC_FUNDED_RISK_PROGRAM
+MSOC_SECURITY_STACK_CHANGE
+MSOC_SECURITY_COMPLIANCE_ACTIVITY.
+
+Do not add, remove or broaden signals.
+
+==================================================
+5. PROVIDER BEHAVIOR
+==================================================
+
+Use normal adaptive retrieval.
+
+Tavily = primary WEB_SEARCH.
+
+Exa = fallback according to existing frozen sufficiency/failure rules.
+
+Do not force providers.
+
+Provider failure/timeouts must NOT be interpreted as negative company
+evidence.
+
+Record:
+
+provider
+question
+query
+success
+timeout
+failure
+fallback
+result count
+cost
+duration.
+
+==================================================
+6. DO NOT STOP FOR INDIVIDUAL FAILURES
+==================================================
+
+Continue the benchmark when individual:
+
+companies
+queries
+providers
+facts
+signals
+
+fail.
+
+Record defects and continue.
+
+Abort only for:
+
+production/database safety risk
+data corruption risk
+catastrophic runner failure.
+
+The purpose is to discover multiple real-world defects in one execution.
+
+==================================================
+7. NO CONTACT / OUTREACH
+==================================================
+
+Contact enrichment must remain DISABLED.
+
+Calls must remain zero for:
+
+Explee
+person search
+email lookup
+phone lookup
+contact enrichment
+campaign creation
+outreach.
+
+Do not test outreach.
+
+==================================================
+8. WHO
+==================================================
+
+For each company classify using normal product semantics:
+
+LIKELY_FIT
+LIKELY_NOT_FIT
+INSUFFICIENT_DATA.
+
+Missing information = UNKNOWN.
+
+UNKNOWN must not automatically become negative fit.
+
+Record identity and firmographic quality.
+
+==================================================
+9. RESEARCH
+==================================================
+
+Research only companies the normal system considers research eligible.
+
+Do not force deep research across all 50.
+
+Record:
+
+research eligible
+researched
+not researched
+reason not researched
+questions generated
+questions completed
+timeouts
+failures.
+
+==================================================
+10. SIGNAL SAFETY
+==================================================
+
+Every signal must trace:
+
+SIGNAL
+→ FACT
+→ EVIDENCE
+→ SOURCE.
+
+Track false signals caused by:
+
+SELLER_AS_BUYER
+WRONG_ENTITY
+TEMPORALLY_INVALID
+GENERIC_FUNDING_INFERENCE
+UNSUPPORTED_FACT
+UNSUPPORTED_INFERENCE.
+
+Safety takes priority over coverage.
+
+==================================================
+11. WHEN / WHY
+==================================================
+
+WHEN must explain why timing may matter NOW.
+
+WHY must explain why this company deserves attention for this seller.
+
+Do not manufacture:
+
+buying intent
+budget
+vendor evaluation
+purchase readiness
+urgency.
+
+If evidence is insufficient, say so.
+
+WHY provenance must remain traceable.
+
+==================================================
+12. RANKING
+==================================================
+
+Rank companies using normal Opportunity Priority.
+
+Do not manually reorder results.
+
+Select the TOP 10 exactly from JYRA's ranking.
+
+These become the primary product-quality review set.
+
+==================================================
+13. TOP-10 ADJUDICATION
+==================================================
+
+For each JYRA-selected top-10 company evaluate:
+
+ICP FIT
+YES / NO / UNCERTAIN
+
+SIGNAL VALIDITY
+SUPPORTED / PARTIAL / UNSUPPORTED
+
+TIMING QUALITY
+STRONG / MODERATE / WEAK / NONE
+
+WHY QUALITY
+YES / PARTIAL / NO
+
+SALES USEFULNESS
+HIGH / MEDIUM / LOW
+
+CLEAR FALSE POSITIVE
+YES / NO.
+
+Do not alter product results based on adjudication.
+
+==================================================
+14. SIGNAL ADJUDICATION
+==================================================
+
+Review every material signal produced.
+
+Classify:
+
+SUPPORTED
+PARTIALLY_SUPPORTED
+UNSUPPORTED_FACT
+UNSUPPORTED_INFERENCE
+SELLER_AS_BUYER
+WRONG_ENTITY
+TEMPORALLY_INVALID
+GENERIC_FUNDING_INFERENCE
+OTHER_INVALID.
+
+Calculate strict signal precision.
+
+==================================================
+15. DEFECT LEDGER
+==================================================
+
+Capture every observed product defect.
+
+Categories:
+
+DISCOVERY
+IDENTITY
+FIRMOGRAPHICS
+ICP_CLASSIFICATION
+RESEARCH_PLANNER
+QUERY_GENERATION
+PROVIDER_TIMEOUT
+PROVIDER_COVERAGE
+FALLBACK_ORCHESTRATION
+EVIDENCE_ACCEPTANCE
+ENTITY_VALIDATION
+FACT_EXTRACTION
+FACT_VALIDATION
+TEMPORAL
+SIGNAL_MAPPING
+SIGNAL_PRECISION
+WHEN
+WHY
+OPPORTUNITY_RANKING
+NBA
+COST
+PERFORMANCE
+UI
+OTHER.
+
+Severity:
+
+P0 = unsafe/core unusable
+P1 = materially reduces usefulness/coverage
+P2 = meaningful but usable
+P3 = minor/cosmetic.
+
+DO NOT FIX THEM.
+
+==================================================
+16. COST
+==================================================
+
+Record actual provider usage.
+
+Calculate where data permits:
+
+total known cost
+unknown cost
+cost/company discovered
+cost/company researched
+cost/signal
+cost/useful top-10 opportunity.
+
+Do not fabricate unavailable provider costs.
+
+==================================================
+17. PERFORMANCE
+==================================================
+
+Record:
+
+Run ID
+Start
+End
+Total runtime
+
+Discovery runtime
+WHO runtime
+Research runtime
+Opportunity-processing runtime
+
+Provider timeouts
+Provider failures.
+
+==================================================
+18. REQUIRED FUNNEL
+==================================================
+
+Produce:
+
+Raw Discovered Candidates
+
+→ Unique Canonical Companies
+
+→ WHO Likely Fit
+
+→ Research Eligible
+
+→ Researched
+
+→ Companies With Approved Facts
+
+→ Companies With Signals
+
+→ Companies With Supported Opportunity Evidence
+
+→ Top 10 Opportunities
+
+→ Useful Top-10 Opportunities.
+
+Do not hide weak conversion between stages.
+
+==================================================
+19. PRIMARY REALITY METRICS
+==================================================
+
+Calculate:
+
+Identity precision
+
+Discovery usable-company rate
+
+Discovery likely-fit rate
+
+Research question success rate
+
+Researchable-company completion rate
+
+Strict signal precision
+
+WHY provenance
+
+Top-10 useful opportunity rate
+
+Top-10 false-positive rate
+
+Coverage classification.
+
+Coverage classification:
+
+STRONG
+ADEQUATE
+WEAK
+UNUSABLE.
+
+==================================================
+20. PASS GATES
+==================================================
+
+Reality Test 02 PASS requires:
+
+Identity precision >= 95%
+
+Strict signal precision >= 85%
+
+WHY provenance = 100%
+
+Seller-as-buyer false signals = 0
+
+Wrong-entity false signals = 0
+
+Temporally invalid signals = 0
+
+Top-10 useful opportunity rate >= 70%
+
+Top-10 false-positive rate <= 10%
+
+Coverage >= ADEQUATE
+
+No unresolved P0 defect
+
+Production operations = 0.
+
+The old 70% known-event recall requirement DOES NOT apply to this test.
+
+==================================================
+21. IMPORTANT COVERAGE PRINCIPLE
+==================================================
+
+Do not allow perfect precision through zero output to count as success.
+
+If JYRA produces too few:
+
+facts
+signals
+supported opportunities
+useful ranked accounts
+
+then classify coverage as WEAK or UNUSABLE.
+
+The product needs BOTH:
+
+trustworthy intelligence
+and
+enough intelligence to help sales.
+
+==================================================
+22. REQUIRED ARTIFACTS
+==================================================
+
+Generate fresh artifacts under the Test 02 namespace:
+
+JYRA_50_COMPANY_MVP_REALITY_TEST_02.md
+
+JYRA_50_COMPANY_MVP_REALITY_TEST_02.json
+
+JYRA_50_COMPANY_MVP_REALITY_TEST_02_COMPANIES.csv
+
+JYRA_50_COMPANY_MVP_REALITY_TEST_02_TOP10.csv
+
+JYRA_50_COMPANY_MVP_REALITY_TEST_02_SIGNALS.csv
+
+JYRA_50_COMPANY_MVP_REALITY_TEST_02_DEFECTS.csv
+
+JYRA_50_COMPANY_MVP_REALITY_TEST_02_COSTS.json
+
+JYRA_50_COMPANY_MVP_REALITY_TEST_02_PERFORMANCE.json.
+
+Do not reuse stale Reality Test 01 artifact content.
+
+==================================================
+23. REQUIRED FINAL REPORT
+==================================================
+
+Return:
+
+EXECUTION
+
+Run ID =
+Start =
+End =
+Runtime =
+Process exit =
+
+DISCOVERY
+
+Raw candidates =
+Duplicates =
+Non-companies =
+Unique canonical companies =
+Final cohort =
+
+WHO
+
+Confirmed =
+Probable =
+Ambiguous =
+Wrong entity =
+Unresolved =
+
+Likely fit =
+Likely not fit =
+Insufficient =
+
+Identity precision =
+Discovery usable-company rate =
+Discovery likely-fit rate =
+
+RESEARCH
+
+Research eligible =
+Companies researched =
+
+Questions generated =
+Succeeded =
+Timed out =
+Failed =
+
+Question success rate =
+Research completion rate =
+
+Tavily calls =
+Exa fallback calls =
+Other provider calls =
+
+EVIDENCE
+
+Evidence retrieved =
+Evidence accepted =
+
+FACTS
+
+Facts extracted =
+Facts approved =
+Facts rejected =
+Companies with approved facts =
+
+SIGNALS
+
+Signals generated =
+Supported =
+Partially supported =
+Unsupported =
+
+Seller-as-buyer =
+Wrong entity =
+Temporally invalid =
+Generic funding inference =
+
+Strict signal precision =
+Companies with signals =
+
+OPPORTUNITIES
+
+Companies with supported opportunity evidence =
+
+CONTACT =
+MONITOR =
+RESEARCH_MORE =
+INSUFFICIENT_EVIDENCE =
+
+TOP 10
+
+High usefulness =
+Medium usefulness =
+Low usefulness =
+
+Useful top-10 =
+Top-10 useful opportunity rate =
+
+False positives =
+Top-10 false-positive rate =
+
+WHY
+
+Material WHY claims =
+Complete provenance =
+WHY provenance =
+
+COVERAGE
+
+Coverage =
+STRONG / ADEQUATE / WEAK / UNUSABLE
+
+COST
+
+Known total =
+Unknown total =
+
+Cost/discovered company =
+Cost/researched company =
+Cost/signal =
+Cost/useful top-10 opportunity =
+
+PERFORMANCE
+
+Total runtime =
+Timeouts =
+Provider failures =
+
+DEFECTS
+
+P0 =
+P1 =
+P2 =
+P3 =
+
+Top five defects =
+[include stage + business impact]
+
+Production operations =
+
+==================================================
+24. EXECUTION PROOF
+==================================================
+
+This must be an ACTUAL execution.
+
+Do not return:
+
+ready
+prepared
+scheduled
+still running
+
+as the final answer.
+
+Start the benchmark and complete it.
+
+If execution genuinely cannot start, return:
+
+EXECUTION_NOT_STARTED
+
+with exact blocker.
+
+If catastrophic failure occurs after execution begins, return:
+
+EXECUTION_FAILED
+
+with:
+
+run ID
+last completed stage
+companies completed
+provider calls made
+exact failure.
+
+==================================================
+25. FINAL VERDICT
+==================================================
+
+Return EXACTLY ONE:
+
+A — MVP REALITY TEST PASSED
+
+B — USEFUL BUT COVERAGE NEEDS IMPROVEMENT
+
+C — OPPORTUNITY QUALITY / PRECISION NEEDS IMPROVEMENT
+
+D — MARKET DISCOVERY / WHO NEEDS IMPROVEMENT
+
+E — RESEARCH RELIABILITY NEEDS IMPROVEMENT
+
+F — PRODUCT OUTPUT NOT YET USEFUL
+
+G — MULTIPLE MATERIAL MVP DEFECTS
+
+H — INCONCLUSIVE SYSTEM / PROVIDER FAILURE
+
+==================================================
+26. AFTER VERDICT
+==================================================
+
+DO NOT implement fixes.
+
+If A:
+
+state:
+
+50-Company MVP Reality Test 02 passed.
+
+Next milestone:
+FINAL MVP ACCEPTANCE AND LAUNCH-READINESS VALIDATION.
+
+If B-G:
+
+identify ONLY the maximum 3 highest-impact repair areas.
+
+Prioritize:
+
+1. Safety
+2. Sales usefulness
+3. Coverage
+4. Reliability
+5. Cost/performance.
+
+Do not automatically fix them.
+
+We want to review the complete reality-test results first.
+
+==================================================
+27. START NOW
+==================================================
+
+Execute:
+
+JYRA_50_COMPANY_MVP_REALITY_TEST_02
+
+now.
+
+Do not perform another preparation cycle.
+
+Do not modify JYRA during execution.
+
+Complete the test and return the authoritative results.

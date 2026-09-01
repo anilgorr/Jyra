@@ -1,0 +1,24 @@
+{
+  "test": "JYRA_50_COMPANY_MVP_REALITY_TEST_02",
+  "runId": "60d963eb-eec3-4aec-a51f-a9398f5e1555",
+  "generatedAt": "2026-09-01T11:13:21.517Z",
+  "providers": [
+    {
+      "provider": "exa",
+      "capability": "COMPANY_DISCOVERY",
+      "requests": 40,
+      "succeeded": 40,
+      "timedOut": 0,
+      "failed": 0,
+      "estimatedCost": 0.2800000000000002,
+      "actualKnownCost": 0.2800000000000002,
+      "actualUnknown": 0
+    }
+  ],
+  "totals": {
+    "requests": 40,
+    "estimatedCost": 0.2800000000000002,
+    "actualKnownCost": 0.2800000000000002,
+    "actualUnknown": 0
+  }
+}
