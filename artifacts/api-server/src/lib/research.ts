@@ -1377,7 +1377,7 @@ export async function executeResearchNow(input: {
         candidates = await (input.extractFacts ?? extractFactCandidatesFromSource)(
           preserved.evidence.id,
           source.rawContent,
-          completedAt.toISOString().slice(0, 10),
+          preserved.evidence.observedAt.toISOString().slice(0, 10),
         );
       } catch (error) {
         // A source has already been preserved.  Keep the job successful, but
@@ -1390,9 +1390,11 @@ export async function executeResearchNow(input: {
         try {
           const validated = validateFactCandidate(candidate, {
             companyId: row.company.id,
+            companyName: row.company.canonicalName,
             evidenceId: preserved.evidence.id,
             rawContent: source.rawContent,
-            observationDate: completedAt.toISOString().slice(0, 10),
+            observationDate: preserved.evidence.observedAt.toISOString().slice(0, 10),
+            publisherName: preserved.evidence.publisher ?? undefined,
           });
           await db.transaction(async (tx) => {
             let [proposal] = await tx.insert(researchFactProposalsTable).values({

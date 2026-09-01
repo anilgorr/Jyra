@@ -1,0 +1,1022 @@
+JYRA — FACT & TEMPORAL SAFETY FIX 03
+EVIDENCE → FACT PRECISION + EVENT-TIME CORRECTNESS
+
+CURRENT STATE
+
+The frozen 10-Control Blind End-to-End Retest returned:
+
+G — SAFETY FAILURE
+
+Autopsy returned:
+
+D — MULTIPLE INDEPENDENT CORE DEFECTS
+
+Important findings:
+
+Retrieval succeeded for ALL 10 controls.
+
+Primary recall failures:
+- 6 FACT_EXTRACTION failures
+- 2 TEMPORAL/DATE failures
+
+Signals:
+- 6 generated
+- 2 supported
+- 1 unsupported fact
+- 1 unsupported inference
+- 1 seller-as-buyer
+- 1 temporally invalid
+
+Signal precision = 33.3%
+
+Signal-feeding fact precision = 45.5% (5/11)
+
+Known safety defects:
+
+1. Incorrect / overly broad fact extraction
+2. Observation dates being used as event dates
+3. Seller product/service content becoming buyer-intent evidence
+4. Generic funding becoming funded-security-program evidence
+
+Retrieval is NOT the current bottleneck.
+
+GOAL
+
+Repair the generic:
+
+EVIDENCE
+→ FACT EXTRACTION
+→ FACT VALIDATION
+→ TEMPORAL SEMANTICS
+
+boundary so that only defensible atomic facts reach the existing
+signal engine.
+
+Do NOT optimize for benchmark recall at the expense of precision.
+
+Precision and safety come first.
+
+==================================================
+1. DATABASE SAFETY
+==================================================
+
+DEVELOPMENT ONLY.
+
+Use ONLY development database.
+
+Production operations = 0.
+
+Do not:
+
+migrate production
+modify production
+reset production
+seed production
+truncate production.
+
+==================================================
+2. FREEZE WORKING SYSTEMS
+==================================================
+
+DO NOT CHANGE:
+
+MVP_RETRIEVAL_V1_FROZEN
+
+Tavily primary
+
+Exa adaptive fallback
+
+query generation
+
+COMPANY_DISCOVERY
+
+Find My Market
+
+identity resolution
+
+profile resolution
+
+company-likeness
+
+ICP qualification
+
+Managed SOC signal definitions
+
+signal thresholds
+
+opportunity scoring
+
+ranking
+
+WHY
+
+NBA
+
+contacts
+
+UI
+
+providers.
+
+Do NOT add providers.
+
+==================================================
+3. USE AUTOPSY AS FIX BASIS
+==================================================
+
+Use the persisted:
+
+CORE_INTELLIGENCE_SAFETY_AUTOPSY_01
+
+artifacts.
+
+Identify the exact:
+
+6 fact-extraction failures
+
+2 temporal failures
+
+1 seller-as-buyer case
+
+1 generic-funding → funded-security-program case
+
+and the other unsupported fact/inference paths.
+
+Do not introduce fixes until each observed defect is mapped to a
+generic failure class.
+
+==================================================
+4. FACT LAYER PRINCIPLE
+==================================================
+
+A FACT is an observed claim supported directly by evidence.
+
+A FACT is NOT:
+
+buyer intent
+
+opportunity interpretation
+
+sales hypothesis
+
+signal
+
+prediction.
+
+Example:
+
+VALID FACT:
+"Company appointed Jane Doe as CISO on May 3, 2026."
+
+INVALID FACT:
+"Company is strengthening cybersecurity."
+
+VALID FACT:
+"Company raised $50M Series C."
+
+INVALID FACT:
+"Company has funded a security program."
+
+The latter requires additional security-specific evidence.
+
+==================================================
+5. ATOMIC FACT EXTRACTION
+==================================================
+
+Extractor must return EVERY independent material atomic fact supported
+by the accepted evidence.
+
+Do not select only the most interesting fact.
+
+For each fact preserve:
+
+company
+
+fact type
+
+subject
+
+predicate/event
+
+object
+
+person if applicable
+
+role if applicable
+
+technology if applicable
+
+program if applicable
+
+event date
+
+observation date
+
+supporting excerpt
+
+evidence ID
+
+source URL
+
+publisher
+
+source classification
+
+extraction confidence.
+
+==================================================
+6. FACT ONTOLOGY
+==================================================
+
+Continue using generic fact types.
+
+Examples:
+
+PERSON_ROLE_CHANGE
+
+JOB_OPENING
+
+HIRING_EXPANSION
+
+TECHNOLOGY_IMPLEMENTATION
+
+TECHNOLOGY_MIGRATION
+
+TECHNOLOGY_REPLACEMENT
+
+COMPLIANCE_INITIATIVE
+
+SECURITY_INCIDENT
+
+PROGRAM_INVESTMENT
+
+MARKET_EXPANSION
+
+ACQUISITION
+
+FUNDING_EVENT.
+
+Do NOT add benchmark-company-specific fact types.
+
+Do NOT encode Managed SOC intent into the fact ontology.
+
+==================================================
+7. CLAIM BOUNDARY
+==================================================
+
+Every extracted fact must be directly supported by the evidence.
+
+The extractor may normalize wording.
+
+It may NOT strengthen meaning.
+
+Example:
+
+Evidence:
+"Company raised $100 million."
+
+Allowed:
+FUNDING_EVENT
+amount = $100M
+
+Not allowed:
+PROGRAM_INVESTMENT
+program = cybersecurity
+
+unless the source explicitly links the funding/investment to that
+program.
+
+==================================================
+8. GENERIC FUNDING SAFETY
+==================================================
+
+This is a mandatory regression.
+
+Generic:
+
+funding
+capital raise
+investment round
+revenue growth
+company expansion
+
+must NOT become:
+
+FUNDED_SECURITY_PROGRAM
+
+SECURITY_PROGRAM_INVESTMENT
+
+or equivalent security-buying evidence
+
+without explicit evidence connecting the funding/investment to:
+
+security
+cybersecurity
+SOC
+SIEM
+security operations
+compliance/risk program
+or another relevant security initiative.
+
+Do NOT solve this by hardcoding benchmark companies.
+
+==================================================
+9. SELLER-AS-BUYER SAFETY
+==================================================
+
+Evidence describing what a company SELLS must not become evidence that
+the company is BUYING the same thing.
+
+Examples:
+
+"We provide Managed SOC services"
+
+must NOT become:
+
+"Company is investing in Managed SOC."
+
+"We offer cybersecurity consulting"
+
+must NOT become:
+
+"Company has a cybersecurity buying initiative."
+
+"We help customers migrate to Azure"
+
+must NOT become:
+
+"Company is migrating its own infrastructure to Azure."
+
+Preserve source/entity role semantics.
+
+==================================================
+10. SOURCE SUBJECT / OBJECT SEMANTICS
+==================================================
+
+For each evidence claim identify when possible:
+
+CLAIMING_ENTITY
+
+SUBJECT_ENTITY
+
+OBJECT_ENTITY
+
+CUSTOMER_ENTITY
+
+SELLER_ENTITY
+
+PARTNER_ENTITY.
+
+Do not assume publisher == subject.
+
+Do not assume subject == buyer.
+
+If role cannot be determined safely:
+
+do not infer buyer behavior.
+
+==================================================
+11. SELLER CONTENT MAY STILL CONTAIN FACTS
+==================================================
+
+Do NOT globally reject first-party seller content.
+
+A company website may validly state:
+
+new CISO appointed
+
+new office opened
+
+new product launched
+
+technology partnership announced
+
+acquisition completed.
+
+The rule is:
+
+extract what the content explicitly establishes.
+
+Do not transform seller capability into buyer intent.
+
+==================================================
+12. EVENT DATE MODEL
+==================================================
+
+Separate:
+
+PUBLISHED_AT
+
+RETRIEVED_AT
+
+OBSERVED_AT
+
+EVENT_AT.
+
+These are different concepts.
+
+EVENT_AT must represent when the event actually happened.
+
+PUBLISHED_AT = source publication timestamp.
+
+RETRIEVED_AT = when JYRA fetched it.
+
+OBSERVED_AT = when JYRA observed a timeless/current-state fact.
+
+Never silently substitute one for another.
+
+==================================================
+13. EVENT FACT DATE REQUIREMENT
+==================================================
+
+Event-style facts require a defensible event date or explicit temporal
+relationship.
+
+Examples:
+
+PERSON_ROLE_CHANGE
+FUNDING_EVENT
+ACQUISITION
+SECURITY_INCIDENT
+TECHNOLOGY_MIGRATION
+PROGRAM_INVESTMENT
+
+should NOT become current event signals merely because JYRA observed
+the page today.
+
+If event date cannot be established:
+
+eventDate = UNKNOWN
+
+and temporal signal activation must follow existing safe behavior.
+
+==================================================
+14. OBSERVATION DATE
+==================================================
+
+Observation date is appropriate for timeless/current-state facts such
+as:
+
+company currently lists a technology
+
+current website technology
+
+current employee range
+
+current service description
+
+current leadership roster
+
+when no change event is claimed.
+
+Observation date must NOT convert a state observation into a recent
+change event.
+
+==================================================
+15. DATE EXTRACTION
+==================================================
+
+Extract event date from:
+
+explicit date in claim
+
+explicit relative date with defensible source date
+
+structured metadata tied to the event
+
+clearly stated announcement timing.
+
+Do NOT infer event date from:
+
+retrieval timestamp
+
+page crawl timestamp
+
+database insertion timestamp.
+
+==================================================
+16. RELATIVE DATE SAFETY
+==================================================
+
+Example:
+
+"appointed last month"
+
+may be resolved only if the source has a defensible publication date.
+
+Store:
+
+original temporal phrase
+
+derived event date/range
+
+derivation basis
+
+confidence.
+
+If derivation is uncertain:
+
+UNKNOWN.
+
+==================================================
+17. TEMPORAL VALIDATION
+==================================================
+
+Before approving event facts verify:
+
+event date source exists
+
+event date is plausible
+
+event date is not accidentally retrieval date
+
+event date is not accidentally observation date
+
+event date is consistent with source chronology.
+
+Reject or downgrade unsafe temporal facts.
+
+==================================================
+18. CURRENT VS HISTORICAL
+==================================================
+
+Historical leadership biographies must not create new leadership-change
+events.
+
+Example:
+
+"Jane joined the company as CISO in 2019."
+
+Retrieved in 2026.
+
+Must NOT create:
+
+2026 PERSON_ROLE_CHANGE.
+
+Likewise:
+
+old funding
+old acquisition
+old incident
+old migration
+
+must retain historical timing.
+
+==================================================
+19. MULTI-FACT EXTRACTION
+==================================================
+
+Preserve the Black Duck fix.
+
+If evidence contains multiple independent facts:
+
+extract each independently.
+
+Do not prioritize one and discard the others.
+
+Example:
+
+"Company appointed a new CISO and announced three new security
+engineering positions."
+
+should potentially yield:
+
+PERSON_ROLE_CHANGE
+
+and
+
+HIRING_EXPANSION / JOB_OPENING
+
+if independently supported.
+
+==================================================
+20. EXTRACTION COMPLETENESS
+==================================================
+
+For the six known extraction misses, determine whether the existing
+accepted evidence contains enough information to produce the reference
+fact.
+
+If YES:
+
+the corrected extractor should recover it.
+
+If NO:
+
+do not manufacture it.
+
+Report this distinction.
+
+==================================================
+21. FACT VALIDATION
+==================================================
+
+Validation must separately evaluate:
+
+ENTITY SUPPORT
+
+CLAIM SUPPORT
+
+TEMPORAL SUPPORT
+
+ROLE/RELATIONSHIP SUPPORT
+
+FACT-TYPE SUPPORT.
+
+Do not collapse these into one opaque confidence number.
+
+Record rejection reasons.
+
+==================================================
+22. FACT APPROVAL
+==================================================
+
+A fact may become APPROVED only when:
+
+entity is sufficiently supported
+
+claim is directly supported
+
+fact type matches the claim
+
+required temporal semantics are valid
+
+buyer/seller roles are not incorrectly inferred.
+
+Otherwise:
+
+REJECTED
+
+or equivalent safe non-approved state.
+
+==================================================
+23. SIGNAL ENGINE REMAINS FROZEN
+==================================================
+
+Do NOT change signal definitions in this task.
+
+The objective is to determine whether correct facts flowing into the
+existing signal engine restore precision and recall.
+
+If a correct approved fact still produces an invalid signal:
+
+record SIGNAL_MAPPING_DEFECT.
+
+Do not fix it here.
+
+==================================================
+24. PRESERVED-EVIDENCE RETEST
+==================================================
+
+After implementing the generic fixes:
+
+reprocess the EXACT persisted evidence from the frozen 10-control run.
+
+NO Tavily calls.
+
+NO Exa calls.
+
+NO new retrieval.
+
+NO new market discovery.
+
+NO profile-resolution provider calls unless technically unavoidable;
+expected = 0.
+
+Run:
+
+accepted evidence
+→ extraction
+→ validation
+→ existing signals.
+
+==================================================
+25. RETEST ALL TEN CONTROLS
+==================================================
+
+Do not test only the six failures.
+
+Reprocess all 10 so we detect regressions in the two existing successes
+and two partials.
+
+==================================================
+26. FACT-LEVEL REPORT
+==================================================
+
+For each control report:
+
+accepted evidence count
+
+expected reference fact type
+
+fact proposals
+
+approved facts
+
+rejected facts
+
+rejection reasons
+
+event date
+
+date provenance
+
+seller/buyer role
+
+whether reference fact recovered.
+
+==================================================
+27. SIGNAL-LEVEL REPORT
+==================================================
+
+Using existing frozen signal definitions report:
+
+signals generated
+
+supported
+
+unsupported
+
+seller-as-buyer
+
+temporally invalid
+
+wrong entity
+
+duplicate event
+
+generic funding misinterpretation.
+
+==================================================
+28. STRICT EVENT DETECTION
+==================================================
+
+Re-adjudicate the exact frozen 10 controls.
+
+Report:
+
+STRICT DETECTED
+
+PARTIAL
+
+MISSED.
+
+Ground-truth labels remain evaluation-only.
+
+Do not expose them to extraction logic.
+
+==================================================
+29. PASS TARGETS
+==================================================
+
+For this fix cycle:
+
+FACT PRECISION among signal-feeding facts >= 90%
+
+SELLER-AS-BUYER FACT/SIGNAL = 0
+
+GENERIC FUNDING → SECURITY PROGRAM false inference = 0
+
+TEMPORALLY INVALID SIGNALS = 0
+
+WRONG-ENTITY SIGNALS = 0
+
+STRICT SIGNAL PRECISION >= 85%
+
+UNSUPPORTED SIGNAL RATE <= 5%
+
+STRICT EVENT RECALL >= 70%
+
+If strict recall remains below 70% but precision/safety passes:
+
+do NOT weaken extraction.
+
+Report remaining failure stages.
+
+==================================================
+30. REGRESSION TESTS
+==================================================
+
+Add generic tests for at least:
+
+A.
+Explicit CISO appointment with explicit date
+→ valid PERSON_ROLE_CHANGE.
+
+B.
+Historical leadership biography
+→ no current leadership-change event.
+
+C.
+Generic company funding
+→ FUNDING_EVENT only.
+
+D.
+Funding explicitly earmarked for security program
+→ funding + security-program fact may be valid.
+
+E.
+Company sells Managed SOC
+→ no Managed SOC buyer fact.
+
+F.
+Third party states company selected Managed SOC provider
+→ buyer-side fact may be valid.
+
+G.
+Company markets Azure migration services
+→ no internal Azure migration fact.
+
+H.
+Company explicitly announces its own Azure migration
+→ valid internal migration fact.
+
+I.
+Publication date exists but event date absent
+→ publication date not silently used as event date.
+
+J.
+Retrieval date exists but event date absent
+→ retrieval date not used as event date.
+
+K.
+Relative event date with defensible publication date
+→ derived temporal value with provenance.
+
+L.
+Multiple independent facts in one evidence item
+→ all valid atomic facts returned.
+
+M.
+Publisher differs from subject entity
+→ correct subject attribution.
+
+N.
+Customer case study
+→ customer action attributed to customer, not vendor.
+
+O.
+Unsupported inference
+→ rejected before signal engine.
+
+==================================================
+31. NO BENCHMARK HARDCODING
+==================================================
+
+Search runtime logic for benchmark company names and reference event
+phrases.
+
+No benchmark-specific production rules.
+
+Company names may exist only in:
+
+tests
+fixtures
+benchmark artifacts.
+
+==================================================
+32. REQUIRED ARTIFACTS
+==================================================
+
+Generate:
+
+FACT_TEMPORAL_SAFETY_FIX_03.md
+
+FACT_TEMPORAL_SAFETY_FIX_03.json
+
+FACT_TEMPORAL_SAFETY_FIX_03_FACTS.json
+
+FACT_TEMPORAL_SAFETY_FIX_03_TEMPORAL.json
+
+FACT_TEMPORAL_SAFETY_FIX_03_RETEST.json
+
+FACT_TEMPORAL_SAFETY_FIX_03_TESTS.json
+
+==================================================
+33. REQUIRED FINAL SUMMARY
+==================================================
+
+BEFORE
+
+Fact precision = 45.5%
+Signal precision = 33.3%
+Strict recall = 20%
+Partial = 2
+Seller-as-buyer = 1
+Temporal invalid = 1
+
+AFTER
+
+Controls =
+
+Reference facts recovered =
+
+Fact proposals =
+Approved facts =
+Rejected facts =
+
+Signal-feeding facts =
+Supported signal-feeding facts =
+Fact precision =
+
+Signals =
+Supported signals =
+Unsupported signals =
+Seller-as-buyer =
+Temporally invalid =
+Wrong entity =
+Generic-funding false inference =
+
+Signal precision =
+Unsupported signal rate =
+
+Strict detected =
+Partial =
+Missed =
+Strict recall =
+
+Remaining earliest failure stages:
+
+Extraction =
+Validation =
+Signal mapping =
+Temporal =
+Other =
+
+Provider calls = 0 required
+Retrieval changed = NO required
+Identity changed = NO required
+ICP changed = NO required
+Signal definitions changed = NO required
+Production operations = 0 required
+
+==================================================
+34. FINAL DECISION
+==================================================
+
+Return exactly ONE:
+
+A — FACT & TEMPORAL SAFETY VALIDATED
+
+Requirements:
+
+fact precision >= 90%
+
+signal precision >= 85%
+
+unsupported signal rate <= 5%
+
+seller-as-buyer = 0
+
+temporal invalid = 0
+
+wrong entity = 0
+
+generic funding false inference = 0
+
+strict recall >= 70%.
+
+B — SAFETY VALIDATED, RECALL STILL BELOW TARGET
+
+Safety/precision gates pass but recall <70%.
+
+C — EXTRACTION STILL BLOCKING
+
+D — TEMPORAL SEMANTICS STILL BLOCKING
+
+E — SIGNAL MAPPING DEFECT EXPOSED
+
+Correct facts now exist but existing signal definitions produce
+materially incorrect/missing signals.
+
+F — SAFETY REGRESSION
+
+G — INCONCLUSIVE
+
+==================================================
+35. STOP
+==================================================
+
+STOP after this fix/retest.
+
+DO NOT:
+
+change signal definitions
+
+change retrieval
+
+change identity
+
+run providers
+
+run the full 10-control end-to-end benchmark with fresh retrieval
+
+run the 50-company benchmark
+
+fix idempotency in this task
+
+work on contacts
+
+work on UI.
+
+Return results for human review.

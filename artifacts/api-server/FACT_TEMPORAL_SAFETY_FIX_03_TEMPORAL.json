@@ -1,0 +1,199 @@
+{
+  "test": "FACT_TEMPORAL_SAFETY_FIX_03",
+  "model": {
+    "publishedAt": "source publication timestamp",
+    "retrievedAt": "provider retrieval timestamp",
+    "observedAt": "JYRA observation timestamp for timeless/current-state facts",
+    "eventAt": "source-supported event timestamp"
+  },
+  "eventObservationDateFallbackAllowed": false,
+  "temporallyInvalidApprovedFacts": 0,
+  "rejectedTemporalCandidates": [
+    {
+      "origin": "DETERMINISTIC",
+      "candidate": {
+        "evidenceId": "7d53db09-bddc-46a9-a9be-4bf51e625180",
+        "factType": "LEADERSHIP_CHANGE",
+        "structuredValue": {
+          "person": "Henrik Smith",
+          "role": "chief information security officer (CISO)",
+          "eventType": "announced"
+        },
+        "effectiveDate": "2026-06-09",
+        "confidence": 98,
+        "supportingExcerpt": "June 09, 2026 (GLOBE NEWSWIRE) -- Infoblox, a leading platform for preemptive security and critical network services, today announced the appointment of Henrik Smith as chief information security officer (CISO).",
+        "extractorVersion": "fact-extraction-v4"
+      },
+      "approved": false,
+      "rejectionReasons": [
+        {
+          "dimension": "temporal",
+          "code": "EVENT_DATE_NOT_EXPLICIT",
+          "message": "Event effective date is not supported by the supporting excerpt"
+        }
+      ],
+      "validationDimensions": {
+        "entity": {
+          "valid": true,
+          "codes": []
+        },
+        "claim": {
+          "valid": true,
+          "codes": []
+        },
+        "temporal": {
+          "valid": false,
+          "codes": [
+            "EVENT_DATE_NOT_EXPLICIT"
+          ]
+        },
+        "roleRelationship": {
+          "valid": true,
+          "codes": []
+        },
+        "factType": {
+          "valid": true,
+          "codes": []
+        }
+      },
+      "dateProvenance": [
+        "EVENT_DATE_NOT_EXPLICIT"
+      ],
+      "sellerBuyerRole": "SAFE_OR_NOT_APPLICABLE",
+      "source": {
+        "evidenceId": "7d53db09-bddc-46a9-a9be-4bf51e625180",
+        "sourceUrl": "https://finance.yahoo.com/sectors/technology/articles/infoblox-appoints-henrik-smith-chief-130000632.html",
+        "publisher": null,
+        "publishedAt": null,
+        "observedAt": "2026-08-31T12:35:13.631Z",
+        "sourceClassification": "OTHER_WEB",
+        "entityStatus": "CONFIRMED_ENTITY"
+      }
+    },
+    {
+      "origin": "PERSISTED_PROPOSAL",
+      "candidate": {
+        "evidenceId": "16713492-ccff-4861-8c43-e0de1b3061b0",
+        "factType": "FUNDING_EVENT",
+        "structuredValue": {
+          "company": "Black Duck",
+          "roundCount": "8",
+          "totalFunding": "$71M"
+        },
+        "effectiveDate": "2026-08-31",
+        "confidence": 94,
+        "supportingExcerpt": "Black Duckhas raised a total funding of$71Mover 8rounds.",
+        "extractorVersion": "fact-extraction-v2"
+      },
+      "approved": false,
+      "rejectionReasons": [
+        {
+          "dimension": "temporal",
+          "code": "EVENT_DATE_NOT_EXPLICIT",
+          "message": "Event effective date is not supported by the supporting excerpt"
+        }
+      ],
+      "validationDimensions": {
+        "entity": {
+          "valid": true,
+          "codes": []
+        },
+        "claim": {
+          "valid": true,
+          "codes": []
+        },
+        "temporal": {
+          "valid": false,
+          "codes": [
+            "EVENT_DATE_NOT_EXPLICIT"
+          ]
+        },
+        "roleRelationship": {
+          "valid": true,
+          "codes": []
+        },
+        "factType": {
+          "valid": true,
+          "codes": []
+        }
+      },
+      "dateProvenance": [
+        "EVENT_DATE_NOT_EXPLICIT"
+      ],
+      "sellerBuyerRole": "SAFE_OR_NOT_APPLICABLE",
+      "source": {
+        "evidenceId": "16713492-ccff-4861-8c43-e0de1b3061b0",
+        "sourceUrl": "https://tracxn.com/d/companies/black-duck/__vaa626lqWTfuanFv_EfwUPj9X_BUgMzFB2PAgx6gkXk",
+        "publisher": null,
+        "publishedAt": null,
+        "observedAt": "2026-08-31T12:50:01.070Z",
+        "sourceClassification": "JOB_LISTING",
+        "entityStatus": "CONFIRMED_ENTITY"
+      }
+    },
+    {
+      "origin": "PERSISTED_PROPOSAL",
+      "candidate": {
+        "evidenceId": "57404b8f-b23d-4369-962f-d94b7ee81232",
+        "factType": "TECHNOLOGY_MENTION",
+        "structuredValue": {
+          "technologies": [
+            "an integrated, software-as-a-service application security platform",
+            "static application security testing",
+            "software composition analysis",
+            "dynamic application security testing"
+          ]
+        },
+        "effectiveDate": "2026-08-31",
+        "confidence": 97,
+        "supportingExcerpt": "The Polaris Platform is an integrated, software-as-a-service application security platform powered by the industry's leading static application security testing, software composition analysis, and dynamic application security testing engines.",
+        "extractorVersion": "fact-extraction-v3"
+      },
+      "approved": false,
+      "rejectionReasons": [
+        {
+          "dimension": "temporal",
+          "code": "EVENT_DATE_NOT_EXPLICIT",
+          "message": "Event effective date is not supported by the supporting excerpt"
+        }
+      ],
+      "validationDimensions": {
+        "entity": {
+          "valid": true,
+          "codes": []
+        },
+        "claim": {
+          "valid": true,
+          "codes": []
+        },
+        "temporal": {
+          "valid": false,
+          "codes": [
+            "EVENT_DATE_NOT_EXPLICIT"
+          ]
+        },
+        "roleRelationship": {
+          "valid": true,
+          "codes": []
+        },
+        "factType": {
+          "valid": true,
+          "codes": []
+        }
+      },
+      "dateProvenance": [
+        "EVENT_DATE_NOT_EXPLICIT"
+      ],
+      "sellerBuyerRole": "SAFE_OR_NOT_APPLICABLE",
+      "source": {
+        "evidenceId": "57404b8f-b23d-4369-962f-d94b7ee81232",
+        "sourceUrl": "https://news.blackduck.com/2026-02-12-Black-Duck-Expands-Polaris-Integrations-to-Deliver-Frictionless-DevSecOps-at-Enterprise-Scale",
+        "publisher": null,
+        "publishedAt": null,
+        "observedAt": "2026-08-31T19:12:34.063Z",
+        "sourceClassification": "OFFICIAL_WEBSITE",
+        "entityStatus": "CONFIRMED_ENTITY"
+      }
+    }
+  ]
+}

@@ -1,0 +1,3714 @@
+{
+  "test": "FACT_TEMPORAL_SAFETY_FIX_03",
+  "extractorVersion": "fact-extraction-v4",
+  "controls": [
+    {
+      "company": "SolarWinds",
+      "acceptedEvidenceCount": 1,
+      "expectedReferenceFactType": "LEADERSHIP_CHANGE",
+      "factProposals": [
+        {
+          "origin": "DETERMINISTIC",
+          "candidate": {
+            "evidenceId": "33ab1424-6091-4007-bb19-c76fb6d6afff",
+            "factType": "LEADERSHIP_CHANGE",
+            "structuredValue": {
+              "company": "SolarWinds",
+              "person": "Justin Henkel",
+              "role": "Chief Information Security Officer",
+              "eventType": "Appoints"
+            },
+            "effectiveDate": "2026-06-17",
+            "confidence": 98,
+            "supportingExcerpt": "SolarWinds Appoints Justin Henkel as Chief Information Security Officer | SolarWinds\n\n![](https://cdn.builder.io/api/v1/pixel?apiKey=bf1b253f23f34866afac8e265c9bebe9)\n\n# SolarWinds Appoints Justin Henkel as Chief Information Security Officer\n\nJune 17, 2026\n\n**AUSTIN, Texas — June 17, 2026 —** [SolarWinds](https://www.solarwinds.com/), a leading provider of simple, powerful, secure observability and IT management software, today announced the appointment of Justin Henkel as its Chief Information Security Officer.",
+            "extractorVersion": "fact-extraction-v4"
+          },
+          "approved": true,
+          "rejectionReasons": [],
+          "validationDimensions": {
+            "entity": {
+              "valid": true,
+              "codes": []
+            },
+            "claim": {
+              "valid": true,
+              "codes": []
+            },
+            "temporal": {
+              "valid": true,
+              "codes": []
+            },
+            "roleRelationship": {
+              "valid": true,
+              "codes": []
+            },
+            "factType": {
+              "valid": true,
+              "codes": []
+            }
+          },
+          "dateProvenance": "EXPLICIT_SOURCE_SUPPORTED_DATE",
+          "sellerBuyerRole": "SAFE_OR_NOT_APPLICABLE",
+          "source": {
+            "evidenceId": "33ab1424-6091-4007-bb19-c76fb6d6afff",
+            "sourceUrl": "https://solarwinds.com/company/newsroom/press-releases/solarwinds-appoints-justin-henkel-as-chief-information-security-officer",
+            "publisher": null,
+            "publishedAt": null,
+            "observedAt": "2026-08-31T13:51:57.240Z",
+            "sourceClassification": "OFFICIAL_WEBSITE",
+            "entityStatus": "CONFIRMED_ENTITY"
+          }
+        },
+        {
+          "origin": "DETERMINISTIC",
+          "candidate": {
+            "evidenceId": "33ab1424-6091-4007-bb19-c76fb6d6afff",
+            "factType": "LEADERSHIP_CHANGE",
+            "structuredValue": {
+              "company": "SolarWinds",
+              "person": "Justin Henkel",
+              "role": "Chief Information Security Officer",
+              "eventType": "Appoints"
+            },
+            "effectiveDate": "2026-06-17",
+            "confidence": 98,
+            "supportingExcerpt": "SolarWinds Appoints Justin Henkel as Chief Information Security Officer\n\nJune 17, 2026\n\n**AUSTIN, Texas — June 17, 2026 —** [SolarWinds](https://www.solarwinds.com/), a leading provider of simple, powerful, secure observability and IT management software, today announced the appointment of Justin Henkel as its Chief Information Security Officer.",
+            "extractorVersion": "fact-extraction-v4"
+          },
+          "approved": true,
+          "rejectionReasons": [],
+          "validationDimensions": {
+            "entity": {
+              "valid": true,
+              "codes": []
+            },
+            "claim": {
+              "valid": true,
+              "codes": []
+            },
+            "temporal": {
+              "valid": true,
+              "codes": []
+            },
+            "roleRelationship": {
+              "valid": true,
+              "codes": []
+            },
+            "factType": {
+              "valid": true,
+              "codes": []
+            }
+          },
+          "dateProvenance": "EXPLICIT_SOURCE_SUPPORTED_DATE",
+          "sellerBuyerRole": "SAFE_OR_NOT_APPLICABLE",
+          "source": {
+            "evidenceId": "33ab1424-6091-4007-bb19-c76fb6d6afff",
+            "sourceUrl": "https://solarwinds.com/company/newsroom/press-releases/solarwinds-appoints-justin-henkel-as-chief-information-security-officer",
+            "publisher": null,
+            "publishedAt": null,
+            "observedAt": "2026-08-31T13:51:57.240Z",
+            "sourceClassification": "OFFICIAL_WEBSITE",
+            "entityStatus": "CONFIRMED_ENTITY"
+          }
+        },
+        {
+          "origin": "DETERMINISTIC",
+          "candidate": {
+            "evidenceId": "33ab1424-6091-4007-bb19-c76fb6d6afff",
+            "factType": "LEADERSHIP_CHANGE",
+            "structuredValue": {
+              "person": "Justin Henkel",
+              "role": "Chief Information Security Officer",
+              "eventType": "announced"
+            },
+            "effectiveDate": "2026-06-17",
+            "confidence": 98,
+            "supportingExcerpt": "June 17, 2026 —** [SolarWinds](https://www.solarwinds.com/), a leading provider of simple, powerful, secure observability and IT management software, today announced the appointment of Justin Henkel as its Chief Information Security Officer.",
+            "extractorVersion": "fact-extraction-v4"
+          },
+          "approved": true,
+          "rejectionReasons": [],
+          "validationDimensions": {
+            "entity": {
+              "valid": true,
+              "codes": []
+            },
+            "claim": {
+              "valid": true,
+              "codes": []
+            },
+            "temporal": {
+              "valid": true,
+              "codes": []
+            },
+            "roleRelationship": {
+              "valid": true,
+              "codes": []
+            },
+            "factType": {
+              "valid": true,
+              "codes": []
+            }
+          },
+          "dateProvenance": "EXPLICIT_SOURCE_SUPPORTED_DATE",
+          "sellerBuyerRole": "SAFE_OR_NOT_APPLICABLE",
+          "source": {
+            "evidenceId": "33ab1424-6091-4007-bb19-c76fb6d6afff",
+            "sourceUrl": "https://solarwinds.com/company/newsroom/press-releases/solarwinds-appoints-justin-henkel-as-chief-information-security-officer",
+            "publisher": null,
+            "publishedAt": null,
+            "observedAt": "2026-08-31T13:51:57.240Z",
+            "sourceClassification": "OFFICIAL_WEBSITE",
+            "entityStatus": "CONFIRMED_ENTITY"
+          }
+        }
+      ],
+      "approvedFacts": [
+        {
+          "id": "ephemeral-803f4e9f3f90f8e7e761b637",
+          "factType": "LEADERSHIP_CHANGE",
+          "effectiveDate": "2026-06-17",
+          "structuredValue": {
+            "company": "SolarWinds",
+            "person": "Justin Henkel",
+            "role": "Chief Information Security Officer",
+            "eventType": "Appoints"
+          },
+          "supportingExcerpt": "SolarWinds Appoints Justin Henkel as Chief Information Security Officer | SolarWinds\n\n![](https://cdn.builder.io/api/v1/pixel?apiKey=bf1b253f23f34866afac8e265c9bebe9)\n\n# SolarWinds Appoints Justin Henkel as Chief Information Security Officer\n\nJune 17, 2026\n\n**AUSTIN, Texas — June 17, 2026 —** [SolarWinds](https://www.solarwinds.com/), a leading provider of simple, powerful, secure observability and IT management software, today announced the appointment of Justin Henkel as its Chief Information Security Officer.",
+          "evidenceId": "33ab1424-6091-4007-bb19-c76fb6d6afff"
+        },
+        {
+          "id": "ephemeral-ba5fcd1e0c4b9542a1f2d870",
+          "factType": "LEADERSHIP_CHANGE",
+          "effectiveDate": "2026-06-17",
+          "structuredValue": {
+            "company": "SolarWinds",
+            "person": "Justin Henkel",
+            "role": "Chief Information Security Officer",
+            "eventType": "Appoints"
+          },
+          "supportingExcerpt": "SolarWinds Appoints Justin Henkel as Chief Information Security Officer\n\nJune 17, 2026\n\n**AUSTIN, Texas — June 17, 2026 —** [SolarWinds](https://www.solarwinds.com/), a leading provider of simple, powerful, secure observability and IT management software, today announced the appointment of Justin Henkel as its Chief Information Security Officer.",
+          "evidenceId": "33ab1424-6091-4007-bb19-c76fb6d6afff"
+        },
+        {
+          "id": "ephemeral-3db61ac7055ca1f66c7a0267",
+          "factType": "LEADERSHIP_CHANGE",
+          "effectiveDate": "2026-06-17",
+          "structuredValue": {
+            "person": "Justin Henkel",
+            "role": "Chief Information Security Officer",
+            "eventType": "announced"
+          },
+          "supportingExcerpt": "June 17, 2026 —** [SolarWinds](https://www.solarwinds.com/), a leading provider of simple, powerful, secure observability and IT management software, today announced the appointment of Justin Henkel as its Chief Information Security Officer.",
+          "evidenceId": "33ab1424-6091-4007-bb19-c76fb6d6afff"
+        }
+      ],
+      "rejectedFacts": [],
+      "referenceFactRecovered": true,
+      "signalFeedingFactAdjudications": [
+        {
+          "factId": "ephemeral-803f4e9f3f90f8e7e761b637",
+          "classification": "SUPPORTED",
+          "adjudicationBasis": "Independently adjudicated reference fact for this control"
+        },
+        {
+          "factId": "ephemeral-ba5fcd1e0c4b9542a1f2d870",
+          "classification": "SUPPORTED",
+          "adjudicationBasis": "Independently adjudicated reference fact for this control"
+        },
+        {
+          "factId": "ephemeral-3db61ac7055ca1f66c7a0267",
+          "classification": "SUPPORTED",
+          "adjudicationBasis": "Independently adjudicated reference fact for this control"
+        }
+      ],
+      "supportedSignalFeedingFactCount": 3,
+      "unsupportedSignalFeedingFactCount": 0
+    },
+    {
+      "company": "First Horizon",
+      "acceptedEvidenceCount": 27,
+      "expectedReferenceFactType": "LEADERSHIP_CHANGE",
+      "factProposals": [
+        {
+          "origin": "DETERMINISTIC",
+          "candidate": {
+            "evidenceId": "4ec7b5c0-2fe9-4cc9-8876-647b39c4ebd5",
+            "factType": "LEADERSHIP_CHANGE",
+            "structuredValue": {
+              "person": "Leilani Farol",
+              "role": "Senior Vice President, Chief Information Security Officer (CISO)",
+              "eventType": "announced"
+            },
+            "effectiveDate": "2026-02-11",
+            "confidence": 98,
+            "supportingExcerpt": "Feb. 11, 2026 /PRNewswire/ -- First Horizon (NYSE: [FHN](#financial-modal)) announced today that Leilani Farol has joined the company as Senior Vice President, Chief Information Security Officer (CISO).",
+            "extractorVersion": "fact-extraction-v4"
+          },
+          "approved": true,
+          "rejectionReasons": [],
+          "validationDimensions": {
+            "entity": {
+              "valid": true,
+              "codes": []
+            },
+            "claim": {
+              "valid": true,
+              "codes": []
+            },
+            "temporal": {
+              "valid": true,
+              "codes": []
+            },
+            "roleRelationship": {
+              "valid": true,
+              "codes": []
+            },
+            "factType": {
+              "valid": true,
+              "codes": []
+            }
+          },
+          "dateProvenance": "EXPLICIT_SOURCE_SUPPORTED_DATE",
+          "sellerBuyerRole": "SAFE_OR_NOT_APPLICABLE",
+          "source": {
+            "evidenceId": "4ec7b5c0-2fe9-4cc9-8876-647b39c4ebd5",
+            "sourceUrl": "https://prnewswire.com/news-releases/first-horizon-appoints-leilani-farol-as-chief-information-security-officer-302685334.html",
+            "publisher": null,
+            "publishedAt": null,
+            "observedAt": "2026-08-31T13:53:19.157Z",
+            "sourceClassification": "OTHER_WEB",
+            "entityStatus": "CONFIRMED_ENTITY"
+          }
+        },
+        {
+          "origin": "PERSISTED_PROPOSAL",
+          "candidate": {
+            "evidenceId": "b2f46000-2ca1-4f0c-a2fc-eaa5a389b8ce",
+            "factType": "COMPLIANCE_MENTION",
+            "structuredValue": {
+              "program": "BSA/AML/OFAC Compliance Program"
+            },
+            "effectiveDate": "2026-08-31",
+            "confidence": 98,
+            "supportingExcerpt": "The purpose of our board-approved BSA Policy and Program (which also covers AML and OFAC) is to ensure First Horizon’s compliance with the related regulations through its BSA/AML/OFAC Compliance Program.",
+            "extractorVersion": "fact-extraction-v2"
+          },
+          "approved": true,
+          "rejectionReasons": [],
+          "validationDimensions": {
+            "entity": {
+              "valid": true,
+              "codes": []
+            },
+            "claim": {
+              "valid": true,
+              "codes": []
+            },
+            "temporal": {
+              "valid": true,
+              "codes": []
+            },
+            "roleRelationship": {
+              "valid": true,
+              "codes": []
+            },
+            "factType": {
+              "valid": true,
+              "codes": []
+            }
+          },
+          "dateProvenance": "OBSERVATION_DATE_TIMELESS",
+          "sellerBuyerRole": "SAFE_OR_NOT_APPLICABLE",
+          "source": {
+            "evidenceId": "b2f46000-2ca1-4f0c-a2fc-eaa5a389b8ce",
+            "sourceUrl": "https://firsthorizon.com/First-Horizon-Corporation/Corporate-Responsibility/Corporate-Statements",
+            "publisher": null,
+            "publishedAt": null,
+            "observedAt": "2026-08-31T13:53:23.407Z",
+            "sourceClassification": "OFFICIAL_WEBSITE",
+            "entityStatus": "CONFIRMED_ENTITY"
+          }
+        },
+        {
+          "origin": "PERSISTED_PROPOSAL",
+          "candidate": {
+            "evidenceId": "b2f46000-2ca1-4f0c-a2fc-eaa5a389b8ce",
+            "factType": "COMPLIANCE_MENTION",
+            "structuredValue": {
+              "program": "Fair Lending Compliance Program"
+            },
+            "effectiveDate": "2026-08-31",
+            "confidence": 97,
+            "supportingExcerpt": "The Chief Compliance Officer in conjunction with the Compliance Risk Committee is responsible for maintaining a Fair Lending Compliance Program overseen by the Fair Lending Officer that provides for a system of internal controls to ensure ongoing compliance, monitoring and training for appropriate personnel.",
+            "extractorVersion": "fact-extraction-v2"
+          },
+          "approved": true,
+          "rejectionReasons": [],
+          "validationDimensions": {
+            "entity": {
+              "valid": true,
+              "codes": []
+            },
+            "claim": {
+              "valid": true,
+              "codes": []
+            },
+            "temporal": {
+              "valid": true,
+              "codes": []
+            },
+            "roleRelationship": {
+              "valid": true,
+              "codes": []
+            },
+            "factType": {
+              "valid": true,
+              "codes": []
+            }
+          },
+          "dateProvenance": "OBSERVATION_DATE_TIMELESS",
+          "sellerBuyerRole": "SAFE_OR_NOT_APPLICABLE",
+          "source": {
+            "evidenceId": "b2f46000-2ca1-4f0c-a2fc-eaa5a389b8ce",
+            "sourceUrl": "https://firsthorizon.com/First-Horizon-Corporation/Corporate-Responsibility/Corporate-Statements",
+            "publisher": null,
+            "publishedAt": null,
+            "observedAt": "2026-08-31T13:53:23.407Z",
+            "sourceClassification": "OFFICIAL_WEBSITE",
+            "entityStatus": "CONFIRMED_ENTITY"
+          }
+        },
+        {
+          "origin": "DETERMINISTIC",
+          "candidate": {
+            "evidenceId": "30ad0a37-4a6e-4232-86cc-7053e2b70787",
+            "factType": "LEADERSHIP_CHANGE",
+            "structuredValue": {
+              "company": "First Horizon",
+              "person": "Leilani Farol",
+              "role": "Chief Information Security Officer",
+              "eventType": "Appoints"
+            },
+            "effectiveDate": "2026-02-11",
+            "confidence": 98,
+            "supportingExcerpt": "First Horizon Appoints Leilani Farol as Chief Information Security Officer - First Horizon Corporation\n\nFirst Horizon Appoints Leilani Farol as Chief Information Security Officer - First Horizon Corporation\n\n### First Horizon Appoints Leilani Farol as Chief Information Security Officer\n\nFebruary 11, 2026\n\n- Download (opens in new window)\n\nMEMPHIS, Tenn., Feb.",
+            "extractorVersion": "fact-extraction-v4"
+          },
+          "approved": false,
+          "rejectionReasons": [
+            {
+              "dimension": "entity",
+              "code": "WRONG_ENTITY",
+              "message": "Fact is attributed to a different company than the requested subject"
+            }
+          ],
+          "validationDimensions": {
+            "entity": {
+              "valid": false,
+              "codes": [
+                "WRONG_ENTITY"
+              ]
+            },
+            "claim": {
+              "valid": true,
+              "codes": []
+            },
+            "temporal": {
+              "valid": true,
+              "codes": []
+            },
+            "roleRelationship": {
+              "valid": true,
+              "codes": []
+            },
+            "factType": {
+              "valid": true,
+              "codes": []
+            }
+          },
+          "dateProvenance": [],
+          "sellerBuyerRole": "SAFE_OR_NOT_APPLICABLE",
+          "source": {
+            "evidenceId": "30ad0a37-4a6e-4232-86cc-7053e2b70787",
+            "sourceUrl": "https://ir.firsthorizon.com/press-releases/press-release-details/2026/First-Horizon-Appoints-Leilani-Farol-as-Chief-Information-Security-Officer/default.aspx",
+            "publisher": null,
+            "publishedAt": null,
+            "observedAt": "2026-08-31T19:00:21.647Z",
+            "sourceClassification": "OFFICIAL_WEBSITE",
+            "entityStatus": "CONFIRMED_ENTITY"
+          }
+        },
+        {
+          "origin": "DETERMINISTIC",
+          "candidate": {
+            "evidenceId": "30ad0a37-4a6e-4232-86cc-7053e2b70787",
+            "factType": "LEADERSHIP_CHANGE",
+            "structuredValue": {
+              "company": "First Horizon Corporation\n\nFirst Horizon",
+              "person": "Leilani Farol",
+              "role": "Chief Information Security Officer",
+              "eventType": "Appoints"
+            },
+            "effectiveDate": "2026-02-11",
+            "confidence": 98,
+            "supportingExcerpt": "First Horizon Corporation\n\nFirst Horizon Appoints Leilani Farol as Chief Information Security Officer - First Horizon Corporation\n\n### First Horizon Appoints Leilani Farol as Chief Information Security Officer\n\nFebruary 11, 2026\n\n- Download (opens in new window)\n\nMEMPHIS, Tenn., Feb.",
+            "extractorVersion": "fact-extraction-v4"
+          },
+          "approved": false,
+          "rejectionReasons": [
+            {
+              "dimension": "entity",
+              "code": "WRONG_ENTITY",
+              "message": "Fact is attributed to a different company than the requested subject"
+            }
+          ],
+          "validationDimensions": {
+            "entity": {
+              "valid": false,
+              "codes": [
+                "WRONG_ENTITY"
+              ]
+            },
+            "claim": {
+              "valid": true,
+              "codes": []
+            },
+            "temporal": {
+              "valid": true,
+              "codes": []
+            },
+            "roleRelationship": {
+              "valid": true,
+              "codes": []
+            },
+            "factType": {
+              "valid": true,
+              "codes": []
+            }
+          },
+          "dateProvenance": [],
+          "sellerBuyerRole": "SAFE_OR_NOT_APPLICABLE",
+          "source": {
+            "evidenceId": "30ad0a37-4a6e-4232-86cc-7053e2b70787",
+            "sourceUrl": "https://ir.firsthorizon.com/press-releases/press-release-details/2026/First-Horizon-Appoints-Leilani-Farol-as-Chief-Information-Security-Officer/default.aspx",
+            "publisher": null,
+            "publishedAt": null,
+            "observedAt": "2026-08-31T19:00:21.647Z",
+            "sourceClassification": "OFFICIAL_WEBSITE",
+            "entityStatus": "CONFIRMED_ENTITY"
+          }
+        },
+        {
+          "origin": "DETERMINISTIC",
+          "candidate": {
+            "evidenceId": "30ad0a37-4a6e-4232-86cc-7053e2b70787",
+            "factType": "LEADERSHIP_CHANGE",
+            "structuredValue": {
+              "company": "First Horizon",
+              "person": "Leilani Farol",
+              "role": "Chief Information Security Officer",
+              "eventType": "Appoints"
+            },
+            "effectiveDate": "2026-02-11",
+            "confidence": 98,
+            "supportingExcerpt": "First Horizon Appoints Leilani Farol as Chief Information Security Officer\n\nFebruary 11, 2026\n\n- Download (opens in new window)\n\nMEMPHIS, Tenn., Feb.",
+            "extractorVersion": "fact-extraction-v4"
+          },
+          "approved": false,
+          "rejectionReasons": [
+            {
+              "dimension": "entity",
+              "code": "WRONG_ENTITY",
+              "message": "Fact is attributed to a different company than the requested subject"
+            }
+          ],
+          "validationDimensions": {
+            "entity": {
+              "valid": false,
+              "codes": [
+                "WRONG_ENTITY"
+              ]
+            },
+            "claim": {
+              "valid": true,
+              "codes": []
+            },
+            "temporal": {
+              "valid": true,
+              "codes": []
+            },
+            "roleRelationship": {
+              "valid": true,
+              "codes": []
+            },
+            "factType": {
+              "valid": true,
+              "codes": []
+            }
+          },
+          "dateProvenance": [],
+          "sellerBuyerRole": "SAFE_OR_NOT_APPLICABLE",
+          "source": {
+            "evidenceId": "30ad0a37-4a6e-4232-86cc-7053e2b70787",
+            "sourceUrl": "https://ir.firsthorizon.com/press-releases/press-release-details/2026/First-Horizon-Appoints-Leilani-Farol-as-Chief-Information-Security-Officer/default.aspx",
+            "publisher": null,
+            "publishedAt": null,
+            "observedAt": "2026-08-31T19:00:21.647Z",
+            "sourceClassification": "OFFICIAL_WEBSITE",
+            "entityStatus": "CONFIRMED_ENTITY"
+          }
+        },
+        {
+          "origin": "DETERMINISTIC",
+          "candidate": {
+            "evidenceId": "30ad0a37-4a6e-4232-86cc-7053e2b70787",
+            "factType": "LEADERSHIP_CHANGE",
+            "structuredValue": {
+              "person": "Leilani Farol",
+              "role": "Senior Vice President, Chief Information Security Officer (CISO)",
+              "eventType": "announced"
+            },
+            "effectiveDate": "2026-02-11",
+            "confidence": 98,
+            "supportingExcerpt": "Feb. 11, 2026 /PRNewswire/ -- First Horizon (NYSE: FHN) announced today that Leilani Farol has joined the company as Senior Vice President, Chief Information Security Officer (CISO).",
+            "extractorVersion": "fact-extraction-v4"
+          },
+          "approved": true,
+          "rejectionReasons": [],
+          "validationDimensions": {
+            "entity": {
+              "valid": true,
+              "codes": []
+            },
+            "claim": {
+              "valid": true,
+              "codes": []
+            },
+            "temporal": {
+              "valid": true,
+              "codes": []
+            },
+            "roleRelationship": {
+              "valid": true,
+              "codes": []
+            },
+            "factType": {
+              "valid": true,
+              "codes": []
+            }
+          },
+          "dateProvenance": "EXPLICIT_SOURCE_SUPPORTED_DATE",
+          "sellerBuyerRole": "SAFE_OR_NOT_APPLICABLE",
+          "source": {
+            "evidenceId": "30ad0a37-4a6e-4232-86cc-7053e2b70787",
+            "sourceUrl": "https://ir.firsthorizon.com/press-releases/press-release-details/2026/First-Horizon-Appoints-Leilani-Farol-as-Chief-Information-Security-Officer/default.aspx",
+            "publisher": null,
+            "publishedAt": null,
+            "observedAt": "2026-08-31T19:00:21.647Z",
+            "sourceClassification": "OFFICIAL_WEBSITE",
+            "entityStatus": "CONFIRMED_ENTITY"
+          }
+        },
+        {
+          "origin": "PERSISTED_PROPOSAL",
+          "candidate": {
+            "evidenceId": "07f18d9d-0bd4-4494-bd7b-7ce1d4482fb4",
+            "factType": "COMPLIANCE_MENTION",
+            "structuredValue": {
+              "program": "BSA/AML/OFAC Compliance Program"
+            },
+            "effectiveDate": "2026-08-31",
+            "confidence": 98,
+            "supportingExcerpt": "The purpose of our board-approved BSA Policy and Program (which also covers AML and OFAC) is to ensure First Horizon’s compliance with the related regulations through its BSA/AML/OFAC Compliance Program.",
+            "extractorVersion": "fact-extraction-v3"
+          },
+          "approved": true,
+          "rejectionReasons": [],
+          "validationDimensions": {
+            "entity": {
+              "valid": true,
+              "codes": []
+            },
+            "claim": {
+              "valid": true,
+              "codes": []
+            },
+            "temporal": {
+              "valid": true,
+              "codes": []
+            },
+            "roleRelationship": {
+              "valid": true,
+              "codes": []
+            },
+            "factType": {
+              "valid": true,
+              "codes": []
+            }
+          },
+          "dateProvenance": "OBSERVATION_DATE_TIMELESS",
+          "sellerBuyerRole": "SAFE_OR_NOT_APPLICABLE",
+          "source": {
+            "evidenceId": "07f18d9d-0bd4-4494-bd7b-7ce1d4482fb4",
+            "sourceUrl": "https://firsthorizon.com/first-horizon-corporation/Corporate-Responsibility/Corporate-Statements",
+            "publisher": null,
+            "publishedAt": null,
+            "observedAt": "2026-08-31T19:00:21.647Z",
+            "sourceClassification": "OFFICIAL_WEBSITE",
+            "entityStatus": "CONFIRMED_ENTITY"
+          }
+        },
+        {
+          "origin": "PERSISTED_PROPOSAL",
+          "candidate": {
+            "evidenceId": "07f18d9d-0bd4-4494-bd7b-7ce1d4482fb4",
+            "factType": "COMPLIANCE_MENTION",
+            "structuredValue": {
+              "program": "Fair Lending Compliance Program"
+            },
+            "effectiveDate": "2026-08-31",
+            "confidence": 97,
+            "supportingExcerpt": "The Chief Compliance Officer in conjunction with the Compliance Risk Committee is responsible for maintaining a Fair Lending Compliance Program overseen by the Fair Lending Officer that provides for a system of internal controls to ensure ongoing compliance, monitoring and training for appropriate personnel.",
+            "extractorVersion": "fact-extraction-v3"
+          },
+          "approved": true,
+          "rejectionReasons": [],
+          "validationDimensions": {
+            "entity": {
+              "valid": true,
+              "codes": []
+            },
+            "claim": {
+              "valid": true,
+              "codes": []
+            },
+            "temporal": {
+              "valid": true,
+              "codes": []
+            },
+            "roleRelationship": {
+              "valid": true,
+              "codes": []
+            },
+            "factType": {
+              "valid": true,
+              "codes": []
+            }
+          },
+          "dateProvenance": "OBSERVATION_DATE_TIMELESS",
+          "sellerBuyerRole": "SAFE_OR_NOT_APPLICABLE",
+          "source": {
+            "evidenceId": "07f18d9d-0bd4-4494-bd7b-7ce1d4482fb4",
+            "sourceUrl": "https://firsthorizon.com/first-horizon-corporation/Corporate-Responsibility/Corporate-Statements",
+            "publisher": null,
+            "publishedAt": null,
+            "observedAt": "2026-08-31T19:00:21.647Z",
+            "sourceClassification": "OFFICIAL_WEBSITE",
+            "entityStatus": "CONFIRMED_ENTITY"
+          }
+        },
+        {
+          "origin": "DETERMINISTIC",
+          "candidate": {
+            "evidenceId": "6d812673-5c21-4f2c-bd4f-e10f87d59496",
+            "factType": "LEADERSHIP_CHANGE",
+            "structuredValue": {
+              "company": "First Horizon",
+              "person": "Leilani Farol",
+              "role": "Chief Information Security Officer",
+              "eventType": "Appoints"
+            },
+            "effectiveDate": "2026-02-11",
+            "confidence": 98,
+            "supportingExcerpt": "First Horizon Appoints Leilani Farol as Chief Information Security Officer\n\n(Neutral)\n\n(Neutral)\n\nTags\n\n## Rhea-AI Summary\n\n- English\n- Arabic\n- French\n- German\n- Italian\n- Korean\n- Spanish\n\nFirst Horizon (NYSE: FHN) named Leilani Farol Senior Vice President and Chief Information Security Officer on Feb 11, 2026.",
+            "extractorVersion": "fact-extraction-v4"
+          },
+          "approved": false,
+          "rejectionReasons": [
+            {
+              "dimension": "entity",
+              "code": "WRONG_ENTITY",
+              "message": "Fact is attributed to a different company than the requested subject"
+            }
+          ],
+          "validationDimensions": {
+            "entity": {
+              "valid": false,
+              "codes": [
+                "WRONG_ENTITY"
+              ]
+            },
+            "claim": {
+              "valid": true,
+              "codes": []
+            },
+            "temporal": {
+              "valid": true,
+              "codes": []
+            },
+            "roleRelationship": {
+              "valid": true,
+              "codes": []
+            },
+            "factType": {
+              "valid": true,
+              "codes": []
+            }
+          },
+          "dateProvenance": [],
+          "sellerBuyerRole": "SAFE_OR_NOT_APPLICABLE",
+          "source": {
+            "evidenceId": "6d812673-5c21-4f2c-bd4f-e10f87d59496",
+            "sourceUrl": "https://stocktitan.net/news/FHN/first-horizon-appoints-leilani-farol-as-chief-information-security-nw16bbc6cqz2.html",
+            "publisher": null,
+            "publishedAt": null,
+            "observedAt": "2026-08-31T19:00:21.647Z",
+            "sourceClassification": "OTHER_WEB",
+            "entityStatus": "CONFIRMED_ENTITY"
+          }
+        },
+        {
+          "origin": "DETERMINISTIC",
+          "candidate": {
+            "evidenceId": "6d812673-5c21-4f2c-bd4f-e10f87d59496",
+            "factType": "LEADERSHIP_CHANGE",
+            "structuredValue": {
+              "person": "Leilani Farol",
+              "role": "Senior Vice President, Chief Information Security Officer (CISO)",
+              "eventType": "announced"
+            },
+            "effectiveDate": "2026-02-11",
+            "confidence": 98,
+            "supportingExcerpt": "Feb. 11, 2026 /PRNewswire/ -- First Horizon (NYSE: FHN) announced today that Leilani Farol has joined the company as Senior Vice President, Chief Information Security Officer (CISO).",
+            "extractorVersion": "fact-extraction-v4"
+          },
+          "approved": true,
+          "rejectionReasons": [],
+          "validationDimensions": {
+            "entity": {
+              "valid": true,
+              "codes": []
+            },
+            "claim": {
+              "valid": true,
+              "codes": []
+            },
+            "temporal": {
+              "valid": true,
+              "codes": []
+            },
+            "roleRelationship": {
+              "valid": true,
+              "codes": []
+            },
+            "factType": {
+              "valid": true,
+              "codes": []
+            }
+          },
+          "dateProvenance": "EXPLICIT_SOURCE_SUPPORTED_DATE",
+          "sellerBuyerRole": "SAFE_OR_NOT_APPLICABLE",
+          "source": {
+            "evidenceId": "6d812673-5c21-4f2c-bd4f-e10f87d59496",
+            "sourceUrl": "https://stocktitan.net/news/FHN/first-horizon-appoints-leilani-farol-as-chief-information-security-nw16bbc6cqz2.html",
+            "publisher": null,
+            "publishedAt": null,
+            "observedAt": "2026-08-31T19:00:21.647Z",
+            "sourceClassification": "OTHER_WEB",
+            "entityStatus": "CONFIRMED_ENTITY"
+          }
+        }
+      ],
+      "approvedFacts": [
+        {
+          "id": "ephemeral-ff795fcc337ce0c87a4c96ed",
+          "factType": "LEADERSHIP_CHANGE",
+          "effectiveDate": "2026-02-11",
+          "structuredValue": {
+            "person": "Leilani Farol",
+            "role": "Senior Vice President, Chief Information Security Officer (CISO)",
+            "eventType": "announced"
+          },
+          "supportingExcerpt": "Feb. 11, 2026 /PRNewswire/ -- First Horizon (NYSE: [FHN](#financial-modal)) announced today that Leilani Farol has joined the company as Senior Vice President, Chief Information Security Officer (CISO).",
+          "evidenceId": "4ec7b5c0-2fe9-4cc9-8876-647b39c4ebd5"
+        },
+        {
+          "id": "ephemeral-6fd3c53fca014b4e879b9665",
+          "factType": "COMPLIANCE_MENTION",
+          "effectiveDate": "2026-08-31",
+          "structuredValue": {
+            "program": "BSA/AML/OFAC Compliance Program"
+          },
+          "supportingExcerpt": "The purpose of our board-approved BSA Policy and Program (which also covers AML and OFAC) is to ensure First Horizon’s compliance with the related regulations through its BSA/AML/OFAC Compliance Program.",
+          "evidenceId": "b2f46000-2ca1-4f0c-a2fc-eaa5a389b8ce"
+        },
+        {
+          "id": "ephemeral-a3081cf8e3cf06e1e38f45e8",
+          "factType": "COMPLIANCE_MENTION",
+          "effectiveDate": "2026-08-31",
+          "structuredValue": {
+            "program": "Fair Lending Compliance Program"
+          },
+          "supportingExcerpt": "The Chief Compliance Officer in conjunction with the Compliance Risk Committee is responsible for maintaining a Fair Lending Compliance Program overseen by the Fair Lending Officer that provides for a system of internal controls to ensure ongoing compliance, monitoring and training for appropriate personnel.",
+          "evidenceId": "b2f46000-2ca1-4f0c-a2fc-eaa5a389b8ce"
+        },
+        {
+          "id": "ephemeral-21a9e3ce384d17e295039722",
+          "factType": "LEADERSHIP_CHANGE",
+          "effectiveDate": "2026-02-11",
+          "structuredValue": {
+            "person": "Leilani Farol",
+            "role": "Senior Vice President, Chief Information Security Officer (CISO)",
+            "eventType": "announced"
+          },
+          "supportingExcerpt": "Feb. 11, 2026 /PRNewswire/ -- First Horizon (NYSE: FHN) announced today that Leilani Farol has joined the company as Senior Vice President, Chief Information Security Officer (CISO).",
+          "evidenceId": "30ad0a37-4a6e-4232-86cc-7053e2b70787"
+        },
+        {
+          "id": "ephemeral-84ad0f915ea0b703700c3082",
+          "factType": "COMPLIANCE_MENTION",
+          "effectiveDate": "2026-08-31",
+          "structuredValue": {
+            "program": "BSA/AML/OFAC Compliance Program"
+          },
+          "supportingExcerpt": "The purpose of our board-approved BSA Policy and Program (which also covers AML and OFAC) is to ensure First Horizon’s compliance with the related regulations through its BSA/AML/OFAC Compliance Program.",
+          "evidenceId": "07f18d9d-0bd4-4494-bd7b-7ce1d4482fb4"
+        },
+        {
+          "id": "ephemeral-905599530208a17df0a8af2a",
+          "factType": "COMPLIANCE_MENTION",
+          "effectiveDate": "2026-08-31",
+          "structuredValue": {
+            "program": "Fair Lending Compliance Program"
+          },
+          "supportingExcerpt": "The Chief Compliance Officer in conjunction with the Compliance Risk Committee is responsible for maintaining a Fair Lending Compliance Program overseen by the Fair Lending Officer that provides for a system of internal controls to ensure ongoing compliance, monitoring and training for appropriate personnel.",
+          "evidenceId": "07f18d9d-0bd4-4494-bd7b-7ce1d4482fb4"
+        },
+        {
+          "id": "ephemeral-0b02e4ce96652c3f8e60f3d7",
+          "factType": "LEADERSHIP_CHANGE",
+          "effectiveDate": "2026-02-11",
+          "structuredValue": {
+            "person": "Leilani Farol",
+            "role": "Senior Vice President, Chief Information Security Officer (CISO)",
+            "eventType": "announced"
+          },
+          "supportingExcerpt": "Feb. 11, 2026 /PRNewswire/ -- First Horizon (NYSE: FHN) announced today that Leilani Farol has joined the company as Senior Vice President, Chief Information Security Officer (CISO).",
+          "evidenceId": "6d812673-5c21-4f2c-bd4f-e10f87d59496"
+        }
+      ],
+      "rejectedFacts": [
+        {
+          "candidate": {
+            "evidenceId": "30ad0a37-4a6e-4232-86cc-7053e2b70787",
+            "factType": "LEADERSHIP_CHANGE",
+            "structuredValue": {
+              "company": "First Horizon",
+              "person": "Leilani Farol",
+              "role": "Chief Information Security Officer",
+              "eventType": "Appoints"
+            },
+            "effectiveDate": "2026-02-11",
+            "confidence": 98,
+            "supportingExcerpt": "First Horizon Appoints Leilani Farol as Chief Information Security Officer - First Horizon Corporation\n\nFirst Horizon Appoints Leilani Farol as Chief Information Security Officer - First Horizon Corporation\n\n### First Horizon Appoints Leilani Farol as Chief Information Security Officer\n\nFebruary 11, 2026\n\n- Download (opens in new window)\n\nMEMPHIS, Tenn., Feb.",
+            "extractorVersion": "fact-extraction-v4"
+          },
+          "reasons": [
+            {
+              "dimension": "entity",
+              "code": "WRONG_ENTITY",
+              "message": "Fact is attributed to a different company than the requested subject"
+            }
+          ],
+          "evidenceId": "30ad0a37-4a6e-4232-86cc-7053e2b70787"
+        },
+        {
+          "candidate": {
+            "evidenceId": "30ad0a37-4a6e-4232-86cc-7053e2b70787",
+            "factType": "LEADERSHIP_CHANGE",
+            "structuredValue": {
+              "company": "First Horizon Corporation\n\nFirst Horizon",
+              "person": "Leilani Farol",
+              "role": "Chief Information Security Officer",
+              "eventType": "Appoints"
+            },
+            "effectiveDate": "2026-02-11",
+            "confidence": 98,
+            "supportingExcerpt": "First Horizon Corporation\n\nFirst Horizon Appoints Leilani Farol as Chief Information Security Officer - First Horizon Corporation\n\n### First Horizon Appoints Leilani Farol as Chief Information Security Officer\n\nFebruary 11, 2026\n\n- Download (opens in new window)\n\nMEMPHIS, Tenn., Feb.",
+            "extractorVersion": "fact-extraction-v4"
+          },
+          "reasons": [
+            {
+              "dimension": "entity",
+              "code": "WRONG_ENTITY",
+              "message": "Fact is attributed to a different company than the requested subject"
+            }
+          ],
+          "evidenceId": "30ad0a37-4a6e-4232-86cc-7053e2b70787"
+        },
+        {
+          "candidate": {
+            "evidenceId": "30ad0a37-4a6e-4232-86cc-7053e2b70787",
+            "factType": "LEADERSHIP_CHANGE",
+            "structuredValue": {
+              "company": "First Horizon",
+              "person": "Leilani Farol",
+              "role": "Chief Information Security Officer",
+              "eventType": "Appoints"
+            },
+            "effectiveDate": "2026-02-11",
+            "confidence": 98,
+            "supportingExcerpt": "First Horizon Appoints Leilani Farol as Chief Information Security Officer\n\nFebruary 11, 2026\n\n- Download (opens in new window)\n\nMEMPHIS, Tenn., Feb.",
+            "extractorVersion": "fact-extraction-v4"
+          },
+          "reasons": [
+            {
+              "dimension": "entity",
+              "code": "WRONG_ENTITY",
+              "message": "Fact is attributed to a different company than the requested subject"
+            }
+          ],
+          "evidenceId": "30ad0a37-4a6e-4232-86cc-7053e2b70787"
+        },
+        {
+          "candidate": {
+            "evidenceId": "6d812673-5c21-4f2c-bd4f-e10f87d59496",
+            "factType": "LEADERSHIP_CHANGE",
+            "structuredValue": {
+              "company": "First Horizon",
+              "person": "Leilani Farol",
+              "role": "Chief Information Security Officer",
+              "eventType": "Appoints"
+            },
+            "effectiveDate": "2026-02-11",
+            "confidence": 98,
+            "supportingExcerpt": "First Horizon Appoints Leilani Farol as Chief Information Security Officer\n\n(Neutral)\n\n(Neutral)\n\nTags\n\n## Rhea-AI Summary\n\n- English\n- Arabic\n- French\n- German\n- Italian\n- Korean\n- Spanish\n\nFirst Horizon (NYSE: FHN) named Leilani Farol Senior Vice President and Chief Information Security Officer on Feb 11, 2026.",
+            "extractorVersion": "fact-extraction-v4"
+          },
+          "reasons": [
+            {
+              "dimension": "entity",
+              "code": "WRONG_ENTITY",
+              "message": "Fact is attributed to a different company than the requested subject"
+            }
+          ],
+          "evidenceId": "6d812673-5c21-4f2c-bd4f-e10f87d59496"
+        }
+      ],
+      "referenceFactRecovered": true,
+      "signalFeedingFactAdjudications": [
+        {
+          "factId": "ephemeral-ff795fcc337ce0c87a4c96ed",
+          "classification": "SUPPORTED",
+          "adjudicationBasis": "Independently adjudicated reference fact for this control"
+        },
+        {
+          "factId": "ephemeral-21a9e3ce384d17e295039722",
+          "classification": "SUPPORTED",
+          "adjudicationBasis": "Independently adjudicated reference fact for this control"
+        },
+        {
+          "factId": "ephemeral-0b02e4ce96652c3f8e60f3d7",
+          "classification": "SUPPORTED",
+          "adjudicationBasis": "Independently adjudicated reference fact for this control"
+        }
+      ],
+      "supportedSignalFeedingFactCount": 3,
+      "unsupportedSignalFeedingFactCount": 0
+    },
+    {
+      "company": "GitLab",
+      "acceptedEvidenceCount": 1,
+      "expectedReferenceFactType": "LEADERSHIP_CHANGE",
+      "factProposals": [
+        {
+          "origin": "DETERMINISTIC",
+          "candidate": {
+            "evidenceId": "0488986c-21e7-4675-b161-edf2f9307156",
+            "factType": "LEADERSHIP_CHANGE",
+            "structuredValue": {
+              "company": "GitLab",
+              "person": "Chaim Mazal",
+              "role": "Chief Information Security Officer",
+              "eventType": "Appoints"
+            },
+            "effectiveDate": "2026-06-09",
+            "confidence": 98,
+            "supportingExcerpt": "GitLab Appoints Chaim Mazal as Chief Information Security Officer\n\n### Automation\n\n### Security\n\n### Measurement\n\n### GitLab for\n\n### Getting started\n\n### Discover\n\n### Connect\n\nStay updated with our latest features and improvements.\n\n###\n\n###\n\n# GitLab Appoints Chaim Mazal as Chief Information Security Officer\n\n*Mazal joins to define what AI security looks like for the next generation of software development*\n\nSAN FRANCISCO, June 9, 2026",
+            "extractorVersion": "fact-extraction-v4"
+          },
+          "approved": true,
+          "rejectionReasons": [],
+          "validationDimensions": {
+            "entity": {
+              "valid": true,
+              "codes": []
+            },
+            "claim": {
+              "valid": true,
+              "codes": []
+            },
+            "temporal": {
+              "valid": true,
+              "codes": []
+            },
+            "roleRelationship": {
+              "valid": true,
+              "codes": []
+            },
+            "factType": {
+              "valid": true,
+              "codes": []
+            }
+          },
+          "dateProvenance": "EXPLICIT_SOURCE_SUPPORTED_DATE",
+          "sellerBuyerRole": "SAFE_OR_NOT_APPLICABLE",
+          "source": {
+            "evidenceId": "0488986c-21e7-4675-b161-edf2f9307156",
+            "sourceUrl": "https://about.gitlab.com/press/releases/2026-06-09-gitlab-appoints-chaim-mazal-as-chief-information-security-officer",
+            "publisher": null,
+            "publishedAt": null,
+            "observedAt": "2026-08-31T12:30:07.292Z",
+            "sourceClassification": "OFFICIAL_WEBSITE",
+            "entityStatus": "CONFIRMED_ENTITY"
+          }
+        },
+        {
+          "origin": "DETERMINISTIC",
+          "candidate": {
+            "evidenceId": "0488986c-21e7-4675-b161-edf2f9307156",
+            "factType": "LEADERSHIP_CHANGE",
+            "structuredValue": {
+              "company": "GitLab",
+              "person": "Chaim Mazal",
+              "role": "Chief Information Security Officer",
+              "eventType": "Appoints"
+            },
+            "effectiveDate": "2026-06-09",
+            "confidence": 98,
+            "supportingExcerpt": "GitLab Appoints Chaim Mazal as Chief Information Security Officer\n\n*Mazal joins to define what AI security looks like for the next generation of software development*\n\nSAN FRANCISCO, June 9, 2026 - All Remote - GitLab Inc., the intelligent orchestration platform for DevSecOps, announced that Chaim Mazal has joined as Chief Information Security Officer (CISO).",
+            "extractorVersion": "fact-extraction-v4"
+          },
+          "approved": true,
+          "rejectionReasons": [],
+          "validationDimensions": {
+            "entity": {
+              "valid": true,
+              "codes": []
+            },
+            "claim": {
+              "valid": true,
+              "codes": []
+            },
+            "temporal": {
+              "valid": true,
+              "codes": []
+            },
+            "roleRelationship": {
+              "valid": true,
+              "codes": []
+            },
+            "factType": {
+              "valid": true,
+              "codes": []
+            }
+          },
+          "dateProvenance": "EXPLICIT_SOURCE_SUPPORTED_DATE",
+          "sellerBuyerRole": "SAFE_OR_NOT_APPLICABLE",
+          "source": {
+            "evidenceId": "0488986c-21e7-4675-b161-edf2f9307156",
+            "sourceUrl": "https://about.gitlab.com/press/releases/2026-06-09-gitlab-appoints-chaim-mazal-as-chief-information-security-officer",
+            "publisher": null,
+            "publishedAt": null,
+            "observedAt": "2026-08-31T12:30:07.292Z",
+            "sourceClassification": "OFFICIAL_WEBSITE",
+            "entityStatus": "CONFIRMED_ENTITY"
+          }
+        },
+        {
+          "origin": "DETERMINISTIC",
+          "candidate": {
+            "evidenceId": "0488986c-21e7-4675-b161-edf2f9307156",
+            "factType": "LEADERSHIP_CHANGE",
+            "structuredValue": {
+              "person": "Chaim Mazal",
+              "role": "Chief Information Security Officer (CISO)",
+              "eventType": "announced"
+            },
+            "effectiveDate": "2026-06-09",
+            "confidence": 98,
+            "supportingExcerpt": "June 9, 2026 - All Remote - GitLab Inc., the intelligent orchestration platform for DevSecOps, announced that Chaim Mazal has joined as Chief Information Security Officer (CISO).",
+            "extractorVersion": "fact-extraction-v4"
+          },
+          "approved": true,
+          "rejectionReasons": [],
+          "validationDimensions": {
+            "entity": {
+              "valid": true,
+              "codes": []
+            },
+            "claim": {
+              "valid": true,
+              "codes": []
+            },
+            "temporal": {
+              "valid": true,
+              "codes": []
+            },
+            "roleRelationship": {
+              "valid": true,
+              "codes": []
+            },
+            "factType": {
+              "valid": true,
+              "codes": []
+            }
+          },
+          "dateProvenance": "EXPLICIT_SOURCE_SUPPORTED_DATE",
+          "sellerBuyerRole": "SAFE_OR_NOT_APPLICABLE",
+          "source": {
+            "evidenceId": "0488986c-21e7-4675-b161-edf2f9307156",
+            "sourceUrl": "https://about.gitlab.com/press/releases/2026-06-09-gitlab-appoints-chaim-mazal-as-chief-information-security-officer",
+            "publisher": null,
+            "publishedAt": null,
+            "observedAt": "2026-08-31T12:30:07.292Z",
+            "sourceClassification": "OFFICIAL_WEBSITE",
+            "entityStatus": "CONFIRMED_ENTITY"
+          }
+        },
+        {
+          "origin": "PERSISTED_PROPOSAL",
+          "candidate": {
+            "evidenceId": "0488986c-21e7-4675-b161-edf2f9307156",
+            "factType": "LEADERSHIP_CHANGE",
+            "structuredValue": {
+              "title": "Chief Information Security Officer (CISO)",
+              "person": "Chaim Mazal"
+            },
+            "effectiveDate": "2026-06-09",
+            "confidence": 100,
+            "supportingExcerpt": "SAN FRANCISCO, June 9, 2026 - All Remote - GitLab Inc., the intelligent orchestration platform for DevSecOps, announced that Chaim Mazal has joined as Chief Information Security Officer (CISO).",
+            "extractorVersion": "fact-extraction-v2"
+          },
+          "approved": true,
+          "rejectionReasons": [],
+          "validationDimensions": {
+            "entity": {
+              "valid": true,
+              "codes": []
+            },
+            "claim": {
+              "valid": true,
+              "codes": []
+            },
+            "temporal": {
+              "valid": true,
+              "codes": []
+            },
+            "roleRelationship": {
+              "valid": true,
+              "codes": []
+            },
+            "factType": {
+              "valid": true,
+              "codes": []
+            }
+          },
+          "dateProvenance": "EXPLICIT_SOURCE_SUPPORTED_DATE",
+          "sellerBuyerRole": "SAFE_OR_NOT_APPLICABLE",
+          "source": {
+            "evidenceId": "0488986c-21e7-4675-b161-edf2f9307156",
+            "sourceUrl": "https://about.gitlab.com/press/releases/2026-06-09-gitlab-appoints-chaim-mazal-as-chief-information-security-officer",
+            "publisher": null,
+            "publishedAt": null,
+            "observedAt": "2026-08-31T12:30:07.292Z",
+            "sourceClassification": "OFFICIAL_WEBSITE",
+            "entityStatus": "CONFIRMED_ENTITY"
+          }
+        }
+      ],
+      "approvedFacts": [
+        {
+          "id": "ephemeral-49da63bfa198351713fb6427",
+          "factType": "LEADERSHIP_CHANGE",
+          "effectiveDate": "2026-06-09",
+          "structuredValue": {
+            "company": "GitLab",
+            "person": "Chaim Mazal",
+            "role": "Chief Information Security Officer",
+            "eventType": "Appoints"
+          },
+          "supportingExcerpt": "GitLab Appoints Chaim Mazal as Chief Information Security Officer\n\n### Automation\n\n### Security\n\n### Measurement\n\n### GitLab for\n\n### Getting started\n\n### Discover\n\n### Connect\n\nStay updated with our latest features and improvements.\n\n###\n\n###\n\n# GitLab Appoints Chaim Mazal as Chief Information Security Officer\n\n*Mazal joins to define what AI security looks like for the next generation of software development*\n\nSAN FRANCISCO, June 9, 2026",
+          "evidenceId": "0488986c-21e7-4675-b161-edf2f9307156"
+        },
+        {
+          "id": "ephemeral-70d615826ff7ac9ba2fd50db",
+          "factType": "LEADERSHIP_CHANGE",
+          "effectiveDate": "2026-06-09",
+          "structuredValue": {
+            "company": "GitLab",
+            "person": "Chaim Mazal",
+            "role": "Chief Information Security Officer",
+            "eventType": "Appoints"
+          },
+          "supportingExcerpt": "GitLab Appoints Chaim Mazal as Chief Information Security Officer\n\n*Mazal joins to define what AI security looks like for the next generation of software development*\n\nSAN FRANCISCO, June 9, 2026 - All Remote - GitLab Inc., the intelligent orchestration platform for DevSecOps, announced that Chaim Mazal has joined as Chief Information Security Officer (CISO).",
+          "evidenceId": "0488986c-21e7-4675-b161-edf2f9307156"
+        },
+        {
+          "id": "ephemeral-c7f3f9d5000299f9a7579235",
+          "factType": "LEADERSHIP_CHANGE",
+          "effectiveDate": "2026-06-09",
+          "structuredValue": {
+            "person": "Chaim Mazal",
+            "role": "Chief Information Security Officer (CISO)",
+            "eventType": "announced"
+          },
+          "supportingExcerpt": "June 9, 2026 - All Remote - GitLab Inc., the intelligent orchestration platform for DevSecOps, announced that Chaim Mazal has joined as Chief Information Security Officer (CISO).",
+          "evidenceId": "0488986c-21e7-4675-b161-edf2f9307156"
+        },
+        {
+          "id": "ephemeral-4f940db72262af288892908d",
+          "factType": "LEADERSHIP_CHANGE",
+          "effectiveDate": "2026-06-09",
+          "structuredValue": {
+            "title": "Chief Information Security Officer (CISO)",
+            "person": "Chaim Mazal"
+          },
+          "supportingExcerpt": "SAN FRANCISCO, June 9, 2026 - All Remote - GitLab Inc., the intelligent orchestration platform for DevSecOps, announced that Chaim Mazal has joined as Chief Information Security Officer (CISO).",
+          "evidenceId": "0488986c-21e7-4675-b161-edf2f9307156"
+        }
+      ],
+      "rejectedFacts": [],
+      "referenceFactRecovered": true,
+      "signalFeedingFactAdjudications": [
+        {
+          "factId": "ephemeral-49da63bfa198351713fb6427",
+          "classification": "SUPPORTED",
+          "adjudicationBasis": "Independently adjudicated reference fact for this control"
+        },
+        {
+          "factId": "ephemeral-70d615826ff7ac9ba2fd50db",
+          "classification": "SUPPORTED",
+          "adjudicationBasis": "Independently adjudicated reference fact for this control"
+        },
+        {
+          "factId": "ephemeral-c7f3f9d5000299f9a7579235",
+          "classification": "SUPPORTED",
+          "adjudicationBasis": "Independently adjudicated reference fact for this control"
+        },
+        {
+          "factId": "ephemeral-4f940db72262af288892908d",
+          "classification": "SUPPORTED",
+          "adjudicationBasis": "Independently adjudicated reference fact for this control"
+        }
+      ],
+      "supportedSignalFeedingFactCount": 4,
+      "unsupportedSignalFeedingFactCount": 0
+    },
+    {
+      "company": "Infoblox",
+      "acceptedEvidenceCount": 2,
+      "expectedReferenceFactType": "LEADERSHIP_CHANGE",
+      "factProposals": [
+        {
+          "origin": "DETERMINISTIC",
+          "candidate": {
+            "evidenceId": "df4597ec-3a1d-4a60-bb9e-eef8f8281bfa",
+            "factType": "LEADERSHIP_CHANGE",
+            "structuredValue": {
+              "company": "Infoblox",
+              "person": "Henrik Smith",
+              "role": "Chief Information Security Officer",
+              "eventType": "Appoints"
+            },
+            "effectiveDate": "2026-06-09",
+            "confidence": 98,
+            "supportingExcerpt": "Infoblox Appoints Henrik Smith as Chief Information Security Officer\n\n* *Former Amazon, Salesforce and AWS Security Leader to Strengthen Infoblox Security Strategy and Cyber Resilience*\n\n**SANTA CLARA, Calif., June 9, 2026** — Infoblox, a leading platform for preemptive security and critical network services, today announced the appointment of Henrik Smith as chief information security officer (CISO).",
+            "extractorVersion": "fact-extraction-v4"
+          },
+          "approved": true,
+          "rejectionReasons": [],
+          "validationDimensions": {
+            "entity": {
+              "valid": true,
+              "codes": []
+            },
+            "claim": {
+              "valid": true,
+              "codes": []
+            },
+            "temporal": {
+              "valid": true,
+              "codes": []
+            },
+            "roleRelationship": {
+              "valid": true,
+              "codes": []
+            },
+            "factType": {
+              "valid": true,
+              "codes": []
+            }
+          },
+          "dateProvenance": "EXPLICIT_SOURCE_SUPPORTED_DATE",
+          "sellerBuyerRole": "SAFE_OR_NOT_APPLICABLE",
+          "source": {
+            "evidenceId": "df4597ec-3a1d-4a60-bb9e-eef8f8281bfa",
+            "sourceUrl": "https://infoblox.com/news/news-events/press-releases/infoblox-appoints-henrik-smith-as-chief-information-security-officer",
+            "publisher": null,
+            "publishedAt": null,
+            "observedAt": "2026-08-31T12:35:13.631Z",
+            "sourceClassification": "OFFICIAL_WEBSITE",
+            "entityStatus": "CONFIRMED_ENTITY"
+          }
+        },
+        {
+          "origin": "DETERMINISTIC",
+          "candidate": {
+            "evidenceId": "df4597ec-3a1d-4a60-bb9e-eef8f8281bfa",
+            "factType": "LEADERSHIP_CHANGE",
+            "structuredValue": {
+              "person": "Henrik Smith",
+              "role": "chief information security officer (CISO)",
+              "eventType": "announced"
+            },
+            "effectiveDate": "2026-06-09",
+            "confidence": 98,
+            "supportingExcerpt": "June 9, 2026** — Infoblox, a leading platform for preemptive security and critical network services, today announced the appointment of Henrik Smith as chief information security officer (CISO).",
+            "extractorVersion": "fact-extraction-v4"
+          },
+          "approved": true,
+          "rejectionReasons": [],
+          "validationDimensions": {
+            "entity": {
+              "valid": true,
+              "codes": []
+            },
+            "claim": {
+              "valid": true,
+              "codes": []
+            },
+            "temporal": {
+              "valid": true,
+              "codes": []
+            },
+            "roleRelationship": {
+              "valid": true,
+              "codes": []
+            },
+            "factType": {
+              "valid": true,
+              "codes": []
+            }
+          },
+          "dateProvenance": "EXPLICIT_SOURCE_SUPPORTED_DATE",
+          "sellerBuyerRole": "SAFE_OR_NOT_APPLICABLE",
+          "source": {
+            "evidenceId": "df4597ec-3a1d-4a60-bb9e-eef8f8281bfa",
+            "sourceUrl": "https://infoblox.com/news/news-events/press-releases/infoblox-appoints-henrik-smith-as-chief-information-security-officer",
+            "publisher": null,
+            "publishedAt": null,
+            "observedAt": "2026-08-31T12:35:13.631Z",
+            "sourceClassification": "OFFICIAL_WEBSITE",
+            "entityStatus": "CONFIRMED_ENTITY"
+          }
+        },
+        {
+          "origin": "DETERMINISTIC",
+          "candidate": {
+            "evidenceId": "7d53db09-bddc-46a9-a9be-4bf51e625180",
+            "factType": "LEADERSHIP_CHANGE",
+            "structuredValue": {
+              "person": "Henrik Smith",
+              "role": "chief information security officer (CISO)",
+              "eventType": "announced"
+            },
+            "effectiveDate": "2026-06-09",
+            "confidence": 98,
+            "supportingExcerpt": "June 09, 2026 (GLOBE NEWSWIRE) -- Infoblox, a leading platform for preemptive security and critical network services, today announced the appointment of Henrik Smith as chief information security officer (CISO).",
+            "extractorVersion": "fact-extraction-v4"
+          },
+          "approved": false,
+          "rejectionReasons": [
+            {
+              "dimension": "temporal",
+              "code": "EVENT_DATE_NOT_EXPLICIT",
+              "message": "Event effective date is not supported by the supporting excerpt"
+            }
+          ],
+          "validationDimensions": {
+            "entity": {
+              "valid": true,
+              "codes": []
+            },
+            "claim": {
+              "valid": true,
+              "codes": []
+            },
+            "temporal": {
+              "valid": false,
+              "codes": [
+                "EVENT_DATE_NOT_EXPLICIT"
+              ]
+            },
+            "roleRelationship": {
+              "valid": true,
+              "codes": []
+            },
+            "factType": {
+              "valid": true,
+              "codes": []
+            }
+          },
+          "dateProvenance": [
+            "EVENT_DATE_NOT_EXPLICIT"
+          ],
+          "sellerBuyerRole": "SAFE_OR_NOT_APPLICABLE",
+          "source": {
+            "evidenceId": "7d53db09-bddc-46a9-a9be-4bf51e625180",
+            "sourceUrl": "https://finance.yahoo.com/sectors/technology/articles/infoblox-appoints-henrik-smith-chief-130000632.html",
+            "publisher": null,
+            "publishedAt": null,
+            "observedAt": "2026-08-31T12:35:13.631Z",
+            "sourceClassification": "OTHER_WEB",
+            "entityStatus": "CONFIRMED_ENTITY"
+          }
+        }
+      ],
+      "approvedFacts": [
+        {
+          "id": "ephemeral-9461e5c40c101a6a40846350",
+          "factType": "LEADERSHIP_CHANGE",
+          "effectiveDate": "2026-06-09",
+          "structuredValue": {
+            "company": "Infoblox",
+            "person": "Henrik Smith",
+            "role": "Chief Information Security Officer",
+            "eventType": "Appoints"
+          },
+          "supportingExcerpt": "Infoblox Appoints Henrik Smith as Chief Information Security Officer\n\n* *Former Amazon, Salesforce and AWS Security Leader to Strengthen Infoblox Security Strategy and Cyber Resilience*\n\n**SANTA CLARA, Calif., June 9, 2026** — Infoblox, a leading platform for preemptive security and critical network services, today announced the appointment of Henrik Smith as chief information security officer (CISO).",
+          "evidenceId": "df4597ec-3a1d-4a60-bb9e-eef8f8281bfa"
+        },
+        {
+          "id": "ephemeral-4c4c1c876e6974671abf08a7",
+          "factType": "LEADERSHIP_CHANGE",
+          "effectiveDate": "2026-06-09",
+          "structuredValue": {
+            "person": "Henrik Smith",
+            "role": "chief information security officer (CISO)",
+            "eventType": "announced"
+          },
+          "supportingExcerpt": "June 9, 2026** — Infoblox, a leading platform for preemptive security and critical network services, today announced the appointment of Henrik Smith as chief information security officer (CISO).",
+          "evidenceId": "df4597ec-3a1d-4a60-bb9e-eef8f8281bfa"
+        }
+      ],
+      "rejectedFacts": [
+        {
+          "candidate": {
+            "evidenceId": "7d53db09-bddc-46a9-a9be-4bf51e625180",
+            "factType": "LEADERSHIP_CHANGE",
+            "structuredValue": {
+              "person": "Henrik Smith",
+              "role": "chief information security officer (CISO)",
+              "eventType": "announced"
+            },
+            "effectiveDate": "2026-06-09",
+            "confidence": 98,
+            "supportingExcerpt": "June 09, 2026 (GLOBE NEWSWIRE) -- Infoblox, a leading platform for preemptive security and critical network services, today announced the appointment of Henrik Smith as chief information security officer (CISO).",
+            "extractorVersion": "fact-extraction-v4"
+          },
+          "reasons": [
+            {
+              "dimension": "temporal",
+              "code": "EVENT_DATE_NOT_EXPLICIT",
+              "message": "Event effective date is not supported by the supporting excerpt"
+            }
+          ],
+          "evidenceId": "7d53db09-bddc-46a9-a9be-4bf51e625180"
+        }
+      ],
+      "referenceFactRecovered": true,
+      "signalFeedingFactAdjudications": [
+        {
+          "factId": "ephemeral-9461e5c40c101a6a40846350",
+          "classification": "SUPPORTED",
+          "adjudicationBasis": "Independently adjudicated reference fact for this control"
+        },
+        {
+          "factId": "ephemeral-4c4c1c876e6974671abf08a7",
+          "classification": "SUPPORTED",
+          "adjudicationBasis": "Independently adjudicated reference fact for this control"
+        }
+      ],
+      "supportedSignalFeedingFactCount": 2,
+      "unsupportedSignalFeedingFactCount": 0
+    },
+    {
+      "company": "Teradata",
+      "acceptedEvidenceCount": 4,
+      "expectedReferenceFactType": "LEADERSHIP_CHANGE",
+      "factProposals": [
+        {
+          "origin": "DETERMINISTIC",
+          "candidate": {
+            "evidenceId": "da37b7d0-cd3d-48ba-998c-ee6af7896e48",
+            "factType": "LEADERSHIP_CHANGE",
+            "structuredValue": {
+              "person": "Ken Ricketts",
+              "role": "Senior Vice President and Chief Information Security Officer (CISO)",
+              "eventType": "announced"
+            },
+            "effectiveDate": "2026-01-21",
+            "confidence": 98,
+            "supportingExcerpt": "Jan. 21, 2026 /PRNewswire/ -- Teradata (NYSE: [TDC](/overview/TDC/ \"View TDC stock overview\")) announced the appointment of Ken Ricketts as Senior Vice President and Chief Information Security Officer (CISO).",
+            "extractorVersion": "fact-extraction-v4"
+          },
+          "approved": true,
+          "rejectionReasons": [],
+          "validationDimensions": {
+            "entity": {
+              "valid": true,
+              "codes": []
+            },
+            "claim": {
+              "valid": true,
+              "codes": []
+            },
+            "temporal": {
+              "valid": true,
+              "codes": []
+            },
+            "roleRelationship": {
+              "valid": true,
+              "codes": []
+            },
+            "factType": {
+              "valid": true,
+              "codes": []
+            }
+          },
+          "dateProvenance": "EXPLICIT_SOURCE_SUPPORTED_DATE",
+          "sellerBuyerRole": "SAFE_OR_NOT_APPLICABLE",
+          "source": {
+            "evidenceId": "da37b7d0-cd3d-48ba-998c-ee6af7896e48",
+            "sourceUrl": "https://stocktitan.net/news/TDC/teradata-appoints-ken-ricketts-as-chief-information-security-5x3804nnmwt2.html",
+            "publisher": null,
+            "publishedAt": null,
+            "observedAt": "2026-08-31T12:42:33.196Z",
+            "sourceClassification": "OTHER_WEB",
+            "entityStatus": "CONFIRMED_ENTITY"
+          }
+        },
+        {
+          "origin": "DETERMINISTIC",
+          "candidate": {
+            "evidenceId": "9fc73350-4e40-4bd3-9576-4dd6a5cb9ebb",
+            "factType": "LEADERSHIP_CHANGE",
+            "structuredValue": {
+              "person": "Ken Ricketts",
+              "role": "Senior Vice President and Chief Information Security Officer (CISO)",
+              "eventType": "announced"
+            },
+            "effectiveDate": "2026-01-21",
+            "confidence": 98,
+            "supportingExcerpt": "Jan. 21, 2026 /PRNewswire/ -- Teradata (NYSE: [TDC](#financial-modal)) announced the appointment of Ken Ricketts as Senior Vice President and Chief Information Security Officer (CISO).",
+            "extractorVersion": "fact-extraction-v4"
+          },
+          "approved": true,
+          "rejectionReasons": [],
+          "validationDimensions": {
+            "entity": {
+              "valid": true,
+              "codes": []
+            },
+            "claim": {
+              "valid": true,
+              "codes": []
+            },
+            "temporal": {
+              "valid": true,
+              "codes": []
+            },
+            "roleRelationship": {
+              "valid": true,
+              "codes": []
+            },
+            "factType": {
+              "valid": true,
+              "codes": []
+            }
+          },
+          "dateProvenance": "EXPLICIT_SOURCE_SUPPORTED_DATE",
+          "sellerBuyerRole": "SAFE_OR_NOT_APPLICABLE",
+          "source": {
+            "evidenceId": "9fc73350-4e40-4bd3-9576-4dd6a5cb9ebb",
+            "sourceUrl": "https://prnewswire.com/news-releases/teradata-appoints-ken-ricketts-as-chief-information-security-officer-302666405.html",
+            "publisher": null,
+            "publishedAt": null,
+            "observedAt": "2026-08-31T12:42:33.196Z",
+            "sourceClassification": "OTHER_WEB",
+            "entityStatus": "CONFIRMED_ENTITY"
+          }
+        },
+        {
+          "origin": "DETERMINISTIC",
+          "candidate": {
+            "evidenceId": "6ae4f9dc-a52d-47ec-9888-d5bfc874f83d",
+            "factType": "LEADERSHIP_CHANGE",
+            "structuredValue": {
+              "company": "Teradata",
+              "person": "Ken Ricketts",
+              "role": "CISO",
+              "eventType": "Appoints"
+            },
+            "effectiveDate": "2026-01-21",
+            "confidence": 98,
+            "supportingExcerpt": "Teradata Appoints Ken Ricketts as CISO\n\n* [Home](/)\n* [About us](/about-us)\n* [Newsroom](/newsroom)\n* [Press releases](/press-releases)\n\n# Teradata Appoints Ken Ricketts as Chief Information Security Officer\n\nJan 21, 2026 | SAN DIEGO\n\nTeradata (NYSE: [TDC](https://investor.teradata.com/overview/default.aspx)) announced the appointment of Ken Ricketts as Senior Vice President and Chief Information Security Officer (CISO).",
+            "extractorVersion": "fact-extraction-v4"
+          },
+          "approved": true,
+          "rejectionReasons": [],
+          "validationDimensions": {
+            "entity": {
+              "valid": true,
+              "codes": []
+            },
+            "claim": {
+              "valid": true,
+              "codes": []
+            },
+            "temporal": {
+              "valid": true,
+              "codes": []
+            },
+            "roleRelationship": {
+              "valid": true,
+              "codes": []
+            },
+            "factType": {
+              "valid": true,
+              "codes": []
+            }
+          },
+          "dateProvenance": "EXPLICIT_SOURCE_SUPPORTED_DATE",
+          "sellerBuyerRole": "SAFE_OR_NOT_APPLICABLE",
+          "source": {
+            "evidenceId": "6ae4f9dc-a52d-47ec-9888-d5bfc874f83d",
+            "sourceUrl": "https://teradata.com/press-releases/2026/teradata-appoints-ken-ricketts-as-ciso",
+            "publisher": null,
+            "publishedAt": null,
+            "observedAt": "2026-08-31T12:42:33.196Z",
+            "sourceClassification": "OFFICIAL_WEBSITE",
+            "entityStatus": "CONFIRMED_ENTITY"
+          }
+        },
+        {
+          "origin": "DETERMINISTIC",
+          "candidate": {
+            "evidenceId": "6ae4f9dc-a52d-47ec-9888-d5bfc874f83d",
+            "factType": "LEADERSHIP_CHANGE",
+            "structuredValue": {
+              "company": "Teradata",
+              "person": "Ken Ricketts",
+              "role": "Chief Information Security Officer",
+              "eventType": "Appoints"
+            },
+            "effectiveDate": "2026-01-21",
+            "confidence": 98,
+            "supportingExcerpt": "Teradata Appoints Ken Ricketts as Chief Information Security Officer\n\nJan 21, 2026 | SAN DIEGO\n\nTeradata (NYSE: [TDC](https://investor.teradata.com/overview/default.aspx)) announced the appointment of Ken Ricketts as Senior Vice President and Chief Information Security Officer (CISO).",
+            "extractorVersion": "fact-extraction-v4"
+          },
+          "approved": true,
+          "rejectionReasons": [],
+          "validationDimensions": {
+            "entity": {
+              "valid": true,
+              "codes": []
+            },
+            "claim": {
+              "valid": true,
+              "codes": []
+            },
+            "temporal": {
+              "valid": true,
+              "codes": []
+            },
+            "roleRelationship": {
+              "valid": true,
+              "codes": []
+            },
+            "factType": {
+              "valid": true,
+              "codes": []
+            }
+          },
+          "dateProvenance": "EXPLICIT_SOURCE_SUPPORTED_DATE",
+          "sellerBuyerRole": "SAFE_OR_NOT_APPLICABLE",
+          "source": {
+            "evidenceId": "6ae4f9dc-a52d-47ec-9888-d5bfc874f83d",
+            "sourceUrl": "https://teradata.com/press-releases/2026/teradata-appoints-ken-ricketts-as-ciso",
+            "publisher": null,
+            "publishedAt": null,
+            "observedAt": "2026-08-31T12:42:33.196Z",
+            "sourceClassification": "OFFICIAL_WEBSITE",
+            "entityStatus": "CONFIRMED_ENTITY"
+          }
+        },
+        {
+          "origin": "DETERMINISTIC",
+          "candidate": {
+            "evidenceId": "6ae4f9dc-a52d-47ec-9888-d5bfc874f83d",
+            "factType": "LEADERSHIP_CHANGE",
+            "structuredValue": {
+              "person": "Ken Ricketts",
+              "role": "Senior Vice President and Chief Information Security Officer (CISO)",
+              "eventType": "announced"
+            },
+            "effectiveDate": "2026-01-21",
+            "confidence": 98,
+            "supportingExcerpt": "Jan 21, 2026 | SAN DIEGO\n\nTeradata (NYSE: [TDC](https://investor.teradata.com/overview/default.aspx)) announced the appointment of Ken Ricketts as Senior Vice President and Chief Information Security Officer (CISO).",
+            "extractorVersion": "fact-extraction-v4"
+          },
+          "approved": true,
+          "rejectionReasons": [],
+          "validationDimensions": {
+            "entity": {
+              "valid": true,
+              "codes": []
+            },
+            "claim": {
+              "valid": true,
+              "codes": []
+            },
+            "temporal": {
+              "valid": true,
+              "codes": []
+            },
+            "roleRelationship": {
+              "valid": true,
+              "codes": []
+            },
+            "factType": {
+              "valid": true,
+              "codes": []
+            }
+          },
+          "dateProvenance": "EXPLICIT_SOURCE_SUPPORTED_DATE",
+          "sellerBuyerRole": "SAFE_OR_NOT_APPLICABLE",
+          "source": {
+            "evidenceId": "6ae4f9dc-a52d-47ec-9888-d5bfc874f83d",
+            "sourceUrl": "https://teradata.com/press-releases/2026/teradata-appoints-ken-ricketts-as-ciso",
+            "publisher": null,
+            "publishedAt": null,
+            "observedAt": "2026-08-31T12:42:33.196Z",
+            "sourceClassification": "OFFICIAL_WEBSITE",
+            "entityStatus": "CONFIRMED_ENTITY"
+          }
+        }
+      ],
+      "approvedFacts": [
+        {
+          "id": "ephemeral-6560af66da05ad8555113b22",
+          "factType": "LEADERSHIP_CHANGE",
+          "effectiveDate": "2026-01-21",
+          "structuredValue": {
+            "person": "Ken Ricketts",
+            "role": "Senior Vice President and Chief Information Security Officer (CISO)",
+            "eventType": "announced"
+          },
+          "supportingExcerpt": "Jan. 21, 2026 /PRNewswire/ -- Teradata (NYSE: [TDC](/overview/TDC/ \"View TDC stock overview\")) announced the appointment of Ken Ricketts as Senior Vice President and Chief Information Security Officer (CISO).",
+          "evidenceId": "da37b7d0-cd3d-48ba-998c-ee6af7896e48"
+        },
+        {
+          "id": "ephemeral-afcf49a4f9e4284437ec31d3",
+          "factType": "LEADERSHIP_CHANGE",
+          "effectiveDate": "2026-01-21",
+          "structuredValue": {
+            "person": "Ken Ricketts",
+            "role": "Senior Vice President and Chief Information Security Officer (CISO)",
+            "eventType": "announced"
+          },
+          "supportingExcerpt": "Jan. 21, 2026 /PRNewswire/ -- Teradata (NYSE: [TDC](#financial-modal)) announced the appointment of Ken Ricketts as Senior Vice President and Chief Information Security Officer (CISO).",
+          "evidenceId": "9fc73350-4e40-4bd3-9576-4dd6a5cb9ebb"
+        },
+        {
+          "id": "ephemeral-3bc9866e22dbe8e43a572e4f",
+          "factType": "LEADERSHIP_CHANGE",
+          "effectiveDate": "2026-01-21",
+          "structuredValue": {
+            "company": "Teradata",
+            "person": "Ken Ricketts",
+            "role": "CISO",
+            "eventType": "Appoints"
+          },
+          "supportingExcerpt": "Teradata Appoints Ken Ricketts as CISO\n\n* [Home](/)\n* [About us](/about-us)\n* [Newsroom](/newsroom)\n* [Press releases](/press-releases)\n\n# Teradata Appoints Ken Ricketts as Chief Information Security Officer\n\nJan 21, 2026 | SAN DIEGO\n\nTeradata (NYSE: [TDC](https://investor.teradata.com/overview/default.aspx)) announced the appointment of Ken Ricketts as Senior Vice President and Chief Information Security Officer (CISO).",
+          "evidenceId": "6ae4f9dc-a52d-47ec-9888-d5bfc874f83d"
+        },
+        {
+          "id": "ephemeral-3e949a705bd874ee4e414737",
+          "factType": "LEADERSHIP_CHANGE",
+          "effectiveDate": "2026-01-21",
+          "structuredValue": {
+            "company": "Teradata",
+            "person": "Ken Ricketts",
+            "role": "Chief Information Security Officer",
+            "eventType": "Appoints"
+          },
+          "supportingExcerpt": "Teradata Appoints Ken Ricketts as Chief Information Security Officer\n\nJan 21, 2026 | SAN DIEGO\n\nTeradata (NYSE: [TDC](https://investor.teradata.com/overview/default.aspx)) announced the appointment of Ken Ricketts as Senior Vice President and Chief Information Security Officer (CISO).",
+          "evidenceId": "6ae4f9dc-a52d-47ec-9888-d5bfc874f83d"
+        },
+        {
+          "id": "ephemeral-a57c87541fd02d1f093239e9",
+          "factType": "LEADERSHIP_CHANGE",
+          "effectiveDate": "2026-01-21",
+          "structuredValue": {
+            "person": "Ken Ricketts",
+            "role": "Senior Vice President and Chief Information Security Officer (CISO)",
+            "eventType": "announced"
+          },
+          "supportingExcerpt": "Jan 21, 2026 | SAN DIEGO\n\nTeradata (NYSE: [TDC](https://investor.teradata.com/overview/default.aspx)) announced the appointment of Ken Ricketts as Senior Vice President and Chief Information Security Officer (CISO).",
+          "evidenceId": "6ae4f9dc-a52d-47ec-9888-d5bfc874f83d"
+        }
+      ],
+      "rejectedFacts": [],
+      "referenceFactRecovered": true,
+      "signalFeedingFactAdjudications": [
+        {
+          "factId": "ephemeral-6560af66da05ad8555113b22",
+          "classification": "SUPPORTED",
+          "adjudicationBasis": "Independently adjudicated reference fact for this control"
+        },
+        {
+          "factId": "ephemeral-afcf49a4f9e4284437ec31d3",
+          "classification": "SUPPORTED",
+          "adjudicationBasis": "Independently adjudicated reference fact for this control"
+        },
+        {
+          "factId": "ephemeral-3bc9866e22dbe8e43a572e4f",
+          "classification": "SUPPORTED",
+          "adjudicationBasis": "Independently adjudicated reference fact for this control"
+        },
+        {
+          "factId": "ephemeral-3e949a705bd874ee4e414737",
+          "classification": "SUPPORTED",
+          "adjudicationBasis": "Independently adjudicated reference fact for this control"
+        },
+        {
+          "factId": "ephemeral-a57c87541fd02d1f093239e9",
+          "classification": "SUPPORTED",
+          "adjudicationBasis": "Independently adjudicated reference fact for this control"
+        }
+      ],
+      "supportedSignalFeedingFactCount": 5,
+      "unsupportedSignalFeedingFactCount": 0
+    },
+    {
+      "company": "Nubank",
+      "acceptedEvidenceCount": 1,
+      "expectedReferenceFactType": "LEADERSHIP_CHANGE",
+      "factProposals": [],
+      "approvedFacts": [],
+      "rejectedFacts": [],
+      "referenceFactRecovered": false,
+      "signalFeedingFactAdjudications": [],
+      "supportedSignalFeedingFactCount": 0,
+      "unsupportedSignalFeedingFactCount": 0
+    },
+    {
+      "company": "Black Duck",
+      "acceptedEvidenceCount": 43,
+      "expectedReferenceFactType": "LEADERSHIP_CHANGE",
+      "factProposals": [
+        {
+          "origin": "DETERMINISTIC",
+          "candidate": {
+            "evidenceId": "4a9fbc45-1012-440a-89a0-6c592f421761",
+            "factType": "LEADERSHIP_CHANGE",
+            "structuredValue": {
+              "company": "Inc.",
+              "person": "Bruce Jenkins",
+              "role": "chief information security officer",
+              "eventType": "hires"
+            },
+            "effectiveDate": "2026-05-14",
+            "confidence": 98,
+            "supportingExcerpt": "May 14, 2026 | www.itsecuritynews.info](https://www.itsecuritynews.info/qa-why-vulnerability-scans-are-giving-businesses-a-false-sense-of-security)\n* ![Media icon](/_assets/media.BMJLsbkg.svg)\n\n[### Black Duck Software, Inc.",
+            "extractorVersion": "fact-extraction-v4"
+          },
+          "approved": false,
+          "rejectionReasons": [
+            {
+              "dimension": "entity",
+              "code": "WRONG_ENTITY",
+              "message": "Fact is attributed to a different company than the requested subject"
+            },
+            {
+              "dimension": "factType",
+              "code": "FACT_TYPE_NOT_SUPPORTED",
+              "message": "Fact type is not supported by the supporting excerpt"
+            },
+            {
+              "dimension": "claim",
+              "code": "UNSUPPORTED_CLAIM",
+              "message": "Structured values are not directly supported by the excerpt"
+            }
+          ],
+          "validationDimensions": {
+            "entity": {
+              "valid": false,
+              "codes": [
+                "WRONG_ENTITY"
+              ]
+            },
+            "claim": {
+              "valid": false,
+              "codes": [
+                "UNSUPPORTED_CLAIM"
+              ]
+            },
+            "temporal": {
+              "valid": true,
+              "codes": []
+            },
+            "roleRelationship": {
+              "valid": true,
+              "codes": []
+            },
+            "factType": {
+              "valid": false,
+              "codes": [
+                "FACT_TYPE_NOT_SUPPORTED"
+              ]
+            }
+          },
+          "dateProvenance": [],
+          "sellerBuyerRole": "SAFE_OR_NOT_APPLICABLE",
+          "source": {
+            "evidenceId": "4a9fbc45-1012-440a-89a0-6c592f421761",
+            "sourceUrl": "https://leadiq.com/c/black-duck/5a1d8aa22400002400647cc5",
+            "publisher": null,
+            "publishedAt": null,
+            "observedAt": "2026-08-31T12:48:42.491Z",
+            "sourceClassification": "OTHER_WEB",
+            "entityStatus": "CONFIRMED_ENTITY"
+          }
+        },
+        {
+          "origin": "PERSISTED_PROPOSAL",
+          "candidate": {
+            "evidenceId": "4a9fbc45-1012-440a-89a0-6c592f421761",
+            "factType": "TECHNOLOGY_MENTION",
+            "structuredValue": {
+              "technologies": [
+                "Camtasia",
+                "Prometheus",
+                "WSDL",
+                "Pivotal Cloud Foundry",
+                "LinkedIn Sales Navigator",
+                "Xactly",
+                "Cypress.io",
+                "Spring"
+              ]
+            },
+            "effectiveDate": "2026-08-31",
+            "confidence": 90,
+            "supportingExcerpt": "Black Duck uses 8 technology products and services including Camtasia, Prometheus, WSDL, and more. Explore Black Duck's tech stack below.\n\n* Camtasia\n\n  Audio, Video, Graphics\n* Prometheus\n\n  Data Management\n* WSDL\n\n  IT Infrastructure\n* Pivotal Cloud Foundry\n\n  Platform As A Service\n* LinkedIn Sales Navigator\n\n  Sales Enablement\n* Xactly\n\n  Sales Performance Management\n* Cypress.io\n\n  Testing And Qa\n* Spring\n\n  Web Frameworks",
+            "extractorVersion": "fact-extraction-v2"
+          },
+          "approved": true,
+          "rejectionReasons": [],
+          "validationDimensions": {
+            "entity": {
+              "valid": true,
+              "codes": []
+            },
+            "claim": {
+              "valid": true,
+              "codes": []
+            },
+            "temporal": {
+              "valid": true,
+              "codes": []
+            },
+            "roleRelationship": {
+              "valid": true,
+              "codes": []
+            },
+            "factType": {
+              "valid": true,
+              "codes": []
+            }
+          },
+          "dateProvenance": "OBSERVATION_DATE_TIMELESS",
+          "sellerBuyerRole": "SAFE_OR_NOT_APPLICABLE",
+          "source": {
+            "evidenceId": "4a9fbc45-1012-440a-89a0-6c592f421761",
+            "sourceUrl": "https://leadiq.com/c/black-duck/5a1d8aa22400002400647cc5",
+            "publisher": null,
+            "publishedAt": null,
+            "observedAt": "2026-08-31T12:48:42.491Z",
+            "sourceClassification": "OTHER_WEB",
+            "entityStatus": "CONFIRMED_ENTITY"
+          }
+        },
+        {
+          "origin": "PERSISTED_PROPOSAL",
+          "candidate": {
+            "evidenceId": "4a9fbc45-1012-440a-89a0-6c592f421761",
+            "factType": "TECHNOLOGY_MENTION",
+            "structuredValue": {
+              "technologies": [
+                "Camtasia",
+                "Prometheus",
+                "WSDL",
+                "Pivotal Cloud Foundry",
+                "LinkedIn Sales Navigator",
+                "Xactly",
+                "Cypress.io",
+                "Spring"
+              ]
+            },
+            "effectiveDate": "2026-08-31",
+            "confidence": 85,
+            "supportingExcerpt": "Black Duck's tech stack includes CamtasiaPrometheusWSDLPivotal Cloud FoundryLinkedIn Sales NavigatorXactlyCypress.ioSpring.",
+            "extractorVersion": "fact-extraction-v2"
+          },
+          "approved": false,
+          "rejectionReasons": [
+            {
+              "dimension": "factType",
+              "code": "FACT_TYPE_NOT_SUPPORTED",
+              "message": "Fact type is not supported by the supporting excerpt"
+            }
+          ],
+          "validationDimensions": {
+            "entity": {
+              "valid": true,
+              "codes": []
+            },
+            "claim": {
+              "valid": true,
+              "codes": []
+            },
+            "temporal": {
+              "valid": true,
+              "codes": []
+            },
+            "roleRelationship": {
+              "valid": true,
+              "codes": []
+            },
+            "factType": {
+              "valid": false,
+              "codes": [
+                "FACT_TYPE_NOT_SUPPORTED"
+              ]
+            }
+          },
+          "dateProvenance": [],
+          "sellerBuyerRole": "SAFE_OR_NOT_APPLICABLE",
+          "source": {
+            "evidenceId": "4a9fbc45-1012-440a-89a0-6c592f421761",
+            "sourceUrl": "https://leadiq.com/c/black-duck/5a1d8aa22400002400647cc5",
+            "publisher": null,
+            "publishedAt": null,
+            "observedAt": "2026-08-31T12:48:42.491Z",
+            "sourceClassification": "OTHER_WEB",
+            "entityStatus": "CONFIRMED_ENTITY"
+          }
+        },
+        {
+          "origin": "DETERMINISTIC",
+          "candidate": {
+            "evidenceId": "4a9fbc45-1012-440a-89a0-6c592f421761",
+            "factType": "TECHNOLOGY_MENTION",
+            "structuredValue": {
+              "technologies": [
+                "with Coverity"
+              ]
+            },
+            "effectiveDate": "2026-06-17",
+            "confidence": 98,
+            "supportingExcerpt": "Jun 17, 2026 | uktechnews.co.uk](https://uktechnews.co.uk/2026/06/17/black-duck-upgrades-security-platform-as-ai-attack-threat-intensifies)\n* ![Media icon](/_assets/media.BMJLsbkg.svg)\n\n[### Black Duck Software, Inc.",
+            "extractorVersion": "fact-extraction-v4"
+          },
+          "approved": false,
+          "rejectionReasons": [
+            {
+              "dimension": "factType",
+              "code": "FACT_TYPE_NOT_SUPPORTED",
+              "message": "Fact type is not supported by the supporting excerpt"
+            },
+            {
+              "dimension": "claim",
+              "code": "UNSUPPORTED_CLAIM",
+              "message": "Structured values are not directly supported by the excerpt"
+            }
+          ],
+          "validationDimensions": {
+            "entity": {
+              "valid": true,
+              "codes": []
+            },
+            "claim": {
+              "valid": false,
+              "codes": [
+                "UNSUPPORTED_CLAIM"
+              ]
+            },
+            "temporal": {
+              "valid": true,
+              "codes": []
+            },
+            "roleRelationship": {
+              "valid": true,
+              "codes": []
+            },
+            "factType": {
+              "valid": false,
+              "codes": [
+                "FACT_TYPE_NOT_SUPPORTED"
+              ]
+            }
+          },
+          "dateProvenance": [],
+          "sellerBuyerRole": "SAFE_OR_NOT_APPLICABLE",
+          "source": {
+            "evidenceId": "4a9fbc45-1012-440a-89a0-6c592f421761",
+            "sourceUrl": "https://leadiq.com/c/black-duck/5a1d8aa22400002400647cc5",
+            "publisher": null,
+            "publishedAt": null,
+            "observedAt": "2026-08-31T12:48:42.491Z",
+            "sourceClassification": "OTHER_WEB",
+            "entityStatus": "CONFIRMED_ENTITY"
+          }
+        },
+        {
+          "origin": "DETERMINISTIC",
+          "candidate": {
+            "evidenceId": "09101ce7-ad5c-4621-819a-13ebf8433368",
+            "factType": "LEADERSHIP_CHANGE",
+            "structuredValue": {
+              "company": "Black Duck",
+              "person": "Dom Glavach",
+              "role": "Chief Information Security Officer",
+              "eventType": "Appoints"
+            },
+            "effectiveDate": "2026-04-09",
+            "confidence": 98,
+            "supportingExcerpt": "Black Duck Appoints Dom Glavach as Chief Information Security Officer\n\n[Accessibility Statement](https://www.cision.com/about/accessibility/) [Skip Navigation](#main)\n\n# Black Duck Appoints Dom Glavach as Chief Information Security Officer\n\n[![Black Duck (PRNewsfoto/Black Duck Software)]( \"Black Duck (PRNewsfoto/Black Duck Software)\")](#)\n\n---\n\n## News provided by\n\n[**Black Duck Software**](/news/black-duck-software/)\n\nApr 09, 2026, 08:00 ET\n\n## Share this article\n\nShare toX\n\n![]()\n\nShare this article\n\nShare toX\n\n![]()\n\n---\n\n*Veteran security executive brings more than two decades of enterprise, SaaS, and national defense cybersecurity leadership to Black Duck*\n\nBURLINGTON, Mass., April 9, 2026 /PRNewswire/ -- [Black Duck®](https://edge.prnewswire.com/c/link/?t=0&l=en&o=4660042-1&h=3032668954&u=https%3A%2F%2Fwww.blackduck.com%2F%3Fcmp%3Dpr-sig%26utm_medium%3Dreferral&a=Black+Duck%C2%AE), the leader in AI-powered application security, today announced the appointment of Dom Glavach as Chief Information Security Officer (CISO).",
+            "extractorVersion": "fact-extraction-v4"
+          },
+          "approved": true,
+          "rejectionReasons": [],
+          "validationDimensions": {
+            "entity": {
+              "valid": true,
+              "codes": []
+            },
+            "claim": {
+              "valid": true,
+              "codes": []
+            },
+            "temporal": {
+              "valid": true,
+              "codes": []
+            },
+            "roleRelationship": {
+              "valid": true,
+              "codes": []
+            },
+            "factType": {
+              "valid": true,
+              "codes": []
+            }
+          },
+          "dateProvenance": "EXPLICIT_SOURCE_SUPPORTED_DATE",
+          "sellerBuyerRole": "SAFE_OR_NOT_APPLICABLE",
+          "source": {
+            "evidenceId": "09101ce7-ad5c-4621-819a-13ebf8433368",
+            "sourceUrl": "https://prnewswire.com/news-releases/black-duck-appoints-dom-glavach-as-chief-information-security-officer-302737311.html",
+            "publisher": null,
+            "publishedAt": null,
+            "observedAt": "2026-08-31T12:48:42.491Z",
+            "sourceClassification": "OTHER_WEB",
+            "entityStatus": "CONFIRMED_ENTITY"
+          }
+        },
+        {
+          "origin": "DETERMINISTIC",
+          "candidate": {
+            "evidenceId": "09101ce7-ad5c-4621-819a-13ebf8433368",
+            "factType": "LEADERSHIP_CHANGE",
+            "structuredValue": {
+              "company": "Black Duck",
+              "person": "Dom Glavach",
+              "role": "Chief Information Security Officer",
+              "eventType": "Appoints"
+            },
+            "effectiveDate": "2026-04-09",
+            "confidence": 98,
+            "supportingExcerpt": "Black Duck Appoints Dom Glavach as Chief Information Security Officer\n\n[![Black Duck (PRNewsfoto/Black Duck Software)]( \"Black Duck (PRNewsfoto/Black Duck Software)\")](#)\n\n---\n\n## News provided by\n\n[**Black Duck Software**](/news/black-duck-software/)\n\nApr 09, 2026, 08:00 ET\n\n## Share this article\n\nShare toX\n\n![]()\n\nShare this article\n\nShare toX\n\n![]()\n\n---\n\n*Veteran security executive brings more than two decades of enterprise, SaaS, and national defense cybersecurity leadership to Black Duck*\n\nBURLINGTON, Mass., April 9, 2026 /PRNewswire/ -- [Black Duck®](https://edge.prnewswire.com/c/link/?t=0&l=en&o=4660042-1&h=3032668954&u=https%3A%2F%2Fwww.blackduck.com%2F%3Fcmp%3Dpr-sig%26utm_medium%3Dreferral&a=Black+Duck%C2%AE), the leader in AI-powered application security, today announced the appointment of Dom Glavach as Chief Information Security Officer (CISO).",
+            "extractorVersion": "fact-extraction-v4"
+          },
+          "approved": true,
+          "rejectionReasons": [],
+          "validationDimensions": {
+            "entity": {
+              "valid": true,
+              "codes": []
+            },
+            "claim": {
+              "valid": true,
+              "codes": []
+            },
+            "temporal": {
+              "valid": true,
+              "codes": []
+            },
+            "roleRelationship": {
+              "valid": true,
+              "codes": []
+            },
+            "factType": {
+              "valid": true,
+              "codes": []
+            }
+          },
+          "dateProvenance": "EXPLICIT_SOURCE_SUPPORTED_DATE",
+          "sellerBuyerRole": "SAFE_OR_NOT_APPLICABLE",
+          "source": {
+            "evidenceId": "09101ce7-ad5c-4621-819a-13ebf8433368",
+            "sourceUrl": "https://prnewswire.com/news-releases/black-duck-appoints-dom-glavach-as-chief-information-security-officer-302737311.html",
+            "publisher": null,
+            "publishedAt": null,
+            "observedAt": "2026-08-31T12:48:42.491Z",
+            "sourceClassification": "OTHER_WEB",
+            "entityStatus": "CONFIRMED_ENTITY"
+          }
+        },
+        {
+          "origin": "DETERMINISTIC",
+          "candidate": {
+            "evidenceId": "09101ce7-ad5c-4621-819a-13ebf8433368",
+            "factType": "LEADERSHIP_CHANGE",
+            "structuredValue": {
+              "person": "Dom Glavach",
+              "role": "Chief Information Security Officer (CISO)",
+              "eventType": "announced"
+            },
+            "effectiveDate": "2026-04-09",
+            "confidence": 98,
+            "supportingExcerpt": "April 9, 2026 /PRNewswire/ -- [Black Duck®](https://edge.prnewswire.com/c/link/?t=0&l=en&o=4660042-1&h=3032668954&u=https%3A%2F%2Fwww.blackduck.com%2F%3Fcmp%3Dpr-sig%26utm_medium%3Dreferral&a=Black+Duck%C2%AE), the leader in AI-powered application security, today announced the appointment of Dom Glavach as Chief Information Security Officer (CISO).",
+            "extractorVersion": "fact-extraction-v4"
+          },
+          "approved": true,
+          "rejectionReasons": [],
+          "validationDimensions": {
+            "entity": {
+              "valid": true,
+              "codes": []
+            },
+            "claim": {
+              "valid": true,
+              "codes": []
+            },
+            "temporal": {
+              "valid": true,
+              "codes": []
+            },
+            "roleRelationship": {
+              "valid": true,
+              "codes": []
+            },
+            "factType": {
+              "valid": true,
+              "codes": []
+            }
+          },
+          "dateProvenance": "EXPLICIT_SOURCE_SUPPORTED_DATE",
+          "sellerBuyerRole": "SAFE_OR_NOT_APPLICABLE",
+          "source": {
+            "evidenceId": "09101ce7-ad5c-4621-819a-13ebf8433368",
+            "sourceUrl": "https://prnewswire.com/news-releases/black-duck-appoints-dom-glavach-as-chief-information-security-officer-302737311.html",
+            "publisher": null,
+            "publishedAt": null,
+            "observedAt": "2026-08-31T12:48:42.491Z",
+            "sourceClassification": "OTHER_WEB",
+            "entityStatus": "CONFIRMED_ENTITY"
+          }
+        },
+        {
+          "origin": "DETERMINISTIC",
+          "candidate": {
+            "evidenceId": "2c1c3ffa-df94-4c44-ac0e-6519cc8b9616",
+            "factType": "LEADERSHIP_CHANGE",
+            "structuredValue": {
+              "company": "Black Duck",
+              "person": "Dom Glavach",
+              "role": "Chief Information Security Officer",
+              "eventType": "Appoints"
+            },
+            "effectiveDate": "2026-04-09",
+            "confidence": 98,
+            "supportingExcerpt": "Black Duck Appoints Dom Glavach as Chief Information Security Officer\n\n* [Download a PDF version of this page](https://news.blackduck.com/2026-04-09-Black-Duck-Appoints-Dom-Glavach-as-Chief-Information-Security-Officer?asPDF=1 \"Download a PDF version of this page\")\n* [Share this page on Twitter](https://twitter.com/share?url=https%3A%2F%2Fnews.blackduck.com%2Findex.php%3Fs%3D20295%26item%3D122571 \"Twitter Share\")\n* [Share this page on LinkedIn](https://www.linkedin.com/shareArticle?mini=true&url=https%3A%2F%2Fnews.blackduck.com%2Findex.php%3Fs%3D20295%26item%3D122571 \"Linkedin Share\")\n* [Share this page on Facebook](https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fnews.blackduck.com%2Findex.php%3Fs%3D20295%26item%3D122571 \"Facebook Share\")\n* [Email the URL of this page to a friend](#email \"Email the URL of this page to a friend\")\n\n* ![](https://mma.prnewswire.com/media/2952425/Dom_Glavach_Headshot.jpg?w=600 \"Dom Glavach Headshot\")\n\n[View File](https://news.blackduck.com/2026-04-09-Black-Duck-Appoints-Dom-Glavach-as-Chief-Information-Security-Officer#assets_117:19148) [Download File](https://mma.prnewswire.com/media/2952425/Dom_Glavach_Headshot.jpg?p=original)\n\nDom Glavach Headshot\n\n*Veteran security executive brings more than two decades of enterprise, SaaS, and national defense cybersecurity leadership to Black Duck*\n\nBURLINGTON, Mass., April 9, 2026 /[PRNewswire](http://www.prnewswire.com/)/ -- [Black Duck®](https://edge.prnewswire.com/c/link/?t=0&l=en&o=4660042-1&h=3032668954&u=https%3A%2F%2Fwww.blackduck.com%2F%3Fcmp%3Dpr-sig%26utm_medium%3Dreferral&a=Black+Duck%C2%AE), the leader in AI-powered application security, today announced the appointment of Dom Glavach as Chief Information Security Officer (CISO).",
+            "extractorVersion": "fact-extraction-v4"
+          },
+          "approved": true,
+          "rejectionReasons": [],
+          "validationDimensions": {
+            "entity": {
+              "valid": true,
+              "codes": []
+            },
+            "claim": {
+              "valid": true,
+              "codes": []
+            },
+            "temporal": {
+              "valid": true,
+              "codes": []
+            },
+            "roleRelationship": {
+              "valid": true,
+              "codes": []
+            },
+            "factType": {
+              "valid": true,
+              "codes": []
+            }
+          },
+          "dateProvenance": "EXPLICIT_SOURCE_SUPPORTED_DATE",
+          "sellerBuyerRole": "SAFE_OR_NOT_APPLICABLE",
+          "source": {
+            "evidenceId": "2c1c3ffa-df94-4c44-ac0e-6519cc8b9616",
+            "sourceUrl": "https://news.blackduck.com/2026-04-09-Black-Duck-Appoints-Dom-Glavach-as-Chief-Information-Security-Officer",
+            "publisher": null,
+            "publishedAt": null,
+            "observedAt": "2026-08-31T12:48:42.491Z",
+            "sourceClassification": "OFFICIAL_WEBSITE",
+            "entityStatus": "CONFIRMED_ENTITY"
+          }
+        },
+        {
+          "origin": "DETERMINISTIC",
+          "candidate": {
+            "evidenceId": "2c1c3ffa-df94-4c44-ac0e-6519cc8b9616",
+            "factType": "LEADERSHIP_CHANGE",
+            "structuredValue": {
+              "person": "Dom Glavach",
+              "role": "Chief Information Security Officer (CISO)",
+              "eventType": "announced"
+            },
+            "effectiveDate": "2026-04-09",
+            "confidence": 98,
+            "supportingExcerpt": "April 9, 2026 /[PRNewswire](http://www.prnewswire.com/)/ -- [Black Duck®](https://edge.prnewswire.com/c/link/?t=0&l=en&o=4660042-1&h=3032668954&u=https%3A%2F%2Fwww.blackduck.com%2F%3Fcmp%3Dpr-sig%26utm_medium%3Dreferral&a=Black+Duck%C2%AE), the leader in AI-powered application security, today announced the appointment of Dom Glavach as Chief Information Security Officer (CISO).",
+            "extractorVersion": "fact-extraction-v4"
+          },
+          "approved": true,
+          "rejectionReasons": [],
+          "validationDimensions": {
+            "entity": {
+              "valid": true,
+              "codes": []
+            },
+            "claim": {
+              "valid": true,
+              "codes": []
+            },
+            "temporal": {
+              "valid": true,
+              "codes": []
+            },
+            "roleRelationship": {
+              "valid": true,
+              "codes": []
+            },
+            "factType": {
+              "valid": true,
+              "codes": []
+            }
+          },
+          "dateProvenance": "EXPLICIT_SOURCE_SUPPORTED_DATE",
+          "sellerBuyerRole": "SAFE_OR_NOT_APPLICABLE",
+          "source": {
+            "evidenceId": "2c1c3ffa-df94-4c44-ac0e-6519cc8b9616",
+            "sourceUrl": "https://news.blackduck.com/2026-04-09-Black-Duck-Appoints-Dom-Glavach-as-Chief-Information-Security-Officer",
+            "publisher": null,
+            "publishedAt": null,
+            "observedAt": "2026-08-31T12:48:42.491Z",
+            "sourceClassification": "OFFICIAL_WEBSITE",
+            "entityStatus": "CONFIRMED_ENTITY"
+          }
+        },
+        {
+          "origin": "PERSISTED_PROPOSAL",
+          "candidate": {
+            "evidenceId": "16713492-ccff-4861-8c43-e0de1b3061b0",
+            "factType": "FUNDING_EVENT",
+            "structuredValue": {
+              "company": "Black Duck",
+              "roundCount": "8",
+              "totalFunding": "$71M"
+            },
+            "effectiveDate": "2026-08-31",
+            "confidence": 94,
+            "supportingExcerpt": "Black Duckhas raised a total funding of$71Mover 8rounds.",
+            "extractorVersion": "fact-extraction-v2"
+          },
+          "approved": false,
+          "rejectionReasons": [
+            {
+              "dimension": "temporal",
+              "code": "EVENT_DATE_NOT_EXPLICIT",
+              "message": "Event effective date is not supported by the supporting excerpt"
+            }
+          ],
+          "validationDimensions": {
+            "entity": {
+              "valid": true,
+              "codes": []
+            },
+            "claim": {
+              "valid": true,
+              "codes": []
+            },
+            "temporal": {
+              "valid": false,
+              "codes": [
+                "EVENT_DATE_NOT_EXPLICIT"
+              ]
+            },
+            "roleRelationship": {
+              "valid": true,
+              "codes": []
+            },
+            "factType": {
+              "valid": true,
+              "codes": []
+            }
+          },
+          "dateProvenance": [
+            "EVENT_DATE_NOT_EXPLICIT"
+          ],
+          "sellerBuyerRole": "SAFE_OR_NOT_APPLICABLE",
+          "source": {
+            "evidenceId": "16713492-ccff-4861-8c43-e0de1b3061b0",
+            "sourceUrl": "https://tracxn.com/d/companies/black-duck/__vaa626lqWTfuanFv_EfwUPj9X_BUgMzFB2PAgx6gkXk",
+            "publisher": null,
+            "publishedAt": null,
+            "observedAt": "2026-08-31T12:50:01.070Z",
+            "sourceClassification": "JOB_LISTING",
+            "entityStatus": "CONFIRMED_ENTITY"
+          }
+        },
+        {
+          "origin": "PERSISTED_PROPOSAL",
+          "candidate": {
+            "evidenceId": "cdfad517-1340-4f19-911c-6128416af443",
+            "factType": "TECHNOLOGY_MENTION",
+            "structuredValue": {
+              "technologies": [
+                "Managed Services Portal",
+                "Polaris (Classic & Next Generation)",
+                "Knowledge Base",
+                "Black Duck Binary Analysis"
+              ]
+            },
+            "effectiveDate": "2026-08-31",
+            "confidence": 93,
+            "supportingExcerpt": "The certificate scope comprises the Information Security Management System underlying the Black Duck Software Inc. Information Technology (IT) and Cloud Operations processes that collect, process and store confidential customer information supporting the Managed Services Portal, Polaris (Classic & Next Generation), and Black Duck applications (including Knowledge Base & Black Duck Binary Analysis).",
+            "extractorVersion": "fact-extraction-v3"
+          },
+          "approved": false,
+          "rejectionReasons": [
+            {
+              "dimension": "factType",
+              "code": "FACT_TYPE_NOT_SUPPORTED",
+              "message": "Fact type is not supported by the supporting excerpt"
+            }
+          ],
+          "validationDimensions": {
+            "entity": {
+              "valid": true,
+              "codes": []
+            },
+            "claim": {
+              "valid": true,
+              "codes": []
+            },
+            "temporal": {
+              "valid": true,
+              "codes": []
+            },
+            "roleRelationship": {
+              "valid": true,
+              "codes": []
+            },
+            "factType": {
+              "valid": false,
+              "codes": [
+                "FACT_TYPE_NOT_SUPPORTED"
+              ]
+            }
+          },
+          "dateProvenance": [],
+          "sellerBuyerRole": "SAFE_OR_NOT_APPLICABLE",
+          "source": {
+            "evidenceId": "cdfad517-1340-4f19-911c-6128416af443",
+            "sourceUrl": "https://blackduck.com/content/dam/black-duck/en-us/documents/21-Certificate-ISO%2027017-Black%20Duck%20Software-2025.pdf",
+            "publisher": null,
+            "publishedAt": null,
+            "observedAt": "2026-08-31T19:12:27.433Z",
+            "sourceClassification": "OFFICIAL_WEBSITE",
+            "entityStatus": "CONFIRMED_ENTITY"
+          }
+        },
+        {
+          "origin": "PERSISTED_PROPOSAL",
+          "candidate": {
+            "evidenceId": "57404b8f-b23d-4369-962f-d94b7ee81232",
+            "factType": "TECHNOLOGY_MENTION",
+            "structuredValue": {
+              "technologies": [
+                "an integrated, software-as-a-service application security platform",
+                "static application security testing",
+                "software composition analysis",
+                "dynamic application security testing"
+              ]
+            },
+            "effectiveDate": "2026-08-31",
+            "confidence": 97,
+            "supportingExcerpt": "The Polaris Platform is an integrated, software-as-a-service application security platform powered by the industry's leading static application security testing, software composition analysis, and dynamic application security testing engines.",
+            "extractorVersion": "fact-extraction-v3"
+          },
+          "approved": false,
+          "rejectionReasons": [
+            {
+              "dimension": "temporal",
+              "code": "EVENT_DATE_NOT_EXPLICIT",
+              "message": "Event effective date is not supported by the supporting excerpt"
+            }
+          ],
+          "validationDimensions": {
+            "entity": {
+              "valid": true,
+              "codes": []
+            },
+            "claim": {
+              "valid": true,
+              "codes": []
+            },
+            "temporal": {
+              "valid": false,
+              "codes": [
+                "EVENT_DATE_NOT_EXPLICIT"
+              ]
+            },
+            "roleRelationship": {
+              "valid": true,
+              "codes": []
+            },
+            "factType": {
+              "valid": true,
+              "codes": []
+            }
+          },
+          "dateProvenance": [
+            "EVENT_DATE_NOT_EXPLICIT"
+          ],
+          "sellerBuyerRole": "SAFE_OR_NOT_APPLICABLE",
+          "source": {
+            "evidenceId": "57404b8f-b23d-4369-962f-d94b7ee81232",
+            "sourceUrl": "https://news.blackduck.com/2026-02-12-Black-Duck-Expands-Polaris-Integrations-to-Deliver-Frictionless-DevSecOps-at-Enterprise-Scale",
+            "publisher": null,
+            "publishedAt": null,
+            "observedAt": "2026-08-31T19:12:34.063Z",
+            "sourceClassification": "OFFICIAL_WEBSITE",
+            "entityStatus": "CONFIRMED_ENTITY"
+          }
+        },
+        {
+          "origin": "PERSISTED_PROPOSAL",
+          "candidate": {
+            "evidenceId": "1f964cc8-c674-4fbc-bead-b60a9a4230ef",
+            "factType": "TECHNOLOGY_MENTION",
+            "structuredValue": {
+              "technologies": [
+                "ContextAI™"
+              ]
+            },
+            "effectiveDate": "2026-08-31",
+            "confidence": 98,
+            "supportingExcerpt": "Signal uses a coordinated system of specialized AI security agents powered by ContextAI™ to analyze code, assess exploitability, and guide remediation in real time.",
+            "extractorVersion": "fact-extraction-v3"
+          },
+          "approved": false,
+          "rejectionReasons": [
+            {
+              "dimension": "roleRelationship",
+              "code": "SELLER_AS_BUYER",
+              "message": "Seller capability or customer enablement is not buyer technology behavior"
+            }
+          ],
+          "validationDimensions": {
+            "entity": {
+              "valid": true,
+              "codes": []
+            },
+            "claim": {
+              "valid": true,
+              "codes": []
+            },
+            "temporal": {
+              "valid": true,
+              "codes": []
+            },
+            "roleRelationship": {
+              "valid": false,
+              "codes": [
+                "SELLER_AS_BUYER"
+              ]
+            },
+            "factType": {
+              "valid": true,
+              "codes": []
+            }
+          },
+          "dateProvenance": [],
+          "sellerBuyerRole": "REJECTED",
+          "source": {
+            "evidenceId": "1f964cc8-c674-4fbc-bead-b60a9a4230ef",
+            "sourceUrl": "https://blackduck.com/blog/black-duck-polaris-may-2026-platform-updates.html",
+            "publisher": null,
+            "publishedAt": null,
+            "observedAt": "2026-08-31T19:12:34.063Z",
+            "sourceClassification": "OFFICIAL_WEBSITE",
+            "entityStatus": "CONFIRMED_ENTITY"
+          }
+        }
+      ],
+      "approvedFacts": [
+        {
+          "id": "ephemeral-3d26f3fa061dcc2b594671e7",
+          "factType": "TECHNOLOGY_MENTION",
+          "effectiveDate": "2026-08-31",
+          "structuredValue": {
+            "technologies": [
+              "Camtasia",
+              "Prometheus",
+              "WSDL",
+              "Pivotal Cloud Foundry",
+              "LinkedIn Sales Navigator",
+              "Xactly",
+              "Cypress.io",
+              "Spring"
+            ]
+          },
+          "supportingExcerpt": "Black Duck uses 8 technology products and services including Camtasia, Prometheus, WSDL, and more. Explore Black Duck's tech stack below.\n\n* Camtasia\n\n  Audio, Video, Graphics\n* Prometheus\n\n  Data Management\n* WSDL\n\n  IT Infrastructure\n* Pivotal Cloud Foundry\n\n  Platform As A Service\n* LinkedIn Sales Navigator\n\n  Sales Enablement\n* Xactly\n\n  Sales Performance Management\n* Cypress.io\n\n  Testing And Qa\n* Spring\n\n  Web Frameworks",
+          "evidenceId": "4a9fbc45-1012-440a-89a0-6c592f421761"
+        },
+        {
+          "id": "ephemeral-fcb8bd720d4d27dc33f475bf",
+          "factType": "LEADERSHIP_CHANGE",
+          "effectiveDate": "2026-04-09",
+          "structuredValue": {
+            "company": "Black Duck",
+            "person": "Dom Glavach",
+            "role": "Chief Information Security Officer",
+            "eventType": "Appoints"
+          },
+          "supportingExcerpt": "Black Duck Appoints Dom Glavach as Chief Information Security Officer\n\n[Accessibility Statement](https://www.cision.com/about/accessibility/) [Skip Navigation](#main)\n\n# Black Duck Appoints Dom Glavach as Chief Information Security Officer\n\n[![Black Duck (PRNewsfoto/Black Duck Software)]( \"Black Duck (PRNewsfoto/Black Duck Software)\")](#)\n\n---\n\n## News provided by\n\n[**Black Duck Software**](/news/black-duck-software/)\n\nApr 09, 2026, 08:00 ET\n\n## Share this article\n\nShare toX\n\n![]()\n\nShare this article\n\nShare toX\n\n![]()\n\n---\n\n*Veteran security executive brings more than two decades of enterprise, SaaS, and national defense cybersecurity leadership to Black Duck*\n\nBURLINGTON, Mass., April 9, 2026 /PRNewswire/ -- [Black Duck®](https://edge.prnewswire.com/c/link/?t=0&l=en&o=4660042-1&h=3032668954&u=https%3A%2F%2Fwww.blackduck.com%2F%3Fcmp%3Dpr-sig%26utm_medium%3Dreferral&a=Black+Duck%C2%AE), the leader in AI-powered application security, today announced the appointment of Dom Glavach as Chief Information Security Officer (CISO).",
+          "evidenceId": "09101ce7-ad5c-4621-819a-13ebf8433368"
+        },
+        {
+          "id": "ephemeral-ce6b7df52d9c37066f873833",
+          "factType": "LEADERSHIP_CHANGE",
+          "effectiveDate": "2026-04-09",
+          "structuredValue": {
+            "company": "Black Duck",
+            "person": "Dom Glavach",
+            "role": "Chief Information Security Officer",
+            "eventType": "Appoints"
+          },
+          "supportingExcerpt": "Black Duck Appoints Dom Glavach as Chief Information Security Officer\n\n[![Black Duck (PRNewsfoto/Black Duck Software)]( \"Black Duck (PRNewsfoto/Black Duck Software)\")](#)\n\n---\n\n## News provided by\n\n[**Black Duck Software**](/news/black-duck-software/)\n\nApr 09, 2026, 08:00 ET\n\n## Share this article\n\nShare toX\n\n![]()\n\nShare this article\n\nShare toX\n\n![]()\n\n---\n\n*Veteran security executive brings more than two decades of enterprise, SaaS, and national defense cybersecurity leadership to Black Duck*\n\nBURLINGTON, Mass., April 9, 2026 /PRNewswire/ -- [Black Duck®](https://edge.prnewswire.com/c/link/?t=0&l=en&o=4660042-1&h=3032668954&u=https%3A%2F%2Fwww.blackduck.com%2F%3Fcmp%3Dpr-sig%26utm_medium%3Dreferral&a=Black+Duck%C2%AE), the leader in AI-powered application security, today announced the appointment of Dom Glavach as Chief Information Security Officer (CISO).",
+          "evidenceId": "09101ce7-ad5c-4621-819a-13ebf8433368"
+        },
+        {
+          "id": "ephemeral-c3f30226aa1313575a4c2be0",
+          "factType": "LEADERSHIP_CHANGE",
+          "effectiveDate": "2026-04-09",
+          "structuredValue": {
+            "person": "Dom Glavach",
+            "role": "Chief Information Security Officer (CISO)",
+            "eventType": "announced"
+          },
+          "supportingExcerpt": "April 9, 2026 /PRNewswire/ -- [Black Duck®](https://edge.prnewswire.com/c/link/?t=0&l=en&o=4660042-1&h=3032668954&u=https%3A%2F%2Fwww.blackduck.com%2F%3Fcmp%3Dpr-sig%26utm_medium%3Dreferral&a=Black+Duck%C2%AE), the leader in AI-powered application security, today announced the appointment of Dom Glavach as Chief Information Security Officer (CISO).",
+          "evidenceId": "09101ce7-ad5c-4621-819a-13ebf8433368"
+        },
+        {
+          "id": "ephemeral-12ca44bfcb0eab1635d59cd4",
+          "factType": "LEADERSHIP_CHANGE",
+          "effectiveDate": "2026-04-09",
+          "structuredValue": {
+            "company": "Black Duck",
+            "person": "Dom Glavach",
+            "role": "Chief Information Security Officer",
+            "eventType": "Appoints"
+          },
+          "supportingExcerpt": "Black Duck Appoints Dom Glavach as Chief Information Security Officer\n\n* [Download a PDF version of this page](https://news.blackduck.com/2026-04-09-Black-Duck-Appoints-Dom-Glavach-as-Chief-Information-Security-Officer?asPDF=1 \"Download a PDF version of this page\")\n* [Share this page on Twitter](https://twitter.com/share?url=https%3A%2F%2Fnews.blackduck.com%2Findex.php%3Fs%3D20295%26item%3D122571 \"Twitter Share\")\n* [Share this page on LinkedIn](https://www.linkedin.com/shareArticle?mini=true&url=https%3A%2F%2Fnews.blackduck.com%2Findex.php%3Fs%3D20295%26item%3D122571 \"Linkedin Share\")\n* [Share this page on Facebook](https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fnews.blackduck.com%2Findex.php%3Fs%3D20295%26item%3D122571 \"Facebook Share\")\n* [Email the URL of this page to a friend](#email \"Email the URL of this page to a friend\")\n\n* ![](https://mma.prnewswire.com/media/2952425/Dom_Glavach_Headshot.jpg?w=600 \"Dom Glavach Headshot\")\n\n[View File](https://news.blackduck.com/2026-04-09-Black-Duck-Appoints-Dom-Glavach-as-Chief-Information-Security-Officer#assets_117:19148) [Download File](https://mma.prnewswire.com/media/2952425/Dom_Glavach_Headshot.jpg?p=original)\n\nDom Glavach Headshot\n\n*Veteran security executive brings more than two decades of enterprise, SaaS, and national defense cybersecurity leadership to Black Duck*\n\nBURLINGTON, Mass., April 9, 2026 /[PRNewswire](http://www.prnewswire.com/)/ -- [Black Duck®](https://edge.prnewswire.com/c/link/?t=0&l=en&o=4660042-1&h=3032668954&u=https%3A%2F%2Fwww.blackduck.com%2F%3Fcmp%3Dpr-sig%26utm_medium%3Dreferral&a=Black+Duck%C2%AE), the leader in AI-powered application security, today announced the appointment of Dom Glavach as Chief Information Security Officer (CISO).",
+          "evidenceId": "2c1c3ffa-df94-4c44-ac0e-6519cc8b9616"
+        },
+        {
+          "id": "ephemeral-51136ff9f181daf226401452",
+          "factType": "LEADERSHIP_CHANGE",
+          "effectiveDate": "2026-04-09",
+          "structuredValue": {
+            "person": "Dom Glavach",
+            "role": "Chief Information Security Officer (CISO)",
+            "eventType": "announced"
+          },
+          "supportingExcerpt": "April 9, 2026 /[PRNewswire](http://www.prnewswire.com/)/ -- [Black Duck®](https://edge.prnewswire.com/c/link/?t=0&l=en&o=4660042-1&h=3032668954&u=https%3A%2F%2Fwww.blackduck.com%2F%3Fcmp%3Dpr-sig%26utm_medium%3Dreferral&a=Black+Duck%C2%AE), the leader in AI-powered application security, today announced the appointment of Dom Glavach as Chief Information Security Officer (CISO).",
+          "evidenceId": "2c1c3ffa-df94-4c44-ac0e-6519cc8b9616"
+        }
+      ],
+      "rejectedFacts": [
+        {
+          "candidate": {
+            "evidenceId": "4a9fbc45-1012-440a-89a0-6c592f421761",
+            "factType": "LEADERSHIP_CHANGE",
+            "structuredValue": {
+              "company": "Inc.",
+              "person": "Bruce Jenkins",
+              "role": "chief information security officer",
+              "eventType": "hires"
+            },
+            "effectiveDate": "2026-05-14",
+            "confidence": 98,
+            "supportingExcerpt": "May 14, 2026 | www.itsecuritynews.info](https://www.itsecuritynews.info/qa-why-vulnerability-scans-are-giving-businesses-a-false-sense-of-security)\n* ![Media icon](/_assets/media.BMJLsbkg.svg)\n\n[### Black Duck Software, Inc.",
+            "extractorVersion": "fact-extraction-v4"
+          },
+          "reasons": [
+            {
+              "dimension": "entity",
+              "code": "WRONG_ENTITY",
+              "message": "Fact is attributed to a different company than the requested subject"
+            },
+            {
+              "dimension": "factType",
+              "code": "FACT_TYPE_NOT_SUPPORTED",
+              "message": "Fact type is not supported by the supporting excerpt"
+            },
+            {
+              "dimension": "claim",
+              "code": "UNSUPPORTED_CLAIM",
+              "message": "Structured values are not directly supported by the excerpt"
+            }
+          ],
+          "evidenceId": "4a9fbc45-1012-440a-89a0-6c592f421761"
+        },
+        {
+          "candidate": {
+            "evidenceId": "4a9fbc45-1012-440a-89a0-6c592f421761",
+            "factType": "TECHNOLOGY_MENTION",
+            "structuredValue": {
+              "technologies": [
+                "Camtasia",
+                "Prometheus",
+                "WSDL",
+                "Pivotal Cloud Foundry",
+                "LinkedIn Sales Navigator",
+                "Xactly",
+                "Cypress.io",
+                "Spring"
+              ]
+            },
+            "effectiveDate": "2026-08-31",
+            "confidence": 85,
+            "supportingExcerpt": "Black Duck's tech stack includes CamtasiaPrometheusWSDLPivotal Cloud FoundryLinkedIn Sales NavigatorXactlyCypress.ioSpring.",
+            "extractorVersion": "fact-extraction-v2"
+          },
+          "reasons": [
+            {
+              "dimension": "factType",
+              "code": "FACT_TYPE_NOT_SUPPORTED",
+              "message": "Fact type is not supported by the supporting excerpt"
+            }
+          ],
+          "evidenceId": "4a9fbc45-1012-440a-89a0-6c592f421761"
+        },
+        {
+          "candidate": {
+            "evidenceId": "4a9fbc45-1012-440a-89a0-6c592f421761",
+            "factType": "TECHNOLOGY_MENTION",
+            "structuredValue": {
+              "technologies": [
+                "with Coverity"
+              ]
+            },
+            "effectiveDate": "2026-06-17",
+            "confidence": 98,
+            "supportingExcerpt": "Jun 17, 2026 | uktechnews.co.uk](https://uktechnews.co.uk/2026/06/17/black-duck-upgrades-security-platform-as-ai-attack-threat-intensifies)\n* ![Media icon](/_assets/media.BMJLsbkg.svg)\n\n[### Black Duck Software, Inc.",
+            "extractorVersion": "fact-extraction-v4"
+          },
+          "reasons": [
+            {
+              "dimension": "factType",
+              "code": "FACT_TYPE_NOT_SUPPORTED",
+              "message": "Fact type is not supported by the supporting excerpt"
+            },
+            {
+              "dimension": "claim",
+              "code": "UNSUPPORTED_CLAIM",
+              "message": "Structured values are not directly supported by the excerpt"
+            }
+          ],
+          "evidenceId": "4a9fbc45-1012-440a-89a0-6c592f421761"
+        },
+        {
+          "candidate": {
+            "evidenceId": "16713492-ccff-4861-8c43-e0de1b3061b0",
+            "factType": "FUNDING_EVENT",
+            "structuredValue": {
+              "company": "Black Duck",
+              "roundCount": "8",
+              "totalFunding": "$71M"
+            },
+            "effectiveDate": "2026-08-31",
+            "confidence": 94,
+            "supportingExcerpt": "Black Duckhas raised a total funding of$71Mover 8rounds.",
+            "extractorVersion": "fact-extraction-v2"
+          },
+          "reasons": [
+            {
+              "dimension": "temporal",
+              "code": "EVENT_DATE_NOT_EXPLICIT",
+              "message": "Event effective date is not supported by the supporting excerpt"
+            }
+          ],
+          "evidenceId": "16713492-ccff-4861-8c43-e0de1b3061b0"
+        },
+        {
+          "candidate": {
+            "evidenceId": "cdfad517-1340-4f19-911c-6128416af443",
+            "factType": "TECHNOLOGY_MENTION",
+            "structuredValue": {
+              "technologies": [
+                "Managed Services Portal",
+                "Polaris (Classic & Next Generation)",
+                "Knowledge Base",
+                "Black Duck Binary Analysis"
+              ]
+            },
+            "effectiveDate": "2026-08-31",
+            "confidence": 93,
+            "supportingExcerpt": "The certificate scope comprises the Information Security Management System underlying the Black Duck Software Inc. Information Technology (IT) and Cloud Operations processes that collect, process and store confidential customer information supporting the Managed Services Portal, Polaris (Classic & Next Generation), and Black Duck applications (including Knowledge Base & Black Duck Binary Analysis).",
+            "extractorVersion": "fact-extraction-v3"
+          },
+          "reasons": [
+            {
+              "dimension": "factType",
+              "code": "FACT_TYPE_NOT_SUPPORTED",
+              "message": "Fact type is not supported by the supporting excerpt"
+            }
+          ],
+          "evidenceId": "cdfad517-1340-4f19-911c-6128416af443"
+        },
+        {
+          "candidate": {
+            "evidenceId": "57404b8f-b23d-4369-962f-d94b7ee81232",
+            "factType": "TECHNOLOGY_MENTION",
+            "structuredValue": {
+              "technologies": [
+                "an integrated, software-as-a-service application security platform",
+                "static application security testing",
+                "software composition analysis",
+                "dynamic application security testing"
+              ]
+            },
+            "effectiveDate": "2026-08-31",
+            "confidence": 97,
+            "supportingExcerpt": "The Polaris Platform is an integrated, software-as-a-service application security platform powered by the industry's leading static application security testing, software composition analysis, and dynamic application security testing engines.",
+            "extractorVersion": "fact-extraction-v3"
+          },
+          "reasons": [
+            {
+              "dimension": "temporal",
+              "code": "EVENT_DATE_NOT_EXPLICIT",
+              "message": "Event effective date is not supported by the supporting excerpt"
+            }
+          ],
+          "evidenceId": "57404b8f-b23d-4369-962f-d94b7ee81232"
+        },
+        {
+          "candidate": {
+            "evidenceId": "1f964cc8-c674-4fbc-bead-b60a9a4230ef",
+            "factType": "TECHNOLOGY_MENTION",
+            "structuredValue": {
+              "technologies": [
+                "ContextAI™"
+              ]
+            },
+            "effectiveDate": "2026-08-31",
+            "confidence": 98,
+            "supportingExcerpt": "Signal uses a coordinated system of specialized AI security agents powered by ContextAI™ to analyze code, assess exploitability, and guide remediation in real time.",
+            "extractorVersion": "fact-extraction-v3"
+          },
+          "reasons": [
+            {
+              "dimension": "roleRelationship",
+              "code": "SELLER_AS_BUYER",
+              "message": "Seller capability or customer enablement is not buyer technology behavior"
+            }
+          ],
+          "evidenceId": "1f964cc8-c674-4fbc-bead-b60a9a4230ef"
+        }
+      ],
+      "referenceFactRecovered": true,
+      "signalFeedingFactAdjudications": [
+        {
+          "factId": "ephemeral-fcb8bd720d4d27dc33f475bf",
+          "classification": "SUPPORTED",
+          "adjudicationBasis": "Independently adjudicated reference fact for this control"
+        },
+        {
+          "factId": "ephemeral-ce6b7df52d9c37066f873833",
+          "classification": "SUPPORTED",
+          "adjudicationBasis": "Independently adjudicated reference fact for this control"
+        },
+        {
+          "factId": "ephemeral-c3f30226aa1313575a4c2be0",
+          "classification": "SUPPORTED",
+          "adjudicationBasis": "Independently adjudicated reference fact for this control"
+        },
+        {
+          "factId": "ephemeral-12ca44bfcb0eab1635d59cd4",
+          "classification": "SUPPORTED",
+          "adjudicationBasis": "Independently adjudicated reference fact for this control"
+        },
+        {
+          "factId": "ephemeral-51136ff9f181daf226401452",
+          "classification": "SUPPORTED",
+          "adjudicationBasis": "Independently adjudicated reference fact for this control"
+        }
+      ],
+      "supportedSignalFeedingFactCount": 5,
+      "unsupportedSignalFeedingFactCount": 0
+    },
+    {
+      "company": "OpenAssets",
+      "acceptedEvidenceCount": 2,
+      "expectedReferenceFactType": "CERTIFICATION",
+      "factProposals": [
+        {
+          "origin": "DETERMINISTIC",
+          "candidate": {
+            "evidenceId": "4e647bd0-6d4c-469a-80c4-21008e44f4d3",
+            "factType": "CERTIFICATION",
+            "structuredValue": {
+              "certification": "SOC 2 Type 2 compliance",
+              "eventType": "has achieved"
+            },
+            "effectiveDate": "2026-08-03",
+            "confidence": 98,
+            "supportingExcerpt": "Aug. 3, 2026 /PRNewswire/ -- OpenAssets, a leading provider of digital asset infrastructure, today announced that it has achieved SOC 2 Type 2 compliance and ISO/IEC 27001:2022 certification, two leading standards for enterprise security, governance and information-risk management.",
+            "extractorVersion": "fact-extraction-v4"
+          },
+          "approved": true,
+          "rejectionReasons": [],
+          "validationDimensions": {
+            "entity": {
+              "valid": true,
+              "codes": []
+            },
+            "claim": {
+              "valid": true,
+              "codes": []
+            },
+            "temporal": {
+              "valid": true,
+              "codes": []
+            },
+            "roleRelationship": {
+              "valid": true,
+              "codes": []
+            },
+            "factType": {
+              "valid": true,
+              "codes": []
+            }
+          },
+          "dateProvenance": "EXPLICIT_SOURCE_SUPPORTED_DATE",
+          "sellerBuyerRole": "SAFE_OR_NOT_APPLICABLE",
+          "source": {
+            "evidenceId": "4e647bd0-6d4c-469a-80c4-21008e44f4d3",
+            "sourceUrl": "https://prnewswire.com/news-releases/openassets-achieves-soc-2-type-2-compliance-and-renews-iso-27001-certification-302840457.html",
+            "publisher": null,
+            "publishedAt": null,
+            "observedAt": "2026-08-31T12:54:27.090Z",
+            "sourceClassification": "JOB_LISTING",
+            "entityStatus": "CONFIRMED_ENTITY"
+          }
+        },
+        {
+          "origin": "DETERMINISTIC",
+          "candidate": {
+            "evidenceId": "4e647bd0-6d4c-469a-80c4-21008e44f4d3",
+            "factType": "CERTIFICATION",
+            "structuredValue": {
+              "certification": "ISO/IEC 27001:2022 certification",
+              "eventType": "renewed"
+            },
+            "effectiveDate": "2026-07-05",
+            "confidence": 98,
+            "supportingExcerpt": "July 5, 2026. The examination confirmed that OpenAssets' controls were suitably designed and operated effectively throughout the period. Developed by the American Institute of Certified Public Accountants (AICPA), SOC 2 is an attestation report on the operating effectiveness of controls over time.\n\nOpenAssets also holds and renewed its ISO/IEC 27001:2022 certification, the internationally recognized standard for information security management.",
+            "extractorVersion": "fact-extraction-v4"
+          },
+          "approved": true,
+          "rejectionReasons": [],
+          "validationDimensions": {
+            "entity": {
+              "valid": true,
+              "codes": []
+            },
+            "claim": {
+              "valid": true,
+              "codes": []
+            },
+            "temporal": {
+              "valid": true,
+              "codes": []
+            },
+            "roleRelationship": {
+              "valid": true,
+              "codes": []
+            },
+            "factType": {
+              "valid": true,
+              "codes": []
+            }
+          },
+          "dateProvenance": "EXPLICIT_SOURCE_SUPPORTED_DATE",
+          "sellerBuyerRole": "SAFE_OR_NOT_APPLICABLE",
+          "source": {
+            "evidenceId": "4e647bd0-6d4c-469a-80c4-21008e44f4d3",
+            "sourceUrl": "https://prnewswire.com/news-releases/openassets-achieves-soc-2-type-2-compliance-and-renews-iso-27001-certification-302840457.html",
+            "publisher": null,
+            "publishedAt": null,
+            "observedAt": "2026-08-31T12:54:27.090Z",
+            "sourceClassification": "JOB_LISTING",
+            "entityStatus": "CONFIRMED_ENTITY"
+          }
+        },
+        {
+          "origin": "DETERMINISTIC",
+          "candidate": {
+            "evidenceId": "2bd2ce88-2582-4d2d-b1dc-810ab1c84cd6",
+            "factType": "CERTIFICATION",
+            "structuredValue": {
+              "certification": "ISO/IEC 27001:2022 certification",
+              "eventType": "renewed"
+            },
+            "effectiveDate": "2026-08-03",
+            "confidence": 98,
+            "supportingExcerpt": "Aug. 3, 2026\n\n*OpenAssets has earned a clean SOC 2 Type 2 report and renewed ISO/IEC 27001:2022 certification, meeting globally recognized standards for secure, production-grade financial infrastructure.*\n\nPITTSBURGH, Aug.",
+            "extractorVersion": "fact-extraction-v4"
+          },
+          "approved": true,
+          "rejectionReasons": [],
+          "validationDimensions": {
+            "entity": {
+              "valid": true,
+              "codes": []
+            },
+            "claim": {
+              "valid": true,
+              "codes": []
+            },
+            "temporal": {
+              "valid": true,
+              "codes": []
+            },
+            "roleRelationship": {
+              "valid": true,
+              "codes": []
+            },
+            "factType": {
+              "valid": true,
+              "codes": []
+            }
+          },
+          "dateProvenance": "EXPLICIT_SOURCE_SUPPORTED_DATE",
+          "sellerBuyerRole": "SAFE_OR_NOT_APPLICABLE",
+          "source": {
+            "evidenceId": "2bd2ce88-2582-4d2d-b1dc-810ab1c84cd6",
+            "sourceUrl": "https://morningstar.com/news/pr-newswire/20260803ne17123/openassets-achieves-soc-2-type-2-compliance-and-renews-iso-27001-certification",
+            "publisher": null,
+            "publishedAt": null,
+            "observedAt": "2026-08-31T12:54:29.333Z",
+            "sourceClassification": "OTHER_WEB",
+            "entityStatus": "CONFIRMED_ENTITY"
+          }
+        },
+        {
+          "origin": "DETERMINISTIC",
+          "candidate": {
+            "evidenceId": "2bd2ce88-2582-4d2d-b1dc-810ab1c84cd6",
+            "factType": "CERTIFICATION",
+            "structuredValue": {
+              "certification": "SOC 2 Type 2 compliance",
+              "eventType": "has achieved"
+            },
+            "effectiveDate": "2026-08-03",
+            "confidence": 98,
+            "supportingExcerpt": "Aug. 3, 2026 /PRNewswire/ -- OpenAssets, a leading provider of digital asset infrastructure, today announced that it has achieved SOC 2 Type 2 compliance and ISO/IEC 27001:2022 certification, two leading standards for enterprise security, governance and information-risk management.",
+            "extractorVersion": "fact-extraction-v4"
+          },
+          "approved": true,
+          "rejectionReasons": [],
+          "validationDimensions": {
+            "entity": {
+              "valid": true,
+              "codes": []
+            },
+            "claim": {
+              "valid": true,
+              "codes": []
+            },
+            "temporal": {
+              "valid": true,
+              "codes": []
+            },
+            "roleRelationship": {
+              "valid": true,
+              "codes": []
+            },
+            "factType": {
+              "valid": true,
+              "codes": []
+            }
+          },
+          "dateProvenance": "EXPLICIT_SOURCE_SUPPORTED_DATE",
+          "sellerBuyerRole": "SAFE_OR_NOT_APPLICABLE",
+          "source": {
+            "evidenceId": "2bd2ce88-2582-4d2d-b1dc-810ab1c84cd6",
+            "sourceUrl": "https://morningstar.com/news/pr-newswire/20260803ne17123/openassets-achieves-soc-2-type-2-compliance-and-renews-iso-27001-certification",
+            "publisher": null,
+            "publishedAt": null,
+            "observedAt": "2026-08-31T12:54:29.333Z",
+            "sourceClassification": "OTHER_WEB",
+            "entityStatus": "CONFIRMED_ENTITY"
+          }
+        },
+        {
+          "origin": "DETERMINISTIC",
+          "candidate": {
+            "evidenceId": "2bd2ce88-2582-4d2d-b1dc-810ab1c84cd6",
+            "factType": "CERTIFICATION",
+            "structuredValue": {
+              "certification": "ISO/IEC 27001:2022 certification",
+              "eventType": "renewed"
+            },
+            "effectiveDate": "2026-07-05",
+            "confidence": 98,
+            "supportingExcerpt": "July 5, 2026. The examination confirmed that OpenAssets' controls were suitably designed and operated effectively throughout the period. Developed by the American Institute of Certified Public Accountants (AICPA), SOC 2 is an attestation report on the operating effectiveness of controls over time.\n\nOpenAssets also holds and renewed its ISO/IEC 27001:2022 certification, the internationally recognized standard for information security management.",
+            "extractorVersion": "fact-extraction-v4"
+          },
+          "approved": true,
+          "rejectionReasons": [],
+          "validationDimensions": {
+            "entity": {
+              "valid": true,
+              "codes": []
+            },
+            "claim": {
+              "valid": true,
+              "codes": []
+            },
+            "temporal": {
+              "valid": true,
+              "codes": []
+            },
+            "roleRelationship": {
+              "valid": true,
+              "codes": []
+            },
+            "factType": {
+              "valid": true,
+              "codes": []
+            }
+          },
+          "dateProvenance": "EXPLICIT_SOURCE_SUPPORTED_DATE",
+          "sellerBuyerRole": "SAFE_OR_NOT_APPLICABLE",
+          "source": {
+            "evidenceId": "2bd2ce88-2582-4d2d-b1dc-810ab1c84cd6",
+            "sourceUrl": "https://morningstar.com/news/pr-newswire/20260803ne17123/openassets-achieves-soc-2-type-2-compliance-and-renews-iso-27001-certification",
+            "publisher": null,
+            "publishedAt": null,
+            "observedAt": "2026-08-31T12:54:29.333Z",
+            "sourceClassification": "OTHER_WEB",
+            "entityStatus": "CONFIRMED_ENTITY"
+          }
+        }
+      ],
+      "approvedFacts": [
+        {
+          "id": "ephemeral-e993a6cfe50a83ca131493e4",
+          "factType": "CERTIFICATION",
+          "effectiveDate": "2026-08-03",
+          "structuredValue": {
+            "certification": "SOC 2 Type 2 compliance",
+            "eventType": "has achieved"
+          },
+          "supportingExcerpt": "Aug. 3, 2026 /PRNewswire/ -- OpenAssets, a leading provider of digital asset infrastructure, today announced that it has achieved SOC 2 Type 2 compliance and ISO/IEC 27001:2022 certification, two leading standards for enterprise security, governance and information-risk management.",
+          "evidenceId": "4e647bd0-6d4c-469a-80c4-21008e44f4d3"
+        },
+        {
+          "id": "ephemeral-8588b059354f9e71a652a3a9",
+          "factType": "CERTIFICATION",
+          "effectiveDate": "2026-07-05",
+          "structuredValue": {
+            "certification": "ISO/IEC 27001:2022 certification",
+            "eventType": "renewed"
+          },
+          "supportingExcerpt": "July 5, 2026. The examination confirmed that OpenAssets' controls were suitably designed and operated effectively throughout the period. Developed by the American Institute of Certified Public Accountants (AICPA), SOC 2 is an attestation report on the operating effectiveness of controls over time.\n\nOpenAssets also holds and renewed its ISO/IEC 27001:2022 certification, the internationally recognized standard for information security management.",
+          "evidenceId": "4e647bd0-6d4c-469a-80c4-21008e44f4d3"
+        },
+        {
+          "id": "ephemeral-5e88d97f1b799185080aba63",
+          "factType": "CERTIFICATION",
+          "effectiveDate": "2026-08-03",
+          "structuredValue": {
+            "certification": "ISO/IEC 27001:2022 certification",
+            "eventType": "renewed"
+          },
+          "supportingExcerpt": "Aug. 3, 2026\n\n*OpenAssets has earned a clean SOC 2 Type 2 report and renewed ISO/IEC 27001:2022 certification, meeting globally recognized standards for secure, production-grade financial infrastructure.*\n\nPITTSBURGH, Aug.",
+          "evidenceId": "2bd2ce88-2582-4d2d-b1dc-810ab1c84cd6"
+        },
+        {
+          "id": "ephemeral-26f6b74fd793e9ce3ca0cfb5",
+          "factType": "CERTIFICATION",
+          "effectiveDate": "2026-08-03",
+          "structuredValue": {
+            "certification": "SOC 2 Type 2 compliance",
+            "eventType": "has achieved"
+          },
+          "supportingExcerpt": "Aug. 3, 2026 /PRNewswire/ -- OpenAssets, a leading provider of digital asset infrastructure, today announced that it has achieved SOC 2 Type 2 compliance and ISO/IEC 27001:2022 certification, two leading standards for enterprise security, governance and information-risk management.",
+          "evidenceId": "2bd2ce88-2582-4d2d-b1dc-810ab1c84cd6"
+        },
+        {
+          "id": "ephemeral-7d91937dcb8bdd8bf71db5f3",
+          "factType": "CERTIFICATION",
+          "effectiveDate": "2026-07-05",
+          "structuredValue": {
+            "certification": "ISO/IEC 27001:2022 certification",
+            "eventType": "renewed"
+          },
+          "supportingExcerpt": "July 5, 2026. The examination confirmed that OpenAssets' controls were suitably designed and operated effectively throughout the period. Developed by the American Institute of Certified Public Accountants (AICPA), SOC 2 is an attestation report on the operating effectiveness of controls over time.\n\nOpenAssets also holds and renewed its ISO/IEC 27001:2022 certification, the internationally recognized standard for information security management.",
+          "evidenceId": "2bd2ce88-2582-4d2d-b1dc-810ab1c84cd6"
+        }
+      ],
+      "rejectedFacts": [],
+      "referenceFactRecovered": true,
+      "signalFeedingFactAdjudications": [],
+      "supportedSignalFeedingFactCount": 0,
+      "unsupportedSignalFeedingFactCount": 0
+    },
+    {
+      "company": "Black & McDonald",
+      "acceptedEvidenceCount": 6,
+      "expectedReferenceFactType": "CERTIFICATION",
+      "factProposals": [
+        {
+          "origin": "PERSISTED_PROPOSAL",
+          "candidate": {
+            "evidenceId": "847b2574-872b-45b6-9c64-776ee87d4eaf",
+            "factType": "TECHNOLOGY_MENTION",
+            "structuredValue": {
+              "technologies": [
+                "JSON-LD"
+              ]
+            },
+            "effectiveDate": "2026-08-31",
+            "confidence": 95,
+            "supportingExcerpt": "Black & McDonald Limited uses 8 technology products and services including Adobe, Adobe Premiere Pro, JSON-LD, and more. Explore Black & McDonald Limited's tech stack below.\n\n* Adobe\n\n  Audio, Video, Graphics\n* Adobe Premiere Pro\n\n  Audio, Video, Graphics\n* JSON-LD\n\n  Javascript Frameworks\n* Microsoft Azure",
+            "extractorVersion": "fact-extraction-v2"
+          },
+          "approved": false,
+          "rejectionReasons": [
+            {
+              "dimension": "roleRelationship",
+              "code": "SELLER_AS_BUYER",
+              "message": "Seller capability or customer enablement is not buyer technology behavior"
+            }
+          ],
+          "validationDimensions": {
+            "entity": {
+              "valid": true,
+              "codes": []
+            },
+            "claim": {
+              "valid": true,
+              "codes": []
+            },
+            "temporal": {
+              "valid": true,
+              "codes": []
+            },
+            "roleRelationship": {
+              "valid": false,
+              "codes": [
+                "SELLER_AS_BUYER"
+              ]
+            },
+            "factType": {
+              "valid": true,
+              "codes": []
+            }
+          },
+          "dateProvenance": [],
+          "sellerBuyerRole": "REJECTED",
+          "source": {
+            "evidenceId": "847b2574-872b-45b6-9c64-776ee87d4eaf",
+            "sourceUrl": "https://leadiq.com/c/black--mcdonald-limited/5a1d7dbe240000240057357a",
+            "publisher": null,
+            "publishedAt": null,
+            "observedAt": "2026-08-31T14:09:47.980Z",
+            "sourceClassification": "OTHER_WEB",
+            "entityStatus": "CONFIRMED_ENTITY"
+          }
+        },
+        {
+          "origin": "PERSISTED_PROPOSAL",
+          "candidate": {
+            "evidenceId": "847b2574-872b-45b6-9c64-776ee87d4eaf",
+            "factType": "TECHNOLOGY_MENTION",
+            "structuredValue": {
+              "technologies": [
+                "Adobe"
+              ]
+            },
+            "effectiveDate": "2026-08-31",
+            "confidence": 96,
+            "supportingExcerpt": "Black & McDonald Limited uses 8 technology products and services including Adobe, Adobe Premiere Pro, JSON-LD, and more. Explore Black & McDonald Limited's tech stack below.\n\n* Adobe",
+            "extractorVersion": "fact-extraction-v2"
+          },
+          "approved": false,
+          "rejectionReasons": [
+            {
+              "dimension": "roleRelationship",
+              "code": "SELLER_AS_BUYER",
+              "message": "Seller capability or customer enablement is not buyer technology behavior"
+            }
+          ],
+          "validationDimensions": {
+            "entity": {
+              "valid": true,
+              "codes": []
+            },
+            "claim": {
+              "valid": true,
+              "codes": []
+            },
+            "temporal": {
+              "valid": true,
+              "codes": []
+            },
+            "roleRelationship": {
+              "valid": false,
+              "codes": [
+                "SELLER_AS_BUYER"
+              ]
+            },
+            "factType": {
+              "valid": true,
+              "codes": []
+            }
+          },
+          "dateProvenance": [],
+          "sellerBuyerRole": "REJECTED",
+          "source": {
+            "evidenceId": "847b2574-872b-45b6-9c64-776ee87d4eaf",
+            "sourceUrl": "https://leadiq.com/c/black--mcdonald-limited/5a1d7dbe240000240057357a",
+            "publisher": null,
+            "publishedAt": null,
+            "observedAt": "2026-08-31T14:09:47.980Z",
+            "sourceClassification": "OTHER_WEB",
+            "entityStatus": "CONFIRMED_ENTITY"
+          }
+        },
+        {
+          "origin": "PERSISTED_PROPOSAL",
+          "candidate": {
+            "evidenceId": "847b2574-872b-45b6-9c64-776ee87d4eaf",
+            "factType": "TECHNOLOGY_MENTION",
+            "structuredValue": {
+              "technologies": [
+                "JSON-LD"
+              ]
+            },
+            "effectiveDate": "2026-08-31",
+            "confidence": 95,
+            "supportingExcerpt": "Black & McDonald Limited uses 8 technology products and services including Adobe, Adobe Premiere Pro, JSON-LD, and more. Explore Black & McDonald Limited's tech stack below.\n\n* Adobe\n\n  Audio, Video, Graphics\n* Adobe Premiere Pro\n\n  Audio, Video, Graphics\n* JSON-LD\n\n  Javascript Frameworks",
+            "extractorVersion": "fact-extraction-v3"
+          },
+          "approved": false,
+          "rejectionReasons": [
+            {
+              "dimension": "roleRelationship",
+              "code": "SELLER_AS_BUYER",
+              "message": "Seller capability or customer enablement is not buyer technology behavior"
+            }
+          ],
+          "validationDimensions": {
+            "entity": {
+              "valid": true,
+              "codes": []
+            },
+            "claim": {
+              "valid": true,
+              "codes": []
+            },
+            "temporal": {
+              "valid": true,
+              "codes": []
+            },
+            "roleRelationship": {
+              "valid": false,
+              "codes": [
+                "SELLER_AS_BUYER"
+              ]
+            },
+            "factType": {
+              "valid": true,
+              "codes": []
+            }
+          },
+          "dateProvenance": [],
+          "sellerBuyerRole": "REJECTED",
+          "source": {
+            "evidenceId": "847b2574-872b-45b6-9c64-776ee87d4eaf",
+            "sourceUrl": "https://leadiq.com/c/black--mcdonald-limited/5a1d7dbe240000240057357a",
+            "publisher": null,
+            "publishedAt": null,
+            "observedAt": "2026-08-31T14:09:47.980Z",
+            "sourceClassification": "OTHER_WEB",
+            "entityStatus": "CONFIRMED_ENTITY"
+          }
+        },
+        {
+          "origin": "DETERMINISTIC",
+          "candidate": {
+            "evidenceId": "8bcb7652-0ba0-49f6-979d-688cd48ea5cf",
+            "factType": "CERTIFICATION",
+            "structuredValue": {
+              "certification": "SOC 2® Type II examination",
+              "eventType": "completed"
+            },
+            "effectiveDate": "2026-05-08",
+            "confidence": 98,
+            "supportingExcerpt": "May 8, 2026\n\nB&M is pleased to announce that we are now **ISO/IEC 27001:2022 certified** and have **completed a SOC 2® Type II examination**.",
+            "extractorVersion": "fact-extraction-v4"
+          },
+          "approved": true,
+          "rejectionReasons": [],
+          "validationDimensions": {
+            "entity": {
+              "valid": true,
+              "codes": []
+            },
+            "claim": {
+              "valid": true,
+              "codes": []
+            },
+            "temporal": {
+              "valid": true,
+              "codes": []
+            },
+            "roleRelationship": {
+              "valid": true,
+              "codes": []
+            },
+            "factType": {
+              "valid": true,
+              "codes": []
+            }
+          },
+          "dateProvenance": "EXPLICIT_SOURCE_SUPPORTED_DATE",
+          "sellerBuyerRole": "SAFE_OR_NOT_APPLICABLE",
+          "source": {
+            "evidenceId": "8bcb7652-0ba0-49f6-979d-688cd48ea5cf",
+            "sourceUrl": "https://blackandmcdonald.com/us/news/bm-achieves-iso-27001-certification-and-completes-soc-2-type-ii-examination",
+            "publisher": null,
+            "publishedAt": null,
+            "observedAt": "2026-08-31T19:17:13.916Z",
+            "sourceClassification": "OFFICIAL_WEBSITE",
+            "entityStatus": "CONFIRMED_ENTITY"
+          }
+        },
+        {
+          "origin": "DETERMINISTIC",
+          "candidate": {
+            "evidenceId": "53cddfd5-6e4c-4223-993c-2661024a13ab",
+            "factType": "CERTIFICATION",
+            "structuredValue": {
+              "certification": "ISO/IEC 27001:2022 certified",
+              "eventType": "are now"
+            },
+            "effectiveDate": "2026-05-08",
+            "confidence": 98,
+            "supportingExcerpt": "May 8, 2026\n\nB&M is pleased to announce that we are now ISO/IEC 27001:2022 certified and have completed a SOC 2® Type II examination.",
+            "extractorVersion": "fact-extraction-v4"
+          },
+          "approved": true,
+          "rejectionReasons": [],
+          "validationDimensions": {
+            "entity": {
+              "valid": true,
+              "codes": []
+            },
+            "claim": {
+              "valid": true,
+              "codes": []
+            },
+            "temporal": {
+              "valid": true,
+              "codes": []
+            },
+            "roleRelationship": {
+              "valid": true,
+              "codes": []
+            },
+            "factType": {
+              "valid": true,
+              "codes": []
+            }
+          },
+          "dateProvenance": "EXPLICIT_SOURCE_SUPPORTED_DATE",
+          "sellerBuyerRole": "SAFE_OR_NOT_APPLICABLE",
+          "source": {
+            "evidenceId": "53cddfd5-6e4c-4223-993c-2661024a13ab",
+            "sourceUrl": "https://blackandmcdonald.com/news/bm-achieves-iso-27001-certification-and-completes-soc-2-type-ii-examination",
+            "publisher": null,
+            "publishedAt": null,
+            "observedAt": "2026-08-31T19:17:30.203Z",
+            "sourceClassification": "OFFICIAL_WEBSITE",
+            "entityStatus": "CONFIRMED_ENTITY"
+          }
+        }
+      ],
+      "approvedFacts": [
+        {
+          "id": "ephemeral-2973451851e3e00f3481fd0d",
+          "factType": "CERTIFICATION",
+          "effectiveDate": "2026-05-08",
+          "structuredValue": {
+            "certification": "SOC 2® Type II examination",
+            "eventType": "completed"
+          },
+          "supportingExcerpt": "May 8, 2026\n\nB&M is pleased to announce that we are now **ISO/IEC 27001:2022 certified** and have **completed a SOC 2® Type II examination**.",
+          "evidenceId": "8bcb7652-0ba0-49f6-979d-688cd48ea5cf"
+        },
+        {
+          "id": "ephemeral-e4960b16ba3d7232f67f1dee",
+          "factType": "CERTIFICATION",
+          "effectiveDate": "2026-05-08",
+          "structuredValue": {
+            "certification": "ISO/IEC 27001:2022 certified",
+            "eventType": "are now"
+          },
+          "supportingExcerpt": "May 8, 2026\n\nB&M is pleased to announce that we are now ISO/IEC 27001:2022 certified and have completed a SOC 2® Type II examination.",
+          "evidenceId": "53cddfd5-6e4c-4223-993c-2661024a13ab"
+        }
+      ],
+      "rejectedFacts": [
+        {
+          "candidate": {
+            "evidenceId": "847b2574-872b-45b6-9c64-776ee87d4eaf",
+            "factType": "TECHNOLOGY_MENTION",
+            "structuredValue": {
+              "technologies": [
+                "JSON-LD"
+              ]
+            },
+            "effectiveDate": "2026-08-31",
+            "confidence": 95,
+            "supportingExcerpt": "Black & McDonald Limited uses 8 technology products and services including Adobe, Adobe Premiere Pro, JSON-LD, and more. Explore Black & McDonald Limited's tech stack below.\n\n* Adobe\n\n  Audio, Video, Graphics\n* Adobe Premiere Pro\n\n  Audio, Video, Graphics\n* JSON-LD\n\n  Javascript Frameworks\n* Microsoft Azure",
+            "extractorVersion": "fact-extraction-v2"
+          },
+          "reasons": [
+            {
+              "dimension": "roleRelationship",
+              "code": "SELLER_AS_BUYER",
+              "message": "Seller capability or customer enablement is not buyer technology behavior"
+            }
+          ],
+          "evidenceId": "847b2574-872b-45b6-9c64-776ee87d4eaf"
+        },
+        {
+          "candidate": {
+            "evidenceId": "847b2574-872b-45b6-9c64-776ee87d4eaf",
+            "factType": "TECHNOLOGY_MENTION",
+            "structuredValue": {
+              "technologies": [
+                "Adobe"
+              ]
+            },
+            "effectiveDate": "2026-08-31",
+            "confidence": 96,
+            "supportingExcerpt": "Black & McDonald Limited uses 8 technology products and services including Adobe, Adobe Premiere Pro, JSON-LD, and more. Explore Black & McDonald Limited's tech stack below.\n\n* Adobe",
+            "extractorVersion": "fact-extraction-v2"
+          },
+          "reasons": [
+            {
+              "dimension": "roleRelationship",
+              "code": "SELLER_AS_BUYER",
+              "message": "Seller capability or customer enablement is not buyer technology behavior"
+            }
+          ],
+          "evidenceId": "847b2574-872b-45b6-9c64-776ee87d4eaf"
+        },
+        {
+          "candidate": {
+            "evidenceId": "847b2574-872b-45b6-9c64-776ee87d4eaf",
+            "factType": "TECHNOLOGY_MENTION",
+            "structuredValue": {
+              "technologies": [
+                "JSON-LD"
+              ]
+            },
+            "effectiveDate": "2026-08-31",
+            "confidence": 95,
+            "supportingExcerpt": "Black & McDonald Limited uses 8 technology products and services including Adobe, Adobe Premiere Pro, JSON-LD, and more. Explore Black & McDonald Limited's tech stack below.\n\n* Adobe\n\n  Audio, Video, Graphics\n* Adobe Premiere Pro\n\n  Audio, Video, Graphics\n* JSON-LD\n\n  Javascript Frameworks",
+            "extractorVersion": "fact-extraction-v3"
+          },
+          "reasons": [
+            {
+              "dimension": "roleRelationship",
+              "code": "SELLER_AS_BUYER",
+              "message": "Seller capability or customer enablement is not buyer technology behavior"
+            }
+          ],
+          "evidenceId": "847b2574-872b-45b6-9c64-776ee87d4eaf"
+        }
+      ],
+      "referenceFactRecovered": true,
+      "signalFeedingFactAdjudications": [],
+      "supportedSignalFeedingFactCount": 0,
+      "unsupportedSignalFeedingFactCount": 0
+    },
+    {
+      "company": "RAKBANK",
+      "acceptedEvidenceCount": 1,
+      "expectedReferenceFactType": "TECHNOLOGY_MENTION",
+      "factProposals": [],
+      "approvedFacts": [],
+      "rejectedFacts": [],
+      "referenceFactRecovered": false,
+      "signalFeedingFactAdjudications": [],
+      "supportedSignalFeedingFactCount": 0,
+      "unsupportedSignalFeedingFactCount": 0
+    }
+  ]
+}

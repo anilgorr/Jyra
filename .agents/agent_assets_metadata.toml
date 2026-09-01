@@ -234,3 +234,31 @@ mtime_ms = 1788205721453
 storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/7820d844-ebca-42cd-9c67-306678d5b93b/03d0ad94-b535-4adf-9755-d8ac6f646ffb"
 storage_version_token = "1788205752293575"
 content_type = "text/markdown"
+
+[[outputs]]
+id = "SvZfDwVSZPZ_tEzAkhWDb"
+uri = "file://artifacts/api-server/FACT_TEMPORAL_SAFETY_FIX_03.md"
+type = "text"
+title = "Fact & Temporal Safety Fix 03 Report"
+description = "Primary development-only preserved-evidence retest report with safety metrics, outcomes, invariants, and final decision."
+logical_id = "5d14018c-ba5e-4198-90d4-daf9f6bc23de"
+content_hash = "sha256:4fa3ec18ca4cc8f028e759aebff61bd82dbed1385dca76d6a6a4c825d7b2c848"
+size = 3049
+mtime_ms = 1788242356497
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/5d14018c-ba5e-4198-90d4-daf9f6bc23de/b900c135-fd92-41fd-80a3-be61efe17449"
+storage_version_token = "1788242440483997"
+content_type = "text/markdown"
+
+[[outputs]]
+id = "lcL7LPuwRN5JgJSGnisY3"
+uri = "file://artifacts/api-server/FACT_TEMPORAL_SAFETY_FIX_03.json"
+type = "unspecified"
+title = "Fact & Temporal Safety Fix 03 Structured Result"
+description = "Combined machine-readable retest result and invariant checks."
+logical_id = "0f8933c1-eb8c-4fdb-b472-781eacaf46a7"
+content_hash = "sha256:d582c8773a08cd83220f08bba794b997229538ca6b89f8297f7635c2cbd27157"
+size = 1812
+mtime_ms = 1788242356497
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/0f8933c1-eb8c-4fdb-b472-781eacaf46a7/726494c2-f579-4266-8455-2666ecda7c4f"
+storage_version_token = "1788242441849103"
+content_type = "application/octet-stream"

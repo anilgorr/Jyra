@@ -211,8 +211,11 @@ router.post(
     try {
       candidate = validateFactCandidate(body.data, {
         companyId: access.company.id,
+        companyName: access.company.canonicalName,
         evidenceId: source.evidence.id,
         rawContent: source.crawlPage.rawContent,
+        observationDate: source.evidence.observedAt.toISOString().slice(0, 10),
+        publisherName: source.evidence.publisher ?? undefined,
       });
     } catch (error) {
       res.status(400).json({
@@ -318,9 +321,11 @@ router.post(
         candidates.push(
           validateFactCandidate(rawCandidate, {
             companyId: access.company.id,
+            companyName: access.company.canonicalName,
             evidenceId: source.evidence.id,
             rawContent: source.crawlPage.rawContent,
             observationDate: source.evidence.observedAt.toISOString().slice(0, 10),
+            publisherName: source.evidence.publisher ?? undefined,
           }),
         );
       } catch (error) {

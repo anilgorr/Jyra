@@ -1,0 +1,73 @@
+{
+  "test": "FACT_TEMPORAL_SAFETY_FIX_03",
+  "before": {
+    "factPrecision": 0.455,
+    "signalPrecision": 0.333,
+    "strictRecall": 0.2,
+    "partial": 2,
+    "sellerAsBuyer": 1,
+    "temporalInvalid": 1
+  },
+  "after": {
+    "controls": 10,
+    "referenceFactsRecovered": 8,
+    "factProposals": 49,
+    "approvedFacts": 34,
+    "rejectedFacts": 15,
+    "signalFeedingFacts": 22,
+    "supportedSignalFeedingFacts": 22,
+    "unsupportedSignalFeedingFacts": 0,
+    "supportedFactCount": 22,
+    "unsupportedFactCount": 0,
+    "signalFeedingFactPrecision": 1,
+    "factPrecision": 1,
+    "signals": 6,
+    "supportedSignals": 6,
+    "unsupportedSignals": 0,
+    "sellerAsBuyer": 0,
+    "sellerAsBuyerRejected": 4,
+    "temporallyInvalid": 0,
+    "wrongEntity": 0,
+    "genericFundingFalseInference": 0,
+    "signalPrecision": 1,
+    "unsupportedSignalRate": 0,
+    "strictDetected": 6,
+    "partial": 2,
+    "missed": 2,
+    "strictRecall": 0.6,
+    "remainingStages": {
+      "extraction": 2,
+      "validation": 0,
+      "signalMapping": 2,
+      "temporal": 0,
+      "other": 0
+    }
+  },
+  "invariants": {
+    "providerCalls": 0,
+    "newRetrieval": false,
+    "productionOperations": 0,
+    "noDatabaseWrites": true,
+    "before": {
+      "providerUsage": 1268,
+      "evidence": 761,
+      "facts": 70,
+      "proposals": 169,
+      "signals": 7
+    },
+    "after": {
+      "providerUsage": 1268,
+      "evidence": 761,
+      "facts": 70,
+      "proposals": 169,
+      "signals": 7
+    },
+    "retrievalChanged": false,
+    "identityChanged": false,
+    "icpChanged": false,
+    "signalDefinitionsChanged": false,
+    "frozenSystemsUnchanged": true,
+    "definitionFingerprint": "75c767c4fd5e8a03127125d0cfb9d71ef92b45ca1a77c9f93d69aba64ad4c747"
+  },
+  "decision": "E — SIGNAL MAPPING DEFECT EXPOSED"
+}

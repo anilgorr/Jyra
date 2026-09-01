@@ -1,0 +1,22 @@
+{
+  "test": "FACT_TEMPORAL_SAFETY_FIX_03",
+  "regressionCases": [
+    "A explicit dated CISO appointment",
+    "B historical leadership biography",
+    "C generic funding remains FUNDING_EVENT",
+    "D security-earmarked funding",
+    "E seller Managed SOC content",
+    "F third-party customer selection",
+    "G seller Azure migration services",
+    "H company internal Azure migration",
+    "I publication date is not event date",
+    "J retrieval date is not event date",
+    "K defensible relative date",
+    "L multi-fact extraction",
+    "M publisher differs from subject",
+    "N customer case study attribution",
+    "O unsupported inference rejected"
+  ],
+  "command": "pnpm run test:facts",
+  "result": "PASS"
+}
