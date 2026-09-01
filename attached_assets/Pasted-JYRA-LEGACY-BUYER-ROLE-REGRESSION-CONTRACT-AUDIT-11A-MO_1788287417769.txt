@@ -1,0 +1,313 @@
+JYRA — LEGACY BUYER ROLE REGRESSION CONTRACT AUDIT 11A
+
+MODE:
+OFFLINE TEST-CONTRACT AUDIT + VALIDATION UNBLOCK
+
+DO NOT implement product changes unless this audit proves a real regression.
+
+CURRENT STATE:
+
+Fix 11 implementation is complete.
+
+Implemented and passing:
+
+- MinimumCompanyIntelligence
+- semantic sufficiency
+- bounded company profile enrichment
+- evidence provenance
+- identity safety
+- Research Now orchestration
+- seller-context readiness
+- CompanyUnderstanding orchestration
+- CommercialRole reload
+- WHO
+- buyer-research gating
+- stable stop codes
+- API/OpenAPI/client updates
+- idempotency
+- provider routing/accounting
+- typecheck/build/startup
+
+Fresh DigiPuush validation was NOT run because one legacy regression failed:
+
+test:buyer-market-who-fix-05
+
+Expected:
+POTENTIAL_BUYER
+
+Actual using frozen buyer-role-resolution-06a:
+UNKNOWN
+
+Do NOT automatically assume either side is correct.
+
+The purpose of this audit is to determine whether:
+
+A. the legacy fixture is obsolete/incomplete under the current buyer-role contract,
+
+B. the current frozen classifier has a genuine regression,
+
+C. the test invokes the classifier incorrectly / bypasses required upstream context,
+
+or
+
+D. another test-harness defect exists.
+
+==================================================
+DATABASE SAFETY
+==================================================
+
+Development only.
+
+Production operations = 0.
+
+Do not modify production.
+
+==================================================
+1. FREEZE PRODUCT LOGIC
+==================================================
+
+DO NOT change:
+
+- CompanyUnderstanding prompt
+- CommercialRole prompt
+- buyer-role thresholds
+- ICP logic
+- discovery logic
+- MinimumCompanyIntelligence
+- identity safety
+- WHO logic
+- signals
+- WHEN/WHY
+- opportunity logic
+
+DO NOT weaken or delete the failing test merely to obtain PASS.
+
+==================================================
+2. INSPECT THE EXACT FAILING FIXTURE
+==================================================
+
+Trace the exact fixture used by:
+
+test:buyer-market-who-fix-05
+
+Report:
+
+- seller Business Twin input
+- seller Offering input
+- ICP input
+- candidate company identity
+- candidate company description
+- products/services
+- business model
+- industry
+- profile evidence
+- evidence IDs
+- CompanyUnderstanding input/output
+- CommercialRole input/output
+- confidence
+- UNKNOWN reason
+- test's original expected reasoning
+
+Determine whether the fixture represents a realistic current production input.
+
+==================================================
+3. VALIDATE CURRENT CONTRACT REQUIREMENTS
+==================================================
+
+For the current CommercialRoleAssessment contract, determine whether the fixture contains sufficient:
+
+SELLER CONTEXT:
+- real Business Twin
+- real Offering
+- non-placeholder offering description
+
+COMPANY CONTEXT:
+- identity-safe company
+- primary business
+- products/services
+- sufficient grounded company evidence
+
+PROVENANCE:
+- valid evidence IDs
+- evidence linked to correct company
+
+If any required prerequisite is absent, identify it explicitly.
+
+==================================================
+4. DETERMINE WHETHER EXPECTED POTENTIAL_BUYER IS STILL VALID
+==================================================
+
+Independently assess the fixture using the current product semantics.
+
+Do NOT use the same frozen CommercialRole output as the judge.
+
+Question:
+
+Given the actual seller offering and the candidate company's grounded business information, should this fixture legitimately be:
+
+POTENTIAL_BUYER
+SELLER_COMPETITOR
+ADJACENT_VENDOR
+PARTNER_POSSIBLE
+UNKNOWN
+
+Provide evidence-backed reasoning.
+
+==================================================
+5. CLASSIFY ROOT CAUSE
+==================================================
+
+Return exactly one root cause:
+
+LEGACY_FIXTURE_MISSING_SELLER_CONTEXT
+
+LEGACY_FIXTURE_MISSING_COMPANY_EVIDENCE
+
+LEGACY_FIXTURE_BYPASSES_MINIMUM_INTELLIGENCE
+
+LEGACY_EXPECTATION_NO_LONGER_VALID
+
+TEST_HARNESS_INVOCATION_DEFECT
+
+CURRENT_CLASSIFIER_GENUINE_REGRESSION
+
+OTHER
+
+==================================================
+6. ACTION RULES
+==================================================
+
+CASE A:
+If fixture is obsolete/incomplete under the current architecture:
+
+Update ONLY the fixture/test harness so it represents the CURRENT
+production contract.
+
+This is not "weakening the test."
+
+The updated fixture must contain realistic required inputs.
+
+Then determine the expected role independently.
+
+Do NOT simply change:
+
+POTENTIAL_BUYER → UNKNOWN
+
+without correcting the fixture semantics.
+
+CASE B:
+If current fixture is valid and independently should be POTENTIAL_BUYER,
+but frozen classifier returns UNKNOWN:
+
+DO NOT modify the classifier in this task.
+
+Report:
+
+CURRENT_CLASSIFIER_GENUINE_REGRESSION
+
+and STOP before DigiPuush validation.
+
+CASE C:
+If the test bypasses MinimumCompanyIntelligence or CompanyUnderstanding:
+
+Update the test to invoke the same canonical path used by production.
+
+Do not duplicate buyer-role logic inside the test.
+
+==================================================
+7. RE-RUN RELEVANT REGRESSIONS
+==================================================
+
+After any TEST/HARNESS correction only:
+
+run:
+
+buyer-market-who-fix-05
+Buyer Role 06A
+MinimumCompanyIntelligence
+Fix08 CompanyUnderstanding
+Fix10 readiness
+identity regressions
+semantic idempotency
+provider accounting
+typecheck
+build
+
+All product logic remains frozen.
+
+==================================================
+8. IF AND ONLY IF THE REGRESSION GATE IS CLEAN
+==================================================
+
+Resume the ORIGINAL Fix 11 validation.
+
+Run ONE fresh DigiPuush 20-company blind validation.
+
+Do not change:
+
+Business Twin
+Offering
+ICP
+discovery strategy
+CompanyUnderstanding prompt
+CommercialRole prompt
+model
+thresholds
+
+Pipeline:
+
+Find My Market
+→ Discovery
+→ Identity
+→ MinimumCompanyIntelligence
+→ CompanyUnderstanding
+→ CommercialRole
+→ WHO
+
+No WHEN
+No WHY
+No signals
+No opportunities
+No contacts
+No outreach
+No Explee
+
+Persist results before independent adjudication.
+
+Report the complete Fix 11 metrics already specified.
+
+==================================================
+9. IMPORTANT
+==================================================
+
+Do not rerun the DigiPuush test repeatedly.
+
+Do not tune after seeing the results.
+
+Do not optimize specifically for Managed SOC.
+
+The purpose is to establish whether MinimumCompanyIntelligence now
+lets the frozen semantic intelligence pipeline receive enough data to
+be evaluated fairly.
+
+==================================================
+10. FINAL VERDICT
+==================================================
+
+Return exactly one:
+
+A — LEGACY REGRESSION WAS INVALID; FIX 11 VALIDATION COMPLETED
+
+B — LEGACY REGRESSION WAS INVALID; DIGIPUUSH VALIDATION STILL FAILED
+
+C — CURRENT COMMERCIAL ROLE CLASSIFIER HAS A GENUINE REGRESSION
+
+D — TEST HARNESS STILL DOES NOT MATCH PRODUCTION CONTRACT
+
+E — MULTIPLE MATERIAL DEFECTS
+
+Then STOP.
+
+Do not begin architecture refactoring.
+Do not run the 50-company test.
+Do not modify commercial-role prompts.

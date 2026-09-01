@@ -1,0 +1,1894 @@
+{
+  "title": "JYRA Fix 11 DigiPuush fresh normal 20-company validation raw results",
+  "status": "EXECUTED",
+  "frozen": {
+    "organizationId": "02d40c31-72e4-42d9-9d8d-fe676a369205",
+    "projectId": "5ca11b69-e296-4e79-b3da-ee127f16ab55",
+    "businessTwinId": "cb40e2b3-0330-4ce8-afc4-a9ab08f0bcd4",
+    "businessTwinVersionId": "48d80510-1f54-41b2-bdcd-2e82a0eb9913",
+    "icpId": "5731bd2f-8951-40d5-a4e1-847ee0ea3564",
+    "icpVersionId": "e7b9a805-f690-449f-8958-e35cd301e366",
+    "offeringFingerprint": "d312a81ac1c9ef9e84b8e30266713947b78e5717b22d6dd3cf570edc26a08528",
+    "companyUnderstandingPromptVersion": "fix08-company-understanding-v4",
+    "commercialRoleVersion": "buyer-role-resolution-06a",
+    "model": "gpt-5-mini",
+    "normalizationVersion": "fix07-v1",
+    "minimumCompanyIntelligenceVersion": "fix11-minimum-company-intelligence-v1"
+  },
+  "readiness": {
+    "projectId": "5ca11b69-e296-4e79-b3da-ee127f16ab55",
+    "organizationId": "02d40c31-72e4-42d9-9d8d-fe676a369205",
+    "businessTwinId": "cb40e2b3-0330-4ce8-afc4-a9ab08f0bcd4",
+    "businessTwinVersionId": "48d80510-1f54-41b2-bdcd-2e82a0eb9913",
+    "businessTwinVersion": 1,
+    "businessTwinStatus": "ready",
+    "businessTwinCreatedAt": "2026-09-01T17:03:26.934Z",
+    "businessTwinRawAnswers": {
+      "website": "https://digipuush.com/",
+      "industry": "Marketing",
+      "betaUsers": "",
+      "pilotUsers": "",
+      "companyName": "Digipuush",
+      "offeringName": "AEO & GEO / AI Visibility Services",
+      "bestCustomers": [
+        {
+          "name": "Third Bracket — HR / Recruitment / Talent Solutions",
+          "whyBoughtThen": "The likely trigger was the need to expand organic visibility beyond traditional Google search and establish Third Bracket as an authoritative company that can surface in AI-generated answers when businesses search for recruitment and talent partners.",
+          "whyGoodCustomer": "Third Bracket operates in a search- and reputation-driven professional-services category where potential customers research recruitment and talent partners before engaging. Visibility in Google as well as ChatGPT, Gemini, Perplexity and AI-generated recommendations can directly influence whether the company enters a buyer's consideration set.\n\nTheir service category also creates many high-intent discovery opportunities around recruitment companies, hiring partners, executive search, staffing and talent solutions."
+        },
+        {
+          "name": "Zyngg — Consumer Technology / Mobile App",
+          "whyBoughtThen": "The likely trigger was the need to build visibility and digital authority for a growing product rather than depending entirely on paid acquisition or conventional search. Establishing the brand early across Google and AI discovery channels can help create longer-term organic visibility.",
+          "whyGoodCustomer": "Zyngg is a digital-first product where online discovery, brand awareness and category visibility are important for growth. As a technology/app business, its prospective users and partners are naturally more likely to use digital and AI-powered discovery channels.\n\nAEO/GEO can help establish the brand's entity, product positioning, use cases and category relevance across search engines and AI platforms."
+        },
+        {
+          "name": "Virama Farm Stay — Hospitality / Farm Stay / Travel",
+          "whyBoughtThen": "The objective was to increase direct organic discovery for high-intent farm-stay searches and reduce dependence on intermediaries/booking platforms. Virama actively promotes direct WhatsApp/phone booking without platform fees, making increased Google and AI visibility commercially valuable because discovery can translate directly into bookings.",
+          "whyGoodCustomer": "Virama is an excellent AEO/GEO use case because customers actively search questions such as “best farm stay near Bangalore,” “farm stay near Bangalore with pool,” “private farm stay near Bangalore,” “pet-friendly farm stay near Bangalore” and similar recommendation queries.\n\nVirama is a private 3-acre farm stay in Magadi, around 45 km from Bangalore, accommodating up to 28 guests with a private 24-hour pool, bonfire, activities and direct booking. These clear attributes provide substantial structured information that can be optimized for both conventional search and AI answers."
+        }
+      ],
+      "customerCount": "3",
+      "costOfInaction": "As buyers increasingly use AI systems during research and vendor discovery, brands that are absent from AI-generated answers risk becoming invisible during an important part of the buying journey.\n\nCompetitors can become the brands repeatedly recommended by AI while the company receives fewer mentions and fewer opportunities to enter buyer consideration.\n\nA company may continue investing heavily in SEO and content while failing to capture visibility in AI-driven discovery.\n\nThe longer competitors accumulate authoritative content, citations and machine-readable signals, the harder it can become to close the visibility gap.",
+      "designPartners": "",
+      "pilotCustomers": "",
+      "problemsSolved": "Companies may rank on Google but remain invisible when prospective customers ask ChatGPT, Perplexity, Gemini or Google AI Overviews for recommendations, comparisons or solutions.\n\nTheir website content may not be structured in a way that AI systems can easily understand, extract and cite. Competitors can therefore appear in AI-generated recommendations even when the company has stronger products, experience or traditional SEO rankings.\n\nDigiPuush solves:\n\nAI search invisibility; lack of brand citations in LLM answers; competitors being recommended instead; poor content structure for AI extraction; weak entity/brand authority; insufficient structured data/schema; declining effectiveness of traditional SEO alone; and lack of visibility into how the brand appears across AI answer engines.",
+      "activeProspects": "",
+      "dealSizeHistory": "",
+      "payingCustomers": "",
+      "typicalDealSize": "AEO + GEO: ₹25,000/month, SEO + AEO + GEO: ₹40,000/month",
+      "validationNotes": "",
+      "commonBuyerRoles": "",
+      "commonObjections": "",
+      "currentCustomers": "zyng.app\nthirdbracket\nvirama.in",
+      "customerProblems": "",
+      "marketHypotheses": "",
+      "objectionHistory": "",
+      "primaryGeography": "India",
+      "wonOpportunities": "The prospect already understands SEO.\n\nThe company has an established website and content base.\n\nOrganic discovery matters commercially.\n\nManagement understands that AI is changing search behaviour.\n\nCompetitors already have stronger AI visibility.\n\nThere is a measurable visibility gap.\n\nA senior marketing stakeholder owns the problem.\n\nThe company is willing to make website/content changes.\n\nThere is sufficient budget for a recurring engagement.\n\nThe AI Visibility Audit creates a clear before/after measurement.",
+      "competitorHistory": "",
+      "customerApprovers": "",
+      "expansionPatterns": "",
+      "lostOpportunities": "Prospect expects immediate leads.\n\nProspect doesn't understand AEO/GEO.\n\nNo marketing budget.\n\nNo urgency.\n\nCompany has a weak website/content foundation.\n\nManagement sees AI search as experimental.\n\nExisting SEO agency claims it already covers GEO.\n\nNo senior marketing sponsor.\n\nProspect wants guaranteed rankings/citations.\n\nCompany wants a one-time activity instead of ongoing optimization.",
+      "salesCycleHistory": "",
+      "targetGeographies": "India",
+      "typicalSalesCycle": "2–6 weeks",
+      "customerInitiators": "",
+      "economicBuyerRoles": "",
+      "commonChampionRoles": "",
+      "historicalChampions": "",
+      "typicalRevenueRange": "₹10 crore–₹500 crore annual revenue",
+      "bestCustomerPatterns": "Very small businesses with little website traffic or marketing budget.\n\nCompanies without a meaningful website.\n\nBusinesses where customers rarely research purchases online.\n\nCompanies looking exclusively for immediate lead generation.\n\nBusinesses expecting AEO/GEO to generate leads within days.\n\nCompanies unwilling to invest in content or website improvements.\n\nCompanies with no internal person capable of approving website/content changes.\n\nBusinesses wanting guaranteed ChatGPT rankings or citations.\n\nCompanies looking only for social media management or paid advertising should not be considered AEO/GEO ICP merely because DigiPuush offers those services.\n\nThat last distinction is important because DigiPuush also provides paid marketing, social media, website development and other services.",
+      "historicalBuyerRoles": "",
+      "historicalIndustries": "",
+      "majorDifferentiators": "DigiPuush approaches SEO + AEO + GEO as one integrated search strategy, rather than treating AI visibility as an isolated add-on.\n\nThe service focuses specifically on measurable visibility across ChatGPT, Perplexity, Gemini, Google AI Overviews and traditional Google Search.\n\nKey differentiators include AI visibility audits, content restructuring for answer extraction, schema implementation, citation-oriented content, traditional SEO foundations, authority building and ongoing AI citation monitoring.\n\nDigiPuush is also positioned specifically around the Indian market rather than as a generic international GEO consultancy.",
+      "typicalEmployeeRange": "20–1,000 employees",
+      "businessMaturityStage": "REPEATABLE_SALES",
+      "customerBuyingReasons": "",
+      "historicalGeographies": "",
+      "historicalCompanySizes": "",
+      "typicalCustomerProfile": "B2B SaaS, technology companies, professional services, education, healthcare, financial services, e-commerce and other businesses where customers research providers online before making a purchase.\n\nIdeal companies already invest in their website, content, SEO or digital marketing but have limited visibility when potential customers ask AI platforms for recommendations.\n\nThe strongest customers operate in competitive categories where appearing in \"best company\", \"best software\", \"alternative to\", \"which provider\", comparison and high-intent informational queries can influence purchasing decisions.\n\nCompanies with established websites, existing content and some domain authority are particularly attractive because DigiPuush can build on those assets rather than starting from zero.\n\nDigiPuush's current site explicitly says it works with B2B, SaaS and e-commerce brands and shows case-study patterns across B2B SaaS, D2C e-commerce and local services.",
+      "typicalUrgencyTriggers": "",
+      "customerInterestTriggers": "",
+      "competitorsOrAlternatives": "Traditional SEO agencies; specialist AEO/GEO agencies; AI SEO consultants; digital marketing agencies adding AI visibility services; internal SEO/content teams; PR/content agencies; and companies attempting to optimize for AI internally.",
+      "waitlistOrLettersOfIntent": "",
+      "badCustomerCharacteristics": "",
+      "productOrServiceDescription": "DigiPuush helps businesses become visible and cited in AI-generated answers across ChatGPT, Perplexity, Gemini and Google AI Overviews, while also improving traditional Google search visibility.\n\nThe service combines Answer Engine Optimization (AEO), Generative Engine Optimization (GEO), AI SEO, content restructuring, schema markup, technical SEO, authority building and ongoing AI citation monitoring. DigiPuush audits where a brand appears across AI platforms, identifies visibility gaps, restructures website content so AI systems can understand and extract it, builds authority signals, and tracks improvements over time.",
+      "prospectiveCustomerEvidence": "",
+      "commonTechnicalEvaluatorRoles": ""
+    },
+    "businessTwinAiInterpretation": {
+      "claims": [
+        {
+          "key": "target_customer",
+          "evidence": "B2B SaaS, technology companies, professional services, education, healthcare, financial services, e-commerce and other businesses where customers research providers online before making a purchase.\n\nIdeal companies already invest in their website, content, SEO or digital marketing but have limited visibility when potential customers ask AI platforms for recommendations.\n\nThe strongest customers operate in competitive categories where appearing in \"best company\", \"best software\", \"alternative to\", \"which provider\", comparison and high-intent informational queries can influence purchasing decisions.\n\nCompanies with established websites, existing content and some domain authority are particularly attractive because DigiPuush can build on those assets rather than starting from zero.\n\nDigiPuush's current site explicitly says it works with B2B, SaaS and e-commerce brands and shows case-study patterns across B2B SaaS, D2C e-commerce and local services.",
+          "statement": "B2B SaaS, technology companies, professional services, education, healthcare, financial services, e-commerce and other businesses where customers research providers online before making a purchase.\n\nIdeal companies already invest in their website, content, SEO or digital marketing but have limited visibility when potential customers ask AI platforms for recommendations.\n\nThe strongest customers operate in competitive categories where appearing in \"best company\", \"best software\", \"alternative to\", \"which provider\", comparison and high-intent informational queries can influence purchasing decisions.\n\nCompanies with established websites, existing content and some domain authority are particularly attractive because DigiPuush can build on those assets rather than starting from zero.\n\nDigiPuush's current site explicitly says it works with B2B, SaaS and e-commerce brands and shows case-study patterns across B2B SaaS, D2C e-commerce and local services.",
+          "provenance": "FOUNDER_HYPOTHESIS",
+          "isAssumption": true,
+          "validationStatus": "UNTESTED"
+        },
+        {
+          "key": "target_company_size",
+          "evidence": "20–1,000 employees",
+          "statement": "20–1,000 employees",
+          "provenance": "FOUNDER_HYPOTHESIS",
+          "isAssumption": true,
+          "validationStatus": "UNTESTED"
+        },
+        {
+          "key": "customers",
+          "evidence": "zyng.app\nthirdbracket\nvirama.in",
+          "statement": "zyng.app\nthirdbracket\nvirama.in",
+          "provenance": "CUSTOMER",
+          "isAssumption": false,
+          "validationStatus": "PARTIALLY_VALIDATED"
+        },
+        {
+          "key": "won_opportunities",
+          "evidence": "The prospect already understands SEO.\n\nThe company has an established website and content base.\n\nOrganic discovery matters commercially.\n\nManagement understands that AI is changing search behaviour.\n\nCompetitors already have stronger AI visibility.\n\nThere is a measurable visibility gap.\n\nA senior marketing stakeholder owns the problem.\n\nThe company is willing to make website/content changes.\n\nThere is sufficient budget for a recurring engagement.\n\nThe AI Visibility Audit creates a clear before/after measurement.",
+          "statement": "The prospect already understands SEO.\n\nThe company has an established website and content base.\n\nOrganic discovery matters commercially.\n\nManagement understands that AI is changing search behaviour.\n\nCompetitors already have stronger AI visibility.\n\nThere is a measurable visibility gap.\n\nA senior marketing stakeholder owns the problem.\n\nThe company is willing to make website/content changes.\n\nThere is sufficient budget for a recurring engagement.\n\nThe AI Visibility Audit creates a clear before/after measurement.",
+          "provenance": "SALES_OUTCOME",
+          "isAssumption": false,
+          "validationStatus": "PARTIALLY_VALIDATED"
+        },
+        {
+          "key": "lost_opportunities",
+          "evidence": "Prospect expects immediate leads.\n\nProspect doesn't understand AEO/GEO.\n\nNo marketing budget.\n\nNo urgency.\n\nCompany has a weak website/content foundation.\n\nManagement sees AI search as experimental.\n\nExisting SEO agency claims it already covers GEO.\n\nNo senior marketing sponsor.\n\nProspect wants guaranteed rankings/citations.\n\nCompany wants a one-time activity instead of ongoing optimization.",
+          "statement": "Prospect expects immediate leads.\n\nProspect doesn't understand AEO/GEO.\n\nNo marketing budget.\n\nNo urgency.\n\nCompany has a weak website/content foundation.\n\nManagement sees AI search as experimental.\n\nExisting SEO agency claims it already covers GEO.\n\nNo senior marketing sponsor.\n\nProspect wants guaranteed rankings/citations.\n\nCompany wants a one-time activity instead of ongoing optimization.",
+          "provenance": "SALES_OUTCOME",
+          "isAssumption": false,
+          "validationStatus": "PARTIALLY_VALIDATED"
+        }
+      ],
+      "unknowns": [
+        "Specific buyer, champion, economic buyer, and technical evaluator roles are unknown.",
+        "Actual customer buying reasons, customer problems, initiators, approvers, and interest triggers are unknown.",
+        "Whether the listed current customers are paying customers, pilot customers, or another customer type is unknown.",
+        "Documented customer outcomes, visibility improvements, citations, leads, bookings, or other results are unknown.",
+        "Historical deal sizes, sales-cycle outcomes, win rates, and deal-size history are unknown.",
+        "Historical industries, company sizes, and geographies beyond the supplied target patterns are unknown.",
+        "Specific objection history and competitor history are unknown.",
+        "Compliance requirements or constraints are unknown.",
+        "Expansion patterns are unknown.",
+        "Expansion patterns"
+      ],
+      "industries": [
+        "Marketing",
+        "B2B SaaS",
+        "Technology",
+        "Professional services",
+        "Education",
+        "Healthcare",
+        "Financial services",
+        "E-commerce",
+        "D2C e-commerce",
+        "Local services",
+        "Hospitality",
+        "Travel",
+        "HR / recruitment / talent solutions"
+      ],
+      "buyer_roles": [],
+      "geographies": [
+        "India"
+      ],
+      "champion_roles": [],
+      "buying_triggers": [
+        "A need to expand visibility beyond traditional Google Search into ChatGPT, Gemini, Perplexity, and AI-generated recommendations.",
+        "Competitors having stronger AI visibility.",
+        "A measurable AI visibility gap identified through an AI Visibility Audit.",
+        "Management recognition that AI is changing search behavior.",
+        "The need to build brand entity, product positioning, use-case, and category visibility.",
+        "The need to reduce reliance on paid acquisition, conventional search, intermediaries, or booking platforms.",
+        "High-intent online searches that can influence provider selection or direct bookings."
+      ],
+      "differentiators": [
+        "An integrated SEO + AEO + GEO approach rather than treating AI visibility as an isolated add-on.",
+        "Focus on measurable visibility across ChatGPT, Perplexity, Gemini, Google AI Overviews, and traditional Google Search.",
+        "AI visibility audits, answer-extraction-oriented content restructuring, schema implementation, citation-oriented content, traditional SEO foundations, authority building, and ongoing AI citation monitoring.",
+        "Positioning around the Indian market."
+      ],
+      "problems_solved": [
+        "Brands may rank in Google but remain absent from AI-generated recommendations, comparisons, and solution queries.",
+        "Website content may not be structured for AI systems to understand, extract, and cite.",
+        "Competitors may be recommended in AI-generated answers despite weaker products, experience, or traditional SEO rankings.",
+        "Brands may lack visibility into how they appear across AI answer engines.",
+        "Traditional SEO alone may not capture AI-driven discovery visibility."
+      ],
+      "technical_roles": [],
+      "offering_summary": "AEO & GEO / AI Visibility Services that combine AI visibility audits, content restructuring, schema markup, technical SEO, authority building, AI citation monitoring, and traditional SEO to improve visibility across ChatGPT, Perplexity, Gemini, Google AI Overviews, and Google Search.",
+      "urgency_patterns": [
+        "Competitors are accumulating authoritative content, citations, and machine-readable signals, making visibility gaps harder to close over time.",
+        "Brands risk absence from AI-generated answers during buyer research and vendor discovery.",
+        "Companies may be investing in SEO and content without capturing AI-driven discovery visibility.",
+        "High-intent recommendation, comparison, and provider-selection queries can affect consideration and direct bookings."
+      ],
+      "business_outcomes": [
+        "Greater visibility in AI-generated answers and traditional Google Search.",
+        "More opportunities for a brand to enter buyer consideration during AI-driven research and vendor discovery.",
+        "Improved machine-readable content, structured data, entity signals, and brand authority.",
+        "Ongoing measurement of AI citation and visibility improvements.",
+        "For direct-booking businesses, increased organic discovery can support direct bookings rather than reliance on intermediaries."
+      ],
+      "common_objections": [
+        "Expectation of immediate leads.",
+        "Limited understanding of AEO/GEO.",
+        "No marketing budget.",
+        "Lack of urgency.",
+        "Perception that AI search is experimental.",
+        "Belief that an existing SEO agency already covers GEO.",
+        "Demand for guaranteed rankings or citations.",
+        "Preference for a one-time activity instead of ongoing optimization."
+      ],
+      "compliance_patterns": [],
+      "technology_patterns": [
+        "Established websites with existing content and some domain authority.",
+        "Website content requiring restructuring for AI understanding, extraction, and citation.",
+        "Use of schema markup and structured data.",
+        "Visibility across ChatGPT, Perplexity, Gemini, Google AI Overviews, and Google Search."
+      ],
+      "company_size_patterns": [
+        "20–1,000 employees.",
+        "₹10 crore–₹500 crore annual revenue."
+      ],
+      "disqualifier_hypotheses": [
+        "The prospect expects immediate leads or results within days.",
+        "The prospect lacks marketing budget or urgency.",
+        "Management views AI search as experimental.",
+        "The prospect has no senior marketing sponsor.",
+        "The prospect wants guaranteed rankings or citations.",
+        "The prospect is unwilling or unable to approve website and content changes.",
+        "The company has insufficient website or content foundations.",
+        "The prospect wants a one-time engagement rather than ongoing optimization.",
+        "The prospect believes an existing SEO agency already covers GEO."
+      ],
+      "ideal_customer_patterns": [
+        "B2B SaaS, technology, professional services, education, healthcare, financial services, e-commerce, and other businesses whose customers research providers online before purchase.",
+        "Companies that already invest in websites, content, SEO, or digital marketing but have limited visibility in AI-platform recommendations.",
+        "Businesses in competitive categories where 'best company,' 'best software,' alternatives, provider-selection, comparison, and high-intent informational queries influence purchasing decisions.",
+        "Companies with established websites, existing content, and some domain authority.",
+        "Companies with 20–1,000 employees and ₹10 crore–₹500 crore in annual revenue.",
+        "Companies where organic discovery matters commercially, management recognizes changing search behavior, and a senior marketing stakeholder owns the problem.",
+        "Companies willing to make website and content changes and fund an ongoing engagement."
+      ],
+      "negative_customer_patterns": [
+        "Very small businesses with little website traffic or marketing budget.",
+        "Companies without a meaningful website or with a weak website/content foundation.",
+        "Businesses where customers rarely research purchases online.",
+        "Companies seeking exclusively immediate lead generation or expecting AEO/GEO to generate leads within days.",
+        "Businesses unwilling to invest in content or website improvements.",
+        "Companies without an internal person who can approve website or content changes.",
+        "Businesses seeking guaranteed ChatGPT rankings or citations.",
+        "Companies seeking only social media management or paid advertising.",
+        "Companies seeking a one-time activity rather than ongoing optimization."
+      ]
+    },
+    "icpId": "5731bd2f-8951-40d5-a4e1-847ee0ea3564",
+    "icpVersionId": "e7b9a805-f690-449f-8958-e35cd301e366",
+    "icpVersion": 7,
+    "icpCreatedAt": "2026-09-01T17:41:09.452Z",
+    "icpAssumptions": [
+      "We believe B2B SaaS, technology companies, professional services, education, healthcare, financial services, e-commerce and other businesses where customers research providers online before making a purchase.\n\nIdeal companies already invest in their website, content, SEO or digital marketing but have limited visibility when potential customers ask AI platforms for recommendations.\n\nThe strongest customers operate in competitive categories where appearing in \"best company\", \"best software\", \"alternative to\", \"which provider\", comparison and high-intent informational queries can influence purchasing decisions.\n\nCompanies with established websites, existing content and some domain authority are particularly attractive because DigiPuush can build on those assets rather than starting from zero.\n\nDigiPuush's current site explicitly says it works with B2B, SaaS and e-commerce brands and shows case-study patterns across B2B SaaS, D2C e-commerce and local services..",
+      "We believe companies with 20–1,000 employees employees are a strong fit."
+    ],
+    "opportunityPackId": null,
+    "opportunityPackVersionId": null,
+    "opportunityPackVersion": null,
+    "opportunityPackStatus": null,
+    "opportunityPackCreatedAt": null,
+    "context": {
+      "businessTwinId": "cb40e2b3-0330-4ce8-afc4-a9ab08f0bcd4",
+      "businessTwinVersionId": "48d80510-1f54-41b2-bdcd-2e82a0eb9913",
+      "icpId": "e7b9a805-f690-449f-8958-e35cd301e366",
+      "offeringId": null,
+      "offeringKey": null,
+      "sellerCompanyName": "Digipuush",
+      "sellerBusinessDescription": null,
+      "sellerBusinessModel": null,
+      "offeringName": "AEO & GEO / AI Visibility Services",
+      "offeringCategory": null,
+      "offeringDescription": "DigiPuush helps businesses become visible and cited in AI-generated answers across ChatGPT, Perplexity, Gemini and Google AI Overviews, while also improving traditional Google search visibility.\n\nThe service combines Answer Engine Optimization (AEO), Generative Engine Optimization (GEO), AI SEO, content restructuring, schema markup, technical SEO, authority building and ongoing AI citation monitoring. DigiPuush audits where a brand appears across AI platforms, identifies visibility gaps, restructures website content so AI systems can understand and extract it, builds authority signals, and tracks improvements over time.",
+      "offeringCapabilities": [],
+      "offeringExclusions": [],
+      "source": "BUSINESS_TWIN",
+      "fingerprint": "d312a81ac1c9ef9e84b8e30266713947b78e5717b22d6dd3cf570edc26a08528"
+    },
+    "sufficiency": {
+      "sufficient": true,
+      "reason": "SUFFICIENT"
+    },
+    "businessTwinReady": true,
+    "offeringReady": true,
+    "icpReady": true,
+    "opportunityPackReady": false,
+    "buyerRoleReady": true,
+    "marketDiscoveryReady": true,
+    "whoReady": true,
+    "whenWhyReady": false,
+    "contextStatus": "READY",
+    "missingRequirements": [
+      "OPPORTUNITY_PACK_MISSING"
+    ]
+  },
+  "discovery": {
+    "requested": 20,
+    "rawCandidates": 20,
+    "canonicalCandidates": 20,
+    "finalCohort": 20,
+    "providerCalls": 4,
+    "estimatedCost": 0.028,
+    "actualCost": 0.04
+  },
+  "minimumIntelligence": {
+    "sufficientBefore": 2,
+    "requiredEnrichment": 0,
+    "primaryAttempts": 0,
+    "fallbackAttempts": 0,
+    "sufficientAfter": 2,
+    "identityUnsafe": 18,
+    "cacheHits": 0
+  },
+  "companyUnderstanding": {
+    "attempted": 20,
+    "llmCalls": 1,
+    "cacheHits": 19,
+    "evidenceBacked": 2
+  },
+  "commercialRole": {
+    "distribution": {
+      "POTENTIAL_BUYER": 2,
+      "SELLER_COMPETITOR": 0,
+      "ADJACENT_VENDOR": 0,
+      "PARTNER_POSSIBLE": 0,
+      "UNKNOWN": 18
+    }
+  },
+  "who": {
+    "distribution": {
+      "LIKELY_FIT": 0,
+      "POSSIBLE_FIT": 0,
+      "LIKELY_NOT_FIT": 0,
+      "INSUFFICIENT_DATA": 20
+    },
+    "eligible": 20
+  },
+  "costs": {
+    "provider": {
+      "calls": 4,
+      "byCapability": {
+        "COMPANY_DISCOVERY": 2,
+        "WEB_SEARCH": 2
+      },
+      "knownCost": 0.04,
+      "unknownCostCalls": 0,
+      "records": [
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "COMPANY_DISCOVERY",
+          "status": "success",
+          "requestId": "discovery:26e4d9f7-bdd4-4040-9f86-1b40c39fb9e3:1:b220e720-6d21-4c7a-badf-3aec920febca",
+          "estimatedCost": 0.007,
+          "actualCost": 0.007,
+          "resultCount": 10,
+          "metadata": {
+            "organizationId": "02d40c31-72e4-42d9-9d8d-fe676a369205",
+            "projectId": "5ca11b69-e296-4e79-b3da-ee127f16ab55",
+            "discoveryRunId": "26e4d9f7-bdd4-4040-9f86-1b40c39fb9e3",
+            "queryIndex": "1",
+            "query": "saas operating companies in India with 20-1000 employees",
+            "strategy": {
+              "icpDescription": "We believe B2B SaaS, technology companies, professional services, education, healthcare, financial services, e-commerce and other businesses where customers research providers online before making a purchase.\n\nIdeal companies already invest in their website, content, SEO or digital marketing but have limited visibility when potential customers ask AI platforms for recommendations.\n\nThe strongest customers operate in competitive categories where appearing in \"best company\", \"best software\", \"alternative to\", \"which provider\", comparison and high-intent informational queries can influence purchasing decisions.\n\nCompanies with established websites, existing content and some domain authority are particularly attractive because DigiPuush can build on those assets rather than starting from zero.\n\nDigiPuush's current site explicitly says it works with B2B, SaaS and e-commerce brands and shows case-study patterns across B2B SaaS, D2C e-commerce and local services.. We believe companies with 20–1,000 employees employees are a strong fit.",
+              "targetIndustries": [
+                "saas",
+                "software",
+                "it",
+                "technology",
+                "healthcare",
+                "professional services"
+              ],
+              "geographies": [
+                "India"
+              ],
+              "employeeRange": {
+                "minimum": 20,
+                "maximum": 1000
+              },
+              "technologyCharacteristics": [],
+              "exclusions": [],
+              "hardFilters": [
+                "Geography: India",
+                "Industries: saas, software, it, technology, healthcare, professional services",
+                "Employees: 20–1000",
+                "Target customer operates in a stated target industry.",
+                "Company is located in a stated target geography."
+              ],
+              "softCriteria": [
+                "We believe B2B SaaS, technology companies, professional services, education, healthcare, financial services, e-commerce and other businesses where customers research providers online before making a purchase.\n\nIdeal companies already invest in their website, content, SEO or digital marketing but have limited visibility when potential customers ask AI platforms for recommendations.\n\nThe strongest customers operate in competitive categories where appearing in \"best company\", \"best software\", \"alternative to\", \"which provider\", comparison and high-intent informational queries can influence purchasing decisions.\n\nCompanies with established websites, existing content and some domain authority are particularly attractive because DigiPuush can build on those assets rather than starting from zero.\n\nDigiPuush's current site explicitly says it works with B2B, SaaS and e-commerce brands and shows case-study patterns across B2B SaaS, D2C e-commerce and local services..",
+                "We believe companies with 20–1,000 employees employees are a strong fit.",
+                "Technology pattern suggested by the Business Twin interpretation.",
+                "A Business Twin hypothesis that requires human validation before becoming a disqualifier.",
+                "A Business Twin hypothesis that requires human validation before becoming a disqualifier.",
+                "A Business Twin hypothesis that requires human validation before becoming a disqualifier."
+              ],
+              "marketDiscoveryIntent": {
+                "buyerCompanyTypes": [
+                  "operating company",
+                  "employer",
+                  "facility owner",
+                  "commercial buyer"
+                ],
+                "targetIndustries": [
+                  "saas",
+                  "software",
+                  "it",
+                  "technology",
+                  "healthcare",
+                  "professional services"
+                ],
+                "targetGeographies": [
+                  "India"
+                ],
+                "employeeRange": {
+                  "minimum": 20,
+                  "maximum": 1000
+                },
+                "requiredCharacteristics": [
+                  "Geography: India",
+                  "Industries: saas, software, it, technology, healthcare, professional services",
+                  "Employees: 20–1000",
+                  "Target customer operates in a stated target industry.",
+                  "Company is located in a stated target geography."
+                ],
+                "preferredCharacteristics": [
+                  "We believe B2B SaaS, technology companies, professional services, education, healthcare, financial services, e-commerce and other businesses where customers research providers online before making a purchase.\n\nIdeal companies already invest in their website, content, SEO or digital marketing but have limited visibility when potential customers ask AI platforms for recommendations.\n\nThe strongest customers operate in competitive categories where appearing in \"best company\", \"best software\", \"alternative to\", \"which provider\", comparison and high-intent informational queries can influence purchasing decisions.\n\nCompanies with established websites, existing content and some domain authority are particularly attractive because DigiPuush can build on those assets rather than starting from zero.\n\nDigiPuush's current site explicitly says it works with B2B, SaaS and e-commerce brands and shows case-study patterns across B2B SaaS, D2C e-commerce and local services..",
+                  "We believe companies with 20–1,000 employees employees are a strong fit."
+                ],
+                "excludedCompanyTypes": [],
+                "sellerCategoryExclusions": [
+                  "Marketing"
+                ],
+                "offeringCategoryExclusions": [
+                  "AEO & GEO / AI Visibility Services"
+                ],
+                "searchConcepts": [
+                  "saas",
+                  "software",
+                  "it",
+                  "technology",
+                  "healthcare",
+                  "professional services"
+                ],
+                "negativeConcepts": [
+                  "companies primarily selling in Marketing",
+                  "providers or vendors of AEO & GEO / AI Visibility Services"
+                ],
+                "confidence": "HIGH",
+                "provenance": [
+                  "ICP:5f262327-2045-4657-b3b1-db4aea00be36",
+                  "ICP:ff568633-b97c-4d41-8da0-42cd11b38bd9",
+                  "ICP:468f08f6-fc9c-4839-887c-585348a58bff",
+                  "ICP:da615753-be56-4697-b591-072fe36bfbc7",
+                  "ICP:90a7f2b3-9d03-475a-b557-cf45ec26762e",
+                  "ICP:bbb4392d-c83e-44b9-a46f-37bb27a1c739",
+                  "BUSINESS_TWIN:48d80510-1f54-41b2-bdcd-2e82a0eb9913"
+                ]
+              }
+            },
+            "searchType": "auto",
+            "category": "company",
+            "numResults": 10,
+            "rawResultCount": 10,
+            "rawResultProjection": [
+              {
+                "index": 1,
+                "title": "Corefactors",
+                "url": "https://corefactors.ai",
+                "providerResultId": "https://exa.ai/library/organization/hzhy7nn0bft",
+                "description": null,
+                "entityStatus": "VALID"
+              },
+              {
+                "index": 2,
+                "title": "RazorSign",
+                "url": "https://razorsign.com",
+                "providerResultId": "https://exa.ai/library/organization/9t1xx6rmymt",
+                "description": null,
+                "entityStatus": "VALID"
+              },
+              {
+                "index": 3,
+                "title": "BetterPlace",
+                "url": "https://betterplace.co.in",
+                "providerResultId": "https://exa.ai/library/organization/6hb67y8g8c3",
+                "description": null,
+                "entityStatus": "VALID"
+              },
+              {
+                "index": 4,
+                "title": "Setu",
+                "url": "https://setu.co",
+                "providerResultId": "https://exa.ai/library/organization/lp1f9wkwb9x",
+                "description": null,
+                "entityStatus": "VALID"
+              },
+              {
+                "index": 5,
+                "title": "Decentro",
+                "url": "https://decentro.tech",
+                "providerResultId": "https://exa.ai/library/organization/lng2rl0k06m",
+                "description": null,
+                "entityStatus": "VALID"
+              },
+              {
+                "index": 6,
+                "title": "PagarBook",
+                "url": "https://pagarbook.com",
+                "providerResultId": "https://exa.ai/library/organization/j6bxnxbbgg9",
+                "description": null,
+                "entityStatus": "VALID"
+              },
+              {
+                "index": 7,
+                "title": "NeoDove",
+                "url": "https://neodove.com",
+                "providerResultId": "https://exa.ai/library/organization/n9k4q4xxcps",
+                "description": null,
+                "entityStatus": "VALID"
+              },
+              {
+                "index": 8,
+                "title": "ekincare",
+                "url": "https://ekincare.com",
+                "providerResultId": "https://exa.ai/library/organization/zmyflfkbxsc",
+                "description": null,
+                "entityStatus": "VALID"
+              },
+              {
+                "index": 9,
+                "title": "Neysa",
+                "url": "https://neysa.ai",
+                "providerResultId": "https://exa.ai/library/organization/c1z2ktqwx42",
+                "description": null,
+                "entityStatus": "VALID"
+              },
+              {
+                "index": 10,
+                "title": "Avataar",
+                "url": "https://avataar.ai",
+                "providerResultId": "https://exa.ai/library/organization/5lszxtcq35v",
+                "description": null,
+                "entityStatus": "VALID"
+              }
+            ],
+            "normalizedResultCount": 10,
+            "retrievalTimestamp": "2026-09-01T18:33:12.662Z"
+          }
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "COMPANY_DISCOVERY",
+          "status": "success",
+          "requestId": "discovery:26e4d9f7-bdd4-4040-9f86-1b40c39fb9e3:2:b220e720-6d21-4c7a-badf-3aec920febca",
+          "estimatedCost": 0.007,
+          "actualCost": 0.007,
+          "resultCount": 10,
+          "metadata": {
+            "organizationId": "02d40c31-72e4-42d9-9d8d-fe676a369205",
+            "projectId": "5ca11b69-e296-4e79-b3da-ee127f16ab55",
+            "discoveryRunId": "26e4d9f7-bdd4-4040-9f86-1b40c39fb9e3",
+            "queryIndex": "2",
+            "query": "software operating companies in India with 20-1000 employees",
+            "strategy": {
+              "icpDescription": "We believe B2B SaaS, technology companies, professional services, education, healthcare, financial services, e-commerce and other businesses where customers research providers online before making a purchase.\n\nIdeal companies already invest in their website, content, SEO or digital marketing but have limited visibility when potential customers ask AI platforms for recommendations.\n\nThe strongest customers operate in competitive categories where appearing in \"best company\", \"best software\", \"alternative to\", \"which provider\", comparison and high-intent informational queries can influence purchasing decisions.\n\nCompanies with established websites, existing content and some domain authority are particularly attractive because DigiPuush can build on those assets rather than starting from zero.\n\nDigiPuush's current site explicitly says it works with B2B, SaaS and e-commerce brands and shows case-study patterns across B2B SaaS, D2C e-commerce and local services.. We believe companies with 20–1,000 employees employees are a strong fit.",
+              "targetIndustries": [
+                "saas",
+                "software",
+                "it",
+                "technology",
+                "healthcare",
+                "professional services"
+              ],
+              "geographies": [
+                "India"
+              ],
+              "employeeRange": {
+                "minimum": 20,
+                "maximum": 1000
+              },
+              "technologyCharacteristics": [],
+              "exclusions": [],
+              "hardFilters": [
+                "Geography: India",
+                "Industries: saas, software, it, technology, healthcare, professional services",
+                "Employees: 20–1000",
+                "Target customer operates in a stated target industry.",
+                "Company is located in a stated target geography."
+              ],
+              "softCriteria": [
+                "We believe B2B SaaS, technology companies, professional services, education, healthcare, financial services, e-commerce and other businesses where customers research providers online before making a purchase.\n\nIdeal companies already invest in their website, content, SEO or digital marketing but have limited visibility when potential customers ask AI platforms for recommendations.\n\nThe strongest customers operate in competitive categories where appearing in \"best company\", \"best software\", \"alternative to\", \"which provider\", comparison and high-intent informational queries can influence purchasing decisions.\n\nCompanies with established websites, existing content and some domain authority are particularly attractive because DigiPuush can build on those assets rather than starting from zero.\n\nDigiPuush's current site explicitly says it works with B2B, SaaS and e-commerce brands and shows case-study patterns across B2B SaaS, D2C e-commerce and local services..",
+                "We believe companies with 20–1,000 employees employees are a strong fit.",
+                "Technology pattern suggested by the Business Twin interpretation.",
+                "A Business Twin hypothesis that requires human validation before becoming a disqualifier.",
+                "A Business Twin hypothesis that requires human validation before becoming a disqualifier.",
+                "A Business Twin hypothesis that requires human validation before becoming a disqualifier."
+              ],
+              "marketDiscoveryIntent": {
+                "buyerCompanyTypes": [
+                  "operating company",
+                  "employer",
+                  "facility owner",
+                  "commercial buyer"
+                ],
+                "targetIndustries": [
+                  "saas",
+                  "software",
+                  "it",
+                  "technology",
+                  "healthcare",
+                  "professional services"
+                ],
+                "targetGeographies": [
+                  "India"
+                ],
+                "employeeRange": {
+                  "minimum": 20,
+                  "maximum": 1000
+                },
+                "requiredCharacteristics": [
+                  "Geography: India",
+                  "Industries: saas, software, it, technology, healthcare, professional services",
+                  "Employees: 20–1000",
+                  "Target customer operates in a stated target industry.",
+                  "Company is located in a stated target geography."
+                ],
+                "preferredCharacteristics": [
+                  "We believe B2B SaaS, technology companies, professional services, education, healthcare, financial services, e-commerce and other businesses where customers research providers online before making a purchase.\n\nIdeal companies already invest in their website, content, SEO or digital marketing but have limited visibility when potential customers ask AI platforms for recommendations.\n\nThe strongest customers operate in competitive categories where appearing in \"best company\", \"best software\", \"alternative to\", \"which provider\", comparison and high-intent informational queries can influence purchasing decisions.\n\nCompanies with established websites, existing content and some domain authority are particularly attractive because DigiPuush can build on those assets rather than starting from zero.\n\nDigiPuush's current site explicitly says it works with B2B, SaaS and e-commerce brands and shows case-study patterns across B2B SaaS, D2C e-commerce and local services..",
+                  "We believe companies with 20–1,000 employees employees are a strong fit."
+                ],
+                "excludedCompanyTypes": [],
+                "sellerCategoryExclusions": [
+                  "Marketing"
+                ],
+                "offeringCategoryExclusions": [
+                  "AEO & GEO / AI Visibility Services"
+                ],
+                "searchConcepts": [
+                  "saas",
+                  "software",
+                  "it",
+                  "technology",
+                  "healthcare",
+                  "professional services"
+                ],
+                "negativeConcepts": [
+                  "companies primarily selling in Marketing",
+                  "providers or vendors of AEO & GEO / AI Visibility Services"
+                ],
+                "confidence": "HIGH",
+                "provenance": [
+                  "ICP:5f262327-2045-4657-b3b1-db4aea00be36",
+                  "ICP:ff568633-b97c-4d41-8da0-42cd11b38bd9",
+                  "ICP:468f08f6-fc9c-4839-887c-585348a58bff",
+                  "ICP:da615753-be56-4697-b591-072fe36bfbc7",
+                  "ICP:90a7f2b3-9d03-475a-b557-cf45ec26762e",
+                  "ICP:bbb4392d-c83e-44b9-a46f-37bb27a1c739",
+                  "BUSINESS_TWIN:48d80510-1f54-41b2-bdcd-2e82a0eb9913"
+                ]
+              }
+            },
+            "searchType": "auto",
+            "category": "company",
+            "numResults": 10,
+            "rawResultCount": 10,
+            "rawResultProjection": [
+              {
+                "index": 1,
+                "title": "Heera Software Private Limited",
+                "url": "https://heerasoftware.com",
+                "providerResultId": "https://exa.ai/library/organization/2nvn4kfg3hh",
+                "description": null,
+                "entityStatus": "VALID"
+              },
+              {
+                "index": 2,
+                "title": "Meander Software",
+                "url": "https://meander.software",
+                "providerResultId": "https://exa.ai/library/organization/87v48jn2cbx",
+                "description": null,
+                "entityStatus": "VALID"
+              },
+              {
+                "index": 3,
+                "title": "Pramati",
+                "url": "https://pramati.com",
+                "providerResultId": "https://exa.ai/library/organization/ys65wb5t6rl",
+                "description": null,
+                "entityStatus": "VALID"
+              },
+              {
+                "index": 4,
+                "title": "KDK Software",
+                "url": "https://kdksoftware.com",
+                "providerResultId": "https://exa.ai/library/organization/ljx6bhyx2px",
+                "description": null,
+                "entityStatus": "VALID"
+              },
+              {
+                "index": 5,
+                "title": "Bitla Software",
+                "url": "https://bitlasoft.com",
+                "providerResultId": "https://exa.ai/library/organization/n983p1w1vxx",
+                "description": null,
+                "entityStatus": "VALID"
+              },
+              {
+                "index": 6,
+                "title": "One2N",
+                "url": "https://one2n.io",
+                "providerResultId": "https://exa.ai/library/organization/tzrbx720n1y",
+                "description": null,
+                "entityStatus": "VALID"
+              },
+              {
+                "index": 7,
+                "title": "Neysa",
+                "url": "https://neysa.ai",
+                "providerResultId": "https://exa.ai/library/organization/c1z2ktqwx42",
+                "description": null,
+                "entityStatus": "VALID"
+              },
+              {
+                "index": 8,
+                "title": "Avataar",
+                "url": "https://avataar.ai",
+                "providerResultId": "https://exa.ai/library/organization/5lszxtcq35v",
+                "description": null,
+                "entityStatus": "VALID"
+              },
+              {
+                "index": 9,
+                "title": "Jaza Software",
+                "url": "https://jazasoft.com",
+                "providerResultId": "https://exa.ai/library/organization/cp4ppnh1wh3",
+                "description": null,
+                "entityStatus": "VALID"
+              },
+              {
+                "index": 10,
+                "title": "KeyValue",
+                "url": "https://keyvalue.systems",
+                "providerResultId": "https://exa.ai/library/organization/1q4f8xj03fb",
+                "description": null,
+                "entityStatus": "VALID"
+              }
+            ],
+            "normalizedResultCount": 10,
+            "retrievalTimestamp": "2026-09-01T18:33:14.112Z"
+          }
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "requestId": "discovery-profile:26e4d9f7-bdd4-4040-9f86-1b40c39fb9e3:11:search-1:b220e720-6d21-4c7a-badf-3aec920febca",
+          "estimatedCost": 0.007,
+          "actualCost": 0.017,
+          "resultCount": 10,
+          "metadata": {
+            "organizationId": "02d40c31-72e4-42d9-9d8d-fe676a369205",
+            "projectId": "5ca11b69-e296-4e79-b3da-ee127f16ab55",
+            "discoveryRunId": "26e4d9f7-bdd4-4040-9f86-1b40c39fb9e3",
+            "resolutionCapability": "COMPANY_PROFILE_RESOLUTION",
+            "discoveryQuery": "site:linkedin.com/company \"Heera Software Private Limited\" \"heerasoftware.com\"",
+            "query": "site:linkedin.com/company \"Heera Software Private Limited\" \"heerasoftware.com\"",
+            "retrievalTimestamp": "2026-09-01T18:33:16.336Z",
+            "searchType": "auto",
+            "numResults": 10,
+            "rawResultCount": 10,
+            "normalizedResultCount": 10,
+            "providerResultIds": [
+              "https://exa.ai/library/organization/2nvn4kfg3hh",
+              "https://exa.ai/library/organization/m6ydl6y8jgh",
+              "https://exa.ai/library/organization/djdlxgc7ttn",
+              "https://exa.ai/library/organization/tkbdwcxbpsk",
+              "https://exa.ai/library/organization/lpcp5ryl2r1",
+              "https://exa.ai/library/organization/s3d68307w1y",
+              "https://exa.ai/library/organization/v616h16vqx7",
+              "https://exa.ai/library/organization/znmh19ng2np",
+              "https://exa.ai/library/organization/32gr4wgwyxf",
+              "https://exa.ai/library/organization/sjh1h7pyxy2"
+            ]
+          }
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "requestId": "buyer-role-description:26e4d9f7-bdd4-4040-9f86-1b40c39fb9e3:11:b220e720-6d21-4c7a-badf-3aec920febca",
+          "estimatedCost": 0.007,
+          "actualCost": 0.009,
+          "resultCount": 2,
+          "metadata": {
+            "organizationId": "02d40c31-72e4-42d9-9d8d-fe676a369205",
+            "projectId": "5ca11b69-e296-4e79-b3da-ee127f16ab55",
+            "discoveryRunId": "26e4d9f7-bdd4-4040-9f86-1b40c39fb9e3",
+            "query": "What does Heera Software Private Limited primarily do?",
+            "retrievalTimestamp": "2026-09-01T18:33:23.238Z",
+            "searchType": "auto",
+            "numResults": 2,
+            "rawResultCount": 2,
+            "normalizedResultCount": 2,
+            "providerResultIds": [
+              "https://heerasoftware.com/about-us/",
+              "https://heerasoftware.com/"
+            ]
+          }
+        }
+      ]
+    },
+    "semanticLlmCalls": 1,
+    "llmCost": "UNKNOWN"
+  },
+  "outcomes": [
+    {
+      "companyId": "8a4ac58f-98cd-4a27-b684-ac1bf81293cb",
+      "name": "3LOCKS",
+      "domain": null,
+      "discoveryBuyerRole": "UNKNOWN",
+      "buyerRole": "UNKNOWN",
+      "confidence": "LOW",
+      "unknownReason": "IDENTITY_INSUFFICIENT",
+      "minimum": {
+        "stage": "UNSAFE_IDENTITY",
+        "cacheHit": false,
+        "identitySafe": false,
+        "evidenceIds": [],
+        "attempts": {
+          "profileResolution": 0,
+          "firmographics": 0
+        }
+      },
+      "semantic": {
+        "invoked": false,
+        "cacheHit": true,
+        "evidenceIds": []
+      },
+      "who": {
+        "eligible": true,
+        "qualification": "INSUFFICIENT_DATA"
+      },
+      "primaryBusiness": null,
+      "businessModel": "UNKNOWN",
+      "industry": null,
+      "productsServices": []
+    },
+    {
+      "companyId": "aa1faa72-6d6c-4141-8163-540963623580",
+      "name": "Avataar",
+      "domain": "avataar.ai",
+      "discoveryBuyerRole": "UNKNOWN",
+      "buyerRole": "UNKNOWN",
+      "confidence": "LOW",
+      "unknownReason": "IDENTITY_INSUFFICIENT",
+      "minimum": {
+        "stage": "UNSAFE_IDENTITY",
+        "cacheHit": false,
+        "identitySafe": false,
+        "evidenceIds": [],
+        "attempts": {
+          "profileResolution": 0,
+          "firmographics": 0
+        }
+      },
+      "semantic": {
+        "invoked": false,
+        "cacheHit": true,
+        "evidenceIds": []
+      },
+      "who": {
+        "eligible": true,
+        "qualification": "INSUFFICIENT_DATA"
+      },
+      "primaryBusiness": null,
+      "businessModel": "UNKNOWN",
+      "industry": null,
+      "productsServices": []
+    },
+    {
+      "companyId": "56b9fd26-ae1e-4ba3-9cba-c7846633ebd0",
+      "name": "BetterPlace",
+      "domain": "betterplace.co.in",
+      "discoveryBuyerRole": "UNKNOWN",
+      "buyerRole": "UNKNOWN",
+      "confidence": "LOW",
+      "unknownReason": "IDENTITY_INSUFFICIENT",
+      "minimum": {
+        "stage": "UNSAFE_IDENTITY",
+        "cacheHit": false,
+        "identitySafe": false,
+        "evidenceIds": [],
+        "attempts": {
+          "profileResolution": 0,
+          "firmographics": 0
+        }
+      },
+      "semantic": {
+        "invoked": false,
+        "cacheHit": true,
+        "evidenceIds": []
+      },
+      "who": {
+        "eligible": true,
+        "qualification": "INSUFFICIENT_DATA"
+      },
+      "primaryBusiness": null,
+      "businessModel": "UNKNOWN",
+      "industry": null,
+      "productsServices": []
+    },
+    {
+      "companyId": "9d14887f-e3de-4f00-be48-10bb5986881e",
+      "name": "Bitla Software",
+      "domain": "bitlasoft.com",
+      "discoveryBuyerRole": "UNKNOWN",
+      "buyerRole": "UNKNOWN",
+      "confidence": "LOW",
+      "unknownReason": "IDENTITY_INSUFFICIENT",
+      "minimum": {
+        "stage": "UNSAFE_IDENTITY",
+        "cacheHit": false,
+        "identitySafe": false,
+        "evidenceIds": [],
+        "attempts": {
+          "profileResolution": 0,
+          "firmographics": 0
+        }
+      },
+      "semantic": {
+        "invoked": false,
+        "cacheHit": true,
+        "evidenceIds": []
+      },
+      "who": {
+        "eligible": true,
+        "qualification": "INSUFFICIENT_DATA"
+      },
+      "primaryBusiness": null,
+      "businessModel": "UNKNOWN",
+      "industry": null,
+      "productsServices": []
+    },
+    {
+      "companyId": "50ceadee-afc9-41a1-b7c7-f6334e213df8",
+      "name": "CData Virtuality",
+      "domain": null,
+      "discoveryBuyerRole": "UNKNOWN",
+      "buyerRole": "UNKNOWN",
+      "confidence": "LOW",
+      "unknownReason": "IDENTITY_INSUFFICIENT",
+      "minimum": {
+        "stage": "UNSAFE_IDENTITY",
+        "cacheHit": false,
+        "identitySafe": false,
+        "evidenceIds": [],
+        "attempts": {
+          "profileResolution": 0,
+          "firmographics": 0
+        }
+      },
+      "semantic": {
+        "invoked": false,
+        "cacheHit": true,
+        "evidenceIds": []
+      },
+      "who": {
+        "eligible": true,
+        "qualification": "INSUFFICIENT_DATA"
+      },
+      "primaryBusiness": null,
+      "businessModel": "UNKNOWN",
+      "industry": null,
+      "productsServices": []
+    },
+    {
+      "companyId": "87a4983e-4510-4c2a-be74-879adb3fcf15",
+      "name": "Corefactors",
+      "domain": "corefactors.ai",
+      "discoveryBuyerRole": "UNKNOWN",
+      "buyerRole": "POTENTIAL_BUYER",
+      "confidence": "MEDIUM",
+      "unknownReason": null,
+      "minimum": {
+        "stage": "SUFFICIENT",
+        "cacheHit": false,
+        "identitySafe": true,
+        "evidenceIds": [
+          "7473d4e6-3ca3-4476-8586-10595e857bf7"
+        ],
+        "attempts": {
+          "profileResolution": 0,
+          "firmographics": 0
+        }
+      },
+      "semantic": {
+        "invoked": false,
+        "cacheHit": true,
+        "evidenceIds": [
+          "7473d4e6-3ca3-4476-8586-10595e857bf7"
+        ]
+      },
+      "who": {
+        "eligible": true,
+        "qualification": "INSUFFICIENT_DATA"
+      },
+      "primaryBusiness": null,
+      "businessModel": "UNKNOWN",
+      "industry": null,
+      "productsServices": []
+    },
+    {
+      "companyId": "53ff0ebf-124e-4577-8231-94f082505d94",
+      "name": "Decentro",
+      "domain": "decentro.tech",
+      "discoveryBuyerRole": "UNKNOWN",
+      "buyerRole": "UNKNOWN",
+      "confidence": "LOW",
+      "unknownReason": "IDENTITY_INSUFFICIENT",
+      "minimum": {
+        "stage": "UNSAFE_IDENTITY",
+        "cacheHit": false,
+        "identitySafe": false,
+        "evidenceIds": [],
+        "attempts": {
+          "profileResolution": 0,
+          "firmographics": 0
+        }
+      },
+      "semantic": {
+        "invoked": false,
+        "cacheHit": true,
+        "evidenceIds": []
+      },
+      "who": {
+        "eligible": true,
+        "qualification": "INSUFFICIENT_DATA"
+      },
+      "primaryBusiness": null,
+      "businessModel": "UNKNOWN",
+      "industry": null,
+      "productsServices": []
+    },
+    {
+      "companyId": "5812ed89-b390-4d55-a6eb-2d7de304d606",
+      "name": "ekincare",
+      "domain": "ekincare.com",
+      "discoveryBuyerRole": "UNKNOWN",
+      "buyerRole": "UNKNOWN",
+      "confidence": "LOW",
+      "unknownReason": "IDENTITY_INSUFFICIENT",
+      "minimum": {
+        "stage": "UNSAFE_IDENTITY",
+        "cacheHit": false,
+        "identitySafe": false,
+        "evidenceIds": [],
+        "attempts": {
+          "profileResolution": 0,
+          "firmographics": 0
+        }
+      },
+      "semantic": {
+        "invoked": false,
+        "cacheHit": true,
+        "evidenceIds": []
+      },
+      "who": {
+        "eligible": true,
+        "qualification": "INSUFFICIENT_DATA"
+      },
+      "primaryBusiness": null,
+      "businessModel": "UNKNOWN",
+      "industry": null,
+      "productsServices": []
+    },
+    {
+      "companyId": "3dbd48a8-8686-48e4-8228-e0cf5fb09b9a",
+      "name": "Heera Software Private Limited",
+      "domain": "heerasoftware.com",
+      "discoveryBuyerRole": "UNKNOWN",
+      "buyerRole": "POTENTIAL_BUYER",
+      "confidence": "MEDIUM",
+      "unknownReason": null,
+      "minimum": {
+        "stage": "SUFFICIENT",
+        "cacheHit": false,
+        "identitySafe": true,
+        "evidenceIds": [
+          "0fb86d28-1473-4f55-9a0f-9fc68a4b7655"
+        ],
+        "attempts": {
+          "profileResolution": 0,
+          "firmographics": 0
+        }
+      },
+      "semantic": {
+        "invoked": true,
+        "cacheHit": false,
+        "evidenceIds": [
+          "0fb86d28-1473-4f55-9a0f-9fc68a4b7655"
+        ]
+      },
+      "who": {
+        "eligible": true,
+        "qualification": "INSUFFICIENT_DATA"
+      },
+      "primaryBusiness": null,
+      "businessModel": "UNKNOWN",
+      "industry": null,
+      "productsServices": []
+    },
+    {
+      "companyId": "c0f9af61-0c4c-42eb-ab9b-16384d7894c1",
+      "name": "Jaza Software",
+      "domain": "jazasoft.com",
+      "discoveryBuyerRole": "UNKNOWN",
+      "buyerRole": "UNKNOWN",
+      "confidence": "LOW",
+      "unknownReason": "IDENTITY_INSUFFICIENT",
+      "minimum": {
+        "stage": "UNSAFE_IDENTITY",
+        "cacheHit": false,
+        "identitySafe": false,
+        "evidenceIds": [],
+        "attempts": {
+          "profileResolution": 0,
+          "firmographics": 0
+        }
+      },
+      "semantic": {
+        "invoked": false,
+        "cacheHit": true,
+        "evidenceIds": []
+      },
+      "who": {
+        "eligible": true,
+        "qualification": "INSUFFICIENT_DATA"
+      },
+      "primaryBusiness": null,
+      "businessModel": "UNKNOWN",
+      "industry": null,
+      "productsServices": []
+    },
+    {
+      "companyId": "18d19813-3efe-4e93-989c-e98321439cf3",
+      "name": "KDK Software",
+      "domain": "kdksoftware.com",
+      "discoveryBuyerRole": "UNKNOWN",
+      "buyerRole": "UNKNOWN",
+      "confidence": "LOW",
+      "unknownReason": "IDENTITY_INSUFFICIENT",
+      "minimum": {
+        "stage": "UNSAFE_IDENTITY",
+        "cacheHit": false,
+        "identitySafe": false,
+        "evidenceIds": [],
+        "attempts": {
+          "profileResolution": 0,
+          "firmographics": 0
+        }
+      },
+      "semantic": {
+        "invoked": false,
+        "cacheHit": true,
+        "evidenceIds": []
+      },
+      "who": {
+        "eligible": true,
+        "qualification": "INSUFFICIENT_DATA"
+      },
+      "primaryBusiness": null,
+      "businessModel": "UNKNOWN",
+      "industry": null,
+      "productsServices": []
+    },
+    {
+      "companyId": "e7d81816-a89c-41cf-b599-9088e6c18165",
+      "name": "KeyValue",
+      "domain": "keyvalue.systems",
+      "discoveryBuyerRole": "UNKNOWN",
+      "buyerRole": "UNKNOWN",
+      "confidence": "LOW",
+      "unknownReason": "IDENTITY_INSUFFICIENT",
+      "minimum": {
+        "stage": "UNSAFE_IDENTITY",
+        "cacheHit": false,
+        "identitySafe": false,
+        "evidenceIds": [],
+        "attempts": {
+          "profileResolution": 0,
+          "firmographics": 0
+        }
+      },
+      "semantic": {
+        "invoked": false,
+        "cacheHit": true,
+        "evidenceIds": []
+      },
+      "who": {
+        "eligible": true,
+        "qualification": "INSUFFICIENT_DATA"
+      },
+      "primaryBusiness": null,
+      "businessModel": "UNKNOWN",
+      "industry": null,
+      "productsServices": []
+    },
+    {
+      "companyId": "489268e2-ee77-40ba-ac79-d2625c4e868f",
+      "name": "Meander Software",
+      "domain": "meander.software",
+      "discoveryBuyerRole": "UNKNOWN",
+      "buyerRole": "UNKNOWN",
+      "confidence": "LOW",
+      "unknownReason": "IDENTITY_INSUFFICIENT",
+      "minimum": {
+        "stage": "UNSAFE_IDENTITY",
+        "cacheHit": false,
+        "identitySafe": false,
+        "evidenceIds": [],
+        "attempts": {
+          "profileResolution": 0,
+          "firmographics": 0
+        }
+      },
+      "semantic": {
+        "invoked": false,
+        "cacheHit": true,
+        "evidenceIds": []
+      },
+      "who": {
+        "eligible": true,
+        "qualification": "INSUFFICIENT_DATA"
+      },
+      "primaryBusiness": null,
+      "businessModel": "UNKNOWN",
+      "industry": null,
+      "productsServices": []
+    },
+    {
+      "companyId": "6077fa9f-cf44-4bdc-95ff-089c883d32db",
+      "name": "NeoDove",
+      "domain": "neodove.com",
+      "discoveryBuyerRole": "UNKNOWN",
+      "buyerRole": "UNKNOWN",
+      "confidence": "LOW",
+      "unknownReason": "IDENTITY_INSUFFICIENT",
+      "minimum": {
+        "stage": "UNSAFE_IDENTITY",
+        "cacheHit": false,
+        "identitySafe": false,
+        "evidenceIds": [],
+        "attempts": {
+          "profileResolution": 0,
+          "firmographics": 0
+        }
+      },
+      "semantic": {
+        "invoked": false,
+        "cacheHit": true,
+        "evidenceIds": []
+      },
+      "who": {
+        "eligible": true,
+        "qualification": "INSUFFICIENT_DATA"
+      },
+      "primaryBusiness": null,
+      "businessModel": "UNKNOWN",
+      "industry": null,
+      "productsServices": []
+    },
+    {
+      "companyId": "6c5c28ec-6400-4c55-8c85-b81acfa375ad",
+      "name": "Neysa",
+      "domain": "neysa.ai",
+      "discoveryBuyerRole": "UNKNOWN",
+      "buyerRole": "UNKNOWN",
+      "confidence": "LOW",
+      "unknownReason": "IDENTITY_INSUFFICIENT",
+      "minimum": {
+        "stage": "UNSAFE_IDENTITY",
+        "cacheHit": false,
+        "identitySafe": false,
+        "evidenceIds": [],
+        "attempts": {
+          "profileResolution": 0,
+          "firmographics": 0
+        }
+      },
+      "semantic": {
+        "invoked": false,
+        "cacheHit": true,
+        "evidenceIds": []
+      },
+      "who": {
+        "eligible": true,
+        "qualification": "INSUFFICIENT_DATA"
+      },
+      "primaryBusiness": null,
+      "businessModel": "UNKNOWN",
+      "industry": null,
+      "productsServices": []
+    },
+    {
+      "companyId": "b14e217b-b9ea-43d3-93f0-641d80ed7ec7",
+      "name": "One2N",
+      "domain": "one2n.io",
+      "discoveryBuyerRole": "UNKNOWN",
+      "buyerRole": "UNKNOWN",
+      "confidence": "LOW",
+      "unknownReason": "IDENTITY_INSUFFICIENT",
+      "minimum": {
+        "stage": "UNSAFE_IDENTITY",
+        "cacheHit": false,
+        "identitySafe": false,
+        "evidenceIds": [],
+        "attempts": {
+          "profileResolution": 0,
+          "firmographics": 0
+        }
+      },
+      "semantic": {
+        "invoked": false,
+        "cacheHit": true,
+        "evidenceIds": []
+      },
+      "who": {
+        "eligible": true,
+        "qualification": "INSUFFICIENT_DATA"
+      },
+      "primaryBusiness": null,
+      "businessModel": "UNKNOWN",
+      "industry": null,
+      "productsServices": []
+    },
+    {
+      "companyId": "28d93677-10eb-4833-981d-62939b59ec47",
+      "name": "PagarBook",
+      "domain": "pagarbook.com",
+      "discoveryBuyerRole": "UNKNOWN",
+      "buyerRole": "UNKNOWN",
+      "confidence": "LOW",
+      "unknownReason": "IDENTITY_INSUFFICIENT",
+      "minimum": {
+        "stage": "UNSAFE_IDENTITY",
+        "cacheHit": false,
+        "identitySafe": false,
+        "evidenceIds": [],
+        "attempts": {
+          "profileResolution": 0,
+          "firmographics": 0
+        }
+      },
+      "semantic": {
+        "invoked": false,
+        "cacheHit": true,
+        "evidenceIds": []
+      },
+      "who": {
+        "eligible": true,
+        "qualification": "INSUFFICIENT_DATA"
+      },
+      "primaryBusiness": null,
+      "businessModel": "UNKNOWN",
+      "industry": null,
+      "productsServices": []
+    },
+    {
+      "companyId": "9c4a92e8-0f3d-4443-b237-c1eaa76f29c3",
+      "name": "Pramati",
+      "domain": "pramati.com",
+      "discoveryBuyerRole": "UNKNOWN",
+      "buyerRole": "UNKNOWN",
+      "confidence": "LOW",
+      "unknownReason": "IDENTITY_INSUFFICIENT",
+      "minimum": {
+        "stage": "UNSAFE_IDENTITY",
+        "cacheHit": false,
+        "identitySafe": false,
+        "evidenceIds": [],
+        "attempts": {
+          "profileResolution": 0,
+          "firmographics": 0
+        }
+      },
+      "semantic": {
+        "invoked": false,
+        "cacheHit": true,
+        "evidenceIds": []
+      },
+      "who": {
+        "eligible": true,
+        "qualification": "INSUFFICIENT_DATA"
+      },
+      "primaryBusiness": null,
+      "businessModel": "UNKNOWN",
+      "industry": null,
+      "productsServices": []
+    },
+    {
+      "companyId": "62cdd90c-0126-49bd-8657-6172cc95e343",
+      "name": "RazorSign",
+      "domain": "razorsign.com",
+      "discoveryBuyerRole": "UNKNOWN",
+      "buyerRole": "UNKNOWN",
+      "confidence": "LOW",
+      "unknownReason": "IDENTITY_INSUFFICIENT",
+      "minimum": {
+        "stage": "UNSAFE_IDENTITY",
+        "cacheHit": false,
+        "identitySafe": false,
+        "evidenceIds": [],
+        "attempts": {
+          "profileResolution": 0,
+          "firmographics": 0
+        }
+      },
+      "semantic": {
+        "invoked": false,
+        "cacheHit": true,
+        "evidenceIds": []
+      },
+      "who": {
+        "eligible": true,
+        "qualification": "INSUFFICIENT_DATA"
+      },
+      "primaryBusiness": null,
+      "businessModel": "UNKNOWN",
+      "industry": null,
+      "productsServices": []
+    },
+    {
+      "companyId": "c75ac750-f16c-4559-9534-c96f76df84e3",
+      "name": "Setu",
+      "domain": "setu.co",
+      "discoveryBuyerRole": "UNKNOWN",
+      "buyerRole": "UNKNOWN",
+      "confidence": "LOW",
+      "unknownReason": "IDENTITY_INSUFFICIENT",
+      "minimum": {
+        "stage": "UNSAFE_IDENTITY",
+        "cacheHit": false,
+        "identitySafe": false,
+        "evidenceIds": [],
+        "attempts": {
+          "profileResolution": 0,
+          "firmographics": 0
+        }
+      },
+      "semantic": {
+        "invoked": false,
+        "cacheHit": true,
+        "evidenceIds": []
+      },
+      "who": {
+        "eligible": true,
+        "qualification": "INSUFFICIENT_DATA"
+      },
+      "primaryBusiness": null,
+      "businessModel": "UNKNOWN",
+      "industry": null,
+      "productsServices": []
+    }
+  ],
+  "independentAdjudication": {
+    "source": "Prior independent DigiPuush adjudication; exact normalized company-name matches only",
+    "matched": 19,
+    "unmatched": 1,
+    "entries": [
+      {
+        "companyId": "8a4ac58f-98cd-4a27-b684-ac1bf81293cb",
+        "company": "3LOCKS",
+        "domain": null,
+        "priorIndependentAdjudication": {
+          "businessModel": "Service-based IT project support",
+          "canonicalIndustry": "IT Services",
+          "commercialRole": "ADJACENT_VENDOR",
+          "company": "3LOCKS",
+          "companyUnderstanding": "CORRECT",
+          "identity": "CORRECT",
+          "marketRelevance": "PLAUSIBLE_MARKET_CANDIDATE",
+          "primaryBusiness": "IT consulting and privileged access management services",
+          "profileSufficient": true,
+          "reason": "IT services provider; could potentially benefit from AEO services for their own market positioning.",
+          "sourceUrls": [
+            "https://3locks.ch/"
+          ],
+          "who": "POSSIBLE_FIT"
+        }
+      },
+      {
+        "companyId": "aa1faa72-6d6c-4141-8163-540963623580",
+        "company": "Avataar",
+        "domain": "avataar.ai",
+        "priorIndependentAdjudication": {
+          "businessModel": "SaaS and AI-platform licensing",
+          "canonicalIndustry": "Artificial Intelligence",
+          "commercialRole": "PARTNER_POSSIBLE",
+          "company": "Avataar",
+          "companyUnderstanding": "CORRECT",
+          "identity": "CORRECT",
+          "marketRelevance": "PLAUSIBLE_MARKET_CANDIDATE",
+          "primaryBusiness": "Agentic AI platform for enterprise transformation",
+          "profileSufficient": true,
+          "reason": "Highly sophisticated AI enterprise company; potential partner for visibility and integration services.",
+          "sourceUrls": [
+            "https://www.avataar.ai/about"
+          ],
+          "who": "LIKELY_FIT"
+        }
+      },
+      {
+        "companyId": "56b9fd26-ae1e-4ba3-9cba-c7846633ebd0",
+        "company": "BetterPlace",
+        "domain": "betterplace.co.in",
+        "priorIndependentAdjudication": {
+          "businessModel": "SaaS for HR and operations",
+          "canonicalIndustry": "HR Technology",
+          "commercialRole": "POTENTIAL_BUYER",
+          "company": "BetterPlace",
+          "companyUnderstanding": "CORRECT",
+          "identity": "CORRECT",
+          "marketRelevance": "PLAUSIBLE_MARKET_CANDIDATE",
+          "primaryBusiness": "Frontline workforce management SaaS platform",
+          "profileSufficient": true,
+          "reason": "Large-scale human capital SaaS platform in India, relevant for growth and visibility services.",
+          "sourceUrls": [
+            "https://www.betterplace.co.in/about-us-new/"
+          ],
+          "who": "LIKELY_FIT"
+        }
+      },
+      {
+        "companyId": "9d14887f-e3de-4f00-be48-10bb5986881e",
+        "company": "Bitla Software",
+        "domain": "bitlasoft.com",
+        "priorIndependentAdjudication": {
+          "businessModel": "SaaS and B2B software solutions",
+          "canonicalIndustry": "Travel Technology",
+          "commercialRole": "POTENTIAL_BUYER",
+          "company": "Bitla Software",
+          "companyUnderstanding": "CORRECT",
+          "identity": "CORRECT",
+          "marketRelevance": "PLAUSIBLE_MARKET_CANDIDATE",
+          "primaryBusiness": "Technology and SaaS solutions for the bus industry",
+          "profileSufficient": true,
+          "reason": "Established SaaS company serving specialized industrial needs; valid candidate for visibility services.",
+          "sourceUrls": [
+            "https://www.bitlasoft.com/about-us"
+          ],
+          "who": "LIKELY_FIT"
+        }
+      },
+      {
+        "companyId": "50ceadee-afc9-41a1-b7c7-f6334e213df8",
+        "company": "CData Virtuality",
+        "domain": null,
+        "priorIndependentAdjudication": {
+          "businessModel": "Software licensing/SaaS",
+          "canonicalIndustry": "Data Software",
+          "commercialRole": "ADJACENT_VENDOR",
+          "company": "CData Virtuality",
+          "companyUnderstanding": "CORRECT",
+          "identity": "CORRECT",
+          "marketRelevance": "PLAUSIBLE_MARKET_CANDIDATE",
+          "primaryBusiness": "Data virtualization software",
+          "profileSufficient": true,
+          "reason": "Data software provider; could serve as a partner or client for technical visibility projects.",
+          "sourceUrls": [
+            "https://docs.datavirtuality.com/v25/overview-of-cdata-virtuality"
+          ],
+          "who": "POSSIBLE_FIT"
+        }
+      },
+      {
+        "companyId": "87a4983e-4510-4c2a-be74-879adb3fcf15",
+        "company": "Corefactors",
+        "domain": "corefactors.ai",
+        "priorIndependentAdjudication": {
+          "businessModel": "SaaS/CRM",
+          "canonicalIndustry": "Software/CRM",
+          "commercialRole": "PARTNER_POSSIBLE",
+          "company": "Corefactors",
+          "companyUnderstanding": "CORRECT",
+          "identity": "CORRECT",
+          "marketRelevance": "PLAUSIBLE_MARKET_CANDIDATE",
+          "primaryBusiness": "RevOps CRM platform",
+          "profileSufficient": true,
+          "reason": "CRM and RevOps platform for SMBs; aligns well with digital visibility needs.",
+          "sourceUrls": [
+            "https://www.corefactors.ai/about-us"
+          ],
+          "who": "LIKELY_FIT"
+        }
+      },
+      {
+        "companyId": "53ff0ebf-124e-4577-8231-94f082505d94",
+        "company": "Decentro",
+        "domain": "decentro.tech",
+        "priorIndependentAdjudication": {
+          "businessModel": "API-based financial infrastructure",
+          "canonicalIndustry": "Fintech",
+          "commercialRole": "POTENTIAL_BUYER",
+          "company": "Decentro",
+          "companyUnderstanding": "CORRECT",
+          "identity": "CORRECT",
+          "marketRelevance": "PLAUSIBLE_MARKET_CANDIDATE",
+          "primaryBusiness": "Fintech infrastructure and Banking-as-a-Service APIs",
+          "profileSufficient": true,
+          "reason": "High-growth fintech infrastructure company in India; relevant for SEO/AEO optimization.",
+          "sourceUrls": [
+            "https://decentro.tech/about"
+          ],
+          "who": "LIKELY_FIT"
+        }
+      },
+      {
+        "companyId": "5812ed89-b390-4d55-a6eb-2d7de304d606",
+        "company": "ekincare",
+        "domain": "ekincare.com",
+        "priorIndependentAdjudication": {
+          "businessModel": "SaaS platform",
+          "canonicalIndustry": "Health Technology",
+          "commercialRole": "POTENTIAL_BUYER",
+          "company": "ekincare",
+          "companyUnderstanding": "CORRECT",
+          "identity": "CORRECT",
+          "marketRelevance": "PLAUSIBLE_MARKET_CANDIDATE",
+          "primaryBusiness": "Corporate wellness and employee benefits software",
+          "profileSufficient": true,
+          "reason": "Established SaaS health platform with large customer base; candidate for digital visibility services.",
+          "sourceUrls": [
+            "https://www.ekincare.com/"
+          ],
+          "who": "LIKELY_FIT"
+        }
+      },
+      {
+        "companyId": "3dbd48a8-8686-48e4-8228-e0cf5fb09b9a",
+        "company": "Heera Software Private Limited",
+        "domain": "heerasoftware.com",
+        "priorIndependentAdjudication": null
+      },
+      {
+        "companyId": "c0f9af61-0c4c-42eb-ab9b-16384d7894c1",
+        "company": "Jaza Software",
+        "domain": "jazasoft.com",
+        "priorIndependentAdjudication": {
+          "businessModel": "B2B SaaS",
+          "canonicalIndustry": "Industrial Software",
+          "commercialRole": "POTENTIAL_BUYER",
+          "company": "Jaza Software",
+          "companyUnderstanding": "CORRECT",
+          "identity": "CORRECT",
+          "marketRelevance": "PLAUSIBLE_MARKET_CANDIDATE",
+          "primaryBusiness": "Manufacturing intelligence software for the apparel industry",
+          "profileSufficient": true,
+          "reason": "Specialized SaaS company needing niche visibility in manufacturing intelligence.",
+          "sourceUrls": [
+            "https://jazasoft.com/demo"
+          ],
+          "who": "POSSIBLE_FIT"
+        }
+      },
+      {
+        "companyId": "18d19813-3efe-4e93-989c-e98321439cf3",
+        "company": "KDK Software",
+        "domain": "kdksoftware.com",
+        "priorIndependentAdjudication": {
+          "businessModel": "SaaS/Desktop Software",
+          "canonicalIndustry": "Fintech/Tax Software",
+          "commercialRole": "POTENTIAL_BUYER",
+          "company": "KDK Software",
+          "companyUnderstanding": "CORRECT",
+          "identity": "CORRECT",
+          "marketRelevance": "PLAUSIBLE_MARKET_CANDIDATE",
+          "primaryBusiness": "Tax compliance and ITR software",
+          "profileSufficient": true,
+          "reason": "Large user base and long-standing experience; significant potential for digital visibility enhancement.",
+          "sourceUrls": [
+            "https://www.kdksoftware.com/"
+          ],
+          "who": "LIKELY_FIT"
+        }
+      },
+      {
+        "companyId": "e7d81816-a89c-41cf-b599-9088e6c18165",
+        "company": "KeyValue",
+        "domain": "keyvalue.systems",
+        "priorIndependentAdjudication": {
+          "businessModel": "Professional services/Outsourced development",
+          "canonicalIndustry": "IT Services",
+          "commercialRole": "PARTNER_POSSIBLE",
+          "company": "KeyValue",
+          "companyUnderstanding": "CORRECT",
+          "identity": "CORRECT",
+          "marketRelevance": "PLAUSIBLE_MARKET_CANDIDATE",
+          "primaryBusiness": "Product engineering and development services",
+          "profileSufficient": true,
+          "reason": "Product engineering partner; complementary skills in development and implementation.",
+          "sourceUrls": [
+            "https://www.keyvalue.systems/about-us/"
+          ],
+          "who": "POSSIBLE_FIT"
+        }
+      },
+      {
+        "companyId": "489268e2-ee77-40ba-ac79-d2625c4e868f",
+        "company": "Meander Software",
+        "domain": "meander.software",
+        "priorIndependentAdjudication": {
+          "businessModel": "Outsourced services",
+          "canonicalIndustry": "IT Services",
+          "commercialRole": "ADJACENT_VENDOR",
+          "company": "Meander Software",
+          "companyUnderstanding": "CORRECT",
+          "identity": "CORRECT",
+          "marketRelevance": "PLAUSIBLE_MARKET_CANDIDATE",
+          "primaryBusiness": "IT services, app development, and e-learning solutions",
+          "profileSufficient": true,
+          "reason": "IT services provider with potential overlap in digital transformation offerings.",
+          "sourceUrls": [
+            "https://do.meanderapps.com/"
+          ],
+          "who": "POSSIBLE_FIT"
+        }
+      },
+      {
+        "companyId": "6077fa9f-cf44-4bdc-95ff-089c883d32db",
+        "company": "NeoDove",
+        "domain": "neodove.com",
+        "priorIndependentAdjudication": {
+          "businessModel": "SaaS",
+          "canonicalIndustry": "CRM/Software",
+          "commercialRole": "UNKNOWN",
+          "company": "NeoDove",
+          "companyUnderstanding": "INSUFFICIENT",
+          "identity": "UNCERTAIN",
+          "marketRelevance": "PLAUSIBLE_MARKET_CANDIDATE",
+          "primaryBusiness": "Sales automation/telecalling CRM",
+          "profileSufficient": false,
+          "reason": "Data retrieval for the specific entity profile failed during search.",
+          "sourceUrls": [
+            "https://neodove.com/about-us/"
+          ],
+          "who": "INSUFFICIENT_DATA"
+        }
+      },
+      {
+        "companyId": "6c5c28ec-6400-4c55-8c85-b81acfa375ad",
+        "company": "Neysa",
+        "domain": "neysa.ai",
+        "priorIndependentAdjudication": {
+          "businessModel": "AI infrastructure services",
+          "canonicalIndustry": "AI/Cloud Computing",
+          "commercialRole": "PARTNER_POSSIBLE",
+          "company": "Neysa",
+          "companyUnderstanding": "CORRECT",
+          "identity": "CORRECT",
+          "marketRelevance": "PLAUSIBLE_MARKET_CANDIDATE",
+          "primaryBusiness": "AI infrastructure and acceleration cloud",
+          "profileSufficient": true,
+          "reason": "High-growth AI company; strong potential as a partner or buyer for visibility services.",
+          "sourceUrls": [
+            "https://neysa.ai/about-us/"
+          ],
+          "who": "LIKELY_FIT"
+        }
+      },
+      {
+        "companyId": "b14e217b-b9ea-43d3-93f0-641d80ed7ec7",
+        "company": "One2N",
+        "domain": "one2n.io",
+        "priorIndependentAdjudication": {
+          "businessModel": "Professional services/Consulting",
+          "canonicalIndustry": "IT Services",
+          "commercialRole": "ADJACENT_VENDOR",
+          "company": "One2N",
+          "companyUnderstanding": "CORRECT",
+          "identity": "CORRECT",
+          "marketRelevance": "PLAUSIBLE_MARKET_CANDIDATE",
+          "primaryBusiness": "Backend and reliability engineering services",
+          "profileSufficient": true,
+          "reason": "Reliability engineering specialist; could be a collaborative partner.",
+          "sourceUrls": [
+            "https://one2n.io/about"
+          ],
+          "who": "POSSIBLE_FIT"
+        }
+      },
+      {
+        "companyId": "28d93677-10eb-4833-981d-62939b59ec47",
+        "company": "PagarBook",
+        "domain": "pagarbook.com",
+        "priorIndependentAdjudication": {
+          "businessModel": "SaaS",
+          "canonicalIndustry": "HR/Fintech",
+          "commercialRole": "POTENTIAL_BUYER",
+          "company": "PagarBook",
+          "companyUnderstanding": "CORRECT",
+          "identity": "CORRECT",
+          "marketRelevance": "PLAUSIBLE_MARKET_CANDIDATE",
+          "primaryBusiness": "HRMS for SMBs (attendance and payroll)",
+          "profileSufficient": true,
+          "reason": "Large SME user base; potential for optimization in digital visibility and presence.",
+          "sourceUrls": [
+            "https://pagarbook.com/lp/hrms-software"
+          ],
+          "who": "LIKELY_FIT"
+        }
+      },
+      {
+        "companyId": "9c4a92e8-0f3d-4443-b237-c1eaa76f29c3",
+        "company": "Pramati",
+        "domain": "pramati.com",
+        "priorIndependentAdjudication": {
+          "businessModel": "Product studio/Tech services",
+          "canonicalIndustry": "IT Services/Enterprise Tech",
+          "commercialRole": "PARTNER_POSSIBLE",
+          "company": "Pramati",
+          "companyUnderstanding": "CORRECT",
+          "identity": "CORRECT",
+          "marketRelevance": "PLAUSIBLE_MARKET_CANDIDATE",
+          "primaryBusiness": "Enterprise software and corporate incubation",
+          "profileSufficient": true,
+          "reason": "Legacy company with incubation model; strong candidate for visibility partnerships.",
+          "sourceUrls": [
+            "https://pramati.com/about/"
+          ],
+          "who": "LIKELY_FIT"
+        }
+      },
+      {
+        "companyId": "62cdd90c-0126-49bd-8657-6172cc95e343",
+        "company": "RazorSign",
+        "domain": "razorsign.com",
+        "priorIndependentAdjudication": {
+          "businessModel": "SaaS",
+          "canonicalIndustry": "Legal Technology",
+          "commercialRole": "POTENTIAL_BUYER",
+          "company": "RazorSign",
+          "companyUnderstanding": "CORRECT",
+          "identity": "CORRECT",
+          "marketRelevance": "PLAUSIBLE_MARKET_CANDIDATE",
+          "primaryBusiness": "AI-powered contract lifecycle management (CLM)",
+          "profileSufficient": true,
+          "reason": "AI-focused software provider; high alignment with digital transformation and visibility needs.",
+          "sourceUrls": [
+            "https://razorsign.com/"
+          ],
+          "who": "LIKELY_FIT"
+        }
+      },
+      {
+        "companyId": "c75ac750-f16c-4559-9534-c96f76df84e3",
+        "company": "Setu",
+        "domain": "setu.co",
+        "priorIndependentAdjudication": {
+          "businessModel": "API/Infrastructure as a Service",
+          "canonicalIndustry": "Fintech",
+          "commercialRole": "POTENTIAL_BUYER",
+          "company": "Setu",
+          "companyUnderstanding": "CORRECT",
+          "identity": "CORRECT",
+          "marketRelevance": "PLAUSIBLE_MARKET_CANDIDATE",
+          "primaryBusiness": "Fintech API platform (payments, KYC, data)",
+          "profileSufficient": true,
+          "reason": "Significant player in India's API infrastructure; strong potential candidate.",
+          "sourceUrls": [
+            "https://setu.co/"
+          ],
+          "who": "LIKELY_FIT"
+        }
+      }
+    ]
+  },
+  "verdict": "B — PROFILE RESOLUTION COVERAGE STILL INSUFFICIENT",
+  "verdictQualification": "18/20 fresh companies were stopped as identity-unsafe before bounded profile enrichment; profile sufficiency was 2/20."
+}

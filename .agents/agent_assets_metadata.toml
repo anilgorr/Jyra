@@ -976,3 +976,17 @@ mtime_ms = 1788285894097
 storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/9a494b25-defd-4496-8a11-0a19150a4195/0b3881ff-87b8-42b1-9e6e-48c54be3d017"
 storage_version_token = "1788286321568546"
 content_type = "application/octet-stream"
+
+[[outputs]]
+id = "SW12GaDIqBuRupdTbrLFB"
+uri = "file://artifacts/api-server/JYRA_FIX_11_DIGIPUUSH_VALIDATION.md"
+type = "text"
+title = "Fix 11 DigiPuush Validation Report"
+description = "Fresh 20-company validation results, corrected WHO aggregation, cost summary, and final verdict."
+logical_id = "4cde90f6-9001-4073-a171-5ce1b54d0848"
+content_hash = "sha256:dcf490cd694bb8c4fcead38060f65b6c754da36121a20641ec2ea47f0a8c454f"
+size = 584
+mtime_ms = 1788287662400
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/4cde90f6-9001-4073-a171-5ce1b54d0848/41ebe76d-609b-46aa-b7fa-5608b7eab786"
+storage_version_token = "1788287676047501"
+content_type = "text/markdown"

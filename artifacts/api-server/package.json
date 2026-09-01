@@ -91,7 +91,8 @@
       ,"test:minimum-company-intelligence": "node ./scripts/test-minimum-company-intelligence.mjs"
       ,"replay:canonical-company-profile-fix-07": "NODE_ENV=development JYRA_REALITY_CONTACT_ENRICHMENT_ENABLED=false JYRA_FIX_07_REPLAY=YES node ./scripts/run-canonical-company-profile-fix-07-replay.mjs"
       ,"replay:buyer-role-resolution-06a": "NODE_ENV=development node ./scripts/run-buyer-role-resolution-06a-replay.mjs"
-      ,"validate:buyer-role-resolution-06a:fresh": "NODE_ENV=development JYRA_REALITY_CONTACT_ENRICHMENT_ENABLED=false JYRA_06A_FRESH_VALIDATION=YES node ./scripts/run-buyer-role-resolution-06a-fresh-validation.mjs"
+       ,"validate:buyer-role-resolution-06a:fresh": "NODE_ENV=development JYRA_REALITY_CONTACT_ENRICHMENT_ENABLED=false JYRA_06A_FRESH_VALIDATION=YES node ./scripts/run-buyer-role-resolution-06a-fresh-validation.mjs"
+       ,"validate:fix-11-digipuush:fresh": "NODE_ENV=development JYRA_FIX_11_RUN_FRESH_20=YES node ./scripts/run-fix-11-digipuush-validation.mjs"
   },
   "dependencies": {
     "@clerk/express": "^2.1.63",

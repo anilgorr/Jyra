@@ -74,19 +74,21 @@ check("possible fit semantics preserved", () =>
 check("insufficient data is not negative fit", () =>
   assert.equal(lib.classifyIcpFit({ geography: "unknown", industry: "unknown", employeeSize: "unknown" }).status, "INSUFFICIENT_DATA"));
 check("Managed SOC buyer fixture passes", () => assert.equal(lib.classifyCandidateBuyerRole({
-  name: "Cloud Payroll", industry: "SaaS", description: "Cloud payroll operating company",
+  // The current 06A contract needs an explicit primary-business statement;
+  // a bare company-type noun phrase is not sufficient evidence.
+  name: "Cloud Payroll", industry: "SaaS", description: "Cloud-based payroll software company serving operating businesses",
   offeringLabel: "Managed SOC", sellerIndustry: "Computer and Network Security", targetIndustries: ["SaaS"],
 }), "POTENTIAL_BUYER"));
 check("recruitment buyer fixture passes", () => assert.equal(lib.classifyCandidateBuyerRole({
-  name: "FactoryCo", industry: "Manufacturing", description: "Industrial employer",
+  name: "FactoryCo", industry: "Manufacturing", description: "Manufacturing company that operates industrial production facilities",
   offeringLabel: "Recruitment services", sellerIndustry: "Staffing and Recruiting", targetIndustries: ["Manufacturing"],
 }), "POTENTIAL_BUYER"));
 check("ERP buyer fixture passes", () => assert.equal(lib.classifyCandidateBuyerRole({
-  name: "Food Distribution Co", industry: "Wholesale", description: "Regional food distributor",
+  name: "Food Distribution Co", industry: "Wholesale", description: "Regional food distributor that distributes products to commercial customers",
   offeringLabel: "ERP implementation", sellerIndustry: "IT Services", targetIndustries: ["Wholesale"],
 }), "POTENTIAL_BUYER"));
 check("solar buyer fixture passes", () => assert.equal(lib.classifyCandidateBuyerRole({
-  name: "Warehouse Group", industry: "Logistics", description: "Owns and operates warehouses",
+  name: "Warehouse Group", industry: "Logistics", description: "Logistics company that operates warehouses and distribution facilities",
   offeringLabel: "Commercial solar installation", sellerIndustry: "Renewable Energy", targetIndustries: ["Logistics"],
 }), "POTENTIAL_BUYER"));
 check("discovery canonical gate remains fail closed", () => {
