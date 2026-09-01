@@ -1,0 +1,260 @@
+IMPORTANT UPDATE FROM 06A — COMPANY PROFILE DATA GAP
+
+The 06A offline replay has completed.
+
+Results:
+
+POTENTIAL_BUYER = 0
+SELLER_COMPETITOR = 0
+ADJACENT_VENDOR = 0
+PARTNER_POSSIBLE = 0
+UNKNOWN = 18
+
+Root cause:
+
+The persisted 18-company cohort lacks usable company/business descriptions.
+
+The buyer-role classifier itself is NOT currently considered defective.
+
+Its focused regression suite passes 20/20 and correctly distinguishes:
+
+POTENTIAL_BUYER
+SELLER_COMPETITOR
+ADJACENT_VENDOR
+UNKNOWN.
+
+Therefore:
+
+DO NOT weaken or rewrite the buyer-role classifier merely to convert these
+18 UNKNOWN companies.
+
+The upstream company-profile data path must be repaired.
+
+==================================================
+CANONICAL COMPANY PROFILE RESOLUTION
+==================================================
+
+Create/reuse a provider-independent CanonicalCompanyProfile.
+
+For buyer-role and WHO reasoning it should make available, where evidence
+exists:
+
+canonical company identity
+domain
+canonical industry
+industry aliases/mappings
+company description
+primary business description
+business model
+products/services/categories
+employee count/range
+geography
+company type
+profile provenance
+profile confidence.
+
+External provider values must first normalize into this profile.
+
+Provider-specific fields must not be consumed directly by buyer-role
+business logic where a canonical field exists.
+
+==================================================
+PROFILE RESOLUTION ORDER
+==================================================
+
+For every evaluable company, resolve the cheapest already-available
+information first:
+
+1. Existing persisted canonical company/profile data
+2. Existing firmographic observations
+3. Existing accepted website/profile evidence
+4. Existing provider cache
+5. Existing public company profile resolution capability
+6. Only then make a bounded external profile-resolution request if material
+   fields remain missing.
+
+Do NOT perform WHEN/WHY research merely to determine what a company does.
+
+Company profile resolution and opportunity research are separate concerns.
+
+==================================================
+INDUSTRY NORMALIZATION
+==================================================
+
+Implement canonical industry normalization.
+
+Use this as one reference mapping:
+
+https://gist.github.com/gp187/288039ce22b0ca58efdb79efd7a91a24
+
+The LinkedIn numeric codes are EXTERNAL/LEGACY mappings, not JYRA canonical
+IDs.
+
+Normalize provider variants such as:
+
+Information Technology & Services
+IT Services
+Technology Services
+
+into appropriate canonical industry families.
+
+Preserve:
+
+raw value
+provider
+canonical value
+mapping method
+confidence
+provenance.
+
+==================================================
+BUSINESS MODEL RESOLUTION
+==================================================
+
+Industry is insufficient for buyer identification.
+
+Derive a normalized primary business/business model from supported company
+profile information.
+
+Examples of generic business-model families:
+
+SAAS
+SOFTWARE_VENDOR
+PROFESSIONAL_SERVICES
+CONSULTING
+MSP
+MSSP
+FINANCIAL_INSTITUTION
+INSURANCE
+HEALTHCARE_PROVIDER
+MANUFACTURER
+RETAILER
+MARKETPLACE
+GOVERNMENT
+NONPROFIT
+OTHER
+UNKNOWN.
+
+Do not keyword-classify blindly.
+
+Retain supporting profile evidence.
+
+==================================================
+BUYER ROLE
+==================================================
+
+After CanonicalCompanyProfile is sufficiently populated, invoke the EXISTING
+buyer-role classifier.
+
+Buyer role remains relative to:
+
+Business Twin
++
+Offering
++
+Candidate Company Profile.
+
+Do not use industry alone.
+
+Do not default UNKNOWN to POTENTIAL_BUYER.
+
+Do not classify based only on semantic similarity to the seller's offering.
+
+==================================================
+06A REPLAY AFTER PROFILE FIX
+==================================================
+
+After implementing profile resolution:
+
+Replay the SAME persisted 18 companies.
+
+This time profile resolution MAY use the normal bounded company-profile
+resolution capability where persisted data is insufficient.
+
+Do not perform opportunity research.
+
+Report per company:
+
+company
+domain
+canonical industry
+business model
+primary business description
+profile source
+profile confidence
+buyer role
+buyer-role confidence
+reason.
+
+Report:
+
+Profiles sufficiently resolved =
+Profiles unresolved =
+
+POTENTIAL_BUYER =
+SELLER_COMPETITOR =
+ADJACENT_VENDOR =
+PARTNER_POSSIBLE =
+UNKNOWN =
+
+Do not require a specific distribution.
+
+Success means:
+
+legitimate companies with sufficient public information are no longer
+UNKNOWN merely because the discovery record lacked a description,
+
+while genuinely ambiguous companies remain UNKNOWN.
+
+Buyer-role precision target >=90%.
+
+Seller incorrectly classified POTENTIAL_BUYER = 0.
+
+==================================================
+PARTNER_POSSIBLE
+==================================================
+
+Do NOT add partner-detection logic in this MVP hardening sprint merely
+because PARTNER_POSSIBLE currently reports zero.
+
+Treat this as future functionality unless the current architecture already
+has strong evidence-backed partner semantics.
+
+It is acceptable for PARTNER_POSSIBLE = 0.
+
+==================================================
+IMPORTANT
+==================================================
+
+The problem to solve is:
+
+DISCOVERY RECORD
+        ↓
+CANONICAL COMPANY
+        ↓
+CANONICAL COMPANY PROFILE
+        ↓
+NORMALIZED INDUSTRY
+NORMALIZED BUSINESS MODEL
+PRIMARY BUSINESS
+PRODUCTS/SERVICES
+SIZE
+GEOGRAPHY
+        ↓
+BUYER ROLE
+        ↓
+WHO
+
+NOT:
+
+DISCOVERY RECORD
+        ↓
+missing description
+        ↓
+UNKNOWN forever.
+
+After this is incorporated, continue with the remaining MASTER MVP HARDENING
+plan.
+
+Do not run the final 50-company Reality Test until the bounded profile /
+buyer-role validation passes.

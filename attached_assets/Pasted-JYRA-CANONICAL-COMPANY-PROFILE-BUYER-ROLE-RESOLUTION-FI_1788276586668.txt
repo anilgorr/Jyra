@@ -1,0 +1,991 @@
+JYRA — CANONICAL COMPANY PROFILE + BUYER ROLE RESOLUTION FIX 07
+
+OBJECTIVE
+
+Fix the current real-world blocker in JYRA:
+
+Cycle 06 / 06A persisted cohort:
+
+18 evaluable companies
+POTENTIAL_BUYER = 0
+SELLER_COMPETITOR = 0
+ADJACENT_VENDOR = 0
+PARTNER_POSSIBLE = 0
+UNKNOWN = 18
+
+06A established that the buyer-role classifier itself is functioning:
+
+- focused classifier regression = 20/20 PASS
+- it correctly recognizes POTENTIAL_BUYER
+- it correctly recognizes SELLER_COMPETITOR
+- it correctly recognizes ADJACENT_VENDOR
+- it correctly preserves UNKNOWN
+
+The real problem is:
+
+REAL DISCOVERED COMPANIES DO NOT HAVE SUFFICIENT NORMALIZED COMPANY PROFILE
+DATA REACHING THE BUYER-ROLE CLASSIFIER.
+
+Therefore DO NOT weaken or rewrite the buyer-role classifier merely to reduce
+UNKNOWN.
+
+Fix the upstream company-profile resolution and normalization architecture.
+
+==================================================
+0. DATABASE SAFETY
+==================================================
+
+THIS IS DEVELOPMENT WORK.
+
+Use ONLY the development database.
+
+Create/apply migrations only to DEVELOPMENT.
+
+DO NOT:
+
+- migrate production
+- reset production
+- seed production
+- modify production
+- truncate production
+- test against production.
+
+Production operations MUST remain 0.
+
+==================================================
+1. PRESERVE EXISTING WORK
+==================================================
+
+Do not unnecessarily rewrite working JYRA subsystems.
+
+Preserve:
+
+- canonical company identity resolution
+- Fix 04 discovery → canonical handoff
+- Fix 05 buyer-market discovery
+- Cycle 06 buyer-role gating
+- 06A buyer-role classifier
+- firmographic identity conflict protection
+- Tavily/Exa adaptive research retrieval
+- evidence/fact/signal safety
+- temporal safety
+- semantic idempotency
+- signal-pack activation concurrency fix.
+
+Do NOT change:
+
+- Managed SOC signal definitions
+- WHEN/WHY logic
+- Opportunity scoring
+- NBA
+- contact enrichment
+- outreach
+- Explee integration.
+
+This task is:
+
+DISCOVERY
+→ CANONICAL COMPANY PROFILE
+→ NORMALIZATION
+→ BUYER ROLE
+→ WHO.
+
+==================================================
+2. FIRST AUTOPSY THE 18 UNKNOWN COMPANIES
+==================================================
+
+Before changing code, inspect the persisted 18-company 06A cohort.
+
+For each company inspect all existing available fields:
+
+- canonical name
+- domain
+- website
+- LinkedIn/company-profile URL
+- raw industry
+- normalized industry if any
+- company description
+- website description
+- provider description
+- products/services
+- employee count/range
+- geography
+- firmographic observations
+- existing evidence
+- provider cache
+- business model
+- buyer role
+- buyer-role confidence.
+
+Determine WHY profile information failed to reach buyer-role resolution.
+
+Classify each failure using one or more:
+
+PROFILE_NOT_FETCHED
+PROFILE_FETCHED_NOT_PERSISTED
+PROFILE_PERSISTED_NOT_READ
+DESCRIPTION_NOT_MAPPED
+INDUSTRY_NOT_NORMALIZED
+BUSINESS_MODEL_NOT_DERIVED
+PROVIDER_FIELD_NOT_MAPPED
+CACHE_DATA_IGNORED
+IDENTITY_BLOCKED_PROFILE
+PROFILE_CONFIDENCE_TOO_LOW
+GENUINELY_INSUFFICIENT_PUBLIC_DATA
+OTHER.
+
+Produce the autopsy before implementation.
+
+Do not assume all 18 have the same cause.
+
+==================================================
+3. INTRODUCE A CANONICAL COMPANY PROFILE
+==================================================
+
+Create or refactor toward one provider-independent canonical company profile.
+
+Do NOT duplicate existing models unnecessarily.
+
+Reuse current Company/Firmographic/Observation architecture where possible.
+
+The logical CanonicalCompanyProfile must expose:
+
+company_id
+canonical_name
+domain
+website
+linkedin_company_url
+
+canonical_industry
+industry_parent
+industry_confidence
+
+primary_business_description
+business_model
+business_model_confidence
+
+products_services/categories where supported
+
+employees_exact
+employees_min
+employees_max
+employee_confidence
+
+city
+region
+country
+country_iso2
+
+company_type where available
+
+profile_confidence
+profile_completeness
+
+and provenance for material fields.
+
+IMPORTANT:
+
+Provider-specific raw values may be stored as observations.
+
+Downstream Buyer Role and WHO should consume normalized canonical values.
+
+==================================================
+4. NORMALIZED OBSERVATION PRINCIPLE
+==================================================
+
+Do not destroy raw provider data.
+
+Use conceptually:
+
+RAW PROVIDER VALUE
+        ↓
+Observation
+        ↓
+Normalization
+        ↓
+Canonical Company Profile
+
+Every material normalized field should retain:
+
+source_provider
+source_type
+raw_value
+normalized_value
+source_url where available
+retrieved_at
+published_at where relevant
+normalization_method/version
+confidence
+entity_match_confidence.
+
+If providers disagree:
+
+DO NOT silently overwrite one value.
+
+Retain observations and resolve canonical value using deterministic confidence
+and provenance rules.
+
+==================================================
+5. INDUSTRY NORMALIZATION
+==================================================
+
+Implement/reuse a provider-independent canonical industry taxonomy.
+
+Use this external list as ONE useful reference/mapping source:
+
+https://gist.github.com/gp187/288039ce22b0ca58efdb79efd7a91a24
+
+IMPORTANT:
+
+This is an older LinkedIn-style industry taxonomy.
+
+Do NOT use LinkedIn numeric codes as JYRA's canonical internal IDs.
+
+Treat them only as external/legacy mappings.
+
+Normalize variants such as:
+
+Information Technology & Services
+IT Services
+Technology Services
+
+into a canonical industry where semantically appropriate.
+
+Likewise normalize common external variations for:
+
+Software
+SaaS
+Financial Services
+Banking
+Insurance
+Healthcare
+Professional Services
+Cybersecurity
+Manufacturing
+Retail
+Telecommunications
+Cloud/IT Services
+etc.
+
+Do not build thousands of brittle exact mappings.
+
+Support:
+
+canonical_id
+canonical_name
+parent/family
+aliases
+external mappings.
+
+Unknown/unmappable industry remains UNKNOWN.
+
+==================================================
+6. COMPANY SIZE NORMALIZATION
+==================================================
+
+Normalize:
+
+exact employee count
+employee range
+minimum
+maximum.
+
+Examples:
+
+"51-200"
+"51 – 200 employees"
+174
+
+must become comparable.
+
+Do not convert missing employee count into zero.
+
+Missing = UNKNOWN.
+
+WHO should understand range overlap.
+
+==================================================
+7. GEOGRAPHY NORMALIZATION
+==================================================
+
+Normalize:
+
+city
+region/state
+country
+country_iso2
+country_iso3 if already useful.
+
+Examples:
+
+USA
+US
+United States
+United States of America
+
+must resolve to the same canonical country.
+
+Do not compare raw provider geography strings directly against ICP when
+canonical geography exists.
+
+==================================================
+8. BUSINESS MODEL / PRIMARY BUSINESS
+==================================================
+
+This is essential for Buyer Role.
+
+Industry alone does NOT determine whether a company is a buyer.
+
+Derive a normalized primary business/business model from supported profile
+information.
+
+Use maintainable generic families such as:
+
+SAAS
+SOFTWARE_VENDOR
+PROFESSIONAL_SERVICES
+CONSULTING
+MSP
+MSSP
+FINANCIAL_INSTITUTION
+INSURANCE
+HEALTHCARE_PROVIDER
+MANUFACTURER
+RETAILER
+MARKETPLACE
+TELECOMMUNICATIONS
+GOVERNMENT
+NONPROFIT
+OTHER
+UNKNOWN.
+
+Do NOT create a massive brittle taxonomy.
+
+Store separately:
+
+primary_business_description
+
+and
+
+business_model.
+
+Example:
+
+Industry:
+CYBERSECURITY
+
+Primary business:
+Provides managed detection and response and 24/7 SOC services.
+
+Business model:
+MSSP.
+
+This is much more useful than industry alone.
+
+==================================================
+9. DO NOT USE KEYWORD-ONLY BUSINESS MODEL CLASSIFICATION
+==================================================
+
+Do not implement logic like:
+
+if description contains "security"
+    business_model = MSSP
+
+or:
+
+if industry = CYBERSECURITY
+    seller competitor.
+
+Use the meaning of:
+
+company description
+products/services
+industry
+website/profile information.
+
+Classification must be evidence-backed.
+
+If insufficient:
+
+business_model = UNKNOWN.
+
+==================================================
+10. COMPANY PROFILE RESOLUTION ORDER
+==================================================
+
+When a discovered company lacks enough information for Buyer Role/WHO:
+
+use the cheapest existing data first.
+
+Resolution order:
+
+1. Existing CanonicalCompanyProfile
+2. Existing persisted firmographics
+3. Existing normalized observations
+4. Existing accepted website/company-profile evidence
+5. Existing provider cache
+6. Existing company-profile resolution capability
+7. Only then bounded external profile resolution.
+
+Do NOT perform WHEN/WHY research to answer:
+
+"What does this company do?"
+
+Profile resolution is separate from opportunity research.
+
+==================================================
+11. PROFILE COMPLETENESS
+==================================================
+
+Create a deterministic profile completeness assessment.
+
+For Buyer Role, the most important fields are:
+
+identity
+primary business description
+business model
+industry.
+
+For WHO:
+
+identity
+industry
+geography
+size
+business model where relevant.
+
+Do not require every possible company field before classification.
+
+A company can have sufficient Buyer Role data while employee count is
+unknown.
+
+==================================================
+12. BUYER ROLE BUSINESS LOGIC
+==================================================
+
+Preserve the existing 06A classifier where it works.
+
+Buyer Role is relative to:
+
+BUSINESS TWIN
++
+OFFERING
++
+CANDIDATE COMPANY PROFILE.
+
+Question:
+
+"What commercial relationship does this company have to this seller's
+specific offering?"
+
+Allowed states:
+
+POTENTIAL_BUYER
+SELLER_COMPETITOR
+ADJACENT_VENDOR
+PARTNER_POSSIBLE
+UNKNOWN.
+
+For this MVP:
+
+Do NOT add new PARTNER_POSSIBLE classification logic merely to produce
+non-zero counts.
+
+It is acceptable for PARTNER_POSSIBLE = 0.
+
+==================================================
+13. BUYER ROLE DECISION PRINCIPLE
+==================================================
+
+Conceptually reason in this order:
+
+1. Is this the correct real company?
+
+2. What does the candidate company primarily do?
+
+3. What exactly does the seller offer?
+
+4. Does the candidate substantially sell the same offering?
+
+   YES:
+   SELLER_COMPETITOR
+
+5. Does the candidate sell a complementary/adjacent offering?
+
+   YES:
+   ADJACENT_VENDOR
+   unless strong existing semantics justify PARTNER_POSSIBLE.
+
+6. Is this type of organization structurally capable of consuming the
+   seller's offering?
+
+7. Is there sufficient supported profile information to classify it?
+
+   YES:
+   POTENTIAL_BUYER where appropriate.
+
+   NO:
+   UNKNOWN.
+
+Do not use ICP fit itself as proof of buyer role.
+
+==================================================
+14. IMPORTANT SEPARATION
+==================================================
+
+Keep these concepts separate:
+
+BUYER ROLE:
+Could this type of company plausibly consume what the seller sells?
+
+WHO:
+Does this company fit the seller's ICP?
+
+WHEN:
+Is something happening now?
+
+WHY:
+Why should the seller care?
+
+Do not combine them into one classifier.
+
+Correct flow:
+
+Company Profile
+      ↓
+Buyer Role
+      ↓
+WHO
+      ↓
+WHEN / WHY
+      ↓
+Opportunity Priority.
+
+==================================================
+15. CROSS-INDUSTRY GENERIC TESTS
+==================================================
+
+Prove this is generic.
+
+Add fixtures for at least:
+
+A. Managed SOC seller
+
+Bank
+→ POTENTIAL_BUYER
+
+SaaS company
+→ POTENTIAL_BUYER
+
+MSSP
+→ SELLER_COMPETITOR
+
+Security software vendor
+→ ADJACENT_VENDOR or correctly justified role.
+
+B. Recruitment seller
+
+Software company/employer
+→ POTENTIAL_BUYER
+
+Recruitment agency
+→ SELLER_COMPETITOR
+
+HR-tech vendor
+→ ADJACENT_VENDOR where appropriate.
+
+C. ERP implementation seller
+
+Manufacturer
+→ POTENTIAL_BUYER
+
+ERP implementation consultancy
+→ SELLER_COMPETITOR
+
+ERP software vendor
+→ ADJACENT_VENDOR where appropriate.
+
+D. Solar installation seller
+
+Factory / warehouse operator
+→ POTENTIAL_BUYER
+
+Solar EPC contractor
+→ SELLER_COMPETITOR
+
+Solar panel manufacturer
+→ ADJACENT_VENDOR.
+
+These are TEST FIXTURES.
+
+Do not hardcode these examples into production logic.
+
+==================================================
+16. REPLAY THE ORIGINAL 18
+==================================================
+
+After implementation, replay the SAME persisted 18-company cohort.
+
+This time the normal company-profile resolution path MAY make bounded profile
+resolution calls when existing persisted/cache data is insufficient.
+
+Do NOT:
+
+run Find My Market again
+replace companies
+perform WHEN/WHY research
+perform contact enrichment.
+
+For each company report:
+
+company
+domain
+canonical industry
+primary business
+business model
+employee range
+country
+profile source(s)
+profile confidence
+buyer role
+buyer-role confidence
+reason.
+
+Summary:
+
+Profiles sufficiently resolved =
+Profiles still insufficient =
+
+POTENTIAL_BUYER =
+SELLER_COMPETITOR =
+ADJACENT_VENDOR =
+PARTNER_POSSIBLE =
+UNKNOWN =
+
+Provider calls =
+Known cost =
+Unknown cost =
+
+Do NOT require a particular role distribution.
+
+SUCCESS means:
+
+legitimate companies with sufficient public information are no longer
+UNKNOWN merely because the original discovery record lacked a description.
+
+Genuinely ambiguous companies should remain UNKNOWN.
+
+==================================================
+17. INDEPENDENT ROLE REVIEW
+==================================================
+
+Independently adjudicate every non-UNKNOWN classification from the 18-company
+replay.
+
+Measure:
+
+buyer-role precision.
+
+Target:
+
+>=90%.
+
+Critical:
+
+SELLER_COMPETITOR incorrectly classified POTENTIAL_BUYER = 0.
+
+Do not inflate coverage by weakening classification.
+
+==================================================
+18. FRESH BOUNDED 20-COMPANY VALIDATION
+==================================================
+
+ONLY if the 18-company replay shows the profile-resolution path is working:
+
+run ONE fresh normal bounded Find My Market validation for 20 companies.
+
+No handpicked companies.
+
+No benchmark seeding.
+
+Normal flow:
+
+Business Twin
+→ Offering
+→ ICP
+→ Market Discovery
+→ Canonical Company
+→ Canonical Company Profile
+→ Buyer Role
+→ WHO.
+
+Do NOT run WHEN/WHY research.
+
+Do NOT enrich contacts.
+
+Report:
+
+raw candidates
+candidate records
+canonical companies
+profiles resolved
+profiles insufficient
+
+POTENTIAL_BUYER
+SELLER_COMPETITOR
+ADJACENT_VENDOR
+PARTNER_POSSIBLE
+UNKNOWN
+
+LIKELY_FIT
+POSSIBLE_FIT
+LIKELY_NOT_FIT
+INSUFFICIENT_DATA.
+
+==================================================
+19. MANUAL QUALITY REVIEW
+==================================================
+
+Independently review all 20 companies.
+
+For each assess:
+
+correct company identity?
+correct industry?
+reasonable business model?
+correct buyer role?
+reasonable WHO classification?
+
+Report:
+
+identity precision
+industry accuracy
+business-model accuracy
+buyer-role precision
+WHO agreement.
+
+Targets:
+
+Identity precision >=95%
+
+Buyer-role precision >=90%
+
+Seller incorrectly classified buyer = 0.
+
+Do NOT require a minimum number of POTENTIAL_BUYER companies if the actual
+discovery set does not support it.
+
+But if buyer coverage is unexpectedly low, report why.
+
+==================================================
+20. SIGNAL SUITE FAILURE
+==================================================
+
+There is an existing broader signal-suite assertion failure that occurs
+before activation.
+
+Inspect it.
+
+Classify:
+
+STALE_TEST_ASSUMPTION
+REAL_PRODUCT_REGRESSION
+FIXTURE_PROBLEM
+UNKNOWN.
+
+If it is clearly a stale test assumption caused by legitimate current
+architecture, update the TEST ONLY.
+
+If it is a real product regression:
+
+DO NOT repair signal business logic in this task.
+
+Report it as remaining technical debt.
+
+Do not modify signal definitions.
+
+==================================================
+21. REGRESSIONS
+==================================================
+
+Run:
+
+06A buyer-role classifier regression
+Fix 04 handoff regressions
+Fix 05 discovery/WHO regressions
+Cycle 06 structural regressions
+identity suite
+firmographic suite
+activation concurrency regression
+new normalization tests
+new company-profile tests
+new cross-industry buyer-role tests.
+
+Also run:
+
+typecheck
+build
+API restart.
+
+==================================================
+22. DO NOT RUN THE 50-COMPANY REALITY TEST
+==================================================
+
+IMPORTANT:
+
+DO NOT run the full 50-company Reality Test in this task.
+
+We first need to verify:
+
+company profile resolution
++
+normalization
++
+buyer role
++
+WHO.
+
+After this passes, we will perform the broader MVP hardening/final Reality
+Test separately.
+
+==================================================
+23. REQUIRED FINAL REPORT
+==================================================
+
+Return:
+
+FIX 07 — CANONICAL COMPANY PROFILE + BUYER ROLE RESOLUTION
+
+ROOT CAUSE OF 18 UNKNOWN =
+
+CANONICAL PROFILE LAYER =
+PASS / FAIL
+
+INDUSTRY NORMALIZATION =
+PASS / FAIL
+
+SIZE NORMALIZATION =
+PASS / FAIL
+
+GEOGRAPHY NORMALIZATION =
+PASS / FAIL
+
+BUSINESS MODEL RESOLUTION =
+PASS / FAIL
+
+PROVENANCE =
+PASS / FAIL
+
+BUYER ROLE CLASSIFIER =
+PASS / FAIL
+
+--------------------------------------------
+
+18-COMPANY REPLAY
+
+Profiles sufficiently resolved =
+Profiles insufficient =
+
+POTENTIAL_BUYER =
+SELLER_COMPETITOR =
+ADJACENT_VENDOR =
+PARTNER_POSSIBLE =
+UNKNOWN =
+
+Buyer-role precision =
+Seller incorrectly classified buyer =
+
+Provider calls =
+Known cost =
+Unknown cost =
+
+--------------------------------------------
+
+FRESH 20-COMPANY VALIDATION
+
+Executed = YES / NO
+
+Raw candidates =
+Canonical companies =
+Profiles resolved =
+
+POTENTIAL_BUYER =
+SELLER_COMPETITOR =
+ADJACENT_VENDOR =
+PARTNER_POSSIBLE =
+UNKNOWN =
+
+LIKELY_FIT =
+POSSIBLE_FIT =
+LIKELY_NOT_FIT =
+INSUFFICIENT_DATA =
+
+Identity precision =
+Industry accuracy =
+Business-model accuracy =
+Buyer-role precision =
+WHO agreement =
+
+--------------------------------------------
+
+REGRESSIONS
+
+06A =
+Fix 04 =
+Fix 05 =
+Cycle 06 =
+Identity =
+Firmographics =
+Activation concurrency =
+Normalization tests =
+Company profile tests =
+Cross-industry tests =
+Typecheck =
+Build =
+API restart =
+
+Broader signal-suite failure classification =
+
+Production operations =
+MUST BE 0
+
+--------------------------------------------
+
+VERDICT
+
+Return EXACTLY ONE:
+
+A — COMPANY PROFILE + BUYER ROLE FOUNDATION PASSED
+
+B — PROFILE RESOLUTION COVERAGE STILL INSUFFICIENT
+
+C — NORMALIZATION NEEDS WORK
+
+D — BUYER ROLE PRECISION NEEDS WORK
+
+E — WHO REGRESSION DETECTED
+
+F — MULTIPLE MATERIAL DEFECTS REMAIN
+
+--------------------------------------------
+
+STOP CONDITION
+
+STOP after this validation.
+
+Do not:
+
+run the 50-company Reality Test
+modify WHEN/WHY
+modify signal definitions
+optimize opportunity scoring
+build contacts
+integrate Explee
+build outreach.
+
+If verdict A, state:
+
+"Company Profile + Buyer Role foundation is ready for the final JYRA
+hardening and Reality Test."
+
+If verdict B-F, list ONLY the three highest-impact remaining root causes.

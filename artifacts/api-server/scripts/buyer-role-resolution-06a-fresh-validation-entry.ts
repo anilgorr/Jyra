@@ -34,7 +34,9 @@ if (buyers.length >= 5) {
   miniResearch = { executed: true, companies: 5, attempts: attempts.length };
 }
 const resolved = outcomes.filter((item) => item.jyraRole !== "UNKNOWN");
-const report = { status: "EXECUTED", mode: "fresh-normal-discovery", rawCandidates: 20, providerCalls: discovery.providerCalls, estimatedCost: discovery.estimatedCost, actualCost: discovery.actualCost, outcomes, resolutionCoverage: resolved.length / 20, reviewerAgreement: outcomes.filter((item) => item.agreement).length / 20, precision: resolved.length ? resolved.filter((item) => item.agreement).length / resolved.length : null, sellerAsBuyerErrors: outcomes.filter((item) => item.jyraRole === "POTENTIAL_BUYER" && item.independentReviewerRole === "SELLER_COMPETITOR").length, miniResearch };
+const countBy = <T extends string>(values: T[]) => Object.fromEntries(["POTENTIAL_BUYER", "SELLER_COMPETITOR", "ADJACENT_VENDOR", "PARTNER_POSSIBLE", "UNKNOWN"].map((key) => [key, values.filter((value) => value === key).length]));
+const whoCounts = Object.fromEntries(["LIKELY_FIT", "POSSIBLE_FIT", "LIKELY_NOT_FIT", "INSUFFICIENT_DATA"].map((key) => [key, discovery.candidates.filter((candidate) => candidate.qualification === key).length]));
+const report = { status: "EXECUTED", mode: "fresh-normal-discovery", rawCandidates: 20, providerCalls: discovery.providerCalls, estimatedCost: discovery.estimatedCost, actualCost: discovery.actualCost, outcomes, roleCounts: countBy(outcomes.map((item) => item.jyraRole)), whoCounts, resolutionCoverage: resolved.length / 20, reviewerAgreement: outcomes.filter((item) => item.agreement).length / 20, precision: resolved.length ? resolved.filter((item) => item.agreement).length / resolved.length : null, sellerAsBuyerErrors: outcomes.filter((item) => item.jyraRole === "POTENTIAL_BUYER" && item.independentReviewerRole === "SELLER_COMPETITOR").length, miniResearch };
 await writeFile("JYRA_BUYER_ROLE_RESOLUTION_FIX_06A.json", `${JSON.stringify(report, null, 2)}\n`);
 console.log(JSON.stringify(report));
 }

@@ -80,6 +80,8 @@
       ,"test:cycle-06-structural-repair": "node ./scripts/test-cycle-06-structural-repair.mjs"
       ,"validate:cycle-06": "NODE_ENV=development JYRA_REALITY_CONTACT_ENRICHMENT_ENABLED=false node ./scripts/run-cycle-06-validation.mjs"
       ,"test:buyer-role-resolution-06a": "NODE_ENV=development node ./scripts/test-buyer-role-resolution-06a.mjs"
+      ,"test:canonical-company-profile": "NODE_ENV=development node ./scripts/test-canonical-company-profile.mjs"
+      ,"replay:canonical-company-profile-fix-07": "NODE_ENV=development JYRA_REALITY_CONTACT_ENRICHMENT_ENABLED=false JYRA_FIX_07_REPLAY=YES node ./scripts/run-canonical-company-profile-fix-07-replay.mjs"
       ,"replay:buyer-role-resolution-06a": "NODE_ENV=development node ./scripts/run-buyer-role-resolution-06a-replay.mjs"
       ,"validate:buyer-role-resolution-06a:fresh": "NODE_ENV=development JYRA_REALITY_CONTACT_ENRICHMENT_ENABLED=false JYRA_06A_FRESH_VALIDATION=YES node ./scripts/run-buyer-role-resolution-06a-fresh-validation.mjs"
   },

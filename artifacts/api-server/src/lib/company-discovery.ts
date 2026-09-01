@@ -31,6 +31,7 @@ import type {
 } from "./provider-contract";
 import { resolveCompanyProfileWithRouter } from "./company-profile-resolution";
 import { assessBuyerRole, sameBuyerRoleAssessment, trustedCanonicalDomainDescription, type BuyerRoleAssessment } from "./buyer-role-resolution";
+import { getCanonicalCompanyProfile } from "./canonical-company-profile";
 
 type DiscoveryInput = {
   organizationId: string;
@@ -400,15 +401,22 @@ export async function recomputeProjectBuyerRoles(input: { projectId: string; com
       : eq(projectCompaniesTable.projectId, input.projectId));
   let changed = 0;
   for (const row of rows) {
-    const normalized = normalizeCompanyInput(row.company).value;
+    const profile = await getCanonicalCompanyProfile(input.projectId, row.company);
+    const normalized = normalizeCompanyInput({
+      canonicalName: profile.canonicalName, domain: profile.domain, website: profile.website,
+      linkedinUrl: profile.linkedinCompanyUrl, profileUrls: profile.profileUrls, country: profile.country,
+      industry: profile.canonicalIndustry, employeeCount: profile.employeesExact,
+      employeeRange: profile.employeesMin !== null && profile.employeesMax !== null ? `${profile.employeesMin}-${profile.employeesMax}` : null,
+      description: profile.primaryBusinessDescription,
+    }).value;
     if (!normalized) continue;
     // Preserve an identical assessment verbatim: recomputation is idempotent
     // and does not manufacture a new timestamp when no input changed.
     const previous = row.membership.buyerRoleAssessment;
-    const stableAssessment = qualifyCandidate(normalized, plan.strategy);
+    const stableAssessment = qualifyCandidate(normalized, plan.strategy, null, profile.primaryBusinessDescription ? { text: profile.primaryBusinessDescription, source: "canonical_company_profile" } : null);
     const same = sameBuyerRoleAssessment(previous, stableAssessment.buyerRoleAssessment);
     if (same && row.membership.buyerRole === stableAssessment.buyerRole) continue;
-    const assessment = qualifyCandidate(normalized, plan.strategy);
+    const assessment = stableAssessment;
     if (row.membership.buyerRole !== assessment.buyerRole) changed += 1;
     await db.update(projectCompaniesTable).set({
       buyerRole: assessment.buyerRole,

@@ -1,0 +1,2 @@
+export { normalizeBusinessModel, normalizeCountry, normalizeEmployees, normalizeIndustry, projectCanonicalCompanyProfile } from "../src/lib/canonical-company-profile";
+export { assessBuyerRole } from "../src/lib/buyer-role-resolution";
