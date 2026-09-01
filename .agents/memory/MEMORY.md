@@ -34,3 +34,4 @@
 - [Known-target provisioning](known-target-provisioning.md) — resolve fixed benchmark targets from canonical project state before considering market discovery.
 - [Acceptance pack preflight](acceptance-pack-preflight.md) — validate frozen packs by stable identity/version/configuration, never raw definition or question cardinality.
 - [Discovery provider identity evidence](discovery-provider-identity-evidence.md) — generic provider result IDs are trace identifiers, never organization-type assertions.
+- [Buyer-market discovery intent](buyer-market-discovery-intent.md) — positive discovery starts from buyer ICP constraints; seller offering/category is negative relationship context.

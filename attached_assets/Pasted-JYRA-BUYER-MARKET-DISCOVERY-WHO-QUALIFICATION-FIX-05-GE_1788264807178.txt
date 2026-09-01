@@ -1,0 +1,1104 @@
+JYRA — BUYER MARKET DISCOVERY + WHO QUALIFICATION FIX 05
+GENERIC PRODUCT FIX
+
+PURPOSE
+
+Fix the next structural product defect exposed by the authoritative fresh:
+
+JYRA — 50-COMPANY MVP REALITY TEST 02
+
+Run ID:
+e0f07200-08dc-4b41-8831-95be7df92616
+
+Observed funnel:
+
+70 raw candidates
+→ 70 candidate records
+→ 50 evaluable companies
+→ 0 LIKELY_FIT
+→ 0 research eligible
+→ 0 researched
+→ 0 opportunities.
+
+WHO:
+
+LIKELY_FIT = 0
+LIKELY_NOT_FIT = 33
+POSSIBLE_FIT = 7
+INSUFFICIENT_DATA = 10.
+
+The discovered cohort was dominated by undersized security vendors rather
+than likely customers for the seller's Managed SOC offering.
+
+Additional WHO issues:
+
+10/50 insufficient fit data
+7 profile-resolution ambiguity cases
+2 firmographic responses matched wrong entities.
+
+The Discovery → Canonical Company handoff is already repaired.
+
+DO NOT reopen that fix unless a concrete regression is found.
+
+The objective of this task is:
+
+JYRA must discover potential BUYERS for the seller's offering,
+not companies that merely resemble the seller or offering category.
+
+This must be solved GENERICALLY.
+
+==================================================
+1. DATABASE SAFETY
+==================================================
+
+DEVELOPMENT ONLY.
+
+Use only development database.
+
+Production operations = 0.
+
+DO NOT:
+
+modify production
+migrate production
+reset production
+seed production
+truncate production.
+
+==================================================
+2. SCOPE
+==================================================
+
+Allowed product areas:
+
+Business Twin → market-search intent derivation
+ICP → discovery-query construction
+Find My Market candidate discovery
+buyer/seller/category distinction
+candidate prequalification
+firmographic acquisition
+firmographic entity validation
+WHO fit evaluation
+WHO evidence sufficiency
+research-eligibility handoff only where necessary to correctly consume WHO.
+
+DO NOT MODIFY:
+
+Research Planner question generation
+Tavily research query generation
+Tavily/Exa research fallback
+fact extraction
+fact validation
+temporal logic
+signal definitions
+signal mapping
+WHEN
+WHY
+opportunity scoring
+NBA
+contact enrichment
+outreach.
+
+==================================================
+3. IMPORTANT PRODUCT PRINCIPLE
+==================================================
+
+Find My Market must answer:
+
+"Who could plausibly BUY what this Business Twin sells?"
+
+NOT:
+
+"Which companies are semantically similar to what this Business Twin sells?"
+
+These are fundamentally different problems.
+
+Example:
+
+Seller:
+Managed SOC provider
+
+Incorrect market discovery:
+
+cybersecurity companies
+SOC providers
+MSSPs
+security consulting firms
+security vendors.
+
+Correct market discovery:
+
+companies matching the ICP that may NEED managed security operations.
+
+Likewise:
+
+Recruitment seller
+
+must discover employers likely to hire,
+
+not recruitment agencies.
+
+Solar installer
+
+must discover facility owners / energy buyers,
+
+not solar companies.
+
+ERP vendor
+
+must discover businesses that may need ERP,
+
+not ERP vendors.
+
+This buyer/seller distinction must be generic.
+
+==================================================
+4. FIRST — AUTOPSY THE FAILED 50
+==================================================
+
+Use persisted data from:
+
+e0f07200-08dc-4b41-8831-95be7df92616
+
+Do NOT make provider calls initially.
+
+Inspect all 50 cohort companies.
+
+For each classify independently:
+
+A. PLAUSIBLE_BUYER
+B. SELLER_OR_COMPETITOR
+C. ADJACENT_VENDOR
+D. CLEARLY_OUTSIDE_ICP
+E. INSUFFICIENT_INFORMATION.
+
+Record why.
+
+Determine:
+
+How many were security vendors?
+
+How many were Managed SOC/MSSP/security-service sellers?
+
+How many were undersized?
+
+How many failed geography?
+
+How many failed industry?
+
+How many failed employee range?
+
+How many failed multiple ICP dimensions?
+
+How many were actually plausible buyers but WHO rejected them?
+
+How many could not be evaluated because firmographics were missing?
+
+==================================================
+5. TRACE DISCOVERY QUERY GENERATION
+==================================================
+
+For each discovery round from the failed run reconstruct:
+
+Business Twin inputs
+Offering inputs
+ICP inputs
+generated market-search intent
+generated Exa COMPANY_DISCOVERY query
+provider filters
+returned candidate types.
+
+Determine WHY the discovery engine produced security vendors.
+
+Specifically test whether discovery query generation overweights:
+
+offering keywords
+service-category keywords
+seller industry
+security terminology
+
+instead of:
+
+buyer industries
+buyer geography
+buyer size
+buyer company type
+ICP constraints.
+
+Find the earliest generic logic responsible.
+
+==================================================
+6. BUYER MARKET MODEL
+==================================================
+
+Introduce or repair a generic buyer-market representation.
+
+Conceptually JYRA should derive:
+
+SELLER
+
+What does this company sell?
+
+OFFERING
+
+What problem does the offering solve?
+
+BUYER PROFILE
+
+What type of organization can buy/use this offering?
+
+ICP
+
+Which subset of those organizations does the seller want?
+
+EXCLUSIONS
+
+Which organizations are structurally unlikely buyers?
+
+DISCOVERY INTENT
+
+What market should Find My Market search?
+
+Do not hardcode Managed SOC-specific buyer logic.
+
+==================================================
+7. DISCOVERY INTENT
+==================================================
+
+Before calling COMPANY_DISCOVERY, construct an explicit structured object
+such as:
+
+MarketDiscoveryIntent
+
+with fields equivalent to:
+
+buyer_company_types
+target_industries
+target_geographies
+employee_range
+revenue_range if applicable
+business_model
+required_characteristics
+preferred_characteristics
+excluded_company_types
+excluded_industries
+seller_category_exclusions
+offering_category_exclusions
+search_concepts
+negative_concepts
+confidence
+provenance.
+
+Use the existing architecture/style where possible.
+
+Do not unnecessarily redesign the product.
+
+==================================================
+8. ICP MUST DOMINATE DISCOVERY
+==================================================
+
+Find My Market should primarily search the ICP market.
+
+For the current Managed SOC fixture, use the APPROVED ICP already stored in
+JYRA.
+
+Do NOT change the ICP.
+
+Discovery should respect its existing dimensions such as:
+
+target industries
+geographies
+employee range
+company type
+other approved criteria.
+
+Do not invent new Aadit ICP requirements.
+
+The discovery query must not collapse into:
+
+"cybersecurity companies"
+
+merely because the offering is cybersecurity.
+
+==================================================
+9. SELLER / COMPETITOR EXCLUSION
+==================================================
+
+Create generic structural exclusion logic.
+
+If a company primarily SELLS the same service/category that the seller is
+offering, that company should generally not rank as a normal prospective
+buyer unless there is specific evidence/ICP configuration permitting it.
+
+Examples:
+
+MSSP selling Managed SOC
+→ likely seller/competitor for Managed SOC seller.
+
+Recruitment agency
+→ likely seller/competitor for recruitment seller.
+
+ERP implementation company
+→ likely seller/competitor for ERP consultancy.
+
+Solar installer
+→ likely seller/competitor for solar installer.
+
+This should be a generic relationship:
+
+candidate role relative to offering:
+
+POTENTIAL_BUYER
+SELLER_COMPETITOR
+ADJACENT_VENDOR
+PARTNER_POSSIBLE
+UNKNOWN.
+
+Do NOT use seller-category exclusion as a universal hard block if the business
+configuration explicitly targets that type of company.
+
+==================================================
+10. DO NOT USE SIGNALS FOR MARKET DISCOVERY
+==================================================
+
+Find My Market should first answer WHO.
+
+Do not require:
+
+security leadership change
+security hiring
+funding
+stack change
+compliance activity
+
+to discover companies.
+
+Those belong to WHEN/WHY research after WHO.
+
+Market discovery should find plausible buyers based on market/ICP structure.
+
+==================================================
+11. DISCOVERY QUERY QUALITY
+==================================================
+
+Generate discovery queries from buyer-market constraints.
+
+Queries should represent:
+
+buyer organization
+industry
+geography
+size/company characteristics
+
+rather than primarily the seller's service vocabulary.
+
+If the provider supports structured filters, prefer structured filters for
+hard firmographic constraints.
+
+Use semantic text for dimensions that cannot be expressed structurally.
+
+==================================================
+12. DIVERSIFY DISCOVERY
+==================================================
+
+Do not rely on one semantically narrow query repeated many times.
+
+The discovery planner should be capable of generating multiple market slices
+from the ICP.
+
+For example, generically:
+
+industry slice
+geography slice
+company-size slice
+business-model slice
+
+where appropriate.
+
+But do NOT create dozens of unnecessary calls.
+
+Use cost-aware discovery.
+
+==================================================
+13. CANDIDATE PREQUALIFICATION
+==================================================
+
+Before spending expensive downstream resources, perform cheap candidate
+qualification where supported.
+
+Evaluate:
+
+company-likeness
+buyer-vs-seller role
+industry
+geography
+size
+obvious ICP exclusions.
+
+However:
+
+missing data = UNKNOWN.
+
+Do not reject solely because a field is missing.
+
+==================================================
+14. WHO SEMANTICS
+==================================================
+
+WHO must distinguish:
+
+LIKELY_FIT
+POSSIBLE_FIT
+LIKELY_NOT_FIT
+INSUFFICIENT_DATA.
+
+Do not collapse POSSIBLE_FIT into NOT_FIT.
+
+Do not require every ICP field to be known for LIKELY_FIT if enough strong
+supported criteria exist according to current scoring semantics.
+
+At the same time:
+
+do not call companies LIKELY_FIT without sufficient evidence.
+
+==================================================
+15. FIT VS DATA COMPLETENESS
+==================================================
+
+Separate:
+
+FIT
+
+from
+
+DATA_COMPLETENESS.
+
+A company can have:
+
+high apparent fit
++
+medium data completeness.
+
+Do not make missing noncritical firmographics automatically destroy fit.
+
+Represent confidence separately.
+
+Example conceptual output:
+
+fit = LIKELY_FIT
+fit_confidence = MEDIUM
+missing = employee_count
+
+if other supported ICP dimensions are strong enough.
+
+Use existing architecture where possible.
+
+==================================================
+16. FIRMOGRAPHIC RELIABILITY
+==================================================
+
+The failed run had:
+
+10 insufficient-data companies
+7 ambiguous profile resolutions
+2 wrong-entity firmographic responses.
+
+Fix firmographic entity binding.
+
+Every firmographic result must be validated against the candidate identity
+before attaching.
+
+Use supported identifiers such as:
+
+domain
+legal/company name
+LinkedIn company identity
+location
+known aliases
+other deterministic identifiers.
+
+Provider result ≠ automatically correct company.
+
+==================================================
+17. WRONG FIRMOGRAPHIC ENTITY
+==================================================
+
+If firmographic data belongs to another entity:
+
+DO NOT attach it.
+
+Mark:
+
+ENTITY_MISMATCH
+
+and preserve UNKNOWN for those fields.
+
+Wrong data is worse than missing data.
+
+Target:
+
+wrong firmographic attachments = 0.
+
+==================================================
+18. PROFILE RESOLUTION
+==================================================
+
+Audit the seven ambiguous profile-resolution cases.
+
+Determine whether ambiguity came from:
+
+query construction
+name collision
+domain absence
+profile selection
+parent/subsidiary confusion
+brand/legal-name mismatch
+provider ambiguity.
+
+Fix only generic deterministic/safe resolution defects.
+
+Do NOT weaken identity safety.
+
+==================================================
+19. EMPLOYEE SIZE
+==================================================
+
+Audit how employee ranges are interpreted.
+
+Do not reject valid companies due to:
+
+different provider range buckets
+minor boundary differences
+stale exact counts
+range overlap.
+
+Normalize ranges conservatively.
+
+If ICP is 100–2,000 and provider says:
+
+201–500
+
+this should clearly satisfy size.
+
+If provider says:
+
+51–200
+
+and exact count unknown,
+
+handle overlap according to deterministic conservative rules rather than
+inventing a count.
+
+Document the behavior.
+
+==================================================
+20. INDUSTRY NORMALIZATION
+==================================================
+
+Audit industry mapping.
+
+Provider industry labels may differ from ICP vocabulary.
+
+Use generic normalized industry taxonomy / alias mapping where existing
+architecture permits.
+
+Example conceptual equivalences:
+
+Software
+Computer Software
+SaaS
+Information Technology
+
+may require hierarchical reasoning rather than literal string equality.
+
+Do NOT make every technology company automatically match.
+
+Preserve meaningful exclusions.
+
+==================================================
+21. GEOGRAPHY NORMALIZATION
+==================================================
+
+Normalize:
+
+country
+state/region
+city
+
+against ICP geography.
+
+Do not reject because one provider returns:
+
+United States
+
+and another:
+
+USA.
+
+Do not infer geography unsupported by evidence.
+
+==================================================
+22. RESEARCH ELIGIBILITY
+==================================================
+
+Research eligibility should consume WHO correctly.
+
+Do NOT solve the zero-research problem by simply allowing every company into
+research.
+
+Expected generic behavior:
+
+LIKELY_FIT
+→ normally research eligible.
+
+POSSIBLE_FIT
+→ may be eligible for targeted cheap research / missing-fit resolution
+according to existing planner/economics.
+
+LIKELY_NOT_FIT
+→ normally not deep researched.
+
+INSUFFICIENT_DATA
+→ may require fit-resolution research rather than being permanently blocked.
+
+Use existing staged research economics.
+
+Do not redesign the Research Planner unless required.
+
+==================================================
+23. IMPORTANT — FIT RESOLUTION RESEARCH
+==================================================
+
+Determine whether JYRA already supports researching missing WHO information.
+
+If it does:
+
+ensure INSUFFICIENT_DATA/POSSIBLE_FIT can use that normal path where
+economically justified.
+
+If it does not:
+
+DO NOT build a large new research subsystem in this fix.
+
+Instead report the architectural gap.
+
+The primary fix is to discover a much better buyer cohort and improve WHO
+firmographic reliability.
+
+==================================================
+24. VALIDATION STAGE 1 — OFFLINE REPLAY
+==================================================
+
+After implementing the fix, replay the persisted 70 candidates from:
+
+e0f07200-08dc-4b41-8831-95be7df92616
+
+without fresh COMPANY_DISCOVERY.
+
+Determine how much of the failure came from:
+
+bad market candidates
+
+versus
+
+bad WHO classification.
+
+Report before/after WHO on the same candidate set.
+
+Do not expect the old cohort to become good if the candidates themselves were
+wrong.
+
+==================================================
+25. VALIDATION STAGE 2 — FRESH DISCOVERY TEST
+==================================================
+
+Then perform ONE fresh bounded Find My Market validation.
+
+This is NOT the full Reality Test.
+
+Target:
+
+20 evaluable companies.
+
+Use the repaired normal product flow.
+
+Do not handpick.
+
+Do not seed known companies.
+
+Use the existing Aadit Managed SOC Business Twin + approved ICP.
+
+==================================================
+26. FRESH 20-COMPANY QUALITY REVIEW
+==================================================
+
+Independently adjudicate all 20 companies.
+
+For each report:
+
+Company
+Domain
+Primary business
+Buyer-role classification
+Industry
+Geography
+Employee range
+JYRA WHO
+Reviewer WHO
+Reason
+Firmographic confidence.
+
+Reviewer classifications:
+
+LIKELY_FIT
+POSSIBLE_FIT
+LIKELY_NOT_FIT
+INSUFFICIENT_DATA.
+
+==================================================
+27. FRESH DISCOVERY TARGETS
+==================================================
+
+For this focused validation, target:
+
+wrong/non-company canonical entries = 0
+
+seller/competitor contamination <= 10%
+
+wrong firmographic attachments = 0
+
+at least 50% of the 20-company cohort should be independently judged:
+
+LIKELY_FIT
+or
+POSSIBLE_FIT
+
+for the approved ICP.
+
+At least 5 companies should be JYRA LIKELY_FIT if the discovered market
+supports it.
+
+Do NOT manipulate results to hit these targets.
+
+If the system cannot meet them, report failure.
+
+==================================================
+28. WHO AGREEMENT
+==================================================
+
+Calculate:
+
+JYRA vs reviewer exact WHO agreement.
+
+Also calculate useful agreement:
+
+JYRA LIKELY_FIT/POSSIBLE_FIT
+vs
+reviewer LIKELY_FIT/POSSIBLE_FIT.
+
+Report false-positive and false-negative fit classifications separately.
+
+==================================================
+29. RESEARCH HANDOFF CHECK
+==================================================
+
+For the fresh 20:
+
+report how many would become research eligible.
+
+Do NOT perform full WHEN/WHY research.
+
+We only need to verify that qualified buyers can now enter research.
+
+Target:
+
+at least several legitimate companies reach research eligibility.
+
+If:
+
+LIKELY_FIT > 0
+but
+research eligible = 0
+
+then classify that as a separate Research Eligibility defect.
+
+==================================================
+30. COST
+==================================================
+
+Track fresh validation provider cost.
+
+Report:
+
+COMPANY_DISCOVERY calls
+profile-resolution calls
+firmographic calls
+other calls
+known cost
+unknown cost.
+
+Keep this validation bounded.
+
+==================================================
+31. DO NOT TOUCH DOWNSTREAM INTELLIGENCE
+==================================================
+
+During this fix:
+
+Tavily WHEN/WHY research = 0
+Exa WEB_SEARCH fallback = 0
+fact extraction changes = 0
+signal changes = 0
+WHEN changes = 0
+WHY changes = 0
+opportunity changes = 0
+NBA changes = 0
+contact enrichment = 0.
+
+==================================================
+32. GENERIC REGRESSION FIXTURES
+==================================================
+
+Add tests proving buyer/seller distinction is not Managed-SOC-specific.
+
+At minimum create generic fixtures for:
+
+A. Managed SOC seller
+
+Should prefer plausible buyer organizations over MSSPs/security vendors.
+
+B. Recruitment agency
+
+Should prefer employers over recruitment agencies.
+
+C. ERP implementation provider
+
+Should prefer operating companies over ERP consultancies/vendors.
+
+D. Commercial solar installer
+
+Should prefer facility-owning businesses over solar installers.
+
+These are unit/integration fixtures.
+
+Do not call providers for these fixtures.
+
+==================================================
+33. REQUIRED REGRESSION TESTS
+==================================================
+
+Test:
+
+1. Offering keywords do not dominate buyer discovery.
+
+2. ICP industry constrains discovery.
+
+3. ICP geography constrains discovery.
+
+4. ICP size constrains/qualifies discovery.
+
+5. Seller/competitor relationship identified.
+
+6. Seller-category company does not automatically become buyer.
+
+7. Missing firmographic data remains UNKNOWN.
+
+8. Wrong-entity firmographics rejected.
+
+9. Industry aliases normalize safely.
+
+10. Geography aliases normalize safely.
+
+11. Employee ranges normalize safely.
+
+12. LIKELY_FIT reaches research eligibility.
+
+13. POSSIBLE_FIT semantics preserved.
+
+14. INSUFFICIENT_DATA is not negative fit.
+
+15. Managed SOC generic fixture passes.
+
+16. Recruitment fixture passes.
+
+17. ERP fixture passes.
+
+18. Solar fixture passes.
+
+19. Discovery → canonical handoff regression remains PASS.
+
+20. Known-company identity safety remains PASS.
+
+==================================================
+34. REQUIRED ARTIFACT
+==================================================
+
+Generate:
+
+JYRA_BUYER_MARKET_DISCOVERY_WHO_FIX_05.md
+
+Include:
+
+root cause
+failed-run cohort analysis
+query analysis
+buyer-market architecture
+files changed
+before/after query examples
+firmographic fixes
+WHO fixes
+offline replay
+fresh 20-company results
+manual adjudication
+cost
+regressions
+remaining limitations.
+
+==================================================
+35. REQUIRED FINAL REPORT
+==================================================
+
+ROOT CAUSE
+
+Primary discovery defect =
+
+Why security vendors dominated =
+
+Primary WHO defect =
+
+Firmographic binding defect =
+
+REPAIRS
+
+Buyer-market intent added/repaired =
+YES / NO
+
+ICP-driven discovery repaired =
+YES / NO
+
+Seller/competitor distinction =
+YES / NO
+
+Firmographic entity validation repaired =
+YES / NO
+
+WHO fit/data-completeness separation repaired =
+YES / NO
+
+Identity safety weakened =
+MUST BE NO
+
+OFFLINE REPLAY
+
+Candidates replayed = 70
+
+Original:
+Likely fit = 0
+Likely not fit = 33
+Possible fit = 7
+Insufficient = 10
+
+After WHO fixes on same candidates:
+
+Likely fit =
+Likely not fit =
+Possible fit =
+Insufficient =
+
+Companies incorrectly rejected previously =
+
+FRESH 20-COMPANY VALIDATION
+
+Raw discovered =
+Unique evaluable =
+Final cohort = 20
+
+Likely fit =
+Possible fit =
+Likely not fit =
+Insufficient =
+
+Reviewer likely fit =
+Reviewer possible fit =
+Reviewer likely not fit =
+Reviewer insufficient =
+
+Seller/competitor contamination =
+
+Wrong firmographic attachments =
+
+WHO exact agreement =
+
+WHO useful agreement =
+
+Research eligible =
+
+Can qualified companies reach research =
+YES / NO
+
+PROVIDERS / COST
+
+Discovery calls =
+Profile-resolution calls =
+Firmographic calls =
+Known cost =
+Unknown cost =
+
+REGRESSIONS
+
+Generic buyer/seller fixtures =
+4/4 PASS / FAIL
+
+New regression tests =
+X/20
+
+Discovery-canonical regression =
+PASS / FAIL
+
+Identity safety =
+PASS / FAIL
+
+Typecheck =
+PASS / FAIL
+
+Build =
+PASS / FAIL
+
+Production operations = 0
+
+==================================================
+36. FINAL VERDICT
+==================================================
+
+Return EXACTLY ONE:
+
+A — BUYER DISCOVERY + WHO REPAIRED
+
+B — DISCOVERY IMPROVED, WHO STILL WEAK
+
+C — WHO IMPROVED, DISCOVERY STILL WEAK
+
+D — BUYER/SELLER DISTINCTION STILL FAILING
+
+E — FIRMOGRAPHIC RELIABILITY STILL FAILING
+
+F — RESEARCH HANDOFF BLOCKED
+
+G — MULTIPLE MATERIAL DEFECTS REMAIN
+
+==================================================
+37. STOP
+==================================================
+
+Do NOT rerun the full 50-company benchmark automatically.
+
+If verdict = A:
+
+STOP and state:
+
+"Buyer-market discovery and WHO qualification repaired.
+
+Next step:
+fresh 50-Company MVP Reality Test 02."
+
+Do not modify downstream intelligence.

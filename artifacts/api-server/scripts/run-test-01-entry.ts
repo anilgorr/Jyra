@@ -38,6 +38,8 @@ import { buildDiscoveryPlan, discoverCompaniesForProject } from "../src/lib/comp
 import {
   classifyIcpFit,
   employeeRangeDecision,
+  geographyMatches,
+  industryMatches,
   parseEmployeeRange,
 } from "../src/lib/icp-qualification";
 import {
@@ -77,7 +79,8 @@ const RUN_STARTED_AT = process.env.JYRA_REALITY_RUN_STARTED_AT
   ? new Date(process.env.JYRA_REALITY_RUN_STARTED_AT)
   : new Date();
 const CONTACT_ENRICHMENT_ENABLED = process.env.JYRA_REALITY_CONTACT_ENRICHMENT_ENABLED !== "false";
-const TARGET_COMPANIES = 50;
+const TARGET_COMPANIES = Math.min(50, Math.max(1, Number(process.env.JYRA_REALITY_TARGET_COMPANIES ?? 50)));
+const WHO_ONLY = process.env.JYRA_REALITY_WHO_ONLY === "true";
 const MAX_DISCOVERY_ROUNDS = 40;
 const RESUME_SINCE = new Date(
   process.env.JYRA_TEST_01_RESUME_SINCE ??
@@ -132,14 +135,8 @@ function normalizedComparison(value: string): string {
 }
 
 function targetMatch(value: string | null, targets: string[], industry = false): DimensionResult {
-  if (!value || !targets.length) return "unknown";
-  const normalized = normalizedComparison(value);
-  const matched = targets.some((target) => {
-    const candidate = normalizedComparison(target);
-    return normalized.includes(candidate) || candidate.includes(normalized) ||
-      (industry && candidate.includes("it services") && /it services|it consulting|managed services/.test(normalized));
-  });
-  return matched ? "pass" : "fail";
+  const matched = industry ? industryMatches(value, targets) : geographyMatches(value, targets);
+  return matched === null ? "unknown" : matched ? "pass" : "fail";
 }
 
 function employeeEvidence(attributes: CompanyFirmographicAttributes) {
@@ -305,7 +302,10 @@ async function main() {
     "ecommerce", "SaaS", "data platforms", "enterprise software",
   ];
   const continuationQueries = discoveryPlan.queries.flatMap((query) =>
-    continuationFacets.map((facet) => `${query} in ${facet}`.slice(0, 500)));
+    continuationFacets.map((facet) =>
+      /\b(in|across)\s+(india|united states|united kingdom|canada|australia|singapore)\b/i.test(query)
+        ? query
+        : `${query} in ${facet}`.slice(0, 500)));
   const discoveryRuns: any[] = [];
   const candidates = new Map<string, any>();
   const rejectedCandidates: any[] = [];
@@ -498,7 +498,7 @@ async function main() {
 
   const likelyFit = companyReports.filter((report) => report.qualification?.status === "LIKELY_FIT");
   const whenWhyErrors: any[] = [];
-  for (const report of companyReports) {
+  for (const report of WHO_ONLY ? [] : companyReports) {
     if (report.qualification?.status !== "LIKELY_FIT") continue;
     let intelligenceStage = "RESEARCH_PLANNER";
     try {

@@ -344,6 +344,36 @@ export async function enrichCompanyFirmographics(
   }
 
   const result = storageSafeValue(response.data) as CompanyFirmographicsResult;
+  const expectedDomain = company.domain?.toLowerCase().replace(/^www\./, "") ?? null;
+  const observedDomain = result.attributes.canonicalDomain?.toLowerCase().replace(/^www\./, "") ?? null;
+  const expectedProfile = linkedinCompanyUrl
+    ? normalizeLinkedInCompanyUrl(linkedinCompanyUrl)?.normalizedProfileUrl ?? null
+    : null;
+  const observedProfile = result.attributes.linkedinCompanyUrl
+    ? normalizeLinkedInCompanyUrl(result.attributes.linkedinCompanyUrl)?.normalizedProfileUrl ?? null
+    : null;
+  const deterministicEntityMismatch =
+    Boolean(expectedDomain && observedDomain && expectedDomain !== observedDomain) ||
+    Boolean(expectedProfile && observedProfile && expectedProfile !== observedProfile);
+  if (deterministicEntityMismatch) {
+    return {
+      response: {
+        ...response,
+        data: {
+          ...result,
+          entityMatchStatus: "WRONG",
+        },
+      },
+      cacheHit: false,
+      canonicalUpdated: false,
+      conflicts: [{
+        attribute: "entityIdentity",
+        existingValue: { domain: expectedDomain, linkedinCompanyUrl: expectedProfile },
+        observedValue: { domain: observedDomain, linkedinCompanyUrl: observedProfile },
+      }],
+      profileResolution,
+    };
+  }
   if (result.entityMatchStatus === "WRONG") {
     return { response, cacheHit: false, canonicalUpdated: false, conflicts: [] };
   }

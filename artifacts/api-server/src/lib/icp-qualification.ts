@@ -7,6 +7,42 @@ export type EmployeeRangeEvidence = {
   maximum: number | null;
 };
 
+const INDUSTRY_GROUPS = [
+  ["software", "computer software", "saas", "enterprise software", "software development"],
+  ["information technology", "it services", "it consulting", "technology", "technology information and internet"],
+  ["financial services", "fintech", "banking", "insurance"],
+  ["healthcare", "hospital", "health technology", "medical"],
+  ["professional services", "consulting", "business consulting"],
+];
+
+export function normalizeGeography(value: string): string {
+  return value.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim()
+    .replace(/\bunited states of america\b|\busa\b|\bu s a\b/g, "united states")
+    .replace(/\bunited kingdom\b|\buk\b|\bu k\b/g, "united kingdom")
+    .replace(/\bunited arab emirates\b|\buae\b|\bu a e\b/g, "united arab emirates");
+}
+
+export function geographyMatches(value: string | null, targets: string[]): boolean | null {
+  if (!value || !targets.length) return null;
+  const normalized = normalizeGeography(value);
+  return targets.some((target) => {
+    const candidate = normalizeGeography(target);
+    return normalized === candidate || normalized.includes(candidate) || candidate.includes(normalized);
+  });
+}
+
+export function industryMatches(value: string | null, targets: string[]): boolean | null {
+  if (!value || !targets.length) return null;
+  const normalized = value.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+  return targets.some((target) => {
+    const candidate = target.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+    if (normalized === candidate || normalized.includes(candidate) || candidate.includes(normalized)) return true;
+    return INDUSTRY_GROUPS.some((group) =>
+      group.some((alias) => normalized.includes(alias)) &&
+      group.some((alias) => candidate.includes(alias)));
+  });
+}
+
 /**
  * Interpret an observed employee band without claiming a point estimate.  A
  * provider's range is more specific than its count only when it is present.
@@ -52,7 +88,12 @@ export function classifyIcpFit(dimensions: {
   const values = [dimensions.geography, dimensions.industry, dimensions.employeeSize];
   const passes = values.filter((value) => value === "pass").length;
   const partials = values.filter((value) => value === "partial").length;
-  if (passes >= 2 && partials === 0) return { status: "LIKELY_FIT", confidence: "HIGH" };
+  if (passes >= 2 && partials === 0) {
+    return {
+      status: "LIKELY_FIT",
+      confidence: values.every((value) => value === "pass") ? "HIGH" : "MEDIUM",
+    };
+  }
   if (passes + partials >= 1) return { status: "POSSIBLE_FIT", confidence: "MEDIUM" };
   return { status: "INSUFFICIENT_DATA", confidence: "LOW" };
 }

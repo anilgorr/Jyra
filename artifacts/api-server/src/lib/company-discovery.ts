@@ -73,6 +73,7 @@ export type DiscoveryCandidateReport = {
     missingVerificationRequirement: string | null;
   } | null;
   relationshipAssertions: CompanyRelationshipAssertion[];
+  buyerRole: "POTENTIAL_BUYER" | "SELLER_COMPETITOR" | "ADJACENT_VENDOR" | "PARTNER_POSSIBLE" | "UNKNOWN";
 };
 
 export type DiscoveryResult = {
@@ -127,13 +128,58 @@ export function buildHighRecallDiscoveryQueries(
   targetIndustries: string[],
   offeringLabel: string,
 ): string[] {
-  const offering = offeringLabel.trim() || "the seller's offering";
   const industries = targetIndustries.map((industry) => industry.trim()).filter(Boolean);
   if (!industries.length) {
-    return [`companies that may be relevant buyers for ${offering}`];
+    return ["operating companies matching the approved ideal customer profile"];
   }
-  return industries.map((industry) =>
-    `${industry} companies that may be relevant buyers for ${offering}`.slice(0, 500));
+  return industries.map((industry) => `${industry} operating companies`.slice(0, 500));
+}
+
+const SELLER_MARKERS = /\b(provider|vendor|agency|consultancy|consulting|implementation|installer|integrator|outsourcing|managed services?)\b/i;
+const TOKEN_STOPWORDS = new Set(["the", "and", "for", "with", "from", "that", "this", "managed", "service", "services", "solution", "solutions"]);
+
+function conceptTokens(value: string): string[] {
+  return [...new Set(value.toLowerCase().split(/[^a-z0-9]+/)
+    .filter((token) => token.length >= 3 && !TOKEN_STOPWORDS.has(token)))];
+}
+
+export function classifyCandidateBuyerRole(input: {
+  name: string;
+  industry?: string | null;
+  description?: string | null;
+  offeringLabel: string;
+  sellerIndustry?: string | null;
+  targetIndustries: string[];
+}): DiscoveryCandidateReport["buyerRole"] {
+  const text = [input.name, input.industry, input.description].filter(Boolean).join(" ").toLowerCase();
+  const offeringTokens = conceptTokens(input.offeringLabel);
+  const categoryOverlap = offeringTokens.filter((token) => text.includes(token)).length;
+  const sellerIndustry = input.sellerIndustry?.trim() || null;
+  const sellerIndustryMatch = sellerIndustry ? textMatchesAny(input.industry ?? null, [sellerIndustry]) === true : false;
+  const sellerIndustryExplicitlyTargeted = sellerIndustry
+    ? input.targetIndustries.some((target) => normalizedComparison(target) === normalizedComparison(sellerIndustry))
+    : false;
+  if (SELLER_MARKERS.test(text) && categoryOverlap > 0) return "SELLER_COMPETITOR";
+  if (sellerIndustryMatch && !sellerIndustryExplicitlyTargeted) return "ADJACENT_VENDOR";
+  if (textMatchesAny(input.industry ?? null, input.targetIndustries) === true) return "POTENTIAL_BUYER";
+  return "UNKNOWN";
+}
+
+export function buildBuyerMarketDiscoveryQueries(
+  strategy: CompanyDiscoveryStrategy,
+): string[] {
+  const intent = strategy.marketDiscoveryIntent;
+  const industries = intent?.targetIndustries?.length ? intent.targetIndustries : strategy.targetIndustries ?? [];
+  const geographies = intent?.targetGeographies?.length ? intent.targetGeographies : strategy.geographies ?? [];
+  const size = intent?.employeeRange;
+  const sizeText = size && (size.minimum !== undefined || size.maximum !== undefined)
+    ? ` with ${size.minimum ?? "any"}-${size.maximum ?? "any"} employees`
+    : "";
+  const slices = industries.length ? industries : ["operating business"];
+  return slices.flatMap((industry, index) => {
+    const geography = geographies.length ? geographies[index % geographies.length] : "";
+    return [`${industry} operating companies${geography ? ` in ${geography}` : ""}${sizeText}`.slice(0, 500)];
+  }).slice(0, 12);
 }
 
 function textValue(value: unknown): string {
@@ -219,6 +265,7 @@ export async function buildDiscoveryPlan(projectId: string): Promise<DiscoveryPl
     ...assumptions,
   ].filter(Boolean).join(" ");
   const acceptedCriteria = criteria.filter((criterion) => criterion.accepted);
+  const sellerIndustry = textValue(raw.industry);
   const geographies = splitList(textValue(raw.targetGeographies));
   const acceptedIndustryValues = acceptedCriteria
     .filter((criterion) => criterion.dimension === "industry")
@@ -258,8 +305,30 @@ export async function buildDiscoveryPlan(projectId: string): Promise<DiscoveryPl
         .filter((criterion) => criterion.criterionType === "PREFERRED" || criterion.criterionType === "ADVISORY")
         .map((criterion) => criterion.description),
     ],
+    marketDiscoveryIntent: {
+      buyerCompanyTypes: ["operating company", "employer", "facility owner", "commercial buyer"],
+      targetIndustries,
+      targetGeographies: geographies,
+      employeeRange,
+      requiredCharacteristics: hardFilters,
+      preferredCharacteristics: assumptions,
+      excludedCompanyTypes: exclusions,
+      sellerCategoryExclusions: sellerIndustry ? [sellerIndustry] : [],
+      offeringCategoryExclusions: offeringLabel ? [offeringLabel] : [],
+      searchConcepts: targetIndustries,
+      negativeConcepts: [
+        ...exclusions,
+        sellerIndustry ? `companies primarily selling in ${sellerIndustry}` : "",
+        offeringLabel ? `providers or vendors of ${offeringLabel}` : "",
+      ].filter(Boolean),
+      confidence: targetIndustries.length && geographies.length ? "HIGH" : "MEDIUM",
+      provenance: [
+        ...acceptedCriteria.map((criterion) => `ICP:${criterion.id}`),
+        twin?.id ? `BUSINESS_TWIN:${twin.id}` : "",
+      ].filter(Boolean),
+    },
   };
-  const queries = buildHighRecallDiscoveryQueries(targetIndustries, offeringLabel);
+  const queries = buildBuyerMarketDiscoveryQueries(strategy);
   return {
     businessTwinVersionId: twin?.id ?? null,
     icpVersionId: icp?.id ?? null,
@@ -382,6 +451,7 @@ type CandidateAssessment = {
   knownCriteria: number;
   matchedCriteria: number;
   missingCriteria: number;
+  buyerRole: DiscoveryCandidateReport["buyerRole"];
 };
 
 function normalizedComparison(value: string): string {
@@ -418,6 +488,15 @@ function qualifyCandidate(
         normalizedComparison(technologyText).includes(normalizedComparison(technology)))
       ? true
       : null;
+  const intent = strategy.marketDiscoveryIntent;
+  const buyerRole = classifyCandidateBuyerRole({
+    name: company.canonicalName,
+    industry: company.industry,
+    description: company.description,
+    offeringLabel: intent?.offeringCategoryExclusions[0] ?? "",
+    sellerIndustry: intent?.sellerCategoryExclusions[0] ?? null,
+    targetIndustries: strategy.targetIndustries ?? [],
+  });
   const checks = {
     geography: textMatchesAny(company.country, strategy.geographies),
     industry: textMatchesAny(company.industry, strategy.targetIndustries),
@@ -428,14 +507,15 @@ function qualifyCandidate(
   const knownCriteria = values.filter((value) => value !== null).length;
   const matchedCriteria = values.filter((value) => value === true).length;
   const missingCriteria = values.filter((value) => value === null).length;
-  const classification: DiscoveryQualification = values.some((value) => value === false)
+  const structurallyExcluded = buyerRole === "SELLER_COMPETITOR" || buyerRole === "ADJACENT_VENDOR";
+  const classification: DiscoveryQualification = structurallyExcluded || values.some((value) => value === false)
     ? "LIKELY_NOT_FIT"
     : matchedCriteria >= 2
       ? "LIKELY_FIT"
       : matchedCriteria === 1
         ? "POSSIBLE_FIT"
         : "INSUFFICIENT_DATA";
-  return { classification, checks, knownCriteria, matchedCriteria, missingCriteria };
+  return { classification, checks, knownCriteria, matchedCriteria, missingCriteria, buyerRole };
 }
 
 function researchPriority(assessment: CandidateAssessment, evidenceCount: number): number {
@@ -462,6 +542,7 @@ function candidateReport(
   companyId: string | null = null,
   identityState: DiscoveryCandidateReport["identityState"] = "UNRESOLVED",
   profileResolution: CompanyProfileResolutionResult | null = null,
+  buyerRole: DiscoveryCandidateReport["buyerRole"] = "UNKNOWN",
 ): DiscoveryCandidateReport {
   return {
     companyId,
@@ -488,6 +569,7 @@ function candidateReport(
       missingVerificationRequirement: profileResolution.missingVerificationRequirement,
     } : null,
     relationshipAssertions: profileResolution?.relationships ?? [],
+    buyerRole,
   };
 }
 
@@ -984,6 +1066,7 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
         null,
         result.identity.identityState,
         profileResolutionResult,
+        assessment.buyerRole,
       ));
     } else if (result.outcome === "rejected") {
       rejected += 1;
@@ -1002,6 +1085,7 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
         result.company.id,
         result.identity.identityState,
         profileResolutionResult,
+        assessment.buyerRole,
       ));
     }
   }

@@ -71,6 +71,24 @@ export type CompanyDiscoveryStrategy = {
   exclusions?: string[];
   hardFilters?: string[];
   softCriteria?: string[];
+  marketDiscoveryIntent?: {
+    buyerCompanyTypes: string[];
+    targetIndustries: string[];
+    targetGeographies: string[];
+    employeeRange?: {
+      minimum?: number;
+      maximum?: number;
+    };
+    requiredCharacteristics: string[];
+    preferredCharacteristics: string[];
+    excludedCompanyTypes: string[];
+    sellerCategoryExclusions: string[];
+    offeringCategoryExclusions: string[];
+    searchConcepts: string[];
+    negativeConcepts: string[];
+    confidence: "HIGH" | "MEDIUM" | "LOW";
+    provenance: string[];
+  };
 };
 
 export type DiscoverCompaniesRequest = ProviderRequestBase & {

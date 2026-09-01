@@ -1,0 +1,12 @@
+{
+  "test": "JYRA_50_COMPANY_MVP_REALITY_TEST_02_FIX_05_20",
+  "runId": "41ee95e9-4483-499d-9562-1f0009cd8a01",
+  "generatedAt": "2026-09-01T12:24:27.606Z",
+  "providers": [],
+  "totals": {
+    "requests": 0,
+    "estimatedCost": 0,
+    "actualKnownCost": 0,
+    "actualUnknown": 0
+  }
+}

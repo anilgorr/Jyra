@@ -53,8 +53,10 @@ function firmographicsResponse(companyId, request, status) {
       entityMatchConfidence: status === "CONFIRMED" ? 100 : status === "PROBABLE" ? 80 : 40,
       attributes: {
         companyName: "Firmographics Test",
-        websiteUrl: "https://firmographics.example/about",
-        canonicalDomain: "firmographics.example",
+        websiteUrl: request.canonicalDomain
+          ? `https://${request.canonicalDomain}/about`
+          : "https://firmographics.example/about",
+        canonicalDomain: request.canonicalDomain ?? "firmographics.example",
         linkedinCompanyUrl: request.linkedinCompanyUrl,
         industry: "Observed Industry",
         employeeCount: 327,

@@ -1,0 +1,672 @@
+{
+  "test": "JYRA_BUYER_MARKET_DISCOVERY_WHO_FIX_05_OFFLINE_REPLAY",
+  "sourceRunId": "e0f07200-08dc-4b41-8831-95be7df92616",
+  "providerCalls": 0,
+  "retainedRawCandidateCountReported": 70,
+  "recoverableSelectedCandidateCount": 50,
+  "unavailableRawCandidateBodies": 20,
+  "retentionLimitation": "The final Fix 04 report retained the 50 selected company records but not the 20 unselected raw candidate bodies.",
+  "roleCounts": {
+    "ADJACENT_VENDOR": 3,
+    "POTENTIAL_BUYER": 7,
+    "SELLER_COMPETITOR": 40
+  },
+  "qualificationCounts": {
+    "INSUFFICIENT_DATA": 8,
+    "LIKELY_FIT": 2,
+    "LIKELY_NOT_FIT": 35,
+    "POSSIBLE_FIT": 5
+  },
+  "companies": [
+    {
+      "company": "Suronex",
+      "role": "SELLER_COMPETITOR",
+      "qualification": {
+        "status": "LIKELY_NOT_FIT",
+        "confidence": "HIGH"
+      },
+      "dimensions": {
+        "geography": "pass",
+        "industry": "fail",
+        "employeeSize": "fail"
+      }
+    },
+    {
+      "company": "HarkX",
+      "role": "SELLER_COMPETITOR",
+      "qualification": {
+        "status": "LIKELY_NOT_FIT",
+        "confidence": "HIGH"
+      },
+      "dimensions": {
+        "geography": "pass",
+        "industry": "fail",
+        "employeeSize": "fail"
+      }
+    },
+    {
+      "company": "Skysecure Technologies Private Limited",
+      "role": "SELLER_COMPETITOR",
+      "qualification": {
+        "status": "POSSIBLE_FIT",
+        "confidence": "MEDIUM"
+      },
+      "dimensions": {
+        "geography": "pass",
+        "industry": "pass",
+        "employeeSize": "partial"
+      }
+    },
+    {
+      "company": "Cyber Soldiers | Lab",
+      "role": "SELLER_COMPETITOR",
+      "qualification": {
+        "status": "LIKELY_NOT_FIT",
+        "confidence": "HIGH"
+      },
+      "dimensions": {
+        "geography": "pass",
+        "industry": "pass",
+        "employeeSize": "fail"
+      }
+    },
+    {
+      "company": "Aquila I",
+      "role": "SELLER_COMPETITOR",
+      "qualification": {
+        "status": "POSSIBLE_FIT",
+        "confidence": "MEDIUM"
+      },
+      "dimensions": {
+        "geography": "pass",
+        "industry": "pass",
+        "employeeSize": "partial"
+      }
+    },
+    {
+      "company": "Cyber Evolve",
+      "role": "SELLER_COMPETITOR",
+      "qualification": {
+        "status": "LIKELY_NOT_FIT",
+        "confidence": "HIGH"
+      },
+      "dimensions": {
+        "geography": "pass",
+        "industry": "fail",
+        "employeeSize": "fail"
+      }
+    },
+    {
+      "company": "Awwal Security",
+      "role": "SELLER_COMPETITOR",
+      "qualification": {
+        "status": "LIKELY_NOT_FIT",
+        "confidence": "HIGH"
+      },
+      "dimensions": {
+        "geography": "pass",
+        "industry": "pass",
+        "employeeSize": "fail"
+      }
+    },
+    {
+      "company": "SPYINT - Backed by IIMCIP",
+      "role": "SELLER_COMPETITOR",
+      "qualification": {
+        "status": "LIKELY_NOT_FIT",
+        "confidence": "HIGH"
+      },
+      "dimensions": {
+        "geography": "unknown",
+        "industry": "pass",
+        "employeeSize": "fail"
+      }
+    },
+    {
+      "company": "360 SOC, Inc.",
+      "role": "SELLER_COMPETITOR",
+      "qualification": {
+        "status": "LIKELY_NOT_FIT",
+        "confidence": "HIGH"
+      },
+      "dimensions": {
+        "geography": "pass",
+        "industry": "fail",
+        "employeeSize": "partial"
+      }
+    },
+    {
+      "company": "XeneX SOC",
+      "role": "SELLER_COMPETITOR",
+      "qualification": {
+        "status": "POSSIBLE_FIT",
+        "confidence": "MEDIUM"
+      },
+      "dimensions": {
+        "geography": "pass",
+        "industry": "pass",
+        "employeeSize": "partial"
+      }
+    },
+    {
+      "company": "Prophet Security",
+      "role": "SELLER_COMPETITOR",
+      "qualification": {
+        "status": "LIKELY_NOT_FIT",
+        "confidence": "HIGH"
+      },
+      "dimensions": {
+        "geography": "pass",
+        "industry": "fail",
+        "employeeSize": "partial"
+      }
+    },
+    {
+      "company": "AlphaSOC",
+      "role": "SELLER_COMPETITOR",
+      "qualification": {
+        "status": "LIKELY_NOT_FIT",
+        "confidence": "HIGH"
+      },
+      "dimensions": {
+        "geography": "pass",
+        "industry": "fail",
+        "employeeSize": "fail"
+      }
+    },
+    {
+      "company": "InteliSecure",
+      "role": "ADJACENT_VENDOR",
+      "qualification": {
+        "status": "POSSIBLE_FIT",
+        "confidence": "MEDIUM"
+      },
+      "dimensions": {
+        "geography": "pass",
+        "industry": "pass",
+        "employeeSize": "partial"
+      }
+    },
+    {
+      "company": "Cyber Overwatch",
+      "role": "SELLER_COMPETITOR",
+      "qualification": {
+        "status": "LIKELY_NOT_FIT",
+        "confidence": "HIGH"
+      },
+      "dimensions": {
+        "geography": "pass",
+        "industry": "fail",
+        "employeeSize": "fail"
+      }
+    },
+    {
+      "company": "SOS Intelligence",
+      "role": "SELLER_COMPETITOR",
+      "qualification": {
+        "status": "LIKELY_NOT_FIT",
+        "confidence": "HIGH"
+      },
+      "dimensions": {
+        "geography": "pass",
+        "industry": "fail",
+        "employeeSize": "fail"
+      }
+    },
+    {
+      "company": "Socura",
+      "role": "SELLER_COMPETITOR",
+      "qualification": {
+        "status": "LIKELY_NOT_FIT",
+        "confidence": "HIGH"
+      },
+      "dimensions": {
+        "geography": "pass",
+        "industry": "fail",
+        "employeeSize": "fail"
+      }
+    },
+    {
+      "company": "CounterShadow",
+      "role": "SELLER_COMPETITOR",
+      "qualification": {
+        "status": "LIKELY_NOT_FIT",
+        "confidence": "HIGH"
+      },
+      "dimensions": {
+        "geography": "pass",
+        "industry": "fail",
+        "employeeSize": "fail"
+      }
+    },
+    {
+      "company": "Atech Cloud",
+      "role": "POTENTIAL_BUYER",
+      "qualification": {
+        "status": "INSUFFICIENT_DATA",
+        "confidence": "LOW"
+      },
+      "dimensions": {
+        "geography": "unknown",
+        "industry": "unknown",
+        "employeeSize": "unknown"
+      }
+    },
+    {
+      "company": "CyberOne",
+      "role": "POTENTIAL_BUYER",
+      "qualification": {
+        "status": "INSUFFICIENT_DATA",
+        "confidence": "LOW"
+      },
+      "dimensions": {
+        "geography": "unknown",
+        "industry": "unknown",
+        "employeeSize": "unknown"
+      }
+    },
+    {
+      "company": "CSaaS Powered by Managed IT Services LTD",
+      "role": "SELLER_COMPETITOR",
+      "qualification": {
+        "status": "LIKELY_NOT_FIT",
+        "confidence": "HIGH"
+      },
+      "dimensions": {
+        "geography": "pass",
+        "industry": "pass",
+        "employeeSize": "fail"
+      }
+    },
+    {
+      "company": "Owlis",
+      "role": "ADJACENT_VENDOR",
+      "qualification": {
+        "status": "POSSIBLE_FIT",
+        "confidence": "MEDIUM"
+      },
+      "dimensions": {
+        "geography": "unknown",
+        "industry": "pass",
+        "employeeSize": "partial"
+      }
+    },
+    {
+      "company": "Helxon",
+      "role": "SELLER_COMPETITOR",
+      "qualification": {
+        "status": "LIKELY_NOT_FIT",
+        "confidence": "HIGH"
+      },
+      "dimensions": {
+        "geography": "pass",
+        "industry": "fail",
+        "employeeSize": "fail"
+      }
+    },
+    {
+      "company": "eSentire",
+      "role": "SELLER_COMPETITOR",
+      "qualification": {
+        "status": "LIKELY_NOT_FIT",
+        "confidence": "HIGH"
+      },
+      "dimensions": {
+        "geography": "pass",
+        "industry": "fail",
+        "employeeSize": "pass"
+      }
+    },
+    {
+      "company": "Managed Sentinel Inc.",
+      "role": "SELLER_COMPETITOR",
+      "qualification": {
+        "status": "LIKELY_NOT_FIT",
+        "confidence": "HIGH"
+      },
+      "dimensions": {
+        "geography": "pass",
+        "industry": "pass",
+        "employeeSize": "fail"
+      }
+    },
+    {
+      "company": "Cypienta",
+      "role": "SELLER_COMPETITOR",
+      "qualification": {
+        "status": "LIKELY_NOT_FIT",
+        "confidence": "HIGH"
+      },
+      "dimensions": {
+        "geography": "pass",
+        "industry": "fail",
+        "employeeSize": "fail"
+      }
+    },
+    {
+      "company": "Fulcrum IT Partners",
+      "role": "SELLER_COMPETITOR",
+      "qualification": {
+        "status": "LIKELY_FIT",
+        "confidence": "HIGH"
+      },
+      "dimensions": {
+        "geography": "pass",
+        "industry": "pass",
+        "employeeSize": "pass"
+      }
+    },
+    {
+      "company": "PYXiS Software Group",
+      "role": "ADJACENT_VENDOR",
+      "qualification": {
+        "status": "INSUFFICIENT_DATA",
+        "confidence": "LOW"
+      },
+      "dimensions": {
+        "geography": "unknown",
+        "industry": "unknown",
+        "employeeSize": "unknown"
+      }
+    },
+    {
+      "company": "iPSS inc.",
+      "role": "POTENTIAL_BUYER",
+      "qualification": {
+        "status": "LIKELY_NOT_FIT",
+        "confidence": "HIGH"
+      },
+      "dimensions": {
+        "geography": "pass",
+        "industry": "fail",
+        "employeeSize": "fail"
+      }
+    },
+    {
+      "company": "Huntsman Security",
+      "role": "SELLER_COMPETITOR",
+      "qualification": {
+        "status": "INSUFFICIENT_DATA",
+        "confidence": "LOW"
+      },
+      "dimensions": {
+        "geography": "unknown",
+        "industry": "unknown",
+        "employeeSize": "unknown"
+      }
+    },
+    {
+      "company": "CyberPulse",
+      "role": "SELLER_COMPETITOR",
+      "qualification": {
+        "status": "LIKELY_NOT_FIT",
+        "confidence": "HIGH"
+      },
+      "dimensions": {
+        "geography": "pass",
+        "industry": "fail",
+        "employeeSize": "fail"
+      }
+    },
+    {
+      "company": "FirstWave ASX: FCT",
+      "role": "SELLER_COMPETITOR",
+      "qualification": {
+        "status": "LIKELY_NOT_FIT",
+        "confidence": "HIGH"
+      },
+      "dimensions": {
+        "geography": "pass",
+        "industry": "fail",
+        "employeeSize": "partial"
+      }
+    },
+    {
+      "company": "Cythera",
+      "role": "SELLER_COMPETITOR",
+      "qualification": {
+        "status": "LIKELY_NOT_FIT",
+        "confidence": "HIGH"
+      },
+      "dimensions": {
+        "geography": "pass",
+        "industry": "fail",
+        "employeeSize": "fail"
+      }
+    },
+    {
+      "company": "CSO Group",
+      "role": "SELLER_COMPETITOR",
+      "qualification": {
+        "status": "LIKELY_NOT_FIT",
+        "confidence": "HIGH"
+      },
+      "dimensions": {
+        "geography": "pass",
+        "industry": "pass",
+        "employeeSize": "fail"
+      }
+    },
+    {
+      "company": "CyberCX",
+      "role": "POTENTIAL_BUYER",
+      "qualification": {
+        "status": "INSUFFICIENT_DATA",
+        "confidence": "LOW"
+      },
+      "dimensions": {
+        "geography": "unknown",
+        "industry": "unknown",
+        "employeeSize": "unknown"
+      }
+    },
+    {
+      "company": "IPSec Pty Ltd",
+      "role": "SELLER_COMPETITOR",
+      "qualification": {
+        "status": "LIKELY_NOT_FIT",
+        "confidence": "HIGH"
+      },
+      "dimensions": {
+        "geography": "pass",
+        "industry": "fail",
+        "employeeSize": "fail"
+      }
+    },
+    {
+      "company": "CyberDNA",
+      "role": "SELLER_COMPETITOR",
+      "qualification": {
+        "status": "LIKELY_NOT_FIT",
+        "confidence": "HIGH"
+      },
+      "dimensions": {
+        "geography": "pass",
+        "industry": "fail",
+        "employeeSize": "fail"
+      }
+    },
+    {
+      "company": "Thales Cybersecurity Services ANZ (Formerly Tesserent)",
+      "role": "SELLER_COMPETITOR",
+      "qualification": {
+        "status": "LIKELY_FIT",
+        "confidence": "HIGH"
+      },
+      "dimensions": {
+        "geography": "pass",
+        "industry": "pass",
+        "employeeSize": "pass"
+      }
+    },
+    {
+      "company": "StrongKeep",
+      "role": "SELLER_COMPETITOR",
+      "qualification": {
+        "status": "LIKELY_NOT_FIT",
+        "confidence": "HIGH"
+      },
+      "dimensions": {
+        "geography": "pass",
+        "industry": "fail",
+        "employeeSize": "fail"
+      }
+    },
+    {
+      "company": "BitCyber",
+      "role": "SELLER_COMPETITOR",
+      "qualification": {
+        "status": "LIKELY_NOT_FIT",
+        "confidence": "HIGH"
+      },
+      "dimensions": {
+        "geography": "pass",
+        "industry": "fail",
+        "employeeSize": "fail"
+      }
+    },
+    {
+      "company": "Insyghts Security Pte Ltd",
+      "role": "SELLER_COMPETITOR",
+      "qualification": {
+        "status": "LIKELY_NOT_FIT",
+        "confidence": "HIGH"
+      },
+      "dimensions": {
+        "geography": "pass",
+        "industry": "fail",
+        "employeeSize": "fail"
+      }
+    },
+    {
+      "company": "CYFIRMA",
+      "role": "SELLER_COMPETITOR",
+      "qualification": {
+        "status": "LIKELY_NOT_FIT",
+        "confidence": "HIGH"
+      },
+      "dimensions": {
+        "geography": "pass",
+        "industry": "fail",
+        "employeeSize": "partial"
+      }
+    },
+    {
+      "company": "Viperlink Pte Ltd",
+      "role": "SELLER_COMPETITOR",
+      "qualification": {
+        "status": "LIKELY_NOT_FIT",
+        "confidence": "HIGH"
+      },
+      "dimensions": {
+        "geography": "pass",
+        "industry": "pass",
+        "employeeSize": "fail"
+      }
+    },
+    {
+      "company": "ABP Group",
+      "role": "POTENTIAL_BUYER",
+      "qualification": {
+        "status": "INSUFFICIENT_DATA",
+        "confidence": "LOW"
+      },
+      "dimensions": {
+        "geography": "unknown",
+        "industry": "unknown",
+        "employeeSize": "unknown"
+      }
+    },
+    {
+      "company": "DACTA Global",
+      "role": "POTENTIAL_BUYER",
+      "qualification": {
+        "status": "INSUFFICIENT_DATA",
+        "confidence": "LOW"
+      },
+      "dimensions": {
+        "geography": "unknown",
+        "industry": "unknown",
+        "employeeSize": "unknown"
+      }
+    },
+    {
+      "company": "ArmourZero",
+      "role": "SELLER_COMPETITOR",
+      "qualification": {
+        "status": "LIKELY_NOT_FIT",
+        "confidence": "HIGH"
+      },
+      "dimensions": {
+        "geography": "pass",
+        "industry": "pass",
+        "employeeSize": "fail"
+      }
+    },
+    {
+      "company": "Cyberlence",
+      "role": "SELLER_COMPETITOR",
+      "qualification": {
+        "status": "LIKELY_NOT_FIT",
+        "confidence": "HIGH"
+      },
+      "dimensions": {
+        "geography": "pass",
+        "industry": "pass",
+        "employeeSize": "fail"
+      }
+    },
+    {
+      "company": "Attacklens",
+      "role": "SELLER_COMPETITOR",
+      "qualification": {
+        "status": "LIKELY_NOT_FIT",
+        "confidence": "HIGH"
+      },
+      "dimensions": {
+        "geography": "pass",
+        "industry": "pass",
+        "employeeSize": "fail"
+      }
+    },
+    {
+      "company": "ipingU Managed Security Solutions",
+      "role": "SELLER_COMPETITOR",
+      "qualification": {
+        "status": "LIKELY_NOT_FIT",
+        "confidence": "HIGH"
+      },
+      "dimensions": {
+        "geography": "pass",
+        "industry": "fail",
+        "employeeSize": "fail"
+      }
+    },
+    {
+      "company": "Mugil",
+      "role": "POTENTIAL_BUYER",
+      "qualification": {
+        "status": "INSUFFICIENT_DATA",
+        "confidence": "LOW"
+      },
+      "dimensions": {
+        "geography": "unknown",
+        "industry": "unknown",
+        "employeeSize": "unknown"
+      }
+    },
+    {
+      "company": "ViwSecurity",
+      "role": "SELLER_COMPETITOR",
+      "qualification": {
+        "status": "LIKELY_NOT_FIT",
+        "confidence": "HIGH"
+      },
+      "dimensions": {
+        "geography": "pass",
+        "industry": "fail",
+        "employeeSize": "fail"
+      }
+    }
+  ]
+}
