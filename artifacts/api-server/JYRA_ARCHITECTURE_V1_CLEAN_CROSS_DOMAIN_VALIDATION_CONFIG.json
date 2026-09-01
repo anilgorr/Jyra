@@ -1,0 +1,707 @@
+{
+  "status": "VERIFIED_AND_FROZEN_BEFORE_PROVIDER_CALLS",
+  "frozen": {
+    "startedAt": "2026-09-01T19:54:08.334Z",
+    "organizationId": "02d40c31-72e4-42d9-9d8d-fe676a369205",
+    "clones": [
+      {
+        "key": "DIGIPUUSH",
+        "sourceProjectId": "5ca11b69-e296-4e79-b3da-ee127f16ab55",
+        "projectId": "db141bf9-bc25-4e19-87e1-1d4db4a6a005",
+        "projectCreatedAt": "2026-09-01T19:54:08.347Z",
+        "businessTwinVersionId": "5197de3c-3eff-425c-ad85-6922b17ed601",
+        "icpVersionId": "5287f1bb-bd06-4247-a5bd-9ae6139bb3cf"
+      },
+      {
+        "key": "MANAGED_SOC",
+        "sourceProjectId": "b4c8a95a-eb1c-4a86-89d6-62d72097d820",
+        "projectId": "364a64a0-98ba-42d5-b27b-94478d26226b",
+        "projectCreatedAt": "2026-09-01T19:54:08.404Z",
+        "businessTwinVersionId": "bce449c6-db41-4efd-95ab-1ef52bb84517",
+        "icpVersionId": "2da4e080-50be-425f-bf7d-f796128b3a3c"
+      }
+    ],
+    "sellerContextFingerprints": [
+      {
+        "key": "DIGIPUUSH",
+        "fingerprint": "4350c74d007c5647c1690550a97d33b6bfca7cd0dc54eed7aa76825f72aa9394"
+      },
+      {
+        "key": "MANAGED_SOC",
+        "fingerprint": "7cbdda31ac7fc42476d69d8f2a033a32df1d55e9f3eb246027b06f283d039d23"
+      }
+    ],
+    "perDomain": 10,
+    "discoveryLimits": {
+      "DIGIPUUSH": 10,
+      "MANAGED_SOC": 11
+    },
+    "frozenQueries": {
+      "DIGIPUUSH": "B2B SaaS companies likely to need white-label lead generation appointment setting outsourced SDR services",
+      "MANAGED_SOC": "mid-market companies likely to buy managed SOC MDR SIEM cybersecurity services"
+    },
+    "controlPlaneVersion": "architecture-v1-control-plane-v2",
+    "minimumCompanyIntelligenceVersion": "architecture-v1-minimum-company-intelligence-v2",
+    "companyUnderstandingPromptVersion": "fix08-company-understanding-v4",
+    "companyUnderstandingModel": "gpt-5-mini",
+    "normalizationVersion": "fix07-v1",
+    "commercialRoleVersion": "buyer-role-resolution-06a"
+  },
+  "preflight": {
+    "checkedAt": "2026-09-01T19:54:08.464Z",
+    "projectsCreatedAfterRunStart": true,
+    "sellerAndIcpReady": true,
+    "projectMembershipRows": 0,
+    "projectProvenanceRows": 0,
+    "downstream": {
+      "signals": 0,
+      "opportunities": 0,
+      "recommendations": 0,
+      "contacts": 0,
+      "why": 0
+    }
+  },
+  "readiness": [
+    {
+      "key": "DIGIPUUSH",
+      "state": {
+        "projectId": "db141bf9-bc25-4e19-87e1-1d4db4a6a005",
+        "organizationId": "02d40c31-72e4-42d9-9d8d-fe676a369205",
+        "businessTwinId": "1f488503-4dc8-4ebc-9732-3fbcb8a29cb1",
+        "businessTwinVersionId": "5197de3c-3eff-425c-ad85-6922b17ed601",
+        "businessTwinVersion": 1,
+        "businessTwinStatus": "ready",
+        "businessTwinCreatedAt": "2026-09-01T19:54:08.347Z",
+        "businessTwinRawAnswers": {
+          "website": "https://digipuush.com/",
+          "industry": "Marketing",
+          "betaUsers": "",
+          "pilotUsers": "",
+          "companyName": "Digipuush",
+          "offeringName": "AEO & GEO / AI Visibility Services",
+          "bestCustomers": [
+            {
+              "name": "Third Bracket — HR / Recruitment / Talent Solutions",
+              "whyBoughtThen": "The likely trigger was the need to expand organic visibility beyond traditional Google search and establish Third Bracket as an authoritative company that can surface in AI-generated answers when businesses search for recruitment and talent partners.",
+              "whyGoodCustomer": "Third Bracket operates in a search- and reputation-driven professional-services category where potential customers research recruitment and talent partners before engaging. Visibility in Google as well as ChatGPT, Gemini, Perplexity and AI-generated recommendations can directly influence whether the company enters a buyer's consideration set.\n\nTheir service category also creates many high-intent discovery opportunities around recruitment companies, hiring partners, executive search, staffing and talent solutions."
+            },
+            {
+              "name": "Zyngg — Consumer Technology / Mobile App",
+              "whyBoughtThen": "The likely trigger was the need to build visibility and digital authority for a growing product rather than depending entirely on paid acquisition or conventional search. Establishing the brand early across Google and AI discovery channels can help create longer-term organic visibility.",
+              "whyGoodCustomer": "Zyngg is a digital-first product where online discovery, brand awareness and category visibility are important for growth. As a technology/app business, its prospective users and partners are naturally more likely to use digital and AI-powered discovery channels.\n\nAEO/GEO can help establish the brand's entity, product positioning, use cases and category relevance across search engines and AI platforms."
+            },
+            {
+              "name": "Virama Farm Stay — Hospitality / Farm Stay / Travel",
+              "whyBoughtThen": "The objective was to increase direct organic discovery for high-intent farm-stay searches and reduce dependence on intermediaries/booking platforms. Virama actively promotes direct WhatsApp/phone booking without platform fees, making increased Google and AI visibility commercially valuable because discovery can translate directly into bookings.",
+              "whyGoodCustomer": "Virama is an excellent AEO/GEO use case because customers actively search questions such as “best farm stay near Bangalore,” “farm stay near Bangalore with pool,” “private farm stay near Bangalore,” “pet-friendly farm stay near Bangalore” and similar recommendation queries.\n\nVirama is a private 3-acre farm stay in Magadi, around 45 km from Bangalore, accommodating up to 28 guests with a private 24-hour pool, bonfire, activities and direct booking. These clear attributes provide substantial structured information that can be optimized for both conventional search and AI answers."
+            }
+          ],
+          "customerCount": "3",
+          "costOfInaction": "As buyers increasingly use AI systems during research and vendor discovery, brands that are absent from AI-generated answers risk becoming invisible during an important part of the buying journey.\n\nCompetitors can become the brands repeatedly recommended by AI while the company receives fewer mentions and fewer opportunities to enter buyer consideration.\n\nA company may continue investing heavily in SEO and content while failing to capture visibility in AI-driven discovery.\n\nThe longer competitors accumulate authoritative content, citations and machine-readable signals, the harder it can become to close the visibility gap.",
+          "designPartners": "",
+          "pilotCustomers": "",
+          "problemsSolved": "Companies may rank on Google but remain invisible when prospective customers ask ChatGPT, Perplexity, Gemini or Google AI Overviews for recommendations, comparisons or solutions.\n\nTheir website content may not be structured in a way that AI systems can easily understand, extract and cite. Competitors can therefore appear in AI-generated recommendations even when the company has stronger products, experience or traditional SEO rankings.\n\nDigiPuush solves:\n\nAI search invisibility; lack of brand citations in LLM answers; competitors being recommended instead; poor content structure for AI extraction; weak entity/brand authority; insufficient structured data/schema; declining effectiveness of traditional SEO alone; and lack of visibility into how the brand appears across AI answer engines.",
+          "activeProspects": "",
+          "dealSizeHistory": "",
+          "payingCustomers": "",
+          "typicalDealSize": "AEO + GEO: ₹25,000/month, SEO + AEO + GEO: ₹40,000/month",
+          "validationNotes": "",
+          "commonBuyerRoles": "",
+          "commonObjections": "",
+          "currentCustomers": "zyng.app\nthirdbracket\nvirama.in",
+          "customerProblems": "",
+          "marketHypotheses": "",
+          "objectionHistory": "",
+          "primaryGeography": "India",
+          "wonOpportunities": "The prospect already understands SEO.\n\nThe company has an established website and content base.\n\nOrganic discovery matters commercially.\n\nManagement understands that AI is changing search behaviour.\n\nCompetitors already have stronger AI visibility.\n\nThere is a measurable visibility gap.\n\nA senior marketing stakeholder owns the problem.\n\nThe company is willing to make website/content changes.\n\nThere is sufficient budget for a recurring engagement.\n\nThe AI Visibility Audit creates a clear before/after measurement.",
+          "competitorHistory": "",
+          "customerApprovers": "",
+          "expansionPatterns": "",
+          "lostOpportunities": "Prospect expects immediate leads.\n\nProspect doesn't understand AEO/GEO.\n\nNo marketing budget.\n\nNo urgency.\n\nCompany has a weak website/content foundation.\n\nManagement sees AI search as experimental.\n\nExisting SEO agency claims it already covers GEO.\n\nNo senior marketing sponsor.\n\nProspect wants guaranteed rankings/citations.\n\nCompany wants a one-time activity instead of ongoing optimization.",
+          "salesCycleHistory": "",
+          "targetGeographies": "India",
+          "typicalSalesCycle": "2–6 weeks",
+          "customerInitiators": "",
+          "economicBuyerRoles": "",
+          "commonChampionRoles": "",
+          "historicalChampions": "",
+          "typicalRevenueRange": "₹10 crore–₹500 crore annual revenue",
+          "bestCustomerPatterns": "Very small businesses with little website traffic or marketing budget.\n\nCompanies without a meaningful website.\n\nBusinesses where customers rarely research purchases online.\n\nCompanies looking exclusively for immediate lead generation.\n\nBusinesses expecting AEO/GEO to generate leads within days.\n\nCompanies unwilling to invest in content or website improvements.\n\nCompanies with no internal person capable of approving website/content changes.\n\nBusinesses wanting guaranteed ChatGPT rankings or citations.\n\nCompanies looking only for social media management or paid advertising should not be considered AEO/GEO ICP merely because DigiPuush offers those services.\n\nThat last distinction is important because DigiPuush also provides paid marketing, social media, website development and other services.",
+          "historicalBuyerRoles": "",
+          "historicalIndustries": "",
+          "majorDifferentiators": "DigiPuush approaches SEO + AEO + GEO as one integrated search strategy, rather than treating AI visibility as an isolated add-on.\n\nThe service focuses specifically on measurable visibility across ChatGPT, Perplexity, Gemini, Google AI Overviews and traditional Google Search.\n\nKey differentiators include AI visibility audits, content restructuring for answer extraction, schema implementation, citation-oriented content, traditional SEO foundations, authority building and ongoing AI citation monitoring.\n\nDigiPuush is also positioned specifically around the Indian market rather than as a generic international GEO consultancy.",
+          "typicalEmployeeRange": "20–1,000 employees",
+          "businessMaturityStage": "REPEATABLE_SALES",
+          "customerBuyingReasons": "",
+          "historicalGeographies": "",
+          "historicalCompanySizes": "",
+          "typicalCustomerProfile": "B2B SaaS, technology companies, professional services, education, healthcare, financial services, e-commerce and other businesses where customers research providers online before making a purchase.\n\nIdeal companies already invest in their website, content, SEO or digital marketing but have limited visibility when potential customers ask AI platforms for recommendations.\n\nThe strongest customers operate in competitive categories where appearing in \"best company\", \"best software\", \"alternative to\", \"which provider\", comparison and high-intent informational queries can influence purchasing decisions.\n\nCompanies with established websites, existing content and some domain authority are particularly attractive because DigiPuush can build on those assets rather than starting from zero.\n\nDigiPuush's current site explicitly says it works with B2B, SaaS and e-commerce brands and shows case-study patterns across B2B SaaS, D2C e-commerce and local services.",
+          "typicalUrgencyTriggers": "",
+          "customerInterestTriggers": "",
+          "competitorsOrAlternatives": "Traditional SEO agencies; specialist AEO/GEO agencies; AI SEO consultants; digital marketing agencies adding AI visibility services; internal SEO/content teams; PR/content agencies; and companies attempting to optimize for AI internally.",
+          "waitlistOrLettersOfIntent": "",
+          "badCustomerCharacteristics": "",
+          "productOrServiceDescription": "DigiPuush helps businesses become visible and cited in AI-generated answers across ChatGPT, Perplexity, Gemini and Google AI Overviews, while also improving traditional Google search visibility.\n\nThe service combines Answer Engine Optimization (AEO), Generative Engine Optimization (GEO), AI SEO, content restructuring, schema markup, technical SEO, authority building and ongoing AI citation monitoring. DigiPuush audits where a brand appears across AI platforms, identifies visibility gaps, restructures website content so AI systems can understand and extract it, builds authority signals, and tracks improvements over time.",
+          "prospectiveCustomerEvidence": "",
+          "commonTechnicalEvaluatorRoles": ""
+        },
+        "businessTwinAiInterpretation": {
+          "claims": [
+            {
+              "key": "target_customer",
+              "evidence": "B2B SaaS, technology companies, professional services, education, healthcare, financial services, e-commerce and other businesses where customers research providers online before making a purchase.\n\nIdeal companies already invest in their website, content, SEO or digital marketing but have limited visibility when potential customers ask AI platforms for recommendations.\n\nThe strongest customers operate in competitive categories where appearing in \"best company\", \"best software\", \"alternative to\", \"which provider\", comparison and high-intent informational queries can influence purchasing decisions.\n\nCompanies with established websites, existing content and some domain authority are particularly attractive because DigiPuush can build on those assets rather than starting from zero.\n\nDigiPuush's current site explicitly says it works with B2B, SaaS and e-commerce brands and shows case-study patterns across B2B SaaS, D2C e-commerce and local services.",
+              "statement": "B2B SaaS, technology companies, professional services, education, healthcare, financial services, e-commerce and other businesses where customers research providers online before making a purchase.\n\nIdeal companies already invest in their website, content, SEO or digital marketing but have limited visibility when potential customers ask AI platforms for recommendations.\n\nThe strongest customers operate in competitive categories where appearing in \"best company\", \"best software\", \"alternative to\", \"which provider\", comparison and high-intent informational queries can influence purchasing decisions.\n\nCompanies with established websites, existing content and some domain authority are particularly attractive because DigiPuush can build on those assets rather than starting from zero.\n\nDigiPuush's current site explicitly says it works with B2B, SaaS and e-commerce brands and shows case-study patterns across B2B SaaS, D2C e-commerce and local services.",
+              "provenance": "FOUNDER_HYPOTHESIS",
+              "isAssumption": true,
+              "validationStatus": "UNTESTED"
+            },
+            {
+              "key": "target_company_size",
+              "evidence": "20–1,000 employees",
+              "statement": "20–1,000 employees",
+              "provenance": "FOUNDER_HYPOTHESIS",
+              "isAssumption": true,
+              "validationStatus": "UNTESTED"
+            },
+            {
+              "key": "customers",
+              "evidence": "zyng.app\nthirdbracket\nvirama.in",
+              "statement": "zyng.app\nthirdbracket\nvirama.in",
+              "provenance": "CUSTOMER",
+              "isAssumption": false,
+              "validationStatus": "PARTIALLY_VALIDATED"
+            },
+            {
+              "key": "won_opportunities",
+              "evidence": "The prospect already understands SEO.\n\nThe company has an established website and content base.\n\nOrganic discovery matters commercially.\n\nManagement understands that AI is changing search behaviour.\n\nCompetitors already have stronger AI visibility.\n\nThere is a measurable visibility gap.\n\nA senior marketing stakeholder owns the problem.\n\nThe company is willing to make website/content changes.\n\nThere is sufficient budget for a recurring engagement.\n\nThe AI Visibility Audit creates a clear before/after measurement.",
+              "statement": "The prospect already understands SEO.\n\nThe company has an established website and content base.\n\nOrganic discovery matters commercially.\n\nManagement understands that AI is changing search behaviour.\n\nCompetitors already have stronger AI visibility.\n\nThere is a measurable visibility gap.\n\nA senior marketing stakeholder owns the problem.\n\nThe company is willing to make website/content changes.\n\nThere is sufficient budget for a recurring engagement.\n\nThe AI Visibility Audit creates a clear before/after measurement.",
+              "provenance": "SALES_OUTCOME",
+              "isAssumption": false,
+              "validationStatus": "PARTIALLY_VALIDATED"
+            },
+            {
+              "key": "lost_opportunities",
+              "evidence": "Prospect expects immediate leads.\n\nProspect doesn't understand AEO/GEO.\n\nNo marketing budget.\n\nNo urgency.\n\nCompany has a weak website/content foundation.\n\nManagement sees AI search as experimental.\n\nExisting SEO agency claims it already covers GEO.\n\nNo senior marketing sponsor.\n\nProspect wants guaranteed rankings/citations.\n\nCompany wants a one-time activity instead of ongoing optimization.",
+              "statement": "Prospect expects immediate leads.\n\nProspect doesn't understand AEO/GEO.\n\nNo marketing budget.\n\nNo urgency.\n\nCompany has a weak website/content foundation.\n\nManagement sees AI search as experimental.\n\nExisting SEO agency claims it already covers GEO.\n\nNo senior marketing sponsor.\n\nProspect wants guaranteed rankings/citations.\n\nCompany wants a one-time activity instead of ongoing optimization.",
+              "provenance": "SALES_OUTCOME",
+              "isAssumption": false,
+              "validationStatus": "PARTIALLY_VALIDATED"
+            }
+          ],
+          "unknowns": [
+            "Specific buyer, champion, economic buyer, and technical evaluator roles are unknown.",
+            "Actual customer buying reasons, customer problems, initiators, approvers, and interest triggers are unknown.",
+            "Whether the listed current customers are paying customers, pilot customers, or another customer type is unknown.",
+            "Documented customer outcomes, visibility improvements, citations, leads, bookings, or other results are unknown.",
+            "Historical deal sizes, sales-cycle outcomes, win rates, and deal-size history are unknown.",
+            "Historical industries, company sizes, and geographies beyond the supplied target patterns are unknown.",
+            "Specific objection history and competitor history are unknown.",
+            "Compliance requirements or constraints are unknown.",
+            "Expansion patterns are unknown.",
+            "Expansion patterns"
+          ],
+          "industries": [
+            "Marketing",
+            "B2B SaaS",
+            "Technology",
+            "Professional services",
+            "Education",
+            "Healthcare",
+            "Financial services",
+            "E-commerce",
+            "D2C e-commerce",
+            "Local services",
+            "Hospitality",
+            "Travel",
+            "HR / recruitment / talent solutions"
+          ],
+          "buyer_roles": [],
+          "geographies": [
+            "India"
+          ],
+          "champion_roles": [],
+          "buying_triggers": [
+            "A need to expand visibility beyond traditional Google Search into ChatGPT, Gemini, Perplexity, and AI-generated recommendations.",
+            "Competitors having stronger AI visibility.",
+            "A measurable AI visibility gap identified through an AI Visibility Audit.",
+            "Management recognition that AI is changing search behavior.",
+            "The need to build brand entity, product positioning, use-case, and category visibility.",
+            "The need to reduce reliance on paid acquisition, conventional search, intermediaries, or booking platforms.",
+            "High-intent online searches that can influence provider selection or direct bookings."
+          ],
+          "differentiators": [
+            "An integrated SEO + AEO + GEO approach rather than treating AI visibility as an isolated add-on.",
+            "Focus on measurable visibility across ChatGPT, Perplexity, Gemini, Google AI Overviews, and traditional Google Search.",
+            "AI visibility audits, answer-extraction-oriented content restructuring, schema implementation, citation-oriented content, traditional SEO foundations, authority building, and ongoing AI citation monitoring.",
+            "Positioning around the Indian market."
+          ],
+          "problems_solved": [
+            "Brands may rank in Google but remain absent from AI-generated recommendations, comparisons, and solution queries.",
+            "Website content may not be structured for AI systems to understand, extract, and cite.",
+            "Competitors may be recommended in AI-generated answers despite weaker products, experience, or traditional SEO rankings.",
+            "Brands may lack visibility into how they appear across AI answer engines.",
+            "Traditional SEO alone may not capture AI-driven discovery visibility."
+          ],
+          "technical_roles": [],
+          "offering_summary": "AEO & GEO / AI Visibility Services that combine AI visibility audits, content restructuring, schema markup, technical SEO, authority building, AI citation monitoring, and traditional SEO to improve visibility across ChatGPT, Perplexity, Gemini, Google AI Overviews, and Google Search.",
+          "urgency_patterns": [
+            "Competitors are accumulating authoritative content, citations, and machine-readable signals, making visibility gaps harder to close over time.",
+            "Brands risk absence from AI-generated answers during buyer research and vendor discovery.",
+            "Companies may be investing in SEO and content without capturing AI-driven discovery visibility.",
+            "High-intent recommendation, comparison, and provider-selection queries can affect consideration and direct bookings."
+          ],
+          "business_outcomes": [
+            "Greater visibility in AI-generated answers and traditional Google Search.",
+            "More opportunities for a brand to enter buyer consideration during AI-driven research and vendor discovery.",
+            "Improved machine-readable content, structured data, entity signals, and brand authority.",
+            "Ongoing measurement of AI citation and visibility improvements.",
+            "For direct-booking businesses, increased organic discovery can support direct bookings rather than reliance on intermediaries."
+          ],
+          "common_objections": [
+            "Expectation of immediate leads.",
+            "Limited understanding of AEO/GEO.",
+            "No marketing budget.",
+            "Lack of urgency.",
+            "Perception that AI search is experimental.",
+            "Belief that an existing SEO agency already covers GEO.",
+            "Demand for guaranteed rankings or citations.",
+            "Preference for a one-time activity instead of ongoing optimization."
+          ],
+          "compliance_patterns": [],
+          "technology_patterns": [
+            "Established websites with existing content and some domain authority.",
+            "Website content requiring restructuring for AI understanding, extraction, and citation.",
+            "Use of schema markup and structured data.",
+            "Visibility across ChatGPT, Perplexity, Gemini, Google AI Overviews, and Google Search."
+          ],
+          "company_size_patterns": [
+            "20–1,000 employees.",
+            "₹10 crore–₹500 crore annual revenue."
+          ],
+          "disqualifier_hypotheses": [
+            "The prospect expects immediate leads or results within days.",
+            "The prospect lacks marketing budget or urgency.",
+            "Management views AI search as experimental.",
+            "The prospect has no senior marketing sponsor.",
+            "The prospect wants guaranteed rankings or citations.",
+            "The prospect is unwilling or unable to approve website and content changes.",
+            "The company has insufficient website or content foundations.",
+            "The prospect wants a one-time engagement rather than ongoing optimization.",
+            "The prospect believes an existing SEO agency already covers GEO."
+          ],
+          "ideal_customer_patterns": [
+            "B2B SaaS, technology, professional services, education, healthcare, financial services, e-commerce, and other businesses whose customers research providers online before purchase.",
+            "Companies that already invest in websites, content, SEO, or digital marketing but have limited visibility in AI-platform recommendations.",
+            "Businesses in competitive categories where 'best company,' 'best software,' alternatives, provider-selection, comparison, and high-intent informational queries influence purchasing decisions.",
+            "Companies with established websites, existing content, and some domain authority.",
+            "Companies with 20–1,000 employees and ₹10 crore–₹500 crore in annual revenue.",
+            "Companies where organic discovery matters commercially, management recognizes changing search behavior, and a senior marketing stakeholder owns the problem.",
+            "Companies willing to make website and content changes and fund an ongoing engagement."
+          ],
+          "negative_customer_patterns": [
+            "Very small businesses with little website traffic or marketing budget.",
+            "Companies without a meaningful website or with a weak website/content foundation.",
+            "Businesses where customers rarely research purchases online.",
+            "Companies seeking exclusively immediate lead generation or expecting AEO/GEO to generate leads within days.",
+            "Businesses unwilling to invest in content or website improvements.",
+            "Companies without an internal person who can approve website or content changes.",
+            "Businesses seeking guaranteed ChatGPT rankings or citations.",
+            "Companies seeking only social media management or paid advertising.",
+            "Companies seeking a one-time activity rather than ongoing optimization."
+          ]
+        },
+        "icpId": "7b17234b-92e9-43f5-8f9a-60c702e9753d",
+        "icpVersionId": "5287f1bb-bd06-4247-a5bd-9ae6139bb3cf",
+        "icpVersion": 1,
+        "icpCreatedAt": "2026-09-01T19:54:08.347Z",
+        "icpAssumptions": [
+          "We believe B2B SaaS, technology companies, professional services, education, healthcare, financial services, e-commerce and other businesses where customers research providers online before making a purchase.\n\nIdeal companies already invest in their website, content, SEO or digital marketing but have limited visibility when potential customers ask AI platforms for recommendations.\n\nThe strongest customers operate in competitive categories where appearing in \"best company\", \"best software\", \"alternative to\", \"which provider\", comparison and high-intent informational queries can influence purchasing decisions.\n\nCompanies with established websites, existing content and some domain authority are particularly attractive because DigiPuush can build on those assets rather than starting from zero.\n\nDigiPuush's current site explicitly says it works with B2B, SaaS and e-commerce brands and shows case-study patterns across B2B SaaS, D2C e-commerce and local services..",
+          "We believe companies with 20–1,000 employees employees are a strong fit."
+        ],
+        "opportunityPackId": null,
+        "opportunityPackVersionId": null,
+        "opportunityPackVersion": null,
+        "opportunityPackStatus": null,
+        "opportunityPackCreatedAt": null,
+        "context": {
+          "businessTwinId": "1f488503-4dc8-4ebc-9732-3fbcb8a29cb1",
+          "businessTwinVersionId": "5197de3c-3eff-425c-ad85-6922b17ed601",
+          "icpId": "5287f1bb-bd06-4247-a5bd-9ae6139bb3cf",
+          "offeringId": null,
+          "offeringKey": null,
+          "sellerCompanyName": "Digipuush",
+          "sellerBusinessDescription": null,
+          "sellerBusinessModel": null,
+          "offeringName": "AEO & GEO / AI Visibility Services",
+          "offeringCategory": null,
+          "offeringDescription": "DigiPuush helps businesses become visible and cited in AI-generated answers across ChatGPT, Perplexity, Gemini and Google AI Overviews, while also improving traditional Google search visibility.\n\nThe service combines Answer Engine Optimization (AEO), Generative Engine Optimization (GEO), AI SEO, content restructuring, schema markup, technical SEO, authority building and ongoing AI citation monitoring. DigiPuush audits where a brand appears across AI platforms, identifies visibility gaps, restructures website content so AI systems can understand and extract it, builds authority signals, and tracks improvements over time.",
+          "offeringCapabilities": [],
+          "offeringExclusions": [],
+          "source": "BUSINESS_TWIN",
+          "fingerprint": "4350c74d007c5647c1690550a97d33b6bfca7cd0dc54eed7aa76825f72aa9394"
+        },
+        "sufficiency": {
+          "sufficient": true,
+          "reason": "SUFFICIENT"
+        },
+        "businessTwinReady": true,
+        "offeringReady": true,
+        "icpReady": true,
+        "opportunityPackReady": false,
+        "buyerRoleReady": true,
+        "marketDiscoveryReady": true,
+        "whoReady": true,
+        "whenWhyReady": false,
+        "contextStatus": "READY",
+        "missingRequirements": [
+          "OPPORTUNITY_PACK_MISSING"
+        ]
+      }
+    },
+    {
+      "key": "MANAGED_SOC",
+      "state": {
+        "projectId": "364a64a0-98ba-42d5-b27b-94478d26226b",
+        "organizationId": "02d40c31-72e4-42d9-9d8d-fe676a369205",
+        "businessTwinId": "ca78b2b5-9ddf-44b9-a7a1-fa007dac656d",
+        "businessTwinVersionId": "bce449c6-db41-4efd-95ab-1ef52bb84517",
+        "businessTwinVersion": 1,
+        "businessTwinStatus": "ready",
+        "businessTwinCreatedAt": "2026-09-01T19:54:08.404Z",
+        "businessTwinRawAnswers": {
+          "website": "https://aadit.net/",
+          "industry": "Cybersecurity",
+          "betaUsers": "",
+          "pilotUsers": "",
+          "companyName": "Aadit Technologies",
+          "offeringName": "Managed Soc",
+          "bestCustomers": [
+            {
+              "name": "Alphastream.ai — AI / FinTech / Financial Data Platform",
+              "whyBoughtThen": "As the platform and enterprise relationships grew, security requirements increased. 24/7 monitoring provided continuous security oversight and threat investigation without requiring a complete internal SOC.",
+              "whyGoodCustomer": "Operates a cloud-based AI platform handling sensitive financial, legal and investment information for financial institutions. Enterprise financial customers, sensitive data and security/compliance requirements make continuous monitoring particularly important."
+            },
+            {
+              "name": "Altoura — Enterprise SaaS / AI Technology",
+              "whyBoughtThen": "Growth in enterprise deployments increased the importance of continuous security monitoring and meeting customer security expectations. Outsourced SOC monitoring provided round-the-clock coverage without building a dedicated internal 24/7 SOC.",
+              "whyGoodCustomer": "Operates an enterprise cloud platform used by large organizations. Its cloud infrastructure, enterprise customer base, Microsoft-oriented technology environment and security/compliance requirements make it suitable for Aadit's Managed SOC."
+            },
+            {
+              "name": "Aditi Consulting — Digital Engineering / IT Services",
+              "whyBoughtThen": "Increasing infrastructure, workforce and enterprise-client security requirements created a need for dedicated 24/7 security oversight. Aadit's Managed SOC provided continuous monitoring and investigation without the complexity of expanding an internal round-the-clock SOC.",
+              "whyGoodCustomer": "A large technology services organization with 2,000+ employees, distributed operations, substantial cloud/IT infrastructure and major enterprise customers. Its scale and infrastructure complexity create a strong requirement for continuous security monitoring."
+            }
+          ],
+          "customerCount": "3+ Managed SOC customers",
+          "costOfInaction": "Without continuous security monitoring, suspicious activity can remain undetected for hours or days, allowing attackers more time to compromise accounts, move across systems, steal information or deploy ransomware.\n\nA successful security incident can result in business downtime, data loss, financial losses, customer impact, regulatory exposure, failed security audits and reputational damage.\n\nCompanies may also lose or delay enterprise contracts when they cannot demonstrate adequate security monitoring and incident-response capabilities.\n\nBuilding an equivalent 24/7 internal SOC requires recruiting and retaining multiple cybersecurity professionals, implementing processes and maintaining round-the-clock coverage, making it expensive and operationally difficult for many mid-market organizations.",
+          "designPartners": "",
+          "pilotCustomers": "",
+          "problemsSolved": "Organizations often have multiple cybersecurity tools generating large volumes of alerts but lack dedicated security analysts to continuously review and investigate them.\n\nInternal IT teams are typically focused on infrastructure and business operations and cannot monitor security events 24/7. This creates gaps during nights, weekends and holidays and increases the possibility of critical alerts being missed.\n\nAadit's Managed SOC solves:\n\n24/7 security monitoring gaps; shortage of skilled cybersecurity analysts; excessive security alerts and alert fatigue; slow threat detection and investigation; lack of centralized visibility across cloud, endpoints, identities and networks; limited internal incident-response capability; and security monitoring requirements arising from ISO 27001, SOC 2, customer security assessments and other compliance obligations.",
+          "activeProspects": "",
+          "dealSizeHistory": "Managed SOC engagements are generally recurring annual contracts, with value increasing according to the number of users/endpoints, infrastructure complexity, cloud workloads, monitoring scope and additional security services required.\n\nTypical target contract value is approximately $30,000–$60,000 annually, with ~$45,000 representing a useful target deal size. Larger organizations and expanded monitoring scopes can result in higher contract values.\n\nExpansion can occur as customers add employees, endpoints, cloud workloads, locations or additional cybersecurity/compliance services.",
+          "payingCustomers": "",
+          "typicalDealSize": "$30,000–$60,000 per year; typical target ~$45,000 annually",
+          "validationNotes": "",
+          "commonBuyerRoles": "",
+          "commonObjections": "",
+          "currentCustomers": "Current Managed SOC customers include technology, AI/SaaS and digital engineering companies operating cloud-based environments and serving enterprise customers. Examples include Alphastream.ai, Altoura and Aditi Consulting. These organizations depend heavily on technology infrastructure, handle sensitive business/customer data, and require strong security monitoring. Customers range from growing technology companies to large global organizations, demonstrating that the service can support different levels of infrastructure complexity.",
+          "customerProblems": "",
+          "marketHypotheses": "",
+          "objectionHistory": "Common objections include:\n\n“We already have security tools in place.”\n“Our internal IT/security team monitors this.”\n“We don't need 24/7 monitoring yet.”\n“We haven't had a major security incident.”\n“Our current MSP already handles security.”\n“The budget is too high.”\n“We are comparing other MDR/MSSP providers.”\n“We can build this capability internally.”\n“We don't generate enough security alerts to justify a SOC.”\n“We can revisit this during the next budget cycle.”\n\nOther delays occur because of procurement, vendor onboarding, management approval or uncertainty about the immediate ROI of security monitoring.",
+          "primaryGeography": "india",
+          "wonOpportunities": "Won opportunities typically involve companies with established IT/cloud environments but without sufficient internal resources for true 24/7 security monitoring. Common characteristics include cloud adoption, Microsoft-centric environments, distributed users, enterprise customers, sensitive data, growing security complexity and compliance requirements.\n\nDeals become stronger when there is a clear trigger: an upcoming ISO 27001/SOC 2 or customer audit, enterprise customer security requirements, a recent security concern, rapid growth, increasing endpoints/cloud workloads, or management realizing that the existing IT team cannot effectively monitor security around the clock.\n\nAadit wins when customers value human-led 24/7 monitoring, manual investigation of alerts, direct access to experienced analysts, flexibility and cost-effectiveness compared with building an internal SOC.",
+          "competitorHistory": "Managed SOC/MSSP/MDR providers, regional cybersecurity service providers, Microsoft security partners, and customers' incumbent MSPs.\n\nThe most common competitive alternatives are often not another SOC provider, but the customer's existing internal IT/security team, automated security tools, an existing MSP providing basic security monitoring, or the customer considering building an internal SOC.\n\nWhere formal vendor comparisons occur, alternatives may include providers such as Arctic Wolf, Sophos MDR, Rapid7 MDR, eSentire, Secureworks and similar managed security providers.",
+          "customerApprovers": "",
+          "expansionPatterns": "Customers can initially engage Aadit for 24/7 security monitoring and subsequently expand the relationship as their infrastructure, employee base and security requirements grow. Expansion opportunities include adding more endpoints, cloud workloads, business units or geographic locations to SOC coverage; vulnerability assessment and penetration testing (VAPT); ISO 27001 and SOC 2 readiness; security assessments; incident response; cloud security; endpoint and identity security; and broader managed IT/security services.\n\nGrowth, acquisitions, new offices, cloud migrations, compliance initiatives, major enterprise customers and increased employee counts can all create natural opportunities to expand the engagement.",
+          "lostOpportunities": "Opportunities are more likely to be lost or delayed when cybersecurity monitoring is viewed as non-urgent, there is no immediate compliance/customer requirement, management believes existing security tools are sufficient, or the internal IT team believes it can continue handling security monitoring.\n\nOther common barriers include budget constraints, comparison with lower-cost automated MDR/MSSP offerings, preference for an incumbent IT/security provider, long procurement processes and organizations deciding to postpone the project.",
+          "salesCycleHistory": "Typical Managed SOC opportunities can take approximately 30–90 days from qualified opportunity to closure.\n\nSales cycles tend to be considerably shorter when there is a strong buying trigger such as an upcoming audit, enterprise customer security requirement, security incident, compliance deadline or immediate requirement for 24/7 monitoring.\n\nSales cycles become longer when the requirement is exploratory, there is no defined security deadline, multiple stakeholders are involved, budget approval is pending, or the customer is comparing an outsourced SOC against building capabilities internally.",
+          "targetGeographies": "United States, India, UAE, United Kingdom, Singapore",
+          "typicalSalesCycle": "30–90 days; can shorten to 2–4 weeks when there is an active security incident, audit deadline, compliance requirement or enterprise customer security demand.",
+          "customerInitiators": "",
+          "economicBuyerRoles": "CIO, CTO, CISO, VP/Head of IT, CFO, COO and, particularly in smaller/mid-market organizations, CEO/Founder.\n\nFor larger organizations, the CIO/CISO/CTO will typically own or strongly influence the security budget. For smaller companies, final approval may come from the CEO, COO or CFO.",
+          "commonChampionRoles": "",
+          "historicalChampions": "IT Manager, Security Manager, Information Security Manager, SOC/Security Lead, Infrastructure Manager, Cloud/Infrastructure Lead, Head of IT, Compliance/GRC Manager.\n\nThe strongest internal champions are typically people who experience the operational problem directly: too many security alerts, insufficient security staff, lack of night/weekend monitoring, increasing compliance requirements, or pressure from enterprise customers.\n\nThey understand the security gap and help build the internal case for outsourcing 24/7 monitoring.",
+          "typicalRevenueRange": "$10M–$250M annual revenue; sweet spot: $20M–$100M",
+          "bestCustomerPatterns": "The strongest customers typically have cloud-based infrastructure, 100+ employees, enterprise or regulated customers, sensitive business/customer data, and an internal IT team but no complete 24/7 SOC capability. They often already invest in cybersecurity tools but need skilled analysts to continuously monitor and investigate alerts. Strong indicators include Microsoft/Azure environments, distributed workforces, rapid growth, ISO 27001 or SOC 2 requirements, enterprise customer security assessments, increasing security complexity, and a need for round-the-clock monitoring without building an expensive internal SOC.",
+          "historicalBuyerRoles": "CISO, Head of Information Security, Director of Information Security, VP/Head of IT, IT Director, Head of Infrastructure, CIO, CTO, Security Manager, IT Security Manager, Infrastructure Manager, and in smaller technology companies, Founder/CEO or COO.\n\nThe primary buyer is usually the person responsible for security operations, IT infrastructure, risk and continuous monitoring.",
+          "historicalIndustries": "Technology and IT Services; SaaS / Enterprise Software; Artificial Intelligence; FinTech / Financial Technology; Financial Data and Analytics; Digital Engineering and Technology Consulting.\n\nExisting Managed SOC customer examples include Alphastream.ai (AI/financial technology), Altoura (enterprise SaaS/AI technology), and Aditi Consulting (digital engineering/IT services).\n\nThe strongest historical pattern is therefore technology-dependent B2B organizations operating cloud infrastructure and serving enterprise customers.",
+          "majorDifferentiators": "Aadit provides human-led 24/7 security monitoring, rather than simply deploying another security tool or forwarding automated alerts.\n\nSecurity analysts investigate and validate alerts before escalation, helping customers focus on genuine security incidents rather than large volumes of raw alerts.\n\nAadit works alongside the customer's existing IT and security infrastructure, allowing organizations to strengthen their security operations without replacing their existing technology investments.\n\nKey differentiators include 24/7 human monitoring, manual investigation and validation of security events, experienced security analysts, rapid escalation of genuine threats, integration with existing security infrastructure, personalized support, and a cost-effective alternative to building an internal SOC.",
+          "typicalEmployeeRange": "100–2,000 employees; sweet spot: 200–1,000 employees",
+          "businessMaturityStage": "REPEATABLE_SALES",
+          "customerBuyingReasons": "",
+          "historicalGeographies": "India and United States / North America, including organizations with distributed and global operations.\n\nExisting Managed SOC customers operate across multiple locations and serve customers internationally, so Aadit has experience supporting security environments that are not limited to a single office or geography.",
+          "historicalCompanySizes": "Aadit's Managed SOC customers range from growing technology companies to large global technology/service organizations.\n\nBased on the existing customer set, the historical footprint spans approximately:\n\n50 to 2,000+ employees\n\nRather than treating company size as a strict requirement, the stronger historical indicator is organizations with sufficiently complex cloud/IT environments, enterprise customers, sensitive data and a requirement for continuous security monitoring.",
+          "typicalCustomerProfile": "Mid-market and growing organizations with significant cloud and IT infrastructure that need continuous cybersecurity monitoring but do not have a fully staffed 24/7 internal SOC. Ideal customers typically use Microsoft 365/Azure or other cloud platforms, have 100+ employees, handle sensitive customer or business data, serve enterprise customers, and have security or compliance requirements such as ISO 27001, SOC 2, customer security assessments or cyber-insurance. Strong industries include SaaS, technology, IT services, fintech, financial services, healthcare and professional services.",
+          "typicalUrgencyTriggers": "",
+          "customerInterestTriggers": "",
+          "competitorsOrAlternatives": "Other Managed SOC, MSSP and MDR providers; Arctic Wolf, Expel, Red Canary, eSentire, Sophos MDR, Rapid7 MDR, Secureworks and regional cybersecurity providers. Alternatives also include monitoring security internally through the existing IT team, relying primarily on automated security tools, using an existing MSP for security, or building an internal SOC.",
+          "waitlistOrLettersOfIntent": "",
+          "badCustomerCharacteristics": "",
+          "productOrServiceDescription": "Aadit provides a fully managed 24/7 Security Operations Center (SOC) for organizations that need continuous cybersecurity monitoring without the cost and complexity of building an internal SOC.\n\nAadit's security analysts continuously monitor the customer's IT and cloud environment, investigate security alerts, identify genuine threats, prioritize incidents, and coordinate with the customer's IT team for response and remediation.\n\nThe service provides continuous human security oversight across endpoints, identities, cloud infrastructure, networks and security systems, helping organizations detect and respond to threats before they become serious security incidents.",
+          "prospectiveCustomerEvidence": "",
+          "commonTechnicalEvaluatorRoles": ""
+        },
+        "businessTwinAiInterpretation": {
+          "claims": [
+            {
+              "key": "target_customer",
+              "evidence": "Mid-market and growing organizations with significant cloud and IT infrastructure that need continuous cybersecurity monitoring but do not have a fully staffed 24/7 internal SOC. Ideal customers typically use Microsoft 365/Azure or other cloud platforms, have 100+ employees, handle sensitive customer or business data, serve enterprise customers, and have security or compliance requirements such as ISO 27001, SOC 2, customer security assessments or cyber-insurance. Strong industries include SaaS, technology, IT services, fintech, financial services, healthcare and professional services.",
+              "statement": "Mid-market and growing organizations with significant cloud and IT infrastructure that need continuous cybersecurity monitoring but do not have a fully staffed 24/7 internal SOC. Ideal customers typically use Microsoft 365/Azure or other cloud platforms, have 100+ employees, handle sensitive customer or business data, serve enterprise customers, and have security or compliance requirements such as ISO 27001, SOC 2, customer security assessments or cyber-insurance. Strong industries include SaaS, technology, IT services, fintech, financial services, healthcare and professional services.",
+              "provenance": "FOUNDER_HYPOTHESIS",
+              "isAssumption": true,
+              "validationStatus": "UNTESTED"
+            },
+            {
+              "key": "target_company_size",
+              "evidence": "100–2,000 employees; sweet spot: 200–1,000 employees",
+              "statement": "100–2,000 employees; sweet spot: 200–1,000 employees",
+              "provenance": "FOUNDER_HYPOTHESIS",
+              "isAssumption": true,
+              "validationStatus": "UNTESTED"
+            },
+            {
+              "key": "customers",
+              "evidence": "Current Managed SOC customers include technology, AI/SaaS and digital engineering companies operating cloud-based environments and serving enterprise customers. Examples include Alphastream.ai, Altoura and Aditi Consulting. These organizations depend heavily on technology infrastructure, handle sensitive business/customer data, and require strong security monitoring. Customers range from growing technology companies to large global organizations, demonstrating that the service can support different levels of infrastructure complexity.",
+              "statement": "Current Managed SOC customers include technology, AI/SaaS and digital engineering companies operating cloud-based environments and serving enterprise customers. Examples include Alphastream.ai, Altoura and Aditi Consulting. These organizations depend heavily on technology infrastructure, handle sensitive business/customer data, and require strong security monitoring. Customers range from growing technology companies to large global organizations, demonstrating that the service can support different levels of infrastructure complexity.",
+              "provenance": "CUSTOMER",
+              "isAssumption": false,
+              "validationStatus": "PARTIALLY_VALIDATED"
+            },
+            {
+              "key": "won_opportunities",
+              "evidence": "Won opportunities typically involve companies with established IT/cloud environments but without sufficient internal resources for true 24/7 security monitoring. Common characteristics include cloud adoption, Microsoft-centric environments, distributed users, enterprise customers, sensitive data, growing security complexity and compliance requirements.\n\nDeals become stronger when there is a clear trigger: an upcoming ISO 27001/SOC 2 or customer audit, enterprise customer security requirements, a recent security concern, rapid growth, increasing endpoints/cloud workloads, or management realizing that the existing IT team cannot effectively monitor security around the clock.\n\nAadit wins when customers value human-led 24/7 monitoring, manual investigation of alerts, direct access to experienced analysts, flexibility and cost-effectiveness compared with building an internal SOC.",
+              "statement": "Won opportunities typically involve companies with established IT/cloud environments but without sufficient internal resources for true 24/7 security monitoring. Common characteristics include cloud adoption, Microsoft-centric environments, distributed users, enterprise customers, sensitive data, growing security complexity and compliance requirements.\n\nDeals become stronger when there is a clear trigger: an upcoming ISO 27001/SOC 2 or customer audit, enterprise customer security requirements, a recent security concern, rapid growth, increasing endpoints/cloud workloads, or management realizing that the existing IT team cannot effectively monitor security around the clock.\n\nAadit wins when customers value human-led 24/7 monitoring, manual investigation of alerts, direct access to experienced analysts, flexibility and cost-effectiveness compared with building an internal SOC.",
+              "provenance": "SALES_OUTCOME",
+              "isAssumption": false,
+              "validationStatus": "PARTIALLY_VALIDATED"
+            },
+            {
+              "key": "lost_opportunities",
+              "evidence": "Opportunities are more likely to be lost or delayed when cybersecurity monitoring is viewed as non-urgent, there is no immediate compliance/customer requirement, management believes existing security tools are sufficient, or the internal IT team believes it can continue handling security monitoring.\n\nOther common barriers include budget constraints, comparison with lower-cost automated MDR/MSSP offerings, preference for an incumbent IT/security provider, long procurement processes and organizations deciding to postpone the project.",
+              "statement": "Opportunities are more likely to be lost or delayed when cybersecurity monitoring is viewed as non-urgent, there is no immediate compliance/customer requirement, management believes existing security tools are sufficient, or the internal IT team believes it can continue handling security monitoring.\n\nOther common barriers include budget constraints, comparison with lower-cost automated MDR/MSSP offerings, preference for an incumbent IT/security provider, long procurement processes and organizations deciding to postpone the project.",
+              "provenance": "SALES_OUTCOME",
+              "isAssumption": false,
+              "validationStatus": "PARTIALLY_VALIDATED"
+            }
+          ],
+          "unknowns": [
+            "Specific onboarding process, implementation timeline, and service-level commitments are unknown.",
+            "Exact pricing structure, minimum contract terms, and how pricing varies by users, endpoints, workloads, or scope are unknown.",
+            "Named technical integrations and supported security-tool vendors beyond Microsoft 365, Azure, cloud platforms, and existing customer infrastructure are unknown.",
+            "Specific customer retention, renewal, expansion, or satisfaction history is unknown.",
+            "Specific win rates, loss rates, and competitive win/loss results are unknown.",
+            "Specific measurable customer outcomes, such as incident-response time improvements or alert-volume reductions, are unknown.",
+            "The precise division of responsibilities between Aadit and customer IT teams during incident response and remediation is unknown.",
+            "The full set of compliance frameworks supported beyond ISO 27001, SOC 2, customer security assessments, cyber-insurance, and other unspecified obligations is unknown."
+          ],
+          "industries": [
+            "Technology and IT services.",
+            "SaaS and enterprise software.",
+            "Artificial intelligence.",
+            "FinTech and financial technology.",
+            "Financial data and analytics.",
+            "Digital engineering and technology consulting.",
+            "Healthcare.",
+            "Professional services."
+          ],
+          "buyer_roles": [
+            "CISO.",
+            "Head of Information Security.",
+            "Director of Information Security.",
+            "VP or Head of IT.",
+            "IT Director.",
+            "Head of Infrastructure.",
+            "CIO.",
+            "CTO.",
+            "Security Manager.",
+            "IT Security Manager.",
+            "Infrastructure Manager.",
+            "Founder, CEO, or COO in smaller technology companies.",
+            "CFO or COO as economic buyers."
+          ],
+          "geographies": [
+            "India.",
+            "United States and North America.",
+            "United Arab Emirates.",
+            "United Kingdom.",
+            "Singapore.",
+            "Organizations with distributed or global operations."
+          ],
+          "champion_roles": [
+            "IT Manager.",
+            "Security Manager.",
+            "Information Security Manager.",
+            "SOC or Security Lead.",
+            "Infrastructure Manager.",
+            "Cloud or Infrastructure Lead.",
+            "Head of IT.",
+            "Compliance or GRC Manager."
+          ],
+          "buying_triggers": [
+            "Upcoming ISO 27001, SOC 2, or customer audit.",
+            "Enterprise customer security requirements or security assessments.",
+            "A recent security concern or active security incident.",
+            "A compliance deadline.",
+            "Rapid growth, increasing infrastructure, or expanding enterprise deployments.",
+            "Increasing endpoints, cloud workloads, locations, or workforce size.",
+            "Management recognizing that the existing IT team cannot provide effective 24/7 security monitoring.",
+            "An immediate need for 24/7 monitoring."
+          ],
+          "differentiators": [
+            "Human-led 24/7 security monitoring rather than only deploying tools or forwarding automated alerts.",
+            "Security analysts manually investigate and validate alerts before escalation.",
+            "Focus on genuine threats rather than large volumes of raw alerts.",
+            "Works alongside existing IT and security infrastructure without requiring replacement of current technology investments.",
+            "Direct access to experienced security analysts.",
+            "Rapid escalation of genuine threats.",
+            "Personalized support.",
+            "Cost-effective alternative to building and maintaining an internal round-the-clock SOC."
+          ],
+          "problems_solved": [
+            "Gaps in 24/7 security monitoring, including nights, weekends, and holidays.",
+            "Shortage of skilled cybersecurity analysts for continuous alert review and investigation.",
+            "Excessive security alerts and alert fatigue.",
+            "Slow threat detection and investigation.",
+            "Lack of centralized visibility across cloud, endpoints, identities, networks, and security systems.",
+            "Limited internal incident-response capability.",
+            "Difficulty meeting security-monitoring expectations associated with ISO 27001, SOC 2, customer security assessments, and other compliance obligations."
+          ],
+          "technical_roles": [
+            "Security Manager.",
+            "IT Security Manager.",
+            "SOC or Security Lead.",
+            "Head of Infrastructure.",
+            "Infrastructure Manager.",
+            "Cloud or Infrastructure Lead.",
+            "IT Manager.",
+            "Information Security Manager."
+          ],
+          "offering_summary": "Managed SOC: a fully managed, human-led 24/7 Security Operations Center that continuously monitors customer IT and cloud environments, investigates and validates alerts, identifies and prioritizes threats, and coordinates response and remediation with customer IT teams.",
+          "urgency_patterns": [
+            "Active security incidents can shorten sales cycles to 2–4 weeks.",
+            "Audit deadlines, compliance requirements, and enterprise customer security demands increase urgency.",
+            "Recent security concerns and an immediate need for 24/7 monitoring increase urgency.",
+            "Exploratory projects without a defined deadline tend to have longer sales cycles.",
+            "Pending budget approval, multiple stakeholders, and outsourced-SOC-versus-internal-build comparisons can extend sales cycles."
+          ],
+          "business_outcomes": [
+            "Continuous security oversight across endpoints, identities, cloud infrastructure, networks, and security systems.",
+            "Investigation and validation of alerts before escalation, helping teams focus on genuine security incidents rather than raw alert volume.",
+            "Round-the-clock monitoring without building and staffing an internal 24/7 SOC.",
+            "Support for demonstrating security monitoring and incident-response capabilities to enterprise customers and during security assessments or audits.",
+            "Ability to expand SOC coverage as employees, endpoints, cloud workloads, locations, or security requirements grow."
+          ],
+          "common_objections": [
+            "We already have security tools in place.",
+            "Our internal IT or security team monitors this.",
+            "We do not need 24/7 monitoring yet.",
+            "We have not had a major security incident.",
+            "Our current MSP already handles security.",
+            "The budget is too high.",
+            "We are comparing other MDR or MSSP providers.",
+            "We can build this capability internally.",
+            "We do not generate enough security alerts to justify a SOC.",
+            "We can revisit this during the next budget cycle.",
+            "Uncertainty about the immediate ROI of security monitoring."
+          ],
+          "compliance_patterns": [
+            "ISO 27001 requirements or audit preparation.",
+            "SOC 2 requirements or readiness.",
+            "Enterprise customer security requirements and security assessments.",
+            "Cyber-insurance requirements.",
+            "Security monitoring and incident-response capability expectations."
+          ],
+          "technology_patterns": [
+            "Microsoft 365 and Azure environments.",
+            "Other cloud platforms.",
+            "Cloud-based infrastructure and cloud workloads.",
+            "Endpoints, identities, networks, and security systems requiring centralized monitoring.",
+            "Microsoft-centric environments.",
+            "Existing cybersecurity tools and security infrastructure that customers want to retain."
+          ],
+          "company_size_patterns": [
+            "Typical target range: 100–2,000 employees.",
+            "Stated sweet spot: 200–1,000 employees.",
+            "Historical customer footprint: approximately 50 to 2,000+ employees.",
+            "Infrastructure complexity, enterprise customers, sensitive data, and continuous-monitoring needs are stronger indicators than company size alone."
+          ],
+          "disqualifier_hypotheses": [
+            "No immediate need or urgency for continuous security monitoring.",
+            "Belief that existing security tools, an internal IT team, or an existing MSP sufficiently cover security monitoring.",
+            "Insufficient budget for managed security monitoring.",
+            "Preference for a lower-cost automated MDR/MSSP option.",
+            "Decision to build an internal SOC instead of outsourcing.",
+            "Long procurement, vendor onboarding, or management-approval processes.",
+            "Decision to postpone until a future budget cycle."
+          ],
+          "ideal_customer_patterns": [
+            "Organizations with significant cloud and IT infrastructure that need continuous monitoring but do not have a fully staffed internal 24/7 SOC.",
+            "Organizations with 100–2,000 employees, with a stated sweet spot of 200–1,000 employees.",
+            "Organizations with $10M–$250M annual revenue, with a stated sweet spot of $20M–$100M.",
+            "Technology-dependent B2B organizations serving enterprise customers.",
+            "Organizations handling sensitive customer or business data.",
+            "Organizations with an internal IT team that cannot effectively monitor security around the clock.",
+            "Organizations that already use cybersecurity tools but need analysts to continuously monitor and investigate alerts.",
+            "Organizations with distributed users or workforces, growing endpoints or cloud workloads, and increasing security complexity.",
+            "Organizations facing ISO 27001, SOC 2, cyber-insurance, enterprise customer-security, or customer-assessment requirements."
+          ],
+          "negative_customer_patterns": [
+            "Organizations where cybersecurity monitoring is viewed as non-urgent.",
+            "Organizations with no immediate compliance, audit, or enterprise-customer security requirement.",
+            "Organizations whose management believes existing security tools are sufficient.",
+            "Organizations whose internal IT team believes it can continue handling security monitoring.",
+            "Organizations with budget constraints or a preference for lower-cost automated MDR/MSSP offerings.",
+            "Organizations committed to an incumbent IT, security, or MSP provider.",
+            "Organizations that choose to postpone the project or revisit it during a later budget cycle."
+          ]
+        },
+        "icpId": "1868068a-f890-407e-b8c5-5c7d34d49bd9",
+        "icpVersionId": "2da4e080-50be-425f-bf7d-f796128b3a3c",
+        "icpVersion": 1,
+        "icpCreatedAt": "2026-09-01T19:54:08.404Z",
+        "icpAssumptions": [
+          "We believe Mid-market and growing organizations with significant cloud and IT infrastructure that need continuous cybersecurity monitoring but do not have a fully staffed 24/7 internal SOC. Ideal customers typically use Microsoft 365/Azure or other cloud platforms, have 100+ employees, handle sensitive customer or business data, serve enterprise customers, and have security or compliance requirements such as ISO 27001, SOC 2, customer security assessments or cyber-insurance. Strong industries include SaaS, technology, IT services, fintech, financial services, healthcare and professional services..",
+          "We believe companies with 100–2,000 employees; sweet spot: 200–1,000 employees employees are a strong fit."
+        ],
+        "opportunityPackId": null,
+        "opportunityPackVersionId": null,
+        "opportunityPackVersion": null,
+        "opportunityPackStatus": null,
+        "opportunityPackCreatedAt": null,
+        "context": {
+          "businessTwinId": "ca78b2b5-9ddf-44b9-a7a1-fa007dac656d",
+          "businessTwinVersionId": "bce449c6-db41-4efd-95ab-1ef52bb84517",
+          "icpId": "2da4e080-50be-425f-bf7d-f796128b3a3c",
+          "offeringId": null,
+          "offeringKey": null,
+          "sellerCompanyName": "Aadit Technologies",
+          "sellerBusinessDescription": null,
+          "sellerBusinessModel": null,
+          "offeringName": "Managed Soc",
+          "offeringCategory": null,
+          "offeringDescription": "Aadit provides a fully managed 24/7 Security Operations Center (SOC) for organizations that need continuous cybersecurity monitoring without the cost and complexity of building an internal SOC.\n\nAadit's security analysts continuously monitor the customer's IT and cloud environment, investigate security alerts, identify genuine threats, prioritize incidents, and coordinate with the customer's IT team for response and remediation.\n\nThe service provides continuous human security oversight across endpoints, identities, cloud infrastructure, networks and security systems, helping organizations detect and respond to threats before they become serious security incidents.",
+          "offeringCapabilities": [],
+          "offeringExclusions": [],
+          "source": "BUSINESS_TWIN",
+          "fingerprint": "7cbdda31ac7fc42476d69d8f2a033a32df1d55e9f3eb246027b06f283d039d23"
+        },
+        "sufficiency": {
+          "sufficient": true,
+          "reason": "SUFFICIENT"
+        },
+        "businessTwinReady": true,
+        "offeringReady": true,
+        "icpReady": true,
+        "opportunityPackReady": false,
+        "buyerRoleReady": true,
+        "marketDiscoveryReady": true,
+        "whoReady": true,
+        "whenWhyReady": false,
+        "contextStatus": "READY",
+        "missingRequirements": [
+          "OPPORTUNITY_PACK_MISSING"
+        ]
+      }
+    }
+  ]
+}

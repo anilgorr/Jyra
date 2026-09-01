@@ -93,6 +93,7 @@
       ,"replay:buyer-role-resolution-06a": "NODE_ENV=development node ./scripts/run-buyer-role-resolution-06a-replay.mjs"
        ,"validate:buyer-role-resolution-06a:fresh": "NODE_ENV=development JYRA_REALITY_CONTACT_ENRICHMENT_ENABLED=false JYRA_06A_FRESH_VALIDATION=YES node ./scripts/run-buyer-role-resolution-06a-fresh-validation.mjs"
        ,"validate:fix-11-digipuush:fresh": "NODE_ENV=development JYRA_FIX_11_RUN_FRESH_20=YES node ./scripts/run-fix-11-digipuush-validation.mjs"
+       ,"validate:architecture-v1-clean-cross-domain:fresh": "NODE_ENV=development JYRA_ARCHITECTURE_V1_CLEAN_FRESH_20=YES node ./scripts/run-architecture-v1-clean-cross-domain-validation.mjs"
   },
   "dependencies": {
     "@clerk/express": "^2.1.63",

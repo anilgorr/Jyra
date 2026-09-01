@@ -26,6 +26,7 @@ const {
   ProviderRouter,
   executeResearchNow,
   discoverCompaniesForProject,
+  bindControlPlaneProviderOperations,
   orchestrateCompanyIntelligence,
   setSemanticModelInvokerForTests,
   getResearchEconomics,
@@ -352,6 +353,7 @@ try {
     limit: 1,
     maxProviderCalls: 1,
     orchestrateAcceptedCandidates: true,
+    maxOrchestratedCandidates: 1,
     router: {
       async discoverCompanies() {
         const domain = `automatic-buyer-${suffix}.com`;
@@ -395,6 +397,22 @@ try {
   assert.equal(automaticDiscovery.candidates[0].intelligence.reasonCode, "READY_FOR_SIGNAL_RESEARCH");
   assert.equal(discoveryResolutionCalls, 0, "sufficient discovery evidence must not force another provider call");
   assert.equal(semanticModelCalls, 1, "an unresolved accepted candidate gets one semantic assessment");
+  let boundSearchCalls = 0;
+  const statefulRouter = {
+    marker: "stateful-router",
+    async searchWeb() {
+      assert.equal(this.marker, "stateful-router", "control-plane handoff must preserve ProviderRouter method binding");
+      boundSearchCalls += 1;
+      return null;
+    },
+    async enrichCompany() {
+      assert.equal(this.marker, "stateful-router", "firmographic handoff must preserve ProviderRouter method binding");
+      return null;
+    },
+  };
+  const boundOperations = bindControlPlaneProviderOperations(statefulRouter);
+  await boundOperations.searchWeb({});
+  assert.equal(boundSearchCalls, 1);
   const signalPack = await ensureCybersecuritySignalPack();
   await db.insert(projectSignalPacksTable).values({
     organizationId: organization.id,

@@ -1,7 +1,7 @@
 export * from "../src/lib/research";
 export * from "../src/lib/research-economics";
 export * from "../src/lib/provider-router";
-export { discoverCompaniesForProject } from "../src/lib/company-discovery";
+export { bindControlPlaneProviderOperations, discoverCompaniesForProject } from "../src/lib/company-discovery";
 export { orchestrateCompanyIntelligence } from "../src/lib/company-intelligence-control-plane";
 export { setSemanticModelInvokerForTests } from "../src/lib/company-semantic-assessment";
 export * from "../src/lib/signal-packs";

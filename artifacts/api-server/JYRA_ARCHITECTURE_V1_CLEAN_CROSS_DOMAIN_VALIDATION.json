@@ -1,0 +1,3636 @@
+{
+  "title": "JYRA Architecture V1 clean bounded cross-domain validation",
+  "status": "COMPLETE_WITH_APPEND_ONLY_RECONCILIATION",
+  "verdict": "ARCHITECTURE PASS; MARKET-QUALITY GATE FAIL — do not run the 50-company Reality Test",
+  "integrity": {
+    "raw": {
+      "file": "JYRA_ARCHITECTURE_V1_CLEAN_CROSS_DOMAIN_VALIDATION_RAW.json",
+      "sha256": "4f1ff5d768c12be98ce08eb4ab60da3634b9e53caa643cb3fef6ae6c7bc661d7",
+      "createdAt": "2026-09-01T19:56:01.723075107Z",
+      "bytes": 152139
+    },
+    "adjudication": {
+      "file": "JYRA_ARCHITECTURE_V1_CLEAN_CROSS_DOMAIN_VALIDATION_ADJUDICATION.json",
+      "sha256": "e2edb309a2441fe154dacd276296f685b8216309648401aee34305f5ab582651",
+      "createdAt": "2026-09-01T19:59:53.955674585Z",
+      "bytes": 9467
+    },
+    "rawPredatesAdjudication": true
+  },
+  "preflight": {
+    "checkedAt": "2026-09-01T19:54:08.464Z",
+    "projectsCreatedAfterRunStart": true,
+    "sellerAndIcpReady": true,
+    "projectMembershipRows": 0,
+    "projectProvenanceRows": 0,
+    "downstream": {
+      "signals": 0,
+      "opportunities": 0,
+      "recommendations": 0,
+      "contacts": 0,
+      "why": 0
+    }
+  },
+  "invariants": {
+    "freshIsolatedProjects": true,
+    "allProjectScopedProvenanceCreatedAfterStart": true,
+    "exactCohort": {
+      "DIGIPUUSH": 10,
+      "MANAGED_SOC": 10
+    },
+    "authoritativeControlPlaneResults": 20,
+    "downstreamBefore": {
+      "signals": 0,
+      "opportunities": 0,
+      "recommendations": 0,
+      "contacts": 0,
+      "why": 0
+    },
+    "downstreamAfter": {
+      "signals": 0,
+      "opportunities": 0,
+      "recommendations": 0,
+      "contacts": 0,
+      "why": 0
+    },
+    "downstreamUnchanged": true
+  },
+  "aggregate": {
+    "provider": {
+      "calls": 14,
+      "byCapability": {
+        "COMPANY_DISCOVERY": 2,
+        "COMPANY_FIRMOGRAPHICS": 1,
+        "WEB_SEARCH": 11
+      },
+      "byStatus": {
+        "empty": 1,
+        "success": 13
+      },
+      "knownActualCost": 0.19300000000000006,
+      "knownEstimatedCost": 0.09250000000000003,
+      "unknownActualCostCalls": 1,
+      "records": [
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "COMPANY_DISCOVERY",
+          "requestId": "discovery:d53bb85c-e041-4683-80b0-1d6ee3ff1815:1:b220e720-6d21-4c7a-badf-3aec920febca",
+          "status": "success",
+          "retryable": false,
+          "latencyMs": 1804,
+          "estimatedCost": 0.007,
+          "actualCost": 0.007,
+          "runtimeMs": 1803,
+          "resultCount": 10,
+          "errorCode": null,
+          "metadata": {
+            "organizationId": "02d40c31-72e4-42d9-9d8d-fe676a369205",
+            "projectId": "db141bf9-bc25-4e19-87e1-1d4db4a6a005",
+            "discoveryRunId": "d53bb85c-e041-4683-80b0-1d6ee3ff1815",
+            "queryIndex": "1",
+            "query": "B2B SaaS companies likely to need white-label lead generation appointment setting outsourced SDR services",
+            "strategy": {
+              "icpDescription": "We believe B2B SaaS, technology companies, professional services, education, healthcare, financial services, e-commerce and other businesses where customers research providers online before making a purchase.\n\nIdeal companies already invest in their website, content, SEO or digital marketing but have limited visibility when potential customers ask AI platforms for recommendations.\n\nThe strongest customers operate in competitive categories where appearing in \"best company\", \"best software\", \"alternative to\", \"which provider\", comparison and high-intent informational queries can influence purchasing decisions.\n\nCompanies with established websites, existing content and some domain authority are particularly attractive because DigiPuush can build on those assets rather than starting from zero.\n\nDigiPuush's current site explicitly says it works with B2B, SaaS and e-commerce brands and shows case-study patterns across B2B SaaS, D2C e-commerce and local services.. We believe companies with 20–1,000 employees employees are a strong fit.",
+              "targetIndustries": [
+                "saas",
+                "software",
+                "it",
+                "technology",
+                "healthcare",
+                "professional services"
+              ],
+              "geographies": [
+                "India"
+              ],
+              "employeeRange": {
+                "minimum": 20,
+                "maximum": 1000
+              },
+              "technologyCharacteristics": [],
+              "exclusions": [],
+              "hardFilters": [
+                "Geography: India",
+                "Industries: saas, software, it, technology, healthcare, professional services",
+                "Employees: 20–1000",
+                "Company is located in a stated target geography.",
+                "Target customer operates in a stated target industry."
+              ],
+              "softCriteria": [
+                "We believe B2B SaaS, technology companies, professional services, education, healthcare, financial services, e-commerce and other businesses where customers research providers online before making a purchase.\n\nIdeal companies already invest in their website, content, SEO or digital marketing but have limited visibility when potential customers ask AI platforms for recommendations.\n\nThe strongest customers operate in competitive categories where appearing in \"best company\", \"best software\", \"alternative to\", \"which provider\", comparison and high-intent informational queries can influence purchasing decisions.\n\nCompanies with established websites, existing content and some domain authority are particularly attractive because DigiPuush can build on those assets rather than starting from zero.\n\nDigiPuush's current site explicitly says it works with B2B, SaaS and e-commerce brands and shows case-study patterns across B2B SaaS, D2C e-commerce and local services..",
+                "We believe companies with 20–1,000 employees employees are a strong fit.",
+                "Technology pattern suggested by the Business Twin interpretation.",
+                "A Business Twin hypothesis that requires human validation before becoming a disqualifier.",
+                "A Business Twin hypothesis that requires human validation before becoming a disqualifier.",
+                "A Business Twin hypothesis that requires human validation before becoming a disqualifier."
+              ],
+              "marketDiscoveryIntent": {
+                "buyerCompanyTypes": [
+                  "operating company",
+                  "employer",
+                  "facility owner",
+                  "commercial buyer"
+                ],
+                "targetIndustries": [
+                  "saas",
+                  "software",
+                  "it",
+                  "technology",
+                  "healthcare",
+                  "professional services"
+                ],
+                "targetGeographies": [
+                  "India"
+                ],
+                "employeeRange": {
+                  "minimum": 20,
+                  "maximum": 1000
+                },
+                "requiredCharacteristics": [
+                  "Geography: India",
+                  "Industries: saas, software, it, technology, healthcare, professional services",
+                  "Employees: 20–1000",
+                  "Company is located in a stated target geography.",
+                  "Target customer operates in a stated target industry."
+                ],
+                "preferredCharacteristics": [
+                  "We believe B2B SaaS, technology companies, professional services, education, healthcare, financial services, e-commerce and other businesses where customers research providers online before making a purchase.\n\nIdeal companies already invest in their website, content, SEO or digital marketing but have limited visibility when potential customers ask AI platforms for recommendations.\n\nThe strongest customers operate in competitive categories where appearing in \"best company\", \"best software\", \"alternative to\", \"which provider\", comparison and high-intent informational queries can influence purchasing decisions.\n\nCompanies with established websites, existing content and some domain authority are particularly attractive because DigiPuush can build on those assets rather than starting from zero.\n\nDigiPuush's current site explicitly says it works with B2B, SaaS and e-commerce brands and shows case-study patterns across B2B SaaS, D2C e-commerce and local services..",
+                  "We believe companies with 20–1,000 employees employees are a strong fit."
+                ],
+                "excludedCompanyTypes": [],
+                "sellerCategoryExclusions": [
+                  "Marketing"
+                ],
+                "offeringCategoryExclusions": [
+                  "AEO & GEO / AI Visibility Services"
+                ],
+                "searchConcepts": [
+                  "saas",
+                  "software",
+                  "it",
+                  "technology",
+                  "healthcare",
+                  "professional services"
+                ],
+                "negativeConcepts": [
+                  "companies primarily selling in Marketing",
+                  "providers or vendors of AEO & GEO / AI Visibility Services"
+                ],
+                "confidence": "HIGH",
+                "provenance": [
+                  "ICP:8c72ba31-3e38-4dc8-ae58-ae4e69abd0ad",
+                  "ICP:c182cd9d-cb43-483d-aba2-cf2776783882",
+                  "ICP:db9ccc9b-ee70-499b-b951-d5f527a26a43",
+                  "ICP:50cf4c0a-90bd-4671-86b2-c3c56d53d8e3",
+                  "ICP:89e1f86e-e4a1-40eb-9937-6c02bd4f7738",
+                  "ICP:96d6e6fc-9c37-4eba-b16a-64cbd6e43925",
+                  "BUSINESS_TWIN:5197de3c-3eff-425c-ad85-6922b17ed601"
+                ]
+              }
+            },
+            "searchType": "auto",
+            "category": "company",
+            "numResults": 10,
+            "rawResultCount": 10,
+            "rawResultProjection": [
+              {
+                "index": 1,
+                "title": "Outbound System",
+                "url": "https://outboundsystem.com",
+                "providerResultId": "https://exa.ai/library/organization/60pkg1b186z",
+                "description": null,
+                "entityStatus": "VALID"
+              },
+              {
+                "index": 2,
+                "title": "Partner Propel",
+                "url": "https://partnerpropel.com",
+                "providerResultId": "https://exa.ai/library/organization/hn9k2s2sv9c",
+                "description": null,
+                "entityStatus": "VALID"
+              },
+              {
+                "index": 3,
+                "title": "Pure Sales",
+                "url": "https://puresales.io",
+                "providerResultId": "https://exa.ai/library/organization/qt6s4mkmg1h",
+                "description": null,
+                "entityStatus": "VALID"
+              },
+              {
+                "index": 4,
+                "title": "Grownob LLC",
+                "url": "https://grownob.com",
+                "providerResultId": "https://exa.ai/library/organization/06c0c238gsw",
+                "description": null,
+                "entityStatus": "VALID"
+              },
+              {
+                "index": 5,
+                "title": "OutPro",
+                "url": "https://outpro.us",
+                "providerResultId": "https://exa.ai/library/organization/crg0c2jpvcz",
+                "description": null,
+                "entityStatus": "VALID"
+              },
+              {
+                "index": 6,
+                "title": "Lead Made Easy",
+                "url": "https://leadmadeeasy.com",
+                "providerResultId": "https://exa.ai/library/organization/85wph5fb958",
+                "description": null,
+                "entityStatus": "VALID"
+              },
+              {
+                "index": 7,
+                "title": "SalesGig",
+                "url": "https://salesgig.com",
+                "providerResultId": "https://exa.ai/library/organization/sp1wq9m3jp7",
+                "description": null,
+                "entityStatus": "VALID"
+              },
+              {
+                "index": 8,
+                "title": "RevyGo",
+                "url": "https://revygo.com",
+                "providerResultId": "https://exa.ai/library/organization/c91xhc6wh0r",
+                "description": null,
+                "entityStatus": "VALID"
+              },
+              {
+                "index": 9,
+                "title": "Leadzen.ai",
+                "url": "https://leadzen.ai",
+                "providerResultId": "https://exa.ai/library/organization/p8wnwvvrmy7",
+                "description": null,
+                "entityStatus": "VALID"
+              },
+              {
+                "index": 10,
+                "title": "Leadgeneron",
+                "url": "https://leadgeneron.com",
+                "providerResultId": "https://exa.ai/library/organization/blfqf3rgv4x",
+                "description": null,
+                "entityStatus": "VALID"
+              }
+            ],
+            "normalizedResultCount": 10,
+            "retrievalTimestamp": "2026-09-01T19:54:08.489Z"
+          },
+          "startedAt": "2026-09-01T19:54:08.489Z",
+          "completedAt": "2026-09-01T19:54:10.293Z"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "requestId": "discovery-profile:d53bb85c-e041-4683-80b0-1d6ee3ff1815:10:search-1:b220e720-6d21-4c7a-badf-3aec920febca",
+          "status": "success",
+          "retryable": false,
+          "latencyMs": 5178,
+          "estimatedCost": 0.007,
+          "actualCost": 0.017,
+          "runtimeMs": 5177,
+          "resultCount": 10,
+          "errorCode": null,
+          "metadata": {
+            "organizationId": "02d40c31-72e4-42d9-9d8d-fe676a369205",
+            "projectId": "db141bf9-bc25-4e19-87e1-1d4db4a6a005",
+            "discoveryRunId": "d53bb85c-e041-4683-80b0-1d6ee3ff1815",
+            "resolutionCapability": "COMPANY_PROFILE_RESOLUTION",
+            "discoveryQuery": "site:linkedin.com/company \"Leadgeneron\" \"leadgeneron.com\"",
+            "query": "site:linkedin.com/company \"Leadgeneron\" \"leadgeneron.com\"",
+            "retrievalTimestamp": "2026-09-01T19:54:10.447Z",
+            "searchType": "auto",
+            "numResults": 10,
+            "rawResultCount": 10,
+            "normalizedResultCount": 10,
+            "providerResultIds": [
+              "https://exa.ai/library/organization/blfqf3rgv4x",
+              "https://exa.ai/library/organization/jdrqgw47jqm",
+              "https://exa.ai/library/organization/mw1qmnfgp99",
+              "https://exa.ai/library/organization/lk0sr0yg0ny",
+              "https://exa.ai/library/organization/0zq5sgtqdlr",
+              "https://exa.ai/library/organization/5vf9wjt79mh",
+              "https://exa.ai/library/organization/s1wtyymgt5c",
+              "https://exa.ai/library/organization/rsyjclfbj7z",
+              "https://exa.ai/library/organization/nhsp4rl89lw",
+              "https://exa.ai/library/organization/dxrgw69jl3h"
+            ]
+          },
+          "startedAt": "2026-09-01T19:54:10.446Z",
+          "completedAt": "2026-09-01T19:54:15.624Z"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "requestId": "buyer-role-description:d53bb85c-e041-4683-80b0-1d6ee3ff1815:10:b220e720-6d21-4c7a-badf-3aec920febca",
+          "status": "success",
+          "retryable": false,
+          "latencyMs": 2600,
+          "estimatedCost": 0.007,
+          "actualCost": 0.009,
+          "runtimeMs": 2600,
+          "resultCount": 2,
+          "errorCode": null,
+          "metadata": {
+            "organizationId": "02d40c31-72e4-42d9-9d8d-fe676a369205",
+            "projectId": "db141bf9-bc25-4e19-87e1-1d4db4a6a005",
+            "discoveryRunId": "d53bb85c-e041-4683-80b0-1d6ee3ff1815",
+            "query": "What does Leadgeneron primarily do?",
+            "retrievalTimestamp": "2026-09-01T19:54:15.661Z",
+            "searchType": "auto",
+            "numResults": 2,
+            "rawResultCount": 2,
+            "normalizedResultCount": 2,
+            "providerResultIds": [
+              "https://www.leadgeneron.com/new-page",
+              "https://www.leadgeneron.com/"
+            ]
+          },
+          "startedAt": "2026-09-01T19:54:15.661Z",
+          "completedAt": "2026-09-01T19:54:18.261Z"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "requestId": "minimum-intelligence:d2dd1f48-1b81-4149-a298-1dde2ae96ade:2026-09-01T19:54:08.471Z:search-1:b220e720-6d21-4c7a-badf-3aec920febca",
+          "status": "success",
+          "retryable": false,
+          "latencyMs": 4820,
+          "estimatedCost": 0.007,
+          "actualCost": 0.017,
+          "runtimeMs": 4820,
+          "resultCount": 10,
+          "errorCode": null,
+          "metadata": {
+            "resolutionCapability": "COMPANY_PROFILE_RESOLUTION",
+            "discoveryQuery": "site:linkedin.com/company \"Pure Sales\" \"puresales.io\"",
+            "query": "site:linkedin.com/company \"Pure Sales\" \"puresales.io\"",
+            "retrievalTimestamp": "2026-09-01T19:54:18.409Z",
+            "searchType": "auto",
+            "numResults": 10,
+            "rawResultCount": 10,
+            "normalizedResultCount": 10,
+            "providerResultIds": [
+              "https://exa.ai/library/organization/qt6s4mkmg1h",
+              "https://exa.ai/library/organization/3c9rtwcgzxy",
+              "https://exa.ai/library/organization/6gty5p6q45l",
+              "https://exa.ai/library/organization/q0mpccykm2v",
+              "https://exa.ai/library/organization/9hsgys2dzql",
+              "https://exa.ai/library/organization/lpr6j2tkx2z",
+              "https://exa.ai/library/organization/bt9yynfknnl",
+              "https://exa.ai/library/organization/yg4cq1tdg06",
+              "https://exa.ai/library/organization/y50r0tbfl1x",
+              "https://exa.ai/library/organization/wsxv8sxz6mk"
+            ]
+          },
+          "startedAt": "2026-09-01T19:54:18.409Z",
+          "completedAt": "2026-09-01T19:54:23.229Z"
+        },
+        {
+          "providerId": "c8acd975-a514-42a7-9a0a-212442a7a247",
+          "capability": "COMPANY_FIRMOGRAPHICS",
+          "requestId": "firmographics:d2dd1f48-1b81-4149-a298-1dde2ae96ade:2026-09-01T19:54:08.471Z:c8acd975-a514-42a7-9a0a-212442a7a247",
+          "status": "empty",
+          "retryable": false,
+          "latencyMs": 2571,
+          "estimatedCost": 0.0015,
+          "actualCost": null,
+          "runtimeMs": 2570,
+          "resultCount": 0,
+          "errorCode": "PARTIAL_PROFILE",
+          "metadata": {
+            "organizationId": "02d40c31-72e4-42d9-9d8d-fe676a369205",
+            "projectId": "db141bf9-bc25-4e19-87e1-1d4db4a6a005",
+            "companyId": "d2dd1f48-1b81-4149-a298-1dde2ae96ade",
+            "cacheHit": "false",
+            "datasetId": "gd_l1vikfnt1wgvvqz95w",
+            "rawProviderResponse": {
+              "timestamp": "2026-09-01T19:54:25.505Z",
+              "input": {
+                "url": "https://linkedin.com/company/puresales-eu"
+              },
+              "error": "4XX page - dead page",
+              "error_code": "dead_page"
+            }
+          },
+          "startedAt": "2026-09-01T19:54:23.254Z",
+          "completedAt": "2026-09-01T19:54:25.825Z"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "requestId": "minimum-intelligence:4233dfdf-a2ac-48de-8347-91759eb415de:2026-09-01T19:54:08.471Z:search-1:b220e720-6d21-4c7a-badf-3aec920febca",
+          "status": "success",
+          "retryable": false,
+          "latencyMs": 4602,
+          "estimatedCost": 0.007,
+          "actualCost": 0.017,
+          "runtimeMs": 4602,
+          "resultCount": 10,
+          "errorCode": null,
+          "metadata": {
+            "resolutionCapability": "COMPANY_PROFILE_RESOLUTION",
+            "discoveryQuery": "site:linkedin.com/company \"RevyGo\" \"revygo.com\"",
+            "query": "site:linkedin.com/company \"RevyGo\" \"revygo.com\"",
+            "retrievalTimestamp": "2026-09-01T19:54:47.200Z",
+            "searchType": "auto",
+            "numResults": 10,
+            "rawResultCount": 10,
+            "normalizedResultCount": 10,
+            "providerResultIds": [
+              "https://exa.ai/library/organization/v843cmgn7zv",
+              "https://exa.ai/library/organization/v7y708wn8m6",
+              "https://www.linkedin.com/company/revy-let-s-go",
+              "https://exa.ai/library/organization/q6hcc094gm8",
+              "https://exa.ai/library/organization/wnl00rcb9kx",
+              "https://exa.ai/library/organization/24rbsv33sfs",
+              "https://exa.ai/library/organization/rbdtb2mwzhq",
+              "https://exa.ai/library/organization/5t0mrxk67z0",
+              "https://exa.ai/library/organization/j936z4ml6qw",
+              "https://exa.ai/library/organization/12bhw7lq9mx"
+            ]
+          },
+          "startedAt": "2026-09-01T19:54:47.200Z",
+          "completedAt": "2026-09-01T19:54:51.802Z"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "requestId": "minimum-intelligence:4233dfdf-a2ac-48de-8347-91759eb415de:2026-09-01T19:54:08.471Z:search-2:b220e720-6d21-4c7a-badf-3aec920febca",
+          "status": "success",
+          "retryable": false,
+          "latencyMs": 4785,
+          "estimatedCost": 0.007,
+          "actualCost": 0.017,
+          "runtimeMs": 4785,
+          "resultCount": 10,
+          "errorCode": null,
+          "metadata": {
+            "resolutionCapability": "COMPANY_PROFILE_RESOLUTION",
+            "discoveryQuery": "site:linkedin.com/company \"RevyGo\" LinkedIn company",
+            "query": "site:linkedin.com/company \"RevyGo\" LinkedIn company",
+            "retrievalTimestamp": "2026-09-01T19:54:51.815Z",
+            "searchType": "auto",
+            "numResults": 10,
+            "rawResultCount": 10,
+            "normalizedResultCount": 10,
+            "providerResultIds": [
+              "https://exa.ai/library/organization/v843cmgn7zv",
+              "https://exa.ai/library/organization/v7y708wn8m6",
+              "https://www.linkedin.com/company/revy-let-s-go",
+              "https://tr.linkedin.com/company/revego-tech",
+              "https://exa.ai/library/organization/2bk28yklzx2",
+              "https://exa.ai/library/organization/24rbsv33sfs",
+              "https://exa.ai/library/organization/wnl00rcb9kx",
+              "https://www.linkedin.com/company/the-revy-ai",
+              "https://exa.ai/library/organization/5t0mrxk67z0",
+              "https://exa.ai/library/organization/j936z4ml6qw"
+            ]
+          },
+          "startedAt": "2026-09-01T19:54:51.815Z",
+          "completedAt": "2026-09-01T19:54:56.600Z"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "requestId": "minimum-intelligence:b7e9af09-ede7-46fb-baa1-cf2d9f3158bf:2026-09-01T19:54:08.471Z:search-1:b220e720-6d21-4c7a-badf-3aec920febca",
+          "status": "success",
+          "retryable": false,
+          "latencyMs": 8111,
+          "estimatedCost": 0.007,
+          "actualCost": 0.017,
+          "runtimeMs": 8111,
+          "resultCount": 10,
+          "errorCode": null,
+          "metadata": {
+            "resolutionCapability": "COMPANY_PROFILE_RESOLUTION",
+            "discoveryQuery": "site:linkedin.com/company \"Leadzen.ai\" \"leadzen.ai\"",
+            "query": "site:linkedin.com/company \"Leadzen.ai\" \"leadzen.ai\"",
+            "retrievalTimestamp": "2026-09-01T19:55:08.789Z",
+            "searchType": "auto",
+            "numResults": 10,
+            "rawResultCount": 10,
+            "normalizedResultCount": 10,
+            "providerResultIds": [
+              "https://exa.ai/library/organization/p8wnwvvrmy7",
+              "https://exa.ai/library/organization/3q6772w8xbg",
+              "https://exa.ai/library/organization/hvm4kt3f81d",
+              "https://exa.ai/library/organization/yb01xlbvwnl",
+              "https://exa.ai/library/organization/chg8v69wb9j",
+              "https://exa.ai/library/organization/ghswx20fdbk",
+              "https://exa.ai/library/organization/jztncdqp7xk",
+              "https://exa.ai/library/organization/lnckj50d48x",
+              "https://exa.ai/library/organization/h4v86twwmw3",
+              "https://exa.ai/library/organization/clyynnq6gr2"
+            ]
+          },
+          "startedAt": "2026-09-01T19:55:08.789Z",
+          "completedAt": "2026-09-01T19:55:16.900Z"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "requestId": "minimum-intelligence:b7e9af09-ede7-46fb-baa1-cf2d9f3158bf:2026-09-01T19:54:08.471Z:search-2:b220e720-6d21-4c7a-badf-3aec920febca",
+          "status": "success",
+          "retryable": false,
+          "latencyMs": 4403,
+          "estimatedCost": 0.007,
+          "actualCost": 0.017,
+          "runtimeMs": 4403,
+          "resultCount": 10,
+          "errorCode": null,
+          "metadata": {
+            "resolutionCapability": "COMPANY_PROFILE_RESOLUTION",
+            "discoveryQuery": "site:linkedin.com/company \"Leadzen.ai\" LinkedIn company",
+            "query": "site:linkedin.com/company \"Leadzen.ai\" LinkedIn company",
+            "retrievalTimestamp": "2026-09-01T19:55:16.923Z",
+            "searchType": "auto",
+            "numResults": 10,
+            "rawResultCount": 10,
+            "normalizedResultCount": 10,
+            "providerResultIds": [
+              "https://exa.ai/library/organization/p8wnwvvrmy7",
+              "https://exa.ai/library/organization/3q6772w8xbg",
+              "https://exa.ai/library/organization/ghswx20fdbk",
+              "https://exa.ai/library/organization/yb01xlbvwnl",
+              "https://exa.ai/library/organization/chg8v69wb9j",
+              "https://exa.ai/library/organization/hvm4kt3f81d",
+              "https://exa.ai/library/organization/jztncdqp7xk",
+              "https://exa.ai/library/organization/5fcb1pqmxj0",
+              "https://exa.ai/library/organization/lnckj50d48x",
+              "https://exa.ai/library/organization/dmbk6hsc61l"
+            ]
+          },
+          "startedAt": "2026-09-01T19:55:16.923Z",
+          "completedAt": "2026-09-01T19:55:21.326Z"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "COMPANY_DISCOVERY",
+          "requestId": "discovery:2575325e-9d5e-411b-8994-bd56b7f549f5:1:b220e720-6d21-4c7a-badf-3aec920febca",
+          "status": "success",
+          "retryable": false,
+          "latencyMs": 359,
+          "estimatedCost": 0.007,
+          "actualCost": 0.007,
+          "runtimeMs": 359,
+          "resultCount": 10,
+          "errorCode": null,
+          "metadata": {
+            "organizationId": "02d40c31-72e4-42d9-9d8d-fe676a369205",
+            "projectId": "364a64a0-98ba-42d5-b27b-94478d26226b",
+            "discoveryRunId": "2575325e-9d5e-411b-8994-bd56b7f549f5",
+            "queryIndex": "1",
+            "query": "mid-market companies likely to buy managed SOC MDR SIEM cybersecurity services",
+            "strategy": {
+              "icpDescription": "We believe Mid-market and growing organizations with significant cloud and IT infrastructure that need continuous cybersecurity monitoring but do not have a fully staffed 24/7 internal SOC. Ideal customers typically use Microsoft 365/Azure or other cloud platforms, have 100+ employees, handle sensitive customer or business data, serve enterprise customers, and have security or compliance requirements such as ISO 27001, SOC 2, customer security assessments or cyber-insurance. Strong industries include SaaS, technology, IT services, fintech, financial services, healthcare and professional services.. We believe companies with 100–2,000 employees; sweet spot: 200–1,000 employees employees are a strong fit.",
+              "targetIndustries": [
+                "saas",
+                "it",
+                "technology",
+                "fintech",
+                "healthcare",
+                "professional services",
+                "SaaS",
+                "IT services",
+                "financial services"
+              ],
+              "geographies": [
+                "United States",
+                "India",
+                "UAE",
+                "United Kingdom",
+                "Singapore"
+              ],
+              "employeeRange": {
+                "minimum": 100,
+                "maximum": 2000,
+                "sweetSpotMinimum": 200,
+                "sweetSpotMaximum": 1000
+              },
+              "technologyCharacteristics": [
+                "Microsoft 365",
+                "Azure",
+                "significant cloud/IT infrastructure",
+                "other cloud platforms"
+              ],
+              "exclusions": [],
+              "hardFilters": [
+                "Geography: United States, India, UAE, United Kingdom, Singapore",
+                "Industries: saas, it, technology, fintech, healthcare, professional services, SaaS, IT services, financial services",
+                "Employees: 100–2000",
+                "Target customer operates in a stated target industry.",
+                "Company is located in a stated target geography."
+              ],
+              "softCriteria": [
+                "We believe Mid-market and growing organizations with significant cloud and IT infrastructure that need continuous cybersecurity monitoring but do not have a fully staffed 24/7 internal SOC. Ideal customers typically use Microsoft 365/Azure or other cloud platforms, have 100+ employees, handle sensitive customer or business data, serve enterprise customers, and have security or compliance requirements such as ISO 27001, SOC 2, customer security assessments or cyber-insurance. Strong industries include SaaS, technology, IT services, fintech, financial services, healthcare and professional services..",
+                "We believe companies with 100–2,000 employees; sweet spot: 200–1,000 employees employees are a strong fit.",
+                "Technology pattern suggested by the Business Twin interpretation.",
+                "Compliance context may improve commercial fit but is not mandatory."
+              ],
+              "marketDiscoveryIntent": {
+                "buyerCompanyTypes": [
+                  "operating company",
+                  "employer",
+                  "facility owner",
+                  "commercial buyer"
+                ],
+                "targetIndustries": [
+                  "saas",
+                  "it",
+                  "technology",
+                  "fintech",
+                  "healthcare",
+                  "professional services",
+                  "SaaS",
+                  "IT services",
+                  "financial services"
+                ],
+                "targetGeographies": [
+                  "United States",
+                  "India",
+                  "UAE",
+                  "United Kingdom",
+                  "Singapore"
+                ],
+                "employeeRange": {
+                  "minimum": 100,
+                  "maximum": 2000,
+                  "sweetSpotMinimum": 200,
+                  "sweetSpotMaximum": 1000
+                },
+                "requiredCharacteristics": [
+                  "Geography: United States, India, UAE, United Kingdom, Singapore",
+                  "Industries: saas, it, technology, fintech, healthcare, professional services, SaaS, IT services, financial services",
+                  "Employees: 100–2000",
+                  "Target customer operates in a stated target industry.",
+                  "Company is located in a stated target geography."
+                ],
+                "preferredCharacteristics": [
+                  "We believe Mid-market and growing organizations with significant cloud and IT infrastructure that need continuous cybersecurity monitoring but do not have a fully staffed 24/7 internal SOC. Ideal customers typically use Microsoft 365/Azure or other cloud platforms, have 100+ employees, handle sensitive customer or business data, serve enterprise customers, and have security or compliance requirements such as ISO 27001, SOC 2, customer security assessments or cyber-insurance. Strong industries include SaaS, technology, IT services, fintech, financial services, healthcare and professional services..",
+                  "We believe companies with 100–2,000 employees; sweet spot: 200–1,000 employees employees are a strong fit."
+                ],
+                "excludedCompanyTypes": [],
+                "sellerCategoryExclusions": [
+                  "Cybersecurity"
+                ],
+                "offeringCategoryExclusions": [
+                  "Managed Soc"
+                ],
+                "searchConcepts": [
+                  "saas",
+                  "it",
+                  "technology",
+                  "fintech",
+                  "healthcare",
+                  "professional services",
+                  "SaaS",
+                  "IT services",
+                  "financial services"
+                ],
+                "negativeConcepts": [
+                  "companies primarily selling in Cybersecurity",
+                  "providers or vendors of Managed Soc"
+                ],
+                "confidence": "HIGH",
+                "provenance": [
+                  "ICP:6b788709-947b-4ec2-b061-01a09951fd78",
+                  "ICP:05dd1e3c-8526-43d6-a869-19ef041931cb",
+                  "ICP:f2a399ef-3a40-47a0-8df9-0378f7bed386",
+                  "ICP:2cf6be2c-4df0-49b5-a485-d412c54752db",
+                  "BUSINESS_TWIN:bce449c6-db41-4efd-95ab-1ef52bb84517"
+                ]
+              }
+            },
+            "searchType": "auto",
+            "category": "company",
+            "numResults": 10,
+            "rawResultCount": 10,
+            "rawResultProjection": [
+              {
+                "index": 1,
+                "title": "Cyber Managed Services Inc. (CyberMSI)",
+                "url": "https://cybermsi.com",
+                "providerResultId": "https://exa.ai/library/organization/jyg13ny5zwf",
+                "description": null,
+                "entityStatus": "VALID"
+              },
+              {
+                "index": 2,
+                "title": "Ostra Security",
+                "url": "https://ostrasecurity.com",
+                "providerResultId": "https://exa.ai/library/organization/v9myr6y5mzf",
+                "description": null,
+                "entityStatus": "VALID"
+              },
+              {
+                "index": 3,
+                "title": "Critical Start",
+                "url": "https://criticalstart.com",
+                "providerResultId": "https://exa.ai/library/organization/f2jm1byxsyn",
+                "description": null,
+                "entityStatus": "VALID"
+              },
+              {
+                "index": 4,
+                "title": "Pondurance",
+                "url": "https://pondurance.com",
+                "providerResultId": "https://exa.ai/library/organization/s8vp3kv8b2w",
+                "description": null,
+                "entityStatus": "VALID"
+              },
+              {
+                "index": 5,
+                "title": "CyberOne",
+                "url": "https://cyberone.security",
+                "providerResultId": "https://exa.ai/library/organization/xcxm4vfxlfh",
+                "description": null,
+                "entityStatus": "VALID"
+              },
+              {
+                "index": 6,
+                "title": "Socura",
+                "url": "https://socura.co.uk",
+                "providerResultId": "https://exa.ai/library/organization/89glkv3335r",
+                "description": null,
+                "entityStatus": "VALID"
+              },
+              {
+                "index": 7,
+                "title": "SOCFortress",
+                "url": "https://socfortress.co",
+                "providerResultId": "https://exa.ai/library/organization/rqgm08t167q",
+                "description": null,
+                "entityStatus": "VALID"
+              },
+              {
+                "index": 8,
+                "title": "CHR Managed IT & Cybersecurity",
+                "url": "https://linkedin.com/showcase/chr-managed-it-services",
+                "providerResultId": "https://exa.ai/library/organization/4h90hskxxcv",
+                "description": null,
+                "entityStatus": "VALID"
+              },
+              {
+                "index": 9,
+                "title": "CySOC",
+                "url": "https://cysocsecure.com",
+                "providerResultId": "https://exa.ai/library/organization/6xw4yzqrsmq",
+                "description": null,
+                "entityStatus": "VALID"
+              },
+              {
+                "index": 10,
+                "title": "Barracuda SKOUT Managed XDR",
+                "url": "https://barracuda.com/products/managed-xdr/msp",
+                "providerResultId": "https://exa.ai/library/organization/ds7v05g6g4j",
+                "description": null,
+                "entityStatus": "VALID"
+              }
+            ],
+            "normalizedResultCount": 10,
+            "retrievalTimestamp": "2026-09-01T19:55:48.099Z"
+          },
+          "startedAt": "2026-09-01T19:55:48.099Z",
+          "completedAt": "2026-09-01T19:55:48.458Z"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "requestId": "discovery-profile:2575325e-9d5e-411b-8994-bd56b7f549f5:8:search-1:b220e720-6d21-4c7a-badf-3aec920febca",
+          "status": "success",
+          "retryable": false,
+          "latencyMs": 265,
+          "estimatedCost": 0.007,
+          "actualCost": 0.017,
+          "runtimeMs": 265,
+          "resultCount": 10,
+          "errorCode": null,
+          "metadata": {
+            "organizationId": "02d40c31-72e4-42d9-9d8d-fe676a369205",
+            "projectId": "364a64a0-98ba-42d5-b27b-94478d26226b",
+            "discoveryRunId": "2575325e-9d5e-411b-8994-bd56b7f549f5",
+            "resolutionCapability": "COMPANY_PROFILE_RESOLUTION",
+            "discoveryQuery": "site:linkedin.com/company \"CHR Managed IT & Cybersecurity\"",
+            "query": "site:linkedin.com/company \"CHR Managed IT & Cybersecurity\"",
+            "retrievalTimestamp": "2026-09-01T19:55:48.633Z",
+            "searchType": "auto",
+            "numResults": 10,
+            "rawResultCount": 10,
+            "normalizedResultCount": 10,
+            "providerResultIds": [
+              "https://exa.ai/library/organization/18h90dcgt96",
+              "https://exa.ai/library/organization/scf0dc061f5",
+              "https://exa.ai/library/organization/4571v7pcx42",
+              "https://exa.ai/library/organization/br6d794yxrx",
+              "https://exa.ai/library/organization/yxx1926s16t",
+              "https://exa.ai/library/organization/kjxqrbq6szv",
+              "https://exa.ai/library/organization/7cn7s93yqqj",
+              "https://exa.ai/library/organization/d0drf0p6dzy",
+              "https://exa.ai/library/organization/l1r6frzvpsl",
+              "https://exa.ai/library/organization/wcb94vtnkjy"
+            ]
+          },
+          "startedAt": "2026-09-01T19:55:48.633Z",
+          "completedAt": "2026-09-01T19:55:48.898Z"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "requestId": "discovery-profile:2575325e-9d5e-411b-8994-bd56b7f549f5:8:search-2:b220e720-6d21-4c7a-badf-3aec920febca",
+          "status": "success",
+          "retryable": false,
+          "latencyMs": 356,
+          "estimatedCost": 0.007,
+          "actualCost": 0.017,
+          "runtimeMs": 356,
+          "resultCount": 10,
+          "errorCode": null,
+          "metadata": {
+            "organizationId": "02d40c31-72e4-42d9-9d8d-fe676a369205",
+            "projectId": "364a64a0-98ba-42d5-b27b-94478d26226b",
+            "discoveryRunId": "2575325e-9d5e-411b-8994-bd56b7f549f5",
+            "resolutionCapability": "COMPANY_PROFILE_RESOLUTION",
+            "discoveryQuery": "site:linkedin.com/company \"CHR Managed IT & Cybersecurity\" LinkedIn company",
+            "query": "site:linkedin.com/company \"CHR Managed IT & Cybersecurity\" LinkedIn company",
+            "retrievalTimestamp": "2026-09-01T19:55:48.908Z",
+            "searchType": "auto",
+            "numResults": 10,
+            "rawResultCount": 10,
+            "normalizedResultCount": 10,
+            "providerResultIds": [
+              "https://exa.ai/library/organization/18h90dcgt96",
+              "https://exa.ai/library/organization/4571v7pcx42",
+              "https://exa.ai/library/organization/scf0dc061f5",
+              "https://exa.ai/library/organization/kjxqrbq6szv",
+              "https://exa.ai/library/organization/br6d794yxrx",
+              "https://exa.ai/library/organization/yxx1926s16t",
+              "https://exa.ai/library/organization/d0drf0p6dzy",
+              "https://exa.ai/library/organization/rzql4wr1z1t",
+              "https://exa.ai/library/organization/csfsz7319t1",
+              "https://exa.ai/library/organization/9yqt5lkv3bh"
+            ]
+          },
+          "startedAt": "2026-09-01T19:55:48.908Z",
+          "completedAt": "2026-09-01T19:55:49.264Z"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "requestId": "minimum-intelligence:8ef6a894-78e7-4276-94d5-3c14c64b7ee1:2026-09-01T19:55:48.058Z:search-1:b220e720-6d21-4c7a-badf-3aec920febca",
+          "status": "success",
+          "retryable": false,
+          "latencyMs": 454,
+          "estimatedCost": 0.007,
+          "actualCost": 0.017,
+          "runtimeMs": 454,
+          "resultCount": 10,
+          "errorCode": null,
+          "metadata": {
+            "resolutionCapability": "COMPANY_PROFILE_RESOLUTION",
+            "discoveryQuery": "site:linkedin.com/company \"CyberOne\" \"cyberone.security\"",
+            "query": "site:linkedin.com/company \"CyberOne\" \"cyberone.security\"",
+            "retrievalTimestamp": "2026-09-01T19:55:49.452Z",
+            "searchType": "auto",
+            "numResults": 10,
+            "rawResultCount": 10,
+            "normalizedResultCount": 10,
+            "providerResultIds": [
+              "https://exa.ai/library/organization/w6m8gsnzcc3",
+              "https://exa.ai/library/organization/1njxwg72fpb",
+              "https://exa.ai/library/organization/y89ds6xbhs2",
+              "https://exa.ai/library/organization/cbgngd6tvhq",
+              "https://exa.ai/library/organization/pr70tlr64cd",
+              "https://exa.ai/library/organization/xcxm4vfxlfh",
+              "https://exa.ai/library/organization/0p1zzh1bbll",
+              "https://exa.ai/library/organization/cmmzgr78yzq",
+              "https://exa.ai/library/organization/kb3fssskm2w",
+              "https://exa.ai/library/organization/bxwms182nyv"
+            ]
+          },
+          "startedAt": "2026-09-01T19:55:49.452Z",
+          "completedAt": "2026-09-01T19:55:49.906Z"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "requestId": "minimum-intelligence:8ef6a894-78e7-4276-94d5-3c14c64b7ee1:2026-09-01T19:55:48.058Z:search-2:b220e720-6d21-4c7a-badf-3aec920febca",
+          "status": "success",
+          "retryable": false,
+          "latencyMs": 923,
+          "estimatedCost": 0.007,
+          "actualCost": 0.017,
+          "runtimeMs": 923,
+          "resultCount": 10,
+          "errorCode": null,
+          "metadata": {
+            "resolutionCapability": "COMPANY_PROFILE_RESOLUTION",
+            "discoveryQuery": "site:linkedin.com/company \"CyberOne\" LinkedIn company",
+            "query": "site:linkedin.com/company \"CyberOne\" LinkedIn company",
+            "retrievalTimestamp": "2026-09-01T19:55:49.917Z",
+            "searchType": "auto",
+            "numResults": 10,
+            "rawResultCount": 10,
+            "normalizedResultCount": 10,
+            "providerResultIds": [
+              "https://exa.ai/library/organization/xcxm4vfxlfh",
+              "https://exa.ai/library/organization/w6m8gsnzcc3",
+              "https://exa.ai/library/organization/1njxwg72fpb",
+              "https://exa.ai/library/organization/cbgngd6tvhq",
+              "https://exa.ai/library/organization/byv96n19bjr",
+              "https://exa.ai/library/organization/y89ds6xbhs2",
+              "https://exa.ai/library/organization/bxwms182nyv",
+              "https://exa.ai/library/organization/jhj14kzzspg",
+              "https://exa.ai/library/organization/cdjvj3gbj6p",
+              "https://exa.ai/library/organization/0p1zzh1bbll"
+            ]
+          },
+          "startedAt": "2026-09-01T19:55:49.917Z",
+          "completedAt": "2026-09-01T19:55:50.840Z"
+        }
+      ]
+    },
+    "identityPermissions": {
+      "ATTRIBUTION_SAFE": 16,
+      "RESEARCH_SAFE": 2,
+      "UNSAFE": 2
+    },
+    "minimumStages": {
+      "SUFFICIENT": 18,
+      "UNSAFE_IDENTITY": 2
+    },
+    "controlStatuses": {
+      "BLOCKED": 2,
+      "INSUFFICIENT": 14,
+      "SUCCESS": 4
+    },
+    "reasons": {
+      "ADJACENT_VENDOR_NOT_ELIGIBLE": 2,
+      "COMMERCIAL_RELATIONSHIP_AMBIGUOUS": 14,
+      "COMPETITOR_NOT_ELIGIBLE": 1,
+      "DOMAIN_MISSING": 2,
+      "READY_FOR_SIGNAL_RESEARCH": 1
+    },
+    "commercialRoles": {
+      "ADJACENT_VENDOR": 2,
+      "POTENTIAL_BUYER": 1,
+      "SELLER_COMPETITOR": 1,
+      "UNKNOWN": 16
+    },
+    "who": {
+      "INSUFFICIENT_DATA": 1,
+      "NOT_RUN": 19
+    },
+    "returnedMinimumCacheHits": 20,
+    "persistedProfileResolutionAttempts": 7,
+    "persistedFirmographicAttempts": 1,
+    "semanticLlmCalls": 5,
+    "semanticCacheHits": 18,
+    "semanticActualCost": null,
+    "semanticUnknownCostCalls": 5,
+    "semanticCostReconciledFromFrozenRaw": true
+  },
+  "independent": {
+    "methodology": "The adjudication process relies on matching company profile evidence against the provided seller offerings. Each company was evaluated based on industry alignment, business model, and functional capabilities to determine their commercial relationship to the seller. Identity status and profile sufficiency were cross-referenced against the provided intelligence stage. Non-buyer entities (competitors or adjacent vendors) were assigned 'NOT_APPLICABLE' for 'expectedWho' as per instructions.",
+    "caveats": "Content for several entries was incomplete or missing (e.g., identity state UNRESOLVED or missing domain). Several entities identified as cybersecurity firms or MSSPs were classified as 'SELLER_COMPETITOR' based on overlap with the 'MANAGED_SOC' offering. Inference of size, geography, or industry was strictly avoided; missing fields result in 'INSUFFICIENT_DATA' or null status.",
+    "identity": {
+      "CORRECT": 15,
+      "UNCERTAIN": 5
+    },
+    "profileEvidence": {
+      "INSUFFICIENT": 7,
+      "SUFFICIENT": 13
+    },
+    "expectedCommercialRoles": {
+      "POTENTIAL_BUYER": 6,
+      "SELLER_COMPETITOR": 7,
+      "UNKNOWN": 7
+    },
+    "expectedWho": {
+      "INSUFFICIENT_DATA": 7,
+      "LIKELY_FIT": 6,
+      "NOT_APPLICABLE": 7
+    },
+    "commercialRoleExactAgreement": {
+      "correct": 3,
+      "total": 20,
+      "rate": 0.15
+    },
+    "whoExactAgreement": {
+      "correct": 8,
+      "total": 20,
+      "rate": 0.4
+    }
+  },
+  "domains": [
+    {
+      "key": "DIGIPUUSH",
+      "projectId": "db141bf9-bc25-4e19-87e1-1d4db4a6a005",
+      "discovery": {
+        "runId": "d53bb85c-e041-4683-80b0-1d6ee3ff1815",
+        "reports": 10,
+        "controlPlaneCohort": 10,
+        "rawResults": 10,
+        "duplicatesRemoved": 0,
+        "possibleMatches": 0,
+        "rejected": 0
+      },
+      "funnel": {
+        "identityPermissions": {
+          "ATTRIBUTION_SAFE": 9,
+          "RESEARCH_SAFE": 1
+        },
+        "minimumStages": {
+          "SUFFICIENT": 10
+        },
+        "controlStatuses": {
+          "INSUFFICIENT": 7,
+          "SUCCESS": 3
+        },
+        "reasons": {
+          "ADJACENT_VENDOR_NOT_ELIGIBLE": 2,
+          "COMMERCIAL_RELATIONSHIP_AMBIGUOUS": 7,
+          "READY_FOR_SIGNAL_RESEARCH": 1
+        },
+        "commercialRoles": {
+          "ADJACENT_VENDOR": 2,
+          "POTENTIAL_BUYER": 1,
+          "UNKNOWN": 7
+        },
+        "who": {
+          "INSUFFICIENT_DATA": 1,
+          "NOT_RUN": 9
+        }
+      },
+      "calls": {
+        "provider": {
+          "calls": 9,
+          "byCapability": {
+            "COMPANY_DISCOVERY": 1,
+            "COMPANY_FIRMOGRAPHICS": 1,
+            "WEB_SEARCH": 7
+          },
+          "byStatus": {
+            "empty": 1,
+            "success": 8
+          },
+          "knownActualCost": 0.11800000000000001,
+          "knownEstimatedCost": 0.0575,
+          "unknownActualCostCalls": 1,
+          "records": [
+            {
+              "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+              "capability": "COMPANY_DISCOVERY",
+              "requestId": "discovery:d53bb85c-e041-4683-80b0-1d6ee3ff1815:1:b220e720-6d21-4c7a-badf-3aec920febca",
+              "status": "success",
+              "retryable": false,
+              "latencyMs": 1804,
+              "estimatedCost": 0.007,
+              "actualCost": 0.007,
+              "runtimeMs": 1803,
+              "resultCount": 10,
+              "errorCode": null,
+              "metadata": {
+                "organizationId": "02d40c31-72e4-42d9-9d8d-fe676a369205",
+                "projectId": "db141bf9-bc25-4e19-87e1-1d4db4a6a005",
+                "discoveryRunId": "d53bb85c-e041-4683-80b0-1d6ee3ff1815",
+                "queryIndex": "1",
+                "query": "B2B SaaS companies likely to need white-label lead generation appointment setting outsourced SDR services",
+                "strategy": {
+                  "icpDescription": "We believe B2B SaaS, technology companies, professional services, education, healthcare, financial services, e-commerce and other businesses where customers research providers online before making a purchase.\n\nIdeal companies already invest in their website, content, SEO or digital marketing but have limited visibility when potential customers ask AI platforms for recommendations.\n\nThe strongest customers operate in competitive categories where appearing in \"best company\", \"best software\", \"alternative to\", \"which provider\", comparison and high-intent informational queries can influence purchasing decisions.\n\nCompanies with established websites, existing content and some domain authority are particularly attractive because DigiPuush can build on those assets rather than starting from zero.\n\nDigiPuush's current site explicitly says it works with B2B, SaaS and e-commerce brands and shows case-study patterns across B2B SaaS, D2C e-commerce and local services.. We believe companies with 20–1,000 employees employees are a strong fit.",
+                  "targetIndustries": [
+                    "saas",
+                    "software",
+                    "it",
+                    "technology",
+                    "healthcare",
+                    "professional services"
+                  ],
+                  "geographies": [
+                    "India"
+                  ],
+                  "employeeRange": {
+                    "minimum": 20,
+                    "maximum": 1000
+                  },
+                  "technologyCharacteristics": [],
+                  "exclusions": [],
+                  "hardFilters": [
+                    "Geography: India",
+                    "Industries: saas, software, it, technology, healthcare, professional services",
+                    "Employees: 20–1000",
+                    "Company is located in a stated target geography.",
+                    "Target customer operates in a stated target industry."
+                  ],
+                  "softCriteria": [
+                    "We believe B2B SaaS, technology companies, professional services, education, healthcare, financial services, e-commerce and other businesses where customers research providers online before making a purchase.\n\nIdeal companies already invest in their website, content, SEO or digital marketing but have limited visibility when potential customers ask AI platforms for recommendations.\n\nThe strongest customers operate in competitive categories where appearing in \"best company\", \"best software\", \"alternative to\", \"which provider\", comparison and high-intent informational queries can influence purchasing decisions.\n\nCompanies with established websites, existing content and some domain authority are particularly attractive because DigiPuush can build on those assets rather than starting from zero.\n\nDigiPuush's current site explicitly says it works with B2B, SaaS and e-commerce brands and shows case-study patterns across B2B SaaS, D2C e-commerce and local services..",
+                    "We believe companies with 20–1,000 employees employees are a strong fit.",
+                    "Technology pattern suggested by the Business Twin interpretation.",
+                    "A Business Twin hypothesis that requires human validation before becoming a disqualifier.",
+                    "A Business Twin hypothesis that requires human validation before becoming a disqualifier.",
+                    "A Business Twin hypothesis that requires human validation before becoming a disqualifier."
+                  ],
+                  "marketDiscoveryIntent": {
+                    "buyerCompanyTypes": [
+                      "operating company",
+                      "employer",
+                      "facility owner",
+                      "commercial buyer"
+                    ],
+                    "targetIndustries": [
+                      "saas",
+                      "software",
+                      "it",
+                      "technology",
+                      "healthcare",
+                      "professional services"
+                    ],
+                    "targetGeographies": [
+                      "India"
+                    ],
+                    "employeeRange": {
+                      "minimum": 20,
+                      "maximum": 1000
+                    },
+                    "requiredCharacteristics": [
+                      "Geography: India",
+                      "Industries: saas, software, it, technology, healthcare, professional services",
+                      "Employees: 20–1000",
+                      "Company is located in a stated target geography.",
+                      "Target customer operates in a stated target industry."
+                    ],
+                    "preferredCharacteristics": [
+                      "We believe B2B SaaS, technology companies, professional services, education, healthcare, financial services, e-commerce and other businesses where customers research providers online before making a purchase.\n\nIdeal companies already invest in their website, content, SEO or digital marketing but have limited visibility when potential customers ask AI platforms for recommendations.\n\nThe strongest customers operate in competitive categories where appearing in \"best company\", \"best software\", \"alternative to\", \"which provider\", comparison and high-intent informational queries can influence purchasing decisions.\n\nCompanies with established websites, existing content and some domain authority are particularly attractive because DigiPuush can build on those assets rather than starting from zero.\n\nDigiPuush's current site explicitly says it works with B2B, SaaS and e-commerce brands and shows case-study patterns across B2B SaaS, D2C e-commerce and local services..",
+                      "We believe companies with 20–1,000 employees employees are a strong fit."
+                    ],
+                    "excludedCompanyTypes": [],
+                    "sellerCategoryExclusions": [
+                      "Marketing"
+                    ],
+                    "offeringCategoryExclusions": [
+                      "AEO & GEO / AI Visibility Services"
+                    ],
+                    "searchConcepts": [
+                      "saas",
+                      "software",
+                      "it",
+                      "technology",
+                      "healthcare",
+                      "professional services"
+                    ],
+                    "negativeConcepts": [
+                      "companies primarily selling in Marketing",
+                      "providers or vendors of AEO & GEO / AI Visibility Services"
+                    ],
+                    "confidence": "HIGH",
+                    "provenance": [
+                      "ICP:8c72ba31-3e38-4dc8-ae58-ae4e69abd0ad",
+                      "ICP:c182cd9d-cb43-483d-aba2-cf2776783882",
+                      "ICP:db9ccc9b-ee70-499b-b951-d5f527a26a43",
+                      "ICP:50cf4c0a-90bd-4671-86b2-c3c56d53d8e3",
+                      "ICP:89e1f86e-e4a1-40eb-9937-6c02bd4f7738",
+                      "ICP:96d6e6fc-9c37-4eba-b16a-64cbd6e43925",
+                      "BUSINESS_TWIN:5197de3c-3eff-425c-ad85-6922b17ed601"
+                    ]
+                  }
+                },
+                "searchType": "auto",
+                "category": "company",
+                "numResults": 10,
+                "rawResultCount": 10,
+                "rawResultProjection": [
+                  {
+                    "index": 1,
+                    "title": "Outbound System",
+                    "url": "https://outboundsystem.com",
+                    "providerResultId": "https://exa.ai/library/organization/60pkg1b186z",
+                    "description": null,
+                    "entityStatus": "VALID"
+                  },
+                  {
+                    "index": 2,
+                    "title": "Partner Propel",
+                    "url": "https://partnerpropel.com",
+                    "providerResultId": "https://exa.ai/library/organization/hn9k2s2sv9c",
+                    "description": null,
+                    "entityStatus": "VALID"
+                  },
+                  {
+                    "index": 3,
+                    "title": "Pure Sales",
+                    "url": "https://puresales.io",
+                    "providerResultId": "https://exa.ai/library/organization/qt6s4mkmg1h",
+                    "description": null,
+                    "entityStatus": "VALID"
+                  },
+                  {
+                    "index": 4,
+                    "title": "Grownob LLC",
+                    "url": "https://grownob.com",
+                    "providerResultId": "https://exa.ai/library/organization/06c0c238gsw",
+                    "description": null,
+                    "entityStatus": "VALID"
+                  },
+                  {
+                    "index": 5,
+                    "title": "OutPro",
+                    "url": "https://outpro.us",
+                    "providerResultId": "https://exa.ai/library/organization/crg0c2jpvcz",
+                    "description": null,
+                    "entityStatus": "VALID"
+                  },
+                  {
+                    "index": 6,
+                    "title": "Lead Made Easy",
+                    "url": "https://leadmadeeasy.com",
+                    "providerResultId": "https://exa.ai/library/organization/85wph5fb958",
+                    "description": null,
+                    "entityStatus": "VALID"
+                  },
+                  {
+                    "index": 7,
+                    "title": "SalesGig",
+                    "url": "https://salesgig.com",
+                    "providerResultId": "https://exa.ai/library/organization/sp1wq9m3jp7",
+                    "description": null,
+                    "entityStatus": "VALID"
+                  },
+                  {
+                    "index": 8,
+                    "title": "RevyGo",
+                    "url": "https://revygo.com",
+                    "providerResultId": "https://exa.ai/library/organization/c91xhc6wh0r",
+                    "description": null,
+                    "entityStatus": "VALID"
+                  },
+                  {
+                    "index": 9,
+                    "title": "Leadzen.ai",
+                    "url": "https://leadzen.ai",
+                    "providerResultId": "https://exa.ai/library/organization/p8wnwvvrmy7",
+                    "description": null,
+                    "entityStatus": "VALID"
+                  },
+                  {
+                    "index": 10,
+                    "title": "Leadgeneron",
+                    "url": "https://leadgeneron.com",
+                    "providerResultId": "https://exa.ai/library/organization/blfqf3rgv4x",
+                    "description": null,
+                    "entityStatus": "VALID"
+                  }
+                ],
+                "normalizedResultCount": 10,
+                "retrievalTimestamp": "2026-09-01T19:54:08.489Z"
+              },
+              "startedAt": "2026-09-01T19:54:08.489Z",
+              "completedAt": "2026-09-01T19:54:10.293Z"
+            },
+            {
+              "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+              "capability": "WEB_SEARCH",
+              "requestId": "discovery-profile:d53bb85c-e041-4683-80b0-1d6ee3ff1815:10:search-1:b220e720-6d21-4c7a-badf-3aec920febca",
+              "status": "success",
+              "retryable": false,
+              "latencyMs": 5178,
+              "estimatedCost": 0.007,
+              "actualCost": 0.017,
+              "runtimeMs": 5177,
+              "resultCount": 10,
+              "errorCode": null,
+              "metadata": {
+                "organizationId": "02d40c31-72e4-42d9-9d8d-fe676a369205",
+                "projectId": "db141bf9-bc25-4e19-87e1-1d4db4a6a005",
+                "discoveryRunId": "d53bb85c-e041-4683-80b0-1d6ee3ff1815",
+                "resolutionCapability": "COMPANY_PROFILE_RESOLUTION",
+                "discoveryQuery": "site:linkedin.com/company \"Leadgeneron\" \"leadgeneron.com\"",
+                "query": "site:linkedin.com/company \"Leadgeneron\" \"leadgeneron.com\"",
+                "retrievalTimestamp": "2026-09-01T19:54:10.447Z",
+                "searchType": "auto",
+                "numResults": 10,
+                "rawResultCount": 10,
+                "normalizedResultCount": 10,
+                "providerResultIds": [
+                  "https://exa.ai/library/organization/blfqf3rgv4x",
+                  "https://exa.ai/library/organization/jdrqgw47jqm",
+                  "https://exa.ai/library/organization/mw1qmnfgp99",
+                  "https://exa.ai/library/organization/lk0sr0yg0ny",
+                  "https://exa.ai/library/organization/0zq5sgtqdlr",
+                  "https://exa.ai/library/organization/5vf9wjt79mh",
+                  "https://exa.ai/library/organization/s1wtyymgt5c",
+                  "https://exa.ai/library/organization/rsyjclfbj7z",
+                  "https://exa.ai/library/organization/nhsp4rl89lw",
+                  "https://exa.ai/library/organization/dxrgw69jl3h"
+                ]
+              },
+              "startedAt": "2026-09-01T19:54:10.446Z",
+              "completedAt": "2026-09-01T19:54:15.624Z"
+            },
+            {
+              "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+              "capability": "WEB_SEARCH",
+              "requestId": "buyer-role-description:d53bb85c-e041-4683-80b0-1d6ee3ff1815:10:b220e720-6d21-4c7a-badf-3aec920febca",
+              "status": "success",
+              "retryable": false,
+              "latencyMs": 2600,
+              "estimatedCost": 0.007,
+              "actualCost": 0.009,
+              "runtimeMs": 2600,
+              "resultCount": 2,
+              "errorCode": null,
+              "metadata": {
+                "organizationId": "02d40c31-72e4-42d9-9d8d-fe676a369205",
+                "projectId": "db141bf9-bc25-4e19-87e1-1d4db4a6a005",
+                "discoveryRunId": "d53bb85c-e041-4683-80b0-1d6ee3ff1815",
+                "query": "What does Leadgeneron primarily do?",
+                "retrievalTimestamp": "2026-09-01T19:54:15.661Z",
+                "searchType": "auto",
+                "numResults": 2,
+                "rawResultCount": 2,
+                "normalizedResultCount": 2,
+                "providerResultIds": [
+                  "https://www.leadgeneron.com/new-page",
+                  "https://www.leadgeneron.com/"
+                ]
+              },
+              "startedAt": "2026-09-01T19:54:15.661Z",
+              "completedAt": "2026-09-01T19:54:18.261Z"
+            },
+            {
+              "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+              "capability": "WEB_SEARCH",
+              "requestId": "minimum-intelligence:d2dd1f48-1b81-4149-a298-1dde2ae96ade:2026-09-01T19:54:08.471Z:search-1:b220e720-6d21-4c7a-badf-3aec920febca",
+              "status": "success",
+              "retryable": false,
+              "latencyMs": 4820,
+              "estimatedCost": 0.007,
+              "actualCost": 0.017,
+              "runtimeMs": 4820,
+              "resultCount": 10,
+              "errorCode": null,
+              "metadata": {
+                "resolutionCapability": "COMPANY_PROFILE_RESOLUTION",
+                "discoveryQuery": "site:linkedin.com/company \"Pure Sales\" \"puresales.io\"",
+                "query": "site:linkedin.com/company \"Pure Sales\" \"puresales.io\"",
+                "retrievalTimestamp": "2026-09-01T19:54:18.409Z",
+                "searchType": "auto",
+                "numResults": 10,
+                "rawResultCount": 10,
+                "normalizedResultCount": 10,
+                "providerResultIds": [
+                  "https://exa.ai/library/organization/qt6s4mkmg1h",
+                  "https://exa.ai/library/organization/3c9rtwcgzxy",
+                  "https://exa.ai/library/organization/6gty5p6q45l",
+                  "https://exa.ai/library/organization/q0mpccykm2v",
+                  "https://exa.ai/library/organization/9hsgys2dzql",
+                  "https://exa.ai/library/organization/lpr6j2tkx2z",
+                  "https://exa.ai/library/organization/bt9yynfknnl",
+                  "https://exa.ai/library/organization/yg4cq1tdg06",
+                  "https://exa.ai/library/organization/y50r0tbfl1x",
+                  "https://exa.ai/library/organization/wsxv8sxz6mk"
+                ]
+              },
+              "startedAt": "2026-09-01T19:54:18.409Z",
+              "completedAt": "2026-09-01T19:54:23.229Z"
+            },
+            {
+              "providerId": "c8acd975-a514-42a7-9a0a-212442a7a247",
+              "capability": "COMPANY_FIRMOGRAPHICS",
+              "requestId": "firmographics:d2dd1f48-1b81-4149-a298-1dde2ae96ade:2026-09-01T19:54:08.471Z:c8acd975-a514-42a7-9a0a-212442a7a247",
+              "status": "empty",
+              "retryable": false,
+              "latencyMs": 2571,
+              "estimatedCost": 0.0015,
+              "actualCost": null,
+              "runtimeMs": 2570,
+              "resultCount": 0,
+              "errorCode": "PARTIAL_PROFILE",
+              "metadata": {
+                "organizationId": "02d40c31-72e4-42d9-9d8d-fe676a369205",
+                "projectId": "db141bf9-bc25-4e19-87e1-1d4db4a6a005",
+                "companyId": "d2dd1f48-1b81-4149-a298-1dde2ae96ade",
+                "cacheHit": "false",
+                "datasetId": "gd_l1vikfnt1wgvvqz95w",
+                "rawProviderResponse": {
+                  "timestamp": "2026-09-01T19:54:25.505Z",
+                  "input": {
+                    "url": "https://linkedin.com/company/puresales-eu"
+                  },
+                  "error": "4XX page - dead page",
+                  "error_code": "dead_page"
+                }
+              },
+              "startedAt": "2026-09-01T19:54:23.254Z",
+              "completedAt": "2026-09-01T19:54:25.825Z"
+            },
+            {
+              "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+              "capability": "WEB_SEARCH",
+              "requestId": "minimum-intelligence:4233dfdf-a2ac-48de-8347-91759eb415de:2026-09-01T19:54:08.471Z:search-1:b220e720-6d21-4c7a-badf-3aec920febca",
+              "status": "success",
+              "retryable": false,
+              "latencyMs": 4602,
+              "estimatedCost": 0.007,
+              "actualCost": 0.017,
+              "runtimeMs": 4602,
+              "resultCount": 10,
+              "errorCode": null,
+              "metadata": {
+                "resolutionCapability": "COMPANY_PROFILE_RESOLUTION",
+                "discoveryQuery": "site:linkedin.com/company \"RevyGo\" \"revygo.com\"",
+                "query": "site:linkedin.com/company \"RevyGo\" \"revygo.com\"",
+                "retrievalTimestamp": "2026-09-01T19:54:47.200Z",
+                "searchType": "auto",
+                "numResults": 10,
+                "rawResultCount": 10,
+                "normalizedResultCount": 10,
+                "providerResultIds": [
+                  "https://exa.ai/library/organization/v843cmgn7zv",
+                  "https://exa.ai/library/organization/v7y708wn8m6",
+                  "https://www.linkedin.com/company/revy-let-s-go",
+                  "https://exa.ai/library/organization/q6hcc094gm8",
+                  "https://exa.ai/library/organization/wnl00rcb9kx",
+                  "https://exa.ai/library/organization/24rbsv33sfs",
+                  "https://exa.ai/library/organization/rbdtb2mwzhq",
+                  "https://exa.ai/library/organization/5t0mrxk67z0",
+                  "https://exa.ai/library/organization/j936z4ml6qw",
+                  "https://exa.ai/library/organization/12bhw7lq9mx"
+                ]
+              },
+              "startedAt": "2026-09-01T19:54:47.200Z",
+              "completedAt": "2026-09-01T19:54:51.802Z"
+            },
+            {
+              "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+              "capability": "WEB_SEARCH",
+              "requestId": "minimum-intelligence:4233dfdf-a2ac-48de-8347-91759eb415de:2026-09-01T19:54:08.471Z:search-2:b220e720-6d21-4c7a-badf-3aec920febca",
+              "status": "success",
+              "retryable": false,
+              "latencyMs": 4785,
+              "estimatedCost": 0.007,
+              "actualCost": 0.017,
+              "runtimeMs": 4785,
+              "resultCount": 10,
+              "errorCode": null,
+              "metadata": {
+                "resolutionCapability": "COMPANY_PROFILE_RESOLUTION",
+                "discoveryQuery": "site:linkedin.com/company \"RevyGo\" LinkedIn company",
+                "query": "site:linkedin.com/company \"RevyGo\" LinkedIn company",
+                "retrievalTimestamp": "2026-09-01T19:54:51.815Z",
+                "searchType": "auto",
+                "numResults": 10,
+                "rawResultCount": 10,
+                "normalizedResultCount": 10,
+                "providerResultIds": [
+                  "https://exa.ai/library/organization/v843cmgn7zv",
+                  "https://exa.ai/library/organization/v7y708wn8m6",
+                  "https://www.linkedin.com/company/revy-let-s-go",
+                  "https://tr.linkedin.com/company/revego-tech",
+                  "https://exa.ai/library/organization/2bk28yklzx2",
+                  "https://exa.ai/library/organization/24rbsv33sfs",
+                  "https://exa.ai/library/organization/wnl00rcb9kx",
+                  "https://www.linkedin.com/company/the-revy-ai",
+                  "https://exa.ai/library/organization/5t0mrxk67z0",
+                  "https://exa.ai/library/organization/j936z4ml6qw"
+                ]
+              },
+              "startedAt": "2026-09-01T19:54:51.815Z",
+              "completedAt": "2026-09-01T19:54:56.600Z"
+            },
+            {
+              "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+              "capability": "WEB_SEARCH",
+              "requestId": "minimum-intelligence:b7e9af09-ede7-46fb-baa1-cf2d9f3158bf:2026-09-01T19:54:08.471Z:search-1:b220e720-6d21-4c7a-badf-3aec920febca",
+              "status": "success",
+              "retryable": false,
+              "latencyMs": 8111,
+              "estimatedCost": 0.007,
+              "actualCost": 0.017,
+              "runtimeMs": 8111,
+              "resultCount": 10,
+              "errorCode": null,
+              "metadata": {
+                "resolutionCapability": "COMPANY_PROFILE_RESOLUTION",
+                "discoveryQuery": "site:linkedin.com/company \"Leadzen.ai\" \"leadzen.ai\"",
+                "query": "site:linkedin.com/company \"Leadzen.ai\" \"leadzen.ai\"",
+                "retrievalTimestamp": "2026-09-01T19:55:08.789Z",
+                "searchType": "auto",
+                "numResults": 10,
+                "rawResultCount": 10,
+                "normalizedResultCount": 10,
+                "providerResultIds": [
+                  "https://exa.ai/library/organization/p8wnwvvrmy7",
+                  "https://exa.ai/library/organization/3q6772w8xbg",
+                  "https://exa.ai/library/organization/hvm4kt3f81d",
+                  "https://exa.ai/library/organization/yb01xlbvwnl",
+                  "https://exa.ai/library/organization/chg8v69wb9j",
+                  "https://exa.ai/library/organization/ghswx20fdbk",
+                  "https://exa.ai/library/organization/jztncdqp7xk",
+                  "https://exa.ai/library/organization/lnckj50d48x",
+                  "https://exa.ai/library/organization/h4v86twwmw3",
+                  "https://exa.ai/library/organization/clyynnq6gr2"
+                ]
+              },
+              "startedAt": "2026-09-01T19:55:08.789Z",
+              "completedAt": "2026-09-01T19:55:16.900Z"
+            },
+            {
+              "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+              "capability": "WEB_SEARCH",
+              "requestId": "minimum-intelligence:b7e9af09-ede7-46fb-baa1-cf2d9f3158bf:2026-09-01T19:54:08.471Z:search-2:b220e720-6d21-4c7a-badf-3aec920febca",
+              "status": "success",
+              "retryable": false,
+              "latencyMs": 4403,
+              "estimatedCost": 0.007,
+              "actualCost": 0.017,
+              "runtimeMs": 4403,
+              "resultCount": 10,
+              "errorCode": null,
+              "metadata": {
+                "resolutionCapability": "COMPANY_PROFILE_RESOLUTION",
+                "discoveryQuery": "site:linkedin.com/company \"Leadzen.ai\" LinkedIn company",
+                "query": "site:linkedin.com/company \"Leadzen.ai\" LinkedIn company",
+                "retrievalTimestamp": "2026-09-01T19:55:16.923Z",
+                "searchType": "auto",
+                "numResults": 10,
+                "rawResultCount": 10,
+                "normalizedResultCount": 10,
+                "providerResultIds": [
+                  "https://exa.ai/library/organization/p8wnwvvrmy7",
+                  "https://exa.ai/library/organization/3q6772w8xbg",
+                  "https://exa.ai/library/organization/ghswx20fdbk",
+                  "https://exa.ai/library/organization/yb01xlbvwnl",
+                  "https://exa.ai/library/organization/chg8v69wb9j",
+                  "https://exa.ai/library/organization/hvm4kt3f81d",
+                  "https://exa.ai/library/organization/jztncdqp7xk",
+                  "https://exa.ai/library/organization/5fcb1pqmxj0",
+                  "https://exa.ai/library/organization/lnckj50d48x",
+                  "https://exa.ai/library/organization/dmbk6hsc61l"
+                ]
+              },
+              "startedAt": "2026-09-01T19:55:16.923Z",
+              "completedAt": "2026-09-01T19:55:21.326Z"
+            }
+          ]
+        },
+        "returnedMinimumCacheHits": 10,
+        "persistedProfileResolutionAttempts": 5,
+        "persistedFirmographicAttempts": 1,
+        "semanticLlmCalls": 4,
+        "semanticCacheHits": 10
+      },
+      "adjudication": {
+        "commercialRoleCorrect": 1,
+        "whoCorrect": 1,
+        "total": 10
+      }
+    },
+    {
+      "key": "MANAGED_SOC",
+      "projectId": "364a64a0-98ba-42d5-b27b-94478d26226b",
+      "discovery": {
+        "runId": "2575325e-9d5e-411b-8994-bd56b7f549f5",
+        "reports": 11,
+        "controlPlaneCohort": 10,
+        "rawResults": 10,
+        "duplicatesRemoved": 0,
+        "possibleMatches": 0,
+        "rejected": 2
+      },
+      "funnel": {
+        "identityPermissions": {
+          "ATTRIBUTION_SAFE": 7,
+          "RESEARCH_SAFE": 1,
+          "UNSAFE": 2
+        },
+        "minimumStages": {
+          "SUFFICIENT": 8,
+          "UNSAFE_IDENTITY": 2
+        },
+        "controlStatuses": {
+          "BLOCKED": 2,
+          "INSUFFICIENT": 7,
+          "SUCCESS": 1
+        },
+        "reasons": {
+          "COMMERCIAL_RELATIONSHIP_AMBIGUOUS": 7,
+          "COMPETITOR_NOT_ELIGIBLE": 1,
+          "DOMAIN_MISSING": 2
+        },
+        "commercialRoles": {
+          "SELLER_COMPETITOR": 1,
+          "UNKNOWN": 9
+        },
+        "who": {
+          "NOT_RUN": 10
+        }
+      },
+      "calls": {
+        "provider": {
+          "calls": 5,
+          "byCapability": {
+            "COMPANY_DISCOVERY": 1,
+            "WEB_SEARCH": 4
+          },
+          "byStatus": {
+            "success": 5
+          },
+          "knownActualCost": 0.07500000000000001,
+          "knownEstimatedCost": 0.035,
+          "unknownActualCostCalls": 0,
+          "records": [
+            {
+              "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+              "capability": "COMPANY_DISCOVERY",
+              "requestId": "discovery:2575325e-9d5e-411b-8994-bd56b7f549f5:1:b220e720-6d21-4c7a-badf-3aec920febca",
+              "status": "success",
+              "retryable": false,
+              "latencyMs": 359,
+              "estimatedCost": 0.007,
+              "actualCost": 0.007,
+              "runtimeMs": 359,
+              "resultCount": 10,
+              "errorCode": null,
+              "metadata": {
+                "organizationId": "02d40c31-72e4-42d9-9d8d-fe676a369205",
+                "projectId": "364a64a0-98ba-42d5-b27b-94478d26226b",
+                "discoveryRunId": "2575325e-9d5e-411b-8994-bd56b7f549f5",
+                "queryIndex": "1",
+                "query": "mid-market companies likely to buy managed SOC MDR SIEM cybersecurity services",
+                "strategy": {
+                  "icpDescription": "We believe Mid-market and growing organizations with significant cloud and IT infrastructure that need continuous cybersecurity monitoring but do not have a fully staffed 24/7 internal SOC. Ideal customers typically use Microsoft 365/Azure or other cloud platforms, have 100+ employees, handle sensitive customer or business data, serve enterprise customers, and have security or compliance requirements such as ISO 27001, SOC 2, customer security assessments or cyber-insurance. Strong industries include SaaS, technology, IT services, fintech, financial services, healthcare and professional services.. We believe companies with 100–2,000 employees; sweet spot: 200–1,000 employees employees are a strong fit.",
+                  "targetIndustries": [
+                    "saas",
+                    "it",
+                    "technology",
+                    "fintech",
+                    "healthcare",
+                    "professional services",
+                    "SaaS",
+                    "IT services",
+                    "financial services"
+                  ],
+                  "geographies": [
+                    "United States",
+                    "India",
+                    "UAE",
+                    "United Kingdom",
+                    "Singapore"
+                  ],
+                  "employeeRange": {
+                    "minimum": 100,
+                    "maximum": 2000,
+                    "sweetSpotMinimum": 200,
+                    "sweetSpotMaximum": 1000
+                  },
+                  "technologyCharacteristics": [
+                    "Microsoft 365",
+                    "Azure",
+                    "significant cloud/IT infrastructure",
+                    "other cloud platforms"
+                  ],
+                  "exclusions": [],
+                  "hardFilters": [
+                    "Geography: United States, India, UAE, United Kingdom, Singapore",
+                    "Industries: saas, it, technology, fintech, healthcare, professional services, SaaS, IT services, financial services",
+                    "Employees: 100–2000",
+                    "Target customer operates in a stated target industry.",
+                    "Company is located in a stated target geography."
+                  ],
+                  "softCriteria": [
+                    "We believe Mid-market and growing organizations with significant cloud and IT infrastructure that need continuous cybersecurity monitoring but do not have a fully staffed 24/7 internal SOC. Ideal customers typically use Microsoft 365/Azure or other cloud platforms, have 100+ employees, handle sensitive customer or business data, serve enterprise customers, and have security or compliance requirements such as ISO 27001, SOC 2, customer security assessments or cyber-insurance. Strong industries include SaaS, technology, IT services, fintech, financial services, healthcare and professional services..",
+                    "We believe companies with 100–2,000 employees; sweet spot: 200–1,000 employees employees are a strong fit.",
+                    "Technology pattern suggested by the Business Twin interpretation.",
+                    "Compliance context may improve commercial fit but is not mandatory."
+                  ],
+                  "marketDiscoveryIntent": {
+                    "buyerCompanyTypes": [
+                      "operating company",
+                      "employer",
+                      "facility owner",
+                      "commercial buyer"
+                    ],
+                    "targetIndustries": [
+                      "saas",
+                      "it",
+                      "technology",
+                      "fintech",
+                      "healthcare",
+                      "professional services",
+                      "SaaS",
+                      "IT services",
+                      "financial services"
+                    ],
+                    "targetGeographies": [
+                      "United States",
+                      "India",
+                      "UAE",
+                      "United Kingdom",
+                      "Singapore"
+                    ],
+                    "employeeRange": {
+                      "minimum": 100,
+                      "maximum": 2000,
+                      "sweetSpotMinimum": 200,
+                      "sweetSpotMaximum": 1000
+                    },
+                    "requiredCharacteristics": [
+                      "Geography: United States, India, UAE, United Kingdom, Singapore",
+                      "Industries: saas, it, technology, fintech, healthcare, professional services, SaaS, IT services, financial services",
+                      "Employees: 100–2000",
+                      "Target customer operates in a stated target industry.",
+                      "Company is located in a stated target geography."
+                    ],
+                    "preferredCharacteristics": [
+                      "We believe Mid-market and growing organizations with significant cloud and IT infrastructure that need continuous cybersecurity monitoring but do not have a fully staffed 24/7 internal SOC. Ideal customers typically use Microsoft 365/Azure or other cloud platforms, have 100+ employees, handle sensitive customer or business data, serve enterprise customers, and have security or compliance requirements such as ISO 27001, SOC 2, customer security assessments or cyber-insurance. Strong industries include SaaS, technology, IT services, fintech, financial services, healthcare and professional services..",
+                      "We believe companies with 100–2,000 employees; sweet spot: 200–1,000 employees employees are a strong fit."
+                    ],
+                    "excludedCompanyTypes": [],
+                    "sellerCategoryExclusions": [
+                      "Cybersecurity"
+                    ],
+                    "offeringCategoryExclusions": [
+                      "Managed Soc"
+                    ],
+                    "searchConcepts": [
+                      "saas",
+                      "it",
+                      "technology",
+                      "fintech",
+                      "healthcare",
+                      "professional services",
+                      "SaaS",
+                      "IT services",
+                      "financial services"
+                    ],
+                    "negativeConcepts": [
+                      "companies primarily selling in Cybersecurity",
+                      "providers or vendors of Managed Soc"
+                    ],
+                    "confidence": "HIGH",
+                    "provenance": [
+                      "ICP:6b788709-947b-4ec2-b061-01a09951fd78",
+                      "ICP:05dd1e3c-8526-43d6-a869-19ef041931cb",
+                      "ICP:f2a399ef-3a40-47a0-8df9-0378f7bed386",
+                      "ICP:2cf6be2c-4df0-49b5-a485-d412c54752db",
+                      "BUSINESS_TWIN:bce449c6-db41-4efd-95ab-1ef52bb84517"
+                    ]
+                  }
+                },
+                "searchType": "auto",
+                "category": "company",
+                "numResults": 10,
+                "rawResultCount": 10,
+                "rawResultProjection": [
+                  {
+                    "index": 1,
+                    "title": "Cyber Managed Services Inc. (CyberMSI)",
+                    "url": "https://cybermsi.com",
+                    "providerResultId": "https://exa.ai/library/organization/jyg13ny5zwf",
+                    "description": null,
+                    "entityStatus": "VALID"
+                  },
+                  {
+                    "index": 2,
+                    "title": "Ostra Security",
+                    "url": "https://ostrasecurity.com",
+                    "providerResultId": "https://exa.ai/library/organization/v9myr6y5mzf",
+                    "description": null,
+                    "entityStatus": "VALID"
+                  },
+                  {
+                    "index": 3,
+                    "title": "Critical Start",
+                    "url": "https://criticalstart.com",
+                    "providerResultId": "https://exa.ai/library/organization/f2jm1byxsyn",
+                    "description": null,
+                    "entityStatus": "VALID"
+                  },
+                  {
+                    "index": 4,
+                    "title": "Pondurance",
+                    "url": "https://pondurance.com",
+                    "providerResultId": "https://exa.ai/library/organization/s8vp3kv8b2w",
+                    "description": null,
+                    "entityStatus": "VALID"
+                  },
+                  {
+                    "index": 5,
+                    "title": "CyberOne",
+                    "url": "https://cyberone.security",
+                    "providerResultId": "https://exa.ai/library/organization/xcxm4vfxlfh",
+                    "description": null,
+                    "entityStatus": "VALID"
+                  },
+                  {
+                    "index": 6,
+                    "title": "Socura",
+                    "url": "https://socura.co.uk",
+                    "providerResultId": "https://exa.ai/library/organization/89glkv3335r",
+                    "description": null,
+                    "entityStatus": "VALID"
+                  },
+                  {
+                    "index": 7,
+                    "title": "SOCFortress",
+                    "url": "https://socfortress.co",
+                    "providerResultId": "https://exa.ai/library/organization/rqgm08t167q",
+                    "description": null,
+                    "entityStatus": "VALID"
+                  },
+                  {
+                    "index": 8,
+                    "title": "CHR Managed IT & Cybersecurity",
+                    "url": "https://linkedin.com/showcase/chr-managed-it-services",
+                    "providerResultId": "https://exa.ai/library/organization/4h90hskxxcv",
+                    "description": null,
+                    "entityStatus": "VALID"
+                  },
+                  {
+                    "index": 9,
+                    "title": "CySOC",
+                    "url": "https://cysocsecure.com",
+                    "providerResultId": "https://exa.ai/library/organization/6xw4yzqrsmq",
+                    "description": null,
+                    "entityStatus": "VALID"
+                  },
+                  {
+                    "index": 10,
+                    "title": "Barracuda SKOUT Managed XDR",
+                    "url": "https://barracuda.com/products/managed-xdr/msp",
+                    "providerResultId": "https://exa.ai/library/organization/ds7v05g6g4j",
+                    "description": null,
+                    "entityStatus": "VALID"
+                  }
+                ],
+                "normalizedResultCount": 10,
+                "retrievalTimestamp": "2026-09-01T19:55:48.099Z"
+              },
+              "startedAt": "2026-09-01T19:55:48.099Z",
+              "completedAt": "2026-09-01T19:55:48.458Z"
+            },
+            {
+              "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+              "capability": "WEB_SEARCH",
+              "requestId": "discovery-profile:2575325e-9d5e-411b-8994-bd56b7f549f5:8:search-1:b220e720-6d21-4c7a-badf-3aec920febca",
+              "status": "success",
+              "retryable": false,
+              "latencyMs": 265,
+              "estimatedCost": 0.007,
+              "actualCost": 0.017,
+              "runtimeMs": 265,
+              "resultCount": 10,
+              "errorCode": null,
+              "metadata": {
+                "organizationId": "02d40c31-72e4-42d9-9d8d-fe676a369205",
+                "projectId": "364a64a0-98ba-42d5-b27b-94478d26226b",
+                "discoveryRunId": "2575325e-9d5e-411b-8994-bd56b7f549f5",
+                "resolutionCapability": "COMPANY_PROFILE_RESOLUTION",
+                "discoveryQuery": "site:linkedin.com/company \"CHR Managed IT & Cybersecurity\"",
+                "query": "site:linkedin.com/company \"CHR Managed IT & Cybersecurity\"",
+                "retrievalTimestamp": "2026-09-01T19:55:48.633Z",
+                "searchType": "auto",
+                "numResults": 10,
+                "rawResultCount": 10,
+                "normalizedResultCount": 10,
+                "providerResultIds": [
+                  "https://exa.ai/library/organization/18h90dcgt96",
+                  "https://exa.ai/library/organization/scf0dc061f5",
+                  "https://exa.ai/library/organization/4571v7pcx42",
+                  "https://exa.ai/library/organization/br6d794yxrx",
+                  "https://exa.ai/library/organization/yxx1926s16t",
+                  "https://exa.ai/library/organization/kjxqrbq6szv",
+                  "https://exa.ai/library/organization/7cn7s93yqqj",
+                  "https://exa.ai/library/organization/d0drf0p6dzy",
+                  "https://exa.ai/library/organization/l1r6frzvpsl",
+                  "https://exa.ai/library/organization/wcb94vtnkjy"
+                ]
+              },
+              "startedAt": "2026-09-01T19:55:48.633Z",
+              "completedAt": "2026-09-01T19:55:48.898Z"
+            },
+            {
+              "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+              "capability": "WEB_SEARCH",
+              "requestId": "discovery-profile:2575325e-9d5e-411b-8994-bd56b7f549f5:8:search-2:b220e720-6d21-4c7a-badf-3aec920febca",
+              "status": "success",
+              "retryable": false,
+              "latencyMs": 356,
+              "estimatedCost": 0.007,
+              "actualCost": 0.017,
+              "runtimeMs": 356,
+              "resultCount": 10,
+              "errorCode": null,
+              "metadata": {
+                "organizationId": "02d40c31-72e4-42d9-9d8d-fe676a369205",
+                "projectId": "364a64a0-98ba-42d5-b27b-94478d26226b",
+                "discoveryRunId": "2575325e-9d5e-411b-8994-bd56b7f549f5",
+                "resolutionCapability": "COMPANY_PROFILE_RESOLUTION",
+                "discoveryQuery": "site:linkedin.com/company \"CHR Managed IT & Cybersecurity\" LinkedIn company",
+                "query": "site:linkedin.com/company \"CHR Managed IT & Cybersecurity\" LinkedIn company",
+                "retrievalTimestamp": "2026-09-01T19:55:48.908Z",
+                "searchType": "auto",
+                "numResults": 10,
+                "rawResultCount": 10,
+                "normalizedResultCount": 10,
+                "providerResultIds": [
+                  "https://exa.ai/library/organization/18h90dcgt96",
+                  "https://exa.ai/library/organization/4571v7pcx42",
+                  "https://exa.ai/library/organization/scf0dc061f5",
+                  "https://exa.ai/library/organization/kjxqrbq6szv",
+                  "https://exa.ai/library/organization/br6d794yxrx",
+                  "https://exa.ai/library/organization/yxx1926s16t",
+                  "https://exa.ai/library/organization/d0drf0p6dzy",
+                  "https://exa.ai/library/organization/rzql4wr1z1t",
+                  "https://exa.ai/library/organization/csfsz7319t1",
+                  "https://exa.ai/library/organization/9yqt5lkv3bh"
+                ]
+              },
+              "startedAt": "2026-09-01T19:55:48.908Z",
+              "completedAt": "2026-09-01T19:55:49.264Z"
+            },
+            {
+              "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+              "capability": "WEB_SEARCH",
+              "requestId": "minimum-intelligence:8ef6a894-78e7-4276-94d5-3c14c64b7ee1:2026-09-01T19:55:48.058Z:search-1:b220e720-6d21-4c7a-badf-3aec920febca",
+              "status": "success",
+              "retryable": false,
+              "latencyMs": 454,
+              "estimatedCost": 0.007,
+              "actualCost": 0.017,
+              "runtimeMs": 454,
+              "resultCount": 10,
+              "errorCode": null,
+              "metadata": {
+                "resolutionCapability": "COMPANY_PROFILE_RESOLUTION",
+                "discoveryQuery": "site:linkedin.com/company \"CyberOne\" \"cyberone.security\"",
+                "query": "site:linkedin.com/company \"CyberOne\" \"cyberone.security\"",
+                "retrievalTimestamp": "2026-09-01T19:55:49.452Z",
+                "searchType": "auto",
+                "numResults": 10,
+                "rawResultCount": 10,
+                "normalizedResultCount": 10,
+                "providerResultIds": [
+                  "https://exa.ai/library/organization/w6m8gsnzcc3",
+                  "https://exa.ai/library/organization/1njxwg72fpb",
+                  "https://exa.ai/library/organization/y89ds6xbhs2",
+                  "https://exa.ai/library/organization/cbgngd6tvhq",
+                  "https://exa.ai/library/organization/pr70tlr64cd",
+                  "https://exa.ai/library/organization/xcxm4vfxlfh",
+                  "https://exa.ai/library/organization/0p1zzh1bbll",
+                  "https://exa.ai/library/organization/cmmzgr78yzq",
+                  "https://exa.ai/library/organization/kb3fssskm2w",
+                  "https://exa.ai/library/organization/bxwms182nyv"
+                ]
+              },
+              "startedAt": "2026-09-01T19:55:49.452Z",
+              "completedAt": "2026-09-01T19:55:49.906Z"
+            },
+            {
+              "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+              "capability": "WEB_SEARCH",
+              "requestId": "minimum-intelligence:8ef6a894-78e7-4276-94d5-3c14c64b7ee1:2026-09-01T19:55:48.058Z:search-2:b220e720-6d21-4c7a-badf-3aec920febca",
+              "status": "success",
+              "retryable": false,
+              "latencyMs": 923,
+              "estimatedCost": 0.007,
+              "actualCost": 0.017,
+              "runtimeMs": 923,
+              "resultCount": 10,
+              "errorCode": null,
+              "metadata": {
+                "resolutionCapability": "COMPANY_PROFILE_RESOLUTION",
+                "discoveryQuery": "site:linkedin.com/company \"CyberOne\" LinkedIn company",
+                "query": "site:linkedin.com/company \"CyberOne\" LinkedIn company",
+                "retrievalTimestamp": "2026-09-01T19:55:49.917Z",
+                "searchType": "auto",
+                "numResults": 10,
+                "rawResultCount": 10,
+                "normalizedResultCount": 10,
+                "providerResultIds": [
+                  "https://exa.ai/library/organization/xcxm4vfxlfh",
+                  "https://exa.ai/library/organization/w6m8gsnzcc3",
+                  "https://exa.ai/library/organization/1njxwg72fpb",
+                  "https://exa.ai/library/organization/cbgngd6tvhq",
+                  "https://exa.ai/library/organization/byv96n19bjr",
+                  "https://exa.ai/library/organization/y89ds6xbhs2",
+                  "https://exa.ai/library/organization/bxwms182nyv",
+                  "https://exa.ai/library/organization/jhj14kzzspg",
+                  "https://exa.ai/library/organization/cdjvj3gbj6p",
+                  "https://exa.ai/library/organization/0p1zzh1bbll"
+                ]
+              },
+              "startedAt": "2026-09-01T19:55:49.917Z",
+              "completedAt": "2026-09-01T19:55:50.840Z"
+            }
+          ]
+        },
+        "returnedMinimumCacheHits": 10,
+        "persistedProfileResolutionAttempts": 2,
+        "persistedFirmographicAttempts": 0,
+        "semanticLlmCalls": 1,
+        "semanticCacheHits": 8
+      },
+      "adjudication": {
+        "commercialRoleCorrect": 2,
+        "whoCorrect": 7,
+        "total": 10
+      }
+    }
+  ],
+  "entries": [
+    {
+      "companyId": "c5a70b95-1302-4fa3-9e96-8ee6c6d18926",
+      "name": "Grownob LLC",
+      "domain": "grownob.com",
+      "identityState": "CONFIRMED",
+      "status": "INSUFFICIENT",
+      "reasonCode": "COMMERCIAL_RELATIONSHIP_AMBIGUOUS",
+      "buyerRole": "UNKNOWN",
+      "who": null,
+      "minimumIntelligence": {
+        "stage": "SUFFICIENT",
+        "cacheHit": true,
+        "identitySafe": true,
+        "attributionSafe": true,
+        "identityPermissions": {
+          "version": "architecture-v1-identity-actions-v1",
+          "trustLevel": "ATTRIBUTION_SAFE",
+          "reasonCode": "CONFIRMED_DISCOVERY_IDENTITY",
+          "canPublicProfileResearch": true,
+          "canBuildProvisionalProfile": true,
+          "canRunCompanyUnderstanding": true,
+          "canRunCommercialRole": true,
+          "canAttachCanonicalFacts": true,
+          "canGenerateSignals": true,
+          "canRankOpportunity": true,
+          "canEnrichContacts": true
+        },
+        "reasonCode": null,
+        "missingRequirements": [],
+        "nextRecommendedCapability": null,
+        "evidenceIds": [],
+        "attempts": {
+          "firmographics": 0,
+          "profileResolution": 0
+        }
+      },
+      "semantic": {
+        "cacheHit": true,
+        "llmInvoked": false,
+        "unknownReason": "COMPANY_EVIDENCE_INSUFFICIENT",
+        "reusedPersistedAssessment": false,
+        "output": null,
+        "usage": null
+      },
+      "profile": {
+        "primaryBusiness": "Grownob LLC | 6 followers on LinkedIn. We build the outbound infrastructure B2B sales teams use to close deals — not hunt leads. | Grownob LLC is an AI-powered B2B outbound infrastructure agency. We handle the entire pipeline from ICP research to personalised outreach — so your sales team spends time closing, not prospecting.\n\nGrownob LLC builds end-to-end outbound systems for B2B companies that need a consistent, qualified pipeline without adding headcount.",
+        "businessModel": "UNKNOWN",
+        "industry": "Professional Services",
+        "employeesExact": null,
+        "employeesMin": 2,
+        "employeesMax": 10,
+        "country": "United States",
+        "productsServices": []
+      },
+      "domainKey": "DIGIPUUSH",
+      "projectId": "db141bf9-bc25-4e19-87e1-1d4db4a6a005",
+      "independent": {
+        "companyId": "c5a70b95-1302-4fa3-9e96-8ee6c6d18926",
+        "domainKey": "DIGIPUUSH",
+        "company": "Grownob LLC",
+        "domain": "grownob.com",
+        "identity": "CORRECT",
+        "profileEvidence": "SUFFICIENT",
+        "expectedCommercialRole": "POTENTIAL_BUYER",
+        "expectedWho": "LIKELY_FIT",
+        "rationale": "As a B2B outbound infrastructure agency, they are a primary target for AI visibility and AEO services to enhance client pipeline results."
+      },
+      "agreement": {
+        "commercialRole": false,
+        "who": false,
+        "actualWho": "NOT_APPLICABLE",
+        "expectedWho": "LIKELY_FIT"
+      }
+    },
+    {
+      "companyId": "6594cacd-e2a9-4803-ba7a-e166b8da7489",
+      "name": "Lead Made Easy",
+      "domain": "leadmadeeasy.com",
+      "identityState": "CONFIRMED",
+      "status": "INSUFFICIENT",
+      "reasonCode": "COMMERCIAL_RELATIONSHIP_AMBIGUOUS",
+      "buyerRole": "UNKNOWN",
+      "who": null,
+      "minimumIntelligence": {
+        "stage": "SUFFICIENT",
+        "cacheHit": true,
+        "identitySafe": true,
+        "attributionSafe": true,
+        "identityPermissions": {
+          "version": "architecture-v1-identity-actions-v1",
+          "trustLevel": "ATTRIBUTION_SAFE",
+          "reasonCode": "CONFIRMED_DISCOVERY_IDENTITY",
+          "canPublicProfileResearch": true,
+          "canBuildProvisionalProfile": true,
+          "canRunCompanyUnderstanding": true,
+          "canRunCommercialRole": true,
+          "canAttachCanonicalFacts": true,
+          "canGenerateSignals": true,
+          "canRankOpportunity": true,
+          "canEnrichContacts": true
+        },
+        "reasonCode": null,
+        "missingRequirements": [],
+        "nextRecommendedCapability": null,
+        "evidenceIds": [],
+        "attempts": {
+          "firmographics": 0,
+          "profileResolution": 0
+        }
+      },
+      "semantic": {
+        "cacheHit": true,
+        "llmInvoked": false,
+        "unknownReason": "COMPANY_EVIDENCE_INSUFFICIENT",
+        "reusedPersistedAssessment": false,
+        "output": null,
+        "usage": null
+      },
+      "profile": {
+        "primaryBusiness": "Lead Made Easy | 523 followers on LinkedIn. Pipeline-as-a-Service for SaaS &amp; IT Services firms. | Finding the right leads shouldn&#39;t be complicated. At Lead Made Easy, we help IT services and SaaS businesses connect with high-intent decision-makers through targeted outreach and appointment setting—so you can focus on closing deals, not chasing prospects.\n\nWHY CHOOSE US?",
+        "businessModel": "SAAS",
+        "industry": null,
+        "employeesExact": null,
+        "employeesMin": 11,
+        "employeesMax": 50,
+        "country": null,
+        "productsServices": []
+      },
+      "domainKey": "DIGIPUUSH",
+      "projectId": "db141bf9-bc25-4e19-87e1-1d4db4a6a005",
+      "independent": {
+        "companyId": "6594cacd-e2a9-4803-ba7a-e166b8da7489",
+        "domainKey": "DIGIPUUSH",
+        "company": "Lead Made Easy",
+        "domain": "leadmadeeasy.com",
+        "identity": "CORRECT",
+        "profileEvidence": "SUFFICIENT",
+        "expectedCommercialRole": "POTENTIAL_BUYER",
+        "expectedWho": "LIKELY_FIT",
+        "rationale": "Pipeline-as-a-Service firm that would benefit from improved search and AI visibility to attract high-intent SaaS/IT clients."
+      },
+      "agreement": {
+        "commercialRole": false,
+        "who": false,
+        "actualWho": "NOT_APPLICABLE",
+        "expectedWho": "LIKELY_FIT"
+      }
+    },
+    {
+      "companyId": "b45eeee7-aab7-412f-b7e7-4c95c999fa14",
+      "name": "Leadgeneron",
+      "domain": "leadgeneron.com",
+      "identityState": "CONFIRMED",
+      "status": "SUCCESS",
+      "reasonCode": "READY_FOR_SIGNAL_RESEARCH",
+      "buyerRole": "POTENTIAL_BUYER",
+      "who": {
+        "eligible": true,
+        "qualification": "INSUFFICIENT_DATA"
+      },
+      "minimumIntelligence": {
+        "stage": "SUFFICIENT",
+        "cacheHit": true,
+        "identitySafe": true,
+        "attributionSafe": true,
+        "identityPermissions": {
+          "version": "architecture-v1-identity-actions-v1",
+          "trustLevel": "ATTRIBUTION_SAFE",
+          "reasonCode": "VERIFIED_IDENTIFIER",
+          "canPublicProfileResearch": true,
+          "canBuildProvisionalProfile": true,
+          "canRunCompanyUnderstanding": true,
+          "canRunCommercialRole": true,
+          "canAttachCanonicalFacts": true,
+          "canGenerateSignals": true,
+          "canRankOpportunity": true,
+          "canEnrichContacts": true
+        },
+        "reasonCode": null,
+        "missingRequirements": [],
+        "nextRecommendedCapability": null,
+        "evidenceIds": [
+          "7baaccf7-2867-4cd5-802c-994b89142179"
+        ],
+        "attempts": {
+          "firmographics": 0,
+          "profileResolution": 0
+        }
+      },
+      "semantic": {
+        "cacheHit": true,
+        "llmInvoked": false,
+        "unknownReason": null,
+        "reusedPersistedAssessment": true,
+        "output": {
+          "reason": "Leadgeneron is described as an IT services/consulting company operating a Managed Services SDR platform that uses AI to generate and qualify leads and set appointments. DigiPuush's AEO/GEO and AI visibility offering (improving presence in AI-generated answers, restructuring content, schema, authority building and monitoring) could be consumed by a sales development firm to increase discoverability and generate inbound leads. The candidate's focus on AI-driven lead generation aligns with the seller's AI visibility and SEO capabilities, making Leadgeneron a plausible buyer of DigiPuush services.",
+          "confidence": 0.69,
+          "evidence_ids": [
+            "7baaccf7-2867-4cd5-802c-994b89142179"
+          ],
+          "business_model": "INSURANCE",
+          "commercial_role": "POTENTIAL_BUYER",
+          "primary_business": "AI-driven sales development and lead generation services (Managed Services SDR platform)",
+          "products_services": [
+            "AI-driven lead generation and qualification",
+            "Appointment setting",
+            "Managed Services SDR (sales development) platform",
+            "End-to-end sales support and customized sales development services"
+          ],
+          "canonical_industry": "IT_SERVICES",
+          "missing_information": [
+            "Company size (revenue, customer count)",
+            "Current marketing/SEO/AI visibility efforts",
+            "Budget or procurement authority for marketing/SEO services",
+            "Existing vendor relationships for SEO or content services",
+            "Geographic target markets and channels for visibility"
+          ]
+        },
+        "usage": null
+      },
+      "profile": {
+        "primaryBusiness": null,
+        "businessModel": "UNKNOWN",
+        "industry": null,
+        "employeesExact": null,
+        "employeesMin": null,
+        "employeesMax": null,
+        "country": null,
+        "productsServices": []
+      },
+      "domainKey": "DIGIPUUSH",
+      "projectId": "db141bf9-bc25-4e19-87e1-1d4db4a6a005",
+      "independent": {
+        "companyId": "b45eeee7-aab7-412f-b7e7-4c95c999fa14",
+        "domainKey": "DIGIPUUSH",
+        "company": "Leadgeneron",
+        "domain": "leadgeneron.com",
+        "identity": "CORRECT",
+        "profileEvidence": "INSUFFICIENT",
+        "expectedCommercialRole": "UNKNOWN",
+        "expectedWho": "INSUFFICIENT_DATA",
+        "rationale": "No business profile or primary business description available."
+      },
+      "agreement": {
+        "commercialRole": false,
+        "who": true,
+        "actualWho": "INSUFFICIENT_DATA",
+        "expectedWho": "INSUFFICIENT_DATA"
+      }
+    },
+    {
+      "companyId": "b7e9af09-ede7-46fb-baa1-cf2d9f3158bf",
+      "name": "Leadzen.ai",
+      "domain": "leadzen.ai",
+      "identityState": "PROBABLE",
+      "status": "SUCCESS",
+      "reasonCode": "ADJACENT_VENDOR_NOT_ELIGIBLE",
+      "buyerRole": "ADJACENT_VENDOR",
+      "who": null,
+      "minimumIntelligence": {
+        "stage": "SUFFICIENT",
+        "cacheHit": true,
+        "identitySafe": true,
+        "attributionSafe": false,
+        "identityPermissions": {
+          "version": "architecture-v1-identity-actions-v1",
+          "trustLevel": "RESEARCH_SAFE",
+          "reasonCode": "PROBABLE_COHERENT_DISCOVERY_IDENTITY",
+          "canPublicProfileResearch": true,
+          "canBuildProvisionalProfile": true,
+          "canRunCompanyUnderstanding": true,
+          "canRunCommercialRole": true,
+          "canAttachCanonicalFacts": false,
+          "canGenerateSignals": false,
+          "canRankOpportunity": false,
+          "canEnrichContacts": false
+        },
+        "reasonCode": null,
+        "missingRequirements": [],
+        "nextRecommendedCapability": null,
+        "evidenceIds": [
+          "9fcfdb0e-a1e0-4d3b-86a3-f465e15cd446"
+        ],
+        "attempts": {
+          "firmographics": 0,
+          "profileResolution": 2
+        }
+      },
+      "semantic": {
+        "cacheHit": true,
+        "llmInvoked": false,
+        "unknownReason": null,
+        "reusedPersistedAssessment": true,
+        "output": {
+          "reason": "Evidence describes Leadzen.ai as an AI-driven lead generation/SDR automation software company. Its offering (converting website traffic into meetings and automating outreach) is complementary to DigiPuush's AEO/GEO and AI visibility services, which aim to drive and surface website traffic in AI answers and search. There is no evidence Leadzen.ai provides AI-visibility or SEO services (so not a competitor) nor evidence of an existing partnership; the products align in the same marketing-to-sales workflow, making Leadzen.ai an adjacent vendor.",
+          "confidence": 0.78,
+          "evidence_ids": [
+            "9fcfdb0e-a1e0-4d3b-86a3-f465e15cd446"
+          ],
+          "business_model": "SAAS",
+          "commercial_role": "ADJACENT_VENDOR",
+          "primary_business": "AI-powered lead generation and SDR automation platform (turns website traffic into meetings; outreach and booking automation; data enrichment)",
+          "products_services": [
+            "AI-powered lead generation platform",
+            "SDR automation (outreach and meeting booking)",
+            "Demand generation tools",
+            "Data enrichment",
+            "Integrations with sales/marketing stacks"
+          ],
+          "canonical_industry": "IT_SERVICES",
+          "missing_information": [
+            "Whether Leadzen.ai currently purchases or uses SEO/AEO/GEO or AI visibility services",
+            "Company size, customer segments, and geographic focus relevant to partnership or resale",
+            "Any existing partnerships, integrations, or reseller relationships with SEO/visibility providers",
+            "Whether Leadzen.ai offers any overlapping functionality (e.g., SEO, content restructuring) not stated in the evidence",
+            "Technology stack and APIs for potential integration with DigiPuush services"
+          ]
+        },
+        "usage": null
+      },
+      "profile": {
+        "primaryBusiness": null,
+        "businessModel": "UNKNOWN",
+        "industry": null,
+        "employeesExact": null,
+        "employeesMin": null,
+        "employeesMax": null,
+        "country": null,
+        "productsServices": []
+      },
+      "domainKey": "DIGIPUUSH",
+      "projectId": "db141bf9-bc25-4e19-87e1-1d4db4a6a005",
+      "independent": {
+        "companyId": "b7e9af09-ede7-46fb-baa1-cf2d9f3158bf",
+        "domainKey": "DIGIPUUSH",
+        "company": "Leadzen.ai",
+        "domain": "leadzen.ai",
+        "identity": "UNCERTAIN",
+        "profileEvidence": "INSUFFICIENT",
+        "expectedCommercialRole": "UNKNOWN",
+        "expectedWho": "INSUFFICIENT_DATA",
+        "rationale": "Identity is probable but profile evidence is missing, preventing accurate commercial role assignment."
+      },
+      "agreement": {
+        "commercialRole": false,
+        "who": false,
+        "actualWho": "NOT_APPLICABLE",
+        "expectedWho": "INSUFFICIENT_DATA"
+      }
+    },
+    {
+      "companyId": "a96d5d08-cdd4-4970-b0e4-f85d569a3e75",
+      "name": "Outbound System",
+      "domain": "outboundsystem.com",
+      "identityState": "CONFIRMED",
+      "status": "INSUFFICIENT",
+      "reasonCode": "COMMERCIAL_RELATIONSHIP_AMBIGUOUS",
+      "buyerRole": "UNKNOWN",
+      "who": null,
+      "minimumIntelligence": {
+        "stage": "SUFFICIENT",
+        "cacheHit": true,
+        "identitySafe": true,
+        "attributionSafe": true,
+        "identityPermissions": {
+          "version": "architecture-v1-identity-actions-v1",
+          "trustLevel": "ATTRIBUTION_SAFE",
+          "reasonCode": "CONFIRMED_DISCOVERY_IDENTITY",
+          "canPublicProfileResearch": true,
+          "canBuildProvisionalProfile": true,
+          "canRunCompanyUnderstanding": true,
+          "canRunCommercialRole": true,
+          "canAttachCanonicalFacts": true,
+          "canGenerateSignals": true,
+          "canRankOpportunity": true,
+          "canEnrichContacts": true
+        },
+        "reasonCode": null,
+        "missingRequirements": [],
+        "nextRecommendedCapability": null,
+        "evidenceIds": [],
+        "attempts": {
+          "firmographics": 0,
+          "profileResolution": 0
+        }
+      },
+      "semantic": {
+        "cacheHit": true,
+        "llmInvoked": false,
+        "unknownReason": "COMPANY_EVIDENCE_INSUFFICIENT",
+        "reusedPersistedAssessment": false,
+        "output": null,
+        "usage": null
+      },
+      "profile": {
+        "primaryBusiness": "Outbound System | 1,545 followers on LinkedIn. Grow revenue faster with a proven B2B lead generation team. Trusted by 1000+ B2B companies. | Outbound System is a done-for-you B2B lead generation agency and outsourced SDR service that books 20-40+ qualified meetings per month using AI-powered cold email, LinkedIn outreach, and cold calling - each available as a standalone service or bundled into a unified multi-channel system.\n\nWe&#39;re the outbound partner companies switch to after they&#39;ve been burned by agencies that overpromise and underdeliver. Most agencies lock you into 3-6 month contracts, take 2-3 months to launch, run your campaigns on shared sending pools where one bad actor tanks everyone&#39;s deliverability, and send you PDF reports weekly or monthly instead of giving you real-time access to your own data.",
+        "businessModel": "UNKNOWN",
+        "industry": null,
+        "employeesExact": null,
+        "employeesMin": 11,
+        "employeesMax": 50,
+        "country": "United States",
+        "productsServices": []
+      },
+      "domainKey": "DIGIPUUSH",
+      "projectId": "db141bf9-bc25-4e19-87e1-1d4db4a6a005",
+      "independent": {
+        "companyId": "a96d5d08-cdd4-4970-b0e4-f85d569a3e75",
+        "domainKey": "DIGIPUUSH",
+        "company": "Outbound System",
+        "domain": "outboundsystem.com",
+        "identity": "CORRECT",
+        "profileEvidence": "SUFFICIENT",
+        "expectedCommercialRole": "POTENTIAL_BUYER",
+        "expectedWho": "LIKELY_FIT",
+        "rationale": "Lead generation agency that uses multi-channel systems; visibility into AI engines is a direct value-add for their outbound strategy."
+      },
+      "agreement": {
+        "commercialRole": false,
+        "who": false,
+        "actualWho": "NOT_APPLICABLE",
+        "expectedWho": "LIKELY_FIT"
+      }
+    },
+    {
+      "companyId": "ada76ca1-a14b-48e4-8de6-e96498b23d95",
+      "name": "OutPro",
+      "domain": "outpro.us",
+      "identityState": "CONFIRMED",
+      "status": "INSUFFICIENT",
+      "reasonCode": "COMMERCIAL_RELATIONSHIP_AMBIGUOUS",
+      "buyerRole": "UNKNOWN",
+      "who": null,
+      "minimumIntelligence": {
+        "stage": "SUFFICIENT",
+        "cacheHit": true,
+        "identitySafe": true,
+        "attributionSafe": true,
+        "identityPermissions": {
+          "version": "architecture-v1-identity-actions-v1",
+          "trustLevel": "ATTRIBUTION_SAFE",
+          "reasonCode": "CONFIRMED_DISCOVERY_IDENTITY",
+          "canPublicProfileResearch": true,
+          "canBuildProvisionalProfile": true,
+          "canRunCompanyUnderstanding": true,
+          "canRunCommercialRole": true,
+          "canAttachCanonicalFacts": true,
+          "canGenerateSignals": true,
+          "canRankOpportunity": true,
+          "canEnrichContacts": true
+        },
+        "reasonCode": null,
+        "missingRequirements": [],
+        "nextRecommendedCapability": null,
+        "evidenceIds": [],
+        "attempts": {
+          "firmographics": 0,
+          "profileResolution": 0
+        }
+      },
+      "semantic": {
+        "cacheHit": true,
+        "llmInvoked": false,
+        "unknownReason": "COMPANY_EVIDENCE_INSUFFICIENT",
+        "reusedPersistedAssessment": false,
+        "output": null,
+        "usage": null
+      },
+      "profile": {
+        "primaryBusiness": "OutPro | 1,190 followers on LinkedIn. People, Process, Playbook - No Leads Left Behind\n | Most B2B SaaS companies don&#39;t have a GTM problem. They have a systems problem.\n\nThe pipeline is inconsistent.",
+        "businessModel": "SAAS",
+        "industry": null,
+        "employeesExact": null,
+        "employeesMin": 11,
+        "employeesMax": 50,
+        "country": "India",
+        "productsServices": []
+      },
+      "domainKey": "DIGIPUUSH",
+      "projectId": "db141bf9-bc25-4e19-87e1-1d4db4a6a005",
+      "independent": {
+        "companyId": "ada76ca1-a14b-48e4-8de6-e96498b23d95",
+        "domainKey": "DIGIPUUSH",
+        "company": "OutPro",
+        "domain": "outpro.us",
+        "identity": "CORRECT",
+        "profileEvidence": "SUFFICIENT",
+        "expectedCommercialRole": "POTENTIAL_BUYER",
+        "expectedWho": "LIKELY_FIT",
+        "rationale": "Focuses on GTM systems for B2B SaaS; requires strong digital presence and visibility to address pipeline inconsistency."
+      },
+      "agreement": {
+        "commercialRole": false,
+        "who": false,
+        "actualWho": "NOT_APPLICABLE",
+        "expectedWho": "LIKELY_FIT"
+      }
+    },
+    {
+      "companyId": "252b9ea5-ec55-49b5-8bf7-c514da6ca2cd",
+      "name": "Partner Propel",
+      "domain": "partnerpropel.com",
+      "identityState": "CONFIRMED",
+      "status": "INSUFFICIENT",
+      "reasonCode": "COMMERCIAL_RELATIONSHIP_AMBIGUOUS",
+      "buyerRole": "UNKNOWN",
+      "who": null,
+      "minimumIntelligence": {
+        "stage": "SUFFICIENT",
+        "cacheHit": true,
+        "identitySafe": true,
+        "attributionSafe": true,
+        "identityPermissions": {
+          "version": "architecture-v1-identity-actions-v1",
+          "trustLevel": "ATTRIBUTION_SAFE",
+          "reasonCode": "CONFIRMED_DISCOVERY_IDENTITY",
+          "canPublicProfileResearch": true,
+          "canBuildProvisionalProfile": true,
+          "canRunCompanyUnderstanding": true,
+          "canRunCommercialRole": true,
+          "canAttachCanonicalFacts": true,
+          "canGenerateSignals": true,
+          "canRankOpportunity": true,
+          "canEnrichContacts": true
+        },
+        "reasonCode": null,
+        "missingRequirements": [],
+        "nextRecommendedCapability": null,
+        "evidenceIds": [],
+        "attempts": {
+          "firmographics": 0,
+          "profileResolution": 0
+        }
+      },
+      "semantic": {
+        "cacheHit": true,
+        "llmInvoked": false,
+        "unknownReason": "COMPANY_EVIDENCE_INSUFFICIENT",
+        "reusedPersistedAssessment": false,
+        "output": null,
+        "usage": null
+      },
+      "profile": {
+        "primaryBusiness": "Partner Propel | 500 followers on LinkedIn. We set up AI GTM systems for SMBs. | Most B2B SaaS companies plateau around $5M because growth depends on inconsistent referrals and founder-led sales.\n\nYou know you need systematic outbound. But hiring SDRs costs $80K+ per person per year.",
+        "businessModel": "SAAS",
+        "industry": null,
+        "employeesExact": null,
+        "employeesMin": 2,
+        "employeesMax": 10,
+        "country": "United States",
+        "productsServices": []
+      },
+      "domainKey": "DIGIPUUSH",
+      "projectId": "db141bf9-bc25-4e19-87e1-1d4db4a6a005",
+      "independent": {
+        "companyId": "252b9ea5-ec55-49b5-8bf7-c514da6ca2cd",
+        "domainKey": "DIGIPUUSH",
+        "company": "Partner Propel",
+        "domain": "partnerpropel.com",
+        "identity": "CORRECT",
+        "profileEvidence": "SUFFICIENT",
+        "expectedCommercialRole": "POTENTIAL_BUYER",
+        "expectedWho": "LIKELY_FIT",
+        "rationale": "Specializes in AI GTM systems for SMBs; align well with the service's focus on AI-driven visibility and authority."
+      },
+      "agreement": {
+        "commercialRole": false,
+        "who": false,
+        "actualWho": "NOT_APPLICABLE",
+        "expectedWho": "LIKELY_FIT"
+      }
+    },
+    {
+      "companyId": "d2dd1f48-1b81-4149-a298-1dde2ae96ade",
+      "name": "Pure Sales",
+      "domain": "puresales.io",
+      "identityState": "PROBABLE",
+      "status": "SUCCESS",
+      "reasonCode": "ADJACENT_VENDOR_NOT_ELIGIBLE",
+      "buyerRole": "ADJACENT_VENDOR",
+      "who": null,
+      "minimumIntelligence": {
+        "stage": "SUFFICIENT",
+        "cacheHit": true,
+        "identitySafe": true,
+        "attributionSafe": true,
+        "identityPermissions": {
+          "version": "architecture-v1-identity-actions-v1",
+          "trustLevel": "ATTRIBUTION_SAFE",
+          "reasonCode": "VERIFIED_IDENTIFIER",
+          "canPublicProfileResearch": true,
+          "canBuildProvisionalProfile": true,
+          "canRunCompanyUnderstanding": true,
+          "canRunCommercialRole": true,
+          "canAttachCanonicalFacts": true,
+          "canGenerateSignals": true,
+          "canRankOpportunity": true,
+          "canEnrichContacts": true
+        },
+        "reasonCode": null,
+        "missingRequirements": [],
+        "nextRecommendedCapability": null,
+        "evidenceIds": [
+          "05ad1d1e-067a-43e4-8080-6b3342238ef1"
+        ],
+        "attempts": {
+          "firmographics": 1,
+          "profileResolution": 1
+        }
+      },
+      "semantic": {
+        "cacheHit": true,
+        "llmInvoked": false,
+        "unknownReason": null,
+        "reusedPersistedAssessment": true,
+        "output": {
+          "reason": "Evidence describes Pure Sales as a marketing/sales services company focused on generating qualified meetings and managing pipeline for B2B SaaS and AI firms. Those offerings complement DigiPuush's AI visibility and SEO services (both target marketing/sales outcomes), making Pure Sales an adjacent vendor rather than a direct competitor or confirmed partner/buyer. There is no supplied evidence of resale, technical integration, or explicit partnership with DigiPuush.",
+          "confidence": 0.75,
+          "evidence_ids": [
+            "05ad1d1e-067a-43e4-8080-6b3342238ef1"
+          ],
+          "business_model": "PROFESSIONAL_SERVICES",
+          "commercial_role": "ADJACENT_VENDOR",
+          "primary_business": "B2B sales and marketing services (outsourced sales / lead generation)",
+          "products_services": [
+            "Qualified meeting generation",
+            "End-to-end pipeline management",
+            "Cold calling and high-level human conversations",
+            "Outbound prospecting / sales development",
+            "Sales partner services (no fixed salaries / flexible ramp-up)"
+          ],
+          "canonical_industry": "PROFESSIONAL_SERVICES",
+          "missing_information": [
+            "Any explicit statement that Pure Sales purchases or resells SEO/AI visibility services",
+            "Evidence of partnerships, channel/referral relationships, or integrations with DigiPuush or similar vendors",
+            "Client list or buyer persona overlap details showing shared customers with DigiPuush",
+            "Company size, revenue, or capacity to co-deliver complementary services"
+          ]
+        },
+        "usage": null
+      },
+      "profile": {
+        "primaryBusiness": null,
+        "businessModel": "UNKNOWN",
+        "industry": null,
+        "employeesExact": null,
+        "employeesMin": null,
+        "employeesMax": null,
+        "country": null,
+        "productsServices": []
+      },
+      "domainKey": "DIGIPUUSH",
+      "projectId": "db141bf9-bc25-4e19-87e1-1d4db4a6a005",
+      "independent": {
+        "companyId": "d2dd1f48-1b81-4149-a298-1dde2ae96ade",
+        "domainKey": "DIGIPUUSH",
+        "company": "Pure Sales",
+        "domain": "puresales.io",
+        "identity": "UNCERTAIN",
+        "profileEvidence": "INSUFFICIENT",
+        "expectedCommercialRole": "UNKNOWN",
+        "expectedWho": "INSUFFICIENT_DATA",
+        "rationale": "Insufficient profile information to determine service alignment."
+      },
+      "agreement": {
+        "commercialRole": false,
+        "who": false,
+        "actualWho": "NOT_APPLICABLE",
+        "expectedWho": "INSUFFICIENT_DATA"
+      }
+    },
+    {
+      "companyId": "4233dfdf-a2ac-48de-8347-91759eb415de",
+      "name": "RevyGo",
+      "domain": "revygo.com",
+      "identityState": "CONFIRMED",
+      "status": "INSUFFICIENT",
+      "reasonCode": "COMMERCIAL_RELATIONSHIP_AMBIGUOUS",
+      "buyerRole": "UNKNOWN",
+      "who": null,
+      "minimumIntelligence": {
+        "stage": "SUFFICIENT",
+        "cacheHit": true,
+        "identitySafe": true,
+        "attributionSafe": true,
+        "identityPermissions": {
+          "version": "architecture-v1-identity-actions-v1",
+          "trustLevel": "ATTRIBUTION_SAFE",
+          "reasonCode": "CONFIRMED_DISCOVERY_IDENTITY",
+          "canPublicProfileResearch": true,
+          "canBuildProvisionalProfile": true,
+          "canRunCompanyUnderstanding": true,
+          "canRunCommercialRole": true,
+          "canAttachCanonicalFacts": true,
+          "canGenerateSignals": true,
+          "canRankOpportunity": true,
+          "canEnrichContacts": true
+        },
+        "reasonCode": null,
+        "missingRequirements": [],
+        "nextRecommendedCapability": null,
+        "evidenceIds": [
+          "f678a9a3-5ba6-43b2-9c87-2e41c54c73ba"
+        ],
+        "attempts": {
+          "firmographics": 0,
+          "profileResolution": 2
+        }
+      },
+      "semantic": {
+        "cacheHit": true,
+        "llmInvoked": false,
+        "unknownReason": "GENUINELY_AMBIGUOUS",
+        "reusedPersistedAssessment": false,
+        "output": {
+          "primary_business": "Unknown — supplied evidence does not confirm RevyGo's business",
+          "business_model": "UNKNOWN",
+          "canonical_industry": "UNKNOWN",
+          "products_services": [],
+          "commercial_role": "UNKNOWN",
+          "confidence": 0.15,
+          "reason": "The only provided evidence discusses a company named Revvy (a product-review social platform) and a different company Revalgo (AI automation for sales/order processes) and explicitly states that the LinkedIn extract does not confirm an association with RevyGo or revygo.com. There is insufficient, unambiguous information to determine RevyGo's primary business or its relationship (buyer, competitor, partner, etc.) to DigiPuush.",
+          "evidence_ids": [
+            "f678a9a3-5ba6-43b2-9c87-2e41c54c73ba"
+          ],
+          "missing_information": [
+            "Authoritative company profile for RevyGo (company description)",
+            "Confirmation of domain ownership (revygo.com) and product/service offerings",
+            "Industry / vertical classification for RevyGo",
+            "Any public partnership, integration, or competitor relationships between RevyGo and DigiPuush"
+          ]
+        },
+        "usage": null
+      },
+      "profile": {
+        "primaryBusiness": null,
+        "businessModel": "UNKNOWN",
+        "industry": null,
+        "employeesExact": null,
+        "employeesMin": null,
+        "employeesMax": null,
+        "country": null,
+        "productsServices": []
+      },
+      "domainKey": "DIGIPUUSH",
+      "projectId": "db141bf9-bc25-4e19-87e1-1d4db4a6a005",
+      "independent": {
+        "companyId": "4233dfdf-a2ac-48de-8347-91759eb415de",
+        "domainKey": "DIGIPUUSH",
+        "company": "RevyGo",
+        "domain": "revygo.com",
+        "identity": "CORRECT",
+        "profileEvidence": "INSUFFICIENT",
+        "expectedCommercialRole": "UNKNOWN",
+        "expectedWho": "INSUFFICIENT_DATA",
+        "rationale": "Profile lacks sufficient business information to determine fit."
+      },
+      "agreement": {
+        "commercialRole": true,
+        "who": false,
+        "actualWho": "NOT_APPLICABLE",
+        "expectedWho": "INSUFFICIENT_DATA"
+      }
+    },
+    {
+      "companyId": "60fafac0-f176-4d81-8215-847e1026ba74",
+      "name": "SalesGig",
+      "domain": "salesgig.com",
+      "identityState": "CONFIRMED",
+      "status": "INSUFFICIENT",
+      "reasonCode": "COMMERCIAL_RELATIONSHIP_AMBIGUOUS",
+      "buyerRole": "UNKNOWN",
+      "who": null,
+      "minimumIntelligence": {
+        "stage": "SUFFICIENT",
+        "cacheHit": true,
+        "identitySafe": true,
+        "attributionSafe": true,
+        "identityPermissions": {
+          "version": "architecture-v1-identity-actions-v1",
+          "trustLevel": "ATTRIBUTION_SAFE",
+          "reasonCode": "CONFIRMED_DISCOVERY_IDENTITY",
+          "canPublicProfileResearch": true,
+          "canBuildProvisionalProfile": true,
+          "canRunCompanyUnderstanding": true,
+          "canRunCommercialRole": true,
+          "canAttachCanonicalFacts": true,
+          "canGenerateSignals": true,
+          "canRankOpportunity": true,
+          "canEnrichContacts": true
+        },
+        "reasonCode": null,
+        "missingRequirements": [],
+        "nextRecommendedCapability": null,
+        "evidenceIds": [],
+        "attempts": {
+          "firmographics": 0,
+          "profileResolution": 0
+        }
+      },
+      "semantic": {
+        "cacheHit": true,
+        "llmInvoked": false,
+        "unknownReason": "COMPANY_EVIDENCE_INSUFFICIENT",
+        "reusedPersistedAssessment": false,
+        "output": null,
+        "usage": null
+      },
+      "profile": {
+        "primaryBusiness": "SalesGig | 3,804 followers on LinkedIn. Fractional &amp; full-time outsourced sales development experts; We schedule sales meetings, so you can close more deals. | SalesGig, a QCSS company, is leader in fractional &amp; full-time outsourced sales development; We focus on scheduling sales meetings, so you can focus on closing deals. \n\nImagine employing the best US-based sales development reps to aggressively and consistently fill your sales funnel with qualified meetings. \n\nWith SalesGig, that’s your reality!",
+        "businessModel": "UNKNOWN",
+        "industry": null,
+        "employeesExact": null,
+        "employeesMin": 201,
+        "employeesMax": 500,
+        "country": "United States",
+        "productsServices": []
+      },
+      "domainKey": "DIGIPUUSH",
+      "projectId": "db141bf9-bc25-4e19-87e1-1d4db4a6a005",
+      "independent": {
+        "companyId": "60fafac0-f176-4d81-8215-847e1026ba74",
+        "domainKey": "DIGIPUUSH",
+        "company": "SalesGig",
+        "domain": "salesgig.com",
+        "identity": "CORRECT",
+        "profileEvidence": "SUFFICIENT",
+        "expectedCommercialRole": "POTENTIAL_BUYER",
+        "expectedWho": "LIKELY_FIT",
+        "rationale": "Large outsourced sales development firm needing high-volume lead visibility."
+      },
+      "agreement": {
+        "commercialRole": false,
+        "who": false,
+        "actualWho": "NOT_APPLICABLE",
+        "expectedWho": "LIKELY_FIT"
+      }
+    },
+    {
+      "companyId": "8a4ac58f-98cd-4a27-b684-ac1bf81293cb",
+      "name": "3LOCKS",
+      "domain": null,
+      "identityState": "UNRESOLVED",
+      "status": "BLOCKED",
+      "reasonCode": "DOMAIN_MISSING",
+      "buyerRole": "UNKNOWN",
+      "who": null,
+      "minimumIntelligence": {
+        "stage": "UNSAFE_IDENTITY",
+        "cacheHit": true,
+        "identitySafe": false,
+        "attributionSafe": false,
+        "identityPermissions": {
+          "version": "architecture-v1-identity-actions-v1",
+          "trustLevel": "UNSAFE",
+          "reasonCode": "DOMAIN_MISSING",
+          "canPublicProfileResearch": false,
+          "canBuildProvisionalProfile": false,
+          "canRunCompanyUnderstanding": false,
+          "canRunCommercialRole": false,
+          "canAttachCanonicalFacts": false,
+          "canGenerateSignals": false,
+          "canRankOpportunity": false,
+          "canEnrichContacts": false
+        },
+        "reasonCode": "DOMAIN_MISSING",
+        "missingRequirements": [
+          "safe company identity"
+        ],
+        "nextRecommendedCapability": "DOMAIN_RESOLUTION",
+        "evidenceIds": [],
+        "attempts": {
+          "firmographics": 0,
+          "profileResolution": 0
+        }
+      },
+      "semantic": null,
+      "profile": {
+        "primaryBusiness": null,
+        "businessModel": "UNKNOWN",
+        "industry": null,
+        "employeesExact": null,
+        "employeesMin": null,
+        "employeesMax": null,
+        "country": null,
+        "productsServices": []
+      },
+      "domainKey": "MANAGED_SOC",
+      "projectId": "364a64a0-98ba-42d5-b27b-94478d26226b",
+      "independent": {
+        "companyId": "8a4ac58f-98cd-4a27-b684-ac1bf81293cb",
+        "domainKey": "MANAGED_SOC",
+        "company": "3LOCKS",
+        "domain": null,
+        "identity": "UNCERTAIN",
+        "profileEvidence": "INSUFFICIENT",
+        "expectedCommercialRole": "UNKNOWN",
+        "expectedWho": "INSUFFICIENT_DATA",
+        "rationale": "Domain missing and identity unresolved."
+      },
+      "agreement": {
+        "commercialRole": true,
+        "who": false,
+        "actualWho": "NOT_APPLICABLE",
+        "expectedWho": "INSUFFICIENT_DATA"
+      }
+    },
+    {
+      "companyId": "5e4137f0-f1da-4877-b78c-330d77e4d58d",
+      "name": "Barracuda SKOUT Managed XDR",
+      "domain": "barracuda.com",
+      "identityState": "CONFIRMED",
+      "status": "INSUFFICIENT",
+      "reasonCode": "COMMERCIAL_RELATIONSHIP_AMBIGUOUS",
+      "buyerRole": "UNKNOWN",
+      "who": null,
+      "minimumIntelligence": {
+        "stage": "SUFFICIENT",
+        "cacheHit": true,
+        "identitySafe": true,
+        "attributionSafe": true,
+        "identityPermissions": {
+          "version": "architecture-v1-identity-actions-v1",
+          "trustLevel": "ATTRIBUTION_SAFE",
+          "reasonCode": "CONFIRMED_DISCOVERY_IDENTITY",
+          "canPublicProfileResearch": true,
+          "canBuildProvisionalProfile": true,
+          "canRunCompanyUnderstanding": true,
+          "canRunCommercialRole": true,
+          "canAttachCanonicalFacts": true,
+          "canGenerateSignals": true,
+          "canRankOpportunity": true,
+          "canEnrichContacts": true
+        },
+        "reasonCode": null,
+        "missingRequirements": [],
+        "nextRecommendedCapability": null,
+        "evidenceIds": [],
+        "attempts": {
+          "firmographics": 0,
+          "profileResolution": 0
+        }
+      },
+      "semantic": {
+        "cacheHit": true,
+        "llmInvoked": false,
+        "unknownReason": "COMPANY_EVIDENCE_INSUFFICIENT",
+        "reusedPersistedAssessment": false,
+        "output": null,
+        "usage": null
+      },
+      "profile": {
+        "primaryBusiness": "Barracuda | 88,530 followers on LinkedIn. Barracuda is a leading global cybersecurity company providing complete protection against complex threats for all size business. Our AI-powered BarracudaONE platform secures email, data, applications and networks with innovative solutions, managed XDR and a centralized dashboard to maximize protection and strengthen cyber resilience. Trusted by hundreds of thousands of IT professionals and managed service providers worldwide, Barracuda delivers powerful defenses that are easy to buy, deploy and use.",
+        "businessModel": "MSP",
+        "industry": "Cybersecurity",
+        "employeesExact": null,
+        "employeesMin": 1001,
+        "employeesMax": 5000,
+        "country": "United States",
+        "productsServices": []
+      },
+      "domainKey": "MANAGED_SOC",
+      "projectId": "364a64a0-98ba-42d5-b27b-94478d26226b",
+      "independent": {
+        "companyId": "5e4137f0-f1da-4877-b78c-330d77e4d58d",
+        "domainKey": "MANAGED_SOC",
+        "company": "Barracuda SKOUT Managed XDR",
+        "domain": "barracuda.com",
+        "identity": "CORRECT",
+        "profileEvidence": "SUFFICIENT",
+        "expectedCommercialRole": "SELLER_COMPETITOR",
+        "expectedWho": "NOT_APPLICABLE",
+        "rationale": "Direct competitor offering managed XDR and security services."
+      },
+      "agreement": {
+        "commercialRole": false,
+        "who": true,
+        "actualWho": "NOT_APPLICABLE",
+        "expectedWho": "NOT_APPLICABLE"
+      }
+    },
+    {
+      "companyId": "50ceadee-afc9-41a1-b7c7-f6334e213df8",
+      "name": "CData Virtuality",
+      "domain": null,
+      "identityState": "UNRESOLVED",
+      "status": "BLOCKED",
+      "reasonCode": "DOMAIN_MISSING",
+      "buyerRole": "UNKNOWN",
+      "who": null,
+      "minimumIntelligence": {
+        "stage": "UNSAFE_IDENTITY",
+        "cacheHit": true,
+        "identitySafe": false,
+        "attributionSafe": false,
+        "identityPermissions": {
+          "version": "architecture-v1-identity-actions-v1",
+          "trustLevel": "UNSAFE",
+          "reasonCode": "DOMAIN_MISSING",
+          "canPublicProfileResearch": false,
+          "canBuildProvisionalProfile": false,
+          "canRunCompanyUnderstanding": false,
+          "canRunCommercialRole": false,
+          "canAttachCanonicalFacts": false,
+          "canGenerateSignals": false,
+          "canRankOpportunity": false,
+          "canEnrichContacts": false
+        },
+        "reasonCode": "DOMAIN_MISSING",
+        "missingRequirements": [
+          "safe company identity"
+        ],
+        "nextRecommendedCapability": "DOMAIN_RESOLUTION",
+        "evidenceIds": [],
+        "attempts": {
+          "firmographics": 0,
+          "profileResolution": 0
+        }
+      },
+      "semantic": null,
+      "profile": {
+        "primaryBusiness": null,
+        "businessModel": "UNKNOWN",
+        "industry": null,
+        "employeesExact": null,
+        "employeesMin": null,
+        "employeesMax": null,
+        "country": null,
+        "productsServices": []
+      },
+      "domainKey": "MANAGED_SOC",
+      "projectId": "364a64a0-98ba-42d5-b27b-94478d26226b",
+      "independent": {
+        "companyId": "50ceadee-afc9-41a1-b7c7-f6334e213df8",
+        "domainKey": "MANAGED_SOC",
+        "company": "CData Virtuality",
+        "domain": null,
+        "identity": "UNCERTAIN",
+        "profileEvidence": "INSUFFICIENT",
+        "expectedCommercialRole": "UNKNOWN",
+        "expectedWho": "INSUFFICIENT_DATA",
+        "rationale": "Domain missing and identity unresolved."
+      },
+      "agreement": {
+        "commercialRole": true,
+        "who": false,
+        "actualWho": "NOT_APPLICABLE",
+        "expectedWho": "INSUFFICIENT_DATA"
+      }
+    },
+    {
+      "companyId": "36e5aa54-997a-4281-95c7-460508f94e32",
+      "name": "Critical Start",
+      "domain": "criticalstart.com",
+      "identityState": "CONFIRMED",
+      "status": "INSUFFICIENT",
+      "reasonCode": "COMMERCIAL_RELATIONSHIP_AMBIGUOUS",
+      "buyerRole": "UNKNOWN",
+      "who": null,
+      "minimumIntelligence": {
+        "stage": "SUFFICIENT",
+        "cacheHit": true,
+        "identitySafe": true,
+        "attributionSafe": true,
+        "identityPermissions": {
+          "version": "architecture-v1-identity-actions-v1",
+          "trustLevel": "ATTRIBUTION_SAFE",
+          "reasonCode": "CONFIRMED_DISCOVERY_IDENTITY",
+          "canPublicProfileResearch": true,
+          "canBuildProvisionalProfile": true,
+          "canRunCompanyUnderstanding": true,
+          "canRunCommercialRole": true,
+          "canAttachCanonicalFacts": true,
+          "canGenerateSignals": true,
+          "canRankOpportunity": true,
+          "canEnrichContacts": true
+        },
+        "reasonCode": null,
+        "missingRequirements": [],
+        "nextRecommendedCapability": null,
+        "evidenceIds": [],
+        "attempts": {
+          "firmographics": 0,
+          "profileResolution": 0
+        }
+      },
+      "semantic": {
+        "cacheHit": true,
+        "llmInvoked": false,
+        "unknownReason": "COMPANY_EVIDENCE_INSUFFICIENT",
+        "reusedPersistedAssessment": false,
+        "output": null,
+        "usage": null
+      },
+      "profile": {
+        "primaryBusiness": "Critical Start | 20,492 followers on LinkedIn. MDR with fast response, full visibility, and expert action. Built to cut noise and help your team stay in control. | Most MDR providers send alerts and call it coverage, but security teams don&#39;t need more notifications. They need action.\n\nCritical Start is a Managed Detection and Response (MDR) provider built for outcomes.",
+        "businessModel": "MSSP",
+        "industry": "Cybersecurity",
+        "employeesExact": null,
+        "employeesMin": 201,
+        "employeesMax": 500,
+        "country": "United States",
+        "productsServices": []
+      },
+      "domainKey": "MANAGED_SOC",
+      "projectId": "364a64a0-98ba-42d5-b27b-94478d26226b",
+      "independent": {
+        "companyId": "36e5aa54-997a-4281-95c7-460508f94e32",
+        "domainKey": "MANAGED_SOC",
+        "company": "Critical Start",
+        "domain": "criticalstart.com",
+        "identity": "CORRECT",
+        "profileEvidence": "SUFFICIENT",
+        "expectedCommercialRole": "SELLER_COMPETITOR",
+        "expectedWho": "NOT_APPLICABLE",
+        "rationale": "Established Managed Detection and Response (MDR) provider, direct competitor."
+      },
+      "agreement": {
+        "commercialRole": false,
+        "who": true,
+        "actualWho": "NOT_APPLICABLE",
+        "expectedWho": "NOT_APPLICABLE"
+      }
+    },
+    {
+      "companyId": "8ef6a894-78e7-4276-94d5-3c14c64b7ee1",
+      "name": "CyberOne",
+      "domain": "cyberone.security",
+      "identityState": "PROBABLE",
+      "status": "SUCCESS",
+      "reasonCode": "COMPETITOR_NOT_ELIGIBLE",
+      "buyerRole": "SELLER_COMPETITOR",
+      "who": null,
+      "minimumIntelligence": {
+        "stage": "SUFFICIENT",
+        "cacheHit": true,
+        "identitySafe": true,
+        "attributionSafe": false,
+        "identityPermissions": {
+          "version": "architecture-v1-identity-actions-v1",
+          "trustLevel": "RESEARCH_SAFE",
+          "reasonCode": "PROBABLE_COHERENT_DISCOVERY_IDENTITY",
+          "canPublicProfileResearch": true,
+          "canBuildProvisionalProfile": true,
+          "canRunCompanyUnderstanding": true,
+          "canRunCommercialRole": true,
+          "canAttachCanonicalFacts": false,
+          "canGenerateSignals": false,
+          "canRankOpportunity": false,
+          "canEnrichContacts": false
+        },
+        "reasonCode": null,
+        "missingRequirements": [],
+        "nextRecommendedCapability": null,
+        "evidenceIds": [
+          "b0567cfb-c3ed-40f3-9b6a-11bbee49f34c"
+        ],
+        "attempts": {
+          "firmographics": 0,
+          "profileResolution": 2
+        }
+      },
+      "semantic": {
+        "cacheHit": true,
+        "llmInvoked": false,
+        "unknownReason": null,
+        "reusedPersistedAssessment": true,
+        "output": {
+          "reason": "Evidence describes CyberOne as a cybersecurity company delivering Managed XDR and Microsoft-managed security services plus security consulting and professional services. Those offerings are substantial substitutes for Aadit Technologies' Managed SOC (continuous managed security monitoring and response), indicating a competitive relationship.",
+          "confidence": 0.9,
+          "evidence_ids": [
+            "b0567cfb-c3ed-40f3-9b6a-11bbee49f34c"
+          ],
+          "business_model": "MSSP",
+          "commercial_role": "SELLER_COMPETITOR",
+          "primary_business": "Cybersecurity consulting and managed security services",
+          "products_services": [
+            "Managed Extended Detection & Response (Managed XDR)",
+            "Microsoft-managed security services",
+            "Security consulting",
+            "Professional services",
+            "AI-augmented security operations"
+          ],
+          "canonical_industry": "CYBERSECURITY",
+          "missing_information": [
+            "Explicit statement that CyberOne offers a 24/7 managed SOC service equivalent in scope to Aadit's Managed SOC",
+            "Detailed feature-to-feature comparison (coverage of endpoints, identities, cloud, networks) between CyberOne offerings and Aadit's Managed SOC",
+            "Geographic targeting and customer segments to assess direct market overlap with Aadit"
+          ]
+        },
+        "usage": null
+      },
+      "profile": {
+        "primaryBusiness": null,
+        "businessModel": "UNKNOWN",
+        "industry": null,
+        "employeesExact": null,
+        "employeesMin": null,
+        "employeesMax": null,
+        "country": null,
+        "productsServices": []
+      },
+      "domainKey": "MANAGED_SOC",
+      "projectId": "364a64a0-98ba-42d5-b27b-94478d26226b",
+      "independent": {
+        "companyId": "8ef6a894-78e7-4276-94d5-3c14c64b7ee1",
+        "domainKey": "MANAGED_SOC",
+        "company": "CyberOne",
+        "domain": "cyberone.security",
+        "identity": "UNCERTAIN",
+        "profileEvidence": "INSUFFICIENT",
+        "expectedCommercialRole": "UNKNOWN",
+        "expectedWho": "INSUFFICIENT_DATA",
+        "rationale": "Profile data is missing, identity only probable."
+      },
+      "agreement": {
+        "commercialRole": false,
+        "who": false,
+        "actualWho": "NOT_APPLICABLE",
+        "expectedWho": "INSUFFICIENT_DATA"
+      }
+    },
+    {
+      "companyId": "05939322-6f62-408e-af6a-307196598385",
+      "name": "CySOC",
+      "domain": "cysocsecure.com",
+      "identityState": "CONFIRMED",
+      "status": "INSUFFICIENT",
+      "reasonCode": "COMMERCIAL_RELATIONSHIP_AMBIGUOUS",
+      "buyerRole": "UNKNOWN",
+      "who": null,
+      "minimumIntelligence": {
+        "stage": "SUFFICIENT",
+        "cacheHit": true,
+        "identitySafe": true,
+        "attributionSafe": true,
+        "identityPermissions": {
+          "version": "architecture-v1-identity-actions-v1",
+          "trustLevel": "ATTRIBUTION_SAFE",
+          "reasonCode": "CONFIRMED_DISCOVERY_IDENTITY",
+          "canPublicProfileResearch": true,
+          "canBuildProvisionalProfile": true,
+          "canRunCompanyUnderstanding": true,
+          "canRunCommercialRole": true,
+          "canAttachCanonicalFacts": true,
+          "canGenerateSignals": true,
+          "canRankOpportunity": true,
+          "canEnrichContacts": true
+        },
+        "reasonCode": null,
+        "missingRequirements": [],
+        "nextRecommendedCapability": null,
+        "evidenceIds": [],
+        "attempts": {
+          "firmographics": 0,
+          "profileResolution": 0
+        }
+      },
+      "semantic": {
+        "cacheHit": true,
+        "llmInvoked": false,
+        "unknownReason": "COMPANY_EVIDENCE_INSUFFICIENT",
+        "reusedPersistedAssessment": false,
+        "output": null,
+        "usage": null
+      },
+      "profile": {
+        "primaryBusiness": "CySOC | 72 followers on LinkedIn. Get Secure, Stay Secure | CYSOC Secure is a Cybersecurity Consulting and Security Operations Center (SOC) firm headquartered in Raleigh, North Carolina, specializing in protecting enterprises from advanced cyber threats and operational disruptions.\n\nWe partner with organizations to design and implement scalable, compliance-driven security frameworks that align with business objectives and regulatory standards. Our team delivers end-to-end solutions — from 24/7 SOC monitoring and incident response to Unified Communication and IT infrastructure management — ensuring our clients maintain business continuity and resilience.",
+        "businessModel": "MSSP",
+        "industry": "Cybersecurity",
+        "employeesExact": null,
+        "employeesMin": 2,
+        "employeesMax": 10,
+        "country": "United States",
+        "productsServices": []
+      },
+      "domainKey": "MANAGED_SOC",
+      "projectId": "364a64a0-98ba-42d5-b27b-94478d26226b",
+      "independent": {
+        "companyId": "05939322-6f62-408e-af6a-307196598385",
+        "domainKey": "MANAGED_SOC",
+        "company": "CySOC",
+        "domain": "cysocsecure.com",
+        "identity": "CORRECT",
+        "profileEvidence": "SUFFICIENT",
+        "expectedCommercialRole": "SELLER_COMPETITOR",
+        "expectedWho": "NOT_APPLICABLE",
+        "rationale": "Cybersecurity firm providing 24/7 SOC services, direct competitor."
+      },
+      "agreement": {
+        "commercialRole": false,
+        "who": true,
+        "actualWho": "NOT_APPLICABLE",
+        "expectedWho": "NOT_APPLICABLE"
+      }
+    },
+    {
+      "companyId": "e963aa5d-4bf6-4fec-95cb-14ac65c85679",
+      "name": "Ostra Security",
+      "domain": "ostrasecurity.com",
+      "identityState": "CONFIRMED",
+      "status": "INSUFFICIENT",
+      "reasonCode": "COMMERCIAL_RELATIONSHIP_AMBIGUOUS",
+      "buyerRole": "UNKNOWN",
+      "who": null,
+      "minimumIntelligence": {
+        "stage": "SUFFICIENT",
+        "cacheHit": true,
+        "identitySafe": true,
+        "attributionSafe": true,
+        "identityPermissions": {
+          "version": "architecture-v1-identity-actions-v1",
+          "trustLevel": "ATTRIBUTION_SAFE",
+          "reasonCode": "CONFIRMED_DISCOVERY_IDENTITY",
+          "canPublicProfileResearch": true,
+          "canBuildProvisionalProfile": true,
+          "canRunCompanyUnderstanding": true,
+          "canRunCommercialRole": true,
+          "canAttachCanonicalFacts": true,
+          "canGenerateSignals": true,
+          "canRankOpportunity": true,
+          "canEnrichContacts": true
+        },
+        "reasonCode": null,
+        "missingRequirements": [],
+        "nextRecommendedCapability": null,
+        "evidenceIds": [],
+        "attempts": {
+          "firmographics": 0,
+          "profileResolution": 0
+        }
+      },
+      "semantic": {
+        "cacheHit": true,
+        "llmInvoked": false,
+        "unknownReason": "COMPANY_EVIDENCE_INSUFFICIENT",
+        "reusedPersistedAssessment": false,
+        "output": null,
+        "usage": null
+      },
+      "profile": {
+        "primaryBusiness": "Ostra Security | 3,422 followers on LinkedIn. Managed detection, response, and remediation for organizations that need more than alerts and PDF reports. | Ostra Security delivers MXDRR: Managed Extended Detection, Response, and Remediation. \n\nWe added the extra ‘R’ because traditional MDR and XDR often stop short. They detect a threat, isolate a device, and send an alert.",
+        "businessModel": "MSSP",
+        "industry": "Cybersecurity",
+        "employeesExact": null,
+        "employeesMin": 51,
+        "employeesMax": 200,
+        "country": "United States",
+        "productsServices": []
+      },
+      "domainKey": "MANAGED_SOC",
+      "projectId": "364a64a0-98ba-42d5-b27b-94478d26226b",
+      "independent": {
+        "companyId": "e963aa5d-4bf6-4fec-95cb-14ac65c85679",
+        "domainKey": "MANAGED_SOC",
+        "company": "Ostra Security",
+        "domain": "ostrasecurity.com",
+        "identity": "CORRECT",
+        "profileEvidence": "SUFFICIENT",
+        "expectedCommercialRole": "SELLER_COMPETITOR",
+        "expectedWho": "NOT_APPLICABLE",
+        "rationale": "Managed detection and response provider, direct competitor."
+      },
+      "agreement": {
+        "commercialRole": false,
+        "who": true,
+        "actualWho": "NOT_APPLICABLE",
+        "expectedWho": "NOT_APPLICABLE"
+      }
+    },
+    {
+      "companyId": "14f2dadb-6650-43bd-a930-cab49890f950",
+      "name": "Pondurance",
+      "domain": "pondurance.com",
+      "identityState": "CONFIRMED",
+      "status": "INSUFFICIENT",
+      "reasonCode": "COMMERCIAL_RELATIONSHIP_AMBIGUOUS",
+      "buyerRole": "UNKNOWN",
+      "who": null,
+      "minimumIntelligence": {
+        "stage": "SUFFICIENT",
+        "cacheHit": true,
+        "identitySafe": true,
+        "attributionSafe": true,
+        "identityPermissions": {
+          "version": "architecture-v1-identity-actions-v1",
+          "trustLevel": "ATTRIBUTION_SAFE",
+          "reasonCode": "CONFIRMED_DISCOVERY_IDENTITY",
+          "canPublicProfileResearch": true,
+          "canBuildProvisionalProfile": true,
+          "canRunCompanyUnderstanding": true,
+          "canRunCommercialRole": true,
+          "canAttachCanonicalFacts": true,
+          "canGenerateSignals": true,
+          "canRankOpportunity": true,
+          "canEnrichContacts": true
+        },
+        "reasonCode": null,
+        "missingRequirements": [],
+        "nextRecommendedCapability": null,
+        "evidenceIds": [],
+        "attempts": {
+          "firmographics": 0,
+          "profileResolution": 0
+        }
+      },
+      "semantic": {
+        "cacheHit": true,
+        "llmInvoked": false,
+        "unknownReason": "COMPANY_EVIDENCE_INSUFFICIENT",
+        "reusedPersistedAssessment": false,
+        "output": null,
+        "usage": null
+      },
+      "profile": {
+        "primaryBusiness": "Pondurance | 25,317 followers on LinkedIn. Delivering personalized, 24/7 MDR services that grow with your organization.  | Pondurance delivers world-class Managed Detection and Response (MDR) services to organizations facing today&#39;s most pressing and dynamic cybersecurity challenges, including ransomware, complex compliance mandates, and digital transformation accelerated by distributed workforces. These MDR services include an annual risk assessment powered by Pondurance’s risk management platform MyCyberScorecard. Our experienced team of analysts, threat hunters, and incident responders leverages your cyber risk improvement plan and uses our advanced Scope platform and integrated tech stack — including SIEM, log management, and security orchestration and response (SOAR) — to continuously hunt, investigate, validate, and contain threats.",
+        "businessModel": "MSSP",
+        "industry": "Cybersecurity",
+        "employeesExact": null,
+        "employeesMin": 51,
+        "employeesMax": 200,
+        "country": "United States",
+        "productsServices": []
+      },
+      "domainKey": "MANAGED_SOC",
+      "projectId": "364a64a0-98ba-42d5-b27b-94478d26226b",
+      "independent": {
+        "companyId": "14f2dadb-6650-43bd-a930-cab49890f950",
+        "domainKey": "MANAGED_SOC",
+        "company": "Pondurance",
+        "domain": "pondurance.com",
+        "identity": "CORRECT",
+        "profileEvidence": "SUFFICIENT",
+        "expectedCommercialRole": "SELLER_COMPETITOR",
+        "expectedWho": "NOT_APPLICABLE",
+        "rationale": "Provides 24/7 MDR services, direct competitor."
+      },
+      "agreement": {
+        "commercialRole": false,
+        "who": true,
+        "actualWho": "NOT_APPLICABLE",
+        "expectedWho": "NOT_APPLICABLE"
+      }
+    },
+    {
+      "companyId": "8cec0d59-cbec-4285-a830-52fc38523bbf",
+      "name": "SOCFortress",
+      "domain": "socfortress.co",
+      "identityState": "CONFIRMED",
+      "status": "INSUFFICIENT",
+      "reasonCode": "COMMERCIAL_RELATIONSHIP_AMBIGUOUS",
+      "buyerRole": "UNKNOWN",
+      "who": null,
+      "minimumIntelligence": {
+        "stage": "SUFFICIENT",
+        "cacheHit": true,
+        "identitySafe": true,
+        "attributionSafe": true,
+        "identityPermissions": {
+          "version": "architecture-v1-identity-actions-v1",
+          "trustLevel": "ATTRIBUTION_SAFE",
+          "reasonCode": "CONFIRMED_DISCOVERY_IDENTITY",
+          "canPublicProfileResearch": true,
+          "canBuildProvisionalProfile": true,
+          "canRunCompanyUnderstanding": true,
+          "canRunCommercialRole": true,
+          "canAttachCanonicalFacts": true,
+          "canGenerateSignals": true,
+          "canRankOpportunity": true,
+          "canEnrichContacts": true
+        },
+        "reasonCode": null,
+        "missingRequirements": [],
+        "nextRecommendedCapability": null,
+        "evidenceIds": [],
+        "attempts": {
+          "firmographics": 0,
+          "profileResolution": 0
+        }
+      },
+      "semantic": {
+        "cacheHit": true,
+        "llmInvoked": false,
+        "unknownReason": "COMPANY_EVIDENCE_INSUFFICIENT",
+        "reusedPersistedAssessment": false,
+        "output": null,
+        "usage": null
+      },
+      "profile": {
+        "primaryBusiness": "SOCFortress | 1,941 followers on LinkedIn. SOCFortress is a SaaS company that unifies Observability, Security Monitoring, Threat Intelligence and SOAR. | SOCFortress is a SaaS company that unifies Observability, Security Monitoring, Threat Intelligence and Security Orchestration, Automation, and Response (SOAR). SOCFortress helps organizations align strategic and operational goals by exposing the risks and threats that matter most.",
+        "businessModel": "SAAS",
+        "industry": "IT Services",
+        "employeesExact": null,
+        "employeesMin": 2,
+        "employeesMax": 10,
+        "country": "United States",
+        "productsServices": []
+      },
+      "domainKey": "MANAGED_SOC",
+      "projectId": "364a64a0-98ba-42d5-b27b-94478d26226b",
+      "independent": {
+        "companyId": "8cec0d59-cbec-4285-a830-52fc38523bbf",
+        "domainKey": "MANAGED_SOC",
+        "company": "SOCFortress",
+        "domain": "socfortress.co",
+        "identity": "CORRECT",
+        "profileEvidence": "SUFFICIENT",
+        "expectedCommercialRole": "SELLER_COMPETITOR",
+        "expectedWho": "NOT_APPLICABLE",
+        "rationale": "SaaS provider for security monitoring and SOC operations, direct competitor."
+      },
+      "agreement": {
+        "commercialRole": false,
+        "who": true,
+        "actualWho": "NOT_APPLICABLE",
+        "expectedWho": "NOT_APPLICABLE"
+      }
+    },
+    {
+      "companyId": "bef79acd-a69f-40a9-8488-d46a03ae3710",
+      "name": "Socura",
+      "domain": "socura.co.uk",
+      "identityState": "CONFIRMED",
+      "status": "INSUFFICIENT",
+      "reasonCode": "COMMERCIAL_RELATIONSHIP_AMBIGUOUS",
+      "buyerRole": "UNKNOWN",
+      "who": null,
+      "minimumIntelligence": {
+        "stage": "SUFFICIENT",
+        "cacheHit": true,
+        "identitySafe": true,
+        "attributionSafe": true,
+        "identityPermissions": {
+          "version": "architecture-v1-identity-actions-v1",
+          "trustLevel": "ATTRIBUTION_SAFE",
+          "reasonCode": "CONFIRMED_DISCOVERY_IDENTITY",
+          "canPublicProfileResearch": true,
+          "canBuildProvisionalProfile": true,
+          "canRunCompanyUnderstanding": true,
+          "canRunCommercialRole": true,
+          "canAttachCanonicalFacts": true,
+          "canGenerateSignals": true,
+          "canRankOpportunity": true,
+          "canEnrichContacts": true
+        },
+        "reasonCode": null,
+        "missingRequirements": [],
+        "nextRecommendedCapability": null,
+        "evidenceIds": [],
+        "attempts": {
+          "firmographics": 0,
+          "profileResolution": 0
+        }
+      },
+      "semantic": {
+        "cacheHit": true,
+        "llmInvoked": false,
+        "unknownReason": "COMPANY_EVIDENCE_INSUFFICIENT",
+        "reusedPersistedAssessment": false,
+        "output": null,
+        "usage": null
+      },
+      "profile": {
+        "primaryBusiness": "Socura | 2,470 followers on LinkedIn. Managed Detection and Response | With constant vigilance against cyber threats comes the calm to grow your business. Socura is a Managed Detection and Response provider bringing the clarity, control, and confidence needed to minimise risk and thrive in an ever-changing landscape.",
+        "businessModel": "MSSP",
+        "industry": "Cybersecurity",
+        "employeesExact": null,
+        "employeesMin": 11,
+        "employeesMax": 50,
+        "country": "United Kingdom",
+        "productsServices": []
+      },
+      "domainKey": "MANAGED_SOC",
+      "projectId": "364a64a0-98ba-42d5-b27b-94478d26226b",
+      "independent": {
+        "companyId": "bef79acd-a69f-40a9-8488-d46a03ae3710",
+        "domainKey": "MANAGED_SOC",
+        "company": "Socura",
+        "domain": "socura.co.uk",
+        "identity": "CORRECT",
+        "profileEvidence": "SUFFICIENT",
+        "expectedCommercialRole": "SELLER_COMPETITOR",
+        "expectedWho": "NOT_APPLICABLE",
+        "rationale": "MDR provider offering similar services, direct competitor."
+      },
+      "agreement": {
+        "commercialRole": false,
+        "who": true,
+        "actualWho": "NOT_APPLICABLE",
+        "expectedWho": "NOT_APPLICABLE"
+      }
+    }
+  ],
+  "reconciliation": "JYRA_ARCHITECTURE_V1_CLEAN_CROSS_DOMAIN_VALIDATION_RECONCILIATION.json"
+}

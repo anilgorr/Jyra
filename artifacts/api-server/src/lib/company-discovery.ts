@@ -39,11 +39,22 @@ type DiscoveryInput = {
   router: Pick<ProviderOperations, "discoverCompanies" | "lookupCompany"> &
     Partial<Pick<ProviderOperations, "searchWeb" | "enrichCompany">>;
   orchestrateAcceptedCandidates?: boolean;
+  maxOrchestratedCandidates?: number;
   limit?: number;
   maxProviderCalls?: number;
   queryOverrides?: string[];
   now?: Date;
 };
+
+export function bindControlPlaneProviderOperations(
+  router: Pick<ProviderOperations, "searchWeb" | "enrichCompany">,
+): Pick<ProviderOperations, "searchWeb" | "enrichCompany"> {
+  return {
+    searchWeb: router.searchWeb.bind(router),
+    enrichCompany: router.enrichCompany.bind(router),
+  };
+}
+
 type DbExecutor = typeof db | Parameters<Parameters<typeof db.transaction>[0]>[0];
 
 export type DiscoveryQualification =
@@ -1365,16 +1376,16 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
       throw new Error("COMPANY_INTELLIGENCE_CAPABILITIES_UNAVAILABLE");
     }
     const { orchestrateCompanyIntelligence } = await import("./company-intelligence-control-plane");
+    let orchestratedCandidates = 0;
     for (const report of reports) {
       if (!report.companyId || report.existingOrNew === "NEEDS_REVIEW") continue;
+      if (input.maxOrchestratedCandidates !== undefined &&
+        orchestratedCandidates >= input.maxOrchestratedCandidates) break;
       const intelligence = await orchestrateCompanyIntelligence({
         organizationId: input.organizationId,
         projectId: input.projectId,
         companyId: report.companyId,
-        router: {
-          searchWeb: input.router.searchWeb,
-          enrichCompany: input.router.enrichCompany,
-        },
+        router: bindControlPlaneProviderOperations(input.router as Pick<ProviderOperations, "searchWeb" | "enrichCompany">),
         now,
       });
       report.buyerRole = intelligence.buyerRole as DiscoveryCandidateReport["buyerRole"];
@@ -1383,6 +1394,7 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
         reasonCode: intelligence.reasonCode,
         nextRecommendedCapability: intelligence.nextRecommendedCapability,
       };
+      orchestratedCandidates += 1;
     }
   }
 

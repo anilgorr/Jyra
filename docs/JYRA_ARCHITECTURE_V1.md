@@ -312,13 +312,33 @@ Current focused regressions verify:
 - profile canonical updates require verified identity;
 - CompanyUnderstanding/CommercialRole prompt and versions remain frozen.
 
-The required fresh 10 DigiPuush + 10 Managed SOC validation has **not** been
-run. It belongs to the separate bounded cross-domain validation workstream.
+The bounded Architecture V1 validation is complete:
+
+- exactly 10 DigiPuush + 10 Managed SOC companies;
+- all 20 processed through the authoritative control plane;
+- 18 reached sufficient MinimumCompanyIntelligence and 2 failed closed on
+  unsafe identity;
+- identity permissions: 16 `ATTRIBUTION_SAFE`, 2 `RESEARCH_SAFE`, 2 `UNSAFE`;
+- outcomes: 1 ready for signal research, 2 adjacent vendors, 1 competitor,
+  14 commercial-relationship ambiguities, and 2 missing domains;
+- forbidden downstream counts were unchanged;
+- raw output was frozen before independent blind adjudication;
+- exact blind agreement: 3/20 CommercialRole and 8/20 WHO.
+
+The run uses two isolated validation projects cloned from the frozen source
+Business Twin and ICP contexts. Preflight verified zero memberships,
+project-scoped provenance, and measured downstream rows before provider calls.
+All validation-project provenance was created after the run start.
+
+The frozen raw, adjudication, final JSON, reconciliation, and Markdown reports
+use the `JYRA_ARCHITECTURE_V1_CLEAN_CROSS_DOMAIN_VALIDATION` filename prefix
+under `artifacts/api-server/`.
 
 ## 20. Current architecture verdict
 
 The progressive identity deadlock and duplicate orchestration paths are
-corrected. The architecture still requires its frozen cross-domain validation
-before the 50-company Reality Test.
+corrected. The clean bounded run proves the consolidated architecture mechanics
+and fail-closed boundaries, but market-quality adjudication failed. It does not
+authorize the 50-company Reality Test.
 
-**C — READY FOR BOUNDED CROSS-DOMAIN VALIDATION**
+**ARCHITECTURE PASS; MARKET-QUALITY GATE FAIL**

@@ -1,0 +1,226 @@
+{
+  "methodology": "The adjudication process relies on matching company profile evidence against the provided seller offerings. Each company was evaluated based on industry alignment, business model, and functional capabilities to determine their commercial relationship to the seller. Identity status and profile sufficiency were cross-referenced against the provided intelligence stage. Non-buyer entities (competitors or adjacent vendors) were assigned 'NOT_APPLICABLE' for 'expectedWho' as per instructions.",
+  "caveats": "Content for several entries was incomplete or missing (e.g., identity state UNRESOLVED or missing domain). Several entities identified as cybersecurity firms or MSSPs were classified as 'SELLER_COMPETITOR' based on overlap with the 'MANAGED_SOC' offering. Inference of size, geography, or industry was strictly avoided; missing fields result in 'INSUFFICIENT_DATA' or null status.",
+  "entries": [
+    {
+      "companyId": "c5a70b95-1302-4fa3-9e96-8ee6c6d18926",
+      "domainKey": "DIGIPUUSH",
+      "company": "Grownob LLC",
+      "domain": "grownob.com",
+      "identity": "CORRECT",
+      "profileEvidence": "SUFFICIENT",
+      "expectedCommercialRole": "POTENTIAL_BUYER",
+      "expectedWho": "LIKELY_FIT",
+      "rationale": "As a B2B outbound infrastructure agency, they are a primary target for AI visibility and AEO services to enhance client pipeline results."
+    },
+    {
+      "companyId": "6594cacd-e2a9-4803-ba7a-e166b8da7489",
+      "domainKey": "DIGIPUUSH",
+      "company": "Lead Made Easy",
+      "domain": "leadmadeeasy.com",
+      "identity": "CORRECT",
+      "profileEvidence": "SUFFICIENT",
+      "expectedCommercialRole": "POTENTIAL_BUYER",
+      "expectedWho": "LIKELY_FIT",
+      "rationale": "Pipeline-as-a-Service firm that would benefit from improved search and AI visibility to attract high-intent SaaS/IT clients."
+    },
+    {
+      "companyId": "b45eeee7-aab7-412f-b7e7-4c95c999fa14",
+      "domainKey": "DIGIPUUSH",
+      "company": "Leadgeneron",
+      "domain": "leadgeneron.com",
+      "identity": "CORRECT",
+      "profileEvidence": "INSUFFICIENT",
+      "expectedCommercialRole": "UNKNOWN",
+      "expectedWho": "INSUFFICIENT_DATA",
+      "rationale": "No business profile or primary business description available."
+    },
+    {
+      "companyId": "b7e9af09-ede7-46fb-baa1-cf2d9f3158bf",
+      "domainKey": "DIGIPUUSH",
+      "company": "Leadzen.ai",
+      "domain": "leadzen.ai",
+      "identity": "UNCERTAIN",
+      "profileEvidence": "INSUFFICIENT",
+      "expectedCommercialRole": "UNKNOWN",
+      "expectedWho": "INSUFFICIENT_DATA",
+      "rationale": "Identity is probable but profile evidence is missing, preventing accurate commercial role assignment."
+    },
+    {
+      "companyId": "a96d5d08-cdd4-4970-b0e4-f85d569a3e75",
+      "domainKey": "DIGIPUUSH",
+      "company": "Outbound System",
+      "domain": "outboundsystem.com",
+      "identity": "CORRECT",
+      "profileEvidence": "SUFFICIENT",
+      "expectedCommercialRole": "POTENTIAL_BUYER",
+      "expectedWho": "LIKELY_FIT",
+      "rationale": "Lead generation agency that uses multi-channel systems; visibility into AI engines is a direct value-add for their outbound strategy."
+    },
+    {
+      "companyId": "ada76ca1-a14b-48e4-8de6-e96498b23d95",
+      "domainKey": "DIGIPUUSH",
+      "company": "OutPro",
+      "domain": "outpro.us",
+      "identity": "CORRECT",
+      "profileEvidence": "SUFFICIENT",
+      "expectedCommercialRole": "POTENTIAL_BUYER",
+      "expectedWho": "LIKELY_FIT",
+      "rationale": "Focuses on GTM systems for B2B SaaS; requires strong digital presence and visibility to address pipeline inconsistency."
+    },
+    {
+      "companyId": "252b9ea5-ec55-49b5-8bf7-c514da6ca2cd",
+      "domainKey": "DIGIPUUSH",
+      "company": "Partner Propel",
+      "domain": "partnerpropel.com",
+      "identity": "CORRECT",
+      "profileEvidence": "SUFFICIENT",
+      "expectedCommercialRole": "POTENTIAL_BUYER",
+      "expectedWho": "LIKELY_FIT",
+      "rationale": "Specializes in AI GTM systems for SMBs; align well with the service's focus on AI-driven visibility and authority."
+    },
+    {
+      "companyId": "d2dd1f48-1b81-4149-a298-1dde2ae96ade",
+      "domainKey": "DIGIPUUSH",
+      "company": "Pure Sales",
+      "domain": "puresales.io",
+      "identity": "UNCERTAIN",
+      "profileEvidence": "INSUFFICIENT",
+      "expectedCommercialRole": "UNKNOWN",
+      "expectedWho": "INSUFFICIENT_DATA",
+      "rationale": "Insufficient profile information to determine service alignment."
+    },
+    {
+      "companyId": "4233dfdf-a2ac-48de-8347-91759eb415de",
+      "domainKey": "DIGIPUUSH",
+      "company": "RevyGo",
+      "domain": "revygo.com",
+      "identity": "CORRECT",
+      "profileEvidence": "INSUFFICIENT",
+      "expectedCommercialRole": "UNKNOWN",
+      "expectedWho": "INSUFFICIENT_DATA",
+      "rationale": "Profile lacks sufficient business information to determine fit."
+    },
+    {
+      "companyId": "60fafac0-f176-4d81-8215-847e1026ba74",
+      "domainKey": "DIGIPUUSH",
+      "company": "SalesGig",
+      "domain": "salesgig.com",
+      "identity": "CORRECT",
+      "profileEvidence": "SUFFICIENT",
+      "expectedCommercialRole": "POTENTIAL_BUYER",
+      "expectedWho": "LIKELY_FIT",
+      "rationale": "Large outsourced sales development firm needing high-volume lead visibility."
+    },
+    {
+      "companyId": "8a4ac58f-98cd-4a27-b684-ac1bf81293cb",
+      "domainKey": "MANAGED_SOC",
+      "company": "3LOCKS",
+      "domain": null,
+      "identity": "UNCERTAIN",
+      "profileEvidence": "INSUFFICIENT",
+      "expectedCommercialRole": "UNKNOWN",
+      "expectedWho": "INSUFFICIENT_DATA",
+      "rationale": "Domain missing and identity unresolved."
+    },
+    {
+      "companyId": "5e4137f0-f1da-4877-b78c-330d77e4d58d",
+      "domainKey": "MANAGED_SOC",
+      "company": "Barracuda SKOUT Managed XDR",
+      "domain": "barracuda.com",
+      "identity": "CORRECT",
+      "profileEvidence": "SUFFICIENT",
+      "expectedCommercialRole": "SELLER_COMPETITOR",
+      "expectedWho": "NOT_APPLICABLE",
+      "rationale": "Direct competitor offering managed XDR and security services."
+    },
+    {
+      "companyId": "50ceadee-afc9-41a1-b7c7-f6334e213df8",
+      "domainKey": "MANAGED_SOC",
+      "company": "CData Virtuality",
+      "domain": null,
+      "identity": "UNCERTAIN",
+      "profileEvidence": "INSUFFICIENT",
+      "expectedCommercialRole": "UNKNOWN",
+      "expectedWho": "INSUFFICIENT_DATA",
+      "rationale": "Domain missing and identity unresolved."
+    },
+    {
+      "companyId": "36e5aa54-997a-4281-95c7-460508f94e32",
+      "domainKey": "MANAGED_SOC",
+      "company": "Critical Start",
+      "domain": "criticalstart.com",
+      "identity": "CORRECT",
+      "profileEvidence": "SUFFICIENT",
+      "expectedCommercialRole": "SELLER_COMPETITOR",
+      "expectedWho": "NOT_APPLICABLE",
+      "rationale": "Established Managed Detection and Response (MDR) provider, direct competitor."
+    },
+    {
+      "companyId": "8ef6a894-78e7-4276-94d5-3c14c64b7ee1",
+      "domainKey": "MANAGED_SOC",
+      "company": "CyberOne",
+      "domain": "cyberone.security",
+      "identity": "UNCERTAIN",
+      "profileEvidence": "INSUFFICIENT",
+      "expectedCommercialRole": "UNKNOWN",
+      "expectedWho": "INSUFFICIENT_DATA",
+      "rationale": "Profile data is missing, identity only probable."
+    },
+    {
+      "companyId": "05939322-6f62-408e-af6a-307196598385",
+      "domainKey": "MANAGED_SOC",
+      "company": "CySOC",
+      "domain": "cysocsecure.com",
+      "identity": "CORRECT",
+      "profileEvidence": "SUFFICIENT",
+      "expectedCommercialRole": "SELLER_COMPETITOR",
+      "expectedWho": "NOT_APPLICABLE",
+      "rationale": "Cybersecurity firm providing 24/7 SOC services, direct competitor."
+    },
+    {
+      "companyId": "e963aa5d-4bf6-4fec-95cb-14ac65c85679",
+      "domainKey": "MANAGED_SOC",
+      "company": "Ostra Security",
+      "domain": "ostrasecurity.com",
+      "identity": "CORRECT",
+      "profileEvidence": "SUFFICIENT",
+      "expectedCommercialRole": "SELLER_COMPETITOR",
+      "expectedWho": "NOT_APPLICABLE",
+      "rationale": "Managed detection and response provider, direct competitor."
+    },
+    {
+      "companyId": "14f2dadb-6650-43bd-a930-cab49890f950",
+      "domainKey": "MANAGED_SOC",
+      "company": "Pondurance",
+      "domain": "pondurance.com",
+      "identity": "CORRECT",
+      "profileEvidence": "SUFFICIENT",
+      "expectedCommercialRole": "SELLER_COMPETITOR",
+      "expectedWho": "NOT_APPLICABLE",
+      "rationale": "Provides 24/7 MDR services, direct competitor."
+    },
+    {
+      "companyId": "8cec0d59-cbec-4285-a830-52fc38523bbf",
+      "domainKey": "MANAGED_SOC",
+      "company": "SOCFortress",
+      "domain": "socfortress.co",
+      "identity": "CORRECT",
+      "profileEvidence": "SUFFICIENT",
+      "expectedCommercialRole": "SELLER_COMPETITOR",
+      "expectedWho": "NOT_APPLICABLE",
+      "rationale": "SaaS provider for security monitoring and SOC operations, direct competitor."
+    },
+    {
+      "companyId": "bef79acd-a69f-40a9-8488-d46a03ae3710",
+      "domainKey": "MANAGED_SOC",
+      "company": "Socura",
+      "domain": "socura.co.uk",
+      "identity": "CORRECT",
+      "profileEvidence": "SUFFICIENT",
+      "expectedCommercialRole": "SELLER_COMPETITOR",
+      "expectedWho": "NOT_APPLICABLE",
+      "rationale": "MDR provider offering similar services, direct competitor."
+    }
+  ]
+}

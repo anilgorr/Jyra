@@ -1,0 +1,21 @@
+{
+  "title": "JYRA Architecture V1 clean raw accounting reconciliation",
+  "status": "APPEND_ONLY_RECONCILIATION",
+  "raw": {
+    "file": "JYRA_ARCHITECTURE_V1_CLEAN_CROSS_DOMAIN_VALIDATION_RAW.json",
+    "sha256": "4f1ff5d768c12be98ce08eb4ab60da3634b9e53caa643cb3fef6ae6c7bc661d7",
+    "mutated": false
+  },
+  "defect": {
+    "field": "aggregate.semanticUnknownCostCalls",
+    "rawValue": 0,
+    "reconciledValue": 5,
+    "cause": "Raw serializer counted llmInvoked flags from the final same-run cache capture instead of persisted semantic model-invocation rows.",
+    "futureSerializerCorrected": true
+  },
+  "support": {
+    "persistedSemanticModelInvocations": 5,
+    "semanticActualCost": null,
+    "thereforeUnknownCostCalls": 5
+  }
+}
