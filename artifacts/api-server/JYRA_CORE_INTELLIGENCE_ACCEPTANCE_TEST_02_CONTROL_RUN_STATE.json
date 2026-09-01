@@ -1,0 +1,47 @@
+{
+  "manifestSha256": "438ae22cc5f06ed16588d911541572fd0617dd608c6ad9bfc451462f5ff90931",
+  "runs": [
+    {
+      "manifestIndex": 0,
+      "requestedCompany": "SolarWinds",
+      "provision": {
+        "resolutionPath": "KNOWN_COMPANY_RESOLUTION",
+        "matchBasis": "EXACT_CANONICAL_NAME",
+        "existingCanonicalReused": true,
+        "identityState": "CONFIRMED",
+        "canAutoAttachCanonical": false,
+        "canResearchEntity": true,
+        "providerCapabilitiesInvoked": [],
+        "providerCalls": 0,
+        "companyId": "3cd73d96-37d1-4cf8-9dab-db596e019783",
+        "status": "PROVISIONED",
+        "blockReason": null
+      },
+      "questions": [
+        {
+          "questionType": "LEADERSHIP",
+          "status": "SUCCEEDED",
+          "questionId": "24e2f54f-18bf-4338-bdc4-c42cc3af6d53",
+          "jobId": "9ce63512-c18c-4763-9150-f8c16086180b"
+        },
+        {
+          "questionType": "HIRING",
+          "status": "SUCCEEDED",
+          "questionId": "b37fba97-d1bd-4bd6-9452-48199eff53bb",
+          "jobId": "4f781203-61e7-46d9-849b-8c3bb0b6a6ec"
+        },
+        {
+          "questionType": "EXPANSION",
+          "status": "SUCCEEDED",
+          "questionId": "8083b764-b2c7-4788-ad1f-8c631f1110f6",
+          "jobId": "568d3d1c-a04d-4e57-9d9d-4549985e8dcf"
+        },
+        {
+          "questionType": "TECHNOLOGY",
+          "status": "TIMED_OUT",
+          "reason": "No terminal research disposition persisted within 150000ms"
+        }
+      ]
+    }
+  ]
+}
