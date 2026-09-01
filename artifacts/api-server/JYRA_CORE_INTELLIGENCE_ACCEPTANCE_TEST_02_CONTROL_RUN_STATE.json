@@ -169,6 +169,91 @@
           "reason": "No terminal research disposition persisted within 150000ms"
         }
       ]
+    },
+    {
+      "manifestIndex": 4,
+      "requestedCompany": "Teradata",
+      "provision": {
+        "resolutionPath": "KNOWN_COMPANY_RESOLUTION",
+        "matchBasis": "EXACT_CANONICAL_NAME",
+        "existingCanonicalReused": true,
+        "identityState": "CONFIRMED",
+        "canAutoAttachCanonical": false,
+        "canResearchEntity": true,
+        "providerCapabilitiesInvoked": [],
+        "providerCalls": 0,
+        "companyId": "0ba57746-1f8e-4691-a647-0921de1a971d",
+        "status": "PROVISIONED",
+        "blockReason": null
+      },
+      "questions": [
+        {
+          "questionType": "LEADERSHIP",
+          "status": "SUCCEEDED",
+          "questionId": "fbe0a8b3-eeb5-43bf-a3a7-b4273ba35c42",
+          "jobId": "684fbad2-e7ac-4973-85df-300463790985"
+        },
+        {
+          "questionType": "HIRING",
+          "status": "SUCCEEDED",
+          "questionId": "799806ca-c9c0-4461-ba93-a21457f7250b",
+          "jobId": "fc0eea90-999d-4c37-90e0-b182879d2f77"
+        },
+        {
+          "questionType": "EXPANSION",
+          "status": "SUCCEEDED",
+          "questionId": "c3a71eb7-6511-46a3-bf51-33d04337b943",
+          "jobId": "a33ca2e3-0c23-45c5-bd99-a9db18662a9e"
+        },
+        {
+          "questionType": "TECHNOLOGY",
+          "status": "TIMED_OUT",
+          "reason": "No terminal research disposition persisted within 150000ms"
+        }
+      ]
+    },
+    {
+      "manifestIndex": 5,
+      "requestedCompany": "Nubank",
+      "provision": {
+        "resolutionPath": "KNOWN_COMPANY_RESOLUTION",
+        "matchBasis": "EXACT_CANONICAL_NAME",
+        "existingCanonicalReused": true,
+        "identityState": "CONFIRMED",
+        "canAutoAttachCanonical": false,
+        "canResearchEntity": true,
+        "providerCapabilitiesInvoked": [],
+        "providerCalls": 0,
+        "companyId": "8ee8a9ce-dd62-4b03-bfb0-f9f9a3683f32",
+        "status": "PROVISIONED",
+        "blockReason": null
+      },
+      "questions": [
+        {
+          "questionType": "LEADERSHIP",
+          "status": "SUCCEEDED",
+          "questionId": "2c57327a-8a7f-4629-9b60-2dbd03b7e400",
+          "jobId": "67c0f4b1-57c1-49a0-aba6-12b0422a6e42"
+        },
+        {
+          "questionType": "HIRING",
+          "status": "SUCCEEDED",
+          "questionId": "9fef5c5b-73e2-46a6-8ccb-0124d659a6e5",
+          "jobId": "fa52ffd0-da2e-413d-83b5-966753523f74"
+        },
+        {
+          "questionType": "EXPANSION",
+          "status": "SUCCEEDED",
+          "questionId": "5d693007-7ae7-461d-878b-3310a3cf8416",
+          "jobId": "85327c1f-d343-423d-b84c-9811029d0913"
+        },
+        {
+          "questionType": "TECHNOLOGY",
+          "status": "SUCCEEDED",
+          "questionId": "484f1d37-25ae-45b0-8e81-c7030da0217a",
+          "jobId": "86439c9a-dea7-4c2c-b353-79380ede0e08"
+        }
+      ]
     }
   ]
 }
