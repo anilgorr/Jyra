@@ -1,0 +1,1050 @@
+TASK #111 — FREEZE BLIND SMALL HOLDOUT GOLD
+
+PURPOSE
+
+Task #110 created:
+
+JYRA_SMALL_HOLDOUT_V1
+
+Cohort:
+12
+
+DigiPuush:
+6
+
+Managed SOC:
+6
+
+Cohort SHA-256:
+e4f01b94c2180366e55200c834b8bd70de3248a2f5460faf8340023517a68165
+
+The independent evidence and machine proposals were reviewed blindly by the human reviewer.
+
+No JYRA CommercialRole or WHO predictions were exposed during human review.
+
+The 12 human decisions are now complete.
+
+Task #111 must:
+
+1. persist the exact human decisions
+2. preserve the independent machine proposals
+3. freeze immutable gold truth
+4. compute checksums
+5. validate blindness/provenance
+6. NOT reveal JYRA predictions yet
+
+DO NOT run JYRA evaluation.
+DO NOT compare predictions.
+DO NOT modify JYRA.
+DO NOT change prompts.
+DO NOT call providers.
+DO NOT research companies again.
+
+==================================================
+1. DATABASE SAFETY
+==================================================
+
+DATABASE SAFETY:
+
+This is evaluation/development work.
+
+Use ONLY development.
+
+DO NOT:
+
+- migrate production
+- reset production
+- seed production
+- truncate production
+- modify production customer data
+- test against production
+
+Production must remain untouched.
+
+==================================================
+2. SOURCE ARTIFACTS
+==================================================
+
+Use the existing Task #110 artifacts:
+
+evaluations/jyra-holdout-v1/HOLDOUT_V1_COHORT.json
+
+evaluations/jyra-holdout-v1/HOLDOUT_V1_PUBLIC_EVIDENCE.json
+
+evaluations/jyra-holdout-v1/HOLDOUT_V1_MACHINE_PROPOSALS.json
+
+evaluations/jyra-holdout-v1/HOLDOUT_V1_HUMAN_REVIEW.csv
+
+evaluations/jyra-holdout-v1/HOLDOUT_V1_MANIFEST.json
+
+evaluations/jyra-holdout-v1/HOLDOUT_V1_REVIEWER_PACKET.md
+
+Do not regenerate any of them.
+
+Do not replace companies.
+
+Do not alter evidence.
+
+Do not alter original machine proposals.
+
+==================================================
+3. VERIFY COHORT FIRST
+==================================================
+
+Verify:
+
+cohort size = 12
+
+DIGIPUUSH = 6
+
+MANAGED_SOC = 6
+
+old benchmark overlap = 0
+
+cohort SHA-256 =
+e4f01b94c2180366e55200c834b8bd70de3248a2f5460faf8340023517a68165
+
+Expected companies:
+
+DIGIPUUSH
+
+1. Wingify
+2. Druva
+3. MoEngage
+4. Uplers
+5. Writesonic
+6. Smarketers
+
+MANAGED_SOC
+
+7. Razorpay
+8. Zerodha
+9. ACKO
+10. CloudSEK
+11. Sify Technologies
+12. Freshworks
+
+HARD FAIL if the cohort differs.
+
+==================================================
+4. REVIEWER PROVENANCE
+==================================================
+
+Reviewer:
+
+Anil Gorraladaku
+
+Review type:
+
+HUMAN_BLIND_REVIEW
+
+Review date:
+
+2026-09-02
+
+Gold version:
+
+JYRA_SMALL_HOLDOUT_GOLD_V1
+
+Human reviewer saw:
+
+- independent public evidence
+- independent clean-room machine proposals
+
+Human reviewer DID NOT see:
+
+- current JYRA CommercialRole prediction
+- current JYRA WHO prediction
+- current JYRA confidence
+- current JYRA rationale
+- current JYRA comparison metrics
+
+Preserve provenance:
+
+new cohort
+→ independent public evidence
+→ independent machine proposal
+→ blind human review
+→ frozen gold
+→ ONLY LATER JYRA prediction reveal
+
+==================================================
+5. FINAL HUMAN DECISIONS
+==================================================
+
+Persist EXACTLY these decisions.
+
+--------------------------------------------------
+1. Wingify
+--------------------------------------------------
+
+domainKey:
+DIGIPUUSH
+
+identity:
+CORRECT
+
+commercialRole:
+POTENTIAL_BUYER
+
+commercialRoleConfidence:
+MEDIUM
+
+who:
+LIKELY_FIT
+
+whoConfidence:
+MEDIUM
+
+groundTruthStatus:
+GROUND_TRUTH_CONFIRMED
+
+reviewAction:
+APPROVE
+
+Reason:
+India-based SaaS/experience-optimization company structurally capable of purchasing DigiPuush AI Visibility/AEO/GEO. No evidence establishes a materially substitutable AEO/GEO offering.
+
+--------------------------------------------------
+2. Druva
+--------------------------------------------------
+
+domainKey:
+DIGIPUUSH
+
+identity:
+CORRECT
+
+commercialRole:
+POTENTIAL_BUYER
+
+commercialRoleConfidence:
+MEDIUM
+
+who:
+POSSIBLE_FIT
+
+whoConfidence:
+LOW
+
+groundTruthStatus:
+GROUND_TRUTH_CONFIRMED
+
+reviewAction:
+APPROVE
+
+Reason:
+Structurally a valid B2B SaaS potential buyer, but the independent evidence does not establish India as headquarters or primary geography. India is a mandatory DigiPuush criterion.
+
+--------------------------------------------------
+3. MoEngage
+--------------------------------------------------
+
+domainKey:
+DIGIPUUSH
+
+identity:
+CORRECT
+
+commercialRole:
+POTENTIAL_BUYER
+
+commercialRoleConfidence:
+MEDIUM
+
+who:
+POSSIBLE_FIT
+
+whoConfidence:
+MEDIUM
+
+groundTruthStatus:
+GROUND_TRUTH_CONFIRMED
+
+reviewAction:
+APPROVE
+
+Reason:
+Customer-engagement SaaS company with structural capacity to buy AI visibility services, but the independent evidence does not explicitly establish India headquarters/primary geography.
+
+--------------------------------------------------
+4. Uplers
+--------------------------------------------------
+
+domainKey:
+DIGIPUUSH
+
+identity:
+CORRECT
+
+commercialRole:
+POTENTIAL_BUYER
+
+commercialRoleConfidence:
+MEDIUM
+
+who:
+POSSIBLE_FIT
+
+whoConfidence:
+MEDIUM
+
+groundTruthStatus:
+GROUND_TRUTH_CONFIRMED
+
+reviewAction:
+CORRECT
+
+IMPORTANT HUMAN CORRECTION:
+
+Machine WHO:
+LIKELY_FIT
+
+Human WHO:
+POSSIBLE_FIT
+
+Machine geography:
+PASS
+
+Human geography interpretation:
+UNKNOWN
+
+Reason:
+Evidence that Uplers hires or sources talent from India does not by itself prove India headquarters or primary company geography. Structural buyer capability is established, but the mandatory geography criterion is not sufficiently proven.
+
+Do NOT rewrite the underlying evidence.
+
+--------------------------------------------------
+5. Writesonic
+--------------------------------------------------
+
+domainKey:
+DIGIPUUSH
+
+identity:
+CORRECT
+
+commercialRole:
+SELLER_COMPETITOR
+
+commercialRoleConfidence:
+HIGH
+
+who:
+LIKELY_NOT_FIT
+
+whoConfidence:
+HIGH
+
+groundTruthStatus:
+GROUND_TRUTH_CONFIRMED
+
+reviewAction:
+APPROVE
+
+Reason:
+Writesonic explicitly offers AI visibility, AEO and GEO tooling that materially overlaps DigiPuush's offering.
+
+--------------------------------------------------
+6. Smarketers
+--------------------------------------------------
+
+domainKey:
+DIGIPUUSH
+
+identity:
+CORRECT
+
+commercialRole:
+POTENTIAL_BUYER
+
+commercialRoleConfidence:
+MEDIUM
+
+who:
+LIKELY_FIT
+
+whoConfidence:
+MEDIUM
+
+groundTruthStatus:
+GROUND_TRUTH_CONFIRMED
+
+reviewAction:
+CORRECT
+
+IMPORTANT HUMAN CORRECTION:
+
+Machine CommercialRole:
+ADJACENT_VENDOR
+
+Human CommercialRole:
+POTENTIAL_BUYER
+
+Machine WHO:
+POSSIBLE_FIT
+
+Human WHO:
+LIKELY_FIT
+
+Reason:
+Being a B2B marketing agency does not automatically establish an adjacent-vendor relationship. Evidence does not show materially substitutable AEO/GEO services or a specific partner/vendor relationship. The company is India-based and structurally capable of purchasing a specialized AI visibility service.
+
+--------------------------------------------------
+7. Razorpay
+--------------------------------------------------
+
+domainKey:
+MANAGED_SOC
+
+identity:
+CORRECT
+
+commercialRole:
+POTENTIAL_BUYER
+
+commercialRoleConfidence:
+HIGH
+
+who:
+LIKELY_FIT
+
+whoConfidence:
+HIGH
+
+groundTruthStatus:
+GROUND_TRUTH_CONFIRMED
+
+reviewAction:
+APPROVE
+
+Reason:
+Large regulated fintech/payment platform, not a managed-security provider, with strong structural capacity to consume managed security monitoring.
+
+--------------------------------------------------
+8. Zerodha
+--------------------------------------------------
+
+domainKey:
+MANAGED_SOC
+
+identity:
+CORRECT
+
+commercialRole:
+POTENTIAL_BUYER
+
+commercialRoleConfidence:
+HIGH
+
+who:
+LIKELY_FIT
+
+whoConfidence:
+HIGH
+
+groundTruthStatus:
+GROUND_TRUTH_CONFIRMED
+
+reviewAction:
+APPROVE
+
+Reason:
+Large regulated digital brokerage with substantial security relevance and no evidence of offering a materially substitutable Managed SOC service.
+
+--------------------------------------------------
+9. ACKO
+--------------------------------------------------
+
+domainKey:
+MANAGED_SOC
+
+identity:
+CORRECT
+
+commercialRole:
+POTENTIAL_BUYER
+
+commercialRoleConfidence:
+HIGH
+
+who:
+LIKELY_FIT
+
+whoConfidence:
+HIGH
+
+groundTruthStatus:
+GROUND_TRUTH_CONFIRMED
+
+reviewAction:
+APPROVE
+
+Reason:
+Digital insurer operating in a regulated environment with substantial security needs and no evidence of being a managed-security provider.
+
+--------------------------------------------------
+10. CloudSEK
+--------------------------------------------------
+
+domainKey:
+MANAGED_SOC
+
+identity:
+CORRECT
+
+commercialRole:
+ADJACENT_VENDOR
+
+commercialRoleConfidence:
+MEDIUM
+
+who:
+POSSIBLE_FIT
+
+whoConfidence:
+MEDIUM
+
+groundTruthStatus:
+GROUND_TRUTH_CONFIRMED
+
+reviewAction:
+CORRECT
+
+IMPORTANT HUMAN CORRECTION:
+
+Machine CommercialRole:
+SELLER_COMPETITOR
+
+Human CommercialRole:
+ADJACENT_VENDOR
+
+Machine WHO:
+LIKELY_NOT_FIT
+
+Human WHO:
+POSSIBLE_FIT
+
+Reason:
+The supplied evidence establishes threat intelligence, brand monitoring and attack-surface monitoring, but does not establish a materially substitutable Managed SOC/MDR/24x7 monitoring service. Same cybersecurity industry does not automatically mean direct competitor.
+
+--------------------------------------------------
+11. Sify Technologies
+--------------------------------------------------
+
+domainKey:
+MANAGED_SOC
+
+identity:
+CORRECT
+
+commercialRole:
+POTENTIAL_BUYER
+
+commercialRoleConfidence:
+MEDIUM
+
+who:
+POSSIBLE_FIT
+
+whoConfidence:
+MEDIUM
+
+groundTruthStatus:
+GROUND_TRUTH_CONFIRMED
+
+reviewAction:
+CORRECT
+
+IMPORTANT HUMAN CORRECTION:
+
+Machine CommercialRole:
+ADJACENT_VENDOR
+
+Human CommercialRole:
+POTENTIAL_BUYER
+
+Machine WHO:
+POSSIBLE_FIT
+
+Human WHO:
+POSSIBLE_FIT
+
+Reason:
+The evidence shows broad ICT/cloud/managed services but does not establish a sufficiently clear managed-security competitor or complementary-vendor relationship. Sify is structurally capable of purchasing Managed SOC, but possible service overlap remains unresolved.
+
+--------------------------------------------------
+12. Freshworks
+--------------------------------------------------
+
+domainKey:
+MANAGED_SOC
+
+identity:
+CORRECT
+
+commercialRole:
+POTENTIAL_BUYER
+
+commercialRoleConfidence:
+HIGH
+
+who:
+LIKELY_FIT
+
+whoConfidence:
+HIGH
+
+groundTruthStatus:
+GROUND_TRUTH_CONFIRMED
+
+reviewAction:
+APPROVE
+
+Reason:
+Large B2B SaaS company with significant digital infrastructure and enterprise exposure, no evidence of materially substitutable Managed SOC/MDR services, and strong structural capacity to consume managed security monitoring.
+
+==================================================
+6. EXPECTED STATUS COUNTS
+==================================================
+
+GROUND_TRUTH_CONFIRMED:
+12
+
+AMBIGUOUS:
+0
+
+INSUFFICIENT:
+0
+
+REJECTED_WRONG_IDENTITY:
+0
+
+Total:
+12
+
+All 12 are strict metric eligible.
+
+==================================================
+7. HUMAN CORRECTION COUNT
+==================================================
+
+Expected corrected companies:
+
+4
+
+Uplers
+Smarketers
+CloudSEK
+Sify Technologies
+
+Do not count ordinary APPROVE records as corrections.
+
+For each correction preserve:
+
+machine proposal
+human decision
+reason
+evidence provenance
+
+==================================================
+8. DO NOT ALTER MACHINE PROPOSALS
+==================================================
+
+This is critical.
+
+Preserve the original independent machine proposal separately.
+
+For corrected records, the frozen artifact must make visible:
+
+machine proposal
+vs
+human gold
+
+Do not rewrite the machine proposal so it appears to have predicted the corrected human truth.
+
+==================================================
+9. WHO CRITERION HANDLING
+==================================================
+
+Preserve the independent criterion rows/evidence.
+
+Human review may override the final interpretation.
+
+Examples:
+
+Uplers:
+machine geography PASS
+human interpretation UNKNOWN
+
+Do not fabricate new location evidence.
+
+CloudSEK:
+machine competitor interpretation was too strong
+human role is ADJACENT_VENDOR
+
+Do not delete security evidence.
+
+Sify:
+uncertainty about security overlap remains uncertainty.
+
+==================================================
+10. GOLD ARTIFACT
+==================================================
+
+Create immutable:
+
+evaluations/jyra-holdout-v1/JYRA_SMALL_HOLDOUT_GOLD_V1.json
+
+It must contain exactly 12 records.
+
+Preferred structure:
+
+{
+  holdoutCompanyId,
+  domainKey,
+  company,
+  targetDomain,
+
+  independentProposal: {...},
+
+  humanTruth: {
+    identity,
+    commercialRole,
+    commercialRoleConfidence,
+    who,
+    whoConfidence,
+    groundTruthStatus
+  },
+
+  humanReview: {
+    action,
+    reviewer,
+    reviewedAt,
+    reason,
+    machineProposalChanged
+  },
+
+  evidenceIds
+}
+
+Reuse repository conventions where appropriate.
+
+==================================================
+11. IMMUTABILITY
+==================================================
+
+If:
+
+JYRA_SMALL_HOLDOUT_GOLD_V1.json
+
+already exists:
+
+calculate checksum.
+
+If contents exactly match:
+report idempotent success.
+
+If contents differ:
+HARD FAIL.
+
+DO NOT overwrite V1.
+
+Future truth corrections require V2.
+
+==================================================
+12. GOLD MANIFEST
+==================================================
+
+Create:
+
+evaluations/jyra-holdout-v1/JYRA_SMALL_HOLDOUT_GOLD_V1.manifest.json
+
+Include:
+
+{
+  "goldVersion": "JYRA_SMALL_HOLDOUT_GOLD_V1",
+  "sourceHoldout": "JYRA_SMALL_HOLDOUT_V1",
+  "sourceCohortSha256": "e4f01b94c2180366e55200c834b8bd70de3248a2f5460faf8340023517a68165",
+  "cohortSize": 12,
+  "digipuushCount": 6,
+  "managedSocCount": 6,
+  "confirmedCount": 12,
+  "ambiguousCount": 0,
+  "insufficientCount": 0,
+  "wrongIdentityCount": 0,
+  "reviewer": "Anil Gorraladaku",
+  "reviewType": "HUMAN_BLIND_REVIEW",
+  "humanCorrections": 4,
+  "goldFile": "...",
+  "humanReviewArtifact": "...",
+  "sha256": "...",
+  "jyraPredictionsExposedBeforeFreeze": false,
+  "jyraPredictionComparisonRunBeforeFreeze": false,
+  "externalProviderCallsDuringFreeze": 0
+}
+
+Add source artifact checksums where practical.
+
+==================================================
+13. UPDATE HUMAN REVIEW CSV
+==================================================
+
+Populate:
+
+HOLDOUT_V1_HUMAN_REVIEW.csv
+
+with the 12 human decisions.
+
+Preserve machine columns.
+
+Fill:
+
+humanIdentity
+humanCommercialRole
+humanCommercialRoleConfidence
+humanWho
+humanWhoConfidence
+humanGroundTruthStatus
+humanReviewAction
+humanReviewReason
+reviewer
+reviewedAt
+goldVersion
+
+For corrected records make machine/human differences obvious.
+
+==================================================
+14. BLINDNESS VALIDATION
+==================================================
+
+Before freeze completion verify:
+
+No current JYRA CommercialRole prediction was used during review.
+
+No current JYRA WHO prediction was used during review.
+
+No JYRA score/confidence was supplied to reviewer.
+
+No current JYRA prediction was copied into the human review artifact.
+
+No comparison against current JYRA occurred before freeze.
+
+Manifest must state:
+
+jyraPredictionsExposedBeforeFreeze = false
+
+jyraPredictionComparisonRunBeforeFreeze = false
+
+If evidence shows contamination:
+
+HARD FAIL.
+
+Do not freeze.
+
+==================================================
+15. NO JYRA PREDICTION REVEAL
+==================================================
+
+Do NOT:
+
+run current JYRA predictions
+
+reveal existing current predictions
+
+compare against gold
+
+calculate accuracy
+
+calculate confusion matrices
+
+calculate buyer precision
+
+calculate competitor recall
+
+The gold must be frozen first.
+
+==================================================
+16. VALIDATION TESTS
+==================================================
+
+At minimum assert:
+
+A. cohort = 12
+
+B. DigiPuush = 6
+
+C. Managed SOC = 6
+
+D. overlap with original 20 = 0
+
+E. all holdoutCompanyId values unique
+
+F. exactly 12 GROUND_TRUTH_CONFIRMED
+
+G. strict metric eligible = 12
+
+H. corrections = 4
+
+I. Uplers:
+POTENTIAL_BUYER / POSSIBLE_FIT
+
+J. Writesonic:
+SELLER_COMPETITOR / LIKELY_NOT_FIT
+
+K. Smarketers:
+POTENTIAL_BUYER / LIKELY_FIT
+
+L. CloudSEK:
+ADJACENT_VENDOR / POSSIBLE_FIT
+
+M. Sify Technologies:
+POTENTIAL_BUYER / POSSIBLE_FIT
+
+N. Razorpay/Zerodha/ACKO/Freshworks:
+POTENTIAL_BUYER / LIKELY_FIT
+
+O. original machine proposals preserved
+
+P. no JYRA prediction comparison occurred
+
+Q. no external provider calls during freeze
+
+R. production unchanged
+
+S. freeze operation idempotent
+
+==================================================
+17. NO CODE CHANGES
+==================================================
+
+Task #111 must make:
+
+JYRA runtime code changes:
+0
+
+Prompt changes:
+0
+
+Model changes:
+0
+
+Scoring changes:
+0
+
+Provider changes:
+0
+
+Database schema changes:
+0
+
+This is benchmark persistence only.
+
+==================================================
+18. NEXT STEP AFTER FREEZE
+==================================================
+
+Once gold is frozen:
+
+JYRA predictions may finally be generated/revealed.
+
+But do NOT do that inside Task #111.
+
+That will be Task #112.
+
+==================================================
+19. FINAL RESPONSE FORMAT
+==================================================
+
+Return exactly:
+
+TASK #111 — SMALL HOLDOUT GOLD FREEZE
+
+Status:
+PASS / FAIL
+
+Gold version:
+JYRA_SMALL_HOLDOUT_GOLD_V1
+
+Source holdout:
+JYRA_SMALL_HOLDOUT_V1
+
+Cohort:
+12
+
+DigiPuush:
+6
+
+Managed SOC:
+6
+
+Confirmed:
+12
+
+Ambiguous:
+0
+
+Insufficient:
+0
+
+Wrong identity:
+0
+
+Strict metric eligible:
+12
+
+Human corrections:
+4
+
+Corrections:
+- Uplers: WHO LIKELY_FIT → POSSIBLE_FIT
+- Smarketers: CommercialRole ADJACENT_VENDOR → POTENTIAL_BUYER; WHO POSSIBLE_FIT → LIKELY_FIT
+- CloudSEK: CommercialRole SELLER_COMPETITOR → ADJACENT_VENDOR; WHO LIKELY_NOT_FIT → POSSIBLE_FIT
+- Sify Technologies: CommercialRole ADJACENT_VENDOR → POTENTIAL_BUYER
+
+Cohort SHA-256:
+e4f01b94c2180366e55200c834b8bd70de3248a2f5460faf8340023517a68165
+
+Gold file:
+<path>
+
+Gold SHA-256:
+<actual checksum>
+
+Human review file:
+<path>
+
+Manifest:
+<path>
+
+JYRA predictions exposed before freeze:
+NO
+
+JYRA prediction comparison run before freeze:
+NO
+
+External provider calls:
+0
+
+Production modified:
+NO
+
+Code changes:
+0
+
+Prompt changes:
+0
+
+Tests:
+x/x
+
+Freeze idempotency:
+PASS / FAIL
+
+NEXT STEP:
+
+State only:
+
+"Blind holdout gold is frozen. JYRA predictions may now be run/revealed against JYRA_SMALL_HOLDOUT_GOLD_V1."
+
+Do NOT perform Task #112 until approved.
