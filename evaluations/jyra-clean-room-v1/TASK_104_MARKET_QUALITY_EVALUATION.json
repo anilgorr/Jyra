@@ -1,0 +1,1505 @@
+{
+  "goldVersion": "JYRA_MARKET_QUALITY_GOLD_V1",
+  "goldSha256": "f59aca76b676d0e54d0899dd23bb3e5c6d5912e71e0597d967a2a722ac8ecfca",
+  "task100RunProvenance": {
+    "sourceFile": "artifacts/api-server/JYRA_ARCHITECTURE_V1_CLEAN_CROSS_DOMAIN_VALIDATION_RAW.json",
+    "sourceSha256": "4f1ff5d768c12be98ce08eb4ab60da3634b9e53caa643cb3fef6ae6c7bc661d7",
+    "status": "RAW_FROZEN_BEFORE_ADJUDICATION",
+    "startedAt": "2026-09-01T19:54:08.334Z",
+    "domainRuns": [
+      {
+        "domainKey": "DIGIPUUSH",
+        "runId": "d53bb85c-e041-4683-80b0-1d6ee3ff1815",
+        "projectId": "db141bf9-bc25-4e19-87e1-1d4db4a6a005",
+        "companyCount": 10
+      },
+      {
+        "domainKey": "MANAGED_SOC",
+        "runId": "2575325e-9d5e-411b-8994-bd56b7f549f5",
+        "projectId": "364a64a0-98ba-42d5-b27b-94478d26226b",
+        "companyCount": 10
+      }
+    ],
+    "companyUnderstandingModel": "gpt-5-mini",
+    "companyUnderstandingPromptVersion": "fix08-company-understanding-v4",
+    "commercialRoleVersion": "buyer-role-resolution-06a",
+    "minimumCompanyIntelligenceVersion": "architecture-v1-minimum-company-intelligence-v2",
+    "normalizationVersion": "fix07-v1",
+    "controlPlaneVersion": "architecture-v1-control-plane-v2",
+    "predictionRecordCount": 20,
+    "companyIds": [
+      "c5a70b95-1302-4fa3-9e96-8ee6c6d18926",
+      "6594cacd-e2a9-4803-ba7a-e166b8da7489",
+      "b45eeee7-aab7-412f-b7e7-4c95c999fa14",
+      "b7e9af09-ede7-46fb-baa1-cf2d9f3158bf",
+      "a96d5d08-cdd4-4970-b0e4-f85d569a3e75",
+      "ada76ca1-a14b-48e4-8de6-e96498b23d95",
+      "252b9ea5-ec55-49b5-8bf7-c514da6ca2cd",
+      "d2dd1f48-1b81-4149-a298-1dde2ae96ade",
+      "4233dfdf-a2ac-48de-8347-91759eb415de",
+      "60fafac0-f176-4d81-8215-847e1026ba74",
+      "8a4ac58f-98cd-4a27-b684-ac1bf81293cb",
+      "5e4137f0-f1da-4877-b78c-330d77e4d58d",
+      "50ceadee-afc9-41a1-b7c7-f6334e213df8",
+      "36e5aa54-997a-4281-95c7-460508f94e32",
+      "8ef6a894-78e7-4276-94d5-3c14c64b7ee1",
+      "05939322-6f62-408e-af6a-307196598385",
+      "e963aa5d-4bf6-4fec-95cb-14ac65c85679",
+      "14f2dadb-6650-43bd-a930-cab49890f950",
+      "8cec0d59-cbec-4285-a830-52fc38523bbf",
+      "bef79acd-a69f-40a9-8488-d46a03ae3710"
+    ]
+  },
+  "evaluatedAt": "2026-09-02T05:41:23.272Z",
+  "eligibleStrictCount": 18,
+  "excludedRecords": [
+    {
+      "company": "Pure Sales",
+      "status": "INSUFFICIENT"
+    },
+    {
+      "company": "3LOCKS",
+      "status": "AMBIGUOUS"
+    }
+  ],
+  "commercialRoleMetrics": {
+    "correct": 2,
+    "eligible": 18,
+    "accuracy": 0.1111111111111111,
+    "byDomain": {
+      "DIGIPUUSH": {
+        "correct": 1,
+        "eligible": 9,
+        "accuracy": 0.1111111111111111
+      },
+      "MANAGED_SOC": {
+        "correct": 1,
+        "eligible": 9,
+        "accuracy": 0.1111111111111111
+      }
+    },
+    "potentialBuyerPrecision": {
+      "correct": 1,
+      "predicted": 1,
+      "value": 1
+    },
+    "sellerCompetitorRecall": {
+      "correct": 1,
+      "gold": 8,
+      "value": 0.125
+    }
+  },
+  "whoMetrics": {
+    "correct": 0,
+    "eligible": 18,
+    "accuracy": 0,
+    "byDomain": {
+      "DIGIPUUSH": {
+        "correct": 0,
+        "eligible": 9,
+        "accuracy": 0
+      },
+      "MANAGED_SOC": {
+        "correct": 0,
+        "eligible": 9,
+        "accuracy": 0
+      }
+    },
+    "binaryBuyerFit": {
+      "eligible": 0,
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "precision": null,
+      "recall": null,
+      "f1": null
+    }
+  },
+  "buyerPrecisionMetrics": {
+    "potentialBuyerPrecision": 1,
+    "predictedPotentialBuyerCount": 1
+  },
+  "competitorSafetyMetrics": {
+    "goldCompetitorCount": 8,
+    "correctlyDetected": 1,
+    "dangerousCompetitorAsBuyerCount": 0,
+    "companies": [],
+    "rate": 0
+  },
+  "coverageMetrics": {
+    "commercialRoleAvailable": 20,
+    "whoAvailable": 1,
+    "completeRoleWhoPair": 1,
+    "predictedUnknownRole": 16,
+    "predictedInsufficientWho": 1,
+    "identityUnresolved": 2,
+    "researchBlocked": 2,
+    "safeAbstentions": 1,
+    "unsafeOverclaims": 1,
+    "excludedAssessment": {
+      "3LOCKS": "Safe abstention: unresolved identity, blocked control path, UNKNOWN role, and no WHO.",
+      "Pure Sales": "Unsafe role overclaim within an insufficient gold record: ADJACENT_VENDOR at 0.75 despite human-reviewed POTENTIAL_BUYER; WHO remained absent."
+    }
+  },
+  "conditionedMetrics": {
+    "commercialRoleWhenCompanyUnderstandingAcceptable": {
+      "correct": 2,
+      "eligible": 3,
+      "accuracy": 0.6666666666666666,
+      "companies": [
+        "Leadgeneron",
+        "Leadzen.ai",
+        "CyberOne"
+      ]
+    },
+    "whoWhenCommercialRoleCorrect": {
+      "correct": 0,
+      "eligible": 2,
+      "accuracy": 0,
+      "companies": [
+        "Leadgeneron",
+        "CyberOne"
+      ]
+    },
+    "whoWhenIdentityUsableCompanyUnderstandingAcceptableAndRoleCorrect": {
+      "correct": 0,
+      "eligible": 2,
+      "accuracy": 0
+    }
+  },
+  "confusionMatrices": {
+    "commercialRole": {
+      "POTENTIAL_BUYER": {
+        "POTENTIAL_BUYER": 1,
+        "SELLER_COMPETITOR": 0,
+        "ADJACENT_VENDOR": 1,
+        "PARTNER_POSSIBLE": 0,
+        "UNKNOWN": 8,
+        "MISSING_PREDICTION": 0
+      },
+      "SELLER_COMPETITOR": {
+        "POTENTIAL_BUYER": 0,
+        "SELLER_COMPETITOR": 1,
+        "ADJACENT_VENDOR": 0,
+        "PARTNER_POSSIBLE": 0,
+        "UNKNOWN": 7,
+        "MISSING_PREDICTION": 0
+      },
+      "ADJACENT_VENDOR": {
+        "POTENTIAL_BUYER": 0,
+        "SELLER_COMPETITOR": 0,
+        "ADJACENT_VENDOR": 0,
+        "PARTNER_POSSIBLE": 0,
+        "UNKNOWN": 0,
+        "MISSING_PREDICTION": 0
+      },
+      "PARTNER_POSSIBLE": {
+        "POTENTIAL_BUYER": 0,
+        "SELLER_COMPETITOR": 0,
+        "ADJACENT_VENDOR": 0,
+        "PARTNER_POSSIBLE": 0,
+        "UNKNOWN": 0,
+        "MISSING_PREDICTION": 0
+      },
+      "UNKNOWN": {
+        "POTENTIAL_BUYER": 0,
+        "SELLER_COMPETITOR": 0,
+        "ADJACENT_VENDOR": 0,
+        "PARTNER_POSSIBLE": 0,
+        "UNKNOWN": 0,
+        "MISSING_PREDICTION": 0
+      },
+      "MISSING_PREDICTION": {
+        "POTENTIAL_BUYER": 0,
+        "SELLER_COMPETITOR": 0,
+        "ADJACENT_VENDOR": 0,
+        "PARTNER_POSSIBLE": 0,
+        "UNKNOWN": 0,
+        "MISSING_PREDICTION": 0
+      }
+    },
+    "who": {
+      "LIKELY_FIT": {
+        "LIKELY_FIT": 0,
+        "POSSIBLE_FIT": 0,
+        "LIKELY_NOT_FIT": 0,
+        "INSUFFICIENT_DATA": 0,
+        "MISSING_PREDICTION": 3
+      },
+      "POSSIBLE_FIT": {
+        "LIKELY_FIT": 0,
+        "POSSIBLE_FIT": 0,
+        "LIKELY_NOT_FIT": 0,
+        "INSUFFICIENT_DATA": 0,
+        "MISSING_PREDICTION": 1
+      },
+      "LIKELY_NOT_FIT": {
+        "LIKELY_FIT": 0,
+        "POSSIBLE_FIT": 0,
+        "LIKELY_NOT_FIT": 0,
+        "INSUFFICIENT_DATA": 1,
+        "MISSING_PREDICTION": 13
+      },
+      "INSUFFICIENT_DATA": {
+        "LIKELY_FIT": 0,
+        "POSSIBLE_FIT": 0,
+        "LIKELY_NOT_FIT": 0,
+        "INSUFFICIENT_DATA": 0,
+        "MISSING_PREDICTION": 0
+      },
+      "MISSING_PREDICTION": {
+        "LIKELY_FIT": 0,
+        "POSSIBLE_FIT": 0,
+        "LIKELY_NOT_FIT": 0,
+        "INSUFFICIENT_DATA": 0,
+        "MISSING_PREDICTION": 0
+      }
+    }
+  },
+  "perCompanyComparisons": [
+    {
+      "benchmarkCompanyId": "c5a70b95-1302-4fa3-9e96-8ee6c6d18926",
+      "company": "Grownob LLC",
+      "domainKey": "DIGIPUUSH",
+      "groundTruthStatus": "GROUND_TRUTH_CONFIRMED",
+      "strictEligible": true,
+      "gold": {
+        "identity": "CORRECT",
+        "commercialRole": "POTENTIAL_BUYER",
+        "commercialRoleConfidence": "HIGH",
+        "who": "LIKELY_NOT_FIT",
+        "whoConfidence": "HIGH"
+      },
+      "task100": {
+        "identityState": "CONFIRMED",
+        "mciStage": "SUFFICIENT",
+        "mciReasonCode": null,
+        "controlStatus": "INSUFFICIENT",
+        "reasonCode": "COMMERCIAL_RELATIONSHIP_AMBIGUOUS",
+        "profile": {
+          "primaryBusiness": "Grownob LLC | 6 followers on LinkedIn. We build the outbound infrastructure B2B sales teams use to close deals — not hunt leads. | Grownob LLC is an AI-powered B2B outbound infrastructure agency. We handle the entire pipeline from ICP research to personalised outreach — so your sales team spends time closing, not prospecting.\n\nGrownob LLC builds end-to-end outbound systems for B2B companies that need a consistent, qualified pipeline without adding headcount.",
+          "businessModel": "UNKNOWN",
+          "industry": "Professional Services",
+          "employeesExact": null,
+          "employeesMin": 2,
+          "employeesMax": 10,
+          "country": "United States",
+          "productsServices": []
+        },
+        "companyUnderstanding": null,
+        "companyUnderstandingUnknownReason": "COMPANY_EVIDENCE_INSUFFICIENT",
+        "commercialRole": "UNKNOWN",
+        "commercialRoleConfidence": null,
+        "who": "MISSING_PREDICTION",
+        "whoAvailable": false
+      },
+      "companyUnderstandingAssessment": {
+        "assessment": "INSUFFICIENT",
+        "acceptable": false,
+        "reason": "COMPANY_EVIDENCE_INSUFFICIENT"
+      },
+      "commercialRoleCorrect": false,
+      "whoCorrect": false,
+      "firstError": {
+        "category": "INSUFFICIENT_EVIDENCE_HANDLING",
+        "severity": "HIGH",
+        "reason": "MCI was SUFFICIENT and the persisted profile described a B2B outbound agency, but CompanyUnderstanding abstained as COMPANY_EVIDENCE_INSUFFICIENT, causing UNKNOWN role and no WHO."
+      }
+    },
+    {
+      "benchmarkCompanyId": "6594cacd-e2a9-4803-ba7a-e166b8da7489",
+      "company": "Lead Made Easy",
+      "domainKey": "DIGIPUUSH",
+      "groundTruthStatus": "GROUND_TRUTH_CONFIRMED",
+      "strictEligible": true,
+      "gold": {
+        "identity": "CORRECT",
+        "commercialRole": "POTENTIAL_BUYER",
+        "commercialRoleConfidence": "HIGH",
+        "who": "POSSIBLE_FIT",
+        "whoConfidence": "MEDIUM"
+      },
+      "task100": {
+        "identityState": "CONFIRMED",
+        "mciStage": "SUFFICIENT",
+        "mciReasonCode": null,
+        "controlStatus": "INSUFFICIENT",
+        "reasonCode": "COMMERCIAL_RELATIONSHIP_AMBIGUOUS",
+        "profile": {
+          "primaryBusiness": "Lead Made Easy | 523 followers on LinkedIn. Pipeline-as-a-Service for SaaS &amp; IT Services firms. | Finding the right leads shouldn&#39;t be complicated. At Lead Made Easy, we help IT services and SaaS businesses connect with high-intent decision-makers through targeted outreach and appointment setting—so you can focus on closing deals, not chasing prospects.\n\nWHY CHOOSE US?",
+          "businessModel": "SAAS",
+          "industry": null,
+          "employeesExact": null,
+          "employeesMin": 11,
+          "employeesMax": 50,
+          "country": null,
+          "productsServices": []
+        },
+        "companyUnderstanding": null,
+        "companyUnderstandingUnknownReason": "COMPANY_EVIDENCE_INSUFFICIENT",
+        "commercialRole": "UNKNOWN",
+        "commercialRoleConfidence": null,
+        "who": "MISSING_PREDICTION",
+        "whoAvailable": false
+      },
+      "companyUnderstandingAssessment": {
+        "assessment": "INSUFFICIENT",
+        "acceptable": false,
+        "reason": "COMPANY_EVIDENCE_INSUFFICIENT"
+      },
+      "commercialRoleCorrect": false,
+      "whoCorrect": false,
+      "firstError": {
+        "category": "INSUFFICIENT_EVIDENCE_HANDLING",
+        "severity": "HIGH",
+        "reason": "MCI was SUFFICIENT and the profile described Pipeline-as-a-Service for SaaS/IT, but semantic understanding abstained, causing UNKNOWN role and no WHO."
+      }
+    },
+    {
+      "benchmarkCompanyId": "b45eeee7-aab7-412f-b7e7-4c95c999fa14",
+      "company": "Leadgeneron",
+      "domainKey": "DIGIPUUSH",
+      "groundTruthStatus": "GROUND_TRUTH_CONFIRMED",
+      "strictEligible": true,
+      "gold": {
+        "identity": "CORRECT",
+        "commercialRole": "POTENTIAL_BUYER",
+        "commercialRoleConfidence": "HIGH",
+        "who": "LIKELY_NOT_FIT",
+        "whoConfidence": "HIGH"
+      },
+      "task100": {
+        "identityState": "CONFIRMED",
+        "mciStage": "SUFFICIENT",
+        "mciReasonCode": null,
+        "controlStatus": "SUCCESS",
+        "reasonCode": "READY_FOR_SIGNAL_RESEARCH",
+        "profile": {
+          "primaryBusiness": null,
+          "businessModel": "UNKNOWN",
+          "industry": null,
+          "employeesExact": null,
+          "employeesMin": null,
+          "employeesMax": null,
+          "country": null,
+          "productsServices": []
+        },
+        "companyUnderstanding": {
+          "reason": "Leadgeneron is described as an IT services/consulting company operating a Managed Services SDR platform that uses AI to generate and qualify leads and set appointments. DigiPuush's AEO/GEO and AI visibility offering (improving presence in AI-generated answers, restructuring content, schema, authority building and monitoring) could be consumed by a sales development firm to increase discoverability and generate inbound leads. The candidate's focus on AI-driven lead generation aligns with the seller's AI visibility and SEO capabilities, making Leadgeneron a plausible buyer of DigiPuush services.",
+          "confidence": 0.69,
+          "evidence_ids": [
+            "7baaccf7-2867-4cd5-802c-994b89142179"
+          ],
+          "business_model": "INSURANCE",
+          "commercial_role": "POTENTIAL_BUYER",
+          "primary_business": "AI-driven sales development and lead generation services (Managed Services SDR platform)",
+          "products_services": [
+            "AI-driven lead generation and qualification",
+            "Appointment setting",
+            "Managed Services SDR (sales development) platform",
+            "End-to-end sales support and customized sales development services"
+          ],
+          "canonical_industry": "IT_SERVICES",
+          "missing_information": [
+            "Company size (revenue, customer count)",
+            "Current marketing/SEO/AI visibility efforts",
+            "Budget or procurement authority for marketing/SEO services",
+            "Existing vendor relationships for SEO or content services",
+            "Geographic target markets and channels for visibility"
+          ]
+        },
+        "companyUnderstandingUnknownReason": null,
+        "commercialRole": "POTENTIAL_BUYER",
+        "commercialRoleConfidence": 0.69,
+        "who": "INSUFFICIENT_DATA",
+        "whoAvailable": true
+      },
+      "companyUnderstandingAssessment": {
+        "assessment": "MOSTLY_CORRECT",
+        "acceptable": true,
+        "reason": "Primary business, services, and industry align; business_model=INSURANCE is materially wrong but does not overturn the overall company identity."
+      },
+      "commercialRoleCorrect": true,
+      "whoCorrect": false,
+      "firstError": {
+        "category": "PROVIDER_DATA_GAP",
+        "severity": "MEDIUM",
+        "reason": "CommercialRole was correct, but persisted intelligence lacked geography and WHO returned INSUFFICIENT_DATA instead of applying the gold US geography failure."
+      }
+    },
+    {
+      "benchmarkCompanyId": "b7e9af09-ede7-46fb-baa1-cf2d9f3158bf",
+      "company": "Leadzen.ai",
+      "domainKey": "DIGIPUUSH",
+      "groundTruthStatus": "GROUND_TRUTH_CONFIRMED",
+      "strictEligible": true,
+      "gold": {
+        "identity": "CORRECT",
+        "commercialRole": "POTENTIAL_BUYER",
+        "commercialRoleConfidence": "HIGH",
+        "who": "LIKELY_FIT",
+        "whoConfidence": "HIGH"
+      },
+      "task100": {
+        "identityState": "PROBABLE",
+        "mciStage": "SUFFICIENT",
+        "mciReasonCode": null,
+        "controlStatus": "SUCCESS",
+        "reasonCode": "ADJACENT_VENDOR_NOT_ELIGIBLE",
+        "profile": {
+          "primaryBusiness": null,
+          "businessModel": "UNKNOWN",
+          "industry": null,
+          "employeesExact": null,
+          "employeesMin": null,
+          "employeesMax": null,
+          "country": null,
+          "productsServices": []
+        },
+        "companyUnderstanding": {
+          "reason": "Evidence describes Leadzen.ai as an AI-driven lead generation/SDR automation software company. Its offering (converting website traffic into meetings and automating outreach) is complementary to DigiPuush's AEO/GEO and AI visibility services, which aim to drive and surface website traffic in AI answers and search. There is no evidence Leadzen.ai provides AI-visibility or SEO services (so not a competitor) nor evidence of an existing partnership; the products align in the same marketing-to-sales workflow, making Leadzen.ai an adjacent vendor.",
+          "confidence": 0.78,
+          "evidence_ids": [
+            "9fcfdb0e-a1e0-4d3b-86a3-f465e15cd446"
+          ],
+          "business_model": "SAAS",
+          "commercial_role": "ADJACENT_VENDOR",
+          "primary_business": "AI-powered lead generation and SDR automation platform (turns website traffic into meetings; outreach and booking automation; data enrichment)",
+          "products_services": [
+            "AI-powered lead generation platform",
+            "SDR automation (outreach and meeting booking)",
+            "Demand generation tools",
+            "Data enrichment",
+            "Integrations with sales/marketing stacks"
+          ],
+          "canonical_industry": "IT_SERVICES",
+          "missing_information": [
+            "Whether Leadzen.ai currently purchases or uses SEO/AEO/GEO or AI visibility services",
+            "Company size, customer segments, and geographic focus relevant to partnership or resale",
+            "Any existing partnerships, integrations, or reseller relationships with SEO/visibility providers",
+            "Whether Leadzen.ai offers any overlapping functionality (e.g., SEO, content restructuring) not stated in the evidence",
+            "Technology stack and APIs for potential integration with DigiPuush services"
+          ]
+        },
+        "companyUnderstandingUnknownReason": null,
+        "commercialRole": "ADJACENT_VENDOR",
+        "commercialRoleConfidence": 0.78,
+        "who": "MISSING_PREDICTION",
+        "whoAvailable": false
+      },
+      "companyUnderstandingAssessment": {
+        "assessment": "CORRECT",
+        "acceptable": true,
+        "reason": "Persisted semantic understanding matches the independent factual truth."
+      },
+      "commercialRoleCorrect": false,
+      "whoCorrect": false,
+      "firstError": {
+        "category": "COMMERCIAL_ROLE",
+        "severity": "HIGH",
+        "reason": "CompanyUnderstanding correctly described lead-generation SaaS, but seller-relative reasoning chose ADJACENT_VENDOR rather than structurally plausible POTENTIAL_BUYER."
+      }
+    },
+    {
+      "benchmarkCompanyId": "a96d5d08-cdd4-4970-b0e4-f85d569a3e75",
+      "company": "Outbound System",
+      "domainKey": "DIGIPUUSH",
+      "groundTruthStatus": "GROUND_TRUTH_CONFIRMED",
+      "strictEligible": true,
+      "gold": {
+        "identity": "CORRECT",
+        "commercialRole": "POTENTIAL_BUYER",
+        "commercialRoleConfidence": "HIGH",
+        "who": "LIKELY_NOT_FIT",
+        "whoConfidence": "HIGH"
+      },
+      "task100": {
+        "identityState": "CONFIRMED",
+        "mciStage": "SUFFICIENT",
+        "mciReasonCode": null,
+        "controlStatus": "INSUFFICIENT",
+        "reasonCode": "COMMERCIAL_RELATIONSHIP_AMBIGUOUS",
+        "profile": {
+          "primaryBusiness": "Outbound System | 1,545 followers on LinkedIn. Grow revenue faster with a proven B2B lead generation team. Trusted by 1000+ B2B companies. | Outbound System is a done-for-you B2B lead generation agency and outsourced SDR service that books 20-40+ qualified meetings per month using AI-powered cold email, LinkedIn outreach, and cold calling - each available as a standalone service or bundled into a unified multi-channel system.\n\nWe&#39;re the outbound partner companies switch to after they&#39;ve been burned by agencies that overpromise and underdeliver. Most agencies lock you into 3-6 month contracts, take 2-3 months to launch, run your campaigns on shared sending pools where one bad actor tanks everyone&#39;s deliverability, and send you PDF reports weekly or monthly instead of giving you real-time access to your own data.",
+          "businessModel": "UNKNOWN",
+          "industry": null,
+          "employeesExact": null,
+          "employeesMin": 11,
+          "employeesMax": 50,
+          "country": "United States",
+          "productsServices": []
+        },
+        "companyUnderstanding": null,
+        "companyUnderstandingUnknownReason": "COMPANY_EVIDENCE_INSUFFICIENT",
+        "commercialRole": "UNKNOWN",
+        "commercialRoleConfidence": null,
+        "who": "MISSING_PREDICTION",
+        "whoAvailable": false
+      },
+      "companyUnderstandingAssessment": {
+        "assessment": "INSUFFICIENT",
+        "acceptable": false,
+        "reason": "COMPANY_EVIDENCE_INSUFFICIENT"
+      },
+      "commercialRoleCorrect": false,
+      "whoCorrect": false,
+      "firstError": {
+        "category": "INSUFFICIENT_EVIDENCE_HANDLING",
+        "severity": "HIGH",
+        "reason": "MCI was SUFFICIENT and profile evidence described the company, but semantic understanding abstained and prevented role/WHO decisions."
+      }
+    },
+    {
+      "benchmarkCompanyId": "ada76ca1-a14b-48e4-8de6-e96498b23d95",
+      "company": "OutPro",
+      "domainKey": "DIGIPUUSH",
+      "groundTruthStatus": "GROUND_TRUTH_CONFIRMED",
+      "strictEligible": true,
+      "gold": {
+        "identity": "CORRECT",
+        "commercialRole": "POTENTIAL_BUYER",
+        "commercialRoleConfidence": "HIGH",
+        "who": "LIKELY_FIT",
+        "whoConfidence": "HIGH"
+      },
+      "task100": {
+        "identityState": "CONFIRMED",
+        "mciStage": "SUFFICIENT",
+        "mciReasonCode": null,
+        "controlStatus": "INSUFFICIENT",
+        "reasonCode": "COMMERCIAL_RELATIONSHIP_AMBIGUOUS",
+        "profile": {
+          "primaryBusiness": "OutPro | 1,190 followers on LinkedIn. People, Process, Playbook - No Leads Left Behind\n | Most B2B SaaS companies don&#39;t have a GTM problem. They have a systems problem.\n\nThe pipeline is inconsistent.",
+          "businessModel": "SAAS",
+          "industry": null,
+          "employeesExact": null,
+          "employeesMin": 11,
+          "employeesMax": 50,
+          "country": "India",
+          "productsServices": []
+        },
+        "companyUnderstanding": null,
+        "companyUnderstandingUnknownReason": "COMPANY_EVIDENCE_INSUFFICIENT",
+        "commercialRole": "UNKNOWN",
+        "commercialRoleConfidence": null,
+        "who": "MISSING_PREDICTION",
+        "whoAvailable": false
+      },
+      "companyUnderstandingAssessment": {
+        "assessment": "INSUFFICIENT",
+        "acceptable": false,
+        "reason": "COMPANY_EVIDENCE_INSUFFICIENT"
+      },
+      "commercialRoleCorrect": false,
+      "whoCorrect": false,
+      "firstError": {
+        "category": "INSUFFICIENT_EVIDENCE_HANDLING",
+        "severity": "HIGH",
+        "reason": "MCI was SUFFICIENT and profile evidence was available, but semantic understanding abstained and suppressed a gold likely-fit buyer."
+      }
+    },
+    {
+      "benchmarkCompanyId": "252b9ea5-ec55-49b5-8bf7-c514da6ca2cd",
+      "company": "Partner Propel",
+      "domainKey": "DIGIPUUSH",
+      "groundTruthStatus": "GROUND_TRUTH_CONFIRMED",
+      "strictEligible": true,
+      "gold": {
+        "identity": "CORRECT",
+        "commercialRole": "POTENTIAL_BUYER",
+        "commercialRoleConfidence": "HIGH",
+        "who": "LIKELY_NOT_FIT",
+        "whoConfidence": "HIGH"
+      },
+      "task100": {
+        "identityState": "CONFIRMED",
+        "mciStage": "SUFFICIENT",
+        "mciReasonCode": null,
+        "controlStatus": "INSUFFICIENT",
+        "reasonCode": "COMMERCIAL_RELATIONSHIP_AMBIGUOUS",
+        "profile": {
+          "primaryBusiness": "Partner Propel | 500 followers on LinkedIn. We set up AI GTM systems for SMBs. | Most B2B SaaS companies plateau around $5M because growth depends on inconsistent referrals and founder-led sales.\n\nYou know you need systematic outbound. But hiring SDRs costs $80K+ per person per year.",
+          "businessModel": "SAAS",
+          "industry": null,
+          "employeesExact": null,
+          "employeesMin": 2,
+          "employeesMax": 10,
+          "country": "United States",
+          "productsServices": []
+        },
+        "companyUnderstanding": null,
+        "companyUnderstandingUnknownReason": "COMPANY_EVIDENCE_INSUFFICIENT",
+        "commercialRole": "UNKNOWN",
+        "commercialRoleConfidence": null,
+        "who": "MISSING_PREDICTION",
+        "whoAvailable": false
+      },
+      "companyUnderstandingAssessment": {
+        "assessment": "INSUFFICIENT",
+        "acceptable": false,
+        "reason": "COMPANY_EVIDENCE_INSUFFICIENT"
+      },
+      "commercialRoleCorrect": false,
+      "whoCorrect": false,
+      "firstError": {
+        "category": "INSUFFICIENT_EVIDENCE_HANDLING",
+        "severity": "HIGH",
+        "reason": "MCI was SUFFICIENT and profile evidence was available, but semantic understanding abstained and prevented seller-relative classification."
+      }
+    },
+    {
+      "benchmarkCompanyId": "d2dd1f48-1b81-4149-a298-1dde2ae96ade",
+      "company": "Pure Sales",
+      "domainKey": "DIGIPUUSH",
+      "groundTruthStatus": "INSUFFICIENT",
+      "strictEligible": false,
+      "gold": {
+        "identity": "CORRECT",
+        "commercialRole": "POTENTIAL_BUYER",
+        "commercialRoleConfidence": "MEDIUM",
+        "who": "INSUFFICIENT_DATA",
+        "whoConfidence": "MEDIUM"
+      },
+      "task100": {
+        "identityState": "PROBABLE",
+        "mciStage": "SUFFICIENT",
+        "mciReasonCode": null,
+        "controlStatus": "SUCCESS",
+        "reasonCode": "ADJACENT_VENDOR_NOT_ELIGIBLE",
+        "profile": {
+          "primaryBusiness": null,
+          "businessModel": "UNKNOWN",
+          "industry": null,
+          "employeesExact": null,
+          "employeesMin": null,
+          "employeesMax": null,
+          "country": null,
+          "productsServices": []
+        },
+        "companyUnderstanding": {
+          "reason": "Evidence describes Pure Sales as a marketing/sales services company focused on generating qualified meetings and managing pipeline for B2B SaaS and AI firms. Those offerings complement DigiPuush's AI visibility and SEO services (both target marketing/sales outcomes), making Pure Sales an adjacent vendor rather than a direct competitor or confirmed partner/buyer. There is no supplied evidence of resale, technical integration, or explicit partnership with DigiPuush.",
+          "confidence": 0.75,
+          "evidence_ids": [
+            "05ad1d1e-067a-43e4-8080-6b3342238ef1"
+          ],
+          "business_model": "PROFESSIONAL_SERVICES",
+          "commercial_role": "ADJACENT_VENDOR",
+          "primary_business": "B2B sales and marketing services (outsourced sales / lead generation)",
+          "products_services": [
+            "Qualified meeting generation",
+            "End-to-end pipeline management",
+            "Cold calling and high-level human conversations",
+            "Outbound prospecting / sales development",
+            "Sales partner services (no fixed salaries / flexible ramp-up)"
+          ],
+          "canonical_industry": "PROFESSIONAL_SERVICES",
+          "missing_information": [
+            "Any explicit statement that Pure Sales purchases or resells SEO/AI visibility services",
+            "Evidence of partnerships, channel/referral relationships, or integrations with DigiPuush or similar vendors",
+            "Client list or buyer persona overlap details showing shared customers with DigiPuush",
+            "Company size, revenue, or capacity to co-deliver complementary services"
+          ]
+        },
+        "companyUnderstandingUnknownReason": null,
+        "commercialRole": "ADJACENT_VENDOR",
+        "commercialRoleConfidence": 0.75,
+        "who": "MISSING_PREDICTION",
+        "whoAvailable": false
+      },
+      "companyUnderstandingAssessment": {
+        "assessment": "INSUFFICIENT",
+        "acceptable": false,
+        "reason": "No independent field agreement mapping available."
+      },
+      "commercialRoleCorrect": null,
+      "whoCorrect": null,
+      "firstError": null
+    },
+    {
+      "benchmarkCompanyId": "4233dfdf-a2ac-48de-8347-91759eb415de",
+      "company": "RevyGo",
+      "domainKey": "DIGIPUUSH",
+      "groundTruthStatus": "GROUND_TRUTH_CONFIRMED",
+      "strictEligible": true,
+      "gold": {
+        "identity": "CORRECT",
+        "commercialRole": "POTENTIAL_BUYER",
+        "commercialRoleConfidence": "HIGH",
+        "who": "LIKELY_NOT_FIT",
+        "whoConfidence": "HIGH"
+      },
+      "task100": {
+        "identityState": "CONFIRMED",
+        "mciStage": "SUFFICIENT",
+        "mciReasonCode": null,
+        "controlStatus": "INSUFFICIENT",
+        "reasonCode": "COMMERCIAL_RELATIONSHIP_AMBIGUOUS",
+        "profile": {
+          "primaryBusiness": null,
+          "businessModel": "UNKNOWN",
+          "industry": null,
+          "employeesExact": null,
+          "employeesMin": null,
+          "employeesMax": null,
+          "country": null,
+          "productsServices": []
+        },
+        "companyUnderstanding": {
+          "primary_business": "Unknown — supplied evidence does not confirm RevyGo's business",
+          "business_model": "UNKNOWN",
+          "canonical_industry": "UNKNOWN",
+          "products_services": [],
+          "commercial_role": "UNKNOWN",
+          "confidence": 0.15,
+          "reason": "The only provided evidence discusses a company named Revvy (a product-review social platform) and a different company Revalgo (AI automation for sales/order processes) and explicitly states that the LinkedIn extract does not confirm an association with RevyGo or revygo.com. There is insufficient, unambiguous information to determine RevyGo's primary business or its relationship (buyer, competitor, partner, etc.) to DigiPuush.",
+          "evidence_ids": [
+            "f678a9a3-5ba6-43b2-9c87-2e41c54c73ba"
+          ],
+          "missing_information": [
+            "Authoritative company profile for RevyGo (company description)",
+            "Confirmation of domain ownership (revygo.com) and product/service offerings",
+            "Industry / vertical classification for RevyGo",
+            "Any public partnership, integration, or competitor relationships between RevyGo and DigiPuush"
+          ]
+        },
+        "companyUnderstandingUnknownReason": "GENUINELY_AMBIGUOUS",
+        "commercialRole": "UNKNOWN",
+        "commercialRoleConfidence": 0.15,
+        "who": "MISSING_PREDICTION",
+        "whoAvailable": false
+      },
+      "companyUnderstandingAssessment": {
+        "assessment": "INSUFFICIENT",
+        "acceptable": false,
+        "reason": "Persisted evidence was attributed to unrelated entities, so no usable understanding was produced."
+      },
+      "commercialRoleCorrect": false,
+      "whoCorrect": false,
+      "firstError": {
+        "category": "PROVIDER_DATA_GAP",
+        "severity": "HIGH",
+        "reason": "Persisted evidence referred to unrelated Revvy/Revalgo entities and could not establish RevyGo, so downstream role and WHO abstained."
+      }
+    },
+    {
+      "benchmarkCompanyId": "60fafac0-f176-4d81-8215-847e1026ba74",
+      "company": "SalesGig",
+      "domainKey": "DIGIPUUSH",
+      "groundTruthStatus": "GROUND_TRUTH_CONFIRMED",
+      "strictEligible": true,
+      "gold": {
+        "identity": "CORRECT",
+        "commercialRole": "POTENTIAL_BUYER",
+        "commercialRoleConfidence": "HIGH",
+        "who": "LIKELY_NOT_FIT",
+        "whoConfidence": "HIGH"
+      },
+      "task100": {
+        "identityState": "CONFIRMED",
+        "mciStage": "SUFFICIENT",
+        "mciReasonCode": null,
+        "controlStatus": "INSUFFICIENT",
+        "reasonCode": "COMMERCIAL_RELATIONSHIP_AMBIGUOUS",
+        "profile": {
+          "primaryBusiness": "SalesGig | 3,804 followers on LinkedIn. Fractional &amp; full-time outsourced sales development experts; We schedule sales meetings, so you can close more deals. | SalesGig, a QCSS company, is leader in fractional &amp; full-time outsourced sales development; We focus on scheduling sales meetings, so you can focus on closing deals. \n\nImagine employing the best US-based sales development reps to aggressively and consistently fill your sales funnel with qualified meetings. \n\nWith SalesGig, that’s your reality!",
+          "businessModel": "UNKNOWN",
+          "industry": null,
+          "employeesExact": null,
+          "employeesMin": 201,
+          "employeesMax": 500,
+          "country": "United States",
+          "productsServices": []
+        },
+        "companyUnderstanding": null,
+        "companyUnderstandingUnknownReason": "COMPANY_EVIDENCE_INSUFFICIENT",
+        "commercialRole": "UNKNOWN",
+        "commercialRoleConfidence": null,
+        "who": "MISSING_PREDICTION",
+        "whoAvailable": false
+      },
+      "companyUnderstandingAssessment": {
+        "assessment": "INSUFFICIENT",
+        "acceptable": false,
+        "reason": "COMPANY_EVIDENCE_INSUFFICIENT"
+      },
+      "commercialRoleCorrect": false,
+      "whoCorrect": false,
+      "firstError": {
+        "category": "INSUFFICIENT_EVIDENCE_HANDLING",
+        "severity": "HIGH",
+        "reason": "MCI was SUFFICIENT and a company profile existed, but semantic understanding abstained and prevented role/WHO decisions."
+      }
+    },
+    {
+      "benchmarkCompanyId": "8a4ac58f-98cd-4a27-b684-ac1bf81293cb",
+      "company": "3LOCKS",
+      "domainKey": "MANAGED_SOC",
+      "groundTruthStatus": "AMBIGUOUS",
+      "strictEligible": false,
+      "gold": {
+        "identity": "UNCERTAIN",
+        "commercialRole": "UNKNOWN",
+        "commercialRoleConfidence": "LOW",
+        "who": "INSUFFICIENT_DATA",
+        "whoConfidence": "LOW"
+      },
+      "task100": {
+        "identityState": "UNRESOLVED",
+        "mciStage": "UNSAFE_IDENTITY",
+        "mciReasonCode": "DOMAIN_MISSING",
+        "controlStatus": "BLOCKED",
+        "reasonCode": "DOMAIN_MISSING",
+        "profile": {
+          "primaryBusiness": null,
+          "businessModel": "UNKNOWN",
+          "industry": null,
+          "employeesExact": null,
+          "employeesMin": null,
+          "employeesMax": null,
+          "country": null,
+          "productsServices": []
+        },
+        "companyUnderstanding": null,
+        "companyUnderstandingUnknownReason": null,
+        "commercialRole": "UNKNOWN",
+        "commercialRoleConfidence": null,
+        "who": "MISSING_PREDICTION",
+        "whoAvailable": false
+      },
+      "companyUnderstandingAssessment": {
+        "assessment": "INSUFFICIENT",
+        "acceptable": false,
+        "reason": "CompanyUnderstanding output absent."
+      },
+      "commercialRoleCorrect": null,
+      "whoCorrect": null,
+      "firstError": null
+    },
+    {
+      "benchmarkCompanyId": "5e4137f0-f1da-4877-b78c-330d77e4d58d",
+      "company": "Barracuda SKOUT Managed XDR",
+      "domainKey": "MANAGED_SOC",
+      "groundTruthStatus": "GROUND_TRUTH_CONFIRMED",
+      "strictEligible": true,
+      "gold": {
+        "identity": "CORRECT",
+        "commercialRole": "SELLER_COMPETITOR",
+        "commercialRoleConfidence": "HIGH",
+        "who": "LIKELY_NOT_FIT",
+        "whoConfidence": "HIGH"
+      },
+      "task100": {
+        "identityState": "CONFIRMED",
+        "mciStage": "SUFFICIENT",
+        "mciReasonCode": null,
+        "controlStatus": "INSUFFICIENT",
+        "reasonCode": "COMMERCIAL_RELATIONSHIP_AMBIGUOUS",
+        "profile": {
+          "primaryBusiness": "Barracuda | 88,530 followers on LinkedIn. Barracuda is a leading global cybersecurity company providing complete protection against complex threats for all size business. Our AI-powered BarracudaONE platform secures email, data, applications and networks with innovative solutions, managed XDR and a centralized dashboard to maximize protection and strengthen cyber resilience. Trusted by hundreds of thousands of IT professionals and managed service providers worldwide, Barracuda delivers powerful defenses that are easy to buy, deploy and use.",
+          "businessModel": "MSP",
+          "industry": "Cybersecurity",
+          "employeesExact": null,
+          "employeesMin": 1001,
+          "employeesMax": 5000,
+          "country": "United States",
+          "productsServices": []
+        },
+        "companyUnderstanding": null,
+        "companyUnderstandingUnknownReason": "COMPANY_EVIDENCE_INSUFFICIENT",
+        "commercialRole": "UNKNOWN",
+        "commercialRoleConfidence": null,
+        "who": "MISSING_PREDICTION",
+        "whoAvailable": false
+      },
+      "companyUnderstandingAssessment": {
+        "assessment": "INSUFFICIENT",
+        "acceptable": false,
+        "reason": "COMPANY_EVIDENCE_INSUFFICIENT"
+      },
+      "commercialRoleCorrect": false,
+      "whoCorrect": false,
+      "firstError": {
+        "category": "INSUFFICIENT_EVIDENCE_HANDLING",
+        "severity": "MEDIUM",
+        "reason": "The profile identified Managed XDR/SOC overlap, but semantic understanding abstained, leaving the competitor role UNKNOWN."
+      }
+    },
+    {
+      "benchmarkCompanyId": "50ceadee-afc9-41a1-b7c7-f6334e213df8",
+      "company": "CData Virtuality",
+      "domainKey": "MANAGED_SOC",
+      "groundTruthStatus": "GROUND_TRUTH_CONFIRMED",
+      "strictEligible": true,
+      "gold": {
+        "identity": "CORRECT",
+        "commercialRole": "POTENTIAL_BUYER",
+        "commercialRoleConfidence": "HIGH",
+        "who": "LIKELY_FIT",
+        "whoConfidence": "HIGH"
+      },
+      "task100": {
+        "identityState": "UNRESOLVED",
+        "mciStage": "UNSAFE_IDENTITY",
+        "mciReasonCode": "DOMAIN_MISSING",
+        "controlStatus": "BLOCKED",
+        "reasonCode": "DOMAIN_MISSING",
+        "profile": {
+          "primaryBusiness": null,
+          "businessModel": "UNKNOWN",
+          "industry": null,
+          "employeesExact": null,
+          "employeesMin": null,
+          "employeesMax": null,
+          "country": null,
+          "productsServices": []
+        },
+        "companyUnderstanding": null,
+        "companyUnderstandingUnknownReason": null,
+        "commercialRole": "UNKNOWN",
+        "commercialRoleConfidence": null,
+        "who": "MISSING_PREDICTION",
+        "whoAvailable": false
+      },
+      "companyUnderstandingAssessment": {
+        "assessment": "INSUFFICIENT",
+        "acceptable": false,
+        "reason": "CompanyUnderstanding output absent."
+      },
+      "commercialRoleCorrect": false,
+      "whoCorrect": false,
+      "firstError": {
+        "category": "IDENTITY_RESOLUTION",
+        "severity": "HIGH",
+        "reason": "Task #100 blocked the record for DOMAIN_MISSING and UNRESOLVED identity, while gold independently confirmed the company as a likely-fit buyer."
+      }
+    },
+    {
+      "benchmarkCompanyId": "36e5aa54-997a-4281-95c7-460508f94e32",
+      "company": "Critical Start",
+      "domainKey": "MANAGED_SOC",
+      "groundTruthStatus": "GROUND_TRUTH_CONFIRMED",
+      "strictEligible": true,
+      "gold": {
+        "identity": "CORRECT",
+        "commercialRole": "SELLER_COMPETITOR",
+        "commercialRoleConfidence": "HIGH",
+        "who": "LIKELY_NOT_FIT",
+        "whoConfidence": "HIGH"
+      },
+      "task100": {
+        "identityState": "CONFIRMED",
+        "mciStage": "SUFFICIENT",
+        "mciReasonCode": null,
+        "controlStatus": "INSUFFICIENT",
+        "reasonCode": "COMMERCIAL_RELATIONSHIP_AMBIGUOUS",
+        "profile": {
+          "primaryBusiness": "Critical Start | 20,492 followers on LinkedIn. MDR with fast response, full visibility, and expert action. Built to cut noise and help your team stay in control. | Most MDR providers send alerts and call it coverage, but security teams don&#39;t need more notifications. They need action.\n\nCritical Start is a Managed Detection and Response (MDR) provider built for outcomes.",
+          "businessModel": "MSSP",
+          "industry": "Cybersecurity",
+          "employeesExact": null,
+          "employeesMin": 201,
+          "employeesMax": 500,
+          "country": "United States",
+          "productsServices": []
+        },
+        "companyUnderstanding": null,
+        "companyUnderstandingUnknownReason": "COMPANY_EVIDENCE_INSUFFICIENT",
+        "commercialRole": "UNKNOWN",
+        "commercialRoleConfidence": null,
+        "who": "MISSING_PREDICTION",
+        "whoAvailable": false
+      },
+      "companyUnderstandingAssessment": {
+        "assessment": "INSUFFICIENT",
+        "acceptable": false,
+        "reason": "COMPANY_EVIDENCE_INSUFFICIENT"
+      },
+      "commercialRoleCorrect": false,
+      "whoCorrect": false,
+      "firstError": {
+        "category": "INSUFFICIENT_EVIDENCE_HANDLING",
+        "severity": "MEDIUM",
+        "reason": "The profile identified MDR/SOC services, but semantic understanding abstained and did not classify the competitor."
+      }
+    },
+    {
+      "benchmarkCompanyId": "8ef6a894-78e7-4276-94d5-3c14c64b7ee1",
+      "company": "CyberOne",
+      "domainKey": "MANAGED_SOC",
+      "groundTruthStatus": "GROUND_TRUTH_CONFIRMED",
+      "strictEligible": true,
+      "gold": {
+        "identity": "CORRECT",
+        "commercialRole": "SELLER_COMPETITOR",
+        "commercialRoleConfidence": "HIGH",
+        "who": "LIKELY_NOT_FIT",
+        "whoConfidence": "HIGH"
+      },
+      "task100": {
+        "identityState": "PROBABLE",
+        "mciStage": "SUFFICIENT",
+        "mciReasonCode": null,
+        "controlStatus": "SUCCESS",
+        "reasonCode": "COMPETITOR_NOT_ELIGIBLE",
+        "profile": {
+          "primaryBusiness": null,
+          "businessModel": "UNKNOWN",
+          "industry": null,
+          "employeesExact": null,
+          "employeesMin": null,
+          "employeesMax": null,
+          "country": null,
+          "productsServices": []
+        },
+        "companyUnderstanding": {
+          "reason": "Evidence describes CyberOne as a cybersecurity company delivering Managed XDR and Microsoft-managed security services plus security consulting and professional services. Those offerings are substantial substitutes for Aadit Technologies' Managed SOC (continuous managed security monitoring and response), indicating a competitive relationship.",
+          "confidence": 0.9,
+          "evidence_ids": [
+            "b0567cfb-c3ed-40f3-9b6a-11bbee49f34c"
+          ],
+          "business_model": "MSSP",
+          "commercial_role": "SELLER_COMPETITOR",
+          "primary_business": "Cybersecurity consulting and managed security services",
+          "products_services": [
+            "Managed Extended Detection & Response (Managed XDR)",
+            "Microsoft-managed security services",
+            "Security consulting",
+            "Professional services",
+            "AI-augmented security operations"
+          ],
+          "canonical_industry": "CYBERSECURITY",
+          "missing_information": [
+            "Explicit statement that CyberOne offers a 24/7 managed SOC service equivalent in scope to Aadit's Managed SOC",
+            "Detailed feature-to-feature comparison (coverage of endpoints, identities, cloud, networks) between CyberOne offerings and Aadit's Managed SOC",
+            "Geographic targeting and customer segments to assess direct market overlap with Aadit"
+          ]
+        },
+        "companyUnderstandingUnknownReason": null,
+        "commercialRole": "SELLER_COMPETITOR",
+        "commercialRoleConfidence": 0.9,
+        "who": "MISSING_PREDICTION",
+        "whoAvailable": false
+      },
+      "companyUnderstandingAssessment": {
+        "assessment": "CORRECT",
+        "acceptable": true,
+        "reason": "Persisted semantic understanding correctly identifies managed cybersecurity/MXDR services."
+      },
+      "commercialRoleCorrect": true,
+      "whoCorrect": false,
+      "firstError": {
+        "category": "WHO_DECISION_POLICY",
+        "severity": "MEDIUM",
+        "reason": "CommercialRole correctly identified a competitor, but the competitor-ineligible path emitted no explicit WHO result instead of the gold LIKELY_NOT_FIT label."
+      }
+    },
+    {
+      "benchmarkCompanyId": "05939322-6f62-408e-af6a-307196598385",
+      "company": "CySOC",
+      "domainKey": "MANAGED_SOC",
+      "groundTruthStatus": "GROUND_TRUTH_CONFIRMED",
+      "strictEligible": true,
+      "gold": {
+        "identity": "CORRECT",
+        "commercialRole": "SELLER_COMPETITOR",
+        "commercialRoleConfidence": "HIGH",
+        "who": "LIKELY_NOT_FIT",
+        "whoConfidence": "HIGH"
+      },
+      "task100": {
+        "identityState": "CONFIRMED",
+        "mciStage": "SUFFICIENT",
+        "mciReasonCode": null,
+        "controlStatus": "INSUFFICIENT",
+        "reasonCode": "COMMERCIAL_RELATIONSHIP_AMBIGUOUS",
+        "profile": {
+          "primaryBusiness": "CySOC | 72 followers on LinkedIn. Get Secure, Stay Secure | CYSOC Secure is a Cybersecurity Consulting and Security Operations Center (SOC) firm headquartered in Raleigh, North Carolina, specializing in protecting enterprises from advanced cyber threats and operational disruptions.\n\nWe partner with organizations to design and implement scalable, compliance-driven security frameworks that align with business objectives and regulatory standards. Our team delivers end-to-end solutions — from 24/7 SOC monitoring and incident response to Unified Communication and IT infrastructure management — ensuring our clients maintain business continuity and resilience.",
+          "businessModel": "MSSP",
+          "industry": "Cybersecurity",
+          "employeesExact": null,
+          "employeesMin": 2,
+          "employeesMax": 10,
+          "country": "United States",
+          "productsServices": []
+        },
+        "companyUnderstanding": null,
+        "companyUnderstandingUnknownReason": "COMPANY_EVIDENCE_INSUFFICIENT",
+        "commercialRole": "UNKNOWN",
+        "commercialRoleConfidence": null,
+        "who": "MISSING_PREDICTION",
+        "whoAvailable": false
+      },
+      "companyUnderstandingAssessment": {
+        "assessment": "INSUFFICIENT",
+        "acceptable": false,
+        "reason": "COMPANY_EVIDENCE_INSUFFICIENT"
+      },
+      "commercialRoleCorrect": false,
+      "whoCorrect": false,
+      "firstError": {
+        "category": "INSUFFICIENT_EVIDENCE_HANDLING",
+        "severity": "MEDIUM",
+        "reason": "The profile identified 24/7 SOC services, but semantic understanding abstained and left the competitor role UNKNOWN."
+      }
+    },
+    {
+      "benchmarkCompanyId": "e963aa5d-4bf6-4fec-95cb-14ac65c85679",
+      "company": "Ostra Security",
+      "domainKey": "MANAGED_SOC",
+      "groundTruthStatus": "GROUND_TRUTH_CONFIRMED",
+      "strictEligible": true,
+      "gold": {
+        "identity": "CORRECT",
+        "commercialRole": "SELLER_COMPETITOR",
+        "commercialRoleConfidence": "HIGH",
+        "who": "LIKELY_NOT_FIT",
+        "whoConfidence": "HIGH"
+      },
+      "task100": {
+        "identityState": "CONFIRMED",
+        "mciStage": "SUFFICIENT",
+        "mciReasonCode": null,
+        "controlStatus": "INSUFFICIENT",
+        "reasonCode": "COMMERCIAL_RELATIONSHIP_AMBIGUOUS",
+        "profile": {
+          "primaryBusiness": "Ostra Security | 3,422 followers on LinkedIn. Managed detection, response, and remediation for organizations that need more than alerts and PDF reports. | Ostra Security delivers MXDRR: Managed Extended Detection, Response, and Remediation. \n\nWe added the extra ‘R’ because traditional MDR and XDR often stop short. They detect a threat, isolate a device, and send an alert.",
+          "businessModel": "MSSP",
+          "industry": "Cybersecurity",
+          "employeesExact": null,
+          "employeesMin": 51,
+          "employeesMax": 200,
+          "country": "United States",
+          "productsServices": []
+        },
+        "companyUnderstanding": null,
+        "companyUnderstandingUnknownReason": "COMPANY_EVIDENCE_INSUFFICIENT",
+        "commercialRole": "UNKNOWN",
+        "commercialRoleConfidence": null,
+        "who": "MISSING_PREDICTION",
+        "whoAvailable": false
+      },
+      "companyUnderstandingAssessment": {
+        "assessment": "INSUFFICIENT",
+        "acceptable": false,
+        "reason": "COMPANY_EVIDENCE_INSUFFICIENT"
+      },
+      "commercialRoleCorrect": false,
+      "whoCorrect": false,
+      "firstError": {
+        "category": "INSUFFICIENT_EVIDENCE_HANDLING",
+        "severity": "MEDIUM",
+        "reason": "The profile identified managed security/MDR services, but semantic understanding abstained and left the competitor role UNKNOWN."
+      }
+    },
+    {
+      "benchmarkCompanyId": "14f2dadb-6650-43bd-a930-cab49890f950",
+      "company": "Pondurance",
+      "domainKey": "MANAGED_SOC",
+      "groundTruthStatus": "GROUND_TRUTH_CONFIRMED",
+      "strictEligible": true,
+      "gold": {
+        "identity": "CORRECT",
+        "commercialRole": "SELLER_COMPETITOR",
+        "commercialRoleConfidence": "HIGH",
+        "who": "LIKELY_NOT_FIT",
+        "whoConfidence": "HIGH"
+      },
+      "task100": {
+        "identityState": "CONFIRMED",
+        "mciStage": "SUFFICIENT",
+        "mciReasonCode": null,
+        "controlStatus": "INSUFFICIENT",
+        "reasonCode": "COMMERCIAL_RELATIONSHIP_AMBIGUOUS",
+        "profile": {
+          "primaryBusiness": "Pondurance | 25,317 followers on LinkedIn. Delivering personalized, 24/7 MDR services that grow with your organization.  | Pondurance delivers world-class Managed Detection and Response (MDR) services to organizations facing today&#39;s most pressing and dynamic cybersecurity challenges, including ransomware, complex compliance mandates, and digital transformation accelerated by distributed workforces. These MDR services include an annual risk assessment powered by Pondurance’s risk management platform MyCyberScorecard. Our experienced team of analysts, threat hunters, and incident responders leverages your cyber risk improvement plan and uses our advanced Scope platform and integrated tech stack — including SIEM, log management, and security orchestration and response (SOAR) — to continuously hunt, investigate, validate, and contain threats.",
+          "businessModel": "MSSP",
+          "industry": "Cybersecurity",
+          "employeesExact": null,
+          "employeesMin": 51,
+          "employeesMax": 200,
+          "country": "United States",
+          "productsServices": []
+        },
+        "companyUnderstanding": null,
+        "companyUnderstandingUnknownReason": "COMPANY_EVIDENCE_INSUFFICIENT",
+        "commercialRole": "UNKNOWN",
+        "commercialRoleConfidence": null,
+        "who": "MISSING_PREDICTION",
+        "whoAvailable": false
+      },
+      "companyUnderstandingAssessment": {
+        "assessment": "INSUFFICIENT",
+        "acceptable": false,
+        "reason": "COMPANY_EVIDENCE_INSUFFICIENT"
+      },
+      "commercialRoleCorrect": false,
+      "whoCorrect": false,
+      "firstError": {
+        "category": "INSUFFICIENT_EVIDENCE_HANDLING",
+        "severity": "MEDIUM",
+        "reason": "The profile identified 24/7 MDR services, but semantic understanding abstained and left the competitor role UNKNOWN."
+      }
+    },
+    {
+      "benchmarkCompanyId": "8cec0d59-cbec-4285-a830-52fc38523bbf",
+      "company": "SOCFortress",
+      "domainKey": "MANAGED_SOC",
+      "groundTruthStatus": "GROUND_TRUTH_CONFIRMED",
+      "strictEligible": true,
+      "gold": {
+        "identity": "CORRECT",
+        "commercialRole": "SELLER_COMPETITOR",
+        "commercialRoleConfidence": "HIGH",
+        "who": "LIKELY_NOT_FIT",
+        "whoConfidence": "HIGH"
+      },
+      "task100": {
+        "identityState": "CONFIRMED",
+        "mciStage": "SUFFICIENT",
+        "mciReasonCode": null,
+        "controlStatus": "INSUFFICIENT",
+        "reasonCode": "COMMERCIAL_RELATIONSHIP_AMBIGUOUS",
+        "profile": {
+          "primaryBusiness": "SOCFortress | 1,941 followers on LinkedIn. SOCFortress is a SaaS company that unifies Observability, Security Monitoring, Threat Intelligence and SOAR. | SOCFortress is a SaaS company that unifies Observability, Security Monitoring, Threat Intelligence and Security Orchestration, Automation, and Response (SOAR). SOCFortress helps organizations align strategic and operational goals by exposing the risks and threats that matter most.",
+          "businessModel": "SAAS",
+          "industry": "IT Services",
+          "employeesExact": null,
+          "employeesMin": 2,
+          "employeesMax": 10,
+          "country": "United States",
+          "productsServices": []
+        },
+        "companyUnderstanding": null,
+        "companyUnderstandingUnknownReason": "COMPANY_EVIDENCE_INSUFFICIENT",
+        "commercialRole": "UNKNOWN",
+        "commercialRoleConfidence": null,
+        "who": "MISSING_PREDICTION",
+        "whoAvailable": false
+      },
+      "companyUnderstandingAssessment": {
+        "assessment": "INSUFFICIENT",
+        "acceptable": false,
+        "reason": "COMPANY_EVIDENCE_INSUFFICIENT"
+      },
+      "commercialRoleCorrect": false,
+      "whoCorrect": false,
+      "firstError": {
+        "category": "INSUFFICIENT_EVIDENCE_HANDLING",
+        "severity": "MEDIUM",
+        "reason": "The profile identified SOC/security monitoring services, but semantic understanding abstained and left the competitor role UNKNOWN."
+      }
+    },
+    {
+      "benchmarkCompanyId": "bef79acd-a69f-40a9-8488-d46a03ae3710",
+      "company": "Socura",
+      "domainKey": "MANAGED_SOC",
+      "groundTruthStatus": "GROUND_TRUTH_CONFIRMED",
+      "strictEligible": true,
+      "gold": {
+        "identity": "CORRECT",
+        "commercialRole": "SELLER_COMPETITOR",
+        "commercialRoleConfidence": "HIGH",
+        "who": "LIKELY_NOT_FIT",
+        "whoConfidence": "HIGH"
+      },
+      "task100": {
+        "identityState": "CONFIRMED",
+        "mciStage": "SUFFICIENT",
+        "mciReasonCode": null,
+        "controlStatus": "INSUFFICIENT",
+        "reasonCode": "COMMERCIAL_RELATIONSHIP_AMBIGUOUS",
+        "profile": {
+          "primaryBusiness": "Socura | 2,470 followers on LinkedIn. Managed Detection and Response | With constant vigilance against cyber threats comes the calm to grow your business. Socura is a Managed Detection and Response provider bringing the clarity, control, and confidence needed to minimise risk and thrive in an ever-changing landscape.",
+          "businessModel": "MSSP",
+          "industry": "Cybersecurity",
+          "employeesExact": null,
+          "employeesMin": 11,
+          "employeesMax": 50,
+          "country": "United Kingdom",
+          "productsServices": []
+        },
+        "companyUnderstanding": null,
+        "companyUnderstandingUnknownReason": "COMPANY_EVIDENCE_INSUFFICIENT",
+        "commercialRole": "UNKNOWN",
+        "commercialRoleConfidence": null,
+        "who": "MISSING_PREDICTION",
+        "whoAvailable": false
+      },
+      "companyUnderstandingAssessment": {
+        "assessment": "INSUFFICIENT",
+        "acceptable": false,
+        "reason": "COMPANY_EVIDENCE_INSUFFICIENT"
+      },
+      "commercialRoleCorrect": false,
+      "whoCorrect": false,
+      "firstError": {
+        "category": "INSUFFICIENT_EVIDENCE_HANDLING",
+        "severity": "MEDIUM",
+        "reason": "The profile identified MDR/24x7 SOC services, but semantic understanding abstained and left the competitor role UNKNOWN."
+      }
+    }
+  ],
+  "firstErrorAnalysis": {
+    "counts": {
+      "IDENTITY_RESOLUTION": 1,
+      "COMPANY_UNDERSTANDING": 0,
+      "COMMERCIAL_ROLE": 1,
+      "ICP_CRITERION_MAPPING": 0,
+      "WHO_DECISION_POLICY": 1,
+      "INSUFFICIENT_EVIDENCE_HANDLING": 13,
+      "STALE_STATE": 0,
+      "PROVIDER_DATA_GAP": 2,
+      "OTHER": 0
+    },
+    "records": [
+      {
+        "company": "Grownob LLC",
+        "domainKey": "DIGIPUUSH",
+        "category": "INSUFFICIENT_EVIDENCE_HANDLING",
+        "severity": "HIGH",
+        "reason": "MCI was SUFFICIENT and the persisted profile described a B2B outbound agency, but CompanyUnderstanding abstained as COMPANY_EVIDENCE_INSUFFICIENT, causing UNKNOWN role and no WHO."
+      },
+      {
+        "company": "Lead Made Easy",
+        "domainKey": "DIGIPUUSH",
+        "category": "INSUFFICIENT_EVIDENCE_HANDLING",
+        "severity": "HIGH",
+        "reason": "MCI was SUFFICIENT and the profile described Pipeline-as-a-Service for SaaS/IT, but semantic understanding abstained, causing UNKNOWN role and no WHO."
+      },
+      {
+        "company": "Leadgeneron",
+        "domainKey": "DIGIPUUSH",
+        "category": "PROVIDER_DATA_GAP",
+        "severity": "MEDIUM",
+        "reason": "CommercialRole was correct, but persisted intelligence lacked geography and WHO returned INSUFFICIENT_DATA instead of applying the gold US geography failure."
+      },
+      {
+        "company": "Leadzen.ai",
+        "domainKey": "DIGIPUUSH",
+        "category": "COMMERCIAL_ROLE",
+        "severity": "HIGH",
+        "reason": "CompanyUnderstanding correctly described lead-generation SaaS, but seller-relative reasoning chose ADJACENT_VENDOR rather than structurally plausible POTENTIAL_BUYER."
+      },
+      {
+        "company": "Outbound System",
+        "domainKey": "DIGIPUUSH",
+        "category": "INSUFFICIENT_EVIDENCE_HANDLING",
+        "severity": "HIGH",
+        "reason": "MCI was SUFFICIENT and profile evidence described the company, but semantic understanding abstained and prevented role/WHO decisions."
+      },
+      {
+        "company": "OutPro",
+        "domainKey": "DIGIPUUSH",
+        "category": "INSUFFICIENT_EVIDENCE_HANDLING",
+        "severity": "HIGH",
+        "reason": "MCI was SUFFICIENT and profile evidence was available, but semantic understanding abstained and suppressed a gold likely-fit buyer."
+      },
+      {
+        "company": "Partner Propel",
+        "domainKey": "DIGIPUUSH",
+        "category": "INSUFFICIENT_EVIDENCE_HANDLING",
+        "severity": "HIGH",
+        "reason": "MCI was SUFFICIENT and profile evidence was available, but semantic understanding abstained and prevented seller-relative classification."
+      },
+      {
+        "company": "RevyGo",
+        "domainKey": "DIGIPUUSH",
+        "category": "PROVIDER_DATA_GAP",
+        "severity": "HIGH",
+        "reason": "Persisted evidence referred to unrelated Revvy/Revalgo entities and could not establish RevyGo, so downstream role and WHO abstained."
+      },
+      {
+        "company": "SalesGig",
+        "domainKey": "DIGIPUUSH",
+        "category": "INSUFFICIENT_EVIDENCE_HANDLING",
+        "severity": "HIGH",
+        "reason": "MCI was SUFFICIENT and a company profile existed, but semantic understanding abstained and prevented role/WHO decisions."
+      },
+      {
+        "company": "Barracuda SKOUT Managed XDR",
+        "domainKey": "MANAGED_SOC",
+        "category": "INSUFFICIENT_EVIDENCE_HANDLING",
+        "severity": "MEDIUM",
+        "reason": "The profile identified Managed XDR/SOC overlap, but semantic understanding abstained, leaving the competitor role UNKNOWN."
+      },
+      {
+        "company": "CData Virtuality",
+        "domainKey": "MANAGED_SOC",
+        "category": "IDENTITY_RESOLUTION",
+        "severity": "HIGH",
+        "reason": "Task #100 blocked the record for DOMAIN_MISSING and UNRESOLVED identity, while gold independently confirmed the company as a likely-fit buyer."
+      },
+      {
+        "company": "Critical Start",
+        "domainKey": "MANAGED_SOC",
+        "category": "INSUFFICIENT_EVIDENCE_HANDLING",
+        "severity": "MEDIUM",
+        "reason": "The profile identified MDR/SOC services, but semantic understanding abstained and did not classify the competitor."
+      },
+      {
+        "company": "CyberOne",
+        "domainKey": "MANAGED_SOC",
+        "category": "WHO_DECISION_POLICY",
+        "severity": "MEDIUM",
+        "reason": "CommercialRole correctly identified a competitor, but the competitor-ineligible path emitted no explicit WHO result instead of the gold LIKELY_NOT_FIT label."
+      },
+      {
+        "company": "CySOC",
+        "domainKey": "MANAGED_SOC",
+        "category": "INSUFFICIENT_EVIDENCE_HANDLING",
+        "severity": "MEDIUM",
+        "reason": "The profile identified 24/7 SOC services, but semantic understanding abstained and left the competitor role UNKNOWN."
+      },
+      {
+        "company": "Ostra Security",
+        "domainKey": "MANAGED_SOC",
+        "category": "INSUFFICIENT_EVIDENCE_HANDLING",
+        "severity": "MEDIUM",
+        "reason": "The profile identified managed security/MDR services, but semantic understanding abstained and left the competitor role UNKNOWN."
+      },
+      {
+        "company": "Pondurance",
+        "domainKey": "MANAGED_SOC",
+        "category": "INSUFFICIENT_EVIDENCE_HANDLING",
+        "severity": "MEDIUM",
+        "reason": "The profile identified 24/7 MDR services, but semantic understanding abstained and left the competitor role UNKNOWN."
+      },
+      {
+        "company": "SOCFortress",
+        "domainKey": "MANAGED_SOC",
+        "category": "INSUFFICIENT_EVIDENCE_HANDLING",
+        "severity": "MEDIUM",
+        "reason": "The profile identified SOC/security monitoring services, but semantic understanding abstained and left the competitor role UNKNOWN."
+      },
+      {
+        "company": "Socura",
+        "domainKey": "MANAGED_SOC",
+        "category": "INSUFFICIENT_EVIDENCE_HANDLING",
+        "severity": "MEDIUM",
+        "reason": "The profile identified MDR/24x7 SOC services, but semantic understanding abstained and left the competitor role UNKNOWN."
+      }
+    ]
+  },
+  "severitySummary": {
+    "CRITICAL": 0,
+    "HIGH": 9,
+    "MEDIUM": 9,
+    "LOW": 0
+  },
+  "overallVerdict": {
+    "code": "C",
+    "label": "WEAK",
+    "reason": "CommercialRole exact accuracy is 2/18 and WHO exact accuracy is 0/18, with complete role+WHO output for only 1/20 companies. The system is conservative rather than dangerously aggressive: POTENTIAL_BUYER precision is 1/1 and no gold competitor was predicted as a buyer. However, 13/18 first errors arise from evidence-sufficiency handling that suppresses semantic assessment despite MCI being SUFFICIENT and descriptive profiles already being persisted, while additional identity, relationship, provider-gap, and WHO-output defects remain."
+  },
+  "singleRepairRecommendation": {
+    "repair": "Strengthen the CompanyUnderstanding evidence-admission/sufficiency boundary so identity-safe, MCI-SUFFICIENT profiles with an explicit primary-business description are assessed instead of automatically returning COMPANY_EVIDENCE_INSUFFICIENT.",
+    "why": "13/18 strict records first fail at evidence-sufficiency handling; those abstentions drive UNKNOWN CommercialRole and missing WHO outputs across both domains.",
+    "scope": "Change only the generic semantic-assessment admission/sufficiency contract and add bounded tests for MCI-SUFFICIENT profiles with explicit business descriptions but sparse products/services. Preserve attribution safety, UNKNOWN for genuinely conflicting evidence, frozen role/WHO semantics, prompts, models, and thresholds until separately approved.",
+    "implemented": false
+  },
+  "externalProviderCallsDuringEvaluation": 0,
+  "jyraRerunsDuringEvaluation": 0,
+  "productionModified": false,
+  "goldModified": false,
+  "task100PredictionsModified": false
+}

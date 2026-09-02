@@ -1060,3 +1060,31 @@ mtime_ms = 1788327339834
 storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/b429dc2f-91a0-4260-a351-3b5c45efe3f1/5c5ea246-2a44-4e63-8ec7-05d5b1b955cf"
 storage_version_token = "1788327379455221"
 content_type = "application/octet-stream"
+
+[[outputs]]
+id = "X7_w4uIus64I6Bdn8fd0a"
+uri = "file://evaluations/jyra-clean-room-v1/TASK_104_MARKET_QUALITY_EVALUATION.json"
+type = "unspecified"
+title = "Task 104 Market Quality Evaluation"
+description = "Complete 20-company deterministic comparison, metrics, confusion matrices, first-error analysis, severity, and the single repair recommendation."
+logical_id = "330debfd-d2a5-4ca9-9438-62c226f34dc6"
+content_hash = "sha256:219eb36343a9153b3f918e9644ed219d4a48090be7b5926250be507186e48bad"
+size = 63476
+mtime_ms = 1788327684471
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/330debfd-d2a5-4ca9-9438-62c226f34dc6/4c8face5-1a4e-4aa9-af0c-6400f07613ea"
+storage_version_token = "1788327733955968"
+content_type = "application/octet-stream"
+
+[[outputs]]
+id = "fcvJFY5B0nkIbBtfLV4s_"
+uri = "file://evaluations/jyra-clean-room-v1/TASK_104_MARKET_QUALITY_REPORT.md"
+type = "text"
+title = "Task 104 Market Quality Report"
+description = "Readable evaluation report comparing immutable Task #100 predictions against Gold V1."
+logical_id = "e2824d57-0555-4586-80a3-7c04011b26ee"
+content_hash = "sha256:db25bd0e04af164e63e9580fe19a03dbcca8e328128c0f4872aaa32a87a48f94"
+size = 11382
+mtime_ms = 1788327713255
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/e2824d57-0555-4586-80a3-7c04011b26ee/6b20ae24-c6a4-4cfe-baef-1896b9cc8a5e"
+storage_version_token = "1788327736116525"
+content_type = "text/markdown"

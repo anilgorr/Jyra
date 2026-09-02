@@ -1,0 +1,903 @@
+TASK #104 — REVEAL TASK #100 PREDICTIONS AND MEASURE MARKET QUALITY
+
+Gold benchmark:
+JYRA_MARKET_QUALITY_GOLD_V1
+
+Frozen gold file:
+evaluations/jyra-clean-room-v1/JYRA_MARKET_QUALITY_GOLD_V1.json
+
+Expected SHA-256:
+f59aca76b676d0e54d0899dd23bb3e5c6d5912e71e0597d967a2a722ac8ecfca
+
+This task evaluates the EXISTING persisted Task #100 JYRA predictions against the now-frozen independent human-reviewed gold benchmark.
+
+This is an EVALUATION task only.
+
+DO NOT rerun JYRA.
+DO NOT rerun Company Understanding.
+DO NOT rerun Commercial Role.
+DO NOT rerun WHO.
+DO NOT run market discovery.
+DO NOT research companies again.
+DO NOT call any external provider.
+DO NOT call Gemini, OpenAI, Tavily, Exa, Apify, Bright Data, or any other provider.
+DO NOT modify the frozen gold benchmark.
+DO NOT modify Task #100 predictions.
+DO NOT change prompts.
+DO NOT change scoring logic.
+DO NOT implement fixes yet.
+DO NOT tune anything against this benchmark.
+
+We are measuring the existing system exactly as it was at Task #100.
+
+==================================================
+DATABASE SAFETY
+==================================================
+
+This is development/evaluation work.
+
+Use ONLY development data during implementation/testing.
+
+DO NOT:
+- migrate production
+- reset production
+- seed production
+- modify production customer data
+- truncate production
+- test against production
+
+Production must remain untouched.
+
+==================================================
+1. VERIFY GOLD INTEGRITY FIRST
+==================================================
+
+Before loading Task #100 predictions:
+
+Read:
+
+evaluations/jyra-clean-room-v1/JYRA_MARKET_QUALITY_GOLD_V1.json
+
+Calculate SHA-256 from the actual bytes.
+
+It MUST equal:
+
+f59aca76b676d0e54d0899dd23bb3e5c6d5912e71e0597d967a2a722ac8ecfca
+
+If checksum does not match:
+
+HARD FAIL.
+
+Do not continue.
+
+Also verify:
+
+cohort size = 20
+GROUND_TRUTH_CONFIRMED = 18
+AMBIGUOUS = 1
+INSUFFICIENT = 1
+
+3LOCKS must be AMBIGUOUS.
+
+Pure Sales must be INSUFFICIENT.
+
+CData Virtuality must have:
+
+commercialRole = POTENTIAL_BUYER
+who = LIKELY_FIT
+
+Do not modify gold under any circumstances.
+
+==================================================
+2. LOCATE EXISTING TASK #100 PREDICTIONS
+==================================================
+
+Locate the EXACT persisted predictions produced during Task #100 for this exact 20-company cohort.
+
+Do NOT generate replacements.
+
+Do NOT use current JYRA logic to recreate them.
+
+Do NOT infer missing predictions from current database state unless that state is proven to be the immutable persisted Task #100 output.
+
+The predictions being evaluated must be historically persisted outputs from Task #100.
+
+Identify and report:
+
+- source file/table
+- run ID
+- project/run identifier if available
+- createdAt
+- model/prompt versions if stored
+- prediction record count
+- exact company IDs
+
+Before comparison verify that the prediction cohort corresponds to the exact same 20 benchmarkCompanyIds.
+
+If Task #100 prediction provenance cannot be established with high confidence:
+
+HARD FAIL.
+
+Do not silently use newer predictions.
+
+==================================================
+3. NEVER REPAIR OR RECOMPUTE MISSING PREDICTIONS
+==================================================
+
+If a Task #100 prediction is missing:
+
+record:
+
+MISSING_PREDICTION
+
+Do NOT rerun JYRA.
+
+A missing prediction is a coverage failure.
+
+Do not fabricate a prediction.
+
+==================================================
+4. MATCHING KEY
+==================================================
+
+Use:
+
+benchmarkCompanyId
+
+as the primary comparison key.
+
+Do not match only by company name.
+
+Validate:
+
+gold benchmarkCompanyId
+↔ Task #100 benchmark/company record
+
+All mappings must be deterministic and auditable.
+
+Report any mismatch.
+
+==================================================
+5. STRICT EVALUATION COHORT
+==================================================
+
+Strict accuracy calculations must ONLY use:
+
+groundTruthStatus == GROUND_TRUTH_CONFIRMED
+
+Expected strict cohort:
+
+18 companies
+
+Exclude from strict label accuracy:
+
+3LOCKS
+groundTruthStatus = AMBIGUOUS
+
+Pure Sales
+groundTruthStatus = INSUFFICIENT
+
+Do NOT count these two as correct or incorrect label predictions.
+
+However, report them separately in the coverage/unresolved section.
+
+==================================================
+6. EVALUATE COMMERCIAL ROLE
+==================================================
+
+For the 18 strict records compare:
+
+Task #100 predicted Commercial Role
+vs
+Gold Commercial Role
+
+Gold labels may include:
+
+POTENTIAL_BUYER
+SELLER_COMPETITOR
+ADJACENT_VENDOR
+PARTNER_POSSIBLE
+UNKNOWN
+
+Calculate:
+
+Commercial Role exact-match accuracy
+
+correct / eligible
+
+Also calculate:
+
+DIGIPUUSH Commercial Role accuracy
+
+MANAGED_SOC Commercial Role accuracy
+
+Create a confusion matrix:
+
+gold role
+vs
+predicted role
+
+Also report each Commercial Role error individually.
+
+For each error show:
+
+company
+domainKey
+gold role
+Task #100 predicted role
+prediction confidence if persisted
+gold confidence
+reason/evidence available in persisted prediction
+first error category
+
+==================================================
+7. EVALUATE WHO
+==================================================
+
+For the same 18 strict records compare:
+
+Task #100 WHO
+vs
+Gold WHO
+
+Possible labels include:
+
+LIKELY_FIT
+POSSIBLE_FIT
+LIKELY_NOT_FIT
+INSUFFICIENT_DATA
+
+Calculate:
+
+WHO exact-match accuracy
+
+correct / eligible
+
+Also:
+
+DIGIPUUSH WHO accuracy
+MANAGED_SOC WHO accuracy
+
+Create a WHO confusion matrix:
+
+gold WHO
+vs
+predicted WHO
+
+Report every WHO error individually.
+
+For every error show:
+
+company
+domainKey
+gold WHO
+Task #100 predicted WHO
+prediction confidence if persisted
+gold confidence
+persisted reason
+first error category
+
+==================================================
+8. BUYER-PRECISION METRICS
+==================================================
+
+One of the most important JYRA metrics is avoiding false buyers.
+
+Calculate:
+
+A. POTENTIAL_BUYER precision
+
+Among companies Task #100 predicted as:
+
+POTENTIAL_BUYER
+
+what percentage are gold:
+
+POTENTIAL_BUYER
+
+B. SELLER_COMPETITOR recall
+
+Of gold SELLER_COMPETITOR companies, what percentage did JYRA correctly classify as SELLER_COMPETITOR?
+
+C. Dangerous competitor-as-buyer errors
+
+Count companies where:
+
+gold commercialRole = SELLER_COMPETITOR
+
+but Task #100 predicted:
+
+POTENTIAL_BUYER
+
+This is a high-severity error.
+
+Report:
+
+count
+companies
+rate
+
+Our goal for this class should be as close to zero as possible.
+
+==================================================
+9. WHO BUYER QUALITY METRICS
+==================================================
+
+Calculate buyer-oriented WHO metrics.
+
+Treat:
+
+LIKELY_FIT
+POSSIBLE_FIT
+
+as "buyer-fit positive" for a secondary binary view.
+
+Treat:
+
+LIKELY_NOT_FIT
+
+as negative.
+
+Do not force INSUFFICIENT_DATA into positive or negative.
+
+For eligible records where both gold and prediction resolve to positive/negative, calculate:
+
+buyer-fit precision
+buyer-fit recall
+buyer-fit F1
+
+But retain exact-label accuracy as the primary metric.
+
+Do not hide POSSIBLE_FIT vs LIKELY_FIT errors inside binary metrics.
+
+==================================================
+10. COVERAGE / ABSTENTION
+==================================================
+
+Separately measure whether JYRA knew when not to decide.
+
+For all 20 companies report:
+
+prediction available
+prediction unavailable
+predicted UNKNOWN
+predicted INSUFFICIENT_DATA
+identity unresolved
+research blocked
+
+Specifically inspect:
+
+3LOCKS
+Pure Sales
+
+The gold benchmark excludes them from strict accuracy, but they are useful tests of abstention behavior.
+
+Ask:
+
+Did JYRA safely avoid overclaiming when evidence was insufficient?
+
+Report this qualitatively and quantitatively where possible.
+
+Do NOT turn ambiguous truth into a normal accuracy label.
+
+==================================================
+11. CONDITIONED PIPELINE METRICS
+==================================================
+
+We need to know WHERE errors originate.
+
+Calculate conditioned metrics where persisted Task #100 stage outputs allow it.
+
+At minimum:
+
+Commercial Role accuracy when Company Understanding was factually sufficient/correct.
+
+WHO accuracy when:
+- identity was usable
+- Company Understanding was sufficient
+- Commercial Role was correct
+
+Also report:
+
+WHO accuracy conditioned on correct Commercial Role.
+
+This is critical.
+
+Example:
+
+If WHO is wrong only because Commercial Role was wrong, classify the first error as Commercial Role rather than WHO.
+
+Do not blame downstream stages for upstream errors.
+
+==================================================
+12. FIRST-ERROR ANALYSIS
+==================================================
+
+For every incorrect final decision identify the EARLIEST meaningful failure.
+
+Use categories such as:
+
+IDENTITY_RESOLUTION
+COMPANY_UNDERSTANDING
+COMMERCIAL_ROLE
+ICP_CRITERION_MAPPING
+WHO_DECISION_POLICY
+INSUFFICIENT_EVIDENCE_HANDLING
+STALE_STATE
+PROVIDER_DATA_GAP
+OTHER
+
+Use persisted evidence and stage outputs.
+
+Do not infer arbitrary failure causes.
+
+A downstream disagreement caused by an earlier error must be assigned to the earlier stage.
+
+Example:
+
+Company Understanding wrongly identifies an MDR provider as normal SaaS
+→ Commercial Role becomes POTENTIAL_BUYER
+→ WHO becomes LIKELY_FIT
+
+First error:
+
+COMPANY_UNDERSTANDING
+
+not WHO.
+
+==================================================
+13. ERROR SEVERITY
+==================================================
+
+Classify each strict error:
+
+CRITICAL
+HIGH
+MEDIUM
+LOW
+
+Suggested semantics:
+
+CRITICAL:
+SELLER_COMPETITOR predicted as POTENTIAL_BUYER / high-confidence buyer
+
+HIGH:
+LIKELY_NOT_FIT predicted LIKELY_FIT, or inverse, where decision would materially change outreach
+
+MEDIUM:
+LIKELY_FIT vs POSSIBLE_FIT
+or other qualification-strength difference
+
+LOW:
+confidence/rationale differences without meaningful action change
+
+Do not inflate severity.
+
+==================================================
+14. DIGIPUUSH-SPECIFIC CHECK
+==================================================
+
+For this benchmark:
+
+DigiPuush geography is INDIA ONLY.
+
+Verify Task #100 handling of this MUST-HAVE criterion.
+
+Gold DigiPuush WHO truth includes:
+
+Grownob LLC → LIKELY_NOT_FIT
+Lead Made Easy → POSSIBLE_FIT
+Leadgeneron → LIKELY_NOT_FIT
+Leadzen.ai → LIKELY_FIT
+Outbound System → LIKELY_NOT_FIT
+OutPro → LIKELY_FIT
+Partner Propel → LIKELY_NOT_FIT
+Pure Sales → INSUFFICIENT, excluded strict
+RevyGo → LIKELY_NOT_FIT
+SalesGig → LIKELY_NOT_FIT
+
+Evaluate whether Task #100 systematically:
+
+- ignored mandatory geography
+- treated unknown geography as pass
+- treated unknown geography as fail
+- correctly distinguished UNKNOWN from FAIL
+
+Do not modify the system.
+
+Only measure.
+
+==================================================
+15. MANAGED SOC-SPECIFIC CHECK
+==================================================
+
+Gold competitor set:
+
+Barracuda SKOUT Managed XDR
+Critical Start
+CyberOne
+CySOC
+Ostra Security
+Pondurance
+SOCFortress
+Socura
+
+All eight are:
+
+commercialRole = SELLER_COMPETITOR
+who = LIKELY_NOT_FIT
+
+CData Virtuality is:
+
+commercialRole = POTENTIAL_BUYER
+who = LIKELY_FIT
+
+3LOCKS is ambiguous and excluded.
+
+Measure whether Task #100 correctly separated:
+
+companies that USE cybersecurity/cloud infrastructure
+
+from
+
+companies that SELL Managed SOC/MDR/SOC services.
+
+This distinction is central to JYRA.
+
+==================================================
+16. CData SPECIAL CHECK
+==================================================
+
+CData Virtuality is deliberately important.
+
+Gold:
+
+Commercial Role:
+POTENTIAL_BUYER
+
+WHO:
+LIKELY_FIT
+
+Reason:
+
+Structural WHO fit does NOT require proof of an active compliance initiative.
+
+Compliance activity is mainly WHEN/WHY.
+
+Report Task #100's persisted prediction for CData.
+
+If it predicted POSSIBLE_FIT because compliance evidence was missing, identify this as:
+
+WHO_DECISION_POLICY
+
+specifically:
+
+"WHEN/WHY evidence incorrectly used as a prerequisite for structural WHO."
+
+Do not modify the logic yet.
+
+==================================================
+17. DO NOT CREATE PURCHASE-PROBABILITY METRICS
+==================================================
+
+JYRA does not currently claim calibrated purchase probability.
+
+Do not calculate:
+
+purchase probability
+conversion probability
+win probability
+
+This benchmark evaluates:
+
+Commercial Role correctness
+WHO correctness
+buyer prioritization safety
+abstention behavior
+
+==================================================
+18. SAVE EVALUATION ARTIFACT
+==================================================
+
+Create:
+
+evaluations/jyra-clean-room-v1/TASK_104_MARKET_QUALITY_EVALUATION.json
+
+Include:
+
+goldVersion
+goldSha256
+task100RunProvenance
+evaluatedAt
+eligibleStrictCount
+excludedRecords
+
+commercialRoleMetrics
+whoMetrics
+buyerPrecisionMetrics
+competitorSafetyMetrics
+coverageMetrics
+conditionedMetrics
+confusionMatrices
+perCompanyComparisons
+firstErrorAnalysis
+severitySummary
+
+Also create a readable report:
+
+evaluations/jyra-clean-room-v1/TASK_104_MARKET_QUALITY_REPORT.md
+
+Neither file may modify the gold artifact or original predictions.
+
+==================================================
+19. EXACTLY ONE REPAIR RECOMMENDATION
+==================================================
+
+After measuring results, identify the SINGLE smallest generic repair that is most likely to improve JYRA.
+
+Do not implement it.
+
+Do not give five recommendations.
+
+Give exactly ONE.
+
+The repair must:
+
+- address the dominant first-error class
+- be generic across customers/offering types
+- not hard-code benchmark companies
+- not hard-code DigiPuush or Managed SOC behavior
+- preserve existing correct behavior
+- be bounded and testable
+
+Examples of acceptable repair classes:
+
+- strengthen Commercial Relationship Assessment using seller-vs-candidate offering overlap
+- enforce MUST_HAVE ICP criterion semantics
+- improve evidence sufficiency handling
+- separate structural WHO from WHEN/WHY evidence
+
+But select ONLY what the actual Task #100 results justify.
+
+==================================================
+20. NO REALITY TEST YET
+==================================================
+
+Do NOT run the 50-company Reality Test.
+
+Do NOT run new companies.
+
+Do NOT optimize JYRA.
+
+First we need to understand the results of this 20-company gold benchmark.
+
+==================================================
+21. FINAL RESPONSE FORMAT
+==================================================
+
+Return exactly this structure:
+
+TASK #104 — MARKET QUALITY EVALUATION
+
+Status:
+PASS / FAIL
+
+Gold integrity:
+PASS / FAIL
+
+Gold SHA-256:
+<checksum>
+
+Task #100 prediction provenance:
+<source/run information>
+
+Task #100 reruns:
+0
+
+External provider calls:
+0
+
+Production modified:
+NO
+
+STRICT COHORT:
+18
+
+EXCLUDED:
+3LOCKS — AMBIGUOUS
+Pure Sales — INSUFFICIENT
+
+====================
+COMMERCIAL ROLE
+====================
+
+Correct:
+x/18
+
+Accuracy:
+xx.x%
+
+DigiPuush:
+x/9
+
+Managed SOC:
+x/9
+
+POTENTIAL_BUYER precision:
+xx.x%
+
+SELLER_COMPETITOR recall:
+xx.x%
+
+Dangerous competitor → buyer errors:
+x
+
+Companies:
+<names or NONE>
+
+Confusion matrix:
+<compact matrix>
+
+====================
+WHO
+====================
+
+Correct:
+x/18
+
+Accuracy:
+xx.x%
+
+DigiPuush:
+x/9
+
+Managed SOC:
+x/9
+
+Buyer-fit precision:
+xx.x%
+
+Buyer-fit recall:
+xx.x%
+
+Buyer-fit F1:
+xx.x%
+
+Confusion matrix:
+<compact matrix>
+
+====================
+COVERAGE / ABSTENTION
+====================
+
+Prediction coverage:
+x/20
+
+Safe abstentions:
+x
+
+Unsafe overclaims:
+x
+
+3LOCKS:
+<result>
+
+Pure Sales:
+<result>
+
+====================
+CONDITIONED METRICS
+====================
+
+Commercial Role accuracy when Company Understanding sufficient:
+xx.x%
+
+WHO accuracy when Commercial Role correct:
+xx.x%
+
+<other useful conditioned metric if supported>
+
+====================
+ERRORS
+====================
+
+For every strict error:
+
+Company:
+Gold:
+Prediction:
+First error:
+Severity:
+Reason:
+
+====================
+FIRST-ERROR SUMMARY
+====================
+
+IDENTITY_RESOLUTION:
+x
+
+COMPANY_UNDERSTANDING:
+x
+
+COMMERCIAL_ROLE:
+x
+
+ICP_CRITERION_MAPPING:
+x
+
+WHO_DECISION_POLICY:
+x
+
+INSUFFICIENT_EVIDENCE_HANDLING:
+x
+
+OTHER:
+x
+
+====================
+CData CHECK
+====================
+
+Gold:
+POTENTIAL_BUYER / LIKELY_FIT
+
+Task #100:
+<actual persisted prediction>
+
+Assessment:
+<result>
+
+====================
+OVERALL VERDICT
+====================
+
+Choose one:
+
+A — STRONG
+Market quality is good enough to proceed to larger reality testing.
+
+B — PROMISING
+Core logic works but one bounded repair should be made before larger testing.
+
+C — WEAK
+Multiple material market-quality problems remain.
+
+D — UNSAFE
+Buyer/competitor discrimination is unreliable.
+
+Explain in 3–6 sentences.
+
+====================
+SINGLE REPAIR RECOMMENDATION
+====================
+
+Repair:
+<exactly one>
+
+Why:
+<dominant evidence>
+
+Scope:
+<smallest generic implementation boundary>
+
+DO NOT IMPLEMENT YET.
+
+====================
+ARTIFACTS
+====================
+
+Evaluation JSON:
+<path>
+
+Report:
+<path>
+
+Gold modified:
+NO
+
+Task #100 predictions modified:
+NO
+
+NEXT STEP:
+Wait for approval before implementing the repair or running any larger test.
