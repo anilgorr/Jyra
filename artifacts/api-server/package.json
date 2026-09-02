@@ -103,7 +103,8 @@
          ,"test:task-109-evidence-to-icp": "node ./scripts/test-task-109-evidence-to-icp.mjs"
           ,"test:task-113-identity-bootstrap": "node ./scripts/test-task-113-identity-bootstrap.mjs"
           ,"test:task-117-intelligence-v2": "NODE_ENV=test node ./scripts/test-task-117-generic-fixtures.mjs"
-          ,"test:task-117-route-isolation": "node ./scripts/test-task-117-route-isolation.mjs"
+           ,"test:task-117-route-isolation": "node ./scripts/test-task-117-route-isolation.mjs"
+           ,"probe:task-117-live-semantic": "NODE_ENV=development node ./scripts/run-task-117-live-semantic-probe.mjs"
          ,"integration:task-113-identity-bootstrap": "NODE_ENV=development JYRA_TASK_113_INTEGRATION=YES node ./scripts/run-task-113-identity-bootstrap-integration.mjs"
           ,"regression:task-109-evidence-to-icp": "NODE_ENV=development JYRA_TASK_109_POST_REPAIR_REGRESSION=YES node ./scripts/run-task-109-evidence-to-icp-regression.mjs"
   },

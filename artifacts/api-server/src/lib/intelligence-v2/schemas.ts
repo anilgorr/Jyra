@@ -109,14 +109,14 @@ export type CompanyIntelligenceProfileV2 = z.infer<typeof companyProfileSchema>;
 export const assessmentSchema = z.object({
   commercialRole: z.object({
     value: z.enum(commercialRoles), confidence, reason: z.string().min(1).max(1200), evidenceIds, claimIds: z.array(z.string().min(1)).max(40),
-    claimBindings: z.array(z.object({ claimId: z.string().min(1), claimedValue: z.string().min(1), purpose: z.string().min(1), relation: z.enum(["SUPPORTS_ROLE", "MATERIAL_SUBSTITUTE", "COMPLEMENTARY", "BUYER_CAPABILITY"]) }).strict()).min(1).max(40),
+    claimBindings: z.array(z.object({ claimId: z.string().min(1), claimedValue: z.string().min(1), purpose: z.string().min(1), relation: z.enum(["SUPPORTS_ROLE", "MATERIAL_SUBSTITUTE", "COMPLEMENTARY", "BUYER_CAPABILITY"]) }).strict()).max(40),
   }).strict(),
   who: z.object({
     value: z.enum(whoValues), confidence, reason: z.string().min(1).max(1200), evidenceIds, claimIds: z.array(z.string().min(1)).max(40),
-    claimBindings: z.array(z.object({ claimId: z.string().min(1), claimedValue: z.string().min(1), purpose: z.string().min(1), relation: z.enum(["SUPPORTS_WHO", "SATISFIES_CRITERION", "FAILS_CRITERION"]) }).strict()).min(1).max(40),
+    claimBindings: z.array(z.object({ claimId: z.string().min(1), claimedValue: z.string().min(1), purpose: z.string().min(1), relation: z.enum(["SUPPORTS_WHO", "SATISFIES_CRITERION", "FAILS_CRITERION"]) }).strict()).max(40),
     criteria: z.array(z.object({
       criterionId: z.string().min(1), description: z.string().min(1), mandatory: z.boolean(),
-      result: z.enum(["PASS", "FAIL", "UNKNOWN"]), reason: z.string().min(1).max(800), evidenceIds, claimIds: z.array(z.string().min(1)).max(40),
+      result: z.enum(["PASS", "FAIL", "UNKNOWN"]), confidence: confidence.optional(), reason: z.string().min(1).max(800), evidenceIds, claimIds: z.array(z.string().min(1)).max(40),
       claimBindings: z.array(z.object({ claimId: z.string().min(1), claimedValue: z.string().min(1), purpose: z.string().min(1), relation: z.enum(["SATISFIES_CRITERION", "FAILS_CRITERION"]) }).strict()).max(40),
     }).strict()).max(40),
   }).strict(),
@@ -172,8 +172,15 @@ export type SafetyOverrideV2 =
   | "IDENTITY_UNCERTAIN"
   | "EVIDENCELESS_POSITIVE_BLOCKED";
 
+export type SafetyOverrideMetadataV2 = {
+  rule: SafetyOverrideV2;
+  changed: Array<"commercialRole" | "who">;
+  provenance: "PRESERVED" | "EVIDENCE_FREE_ABSTENTION";
+};
+
 export type FinalAssessmentV2 = SellerRelativeAssessmentV2 & {
   resolutionType: "SEMANTIC_ASSESSMENT" | SafetyOverrideV2;
   deterministicOverrides: SafetyOverrideV2[];
+  safetyOverrideMetadata: SafetyOverrideMetadataV2[];
   fingerprint: string;
 };

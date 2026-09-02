@@ -17,7 +17,7 @@ const evidence = (claims, options = {}) => ({
   observedAt: "2026-01-01T00:00:00.000Z", rawSnippet: options.snippet ?? "Generic company provides business software and services.",
   firstParty: options.firstParty ?? true, confidence: .9, version: options.version ?? "v1",
   atomicClaims: [
-    { claimId: "claim-brand", type: "BRAND_MATCH", value: "Generic Company" },
+    { claimId: options.id ? `claim-brand-${options.id}` : "claim-brand", type: "BRAND_MATCH", value: "Generic Company" },
     ...(claims.primaryBusiness ? [{ claimId: "claim-business", type: "PRIMARY_BUSINESS", value: claims.primaryBusiness }] : []),
     ...(claims.productsServices ?? []).map((value, i) => ({ claimId: `claim-product-${i}`, type: "PRODUCT_SERVICE", value })),
     ...(claims.offeringOverlapFacts ?? []).map((value, i) => ({ claimId: `claim-overlap-${i}`, type: "OFFERING_OVERLAP", value })),
@@ -55,13 +55,21 @@ const deterministicInvoker = async ({ payload }) => {
     : /vulnerability|application security|risk quantification/.test(text) ? "ADJACENT_VENDOR" : "POTENTIAL_BUYER";
   const geography = claims.find((claim) => claim.type === "GEOGRAPHY" && claim.geographyType === "HEADQUARTERS")?.value;
   const who = role === "SELLER_COMPETITOR" ? "LIKELY_NOT_FIT" : geography === "TARGET" ? "LIKELY_FIT" : "POSSIBLE_FIT";
-  const result = assessment(role, who, ids, []);
   const roleClaim = claims.find((claim) => role === "SELLER_COMPETITOR" ? claim.type === "OFFERING_OVERLAP" : claim.type === "PRIMARY_BUSINESS");
-  result.commercialRole.claimIds = [roleClaim.claimId];
-  result.commercialRole.claimBindings = [{ claimId: roleClaim.claimId, claimedValue: roleClaim.value, purpose: "commercial role", relation: role === "SELLER_COMPETITOR" ? "MATERIAL_SUBSTITUTE" : "SUPPORTS_ROLE" }];
-  result.commercialRole.reason = `${roleClaim.claimId} supports this seller-relative commercial relationship.`;
-  result.who.claimIds = [roleClaim.claimId]; result.who.claimBindings = [{ claimId: roleClaim.claimId, claimedValue: roleClaim.value, purpose: "WHO", relation: "SUPPORTS_WHO" }];
-  result.who.reason = `${roleClaim.claimId} supports this structural ICP result.`;
+  const criteria = (payload.icp.requirements ?? []).map((requirement) => {
+    const supporting = claims.find((claim) => claim.type === requirement.type);
+    const pass = supporting && (requirement.operator === "EQUALS" ? supporting.value === requirement.value : supporting.value.includes(requirement.value ?? ""));
+    return {
+      criterionId: requirement.criterionId, result: pass ? "PASS" : supporting ? "FAIL" : "UNKNOWN", confidence: .8,
+      reason: pass ? "The cited claim satisfies the criterion." : supporting ? "The cited claim fails the criterion." : "No supplied claim decides this criterion.",
+      citations: supporting ? [{ claimId: supporting.claimId, relation: pass ? "SATISFIES_CRITERION" : "FAILS_CRITERION" }] : [],
+    };
+  });
+  const result = {
+    commercialRole: { value: role, confidence: .82, reason: "The cited claim supports this commercial relationship.", citations: [{ claimId: roleClaim.claimId, relation: role === "SELLER_COMPETITOR" ? "MATERIAL_SUBSTITUTE" : "SUPPORTS_ROLE" }] },
+    who: { value: who, confidence: .79, reason: "The cited claim supports this structural ICP result.", citations: [{ claimId: roleClaim.claimId, relation: "SUPPORTS_WHO" }], criteria },
+    uncertainties: [], assessmentConfidence: .8,
+  };
   return { content: result, usage: { total_tokens: 100 }, cost: .001 };
 };
 // Deterministic invoker deliberately derives output from supplied atomic claims.
@@ -218,6 +226,97 @@ test("Cache/Idempotency", "16 exact request is idempotent", async () => {
     run([item], assessment("POTENTIAL_BUYER", "LIKELY_FIT"), new v2.InMemoryIntelligenceV2Repository()),
   ]);
   assert.deepEqual(left.assessment, right.assessment); assert.equal(semanticCalls, beforeConcurrent + 1);
+});
+
+const compactResponse = () => ({
+  commercialRole: { value: "POTENTIAL_BUYER", confidence: .8, reason: "The cited business claim supports buyer capability.", citations: [{ claimId: "claim-business", relation: "SUPPORTS_ROLE" }] },
+  who: { value: "POSSIBLE_FIT", confidence: .7, reason: "The cited business claim supports structural fit.", citations: [{ claimId: "claim-business", relation: "SUPPORTS_WHO" }], criteria: [] },
+  uncertainties: ["Optional firmographic facts remain unknown."], assessmentConfidence: .75,
+});
+const directAssessment = (invoke, options = {}) => {
+  const item = evidence({ primaryBusiness: "B2B SaaS" });
+  return v2.assessMarketFitV2({ context: context(), profile: profile([item]), evidence: [item], invoke, ...options });
+};
+test("Semantic contract", "17 valid first pass materializes immutable provenance", async () => {
+  let calls = 0;
+  const result = await directAssessment(async () => { calls++; return { content: compactResponse(), usage: { total_tokens: 11 }, cost: .01 }; });
+  assert.equal(calls, 1); assert.equal(result.modelCalls, 1); assert.equal(result.assessment.commercialRole.claimBindings[0].claimedValue, "B2B SaaS");
+  assert.deepEqual(result.assessment.commercialRole.evidenceIds, [ids[0]]);
+});
+test("Semantic contract", "18 one validation repair succeeds with exact accounting", async () => {
+  let calls = 0;
+  const result = await directAssessment(async () => {
+    calls++;
+    const content = compactResponse();
+    if (calls === 1) content.commercialRole.citations[0].claimId = "foreign-claim";
+    return { content, usage: { total_tokens: calls * 10 }, cost: .01 * calls };
+  });
+  assert.equal(calls, 2); assert.equal(result.modelCalls, 2); assert.equal(result.usage.total_tokens, 30);
+  assert.equal(result.cost, .03); assert.deepEqual(result.attempts.map((attempt) => attempt.outcome), ["INVALID", "VALID"]);
+});
+test("Semantic contract", "19 second invalid response rejects after exactly two calls", async () => {
+  let calls = 0;
+  await assert.rejects(directAssessment(async () => {
+    calls++; const content = compactResponse(); content.who.citations[0].claimId = "foreign-claim"; return { content };
+  }), (error) => error.code === "V2_ASSESSMENT_INVALID" && error.attempts.length === 2);
+  assert.equal(calls, 2);
+});
+test("Semantic contract", "20 reason bounds are enforced", async () => {
+  let calls = 0;
+  await assert.rejects(directAssessment(async () => {
+    calls++; const content = compactResponse(); content.who.reason = "x".repeat(1201); return { content };
+  }), (error) => error.code === "V2_ASSESSMENT_INVALID");
+  assert.equal(calls, 2);
+});
+test("Semantic contract", "21 timeout is typed and never retried", async () => {
+  let calls = 0;
+  await assert.rejects(directAssessment(async () => { calls++; return new Promise(() => {}); }, { timeoutMs: 5 }),
+    (error) => error.code === "V2_ASSESSMENT_TIMEOUT" && error.attempts.length === 1 && error.attempts[0].outcome === "TIMEOUT");
+  assert.equal(calls, 1);
+});
+test("Scope", "22 foreign seed and cached research evidence are rejected", async () => {
+  const foreign = { ...evidence({ primaryBusiness: "B2B SaaS" }), organizationId: "org-foreign" };
+  await assert.rejects(run([foreign]), /V2_EVIDENCE_SCOPE_MISMATCH:seed/);
+  const item = evidence({ primaryBusiness: "B2B SaaS" });
+  class ForeignCache extends v2.InMemoryIntelligenceV2Repository {
+    async getResearch() {
+      return { organizationId: "org-a", projectId: "project-a", companyId: "company-generic",
+        evidence: [{ ...item, organizationId: "other" }], negativeAssertions: [], actions: [], externalCalls: 0,
+        providerCost: 0, sufficient: true, fingerprint: "foreign-cache" };
+    }
+  }
+  await assert.rejects(run([item], null, new ForeignCache()), /V2_EVIDENCE_SCOPE_MISMATCH:cached-research/);
+  await assert.rejects(run([item], null, new v2.InMemoryIntelligenceV2Repository(), "icp-v1", { contradictoryEvidence: [{ ...item, evidenceId: "foreign-e", organizationId: "other" }] }), /V2_EVIDENCE_SCOPE_MISMATCH:contradictory/);
+});
+test("Safety", "23 all overrides produce valid final provenance", () => {
+  const item = evidence({ primaryBusiness: "B2B SaaS", offeringOverlapFacts: ["same outcome"] });
+  const p = profile([item]);
+  const validateFinal = (final, ctx = context()) => {
+    const { resolutionType, deterministicOverrides, safetyOverrideMetadata, fingerprint, ...semantic } = final;
+    assert.equal(v2.validateAssessmentEvidenceV2(semantic, [item], ctx).ok, true);
+    assert.equal(safetyOverrideMetadata.length > 0, true);
+  };
+  const competitor = assessment("SELLER_COMPETITOR", "LIKELY_FIT");
+  competitor.commercialRole.reason = "The overlap is a material substitute.";
+  competitor.commercialRole.claimIds = ["claim-overlap-0"]; competitor.commercialRole.evidenceIds = [ids[0]];
+  competitor.commercialRole.claimBindings = [{ claimId: "claim-overlap-0", claimedValue: "same outcome", purpose: "commercialRole", relation: "MATERIAL_SUBSTITUTE" }];
+  validateFinal(v2.applySafetyRulesV2({ profile: p, assessment: competitor, fingerprint: "fp" }));
+
+  const mandatoryContext = context("icp-v1", [{ criterionId: "industry", type: "INDUSTRY", operator: "EQUALS", value: "target", mandatory: true, exclusion: false, preferred: false }]);
+  const withIndustry = evidence({ primaryBusiness: "B2B SaaS" });
+  withIndustry.atomicClaims.push({ claimId: "claim-industry", type: "INDUSTRY", value: "other" });
+  const failed = assessment("POTENTIAL_BUYER", "LIKELY_FIT");
+  failed.who.criteria = [{ criterionId: "industry", description: "INDUSTRY EQUALS target", mandatory: true, result: "FAIL", reason: "The cited industry differs.", evidenceIds: [ids[0]], claimIds: ["claim-industry"], claimBindings: [{ claimId: "claim-industry", claimedValue: "other", purpose: "industry", relation: "FAILS_CRITERION" }] }];
+  const failedFinal = v2.applySafetyRulesV2({ profile: profile([withIndustry]), assessment: failed, fingerprint: "fp" });
+  const { resolutionType: _r, deterministicOverrides: _d, safetyOverrideMetadata: _m, fingerprint: _f, ...failedSemantic } = failedFinal;
+  assert.equal(v2.validateAssessmentEvidenceV2(failedSemantic, [withIndustry], mandatoryContext).ok, true);
+
+  validateFinal(v2.applySafetyRulesV2({ profile: { ...p, identity: { ...p.identity, status: "IDENTITY_UNCERTAIN" } }, assessment: assessment("POTENTIAL_BUYER", "LIKELY_FIT"), fingerprint: "fp" }));
+  const unsupported = assessment("POTENTIAL_BUYER", "LIKELY_FIT");
+  unsupported.who.criteria = [{ criterionId: "industry", description: "INDUSTRY EQUALS target", mandatory: true, result: "PASS", reason: "Unsupported.", evidenceIds: [], claimIds: [], claimBindings: [] }];
+  const unsupportedFinal = v2.applySafetyRulesV2({ profile: p, assessment: unsupported, fingerprint: "fp" });
+  const { resolutionType: _r2, deterministicOverrides: _d2, safetyOverrideMetadata: _m2, fingerprint: _f2, ...unsupportedSemantic } = unsupportedFinal;
+  assert.equal(v2.validateAssessmentEvidenceV2(unsupportedSemantic, [item], mandatoryContext).ok, true);
 });
 
 for (const item of tests) await item.fn();

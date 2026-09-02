@@ -11,14 +11,14 @@ V1 was safe but fragmented. Task 116 measured CommercialRole at 7/16, WHO at 4/1
 1. **Resolve candidate** — normalize name/domain/URL and decide only `RESOLVED` or `IDENTITY_UNCERTAIN`.
 2. **Research company** — create one immutable, project-scoped evidence package through cache, first-party, company-profile/search, then bounded fallback. Research stops when decision facts are sufficient and never exceeds six external calls.
 3. **Build Company Intelligence Profile** — deterministically normalize evidence into one `CompanyIntelligenceProfileV2`; optional missing facts remain `UNKNOWN` through `unknownFields`.
-4. **Seller-relative assessment** — one structured model call consumes the Business Twin, specific offering, ICP, profile, and evidence and returns CommercialRole plus WHO.
+4. **Seller-relative assessment** — one structured model call consumes the Business Twin, specific offering, ICP, profile, and evidence and returns CommercialRole plus WHO. One validation-only repair is permitted; provider errors and deadlines are never retried.
 5. **Safety resolution** — four deterministic rules protect competitor exclusion, verified mandatory failures, uncertain identity, and evidence-less positive mandatory claims.
 
 The core accepts provider and model invokers. Runtime adapters can use the existing capability router without hard-coding provider names. Generic tests use deterministic invokers and make no external calls.
 
 ## Evidence and identity
 
-Evidence carries an ID, organization/company/project IDs, source type, provider, original and final URL, title, observation time, verbatim snippet, first-party flag, confidence, and source version. Atomic claims have immutable claim IDs and types and remain attached to the evidence item; they are extraction metadata, not model inference promoted into evidence. Assessment validation rejects unknown evidence IDs, unknown claim IDs, claim/evidence linkage mismatches, unsupported claim types, and factual role, WHO, PASS, or FAIL assertions without atomic claim support. Mandatory FAIL requires admitted claim support.
+Evidence carries an ID, organization/company/project IDs, source type, provider, original and final URL, title, observation time, verbatim snippet, first-party flag, confidence, and source version. Atomic claims have immutable claim IDs and types and remain attached to the evidence item; they are extraction metadata, not model inference promoted into evidence. The model-facing contract requests only bounded decisions, reasons, confidence, and claim ID/relation citations. Evidence IDs, claimed values, purposes, and bindings are materialized internally from the immutable scoped evidence. Assessment validation rejects foreign or duplicate IDs, parent mismatches, incompatible relation/type/value combinations, criteria outside the supplied ICP, and factual role, WHO, PASS, or FAIL assertions without compatible claim support.
 
 An exact syntactically valid domain from an import, discovery, user, existing record, or provider is resolved only when a website/crawl evidence item has a responding final URL on that domain or a subdomain, an explicit `BRAND_MATCH` atomic claim identifying the expected brand, and no conflict. Caller-supplied `firstParty` flags alone are never trusted. Missing employee count, headquarters, technology, or social profile does not create identity uncertainty.
 
@@ -47,7 +47,11 @@ Profile fingerprints include the project, company/domain, and evidence versions.
 
 The repository is an explicit interface. The included development implementation is process-local in-memory storage only: it is not durable and is intentionally discarded on restart. A future persistent adapter may use only safe organization/project/company-scoped provenance snapshots; it must never update V1/global company truth.
 
-Observability reports fingerprints, research actions, evidence count, provider/model calls, cache state, provider/model cost, total cost, and duration. Cached work is reported as zero incremental calls and cost.
+Observability reports fingerprints, research actions, evidence count, actual semantic attempts and outcomes, aggregate model tokens, provider/model calls, cache state, provider/model cost, total cost, and duration. Cached work is reported as zero incremental calls and cost.
+
+The generic contract suite is offline and uses zero providers: `pnpm --filter @workspace/api-server test:task-117-intelligence-v2`. A separate synthetic live semantic probe calls only the configured OpenAI assessment model (no research providers and no holdout data). It is disabled unless explicitly enabled:
+
+`JYRA_V2_LIVE_SEMANTIC_PROBE=YES pnpm --filter @workspace/api-server probe:task-117-live-semantic`
 
 ## Versions
 
