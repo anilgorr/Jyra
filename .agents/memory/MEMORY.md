@@ -44,3 +44,4 @@
 - [Semantic evidence snapshots](semantic-evidence-snapshots.md) — derived assessment snapshots cannot bootstrap their own evidence or enter upstream fingerprints.
 - [ICP-ready company facts](icp-ready-company-facts.md) — WHO geography must use typed, provenance-bound, non-conflicted facts and preserve the authoritative CommercialRole.
 - [Live semantic contract validation](live-semantic-contract-validation.md) — strict evidence-bound model outputs need live contract probes before paid cohort research.
+- [JYRA market-readiness gates](jyra-market-readiness-gates.md) — launch requires blind quality, population reliability, and measured commercial lift.
