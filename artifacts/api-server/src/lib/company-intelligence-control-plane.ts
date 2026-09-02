@@ -13,14 +13,24 @@ import {
 import { ensureMinimumCompanyIntelligence, type MinimumCompanyIntelligence } from "./minimum-company-intelligence";
 import type { ProviderOperations } from "./provider-contract";
 import { resolveProjectSellerContext } from "./seller-context";
-import type { BuyerRoleAssessment } from "./buyer-role-resolution";
+import type { BuyerRoleAssessment, CommercialRoleWhoResolution } from "./buyer-role-resolution";
 import {
   qualifyProjectCompanyForWho,
   type IcpMissingDimension,
   type IcpMissingReasonCode,
 } from "./company-discovery";
 
-export const COMPANY_INTELLIGENCE_CONTROL_PLANE_VERSION = "architecture-v1-control-plane-v2";
+export const COMPANY_INTELLIGENCE_CONTROL_PLANE_VERSION = "architecture-v1-control-plane-v3";
+export const COMMERCIAL_ROLE_WHO_POLICY_VERSION = "commercial-role-who-exclusion-v1";
+
+export type CompanyIntelligenceWhoResult = Awaited<ReturnType<typeof qualifyProjectCompanyForWho>> & {
+  confidence?: "HIGH" | "MEDIUM" | "LOW";
+  resolutionType?: "COMMERCIAL_ROLE_EXCLUSION" | "ICP_EVALUATION";
+  sourceCommercialRole?: "SELLER_COMPETITOR";
+  reason?: string;
+  evidenceIds?: string[];
+  policyVersion?: typeof COMMERCIAL_ROLE_WHO_POLICY_VERSION;
+};
 
 export type CompanyIntelligenceReasonCode =
   | "READY_FOR_SIGNAL_RESEARCH"
@@ -51,7 +61,7 @@ export type CompanyIntelligenceControlResult = {
   manualReviewHelpful: boolean;
   minimumIntelligence: MinimumCompanyIntelligence | null;
   buyerRole: string;
-  who: Awaited<ReturnType<typeof qualifyProjectCompanyForWho>> | null;
+  who: CompanyIntelligenceWhoResult | null;
   semantic: {
     cacheHit: boolean;
     llmInvoked: boolean;
@@ -75,6 +85,41 @@ function result(value: ControlResultInput): CompanyIntelligenceControlResult {
   };
 }
 
+function assessmentEvidenceIds(assessment: BuyerRoleAssessment): string[] {
+  return [...new Set(assessment.supportingInputs
+    .map((item) => item.excerpt)
+    .filter((value) => /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value)))]
+    .sort();
+}
+
+export function resolveWhoFromCommercialRole(
+  assessment: BuyerRoleAssessment,
+): CommercialRoleWhoResolution | null {
+  if (assessment.buyerRole !== "SELLER_COMPETITOR") return null;
+  return {
+    qualification: "LIKELY_NOT_FIT",
+    confidence: assessment.confidence,
+    resolutionType: "COMMERCIAL_ROLE_EXCLUSION",
+    sourceCommercialRole: "SELLER_COMPETITOR",
+    reason: "The company is classified as a seller competitor for this offering and is therefore not eligible for buyer targeting.",
+    evidenceIds: assessmentEvidenceIds(assessment),
+    policyVersion: COMMERCIAL_ROLE_WHO_POLICY_VERSION,
+  };
+}
+
+function exclusionWhoResult(resolution: CommercialRoleWhoResolution): CompanyIntelligenceWhoResult {
+  return {
+    ...resolution,
+    eligible: false,
+    checks: null,
+    missingDimensions: [],
+    missingReasonCodes: [],
+    missingReasonCode: null,
+    missingRequirements: [],
+    firmographicResolutionAvailable: false,
+  };
+}
+
 export function shouldRecommendCompanyFirmographics(who: Pick<
   NonNullable<CompanyIntelligenceControlResult["who"]>,
   "qualification" | "firmographicResolutionAvailable"
@@ -82,7 +127,7 @@ export function shouldRecommendCompanyFirmographics(who: Pick<
   return who.qualification === "INSUFFICIENT_DATA" && who.firmographicResolutionAvailable;
 }
 
-function controlPlaneFingerprint(input: {
+export function controlPlaneFingerprint(input: {
   projectId: string;
   companyId: string;
   sellerContextFingerprint: string;
@@ -264,6 +309,7 @@ export async function orchestrateCompanyIntelligence(input: {
     ...semantic.assessment,
     controlPlaneFingerprint: fingerprint,
     controlPlaneVersion: COMPANY_INTELLIGENCE_CONTROL_PLANE_VERSION,
+    whoResolution: resolveWhoFromCommercialRole(semantic.assessment) ?? undefined,
   };
   await db.update(projectCompaniesTable).set({
     buyerRole: stampedAssessment.buyerRole,
@@ -313,7 +359,7 @@ export async function orchestrateCompanyIntelligence(input: {
       manualReviewHelpful: false,
       minimumIntelligence: minimum,
       buyerRole,
-      who: null,
+      who: stampedAssessment.whoResolution ? exclusionWhoResult(stampedAssessment.whoResolution) : null,
       semantic: semanticSummary,
     });
   }

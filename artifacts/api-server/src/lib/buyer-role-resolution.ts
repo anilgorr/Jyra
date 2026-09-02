@@ -5,6 +5,16 @@
 export type BuyerRole = "POTENTIAL_BUYER" | "SELLER_COMPETITOR" | "ADJACENT_VENDOR" | "PARTNER_POSSIBLE" | "UNKNOWN";
 export type BuyerRoleConfidence = "HIGH" | "MEDIUM" | "LOW";
 
+export type CommercialRoleWhoResolution = {
+  qualification: "LIKELY_NOT_FIT";
+  confidence: BuyerRoleConfidence;
+  resolutionType: "COMMERCIAL_ROLE_EXCLUSION";
+  sourceCommercialRole: "SELLER_COMPETITOR";
+  reason: string;
+  evidenceIds: string[];
+  policyVersion: "commercial-role-who-exclusion-v1";
+};
+
 export type BuyerRoleAssessment = {
   buyerRole: BuyerRole;
   confidence: BuyerRoleConfidence;
@@ -15,6 +25,7 @@ export type BuyerRoleAssessment = {
   classifierVersion: "buyer-role-resolution-06a";
   controlPlaneFingerprint?: string;
   controlPlaneVersion?: string;
+  whoResolution?: CommercialRoleWhoResolution;
 };
 
 export type BuyerRoleAssessmentInput = {

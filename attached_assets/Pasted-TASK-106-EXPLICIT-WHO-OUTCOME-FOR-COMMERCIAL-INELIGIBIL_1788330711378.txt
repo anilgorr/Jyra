@@ -1,0 +1,943 @@
+TASK #106 — EXPLICIT WHO OUTCOME FOR COMMERCIAL INELIGIBILITY
+
+Context:
+
+Task #103 froze:
+
+JYRA_MARKET_QUALITY_GOLD_V1
+
+Gold SHA-256:
+f59aca76b676d0e54d0899dd23bb3e5c6d5912e71e0597d967a2a722ac8ecfca
+
+Task #105 result:
+
+CommercialRole coverage:
+20/20
+
+Non-UNKNOWN CommercialRole:
+16/20
+
+WHO available:
+6/20
+
+Complete CommercialRole + WHO:
+6/20
+
+CommercialRole strict accuracy:
+13/18
+
+WHO strict accuracy:
+3/18
+
+POTENTIAL_BUYER precision:
+5/5 = 100%
+
+SELLER_COMPETITOR recall:
+8/8 = 100%
+
+Dangerous competitor → buyer:
+0
+
+First-error distribution:
+
+IDENTITY_RESOLUTION: 1
+COMPANY_UNDERSTANDING: 0
+COMMERCIAL_ROLE: 4
+ICP_CRITERION_MAPPING: 0
+WHO_DECISION_POLICY: 8
+INSUFFICIENT_EVIDENCE_HANDLING: 0
+PROVIDER_DATA_GAP: 2
+OTHER: 0
+
+The SINGLE repair for Task #106 is:
+
+When Commercial Relationship Assessment conclusively determines that a company is commercially ineligible as a buyer for the specific seller offering — specifically SELLER_COMPETITOR — JYRA must persist an explicit WHO result instead of silently producing no WHO result.
+
+DO NOT fix anything else in this task.
+
+==================================================
+1. DATABASE SAFETY
+==================================================
+
+DATABASE SAFETY:
+
+This is development work.
+
+Use ONLY the development database.
+
+DO NOT:
+- migrate production
+- reset production
+- seed production
+- truncate production
+- modify production customer data
+- test against production
+
+Production must remain untouched.
+
+==================================================
+2. BENCHMARK CONTAMINATION GUARD
+==================================================
+
+The frozen 20-company benchmark has already been seen.
+
+Therefore:
+
+DO NOT hard-code company names.
+DO NOT hard-code benchmarkCompanyIds.
+DO NOT hard-code Managed SOC companies.
+DO NOT hard-code DigiPuush companies.
+DO NOT add benchmark-specific conditions.
+DO NOT tune logic against these exact labels.
+DO NOT use gold labels as runtime inputs.
+DO NOT add keyword rules such as:
+"MDR means competitor"
+"SOC means competitor"
+
+Commercial Role already determines the relationship.
+
+The frozen benchmark may only be used AFTER implementation as regression diagnostics.
+
+==================================================
+3. DO NOT MODIFY THESE AREAS
+==================================================
+
+Do NOT modify:
+
+- identity resolution
+- Minimum Company Intelligence
+- CompanyAssessmentReadiness
+- evidence-admission logic from Task #105
+- Company Understanding prompt/model/version
+- Commercial Role prompt/model/version
+- Commercial Role classification logic
+- provider routing
+- discovery
+- ICP generation
+- ICP criterion extraction
+- geography normalization
+- evidence fetching
+- signal packs
+- WHEN/WHY logic
+- Opportunity scoring
+- Business Twin logic
+- control-plane architecture
+
+Task #106 is ONLY about:
+
+Commercial Role
+→ buyer eligibility
+→ explicit WHO output
+
+==================================================
+4. TRACE CURRENT FAILURE FIRST
+==================================================
+
+Before implementing changes, document the current Task #105 behavior.
+
+Identify:
+
+A. function/service that decides whether WHO runs
+
+B. what happens when CommercialRole =
+SELLER_COMPETITOR
+
+C. whether the pipeline terminates early
+
+D. whether termination currently produces:
+- no WHO record
+- null
+- undefined
+- MISSING
+- skipped stage
+- another state
+
+E. whether a reason code exists
+
+F. whether downstream Opportunity logic can distinguish:
+
+"WHO not evaluated"
+
+from:
+
+"WHO evaluated / structurally not eligible"
+
+G. whether WHO semantic inference is currently called for competitors
+
+H. where the smallest safe policy change should live
+
+Document BEFORE behavior in the Task #106 report.
+
+==================================================
+5. CORE SEMANTIC PRINCIPLE
+==================================================
+
+JYRA must distinguish:
+
+UNKNOWN BECAUSE WE CANNOT DECIDE
+
+from
+
+KNOWN NOT TO BE A BUYER FOR THIS OFFERING
+
+These are fundamentally different.
+
+Example:
+
+CommercialRole = UNKNOWN
+
+means:
+
+The seller-relative commercial relationship could not be established.
+
+WHO may therefore remain unresolved / INSUFFICIENT_DATA depending on existing policy.
+
+But:
+
+CommercialRole = SELLER_COMPETITOR
+
+means:
+
+The company has already been conclusively classified as selling an offering that materially competes with the seller's specific offering.
+
+For normal buyer-targeting purposes, this is sufficient to deterministically resolve:
+
+WHO = LIKELY_NOT_FIT
+
+This is not a new LLM inference.
+
+It is a deterministic buyer-eligibility policy based on an already resolved seller-relative Commercial Role.
+
+==================================================
+6. REQUIRED POLICY
+==================================================
+
+Implement the minimum generic policy:
+
+IF:
+
+CommercialRole == SELLER_COMPETITOR
+
+AND the CommercialRole assessment is considered resolved under existing confidence/status semantics
+
+THEN:
+
+WHO = LIKELY_NOT_FIT
+
+resolution reason:
+COMMERCIAL_ROLE_EXCLUSION
+
+or use an equivalent existing reason-code convention.
+
+Do NOT call the WHO semantic model for this path.
+
+The persisted WHO result must clearly indicate that it was resolved by the Commercial Role exclusion policy rather than normal ICP semantic evaluation.
+
+==================================================
+7. DO NOT COLLAPSE COMMERCIAL ROLE AND WHO
+==================================================
+
+Commercial Role and WHO remain separate concepts.
+
+Commercial Role asks:
+
+"Can this company reasonably buy, compete with, or partner around this specific seller offering?"
+
+WHO asks:
+
+"Does this company fit this seller's current buyer ICP?"
+
+DO NOT implement:
+
+POTENTIAL_BUYER → LIKELY_FIT
+
+That is wrong.
+
+A POTENTIAL_BUYER can still be:
+
+LIKELY_FIT
+POSSIBLE_FIT
+LIKELY_NOT_FIT
+INSUFFICIENT_DATA
+
+depending on ICP.
+
+Do NOT automatically convert:
+
+ADJACENT_VENDOR → LIKELY_NOT_FIT
+
+or
+
+PARTNER_POSSIBLE → LIKELY_NOT_FIT
+
+unless an existing generic policy already explicitly requires it.
+
+For Task #106, the required deterministic exclusion is only:
+
+SELLER_COMPETITOR
+→ LIKELY_NOT_FIT
+
+==================================================
+8. STRUCTURED WHO RESOLUTION
+==================================================
+
+Prefer an explicit structured output using existing schemas, conceptually:
+
+{
+  who: "LIKELY_NOT_FIT",
+  confidence: "HIGH",
+  resolutionType: "COMMERCIAL_ROLE_EXCLUSION",
+  sourceCommercialRole: "SELLER_COMPETITOR",
+  reason: "The company is classified as a seller competitor for this offering and is therefore not eligible for buyer targeting.",
+  evidenceIds: [...]
+}
+
+Use existing schema/naming where possible.
+
+Do not create duplicate architecture.
+
+The important distinction is:
+
+WHO evaluated via ICP
+
+vs
+
+WHO resolved via commercial-role exclusion.
+
+==================================================
+9. CONFIDENCE
+==================================================
+
+WHO confidence should inherit or deterministically derive from the Commercial Role confidence.
+
+Example:
+
+SELLER_COMPETITOR / HIGH
+→ LIKELY_NOT_FIT / HIGH
+
+SELLER_COMPETITOR / MEDIUM
+→ LIKELY_NOT_FIT / MEDIUM
+
+Do not blindly assign HIGH.
+
+Follow existing confidence conventions.
+
+==================================================
+10. EVIDENCE PROVENANCE
+==================================================
+
+Do not create new evidence.
+
+The explicit WHO exclusion must remain traceable to the evidence supporting the Commercial Role assessment.
+
+If Commercial Role used evidence IDs:
+
+E1
+E2
+
+then the WHO resolution should either:
+
+- reference E1/E2 directly
+
+or
+
+- reference the persisted CommercialRole assessment that contains them.
+
+Required chain:
+
+Source
+→ Evidence
+→ Company Understanding
+→ Commercial Relationship Assessment
+→ WHO exclusion
+
+Preserve auditability.
+
+==================================================
+11. REASON / STATUS SEMANTICS
+==================================================
+
+A conclusively resolved competitor must NOT appear downstream as:
+
+MISSING
+NOT_RUN
+UNKNOWN
+INSUFFICIENT_DATA
+
+solely because WHO semantic inference was skipped.
+
+Prefer a reason such as:
+
+WHO_RESOLVED_BY_COMMERCIAL_ROLE
+
+COMMERCIAL_ROLE_EXCLUSION
+
+SELLER_COMPETITOR_NOT_BUYER_ELIGIBLE
+
+Use existing enum conventions where possible.
+
+If API compatibility prevents a new public enum, retain public compatibility and store the detail as a subreason/internal resolution type.
+
+==================================================
+12. ORCHESTRATOR BEHAVIOR
+==================================================
+
+Desired flow:
+
+Commercial Role resolved
+        ↓
+deterministic buyer-eligibility policy
+        ↓
+SELLER_COMPETITOR?
+        ↓ YES
+persist WHO = LIKELY_NOT_FIT
+        ↓
+skip WHO semantic model
+        ↓
+continue downstream with explicit WHO outcome
+
+Otherwise:
+
+continue normal WHO evaluation.
+
+No external research should be triggered.
+
+==================================================
+13. STALENESS / FINGERPRINTS
+==================================================
+
+Preserve existing fingerprint and stale-state semantics.
+
+If:
+
+Commercial Role unchanged
+ICP unchanged
+buyer-eligibility policy unchanged
+
+then repeated orchestration must not create duplicate WHO results.
+
+If Commercial Role changes:
+
+SELLER_COMPETITOR
+→ POTENTIAL_BUYER
+
+then the deterministic WHO exclusion must become stale and normal WHO evaluation must become eligible.
+
+If Commercial Role changes:
+
+POTENTIAL_BUYER
+→ SELLER_COMPETITOR
+
+then WHO must recompute to:
+
+LIKELY_NOT_FIT
+
+via deterministic exclusion.
+
+==================================================
+14. GENERIC TESTS
+==================================================
+
+Do NOT use benchmark company names.
+
+Create at least these tests.
+
+--------------------------------------------------
+TEST A — HIGH-CONFIDENCE COMPETITOR
+--------------------------------------------------
+
+CommercialRole:
+SELLER_COMPETITOR
+
+confidence:
+HIGH
+
+evidence:
+valid
+
+Expected:
+
+WHO = LIKELY_NOT_FIT
+confidence = HIGH
+resolution = COMMERCIAL_ROLE_EXCLUSION
+WHO semantic calls = 0
+
+--------------------------------------------------
+TEST B — MEDIUM-CONFIDENCE COMPETITOR
+--------------------------------------------------
+
+CommercialRole:
+SELLER_COMPETITOR
+
+confidence:
+MEDIUM
+
+Expected:
+
+WHO = LIKELY_NOT_FIT
+confidence consistent with MEDIUM source assessment
+
+--------------------------------------------------
+TEST C — POTENTIAL BUYER
+--------------------------------------------------
+
+CommercialRole:
+POTENTIAL_BUYER
+
+Expected:
+
+DO NOT deterministically assign LIKELY_FIT.
+
+Normal ICP/WHO processing continues.
+
+--------------------------------------------------
+TEST D — UNKNOWN ROLE
+--------------------------------------------------
+
+CommercialRole:
+UNKNOWN
+
+Expected:
+
+Do not convert UNKNOWN to LIKELY_NOT_FIT.
+
+Preserve unresolved/insufficient semantics.
+
+--------------------------------------------------
+TEST E — ADJACENT VENDOR
+--------------------------------------------------
+
+CommercialRole:
+ADJACENT_VENDOR
+
+Expected:
+
+Do not automatically assign LIKELY_NOT_FIT solely due to this role.
+
+--------------------------------------------------
+TEST F — PARTNER POSSIBLE
+--------------------------------------------------
+
+CommercialRole:
+PARTNER_POSSIBLE
+
+Expected:
+
+Do not automatically assign LIKELY_NOT_FIT solely due to this role.
+
+--------------------------------------------------
+TEST G — PROVENANCE
+--------------------------------------------------
+
+CommercialRole has evidenceIds.
+
+Expected:
+
+WHO deterministic exclusion remains traceable to those evidence IDs or source CommercialRole assessment.
+
+--------------------------------------------------
+TEST H — ROLE CHANGE
+--------------------------------------------------
+
+Initial:
+
+SELLER_COMPETITOR
+→ WHO LIKELY_NOT_FIT
+
+Then role changes to:
+
+POTENTIAL_BUYER
+
+Expected:
+
+old deterministic WHO becomes stale
+normal WHO evaluation becomes eligible.
+
+--------------------------------------------------
+TEST I — REVERSE ROLE CHANGE
+--------------------------------------------------
+
+Initial:
+
+POTENTIAL_BUYER
+
+Then:
+
+SELLER_COMPETITOR
+
+Expected:
+
+WHO becomes LIKELY_NOT_FIT through deterministic exclusion.
+
+--------------------------------------------------
+TEST J — IDEMPOTENCY
+--------------------------------------------------
+
+Same CommercialRole
+same evidence
+same ICP
+same policy version
+
+Expected:
+
+no duplicate WHO assessment
+no unnecessary semantic execution.
+
+--------------------------------------------------
+TEST K — ZERO WHO MODEL CALL
+--------------------------------------------------
+
+Instrument WHO semantic inference.
+
+Resolved SELLER_COMPETITOR path must generate:
+
+0 WHO semantic model calls.
+
+==================================================
+15. EXISTING REGRESSION TESTS
+==================================================
+
+Run all relevant existing tests:
+
+- identity resolution
+- Minimum Company Intelligence
+- CompanyAssessmentReadiness
+- Company Understanding
+- Commercial Role
+- WHO
+- control plane
+- fingerprints
+- stale-state logic
+- reason codes
+- evidence provenance
+- tenant isolation
+- provider routing
+
+Do not weaken tests.
+
+==================================================
+16. POST-REPAIR BENCHMARK REGRESSION
+==================================================
+
+Only after implementation and generic tests pass:
+
+Run a new DEVELOPMENT regression against the exact frozen evidence snapshot.
+
+Run name:
+
+TASK_106_POST_REPAIR_REGRESSION
+
+DO NOT overwrite:
+
+Task #100
+Task #105
+
+Do not call external providers.
+
+Do not fetch new evidence.
+
+Do not replace companies.
+
+Do not modify gold.
+
+Verify gold SHA-256:
+
+f59aca76b676d0e54d0899dd23bb3e5c6d5912e71e0597d967a2a722ac8ecfca
+
+==================================================
+17. MEASURE TASK #105 → TASK #106
+==================================================
+
+Report:
+
+CommercialRole coverage
+
+Non-UNKNOWN CommercialRole
+
+WHO available
+
+Complete CommercialRole + WHO
+
+CommercialRole strict accuracy
+
+WHO strict accuracy
+
+POTENTIAL_BUYER precision
+
+SELLER_COMPETITOR recall
+
+dangerous competitor → buyer errors
+
+WHO_DECISION_POLICY first-errors
+
+Also report:
+
+WHO outputs deterministically resolved from Commercial Role
+
+WHO semantic calls avoided
+
+first-error distribution
+
+remaining errors
+
+==================================================
+18. EXPECTED DIRECTION — NOT HARD TARGETS
+==================================================
+
+Do NOT hard-code numbers.
+
+Semantically we expect:
+
+WHO availability to increase materially
+
+WHO_DECISION_POLICY errors to decrease
+
+Commercial Role results to remain unchanged
+
+SELLER_COMPETITOR recall to remain strong
+
+dangerous competitor → buyer errors to remain zero
+
+Do not manipulate logic just to hit those outcomes.
+
+==================================================
+19. DO NOT FIX NEW ERRORS
+==================================================
+
+Do NOT fix the four existing Commercial Role errors.
+
+Do NOT fix:
+
+- provider-data gaps
+- identity-resolution issue
+- geography handling
+- ICP criterion semantics
+- other WHO decision policies
+- Company Understanding
+- evidence admission
+
+If newly visible errors appear:
+
+REPORT THEM ONLY.
+
+One causal repair per task.
+
+==================================================
+20. ACCEPTANCE CRITERIA
+==================================================
+
+PASS only if:
+
+1. generic tests pass
+
+2. existing regressions pass
+
+3. resolved SELLER_COMPETITOR produces explicit:
+   WHO = LIKELY_NOT_FIT
+
+4. UNKNOWN Commercial Role is not forced negative
+
+5. POTENTIAL_BUYER is not forced LIKELY_FIT
+
+6. ADJACENT_VENDOR is not blindly forced negative
+
+7. PARTNER_POSSIBLE is not blindly forced negative
+
+8. evidence provenance is preserved
+
+9. deterministic competitor exclusion generates no WHO model call
+
+10. no external providers are called
+
+11. production is untouched
+
+12. no benchmark-specific logic exists
+
+13. WHO_DECISION_POLICY missing-output failures materially decrease
+
+14. dangerous competitor → buyer remains zero
+
+15. gold SHA-256 remains unchanged
+
+==================================================
+21. ARTIFACTS
+==================================================
+
+Create:
+
+evaluations/jyra-clean-room-v1/TASK_106_EXPLICIT_WHO_POLICY.json
+
+and:
+
+evaluations/jyra-clean-room-v1/TASK_106_EXPLICIT_WHO_POLICY_REPORT.md
+
+Include:
+
+- before behavior
+- after behavior
+- implementation details
+- files changed
+- generic tests
+- existing regressions
+- semantic-call counts
+- deterministic resolution count
+- benchmark diagnostic results
+- first-error distribution
+- remaining errors
+- safety validation
+
+==================================================
+22. FINAL RESPONSE FORMAT
+==================================================
+
+Return:
+
+TASK #106 — EXPLICIT WHO POLICY
+
+Status:
+PASS / FAIL
+
+Repair implemented:
+<description>
+
+Files changed:
+<list>
+
+Gold SHA-256 unchanged:
+YES / NO
+
+External provider calls:
+0
+
+Production modified:
+NO
+
+Generic tests:
+x/x
+
+Existing regressions:
+x/x
+
+====================
+TASK #105 → TASK #106
+====================
+
+CommercialRole coverage:
+20/20 → x/20
+
+Non-UNKNOWN CommercialRole:
+16/20 → x/20
+
+WHO available:
+6/20 → x/20
+
+Complete CommercialRole + WHO:
+6/20 → x/20
+
+CommercialRole strict accuracy:
+13/18 → x/18
+
+WHO strict accuracy:
+3/18 → x/18
+
+POTENTIAL_BUYER precision:
+100% → x%
+
+SELLER_COMPETITOR recall:
+100% → x%
+
+Dangerous competitor → buyer:
+0 → x
+
+WHO_DECISION_POLICY first-errors:
+8 → x
+
+WHO deterministically resolved from CommercialRole:
+x
+
+WHO semantic calls avoided:
+x
+
+====================
+NEW FIRST-ERROR DISTRIBUTION
+====================
+
+IDENTITY_RESOLUTION:
+x
+
+COMPANY_UNDERSTANDING:
+x
+
+COMMERCIAL_ROLE:
+x
+
+ICP_CRITERION_MAPPING:
+x
+
+WHO_DECISION_POLICY:
+x
+
+INSUFFICIENT_EVIDENCE_HANDLING:
+x
+
+PROVIDER_DATA_GAP:
+x
+
+OTHER:
+x
+
+====================
+REMAINING ERRORS
+====================
+
+List remaining errors.
+
+DO NOT FIX THEM.
+
+====================
+SAFETY
+====================
+
+UNKNOWN role forced negative:
+NO
+
+POTENTIAL_BUYER forced LIKELY_FIT:
+NO
+
+ADJACENT_VENDOR forced negative:
+NO
+
+PARTNER_POSSIBLE forced negative:
+NO
+
+Evidence provenance preserved:
+YES
+
+Benchmark-specific logic added:
+NO
+
+Gold modified:
+NO
+
+Task #100 modified:
+NO
+
+Task #105 modified:
+NO
+
+====================
+VERDICT
+====================
+
+Did this single repair solve the explicit-WHO-output defect?
+
+YES / PARTIAL / NO
+
+Explain briefly.
+
+NEXT STEP:
+
+Wait for approval.
+
+DO NOT implement another repair.
+DO NOT run the 50-company Reality Test.

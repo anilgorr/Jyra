@@ -95,7 +95,9 @@
        ,"validate:buyer-role-resolution-06a:fresh": "NODE_ENV=development JYRA_REALITY_CONTACT_ENRICHMENT_ENABLED=false JYRA_06A_FRESH_VALIDATION=YES node ./scripts/run-buyer-role-resolution-06a-fresh-validation.mjs"
        ,"validate:fix-11-digipuush:fresh": "NODE_ENV=development JYRA_FIX_11_RUN_FRESH_20=YES node ./scripts/run-fix-11-digipuush-validation.mjs"
         ,"validate:architecture-v1-clean-cross-domain:fresh": "NODE_ENV=development JYRA_ARCHITECTURE_V1_CLEAN_FRESH_20=YES node ./scripts/run-architecture-v1-clean-cross-domain-validation.mjs"
-        ,"regression:task-105-evidence-admission": "NODE_ENV=development JYRA_TASK_105_POST_REPAIR_REGRESSION=YES node ./scripts/run-task-105-evidence-admission-regression.mjs"
+         ,"regression:task-105-evidence-admission": "NODE_ENV=development JYRA_TASK_105_POST_REPAIR_REGRESSION=YES node ./scripts/run-task-105-evidence-admission-regression.mjs"
+         ,"test:task-106-who-policy": "node ./scripts/test-task-106-who-policy.mjs"
+         ,"regression:task-106-explicit-who": "NODE_ENV=development JYRA_TASK_106_POST_REPAIR_REGRESSION=YES node ./scripts/run-task-106-explicit-who-regression.mjs"
   },
   "dependencies": {
     "@clerk/express": "^2.1.63",
