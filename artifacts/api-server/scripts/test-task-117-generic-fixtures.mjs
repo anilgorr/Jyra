@@ -437,6 +437,68 @@ test("Safety/Citation normalization", "28 normalized assessment remains valid af
   const { resolutionType, deterministicOverrides, safetyOverrideMetadata, fingerprint, ...finalSemantic } = final;
   assert.equal(v2.validateAssessmentEvidenceV2(finalSemantic, [item], context("icp-v1", [geoRequirement])).ok, true);
 });
+test("CommercialRole/Citation normalization", "29 relation and claim type mismatch abstains", () => {
+  const item = evidence({ primaryBusiness: "B2B SaaS" });
+  const semantic = assessment("POTENTIAL_BUYER", "POSSIBLE_FIT");
+  semantic.commercialRole.claimBindings[0] = {
+    claimId: "claim-business", claimedValue: "B2B SaaS", purpose: "commercialRole", relation: "MATERIAL_SUBSTITUTE",
+  };
+  const normalized = v2.normalizeAssessmentEvidenceV2(semantic, [item], context());
+  assert.equal(normalized.commercialRole.value, "UNKNOWN");
+  assert.deepEqual([normalized.commercialRole.evidenceIds, normalized.commercialRole.claimIds, normalized.commercialRole.claimBindings], [[], [], []]);
+  assert.match(normalized.commercialRole.reason, /compatible role relation and evidence type/);
+});
+test("CommercialRole/Citation normalization", "30 competitor without material substitute abstains", () => {
+  const item = evidence({ primaryBusiness: "Substitute", offeringOverlapFacts: ["same outcome"] });
+  const semantic = assessment("SELLER_COMPETITOR", "POSSIBLE_FIT");
+  semantic.commercialRole.claimIds = ["claim-overlap-0"];
+  semantic.commercialRole.claimBindings = [{
+    claimId: "claim-overlap-0", claimedValue: "same outcome", purpose: "commercialRole", relation: "SUPPORTS_ROLE",
+  }];
+  const normalized = v2.normalizeAssessmentEvidenceV2(semantic, [item], context());
+  assert.equal(normalized.commercialRole.value, "UNKNOWN");
+  assert.deepEqual([normalized.commercialRole.evidenceIds, normalized.commercialRole.claimIds, normalized.commercialRole.claimBindings], [[], [], []]);
+  assert.match(normalized.commercialRole.reason, /material substitute/);
+});
+test("CommercialRole/Citation normalization", "31 material substitute competitor remains safety-valid", () => {
+  const item = evidence({ primaryBusiness: "Substitute", offeringOverlapFacts: ["same outcome"] });
+  const semantic = assessment("SELLER_COMPETITOR", "LIKELY_FIT");
+  semantic.commercialRole.claimIds = ["claim-overlap-0"];
+  semantic.commercialRole.claimBindings = [{
+    claimId: "claim-overlap-0", claimedValue: "same outcome", purpose: "commercialRole", relation: "MATERIAL_SUBSTITUTE",
+  }];
+  const normalized = v2.normalizeAssessmentEvidenceV2(semantic, [item], context());
+  assert.equal(normalized.commercialRole.value, "SELLER_COMPETITOR");
+  const final = v2.applySafetyRulesV2({ profile: profile([item]), assessment: normalized, fingerprint: "fp" });
+  assert.equal(final.who.value, "LIKELY_NOT_FIT");
+  const { resolutionType, deterministicOverrides, safetyOverrideMetadata, fingerprint, ...finalSemantic } = final;
+  assert.equal(v2.validateAssessmentEvidenceV2(finalSemantic, [item], context()).ok, true);
+});
+test("CommercialRole/Citation normalization", "32 mixed bindings retain only compatible provenance", () => {
+  const item = evidence({ primaryBusiness: "B2B SaaS", offeringOverlapFacts: ["related outcome"] });
+  const semantic = assessment("ADJACENT_VENDOR", "POSSIBLE_FIT");
+  semantic.commercialRole.claimIds = ["claim-business", "claim-overlap-0"];
+  semantic.commercialRole.claimBindings = [
+    { claimId: "claim-business", claimedValue: "B2B SaaS", purpose: "commercialRole", relation: "MATERIAL_SUBSTITUTE" },
+    { claimId: "claim-overlap-0", claimedValue: "related outcome", purpose: "commercialRole", relation: "COMPLEMENTARY" },
+  ];
+  const normalized = v2.normalizeAssessmentEvidenceV2(semantic, [item], context());
+  assert.equal(normalized.commercialRole.value, "ADJACENT_VENDOR");
+  assert.deepEqual(normalized.commercialRole.claimIds, ["claim-overlap-0"]);
+  assert.deepEqual(normalized.commercialRole.evidenceIds, [ids[0]]);
+  assert.deepEqual(normalized.commercialRole.claimBindings, [semantic.commercialRole.claimBindings[1]]);
+});
+test("CommercialRole/Citation normalization", "33 unknown IDs and claimed-value mismatch remain hard failures", () => {
+  const item = evidence({ primaryBusiness: "B2B SaaS" });
+  const unknown = assessment("POTENTIAL_BUYER", "POSSIBLE_FIT");
+  unknown.commercialRole.claimBindings[0].claimId = "forged-claim";
+  assert.throws(() => v2.normalizeAssessmentEvidenceV2(unknown, [item], context()), /unknown claim/);
+  const mismatch = assessment("POTENTIAL_BUYER", "POSSIBLE_FIT");
+  mismatch.commercialRole.claimBindings[0] = {
+    claimId: "claim-business", claimedValue: "forged value", purpose: "commercialRole", relation: "MATERIAL_SUBSTITUTE",
+  };
+  assert.throws(() => v2.normalizeAssessmentEvidenceV2(mismatch, [item], context()), /binding value does not match claim/);
+});
 
 for (const item of tests) await item.fn();
 const categories = Object.fromEntries([...new Set(tests.map((item) => item.category))].map((category) => [category, tests.filter((item) => item.category === category).length]));

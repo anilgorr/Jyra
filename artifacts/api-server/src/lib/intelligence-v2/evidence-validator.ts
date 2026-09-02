@@ -6,6 +6,8 @@ export type EvidenceValidationResult =
 
 const CRITERION_ABSTENTION_REASON = "This criterion is unknown because no cited atomic claim has the required evidence type.";
 const WHO_ABSTENTION_REASON = "Structural fit is insufficient because no valid parent WHO evidence remains.";
+const ROLE_ABSTENTION_REASON = "Commercial role is unknown because no cited atomic claim has a compatible role relation and evidence type.";
+const COMPETITOR_ABSTENTION_REASON = "Commercial role is unknown because no cited offering-overlap claim establishes a material substitute.";
 
 const ROLE_TYPES = {
   SUPPORTS_ROLE: ["PRIMARY_BUSINESS", "PRODUCT_SERVICE", "OFFERING_OVERLAP"],
@@ -62,10 +64,29 @@ export function normalizeAssessmentEvidenceV2(
   assertResolvable("who", assessment.who);
   assessment.who.criteria.forEach((criterion, index) => assertResolvable(`who.criteria.${index}`, criterion));
 
-  assessment.commercialRole = {
-    ...assessment.commercialRole,
-    ...canonicalProvenance(assessment.commercialRole.claimBindings),
-  };
+  for (const binding of assessment.commercialRole.claimBindings) {
+    if (claims.get(binding.claimId)!.value !== binding.claimedValue) throw new Error("commercialRole binding value does not match claim");
+  }
+  const roleBindings = assessment.commercialRole.claimBindings.filter((binding) =>
+    ROLE_TYPES[binding.relation].includes(claims.get(binding.claimId)!.type as never));
+  const unsupportedRole = assessment.commercialRole.value !== "UNKNOWN" && !roleBindings.length;
+  const unsupportedCompetitor = assessment.commercialRole.value === "SELLER_COMPETITOR"
+    && !roleBindings.some((binding) =>
+      binding.relation === "MATERIAL_SUBSTITUTE" && claims.get(binding.claimId)!.type === "OFFERING_OVERLAP");
+  assessment.commercialRole = unsupportedRole || unsupportedCompetitor
+    ? {
+        ...assessment.commercialRole,
+        value: "UNKNOWN",
+        reason: unsupportedCompetitor ? COMPETITOR_ABSTENTION_REASON : ROLE_ABSTENTION_REASON,
+        evidenceIds: [],
+        claimIds: [],
+        claimBindings: [],
+      }
+    : {
+        ...assessment.commercialRole,
+        ...canonicalProvenance(roleBindings),
+        claimBindings: roleBindings,
+      };
   const parentBindings = assessment.who.claimBindings;
   assessment.who = {
     ...assessment.who,
