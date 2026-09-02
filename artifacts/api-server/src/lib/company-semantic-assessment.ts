@@ -8,7 +8,8 @@ import { resolveProjectSellerContext, type SellerContext } from "./seller-contex
 import { companySemanticFingerprint } from "./company-semantic-fingerprint";
 
 export const COMPANY_UNDERSTANDING_MODEL = "gpt-5-mini";
-export const COMPANY_UNDERSTANDING_PROMPT_VERSION = "fix08-company-understanding-v4";
+export const COMPANY_UNDERSTANDING_PROMPT_VERSION = "fix08-company-understanding-v5";
+export const COMMERCIAL_RELATIONSHIP_POLICY_VERSION = "commercial-relationship-v2";
 export const COMPANY_UNDERSTANDING_NORMALIZATION_VERSION = "fix07-v1";
 export const UNKNOWN_REASON_CODES = ["IDENTITY_INSUFFICIENT", "SELLER_CONTEXT_INSUFFICIENT", "COMPANY_EVIDENCE_INSUFFICIENT", "LLM_LOW_CONFIDENCE", "LLM_OUTPUT_INVALID", "GENUINELY_AMBIGUOUS", "OTHER"] as const;
 export type UnknownReasonCode = typeof UNKNOWN_REASON_CODES[number];
@@ -103,12 +104,13 @@ export const companySemanticResponseSchema = {
     },
   },
 } as const;
-export const COMPANY_SEMANTIC_SYSTEM_PROMPT = `Use only supplied seller context and evidence. Do not infer timing, intent, contacts, or cite sources not supplied. Classification is based on the candidate's primary business plus its seller-relative relationship.
-POTENTIAL_BUYER means an operating organization that fits the supplied context and could consume the described seller offering for its own operations; explicit purchase intent is not required.
-SELLER_COMPETITOR means it offers a substantial substitute to the described seller offering.
-ADJACENT_VENDOR means it sells complementary products or services in the same buyer workflow, not merely any software or IT vendor.
-PARTNER_POSSIBLE means public evidence supports a plausible channel, referral, integration, or co-delivery relationship; generic IT-services status alone is insufficient.
-UNKNOWN means evidence cannot safely determine the role. SaaS and technology firms may be buyers when they operate cloud infrastructure or sensitive data and do not sell substitutes.
+export const COMPANY_SEMANTIC_SYSTEM_PROMPT = `Use only supplied seller context and evidence. Do not infer timing, intent, contacts, or cite sources not supplied. First understand the candidate's evidence-backed primary business and the seller's specific offering, then classify their seller-relative commercial relationship in this order.
+1. SELLER_COMPETITOR means the candidate's primary offering is a material substitute for the seller offering in the same purchasing decision; classify it only on that basis. Shared industry, customer segment, workflow, technology, or vocabulary is not competition.
+2. ADJACENT_VENDOR means affirmative evidence shows the candidate primarily sells a complementary vendor-side product or service around this seller offering and vendor-to-vendor is the stronger natural relationship. Being a B2B vendor is not enough.
+3. PARTNER_POSSIBLE means affirmative evidence supports a channel, referral, reseller, integration, joint-go-to-market, or co-delivery relationship. Complementarity, company name, or generic integration capability alone is not partnership evidence.
+4. POTENTIAL_BUYER means the candidate does not sell a material substitute and can reasonably consume the seller offering for its own operations. Test this buyer capability when stronger vendor-side relationships are not supported. Explicit purchase intent is not required. A company may sell products or services and still be a buyer.
+5. UNKNOWN means candidate business, seller offering, conflicting evidence, or the relationship cannot safely be resolved. Multiple business activities alone are not ambiguity.
+Weight primary commercial activity over minor feature overlap. In the reason, explicitly compare candidate primary offering with seller offering, state whether they are substitutes, and explain why the selected relationship is stronger than buyer capability or vendor-side alternatives.
 commercial_role is seller-relative and exactly one of ${roles.join(", ")}. business_model and canonical_industry must use the supplied exact enums. confidence is numeric 0..1. evidence_ids may contain only supplied evidence UUIDs. Return only strict JSON.`;
 type SemanticModelResponse = { choices: Array<{ message: { content?: string | null } }>; usage?: unknown };
 let semanticModelInvoker = async (request: Parameters<typeof openai.chat.completions.create>[0]): Promise<SemanticModelResponse> =>

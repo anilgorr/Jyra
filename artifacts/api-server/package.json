@@ -98,6 +98,8 @@
          ,"regression:task-105-evidence-admission": "NODE_ENV=development JYRA_TASK_105_POST_REPAIR_REGRESSION=YES node ./scripts/run-task-105-evidence-admission-regression.mjs"
          ,"test:task-106-who-policy": "node ./scripts/test-task-106-who-policy.mjs"
          ,"regression:task-106-explicit-who": "NODE_ENV=development JYRA_TASK_106_POST_REPAIR_REGRESSION=YES node ./scripts/run-task-106-explicit-who-regression.mjs"
+         ,"test:task-107-commercial-role": "node ./scripts/test-task-107-commercial-role.mjs"
+         ,"regression:task-107-commercial-role": "NODE_ENV=development JYRA_TASK_107_POST_REPAIR_REGRESSION=YES node ./scripts/run-task-107-commercial-role-regression.mjs"
   },
   "dependencies": {
     "@clerk/express": "^2.1.63",

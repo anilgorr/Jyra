@@ -1,0 +1,761 @@
+{
+  "task": "TASK_107_POST_REPAIR_REGRESSION",
+  "status": "PASS",
+  "repairVerdict": "YES",
+  "evaluatedAt": "2026-09-02T07:01:03.823Z",
+  "goldSha256": "f59aca76b676d0e54d0899dd23bb3e5c6d5912e71e0597d967a2a722ac8ecfca",
+  "task106Sha256": "3e822bed680037e42bd8f915ed5288122cc7cd5ce7cb09cba406c484df641f3f",
+  "dominantFailurePattern": "Shared ICP, service, and workflow vocabulary was overweighted while candidate-as-consumer capability and affirmative partnership evidence were underweighted.",
+  "implementation": {
+    "promptBefore": "fix08-company-understanding-v4 / implicit commercial-role ordering",
+    "promptAfter": "fix08-company-understanding-v5 / commercial-relationship-v2",
+    "model": "gpt-5-mini",
+    "description": "Versioned prompt-only Commercial Relationship repair: material substitutability first, affirmative vendor/partner evidence, then candidate buyer capability.",
+    "filesChanged": [
+      "artifacts/api-server/src/lib/company-semantic-assessment.ts",
+      "artifacts/api-server/scripts/task-107-commercial-role-test-entry.ts",
+      "artifacts/api-server/scripts/test-task-107-commercial-role.mjs",
+      "artifacts/api-server/scripts/task-107-commercial-role-regression-entry.ts",
+      "artifacts/api-server/scripts/run-task-107-commercial-role-regression.mjs",
+      "artifacts/api-server/package.json"
+    ]
+  },
+  "source": {
+    "task106Projects": [
+      "234bccfd-bbf5-4593-8ba2-4d77aaa8e3f0",
+      "13bb1b6b-7e9c-47ca-bdbf-00bedd9615c8"
+    ],
+    "newDevelopmentProjects": [
+      "0fd3a6c3-77c2-4552-a038-60914de92431",
+      "85eb48a7-4792-4376-8fd0-76836c804bfd"
+    ]
+  },
+  "fourErrorAudit": [
+    {
+      "benchmarkCompanyId": "6594cacd-e2a9-4803-ba7a-e166b8da7489",
+      "domainKey": "DIGIPUUSH",
+      "company": "Lead Made Easy",
+      "candidateCompanyUnderstanding": {
+        "primaryBusiness": "Lead Made Easy | 523 followers on LinkedIn. Pipeline-as-a-Service for SaaS &amp; IT Services firms. | Finding the right leads shouldn&#39;t be complicated. At Lead Made Easy, we help IT services and SaaS businesses connect with high-intent decision-makers through targeted outreach and appointment setting—so you can focus on closing deals, not chasing prospects.\n\nWHY CHOOSE US?",
+        "productsServices": []
+      },
+      "sellerBusinessTwin": "Digipuush",
+      "sellerOffering": {
+        "name": "AEO & GEO / AI Visibility Services",
+        "description": "DigiPuush helps businesses become visible and cited in AI-generated answers across ChatGPT, Perplexity, Gemini and Google AI Overviews, while also improving traditional Google search visibility.\n\nThe service combines Answer Engine Optimization (AEO), Generative Engine Optimization (GEO), AI SEO, content restructuring, schema markup, technical SEO, authority building and ongoing AI citation monitoring. DigiPuush audits where a brand appears across AI platforms, identifies visibility gaps, restructures website content so AI systems can understand and extract it, builds authority signals, and tracks improvements over time."
+      },
+      "task106": {
+        "role": "ADJACENT_VENDOR",
+        "confidence": "MEDIUM",
+        "rationale": "The candidate (Lead Made Easy) is a pipeline/lead-generation and appointment-setting service for SaaS and IT services firms, which complements DigiPuush's AEO/GEO/AI visibility and SEO services that drive discoverability and attribution. There is no evidence that Lead Made Easy offers competing AI/SEO visibility products or that it is an existing partner or buyer of DigiPuush, so the safest seller-relative classification is ADJACENT_VENDOR.",
+        "evidenceIds": [
+          "6594cacd-e2a9-4803-ba7a-e166b8da7489"
+        ]
+      },
+      "goldRole": "POTENTIAL_BUYER",
+      "genericFailurePattern": "Shared workflow/customer vocabulary outweighed candidate buyer capability despite no substitute offering.",
+      "sourceProjectId": "234bccfd-bbf5-4593-8ba2-4d77aaa8e3f0"
+    },
+    {
+      "benchmarkCompanyId": "ada76ca1-a14b-48e4-8de6-e96498b23d95",
+      "domainKey": "DIGIPUUSH",
+      "company": "OutPro",
+      "candidateCompanyUnderstanding": {
+        "primaryBusiness": "OutPro | 1,190 followers on LinkedIn. People, Process, Playbook - No Leads Left Behind\n | Most B2B SaaS companies don&#39;t have a GTM problem. They have a systems problem.\n\nThe pipeline is inconsistent.",
+        "productsServices": []
+      },
+      "sellerBusinessTwin": "Digipuush",
+      "sellerOffering": {
+        "name": "AEO & GEO / AI Visibility Services",
+        "description": "DigiPuush helps businesses become visible and cited in AI-generated answers across ChatGPT, Perplexity, Gemini and Google AI Overviews, while also improving traditional Google search visibility.\n\nThe service combines Answer Engine Optimization (AEO), Generative Engine Optimization (GEO), AI SEO, content restructuring, schema markup, technical SEO, authority building and ongoing AI citation monitoring. DigiPuush audits where a brand appears across AI platforms, identifies visibility gaps, restructures website content so AI systems can understand and extract it, builds authority signals, and tracks improvements over time."
+      },
+      "task106": {
+        "role": "UNKNOWN",
+        "confidence": "LOW",
+        "rationale": "LLM_LOW_CONFIDENCE",
+        "evidenceIds": []
+      },
+      "goldRole": "POTENTIAL_BUYER",
+      "genericFailurePattern": "Candidate-as-consumer was identified but confidence calibration left the seller-relative role unresolved.",
+      "sourceProjectId": "234bccfd-bbf5-4593-8ba2-4d77aaa8e3f0"
+    },
+    {
+      "benchmarkCompanyId": "252b9ea5-ec55-49b5-8bf7-c514da6ca2cd",
+      "domainKey": "DIGIPUUSH",
+      "company": "Partner Propel",
+      "candidateCompanyUnderstanding": {
+        "primaryBusiness": "Partner Propel | 500 followers on LinkedIn. We set up AI GTM systems for SMBs. | Most B2B SaaS companies plateau around $5M because growth depends on inconsistent referrals and founder-led sales.\n\nYou know you need systematic outbound. But hiring SDRs costs $80K+ per person per year.",
+        "productsServices": []
+      },
+      "sellerBusinessTwin": "Digipuush",
+      "sellerOffering": {
+        "name": "AEO & GEO / AI Visibility Services",
+        "description": "DigiPuush helps businesses become visible and cited in AI-generated answers across ChatGPT, Perplexity, Gemini and Google AI Overviews, while also improving traditional Google search visibility.\n\nThe service combines Answer Engine Optimization (AEO), Generative Engine Optimization (GEO), AI SEO, content restructuring, schema markup, technical SEO, authority building and ongoing AI citation monitoring. DigiPuush audits where a brand appears across AI platforms, identifies visibility gaps, restructures website content so AI systems can understand and extract it, builds authority signals, and tracks improvements over time."
+      },
+      "task106": {
+        "role": "PARTNER_POSSIBLE",
+        "confidence": "MEDIUM",
+        "rationale": "Public company description states Partner Propel 'set up AI GTM systems for SMBs' and focuses on GTM/outbound for B2B SaaS. That makes them plausibly complementary to Digipuush's AI visibility/SEO services (opportunity for referral, integration, or co-delivery), with no evidence they offer substantially overlapping AEO/GEO SEO services.",
+        "evidenceIds": [
+          "252b9ea5-ec55-49b5-8bf7-c514da6ca2cd"
+        ]
+      },
+      "goldRole": "POTENTIAL_BUYER",
+      "genericFailurePattern": "Partnership inferred without affirmative channel, referral, reseller, integration, or co-delivery evidence.",
+      "sourceProjectId": "234bccfd-bbf5-4593-8ba2-4d77aaa8e3f0"
+    },
+    {
+      "benchmarkCompanyId": "4233dfdf-a2ac-48de-8347-91759eb415de",
+      "domainKey": "DIGIPUUSH",
+      "company": "RevyGo",
+      "candidateCompanyUnderstanding": {
+        "primaryBusiness": null,
+        "productsServices": []
+      },
+      "sellerBusinessTwin": "Digipuush",
+      "sellerOffering": {
+        "name": "AEO & GEO / AI Visibility Services",
+        "description": "DigiPuush helps businesses become visible and cited in AI-generated answers across ChatGPT, Perplexity, Gemini and Google AI Overviews, while also improving traditional Google search visibility.\n\nThe service combines Answer Engine Optimization (AEO), Generative Engine Optimization (GEO), AI SEO, content restructuring, schema markup, technical SEO, authority building and ongoing AI citation monitoring. DigiPuush audits where a brand appears across AI platforms, identifies visibility gaps, restructures website content so AI systems can understand and extract it, builds authority signals, and tracks improvements over time."
+      },
+      "task106": {
+        "role": "UNKNOWN",
+        "confidence": "LOW",
+        "rationale": "LLM_LOW_CONFIDENCE",
+        "evidenceIds": []
+      },
+      "goldRole": "POTENTIAL_BUYER",
+      "genericFailurePattern": "Candidate-as-consumer was identified but confidence calibration left the seller-relative role unresolved.",
+      "sourceProjectId": "234bccfd-bbf5-4593-8ba2-4d77aaa8e3f0"
+    }
+  ],
+  "transitions": [
+    {
+      "company": "Lead Made Easy",
+      "benchmarkCompanyId": "6594cacd-e2a9-4803-ba7a-e166b8da7489",
+      "task106Role": "ADJACENT_VENDOR",
+      "task107Role": "POTENTIAL_BUYER",
+      "goldRole": "POTENTIAL_BUYER",
+      "changed": true,
+      "correctNow": true
+    },
+    {
+      "company": "OutPro",
+      "benchmarkCompanyId": "ada76ca1-a14b-48e4-8de6-e96498b23d95",
+      "task106Role": "UNKNOWN",
+      "task107Role": "UNKNOWN",
+      "goldRole": "POTENTIAL_BUYER",
+      "changed": false,
+      "correctNow": false
+    },
+    {
+      "company": "Partner Propel",
+      "benchmarkCompanyId": "252b9ea5-ec55-49b5-8bf7-c514da6ca2cd",
+      "task106Role": "PARTNER_POSSIBLE",
+      "task107Role": "POTENTIAL_BUYER",
+      "goldRole": "POTENTIAL_BUYER",
+      "changed": true,
+      "correctNow": true
+    },
+    {
+      "company": "RevyGo",
+      "benchmarkCompanyId": "4233dfdf-a2ac-48de-8347-91759eb415de",
+      "task106Role": "UNKNOWN",
+      "task107Role": "UNKNOWN",
+      "goldRole": "POTENTIAL_BUYER",
+      "changed": false,
+      "correctNow": false
+    }
+  ],
+  "regressions": [],
+  "tests": {
+    "generic": "12/12",
+    "existingRegressions": "11/11 suites"
+  },
+  "safety": {
+    "developmentOnly": true,
+    "providerCalls": 0,
+    "productionModified": false,
+    "goldModified": false,
+    "historicalRunsModified": false,
+    "benchmarkSpecificRuntimeLogic": false,
+    "evidenceProvenancePreserved": true,
+    "task105BehaviorPreserved": true,
+    "task106WhoPolicyPreserved": true
+  },
+  "before": {
+    "commercialRoleCoverage": 20,
+    "whoAvailable": 14,
+    "completeRoleWho": 14,
+    "unknownCommercialRole": 4,
+    "commercialRoleStrict": {
+      "correct": 13,
+      "eligible": 18,
+      "accuracy": 0.7222222222222222
+    },
+    "whoStrict": {
+      "correct": 11,
+      "eligible": 18,
+      "accuracy": 0.6111111111111112
+    },
+    "potentialBuyerPrecision": {
+      "correct": 5,
+      "predicted": 5,
+      "value": 1
+    },
+    "sellerCompetitorRecall": {
+      "correct": 8,
+      "gold": 8,
+      "value": 1
+    },
+    "dangerousCompetitorAsBuyer": 0,
+    "deterministicWhoResolutions": 8,
+    "whoSemanticCallsAvoided": 8,
+    "firstErrorDistribution": {
+      "IDENTITY_RESOLUTION": 1,
+      "COMPANY_UNDERSTANDING": 0,
+      "COMMERCIAL_ROLE": 4,
+      "ICP_CRITERION_MAPPING": 0,
+      "WHO_DECISION_POLICY": 0,
+      "INSUFFICIENT_EVIDENCE_HANDLING": 0,
+      "PROVIDER_DATA_GAP": 2,
+      "OTHER": 0
+    }
+  },
+  "after": {
+    "commercialRoleCoverage": 20,
+    "whoAvailable": 16,
+    "completeRoleWho": 16,
+    "unknownCommercialRole": 4,
+    "commercialRoleStrict": {
+      "correct": 15,
+      "eligible": 18,
+      "accuracy": 0.8333333333333334
+    },
+    "whoStrict": {
+      "correct": 13,
+      "eligible": 18,
+      "accuracy": 0.7222222222222222
+    },
+    "potentialBuyerPrecision": {
+      "correct": 7,
+      "predicted": 7,
+      "value": 1
+    },
+    "sellerCompetitorRecall": {
+      "correct": 8,
+      "gold": 8,
+      "value": 1
+    },
+    "dangerousCompetitorAsBuyer": 0,
+    "commercialRoleFirstErrors": 2,
+    "newlyWrongPreviouslyCorrect": 0,
+    "firstErrorDistribution": {
+      "IDENTITY_RESOLUTION": 1,
+      "COMPANY_UNDERSTANDING": 0,
+      "COMMERCIAL_ROLE": 2,
+      "ICP_CRITERION_MAPPING": 0,
+      "WHO_DECISION_POLICY": 0,
+      "INSUFFICIENT_EVIDENCE_HANDLING": 0,
+      "PROVIDER_DATA_GAP": 2,
+      "OTHER": 0
+    }
+  },
+  "comparisons": [
+    {
+      "benchmarkCompanyId": "c5a70b95-1302-4fa3-9e96-8ee6c6d18926",
+      "domainKey": "DIGIPUUSH",
+      "strictEligible": true,
+      "company": "c5a70b95-1302-4fa3-9e96-8ee6c6d18926",
+      "gold": {
+        "commercialRole": "POTENTIAL_BUYER",
+        "who": "LIKELY_NOT_FIT"
+      },
+      "task107": {
+        "buyerRole": "POTENTIAL_BUYER",
+        "who": "LIKELY_NOT_FIT",
+        "reasonCode": "ICP_NOT_FIT",
+        "confidence": 0.8,
+        "rationale": "Grownob's primary offering is managed outbound sales infrastructure and personalized B2B prospecting services, which is distinct from Digipuush's AEO/GEO and AI visibility/SEO services. These offerings are not material substitutes: Grownob does not provide search or AI-answer visibility optimization, and Digipuush does not provide outbound sales infrastructure. There is no affirmative evidence that Grownob sells complementary vendor-side products or acts as a reseller/integration partner for SEO/AI visibility services, so ADJACENT_VENDOR or PARTNER_POSSIBLE is not supported. The strongest safe",
+        "evidenceIds": [
+          "c5a70b95-1302-4fa3-9e96-8ee6c6d18926"
+        ],
+        "semanticModelInvoked": true,
+        "identitySafe": true,
+        "mciStage": "SUFFICIENT"
+      },
+      "firstError": null
+    },
+    {
+      "benchmarkCompanyId": "6594cacd-e2a9-4803-ba7a-e166b8da7489",
+      "domainKey": "DIGIPUUSH",
+      "strictEligible": true,
+      "company": "6594cacd-e2a9-4803-ba7a-e166b8da7489",
+      "gold": {
+        "commercialRole": "POTENTIAL_BUYER",
+        "who": "POSSIBLE_FIT"
+      },
+      "task107": {
+        "buyerRole": "POTENTIAL_BUYER",
+        "who": "POSSIBLE_FIT",
+        "reasonCode": "READY_FOR_SIGNAL_RESEARCH",
+        "confidence": 0.8,
+        "rationale": "Lead Made Easy's primary offering is pipeline-as-a-service (lead generation, targeted outreach, appointment setting) for SaaS and IT services firms. Digipuush offers AEO/GEO and AI visibility/SEO services (content restructuring, schema markup, AI citation monitoring) to improve presence in AI-generated answers and search. These are not material substitutes: one generates sales leads and outbound appointments, the other optimizes web content for AI/search visibility. There is no affirmative evidence that Lead Made Easy resells, integrates, or jointly delivers AI/SEO services (so ADJACENT_VENDOR",
+        "evidenceIds": [
+          "6594cacd-e2a9-4803-ba7a-e166b8da7489"
+        ],
+        "semanticModelInvoked": true,
+        "identitySafe": true,
+        "mciStage": "SUFFICIENT"
+      },
+      "firstError": null
+    },
+    {
+      "benchmarkCompanyId": "b45eeee7-aab7-412f-b7e7-4c95c999fa14",
+      "domainKey": "DIGIPUUSH",
+      "strictEligible": true,
+      "company": "b45eeee7-aab7-412f-b7e7-4c95c999fa14",
+      "gold": {
+        "commercialRole": "POTENTIAL_BUYER",
+        "who": "LIKELY_NOT_FIT"
+      },
+      "task107": {
+        "buyerRole": "POTENTIAL_BUYER",
+        "who": "INSUFFICIENT_DATA",
+        "reasonCode": "ICP_REQUIREMENTS_MISSING",
+        "confidence": 0.8,
+        "rationale": "Leadgeneron’s documented primary offering is AI-enabled sales development and managed SDR services (lead generation, qualification, appointment setting) and IT consulting. DigiPuush’s AEO & GEO / AI Visibility Services are SEO and content-structuring services that optimize brand visibility and citations in AI-generated answers and traditional search. These are not material substitutes: Leadgeneron sells lead-generation and sales execution services, not SEO/AEO/GEO offerings. There is no affirmative evidence that Leadgeneron sells complementary vendor-side SEO products or has channel/reseller/​",
+        "evidenceIds": [
+          "ac12203a-f23b-430c-8a90-0284487091c9"
+        ],
+        "semanticModelInvoked": true,
+        "identitySafe": true,
+        "mciStage": "SUFFICIENT"
+      },
+      "firstError": "PROVIDER_DATA_GAP"
+    },
+    {
+      "benchmarkCompanyId": "b7e9af09-ede7-46fb-baa1-cf2d9f3158bf",
+      "domainKey": "DIGIPUUSH",
+      "strictEligible": true,
+      "company": "b7e9af09-ede7-46fb-baa1-cf2d9f3158bf",
+      "gold": {
+        "commercialRole": "POTENTIAL_BUYER",
+        "who": "LIKELY_FIT"
+      },
+      "task107": {
+        "buyerRole": "POTENTIAL_BUYER",
+        "who": "INSUFFICIENT_DATA",
+        "reasonCode": "ICP_REQUIREMENTS_MISSING",
+        "confidence": 0.85,
+        "rationale": "LeadZen (Leadzen.ai) primarily offers an AI-powered lead generation/SDR automation SaaS that automates outreach, booking, and data enrichment. Digipuush offers AEO/GEO and AI visibility/SEO services (content restructuring, schema markup, authority building, AI citation monitoring) to improve brand presence in AI-generated answers and search. These two offerings are not material substitutes: LeadZen sells demand-generation and sales automation software, while Digipuush sells SEO/AI-visibility services. There is no affirmative evidence that LeadZen provides a vendor-side product complementary to",
+        "evidenceIds": [
+          "3bff803c-01dd-4625-b6d7-23ab2c324667"
+        ],
+        "semanticModelInvoked": true,
+        "identitySafe": true,
+        "mciStage": "SUFFICIENT"
+      },
+      "firstError": "PROVIDER_DATA_GAP"
+    },
+    {
+      "benchmarkCompanyId": "a96d5d08-cdd4-4970-b0e4-f85d569a3e75",
+      "domainKey": "DIGIPUUSH",
+      "strictEligible": true,
+      "company": "a96d5d08-cdd4-4970-b0e4-f85d569a3e75",
+      "gold": {
+        "commercialRole": "POTENTIAL_BUYER",
+        "who": "LIKELY_NOT_FIT"
+      },
+      "task107": {
+        "buyerRole": "POTENTIAL_BUYER",
+        "who": "LIKELY_NOT_FIT",
+        "reasonCode": "ICP_NOT_FIT",
+        "confidence": 0.7,
+        "rationale": "Outbound System's primary offering is outbound lead generation and outsourced SDR services (AI-powered cold email, LinkedIn outreach, cold calling). DigiPuush offers AEO/GEO and AI visibility/SEO services focused on making brands visible in AI-generated answers and improving search visibility. These offerings are not material substitutes: Outbound System sells demand-generation/sales services, whereas DigiPuush sells SEO/AI visibility services. There is no affirmative evidence that Outbound System sells a complementary vendor-side product around AI visibility (so ADJACENT_VENDOR is unsupported",
+        "evidenceIds": [
+          "a96d5d08-cdd4-4970-b0e4-f85d569a3e75"
+        ],
+        "semanticModelInvoked": true,
+        "identitySafe": true,
+        "mciStage": "SUFFICIENT"
+      },
+      "firstError": null
+    },
+    {
+      "benchmarkCompanyId": "ada76ca1-a14b-48e4-8de6-e96498b23d95",
+      "domainKey": "DIGIPUUSH",
+      "strictEligible": true,
+      "company": "ada76ca1-a14b-48e4-8de6-e96498b23d95",
+      "gold": {
+        "commercialRole": "POTENTIAL_BUYER",
+        "who": "LIKELY_FIT"
+      },
+      "task107": {
+        "buyerRole": "UNKNOWN",
+        "who": "MISSING_PREDICTION",
+        "reasonCode": "COMMERCIAL_RELATIONSHIP_AMBIGUOUS",
+        "confidence": null,
+        "rationale": "LLM_LOW_CONFIDENCE",
+        "evidenceIds": [],
+        "semanticModelInvoked": true,
+        "identitySafe": true,
+        "mciStage": "SUFFICIENT"
+      },
+      "firstError": "COMMERCIAL_ROLE"
+    },
+    {
+      "benchmarkCompanyId": "252b9ea5-ec55-49b5-8bf7-c514da6ca2cd",
+      "domainKey": "DIGIPUUSH",
+      "strictEligible": true,
+      "company": "252b9ea5-ec55-49b5-8bf7-c514da6ca2cd",
+      "gold": {
+        "commercialRole": "POTENTIAL_BUYER",
+        "who": "LIKELY_NOT_FIT"
+      },
+      "task107": {
+        "buyerRole": "POTENTIAL_BUYER",
+        "who": "LIKELY_NOT_FIT",
+        "reasonCode": "ICP_NOT_FIT",
+        "confidence": 0.78,
+        "rationale": "Partner Propel's primary offering (setting up AI GTM systems and systematic outbound sales for SMBs/B2B SaaS) is a go-to-market and sales enablement consultancy, while Digipuush offers Answer/Generative Engine Optimization and AI visibility (AEO/GEO/AI SEO) services to improve brand visibility in AI-generated answers and search. These offerings are not material substitutes: Partner Propel focuses on GTM and outbound sales systems, whereas Digipuush focuses on content restructuring, schema, authority building, and AI citation monitoring for visibility. There is no affirmative evidence that Pair",
+        "evidenceIds": [
+          "252b9ea5-ec55-49b5-8bf7-c514da6ca2cd"
+        ],
+        "semanticModelInvoked": true,
+        "identitySafe": true,
+        "mciStage": "SUFFICIENT"
+      },
+      "firstError": null
+    },
+    {
+      "benchmarkCompanyId": "d2dd1f48-1b81-4149-a298-1dde2ae96ade",
+      "domainKey": "DIGIPUUSH",
+      "strictEligible": false,
+      "company": "d2dd1f48-1b81-4149-a298-1dde2ae96ade",
+      "gold": {
+        "commercialRole": "POTENTIAL_BUYER",
+        "who": "INSUFFICIENT_DATA"
+      },
+      "task107": {
+        "buyerRole": "POTENTIAL_BUYER",
+        "who": "INSUFFICIENT_DATA",
+        "reasonCode": "ICP_REQUIREMENTS_MISSING",
+        "confidence": 0.8,
+        "rationale": "Evidence shows Pure Sales primarily provides B2B sales and lead-generation services (cold calling, appointment setting, pipeline management). DigiPuush's offering is AEO & GEO / AI Visibility Services (SEO and AI-citation visibility work). These are not material substitutes: Pure Sales sells sales outreach and pipeline services, while DigiPuush sells SEO/AI visibility optimization. There is no affirmative evidence that Pure Sales sells a complementary vendor-side product around AI/SEO (so ADJACENT_VENDOR is unsupported) nor any evidence of channel/referral/reseller relationships (so PARTNER_P0",
+        "evidenceIds": [
+          "9dc7f2b6-05fe-4b3f-a949-bd0781825d94"
+        ],
+        "semanticModelInvoked": true,
+        "identitySafe": true,
+        "mciStage": "SUFFICIENT"
+      },
+      "firstError": null
+    },
+    {
+      "benchmarkCompanyId": "4233dfdf-a2ac-48de-8347-91759eb415de",
+      "domainKey": "DIGIPUUSH",
+      "strictEligible": true,
+      "company": "4233dfdf-a2ac-48de-8347-91759eb415de",
+      "gold": {
+        "commercialRole": "POTENTIAL_BUYER",
+        "who": "LIKELY_NOT_FIT"
+      },
+      "task107": {
+        "buyerRole": "UNKNOWN",
+        "who": "MISSING_PREDICTION",
+        "reasonCode": "COMMERCIAL_RELATIONSHIP_AMBIGUOUS",
+        "confidence": 0.15,
+        "rationale": "The candidate's primary offering cannot be established from the provided evidence. Because the business for 'RevyGo / revygo.com' is not confirmed, we cannot reliably compare it to Digipuush's AEO & GEO / AI Visibility Services. Neither of the entities mentioned in the evidence (a product-review social platform or an AI supply-chain automation vendor) is a clear material substitute for Digipuush's AI/answer-engine optimization services, so SELLER_COMPETITOR is not supported. There is also no affirmative evidence that the candidate sells a complementary vendor-side product (ADJACENT_VENDOR) or,",
+        "evidenceIds": [
+          "3b844d93-bc86-415b-9e0d-357cca69d622"
+        ],
+        "semanticModelInvoked": true,
+        "identitySafe": true,
+        "mciStage": "SUFFICIENT"
+      },
+      "firstError": "COMMERCIAL_ROLE"
+    },
+    {
+      "benchmarkCompanyId": "60fafac0-f176-4d81-8215-847e1026ba74",
+      "domainKey": "DIGIPUUSH",
+      "strictEligible": true,
+      "company": "60fafac0-f176-4d81-8215-847e1026ba74",
+      "gold": {
+        "commercialRole": "POTENTIAL_BUYER",
+        "who": "LIKELY_NOT_FIT"
+      },
+      "task107": {
+        "buyerRole": "POTENTIAL_BUYER",
+        "who": "LIKELY_NOT_FIT",
+        "reasonCode": "ICP_NOT_FIT",
+        "confidence": 0.8,
+        "rationale": "SalesGig's primary offering is outsourced sales development and lead-generation services (SDR/meeting scheduling), which is not a substitute for DigiPuush's AEO & GEO / AI Visibility Services (SEO and AI-citation visibility). There is no evidence SalesGig sells a vendor-side product complementary to DigiPuush (so ADJACENT_VENDOR is unsupported) nor any evidence of channel/referral/reseller/integration activity (so PARTNER_POSSIBLE is unsupported). Given the lack of vendor-side relationship evidence and the fact SalesGig could plausibly consume SEO/AI-visibility services to improve its own go‑t",
+        "evidenceIds": [
+          "60fafac0-f176-4d81-8215-847e1026ba74"
+        ],
+        "semanticModelInvoked": true,
+        "identitySafe": true,
+        "mciStage": "SUFFICIENT"
+      },
+      "firstError": null
+    },
+    {
+      "benchmarkCompanyId": "8a4ac58f-98cd-4a27-b684-ac1bf81293cb",
+      "domainKey": "MANAGED_SOC",
+      "strictEligible": false,
+      "company": "8a4ac58f-98cd-4a27-b684-ac1bf81293cb",
+      "gold": {
+        "commercialRole": "UNKNOWN",
+        "who": "INSUFFICIENT_DATA"
+      },
+      "task107": {
+        "buyerRole": "UNKNOWN",
+        "who": "MISSING_PREDICTION",
+        "reasonCode": "DOMAIN_MISSING",
+        "confidence": null,
+        "rationale": null,
+        "evidenceIds": [],
+        "semanticModelInvoked": false,
+        "identitySafe": false,
+        "mciStage": "UNSAFE_IDENTITY"
+      },
+      "firstError": null
+    },
+    {
+      "benchmarkCompanyId": "5e4137f0-f1da-4877-b78c-330d77e4d58d",
+      "domainKey": "MANAGED_SOC",
+      "strictEligible": true,
+      "company": "5e4137f0-f1da-4877-b78c-330d77e4d58d",
+      "gold": {
+        "commercialRole": "SELLER_COMPETITOR",
+        "who": "LIKELY_NOT_FIT"
+      },
+      "task107": {
+        "buyerRole": "SELLER_COMPETITOR",
+        "who": "LIKELY_NOT_FIT",
+        "reasonCode": "COMPETITOR_NOT_ELIGIBLE",
+        "confidence": 0.9,
+        "rationale": "Barracuda's primary offering (managed XDR and a security platform delivering managed security services) directly overlaps the seller Aadit Technologies' Managed SOC (a fully managed 24/7 security operations service). Both provide outsourced continuous security monitoring, alert investigation, threat detection, prioritization, and coordination for incident response — i.e., they are material substitutes for an organization choosing an outsourced SOC/MDR provider. This makes SELLER_COMPETITOR the strongest classification: the candidate is offering a competing managed security service rather than:",
+        "evidenceIds": [
+          "5e4137f0-f1da-4877-b78c-330d77e4d58d"
+        ],
+        "semanticModelInvoked": true,
+        "identitySafe": true,
+        "mciStage": "SUFFICIENT"
+      },
+      "firstError": null
+    },
+    {
+      "benchmarkCompanyId": "50ceadee-afc9-41a1-b7c7-f6334e213df8",
+      "domainKey": "MANAGED_SOC",
+      "strictEligible": true,
+      "company": "50ceadee-afc9-41a1-b7c7-f6334e213df8",
+      "gold": {
+        "commercialRole": "POTENTIAL_BUYER",
+        "who": "LIKELY_FIT"
+      },
+      "task107": {
+        "buyerRole": "UNKNOWN",
+        "who": "MISSING_PREDICTION",
+        "reasonCode": "DOMAIN_MISSING",
+        "confidence": null,
+        "rationale": null,
+        "evidenceIds": [],
+        "semanticModelInvoked": false,
+        "identitySafe": false,
+        "mciStage": "UNSAFE_IDENTITY"
+      },
+      "firstError": "IDENTITY_RESOLUTION"
+    },
+    {
+      "benchmarkCompanyId": "36e5aa54-997a-4281-95c7-460508f94e32",
+      "domainKey": "MANAGED_SOC",
+      "strictEligible": true,
+      "company": "36e5aa54-997a-4281-95c7-460508f94e32",
+      "gold": {
+        "commercialRole": "SELLER_COMPETITOR",
+        "who": "LIKELY_NOT_FIT"
+      },
+      "task107": {
+        "buyerRole": "SELLER_COMPETITOR",
+        "who": "LIKELY_NOT_FIT",
+        "reasonCode": "COMPETITOR_NOT_ELIGIBLE",
+        "confidence": 0.9,
+        "rationale": "Critical Start's primary offering is Managed Detection and Response (MDR) — a managed security service that provides continuous detection, investigation, and response. Aadit Technologies' offering is a Managed SOC (fully managed 24/7 SOC) that provides continuous monitoring, investigation, prioritization, and coordination for incident response. These offerings are material substitutes in the same purchasing decision (organizations choose either an MDR/MSSP or a managed SOC to outsource continuous security monitoring and response). This substitution is stronger than a buyer relationship (both公司",
+        "evidenceIds": [
+          "36e5aa54-997a-4281-95c7-460508f94e32"
+        ],
+        "semanticModelInvoked": true,
+        "identitySafe": true,
+        "mciStage": "SUFFICIENT"
+      },
+      "firstError": null
+    },
+    {
+      "benchmarkCompanyId": "8ef6a894-78e7-4276-94d5-3c14c64b7ee1",
+      "domainKey": "MANAGED_SOC",
+      "strictEligible": true,
+      "company": "8ef6a894-78e7-4276-94d5-3c14c64b7ee1",
+      "gold": {
+        "commercialRole": "SELLER_COMPETITOR",
+        "who": "LIKELY_NOT_FIT"
+      },
+      "task107": {
+        "buyerRole": "SELLER_COMPETITOR",
+        "who": "LIKELY_NOT_FIT",
+        "reasonCode": "COMPETITOR_NOT_ELIGIBLE",
+        "confidence": 0.9,
+        "rationale": "CyberOne’s primary offerings are managed security services (Managed XDR and Microsoft-managed security services) and security consulting. Aadit Technologies sells a Managed SOC (24/7 outsourced security monitoring, detection and response). Managed XDR and a Managed SOC are material substitutes in the same purchasing decision (outsourcing continuous threat monitoring and incident response). There is affirmative evidence CyberOne operates as an MSSP delivering managed detection and response, so the relationship is direct competition rather than vendor-adjacency or a buyer-supplier relationship.",
+        "evidenceIds": [
+          "bdf4ab98-ed92-421e-93dd-cad20525fe8c"
+        ],
+        "semanticModelInvoked": true,
+        "identitySafe": true,
+        "mciStage": "SUFFICIENT"
+      },
+      "firstError": null
+    },
+    {
+      "benchmarkCompanyId": "05939322-6f62-408e-af6a-307196598385",
+      "domainKey": "MANAGED_SOC",
+      "strictEligible": true,
+      "company": "05939322-6f62-408e-af6a-307196598385",
+      "gold": {
+        "commercialRole": "SELLER_COMPETITOR",
+        "who": "LIKELY_NOT_FIT"
+      },
+      "task107": {
+        "buyerRole": "SELLER_COMPETITOR",
+        "who": "LIKELY_NOT_FIT",
+        "reasonCode": "COMPETITOR_NOT_ELIGIBLE",
+        "confidence": 0.93,
+        "rationale": "Evidence describes CySOC as a Cybersecurity Consulting and Security Operations Center firm that delivers end-to-end solutions including 24/7 SOC monitoring and incident response. Aadit Technologies' offering is a managed 24/7 SOC service. These offerings are material substitutes for the same purchasing decision (outsourced SOC/managed security services). The competitor classification is stronger than ADJACENT_VENDOR because CySOC's primary products are the same managed SOC services rather than vendor-side complementary products. It is stronger than POTENTIAL_BUYER because CySOC appears to sell",
+        "evidenceIds": [
+          "05939322-6f62-408e-af6a-307196598385"
+        ],
+        "semanticModelInvoked": true,
+        "identitySafe": true,
+        "mciStage": "SUFFICIENT"
+      },
+      "firstError": null
+    },
+    {
+      "benchmarkCompanyId": "e963aa5d-4bf6-4fec-95cb-14ac65c85679",
+      "domainKey": "MANAGED_SOC",
+      "strictEligible": true,
+      "company": "e963aa5d-4bf6-4fec-95cb-14ac65c85679",
+      "gold": {
+        "commercialRole": "SELLER_COMPETITOR",
+        "who": "LIKELY_NOT_FIT"
+      },
+      "task107": {
+        "buyerRole": "SELLER_COMPETITOR",
+        "who": "LIKELY_NOT_FIT",
+        "reasonCode": "COMPETITOR_NOT_ELIGIBLE",
+        "confidence": 0.92,
+        "rationale": "Ostra Security's primary offering is MXDRR — a managed detection, response, and remediation service (managed security operations). Aadit Technologies offers a Managed SOC: a fully managed 24/7 Security Operations Center providing continuous monitoring, investigation, threat detection, prioritization, and coordination for response. These offerings address the same purchaser need (outsourced continuous security monitoring and response) and therefore are material substitutes in the same purchasing decision. This makes a competitive relationship stronger than classifying Ostra as a partner (no V2V",
+        "evidenceIds": [
+          "e963aa5d-4bf6-4fec-95cb-14ac65c85679"
+        ],
+        "semanticModelInvoked": true,
+        "identitySafe": true,
+        "mciStage": "SUFFICIENT"
+      },
+      "firstError": null
+    },
+    {
+      "benchmarkCompanyId": "14f2dadb-6650-43bd-a930-cab49890f950",
+      "domainKey": "MANAGED_SOC",
+      "strictEligible": true,
+      "company": "14f2dadb-6650-43bd-a930-cab49890f950",
+      "gold": {
+        "commercialRole": "SELLER_COMPETITOR",
+        "who": "LIKELY_NOT_FIT"
+      },
+      "task107": {
+        "buyerRole": "SELLER_COMPETITOR",
+        "who": "LIKELY_NOT_FIT",
+        "reasonCode": "COMPETITOR_NOT_ELIGIBLE",
+        "confidence": 0.9,
+        "rationale": "Aadit's offering is a 'Managed SOC' providing a fully managed 24/7 Security Operations Center with continuous human security oversight across endpoints, identities, cloud infrastructure, networks and security systems. Pondurance's primary offering (per the supplied evidence) is personalized, 24/7 MDR services delivered by analysts, threat hunters, and incident responders using SIEM, log management, and SOAR to continuously hunt, investigate, validate, and contain threats. These offerings address the same purchasing decision (outsourced continuous detection, investigation, and response) and are",
+        "evidenceIds": [
+          "14f2dadb-6650-43bd-a930-cab49890f950"
+        ],
+        "semanticModelInvoked": true,
+        "identitySafe": true,
+        "mciStage": "SUFFICIENT"
+      },
+      "firstError": null
+    },
+    {
+      "benchmarkCompanyId": "8cec0d59-cbec-4285-a830-52fc38523bbf",
+      "domainKey": "MANAGED_SOC",
+      "strictEligible": true,
+      "company": "8cec0d59-cbec-4285-a830-52fc38523bbf",
+      "gold": {
+        "commercialRole": "SELLER_COMPETITOR",
+        "who": "LIKELY_NOT_FIT"
+      },
+      "task107": {
+        "buyerRole": "SELLER_COMPETITOR",
+        "who": "LIKELY_NOT_FIT",
+        "reasonCode": "COMPETITOR_NOT_ELIGIBLE",
+        "confidence": 0.85,
+        "rationale": "SOCFortress's primary offering is a SaaS platform for security monitoring, threat intelligence, and SOAR—core capabilities that materially overlap with the detection, investigation, and response functions provided by Aadit Technologies' Managed SOC. As a platform enabling security monitoring and automated response, SOCFortress can serve as a buyer's in-house alternative to outsourcing those SOC functions, making it a material substitute rather than merely adjacent. This classification is stronger than PARTNER_POSSIBLE because there is no evidence of channel/reseller/integration or co‑delivery;",
+        "evidenceIds": [
+          "8cec0d59-cbec-4285-a830-52fc38523bbf"
+        ],
+        "semanticModelInvoked": true,
+        "identitySafe": true,
+        "mciStage": "SUFFICIENT"
+      },
+      "firstError": null
+    },
+    {
+      "benchmarkCompanyId": "bef79acd-a69f-40a9-8488-d46a03ae3710",
+      "domainKey": "MANAGED_SOC",
+      "strictEligible": true,
+      "company": "bef79acd-a69f-40a9-8488-d46a03ae3710",
+      "gold": {
+        "commercialRole": "SELLER_COMPETITOR",
+        "who": "LIKELY_NOT_FIT"
+      },
+      "task107": {
+        "buyerRole": "SELLER_COMPETITOR",
+        "who": "LIKELY_NOT_FIT",
+        "reasonCode": "COMPETITOR_NOT_ELIGIBLE",
+        "confidence": 0.9,
+        "rationale": "Evidence shows Socura's primary offering is Managed Detection and Response (MDR). The seller, Aadit Technologies, offers a fully managed 24/7 Security Operations Center (Managed SOC) that provides continuous monitoring, threat detection, investigation, prioritization and coordination for response. MDR and a managed SOC are material substitutes in the same purchasing decision because both provide continuous security monitoring and incident detection/response for customers. This overlap in core service (monitoring, threat detection and response) makes SELLER_COMPETITOR the strongest relationship",
+        "evidenceIds": [
+          "bef79acd-a69f-40a9-8488-d46a03ae3710"
+        ],
+        "semanticModelInvoked": true,
+        "identitySafe": true,
+        "mciStage": "SUFFICIENT"
+      },
+      "firstError": null
+    }
+  ],
+  "remainingErrors": [
+    {
+      "benchmarkCompanyId": "b45eeee7-aab7-412f-b7e7-4c95c999fa14",
+      "category": "PROVIDER_DATA_GAP"
+    },
+    {
+      "benchmarkCompanyId": "b7e9af09-ede7-46fb-baa1-cf2d9f3158bf",
+      "category": "PROVIDER_DATA_GAP"
+    },
+    {
+      "benchmarkCompanyId": "ada76ca1-a14b-48e4-8de6-e96498b23d95",
+      "category": "COMMERCIAL_ROLE"
+    },
+    {
+      "benchmarkCompanyId": "4233dfdf-a2ac-48de-8347-91759eb415de",
+      "category": "COMMERCIAL_ROLE"
+    },
+    {
+      "benchmarkCompanyId": "50ceadee-afc9-41a1-b7c7-f6334e213df8",
+      "category": "IDENTITY_RESOLUTION"
+    }
+  ]
+}

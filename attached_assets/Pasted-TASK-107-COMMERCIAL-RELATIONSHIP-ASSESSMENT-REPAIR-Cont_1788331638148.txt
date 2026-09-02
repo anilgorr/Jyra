@@ -1,0 +1,1135 @@
+TASK #107 — COMMERCIAL RELATIONSHIP ASSESSMENT REPAIR
+
+Context:
+
+Task #103 froze:
+
+JYRA_MARKET_QUALITY_GOLD_V1
+
+Gold SHA-256:
+f59aca76b676d0e54d0899dd23bb3e5c6d5912e71e0597d967a2a722ac8ecfca
+
+Task #105 repaired evidence admission.
+
+Task #106 repaired deterministic WHO exclusion for resolved SELLER_COMPETITOR.
+
+Current Task #106 result:
+
+CommercialRole coverage:
+20/20
+
+Non-UNKNOWN CommercialRole:
+16/20
+
+WHO available:
+14/20
+
+Complete CommercialRole + WHO:
+14/20
+
+CommercialRole strict accuracy:
+13/18
+
+WHO strict accuracy:
+11/18
+
+POTENTIAL_BUYER precision:
+100%
+
+SELLER_COMPETITOR recall:
+100%
+
+Dangerous competitor → buyer:
+0
+
+Current first-error distribution:
+
+IDENTITY_RESOLUTION: 1
+COMPANY_UNDERSTANDING: 0
+COMMERCIAL_ROLE: 4
+ICP_CRITERION_MAPPING: 0
+WHO_DECISION_POLICY: 0
+INSUFFICIENT_EVIDENCE_HANDLING: 0
+PROVIDER_DATA_GAP: 2
+OTHER: 0
+
+The SINGLE repair for Task #107 is:
+
+Improve seller-relative Commercial Relationship Assessment so JYRA correctly distinguishes:
+
+POTENTIAL_BUYER
+vs
+ADJACENT_VENDOR
+vs
+PARTNER_POSSIBLE
+vs
+SELLER_COMPETITOR
+
+based on the relationship between:
+
+candidate company's actual business
++
+seller Business Twin
++
+specific seller offering.
+
+Do NOT modify identity resolution.
+Do NOT fix provider-data gaps.
+Do NOT modify WHO policy.
+Do NOT modify ICP criteria.
+Do NOT modify evidence-admission logic.
+
+==================================================
+1. DATABASE SAFETY
+==================================================
+
+DATABASE SAFETY:
+
+This is development work.
+
+Use ONLY the development database.
+
+DO NOT:
+
+- migrate production
+- reset production
+- seed production
+- truncate production
+- modify production customer data
+- test against production
+
+Production must remain untouched.
+
+==================================================
+2. BENCHMARK CONTAMINATION GUARD
+==================================================
+
+The frozen 20-company benchmark is already known.
+
+Therefore:
+
+DO NOT hard-code:
+
+- company names
+- benchmarkCompanyIds
+- DigiPuush
+- Managed SOC
+- specific industries
+- specific keywords
+- specific benchmark labels
+
+DO NOT add rules such as:
+
+"lead generation company = buyer"
+"cybersecurity company = competitor"
+"SOC keyword = competitor"
+"marketing company = adjacent vendor"
+
+DO NOT use gold labels as runtime inputs.
+
+DO NOT tune thresholds solely until these 20 records pass.
+
+The benchmark may be used ONLY after implementation as a post-change regression diagnostic.
+
+Generic reasoning must come first.
+
+==================================================
+3. DO NOT MODIFY THESE AREAS
+==================================================
+
+Do NOT modify:
+
+- identity resolution
+- domain resolution
+- provider routing
+- Minimum Company Intelligence
+- CompanyAssessmentReadiness
+- evidence-admission logic
+- Company Understanding prompt/model
+- Company Understanding normalization
+- WHO prompt/model
+- WHO exclusion policy from Task #106
+- ICP generation
+- ICP criteria
+- geography rules
+- Business Twin generation
+- signal research
+- WHEN/WHY
+- opportunity scoring
+- discovery
+- provider calls
+
+Task #107 is ONLY about:
+
+Commercial Relationship Assessment.
+
+==================================================
+4. FIRST AUDIT THE FOUR ERRORS
+==================================================
+
+Before changing code:
+
+Read the existing Task #105 / Task #106 regression artifacts.
+
+Identify the exact four strict records whose FIRST ERROR is:
+
+COMMERCIAL_ROLE
+
+For each record document:
+
+- benchmarkCompanyId
+- domainKey
+- candidate Company Understanding
+- candidate primary business
+- candidate products/services
+- seller Business Twin
+- seller offering
+- persisted predicted CommercialRole
+- prediction confidence
+- prediction rationale
+- evidenceIds
+- gold CommercialRole
+- why the existing reasoning selected the wrong relationship
+
+Do NOT change anything during this audit.
+
+Then group the four failures by generic reasoning pattern.
+
+Examples of possible generic patterns:
+
+- confusing complementary service with commercial adjacency
+- treating overlapping customer segment as offering overlap
+- failing to distinguish "company sells to same ICP" from "company sells same offering"
+- mistaking GTM/marketing capability for competition with marketing outcome service
+- treating technology/tool vendor as adjacent when it can still buy the seller's service
+- using company industry instead of actual offering relationship
+- insufficient consideration of candidate-as-consumer capability
+- overweighting shared vocabulary
+
+Do not assume these examples are the actual causes.
+
+Determine the real causes from persisted data.
+
+==================================================
+5. COMMERCIAL ROLE SEMANTICS
+==================================================
+
+Commercial Role is SELLER/OFFERING RELATIVE.
+
+It is NOT an intrinsic company property.
+
+Correct conceptual input:
+
+Candidate:
+Company + business model + primary business + products/services
+
+Seller:
+Business Twin + specific offering
+
+Then determine:
+
+How does the candidate commercially relate to THIS seller offering?
+
+Supported roles:
+
+POTENTIAL_BUYER
+SELLER_COMPETITOR
+ADJACENT_VENDOR
+PARTNER_POSSIBLE
+UNKNOWN
+
+==================================================
+6. REQUIRED DECISION ORDER
+==================================================
+
+The Commercial Relationship Assessment should reason in this order:
+
+STEP 1 — UNDERSTAND CANDIDATE
+
+What does the candidate primarily sell or deliver?
+
+Use evidence-backed Company Understanding.
+
+Do not infer from industry alone.
+
+--------------------------------------------------
+
+STEP 2 — UNDERSTAND SELLER OFFERING
+
+What specific commercial outcome/product/service does the seller offer?
+
+Do not compare only company industries.
+
+Compare actual offerings.
+
+--------------------------------------------------
+
+STEP 3 — DIRECT OFFERING OVERLAP
+
+Ask:
+
+Does the candidate sell substantially the same solution/outcome to substantially the same buyer?
+
+If YES:
+
+SELLER_COMPETITOR
+
+This requires meaningful commercial offering overlap.
+
+Shared industry alone is not enough.
+
+Shared buyer persona alone is not enough.
+
+Shared technology alone is not enough.
+
+--------------------------------------------------
+
+STEP 4 — COMPLEMENTARY / ADJACENT RELATIONSHIP
+
+If candidate does NOT directly compete, ask:
+
+Does it primarily sell a complementary product/service around the seller's offering such that the natural commercial relationship is vendor-to-vendor rather than buyer-to-seller?
+
+If clearly complementary:
+
+ADJACENT_VENDOR
+
+But do not use ADJACENT_VENDOR merely because the candidate itself is a B2B vendor.
+
+Most B2B vendors still purchase services from other vendors.
+
+--------------------------------------------------
+
+STEP 5 — PARTNERSHIP STRUCTURE
+
+Ask:
+
+Is there evidence of a natural reseller, referral, integration, delivery, channel, or joint-go-to-market relationship?
+
+Only then:
+
+PARTNER_POSSIBLE
+
+Do not call something a partner simply because offerings are complementary.
+
+--------------------------------------------------
+
+STEP 6 — BUYER CAPABILITY
+
+If the candidate does not directly compete and is structurally capable of consuming the seller's offering:
+
+POTENTIAL_BUYER
+
+A company may sell products/services itself and still be a buyer.
+
+Examples generically:
+
+A SaaS company can buy marketing services.
+A consulting company can buy cybersecurity.
+A cybersecurity software vendor can buy HR services.
+A marketing agency can buy finance software.
+
+Do not confuse:
+
+"they sell something"
+
+with:
+
+"they cannot buy this offering."
+
+--------------------------------------------------
+
+STEP 7 — UNKNOWN
+
+Use UNKNOWN only when:
+
+- candidate business cannot be understood
+- seller offering cannot be understood
+- evidence materially conflicts
+- relationship cannot reasonably be determined
+
+UNKNOWN is not the fallback merely because the candidate has multiple business activities.
+
+==================================================
+7. BUYER-CAPABILITY TEST
+==================================================
+
+Introduce or strengthen an explicit generic question:
+
+"Can this candidate reasonably consume this seller offering as an internal or external business service/product?"
+
+This should be evaluated AFTER ruling out direct competition.
+
+Conceptually:
+
+direct competitor?
+→ yes → SELLER_COMPETITOR
+
+otherwise:
+
+structurally capable of consuming seller offering?
+→ yes → POTENTIAL_BUYER
+
+unless there is stronger evidence for:
+
+ADJACENT_VENDOR
+or
+PARTNER_POSSIBLE
+
+This does NOT mean every non-competitor is automatically a buyer.
+
+The assessment must still be evidence-based.
+
+==================================================
+8. SAME CUSTOMER ≠ COMPETITOR
+==================================================
+
+Explicitly prevent this failure:
+
+Candidate and seller target similar customers
+≠
+candidate and seller compete.
+
+Example generic logic:
+
+Seller offers Service A to B2B SaaS companies.
+Candidate offers Service B to B2B SaaS companies.
+
+If A and B solve materially different problems:
+
+do NOT classify as SELLER_COMPETITOR solely because customer segments overlap.
+
+==================================================
+9. SAME INDUSTRY ≠ COMPETITOR
+==================================================
+
+Explicitly prevent:
+
+industry overlap
+→ competitor
+
+Examples:
+
+two technology companies are not necessarily competitors.
+
+two professional-services companies are not necessarily competitors.
+
+two cybersecurity companies are not necessarily competitors if their actual offerings do not overlap materially.
+
+Competition must be based primarily on:
+
+commercial offering overlap.
+
+==================================================
+10. BEING A VENDOR ≠ ADJACENT_VENDOR
+==================================================
+
+This distinction is important.
+
+Many candidates are themselves B2B vendors.
+
+That alone must NOT cause:
+
+ADJACENT_VENDOR.
+
+ADJACENT_VENDOR should mean:
+
+the candidate's commercial relationship to this specific seller offering is primarily complementary/vendor-side.
+
+Not:
+
+"the company sells services."
+
+If the company can reasonably buy the seller's offering for itself:
+
+POTENTIAL_BUYER may be the stronger relationship.
+
+==================================================
+11. PRIMARY VS SECONDARY OFFERINGS
+==================================================
+
+When candidates have several offerings:
+
+weight primary commercial activity more strongly.
+
+Do not classify a company as competitor because one minor feature overlaps with the seller.
+
+Competition should require:
+
+material overlap in primary offering
+OR
+meaningful revenue/product-line overlap
+OR
+clear substitutability from buyer perspective.
+
+A small secondary capability should not automatically produce SELLER_COMPETITOR.
+
+==================================================
+12. SUBSTITUTABILITY TEST
+==================================================
+
+Add/strengthen a generic reasoning question:
+
+"Would a reasonable buyer treat the candidate's offering and seller's offering as substitutes for the same purchasing decision?"
+
+If YES:
+competition evidence is strong.
+
+If NO:
+do not classify as SELLER_COMPETITOR merely because terminology overlaps.
+
+This is an important generic distinction.
+
+==================================================
+13. RELATIONSHIP EVIDENCE OBJECT
+==================================================
+
+Where compatible with current architecture, make the assessment rationale explicitly structured.
+
+Conceptually:
+
+{
+  candidatePrimaryOffering: "...",
+  sellerOffering: "...",
+
+  offeringOverlap: {
+    level: "NONE | LOW | PARTIAL | SUBSTANTIAL",
+    reason: "..."
+  },
+
+  substitutable: true | false | unknown,
+
+  candidateCanConsumeSellerOffering:
+    true | false | unknown,
+
+  complementaryRelationship:
+    true | false | unknown,
+
+  partnershipEvidence:
+    true | false | unknown,
+
+  role:
+    "...",
+
+  confidence:
+    "...",
+
+  evidenceIds: [...]
+}
+
+Do not create an unnecessary parallel data model if equivalent fields already exist.
+
+Structured intermediate reasoning is preferable to an opaque classification.
+
+==================================================
+14. DETERMINISTIC VALIDATION, NOT DETERMINISTIC CLASSIFICATION
+==================================================
+
+Do NOT replace semantic Commercial Relationship Assessment with simple keyword rules.
+
+Semantic interpretation is still required.
+
+However, use deterministic post-validation for contradictions such as:
+
+role = SELLER_COMPETITOR
+but
+offeringOverlap = NONE
+and
+substitutable = false
+
+That should trigger:
+
+reassessment / lower confidence / UNKNOWN
+
+rather than blindly persist a contradiction.
+
+Similarly:
+
+role = ADJACENT_VENDOR
+
+but:
+
+candidateCanConsumeSellerOffering = true
+complementaryRelationship = false
+partnershipEvidence = false
+
+should trigger reconsideration.
+
+Use generic contradiction checks.
+
+==================================================
+15. CONFIDENCE
+==================================================
+
+HIGH confidence should require strong evidence for the commercial relationship.
+
+Examples:
+
+SELLER_COMPETITOR HIGH:
+clear material offering overlap / substitutability.
+
+POTENTIAL_BUYER HIGH:
+candidate business is well understood, direct competition ruled out, and candidate clearly could consume the offering.
+
+ADJACENT_VENDOR HIGH:
+clear complementary vendor relationship.
+
+PARTNER_POSSIBLE HIGH:
+clear partnership/channel/integration logic.
+
+Use MEDIUM/LOW when evidence is incomplete.
+
+Do not inflate confidence.
+
+==================================================
+16. GENERIC SYNTHETIC TESTS
+==================================================
+
+Do NOT use benchmark companies.
+
+Create at least these tests.
+
+--------------------------------------------------
+TEST A — SAME ICP, DIFFERENT OFFERING
+--------------------------------------------------
+
+Seller:
+cybersecurity monitoring service
+
+Candidate:
+B2B payroll software company
+
+Both sell to mid-market companies.
+
+Expected:
+NOT SELLER_COMPETITOR.
+
+Candidate may be POTENTIAL_BUYER.
+
+--------------------------------------------------
+TEST B — DIRECT SUBSTITUTE
+--------------------------------------------------
+
+Seller:
+managed security monitoring
+
+Candidate:
+managed detection and response service
+
+Expected:
+SELLER_COMPETITOR
+
+because offerings are materially substitutable.
+
+--------------------------------------------------
+TEST C — B2B VENDOR CAN STILL BUY
+--------------------------------------------------
+
+Seller:
+AI search/visibility marketing service
+
+Candidate:
+B2B lead-generation agency
+
+Candidate sells services but does not sell AI search visibility.
+
+Expected:
+POTENTIAL_BUYER is allowed.
+
+Do NOT classify ADJACENT_VENDOR simply because both are marketing/GTM vendors.
+
+--------------------------------------------------
+TEST D — COMPLEMENTARY VENDOR
+--------------------------------------------------
+
+Seller:
+managed SOC service
+
+Candidate:
+specialized security hardware vendor whose primary commercial relationship is complementary and does not reasonably consume the seller service in this fixture.
+
+Expected:
+ADJACENT_VENDOR is permissible if supported.
+
+--------------------------------------------------
+TEST E — REAL PARTNER
+--------------------------------------------------
+
+Seller:
+enterprise SaaS platform
+
+Candidate:
+implementation consultancy explicitly positioned to implement/resell/integrate that category.
+
+Expected:
+PARTNER_POSSIBLE when evidence supports channel/integration relationship.
+
+--------------------------------------------------
+TEST F — MINOR FEATURE OVERLAP
+--------------------------------------------------
+
+Candidate has one small feature similar to seller offering but primary business differs materially.
+
+Expected:
+do not automatically classify SELLER_COMPETITOR.
+
+--------------------------------------------------
+TEST G — SHARED INDUSTRY ONLY
+--------------------------------------------------
+
+Both companies are in "technology."
+
+Offerings differ.
+
+Expected:
+industry alone cannot produce competitor classification.
+
+--------------------------------------------------
+TEST H — UNKNOWN
+--------------------------------------------------
+
+Candidate has conflicting credible evidence about its primary business.
+
+Expected:
+UNKNOWN or appropriately low-confidence result.
+
+Do not fabricate certainty.
+
+--------------------------------------------------
+TEST I — SUBSTITUTABILITY
+--------------------------------------------------
+
+Candidate and seller use similar language but solve different purchasing problems.
+
+Expected:
+substitutable = false
+not competitor.
+
+--------------------------------------------------
+TEST J — EVIDENCE PROVENANCE
+--------------------------------------------------
+
+All relationship conclusions must retain evidence IDs.
+
+No unsupported claim may become a deciding relationship fact.
+
+--------------------------------------------------
+TEST K — IDEMPOTENCY
+--------------------------------------------------
+
+Same candidate understanding
+same seller Business Twin
+same seller offering
+same relationship-policy version
+
+Expected:
+no unnecessary rerun.
+
+--------------------------------------------------
+TEST L — OFFERING CHANGE
+--------------------------------------------------
+
+Same candidate.
+
+Seller offering changes materially.
+
+Expected:
+Commercial Relationship Assessment becomes stale and reruns.
+
+Company Understanding should be reused.
+
+==================================================
+17. PROMPT / MODEL CHANGE POLICY
+==================================================
+
+If the Commercial Relationship Assessment currently uses an LLM prompt:
+
+inspect the existing prompt first.
+
+Make the SMALLEST generic change necessary.
+
+Do not rewrite the whole system unless necessary.
+
+The prompt should explicitly emphasize:
+
+- seller-relative relationship
+- actual offering overlap
+- substitutability
+- candidate buyer capability
+- same industry is not competition
+- same ICP is not competition
+- vendor status does not prevent buyer status
+- adjacency requires an actual complementary vendor relationship
+
+Version the prompt/policy appropriately.
+
+Document before/after versions.
+
+==================================================
+18. DO NOT CHANGE COMPANY UNDERSTANDING
+==================================================
+
+Task #106 first-error analysis reports:
+
+COMPANY_UNDERSTANDING = 0
+
+Therefore do not repair Company Understanding.
+
+Use the existing Company Understanding output as input.
+
+If a Commercial Role error is actually caused by missing provider evidence, leave it classified as PROVIDER_DATA_GAP.
+
+Do not compensate by changing relationship logic.
+
+==================================================
+19. DO NOT FIX DATA GAPS
+==================================================
+
+There are currently:
+
+PROVIDER_DATA_GAP = 2
+IDENTITY_RESOLUTION = 1
+
+Leave them untouched.
+
+Do not fetch new data.
+
+Do not add providers.
+
+Do not change identity thresholds.
+
+Do not reinterpret missing facts as known.
+
+==================================================
+20. POST-REPAIR REGRESSION
+==================================================
+
+After generic tests and normal regressions pass:
+
+Run:
+
+TASK_107_POST_REPAIR_REGRESSION
+
+against the same frozen evidence snapshot.
+
+No external provider calls.
+
+No new web research.
+
+No replacement companies.
+
+Do not overwrite:
+
+Task #100
+Task #105
+Task #106
+
+Verify gold SHA-256 remains:
+
+f59aca76b676d0e54d0899dd23bb3e5c6d5912e71e0597d967a2a722ac8ecfca
+
+==================================================
+21. MEASURE TASK #106 → TASK #107
+==================================================
+
+Report:
+
+CommercialRole coverage
+
+Non-UNKNOWN CommercialRole
+
+WHO available
+
+Complete CommercialRole + WHO
+
+CommercialRole strict accuracy
+
+WHO strict accuracy
+
+POTENTIAL_BUYER precision
+
+SELLER_COMPETITOR recall
+
+Dangerous competitor → buyer errors
+
+CommercialRole first-errors
+
+First-error distribution
+
+Also show exact transition for each of the four previous CommercialRole-error records:
+
+Company:
+Task #106 role:
+Task #107 role:
+Gold:
+Changed?:
+Now correct?:
+
+Do not hide regressions.
+
+==================================================
+22. CRITICAL SAFETY METRICS
+==================================================
+
+CommercialRole improvement must NOT come at the cost of unsafe classifications.
+
+Explicitly calculate:
+
+A. Gold SELLER_COMPETITOR predicted POTENTIAL_BUYER
+
+This must remain:
+0 if possible.
+
+B. POTENTIAL_BUYER precision
+
+C. SELLER_COMPETITOR recall
+
+D. newly introduced wrong-role records that were correct in Task #106
+
+A repair that fixes 3 errors but breaks 3 previously correct records is not a success.
+
+==================================================
+23. ACCEPTANCE CRITERIA
+==================================================
+
+PASS Task #107 only if:
+
+1. Generic tests pass.
+
+2. Existing regressions pass.
+
+3. No benchmark-specific logic was introduced.
+
+4. Gold checksum unchanged.
+
+5. No external provider calls.
+
+6. Production untouched.
+
+7. CommercialRole first-errors decrease.
+
+8. CommercialRole strict accuracy improves or remains equal with materially better calibrated relationship reasoning.
+
+9. POTENTIAL_BUYER precision remains high.
+
+10. SELLER_COMPETITOR recall remains high.
+
+11. Dangerous competitor → buyer errors remain 0.
+
+12. No material regression on previously correct records.
+
+13. WHO policy from Task #106 remains intact.
+
+14. Evidence-admission behavior from Task #105 remains intact.
+
+==================================================
+24. DO NOT FIX NEWLY EXPOSED ERRORS
+==================================================
+
+After this repair, do not fix:
+
+identity
+provider-data
+WHO
+ICP
+geography
+signals
+opportunity scoring
+
+Report remaining first-errors only.
+
+One causal repair per task.
+
+==================================================
+25. ARTIFACTS
+==================================================
+
+Create:
+
+evaluations/jyra-clean-room-v1/TASK_107_COMMERCIAL_ROLE_REPAIR.json
+
+and:
+
+evaluations/jyra-clean-room-v1/TASK_107_COMMERCIAL_ROLE_REPAIR_REPORT.md
+
+Include:
+
+- four-error audit
+- dominant generic failure pattern
+- implementation
+- prompt/policy version changes
+- files changed
+- synthetic tests
+- regressions
+- before/after benchmark diagnostic
+- per-company role transitions
+- safety metrics
+- remaining first-errors
+
+==================================================
+26. FINAL RESPONSE FORMAT
+==================================================
+
+Return exactly:
+
+TASK #107 — COMMERCIAL RELATIONSHIP REPAIR
+
+Status:
+PASS / FAIL
+
+Dominant CommercialRole failure pattern:
+<description>
+
+Repair implemented:
+<description>
+
+Prompt/policy before:
+<version>
+
+Prompt/policy after:
+<version>
+
+Files changed:
+<list>
+
+Gold SHA-256 unchanged:
+YES / NO
+
+External provider calls:
+0
+
+Production modified:
+NO
+
+Generic tests:
+x/x
+
+Existing regressions:
+x/x
+
+====================
+TASK #106 → TASK #107
+====================
+
+CommercialRole coverage:
+20/20 → x/20
+
+Non-UNKNOWN CommercialRole:
+16/20 → x/20
+
+WHO available:
+14/20 → x/20
+
+Complete CommercialRole + WHO:
+14/20 → x/20
+
+CommercialRole strict accuracy:
+13/18 → x/18
+
+WHO strict accuracy:
+11/18 → x/18
+
+POTENTIAL_BUYER precision:
+100% → x%
+
+SELLER_COMPETITOR recall:
+100% → x%
+
+Dangerous competitor → buyer:
+0 → x
+
+CommercialRole first-errors:
+4 → x
+
+====================
+FOUR PRIOR COMMERCIAL ROLE ERRORS
+====================
+
+For each:
+
+Company:
+Task #106:
+Task #107:
+Gold:
+Correct now:
+YES / NO
+
+====================
+NEW REGRESSIONS
+====================
+
+Previously-correct records now wrong:
+x
+
+Companies:
+<names or NONE>
+
+====================
+NEW FIRST-ERROR DISTRIBUTION
+====================
+
+IDENTITY_RESOLUTION:
+x
+
+COMPANY_UNDERSTANDING:
+x
+
+COMMERCIAL_ROLE:
+x
+
+ICP_CRITERION_MAPPING:
+x
+
+WHO_DECISION_POLICY:
+x
+
+INSUFFICIENT_EVIDENCE_HANDLING:
+x
+
+PROVIDER_DATA_GAP:
+x
+
+OTHER:
+x
+
+====================
+SAFETY
+====================
+
+Competitor → buyer errors:
+x
+
+Benchmark-specific rules added:
+NO
+
+Evidence provenance preserved:
+YES
+
+Task #105 behavior preserved:
+YES / NO
+
+Task #106 WHO policy preserved:
+YES / NO
+
+Gold modified:
+NO
+
+Historical runs modified:
+NO
+
+====================
+VERDICT
+====================
+
+Did this single repair materially improve Commercial Relationship Assessment?
+
+YES / PARTIAL / NO
+
+Explain briefly.
+
+NEXT STEP:
+
+Wait for approval.
+
+Do NOT fix remaining errors.
+Do NOT run the 50-company Reality Test.
