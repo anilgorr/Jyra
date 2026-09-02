@@ -24,6 +24,8 @@ import CompanyIntelligencePage from './pages/company-intelligence';
 import ProviderDiagnostics from './pages/provider-diagnostics';
 import Research from './pages/research';
 import Signals from './pages/signals';
+import MarketReadinessPage from './pages/market-readiness/index';
+import MarketReadinessCampaignPage from './pages/market-readiness/campaign';
 import Opportunities from './pages/opportunities';
 import Outcomes from './pages/outcomes';
 import Learning from './pages/learning';
@@ -173,6 +175,8 @@ function AuthenticatedRoutes() {
             <Route path="/icp" component={IcpPage} />
             <Route path="/research" component={Research} />
             <Route path="/signals" component={Signals} />
+            <Route path="/market-readiness/:campaignId" component={MarketReadinessCampaignPage} />
+            <Route path="/market-readiness" component={MarketReadinessPage} />
             <Route path="/outcomes" component={Outcomes} />
             <Route path="/learning" component={Learning} />
             <Route path="/admin/quality" component={AdminQualityPage} />

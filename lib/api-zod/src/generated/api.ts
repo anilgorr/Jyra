@@ -6333,3 +6333,551 @@ export const ReviewLearningProposalResponse = zod.object({
 })
 
 
+export const GetMarketReadinessDashboardParams = zod.object({
+  "projectId": zod.coerce.string()
+})
+
+export const GetMarketReadinessDashboardResponse = zod.object({
+  "campaigns": zod.array(zod.object({
+  "id": zod.string(),
+  "organizationId": zod.string(),
+  "projectId": zod.string(),
+  "name": zod.string(),
+  "state": zod.enum(['PLANNED', 'DISCOVERING', 'REVIEWING', 'FROZEN', 'RUNNING', 'PARTIAL', 'COMPLETED', 'BLOCKED', 'CANCELLED']),
+  "discoveryMode": zod.string(),
+  "targetCount": zod.number(),
+  "paidCapCents": zod.number(),
+  "spentCents": zod.number(),
+  "reservedCents": zod.number(),
+  "outcomeMode": zod.string(),
+  "freezeHash": zod.string().nullable(),
+  "frozenAt": zod.string().nullable(),
+  "frozenBy": zod.string().nullable(),
+  "createdBy": zod.string(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string()
+})),
+  "defaultConfiguration": zod.object({
+  "discoveryMode": zod.string(),
+  "targetCount": zod.number(),
+  "paidCapCents": zod.number(),
+  "outcomeMode": zod.string()
+})
+})
+
+
+export const ListMarketReadinessCampaignsParams = zod.object({
+  "projectId": zod.coerce.string()
+})
+
+export const ListMarketReadinessCampaignsResponseItem = zod.object({
+  "id": zod.string(),
+  "organizationId": zod.string(),
+  "projectId": zod.string(),
+  "name": zod.string(),
+  "state": zod.enum(['PLANNED', 'DISCOVERING', 'REVIEWING', 'FROZEN', 'RUNNING', 'PARTIAL', 'COMPLETED', 'BLOCKED', 'CANCELLED']),
+  "discoveryMode": zod.string(),
+  "targetCount": zod.number(),
+  "paidCapCents": zod.number(),
+  "spentCents": zod.number(),
+  "reservedCents": zod.number(),
+  "outcomeMode": zod.string(),
+  "freezeHash": zod.string().nullable(),
+  "frozenAt": zod.string().nullable(),
+  "frozenBy": zod.string().nullable(),
+  "createdBy": zod.string(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string()
+})
+export const ListMarketReadinessCampaignsResponse = zod.array(ListMarketReadinessCampaignsResponseItem)
+
+
+export const CreateMarketReadinessCampaignParams = zod.object({
+  "projectId": zod.coerce.string()
+})
+
+export const createMarketReadinessCampaignBodyNameMax = 200;
+
+export const createMarketReadinessCampaignBodyTargetCountDefault = 200;
+export const createMarketReadinessCampaignBodyPaidCapCentsDefault = 5000;
+export const createMarketReadinessCampaignBodyPaidCapCentsMin = 0;
+export const createMarketReadinessCampaignBodyPaidCapCentsMax = 5000;
+
+
+
+export const CreateMarketReadinessCampaignBody = zod.object({
+  "name": zod.string().min(1).max(createMarketReadinessCampaignBodyNameMax),
+  "targetCount": zod.literal(200).default(createMarketReadinessCampaignBodyTargetCountDefault),
+  "paidCapCents": zod.number().min(createMarketReadinessCampaignBodyPaidCapCentsMin).max(createMarketReadinessCampaignBodyPaidCapCentsMax).default(createMarketReadinessCampaignBodyPaidCapCentsDefault)
+})
+
+export const CreateMarketReadinessCampaignResponse = zod.object({
+  "id": zod.string(),
+  "organizationId": zod.string(),
+  "projectId": zod.string(),
+  "name": zod.string(),
+  "state": zod.enum(['PLANNED', 'DISCOVERING', 'REVIEWING', 'FROZEN', 'RUNNING', 'PARTIAL', 'COMPLETED', 'BLOCKED', 'CANCELLED']),
+  "discoveryMode": zod.string(),
+  "targetCount": zod.number(),
+  "paidCapCents": zod.number(),
+  "spentCents": zod.number(),
+  "reservedCents": zod.number(),
+  "outcomeMode": zod.string(),
+  "freezeHash": zod.string().nullable(),
+  "frozenAt": zod.string().nullable(),
+  "frozenBy": zod.string().nullable(),
+  "createdBy": zod.string(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string()
+})
+
+
+export const GetMarketReadinessCampaignParams = zod.object({
+  "projectId": zod.coerce.string(),
+  "campaignId": zod.coerce.string()
+})
+
+export const GetMarketReadinessCampaignResponse = zod.object({
+  "id": zod.string(),
+  "organizationId": zod.string(),
+  "projectId": zod.string(),
+  "name": zod.string(),
+  "state": zod.enum(['PLANNED', 'DISCOVERING', 'REVIEWING', 'FROZEN', 'RUNNING', 'PARTIAL', 'COMPLETED', 'BLOCKED', 'CANCELLED']),
+  "discoveryMode": zod.string(),
+  "targetCount": zod.number(),
+  "paidCapCents": zod.number(),
+  "spentCents": zod.number(),
+  "reservedCents": zod.number(),
+  "outcomeMode": zod.string(),
+  "freezeHash": zod.string().nullable(),
+  "frozenAt": zod.string().nullable(),
+  "frozenBy": zod.string().nullable(),
+  "createdBy": zod.string(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string()
+})
+
+
+export const UpdateMarketReadinessCampaignParams = zod.object({
+  "projectId": zod.coerce.string(),
+  "campaignId": zod.coerce.string()
+})
+
+export const updateMarketReadinessCampaignBodyNameMax = 200;
+
+
+
+export const UpdateMarketReadinessCampaignBody = zod.object({
+  "name": zod.string().min(1).max(updateMarketReadinessCampaignBodyNameMax).optional(),
+  "state": zod.enum(['PLANNED', 'DISCOVERING', 'REVIEWING', 'FROZEN', 'RUNNING', 'PARTIAL', 'COMPLETED', 'BLOCKED', 'CANCELLED']).optional()
+})
+
+export const UpdateMarketReadinessCampaignResponse = zod.object({
+  "id": zod.string(),
+  "organizationId": zod.string(),
+  "projectId": zod.string(),
+  "name": zod.string(),
+  "state": zod.enum(['PLANNED', 'DISCOVERING', 'REVIEWING', 'FROZEN', 'RUNNING', 'PARTIAL', 'COMPLETED', 'BLOCKED', 'CANCELLED']),
+  "discoveryMode": zod.string(),
+  "targetCount": zod.number(),
+  "paidCapCents": zod.number(),
+  "spentCents": zod.number(),
+  "reservedCents": zod.number(),
+  "outcomeMode": zod.string(),
+  "freezeHash": zod.string().nullable(),
+  "frozenAt": zod.string().nullable(),
+  "frozenBy": zod.string().nullable(),
+  "createdBy": zod.string(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string()
+})
+
+
+export const ActionMarketReadinessCampaignParams = zod.object({
+  "projectId": zod.coerce.string(),
+  "campaignId": zod.coerce.string(),
+  "action": zod.enum(['start', 'pause', 'resume', 'cancel'])
+})
+
+export const ActionMarketReadinessCampaignResponse = zod.object({
+  "id": zod.string(),
+  "organizationId": zod.string(),
+  "projectId": zod.string(),
+  "name": zod.string(),
+  "state": zod.enum(['PLANNED', 'DISCOVERING', 'REVIEWING', 'FROZEN', 'RUNNING', 'PARTIAL', 'COMPLETED', 'BLOCKED', 'CANCELLED']),
+  "discoveryMode": zod.string(),
+  "targetCount": zod.number(),
+  "paidCapCents": zod.number(),
+  "spentCents": zod.number(),
+  "reservedCents": zod.number(),
+  "outcomeMode": zod.string(),
+  "freezeHash": zod.string().nullable(),
+  "frozenAt": zod.string().nullable(),
+  "frozenBy": zod.string().nullable(),
+  "createdBy": zod.string(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string()
+})
+
+
+export const FreezeMarketReadinessCampaignParams = zod.object({
+  "projectId": zod.coerce.string(),
+  "campaignId": zod.coerce.string()
+})
+
+export const FreezeMarketReadinessCampaignResponse = zod.object({
+  "id": zod.string(),
+  "organizationId": zod.string(),
+  "projectId": zod.string(),
+  "name": zod.string(),
+  "state": zod.enum(['PLANNED', 'DISCOVERING', 'REVIEWING', 'FROZEN', 'RUNNING', 'PARTIAL', 'COMPLETED', 'BLOCKED', 'CANCELLED']),
+  "discoveryMode": zod.string(),
+  "targetCount": zod.number(),
+  "paidCapCents": zod.number(),
+  "spentCents": zod.number(),
+  "reservedCents": zod.number(),
+  "outcomeMode": zod.string(),
+  "freezeHash": zod.string().nullable(),
+  "frozenAt": zod.string().nullable(),
+  "frozenBy": zod.string().nullable(),
+  "createdBy": zod.string(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string()
+})
+
+
+export const ListMarketReadinessCohortParams = zod.object({
+  "projectId": zod.coerce.string(),
+  "campaignId": zod.coerce.string()
+})
+
+export const ListMarketReadinessCohortResponseItem = zod.object({
+  "id": zod.string(),
+  "organizationId": zod.string(),
+  "projectId": zod.string(),
+  "campaignId": zod.string(),
+  "companyId": zod.string().nullable(),
+  "normalizedDomain": zod.string(),
+  "source": zod.enum(['DISCOVERY', 'MANUAL', 'IMPORT']),
+  "stratum": zod.string(),
+  "opaqueReviewKey": zod.string(),
+  "createdAt": zod.string()
+})
+export const ListMarketReadinessCohortResponse = zod.array(ListMarketReadinessCohortResponseItem)
+
+
+export const CreateMarketReadinessExperimentParams = zod.object({
+  "projectId": zod.coerce.string(),
+  "campaignId": zod.coerce.string()
+})
+
+
+
+
+export const CreateMarketReadinessExperimentBody = zod.object({
+  "seed": zod.string().min(1)
+})
+
+export const CreateMarketReadinessExperimentResponse = zod.object({
+  "id": zod.string(),
+  "organizationId": zod.string(),
+  "projectId": zod.string(),
+  "campaignId": zod.string(),
+  "state": zod.enum(['DRAFT', 'ASSIGNED', 'RUNNING', 'COMPLETED']),
+  "seed": zod.string(),
+  "treatmentName": zod.string(),
+  "controlName": zod.string(),
+  "createdBy": zod.string(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string()
+})
+
+
+export const GetMarketReadinessExperimentParams = zod.object({
+  "projectId": zod.coerce.string(),
+  "campaignId": zod.coerce.string(),
+  "experimentId": zod.coerce.string()
+})
+
+export const GetMarketReadinessExperimentResponse = zod.object({
+  "id": zod.string(),
+  "organizationId": zod.string(),
+  "projectId": zod.string(),
+  "campaignId": zod.string(),
+  "state": zod.enum(['DRAFT', 'ASSIGNED', 'RUNNING', 'COMPLETED']),
+  "seed": zod.string(),
+  "treatmentName": zod.string(),
+  "controlName": zod.string(),
+  "createdBy": zod.string(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string()
+})
+
+
+export const ActionMarketReadinessExperimentParams = zod.object({
+  "projectId": zod.coerce.string(),
+  "campaignId": zod.coerce.string(),
+  "experimentId": zod.coerce.string(),
+  "experimentAction": zod.enum(['start', 'complete'])
+})
+
+export const ActionMarketReadinessExperimentResponse = zod.object({
+  "id": zod.string(),
+  "organizationId": zod.string(),
+  "projectId": zod.string(),
+  "campaignId": zod.string(),
+  "state": zod.enum(['DRAFT', 'ASSIGNED', 'RUNNING', 'COMPLETED']),
+  "seed": zod.string(),
+  "treatmentName": zod.string(),
+  "controlName": zod.string(),
+  "createdBy": zod.string(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string()
+})
+
+
+export const AssignMarketReadinessExperimentParams = zod.object({
+  "projectId": zod.coerce.string(),
+  "campaignId": zod.coerce.string(),
+  "experimentId": zod.coerce.string()
+})
+
+export const AssignMarketReadinessExperimentResponse = zod.object({
+  "assignments": zod.array(zod.object({
+  "cohortItemId": zod.string(),
+  "stratum": zod.string(),
+  "arm": zod.enum(['TREATMENT', 'CONTROL'])
+}))
+})
+
+
+export const CreateMarketReadinessBlindReviewParams = zod.object({
+  "projectId": zod.coerce.string(),
+  "campaignId": zod.coerce.string()
+})
+
+export const createMarketReadinessBlindReviewBodyDangerousDefault = false;
+export const createMarketReadinessBlindReviewBodyNotesMax = 5000;
+
+
+
+export const CreateMarketReadinessBlindReviewBody = zod.object({
+  "cohortItemId": zod.string(),
+  "roleFit": zod.boolean(),
+  "whoFit": zod.boolean(),
+  "buyer": zod.boolean(),
+  "competitor": zod.boolean(),
+  "dangerous": zod.boolean().default(createMarketReadinessBlindReviewBodyDangerousDefault),
+  "actionableEvidence": zod.boolean(),
+  "notes": zod.string().max(createMarketReadinessBlindReviewBodyNotesMax).optional()
+})
+
+export const CreateMarketReadinessBlindReviewResponse = zod.object({
+  "id": zod.string(),
+  "organizationId": zod.string(),
+  "projectId": zod.string(),
+  "campaignId": zod.string(),
+  "cohortItemId": zod.string(),
+  "reviewerId": zod.string(),
+  "roleFit": zod.boolean(),
+  "whoFit": zod.boolean(),
+  "buyer": zod.boolean(),
+  "competitor": zod.boolean(),
+  "dangerous": zod.boolean(),
+  "actionableEvidence": zod.boolean(),
+  "notes": zod.string().nullable(),
+  "submittedAt": zod.string()
+})
+
+
+export const CreateMarketReadinessAdjudicationParams = zod.object({
+  "projectId": zod.coerce.string(),
+  "campaignId": zod.coerce.string()
+})
+
+
+
+
+export const CreateMarketReadinessAdjudicationBody = zod.object({
+  "cohortItemId": zod.string(),
+  "goldLabels": zod.record(zod.string(), zod.boolean()),
+  "rationale": zod.string().min(1)
+})
+
+export const CreateMarketReadinessAdjudicationResponse = zod.object({
+  "id": zod.string(),
+  "organizationId": zod.string(),
+  "projectId": zod.string(),
+  "campaignId": zod.string(),
+  "cohortItemId": zod.string(),
+  "adjudicatorId": zod.string(),
+  "goldLabels": zod.record(zod.string(), zod.boolean()),
+  "rationale": zod.string(),
+  "createdAt": zod.string()
+})
+
+
+export const CreateMarketReadinessSalespersonReviewParams = zod.object({
+  "projectId": zod.coerce.string(),
+  "campaignId": zod.coerce.string()
+})
+
+export const createMarketReadinessSalespersonReviewBodyNotesMax = 5000;
+
+
+
+export const CreateMarketReadinessSalespersonReviewBody = zod.object({
+  "cohortItemId": zod.string(),
+  "usable": zod.boolean(),
+  "notes": zod.string().max(createMarketReadinessSalespersonReviewBodyNotesMax).optional()
+})
+
+export const CreateMarketReadinessSalespersonReviewResponse = zod.object({
+  "id": zod.string(),
+  "organizationId": zod.string(),
+  "projectId": zod.string(),
+  "campaignId": zod.string(),
+  "cohortItemId": zod.string(),
+  "reviewerId": zod.string(),
+  "usable": zod.boolean(),
+  "notes": zod.string().nullable(),
+  "createdAt": zod.string()
+})
+
+
+export const ListMarketReadinessOutcomesParams = zod.object({
+  "projectId": zod.coerce.string(),
+  "campaignId": zod.coerce.string()
+})
+
+export const ListMarketReadinessOutcomesResponseItem = zod.object({
+  "id": zod.string(),
+  "organizationId": zod.string(),
+  "projectId": zod.string(),
+  "campaignId": zod.string(),
+  "experimentAssignmentId": zod.string().nullable(),
+  "cohortItemId": zod.string(),
+  "importBatchId": zod.string().nullable(),
+  "outcome": zod.enum(['MEETING', 'OPPORTUNITY', 'BAD_FIT', 'OTHER']),
+  "occurredAt": zod.string(),
+  "recordedBy": zod.string(),
+  "idempotencyKey": zod.string(),
+  "createdAt": zod.string()
+})
+export const ListMarketReadinessOutcomesResponse = zod.array(ListMarketReadinessOutcomesResponseItem)
+
+
+export const CreateMarketReadinessOutcomeParams = zod.object({
+  "projectId": zod.coerce.string(),
+  "campaignId": zod.coerce.string()
+})
+
+
+
+
+export const CreateMarketReadinessOutcomeBody = zod.object({
+  "cohortItemId": zod.string(),
+  "outcome": zod.enum(['MEETING', 'OPPORTUNITY', 'BAD_FIT', 'OTHER']),
+  "occurredAt": zod.string(),
+  "idempotencyKey": zod.string().min(1)
+})
+
+export const CreateMarketReadinessOutcomeResponse = zod.object({
+  "id": zod.string(),
+  "organizationId": zod.string(),
+  "projectId": zod.string(),
+  "campaignId": zod.string(),
+  "experimentAssignmentId": zod.string().nullable(),
+  "cohortItemId": zod.string(),
+  "importBatchId": zod.string().nullable(),
+  "outcome": zod.enum(['MEETING', 'OPPORTUNITY', 'BAD_FIT', 'OTHER']),
+  "occurredAt": zod.string(),
+  "recordedBy": zod.string(),
+  "idempotencyKey": zod.string(),
+  "createdAt": zod.string()
+})
+
+
+export const ImportMarketReadinessOutcomesParams = zod.object({
+  "projectId": zod.coerce.string(),
+  "campaignId": zod.coerce.string()
+})
+
+
+
+
+
+export const ImportMarketReadinessOutcomesBody = zod.object({
+  "csv": zod.string().min(1),
+  "idempotencyKey": zod.string().min(1)
+})
+
+export const ImportMarketReadinessOutcomesResponse = zod.object({
+  "batch": zod.record(zod.string(), zod.unknown()).nullable(),
+  "rows": zod.array(zod.object({
+  "domain": zod.string(),
+  "outcome": zod.enum(['MEETING', 'OPPORTUNITY', 'BAD_FIT', 'OTHER']),
+  "occurredAt": zod.string()
+}))
+})
+
+
+export const GetMarketReadinessRolloutParams = zod.object({
+  "projectId": zod.coerce.string(),
+  "campaignId": zod.coerce.string()
+})
+
+export const GetMarketReadinessRolloutResponse = zod.object({
+  "id": zod.string(),
+  "organizationId": zod.string(),
+  "projectId": zod.string(),
+  "campaignId": zod.string(),
+  "state": zod.enum(['DRAFT', 'APPROVED', 'REJECTED', 'PROMOTED']),
+  "decision": zod.record(zod.string(), zod.unknown()).describe('Authoritative persisted quality'),
+  "decidedBy": zod.string().nullable(),
+  "decidedAt": zod.string().nullable(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string()
+})
+
+
+export const UpdateMarketReadinessRolloutParams = zod.object({
+  "projectId": zod.coerce.string(),
+  "campaignId": zod.coerce.string()
+})
+
+export const updateMarketReadinessRolloutBodyDesiredStageDefault = `DRAFT`;
+
+export const UpdateMarketReadinessRolloutBody = zod.object({
+  "desiredStage": zod.enum(['DRAFT', 'PROMOTED']).default(updateMarketReadinessRolloutBodyDesiredStageDefault)
+})
+
+export const UpdateMarketReadinessRolloutResponse = zod.object({
+  "id": zod.string(),
+  "organizationId": zod.string(),
+  "projectId": zod.string(),
+  "campaignId": zod.string(),
+  "state": zod.enum(['DRAFT', 'APPROVED', 'REJECTED', 'PROMOTED']),
+  "decision": zod.record(zod.string(), zod.unknown()).describe('Authoritative persisted quality'),
+  "decidedBy": zod.string().nullable(),
+  "decidedAt": zod.string().nullable(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string()
+})
+
+
+/**
+ * @summary Advance one explicit development-only Market Readiness work lease
+ */
+export const RequestMarketReadinessWorkerAdvanceParams = zod.object({
+  "projectId": zod.coerce.string(),
+  "campaignId": zod.coerce.string()
+})
+
+export const RequestMarketReadinessWorkerAdvanceResponse = zod.object({
+  "accepted": zod.boolean(),
+  "limit": zod.number(),
+  "message": zod.string()
+})
+
+

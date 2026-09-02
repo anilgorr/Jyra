@@ -1,6 +1,7 @@
 import { fingerprintV2 } from "./fingerprint";
 import { MAX_EXTERNAL_RESEARCH_CALLS, evidenceItemSchema, type EvidenceItemV2, type ResearchActionV2, type ResearchPackageV2, type ResearchRequirementV2 } from "./schemas";
 import type { ProviderOperations, ProviderResponse } from "../provider-contract";
+import { MAX_PROFILE_RESOLUTION_SEARCHES_PER_COMPANY } from "../company-profile-resolution";
 
 export type ResearchRequestV2 = {
   organizationId: string; projectId: string; companyId: string; companyName: string; domain: string | null;
@@ -31,6 +32,13 @@ export const DEFAULT_RESEARCH_WATERFALL: readonly ResearchStepV2[] = [
   { source: "WEB_SEARCH", capability: "WEB_SEARCH", external: true },
   { source: "FALLBACK", capability: "WEB_SEARCH", external: true },
 ] as const;
+export const V2_RESEARCH_PROVIDER_CALL_GRAPH = {
+  WEBSITE_CRAWL: DEFAULT_RESEARCH_WATERFALL.filter((step) => step.capability === "WEBSITE_CRAWL").length,
+  COMPANY_FIRMOGRAPHICS: DEFAULT_RESEARCH_WATERFALL.filter((step) => step.capability === "COMPANY_FIRMOGRAPHICS").length,
+  WEB_SEARCH: DEFAULT_RESEARCH_WATERFALL.filter((step) => step.capability === "WEB_SEARCH").length +
+    DEFAULT_RESEARCH_WATERFALL.filter((step) => step.capability === "COMPANY_PROFILE_RESOLUTION").length *
+      MAX_PROFILE_RESOLUTION_SEARCHES_PER_COMPANY,
+} as const;
 
 export function researchRequirementStatusV2(
   evidence: EvidenceItemV2[], requirement: ResearchRequirementV2,
@@ -151,10 +159,15 @@ function providerEvidence(input: {
  * provider selection outside business logic. */
 export function createProviderRouterResearchInvokerV2(
   router: Pick<ProviderOperations, "lookupCompany" | "enrichCompany" | "searchWeb" | "resolveCompanyProfile" | "crawlWebsite">,
-  configuration: { trustedCompletenessProviderIds?: readonly string[] } = {},
+  configuration: { trustedCompletenessProviderIds?: readonly string[]; maxProviderAttempts?: number; maxResults?: number } = {},
 ): ResearchInvokerV2 {
   return async (step, request) => {
-    const metadata = { organizationId: request.organizationId, projectId: request.projectId, intelligenceVersion: "JYRA_INTELLIGENCE_V2" };
+    const metadata = {
+      organizationId: request.organizationId,
+      projectId: request.projectId,
+      intelligenceVersion: "JYRA_INTELLIGENCE_V2",
+      ...(configuration.maxProviderAttempts ? { maxProviderAttempts: String(configuration.maxProviderAttempts) } : {}),
+    };
     if (step.capability === "WEBSITE_CRAWL") {
       if (!request.domain) return { provider: "router", evidence: [], status: "EMPTY" };
       const response = await router.crawlWebsite({ url: `https://${request.domain}`, metadata });
@@ -237,7 +250,7 @@ export function createProviderRouterResearchInvokerV2(
     const response = await router.searchWeb({
       query: `${request.companyName} ${request.domain ?? ""} company products services business model headquarters`,
       domains: step.source === "WEB_SEARCH" && request.domain ? [request.domain] : undefined,
-      limit: 5, searchDepth: "basic", includeRawContent: false, metadata,
+      limit: Math.max(1, Math.min(5, configuration.maxResults ?? 5)), searchDepth: "basic", includeRawContent: false, metadata,
     });
     const results = response.data?.results ?? [];
     return {

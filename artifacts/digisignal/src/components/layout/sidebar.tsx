@@ -34,6 +34,7 @@ export const navItems = [
   { href: "/icp", label: "Dynamic ICP", icon: Crosshair },
   { href: "/research", label: "Research", icon: BookOpen },
   { href: "/signals", label: "Signals", icon: RadioTower },
+  { href: "/market-readiness", label: "Market Readiness", icon: ShieldCheck },
   { href: "/outcomes", label: "Outcomes", icon: TrendingUp },
   { href: "/learning", label: "Learning", icon: BrainCircuit },
 ];

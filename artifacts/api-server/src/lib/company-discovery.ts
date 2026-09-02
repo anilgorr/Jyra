@@ -886,6 +886,7 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
         projectId: input.projectId,
         discoveryRunId: run.id,
         queryIndex: String(queryIndex + 1),
+        maxProviderAttempts: "1",
       },
     });
     responses.push(response);
@@ -997,6 +998,7 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
           organizationId: input.organizationId,
           projectId: input.projectId,
           discoveryRunId: run.id,
+          maxProviderAttempts: "1",
         },
       });
       const lookupCompany = lookup.status === "success" ? lookup.data?.company : null;
@@ -1081,6 +1083,7 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
             organizationId: input.organizationId,
             projectId: input.projectId,
             discoveryRunId: run.id,
+            maxProviderAttempts: "1",
           },
         },
         router: { searchWeb: budgetedSearchWeb },

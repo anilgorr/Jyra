@@ -38,6 +38,8 @@ tags:
     description: Evidence-based correlation analytics and user-approved learning proposals
   - name: intelligence-v2
     description: Development-only JYRA Intelligence Core V2 inspection
+  - name: market-readiness
+    description: Controlled market-readiness campaign evaluation
 paths:
   /projects/{projectId}/companies/{projectCompanyId}/intelligence-v2:
     get:
@@ -1870,8 +1872,133 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
         "404": { $ref: "#/components/responses/NotFound" }
+  /projects/{projectId}/market-readiness/dashboard:
+    get: { operationId: getMarketReadinessDashboard, tags: [market-readiness], security: [{ clerkSession: [] }], parameters: [{ $ref: "#/components/parameters/ProjectId" }], responses: { "200": { description: Dashboard, content: { application/json: { schema: { $ref: "#/components/schemas/MarketReadinessDashboard" } } } }, "400": { $ref: "#/components/responses/BadRequest" }, "401": { $ref: "#/components/responses/Unauthorized" }, "403": { $ref: "#/components/responses/Forbidden" }, "404": { $ref: "#/components/responses/NotFound" } } }
+  /projects/{projectId}/market-readiness/campaigns:
+    get: { operationId: listMarketReadinessCampaigns, tags: [market-readiness], security: [{ clerkSession: [] }], parameters: [{ $ref: "#/components/parameters/ProjectId" }], responses: { "200": { description: Campaigns, content: { application/json: { schema: { type: array, items: { $ref: "#/components/schemas/MarketReadinessCampaign" } } } } }, "401": { $ref: "#/components/responses/Unauthorized" }, "403": { $ref: "#/components/responses/Forbidden" }, "404": { $ref: "#/components/responses/NotFound" } } }
+    post: { operationId: createMarketReadinessCampaign, tags: [market-readiness], security: [{ clerkSession: [] }], parameters: [{ $ref: "#/components/parameters/ProjectId" }], requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/CreateMarketReadinessCampaignRequest" } } } }, responses: { "201": { description: Campaign, content: { application/json: { schema: { $ref: "#/components/schemas/MarketReadinessCampaign" } } } }, "400": { $ref: "#/components/responses/BadRequest" }, "401": { $ref: "#/components/responses/Unauthorized" }, "403": { $ref: "#/components/responses/Forbidden" }, "404": { $ref: "#/components/responses/NotFound" } } }
+  /projects/{projectId}/market-readiness/campaigns/{campaignId}:
+    get: { operationId: getMarketReadinessCampaign, tags: [market-readiness], security: [{ clerkSession: [] }], parameters: [{ $ref: "#/components/parameters/ProjectId" }, { $ref: "#/components/parameters/MarketReadinessCampaignId" }], responses: { "200": { description: Campaign, content: { application/json: { schema: { $ref: "#/components/schemas/MarketReadinessCampaign" } } } }, "401": { $ref: "#/components/responses/Unauthorized" }, "403": { $ref: "#/components/responses/Forbidden" }, "404": { $ref: "#/components/responses/NotFound" } } }
+    patch: { operationId: updateMarketReadinessCampaign, tags: [market-readiness], security: [{ clerkSession: [] }], parameters: [{ $ref: "#/components/parameters/ProjectId" }, { $ref: "#/components/parameters/MarketReadinessCampaignId" }], requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/UpdateMarketReadinessCampaignRequest" } } } }, responses: { "200": { description: Campaign, content: { application/json: { schema: { $ref: "#/components/schemas/MarketReadinessCampaign" } } } }, "400": { $ref: "#/components/responses/BadRequest" }, "401": { $ref: "#/components/responses/Unauthorized" }, "403": { $ref: "#/components/responses/Forbidden" }, "404": { $ref: "#/components/responses/NotFound" } } }
+  /projects/{projectId}/market-readiness/campaigns/{campaignId}/{action}:
+    post: { operationId: actionMarketReadinessCampaign, tags: [market-readiness], security: [{ clerkSession: [] }], parameters: [{ $ref: "#/components/parameters/ProjectId" }, { $ref: "#/components/parameters/MarketReadinessCampaignId" }, { name: action, in: path, required: true, schema: { type: string, enum: [start, pause, resume, cancel] } }], responses: { "200": { description: Campaign, content: { application/json: { schema: { $ref: "#/components/schemas/MarketReadinessCampaign" } } } }, "400": { $ref: "#/components/responses/BadRequest" }, "401": { $ref: "#/components/responses/Unauthorized" }, "403": { $ref: "#/components/responses/Forbidden" }, "404": { $ref: "#/components/responses/NotFound" } } }
+  /projects/{projectId}/market-readiness/campaigns/{campaignId}/freeze:
+    post: { operationId: freezeMarketReadinessCampaign, tags: [market-readiness], security: [{ clerkSession: [] }], parameters: [{ $ref: "#/components/parameters/ProjectId" }, { $ref: "#/components/parameters/MarketReadinessCampaignId" }], responses: { "200": { description: Frozen campaign, content: { application/json: { schema: { $ref: "#/components/schemas/MarketReadinessCampaign" } } } }, "400": { $ref: "#/components/responses/BadRequest" }, "401": { $ref: "#/components/responses/Unauthorized" }, "403": { $ref: "#/components/responses/Forbidden" }, "404": { $ref: "#/components/responses/NotFound" } } }
+  /projects/{projectId}/market-readiness/campaigns/{campaignId}/cohort:
+    get: { operationId: listMarketReadinessCohort, tags: [market-readiness], security: [{ clerkSession: [] }], parameters: [{ $ref: "#/components/parameters/ProjectId" }, { $ref: "#/components/parameters/MarketReadinessCampaignId" }], responses: { "200": { description: Cohort, content: { application/json: { schema: { type: array, items: { $ref: "#/components/schemas/MarketReadinessCohortItem" } } } } }, "401": { $ref: "#/components/responses/Unauthorized" }, "403": { $ref: "#/components/responses/Forbidden" }, "404": { $ref: "#/components/responses/NotFound" } } }
+  /projects/{projectId}/market-readiness/campaigns/{campaignId}/experiments:
+    post: { operationId: createMarketReadinessExperiment, tags: [market-readiness], security: [{ clerkSession: [] }], parameters: [{ $ref: "#/components/parameters/ProjectId" }, { $ref: "#/components/parameters/MarketReadinessCampaignId" }], requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/CreateMarketReadinessExperimentRequest" } } } }, responses: { "201": { description: Experiment, content: { application/json: { schema: { $ref: "#/components/schemas/MarketReadinessExperiment" } } } }, "400": { $ref: "#/components/responses/BadRequest" }, "401": { $ref: "#/components/responses/Unauthorized" }, "403": { $ref: "#/components/responses/Forbidden" }, "404": { $ref: "#/components/responses/NotFound" } } }
+  /projects/{projectId}/market-readiness/campaigns/{campaignId}/experiments/{experimentId}:
+    get: { operationId: getMarketReadinessExperiment, tags: [market-readiness], security: [{ clerkSession: [] }], parameters: [{ $ref: "#/components/parameters/ProjectId" }, { $ref: "#/components/parameters/MarketReadinessCampaignId" }, { $ref: "#/components/parameters/MarketReadinessExperimentId" }], responses: { "200": { description: Experiment, content: { application/json: { schema: { $ref: "#/components/schemas/MarketReadinessExperiment" } } } }, "401": { $ref: "#/components/responses/Unauthorized" }, "403": { $ref: "#/components/responses/Forbidden" }, "404": { $ref: "#/components/responses/NotFound" } } }
+  /projects/{projectId}/market-readiness/campaigns/{campaignId}/experiments/{experimentId}/{experimentAction}:
+    post: { operationId: actionMarketReadinessExperiment, tags: [market-readiness], security: [{ clerkSession: [] }], parameters: [{ $ref: "#/components/parameters/ProjectId" }, { $ref: "#/components/parameters/MarketReadinessCampaignId" }, { $ref: "#/components/parameters/MarketReadinessExperimentId" }, { name: experimentAction, in: path, required: true, schema: { type: string, enum: [start, complete] } }], responses: { "200": { description: Experiment, content: { application/json: { schema: { $ref: "#/components/schemas/MarketReadinessExperiment" } } } }, "400": { $ref: "#/components/responses/BadRequest" }, "401": { $ref: "#/components/responses/Unauthorized" }, "403": { $ref: "#/components/responses/Forbidden" }, "404": { $ref: "#/components/responses/NotFound" } } }
+  /projects/{projectId}/market-readiness/campaigns/{campaignId}/experiments/{experimentId}/assign:
+    post: { operationId: assignMarketReadinessExperiment, tags: [market-readiness], security: [{ clerkSession: [] }], parameters: [{ $ref: "#/components/parameters/ProjectId" }, { $ref: "#/components/parameters/MarketReadinessCampaignId" }, { $ref: "#/components/parameters/MarketReadinessExperimentId" }], responses: { "200": { description: Assignments, content: { application/json: { schema: { $ref: "#/components/schemas/MarketReadinessAssignmentsResponse" } } } }, "400": { $ref: "#/components/responses/BadRequest" }, "401": { $ref: "#/components/responses/Unauthorized" }, "403": { $ref: "#/components/responses/Forbidden" }, "404": { $ref: "#/components/responses/NotFound" } } }
+  /projects/{projectId}/market-readiness/campaigns/{campaignId}/blind-reviews:
+    post: { operationId: createMarketReadinessBlindReview, tags: [market-readiness], security: [{ clerkSession: [] }], parameters: [{ $ref: "#/components/parameters/ProjectId" }, { $ref: "#/components/parameters/MarketReadinessCampaignId" }], requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/CreateMarketReadinessBlindReviewRequest" } } } }, responses: { "201": { description: Blind review, content: { application/json: { schema: { $ref: "#/components/schemas/MarketReadinessBlindReview" } } } }, "400": { $ref: "#/components/responses/BadRequest" }, "401": { $ref: "#/components/responses/Unauthorized" }, "403": { $ref: "#/components/responses/Forbidden" }, "404": { $ref: "#/components/responses/NotFound" } } }
+  /projects/{projectId}/market-readiness/campaigns/{campaignId}/adjudications:
+    post: { operationId: createMarketReadinessAdjudication, tags: [market-readiness], security: [{ clerkSession: [] }], parameters: [{ $ref: "#/components/parameters/ProjectId" }, { $ref: "#/components/parameters/MarketReadinessCampaignId" }], requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/CreateMarketReadinessAdjudicationRequest" } } } }, responses: { "201": { description: Adjudication, content: { application/json: { schema: { $ref: "#/components/schemas/MarketReadinessAdjudication" } } } }, "400": { $ref: "#/components/responses/BadRequest" }, "401": { $ref: "#/components/responses/Unauthorized" }, "403": { $ref: "#/components/responses/Forbidden" }, "404": { $ref: "#/components/responses/NotFound" } } }
+  /projects/{projectId}/market-readiness/campaigns/{campaignId}/salesperson-reviews:
+    post: { operationId: createMarketReadinessSalespersonReview, tags: [market-readiness], security: [{ clerkSession: [] }], parameters: [{ $ref: "#/components/parameters/ProjectId" }, { $ref: "#/components/parameters/MarketReadinessCampaignId" }], requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/CreateMarketReadinessSalespersonReviewRequest" } } } }, responses: { "201": { description: Salesperson review, content: { application/json: { schema: { $ref: "#/components/schemas/MarketReadinessSalespersonReview" } } } }, "400": { $ref: "#/components/responses/BadRequest" }, "401": { $ref: "#/components/responses/Unauthorized" }, "403": { $ref: "#/components/responses/Forbidden" }, "404": { $ref: "#/components/responses/NotFound" } } }
+  /projects/{projectId}/market-readiness/campaigns/{campaignId}/outcomes:
+    get: { operationId: listMarketReadinessOutcomes, tags: [market-readiness], security: [{ clerkSession: [] }], parameters: [{ $ref: "#/components/parameters/ProjectId" }, { $ref: "#/components/parameters/MarketReadinessCampaignId" }], responses: { "200": { description: Outcomes, content: { application/json: { schema: { type: array, items: { $ref: "#/components/schemas/MarketReadinessOutcome" } } } } }, "401": { $ref: "#/components/responses/Unauthorized" }, "403": { $ref: "#/components/responses/Forbidden" }, "404": { $ref: "#/components/responses/NotFound" } } }
+    post: { operationId: createMarketReadinessOutcome, tags: [market-readiness], security: [{ clerkSession: [] }], parameters: [{ $ref: "#/components/parameters/ProjectId" }, { $ref: "#/components/parameters/MarketReadinessCampaignId" }], requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/CreateMarketReadinessOutcomeRequest" } } } }, responses: { "201": { description: Outcome, content: { application/json: { schema: { $ref: "#/components/schemas/MarketReadinessOutcome" } } } }, "400": { $ref: "#/components/responses/BadRequest" }, "401": { $ref: "#/components/responses/Unauthorized" }, "403": { $ref: "#/components/responses/Forbidden" }, "404": { $ref: "#/components/responses/NotFound" } } }
+  /projects/{projectId}/market-readiness/campaigns/{campaignId}/outcomes/import:
+    post: { operationId: importMarketReadinessOutcomes, tags: [market-readiness], security: [{ clerkSession: [] }], parameters: [{ $ref: "#/components/parameters/ProjectId" }, { $ref: "#/components/parameters/MarketReadinessCampaignId" }], requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/ImportMarketReadinessOutcomesRequest" } } } }, responses: { "201": { description: Imported outcome batch, content: { application/json: { schema: { $ref: "#/components/schemas/MarketReadinessOutcomeImportResponse" } } } }, "400": { $ref: "#/components/responses/BadRequest" }, "401": { $ref: "#/components/responses/Unauthorized" }, "403": { $ref: "#/components/responses/Forbidden" }, "404": { $ref: "#/components/responses/NotFound" } } }
+  /projects/{projectId}/market-readiness/campaigns/{campaignId}/rollout:
+    get: { operationId: getMarketReadinessRollout, tags: [market-readiness], security: [{ clerkSession: [] }], parameters: [{ $ref: "#/components/parameters/ProjectId" }, { $ref: "#/components/parameters/MarketReadinessCampaignId" }], responses: { "200": { description: Rollout decision, content: { application/json: { schema: { $ref: "#/components/schemas/MarketReadinessRolloutDecision" } } } }, "401": { $ref: "#/components/responses/Unauthorized" }, "403": { $ref: "#/components/responses/Forbidden" }, "404": { $ref: "#/components/responses/NotFound" } } }
+    put: { operationId: updateMarketReadinessRollout, tags: [market-readiness], security: [{ clerkSession: [] }], parameters: [{ $ref: "#/components/parameters/ProjectId" }, { $ref: "#/components/parameters/MarketReadinessCampaignId" }], requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/UpdateMarketReadinessRolloutRequest" } } } }, responses: { "200": { description: Rollout decision, content: { application/json: { schema: { $ref: "#/components/schemas/MarketReadinessRolloutDecision" } } } }, "400": { $ref: "#/components/responses/BadRequest" }, "401": { $ref: "#/components/responses/Unauthorized" }, "403": { $ref: "#/components/responses/Forbidden" }, "404": { $ref: "#/components/responses/NotFound" } } }
+  /projects/{projectId}/market-readiness/campaigns/{campaignId}/advance-worker:
+    post: { operationId: requestMarketReadinessWorkerAdvance, summary: Advance one explicit development-only Market Readiness work lease, tags: [market-readiness], security: [{ clerkSession: [] }], parameters: [{ $ref: "#/components/parameters/ProjectId" }, { $ref: "#/components/parameters/MarketReadinessCampaignId" }], responses: { "200": { description: Actual progress from one explicitly requested worker lease, content: { application/json: { schema: { $ref: "#/components/schemas/MarketReadinessWorkerAdvance" } } } }, "400": { $ref: "#/components/responses/BadRequest" }, "401": { $ref: "#/components/responses/Unauthorized" }, "403": { $ref: "#/components/responses/Forbidden" }, "404": { $ref: "#/components/responses/NotFound" } } }
 components:
   schemas:
+    MarketReadinessCampaign:
+      type: object
+      required: [id, organizationId, projectId, name, state, discoveryMode, targetCount, paidCapCents, spentCents, reservedCents, outcomeMode, freezeHash, frozenAt, frozenBy, createdBy, createdAt, updatedAt]
+      properties: { id: { type: string }, organizationId: { type: string }, projectId: { type: string }, name: { type: string }, state: { type: string, enum: [PLANNED, DISCOVERING, REVIEWING, FROZEN, RUNNING, PARTIAL, COMPLETED, BLOCKED, CANCELLED] }, discoveryMode: { type: string }, targetCount: { type: number }, paidCapCents: { type: number }, spentCents: { type: number }, reservedCents: { type: number }, outcomeMode: { type: string }, freezeHash: { type: string, nullable: true }, frozenAt: { type: string, nullable: true }, frozenBy: { type: string, nullable: true }, createdBy: { type: string }, createdAt: { type: string }, updatedAt: { type: string } }
+    CreateMarketReadinessCampaignRequest:
+      type: object
+      required: [name]
+      properties: { name: { type: string, minLength: 1, maxLength: 200 }, targetCount: { type: number, enum: [200], default: 200 }, paidCapCents: { type: number, minimum: 0, maximum: 5000, default: 5000 } }
+    UpdateMarketReadinessCampaignRequest:
+      type: object
+      properties: { name: { type: string, minLength: 1, maxLength: 200 }, state: { type: string, enum: [PLANNED, DISCOVERING, REVIEWING, FROZEN, RUNNING, PARTIAL, COMPLETED, BLOCKED, CANCELLED] } }
+    MarketReadinessCohortItem:
+      type: object
+      required: [id, organizationId, projectId, campaignId, companyId, normalizedDomain, source, stratum, opaqueReviewKey, createdAt]
+      properties: { id: { type: string }, organizationId: { type: string }, projectId: { type: string }, campaignId: { type: string }, companyId: { type: string, nullable: true }, normalizedDomain: { type: string }, source: { type: string, enum: [DISCOVERY, MANUAL, IMPORT] }, stratum: { type: string }, opaqueReviewKey: { type: string }, createdAt: { type: string } }
+    MarketReadinessExperiment:
+      type: object
+      required: [id, organizationId, projectId, campaignId, state, seed, treatmentName, controlName, createdBy, createdAt, updatedAt]
+      properties: { id: { type: string }, organizationId: { type: string }, projectId: { type: string }, campaignId: { type: string }, state: { type: string, enum: [DRAFT, ASSIGNED, RUNNING, COMPLETED] }, seed: { type: string }, treatmentName: { type: string }, controlName: { type: string }, createdBy: { type: string }, createdAt: { type: string }, updatedAt: { type: string } }
+    CreateMarketReadinessExperimentRequest:
+      type: object
+      required: [seed]
+      properties: { seed: { type: string, minLength: 1 } }
+    MarketReadinessAssignment:
+      type: object
+      required: [cohortItemId, stratum, arm]
+      properties: { cohortItemId: { type: string }, stratum: { type: string }, arm: { type: string, enum: [TREATMENT, CONTROL] } }
+    MarketReadinessAssignmentsResponse:
+      type: object
+      required: [assignments]
+      properties: { assignments: { type: array, items: { $ref: "#/components/schemas/MarketReadinessAssignment" } } }
+    CreateMarketReadinessBlindReviewRequest:
+      type: object
+      required: [cohortItemId, roleFit, whoFit, buyer, competitor, actionableEvidence]
+      properties: { cohortItemId: { type: string }, roleFit: { type: boolean }, whoFit: { type: boolean }, buyer: { type: boolean }, competitor: { type: boolean }, dangerous: { type: boolean, default: false }, actionableEvidence: { type: boolean }, notes: { type: string, maxLength: 5000 } }
+    MarketReadinessBlindReview:
+      type: object
+      required: [id, organizationId, projectId, campaignId, cohortItemId, reviewerId, roleFit, whoFit, buyer, competitor, dangerous, actionableEvidence, notes, submittedAt]
+      properties: { id: { type: string }, organizationId: { type: string }, projectId: { type: string }, campaignId: { type: string }, cohortItemId: { type: string }, reviewerId: { type: string }, roleFit: { type: boolean }, whoFit: { type: boolean }, buyer: { type: boolean }, competitor: { type: boolean }, dangerous: { type: boolean }, actionableEvidence: { type: boolean }, notes: { type: string, nullable: true }, submittedAt: { type: string } }
+    CreateMarketReadinessAdjudicationRequest:
+      type: object
+      required: [cohortItemId, goldLabels, rationale]
+      properties: { cohortItemId: { type: string }, goldLabels: { type: object, additionalProperties: { type: boolean } }, rationale: { type: string, minLength: 1 } }
+    MarketReadinessAdjudication:
+      type: object
+      required: [id, organizationId, projectId, campaignId, cohortItemId, adjudicatorId, goldLabels, rationale, createdAt]
+      properties: { id: { type: string }, organizationId: { type: string }, projectId: { type: string }, campaignId: { type: string }, cohortItemId: { type: string }, adjudicatorId: { type: string }, goldLabels: { type: object, additionalProperties: { type: boolean } }, rationale: { type: string }, createdAt: { type: string } }
+    CreateMarketReadinessSalespersonReviewRequest:
+      type: object
+      required: [cohortItemId, usable]
+      properties: { cohortItemId: { type: string }, usable: { type: boolean }, notes: { type: string, maxLength: 5000 } }
+    MarketReadinessSalespersonReview:
+      type: object
+      required: [id, organizationId, projectId, campaignId, cohortItemId, reviewerId, usable, notes, createdAt]
+      properties: { id: { type: string }, organizationId: { type: string }, projectId: { type: string }, campaignId: { type: string }, cohortItemId: { type: string }, reviewerId: { type: string }, usable: { type: boolean }, notes: { type: string, nullable: true }, createdAt: { type: string } }
+    CreateMarketReadinessOutcomeRequest:
+      type: object
+      required: [cohortItemId, outcome, occurredAt, idempotencyKey]
+      properties: { cohortItemId: { type: string }, outcome: { type: string, enum: [MEETING, OPPORTUNITY, BAD_FIT, OTHER] }, occurredAt: { type: string }, idempotencyKey: { type: string, minLength: 1 } }
+    MarketReadinessOutcome:
+      type: object
+      required: [id, organizationId, projectId, campaignId, experimentAssignmentId, cohortItemId, importBatchId, outcome, occurredAt, recordedBy, idempotencyKey, createdAt]
+      properties: { id: { type: string }, organizationId: { type: string }, projectId: { type: string }, campaignId: { type: string }, experimentAssignmentId: { type: string, nullable: true }, cohortItemId: { type: string }, importBatchId: { type: string, nullable: true }, outcome: { type: string, enum: [MEETING, OPPORTUNITY, BAD_FIT, OTHER] }, occurredAt: { type: string }, recordedBy: { type: string }, idempotencyKey: { type: string }, createdAt: { type: string } }
+    ImportMarketReadinessOutcomesRequest:
+      type: object
+      required: [csv, idempotencyKey]
+      properties: { csv: { type: string, minLength: 1 }, idempotencyKey: { type: string, minLength: 1 } }
+    MarketReadinessOutcomeImportResponse:
+      type: object
+      required: [batch, rows]
+      properties: { batch: { type: object, nullable: true, additionalProperties: true }, rows: { type: array, items: { type: object, required: [domain, outcome, occurredAt], properties: { domain: { type: string }, outcome: { type: string, enum: [MEETING, OPPORTUNITY, BAD_FIT, OTHER] }, occurredAt: { type: string } } } } }
+    UpdateMarketReadinessRolloutRequest:
+      type: object
+      additionalProperties: false
+      properties: { desiredStage: { type: string, enum: [DRAFT, PROMOTED], default: DRAFT } }
+    MarketReadinessRolloutDecision:
+      type: object
+      required: [id, organizationId, projectId, campaignId, state, decision, decidedBy, decidedAt, createdAt, updatedAt]
+      properties: { id: { type: string }, organizationId: { type: string }, projectId: { type: string }, campaignId: { type: string }, state: { type: string, enum: [DRAFT, APPROVED, REJECTED, PROMOTED] }, decision: { description: Authoritative persisted quality, population, and commercial gates, type: object, additionalProperties: true }, decidedBy: { type: string, nullable: true }, decidedAt: { type: string, nullable: true }, createdAt: { type: string }, updatedAt: { type: string } }
+    MarketReadinessWorkerAdvance:
+      type: object
+      required: [accepted, limit, message]
+      properties: { accepted: { type: boolean }, limit: { type: number }, message: { type: string } }
+    MarketReadinessDashboard:
+      type: object
+      required: [campaigns, defaultConfiguration]
+      properties: { campaigns: { type: array, items: { $ref: "#/components/schemas/MarketReadinessCampaign" } }, defaultConfiguration: { type: object, required: [discoveryMode, targetCount, paidCapCents, outcomeMode], properties: { discoveryMode: { type: string }, targetCount: { type: number }, paidCapCents: { type: number }, outcomeMode: { type: string } } } }
     IntelligenceV2RunInput:
       type: object
       additionalProperties: false
@@ -4196,6 +4323,18 @@ components:
         type: string
     ProjectId:
       name: projectId
+      in: path
+      required: true
+      schema:
+        type: string
+    MarketReadinessCampaignId:
+      name: campaignId
+      in: path
+      required: true
+      schema:
+        type: string
+    MarketReadinessExperimentId:
+      name: experimentId
       in: path
       required: true
       schema:

@@ -47,6 +47,12 @@ import type {
   ConfigureProjectSignalPackRequest,
   ConfigureSignalClusterDefinitionRequest,
   CreateLearningPolicyRequest,
+  CreateMarketReadinessAdjudicationRequest,
+  CreateMarketReadinessBlindReviewRequest,
+  CreateMarketReadinessCampaignRequest,
+  CreateMarketReadinessExperimentRequest,
+  CreateMarketReadinessOutcomeRequest,
+  CreateMarketReadinessSalespersonReviewRequest,
   CreateOpportunityModelRequest,
   CreateSignalClusterDefinitionRequest,
   CurrentUser,
@@ -63,6 +69,7 @@ import type {
   IcpCriterionInput,
   IcpCriterionUpdate,
   IcpVersion,
+  ImportMarketReadinessOutcomesRequest,
   IntelligenceV2Run,
   IntelligenceV2RunInput,
   InterpretationUnavailableResponse,
@@ -71,6 +78,18 @@ import type {
   LearningProposal,
   LearningProposalReview,
   ListLearningProposalsParams,
+  MarketReadinessAdjudication,
+  MarketReadinessAssignmentsResponse,
+  MarketReadinessBlindReview,
+  MarketReadinessCampaign,
+  MarketReadinessCohortItem,
+  MarketReadinessDashboard,
+  MarketReadinessExperiment,
+  MarketReadinessOutcome,
+  MarketReadinessOutcomeImportResponse,
+  MarketReadinessRolloutDecision,
+  MarketReadinessSalespersonReview,
+  MarketReadinessWorkerAdvance,
   MarketTodayResponse,
   MaturityStageRequiredResponse,
   NotFoundResponse,
@@ -114,6 +133,8 @@ import type {
   SignalClusterDefinition,
   SignalPack,
   UnauthorizedResponse,
+  UpdateMarketReadinessCampaignRequest,
+  UpdateMarketReadinessRolloutRequest,
   UpdateOpportunityResearchQuestionRequest,
   UpdateOpportunitySignalRequest,
   WorkspaceActivity,
@@ -6535,5 +6556,1491 @@ export const useReviewLearningProposal = <TError = ErrorType<BadRequestResponse 
         TContext
       > => {
       return useMutation(getReviewLearningProposalMutationOptions(options));
+    }
+
+export const getGetMarketReadinessDashboardUrl = (projectId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/market-readiness/dashboard`
+}
+
+export const getMarketReadinessDashboard = async (projectId: string, options?: Parameters<typeof customFetch>[1]): Promise<MarketReadinessDashboard> => {
+
+  return customFetch<MarketReadinessDashboard>(getGetMarketReadinessDashboardUrl(projectId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetMarketReadinessDashboardQueryKey = (projectId: string,) => {
+    return [
+    `/api/projects/${projectId}/market-readiness/dashboard`
+    ] as const;
+    }
+
+
+export const getGetMarketReadinessDashboardQueryOptions = <TData = Awaited<ReturnType<typeof getMarketReadinessDashboard>>, TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(projectId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getMarketReadinessDashboard>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetMarketReadinessDashboardQueryKey(projectId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getMarketReadinessDashboard>>> = ({ signal }) => getMarketReadinessDashboard(projectId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: projectId !== null && projectId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getMarketReadinessDashboard>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetMarketReadinessDashboardQueryResult = NonNullable<Awaited<ReturnType<typeof getMarketReadinessDashboard>>>
+export type GetMarketReadinessDashboardQueryError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+
+
+export function useGetMarketReadinessDashboard<TData = Awaited<ReturnType<typeof getMarketReadinessDashboard>>, TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(
+ projectId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getMarketReadinessDashboard>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetMarketReadinessDashboardQueryOptions(projectId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getListMarketReadinessCampaignsUrl = (projectId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/market-readiness/campaigns`
+}
+
+export const listMarketReadinessCampaigns = async (projectId: string, options?: Parameters<typeof customFetch>[1]): Promise<MarketReadinessCampaign[]> => {
+
+  return customFetch<MarketReadinessCampaign[]>(getListMarketReadinessCampaignsUrl(projectId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListMarketReadinessCampaignsQueryKey = (projectId: string,) => {
+    return [
+    `/api/projects/${projectId}/market-readiness/campaigns`
+    ] as const;
+    }
+
+
+export const getListMarketReadinessCampaignsQueryOptions = <TData = Awaited<ReturnType<typeof listMarketReadinessCampaigns>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(projectId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listMarketReadinessCampaigns>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListMarketReadinessCampaignsQueryKey(projectId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listMarketReadinessCampaigns>>> = ({ signal }) => listMarketReadinessCampaigns(projectId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: projectId !== null && projectId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listMarketReadinessCampaigns>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListMarketReadinessCampaignsQueryResult = NonNullable<Awaited<ReturnType<typeof listMarketReadinessCampaigns>>>
+export type ListMarketReadinessCampaignsQueryError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+
+
+export function useListMarketReadinessCampaigns<TData = Awaited<ReturnType<typeof listMarketReadinessCampaigns>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(
+ projectId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listMarketReadinessCampaigns>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListMarketReadinessCampaignsQueryOptions(projectId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getCreateMarketReadinessCampaignUrl = (projectId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/market-readiness/campaigns`
+}
+
+export const createMarketReadinessCampaign = async (projectId: string,
+    createMarketReadinessCampaignRequest: CreateMarketReadinessCampaignRequest, options?: Parameters<typeof customFetch>[1]): Promise<MarketReadinessCampaign> => {
+
+  return customFetch<MarketReadinessCampaign>(getCreateMarketReadinessCampaignUrl(projectId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(createMarketReadinessCampaignRequest)
+  }
+);}
+
+
+
+
+
+export const getCreateMarketReadinessCampaignMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createMarketReadinessCampaign>>, TError,{projectId: string;data: BodyType<CreateMarketReadinessCampaignRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createMarketReadinessCampaign>>, TError,{projectId: string;data: BodyType<CreateMarketReadinessCampaignRequest>}, TContext> => {
+
+const mutationKey = ['createMarketReadinessCampaign'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createMarketReadinessCampaign>>, {projectId: string;data: BodyType<CreateMarketReadinessCampaignRequest>}> = (props) => {
+          const {projectId,data} = props ?? {};
+
+          return  createMarketReadinessCampaign(projectId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateMarketReadinessCampaignMutationResult = NonNullable<Awaited<ReturnType<typeof createMarketReadinessCampaign>>>
+    export type CreateMarketReadinessCampaignMutationBody = BodyType<CreateMarketReadinessCampaignRequest>
+    export type CreateMarketReadinessCampaignMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+    export const useCreateMarketReadinessCampaign = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createMarketReadinessCampaign>>, TError,{projectId: string;data: BodyType<CreateMarketReadinessCampaignRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createMarketReadinessCampaign>>,
+        TError,
+        {projectId: string;data: BodyType<CreateMarketReadinessCampaignRequest>},
+        TContext
+      > => {
+      return useMutation(getCreateMarketReadinessCampaignMutationOptions(options));
+    }
+
+export const getGetMarketReadinessCampaignUrl = (projectId: string,
+    campaignId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/market-readiness/campaigns/${campaignId}`
+}
+
+export const getMarketReadinessCampaign = async (projectId: string,
+    campaignId: string, options?: Parameters<typeof customFetch>[1]): Promise<MarketReadinessCampaign> => {
+
+  return customFetch<MarketReadinessCampaign>(getGetMarketReadinessCampaignUrl(projectId,campaignId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetMarketReadinessCampaignQueryKey = (projectId: string,
+    campaignId: string,) => {
+    return [
+    `/api/projects/${projectId}/market-readiness/campaigns/${campaignId}`
+    ] as const;
+    }
+
+
+export const getGetMarketReadinessCampaignQueryOptions = <TData = Awaited<ReturnType<typeof getMarketReadinessCampaign>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(projectId: string,
+    campaignId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getMarketReadinessCampaign>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetMarketReadinessCampaignQueryKey(projectId,campaignId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getMarketReadinessCampaign>>> = ({ signal }) => getMarketReadinessCampaign(projectId,campaignId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: projectId !== null && projectId !== undefined && campaignId !== null && campaignId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getMarketReadinessCampaign>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetMarketReadinessCampaignQueryResult = NonNullable<Awaited<ReturnType<typeof getMarketReadinessCampaign>>>
+export type GetMarketReadinessCampaignQueryError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+
+
+export function useGetMarketReadinessCampaign<TData = Awaited<ReturnType<typeof getMarketReadinessCampaign>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(
+ projectId: string,
+    campaignId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getMarketReadinessCampaign>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetMarketReadinessCampaignQueryOptions(projectId,campaignId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getUpdateMarketReadinessCampaignUrl = (projectId: string,
+    campaignId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/market-readiness/campaigns/${campaignId}`
+}
+
+export const updateMarketReadinessCampaign = async (projectId: string,
+    campaignId: string,
+    updateMarketReadinessCampaignRequest: UpdateMarketReadinessCampaignRequest, options?: Parameters<typeof customFetch>[1]): Promise<MarketReadinessCampaign> => {
+
+  return customFetch<MarketReadinessCampaign>(getUpdateMarketReadinessCampaignUrl(projectId,campaignId),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(updateMarketReadinessCampaignRequest)
+  }
+);}
+
+
+
+
+
+export const getUpdateMarketReadinessCampaignMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateMarketReadinessCampaign>>, TError,{projectId: string;campaignId: string;data: BodyType<UpdateMarketReadinessCampaignRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateMarketReadinessCampaign>>, TError,{projectId: string;campaignId: string;data: BodyType<UpdateMarketReadinessCampaignRequest>}, TContext> => {
+
+const mutationKey = ['updateMarketReadinessCampaign'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateMarketReadinessCampaign>>, {projectId: string;campaignId: string;data: BodyType<UpdateMarketReadinessCampaignRequest>}> = (props) => {
+          const {projectId,campaignId,data} = props ?? {};
+
+          return  updateMarketReadinessCampaign(projectId,campaignId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateMarketReadinessCampaignMutationResult = NonNullable<Awaited<ReturnType<typeof updateMarketReadinessCampaign>>>
+    export type UpdateMarketReadinessCampaignMutationBody = BodyType<UpdateMarketReadinessCampaignRequest>
+    export type UpdateMarketReadinessCampaignMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+    export const useUpdateMarketReadinessCampaign = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateMarketReadinessCampaign>>, TError,{projectId: string;campaignId: string;data: BodyType<UpdateMarketReadinessCampaignRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateMarketReadinessCampaign>>,
+        TError,
+        {projectId: string;campaignId: string;data: BodyType<UpdateMarketReadinessCampaignRequest>},
+        TContext
+      > => {
+      return useMutation(getUpdateMarketReadinessCampaignMutationOptions(options));
+    }
+
+export const getActionMarketReadinessCampaignUrl = (projectId: string,
+    campaignId: string,
+    action: 'start' | 'pause' | 'resume' | 'cancel',) => {
+
+
+
+
+  return `/api/projects/${projectId}/market-readiness/campaigns/${campaignId}/${action}`
+}
+
+export const actionMarketReadinessCampaign = async (projectId: string,
+    campaignId: string,
+    action: 'start' | 'pause' | 'resume' | 'cancel', options?: Parameters<typeof customFetch>[1]): Promise<MarketReadinessCampaign> => {
+
+  return customFetch<MarketReadinessCampaign>(getActionMarketReadinessCampaignUrl(projectId,campaignId,action),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getActionMarketReadinessCampaignMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof actionMarketReadinessCampaign>>, TError,{projectId: string;campaignId: string;action: 'start' | 'pause' | 'resume' | 'cancel'}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof actionMarketReadinessCampaign>>, TError,{projectId: string;campaignId: string;action: 'start' | 'pause' | 'resume' | 'cancel'}, TContext> => {
+
+const mutationKey = ['actionMarketReadinessCampaign'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof actionMarketReadinessCampaign>>, {projectId: string;campaignId: string;action: 'start' | 'pause' | 'resume' | 'cancel'}> = (props) => {
+          const {projectId,campaignId,action} = props ?? {};
+
+          return  actionMarketReadinessCampaign(projectId,campaignId,action,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ActionMarketReadinessCampaignMutationResult = NonNullable<Awaited<ReturnType<typeof actionMarketReadinessCampaign>>>
+
+    export type ActionMarketReadinessCampaignMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+    export const useActionMarketReadinessCampaign = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof actionMarketReadinessCampaign>>, TError,{projectId: string;campaignId: string;action: 'start' | 'pause' | 'resume' | 'cancel'}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof actionMarketReadinessCampaign>>,
+        TError,
+        {projectId: string;campaignId: string;action: 'start' | 'pause' | 'resume' | 'cancel'},
+        TContext
+      > => {
+      return useMutation(getActionMarketReadinessCampaignMutationOptions(options));
+    }
+
+export const getFreezeMarketReadinessCampaignUrl = (projectId: string,
+    campaignId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/market-readiness/campaigns/${campaignId}/freeze`
+}
+
+export const freezeMarketReadinessCampaign = async (projectId: string,
+    campaignId: string, options?: Parameters<typeof customFetch>[1]): Promise<MarketReadinessCampaign> => {
+
+  return customFetch<MarketReadinessCampaign>(getFreezeMarketReadinessCampaignUrl(projectId,campaignId),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getFreezeMarketReadinessCampaignMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof freezeMarketReadinessCampaign>>, TError,{projectId: string;campaignId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof freezeMarketReadinessCampaign>>, TError,{projectId: string;campaignId: string}, TContext> => {
+
+const mutationKey = ['freezeMarketReadinessCampaign'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof freezeMarketReadinessCampaign>>, {projectId: string;campaignId: string}> = (props) => {
+          const {projectId,campaignId} = props ?? {};
+
+          return  freezeMarketReadinessCampaign(projectId,campaignId,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type FreezeMarketReadinessCampaignMutationResult = NonNullable<Awaited<ReturnType<typeof freezeMarketReadinessCampaign>>>
+
+    export type FreezeMarketReadinessCampaignMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+    export const useFreezeMarketReadinessCampaign = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof freezeMarketReadinessCampaign>>, TError,{projectId: string;campaignId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof freezeMarketReadinessCampaign>>,
+        TError,
+        {projectId: string;campaignId: string},
+        TContext
+      > => {
+      return useMutation(getFreezeMarketReadinessCampaignMutationOptions(options));
+    }
+
+export const getListMarketReadinessCohortUrl = (projectId: string,
+    campaignId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/market-readiness/campaigns/${campaignId}/cohort`
+}
+
+export const listMarketReadinessCohort = async (projectId: string,
+    campaignId: string, options?: Parameters<typeof customFetch>[1]): Promise<MarketReadinessCohortItem[]> => {
+
+  return customFetch<MarketReadinessCohortItem[]>(getListMarketReadinessCohortUrl(projectId,campaignId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListMarketReadinessCohortQueryKey = (projectId: string,
+    campaignId: string,) => {
+    return [
+    `/api/projects/${projectId}/market-readiness/campaigns/${campaignId}/cohort`
+    ] as const;
+    }
+
+
+export const getListMarketReadinessCohortQueryOptions = <TData = Awaited<ReturnType<typeof listMarketReadinessCohort>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(projectId: string,
+    campaignId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listMarketReadinessCohort>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListMarketReadinessCohortQueryKey(projectId,campaignId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listMarketReadinessCohort>>> = ({ signal }) => listMarketReadinessCohort(projectId,campaignId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: projectId !== null && projectId !== undefined && campaignId !== null && campaignId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listMarketReadinessCohort>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListMarketReadinessCohortQueryResult = NonNullable<Awaited<ReturnType<typeof listMarketReadinessCohort>>>
+export type ListMarketReadinessCohortQueryError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+
+
+export function useListMarketReadinessCohort<TData = Awaited<ReturnType<typeof listMarketReadinessCohort>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(
+ projectId: string,
+    campaignId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listMarketReadinessCohort>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListMarketReadinessCohortQueryOptions(projectId,campaignId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getCreateMarketReadinessExperimentUrl = (projectId: string,
+    campaignId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/market-readiness/campaigns/${campaignId}/experiments`
+}
+
+export const createMarketReadinessExperiment = async (projectId: string,
+    campaignId: string,
+    createMarketReadinessExperimentRequest: CreateMarketReadinessExperimentRequest, options?: Parameters<typeof customFetch>[1]): Promise<MarketReadinessExperiment> => {
+
+  return customFetch<MarketReadinessExperiment>(getCreateMarketReadinessExperimentUrl(projectId,campaignId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(createMarketReadinessExperimentRequest)
+  }
+);}
+
+
+
+
+
+export const getCreateMarketReadinessExperimentMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createMarketReadinessExperiment>>, TError,{projectId: string;campaignId: string;data: BodyType<CreateMarketReadinessExperimentRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createMarketReadinessExperiment>>, TError,{projectId: string;campaignId: string;data: BodyType<CreateMarketReadinessExperimentRequest>}, TContext> => {
+
+const mutationKey = ['createMarketReadinessExperiment'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createMarketReadinessExperiment>>, {projectId: string;campaignId: string;data: BodyType<CreateMarketReadinessExperimentRequest>}> = (props) => {
+          const {projectId,campaignId,data} = props ?? {};
+
+          return  createMarketReadinessExperiment(projectId,campaignId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateMarketReadinessExperimentMutationResult = NonNullable<Awaited<ReturnType<typeof createMarketReadinessExperiment>>>
+    export type CreateMarketReadinessExperimentMutationBody = BodyType<CreateMarketReadinessExperimentRequest>
+    export type CreateMarketReadinessExperimentMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+    export const useCreateMarketReadinessExperiment = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createMarketReadinessExperiment>>, TError,{projectId: string;campaignId: string;data: BodyType<CreateMarketReadinessExperimentRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createMarketReadinessExperiment>>,
+        TError,
+        {projectId: string;campaignId: string;data: BodyType<CreateMarketReadinessExperimentRequest>},
+        TContext
+      > => {
+      return useMutation(getCreateMarketReadinessExperimentMutationOptions(options));
+    }
+
+export const getGetMarketReadinessExperimentUrl = (projectId: string,
+    campaignId: string,
+    experimentId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/market-readiness/campaigns/${campaignId}/experiments/${experimentId}`
+}
+
+export const getMarketReadinessExperiment = async (projectId: string,
+    campaignId: string,
+    experimentId: string, options?: Parameters<typeof customFetch>[1]): Promise<MarketReadinessExperiment> => {
+
+  return customFetch<MarketReadinessExperiment>(getGetMarketReadinessExperimentUrl(projectId,campaignId,experimentId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetMarketReadinessExperimentQueryKey = (projectId: string,
+    campaignId: string,
+    experimentId: string,) => {
+    return [
+    `/api/projects/${projectId}/market-readiness/campaigns/${campaignId}/experiments/${experimentId}`
+    ] as const;
+    }
+
+
+export const getGetMarketReadinessExperimentQueryOptions = <TData = Awaited<ReturnType<typeof getMarketReadinessExperiment>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(projectId: string,
+    campaignId: string,
+    experimentId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getMarketReadinessExperiment>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetMarketReadinessExperimentQueryKey(projectId,campaignId,experimentId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getMarketReadinessExperiment>>> = ({ signal }) => getMarketReadinessExperiment(projectId,campaignId,experimentId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: projectId !== null && projectId !== undefined && campaignId !== null && campaignId !== undefined && experimentId !== null && experimentId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getMarketReadinessExperiment>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetMarketReadinessExperimentQueryResult = NonNullable<Awaited<ReturnType<typeof getMarketReadinessExperiment>>>
+export type GetMarketReadinessExperimentQueryError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+
+
+export function useGetMarketReadinessExperiment<TData = Awaited<ReturnType<typeof getMarketReadinessExperiment>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(
+ projectId: string,
+    campaignId: string,
+    experimentId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getMarketReadinessExperiment>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetMarketReadinessExperimentQueryOptions(projectId,campaignId,experimentId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getActionMarketReadinessExperimentUrl = (projectId: string,
+    campaignId: string,
+    experimentId: string,
+    experimentAction: 'start' | 'complete',) => {
+
+
+
+
+  return `/api/projects/${projectId}/market-readiness/campaigns/${campaignId}/experiments/${experimentId}/${experimentAction}`
+}
+
+export const actionMarketReadinessExperiment = async (projectId: string,
+    campaignId: string,
+    experimentId: string,
+    experimentAction: 'start' | 'complete', options?: Parameters<typeof customFetch>[1]): Promise<MarketReadinessExperiment> => {
+
+  return customFetch<MarketReadinessExperiment>(getActionMarketReadinessExperimentUrl(projectId,campaignId,experimentId,experimentAction),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getActionMarketReadinessExperimentMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof actionMarketReadinessExperiment>>, TError,{projectId: string;campaignId: string;experimentId: string;experimentAction: 'start' | 'complete'}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof actionMarketReadinessExperiment>>, TError,{projectId: string;campaignId: string;experimentId: string;experimentAction: 'start' | 'complete'}, TContext> => {
+
+const mutationKey = ['actionMarketReadinessExperiment'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof actionMarketReadinessExperiment>>, {projectId: string;campaignId: string;experimentId: string;experimentAction: 'start' | 'complete'}> = (props) => {
+          const {projectId,campaignId,experimentId,experimentAction} = props ?? {};
+
+          return  actionMarketReadinessExperiment(projectId,campaignId,experimentId,experimentAction,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ActionMarketReadinessExperimentMutationResult = NonNullable<Awaited<ReturnType<typeof actionMarketReadinessExperiment>>>
+
+    export type ActionMarketReadinessExperimentMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+    export const useActionMarketReadinessExperiment = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof actionMarketReadinessExperiment>>, TError,{projectId: string;campaignId: string;experimentId: string;experimentAction: 'start' | 'complete'}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof actionMarketReadinessExperiment>>,
+        TError,
+        {projectId: string;campaignId: string;experimentId: string;experimentAction: 'start' | 'complete'},
+        TContext
+      > => {
+      return useMutation(getActionMarketReadinessExperimentMutationOptions(options));
+    }
+
+export const getAssignMarketReadinessExperimentUrl = (projectId: string,
+    campaignId: string,
+    experimentId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/market-readiness/campaigns/${campaignId}/experiments/${experimentId}/assign`
+}
+
+export const assignMarketReadinessExperiment = async (projectId: string,
+    campaignId: string,
+    experimentId: string, options?: Parameters<typeof customFetch>[1]): Promise<MarketReadinessAssignmentsResponse> => {
+
+  return customFetch<MarketReadinessAssignmentsResponse>(getAssignMarketReadinessExperimentUrl(projectId,campaignId,experimentId),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getAssignMarketReadinessExperimentMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof assignMarketReadinessExperiment>>, TError,{projectId: string;campaignId: string;experimentId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof assignMarketReadinessExperiment>>, TError,{projectId: string;campaignId: string;experimentId: string}, TContext> => {
+
+const mutationKey = ['assignMarketReadinessExperiment'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof assignMarketReadinessExperiment>>, {projectId: string;campaignId: string;experimentId: string}> = (props) => {
+          const {projectId,campaignId,experimentId} = props ?? {};
+
+          return  assignMarketReadinessExperiment(projectId,campaignId,experimentId,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AssignMarketReadinessExperimentMutationResult = NonNullable<Awaited<ReturnType<typeof assignMarketReadinessExperiment>>>
+
+    export type AssignMarketReadinessExperimentMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+    export const useAssignMarketReadinessExperiment = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof assignMarketReadinessExperiment>>, TError,{projectId: string;campaignId: string;experimentId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof assignMarketReadinessExperiment>>,
+        TError,
+        {projectId: string;campaignId: string;experimentId: string},
+        TContext
+      > => {
+      return useMutation(getAssignMarketReadinessExperimentMutationOptions(options));
+    }
+
+export const getCreateMarketReadinessBlindReviewUrl = (projectId: string,
+    campaignId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/market-readiness/campaigns/${campaignId}/blind-reviews`
+}
+
+export const createMarketReadinessBlindReview = async (projectId: string,
+    campaignId: string,
+    createMarketReadinessBlindReviewRequest: CreateMarketReadinessBlindReviewRequest, options?: Parameters<typeof customFetch>[1]): Promise<MarketReadinessBlindReview> => {
+
+  return customFetch<MarketReadinessBlindReview>(getCreateMarketReadinessBlindReviewUrl(projectId,campaignId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(createMarketReadinessBlindReviewRequest)
+  }
+);}
+
+
+
+
+
+export const getCreateMarketReadinessBlindReviewMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createMarketReadinessBlindReview>>, TError,{projectId: string;campaignId: string;data: BodyType<CreateMarketReadinessBlindReviewRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createMarketReadinessBlindReview>>, TError,{projectId: string;campaignId: string;data: BodyType<CreateMarketReadinessBlindReviewRequest>}, TContext> => {
+
+const mutationKey = ['createMarketReadinessBlindReview'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createMarketReadinessBlindReview>>, {projectId: string;campaignId: string;data: BodyType<CreateMarketReadinessBlindReviewRequest>}> = (props) => {
+          const {projectId,campaignId,data} = props ?? {};
+
+          return  createMarketReadinessBlindReview(projectId,campaignId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateMarketReadinessBlindReviewMutationResult = NonNullable<Awaited<ReturnType<typeof createMarketReadinessBlindReview>>>
+    export type CreateMarketReadinessBlindReviewMutationBody = BodyType<CreateMarketReadinessBlindReviewRequest>
+    export type CreateMarketReadinessBlindReviewMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+    export const useCreateMarketReadinessBlindReview = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createMarketReadinessBlindReview>>, TError,{projectId: string;campaignId: string;data: BodyType<CreateMarketReadinessBlindReviewRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createMarketReadinessBlindReview>>,
+        TError,
+        {projectId: string;campaignId: string;data: BodyType<CreateMarketReadinessBlindReviewRequest>},
+        TContext
+      > => {
+      return useMutation(getCreateMarketReadinessBlindReviewMutationOptions(options));
+    }
+
+export const getCreateMarketReadinessAdjudicationUrl = (projectId: string,
+    campaignId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/market-readiness/campaigns/${campaignId}/adjudications`
+}
+
+export const createMarketReadinessAdjudication = async (projectId: string,
+    campaignId: string,
+    createMarketReadinessAdjudicationRequest: CreateMarketReadinessAdjudicationRequest, options?: Parameters<typeof customFetch>[1]): Promise<MarketReadinessAdjudication> => {
+
+  return customFetch<MarketReadinessAdjudication>(getCreateMarketReadinessAdjudicationUrl(projectId,campaignId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(createMarketReadinessAdjudicationRequest)
+  }
+);}
+
+
+
+
+
+export const getCreateMarketReadinessAdjudicationMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createMarketReadinessAdjudication>>, TError,{projectId: string;campaignId: string;data: BodyType<CreateMarketReadinessAdjudicationRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createMarketReadinessAdjudication>>, TError,{projectId: string;campaignId: string;data: BodyType<CreateMarketReadinessAdjudicationRequest>}, TContext> => {
+
+const mutationKey = ['createMarketReadinessAdjudication'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createMarketReadinessAdjudication>>, {projectId: string;campaignId: string;data: BodyType<CreateMarketReadinessAdjudicationRequest>}> = (props) => {
+          const {projectId,campaignId,data} = props ?? {};
+
+          return  createMarketReadinessAdjudication(projectId,campaignId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateMarketReadinessAdjudicationMutationResult = NonNullable<Awaited<ReturnType<typeof createMarketReadinessAdjudication>>>
+    export type CreateMarketReadinessAdjudicationMutationBody = BodyType<CreateMarketReadinessAdjudicationRequest>
+    export type CreateMarketReadinessAdjudicationMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+    export const useCreateMarketReadinessAdjudication = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createMarketReadinessAdjudication>>, TError,{projectId: string;campaignId: string;data: BodyType<CreateMarketReadinessAdjudicationRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createMarketReadinessAdjudication>>,
+        TError,
+        {projectId: string;campaignId: string;data: BodyType<CreateMarketReadinessAdjudicationRequest>},
+        TContext
+      > => {
+      return useMutation(getCreateMarketReadinessAdjudicationMutationOptions(options));
+    }
+
+export const getCreateMarketReadinessSalespersonReviewUrl = (projectId: string,
+    campaignId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/market-readiness/campaigns/${campaignId}/salesperson-reviews`
+}
+
+export const createMarketReadinessSalespersonReview = async (projectId: string,
+    campaignId: string,
+    createMarketReadinessSalespersonReviewRequest: CreateMarketReadinessSalespersonReviewRequest, options?: Parameters<typeof customFetch>[1]): Promise<MarketReadinessSalespersonReview> => {
+
+  return customFetch<MarketReadinessSalespersonReview>(getCreateMarketReadinessSalespersonReviewUrl(projectId,campaignId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(createMarketReadinessSalespersonReviewRequest)
+  }
+);}
+
+
+
+
+
+export const getCreateMarketReadinessSalespersonReviewMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createMarketReadinessSalespersonReview>>, TError,{projectId: string;campaignId: string;data: BodyType<CreateMarketReadinessSalespersonReviewRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createMarketReadinessSalespersonReview>>, TError,{projectId: string;campaignId: string;data: BodyType<CreateMarketReadinessSalespersonReviewRequest>}, TContext> => {
+
+const mutationKey = ['createMarketReadinessSalespersonReview'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createMarketReadinessSalespersonReview>>, {projectId: string;campaignId: string;data: BodyType<CreateMarketReadinessSalespersonReviewRequest>}> = (props) => {
+          const {projectId,campaignId,data} = props ?? {};
+
+          return  createMarketReadinessSalespersonReview(projectId,campaignId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateMarketReadinessSalespersonReviewMutationResult = NonNullable<Awaited<ReturnType<typeof createMarketReadinessSalespersonReview>>>
+    export type CreateMarketReadinessSalespersonReviewMutationBody = BodyType<CreateMarketReadinessSalespersonReviewRequest>
+    export type CreateMarketReadinessSalespersonReviewMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+    export const useCreateMarketReadinessSalespersonReview = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createMarketReadinessSalespersonReview>>, TError,{projectId: string;campaignId: string;data: BodyType<CreateMarketReadinessSalespersonReviewRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createMarketReadinessSalespersonReview>>,
+        TError,
+        {projectId: string;campaignId: string;data: BodyType<CreateMarketReadinessSalespersonReviewRequest>},
+        TContext
+      > => {
+      return useMutation(getCreateMarketReadinessSalespersonReviewMutationOptions(options));
+    }
+
+export const getListMarketReadinessOutcomesUrl = (projectId: string,
+    campaignId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/market-readiness/campaigns/${campaignId}/outcomes`
+}
+
+export const listMarketReadinessOutcomes = async (projectId: string,
+    campaignId: string, options?: Parameters<typeof customFetch>[1]): Promise<MarketReadinessOutcome[]> => {
+
+  return customFetch<MarketReadinessOutcome[]>(getListMarketReadinessOutcomesUrl(projectId,campaignId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListMarketReadinessOutcomesQueryKey = (projectId: string,
+    campaignId: string,) => {
+    return [
+    `/api/projects/${projectId}/market-readiness/campaigns/${campaignId}/outcomes`
+    ] as const;
+    }
+
+
+export const getListMarketReadinessOutcomesQueryOptions = <TData = Awaited<ReturnType<typeof listMarketReadinessOutcomes>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(projectId: string,
+    campaignId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listMarketReadinessOutcomes>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListMarketReadinessOutcomesQueryKey(projectId,campaignId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listMarketReadinessOutcomes>>> = ({ signal }) => listMarketReadinessOutcomes(projectId,campaignId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: projectId !== null && projectId !== undefined && campaignId !== null && campaignId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listMarketReadinessOutcomes>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListMarketReadinessOutcomesQueryResult = NonNullable<Awaited<ReturnType<typeof listMarketReadinessOutcomes>>>
+export type ListMarketReadinessOutcomesQueryError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+
+
+export function useListMarketReadinessOutcomes<TData = Awaited<ReturnType<typeof listMarketReadinessOutcomes>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(
+ projectId: string,
+    campaignId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listMarketReadinessOutcomes>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListMarketReadinessOutcomesQueryOptions(projectId,campaignId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getCreateMarketReadinessOutcomeUrl = (projectId: string,
+    campaignId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/market-readiness/campaigns/${campaignId}/outcomes`
+}
+
+export const createMarketReadinessOutcome = async (projectId: string,
+    campaignId: string,
+    createMarketReadinessOutcomeRequest: CreateMarketReadinessOutcomeRequest, options?: Parameters<typeof customFetch>[1]): Promise<MarketReadinessOutcome> => {
+
+  return customFetch<MarketReadinessOutcome>(getCreateMarketReadinessOutcomeUrl(projectId,campaignId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(createMarketReadinessOutcomeRequest)
+  }
+);}
+
+
+
+
+
+export const getCreateMarketReadinessOutcomeMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createMarketReadinessOutcome>>, TError,{projectId: string;campaignId: string;data: BodyType<CreateMarketReadinessOutcomeRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createMarketReadinessOutcome>>, TError,{projectId: string;campaignId: string;data: BodyType<CreateMarketReadinessOutcomeRequest>}, TContext> => {
+
+const mutationKey = ['createMarketReadinessOutcome'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createMarketReadinessOutcome>>, {projectId: string;campaignId: string;data: BodyType<CreateMarketReadinessOutcomeRequest>}> = (props) => {
+          const {projectId,campaignId,data} = props ?? {};
+
+          return  createMarketReadinessOutcome(projectId,campaignId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateMarketReadinessOutcomeMutationResult = NonNullable<Awaited<ReturnType<typeof createMarketReadinessOutcome>>>
+    export type CreateMarketReadinessOutcomeMutationBody = BodyType<CreateMarketReadinessOutcomeRequest>
+    export type CreateMarketReadinessOutcomeMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+    export const useCreateMarketReadinessOutcome = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createMarketReadinessOutcome>>, TError,{projectId: string;campaignId: string;data: BodyType<CreateMarketReadinessOutcomeRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createMarketReadinessOutcome>>,
+        TError,
+        {projectId: string;campaignId: string;data: BodyType<CreateMarketReadinessOutcomeRequest>},
+        TContext
+      > => {
+      return useMutation(getCreateMarketReadinessOutcomeMutationOptions(options));
+    }
+
+export const getImportMarketReadinessOutcomesUrl = (projectId: string,
+    campaignId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/market-readiness/campaigns/${campaignId}/outcomes/import`
+}
+
+export const importMarketReadinessOutcomes = async (projectId: string,
+    campaignId: string,
+    importMarketReadinessOutcomesRequest: ImportMarketReadinessOutcomesRequest, options?: Parameters<typeof customFetch>[1]): Promise<MarketReadinessOutcomeImportResponse> => {
+
+  return customFetch<MarketReadinessOutcomeImportResponse>(getImportMarketReadinessOutcomesUrl(projectId,campaignId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(importMarketReadinessOutcomesRequest)
+  }
+);}
+
+
+
+
+
+export const getImportMarketReadinessOutcomesMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof importMarketReadinessOutcomes>>, TError,{projectId: string;campaignId: string;data: BodyType<ImportMarketReadinessOutcomesRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof importMarketReadinessOutcomes>>, TError,{projectId: string;campaignId: string;data: BodyType<ImportMarketReadinessOutcomesRequest>}, TContext> => {
+
+const mutationKey = ['importMarketReadinessOutcomes'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof importMarketReadinessOutcomes>>, {projectId: string;campaignId: string;data: BodyType<ImportMarketReadinessOutcomesRequest>}> = (props) => {
+          const {projectId,campaignId,data} = props ?? {};
+
+          return  importMarketReadinessOutcomes(projectId,campaignId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ImportMarketReadinessOutcomesMutationResult = NonNullable<Awaited<ReturnType<typeof importMarketReadinessOutcomes>>>
+    export type ImportMarketReadinessOutcomesMutationBody = BodyType<ImportMarketReadinessOutcomesRequest>
+    export type ImportMarketReadinessOutcomesMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+    export const useImportMarketReadinessOutcomes = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof importMarketReadinessOutcomes>>, TError,{projectId: string;campaignId: string;data: BodyType<ImportMarketReadinessOutcomesRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof importMarketReadinessOutcomes>>,
+        TError,
+        {projectId: string;campaignId: string;data: BodyType<ImportMarketReadinessOutcomesRequest>},
+        TContext
+      > => {
+      return useMutation(getImportMarketReadinessOutcomesMutationOptions(options));
+    }
+
+export const getGetMarketReadinessRolloutUrl = (projectId: string,
+    campaignId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/market-readiness/campaigns/${campaignId}/rollout`
+}
+
+export const getMarketReadinessRollout = async (projectId: string,
+    campaignId: string, options?: Parameters<typeof customFetch>[1]): Promise<MarketReadinessRolloutDecision> => {
+
+  return customFetch<MarketReadinessRolloutDecision>(getGetMarketReadinessRolloutUrl(projectId,campaignId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetMarketReadinessRolloutQueryKey = (projectId: string,
+    campaignId: string,) => {
+    return [
+    `/api/projects/${projectId}/market-readiness/campaigns/${campaignId}/rollout`
+    ] as const;
+    }
+
+
+export const getGetMarketReadinessRolloutQueryOptions = <TData = Awaited<ReturnType<typeof getMarketReadinessRollout>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(projectId: string,
+    campaignId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getMarketReadinessRollout>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetMarketReadinessRolloutQueryKey(projectId,campaignId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getMarketReadinessRollout>>> = ({ signal }) => getMarketReadinessRollout(projectId,campaignId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: projectId !== null && projectId !== undefined && campaignId !== null && campaignId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getMarketReadinessRollout>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetMarketReadinessRolloutQueryResult = NonNullable<Awaited<ReturnType<typeof getMarketReadinessRollout>>>
+export type GetMarketReadinessRolloutQueryError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+
+
+export function useGetMarketReadinessRollout<TData = Awaited<ReturnType<typeof getMarketReadinessRollout>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(
+ projectId: string,
+    campaignId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getMarketReadinessRollout>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetMarketReadinessRolloutQueryOptions(projectId,campaignId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getUpdateMarketReadinessRolloutUrl = (projectId: string,
+    campaignId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/market-readiness/campaigns/${campaignId}/rollout`
+}
+
+export const updateMarketReadinessRollout = async (projectId: string,
+    campaignId: string,
+    updateMarketReadinessRolloutRequest: UpdateMarketReadinessRolloutRequest, options?: Parameters<typeof customFetch>[1]): Promise<MarketReadinessRolloutDecision> => {
+
+  return customFetch<MarketReadinessRolloutDecision>(getUpdateMarketReadinessRolloutUrl(projectId,campaignId),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(updateMarketReadinessRolloutRequest)
+  }
+);}
+
+
+
+
+
+export const getUpdateMarketReadinessRolloutMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateMarketReadinessRollout>>, TError,{projectId: string;campaignId: string;data: BodyType<UpdateMarketReadinessRolloutRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateMarketReadinessRollout>>, TError,{projectId: string;campaignId: string;data: BodyType<UpdateMarketReadinessRolloutRequest>}, TContext> => {
+
+const mutationKey = ['updateMarketReadinessRollout'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateMarketReadinessRollout>>, {projectId: string;campaignId: string;data: BodyType<UpdateMarketReadinessRolloutRequest>}> = (props) => {
+          const {projectId,campaignId,data} = props ?? {};
+
+          return  updateMarketReadinessRollout(projectId,campaignId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateMarketReadinessRolloutMutationResult = NonNullable<Awaited<ReturnType<typeof updateMarketReadinessRollout>>>
+    export type UpdateMarketReadinessRolloutMutationBody = BodyType<UpdateMarketReadinessRolloutRequest>
+    export type UpdateMarketReadinessRolloutMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+    export const useUpdateMarketReadinessRollout = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateMarketReadinessRollout>>, TError,{projectId: string;campaignId: string;data: BodyType<UpdateMarketReadinessRolloutRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateMarketReadinessRollout>>,
+        TError,
+        {projectId: string;campaignId: string;data: BodyType<UpdateMarketReadinessRolloutRequest>},
+        TContext
+      > => {
+      return useMutation(getUpdateMarketReadinessRolloutMutationOptions(options));
+    }
+
+export const getRequestMarketReadinessWorkerAdvanceUrl = (projectId: string,
+    campaignId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/market-readiness/campaigns/${campaignId}/advance-worker`
+}
+
+/**
+ * @summary Advance one explicit development-only Market Readiness work lease
+ */
+export const requestMarketReadinessWorkerAdvance = async (projectId: string,
+    campaignId: string, options?: Parameters<typeof customFetch>[1]): Promise<MarketReadinessWorkerAdvance> => {
+
+  return customFetch<MarketReadinessWorkerAdvance>(getRequestMarketReadinessWorkerAdvanceUrl(projectId,campaignId),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getRequestMarketReadinessWorkerAdvanceMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof requestMarketReadinessWorkerAdvance>>, TError,{projectId: string;campaignId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof requestMarketReadinessWorkerAdvance>>, TError,{projectId: string;campaignId: string}, TContext> => {
+
+const mutationKey = ['requestMarketReadinessWorkerAdvance'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof requestMarketReadinessWorkerAdvance>>, {projectId: string;campaignId: string}> = (props) => {
+          const {projectId,campaignId} = props ?? {};
+
+          return  requestMarketReadinessWorkerAdvance(projectId,campaignId,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type RequestMarketReadinessWorkerAdvanceMutationResult = NonNullable<Awaited<ReturnType<typeof requestMarketReadinessWorkerAdvance>>>
+
+    export type RequestMarketReadinessWorkerAdvanceMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+    /**
+ * @summary Advance one explicit development-only Market Readiness work lease
+ */
+export const useRequestMarketReadinessWorkerAdvance = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof requestMarketReadinessWorkerAdvance>>, TError,{projectId: string;campaignId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof requestMarketReadinessWorkerAdvance>>,
+        TError,
+        {projectId: string;campaignId: string},
+        TContext
+      > => {
+      return useMutation(getRequestMarketReadinessWorkerAdvanceMutationOptions(options));
     }
 

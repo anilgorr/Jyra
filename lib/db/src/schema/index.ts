@@ -39,3 +39,4 @@ export * from "./people";
 export * from "./buyers";
 export * from "./learning";
 export * from "./recommendation-ledger";
+export * from "./market-readiness";

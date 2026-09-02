@@ -31,7 +31,7 @@ const PROFILE_SOURCE_TYPE = "COMPANY_PROFILE_RESOLUTION";
 const PROFILE_REVIEW_SOURCE_TYPE = "COMPANY_PROFILE_RESOLUTION_REVIEW";
 const DEFAULT_FRESHNESS_DAYS = 365;
 const MAX_STORED_PAYLOAD_BYTES = 250_000;
-const MAX_SEARCHES_PER_COMPANY = 2;
+export const MAX_PROFILE_RESOLUTION_SEARCHES_PER_COMPANY = 2;
 
 export type NormalizedLinkedInCompanyUrl = {
   profileUrl: string;
@@ -396,7 +396,7 @@ export function buildProfileResolutionQueries(request: CompanyProfileResolutionR
     ? `site:linkedin.com/company "${name}" "${domain}"`
     : `site:linkedin.com/company "${name}"`;
   const second = `site:linkedin.com/company "${name}" LinkedIn company`;
-  return [first, second].filter((query, index, all) => all.indexOf(query) === index).slice(0, MAX_SEARCHES_PER_COMPANY);
+  return [first, second].filter((query, index, all) => all.indexOf(query) === index).slice(0, MAX_PROFILE_RESOLUTION_SEARCHES_PER_COMPANY);
 }
 
 function resultStatus(

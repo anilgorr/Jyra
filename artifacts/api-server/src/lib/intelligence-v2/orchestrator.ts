@@ -87,6 +87,7 @@ export async function orchestrateIntelligenceV2(input: {
   request: ResearchRequestV2 & { source: string; firstPartyEvidence: EvidenceItemV2[]; contradictoryEvidence?: EvidenceItemV2[] };
   context: SellerRelativeContextV2; repository: IntelligenceV2Repository;
   researchInvoker: ResearchInvokerV2; assessmentInvoker?: AssessmentInvokerV2; now?: Date;
+  maxExternalResearchCalls?: number;
 }): Promise<IntelligenceV2Result> {
   const key = fingerprintV2({ organizationId: input.request.organizationId, projectId: input.request.projectId, companyId: input.request.companyId,
     domain: input.request.domain, sourceEvidence: input.request.firstPartyEvidence.map(({ evidenceId, version }) => ({ evidenceId, version })),
@@ -103,6 +104,7 @@ async function orchestrateIntelligenceV2Internal(input: {
   request: ResearchRequestV2 & { source: string; firstPartyEvidence: EvidenceItemV2[]; contradictoryEvidence?: EvidenceItemV2[] };
   context: SellerRelativeContextV2; repository: IntelligenceV2Repository;
   researchInvoker: ResearchInvokerV2; assessmentInvoker?: AssessmentInvokerV2; now?: Date;
+  maxExternalResearchCalls?: number;
 }): Promise<IntelligenceV2Result> {
   const started = Date.now();
   sellerRelativeContextSchema.parse(input.context);
@@ -126,7 +128,7 @@ async function orchestrateIntelligenceV2Internal(input: {
     research = await researchCompanyV2({ ...input.request, requirements: deriveResearchRequirementsV2(input.context) }, async (step, request) => {
       if (step.source === "CACHE") return { provider: "request-evidence", evidence: input.request.firstPartyEvidence };
       return input.researchInvoker(step, request);
-    });
+    }, input.maxExternalResearchCalls);
     if (research.organizationId !== input.request.organizationId || research.projectId !== input.request.projectId || research.companyId !== input.request.companyId) throw new Error("V2_RESEARCH_SCOPE_MISMATCH:researched");
     validateScopedEvidence(research.evidence, input.request, "researched");
     await input.repository.putResearch(researchKey, research);

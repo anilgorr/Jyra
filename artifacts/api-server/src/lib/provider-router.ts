@@ -352,6 +352,27 @@ export class ProviderRouter implements ProviderOperations {
       .reduce((total, provider) => total + Math.max(0, provider.estimatedCost), 0);
   }
 
+  /** A paid call may only be budgeted when the selected enabled provider has a
+   * configured, positive, finite price.  A zero/default price is not evidence
+   * that an external provider is free. */
+  async finiteEstimatedCostUpperBound(
+    capability: ProviderCapability,
+    maximumProviderAttempts = 1,
+  ): Promise<number | null> {
+    if (!Number.isInteger(maximumProviderAttempts) || maximumProviderAttempts < 1) {
+      throw new Error("INVALID_MAX_PROVIDER_ATTEMPTS");
+    }
+    const providers = (this.configuredProviders ?? await this.loadProviders())
+      .filter((provider) => provider.enabled && provider.capabilities.includes(capability))
+      .sort(rankProviders)
+      .slice(0, maximumProviderAttempts);
+    if (!providers.length || providers.some((provider) =>
+      !Number.isFinite(provider.estimatedCost) || provider.estimatedCost <= 0)) {
+      return null;
+    }
+    return providers.reduce((total, provider) => total + provider.estimatedCost, 0);
+  }
+
   async maximumAdaptiveWebSearchCost(): Promise<number> {
     const providers = this.configuredProviders ?? await this.loadProviders();
     const costForRole = (role: ProviderRoutingRole) => providers
@@ -460,7 +481,10 @@ export class ProviderRouter implements ProviderOperations {
       }));
     }
     const requestedRoutingRole = request.metadata?.routingRole;
-    const maximumProviderAttempts = request.metadata?.maxProviderAttempts === "1" ? 1 : undefined;
+    const requestedAttempts = Number(request.metadata?.maxProviderAttempts);
+    const maximumProviderAttempts = Number.isInteger(requestedAttempts) && requestedAttempts > 0
+      ? requestedAttempts
+      : undefined;
     const providers = candidates
       .filter(
         (provider) =>

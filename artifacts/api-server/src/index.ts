@@ -4,6 +4,7 @@ import { ensureDevelopmentExaProvider } from "./lib/exa-provider-config";
 import { ensureDevelopmentTavilyProvider } from "./lib/tavily-provider-config";
 import { ensureDevelopmentBrightDataProvider } from "./lib/bright-data-provider-config";
 import { logger } from "./lib/logger";
+import { assertMarketReadinessProcessingConfig } from "./lib/market-readiness";
 
 const rawPort = process.env["PORT"];
 
@@ -20,6 +21,9 @@ if (Number.isNaN(port) || port <= 0) {
 }
 
 async function main() {
+  if (process.env.MARKET_READINESS_PROCESSING_ENABLED === "true") {
+    assertMarketReadinessProcessingConfig();
+  }
   if (process.env.NODE_ENV !== "production") {
     await ensureDevelopmentApifyProvider();
     await ensureDevelopmentExaProvider();

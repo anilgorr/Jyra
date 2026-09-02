@@ -5,6 +5,358 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+export type MarketReadinessCampaignState = typeof MarketReadinessCampaignState[keyof typeof MarketReadinessCampaignState];
+
+
+export const MarketReadinessCampaignState = {
+  PLANNED: 'PLANNED',
+  DISCOVERING: 'DISCOVERING',
+  REVIEWING: 'REVIEWING',
+  FROZEN: 'FROZEN',
+  RUNNING: 'RUNNING',
+  PARTIAL: 'PARTIAL',
+  COMPLETED: 'COMPLETED',
+  BLOCKED: 'BLOCKED',
+  CANCELLED: 'CANCELLED',
+} as const;
+
+export interface MarketReadinessCampaign {
+  id: string;
+  organizationId: string;
+  projectId: string;
+  name: string;
+  state: MarketReadinessCampaignState;
+  discoveryMode: string;
+  targetCount: number;
+  paidCapCents: number;
+  spentCents: number;
+  reservedCents: number;
+  outcomeMode: string;
+  freezeHash: string | null;
+  frozenAt: string | null;
+  frozenBy: string | null;
+  createdBy: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type CreateMarketReadinessCampaignRequestTargetCount = typeof CreateMarketReadinessCampaignRequestTargetCount[keyof typeof CreateMarketReadinessCampaignRequestTargetCount];
+
+
+export const CreateMarketReadinessCampaignRequestTargetCount = {
+  NUMBER_200: 200,
+} as const;
+
+export interface CreateMarketReadinessCampaignRequest {
+  /**
+     * @minLength 1
+     * @maxLength 200
+     */
+  name: string;
+  targetCount?: CreateMarketReadinessCampaignRequestTargetCount;
+  /**
+     * @minimum 0
+     * @maximum 5000
+     */
+  paidCapCents?: number;
+}
+
+export type UpdateMarketReadinessCampaignRequestState = typeof UpdateMarketReadinessCampaignRequestState[keyof typeof UpdateMarketReadinessCampaignRequestState];
+
+
+export const UpdateMarketReadinessCampaignRequestState = {
+  PLANNED: 'PLANNED',
+  DISCOVERING: 'DISCOVERING',
+  REVIEWING: 'REVIEWING',
+  FROZEN: 'FROZEN',
+  RUNNING: 'RUNNING',
+  PARTIAL: 'PARTIAL',
+  COMPLETED: 'COMPLETED',
+  BLOCKED: 'BLOCKED',
+  CANCELLED: 'CANCELLED',
+} as const;
+
+export interface UpdateMarketReadinessCampaignRequest {
+  /**
+     * @minLength 1
+     * @maxLength 200
+     */
+  name?: string;
+  state?: UpdateMarketReadinessCampaignRequestState;
+}
+
+export type MarketReadinessCohortItemSource = typeof MarketReadinessCohortItemSource[keyof typeof MarketReadinessCohortItemSource];
+
+
+export const MarketReadinessCohortItemSource = {
+  DISCOVERY: 'DISCOVERY',
+  MANUAL: 'MANUAL',
+  IMPORT: 'IMPORT',
+} as const;
+
+export interface MarketReadinessCohortItem {
+  id: string;
+  organizationId: string;
+  projectId: string;
+  campaignId: string;
+  companyId: string | null;
+  normalizedDomain: string;
+  source: MarketReadinessCohortItemSource;
+  stratum: string;
+  opaqueReviewKey: string;
+  createdAt: string;
+}
+
+export type MarketReadinessExperimentState = typeof MarketReadinessExperimentState[keyof typeof MarketReadinessExperimentState];
+
+
+export const MarketReadinessExperimentState = {
+  DRAFT: 'DRAFT',
+  ASSIGNED: 'ASSIGNED',
+  RUNNING: 'RUNNING',
+  COMPLETED: 'COMPLETED',
+} as const;
+
+export interface MarketReadinessExperiment {
+  id: string;
+  organizationId: string;
+  projectId: string;
+  campaignId: string;
+  state: MarketReadinessExperimentState;
+  seed: string;
+  treatmentName: string;
+  controlName: string;
+  createdBy: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateMarketReadinessExperimentRequest {
+  /** @minLength 1 */
+  seed: string;
+}
+
+export type MarketReadinessAssignmentArm = typeof MarketReadinessAssignmentArm[keyof typeof MarketReadinessAssignmentArm];
+
+
+export const MarketReadinessAssignmentArm = {
+  TREATMENT: 'TREATMENT',
+  CONTROL: 'CONTROL',
+} as const;
+
+export interface MarketReadinessAssignment {
+  cohortItemId: string;
+  stratum: string;
+  arm: MarketReadinessAssignmentArm;
+}
+
+export interface MarketReadinessAssignmentsResponse {
+  assignments: MarketReadinessAssignment[];
+}
+
+export interface CreateMarketReadinessBlindReviewRequest {
+  cohortItemId: string;
+  roleFit: boolean;
+  whoFit: boolean;
+  buyer: boolean;
+  competitor: boolean;
+  dangerous?: boolean;
+  actionableEvidence: boolean;
+  /** @maxLength 5000 */
+  notes?: string;
+}
+
+export interface MarketReadinessBlindReview {
+  id: string;
+  organizationId: string;
+  projectId: string;
+  campaignId: string;
+  cohortItemId: string;
+  reviewerId: string;
+  roleFit: boolean;
+  whoFit: boolean;
+  buyer: boolean;
+  competitor: boolean;
+  dangerous: boolean;
+  actionableEvidence: boolean;
+  notes: string | null;
+  submittedAt: string;
+}
+
+export type CreateMarketReadinessAdjudicationRequestGoldLabels = {[key: string]: boolean};
+
+export interface CreateMarketReadinessAdjudicationRequest {
+  cohortItemId: string;
+  goldLabels: CreateMarketReadinessAdjudicationRequestGoldLabels;
+  /** @minLength 1 */
+  rationale: string;
+}
+
+export type MarketReadinessAdjudicationGoldLabels = {[key: string]: boolean};
+
+export interface MarketReadinessAdjudication {
+  id: string;
+  organizationId: string;
+  projectId: string;
+  campaignId: string;
+  cohortItemId: string;
+  adjudicatorId: string;
+  goldLabels: MarketReadinessAdjudicationGoldLabels;
+  rationale: string;
+  createdAt: string;
+}
+
+export interface CreateMarketReadinessSalespersonReviewRequest {
+  cohortItemId: string;
+  usable: boolean;
+  /** @maxLength 5000 */
+  notes?: string;
+}
+
+export interface MarketReadinessSalespersonReview {
+  id: string;
+  organizationId: string;
+  projectId: string;
+  campaignId: string;
+  cohortItemId: string;
+  reviewerId: string;
+  usable: boolean;
+  notes: string | null;
+  createdAt: string;
+}
+
+export type CreateMarketReadinessOutcomeRequestOutcome = typeof CreateMarketReadinessOutcomeRequestOutcome[keyof typeof CreateMarketReadinessOutcomeRequestOutcome];
+
+
+export const CreateMarketReadinessOutcomeRequestOutcome = {
+  MEETING: 'MEETING',
+  OPPORTUNITY: 'OPPORTUNITY',
+  BAD_FIT: 'BAD_FIT',
+  OTHER: 'OTHER',
+} as const;
+
+export interface CreateMarketReadinessOutcomeRequest {
+  cohortItemId: string;
+  outcome: CreateMarketReadinessOutcomeRequestOutcome;
+  occurredAt: string;
+  /** @minLength 1 */
+  idempotencyKey: string;
+}
+
+export type MarketReadinessOutcomeOutcome = typeof MarketReadinessOutcomeOutcome[keyof typeof MarketReadinessOutcomeOutcome];
+
+
+export const MarketReadinessOutcomeOutcome = {
+  MEETING: 'MEETING',
+  OPPORTUNITY: 'OPPORTUNITY',
+  BAD_FIT: 'BAD_FIT',
+  OTHER: 'OTHER',
+} as const;
+
+export interface MarketReadinessOutcome {
+  id: string;
+  organizationId: string;
+  projectId: string;
+  campaignId: string;
+  experimentAssignmentId: string | null;
+  cohortItemId: string;
+  importBatchId: string | null;
+  outcome: MarketReadinessOutcomeOutcome;
+  occurredAt: string;
+  recordedBy: string;
+  idempotencyKey: string;
+  createdAt: string;
+}
+
+export interface ImportMarketReadinessOutcomesRequest {
+  /** @minLength 1 */
+  csv: string;
+  /** @minLength 1 */
+  idempotencyKey: string;
+}
+
+export type MarketReadinessOutcomeImportResponseBatch = { [key: string]: unknown } | null;
+
+export type MarketReadinessOutcomeImportResponseRowsItemOutcome = typeof MarketReadinessOutcomeImportResponseRowsItemOutcome[keyof typeof MarketReadinessOutcomeImportResponseRowsItemOutcome];
+
+
+export const MarketReadinessOutcomeImportResponseRowsItemOutcome = {
+  MEETING: 'MEETING',
+  OPPORTUNITY: 'OPPORTUNITY',
+  BAD_FIT: 'BAD_FIT',
+  OTHER: 'OTHER',
+} as const;
+
+export type MarketReadinessOutcomeImportResponseRowsItem = {
+  domain: string;
+  outcome: MarketReadinessOutcomeImportResponseRowsItemOutcome;
+  occurredAt: string;
+};
+
+export interface MarketReadinessOutcomeImportResponse {
+  batch: MarketReadinessOutcomeImportResponseBatch;
+  rows: MarketReadinessOutcomeImportResponseRowsItem[];
+}
+
+export type UpdateMarketReadinessRolloutRequestDesiredStage = typeof UpdateMarketReadinessRolloutRequestDesiredStage[keyof typeof UpdateMarketReadinessRolloutRequestDesiredStage];
+
+
+export const UpdateMarketReadinessRolloutRequestDesiredStage = {
+  DRAFT: 'DRAFT',
+  PROMOTED: 'PROMOTED',
+} as const;
+
+export interface UpdateMarketReadinessRolloutRequest {
+  desiredStage?: UpdateMarketReadinessRolloutRequestDesiredStage;
+}
+
+export type MarketReadinessRolloutDecisionState = typeof MarketReadinessRolloutDecisionState[keyof typeof MarketReadinessRolloutDecisionState];
+
+
+export const MarketReadinessRolloutDecisionState = {
+  DRAFT: 'DRAFT',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED',
+  PROMOTED: 'PROMOTED',
+} as const;
+
+/**
+ * Authoritative persisted quality
+ */
+export type MarketReadinessRolloutDecisionDecision = { [key: string]: unknown };
+
+export interface MarketReadinessRolloutDecision {
+  id: string;
+  organizationId: string;
+  projectId: string;
+  campaignId: string;
+  state: MarketReadinessRolloutDecisionState;
+  /** Authoritative persisted quality */
+  decision: MarketReadinessRolloutDecisionDecision;
+  decidedBy: string | null;
+  decidedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface MarketReadinessWorkerAdvance {
+  accepted: boolean;
+  limit: number;
+  message: string;
+}
+
+export type MarketReadinessDashboardDefaultConfiguration = {
+  discoveryMode: string;
+  targetCount: number;
+  paidCapCents: number;
+  outcomeMode: string;
+};
+
+export interface MarketReadinessDashboard {
+  campaigns: MarketReadinessCampaign[];
+  defaultConfiguration: MarketReadinessDashboardDefaultConfiguration;
+}
+
 export interface IntelligenceV2RunInput { [key: string]: unknown }
 
 export type IntelligenceV2ClaimBindingRelation = typeof IntelligenceV2ClaimBindingRelation[keyof typeof IntelligenceV2ClaimBindingRelation];
