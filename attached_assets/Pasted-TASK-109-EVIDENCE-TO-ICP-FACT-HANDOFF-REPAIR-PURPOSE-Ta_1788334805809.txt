@@ -1,0 +1,1207 @@
+TASK #109 — EVIDENCE-TO-ICP FACT HANDOFF REPAIR
+
+PURPOSE
+
+Task #108 audited the remaining errors after Tasks #105–#107.
+
+Current diagnostic quality:
+
+CommercialRole strict:
+15/18
+
+WHO strict:
+13/18
+
+POTENTIAL_BUYER precision:
+100%
+
+SELLER_COMPETITOR recall:
+100%
+
+Dangerous competitor → buyer:
+0
+
+Remaining first-error distribution:
+
+IDENTITY_RESOLUTION: 1
+COMMERCIAL_ROLE: 2
+PROVIDER_DATA_GAP: 2
+
+Task #108 determined that the ONLY shared generic residual worth repairing now is:
+
+Already-captured, provenance-backed company facts are not reliably being extracted/admitted/persisted into the ICP-ready fact representation consumed by WHO.
+
+Affected diagnostic cases include:
+- explicit geography already captured but unavailable to WHO
+- explicit primary-business facts already captured but unavailable in ICP-ready form
+
+This task must repair ONLY that generic handoff.
+
+DO NOT repair:
+- identity/domain resolution
+- CommercialRole
+- CommercialRole confidence thresholds
+- WHO decision policy
+- ICP semantics
+- discovery
+- providers
+- external research
+- OutPro
+- RevyGo
+- CData Virtuality
+
+==================================================
+1. DATABASE SAFETY
+==================================================
+
+DATABASE SAFETY:
+
+This is development work.
+
+Use ONLY the development database.
+
+DO NOT:
+- migrate production
+- reset production
+- seed production
+- truncate production
+- modify production customer data
+- test against production
+
+Production must remain untouched.
+
+==================================================
+2. BENCHMARK CONTAMINATION GUARD
+==================================================
+
+JYRA_MARKET_QUALITY_GOLD_V1 is a SEEN benchmark.
+
+DO NOT:
+
+- hard-code company names
+- hard-code benchmarkCompanyIds
+- add DigiPuush-specific logic
+- add Managed SOC-specific logic
+- add India-specific runtime exceptions
+- add Leadgeneron-specific logic
+- add Leadzen.ai-specific logic
+- tune against exact gold labels
+- use gold labels as runtime inputs
+
+Implement generic fact-flow semantics first.
+
+The frozen benchmark may only be used AFTER implementation as a regression diagnostic.
+
+==================================================
+3. GOLD INTEGRITY
+==================================================
+
+Gold:
+
+JYRA_MARKET_QUALITY_GOLD_V1
+
+Expected SHA-256:
+
+f59aca76b676d0e54d0899dd23bb3e5c6d5912e71e0597d967a2a722ac8ecfca
+
+Verify before and after.
+
+If changed:
+
+HARD FAIL.
+
+==================================================
+4. SINGLE APPROVED REPAIR
+==================================================
+
+Repair the existing:
+
+Evidence
+→ Observation / extracted claim
+→ canonical/provisional company fact
+→ ICP-ready company fact
+→ WHO criterion evaluation
+
+handoff.
+
+When a fact is already explicitly present in admissible captured evidence and has sufficient provenance/identity permission, it must not disappear between Company Intelligence and WHO.
+
+This task is NOT about acquiring new data.
+
+The desired principle is:
+
+captured evidence exists
++
+fact is explicit
++
+identity/evidence permission allows attribution
++
+fact is not materially conflicted
+→ persist/reuse ICP-ready fact
+
+rather than:
+
+captured evidence exists
+→ fact lost during normalization/handoff
+→ WHO receives UNKNOWN
+
+==================================================
+5. AUDIT CURRENT PIPELINE BEFORE CHANGING CODE
+==================================================
+
+Trace the complete current path for at least:
+
+A. geography
+B. primary business / business description
+
+Identify:
+
+1. where raw/provider/public evidence is stored
+
+2. where structured observations/claims are extracted
+
+3. where evidenceIds are attached
+
+4. where company facts are normalized
+
+5. where canonical vs provisional facts are distinguished
+
+6. where MCI consumes facts
+
+7. where Company Understanding consumes facts
+
+8. where WHO obtains ICP-ready facts
+
+9. which fields WHO actually reads
+
+10. where an existing fact can currently be dropped
+
+11. whether facts are recomputed from prose instead of reused
+
+12. whether current persistence schemas already support the needed fact
+
+13. whether geography normalization is performed before or after persistence
+
+14. whether primary-business evidence is represented differently across stages
+
+Document BEFORE behavior.
+
+Do not implement until the loss point is identified.
+
+==================================================
+6. REQUIRED FACT CONTRACT
+==================================================
+
+Prefer a generic, provenance-bound fact object using existing architecture.
+
+Conceptually:
+
+{
+  factType: "GEOGRAPHY" | "PRIMARY_BUSINESS" | ...,
+  value: ...,
+  normalizedValue: ...,
+  confidence: ...,
+  evidenceIds: [...],
+  sourceEntityId: ...,
+  identityPermission: ...,
+  provenanceStatus: ...,
+  conflictStatus: ...,
+  observedAt: ...,
+  fingerprint: ...
+}
+
+Reuse existing schemas if equivalent.
+
+Do NOT create an unnecessary parallel fact store.
+
+Critical requirement:
+
+WHO must consume persisted/evidence-backed facts, not rely on reconstructing facts from free-form Company Understanding prose when structured facts already exist.
+
+==================================================
+7. GEOGRAPHY HANDOFF
+==================================================
+
+Repair geography flow generically.
+
+If captured admissible evidence explicitly establishes a company location such as:
+
+city
+state/province
+country
+
+then normalize it deterministically and persist the usable geography fact.
+
+Examples:
+
+"New York, NY, United States"
+→ country = United States
+→ city = New York
+→ region = New York
+
+"Mumbai, Maharashtra, India"
+→ country = India
+→ city = Mumbai
+→ region = Maharashtra
+
+Do not require every component.
+
+Country alone may still be usable for an ICP country criterion.
+
+Preserve source text and evidence IDs.
+
+==================================================
+8. GEOGRAPHY SEMANTICS
+==================================================
+
+Do NOT silently equate every geographic mention with headquarters.
+
+Distinguish when evidence supports:
+
+HEADQUARTERS
+OFFICE_LOCATION
+INCORPORATION_LOCATION
+OPERATING_MARKET
+CUSTOMER_MARKET
+UNKNOWN_LOCATION_TYPE
+
+WHO should use only location types allowed by the ICP semantics.
+
+If current ICP geography means company location/HQ, a customer-market mention must not become a PASS.
+
+Do not change existing ICP semantics in Task #109.
+
+Just ensure properly typed geography facts reach the evaluator.
+
+==================================================
+9. GEOGRAPHY CONFLICTS
+==================================================
+
+If evidence contains conflicting credible geography:
+
+Example:
+
+Source A:
+United States headquarters
+
+Source B:
+India headquarters
+
+Do NOT pick one merely to maximize fit.
+
+Mark conflict/uncertainty according to existing evidence-resolution rules.
+
+WHO should receive UNKNOWN if the required geography cannot be safely resolved.
+
+Missing ≠ fail.
+Conflict ≠ arbitrary pass.
+
+==================================================
+10. PRIMARY-BUSINESS HANDOFF
+==================================================
+
+Repair primary-business fact flow generically.
+
+If admissible evidence explicitly states what a company primarily does or sells, persist/reuse that fact for ICP/WHO consumption.
+
+Possible sources include:
+
+- homepage company description
+- service/product page
+- company profile
+- authoritative business description
+- existing provenance-backed MCI claim
+
+Do NOT require a complete product catalog.
+
+Example:
+
+"Cloud data integration SaaS platform"
+
+may be enough to establish:
+
+business model:
+B2B SaaS / software
+
+industry:
+technology / data infrastructure
+
+primary business:
+data integration
+
+without fabricating additional facts.
+
+==================================================
+11. DO NOT REINFER KNOWN FACTS UNNECESSARILY
+==================================================
+
+If a normalized provenance-backed fact already exists and its fingerprint is current:
+
+reuse it.
+
+Do not invoke semantic extraction again just because WHO needs the fact.
+
+Preferred flow:
+
+evidence
+→ fact once
+→ reuse
+
+not:
+
+evidence
+→ prose
+→ LLM summary
+→ new prose
+→ WHO reinterprets prose again
+
+Avoid semantic telephone-game degradation.
+
+==================================================
+12. PROVISIONAL VS CANONICAL FACTS
+==================================================
+
+Preserve the current identity-safety architecture.
+
+If evidence is only RESEARCH_SAFE / provisional:
+
+do not automatically promote it to canonical attribution.
+
+The fix must respect:
+
+ATTRIBUTION_SAFE
+RESEARCH_SAFE
+UNSAFE
+
+If WHO requires attribution-safe facts, retain that requirement.
+
+Do not weaken identity permissions to improve coverage.
+
+==================================================
+13. CONFLICT / UNKNOWN POLICY
+==================================================
+
+Preserve uncertainty.
+
+Do NOT fabricate:
+
+geography
+company size
+technology
+business model
+industry
+products
+compliance
+
+If a value is:
+
+missing
+conflicted
+unsupported
+
+persist UNKNOWN / unresolved as appropriate.
+
+The repair is about preventing KNOWN supported facts from being lost.
+
+It is not about filling unknowns.
+
+==================================================
+14. ICP-READY FACT ADAPTER
+==================================================
+
+If the current architecture has a mismatch between canonical fact schemas and WHO input schemas, implement the smallest generic adapter/selector.
+
+Conceptually:
+
+getIcpReadyCompanyFacts(companyId, offeringId, icpVersion)
+
+should return only:
+
+- currently valid
+- correctly attributed
+- provenance-backed
+- normalized
+- non-conflicted
+
+facts relevant to ICP evaluation.
+
+Use existing names/architecture if equivalent functionality exists.
+
+Do not couple this function to specific ICPs.
+
+==================================================
+15. FACT SELECTION MUST BE DETERMINISTIC
+==================================================
+
+Where multiple facts exist, use deterministic selection rules based on existing metadata such as:
+
+- attribution safety
+- source authority
+- recency
+- specificity
+- confidence
+- conflict state
+
+Do NOT allow the LLM to arbitrarily choose between conflicting structured facts.
+
+If existing canonical fact-resolution logic already exists:
+
+reuse it.
+
+==================================================
+16. STALENESS / FINGERPRINTING
+==================================================
+
+Preserve Architecture V1.1 fingerprint semantics.
+
+If evidence changes:
+
+recompute affected fact.
+
+If ICP changes:
+
+do NOT unnecessarily re-extract company facts.
+
+If Company Understanding changes but underlying canonical facts do not:
+
+WHO should still reuse current facts where appropriate.
+
+If geography fact changes:
+
+WHO should become stale.
+
+If primary-business fact changes materially:
+
+affected CommercialRole/WHO dependencies should become stale according to existing dependency graph.
+
+Do not break idempotency.
+
+==================================================
+17. NO NEW PROVIDER CALLS
+==================================================
+
+Task #108 explicitly found the relevant facts were already captured.
+
+Therefore:
+
+External provider calls for this repair:
+0
+
+Do not call:
+
+Tavily
+Exa
+Apify
+Bright Data
+Gemini
+OpenAI
+or any other provider
+
+to fill these two diagnostic records.
+
+If a generic test needs fixtures, use synthetic data.
+
+==================================================
+18. DO NOT CHANGE WHO POLICY
+==================================================
+
+Do NOT alter:
+
+LIKELY_FIT
+POSSIBLE_FIT
+LIKELY_NOT_FIT
+INSUFFICIENT_DATA
+
+decision semantics.
+
+Do NOT alter:
+
+MUST_HAVE
+SHOULD_HAVE
+negative indicators
+
+Do NOT change India geography rules.
+
+WHO should simply receive better factual inputs.
+
+If WHO remains wrong after receiving correct facts:
+
+report that as a newly exposed downstream defect.
+
+Do not fix it in Task #109.
+
+==================================================
+19. DO NOT CHANGE COMMERCIAL ROLE
+==================================================
+
+CommercialRole logic from Task #107 remains frozen for this task.
+
+Do not modify:
+
+commercial-relationship-v2
+candidate buyer-capability policy
+substitutability
+adjacency
+partnership
+confidence threshold
+
+OutPro must remain untouched.
+
+RevyGo must remain untouched.
+
+==================================================
+20. DO NOT FIX CDATA IDENTITY
+==================================================
+
+CData Virtuality has an independent DOMAIN_MISSING identity issue.
+
+Do not:
+
+guess a domain
+infer a canonical domain
+change resolver thresholds
+add a fallback
+manually map CData
+
+Leave this failure exactly as-is.
+
+==================================================
+21. GENERIC SYNTHETIC TESTS
+==================================================
+
+Do NOT use benchmark company names.
+
+Create at least:
+
+--------------------------------------------------
+TEST A — EXPLICIT COUNTRY REACHES WHO
+--------------------------------------------------
+
+Evidence:
+
+"Headquartered in Austin, Texas, United States."
+
+Valid evidenceId.
+Attribution safe.
+
+Expected persisted facts:
+
+country = United States
+region = Texas
+city = Austin
+locationType = HEADQUARTERS
+
+Expected:
+
+ICP-ready fact selector exposes United States.
+
+--------------------------------------------------
+TEST B — PARTIAL LOCATION
+--------------------------------------------------
+
+Evidence:
+
+"Based in India."
+
+Expected:
+
+country = India
+
+city/region:
+UNKNOWN
+
+Country remains usable for country-level ICP evaluation.
+
+--------------------------------------------------
+TEST C — CUSTOMER MARKET IS NOT HQ
+--------------------------------------------------
+
+Evidence:
+
+"Serving customers across India."
+
+Expected:
+
+do NOT persist India as company headquarters.
+
+Preserve as operating/customer-market fact if schema supports it.
+
+--------------------------------------------------
+TEST D — CONFLICTING HQ
+--------------------------------------------------
+
+Two authoritative sources disagree:
+
+United States
+India
+
+Expected:
+
+conflict represented.
+
+Do not arbitrarily choose either.
+
+WHO receives unresolved geography if HQ is required.
+
+--------------------------------------------------
+TEST E — PRIMARY BUSINESS
+--------------------------------------------------
+
+Evidence:
+
+"We provide B2B cloud data integration software."
+
+Expected:
+
+primaryBusiness fact available to downstream ICP-ready fact layer.
+
+Evidence provenance retained.
+
+--------------------------------------------------
+TEST F — SPARSE PRODUCT LIST
+--------------------------------------------------
+
+Primary business explicit.
+Products/services incomplete.
+
+Expected:
+
+primary-business fact still persists.
+
+Do not suppress the known fact.
+
+--------------------------------------------------
+TEST G — PROVENANCE REQUIRED
+--------------------------------------------------
+
+Unlinked string:
+
+"Company is in India"
+
+with no valid evidence linkage.
+
+Expected:
+
+not promoted to canonical/ICP-ready fact.
+
+--------------------------------------------------
+TEST H — RESEARCH SAFE ONLY
+--------------------------------------------------
+
+Fact exists only in provisional RESEARCH_SAFE workspace.
+
+Expected:
+
+respect action-scoped permission.
+
+Do not improperly promote to attribution-safe fact.
+
+--------------------------------------------------
+TEST I — KNOWN FACT REUSE
+--------------------------------------------------
+
+Canonical geography already exists and is current.
+
+Expected:
+
+WHO fact selector reuses it.
+
+No semantic re-extraction.
+
+--------------------------------------------------
+TEST J — IDEMPOTENCY
+--------------------------------------------------
+
+Same evidence
+same fact fingerprint
+same ICP
+
+Expected:
+
+no duplicate fact writes
+no unnecessary semantic calls
+
+--------------------------------------------------
+TEST K — EVIDENCE UPDATE
+--------------------------------------------------
+
+Old:
+
+United States
+
+New authoritative evidence:
+
+India
+
+Expected:
+
+fact staleness/re-resolution follows existing rules.
+WHO dependency becomes stale.
+
+--------------------------------------------------
+TEST L — UNKNOWN PRESERVATION
+--------------------------------------------------
+
+No geography evidence.
+
+Expected:
+
+UNKNOWN
+
+Do not infer from TLD, phone code, customer market, or industry unless existing explicitly approved rules already permit it.
+
+==================================================
+22. EXISTING REGRESSIONS
+==================================================
+
+Run all relevant existing suites:
+
+- identity resolution
+- MCI
+- CompanyAssessmentReadiness
+- Company Understanding
+- evidence admission
+- evidence provenance
+- canonical facts
+- CommercialRole
+- WHO
+- control plane
+- fingerprints/staleness
+- provider routing
+- tenant isolation
+- Task #105
+- Task #106
+- Task #107
+
+Do not weaken existing tests.
+
+==================================================
+23. POST-REPAIR REGRESSION
+==================================================
+
+After generic implementation/tests pass:
+
+Create:
+
+TASK_109_POST_REPAIR_REGRESSION
+
+Use the SAME frozen evidence snapshot.
+
+No new providers.
+No new search.
+No replacement companies.
+
+Do not overwrite:
+
+Task #100
+Task #105
+Task #106
+Task #107
+
+Verify gold unchanged.
+
+==================================================
+24. PRIMARY DIAGNOSTIC RECORDS
+==================================================
+
+For regression diagnostics, report what happened to the two previously identified evidence-handoff failures:
+
+Leadgeneron
+
+Before:
+required geography was already captured but unavailable to WHO.
+
+Report after:
+
+- geography fact selected?
+- source evidenceIds?
+- normalized country?
+- WHO input received geography?
+- WHO changed?
+- first-error changed?
+
+Leadzen.ai
+
+Before:
+Mumbai/India and primary-business evidence were captured but did not reliably reach ICP-ready evaluation.
+
+Report after:
+
+- geography fact selected?
+- primary-business fact selected?
+- evidenceIds?
+- WHO input received facts?
+- WHO changed?
+- first-error changed?
+
+These companies must NOT receive special runtime logic.
+
+They are regression observations only.
+
+==================================================
+25. MEASURE TASK #107 → TASK #109
+==================================================
+
+Report:
+
+CommercialRole strict accuracy
+
+WHO strict accuracy
+
+CommercialRole coverage
+
+WHO coverage
+
+POTENTIAL_BUYER precision
+
+SELLER_COMPETITOR recall
+
+Dangerous competitor → buyer
+
+PROVIDER_DATA_GAP first-errors
+
+Evidence-handoff failures
+
+New regressions
+
+First-error distribution
+
+Also report:
+
+ICP-ready geography facts successfully reused from existing evidence:
+count
+
+ICP-ready primary-business facts successfully reused:
+count
+
+Additional provider calls:
+0
+
+==================================================
+26. SUCCESS CRITERION
+==================================================
+
+The PRIMARY success criterion is NOT:
+
+"make Leadgeneron and Leadzen.ai match gold."
+
+The primary success criterion is:
+
+"When explicit, admissible, provenance-backed company facts already exist, does JYRA reliably preserve and supply them to ICP/WHO without fabricating, dropping, or re-researching them?"
+
+PASS only if the generic fact-flow contract is fixed.
+
+==================================================
+27. ACCEPTANCE CRITERIA
+==================================================
+
+PASS Task #109 only if:
+
+1. generic tests pass
+
+2. existing regressions pass
+
+3. gold SHA unchanged
+
+4. production untouched
+
+5. provider calls = 0
+
+6. explicit captured geography reaches ICP-ready evaluation
+
+7. explicit captured primary-business facts reach ICP-ready evaluation
+
+8. provenance IDs remain intact
+
+9. conflicting facts remain uncertain
+
+10. customer-market geography is not mislabeled as headquarters
+
+11. identity permissions are not weakened
+
+12. CommercialRole behavior from Task #107 is preserved
+
+13. WHO policy from Task #106 is preserved
+
+14. evidence-admission behavior from Task #105 is preserved
+
+15. no benchmark-specific rules added
+
+16. no material regression on previously correct records
+
+17. PROVIDER_DATA_GAP / evidence-handoff errors decrease if caused by this defect
+
+==================================================
+28. HOLDOUT GATE
+==================================================
+
+After Task #109, reassess holdout readiness.
+
+Choose:
+
+READY_FOR_SMALL_HOLDOUT
+
+or
+
+NOT_READY_FOR_HOLDOUT
+
+Do NOT run the holdout in this task.
+
+A small holdout means a NEW BLIND cohort of approximately 10–20 companies.
+
+If Task #109 works and remaining failures are only:
+
+- isolated identity ambiguity
+- reasonable evidence abstention
+- isolated confidence calibration
+
+then strongly consider moving to a new blind holdout instead of further tuning the seen benchmark.
+
+==================================================
+29. ARTIFACTS
+==================================================
+
+Create:
+
+evaluations/jyra-clean-room-v1/TASK_109_EVIDENCE_TO_ICP_HANDOFF.json
+
+and:
+
+evaluations/jyra-clean-room-v1/TASK_109_EVIDENCE_TO_ICP_HANDOFF_REPORT.md
+
+Include:
+
+- current pipeline audit
+- exact loss point
+- implementation
+- files changed
+- fact contract
+- provenance behavior
+- conflict behavior
+- generic tests
+- regressions
+- benchmark diagnostic
+- first-error changes
+- safety metrics
+- holdout-readiness assessment
+
+==================================================
+30. FINAL RESPONSE FORMAT
+==================================================
+
+Return:
+
+TASK #109 — EVIDENCE-TO-ICP HANDOFF REPAIR
+
+Status:
+PASS / FAIL
+
+Root cause:
+<exact handoff defect>
+
+Repair implemented:
+<description>
+
+Files changed:
+<list>
+
+Gold SHA-256 unchanged:
+YES / NO
+
+External provider calls:
+0
+
+Production modified:
+NO
+
+Generic tests:
+x/x
+
+Existing regressions:
+x/x
+
+====================
+TASK #107 → TASK #109
+====================
+
+CommercialRole strict:
+15/18 → x/18
+
+WHO strict:
+13/18 → x/18
+
+CommercialRole coverage:
+x/20
+
+WHO available:
+16/20 → x/20
+
+POTENTIAL_BUYER precision:
+100% → x%
+
+SELLER_COMPETITOR recall:
+100% → x%
+
+Dangerous competitor → buyer:
+0 → x
+
+PROVIDER_DATA_GAP first-errors:
+2 → x
+
+====================
+FACT HANDOFF
+====================
+
+Existing geography facts successfully delivered to ICP/WHO:
+x
+
+Existing primary-business facts successfully delivered:
+x
+
+Facts fabricated:
+0
+
+Provenance lost:
+0
+
+Conflicted facts forced resolved:
+0
+
+====================
+DIAGNOSTIC CASES
+====================
+
+Leadgeneron:
+
+Geography before:
+<state>
+
+Geography after:
+<state>
+
+WHO before:
+<state>
+
+WHO after:
+<state>
+
+First error after:
+<state>
+
+Leadzen.ai:
+
+Geography before:
+<state>
+
+Geography after:
+<state>
+
+Primary-business fact after:
+<state>
+
+WHO before:
+<state>
+
+WHO after:
+<state>
+
+First error after:
+<state>
+
+====================
+NEW FIRST-ERROR DISTRIBUTION
+====================
+
+IDENTITY_RESOLUTION:
+x
+
+COMPANY_UNDERSTANDING:
+x
+
+COMMERCIAL_ROLE:
+x
+
+ICP_CRITERION_MAPPING:
+x
+
+WHO_DECISION_POLICY:
+x
+
+INSUFFICIENT_EVIDENCE_HANDLING:
+x
+
+PROVIDER_DATA_GAP:
+x
+
+OTHER:
+x
+
+====================
+NEW REGRESSIONS
+====================
+
+Previously-correct records now wrong:
+x
+
+Companies:
+<names or NONE>
+
+====================
+SAFETY
+====================
+
+Identity permissions weakened:
+NO
+
+Customer market treated as HQ:
+NO
+
+Unsupported facts promoted:
+NO
+
+Benchmark-specific logic:
+NO
+
+Task #105 preserved:
+YES / NO
+
+Task #106 preserved:
+YES / NO
+
+Task #107 preserved:
+YES / NO
+
+Gold modified:
+NO
+
+Historical runs modified:
+NO
+
+====================
+HOLDOUT READINESS
+====================
+
+READY_FOR_SMALL_HOLDOUT
+or
+NOT_READY_FOR_HOLDOUT
+
+Reason:
+<brief>
+
+====================
+VERDICT
+====================
+
+Did Task #109 fix the generic evidence-to-ICP handoff defect?
+
+YES / PARTIAL / NO
+
+NEXT STEP:
+
+Wait for approval.
+
+Do NOT repair CData identity.
+Do NOT lower the CommercialRole confidence threshold.
+Do NOT fix RevyGo.
+Do NOT run the 50-company Reality Test.
+Do NOT run a new holdout until approved.

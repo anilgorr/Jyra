@@ -22,7 +22,7 @@ assert.equal(profile.countryIso2, "US");
 assert.equal(profile.provenance.industry.sourceType, "CANONICAL_COMPANY");
 assert.equal(profile.profileCompleteness, 1);
 assert.deepEqual(profile.unknownFields, []);
-const discoveryOnly = lib.projectCanonicalCompanyProfile({ ...company, industry: null, country: null, website: null, domain: null }, [{ sourceType: "JYRA_DISCOVERY", sourceLabel: "Exa", sourceUrl: "https://source.test", observedAt: now, createdAt: now, payload: { provider: "exa", industry: "Banking", description: "A bank serving businesses.", employeeRange: "10,001+", location: "India" } }]);
+const discoveryOnly = lib.projectCanonicalCompanyProfile({ ...company, industry: null, country: null, website: null, domain: null }, [{ sourceType: "JYRA_DISCOVERY", sourceLabel: "Exa", sourceUrl: "https://source.test", observedAt: now, createdAt: now, payload: { provider: "exa", industry: "Banking", description: "A bank serving businesses.", employeeRange: "10,001+", headquartersCountry: "India" } }]);
 assert.equal(discoveryOnly.canonicalIndustry, "Financial Services");
 assert.equal(discoveryOnly.primaryBusinessDescription, "A bank serving businesses.");
 assert.equal(discoveryOnly.countryIso2, "IN");

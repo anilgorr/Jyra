@@ -100,6 +100,8 @@
          ,"regression:task-106-explicit-who": "NODE_ENV=development JYRA_TASK_106_POST_REPAIR_REGRESSION=YES node ./scripts/run-task-106-explicit-who-regression.mjs"
          ,"test:task-107-commercial-role": "node ./scripts/test-task-107-commercial-role.mjs"
          ,"regression:task-107-commercial-role": "NODE_ENV=development JYRA_TASK_107_POST_REPAIR_REGRESSION=YES node ./scripts/run-task-107-commercial-role-regression.mjs"
+          ,"test:task-109-evidence-to-icp": "node ./scripts/test-task-109-evidence-to-icp.mjs"
+          ,"regression:task-109-evidence-to-icp": "NODE_ENV=development JYRA_TASK_109_POST_REPAIR_REGRESSION=YES node ./scripts/run-task-109-evidence-to-icp-regression.mjs"
   },
   "dependencies": {
     "@clerk/express": "^2.1.63",

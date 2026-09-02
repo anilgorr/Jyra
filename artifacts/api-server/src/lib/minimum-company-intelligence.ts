@@ -44,13 +44,15 @@ function claimsFor(profile: Awaited<ReturnType<typeof getCanonicalCompanyProfile
   const evidenceIds = [...byId.keys()];
   // Canonical values remain claims, never anonymous facts: every projected
   // claim declares its project-scoped provenance/evidence references.
-  return [
+  const baseClaims: Array<[string, unknown]> = [
     ["canonicalName", profile.canonicalName],
     ["domain", profile.domain],
     ["description", profile.primaryBusinessDescription],
     ["industry", profile.canonicalIndustry],
     ["productsServices", profile.productsServices],
-  ].filter(([, value]) => value !== null && value !== "" && (!Array.isArray(value) || value.length))
+  ];
+  return baseClaims
+    .filter(([, value]) => value !== null && value !== "" && (!Array.isArray(value) || value.length))
     .map(([field, value]) => ({ field, value, evidenceIds,
       sourceTypes: [...new Set(evidenceIds.map((id) => byId.get(id)!.sourceType))] }));
 }

@@ -621,6 +621,7 @@ export function qualifyCandidate(
   strategy: CompanyDiscoveryStrategy,
   profileResolution?: CompanyProfileResolutionResult | null,
   roleDescription?: { text: string; source: string } | null,
+  authoritativeBuyerRole?: DiscoveryCandidateReport["buyerRole"],
 ): CandidateAssessment {
   const employeeRange = strategy.employeeRange;
   const hasEmployeeTarget = employeeRange?.minimum !== undefined || employeeRange?.maximum !== undefined;
@@ -659,7 +660,10 @@ export function qualifyCandidate(
       website_profile: roleDescription?.source ?? "canonical_company",
     },
   });
-  const buyerRole = buyerRoleAssessment.buyerRole;
+  // Existing-project WHO receives the control plane's persisted semantic
+  // CommercialRole. Do not recompute and overwrite that seller-relative
+  // decision from a generic prose classifier at the ICP boundary.
+  const buyerRole = authoritativeBuyerRole ?? buyerRoleAssessment.buyerRole;
   const checks = {
     geography: textMatchesAny(company.country, strategy.geographies),
     industry: textMatchesAny(company.industry, strategy.targetIndustries),
@@ -753,7 +757,8 @@ export async function qualifyProjectCompanyForWho(input: {
     };
   }
   const assessment = qualifyCandidate(normalized, plan.strategy, null,
-    profile.primaryBusinessDescription ? { text: profile.primaryBusinessDescription, source: "canonical_company_profile" } : null);
+    profile.primaryBusinessDescription ? { text: profile.primaryBusinessDescription, source: "canonical_company_profile" } : null,
+    input.buyerRole);
   const buyerRole = input.buyerRole ?? assessment.buyerRole;
   const evidenceIncomplete = assessment.classification === "INSUFFICIENT_DATA"
     && assessment.missingDimensions.length > 0;

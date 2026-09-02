@@ -1,0 +1,326 @@
+{
+  "task": "TASK_109_EVIDENCE_TO_ICP_HANDOFF",
+  "decision": "PASS",
+  "releaseDecision": "YES",
+  "run": {
+    "name": "TASK_109_POST_REPAIR_REGRESSION",
+    "environment": "development",
+    "sourceProjectId": "0fd3a6c3-77c2-4552-a038-60914de92431",
+    "readOnlyEvidence": true,
+    "controlPathMutation": "existing project membership assessment stamp only",
+    "externalProviderCalls": 0,
+    "semanticModelCalls": 0
+  },
+  "policyVersion": "icp-ready-company-facts-v1",
+  "currentPipelineAudit": {
+    "rawEvidenceStorage": "company_provenance stores project/company-scoped provider and public evidence with immutable row IDs.",
+    "extractionBefore": "Canonical profile recognized only global company fields, confirmed COMPANY_FIRMOGRAPHICS attributes, and JYRA_DISCOVERY top-level fields.",
+    "mciAndCompanyUnderstanding": "MCI and Company Understanding could admit profile excerpts as evidence while normalized geography and primary business remained absent from the canonical profile.",
+    "whoBoundary": "qualifyProjectCompanyForWho reads country, industry, employee range, and description exclusively from getCanonicalCompanyProfile.",
+    "exactLossPoint": "projectCanonicalCompanyProfile dropped explicit facts from admissible verified profile evidence before normalizeCompanyInput; WHO also recomputed a legacy prose role instead of honoring the supplied persisted CommercialRole."
+  },
+  "repairImplemented": {
+    "selector": "A deterministic ICP-ready fact selector projects typed geography and primary business from already-persisted admissible provenance.",
+    "whoProjection": "WHO-facing country/city/region derive only from a permitted, non-conflicted HEADQUARTERS fact.",
+    "roleHandoff": "Existing-project WHO uses the authoritative persisted CommercialRole supplied by the control plane.",
+    "persistenceStrategy": "No parallel store was added; persisted provenance and MCI claims remain the source of truth and fact fingerprints make projection deterministic."
+  },
+  "filesChanged": [
+    "artifacts/api-server/src/lib/canonical-company-profile.ts",
+    "artifacts/api-server/src/lib/company-discovery.ts",
+    "artifacts/api-server/src/lib/minimum-company-intelligence.ts",
+    "artifacts/api-server/scripts/task-109-evidence-to-icp-test-entry.ts",
+    "artifacts/api-server/scripts/test-task-109-evidence-to-icp.mjs",
+    "artifacts/api-server/scripts/task-109-evidence-to-icp-regression-entry.ts",
+    "artifacts/api-server/scripts/run-task-109-evidence-to-icp-regression.mjs",
+    "artifacts/api-server/scripts/test-canonical-company-profile.mjs",
+    "artifacts/api-server/package.json"
+  ],
+  "factContract": {
+    "fields": [
+      "factType",
+      "value",
+      "normalizedValue",
+      "confidence",
+      "evidenceIds",
+      "sourceEntityId",
+      "identityPermission",
+      "provenanceStatus",
+      "conflictStatus",
+      "observedAt",
+      "sourceType",
+      "sourceText",
+      "fingerprint"
+    ],
+    "locationTypes": [
+      "HEADQUARTERS",
+      "OFFICE_LOCATION",
+      "INCORPORATION_LOCATION",
+      "OPERATING_MARKET",
+      "CUSTOMER_MARKET",
+      "UNKNOWN_LOCATION_TYPE"
+    ],
+    "countryOnlyUsable": true,
+    "sourceTextPreserved": true,
+    "evidenceIdsPreserved": true
+  },
+  "provenanceBehavior": {
+    "accepted": [
+      "canonical company facts",
+      "confirmed firmographics",
+      "explicit discovery headquarters",
+      "verified exact-domain profile evidence",
+      "exact-name/exact-domain reviewed candidate evidence",
+      "attribution-safe persisted MCI primary-business claims"
+    ],
+    "rejected": [
+      "unverified candidates",
+      "review candidates without exact name/domain binding",
+      "unsupported prose",
+      "assessment snapshots as upstream evidence"
+    ],
+    "fabricatedFacts": 0,
+    "provenanceLost": 0
+  },
+  "conflictBehavior": {
+    "crossSourceHeadquartersComparedBeforeSelection": true,
+    "conflictedHeadquartersResult": "UNKNOWN",
+    "conflictedFactsForcedResolved": 0,
+    "nonHeadquartersUsedAsHeadquarters": 0
+  },
+  "frozenInputs": {
+    "goldSha256": "f59aca76b676d0e54d0899dd23bb3e5c6d5912e71e0597d967a2a722ac8ecfca",
+    "task107Sha256": "c4bdc2314579a0292fa308fb19c58ed9b41682021724bf5eaf458ec158323d3f",
+    "task108Sha256": "a64226547e9cd9ddfdeee70c9d5fa5df36618b93624315a69e0b05e87938f458"
+  },
+  "implementation": {
+    "scope": "generic evidence-to-ICP handoff only",
+    "providerChanges": false,
+    "modelChanges": false,
+    "commercialRoleChanges": false,
+    "whoPolicyChanges": false,
+    "identityPolicyChanges": false,
+    "globalThresholdChanges": false
+  },
+  "metrics": {
+    "commercialRoleStrict": {
+      "before": "15/18",
+      "after": "15/18"
+    },
+    "whoStrict": {
+      "before": "13/18",
+      "after": "15/18"
+    },
+    "commercialRoleCoverage": "16/20",
+    "whoAvailable": {
+      "before": "16/20",
+      "after": "18/20"
+    },
+    "potentialBuyerPrecision": {
+      "before": "100%",
+      "after": "100%"
+    },
+    "sellerCompetitorRecall": {
+      "before": "100%",
+      "after": "100%"
+    },
+    "remainingFirstErrors": {
+      "before": {
+        "IDENTITY_RESOLUTION": 1,
+        "COMMERCIAL_ROLE": 2,
+        "PROVIDER_DATA_GAP": 2
+      },
+      "after": {
+        "IDENTITY_RESOLUTION": 1,
+        "COMMERCIAL_ROLE": 2,
+        "PROVIDER_DATA_GAP": 0
+      }
+    },
+    "dangerousCompetitorAsBuyer": 0,
+    "previouslyCorrectRegressions": 0
+  },
+  "cases": [
+    {
+      "company": "Leadgeneron",
+      "benchmarkCompanyId": "b45eeee7-aab7-412f-b7e7-4c95c999fa14",
+      "commercialRole": "POTENTIAL_BUYER",
+      "productionControlPath": {
+        "status": "SUCCESS",
+        "reasonCode": "ICP_NOT_FIT",
+        "buyerRole": "POTENTIAL_BUYER",
+        "providerCalls": 0,
+        "semanticModelInvoked": false,
+        "reusedPersistedAssessment": true,
+        "who": "LIKELY_NOT_FIT"
+      },
+      "selectedFacts": {
+        "geography": {
+          "normalized": {
+            "country": "United States",
+            "iso2": "US",
+            "city": "New York",
+            "region": "New York",
+            "locationType": "HEADQUARTERS"
+          },
+          "evidenceIds": [
+            "ac12203a-f23b-430c-8a90-0284487091c9"
+          ],
+          "sourceType": "COMPANY_PROFILE_RESOLUTION",
+          "identityPermission": "ATTRIBUTION_SAFE",
+          "provenanceStatus": "SUPPORTED",
+          "conflictStatus": "NONE",
+          "fingerprint": "ccdc68eb5bb7719781d474970615a3936ed839cf7e558dd91cdb527afb5eb16d"
+        },
+        "primaryBusiness": {
+          "value": "Leadgeneron is a privately held IT services and IT consulting company (founded 2018) based in New York, NY. It operates as a sales development firm leveraging AI and industry knowledge to generate and qualify leads, set appointments, and support end-to-end sales through its Managed Services SDR Platform. Services are customized per client to drive additional revenue. Website: leadgeneron.com. LinkedIn presence: linkedin.com/company/leadgeneron with a small following (8 followers, growing).",
+          "evidenceIds": [
+            "ac12203a-f23b-430c-8a90-0284487091c9"
+          ],
+          "sourceType": "MINIMUM_COMPANY_INTELLIGENCE",
+          "identityPermission": "ATTRIBUTION_SAFE",
+          "provenanceStatus": "SUPPORTED",
+          "fingerprint": "2dcd58887632cc3f3b8c30ff4b572e46a1fd3ec08c7cc90ba3259f4a41cd364d"
+        }
+      },
+      "whoInput": {
+        "country": "United States",
+        "countryIso2": "US",
+        "industry": "IT Services",
+        "description": "Leadgeneron is a privately held IT services and IT consulting company (founded 2018) based in New York, NY. It operates as a sales development firm leveraging AI and industry knowledge to generate and qualify leads, set appointments, and support end-to-end sales through its Managed Services SDR Platform. Services are customized per client to drive additional revenue. Website: leadgeneron.com. LinkedIn presence: linkedin.com/company/leadgeneron with a small following (8 followers, growing).",
+        "employeesExact": null,
+        "employeesMin": null,
+        "employeesMax": null
+      },
+      "transition": {
+        "task107Who": "INSUFFICIENT_DATA",
+        "task109Who": "LIKELY_NOT_FIT",
+        "goldWho": "LIKELY_NOT_FIT",
+        "task108FirstError": "PROVIDER_DATA_GAP",
+        "task109FirstError": null
+      },
+      "who": {
+        "eligible": false,
+        "qualification": "LIKELY_NOT_FIT",
+        "checks": {
+          "geography": false,
+          "industry": true,
+          "employeeRange": null,
+          "technology": null
+        },
+        "missingDimensions": [
+          "employee_count",
+          "technology"
+        ],
+        "missingReasonCodes": [
+          "ICP_MISSING_EMPLOYEE_SIZE",
+          "ICP_MISSING_TECHNOLOGY",
+          "ICP_MISSING_MULTIPLE_DIMENSIONS"
+        ],
+        "missingReasonCode": "ICP_MISSING_MULTIPLE_DIMENSIONS",
+        "missingRequirements": [
+          "employee-size evidence",
+          "technology evidence"
+        ],
+        "firmographicResolutionAvailable": true
+      }
+    },
+    {
+      "company": "Leadzen.ai",
+      "benchmarkCompanyId": "b7e9af09-ede7-46fb-baa1-cf2d9f3158bf",
+      "commercialRole": "POTENTIAL_BUYER",
+      "productionControlPath": {
+        "status": "SUCCESS",
+        "reasonCode": "READY_FOR_SIGNAL_RESEARCH",
+        "buyerRole": "POTENTIAL_BUYER",
+        "providerCalls": 0,
+        "semanticModelInvoked": false,
+        "reusedPersistedAssessment": true,
+        "who": "LIKELY_FIT"
+      },
+      "selectedFacts": {
+        "geography": {
+          "normalized": {
+            "country": "India",
+            "iso2": "IN",
+            "city": "Mumbai",
+            "region": null,
+            "locationType": "HEADQUARTERS"
+          },
+          "evidenceIds": [
+            "3bff803c-01dd-4625-b6d7-23ab2c324667"
+          ],
+          "sourceType": "COMPANY_PROFILE_RESOLUTION_REVIEW",
+          "identityPermission": "ATTRIBUTION_SAFE",
+          "provenanceStatus": "SUPPORTED",
+          "conflictStatus": "NONE",
+          "fingerprint": "f45907846745d676a32aacf9dbb84b4a88d0dffbd0ca04fedea267dc25074b8e"
+        },
+        "primaryBusiness": {
+          "value": "Leadzen.ai (Analystt AI Technology Private Limited) is an IT Services and IT Consulting company headquartered in Mumbai, India (founded 2020) with a presence in the United States. It offers an AI-powered lead generation and SDR automation platform designed to turn website traffic into confirmed meetings, handling outreach and booking to improve outbound sales efficiency. The company emphasizes seamless integration, scalable for startups to enterprises, and focuses on growth through AI-driven lead generation, demand generation, and data enrichment. LinkedIn presence: leadzen-ai with about 8,068 followers. Contact email listed: sarthak@kapso.in.",
+          "evidenceIds": [
+            "3bff803c-01dd-4625-b6d7-23ab2c324667"
+          ],
+          "sourceType": "COMPANY_PROFILE_RESOLUTION_REVIEW",
+          "identityPermission": "ATTRIBUTION_SAFE",
+          "provenanceStatus": "SUPPORTED",
+          "fingerprint": "fe89779623ae9d50fa9ded546c5ce2bb393e7d7080ef0ea86b8f5c5bcdce2d47"
+        }
+      },
+      "whoInput": {
+        "country": "India",
+        "countryIso2": "IN",
+        "industry": "IT Services",
+        "description": "Leadzen.ai (Analystt AI Technology Private Limited) is an IT Services and IT Consulting company headquartered in Mumbai, India (founded 2020) with a presence in the United States. It offers an AI-powered lead generation and SDR automation platform designed to turn website traffic into confirmed meetings, handling outreach and booking to improve outbound sales efficiency. The company emphasizes seamless integration, scalable for startups to enterprises, and focuses on growth through AI-driven lead generation, demand generation, and data enrichment. LinkedIn presence: leadzen-ai with about 8,068 followers. Contact email listed: sarthak@kapso.in.",
+        "employeesExact": null,
+        "employeesMin": null,
+        "employeesMax": null
+      },
+      "transition": {
+        "task107Who": "INSUFFICIENT_DATA",
+        "task109Who": "LIKELY_FIT",
+        "goldWho": "LIKELY_FIT",
+        "task108FirstError": "PROVIDER_DATA_GAP",
+        "task109FirstError": null
+      },
+      "who": {
+        "eligible": true,
+        "qualification": "LIKELY_FIT",
+        "checks": {
+          "geography": true,
+          "industry": true,
+          "employeeRange": null,
+          "technology": null
+        },
+        "missingDimensions": [
+          "employee_count",
+          "technology"
+        ],
+        "missingReasonCodes": [
+          "ICP_MISSING_EMPLOYEE_SIZE",
+          "ICP_MISSING_TECHNOLOGY",
+          "ICP_MISSING_MULTIPLE_DIMENSIONS"
+        ],
+        "missingReasonCode": "ICP_MISSING_MULTIPLE_DIMENSIONS",
+        "missingRequirements": [
+          "employee-size evidence",
+          "technology evidence"
+        ],
+        "firmographicResolutionAvailable": true
+      }
+    }
+  ],
+  "verification": {
+    "genericSynthetic": "PASS 16 checks",
+    "typecheck": "PASS",
+    "canonicalCompanyProfile": "PASS",
+    "minimumCompanyIntelligence": "PASS",
+    "task106WhoPolicy": "PASS 11/11",
+    "task107CommercialRole": "PASS 12/12",
+    "architectureReview": "PASS"
+  },
+  "holdoutReadiness": {
+    "decision": "READY_FOR_SMALL_HOLDOUT",
+    "reason": "The shared handoff defect is repaired without safety regression; remaining errors are the isolated identity ambiguity and two isolated relationship/calibration cases identified by Task 108.",
+    "holdoutRunInThisTask": false
+  }
+}
