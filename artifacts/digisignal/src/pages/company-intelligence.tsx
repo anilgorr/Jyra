@@ -29,6 +29,7 @@ import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
 import {
   getGetOpportunityAssessmentQueryKey,
+  getGetCompanyIntelligenceV2QueryKey,
   getGetOpportunityWhyQueryKey,
   getGetMarketTodayQueryKey,
   getListCompanyEvidenceQueryKey,
@@ -38,6 +39,8 @@ import {
   getListSignalClustersQueryKey,
   getListResearchWorkspaceQueryKey,
   useExecuteCompanyResearch,
+  useAnalyzeCompanyIntelligenceV2,
+  useGetCompanyIntelligenceV2,
   useGetMarketToday,
   useListCompanyEvidence,
   useListCompanyFacts,
@@ -45,6 +48,7 @@ import {
   useListProjectSignals,
   useListResearchWorkspace,
   type CompanyEvidence,
+  type IntelligenceV2Run,
   type OpportunityAssessmentDetail,
   type OpportunityWhyDetail,
   type ResearchExecutionResponse,
@@ -388,12 +392,136 @@ function ResearchPanel({
   );
 }
 
+function IntelligenceV2Panel({
+  run,
+  loading,
+  error,
+  analyzing,
+  onAnalyze,
+}: {
+  run: IntelligenceV2Run | undefined;
+  loading: boolean;
+  error: boolean;
+  analyzing: boolean;
+  onAnalyze: () => void;
+}) {
+  return (
+    <Section eyebrow="DEVELOPMENT INSPECTION" title="Intelligence Core: V2" icon={<Layers3 className="h-5 w-5" />}>
+      <Card className="border-accent/30 shadow-none" data-testid="panel-intelligence-v2">
+        <CardContent className="p-6 md:p-8">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <Badge variant="outline" data-testid="status-intelligence-version-v2">JYRA_INTELLIGENCE_V2</Badge>
+              <p className="mt-3 max-w-2xl text-sm text-muted-foreground">
+                This explicit development path is isolated from the default V1 workflow.
+              </p>
+            </div>
+            <Button
+              onClick={onAnalyze}
+              disabled={analyzing}
+              data-testid="button-analyze-v2"
+            >
+              {analyzing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {analyzing ? "Analyzing with V2…" : "Analyze with V2"}
+            </Button>
+          </div>
+
+          {loading ? (
+            <div className="mt-8 flex items-center gap-2 text-sm text-muted-foreground" data-testid="status-intelligence-v2-loading">
+              <Loader2 className="h-4 w-4 animate-spin" /> Loading the latest V2 run…
+            </div>
+          ) : error ? (
+            <div className="mt-8" data-testid="status-intelligence-v2-error">
+              <Unavailable message="The V2 inspection snapshot could not be loaded." />
+            </div>
+          ) : !run ? (
+            <div className="mt-8 rounded-xl border border-dashed p-8 text-center text-sm text-muted-foreground" data-testid="status-intelligence-v2-empty">
+              No V2 run exists in this development process. Run an explicit analysis to inspect it.
+            </div>
+          ) : (
+            <div className="mt-8 space-y-8" data-testid="content-intelligence-v2">
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                <InfoCell label="Company" value={run.companyName} />
+                <InfoCell label="Identity" value={`${label(run.identity.status)} · ${Math.round(run.identity.confidence * 100)}%`} />
+                <InfoCell label="CommercialRole" value={`${label(run.commercialRole.value)} · ${Math.round(run.commercialRole.confidence * 100)}%`} />
+                <InfoCell label="WHO" value={`${label(run.who.value)} · ${Math.round(run.who.confidence * 100)}%`} />
+              </div>
+              <div className="grid gap-5 rounded-xl border bg-muted/20 p-5 md:grid-cols-2">
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Primary business</p>
+                  <p className="mt-2 text-sm leading-relaxed" data-testid="text-intelligence-v2-primary-business">
+                    {run.primaryBusiness?.value ?? "Unknown"}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Confidence and rationale</p>
+                  <p className="mt-2 text-sm leading-relaxed" data-testid="text-intelligence-v2-rationale">
+                    {run.commercialRole.reason} {run.who.reason}
+                  </p>
+                </div>
+              </div>
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Evidence</p>
+                {run.evidence.length ? (
+                  <div className="mt-3 space-y-2">
+                    {run.evidence.map((item) => (
+                      <div key={item.evidenceId} className="rounded-lg border p-3 text-sm" data-testid={`evidence-intelligence-v2-${item.evidenceId}`}>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <Badge variant="secondary">{label(item.sourceType)}</Badge>
+                          <span className="font-medium">{item.title}</span>
+                          <span className="text-xs text-muted-foreground">{Math.round(item.confidence * 100)}%</span>
+                        </div>
+                        <p className="mt-2 text-muted-foreground">{item.statement}</p>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="mt-2 text-sm text-muted-foreground" data-testid="status-intelligence-v2-evidence-empty">No evidence was returned.</p>
+                )}
+              </div>
+              <div className="grid gap-5 md:grid-cols-3">
+                <div data-testid="text-intelligence-v2-unknowns">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Unknown facts</p>
+                  <p className="mt-2 text-sm">{run.unknownFacts.length ? run.unknownFacts.join(", ") : "None recorded"}</p>
+                </div>
+                <div data-testid="text-intelligence-v2-cost">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Run cost</p>
+                  <p className="mt-2 text-sm">${run.cost.total.toFixed(4)} · {run.cost.researchProviderCalls} research / {run.cost.modelCalls} model calls</p>
+                </div>
+                <div data-testid="text-intelligence-v2-fingerprints">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Versions / fingerprints</p>
+                  <p className="mt-2 break-all text-xs text-muted-foreground">
+                    {run.versions.profile} · {run.versions.assessmentPolicy}<br />
+                    Profile {run.fingerprints.profile}<br />Assessment {run.fingerprints.assessment}
+                  </p>
+                </div>
+              </div>
+              <div className="rounded-xl border p-4" data-testid="text-intelligence-v2-resolution">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Final resolution</p>
+                <p className="mt-2 text-sm">{label(run.resolutionType)}{run.deterministicOverrides.length ? ` · ${run.deterministicOverrides.map(label).join(", ")}` : ""}</p>
+                <div className="mt-3 space-y-2">
+                  {run.who.criteria.map((criterion) => (
+                    <p key={criterion.criterionId} className="text-sm text-muted-foreground" data-testid={`criterion-intelligence-v2-${criterion.criterionId}`}>
+                      <span className="font-medium text-foreground">{label(criterion.result)}</span> · {criterion.description}: {criterion.reason}
+                    </p>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </Section>
+  );
+}
+
 export default function CompanyIntelligencePage() {
   const { activeProjectId } = useWorkspace();
   const params = useParams<{ projectCompanyId: string }>();
   const [, navigate] = useLocation();
   const projectId = activeProjectId ?? "";
   const projectCompanyId = params.projectCompanyId ?? "";
+  const v2Enabled = import.meta.env.DEV;
 
   const companiesQuery = useListProjectCompanies(projectId, {
     query: { enabled: Boolean(projectId), queryKey: getListProjectCompaniesQueryKey(projectId), refetchOnMount: "always" },
@@ -437,6 +565,24 @@ export default function CompanyIntelligencePage() {
     queryKey: getNextBestActionQueryKey(projectId, projectCompanyId),
     enabled: Boolean(projectId && projectCompanyId),
     queryFn: () => getJson<NextBestActionResponse>(`/api/projects/${projectId}/companies/${projectCompanyId}/next-best-action`),
+  });
+  const v2Query = useGetCompanyIntelligenceV2(projectId, projectCompanyId, {
+    query: {
+      enabled: Boolean(v2Enabled && projectId && projectCompanyId),
+      queryKey: getGetCompanyIntelligenceV2QueryKey(projectId, projectCompanyId),
+      retry: false,
+    },
+  });
+  const v2Analyze = useAnalyzeCompanyIntelligenceV2({
+    mutation: {
+      onSuccess: (run) => {
+        queryClient.setQueryData(getGetCompanyIntelligenceV2QueryKey(projectId, projectCompanyId), run);
+        toast.success("Intelligence Core V2 analysis complete");
+      },
+      onError: (error) => toast.error("V2 analysis failed", {
+        description: error instanceof Error ? error.message : "The development-only analysis could not be completed.",
+      }),
+    },
   });
 
   const signals = useMemo(() => (signalsQuery.data ?? []).filter((item) => item.companyId === companyId), [signalsQuery.data, companyId]);
@@ -526,6 +672,16 @@ export default function CompanyIntelligencePage() {
           </div>
         </div>
       </header>
+
+      {v2Enabled && (
+        <IntelligenceV2Panel
+          run={v2Query.data}
+          loading={v2Query.isLoading}
+          error={v2Query.isError && (v2Query.error as { status?: number } | null)?.status !== 404}
+          analyzing={v2Analyze.isPending}
+          onAnalyze={() => v2Analyze.mutate({ projectId, projectCompanyId, data: {} })}
+        />
+      )}
 
       <Section eyebrow="WHO" title="Company overview" icon={<Building2 className="h-5 w-5" />}>
         <div className="grid gap-6 lg:grid-cols-[1fr_300px]">

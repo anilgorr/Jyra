@@ -1,0 +1,53 @@
+{
+  "benchmark": "JYRA_BLIND_HOLDOUT_GOLD_V2",
+  "phase": "PHASE_1",
+  "status": "FROZEN_BEFORE_GOLD_ACCESS",
+  "predictionPath": "evaluations/jyra-holdout-v2/TASK_117_V2_PREDICTIONS.json",
+  "artifactSha256": "6e6999acb8ef006e466d90081cd65e4cc5106ae73d4d3c7b240b57e5f903b8d0",
+  "predictionCount": 16,
+  "cohortPath": "evaluations/jyra-holdout-v2/HOLDOUT_V2_COHORT.json",
+  "frozenImplementationManifestSha256": "ee6249675681c2d1e0216d4cd85a2276bed11e1c6dce1e4e179a052ed5b9ab03",
+  "environment": "development",
+  "selector": "JYRA_INTELLIGENCE_V2",
+  "projectIds": {
+    "DIGIPUUSH": "057667fc-3a54-4dd3-ad2f-2ab43e984b62",
+    "MANAGED_SOC": "92fa6f40-285c-481c-b48a-cdb0033ac3ca"
+  },
+  "maximumExternalProviderCallsPerCompany": 6,
+  "versions": {
+    "INTELLIGENCE_CORE_VERSION": "JYRA_INTELLIGENCE_V2",
+    "COMPANY_PROFILE_VERSION": "company-intelligence-profile-v2",
+    "ASSESSMENT_POLICY_VERSION": "seller-relative-assessment-v2",
+    "ASSESSMENT_PROMPT_VERSION": "seller-relative-who-role-v2",
+    "SAFETY_POLICY_VERSION": "market-fit-safety-v2",
+    "ASSESSMENT_MODEL": "gpt-5-mini"
+  },
+  "providerUsage": {
+    "calls": 86,
+    "actualCostUsd": 1.024853592942899,
+    "estimatedCostUsd": 0.7220000000000002,
+    "semanticCalls": 0,
+    "semanticTokens": {
+      "prompt": 0,
+      "completion": 0,
+      "total": 0,
+      "reasoning": 0,
+      "status": "captured when model response supplies usage"
+    },
+    "semanticActualCostUsd": null,
+    "semanticCostStatus": "NOT_REPORTED_BY_MODEL_RESPONSE"
+  },
+  "blindness": {
+    "goldAccessedDuringPrediction": false,
+    "humanReviewAccessedDuringPrediction": false,
+    "task114EvidenceAccessedDuringPrediction": false,
+    "task114ProposalAccessedDuringPrediction": false,
+    "legacySeedEvidenceUsed": false,
+    "manualWebResearchUsed": false
+  },
+  "immutability": {
+    "refuseOverwriteOrRerun": true,
+    "predictionsHashedBeforeManifest": true,
+    "freezeVerifiedBeforeAndAfter": true
+  }
+}

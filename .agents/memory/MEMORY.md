@@ -43,3 +43,4 @@
 - [ICP evidence gaps](icp-evidence-gaps.md) — WHO unknowns name configured missing dimensions; enrich only gaps that firmographics can resolve.
 - [Semantic evidence snapshots](semantic-evidence-snapshots.md) — derived assessment snapshots cannot bootstrap their own evidence or enter upstream fingerprints.
 - [ICP-ready company facts](icp-ready-company-facts.md) — WHO geography must use typed, provenance-bound, non-conflicted facts and preserve the authoritative CommercialRole.
+- [Live semantic contract validation](live-semantic-contract-validation.md) — strict evidence-bound model outputs need live contract probes before paid cohort research.

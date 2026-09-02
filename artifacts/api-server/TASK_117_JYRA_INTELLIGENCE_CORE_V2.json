@@ -1,0 +1,168 @@
+{
+  "task": "TASK_117_JYRA_INTELLIGENCE_CORE_V2",
+  "status": "FAIL",
+  "architecture": {
+    "version": "JYRA_INTELLIGENCE_V2",
+    "v1MajorRuntimeStages": 9,
+    "v2RuntimeStages": 5,
+    "flow": ["Resolve", "Research", "Company Profile", "Seller-Relative Assessment", "Safety Resolution"],
+    "verdict": "SIMPLIFICATION_INSUFFICIENT",
+    "reason": "The five-stage architecture is simpler, but the historical run produced zero final decisions. All 16 attempts failed the strict semantic response contract after paid research. Independent review also found that deterministic WHO overrides can leave stale or unbound final rationale because final output is not revalidated. Accuracy and coverage regressed from V1, while the zero unsafe competitor counts were caused by universal failure rather than reliable detection. The bounded next iteration is contract and safety-provenance alignment, not a new architecture layer."
+  },
+  "finalArchitectureReview": {
+    "status": "FAIL",
+    "reportIntegrity": "PASS",
+    "findings": [
+      {
+        "code": "LIVE_SEMANTIC_SCHEMA_CONTRACT_MISMATCH",
+        "bounded": true,
+        "description": "The combined live response schema omits required claimBindings and compatible reason limits."
+      },
+      {
+        "code": "SAFETY_OVERRIDE_PROVENANCE_NOT_REVALIDATED",
+        "bounded": true,
+        "description": "applySafetyRulesV2 can overwrite WHO reasons or decisions after validateAssessmentEvidenceV2 without regenerating compatible bindings or validating the final output; all four deterministic overrides require provenance-preserving final resolution."
+      }
+    ]
+  },
+  "hashes": {
+    "frozenImplementationManifest": "ee6249675681c2d1e0216d4cd85a2276bed11e1c6dce1e4e179a052ed5b9ab03",
+    "predictions": "6e6999acb8ef006e466d90081cd65e4cc5106ae73d4d3c7b240b57e5f903b8d0",
+    "gold": "e9508c226b077229557b8de13ba5e272d2ec963a8a2b9fc88748abed19dbca8e"
+  },
+  "versions": {
+    "intelligenceCore": "JYRA_INTELLIGENCE_V2",
+    "companyProfile": "company-intelligence-profile-v2",
+    "assessmentPolicy": "seller-relative-assessment-v2",
+    "assessmentPrompt": "seller-relative-who-role-v2",
+    "safetyPolicy": "market-fit-safety-v2",
+    "assessmentModel": "gpt-5-mini"
+  },
+  "changedFiles": [
+    "artifacts/api-server/src/routes/index.ts",
+    "lib/api-spec/openapi.yaml",
+    "lib/api-zod/src/generated/api.ts",
+    "lib/api-zod/src/generated/types/index.ts",
+    "lib/api-client-react/src/generated/api.ts",
+    "lib/api-client-react/src/generated/api.schemas.ts",
+    "artifacts/digisignal/src/pages/company-intelligence.tsx",
+    "artifacts/api-server/package.json"
+  ],
+  "newFiles": [
+    "artifacts/api-server/src/lib/intelligence-v2/apply-safety-rules.ts",
+    "artifacts/api-server/src/lib/intelligence-v2/assess-market-fit.ts",
+    "artifacts/api-server/src/lib/intelligence-v2/build-company-profile.ts",
+    "artifacts/api-server/src/lib/intelligence-v2/evidence-validator.ts",
+    "artifacts/api-server/src/lib/intelligence-v2/fingerprint.ts",
+    "artifacts/api-server/src/lib/intelligence-v2/orchestrator.ts",
+    "artifacts/api-server/src/lib/intelligence-v2/research-company.ts",
+    "artifacts/api-server/src/lib/intelligence-v2/resolve-company.ts",
+    "artifacts/api-server/src/lib/intelligence-v2/schemas.ts",
+    "artifacts/api-server/src/routes/intelligence-v2.ts",
+    "artifacts/api-server/scripts/task-117-generic-fixtures-entry.ts",
+    "artifacts/api-server/scripts/test-task-117-generic-fixtures.mjs",
+    "lib/api-zod/src/generated/types/intelligenceV2Run.ts",
+    "lib/api-zod/src/generated/types/intelligenceV2ClaimBinding.ts",
+    "docs/jyra-intelligence-core-v2.md",
+    "evaluations/jyra-intelligence-v2/TASK_117_GENERIC_V2_FREEZE.manifest.json",
+    "evaluations/jyra-intelligence-v2/validate-task-117-freeze.mjs",
+    "evaluations/jyra-intelligence-v2/run-task-117-v2-historical-entry.ts",
+    "evaluations/jyra-holdout-v2/TASK_117_V2_PREDICTIONS.json",
+    "evaluations/jyra-holdout-v2/TASK_117_V2_PREDICTIONS.manifest.json",
+    "evaluations/jyra-holdout-v2/TASK_117_V2_HISTORICAL_REGRESSION.json",
+    "evaluations/jyra-holdout-v2/TASK_117_V2_HISTORICAL_REGRESSION.md",
+    "evaluations/jyra-intelligence-v2/validate-task-117-final.mjs",
+    "artifacts/api-server/TASK_117_JYRA_INTELLIGENCE_CORE_V2.json"
+  ],
+  "v1ComponentsBypassed": [
+    "identity permission ceremony",
+    "separate provisional evidence promotion",
+    "MinimumCompanyIntelligence blocking stage",
+    "CompanyAssessmentReadiness blocking stage",
+    "repeated Company Understanding calls",
+    "separate CommercialRole research pass",
+    "separate WHO research pass",
+    "multiple independent semantic agents",
+    "legacy/global seed evidence"
+  ],
+  "removedV2Dependencies": {
+    "count": 9,
+    "meaning": "V1 stages bypassed by V2; V1 code was retained."
+  },
+  "genericTests": {
+    "passed": 16,
+    "total": 16,
+    "externalProviderCalls": 0,
+    "categories": {
+      "CommercialRole/WHO": {"count": 1, "result": "PASS"},
+      "Geography/WHO": {"count": 1, "result": "PASS"},
+      "CommercialRole/Safety": {"count": 2, "result": "PASS"},
+      "CommercialRole": {"count": 3, "result": "PASS"},
+      "Geography": {"count": 2, "result": "PASS"},
+      "Identity": {"count": 1, "result": "PASS"},
+      "Identity/Safety": {"count": 1, "result": "PASS"},
+      "Unknown/WHO": {"count": 1, "result": "PASS"},
+      "Evidence": {"count": 1, "result": "PASS"},
+      "Safety": {"count": 1, "result": "PASS"},
+      "Cache": {"count": 1, "result": "PASS"},
+      "Cache/Idempotency": {"count": 1, "result": "PASS"}
+    }
+  },
+  "historicalRegression": {
+    "cohort": 16,
+    "commercialRole": {"correct": 0, "accuracy": 0, "coverage": 0},
+    "who": {"correct": 0, "accuracy": 0, "coverage": 0},
+    "potentialBuyerPrecision": null,
+    "potentialBuyerRecall": 0,
+    "sellerCompetitorRecall": 0,
+    "adjacentVendorRecall": 0,
+    "competitorSafety": {
+      "goldCompetitors": 5,
+      "correctlyDetectedCompetitors": 0,
+      "dangerousCompetitorToBuyer": 0,
+      "competitorsInPositiveBuyerShortlist": 0,
+      "unresolvedCompetitors": 5
+    },
+    "failures": {
+      "failedOnce": 16,
+      "primaryTaxonomy": "SEMANTIC_RESPONSE_SCHEMA_CONTRACT_MISMATCH",
+      "missingClaimBindings": 16,
+      "additionalReasonLengthViolation": 3
+    }
+  },
+  "providerAndSemanticUsage": {
+    "externalProviderCalls": 86,
+    "maximumObservedProviderCallsPerCompany": 6,
+    "actualProviderCostUsd": 1.024853592942899,
+    "estimatedProviderCostUsd": 0.7220000000000002,
+    "averageActualCostPerCompanyUsd": 0.06405334955893119,
+    "semanticCalls": 0,
+    "semanticTokens": {"prompt": 0, "completion": 0, "total": 0, "reasoning": 0},
+    "semanticCostStatus": "NOT_REPORTED_BY_MODEL_RESPONSE"
+  },
+  "v1Comparison": {
+    "commercialRoleCorrect": "7/16 -> 0/16",
+    "whoCorrect": "4/16 -> 0/16",
+    "roleCoverage": "11/16 -> 0/16",
+    "whoCoverage": "8/16 -> 0/16",
+    "buyerPrecision": "66.7% -> not measurable",
+    "dangerousCompetitorToBuyer": "0 -> 0",
+    "providerCalls": "21 -> 86",
+    "providerCostUsd": "0.28500000000000003 -> 1.024853592942899"
+  },
+  "executionHistory": {
+    "strictSingleProcessClaimed": false,
+    "discardedPreflight": "0 pipeline/provider/semantic calls; invalid holdout-ID DB mapping",
+    "interruptedLiveInvocation": "main shell five-minute timeout after provider calls; no predictions artifact",
+    "scoredInvocation": "unchanged full background invocation, completed without tuning or gold access"
+  },
+  "productionStatus": {
+    "v2": "DEVELOPMENT_ONLY",
+    "productionDefault": "V1",
+    "productionModified": false,
+    "v1Deleted": false,
+    "readyToReplaceV1": false
+  },
+  "nextStep": "V2 is simpler but has not yet met the product threshold. Do not add architectural complexity; inspect only the remaining bounded failure.",
+  "specificRecommendation": "In the next iteration: (1) align the live combined semantic schema with required claimBindings and reason limits; and (2) make all four deterministic overrides provenance-preserving and validate the final output. Prove both with generic zero-provider fixtures, then run a new untouched evaluation that is not Holdout V2; do not replace V1 yet."
+}

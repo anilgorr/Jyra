@@ -1,0 +1,905 @@
+{
+  "benchmark": "JYRA_BLIND_HOLDOUT_GOLD_V2",
+  "phase": "TASK_117_PHASE_1_HISTORICAL_REGRESSION",
+  "predictionStatus": "FROZEN_BEFORE_GOLD_ACCESS",
+  "startedAt": "2026-09-02T10:52:24.244Z",
+  "completedAt": "2026-09-02T11:39:14.972Z",
+  "predictions": [
+    {
+      "holdoutCompanyId": "93e96426-1491-4142-abf8-c2f5e80d88b9",
+      "domainKey": "chargebee.com",
+      "company": "Chargebee",
+      "domain": "chargebee.com",
+      "targetDomain": "DIGIPUUSH",
+      "status": "FAILED_ONCE",
+      "canonicalCompanyId": "9cd81b22-a244-4d46-8786-27198a6d3f93",
+      "projectCompanyId": "45893c00-e98b-458a-b1f4-bbb9939607fb",
+      "error": "[\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"commercialRole\",\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"criteria\",\n      0,\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"criteria\",\n      1,\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"criteria\",\n      2,\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"criteria\",\n      3,\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"criteria\",\n      4,\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"criteria\",\n      5,\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  }\n]",
+      "providerUsage": [
+        {
+          "providerId": "33f24745-2734-498a-a951-a92130787ee1",
+          "capability": "WEBSITE_CRAWL",
+          "status": "failed",
+          "estimatedCost": 0.02,
+          "actualCost": null,
+          "requestId": "00817915-1c7e-4111-a6ad-c60bc7396e50:33f24745-2734-498a-a951-a92130787ee1"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "estimatedCost": 0.007,
+          "actualCost": 0.017,
+          "requestId": "profile-resolution:9cd81b22-a244-4d46-8786-27198a6d3f93:search-1:b220e720-6d21-4c7a-badf-3aec920febca"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "estimatedCost": 0.007,
+          "actualCost": 0.017,
+          "requestId": "profile-resolution:9cd81b22-a244-4d46-8786-27198a6d3f93:search-2:b220e720-6d21-4c7a-badf-3aec920febca"
+        },
+        {
+          "providerId": "c8acd975-a514-42a7-9a0a-212442a7a247",
+          "capability": "COMPANY_FIRMOGRAPHICS",
+          "status": "failed",
+          "estimatedCost": 0.0015,
+          "actualCost": null,
+          "requestId": "ed3ad169-6546-47cf-ac2b-b5c49c231392:c8acd975-a514-42a7-9a0a-212442a7a247"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "estimatedCost": 0.007,
+          "actualCost": 0.012,
+          "requestId": "1a18b016-6af1-4938-8f27-e83995ddad28:b220e720-6d21-4c7a-badf-3aec920febca"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "estimatedCost": 0.007,
+          "actualCost": 0.012,
+          "requestId": "cc42865c-b84b-437c-b159-4840955219e5:b220e720-6d21-4c7a-badf-3aec920febca"
+        }
+      ]
+    },
+    {
+      "holdoutCompanyId": "2d4f65f2-785a-462d-88b4-08b3e2547a8c",
+      "domainKey": "hasura.io",
+      "company": "Hasura",
+      "domain": "hasura.io",
+      "targetDomain": "DIGIPUUSH",
+      "status": "FAILED_ONCE",
+      "canonicalCompanyId": "0d3b8f63-5891-418b-8a16-e6c1243185eb",
+      "projectCompanyId": "2ea5a941-fba3-49a3-bcce-2fa35153a42f",
+      "error": "[\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"commercialRole\",\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"criteria\",\n      0,\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"criteria\",\n      1,\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"criteria\",\n      2,\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  }\n]",
+      "providerUsage": [
+        {
+          "providerId": "33f24745-2734-498a-a951-a92130787ee1",
+          "capability": "WEBSITE_CRAWL",
+          "status": "success",
+          "estimatedCost": 0.02,
+          "actualCost": 0.01641729480439921,
+          "requestId": "09c2aa95-cd76-4ce6-963d-a9b4588e1dd7:33f24745-2734-498a-a951-a92130787ee1"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "estimatedCost": 0.007,
+          "actualCost": 0.01,
+          "requestId": "profile-resolution:0d3b8f63-5891-418b-8a16-e6c1243185eb:search-1:b220e720-6d21-4c7a-badf-3aec920febca"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "estimatedCost": 0.007,
+          "actualCost": 0.017,
+          "requestId": "profile-resolution:0d3b8f63-5891-418b-8a16-e6c1243185eb:search-2:b220e720-6d21-4c7a-badf-3aec920febca"
+        },
+        {
+          "providerId": "c8acd975-a514-42a7-9a0a-212442a7a247",
+          "capability": "COMPANY_FIRMOGRAPHICS",
+          "status": "failed",
+          "estimatedCost": 0.0015,
+          "actualCost": null,
+          "requestId": "30ea7851-b603-43f7-8605-c290ee494104:c8acd975-a514-42a7-9a0a-212442a7a247"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "estimatedCost": 0.007,
+          "actualCost": 0.012,
+          "requestId": "1e30953d-e1f8-4a7b-adcb-f000ed20635e:b220e720-6d21-4c7a-badf-3aec920febca"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "estimatedCost": 0.007,
+          "actualCost": 0.012,
+          "requestId": "b654ddf2-05e1-404e-afb2-390febefac8b:b220e720-6d21-4c7a-badf-3aec920febca"
+        }
+      ]
+    },
+    {
+      "holdoutCompanyId": "19ac4e0e-559d-4d3b-8c97-ea15f72a24dd",
+      "domainKey": "drdroid.io",
+      "company": "DrDroid",
+      "domain": "drdroid.io",
+      "targetDomain": "DIGIPUUSH",
+      "status": "FAILED_ONCE",
+      "canonicalCompanyId": "ea04d273-bb4c-478e-84b2-e7b939ef882f",
+      "projectCompanyId": "6245eadf-4b34-473e-8e8b-57136c65ef8a",
+      "error": "[\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"commercialRole\",\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"criteria\",\n      0,\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"criteria\",\n      1,\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"criteria\",\n      2,\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  }\n]",
+      "providerUsage": [
+        {
+          "providerId": "33f24745-2734-498a-a951-a92130787ee1",
+          "capability": "WEBSITE_CRAWL",
+          "status": "success",
+          "estimatedCost": 0.02,
+          "actualCost": 0.010208271199862158,
+          "requestId": "687c7d7f-fbf0-4c9e-82a4-a2c393d90b61:33f24745-2734-498a-a951-a92130787ee1"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "estimatedCost": 0.007,
+          "actualCost": 0.008,
+          "requestId": "profile-resolution:ea04d273-bb4c-478e-84b2-e7b939ef882f:search-1:b220e720-6d21-4c7a-badf-3aec920febca"
+        },
+        {
+          "providerId": "c8acd975-a514-42a7-9a0a-212442a7a247",
+          "capability": "COMPANY_FIRMOGRAPHICS",
+          "status": "failed",
+          "estimatedCost": 0.0015,
+          "actualCost": null,
+          "requestId": "eae3cdc7-9f48-418f-97d2-5c5480b49fc5:c8acd975-a514-42a7-9a0a-212442a7a247"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "estimatedCost": 0.007,
+          "actualCost": 0.012,
+          "requestId": "513cf752-0cae-4d20-8afe-319d6aa6ebd9:b220e720-6d21-4c7a-badf-3aec920febca"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "estimatedCost": 0.007,
+          "actualCost": 0.012,
+          "requestId": "ea12d2bd-8d32-422d-be82-3c80dc950cf4:b220e720-6d21-4c7a-badf-3aec920febca"
+        }
+      ]
+    },
+    {
+      "holdoutCompanyId": "efb9f50e-7cb1-498e-84e9-4fda9b1e7c16",
+      "domainKey": "schbang.com",
+      "company": "Schbang",
+      "domain": "schbang.com",
+      "targetDomain": "DIGIPUUSH",
+      "status": "FAILED_ONCE",
+      "canonicalCompanyId": "85bda769-074b-499b-a314-f39913f503e8",
+      "projectCompanyId": "16655e32-3305-48b3-8933-fc04233ce92b",
+      "error": "[\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"commercialRole\",\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"criteria\",\n      0,\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"criteria\",\n      1,\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"criteria\",\n      2,\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"criteria\",\n      3,\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"criteria\",\n      4,\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"criteria\",\n      5,\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  }\n]",
+      "providerUsage": [
+        {
+          "providerId": "33f24745-2734-498a-a951-a92130787ee1",
+          "capability": "WEBSITE_CRAWL",
+          "status": "failed",
+          "estimatedCost": 0.02,
+          "actualCost": null,
+          "requestId": "bc5000a2-0c0c-4f85-9b0f-f14604a76946:33f24745-2734-498a-a951-a92130787ee1"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "estimatedCost": 0.007,
+          "actualCost": 0.009,
+          "requestId": "profile-resolution:85bda769-074b-499b-a314-f39913f503e8:search-1:b220e720-6d21-4c7a-badf-3aec920febca"
+        },
+        {
+          "providerId": "c8acd975-a514-42a7-9a0a-212442a7a247",
+          "capability": "COMPANY_FIRMOGRAPHICS",
+          "status": "failed",
+          "estimatedCost": 0.0015,
+          "actualCost": null,
+          "requestId": "26a10987-224b-47f4-92b2-24f15c638416:c8acd975-a514-42a7-9a0a-212442a7a247"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "estimatedCost": 0.007,
+          "actualCost": 0.012,
+          "requestId": "d2bf7e60-8022-4323-89eb-c49dbf9d64d8:b220e720-6d21-4c7a-badf-3aec920febca"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "estimatedCost": 0.007,
+          "actualCost": 0.012,
+          "requestId": "a909dc77-39f9-4147-894e-1208dbe0a97e:b220e720-6d21-4c7a-badf-3aec920febca"
+        }
+      ]
+    },
+    {
+      "holdoutCompanyId": "1dea0dcd-85c7-4f13-87e3-856e52e79552",
+      "domainKey": "socialbeat.in",
+      "company": "Social Beat",
+      "domain": "socialbeat.in",
+      "targetDomain": "DIGIPUUSH",
+      "status": "FAILED_ONCE",
+      "canonicalCompanyId": "2a6d22f4-d930-415d-bed0-1ddfaba02dc8",
+      "projectCompanyId": "4eae19eb-bd59-4d68-a849-5e1380acf99f",
+      "error": "[\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"commercialRole\",\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"criteria\",\n      0,\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"criteria\",\n      1,\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"criteria\",\n      2,\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  }\n]",
+      "providerUsage": [
+        {
+          "providerId": "33f24745-2734-498a-a951-a92130787ee1",
+          "capability": "WEBSITE_CRAWL",
+          "status": "failed",
+          "estimatedCost": 0.02,
+          "actualCost": null,
+          "requestId": "5fd69a5f-e46a-4870-b7d8-4f7a23f1178e:33f24745-2734-498a-a951-a92130787ee1"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "estimatedCost": 0.007,
+          "actualCost": 0.017,
+          "requestId": "profile-resolution:2a6d22f4-d930-415d-bed0-1ddfaba02dc8:search-1:b220e720-6d21-4c7a-badf-3aec920febca"
+        },
+        {
+          "providerId": "c8acd975-a514-42a7-9a0a-212442a7a247",
+          "capability": "COMPANY_FIRMOGRAPHICS",
+          "status": "failed",
+          "estimatedCost": 0.0015,
+          "actualCost": null,
+          "requestId": "551d633d-90e8-46df-93a6-7fbe2b532554:c8acd975-a514-42a7-9a0a-212442a7a247"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "estimatedCost": 0.007,
+          "actualCost": 0.012,
+          "requestId": "4d1cabc6-4aa3-4f70-8593-bf90edede70d:b220e720-6d21-4c7a-badf-3aec920febca"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "estimatedCost": 0.007,
+          "actualCost": 0.012,
+          "requestId": "01f20ea5-14c2-4cc7-b6b6-a168d7d5ceb6:b220e720-6d21-4c7a-badf-3aec920febca"
+        }
+      ]
+    },
+    {
+      "holdoutCompanyId": "c08fb7d3-d435-4a60-b2b5-88de4be06210",
+      "domainKey": "thatware.co",
+      "company": "ThatWare",
+      "domain": "thatware.co",
+      "targetDomain": "DIGIPUUSH",
+      "status": "FAILED_ONCE",
+      "canonicalCompanyId": "9e3a2253-125f-4b8d-a4f8-9afc6970cc6f",
+      "projectCompanyId": "54b9d414-4551-4b6d-a76a-4f0f881d2c45",
+      "error": "[\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"commercialRole\",\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"criteria\",\n      0,\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"criteria\",\n      1,\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"criteria\",\n      2,\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  }\n]",
+      "providerUsage": [
+        {
+          "providerId": "33f24745-2734-498a-a951-a92130787ee1",
+          "capability": "WEBSITE_CRAWL",
+          "status": "success",
+          "estimatedCost": 0.02,
+          "actualCost": 0.05445660647608339,
+          "requestId": "b9f34b91-6998-4f94-b8fe-ba6d6154cd43:33f24745-2734-498a-a951-a92130787ee1"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "estimatedCost": 0.007,
+          "actualCost": 0.008,
+          "requestId": "profile-resolution:9e3a2253-125f-4b8d-a4f8-9afc6970cc6f:search-1:b220e720-6d21-4c7a-badf-3aec920febca"
+        },
+        {
+          "providerId": "c8acd975-a514-42a7-9a0a-212442a7a247",
+          "capability": "COMPANY_FIRMOGRAPHICS",
+          "status": "failed",
+          "estimatedCost": 0.0015,
+          "actualCost": null,
+          "requestId": "6b3bdf15-1b3d-45c3-ba69-b24c3d0bc4ef:c8acd975-a514-42a7-9a0a-212442a7a247"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "estimatedCost": 0.007,
+          "actualCost": 0.012,
+          "requestId": "7523bdc6-44f7-436f-abac-c687afdfab8a:b220e720-6d21-4c7a-badf-3aec920febca"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "estimatedCost": 0.007,
+          "actualCost": 0.012,
+          "requestId": "3f379bcb-977c-4b32-92e6-48edf399d066:b220e720-6d21-4c7a-badf-3aec920febca"
+        }
+      ]
+    },
+    {
+      "holdoutCompanyId": "6eddb470-a147-49bb-ba00-c73fd5ef3387",
+      "domainKey": "scalenut.com",
+      "company": "Scalenut",
+      "domain": "scalenut.com",
+      "targetDomain": "DIGIPUUSH",
+      "status": "FAILED_ONCE",
+      "canonicalCompanyId": "299b7c74-93cd-46a8-b01a-d7f2a966e2e6",
+      "projectCompanyId": "c2ce6915-3975-47f2-aaba-1e0845e663c4",
+      "error": "[\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"commercialRole\",\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"criteria\",\n      0,\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"criteria\",\n      1,\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"criteria\",\n      2,\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  }\n]",
+      "providerUsage": [
+        {
+          "providerId": "33f24745-2734-498a-a951-a92130787ee1",
+          "capability": "WEBSITE_CRAWL",
+          "status": "success",
+          "estimatedCost": 0.02,
+          "actualCost": 0.034578677277247116,
+          "requestId": "f26eed3c-eba8-4c55-b464-3f81a23c8fa9:33f24745-2734-498a-a951-a92130787ee1"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "estimatedCost": 0.007,
+          "actualCost": 0.017,
+          "requestId": "profile-resolution:299b7c74-93cd-46a8-b01a-d7f2a966e2e6:search-1:b220e720-6d21-4c7a-badf-3aec920febca"
+        },
+        {
+          "providerId": "c8acd975-a514-42a7-9a0a-212442a7a247",
+          "capability": "COMPANY_FIRMOGRAPHICS",
+          "status": "failed",
+          "estimatedCost": 0.0015,
+          "actualCost": null,
+          "requestId": "fef3fd1c-3e6f-47eb-8038-d6ee87718457:c8acd975-a514-42a7-9a0a-212442a7a247"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "estimatedCost": 0.007,
+          "actualCost": 0.012,
+          "requestId": "a3a9c540-6a13-461e-8195-7dfcae1d32c2:b220e720-6d21-4c7a-badf-3aec920febca"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "estimatedCost": 0.007,
+          "actualCost": 0.012,
+          "requestId": "a3981257-ed0c-4a1d-8a31-72b1bcb99784:b220e720-6d21-4c7a-badf-3aec920febca"
+        }
+      ]
+    },
+    {
+      "holdoutCompanyId": "64fa9c8a-7a82-4e1a-9df0-88594c273114",
+      "domainKey": "tryprofound.com",
+      "company": "Profound",
+      "domain": "tryprofound.com",
+      "targetDomain": "DIGIPUUSH",
+      "status": "FAILED_ONCE",
+      "canonicalCompanyId": "c5ff5373-1f72-43fd-840a-19676778dda5",
+      "projectCompanyId": "5230a27f-69d7-46a2-a35a-46443558ea0c",
+      "error": "[\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"commercialRole\",\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"criteria\",\n      0,\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"criteria\",\n      1,\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"criteria\",\n      2,\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  }\n]",
+      "providerUsage": [
+        {
+          "providerId": "33f24745-2734-498a-a951-a92130787ee1",
+          "capability": "WEBSITE_CRAWL",
+          "status": "success",
+          "estimatedCost": 0.02,
+          "actualCost": 0.03064357680760324,
+          "requestId": "edf71cf5-2cff-4b70-8543-1fb8b442383a:33f24745-2734-498a-a951-a92130787ee1"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "estimatedCost": 0.007,
+          "actualCost": 0.017,
+          "requestId": "profile-resolution:c5ff5373-1f72-43fd-840a-19676778dda5:search-1:b220e720-6d21-4c7a-badf-3aec920febca"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "estimatedCost": 0.007,
+          "actualCost": 0.017,
+          "requestId": "profile-resolution:c5ff5373-1f72-43fd-840a-19676778dda5:search-2:b220e720-6d21-4c7a-badf-3aec920febca"
+        },
+        {
+          "providerId": "c8acd975-a514-42a7-9a0a-212442a7a247",
+          "capability": "COMPANY_FIRMOGRAPHICS",
+          "status": "failed",
+          "estimatedCost": 0.0015,
+          "actualCost": null,
+          "requestId": "b73682dc-2958-489f-9b38-e3af963a3ac6:c8acd975-a514-42a7-9a0a-212442a7a247"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "estimatedCost": 0.007,
+          "actualCost": 0.012,
+          "requestId": "03bff13b-9dbc-461e-a883-6414c13975f4:b220e720-6d21-4c7a-badf-3aec920febca"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "estimatedCost": 0.007,
+          "actualCost": 0.012,
+          "requestId": "cd6b3684-ba9a-421f-b753-fec8ff82ea14:b220e720-6d21-4c7a-badf-3aec920febca"
+        }
+      ]
+    },
+    {
+      "holdoutCompanyId": "c1ff6adb-e0ba-43e3-8031-effc4548bd78",
+      "domainKey": "pinelabs.com",
+      "company": "Pine Labs",
+      "domain": "pinelabs.com",
+      "targetDomain": "MANAGED_SOC",
+      "status": "FAILED_ONCE",
+      "canonicalCompanyId": "d48cc11c-187b-4232-ae7c-d84dc51c70dc",
+      "projectCompanyId": "a5f048d3-678f-4d40-b633-30952351c9fb",
+      "error": "[\n  {\n    \"origin\": \"string\",\n    \"code\": \"too_big\",\n    \"maximum\": 1200,\n    \"inclusive\": true,\n    \"path\": [\n      \"commercialRole\",\n      \"reason\"\n    ],\n    \"message\": \"Too big: expected string to have <=1200 characters\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"commercialRole\",\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"criteria\",\n      0,\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"criteria\",\n      1,\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"criteria\",\n      2,\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"criteria\",\n      3,\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  }\n]",
+      "providerUsage": [
+        {
+          "providerId": "33f24745-2734-498a-a951-a92130787ee1",
+          "capability": "WEBSITE_CRAWL",
+          "status": "success",
+          "estimatedCost": 0.02,
+          "actualCost": 0.03887320069990556,
+          "requestId": "6d573168-17cf-4d98-9499-f587643baa47:33f24745-2734-498a-a951-a92130787ee1"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "estimatedCost": 0.007,
+          "actualCost": 0.014,
+          "requestId": "profile-resolution:d48cc11c-187b-4232-ae7c-d84dc51c70dc:search-1:b220e720-6d21-4c7a-badf-3aec920febca"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "estimatedCost": 0.007,
+          "actualCost": 0.017,
+          "requestId": "profile-resolution:d48cc11c-187b-4232-ae7c-d84dc51c70dc:search-2:b220e720-6d21-4c7a-badf-3aec920febca"
+        },
+        {
+          "providerId": "c8acd975-a514-42a7-9a0a-212442a7a247",
+          "capability": "COMPANY_FIRMOGRAPHICS",
+          "status": "failed",
+          "estimatedCost": 0.0015,
+          "actualCost": null,
+          "requestId": "88aad7ca-6021-444e-a1ec-2b5b4168fe92:c8acd975-a514-42a7-9a0a-212442a7a247"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "estimatedCost": 0.007,
+          "actualCost": 0.012,
+          "requestId": "130cba42-45f6-4076-809c-c816b693ad83:b220e720-6d21-4c7a-badf-3aec920febca"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "estimatedCost": 0.007,
+          "actualCost": 0.012,
+          "requestId": "f02257ac-fb52-49a1-876c-35af9b769517:b220e720-6d21-4c7a-badf-3aec920febca"
+        }
+      ]
+    },
+    {
+      "holdoutCompanyId": "966b0b9c-2794-4652-bbc2-356508030f36",
+      "domainKey": "practo.com",
+      "company": "Practo",
+      "domain": "practo.com",
+      "targetDomain": "MANAGED_SOC",
+      "status": "FAILED_ONCE",
+      "canonicalCompanyId": "1b879e3e-c167-4cd4-b344-4ec1ae2d6339",
+      "projectCompanyId": "2baaa1f8-3f62-4b0b-92c9-8e226a7f666b",
+      "error": "[\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"commercialRole\",\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"criteria\",\n      0,\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"criteria\",\n      1,\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"criteria\",\n      2,\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"criteria\",\n      3,\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  }\n]",
+      "providerUsage": [
+        {
+          "providerId": "33f24745-2734-498a-a951-a92130787ee1",
+          "capability": "WEBSITE_CRAWL",
+          "status": "success",
+          "estimatedCost": 0.02,
+          "actualCost": 0.011129772682701546,
+          "requestId": "767196ea-22e6-461d-8843-de761fc85c74:33f24745-2734-498a-a951-a92130787ee1"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "estimatedCost": 0.007,
+          "actualCost": 0.016,
+          "requestId": "profile-resolution:1b879e3e-c167-4cd4-b344-4ec1ae2d6339:search-1:b220e720-6d21-4c7a-badf-3aec920febca"
+        },
+        {
+          "providerId": "c8acd975-a514-42a7-9a0a-212442a7a247",
+          "capability": "COMPANY_FIRMOGRAPHICS",
+          "status": "failed",
+          "estimatedCost": 0.0015,
+          "actualCost": null,
+          "requestId": "faf8f0f8-ceab-426b-9cfc-ae5de8198369:c8acd975-a514-42a7-9a0a-212442a7a247"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "estimatedCost": 0.007,
+          "actualCost": 0.012,
+          "requestId": "2c855ebe-63c0-40f0-b2e5-317d48a13b53:b220e720-6d21-4c7a-badf-3aec920febca"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "estimatedCost": 0.007,
+          "actualCost": 0.012,
+          "requestId": "3096a55d-ef11-40b9-a908-69305e5f716f:b220e720-6d21-4c7a-badf-3aec920febca"
+        }
+      ]
+    },
+    {
+      "holdoutCompanyId": "20b11621-f344-422d-8c54-e7ef96220077",
+      "domainKey": "whatfix.com",
+      "company": "Whatfix",
+      "domain": "whatfix.com",
+      "targetDomain": "MANAGED_SOC",
+      "status": "FAILED_ONCE",
+      "canonicalCompanyId": "d2ebf826-0a1c-4e74-ae1e-fb1ee5ead38c",
+      "projectCompanyId": "e072951e-01b6-4c64-a3e8-46df97c948a6",
+      "error": "[\n  {\n    \"origin\": \"string\",\n    \"code\": \"too_big\",\n    \"maximum\": 1200,\n    \"inclusive\": true,\n    \"path\": [\n      \"commercialRole\",\n      \"reason\"\n    ],\n    \"message\": \"Too big: expected string to have <=1200 characters\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"commercialRole\",\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"criteria\",\n      0,\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"criteria\",\n      1,\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"criteria\",\n      2,\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  }\n]",
+      "providerUsage": [
+        {
+          "providerId": "33f24745-2734-498a-a951-a92130787ee1",
+          "capability": "WEBSITE_CRAWL",
+          "status": "failed",
+          "estimatedCost": 0.02,
+          "actualCost": null,
+          "requestId": "9204764f-902e-4836-af78-218685df8bf6:33f24745-2734-498a-a951-a92130787ee1"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "estimatedCost": 0.007,
+          "actualCost": 0.017,
+          "requestId": "profile-resolution:d2ebf826-0a1c-4e74-ae1e-fb1ee5ead38c:search-1:b220e720-6d21-4c7a-badf-3aec920febca"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "estimatedCost": 0.007,
+          "actualCost": 0.016,
+          "requestId": "profile-resolution:d2ebf826-0a1c-4e74-ae1e-fb1ee5ead38c:search-2:b220e720-6d21-4c7a-badf-3aec920febca"
+        },
+        {
+          "providerId": "c8acd975-a514-42a7-9a0a-212442a7a247",
+          "capability": "COMPANY_FIRMOGRAPHICS",
+          "status": "failed",
+          "estimatedCost": 0.0015,
+          "actualCost": null,
+          "requestId": "8b15b4d3-fd68-4e95-bd55-f260d476254b:c8acd975-a514-42a7-9a0a-212442a7a247"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "estimatedCost": 0.007,
+          "actualCost": 0.012,
+          "requestId": "a5043c96-8d4e-4961-9257-d5ba72f2b9e8:b220e720-6d21-4c7a-badf-3aec920febca"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "estimatedCost": 0.007,
+          "actualCost": 0.012,
+          "requestId": "c147ad9e-202e-43e9-9620-5255ce1172ff:b220e720-6d21-4c7a-badf-3aec920febca"
+        }
+      ]
+    },
+    {
+      "holdoutCompanyId": "a66b03e4-9ec1-45d4-b7cd-d2b960e169f7",
+      "domainKey": "ctrls.com",
+      "company": "CtrlS Datacenters",
+      "domain": "ctrls.com",
+      "targetDomain": "MANAGED_SOC",
+      "status": "FAILED_ONCE",
+      "canonicalCompanyId": "8b0ea2bd-fb42-439f-adf6-90ade7320ab2",
+      "projectCompanyId": "731da426-e25d-4a95-b1da-1d5cfd2f465d",
+      "error": "[\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"commercialRole\",\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"criteria\",\n      0,\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"criteria\",\n      1,\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"criteria\",\n      2,\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"criteria\",\n      3,\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  }\n]",
+      "providerUsage": [
+        {
+          "providerId": "33f24745-2734-498a-a951-a92130787ee1",
+          "capability": "WEBSITE_CRAWL",
+          "status": "failed",
+          "estimatedCost": 0.02,
+          "actualCost": null,
+          "requestId": "bb5c2ee2-a808-42c9-bd4a-6ba653b5a038:33f24745-2734-498a-a951-a92130787ee1"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "estimatedCost": 0.007,
+          "actualCost": 0.009,
+          "requestId": "profile-resolution:8b0ea2bd-fb42-439f-adf6-90ade7320ab2:search-1:b220e720-6d21-4c7a-badf-3aec920febca"
+        },
+        {
+          "providerId": "c8acd975-a514-42a7-9a0a-212442a7a247",
+          "capability": "COMPANY_FIRMOGRAPHICS",
+          "status": "failed",
+          "estimatedCost": 0.0015,
+          "actualCost": null,
+          "requestId": "3878d031-2163-40c1-b61a-a05288a17ba7:c8acd975-a514-42a7-9a0a-212442a7a247"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "estimatedCost": 0.007,
+          "actualCost": 0.012,
+          "requestId": "808628fb-fdb7-4334-8435-da7bee5c0064:b220e720-6d21-4c7a-badf-3aec920febca"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "estimatedCost": 0.007,
+          "actualCost": 0.012,
+          "requestId": "0f06821f-5212-482a-b981-7764d576e708:b220e720-6d21-4c7a-badf-3aec920febca"
+        }
+      ]
+    },
+    {
+      "holdoutCompanyId": "9cac7eb5-e229-46b0-ba24-668a3ea8b24c",
+      "domainKey": "esds.co.in",
+      "company": "ESDS Software Solution",
+      "domain": "esds.co.in",
+      "targetDomain": "MANAGED_SOC",
+      "status": "FAILED_ONCE",
+      "canonicalCompanyId": "f8f743e0-5827-4516-9e51-89e5b649b908",
+      "projectCompanyId": "dd047f7e-b297-443c-8e3b-d5f40f42b1bc",
+      "error": "[\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"commercialRole\",\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"criteria\",\n      0,\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"criteria\",\n      1,\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"criteria\",\n      2,\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"criteria\",\n      3,\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  }\n]",
+      "providerUsage": [
+        {
+          "providerId": "33f24745-2734-498a-a951-a92130787ee1",
+          "capability": "WEBSITE_CRAWL",
+          "status": "success",
+          "estimatedCost": 0.02,
+          "actualCost": 0.07134593498936792,
+          "requestId": "84121c98-0c66-43df-8132-d00cf78adf44:33f24745-2734-498a-a951-a92130787ee1"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "estimatedCost": 0.007,
+          "actualCost": 0.009,
+          "requestId": "profile-resolution:f8f743e0-5827-4516-9e51-89e5b649b908:search-1:b220e720-6d21-4c7a-badf-3aec920febca"
+        },
+        {
+          "providerId": "c8acd975-a514-42a7-9a0a-212442a7a247",
+          "capability": "COMPANY_FIRMOGRAPHICS",
+          "status": "failed",
+          "estimatedCost": 0.0015,
+          "actualCost": null,
+          "requestId": "b06f5f8c-8d03-4b55-b489-464a37cbe980:c8acd975-a514-42a7-9a0a-212442a7a247"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "estimatedCost": 0.007,
+          "actualCost": 0.012,
+          "requestId": "b5d5f630-675e-4ff6-ae28-f888f0265ecb:b220e720-6d21-4c7a-badf-3aec920febca"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "estimatedCost": 0.007,
+          "actualCost": 0.012,
+          "requestId": "807e4735-974f-4ef9-9830-b56d8ea8f2ae:b220e720-6d21-4c7a-badf-3aec920febca"
+        }
+      ]
+    },
+    {
+      "holdoutCompanyId": "9136ec53-18a9-4530-825f-75459942dbd9",
+      "domainKey": "safe.security",
+      "company": "Safe Security",
+      "domain": "safe.security",
+      "targetDomain": "MANAGED_SOC",
+      "status": "FAILED_ONCE",
+      "canonicalCompanyId": "39a7558c-7337-4c2f-8128-22d4667aa115",
+      "projectCompanyId": "b7958d0a-e1c3-4688-8c05-cdd9c1b97eaa",
+      "error": "[\n  {\n    \"origin\": \"string\",\n    \"code\": \"too_big\",\n    \"maximum\": 1200,\n    \"inclusive\": true,\n    \"path\": [\n      \"commercialRole\",\n      \"reason\"\n    ],\n    \"message\": \"Too big: expected string to have <=1200 characters\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"commercialRole\",\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"criteria\",\n      0,\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"criteria\",\n      1,\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"criteria\",\n      2,\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"criteria\",\n      3,\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  }\n]",
+      "providerUsage": [
+        {
+          "providerId": "33f24745-2734-498a-a951-a92130787ee1",
+          "capability": "WEBSITE_CRAWL",
+          "status": "success",
+          "estimatedCost": 0.02,
+          "actualCost": 0.03457956763680776,
+          "requestId": "446dc129-e6e4-4168-bc47-fc864e33a847:33f24745-2734-498a-a951-a92130787ee1"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "estimatedCost": 0.007,
+          "actualCost": 0.016,
+          "requestId": "profile-resolution:39a7558c-7337-4c2f-8128-22d4667aa115:search-1:b220e720-6d21-4c7a-badf-3aec920febca"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "estimatedCost": 0.007,
+          "actualCost": 0.017,
+          "requestId": "profile-resolution:39a7558c-7337-4c2f-8128-22d4667aa115:search-2:b220e720-6d21-4c7a-badf-3aec920febca"
+        },
+        {
+          "providerId": "c8acd975-a514-42a7-9a0a-212442a7a247",
+          "capability": "COMPANY_FIRMOGRAPHICS",
+          "status": "failed",
+          "estimatedCost": 0.0015,
+          "actualCost": null,
+          "requestId": "38536aca-4ec1-4954-8af6-37e4b9827d48:c8acd975-a514-42a7-9a0a-212442a7a247"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "estimatedCost": 0.007,
+          "actualCost": 0.012,
+          "requestId": "654811ca-bf45-427a-8d49-259900fc1713:b220e720-6d21-4c7a-badf-3aec920febca"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "estimatedCost": 0.007,
+          "actualCost": 0.012,
+          "requestId": "20b7bbc8-6809-47dc-877d-9a6a9221a76f:b220e720-6d21-4c7a-badf-3aec920febca"
+        }
+      ]
+    },
+    {
+      "holdoutCompanyId": "6c6f7d6b-3f0f-4d6a-8dfb-f83176c8222f",
+      "domainKey": "tacsecurity.com",
+      "company": "TAC Security",
+      "domain": "tacsecurity.com",
+      "targetDomain": "MANAGED_SOC",
+      "status": "FAILED_ONCE",
+      "canonicalCompanyId": "0be3338e-2ae3-4c26-a0e8-608295368f07",
+      "projectCompanyId": "54ec6009-d236-4f1f-a419-2d82707a480b",
+      "error": "[\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"commercialRole\",\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"criteria\",\n      0,\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"criteria\",\n      1,\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"criteria\",\n      2,\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"criteria\",\n      3,\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  }\n]",
+      "providerUsage": [
+        {
+          "providerId": "33f24745-2734-498a-a951-a92130787ee1",
+          "capability": "WEBSITE_CRAWL",
+          "status": "failed",
+          "estimatedCost": 0.02,
+          "actualCost": null,
+          "requestId": "d248dee8-b4c6-48ae-aa2c-a5328c91dacb:33f24745-2734-498a-a951-a92130787ee1"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "estimatedCost": 0.007,
+          "actualCost": 0.008,
+          "requestId": "profile-resolution:0be3338e-2ae3-4c26-a0e8-608295368f07:search-1:b220e720-6d21-4c7a-badf-3aec920febca"
+        },
+        {
+          "providerId": "c8acd975-a514-42a7-9a0a-212442a7a247",
+          "capability": "COMPANY_FIRMOGRAPHICS",
+          "status": "failed",
+          "estimatedCost": 0.0015,
+          "actualCost": null,
+          "requestId": "58e343fc-c0a8-45ae-ab6c-4da49b411231:c8acd975-a514-42a7-9a0a-212442a7a247"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "estimatedCost": 0.007,
+          "actualCost": 0.012,
+          "requestId": "adfbeb63-4722-4651-bfca-cbbf892b1950:b220e720-6d21-4c7a-badf-3aec920febca"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "estimatedCost": 0.007,
+          "actualCost": 0.012,
+          "requestId": "e1ea941d-ac50-4114-8148-4e47a5e36815:b220e720-6d21-4c7a-badf-3aec920febca"
+        }
+      ]
+    },
+    {
+      "holdoutCompanyId": "0e45e52c-1042-4511-a021-52a68c01ce80",
+      "domainKey": "appsecco.com",
+      "company": "Appsecco",
+      "domain": "appsecco.com",
+      "targetDomain": "MANAGED_SOC",
+      "status": "FAILED_ONCE",
+      "canonicalCompanyId": "d25785e2-7b38-4e58-bd81-683c794888eb",
+      "projectCompanyId": "ac8af460-69fd-4f6c-ad99-4e4ae83e72e9",
+      "error": "[\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"commercialRole\",\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"criteria\",\n      0,\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"criteria\",\n      1,\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"criteria\",\n      2,\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  },\n  {\n    \"expected\": \"array\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"who\",\n      \"criteria\",\n      3,\n      \"claimBindings\"\n    ],\n    \"message\": \"Invalid input: expected array, received undefined\"\n  }\n]",
+      "providerUsage": [
+        {
+          "providerId": "33f24745-2734-498a-a951-a92130787ee1",
+          "capability": "WEBSITE_CRAWL",
+          "status": "success",
+          "estimatedCost": 0.02,
+          "actualCost": 0.037620690368920566,
+          "requestId": "6a256a32-e7c0-496c-9a4f-7d48be1d6dc4:33f24745-2734-498a-a951-a92130787ee1"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "estimatedCost": 0.007,
+          "actualCost": 0.008,
+          "requestId": "profile-resolution:d25785e2-7b38-4e58-bd81-683c794888eb:search-1:b220e720-6d21-4c7a-badf-3aec920febca"
+        },
+        {
+          "providerId": "c8acd975-a514-42a7-9a0a-212442a7a247",
+          "capability": "COMPANY_FIRMOGRAPHICS",
+          "status": "failed",
+          "estimatedCost": 0.0015,
+          "actualCost": null,
+          "requestId": "2af15545-e8ad-4722-b061-9f17c9b2a8c4:c8acd975-a514-42a7-9a0a-212442a7a247"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "estimatedCost": 0.007,
+          "actualCost": 0.012,
+          "requestId": "2c7a7578-1ecf-410f-900e-2db56052ea5d:b220e720-6d21-4c7a-badf-3aec920febca"
+        },
+        {
+          "providerId": "b220e720-6d21-4c7a-badf-3aec920febca",
+          "capability": "WEB_SEARCH",
+          "status": "success",
+          "estimatedCost": 0.007,
+          "actualCost": 0.012,
+          "requestId": "0a34827a-1915-4892-84a3-a1a6fa659da6:b220e720-6d21-4c7a-badf-3aec920febca"
+        }
+      ]
+    }
+  ]
+}

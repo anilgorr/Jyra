@@ -9,6 +9,266 @@ import * as zod from 'zod';
 
 
 /**
+ * Development-only retrieval of the latest process-private V2 snapshot for this project company.
+ * @summary Get the latest development V2 intelligence run
+ */
+export const GetCompanyIntelligenceV2Params = zod.object({
+  "projectId": zod.coerce.string(),
+  "projectCompanyId": zod.coerce.string()
+})
+
+export const getCompanyIntelligenceV2ResponseIdentityConfidenceMin = 0;
+export const getCompanyIntelligenceV2ResponseIdentityConfidenceMax = 1;
+
+export const getCompanyIntelligenceV2ResponsePrimaryBusinessConfidenceMin = 0;
+export const getCompanyIntelligenceV2ResponsePrimaryBusinessConfidenceMax = 1;
+
+export const getCompanyIntelligenceV2ResponseCommercialRoleConfidenceMin = 0;
+export const getCompanyIntelligenceV2ResponseCommercialRoleConfidenceMax = 1;
+
+export const getCompanyIntelligenceV2ResponseWhoConfidenceMin = 0;
+export const getCompanyIntelligenceV2ResponseWhoConfidenceMax = 1;
+
+export const getCompanyIntelligenceV2ResponseAssessmentConfidenceMin = 0;
+export const getCompanyIntelligenceV2ResponseAssessmentConfidenceMax = 1;
+
+export const getCompanyIntelligenceV2ResponseEvidenceItemConfidenceMin = 0;
+export const getCompanyIntelligenceV2ResponseEvidenceItemConfidenceMax = 1;
+
+
+
+export const GetCompanyIntelligenceV2Response = zod.object({
+  "intelligenceVersion": zod.enum(['JYRA_INTELLIGENCE_V2']),
+  "projectId": zod.string(),
+  "projectCompanyId": zod.string(),
+  "companyId": zod.string(),
+  "companyName": zod.string(),
+  "domain": zod.string().nullable(),
+  "createdAt": zod.string(),
+  "identity": zod.object({
+  "status": zod.enum(['RESOLVED', 'IDENTITY_UNCERTAIN']),
+  "confidence": zod.number().min(getCompanyIntelligenceV2ResponseIdentityConfidenceMin).max(getCompanyIntelligenceV2ResponseIdentityConfidenceMax),
+  "reason": zod.string(),
+  "evidenceIds": zod.array(zod.string())
+}),
+  "primaryBusiness": zod.object({
+  "value": zod.string(),
+  "confidence": zod.number().min(getCompanyIntelligenceV2ResponsePrimaryBusinessConfidenceMin).max(getCompanyIntelligenceV2ResponsePrimaryBusinessConfidenceMax),
+  "evidenceIds": zod.array(zod.string())
+}).nullable(),
+  "commercialRole": zod.object({
+  "value": zod.enum(['POTENTIAL_BUYER', 'SELLER_COMPETITOR', 'ADJACENT_VENDOR', 'PARTNER_POSSIBLE', 'UNKNOWN']),
+  "confidence": zod.number().min(getCompanyIntelligenceV2ResponseCommercialRoleConfidenceMin).max(getCompanyIntelligenceV2ResponseCommercialRoleConfidenceMax),
+  "reason": zod.string(),
+  "evidenceIds": zod.array(zod.string()),
+  "claimIds": zod.array(zod.string()),
+  "claimBindings": zod.array(zod.object({
+  "claimId": zod.string(),
+  "claimedValue": zod.string(),
+  "purpose": zod.string(),
+  "relation": zod.enum(['SUPPORTS_ROLE', 'MATERIAL_SUBSTITUTE', 'COMPLEMENTARY', 'BUYER_CAPABILITY', 'SUPPORTS_WHO', 'SATISFIES_CRITERION', 'FAILS_CRITERION'])
+}))
+}),
+  "who": zod.object({
+  "value": zod.enum(['LIKELY_FIT', 'POSSIBLE_FIT', 'LIKELY_NOT_FIT', 'INSUFFICIENT_DATA']),
+  "confidence": zod.number().min(getCompanyIntelligenceV2ResponseWhoConfidenceMin).max(getCompanyIntelligenceV2ResponseWhoConfidenceMax),
+  "reason": zod.string(),
+  "evidenceIds": zod.array(zod.string()),
+  "claimIds": zod.array(zod.string()),
+  "claimBindings": zod.array(zod.object({
+  "claimId": zod.string(),
+  "claimedValue": zod.string(),
+  "purpose": zod.string(),
+  "relation": zod.enum(['SUPPORTS_ROLE', 'MATERIAL_SUBSTITUTE', 'COMPLEMENTARY', 'BUYER_CAPABILITY', 'SUPPORTS_WHO', 'SATISFIES_CRITERION', 'FAILS_CRITERION'])
+})),
+  "criteria": zod.array(zod.object({
+  "criterionId": zod.string(),
+  "description": zod.string(),
+  "mandatory": zod.boolean(),
+  "result": zod.enum(['PASS', 'FAIL', 'UNKNOWN']),
+  "reason": zod.string(),
+  "evidenceIds": zod.array(zod.string()),
+  "claimIds": zod.array(zod.string()),
+  "claimBindings": zod.array(zod.object({
+  "claimId": zod.string(),
+  "claimedValue": zod.string(),
+  "purpose": zod.string(),
+  "relation": zod.enum(['SUPPORTS_ROLE', 'MATERIAL_SUBSTITUTE', 'COMPLEMENTARY', 'BUYER_CAPABILITY', 'SUPPORTS_WHO', 'SATISFIES_CRITERION', 'FAILS_CRITERION'])
+}))
+}))
+}),
+  "assessmentConfidence": zod.number().min(getCompanyIntelligenceV2ResponseAssessmentConfidenceMin).max(getCompanyIntelligenceV2ResponseAssessmentConfidenceMax),
+  "resolutionType": zod.enum(['SEMANTIC_ASSESSMENT', 'COMMERCIAL_ROLE_EXCLUSION', 'MANDATORY_CRITERION_FAILURE', 'IDENTITY_UNCERTAIN', 'EVIDENCELESS_POSITIVE_BLOCKED']),
+  "deterministicOverrides": zod.array(zod.enum(['COMMERCIAL_ROLE_EXCLUSION', 'MANDATORY_CRITERION_FAILURE', 'IDENTITY_UNCERTAIN', 'EVIDENCELESS_POSITIVE_BLOCKED'])),
+  "unknownFacts": zod.array(zod.string()),
+  "evidence": zod.array(zod.object({
+  "evidenceId": zod.string(),
+  "sourceType": zod.string(),
+  "provider": zod.string(),
+  "url": zod.string().nullable(),
+  "title": zod.string(),
+  "observedAt": zod.string(),
+  "statement": zod.string(),
+  "firstParty": zod.boolean(),
+  "confidence": zod.number().min(getCompanyIntelligenceV2ResponseEvidenceItemConfidenceMin).max(getCompanyIntelligenceV2ResponseEvidenceItemConfidenceMax),
+  "version": zod.string()
+})),
+  "cost": zod.object({
+  "provider": zod.number(),
+  "model": zod.number(),
+  "total": zod.number(),
+  "researchProviderCalls": zod.number(),
+  "modelCalls": zod.number()
+}),
+  "versions": zod.object({
+  "profile": zod.string(),
+  "assessmentPolicy": zod.string(),
+  "assessmentPrompt": zod.string(),
+  "safetyPolicy": zod.string(),
+  "businessTwin": zod.string(),
+  "offering": zod.string(),
+  "icp": zod.string()
+}),
+  "fingerprints": zod.object({
+  "profile": zod.string(),
+  "assessment": zod.string()
+})
+})
+
+
+/**
+ * Development-only explicit V2 execution. Company and seller ownership are always resolved from authenticated database context.
+ * @summary Analyze a project company with Intelligence Core V2
+ */
+export const AnalyzeCompanyIntelligenceV2Params = zod.object({
+  "projectId": zod.coerce.string(),
+  "projectCompanyId": zod.coerce.string()
+})
+
+export const AnalyzeCompanyIntelligenceV2Body = zod.object({
+
+})
+
+export const analyzeCompanyIntelligenceV2ResponseIdentityConfidenceMin = 0;
+export const analyzeCompanyIntelligenceV2ResponseIdentityConfidenceMax = 1;
+
+export const analyzeCompanyIntelligenceV2ResponsePrimaryBusinessConfidenceMin = 0;
+export const analyzeCompanyIntelligenceV2ResponsePrimaryBusinessConfidenceMax = 1;
+
+export const analyzeCompanyIntelligenceV2ResponseCommercialRoleConfidenceMin = 0;
+export const analyzeCompanyIntelligenceV2ResponseCommercialRoleConfidenceMax = 1;
+
+export const analyzeCompanyIntelligenceV2ResponseWhoConfidenceMin = 0;
+export const analyzeCompanyIntelligenceV2ResponseWhoConfidenceMax = 1;
+
+export const analyzeCompanyIntelligenceV2ResponseAssessmentConfidenceMin = 0;
+export const analyzeCompanyIntelligenceV2ResponseAssessmentConfidenceMax = 1;
+
+export const analyzeCompanyIntelligenceV2ResponseEvidenceItemConfidenceMin = 0;
+export const analyzeCompanyIntelligenceV2ResponseEvidenceItemConfidenceMax = 1;
+
+
+
+export const AnalyzeCompanyIntelligenceV2Response = zod.object({
+  "intelligenceVersion": zod.enum(['JYRA_INTELLIGENCE_V2']),
+  "projectId": zod.string(),
+  "projectCompanyId": zod.string(),
+  "companyId": zod.string(),
+  "companyName": zod.string(),
+  "domain": zod.string().nullable(),
+  "createdAt": zod.string(),
+  "identity": zod.object({
+  "status": zod.enum(['RESOLVED', 'IDENTITY_UNCERTAIN']),
+  "confidence": zod.number().min(analyzeCompanyIntelligenceV2ResponseIdentityConfidenceMin).max(analyzeCompanyIntelligenceV2ResponseIdentityConfidenceMax),
+  "reason": zod.string(),
+  "evidenceIds": zod.array(zod.string())
+}),
+  "primaryBusiness": zod.object({
+  "value": zod.string(),
+  "confidence": zod.number().min(analyzeCompanyIntelligenceV2ResponsePrimaryBusinessConfidenceMin).max(analyzeCompanyIntelligenceV2ResponsePrimaryBusinessConfidenceMax),
+  "evidenceIds": zod.array(zod.string())
+}).nullable(),
+  "commercialRole": zod.object({
+  "value": zod.enum(['POTENTIAL_BUYER', 'SELLER_COMPETITOR', 'ADJACENT_VENDOR', 'PARTNER_POSSIBLE', 'UNKNOWN']),
+  "confidence": zod.number().min(analyzeCompanyIntelligenceV2ResponseCommercialRoleConfidenceMin).max(analyzeCompanyIntelligenceV2ResponseCommercialRoleConfidenceMax),
+  "reason": zod.string(),
+  "evidenceIds": zod.array(zod.string()),
+  "claimIds": zod.array(zod.string()),
+  "claimBindings": zod.array(zod.object({
+  "claimId": zod.string(),
+  "claimedValue": zod.string(),
+  "purpose": zod.string(),
+  "relation": zod.enum(['SUPPORTS_ROLE', 'MATERIAL_SUBSTITUTE', 'COMPLEMENTARY', 'BUYER_CAPABILITY', 'SUPPORTS_WHO', 'SATISFIES_CRITERION', 'FAILS_CRITERION'])
+}))
+}),
+  "who": zod.object({
+  "value": zod.enum(['LIKELY_FIT', 'POSSIBLE_FIT', 'LIKELY_NOT_FIT', 'INSUFFICIENT_DATA']),
+  "confidence": zod.number().min(analyzeCompanyIntelligenceV2ResponseWhoConfidenceMin).max(analyzeCompanyIntelligenceV2ResponseWhoConfidenceMax),
+  "reason": zod.string(),
+  "evidenceIds": zod.array(zod.string()),
+  "claimIds": zod.array(zod.string()),
+  "claimBindings": zod.array(zod.object({
+  "claimId": zod.string(),
+  "claimedValue": zod.string(),
+  "purpose": zod.string(),
+  "relation": zod.enum(['SUPPORTS_ROLE', 'MATERIAL_SUBSTITUTE', 'COMPLEMENTARY', 'BUYER_CAPABILITY', 'SUPPORTS_WHO', 'SATISFIES_CRITERION', 'FAILS_CRITERION'])
+})),
+  "criteria": zod.array(zod.object({
+  "criterionId": zod.string(),
+  "description": zod.string(),
+  "mandatory": zod.boolean(),
+  "result": zod.enum(['PASS', 'FAIL', 'UNKNOWN']),
+  "reason": zod.string(),
+  "evidenceIds": zod.array(zod.string()),
+  "claimIds": zod.array(zod.string()),
+  "claimBindings": zod.array(zod.object({
+  "claimId": zod.string(),
+  "claimedValue": zod.string(),
+  "purpose": zod.string(),
+  "relation": zod.enum(['SUPPORTS_ROLE', 'MATERIAL_SUBSTITUTE', 'COMPLEMENTARY', 'BUYER_CAPABILITY', 'SUPPORTS_WHO', 'SATISFIES_CRITERION', 'FAILS_CRITERION'])
+}))
+}))
+}),
+  "assessmentConfidence": zod.number().min(analyzeCompanyIntelligenceV2ResponseAssessmentConfidenceMin).max(analyzeCompanyIntelligenceV2ResponseAssessmentConfidenceMax),
+  "resolutionType": zod.enum(['SEMANTIC_ASSESSMENT', 'COMMERCIAL_ROLE_EXCLUSION', 'MANDATORY_CRITERION_FAILURE', 'IDENTITY_UNCERTAIN', 'EVIDENCELESS_POSITIVE_BLOCKED']),
+  "deterministicOverrides": zod.array(zod.enum(['COMMERCIAL_ROLE_EXCLUSION', 'MANDATORY_CRITERION_FAILURE', 'IDENTITY_UNCERTAIN', 'EVIDENCELESS_POSITIVE_BLOCKED'])),
+  "unknownFacts": zod.array(zod.string()),
+  "evidence": zod.array(zod.object({
+  "evidenceId": zod.string(),
+  "sourceType": zod.string(),
+  "provider": zod.string(),
+  "url": zod.string().nullable(),
+  "title": zod.string(),
+  "observedAt": zod.string(),
+  "statement": zod.string(),
+  "firstParty": zod.boolean(),
+  "confidence": zod.number().min(analyzeCompanyIntelligenceV2ResponseEvidenceItemConfidenceMin).max(analyzeCompanyIntelligenceV2ResponseEvidenceItemConfidenceMax),
+  "version": zod.string()
+})),
+  "cost": zod.object({
+  "provider": zod.number(),
+  "model": zod.number(),
+  "total": zod.number(),
+  "researchProviderCalls": zod.number(),
+  "modelCalls": zod.number()
+}),
+  "versions": zod.object({
+  "profile": zod.string(),
+  "assessmentPolicy": zod.string(),
+  "assessmentPrompt": zod.string(),
+  "safetyPolicy": zod.string(),
+  "businessTwin": zod.string(),
+  "offering": zod.string(),
+  "icp": zod.string()
+}),
+  "fingerprints": zod.object({
+  "profile": zod.string(),
+  "assessment": zod.string()
+})
+})
+
+
+/**
  * Returns server health status
  * @summary Health check
  */

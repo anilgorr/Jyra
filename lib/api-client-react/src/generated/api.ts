@@ -50,6 +50,7 @@ import type {
   CreateOpportunityModelRequest,
   CreateSignalClusterDefinitionRequest,
   CurrentUser,
+  ErrorResponse,
   EvaluateSignalClusters200,
   EvaluateSignalsResponse,
   FactExtractionInput,
@@ -62,6 +63,8 @@ import type {
   IcpCriterionInput,
   IcpCriterionUpdate,
   IcpVersion,
+  IntelligenceV2Run,
+  IntelligenceV2RunInput,
   InterpretationUnavailableResponse,
   LearningAnalytics,
   LearningPolicy,
@@ -143,6 +146,164 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   }
   return result;
 };
+
+export const getGetCompanyIntelligenceV2Url = (projectId: string,
+    projectCompanyId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/companies/${projectCompanyId}/intelligence-v2`
+}
+
+/**
+ * Development-only retrieval of the latest process-private V2 snapshot for this project company.
+ * @summary Get the latest development V2 intelligence run
+ */
+export const getCompanyIntelligenceV2 = async (projectId: string,
+    projectCompanyId: string, options?: Parameters<typeof customFetch>[1]): Promise<IntelligenceV2Run> => {
+
+  return customFetch<IntelligenceV2Run>(getGetCompanyIntelligenceV2Url(projectId,projectCompanyId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetCompanyIntelligenceV2QueryKey = (projectId: string,
+    projectCompanyId: string,) => {
+    return [
+    `/api/projects/${projectId}/companies/${projectCompanyId}/intelligence-v2`
+    ] as const;
+    }
+
+
+export const getGetCompanyIntelligenceV2QueryOptions = <TData = Awaited<ReturnType<typeof getCompanyIntelligenceV2>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(projectId: string,
+    projectCompanyId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getCompanyIntelligenceV2>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetCompanyIntelligenceV2QueryKey(projectId,projectCompanyId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getCompanyIntelligenceV2>>> = ({ signal }) => getCompanyIntelligenceV2(projectId,projectCompanyId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: projectId !== null && projectId !== undefined && projectCompanyId !== null && projectCompanyId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getCompanyIntelligenceV2>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetCompanyIntelligenceV2QueryResult = NonNullable<Awaited<ReturnType<typeof getCompanyIntelligenceV2>>>
+export type GetCompanyIntelligenceV2QueryError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+
+/**
+ * @summary Get the latest development V2 intelligence run
+ */
+
+export function useGetCompanyIntelligenceV2<TData = Awaited<ReturnType<typeof getCompanyIntelligenceV2>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(
+ projectId: string,
+    projectCompanyId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getCompanyIntelligenceV2>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetCompanyIntelligenceV2QueryOptions(projectId,projectCompanyId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getAnalyzeCompanyIntelligenceV2Url = (projectId: string,
+    projectCompanyId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/companies/${projectCompanyId}/intelligence-v2`
+}
+
+/**
+ * Development-only explicit V2 execution. Company and seller ownership are always resolved from authenticated database context.
+ * @summary Analyze a project company with Intelligence Core V2
+ */
+export const analyzeCompanyIntelligenceV2 = async (projectId: string,
+    projectCompanyId: string,
+    intelligenceV2RunInput: IntelligenceV2RunInput, options?: Parameters<typeof customFetch>[1]): Promise<IntelligenceV2Run> => {
+
+  return customFetch<IntelligenceV2Run>(getAnalyzeCompanyIntelligenceV2Url(projectId,projectCompanyId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(intelligenceV2RunInput)
+  }
+);}
+
+
+
+
+
+export const getAnalyzeCompanyIntelligenceV2MutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof analyzeCompanyIntelligenceV2>>, TError,{projectId: string;projectCompanyId: string;data: BodyType<IntelligenceV2RunInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof analyzeCompanyIntelligenceV2>>, TError,{projectId: string;projectCompanyId: string;data: BodyType<IntelligenceV2RunInput>}, TContext> => {
+
+const mutationKey = ['analyzeCompanyIntelligenceV2'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof analyzeCompanyIntelligenceV2>>, {projectId: string;projectCompanyId: string;data: BodyType<IntelligenceV2RunInput>}> = (props) => {
+          const {projectId,projectCompanyId,data} = props ?? {};
+
+          return  analyzeCompanyIntelligenceV2(projectId,projectCompanyId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AnalyzeCompanyIntelligenceV2MutationResult = NonNullable<Awaited<ReturnType<typeof analyzeCompanyIntelligenceV2>>>
+    export type AnalyzeCompanyIntelligenceV2MutationBody = BodyType<IntelligenceV2RunInput>
+    export type AnalyzeCompanyIntelligenceV2MutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | ErrorResponse>
+
+    /**
+ * @summary Analyze a project company with Intelligence Core V2
+ */
+export const useAnalyzeCompanyIntelligenceV2 = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof analyzeCompanyIntelligenceV2>>, TError,{projectId: string;projectCompanyId: string;data: BodyType<IntelligenceV2RunInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof analyzeCompanyIntelligenceV2>>,
+        TError,
+        {projectId: string;projectCompanyId: string;data: BodyType<IntelligenceV2RunInput>},
+        TContext
+      > => {
+      return useMutation(getAnalyzeCompanyIntelligenceV2MutationOptions(options));
+    }
 
 export const getHealthCheckUrl = () => {
 

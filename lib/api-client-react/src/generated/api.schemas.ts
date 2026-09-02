@@ -5,6 +5,225 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+export interface IntelligenceV2RunInput { [key: string]: unknown }
+
+export type IntelligenceV2ClaimBindingRelation = typeof IntelligenceV2ClaimBindingRelation[keyof typeof IntelligenceV2ClaimBindingRelation];
+
+
+export const IntelligenceV2ClaimBindingRelation = {
+  SUPPORTS_ROLE: 'SUPPORTS_ROLE',
+  MATERIAL_SUBSTITUTE: 'MATERIAL_SUBSTITUTE',
+  COMPLEMENTARY: 'COMPLEMENTARY',
+  BUYER_CAPABILITY: 'BUYER_CAPABILITY',
+  SUPPORTS_WHO: 'SUPPORTS_WHO',
+  SATISFIES_CRITERION: 'SATISFIES_CRITERION',
+  FAILS_CRITERION: 'FAILS_CRITERION',
+} as const;
+
+export interface IntelligenceV2ClaimBinding {
+  claimId: string;
+  claimedValue: string;
+  purpose: string;
+  relation: IntelligenceV2ClaimBindingRelation;
+}
+
+export type IntelligenceV2CommercialRoleValue = typeof IntelligenceV2CommercialRoleValue[keyof typeof IntelligenceV2CommercialRoleValue];
+
+
+export const IntelligenceV2CommercialRoleValue = {
+  POTENTIAL_BUYER: 'POTENTIAL_BUYER',
+  SELLER_COMPETITOR: 'SELLER_COMPETITOR',
+  ADJACENT_VENDOR: 'ADJACENT_VENDOR',
+  PARTNER_POSSIBLE: 'PARTNER_POSSIBLE',
+  UNKNOWN: 'UNKNOWN',
+} as const;
+
+export interface IntelligenceV2CommercialRole {
+  value: IntelligenceV2CommercialRoleValue;
+  /**
+     * @minimum 0
+     * @maximum 1
+     */
+  confidence: number;
+  reason: string;
+  evidenceIds: string[];
+  claimIds: string[];
+  claimBindings: IntelligenceV2ClaimBinding[];
+}
+
+export type IntelligenceV2CriterionResult = typeof IntelligenceV2CriterionResult[keyof typeof IntelligenceV2CriterionResult];
+
+
+export const IntelligenceV2CriterionResult = {
+  PASS: 'PASS',
+  FAIL: 'FAIL',
+  UNKNOWN: 'UNKNOWN',
+} as const;
+
+export interface IntelligenceV2Criterion {
+  criterionId: string;
+  description: string;
+  mandatory: boolean;
+  result: IntelligenceV2CriterionResult;
+  reason: string;
+  evidenceIds: string[];
+  claimIds: string[];
+  claimBindings: IntelligenceV2ClaimBinding[];
+}
+
+export type IntelligenceV2WhoValue = typeof IntelligenceV2WhoValue[keyof typeof IntelligenceV2WhoValue];
+
+
+export const IntelligenceV2WhoValue = {
+  LIKELY_FIT: 'LIKELY_FIT',
+  POSSIBLE_FIT: 'POSSIBLE_FIT',
+  LIKELY_NOT_FIT: 'LIKELY_NOT_FIT',
+  INSUFFICIENT_DATA: 'INSUFFICIENT_DATA',
+} as const;
+
+export interface IntelligenceV2Who {
+  value: IntelligenceV2WhoValue;
+  /**
+     * @minimum 0
+     * @maximum 1
+     */
+  confidence: number;
+  reason: string;
+  evidenceIds: string[];
+  claimIds: string[];
+  claimBindings: IntelligenceV2ClaimBinding[];
+  criteria: IntelligenceV2Criterion[];
+}
+
+export interface IntelligenceV2Evidence {
+  evidenceId: string;
+  sourceType: string;
+  provider: string;
+  /** @nullable */
+  url: string | null;
+  title: string;
+  observedAt: string;
+  statement: string;
+  firstParty: boolean;
+  /**
+     * @minimum 0
+     * @maximum 1
+     */
+  confidence: number;
+  version: string;
+}
+
+export type IntelligenceV2RunIntelligenceVersion = typeof IntelligenceV2RunIntelligenceVersion[keyof typeof IntelligenceV2RunIntelligenceVersion];
+
+
+export const IntelligenceV2RunIntelligenceVersion = {
+  JYRA_INTELLIGENCE_V2: 'JYRA_INTELLIGENCE_V2',
+} as const;
+
+export type IntelligenceV2RunIdentityStatus = typeof IntelligenceV2RunIdentityStatus[keyof typeof IntelligenceV2RunIdentityStatus];
+
+
+export const IntelligenceV2RunIdentityStatus = {
+  RESOLVED: 'RESOLVED',
+  IDENTITY_UNCERTAIN: 'IDENTITY_UNCERTAIN',
+} as const;
+
+export type IntelligenceV2RunIdentity = {
+  status: IntelligenceV2RunIdentityStatus;
+  /**
+     * @minimum 0
+     * @maximum 1
+     */
+  confidence: number;
+  reason: string;
+  evidenceIds: string[];
+};
+
+/**
+ * @nullable
+ */
+export type IntelligenceV2RunPrimaryBusiness = {
+  value: string;
+  /**
+     * @minimum 0
+     * @maximum 1
+     */
+  confidence: number;
+  evidenceIds: string[];
+} | null;
+
+export type IntelligenceV2RunResolutionType = typeof IntelligenceV2RunResolutionType[keyof typeof IntelligenceV2RunResolutionType];
+
+
+export const IntelligenceV2RunResolutionType = {
+  SEMANTIC_ASSESSMENT: 'SEMANTIC_ASSESSMENT',
+  COMMERCIAL_ROLE_EXCLUSION: 'COMMERCIAL_ROLE_EXCLUSION',
+  MANDATORY_CRITERION_FAILURE: 'MANDATORY_CRITERION_FAILURE',
+  IDENTITY_UNCERTAIN: 'IDENTITY_UNCERTAIN',
+  EVIDENCELESS_POSITIVE_BLOCKED: 'EVIDENCELESS_POSITIVE_BLOCKED',
+} as const;
+
+export type IntelligenceV2RunDeterministicOverridesItem = typeof IntelligenceV2RunDeterministicOverridesItem[keyof typeof IntelligenceV2RunDeterministicOverridesItem];
+
+
+export const IntelligenceV2RunDeterministicOverridesItem = {
+  COMMERCIAL_ROLE_EXCLUSION: 'COMMERCIAL_ROLE_EXCLUSION',
+  MANDATORY_CRITERION_FAILURE: 'MANDATORY_CRITERION_FAILURE',
+  IDENTITY_UNCERTAIN: 'IDENTITY_UNCERTAIN',
+  EVIDENCELESS_POSITIVE_BLOCKED: 'EVIDENCELESS_POSITIVE_BLOCKED',
+} as const;
+
+export type IntelligenceV2RunCost = {
+  provider: number;
+  model: number;
+  total: number;
+  researchProviderCalls: number;
+  modelCalls: number;
+};
+
+export type IntelligenceV2RunVersions = {
+  profile: string;
+  assessmentPolicy: string;
+  assessmentPrompt: string;
+  safetyPolicy: string;
+  businessTwin: string;
+  offering: string;
+  icp: string;
+};
+
+export type IntelligenceV2RunFingerprints = {
+  profile: string;
+  assessment: string;
+};
+
+export interface IntelligenceV2Run {
+  intelligenceVersion: IntelligenceV2RunIntelligenceVersion;
+  projectId: string;
+  projectCompanyId: string;
+  companyId: string;
+  companyName: string;
+  /** @nullable */
+  domain: string | null;
+  createdAt: string;
+  identity: IntelligenceV2RunIdentity;
+  /** @nullable */
+  primaryBusiness: IntelligenceV2RunPrimaryBusiness;
+  commercialRole: IntelligenceV2CommercialRole;
+  who: IntelligenceV2Who;
+  /**
+     * @minimum 0
+     * @maximum 1
+     */
+  assessmentConfidence: number;
+  resolutionType: IntelligenceV2RunResolutionType;
+  deterministicOverrides: IntelligenceV2RunDeterministicOverridesItem[];
+  unknownFacts: string[];
+  evidence: IntelligenceV2Evidence[];
+  cost: IntelligenceV2RunCost;
+  versions: IntelligenceV2RunVersions;
+  fingerprints: IntelligenceV2RunFingerprints;
+}
+
 export type AdminMetricSectionSummary = { [key: string]: unknown };
 
 export type AdminMetricSectionRowsItem = { [key: string]: unknown };

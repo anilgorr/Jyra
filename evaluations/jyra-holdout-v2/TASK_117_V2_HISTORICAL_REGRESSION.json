@@ -1,0 +1,157 @@
+{
+  "task": "TASK_117_V2_HISTORICAL_REGRESSION",
+  "status": "FAIL",
+  "architecture": "JYRA_INTELLIGENCE_V2",
+  "evaluationType": "HISTORICAL_DEVELOPMENT_REGRESSION",
+  "sources": {
+    "frozenImplementationManifest": {
+      "path": "evaluations/jyra-intelligence-v2/TASK_117_GENERIC_V2_FREEZE.manifest.json",
+      "sha256": "ee6249675681c2d1e0216d4cd85a2276bed11e1c6dce1e4e179a052ed5b9ab03"
+    },
+    "predictions": {
+      "path": "evaluations/jyra-holdout-v2/TASK_117_V2_PREDICTIONS.json",
+      "sha256": "6e6999acb8ef006e466d90081cd65e4cc5106ae73d4d3c7b240b57e5f903b8d0"
+    },
+    "gold": {
+      "path": "evaluations/jyra-holdout-v2/JYRA_BLIND_HOLDOUT_GOLD_V2.json",
+      "sha256": "e9508c226b077229557b8de13ba5e272d2ec963a8a2b9fc88748abed19dbca8e"
+    },
+    "v1Evaluation": {
+      "path": "evaluations/jyra-holdout-v2/TASK_116_FINAL_EVALUATION.json",
+      "sha256": "e36475666256e69a737d4c7d7339414dd60685676a851adfeff46f3f028eec17"
+    }
+  },
+  "integrity": {
+    "predictionCount": 16,
+    "predictionHashVerifiedBeforeGoldComparison": true,
+    "freezeVerifiedBeforeAndAfterPhase1": true,
+    "goldAccessedDuringPrediction": false,
+    "runtimeChangesAfterResults": 0,
+    "promptOrPolicyChangesAfterResults": 0,
+    "productionModified": false,
+    "strictSingleProcessClaimed": false,
+    "runHistory": [
+      "The first harness preflight attempt made zero pipeline, provider, and semantic calls and was discarded because it incorrectly treated holdoutCompanyId as a database identity.",
+      "The first live invocation was interrupted by the main shell five-minute timeout after provider calls and before any predictions artifact was written.",
+      "An unchanged full background invocation then completed without tuning and without gold access; only its frozen predictions artifact is scored."
+    ]
+  },
+  "commercialRole": {
+    "labels": ["POTENTIAL_BUYER", "SELLER_COMPETITOR", "ADJACENT_VENDOR", "PARTNER_POSSIBLE", "UNKNOWN", "MISSING"],
+    "correct": 0,
+    "total": 16,
+    "accuracy": 0,
+    "perClass": {
+      "POTENTIAL_BUYER": {"precision": null, "recall": 0, "tp": 0, "predicted": 0, "actual": 8},
+      "SELLER_COMPETITOR": {"precision": null, "recall": 0, "tp": 0, "predicted": 0, "actual": 5},
+      "ADJACENT_VENDOR": {"precision": null, "recall": 0, "tp": 0, "predicted": 0, "actual": 3},
+      "PARTNER_POSSIBLE": {"precision": null, "recall": null, "tp": 0, "predicted": 0, "actual": 0},
+      "UNKNOWN": {"precision": null, "recall": null, "tp": 0, "predicted": 0, "actual": 0},
+      "MISSING": {"precision": 0, "recall": null, "tp": 0, "predicted": 16, "actual": 0}
+    },
+    "confusionMatrix": [
+      [0, 0, 0, 0, 0, 8],
+      [0, 0, 0, 0, 0, 5],
+      [0, 0, 0, 0, 0, 3],
+      [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0]
+    ],
+    "potentialBuyerPrecision": null,
+    "potentialBuyerRecall": 0
+  },
+  "who": {
+    "labels": ["LIKELY_FIT", "POSSIBLE_FIT", "LIKELY_NOT_FIT", "INSUFFICIENT_DATA", "MISSING"],
+    "correct": 0,
+    "total": 16,
+    "accuracy": 0,
+    "perClass": {
+      "LIKELY_FIT": {"precision": null, "recall": 0, "tp": 0, "predicted": 0, "actual": 6},
+      "POSSIBLE_FIT": {"precision": null, "recall": 0, "tp": 0, "predicted": 0, "actual": 5},
+      "LIKELY_NOT_FIT": {"precision": null, "recall": 0, "tp": 0, "predicted": 0, "actual": 5},
+      "INSUFFICIENT_DATA": {"precision": null, "recall": null, "tp": 0, "predicted": 0, "actual": 0},
+      "MISSING": {"precision": 0, "recall": null, "tp": 0, "predicted": 16, "actual": 0}
+    },
+    "confusionMatrix": [
+      [0, 0, 0, 0, 6],
+      [0, 0, 0, 0, 5],
+      [0, 0, 0, 0, 5],
+      [0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0]
+    ]
+  },
+  "coverage": {
+    "commercialRoleDecision": {"count": 0, "total": 16, "rate": 0},
+    "whoDecision": {"count": 0, "total": 16, "rate": 0},
+    "completeCommercialRoleAndWho": {"count": 0, "total": 16, "rate": 0},
+    "failedOnce": 16
+  },
+  "competitorSafety": {
+    "goldCompetitors": 5,
+    "correctlyDetectedCompetitors": 0,
+    "dangerousCompetitorToBuyer": 0,
+    "competitorsInPositiveBuyerShortlist": 0,
+    "unresolvedCompetitors": 5,
+    "recall": 0
+  },
+  "failureAnalysis": {
+    "boundedPrimaryFailure": "SEMANTIC_RESPONSE_SCHEMA_CONTRACT_MISMATCH",
+    "failedCompanies": 16,
+    "missingCommercialRoleClaimBindings": 16,
+    "missingWhoClaimBindings": 16,
+    "missingCriterionClaimBindings": 16,
+    "additionalCommercialRoleReasonTooLong": 3,
+    "reasonTooLongCompanies": ["Pine Labs", "Whatfix", "Safe Security"],
+    "interpretation": "Research ran, but every company failed strict assessment-schema parsing before a final CommercialRole or WHO decision. The dominant live-run failure is a bounded response-contract mismatch: the response schema requested evidenceIds and claimIds but omitted claimBindings required by the frozen runtime assessment schema. Three responses also exceeded the 1,200-character role-reason limit. Independent architecture review found a second bounded frozen-code defect: applySafetyRulesV2 can overwrite WHO decisions and reasons after validateAssessmentEvidenceV2 without regenerating compatible bindings or revalidating the final assessment, so final safety rationale can be stale or unbound. No label-level error analysis is possible because coverage is zero."
+  },
+  "runtimeCost": {
+    "externalProviderCalls": 86,
+    "maximumObservedProviderCallsPerCompany": 6,
+    "averageProviderCallsPerCompany": 5.375,
+    "providerActualCostUsd": 1.024853592942899,
+    "providerEstimatedCostUsd": 0.7220000000000002,
+    "averageActualCostPerCompanyUsd": 0.06405334955893119,
+    "semanticCalls": 0,
+    "semanticTokens": {"prompt": 0, "completion": 0, "total": 0, "reasoning": 0},
+    "semanticActualCostUsd": null,
+    "semanticCostStatus": "NOT_REPORTED_BY_MODEL_RESPONSE"
+  },
+  "v1Comparison": {
+    "commercialRoleCorrect": {"v1": 7, "v2": 0, "delta": -7},
+    "whoCorrect": {"v1": 4, "v2": 0, "delta": -4},
+    "commercialRoleCoverage": {"v1": 11, "v2": 0, "delta": -11},
+    "whoCoverage": {"v1": 8, "v2": 0, "delta": -8},
+    "potentialBuyerPrecision": {"v1": 0.6666666666666666, "v2": null},
+    "dangerousCompetitorToBuyer": {"v1": 0, "v2": 0},
+    "externalProviderCalls": {"v1": 21, "v2": 86, "delta": 65},
+    "providerReportedCostUsd": {"v1": 0.28500000000000003, "v2": 1.024853592942899, "delta": 0.739853592942899}
+  },
+  "thresholds": {
+    "commercialRoleAtLeast13Of16": false,
+    "whoAtLeast12Of16": false,
+    "potentialBuyerPrecisionAtLeast85Percent": false,
+    "dangerousCompetitorToBuyerZero": true,
+    "competitorsInPositiveBuyerShortlistZero": true,
+    "commercialRoleCoverageAtLeast14Of16": false,
+    "whoCoverageAtLeast14Of16": false,
+    "allPassed": false
+  },
+  "architectureVerdict": "SIMPLIFICATION_INSUFFICIENT",
+  "finalArchitectureReview": {
+    "status": "FAIL",
+    "reportIntegrity": "PASS",
+    "boundedDefects": [
+      {
+        "code": "LIVE_SEMANTIC_SCHEMA_CONTRACT_MISMATCH",
+        "description": "The live combined semantic response schema does not require the claimBindings required by the assessment schema and does not enforce compatible reason limits."
+      },
+      {
+        "code": "SAFETY_OVERRIDE_PROVENANCE_NOT_REVALIDATED",
+        "description": "applySafetyRulesV2 can overwrite WHO reasons or decisions after validateAssessmentEvidenceV2 without regenerating compatible bindings or revalidating the final assessment, leaving stale or unbound final rationale."
+      }
+    ]
+  },
+  "productionStatus": "DEVELOPMENT_ONLY_V1_REMAINS_PRODUCTION_DEFAULT",
+  "nextStep": "V2 is simpler but has not yet met the product threshold. Do not add architectural complexity; inspect only the remaining bounded failure.",
+  "specificRecommendation": "In the next iteration: (1) align the live combined semantic schema with required claimBindings and reason limits; and (2) make all four deterministic overrides provenance-preserving and validate the final output. Prove both with generic zero-provider fixtures, then run a new untouched evaluation that is not Holdout V2; do not replace V1 yet."
+}

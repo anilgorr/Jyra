@@ -1,0 +1,1764 @@
+TASK #117 — JYRA INTELLIGENCE CORE V2
+SIMPLE EVIDENCE-FIRST PIPELINE
+
+PURPOSE
+
+Stop incrementally patching the current JYRA intelligence architecture.
+
+Task #116 showed:
+
+CommercialRole accuracy:
+7/16 = 43.8%
+
+WHO accuracy:
+4/16 = 25.0%
+
+CommercialRole coverage:
+11/16
+
+WHO coverage:
+8/16
+
+Dangerous competitor → buyer:
+0
+
+Average intelligence cost:
+~$0.02/company
+
+The system is conservative and relatively safe, but the execution architecture is too fragmented.
+
+The current chain contains too many independent gates:
+
+identity permission
+→ provisional research
+→ attribution promotion
+→ MCI
+→ readiness
+→ Company Understanding
+→ CommercialRole
+→ evidence handoff
+→ WHO
+→ multiple policy layers
+
+The new architecture must simplify this to:
+
+DISCOVER
+→ RESEARCH
+→ BUILD COMPANY PROFILE
+→ DECIDE COMMERCIAL ROLE + WHO
+→ APPLY SMALL DETERMINISTIC SAFETY LAYER
+→ OUTPUT
+
+This is:
+
+JYRA INTELLIGENCE CORE V2
+
+The objective is NOT to preserve V1 architecture.
+
+The objective is to create the simplest reliable evidence-backed intelligence pipeline capable of answering:
+
+WHO should I target?
+
+and later enabling:
+
+WHEN?
+WHY?
+
+==================================================
+1. DATABASE SAFETY
+==================================================
+
+DATABASE SAFETY:
+
+Development only.
+
+Use ONLY development database/infrastructure.
+
+DO NOT:
+
+- modify production
+- migrate production
+- reset production
+- truncate production
+- seed production
+- overwrite production customer data
+
+Production modified:
+NO
+
+==================================================
+2. PRESERVE V1
+==================================================
+
+Do NOT delete V1.
+
+Do NOT rewrite historical evaluation artifacts.
+
+Do NOT invalidate previous runs.
+
+Keep V1 available for comparison/debugging.
+
+Implement V2 as a separate execution path.
+
+Suggested:
+
+intelligenceVersion:
+V1
+V2
+
+Default DEVELOPMENT testing can explicitly select:
+
+V2
+
+Do not switch production to V2 in this task.
+
+==================================================
+3. V2 ARCHITECTURAL PRINCIPLE
+==================================================
+
+V2 must follow:
+
+Agents reason.
+Services normalize.
+Evidence grounds.
+Deterministic rules protect.
+The orchestrator stays small.
+
+Do NOT recreate V1 under different names.
+
+Maximum conceptual runtime stages:
+
+1. Resolve candidate
+2. Research company
+3. Build Company Intelligence Profile
+4. Seller-relative assessment
+5. Deterministic safety resolution
+
+That is the core.
+
+==================================================
+4. STAGE 1 — SIMPLE COMPANY RESOLUTION
+==================================================
+
+Input:
+
+companyName
+domain
+source/provenance
+businessId
+offeringId
+projectId
+
+Normalize:
+
+company name
+domain
+URL
+
+Identity logic must be simple.
+
+If:
+
+A. normalized domain is syntactically valid
+
+AND
+
+B. domain came from a legitimate source such as:
+
+- CSV/import
+- company discovery
+- user entry
+- existing company record
+- provider result
+
+AND
+
+C. first-party website responds
+
+AND
+
+D. website reasonably identifies the expected company/brand
+
+AND
+
+E. no contradictory evidence exists
+
+THEN:
+
+identityStatus =
+RESOLVED
+
+Do NOT require multiple independent corroborating providers for an ordinary exact-domain company.
+
+Do NOT create an identity deadlock.
+
+--------------------------------------------------
+
+Use:
+
+IDENTITY_UNCERTAIN
+
+only when there is a REAL ambiguity, such as:
+
+- domain belongs to another company
+- same-name collision
+- parked domain
+- inaccessible website plus no reliable corroboration
+- conflicting organization identity
+- acquisition/rebrand ambiguity
+- unresolved subsidiary/parent mismatch
+
+--------------------------------------------------
+
+Important:
+
+Lack of employee count
+lack of HQ
+lack of LinkedIn data
+lack of technology data
+
+DO NOT make identity uncertain.
+
+Identity answers only:
+
+"Are we researching the correct company?"
+
+==================================================
+5. REMOVE IDENTITY PERMISSION CEREMONY FROM V2
+==================================================
+
+V2 must NOT require the normal company to travel through:
+
+UNSAFE
+→ RESEARCH_SAFE
+→ ATTRIBUTION_SAFE
+
+before basic public research can occur.
+
+Those concepts may remain in V1.
+
+For V2:
+
+RESOLVED
+→ research and company profile allowed
+
+IDENTITY_UNCERTAIN
+→ research allowed only when useful for resolving identity
+→ no final targeting decision until identity resolves
+
+Keep strong cross-company isolation.
+
+Do not sacrifice tenant/project isolation.
+
+==================================================
+6. STAGE 2 — RESEARCH COMPANY ONCE
+==================================================
+
+Research should build ONE evidence package.
+
+Do not repeatedly research the same facts for separate downstream agents.
+
+Research questions:
+
+1. What company is this?
+2. What does it primarily sell/do?
+3. What products/services materially define it?
+4. What is its business model?
+5. What industry/category is it actually in?
+6. What is its HQ or primary geography?
+7. What other offices/geographies are supported?
+8. What is its approximate employee/company scale if available?
+9. What technology/infrastructure facts are relevant to the ICP?
+10. Does it sell anything materially overlapping the seller's offering?
+
+Research only what is required to make:
+
+CommercialRole
+and
+WHO
+
+decisions.
+
+Do NOT research WHEN/WHY signals in this pipeline.
+
+==================================================
+7. PROVIDER WATERFALL
+==================================================
+
+Reuse currently configured providers.
+
+Do NOT add providers in this task.
+
+Use the simplest capability-driven waterfall.
+
+Preferred sequence where available:
+
+1. EXISTING CACHE / EVIDENCE
+2. FIRST-PARTY WEBSITE
+3. COMPANY PROFILE / WEB SEARCH
+4. fallback search only if required facts remain unknown
+
+Potential configured capabilities include:
+
+COMPANY_PROFILE_RESOLUTION
+COMPANY_FIRMOGRAPHICS
+WEB_SEARCH
+WEBSITE_CRAWL
+COMPANY_LOOKUP
+
+Use only existing registered providers.
+
+Do not hard-code provider names into business logic.
+
+==================================================
+8. RESEARCH BUDGET
+==================================================
+
+V2 should prefer:
+
+cheap
+bounded
+sufficient
+
+over:
+
+exhaustive.
+
+Suggested default development limits:
+
+maximum external research calls/company:
+6
+
+target normal calls/company:
+1–4
+
+Do not deliberately consume the limit.
+
+Stop research when required decision information is sufficient.
+
+==================================================
+9. EVIDENCE MODEL
+==================================================
+
+Preserve evidence provenance.
+
+Every evidence item should include:
+
+evidenceId
+companyId
+projectId
+sourceType
+provider
+url
+title
+observedAt
+rawSnippet / extracted statement
+firstParty
+confidence
+
+Evidence must remain immutable where practical.
+
+Do NOT fabricate evidence.
+
+Do NOT silently convert model inference into evidence.
+
+==================================================
+10. STAGE 3 — COMPANY INTELLIGENCE PROFILE
+==================================================
+
+Research produces ONE canonical assessment object:
+
+CompanyIntelligenceProfileV2
+
+Suggested structure:
+
+{
+  companyId,
+  companyName,
+  domain,
+
+  identity: {
+    status,
+    confidence,
+    reason,
+    evidenceIds
+  },
+
+  primaryBusiness: {
+    value,
+    confidence,
+    evidenceIds
+  },
+
+  productsServices: [
+    {
+      value,
+      confidence,
+      evidenceIds
+    }
+  ],
+
+  businessModel: {
+    value,
+    confidence,
+    evidenceIds
+  },
+
+  industry: {
+    value,
+    confidence,
+    evidenceIds
+  },
+
+  geography: {
+    headquarters,
+    primaryOperatingGeography,
+    offices[],
+    otherPresence[],
+    confidence,
+    evidenceIds
+  },
+
+  employeeSize: {
+    value,
+    confidence,
+    evidenceIds
+  },
+
+  technologyFacts: [
+    {
+      value,
+      type,
+      confidence,
+      evidenceIds
+    }
+  ],
+
+  offeringOverlapFacts: [
+    {
+      value,
+      confidence,
+      evidenceIds
+    }
+  ],
+
+  unknownFields: [],
+
+  profileConfidence,
+  createdAt,
+  fingerprint
+}
+
+==================================================
+11. IMPORTANT GEOGRAPHY SEMANTICS
+==================================================
+
+V2 must distinguish:
+
+HEADQUARTERS
+
+PRIMARY_OPERATING_GEOGRAPHY
+
+OFFICE_PRESENCE
+
+CUSTOMER_MARKET
+
+TALENT_MARKET
+
+REGISTERED_ADDRESS
+
+GLOBAL_AVAILABILITY
+
+Do NOT infer:
+
+"India headquarters"
+
+from:
+
+- India office
+- India hiring
+- India customers
+- Indian founders
+- Indian talent
+- India phone number
+
+Unknown remains UNKNOWN.
+
+However:
+
+an ICP may explicitly accept office presence or operating geography.
+
+That is determined from the actual ICP criteria.
+
+==================================================
+12. UNKNOWN IS ALLOWED
+==================================================
+
+Missing data is not negative evidence.
+
+Unknown fields must remain:
+
+UNKNOWN
+
+Do NOT fail the whole Company Intelligence Profile simply because:
+
+employee size is unknown
+HQ is unknown
+tech stack is unknown
+one optional criterion is unavailable
+
+The downstream assessment should decide whether the missing field is actually decision-critical.
+
+==================================================
+13. REMOVE V1 GATES FROM V2
+==================================================
+
+V2 execution path must NOT depend on:
+
+MinimumCompanyIntelligence as a blocking stage
+
+CompanyAssessmentReadiness as a blocking stage
+
+separate evidence promotion before basic company understanding
+
+separate repeated Company Understanding calls
+
+separate CommercialRole research pass
+
+separate WHO research pass
+
+multiple independent semantic agents interpreting the company differently
+
+These V1 components may remain in code for V1.
+
+V2 bypasses them.
+
+==================================================
+14. STAGE 4 — ONE SELLER-RELATIVE ASSESSMENT
+==================================================
+
+This is the main semantic reasoning step.
+
+Make ONE semantic/model assessment using:
+
+A. Seller Business Twin
+
+B. Specific Offering
+
+C. ICP
+
+D. CompanyIntelligenceProfileV2
+
+E. evidence references
+
+The model must answer BOTH:
+
+CommercialRole
+
+AND
+
+WHO
+
+in one structured response.
+
+Reason:
+
+CommercialRole and WHO depend on the same company facts.
+
+They should not be produced by independent semantic pipelines that can contradict each other.
+
+==================================================
+15. INPUT CONTEXT FOR ASSESSMENT
+==================================================
+
+Provide:
+
+sellerBusinessTwin:
+- seller business
+- primary capabilities
+- business model
+- market position
+
+offering:
+- offering name
+- description
+- problem solved
+- service/product boundaries
+- material capabilities
+
+ICP:
+- target geographies
+- industries
+- employee ranges
+- business models
+- required technologies
+- mandatory criteria
+- exclusion criteria
+- preferred criteria
+
+companyProfile:
+CompanyIntelligenceProfileV2
+
+==================================================
+16. COMMERCIAL ROLE SEMANTICS
+==================================================
+
+Allowed:
+
+POTENTIAL_BUYER
+SELLER_COMPETITOR
+ADJACENT_VENDOR
+PARTNER_POSSIBLE
+UNKNOWN
+
+Decision order:
+
+FIRST:
+Does the candidate materially sell the same outcome/capability as the seller's specific offering?
+
+If YES:
+SELLER_COMPETITOR
+
+Competition requires material substitutability.
+
+Same industry does NOT equal competitor.
+
+--------------------------------------------------
+
+SECOND:
+Is there affirmative evidence of a genuinely complementary commercial/vendor relationship?
+
+If YES:
+ADJACENT_VENDOR or PARTNER_POSSIBLE
+
+Do not use ADJACENT_VENDOR merely because both companies sell B2B services.
+
+--------------------------------------------------
+
+THIRD:
+Can the company structurally consume/buy the seller's offering?
+
+If YES and no stronger relationship applies:
+POTENTIAL_BUYER
+
+--------------------------------------------------
+
+Otherwise:
+UNKNOWN
+
+==================================================
+17. CRITICAL COMMERCIAL ROLE RULES
+==================================================
+
+These must be explicit in the assessment instructions.
+
+A marketing agency may still buy specialist marketing capability.
+
+A cybersecurity company may still buy security services.
+
+An IT services company may still buy managed services.
+
+A SaaS company selling adjacent software may still be a buyer.
+
+Do not classify based only on shared vocabulary.
+
+Material offering substitutability matters.
+
+==================================================
+18. WHO SEMANTICS
+==================================================
+
+Allowed:
+
+LIKELY_FIT
+POSSIBLE_FIT
+LIKELY_NOT_FIT
+INSUFFICIENT_DATA
+
+WHO answers:
+
+"Is this structurally a company the seller should target?"
+
+WHO is NOT:
+
+"Will they buy right now?"
+
+Do NOT require:
+
+funding signal
+hiring signal
+active compliance project
+recent executive change
+active buying trigger
+
+Those belong to WHEN/WHY.
+
+==================================================
+19. WHO DECISION PRINCIPLES
+==================================================
+
+LIKELY_FIT
+
+Strong evidence supports all meaningful mandatory ICP criteria and no exclusion applies.
+
+--------------------------------------------------
+
+POSSIBLE_FIT
+
+Structurally plausible buyer, but:
+
+- one important criterion is uncertain
+OR
+- fit is plausible but not strong enough for LIKELY_FIT
+
+--------------------------------------------------
+
+LIKELY_NOT_FIT
+
+A mandatory ICP condition clearly fails
+
+OR
+
+an explicit exclusion applies
+
+OR
+
+resolved CommercialRole = SELLER_COMPETITOR
+
+--------------------------------------------------
+
+INSUFFICIENT_DATA
+
+Evidence is genuinely insufficient to determine structural fit.
+
+Do not use INSUFFICIENT_DATA merely because optional information is missing.
+
+==================================================
+20. SINGLE ASSESSMENT OUTPUT
+==================================================
+
+Return structured JSON similar to:
+
+{
+  "commercialRole": {
+    "value": "POTENTIAL_BUYER",
+    "confidence": 0.86,
+    "reason": "...",
+    "evidenceIds": [...]
+  },
+
+  "who": {
+    "value": "LIKELY_FIT",
+    "confidence": 0.81,
+    "reason": "...",
+    "criteria": [
+      {
+        "criterionId": "...",
+        "description": "...",
+        "mandatory": true,
+        "result": "PASS | FAIL | UNKNOWN",
+        "reason": "...",
+        "evidenceIds": [...]
+      }
+    ]
+  },
+
+  "uncertainties": [...],
+
+  "assessmentConfidence": 0.83
+}
+
+No prose-only responses.
+
+Strict schema validation.
+
+==================================================
+21. EVIDENCE RULE
+==================================================
+
+Every meaningful factual proposition in:
+
+CommercialRole reason
+
+WHO reason
+
+ICP criteria
+
+must map to evidence IDs.
+
+The model may reason over facts.
+
+It may NOT invent facts.
+
+Example:
+
+ALLOWED:
+
+Fact:
+Company explicitly sells Managed SOC.
+
+Reasoning:
+This materially substitutes the seller's Managed SOC offering.
+
+NOT ALLOWED:
+
+"They probably have an internal security team"
+
+unless evidence supports it.
+
+==================================================
+22. STAGE 5 — SMALL DETERMINISTIC SAFETY LAYER
+==================================================
+
+After semantic assessment apply ONLY a small number of deterministic rules.
+
+RULE 1
+
+IF:
+
+CommercialRole =
+SELLER_COMPETITOR
+
+THEN:
+
+WHO =
+LIKELY_NOT_FIT
+
+resolutionType:
+COMMERCIAL_ROLE_EXCLUSION
+
+This rule overrides semantic WHO.
+
+--------------------------------------------------
+
+RULE 2
+
+IF:
+
+a mandatory ICP criterion has verified FAIL evidence
+
+THEN:
+
+WHO cannot be LIKELY_FIT.
+
+Resolve according to ICP policy.
+
+--------------------------------------------------
+
+RULE 3
+
+IF:
+
+identity =
+IDENTITY_UNCERTAIN
+
+THEN:
+
+no actionable buyer recommendation.
+
+--------------------------------------------------
+
+RULE 4
+
+No positive WHO decision may rely on a fabricated or evidence-less mandatory fact.
+
+That's enough.
+
+Do NOT rebuild a large rules engine.
+
+==================================================
+23. CONFIDENCE
+==================================================
+
+Confidence must be separate from classification.
+
+Do not convert:
+
+POTENTIAL_BUYER 0.62
+
+into:
+
+UNKNOWN
+
+merely because it misses an arbitrary global threshold.
+
+Instead preserve:
+
+role = POTENTIAL_BUYER
+confidence = 0.62
+
+Use UNKNOWN only when the relationship itself is genuinely unresolved.
+
+Likewise:
+
+WHO =
+POSSIBLE_FIT
+
+can represent genuine uncertainty.
+
+Avoid threshold-driven abstention.
+
+==================================================
+24. NO PURCHASE PROBABILITY
+==================================================
+
+Do not call this:
+
+purchase probability
+
+buying probability
+
+intent probability
+
+This remains:
+
+CommercialRole
+Structural WHO fit
+Evidence confidence
+
+WHEN/WHY comes later.
+
+==================================================
+25. FINGERPRINT / CACHE
+==================================================
+
+Keep V2 caching simple.
+
+Company profile fingerprint should depend on:
+
+company/domain
+source evidence versions
+
+Seller-relative assessment fingerprint should depend on:
+
+CompanyIntelligenceProfileV2 fingerprint
+Business Twin version
+Offering version
+ICP version
+assessment policy version
+
+Behavior:
+
+unchanged inputs
+→ zero semantic calls
+
+ICP changed
+→ rerun assessment only
+
+Offering changed
+→ rerun assessment only
+
+Company evidence changed
+→ rebuild profile + assessment
+
+Do not rerun research unnecessarily.
+
+==================================================
+26. COST LEDGER
+==================================================
+
+Track:
+
+research provider calls
+semantic model calls
+provider cost
+token usage where available
+cost/company
+
+Keep evaluation and runtime costs separated.
+
+==================================================
+27. GENERIC TEST SUITE
+==================================================
+
+Before using historical benchmark companies, create generic fixtures.
+
+Required cases:
+
+TEST 1 — OBVIOUS BUYER
+
+B2B SaaS company
+correct geography
+no overlapping offering
+
+Expected:
+
+POTENTIAL_BUYER
+LIKELY_FIT
+
+--------------------------------------------------
+
+TEST 2 — BUYER WITH UNCERTAIN GEOGRAPHY
+
+Structurally valid SaaS buyer
+mandatory geography unresolved
+
+Expected:
+
+POTENTIAL_BUYER
+POSSIBLE_FIT
+
+--------------------------------------------------
+
+TEST 3 — DIRECT AEO/GEO COMPETITOR
+
+Company explicitly sells:
+
+AEO
+GEO
+AI visibility
+
+Seller offers same outcome.
+
+Expected:
+
+SELLER_COMPETITOR
+LIKELY_NOT_FIT
+
+--------------------------------------------------
+
+TEST 4 — TRADITIONAL MARKETING AGENCY
+
+Agency sells:
+
+SEO
+paid media
+content
+social
+
+No evidence of AEO/GEO.
+
+Expected:
+
+POTENTIAL_BUYER
+
+NOT automatically:
+
+ADJACENT_VENDOR
+SELLER_COMPETITOR
+
+--------------------------------------------------
+
+TEST 5 — MANAGED SOC COMPETITOR
+
+Company explicitly sells:
+
+24x7 SOC
+MDR
+monitoring
+incident response
+
+Expected:
+
+SELLER_COMPETITOR
+LIKELY_NOT_FIT
+
+--------------------------------------------------
+
+TEST 6 — CYBERSECURITY ADJACENT VENDOR
+
+Company sells:
+
+vulnerability management
+AppSec
+risk quantification
+
+No Managed SOC/MDR evidence.
+
+Expected:
+
+ADJACENT_VENDOR
+
+or POTENTIAL_BUYER only where seller-relative evidence supports it.
+
+Must NOT become competitor solely because industry = cybersecurity.
+
+--------------------------------------------------
+
+TEST 7 — SECURITY TESTING PROVIDER
+
+Pentest/AppSec company
+no continuous managed monitoring
+
+Expected:
+
+not SELLER_COMPETITOR
+
+--------------------------------------------------
+
+TEST 8 — INDIA OFFICE ONLY
+
+US-headquartered company
+India office exists
+ICP requires primary geography/HQ India
+
+Expected:
+
+geography criterion UNKNOWN/FAIL according to actual ICP definition
+
+Must NOT infer India HQ.
+
+--------------------------------------------------
+
+TEST 9 — INDIA TALENT ONLY
+
+Company hires in India
+no India HQ/primary operations evidence
+
+Expected:
+
+do not infer India geography.
+
+--------------------------------------------------
+
+TEST 10 — IDENTITY NORMAL
+
+Exact domain
+first-party brand matches
+
+Expected:
+
+RESOLVED
+
+No additional identity ceremony required.
+
+--------------------------------------------------
+
+TEST 11 — TRUE IDENTITY CONFLICT
+
+Domain belongs to different organization.
+
+Expected:
+
+IDENTITY_UNCERTAIN
+
+No actionable buyer output.
+
+--------------------------------------------------
+
+TEST 12 — OPTIONAL DATA MISSING
+
+Employee count and technology unknown
+core mandatory ICP facts known
+
+Expected:
+
+classification still allowed.
+
+--------------------------------------------------
+
+TEST 13 — EVIDENCELESS MODEL CLAIM
+
+Semantic output cites nonexistent evidence.
+
+Expected:
+
+schema/evidence validation rejects unsupported claim.
+
+--------------------------------------------------
+
+TEST 14 — COMPETITOR OVERRIDE
+
+Semantic model returns:
+
+SELLER_COMPETITOR
++
+LIKELY_FIT
+
+Expected deterministic final:
+
+SELLER_COMPETITOR
++
+LIKELY_NOT_FIT
+
+--------------------------------------------------
+
+TEST 15 — ICP CHANGE
+
+Same company profile
+new ICP
+
+Expected:
+
+no research call
+no Company Profile rebuild
+assessment reruns only.
+
+--------------------------------------------------
+
+TEST 16 — IDEMPOTENCY
+
+Same exact request twice.
+
+Expected:
+
+same result
+cache hit
+zero duplicate canonical evidence
+zero unnecessary semantic calls.
+
+==================================================
+28. TENANT / PROJECT SAFETY
+==================================================
+
+Preserve strict isolation.
+
+Company evidence for:
+
+tenant/project A
+
+must not silently become evidence for:
+
+tenant/project B
+
+unless there is an explicitly supported shared canonical evidence architecture.
+
+Seller-relative assessments must ALWAYS be:
+
+business-specific
+offering-specific
+ICP-specific
+
+Never store:
+
+company.isBuyer = true
+
+globally.
+
+==================================================
+29. WHEN / WHY IS OUT OF SCOPE
+==================================================
+
+Do NOT rebuild signals in Task #117.
+
+Do NOT research:
+
+funding
+hiring
+compliance events
+leadership changes
+security stack changes
+
+unless required for company identity/profile.
+
+First make WHO reliable.
+
+Later architecture:
+
+V2 WHO-positive companies
+→ WHEN/WHY research
+→ Opportunity Priority
+
+==================================================
+30. CONTACTS OUT OF SCOPE
+==================================================
+
+Do NOT add:
+
+people search
+emails
+LinkedIn contacts
+outreach automation
+
+to V2 core.
+
+==================================================
+31. UI
+==================================================
+
+Do not redesign the whole application.
+
+Expose enough V2 information to inspect:
+
+Company
+Identity
+Primary business
+CommercialRole
+WHO
+Confidence
+Evidence
+Unknown facts
+Cost
+Intelligence version
+
+Clearly display:
+
+Intelligence Core:
+V2
+
+Do not break existing UI.
+
+==================================================
+32. OBSERVABILITY
+==================================================
+
+For every V2 run log:
+
+companyId
+intelligenceVersion
+profile fingerprint
+assessment fingerprint
+research actions
+evidence count
+model call count
+CommercialRole
+WHO
+confidence
+deterministic overrides
+cost
+duration
+
+No hidden reasoning logs required.
+
+==================================================
+33. DO NOT TUNE USING HOLDOUT V2 DURING IMPLEMENTATION
+==================================================
+
+IMPORTANT.
+
+Frozen Holdout V2 labels are already known.
+
+Do NOT create:
+
+Chargebee rule
+Schbang rule
+Social Beat rule
+ESDS rule
+Profound rule
+etc.
+
+Do NOT feed gold labels into prompts.
+
+Do NOT modify behavior specifically to make the 16-company set pass.
+
+Build from the generic architecture and generic fixtures above.
+
+==================================================
+34. AFTER GENERIC V2 PASSES — HISTORICAL REGRESSION
+==================================================
+
+Only AFTER:
+
+implementation complete
+generic tests frozen
+prompt/policy version frozen
+
+may you replay:
+
+JYRA_BLIND_HOLDOUT_GOLD_V2
+
+This is now:
+
+REGRESSION / DEVELOPMENT EVALUATION
+
+NOT:
+
+blind generalization.
+
+Do not claim it is blind.
+
+Run all 16 once.
+
+No company-specific repair inside the same task.
+
+==================================================
+35. HISTORICAL V2 TARGETS
+==================================================
+
+Report the historical regression metrics, but do not alter V2 after seeing them.
+
+Targets:
+
+CommercialRole:
+>= 13/16
+
+WHO:
+>= 12/16
+
+POTENTIAL_BUYER precision:
+>= 85%
+
+Dangerous competitor → buyer:
+0
+
+Competitors in positive buyer shortlist:
+0
+
+Role coverage:
+>= 14/16
+
+WHO coverage:
+>= 14/16
+
+These are product targets, not permission to tune.
+
+==================================================
+36. COMPARE V1 TASK #116 VS V2
+==================================================
+
+V1 baseline:
+
+CommercialRole:
+7/16
+
+WHO:
+4/16
+
+CommercialRole coverage:
+11/16
+
+WHO coverage:
+8/16
+
+POTENTIAL_BUYER precision:
+66.7%
+
+Dangerous competitor → buyer:
+0
+
+Cost:
+$0.29 total
+~$0.02/company
+
+Report V2 alongside this.
+
+==================================================
+37. SUCCESS INTERPRETATION
+==================================================
+
+If V2 materially improves:
+
+accuracy
+coverage
+buyer precision
+
+while maintaining:
+
+competitor safety
+reasonable cost
+
+then architecture simplification is validated.
+
+If V2 still performs poorly:
+
+do NOT add another large architecture layer.
+
+Report exactly what remains weak.
+
+==================================================
+38. FILE / MODULE ORGANIZATION
+==================================================
+
+Prefer a small V2 module set such as:
+
+intelligence-v2/
+  resolve-company.ts
+  research-company.ts
+  build-company-profile.ts
+  assess-market-fit.ts
+  apply-safety-rules.ts
+  orchestrator.ts
+  schemas.ts
+  evidence-validator.ts
+  fingerprint.ts
+
+Adapt to repository conventions.
+
+Do NOT create dozens of microservices.
+
+==================================================
+39. VERSIONING
+==================================================
+
+Create explicit versions:
+
+intelligenceCoreVersion:
+JYRA_INTELLIGENCE_V2
+
+companyProfileVersion:
+company-intelligence-profile-v2
+
+assessmentPolicyVersion:
+seller-relative-assessment-v2
+
+promptVersion:
+seller-relative-who-role-v2
+
+Safety policy:
+market-fit-safety-v2
+
+Record exact model used.
+
+==================================================
+40. DOCUMENTATION
+==================================================
+
+Create:
+
+docs/jyra-intelligence-core-v2.md
+
+Document:
+
+Why V1 was simplified
+
+V1 failure metrics
+
+V2 pipeline
+
+data flow
+
+evidence requirements
+
+identity policy
+
+CommercialRole semantics
+
+WHO semantics
+
+deterministic overrides
+
+cache/fingerprint behavior
+
+cost behavior
+
+what V2 intentionally does NOT do
+
+WHEN/WHY future integration
+
+==================================================
+41. ARTIFACT
+==================================================
+
+Create:
+
+artifacts/api-server/TASK_117_JYRA_INTELLIGENCE_CORE_V2.json
+
+Include:
+
+changed files
+new files
+removed V2 dependencies
+versions
+tests
+provider calls
+semantic calls
+cost
+historical regression metrics
+V1 comparison
+production status
+
+==================================================
+42. NO PRODUCTION MIGRATION
+==================================================
+
+Task #117 ends with V2 in DEVELOPMENT.
+
+Do NOT make V2 production default.
+
+Do NOT migrate production customer intelligence.
+
+Do NOT delete V1.
+
+==================================================
+43. FINAL RESPONSE FORMAT
+==================================================
+
+Return:
+
+TASK #117 — JYRA INTELLIGENCE CORE V2
+
+Status:
+PASS / FAIL
+
+Architecture:
+JYRA_INTELLIGENCE_V2
+
+====================
+SIMPLIFICATION
+====================
+
+V1 major runtime stages:
+<count>
+
+V2 runtime stages:
+5
+
+V2 flow:
+
+Resolve
+→ Research
+→ Company Profile
+→ Seller-Relative Assessment
+→ Safety Resolution
+
+V1 components bypassed by V2:
+<list>
+
+====================
+IMPLEMENTATION
+====================
+
+Changed files:
+<list>
+
+New files:
+<list>
+
+Prompt version:
+<version>
+
+Assessment policy:
+<version>
+
+Safety policy:
+<version>
+
+Model:
+<model>
+
+Provider changes:
+0
+
+Production modified:
+NO
+
+====================
+GENERIC TESTS
+====================
+
+Passed:
+x/x
+
+Identity tests:
+x/x
+
+Evidence tests:
+x/x
+
+CommercialRole tests:
+x/x
+
+WHO tests:
+x/x
+
+Safety tests:
+x/x
+
+Cache/idempotency:
+x/x
+
+====================
+V2 HISTORICAL REGRESSION
+====================
+
+Cohort:
+16
+
+CommercialRole:
+x/16
+
+CommercialRole accuracy:
+xx.x%
+
+WHO:
+x/16
+
+WHO accuracy:
+xx.x%
+
+POTENTIAL_BUYER precision:
+xx.x%
+
+POTENTIAL_BUYER recall:
+xx.x%
+
+SELLER_COMPETITOR recall:
+xx.x%
+
+ADJACENT_VENDOR recall:
+xx.x%
+
+Dangerous competitor → buyer:
+x
+
+Competitors in positive buyer shortlist:
+x
+
+CommercialRole coverage:
+x/16
+
+WHO coverage:
+x/16
+
+====================
+V1 → V2
+====================
+
+CommercialRole:
+7/16 → x/16
+
+WHO:
+4/16 → x/16
+
+Role coverage:
+11/16 → x/16
+
+WHO coverage:
+8/16 → x/16
+
+Buyer precision:
+66.7% → xx.x%
+
+Dangerous competitor → buyer:
+0 → x
+
+====================
+RUNTIME COST
+====================
+
+External provider calls:
+x
+
+Semantic calls:
+x
+
+Total cost:
+$X.XX
+
+Average cost/company:
+$X.XX
+
+====================
+ARCHITECTURE VERDICT
+====================
+
+SIMPLIFICATION_VALIDATED
+or
+SIMPLIFICATION_INSUFFICIENT
+
+Reason:
+3–6 sentences.
+
+====================
+NEXT STEP
+====================
+
+If:
+
+CommercialRole >= 13/16
+WHO >= 12/16
+buyer precision >= 85%
+dangerous competitor → buyer = 0
+competitors in positive shortlist = 0
+role coverage >= 14/16
+WHO coverage >= 14/16
+
+state:
+
+"JYRA Intelligence Core V2 is ready for a real 200–500 company market pilot. Stop benchmark engineering."
+
+Otherwise state:
+
+"V2 is simpler but has not yet met the product threshold. Do not add architectural complexity; inspect only the remaining bounded failure."
+
+Do not automatically implement the next step.

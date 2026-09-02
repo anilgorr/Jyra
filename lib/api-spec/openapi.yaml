@@ -36,7 +36,57 @@ tags:
     description: Versioned deterministic project-specific opportunity assessments
   - name: learning
     description: Evidence-based correlation analytics and user-approved learning proposals
+  - name: intelligence-v2
+    description: Development-only JYRA Intelligence Core V2 inspection
 paths:
+  /projects/{projectId}/companies/{projectCompanyId}/intelligence-v2:
+    get:
+      operationId: getCompanyIntelligenceV2
+      tags: [intelligence-v2]
+      summary: Get the latest development V2 intelligence run
+      description: Development-only retrieval of the latest process-private V2 snapshot for this project company.
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/ProjectId" }
+        - { $ref: "#/components/parameters/ProjectCompanyId" }
+      responses:
+        "200":
+          description: Latest V2 intelligence run
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/IntelligenceV2Run" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+    post:
+      operationId: analyzeCompanyIntelligenceV2
+      tags: [intelligence-v2]
+      summary: Analyze a project company with Intelligence Core V2
+      description: Development-only explicit V2 execution. Company and seller ownership are always resolved from authenticated database context.
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/ProjectId" }
+        - { $ref: "#/components/parameters/ProjectCompanyId" }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/IntelligenceV2RunInput" }
+      responses:
+        "200":
+          description: Validated V2 intelligence run
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/IntelligenceV2Run" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409":
+          description: Current seller context is incomplete
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
   /healthz:
     get:
       operationId: healthCheck
@@ -1822,6 +1872,145 @@ paths:
         "404": { $ref: "#/components/responses/NotFound" }
 components:
   schemas:
+    IntelligenceV2RunInput:
+      type: object
+      additionalProperties: false
+      properties: {}
+    IntelligenceV2ClaimBinding:
+      type: object
+      additionalProperties: false
+      properties:
+        claimId: { type: string }
+        claimedValue: { type: string }
+        purpose: { type: string }
+        relation: { type: string, enum: [SUPPORTS_ROLE, MATERIAL_SUBSTITUTE, COMPLEMENTARY, BUYER_CAPABILITY, SUPPORTS_WHO, SATISFIES_CRITERION, FAILS_CRITERION] }
+      required: [claimId, claimedValue, purpose, relation]
+    IntelligenceV2CommercialRole:
+      type: object
+      additionalProperties: false
+      properties:
+        value: { type: string, enum: [POTENTIAL_BUYER, SELLER_COMPETITOR, ADJACENT_VENDOR, PARTNER_POSSIBLE, UNKNOWN] }
+        confidence: { type: number, minimum: 0, maximum: 1 }
+        reason: { type: string }
+        evidenceIds: { type: array, items: { type: string } }
+        claimIds: { type: array, items: { type: string } }
+        claimBindings: { type: array, items: { $ref: "#/components/schemas/IntelligenceV2ClaimBinding" } }
+      required: [value, confidence, reason, evidenceIds, claimIds, claimBindings]
+    IntelligenceV2Criterion:
+      type: object
+      additionalProperties: false
+      properties:
+        criterionId: { type: string }
+        description: { type: string }
+        mandatory: { type: boolean }
+        result: { type: string, enum: [PASS, FAIL, UNKNOWN] }
+        reason: { type: string }
+        evidenceIds: { type: array, items: { type: string } }
+        claimIds: { type: array, items: { type: string } }
+        claimBindings: { type: array, items: { $ref: "#/components/schemas/IntelligenceV2ClaimBinding" } }
+      required: [criterionId, description, mandatory, result, reason, evidenceIds, claimIds, claimBindings]
+    IntelligenceV2Who:
+      type: object
+      additionalProperties: false
+      properties:
+        value: { type: string, enum: [LIKELY_FIT, POSSIBLE_FIT, LIKELY_NOT_FIT, INSUFFICIENT_DATA] }
+        confidence: { type: number, minimum: 0, maximum: 1 }
+        reason: { type: string }
+        evidenceIds: { type: array, items: { type: string } }
+        claimIds: { type: array, items: { type: string } }
+        claimBindings: { type: array, items: { $ref: "#/components/schemas/IntelligenceV2ClaimBinding" } }
+        criteria: { type: array, items: { $ref: "#/components/schemas/IntelligenceV2Criterion" } }
+      required: [value, confidence, reason, evidenceIds, claimIds, claimBindings, criteria]
+    IntelligenceV2Evidence:
+      type: object
+      additionalProperties: false
+      properties:
+        evidenceId: { type: string }
+        sourceType: { type: string }
+        provider: { type: string }
+        url: { type: ["string", "null"] }
+        title: { type: string }
+        observedAt: { type: string }
+        statement: { type: string }
+        firstParty: { type: boolean }
+        confidence: { type: number, minimum: 0, maximum: 1 }
+        version: { type: string }
+      required: [evidenceId, sourceType, provider, url, title, observedAt, statement, firstParty, confidence, version]
+    IntelligenceV2Run:
+      type: object
+      additionalProperties: false
+      properties:
+        intelligenceVersion: { type: string, enum: [JYRA_INTELLIGENCE_V2] }
+        projectId: { type: string }
+        projectCompanyId: { type: string }
+        companyId: { type: string }
+        companyName: { type: string }
+        domain: { type: ["string", "null"] }
+        createdAt: { type: string }
+        identity:
+          type: object
+          additionalProperties: false
+          properties:
+            status: { type: string, enum: [RESOLVED, IDENTITY_UNCERTAIN] }
+            confidence: { type: number, minimum: 0, maximum: 1 }
+            reason: { type: string }
+            evidenceIds:
+              type: array
+              items: { type: string }
+          required: [status, confidence, reason, evidenceIds]
+        primaryBusiness:
+          type: ["object", "null"]
+          additionalProperties: false
+          properties:
+            value: { type: string }
+            confidence: { type: number, minimum: 0, maximum: 1 }
+            evidenceIds:
+              type: array
+              items: { type: string }
+          required: [value, confidence, evidenceIds]
+        commercialRole: { $ref: "#/components/schemas/IntelligenceV2CommercialRole" }
+        who: { $ref: "#/components/schemas/IntelligenceV2Who" }
+        assessmentConfidence: { type: number, minimum: 0, maximum: 1 }
+        resolutionType: { type: string, enum: [SEMANTIC_ASSESSMENT, COMMERCIAL_ROLE_EXCLUSION, MANDATORY_CRITERION_FAILURE, IDENTITY_UNCERTAIN, EVIDENCELESS_POSITIVE_BLOCKED] }
+        deterministicOverrides:
+          type: array
+          items: { type: string, enum: [COMMERCIAL_ROLE_EXCLUSION, MANDATORY_CRITERION_FAILURE, IDENTITY_UNCERTAIN, EVIDENCELESS_POSITIVE_BLOCKED] }
+        unknownFacts:
+          type: array
+          items: { type: string }
+        evidence:
+          type: array
+          items: { $ref: "#/components/schemas/IntelligenceV2Evidence" }
+        cost:
+          type: object
+          additionalProperties: false
+          properties:
+            provider: { type: number }
+            model: { type: number }
+            total: { type: number }
+            researchProviderCalls: { type: number }
+            modelCalls: { type: number }
+          required: [provider, model, total, researchProviderCalls, modelCalls]
+        versions:
+          type: object
+          additionalProperties: false
+          properties:
+            profile: { type: string }
+            assessmentPolicy: { type: string }
+            assessmentPrompt: { type: string }
+            safetyPolicy: { type: string }
+            businessTwin: { type: string }
+            offering: { type: string }
+            icp: { type: string }
+          required: [profile, assessmentPolicy, assessmentPrompt, safetyPolicy, businessTwin, offering, icp]
+        fingerprints:
+          type: object
+          additionalProperties: false
+          properties:
+            profile: { type: string }
+            assessment: { type: string }
+          required: [profile, assessment]
+      required: [intelligenceVersion, projectId, projectCompanyId, companyId, companyName, domain, createdAt, identity, primaryBusiness, commercialRole, who, assessmentConfidence, resolutionType, deterministicOverrides, unknownFacts, evidence, cost, versions, fingerprints]
     AdminMetricSection:
       type: object
       properties:

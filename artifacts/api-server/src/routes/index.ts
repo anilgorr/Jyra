@@ -18,6 +18,7 @@ import recommendationLedgerRouter from "./recommendation-ledger";
 import learningRouter from "./learning";
 import discoveryRouter from "./discovery";
 import adminQualityRouter from "./admin-quality";
+import intelligenceV2Router from "./intelligence-v2";
 
 const router: IRouter = Router();
 
@@ -40,5 +41,6 @@ router.use(recommendationLedgerRouter);
 router.use(learningRouter);
 router.use(discoveryRouter);
 router.use(adminQualityRouter);
+router.use(intelligenceV2Router);
 
 export default router;
