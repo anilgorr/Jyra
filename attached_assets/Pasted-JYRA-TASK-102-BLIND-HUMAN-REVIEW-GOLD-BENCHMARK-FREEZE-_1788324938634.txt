@@ -1,0 +1,763 @@
+JYRA — TASK #102
+BLIND HUMAN REVIEW + GOLD BENCHMARK FREEZE
+
+MODE:
+HUMAN REVIEW WORKFLOW + BENCHMARK FREEZE + POST-FREEZE QUALITY ANALYSIS
+
+NO PRODUCTION INTELLIGENCE CHANGES.
+
+BACKGROUND
+
+Clean-room Evaluation Harness V1 completed for the exact Task #100 cohort:
+
+20 companies total:
+- 10 DigiPuush
+- 10 Managed SOC
+
+Clean-room research:
+- 20 independent web searches
+- 38 public-page fetches
+- 35 successful
+- 18/20 companies with fetched public evidence
+- 4 Gemini 3.1 Pro evaluation calls
+- 255,395 tokens
+- 0 JYRA reruns
+- 0 production intelligence changes
+
+All 20 machine proposals cite clean-room evidence.
+
+However:
+
+- all remain PENDING_HUMAN_REVIEW
+- none are authoritative ground truth
+
+Therefore DO NOT modify JYRA until human-reviewed truth is frozen.
+
+==================================================
+0. DATABASE SAFETY
+==================================================
+
+Development only.
+
+Production operations = 0.
+
+Evaluation data must remain isolated from production intelligence.
+
+Human review must NOT:
+
+- change production CompanyUnderstanding
+- change CommercialRole
+- change WHO
+- change Business Twin
+- change Offering
+- change ICP
+- modify discovery
+- modify prompts/models
+- create production facts/signals/opportunities
+- enter learning/training automatically
+
+==================================================
+1. USE EXACT EXISTING CLEAN-ROOM BENCHMARK
+==================================================
+
+Use the exact 20 companies already researched.
+
+Do NOT:
+
+- replace companies
+- rerun discovery
+- rerun JYRA
+- refresh JYRA predictions
+- modify clean-room evidence merely because a proposal looks wrong
+
+Use the evidence packet already created.
+
+Additional clean-room public evidence may be obtained ONLY when a
+reviewer explicitly marks:
+
+EVIDENCE_INSUFFICIENT
+
+and the additional research is needed to adjudicate that company.
+
+Any such research must remain evaluation-only.
+
+==================================================
+2. HUMAN REVIEW MUST REMAIN BLIND
+==================================================
+
+Until each company's ground truth is frozen, DO NOT expose:
+
+- JYRA CompanyUnderstanding
+- JYRA CommercialRole
+- JYRA WHO
+- JYRA confidence
+- JYRA reasoning
+- previous Task #100 adjudication
+- previous raw agreement metrics
+
+Reviewer sees only:
+
+- seller
+- offering
+- approved ICP
+- target company identity
+- independent clean-room evidence
+- machine clean-room proposal
+- supporting evidence citations
+
+==================================================
+3. SEPARATE FACTUAL TRUTH FROM COMMERCIAL JUDGEMENT
+==================================================
+
+This distinction is mandatory.
+
+A. FACTUAL COMPANY TRUTH
+
+Review from public evidence:
+
+- identity
+- primary business
+- products/services
+- business model
+- industry
+- geography
+- employee size/range where evidence exists
+- relevant technology only when evidence exists
+
+These are evidence-grounded factual judgements.
+
+B. COMMERCIAL RELATIONSHIP TRUTH
+
+Review relative to:
+
+SELLER
++
+SPECIFIC OFFERING
++
+FACTUAL COMPANY TRUTH
+
+Allowed:
+
+POTENTIAL_BUYER
+SELLER_COMPETITOR
+ADJACENT_VENDOR
+PARTNER_POSSIBLE
+UNKNOWN
+
+This is a seller-relative commercial judgement.
+
+C. WHO TRUTH
+
+Evaluate against the exact frozen ICP version.
+
+WHO is also seller-relative.
+
+==================================================
+4. HUMAN REVIEW FORM
+==================================================
+
+For every company present a compact review packet.
+
+HEADER
+
+Seller:
+Offering:
+ICP version:
+Company:
+Domain:
+Clean-room evidence coverage:
+
+----------------------------------------
+
+IDENTITY
+
+Machine proposal:
+CORRECT / WRONG / UNCERTAIN
+
+Reviewer:
+[ APPROVE ]
+[ CORRECT ]
+[ AMBIGUOUS ]
+
+Reason required if corrected.
+
+----------------------------------------
+
+PRIMARY BUSINESS
+
+Machine proposal:
+<value>
+
+Evidence:
+<citations>
+
+Reviewer:
+[ APPROVE ]
+[ EDIT ]
+[ INSUFFICIENT ]
+
+----------------------------------------
+
+PRODUCTS / SERVICES
+
+Machine proposal:
+<values>
+
+Evidence:
+<citations>
+
+Reviewer:
+[ APPROVE ]
+[ EDIT ]
+[ INSUFFICIENT ]
+
+----------------------------------------
+
+BUSINESS MODEL
+
+Machine proposal:
+<value>
+
+Evidence:
+<citations>
+
+Reviewer:
+[ APPROVE ]
+[ EDIT ]
+[ UNKNOWN ]
+
+----------------------------------------
+
+INDUSTRY
+
+Machine proposal:
+<value>
+
+Evidence:
+<citations>
+
+Reviewer:
+[ APPROVE ]
+[ EDIT ]
+[ UNKNOWN ]
+
+----------------------------------------
+
+COMMERCIAL ROLE
+
+Seller offering:
+<actual offering>
+
+Candidate factual summary:
+<approved independent company truth>
+
+Machine proposal:
+<role>
+
+Machine reason:
+<reason>
+
+Supporting evidence:
+<ids>
+
+Reviewer chooses exactly one:
+
+POTENTIAL_BUYER
+SELLER_COMPETITOR
+ADJACENT_VENDOR
+PARTNER_POSSIBLE
+UNKNOWN
+
+Reviewer confidence:
+
+HIGH
+MEDIUM
+LOW
+
+Reviewer reason REQUIRED.
+
+----------------------------------------
+
+WHO
+
+Show the actual ICP criteria.
+
+Evaluate separately:
+
+INDUSTRY
+PASS / FAIL / UNKNOWN
+
+SIZE
+PASS / FAIL / UNKNOWN
+
+GEOGRAPHY
+PASS / FAIL / UNKNOWN
+
+BUSINESS MODEL
+PASS / FAIL / UNKNOWN
+
+TECHNOLOGY
+PASS / FAIL / UNKNOWN
+only if actual ICP uses technology
+
+COMMERCIAL ROLE
+PASS / FAIL / UNKNOWN
+
+EXCLUSIONS
+PASS / FAIL / UNKNOWN
+
+Then reviewer chooses:
+
+LIKELY_FIT
+POSSIBLE_FIT
+LIKELY_NOT_FIT
+INSUFFICIENT_DATA
+
+Reason required.
+
+==================================================
+5. HUMAN REVIEW AUTHORITY
+==================================================
+
+For factual company fields:
+
+public evidence is authoritative.
+
+Reviewer must not override clear evidence merely based on intuition.
+
+For CommercialRole and WHO:
+
+the seller-relative commercial definition is authoritative.
+
+A knowledgeable seller/domain owner may legitimately determine:
+
+"Yes, I would consider this type of organization a plausible customer"
+
+even if the company's website never says it needs the offering.
+
+Do NOT confuse:
+
+POTENTIAL_BUYER
+
+with:
+
+CURRENT PURCHASE INTENT.
+
+Potential Buyer means structurally plausible customer.
+
+WHEN/WHY determines whether there is current opportunity evidence.
+
+==================================================
+6. IMPORTANT ROLE SEMANTICS
+==================================================
+
+POTENTIAL_BUYER
+
+Company could reasonably consume the seller's offering and is not
+primarily selling a substantially overlapping offering.
+
+SELLER_COMPETITOR
+
+Company materially offers substantially the same service to similar
+customers.
+
+ADJACENT_VENDOR
+
+Company sells a related/complementary offering but is not the direct
+customer relationship being targeted.
+
+PARTNER_POSSIBLE
+
+Commercially plausible partnership/referral/integration/reseller
+relationship is more natural than direct buyer relationship.
+
+UNKNOWN
+
+Evidence or commercial relationship genuinely insufficient/ambiguous.
+
+Do NOT use industry alone.
+
+Do NOT infer intent.
+
+==================================================
+7. REVIEW QUALITY CONTROLS
+==================================================
+
+Require correction reasons.
+
+Prevent accidental reveal of JYRA prediction before freeze.
+
+Record:
+
+reviewer identity/reference
+review timestamp
+original machine proposal
+reviewer decision
+correction reason
+confidence
+evidence IDs considered
+
+Do not overwrite the machine proposal.
+
+Maintain complete audit history.
+
+==================================================
+8. OPTIONAL SECOND REVIEW
+==================================================
+
+Do NOT require two reviewers for all 20 companies.
+
+However automatically flag for second review:
+
+- reviewer confidence LOW
+- commercial role UNKNOWN
+- evidence conflicts
+- identity uncertain
+- machine proposal and reviewer materially disagree
+- reviewer marks ICP semantics ambiguous
+
+If a second reviewer is available:
+
+record both decisions independently.
+
+If they disagree materially:
+
+status =
+GROUND_TRUTH_AMBIGUOUS
+
+unless explicitly resolved with documented rationale.
+
+Do not force consensus artificially.
+
+==================================================
+9. BENCHMARK FREEZE
+==================================================
+
+After review, each company receives:
+
+GROUND_TRUTH_CONFIRMED
+
+GROUND_TRUTH_AMBIGUOUS
+
+GROUND_TRUTH_INSUFFICIENT
+
+GROUND_TRUTH_REJECTED_WRONG_IDENTITY
+
+Only confirmed cases enter strict accuracy metrics.
+
+Persist:
+
+benchmark ID
+benchmark version
+company cohort
+seller context
+offering fingerprint
+ICP version
+clean-room evidence IDs
+machine proposal version
+reviewer decision
+review rationale
+ground_truth_frozen_at
+
+Create benchmark version:
+
+JYRA_MARKET_QUALITY_GOLD_V1
+
+After freeze, labels become immutable.
+
+Corrections later require:
+
+new benchmark version.
+
+==================================================
+10. ONLY AFTER GOLD TRUTH IS FROZEN
+==================================================
+
+Reveal the exact already-persisted Task #100 JYRA predictions.
+
+Do NOT rerun JYRA.
+
+Compare original JYRA output against the gold benchmark.
+
+This timing is critical.
+
+==================================================
+11. FIRST MATERIAL ERROR ANALYSIS
+==================================================
+
+For every confirmed company evaluate:
+
+Discovery
+→ Identity
+→ Profile/Evidence
+→ CompanyUnderstanding
+→ CommercialRole
+→ WHO
+
+Assign exactly ONE first material error.
+
+If:
+
+bad CompanyUnderstanding
+→ wrong role
+→ wrong WHO
+
+count:
+
+CompanyUnderstanding
+
+NOT three errors.
+
+==================================================
+12. CONDITIONED COMMERCIAL ROLE METRIC
+==================================================
+
+Create CLEAN_ROLE_SUBSET:
+
+ground truth confirmed
++
+identity correct
++
+JYRA evidence sufficient
++
+JYRA CompanyUnderstanding correct or mostly correct
+
+Then report:
+
+CommercialRole exact agreement
+buyer precision
+buyer recall
+seller/competitor → buyer
+adjacent → buyer
+partner → buyer
+GOOD_UNKNOWN
+BAD_UNKNOWN
+
+Always show numerator / denominator.
+
+==================================================
+13. CONDITIONED WHO METRIC
+==================================================
+
+Create CLEAN_WHO_SUBSET:
+
+ground truth confirmed
++
+identity correct
++
+CompanyUnderstanding acceptable
++
+CommercialRole correct
++
+required ICP evidence available
+
+Then report:
+
+WHO exact agreement
+
+and criterion agreement:
+
+industry
+size
+geography
+business model
+technology
+exclusions
+commercial role
+
+Always show numerator / denominator.
+
+==================================================
+14. DOMAIN COMPARISON
+==================================================
+
+Report separately:
+
+DIGIPUUSH
+
+and
+
+MANAGED SOC.
+
+Metrics:
+
+company understanding
+commercial role
+buyer precision
+buyer recall
+WHO
+UNKNOWN quality
+
+Determine whether observed defects are:
+
+GENERIC
+DOMAIN_SPECIFIC
+INSUFFICIENT_SAMPLE
+
+==================================================
+15. CONFIDENCE CALIBRATION
+==================================================
+
+Identify:
+
+HIGH_CONFIDENCE_CORRECT
+HIGH_CONFIDENCE_WRONG
+MEDIUM_CONFIDENCE_CORRECT
+MEDIUM_CONFIDENCE_WRONG
+LOW_CONFIDENCE_CORRECT
+LOW_CONFIDENCE_WRONG
+
+List all HIGH_CONFIDENCE_WRONG cases individually.
+
+These are priority defects.
+
+==================================================
+16. ROOT CAUSE DISTRIBUTION
+==================================================
+
+Return:
+
+Layer
+First-error count
+% of first errors
+DigiPuush
+Managed SOC
+Generic/domain-specific
+
+Layers:
+
+Discovery
+Identity
+Profile/Evidence
+CompanyUnderstanding
+CommercialRole
+WHO
+Evaluation ambiguity
+
+==================================================
+17. CHOOSE ONE NEXT REPAIR
+==================================================
+
+After the benchmark is frozen and comparison completed, choose exactly
+ONE:
+
+DISCOVERY
+
+PROFILE_EVIDENCE
+
+COMPANY_UNDERSTANDING
+
+COMMERCIAL_RELATIONSHIP
+
+WHO_QUALIFICATION
+
+NO_SINGLE_DOMINANT_FAILURE
+
+Do NOT implement it.
+
+The recommendation must be driven primarily by:
+
+first-material-error distribution
++
+conditioned metrics
+
+not raw agreement.
+
+==================================================
+18. TASK #101 COST PERSISTENCE
+==================================================
+
+Do not implement Task #101 here.
+
+Assess whether durable provider-cost persistence is:
+
+BLOCKING_NEXT_VALIDATION
+
+PRE_PRODUCTION_BLOCKER
+
+CONTINUOUS_MONITORING_BLOCKER
+
+CAN_DEFER
+
+My architectural expectation is:
+
+likely CAN_DEFER for this benchmark,
+but PRE_PRODUCTION / CONTINUOUS_MONITORING blocking.
+
+Verify from current infrastructure.
+
+==================================================
+19. REQUIRED OUTPUT
+==================================================
+
+Produce:
+
+A. Human review completion
+
+B. Ground truth confirmed / ambiguous / insufficient counts
+
+C. Gold benchmark provenance
+
+D. Final 20-company truth table
+
+E. CompanyUnderstanding comparison
+
+F. CommercialRole conditioned metrics
+
+G. WHO conditioned metrics
+
+H. GOOD_UNKNOWN / BAD_UNKNOWN
+
+I. Confidence calibration
+
+J. First-error distribution
+
+K. DigiPuush vs Managed SOC
+
+L. Primary bottleneck
+
+M. Secondary bottleneck
+
+N. Exactly one next repair recommendation
+
+O. Task #101 classification
+
+==================================================
+20. FINAL VERDICT
+==================================================
+
+Return exactly one:
+
+A — GOLD BENCHMARK FROZEN; PROFILE EVIDENCE IS PRIMARY BOTTLENECK
+
+B — GOLD BENCHMARK FROZEN; COMPANY UNDERSTANDING IS PRIMARY BOTTLENECK
+
+C — GOLD BENCHMARK FROZEN; COMMERCIAL RELATIONSHIP IS PRIMARY BOTTLENECK
+
+D — GOLD BENCHMARK FROZEN; WHO IS PRIMARY BOTTLENECK
+
+E — GOLD BENCHMARK FROZEN; NO SINGLE BOTTLENECK DOMINATES
+
+F — HUMAN REVIEW INCOMPLETE; GOLD BENCHMARK NOT YET FROZEN
+
+==================================================
+21. STOP
+==================================================
+
+After benchmark freeze and analysis:
+
+STOP.
+
+DO NOT:
+
+modify JYRA
+tune prompts
+change models
+change thresholds
+change ICP
+rerun JYRA
+run 50-company Reality Test
+modify signals
+build contacts
+build outreach
+integrate Explee
