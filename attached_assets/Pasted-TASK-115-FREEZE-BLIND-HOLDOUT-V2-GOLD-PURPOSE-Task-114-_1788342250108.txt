@@ -1,0 +1,1249 @@
+TASK #115 — FREEZE BLIND HOLDOUT V2 GOLD
+
+PURPOSE
+
+Task #114 created:
+
+JYRA_BLIND_HOLDOUT_V2
+
+Cohort:
+16
+
+DIGIPUUSH:
+8
+
+MANAGED_SOC:
+8
+
+Cohort SHA-256:
+8a72f2e6302e0fcbfc5a8b70815acc2c88b53a66eb23ad688e551bfeefd1d314
+
+The 16 companies were reviewed blindly by the human reviewer.
+
+Current JYRA CommercialRole and WHO predictions were NOT run or exposed before human review.
+
+Task #115 must:
+
+1. persist the 16 approved human decisions
+2. preserve the independent machine proposals
+3. freeze immutable gold
+4. calculate checksums
+5. validate review blindness/provenance
+6. NOT run or reveal JYRA predictions
+
+==================================================
+1. DATABASE SAFETY
+==================================================
+
+DATABASE SAFETY:
+
+This is evaluation/development work.
+
+Use ONLY development/evaluation infrastructure.
+
+DO NOT:
+
+- modify production
+- migrate production
+- reset production
+- seed production
+- truncate production
+- test using production customer data
+
+Production modified:
+NO
+
+==================================================
+2. SOURCE ARTIFACTS
+==================================================
+
+Use the existing Task #114 artifacts:
+
+evaluations/jyra-holdout-v2/HOLDOUT_V2_COHORT.json
+
+evaluations/jyra-holdout-v2/HOLDOUT_V2_COHORT.manifest.json
+
+evaluations/jyra-holdout-v2/HOLDOUT_V2_PUBLIC_EVIDENCE.json
+
+evaluations/jyra-holdout-v2/HOLDOUT_V2_MACHINE_PROPOSALS.json
+
+evaluations/jyra-holdout-v2/HOLDOUT_V2_HUMAN_REVIEW.csv
+
+evaluations/jyra-holdout-v2/HOLDOUT_V2_REVIEWER_PACKET.md
+
+evaluations/jyra-holdout-v2/HOLDOUT_V2_MANIFEST.json
+
+Do not regenerate evidence.
+
+Do not replace companies.
+
+Do not alter original machine proposals.
+
+==================================================
+3. VERIFY COHORT FIRST
+==================================================
+
+Verify cohort SHA:
+
+8a72f2e6302e0fcbfc5a8b70815acc2c88b53a66eb23ad688e551bfeefd1d314
+
+Expected companies:
+
+DIGIPUUSH
+
+1. Chargebee — chargebee.com
+2. Hasura — hasura.io
+3. DrDroid — drdroid.io
+4. Schbang — schbang.com
+5. Social Beat — socialbeat.in
+6. ThatWare — thatware.co
+7. Scalenut — scalenut.com
+8. Profound — tryprofound.com
+
+MANAGED_SOC
+
+9. Pine Labs — pinelabs.com
+10. Practo — practo.com
+11. Whatfix — whatfix.com
+12. CtrlS Datacenters — ctrls.com
+13. ESDS Software Solution — esds.co.in
+14. Safe Security — safe.security
+15. TAC Security — tacsecurity.com
+16. Appsecco — appsecco.com
+
+HARD FAIL if cohort differs.
+
+==================================================
+4. REVIEWER PROVENANCE
+==================================================
+
+Reviewer:
+
+Anil Gorraladaku
+
+Review type:
+
+HUMAN_BLIND_REVIEW
+
+Review date:
+
+2026-09-02
+
+Gold version:
+
+JYRA_BLIND_HOLDOUT_GOLD_V2
+
+Human reviewer saw:
+
+- independent clean-room public evidence
+- independent clean-room machine proposals
+
+Human reviewer DID NOT see:
+
+- current JYRA CommercialRole predictions
+- current JYRA WHO predictions
+- current JYRA confidence
+- current JYRA rationale
+- current JYRA opportunity scores
+
+Preserve provenance:
+
+frozen cohort
+→ independent evidence
+→ independent proposal
+→ human blind review
+→ immutable gold
+→ later JYRA comparison
+
+==================================================
+5. FINAL HUMAN DECISIONS
+==================================================
+
+Persist EXACTLY the following.
+
+--------------------------------------------------
+1. Chargebee
+--------------------------------------------------
+
+domainKey:
+DIGIPUUSH
+
+identity:
+CORRECT
+
+commercialRole:
+POTENTIAL_BUYER
+
+commercialRoleConfidence:
+HIGH
+
+who:
+POSSIBLE_FIT
+
+whoConfidence:
+MEDIUM
+
+groundTruthStatus:
+GROUND_TRUTH_CONFIRMED
+
+reviewAction:
+APPROVE
+
+Reason:
+Chargebee is a B2B SaaS billing/monetization platform structurally capable of purchasing DigiPuush AI visibility services, with no materially substitutable AEO/GEO offering evidenced. India office presence is established, but India headquarters or primary operations are not, so POSSIBLE_FIT is more defensible than LIKELY_FIT.
+
+--------------------------------------------------
+2. Hasura
+--------------------------------------------------
+
+domainKey:
+DIGIPUUSH
+
+identity:
+CORRECT
+
+commercialRole:
+POTENTIAL_BUYER
+
+commercialRoleConfidence:
+HIGH
+
+who:
+POSSIBLE_FIT
+
+whoConfidence:
+MEDIUM
+
+groundTruthStatus:
+GROUND_TRUTH_CONFIRMED
+
+reviewAction:
+APPROVE
+
+Reason:
+Hasura is an enterprise developer/data platform structurally capable of buying AI visibility services, with no substitutable AEO/GEO offering evidenced. India-company context exists, but India headquarters, office, or primary operations are not sufficiently established.
+
+--------------------------------------------------
+3. DrDroid
+--------------------------------------------------
+
+domainKey:
+DIGIPUUSH
+
+identity:
+CORRECT
+
+commercialRole:
+POTENTIAL_BUYER
+
+commercialRoleConfidence:
+HIGH
+
+who:
+LIKELY_FIT
+
+whoConfidence:
+HIGH
+
+groundTruthStatus:
+GROUND_TRUTH_CONFIRMED
+
+reviewAction:
+APPROVE
+
+Reason:
+DrDroid is a B2B AI/SaaS platform operating in a different product category from DigiPuush and is structurally capable of buying external AI visibility services. Bengaluru, India is independently established as its location.
+
+--------------------------------------------------
+4. Schbang
+--------------------------------------------------
+
+domainKey:
+DIGIPUUSH
+
+identity:
+CORRECT
+
+commercialRole:
+POTENTIAL_BUYER
+
+commercialRoleConfidence:
+MEDIUM
+
+who:
+LIKELY_FIT
+
+whoConfidence:
+HIGH
+
+groundTruthStatus:
+GROUND_TRUTH_CONFIRMED
+
+reviewAction:
+APPROVE
+
+Reason:
+Schbang is a creative/media/technology agency that may buy or subcontract specialist AI visibility capability. No materially substitutable AEO/GEO offering or affirmative partner relationship is established. Strong India origin and office presence support structural fit.
+
+--------------------------------------------------
+5. Social Beat
+--------------------------------------------------
+
+domainKey:
+DIGIPUUSH
+
+identity:
+CORRECT
+
+commercialRole:
+POTENTIAL_BUYER
+
+commercialRoleConfidence:
+MEDIUM
+
+who:
+LIKELY_FIT
+
+whoConfidence:
+HIGH
+
+groundTruthStatus:
+GROUND_TRUTH_CONFIRMED
+
+reviewAction:
+APPROVE
+
+Reason:
+Social Beat sells SEO and digital marketing but the evidence does not establish materially substitutable AI visibility/AEO/GEO services. It may consume a specialist service, and its pan-India operations strongly satisfy the geography condition.
+
+--------------------------------------------------
+6. ThatWare
+--------------------------------------------------
+
+domainKey:
+DIGIPUUSH
+
+identity:
+CORRECT
+
+commercialRole:
+SELLER_COMPETITOR
+
+commercialRoleConfidence:
+HIGH
+
+who:
+LIKELY_NOT_FIT
+
+whoConfidence:
+HIGH
+
+groundTruthStatus:
+GROUND_TRUTH_CONFIRMED
+
+reviewAction:
+CORRECT
+
+MACHINE PROPOSAL:
+CommercialRole = SELLER_COMPETITOR
+WHO = LIKELY_FIT
+
+HUMAN GOLD:
+CommercialRole = SELLER_COMPETITOR
+WHO = LIKELY_NOT_FIT
+
+Reason:
+ThatWare explicitly sells GEO, AEO, LLM optimization, AI-search visibility, and managed SEO services that materially substitute DigiPuush. Direct competitors must not appear in the buyer shortlist even if geography and category characteristics otherwise match.
+
+--------------------------------------------------
+7. Scalenut
+--------------------------------------------------
+
+domainKey:
+DIGIPUUSH
+
+identity:
+CORRECT
+
+commercialRole:
+SELLER_COMPETITOR
+
+commercialRoleConfidence:
+HIGH
+
+who:
+LIKELY_NOT_FIT
+
+whoConfidence:
+HIGH
+
+groundTruthStatus:
+GROUND_TRUTH_CONFIRMED
+
+reviewAction:
+CORRECT
+
+MACHINE PROPOSAL:
+CommercialRole = SELLER_COMPETITOR
+WHO = LIKELY_FIT
+
+HUMAN GOLD:
+CommercialRole = SELLER_COMPETITOR
+WHO = LIKELY_NOT_FIT
+
+Reason:
+Scalenut sells AI visibility tracking, GEO creation/optimization, SEO and AI-search products that materially overlap DigiPuush. A direct competitor should be excluded from buyer targeting.
+
+--------------------------------------------------
+8. Profound
+--------------------------------------------------
+
+domainKey:
+DIGIPUUSH
+
+identity:
+CORRECT
+
+commercialRole:
+SELLER_COMPETITOR
+
+commercialRoleConfidence:
+HIGH
+
+who:
+LIKELY_NOT_FIT
+
+whoConfidence:
+HIGH
+
+groundTruthStatus:
+GROUND_TRUTH_CONFIRMED
+
+reviewAction:
+APPROVE
+
+Reason:
+Profound directly sells AI-search visibility/AEO software and therefore materially overlaps DigiPuush. The independent evidence also establishes a New York address with no India nexus sufficient for the mandatory geography condition.
+
+--------------------------------------------------
+9. Pine Labs
+--------------------------------------------------
+
+domainKey:
+MANAGED_SOC
+
+identity:
+CORRECT
+
+commercialRole:
+POTENTIAL_BUYER
+
+commercialRoleConfidence:
+HIGH
+
+who:
+LIKELY_FIT
+
+whoConfidence:
+HIGH
+
+groundTruthStatus:
+GROUND_TRUTH_CONFIRMED
+
+reviewAction:
+APPROVE
+
+Reason:
+Pine Labs operates security-sensitive payment infrastructure, has clear India roots and strong monitoring exposure, and does not evidence a materially substitutable Managed SOC/MDR offering.
+
+--------------------------------------------------
+10. Practo
+--------------------------------------------------
+
+domainKey:
+MANAGED_SOC
+
+identity:
+CORRECT
+
+commercialRole:
+POTENTIAL_BUYER
+
+commercialRoleConfidence:
+HIGH
+
+who:
+LIKELY_FIT
+
+whoConfidence:
+HIGH
+
+groundTruthStatus:
+GROUND_TRUTH_CONFIRMED
+
+reviewAction:
+APPROVE
+
+Reason:
+Practo operates a substantial digital healthcare platform handling sensitive information and has strong structural security requirements. No managed SOC/MDR substitute is evidenced.
+
+--------------------------------------------------
+11. Whatfix
+--------------------------------------------------
+
+domainKey:
+MANAGED_SOC
+
+identity:
+CORRECT
+
+commercialRole:
+POTENTIAL_BUYER
+
+commercialRoleConfidence:
+HIGH
+
+who:
+LIKELY_FIT
+
+whoConfidence:
+HIGH
+
+groundTruthStatus:
+GROUND_TRUTH_CONFIRMED
+
+reviewAction:
+APPROVE
+
+Reason:
+Whatfix is a large enterprise SaaS company with significant digital infrastructure, security ownership, procurement capacity and India presence. Its product portfolio does not substitute for Managed SOC/MDR.
+
+--------------------------------------------------
+12. CtrlS Datacenters
+--------------------------------------------------
+
+domainKey:
+MANAGED_SOC
+
+identity:
+CORRECT
+
+commercialRole:
+SELLER_COMPETITOR
+
+commercialRoleConfidence:
+HIGH
+
+who:
+LIKELY_NOT_FIT
+
+whoConfidence:
+HIGH
+
+groundTruthStatus:
+GROUND_TRUTH_CONFIRMED
+
+reviewAction:
+CORRECT
+
+MACHINE PROPOSAL:
+CommercialRole = SELLER_COMPETITOR
+WHO = LIKELY_FIT
+
+HUMAN GOLD:
+CommercialRole = SELLER_COMPETITOR
+WHO = LIKELY_NOT_FIT
+
+Reason:
+CtrlS explicitly offers Managed SOC, MDR, 24x7 monitoring, threat hunting and incident management. These capabilities materially substitute Aadit's offering, so it must not remain in the buyer-fit shortlist.
+
+--------------------------------------------------
+13. ESDS Software Solution
+--------------------------------------------------
+
+domainKey:
+MANAGED_SOC
+
+identity:
+CORRECT
+
+commercialRole:
+SELLER_COMPETITOR
+
+commercialRoleConfidence:
+HIGH
+
+who:
+LIKELY_NOT_FIT
+
+whoConfidence:
+HIGH
+
+groundTruthStatus:
+GROUND_TRUTH_CONFIRMED
+
+reviewAction:
+CORRECT
+
+MACHINE PROPOSAL:
+CommercialRole = SELLER_COMPETITOR
+WHO = LIKELY_FIT
+
+HUMAN GOLD:
+CommercialRole = SELLER_COMPETITOR
+WHO = LIKELY_NOT_FIT
+
+Reason:
+ESDS explicitly sells Managed SOC, MDR, SIEM/SOAR, continuous monitoring, threat hunting and response. It is a materially substitutable direct competitor and should be excluded from buyer targeting.
+
+--------------------------------------------------
+14. Safe Security
+--------------------------------------------------
+
+domainKey:
+MANAGED_SOC
+
+identity:
+CORRECT
+
+commercialRole:
+ADJACENT_VENDOR
+
+commercialRoleConfidence:
+MEDIUM_HIGH
+
+who:
+POSSIBLE_FIT
+
+whoConfidence:
+MEDIUM
+
+groundTruthStatus:
+GROUND_TRUTH_CONFIRMED
+
+reviewAction:
+APPROVE
+
+Reason:
+Safe Security sells cyber-risk management software such as CRQ, TPRM and CTEM, which can complement SOC operations. No operated 24x7 SOC/MDR is evidenced. It could consume monitoring for its own operations, but sophisticated internal security capability makes outsourcing uncertain.
+
+--------------------------------------------------
+15. TAC Security
+--------------------------------------------------
+
+domainKey:
+MANAGED_SOC
+
+identity:
+CORRECT
+
+commercialRole:
+ADJACENT_VENDOR
+
+commercialRoleConfidence:
+HIGH
+
+who:
+POSSIBLE_FIT
+
+whoConfidence:
+MEDIUM
+
+groundTruthStatus:
+GROUND_TRUTH_CONFIRMED
+
+reviewAction:
+APPROVE
+
+Reason:
+TAC Security focuses on vulnerability management, AppSec, compliance and testing. SOC 2 references are compliance-related rather than evidence of an operated Security Operations Center. Its services complement Managed SOC rather than materially substitute it.
+
+--------------------------------------------------
+16. Appsecco
+--------------------------------------------------
+
+domainKey:
+MANAGED_SOC
+
+identity:
+CORRECT
+
+commercialRole:
+ADJACENT_VENDOR
+
+commercialRoleConfidence:
+HIGH
+
+who:
+POSSIBLE_FIT
+
+whoConfidence:
+MEDIUM
+
+groundTruthStatus:
+GROUND_TRUTH_CONFIRMED
+
+reviewAction:
+APPROVE
+
+Reason:
+Appsecco provides human-led product and cloud security testing, which complements continuous security monitoring. No 24x7 SOC/MDR offering is established. India nexus and company scale are only partially evidenced, so POSSIBLE_FIT is appropriate.
+
+==================================================
+6. EXPECTED COUNTS
+==================================================
+
+Total:
+16
+
+GROUND_TRUTH_CONFIRMED:
+16
+
+AMBIGUOUS:
+0
+
+INSUFFICIENT:
+0
+
+WRONG_IDENTITY:
+0
+
+Strict metric eligible:
+16
+
+DIGIPUUSH:
+8
+
+MANAGED_SOC:
+8
+
+==================================================
+7. EXPECTED COMMERCIAL ROLE DISTRIBUTION
+==================================================
+
+POTENTIAL_BUYER:
+8
+
+SELLER_COMPETITOR:
+5
+
+ADJACENT_VENDOR:
+3
+
+PARTNER_POSSIBLE:
+0
+
+UNKNOWN:
+0
+
+Verify these counts from the decisions above.
+
+==================================================
+8. EXPECTED WHO DISTRIBUTION
+==================================================
+
+LIKELY_FIT:
+6
+
+POSSIBLE_FIT:
+5
+
+LIKELY_NOT_FIT:
+5
+
+INSUFFICIENT_DATA:
+0
+
+Verify these counts from the decisions above.
+
+==================================================
+9. HUMAN CORRECTIONS
+==================================================
+
+Expected corrected companies:
+
+4
+
+ThatWare
+Scalenut
+CtrlS Datacenters
+ESDS Software Solution
+
+All four corrections are specifically:
+
+Machine:
+SELLER_COMPETITOR / LIKELY_FIT
+
+Human:
+SELLER_COMPETITOR / LIKELY_NOT_FIT
+
+CommercialRole did NOT change.
+
+WHO changed because a resolved direct competitor must not remain in the buyer-fit shortlist.
+
+==================================================
+10. PRESERVE MACHINE PROPOSALS
+==================================================
+
+CRITICAL:
+
+Do not rewrite independent machine proposals.
+
+For every record preserve separately:
+
+independentProposal
+humanTruth
+
+For the four corrected records, the frozen artifact must visibly show:
+
+machine WHO = LIKELY_FIT
+
+human WHO = LIKELY_NOT_FIT
+
+Do not make the independent evaluator appear retrospectively correct.
+
+==================================================
+11. GOLD ARTIFACT
+==================================================
+
+Create immutable:
+
+evaluations/jyra-holdout-v2/JYRA_BLIND_HOLDOUT_GOLD_V2.json
+
+Must contain exactly 16 records.
+
+Preferred structure:
+
+{
+  holdoutCompanyId,
+  domainKey,
+  company,
+  domain,
+  targetOffering,
+
+  independentProposal: {...},
+
+  humanTruth: {
+    identity,
+    commercialRole,
+    commercialRoleConfidence,
+    who,
+    whoConfidence,
+    groundTruthStatus
+  },
+
+  humanReview: {
+    action,
+    reviewer,
+    reviewedAt,
+    reason,
+    machineProposalChanged
+  },
+
+  evidenceIds
+}
+
+Reuse repository conventions where appropriate.
+
+==================================================
+12. IMMUTABILITY
+==================================================
+
+If:
+
+JYRA_BLIND_HOLDOUT_GOLD_V2.json
+
+already exists:
+
+calculate checksum.
+
+If contents exactly match:
+report idempotent success.
+
+If contents differ:
+HARD FAIL.
+
+DO NOT overwrite V2.
+
+Any later truth change requires a new gold version.
+
+==================================================
+13. HUMAN REVIEW CSV
+==================================================
+
+Populate:
+
+evaluations/jyra-holdout-v2/HOLDOUT_V2_HUMAN_REVIEW.csv
+
+Preserve all existing independent/machine columns.
+
+Fill:
+
+humanIdentity
+humanCommercialRole
+humanCommercialRoleConfidence
+humanWho
+humanWhoConfidence
+humanGroundTruthStatus
+humanReviewAction
+humanReviewReason
+reviewer
+reviewedAt
+goldVersion
+
+For corrected records preserve machine/human differences.
+
+==================================================
+14. GOLD MANIFEST
+==================================================
+
+Create:
+
+evaluations/jyra-holdout-v2/JYRA_BLIND_HOLDOUT_GOLD_V2.manifest.json
+
+Include at minimum:
+
+{
+  "goldVersion": "JYRA_BLIND_HOLDOUT_GOLD_V2",
+  "sourceHoldout": "JYRA_BLIND_HOLDOUT_V2",
+  "sourceCohortSha256": "8a72f2e6302e0fcbfc5a8b70815acc2c88b53a66eb23ad688e551bfeefd1d314",
+  "cohortSize": 16,
+  "digipuushCount": 8,
+  "managedSocCount": 8,
+  "confirmedCount": 16,
+  "ambiguousCount": 0,
+  "insufficientCount": 0,
+  "wrongIdentityCount": 0,
+  "strictMetricEligible": 16,
+  "humanCorrections": 4,
+  "reviewer": "Anil Gorraladaku",
+  "reviewType": "HUMAN_BLIND_REVIEW",
+  "jyraPredictionsRunBeforeFreeze": false,
+  "jyraPredictionsExposedBeforeFreeze": false,
+  "jyraComparisonRunBeforeFreeze": false,
+  "externalProviderCallsDuringFreeze": 0,
+  "goldFile": "...",
+  "humanReviewFile": "...",
+  "sha256": "..."
+}
+
+Also include source artifact checksums where practical.
+
+==================================================
+15. BLINDNESS VALIDATION
+==================================================
+
+Before completing the freeze verify:
+
+Current JYRA predictions were NOT run before human review.
+
+Current JYRA CommercialRole was NOT exposed.
+
+Current JYRA WHO was NOT exposed.
+
+Current JYRA confidence/rationale was NOT exposed.
+
+No comparison against JYRA was performed before freeze.
+
+Clean-room machine proposals are evaluation artifacts and are not current JYRA predictions.
+
+Manifest must state:
+
+jyraPredictionsRunBeforeFreeze = false
+
+jyraPredictionsExposedBeforeFreeze = false
+
+jyraComparisonRunBeforeFreeze = false
+
+If contamination is found:
+
+HARD FAIL.
+
+==================================================
+16. DO NOT RUN JYRA
+==================================================
+
+Task #115 must NOT:
+
+run current JYRA
+reveal cached JYRA predictions
+calculate JYRA accuracy
+calculate confusion matrices
+calculate buyer precision
+calculate buyer recall
+compare JYRA against gold
+rerun research
+change any labels
+
+That is Task #116.
+
+==================================================
+17. NO JYRA CHANGES
+==================================================
+
+JYRA runtime code changes:
+0
+
+Prompt changes:
+0
+
+Model changes:
+0
+
+Threshold changes:
+0
+
+Policy changes:
+0
+
+Provider routing changes:
+0
+
+ICP changes:
+0
+
+Business Twin changes:
+0
+
+Signal pack changes:
+0
+
+Database schema changes:
+0
+
+Production changes:
+0
+
+==================================================
+18. PRESERVE HISTORICAL TASKS
+==================================================
+
+Task #112 prediction SHA must remain:
+
+309c191d47a9008795ff58a7bdb84875f7198bd61af495fb676882be8e73c7ff
+
+Do not alter or rescore Task #112.
+
+Do not alter Task #113 artifacts.
+
+Task #112 remains the historical pre-Task-113 blind failure.
+
+==================================================
+19. REQUIRED TESTS
+==================================================
+
+Assert:
+
+A. cohort = 16
+
+B. DigiPuush = 8
+
+C. Managed SOC = 8
+
+D. cohort SHA matches expected
+
+E. all holdoutCompanyId unique
+
+F. 16 identities CORRECT
+
+G. 16 GROUND_TRUTH_CONFIRMED
+
+H. strict eligible = 16
+
+I. human corrections = 4
+
+J. CommercialRole distribution:
+8 POTENTIAL_BUYER
+5 SELLER_COMPETITOR
+3 ADJACENT_VENDOR
+
+K. WHO distribution:
+6 LIKELY_FIT
+5 POSSIBLE_FIT
+5 LIKELY_NOT_FIT
+
+L. ThatWare WHO:
+LIKELY_NOT_FIT
+
+M. Scalenut WHO:
+LIKELY_NOT_FIT
+
+N. CtrlS WHO:
+LIKELY_NOT_FIT
+
+O. ESDS WHO:
+LIKELY_NOT_FIT
+
+P. machine proposals preserved unchanged
+
+Q. human/machine differences visible
+
+R. no JYRA prediction run before freeze
+
+S. no JYRA prediction exposed before freeze
+
+T. no comparison before freeze
+
+U. no external provider calls during freeze
+
+V. production unchanged
+
+W. Task #112 prediction SHA unchanged
+
+X. freeze idempotency PASS
+
+==================================================
+20. IMPORTANT SEMANTIC INVARIANT
+==================================================
+
+Record the following evaluation invariant in the manifest/report:
+
+CommercialRole and WHO are conceptually separate assessments.
+
+However, for final buyer-targeting output:
+
+A resolved SELLER_COMPETITOR is deterministically excluded from buyer targeting and therefore resolves to:
+
+WHO = LIKELY_NOT_FIT
+
+This is consistent with the existing Task #106 JYRA policy and prevents direct competitors from appearing in the buyer shortlist.
+
+Do not reinterpret this as:
+
+"competitor means poor ICP structure."
+
+It means:
+
+"competitor is excluded from actionable buyer targeting."
+
+==================================================
+21. OUTPUT ARTIFACTS
+==================================================
+
+Required:
+
+evaluations/jyra-holdout-v2/JYRA_BLIND_HOLDOUT_GOLD_V2.json
+
+evaluations/jyra-holdout-v2/JYRA_BLIND_HOLDOUT_GOLD_V2.manifest.json
+
+updated:
+evaluations/jyra-holdout-v2/HOLDOUT_V2_HUMAN_REVIEW.csv
+
+Optional:
+evaluations/jyra-holdout-v2/TASK_115_GOLD_FREEZE_REPORT.md
+
+==================================================
+22. FINAL RESPONSE FORMAT
+==================================================
+
+Return exactly:
+
+TASK #115 — BLIND HOLDOUT V2 GOLD FREEZE
+
+Status:
+PASS / FAIL
+
+Gold version:
+JYRA_BLIND_HOLDOUT_GOLD_V2
+
+Source holdout:
+JYRA_BLIND_HOLDOUT_V2
+
+Cohort:
+16
+
+DigiPuush:
+8
+
+Managed SOC:
+8
+
+Confirmed:
+16
+
+Ambiguous:
+0
+
+Insufficient:
+0
+
+Wrong identity:
+0
+
+Strict metric eligible:
+16
+
+Human corrections:
+4
+
+CommercialRole distribution:
+POTENTIAL_BUYER: 8
+SELLER_COMPETITOR: 5
+ADJACENT_VENDOR: 3
+PARTNER_POSSIBLE: 0
+UNKNOWN: 0
+
+WHO distribution:
+LIKELY_FIT: 6
+POSSIBLE_FIT: 5
+LIKELY_NOT_FIT: 5
+INSUFFICIENT_DATA: 0
+
+Corrections:
+- ThatWare: WHO LIKELY_FIT → LIKELY_NOT_FIT
+- Scalenut: WHO LIKELY_FIT → LIKELY_NOT_FIT
+- CtrlS Datacenters: WHO LIKELY_FIT → LIKELY_NOT_FIT
+- ESDS Software Solution: WHO LIKELY_FIT → LIKELY_NOT_FIT
+
+Cohort SHA-256:
+8a72f2e6302e0fcbfc5a8b70815acc2c88b53a66eb23ad688e551bfeefd1d314
+
+Gold file:
+<path>
+
+Gold SHA-256:
+<actual checksum>
+
+Human review file:
+<path>
+
+Manifest:
+<path>
+
+JYRA predictions run before freeze:
+NO
+
+JYRA predictions exposed before freeze:
+NO
+
+JYRA comparison run before freeze:
+NO
+
+External provider calls:
+0
+
+Production modified:
+NO
+
+Runtime code changes:
+0
+
+Prompt changes:
+0
+
+Task #112 prediction SHA unchanged:
+YES / NO
+
+Tests:
+x/x
+
+Freeze idempotency:
+PASS / FAIL
+
+NEXT STEP:
+
+State only:
+
+"Blind Holdout V2 gold is frozen. Task #116 may now run the current post-Task-113 JYRA system against the 16 unseen companies."
+
+Do NOT perform Task #116 until approved.
