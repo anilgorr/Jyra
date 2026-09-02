@@ -1,0 +1,101 @@
+{
+  "benchmark": "JYRA_BLIND_HOLDOUT_V2",
+  "phase": "A",
+  "status": "FROZEN_BEFORE_GOLD_ACCESS",
+  "predictionPath": "evaluations/jyra-holdout-v2/TASK_116_JYRA_PREDICTIONS.json",
+  "predictionCount": 16,
+  "artifactSha256": "ae860db8d52bdd9db751855dfd48479d82641a97d7a669f63e27e687e1d2cd60",
+  "sourceCohortPath": "evaluations/jyra-holdout-v2/HOLDOUT_V2_COHORT.json",
+  "sourceCohortSha256": "8a72f2e6302e0fcbfc5a8b70815acc2c88b53a66eb23ad688e551bfeefd1d314",
+  "runMetadata": {
+    "runId": "task116-phase-a-db8fa513-d658-41d8-95bf-1742adabf616",
+    "environment": "development",
+    "startedAt": "2026-09-02T09:54:11.959Z",
+    "completedAt": "2026-09-02T09:58:18.239Z",
+    "projectIds": {
+      "DIGIPUUSH": "057667fc-3a54-4dd3-ad2f-2ab43e984b62",
+      "MANAGED_SOC": "92fa6f40-285c-481c-b48a-cdb0033ac3ca"
+    },
+    "maximumTotalExternalProviderSpendUsd": 8,
+    "maximumExternalProviderCallsPerCompany": 15,
+    "maximumObservedProviderCallsPerCompany": 2,
+    "runtimeCodeChanges": 0,
+    "promptChanges": 0,
+    "modelChanges": 0,
+    "thresholdChanges": 0,
+    "providerRoutingChanges": 0,
+    "identityPolicyChanges": 0,
+    "commercialRolePolicyChanges": 0,
+    "whoPolicyChanges": 0,
+    "icpChanges": 0,
+    "businessTwinChanges": 0,
+    "signalPackChanges": 0
+  },
+  "blindness": {
+    "goldAccessedDuringPrediction": false,
+    "humanReviewAccessedDuringPrediction": false,
+    "cleanRoomEvidenceAccessedDuringPrediction": false,
+    "cleanRoomProposalAccessedDuringPrediction": false,
+    "task114EvidenceAccessedDuringPrediction": false,
+    "task112PredictionsAccessed": false,
+    "task115ArtifactsAccessed": false,
+    "task116FinalEvaluationAccessed": false,
+    "manualWebResearchUsed": false
+  },
+  "providerUsage": {
+    "externalResearchInitiatedCompanies": 16,
+    "researchBlockedBeforeProviderAcquisition": 0,
+    "calls": 21,
+    "byProvider": {
+      "b220e720-6d21-4c7a-badf-3aec920febca": 21
+    },
+    "byCapability": {
+      "WEB_SEARCH": 21
+    },
+    "knownActualCostUsd": 0.28500000000000003,
+    "knownEstimatedCostUsd": 0.14700000000000002,
+    "unknownActualCostCalls": 0,
+    "semanticModel": "gpt-5-mini",
+    "semanticCalls": 11,
+    "semanticActualCostUsd": null,
+    "semanticCostStatus": "NOT_REPORTED_BY_MODEL_RESPONSE",
+    "semanticTokens": {
+      "prompt": 16077,
+      "completion": 12329,
+      "total": 28406,
+      "reasoning": 8320
+    }
+  },
+  "outcomes": {
+    "identityInitial": {
+      "RESEARCH_SAFE": 16
+    },
+    "identityFinal": {
+      "ATTRIBUTION_SAFE": 11,
+      "UNSAFE": 5
+    },
+    "identityTransitions": {
+      "RESEARCH_SAFE->ATTRIBUTION_SAFE": 11,
+      "RESEARCH_SAFE->UNSAFE": 5
+    },
+    "mciSufficient": 11,
+    "companyUnderstanding": 11,
+    "commercialRoleResolved": 11,
+    "whoResolved": 8,
+    "blockerRecords": 0,
+    "reasonCodes": {
+      "ADJACENT_VENDOR_NOT_ELIGIBLE": 3,
+      "COMPETITOR_NOT_ELIGIBLE": 5,
+      "ICP_REQUIREMENTS_MISSING": 1,
+      "IDENTITY_COLLISION": 5,
+      "IDENTITY_RESEARCH_BOOTSTRAP_ALLOWED": 16,
+      "READY_FOR_SIGNAL_RESEARCH": 2,
+      "VERIFIED_IDENTIFIER": 11
+    }
+  },
+  "immutability": {
+    "predictionsHashedBeforeManifest": true,
+    "predictionsMustNotBeMutated": true,
+    "companiesMustNotBeRerun": true
+  }
+}
