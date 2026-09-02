@@ -1,0 +1,1277 @@
+{
+  "holdout": "JYRA_SMALL_HOLDOUT_V1",
+  "runId": "273bc87a-220a-4663-80ef-38ef04efed13",
+  "createdAt": "2026-09-02T08:30:26.151Z",
+  "predictions": [
+    {
+      "holdoutCompanyId": "98402e65-f817-467d-9237-496a797a5fba",
+      "domainKey": "wingify.com",
+      "company": "Wingify",
+      "targetDomain": "DIGIPUUSH",
+      "identity": {
+        "status": "CONFIRMED",
+        "confidence": null,
+        "permission": {
+          "version": "architecture-v1-identity-actions-v1",
+          "trustLevel": "UNSAFE",
+          "reasonCode": "IDENTITY_EVIDENCE_INSUFFICIENT",
+          "canPublicProfileResearch": false,
+          "canBuildProvisionalProfile": false,
+          "canRunCompanyUnderstanding": false,
+          "canRunCommercialRole": false,
+          "canAttachCanonicalFacts": false,
+          "canGenerateSignals": false,
+          "canRankOpportunity": false,
+          "canEnrichContacts": false
+        },
+        "reason": "EXACT_DOMAIN"
+      },
+      "MCI": {
+        "sufficient": false,
+        "reason": "safe company identity",
+        "evidenceIds": []
+      },
+      "CompanyUnderstanding": {
+        "primaryBusiness": null,
+        "productsServices": [],
+        "businessModel": "UNKNOWN",
+        "industry": null,
+        "geography": {
+          "city": null,
+          "region": null,
+          "country": null,
+          "countryIso2": null
+        },
+        "employeeSize": {
+          "exact": null,
+          "min": null,
+          "max": null
+        },
+        "technologyFacts": [],
+        "confidence": 0,
+        "evidenceIds": [
+          "2b626346-689d-453f-87f3-7676e46db2fc"
+        ]
+      },
+      "CommercialRole": {
+        "role": "UNKNOWN",
+        "confidence": null,
+        "reason": "Current identity evidence does not permit public profile research or semantic attribution.",
+        "evidenceIds": [],
+        "policyVersion": "commercial-relationship-v2"
+      },
+      "WHO": {
+        "result": "MISSING",
+        "confidence": null,
+        "reason": "Current identity evidence does not permit public profile research or semantic attribution.",
+        "resolutionType": null,
+        "criteria": null,
+        "evidenceIds": []
+      },
+      "orchestration": {
+        "status": "BLOCKED",
+        "stageOutcomes": {
+          "identity": "RESOLVED",
+          "minimumIntelligence": "UNSAFE_IDENTITY",
+          "companyUnderstanding": "NOT_RUN",
+          "commercialRole": "UNKNOWN",
+          "who": "MISSING"
+        },
+        "reasonCodes": [
+          "IDENTITY_EVIDENCE_INSUFFICIENT"
+        ],
+        "researchActions": [],
+        "blockers": [
+          "safe company identity"
+        ]
+      },
+      "providerUsage": {
+        "calls": 0,
+        "knownCost": 0,
+        "records": []
+      },
+      "modelVersions": {
+        "companyUnderstanding": "gpt-5-mini"
+      },
+      "promptVersions": {
+        "companyUnderstanding": "fix08-company-understanding-v5"
+      },
+      "policyVersions": {
+        "controlPlane": "architecture-v1-control-plane-v3",
+        "minimumIntelligence": "architecture-v1-minimum-company-intelligence-v2",
+        "normalization": "fix07-v1",
+        "commercialRelationship": "commercial-relationship-v2",
+        "commercialRoleWho": "commercial-role-who-exclusion-v1",
+        "icpReadyFacts": "icp-ready-company-facts-v1"
+      },
+      "runId": "273bc87a-220a-4663-80ef-38ef04efed13",
+      "createdAt": "2026-09-02T08:30:26.151Z"
+    },
+    {
+      "holdoutCompanyId": "661718df-9356-4c13-b091-917215b2c9b3",
+      "domainKey": "druva.com",
+      "company": "Druva",
+      "targetDomain": "DIGIPUUSH",
+      "identity": {
+        "status": "CONFIRMED",
+        "confidence": null,
+        "permission": {
+          "version": "architecture-v1-identity-actions-v1",
+          "trustLevel": "UNSAFE",
+          "reasonCode": "IDENTITY_EVIDENCE_INSUFFICIENT",
+          "canPublicProfileResearch": false,
+          "canBuildProvisionalProfile": false,
+          "canRunCompanyUnderstanding": false,
+          "canRunCommercialRole": false,
+          "canAttachCanonicalFacts": false,
+          "canGenerateSignals": false,
+          "canRankOpportunity": false,
+          "canEnrichContacts": false
+        },
+        "reason": "EXACT_DOMAIN"
+      },
+      "MCI": {
+        "sufficient": false,
+        "reason": "safe company identity",
+        "evidenceIds": []
+      },
+      "CompanyUnderstanding": {
+        "primaryBusiness": null,
+        "productsServices": [],
+        "businessModel": "UNKNOWN",
+        "industry": null,
+        "geography": {
+          "city": null,
+          "region": null,
+          "country": null,
+          "countryIso2": null
+        },
+        "employeeSize": {
+          "exact": null,
+          "min": null,
+          "max": null
+        },
+        "technologyFacts": [],
+        "confidence": 0,
+        "evidenceIds": [
+          "32f4d382-6095-458c-8ea7-a3565f84a04e"
+        ]
+      },
+      "CommercialRole": {
+        "role": "UNKNOWN",
+        "confidence": null,
+        "reason": "Current identity evidence does not permit public profile research or semantic attribution.",
+        "evidenceIds": [],
+        "policyVersion": "commercial-relationship-v2"
+      },
+      "WHO": {
+        "result": "MISSING",
+        "confidence": null,
+        "reason": "Current identity evidence does not permit public profile research or semantic attribution.",
+        "resolutionType": null,
+        "criteria": null,
+        "evidenceIds": []
+      },
+      "orchestration": {
+        "status": "BLOCKED",
+        "stageOutcomes": {
+          "identity": "RESOLVED",
+          "minimumIntelligence": "UNSAFE_IDENTITY",
+          "companyUnderstanding": "NOT_RUN",
+          "commercialRole": "UNKNOWN",
+          "who": "MISSING"
+        },
+        "reasonCodes": [
+          "IDENTITY_EVIDENCE_INSUFFICIENT"
+        ],
+        "researchActions": [],
+        "blockers": [
+          "safe company identity"
+        ]
+      },
+      "providerUsage": {
+        "calls": 0,
+        "knownCost": 0,
+        "records": []
+      },
+      "modelVersions": {
+        "companyUnderstanding": "gpt-5-mini"
+      },
+      "promptVersions": {
+        "companyUnderstanding": "fix08-company-understanding-v5"
+      },
+      "policyVersions": {
+        "controlPlane": "architecture-v1-control-plane-v3",
+        "minimumIntelligence": "architecture-v1-minimum-company-intelligence-v2",
+        "normalization": "fix07-v1",
+        "commercialRelationship": "commercial-relationship-v2",
+        "commercialRoleWho": "commercial-role-who-exclusion-v1",
+        "icpReadyFacts": "icp-ready-company-facts-v1"
+      },
+      "runId": "273bc87a-220a-4663-80ef-38ef04efed13",
+      "createdAt": "2026-09-02T08:30:26.151Z"
+    },
+    {
+      "holdoutCompanyId": "47304732-9065-4603-b736-2009f237f22c",
+      "domainKey": "moengage.com",
+      "company": "MoEngage",
+      "targetDomain": "DIGIPUUSH",
+      "identity": {
+        "status": "CONFIRMED",
+        "confidence": null,
+        "permission": {
+          "version": "architecture-v1-identity-actions-v1",
+          "trustLevel": "UNSAFE",
+          "reasonCode": "IDENTITY_EVIDENCE_INSUFFICIENT",
+          "canPublicProfileResearch": false,
+          "canBuildProvisionalProfile": false,
+          "canRunCompanyUnderstanding": false,
+          "canRunCommercialRole": false,
+          "canAttachCanonicalFacts": false,
+          "canGenerateSignals": false,
+          "canRankOpportunity": false,
+          "canEnrichContacts": false
+        },
+        "reason": "EXACT_DOMAIN"
+      },
+      "MCI": {
+        "sufficient": false,
+        "reason": "safe company identity",
+        "evidenceIds": []
+      },
+      "CompanyUnderstanding": {
+        "primaryBusiness": null,
+        "productsServices": [],
+        "businessModel": "UNKNOWN",
+        "industry": null,
+        "geography": {
+          "city": null,
+          "region": null,
+          "country": null,
+          "countryIso2": null
+        },
+        "employeeSize": {
+          "exact": null,
+          "min": null,
+          "max": null
+        },
+        "technologyFacts": [],
+        "confidence": 0,
+        "evidenceIds": [
+          "5cd49212-b7a1-4a7c-8bf1-34a82acd0183"
+        ]
+      },
+      "CommercialRole": {
+        "role": "UNKNOWN",
+        "confidence": null,
+        "reason": "Current identity evidence does not permit public profile research or semantic attribution.",
+        "evidenceIds": [],
+        "policyVersion": "commercial-relationship-v2"
+      },
+      "WHO": {
+        "result": "MISSING",
+        "confidence": null,
+        "reason": "Current identity evidence does not permit public profile research or semantic attribution.",
+        "resolutionType": null,
+        "criteria": null,
+        "evidenceIds": []
+      },
+      "orchestration": {
+        "status": "BLOCKED",
+        "stageOutcomes": {
+          "identity": "RESOLVED",
+          "minimumIntelligence": "UNSAFE_IDENTITY",
+          "companyUnderstanding": "NOT_RUN",
+          "commercialRole": "UNKNOWN",
+          "who": "MISSING"
+        },
+        "reasonCodes": [
+          "IDENTITY_EVIDENCE_INSUFFICIENT"
+        ],
+        "researchActions": [],
+        "blockers": [
+          "safe company identity"
+        ]
+      },
+      "providerUsage": {
+        "calls": 0,
+        "knownCost": 0,
+        "records": []
+      },
+      "modelVersions": {
+        "companyUnderstanding": "gpt-5-mini"
+      },
+      "promptVersions": {
+        "companyUnderstanding": "fix08-company-understanding-v5"
+      },
+      "policyVersions": {
+        "controlPlane": "architecture-v1-control-plane-v3",
+        "minimumIntelligence": "architecture-v1-minimum-company-intelligence-v2",
+        "normalization": "fix07-v1",
+        "commercialRelationship": "commercial-relationship-v2",
+        "commercialRoleWho": "commercial-role-who-exclusion-v1",
+        "icpReadyFacts": "icp-ready-company-facts-v1"
+      },
+      "runId": "273bc87a-220a-4663-80ef-38ef04efed13",
+      "createdAt": "2026-09-02T08:30:26.151Z"
+    },
+    {
+      "holdoutCompanyId": "976cefd3-7421-45e4-8fd4-530be6339e84",
+      "domainKey": "uplers.com",
+      "company": "Uplers",
+      "targetDomain": "DIGIPUUSH",
+      "identity": {
+        "status": "CONFIRMED",
+        "confidence": null,
+        "permission": {
+          "version": "architecture-v1-identity-actions-v1",
+          "trustLevel": "UNSAFE",
+          "reasonCode": "IDENTITY_EVIDENCE_INSUFFICIENT",
+          "canPublicProfileResearch": false,
+          "canBuildProvisionalProfile": false,
+          "canRunCompanyUnderstanding": false,
+          "canRunCommercialRole": false,
+          "canAttachCanonicalFacts": false,
+          "canGenerateSignals": false,
+          "canRankOpportunity": false,
+          "canEnrichContacts": false
+        },
+        "reason": "EXACT_DOMAIN"
+      },
+      "MCI": {
+        "sufficient": false,
+        "reason": "safe company identity",
+        "evidenceIds": []
+      },
+      "CompanyUnderstanding": {
+        "primaryBusiness": null,
+        "productsServices": [],
+        "businessModel": "UNKNOWN",
+        "industry": null,
+        "geography": {
+          "city": null,
+          "region": null,
+          "country": null,
+          "countryIso2": null
+        },
+        "employeeSize": {
+          "exact": null,
+          "min": null,
+          "max": null
+        },
+        "technologyFacts": [],
+        "confidence": 0,
+        "evidenceIds": [
+          "fc8cee8d-fbff-4966-b6db-c9582cb03f8c"
+        ]
+      },
+      "CommercialRole": {
+        "role": "UNKNOWN",
+        "confidence": null,
+        "reason": "Current identity evidence does not permit public profile research or semantic attribution.",
+        "evidenceIds": [],
+        "policyVersion": "commercial-relationship-v2"
+      },
+      "WHO": {
+        "result": "MISSING",
+        "confidence": null,
+        "reason": "Current identity evidence does not permit public profile research or semantic attribution.",
+        "resolutionType": null,
+        "criteria": null,
+        "evidenceIds": []
+      },
+      "orchestration": {
+        "status": "BLOCKED",
+        "stageOutcomes": {
+          "identity": "RESOLVED",
+          "minimumIntelligence": "UNSAFE_IDENTITY",
+          "companyUnderstanding": "NOT_RUN",
+          "commercialRole": "UNKNOWN",
+          "who": "MISSING"
+        },
+        "reasonCodes": [
+          "IDENTITY_EVIDENCE_INSUFFICIENT"
+        ],
+        "researchActions": [],
+        "blockers": [
+          "safe company identity"
+        ]
+      },
+      "providerUsage": {
+        "calls": 0,
+        "knownCost": 0,
+        "records": []
+      },
+      "modelVersions": {
+        "companyUnderstanding": "gpt-5-mini"
+      },
+      "promptVersions": {
+        "companyUnderstanding": "fix08-company-understanding-v5"
+      },
+      "policyVersions": {
+        "controlPlane": "architecture-v1-control-plane-v3",
+        "minimumIntelligence": "architecture-v1-minimum-company-intelligence-v2",
+        "normalization": "fix07-v1",
+        "commercialRelationship": "commercial-relationship-v2",
+        "commercialRoleWho": "commercial-role-who-exclusion-v1",
+        "icpReadyFacts": "icp-ready-company-facts-v1"
+      },
+      "runId": "273bc87a-220a-4663-80ef-38ef04efed13",
+      "createdAt": "2026-09-02T08:30:26.151Z"
+    },
+    {
+      "holdoutCompanyId": "1b05ff96-47fa-4624-81da-4a2283c1b083",
+      "domainKey": "writesonic.com",
+      "company": "Writesonic",
+      "targetDomain": "DIGIPUUSH",
+      "identity": {
+        "status": "CONFIRMED",
+        "confidence": null,
+        "permission": {
+          "version": "architecture-v1-identity-actions-v1",
+          "trustLevel": "UNSAFE",
+          "reasonCode": "IDENTITY_EVIDENCE_INSUFFICIENT",
+          "canPublicProfileResearch": false,
+          "canBuildProvisionalProfile": false,
+          "canRunCompanyUnderstanding": false,
+          "canRunCommercialRole": false,
+          "canAttachCanonicalFacts": false,
+          "canGenerateSignals": false,
+          "canRankOpportunity": false,
+          "canEnrichContacts": false
+        },
+        "reason": "EXACT_DOMAIN"
+      },
+      "MCI": {
+        "sufficient": false,
+        "reason": "safe company identity",
+        "evidenceIds": []
+      },
+      "CompanyUnderstanding": {
+        "primaryBusiness": null,
+        "productsServices": [],
+        "businessModel": "UNKNOWN",
+        "industry": null,
+        "geography": {
+          "city": null,
+          "region": null,
+          "country": null,
+          "countryIso2": null
+        },
+        "employeeSize": {
+          "exact": null,
+          "min": null,
+          "max": null
+        },
+        "technologyFacts": [],
+        "confidence": 0,
+        "evidenceIds": [
+          "67596876-8135-438b-9555-fa884da66c76"
+        ]
+      },
+      "CommercialRole": {
+        "role": "UNKNOWN",
+        "confidence": null,
+        "reason": "Current identity evidence does not permit public profile research or semantic attribution.",
+        "evidenceIds": [],
+        "policyVersion": "commercial-relationship-v2"
+      },
+      "WHO": {
+        "result": "MISSING",
+        "confidence": null,
+        "reason": "Current identity evidence does not permit public profile research or semantic attribution.",
+        "resolutionType": null,
+        "criteria": null,
+        "evidenceIds": []
+      },
+      "orchestration": {
+        "status": "BLOCKED",
+        "stageOutcomes": {
+          "identity": "RESOLVED",
+          "minimumIntelligence": "UNSAFE_IDENTITY",
+          "companyUnderstanding": "NOT_RUN",
+          "commercialRole": "UNKNOWN",
+          "who": "MISSING"
+        },
+        "reasonCodes": [
+          "IDENTITY_EVIDENCE_INSUFFICIENT"
+        ],
+        "researchActions": [],
+        "blockers": [
+          "safe company identity"
+        ]
+      },
+      "providerUsage": {
+        "calls": 0,
+        "knownCost": 0,
+        "records": []
+      },
+      "modelVersions": {
+        "companyUnderstanding": "gpt-5-mini"
+      },
+      "promptVersions": {
+        "companyUnderstanding": "fix08-company-understanding-v5"
+      },
+      "policyVersions": {
+        "controlPlane": "architecture-v1-control-plane-v3",
+        "minimumIntelligence": "architecture-v1-minimum-company-intelligence-v2",
+        "normalization": "fix07-v1",
+        "commercialRelationship": "commercial-relationship-v2",
+        "commercialRoleWho": "commercial-role-who-exclusion-v1",
+        "icpReadyFacts": "icp-ready-company-facts-v1"
+      },
+      "runId": "273bc87a-220a-4663-80ef-38ef04efed13",
+      "createdAt": "2026-09-02T08:30:26.151Z"
+    },
+    {
+      "holdoutCompanyId": "b869a2e2-62c7-4f98-abc3-063f4132092e",
+      "domainKey": "thesmarketers.com",
+      "company": "Smarketers",
+      "targetDomain": "DIGIPUUSH",
+      "identity": {
+        "status": "CONFIRMED",
+        "confidence": null,
+        "permission": {
+          "version": "architecture-v1-identity-actions-v1",
+          "trustLevel": "UNSAFE",
+          "reasonCode": "IDENTITY_EVIDENCE_INSUFFICIENT",
+          "canPublicProfileResearch": false,
+          "canBuildProvisionalProfile": false,
+          "canRunCompanyUnderstanding": false,
+          "canRunCommercialRole": false,
+          "canAttachCanonicalFacts": false,
+          "canGenerateSignals": false,
+          "canRankOpportunity": false,
+          "canEnrichContacts": false
+        },
+        "reason": "EXACT_DOMAIN"
+      },
+      "MCI": {
+        "sufficient": false,
+        "reason": "safe company identity",
+        "evidenceIds": []
+      },
+      "CompanyUnderstanding": {
+        "primaryBusiness": null,
+        "productsServices": [],
+        "businessModel": "UNKNOWN",
+        "industry": null,
+        "geography": {
+          "city": null,
+          "region": null,
+          "country": null,
+          "countryIso2": null
+        },
+        "employeeSize": {
+          "exact": null,
+          "min": null,
+          "max": null
+        },
+        "technologyFacts": [],
+        "confidence": 0,
+        "evidenceIds": [
+          "add9dc23-7fa8-457f-9e25-93abb04b5576"
+        ]
+      },
+      "CommercialRole": {
+        "role": "UNKNOWN",
+        "confidence": null,
+        "reason": "Current identity evidence does not permit public profile research or semantic attribution.",
+        "evidenceIds": [],
+        "policyVersion": "commercial-relationship-v2"
+      },
+      "WHO": {
+        "result": "MISSING",
+        "confidence": null,
+        "reason": "Current identity evidence does not permit public profile research or semantic attribution.",
+        "resolutionType": null,
+        "criteria": null,
+        "evidenceIds": []
+      },
+      "orchestration": {
+        "status": "BLOCKED",
+        "stageOutcomes": {
+          "identity": "RESOLVED",
+          "minimumIntelligence": "UNSAFE_IDENTITY",
+          "companyUnderstanding": "NOT_RUN",
+          "commercialRole": "UNKNOWN",
+          "who": "MISSING"
+        },
+        "reasonCodes": [
+          "IDENTITY_EVIDENCE_INSUFFICIENT"
+        ],
+        "researchActions": [],
+        "blockers": [
+          "safe company identity"
+        ]
+      },
+      "providerUsage": {
+        "calls": 0,
+        "knownCost": 0,
+        "records": []
+      },
+      "modelVersions": {
+        "companyUnderstanding": "gpt-5-mini"
+      },
+      "promptVersions": {
+        "companyUnderstanding": "fix08-company-understanding-v5"
+      },
+      "policyVersions": {
+        "controlPlane": "architecture-v1-control-plane-v3",
+        "minimumIntelligence": "architecture-v1-minimum-company-intelligence-v2",
+        "normalization": "fix07-v1",
+        "commercialRelationship": "commercial-relationship-v2",
+        "commercialRoleWho": "commercial-role-who-exclusion-v1",
+        "icpReadyFacts": "icp-ready-company-facts-v1"
+      },
+      "runId": "273bc87a-220a-4663-80ef-38ef04efed13",
+      "createdAt": "2026-09-02T08:30:26.151Z"
+    },
+    {
+      "holdoutCompanyId": "f6d36da7-947f-4714-9b80-1c3a80382fb1",
+      "domainKey": "razorpay.com",
+      "company": "Razorpay",
+      "targetDomain": "MANAGED_SOC",
+      "identity": {
+        "status": "CONFIRMED",
+        "confidence": null,
+        "permission": {
+          "version": "architecture-v1-identity-actions-v1",
+          "trustLevel": "UNSAFE",
+          "reasonCode": "IDENTITY_EVIDENCE_INSUFFICIENT",
+          "canPublicProfileResearch": false,
+          "canBuildProvisionalProfile": false,
+          "canRunCompanyUnderstanding": false,
+          "canRunCommercialRole": false,
+          "canAttachCanonicalFacts": false,
+          "canGenerateSignals": false,
+          "canRankOpportunity": false,
+          "canEnrichContacts": false
+        },
+        "reason": "EXACT_DOMAIN"
+      },
+      "MCI": {
+        "sufficient": false,
+        "reason": "safe company identity",
+        "evidenceIds": []
+      },
+      "CompanyUnderstanding": {
+        "primaryBusiness": null,
+        "productsServices": [],
+        "businessModel": "UNKNOWN",
+        "industry": null,
+        "geography": {
+          "city": null,
+          "region": null,
+          "country": null,
+          "countryIso2": null
+        },
+        "employeeSize": {
+          "exact": null,
+          "min": null,
+          "max": null
+        },
+        "technologyFacts": [],
+        "confidence": 0,
+        "evidenceIds": [
+          "1eb4be3f-e6e1-48ba-9c57-0695a1099bea"
+        ]
+      },
+      "CommercialRole": {
+        "role": "UNKNOWN",
+        "confidence": null,
+        "reason": "Current identity evidence does not permit public profile research or semantic attribution.",
+        "evidenceIds": [],
+        "policyVersion": "commercial-relationship-v2"
+      },
+      "WHO": {
+        "result": "MISSING",
+        "confidence": null,
+        "reason": "Current identity evidence does not permit public profile research or semantic attribution.",
+        "resolutionType": null,
+        "criteria": null,
+        "evidenceIds": []
+      },
+      "orchestration": {
+        "status": "BLOCKED",
+        "stageOutcomes": {
+          "identity": "RESOLVED",
+          "minimumIntelligence": "UNSAFE_IDENTITY",
+          "companyUnderstanding": "NOT_RUN",
+          "commercialRole": "UNKNOWN",
+          "who": "MISSING"
+        },
+        "reasonCodes": [
+          "IDENTITY_EVIDENCE_INSUFFICIENT"
+        ],
+        "researchActions": [],
+        "blockers": [
+          "safe company identity"
+        ]
+      },
+      "providerUsage": {
+        "calls": 0,
+        "knownCost": 0,
+        "records": []
+      },
+      "modelVersions": {
+        "companyUnderstanding": "gpt-5-mini"
+      },
+      "promptVersions": {
+        "companyUnderstanding": "fix08-company-understanding-v5"
+      },
+      "policyVersions": {
+        "controlPlane": "architecture-v1-control-plane-v3",
+        "minimumIntelligence": "architecture-v1-minimum-company-intelligence-v2",
+        "normalization": "fix07-v1",
+        "commercialRelationship": "commercial-relationship-v2",
+        "commercialRoleWho": "commercial-role-who-exclusion-v1",
+        "icpReadyFacts": "icp-ready-company-facts-v1"
+      },
+      "runId": "273bc87a-220a-4663-80ef-38ef04efed13",
+      "createdAt": "2026-09-02T08:30:26.151Z"
+    },
+    {
+      "holdoutCompanyId": "20d23f96-31b5-4f39-a2c4-e441c31a90bf",
+      "domainKey": "zerodha.com",
+      "company": "Zerodha",
+      "targetDomain": "MANAGED_SOC",
+      "identity": {
+        "status": "CONFIRMED",
+        "confidence": null,
+        "permission": {
+          "version": "architecture-v1-identity-actions-v1",
+          "trustLevel": "UNSAFE",
+          "reasonCode": "IDENTITY_EVIDENCE_INSUFFICIENT",
+          "canPublicProfileResearch": false,
+          "canBuildProvisionalProfile": false,
+          "canRunCompanyUnderstanding": false,
+          "canRunCommercialRole": false,
+          "canAttachCanonicalFacts": false,
+          "canGenerateSignals": false,
+          "canRankOpportunity": false,
+          "canEnrichContacts": false
+        },
+        "reason": "EXACT_DOMAIN"
+      },
+      "MCI": {
+        "sufficient": false,
+        "reason": "safe company identity",
+        "evidenceIds": []
+      },
+      "CompanyUnderstanding": {
+        "primaryBusiness": null,
+        "productsServices": [],
+        "businessModel": "UNKNOWN",
+        "industry": null,
+        "geography": {
+          "city": null,
+          "region": null,
+          "country": null,
+          "countryIso2": null
+        },
+        "employeeSize": {
+          "exact": null,
+          "min": null,
+          "max": null
+        },
+        "technologyFacts": [],
+        "confidence": 0,
+        "evidenceIds": [
+          "22152da7-6b50-4efa-9b0b-21b1c9162f13"
+        ]
+      },
+      "CommercialRole": {
+        "role": "UNKNOWN",
+        "confidence": null,
+        "reason": "Current identity evidence does not permit public profile research or semantic attribution.",
+        "evidenceIds": [],
+        "policyVersion": "commercial-relationship-v2"
+      },
+      "WHO": {
+        "result": "MISSING",
+        "confidence": null,
+        "reason": "Current identity evidence does not permit public profile research or semantic attribution.",
+        "resolutionType": null,
+        "criteria": null,
+        "evidenceIds": []
+      },
+      "orchestration": {
+        "status": "BLOCKED",
+        "stageOutcomes": {
+          "identity": "RESOLVED",
+          "minimumIntelligence": "UNSAFE_IDENTITY",
+          "companyUnderstanding": "NOT_RUN",
+          "commercialRole": "UNKNOWN",
+          "who": "MISSING"
+        },
+        "reasonCodes": [
+          "IDENTITY_EVIDENCE_INSUFFICIENT"
+        ],
+        "researchActions": [],
+        "blockers": [
+          "safe company identity"
+        ]
+      },
+      "providerUsage": {
+        "calls": 0,
+        "knownCost": 0,
+        "records": []
+      },
+      "modelVersions": {
+        "companyUnderstanding": "gpt-5-mini"
+      },
+      "promptVersions": {
+        "companyUnderstanding": "fix08-company-understanding-v5"
+      },
+      "policyVersions": {
+        "controlPlane": "architecture-v1-control-plane-v3",
+        "minimumIntelligence": "architecture-v1-minimum-company-intelligence-v2",
+        "normalization": "fix07-v1",
+        "commercialRelationship": "commercial-relationship-v2",
+        "commercialRoleWho": "commercial-role-who-exclusion-v1",
+        "icpReadyFacts": "icp-ready-company-facts-v1"
+      },
+      "runId": "273bc87a-220a-4663-80ef-38ef04efed13",
+      "createdAt": "2026-09-02T08:30:26.151Z"
+    },
+    {
+      "holdoutCompanyId": "aa41cd62-1f6a-46c8-86e0-2b0443312700",
+      "domainKey": "acko.com",
+      "company": "ACKO",
+      "targetDomain": "MANAGED_SOC",
+      "identity": {
+        "status": "CONFIRMED",
+        "confidence": null,
+        "permission": {
+          "version": "architecture-v1-identity-actions-v1",
+          "trustLevel": "UNSAFE",
+          "reasonCode": "IDENTITY_EVIDENCE_INSUFFICIENT",
+          "canPublicProfileResearch": false,
+          "canBuildProvisionalProfile": false,
+          "canRunCompanyUnderstanding": false,
+          "canRunCommercialRole": false,
+          "canAttachCanonicalFacts": false,
+          "canGenerateSignals": false,
+          "canRankOpportunity": false,
+          "canEnrichContacts": false
+        },
+        "reason": "EXACT_DOMAIN"
+      },
+      "MCI": {
+        "sufficient": false,
+        "reason": "safe company identity",
+        "evidenceIds": []
+      },
+      "CompanyUnderstanding": {
+        "primaryBusiness": null,
+        "productsServices": [],
+        "businessModel": "UNKNOWN",
+        "industry": null,
+        "geography": {
+          "city": null,
+          "region": null,
+          "country": null,
+          "countryIso2": null
+        },
+        "employeeSize": {
+          "exact": null,
+          "min": null,
+          "max": null
+        },
+        "technologyFacts": [],
+        "confidence": 0,
+        "evidenceIds": [
+          "31945999-52cf-421d-b494-01862531dbf9"
+        ]
+      },
+      "CommercialRole": {
+        "role": "UNKNOWN",
+        "confidence": null,
+        "reason": "Current identity evidence does not permit public profile research or semantic attribution.",
+        "evidenceIds": [],
+        "policyVersion": "commercial-relationship-v2"
+      },
+      "WHO": {
+        "result": "MISSING",
+        "confidence": null,
+        "reason": "Current identity evidence does not permit public profile research or semantic attribution.",
+        "resolutionType": null,
+        "criteria": null,
+        "evidenceIds": []
+      },
+      "orchestration": {
+        "status": "BLOCKED",
+        "stageOutcomes": {
+          "identity": "RESOLVED",
+          "minimumIntelligence": "UNSAFE_IDENTITY",
+          "companyUnderstanding": "NOT_RUN",
+          "commercialRole": "UNKNOWN",
+          "who": "MISSING"
+        },
+        "reasonCodes": [
+          "IDENTITY_EVIDENCE_INSUFFICIENT"
+        ],
+        "researchActions": [],
+        "blockers": [
+          "safe company identity"
+        ]
+      },
+      "providerUsage": {
+        "calls": 0,
+        "knownCost": 0,
+        "records": []
+      },
+      "modelVersions": {
+        "companyUnderstanding": "gpt-5-mini"
+      },
+      "promptVersions": {
+        "companyUnderstanding": "fix08-company-understanding-v5"
+      },
+      "policyVersions": {
+        "controlPlane": "architecture-v1-control-plane-v3",
+        "minimumIntelligence": "architecture-v1-minimum-company-intelligence-v2",
+        "normalization": "fix07-v1",
+        "commercialRelationship": "commercial-relationship-v2",
+        "commercialRoleWho": "commercial-role-who-exclusion-v1",
+        "icpReadyFacts": "icp-ready-company-facts-v1"
+      },
+      "runId": "273bc87a-220a-4663-80ef-38ef04efed13",
+      "createdAt": "2026-09-02T08:30:26.151Z"
+    },
+    {
+      "holdoutCompanyId": "4d1a78f5-a6bf-4053-9b5d-72581feda981",
+      "domainKey": "cloudsek.com",
+      "company": "CloudSEK",
+      "targetDomain": "MANAGED_SOC",
+      "identity": {
+        "status": "CONFIRMED",
+        "confidence": null,
+        "permission": {
+          "version": "architecture-v1-identity-actions-v1",
+          "trustLevel": "UNSAFE",
+          "reasonCode": "IDENTITY_EVIDENCE_INSUFFICIENT",
+          "canPublicProfileResearch": false,
+          "canBuildProvisionalProfile": false,
+          "canRunCompanyUnderstanding": false,
+          "canRunCommercialRole": false,
+          "canAttachCanonicalFacts": false,
+          "canGenerateSignals": false,
+          "canRankOpportunity": false,
+          "canEnrichContacts": false
+        },
+        "reason": "EXACT_DOMAIN"
+      },
+      "MCI": {
+        "sufficient": false,
+        "reason": "safe company identity",
+        "evidenceIds": []
+      },
+      "CompanyUnderstanding": {
+        "primaryBusiness": null,
+        "productsServices": [],
+        "businessModel": "UNKNOWN",
+        "industry": null,
+        "geography": {
+          "city": null,
+          "region": null,
+          "country": null,
+          "countryIso2": null
+        },
+        "employeeSize": {
+          "exact": null,
+          "min": null,
+          "max": null
+        },
+        "technologyFacts": [],
+        "confidence": 0,
+        "evidenceIds": [
+          "2d718129-08ed-4ef4-9a0e-ecbe018bb1a7"
+        ]
+      },
+      "CommercialRole": {
+        "role": "UNKNOWN",
+        "confidence": null,
+        "reason": "Current identity evidence does not permit public profile research or semantic attribution.",
+        "evidenceIds": [],
+        "policyVersion": "commercial-relationship-v2"
+      },
+      "WHO": {
+        "result": "MISSING",
+        "confidence": null,
+        "reason": "Current identity evidence does not permit public profile research or semantic attribution.",
+        "resolutionType": null,
+        "criteria": null,
+        "evidenceIds": []
+      },
+      "orchestration": {
+        "status": "BLOCKED",
+        "stageOutcomes": {
+          "identity": "RESOLVED",
+          "minimumIntelligence": "UNSAFE_IDENTITY",
+          "companyUnderstanding": "NOT_RUN",
+          "commercialRole": "UNKNOWN",
+          "who": "MISSING"
+        },
+        "reasonCodes": [
+          "IDENTITY_EVIDENCE_INSUFFICIENT"
+        ],
+        "researchActions": [],
+        "blockers": [
+          "safe company identity"
+        ]
+      },
+      "providerUsage": {
+        "calls": 0,
+        "knownCost": 0,
+        "records": []
+      },
+      "modelVersions": {
+        "companyUnderstanding": "gpt-5-mini"
+      },
+      "promptVersions": {
+        "companyUnderstanding": "fix08-company-understanding-v5"
+      },
+      "policyVersions": {
+        "controlPlane": "architecture-v1-control-plane-v3",
+        "minimumIntelligence": "architecture-v1-minimum-company-intelligence-v2",
+        "normalization": "fix07-v1",
+        "commercialRelationship": "commercial-relationship-v2",
+        "commercialRoleWho": "commercial-role-who-exclusion-v1",
+        "icpReadyFacts": "icp-ready-company-facts-v1"
+      },
+      "runId": "273bc87a-220a-4663-80ef-38ef04efed13",
+      "createdAt": "2026-09-02T08:30:26.151Z"
+    },
+    {
+      "holdoutCompanyId": "57182979-6644-4ff2-ad48-5b45f41642d9",
+      "domainKey": "sifytechnologies.com",
+      "company": "Sify Technologies",
+      "targetDomain": "MANAGED_SOC",
+      "identity": {
+        "status": "CONFIRMED",
+        "confidence": null,
+        "permission": {
+          "version": "architecture-v1-identity-actions-v1",
+          "trustLevel": "UNSAFE",
+          "reasonCode": "IDENTITY_EVIDENCE_INSUFFICIENT",
+          "canPublicProfileResearch": false,
+          "canBuildProvisionalProfile": false,
+          "canRunCompanyUnderstanding": false,
+          "canRunCommercialRole": false,
+          "canAttachCanonicalFacts": false,
+          "canGenerateSignals": false,
+          "canRankOpportunity": false,
+          "canEnrichContacts": false
+        },
+        "reason": "EXACT_DOMAIN"
+      },
+      "MCI": {
+        "sufficient": false,
+        "reason": "safe company identity",
+        "evidenceIds": []
+      },
+      "CompanyUnderstanding": {
+        "primaryBusiness": null,
+        "productsServices": [],
+        "businessModel": "UNKNOWN",
+        "industry": null,
+        "geography": {
+          "city": null,
+          "region": null,
+          "country": null,
+          "countryIso2": null
+        },
+        "employeeSize": {
+          "exact": null,
+          "min": null,
+          "max": null
+        },
+        "technologyFacts": [],
+        "confidence": 0,
+        "evidenceIds": [
+          "2c7cd53d-4f35-4b0d-a26b-00ae9782d293"
+        ]
+      },
+      "CommercialRole": {
+        "role": "UNKNOWN",
+        "confidence": null,
+        "reason": "Current identity evidence does not permit public profile research or semantic attribution.",
+        "evidenceIds": [],
+        "policyVersion": "commercial-relationship-v2"
+      },
+      "WHO": {
+        "result": "MISSING",
+        "confidence": null,
+        "reason": "Current identity evidence does not permit public profile research or semantic attribution.",
+        "resolutionType": null,
+        "criteria": null,
+        "evidenceIds": []
+      },
+      "orchestration": {
+        "status": "BLOCKED",
+        "stageOutcomes": {
+          "identity": "RESOLVED",
+          "minimumIntelligence": "UNSAFE_IDENTITY",
+          "companyUnderstanding": "NOT_RUN",
+          "commercialRole": "UNKNOWN",
+          "who": "MISSING"
+        },
+        "reasonCodes": [
+          "IDENTITY_EVIDENCE_INSUFFICIENT"
+        ],
+        "researchActions": [],
+        "blockers": [
+          "safe company identity"
+        ]
+      },
+      "providerUsage": {
+        "calls": 0,
+        "knownCost": 0,
+        "records": []
+      },
+      "modelVersions": {
+        "companyUnderstanding": "gpt-5-mini"
+      },
+      "promptVersions": {
+        "companyUnderstanding": "fix08-company-understanding-v5"
+      },
+      "policyVersions": {
+        "controlPlane": "architecture-v1-control-plane-v3",
+        "minimumIntelligence": "architecture-v1-minimum-company-intelligence-v2",
+        "normalization": "fix07-v1",
+        "commercialRelationship": "commercial-relationship-v2",
+        "commercialRoleWho": "commercial-role-who-exclusion-v1",
+        "icpReadyFacts": "icp-ready-company-facts-v1"
+      },
+      "runId": "273bc87a-220a-4663-80ef-38ef04efed13",
+      "createdAt": "2026-09-02T08:30:26.151Z"
+    },
+    {
+      "holdoutCompanyId": "963f1d2d-b61f-4b73-8ba9-f6c68dcbd675",
+      "domainKey": "freshworks.com",
+      "company": "Freshworks",
+      "targetDomain": "MANAGED_SOC",
+      "identity": {
+        "status": "CONFIRMED",
+        "confidence": null,
+        "permission": {
+          "version": "architecture-v1-identity-actions-v1",
+          "trustLevel": "UNSAFE",
+          "reasonCode": "IDENTITY_EVIDENCE_INSUFFICIENT",
+          "canPublicProfileResearch": false,
+          "canBuildProvisionalProfile": false,
+          "canRunCompanyUnderstanding": false,
+          "canRunCommercialRole": false,
+          "canAttachCanonicalFacts": false,
+          "canGenerateSignals": false,
+          "canRankOpportunity": false,
+          "canEnrichContacts": false
+        },
+        "reason": "EXACT_DOMAIN"
+      },
+      "MCI": {
+        "sufficient": false,
+        "reason": "safe company identity",
+        "evidenceIds": []
+      },
+      "CompanyUnderstanding": {
+        "primaryBusiness": null,
+        "productsServices": [],
+        "businessModel": "UNKNOWN",
+        "industry": null,
+        "geography": {
+          "city": null,
+          "region": null,
+          "country": null,
+          "countryIso2": null
+        },
+        "employeeSize": {
+          "exact": null,
+          "min": null,
+          "max": null
+        },
+        "technologyFacts": [],
+        "confidence": 0,
+        "evidenceIds": [
+          "61c15ffa-6d53-483d-9bdf-9263c0147a0f"
+        ]
+      },
+      "CommercialRole": {
+        "role": "UNKNOWN",
+        "confidence": null,
+        "reason": "Current identity evidence does not permit public profile research or semantic attribution.",
+        "evidenceIds": [],
+        "policyVersion": "commercial-relationship-v2"
+      },
+      "WHO": {
+        "result": "MISSING",
+        "confidence": null,
+        "reason": "Current identity evidence does not permit public profile research or semantic attribution.",
+        "resolutionType": null,
+        "criteria": null,
+        "evidenceIds": []
+      },
+      "orchestration": {
+        "status": "BLOCKED",
+        "stageOutcomes": {
+          "identity": "RESOLVED",
+          "minimumIntelligence": "UNSAFE_IDENTITY",
+          "companyUnderstanding": "NOT_RUN",
+          "commercialRole": "UNKNOWN",
+          "who": "MISSING"
+        },
+        "reasonCodes": [
+          "IDENTITY_EVIDENCE_INSUFFICIENT"
+        ],
+        "researchActions": [],
+        "blockers": [
+          "safe company identity"
+        ]
+      },
+      "providerUsage": {
+        "calls": 0,
+        "knownCost": 0,
+        "records": []
+      },
+      "modelVersions": {
+        "companyUnderstanding": "gpt-5-mini"
+      },
+      "promptVersions": {
+        "companyUnderstanding": "fix08-company-understanding-v5"
+      },
+      "policyVersions": {
+        "controlPlane": "architecture-v1-control-plane-v3",
+        "minimumIntelligence": "architecture-v1-minimum-company-intelligence-v2",
+        "normalization": "fix07-v1",
+        "commercialRelationship": "commercial-relationship-v2",
+        "commercialRoleWho": "commercial-role-who-exclusion-v1",
+        "icpReadyFacts": "icp-ready-company-facts-v1"
+      },
+      "runId": "273bc87a-220a-4663-80ef-38ef04efed13",
+      "createdAt": "2026-09-02T08:30:26.151Z"
+    }
+  ],
+  "runtimeCost": {
+    "totalProviderCalls": 0,
+    "semanticModelCalls": 0,
+    "knownProviderCost": 0,
+    "unknownCostCalls": 0,
+    "byCapability": {},
+    "byCompany": {
+      "Wingify": 0,
+      "Druva": 0,
+      "MoEngage": 0,
+      "Uplers": 0,
+      "Writesonic": 0,
+      "Smarketers": 0,
+      "Razorpay": 0,
+      "Zerodha": 0,
+      "ACKO": 0,
+      "CloudSEK": 0,
+      "Sify Technologies": 0,
+      "Freshworks": 0
+    },
+    "records": []
+  }
+}

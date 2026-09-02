@@ -1,0 +1,1146 @@
+TASK #112 — BLIND HOLDOUT JYRA GENERALIZATION TEST
+
+PURPOSE
+
+We now have a genuinely blind holdout.
+
+Holdout:
+JYRA_SMALL_HOLDOUT_V1
+
+Frozen gold:
+JYRA_SMALL_HOLDOUT_GOLD_V1
+
+Cohort size:
+12
+
+Gold SHA-256:
+7abb1e4402ce213d4c9ad144d6a15b7e73d526a876fc91cd17a962b4b1d96fde
+
+Cohort SHA-256:
+e4f01b94c2180366e55200c834b8bd70de3248a2f5460faf8340023517a68165
+
+The gold was created through:
+
+new unseen cohort
+→ independent public evidence
+→ independent machine proposal
+→ blind human review
+→ immutable gold freeze
+
+No current JYRA CommercialRole or WHO predictions were exposed before the freeze.
+
+Task #112 is the FIRST true post-repair generalization test.
+
+We need to answer:
+
+"Did the fixes from Tasks #105–#109 generalize to new companies?"
+
+==================================================
+1. CRITICAL TWO-PHASE BLINDNESS PROCEDURE
+==================================================
+
+Task #112 MUST execute in TWO STRICT PHASES.
+
+PHASE A:
+RUN AND FREEZE JYRA PREDICTIONS
+
+PHASE B:
+ONLY AFTER PREDICTIONS ARE FROZEN, LOAD GOLD AND COMPARE
+
+This sequence is mandatory.
+
+During PHASE A:
+
+DO NOT read:
+
+JYRA_SMALL_HOLDOUT_GOLD_V1.json
+
+HOLDOUT_V1_HUMAN_REVIEW.csv
+
+HOLDOUT_V1_MACHINE_PROPOSALS.json
+
+HOLDOUT_V1_REVIEWER_PACKET.md
+
+Do NOT inspect human labels.
+
+Do NOT inspect independent machine proposals.
+
+Do NOT use evaluation evidence as runtime facts unless those facts independently enter through the normal JYRA pipeline.
+
+The only holdout artifact needed to identify the targets during Phase A is:
+
+evaluations/jyra-holdout-v1/HOLDOUT_V1_COHORT.json
+
+Use company/domain identifiers from the cohort only.
+
+==================================================
+2. DATABASE SAFETY
+==================================================
+
+DATABASE SAFETY:
+
+This is DEVELOPMENT evaluation work.
+
+Use ONLY development infrastructure/database.
+
+DO NOT:
+
+- modify production
+- migrate production
+- reset production
+- seed production
+- truncate production
+- test against production customer records
+
+Production modified:
+NO
+
+==================================================
+3. ABSOLUTELY NO CODE OR PROMPT CHANGES
+==================================================
+
+Task #112 must make:
+
+Runtime code changes:
+0
+
+Prompt changes:
+0
+
+Model changes:
+0
+
+Threshold changes:
+0
+
+Policy changes:
+0
+
+Provider-routing changes:
+0
+
+ICP changes:
+0
+
+Business Twin changes:
+0
+
+Signal-pack changes:
+0
+
+Do NOT fix anything during this task.
+
+Run the system exactly as it exists after Task #109.
+
+Relevant repaired behavior includes:
+
+Task #105:
+CompanyAssessmentReadiness / evidence admission
+
+Task #106:
+SELLER_COMPETITOR → explicit LIKELY_NOT_FIT WHO exclusion
+
+Task #107:
+commercial-relationship-v2
+
+Task #109:
+provenance-bound evidence-to-ICP fact handoff
+
+==================================================
+4. VERIFY HOLDOUT COHORT
+==================================================
+
+Before running JYRA verify:
+
+cohort SHA-256:
+
+e4f01b94c2180366e55200c834b8bd70de3248a2f5460faf8340023517a68165
+
+Cohort must contain exactly:
+
+DIGIPUUSH
+
+1. Wingify
+2. Druva
+3. MoEngage
+4. Uplers
+5. Writesonic
+6. Smarketers
+
+MANAGED_SOC
+
+7. Razorpay
+8. Zerodha
+9. ACKO
+10. CloudSEK
+11. Sify Technologies
+12. Freshworks
+
+Do not replace companies.
+
+Do not drop difficult companies.
+
+Do not add companies.
+
+==================================================
+5. RUN CURRENT JYRA NORMALLY
+==================================================
+
+For each of the 12 companies, run the CURRENT DEVELOPMENT JYRA pipeline normally.
+
+Use the existing:
+
+Business Twin
+Offering
+ICP
+control plane
+identity resolution
+provider router
+evidence ingestion
+MCI
+CompanyAssessmentReadiness
+Company Understanding
+Commercial Relationship Assessment
+WHO
+fact handoff
+reason codes
+fingerprints
+staleness logic
+
+Do not create a benchmark-specific execution path.
+
+This should behave like a real JYRA processing run for a newly discovered/imported company.
+
+==================================================
+6. NORMAL PROVIDER USE IS ALLOWED
+==================================================
+
+Unlike Tasks #105–#109 regression diagnostics, Task #112 is testing the actual end-to-end JYRA system.
+
+Therefore normal DEVELOPMENT provider calls ARE allowed if the current orchestrator determines research is necessary.
+
+Use only currently configured providers and normal capability routing.
+
+Do NOT add a provider.
+
+Do NOT force a provider.
+
+Do NOT bypass caches/fingerprints merely to collect more evidence.
+
+Do NOT manually research a company because you know it is in the holdout.
+
+Report separately:
+
+provider
+capability
+calls
+cost if available
+company
+reason
+
+This is JYRA runtime cost, not evaluation-research cost.
+
+==================================================
+7. COST SAFETY
+==================================================
+
+Use existing JYRA research budgets.
+
+Additionally apply only a runaway safety ceiling:
+
+Maximum total attributable external provider spend:
+$5.00
+
+Maximum provider calls for any single company:
+15
+
+These are safety ceilings, not target budgets.
+
+If normal system budgets are stricter, retain them.
+
+Do NOT deliberately consume the ceiling.
+
+If a ceiling is reached:
+
+stop additional research for that company
+preserve the actual JYRA result
+record BUDGET_EXHAUSTED
+
+Do not manually compensate.
+
+==================================================
+8. NO USE OF CLEAN-ROOM EVIDENCE
+==================================================
+
+The independent evidence collected during Task #110 exists to establish truth.
+
+It is NOT automatically JYRA runtime evidence.
+
+Do NOT inject:
+
+HOLDOUT_V1_PUBLIC_EVIDENCE.json
+
+into JYRA merely to improve prediction quality.
+
+JYRA must discover/reuse evidence according to its normal architecture.
+
+If the same public source independently enters JYRA through normal provider research, that is fine.
+
+==================================================
+9. PHASE A — PREDICTION ARTIFACT
+==================================================
+
+Persist the complete JYRA output BEFORE opening gold.
+
+Create:
+
+evaluations/jyra-holdout-v1/TASK_112_JYRA_PREDICTIONS.json
+
+For each company include:
+
+holdoutCompanyId
+domainKey
+company
+targetDomain
+
+identity:
+- status
+- confidence
+- permission
+- reason
+
+MCI:
+- sufficient
+- reason
+- evidenceIds
+
+CompanyUnderstanding:
+- primaryBusiness
+- productsServices
+- businessModel
+- industry
+- geography
+- employeeSize
+- technologyFacts
+- confidence
+- evidenceIds
+
+CommercialRole:
+- role
+- confidence
+- reason
+- evidenceIds
+- policyVersion
+
+WHO:
+- result
+- confidence
+- reason
+- resolutionType
+- criteria
+- evidenceIds
+
+orchestration:
+- stage outcomes
+- reason codes
+- research actions
+- blockers
+
+providerUsage
+
+modelVersions
+promptVersions
+policyVersions
+runId
+createdAt
+
+==================================================
+10. FREEZE PREDICTIONS BEFORE GOLD ACCESS
+==================================================
+
+Once all 12 prediction records are persisted:
+
+calculate SHA-256 of:
+
+TASK_112_JYRA_PREDICTIONS.json
+
+Create:
+
+TASK_112_JYRA_PREDICTIONS.manifest.json
+
+Include:
+
+{
+  "holdout": "JYRA_SMALL_HOLDOUT_V1",
+  "cohortSha256": "e4f01b94c2180366e55200c834b8bd70de3248a2f5460faf8340023517a68165",
+  "predictionCount": 12,
+  "predictionFile": "...",
+  "predictionSha256": "...",
+  "predictedBeforeGoldLoaded": true,
+  "humanReviewAccessedDuringPrediction": false,
+  "goldAccessedDuringPrediction": false,
+  "cleanRoomMachineProposalsAccessedDuringPrediction": false,
+  "runtimeCodeChanges": 0,
+  "promptChanges": 0
+}
+
+Prediction artifact is immutable after this point.
+
+If later comparison reveals an error:
+
+DO NOT rerun it inside Task #112.
+
+==================================================
+11. PHASE A VALIDATION
+==================================================
+
+Before proceeding to Phase B assert:
+
+A. predictions = 12
+
+B. every holdoutCompanyId represented exactly once
+
+C. prediction SHA calculated
+
+D. prediction artifact frozen
+
+E. gold file has not been opened/read during prediction generation
+
+F. human-review CSV not accessed
+
+G. independent machine proposals not accessed
+
+H. reviewer packet not accessed
+
+I. no code changes
+
+J. no prompt changes
+
+If any blindness condition fails:
+
+HARD FAIL.
+
+Do not compare.
+
+==================================================
+12. PHASE B — VERIFY GOLD
+==================================================
+
+Only after Phase A prediction freeze:
+
+Open:
+
+evaluations/jyra-holdout-v1/JYRA_SMALL_HOLDOUT_GOLD_V1.json
+
+Calculate SHA-256.
+
+It MUST equal:
+
+7abb1e4402ce213d4c9ad144d6a15b7e73d526a876fc91cd17a962b4b1d96fde
+
+Expected:
+
+12 records
+12 GROUND_TRUTH_CONFIRMED
+12 strict eligible
+
+If checksum differs:
+
+HARD FAIL.
+
+==================================================
+13. PRIMARY COMMERCIAL ROLE METRIC
+==================================================
+
+Compare current JYRA CommercialRole against frozen gold for all 12.
+
+Calculate:
+
+exact-match CommercialRole accuracy
+
+correct / 12
+
+Also:
+
+DigiPuush:
+x/6
+
+Managed SOC:
+x/6
+
+Confusion matrix:
+
+gold
+vs
+predicted
+
+Roles:
+
+POTENTIAL_BUYER
+SELLER_COMPETITOR
+ADJACENT_VENDOR
+PARTNER_POSSIBLE
+UNKNOWN
+
+==================================================
+14. PRIMARY WHO METRIC
+==================================================
+
+Compare current JYRA WHO against frozen gold for all 12.
+
+Calculate:
+
+exact WHO accuracy
+
+correct / 12
+
+DigiPuush:
+x/6
+
+Managed SOC:
+x/6
+
+Confusion matrix:
+
+LIKELY_FIT
+POSSIBLE_FIT
+LIKELY_NOT_FIT
+INSUFFICIENT_DATA
+MISSING
+
+==================================================
+15. BUYER SAFETY METRICS
+==================================================
+
+Calculate:
+
+POTENTIAL_BUYER precision
+
+Of companies predicted POTENTIAL_BUYER:
+
+what percentage are gold POTENTIAL_BUYER?
+
+Also calculate:
+
+POTENTIAL_BUYER recall
+
+Of gold POTENTIAL_BUYER:
+
+what percentage did JYRA identify?
+
+==================================================
+16. COMPETITOR SAFETY
+==================================================
+
+Calculate:
+
+SELLER_COMPETITOR precision
+SELLER_COMPETITOR recall
+
+Important:
+
+This holdout contains only a small number of gold competitors.
+
+Do not overinterpret percentages from tiny denominators.
+
+Most important:
+
+Dangerous competitor → buyer errors
+
+Definition:
+
+gold CommercialRole =
+SELLER_COMPETITOR
+
+predicted =
+POTENTIAL_BUYER
+
+Report count and company names.
+
+==================================================
+17. ADJACENCY QUALITY
+==================================================
+
+Because this holdout contains an intentionally difficult adjacent-vendor case, report:
+
+Gold ADJACENT_VENDOR
+vs
+JYRA prediction
+
+Also report false adjacency:
+
+gold POTENTIAL_BUYER
+predicted ADJACENT_VENDOR
+
+This directly tests whether Task #107 generalized.
+
+==================================================
+18. WHO BINARY BUYER-FIT VIEW
+==================================================
+
+Secondary metric only.
+
+Treat:
+
+LIKELY_FIT
+POSSIBLE_FIT
+
+as buyer-fit positive.
+
+Treat:
+
+LIKELY_NOT_FIT
+
+as buyer-fit negative.
+
+Exclude:
+
+INSUFFICIENT_DATA
+MISSING
+
+where binary resolution is unavailable.
+
+Calculate:
+
+buyer-fit precision
+buyer-fit recall
+buyer-fit F1
+
+Exact WHO accuracy remains primary.
+
+==================================================
+19. COVERAGE / ABSTENTION
+==================================================
+
+Report all 12:
+
+identity resolved
+CommercialRole available
+CommercialRole UNKNOWN
+WHO available
+WHO INSUFFICIENT_DATA
+WHO missing
+research blocked
+budget exhausted
+
+Calculate:
+
+CommercialRole decision coverage
+
+WHO decision coverage
+
+complete role + WHO coverage
+
+Do not treat safe abstention automatically as a label error explanation.
+
+==================================================
+20. FIRST-ERROR ANALYSIS
+==================================================
+
+For every incorrect CommercialRole or WHO result identify the earliest meaningful failure.
+
+Allowed categories:
+
+IDENTITY_RESOLUTION
+PROVIDER_DATA_GAP
+EVIDENCE_ADMISSION
+COMPANY_UNDERSTANDING
+COMMERCIAL_ROLE
+ICP_FACT_HANDOFF
+ICP_CRITERION_MAPPING
+WHO_DECISION_POLICY
+BUDGET_EXHAUSTED
+OTHER
+
+Assign downstream errors to the upstream cause when appropriate.
+
+Example:
+
+wrong geography fact
+→ wrong WHO
+
+first error:
+ICP_FACT_HANDOFF or provider gap
+
+not WHO.
+
+==================================================
+21. ERROR SEVERITY
+==================================================
+
+Classify errors:
+
+CRITICAL
+
+Direct competitor predicted as buyer.
+
+HIGH
+
+Strong buyer/non-buyer inversion likely to materially alter outreach.
+
+MEDIUM
+
+LIKELY_FIT vs POSSIBLE_FIT
+POTENTIAL_BUYER vs ADJACENT_VENDOR
+or similar material-but-not-dangerous relationship distinction.
+
+LOW
+
+Mostly confidence/detail difference without material targeting consequence.
+
+==================================================
+22. SPECIFIC GENERALIZATION CHECKS
+==================================================
+
+Evaluate these generic behaviors.
+
+A. DIGIPUUSH GEOGRAPHY
+
+Did JYRA correctly distinguish:
+
+company headquarters/primary geography
+
+from:
+
+customer market
+talent market
+global presence
+
+Do not assume India from an India-related mention.
+
+--------------------------------------------------
+
+B. SAME INDUSTRY ≠ COMPETITOR
+
+Did JYRA avoid classifying a cybersecurity company as SELLER_COMPETITOR solely because it operates in security?
+
+Actual offering substitutability should matter.
+
+--------------------------------------------------
+
+C. B2B VENDOR CAN STILL BUY
+
+Did JYRA avoid turning B2B agencies/vendors into ADJACENT_VENDOR simply because they themselves sell services?
+
+--------------------------------------------------
+
+D. DIRECT COMPETITOR DETECTION
+
+Did JYRA identify materially overlapping seller offerings when evidence supported them?
+
+--------------------------------------------------
+
+E. FACT HANDOFF
+
+Did captured geography/business facts reach WHO correctly?
+
+==================================================
+23. NO POST-HOC REPAIR
+==================================================
+
+This is critical.
+
+If Task #112 exposes errors:
+
+DO NOT:
+
+change code
+change prompts
+change thresholds
+rerun individual companies
+fetch additional manual evidence
+change gold
+reclassify human truth
+create exceptions
+
+Persist and report the result exactly as obtained.
+
+==================================================
+24. PREDEFINED GENERALIZATION VERDICT
+==================================================
+
+Use these bands.
+
+A — STRONG GENERALIZATION
+
+CommercialRole exact >= 10/12
+AND
+WHO exact >= 9/12
+AND
+POTENTIAL_BUYER precision >= 85%
+AND
+dangerous competitor → buyer = 0
+AND
+no obvious new systemic failure class
+
+--------------------------------------------------
+
+B — PROMISING GENERALIZATION
+
+CommercialRole exact >= 9/12
+AND
+WHO exact >= 8/12
+AND
+dangerous competitor → buyer = 0
+
+but one bounded residual issue remains.
+
+--------------------------------------------------
+
+C — WEAK GENERALIZATION
+
+CommercialRole < 9/12
+OR
+WHO < 8/12
+
+without a critical safety failure.
+
+--------------------------------------------------
+
+D — UNSAFE
+
+Any material pattern indicates JYRA cannot safely prioritize buyers.
+
+Examples:
+
+repeated competitor → buyer errors
+
+very low buyer precision
+
+systematic confident false classifications.
+
+Do NOT change thresholds after seeing results.
+
+==================================================
+25. BUSINESS-LEVEL INTERPRETATION
+==================================================
+
+Also answer:
+
+"If a salesperson used JYRA's current WHO + CommercialRole output on these 12 companies, would the shortlist generally be directionally useful?"
+
+Choose:
+
+YES
+MOSTLY
+NO
+
+This is not a replacement for metrics.
+
+Explain based on:
+
+buyer precision
+competitor safety
+coverage
+wrong-fit rate
+
+==================================================
+26. RUNTIME COST
+==================================================
+
+Report:
+
+total provider calls
+
+provider calls by capability
+
+provider calls per company
+
+semantic model calls
+
+total provider-reported cost
+
+estimated/known token usage
+
+average JYRA intelligence cost per company
+
+Do not include Task #110 independent evaluation research cost.
+
+This is useful for future pricing.
+
+==================================================
+27. ARTIFACTS
+==================================================
+
+Create:
+
+evaluations/jyra-holdout-v1/TASK_112_JYRA_PREDICTIONS.json
+
+evaluations/jyra-holdout-v1/TASK_112_JYRA_PREDICTIONS.manifest.json
+
+evaluations/jyra-holdout-v1/TASK_112_GENERALIZATION_EVALUATION.json
+
+evaluations/jyra-holdout-v1/TASK_112_GENERALIZATION_REPORT.md
+
+Do not modify:
+
+JYRA_SMALL_HOLDOUT_GOLD_V1.json
+
+HOLDOUT_V1_COHORT.json
+
+Task #105–#109 artifacts
+
+==================================================
+28. FINAL RESPONSE FORMAT
+==================================================
+
+Return exactly:
+
+TASK #112 — BLIND HOLDOUT GENERALIZATION TEST
+
+Status:
+PASS / FAIL
+
+Prediction blindness:
+PASS / FAIL
+
+Cohort:
+12
+
+Prediction artifact:
+<path>
+
+Prediction SHA-256:
+<checksum>
+
+Gold SHA-256:
+7abb1e4402ce213d4c9ad144d6a15b7e73d526a876fc91cd17a962b4b1d96fde
+
+Code changes:
+0
+
+Prompt changes:
+0
+
+Production modified:
+NO
+
+====================
+COMMERCIAL ROLE
+====================
+
+Correct:
+x/12
+
+Accuracy:
+xx.x%
+
+DigiPuush:
+x/6
+
+Managed SOC:
+x/6
+
+POTENTIAL_BUYER precision:
+xx.x%
+
+POTENTIAL_BUYER recall:
+xx.x%
+
+SELLER_COMPETITOR precision:
+xx.x%
+
+SELLER_COMPETITOR recall:
+xx.x%
+
+Dangerous competitor → buyer:
+x
+
+False ADJACENT_VENDOR:
+x
+
+Confusion matrix:
+<table>
+
+====================
+WHO
+====================
+
+Correct:
+x/12
+
+Accuracy:
+xx.x%
+
+DigiPuush:
+x/6
+
+Managed SOC:
+x/6
+
+Buyer-fit precision:
+xx.x%
+
+Buyer-fit recall:
+xx.x%
+
+Buyer-fit F1:
+xx.x%
+
+Confusion matrix:
+<table>
+
+====================
+COVERAGE
+====================
+
+Identity resolved:
+x/12
+
+CommercialRole decision coverage:
+x/12
+
+WHO decision coverage:
+x/12
+
+Complete CommercialRole + WHO:
+x/12
+
+UNKNOWN CommercialRole:
+x
+
+INSUFFICIENT_DATA WHO:
+x
+
+Missing WHO:
+x
+
+Research blocked:
+x
+
+Budget exhausted:
+x
+
+====================
+ERRORS
+====================
+
+For each incorrect strict result:
+
+Company:
+Gold:
+JYRA:
+First error:
+Severity:
+Reason:
+
+====================
+FIRST-ERROR SUMMARY
+====================
+
+IDENTITY_RESOLUTION:
+x
+
+PROVIDER_DATA_GAP:
+x
+
+EVIDENCE_ADMISSION:
+x
+
+COMPANY_UNDERSTANDING:
+x
+
+COMMERCIAL_ROLE:
+x
+
+ICP_FACT_HANDOFF:
+x
+
+ICP_CRITERION_MAPPING:
+x
+
+WHO_DECISION_POLICY:
+x
+
+BUDGET_EXHAUSTED:
+x
+
+OTHER:
+x
+
+====================
+GENERALIZATION CHECKS
+====================
+
+India geography semantics:
+PASS / FAIL
+
+Same industry ≠ competitor:
+PASS / FAIL
+
+B2B vendor can still buy:
+PASS / FAIL
+
+Direct competitor detection:
+PASS / FAIL
+
+Evidence-to-WHO handoff:
+PASS / FAIL
+
+====================
+RUNTIME COST
+====================
+
+External provider calls:
+x
+
+Semantic model calls:
+x
+
+Provider-reported cost:
+$X.XX
+
+Average cost/company:
+$X.XX
+
+====================
+BUSINESS USEFULNESS
+====================
+
+YES / MOSTLY / NO
+
+Reason:
+<brief>
+
+====================
+OVERALL VERDICT
+====================
+
+A — STRONG GENERALIZATION
+B — PROMISING GENERALIZATION
+C — WEAK GENERALIZATION
+D — UNSAFE
+
+Explain in 3–6 sentences.
+
+====================
+ARTIFACTS
+====================
+
+Predictions:
+<path>
+
+Prediction manifest:
+<path>
+
+Evaluation:
+<path>
+
+Report:
+<path>
+
+Gold modified:
+NO
+
+Historical runs modified:
+NO
+
+NEXT STEP:
+
+Do not implement another repair.
+
+Do not rerun failed companies.
+
+Do not run the 50-company Reality Test.
+
+Wait for approval.

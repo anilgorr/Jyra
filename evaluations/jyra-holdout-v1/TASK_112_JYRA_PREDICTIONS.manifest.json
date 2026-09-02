@@ -1,0 +1,15 @@
+{
+  "holdout": "JYRA_SMALL_HOLDOUT_V1",
+  "cohortSha256": "e4f01b94c2180366e55200c834b8bd70de3248a2f5460faf8340023517a68165",
+  "predictionCount": 12,
+  "predictionFile": "evaluations/jyra-holdout-v1/TASK_112_JYRA_PREDICTIONS.json",
+  "predictionSha256": "309c191d47a9008795ff58a7bdb84875f7198bd61af495fb676882be8e73c7ff",
+  "predictedBeforeGoldLoaded": true,
+  "humanReviewAccessedDuringPrediction": false,
+  "goldAccessedDuringPrediction": false,
+  "cleanRoomMachineProposalsAccessedDuringPrediction": false,
+  "runtimeCodeChanges": 0,
+  "promptChanges": 0,
+  "runId": "273bc87a-220a-4663-80ef-38ef04efed13",
+  "createdAt": "2026-09-02T08:30:26.151Z"
+}

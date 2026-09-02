@@ -1,0 +1,492 @@
+{
+  "task": 112,
+  "title": "Blind Holdout JYRA Generalization Test",
+  "status": "FAIL",
+  "predictionBlindness": "PASS",
+  "evaluatedAt": "2026-09-02T08:32:03.714Z",
+  "cohort": {
+    "count": 12,
+    "sha256": "e4f01b94c2180366e55200c834b8bd70de3248a2f5460faf8340023517a68165",
+    "groundTruthConfirmed": 12,
+    "strictEligible": 12
+  },
+  "artifacts": {
+    "predictions": "evaluations/jyra-holdout-v1/TASK_112_JYRA_PREDICTIONS.json",
+    "predictionManifest": "evaluations/jyra-holdout-v1/TASK_112_JYRA_PREDICTIONS.manifest.json",
+    "predictionSha256": "309c191d47a9008795ff58a7bdb84875f7198bd61af495fb676882be8e73c7ff",
+    "gold": "evaluations/jyra-holdout-v1/JYRA_SMALL_HOLDOUT_GOLD_V1.json",
+    "goldSha256": "7abb1e4402ce213d4c9ad144d6a15b7e73d526a876fc91cd17a962b4b1d96fde"
+  },
+  "changeAudit": {
+    "runtimeCodeChanges": 0,
+    "promptChanges": 0,
+    "modelChanges": 0,
+    "thresholdChanges": 0,
+    "policyChanges": 0,
+    "routingChanges": 0,
+    "icpChanges": 0,
+    "businessTwinChanges": 0,
+    "signalPackChanges": 0,
+    "productionModified": false,
+    "postHocRepair": false,
+    "rerunsAfterGold": false
+  },
+  "commercialRole": {
+    "correct": 0,
+    "total": 12,
+    "accuracy": 0,
+    "byDomain": {
+      "DIGIPUUSH": {
+        "correct": 0,
+        "total": 6
+      },
+      "MANAGED_SOC": {
+        "correct": 0,
+        "total": 6
+      }
+    },
+    "potentialBuyer": {
+      "precision": null,
+      "recall": 0,
+      "f1": 0,
+      "tp": 0,
+      "fp": 0,
+      "fn": 10
+    },
+    "sellerCompetitor": {
+      "precision": null,
+      "recall": 0,
+      "f1": 0,
+      "tp": 0,
+      "fp": 0,
+      "fn": 1
+    },
+    "dangerousCompetitorToBuyer": {
+      "count": 0,
+      "companies": []
+    },
+    "adjacency": {
+      "goldAdjacentCases": [
+        {
+          "company": "CloudSEK",
+          "predicted": "UNKNOWN",
+          "correct": false
+        }
+      ],
+      "falseAdjacencyCount": 0,
+      "falseAdjacencyCompanies": []
+    },
+    "confusionMatrix": {
+      "rows": "gold",
+      "columns": "predicted",
+      "labels": [
+        "POTENTIAL_BUYER",
+        "SELLER_COMPETITOR",
+        "ADJACENT_VENDOR",
+        "PARTNER_POSSIBLE",
+        "UNKNOWN"
+      ],
+      "values": {
+        "POTENTIAL_BUYER": {
+          "POTENTIAL_BUYER": 0,
+          "SELLER_COMPETITOR": 0,
+          "ADJACENT_VENDOR": 0,
+          "PARTNER_POSSIBLE": 0,
+          "UNKNOWN": 10
+        },
+        "SELLER_COMPETITOR": {
+          "POTENTIAL_BUYER": 0,
+          "SELLER_COMPETITOR": 0,
+          "ADJACENT_VENDOR": 0,
+          "PARTNER_POSSIBLE": 0,
+          "UNKNOWN": 1
+        },
+        "ADJACENT_VENDOR": {
+          "POTENTIAL_BUYER": 0,
+          "SELLER_COMPETITOR": 0,
+          "ADJACENT_VENDOR": 0,
+          "PARTNER_POSSIBLE": 0,
+          "UNKNOWN": 1
+        },
+        "PARTNER_POSSIBLE": {
+          "POTENTIAL_BUYER": 0,
+          "SELLER_COMPETITOR": 0,
+          "ADJACENT_VENDOR": 0,
+          "PARTNER_POSSIBLE": 0,
+          "UNKNOWN": 0
+        },
+        "UNKNOWN": {
+          "POTENTIAL_BUYER": 0,
+          "SELLER_COMPETITOR": 0,
+          "ADJACENT_VENDOR": 0,
+          "PARTNER_POSSIBLE": 0,
+          "UNKNOWN": 0
+        }
+      }
+    }
+  },
+  "who": {
+    "correct": 0,
+    "total": 12,
+    "accuracy": 0,
+    "byDomain": {
+      "DIGIPUUSH": {
+        "correct": 0,
+        "total": 6
+      },
+      "MANAGED_SOC": {
+        "correct": 0,
+        "total": 6
+      }
+    },
+    "binaryBuyerFit": {
+      "precision": null,
+      "recall": null,
+      "f1": null,
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "evaluated": 0,
+      "excluded": 12,
+      "note": "All predictions were MISSING, so binary precision/recall/F1 are undefined; exact WHO accuracy remains primary."
+    },
+    "confusionMatrix": {
+      "rows": "gold",
+      "columns": "predicted",
+      "labels": [
+        "LIKELY_FIT",
+        "POSSIBLE_FIT",
+        "LIKELY_NOT_FIT",
+        "INSUFFICIENT_DATA",
+        "MISSING"
+      ],
+      "values": {
+        "LIKELY_FIT": {
+          "LIKELY_FIT": 0,
+          "POSSIBLE_FIT": 0,
+          "LIKELY_NOT_FIT": 0,
+          "INSUFFICIENT_DATA": 0,
+          "MISSING": 6
+        },
+        "POSSIBLE_FIT": {
+          "LIKELY_FIT": 0,
+          "POSSIBLE_FIT": 0,
+          "LIKELY_NOT_FIT": 0,
+          "INSUFFICIENT_DATA": 0,
+          "MISSING": 5
+        },
+        "LIKELY_NOT_FIT": {
+          "LIKELY_FIT": 0,
+          "POSSIBLE_FIT": 0,
+          "LIKELY_NOT_FIT": 0,
+          "INSUFFICIENT_DATA": 0,
+          "MISSING": 1
+        },
+        "INSUFFICIENT_DATA": {
+          "LIKELY_FIT": 0,
+          "POSSIBLE_FIT": 0,
+          "LIKELY_NOT_FIT": 0,
+          "INSUFFICIENT_DATA": 0,
+          "MISSING": 0
+        },
+        "MISSING": {
+          "LIKELY_FIT": 0,
+          "POSSIBLE_FIT": 0,
+          "LIKELY_NOT_FIT": 0,
+          "INSUFFICIENT_DATA": 0,
+          "MISSING": 0
+        }
+      }
+    }
+  },
+  "coverage": {
+    "identityResolved": 12,
+    "commercialRoleAvailable": 0,
+    "commercialRoleUnknown": 12,
+    "whoAvailable": 0,
+    "whoInsufficientData": 0,
+    "whoMissing": 12,
+    "researchBlocked": 12,
+    "budgetExhausted": 0,
+    "completeRoleAndWho": 0,
+    "commercialRoleDecisionCoverage": 0,
+    "whoDecisionCoverage": 0,
+    "completeCoverage": 0
+  },
+  "errors": [
+    {
+      "holdoutCompanyId": "98402e65-f817-467d-9237-496a797a5fba",
+      "company": "Wingify",
+      "targetDomain": "DIGIPUUSH",
+      "gold": {
+        "commercialRole": "POTENTIAL_BUYER",
+        "who": "LIKELY_FIT"
+      },
+      "predicted": {
+        "commercialRole": "UNKNOWN",
+        "who": "MISSING"
+      },
+      "roleCorrect": false,
+      "whoCorrect": false,
+      "firstError": "IDENTITY_RESOLUTION",
+      "severity": "HIGH",
+      "reason": "Exact-domain identity was resolved, but the imported identity remained UNSAFE with IDENTITY_EVIDENCE_INSUFFICIENT, so public profile research, Company Understanding, CommercialRole, and WHO did not run."
+    },
+    {
+      "holdoutCompanyId": "661718df-9356-4c13-b091-917215b2c9b3",
+      "company": "Druva",
+      "targetDomain": "DIGIPUUSH",
+      "gold": {
+        "commercialRole": "POTENTIAL_BUYER",
+        "who": "POSSIBLE_FIT"
+      },
+      "predicted": {
+        "commercialRole": "UNKNOWN",
+        "who": "MISSING"
+      },
+      "roleCorrect": false,
+      "whoCorrect": false,
+      "firstError": "IDENTITY_RESOLUTION",
+      "severity": "HIGH",
+      "reason": "Exact-domain identity was resolved, but the imported identity remained UNSAFE with IDENTITY_EVIDENCE_INSUFFICIENT, so public profile research, Company Understanding, CommercialRole, and WHO did not run."
+    },
+    {
+      "holdoutCompanyId": "47304732-9065-4603-b736-2009f237f22c",
+      "company": "MoEngage",
+      "targetDomain": "DIGIPUUSH",
+      "gold": {
+        "commercialRole": "POTENTIAL_BUYER",
+        "who": "POSSIBLE_FIT"
+      },
+      "predicted": {
+        "commercialRole": "UNKNOWN",
+        "who": "MISSING"
+      },
+      "roleCorrect": false,
+      "whoCorrect": false,
+      "firstError": "IDENTITY_RESOLUTION",
+      "severity": "HIGH",
+      "reason": "Exact-domain identity was resolved, but the imported identity remained UNSAFE with IDENTITY_EVIDENCE_INSUFFICIENT, so public profile research, Company Understanding, CommercialRole, and WHO did not run."
+    },
+    {
+      "holdoutCompanyId": "976cefd3-7421-45e4-8fd4-530be6339e84",
+      "company": "Uplers",
+      "targetDomain": "DIGIPUUSH",
+      "gold": {
+        "commercialRole": "POTENTIAL_BUYER",
+        "who": "POSSIBLE_FIT"
+      },
+      "predicted": {
+        "commercialRole": "UNKNOWN",
+        "who": "MISSING"
+      },
+      "roleCorrect": false,
+      "whoCorrect": false,
+      "firstError": "IDENTITY_RESOLUTION",
+      "severity": "HIGH",
+      "reason": "Exact-domain identity was resolved, but the imported identity remained UNSAFE with IDENTITY_EVIDENCE_INSUFFICIENT, so public profile research, Company Understanding, CommercialRole, and WHO did not run."
+    },
+    {
+      "holdoutCompanyId": "1b05ff96-47fa-4624-81da-4a2283c1b083",
+      "company": "Writesonic",
+      "targetDomain": "DIGIPUUSH",
+      "gold": {
+        "commercialRole": "SELLER_COMPETITOR",
+        "who": "LIKELY_NOT_FIT"
+      },
+      "predicted": {
+        "commercialRole": "UNKNOWN",
+        "who": "MISSING"
+      },
+      "roleCorrect": false,
+      "whoCorrect": false,
+      "firstError": "IDENTITY_RESOLUTION",
+      "severity": "MEDIUM",
+      "reason": "Exact-domain identity was resolved, but the imported identity remained UNSAFE with IDENTITY_EVIDENCE_INSUFFICIENT, so public profile research, Company Understanding, CommercialRole, and WHO did not run."
+    },
+    {
+      "holdoutCompanyId": "b869a2e2-62c7-4f98-abc3-063f4132092e",
+      "company": "Smarketers",
+      "targetDomain": "DIGIPUUSH",
+      "gold": {
+        "commercialRole": "POTENTIAL_BUYER",
+        "who": "LIKELY_FIT"
+      },
+      "predicted": {
+        "commercialRole": "UNKNOWN",
+        "who": "MISSING"
+      },
+      "roleCorrect": false,
+      "whoCorrect": false,
+      "firstError": "IDENTITY_RESOLUTION",
+      "severity": "HIGH",
+      "reason": "Exact-domain identity was resolved, but the imported identity remained UNSAFE with IDENTITY_EVIDENCE_INSUFFICIENT, so public profile research, Company Understanding, CommercialRole, and WHO did not run."
+    },
+    {
+      "holdoutCompanyId": "f6d36da7-947f-4714-9b80-1c3a80382fb1",
+      "company": "Razorpay",
+      "targetDomain": "MANAGED_SOC",
+      "gold": {
+        "commercialRole": "POTENTIAL_BUYER",
+        "who": "LIKELY_FIT"
+      },
+      "predicted": {
+        "commercialRole": "UNKNOWN",
+        "who": "MISSING"
+      },
+      "roleCorrect": false,
+      "whoCorrect": false,
+      "firstError": "IDENTITY_RESOLUTION",
+      "severity": "HIGH",
+      "reason": "Exact-domain identity was resolved, but the imported identity remained UNSAFE with IDENTITY_EVIDENCE_INSUFFICIENT, so public profile research, Company Understanding, CommercialRole, and WHO did not run."
+    },
+    {
+      "holdoutCompanyId": "20d23f96-31b5-4f39-a2c4-e441c31a90bf",
+      "company": "Zerodha",
+      "targetDomain": "MANAGED_SOC",
+      "gold": {
+        "commercialRole": "POTENTIAL_BUYER",
+        "who": "LIKELY_FIT"
+      },
+      "predicted": {
+        "commercialRole": "UNKNOWN",
+        "who": "MISSING"
+      },
+      "roleCorrect": false,
+      "whoCorrect": false,
+      "firstError": "IDENTITY_RESOLUTION",
+      "severity": "HIGH",
+      "reason": "Exact-domain identity was resolved, but the imported identity remained UNSAFE with IDENTITY_EVIDENCE_INSUFFICIENT, so public profile research, Company Understanding, CommercialRole, and WHO did not run."
+    },
+    {
+      "holdoutCompanyId": "aa41cd62-1f6a-46c8-86e0-2b0443312700",
+      "company": "ACKO",
+      "targetDomain": "MANAGED_SOC",
+      "gold": {
+        "commercialRole": "POTENTIAL_BUYER",
+        "who": "LIKELY_FIT"
+      },
+      "predicted": {
+        "commercialRole": "UNKNOWN",
+        "who": "MISSING"
+      },
+      "roleCorrect": false,
+      "whoCorrect": false,
+      "firstError": "IDENTITY_RESOLUTION",
+      "severity": "HIGH",
+      "reason": "Exact-domain identity was resolved, but the imported identity remained UNSAFE with IDENTITY_EVIDENCE_INSUFFICIENT, so public profile research, Company Understanding, CommercialRole, and WHO did not run."
+    },
+    {
+      "holdoutCompanyId": "4d1a78f5-a6bf-4053-9b5d-72581feda981",
+      "company": "CloudSEK",
+      "targetDomain": "MANAGED_SOC",
+      "gold": {
+        "commercialRole": "ADJACENT_VENDOR",
+        "who": "POSSIBLE_FIT"
+      },
+      "predicted": {
+        "commercialRole": "UNKNOWN",
+        "who": "MISSING"
+      },
+      "roleCorrect": false,
+      "whoCorrect": false,
+      "firstError": "IDENTITY_RESOLUTION",
+      "severity": "MEDIUM",
+      "reason": "Exact-domain identity was resolved, but the imported identity remained UNSAFE with IDENTITY_EVIDENCE_INSUFFICIENT, so public profile research, Company Understanding, CommercialRole, and WHO did not run."
+    },
+    {
+      "holdoutCompanyId": "57182979-6644-4ff2-ad48-5b45f41642d9",
+      "company": "Sify Technologies",
+      "targetDomain": "MANAGED_SOC",
+      "gold": {
+        "commercialRole": "POTENTIAL_BUYER",
+        "who": "POSSIBLE_FIT"
+      },
+      "predicted": {
+        "commercialRole": "UNKNOWN",
+        "who": "MISSING"
+      },
+      "roleCorrect": false,
+      "whoCorrect": false,
+      "firstError": "IDENTITY_RESOLUTION",
+      "severity": "HIGH",
+      "reason": "Exact-domain identity was resolved, but the imported identity remained UNSAFE with IDENTITY_EVIDENCE_INSUFFICIENT, so public profile research, Company Understanding, CommercialRole, and WHO did not run."
+    },
+    {
+      "holdoutCompanyId": "963f1d2d-b61f-4b73-8ba9-f6c68dcbd675",
+      "company": "Freshworks",
+      "targetDomain": "MANAGED_SOC",
+      "gold": {
+        "commercialRole": "POTENTIAL_BUYER",
+        "who": "LIKELY_FIT"
+      },
+      "predicted": {
+        "commercialRole": "UNKNOWN",
+        "who": "MISSING"
+      },
+      "roleCorrect": false,
+      "whoCorrect": false,
+      "firstError": "IDENTITY_RESOLUTION",
+      "severity": "HIGH",
+      "reason": "Exact-domain identity was resolved, but the imported identity remained UNSAFE with IDENTITY_EVIDENCE_INSUFFICIENT, so public profile research, Company Understanding, CommercialRole, and WHO did not run."
+    }
+  ],
+  "firstErrorSummary": {
+    "IDENTITY_RESOLUTION": 12,
+    "PROVIDER_DATA_GAP": 0,
+    "EVIDENCE_ADMISSION": 0,
+    "COMPANY_UNDERSTANDING": 0,
+    "COMMERCIAL_ROLE": 0,
+    "ICP_FACT_HANDOFF": 0,
+    "ICP_CRITERION_MAPPING": 0,
+    "WHO_DECISION_POLICY": 0,
+    "BUDGET_EXHAUSTED": 0,
+    "OTHER": 0
+  },
+  "errorSeveritySummary": {
+    "CRITICAL": 0,
+    "HIGH": 10,
+    "MEDIUM": 2,
+    "LOW": 0
+  },
+  "generalizationChecks": {
+    "indiaGeographySemantics": {
+      "status": "FAIL",
+      "reason": "No DigiPuush company reached WHO, so headquarters/primary geography was never distinguished from other geography mentions."
+    },
+    "sameIndustryNotCompetitor": {
+      "status": "PASS",
+      "reason": "No cybersecurity company was falsely classified as SELLER_COMPETITOR; this is safety-preserving abstention, not positive classification evidence."
+    },
+    "b2bVendorCanStillBuy": {
+      "status": "FAIL",
+      "reason": "B2B vendors/agencies did not receive buyer decisions because CommercialRole never ran."
+    },
+    "directCompetitorDetection": {
+      "status": "FAIL",
+      "reason": "The gold direct competitor was left UNKNOWN because CommercialRole never ran."
+    },
+    "evidenceToWhoHandoff": {
+      "status": "FAIL",
+      "reason": "No admitted company facts reached WHO; the pipeline stopped at identity permissions."
+    }
+  },
+  "runtimeCost": {
+    "externalProviderCalls": 0,
+    "semanticModelCalls": 0,
+    "providerReportedCost": 0,
+    "averageCostPerCompany": 0,
+    "unknownCostCalls": 0,
+    "withinTotalBudget": true,
+    "withinPerCompanyCallLimit": true
+  },
+  "businessUsefulness": {
+    "rating": "NO",
+    "reason": "The run produced no usable CommercialRole or WHO decisions for any holdout company. It is safe from false-positive outreach only because it abstained systemically."
+  },
+  "overallVerdict": {
+    "band": "C",
+    "label": "WEAK GENERALIZATION",
+    "reason": "CommercialRole and WHO exact accuracy are both below the predefined C-band thresholds. There was no critical competitor-to-buyer safety failure and no confident false classification, so D is not warranted. However, the identity-permission boundary blocked all 12 companies before research, producing zero decision coverage and a systemic new failure class for ordinary known-domain imports. The result is not business-useful and must be reported without post-hoc repair."
+  }
+}
