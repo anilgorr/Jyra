@@ -1,0 +1,480 @@
+JYRA — EXECUTE MARKET QUALITY ROOT-CAUSE AUDIT 01 NOW
+
+The previous response only summarized the audit specification.
+
+DO NOT summarize the plan again.
+
+EXECUTE THE AUDIT NOW.
+
+Use the exact persisted Task #100 cohort:
+
+- 10 DigiPuush companies
+- 10 Managed SOC companies
+
+STRICTLY:
+
+- 0 provider calls
+- 0 new LLM/semantic calls
+- 0 discovery calls
+- 0 retries
+- 0 reruns
+- 0 prompt changes
+- 0 threshold changes
+- 0 product changes
+- 0 database mutations except audit/report artifacts if required
+- production operations = 0
+
+Use ONLY persisted evidence, persisted JYRA outputs, persisted evaluation/adjudication artifacts, and existing run provenance.
+
+==================================================
+1. FIRST VERIFY THE EVALUATION LABELS
+==================================================
+
+Before treating the previous CommercialRole and WHO adjudication as
+ground truth, determine:
+
+- how the independent labels were generated
+- model/tool/person that generated them
+- whether JYRA predictions were visible
+- whether the same model as JYRA was used
+- whether the same prompts were used
+- what evidence supported each label
+- whether every CommercialRole label has reasoning
+- whether every WHO label has reasoning
+
+Classify ground-truth reliability:
+
+STRONG
+ADEQUATE
+WEAK
+UNUSABLE
+
+If ground truth is UNUSABLE:
+
+STOP and return:
+
+E — EVALUATION GROUND TRUTH IS NOT RELIABLE ENOUGH
+
+Do not manufacture replacement labels.
+
+==================================================
+2. AUDIT ALL 20 COMPANIES
+==================================================
+
+Produce an actual company-by-company table.
+
+For EACH company include:
+
+DOMAIN
+- DigiPuush
+- Managed SOC
+
+COMPANY
+
+DISCOVERY
+- plausible market: YES / NO / UNCLEAR
+
+IDENTITY
+- JYRA state
+- independent correctness
+- CORRECT / WRONG / UNCERTAIN
+
+EVIDENCE / PROFILE
+- sufficient: YES / NO
+- correctly attributed: YES / NO
+- major evidence available
+- missing material information
+
+COMPANY UNDERSTANDING — JYRA
+- primary business
+- products/services
+- business model
+- industry
+- confidence
+
+COMPANY UNDERSTANDING — INDEPENDENT
+- primary business
+- products/services
+- business model
+- industry
+
+COMPANY UNDERSTANDING ASSESSMENT
+- CORRECT
+- MOSTLY_CORRECT
+- MATERIALLY_WRONG
+- INSUFFICIENT
+
+COMMERCIAL ROLE — JYRA
+- role
+- confidence
+- reason
+
+COMMERCIAL ROLE — INDEPENDENT
+- role
+- reason
+
+WHO — JYRA
+- result
+- reason codes
+
+WHO — INDEPENDENT
+- result
+- reason
+
+FIRST MATERIAL ERROR
+- exactly one category
+
+DOWNSTREAM CONSEQUENCE
+- concise chain
+
+==================================================
+3. FIRST-ERROR RULE
+==================================================
+
+Assign ONLY the earliest material failure.
+
+Example:
+
+Bad company understanding
+→ wrong CommercialRole
+→ wrong WHO
+
+FIRST ERROR:
+
+COMPANY_PRIMARY_BUSINESS_WRONG
+
+Do NOT separately count CommercialRole and WHO as independent root
+causes in this case.
+
+Allowed first-error categories:
+
+DISCOVERY_WRONG_MARKET
+IDENTITY_WRONG
+PROFILE_EVIDENCE_INSUFFICIENT
+PROFILE_EVIDENCE_WRONG_ENTITY
+COMPANY_PRIMARY_BUSINESS_WRONG
+COMPANY_PRODUCTS_SERVICES_WRONG
+COMPANY_BUSINESS_MODEL_WRONG
+COMPANY_INDUSTRY_WRONG
+COMPANY_UNDERSTANDING_OTHER
+COMMERCIAL_ROLE_REASONING_WRONG
+COMMERCIAL_ROLE_TOO_AGGRESSIVE
+COMMERCIAL_ROLE_TOO_CONSERVATIVE
+COMMERCIAL_ROLE_SHOULD_HAVE_BEEN_UNKNOWN
+WHO_INDUSTRY_EVALUATION_WRONG
+WHO_SIZE_EVALUATION_WRONG
+WHO_GEOGRAPHY_EVALUATION_WRONG
+WHO_TECHNOLOGY_EVALUATION_WRONG
+WHO_COMMERCIAL_ROLE_DEPENDENCY_WRONG
+ICP_SEMANTICS_AMBIGUOUS
+GROUND_TRUTH_AMBIGUOUS
+OTHER
+
+==================================================
+4. COMPANY UNDERSTANDING METRICS
+==================================================
+
+Calculate actual metrics across the 20 companies:
+
+CompanyUnderstanding:
+- CORRECT
+- MOSTLY_CORRECT
+- MATERIALLY_WRONG
+- INSUFFICIENT
+
+Also separately score:
+
+- primary-business accuracy
+- products/services accuracy
+- business-model accuracy
+- industry accuracy
+
+Report separately for:
+
+DigiPuush
+Managed SOC
+combined
+
+==================================================
+5. COMMERCIAL ROLE — CONDITIONED METRICS
+==================================================
+
+This is one of the most important outputs.
+
+Create CLEAN_UPSTREAM_SUBSET where:
+
+- identity is CORRECT
+- evidence is sufficient
+- CompanyUnderstanding is CORRECT or MOSTLY_CORRECT
+
+For ONLY this subset calculate:
+
+COMMERCIAL_ROLE_CONDITIONAL_ACCURACY
+
+Also:
+
+- exact agreement
+- buyer precision
+- buyer recall
+- competitor → buyer errors
+- adjacent → buyer errors
+- partner → buyer errors
+- UNKNOWN count
+
+Report numerator AND denominator.
+
+Example:
+
+CommercialRole conditional accuracy:
+8/10 = 80%
+
+Do not report only percentages.
+
+==================================================
+6. WHO — CONDITIONED METRICS
+==================================================
+
+Create WHO_CLEAN_SUBSET where:
+
+- identity correct
+- evidence sufficient
+- CompanyUnderstanding acceptable
+- JYRA CommercialRole matches independently adjudicated role
+- required ICP evidence exists
+
+For ONLY this subset calculate:
+
+WHO_CONDITIONAL_ACCURACY
+
+Break WHO errors into:
+
+INDUSTRY
+SIZE
+GEOGRAPHY
+TECHNOLOGY
+COMMERCIAL_ROLE
+EXCLUSION
+MISSING_EVIDENCE
+ICP_AMBIGUITY
+OTHER
+
+Report numerator AND denominator.
+
+==================================================
+7. GOOD UNKNOWN VS BAD UNKNOWN
+==================================================
+
+For every JYRA CommercialRole = UNKNOWN:
+
+GOOD_UNKNOWN:
+research/evidence genuinely did not support a safe role.
+
+BAD_UNKNOWN:
+sufficient evidence existed and a commercially meaningful role should
+reasonably have been determined.
+
+Report:
+
+total UNKNOWN
+GOOD_UNKNOWN
+BAD_UNKNOWN
+
+separately by domain and combined.
+
+==================================================
+8. CONFIDENCE CALIBRATION
+==================================================
+
+For CompanyUnderstanding and CommercialRole classify:
+
+HIGH_CONFIDENCE_CORRECT
+HIGH_CONFIDENCE_WRONG
+MEDIUM_CONFIDENCE_CORRECT
+MEDIUM_CONFIDENCE_WRONG
+LOW_CONFIDENCE_CORRECT
+LOW_CONFIDENCE_WRONG
+
+List every:
+
+HIGH_CONFIDENCE_WRONG
+
+These are especially important.
+
+==================================================
+9. ROOT-CAUSE DISTRIBUTION
+==================================================
+
+Produce:
+
+| Layer | First-error count | % of all first errors | DigiPuush | Managed SOC | Generic or domain-specific |
+
+Layers:
+
+Discovery
+Identity
+Profile/Evidence
+CompanyUnderstanding
+CommercialRole
+WHO
+Ground Truth
+
+Do not count inherited downstream errors twice.
+
+==================================================
+10. CROSS-DOMAIN DIAGNOSIS
+==================================================
+
+Answer explicitly:
+
+Does the same failure appear in BOTH DigiPuush and Managed SOC?
+
+Classify each major defect:
+
+GENERIC
+DIGIPUUSH_SPECIFIC
+MANAGED_SOC_SPECIFIC
+INSUFFICIENT_SAMPLE
+
+Do not infer genericity from one company.
+
+==================================================
+11. DETERMINE THE ACTUAL BOTTLENECK
+==================================================
+
+Based on FIRST ERROR counts and conditioned metrics identify:
+
+PRIMARY BOTTLENECK
+
+SECONDARY BOTTLENECK
+
+NON-BLOCKING ISSUES
+
+Do not simply choose the layer with the lowest raw metric.
+
+Example:
+
+Raw CommercialRole agreement could be 15%,
+but if CommercialRole agreement is 85% when CompanyUnderstanding is
+correct, then CommercialRole is NOT the main problem.
+
+==================================================
+12. RECOMMEND EXACTLY ONE NEXT REPAIR AREA
+==================================================
+
+Choose ONE:
+
+COMPANY_UNDERSTANDING
+COMMERCIAL_RELATIONSHIP
+WHO_QUALIFICATION
+PROFILE_EVIDENCE
+GROUND_TRUTH_EVALUATION
+MULTIPLE_UPSTREAM_DEFECTS
+
+Explain why using observed data.
+
+Do NOT implement the fix.
+
+Do NOT provide code changes.
+
+==================================================
+13. TASK #101 COST AUDITABILITY
+==================================================
+
+Separately answer:
+
+Does the cancelled Task #101 create a MATERIAL auditability risk before:
+
+A. next 20–50 company validation?
+B. continuous monitoring?
+C. production customer usage?
+
+Classify each:
+
+BLOCKING
+SHOULD_FIX_SOON
+CAN_DEFER
+
+Do NOT implement cost persistence.
+
+==================================================
+14. REQUIRED FINAL REPORT
+==================================================
+
+Return actual results under:
+
+A. Ground Truth Reliability
+
+B. 20-Company Forensic Table
+
+C. CompanyUnderstanding Metrics
+
+D. CommercialRole Conditioned Metrics
+
+E. WHO Conditioned Metrics
+
+F. UNKNOWN Quality
+
+G. Confidence Calibration
+
+H. First-Error Distribution
+
+I. DigiPuush vs Managed SOC
+
+J. Primary Bottleneck
+
+K. Secondary Bottleneck
+
+L. One Recommended Repair Area
+
+M. Cost Auditability Assessment
+
+N. Provider Calls During Audit
+
+O. Semantic Calls During Audit
+
+Provider Calls MUST = 0.
+Semantic Calls MUST = 0.
+
+==================================================
+15. FINAL VERDICT
+==================================================
+
+Return EXACTLY ONE:
+
+A — COMPANY UNDERSTANDING IS PRIMARY QUALITY BOTTLENECK
+
+B — COMMERCIAL RELATIONSHIP REASONING IS PRIMARY QUALITY BOTTLENECK
+
+C — WHO QUALIFICATION IS PRIMARY QUALITY BOTTLENECK
+
+D — PROFILE / EVIDENCE QUALITY IS PRIMARY BOTTLENECK
+
+E — EVALUATION GROUND TRUTH IS NOT RELIABLE ENOUGH
+
+F — MULTIPLE UPSTREAM INTELLIGENCE DEFECTS
+
+G — QUALITY IS BETTER THAN RAW METRICS SUGGEST AFTER CONDITIONING
+
+==================================================
+16. STOP
+==================================================
+
+After producing the ACTUAL AUDIT RESULTS:
+
+STOP.
+
+DO NOT:
+
+- modify code
+- modify prompts
+- modify models
+- modify thresholds
+- modify ICPs
+- modify architecture
+- call providers
+- rerun companies
+- run another benchmark
+- run the 50-company Reality Test
+- build outreach
+
+This task is analysis only.
