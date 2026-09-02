@@ -208,7 +208,7 @@ export async function orchestrateCompanyIntelligence(input: {
     .limit(1);
   if (!initial) throw new Error("Company is not available in this project");
   const minimum = await ensureMinimumCompanyIntelligence(input);
-  if (!minimum.identitySafe) {
+  if (!minimum.identitySafe && minimum.identityPermissions.trustLevel === "UNSAFE") {
     const reason = minimum.identityPermissions.reasonCode as CompanyIntelligenceReasonCode;
     return result({
       status: "BLOCKED",

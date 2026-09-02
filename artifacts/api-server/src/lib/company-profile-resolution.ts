@@ -55,6 +55,7 @@ export type PersistedCompanyProfileResolutionInput = {
   request: CompanyProfileResolutionRequest;
   freshnessDays?: number;
   now?: Date;
+  provisionalOnly?: boolean;
 };
 
 type ProfileCachePayload = {
@@ -804,7 +805,9 @@ export async function resolveAndPersistCompanyProfile(
   if (Buffer.byteLength(JSON.stringify(payload), "utf8") > MAX_STORED_PAYLOAD_BYTES) {
     throw new Error("Company profile resolution payload exceeds the persistence byte limit");
   }
-  const shouldAttach = result.resolutionStatus === "VERIFIED" && Boolean(result.normalizedProfileUrl);
+  const shouldAttach = !input.provisionalOnly &&
+    result.resolutionStatus === "VERIFIED" &&
+    Boolean(result.normalizedProfileUrl);
   let canonicalUpdated = false;
   await db.transaction(async (tx) => {
     if (shouldAttach && result.normalizedProfileUrl) {

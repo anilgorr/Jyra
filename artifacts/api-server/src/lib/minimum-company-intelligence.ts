@@ -11,7 +11,7 @@ import { deriveIdentityPermissions, type IdentityPermissions } from "./identity-
 
 /** This contract is deliberately small and frozen: it establishes only enough
  * company context to safely run the existing CompanyUnderstanding classifier. */
-export const MINIMUM_COMPANY_INTELLIGENCE_VERSION = "architecture-v1-minimum-company-intelligence-v2";
+export const MINIMUM_COMPANY_INTELLIGENCE_VERSION = "architecture-v1-minimum-company-intelligence-v3";
 const SOURCE_TYPE = "MINIMUM_COMPANY_INTELLIGENCE";
 
 export type MinimumCompanyIntelligence = {
@@ -75,10 +75,16 @@ async function ensureMinimumCompanyIntelligenceUnlocked(input: {
   )).orderBy(desc(companyProvenanceTable.createdAt));
   const profile = await getCanonicalCompanyProfile(input.projectId, company);
   const evidence = buildCandidateEvidence(profile, rows, { includeAssessmentSnapshots: false });
-  let identityPermissions = deriveIdentityPermissions({ domain: company.domain, provenance: rows });
+  let identityPermissions = deriveIdentityPermissions({
+    domain: company.domain,
+    provenance: rows,
+    canonicalRecordDomain: true,
+  });
   let identitySafe = identityPermissions.canRunCompanyUnderstanding;
+  let researchAllowed = identityPermissions.canPublicProfileResearch;
   const fingerprint = createHash("sha256").update(JSON.stringify({
-    version: MINIMUM_COMPANY_INTELLIGENCE_VERSION, companyId: company.id, identitySafe,
+    version: MINIMUM_COMPANY_INTELLIGENCE_VERSION, companyId: company.id,
+    identityTrustLevel: identityPermissions.trustLevel,
     evidenceIds: evidence.map(({ id }) => id).sort(), description: profile.primaryBusinessDescription,
     industry: profile.canonicalIndustry, products: profile.productsServices,
   })).digest("hex");
@@ -93,14 +99,20 @@ async function ensureMinimumCompanyIntelligenceUnlocked(input: {
     evidenceIds: evidence.map(({ id }) => id), attempts: (prior.payload.attempts as MinimumCompanyIntelligence["attempts"]) ?? { profileResolution: 0, firmographics: 0 },
   };
   let attempts = { profileResolution: 0, firmographics: 0 };
-  let stage: MinimumCompanyIntelligence["stage"] = identitySafe ? (sufficient(profile, rows) ? "SUFFICIENT" : "INSUFFICIENT") : "UNSAFE_IDENTITY";
+  let stage: MinimumCompanyIntelligence["stage"] = !researchAllowed
+    ? "UNSAFE_IDENTITY"
+    : identitySafe && sufficient(profile, rows)
+      ? "SUFFICIENT"
+      : "INSUFFICIENT";
   // Research-safe identities may gather project-scoped provisional evidence.
   // Only a verified resolution may update canonical identifiers or unlock
   // attribution-sensitive downstream actions.
   if (stage === "INSUFFICIENT") {
+    const attributionSafeBeforeResearch = identityPermissions.trustLevel === "ATTRIBUTION_SAFE";
     const discovery = rows.find((row) => row.sourceType === "JYRA_DISCOVERY");
     const resolution = await resolveAndPersistCompanyProfile({
       organizationId: input.organizationId, projectId: input.projectId, companyId: company.id, router: input.router,
+      provisionalOnly: identityPermissions.trustLevel === "RESEARCH_SAFE",
       request: { companyId: company.id, companyName: company.canonicalName, canonicalDomain: company.domain,
         websiteUrl: company.website, country: company.country, industry: company.industry, existingProfileUrls: company.profileUrls ?? {},
         existingProfileVerified: false,
@@ -124,7 +136,11 @@ async function ensureMinimumCompanyIntelligenceUnlocked(input: {
     // this orchestration owns the one bounded primary/fallback resolution pass.
     // A verified result can safely be reused by the helper without another web
     // search, then it may make its single firmographics request.
-    if (resolution.response.data?.resolutionStatus === "VERIFIED" && resolution.searchCalls < 2) {
+    if (
+      attributionSafeBeforeResearch &&
+      resolution.response.data?.resolutionStatus === "VERIFIED" &&
+      resolution.searchCalls < 2
+    ) {
       const enrichment = await enrichCompanyFirmographics({
         organizationId: input.organizationId, projectId: input.projectId, companyId: company.id, router: input.router, now,
       });
@@ -133,27 +149,68 @@ async function ensureMinimumCompanyIntelligenceUnlocked(input: {
     const refreshed = await db.select().from(companyProvenanceTable).where(and(
       eq(companyProvenanceTable.projectId, input.projectId), eq(companyProvenanceTable.companyId, company.id),
     )).orderBy(desc(companyProvenanceTable.createdAt));
-    identityPermissions = deriveIdentityPermissions({ domain: company.domain, provenance: refreshed });
+    identityPermissions = deriveIdentityPermissions({
+      domain: company.domain,
+      provenance: refreshed,
+      canonicalRecordDomain: true,
+    });
     identitySafe = identityPermissions.canRunCompanyUnderstanding;
+    researchAllowed = identityPermissions.canPublicProfileResearch;
+    const resolutionData = resolution.response.data;
+    if (
+      identitySafe &&
+      resolutionData?.resolutionStatus === "VERIFIED" &&
+      resolutionData.normalizedProfileUrl &&
+      company.linkedinUrl !== resolutionData.normalizedProfileUrl
+    ) {
+      await db.update(companiesTable).set({
+        linkedinUrl: resolutionData.normalizedProfileUrl,
+        updatedAt: new Date(),
+      }).where(eq(companiesTable.id, company.id));
+      company.linkedinUrl = resolutionData.normalizedProfileUrl;
+    }
     const refreshedProfile = await getCanonicalCompanyProfile(input.projectId, company);
-    stage = sufficient(refreshedProfile, refreshed) ? "SUFFICIENT" : "INSUFFICIENT";
+    stage = !researchAllowed
+      ? "UNSAFE_IDENTITY"
+      : identitySafe && sufficient(refreshedProfile, refreshed)
+        ? "SUFFICIENT"
+        : "INSUFFICIENT";
   }
   const finalRows = await db.select().from(companyProvenanceTable)
     .where(and(eq(companyProvenanceTable.projectId, input.projectId), eq(companyProvenanceTable.companyId, company.id)))
     .orderBy(desc(companyProvenanceTable.createdAt));
   const finalProfile = await getCanonicalCompanyProfile(input.projectId, company);
   const finalEvidence = buildCandidateEvidence(finalProfile, finalRows, { includeAssessmentSnapshots: false });
-  identityPermissions = deriveIdentityPermissions({ domain: company.domain, provenance: finalRows });
+  identityPermissions = deriveIdentityPermissions({
+    domain: company.domain,
+    provenance: finalRows,
+    canonicalRecordDomain: true,
+  });
   identitySafe = identityPermissions.canRunCompanyUnderstanding;
+  researchAllowed = identityPermissions.canPublicProfileResearch;
+  stage = !researchAllowed
+    ? "UNSAFE_IDENTITY"
+    : identitySafe && sufficient(finalProfile, finalRows)
+      ? "SUFFICIENT"
+      : "INSUFFICIENT";
   const reasonCode = stage === "SUFFICIENT" ? null
     : stage === "UNSAFE_IDENTITY" ? identityPermissions.reasonCode
-    : "COMPANY_PROFILE_MISSING";
-  const missingRequirements = stage === "SUFFICIENT" ? [] : [stage === "UNSAFE_IDENTITY" ? "safe company identity" : "primary business evidence"];
+    : identityPermissions.trustLevel === "RESEARCH_SAFE"
+      ? "IDENTITY_ATTRIBUTION_EVIDENCE_INSUFFICIENT"
+      : "COMPANY_PROFILE_MISSING";
+  const missingRequirements = stage === "SUFFICIENT" ? [] : [
+    stage === "UNSAFE_IDENTITY"
+      ? "safe company identity"
+      : identityPermissions.trustLevel === "RESEARCH_SAFE"
+        ? "attribution-grade identity corroboration"
+        : "primary business evidence",
+  ];
   const nextRecommendedCapability = stage === "UNSAFE_IDENTITY"
     ? (identityPermissions.reasonCode === "DOMAIN_MISSING" ? "DOMAIN_RESOLUTION" : null)
     : stage === "INSUFFICIENT" ? "COMPANY_PROFILE_RESOLUTION" : null;
   const finalFingerprint = createHash("sha256").update(JSON.stringify({
-    version: MINIMUM_COMPANY_INTELLIGENCE_VERSION, companyId: company.id, identitySafe,
+    version: MINIMUM_COMPANY_INTELLIGENCE_VERSION, companyId: company.id,
+    identityTrustLevel: identityPermissions.trustLevel,
     evidenceIds: finalEvidence.map(({ id }) => id).sort(), description: finalProfile.primaryBusinessDescription,
     industry: finalProfile.canonicalIndustry, products: finalProfile.productsServices,
   })).digest("hex");

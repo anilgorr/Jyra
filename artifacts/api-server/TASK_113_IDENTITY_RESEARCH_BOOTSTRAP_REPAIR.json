@@ -1,0 +1,125 @@
+{
+  "task": 113,
+  "title": "Identity research-safe bootstrap repair",
+  "status": "PASS",
+  "completedAt": "2026-09-02",
+  "scope": {
+    "identityPermissionsChanged": true,
+    "minimumCompanyIntelligenceGateChanged": true,
+    "controlPlaneUnsafeVsInsufficientDistinctionChanged": true,
+    "promptsChanged": false,
+    "modelsChanged": false,
+    "providersChanged": false,
+    "providerRoutingChanged": false,
+    "commercialRoleChanged": false,
+    "whoIcpChanged": false,
+    "businessTwinsChanged": false,
+    "offeringsChanged": false,
+    "signalPacksChanged": false,
+    "holdoutLabelsUsed": false,
+    "task112Rescored": false,
+    "productionModified": false
+  },
+  "policy": {
+    "version": "architecture-v1-identity-actions-v2",
+    "trustLevels": [
+      "UNSAFE",
+      "RESEARCH_SAFE",
+      "ATTRIBUTION_SAFE"
+    ],
+    "researchSafeAllows": [
+      "bounded public profile research",
+      "project/company-scoped provisional evidence"
+    ],
+    "researchSafeDenies": [
+      "canonical facts",
+      "Company Understanding",
+      "CommercialRole",
+      "signals",
+      "opportunities",
+      "ranking",
+      "contacts",
+      "outreach"
+    ],
+    "attributionSafeRequires": [
+      "valid normalized domain",
+      "legitimate or canonical-record domain association",
+      "independent verified corroboration",
+      "no known contradiction",
+      "no unresolved collision"
+    ],
+    "allKnownConflictsFailClosed": true,
+    "confirmedDiscoveryAloneIsAttributionSafe": false
+  },
+  "minimumCompanyIntelligence": {
+    "version": "architecture-v1-minimum-company-intelligence-v3",
+    "bootstrapProfileResolutionIsProvisional": true,
+    "provisionalSourceType": "COMPANY_PROFILE_RESOLUTION_REVIEW",
+    "provisionalVisibility": "PRIVATE",
+    "canonicalAttachmentAfterReassessmentOnly": true,
+    "firmographicsAllowedDuringResearchSafeBootstrap": false,
+    "advisoryLockPreserved": true,
+    "cacheFingerprintIncludesTrustLevel": true
+  },
+  "genericTests": {
+    "requiredCasesPassed": 12,
+    "requiredCasesTotal": 12,
+    "additionalSecurityAssertions": [
+      "verified resolver row alone cannot promote",
+      "older contradiction cannot be hidden by newer verification",
+      "confirmed discovery alone remains research-safe"
+    ],
+    "result": "PASS"
+  },
+  "developmentIntegration": {
+    "result": "PASS",
+    "fixtureType": "generated generic companies",
+    "providerOutput": "simulated",
+    "trustBefore": "RESEARCH_SAFE",
+    "publicResearchCalls": 1,
+    "firmographicCallsBeforeReassessment": 0,
+    "privateProvisionalRows": 1,
+    "projectScoped": true,
+    "candidateScoped": true,
+    "trustAfter": "ATTRIBUTION_SAFE",
+    "downstreamEligibleAfterPromotion": true,
+    "prematureSignals": 0,
+    "prematureOpportunities": 0,
+    "replayCacheHit": true,
+    "duplicatePromotions": 0,
+    "crossCandidateLeakage": false,
+    "fixtureRetentionReason": "company_provenance is append-only"
+  },
+  "verification": {
+    "task113GenericSuite": "PASS",
+    "developmentIntegration": "PASS",
+    "minimumCompanyIntelligenceSuite": "PASS",
+    "companyIdentitySuite": "PASS",
+    "companyProfileResolutionSuite": "PASS",
+    "evidenceSuite": "PASS",
+    "researchOrchestrationSuite": "PASS",
+    "companyAssessmentReadinessSuite": "PASS",
+    "semanticIdempotencySuite": "PASS",
+    "opportunitySuite": "PASS",
+    "buyerRoleSuite": "PASS",
+    "task106WhoSuite": "PASS",
+    "task107CommercialRoleSuite": "PASS",
+    "task109EvidenceToIcpSuite": "PASS",
+    "canonicalCompanyProfileSuite": "PASS",
+    "signalsSuite": {
+      "result": "FAIL",
+      "classification": "pre-existing unrelated fixture-state failure",
+      "detail": "Direct signal-generation fixture expected at least three project signals but produced fewer; Task 113 does not change signal generation."
+    },
+    "typecheck": "PASS",
+    "build": "PASS",
+    "architectureReview": "PASS"
+  },
+  "task112PredictionArtifact": {
+    "path": "evaluations/jyra-holdout-v1/TASK_112_JYRA_PREDICTIONS.json",
+    "sha256": "309c191d47a9008795ff58a7bdb84875f7198bd61af495fb676882be8e73c7ff",
+    "unchanged": true
+  },
+  "documentation": "docs/identity-research-safe-bootstrap.md",
+  "nextRecommendedStep": "After approval, create and freeze a new blind cohort; do not reopen or rescore Task 112."
+}

@@ -1,0 +1,703 @@
+TASK #113 — IDENTITY RESEARCH-SAFE BOOTSTRAP REPAIR
+
+PURPOSE
+
+Task #112 exposed a systemic control-plane deadlock.
+
+Observed result:
+
+12/12 candidate identities were resolved to the expected exact domains.
+
+However:
+
+CommercialRole coverage:
+0/12
+
+WHO coverage:
+0/12
+
+External provider calls:
+0
+
+Semantic calls:
+0
+
+All 12 candidates received:
+
+identityPermission = UNSAFE
+
+reason:
+IDENTITY_EVIDENCE_INSUFFICIENT
+
+That permission then blocked all research.
+
+This creates a circular dependency:
+
+identity evidence insufficient
+→ identity UNSAFE
+→ research forbidden
+→ identity evidence can never be gathered
+
+This is inconsistent with JYRA's progressive identity-trust architecture.
+
+The required architecture is:
+
+candidate identity
+→ RESEARCH_SAFE
+→ provisional public research
+→ identity corroboration
+→ ATTRIBUTION_SAFE
+→ canonical facts
+→ Company Understanding
+→ CommercialRole
+→ WHO
+
+Task #113 must repair ONLY this generic identity/research permission boundary.
+
+DO NOT tune against Task #112 gold labels.
+
+==================================================
+1. DATABASE SAFETY
+==================================================
+
+DATABASE SAFETY:
+
+Development only.
+
+DO NOT:
+
+- modify production
+- migrate production
+- reset production
+- seed production
+- truncate production
+- test using production customer data
+
+Production must remain unchanged.
+
+==================================================
+2. DO NOT USE HOLDOUT GOLD FOR THE REPAIR
+==================================================
+
+During implementation:
+
+DO NOT read or use:
+
+evaluations/jyra-holdout-v1/JYRA_SMALL_HOLDOUT_GOLD_V1.json
+
+evaluations/jyra-holdout-v1/HOLDOUT_V1_HUMAN_REVIEW.csv
+
+Do not tune:
+
+CommercialRole labels
+WHO labels
+confidence thresholds
+ICP criteria
+seller-specific rules
+
+Do not create company-specific exceptions.
+
+The only Task #112 fact relevant to this repair is the generic failure mode:
+
+exact-domain identity candidates were blocked from public research because identity evidence was not yet sufficient for attribution.
+
+==================================================
+3. PRESERVE THE THREE TRUST LEVELS
+==================================================
+
+The system must preserve distinct identity permissions:
+
+UNSAFE
+RESEARCH_SAFE
+ATTRIBUTION_SAFE
+
+Do NOT collapse these levels.
+
+Meaning:
+
+UNSAFE
+
+The candidate is too ambiguous or contradictory even for entity-directed research.
+
+Examples:
+
+- malformed/invalid domain
+- unresolved same-name entity with no distinguishing identifier
+- strong conflicting identity evidence
+- candidate domain clearly belongs to another organization
+- unresolved entity collision
+- unsafe cross-company attribution risk
+
+--------------------------------------------------
+
+RESEARCH_SAFE
+
+JYRA has enough identifying information to inspect public sources ABOUT the candidate, but not enough evidence yet to attach factual claims canonically.
+
+Research performed while RESEARCH_SAFE must enter the provisional evidence workspace.
+
+RESEARCH_SAFE must NOT permit:
+
+- canonical fact attribution
+- signals
+- opportunity decisions
+- outreach/contact attribution
+- automatic canonical entity merging
+
+--------------------------------------------------
+
+ATTRIBUTION_SAFE
+
+Independent evidence sufficiently corroborates the candidate identity.
+
+Only then may evidence/facts be promoted from provisional workspace into the canonical intelligence store according to existing evidence-admission rules.
+
+==================================================
+4. GENERIC RESEARCH-SAFE BOOTSTRAP RULE
+==================================================
+
+Implement a deterministic generic bootstrap policy.
+
+A candidate MAY become RESEARCH_SAFE when all of the following are true:
+
+A. a syntactically valid normalized domain is available
+
+B. the domain is explicitly associated with the candidate through a legitimate source, such as:
+
+- user/imported company row
+- company discovery provider result
+- existing company record
+- explicit company URL
+- deterministic entity-resolution output
+
+C. there is no known contradictory identity evidence
+
+D. there is no unresolved collision indicating the domain may belong to a different company
+
+E. the candidate is sufficiently identifiable for targeted public research
+
+IMPORTANT:
+
+Exact domain alone is NOT enough for ATTRIBUTION_SAFE.
+
+It is only enough, with valid provenance and no contradiction, to permit bounded RESEARCH_SAFE public investigation.
+
+==================================================
+5. IMPORTANT DISTINCTION
+==================================================
+
+Do NOT interpret:
+
+"identity evidence insufficient"
+
+as automatically:
+
+UNSAFE
+
+Instead distinguish:
+
+INSUFFICIENT_FOR_ATTRIBUTION
+
+from:
+
+UNSAFE_FOR_RESEARCH
+
+A candidate may be:
+
+insufficient for canonical attribution
+BUT
+safe enough to research.
+
+Create/reuse explicit reason codes if useful, for example:
+
+IDENTITY_RESEARCH_BOOTSTRAP_ALLOWED
+IDENTITY_ATTRIBUTION_EVIDENCE_INSUFFICIENT
+IDENTITY_CONFLICT
+IDENTITY_COLLISION
+IDENTITY_DOMAIN_INVALID
+
+Follow repository naming conventions.
+
+==================================================
+6. RESEARCH BEHAVIOR
+==================================================
+
+When candidate is RESEARCH_SAFE:
+
+the normal orchestrator must be allowed to execute appropriate public research capabilities.
+
+Examples:
+
+COMPANY_LOOKUP
+COMPANY_PROFILE_RESOLUTION
+COMPANY_FIRMOGRAPHICS
+WEB_SEARCH
+WEBSITE_CRAWL
+NEWS_SEARCH
+
+Only capabilities already configured in JYRA may be used.
+
+Do NOT add providers.
+
+Do NOT force provider calls.
+
+Existing cost/router/budget policies remain unchanged.
+
+==================================================
+7. PROVISIONAL EVIDENCE
+==================================================
+
+All evidence collected while identity is only RESEARCH_SAFE must remain:
+
+candidate-scoped
+project-scoped
+provisional
+
+It must NOT automatically become canonical company truth.
+
+Preserve:
+
+source
+provider
+URL
+timestamp
+evidence ID
+candidate ID
+project ID
+identity association rationale
+
+No cross-company leakage.
+
+==================================================
+8. IDENTITY REASSESSMENT
+==================================================
+
+After sufficient provisional evidence is collected:
+
+run the existing deterministic identity reassessment.
+
+Possible outcomes:
+
+A. corroborated identity
+→ ATTRIBUTION_SAFE
+
+B. still insufficient but non-conflicting
+→ remain RESEARCH_SAFE
+
+C. conflicting/wrong entity
+→ UNSAFE
+
+Do not force promotion.
+
+==================================================
+9. ATTRIBUTION PROMOTION
+==================================================
+
+Only after ATTRIBUTION_SAFE:
+
+eligible provisional evidence may be promoted according to existing evidence-admission rules.
+
+Then normal downstream processing may occur:
+
+Minimum Company Intelligence
+CompanyAssessmentReadiness
+Company Understanding
+Commercial Relationship
+WHO
+
+Do not create a benchmark-specific shortcut directly from RESEARCH_SAFE to CommercialRole/WHO.
+
+==================================================
+10. NO CHANGES TO DOWNSTREAM INTELLIGENCE
+==================================================
+
+Task #113 must NOT change:
+
+Company Understanding prompt
+CommercialRole prompt
+commercial-relationship-v2
+WHO prompt
+WHO deterministic policies
+ICP interpretation
+geography interpretation
+evidence-to-ICP handoff
+seller Business Twin
+offerings
+signal packs
+model versions
+model thresholds
+
+The Task #112 run never reached those layers.
+
+Do not repair what was not tested.
+
+==================================================
+11. REQUIRED GENERIC TESTS
+==================================================
+
+Add deterministic tests covering at least:
+
+TEST 1
+
+Imported company:
+valid exact domain
+no contradictory identity evidence
+
+Expected:
+
+permission =
+RESEARCH_SAFE
+
+NOT:
+UNSAFE
+
+NOT:
+ATTRIBUTION_SAFE
+
+--------------------------------------------------
+
+TEST 2
+
+Discovery-provider candidate:
+company name + valid exact domain + source provenance
+
+Expected:
+RESEARCH_SAFE
+
+--------------------------------------------------
+
+TEST 3
+
+Candidate with exact domain but conflicting evidence showing domain belongs to another organization
+
+Expected:
+UNSAFE
+
+--------------------------------------------------
+
+TEST 4
+
+Same-name company with no domain or distinguishing identifier
+
+Expected:
+UNSAFE
+
+--------------------------------------------------
+
+TEST 5
+
+RESEARCH_SAFE candidate can request public company research through normal orchestrator.
+
+Expected:
+
+provider/router action allowed
+
+--------------------------------------------------
+
+TEST 6
+
+RESEARCH_SAFE candidate cannot create canonical facts directly.
+
+Expected:
+
+evidence remains provisional
+
+--------------------------------------------------
+
+TEST 7
+
+RESEARCH_SAFE candidate cannot generate signals/opportunity conclusions merely because research was allowed.
+
+Expected:
+
+no premature canonical downstream attribution
+
+--------------------------------------------------
+
+TEST 8
+
+Provisional evidence corroborates:
+
+candidate company name
+candidate domain
+first-party website identity
+
+Expected:
+
+identity can promote to ATTRIBUTION_SAFE
+
+according to existing confidence/evidence rules.
+
+--------------------------------------------------
+
+TEST 9
+
+After ATTRIBUTION_SAFE:
+
+normal downstream pipeline becomes eligible.
+
+--------------------------------------------------
+
+TEST 10
+
+Research discovers contradiction.
+
+Expected:
+
+permission transitions:
+
+RESEARCH_SAFE
+→ UNSAFE
+
+No evidence promotion.
+
+--------------------------------------------------
+
+TEST 11
+
+Repeated processing is idempotent.
+
+No duplicate provisional evidence promotion.
+
+--------------------------------------------------
+
+TEST 12
+
+Candidate A provisional evidence can never satisfy identity for Candidate B.
+
+Tenant/project/entity isolation preserved.
+
+==================================================
+12. REGRESSION TESTS
+==================================================
+
+Run existing suites for:
+
+identity
+entity resolution
+orchestrator
+provisional evidence
+Minimum Company Intelligence
+CompanyAssessmentReadiness
+Company Understanding
+CommercialRole
+WHO
+Task #105
+Task #106
+Task #107
+Task #109
+
+There must be no regression in:
+
+dangerous cross-entity attribution protection
+canonical evidence safety
+commercial relationship logic
+WHO policy
+fact handoff
+
+==================================================
+13. DEVELOPMENT INTEGRATION TEST
+==================================================
+
+Create a development-only integration test using generic/non-holdout fixtures.
+
+Demonstrate:
+
+new company candidate
++
+valid domain
++
+no prior canonical evidence
+
+BEFORE REPAIR:
+
+would have stopped at identity evidence insufficient.
+
+AFTER REPAIR:
+
+RESEARCH_SAFE
+→ research action permitted
+→ provisional evidence collected/simulated
+→ identity reassessed
+→ ATTRIBUTION_SAFE when corroborated
+→ downstream eligibility
+
+Do not use any of the 12 Task #112 companies as a label-tuning fixture.
+
+==================================================
+14. DO NOT SCORE TASK #112 AGAIN
+==================================================
+
+Task #113 must NOT calculate:
+
+Task #112 CommercialRole accuracy
+Task #112 WHO accuracy
+buyer precision
+competitor recall
+holdout confusion matrices
+
+Do not alter:
+
+TASK_112_JYRA_PREDICTIONS.json
+
+Its SHA-256 must remain:
+
+309c191d47a9008795ff58a7bdb84875f7198bd61af495fb676882be8e73c7ff
+
+Task #112 remains a valid historical failure.
+
+==================================================
+15. OPTIONAL POST-REPAIR COVERAGE DIAGNOSTIC
+==================================================
+
+Do NOT perform this unless the existing repository test framework already supports a safe development replay without touching the frozen Task #112 prediction artifact.
+
+If performed, it is diagnostic only.
+
+It may answer:
+
+"Does the identity deadlock still block all processing?"
+
+It must NOT be reported as a new blind generalization accuracy result.
+
+Do NOT compare against gold.
+
+Prefer generic fixtures instead.
+
+==================================================
+16. ARCHITECTURAL INVARIANT
+==================================================
+
+Add/document this invariant:
+
+"Research permission and attribution permission are distinct.
+
+A candidate that is sufficiently identified for bounded public investigation must not require attribution-grade evidence before that investigation can begin."
+
+Also document:
+
+"RESEARCH_SAFE permits evidence acquisition, not truth attribution."
+
+==================================================
+17. ARTIFACTS
+==================================================
+
+Create:
+
+artifacts/api-server/TASK_113_IDENTITY_RESEARCH_BOOTSTRAP_REPAIR.json
+
+docs/identity-research-safe-bootstrap.md
+
+Include:
+
+root cause
+before behavior
+after behavior
+permission transition table
+reason codes
+changed files
+tests
+provider changes
+prompt changes
+production status
+
+==================================================
+18. EXPECTED SUCCESS CONDITION
+==================================================
+
+PASS requires proof that:
+
+1. exact-domain/provenance candidates no longer automatically deadlock at UNSAFE merely because attribution evidence is initially insufficient
+
+2. those candidates can enter RESEARCH_SAFE
+
+3. RESEARCH_SAFE permits bounded public research
+
+4. research evidence remains provisional
+
+5. ATTRIBUTION_SAFE still requires corroboration
+
+6. contradictory identities remain UNSAFE
+
+7. no downstream semantic/WHO logic changed
+
+8. no production modification
+
+==================================================
+19. FINAL RESPONSE FORMAT
+==================================================
+
+Return:
+
+TASK #113 — IDENTITY RESEARCH-SAFE BOOTSTRAP REPAIR
+
+Status:
+PASS / FAIL
+
+Root cause confirmed:
+YES / NO
+
+Root cause:
+<brief>
+
+Before:
+<permission flow>
+
+After:
+<permission flow>
+
+Changed runtime files:
+<list>
+
+Changed prompts:
+0
+
+Changed models:
+0
+
+Changed provider routing:
+0
+
+Changed ICP/WHO/CommercialRole logic:
+0
+
+Production modified:
+NO
+
+Generic identity tests:
+x/x
+
+Regression suites:
+x/x
+
+Integration test:
+PASS / FAIL
+
+RESEARCH_SAFE can initiate public research:
+YES / NO
+
+RESEARCH_SAFE evidence remains provisional:
+YES / NO
+
+ATTRIBUTION_SAFE still requires corroboration:
+YES / NO
+
+Conflicting identity remains UNSAFE:
+YES / NO
+
+Task #112 prediction SHA unchanged:
+YES / NO
+
+Artifact:
+<path>
+
+Documentation:
+<path>
+
+NEXT STEP:
+
+State only:
+
+"Identity bootstrap repair is complete. Use a new blind cohort for the next generalization measurement; Task #112 remains the historical pre-repair failure."
+
+Do not create the next holdout until approved.

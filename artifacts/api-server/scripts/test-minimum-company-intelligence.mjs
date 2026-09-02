@@ -26,6 +26,8 @@ const probable = lib.deriveIdentityPermissions({ domain: "buyer.example", proven
 assert.equal(probable.trustLevel, "RESEARCH_SAFE");
 assert.equal(probable.canPublicProfileResearch, true);
 assert.equal(probable.canAttachCanonicalFacts, false);
+assert.equal(probable.canRunCompanyUnderstanding, false, "research permission is not attribution permission");
+assert.equal(probable.canRunCommercialRole, false, "research-safe cannot skip identity corroboration");
 const conflicting = lib.deriveIdentityPermissions({ domain: "buyer.example", provenance: [{
   sourceType: "JYRA_DISCOVERY",
   payload: {

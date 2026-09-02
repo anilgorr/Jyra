@@ -382,9 +382,34 @@ try {
       async lookupCompany() {
         throw new Error("identity lookup should not be required");
       },
-      async searchWeb() {
+      async searchWeb(request) {
         discoveryResolutionCalls += 1;
-        throw new Error("profile resolution should not be required");
+        const domain = `automatic-buyer-${suffix}.com`;
+        return {
+          status: "success",
+          providerId: "router",
+          providerRequestId: request.requestId,
+          data: {
+            results: discoveryResolutionCalls === 2
+              ? [{
+                  title: `Automatic Buyer ${suffix} | LinkedIn`,
+                  url: `https://linkedin.com/company/automatic-buyer-${suffix}/`,
+                  snippet: `Automatic Buyer ${suffix} manufactures industrial pumps. Official website: https://${domain}`,
+                }]
+              : [],
+          },
+          sources: [],
+          usage: {
+            estimatedCost: 0,
+            actualCost: 0,
+            latencyMs: 1,
+            runtimeMs: 1,
+            resultCount: discoveryResolutionCalls === 2 ? 1 : 0,
+          },
+          error: null,
+          retryable: false,
+          capturedAt: new Date().toISOString(),
+        };
       },
       async enrichCompany() {
         discoveryResolutionCalls += 1;
@@ -395,7 +420,7 @@ try {
   assert.equal(automaticDiscovery.candidates.length, 1);
   assert.ok(automaticDiscovery.candidates[0].intelligence, "accepted discovery candidate must enter the control plane");
   assert.equal(automaticDiscovery.candidates[0].intelligence.reasonCode, "READY_FOR_SIGNAL_RESEARCH");
-  assert.equal(discoveryResolutionCalls, 0, "sufficient discovery evidence must not force another provider call");
+  assert.equal(discoveryResolutionCalls, 2, "research-safe discovery identity must receive bounded corroboration before semantic work");
   assert.equal(semanticModelCalls, 1, "an unresolved accepted candidate gets one semantic assessment");
   let boundSearchCalls = 0;
   const statefulRouter = {
