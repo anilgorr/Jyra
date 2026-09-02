@@ -1,0 +1,146 @@
+[
+  {
+    "holdoutCompanyId": "93e96426-1491-4142-abf8-c2f5e80d88b9",
+    "domainKey": "chargebee.com",
+    "company": "Chargebee",
+    "domain": "chargebee.com",
+    "targetDomain": "DIGIPUUSH",
+    "selectionSource": "https://saasboomi.org/our-story/",
+    "selectionReason": "Indian B2B SaaS ecosystem source; subscription-software category."
+  },
+  {
+    "holdoutCompanyId": "2d4f65f2-785a-462d-88b4-08b3e2547a8c",
+    "domainKey": "hasura.io",
+    "company": "Hasura",
+    "domain": "hasura.io",
+    "targetDomain": "DIGIPUUSH",
+    "selectionSource": "https://saasboomi.org/podcast/what-makes-hasura-the-next-big-thing-in-indian-saas/",
+    "selectionReason": "Indian SaaS ecosystem profile; data-platform category."
+  },
+  {
+    "holdoutCompanyId": "19ac4e0e-559d-4d3b-8c97-ea15f72a24dd",
+    "domainKey": "drdroid.io",
+    "company": "DrDroid",
+    "domain": "drdroid.io",
+    "targetDomain": "DIGIPUUSH",
+    "selectionSource": "https://www.ycombinator.com/companies/industry/saas/india",
+    "selectionReason": "India SaaS accelerator directory; operations-technology category."
+  },
+  {
+    "holdoutCompanyId": "efb9f50e-7cb1-498e-84e9-4fda9b1e7c16",
+    "domainKey": "schbang.com",
+    "company": "Schbang",
+    "domain": "schbang.com",
+    "targetDomain": "DIGIPUUSH",
+    "selectionSource": "https://www.dmcockpit.com/top-digital-marketing-agencies-in-india",
+    "selectionReason": "India marketing-agency list; full-service agency category."
+  },
+  {
+    "holdoutCompanyId": "1dea0dcd-85c7-4f13-87e3-856e52e79552",
+    "domainKey": "socialbeat.in",
+    "company": "Social Beat",
+    "domain": "socialbeat.in",
+    "targetDomain": "DIGIPUUSH",
+    "selectionSource": "https://www.dmcockpit.com/top-digital-marketing-agencies-in-india",
+    "selectionReason": "India marketing-agency list; digital-growth agency category."
+  },
+  {
+    "holdoutCompanyId": "c08fb7d3-d435-4a60-b2b5-88de4be06210",
+    "domainKey": "thatware.co",
+    "company": "ThatWare",
+    "domain": "thatware.co",
+    "targetDomain": "DIGIPUUSH",
+    "selectionSource": "https://thatware.co/geo-services/",
+    "selectionReason": "Public GEO service listing; overlapping search and AI-visibility category."
+  },
+  {
+    "holdoutCompanyId": "6eddb470-a147-49bb-ba00-c73fd5ef3387",
+    "domainKey": "scalenut.com",
+    "company": "Scalenut",
+    "domain": "scalenut.com",
+    "targetDomain": "DIGIPUUSH",
+    "selectionSource": "https://www.scalenut.com/products/ai-visibility",
+    "selectionReason": "Public AI-visibility product listing; marketing and AI ecosystem category."
+  },
+  {
+    "holdoutCompanyId": "64fa9c8a-7a82-4e1a-9df0-88594c273114",
+    "domainKey": "tryprofound.com",
+    "company": "Profound",
+    "domain": "tryprofound.com",
+    "targetDomain": "DIGIPUUSH",
+    "selectionSource": "https://alhena.ai/blog/profound-vs-peec-vs-scrunch-vs-alhena/",
+    "selectionReason": "Public AI-visibility market comparison; non-India and overlapping-category case."
+  },
+  {
+    "holdoutCompanyId": "c1ff6adb-e0ba-43e3-8031-effc4548bd78",
+    "domainKey": "pinelabs.com",
+    "company": "Pine Labs",
+    "domain": "pinelabs.com",
+    "targetDomain": "MANAGED_SOC",
+    "selectionSource": "https://www.pinelabs.com/",
+    "selectionReason": "Public company website; fintech and payments category."
+  },
+  {
+    "holdoutCompanyId": "966b0b9c-2794-4652-bbc2-356508030f36",
+    "domainKey": "practo.com",
+    "company": "Practo",
+    "domain": "practo.com",
+    "targetDomain": "MANAGED_SOC",
+    "selectionSource": "https://www.leadsquared.com/industries/healthcare/healthtech-startups-in-india/",
+    "selectionReason": "India healthtech list; regulated digital-business category."
+  },
+  {
+    "holdoutCompanyId": "20b11621-f344-422d-8c54-e7ef96220077",
+    "domainKey": "whatfix.com",
+    "company": "Whatfix",
+    "domain": "whatfix.com",
+    "targetDomain": "MANAGED_SOC",
+    "selectionSource": "https://www.varindia.com/news/whatfix-nears-unicorn-status-with-49-revenue-surge",
+    "selectionReason": "Public technology-industry source; enterprise SaaS category."
+  },
+  {
+    "holdoutCompanyId": "a66b03e4-9ec1-45d4-b7cd-d2b960e169f7",
+    "domainKey": "ctrls.com",
+    "company": "CtrlS Datacenters",
+    "domain": "ctrls.com",
+    "targetDomain": "MANAGED_SOC",
+    "selectionSource": "https://www.blackridgeresearch.com/blog/list-of-top-ten-largest-data-center-companies-in-india",
+    "selectionReason": "India data-center industry list; IT and infrastructure category."
+  },
+  {
+    "holdoutCompanyId": "9cac7eb5-e229-46b0-ba24-668a3ea8b24c",
+    "domainKey": "esds.co.in",
+    "company": "ESDS Software Solution",
+    "domain": "esds.co.in",
+    "targetDomain": "MANAGED_SOC",
+    "selectionSource": "https://www.esds.co.in/",
+    "selectionReason": "Public company website; sovereign cloud and data-center category."
+  },
+  {
+    "holdoutCompanyId": "9136ec53-18a9-4530-825f-75459942dbd9",
+    "domainKey": "safe.security",
+    "company": "Safe Security",
+    "domain": "safe.security",
+    "targetDomain": "MANAGED_SOC",
+    "selectionSource": "https://safe.security/",
+    "selectionReason": "Public company website; cyber-risk software category."
+  },
+  {
+    "holdoutCompanyId": "6c6f7d6b-3f0f-4d6a-8dfb-f83176c8222f",
+    "domainKey": "tacsecurity.com",
+    "company": "TAC Security",
+    "domain": "tacsecurity.com",
+    "targetDomain": "MANAGED_SOC",
+    "selectionSource": "https://tacsecurity.com/",
+    "selectionReason": "Public company website; cybersecurity product-vendor category."
+  },
+  {
+    "holdoutCompanyId": "0e45e52c-1042-4511-a021-52a68c01ce80",
+    "domainKey": "appsecco.com",
+    "company": "Appsecco",
+    "domain": "appsecco.com",
+    "targetDomain": "MANAGED_SOC",
+    "selectionSource": "https://github.com/appsecco",
+    "selectionReason": "Public organization profile; application-security services category."
+  }
+]

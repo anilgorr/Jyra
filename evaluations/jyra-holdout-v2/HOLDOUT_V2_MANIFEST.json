@@ -1,0 +1,99 @@
+{
+  "benchmark": "JYRA_BLIND_HOLDOUT_V2",
+  "task": "Task 114",
+  "cohort": {
+    "path": "evaluations/jyra-holdout-v2/HOLDOUT_V2_COHORT.json",
+    "sha256": "8a72f2e6302e0fcbfc5a8b70815acc2c88b53a66eb23ad688e551bfeefd1d314",
+    "size": 16,
+    "targetCounts": {
+      "DIGIPUUSH": 8,
+      "MANAGED_SOC": 8
+    },
+    "frozenBeforeResearch": true,
+    "checksumStableAfterResearch": true
+  },
+  "overlap": {
+    "exactCompany": 0,
+    "canonicalDomain": 0,
+    "knownAlias": 0
+  },
+  "evidence": {
+    "records": 36,
+    "companiesCovered": 16,
+    "firstPartyCompaniesCovered": 16,
+    "providerUsage": [
+      {
+        "provider": "webSearch",
+        "capability": "Public web discovery for identity, products, services, geography, and relationship facts",
+        "calls": 26,
+        "companies": 16,
+        "providerReportedCostUsd": 0,
+        "costNote": "Callback returned no cost field; reported as $0.00 per instruction."
+      },
+      {
+        "provider": "webFetch",
+        "capability": "Public-page text retrieval for evidence and hashing",
+        "calls": 48,
+        "companies": 16,
+        "providerReportedCostUsd": 0,
+        "costNote": "Callback returned no cost field; reported as $0.00 per instruction."
+      }
+    ],
+    "totalCalls": 74,
+    "totalProviderReportedCostUsd": 0,
+    "cleanRoomInsertedIntoJyra": false
+  },
+  "proposals": {
+    "count": 16,
+    "cohortOrderPreserved": true,
+    "status": "PENDING_HUMAN_REVIEW",
+    "coverage": 16
+  },
+  "humanReview": {
+    "completed": false,
+    "allHumanAndGoldFieldsBlank": true
+  },
+  "gold": {
+    "frozen": false
+  },
+  "jyraPredictions": {
+    "run": false,
+    "exposed": false
+  },
+  "changes": {
+    "runtimeCode": 0,
+    "prompts": 0,
+    "models": 0,
+    "providerRouting": 0,
+    "icp": 0,
+    "businessTwin": 0,
+    "productionModified": false
+  },
+  "task112": {
+    "predictionsPath": "evaluations/jyra-holdout-v1/TASK_112_JYRA_PREDICTIONS.json",
+    "expectedSha256": "309c191d47a9008795ff58a7bdb84875f7198bd61af495fb676882be8e73c7ff",
+    "unchanged": true
+  },
+  "task113Regression": {
+    "requiredGenericTests": "12/12 PASS",
+    "integration": "PASS",
+    "broaderRegressions": "13/14",
+    "knownUnrelatedFailure": "existing signal-count fixture expecting >=3 project signals",
+    "preserved": true
+  },
+  "task114CreatedFiles": [
+    "HOLDOUT_V2_PUBLIC_EVIDENCE.json",
+    "HOLDOUT_V2_MACHINE_PROPOSALS.json",
+    "HOLDOUT_V2_HUMAN_REVIEW.csv",
+    "HOLDOUT_V2_REVIEWER_PACKET.md",
+    "HOLDOUT_V2_MANIFEST.json",
+    "validate-holdout-v2.mjs"
+  ],
+  "artifactSha256": {
+    "HOLDOUT_V2_PUBLIC_EVIDENCE.json": "dbc1f495e512eaae798315c5f50c44a8ddf434f376bd5d33ca2e3af2eb9d86c8",
+    "HOLDOUT_V2_MACHINE_PROPOSALS.json": "27b98f4d8ff5f2be66f55db6b9573b9d488c4340d2060fd7a5fc566eb7e8238b",
+    "HOLDOUT_V2_HUMAN_REVIEW.csv": "8418dae7b6ad201b99c03c315b21630bef034d52f93754272c64c10e557f60d9",
+    "HOLDOUT_V2_REVIEWER_PACKET.md": "4baa1d11f2a7be43a0b500817039302e01c5ea221ac1475b9b071cfd8edf7caf",
+    "validate-holdout-v2.mjs": "bf50d02ed5a72cc0aa2a4141dea4b68fef75ab57e57026dad0946cf6cb62940e"
+  }
+}

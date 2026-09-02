@@ -1,0 +1,920 @@
+{
+  "benchmark": "JYRA_BLIND_HOLDOUT_V2",
+  "purpose": "Independent clean-room public evidence for human truth creation; not JYRA runtime evidence.",
+  "cleanRoom": true,
+  "jyraRuntimeEvidence": false,
+  "providerUsage": [
+    {
+      "provider": "webSearch",
+      "capability": "Public web discovery for identity, products, services, geography, and relationship facts",
+      "calls": 26,
+      "companies": 16,
+      "providerReportedCostUsd": 0,
+      "costNote": "Callback returned no cost field; reported as $0.00 per instruction."
+    },
+    {
+      "provider": "webFetch",
+      "capability": "Public-page text retrieval for evidence and hashing",
+      "calls": 48,
+      "companies": 16,
+      "providerReportedCostUsd": 0,
+      "costNote": "Callback returned no cost field; reported as $0.00 per instruction."
+    }
+  ],
+  "totalProviderCalls": 74,
+  "totalProviderReportedCostUsd": 0,
+  "evidenceRecords": [
+    {
+      "evidenceId": "DP-CHARGEBEE-01",
+      "holdoutCompanyId": "93e96426-1491-4142-abf8-c2f5e80d88b9",
+      "sourceUrl": "https://www.chargebee.com/",
+      "sourceType": "FIRST_PARTY",
+      "publisher": "Chargebee",
+      "title": "Chargebee: Billing & Monetization for SaaS and AI Companies",
+      "accessedAt": "2026-09-02",
+      "contentHash": "09a403c14b5d10c8eb5109d702798713399d29cc415a34ad5e64d2b6e4c40780",
+      "facts": [
+        {
+          "category": "IDENTITY",
+          "statement": "The chargebee.com homepage identifies the offering and brand as Chargebee."
+        },
+        {
+          "category": "PRIMARY_BUSINESS",
+          "statement": "Chargebee markets recurring billing and monetization capabilities for SaaS, software, and AI companies."
+        },
+        {
+          "category": "PRODUCTS_SERVICES",
+          "statement": "Its product set includes billing automation, usage-based billing, price books, invoicing, subscription management, payments, CPQ, revenue recognition, receivables, and retention."
+        },
+        {
+          "category": "BUSINESS_MODEL",
+          "statement": "The website presents a business software platform sold to companies managing pricing, billing, payments, and recurring revenue."
+        },
+        {
+          "category": "GEOGRAPHY",
+          "statement": "Chargebee states that global payments coverage connects 40+ gateways, 50+ payment methods, 100+ currencies, and 150+ countries; this supports global product availability, not a headquarters claim."
+        }
+      ]
+    },
+    {
+      "evidenceId": "DP-CHARGEBEE-02",
+      "holdoutCompanyId": "93e96426-1491-4142-abf8-c2f5e80d88b9",
+      "sourceUrl": "https://www.chargebee.com/contact",
+      "sourceType": "FIRST_PARTY",
+      "publisher": "Chargebee",
+      "title": "Contact Us | Chargebee",
+      "accessedAt": "2026-09-02",
+      "contentHash": "4d3df987515ade967b3d12f4fb5623433566164d3a7f730c83e6ff7880388510",
+      "facts": [
+        {
+          "category": "GEOGRAPHY",
+          "statement": "Chargebee lists offices in North Bethesda, Salt Lake City, Amsterdam, Dublin, Chennai, and Bengaluru."
+        },
+        {
+          "category": "GEOGRAPHY",
+          "statement": "The India office addresses are in Chennai, Tamil Nadu and Bengaluru, Karnataka; these are office-presence facts and do not by themselves establish headquarters."
+        }
+      ]
+    },
+    {
+      "evidenceId": "DP-HASURA-01",
+      "holdoutCompanyId": "2d4f65f2-785a-462d-88b4-08b3e2547a8c",
+      "sourceUrl": "https://hasura.io/about",
+      "sourceType": "FIRST_PARTY",
+      "publisher": "Hasura",
+      "title": "About Hasura and PromptQL",
+      "accessedAt": "2026-09-02",
+      "contentHash": "420aacf26be9fec8203a78af9411fd50b2667daba7d4c9488982bc7e1f2111bd",
+      "facts": [
+        {
+          "category": "IDENTITY",
+          "statement": "The hasura.io About page identifies PromptQL as built by the team at Hasura."
+        },
+        {
+          "category": "PRIMARY_BUSINESS",
+          "statement": "Hasura builds software for secure, fast access to organizational data for applications and AI."
+        },
+        {
+          "category": "PRODUCTS_SERVICES",
+          "statement": "The page identifies PromptQL, the Hasura GraphQL Engine, and the Hasura Data Delivery Network."
+        },
+        {
+          "category": "TECHNOLOGY",
+          "statement": "Hasura says its GraphQL Engine and Data Delivery Network run at scale in Fortune 100 enterprises and provide access to critical data."
+        }
+      ]
+    },
+    {
+      "evidenceId": "DP-HASURA-02",
+      "holdoutCompanyId": "2d4f65f2-785a-462d-88b4-08b3e2547a8c",
+      "sourceUrl": "https://hasura.io/legal/hasura-privacy-policy",
+      "sourceType": "FIRST_PARTY",
+      "publisher": "Hasura, Inc.",
+      "title": "Hasura, Inc. Privacy Policy",
+      "accessedAt": "2026-09-02",
+      "contentHash": "fa65827eeed6941220dd6d848ea98eeb21abe4a859eae1287874d4cf888208b7",
+      "facts": [
+        {
+          "category": "IDENTITY",
+          "statement": "The policy names the operator as Hasura, Inc. and covers hasura.io products and services, including Hasura Cloud/Data Delivery Network and support services."
+        },
+        {
+          "category": "GEOGRAPHY",
+          "statement": "The policy gives Hasura, Inc. a San Francisco, California 94105 contact address."
+        },
+        {
+          "category": "GEOGRAPHY",
+          "statement": "The policy says personal information may be stored in several countries including the United States and India; this is data-processing geography, not evidence of headquarters or an India office."
+        }
+      ]
+    },
+    {
+      "evidenceId": "DP-HASURA-03",
+      "holdoutCompanyId": "2d4f65f2-785a-462d-88b4-08b3e2547a8c",
+      "sourceUrl": "https://saasboomi.org/podcast/what-makes-hasura-the-next-big-thing-in-indian-saas/",
+      "sourceType": "THIRD_PARTY",
+      "publisher": "SaaSBoomi",
+      "title": "What makes Hasura the next big thing in Indian SaaS",
+      "accessedAt": "2026-09-02",
+      "contentHash": "50f23f1ff61a70420510a58f377049ec74ea83c1054f1637b78a840fc763f24a",
+      "facts": [
+        {
+          "category": "GEOGRAPHY",
+          "statement": "SaaSBoomi describes Hasura in the context of a new breed of India SaaS companies building developer tools for global users."
+        },
+        {
+          "category": "PRIMARY_BUSINESS",
+          "statement": "The profile says Hasura helps developers make sense of big data and is building tools for software developers and programmers globally."
+        }
+      ]
+    },
+    {
+      "evidenceId": "DP-DRDROID-01",
+      "holdoutCompanyId": "19ac4e0e-559d-4d3b-8c97-ea15f72a24dd",
+      "sourceUrl": "https://www.drdroid.io/",
+      "sourceType": "FIRST_PARTY",
+      "publisher": "DrDroid",
+      "title": "DrDroid — Build agents for what begins after you ship",
+      "accessedAt": "2026-09-02",
+      "contentHash": "b432153dc94723b2358094f59723c841d420d20ab0ff412fd40ed079cf92b7ad",
+      "facts": [
+        {
+          "category": "IDENTITY",
+          "statement": "The drdroid.io website presents the DrDroid product and brand."
+        },
+        {
+          "category": "PRIMARY_BUSINESS",
+          "statement": "DrDroid provides agents that automate post-deployment maintenance and operational toil."
+        },
+        {
+          "category": "PRODUCTS_SERVICES",
+          "statement": "The site describes agents for investigating production issues and automating maintenance workflows for platform and infrastructure work."
+        },
+        {
+          "category": "TECHNOLOGY",
+          "statement": "The product uses AI agents and integrations with engineering and observability systems."
+        }
+      ]
+    },
+    {
+      "evidenceId": "DP-DRDROID-02",
+      "holdoutCompanyId": "19ac4e0e-559d-4d3b-8c97-ea15f72a24dd",
+      "sourceUrl": "https://www.ycombinator.com/companies/drdroid",
+      "sourceType": "THIRD_PARTY",
+      "publisher": "Y Combinator",
+      "title": "DrDroid: AI Agents for Platform & Infrastructure teams",
+      "accessedAt": "2026-09-02",
+      "contentHash": "26a2a4aafb1544e87035183fec83172e6a930f55ee67079cd8cd9c5cf83a1984",
+      "facts": [
+        {
+          "category": "IDENTITY",
+          "statement": "Y Combinator links DrDroid to drdroid.io."
+        },
+        {
+          "category": "PRIMARY_BUSINESS",
+          "statement": "Y Combinator says DrDroid builds AI agents for platform and infrastructure teams to automate triage, debugging, and remediation during on-call work."
+        },
+        {
+          "category": "GEOGRAPHY",
+          "statement": "Y Combinator lists DrDroid's location as Bengaluru, India."
+        }
+      ]
+    },
+    {
+      "evidenceId": "DP-SCHBANG-01",
+      "holdoutCompanyId": "efb9f50e-7cb1-498e-84e9-4fda9b1e7c16",
+      "sourceUrl": "https://www.schbang.com/",
+      "sourceType": "FIRST_PARTY",
+      "publisher": "Schbang",
+      "title": "Schbang: Creative + Media + Technology Agency",
+      "accessedAt": "2026-09-02",
+      "contentHash": "e4b0b72d9d79f6a48b7ce1a5d3f7079d43a68394f9932af12de61abf39896d25",
+      "facts": [
+        {
+          "category": "IDENTITY",
+          "statement": "The schbang.com website identifies the organization as Schbang."
+        },
+        {
+          "category": "PRIMARY_BUSINESS",
+          "statement": "Schbang presents itself as a creative, media, and technology company serving brands."
+        },
+        {
+          "category": "BUSINESS_MODEL",
+          "statement": "Its public site presents an agency/services model."
+        },
+        {
+          "category": "PRODUCTS_SERVICES",
+          "statement": "The site describes capabilities spanning brand solutions, campaign planning, media, content, production, and technology solutions."
+        }
+      ]
+    },
+    {
+      "evidenceId": "DP-SCHBANG-02",
+      "holdoutCompanyId": "efb9f50e-7cb1-498e-84e9-4fda9b1e7c16",
+      "sourceUrl": "https://www.schbang.com/contact-us",
+      "sourceType": "FIRST_PARTY",
+      "publisher": "Schbang",
+      "title": "Contact Us | Schbang",
+      "accessedAt": "2026-09-02",
+      "contentHash": "2068776e5591e8b5c09ef9f4c9f010235d34b59e932d2e10a3b44a762f692cda",
+      "facts": [
+        {
+          "category": "GEOGRAPHY",
+          "statement": "Schbang lists locations in Mumbai, Delhi, London, and Amsterdam, including street addresses in Mumbai, London, and Amsterdam."
+        },
+        {
+          "category": "GEOGRAPHY",
+          "statement": "The contact page says the company was proudly created in India; this is origin language, while the listed locations establish present office presence."
+        }
+      ]
+    },
+    {
+      "evidenceId": "DP-SOCIALBEAT-01",
+      "holdoutCompanyId": "1dea0dcd-85c7-4f13-87e3-856e52e79552",
+      "sourceUrl": "https://socialbeat.in/",
+      "sourceType": "FIRST_PARTY",
+      "publisher": "Social Beat",
+      "title": "Social Beat — Digital Growth Partner to Leading Brands in India",
+      "accessedAt": "2026-09-02",
+      "contentHash": "434a60899b6404e7eb43b5d0999e166ff7b9c5cb8a7cbf595a15999b7460abc8",
+      "facts": [
+        {
+          "category": "IDENTITY",
+          "statement": "The socialbeat.in homepage identifies the company as Social Beat."
+        },
+        {
+          "category": "PRIMARY_BUSINESS",
+          "statement": "Social Beat describes itself as a digital growth partner delivering digital services to brands."
+        },
+        {
+          "category": "PRODUCTS_SERVICES",
+          "statement": "The homepage lists SEO and content marketing among its services and describes technical SEO and content expertise."
+        },
+        {
+          "category": "BUSINESS_MODEL",
+          "statement": "The company operates as a digital marketing agency and services partner."
+        },
+        {
+          "category": "GEOGRAPHY",
+          "statement": "Social Beat says it has 300+ experts across four cities in India, calls itself a pan-India growth partner, and says it manages about 3% of India's digital spend."
+        }
+      ]
+    },
+    {
+      "evidenceId": "DP-SOCIALBEAT-02",
+      "holdoutCompanyId": "1dea0dcd-85c7-4f13-87e3-856e52e79552",
+      "sourceUrl": "https://www.socialbeat.in/blog/social-beat-now-bangalore/",
+      "sourceType": "FIRST_PARTY",
+      "publisher": "Social Beat",
+      "title": "Social Beat is now in Bangalore",
+      "accessedAt": "2026-09-02",
+      "contentHash": "68020ceb216d8f8bafd3d9426b7e39c202d83b46416efc3e06ad8cf279205b1f",
+      "facts": [
+        {
+          "category": "GEOGRAPHY",
+          "statement": "Social Beat announced a Bangalore branch office and supplied a Bengaluru, Karnataka address."
+        },
+        {
+          "category": "PRODUCTS_SERVICES",
+          "statement": "The company described its services as website and app development, SEO, social media marketing, digital advertising, and influencer marketing."
+        },
+        {
+          "category": "CUSTOMER_MARKET",
+          "statement": "The article says Social Beat served clients across real estate, finance, e-commerce, startups, retail, FMCG, and healthcare."
+        }
+      ]
+    },
+    {
+      "evidenceId": "DP-THATWARE-01",
+      "holdoutCompanyId": "c08fb7d3-d435-4a60-b2b5-88de4be06210",
+      "sourceUrl": "https://thatware.co/geo-services/",
+      "sourceType": "FIRST_PARTY",
+      "publisher": "ThatWare",
+      "title": "Generative Engine Optimization (GEO) Services to Win AI Search",
+      "accessedAt": "2026-09-02",
+      "contentHash": "dfe3c921b85d44ce5ccfaa3b9235fcc8b9d2e4b75db839aa189f7839ad2a76f1",
+      "facts": [
+        {
+          "category": "IDENTITY",
+          "statement": "The thatware.co service page identifies the provider as ThatWare."
+        },
+        {
+          "category": "PRIMARY_BUSINESS",
+          "statement": "ThatWare markets generative engine optimization services designed to improve visibility in AI search."
+        },
+        {
+          "category": "PRODUCTS_SERVICES",
+          "statement": "The page offers GEO, AEO, LLM optimization, AI-search visibility work, and related SEO services."
+        },
+        {
+          "category": "BUSINESS_MODEL",
+          "statement": "The page presents a client-services engagement rather than only a self-serve software tool."
+        }
+      ]
+    },
+    {
+      "evidenceId": "DP-THATWARE-02",
+      "holdoutCompanyId": "c08fb7d3-d435-4a60-b2b5-88de4be06210",
+      "sourceUrl": "https://thatware.co/about-us/",
+      "sourceType": "FIRST_PARTY",
+      "publisher": "ThatWare",
+      "title": "About Us: Who We Are at ThatWare",
+      "accessedAt": "2026-09-02",
+      "contentHash": "69748c26666685d9e3b6587703150644e4f5c260cc5321ced9a4eb52db01c9b0",
+      "facts": [
+        {
+          "category": "PRIMARY_BUSINESS",
+          "statement": "ThatWare describes itself as a digital marketing agency focused on advanced SEO and data-driven strategies."
+        },
+        {
+          "category": "TECHNOLOGY",
+          "statement": "The company says it applies artificial intelligence and related advanced methods to digital marketing and SEO."
+        }
+      ]
+    },
+    {
+      "evidenceId": "DP-THATWARE-03",
+      "holdoutCompanyId": "c08fb7d3-d435-4a60-b2b5-88de4be06210",
+      "sourceUrl": "https://thatware.co/contact-us",
+      "sourceType": "FIRST_PARTY",
+      "publisher": "ThatWare",
+      "title": "Contact Us | ThatWare",
+      "accessedAt": "2026-09-02",
+      "contentHash": "4186d62cb6b9154218a2aa94823c0b750c1272d27cd2277f48da78ca0e3b3f2d",
+      "facts": [
+        {
+          "category": "GEOGRAPHY",
+          "statement": "ThatWare lists an India address at ThatWare Tower in Bally, Howrah, as well as UK and Dubai addresses."
+        },
+        {
+          "category": "PRODUCTS_SERVICES",
+          "statement": "Its contact form enumerates GEO Marketing, AEO Marketing, LLM Optimisation, AI Based SEO, ChatGPT/OpenAI/Gemini/Perplexity/Claude optimization, and fully managed SEO."
+        }
+      ]
+    },
+    {
+      "evidenceId": "DP-SCALENUT-01",
+      "holdoutCompanyId": "6eddb470-a147-49bb-ba00-c73fd5ef3387",
+      "sourceUrl": "https://www.scalenut.com/products/ai-visibility",
+      "sourceType": "FIRST_PARTY",
+      "publisher": "Scalenut",
+      "title": "AI Visibility | Scalenut",
+      "accessedAt": "2026-09-02",
+      "contentHash": "23fb895967252a34a6ed944bc1fea11e392c43950d2599bd5e8c9b83dba1fd81",
+      "facts": [
+        {
+          "category": "IDENTITY",
+          "statement": "The scalenut.com product page identifies the Scalenut brand and platform."
+        },
+        {
+          "category": "PRIMARY_BUSINESS",
+          "statement": "Scalenut sells an AI visibility and search/content optimization platform."
+        },
+        {
+          "category": "PRODUCTS_SERVICES",
+          "statement": "The product includes AI Visibility Tracking, competitive visibility analysis, GEO content creation and optimization, content audits, and monitoring of visibility trends."
+        },
+        {
+          "category": "TECHNOLOGY",
+          "statement": "The product is designed to track and improve brand presence across AI search surfaces."
+        }
+      ]
+    },
+    {
+      "evidenceId": "DP-SCALENUT-02",
+      "holdoutCompanyId": "6eddb470-a147-49bb-ba00-c73fd5ef3387",
+      "sourceUrl": "https://scalenut.com/about-us",
+      "sourceType": "FIRST_PARTY",
+      "publisher": "Scalenut",
+      "title": "About Scalenut",
+      "accessedAt": "2026-09-02",
+      "contentHash": "38f98b475c3fd3fadf72a4a77618fed099cdf4b12e299ca22f00a318e9061098",
+      "facts": [
+        {
+          "category": "PRIMARY_BUSINESS",
+          "statement": "Scalenut presents a platform for content planning, topic discovery, content briefs, AI-assisted writing, and SEO/marketing workflows."
+        },
+        {
+          "category": "BUSINESS_MODEL",
+          "statement": "The site presents a software platform with account access and product workflows."
+        }
+      ]
+    },
+    {
+      "evidenceId": "DP-SCALENUT-03",
+      "holdoutCompanyId": "6eddb470-a147-49bb-ba00-c73fd5ef3387",
+      "sourceUrl": "https://scalenut.com/terms-and-conditions",
+      "sourceType": "FIRST_PARTY",
+      "publisher": "Scalenut Technologies Private Limited",
+      "title": "Scalenut Terms and Conditions",
+      "accessedAt": "2026-09-02",
+      "contentHash": "7eec38fb1aa894501890fecb6da32f651f0cea3deb32211d09e8e54e8ca490dd",
+      "facts": [
+        {
+          "category": "IDENTITY",
+          "statement": "The terms identify the website operator as M/s Scalenut Technologies Private Limited and describe scalenut.com as its platform."
+        },
+        {
+          "category": "GEOGRAPHY",
+          "statement": "The operator's registered office is listed in Sector 58, Gurugram, Haryana 122001, India."
+        }
+      ]
+    },
+    {
+      "evidenceId": "DP-PROFOUND-01",
+      "holdoutCompanyId": "64fa9c8a-7a82-4e1a-9df0-88594c273114",
+      "sourceUrl": "https://tryprofound.com/",
+      "sourceType": "FIRST_PARTY",
+      "publisher": "Profound",
+      "title": "Profound | Optimize Your Brand's Visibility in AI Search",
+      "accessedAt": "2026-09-02",
+      "contentHash": "e88550a36c5bd94ae907eed7d555395dd16b1c3dd4ab5b0c15e61da7ea68c1af",
+      "facts": [
+        {
+          "category": "IDENTITY",
+          "statement": "The tryprofound.com homepage identifies the platform as Profound."
+        },
+        {
+          "category": "PRIMARY_BUSINESS",
+          "statement": "Profound describes itself as a full-stack marketing platform for understanding, analyzing, building, and measuring marketing in AI search."
+        },
+        {
+          "category": "PRODUCTS_SERVICES",
+          "statement": "Products include Answer Engine Insights, Prompt Volumes, Shopping, Agent Analytics, marketing agents, AEO reports, and AEO/SEO solutions."
+        },
+        {
+          "category": "TECHNOLOGY",
+          "statement": "The platform analyzes AI visibility and provides agents that generate AEO-optimized content such as FAQs."
+        },
+        {
+          "category": "BUSINESS_MODEL",
+          "statement": "The site presents a commercial software platform with login, pricing, integrations, and team solutions."
+        }
+      ]
+    },
+    {
+      "evidenceId": "DP-PROFOUND-02",
+      "holdoutCompanyId": "64fa9c8a-7a82-4e1a-9df0-88594c273114",
+      "sourceUrl": "https://www.tryprofound.com/legal/privacy-policy",
+      "sourceType": "FIRST_PARTY",
+      "publisher": "Profound",
+      "title": "Privacy Policy | Profound",
+      "accessedAt": "2026-09-02",
+      "contentHash": "820400c189548e6bfef249a9504ada1a8680c5e655bfc2b715a7be5ddce7278c",
+      "facts": [
+        {
+          "category": "IDENTITY",
+          "statement": "The privacy policy identifies Profound as responsible for processing personal information on tryprofound.com."
+        },
+        {
+          "category": "GEOGRAPHY",
+          "statement": "Profound gives a contact address at 5 Union Square West, 4th Floor, New York, NY 10003."
+        }
+      ]
+    },
+    {
+      "evidenceId": "MS-PINE-01",
+      "holdoutCompanyId": "c1ff6adb-e0ba-43e3-8031-effc4548bd78",
+      "sourceUrl": "https://www.pinelabs.com/about",
+      "sourceType": "FIRST_PARTY",
+      "publisher": "Pine Labs",
+      "title": "About Pine Labs",
+      "accessedAt": "2026-09-02",
+      "contentHash": "19774249361c4879a005645907485947cd0b7c82f0d188c839caf38caf1111ae",
+      "facts": [
+        {
+          "category": "IDENTITY",
+          "statement": "The pinelabs.com page identifies Pine Labs and its payment business."
+        },
+        {
+          "category": "PRIMARY_BUSINESS",
+          "statement": "Pine Labs says it simplifies payments for merchants, financial institutions, and brands through digital commerce and financial services."
+        },
+        {
+          "category": "GEOGRAPHY",
+          "statement": "It says operations began in India, later merged with Pine Labs Singapore, and describes a platform from Asia for the world."
+        },
+        {
+          "category": "SECURITY",
+          "statement": "It states PCI DSS and other payment-security compliance for its platforms."
+        }
+      ]
+    },
+    {
+      "evidenceId": "MS-PINE-02",
+      "holdoutCompanyId": "c1ff6adb-e0ba-43e3-8031-effc4548bd78",
+      "sourceUrl": "https://www.pinelabs.com/",
+      "sourceType": "FIRST_PARTY",
+      "publisher": "Pine Labs",
+      "title": "Pine Labs commerce platform",
+      "accessedAt": "2026-09-02",
+      "contentHash": "f808f031f867b42bedd6b2c46a708777c27edae84a88817f4dc7f8224cd77670",
+      "facts": [
+        {
+          "category": "PRODUCTS_SERVICES",
+          "statement": "Product categories are online payments, in-store payments, prepaid, fintech infrastructure, and credit processing."
+        },
+        {
+          "category": "BUSINESS_MODEL",
+          "statement": "The site markets a commerce and fintech product stack to organizations."
+        }
+      ]
+    },
+    {
+      "evidenceId": "MS-PRACTO-01",
+      "holdoutCompanyId": "966b0b9c-2794-4652-bbc2-356508030f36",
+      "sourceUrl": "https://www.practo.com/company/about",
+      "sourceType": "FIRST_PARTY",
+      "publisher": "Practo",
+      "title": "About Practo",
+      "accessedAt": "2026-09-02",
+      "contentHash": "53a5fc248d2aafe784cec02570b2a8e354653412161c398e19df1709a4d30dc7",
+      "facts": [
+        {
+          "category": "IDENTITY",
+          "statement": "The practo.com company page identifies Practo and its healthcare offerings."
+        },
+        {
+          "category": "PRIMARY_BUSINESS",
+          "statement": "Practo's mission is affordable, accessible healthcare for Indians through healthcare information and care."
+        },
+        {
+          "category": "PRODUCTS_SERVICES",
+          "statement": "It lists a doctor directory, appointments, online consultation, and subscription health plans."
+        },
+        {
+          "category": "SECURITY",
+          "statement": "It calls data privacy and security a top priority."
+        }
+      ]
+    },
+    {
+      "evidenceId": "MS-PRACTO-02",
+      "holdoutCompanyId": "966b0b9c-2794-4652-bbc2-356508030f36",
+      "sourceUrl": "https://www.practo.com/company/contact",
+      "sourceType": "FIRST_PARTY",
+      "publisher": "Practo",
+      "title": "Contact Practo",
+      "accessedAt": "2026-09-02",
+      "contentHash": "08f64dfa2038b73a9bcf2948c892e1d62b02ce20005a951505641d71602a2a3a",
+      "facts": [
+        {
+          "category": "PRODUCTS_SERVICES",
+          "statement": "It offers clinic, hospital, and multi-centre management software, profiles, and provider advertising."
+        },
+        {
+          "category": "BUSINESS_MODEL",
+          "statement": "The page expressly references product subscriptions and software trials."
+        },
+        {
+          "category": "GEOGRAPHY",
+          "statement": "It lists Practo Technologies Pvt. Ltd. in Bengaluru and branches in India, Singapore, the Philippines, Indonesia, and Brazil."
+        }
+      ]
+    },
+    {
+      "evidenceId": "MS-WHATFIX-01",
+      "holdoutCompanyId": "20b11621-f344-422d-8c54-e7ef96220077",
+      "sourceUrl": "https://whatfix.com/company",
+      "sourceType": "FIRST_PARTY",
+      "publisher": "Whatfix",
+      "title": "About Whatfix",
+      "accessedAt": "2026-09-02",
+      "contentHash": "ae97fbe796e5a4c2e32cbb2b6c9c903f5cda1a5eb0934cab6a4c06b51119b67e",
+      "facts": [
+        {
+          "category": "IDENTITY",
+          "statement": "The whatfix.com page identifies Whatfix."
+        },
+        {
+          "category": "PRIMARY_BUSINESS",
+          "statement": "Whatfix describes itself as a data-driven enterprise digital adoption platform."
+        },
+        {
+          "category": "GEOGRAPHY",
+          "statement": "It lists Bengaluru and San Jose offices and registered offices in the UK and Singapore, without labeling a headquarters."
+        },
+        {
+          "category": "SECURITY",
+          "statement": "It identifies leadership responsible for IT, information security, cybersecurity, data protection, compliance, and procurement."
+        }
+      ]
+    },
+    {
+      "evidenceId": "MS-WHATFIX-02",
+      "holdoutCompanyId": "20b11621-f344-422d-8c54-e7ef96220077",
+      "sourceUrl": "https://whatfix.com/",
+      "sourceType": "FIRST_PARTY",
+      "publisher": "Whatfix",
+      "title": "Whatfix platform",
+      "accessedAt": "2026-09-02",
+      "contentHash": "75242d0811e5c6a62ca91eff638447ce661456e01d3a7d98fe5644461c9bcd57",
+      "facts": [
+        {
+          "category": "PRODUCTS_SERVICES",
+          "statement": "Products include digital adoption, Product Analytics, and Whatfix Mirror application simulations."
+        },
+        {
+          "category": "BUSINESS_MODEL",
+          "statement": "It offers product demos and markets enterprise software to Fortune 1000 and growth companies."
+        },
+        {
+          "category": "GEOGRAPHY",
+          "statement": "The site presents a global enterprise customer market."
+        }
+      ]
+    },
+    {
+      "evidenceId": "MS-CTRLS-01",
+      "holdoutCompanyId": "a66b03e4-9ec1-45d4-b7cd-d2b960e169f7",
+      "sourceUrl": "https://www.ctrls.com/about-us",
+      "sourceType": "FIRST_PARTY",
+      "publisher": "CtrlS Datacenters",
+      "title": "About CtrlS",
+      "accessedAt": "2026-09-02",
+      "contentHash": "ea5968488a451c554a3d7ea2082eee2d8643ae6d7a67fc1175fd830763c98f60",
+      "facts": [
+        {
+          "category": "IDENTITY",
+          "statement": "CtrlS identifies itself as a Rated-4 data-center company."
+        },
+        {
+          "category": "PRIMARY_BUSINESS",
+          "statement": "It markets data centers for storing, managing, and protecting customer data."
+        },
+        {
+          "category": "PRODUCTS_SERVICES",
+          "statement": "Its portfolio includes hyperscale, colocation, connectivity, and managed services."
+        },
+        {
+          "category": "GEOGRAPHY",
+          "statement": "It reports 15+ data centers across India and names Hyderabad, Mumbai, Noida, and Bangalore facilities."
+        }
+      ]
+    },
+    {
+      "evidenceId": "MS-CTRLS-02",
+      "holdoutCompanyId": "a66b03e4-9ec1-45d4-b7cd-d2b960e169f7",
+      "sourceUrl": "https://www.ctrls.com/cybersecurity-services",
+      "sourceType": "FIRST_PARTY",
+      "publisher": "CtrlS Datacenters",
+      "title": "CtrlS cybersecurity services",
+      "accessedAt": "2026-09-02",
+      "contentHash": "0540ecd27de84aa5f0c299d486bf4eba2e0b64a9c46389efefa90c29d9be2224",
+      "facts": [
+        {
+          "category": "MANAGED_SOC",
+          "statement": "CtrlS expressly offers Managed SOC with round-the-clock real-time visibility."
+        },
+        {
+          "category": "MDR",
+          "statement": "It expressly offers MDR with incident management, threat hunting, and threat intelligence."
+        },
+        {
+          "category": "SECURITY_MONITORING",
+          "statement": "It offers 24x7 monitoring and threat analysis plus managed cloud security and compliance."
+        }
+      ]
+    },
+    {
+      "evidenceId": "MS-ESDS-01",
+      "holdoutCompanyId": "9cac7eb5-e229-46b0-ba24-668a3ea8b24c",
+      "sourceUrl": "https://esds.co.in/",
+      "sourceType": "FIRST_PARTY",
+      "publisher": "ESDS Software Solution",
+      "title": "ESDS cloud and IT services",
+      "accessedAt": "2026-09-02",
+      "contentHash": "e4364cf44ff5e87f1292b0536a174fe3ec373ca41c64353f26d09d5ad3ac6e22",
+      "facts": [
+        {
+          "category": "IDENTITY",
+          "statement": "ESDS identifies itself as an India-built AI-enabled cloud and end-to-end IT service provider."
+        },
+        {
+          "category": "PRIMARY_BUSINESS",
+          "statement": "It markets indigenous/community cloud, managed security, and full-stack managed IT."
+        },
+        {
+          "category": "PRODUCTS_SERVICES",
+          "statement": "Managed services span cloud migration, disaster recovery, backup, database, and infrastructure; security uses SOC, SOAR, and SIEM."
+        },
+        {
+          "category": "GEOGRAPHY",
+          "statement": "It says it is built on Indian soil, governed by Indian laws, and serves worldwide."
+        }
+      ]
+    },
+    {
+      "evidenceId": "MS-ESDS-02",
+      "holdoutCompanyId": "9cac7eb5-e229-46b0-ba24-668a3ea8b24c",
+      "sourceUrl": "https://www.esds.co.in/managed-soc-services",
+      "sourceType": "FIRST_PARTY",
+      "publisher": "ESDS Software Solution",
+      "title": "ESDS Managed SOC Services",
+      "accessedAt": "2026-09-02",
+      "contentHash": "0572040bde44e46ee04023d9a6646cc6c3f733a36635af82140b9e79c77eaa2f",
+      "facts": [
+        {
+          "category": "MANAGED_SOC",
+          "statement": "ESDS expressly markets Managed SOC for threat detection, investigation, remediation, and continuous monitoring."
+        },
+        {
+          "category": "MDR",
+          "statement": "It lists a 24x7 SOC and MDR with threat hunting, anomaly detection, and real-time response."
+        },
+        {
+          "category": "PRODUCTS_SERVICES",
+          "statement": "It also lists SIEM, log management, automated incident response, endpoint, ransomware, IAM, and compliance capabilities."
+        }
+      ]
+    },
+    {
+      "evidenceId": "MS-SAFE-01",
+      "holdoutCompanyId": "9136ec53-18a9-4530-825f-75459942dbd9",
+      "sourceUrl": "https://safe.security/",
+      "sourceType": "FIRST_PARTY",
+      "publisher": "Safe Security",
+      "title": "Safe Security platform",
+      "accessedAt": "2026-09-02",
+      "contentHash": "9240d5576669e3d03efb2df23dddba3248e04937cc298e06e8dc839980ca5824",
+      "facts": [
+        {
+          "category": "IDENTITY",
+          "statement": "The safe.security site identifies SAFE and its cyber-risk platform."
+        },
+        {
+          "category": "PRIMARY_BUSINESS",
+          "statement": "SAFE markets an AI-driven platform connecting business context, attack surface, controls, and threat intelligence."
+        },
+        {
+          "category": "PRODUCTS_SERVICES",
+          "statement": "Products include cyber-risk quantification, third-party risk management, CTEM, and board reporting."
+        },
+        {
+          "category": "BUSINESS_MODEL",
+          "statement": "It markets enterprise software and AI co-workers to security and risk teams."
+        }
+      ]
+    },
+    {
+      "evidenceId": "MS-SAFE-02",
+      "holdoutCompanyId": "9136ec53-18a9-4530-825f-75459942dbd9",
+      "sourceUrl": "https://safe.security/about-us",
+      "sourceType": "FIRST_PARTY",
+      "publisher": "Safe Security",
+      "title": "About Safe Security",
+      "accessedAt": "2026-09-02",
+      "contentHash": "5f159dce62af80c94e8cf4d6e776081764c0127b241980a283a2ab0911bd34fe",
+      "facts": [
+        {
+          "category": "COMPANY_HISTORY",
+          "statement": "SAFE says it began in 2012 as ethical-hacking services and evolved into an agentic-AI cyber-risk platform."
+        },
+        {
+          "category": "CUSTOMER_MARKET",
+          "statement": "It says the platform protects Fortune 500 enterprises worldwide."
+        },
+        {
+          "category": "PRODUCTS_SERVICES",
+          "statement": "Its stated areas are CRQ, TPRM, and CTEM."
+        }
+      ]
+    },
+    {
+      "evidenceId": "MS-SAFE-03",
+      "holdoutCompanyId": "9136ec53-18a9-4530-825f-75459942dbd9",
+      "sourceUrl": "https://safe.security/contact-us/",
+      "sourceType": "FIRST_PARTY",
+      "publisher": "Safe Security",
+      "title": "Contact Safe Security",
+      "accessedAt": "2026-09-02",
+      "contentHash": "820992bec5e0b9a5020ee66122068bf5671bb5e6b40ec0a594266e6497ae7f19",
+      "facts": [
+        {
+          "category": "GEOGRAPHY",
+          "statement": "SAFE lists Palo Alto, Santa Clara, New York, New Delhi, and Bengaluru locations, including Palo Alto and Bengaluru addresses."
+        },
+        {
+          "category": "GEOGRAPHY",
+          "statement": "The page does not identify any listed office as headquarters."
+        }
+      ]
+    },
+    {
+      "evidenceId": "MS-TAC-01",
+      "holdoutCompanyId": "6c6f7d6b-3f0f-4d6a-8dfb-f83176c8222f",
+      "sourceUrl": "https://tacsecurity.com/",
+      "sourceType": "FIRST_PARTY",
+      "publisher": "TAC Security",
+      "title": "TAC Security products",
+      "accessedAt": "2026-09-02",
+      "contentHash": "5208c697a459227d6633e2f65dbec82d4a221758812948274ff6c95c5825c3b0",
+      "facts": [
+        {
+          "category": "IDENTITY",
+          "statement": "The tacsecurity.com site identifies TAC Security and its products."
+        },
+        {
+          "category": "PRIMARY_BUSINESS",
+          "statement": "It describes its focus as AI-native vulnerability management and AppSec."
+        },
+        {
+          "category": "PRODUCTS_SERVICES",
+          "statement": "It markets ESOF vulnerability management, Socify SOC 2 readiness, smart-contract assessments, and VAPT-related offerings."
+        },
+        {
+          "category": "RELATIONSHIP",
+          "statement": "SOC 2 on this page is compliance readiness/audit automation, not evidence of a managed Security Operations Center."
+        }
+      ]
+    },
+    {
+      "evidenceId": "MS-TAC-02",
+      "holdoutCompanyId": "6c6f7d6b-3f0f-4d6a-8dfb-f83176c8222f",
+      "sourceUrl": "https://tacsecurity.com/contact-us",
+      "sourceType": "FIRST_PARTY",
+      "publisher": "TAC Security",
+      "title": "Contact TAC Security",
+      "accessedAt": "2026-09-02",
+      "contentHash": "2430d923e0749f7c27f9d5a16d404cb25d7f164b91a48686672a95043d58a754",
+      "facts": [
+        {
+          "category": "GEOGRAPHY",
+          "statement": "TAC Security lists a Mumbai, Maharashtra office."
+        },
+        {
+          "category": "PRODUCTS_SERVICES",
+          "statement": "The page offers penetration-testing and workplace-assessment quotations."
+        }
+      ]
+    },
+    {
+      "evidenceId": "MS-APP-01",
+      "holdoutCompanyId": "0e45e52c-1042-4511-a021-52a68c01ce80",
+      "sourceUrl": "https://appsecco.com/",
+      "sourceType": "FIRST_PARTY",
+      "publisher": "Appsecco",
+      "title": "Appsecco security testing",
+      "accessedAt": "2026-09-02",
+      "contentHash": "dfddfe52ea05e2e66bf2ac9dc17b570eb32268f511070c3273a00427cf4fdc5d",
+      "facts": [
+        {
+          "category": "IDENTITY",
+          "statement": "The appsecco.com site identifies Appsecco through its own assessment offering."
+        },
+        {
+          "category": "PRIMARY_BUSINESS",
+          "statement": "It provides human-led security testing across applications/APIs, cloud/IAM, Kubernetes, AI/MCP, and agents."
+        },
+        {
+          "category": "PRODUCTS_SERVICES",
+          "statement": "Outputs include findings, attack paths, remediation guidance, revalidation, and recurring change-focused testing."
+        },
+        {
+          "category": "BUSINESS_MODEL",
+          "statement": "It sells scoped fixed-quote assessments and recurring testing engagements."
+        }
+      ]
+    },
+    {
+      "evidenceId": "MS-APP-02",
+      "holdoutCompanyId": "0e45e52c-1042-4511-a021-52a68c01ce80",
+      "sourceUrl": "https://appsecco.com/contact",
+      "sourceType": "FIRST_PARTY",
+      "publisher": "Appsecco",
+      "title": "Contact Appsecco",
+      "accessedAt": "2026-09-02",
+      "contentHash": "6d0abe5383883b43be7527df89998dd29b4fac0f6ba82b334e073dabdfcc4a41",
+      "facts": [
+        {
+          "category": "PRODUCTS_SERVICES",
+          "statement": "It accepts requests for product-security testing, urgent incident help, and partnership/reseller discussions."
+        },
+        {
+          "category": "GEOGRAPHY",
+          "statement": "An Indian phone number and IST support hours establish an India operating contact, not headquarters."
+        }
+      ]
+    }
+  ]
+}

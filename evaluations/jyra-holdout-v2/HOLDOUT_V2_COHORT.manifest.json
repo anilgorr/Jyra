@@ -1,0 +1,32 @@
+{
+  "benchmark": "JYRA_BLIND_HOLDOUT_V2",
+  "cohortPath": "evaluations/jyra-holdout-v2/HOLDOUT_V2_COHORT.json",
+  "cohortSha256": "8a72f2e6302e0fcbfc5a8b70815acc2c88b53a66eb23ad688e551bfeefd1d314",
+  "cohortSize": 16,
+  "targetCounts": {
+    "DIGIPUUSH": 8,
+    "MANAGED_SOC": 8
+  },
+  "freezeOrder": {
+    "cohortSelectedBeforeAssessmentResearch": true,
+    "overlapVerifiedBeforeFreeze": true,
+    "assessmentResearchBeganAfterFreeze": true
+  },
+  "overlap": {
+    "exactCompany": 0,
+    "canonicalDomain": 0,
+    "knownAlias": 0
+  },
+  "selection": {
+    "usedJyraScores": false,
+    "usedJyraCommercialRole": false,
+    "usedJyraWho": false,
+    "usedJyraSignals": false,
+    "usedJyraOpportunityState": false,
+    "independentPublicSourcesOnly": true
+  },
+  "immutability": {
+    "replacementAllowedAfterFreeze": false,
+    "checksumMustRemainStableAfterResearch": true
+  }
+}

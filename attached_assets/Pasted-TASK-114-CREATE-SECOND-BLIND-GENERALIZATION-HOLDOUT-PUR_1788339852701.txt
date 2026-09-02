@@ -1,0 +1,947 @@
+TASK #114 — CREATE SECOND BLIND GENERALIZATION HOLDOUT
+
+PURPOSE
+
+Task #112 was a valid blind failure caused by a systemic identity-permission deadlock.
+
+Task #113 repaired that generic architecture:
+
+candidate
+→ RESEARCH_SAFE
+→ bounded provisional research
+→ identity corroboration
+→ ATTRIBUTION_SAFE
+→ downstream intelligence
+
+We now need a completely NEW blind holdout to determine whether the repaired JYRA system generalizes.
+
+This task DOES NOT run JYRA predictions.
+
+It creates:
+
+1. a fresh unseen company cohort
+2. independent public evidence
+3. independent clean-room assessments
+4. a blind human reviewer packet
+
+Current JYRA CommercialRole and WHO outputs must remain hidden.
+
+==================================================
+1. HOLDOUT NAME
+==================================================
+
+Create:
+
+JYRA_BLIND_HOLDOUT_V2
+
+Target size:
+
+16 companies
+
+DIGIPUUSH:
+8
+
+MANAGED_SOC:
+8
+
+This cohort must be completely separate from all prior evaluation companies.
+
+==================================================
+2. DATABASE SAFETY
+==================================================
+
+DATABASE SAFETY:
+
+This is evaluation/development work.
+
+Use ONLY development/evaluation infrastructure.
+
+DO NOT:
+
+- modify production
+- migrate production
+- reset production
+- seed production
+- truncate production
+- test against production customer records
+
+Production modified:
+NO
+
+==================================================
+3. NO JYRA PREDICTIONS
+==================================================
+
+During Task #114:
+
+DO NOT run or expose current JYRA:
+
+- identity permission result
+- Company Understanding
+- CommercialRole
+- WHO
+- opportunity score
+- signals
+- rationale
+- confidence
+- control-plane outcome
+
+Do NOT inspect cached current JYRA predictions for selected companies.
+
+The human review must remain blind.
+
+==================================================
+4. EXCLUDE ALL PRIOR EVALUATION COMPANIES
+==================================================
+
+HARD EXCLUDE every company from:
+
+JYRA_MARKET_QUALITY_GOLD_V1
+
+JYRA_SMALL_HOLDOUT_V1
+
+Task #100 validation cohorts
+
+Task #112 holdout
+
+Task #113 fixtures
+
+At minimum explicitly exclude:
+
+DIGIPUUSH PREVIOUS
+
+Grownob LLC
+Lead Made Easy
+Leadgeneron
+Leadzen.ai
+Outbound System
+OutPro
+Partner Propel
+Pure Sales
+RevyGo
+SalesGig
+Wingify
+Druva
+MoEngage
+Uplers
+Writesonic
+Smarketers
+
+MANAGED SOC PREVIOUS
+
+3LOCKS
+Barracuda SKOUT Managed XDR
+CData Virtuality
+Critical Start
+CyberOne
+CySOC
+Ostra Security
+Pondurance
+SOCFortress
+Socura
+Razorpay
+Zerodha
+ACKO
+CloudSEK
+Sify Technologies
+Freshworks
+
+Also exclude any other company already used in architecture/regression fixtures if discoverable.
+
+Normalize by:
+
+company name
+domain
+canonical domain
+
+No duplicate brands, subsidiaries, aliases or renamed versions of prior companies.
+
+==================================================
+5. COHORT SELECTION MUST BE INDEPENDENT OF JYRA
+==================================================
+
+Do NOT use:
+
+JYRA scores
+JYRA role predictions
+JYRA WHO predictions
+JYRA signals
+JYRA opportunity states
+
+to select companies.
+
+Selection must come from independent discovery/public sources.
+
+The cohort should resemble realistic companies entering JYRA.
+
+Do NOT cherry-pick companies based on how easy they are to classify.
+
+==================================================
+6. DIGIPUUSH TARGET DOMAIN
+==================================================
+
+Seller:
+
+DigiPuush
+
+Offering:
+
+AI visibility / LLM visibility / AEO / GEO services
+
+Important ICP rule:
+
+India is mandatory for strong WHO fit.
+
+CommercialRole is seller-relative and separate from WHO.
+
+A company outside India may still be:
+
+POTENTIAL_BUYER
+
+while WHO may be:
+
+POSSIBLE_FIT
+LIKELY_NOT_FIT
+or insufficient
+
+depending the frozen evaluation semantics.
+
+Do not conflate:
+
+CommercialRole
+with
+WHO.
+
+==================================================
+7. MANAGED SOC TARGET DOMAIN
+==================================================
+
+Seller:
+
+Aadit Technologies
+
+Offering:
+
+Managed SOC / managed security monitoring
+
+Evaluate CommercialRole relative specifically to that offering.
+
+Important:
+
+same cybersecurity industry
+≠
+SELLER_COMPETITOR
+
+Competition requires evidence of materially substitutable managed SOC/MDR/security-monitoring capability.
+
+Similarly:
+
+being an IT/cloud/vendor company
+≠
+automatically ADJACENT_VENDOR.
+
+==================================================
+8. COHORT DIVERSITY
+==================================================
+
+The 16 companies should naturally cover several realistic situations.
+
+Do NOT force exact gold labels.
+
+But seek diversity in source categories.
+
+DIGIPUUSH 8 should include a reasonable mix across:
+
+- B2B SaaS
+- technology companies
+- service/agency businesses
+- marketing/AI ecosystem companies
+- companies where geography may require careful interpretation
+- potentially overlapping AI visibility/search/SEO businesses where naturally discovered
+
+MANAGED_SOC 8 should include a reasonable mix across:
+
+- fintech/financial services
+- SaaS/technology
+- regulated/digital businesses
+- IT/cloud providers
+- cybersecurity vendors
+- companies where offering substitutability is non-obvious
+
+Do not deliberately make all 16 obvious buyers.
+
+Do not deliberately create a balanced label distribution after looking at proposed labels.
+
+Selection comes first.
+
+Truth comes later.
+
+==================================================
+9. FREEZE COHORT BEFORE ASSESSMENT
+==================================================
+
+This is mandatory.
+
+FIRST:
+
+Select the 16 company/domain pairs.
+
+Create:
+
+evaluations/jyra-holdout-v2/HOLDOUT_V2_COHORT.json
+
+Include:
+
+holdoutCompanyId
+domainKey
+company
+domain
+selectionSource
+selectionReason
+
+Then calculate SHA-256.
+
+Create:
+
+HOLDOUT_V2_COHORT.manifest.json
+
+Only AFTER the cohort checksum is frozen may independent evaluation research begin.
+
+This prevents replacing difficult companies after evidence is seen.
+
+==================================================
+10. VERIFY NO OVERLAP
+==================================================
+
+Before research:
+
+compare normalized company/domain against previous evaluation sets.
+
+Required:
+
+exact company overlap = 0
+canonical domain overlap = 0
+known alias overlap = 0
+
+If any overlap exists:
+
+replace BEFORE cohort freeze.
+
+Once cohort SHA is frozen:
+
+NO replacement.
+
+==================================================
+11. INDEPENDENT PUBLIC EVIDENCE
+==================================================
+
+After cohort freeze, conduct independent clean-room public research for all 16 companies.
+
+This research is for GROUND TRUTH CREATION only.
+
+It is not JYRA runtime research.
+
+Keep costs separate.
+
+Prefer:
+
+1. first-party company website
+2. first-party product/service pages
+3. first-party about/contact/legal pages
+4. credible corporate profiles
+5. reputable third-party sources
+
+Avoid relying primarily on:
+
+SEO aggregator pages
+scraped directories
+unverified profiles
+AI-generated company summaries
+
+==================================================
+12. REQUIRED EVIDENCE QUESTIONS
+==================================================
+
+For each company independently establish, where evidence supports it:
+
+IDENTITY
+
+- Is this the correct organization?
+- Is the domain attributable to that organization?
+
+PRIMARY BUSINESS
+
+- What does the company actually sell/do?
+
+PRODUCTS / SERVICES
+
+- What material products/services are publicly supported?
+
+BUSINESS MODEL
+
+- SaaS
+- services
+- agency
+- fintech
+- security vendor
+- etc.
+
+GEOGRAPHY
+
+Distinguish explicitly:
+
+- headquarters
+- primary operating geography
+- office presence
+- customer market
+- talent market
+- global availability
+
+Do NOT infer India headquarters merely from:
+
+India customers
+India hiring
+India talent sourcing
+an Indian office
+
+COMMERCIAL RELATIONSHIP
+
+Relative to the seller/offering:
+
+- POTENTIAL_BUYER
+- SELLER_COMPETITOR
+- ADJACENT_VENDOR
+- PARTNER_POSSIBLE
+- UNKNOWN
+
+WHO
+
+Relative to the target ICP:
+
+- LIKELY_FIT
+- POSSIBLE_FIT
+- LIKELY_NOT_FIT
+- INSUFFICIENT_DATA
+
+==================================================
+13. FACT / INTERPRETATION SEPARATION
+==================================================
+
+Independent evaluation must preserve:
+
+FACT
+vs
+INTERPRETATION
+
+Example:
+
+FACT:
+Company sells threat intelligence.
+
+INTERPRETATION:
+This alone does not prove Managed SOC substitutability.
+
+Example:
+
+FACT:
+Company hires engineers in India.
+
+INTERPRETATION:
+This alone does not establish India headquarters.
+
+Do not encode interpretations as fabricated facts.
+
+==================================================
+14. INDEPENDENT MACHINE PROPOSALS
+==================================================
+
+After evidence collection, create independent machine proposals.
+
+IMPORTANT:
+
+These proposals are NOT JYRA outputs.
+
+They belong only to the clean-room evaluation process.
+
+For each company propose:
+
+identity
+identity confidence
+
+CommercialRole
+CommercialRole confidence
+CommercialRole rationale
+
+WHO
+WHO confidence
+WHO rationale
+
+groundTruthStatusProposal
+
+Each conclusion must cite evidence IDs from the clean-room evidence set.
+
+==================================================
+15. INDEPENDENT ASSESSMENT PRINCIPLES
+==================================================
+
+Use these generic semantics.
+
+COMMERCIAL ROLE
+
+POTENTIAL_BUYER
+
+Company is structurally capable of consuming the seller offering and no stronger competitor/vendor/partner relationship is established.
+
+SELLER_COMPETITOR
+
+Evidence supports material offering substitutability.
+
+Same industry is insufficient.
+
+ADJACENT_VENDOR
+
+Evidence supports a genuinely complementary vendor relationship.
+
+Simply being another B2B vendor is insufficient.
+
+PARTNER_POSSIBLE
+
+Affirmative evidence supports plausible partner/channel/complementary commercial relationship.
+
+UNKNOWN
+
+Evidence is insufficient to establish the seller-relative commercial relationship safely.
+
+--------------------------------------------------
+
+WHO
+
+WHO evaluates ICP structural fit.
+
+WHO does NOT require an active buying trigger.
+
+Do not require public evidence of:
+
+current security project
+current compliance initiative
+current marketing initiative
+
+unless the ICP itself requires that criterion.
+
+WHEN/WHY comes later.
+
+==================================================
+16. GROUND TRUTH MUST REMAIN UNFROZEN
+==================================================
+
+Task #114 MUST NOT create final gold.
+
+Create proposals only.
+
+All records remain:
+
+PENDING_HUMAN_REVIEW
+
+Human review happens after Task #114.
+
+==================================================
+17. REVIEWER PACKET
+==================================================
+
+Create:
+
+evaluations/jyra-holdout-v2/HOLDOUT_V2_REVIEWER_PACKET.md
+
+For each company show:
+
+Company
+Domain
+Target offering
+
+Identity evidence
+
+Primary business facts
+
+Products/services facts
+
+Business model
+
+Geography facts
+
+Relevant relationship facts
+
+Independent proposed CommercialRole
+Independent proposed confidence
+Independent rationale
+
+Independent proposed WHO
+Independent proposed confidence
+Independent rationale
+
+Criteria/evidence supporting proposal
+
+Source links/evidence references
+
+Do NOT show:
+
+current JYRA prediction
+JYRA role
+JYRA WHO
+JYRA score
+JYRA confidence
+JYRA rationale
+
+State at the top:
+
+"Current JYRA CommercialRole and WHO predictions have not been run or exposed for this holdout."
+
+==================================================
+18. HUMAN REVIEW CSV
+==================================================
+
+Create:
+
+evaluations/jyra-holdout-v2/HOLDOUT_V2_HUMAN_REVIEW.csv
+
+Populate machine/evidence columns.
+
+Leave human columns blank:
+
+humanIdentity
+humanCommercialRole
+humanCommercialRoleConfidence
+humanWho
+humanWhoConfidence
+humanGroundTruthStatus
+humanReviewAction
+humanReviewReason
+reviewer
+reviewedAt
+goldVersion
+
+==================================================
+19. IDENTITY BOOTSTRAP TEST INTEGRITY
+==================================================
+
+This holdout is specifically post-Task #113.
+
+Do NOT pre-populate JYRA's canonical intelligence store with clean-room evidence.
+
+Do NOT import evaluation evidence into JYRA.
+
+Do NOT mark these companies ATTRIBUTION_SAFE inside JYRA as part of Task #114.
+
+The later JYRA execution must encounter these companies through its normal runtime identity/research process.
+
+Clean-room evaluation evidence and JYRA runtime evidence must remain separated.
+
+==================================================
+20. PROVIDER COST ACCOUNTING
+==================================================
+
+Report evaluation-research provider usage separately.
+
+For each provider report:
+
+calls
+capability
+companies
+provider-reported cost if available
+
+These are:
+
+EVALUATION COSTS
+
+not:
+
+JYRA RUNTIME COSTS.
+
+No provider calls performed here may be credited to JYRA's future runtime efficiency.
+
+==================================================
+21. QUALITY REQUIREMENTS
+==================================================
+
+Target:
+
+16/16 with usable independent evidence.
+
+Prefer at least:
+
+1 first-party source per company
+
+and ideally:
+
+2 independent/public source records where useful.
+
+If evidence remains genuinely insufficient:
+
+do not replace company after cohort freeze.
+
+Keep it.
+
+Propose:
+
+UNKNOWN
+or
+INSUFFICIENT_DATA
+
+as appropriate.
+
+This is part of the test.
+
+==================================================
+22. NO CODE CHANGES
+==================================================
+
+Task #114 must make:
+
+JYRA runtime code changes:
+0
+
+JYRA prompt changes:
+0
+
+JYRA model changes:
+0
+
+JYRA provider routing changes:
+0
+
+ICP changes:
+0
+
+Business Twin changes:
+0
+
+Production changes:
+0
+
+Evaluation scripts/artifacts may be created.
+
+==================================================
+23. PRESERVE TASK #112 AND #113 HISTORY
+==================================================
+
+Do NOT alter:
+
+TASK_112_JYRA_PREDICTIONS.json
+
+SHA must remain:
+
+309c191d47a9008795ff58a7bdb84875f7198bd61af495fb676882be8e73c7ff
+
+Do NOT rewrite Task #112 metrics.
+
+Do NOT claim Task #113 makes Task #112 pass.
+
+Task #112 remains:
+
+historical pre-repair blind failure.
+
+==================================================
+24. TASK #113 REGRESSION NOTE
+==================================================
+
+Record in the Task #114 manifest:
+
+Task #113 required generic tests:
+12/12 PASS
+
+Task #113 integration:
+PASS
+
+Task #113 broader regressions:
+13/14
+
+Known unrelated failing regression:
+existing signal-count fixture expecting >=3 project signals
+
+Do NOT repair this inside Task #114.
+
+Do NOT number proposed follow-ups as historical Task #104/#105.
+
+==================================================
+25. REQUIRED ARTIFACTS
+==================================================
+
+Create:
+
+evaluations/jyra-holdout-v2/HOLDOUT_V2_COHORT.json
+
+evaluations/jyra-holdout-v2/HOLDOUT_V2_COHORT.manifest.json
+
+evaluations/jyra-holdout-v2/HOLDOUT_V2_PUBLIC_EVIDENCE.json
+
+evaluations/jyra-holdout-v2/HOLDOUT_V2_MACHINE_PROPOSALS.json
+
+evaluations/jyra-holdout-v2/HOLDOUT_V2_HUMAN_REVIEW.csv
+
+evaluations/jyra-holdout-v2/HOLDOUT_V2_REVIEWER_PACKET.md
+
+evaluations/jyra-holdout-v2/HOLDOUT_V2_MANIFEST.json
+
+==================================================
+26. REQUIRED TESTS
+==================================================
+
+Assert:
+
+A. cohort size = 16
+
+B. DigiPuush = 8
+
+C. Managed SOC = 8
+
+D. all holdoutCompanyId unique
+
+E. all domains normalized
+
+F. exact prior-company overlap = 0
+
+G. canonical-domain overlap = 0
+
+H. known alias overlap = 0
+
+I. cohort frozen before assessment research
+
+J. cohort checksum stable after research
+
+K. public evidence exists for every company
+
+L. proposals = 16
+
+M. all proposals PENDING_HUMAN_REVIEW
+
+N. human review labels blank
+
+O. current JYRA predictions not run
+
+P. JYRA predictions not exposed
+
+Q. no clean-room evidence entered JYRA canonical store
+
+R. runtime code changes = 0
+
+S. prompt changes = 0
+
+T. production modified = NO
+
+U. Task #112 prediction SHA unchanged
+
+==================================================
+27. FINAL RESPONSE FORMAT
+==================================================
+
+Return:
+
+TASK #114 — SECOND BLIND HOLDOUT CREATION
+
+Status:
+PASS / FAIL
+
+Holdout:
+JYRA_BLIND_HOLDOUT_V2
+
+Cohort:
+16
+
+DigiPuush:
+8
+
+Managed SOC:
+8
+
+Prior company overlap:
+0
+
+Prior domain overlap:
+0
+
+Cohort frozen before research:
+YES / NO
+
+Cohort SHA-256:
+<checksum>
+
+Companies:
+
+DIGIPUUSH
+1. ...
+2. ...
+3. ...
+4. ...
+5. ...
+6. ...
+7. ...
+8. ...
+
+MANAGED_SOC
+9. ...
+10. ...
+11. ...
+12. ...
+13. ...
+14. ...
+15. ...
+16. ...
+
+Companies with public evidence:
+x/16
+
+First-party coverage:
+x/16
+
+Independent machine proposals:
+16/16
+
+Ground truth status:
+16 PENDING_HUMAN_REVIEW
+
+Current JYRA predictions run:
+NO
+
+Current JYRA predictions exposed:
+NO
+
+Clean-room evidence inserted into JYRA:
+NO
+
+Evaluation provider calls:
+x
+
+Evaluation provider cost:
+$X.XX
+
+JYRA runtime code changes:
+0
+
+JYRA prompt changes:
+0
+
+Production modified:
+NO
+
+Task #112 prediction SHA unchanged:
+YES / NO
+
+Task #113 known unrelated regression preserved:
+YES / NO
+
+Tests:
+x/x
+
+Artifacts:
+<paths>
+
+NEXT STEP:
+
+State only:
+
+"Blind Holdout V2 is ready for human review. Review and freeze human truth before any current JYRA prediction is run or revealed."
+
+Do NOT run JYRA predictions.
+
+Do NOT freeze gold.
+
+Wait for human review.
