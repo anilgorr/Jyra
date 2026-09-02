@@ -1929,8 +1929,8 @@ components:
       properties: { id: { type: string }, organizationId: { type: string }, projectId: { type: string }, campaignId: { type: string }, companyId: { type: string, nullable: true }, normalizedDomain: { type: string }, source: { type: string, enum: [DISCOVERY, MANUAL, IMPORT] }, stratum: { type: string }, opaqueReviewKey: { type: string }, createdAt: { type: string } }
     MarketReadinessExperiment:
       type: object
-      required: [id, organizationId, projectId, campaignId, state, seed, treatmentName, controlName, createdBy, createdAt, updatedAt]
-      properties: { id: { type: string }, organizationId: { type: string }, projectId: { type: string }, campaignId: { type: string }, state: { type: string, enum: [DRAFT, ASSIGNED, RUNNING, COMPLETED] }, seed: { type: string }, treatmentName: { type: string }, controlName: { type: string }, createdBy: { type: string }, createdAt: { type: string }, updatedAt: { type: string } }
+      required: [id, organizationId, projectId, campaignId, state, seed, treatmentName, controlName, createdBy, startedAt, completedAt, createdAt, updatedAt]
+      properties: { id: { type: string }, organizationId: { type: string }, projectId: { type: string }, campaignId: { type: string }, state: { type: string, enum: [DRAFT, ASSIGNED, RUNNING, COMPLETED] }, seed: { type: string }, treatmentName: { type: string }, controlName: { type: string }, createdBy: { type: string }, startedAt: { type: ["string", "null"] }, completedAt: { type: ["string", "null"] }, createdAt: { type: string }, updatedAt: { type: string } }
     CreateMarketReadinessExperimentRequest:
       type: object
       required: [seed]

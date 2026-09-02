@@ -139,11 +139,34 @@ export function parseOutcomesCsv(csv: string): Array<{ domain: string; outcome: 
     return { domain, outcome, occurredAt: new Date(cells[2]!).toISOString() };
   });
 }
-export function commercialGate(treatment: { meetingOrOpportunity: number; total: number; badFit: number }, control: { meetingOrOpportunity: number; total: number; badFit: number }) {
+
+export function validateOutcomeOccurredAt(startedAt: Date | null, occurredAt: string): Date {
+  if (!startedAt) throw new Error("OUTCOMES_REQUIRE_STARTED_EXPERIMENT");
+  const parsed = new Date(occurredAt);
+  if (Number.isNaN(parsed.getTime())) throw new Error("INVALID_OUTCOME_TIMESTAMP");
+  if (parsed < startedAt) throw new Error("OUTCOME_PRECEDES_EXPERIMENT_START");
+  return parsed;
+}
+export function commercialGate(treatment: { meetingOrOpportunity: number; total: number; badFit: number; observed?: number }, control: { meetingOrOpportunity: number; total: number; badFit: number; observed?: number }) {
   if (!treatment.total || !control.total) return { pass: false, reason: "NO_COMMERCIAL_DENOMINATOR" };
+  const treatmentObserved = treatment.observed ?? treatment.total;
+  const controlObserved = control.observed ?? control.total;
+  if (treatmentObserved !== treatment.total || controlObserved !== control.total) {
+    return {
+      pass: false,
+      lift: null,
+      badFitIncrease: null,
+      treatmentObserved,
+      controlObserved,
+      reason: "INCOMPLETE_COMMERCIAL_OUTCOMES",
+    };
+  }
+  if (treatment.meetingOrOpportunity + treatment.badFit > treatmentObserved || control.meetingOrOpportunity + control.badFit > controlObserved) {
+    return { pass: false, lift: null, badFitIncrease: null, treatmentObserved, controlObserved, reason: "AMBIGUOUS_COMMERCIAL_OUTCOMES" };
+  }
   const lift = percent(treatment.meetingOrOpportunity, treatment.total) - percent(control.meetingOrOpportunity, control.total);
   const badFitIncrease = percent(treatment.badFit, treatment.total) - percent(control.badFit, control.total);
-  return { pass: lift >= 25 && badFitIncrease <= 0, lift, badFitIncrease, reason: lift < 25 ? "INSUFFICIENT_LIFT" : badFitIncrease > 0 ? "MATERIAL_BAD_FIT_INCREASE" : null };
+  return { pass: lift >= 25 && badFitIncrease <= 0, lift, badFitIncrease, treatmentObserved, controlObserved, reason: lift < 25 ? "INSUFFICIENT_LIFT" : badFitIncrease > 0 ? "MATERIAL_BAD_FIT_INCREASE" : null };
 }
 export function rolloutGate(input: { metrics: MetricReport; commercial: { pass: boolean }; frozen: boolean; experimentCompleted: boolean }) {
   const reasons = [!input.frozen && "CAMPAIGN_NOT_FROZEN", !input.experimentCompleted && "EXPERIMENT_NOT_COMPLETED", !input.metrics.pass && "READINESS_THRESHOLDS_FAILED", !input.commercial.pass && "COMMERCIAL_GATE_FAILED"].filter(Boolean);

@@ -171,6 +171,8 @@ export const marketReadinessExperimentsTable = pgTable("market_readiness_experim
   state: marketReadinessExperimentStateEnum("state").notNull().default("DRAFT"),
   seed: text("seed").notNull(), treatmentName: text("treatment_name").notNull().default("JYRA_INTELLIGENCE_V2"),
   controlName: text("control_name").notNull().default("CONTROL"), createdBy: text("created_by").notNull(),
+  startedAt: timestamp("started_at", { withTimezone: true }),
+  completedAt: timestamp("completed_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(), updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
 }, (table) => [uniqueIndex("market_readiness_experiment_campaign_unique").on(table.campaignId)]);
 
@@ -196,7 +198,11 @@ export const marketReadinessManualOutcomesTable = pgTable("market_readiness_manu
   experimentAssignmentId: uuid("experiment_assignment_id").notNull().references(() => marketReadinessExperimentAssignmentsTable.id, { onDelete: "cascade" }),
   cohortItemId: uuid("cohort_item_id").notNull().references(() => marketReadinessCohortItemsTable.id, { onDelete: "cascade" }), importBatchId: uuid("import_batch_id").references(() => marketReadinessOutcomeImportBatchesTable.id, { onDelete: "set null" }),
   outcome: marketReadinessOutcomeTypeEnum("outcome").notNull(), occurredAt: timestamp("occurred_at", { withTimezone: true }).notNull(), recordedBy: text("recorded_by").notNull(), idempotencyKey: text("idempotency_key").notNull(), createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-}, (table) => [uniqueIndex("market_readiness_outcome_idempotency_unique").on(table.campaignId, table.idempotencyKey), index("market_readiness_outcome_campaign_item_idx").on(table.campaignId, table.cohortItemId)]);
+}, (table) => [
+  uniqueIndex("market_readiness_outcome_idempotency_unique").on(table.campaignId, table.idempotencyKey),
+  uniqueIndex("market_readiness_outcome_assignment_unique").on(table.experimentAssignmentId),
+  index("market_readiness_outcome_campaign_item_idx").on(table.campaignId, table.cohortItemId),
+]);
 
 export const marketReadinessRolloutDecisionsTable = pgTable("market_readiness_rollout_decisions", {
   id: uuid("id").primaryKey().defaultRandom(), organizationId: uuid("organization_id").notNull().references(() => organizationsTable.id, { onDelete: "cascade" }),

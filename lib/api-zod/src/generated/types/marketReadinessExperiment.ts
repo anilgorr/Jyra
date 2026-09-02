@@ -17,6 +17,10 @@ export interface MarketReadinessExperiment {
   treatmentName: string;
   controlName: string;
   createdBy: string;
+  /** @nullable */
+  startedAt: string | null;
+  /** @nullable */
+  completedAt: string | null;
   createdAt: string;
   updatedAt: string;
 }

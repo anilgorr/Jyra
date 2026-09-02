@@ -479,23 +479,31 @@ try {
     assert.deepEqual(cost.rows[0], { spent_cents: 11, state: "BLOCKED" });
 
     const experiment = randomUUID(), assignment = randomUUID(), batch = randomUUID();
-    await admin.query(`insert into market_readiness_experiments(id,organization_id,project_id,campaign_id,seed,created_by)
-      values($1,$2,$3,$4,'seed',$5)`, [experiment, org, project, campaign, userId]);
+    const experimentStartedAt = new Date("2026-01-01T00:00:00Z");
+    await admin.query(`insert into market_readiness_experiments(id,organization_id,project_id,campaign_id,seed,created_by,state,started_at)
+      values($1,$2,$3,$4,'seed',$5,'RUNNING',$6)`, [experiment, org, project, campaign, userId, experimentStartedAt]);
     await rejects(admin, `insert into market_readiness_experiments(organization_id,project_id,campaign_id,seed,created_by)
       values($1,$2,$3,'duplicate',$4)`, [org, project, campaign, userId], /unique|duplicate/i);
+    await rejects(admin, "update market_readiness_experiments set started_at=$2 where id=$1", [experiment, new Date("2026-01-02T00:00:00Z")], /start is immutable/i);
     await admin.query(`insert into market_readiness_experiment_assignments(id,organization_id,project_id,campaign_id,experiment_id,cohort_item_id,arm,stratum)
       values($1,$2,$3,$4,$5,$6,'TREATMENT','UNSPECIFIED')`, [assignment, org, project, campaign, experiment, item]);
     await admin.query(`insert into market_readiness_outcome_import_batches(id,organization_id,project_id,campaign_id,idempotency_key,row_count,imported_by)
       values($1,$2,$3,$4,'csv',1,$5)`, [batch, org, project, campaign, userId]);
+    await rejects(admin, `insert into market_readiness_manual_outcomes(organization_id,project_id,campaign_id,experiment_assignment_id,cohort_item_id,import_batch_id,outcome,occurred_at,recorded_by,idempotency_key)
+      values($1,$2,$3,$4,$5,$6,'MEETING',$7,$8,'csv:pre-start')`,
+      [org, project, campaign, assignment, item, batch, new Date("2025-12-31T23:59:59Z"), userId], /after experiment start/i);
     const insertOutcome = () => admin.query(`insert into market_readiness_manual_outcomes(organization_id,project_id,campaign_id,experiment_assignment_id,cohort_item_id,import_batch_id,outcome,occurred_at,recorded_by,idempotency_key)
-      values($1,$2,$3,$4,$5,$6,'MEETING',now(),$7,'csv:integration.example') on conflict do nothing returning id`,
-      [org, project, campaign, assignment, item, batch, userId]);
+      values($1,$2,$3,$4,$5,$6,'MEETING',$7,$8,'csv:integration.example') on conflict do nothing returning id`,
+      [org, project, campaign, assignment, item, batch, experimentStartedAt, userId]);
     assert.equal((await insertOutcome()).rowCount, 1);
     assert.equal((await insertOutcome()).rowCount, 0);
+    await rejects(admin, `insert into market_readiness_manual_outcomes(organization_id,project_id,campaign_id,experiment_assignment_id,cohort_item_id,import_batch_id,outcome,occurred_at,recorded_by,idempotency_key)
+      values($1,$2,$3,$4,$5,$6,'OTHER',now(),$7,'manual:duplicate-assignment')`,
+      [org, project, campaign, assignment, item, batch, userId], /unique|duplicate/i);
     const attributed = await admin.query("select experiment_assignment_id from market_readiness_manual_outcomes where campaign_id=$1", [campaign]);
     assert.equal(attributed.rows[0].experiment_assignment_id, assignment);
 
-    // Promotion is premature while the experiment remains DRAFT.
+    // Promotion is premature while the experiment remains RUNNING.
     const premature = await admin.query("select state from market_readiness_experiments where id=$1 and state='COMPLETED'", [experiment]);
     assert.equal(premature.rowCount, 0);
 

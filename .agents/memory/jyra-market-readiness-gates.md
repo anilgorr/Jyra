@@ -32,6 +32,18 @@ Run 200–500 fresh companies without manual correction. Each successful result 
 
 Compare 100 JYRA-prioritized accounts against 100 accounts selected through normal ICP filters or tools such as Sales Navigator or Apollo. Require roughly 25–30% or greater improvement in meetings or opportunities per 100 accounts, with no material increase in bad-fit outreach.
 
-**Why:** Technical validity does not establish ranking utility or revenue impact. Small exposed holdouts can diagnose failures but cannot prove generalization or commercial value.
+Treat each assigned company as having exactly one terminal outcome, require all
+200 outcomes before evaluation, and accept only outcomes that occurred on or
+after the experiment's immutable start timestamp.
 
-**How to apply:** Keep V1 as the production default until a newly frozen blind quality cohort passes, a fresh 200–500-company run passes reliability and cost gates, and a controlled 100-versus-100 field test demonstrates commercial lift. Never reuse an exposed holdout as unbiased launch evidence.
+**Why:** Technical validity does not establish ranking utility or revenue
+impact. Missing or duplicate outcomes distort arm rates, while historical
+outcomes cannot establish lift caused by the field test. Small exposed holdouts
+can diagnose failures but cannot prove generalization or commercial value.
+
+**How to apply:** Keep V1 as the production default until a newly frozen blind
+quality cohort passes, a fresh 200–500-company run passes reliability and cost
+gates, and a controlled 100-versus-100 field test demonstrates commercial lift.
+Persist experiment start once, reject earlier outcomes, and fail closed until
+each arm has 100 unambiguous outcomes. Never reuse an exposed holdout as
+unbiased launch evidence.

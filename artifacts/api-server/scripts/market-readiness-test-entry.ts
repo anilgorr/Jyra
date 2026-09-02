@@ -1,4 +1,6 @@
-export {
+export 
+{
+
   MARKET_READINESS_THRESHOLDS,
   MARKET_READINESS_V2_PROVIDER_CALL_GRAPH,
   MarketReadinessWorkError,
@@ -23,5 +25,14 @@ export {
   rolloutGate,
   scheduleMarketReadinessWork,
   seededAssignments,
-} from "../src/lib/market-readiness";
-export { ProviderRouter } from "../src/lib/provider-router";
+  validateOutcomeOccurredAt,
+}
+ from "../src/lib/market-readiness"
+;
+
+export 
+{
+ ProviderRouter 
+}
+ from "../src/lib/provider-router"
+;

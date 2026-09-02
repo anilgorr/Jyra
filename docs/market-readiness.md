@@ -43,6 +43,16 @@ assignments split 100/100, and commercial gates all pass. If no
 existing staff gate is installed, rollout authorization must be restricted to
 the project organization owner or admin.
 
+Each assignment accepts exactly one terminal outreach outcome: meeting,
+opportunity, bad fit, or other. Outcomes may be entered manually or imported
+from `domain,outcome,occurred_at` CSV after the experiment starts. Experiment
+start is persisted once and cannot be moved; every outcome occurrence must be
+on or after it. Evaluation
+requires all 200 assignments to have unambiguous outcomes, at least a
+25-percentage-point treatment lift in meetings or opportunities, and no
+increase in bad-fit outreach. Missing, duplicate, cross-campaign, or
+pre-experiment outcomes keep rollout blocked.
+
 Every prediction snapshot contains one strict evaluation record derived from
 the final V2 identity, seller-relative assessment, safety output, evidence,
 terminal state, actual provider/model usage, and version/input fingerprints.

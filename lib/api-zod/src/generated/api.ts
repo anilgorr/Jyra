@@ -6588,6 +6588,8 @@ export const CreateMarketReadinessExperimentResponse = zod.object({
   "treatmentName": zod.string(),
   "controlName": zod.string(),
   "createdBy": zod.string(),
+  "startedAt": zod.string().nullable(),
+  "completedAt": zod.string().nullable(),
   "createdAt": zod.string(),
   "updatedAt": zod.string()
 })
@@ -6609,6 +6611,8 @@ export const GetMarketReadinessExperimentResponse = zod.object({
   "treatmentName": zod.string(),
   "controlName": zod.string(),
   "createdBy": zod.string(),
+  "startedAt": zod.string().nullable(),
+  "completedAt": zod.string().nullable(),
   "createdAt": zod.string(),
   "updatedAt": zod.string()
 })
@@ -6631,6 +6635,8 @@ export const ActionMarketReadinessExperimentResponse = zod.object({
   "treatmentName": zod.string(),
   "controlName": zod.string(),
   "createdBy": zod.string(),
+  "startedAt": zod.string().nullable(),
+  "completedAt": zod.string().nullable(),
   "createdAt": zod.string(),
   "updatedAt": zod.string()
 })

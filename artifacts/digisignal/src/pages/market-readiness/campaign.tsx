@@ -394,6 +394,9 @@ function CohortSection({ projectId, campaignId }: { projectId: string, campaignI
 }
 
 function ExperimentSection({ projectId, campaignId, experimentId, setExperimentId }: { projectId: string, campaignId: string, experimentId: string | null, setExperimentId: (id: string | null) => void }) {
+  const { data: cohort } = useListMarketReadinessCohort(projectId, campaignId, {
+    query: { queryKey: getListMarketReadinessCohortQueryKey(projectId, campaignId) }
+  });
   const { data: experiment, isLoading, isError, refetch } = useGetMarketReadinessExperiment(projectId, campaignId, experimentId ?? "", {
     query: {
       enabled: !!experimentId,
@@ -468,6 +471,8 @@ function ExperimentSection({ projectId, campaignId, experimentId, setExperimentI
   const [manualOpen, setManualOpen] = useState(false);
   const [manualCohortItemId, setManualCohortItemId] = useState("");
   const [manualOutcome, setManualOutcome] = useState<"MEETING" | "OPPORTUNITY" | "BAD_FIT" | "OTHER">("MEETING");
+  const recordedItemIds = new Set((outcomes ?? []).map(outcome => outcome.cohortItemId));
+  const availableCohort = (cohort ?? []).filter(item => !recordedItemIds.has(item.id));
 
   const handleImport = () => {
     if (!csvContent.trim()) return;
@@ -578,8 +583,15 @@ function ExperimentSection({ projectId, campaignId, experimentId, setExperimentI
       
       <Card className="shadow-none border-border/60">
         <CardHeader>
-          <CardTitle>Outcomes</CardTitle>
-          <CardDescription>Record and import real-world outcomes for the experiment.</CardDescription>
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <CardTitle>Outcomes</CardTitle>
+              <CardDescription>Record one terminal real-world outcome for every assigned company.</CardDescription>
+            </div>
+            <Badge variant={(outcomes?.length ?? 0) === 200 ? "default" : "secondary"}>
+              {outcomes?.length ?? 0} / 200 recorded
+            </Badge>
+          </div>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center gap-3 p-6 border border-dashed rounded-lg bg-muted/5 justify-center">
@@ -626,8 +638,13 @@ function ExperimentSection({ projectId, campaignId, experimentId, setExperimentI
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
                   <div className="space-y-2">
-                    <Label>Cohort Item ID</Label>
-                    <Input value={manualCohortItemId} onChange={e => setManualCohortItemId(e.target.value)} placeholder="UUID" />
+                    <Label>Company</Label>
+                    <Select value={manualCohortItemId} onValueChange={setManualCohortItemId}>
+                      <SelectTrigger><SelectValue placeholder="Select a company" /></SelectTrigger>
+                      <SelectContent>
+                        {availableCohort.map(item => <SelectItem key={item.id} value={item.id}>{item.normalizedDomain}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
                   </div>
                   <div className="space-y-2">
                     <Label>Outcome</Label>
@@ -714,6 +731,19 @@ function RolloutSection({ projectId, campaignId }: { projectId: string, campaign
     return <div className="h-64 flex items-center justify-center border rounded-xl"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>;
   }
 
+  const decision = rollout.decision as {
+    gates?: { pass?: boolean; reasons?: string[] };
+    commercial?: {
+      pass?: boolean;
+      lift?: number | null;
+      badFitIncrease?: number | null;
+      treatmentObserved?: number;
+      controlObserved?: number;
+      reason?: string | null;
+    };
+  };
+  const commercial = decision.commercial;
+
   return (
     <Card className="shadow-none border-border/60 max-w-3xl">
       <CardHeader>
@@ -730,24 +760,43 @@ function RolloutSection({ projectId, campaignId }: { projectId: string, campaign
       <CardContent className="space-y-6">
          <div className="rounded-lg bg-muted/30 border p-4 space-y-3">
            <h4 className="font-medium text-sm text-foreground">Gate Criteria</h4>
-           {rollout!.decision && Object.keys(rollout!.decision).length > 0 ? (
-             Object.entries(rollout!.decision).map(([key, value]) => (
-               <div key={key} className="flex items-center gap-3 text-sm text-muted-foreground">
-                 {value === true || value === "PASS" || value === "APPROVED" ? (
-                   <CheckCircle2 className="h-4 w-4 text-emerald-500" />
-                 ) : (
-                   <ShieldAlert className="h-4 w-4 text-amber-500" />
-                 )}
-                 <span className="capitalize">{key.replace(/_/g, " ")}: {String(value)}</span>
-               </div>
-             ))
+            {decision.gates ? (
+              <>
+                <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                  {decision.gates.pass ? <CheckCircle2 className="h-4 w-4 text-emerald-500" /> : <ShieldAlert className="h-4 w-4 text-amber-500" />}
+                  <span>{decision.gates.pass ? "All rollout gates pass." : "Rollout remains blocked."}</span>
+                </div>
+                {(decision.gates.reasons ?? []).map(reason => (
+                  <div key={reason} className="pl-7 text-xs text-muted-foreground">{reason.replace(/_/g, " ")}</div>
+                ))}
+              </>
            ) : (
              <div className="flex items-center gap-3 text-sm text-muted-foreground">
                 <ShieldAlert className="h-4 w-4 text-amber-500" />
                 <span>Blocked: Server returned no gate criteria or criteria unknown.</span>
              </div>
-           )}
-         </div>
+            )}
+          </div>
+
+          {commercial && (
+            <div className="grid gap-3 sm:grid-cols-3">
+              <div className="rounded-lg border p-4">
+                <p className="text-xs uppercase tracking-wide text-muted-foreground">Outcome coverage</p>
+                <p className="mt-1 text-lg font-semibold">{commercial.treatmentObserved ?? 0}/100 · {commercial.controlObserved ?? 0}/100</p>
+                <p className="text-xs text-muted-foreground">Treatment · Control</p>
+              </div>
+              <div className="rounded-lg border p-4">
+                <p className="text-xs uppercase tracking-wide text-muted-foreground">Meeting / opportunity lift</p>
+                <p className="mt-1 text-lg font-semibold">{commercial.lift == null ? "Pending" : `${commercial.lift.toFixed(1)} pp`}</p>
+                <p className="text-xs text-muted-foreground">Required: at least 25 pp</p>
+              </div>
+              <div className="rounded-lg border p-4">
+                <p className="text-xs uppercase tracking-wide text-muted-foreground">Bad-fit increase</p>
+                <p className="mt-1 text-lg font-semibold">{commercial.badFitIncrease == null ? "Pending" : `${commercial.badFitIncrease.toFixed(1)} pp`}</p>
+                <p className="text-xs text-muted-foreground">{commercial.reason ? commercial.reason.replace(/_/g, " ") : "No increase allowed"}</p>
+              </div>
+            </div>
+          )}
 
          <div className="flex items-center gap-3">
            <Button 
