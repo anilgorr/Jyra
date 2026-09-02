@@ -1,0 +1,504 @@
+JYRA — MARKET QUALITY ROOT-CAUSE AUDIT 01
+
+MODE:
+OFFLINE FORENSIC EVALUATION ONLY
+
+NO PRODUCT CHANGES.
+NO PROMPT CHANGES.
+NO PROVIDER CALLS.
+NO LLM RETRIES.
+NO DISCOVERY.
+NO NEW BENCHMARK.
+NO 50-COMPANY TEST.
+
+PURPOSE:
+
+Architecture V1.1 has now passed cross-domain execution validation.
+
+Fresh isolated validation:
+- 10 DigiPuush companies
+- 10 Managed SOC companies
+- architecture passed
+- CommercialRole agreement = 3/20
+- WHO agreement = 8/20
+
+The architecture is no longer the primary question.
+
+The purpose of this task is to identify, from the persisted 20-company
+run, the FIRST MATERIAL INTELLIGENCE ERROR for every company.
+
+Do not fix anything.
+
+==================================================
+1. FREEZE ARCHITECTURE
+==================================================
+
+Treat the currently validated architecture as frozen for this audit.
+
+Record marker:
+
+JYRA_ARCHITECTURE_V1_1_VALIDATED
+
+Do NOT change:
+
+- control plane
+- progressive identity
+- provider routing
+- MinimumCompanyIntelligence
+- discovery
+- normalization
+- CompanyUnderstanding
+- CommercialRole
+- WHO
+- Business Twin
+- Offering
+- ICP
+- prompts
+- models
+- thresholds
+
+==================================================
+2. USE EXACT PERSISTED 20-COMPANY RUN
+==================================================
+
+Use only the exact fresh Task #100 cohort:
+
+10 DigiPuush
+10 Managed SOC
+
+No replacement companies.
+
+No new provider calls.
+
+No new semantic predictions.
+
+No reruns.
+
+Load the exact persisted state that existed at evaluation time.
+
+==================================================
+3. VERIFY INDEPENDENT GROUND TRUTH
+==================================================
+
+Before using the adjudication labels, verify how they were produced.
+
+Report:
+
+- who/what generated independent labels
+- whether the same model as JYRA was used
+- whether the same JYRA prompts were used
+- whether JYRA predictions were visible to the adjudicator
+- what external/public evidence supported adjudication
+- whether every role/WHO label has an explanation
+
+If adjudication is not sufficiently independent, report this clearly.
+
+Do NOT silently treat weak adjudication as ground truth.
+
+==================================================
+4. AUDIT EVERY COMPANY THROUGH THE FULL WHO PIPELINE
+==================================================
+
+For each of the 20 companies report:
+
+A. DISCOVERY
+
+- company
+- domain
+- why it was discovered
+- plausible market yes/no
+
+B. IDENTITY
+
+- JYRA identity state
+- identity confidence
+- independent identity
+- correct / wrong / uncertain
+
+C. MINIMUM COMPANY INTELLIGENCE
+
+- evidence available
+- evidence sources
+- sufficient yes/no
+- missing fields
+
+D. COMPANY UNDERSTANDING
+
+JYRA:
+- primary business
+- products/services
+- business model
+- industry
+- confidence
+- evidence IDs
+
+Independent:
+- primary business
+- products/services
+- business model
+- industry
+
+Assessment:
+CORRECT
+MOSTLY_CORRECT
+MATERIALLY_WRONG
+INSUFFICIENT
+
+E. COMMERCIAL ROLE
+
+JYRA role
+JYRA reason
+JYRA confidence
+JYRA supporting evidence
+
+Independent role
+Independent reasoning
+
+F. WHO
+
+JYRA result
+JYRA reason codes
+ICP criteria used
+
+Independent WHO
+Independent reasoning
+
+==================================================
+5. FIRST-ERROR PRINCIPLE
+==================================================
+
+For each company identify the FIRST material error.
+
+Do not blame downstream stages for errors inherited from upstream.
+
+Allowed categories:
+
+DISCOVERY_WRONG_MARKET
+
+IDENTITY_WRONG
+
+PROFILE_EVIDENCE_INSUFFICIENT
+
+PROFILE_EVIDENCE_WRONG_ENTITY
+
+COMPANY_PRIMARY_BUSINESS_WRONG
+
+COMPANY_PRODUCTS_SERVICES_WRONG
+
+COMPANY_BUSINESS_MODEL_WRONG
+
+COMPANY_INDUSTRY_WRONG
+
+COMPANY_UNDERSTANDING_OTHER
+
+COMMERCIAL_ROLE_REASONING_WRONG
+
+COMMERCIAL_ROLE_TOO_AGGRESSIVE
+
+COMMERCIAL_ROLE_TOO_CONSERVATIVE
+
+COMMERCIAL_ROLE_SHOULD_HAVE_BEEN_UNKNOWN
+
+WHO_INDUSTRY_EVALUATION_WRONG
+
+WHO_SIZE_EVALUATION_WRONG
+
+WHO_GEOGRAPHY_EVALUATION_WRONG
+
+WHO_TECHNOLOGY_EVALUATION_WRONG
+
+WHO_COMMERCIAL_ROLE_DEPENDENCY_WRONG
+
+ICP_SEMANTICS_AMBIGUOUS
+
+GROUND_TRUTH_AMBIGUOUS
+
+OTHER
+
+Example:
+
+If CompanyUnderstanding says:
+"SEO agency"
+
+but the company is actually:
+"SaaS marketing analytics platform"
+
+and CommercialRole then calls it competitor:
+
+PRIMARY ERROR =
+COMPANY_PRIMARY_BUSINESS_WRONG
+
+NOT:
+COMMERCIAL_ROLE_REASONING_WRONG.
+
+==================================================
+6. ERROR PROPAGATION
+==================================================
+
+For each company show:
+
+FIRST ERROR
+→ downstream consequences
+
+Example:
+
+wrong primary business
+→ wrong CommercialRole
+→ wrong WHO
+
+This is critical.
+
+We need root causes, not counts of every downstream symptom.
+
+==================================================
+7. COMPANY UNDERSTANDING QUALITY
+==================================================
+
+Calculate:
+
+- exact/correct
+- mostly correct
+- materially wrong
+- insufficient
+
+Report separately:
+
+primary-business accuracy
+products/services accuracy
+business-model accuracy
+industry accuracy
+
+Also report accuracy by domain:
+
+DigiPuush
+Managed SOC
+
+Determine whether CompanyUnderstanding is genuinely cross-domain.
+
+==================================================
+8. COMMERCIAL ROLE QUALITY CONDITIONED ON GOOD INPUT
+==================================================
+
+This metric is mandatory.
+
+Calculate CommercialRole agreement ONLY for companies where:
+
+- identity is correct
+- evidence is sufficient
+- CompanyUnderstanding is CORRECT or MOSTLY_CORRECT
+
+This gives:
+
+COMMERCIAL_ROLE_CONDITIONAL_ACCURACY
+
+Also calculate:
+
+buyer precision
+buyer recall
+
+on that clean subset.
+
+This is much more important than raw 3/20 agreement.
+
+If role accuracy becomes high on good-understanding companies,
+CommercialRole is not the primary problem.
+
+==================================================
+9. WHO QUALITY CONDITIONED ON GOOD UPSTREAM INPUT
+==================================================
+
+Calculate WHO agreement only where:
+
+- identity correct
+- CompanyUnderstanding acceptable
+- CommercialRole independently correct or JYRA role matches independent role
+- required ICP evidence exists
+
+Report:
+
+WHO_CONDITIONAL_ACCURACY
+
+Break disagreements down by:
+
+industry
+size
+geography
+technology
+commercial role
+exclusions
+missing evidence
+
+==================================================
+10. CONFIDENCE CALIBRATION
+==================================================
+
+Check whether confidence corresponds to correctness.
+
+For CompanyUnderstanding and CommercialRole report:
+
+high-confidence correct
+high-confidence wrong
+medium-confidence correct
+medium-confidence wrong
+low-confidence correct
+low-confidence wrong
+
+Specifically identify:
+
+HIGH_CONFIDENCE_WRONG
+
+These are more dangerous than UNKNOWN.
+
+==================================================
+11. UNKNOWN QUALITY
+==================================================
+
+For every UNKNOWN role determine:
+
+GOOD_UNKNOWN
+= evidence genuinely insufficient / relationship genuinely ambiguous
+
+BAD_UNKNOWN
+= sufficient evidence existed and a reasonable role was identifiable
+
+Report:
+
+UNKNOWN count
+GOOD_UNKNOWN
+BAD_UNKNOWN
+
+Do not treat all UNKNOWNs as failure.
+
+==================================================
+12. CROSS-DOMAIN COMPARISON
+==================================================
+
+Compare DigiPuush vs Managed SOC:
+
+discovery quality
+identity
+profile sufficiency
+CompanyUnderstanding
+CommercialRole conditional accuracy
+WHO conditional accuracy
+
+Determine whether the failure is:
+
+GENERIC
+
+or:
+
+DOMAIN_SPECIFIC
+
+Example:
+
+If Managed SOC works but DigiPuush fails:
+likely business/relationship semantics issue.
+
+If both fail in CompanyUnderstanding:
+generic understanding layer issue.
+
+==================================================
+13. DO NOT OPTIMIZE FROM SMALL SAMPLES
+==================================================
+
+20 companies is diagnostic, not enough to build dozens of production
+rules.
+
+Do NOT produce:
+
+company-specific exceptions
+keyword hacks
+DigiPuush rules
+Managed SOC rules
+benchmark-specific conditions
+
+Recommend only generic fixes.
+
+==================================================
+14. ROOT-CAUSE SUMMARY
+==================================================
+
+Return a table:
+
+Layer | Errors caused | % of first errors | Generic/domain-specific | Severity
+
+Layers:
+
+Discovery
+Identity
+Evidence/Profile
+CompanyUnderstanding
+CommercialRole
+WHO
+Ground Truth
+
+Then identify:
+
+PRIMARY BOTTLENECK
+SECONDARY BOTTLENECK
+NON-BLOCKING ISSUES
+
+==================================================
+15. RECOMMEND THE SMALLEST NEXT PRODUCT CHANGE
+==================================================
+
+Based strictly on evidence, recommend ONE next repair area.
+
+Possible outputs:
+
+COMPANY_UNDERSTANDING
+
+COMMERCIAL_RELATIONSHIP
+
+WHO_QUALIFICATION
+
+PROFILE_EVIDENCE
+
+GROUND_TRUTH / EVAL HARNESS
+
+MULTIPLE_UPSTREAM_DEFECTS
+
+Do NOT implement it.
+
+==================================================
+16. COST
+==================================================
+
+This audit must make:
+
+provider calls = 0
+new semantic calls = 0
+
+Report any unexpected calls as a test failure.
+
+Also note whether Task #101's cancelled cost-persistence work creates
+a real auditability gap for future long-running production workflows.
+
+Do not implement it here.
+
+==================================================
+17. FINAL VERDICT
+==================================================
+
+Return exactly one:
+
+A — COMPANY UNDERSTANDING IS PRIMARY QUALITY BOTTLENECK
+
+B — COMMERCIAL RELATIONSHIP REASONING IS PRIMARY QUALITY BOTTLENECK
+
+C — WHO QUALIFICATION IS PRIMARY QUALITY BOTTLENECK
+
+D — PROFILE / EVIDENCE QUALITY IS PRIMARY BOTTLENECK
+
+E — EVALUATION GROUND TRUTH IS NOT RELIABLE ENOUGH
+
+F — MULTIPLE UPSTREAM INTELLIGENCE DEFECTS
+
+G — QUALITY IS BETTER THAN RAW METRICS SUGGEST AFTER CONDITIONING
+
+Then STOP.
+
+NO FIXES.
+NO RERUN.
+NO 50-COMPANY TEST.
