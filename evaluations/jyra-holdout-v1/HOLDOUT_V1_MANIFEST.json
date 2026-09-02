@@ -1,0 +1,57 @@
+{
+  "benchmark": "JYRA_SMALL_HOLDOUT_V1",
+  "createdAt": "2026-09-02T08:08:57.644Z",
+  "cohortSize": 12,
+  "digipuushCount": 6,
+  "managedSocCount": 6,
+  "cohortSha256": "e4f01b94c2180366e55200c834b8bd70de3248a2f5460faf8340023517a68165",
+  "oldBenchmarkOverlap": 0,
+  "publicEvidenceCoverage": 12,
+  "publicEvidenceRecords": 24,
+  "independentMachineProposals": 12,
+  "humanReviewCompleted": false,
+  "goldFrozen": false,
+  "jyraPredictionsExposed": false,
+  "jyraPredictionsRunForComparison": false,
+  "codeChanges": 0,
+  "promptChanges": 0,
+  "runtimePolicyChanges": 0,
+  "modelChanges": 0,
+  "databaseSchemaChanges": 0,
+  "productionModified": false,
+  "externalEvaluationCalls": 17,
+  "evaluationCost": 0,
+  "evaluationCostCurrency": "USD",
+  "evaluationCostBasis": "No provider returned a separately reported billable-cost field; $0.00 is reported cost, not an assertion about platform-credit consumption.",
+  "providerAccounting": [
+    {
+      "provider": "Replit public web search",
+      "capability": "neutral cohort discovery",
+      "calls": 2,
+      "cost": 0,
+      "tokens": null
+    },
+    {
+      "provider": "Replit public web search",
+      "capability": "company public-evidence research",
+      "calls": 12,
+      "cost": 0,
+      "tokens": null
+    },
+    {
+      "provider": "Replit internal clean-room LLM",
+      "capability": "independent machine proposals",
+      "calls": 3,
+      "cost": 0,
+      "tokens": null,
+      "notes": "One structured-schema attempt failed before output; two six-company plain-JSON calls succeeded."
+    }
+  ],
+  "artifacts": {
+    "cohort": "evaluations/jyra-holdout-v1/HOLDOUT_V1_COHORT.json",
+    "evidence": "evaluations/jyra-holdout-v1/HOLDOUT_V1_PUBLIC_EVIDENCE.json",
+    "machineProposals": "evaluations/jyra-holdout-v1/HOLDOUT_V1_MACHINE_PROPOSALS.json",
+    "humanReview": "evaluations/jyra-holdout-v1/HOLDOUT_V1_HUMAN_REVIEW.csv",
+    "reviewerPacket": "evaluations/jyra-holdout-v1/HOLDOUT_V1_REVIEWER_PACKET.md"
+  }
+}

@@ -1,0 +1,810 @@
+{
+  "benchmark": "JYRA_SMALL_HOLDOUT_V1",
+  "generatedAt": "2026-09-02T08:08:16.115Z",
+  "evaluationMethod": "Independent clean-room evaluator using only frozen cohort, public evidence, and fixture definitions; no JYRA runtime assessment code or predictions.",
+  "proposals": [
+    {
+      "holdoutCompanyId": "98402e65-f817-467d-9237-496a797a5fba",
+      "identity": {
+        "canonicalName": "Wingify",
+        "domain": "wingify.com",
+        "status": "OPERATIONAL",
+        "confidence": "HIGH",
+        "evidenceIds": [
+          "a107b467-dcba-46ae-8e35-62c826747499"
+        ]
+      },
+      "companyUnderstanding": {
+        "primaryBusiness": "Experience optimization and SaaS",
+        "productsServices": "VWO platform",
+        "businessModel": "SaaS",
+        "industry": "Technology",
+        "geography": "India",
+        "employeeSize": "UNKNOWN",
+        "technologyFacts": "Experience optimization tools",
+        "confidence": "HIGH",
+        "evidenceIds": [
+          "a107b467-dcba-46ae-8e35-62c826747499",
+          "f85b61c0-9097-463f-9930-3350d4c5a760"
+        ]
+      },
+      "commercialRole": {
+        "role": "POTENTIAL_BUYER",
+        "confidence": "MEDIUM",
+        "reason": "SaaS company that likely utilizes external digital marketing and optimization services.",
+        "evidenceIds": [
+          "f85b61c0-9097-463f-9930-3350d4c5a760"
+        ]
+      },
+      "whoCriteria": [
+        {
+          "criterion": "HEADQUARTERS_OR_PRIMARY_GEOGRAPHY_IN_INDIA",
+          "state": "PASS",
+          "reason": "Based in India.",
+          "evidenceIds": [
+            "a107b467-dcba-46ae-8e35-62c826747499"
+          ]
+        },
+        {
+          "criterion": "STRUCTURAL_CAPACITY_TO_BUY_EXTERNAL_B2B_MARKETING_OR_AI_VISIBILITY_SERVICES",
+          "state": "PASS",
+          "reason": "SaaS company with revenue scale and global presence.",
+          "evidenceIds": [
+            "f85b61c0-9097-463f-9930-3350d4c5a760"
+          ]
+        }
+      ],
+      "who": {
+        "final": "LIKELY_FIT",
+        "confidence": "MEDIUM",
+        "reason": "Fits the geography and structural profile of a potential buyer for AI visibility services.",
+        "evidenceIds": [
+          "a107b467-dcba-46ae-8e35-62c826747499",
+          "f85b61c0-9097-463f-9930-3350d4c5a760"
+        ]
+      }
+    },
+    {
+      "holdoutCompanyId": "661718df-9356-4c13-b091-917215b2c9b3",
+      "identity": {
+        "canonicalName": "Druva",
+        "domain": "druva.com",
+        "status": "OPERATIONAL",
+        "confidence": "HIGH",
+        "evidenceIds": [
+          "d026c29b-69fa-4e43-b0cc-b3824dd1749f"
+        ]
+      },
+      "companyUnderstanding": {
+        "primaryBusiness": "Data security and SaaS",
+        "productsServices": "Resilience Cloud, Dru AI",
+        "businessModel": "SaaS",
+        "industry": "Technology",
+        "geography": "UNKNOWN",
+        "employeeSize": "UNKNOWN",
+        "technologyFacts": "Data security, cloud backups, AI-driven security tools",
+        "confidence": "HIGH",
+        "evidenceIds": [
+          "d026c29b-69fa-4e43-b0cc-b3824dd1749f",
+          "fe7c5dbd-ff18-4a9e-8773-4648472425c4"
+        ]
+      },
+      "commercialRole": {
+        "role": "POTENTIAL_BUYER",
+        "confidence": "MEDIUM",
+        "reason": "SaaS entity requiring visibility in competitive search environments.",
+        "evidenceIds": [
+          "d026c29b-69fa-4e43-b0cc-b3824dd1749f"
+        ]
+      },
+      "whoCriteria": [
+        {
+          "criterion": "HEADQUARTERS_OR_PRIMARY_GEOGRAPHY_IN_INDIA",
+          "state": "UNKNOWN",
+          "reason": "Evidence does not specify India headquarters.",
+          "evidenceIds": [
+            "d026c29b-69fa-4e43-b0cc-b3824dd1749f"
+          ]
+        },
+        {
+          "criterion": "STRUCTURAL_CAPACITY_TO_BUY_EXTERNAL_B2B_MARKETING_OR_AI_VISIBILITY_SERVICES",
+          "state": "PASS",
+          "reason": "Large-scale enterprise SaaS provider.",
+          "evidenceIds": [
+            "d026c29b-69fa-4e43-b0cc-b3824dd1749f"
+          ]
+        }
+      ],
+      "who": {
+        "final": "POSSIBLE_FIT",
+        "confidence": "LOW",
+        "reason": "Geographic status is unknown regarding India requirement.",
+        "evidenceIds": [
+          "d026c29b-69fa-4e43-b0cc-b3824dd1749f"
+        ]
+      }
+    },
+    {
+      "holdoutCompanyId": "47304732-9065-4603-b736-2009f237f22c",
+      "identity": {
+        "canonicalName": "MoEngage",
+        "domain": "moengage.com",
+        "status": "OPERATIONAL",
+        "confidence": "HIGH",
+        "evidenceIds": [
+          "40914a1d-350c-41cc-80f9-3223ad1e1d43"
+        ]
+      },
+      "companyUnderstanding": {
+        "primaryBusiness": "Customer engagement platform",
+        "productsServices": "Analytics, personalization, AI customer journeys",
+        "businessModel": "SaaS",
+        "industry": "Technology",
+        "geography": "Global",
+        "employeeSize": "UNKNOWN",
+        "technologyFacts": "AI-powered engagement, cross-channel workflows",
+        "confidence": "HIGH",
+        "evidenceIds": [
+          "40914a1d-350c-41cc-80f9-3223ad1e1d43",
+          "f19a3a99-85ed-40e6-af90-2db35fe3066e"
+        ]
+      },
+      "commercialRole": {
+        "role": "POTENTIAL_BUYER",
+        "confidence": "MEDIUM",
+        "reason": "High-growth SaaS provider needing visibility.",
+        "evidenceIds": [
+          "40914a1d-350c-41cc-80f9-3223ad1e1d43"
+        ]
+      },
+      "whoCriteria": [
+        {
+          "criterion": "HEADQUARTERS_OR_PRIMARY_GEOGRAPHY_IN_INDIA",
+          "state": "UNKNOWN",
+          "reason": "Global branding used in evidence; specific HQ not explicitly confirmed as India.",
+          "evidenceIds": [
+            "40914a1d-350c-41cc-80f9-3223ad1e1d43"
+          ]
+        },
+        {
+          "criterion": "STRUCTURAL_CAPACITY_TO_BUY_EXTERNAL_B2B_MARKETING_OR_AI_VISIBILITY_SERVICES",
+          "state": "PASS",
+          "reason": "Established SaaS scale.",
+          "evidenceIds": [
+            "40914a1d-350c-41cc-80f9-3223ad1e1d43"
+          ]
+        }
+      ],
+      "who": {
+        "final": "POSSIBLE_FIT",
+        "confidence": "MEDIUM",
+        "reason": "Meets structural requirements but geography is ambiguous.",
+        "evidenceIds": [
+          "40914a1d-350c-41cc-80f9-3223ad1e1d43"
+        ]
+      }
+    },
+    {
+      "holdoutCompanyId": "976cefd3-7421-45e4-8fd4-530be6339e84",
+      "identity": {
+        "canonicalName": "Uplers",
+        "domain": "uplers.com",
+        "status": "OPERATIONAL",
+        "confidence": "HIGH",
+        "evidenceIds": [
+          "f6e27144-ab1b-40cf-8612-fdb4a77344a2"
+        ]
+      },
+      "companyUnderstanding": {
+        "primaryBusiness": "AI-hiring platform",
+        "productsServices": "Talent acquisition and hiring services",
+        "businessModel": "Platform-as-a-Service",
+        "industry": "Human Resources / Tech",
+        "geography": "India",
+        "employeeSize": "UNKNOWN",
+        "technologyFacts": "AI matching for engineering/product roles",
+        "confidence": "HIGH",
+        "evidenceIds": [
+          "f6e27144-ab1b-40cf-8612-fdb4a77344a2"
+        ]
+      },
+      "commercialRole": {
+        "role": "POTENTIAL_BUYER",
+        "confidence": "LOW",
+        "reason": "The service focus (recruitment) is less aligned with AI visibility than core marketing/tech companies.",
+        "evidenceIds": [
+          "f6e27144-ab1b-40cf-8612-fdb4a77344a2"
+        ]
+      },
+      "whoCriteria": [
+        {
+          "criterion": "HEADQUARTERS_OR_PRIMARY_GEOGRAPHY_IN_INDIA",
+          "state": "PASS",
+          "reason": "Explicitly stated as hiring talent from India.",
+          "evidenceIds": [
+            "f6e27144-ab1b-40cf-8612-fdb4a77344a2"
+          ]
+        },
+        {
+          "criterion": "STRUCTURAL_CAPACITY_TO_BUY_EXTERNAL_B2B_MARKETING_OR_AI_VISIBILITY_SERVICES",
+          "state": "PASS",
+          "reason": "Operating a commercial platform.",
+          "evidenceIds": [
+            "f6e27144-ab1b-40cf-8612-fdb4a77344a2"
+          ]
+        }
+      ],
+      "who": {
+        "final": "LIKELY_FIT",
+        "confidence": "MEDIUM",
+        "reason": "Fits geographic criteria and operational profile.",
+        "evidenceIds": [
+          "f6e27144-ab1b-40cf-8612-fdb4a77344a2"
+        ]
+      }
+    },
+    {
+      "holdoutCompanyId": "1b05ff96-47fa-4624-81da-4a2283c1b083",
+      "identity": {
+        "canonicalName": "Writesonic",
+        "domain": "writesonic.com",
+        "status": "OPERATIONAL",
+        "confidence": "HIGH",
+        "evidenceIds": [
+          "a5ad3b90-6e88-4eca-bbff-affb62fb96b7"
+        ]
+      },
+      "companyUnderstanding": {
+        "primaryBusiness": "AI Marketing / SEO / Content tools",
+        "productsServices": "AI visibility, AEO, GEO tools",
+        "businessModel": "SaaS",
+        "industry": "Technology / AI",
+        "geography": "UNKNOWN",
+        "employeeSize": "UNKNOWN",
+        "technologyFacts": "AI visibility for ChatGPT/Google",
+        "confidence": "HIGH",
+        "evidenceIds": [
+          "a5ad3b90-6e88-4eca-bbff-affb62fb96b7",
+          "c7e95305-0fe0-4ba3-a2f6-0f08f32e41ee"
+        ]
+      },
+      "commercialRole": {
+        "role": "SELLER_COMPETITOR",
+        "confidence": "HIGH",
+        "reason": "The offering (AI visibility, GEO, AEO) directly overlaps with the seller's core domain.",
+        "evidenceIds": [
+          "a5ad3b90-6e88-4eca-bbff-affb62fb96b7",
+          "c7e95305-0fe0-4ba3-a2f6-0f08f32e41ee"
+        ]
+      },
+      "whoCriteria": [
+        {
+          "criterion": "HEADQUARTERS_OR_PRIMARY_GEOGRAPHY_IN_INDIA",
+          "state": "UNKNOWN",
+          "reason": "Not explicitly identified in evidence.",
+          "evidenceIds": [
+            "a5ad3b90-6e88-4eca-bbff-affb62fb96b7"
+          ]
+        },
+        {
+          "criterion": "STRUCTURAL_CAPACITY_TO_BUY_EXTERNAL_B2B_MARKETING_OR_AI_VISIBILITY_SERVICES",
+          "state": "FAIL",
+          "reason": "Likely a provider/competitor rather than an external service buyer.",
+          "evidenceIds": [
+            "a5ad3b90-6e88-4eca-bbff-affb62fb96b7"
+          ]
+        }
+      ],
+      "who": {
+        "final": "LIKELY_NOT_FIT",
+        "confidence": "HIGH",
+        "reason": "Direct market competitor.",
+        "evidenceIds": [
+          "a5ad3b90-6e88-4eca-bbff-affb62fb96b7"
+        ]
+      }
+    },
+    {
+      "holdoutCompanyId": "b869a2e2-62c7-4f98-abc3-063f4132092e",
+      "identity": {
+        "canonicalName": "Smarketers",
+        "domain": "thesmarketers.com",
+        "status": "OPERATIONAL",
+        "confidence": "HIGH",
+        "evidenceIds": [
+          "36b20e09-9937-43b7-aeba-b795d29cd209"
+        ]
+      },
+      "companyUnderstanding": {
+        "primaryBusiness": "B2B marketing agency",
+        "productsServices": "ABM, Inbound marketing, Demand generation",
+        "businessModel": "Agency / Service Provider",
+        "industry": "Marketing Services",
+        "geography": "India",
+        "employeeSize": "UNKNOWN",
+        "technologyFacts": "AI-powered marketing",
+        "confidence": "HIGH",
+        "evidenceIds": [
+          "36b20e09-9937-43b7-aeba-b795d29cd209",
+          "79115d21-3309-4359-a170-9fc314ab9851"
+        ]
+      },
+      "commercialRole": {
+        "role": "ADJACENT_VENDOR",
+        "confidence": "MEDIUM",
+        "reason": "Agency provides marketing services, which is adjacent to AI visibility.",
+        "evidenceIds": [
+          "36b20e09-9937-43b7-aeba-b795d29cd209"
+        ]
+      },
+      "whoCriteria": [
+        {
+          "criterion": "HEADQUARTERS_OR_PRIMARY_GEOGRAPHY_IN_INDIA",
+          "state": "PASS",
+          "reason": "Mentioned as an agency for SaaS companies in India.",
+          "evidenceIds": [
+            "36b20e09-9937-43b7-aeba-b795d29cd209"
+          ]
+        },
+        {
+          "criterion": "STRUCTURAL_CAPACITY_TO_BUY_EXTERNAL_B2B_MARKETING_OR_AI_VISIBILITY_SERVICES",
+          "state": "UNKNOWN",
+          "reason": "Could be a partner or buyer depending on business model alignment.",
+          "evidenceIds": [
+            "36b20e09-9937-43b7-aeba-b795d29cd209"
+          ]
+        }
+      ],
+      "who": {
+        "final": "POSSIBLE_FIT",
+        "confidence": "MEDIUM",
+        "reason": "Potential strategic partner or buyer for niche visibility tools.",
+        "evidenceIds": [
+          "36b20e09-9937-43b7-aeba-b795d29cd209"
+        ]
+      }
+    },
+    {
+      "holdoutCompanyId": "f6d36da7-947f-4714-9b80-1c3a80382fb1",
+      "identity": {
+        "canonicalName": "Razorpay",
+        "domain": "razorpay.com",
+        "status": "VERIFIED",
+        "confidence": "HIGH",
+        "evidenceIds": [
+          "f49572b7-6588-4be7-a3f1-b7eeb3111ab1"
+        ]
+      },
+      "companyUnderstanding": {
+        "primaryBusiness": "Financial services and payment technology",
+        "productsServices": "Payment gateway, banking services, payouts, payroll automation",
+        "businessModel": "B2B fintech SaaS",
+        "industry": "Fintech",
+        "geography": "India, USA",
+        "employeeSize": "UNKNOWN",
+        "technologyFacts": "Payments suite, payment APIs",
+        "confidence": "HIGH",
+        "evidenceIds": [
+          "f49572b7-6588-4be7-a3f1-b7eeb3111ab1",
+          "546a7939-f098-4c1a-9b7d-a81a884fb18d"
+        ]
+      },
+      "commercialRole": {
+        "role": "POTENTIAL_BUYER",
+        "confidence": "HIGH",
+        "reason": "Large-scale fintech operation requiring significant security infrastructure.",
+        "evidenceIds": [
+          "f49572b7-6588-4be7-a3f1-b7eeb3111ab1"
+        ]
+      },
+      "whoCriteria": [
+        {
+          "criterion": "NOT_A_MATERIALLY_SUBSTITUTABLE_MANAGED_SECURITY_PROVIDER",
+          "state": "PASS",
+          "reason": "Company is a payment processor, not a security vendor.",
+          "evidenceIds": [
+            "f49572b7-6588-4be7-a3f1-b7eeb3111ab1"
+          ]
+        },
+        {
+          "criterion": "STRUCTURAL_CAPACITY_TO_BUY_MANAGED_SECURITY_MONITORING",
+          "state": "PASS",
+          "reason": "Large enterprise payment platform.",
+          "evidenceIds": [
+            "f49572b7-6588-4be7-a3f1-b7eeb3111ab1"
+          ]
+        },
+        {
+          "criterion": "DIGITAL_OR_REGULATED_OPERATIONS_CREATE_STRUCTURAL_SECURITY_RELEVANCE",
+          "state": "PASS",
+          "reason": "Financial services handling sensitive payment data.",
+          "evidenceIds": [
+            "f49572b7-6588-4be7-a3f1-b7eeb3111ab1"
+          ]
+        },
+        {
+          "criterion": "DO_NOT_REQUIRE_ACTIVE_TIMING_SIGNAL",
+          "state": "PASS",
+          "reason": "Requirement met as per guidelines.",
+          "evidenceIds": []
+        }
+      ],
+      "who": {
+        "final": "LIKELY_FIT",
+        "confidence": "HIGH",
+        "reason": "Fintech platform with significant security compliance requirements.",
+        "evidenceIds": [
+          "f49572b7-6588-4be7-a3f1-b7eeb3111ab1"
+        ]
+      }
+    },
+    {
+      "holdoutCompanyId": "20d23f96-31b5-4f39-a2c4-e441c31a90bf",
+      "identity": {
+        "canonicalName": "Zerodha",
+        "domain": "zerodha.com",
+        "status": "VERIFIED",
+        "confidence": "HIGH",
+        "evidenceIds": [
+          "6382228a-d707-402a-b97d-6ec400ae23bc"
+        ]
+      },
+      "companyUnderstanding": {
+        "primaryBusiness": "Stock brokerage and financial services",
+        "productsServices": "Trading platforms, investment dashboards, APIs",
+        "businessModel": "B2C/B2B brokerage",
+        "industry": "Fintech",
+        "geography": "India",
+        "employeeSize": "UNKNOWN",
+        "technologyFacts": "Trading apps, API connectivity, brokerage infrastructure",
+        "confidence": "HIGH",
+        "evidenceIds": [
+          "9019ab95-22ea-42c4-93ff-c2d93b628c07",
+          "6382228a-d707-402a-b97d-6ec400ae23bc"
+        ]
+      },
+      "commercialRole": {
+        "role": "POTENTIAL_BUYER",
+        "confidence": "HIGH",
+        "reason": "Large broker requiring high levels of data security and regulatory compliance.",
+        "evidenceIds": [
+          "6382228a-d707-402a-b97d-6ec400ae23bc"
+        ]
+      },
+      "whoCriteria": [
+        {
+          "criterion": "NOT_A_MATERIALLY_SUBSTITUTABLE_MANAGED_SECURITY_PROVIDER",
+          "state": "PASS",
+          "reason": "Company is a brokerage, not a security vendor.",
+          "evidenceIds": [
+            "6382228a-d707-402a-b97d-6ec400ae23bc"
+          ]
+        },
+        {
+          "criterion": "STRUCTURAL_CAPACITY_TO_BUY_MANAGED_SECURITY_MONITORING",
+          "state": "PASS",
+          "reason": "Largest broker in India with significant transaction volume.",
+          "evidenceIds": [
+            "6382228a-d707-402a-b97d-6ec400ae23bc"
+          ]
+        },
+        {
+          "criterion": "DIGITAL_OR_REGULATED_OPERATIONS_CREATE_STRUCTURAL_SECURITY_RELEVANCE",
+          "state": "PASS",
+          "reason": "Regulated financial institution.",
+          "evidenceIds": [
+            "9019ab95-22ea-42c4-93ff-c2d93b628c07"
+          ]
+        },
+        {
+          "criterion": "DO_NOT_REQUIRE_ACTIVE_TIMING_SIGNAL",
+          "state": "PASS",
+          "reason": "Requirement met.",
+          "evidenceIds": []
+        }
+      ],
+      "who": {
+        "final": "LIKELY_FIT",
+        "confidence": "HIGH",
+        "reason": "Highly regulated and large-scale digital financial service provider.",
+        "evidenceIds": [
+          "6382228a-d707-402a-b97d-6ec400ae23bc"
+        ]
+      }
+    },
+    {
+      "holdoutCompanyId": "aa41cd62-1f6a-46c8-86e0-2b0443312700",
+      "identity": {
+        "canonicalName": "ACKO",
+        "domain": "acko.com",
+        "status": "VERIFIED",
+        "confidence": "HIGH",
+        "evidenceIds": [
+          "7edd92af-de28-453a-8fb5-8f4e081eefce"
+        ]
+      },
+      "companyUnderstanding": {
+        "primaryBusiness": "Insurance services",
+        "productsServices": "Car, bike, health, and travel insurance",
+        "businessModel": "Digital insurance provider",
+        "industry": "Insurtech",
+        "geography": "India",
+        "employeeSize": "UNKNOWN",
+        "technologyFacts": "Direct insurance application",
+        "confidence": "HIGH",
+        "evidenceIds": [
+          "7edd92af-de28-453a-8fb5-8f4e081eefce",
+          "e5f72ed8-92e5-49c0-9225-76f38ae06c04"
+        ]
+      },
+      "commercialRole": {
+        "role": "POTENTIAL_BUYER",
+        "confidence": "HIGH",
+        "reason": "Insurtech handling personal user data and claims.",
+        "evidenceIds": [
+          "7edd92af-de28-453a-8fb5-8f4e081eefce"
+        ]
+      },
+      "whoCriteria": [
+        {
+          "criterion": "NOT_A_MATERIALLY_SUBSTITUTABLE_MANAGED_SECURITY_PROVIDER",
+          "state": "PASS",
+          "reason": "Insurance provider.",
+          "evidenceIds": [
+            "7edd92af-de28-453a-8fb5-8f4e081eefce"
+          ]
+        },
+        {
+          "criterion": "STRUCTURAL_CAPACITY_TO_BUY_MANAGED_SECURITY_MONITORING",
+          "state": "PASS",
+          "reason": "Significant user base and transaction volumes.",
+          "evidenceIds": [
+            "e5f72ed8-92e5-49c0-9225-76f38ae06c04"
+          ]
+        },
+        {
+          "criterion": "DIGITAL_OR_REGULATED_OPERATIONS_CREATE_STRUCTURAL_SECURITY_RELEVANCE",
+          "state": "PASS",
+          "reason": "Insurance is a highly regulated sector.",
+          "evidenceIds": [
+            "7edd92af-de28-453a-8fb5-8f4e081eefce"
+          ]
+        },
+        {
+          "criterion": "DO_NOT_REQUIRE_ACTIVE_TIMING_SIGNAL",
+          "state": "PASS",
+          "reason": "Requirement met.",
+          "evidenceIds": []
+        }
+      ],
+      "who": {
+        "final": "LIKELY_FIT",
+        "confidence": "HIGH",
+        "reason": "Digital insurer with significant regulatory security requirements.",
+        "evidenceIds": [
+          "7edd92af-de28-453a-8fb5-8f4e081eefce"
+        ]
+      }
+    },
+    {
+      "holdoutCompanyId": "4d1a78f5-a6bf-4053-9b5d-72581feda981",
+      "identity": {
+        "canonicalName": "CloudSEK",
+        "domain": "cloudsek.com",
+        "status": "VERIFIED",
+        "confidence": "HIGH",
+        "evidenceIds": [
+          "3cdb91ef-1996-432b-b53a-fee6993cc47a"
+        ]
+      },
+      "companyUnderstanding": {
+        "primaryBusiness": "Cybersecurity",
+        "productsServices": "Threat intelligence, brand monitoring, attack surface monitoring",
+        "businessModel": "B2B SaaS Security",
+        "industry": "Cybersecurity",
+        "geography": "Global (APAC focus)",
+        "employeeSize": "UNKNOWN",
+        "technologyFacts": "Predictive cybersecurity platform",
+        "confidence": "HIGH",
+        "evidenceIds": [
+          "3cdb91ef-1996-432b-b53a-fee6993cc47a",
+          "fce7743f-c0f0-4dbd-97fb-bc8b66d53f23"
+        ]
+      },
+      "commercialRole": {
+        "role": "SELLER_COMPETITOR",
+        "confidence": "HIGH",
+        "reason": "Provides cybersecurity services including infrastructure monitoring and threat intelligence.",
+        "evidenceIds": [
+          "fce7743f-c0f0-4dbd-97fb-bc8b66d53f23"
+        ]
+      },
+      "whoCriteria": [
+        {
+          "criterion": "NOT_A_MATERIALLY_SUBSTITUTABLE_MANAGED_SECURITY_PROVIDER",
+          "state": "FAIL",
+          "reason": "Company is a direct provider of cybersecurity and intelligence services.",
+          "evidenceIds": [
+            "fce7743f-c0f0-4dbd-97fb-bc8b66d53f23"
+          ]
+        },
+        {
+          "criterion": "STRUCTURAL_CAPACITY_TO_BUY_MANAGED_SECURITY_MONITORING",
+          "state": "PASS",
+          "reason": "Capacity exists but business model is competitive.",
+          "evidenceIds": []
+        },
+        {
+          "criterion": "DIGITAL_OR_REGULATED_OPERATIONS_CREATE_STRUCTURAL_SECURITY_RELEVANCE",
+          "state": "PASS",
+          "reason": "Cybersecurity firm.",
+          "evidenceIds": [
+            "3cdb91ef-1996-432b-b53a-fee6993cc47a"
+          ]
+        },
+        {
+          "criterion": "DO_NOT_REQUIRE_ACTIVE_TIMING_SIGNAL",
+          "state": "PASS",
+          "reason": "Requirement met.",
+          "evidenceIds": []
+        }
+      ],
+      "who": {
+        "final": "LIKELY_NOT_FIT",
+        "confidence": "HIGH",
+        "reason": "Company operates as a competitor in the managed security and threat intelligence space.",
+        "evidenceIds": [
+          "fce7743f-c0f0-4dbd-97fb-bc8b66d53f23"
+        ]
+      }
+    },
+    {
+      "holdoutCompanyId": "57182979-6644-4ff2-ad48-5b45f41642d9",
+      "identity": {
+        "canonicalName": "Sify Technologies",
+        "domain": "sifytechnologies.com",
+        "status": "VERIFIED",
+        "confidence": "HIGH",
+        "evidenceIds": [
+          "94510d4d-8217-4e0a-9318-f5a6d1f80816"
+        ]
+      },
+      "companyUnderstanding": {
+        "primaryBusiness": "ICT and IT services",
+        "productsServices": "Cloud, data center, network, digital, and IT services",
+        "businessModel": "B2B ICT/Managed Services",
+        "industry": "IT Services",
+        "geography": "India",
+        "employeeSize": "UNKNOWN",
+        "technologyFacts": "Hybrid IT infrastructure, converged ICT ecosystem",
+        "confidence": "HIGH",
+        "evidenceIds": [
+          "94510d4d-8217-4e0a-9318-f5a6d1f80816",
+          "bf14ffee-6847-499a-9824-7d607fc7a467"
+        ]
+      },
+      "commercialRole": {
+        "role": "ADJACENT_VENDOR",
+        "confidence": "HIGH",
+        "reason": "Provides broad IT/cloud services which often overlap or integrate with managed security.",
+        "evidenceIds": [
+          "bf14ffee-6847-499a-9824-7d607fc7a467"
+        ]
+      },
+      "whoCriteria": [
+        {
+          "criterion": "NOT_A_MATERIALLY_SUBSTITUTABLE_MANAGED_SECURITY_PROVIDER",
+          "state": "UNKNOWN",
+          "reason": "Sify offers comprehensive ICT and digital services, it is unclear if they provide managed SOC as a core service.",
+          "evidenceIds": [
+            "bf14ffee-6847-499a-9824-7d607fc7a467"
+          ]
+        },
+        {
+          "criterion": "STRUCTURAL_CAPACITY_TO_BUY_MANAGED_SECURITY_MONITORING",
+          "state": "PASS",
+          "reason": "Large scale enterprise ICT provider.",
+          "evidenceIds": [
+            "bf14ffee-6847-499a-9824-7d607fc7a467"
+          ]
+        },
+        {
+          "criterion": "DIGITAL_OR_REGULATED_OPERATIONS_CREATE_STRUCTURAL_SECURITY_RELEVANCE",
+          "state": "PASS",
+          "reason": "Manages IT for other enterprises.",
+          "evidenceIds": [
+            "94510d4d-8217-4e0a-9318-f5a6d1f80816"
+          ]
+        },
+        {
+          "criterion": "DO_NOT_REQUIRE_ACTIVE_TIMING_SIGNAL",
+          "state": "PASS",
+          "reason": "Requirement met.",
+          "evidenceIds": []
+        }
+      ],
+      "who": {
+        "final": "POSSIBLE_FIT",
+        "confidence": "MEDIUM",
+        "reason": "Large ICT provider; potential for partnership or customer relationship, but potential competitive overlap.",
+        "evidenceIds": [
+          "bf14ffee-6847-499a-9824-7d607fc7a467"
+        ]
+      }
+    },
+    {
+      "holdoutCompanyId": "963f1d2d-b61f-4b73-8ba9-f6c68dcbd675",
+      "identity": {
+        "canonicalName": "Freshworks",
+        "domain": "freshworks.com",
+        "status": "VERIFIED",
+        "confidence": "HIGH",
+        "evidenceIds": [
+          "58ddea26-b1fc-4665-84b4-898c990ae3bd"
+        ]
+      },
+      "companyUnderstanding": {
+        "primaryBusiness": "Business software",
+        "productsServices": "Customer support, CRM, and IT management software",
+        "businessModel": "B2B SaaS",
+        "industry": "SaaS / Software",
+        "geography": "Global",
+        "employeeSize": "UNKNOWN",
+        "technologyFacts": "AI-powered workflows for service and support",
+        "confidence": "HIGH",
+        "evidenceIds": [
+          "58ddea26-b1fc-4665-84b4-898c990ae3bd",
+          "8cadb93a-cfd7-49c8-8de4-e524c1cb5bea"
+        ]
+      },
+      "commercialRole": {
+        "role": "POTENTIAL_BUYER",
+        "confidence": "HIGH",
+        "reason": "Global software vendor that requires secure operations for their platform.",
+        "evidenceIds": [
+          "58ddea26-b1fc-4665-84b4-898c990ae3bd"
+        ]
+      },
+      "whoCriteria": [
+        {
+          "criterion": "NOT_A_MATERIALLY_SUBSTITUTABLE_MANAGED_SECURITY_PROVIDER",
+          "state": "PASS",
+          "reason": "Software provider for CRM and IT support, not a security vendor.",
+          "evidenceIds": [
+            "8cadb93a-cfd7-49c8-8de4-e524c1cb5bea"
+          ]
+        },
+        {
+          "criterion": "STRUCTURAL_CAPACITY_TO_BUY_MANAGED_SECURITY_MONITORING",
+          "state": "PASS",
+          "reason": "Large global software organization.",
+          "evidenceIds": [
+            "58ddea26-b1fc-4665-84b4-898c990ae3bd"
+          ]
+        },
+        {
+          "criterion": "DIGITAL_OR_REGULATED_OPERATIONS_CREATE_STRUCTURAL_SECURITY_RELEVANCE",
+          "state": "PASS",
+          "reason": "SaaS platform hosting data for 74k+ businesses.",
+          "evidenceIds": [
+            "58ddea26-b1fc-4665-84b4-898c990ae3bd"
+          ]
+        },
+        {
+          "criterion": "DO_NOT_REQUIRE_ACTIVE_TIMING_SIGNAL",
+          "state": "PASS",
+          "reason": "Requirement met.",
+          "evidenceIds": []
+        }
+      ],
+      "who": {
+        "final": "LIKELY_FIT",
+        "confidence": "HIGH",
+        "reason": "Large SaaS provider with extensive enterprise footprint requiring robust security infrastructure.",
+        "evidenceIds": [
+          "58ddea26-b1fc-4665-84b4-898c990ae3bd"
+        ]
+      }
+    }
+  ]
+}

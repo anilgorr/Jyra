@@ -1,0 +1,98 @@
+[
+  {
+    "holdoutCompanyId": "98402e65-f817-467d-9237-496a797a5fba",
+    "company": "Wingify",
+    "domainKey": "wingify.com",
+    "targetDomain": "DIGIPUUSH",
+    "selectionSource": "https://saasboomi.org/india-saas-unicorn-tracker/",
+    "selectedAt": "2026-09-02T08:05:48.477Z"
+  },
+  {
+    "holdoutCompanyId": "661718df-9356-4c13-b091-917215b2c9b3",
+    "company": "Druva",
+    "domainKey": "druva.com",
+    "targetDomain": "DIGIPUUSH",
+    "selectionSource": "https://saasboomi.org/india-saas-unicorn-tracker/",
+    "selectedAt": "2026-09-02T08:05:48.477Z"
+  },
+  {
+    "holdoutCompanyId": "47304732-9065-4603-b736-2009f237f22c",
+    "company": "MoEngage",
+    "domainKey": "moengage.com",
+    "targetDomain": "DIGIPUUSH",
+    "selectionSource": "https://saasboomi.org/india-saas-unicorn-tracker/",
+    "selectedAt": "2026-09-02T08:05:48.477Z"
+  },
+  {
+    "holdoutCompanyId": "976cefd3-7421-45e4-8fd4-530be6339e84",
+    "company": "Uplers",
+    "domainKey": "uplers.com",
+    "targetDomain": "DIGIPUUSH",
+    "selectionSource": "https://www.nicodigital.com/digital-marketing/best-digital-marketing-companies-in-india",
+    "selectedAt": "2026-09-02T08:05:48.477Z"
+  },
+  {
+    "holdoutCompanyId": "1b05ff96-47fa-4624-81da-4a2283c1b083",
+    "company": "Writesonic",
+    "domainKey": "writesonic.com",
+    "targetDomain": "DIGIPUUSH",
+    "selectionSource": "https://www.ycombinator.com/companies/industry/saas/india",
+    "selectedAt": "2026-09-02T08:05:48.477Z"
+  },
+  {
+    "holdoutCompanyId": "b869a2e2-62c7-4f98-abc3-063f4132092e",
+    "company": "Smarketers",
+    "domainKey": "thesmarketers.com",
+    "targetDomain": "DIGIPUUSH",
+    "selectionSource": "https://thesmarketers.com/blogs/top-b2b-saas-marketing-companies-india/",
+    "selectedAt": "2026-09-02T08:05:48.477Z"
+  },
+  {
+    "holdoutCompanyId": "f6d36da7-947f-4714-9b80-1c3a80382fb1",
+    "company": "Razorpay",
+    "domainKey": "razorpay.com",
+    "targetDomain": "MANAGED_SOC",
+    "selectionSource": "http://builtin.com/articles/fintech-companies-in-india",
+    "selectedAt": "2026-09-02T08:05:48.477Z"
+  },
+  {
+    "holdoutCompanyId": "20d23f96-31b5-4f39-a2c4-e441c31a90bf",
+    "company": "Zerodha",
+    "domainKey": "zerodha.com",
+    "targetDomain": "MANAGED_SOC",
+    "selectionSource": "http://builtin.com/articles/fintech-companies-in-india",
+    "selectedAt": "2026-09-02T08:05:48.477Z"
+  },
+  {
+    "holdoutCompanyId": "aa41cd62-1f6a-46c8-86e0-2b0443312700",
+    "company": "ACKO",
+    "domainKey": "acko.com",
+    "targetDomain": "MANAGED_SOC",
+    "selectionSource": "http://builtin.com/articles/fintech-companies-in-india",
+    "selectedAt": "2026-09-02T08:05:48.477Z"
+  },
+  {
+    "holdoutCompanyId": "4d1a78f5-a6bf-4053-9b5d-72581feda981",
+    "company": "CloudSEK",
+    "domainKey": "cloudsek.com",
+    "targetDomain": "MANAGED_SOC",
+    "selectionSource": "https://www.prophaze.com/made-in-india-enterprise-cybersecurity-solutions-2025",
+    "selectedAt": "2026-09-02T08:05:48.477Z"
+  },
+  {
+    "holdoutCompanyId": "57182979-6644-4ff2-ad48-5b45f41642d9",
+    "company": "Sify Technologies",
+    "domainKey": "sifytechnologies.com",
+    "targetDomain": "MANAGED_SOC",
+    "selectionSource": "https://eventussecurity.com/cybersecurity/india/mssp-companies",
+    "selectedAt": "2026-09-02T08:05:48.477Z"
+  },
+  {
+    "holdoutCompanyId": "963f1d2d-b61f-4b73-8ba9-f6c68dcbd675",
+    "company": "Freshworks",
+    "domainKey": "freshworks.com",
+    "targetDomain": "MANAGED_SOC",
+    "selectionSource": "https://saasboomi.org/india-saas-unicorn-tracker/",
+    "selectedAt": "2026-09-02T08:05:48.477Z"
+  }
+]
