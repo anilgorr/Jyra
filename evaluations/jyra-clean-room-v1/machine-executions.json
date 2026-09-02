@@ -1,0 +1,1796 @@
+[
+  {
+    "batch": 1,
+    "model": "gemini-3.1-pro-preview",
+    "startedAt": "2026-09-02T04:47:07.528Z",
+    "completedAt": "2026-09-02T04:48:34.643Z",
+    "requestId": "51428fdc-fb4b-4b6c-9be8-361f672e715a",
+    "usageMetadata": {
+      "promptTokenCount": 54730,
+      "candidatesTokenCount": 6363,
+      "totalTokenCount": 64217,
+      "trafficType": "ON_DEMAND",
+      "promptTokensDetails": [
+        {
+          "modality": "TEXT",
+          "tokenCount": 54730
+        }
+      ],
+      "candidatesTokensDetails": [
+        {
+          "modality": "TEXT",
+          "tokenCount": 6363
+        }
+      ],
+      "thoughtsTokenCount": 3124
+    },
+    "finishReason": "STOP",
+    "output": {
+      "entries": [
+        {
+          "benchmarkCompanyId": "c5a70b95-1302-4fa3-9e96-8ee6c6d18926",
+          "identity": {
+            "status": "CORRECT",
+            "confidence": "HIGH",
+            "reason": "The company name Grownob LLC and domain grownob.com match the provided evidence.",
+            "evidenceIds": [
+              "c5a70b95-1302-4fa3-9e96-8ee6c6d18926:page:1",
+              "c5a70b95-1302-4fa3-9e96-8ee6c6d18926:search:1",
+              "c5a70b95-1302-4fa3-9e96-8ee6c6d18926:search:5"
+            ]
+          },
+          "companyUnderstanding": {
+            "primaryBusiness": "Grownob LLC is a B2B outbound infrastructure agency that provides ICP research, lead database building, email infrastructure setup, and cold outreach campaigns.",
+            "productsServices": "ICP Research, Lead Database Building, Email Infrastructure Setup, Cold Outreach Campaigns, Sales Automation, Buying Signal Intelligence.",
+            "businessModel": "B2B Services / Agency",
+            "industry": "Marketing Services / Professional Services",
+            "geography": "Sheridan, Wyoming, USA",
+            "employeeSize": "Small (exact size unknown, but operates as an agency with a founder)",
+            "technologyFacts": "Uses Clay, Apollo, Smartlead, LinkedIn, HubSpot, Instantly, ZoomInfo, Claude AI, Make, Airtable.",
+            "confidence": "HIGH",
+            "evidenceIds": [
+              "c5a70b95-1302-4fa3-9e96-8ee6c6d18926:page:1",
+              "c5a70b95-1302-4fa3-9e96-8ee6c6d18926:search:2",
+              "c5a70b95-1302-4fa3-9e96-8ee6c6d18926:search:5"
+            ]
+          },
+          "commercialRole": {
+            "role": "POTENTIAL_BUYER",
+            "confidence": "HIGH",
+            "reason": "As a B2B marketing and outbound agency, they fit the profile of a professional services company that could benefit from AI visibility and SEO services to generate their own inbound leads.",
+            "evidenceIds": [
+              "c5a70b95-1302-4fa3-9e96-8ee6c6d18926:page:1"
+            ]
+          },
+          "whoCriteria": [
+            {
+              "criterionDimension": "geography",
+              "criterionDescription": "Company is located in a stated target geography.",
+              "result": "FAIL",
+              "reason": "The company is headquartered in Sheridan, Wyoming, USA, not India.",
+              "evidenceIds": [
+                "c5a70b95-1302-4fa3-9e96-8ee6c6d18926:search:5"
+              ]
+            },
+            {
+              "criterionDimension": "industry",
+              "criterionDescription": "Target customer operates in a stated target industry.",
+              "result": "PASS",
+              "reason": "The company operates in the marketing and professional services industry.",
+              "evidenceIds": [
+                "c5a70b95-1302-4fa3-9e96-8ee6c6d18926:search:2",
+                "c5a70b95-1302-4fa3-9e96-8ee6c6d18926:search:5"
+              ]
+            },
+            {
+              "criterionDimension": "negative_indicator",
+              "criterionDescription": "A Business Twin hypothesis that requires human validation before becoming a disqualifier.",
+              "result": "UNKNOWN",
+              "reason": "There is no evidence indicating whether the prospect lacks marketing budget or urgency.",
+              "evidenceIds": []
+            },
+            {
+              "criterionDimension": "negative_indicator",
+              "criterionDescription": "A Business Twin hypothesis that requires human validation before becoming a disqualifier.",
+              "result": "UNKNOWN",
+              "reason": "There is no evidence indicating whether the prospect wants guaranteed rankings or citations.",
+              "evidenceIds": []
+            },
+            {
+              "criterionDimension": "negative_indicator",
+              "criterionDescription": "A Business Twin hypothesis that requires human validation before becoming a disqualifier.",
+              "result": "UNKNOWN",
+              "reason": "There is no evidence indicating that the company has insufficient website or content foundations.",
+              "evidenceIds": []
+            },
+            {
+              "criterionDimension": "technology",
+              "criterionDescription": "Technology pattern suggested by the Business Twin interpretation.",
+              "result": "PASS",
+              "reason": "The company has an established website with existing content, case studies, and service descriptions.",
+              "evidenceIds": [
+                "c5a70b95-1302-4fa3-9e96-8ee6c6d18926:page:1"
+              ]
+            }
+          ],
+          "derivedWho": "LIKELY_NOT_FIT",
+          "derivedWhoReason": "The company fails the MUST_HAVE geography criterion as it is located in the USA, not India.",
+          "reviewStatus": "PENDING_HUMAN_REVIEW"
+        },
+        {
+          "benchmarkCompanyId": "6594cacd-e2a9-4803-ba7a-e166b8da7489",
+          "identity": {
+            "status": "CORRECT",
+            "confidence": "HIGH",
+            "reason": "The company name Lead Made Easy and domain leadmadeeasy.com match the provided evidence.",
+            "evidenceIds": [
+              "6594cacd-e2a9-4803-ba7a-e166b8da7489:page:1",
+              "6594cacd-e2a9-4803-ba7a-e166b8da7489:search:2"
+            ]
+          },
+          "companyUnderstanding": {
+            "primaryBusiness": "Lead Made Easy provides B2B lead generation solutions, including appointment setting, cold email outreach, LinkedIn lead generation, and AI calling.",
+            "productsServices": "B2B Appointment Setting, Cold Email Outreach, LinkedIn Lead Generation, AI Calling, Lead Research, Account Based Marketing, Performance Marketing.",
+            "businessModel": "B2B Services / Agency",
+            "industry": "Marketing Services / Professional Services",
+            "geography": "Unknown (Mentions global market expertise across US, Europe, and Asia-Pacific)",
+            "employeeSize": "11-50 employees",
+            "technologyFacts": "Uses AI-powered outreach engines and cold calling.",
+            "confidence": "MEDIUM",
+            "evidenceIds": [
+              "6594cacd-e2a9-4803-ba7a-e166b8da7489:page:1",
+              "6594cacd-e2a9-4803-ba7a-e166b8da7489:search:2"
+            ]
+          },
+          "commercialRole": {
+            "role": "POTENTIAL_BUYER",
+            "confidence": "HIGH",
+            "reason": "As a B2B lead generation and marketing services agency, they fit the professional services ICP and could utilize AI visibility services to enhance their own inbound marketing.",
+            "evidenceIds": [
+              "6594cacd-e2a9-4803-ba7a-e166b8da7489:page:1"
+            ]
+          },
+          "whoCriteria": [
+            {
+              "criterionDimension": "geography",
+              "criterionDescription": "Company is located in a stated target geography.",
+              "result": "UNKNOWN",
+              "reason": "There is no explicit evidence stating the company's headquarters location.",
+              "evidenceIds": []
+            },
+            {
+              "criterionDimension": "industry",
+              "criterionDescription": "Target customer operates in a stated target industry.",
+              "result": "PASS",
+              "reason": "The company operates in the marketing services and professional services industry.",
+              "evidenceIds": [
+                "6594cacd-e2a9-4803-ba7a-e166b8da7489:search:2"
+              ]
+            },
+            {
+              "criterionDimension": "negative_indicator",
+              "criterionDescription": "A Business Twin hypothesis that requires human validation before becoming a disqualifier.",
+              "result": "UNKNOWN",
+              "reason": "There is no evidence indicating whether the prospect lacks marketing budget or urgency.",
+              "evidenceIds": []
+            },
+            {
+              "criterionDimension": "negative_indicator",
+              "criterionDescription": "A Business Twin hypothesis that requires human validation before becoming a disqualifier.",
+              "result": "UNKNOWN",
+              "reason": "There is no evidence indicating whether the prospect wants guaranteed rankings or citations.",
+              "evidenceIds": []
+            },
+            {
+              "criterionDimension": "negative_indicator",
+              "criterionDescription": "A Business Twin hypothesis that requires human validation before becoming a disqualifier.",
+              "result": "UNKNOWN",
+              "reason": "There is no evidence indicating that the company has insufficient website or content foundations.",
+              "evidenceIds": []
+            },
+            {
+              "criterionDimension": "technology",
+              "criterionDescription": "Technology pattern suggested by the Business Twin interpretation.",
+              "result": "PASS",
+              "reason": "The company has an established website with existing content, service pages, and case studies.",
+              "evidenceIds": [
+                "6594cacd-e2a9-4803-ba7a-e166b8da7489:page:1"
+              ]
+            }
+          ],
+          "derivedWho": "POSSIBLE_FIT",
+          "derivedWhoReason": "The company matches the industry and technology criteria, but its geography is unknown, leaving its fit as possible pending location verification.",
+          "reviewStatus": "PENDING_HUMAN_REVIEW"
+        },
+        {
+          "benchmarkCompanyId": "b45eeee7-aab7-412f-b7e7-4c95c999fa14",
+          "identity": {
+            "status": "CORRECT",
+            "confidence": "HIGH",
+            "reason": "The company name Leadgeneron and domain leadgeneron.com match the provided evidence.",
+            "evidenceIds": [
+              "b45eeee7-aab7-412f-b7e7-4c95c999fa14:page:1",
+              "b45eeee7-aab7-412f-b7e7-4c95c999fa14:search:4"
+            ]
+          },
+          "companyUnderstanding": {
+            "primaryBusiness": "Leadgeneron is a lead generation company offering account-based marketing, appointment setting, outsourced sales, and social media marketing.",
+            "productsServices": "Lead Generation, Account Based Marketing (ABM), Appointment Setting, Outsourced Sales, Sales Automation, Online Reputation Management, Social Media Marketing.",
+            "businessModel": "B2B Services / Agency",
+            "industry": "IT Services and IT Consulting / Professional Services",
+            "geography": "New York, NY, USA",
+            "employeeSize": "11-50 employees",
+            "technologyFacts": "Combines AI technology for sales automation and lead generation.",
+            "confidence": "HIGH",
+            "evidenceIds": [
+              "b45eeee7-aab7-412f-b7e7-4c95c999fa14:page:1",
+              "b45eeee7-aab7-412f-b7e7-4c95c999fa14:search:3",
+              "b45eeee7-aab7-412f-b7e7-4c95c999fa14:search:4"
+            ]
+          },
+          "commercialRole": {
+            "role": "POTENTIAL_BUYER",
+            "confidence": "HIGH",
+            "reason": "As a B2B professional services and IT consulting firm, they fit the target industry and could use AI visibility services for their own brand.",
+            "evidenceIds": [
+              "b45eeee7-aab7-412f-b7e7-4c95c999fa14:search:4"
+            ]
+          },
+          "whoCriteria": [
+            {
+              "criterionDimension": "geography",
+              "criterionDescription": "Company is located in a stated target geography.",
+              "result": "FAIL",
+              "reason": "The company is headquartered in New York, NY, USA, not India.",
+              "evidenceIds": [
+                "b45eeee7-aab7-412f-b7e7-4c95c999fa14:search:4"
+              ]
+            },
+            {
+              "criterionDimension": "industry",
+              "criterionDescription": "Target customer operates in a stated target industry.",
+              "result": "PASS",
+              "reason": "The company operates in IT Services and IT Consulting, which is a target industry.",
+              "evidenceIds": [
+                "b45eeee7-aab7-412f-b7e7-4c95c999fa14:search:4"
+              ]
+            },
+            {
+              "criterionDimension": "negative_indicator",
+              "criterionDescription": "A Business Twin hypothesis that requires human validation before becoming a disqualifier.",
+              "result": "UNKNOWN",
+              "reason": "There is no evidence indicating whether the prospect lacks marketing budget or urgency.",
+              "evidenceIds": []
+            },
+            {
+              "criterionDimension": "negative_indicator",
+              "criterionDescription": "A Business Twin hypothesis that requires human validation before becoming a disqualifier.",
+              "result": "UNKNOWN",
+              "reason": "There is no evidence indicating whether the prospect wants guaranteed rankings or citations.",
+              "evidenceIds": []
+            },
+            {
+              "criterionDimension": "negative_indicator",
+              "criterionDescription": "A Business Twin hypothesis that requires human validation before becoming a disqualifier.",
+              "result": "UNKNOWN",
+              "reason": "There is no evidence indicating that the company has insufficient website or content foundations.",
+              "evidenceIds": []
+            },
+            {
+              "criterionDimension": "technology",
+              "criterionDescription": "Technology pattern suggested by the Business Twin interpretation.",
+              "result": "PASS",
+              "reason": "The company has an established website with existing content.",
+              "evidenceIds": [
+                "b45eeee7-aab7-412f-b7e7-4c95c999fa14:page:1"
+              ]
+            }
+          ],
+          "derivedWho": "LIKELY_NOT_FIT",
+          "derivedWhoReason": "The company fails the MUST_HAVE geography criterion as it is located in the USA, not India.",
+          "reviewStatus": "PENDING_HUMAN_REVIEW"
+        },
+        {
+          "benchmarkCompanyId": "b7e9af09-ede7-46fb-baa1-cf2d9f3158bf",
+          "identity": {
+            "status": "CORRECT",
+            "confidence": "HIGH",
+            "reason": "The company name Leadzen.ai and domain leadzen.ai match the provided evidence.",
+            "evidenceIds": [
+              "b7e9af09-ede7-46fb-baa1-cf2d9f3158bf:page:1",
+              "b7e9af09-ede7-46fb-baa1-cf2d9f3158bf:search:1",
+              "b7e9af09-ede7-46fb-baa1-cf2d9f3158bf:search:2"
+            ]
+          },
+          "companyUnderstanding": {
+            "primaryBusiness": "Leadzen.ai is an AI-powered B2B lead generation and data intelligence platform that helps companies find verified prospects and automate outreach.",
+            "productsServices": "AI SDR, Chrome Extension, LinkedIn Extension, Lead Generation Tools, Data Enrichment, B2B Contact Database.",
+            "businessModel": "B2B SaaS",
+            "industry": "IT Services and IT Consulting / Software / SaaS",
+            "geography": "Mumbai, Maharashtra, India",
+            "employeeSize": "51-200 employees (or ~24-27 employees based on different sources)",
+            "technologyFacts": "Provides AI-driven lead generation, Chrome and LinkedIn extensions, and data intelligence.",
+            "confidence": "HIGH",
+            "evidenceIds": [
+              "b7e9af09-ede7-46fb-baa1-cf2d9f3158bf:page:1",
+              "b7e9af09-ede7-46fb-baa1-cf2d9f3158bf:search:1",
+              "b7e9af09-ede7-46fb-baa1-cf2d9f3158bf:search:2",
+              "b7e9af09-ede7-46fb-baa1-cf2d9f3158bf:search:4"
+            ]
+          },
+          "commercialRole": {
+            "role": "POTENTIAL_BUYER",
+            "confidence": "HIGH",
+            "reason": "As a B2B SaaS and technology company based in India, they fit the exact ICP for Digipuush's AI visibility services.",
+            "evidenceIds": [
+              "b7e9af09-ede7-46fb-baa1-cf2d9f3158bf:search:2"
+            ]
+          },
+          "whoCriteria": [
+            {
+              "criterionDimension": "geography",
+              "criterionDescription": "Company is located in a stated target geography.",
+              "result": "PASS",
+              "reason": "The company is headquartered in Mumbai, Maharashtra, India.",
+              "evidenceIds": [
+                "b7e9af09-ede7-46fb-baa1-cf2d9f3158bf:search:2",
+                "b7e9af09-ede7-46fb-baa1-cf2d9f3158bf:search:4"
+              ]
+            },
+            {
+              "criterionDimension": "industry",
+              "criterionDescription": "Target customer operates in a stated target industry.",
+              "result": "PASS",
+              "reason": "The company operates in IT Services and IT Consulting, and provides a SaaS platform.",
+              "evidenceIds": [
+                "b7e9af09-ede7-46fb-baa1-cf2d9f3158bf:search:2",
+                "b7e9af09-ede7-46fb-baa1-cf2d9f3158bf:search:4"
+              ]
+            },
+            {
+              "criterionDimension": "negative_indicator",
+              "criterionDescription": "A Business Twin hypothesis that requires human validation before becoming a disqualifier.",
+              "result": "UNKNOWN",
+              "reason": "There is no evidence indicating whether the prospect lacks marketing budget or urgency.",
+              "evidenceIds": []
+            },
+            {
+              "criterionDimension": "negative_indicator",
+              "criterionDescription": "A Business Twin hypothesis that requires human validation before becoming a disqualifier.",
+              "result": "UNKNOWN",
+              "reason": "There is no evidence indicating whether the prospect wants guaranteed rankings or citations.",
+              "evidenceIds": []
+            },
+            {
+              "criterionDimension": "negative_indicator",
+              "criterionDescription": "A Business Twin hypothesis that requires human validation before becoming a disqualifier.",
+              "result": "UNKNOWN",
+              "reason": "There is no evidence indicating that the company has insufficient website or content foundations.",
+              "evidenceIds": []
+            },
+            {
+              "criterionDimension": "technology",
+              "criterionDescription": "Technology pattern suggested by the Business Twin interpretation.",
+              "result": "PASS",
+              "reason": "The company has an established website with existing content, including a blog and insights section.",
+              "evidenceIds": [
+                "b7e9af09-ede7-46fb-baa1-cf2d9f3158bf:page:1"
+              ]
+            }
+          ],
+          "derivedWho": "LIKELY_FIT",
+          "derivedWhoReason": "The company passes all MUST_HAVE criteria, including being located in India and operating in the SaaS/IT industry, and has an established website.",
+          "reviewStatus": "PENDING_HUMAN_REVIEW"
+        },
+        {
+          "benchmarkCompanyId": "a96d5d08-cdd4-4970-b0e4-f85d569a3e75",
+          "identity": {
+            "status": "CORRECT",
+            "confidence": "HIGH",
+            "reason": "The company name Outbound System and domain outboundsystem.com match the provided evidence.",
+            "evidenceIds": [
+              "a96d5d08-cdd4-4970-b0e4-f85d569a3e75:page:1",
+              "a96d5d08-cdd4-4970-b0e4-f85d569a3e75:search:1"
+            ]
+          },
+          "companyUnderstanding": {
+            "primaryBusiness": "Outbound System is a B2B cold email and lead generation agency that provides fully managed cold email outreach and LinkedIn lead generation.",
+            "productsServices": "Cold Email Outreach, LinkedIn Lead Generation, AI Calling.",
+            "businessModel": "B2B Services / Agency",
+            "industry": "Marketing Services / Professional Services",
+            "geography": "Los Angeles, CA, USA",
+            "employeeSize": "15-16 employees",
+            "technologyFacts": "Consolidates outbound tech stack into one system, handles domain setup and email warmup.",
+            "confidence": "HIGH",
+            "evidenceIds": [
+              "a96d5d08-cdd4-4970-b0e4-f85d569a3e75:page:1",
+              "a96d5d08-cdd4-4970-b0e4-f85d569a3e75:search:1",
+              "a96d5d08-cdd4-4970-b0e4-f85d569a3e75:search:3",
+              "a96d5d08-cdd4-4970-b0e4-f85d569a3e75:search:4"
+            ]
+          },
+          "commercialRole": {
+            "role": "POTENTIAL_BUYER",
+            "confidence": "HIGH",
+            "reason": "As a B2B marketing and professional services agency, they fit the industry profile for Digipuush's services.",
+            "evidenceIds": [
+              "a96d5d08-cdd4-4970-b0e4-f85d569a3e75:page:1"
+            ]
+          },
+          "whoCriteria": [
+            {
+              "criterionDimension": "geography",
+              "criterionDescription": "Company is located in a stated target geography.",
+              "result": "FAIL",
+              "reason": "The company is headquartered in Los Angeles, CA, USA, not India.",
+              "evidenceIds": [
+                "a96d5d08-cdd4-4970-b0e4-f85d569a3e75:search:1",
+                "a96d5d08-cdd4-4970-b0e4-f85d569a3e75:search:3"
+              ]
+            },
+            {
+              "criterionDimension": "industry",
+              "criterionDescription": "Target customer operates in a stated target industry.",
+              "result": "PASS",
+              "reason": "The company operates in the marketing and professional services industry.",
+              "evidenceIds": [
+                "a96d5d08-cdd4-4970-b0e4-f85d569a3e75:search:1"
+              ]
+            },
+            {
+              "criterionDimension": "negative_indicator",
+              "criterionDescription": "A Business Twin hypothesis that requires human validation before becoming a disqualifier.",
+              "result": "UNKNOWN",
+              "reason": "There is no evidence indicating whether the prospect lacks marketing budget or urgency.",
+              "evidenceIds": []
+            },
+            {
+              "criterionDimension": "negative_indicator",
+              "criterionDescription": "A Business Twin hypothesis that requires human validation before becoming a disqualifier.",
+              "result": "UNKNOWN",
+              "reason": "There is no evidence indicating whether the prospect wants guaranteed rankings or citations.",
+              "evidenceIds": []
+            },
+            {
+              "criterionDimension": "negative_indicator",
+              "criterionDescription": "A Business Twin hypothesis that requires human validation before becoming a disqualifier.",
+              "result": "UNKNOWN",
+              "reason": "There is no evidence indicating that the company has insufficient website or content foundations.",
+              "evidenceIds": []
+            },
+            {
+              "criterionDimension": "technology",
+              "criterionDescription": "Technology pattern suggested by the Business Twin interpretation.",
+              "result": "PASS",
+              "reason": "The company has an established website with existing content, case studies, and a blog.",
+              "evidenceIds": [
+                "a96d5d08-cdd4-4970-b0e4-f85d569a3e75:page:1",
+                "a96d5d08-cdd4-4970-b0e4-f85d569a3e75:search:4"
+              ]
+            }
+          ],
+          "derivedWho": "LIKELY_NOT_FIT",
+          "derivedWhoReason": "The company fails the MUST_HAVE geography criterion as it is located in the USA, not India.",
+          "reviewStatus": "PENDING_HUMAN_REVIEW"
+        }
+      ]
+    }
+  },
+  {
+    "batch": 2,
+    "model": "gemini-3.1-pro-preview",
+    "startedAt": "2026-09-02T04:48:34.643Z",
+    "completedAt": "2026-09-02T04:50:08.314Z",
+    "requestId": "2ed18c88-9f87-408c-a0fc-9f8c0e2fa9d0",
+    "usageMetadata": {
+      "promptTokenCount": 49268,
+      "candidatesTokenCount": 5817,
+      "totalTokenCount": 58437,
+      "trafficType": "ON_DEMAND",
+      "promptTokensDetails": [
+        {
+          "modality": "TEXT",
+          "tokenCount": 49268
+        }
+      ],
+      "candidatesTokensDetails": [
+        {
+          "modality": "TEXT",
+          "tokenCount": 5817
+        }
+      ],
+      "thoughtsTokenCount": 3352
+    },
+    "finishReason": "STOP",
+    "output": {
+      "entries": [
+        {
+          "benchmarkCompanyId": "ada76ca1-a14b-48e4-8de6-e96498b23d95",
+          "identity": {
+            "status": "CORRECT",
+            "confidence": "HIGH",
+            "reason": "The domain outpro.us and company name OutPro match the provided evidence.",
+            "evidenceIds": [
+              "ada76ca1-a14b-48e4-8de6-e96498b23d95:page:1",
+              "ada76ca1-a14b-48e4-8de6-e96498b23d95:page:2"
+            ]
+          },
+          "companyUnderstanding": {
+            "primaryBusiness": "OutPro is a GTM execution partner for B2B SaaS companies, offering SDR-as-a-Service, GTM hiring, and intern models to build and execute go-to-market systems.",
+            "productsServices": "SDR-as-a-Service, GTM Hiring, Intern Model, Outbound Strategy.",
+            "businessModel": "B2B Services",
+            "industry": "Professional Services",
+            "geography": "Ahmedabad, Gujarat, India",
+            "employeeSize": "8-50",
+            "technologyFacts": "Established website with case studies, blogs, and service descriptions.",
+            "confidence": "HIGH",
+            "evidenceIds": [
+              "ada76ca1-a14b-48e4-8de6-e96498b23d95:page:1",
+              "ada76ca1-a14b-48e4-8de6-e96498b23d95:page:2",
+              "ada76ca1-a14b-48e4-8de6-e96498b23d95:search:2",
+              "ada76ca1-a14b-48e4-8de6-e96498b23d95:search:5"
+            ]
+          },
+          "commercialRole": {
+            "role": "POTENTIAL_BUYER",
+            "confidence": "HIGH",
+            "reason": "As a B2B professional services company with an established website and content, they fit the profile of a company that could benefit from AI visibility and AEO services.",
+            "evidenceIds": [
+              "ada76ca1-a14b-48e4-8de6-e96498b23d95:page:1"
+            ]
+          },
+          "whoCriteria": [
+            {
+              "criterionDimension": "geography",
+              "criterionDescription": "Company is located in a stated target geography.",
+              "result": "PASS",
+              "reason": "The company's Terms & Conditions state they are located in Ahmedabad, Gujarat, India.",
+              "evidenceIds": [
+                "ada76ca1-a14b-48e4-8de6-e96498b23d95:page:2"
+              ]
+            },
+            {
+              "criterionDimension": "industry",
+              "criterionDescription": "Target customer operates in a stated target industry.",
+              "result": "PASS",
+              "reason": "The company operates in professional services, specifically B2B SaaS GTM execution and marketing services.",
+              "evidenceIds": [
+                "ada76ca1-a14b-48e4-8de6-e96498b23d95:page:1",
+                "ada76ca1-a14b-48e4-8de6-e96498b23d95:search:2"
+              ]
+            },
+            {
+              "criterionDimension": "negative_indicator",
+              "criterionDescription": "The prospect lacks marketing budget or urgency.",
+              "result": "UNKNOWN",
+              "reason": "There is no evidence regarding the company's marketing budget or urgency.",
+              "evidenceIds": []
+            },
+            {
+              "criterionDimension": "negative_indicator",
+              "criterionDescription": "The prospect wants guaranteed rankings or citations.",
+              "result": "UNKNOWN",
+              "reason": "There is no evidence regarding the company's expectations for guaranteed rankings.",
+              "evidenceIds": []
+            },
+            {
+              "criterionDimension": "negative_indicator",
+              "criterionDescription": "The company has insufficient website or content foundations.",
+              "result": "UNKNOWN",
+              "reason": "There is no evidence suggesting their website or content foundations are insufficient; they appear to have a well-developed site.",
+              "evidenceIds": []
+            },
+            {
+              "criterionDimension": "technology",
+              "criterionDescription": "Technology pattern suggested by the Business Twin interpretation.",
+              "result": "PASS",
+              "reason": "The company has an established website with existing content, including blogs and case studies.",
+              "evidenceIds": [
+                "ada76ca1-a14b-48e4-8de6-e96498b23d95:page:1"
+              ]
+            }
+          ],
+          "derivedWho": "LIKELY_FIT",
+          "derivedWhoReason": "The company meets the MUST_HAVE criteria for geography (India) and industry (professional services), and has an established website.",
+          "reviewStatus": "PENDING_HUMAN_REVIEW"
+        },
+        {
+          "benchmarkCompanyId": "252b9ea5-ec55-49b5-8bf7-c514da6ca2cd",
+          "identity": {
+            "status": "CORRECT",
+            "confidence": "HIGH",
+            "reason": "The domain partnerpropel.com and company name Partner Propel match the provided evidence.",
+            "evidenceIds": [
+              "252b9ea5-ec55-49b5-8bf7-c514da6ca2cd:page:1",
+              "252b9ea5-ec55-49b5-8bf7-c514da6ca2cd:search:1"
+            ]
+          },
+          "companyUnderstanding": {
+            "primaryBusiness": "Partner Propel is a revenue architecture firm that designs and installs proprietary autonomous revenue infrastructure (AI SDRs and Ad Creators) for B2B companies.",
+            "productsServices": "Autonomous Revenue Infrastructure, AI SDR, Ad Creator, Live Call Copilot, Signal-Based Sourcing.",
+            "businessModel": "B2B Services / Build + License model",
+            "industry": "Professional Services / Technology",
+            "geography": "Sarasota, Florida, United States",
+            "employeeSize": "2",
+            "technologyFacts": "Established website with detailed service descriptions and case studies.",
+            "confidence": "HIGH",
+            "evidenceIds": [
+              "252b9ea5-ec55-49b5-8bf7-c514da6ca2cd:page:1",
+              "252b9ea5-ec55-49b5-8bf7-c514da6ca2cd:search:1"
+            ]
+          },
+          "commercialRole": {
+            "role": "POTENTIAL_BUYER",
+            "confidence": "HIGH",
+            "reason": "As a B2B professional services and technology firm with an established website, they could be a potential buyer for AI visibility services.",
+            "evidenceIds": [
+              "252b9ea5-ec55-49b5-8bf7-c514da6ca2cd:page:1"
+            ]
+          },
+          "whoCriteria": [
+            {
+              "criterionDimension": "geography",
+              "criterionDescription": "Company is located in a stated target geography.",
+              "result": "FAIL",
+              "reason": "The company is headquartered in Florida, United States, not India.",
+              "evidenceIds": [
+                "252b9ea5-ec55-49b5-8bf7-c514da6ca2cd:page:1",
+                "252b9ea5-ec55-49b5-8bf7-c514da6ca2cd:search:1"
+              ]
+            },
+            {
+              "criterionDimension": "industry",
+              "criterionDescription": "Target customer operates in a stated target industry.",
+              "result": "PASS",
+              "reason": "The company operates in professional services and technology.",
+              "evidenceIds": [
+                "252b9ea5-ec55-49b5-8bf7-c514da6ca2cd:page:1"
+              ]
+            },
+            {
+              "criterionDimension": "negative_indicator",
+              "criterionDescription": "The prospect lacks marketing budget or urgency.",
+              "result": "UNKNOWN",
+              "reason": "There is no evidence regarding the company's marketing budget or urgency.",
+              "evidenceIds": []
+            },
+            {
+              "criterionDimension": "negative_indicator",
+              "criterionDescription": "The prospect wants guaranteed rankings or citations.",
+              "result": "UNKNOWN",
+              "reason": "There is no evidence regarding the company's expectations for guaranteed rankings.",
+              "evidenceIds": []
+            },
+            {
+              "criterionDimension": "negative_indicator",
+              "criterionDescription": "The company has insufficient website or content foundations.",
+              "result": "UNKNOWN",
+              "reason": "There is no evidence suggesting their website or content foundations are insufficient.",
+              "evidenceIds": []
+            },
+            {
+              "criterionDimension": "technology",
+              "criterionDescription": "Technology pattern suggested by the Business Twin interpretation.",
+              "result": "PASS",
+              "reason": "The company has an established website with existing content.",
+              "evidenceIds": [
+                "252b9ea5-ec55-49b5-8bf7-c514da6ca2cd:page:1"
+              ]
+            }
+          ],
+          "derivedWho": "LIKELY_NOT_FIT",
+          "derivedWhoReason": "The company fails the MUST_HAVE geography criterion as they are located in the United States, not India.",
+          "reviewStatus": "PENDING_HUMAN_REVIEW"
+        },
+        {
+          "benchmarkCompanyId": "d2dd1f48-1b81-4149-a298-1dde2ae96ade",
+          "identity": {
+            "status": "CORRECT",
+            "confidence": "HIGH",
+            "reason": "The domain puresales.io and company name Pure Sales match the provided evidence.",
+            "evidenceIds": [
+              "d2dd1f48-1b81-4149-a298-1dde2ae96ade:search:2",
+              "d2dd1f48-1b81-4149-a298-1dde2ae96ade:search:3"
+            ]
+          },
+          "companyUnderstanding": {
+            "primaryBusiness": "Pure Sales is a dedicated sales partner and outbound sales agency for B2B SaaS and AI companies looking to expand their business in Europe.",
+            "productsServices": "Outbound sales, qualified meeting generation.",
+            "businessModel": "B2B Services",
+            "industry": "Professional Services",
+            "geography": "Europe (implied by target market and LinkedIn slug puresales-eu)",
+            "employeeSize": "Unknown",
+            "technologyFacts": "Has a website, but detailed content depth is unknown due to page load errors.",
+            "confidence": "MEDIUM",
+            "evidenceIds": [
+              "d2dd1f48-1b81-4149-a298-1dde2ae96ade:search:2",
+              "d2dd1f48-1b81-4149-a298-1dde2ae96ade:search:3"
+            ]
+          },
+          "commercialRole": {
+            "role": "POTENTIAL_BUYER",
+            "confidence": "MEDIUM",
+            "reason": "As a B2B professional services company, they could potentially benefit from AI visibility services.",
+            "evidenceIds": [
+              "d2dd1f48-1b81-4149-a298-1dde2ae96ade:search:3"
+            ]
+          },
+          "whoCriteria": [
+            {
+              "criterionDimension": "geography",
+              "criterionDescription": "Company is located in a stated target geography.",
+              "result": "UNKNOWN",
+              "reason": "The exact headquarters location is not explicitly stated in the evidence, though they focus on the European market.",
+              "evidenceIds": [
+                "d2dd1f48-1b81-4149-a298-1dde2ae96ade:search:2",
+                "d2dd1f48-1b81-4149-a298-1dde2ae96ade:search:3"
+              ]
+            },
+            {
+              "criterionDimension": "industry",
+              "criterionDescription": "Target customer operates in a stated target industry.",
+              "result": "PASS",
+              "reason": "The company operates in professional services as an outsourced sales agency.",
+              "evidenceIds": [
+                "d2dd1f48-1b81-4149-a298-1dde2ae96ade:search:3"
+              ]
+            },
+            {
+              "criterionDimension": "negative_indicator",
+              "criterionDescription": "The prospect lacks marketing budget or urgency.",
+              "result": "UNKNOWN",
+              "reason": "There is no evidence regarding the company's marketing budget or urgency.",
+              "evidenceIds": []
+            },
+            {
+              "criterionDimension": "negative_indicator",
+              "criterionDescription": "The prospect wants guaranteed rankings or citations.",
+              "result": "UNKNOWN",
+              "reason": "There is no evidence regarding the company's expectations for guaranteed rankings.",
+              "evidenceIds": []
+            },
+            {
+              "criterionDimension": "negative_indicator",
+              "criterionDescription": "The company has insufficient website or content foundations.",
+              "result": "UNKNOWN",
+              "reason": "There is no evidence suggesting their website or content foundations are insufficient.",
+              "evidenceIds": []
+            },
+            {
+              "criterionDimension": "technology",
+              "criterionDescription": "Technology pattern suggested by the Business Twin interpretation.",
+              "result": "UNKNOWN",
+              "reason": "The website content could not be fully retrieved, so the extent of their existing content and domain authority is unknown.",
+              "evidenceIds": []
+            }
+          ],
+          "derivedWho": "INSUFFICIENT_DATA",
+          "derivedWhoReason": "There is insufficient data to confirm the company's geography and the depth of their website content.",
+          "reviewStatus": "PENDING_HUMAN_REVIEW"
+        },
+        {
+          "benchmarkCompanyId": "4233dfdf-a2ac-48de-8347-91759eb415de",
+          "identity": {
+            "status": "CORRECT",
+            "confidence": "HIGH",
+            "reason": "The domain revygo.com and company name RevyGo match the provided evidence.",
+            "evidenceIds": [
+              "4233dfdf-a2ac-48de-8347-91759eb415de:page:1",
+              "4233dfdf-a2ac-48de-8347-91759eb415de:search:1"
+            ]
+          },
+          "companyUnderstanding": {
+            "primaryBusiness": "RevyGo is a B2B lead generation and appointment setting agency that builds and operates outbound sales systems.",
+            "productsServices": "Appointment Setting, Lead List Building, LinkedIn Outreach, Cold Email Outreach, Cold & Intent Calling, CRM services.",
+            "businessModel": "B2B Services",
+            "industry": "Professional Services",
+            "geography": "Vilnius, Lithuania",
+            "employeeSize": "Unknown",
+            "technologyFacts": "Established website with detailed service descriptions.",
+            "confidence": "HIGH",
+            "evidenceIds": [
+              "4233dfdf-a2ac-48de-8347-91759eb415de:page:1",
+              "4233dfdf-a2ac-48de-8347-91759eb415de:search:1"
+            ]
+          },
+          "commercialRole": {
+            "role": "POTENTIAL_BUYER",
+            "confidence": "HIGH",
+            "reason": "As a B2B professional services company with an established website, they could be a potential buyer for AI visibility services.",
+            "evidenceIds": [
+              "4233dfdf-a2ac-48de-8347-91759eb415de:page:1"
+            ]
+          },
+          "whoCriteria": [
+            {
+              "criterionDimension": "geography",
+              "criterionDescription": "Company is located in a stated target geography.",
+              "result": "FAIL",
+              "reason": "The company is incorporated and located in Vilnius, Lithuania, not India.",
+              "evidenceIds": [
+                "4233dfdf-a2ac-48de-8347-91759eb415de:page:1",
+                "4233dfdf-a2ac-48de-8347-91759eb415de:search:1"
+              ]
+            },
+            {
+              "criterionDimension": "industry",
+              "criterionDescription": "Target customer operates in a stated target industry.",
+              "result": "PASS",
+              "reason": "The company operates in professional services (B2B lead generation).",
+              "evidenceIds": [
+                "4233dfdf-a2ac-48de-8347-91759eb415de:page:1"
+              ]
+            },
+            {
+              "criterionDimension": "negative_indicator",
+              "criterionDescription": "The prospect lacks marketing budget or urgency.",
+              "result": "UNKNOWN",
+              "reason": "There is no evidence regarding the company's marketing budget or urgency.",
+              "evidenceIds": []
+            },
+            {
+              "criterionDimension": "negative_indicator",
+              "criterionDescription": "The prospect wants guaranteed rankings or citations.",
+              "result": "UNKNOWN",
+              "reason": "There is no evidence regarding the company's expectations for guaranteed rankings.",
+              "evidenceIds": []
+            },
+            {
+              "criterionDimension": "negative_indicator",
+              "criterionDescription": "The company has insufficient website or content foundations.",
+              "result": "UNKNOWN",
+              "reason": "There is no evidence suggesting their website or content foundations are insufficient.",
+              "evidenceIds": []
+            },
+            {
+              "criterionDimension": "technology",
+              "criterionDescription": "Technology pattern suggested by the Business Twin interpretation.",
+              "result": "PASS",
+              "reason": "The company has an established website with existing content.",
+              "evidenceIds": [
+                "4233dfdf-a2ac-48de-8347-91759eb415de:page:1"
+              ]
+            }
+          ],
+          "derivedWho": "LIKELY_NOT_FIT",
+          "derivedWhoReason": "The company fails the MUST_HAVE geography criterion as they are located in Lithuania, not India.",
+          "reviewStatus": "PENDING_HUMAN_REVIEW"
+        },
+        {
+          "benchmarkCompanyId": "60fafac0-f176-4d81-8215-847e1026ba74",
+          "identity": {
+            "status": "CORRECT",
+            "confidence": "HIGH",
+            "reason": "The domain salesgig.com and company name SalesGig match the provided evidence.",
+            "evidenceIds": [
+              "60fafac0-f176-4d81-8215-847e1026ba74:page:1",
+              "60fafac0-f176-4d81-8215-847e1026ba74:search:3"
+            ]
+          },
+          "companyUnderstanding": {
+            "primaryBusiness": "SalesGig is an outsourced sales development firm providing B2B lead generation, appointment setting, and fractional outbound sales development.",
+            "productsServices": "B2B Lead Generation, Appointment Setting, Outsourced Sales Development.",
+            "businessModel": "B2B Services",
+            "industry": "Professional Services",
+            "geography": "Deer Park, Illinois, United States",
+            "employeeSize": "201-500",
+            "technologyFacts": "Established website with content, client testimonials, and service descriptions.",
+            "confidence": "HIGH",
+            "evidenceIds": [
+              "60fafac0-f176-4d81-8215-847e1026ba74:page:1",
+              "60fafac0-f176-4d81-8215-847e1026ba74:search:3"
+            ]
+          },
+          "commercialRole": {
+            "role": "POTENTIAL_BUYER",
+            "confidence": "HIGH",
+            "reason": "As a B2B professional services company with an established website, they could be a potential buyer for AI visibility services.",
+            "evidenceIds": [
+              "60fafac0-f176-4d81-8215-847e1026ba74:page:1"
+            ]
+          },
+          "whoCriteria": [
+            {
+              "criterionDimension": "geography",
+              "criterionDescription": "Company is located in a stated target geography.",
+              "result": "FAIL",
+              "reason": "The company is headquartered in Deer Park, Illinois, United States, not India.",
+              "evidenceIds": [
+                "60fafac0-f176-4d81-8215-847e1026ba74:search:3"
+              ]
+            },
+            {
+              "criterionDimension": "industry",
+              "criterionDescription": "Target customer operates in a stated target industry.",
+              "result": "PASS",
+              "reason": "The company operates in professional services (outsourced sales development).",
+              "evidenceIds": [
+                "60fafac0-f176-4d81-8215-847e1026ba74:page:1"
+              ]
+            },
+            {
+              "criterionDimension": "negative_indicator",
+              "criterionDescription": "The prospect lacks marketing budget or urgency.",
+              "result": "UNKNOWN",
+              "reason": "There is no evidence regarding the company's marketing budget or urgency.",
+              "evidenceIds": []
+            },
+            {
+              "criterionDimension": "negative_indicator",
+              "criterionDescription": "The prospect wants guaranteed rankings or citations.",
+              "result": "UNKNOWN",
+              "reason": "There is no evidence regarding the company's expectations for guaranteed rankings.",
+              "evidenceIds": []
+            },
+            {
+              "criterionDimension": "negative_indicator",
+              "criterionDescription": "The company has insufficient website or content foundations.",
+              "result": "UNKNOWN",
+              "reason": "There is no evidence suggesting their website or content foundations are insufficient.",
+              "evidenceIds": []
+            },
+            {
+              "criterionDimension": "technology",
+              "criterionDescription": "Technology pattern suggested by the Business Twin interpretation.",
+              "result": "PASS",
+              "reason": "The company has an established website with existing content.",
+              "evidenceIds": [
+                "60fafac0-f176-4d81-8215-847e1026ba74:page:1"
+              ]
+            }
+          ],
+          "derivedWho": "LIKELY_NOT_FIT",
+          "derivedWhoReason": "The company fails the MUST_HAVE geography criterion as they are located in the United States, not India.",
+          "reviewStatus": "PENDING_HUMAN_REVIEW"
+        }
+      ]
+    }
+  },
+  {
+    "batch": 3,
+    "model": "gemini-3.1-pro-preview",
+    "startedAt": "2026-09-02T04:50:08.315Z",
+    "completedAt": "2026-09-02T04:51:27.482Z",
+    "requestId": "274efde6-7b9c-4e15-8322-a80fcb623515",
+    "usageMetadata": {
+      "promptTokenCount": 58023,
+      "candidatesTokenCount": 5829,
+      "totalTokenCount": 66133,
+      "trafficType": "ON_DEMAND",
+      "promptTokensDetails": [
+        {
+          "modality": "TEXT",
+          "tokenCount": 58023
+        }
+      ],
+      "candidatesTokensDetails": [
+        {
+          "modality": "TEXT",
+          "tokenCount": 5829
+        }
+      ],
+      "thoughtsTokenCount": 2281
+    },
+    "finishReason": "STOP",
+    "output": {
+      "entries": [
+        {
+          "benchmarkCompanyId": "8a4ac58f-98cd-4a27-b684-ac1bf81293cb",
+          "identity": {
+            "status": "UNCERTAIN",
+            "confidence": "LOW",
+            "reason": "The provided name '3LOCKS' without a domain matches multiple distinct entities in the search results, including a private equity firm (3lock), an AI solutions company (3loq), a brewing company (3 Locks Brewing), and a financial services firm (3Blocks). There is insufficient information to definitively identify the target company.",
+            "evidenceIds": [
+              "8a4ac58f-98cd-4a27-b684-ac1bf81293cb:search:1",
+              "8a4ac58f-98cd-4a27-b684-ac1bf81293cb:search:3",
+              "8a4ac58f-98cd-4a27-b684-ac1bf81293cb:search:5",
+              "8a4ac58f-98cd-4a27-b684-ac1bf81293cb:search:6"
+            ]
+          },
+          "companyUnderstanding": {
+            "primaryBusiness": "Unknown",
+            "productsServices": "Unknown",
+            "businessModel": "Unknown",
+            "industry": "Unknown",
+            "geography": "Unknown",
+            "employeeSize": "Unknown",
+            "technologyFacts": "Unknown",
+            "confidence": "LOW",
+            "evidenceIds": []
+          },
+          "commercialRole": {
+            "role": "UNKNOWN",
+            "confidence": "LOW",
+            "reason": "Cannot determine commercial role without a definitive company identity.",
+            "evidenceIds": []
+          },
+          "whoCriteria": [
+            {
+              "criterionDimension": "compliance",
+              "criterionDescription": "ISO 27001 requirements or audit preparation. SOC 2 requirements or readiness. Enterprise customer security requirements and security assessments. Cyber-insurance requirements. Security monitoring and incident-response capability expectations.",
+              "result": "UNKNOWN",
+              "reason": "Company identity is uncertain.",
+              "evidenceIds": []
+            },
+            {
+              "criterionDimension": "geography",
+              "criterionDescription": "United States, India, UAE, United Kingdom, Singapore",
+              "result": "UNKNOWN",
+              "reason": "Company identity is uncertain.",
+              "evidenceIds": []
+            },
+            {
+              "criterionDimension": "industry",
+              "criterionDescription": "saas, it, technology, fintech, healthcare, professional services",
+              "result": "UNKNOWN",
+              "reason": "Company identity is uncertain.",
+              "evidenceIds": []
+            },
+            {
+              "criterionDimension": "technology",
+              "criterionDescription": "Microsoft 365 and Azure environments. Other cloud platforms. Cloud-based infrastructure and cloud workloads. Endpoints, identities, networks, and security systems requiring centralized monitoring. Microsoft-centric environments. Existing cybersecurity tools and security infrastructure that customers want to retain.",
+              "result": "UNKNOWN",
+              "reason": "Company identity is uncertain.",
+              "evidenceIds": []
+            }
+          ],
+          "derivedWho": "INSUFFICIENT_DATA",
+          "derivedWhoReason": "The identity of the company could not be verified due to multiple conflicting search results and the lack of a domain.",
+          "reviewStatus": "PENDING_HUMAN_REVIEW"
+        },
+        {
+          "benchmarkCompanyId": "5e4137f0-f1da-4877-b78c-330d77e4d58d",
+          "identity": {
+            "status": "CORRECT",
+            "confidence": "HIGH",
+            "reason": "The domain barracuda.com and the name Barracuda SKOUT Managed XDR clearly align with the provided evidence for Barracuda Networks and its SKOUT Managed XDR offering.",
+            "evidenceIds": [
+              "5e4137f0-f1da-4877-b78c-330d77e4d58d:page:1",
+              "5e4137f0-f1da-4877-b78c-330d77e4d58d:search:4"
+            ]
+          },
+          "companyUnderstanding": {
+            "primaryBusiness": "Cybersecurity solutions and managed services.",
+            "productsServices": "Email protection, data protection, network protection, application protection, and Managed XDR (Extended Detection and Response) with a 24/7 SOC.",
+            "businessModel": "B2B software and managed services, selling directly and through Managed Service Providers (MSPs).",
+            "industry": "Computer and Network Security, Technology",
+            "geography": "Headquartered in the United States (New York, NY for SKOUT division).",
+            "employeeSize": "Large enterprise (hundreds of thousands of customers worldwide).",
+            "technologyFacts": "Provides XDR covering endpoints, servers, networks, email, and cloud (IaaS, SaaS, IAM).",
+            "confidence": "HIGH",
+            "evidenceIds": [
+              "5e4137f0-f1da-4877-b78c-330d77e4d58d:page:1",
+              "5e4137f0-f1da-4877-b78c-330d77e4d58d:page:2",
+              "5e4137f0-f1da-4877-b78c-330d77e4d58d:search:4"
+            ]
+          },
+          "commercialRole": {
+            "role": "SELLER_COMPETITOR",
+            "confidence": "HIGH",
+            "reason": "Barracuda offers Managed XDR, which includes a 24/7 Security Operations Center (SOC) that directly competes with the seller's Managed SOC offering.",
+            "evidenceIds": [
+              "5e4137f0-f1da-4877-b78c-330d77e4d58d:page:2",
+              "5e4137f0-f1da-4877-b78c-330d77e4d58d:search:1"
+            ]
+          },
+          "whoCriteria": [
+            {
+              "criterionDimension": "compliance",
+              "criterionDescription": "ISO 27001 requirements or audit preparation. SOC 2 requirements or readiness. Enterprise customer security requirements and security assessments. Cyber-insurance requirements. Security monitoring and incident-response capability expectations.",
+              "result": "UNKNOWN",
+              "reason": "While they help customers meet compliance and cyber insurance requirements, there is no direct evidence detailing their own internal compliance certifications (like ISO 27001 or SOC 2) in the provided text.",
+              "evidenceIds": [
+                "5e4137f0-f1da-4877-b78c-330d77e4d58d:page:2"
+              ]
+            },
+            {
+              "criterionDimension": "geography",
+              "criterionDescription": "United States, India, UAE, United Kingdom, Singapore",
+              "result": "PASS",
+              "reason": "Barracuda SKOUT is located in New York, New York, United States.",
+              "evidenceIds": [
+                "5e4137f0-f1da-4877-b78c-330d77e4d58d:search:4"
+              ]
+            },
+            {
+              "criterionDimension": "industry",
+              "criterionDescription": "saas, it, technology, fintech, healthcare, professional services",
+              "result": "PASS",
+              "reason": "The company operates in the Computer and Network Security industry, which falls under technology and IT.",
+              "evidenceIds": [
+                "5e4137f0-f1da-4877-b78c-330d77e4d58d:search:4"
+              ]
+            },
+            {
+              "criterionDimension": "technology",
+              "criterionDescription": "Microsoft 365 and Azure environments. Other cloud platforms. Cloud-based infrastructure and cloud workloads. Endpoints, identities, networks, and security systems requiring centralized monitoring. Microsoft-centric environments. Existing cybersecurity tools and security infrastructure that customers want to retain.",
+              "result": "PASS",
+              "reason": "The company utilizes and protects cloud environments, endpoints, servers, networks, and email.",
+              "evidenceIds": [
+                "5e4137f0-f1da-4877-b78c-330d77e4d58d:page:2"
+              ]
+            }
+          ],
+          "derivedWho": "LIKELY_NOT_FIT",
+          "derivedWhoReason": "Although the company matches the geographic, industry, and technology criteria, they are a direct competitor offering their own 24/7 Managed SOC and XDR services.",
+          "reviewStatus": "PENDING_HUMAN_REVIEW"
+        },
+        {
+          "benchmarkCompanyId": "50ceadee-afc9-41a1-b7c7-f6334e213df8",
+          "identity": {
+            "status": "CORRECT",
+            "confidence": "HIGH",
+            "reason": "The evidence clearly links CData Virtuality to CData Software, which acquired Data Virtuality, a data integration platform.",
+            "evidenceIds": [
+              "50ceadee-afc9-41a1-b7c7-f6334e213df8:page:1",
+              "50ceadee-afc9-41a1-b7c7-f6334e213df8:search:3"
+            ]
+          },
+          "companyUnderstanding": {
+            "primaryBusiness": "Data access, connectivity solutions, and data integration.",
+            "productsServices": "Data connectors, CData Sync, Connect AI, API Server, and the Data Virtuality integration platform.",
+            "businessModel": "B2B software and SaaS.",
+            "industry": "Application Software, Technology",
+            "geography": "Headquartered in Chapel Hill, NC, United States (with Data Virtuality originally in Germany).",
+            "employeeSize": "500 employees.",
+            "technologyFacts": "Provides connectivity across on-premise or cloud databases, SaaS, APIs, NoSQL, and Big Data.",
+            "confidence": "HIGH",
+            "evidenceIds": [
+              "50ceadee-afc9-41a1-b7c7-f6334e213df8:search:1",
+              "50ceadee-afc9-41a1-b7c7-f6334e213df8:search:2",
+              "50ceadee-afc9-41a1-b7c7-f6334e213df8:search:3"
+            ]
+          },
+          "commercialRole": {
+            "role": "POTENTIAL_BUYER",
+            "confidence": "HIGH",
+            "reason": "CData is a mid-sized technology company that likely possesses significant cloud and IT infrastructure requiring cybersecurity monitoring, fitting the profile of a potential buyer.",
+            "evidenceIds": [
+              "50ceadee-afc9-41a1-b7c7-f6334e213df8:search:2"
+            ]
+          },
+          "whoCriteria": [
+            {
+              "criterionDimension": "compliance",
+              "criterionDescription": "ISO 27001 requirements or audit preparation. SOC 2 requirements or readiness. Enterprise customer security requirements and security assessments. Cyber-insurance requirements. Security monitoring and incident-response capability expectations.",
+              "result": "UNKNOWN",
+              "reason": "There is no explicit mention of their internal compliance requirements (e.g., ISO 27001, SOC 2) in the provided evidence.",
+              "evidenceIds": []
+            },
+            {
+              "criterionDimension": "geography",
+              "criterionDescription": "United States, India, UAE, United Kingdom, Singapore",
+              "result": "PASS",
+              "reason": "CData is headquartered in Chapel Hill, NC, United States.",
+              "evidenceIds": [
+                "50ceadee-afc9-41a1-b7c7-f6334e213df8:search:2"
+              ]
+            },
+            {
+              "criterionDimension": "industry",
+              "criterionDescription": "saas, it, technology, fintech, healthcare, professional services",
+              "result": "PASS",
+              "reason": "CData operates in the Application Software and Technology industry.",
+              "evidenceIds": [
+                "50ceadee-afc9-41a1-b7c7-f6334e213df8:search:2"
+              ]
+            },
+            {
+              "criterionDimension": "technology",
+              "criterionDescription": "Microsoft 365 and Azure environments. Other cloud platforms. Cloud-based infrastructure and cloud workloads. Endpoints, identities, networks, and security systems requiring centralized monitoring. Microsoft-centric environments. Existing cybersecurity tools and security infrastructure that customers want to retain.",
+              "result": "PASS",
+              "reason": "The company heavily utilizes and integrates with cloud platforms, SaaS, APIs, and big data environments.",
+              "evidenceIds": [
+                "50ceadee-afc9-41a1-b7c7-f6334e213df8:search:1"
+              ]
+            }
+          ],
+          "derivedWho": "POSSIBLE_FIT",
+          "derivedWhoReason": "CData meets the mandatory geography and industry criteria, and aligns with the preferred technology profile. The lack of explicit compliance data keeps it as a possible rather than likely fit.",
+          "reviewStatus": "PENDING_HUMAN_REVIEW"
+        },
+        {
+          "benchmarkCompanyId": "36e5aa54-997a-4281-95c7-460508f94e32",
+          "identity": {
+            "status": "CORRECT",
+            "confidence": "HIGH",
+            "reason": "The domain criticalstart.com and the company name Critical Start perfectly match the provided evidence.",
+            "evidenceIds": [
+              "36e5aa54-997a-4281-95c7-460508f94e32:page:1",
+              "36e5aa54-997a-4281-95c7-460508f94e32:search:2"
+            ]
+          },
+          "companyUnderstanding": {
+            "primaryBusiness": "Managed Detection and Response (MDR) cybersecurity services.",
+            "productsServices": "MDR services, Cyber Operations Risk & Response (CORR) platform, 24x7x365 SOC monitoring, incident response.",
+            "businessModel": "B2B cybersecurity services.",
+            "industry": "Computer and Network Security",
+            "geography": "Headquartered in Plano, Texas, United States.",
+            "employeeSize": "276 employees.",
+            "technologyFacts": "Integrates with numerous security tools including Microsoft Defender, CrowdStrike, AWS, Google Cloud, Palo Alto Networks, and Splunk.",
+            "confidence": "HIGH",
+            "evidenceIds": [
+              "36e5aa54-997a-4281-95c7-460508f94e32:page:1",
+              "36e5aa54-997a-4281-95c7-460508f94e32:search:2",
+              "36e5aa54-997a-4281-95c7-460508f94e32:search:5"
+            ]
+          },
+          "commercialRole": {
+            "role": "SELLER_COMPETITOR",
+            "confidence": "HIGH",
+            "reason": "Critical Start provides 24x7x365 Managed Detection and Response (MDR) and SOC services, which directly competes with the seller's Managed SOC offering.",
+            "evidenceIds": [
+              "36e5aa54-997a-4281-95c7-460508f94e32:page:1",
+              "36e5aa54-997a-4281-95c7-460508f94e32:search:3"
+            ]
+          },
+          "whoCriteria": [
+            {
+              "criterionDimension": "compliance",
+              "criterionDescription": "ISO 27001 requirements or audit preparation. SOC 2 requirements or readiness. Enterprise customer security requirements and security assessments. Cyber-insurance requirements. Security monitoring and incident-response capability expectations.",
+              "result": "UNKNOWN",
+              "reason": "No explicit mention of their own internal compliance certifications in the provided text.",
+              "evidenceIds": []
+            },
+            {
+              "criterionDimension": "geography",
+              "criterionDescription": "United States, India, UAE, United Kingdom, Singapore",
+              "result": "PASS",
+              "reason": "Critical Start is located in Plano, Texas, United States.",
+              "evidenceIds": [
+                "36e5aa54-997a-4281-95c7-460508f94e32:search:2"
+              ]
+            },
+            {
+              "criterionDimension": "industry",
+              "criterionDescription": "saas, it, technology, fintech, healthcare, professional services",
+              "result": "PASS",
+              "reason": "The company operates in the Computer and Network Security industry.",
+              "evidenceIds": [
+                "36e5aa54-997a-4281-95c7-460508f94e32:search:2"
+              ]
+            },
+            {
+              "criterionDimension": "technology",
+              "criterionDescription": "Microsoft 365 and Azure environments. Other cloud platforms. Cloud-based infrastructure and cloud workloads. Endpoints, identities, networks, and security systems requiring centralized monitoring. Microsoft-centric environments. Existing cybersecurity tools and security infrastructure that customers want to retain.",
+              "result": "PASS",
+              "reason": "The company heavily utilizes and integrates with cloud platforms (AWS, Google Cloud), Microsoft environments, and various endpoint/network security tools.",
+              "evidenceIds": [
+                "36e5aa54-997a-4281-95c7-460508f94e32:page:1"
+              ]
+            }
+          ],
+          "derivedWho": "LIKELY_NOT_FIT",
+          "derivedWhoReason": "Despite matching the ICP criteria for geography, industry, and technology, Critical Start is a direct competitor offering 24/7 MDR and SOC services.",
+          "reviewStatus": "PENDING_HUMAN_REVIEW"
+        },
+        {
+          "benchmarkCompanyId": "8ef6a894-78e7-4276-94d5-3c14c64b7ee1",
+          "identity": {
+            "status": "CORRECT",
+            "confidence": "HIGH",
+            "reason": "The domain cyberone.security and the company name CyberOne match the provided evidence perfectly.",
+            "evidenceIds": [
+              "8ef6a894-78e7-4276-94d5-3c14c64b7ee1:page:1",
+              "8ef6a894-78e7-4276-94d5-3c14c64b7ee1:search:1"
+            ]
+          },
+          "companyUnderstanding": {
+            "primaryBusiness": "Cybersecurity managed services and professional consulting.",
+            "productsServices": "Managed eXtended Detection & Response (MXDR) as a Service, 24x7 Cyber Incident Response, Penetration Testing, CISO-as-a-Service.",
+            "businessModel": "B2B cybersecurity services and Value-Added Reseller (VAR).",
+            "industry": "Cyber Security, Technology",
+            "geography": "Headquartered in London, England, United Kingdom (with a US presence in Plano, TX).",
+            "employeeSize": "74 to 272 employees (varying across global entities).",
+            "technologyFacts": "Microsoft Security Elite Partner, heavily focused on Microsoft 365, Azure, and Microsoft security technologies.",
+            "confidence": "HIGH",
+            "evidenceIds": [
+              "8ef6a894-78e7-4276-94d5-3c14c64b7ee1:page:1",
+              "8ef6a894-78e7-4276-94d5-3c14c64b7ee1:search:1",
+              "8ef6a894-78e7-4276-94d5-3c14c64b7ee1:search:3"
+            ]
+          },
+          "commercialRole": {
+            "role": "SELLER_COMPETITOR",
+            "confidence": "HIGH",
+            "reason": "CyberOne provides 24x7 MXDR as a Service and operates a Security Operations Centre (SOC), directly competing with the seller's Managed SOC offering.",
+            "evidenceIds": [
+              "8ef6a894-78e7-4276-94d5-3c14c64b7ee1:page:1"
+            ]
+          },
+          "whoCriteria": [
+            {
+              "criterionDimension": "compliance",
+              "criterionDescription": "ISO 27001 requirements or audit preparation. SOC 2 requirements or readiness. Enterprise customer security requirements and security assessments. Cyber-insurance requirements. Security monitoring and incident-response capability expectations.",
+              "result": "PASS",
+              "reason": "CyberOne holds the ISO27001 certification among other security accreditations.",
+              "evidenceIds": [
+                "8ef6a894-78e7-4276-94d5-3c14c64b7ee1:page:1"
+              ]
+            },
+            {
+              "criterionDimension": "geography",
+              "criterionDescription": "United States, India, UAE, United Kingdom, Singapore",
+              "result": "PASS",
+              "reason": "CyberOne is headquartered in London, United Kingdom.",
+              "evidenceIds": [
+                "8ef6a894-78e7-4276-94d5-3c14c64b7ee1:search:1"
+              ]
+            },
+            {
+              "criterionDimension": "industry",
+              "criterionDescription": "saas, it, technology, fintech, healthcare, professional services",
+              "result": "PASS",
+              "reason": "The company operates in the Cyber Security and Technology industry.",
+              "evidenceIds": [
+                "8ef6a894-78e7-4276-94d5-3c14c64b7ee1:page:1"
+              ]
+            },
+            {
+              "criterionDimension": "technology",
+              "criterionDescription": "Microsoft 365 and Azure environments. Other cloud platforms. Cloud-based infrastructure and cloud workloads. Endpoints, identities, networks, and security systems requiring centralized monitoring. Microsoft-centric environments. Existing cybersecurity tools and security infrastructure that customers want to retain.",
+              "result": "PASS",
+              "reason": "CyberOne is a Microsoft Security Elite Partner, heavily focused on Microsoft 365, Azure, and Microsoft-centric environments.",
+              "evidenceIds": [
+                "8ef6a894-78e7-4276-94d5-3c14c64b7ee1:page:1"
+              ]
+            }
+          ],
+          "derivedWho": "LIKELY_NOT_FIT",
+          "derivedWhoReason": "Although CyberOne perfectly matches the ICP criteria (including compliance, geography, industry, and technology), they are a direct competitor offering 24/7 MXDR and SOC services.",
+          "reviewStatus": "PENDING_HUMAN_REVIEW"
+        }
+      ]
+    }
+  },
+  {
+    "batch": 4,
+    "model": "gemini-3.1-pro-preview",
+    "startedAt": "2026-09-02T04:51:27.482Z",
+    "completedAt": "2026-09-02T04:52:10.994Z",
+    "requestId": "1fb22b85-4ae6-4fd4-837f-c33be38cbb3c",
+    "usageMetadata": {
+      "promptTokenCount": 58407,
+      "candidatesTokenCount": 5278,
+      "totalTokenCount": 66608,
+      "trafficType": "ON_DEMAND",
+      "promptTokensDetails": [
+        {
+          "modality": "TEXT",
+          "tokenCount": 58407
+        }
+      ],
+      "candidatesTokensDetails": [
+        {
+          "modality": "TEXT",
+          "tokenCount": 5278
+        }
+      ],
+      "thoughtsTokenCount": 2923
+    },
+    "finishReason": "STOP",
+    "output": {
+      "entries": [
+        {
+          "benchmarkCompanyId": "05939322-6f62-408e-af6a-307196598385",
+          "identity": {
+            "status": "CORRECT",
+            "confidence": "HIGH",
+            "reason": "The domain cysocsecure.com and company name CySOC match the provided evidence.",
+            "evidenceIds": [
+              "05939322-6f62-408e-af6a-307196598385:page:1",
+              "05939322-6f62-408e-af6a-307196598385:search:1"
+            ]
+          },
+          "companyUnderstanding": {
+            "primaryBusiness": "CySOC provides cybersecurity solutions, including a 24/7 Security Operations Center (SOC), Next Gen Firewall, data protection, and ransomware protection, primarily focused on small to medium-sized businesses.",
+            "productsServices": [
+              "Security Operations Center (SOC)",
+              "Next Gen Firewall",
+              "Data Protection Measures",
+              "Intrusion Prevention System (IPS)",
+              "Ransomware Protection"
+            ],
+            "businessModel": "B2B Services",
+            "industry": "Computer and Network Security",
+            "geography": "United States (Raleigh, North Carolina)",
+            "employeeSize": "2-10",
+            "technologyFacts": [
+              "Microsoft",
+              "Azure",
+              "Cloud Security",
+              "Endpoints"
+            ],
+            "confidence": "HIGH",
+            "evidenceIds": [
+              "05939322-6f62-408e-af6a-307196598385:page:1",
+              "05939322-6f62-408e-af6a-307196598385:search:1"
+            ]
+          },
+          "commercialRole": {
+            "role": "SELLER_COMPETITOR",
+            "confidence": "HIGH",
+            "reason": "CySOC offers a 24/7 Security Operations Center (SOC) and managed cybersecurity services, which directly competes with the seller's Managed SOC offering.",
+            "evidenceIds": [
+              "05939322-6f62-408e-af6a-307196598385:page:1"
+            ]
+          },
+          "whoCriteria": [
+            {
+              "criterionDimension": "compliance",
+              "criterionDescription": "Compliance context may improve commercial fit but is not mandatory.",
+              "result": "UNKNOWN",
+              "reason": "There is no evidence indicating CySOC's internal compliance requirements such as ISO 27001 or SOC 2.",
+              "evidenceIds": []
+            },
+            {
+              "criterionDimension": "geography",
+              "criterionDescription": "Company is located in a stated target geography.",
+              "result": "PASS",
+              "reason": "CySOC is headquartered in Raleigh, North Carolina, United States.",
+              "evidenceIds": [
+                "05939322-6f62-408e-af6a-307196598385:page:1",
+                "05939322-6f62-408e-af6a-307196598385:search:1"
+              ]
+            },
+            {
+              "criterionDimension": "industry",
+              "criterionDescription": "Target customer operates in a stated target industry.",
+              "result": "PASS",
+              "reason": "CySOC operates in the Computer and Network Security industry, which falls under IT and technology.",
+              "evidenceIds": [
+                "05939322-6f62-408e-af6a-307196598385:search:1"
+              ]
+            },
+            {
+              "criterionDimension": "technology",
+              "criterionDescription": "Technology pattern suggested by the Business Twin interpretation.",
+              "result": "PASS",
+              "reason": "CySOC works with Microsoft, cloud security, and endpoints.",
+              "evidenceIds": [
+                "05939322-6f62-408e-af6a-307196598385:page:1"
+              ]
+            }
+          ],
+          "derivedWho": "LIKELY_NOT_FIT",
+          "derivedWhoReason": "Although CySOC matches the geography, industry, and technology criteria, they are a direct competitor offering 24/7 SOC services, making them highly unlikely to purchase the seller's Managed SOC offering.",
+          "reviewStatus": "PENDING_HUMAN_REVIEW"
+        },
+        {
+          "benchmarkCompanyId": "e963aa5d-4bf6-4fec-95cb-14ac65c85679",
+          "identity": {
+            "status": "CORRECT",
+            "confidence": "HIGH",
+            "reason": "The domain ostrasecurity.com and company name Ostra Security match the provided evidence.",
+            "evidenceIds": [
+              "e963aa5d-4bf6-4fec-95cb-14ac65c85679:page:1",
+              "e963aa5d-4bf6-4fec-95cb-14ac65c85679:search:4"
+            ]
+          },
+          "companyUnderstanding": {
+            "primaryBusiness": "Ostra Security provides Managed Security Services, Managed Detection and Response (MDR), Managed SIEM, and Endpoint Security.",
+            "productsServices": [
+              "Managed Security Services",
+              "Managed Detection and Response (MDR)",
+              "Penetration Testing Services",
+              "Endpoint Security",
+              "Managed SIEM"
+            ],
+            "businessModel": "B2B Services",
+            "industry": "Cybersecurity",
+            "geography": "United States (Eden Prairie, Minnesota)",
+            "employeeSize": "25-50",
+            "technologyFacts": [
+              "Microsoft 365",
+              "Defender",
+              "Cloudwatch",
+              "SentinelOne",
+              "Palo Alto"
+            ],
+            "confidence": "HIGH",
+            "evidenceIds": [
+              "e963aa5d-4bf6-4fec-95cb-14ac65c85679:page:1",
+              "e963aa5d-4bf6-4fec-95cb-14ac65c85679:search:4"
+            ]
+          },
+          "commercialRole": {
+            "role": "SELLER_COMPETITOR",
+            "confidence": "HIGH",
+            "reason": "Ostra Security provides Managed Security Services, MDR, and SOC coverage, directly competing with the seller's Managed SOC offering.",
+            "evidenceIds": [
+              "e963aa5d-4bf6-4fec-95cb-14ac65c85679:page:1"
+            ]
+          },
+          "whoCriteria": [
+            {
+              "criterionDimension": "compliance",
+              "criterionDescription": "Compliance context may improve commercial fit but is not mandatory.",
+              "result": "UNKNOWN",
+              "reason": "There is no evidence indicating Ostra Security's internal compliance requirements.",
+              "evidenceIds": []
+            },
+            {
+              "criterionDimension": "geography",
+              "criterionDescription": "Company is located in a stated target geography.",
+              "result": "PASS",
+              "reason": "Ostra Security is headquartered in Eden Prairie, Minnesota, United States.",
+              "evidenceIds": [
+                "e963aa5d-4bf6-4fec-95cb-14ac65c85679:search:4"
+              ]
+            },
+            {
+              "criterionDimension": "industry",
+              "criterionDescription": "Target customer operates in a stated target industry.",
+              "result": "PASS",
+              "reason": "Ostra Security operates in the cybersecurity industry, which falls under IT and technology.",
+              "evidenceIds": [
+                "e963aa5d-4bf6-4fec-95cb-14ac65c85679:search:2"
+              ]
+            },
+            {
+              "criterionDimension": "technology",
+              "criterionDescription": "Technology pattern suggested by the Business Twin interpretation.",
+              "result": "PASS",
+              "reason": "Ostra Security integrates with Microsoft 365, Defender, Cloudwatch, and other cloud and endpoint security tools.",
+              "evidenceIds": [
+                "e963aa5d-4bf6-4fec-95cb-14ac65c85679:page:1"
+              ]
+            }
+          ],
+          "derivedWho": "LIKELY_NOT_FIT",
+          "derivedWhoReason": "Ostra Security is a direct competitor that provides Managed Security Services and MDR, making them highly unlikely to purchase a Managed SOC service.",
+          "reviewStatus": "PENDING_HUMAN_REVIEW"
+        },
+        {
+          "benchmarkCompanyId": "14f2dadb-6650-43bd-a930-cab49890f950",
+          "identity": {
+            "status": "CORRECT",
+            "confidence": "HIGH",
+            "reason": "The domain pondurance.com and company name Pondurance match the provided evidence.",
+            "evidenceIds": [
+              "14f2dadb-6650-43bd-a930-cab49890f950:page:1",
+              "14f2dadb-6650-43bd-a930-cab49890f950:search:2"
+            ]
+          },
+          "companyUnderstanding": {
+            "primaryBusiness": "Pondurance is a cybersecurity provider offering Managed Detection and Response (MDR), an AI-native SOC, Incident Response, and Managed SIEM.",
+            "productsServices": [
+              "Managed Detection & Response (MDR)",
+              "Incident Response",
+              "Manage Vulnerabilities",
+              "Managed SIEM",
+              "Advisory Services"
+            ],
+            "businessModel": "B2B Services",
+            "industry": "Computer and Network Security",
+            "geography": "United States (Indianapolis, Indiana)",
+            "employeeSize": "51-200",
+            "technologyFacts": [
+              "EDR",
+              "Firewall",
+              "SIEM",
+              "SOAR"
+            ],
+            "confidence": "HIGH",
+            "evidenceIds": [
+              "14f2dadb-6650-43bd-a930-cab49890f950:page:1",
+              "14f2dadb-6650-43bd-a930-cab49890f950:search:2"
+            ]
+          },
+          "commercialRole": {
+            "role": "SELLER_COMPETITOR",
+            "confidence": "HIGH",
+            "reason": "Pondurance provides a 24/7 concierge Security Operations Center (SOC) and MDR services, directly competing with the seller's Managed SOC offering.",
+            "evidenceIds": [
+              "14f2dadb-6650-43bd-a930-cab49890f950:page:1"
+            ]
+          },
+          "whoCriteria": [
+            {
+              "criterionDimension": "compliance",
+              "criterionDescription": "Compliance context may improve commercial fit but is not mandatory.",
+              "result": "UNKNOWN",
+              "reason": "There is no evidence indicating Pondurance's internal compliance requirements.",
+              "evidenceIds": []
+            },
+            {
+              "criterionDimension": "geography",
+              "criterionDescription": "Company is located in a stated target geography.",
+              "result": "PASS",
+              "reason": "Pondurance is headquartered in Indianapolis, Indiana, United States.",
+              "evidenceIds": [
+                "14f2dadb-6650-43bd-a930-cab49890f950:search:2"
+              ]
+            },
+            {
+              "criterionDimension": "industry",
+              "criterionDescription": "Target customer operates in a stated target industry.",
+              "result": "PASS",
+              "reason": "Pondurance operates in the Computer and Network Security industry, which falls under IT and technology.",
+              "evidenceIds": [
+                "14f2dadb-6650-43bd-a930-cab49890f950:search:2"
+              ]
+            },
+            {
+              "criterionDimension": "technology",
+              "criterionDescription": "Technology pattern suggested by the Business Twin interpretation.",
+              "result": "PASS",
+              "reason": "Pondurance utilizes EDR, firewalls, and SIEM technologies.",
+              "evidenceIds": [
+                "14f2dadb-6650-43bd-a930-cab49890f950:page:1"
+              ]
+            }
+          ],
+          "derivedWho": "LIKELY_NOT_FIT",
+          "derivedWhoReason": "Pondurance is a direct competitor that provides MDR and SOC services, making them highly unlikely to purchase a Managed SOC service.",
+          "reviewStatus": "PENDING_HUMAN_REVIEW"
+        },
+        {
+          "benchmarkCompanyId": "8cec0d59-cbec-4285-a830-52fc38523bbf",
+          "identity": {
+            "status": "CORRECT",
+            "confidence": "HIGH",
+            "reason": "The domain socfortress.co and company name SOCFortress match the provided evidence.",
+            "evidenceIds": [
+              "8cec0d59-cbec-4285-a830-52fc38523bbf:page:1",
+              "8cec0d59-cbec-4285-a830-52fc38523bbf:search:3"
+            ]
+          },
+          "companyUnderstanding": {
+            "primaryBusiness": "SOCFortress is a SaaS company that unifies Observability, Security Monitoring, Threat Intelligence, and SOAR, offering SOC as a Service for MSPs and MSSPs.",
+            "productsServices": [
+              "SOC as a Service",
+              "SIEM Deployment",
+              "Observability",
+              "Security Logs & Events",
+              "SOAR"
+            ],
+            "businessModel": "B2B SaaS / Services",
+            "industry": "SaaS / Cybersecurity",
+            "geography": "UNKNOWN",
+            "employeeSize": "UNKNOWN",
+            "technologyFacts": [
+              "Cloud",
+              "EDR",
+              "Windows Event Logs",
+              "Office 365",
+              "Elasticsearch",
+              "Grafana"
+            ],
+            "confidence": "HIGH",
+            "evidenceIds": [
+              "8cec0d59-cbec-4285-a830-52fc38523bbf:page:1",
+              "8cec0d59-cbec-4285-a830-52fc38523bbf:search:3"
+            ]
+          },
+          "commercialRole": {
+            "role": "SELLER_COMPETITOR",
+            "confidence": "HIGH",
+            "reason": "SOCFortress provides SOC as a Service and SIEM solutions, directly competing with the seller's Managed SOC offering.",
+            "evidenceIds": [
+              "8cec0d59-cbec-4285-a830-52fc38523bbf:page:1"
+            ]
+          },
+          "whoCriteria": [
+            {
+              "criterionDimension": "compliance",
+              "criterionDescription": "Compliance context may improve commercial fit but is not mandatory.",
+              "result": "UNKNOWN",
+              "reason": "There is no evidence indicating SOCFortress's internal compliance requirements.",
+              "evidenceIds": []
+            },
+            {
+              "criterionDimension": "geography",
+              "criterionDescription": "Company is located in a stated target geography.",
+              "result": "UNKNOWN",
+              "reason": "There is no evidence indicating the geographic location of SOCFortress.",
+              "evidenceIds": []
+            },
+            {
+              "criterionDimension": "industry",
+              "criterionDescription": "Target customer operates in a stated target industry.",
+              "result": "PASS",
+              "reason": "SOCFortress is a SaaS and cybersecurity company, which falls under the target industries.",
+              "evidenceIds": [
+                "8cec0d59-cbec-4285-a830-52fc38523bbf:search:3"
+              ]
+            },
+            {
+              "criterionDimension": "technology",
+              "criterionDescription": "Technology pattern suggested by the Business Twin interpretation.",
+              "result": "PASS",
+              "reason": "SOCFortress integrates with Office 365, cloud environments, and EDR tools.",
+              "evidenceIds": [
+                "8cec0d59-cbec-4285-a830-52fc38523bbf:page:1"
+              ]
+            }
+          ],
+          "derivedWho": "LIKELY_NOT_FIT",
+          "derivedWhoReason": "SOCFortress is a direct competitor that provides SOC as a Service, making them highly unlikely to purchase a Managed SOC service.",
+          "reviewStatus": "PENDING_HUMAN_REVIEW"
+        },
+        {
+          "benchmarkCompanyId": "bef79acd-a69f-40a9-8488-d46a03ae3710",
+          "identity": {
+            "status": "CORRECT",
+            "confidence": "HIGH",
+            "reason": "The domain socura.co.uk and company name Socura match the provided evidence.",
+            "evidenceIds": [
+              "bef79acd-a69f-40a9-8488-d46a03ae3710:page:1",
+              "bef79acd-a69f-40a9-8488-d46a03ae3710:search:1"
+            ]
+          },
+          "companyUnderstanding": {
+            "primaryBusiness": "Socura is a Managed Detection and Response (MDR) provider offering 24/7 SOC services to identify and stop cyber attacks.",
+            "productsServices": [
+              "Managed Detection and Response (MDR)",
+              "24/7 Threat Detection and Containment",
+              "Threat Hunting",
+              "Incident Management"
+            ],
+            "businessModel": "B2B Services",
+            "industry": "Cybersecurity",
+            "geography": "United Kingdom",
+            "employeeSize": "UNKNOWN",
+            "technologyFacts": [
+              "XDR",
+              "XSOAR"
+            ],
+            "confidence": "HIGH",
+            "evidenceIds": [
+              "bef79acd-a69f-40a9-8488-d46a03ae3710:page:1",
+              "bef79acd-a69f-40a9-8488-d46a03ae3710:search:5"
+            ]
+          },
+          "commercialRole": {
+            "role": "SELLER_COMPETITOR",
+            "confidence": "HIGH",
+            "reason": "Socura provides 24/7 SOC and MDR services, directly competing with the seller's Managed SOC offering.",
+            "evidenceIds": [
+              "bef79acd-a69f-40a9-8488-d46a03ae3710:page:1"
+            ]
+          },
+          "whoCriteria": [
+            {
+              "criterionDimension": "compliance",
+              "criterionDescription": "Compliance context may improve commercial fit but is not mandatory.",
+              "result": "UNKNOWN",
+              "reason": "There is no evidence indicating Socura's internal compliance requirements.",
+              "evidenceIds": []
+            },
+            {
+              "criterionDimension": "geography",
+              "criterionDescription": "Company is located in a stated target geography.",
+              "result": "PASS",
+              "reason": "Socura is based in the United Kingdom.",
+              "evidenceIds": [
+                "bef79acd-a69f-40a9-8488-d46a03ae3710:page:1"
+              ]
+            },
+            {
+              "criterionDimension": "industry",
+              "criterionDescription": "Target customer operates in a stated target industry.",
+              "result": "PASS",
+              "reason": "Socura operates in the cybersecurity industry, which falls under IT and technology.",
+              "evidenceIds": [
+                "bef79acd-a69f-40a9-8488-d46a03ae3710:search:1"
+              ]
+            },
+            {
+              "criterionDimension": "technology",
+              "criterionDescription": "Technology pattern suggested by the Business Twin interpretation.",
+              "result": "PASS",
+              "reason": "Socura utilizes XDR and XSOAR technology platforms.",
+              "evidenceIds": [
+                "bef79acd-a69f-40a9-8488-d46a03ae3710:page:1"
+              ]
+            }
+          ],
+          "derivedWho": "LIKELY_NOT_FIT",
+          "derivedWhoReason": "Socura is a direct competitor that provides 24/7 SOC and MDR services, making them highly unlikely to purchase a Managed SOC service.",
+          "reviewStatus": "PENDING_HUMAN_REVIEW"
+        }
+      ]
+    }
+  }
+]

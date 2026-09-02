@@ -990,3 +990,45 @@ mtime_ms = 1788287662400
 storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/4cde90f6-9001-4073-a171-5ce1b54d0848/41ebe76d-609b-46aa-b7fa-5608b7eab786"
 storage_version_token = "1788287676047501"
 content_type = "text/markdown"
+
+[[outputs]]
+id = "0mEgio7Zd64LlbCi9dcJO"
+uri = "file://evaluations/jyra-clean-room-v1/REPORT.md"
+type = "text"
+title = "JYRA Clean-Room Evaluation Report"
+description = "Methodology, evidence coverage, evaluation economics, review status, and the required non-authoritative verdict."
+logical_id = "71514236-8261-46cc-982d-f524d36c848f"
+content_hash = "sha256:1af49537525636213459693819ac292206c9640656d41d9d914aeffa75f4f808"
+size = 11645
+mtime_ms = 1788324784686
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/71514236-8261-46cc-982d-f524d36c848f/d2b15115-03c5-46ec-a311-e2a9a5532a52"
+storage_version_token = "1788324822079999"
+content_type = "text/markdown"
+
+[[outputs]]
+id = "7GzyWiJ6tWRa-UDqSw31a"
+uri = "file://evaluations/jyra-clean-room-v1/human-review.csv"
+type = "table"
+title = "20-Company Human Review Worksheet"
+description = "Editable blind-review worksheet for approving, correcting, or marking each machine proposal ambiguous."
+logical_id = "e4f15448-e3f3-47f2-a783-e47a944afcdc"
+content_hash = "sha256:488ad68053619b328a03fcfd6deff5a3591956a5fc183bea8cfd8ae568aa0817"
+size = 5976
+mtime_ms = 1788324784918
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/e4f15448-e3f3-47f2-a783-e47a944afcdc/e2395f80-e7d9-46cf-99e5-65f314ee67bb"
+storage_version_token = "1788324823566863"
+content_type = "text/csv"
+
+[[outputs]]
+id = "M8SKrK6XTfUEqsh3ZZkWr"
+uri = "file://evaluations/jyra-clean-room-v1/benchmark.json"
+type = "unspecified"
+title = "Clean-Room Benchmark Packet"
+description = "Complete provenance, evidence coverage, machine proposals, pending review records, and evaluation accounting."
+logical_id = "c6ecdbfe-e065-431a-be09-70bf09e56ec6"
+content_hash = "sha256:6c269d7e57bb9b02f1c646aaad98ec6dc623f550c163c025b3491cc23ac35e0a"
+size = 102664
+mtime_ms = 1788324757618
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/c6ecdbfe-e065-431a-be09-70bf09e56ec6/dc3b05a8-be7d-4afe-81a7-dc147c36ecb8"
+storage_version_token = "1788324824933492"
+content_type = "application/octet-stream"

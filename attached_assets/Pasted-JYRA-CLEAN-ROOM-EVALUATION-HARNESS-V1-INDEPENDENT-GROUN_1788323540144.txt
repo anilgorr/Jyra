@@ -1,0 +1,828 @@
+JYRA — CLEAN-ROOM EVALUATION HARNESS V1
+INDEPENDENT GROUND TRUTH FOR MARKET INTELLIGENCE
+
+MODE:
+EVALUATION INFRASTRUCTURE + ONE AUTHORITATIVE 20-COMPANY BENCHMARK
+
+DO NOT MODIFY JYRA PRODUCTION INTELLIGENCE.
+
+BACKGROUND
+
+Architecture V1.1 has passed architectural validation.
+
+However, the previous 20-company market-quality evaluation is NOT
+usable as ground truth.
+
+Audit finding:
+
+E — EVALUATION GROUND TRUTH IS NOT RELIABLE ENOUGH
+
+Problems discovered:
+
+- adjudicator model/version not persisted
+- adjudication prompt not persisted
+- no independently verified public evidence
+- adjudicator relied on JYRA-assembled profile information
+- no independent CompanyUnderstanding ground truth
+- CommercialRole labels lacked proposition-level evidence
+- WHO labels lacked criterion-by-criterion evaluation
+- conditioned accuracy metrics could not be calculated
+
+Therefore:
+
+DO NOT optimize JYRA against the previous 3/20 CommercialRole or
+8/20 WHO numbers.
+
+Build a proper independent evaluation system first.
+
+==================================================
+0. DATABASE SAFETY
+==================================================
+
+DEVELOPMENT ONLY.
+
+Production operations = 0.
+
+Evaluation artifacts must be isolated from production intelligence.
+
+Evaluation data MUST NOT:
+
+- modify canonical company intelligence
+- create production facts
+- create production signals
+- alter CompanyUnderstanding
+- alter CommercialRole
+- alter WHO
+- alter ICP
+- affect learning/training data
+- alter opportunity ranking
+
+Evaluation is read-only with respect to JYRA predictions.
+
+==================================================
+1. FREEZE PRODUCTION JYRA
+==================================================
+
+Do NOT modify:
+
+- architecture/control plane
+- discovery
+- identity
+- MinimumCompanyIntelligence
+- CompanyUnderstanding
+- CompanyUnderstanding prompt/model
+- CommercialRole
+- CommercialRole prompt/model
+- WHO
+- ICP qualification
+- provider production routing
+- thresholds
+- normalization
+- signals
+- WHEN/WHY
+- opportunities
+
+The purpose is to measure JYRA, not improve it.
+
+==================================================
+2. CREATE A CLEAN-ROOM EVALUATION NAMESPACE
+==================================================
+
+Create a logically separate evaluation subsystem.
+
+Suggested concepts:
+
+EvaluationBenchmark
+EvaluationCompany
+EvaluationEvidence
+EvaluationCompanyUnderstanding
+EvaluationCommercialRole
+EvaluationWhoCriterion
+EvaluationAdjudication
+EvaluationReview
+
+Do not unnecessarily create many physical tables if an existing
+generic evaluation model is suitable.
+
+But evaluation artifacts MUST be clearly distinguishable from
+production intelligence.
+
+==================================================
+3. USE THE EXISTING TASK #100 COHORT
+==================================================
+
+Use the exact persisted:
+
+10 DigiPuush companies
++
+10 Managed SOC companies
+
+Do not replace difficult companies.
+
+Do not rediscover companies.
+
+The company name/domain supplied to the clean-room evaluator may be
+used only as the starting identity target.
+
+DO NOT provide the evaluator:
+
+- JYRA CompanyUnderstanding
+- JYRA CommercialRole
+- JYRA WHO
+- JYRA confidence
+- JYRA reasoning
+- JYRA profile summary
+- previous adjudication
+- benchmark expected labels
+
+The evaluator must be blind to JYRA's predictions.
+
+==================================================
+4. INDEPENDENT EVIDENCE COLLECTION
+==================================================
+
+For each company independently collect enough PUBLIC evidence to
+understand the company.
+
+This is evaluation research, not JYRA production research.
+
+Prefer:
+
+1. official company website
+2. official About page
+3. official product/service pages
+4. official LinkedIn/company profile or equivalent trusted profile
+5. high-quality structured company sources
+6. reputable third-party sources when needed
+
+Avoid relying on:
+
+- JYRA-generated summaries
+- JYRA CompanyUnderstanding
+- JYRA normalized business descriptions
+- JYRA CommercialRole
+- JYRA WHO
+- previous benchmark adjudication
+
+Persist source provenance.
+
+For every evidence item store:
+
+source URL
+source type
+publisher/domain
+retrieved_at
+relevant excerpt/structured observation
+company identity being supported
+evidence purpose
+
+==================================================
+5. IDENTITY VERIFICATION
+==================================================
+
+First establish independently:
+
+CORRECT
+WRONG
+UNCERTAIN
+
+for the benchmark company identity.
+
+Use:
+
+name
+domain
+official website
+business description
+location where useful
+
+Do not evaluate CommercialRole or WHO if identity is genuinely wrong.
+
+==================================================
+6. INDEPENDENT COMPANY UNDERSTANDING
+==================================================
+
+Create independent structured truth for:
+
+primary_business
+
+products_services[]
+
+business_model
+
+industry
+
+geography where relevant
+
+employee size/range where supportable
+
+technology facts ONLY where required by the ICP and evidence exists
+
+Every material field must have:
+
+evidence_ids[]
+confidence
+
+Allowed confidence:
+
+HIGH
+MEDIUM
+LOW
+
+Do not invent missing information.
+
+UNKNOWN is acceptable.
+
+==================================================
+7. COMMERCIAL ROLE RUBRIC
+==================================================
+
+CommercialRole must be evaluated RELATIVE TO:
+
+Seller
++
+Specific Offering
++
+independently researched candidate company
+
+Allowed roles:
+
+POTENTIAL_BUYER
+SELLER_COMPETITOR
+ADJACENT_VENDOR
+PARTNER_POSSIBLE
+UNKNOWN
+
+For every role persist:
+
+role
+reason
+supporting evidence IDs
+confidence
+
+Use the following conceptual rubric:
+
+SELLER_COMPETITOR
+
+Candidate materially sells/provides substantially the same commercial
+offering to similar buyers.
+
+ADJACENT_VENDOR
+
+Candidate sells a related/complementary product/service but does not
+materially overlap the seller's core offering.
+
+PARTNER_POSSIBLE
+
+There is a credible complementary commercial relationship where the
+candidate may distribute, refer, integrate, bundle, or cooperate with
+the seller.
+
+POTENTIAL_BUYER
+
+Candidate is structurally capable of consuming the seller's offering
+and is not primarily a competing/adjacent seller in the relationship
+being evaluated.
+
+UNKNOWN
+
+Evidence is insufficient or commercial relationship remains genuinely
+ambiguous.
+
+Industry membership alone MUST NOT determine CommercialRole.
+
+==================================================
+8. WHO MUST BE CRITERION-BY-CRITERION
+==================================================
+
+Do NOT adjudicate WHO with one vague label.
+
+Load the exact frozen ICP version used in Task #100.
+
+For each company evaluate every material ICP criterion separately.
+
+Examples:
+
+INDUSTRY
+PASS / FAIL / UNKNOWN
+evidence_ids
+reason
+
+EMPLOYEE_SIZE
+PASS / FAIL / UNKNOWN
+evidence_ids
+reason
+
+GEOGRAPHY
+PASS / FAIL / UNKNOWN
+evidence_ids
+reason
+
+BUSINESS_MODEL
+PASS / FAIL / UNKNOWN
+evidence_ids
+reason
+
+TECHNOLOGY
+PASS / FAIL / UNKNOWN
+evidence_ids
+reason
+
+EXCLUSIONS
+PASS / FAIL / UNKNOWN
+evidence_ids
+reason
+
+COMMERCIAL_ROLE
+PASS / FAIL / UNKNOWN
+evidence_ids
+reason
+
+Only then derive:
+
+LIKELY_FIT
+POSSIBLE_FIT
+LIKELY_NOT_FIT
+INSUFFICIENT_DATA
+
+using the documented current WHO semantics.
+
+Missing evidence MUST remain UNKNOWN.
+
+Do not convert UNKNOWN to FAIL.
+
+==================================================
+9. TWO-STAGE ADJUDICATION
+==================================================
+
+Do not rely on one opaque LLM answer.
+
+Use two stages.
+
+STAGE A — INDEPENDENT MACHINE ADJUDICATION
+
+Use a dedicated evaluation prompt and structured schema.
+
+Persist:
+
+model
+model version
+prompt version
+full prompt fingerprint
+execution ID
+timestamp
+input evidence IDs
+output
+confidence
+
+The evaluation prompt/model must be separate from JYRA's production
+CommercialRole prompt.
+
+If possible with available infrastructure, use an evaluator
+configuration sufficiently independent from the production
+CompanyUnderstanding/CommercialRole configuration.
+
+But do not pretend model difference alone creates ground truth.
+
+STAGE B — REVIEW
+
+Generate a human-review-ready record containing:
+
+company
+seller
+offering
+independent evidence
+independent company understanding
+proposed CommercialRole
+criterion-by-criterion WHO
+reasoning
+confidence
+
+Allow reviewer actions:
+
+APPROVE
+CORRECT
+MARK_AMBIGUOUS
+
+A reviewer correction must require a reason.
+
+For this 20-company benchmark, HUMAN-APPROVED labels are the preferred
+authoritative benchmark.
+
+==================================================
+10. DO NOT USE JYRA PREDICTIONS DURING REVIEW
+==================================================
+
+The initial truth review must remain blind.
+
+Reviewer should approve/correct the independent evaluation BEFORE
+JYRA predictions are revealed.
+
+Persist:
+
+ground_truth_frozen_at
+
+Only after ground truth is frozen may the comparison system load:
+
+JYRA CompanyUnderstanding
+JYRA CommercialRole
+JYRA WHO
+
+This prevents hindsight contamination.
+
+==================================================
+11. GROUND TRUTH STATES
+==================================================
+
+Each benchmark company should end with:
+
+GROUND_TRUTH_CONFIRMED
+
+GROUND_TRUTH_AMBIGUOUS
+
+GROUND_TRUTH_INSUFFICIENT
+
+GROUND_TRUTH_REJECTED_WRONG_IDENTITY
+
+Only CONFIRMED items should be used for strict accuracy metrics.
+
+AMBIGUOUS items should be reported separately.
+
+Do not force labels merely to increase sample size.
+
+==================================================
+12. EVALUATION PROVENANCE
+==================================================
+
+The benchmark must be reproducible.
+
+Persist:
+
+benchmark ID/version
+
+company cohort
+
+seller Business Twin ID/version
+
+Offering fingerprint/version
+
+ICP ID/version
+
+evaluation research timestamp
+
+evaluation sources
+
+adjudicator model
+
+adjudicator prompt version
+
+prompt fingerprint
+
+adjudication execution ID
+
+reviewer decision
+
+review timestamp
+
+ground_truth_frozen_at
+
+Do not rely on undocumented files.
+
+==================================================
+13. ONLY AFTER GROUND TRUTH IS FROZEN
+==================================================
+
+Compare the ALREADY-PERSISTED Task #100 JYRA outputs against the newly
+frozen independent benchmark.
+
+DO NOT rerun JYRA.
+
+DO NOT make new production predictions.
+
+Use the exact predictions originally generated.
+
+==================================================
+14. FIRST-ERROR ANALYSIS
+==================================================
+
+Now perform the root-cause audit that was previously impossible.
+
+For each company evaluate:
+
+Discovery
+Identity
+Evidence/Profile
+CompanyUnderstanding
+CommercialRole
+WHO
+
+Assign the FIRST MATERIAL ERROR.
+
+Do not count inherited downstream errors as independent failures.
+
+==================================================
+15. COMPANY UNDERSTANDING METRICS
+==================================================
+
+Measure:
+
+primary-business agreement
+products/services agreement
+business-model agreement
+industry agreement
+
+Overall CompanyUnderstanding:
+
+CORRECT
+MOSTLY_CORRECT
+MATERIALLY_WRONG
+INSUFFICIENT
+
+Report:
+
+DigiPuush
+Managed SOC
+combined
+
+==================================================
+16. COMMERCIAL ROLE CONDITIONED METRICS
+==================================================
+
+Define CLEAN_ROLE_SUBSET:
+
+ground truth confirmed
++
+identity correct
++
+production evidence sufficient
++
+JYRA CompanyUnderstanding CORRECT or MOSTLY_CORRECT
+
+Then calculate:
+
+CommercialRole exact agreement
+
+buyer precision
+
+buyer recall
+
+competitor → buyer errors
+
+adjacent → buyer errors
+
+partner → buyer errors
+
+UNKNOWN quality
+
+Report numerator/denominator.
+
+==================================================
+17. WHO CONDITIONED METRICS
+==================================================
+
+Define CLEAN_WHO_SUBSET:
+
+ground truth confirmed
++
+identity correct
++
+CompanyUnderstanding acceptable
++
+CommercialRole correct
++
+required ICP evidence present
+
+Calculate:
+
+WHO exact agreement
+
+and criterion-level accuracy for:
+
+industry
+size
+geography
+business model
+technology
+exclusions
+
+Report numerator/denominator.
+
+==================================================
+18. GOOD UNKNOWN / BAD UNKNOWN
+==================================================
+
+GOOD_UNKNOWN:
+
+Ground truth confirms evidence was genuinely insufficient or
+relationship ambiguous.
+
+BAD_UNKNOWN:
+
+Ground truth demonstrates sufficient evidence existed for a reasonable
+classification.
+
+Report separately:
+
+DigiPuush
+Managed SOC
+combined.
+
+==================================================
+19. CONFIDENCE CALIBRATION
+==================================================
+
+Identify:
+
+HIGH_CONFIDENCE_CORRECT
+HIGH_CONFIDENCE_WRONG
+MEDIUM_CONFIDENCE_CORRECT
+MEDIUM_CONFIDENCE_WRONG
+LOW_CONFIDENCE_CORRECT
+LOW_CONFIDENCE_WRONG
+
+List all HIGH_CONFIDENCE_WRONG cases.
+
+==================================================
+20. ROOT-CAUSE DISTRIBUTION
+==================================================
+
+Produce:
+
+Layer
+First-error count
+Percentage
+DigiPuush count
+Managed SOC count
+Generic/domain-specific
+Severity
+
+Layers:
+
+Discovery
+Identity
+Profile/Evidence
+CompanyUnderstanding
+CommercialRole
+WHO
+Evaluation ambiguity
+
+==================================================
+21. ONE NEXT REPAIR ONLY
+==================================================
+
+Based on frozen independent ground truth, recommend exactly ONE next
+product repair:
+
+PROFILE_EVIDENCE
+
+COMPANY_UNDERSTANDING
+
+COMMERCIAL_RELATIONSHIP
+
+WHO_QUALIFICATION
+
+DISCOVERY
+
+or
+
+NO_SINGLE_DOMINANT_FAILURE
+
+Do NOT implement it.
+
+==================================================
+22. COST / EVALUATION ECONOMICS
+==================================================
+
+Evaluation research can make provider/model calls because this task is
+creating independent ground truth.
+
+Track separately from JYRA production costs:
+
+evaluation provider calls
+
+evaluation LLM calls
+
+tokens
+
+known cost
+
+unknown cost
+
+cost per benchmark company
+
+Do not mix evaluation spend into production research economics.
+
+==================================================
+23. TASK #101
+==================================================
+
+Also reassess the cancelled provider-cost persistence work.
+
+Do not implement it.
+
+Classify whether persistent provider usage/cost records are:
+
+NEXT_VALIDATION_BLOCKER
+
+PRE_PRODUCTION_BLOCKER
+
+CONTINUOUS_MONITORING_BLOCKER
+
+CAN_DEFER
+
+My expected architectural principle:
+
+Lossless cost/event accounting is likely important before continuous
+monitoring and production customer use, but it should not prevent this
+20-company ground-truth benchmark unless current evaluation costs
+cannot otherwise be reconstructed.
+
+Verify rather than assume.
+
+==================================================
+24. OUTPUT
+==================================================
+
+Produce:
+
+A. Evaluation methodology
+
+B. Ground-truth provenance
+
+C. Evidence coverage
+
+D. 20-company independent truth table
+
+E. Review status
+
+F. CompanyUnderstanding benchmark
+
+G. CommercialRole conditioned metrics
+
+H. WHO conditioned metrics
+
+I. GOOD_UNKNOWN / BAD_UNKNOWN
+
+J. confidence calibration
+
+K. first-error distribution
+
+L. DigiPuush vs Managed SOC comparison
+
+M. primary quality bottleneck
+
+N. exactly one recommended repair
+
+O. evaluation cost
+
+P. Task #101 assessment
+
+==================================================
+25. FINAL VERDICT
+==================================================
+
+Return exactly one:
+
+A — AUTHORITATIVE BENCHMARK CREATED; PROFILE EVIDENCE IS PRIMARY BOTTLENECK
+
+B — AUTHORITATIVE BENCHMARK CREATED; COMPANY UNDERSTANDING IS PRIMARY BOTTLENECK
+
+C — AUTHORITATIVE BENCHMARK CREATED; COMMERCIAL RELATIONSHIP IS PRIMARY BOTTLENECK
+
+D — AUTHORITATIVE BENCHMARK CREATED; WHO IS PRIMARY BOTTLENECK
+
+E — AUTHORITATIVE BENCHMARK CREATED; NO SINGLE QUALITY BOTTLENECK DOMINATES
+
+F — INDEPENDENT GROUND TRUTH COULD NOT BE ESTABLISHED RELIABLY
+
+If human review is required but cannot be completed automatically:
+
+return:
+
+F — INDEPENDENT GROUND TRUTH COULD NOT BE ESTABLISHED RELIABLY
+
+and produce the complete review packet rather than inventing approved
+ground truth.
+
+==================================================
+26. STOP
+==================================================
+
+After benchmark creation/comparison/report:
+
+STOP.
+
+DO NOT:
+
+change production code
+change prompts
+change models
+change thresholds
+change ICP
+change discovery
+rerun JYRA
+run 50-company Reality Test
+modify signals
+build contacts
+build outreach
+integrate Explee
