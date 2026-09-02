@@ -1009,14 +1009,14 @@ content_type = "text/markdown"
 id = "7GzyWiJ6tWRa-UDqSw31a"
 uri = "file://evaluations/jyra-clean-room-v1/human-review.csv"
 type = "table"
-title = "20-Company Human Review Worksheet"
-description = "Editable blind-review worksheet for approving, correcting, or marking each machine proposal ambiguous."
+title = "Completed Human Review"
+description = "Preserved machine proposals and explicit human decisions, including the CData WHO correction."
 logical_id = "e4f15448-e3f3-47f2-a783-e47a944afcdc"
-content_hash = "sha256:488ad68053619b328a03fcfd6deff5a3591956a5fc183bea8cfd8ae568aa0817"
-size = 5976
-mtime_ms = 1788324784918
-storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/e4f15448-e3f3-47f2-a783-e47a944afcdc/e2395f80-e7d9-46cf-99e5-65f314ee67bb"
-storage_version_token = "1788324823566863"
+content_hash = "sha256:fdb5423dbf38d145e5f0c2da2b1740ada37d6e3b788f25130c54da7333e9f0cc"
+size = 14888
+mtime_ms = 1788327339586
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/e4f15448-e3f3-47f2-a783-e47a944afcdc/a008ef4e-c90b-40b9-85c4-db60a35b237d"
+storage_version_token = "1788327378096108"
 content_type = "text/csv"
 
 [[outputs]]
@@ -1031,4 +1031,32 @@ size = 102664
 mtime_ms = 1788324757618
 storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/c6ecdbfe-e065-431a-be09-70bf09e56ec6/dc3b05a8-be7d-4afe-81a7-dc147c36ecb8"
 storage_version_token = "1788324824933492"
+content_type = "application/octet-stream"
+
+[[outputs]]
+id = "db16jPVNp-f0pxMUe2ERs"
+uri = "file://evaluations/jyra-clean-room-v1/JYRA_MARKET_QUALITY_GOLD_V1.json"
+type = "unspecified"
+title = "JYRA Market Quality Gold V1"
+description = "Immutable 20-company human-reviewed gold benchmark with 18 confirmed, one ambiguous, and one insufficient record."
+logical_id = "c4a1317f-00f3-41e5-9e36-af59e6233c95"
+content_hash = "sha256:f59aca76b676d0e54d0899dd23bb3e5c6d5912e71e0597d967a2a722ac8ecfca"
+size = 79584
+mtime_ms = 1788327338846
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/c4a1317f-00f3-41e5-9e36-af59e6233c95/74eac525-2851-4211-9f3c-6c0de5832027"
+storage_version_token = "1788327376693842"
+content_type = "application/octet-stream"
+
+[[outputs]]
+id = "5UVu49GMccHHx_3jnT7F7"
+uri = "file://evaluations/jyra-clean-room-v1/JYRA_MARKET_QUALITY_GOLD_V1.manifest.json"
+type = "unspecified"
+title = "Gold V1 Freeze Manifest"
+description = "Freeze provenance, source checksums, cohort counts, blindness declaration, and gold SHA-256."
+logical_id = "b429dc2f-91a0-4260-a351-3b5c45efe3f1"
+content_hash = "sha256:d9d54a9594a93c5312a43fb9ca3d08a03cb14aff435a1ce6180581a12f405aa3"
+size = 1989
+mtime_ms = 1788327339834
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:8a2eb0a0-d3a8-42bf-b47d-b2156c37201b/b429dc2f-91a0-4260-a351-3b5c45efe3f1/5c5ea246-2a44-4e63-8ec7-05d5b1b955cf"
+storage_version_token = "1788327379455221"
 content_type = "application/octet-stream"

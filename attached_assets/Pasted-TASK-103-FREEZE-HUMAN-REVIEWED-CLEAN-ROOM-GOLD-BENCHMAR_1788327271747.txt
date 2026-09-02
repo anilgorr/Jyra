@@ -1,0 +1,856 @@
+TASK #103 — FREEZE HUMAN-REVIEWED CLEAN-ROOM GOLD BENCHMARK
+JYRA_MARKET_QUALITY_GOLD_V1
+
+We have completed the blind human review of the exact 20-company clean-room benchmark created from Task #100.
+
+Your job is ONLY to persist the human decisions, validate the benchmark, and freeze an immutable gold version.
+
+DO NOT rerun JYRA.
+DO NOT rerun Company Understanding.
+DO NOT rerun Commercial Role.
+DO NOT rerun WHO.
+DO NOT run discovery.
+DO NOT call Gemini, OpenAI, Tavily, Exa, Apify, Bright Data, or any other external provider.
+DO NOT fetch new public evidence.
+DO NOT expose/reveal/read Task #100 JYRA predictions yet.
+DO NOT calculate JYRA-vs-gold accuracy yet.
+DO NOT modify production intelligence.
+DO NOT change application scoring or prompts.
+DO NOT implement any repair.
+
+This is a benchmark-freeze task only.
+
+DATABASE SAFETY:
+This is development work.
+Use ONLY the development database during implementation/testing.
+Create/apply migrations only to DEVELOPMENT if absolutely necessary.
+DO NOT migrate/reset/seed/modify/truncate/test production.
+Production schema changes only via explicit production migration workflow.
+Never destroy or overwrite production customer data.
+
+==================================================
+1. EXISTING CLEAN-ROOM DATA
+==================================================
+
+Use the existing exact benchmark under:
+
+evaluations/jyra-clean-room-v1/
+
+Inspect the existing files in that directory.
+
+They should include the existing clean-room benchmark, public evidence, machine proposals, and human-review artifact/table.
+
+Do not replace the cohort.
+Do not substitute companies.
+Do not regenerate evidence.
+Do not change benchmarkCompanyId values.
+Do not change the original machine proposals.
+
+The cohort MUST contain exactly these 20 companies:
+
+DIGIPUUSH
+1. Grownob LLC
+2. Lead Made Easy
+3. Leadgeneron
+4. Leadzen.ai
+5. Outbound System
+6. OutPro
+7. Partner Propel
+8. Pure Sales
+9. RevyGo
+10. SalesGig
+
+MANAGED_SOC
+11. 3LOCKS
+12. Barracuda SKOUT Managed XDR
+13. CData Virtuality
+14. Critical Start
+15. CyberOne
+16. CySOC
+17. Ostra Security
+18. Pondurance
+19. SOCFortress
+20. Socura
+
+Hard fail if the benchmark does not resolve to exactly these 20 existing benchmark records.
+
+Use benchmarkCompanyId as the canonical key after resolving each name against the existing benchmark.
+
+==================================================
+2. HUMAN REVIEW PROVENANCE
+==================================================
+
+Reviewer:
+Anil Gorraladaku
+
+Review type:
+HUMAN_BLIND_REVIEW
+
+Review date:
+2026-09-02
+
+Gold benchmark version:
+JYRA_MARKET_QUALITY_GOLD_V1
+
+Important:
+
+The human reviewer made these decisions WITHOUT seeing the persisted Task #100 JYRA predictions.
+
+The independent clean-room machine proposal was visible to the human reviewer and was either approved or corrected.
+
+Preserve this distinction in provenance:
+
+public evidence
+→ independent clean-room machine proposal
+→ human review
+→ frozen gold truth
+
+JYRA Task #100 predictions MUST NOT become part of the gold-label creation path.
+
+==================================================
+3. FINAL HUMAN DECISIONS
+==================================================
+
+Persist the following EXACT human decisions.
+
+--------------------------------------------------
+1. Grownob LLC
+domainKey: DIGIPUUSH
+identity: CORRECT
+commercialRole: POTENTIAL_BUYER
+commercialRoleConfidence: HIGH
+who: LIKELY_NOT_FIT
+whoConfidence: HIGH
+groundTruthStatus: GROUND_TRUTH_CONFIRMED
+reviewAction: APPROVE
+
+Reason:
+Valid potential buyer for DigiPuush AI Visibility/AEO/GEO, but fails the mandatory India geography requirement because the company is US-based.
+
+--------------------------------------------------
+2. Lead Made Easy
+domainKey: DIGIPUUSH
+identity: CORRECT
+commercialRole: POTENTIAL_BUYER
+commercialRoleConfidence: HIGH
+who: POSSIBLE_FIT
+whoConfidence: MEDIUM
+groundTruthStatus: GROUND_TRUTH_CONFIRMED
+reviewAction: APPROVE
+
+Reason:
+B2B lead-generation agency and commercially capable of buying AI Visibility/AEO/GEO. Evidence does not establish India headquarters/location strongly enough to call LIKELY_FIT, so POSSIBLE_FIT is retained.
+
+--------------------------------------------------
+3. Leadgeneron
+domainKey: DIGIPUUSH
+identity: CORRECT
+commercialRole: POTENTIAL_BUYER
+commercialRoleConfidence: HIGH
+who: LIKELY_NOT_FIT
+whoConfidence: HIGH
+groundTruthStatus: GROUND_TRUTH_CONFIRMED
+reviewAction: APPROVE
+
+Reason:
+Potential buyer structurally, but fails mandatory India geography because it is US-based.
+
+--------------------------------------------------
+4. Leadzen.ai
+domainKey: DIGIPUUSH
+identity: CORRECT
+commercialRole: POTENTIAL_BUYER
+commercialRoleConfidence: HIGH
+who: LIKELY_FIT
+whoConfidence: HIGH
+groundTruthStatus: GROUND_TRUTH_CONFIRMED
+reviewAction: APPROVE
+
+Reason:
+India-based B2B SaaS/data-intelligence company with relevant website/content and strong structural fit for DigiPuush AI Visibility/AEO/GEO.
+
+--------------------------------------------------
+5. Outbound System
+domainKey: DIGIPUUSH
+identity: CORRECT
+commercialRole: POTENTIAL_BUYER
+commercialRoleConfidence: HIGH
+who: LIKELY_NOT_FIT
+whoConfidence: HIGH
+groundTruthStatus: GROUND_TRUTH_CONFIRMED
+reviewAction: APPROVE
+
+Reason:
+Potential buyer structurally, but fails mandatory India geography because it is US-based.
+
+--------------------------------------------------
+6. OutPro
+domainKey: DIGIPUUSH
+identity: CORRECT
+commercialRole: POTENTIAL_BUYER
+commercialRoleConfidence: HIGH
+who: LIKELY_FIT
+whoConfidence: HIGH
+groundTruthStatus: GROUND_TRUTH_CONFIRMED
+reviewAction: APPROVE
+
+Reason:
+India-based B2B GTM/professional-services company with an established website/content foundation and strong structural fit for DigiPuush AI Visibility/AEO/GEO.
+
+--------------------------------------------------
+7. Partner Propel
+domainKey: DIGIPUUSH
+identity: CORRECT
+commercialRole: POTENTIAL_BUYER
+commercialRoleConfidence: HIGH
+who: LIKELY_NOT_FIT
+whoConfidence: HIGH
+groundTruthStatus: GROUND_TRUTH_CONFIRMED
+reviewAction: APPROVE
+
+Reason:
+Commercially capable of buying AI Visibility/AEO/GEO but fails the mandatory India geography requirement because it is US-based.
+
+--------------------------------------------------
+8. Pure Sales
+domainKey: DIGIPUUSH
+identity: CORRECT
+commercialRole: POTENTIAL_BUYER
+commercialRoleConfidence: MEDIUM
+who: INSUFFICIENT_DATA
+whoConfidence: MEDIUM
+groundTruthStatus: INSUFFICIENT
+reviewAction: APPROVE
+
+Reason:
+Potential buyer structurally, but available evidence does not sufficiently establish mandatory geography and website/content depth. Do not infer missing information as failure.
+
+This record MUST be excluded from strict WHO accuracy metrics because groundTruthStatus = INSUFFICIENT.
+
+--------------------------------------------------
+9. RevyGo
+domainKey: DIGIPUUSH
+identity: CORRECT
+commercialRole: POTENTIAL_BUYER
+commercialRoleConfidence: HIGH
+who: LIKELY_NOT_FIT
+whoConfidence: HIGH
+groundTruthStatus: GROUND_TRUTH_CONFIRMED
+reviewAction: APPROVE
+
+Reason:
+Potential buyer structurally, but fails mandatory India geography because it is based in Lithuania.
+
+--------------------------------------------------
+10. SalesGig
+domainKey: DIGIPUUSH
+identity: CORRECT
+commercialRole: POTENTIAL_BUYER
+commercialRoleConfidence: HIGH
+who: LIKELY_NOT_FIT
+whoConfidence: HIGH
+groundTruthStatus: GROUND_TRUTH_CONFIRMED
+reviewAction: APPROVE
+
+Reason:
+Potential buyer structurally, but fails mandatory India geography because it is US-based.
+
+--------------------------------------------------
+11. 3LOCKS
+domainKey: MANAGED_SOC
+identity: UNCERTAIN
+commercialRole: UNKNOWN
+commercialRoleConfidence: LOW
+who: INSUFFICIENT_DATA
+whoConfidence: LOW
+groundTruthStatus: AMBIGUOUS
+reviewAction: MARK_AMBIGUOUS
+
+Reason:
+The target company cannot be uniquely identified from the available evidence. Multiple unrelated entities match the name and no reliable domain was available.
+
+Do not turn missing identity into a buyer/non-buyer classification.
+
+This record MUST be excluded from strict Commercial Role and WHO accuracy metrics.
+
+--------------------------------------------------
+12. Barracuda SKOUT Managed XDR
+domainKey: MANAGED_SOC
+identity: CORRECT
+commercialRole: SELLER_COMPETITOR
+commercialRoleConfidence: HIGH
+who: LIKELY_NOT_FIT
+whoConfidence: HIGH
+groundTruthStatus: GROUND_TRUTH_CONFIRMED
+reviewAction: APPROVE
+
+Reason:
+Provides Managed XDR and a 24/7 SOC that directly overlaps Aadit's Managed SOC offering. Competitor relationship is decisive even though structural ICP dimensions may otherwise pass.
+
+--------------------------------------------------
+13. CData Virtuality
+domainKey: MANAGED_SOC
+identity: CORRECT
+commercialRole: POTENTIAL_BUYER
+commercialRoleConfidence: HIGH
+who: LIKELY_FIT
+whoConfidence: HIGH
+groundTruthStatus: GROUND_TRUTH_CONFIRMED
+reviewAction: CORRECT
+
+IMPORTANT HUMAN CORRECTION:
+Independent clean-room proposal had WHO = POSSIBLE_FIT.
+Human gold truth is WHO = LIKELY_FIT.
+
+Reason:
+CData is a mid-sized B2B software/SaaS technology company in a target geography with substantial cloud/SaaS/data infrastructure and is structurally capable of purchasing Managed SOC.
+
+Missing explicit public evidence of ISO 27001, SOC 2, cyber-insurance, or active compliance requirements MUST NOT downgrade structural WHO fit.
+
+Compliance activity is primarily a WHEN/WHY indicator, not a mandatory prerequisite for WHO.
+
+Preserve compliance criterion as UNKNOWN if that is what the clean-room evidence supports.
+Do NOT fabricate compliance evidence.
+
+--------------------------------------------------
+14. Critical Start
+domainKey: MANAGED_SOC
+identity: CORRECT
+commercialRole: SELLER_COMPETITOR
+commercialRoleConfidence: HIGH
+who: LIKELY_NOT_FIT
+whoConfidence: HIGH
+groundTruthStatus: GROUND_TRUTH_CONFIRMED
+reviewAction: APPROVE
+
+Reason:
+Provides 24x7x365 MDR/SOC services directly competing with Aadit's Managed SOC offering.
+
+--------------------------------------------------
+15. CyberOne
+domainKey: MANAGED_SOC
+identity: CORRECT
+commercialRole: SELLER_COMPETITOR
+commercialRoleConfidence: HIGH
+who: LIKELY_NOT_FIT
+whoConfidence: HIGH
+groundTruthStatus: GROUND_TRUTH_CONFIRMED
+reviewAction: APPROVE
+
+Reason:
+Provides 24x7 MXDR and operates a SOC, directly competing with Aadit's Managed SOC offering.
+
+--------------------------------------------------
+16. CySOC
+domainKey: MANAGED_SOC
+identity: CORRECT
+commercialRole: SELLER_COMPETITOR
+commercialRoleConfidence: HIGH
+who: LIKELY_NOT_FIT
+whoConfidence: HIGH
+groundTruthStatus: GROUND_TRUTH_CONFIRMED
+reviewAction: APPROVE
+
+Reason:
+Provides a 24/7 SOC and managed cybersecurity services directly competing with Aadit's Managed SOC offering.
+
+--------------------------------------------------
+17. Ostra Security
+domainKey: MANAGED_SOC
+identity: CORRECT
+commercialRole: SELLER_COMPETITOR
+commercialRoleConfidence: HIGH
+who: LIKELY_NOT_FIT
+whoConfidence: HIGH
+groundTruthStatus: GROUND_TRUTH_CONFIRMED
+reviewAction: APPROVE
+
+Reason:
+Provides Managed Security Services, MDR and Managed SIEM that materially overlap Aadit's Managed SOC offering.
+
+--------------------------------------------------
+18. Pondurance
+domainKey: MANAGED_SOC
+identity: CORRECT
+commercialRole: SELLER_COMPETITOR
+commercialRoleConfidence: HIGH
+who: LIKELY_NOT_FIT
+whoConfidence: HIGH
+groundTruthStatus: GROUND_TRUTH_CONFIRMED
+reviewAction: APPROVE
+
+Reason:
+Provides MDR and a 24/7 SOC directly competing with Aadit's Managed SOC offering.
+
+--------------------------------------------------
+19. SOCFortress
+domainKey: MANAGED_SOC
+identity: CORRECT
+commercialRole: SELLER_COMPETITOR
+commercialRoleConfidence: HIGH
+who: LIKELY_NOT_FIT
+whoConfidence: HIGH
+groundTruthStatus: GROUND_TRUTH_CONFIRMED
+reviewAction: APPROVE
+
+Reason:
+Provides SOC as a Service and SIEM services directly competing with Aadit's Managed SOC offering. Unknown geography does not override the decisive competitor classification.
+
+--------------------------------------------------
+20. Socura
+domainKey: MANAGED_SOC
+identity: CORRECT
+commercialRole: SELLER_COMPETITOR
+commercialRoleConfidence: HIGH
+who: LIKELY_NOT_FIT
+whoConfidence: HIGH
+groundTruthStatus: GROUND_TRUTH_CONFIRMED
+reviewAction: APPROVE
+
+Reason:
+Provides MDR and 24/7 SOC services directly competing with Aadit's Managed SOC offering.
+
+==================================================
+4. IMPORTANT LABEL SEMANTICS
+==================================================
+
+Commercial Role and WHO must remain separate concepts.
+
+Commercial Role asks:
+
+"Can this company reasonably buy, compete with, or partner around this specific seller offering?"
+
+WHO asks:
+
+"Does this company fit the seller's current ICP?"
+
+Do not make:
+
+POTENTIAL_BUYER = LIKELY_FIT
+
+They are not equivalent.
+
+For DigiPuush in this benchmark:
+
+INDIA IS A MUST-HAVE GEOGRAPHY.
+
+Therefore a US/European company can correctly be:
+
+commercialRole = POTENTIAL_BUYER
+who = LIKELY_NOT_FIT
+
+For Managed SOC:
+
+Direct providers of MDR / Managed SOC / SOC-as-a-Service are:
+
+commercialRole = SELLER_COMPETITOR
+
+and normally:
+
+who = LIKELY_NOT_FIT
+
+even when geography, industry, technology, compliance, or company size otherwise match.
+
+For CData:
+
+Do not require public evidence of active compliance initiatives merely to establish WHO.
+
+WHO identifies structural buyer fit.
+
+Compliance initiatives, audit preparation, security hiring, security incidents, tooling changes, funding, etc. belong primarily to WHEN/WHY.
+
+==================================================
+5. WHO CRITERIA
+==================================================
+
+Do not regenerate criterion-level evidence.
+
+Preserve existing independently-produced clean-room WHO criterion rows and evidenceIds unless the human decision explicitly requires an override.
+
+Do not fabricate PASS/FAIL values.
+
+For CData:
+- preserve the existing compliance UNKNOWN result
+- preserve evidence-backed geography/industry/technology criteria
+- override only the final human WHO judgment from POSSIBLE_FIT → LIKELY_FIT
+- document why the human overrode the derived WHO
+
+For Pure Sales:
+preserve UNKNOWN where evidence was unavailable.
+
+For 3LOCKS:
+preserve UNKNOWN criteria because identity itself was unresolved.
+
+==================================================
+6. FACTUAL COMPANY UNDERSTANDING
+==================================================
+
+Preserve the independently generated factual company-understanding fields and their evidenceIds.
+
+Do not rewrite them merely to make them align with the final label.
+
+Human review and clean-room machine proposal must remain separately auditable.
+
+Gold records should preferably contain:
+
+{
+  benchmarkCompanyId,
+  domainKey,
+  company,
+  targetDomain,
+
+  factualTruth: {
+    identity,
+    primaryBusiness,
+    productsServices,
+    businessModel,
+    industry,
+    geography,
+    employeeSize,
+    technologyFacts
+  },
+
+  sellerRelativeTruth: {
+    commercialRole,
+    commercialRoleConfidence,
+    who,
+    whoConfidence,
+    whoCriteria
+  },
+
+  humanReview: {
+    action,
+    reviewer,
+    reviewedAt,
+    reason,
+    machineProposalChanged
+  },
+
+  evidenceIds,
+  groundTruthStatus
+}
+
+Reuse the existing schema where appropriate rather than creating unnecessary parallel models.
+
+==================================================
+7. HUMAN-REVIEW ARTIFACT
+==================================================
+
+Update/populate the existing human-review artifact/table in:
+
+evaluations/jyra-clean-room-v1/
+
+Do not delete the original machine-proposal columns.
+
+Add/fill explicit human columns if necessary, including:
+
+humanReviewAction
+humanIdentity
+humanCommercialRole
+humanCommercialRoleConfidence
+humanWho
+humanWhoConfidence
+humanGroundTruthStatus
+humanReviewReason
+reviewer
+reviewedAt
+goldVersion
+
+For CData, clearly record:
+
+machine WHO: POSSIBLE_FIT
+human WHO: LIKELY_FIT
+reviewAction: CORRECT
+
+For 3LOCKS:
+
+reviewAction: MARK_AMBIGUOUS
+groundTruthStatus: AMBIGUOUS
+
+For Pure Sales:
+
+groundTruthStatus: INSUFFICIENT
+
+==================================================
+8. FREEZE IMMUTABLE GOLD ARTIFACT
+==================================================
+
+Create an immutable frozen gold artifact such as:
+
+evaluations/jyra-clean-room-v1/JYRA_MARKET_QUALITY_GOLD_V1.json
+
+If the repository already has a benchmark-version naming convention, follow it while retaining the exact logical version:
+
+JYRA_MARKET_QUALITY_GOLD_V1
+
+The frozen artifact must contain the exact 20 records.
+
+Do not silently mutate this file on future runs.
+
+If it already exists:
+- compute its checksum
+- compare it with the desired decisions
+- if identical, report idempotent success
+- if different, HARD FAIL
+- DO NOT overwrite an existing frozen V1 with different content
+
+Corrections after V1 must require a new benchmark version, e.g. V2.
+
+==================================================
+9. MANIFEST + CHECKSUM
+==================================================
+
+Create a freeze manifest, for example:
+
+JYRA_MARKET_QUALITY_GOLD_V1.manifest.json
+
+Include at minimum:
+
+{
+  "goldVersion": "JYRA_MARKET_QUALITY_GOLD_V1",
+  "cohortSize": 20,
+  "reviewer": "Anil Gorraladaku",
+  "reviewType": "HUMAN_BLIND_REVIEW",
+  "frozenAt": "...",
+  "groundTruthConfirmedCount": ...,
+  "ambiguousCount": ...,
+  "insufficientCount": ...,
+  "rejectedWrongIdentityCount": ...,
+  "sourceBenchmark": "...",
+  "sourceEvidence": "...",
+  "sourceMachineProposals": "...",
+  "humanReviewArtifact": "...",
+  "goldFile": "...",
+  "sha256": "...",
+  "task100PredictionsExposedBeforeFreeze": false,
+  "externalProviderCallsDuringFreeze": 0
+}
+
+Expected status counts from these decisions:
+
+GROUND_TRUTH_CONFIRMED = 18
+AMBIGUOUS = 1
+INSUFFICIENT = 1
+REJECTED_WRONG_IDENTITY = 0
+
+Total = 20
+
+Calculate SHA-256 from the actual frozen gold file bytes.
+
+Also calculate checksums for the relevant source clean-room files if practical so provenance is reproducible.
+
+==================================================
+10. VALIDATION TESTS
+==================================================
+
+Add/run deterministic validation.
+
+At minimum assert:
+
+A. cohort size == 20
+
+B. DIGIPUUSH count == 10
+
+C. MANAGED_SOC count == 10
+
+D. all benchmarkCompanyId values are unique
+
+E. all 20 human decisions resolve to an existing clean-room benchmark record
+
+F. no company was added or removed
+
+G. 18 records are GROUND_TRUTH_CONFIRMED
+
+H. 1 record is AMBIGUOUS
+   company = 3LOCKS
+
+I. 1 record is INSUFFICIENT
+   company = Pure Sales
+
+J. CData Virtuality:
+   commercialRole == POTENTIAL_BUYER
+   who == LIKELY_FIT
+   reviewAction == CORRECT
+
+K. 3LOCKS:
+   identity == UNCERTAIN
+   commercialRole == UNKNOWN
+   who == INSUFFICIENT_DATA
+   groundTruthStatus == AMBIGUOUS
+
+L. Pure Sales:
+   commercialRole == POTENTIAL_BUYER
+   who == INSUFFICIENT_DATA
+   groundTruthStatus == INSUFFICIENT
+
+M. DigiPuush India-only decisions match the supplied human truth.
+
+N. Barracuda SKOUT Managed XDR, Critical Start, CyberOne, CySOC, Ostra Security, Pondurance, SOCFortress and Socura are SELLER_COMPETITOR / LIKELY_NOT_FIT.
+
+O. no JYRA inference service was invoked
+
+P. no external provider was invoked
+
+Q. no production data was modified
+
+R. source machine proposal artifacts remain unchanged
+
+S. repeated execution of the freeze operation is idempotent
+
+==================================================
+11. STRICT METRIC ELIGIBILITY
+==================================================
+
+Do NOT calculate Task #100 prediction accuracy yet.
+
+Only establish metric eligibility.
+
+For future Commercial Role / WHO strict metrics:
+
+include only:
+groundTruthStatus == GROUND_TRUTH_CONFIRMED
+
+Therefore expected strict cohort size:
+
+18
+
+Exclude:
+
+3LOCKS — AMBIGUOUS
+Pure Sales — INSUFFICIENT
+
+Do not count either as a JYRA error or success in strict accuracy.
+
+They may later be reported separately as unresolved/coverage cases.
+
+==================================================
+12. BLINDNESS / LEAKAGE GUARD
+==================================================
+
+This is critical.
+
+Before freeze completion, do not inspect, print, compare, load into the review process, or otherwise expose the persisted Task #100 JYRA predictions.
+
+If prediction data exists in the repository, leave it untouched.
+
+The gold benchmark must be frozen first.
+
+The workflow is:
+
+Independent public evidence
+→ independent clean-room assessment
+→ human review
+→ freeze gold
+→ checksum
+→ ONLY THEN reveal persisted Task #100 predictions
+→ compare
+
+Add explicit manifest field:
+
+"task100PredictionsExposedBeforeFreeze": false
+
+If you discover evidence that Task #100 predictions were actually used to generate or change these gold decisions, stop and report contamination instead of freezing.
+
+==================================================
+13. DO NOT OPTIMIZE JYRA
+==================================================
+
+This task must NOT:
+
+- change Company Understanding prompts
+- change Commercial Role prompts
+- change WHO logic
+- change ICP logic
+- change provider routing
+- change identity-resolution thresholds
+- change opportunity scoring
+- change signal logic
+- change control plane
+- add heuristics
+- add hardcoded industry rules
+- change the Managed SOC pack
+- change DigiPuush logic
+- tune against these 20 labels
+
+Gold creation must remain separate from model/product optimization.
+
+==================================================
+14. FINAL OUTPUT
+==================================================
+
+After completion, give me a concise report in this exact structure:
+
+TASK #103 — GOLD FREEZE RESULT
+
+Status:
+PASS / FAIL
+
+Gold version:
+JYRA_MARKET_QUALITY_GOLD_V1
+
+Cohort:
+20
+
+Confirmed:
+18
+
+Ambiguous:
+1
+
+Insufficient:
+1
+
+Wrong identity:
+0
+
+Human corrections:
+<number>
+
+Corrections:
+- CData Virtuality: WHO POSSIBLE_FIT → LIKELY_FIT
+- any others actually recorded as corrections
+
+Gold file:
+<path>
+
+Human review file:
+<path>
+
+Manifest:
+<path>
+
+SHA-256:
+<actual checksum>
+
+Source artifacts unchanged:
+YES / NO
+
+External provider calls:
+0
+
+JYRA Task #100 reruns:
+0
+
+Task #100 predictions exposed:
+NO
+
+Production modified:
+NO
+
+Tests:
+<passed>/<total>
+
+Freeze idempotency:
+PASS / FAIL
+
+STRICT METRIC ELIGIBLE RECORDS:
+18
+
+NEXT STEP:
+DO NOT execute it yet.
+
+State only:
+
+"Gold benchmark is frozen. Task #100 persisted predictions can now be revealed and compared against JYRA_MARKET_QUALITY_GOLD_V1."
+
+Do not perform that comparison until I explicitly tell you to proceed.

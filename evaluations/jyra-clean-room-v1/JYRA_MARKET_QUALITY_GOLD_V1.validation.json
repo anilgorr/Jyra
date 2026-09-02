@@ -1,0 +1,88 @@
+{
+  "goldVersion": "JYRA_MARKET_QUALITY_GOLD_V1",
+  "validatedAt": "2026-09-02T05:36:00.120Z",
+  "passed": 19,
+  "total": 19,
+  "status": "PASS",
+  "tests": [
+    {
+      "name": "A cohort size is 20",
+      "passed": true
+    },
+    {
+      "name": "B DigiPuush count is 10",
+      "passed": true
+    },
+    {
+      "name": "C Managed SOC count is 10",
+      "passed": true
+    },
+    {
+      "name": "D benchmarkCompanyId values are unique",
+      "passed": true
+    },
+    {
+      "name": "E all decisions resolve to clean-room records",
+      "passed": true
+    },
+    {
+      "name": "F cohort membership unchanged",
+      "passed": true
+    },
+    {
+      "name": "G confirmed count is 18",
+      "passed": true
+    },
+    {
+      "name": "H 3LOCKS is sole ambiguous record",
+      "passed": true
+    },
+    {
+      "name": "I Pure Sales is sole insufficient record",
+      "passed": true
+    },
+    {
+      "name": "J CData correction is exact",
+      "passed": true
+    },
+    {
+      "name": "K 3LOCKS values are exact",
+      "passed": true
+    },
+    {
+      "name": "L Pure Sales values are exact",
+      "passed": true
+    },
+    {
+      "name": "M DigiPuush supplied WHO truth is exact",
+      "passed": true
+    },
+    {
+      "name": "N Managed SOC competitors are exact",
+      "passed": true
+    },
+    {
+      "name": "O no JYRA inference service invoked",
+      "passed": true
+    },
+    {
+      "name": "P no external provider invoked",
+      "passed": true
+    },
+    {
+      "name": "Q production not modified",
+      "passed": true
+    },
+    {
+      "name": "R source artifacts unchanged",
+      "passed": true
+    },
+    {
+      "name": "S freeze is checksum-idempotent",
+      "passed": true
+    }
+  ],
+  "actualGoldSha256": "f59aca76b676d0e54d0899dd23bb3e5c6d5912e71e0597d967a2a722ac8ecfca",
+  "sourceArtifactsUnchanged": true,
+  "freezeIdempotency": true
+}
