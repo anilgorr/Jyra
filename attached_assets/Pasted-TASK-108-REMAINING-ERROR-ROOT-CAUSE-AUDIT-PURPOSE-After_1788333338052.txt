@@ -1,0 +1,622 @@
+TASK #108 — REMAINING ERROR ROOT-CAUSE AUDIT
+
+PURPOSE:
+
+After Tasks #105, #106 and #107, JYRA's frozen-benchmark diagnostic is:
+
+CommercialRole strict accuracy:
+15/18
+
+WHO strict accuracy:
+13/18
+
+POTENTIAL_BUYER precision:
+100%
+
+SELLER_COMPETITOR recall:
+100%
+
+Dangerous competitor → buyer errors:
+0
+
+Remaining first-error distribution:
+
+IDENTITY_RESOLUTION: 1
+COMMERCIAL_ROLE: 2
+PROVIDER_DATA_GAP: 2
+
+All previously dominant defects have been repaired:
+
+INSUFFICIENT_EVIDENCE_HANDLING:
+0
+
+WHO_DECISION_POLICY:
+0
+
+COMPANY_UNDERSTANDING:
+0
+
+ICP_CRITERION_MAPPING:
+0
+
+Task #108 is an AUDIT ONLY.
+
+DO NOT CHANGE CODE.
+DO NOT CHANGE PROMPTS.
+DO NOT CHANGE THRESHOLDS.
+DO NOT ADD PROVIDERS.
+DO NOT FETCH NEW DATA.
+DO NOT MODIFY GOLD.
+DO NOT RUN THE 50-COMPANY REALITY TEST.
+
+The objective is to determine the true cause of the remaining five failures before approving another repair.
+
+==================================================
+1. DATABASE SAFETY
+==================================================
+
+Use development only.
+
+DO NOT:
+
+- modify production
+- migrate production
+- seed production
+- reset production
+- truncate production
+- test against production
+
+No database writes should be required for this task other than optional evaluation artifacts.
+
+==================================================
+2. BENCHMARK CONTAMINATION WARNING
+==================================================
+
+JYRA_MARKET_QUALITY_GOLD_V1 is now a SEEN benchmark.
+
+Its labels may be used for diagnosis.
+
+They MUST NOT be used to:
+
+- tune runtime thresholds
+- create company-specific rules
+- create benchmark-specific exceptions
+- select prompt wording merely because it fixes these companies
+- claim independent generalization
+
+This task is diagnosis only.
+
+==================================================
+3. GOLD INTEGRITY
+==================================================
+
+Verify:
+
+Gold:
+JYRA_MARKET_QUALITY_GOLD_V1
+
+SHA-256:
+
+f59aca76b676d0e54d0899dd23bb3e5c6d5912e71e0597d967a2a722ac8ecfca
+
+HARD FAIL if checksum changed.
+
+==================================================
+4. CURRENT RUN
+==================================================
+
+Use the persisted:
+
+TASK_107_POST_REPAIR_REGRESSION
+
+Do NOT rerun semantic models.
+
+Do NOT recreate outputs with current logic.
+
+Audit the persisted Task #107 stage outputs.
+
+==================================================
+5. IDENTIFY EXACT FIVE REMAINING STRICT FAILURES
+==================================================
+
+Identify all strict records whose first-error is one of:
+
+IDENTITY_RESOLUTION
+COMMERCIAL_ROLE
+PROVIDER_DATA_GAP
+
+Expected counts:
+
+IDENTITY_RESOLUTION = 1
+COMMERCIAL_ROLE = 2
+PROVIDER_DATA_GAP = 2
+
+For every record report:
+
+company
+benchmarkCompanyId
+domainKey
+
+gold CommercialRole
+Task #107 CommercialRole
+
+gold WHO
+Task #107 WHO
+
+identity status
+identity permission
+
+MCI sufficiency
+
+Company Understanding
+
+CommercialRole confidence
+CommercialRole reason
+
+WHO result/reason if present
+
+evidenceIds
+
+first-error class
+
+==================================================
+6. DEEP AUDIT THE TWO COMMERCIAL ROLE FAILURES
+==================================================
+
+The two remaining COMMERCIAL_ROLE failures are especially important.
+
+For each one, answer independently:
+
+A. Was candidate identity reliable?
+
+B. Was Company Understanding genuinely sufficient?
+
+C. Did JYRA understand the candidate's primary commercial activity correctly?
+
+D. Did JYRA understand the seller's specific offering correctly?
+
+E. Was there enough evidence to determine whether the candidate could consume the seller offering?
+
+F. Was there evidence of actual offering overlap?
+
+G. Was there evidence of a complementary vendor relationship?
+
+H. Was there evidence of a partner/channel relationship?
+
+I. Why did CommercialRole remain/wind up incorrect?
+
+J. Was UNKNOWN actually unreasonable from the evidence available at Task #107 time?
+
+This last question is critical.
+
+Do NOT assume gold POTENTIAL_BUYER automatically means JYRA should have been confident enough to classify it from the evidence snapshot.
+
+Distinguish:
+
+GOLD TRUTH:
+what the company actually is relative to the seller
+
+from:
+
+PREDICTION FEASIBILITY:
+whether Task #107 had enough evidence to know that reliably.
+
+==================================================
+7. CLASSIFY EACH COMMERCIAL ROLE FAILURE
+==================================================
+
+Assign exactly one causal subtype to each remaining CommercialRole error:
+
+A. RELATIONSHIP_POLICY_DEFECT
+
+Enough evidence existed, but seller-relative reasoning selected/retained the wrong role.
+
+B. RELATIONSHIP_EVIDENCE_GAP
+
+Identity and basic company understanding were available, but the evidence snapshot did not contain enough information to determine buyer/vendor/partner relationship reliably.
+
+C. COMPANY_UNDERSTANDING_DEFECT
+
+The candidate's business was materially misunderstood.
+
+D. SELLER_OFFERING_INTERPRETATION_DEFECT
+
+The seller offering was misunderstood.
+
+E. CONFIDENCE_CALIBRATION_DEFECT
+
+Correct role was reasonably inferable, but the model/policy abstained because confidence requirements were unnecessarily strict.
+
+F. OTHER
+
+Provide evidence.
+
+Do not classify based only on final gold disagreement.
+
+==================================================
+8. PROVIDER DATA GAP AUDIT
+==================================================
+
+For both PROVIDER_DATA_GAP records determine:
+
+What exact missing fact caused the failure?
+
+Use categories such as:
+
+GEOGRAPHY
+DOMAIN
+PRIMARY_BUSINESS
+PRODUCTS_SERVICES
+BUSINESS_MODEL
+COMPANY_SIZE
+TECHNOLOGY
+OTHER
+
+Then determine whether the missing fact was:
+
+A. already present somewhere in existing captured evidence but not extracted
+
+B. absent from captured evidence but available from an already-integrated provider capability
+
+C. requires a new provider/capability
+
+D. inherently ambiguous / unavailable
+
+This distinction matters.
+
+Do NOT call providers to test it.
+
+Inspect existing stored provider outputs/configuration only.
+
+==================================================
+9. IDENTITY FAILURE AUDIT
+==================================================
+
+For the one IDENTITY_RESOLUTION error determine:
+
+A. why identity failed
+
+B. whether a target domain was available
+
+C. whether a domain could have been deterministically inferred from existing stored evidence
+
+D. whether the failure was due to:
+
+DOMAIN_MISSING
+DOMAIN_CONFLICT
+ENTITY_NAME_AMBIGUITY
+CANONICALIZATION
+PROVIDER_GAP
+OTHER
+
+E. whether fixing it would require:
+
+- deterministic resolver improvement
+- existing-provider fallback
+- new provider
+- user clarification
+- no safe automatic fix
+
+Do not implement.
+
+==================================================
+10. OUTPRO / REVYGO SPECIAL DIAGNOSTIC
+==================================================
+
+If OutPro and RevyGo are the two remaining CommercialRole failures, inspect them carefully.
+
+Do NOT assume they require the same fix.
+
+For each determine:
+
+Task #107 evidence quality
+
+Candidate business understanding
+
+Whether buyer capability was explicit or merely inferable
+
+Why role remained UNKNOWN
+
+Whether a generic policy change would be justified without knowing the gold label
+
+Answer:
+
+"Would we make the same proposed policy change if these company names and gold labels were hidden?"
+
+If NO:
+
+do not recommend a CommercialRole repair based on that case.
+
+==================================================
+11. ERROR INDEPENDENCE
+==================================================
+
+Determine whether the five remaining errors represent:
+
+ONE shared root cause
+
+TWO shared root causes
+
+or
+
+multiple independent residual issues.
+
+Do not force them into one bucket.
+
+==================================================
+12. REPAIR VALUE ESTIMATION
+==================================================
+
+For each possible next repair calculate:
+
+Affected remaining strict errors
+
+Risk to currently correct records
+
+Whether repair is generic
+
+Whether runtime safety could decrease
+
+Whether external provider cost would increase
+
+Implementation scope
+
+Suggested categories:
+
+CommercialRole confidence/abstention policy
+
+Existing-provider evidence extraction
+
+Identity/domain resolution
+
+Provider fallback
+
+Other
+
+==================================================
+13. DO NOT RECOMMEND ACCURACY CHASING
+==================================================
+
+Do NOT recommend a repair merely because it could move:
+
+15/18 → 16/18
+
+or:
+
+13/18 → 14/18
+
+The repair must address a real generic defect.
+
+If the remaining CommercialRole errors are reasonable abstentions given available evidence, SAY SO.
+
+UNKNOWN is preferable to unsupported buyer classification.
+
+==================================================
+14. SAFETY PRIORITY
+==================================================
+
+Current safety metrics are excellent:
+
+POTENTIAL_BUYER precision = 100%
+
+SELLER_COMPETITOR recall = 100%
+
+Dangerous competitor → buyer = 0
+
+Do not recommend weakening abstention thresholds unless evidence strongly supports doing so.
+
+Preserving buyer-quality precision is more important than forcing every company into a role.
+
+==================================================
+15. DECIDE WHETHER ANOTHER REPAIR IS WARRANTED
+==================================================
+
+At the end choose exactly ONE of:
+
+A — COMMERCIAL ROLE REPAIR JUSTIFIED
+
+There remains a genuine generic CommercialRole reasoning/calibration defect.
+
+B — DATA ACQUISITION REPAIR JUSTIFIED
+
+The dominant remaining limitation is evidence/provider coverage.
+
+C — IDENTITY REPAIR JUSTIFIED
+
+Identity resolution is now the highest-value generic bottleneck.
+
+D — NO FURTHER REPAIR ON THIS BENCHMARK
+
+Remaining issues are too heterogeneous or too benchmark-specific. Move to a new unseen validation cohort.
+
+This decision is the main output of Task #108.
+
+==================================================
+16. HOLDOUT READINESS
+==================================================
+
+Also assess whether the current system is ready for a NEW UNSEEN evaluation cohort.
+
+Do NOT run it.
+
+Evaluate based on:
+
+CommercialRole coverage
+WHO coverage
+buyer precision
+competitor recall
+dangerous errors
+remaining abstention rate
+remaining known architectural defects
+
+Choose:
+
+READY_FOR_SMALL_HOLDOUT
+
+or
+
+NOT_READY_FOR_HOLDOUT
+
+A small holdout means approximately 10–20 new companies, not the 50-company Reality Test.
+
+==================================================
+17. ARTIFACTS
+==================================================
+
+Create:
+
+evaluations/jyra-clean-room-v1/TASK_108_REMAINING_ERROR_AUDIT.json
+
+and:
+
+evaluations/jyra-clean-room-v1/TASK_108_REMAINING_ERROR_AUDIT_REPORT.md
+
+Do not modify previous artifacts.
+
+Do not modify gold.
+
+==================================================
+18. FINAL RESPONSE FORMAT
+==================================================
+
+Return:
+
+TASK #108 — REMAINING ERROR AUDIT
+
+Status:
+PASS / FAIL
+
+Gold SHA-256 unchanged:
+YES / NO
+
+Code changes:
+0
+
+Prompt changes:
+0
+
+External provider calls:
+0
+
+Production modified:
+NO
+
+====================
+CURRENT QUALITY
+====================
+
+CommercialRole strict:
+15/18
+
+WHO strict:
+13/18
+
+POTENTIAL_BUYER precision:
+100%
+
+SELLER_COMPETITOR recall:
+100%
+
+Dangerous competitor → buyer:
+0
+
+====================
+REMAINING ERRORS
+====================
+
+Identity:
+<company>
+Cause:
+<cause>
+
+CommercialRole #1:
+<company>
+Subtype:
+<subtype>
+Reason:
+<reason>
+
+CommercialRole #2:
+<company>
+Subtype:
+<subtype>
+Reason:
+<reason>
+
+Provider gap #1:
+<company>
+Missing fact:
+<fact>
+Existing provider can resolve:
+YES / NO / UNKNOWN
+
+Provider gap #2:
+<company>
+Missing fact:
+<fact>
+Existing provider can resolve:
+YES / NO / UNKNOWN
+
+====================
+ROOT-CAUSE CONSOLIDATION
+====================
+
+Shared root causes:
+<analysis>
+
+====================
+NEXT REPAIR DECISION
+====================
+
+Choose exactly one:
+
+A — COMMERCIAL ROLE REPAIR JUSTIFIED
+B — DATA ACQUISITION REPAIR JUSTIFIED
+C — IDENTITY REPAIR JUSTIFIED
+D — NO FURTHER REPAIR ON THIS BENCHMARK
+
+Decision:
+<letter + name>
+
+Why:
+<3–6 sentences>
+
+====================
+IF A/B/C
+====================
+
+Single proposed repair:
+<one bounded generic repair>
+
+Do NOT implement.
+
+====================
+HOLDOUT READINESS
+====================
+
+READY_FOR_SMALL_HOLDOUT
+or
+NOT_READY_FOR_HOLDOUT
+
+Reason:
+<brief explanation>
+
+====================
+ARTIFACTS
+====================
+
+Audit JSON:
+<path>
+
+Audit report:
+<path>
+
+Gold modified:
+NO
+
+Historical runs modified:
+NO
+
+NEXT STEP:
+
+Wait for approval.

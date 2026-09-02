@@ -1,0 +1,344 @@
+{
+  "task": "TASK_108_REMAINING_ERROR_AUDIT",
+  "status": "PASS",
+  "auditedAt": "2026-09-02",
+  "sourceRun": {
+    "artifact": "evaluations/jyra-clean-room-v1/TASK_107_COMMERCIAL_ROLE_REPAIR.json",
+    "task": "TASK_107_POST_REPAIR_REGRESSION",
+    "evaluatedAt": "2026-09-02T07:01:03.823Z",
+    "developmentProjects": [
+      "0fd3a6c3-77c2-4552-a038-60914de92431",
+      "85eb48a7-4792-4376-8fd0-76836c804bfd"
+    ],
+    "auditMethod": "Task #107 summary comparisons were reconciled against immutable FIX08_COMPANY_UNDERSTANDING rows persisted in the Task #107 development projects. No current logic or model was executed.",
+    "persistedStageRows": [
+      {
+        "company": "OutPro",
+        "provenanceRowId": "c6e7edeb-de75-4dab-8597-28b5a33b85bf",
+        "sourceType": "FIX08_COMPANY_UNDERSTANDING",
+        "promptVersion": "fix08-company-understanding-v5",
+        "fingerprint": "bd1943ffdb98cf0ee36710220540ed64c8524a0d5f48ce4545a331f775d0ce51",
+        "rawRole": "POTENTIAL_BUYER",
+        "rawConfidence": 0.62,
+        "unknownReason": "LLM_LOW_CONFIDENCE",
+        "evidenceIds": [
+          "ada76ca1-a14b-48e4-8de6-e96498b23d95"
+        ]
+      },
+      {
+        "company": "RevyGo",
+        "provenanceRowId": "4ed885ec-3db2-4bb5-8ead-ed5a427faa07",
+        "sourceType": "FIX08_COMPANY_UNDERSTANDING",
+        "promptVersion": "fix08-company-understanding-v5",
+        "fingerprint": "4a8de72aa45311440e60ba4d728de07096e1cc3e62511be01704f4361d1b0bc6",
+        "rawRole": "UNKNOWN",
+        "rawConfidence": 0.15,
+        "unknownReason": "GENUINELY_AMBIGUOUS",
+        "evidenceIds": [
+          "3b844d93-bc86-415b-9e0d-357cca69d622"
+        ]
+      }
+    ],
+    "semanticModelsRerun": false
+  },
+  "integrity": {
+    "gold": "JYRA_MARKET_QUALITY_GOLD_V1",
+    "expectedSha256": "f59aca76b676d0e54d0899dd23bb3e5c6d5912e71e0597d967a2a722ac8ecfca",
+    "observedSha256": "f59aca76b676d0e54d0899dd23bb3e5c6d5912e71e0597d967a2a722ac8ecfca",
+    "unchanged": true,
+    "historicalRunsModified": false
+  },
+  "safety": {
+    "auditOnly": true,
+    "codeChanges": 0,
+    "promptChanges": 0,
+    "thresholdChanges": 0,
+    "externalProviderCalls": 0,
+    "productionModified": false,
+    "databaseWrites": 0,
+    "realityTestRun": false
+  },
+  "currentQuality": {
+    "commercialRoleStrict": {
+      "correct": 15,
+      "eligible": 18
+    },
+    "whoStrict": {
+      "correct": 13,
+      "eligible": 18
+    },
+    "potentialBuyerPrecision": 1,
+    "sellerCompetitorRecall": 1,
+    "dangerousCompetitorAsBuyer": 0,
+    "remainingFirstErrors": {
+      "IDENTITY_RESOLUTION": 1,
+      "COMMERCIAL_ROLE": 2,
+      "PROVIDER_DATA_GAP": 2
+    }
+  },
+  "remainingFailures": [
+    {
+      "company": "Leadgeneron",
+      "benchmarkCompanyId": "b45eeee7-aab7-412f-b7e7-4c95c999fa14",
+      "domainKey": "DIGIPUUSH",
+      "domain": "leadgeneron.com",
+      "gold": {
+        "commercialRole": "POTENTIAL_BUYER",
+        "who": "LIKELY_NOT_FIT"
+      },
+      "task107": {
+        "commercialRole": "POTENTIAL_BUYER",
+        "who": "INSUFFICIENT_DATA",
+        "identityStatus": "CONFIRMED",
+        "identityPermission": "ATTRIBUTION_SAFE",
+        "mciSufficiency": "SUFFICIENT",
+        "companyUnderstanding": "AI-enabled sales development and managed SDR services: lead generation, qualification, appointment setting, and IT consulting.",
+        "commercialRoleConfidence": 0.8,
+        "commercialRoleReason": "Leadgeneron's sales-development offering is not a material substitute for DigiPuush's AEO/GEO and AI-visibility services; no stronger vendor or partner relationship was supported.",
+        "whoReason": "ICP_REQUIREMENTS_MISSING",
+        "evidenceIds": [
+          "ac12203a-f23b-430c-8a90-0284487091c9"
+        ]
+      },
+      "firstError": "PROVIDER_DATA_GAP",
+      "providerGapAudit": {
+        "missingFactCategory": "GEOGRAPHY",
+        "exactMissingFactAtDecisionBoundary": "The WHO evaluator did not receive the already-captured New York, United States location needed to fail the mandatory India criterion.",
+        "availability": "ALREADY_PRESENT_NOT_EXTRACTED_OR_ADMITTED",
+        "existingProviderCanResolve": true,
+        "evidence": "Existing captured search evidence already contains New York, NY, company size, and primary-business facts. No provider call or new capability is needed.",
+        "rootCause": "Existing evidence was not extracted/admitted and persisted into the ICP decision input."
+      }
+    },
+    {
+      "company": "Leadzen.ai",
+      "benchmarkCompanyId": "b7e9af09-ede7-46fb-baa1-cf2d9f3158bf",
+      "domainKey": "DIGIPUUSH",
+      "domain": "leadzen.ai",
+      "gold": {
+        "commercialRole": "POTENTIAL_BUYER",
+        "who": "LIKELY_FIT"
+      },
+      "task107": {
+        "commercialRole": "POTENTIAL_BUYER",
+        "who": "INSUFFICIENT_DATA",
+        "identityStatus": "CONFIRMED",
+        "identityPermission": "ATTRIBUTION_SAFE",
+        "mciSufficiency": "SUFFICIENT",
+        "companyUnderstanding": "AI-powered lead-generation and SDR-automation SaaS for outreach, booking, enrichment, and data intelligence.",
+        "commercialRoleConfidence": 0.85,
+        "commercialRoleReason": "Leadzen.ai's demand-generation software is not a material substitute for DigiPuush's AEO/GEO and AI-visibility services; no stronger vendor or partner relationship was supported.",
+        "whoReason": "ICP_REQUIREMENTS_MISSING",
+        "evidenceIds": [
+          "3bff803c-01dd-4625-b6d7-23ab2c324667"
+        ]
+      },
+      "firstError": "PROVIDER_DATA_GAP",
+      "providerGapAudit": {
+        "missingFactCategory": "GEOGRAPHY",
+        "secondaryMissingFactCategory": "PRIMARY_BUSINESS",
+        "exactMissingFactAtDecisionBoundary": "The WHO evaluator did not receive the already-captured Mumbai, Maharashtra, India location and ICP-ready business facts.",
+        "availability": "ALREADY_PRESENT_NOT_EXTRACTED_OR_ADMITTED",
+        "existingProviderCanResolve": true,
+        "evidence": "Existing captured search evidence already contains Mumbai, India, IT Services/SaaS, AI lead-generation products, and data-intelligence facts. Company-size evidence conflicts and should remain uncertain, but it is not the decisive missing fact.",
+        "rootCause": "Existing evidence was not extracted/admitted and persisted into the ICP decision input."
+      }
+    },
+    {
+      "company": "OutPro",
+      "benchmarkCompanyId": "ada76ca1-a14b-48e4-8de6-e96498b23d95",
+      "domainKey": "DIGIPUUSH",
+      "domain": "outpro.us",
+      "gold": {
+        "commercialRole": "POTENTIAL_BUYER",
+        "who": "LIKELY_FIT"
+      },
+      "task107": {
+        "commercialRole": "UNKNOWN",
+        "who": "MISSING_PREDICTION",
+        "identityStatus": "CONFIRMED",
+        "identityPermission": "ATTRIBUTION_SAFE",
+        "mciSufficiency": "SUFFICIENT",
+        "companyUnderstanding": "GTM systems and process consulting for B2B SaaS, focused on people, process, playbook, and pipeline consistency.",
+        "commercialRoleConfidence": 0.62,
+        "rawCommercialRole": "POTENTIAL_BUYER",
+        "commercialRoleReason": "The raw persisted assessment correctly ruled out material substitutability, complementary vendor status, and partnership evidence, then selected POTENTIAL_BUYER. Validation converted it to UNKNOWN because 0.62 was below the unchanged 0.65 acceptance threshold.",
+        "whoReason": "WHO was not run because the accepted CommercialRole was UNKNOWN.",
+        "evidenceIds": [
+          "ada76ca1-a14b-48e4-8de6-e96498b23d95"
+        ]
+      },
+      "firstError": "COMMERCIAL_ROLE",
+      "commercialRoleAudit": {
+        "candidateIdentityReliable": true,
+        "companyUnderstandingGenuinelySufficient": true,
+        "primaryCommercialActivityUnderstoodCorrectly": true,
+        "sellerOfferingUnderstoodCorrectly": true,
+        "enoughEvidenceForBuyerCapability": true,
+        "actualOfferingOverlapEvidence": false,
+        "complementaryVendorEvidence": false,
+        "partnerChannelEvidence": false,
+        "whyIncorrect": "The semantic assessment selected the correct role but confidence missed the global acceptance threshold by 0.03.",
+        "wasUnknownUnreasonable": "It was conservative rather than irrational, but the persisted rationale made POTENTIAL_BUYER reasonably inferable. This single seen case does not justify weakening the global threshold.",
+        "causalSubtype": "CONFIDENCE_CALIBRATION_DEFECT",
+        "hiddenNamesAndLabelsPolicyTest": "NO",
+        "genericPolicyChangeJustified": false
+      }
+    },
+    {
+      "company": "RevyGo",
+      "benchmarkCompanyId": "4233dfdf-a2ac-48de-8347-91759eb415de",
+      "domainKey": "DIGIPUUSH",
+      "domain": "revygo.com",
+      "gold": {
+        "commercialRole": "POTENTIAL_BUYER",
+        "who": "LIKELY_NOT_FIT"
+      },
+      "task107": {
+        "commercialRole": "UNKNOWN",
+        "who": "MISSING_PREDICTION",
+        "identityStatus": "CONFIRMED",
+        "identityPermission": "ATTRIBUTION_SAFE",
+        "mciSufficiency": "SUFFICIENT",
+        "companyUnderstanding": "Unknown. The accepted evidence did not reliably establish RevyGo's primary business and included profile candidates for different or unconfirmed entities.",
+        "commercialRoleConfidence": 0.15,
+        "commercialRoleReason": "The candidate's primary offering could not be established from supplied evidence, so it could not be safely compared with DigiPuush's offering.",
+        "whoReason": "WHO was not run because CommercialRole remained UNKNOWN.",
+        "evidenceIds": [
+          "3b844d93-bc86-415b-9e0d-357cca69d622"
+        ]
+      },
+      "firstError": "COMMERCIAL_ROLE",
+      "commercialRoleAudit": {
+        "candidateIdentityReliable": "The canonical name/domain permission gate passed, but business-profile attribution remained ambiguous.",
+        "companyUnderstandingGenuinelySufficient": false,
+        "primaryCommercialActivityUnderstoodCorrectly": false,
+        "sellerOfferingUnderstoodCorrectly": true,
+        "enoughEvidenceForBuyerCapability": false,
+        "actualOfferingOverlapEvidence": false,
+        "complementaryVendorEvidence": false,
+        "partnerChannelEvidence": false,
+        "whyIncorrect": "The captured relationship evidence did not establish the candidate's primary business. Unrelated or unverified Revvy/Revy AI candidates could not safely support a seller-relative role.",
+        "wasUnknownUnreasonable": false,
+        "causalSubtype": "RELATIONSHIP_EVIDENCE_GAP",
+        "hiddenNamesAndLabelsPolicyTest": "NO",
+        "genericPolicyChangeJustified": false
+      }
+    },
+    {
+      "company": "CData Virtuality",
+      "benchmarkCompanyId": "50ceadee-afc9-41a1-b7c7-f6334e213df8",
+      "domainKey": "MANAGED_SOC",
+      "domain": null,
+      "gold": {
+        "commercialRole": "POTENTIAL_BUYER",
+        "who": "LIKELY_FIT"
+      },
+      "task107": {
+        "commercialRole": "UNKNOWN",
+        "who": "MISSING_PREDICTION",
+        "identityStatus": "UNRESOLVED",
+        "identityPermission": "BLOCKED",
+        "mciSufficiency": "UNSAFE_IDENTITY",
+        "companyUnderstanding": null,
+        "commercialRoleConfidence": null,
+        "commercialRoleReason": "DOMAIN_MISSING",
+        "whoReason": "WHO was not run because identity permission blocked semantic assessment.",
+        "evidenceIds": []
+      },
+      "firstError": "IDENTITY_RESOLUTION",
+      "identityAudit": {
+        "whyIdentityFailed": "No authoritative target domain or verified profile identifier was attached, so the deterministic resolver correctly abstained.",
+        "targetDomainAvailable": false,
+        "deterministicallyInferableFromStoredEvidence": false,
+        "evidence": "Stored evidence suggests cdata.com and historical Data Virtuality documentation/domain relationships, but does not safely select one canonical company domain after acquisition/rebranding.",
+        "failureSubtype": "DOMAIN_MISSING",
+        "requiredFix": "No safe automatic canonical fix from the current snapshot. A resolver may preserve candidate related-entity assertions, but canonical attachment requires independent verification or user clarification."
+      }
+    }
+  ],
+  "rootCauseConsolidation": {
+    "classification": "MULTIPLE_INDEPENDENT_RESIDUAL_ISSUES",
+    "groups": [
+      {
+        "cause": "EXISTING_EVIDENCE_TO_ICP_HANDOFF",
+        "affected": [
+          "Leadgeneron",
+          "Leadzen.ai"
+        ]
+      },
+      {
+        "cause": "COMMERCIAL_ROLE_CONFIDENCE_CALIBRATION",
+        "affected": [
+          "OutPro"
+        ]
+      },
+      {
+        "cause": "RELATIONSHIP_EVIDENCE_GAP",
+        "affected": [
+          "RevyGo"
+        ]
+      },
+      {
+        "cause": "MISSING_CANONICAL_DOMAIN_WITH_RELATED_ENTITY_AMBIGUITY",
+        "affected": [
+          "CData Virtuality"
+        ]
+      }
+    ],
+    "conclusion": "The five failures do not support one common repair. Only the two WHO provider-gap labels share a generic defect."
+  },
+  "repairValueEstimates": [
+    {
+      "category": "Existing-provider evidence extraction",
+      "affectedRemainingStrictErrors": 2,
+      "riskToCurrentlyCorrectRecords": "LOW_TO_MODERATE if limited to explicit, provenance-bound facts",
+      "generic": true,
+      "runtimeSafetyCouldDecrease": false,
+      "externalProviderCostIncrease": false,
+      "implementationScope": "MEDIUM",
+      "recommendation": "Repair extraction/admission and persistence of already-captured explicit geography and primary-business facts into ICP evaluation."
+    },
+    {
+      "category": "CommercialRole confidence/abstention policy",
+      "affectedRemainingStrictErrors": 1,
+      "riskToCurrentlyCorrectRecords": "HIGH relative to value because buyer precision and competitor safety may fall",
+      "generic": false,
+      "runtimeSafetyCouldDecrease": true,
+      "externalProviderCostIncrease": false,
+      "implementationScope": "SMALL_TO_MEDIUM",
+      "recommendation": "Do not change policy or threshold based on this seen benchmark case."
+    },
+    {
+      "category": "Identity/domain resolution",
+      "affectedRemainingStrictErrors": 1,
+      "riskToCurrentlyCorrectRecords": "HIGH if candidates are auto-canonicalized; LOW if verification remains mandatory",
+      "generic": true,
+      "runtimeSafetyCouldDecrease": true,
+      "externalProviderCostIncrease": "POSSIBLE with an existing-provider verification fallback",
+      "implementationScope": "MEDIUM",
+      "recommendation": "Treat as a separate future identity task; never infer a canonical domain from name alone."
+    },
+    {
+      "category": "New provider or provider fallback",
+      "affectedRemainingStrictErrors": 0,
+      "riskToCurrentlyCorrectRecords": "MODERATE",
+      "generic": false,
+      "runtimeSafetyCouldDecrease": true,
+      "externalProviderCostIncrease": true,
+      "implementationScope": "MEDIUM_TO_LARGE",
+      "recommendation": "Not justified because the two provider-gap facts already exist in captured evidence."
+    }
+  ],
+  "nextRepairDecision": {
+    "choice": "B",
+    "name": "DATA ACQUISITION REPAIR JUSTIFIED",
+    "reason": "The only shared generic residual affects two strict records and occurs between already-captured evidence and ICP-ready persisted facts. It requires no new provider and can be bounded to explicit provenance-linked geography and primary-business extraction. The CommercialRole residuals do not justify weakening safe abstention, and the identity failure is independent and unsafe to solve by guessing.",
+    "singleProposedRepair": "Repair the existing evidence-to-ICP extraction, admission, and persistence handoff for explicit provenance-bound geography and primary-business facts; do not add providers or change role/WHO policy.",
+    "implemented": false
+  },
+  "holdoutReadiness": {
+    "status": "NOT_READY_FOR_HOLDOUT",
+    "reason": "CommercialRole safety is strong, but known evidence-to-ICP handoff and domain-identity defects still make WHO and identity coverage untrustworthy. Repair and validate those bounded defects before a 10–20 company unseen cohort."
+  }
+}
