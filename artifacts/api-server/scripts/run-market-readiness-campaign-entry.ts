@@ -208,7 +208,12 @@ for (let iteration = 1; iteration <= args.maxIterations; iteration += 1) {
     );
     const scheduled = await scheduleMarketReadinessWork({ organizationId, projectId, campaignId: campaignId! });
     const advanced = scheduled
-      ? await advanceMarketReadinessWorker({ organizationId, projectId, campaignId: campaignId!, workerId: `market-readiness-runner:${iteration}`, adapter })
+      ? await advanceMarketReadinessWorker({
+          organizationId, projectId, campaignId: campaignId!,
+          workerId: `market-readiness-runner:${iteration}`,
+          leaseMs: 10 * 60_000,
+          adapter,
+        })
       : null;
     [campaign] = await db.select().from(marketReadinessCampaignsTable).where(eq(marketReadinessCampaignsTable.id, campaignId!)).limit(1);
     const [{ count: cohortCountAfter }] = await db.select({
