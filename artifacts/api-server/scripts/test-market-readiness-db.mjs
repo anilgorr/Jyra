@@ -59,6 +59,31 @@ try {
   assert.equal(exactReservation.rows[0].reserved_cents, exactBound);
   await admin.query("update market_readiness_campaigns set paid_cap_cents=10,reserved_cents=0 where id=$1", [campaign]);
 
+  // A discovery settlement performs only the lifecycle transition. It never
+  // creates or dispatches processing work in the same explicit advance.
+  const discoveryCampaign=randomUUID(),discoveryAttempt=randomUUID();
+  await admin.query(`insert into market_readiness_campaigns(id,organization_id,project_id,name,target_count,paid_cap_cents,reserved_cents,created_by,state)
+    values($1,$2,$3,'discovery transition',200,100,1,$4,'DISCOVERING')`,[discoveryCampaign,org,project,userId]);
+  await admin.query(`insert into market_readiness_cohort_items(organization_id,project_id,campaign_id,normalized_domain,source,opaque_review_key)
+    select $1::uuid,$2::uuid,$3::uuid,'discovery-'||n||'.example','DISCOVERY',md5($3::uuid::text||':'||n)
+    from generate_series(1,200) n`,[org,project,discoveryCampaign]);
+  await admin.query(`insert into market_readiness_processing_attempts(id,organization_id,project_id,campaign_id,kind,idempotency_key,state,reserved_cents)
+    values($1,$2,$3,$4,'DISCOVERY','discovery-final','PENDING',1)`,[discoveryAttempt,org,project,discoveryCampaign]);
+  let discoveryCalls=0,processingCalls=0;
+  await helpers.advanceMarketReadinessWorker({
+    organizationId:org,projectId:project,campaignId:discoveryCampaign,workerId:"discovery-transition",
+    adapter:{
+      async discoverNext(){discoveryCalls++;return{spentCents:0};},
+      async processNext(){processingCalls++;throw new Error("must not auto-dispatch processing");},
+    },
+  });
+  const discoveryState=await admin.query(`select state,
+    (select count(*)::int from market_readiness_processing_attempts where campaign_id=$1 and kind='PROCESS') process_attempts
+    from market_readiness_campaigns where id=$1`,[discoveryCampaign]);
+  assert.deepEqual(discoveryState.rows[0],{state:"RUNNING",process_attempts:0});
+  assert.equal(discoveryCalls,1);
+  assert.equal(processingCalls,0);
+
   // Exercise the exported worker's real transaction boundary with a fake
   // adapter only: attempt settlement must happen before snapshot insertion.
   const workerCampaign=randomUUID(),workerItem=randomUUID(),workerAttempt=randomUUID();
@@ -95,13 +120,78 @@ try {
     organizationId:org,projectId:project,campaignId:failureCampaign,workerId:"integration-failure",
     adapter:{
       async discoverNext(){throw new Error("unexpected discovery");},
-      async processNext(){throw new Error("synthetic adapter failure");},
+      async processNext(){throw new helpers.MarketReadinessWorkError("synthetic post-research failure",3);},
     },
-  }),/synthetic adapter failure/);
-  const failureState=await admin.query(`select a.state,a.reserved_cents,c.spent_cents campaign_spent,c.reserved_cents campaign_reserved,
+  }),/synthetic post-research failure/);
+  const failureState=await admin.query(`select a.state,a.spent_cents,a.reserved_cents,c.state campaign_state,c.spent_cents campaign_spent,c.reserved_cents campaign_reserved,
     (select count(*)::int from market_readiness_prediction_snapshots s where s.processing_attempt_id=a.id) snapshot_count
     from market_readiness_processing_attempts a join market_readiness_campaigns c on c.id=a.campaign_id where a.id=$1`,[failureAttempt]);
-  assert.deepEqual(failureState.rows[0],{state:"FAILED",reserved_cents:0,campaign_spent:0,campaign_reserved:0,snapshot_count:0});
+  assert.deepEqual(failureState.rows[0],{state:"FAILED",spent_cents:3,reserved_cents:0,campaign_state:"RUNNING",campaign_spent:3,campaign_reserved:0,snapshot_count:0});
+
+  // Ordinary failures retry only through the explicit service. Pricing calls
+  // compute a fresh bound; no provider operation is dispatched.
+  let retryPricingCalls=0,retryProviderCalls=0;
+  const retryRouter={
+    async finiteEstimatedCostUpperBound(){
+      retryPricingCalls++;
+      return 0.01;
+    },
+    async crawlWebsite(){retryProviderCalls++;throw new Error("must not dispatch");},
+    async searchWeb(){retryProviderCalls++;throw new Error("must not dispatch");},
+    async enrichCompany(){retryProviderCalls++;throw new Error("must not dispatch");},
+  };
+  const firstFailedRetry=await helpers.retryFailedMarketReadinessAttempt({
+    organizationId:org,projectId:project,campaignId:failureCampaign,attemptId:failureAttempt,router:retryRouter,
+  });
+  assert.equal(firstFailedRetry.retried,true);
+  assert.equal(firstFailedRetry.attempt.idempotencyKey,`worker-failure:retry:${failureAttempt}`);
+  assert.equal(firstFailedRetry.attempt.state,"PENDING");
+  assert.equal(firstFailedRetry.attempt.reservedCents,16);
+  assert.equal(retryProviderCalls,0);
+  assert.ok(retryPricingCalls>0);
+  const secondFailedRetry=await helpers.retryFailedMarketReadinessAttempt({
+    organizationId:org,projectId:project,campaignId:failureCampaign,attemptId:failureAttempt,router:retryRouter,
+  });
+  assert.equal(secondFailedRetry.retried,false);
+  assert.equal(secondFailedRetry.attempt.id,firstFailedRetry.attempt.id);
+  assert.equal(retryProviderCalls,0);
+
+  const retryCappedCampaign=randomUUID(),retryCappedItem=randomUUID(),retryCappedAttempt=randomUUID();
+  await admin.query(`insert into market_readiness_campaigns(id,organization_id,project_id,name,paid_cap_cents,spent_cents,created_by,state)
+    values($1,$2,$3,'ordinary retry cap',10,9,$4,'RUNNING')`,[retryCappedCampaign,org,project,userId]);
+  await admin.query(`insert into market_readiness_cohort_items(id,organization_id,project_id,campaign_id,normalized_domain,source,opaque_review_key)
+    values($1,$2,$3,$4,'retry-cap.example','MANUAL',$5)`,[retryCappedItem,org,project,retryCappedCampaign,randomUUID()]);
+  await admin.query(`insert into market_readiness_processing_attempts(id,organization_id,project_id,campaign_id,cohort_item_id,kind,idempotency_key,state,error)
+    values($1,$2,$3,$4,$5,'PROCESS','ordinary-cap','FAILED','ordinary failure')`,
+    [retryCappedAttempt,org,project,retryCappedCampaign,retryCappedItem]);
+  await assert.rejects(helpers.retryFailedMarketReadinessAttempt({
+    organizationId:org,projectId:project,campaignId:retryCappedCampaign,attemptId:retryCappedAttempt,router:retryRouter,
+  }),/CAMPAIGN_HARD_CAP_EXCEEDED/);
+  const retryCappedState=await admin.query(`select reserved_cents,
+    (select count(*)::int from market_readiness_processing_attempts where campaign_id=$1 and idempotency_key=$2) retry_count
+    from market_readiness_campaigns where id=$1`,[retryCappedCampaign,`ordinary-cap:retry:${retryCappedAttempt}`]);
+  assert.deepEqual(retryCappedState.rows[0],{reserved_cents:0,retry_count:0});
+  assert.equal(retryProviderCalls,0);
+
+  const overrunFailureCampaign=randomUUID(),overrunFailureItem=randomUUID(),overrunFailureAttempt=randomUUID();
+  await admin.query(`insert into market_readiness_campaigns(id,organization_id,project_id,name,paid_cap_cents,reserved_cents,created_by,state)
+    values($1,$2,$3,'failed overrun',100,5,$4,'RUNNING')`,[overrunFailureCampaign,org,project,userId]);
+  await admin.query(`insert into market_readiness_cohort_items(id,organization_id,project_id,campaign_id,normalized_domain,source,opaque_review_key)
+    values($1,$2,$3,$4,'failed-overrun.example','MANUAL',$5)`,[overrunFailureItem,org,project,overrunFailureCampaign,randomUUID()]);
+  await admin.query(`insert into market_readiness_processing_attempts(id,organization_id,project_id,campaign_id,cohort_item_id,kind,idempotency_key,state,reserved_cents)
+    values($1,$2,$3,$4,$5,'PROCESS','failed-overrun','PENDING',5)`,[overrunFailureAttempt,org,project,overrunFailureCampaign,overrunFailureItem]);
+  await assert.rejects(helpers.advanceMarketReadinessWorker({
+    organizationId:org,projectId:project,campaignId:overrunFailureCampaign,workerId:"failed-overrun-worker",
+    adapter:{
+      async discoverNext(){throw new Error("unexpected discovery");},
+      async processNext(){throw new helpers.MarketReadinessWorkError("post-research overrun",6);},
+    },
+  }),/post-research overrun/);
+  const overrunFailureState=await admin.query(`select a.state,a.spent_cents,c.state campaign_state,c.spent_cents campaign_spent,c.reserved_cents campaign_reserved
+    from market_readiness_processing_attempts a join market_readiness_campaigns c on c.id=a.campaign_id where a.id=$1`,[overrunFailureAttempt]);
+  assert.deepEqual(overrunFailureState.rows[0],{
+    state:"FAILED",spent_cents:6,campaign_state:"BLOCKED",campaign_spent:6,campaign_reserved:0,
+  });
 
   async function delayedLeaseRace(actualCents) {
     const raceCampaign=randomUUID(),raceItem=randomUUID(),raceAttempt=randomUUID();
@@ -150,6 +240,193 @@ try {
   }
   await delayedLeaseRace(5);
   await delayedLeaseRace(9);
+
+  // Fenced work remains blocked until the explicit resume service is called.
+  // Resume itself only mutates database state and never dispatches an adapter
+  // or consults provider pricing.
+  const fencedCampaign=randomUUID(),fencedItem=randomUUID(),fencedAttempt=randomUUID();
+  await admin.query(`insert into market_readiness_campaigns(id,organization_id,project_id,name,paid_cap_cents,spent_cents,created_by,state)
+    values($1,$2,$3,'explicit fenced resume',20,6,$4,'BLOCKED')`,[fencedCampaign,org,project,userId]);
+  await admin.query(`insert into market_readiness_cohort_items(id,organization_id,project_id,campaign_id,normalized_domain,source,opaque_review_key)
+    values($1,$2,$3,$4,'explicit-resume.example','MANUAL',$5)`,[fencedItem,org,project,fencedCampaign,randomUUID()]);
+  await admin.query(`insert into market_readiness_processing_attempts(id,organization_id,project_id,campaign_id,cohort_item_id,kind,idempotency_key,state,spent_cents,error)
+    values($1,$2,$3,$4,$5,'PROCESS','fenced-original','FAILED',6,'LEASE_EXPIRED_RECONCILIATION_REQUIRED')`,
+    [fencedAttempt,org,project,fencedCampaign,fencedItem]);
+  let resumeProviderCalls=0;
+  const unscheduled=await helpers.scheduleMarketReadinessWork?.({
+    organizationId:org,projectId:project,campaignId:fencedCampaign,
+    router:{
+      async finiteEstimatedCostUpperBound(){resumeProviderCalls++;throw new Error("must not price blocked work");},
+      async estimatedCostBound(){resumeProviderCalls++;throw new Error("must not price blocked work");},
+    },
+  });
+  assert.equal(unscheduled,null,"blocked campaigns never resume implicitly");
+  assert.equal(resumeProviderCalls,0);
+  let fencedState=await admin.query("select state,reserved_cents from market_readiness_campaigns where id=$1",[fencedCampaign]);
+  assert.deepEqual(fencedState.rows[0],{state:"BLOCKED",reserved_cents:0});
+  const firstResume=await helpers.resumeMarketReadinessCampaign({
+    organizationId:org,projectId:project,campaignId:fencedCampaign,
+  });
+  assert.equal(firstResume.resumed,true);
+  assert.equal(firstResume.campaign.state,"RUNNING");
+  assert.equal(firstResume.attempt.idempotencyKey,`fenced-original:retry:${fencedAttempt}`);
+  assert.equal(firstResume.attempt.state,"PENDING");
+  assert.equal(firstResume.attempt.reservedCents,6);
+  assert.equal(resumeProviderCalls,0,"resume never calls a provider");
+  const secondResume=await helpers.resumeMarketReadinessCampaign({
+    organizationId:org,projectId:project,campaignId:fencedCampaign,
+  });
+  assert.equal(secondResume.resumed,false);
+  assert.equal(secondResume.attempt.id,firstResume.attempt.id);
+  const retryRows=await admin.query("select count(*)::int count from market_readiness_processing_attempts where campaign_id=$1 and idempotency_key=$2",
+    [fencedCampaign,`fenced-original:retry:${fencedAttempt}`]);
+  assert.equal(retryRows.rows[0].count,1,"resume is idempotent");
+  fencedState=await admin.query("select state,reserved_cents from market_readiness_campaigns where id=$1",[fencedCampaign]);
+  assert.deepEqual(fencedState.rows[0],{state:"RUNNING",reserved_cents:6});
+
+  // Regression for the operational discovery sequence that exposed an
+  // unexpected BLOCKED campaign: a fenced 29-cent reservation is explicitly
+  // resumed, then three successful attempts spend 11, 10, and 9 cents.  Each
+  // adapter call adds one cohort row and never invokes a real provider.
+  const discoveryRouter={
+    async estimatedCostBound(){return{kind:"priced",upperBound:0.029};},
+  };
+  const sequenceReservation=await helpers.discoveryReservationCents(discoveryRouter,70);
+  assert.ok(Number.isInteger(sequenceReservation)&&sequenceReservation>0);
+  const sequenceCampaign=randomUUID(),sequenceFencedAttempt=randomUUID();
+  await admin.query(`insert into market_readiness_campaigns(id,organization_id,project_id,name,target_count,paid_cap_cents,spent_cents,reserved_cents,created_by,state)
+    values($1,$2,$3,'fenced under-reservation sequence',200,5000,46,$4,$5,'DISCOVERING')`,
+    [sequenceCampaign,org,project,sequenceReservation,userId]);
+  await admin.query(`insert into market_readiness_cohort_items(organization_id,project_id,campaign_id,normalized_domain,source,opaque_review_key)
+    select $1::uuid,$2::uuid,$3::uuid,'sequence-baseline-'||n||'.example','DISCOVERY',md5($3::uuid::text||':baseline:'||n)
+    from generate_series(1,130) n`,[org,project,sequenceCampaign]);
+  await admin.query(`insert into market_readiness_processing_attempts(id,organization_id,project_id,campaign_id,kind,idempotency_key,state,lease_token,lease_expires_at,reserved_cents)
+    values($1,$2,$3,$4,'DISCOVERY','discovery:0','LEASED','expired-sequence-worker',now()-interval '1 second',$5)`,
+    [sequenceFencedAttempt,org,project,sequenceCampaign,sequenceReservation]);
+  let sequenceAdapterCalls=0;
+  const fencedSequence=await helpers.advanceMarketReadinessWorker({
+    organizationId:org,projectId:project,campaignId:sequenceCampaign,workerId:"sequence-fencer",
+    adapter:{
+      async discoverNext(){sequenceAdapterCalls++;throw new Error("fencing must not dispatch");},
+      async processNext(){sequenceAdapterCalls++;throw new Error("fencing must not dispatch");},
+    },
+  });
+  assert.deepEqual(fencedSequence,{claimed:false,fenced:true,attemptId:sequenceFencedAttempt,state:"RECONCILIATION_REQUIRED"});
+  assert.equal(sequenceAdapterCalls,0);
+  let sequenceState=await admin.query("select state,spent_cents,reserved_cents from market_readiness_campaigns where id=$1",[sequenceCampaign]);
+  const spentAfterFence=46+sequenceReservation;
+  assert.deepEqual(sequenceState.rows[0],{state:"BLOCKED",spent_cents:spentAfterFence,reserved_cents:0});
+  const sequenceResume=await helpers.resumeMarketReadinessCampaign({
+    organizationId:org,projectId:project,campaignId:sequenceCampaign,
+  });
+  assert.equal(sequenceResume.attempt.reservedCents,sequenceReservation,"retry preserves the fenced reservation");
+  const requestedSequence=[11,10,9];
+  const actualSequence=requestedSequence.map(cents=>Math.min(cents,sequenceReservation));
+  const settleSequenceAttempt=async(actualCents,index)=>{
+    const active=index===0
+      ? sequenceResume.attempt
+      : await helpers.scheduleMarketReadinessWork({
+        organizationId:org,projectId:project,campaignId:sequenceCampaign,router:discoveryRouter,
+      });
+    assert.equal(active.reservedCents,sequenceReservation,`claim ${index} was reserved at the provider bound`);
+    const result=await helpers.advanceMarketReadinessWorker({
+      organizationId:org,projectId:project,campaignId:sequenceCampaign,workerId:`sequence-worker-${index}`,
+      adapter:{
+        async discoverNext(){
+          sequenceAdapterCalls++;
+          await admin.query(`insert into market_readiness_cohort_items(organization_id,project_id,campaign_id,normalized_domain,source,opaque_review_key)
+            values($1,$2,$3,$4,'DISCOVERY',$5)`,
+            [org,project,sequenceCampaign,`sequence-${index}.example`,randomUUID()]);
+          return{spentCents:actualCents};
+        },
+        async processNext(){throw new Error("unexpected processing");},
+      },
+    });
+    assert.equal(result.state,"SUCCEEDED");
+    const inspection=await admin.query(`select c.state,c.spent_cents,c.reserved_cents,
+      (select count(*)::int from market_readiness_cohort_items where campaign_id=c.id) cohort_count,
+      a.state attempt_state,a.spent_cents attempt_spent,a.reserved_cents attempt_reserved
+      from market_readiness_campaigns c join market_readiness_processing_attempts a on a.id=$2
+      where c.id=$1`,[sequenceCampaign,active.id]);
+    return inspection.rows[0];
+  };
+  let expectedSequenceSpend=spentAfterFence;
+  expectedSequenceSpend+=actualSequence[0];
+  assert.deepEqual(await settleSequenceAttempt(actualSequence[0],0),{
+    state:"DISCOVERING",spent_cents:expectedSequenceSpend,reserved_cents:0,cohort_count:131,
+    attempt_state:"SUCCEEDED",attempt_spent:actualSequence[0],attempt_reserved:0,
+  });
+  expectedSequenceSpend+=actualSequence[1];
+  assert.deepEqual(await settleSequenceAttempt(actualSequence[1],1),{
+    state:"DISCOVERING",spent_cents:expectedSequenceSpend,reserved_cents:0,cohort_count:132,
+    attempt_state:"SUCCEEDED",attempt_spent:actualSequence[1],attempt_reserved:0,
+  });
+  expectedSequenceSpend+=actualSequence[2];
+  assert.deepEqual(await settleSequenceAttempt(actualSequence[2],2),{
+    state:"DISCOVERING",spent_cents:expectedSequenceSpend,reserved_cents:0,cohort_count:133,
+    attempt_state:"SUCCEEDED",attempt_spent:actualSequence[2],attempt_reserved:0,
+  });
+  const sequenceAttempts=await admin.query(`select idempotency_key,state,spent_cents,reserved_cents,error
+    from market_readiness_processing_attempts where campaign_id=$1 order by created_at,id`,[sequenceCampaign]);
+  assert.equal(sequenceAttempts.rowCount,4);
+  assert.equal(new Set(sequenceAttempts.rows.map(row=>row.idempotency_key)).size,4,"discovery and retry keys do not collide");
+  assert.equal(sequenceAttempts.rows.filter(row=>row.error==="LEASE_EXPIRED_RECONCILIATION_REQUIRED").length,1,
+    "the old fenced attempt is reconciled exactly once");
+
+  // The narrow explicit recovery path handles the observed impossible block
+  // only when the latest success is within today's bound and the fenced retry
+  // is already present. It creates no work and calls no provider.
+  await admin.query("update market_readiness_campaigns set state='BLOCKED' where id=$1",[sequenceCampaign]);
+  const notExplicitlyRecovered=await helpers.resumeMarketReadinessCampaign({
+    organizationId:org,projectId:project,campaignId:sequenceCampaign,router:discoveryRouter,
+  });
+  assert.equal(notExplicitlyRecovered.resumed,false);
+  assert.equal(notExplicitlyRecovered.campaign.state,"BLOCKED");
+  const recovered=await helpers.resumeMarketReadinessCampaign({
+    organizationId:org,projectId:project,campaignId:sequenceCampaign,router:discoveryRouter,
+    recoverSucceededAfterFenced:true,
+  });
+  assert.equal(recovered.resumed,true);
+  assert.equal(recovered.campaign.state,"DISCOVERING");
+  assert.equal(recovered.attempt.id,sequenceResume.attempt.id);
+
+  // A genuine provider-bound overrun remains a hard block.
+  const overrunAttempt=await helpers.scheduleMarketReadinessWork({
+    organizationId:org,projectId:project,campaignId:sequenceCampaign,router:discoveryRouter,
+  });
+  assert.equal(overrunAttempt.reservedCents,sequenceReservation);
+  const overrun=await helpers.advanceMarketReadinessWorker({
+    organizationId:org,projectId:project,campaignId:sequenceCampaign,workerId:"sequence-overrun",
+    adapter:{
+      async discoverNext(){return{spentCents:overrunAttempt.reservedCents+1};},
+      async processNext(){throw new Error("unexpected processing");},
+    },
+  });
+  assert.equal(overrun.state,"SUCCEEDED");
+  sequenceState=await admin.query("select state,spent_cents,reserved_cents from market_readiness_campaigns where id=$1",[sequenceCampaign]);
+  assert.deepEqual(sequenceState.rows[0],{
+    state:"BLOCKED",spent_cents:expectedSequenceSpend+sequenceReservation+1,reserved_cents:0,
+  });
+  const refusedOverrunRecovery=await helpers.resumeMarketReadinessCampaign({
+    organizationId:org,projectId:project,campaignId:sequenceCampaign,router:discoveryRouter,
+    recoverSucceededAfterFenced:true,
+  });
+  assert.equal(refusedOverrunRecovery.resumed,false);
+  assert.equal(refusedOverrunRecovery.campaign.state,"BLOCKED");
+
+  const cappedCampaign=randomUUID(),cappedAttempt=randomUUID();
+  await admin.query(`insert into market_readiness_campaigns(id,organization_id,project_id,name,paid_cap_cents,spent_cents,reserved_cents,created_by,state)
+    values($1,$2,$3,'fenced cap refusal',10,7,1,$4,'BLOCKED')`,[cappedCampaign,org,project,userId]);
+  await admin.query(`insert into market_readiness_processing_attempts(id,organization_id,project_id,campaign_id,kind,idempotency_key,state,spent_cents,error)
+    values($1,$2,$3,$4,'DISCOVERY','capped-original','FAILED',3,'LEASE_EXPIRED_RECONCILIATION_REQUIRED')`,
+    [cappedAttempt,org,project,cappedCampaign]);
+  await assert.rejects(helpers.resumeMarketReadinessCampaign({
+    organizationId:org,projectId:project,campaignId:cappedCampaign,
+  }),/CAMPAIGN_HARD_CAP_EXCEEDED/);
+  const cappedState=await admin.query(`select state,reserved_cents,
+    (select count(*)::int from market_readiness_processing_attempts where campaign_id=$1 and idempotency_key=$2) retry_count
+    from market_readiness_campaigns where id=$1`,[cappedCampaign,`capped-original:retry:${cappedAttempt}`]);
+  assert.deepEqual(cappedState.rows[0],{state:"BLOCKED",reserved_cents:1,retry_count:0});
 
   const item = randomUUID(), attempt = randomUUID();
   await admin.query(`insert into market_readiness_cohort_items(id,organization_id,project_id,campaign_id,normalized_domain,source,opaque_review_key)
@@ -225,9 +502,10 @@ try {
     // Persisted-data metric gate: a complete 200-item campaign passes only
     // when strict persisted evaluations—not synthetic rollout defaults—pass.
     const gateCampaign=randomUUID();
-    await admin.query(`insert into market_readiness_campaigns(id,organization_id,project_id,name,target_count,paid_cap_cents,created_by,state)
-      values($1,$2,$3,'persisted gate',200,5000,$4,'REVIEWING')`,[gateCampaign,org,project,userId]);
+    await admin.query(`insert into market_readiness_campaigns(id,organization_id,project_id,name,target_count,paid_cap_cents,reserved_cents,created_by,state)
+      values($1,$2,$3,'persisted gate',200,5000,5,$4,'RUNNING')`,[gateCampaign,org,project,userId]);
     const gateRows=[];
+    let finalGateItem,finalGateAttempt,finalGateEvaluation;
     for(let i=0;i<200;i++){
       const gateItem=randomUUID(),competitor=i<20,buyer=i>=21;
       const gateAttempt=randomUUID();
@@ -239,12 +517,27 @@ try {
         values($1,$2,$3,$4,$5,'MANUAL',$6)`,[gateItem,org,project,gateCampaign,`gate-${i}.example`,randomUUID()]);
       await admin.query(`insert into market_readiness_adjudications(organization_id,project_id,campaign_id,cohort_item_id,adjudicator_id,gold_labels,rationale)
         values($1,$2,$3,$4,$5,$6,'integration')`,[org,project,gateCampaign,gateItem,userId,{role:buyer,who:buyer,buyer,competitor,dangerous:false,identity:true,actionableEvidence:true}]);
-      await admin.query(`insert into market_readiness_processing_attempts(id,organization_id,project_id,campaign_id,cohort_item_id,kind,idempotency_key,state,spent_cents)
-        values($1,$2,$3,$4,$5,'PROCESS',$6,'SUCCEEDED',5)`,[gateAttempt,org,project,gateCampaign,gateItem,`gate-${i}`]);
-      await admin.query(`insert into market_readiness_prediction_snapshots(organization_id,project_id,campaign_id,cohort_item_id,processing_attempt_id,version,predictions)
-        values($1,$2,$3,$4,$5,'JYRA_INTELLIGENCE_V2',$6)`,[org,project,gateCampaign,gateItem,gateAttempt,evaluation]);
+      if(i===199){
+        finalGateItem=gateItem;finalGateAttempt=gateAttempt;finalGateEvaluation=evaluation;
+        await admin.query(`insert into market_readiness_processing_attempts(id,organization_id,project_id,campaign_id,cohort_item_id,kind,idempotency_key,state,reserved_cents)
+          values($1,$2,$3,$4,$5,'PROCESS',$6,'PENDING',5)`,[gateAttempt,org,project,gateCampaign,gateItem,`gate-${i}`]);
+      }else{
+        await admin.query(`insert into market_readiness_processing_attempts(id,organization_id,project_id,campaign_id,cohort_item_id,kind,idempotency_key,state,spent_cents)
+          values($1,$2,$3,$4,$5,'PROCESS',$6,'SUCCEEDED',5)`,[gateAttempt,org,project,gateCampaign,gateItem,`gate-${i}`]);
+        await admin.query(`insert into market_readiness_prediction_snapshots(organization_id,project_id,campaign_id,cohort_item_id,processing_attempt_id,version,predictions)
+          values($1,$2,$3,$4,$5,'JYRA_INTELLIGENCE_V2',$6)`,[org,project,gateCampaign,gateItem,gateAttempt,evaluation]);
+      }
       gateRows.push({gold:{role:buyer,who:buyer,buyer,competitor,dangerous:false,identity:true,actionableEvidence:true},evaluation});
     }
+    await helpers.advanceMarketReadinessWorker({
+      organizationId:org,projectId:project,campaignId:gateCampaign,workerId:"final-processing-transition",
+      adapter:{
+        async discoverNext(){throw new Error("unexpected discovery");},
+        async processNext(){return{spentCents:5,snapshot:{cohortItemId:finalGateItem,version:"JYRA_INTELLIGENCE_V2",evaluation:finalGateEvaluation,evidence:{}}};},
+      },
+    });
+    assert.equal((await admin.query("select state from market_readiness_campaigns where id=$1",[gateCampaign])).rows[0].state,"REVIEWING");
+    assert.equal((await admin.query("select state from market_readiness_processing_attempts where id=$1",[finalGateAttempt])).rows[0].state,"SUCCEEDED");
     const persisted=await admin.query("select cohort_item_id,predictions from market_readiness_prediction_snapshots where campaign_id=$1 order by cohort_item_id",[gateCampaign]);
     assert.equal(persisted.rowCount,200);
     persisted.rows.forEach(row=>helpers.parseMarketReadinessPersistedPrediction(row.predictions));

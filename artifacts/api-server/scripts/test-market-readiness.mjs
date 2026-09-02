@@ -10,6 +10,25 @@ const output = "/tmp/jyra-market-readiness-test.cjs";
 await build({ entryPoints: ["./scripts/market-readiness-test-entry.ts"], outfile: output, bundle: true, format: "cjs", platform: "node" });
 const m = await import(`${pathToFileURL(output).href}?t=${Date.now()}`);
 
+assert.equal(m.resumableMarketReadinessState(199,200),"DISCOVERING");
+assert.equal(m.resumableMarketReadinessState(200,200),"RUNNING");
+assert.doesNotThrow(()=>m.assertOperationalFencedResumeFlags({resumeFenced:false,executePaid:false}));
+assert.doesNotThrow(()=>m.assertOperationalFencedResumeFlags({resumeFenced:true,executePaid:true,campaignId:"campaign"}));
+assert.throws(()=>m.assertOperationalFencedResumeFlags({resumeFenced:true,executePaid:false,campaignId:"campaign"}),/RESUME_FENCED_REQUIRES/);
+assert.throws(()=>m.assertOperationalFencedResumeFlags({resumeFenced:true,executePaid:true}),/RESUME_FENCED_REQUIRES/);
+assert.doesNotThrow(()=>m.assertOperationalFailedRetryFlags({retryFailed:false,executePaid:false}));
+assert.doesNotThrow(()=>m.assertOperationalFailedRetryFlags({retryFailed:true,executePaid:true,campaignId:"campaign"}));
+assert.throws(()=>m.assertOperationalFailedRetryFlags({retryFailed:true,executePaid:false,campaignId:"campaign"}),/RETRY_FAILED_REQUIRES/);
+assert.throws(()=>m.assertOperationalFailedRetryFlags({retryFailed:true,executePaid:true}),/RETRY_FAILED_REQUIRES/);
+assert.equal(m.marketReadinessStateAfterSettlement({state:"DISCOVERING",kind:"DISCOVERY",targetCount:200,cohortCount:199,validSnapshotCount:0,activeAttemptCount:0}),"DISCOVERING");
+assert.equal(m.marketReadinessStateAfterSettlement({state:"DISCOVERING",kind:"DISCOVERY",targetCount:200,cohortCount:200,validSnapshotCount:0,activeAttemptCount:0}),"RUNNING");
+assert.equal(m.marketReadinessStateAfterSettlement({state:"RUNNING",kind:"PROCESS",targetCount:200,cohortCount:200,validSnapshotCount:200,activeAttemptCount:0}),"REVIEWING");
+for(const incomplete of [
+  {cohortCount:199,validSnapshotCount:200,activeAttemptCount:0},
+  {cohortCount:200,validSnapshotCount:199,activeAttemptCount:0},
+  {cohortCount:200,validSnapshotCount:200,activeAttemptCount:1},
+])assert.equal(m.marketReadinessStateAfterSettlement({state:"RUNNING",kind:"PROCESS",targetCount:200,...incomplete}),"RUNNING");
+
 const gold = (overrides = {}) => ({ role: true, who: true, buyer: true, competitor: false, dangerous: false, identity: true, actionableEvidence: true, ...overrides });
 const prediction = (overrides = {}) => ({ role: true, who: true, buyer: true, competitor: false, dangerous: false, identity: true, supported: true, costCents: 10, succeeded: true, ...overrides });
 const rows = Array.from({ length: 100 }, (_, i) => ({ gold: gold({ competitor: i < 10, buyer:i>=10 }), prediction: prediction({ competitor: i < 10, buyer:i>=10 }) }));
@@ -74,6 +93,30 @@ assert.equal(exactProcessingBound, 28);
 assert.deepEqual(m.MARKET_READINESS_V2_PROVIDER_CALL_GRAPH, {
   WEBSITE_CRAWL: 1, COMPANY_FIRMOGRAPHICS: 1, WEB_SEARCH: 4,
 });
+const provider = (id, capabilities, estimatedCost) => ({
+  id, name: id, providerType: "exa", enabled: true, priority: 1,
+  estimatedCost, successRate: 1, averageLatency: 1, qualityScore: 1,
+  configuration: {}, lastSuccessAt: null, lastFailureAt: null, capabilities,
+});
+const discoveryBound = async (providers) => m.discoveryReservationCents(
+  new m.ProviderRouter({ providers, usageWriter: async () => {} }), 200,
+);
+// Lookup is optional when absent, but an enabled zero-price lookup can never
+// be interpreted as free external work.
+assert.equal(await discoveryBound([
+  provider("exa", ["COMPANY_DISCOVERY", "WEB_SEARCH"], 0.007),
+]), 8);
+assert.equal(await discoveryBound([
+  provider("exa", ["COMPANY_DISCOVERY", "WEB_SEARCH"], 0.007),
+  provider("lookup-unpriced", ["COMPANY_LOOKUP"], 0),
+]), null);
+assert.equal(await discoveryBound([
+  provider("web-only", ["WEB_SEARCH"], 0.005),
+]), null);
+// Current Exa configured pricing remains finite: ten possible $0.007 calls.
+assert.equal(await discoveryBound([
+  provider("exa", ["COMPANY_DISCOVERY", "WEB_SEARCH"], 0.007),
+]), 8);
 const persistedPrediction = {
   identityResolved:true,predictedRole:true,predictedWho:true,predictedBuyer:true,predictedCompetitor:false,
   evidenceBacked:true,unsupportedFactsCount:0,unsupportedFacts:false,

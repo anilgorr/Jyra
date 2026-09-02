@@ -692,6 +692,7 @@ export async function resolveCompanyProfileWithRouter(input: {
   for (const [index, query] of queries.entries()) {
     const searchRequest: SearchWebRequest = {
       requestId: `${request.requestId ?? `profile-resolution:${request.companyId ?? request.companyName}`}:search-${index + 1}`,
+      providerAttemptBudget: request.providerAttemptBudget,
       query,
       limit: 10,
       searchDepth: "advanced",

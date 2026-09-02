@@ -4,6 +4,9 @@ export type EvidenceValidationResult =
   | { ok: true; assessment: SellerRelativeAssessmentV2 }
   | { ok: false; errors: string[] };
 
+const CRITERION_ABSTENTION_REASON = "This criterion is unknown because no cited atomic claim has the required evidence type.";
+const WHO_ABSTENTION_REASON = "Structural fit is insufficient because no valid parent WHO evidence remains.";
+
 const ROLE_TYPES = {
   SUPPORTS_ROLE: ["PRIMARY_BUSINESS", "PRODUCT_SERVICE", "OFFERING_OVERLAP"],
   MATERIAL_SUBSTITUTE: ["OFFERING_OVERLAP"],
@@ -11,6 +14,87 @@ const ROLE_TYPES = {
   BUYER_CAPABILITY: ["PRIMARY_BUSINESS", "PRODUCT_SERVICE", "BUSINESS_MODEL", "INDUSTRY", "TECHNOLOGY"],
 } as const;
 const WHO_TYPES = ["ICP_CRITERION", "GEOGRAPHY", "BUSINESS_MODEL", "INDUSTRY", "EMPLOYEE_SIZE", "TECHNOLOGY", "PRIMARY_BUSINESS", "PRODUCT_SERVICE", "OFFERING_OVERLAP"] as const;
+
+/**
+ * Deterministically canonicalizes citation-derived provenance before semantic
+ * validation. Unknown identifiers and ambiguous evidence are rejected rather
+ * than repaired; only known criterion bindings of the wrong configured type
+ * are eligible to be removed.
+ */
+export function normalizeAssessmentEvidenceV2(
+  value: unknown,
+  evidence: EvidenceItemV2[],
+  context: Pick<SellerRelativeContextV2, "icp">,
+): SellerRelativeAssessmentV2 {
+  const assessment = assessmentSchema.parse(value);
+  const evidenceIds = new Set<string>();
+  const claims = new Map<string, EvidenceItemV2["atomicClaims"][number] & { evidenceId: string }>();
+  for (const item of evidence) {
+    if (evidenceIds.has(item.evidenceId)) throw new Error(`duplicate evidenceId: ${item.evidenceId}`);
+    evidenceIds.add(item.evidenceId);
+    for (const claim of item.atomicClaims) {
+      if (claims.has(claim.claimId)) throw new Error(`duplicate claimId: ${claim.claimId}`);
+      claims.set(claim.claimId, { ...claim, evidenceId: item.evidenceId });
+    }
+  }
+  const requirements = Array.isArray(context.icp.requirements)
+    ? context.icp.requirements.map((item) => researchRequirementSchema.parse(item))
+    : [];
+  const byCriterion = new Map(requirements.map((requirement) => [requirement.criterionId, requirement]));
+  const assertResolvable = (path: string, section: {
+    evidenceIds: string[];
+    claimIds: string[];
+    claimBindings: Array<{ claimId: string }>;
+  }) => {
+    if (new Set(section.evidenceIds).size !== section.evidenceIds.length) throw new Error(`${path}.evidenceIds contains duplicate IDs`);
+    if (new Set(section.claimIds).size !== section.claimIds.length) throw new Error(`${path}.claimIds contains duplicate IDs`);
+    if (new Set(section.claimBindings.map((binding) => binding.claimId)).size !== section.claimBindings.length) throw new Error(`${path}.bindings contains duplicate IDs`);
+    for (const id of section.evidenceIds) if (!evidenceIds.has(id)) throw new Error(`${path} cites unknown evidence`);
+    for (const id of section.claimIds) if (!claims.has(id)) throw new Error(`${path} cites unknown claim`);
+    for (const binding of section.claimBindings) if (!claims.has(binding.claimId)) throw new Error(`${path} binding cites unknown claim`);
+  };
+  const canonicalProvenance = (bindings: Array<{ claimId: string }>) => ({
+    claimIds: bindings.map((binding) => binding.claimId),
+    evidenceIds: [...new Set(bindings.map((binding) => claims.get(binding.claimId)!.evidenceId))],
+  });
+
+  assertResolvable("commercialRole", assessment.commercialRole);
+  assertResolvable("who", assessment.who);
+  assessment.who.criteria.forEach((criterion, index) => assertResolvable(`who.criteria.${index}`, criterion));
+
+  assessment.commercialRole = {
+    ...assessment.commercialRole,
+    ...canonicalProvenance(assessment.commercialRole.claimBindings),
+  };
+  const parentBindings = assessment.who.claimBindings;
+  assessment.who = {
+    ...assessment.who,
+    ...(parentBindings.length
+      ? canonicalProvenance(parentBindings)
+      : {
+          value: "INSUFFICIENT_DATA" as const,
+          reason: WHO_ABSTENTION_REASON,
+          evidenceIds: [],
+          claimIds: [],
+          claimBindings: [],
+        }),
+    criteria: assessment.who.criteria.map((criterion) => {
+      const requirement = byCriterion.get(criterion.criterionId);
+      if (!requirement) return criterion;
+      const bindings = criterion.claimBindings.filter((binding) => claims.get(binding.claimId)!.type === requirement.type);
+      if (!bindings.length) return {
+        ...criterion,
+        result: "UNKNOWN" as const,
+        reason: CRITERION_ABSTENTION_REASON,
+        evidenceIds: [],
+        claimIds: [],
+        claimBindings: [],
+      };
+      return { ...criterion, ...canonicalProvenance(bindings), claimBindings: bindings };
+    }),
+  };
+  return assessment;
+}
 
 export function validateAssessmentEvidenceV2(value: unknown, evidence: EvidenceItemV2[], context?: Pick<SellerRelativeContextV2, "icp">): EvidenceValidationResult {
   const parsed = assessmentSchema.safeParse(value);

@@ -4,7 +4,7 @@ import { researchCompanyV2, type ResearchInvokerV2, type ResearchRequestV2 } fro
 import { buildCompanyProfileV2 } from "./build-company-profile";
 import { assessMarketFitV2, type AssessmentInvokerV2 } from "./assess-market-fit";
 import { applySafetyRulesV2 } from "./apply-safety-rules";
-import { validateAssessmentEvidenceV2 } from "./evidence-validator";
+import { normalizeAssessmentEvidenceV2, validateAssessmentEvidenceV2 } from "./evidence-validator";
 import {
   ASSESSMENT_MODEL, ASSESSMENT_POLICY_VERSION, ASSESSMENT_PROMPT_VERSION, INTELLIGENCE_CORE_VERSION,
   evidenceItemSchema, sellerRelativeContextSchema, type CompanyIntelligenceProfileV2, type EvidenceItemV2, type FinalAssessmentV2,
@@ -66,7 +66,7 @@ export function deriveResearchRequirementsV2(context: SellerRelativeContextV2) {
 
 const inFlightRuns = new Map<string, Promise<IntelligenceV2Result>>();
 
-function validateScopedEvidence(items: EvidenceItemV2[], request: { organizationId: string; projectId: string; companyId: string }, source: string) {
+export function validateScopedEvidence(items: EvidenceItemV2[], request: { organizationId: string; projectId: string; companyId: string }, source: string) {
   const evidenceIds = new Set<string>();
   const claimIds = new Set<string>();
   for (const item of items) {
@@ -87,7 +87,8 @@ export async function orchestrateIntelligenceV2(input: {
   request: ResearchRequestV2 & { source: string; firstPartyEvidence: EvidenceItemV2[]; contradictoryEvidence?: EvidenceItemV2[] };
   context: SellerRelativeContextV2; repository: IntelligenceV2Repository;
   researchInvoker: ResearchInvokerV2; assessmentInvoker?: AssessmentInvokerV2; now?: Date;
-  maxExternalResearchCalls?: number;
+  maxExternalResearchCalls?: number; assessmentTimeoutMs?: number;
+  onSemanticAttemptStart?: () => void; onSemanticCost?: (cost: number) => void;
 }): Promise<IntelligenceV2Result> {
   const key = fingerprintV2({ organizationId: input.request.organizationId, projectId: input.request.projectId, companyId: input.request.companyId,
     domain: input.request.domain, sourceEvidence: input.request.firstPartyEvidence.map(({ evidenceId, version }) => ({ evidenceId, version })),
@@ -104,7 +105,8 @@ async function orchestrateIntelligenceV2Internal(input: {
   request: ResearchRequestV2 & { source: string; firstPartyEvidence: EvidenceItemV2[]; contradictoryEvidence?: EvidenceItemV2[] };
   context: SellerRelativeContextV2; repository: IntelligenceV2Repository;
   researchInvoker: ResearchInvokerV2; assessmentInvoker?: AssessmentInvokerV2; now?: Date;
-  maxExternalResearchCalls?: number;
+  maxExternalResearchCalls?: number; assessmentTimeoutMs?: number;
+  onSemanticAttemptStart?: () => void; onSemanticCost?: (cost: number) => void;
 }): Promise<IntelligenceV2Result> {
   const started = Date.now();
   sellerRelativeContextSchema.parse(input.context);
@@ -163,9 +165,18 @@ async function orchestrateIntelligenceV2Internal(input: {
   let modelCalls = 0;
   let semanticAttempts: IntelligenceV2Result["observability"]["semanticAttempts"] = [];
   if (!semantic) {
-    const result = await assessMarketFitV2({ context: input.context, profile, evidence: allEvidence, invoke: input.assessmentInvoker });
+    const result = await assessMarketFitV2({
+      context: input.context, profile, evidence: allEvidence,
+      invoke: input.assessmentInvoker, timeoutMs: input.assessmentTimeoutMs,
+      onAttemptStart: input.onSemanticAttemptStart, onCost: input.onSemanticCost,
+    });
     semantic = result.assessment; usage = result.usage; modelCost = result.cost; modelCalls = result.modelCalls; semanticAttempts = result.attempts;
     await input.repository.putAssessment(assessmentFingerprint, semantic);
+  }
+  try {
+    semantic = normalizeAssessmentEvidenceV2(semantic, allEvidence, input.context);
+  } catch (error) {
+    throw new Error(`V2_CACHED_ASSESSMENT_INVALID: ${error instanceof Error ? error.message : String(error)}`, { cause: error });
   }
   const semanticValidation = validateAssessmentEvidenceV2(semantic, allEvidence, input.context);
   if (!semanticValidation.ok) throw new Error(`V2_CACHED_ASSESSMENT_INVALID: ${semanticValidation.errors.join("; ")}`);

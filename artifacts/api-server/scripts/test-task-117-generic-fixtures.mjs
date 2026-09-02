@@ -156,6 +156,42 @@ test("Identity", "10 normal exact-domain identity resolves", async () => {
   });
   const real = await crawl({ url: "https://generic.example/about", title: null, text: "Welcome to Generic, where our company builds software." });
   focused("titleless real-content brand resolves", () => assert.equal(resolved(real.evidence).status, "RESOLVED"));
+  const multiPage = await v2.createProviderRouterResearchInvokerV2({ crawlWebsite: async () => ({
+    status: "success", providerId: "fixture-router", providerRequestId: "shared-crawl-request",
+    data: { pages: [
+      { url: "https://generic.example/about", title: "About", text: "Generic Company builds software." },
+      { url: "https://generic.example/products", title: "Products", text: "Generic Company sells analytics." },
+    ] },
+    sources: [], usage: { estimatedCost: 0, actualCost: 0, latencyMs: 0, runtimeMs: 0, resultCount: 2 },
+    error: null, retryable: false, capturedAt: "2026-01-01T00:00:00.000Z", metadata: {},
+  }) })({ source: "FIRST_PARTY", capability: "WEBSITE_CRAWL", external: true }, {
+    organizationId: "org-a", projectId: "project-a", companyId: "company-generic", companyName: "Generic Company", domain: "generic.example",
+  });
+  focused("multi-page response has globally unique deterministic claim IDs", () => {
+    const claimIds = multiPage.evidence.flatMap((item) => item.atomicClaims.map((claim) => claim.claimId));
+    assert.equal(new Set(claimIds).size, claimIds.length);
+    assert.doesNotThrow(() => v2.validateScopedEvidence(multiPage.evidence, {
+      organizationId: "org-a", projectId: "project-a", companyId: "company-generic",
+    }, "multi-page-fixture"));
+  });
+  const multiResult = await v2.createProviderRouterResearchInvokerV2({ searchWeb: async () => ({
+    status: "success", providerId: "fixture-search", providerRequestId: "shared-search-request",
+    data: { results: [
+      { url: "https://generic.example/one", title: "One", snippet: "Generic Company builds software." },
+      { url: "https://generic.example/two", title: "Two", snippet: "Generic Company sells analytics." },
+    ] },
+    sources: [], usage: { estimatedCost: 0, actualCost: 0, latencyMs: 0, runtimeMs: 0, resultCount: 2 },
+    error: null, retryable: false, capturedAt: "2026-01-01T00:00:00.000Z", metadata: {},
+  }) })({ source: "WEB_SEARCH", capability: "WEB_SEARCH", external: true }, {
+    organizationId: "org-a", projectId: "project-a", companyId: "company-generic", companyName: "Generic Company", domain: "generic.example",
+  });
+  focused("multi-result search has globally unique claim IDs", () => {
+    const claimIds = multiResult.evidence.flatMap((item) => item.atomicClaims.map((claim) => claim.claimId));
+    assert.equal(new Set(claimIds).size, claimIds.length);
+    assert.doesNotThrow(() => v2.validateScopedEvidence(multiResult.evidence, {
+      organizationId: "org-a", projectId: "project-a", companyId: "company-generic",
+    }, "multi-result-fixture"));
+  });
   const attested = await crawl({ url: "https://generic.example/about", title: null, text: "Welcome to Generic, where our company builds software." }, { completenessAttestations: [{
     requirementId: "no-prohibited-service", absentValue: "prohibited service", capability: "WEBSITE_CRAWL",
     sourceEvidenceIds: [real.evidence[0].evidenceId], captureResult: "EXHAUSTIVE_COMPLETE",
@@ -317,6 +353,89 @@ test("Safety", "23 all overrides produce valid final provenance", () => {
   const unsupportedFinal = v2.applySafetyRulesV2({ profile: p, assessment: unsupported, fingerprint: "fp" });
   const { resolutionType: _r2, deterministicOverrides: _d2, safetyOverrideMetadata: _m2, fingerprint: _f2, ...unsupportedSemantic } = unsupportedFinal;
   assert.equal(v2.validateAssessmentEvidenceV2(unsupportedSemantic, [item], mandatoryContext).ok, true);
+});
+
+const geoRequirement = { criterionId: "geo", type: "GEOGRAPHY", operator: "EQUALS", value: "TARGET", mandatory: true, exclusion: false, preferred: false };
+const criterionResponse = (citations) => {
+  const content = compactResponse();
+  content.who.criteria = [{
+    criterionId: "geo", result: "PASS", confidence: .8,
+    reason: "The cited claim satisfies the configured geography criterion.", citations,
+  }];
+  return content;
+};
+test("Citation normalization", "24 wrong-type-only criterion deterministically abstains", async () => {
+  const item = evidence({ primaryBusiness: "B2B SaaS", geography: [{ type: "HEADQUARTERS", value: "TARGET" }] });
+  const result = await v2.assessMarketFitV2({
+    context: context("icp-v1", [geoRequirement]), profile: profile([item]), evidence: [item],
+    invoke: async () => ({ content: criterionResponse([{ claimId: "claim-business", relation: "SATISFIES_CRITERION" }]) }),
+  });
+  assert.equal(result.modelCalls, 1);
+  assert.equal(result.assessment.who.criteria[0].result, "UNKNOWN");
+  assert.deepEqual(result.assessment.who.criteria[0].claimBindings, []);
+  assert.deepEqual(result.assessment.who.criteria[0].claimIds, []);
+  assert.deepEqual(result.assessment.who.criteria[0].evidenceIds, []);
+  assert.match(result.assessment.who.criteria[0].reason, /required evidence type/);
+});
+test("Citation normalization", "25 mixed valid and wrong-type criterion keeps only exact type", async () => {
+  const item = evidence({ primaryBusiness: "B2B SaaS", geography: [{ type: "HEADQUARTERS", value: "TARGET" }] });
+  const result = await v2.assessMarketFitV2({
+    context: context("icp-v1", [geoRequirement]), profile: profile([item]), evidence: [item],
+    invoke: async () => ({ content: criterionResponse([
+      { claimId: "claim-business", relation: "SATISFIES_CRITERION" },
+      { claimId: "claim-geo-0", relation: "SATISFIES_CRITERION" },
+    ]) }),
+  });
+  assert.equal(result.assessment.who.criteria[0].result, "PASS");
+  assert.deepEqual(result.assessment.who.criteria[0].claimIds, ["claim-geo-0"]);
+  assert.deepEqual(result.assessment.who.criteria[0].evidenceIds, [ids[0]]);
+  assert.deepEqual(result.assessment.who.criteria[0].claimBindings.map((binding) => binding.claimId), ["claim-geo-0"]);
+});
+test("Citation normalization", "26 unknown criterion claim remains a hard error after two attempts", async () => {
+  const item = evidence({ primaryBusiness: "B2B SaaS", geography: [{ type: "HEADQUARTERS", value: "TARGET" }] });
+  let calls = 0;
+  await assert.rejects(v2.assessMarketFitV2({
+    context: context("icp-v1", [geoRequirement]), profile: profile([item]), evidence: [item],
+    invoke: async () => {
+      calls++;
+      return { content: criterionResponse([{ claimId: "unknown-criterion-claim", relation: "SATISFIES_CRITERION" }]) };
+    },
+  }), (error) => error.code === "V2_ASSESSMENT_INVALID" && /unknown cited claimId/.test(error.message));
+  assert.equal(calls, 2);
+});
+test("Cache/Citation normalization", "27 cached wrong-type criterion is normalized before validation", async () => {
+  const item = evidence({ primaryBusiness: "B2B SaaS", geography: [{ type: "HEADQUARTERS", value: "TARGET" }] });
+  const cached = assessment("POTENTIAL_BUYER", "POSSIBLE_FIT");
+  cached.commercialRole.claimBindings[0].claimedValue = "B2B SaaS";
+  cached.who.claimBindings[0].claimedValue = "B2B SaaS";
+  cached.who.criteria = [{
+    criterionId: "geo", description: "GEOGRAPHY EQUALS TARGET", mandatory: true, result: "PASS", confidence: .8,
+    reason: "Wrong type.", evidenceIds: [ids[0]], claimIds: ["claim-business"],
+    claimBindings: [{ claimId: "claim-business", claimedValue: "B2B SaaS", purpose: "geo", relation: "SATISFIES_CRITERION" }],
+  }];
+  class WrongTypeAssessmentCache extends v2.InMemoryIntelligenceV2Repository {
+    async getAssessment() { return structuredClone(cached); }
+  }
+  const result = await run([item], null, new WrongTypeAssessmentCache(), "icp-v1", {}, [geoRequirement]);
+  assert.equal(result.observability.cache.assessment, true);
+  assert.equal(result.observability.modelCalls, 0);
+  assert.equal(result.assessment.who.criteria[0].result, "UNKNOWN");
+  assert.deepEqual(result.assessment.who.criteria[0].claimBindings, []);
+});
+test("Safety/Citation normalization", "28 normalized assessment remains valid after safety override", () => {
+  const item = evidence({ primaryBusiness: "B2B SaaS", geography: [{ type: "HEADQUARTERS", value: "TARGET" }] });
+  const semantic = assessment("POTENTIAL_BUYER", "LIKELY_FIT");
+  semantic.commercialRole.claimBindings[0].claimedValue = "B2B SaaS";
+  semantic.who.claimBindings[0].claimedValue = "B2B SaaS";
+  semantic.who.criteria = [{
+    criterionId: "geo", description: "GEOGRAPHY EQUALS TARGET", mandatory: true, result: "PASS", confidence: .8,
+    reason: "Wrong type.", evidenceIds: [ids[0]], claimIds: ["claim-business"],
+    claimBindings: [{ claimId: "claim-business", claimedValue: "B2B SaaS", purpose: "geo", relation: "SATISFIES_CRITERION" }],
+  }];
+  const normalized = v2.normalizeAssessmentEvidenceV2(semantic, [item], context("icp-v1", [geoRequirement]));
+  const final = v2.applySafetyRulesV2({ profile: { ...profile([item]), identity: { ...profile([item]).identity, status: "IDENTITY_UNCERTAIN" } }, assessment: normalized, fingerprint: "fp" });
+  const { resolutionType, deterministicOverrides, safetyOverrideMetadata, fingerprint, ...finalSemantic } = final;
+  assert.equal(v2.validateAssessmentEvidenceV2(finalSemantic, [item], context("icp-v1", [geoRequirement])).ok, true);
 });
 
 for (const item of tests) await item.fn();

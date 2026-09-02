@@ -15,6 +15,7 @@ await build({
 const require = createRequire(import.meta.url);
 const {
   ProviderRouter,
+  ProviderAttemptBudget,
   redactProviderMetadata,
   createApifyAdapters,
   createMockJobSearchAdapter,
@@ -189,7 +190,7 @@ const mismatchedRouter = new ProviderRouter({
 const mismatched = await mismatchedRouter.searchWeb({ query: "wrong capability" });
 assert.equal(mismatched.status, "failed");
 assert.equal(mismatched.error.code, "ADAPTER_NOT_REGISTERED");
-assert.equal(mismatchedUsage.length, 1);
+assert.equal(mismatchedUsage.length, 0);
 
 const persistenceFailureRouter = new ProviderRouter({
   providers: [provider({ id: "usage-failure" })],
@@ -383,5 +384,113 @@ await cappedRouter.searchWeb({
   metadata: { routingRole: "PRIMARY", maxProviderAttempts: "1" },
 });
 assert.deepEqual(cappedCalls, ["tavily-first"], "adaptive stages must never waterfall across multiple same-role providers");
+
+// One shared token bounds physical execute calls and usage writes, including
+// fallback, thrown adapters, mixed capabilities, and concurrent routes.
+const hardBudget = new ProviderAttemptBudget(1);
+const hardUsage = [];
+let hardExecutes = 0;
+const hardRouter = new ProviderRouter({
+  providers: [
+    provider({ id: "hard-primary", priority: 1 }),
+    provider({ id: "hard-fallback", priority: 2 }),
+  ],
+  adapters: ["hard-primary", "hard-fallback"].map((providerId) => ({
+    providerId,
+    capabilities: ["WEB_SEARCH"],
+    execute: async (request) => {
+      hardExecutes += 1;
+      return retryableFailure(providerId)(request);
+    },
+  })),
+  usageWriter: async () => {},
+  usageObserver: async (record) => hardUsage.push(record),
+});
+const hardResult = await hardRouter.searchWeb({
+  query: "hard physical budget",
+  providerAttemptBudget: hardBudget,
+});
+assert.equal(hardResult.error.code, "PROVIDER_ATTEMPT_BUDGET_EXHAUSTED");
+assert.equal(hardExecutes, 1);
+assert.equal(hardUsage.length, 1);
+assert.equal(hardBudget.consumed, 1);
+assert.equal(hardBudget.remaining, 0);
+
+const concurrentBudget = new ProviderAttemptBudget(3);
+const concurrentUsage = [];
+let concurrentExecutes = 0;
+const successfulAdapter = (providerId, capability) => ({
+  providerId,
+  capabilities: [capability],
+  execute: async (request) => {
+    concurrentExecutes += 1;
+    await Promise.resolve();
+    return {
+      status: "success", providerId, providerRequestId: request.requestId,
+      data: capability === "WEB_SEARCH" ? { results: [] } : { jobs: [] },
+      sources: [],
+      usage: { estimatedCost: 0.01, actualCost: 0.01, latencyMs: 0, runtimeMs: 0, resultCount: 0 },
+      error: null, retryable: false, capturedAt: new Date().toISOString(),
+    };
+  },
+});
+const concurrentRouter = new ProviderRouter({
+  providers: [
+    provider({ id: "mixed-web", capabilities: ["WEB_SEARCH"] }),
+    provider({ id: "mixed-jobs", capabilities: ["JOB_SEARCH"] }),
+  ],
+  adapters: [
+    successfulAdapter("mixed-web", "WEB_SEARCH"),
+    successfulAdapter("mixed-jobs", "JOB_SEARCH"),
+  ],
+  usageWriter: async (record) => concurrentUsage.push(record),
+});
+const concurrentResults = await Promise.all([
+  ...Array.from({ length: 5 }, (_, index) => concurrentRouter.searchWeb({
+    query: `concurrent-${index}`, providerAttemptBudget: concurrentBudget,
+  })),
+  ...Array.from({ length: 5 }, () => concurrentRouter.getJobs({
+    companyName: "Concurrent", providerAttemptBudget: concurrentBudget,
+  })),
+]);
+assert.equal(concurrentExecutes, 3);
+assert.equal(concurrentUsage.length, 3);
+assert.equal(concurrentBudget.consumed, 3);
+assert.equal(concurrentResults.filter((result) =>
+  result.error?.code === "PROVIDER_ATTEMPT_BUDGET_EXHAUSTED").length, 7);
+
+const throwBudget = new ProviderAttemptBudget(2);
+const throwUsage = [];
+let throwExecutes = 0;
+const throwRouter = new ProviderRouter({
+  providers: [
+    provider({ id: "throw-first", priority: 1 }),
+    provider({ id: "throw-second", priority: 2 }),
+    provider({ id: "throw-third", priority: 3 }),
+  ],
+  adapters: ["throw-first", "throw-second", "throw-third"].map((providerId) => ({
+    providerId,
+    capabilities: ["WEB_SEARCH"],
+    execute: async () => {
+      throwExecutes += 1;
+      throw { code: "TIMEOUT", message: "timed out", retryable: true };
+    },
+  })),
+  usageWriter: async (record) => throwUsage.push(record),
+});
+const throwResult = await throwRouter.searchWeb({
+  query: "throwing waterfall", providerAttemptBudget: throwBudget,
+});
+assert.equal(throwResult.error.code, "PROVIDER_ATTEMPT_BUDGET_EXHAUSTED");
+assert.equal(throwExecutes, 2);
+assert.equal(throwUsage.length, 2);
+
+const noProviderBudget = new ProviderAttemptBudget(2);
+const noProviderResult = await new ProviderRouter({
+  providers: [],
+  usageWriter: async () => assert.fail("no-provider route must not write usage"),
+}).searchWeb({ query: "none", providerAttemptBudget: noProviderBudget });
+assert.equal(noProviderResult.error.code, "NO_PROVIDER");
+assert.equal(noProviderBudget.consumed, 0);
 
 console.log("Provider router tests passed.");

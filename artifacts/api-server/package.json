@@ -106,6 +106,7 @@
            ,"test:task-117-route-isolation": "node ./scripts/test-task-117-route-isolation.mjs"
             ,"test:market-readiness": "node ./scripts/test-market-readiness.mjs"
             ,"test:market-readiness:db": "NODE_ENV=development node ./scripts/test-market-readiness-db.mjs"
+             ,"run:market-readiness-campaign": "node ./scripts/run-market-readiness-campaign.mjs"
            ,"probe:task-117-live-semantic": "NODE_ENV=development node ./scripts/run-task-117-live-semantic-probe.mjs"
          ,"integration:task-113-identity-bootstrap": "NODE_ENV=development JYRA_TASK_113_INTEGRATION=YES node ./scripts/run-task-113-identity-bootstrap-integration.mjs"
           ,"regression:task-109-evidence-to-icp": "NODE_ENV=development JYRA_TASK_109_POST_REPAIR_REGRESSION=YES node ./scripts/run-task-109-evidence-to-icp-regression.mjs"

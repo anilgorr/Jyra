@@ -121,6 +121,7 @@ function providerEvidence(input: {
   sourceType: string; url: string | null; title: string | null; snippet: string; firstParty: boolean;
   claims?: EvidenceItemV2["claims"];
 }): EvidenceItemV2 {
+  const evidenceId = fingerprintV2({ provider: input.provider, providerRequestId: input.providerRequestId, url: input.url, snippet: input.snippet });
   const fetchedContent = `${input.title ?? ""} ${input.snippet}`;
   const brandFragment = input.request.companyName.split(/\s+/).filter((part) => part.length >= 4)
     .map((part) => {
@@ -135,22 +136,22 @@ function providerEvidence(input: {
     } catch { return false; }
   })() : false;
   return evidenceItemSchema.parse({
-    evidenceId: fingerprintV2({ provider: input.provider, providerRequestId: input.providerRequestId, url: input.url, snippet: input.snippet }),
+    evidenceId,
     organizationId: input.request.organizationId, companyId: input.request.companyId, projectId: input.request.projectId, sourceType: input.sourceType,
     provider: input.provider, url: input.url, finalUrl: input.url, title: input.title || "Untitled fetched page",
     observedAt: input.capturedAt, rawSnippet: input.snippet.slice(0, 4000), firstParty: input.firstParty,
     confidence: input.firstParty ? .9 : .75, version: input.providerRequestId,
     atomicClaims: [
       ...(finalHostMatches && brandFragment
-        ? [{ claimId: `${input.providerRequestId}:brand`, type: "BRAND_MATCH" as const, value: brandFragment }] : []),
-      ...(input.claims?.primaryBusiness ? [{ claimId: `${input.providerRequestId}:business`, type: "PRIMARY_BUSINESS" as const, value: input.claims.primaryBusiness }] : []),
-      ...(input.claims?.productsServices ?? []).map((value, i) => ({ claimId: `${input.providerRequestId}:product:${i}`, type: "PRODUCT_SERVICE" as const, value })),
-      ...(input.claims?.offeringOverlapFacts ?? []).map((value, i) => ({ claimId: `${input.providerRequestId}:overlap:${i}`, type: "OFFERING_OVERLAP" as const, value })),
-      ...(input.claims?.geography ?? []).map((claim, i) => ({ claimId: `${input.providerRequestId}:geography:${i}`, type: "GEOGRAPHY" as const, value: claim.value, geographyType: claim.type })),
-      ...(input.claims?.businessModel ? [{ claimId: `${input.providerRequestId}:model`, type: "BUSINESS_MODEL" as const, value: input.claims.businessModel }] : []),
-      ...(input.claims?.industry ? [{ claimId: `${input.providerRequestId}:industry`, type: "INDUSTRY" as const, value: input.claims.industry }] : []),
-      ...(input.claims?.employeeSize ? [{ claimId: `${input.providerRequestId}:employees`, type: "EMPLOYEE_SIZE" as const, value: input.claims.employeeSize }] : []),
-      ...(input.claims?.technologyFacts ?? []).map((claim, i) => ({ claimId: `${input.providerRequestId}:technology:${i}`, type: "TECHNOLOGY" as const, value: claim.value })),
+        ? [{ claimId: `${evidenceId}:brand`, type: "BRAND_MATCH" as const, value: brandFragment }] : []),
+      ...(input.claims?.primaryBusiness ? [{ claimId: `${evidenceId}:business`, type: "PRIMARY_BUSINESS" as const, value: input.claims.primaryBusiness }] : []),
+      ...(input.claims?.productsServices ?? []).map((value, i) => ({ claimId: `${evidenceId}:product:${i}`, type: "PRODUCT_SERVICE" as const, value })),
+      ...(input.claims?.offeringOverlapFacts ?? []).map((value, i) => ({ claimId: `${evidenceId}:overlap:${i}`, type: "OFFERING_OVERLAP" as const, value })),
+      ...(input.claims?.geography ?? []).map((claim, i) => ({ claimId: `${evidenceId}:geography:${i}`, type: "GEOGRAPHY" as const, value: claim.value, geographyType: claim.type })),
+      ...(input.claims?.businessModel ? [{ claimId: `${evidenceId}:model`, type: "BUSINESS_MODEL" as const, value: input.claims.businessModel }] : []),
+      ...(input.claims?.industry ? [{ claimId: `${evidenceId}:industry`, type: "INDUSTRY" as const, value: input.claims.industry }] : []),
+      ...(input.claims?.employeeSize ? [{ claimId: `${evidenceId}:employees`, type: "EMPLOYEE_SIZE" as const, value: input.claims.employeeSize }] : []),
+      ...(input.claims?.technologyFacts ?? []).map((claim, i) => ({ claimId: `${evidenceId}:technology:${i}`, type: "TECHNOLOGY" as const, value: claim.value })),
     ], claims: input.claims,
   });
 }
@@ -159,7 +160,10 @@ function providerEvidence(input: {
  * provider selection outside business logic. */
 export function createProviderRouterResearchInvokerV2(
   router: Pick<ProviderOperations, "lookupCompany" | "enrichCompany" | "searchWeb" | "resolveCompanyProfile" | "crawlWebsite">,
-  configuration: { trustedCompletenessProviderIds?: readonly string[]; maxProviderAttempts?: number; maxResults?: number } = {},
+  configuration: {
+    trustedCompletenessProviderIds?: readonly string[]; maxProviderAttempts?: number; maxResults?: number;
+    onProviderCost?: (cost: number) => void;
+  } = {},
 ): ResearchInvokerV2 {
   return async (step, request) => {
     const metadata = {
@@ -171,6 +175,7 @@ export function createProviderRouterResearchInvokerV2(
     if (step.capability === "WEBSITE_CRAWL") {
       if (!request.domain) return { provider: "router", evidence: [], status: "EMPTY" };
       const response = await router.crawlWebsite({ url: `https://${request.domain}`, metadata });
+      configuration.onProviderCost?.(providerCost(response));
       const pages = response.data?.pages?.length ? response.data.pages : response.data?.page ? [response.data.page] : [];
       const result: ResearchStepResultV2 = {
         provider: response.providerId, cost: providerCost(response), status: response.status === "failed" ? "FAILED" : pages.length ? "USED" : "EMPTY",
@@ -203,6 +208,7 @@ export function createProviderRouterResearchInvokerV2(
     if (step.capability === "COMPANY_PROFILE_RESOLUTION") {
       const response = await router.resolveCompanyProfile({ companyId: request.companyId, companyName: request.companyName,
         canonicalDomain: request.domain, websiteUrl: request.domain ? `https://${request.domain}` : null, metadata });
+      configuration.onProviderCost?.(providerCost(response));
       const candidates = response.data?.candidates ?? [];
       return {
         provider: response.providerId, cost: providerCost(response), status: response.status === "failed" ? "FAILED" : candidates.length ? "USED" : "EMPTY",
@@ -216,6 +222,7 @@ export function createProviderRouterResearchInvokerV2(
     if (step.capability === "COMPANY_FIRMOGRAPHICS") {
       const response = await router.enrichCompany({ companyId: request.companyId, companyName: request.companyName,
         canonicalDomain: request.domain, websiteUrl: request.domain ? `https://${request.domain}` : null, metadata });
+      configuration.onProviderCost?.(providerCost(response));
       const attrs = response.data?.attributes;
       if (!attrs) return { provider: response.providerId, cost: providerCost(response), evidence: [], status: response.status === "failed" ? "FAILED" : "EMPTY" };
       const snippet = [attrs.companyDescription, attrs.industry, attrs.specialties.join("; ")].filter(Boolean).join("\n");
@@ -238,6 +245,7 @@ export function createProviderRouterResearchInvokerV2(
     }
     if (step.capability === "COMPANY_LOOKUP") {
       const response = await router.lookupCompany({ name: request.companyName, domain: request.domain ?? undefined, metadata });
+      configuration.onProviderCost?.(providerCost(response));
       const company = response.data?.company;
       if (!company?.description) return { provider: response.providerId, cost: providerCost(response), evidence: [], status: response.status === "failed" ? "FAILED" : "EMPTY" };
       return { provider: response.providerId, cost: providerCost(response), status: "USED", evidence: [providerEvidence({
@@ -252,6 +260,7 @@ export function createProviderRouterResearchInvokerV2(
       domains: step.source === "WEB_SEARCH" && request.domain ? [request.domain] : undefined,
       limit: Math.max(1, Math.min(5, configuration.maxResults ?? 5)), searchDepth: "basic", includeRawContent: false, metadata,
     });
+    configuration.onProviderCost?.(providerCost(response));
     const results = response.data?.results ?? [];
     return {
       provider: response.providerId, cost: providerCost(response), status: response.status === "failed" ? "FAILED" : results.length ? "USED" : "EMPTY",

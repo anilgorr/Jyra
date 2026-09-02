@@ -1,13 +1,22 @@
 # JYRA Market Readiness
 
 Market Readiness campaigns are an explicit, project-scoped control plane for
-validating **V1** market intelligence.  V2 is never launch evidence.  New
+validating **JYRA_INTELLIGENCE_V2**. A campaign is not launch-ready until every
+readiness and commercial gate described below passes. New
 campaigns default to automatic fresh discovery, a target of 200, manual
 outcomes, and a hard USD 50.00 cap (5,000 integer cents).
 
-Creating, pausing, freezing, reviewing, importing outcomes, and advancing a
-worker do not spend money.  The $50 is not spent until an explicitly trusted
-worker starts an adapter-backed paid attempt.  Before doing so it must reserve
+The lifecycle is deterministic and explicitly driven: `PLANNED` starts as
+`DISCOVERING`; a settled discovery attempt moves to `RUNNING` only at exactly
+200 unique cohort items; each explicit advance in `RUNNING` processes at most
+one item; and the campaign moves to `REVIEWING` only with 200 scoped,
+successful, exact-cost prediction snapshots and no pending or leased attempts.
+No phase transition automatically dispatches provider work. Pausing preserves
+whether discovery or processing should resume.
+
+Creating, pausing, freezing, reviewing, and importing outcomes do not spend
+money. An explicit Advance may run one adapter-backed paid attempt; lifecycle
+transitions themselves never invoke a provider. Before an attempt starts it must reserve
 the cost transactionally; spent plus reserved can never exceed the campaign
 cap.  Discovery pages are bounded to 50 candidates and domains are normalized
 and deduplicated.

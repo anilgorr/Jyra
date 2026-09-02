@@ -27,6 +27,7 @@ channel = "stable-25_05"
 [userenv.development]
 BRIGHTDATA_TEST_COMPANY_NAME = "Emergys"
 BRIGHTDATA_TEST_LINKEDIN_URL = "https://www.linkedin.com/company/emergys-llc/"
+JYRA_INTELLIGENCE_VERSION = "JYRA_INTELLIGENCE_V2"
 
 [userenv.shared]
 MARKET_READINESS_PROCESSING_ENABLED = "true"

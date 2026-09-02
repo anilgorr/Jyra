@@ -169,7 +169,7 @@ export const marketReadinessExperimentsTable = pgTable("market_readiness_experim
   projectId: uuid("project_id").notNull().references(() => projectsTable.id, { onDelete: "cascade" }),
   campaignId: uuid("campaign_id").notNull().references(() => marketReadinessCampaignsTable.id, { onDelete: "cascade" }),
   state: marketReadinessExperimentStateEnum("state").notNull().default("DRAFT"),
-  seed: text("seed").notNull(), treatmentName: text("treatment_name").notNull().default("JYRA_V1"),
+  seed: text("seed").notNull(), treatmentName: text("treatment_name").notNull().default("JYRA_INTELLIGENCE_V2"),
   controlName: text("control_name").notNull().default("CONTROL"), createdBy: text("created_by").notNull(),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(), updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
 }, (table) => [uniqueIndex("market_readiness_experiment_campaign_unique").on(table.campaignId)]);

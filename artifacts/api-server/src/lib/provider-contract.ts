@@ -53,7 +53,59 @@ export type ProviderResponse<T> = {
 export type ProviderRequestBase = {
   requestId?: string;
   metadata?: Record<string, string>;
+  /**
+   * Run-local control object. It is deliberately carried by object identity
+   * rather than metadata so callers never serialize or clone its state.
+   */
+  providerAttemptBudget?: ProviderAttemptBudget;
 };
+
+export class ProviderAttemptBudget {
+  readonly max: number;
+  private consumedCount = 0;
+  private estimatedCostTotal = 0;
+  private actualCostTotal: number | null = 0;
+
+  constructor(max: number) {
+    if (!Number.isInteger(max) || max < 0) {
+      throw new Error("INVALID_PROVIDER_ATTEMPT_BUDGET");
+    }
+    this.max = max;
+  }
+
+  get consumed(): number {
+    return this.consumedCount;
+  }
+
+  get remaining(): number {
+    return Math.max(0, this.max - this.consumedCount);
+  }
+
+  get estimatedCost(): number {
+    return this.estimatedCostTotal;
+  }
+
+  get actualCost(): number | null {
+    return this.actualCostTotal;
+  }
+
+  tryAcquire(): boolean {
+    if (this.consumedCount >= this.max) return false;
+    // JavaScript executes this synchronous read/increment without yielding,
+    // making one shared instance safe across concurrent async routes.
+    this.consumedCount += 1;
+    return true;
+  }
+
+  recordResponse(usage: ProviderUsageMetadata): void {
+    this.estimatedCostTotal += usage.estimatedCost;
+    if (this.actualCostTotal !== null) {
+      this.actualCostTotal = usage.actualCost === null
+        ? null
+        : this.actualCostTotal + usage.actualCost;
+    }
+  }
+}
 
 export type ProviderRoutingRole = "PRIMARY" | "FALLBACK";
 

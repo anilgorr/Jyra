@@ -17,6 +17,7 @@ import {
   type ProviderAdapter,
   type ProviderCapability,
   type ProviderOperations,
+  type ProviderAttemptBudget,
   type ProviderResponse,
   type ProviderRoutingRole,
 } from "./provider-contract";
@@ -86,6 +87,13 @@ export type ProviderRouterOptions = {
   usageObserver?: ProviderUsageWriter;
   adapterFactory?: (provider: ProviderCatalogEntry) => ProviderAdapter[];
 };
+
+/** Distinguishes an optional capability with no route from an enabled route
+ * whose price cannot safely be reserved. */
+export type ProviderCostBound =
+  | { kind: "absent"; enabledProviderCount: 0 }
+  | { kind: "unpriced"; enabledProviderCount: number }
+  | { kind: "priced"; enabledProviderCount: number; upperBound: number };
 
 function defaultRoutingRole(providerType: string): ProviderRoutingRole | null {
   if (providerType === "tavily") return "PRIMARY";
@@ -241,6 +249,32 @@ function responseForUnavailable(
   };
 }
 
+function responseForAttemptBudgetExhausted<C extends ProviderCapability>(
+  request: CapabilityRequest<C>,
+): ProviderResponse<CapabilityResult<C>> {
+  return {
+    status: "failed",
+    providerId: "router",
+    providerRequestId: request.requestId ?? randomUUID(),
+    data: null,
+    sources: [],
+    usage: {
+      estimatedCost: 0,
+      actualCost: 0,
+      latencyMs: 0,
+      runtimeMs: 0,
+      resultCount: 0,
+    },
+    error: {
+      code: "PROVIDER_ATTEMPT_BUDGET_EXHAUSTED",
+      message: "The shared physical provider-attempt budget is exhausted",
+      retryable: false,
+    },
+    retryable: false,
+    capturedAt: new Date().toISOString(),
+  };
+}
+
 function rankProviders(
   left: ProviderCatalogEntry,
   right: ProviderCatalogEntry,
@@ -359,18 +393,37 @@ export class ProviderRouter implements ProviderOperations {
     capability: ProviderCapability,
     maximumProviderAttempts = 1,
   ): Promise<number | null> {
+    const bound = await this.estimatedCostBound(capability, maximumProviderAttempts);
+    return bound.kind === "priced" ? bound.upperBound : null;
+  }
+
+  /** Returns the complete pricing state for a reachable capability route.
+   * An enabled unpriced provider is never treated as a free provider, while an
+   * absent optional capability can be explicitly handled by its caller. */
+  async estimatedCostBound(
+    capability: ProviderCapability,
+    maximumProviderAttempts = 1,
+  ): Promise<ProviderCostBound> {
     if (!Number.isInteger(maximumProviderAttempts) || maximumProviderAttempts < 1) {
       throw new Error("INVALID_MAX_PROVIDER_ATTEMPTS");
     }
-    const providers = (this.configuredProviders ?? await this.loadProviders())
+    const enabledProviders = (this.configuredProviders ?? await this.loadProviders())
       .filter((provider) => provider.enabled && provider.capabilities.includes(capability))
-      .sort(rankProviders)
-      .slice(0, maximumProviderAttempts);
-    if (!providers.length || providers.some((provider) =>
-      !Number.isFinite(provider.estimatedCost) || provider.estimatedCost <= 0)) {
-      return null;
+      .sort(rankProviders);
+    if (!enabledProviders.length) {
+      return { kind: "absent", enabledProviderCount: 0 };
     }
-    return providers.reduce((total, provider) => total + provider.estimatedCost, 0);
+    if (enabledProviders.some((provider) =>
+      !Number.isFinite(provider.estimatedCost) || provider.estimatedCost <= 0)) {
+      return { kind: "unpriced", enabledProviderCount: enabledProviders.length };
+    }
+    const providers = enabledProviders
+      .slice(0, maximumProviderAttempts);
+    return {
+      kind: "priced",
+      enabledProviderCount: enabledProviders.length,
+      upperBound: providers.reduce((total, provider) => total + provider.estimatedCost, 0),
+    };
   }
 
   async maximumAdaptiveWebSearchCost(): Promise<number> {
@@ -530,6 +583,9 @@ export class ProviderRouter implements ProviderOperations {
           retryable: false,
           capturedAt: new Date().toISOString(),
         } as ProviderResponse<CapabilityResult<C>>;
+        lastResponse = response;
+        if (shouldStop(response)) return response;
+        continue;
       } else if (!adapter.capabilities.includes(capability)) {
         response = {
           status: "failed",
@@ -552,7 +608,14 @@ export class ProviderRouter implements ProviderOperations {
           retryable: false,
           capturedAt: new Date().toISOString(),
         } as ProviderResponse<CapabilityResult<C>>;
+        lastResponse = response;
+        if (shouldStop(response)) return response;
+        continue;
       } else {
+        const attemptBudget: ProviderAttemptBudget | undefined = request.providerAttemptBudget;
+        if (attemptBudget && !attemptBudget.tryAcquire()) {
+          return responseForAttemptBudgetExhausted(request);
+        }
         try {
           response = (await adapter.execute({
             ...request,
@@ -597,6 +660,7 @@ export class ProviderRouter implements ProviderOperations {
         usage: { ...response.usage, latencyMs },
         capturedAt: response.capturedAt || completedAt.toISOString(),
       };
+      request.providerAttemptBudget?.recordResponse(response.usage);
       await this.writeUsage({
         providerId: provider.id,
         capability,

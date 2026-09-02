@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { and, eq, sql } from "drizzle-orm";
+import { and, desc, eq, sql } from "drizzle-orm";
 import {
   companiesTable, db, icpCriteriaTable, marketReadinessCampaignsTable, marketReadinessCohortItemsTable,
   marketReadinessProcessingAttemptsTable,
@@ -150,6 +150,238 @@ export function rolloutGate(input: { metrics: MetricReport; commercial: { pass: 
   return { pass: reasons.length === 0, reasons };
 }
 
+type MarketReadinessCampaignState = "PLANNED"|"DISCOVERING"|"REVIEWING"|"FROZEN"|"RUNNING"|"PARTIAL"|"COMPLETED"|"BLOCKED"|"CANCELLED";
+export function marketReadinessStateAfterSettlement(input: {
+  state: MarketReadinessCampaignState; kind: "DISCOVERY" | "PROCESS"; targetCount: number;
+  cohortCount: number; validSnapshotCount: number; activeAttemptCount: number;
+}) {
+  if (input.kind === "DISCOVERY" && input.state === "DISCOVERING" &&
+    input.cohortCount === input.targetCount) return "RUNNING" as const;
+  if (input.kind === "PROCESS" && input.state === "RUNNING" &&
+    input.cohortCount === input.targetCount &&
+    input.validSnapshotCount === input.targetCount &&
+    input.activeAttemptCount === 0) return "REVIEWING" as const;
+  return input.state;
+}
+
+export function resumableMarketReadinessState(cohortCount: number, targetCount: number) {
+  return cohortCount === targetCount ? "RUNNING" as const : "DISCOVERING" as const;
+}
+
+export function assertOperationalFencedResumeFlags(input: {
+  resumeFenced: boolean; executePaid: boolean; campaignId?: string;
+}) {
+  if (input.resumeFenced && (!input.executePaid || !input.campaignId)) {
+    throw new Error("RESUME_FENCED_REQUIRES_EXECUTE_PAID_AND_CAMPAIGN_ID");
+  }
+}
+
+export function assertOperationalFailedRetryFlags(input: {
+  retryFailed: boolean; executePaid: boolean; campaignId?: string;
+}) {
+  if (input.retryFailed && (!input.executePaid || !input.campaignId)) {
+    throw new Error("RETRY_FAILED_REQUIRES_EXECUTE_PAID_AND_CAMPAIGN_ID");
+  }
+}
+
+/** Explicitly resumes a paused campaign or creates the sole retry for the
+ * latest lease-expiry-fenced attempt. This function never invokes a provider. */
+export async function resumeMarketReadinessCampaign(input: {
+  organizationId: string; projectId: string; campaignId: string;
+  router?: ProviderRouter; recoverSucceededAfterFenced?: boolean;
+}) {
+  return db.transaction(async (tx) => {
+    await tx.execute(sql`select id from market_readiness_campaigns where id=${input.campaignId} for update`);
+    const [campaign] = await tx.select().from(marketReadinessCampaignsTable).where(and(
+      eq(marketReadinessCampaignsTable.id, input.campaignId),
+      eq(marketReadinessCampaignsTable.organizationId, input.organizationId),
+      eq(marketReadinessCampaignsTable.projectId, input.projectId),
+    )).limit(1);
+    if (!campaign) throw new Error("CAMPAIGN_NOT_FOUND");
+    if (campaign.frozenAt) throw new Error("CAMPAIGN_FROZEN_IMMUTABLE");
+    if (campaign.state === "PARTIAL") {
+      const cohort = await tx.select({ id: marketReadinessCohortItemsTable.id })
+        .from(marketReadinessCohortItemsTable).where(and(
+          eq(marketReadinessCohortItemsTable.campaignId, input.campaignId),
+          eq(marketReadinessCohortItemsTable.organizationId, input.organizationId),
+          eq(marketReadinessCohortItemsTable.projectId, input.projectId),
+        ));
+      if (cohort.length > campaign.targetCount) throw new Error("COHORT_EXCEEDS_TARGET");
+      const [updated] = await tx.update(marketReadinessCampaignsTable)
+        .set({ state: resumableMarketReadinessState(cohort.length, campaign.targetCount) })
+        .where(and(
+          eq(marketReadinessCampaignsTable.id, campaign.id),
+          eq(marketReadinessCampaignsTable.state, "PARTIAL"),
+        )).returning();
+      if (!updated) throw new Error("CAMPAIGN_STATE_CHANGED");
+      return { campaign: updated, attempt: null, resumed: true };
+    }
+    const [fenced] = await tx.select().from(marketReadinessProcessingAttemptsTable).where(and(
+      eq(marketReadinessProcessingAttemptsTable.campaignId, input.campaignId),
+      eq(marketReadinessProcessingAttemptsTable.organizationId, input.organizationId),
+      eq(marketReadinessProcessingAttemptsTable.projectId, input.projectId),
+      eq(marketReadinessProcessingAttemptsTable.error, "LEASE_EXPIRED_RECONCILIATION_REQUIRED"),
+      eq(marketReadinessProcessingAttemptsTable.state, "FAILED"),
+    )).orderBy(desc(marketReadinessProcessingAttemptsTable.createdAt)).limit(1);
+    if (!fenced) throw new Error("NO_FENCED_ATTEMPT_TO_RETRY");
+    const retryKey = `${fenced.idempotencyKey}:retry:${fenced.id}`;
+    const [existing] = await tx.select().from(marketReadinessProcessingAttemptsTable).where(and(
+      eq(marketReadinessProcessingAttemptsTable.campaignId, input.campaignId),
+      eq(marketReadinessProcessingAttemptsTable.organizationId, input.organizationId),
+      eq(marketReadinessProcessingAttemptsTable.projectId, input.projectId),
+      eq(marketReadinessProcessingAttemptsTable.idempotencyKey, retryKey),
+    )).limit(1);
+    if (existing) {
+      if (!input.recoverSucceededAfterFenced ||
+        campaign.state !== "BLOCKED" || existing.state !== "SUCCEEDED") {
+        return { campaign, attempt: existing, resumed: false };
+      }
+      const [active, latest, laterFailure] = await Promise.all([
+        tx.select({ id: marketReadinessProcessingAttemptsTable.id })
+          .from(marketReadinessProcessingAttemptsTable).where(and(
+            eq(marketReadinessProcessingAttemptsTable.campaignId, input.campaignId),
+            eq(marketReadinessProcessingAttemptsTable.organizationId, input.organizationId),
+            eq(marketReadinessProcessingAttemptsTable.projectId, input.projectId),
+            sql`${marketReadinessProcessingAttemptsTable.state} in ('PENDING','LEASED')`,
+          )).limit(1),
+        tx.select().from(marketReadinessProcessingAttemptsTable).where(and(
+          eq(marketReadinessProcessingAttemptsTable.campaignId, input.campaignId),
+          eq(marketReadinessProcessingAttemptsTable.organizationId, input.organizationId),
+          eq(marketReadinessProcessingAttemptsTable.projectId, input.projectId),
+        )).orderBy(desc(marketReadinessProcessingAttemptsTable.createdAt), desc(marketReadinessProcessingAttemptsTable.id)).limit(1),
+        tx.select({ id: marketReadinessProcessingAttemptsTable.id })
+          .from(marketReadinessProcessingAttemptsTable).where(and(
+            eq(marketReadinessProcessingAttemptsTable.campaignId, input.campaignId),
+            eq(marketReadinessProcessingAttemptsTable.organizationId, input.organizationId),
+            eq(marketReadinessProcessingAttemptsTable.projectId, input.projectId),
+            eq(marketReadinessProcessingAttemptsTable.state, "FAILED"),
+            sql`${marketReadinessProcessingAttemptsTable.createdAt} > ${existing.createdAt}`,
+          )).limit(1),
+      ]);
+      if (active[0] || laterFailure[0] || latest[0]?.state !== "SUCCEEDED" ||
+        campaign.reservedCents !== 0 ||
+        campaign.spentCents + campaign.reservedCents > campaign.paidCapCents) {
+        return { campaign, attempt: existing, resumed: false };
+      }
+      const cohort = await tx.select({ id: marketReadinessCohortItemsTable.id })
+        .from(marketReadinessCohortItemsTable).where(and(
+          eq(marketReadinessCohortItemsTable.campaignId, input.campaignId),
+          eq(marketReadinessCohortItemsTable.organizationId, input.organizationId),
+          eq(marketReadinessCohortItemsTable.projectId, input.projectId),
+        ));
+      if (cohort.length > campaign.targetCount) throw new Error("COHORT_EXCEEDS_TARGET");
+      const router = input.router ?? new ProviderRouter();
+      const freshReservation = latest[0].kind === "DISCOVERY"
+        ? await discoveryReservationCents(router, campaign.targetCount - cohort.length)
+        : latest[0].kind === "PROCESS" ? await processingReservationCents(router) : null;
+      if (freshReservation === null || latest[0].spentCents > freshReservation) {
+        return { campaign, attempt: existing, resumed: false };
+      }
+      const recoveredState = latest[0].kind === "DISCOVERY"
+        ? resumableMarketReadinessState(cohort.length, campaign.targetCount)
+        : "RUNNING";
+      const [recovered] = await tx.update(marketReadinessCampaignsTable).set({
+        state: recoveredState,
+      }).where(and(
+        eq(marketReadinessCampaignsTable.id, campaign.id),
+        eq(marketReadinessCampaignsTable.state, "BLOCKED"),
+      )).returning();
+      if (!recovered) throw new Error("CAMPAIGN_STATE_CHANGED");
+      return { campaign: recovered, attempt: existing, resumed: true };
+    }
+    if (campaign.state !== "BLOCKED") throw new Error("CAMPAIGN_NOT_BLOCKED");
+    const retryCents = fenced.spentCents;
+    if (retryCents <= 0 ||
+      campaign.spentCents + campaign.reservedCents + retryCents > campaign.paidCapCents) {
+      throw new Error("CAMPAIGN_HARD_CAP_EXCEEDED");
+    }
+    const [attempt] = await tx.insert(marketReadinessProcessingAttemptsTable).values({
+      organizationId: campaign.organizationId, projectId: campaign.projectId,
+      campaignId: campaign.id, cohortItemId: fenced.cohortItemId, kind: fenced.kind,
+      idempotencyKey: retryKey, state: "PENDING", reservedCents: retryCents,
+    }).returning();
+    const [updated] = await tx.update(marketReadinessCampaignsTable).set({
+      reservedCents: sql`${marketReadinessCampaignsTable.reservedCents}+${retryCents}`,
+      state: fenced.kind === "DISCOVERY" ? "DISCOVERING" : "RUNNING",
+    }).where(eq(marketReadinessCampaignsTable.id, campaign.id)).returning();
+    return { campaign: updated!, attempt: attempt!, resumed: true };
+  });
+}
+
+/** Creates one explicit retry for an ordinary failed attempt. Pricing is
+ * consulted, but this transaction never dispatches provider work. */
+export async function retryFailedMarketReadinessAttempt(input: {
+  organizationId: string; projectId: string; campaignId: string;
+  attemptId?: string;
+  router: Pick<ProviderRouter, "finiteEstimatedCostUpperBound" | "estimatedCostBound">;
+}) {
+  return db.transaction(async (tx) => {
+    await tx.execute(sql`select id from market_readiness_campaigns where id=${input.campaignId} for update`);
+    const [campaign] = await tx.select().from(marketReadinessCampaignsTable).where(and(
+      eq(marketReadinessCampaignsTable.id, input.campaignId),
+      eq(marketReadinessCampaignsTable.organizationId, input.organizationId),
+      eq(marketReadinessCampaignsTable.projectId, input.projectId),
+    )).limit(1);
+    if (!campaign) throw new Error("CAMPAIGN_NOT_FOUND");
+    if (campaign.frozenAt) throw new Error("CAMPAIGN_FROZEN_IMMUTABLE");
+    const failedWhere = and(
+      eq(marketReadinessProcessingAttemptsTable.campaignId, input.campaignId),
+      eq(marketReadinessProcessingAttemptsTable.organizationId, input.organizationId),
+      eq(marketReadinessProcessingAttemptsTable.projectId, input.projectId),
+      eq(marketReadinessProcessingAttemptsTable.state, "FAILED"),
+      sql`${marketReadinessProcessingAttemptsTable.error} is distinct from 'LEASE_EXPIRED_RECONCILIATION_REQUIRED'`,
+      ...(input.attemptId ? [eq(marketReadinessProcessingAttemptsTable.id, input.attemptId)] : []),
+    );
+    const [failed] = await tx.select().from(marketReadinessProcessingAttemptsTable)
+      .where(failedWhere).orderBy(desc(marketReadinessProcessingAttemptsTable.createdAt), desc(marketReadinessProcessingAttemptsTable.id)).limit(1);
+    if (!failed) throw new Error("NO_FAILED_ATTEMPT_TO_RETRY");
+    const retryKey = `${failed.idempotencyKey}:retry:${failed.id}`;
+    const [existing] = await tx.select().from(marketReadinessProcessingAttemptsTable).where(and(
+      eq(marketReadinessProcessingAttemptsTable.campaignId, input.campaignId),
+      eq(marketReadinessProcessingAttemptsTable.organizationId, input.organizationId),
+      eq(marketReadinessProcessingAttemptsTable.projectId, input.projectId),
+      eq(marketReadinessProcessingAttemptsTable.idempotencyKey, retryKey),
+    )).limit(1);
+    if (existing) return { campaign, attempt: existing, retried: false };
+    const [active] = await tx.select({ id: marketReadinessProcessingAttemptsTable.id })
+      .from(marketReadinessProcessingAttemptsTable).where(and(
+        eq(marketReadinessProcessingAttemptsTable.campaignId, input.campaignId),
+        eq(marketReadinessProcessingAttemptsTable.organizationId, input.organizationId),
+        eq(marketReadinessProcessingAttemptsTable.projectId, input.projectId),
+        sql`${marketReadinessProcessingAttemptsTable.state} in ('PENDING','LEASED')`,
+      )).limit(1);
+    if (active) throw new Error("CAMPAIGN_HAS_ACTIVE_WORK");
+    const cohort = await tx.select({ id: marketReadinessCohortItemsTable.id })
+      .from(marketReadinessCohortItemsTable).where(and(
+        eq(marketReadinessCohortItemsTable.campaignId, input.campaignId),
+        eq(marketReadinessCohortItemsTable.organizationId, input.organizationId),
+        eq(marketReadinessCohortItemsTable.projectId, input.projectId),
+      ));
+    if (cohort.length > campaign.targetCount) throw new Error("COHORT_EXCEEDS_TARGET");
+    const reservation = failed.kind === "DISCOVERY"
+      ? await discoveryReservationCents(input.router, campaign.targetCount - cohort.length)
+      : failed.kind === "PROCESS" ? await processingReservationCents(input.router) : null;
+    if (reservation === null) throw new Error("MARKET_READINESS_UNPRICED_PROVIDER_REFUSED");
+    if (campaign.spentCents + campaign.reservedCents + reservation > campaign.paidCapCents) {
+      throw new Error("CAMPAIGN_HARD_CAP_EXCEEDED");
+    }
+    const [attempt] = await tx.insert(marketReadinessProcessingAttemptsTable).values({
+      organizationId: campaign.organizationId, projectId: campaign.projectId,
+      campaignId: campaign.id, cohortItemId: failed.cohortItemId, kind: failed.kind,
+      idempotencyKey: retryKey, state: "PENDING", reservedCents: reservation,
+    }).returning();
+    const restoredState = failed.kind === "DISCOVERY" ? "DISCOVERING" : "RUNNING";
+    const [updated] = await tx.update(marketReadinessCampaignsTable).set({
+      reservedCents: campaign.reservedCents + reservation, state: restoredState,
+    }).where(and(
+      eq(marketReadinessCampaignsTable.id, campaign.id),
+      eq(marketReadinessCampaignsTable.organizationId, input.organizationId),
+      eq(marketReadinessCampaignsTable.projectId, input.projectId),
+    )).returning();
+    return { campaign: updated!, attempt: attempt!, retried: true };
+  });
+}
+
 /** Atomic conditional update prevents concurrent reservations from exceeding cap. */
 export async function reserveCampaignBudget(input: { organizationId: string; projectId: string; campaignId: string; idempotencyKey: string; cents: number; kind?: "DISCOVERY" | "PROCESS"; cohortItemId?: string | null }) {
   if (!Number.isInteger(input.cents) || input.cents < 0) throw new Error("INVALID_CENTS");
@@ -172,19 +404,33 @@ export async function reserveCampaignBudget(input: { organizationId: string; pro
 export async function scheduleMarketReadinessWork(input: { organizationId: string; projectId: string; campaignId: string; router?: ProviderRouter }) {
   const [campaign] = await db.select().from(marketReadinessCampaignsTable).where(and(eq(marketReadinessCampaignsTable.id, input.campaignId), eq(marketReadinessCampaignsTable.organizationId, input.organizationId), eq(marketReadinessCampaignsTable.projectId, input.projectId))).limit(1);
   if (!campaign) throw new Error("CAMPAIGN_SCOPE_MISMATCH");
-  const pending = await db.select().from(marketReadinessProcessingAttemptsTable).where(and(eq(marketReadinessProcessingAttemptsTable.campaignId, input.campaignId), eq(marketReadinessProcessingAttemptsTable.organizationId, input.organizationId), eq(marketReadinessProcessingAttemptsTable.projectId, input.projectId), eq(marketReadinessProcessingAttemptsTable.state, "PENDING"))).limit(1);
-  if (pending[0]) return pending[0];
+  const active = await db.select().from(marketReadinessProcessingAttemptsTable).where(and(
+    eq(marketReadinessProcessingAttemptsTable.campaignId, input.campaignId),
+    eq(marketReadinessProcessingAttemptsTable.organizationId, input.organizationId),
+    eq(marketReadinessProcessingAttemptsTable.projectId, input.projectId),
+    sql`${marketReadinessProcessingAttemptsTable.state} in ('PENDING','LEASED')`,
+  )).orderBy(marketReadinessProcessingAttemptsTable.createdAt).limit(1);
+  if (active[0]) return active[0];
   const available = campaign.paidCapCents - campaign.spentCents - campaign.reservedCents;
   if (available <= 0) throw new Error("CAMPAIGN_HARD_CAP_EXCEEDED");
   if (campaign.state === "BLOCKED") return null;
   const router = input.router ?? new ProviderRouter();
   if (campaign.state === "DISCOVERING") {
     const count = await db.select().from(marketReadinessCohortItemsTable).where(eq(marketReadinessCohortItemsTable.campaignId, input.campaignId));
-    if (count.length >= campaign.targetCount) return null;
+    if (count.length > campaign.targetCount) throw new Error("COHORT_EXCEEDS_TARGET");
+    if (count.length === campaign.targetCount) return null;
+    const discoveryAttempts = await db.select({ id: marketReadinessProcessingAttemptsTable.id })
+      .from(marketReadinessProcessingAttemptsTable)
+      .where(and(
+        eq(marketReadinessProcessingAttemptsTable.campaignId, input.campaignId),
+        eq(marketReadinessProcessingAttemptsTable.organizationId, input.organizationId),
+        eq(marketReadinessProcessingAttemptsTable.projectId, input.projectId),
+        eq(marketReadinessProcessingAttemptsTable.kind, "DISCOVERY"),
+      ));
     const reservation = await discoveryReservationCents(router, campaign.targetCount - count.length);
     if (reservation === null) throw new Error("MARKET_READINESS_UNPRICED_PROVIDER_REFUSED");
     if (reservation > available) throw new Error("CAMPAIGN_HARD_CAP_EXCEEDED");
-    return reserveCampaignBudget({ ...input, kind: "DISCOVERY", cents: reservation, idempotencyKey: `discovery:${count.length}` });
+    return reserveCampaignBudget({ ...input, kind: "DISCOVERY", cents: reservation, idempotencyKey: `discovery:${discoveryAttempts.length}` });
   }
   if (campaign.state === "RUNNING") {
     const [item] = await db.select({ id: marketReadinessCohortItemsTable.id }).from(marketReadinessCohortItemsTable)
@@ -205,6 +451,13 @@ export type MarketReadinessWorkerAdapter = {
   discoverNext(input: { organizationId: string; projectId: string; campaignId: string; limit: number; maxCents: number }): Promise<{ spentCents?: number }>;
   processNext(input: { organizationId: string; projectId: string; campaignId: string; attemptId: string; maxCents: number }): Promise<{ spentCents?: number; snapshot?:CompletedPredictionSnapshot }>;
 };
+
+export class MarketReadinessWorkError extends Error {
+  constructor(message: string, public readonly spentCents: number, options?: ErrorOptions) {
+    super(message, options);
+    this.name = "MarketReadinessWorkError";
+  }
+}
 export const MAX_DISCOVERY_PAGE_SIZE = 50;
 export const MARKET_READINESS_DISCOVERY_MAX_PROVIDER_CALLS = 10;
 export const MARKET_READINESS_V2_MAX_EXTERNAL_CALLS = 5;
@@ -245,17 +498,34 @@ export function assertMarketReadinessProcessingConfig(env: NodeJS.ProcessEnv = p
 }
 
 async function boundedProviderCost(router: Pick<ProviderRouter, "finiteEstimatedCostUpperBound">, capability: "COMPANY_DISCOVERY" | "COMPANY_LOOKUP" | "WEB_SEARCH" | "WEBSITE_CRAWL" | "COMPANY_FIRMOGRAPHICS") {
+  // The V2 research invoker pins maxProviderAttempts=1 for every graph edge.
   return router.finiteEstimatedCostUpperBound(capability, 1);
 }
 
-async function discoveryReservationCents(router: ProviderRouter, remainingTarget: number): Promise<number | null> {
-  const costs = await Promise.all((["COMPANY_DISCOVERY", "COMPANY_LOOKUP", "WEB_SEARCH"] as const).map((capability) => boundedProviderCost(router, capability)));
-  if (costs.some((cost) => cost === null)) return null;
-  // Remaining target limits returned candidates, not the bounded identity work
-  // needed to find one; do not under-reserve the configured call maximum.
+export async function discoveryReservationCents(
+  router: Pick<ProviderRouter, "estimatedCostBound">,
+  remainingTarget: number,
+): Promise<number | null> {
+  const [discovery, lookup, webSearch] = await Promise.all(
+    (["COMPANY_DISCOVERY", "COMPANY_LOOKUP", "WEB_SEARCH"] as const)
+      .map((capability) => router.estimatedCostBound(capability, Number.MAX_SAFE_INTEGER)),
+  );
+  // COMPANY_DISCOVERY starts every fresh run and WEB_SEARCH is reachable during
+  // identity resolution. COMPANY_LOOKUP is optional only when no provider is
+  // enabled; an enabled unpriced lookup route must still fail closed.
+  if (discovery.kind !== "priced" || webSearch.kind !== "priced" ||
+    lookup.kind === "unpriced") return null;
+  const reachableCosts = [
+    discovery.upperBound,
+    webSearch.upperBound,
+    ...(lookup.kind === "priced" ? [lookup.upperBound] : []),
+  ];
+  // Each of the maxProviderCalls slots is exactly one provider invocation.
+  // Reserving the greatest reachable per-call cost covers any interleaving of
+  // discovery, lookup, and search without adding mutually exclusive calls.
   void remainingTarget;
   return marketReadinessWorstCaseReservationCents({
-    providerCosts: [Math.max(...(costs as number[]))],
+    providerCosts: [Math.max(...reachableCosts)],
     providerCallCounts: [MARKET_READINESS_DISCOVERY_MAX_PROVIDER_CALLS],
   });
 }
@@ -298,6 +568,13 @@ export function createMarketReadinessWorkerAdapter(deps: {
       if (!campaign) throw new Error("CAMPAIGN_SCOPE_MISMATCH");
       const remaining = Math.max(0, campaign.targetCount - (await db.select().from(marketReadinessCohortItemsTable).where(eq(marketReadinessCohortItemsTable.campaignId, campaign.id))).length);
       if (!remaining) return {};
+      const completedDiscoveryAttempts = await db.select({ id: marketReadinessProcessingAttemptsTable.id })
+        .from(marketReadinessProcessingAttemptsTable)
+        .where(and(
+          eq(marketReadinessProcessingAttemptsTable.campaignId, input.campaignId),
+          eq(marketReadinessProcessingAttemptsTable.kind, "DISCOVERY"),
+          sql`${marketReadinessProcessingAttemptsTable.state} in ('SUCCEEDED','FAILED')`,
+        ));
       const reservation = await discoveryReservationCents(router, remaining);
       if (reservation === null) throw new Error("MARKET_READINESS_UNPRICED_PROVIDER_REFUSED");
       if (reservation > input.maxCents) throw new Error("CAMPAIGN_HARD_CAP_EXCEEDED");
@@ -305,6 +582,7 @@ export function createMarketReadinessWorkerAdapter(deps: {
         organizationId: input.organizationId, projectId: input.projectId, userId: campaign.createdBy, router,
         limit: Math.min(MAX_DISCOVERY_PAGE_SIZE, input.limit, remaining),
         maxProviderCalls: MARKET_READINESS_DISCOVERY_MAX_PROVIDER_CALLS,
+        queryOffset: completedDiscoveryAttempts.length * Math.ceil(MARKET_READINESS_DISCOVERY_MAX_PROVIDER_CALLS / 2),
         orchestrateAcceptedCandidates: true,
       });
       for (const candidate of result.candidates) {
@@ -327,16 +605,24 @@ export function createMarketReadinessWorkerAdapter(deps: {
       const reservation = await processingReservationCents(router);
       if (reservation === null) throw new Error("MARKET_READINESS_UNPRICED_PROVIDER_REFUSED");
       if (reservation > input.maxCents) throw new Error("CAMPAIGN_HARD_CAP_EXCEEDED");
-      const result = await orchestrateIntelligenceV2({
+      let observedProviderCost = 0;
+      let observedSemanticCost = 0;
+      let semanticAttemptStarted = false;
+      try {
+        const result = await orchestrateIntelligenceV2({
         request: { organizationId: input.organizationId, projectId: input.projectId, companyId: row.company.id, companyName: row.company.canonicalName, domain: row.company.domain, source: "MARKET_READINESS_CAMPAIGN", firstPartyEvidence: [] },
         context: { organizationId: input.organizationId, projectId: input.projectId, businessTwinVersion: seller.businessTwinVersionId!, offeringVersion: seller.opportunityPackVersionId ?? seller.context.fingerprint, icpVersion: seller.icpVersionId!, sellerBusinessTwin: { rawAnswers: seller.businessTwinRawAnswers, interpretation: seller.businessTwinAiInterpretation }, offering: { name: seller.context.offeringName, description: seller.context.offeringDescription, materialCapabilities: seller.context.offeringCapabilities, exclusions: seller.context.offeringExclusions }, icp: { requirements: criteria.map((c) => ({ criterionId: c.id, type: criterionClaimType(c.dimension), operator: c.operator === "EQUALS" || c.operator === "CONTAINS" || c.operator === "EXISTS" ? c.operator : "CONTAINS" as const, value: typeof c.value === "string" ? c.value : JSON.stringify(c.value), mandatory: c.criterionType === "MUST_HAVE", exclusion: c.criterionType === "DISQUALIFIER", preferred: c.criterionType === "PREFERRED" })), assumptions: seller.icpAssumptions } },
         repository,
         maxExternalResearchCalls: MARKET_READINESS_V2_MAX_EXTERNAL_CALLS,
-        researchInvoker: createProviderRouterResearchInvokerV2(router, {
-          maxProviderAttempts: 1,
-          maxResults: 5,
-        }),
-      });
+          assessmentTimeoutMs: 90_000,
+          researchInvoker: createProviderRouterResearchInvokerV2(router, {
+            maxProviderAttempts: 1,
+            maxResults: 5,
+            onProviderCost: (cost) => { observedProviderCost += cost; },
+          }),
+          onSemanticAttemptStart: () => { semanticAttemptStarted = true; },
+          onSemanticCost: (cost) => { observedSemanticCost += cost; },
+        });
       const evidenceIds=new Set(result.evidence.map(item=>item.evidenceId));
       const evidenceBacked=result.assessment.commercialRole.evidenceIds.length>0&&result.assessment.who.evidenceIds.length>0&&
         [...result.assessment.commercialRole.evidenceIds,...result.assessment.who.evidenceIds].every(id=>evidenceIds.has(id));
@@ -344,7 +630,7 @@ export function createMarketReadinessWorkerAdapter(deps: {
       const predictedWho=["LIKELY_FIT","POSSIBLE_FIT"].includes(result.assessment.who.value);
       const predictedCompetitor=result.assessment.commercialRole.value==="SELLER_COMPETITOR";
       const predictedBuyer=predictedRole&&predictedWho;
-      const providerCostCents=cents(result.observability.providerCost),semanticCostCents=cents(result.observability.modelCost);
+      const providerCostCents=cents(observedProviderCost),semanticCostCents=cents(observedSemanticCost);
       const evaluation=marketReadinessPersistedPredictionSchema.parse({
         identityResolved:result.profile.identity.status==="RESOLVED",
         predictedRole,predictedWho,predictedBuyer,predictedCompetitor,
@@ -362,7 +648,18 @@ export function createMarketReadinessWorkerAdapter(deps: {
         offeringVersion:seller.opportunityPackVersionId??seller.context.fingerprint,
         icpVersion:seller.icpVersionId,
       });
-      return { spentCents:evaluation.totalCostCents,snapshot:{cohortItemId:row.cohort.id,version:result.intelligenceVersion,evaluation,evidence:{items:result.evidence}} };
+        return { spentCents:evaluation.totalCostCents,snapshot:{cohortItemId:row.cohort.id,version:result.intelligenceVersion,evaluation,evidence:{items:result.evidence}} };
+      } catch (error) {
+        const semanticCostCents = observedSemanticCost > 0
+          ? cents(observedSemanticCost)
+          : semanticAttemptStarted ? assertMarketReadinessProcessingConfig() : 0;
+        const spentCents = cents(observedProviderCost) + semanticCostCents;
+        throw new MarketReadinessWorkError(
+          error instanceof Error ? error.message : "PROCESS_WORK_FAILED",
+          spentCents,
+          { cause: error },
+        );
+      }
     },
   };
 }
@@ -375,7 +672,10 @@ export async function advanceMarketReadinessWorker(input: {
   adapter: MarketReadinessWorkerAdapter; now?: Date; leaseMs?: number;
 }) {
   const now = input.now ?? new Date();
-  const leaseExpiresAt = new Date(now.getTime() + (input.leaseMs ?? 60_000));
+  // A bounded discovery or V2 processing attempt can contain several sequential
+  // provider calls. Keep the default lease longer than that bounded graph so a
+  // second worker cannot fence healthy work merely because one call ran slowly.
+  const leaseExpiresAt = new Date(now.getTime() + (input.leaseMs ?? 15 * 60_000));
   const fenced = await db.transaction(async(tx)=>{
     const[row]=await tx.update(marketReadinessProcessingAttemptsTable).set({
       state:"FAILED",error:"LEASE_EXPIRED_RECONCILIATION_REQUIRED",completedAt:now,
@@ -421,23 +721,90 @@ export async function advanceMarketReadinessWorker(input: {
         limit 1
         for update skip locked
       )`,
+      sql`exists (
+        select 1 from ${marketReadinessCampaignsTable} campaign
+        where campaign.id=${input.campaignId}
+          and campaign.organization_id=${input.organizationId}
+          and campaign.project_id=${input.projectId}
+          and ((${marketReadinessProcessingAttemptsTable.kind}='DISCOVERY' and campaign.state='DISCOVERING')
+            or (${marketReadinessProcessingAttemptsTable.kind}='PROCESS' and campaign.state='RUNNING'))
+      )`,
     )).returning();
   if (!attempt) return { claimed: false as const };
+  let observedSpentCents = 0;
   try {
     const outcome: {spentCents?:number;snapshot?:CompletedPredictionSnapshot} = attempt.kind === "DISCOVERY"
       ? await input.adapter.discoverNext({ organizationId: input.organizationId, projectId: input.projectId, campaignId: input.campaignId, limit: MAX_DISCOVERY_PAGE_SIZE, maxCents: attempt.reservedCents })
       : await input.adapter.processNext({ organizationId: input.organizationId, projectId: input.projectId, campaignId: input.campaignId, attemptId: attempt.id, maxCents: attempt.reservedCents });
     if (!Number.isInteger(outcome.spentCents) || outcome.spentCents === undefined || outcome.spentCents < 0) throw new Error("INVALID_PROVIDER_COST");
     const spent = outcome.spentCents;
+    observedSpentCents = spent;
     const snapshotValid=attempt.kind!=="PROCESS"||(outcome.snapshot&&outcome.snapshot.evaluation.totalCostCents===spent);
     const stale=await db.transaction(async (tx) => {
+      // Re-read and lock the lease before zeroing its reservation.  Settlement
+      // accounting must use the reservation persisted for this exact lease,
+      // rather than a value returned by an earlier claim statement.
+      const [leasedAttempt] = await tx.select({
+        reservedCents: marketReadinessProcessingAttemptsTable.reservedCents,
+      }).from(marketReadinessProcessingAttemptsTable).where(and(
+        eq(marketReadinessProcessingAttemptsTable.id, attempt.id),
+        eq(marketReadinessProcessingAttemptsTable.leaseToken, input.workerId),
+        eq(marketReadinessProcessingAttemptsTable.state, "LEASED"),
+      )).limit(1).for("update");
       const settled = await tx.update(marketReadinessProcessingAttemptsTable).set({ state: "SUCCEEDED", completedAt: new Date(), leaseToken: null, leaseExpiresAt: null, spentCents: spent, reservedCents: 0 }).where(and(eq(marketReadinessProcessingAttemptsTable.id, attempt.id), eq(marketReadinessProcessingAttemptsTable.leaseToken, input.workerId), eq(marketReadinessProcessingAttemptsTable.state, "LEASED"))).returning({ id: marketReadinessProcessingAttemptsTable.id });
        // Actual cost is never clipped. A provider estimate breach is an
        // overrun even when prior unused cap remains, so block immediately.
        if (settled[0]) {
+          if(!leasedAttempt)throw new Error("LEASE_RESERVATION_MISSING");
+          const reservedCents=leasedAttempt.reservedCents;
           if(!snapshotValid)throw new Error("PROCESS_SNAPSHOT_REQUIRED");
-         await tx.update(marketReadinessCampaignsTable).set({ reservedCents: sql`${marketReadinessCampaignsTable.reservedCents} - ${attempt.reservedCents}`, spentCents: sql`${marketReadinessCampaignsTable.spentCents} + ${spent}`, state: sql`case when ${spent} > ${attempt.reservedCents} or ${marketReadinessCampaignsTable.spentCents} + ${spent} > ${marketReadinessCampaignsTable.paidCapCents} then 'BLOCKED'::market_readiness_campaign_state else ${marketReadinessCampaignsTable.state} end` }).where(eq(marketReadinessCampaignsTable.id, input.campaignId));
+          const [lockedCampaign]=await tx.select().from(marketReadinessCampaignsTable).where(and(
+            eq(marketReadinessCampaignsTable.id,input.campaignId),
+            eq(marketReadinessCampaignsTable.organizationId,input.organizationId),
+            eq(marketReadinessCampaignsTable.projectId,input.projectId),
+          )).limit(1).for("update");
+          if(!lockedCampaign)throw new Error("CAMPAIGN_SCOPE_MISMATCH");
+          const costOverrun=spent>reservedCents||
+            lockedCampaign.spentCents+spent>lockedCampaign.paidCapCents;
+          await tx.update(marketReadinessCampaignsTable).set({
+            reservedCents:lockedCampaign.reservedCents-reservedCents,
+            spentCents:lockedCampaign.spentCents+spent,
+            state:costOverrun?"BLOCKED":lockedCampaign.state,
+          }).where(and(
+            eq(marketReadinessCampaignsTable.id,input.campaignId),
+            eq(marketReadinessCampaignsTable.organizationId,input.organizationId),
+            eq(marketReadinessCampaignsTable.projectId,input.projectId),
+          ));
          if(outcome.snapshot)await tx.insert(marketReadinessPredictionSnapshotsTable).values({organizationId:input.organizationId,projectId:input.projectId,campaignId:input.campaignId,cohortItemId:outcome.snapshot.cohortItemId,processingAttemptId:attempt.id,version:outcome.snapshot.version,predictions:outcome.snapshot.evaluation,evidence:outcome.snapshot.evidence});
+         const [campaignRows,cohort,activeAttempts,snapshots]=await Promise.all([
+           tx.select().from(marketReadinessCampaignsTable).where(and(eq(marketReadinessCampaignsTable.id,input.campaignId),eq(marketReadinessCampaignsTable.organizationId,input.organizationId),eq(marketReadinessCampaignsTable.projectId,input.projectId))).limit(1),
+           tx.select({id:marketReadinessCohortItemsTable.id}).from(marketReadinessCohortItemsTable).where(and(eq(marketReadinessCohortItemsTable.campaignId,input.campaignId),eq(marketReadinessCohortItemsTable.organizationId,input.organizationId),eq(marketReadinessCohortItemsTable.projectId,input.projectId))),
+           tx.select({id:marketReadinessProcessingAttemptsTable.id}).from(marketReadinessProcessingAttemptsTable).where(and(eq(marketReadinessProcessingAttemptsTable.campaignId,input.campaignId),eq(marketReadinessProcessingAttemptsTable.organizationId,input.organizationId),eq(marketReadinessProcessingAttemptsTable.projectId,input.projectId),sql`${marketReadinessProcessingAttemptsTable.state} in ('PENDING','LEASED')`)),
+           tx.select({snapshot:marketReadinessPredictionSnapshotsTable,attempt:marketReadinessProcessingAttemptsTable}).from(marketReadinessPredictionSnapshotsTable)
+             .innerJoin(marketReadinessProcessingAttemptsTable,eq(marketReadinessProcessingAttemptsTable.id,marketReadinessPredictionSnapshotsTable.processingAttemptId))
+             .where(and(eq(marketReadinessPredictionSnapshotsTable.campaignId,input.campaignId),eq(marketReadinessPredictionSnapshotsTable.organizationId,input.organizationId),eq(marketReadinessPredictionSnapshotsTable.projectId,input.projectId))),
+         ]);
+         const campaign=campaignRows[0]!;
+         if(cohort.length>campaign.targetCount)throw new Error("COHORT_EXCEEDS_TARGET");
+         const cohortIds=new Set(cohort.map(item=>item.id));
+         const validSnapshots=snapshots.filter(({snapshot,attempt:linkedAttempt})=>{
+           try {
+             const evaluation=parseMarketReadinessPersistedPrediction(snapshot.predictions);
+             return cohortIds.has(snapshot.cohortItemId)&&linkedAttempt.state==="SUCCEEDED"&&
+               linkedAttempt.campaignId===input.campaignId&&linkedAttempt.organizationId===input.organizationId&&
+               linkedAttempt.projectId===input.projectId&&linkedAttempt.cohortItemId===snapshot.cohortItemId&&
+               linkedAttempt.spentCents===evaluation.totalCostCents&&evaluation.processingSucceeded&&
+               snapshot.version===evaluation.intelligenceVersion;
+           } catch { return false; }
+         });
+         const nextState=marketReadinessStateAfterSettlement({
+           state:campaign.state,kind:attempt.kind as "DISCOVERY"|"PROCESS",targetCount:campaign.targetCount,
+           cohortCount:cohort.length,validSnapshotCount:validSnapshots.length,activeAttemptCount:activeAttempts.length,
+         });
+         if(nextState!==campaign.state)await tx.update(marketReadinessCampaignsTable).set({state:nextState}).where(and(
+           eq(marketReadinessCampaignsTable.id,input.campaignId),eq(marketReadinessCampaignsTable.state,campaign.state),
+           eq(marketReadinessCampaignsTable.organizationId,input.organizationId),eq(marketReadinessCampaignsTable.projectId,input.projectId),
+         ));
           return false;
        }
         if(spent>attempt.reservedCents){
@@ -458,8 +825,41 @@ export async function advanceMarketReadinessWorker(input: {
     return { claimed: true as const, attemptId: attempt.id, state: "SUCCEEDED" as const };
   } catch (error) {
     await db.transaction(async (tx) => {
-      const settled = await tx.update(marketReadinessProcessingAttemptsTable).set({ state: "FAILED", completedAt: new Date(), leaseToken: null, leaseExpiresAt: null, error: error instanceof Error ? error.message : "WORKER_FAILED", reservedCents: 0 }).where(and(eq(marketReadinessProcessingAttemptsTable.id, attempt.id), eq(marketReadinessProcessingAttemptsTable.leaseToken, input.workerId), eq(marketReadinessProcessingAttemptsTable.state, "LEASED"))).returning({ id: marketReadinessProcessingAttemptsTable.id });
-      if (settled[0]) await tx.update(marketReadinessCampaignsTable).set({ reservedCents: sql`${marketReadinessCampaignsTable.reservedCents} - ${attempt.reservedCents}` }).where(eq(marketReadinessCampaignsTable.id, input.campaignId));
+      const rawSpent = error && typeof error === "object" && "spentCents" in error
+        ? (error as { spentCents?: unknown }).spentCents : observedSpentCents;
+      const spent = Number.isInteger(rawSpent) && (rawSpent as number) >= 0 ? rawSpent as number : 0;
+      const [leasedAttempt] = await tx.select().from(marketReadinessProcessingAttemptsTable).where(and(
+        eq(marketReadinessProcessingAttemptsTable.id, attempt.id),
+        eq(marketReadinessProcessingAttemptsTable.leaseToken, input.workerId),
+        eq(marketReadinessProcessingAttemptsTable.state, "LEASED"),
+      )).limit(1).for("update");
+      if (!leasedAttempt) return;
+      const [campaign] = await tx.select().from(marketReadinessCampaignsTable).where(and(
+        eq(marketReadinessCampaignsTable.id, input.campaignId),
+        eq(marketReadinessCampaignsTable.organizationId, input.organizationId),
+        eq(marketReadinessCampaignsTable.projectId, input.projectId),
+      )).limit(1).for("update");
+      if (!campaign) throw new Error("CAMPAIGN_SCOPE_MISMATCH");
+      const settled = await tx.update(marketReadinessProcessingAttemptsTable).set({
+        state: "FAILED", completedAt: new Date(), leaseToken: null, leaseExpiresAt: null,
+        error: error instanceof Error ? error.message : "WORKER_FAILED", spentCents: spent, reservedCents: 0,
+      }).where(and(
+        eq(marketReadinessProcessingAttemptsTable.id, attempt.id),
+        eq(marketReadinessProcessingAttemptsTable.leaseToken, input.workerId),
+        eq(marketReadinessProcessingAttemptsTable.state, "LEASED"),
+      )).returning({ id: marketReadinessProcessingAttemptsTable.id });
+      if (settled[0]) {
+        const overrun = spent > leasedAttempt.reservedCents || campaign.spentCents + spent > campaign.paidCapCents;
+        await tx.update(marketReadinessCampaignsTable).set({
+          reservedCents: campaign.reservedCents - leasedAttempt.reservedCents,
+          spentCents: campaign.spentCents + spent,
+          state: overrun ? "BLOCKED" : campaign.state,
+        }).where(and(
+          eq(marketReadinessCampaignsTable.id, input.campaignId),
+          eq(marketReadinessCampaignsTable.organizationId, input.organizationId),
+          eq(marketReadinessCampaignsTable.projectId, input.projectId),
+        ));
+      }
     });
     throw error;
   }

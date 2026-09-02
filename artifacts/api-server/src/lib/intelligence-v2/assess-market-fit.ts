@@ -5,7 +5,7 @@ import {
   commercialRoles, researchRequirementSchema, whoValues,
   type CompanyIntelligenceProfileV2, type EvidenceItemV2, type SellerRelativeAssessmentV2, type SellerRelativeContextV2,
 } from "./schemas";
-import { validateAssessmentEvidenceV2 } from "./evidence-validator";
+import { normalizeAssessmentEvidenceV2, validateAssessmentEvidenceV2 } from "./evidence-validator";
 
 export const SELLER_RELATIVE_ASSESSMENT_SYSTEM_PROMPT = `Use only the immutable scoped evidence and seller context supplied. Return only the requested JSON.
 Decide CommercialRole and structural WHO together. Competition requires a material substitute for the specific offering; shared industry or vocabulary is not competition. WHO is structural ICP fit, not intent.
@@ -152,7 +152,8 @@ function materialize(value: z.infer<typeof modelAssessmentSchema>, evidence: Evi
 
 export async function assessMarketFitV2(input: {
   context: SellerRelativeContextV2; profile: CompanyIntelligenceProfileV2; evidence: EvidenceItemV2[];
-  invoke?: AssessmentInvokerV2; timeoutMs?: number;
+  invoke?: AssessmentInvokerV2; timeoutMs?: number; onCost?: (cost: number) => void;
+  onAttemptStart?: () => void;
 }): Promise<{
   assessment: SellerRelativeAssessmentV2; usage: Record<string, unknown> | null; cost: number;
   attempts: AssessmentAttemptV2[]; modelCalls: number;
@@ -171,6 +172,7 @@ export async function assessMarketFitV2(input: {
     const controller = new AbortController();
     let timer: NodeJS.Timeout | undefined;
     try {
+      input.onAttemptStart?.();
       const response = await Promise.race([
         invoke({
           model: ASSESSMENT_MODEL, promptVersion: ASSESSMENT_PROMPT_VERSION,
@@ -183,10 +185,11 @@ export async function assessMarketFitV2(input: {
         }),
       ]);
       if (timer) clearTimeout(timer);
+      input.onCost?.(Math.max(0, response.cost ?? 0));
       const base = { attempt, durationMs: Math.max(0, Date.now() - started), usage: response.usage ?? null, cost: Math.max(0, response.cost ?? 0) };
       try {
         const parsed = modelAssessmentSchema.parse(response.content);
-        const assessment = materialize(parsed, input.evidence, input.context);
+        const assessment = normalizeAssessmentEvidenceV2(materialize(parsed, input.evidence, input.context), input.evidence, input.context);
         const grounded = validateAssessmentEvidenceV2(assessment, input.evidence, input.context);
         if (!grounded.ok) throw new Error(grounded.errors.join("; "));
         attempts.push({ ...base, outcome: "VALID" });

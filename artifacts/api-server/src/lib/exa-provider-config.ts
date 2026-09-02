@@ -10,7 +10,9 @@ export async function ensureDevelopmentExaProvider(): Promise<void> {
     category: "company",
     content: "none",
     routingRole: "FALLBACK",
-    estimatedCost: 0.007,
+    // The bounded request shape returned at most USD 0.017 in the live preflight.
+    // Keep an 11.8% buffer while preserving the fixed USD 50 campaign ceiling.
+    estimatedCost: 0.019,
     credentialStatus: process.env.EXA_API_KEY ? "AVAILABLE" : "MISSING",
   };
 

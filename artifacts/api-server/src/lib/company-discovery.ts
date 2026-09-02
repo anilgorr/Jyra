@@ -19,6 +19,7 @@ import {
   type NormalizedCompanyInput,
   type CompanyIdentityAssessment,
 } from "./company-identity";
+import { ProviderAttemptBudget } from "./provider-contract";
 import type {
   CompanyDiscoveryStrategy,
   CompanyDiscoveryResult,
@@ -43,15 +44,25 @@ type DiscoveryInput = {
   limit?: number;
   maxProviderCalls?: number;
   queryOverrides?: string[];
+  queryOffset?: number;
   now?: Date;
 };
 
 export function bindControlPlaneProviderOperations(
   router: Pick<ProviderOperations, "searchWeb" | "enrichCompany">,
+  providerAttemptBudget?: ProviderAttemptBudget,
 ): Pick<ProviderOperations, "searchWeb" | "enrichCompany"> {
   return {
-    searchWeb: router.searchWeb.bind(router),
-    enrichCompany: router.enrichCompany.bind(router),
+    searchWeb: (request) => router.searchWeb({
+      ...request,
+      providerAttemptBudget: request.providerAttemptBudget ?? providerAttemptBudget,
+      metadata: { ...(request.metadata ?? {}), maxProviderAttempts: "1" },
+    }),
+    enrichCompany: (request) => router.enrichCompany({
+      ...request,
+      providerAttemptBudget: request.providerAttemptBudget ?? providerAttemptBudget,
+      metadata: { ...(request.metadata ?? {}), maxProviderAttempts: "1" },
+    }),
   };
 }
 
@@ -245,10 +256,10 @@ export function buildBuyerMarketDiscoveryQueries(
     ? ` with ${size.minimum ?? "any"}-${size.maximum ?? "any"} employees`
     : "";
   const slices = industries.length ? industries : ["operating business"];
-  return slices.flatMap((industry, index) => {
-    const geography = geographies.length ? geographies[index % geographies.length] : "";
-    return [`${industry} operating companies${geography ? ` in ${geography}` : ""}${sizeText}`.slice(0, 500)];
-  }).slice(0, 12);
+  const markets = geographies.length ? geographies : [""];
+  return slices.flatMap((industry) => markets.map((geography) =>
+    `${industry} operating companies${geography ? ` in ${geography}` : ""}${sizeText}`.slice(0, 500),
+  )).slice(0, 60);
 }
 
 function textValue(value: unknown): string {
@@ -837,6 +848,7 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
   const now = input.now ?? new Date();
   const limit = Math.min(50, Math.max(1, input.limit ?? 20));
   const maxProviderCalls = Math.min(10, Math.max(1, input.maxProviderCalls ?? 5));
+  const providerAttemptBudget = new ProviderAttemptBudget(maxProviderCalls);
   // Resolve once before a run row or provider request. A caller cannot borrow
   // context from another tenant, and legacy NULL-context runs remain read-only.
   const readiness = await resolveProjectSellerContext(input.projectId, input.organizationId);
@@ -853,7 +865,15 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
   }
   const plan = await buildDiscoveryPlan(input.projectId, readiness);
   const discoveryCallLimit = Math.max(1, Math.min(5, Math.ceil(maxProviderCalls / 2)));
-  const queries = (input.queryOverrides?.length ? input.queryOverrides : plan.queries).slice(0, discoveryCallLimit);
+  const availableQueries = input.queryOverrides?.length ? input.queryOverrides : plan.queries;
+  const queryOffset = availableQueries.length
+    ? Math.max(0, input.queryOffset ?? 0) % availableQueries.length
+    : 0;
+  const rotatedQueries = [
+    ...availableQueries.slice(queryOffset),
+    ...availableQueries.slice(0, queryOffset),
+  ];
+  const queries = rotatedQueries.slice(0, discoveryCallLimit);
   const [run] = await db.insert(companyDiscoveryRunsTable).values({
     organizationId: input.organizationId,
     projectId: input.projectId,
@@ -877,6 +897,7 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
   for (const [queryIndex, query] of queries.entries()) {
     if (rawCandidates.length >= limit) break;
     const response = await input.router.discoverCompanies({
+      providerAttemptBudget,
       query,
       strategy: plan.strategy,
       limit: limit - rawCandidates.length,
@@ -900,11 +921,7 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
     if (response.status === "failed" && !response.retryable) break;
   }
 
-  const providerCalls = responses.length;
-  let remainingProviderCalls = Math.max(0, maxProviderCalls - providerCalls);
-  const estimatedCost = responses.reduce((sum, response) => sum + response.usage.estimatedCost, 0);
-  const costs = responses.map((response) => response.usage.actualCost).filter((cost): cost is number => cost !== null);
-  const actualCost = costs.length ? costs.reduce((sum, cost) => sum + cost, 0) : null;
+  const providerCalls = providerAttemptBudget.consumed;
   const providerResponse = responses.find((response) => response.status !== "failed") ?? responses.at(-1);
   const providerId = providerResponse && providerResponse.providerId !== "router"
     ? providerResponse.providerId
@@ -917,8 +934,8 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
       status: error?.code === "NO_PROVIDER" ? "UNAVAILABLE" : "FAILED",
       providerCalls,
       rawResultCount: rawCandidates.length,
-      estimatedCost,
-      actualCost,
+      estimatedCost: providerAttemptBudget.estimatedCost,
+      actualCost: providerAttemptBudget.actualCost,
       errorCode: error?.code ?? "NO_PROVIDER",
       errorMessage: error?.message ?? "Discovery provider did not return candidates.",
       completedAt: new Date(),
@@ -934,8 +951,8 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
       query: queries[0] ?? "",
       queries,
       providerCalls,
-      estimatedCost,
-      actualCost,
+      estimatedCost: providerAttemptBudget.estimatedCost,
+      actualCost: providerAttemptBudget.actualCost,
       rawResults: rawCandidates.length,
       discovered: 0,
       canonicalized: 0,
@@ -955,9 +972,6 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
   let possibleMatches = 0;
   let rejected = 0;
   const reports: DiscoveryCandidateReport[] = [];
-  let identityProviderCalls = 0;
-  let identityEstimatedCost = 0;
-  let identityActualCost: number | null = 0;
   for (const { candidate, response, query } of rawCandidates.slice(0, limit)) {
     const initialNormalized = candidateInput(candidate);
     if (!initialNormalized.value) {
@@ -984,9 +998,9 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
     let resolvedCandidate = relationship
       ? { ...candidate, name: relationship.accountName }
       : candidate;
-    if (!candidate.domain && !candidate.linkedinUrl && remainingProviderCalls > 0) {
-      remainingProviderCalls -= 1;
+    if (!candidate.domain && !candidate.linkedinUrl && providerAttemptBudget.remaining > 0) {
       const lookup = await input.router.lookupCompany({
+        providerAttemptBudget,
         name: candidate.name,
         sourceUrl: candidate.sourceUrl ?? candidate.website ?? undefined,
         linkedinUrl: candidate.linkedinUrl ?? undefined,
@@ -1010,13 +1024,6 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
           website: lookupNormalized.value.website,
         };
       }
-      identityProviderCalls += 1;
-      identityEstimatedCost += lookup.usage.estimatedCost;
-      if (identityActualCost !== null) {
-        identityActualCost = lookup.usage.actualCost === null
-          ? null
-          : identityActualCost + lookup.usage.actualCost;
-      }
     }
     const normalized = candidateInput(resolvedCandidate);
     if (!normalized.value) {
@@ -1036,28 +1043,17 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
       candidateIdentity.identityState !== "NOT_A_COMPANY" &&
       (value.domain || Boolean(value.linkedinUrl)) &&
       input.router.searchWeb &&
-      (remainingProviderCalls > 0 || Boolean(value.linkedinUrl))) {
-      let actualProfileCalls = 0;
+      (providerAttemptBudget.remaining > 0 || Boolean(value.linkedinUrl))) {
       const budgetedSearchWeb: ProviderOperations["searchWeb"] = async (request) => {
-        if (remainingProviderCalls <= 0) {
-          return {
-            status: "failed",
-            providerId: "identity-budget",
-            providerRequestId: request.requestId ?? `identity-budget:${run.id}`,
-            data: null,
-            sources: [],
-            usage: { estimatedCost: 0, actualCost: 0, latencyMs: 0, runtimeMs: 0, resultCount: 0 },
-            error: { code: "BUDGET_EXHAUSTED", message: "Identity provider-call budget exhausted", retryable: false },
-            retryable: false,
-            capturedAt: now.toISOString(),
-          };
-        }
-        remainingProviderCalls -= 1;
-        actualProfileCalls += 1;
-        return input.router.searchWeb!(request);
+        return input.router.searchWeb!({
+          ...request,
+          providerAttemptBudget: request.providerAttemptBudget ?? providerAttemptBudget,
+          metadata: { ...(request.metadata ?? {}), maxProviderAttempts: "1" },
+        });
       };
       const resolution = await resolveCompanyProfileWithRouter({
         request: {
+          providerAttemptBudget,
           companyName: relationship?.originalLabel ?? value.canonicalName,
           canonicalDomain: value.domain,
           websiteUrl: value.website,
@@ -1089,13 +1085,6 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
         router: { searchWeb: budgetedSearchWeb },
         now,
       });
-      identityProviderCalls += actualProfileCalls;
-      identityEstimatedCost += resolution.response.usage.estimatedCost;
-      if (identityActualCost !== null) {
-        identityActualCost = resolution.response.usage.actualCost === null
-          ? null
-          : identityActualCost + resolution.response.usage.actualCost;
-      }
       const profile = resolution.response.data;
       profileResolutionResult = profile;
       const verifiedProfile = Boolean(profile &&
@@ -1149,20 +1138,17 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
     let roleDescription: { text: string; source: string } | null = null;
     // Fresh discovery cohort only: a bounded, domain-restricted role question.
     // It does not write the text to the global canonical company record.
-    if (!value.description?.trim() && value.domain && candidateIdentity.canonicalAttachAllowed && input.router.searchWeb && remainingProviderCalls > 0) {
-      remainingProviderCalls -= 1;
+    if (!value.description?.trim() && value.domain && candidateIdentity.canonicalAttachAllowed && input.router.searchWeb && providerAttemptBudget.remaining > 0) {
       const response = await input.router.searchWeb({
+        providerAttemptBudget,
         query: `What does ${value.canonicalName} primarily do?`,
         domains: [value.domain],
         limit: 2,
         searchDepth: "basic",
         includeRawContent: true,
         requestId: `buyer-role-description:${run.id}:${reports.length + 1}`,
-        metadata: { organizationId: input.organizationId, projectId: input.projectId, discoveryRunId: run.id },
+        metadata: { organizationId: input.organizationId, projectId: input.projectId, discoveryRunId: run.id, maxProviderAttempts: "1" },
       });
-      identityProviderCalls += 1;
-      identityEstimatedCost += response.usage.estimatedCost;
-      if (identityActualCost !== null) identityActualCost = response.usage.actualCost === null ? null : identityActualCost + response.usage.actualCost;
       if (response.status === "success") {
         for (const item of response.data?.results ?? []) {
           const accepted = trustedCanonicalDomainDescription(item, value.domain);
@@ -1483,7 +1469,10 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
         organizationId: input.organizationId,
         projectId: input.projectId,
         companyId: report.companyId,
-        router: bindControlPlaneProviderOperations(input.router as Pick<ProviderOperations, "searchWeb" | "enrichCompany">),
+        router: bindControlPlaneProviderOperations(
+          input.router as Pick<ProviderOperations, "searchWeb" | "enrichCompany">,
+          providerAttemptBudget,
+        ),
         now,
       });
       report.buyerRole = intelligence.buyerRole as DiscoveryCandidateReport["buyerRole"];
@@ -1500,15 +1489,13 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
   await db.update(companyDiscoveryRunsTable).set({
     providerId,
     status,
-    providerCalls: providerCalls + identityProviderCalls,
+    providerCalls: providerAttemptBudget.consumed,
     rawResultCount: rawCandidates.length,
     acceptedCandidateCount: evaluableCount(),
     duplicateCount: duplicatesRemoved,
     rejectedCount: rejected,
-    estimatedCost: estimatedCost + identityEstimatedCost,
-    actualCost: actualCost === null || identityActualCost === null
-      ? null
-      : actualCost + identityActualCost,
+    estimatedCost: providerAttemptBudget.estimatedCost,
+    actualCost: providerAttemptBudget.actualCost,
     strategy: {
       ...plan.strategy,
       identityCandidateReviews: reports
@@ -1533,11 +1520,9 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
     providerId,
     query: queries[0] ?? "",
     queries,
-    providerCalls: providerCalls + identityProviderCalls,
-    estimatedCost: estimatedCost + identityEstimatedCost,
-    actualCost: actualCost === null || identityActualCost === null
-      ? null
-      : actualCost + identityActualCost,
+    providerCalls: providerAttemptBudget.consumed,
+    estimatedCost: providerAttemptBudget.estimatedCost,
+    actualCost: providerAttemptBudget.actualCost,
     rawResults: rawCandidates.length,
     discovered: evaluableCount(),
     canonicalized,

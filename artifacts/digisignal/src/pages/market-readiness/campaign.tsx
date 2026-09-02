@@ -105,6 +105,7 @@ export default function MarketReadinessCampaignPage() {
   const advanceWorker = useRequestMarketReadinessWorkerAdvance({
     mutation: {
       onSuccess: (res) => {
+        queryClient.invalidateQueries({ queryKey: getGetMarketReadinessCampaignQueryKey(activeProjectId ?? "", campaignId ?? "") });
         queryClient.invalidateQueries({ queryKey: getListMarketReadinessCohortQueryKey(activeProjectId ?? "", campaignId ?? "") });
         if (res.accepted) {
           toast.success("Worker advanced", { description: res.message });
@@ -222,9 +223,11 @@ export default function MarketReadinessCampaignPage() {
               <XCircle className="mr-2 h-4 w-4" /> Cancel
             </Button>
           )}
-          <Button variant="outline" onClick={() => advanceWorker.mutate({ projectId: activeProjectId, campaignId })} disabled={advanceWorker.isPending}>
-            <RotateCw className="mr-2 h-4 w-4" /> Advance Worker
-          </Button>
+          {(campaign.state === 'DISCOVERING' || campaign.state === 'RUNNING') && (
+            <Button variant="outline" onClick={() => advanceWorker.mutate({ projectId: activeProjectId, campaignId })} disabled={advanceWorker.isPending}>
+              <RotateCw className="mr-2 h-4 w-4" /> Advance
+            </Button>
+          )}
         </div>
       </div>
 
