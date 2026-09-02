@@ -41,3 +41,4 @@
 - [Company-intelligence freshness](company-intelligence-freshness.md) — reuse resolved roles only under exact current context and model-input fingerprints; UNKNOWN is never fresh.
 - [Stateful capability handoffs](stateful-capability-handoffs.md) — bind router methods when projecting capabilities across orchestration boundaries.
 - [ICP evidence gaps](icp-evidence-gaps.md) — WHO unknowns name configured missing dimensions; enrich only gaps that firmographics can resolve.
+- [Semantic evidence snapshots](semantic-evidence-snapshots.md) — derived assessment snapshots cannot bootstrap their own evidence or enter upstream fingerprints.

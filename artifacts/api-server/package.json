@@ -9,6 +9,7 @@
     "start": "node --enable-source-maps ./dist/index.mjs",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test:fix-08": "node ./scripts/test-fix-08.mjs",
+    "test:company-assessment-readiness": "node ./scripts/test-company-assessment-readiness.mjs",
     "replay:fix-08": "NODE_ENV=development JYRA_FIX_08_REPLAY=YES JYRA_FIX_08_CONTACTS_ENABLED=false node ./scripts/run-fix-08-replay.mjs",
     "test:icp": "node ./scripts/test-icp-engine.mjs",
     "test:business-twin": "node ./scripts/test-business-twin-maturity.mjs",
@@ -93,7 +94,8 @@
       ,"replay:buyer-role-resolution-06a": "NODE_ENV=development node ./scripts/run-buyer-role-resolution-06a-replay.mjs"
        ,"validate:buyer-role-resolution-06a:fresh": "NODE_ENV=development JYRA_REALITY_CONTACT_ENRICHMENT_ENABLED=false JYRA_06A_FRESH_VALIDATION=YES node ./scripts/run-buyer-role-resolution-06a-fresh-validation.mjs"
        ,"validate:fix-11-digipuush:fresh": "NODE_ENV=development JYRA_FIX_11_RUN_FRESH_20=YES node ./scripts/run-fix-11-digipuush-validation.mjs"
-       ,"validate:architecture-v1-clean-cross-domain:fresh": "NODE_ENV=development JYRA_ARCHITECTURE_V1_CLEAN_FRESH_20=YES node ./scripts/run-architecture-v1-clean-cross-domain-validation.mjs"
+        ,"validate:architecture-v1-clean-cross-domain:fresh": "NODE_ENV=development JYRA_ARCHITECTURE_V1_CLEAN_FRESH_20=YES node ./scripts/run-architecture-v1-clean-cross-domain-validation.mjs"
+        ,"regression:task-105-evidence-admission": "NODE_ENV=development JYRA_TASK_105_POST_REPAIR_REGRESSION=YES node ./scripts/run-task-105-evidence-admission-regression.mjs"
   },
   "dependencies": {
     "@clerk/express": "^2.1.63",

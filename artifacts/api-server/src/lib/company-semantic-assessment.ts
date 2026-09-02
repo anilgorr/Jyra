@@ -28,7 +28,62 @@ export const companySemanticOutputSchema = z.object({
   missing_information: z.array(text(240)).max(15),
 }).strict();
 export type CompanySemanticOutput = z.infer<typeof companySemanticOutputSchema>;
-export type CandidateEvidence = { id: string; sourceType: string; sourceUrl: string | null; text: string };
+export type CandidateEvidence = {
+  id: string;
+  sourceType: string;
+  sourceUrl: string | null;
+  text: string;
+  fields?: string[];
+  referenceKind?: "COMPANY_PROVENANCE" | "CANONICAL_COMPANY";
+};
+export type CompanyAssessmentReadiness = {
+  ready: boolean;
+  identityPermission: "ALLOWED" | "BLOCKED";
+  mciSufficient: boolean;
+  primaryBusinessEvidenceSufficient: boolean;
+  supportingEvidenceCount: number;
+  missingNonBlockingFields: string[];
+  blockingReasons: Array<"IDENTITY_PERMISSION_INSUFFICIENT" | "MCI_INSUFFICIENT" | "PRIMARY_BUSINESS_EVIDENCE_MISSING" | "NO_ADMISSIBLE_EVIDENCE">;
+  admittedEvidenceIds: string[];
+};
+const ADMISSIBLE_SOURCE_TYPES = new Set(["COMPANY_FIRMOGRAPHICS", "JYRA_DISCOVERY", "COMPANY_PROFILE_RESOLUTION", "COMPANY_PROFILE_RESOLUTION_REVIEW"]);
+const PRIMARY_BUSINESS_FIELDS = new Set(["description", "companyDescription", "productsServices", "about", "searchResultExcerpt", "snippet", "specialties"]);
+const meaningfulBusinessText = (value: string) =>
+  value.replace(/\s+/g, " ").trim().length >= 12 && value.trim().split(/\s+/).length >= 3;
+
+/** Optional firmographic gaps remain visible but cannot suppress assessment
+ * when grounded primary-business text exists. */
+export function companyAssessmentReadiness(input: {
+  identitySafe: boolean;
+  mciSufficient: boolean;
+  profile: Pick<CanonicalCompanyProfile, "productsServices" | "employeesExact" | "employeesMin" | "employeesMax" | "country" | "countryIso2">;
+  evidence: CandidateEvidence[];
+}): CompanyAssessmentReadiness {
+  const admitted = input.evidence.filter((item) => meaningfulBusinessText(item.text));
+  const primary = admitted.filter((item) => (item.fields ?? []).some((field) => PRIMARY_BUSINESS_FIELDS.has(field)));
+  const blockingReasons: CompanyAssessmentReadiness["blockingReasons"] = [];
+  if (!input.identitySafe) blockingReasons.push("IDENTITY_PERMISSION_INSUFFICIENT");
+  if (!input.mciSufficient) blockingReasons.push("MCI_INSUFFICIENT");
+  if (!input.evidence.length) blockingReasons.push("NO_ADMISSIBLE_EVIDENCE");
+  if (!primary.length) blockingReasons.push("PRIMARY_BUSINESS_EVIDENCE_MISSING");
+  const missingNonBlockingFields = [
+    !input.profile.productsServices.length ? "productsServices" : null,
+    input.profile.employeesExact === null && input.profile.employeesMin === null && input.profile.employeesMax === null ? "employees" : null,
+    !input.profile.country && !input.profile.countryIso2 ? "geography" : null,
+    "technology",
+    "compliance",
+  ].filter((field): field is string => field !== null);
+  return {
+    ready: blockingReasons.length === 0,
+    identityPermission: input.identitySafe ? "ALLOWED" : "BLOCKED",
+    mciSufficient: input.mciSufficient,
+    primaryBusinessEvidenceSufficient: primary.length > 0,
+    supportingEvidenceCount: admitted.length,
+    missingNonBlockingFields,
+    blockingReasons,
+    admittedEvidenceIds: admitted.map((item) => item.id),
+  };
+}
 /** OpenAI strict-mode schema mirrors the Zod validator; validation remains the
  * authority after parsing. */
 export const companySemanticResponseSchema = {
@@ -67,18 +122,38 @@ export function setSemanticModelInvokerForTests(invoker: typeof semanticModelInv
 const prohibitedSource = /WHEN|WHY|SIGNAL|OPPORTUNITY|CONTACT|OUTREACH/i;
 const trim = (value: unknown, max = 900) => typeof value === "string" ? value.replace(/\s+/g, " ").trim().slice(0, max) : "";
 /** Builds a small, stable evidence set; temporal/intent sources are excluded. */
-export function buildCandidateEvidence(_profile: CanonicalCompanyProfile, provenance: Array<{ id: string; sourceType: string; sourceUrl: string | null; payload: Record<string, unknown> }>): CandidateEvidence[] {
-  const seed: CandidateEvidence[] = [];
+export function buildCandidateEvidence(
+  profile: CanonicalCompanyProfile,
+  provenance: Array<{ id: string; sourceType: string; sourceUrl: string | null; payload: Record<string, unknown> }>,
+  options: { includeAssessmentSnapshots?: boolean } = {},
+): CandidateEvidence[] {
+  const seed = new Map<string, CandidateEvidence>();
+  const canonicalDescription = profile.provenance?.primaryBusinessDescription;
+  if (profile.primaryBusinessDescription && canonicalDescription?.sourceType === "CANONICAL_COMPANY"
+    && trim(canonicalDescription.rawValue) === trim(profile.primaryBusinessDescription)) {
+    seed.set(profile.companyId, {
+      id: profile.companyId,
+      sourceType: "CANONICAL_COMPANY",
+      sourceUrl: canonicalDescription.sourceUrl,
+      text: trim(profile.primaryBusinessDescription, 1800),
+      fields: ["description"],
+      referenceKind: "CANONICAL_COMPANY",
+    });
+  }
   for (const item of provenance) {
-    if (prohibitedSource.test(item.sourceType) || !["COMPANY_FIRMOGRAPHICS", "JYRA_DISCOVERY", "COMPANY_PROFILE_RESOLUTION", "COMPANY_PROFILE_RESOLUTION_REVIEW"].includes(item.sourceType)) continue;
+    if (prohibitedSource.test(item.sourceType) || !ADMISSIBLE_SOURCE_TYPES.has(item.sourceType)) continue;
     const result = item.payload.result as Record<string, unknown> | undefined;
     const attrs = result?.attributes as Record<string, unknown> | undefined;
     const p = { ...item.payload, ...(attrs ?? {}) };
     const excerpts: string[] = [];
+    const fields = new Set<string>();
     for (const field of ["description", "companyDescription", "industry", "specialties", "productsServices", "about", "searchResultExcerpt", "title"]) {
       const raw = p[field];
       const body = Array.isArray(raw) ? raw.filter((entry): entry is string => typeof entry === "string").join("; ") : trim(raw);
-      if (body) excerpts.push(body);
+      if (body) {
+        excerpts.push(body);
+        fields.add(field);
+      }
     }
     // Profile resolution stores snippets beneath result candidates. They are
     // useful company-understanding evidence but remain tied to this one UUID.
@@ -87,13 +162,36 @@ export function buildCandidateEvidence(_profile: CanonicalCompanyProfile, proven
       const row = candidate as Record<string, unknown>;
       for (const field of ["searchResultExcerpt", "title", "snippet"]) {
         const body = trim(row[field]);
-        if (body) excerpts.push(body);
+        if (body) {
+          excerpts.push(body);
+          fields.add(field);
+        }
       }
     }
     const body = trim([...new Set(excerpts)].join("\n"), 1800);
-    if (body) seed.push({ id: item.id, sourceType: item.sourceType, sourceUrl: item.sourceUrl, text: body });
+    if (body) seed.set(item.id, { id: item.id, sourceType: item.sourceType, sourceUrl: item.sourceUrl, text: body, fields: [...fields].sort(), referenceKind: "COMPANY_PROVENANCE" });
   }
-  return seed.filter((item, index, all) => item.text.length >= 3 && all.findIndex((other) => other.id === item.id) === index).slice(0, 25);
+  for (const item of options.includeAssessmentSnapshots === false
+    ? []
+    : provenance.filter((row) => row.sourceType === "MINIMUM_COMPANY_INTELLIGENCE")) {
+    const claims = Array.isArray(item.payload.claims) ? item.payload.claims : [];
+    for (const claim of claims) {
+      if (!claim || typeof claim !== "object") continue;
+      const row = claim as Record<string, unknown>;
+      const field = String(row.field ?? "");
+      if (!["description", "industry", "productsServices"].includes(field)) continue;
+      const values = Array.isArray(row.value) ? row.value : [row.value];
+      const claimText = trim(values.filter((value): value is string => typeof value === "string").join("; "), 1000);
+      if (!claimText) continue;
+      for (const id of Array.isArray(row.evidenceIds) ? row.evidenceIds.map(String) : []) {
+        const existing = seed.get(id);
+        if (!existing) continue;
+        existing.text = trim([...new Set([existing.text, claimText])].join("\n"), 1800);
+        existing.fields = [...new Set([...(existing.fields ?? []), field])].sort();
+      }
+    }
+  }
+  return [...seed.values()].filter((item) => item.text.length >= 3).slice(0, 25);
 }
 
 export function semanticFingerprint(input: {
@@ -182,7 +280,8 @@ export async function assessCompanySemantically(input: { organizationId: string;
   }
   const provenance = await db.select().from(companyProvenanceTable).where(and(eq(companyProvenanceTable.projectId, input.projectId), eq(companyProvenanceTable.companyId, input.companyId)));
   const evidence = buildCandidateEvidence(input.profile, provenance);
-  if (!evidence.length) {
+  const readiness = companyAssessmentReadiness({ identitySafe: input.identitySafe, mciSufficient: true, profile: input.profile, evidence });
+  if (!readiness.ready) {
     const fp = semanticFingerprint({ projectId: input.projectId, companyId: input.companyId, sellerContextFingerprint: seller.fingerprint,
       canonicalName: input.profile.canonicalName, canonicalDomain: input.profile.domain, evidence });
     const decision = await withSemanticFingerprintLock(fp, (tx) => persistNoCallDecision({ ...input, seller, evidence, reason: "COMPANY_EVIDENCE_INSUFFICIENT" }, tx));

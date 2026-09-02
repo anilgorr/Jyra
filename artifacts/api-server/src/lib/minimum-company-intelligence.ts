@@ -36,7 +36,7 @@ function sufficient(profile: Awaited<ReturnType<typeof getCanonicalCompanyProfil
     products: profile.productsServices })) return true;
   // Resolution snippets are valid semantic inputs even when optional normalized
   // firmographic fields are absent; never require every profile field.
-  return minimumIntelligenceSufficient({ evidenceTexts: buildCandidateEvidence(profile, rows).map((item) => item.text) });
+  return minimumIntelligenceSufficient({ evidenceTexts: buildCandidateEvidence(profile, rows, { includeAssessmentSnapshots: false }).map((item) => item.text) });
 }
 
 function claimsFor(profile: Awaited<ReturnType<typeof getCanonicalCompanyProfile>>, evidence: ReturnType<typeof buildCandidateEvidence>) {
@@ -72,7 +72,7 @@ async function ensureMinimumCompanyIntelligenceUnlocked(input: {
     eq(companyProvenanceTable.projectId, input.projectId), eq(companyProvenanceTable.companyId, input.companyId),
   )).orderBy(desc(companyProvenanceTable.createdAt));
   const profile = await getCanonicalCompanyProfile(input.projectId, company);
-  const evidence = buildCandidateEvidence(profile, rows);
+  const evidence = buildCandidateEvidence(profile, rows, { includeAssessmentSnapshots: false });
   let identityPermissions = deriveIdentityPermissions({ domain: company.domain, provenance: rows });
   let identitySafe = identityPermissions.canRunCompanyUnderstanding;
   const fingerprint = createHash("sha256").update(JSON.stringify({
@@ -140,7 +140,7 @@ async function ensureMinimumCompanyIntelligenceUnlocked(input: {
     .where(and(eq(companyProvenanceTable.projectId, input.projectId), eq(companyProvenanceTable.companyId, company.id)))
     .orderBy(desc(companyProvenanceTable.createdAt));
   const finalProfile = await getCanonicalCompanyProfile(input.projectId, company);
-  const finalEvidence = buildCandidateEvidence(finalProfile, finalRows);
+  const finalEvidence = buildCandidateEvidence(finalProfile, finalRows, { includeAssessmentSnapshots: false });
   identityPermissions = deriveIdentityPermissions({ domain: company.domain, provenance: finalRows });
   identitySafe = identityPermissions.canRunCompanyUnderstanding;
   const reasonCode = stage === "SUFFICIENT" ? null

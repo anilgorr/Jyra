@@ -1,0 +1,602 @@
+{
+  "task": "TASK_105_POST_REPAIR_REGRESSION",
+  "status": "PASS",
+  "repairVerdict": "YES",
+  "evaluatedAt": "2026-09-02T06:14:59.317Z",
+  "goldSha256": "f59aca76b676d0e54d0899dd23bb3e5c6d5912e71e0597d967a2a722ac8ecfca",
+  "implementation": {
+    "filesChanged": [
+      "artifacts/api-server/src/lib/company-semantic-assessment.ts",
+      "artifacts/api-server/src/lib/minimum-company-intelligence.ts",
+      "artifacts/api-server/scripts/company-assessment-readiness-test-entry.ts",
+      "artifacts/api-server/scripts/test-company-assessment-readiness.mjs",
+      "artifacts/api-server/scripts/fix-08-test-entry.ts",
+      "artifacts/api-server/scripts/test-fix-08.mjs",
+      "artifacts/api-server/scripts/task-105-evidence-admission-regression-entry.ts",
+      "artifacts/api-server/scripts/run-task-105-evidence-admission-regression.mjs",
+      "artifacts/api-server/package.json"
+    ],
+    "logicBefore": "Semantic assessment recorded COMPANY_EVIDENCE_INSUFFICIENT when useful persisted descriptions were excluded by the admission boundary.",
+    "logicAfter": "The readiness contract admits explicit primary-business text from original admissible provenance or an explicitly labeled canonical-company record reference; unlinked MCI claims are rejected and optional profile gaps remain non-blocking."
+  },
+  "source": {
+    "task100RawSha256": "4f1ff5d768c12be98ce08eb4ab60da3634b9e53caa643cb3fef6ae6c7bc661d7",
+    "task104Artifact": "../../evaluations/jyra-clean-room-v1/TASK_104_MARKET_QUALITY_EVALUATION.json",
+    "frozenProjects": [
+      "db141bf9-bc25-4e19-87e1-1d4db4a6a005",
+      "364a64a0-98ba-42d5-b27b-94478d26226b"
+    ],
+    "newDevelopmentProjects": [
+      "dd5c1c72-10ae-496b-9ff3-4febfce513f8",
+      "e13b6726-3eb9-4e76-853b-19815a928062"
+    ]
+  },
+  "safety": {
+    "developmentOnly": true,
+    "providerCalls": 0,
+    "providerMethodsThrow": true,
+    "productionModified": false,
+    "goldModified": false,
+    "task100HistoricalPredictionsModified": false,
+    "benchmarkSpecificRuntimeLogic": false
+  },
+  "before": {
+    "coverage": {
+      "commercialRoleAvailable": 20,
+      "whoAvailable": 1,
+      "completeRoleWhoPair": 1,
+      "predictedUnknownRole": 16,
+      "predictedInsufficientWho": 1,
+      "identityUnresolved": 2,
+      "researchBlocked": 2,
+      "safeAbstentions": 1,
+      "unsafeOverclaims": 1,
+      "excludedAssessment": {
+        "3LOCKS": "Safe abstention: unresolved identity, blocked control path, UNKNOWN role, and no WHO.",
+        "Pure Sales": "Unsafe role overclaim within an insufficient gold record: ADJACENT_VENDOR at 0.75 despite human-reviewed POTENTIAL_BUYER; WHO remained absent."
+      }
+    },
+    "commercialRoleStrict": {
+      "correct": 2,
+      "eligible": 18,
+      "accuracy": 0.1111111111111111,
+      "byDomain": {
+        "DIGIPUUSH": {
+          "correct": 1,
+          "eligible": 9,
+          "accuracy": 0.1111111111111111
+        },
+        "MANAGED_SOC": {
+          "correct": 1,
+          "eligible": 9,
+          "accuracy": 0.1111111111111111
+        }
+      },
+      "potentialBuyerPrecision": {
+        "correct": 1,
+        "predicted": 1,
+        "value": 1
+      },
+      "sellerCompetitorRecall": {
+        "correct": 1,
+        "gold": 8,
+        "value": 0.125
+      }
+    },
+    "whoStrict": {
+      "correct": 0,
+      "eligible": 18,
+      "accuracy": 0,
+      "byDomain": {
+        "DIGIPUUSH": {
+          "correct": 0,
+          "eligible": 9,
+          "accuracy": 0
+        },
+        "MANAGED_SOC": {
+          "correct": 0,
+          "eligible": 9,
+          "accuracy": 0
+        }
+      },
+      "binaryBuyerFit": {
+        "eligible": 0,
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "precision": null,
+        "recall": null,
+        "f1": null
+      }
+    },
+    "competitorSafety": {
+      "goldCompetitorCount": 8,
+      "correctlyDetected": 1,
+      "dangerousCompetitorAsBuyerCount": 0,
+      "companies": [],
+      "rate": 0
+    }
+  },
+  "after": {
+    "commercialRoleCoverage": 20,
+    "whoAvailable": 6,
+    "completeRoleWho": 6,
+    "unknownCommercialRole": 4,
+    "missingWho": 14,
+    "commercialRoleStrict": {
+      "correct": 13,
+      "eligible": 18,
+      "accuracy": 0.7222222222222222
+    },
+    "whoStrict": {
+      "correct": 3,
+      "eligible": 18,
+      "accuracy": 0.16666666666666666
+    },
+    "potentialBuyerPrecision": {
+      "correct": 5,
+      "predicted": 5,
+      "value": 1
+    },
+    "sellerCompetitorRecall": {
+      "correct": 8,
+      "gold": 8,
+      "value": 1
+    },
+    "dangerousCompetitorAsBuyer": 0,
+    "firstErrorDistribution": {
+      "IDENTITY_RESOLUTION": 1,
+      "COMPANY_UNDERSTANDING": 0,
+      "COMMERCIAL_ROLE": 4,
+      "ICP_CRITERION_MAPPING": 0,
+      "WHO_DECISION_POLICY": 8,
+      "INSUFFICIENT_EVIDENCE_HANDLING": 0,
+      "PROVIDER_DATA_GAP": 2,
+      "OTHER": 0
+    }
+  },
+  "comparisons": [
+    {
+      "benchmarkCompanyId": "c5a70b95-1302-4fa3-9e96-8ee6c6d18926",
+      "domainKey": "DIGIPUUSH",
+      "strictEligible": true,
+      "gold": {
+        "commercialRole": "POTENTIAL_BUYER",
+        "who": "LIKELY_NOT_FIT"
+      },
+      "task105": {
+        "buyerRole": "POTENTIAL_BUYER",
+        "who": "LIKELY_NOT_FIT",
+        "reasonCode": "ICP_NOT_FIT",
+        "semanticUnknownReason": null,
+        "semanticModelInvoked": true,
+        "identitySafe": true,
+        "mciStage": "SUFFICIENT"
+      },
+      "firstError": null
+    },
+    {
+      "benchmarkCompanyId": "6594cacd-e2a9-4803-ba7a-e166b8da7489",
+      "domainKey": "DIGIPUUSH",
+      "strictEligible": true,
+      "gold": {
+        "commercialRole": "POTENTIAL_BUYER",
+        "who": "POSSIBLE_FIT"
+      },
+      "task105": {
+        "buyerRole": "ADJACENT_VENDOR",
+        "who": "MISSING_PREDICTION",
+        "reasonCode": "ADJACENT_VENDOR_NOT_ELIGIBLE",
+        "semanticUnknownReason": null,
+        "semanticModelInvoked": true,
+        "identitySafe": true,
+        "mciStage": "SUFFICIENT"
+      },
+      "firstError": "COMMERCIAL_ROLE"
+    },
+    {
+      "benchmarkCompanyId": "b45eeee7-aab7-412f-b7e7-4c95c999fa14",
+      "domainKey": "DIGIPUUSH",
+      "strictEligible": true,
+      "gold": {
+        "commercialRole": "POTENTIAL_BUYER",
+        "who": "LIKELY_NOT_FIT"
+      },
+      "task105": {
+        "buyerRole": "POTENTIAL_BUYER",
+        "who": "INSUFFICIENT_DATA",
+        "reasonCode": "ICP_REQUIREMENTS_MISSING",
+        "semanticUnknownReason": null,
+        "semanticModelInvoked": true,
+        "identitySafe": true,
+        "mciStage": "SUFFICIENT"
+      },
+      "firstError": "PROVIDER_DATA_GAP"
+    },
+    {
+      "benchmarkCompanyId": "b7e9af09-ede7-46fb-baa1-cf2d9f3158bf",
+      "domainKey": "DIGIPUUSH",
+      "strictEligible": true,
+      "gold": {
+        "commercialRole": "POTENTIAL_BUYER",
+        "who": "LIKELY_FIT"
+      },
+      "task105": {
+        "buyerRole": "POTENTIAL_BUYER",
+        "who": "INSUFFICIENT_DATA",
+        "reasonCode": "ICP_REQUIREMENTS_MISSING",
+        "semanticUnknownReason": null,
+        "semanticModelInvoked": true,
+        "identitySafe": true,
+        "mciStage": "SUFFICIENT"
+      },
+      "firstError": "PROVIDER_DATA_GAP"
+    },
+    {
+      "benchmarkCompanyId": "a96d5d08-cdd4-4970-b0e4-f85d569a3e75",
+      "domainKey": "DIGIPUUSH",
+      "strictEligible": true,
+      "gold": {
+        "commercialRole": "POTENTIAL_BUYER",
+        "who": "LIKELY_NOT_FIT"
+      },
+      "task105": {
+        "buyerRole": "POTENTIAL_BUYER",
+        "who": "LIKELY_NOT_FIT",
+        "reasonCode": "ICP_NOT_FIT",
+        "semanticUnknownReason": null,
+        "semanticModelInvoked": true,
+        "identitySafe": true,
+        "mciStage": "SUFFICIENT"
+      },
+      "firstError": null
+    },
+    {
+      "benchmarkCompanyId": "ada76ca1-a14b-48e4-8de6-e96498b23d95",
+      "domainKey": "DIGIPUUSH",
+      "strictEligible": true,
+      "gold": {
+        "commercialRole": "POTENTIAL_BUYER",
+        "who": "LIKELY_FIT"
+      },
+      "task105": {
+        "buyerRole": "UNKNOWN",
+        "who": "MISSING_PREDICTION",
+        "reasonCode": "COMMERCIAL_RELATIONSHIP_AMBIGUOUS",
+        "semanticUnknownReason": "LLM_LOW_CONFIDENCE",
+        "semanticModelInvoked": true,
+        "identitySafe": true,
+        "mciStage": "SUFFICIENT"
+      },
+      "firstError": "COMMERCIAL_ROLE"
+    },
+    {
+      "benchmarkCompanyId": "252b9ea5-ec55-49b5-8bf7-c514da6ca2cd",
+      "domainKey": "DIGIPUUSH",
+      "strictEligible": true,
+      "gold": {
+        "commercialRole": "POTENTIAL_BUYER",
+        "who": "LIKELY_NOT_FIT"
+      },
+      "task105": {
+        "buyerRole": "PARTNER_POSSIBLE",
+        "who": "MISSING_PREDICTION",
+        "reasonCode": "PARTNER_NOT_ELIGIBLE",
+        "semanticUnknownReason": null,
+        "semanticModelInvoked": true,
+        "identitySafe": true,
+        "mciStage": "SUFFICIENT"
+      },
+      "firstError": "COMMERCIAL_ROLE"
+    },
+    {
+      "benchmarkCompanyId": "d2dd1f48-1b81-4149-a298-1dde2ae96ade",
+      "domainKey": "DIGIPUUSH",
+      "strictEligible": false,
+      "gold": {
+        "commercialRole": "POTENTIAL_BUYER",
+        "who": "INSUFFICIENT_DATA"
+      },
+      "task105": {
+        "buyerRole": "POTENTIAL_BUYER",
+        "who": "INSUFFICIENT_DATA",
+        "reasonCode": "ICP_REQUIREMENTS_MISSING",
+        "semanticUnknownReason": null,
+        "semanticModelInvoked": true,
+        "identitySafe": true,
+        "mciStage": "SUFFICIENT"
+      },
+      "firstError": null
+    },
+    {
+      "benchmarkCompanyId": "4233dfdf-a2ac-48de-8347-91759eb415de",
+      "domainKey": "DIGIPUUSH",
+      "strictEligible": true,
+      "gold": {
+        "commercialRole": "POTENTIAL_BUYER",
+        "who": "LIKELY_NOT_FIT"
+      },
+      "task105": {
+        "buyerRole": "UNKNOWN",
+        "who": "MISSING_PREDICTION",
+        "reasonCode": "COMMERCIAL_RELATIONSHIP_AMBIGUOUS",
+        "semanticUnknownReason": "LLM_LOW_CONFIDENCE",
+        "semanticModelInvoked": true,
+        "identitySafe": true,
+        "mciStage": "SUFFICIENT"
+      },
+      "firstError": "COMMERCIAL_ROLE"
+    },
+    {
+      "benchmarkCompanyId": "60fafac0-f176-4d81-8215-847e1026ba74",
+      "domainKey": "DIGIPUUSH",
+      "strictEligible": true,
+      "gold": {
+        "commercialRole": "POTENTIAL_BUYER",
+        "who": "LIKELY_NOT_FIT"
+      },
+      "task105": {
+        "buyerRole": "POTENTIAL_BUYER",
+        "who": "LIKELY_NOT_FIT",
+        "reasonCode": "ICP_NOT_FIT",
+        "semanticUnknownReason": null,
+        "semanticModelInvoked": true,
+        "identitySafe": true,
+        "mciStage": "SUFFICIENT"
+      },
+      "firstError": null
+    },
+    {
+      "benchmarkCompanyId": "8a4ac58f-98cd-4a27-b684-ac1bf81293cb",
+      "domainKey": "MANAGED_SOC",
+      "strictEligible": false,
+      "gold": {
+        "commercialRole": "UNKNOWN",
+        "who": "INSUFFICIENT_DATA"
+      },
+      "task105": {
+        "buyerRole": "UNKNOWN",
+        "who": "MISSING_PREDICTION",
+        "reasonCode": "DOMAIN_MISSING",
+        "semanticUnknownReason": null,
+        "semanticModelInvoked": false,
+        "identitySafe": false,
+        "mciStage": "UNSAFE_IDENTITY"
+      },
+      "firstError": null
+    },
+    {
+      "benchmarkCompanyId": "5e4137f0-f1da-4877-b78c-330d77e4d58d",
+      "domainKey": "MANAGED_SOC",
+      "strictEligible": true,
+      "gold": {
+        "commercialRole": "SELLER_COMPETITOR",
+        "who": "LIKELY_NOT_FIT"
+      },
+      "task105": {
+        "buyerRole": "SELLER_COMPETITOR",
+        "who": "MISSING_PREDICTION",
+        "reasonCode": "COMPETITOR_NOT_ELIGIBLE",
+        "semanticUnknownReason": null,
+        "semanticModelInvoked": true,
+        "identitySafe": true,
+        "mciStage": "SUFFICIENT"
+      },
+      "firstError": "WHO_DECISION_POLICY"
+    },
+    {
+      "benchmarkCompanyId": "50ceadee-afc9-41a1-b7c7-f6334e213df8",
+      "domainKey": "MANAGED_SOC",
+      "strictEligible": true,
+      "gold": {
+        "commercialRole": "POTENTIAL_BUYER",
+        "who": "LIKELY_FIT"
+      },
+      "task105": {
+        "buyerRole": "UNKNOWN",
+        "who": "MISSING_PREDICTION",
+        "reasonCode": "DOMAIN_MISSING",
+        "semanticUnknownReason": null,
+        "semanticModelInvoked": false,
+        "identitySafe": false,
+        "mciStage": "UNSAFE_IDENTITY"
+      },
+      "firstError": "IDENTITY_RESOLUTION"
+    },
+    {
+      "benchmarkCompanyId": "36e5aa54-997a-4281-95c7-460508f94e32",
+      "domainKey": "MANAGED_SOC",
+      "strictEligible": true,
+      "gold": {
+        "commercialRole": "SELLER_COMPETITOR",
+        "who": "LIKELY_NOT_FIT"
+      },
+      "task105": {
+        "buyerRole": "SELLER_COMPETITOR",
+        "who": "MISSING_PREDICTION",
+        "reasonCode": "COMPETITOR_NOT_ELIGIBLE",
+        "semanticUnknownReason": null,
+        "semanticModelInvoked": true,
+        "identitySafe": true,
+        "mciStage": "SUFFICIENT"
+      },
+      "firstError": "WHO_DECISION_POLICY"
+    },
+    {
+      "benchmarkCompanyId": "8ef6a894-78e7-4276-94d5-3c14c64b7ee1",
+      "domainKey": "MANAGED_SOC",
+      "strictEligible": true,
+      "gold": {
+        "commercialRole": "SELLER_COMPETITOR",
+        "who": "LIKELY_NOT_FIT"
+      },
+      "task105": {
+        "buyerRole": "SELLER_COMPETITOR",
+        "who": "MISSING_PREDICTION",
+        "reasonCode": "COMPETITOR_NOT_ELIGIBLE",
+        "semanticUnknownReason": null,
+        "semanticModelInvoked": true,
+        "identitySafe": true,
+        "mciStage": "SUFFICIENT"
+      },
+      "firstError": "WHO_DECISION_POLICY"
+    },
+    {
+      "benchmarkCompanyId": "05939322-6f62-408e-af6a-307196598385",
+      "domainKey": "MANAGED_SOC",
+      "strictEligible": true,
+      "gold": {
+        "commercialRole": "SELLER_COMPETITOR",
+        "who": "LIKELY_NOT_FIT"
+      },
+      "task105": {
+        "buyerRole": "SELLER_COMPETITOR",
+        "who": "MISSING_PREDICTION",
+        "reasonCode": "COMPETITOR_NOT_ELIGIBLE",
+        "semanticUnknownReason": null,
+        "semanticModelInvoked": true,
+        "identitySafe": true,
+        "mciStage": "SUFFICIENT"
+      },
+      "firstError": "WHO_DECISION_POLICY"
+    },
+    {
+      "benchmarkCompanyId": "e963aa5d-4bf6-4fec-95cb-14ac65c85679",
+      "domainKey": "MANAGED_SOC",
+      "strictEligible": true,
+      "gold": {
+        "commercialRole": "SELLER_COMPETITOR",
+        "who": "LIKELY_NOT_FIT"
+      },
+      "task105": {
+        "buyerRole": "SELLER_COMPETITOR",
+        "who": "MISSING_PREDICTION",
+        "reasonCode": "COMPETITOR_NOT_ELIGIBLE",
+        "semanticUnknownReason": null,
+        "semanticModelInvoked": true,
+        "identitySafe": true,
+        "mciStage": "SUFFICIENT"
+      },
+      "firstError": "WHO_DECISION_POLICY"
+    },
+    {
+      "benchmarkCompanyId": "14f2dadb-6650-43bd-a930-cab49890f950",
+      "domainKey": "MANAGED_SOC",
+      "strictEligible": true,
+      "gold": {
+        "commercialRole": "SELLER_COMPETITOR",
+        "who": "LIKELY_NOT_FIT"
+      },
+      "task105": {
+        "buyerRole": "SELLER_COMPETITOR",
+        "who": "MISSING_PREDICTION",
+        "reasonCode": "COMPETITOR_NOT_ELIGIBLE",
+        "semanticUnknownReason": null,
+        "semanticModelInvoked": true,
+        "identitySafe": true,
+        "mciStage": "SUFFICIENT"
+      },
+      "firstError": "WHO_DECISION_POLICY"
+    },
+    {
+      "benchmarkCompanyId": "8cec0d59-cbec-4285-a830-52fc38523bbf",
+      "domainKey": "MANAGED_SOC",
+      "strictEligible": true,
+      "gold": {
+        "commercialRole": "SELLER_COMPETITOR",
+        "who": "LIKELY_NOT_FIT"
+      },
+      "task105": {
+        "buyerRole": "SELLER_COMPETITOR",
+        "who": "MISSING_PREDICTION",
+        "reasonCode": "COMPETITOR_NOT_ELIGIBLE",
+        "semanticUnknownReason": null,
+        "semanticModelInvoked": true,
+        "identitySafe": true,
+        "mciStage": "SUFFICIENT"
+      },
+      "firstError": "WHO_DECISION_POLICY"
+    },
+    {
+      "benchmarkCompanyId": "bef79acd-a69f-40a9-8488-d46a03ae3710",
+      "domainKey": "MANAGED_SOC",
+      "strictEligible": true,
+      "gold": {
+        "commercialRole": "SELLER_COMPETITOR",
+        "who": "LIKELY_NOT_FIT"
+      },
+      "task105": {
+        "buyerRole": "SELLER_COMPETITOR",
+        "who": "MISSING_PREDICTION",
+        "reasonCode": "COMPETITOR_NOT_ELIGIBLE",
+        "semanticUnknownReason": null,
+        "semanticModelInvoked": true,
+        "identitySafe": true,
+        "mciStage": "SUFFICIENT"
+      },
+      "firstError": "WHO_DECISION_POLICY"
+    }
+  ],
+  "newlyExposedDownstreamErrors": [
+    {
+      "benchmarkCompanyId": "6594cacd-e2a9-4803-ba7a-e166b8da7489",
+      "category": "COMMERCIAL_ROLE"
+    },
+    {
+      "benchmarkCompanyId": "b45eeee7-aab7-412f-b7e7-4c95c999fa14",
+      "category": "PROVIDER_DATA_GAP"
+    },
+    {
+      "benchmarkCompanyId": "b7e9af09-ede7-46fb-baa1-cf2d9f3158bf",
+      "category": "PROVIDER_DATA_GAP"
+    },
+    {
+      "benchmarkCompanyId": "ada76ca1-a14b-48e4-8de6-e96498b23d95",
+      "category": "COMMERCIAL_ROLE"
+    },
+    {
+      "benchmarkCompanyId": "252b9ea5-ec55-49b5-8bf7-c514da6ca2cd",
+      "category": "COMMERCIAL_ROLE"
+    },
+    {
+      "benchmarkCompanyId": "4233dfdf-a2ac-48de-8347-91759eb415de",
+      "category": "COMMERCIAL_ROLE"
+    },
+    {
+      "benchmarkCompanyId": "5e4137f0-f1da-4877-b78c-330d77e4d58d",
+      "category": "WHO_DECISION_POLICY"
+    },
+    {
+      "benchmarkCompanyId": "50ceadee-afc9-41a1-b7c7-f6334e213df8",
+      "category": "IDENTITY_RESOLUTION"
+    },
+    {
+      "benchmarkCompanyId": "36e5aa54-997a-4281-95c7-460508f94e32",
+      "category": "WHO_DECISION_POLICY"
+    },
+    {
+      "benchmarkCompanyId": "8ef6a894-78e7-4276-94d5-3c14c64b7ee1",
+      "category": "WHO_DECISION_POLICY"
+    },
+    {
+      "benchmarkCompanyId": "05939322-6f62-408e-af6a-307196598385",
+      "category": "WHO_DECISION_POLICY"
+    },
+    {
+      "benchmarkCompanyId": "e963aa5d-4bf6-4fec-95cb-14ac65c85679",
+      "category": "WHO_DECISION_POLICY"
+    },
+    {
+      "benchmarkCompanyId": "14f2dadb-6650-43bd-a930-cab49890f950",
+      "category": "WHO_DECISION_POLICY"
+    },
+    {
+      "benchmarkCompanyId": "8cec0d59-cbec-4285-a830-52fc38523bbf",
+      "category": "WHO_DECISION_POLICY"
+    },
+    {
+      "benchmarkCompanyId": "bef79acd-a69f-40a9-8488-d46a03ae3710",
+      "category": "WHO_DECISION_POLICY"
+    }
+  ]
+}

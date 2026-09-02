@@ -1,0 +1,832 @@
+TASK #105 — REPAIR SEMANTIC EVIDENCE ADMISSION / SUFFICIENCY
+
+Context:
+
+Task #104 evaluated the frozen gold benchmark:
+
+JYRA_MARKET_QUALITY_GOLD_V1
+
+Gold SHA-256:
+f59aca76b676d0e54d0899dd23bb3e5c6d5912e71e0597d967a2a722ac8ecfca
+
+Task #104 found:
+
+Commercial Role exact accuracy:
+2/18
+
+WHO exact accuracy:
+0/18
+
+Complete CommercialRole + WHO outputs:
+1/20
+
+Dangerous competitor → buyer errors:
+0
+
+First-error distribution:
+
+IDENTITY_RESOLUTION: 1
+COMPANY_UNDERSTANDING: 0
+COMMERCIAL_ROLE: 1
+ICP_CRITERION_MAPPING: 0
+WHO_DECISION_POLICY: 1
+INSUFFICIENT_EVIDENCE_HANDLING: 13
+PROVIDER_DATA_GAP: 2
+OTHER: 0
+
+The SINGLE approved repair is:
+
+Strengthen the CompanyUnderstanding evidence-admission/sufficiency boundary so identity-safe, MCI-sufficient profiles with explicit primary-business descriptions can proceed to semantic assessment instead of automatically returning COMPANY_EVIDENCE_INSUFFICIENT.
+
+DO NOT implement any other repair in this task.
+
+==================================================
+0. IMPORTANT EVALUATION CONTAMINATION RULE
+==================================================
+
+The frozen 20-company gold benchmark has now been seen.
+
+Therefore:
+
+DO NOT hard-code any of the 20 company names.
+DO NOT hard-code benchmarkCompanyIds.
+DO NOT hard-code Managed SOC companies.
+DO NOT hard-code DigiPuush companies.
+DO NOT add company-specific exceptions.
+DO NOT tune thresholds until these exact 20 labels pass.
+DO NOT use gold labels inside runtime logic.
+DO NOT add rules such as "MDR company = competitor" in this task.
+DO NOT change India geography handling.
+DO NOT change CData-specific behavior.
+DO NOT use the benchmark as training data.
+
+The frozen benchmark may be used ONLY as a post-change regression evaluation.
+
+This repair must be justified from generic system semantics and generic synthetic/unit tests.
+
+==================================================
+1. DATABASE SAFETY
+==================================================
+
+DATABASE SAFETY:
+
+This is development work.
+
+Use ONLY the development database during implementation/testing.
+
+Create/apply migrations to DEVELOPMENT only if absolutely necessary.
+
+DO NOT:
+- migrate production
+- reset production
+- seed production
+- modify production customer data
+- truncate production
+- test against production
+
+Never destroy or overwrite production customer data.
+
+==================================================
+2. DO NOT TOUCH THESE AREAS
+==================================================
+
+Do NOT modify:
+
+- identity-resolution thresholds
+- entity matching rules
+- provider routing
+- company discovery
+- Commercial Role prompt/model/version
+- Commercial Role semantic logic
+- WHO prompt/model/version
+- ICP criterion mapping
+- MUST_HAVE semantics
+- signal/event research
+- WHEN/WHY logic
+- opportunity scoring
+- Business Twin logic
+- Managed SOC signal pack
+- DigiPuush-specific logic
+- control-plane architecture
+- production schema
+- production data
+
+This task is ONLY about the boundary deciding whether existing company evidence is sufficient to invoke semantic Company Understanding / Commercial Relationship assessment.
+
+==================================================
+3. FIND THE CURRENT FAILURE PATH
+==================================================
+
+Trace the Task #100 path that generated:
+
+COMPANY_EVIDENCE_INSUFFICIENT
+
+and caused semantic assessment to be skipped.
+
+Identify:
+
+A. current admission function/service
+B. current required evidence fields
+C. MCI sufficiency calculation
+D. identity safety requirement
+E. conditions that block Company Understanding
+F. conditions that block Commercial Role assessment
+G. reason codes emitted
+H. whether sparse products/services is being treated as fatal
+I. whether descriptive primary-business evidence is being ignored
+J. whether existing persisted profile evidence is available but excluded from the semantic input
+
+Document the exact current behavior before changing it.
+
+==================================================
+4. GENERIC PRINCIPLE
+==================================================
+
+The corrected generic rule should be:
+
+Semantic assessment SHOULD proceed when:
+
+1. Identity is safe enough for the requested action
+AND
+2. Minimum Company Intelligence is sufficient
+AND
+3. There is enough evidence to understand the candidate's primary commercial activity
+
+Primary commercial activity may be established from one or more reliable evidence-backed fields such as:
+
+- primary business description
+- company description
+- products/services
+- homepage/service-page description
+- business model
+- industry plus descriptive evidence
+- other existing evidence-backed company profile text
+
+Do NOT require every company profile field to be populated.
+
+In particular:
+
+Missing or sparse:
+
+- products/services
+- employee size
+- technology
+- geography
+- compliance
+- secondary business details
+
+must NOT automatically make Company Understanding semantically impossible if primary commercial activity can already be understood.
+
+Missing data should remain UNKNOWN downstream where appropriate.
+
+Missing information ≠ negative evidence.
+
+==================================================
+5. ACTION-SCOPED IDENTITY SAFETY MUST REMAIN
+==================================================
+
+Preserve the existing identity permission model:
+
+ATTRIBUTION_SAFE
+RESEARCH_SAFE
+UNSAFE
+
+Do not weaken identity safety merely to increase coverage.
+
+A record with genuinely unresolved or conflicting identity must still abstain.
+
+For example, a name-only entity with multiple conflicting possible companies and no reliable target identity should still be eligible for:
+
+UNKNOWN / insufficient / research-blocked behavior
+
+depending on the existing action-scoped rules.
+
+The repair must not cause ambiguous identities to be semantically assessed as if canonical identity were known.
+
+==================================================
+6. INTRODUCE AN EXPLICIT ASSESSMENT-READINESS CONTRACT
+==================================================
+
+Prefer an explicit deterministic object/function such as:
+
+CompanyAssessmentReadiness
+
+with output conceptually similar to:
+
+{
+  ready: boolean,
+  identityPermission: "...",
+  mciSufficient: boolean,
+  primaryBusinessEvidenceSufficient: boolean,
+  supportingEvidenceCount: number,
+  missingNonBlockingFields: [],
+  blockingReasons: [],
+  admittedEvidenceIds: []
+}
+
+Use the project's existing naming/conventions if an equivalent abstraction already exists.
+
+Do NOT create a parallel architecture unnecessarily.
+
+The core distinction must be:
+
+BLOCKING MISSING DATA
+
+vs
+
+NON-BLOCKING UNKNOWN DATA
+
+Examples of blocking conditions:
+
+- unsafe/unresolved identity when attribution is required
+- no usable description of what the company does
+- evidence conflict that makes primary business ambiguous
+- zero admissible evidence
+- evidence fails provenance/safety requirements
+
+Examples of non-blocking unknowns:
+
+- employee count unavailable
+- exact geography unavailable
+- technology unknown
+- compliance unknown
+- incomplete product list
+- funding unknown
+- hiring unknown
+
+These can remain UNKNOWN in later stages.
+
+==================================================
+7. EVIDENCE ADMISSION
+==================================================
+
+Inspect whether Task #100 already persisted useful evidence that was excluded from semantic assessment.
+
+If:
+
+MCI is sufficient
+AND
+identity permission allows semantic assessment
+AND
+there is an explicit evidence-backed primary-business/company description
+
+then admit that evidence into Company Understanding rather than emitting COMPANY_EVIDENCE_INSUFFICIENT solely because another optional field is sparse.
+
+Do not fabricate missing facts.
+
+Only admit evidence already available in the canonical/provisional evidence system according to existing permissions.
+
+Preserve evidenceIds and provenance.
+
+==================================================
+8. NO NEW PROVIDER CALLS TO FIX SUFFICIENCY
+==================================================
+
+Do not automatically perform new external research merely because optional fields are missing.
+
+For this repair:
+
+existing usable evidence
+→ assess
+
+rather than:
+
+existing usable evidence
+→ demand every field
+→ research again
+
+Provider research should remain reserved for genuinely blocking information gaps according to the orchestrator.
+
+==================================================
+9. COMPANY UNDERSTANDING OUTPUT
+==================================================
+
+Company Understanding should be allowed to produce structured partial understanding.
+
+Example:
+
+primaryBusiness:
+known
+
+productsServices:
+unknown or partial
+
+businessModel:
+known/likely
+
+industry:
+known
+
+geography:
+unknown
+
+employeeSize:
+unknown
+
+technologyFacts:
+unknown
+
+confidence:
+appropriate confidence
+
+This is preferable to suppressing the entire semantic assessment when the company's core commercial activity is already understandable.
+
+Do not invent values merely to fill the schema.
+
+==================================================
+10. COMMERCIAL ROLE HANDOFF
+==================================================
+
+Once Company Understanding is semantically usable, allow the existing Commercial Relationship Assessment stage to execute normally.
+
+Do NOT change its prompt or decision policy.
+
+The point of this task is to allow the existing Commercial Role logic to receive evidence it previously never received.
+
+Preserve seller-relative reasoning:
+
+candidate company understanding
++
+seller Business Twin
++
+specific seller offering
+→ Commercial Relationship Assessment
+
+Do not infer role deterministically from industry.
+
+==================================================
+11. WHO HANDOFF
+==================================================
+
+Do NOT modify WHO logic.
+
+However, if existing orchestration currently fails to call WHO solely because an upstream Company Understanding assessment was incorrectly suppressed, allow the normal existing downstream pipeline to continue.
+
+Do not create artificial WHO labels.
+
+If Commercial Role or ICP still prevents WHO from resolving, preserve that behavior for now.
+
+Task #105 is not a WHO repair.
+
+==================================================
+12. REASON CODES
+==================================================
+
+Keep reason-first orchestration.
+
+Where practical distinguish:
+
+COMPANY_EVIDENCE_INSUFFICIENT
+
+from more precise reasons such as:
+
+PRIMARY_BUSINESS_EVIDENCE_MISSING
+IDENTITY_NOT_ATTRIBUTION_SAFE
+EVIDENCE_CONFLICT
+NO_ADMISSIBLE_EVIDENCE
+
+Use existing enums/naming if equivalent reasons already exist.
+
+Do not break existing API consumers.
+
+If schema compatibility requires retaining COMPANY_EVIDENCE_INSUFFICIENT as a public reason, preserve it and add internal/subreason detail.
+
+==================================================
+13. UNIT / SYNTHETIC TESTS
+==================================================
+
+Create generic tests that do NOT use benchmark company names.
+
+At minimum include:
+
+TEST A — READY WITH PRIMARY BUSINESS
+
+Identity:
+ATTRIBUTION_SAFE
+
+MCI:
+sufficient
+
+Evidence:
+clear primary-business description
+
+Products/services:
+sparse
+
+Employee size:
+unknown
+
+Expected:
+semantic assessment ALLOWED
+
+--------------------------------------------------
+
+TEST B — READY WITH SERVICE PAGE
+
+Identity:
+ATTRIBUTION_SAFE
+
+MCI:
+sufficient
+
+Evidence:
+homepage/service-page clearly states company offering
+
+Technology:
+unknown
+
+Geography:
+unknown
+
+Expected:
+semantic assessment ALLOWED
+
+--------------------------------------------------
+
+TEST C — AMBIGUOUS IDENTITY
+
+Identity:
+UNSAFE or insufficient for attribution
+
+Evidence:
+multiple conflicting candidate companies
+
+Expected:
+semantic assessment BLOCKED
+
+--------------------------------------------------
+
+TEST D — NO PRIMARY BUSINESS EVIDENCE
+
+Identity:
+ATTRIBUTION_SAFE
+
+MCI:
+otherwise partly populated
+
+Evidence:
+no meaningful description of what company sells/does
+
+Expected:
+semantic assessment BLOCKED
+
+--------------------------------------------------
+
+TEST E — UNKNOWN OPTIONAL FIELDS
+
+Identity:
+ATTRIBUTION_SAFE
+
+Primary business:
+known
+
+Products/services:
+known partially
+
+Geography:
+unknown
+
+Employee count:
+unknown
+
+Compliance:
+unknown
+
+Expected:
+semantic assessment ALLOWED
+unknown fields preserved as UNKNOWN
+
+--------------------------------------------------
+
+TEST F — CONFLICTING BUSINESS EVIDENCE
+
+Identity:
+ATTRIBUTION_SAFE
+
+Evidence:
+two credible sources materially disagree on primary commercial activity
+
+Expected:
+semantic assessment BLOCKED or explicit uncertainty according to current evidence-conflict policy
+
+--------------------------------------------------
+
+TEST G — NO EVIDENCE FABRICATION
+
+Provide only:
+primary business + industry
+
+Expected output must NOT invent:
+geography
+employee size
+technology
+compliance
+funding
+
+--------------------------------------------------
+
+TEST H — IDEMPOTENCY
+
+Same evidence fingerprint
+same Business Twin
+same offering
+same inputs
+
+Expected:
+no unnecessary semantic rerun according to existing fingerprint/staleness rules.
+
+==================================================
+14. EXISTING REGRESSION TESTS
+==================================================
+
+Run all relevant existing:
+
+identity
+MCI
+Company Understanding
+Commercial Role
+WHO
+control-plane
+fingerprint/staleness
+tenant isolation
+provider routing
+
+tests.
+
+Do not weaken existing tests merely to make the new behavior pass.
+
+==================================================
+15. POST-REPAIR FROZEN BENCHMARK REGRESSION
+==================================================
+
+ONLY AFTER implementation and generic tests pass:
+
+Evaluate the EXACT same frozen:
+
+JYRA_MARKET_QUALITY_GOLD_V1
+
+as a regression diagnostic.
+
+Important:
+
+This benchmark is no longer an untouched holdout.
+
+Do NOT describe improved results as independent generalization evidence.
+
+Do NOT alter gold.
+
+Do NOT alter Task #100 historical predictions.
+
+Run the current repaired DEVELOPMENT pipeline against the same 20 company/evidence inputs WITHOUT external provider calls if the existing evidence snapshot is sufficient.
+
+Create a NEW run/version.
+
+Never overwrite Task #100.
+
+Call it something explicit such as:
+
+TASK_105_POST_REPAIR_REGRESSION
+
+Use the exact existing clean-room evidence snapshot where possible.
+
+No fresh web research.
+No provider enrichment.
+No company replacements.
+
+==================================================
+16. MEASURE WHAT CHANGED
+==================================================
+
+Compare:
+
+TASK #100
+vs
+TASK #105 repaired run
+
+Report:
+
+A. CommercialRole output coverage
+B. WHO output coverage
+C. CommercialRole exact accuracy on 18 strict records
+D. WHO exact accuracy on 18 strict records
+E. POTENTIAL_BUYER precision
+F. SELLER_COMPETITOR recall
+G. dangerous competitor → buyer errors
+H. UNKNOWN CommercialRole count
+I. missing WHO count
+J. first-error distribution
+
+The PRIMARY success criterion for this repair is:
+
+Did the inappropriate evidence-sufficiency abstention rate drop substantially without creating unsafe buyer classifications?
+
+Do NOT require perfect benchmark accuracy.
+
+==================================================
+17. REPAIR ACCEPTANCE CRITERIA
+==================================================
+
+PASS the repair only if all are true:
+
+1. Generic/synthetic tests pass.
+
+2. Existing architecture regressions pass.
+
+3. Identity safety is not weakened.
+
+4. No production data is modified.
+
+5. No external provider calls occur during frozen-evidence regression.
+
+6. COMPANY_EVIDENCE_INSUFFICIENT / equivalent inappropriate abstentions materially decrease.
+
+7. CommercialRole coverage materially improves.
+
+8. WHO coverage either improves or downstream blockers are clearly exposed.
+
+9. Dangerous competitor → buyer errors do not increase above 0 unless a genuine downstream CommercialRole defect is separately identified.
+
+10. No benchmark-specific company logic was added.
+
+==================================================
+18. DO NOT FIX NEWLY EXPOSED ERRORS
+==================================================
+
+This is critical.
+
+After increasing coverage, other latent errors may become visible.
+
+For example:
+
+- Commercial Role errors
+- mandatory ICP geography errors
+- WHO policy errors
+- provider-data gaps
+- identity-resolution errors
+
+DO NOT fix them in Task #105.
+
+Report them.
+
+We are changing one causal layer at a time.
+
+==================================================
+19. ARTIFACTS
+==================================================
+
+Create:
+
+evaluations/jyra-clean-room-v1/TASK_105_EVIDENCE_ADMISSION_REPAIR.json
+
+and:
+
+evaluations/jyra-clean-room-v1/TASK_105_EVIDENCE_ADMISSION_REPAIR_REPORT.md
+
+Include:
+
+implementation summary
+files changed
+logic before
+logic after
+tests
+regression results
+Task #100 comparison
+new first-error distribution
+newly exposed downstream errors
+safety checks
+provider-call count
+production-modification status
+
+Do not modify:
+
+JYRA_MARKET_QUALITY_GOLD_V1.json
+
+Verify its SHA-256 remains:
+
+f59aca76b676d0e54d0899dd23bb3e5c6d5912e71e0597d967a2a722ac8ecfca
+
+==================================================
+20. FINAL RESPONSE FORMAT
+==================================================
+
+Return:
+
+TASK #105 — EVIDENCE ADMISSION REPAIR
+
+Status:
+PASS / FAIL
+
+Repair implemented:
+<short description>
+
+Files changed:
+<list>
+
+Gold SHA-256 unchanged:
+YES / NO
+
+External provider calls:
+0
+
+Production modified:
+NO
+
+Generic tests:
+x/x
+
+Existing regression tests:
+x/x
+
+====================
+BEFORE → AFTER
+====================
+
+CommercialRole coverage:
+20/20 → x/20
+
+Non-UNKNOWN CommercialRole:
+4/20 → x/20
+
+WHO available:
+1/20 → x/20
+
+Complete CommercialRole + WHO:
+1/20 → x/20
+
+CommercialRole strict accuracy:
+2/18 → x/18
+
+WHO strict accuracy:
+0/18 → x/18
+
+Dangerous competitor → buyer:
+0 → x
+
+COMPANY_EVIDENCE_INSUFFICIENT first-errors:
+13 → x
+
+====================
+NEW FIRST-ERROR DISTRIBUTION
+====================
+
+IDENTITY_RESOLUTION:
+x
+
+COMPANY_UNDERSTANDING:
+x
+
+COMMERCIAL_ROLE:
+x
+
+ICP_CRITERION_MAPPING:
+x
+
+WHO_DECISION_POLICY:
+x
+
+INSUFFICIENT_EVIDENCE_HANDLING:
+x
+
+PROVIDER_DATA_GAP:
+x
+
+OTHER:
+x
+
+====================
+NEWLY EXPOSED DOWNSTREAM ERRORS
+====================
+
+List them, but DO NOT FIX THEM.
+
+====================
+SAFETY
+====================
+
+Identity safety weakened:
+NO
+
+Benchmark-specific rules added:
+NO
+
+Gold modified:
+NO
+
+Task #100 historical predictions modified:
+NO
+
+====================
+VERDICT
+====================
+
+Did the single repair solve the dominant Task #104 failure?
+
+YES / PARTIAL / NO
+
+Explain briefly.
+
+NEXT STEP:
+
+Do not implement another repair and do not run the 50-company Reality Test.
+
+Wait for approval.
