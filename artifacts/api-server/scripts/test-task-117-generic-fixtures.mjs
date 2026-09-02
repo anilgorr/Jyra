@@ -279,23 +279,37 @@ test("Semantic contract", "17 valid first pass materializes immutable provenance
   assert.equal(calls, 1); assert.equal(result.modelCalls, 1); assert.equal(result.assessment.commercialRole.claimBindings[0].claimedValue, "B2B SaaS");
   assert.deepEqual(result.assessment.commercialRole.evidenceIds, [ids[0]]);
 });
-test("Semantic contract", "18 one validation repair succeeds with exact accounting", async () => {
+test("Semantic contract", "18 unknown role citation safely abstains without retry", async () => {
   let calls = 0;
   const result = await directAssessment(async () => {
     calls++;
     const content = compactResponse();
-    if (calls === 1) content.commercialRole.citations[0].claimId = "foreign-claim";
+    content.commercialRole.citations[0].claimId = "foreign-claim";
     return { content, usage: { total_tokens: calls * 10 }, cost: .01 * calls };
   });
-  assert.equal(calls, 2); assert.equal(result.modelCalls, 2); assert.equal(result.usage.total_tokens, 30);
-  assert.equal(result.cost, .03); assert.deepEqual(result.attempts.map((attempt) => attempt.outcome), ["INVALID", "VALID"]);
+  assert.equal(calls, 1); assert.equal(result.modelCalls, 1); assert.equal(result.usage.total_tokens, 10);
+  assert.equal(result.cost, .01); assert.deepEqual(result.attempts.map((attempt) => attempt.outcome), ["VALID"]);
+  assert.equal(result.assessment.commercialRole.value, "UNKNOWN");
+  assert.deepEqual([
+    result.assessment.commercialRole.evidenceIds,
+    result.assessment.commercialRole.claimIds,
+    result.assessment.commercialRole.claimBindings,
+  ], [[], [], []]);
+  assert.match(result.assessment.commercialRole.reason, /unknown atomic claim ID/);
 });
-test("Semantic contract", "19 second invalid response rejects after exactly two calls", async () => {
+test("Semantic contract", "19 unknown parent WHO citation safely abstains without retry", async () => {
   let calls = 0;
-  await assert.rejects(directAssessment(async () => {
+  const result = await directAssessment(async () => {
     calls++; const content = compactResponse(); content.who.citations[0].claimId = "foreign-claim"; return { content };
-  }), (error) => error.code === "V2_ASSESSMENT_INVALID" && error.attempts.length === 2);
-  assert.equal(calls, 2);
+  });
+  assert.equal(calls, 1);
+  assert.equal(result.assessment.who.value, "INSUFFICIENT_DATA");
+  assert.deepEqual([
+    result.assessment.who.evidenceIds,
+    result.assessment.who.claimIds,
+    result.assessment.who.claimBindings,
+  ], [[], [], []]);
+  assert.match(result.assessment.who.reason, /unknown atomic claim ID/);
 });
 test("Semantic contract", "20 reason bounds are enforced", async () => {
   let calls = 0;
@@ -391,17 +405,61 @@ test("Citation normalization", "25 mixed valid and wrong-type criterion keeps on
   assert.deepEqual(result.assessment.who.criteria[0].evidenceIds, [ids[0]]);
   assert.deepEqual(result.assessment.who.criteria[0].claimBindings.map((binding) => binding.claimId), ["claim-geo-0"]);
 });
-test("Citation normalization", "26 unknown criterion claim remains a hard error after two attempts", async () => {
+test("Citation normalization", "26 unknown criterion claim safely abstains without retry", async () => {
   const item = evidence({ primaryBusiness: "B2B SaaS", geography: [{ type: "HEADQUARTERS", value: "TARGET" }] });
   let calls = 0;
-  await assert.rejects(v2.assessMarketFitV2({
+  const result = await v2.assessMarketFitV2({
     context: context("icp-v1", [geoRequirement]), profile: profile([item]), evidence: [item],
     invoke: async () => {
       calls++;
-      return { content: criterionResponse([{ claimId: "unknown-criterion-claim", relation: "SATISFIES_CRITERION" }]) };
+      return { content: criterionResponse([
+        { claimId: "claim-geo-0", relation: "SATISFIES_CRITERION" },
+        { claimId: "unknown-criterion-claim", relation: "SATISFIES_CRITERION" },
+      ]) };
     },
-  }), (error) => error.code === "V2_ASSESSMENT_INVALID" && /unknown cited claimId/.test(error.message));
-  assert.equal(calls, 2);
+  });
+  assert.equal(calls, 1);
+  assert.equal(result.assessment.who.criteria[0].result, "UNKNOWN");
+  assert.deepEqual([
+    result.assessment.who.criteria[0].evidenceIds,
+    result.assessment.who.criteria[0].claimIds,
+    result.assessment.who.criteria[0].claimBindings,
+  ], [[], [], []]);
+  assert.match(result.assessment.who.criteria[0].reason, /unknown atomic claim ID/);
+});
+test("Citation normalization", "26a mixed known and unknown role citations discard the whole role section", async () => {
+  const result = await directAssessment(async () => {
+    const content = compactResponse();
+    content.commercialRole.citations.push({ claimId: "unknown-role-claim", relation: "SUPPORTS_ROLE" });
+    return { content };
+  });
+  assert.equal(result.assessment.commercialRole.value, "UNKNOWN");
+  assert.deepEqual([
+    result.assessment.commercialRole.evidenceIds,
+    result.assessment.commercialRole.claimIds,
+    result.assessment.commercialRole.claimBindings,
+  ], [[], [], []]);
+  assert.equal(JSON.stringify(result.assessment).includes("unknown-role-claim"), false);
+});
+test("Citation normalization", "26b mixed known and unknown parent WHO citations preserve independent criteria", async () => {
+  const item = evidence({ primaryBusiness: "B2B SaaS", geography: [{ type: "HEADQUARTERS", value: "TARGET" }] });
+  const result = await v2.assessMarketFitV2({
+    context: context("icp-v1", [geoRequirement]), profile: profile([item]), evidence: [item],
+    invoke: async () => {
+      const content = criterionResponse([{ claimId: "claim-geo-0", relation: "SATISFIES_CRITERION" }]);
+      content.who.citations.push({ claimId: "unknown-who-claim", relation: "SUPPORTS_WHO" });
+      return { content };
+    },
+  });
+  assert.equal(result.assessment.who.value, "INSUFFICIENT_DATA");
+  assert.deepEqual([
+    result.assessment.who.evidenceIds,
+    result.assessment.who.claimIds,
+    result.assessment.who.claimBindings,
+  ], [[], [], []]);
+  assert.equal(result.assessment.who.criteria[0].result, "PASS");
+  assert.deepEqual(result.assessment.who.criteria[0].claimIds, ["claim-geo-0"]);
+  assert.equal(JSON.stringify(result.assessment).includes("unknown-who-claim"), false);
 });
 test("Cache/Citation normalization", "27 cached wrong-type criterion is normalized before validation", async () => {
   const item = evidence({ primaryBusiness: "B2B SaaS", geography: [{ type: "HEADQUARTERS", value: "TARGET" }] });
@@ -421,6 +479,21 @@ test("Cache/Citation normalization", "27 cached wrong-type criterion is normaliz
   assert.equal(result.observability.modelCalls, 0);
   assert.equal(result.assessment.who.criteria[0].result, "UNKNOWN");
   assert.deepEqual(result.assessment.who.criteria[0].claimBindings, []);
+});
+test("Cache/Citation normalization", "27a cached unknown claim IDs are rejected rather than inferred", async () => {
+  const item = evidence({ primaryBusiness: "B2B SaaS" });
+  const cached = assessment("POTENTIAL_BUYER", "POSSIBLE_FIT");
+  cached.commercialRole.claimIds = ["unknown-cached-claim"];
+  cached.commercialRole.claimBindings = [{
+    claimId: "unknown-cached-claim", claimedValue: "forged", purpose: "commercialRole", relation: "SUPPORTS_ROLE",
+  }];
+  class UnknownClaimAssessmentCache extends v2.InMemoryIntelligenceV2Repository {
+    async getAssessment() { return structuredClone(cached); }
+  }
+  await assert.rejects(
+    run([item], null, new UnknownClaimAssessmentCache()),
+    /V2_CACHED_ASSESSMENT_INVALID: commercialRole cites unknown claim/,
+  );
 });
 test("Safety/Citation normalization", "28 normalized assessment remains valid after safety override", () => {
   const item = evidence({ primaryBusiness: "B2B SaaS", geography: [{ type: "HEADQUARTERS", value: "TARGET" }] });

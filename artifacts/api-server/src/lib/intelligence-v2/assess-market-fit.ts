@@ -5,7 +5,10 @@ import {
   commercialRoles, researchRequirementSchema, whoValues,
   type CompanyIntelligenceProfileV2, type EvidenceItemV2, type SellerRelativeAssessmentV2, type SellerRelativeContextV2,
 } from "./schemas";
-import { normalizeAssessmentEvidenceV2, validateAssessmentEvidenceV2 } from "./evidence-validator";
+import {
+  UNKNOWN_CRITERION_CITATION_REASON, UNKNOWN_ROLE_CITATION_REASON, UNKNOWN_WHO_CITATION_REASON,
+  normalizeAssessmentEvidenceV2, validateAssessmentEvidenceV2,
+} from "./evidence-validator";
 
 export const SELLER_RELATIVE_ASSESSMENT_SYSTEM_PROMPT = `Use only the immutable scoped evidence and seller context supplied. Return only the requested JSON.
 Decide CommercialRole and structural WHO together. Competition requires a material substitute for the specific offering; shared industry or vocabulary is not competition. WHO is structural ICP fit, not intent.
@@ -116,33 +119,51 @@ function materialize(value: z.infer<typeof modelAssessmentSchema>, evidence: Evi
     : [];
   const byCriterion = new Map(requirements.map((requirement) => [requirement.criterionId, requirement]));
   const bind = (citations: Array<{ claimId: string; relation: string }>, purpose: string) => citations.map(({ claimId, relation }) => {
-    const claim = claims.get(claimId);
-    if (!claim) throw new Error(`unknown cited claimId ${claimId}`);
+    const claim = claims.get(claimId)!;
     return { claimId, claimedValue: claim.value, purpose, relation };
   });
+  const containsUnknownClaim = (citations: Array<{ claimId: string }>) =>
+    citations.some(({ claimId }) => !claims.has(claimId));
   const section = (citations: Array<{ claimId: string }>) => ({
     claimIds: citations.map(({ claimId }) => claimId),
-    evidenceIds: [...new Set(citations.map(({ claimId }) => claims.get(claimId)?.evidenceId).filter((id): id is string => Boolean(id)))],
+    evidenceIds: [...new Set(citations.map(({ claimId }) => claims.get(claimId)!.evidenceId))],
   });
+  const commercialRoleHasUnknownClaim = containsUnknownClaim(value.commercialRole.citations);
+  const whoHasUnknownClaim = containsUnknownClaim(value.who.citations);
   return {
-    commercialRole: {
-      value: value.commercialRole.value, confidence: value.commercialRole.confidence, reason: value.commercialRole.reason,
-      ...section(value.commercialRole.citations),
-      claimBindings: bind(value.commercialRole.citations, "commercialRole") as SellerRelativeAssessmentV2["commercialRole"]["claimBindings"],
-    },
+    commercialRole: commercialRoleHasUnknownClaim
+      ? {
+          value: "UNKNOWN", confidence: value.commercialRole.confidence, reason: UNKNOWN_ROLE_CITATION_REASON,
+          evidenceIds: [], claimIds: [], claimBindings: [],
+        }
+      : {
+          value: value.commercialRole.value, confidence: value.commercialRole.confidence, reason: value.commercialRole.reason,
+          ...section(value.commercialRole.citations),
+          claimBindings: bind(value.commercialRole.citations, "commercialRole") as SellerRelativeAssessmentV2["commercialRole"]["claimBindings"],
+        },
     who: {
-      value: value.who.value, confidence: value.who.confidence, reason: value.who.reason,
-      ...section(value.who.citations),
-      claimBindings: bind(value.who.citations, "WHO") as SellerRelativeAssessmentV2["who"]["claimBindings"],
+      value: whoHasUnknownClaim ? "INSUFFICIENT_DATA" : value.who.value,
+      confidence: value.who.confidence,
+      reason: whoHasUnknownClaim ? UNKNOWN_WHO_CITATION_REASON : value.who.reason,
+      ...(whoHasUnknownClaim ? { evidenceIds: [], claimIds: [] } : section(value.who.citations)),
+      claimBindings: whoHasUnknownClaim
+        ? []
+        : bind(value.who.citations, "WHO") as SellerRelativeAssessmentV2["who"]["claimBindings"],
       criteria: value.who.criteria.map((criterion) => {
         const requirement = byCriterion.get(criterion.criterionId);
         if (!requirement) throw new Error(`foreign criterionId ${criterion.criterionId}`);
+        const criterionHasUnknownClaim = containsUnknownClaim(criterion.citations);
         return {
           criterionId: criterion.criterionId,
           description: `${requirement.type} ${requirement.operator}${requirement.value ? ` ${requirement.value}` : ""}`,
-          mandatory: requirement.mandatory, result: criterion.result, confidence: criterion.confidence, reason: criterion.reason,
-          ...section(criterion.citations),
-          claimBindings: bind(criterion.citations, criterion.criterionId) as SellerRelativeAssessmentV2["who"]["criteria"][number]["claimBindings"],
+          mandatory: requirement.mandatory,
+          result: criterionHasUnknownClaim ? "UNKNOWN" : criterion.result,
+          confidence: criterion.confidence,
+          reason: criterionHasUnknownClaim ? UNKNOWN_CRITERION_CITATION_REASON : criterion.reason,
+          ...(criterionHasUnknownClaim ? { evidenceIds: [], claimIds: [] } : section(criterion.citations)),
+          claimBindings: criterionHasUnknownClaim
+            ? []
+            : bind(criterion.citations, criterion.criterionId) as SellerRelativeAssessmentV2["who"]["criteria"][number]["claimBindings"],
         };
       }),
     },

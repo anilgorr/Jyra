@@ -8,6 +8,9 @@ const CRITERION_ABSTENTION_REASON = "This criterion is unknown because no cited 
 const WHO_ABSTENTION_REASON = "Structural fit is insufficient because no valid parent WHO evidence remains.";
 const ROLE_ABSTENTION_REASON = "Commercial role is unknown because no cited atomic claim has a compatible role relation and evidence type.";
 const COMPETITOR_ABSTENTION_REASON = "Commercial role is unknown because no cited offering-overlap claim establishes a material substitute.";
+export const UNKNOWN_ROLE_CITATION_REASON = "Commercial role is unknown because the model cited an unknown atomic claim ID.";
+export const UNKNOWN_WHO_CITATION_REASON = "Structural fit is insufficient because the model cited an unknown atomic claim ID.";
+export const UNKNOWN_CRITERION_CITATION_REASON = "This criterion is unknown because the model cited an unknown atomic claim ID.";
 
 const ROLE_TYPES = {
   SUPPORTS_ROLE: ["PRIMARY_BUSINESS", "PRODUCT_SERVICE", "OFFERING_OVERLAP"],
@@ -19,9 +22,11 @@ const WHO_TYPES = ["ICP_CRITERION", "GEOGRAPHY", "BUSINESS_MODEL", "INDUSTRY", "
 
 /**
  * Deterministically canonicalizes citation-derived provenance before semantic
- * validation. Unknown identifiers and ambiguous evidence are rejected rather
- * than repaired; only known criterion bindings of the wrong configured type
- * are eligible to be removed.
+ * validation. Unknown identifiers in persisted assessments and ambiguous
+ * evidence are rejected rather than repaired; safe abstention for unknown
+ * model citations occurs before persistence during model materialization.
+ * Only known criterion bindings of the wrong configured type are eligible to
+ * be removed.
  */
 export function normalizeAssessmentEvidenceV2(
   value: unknown,
@@ -94,7 +99,9 @@ export function normalizeAssessmentEvidenceV2(
       ? canonicalProvenance(parentBindings)
       : {
           value: "INSUFFICIENT_DATA" as const,
-          reason: WHO_ABSTENTION_REASON,
+           reason: assessment.who.reason === UNKNOWN_WHO_CITATION_REASON
+             ? UNKNOWN_WHO_CITATION_REASON
+             : WHO_ABSTENTION_REASON,
           evidenceIds: [],
           claimIds: [],
           claimBindings: [],
@@ -106,7 +113,9 @@ export function normalizeAssessmentEvidenceV2(
       if (!bindings.length) return {
         ...criterion,
         result: "UNKNOWN" as const,
-        reason: CRITERION_ABSTENTION_REASON,
+         reason: criterion.reason === UNKNOWN_CRITERION_CITATION_REASON
+           ? UNKNOWN_CRITERION_CITATION_REASON
+           : CRITERION_ABSTENTION_REASON,
         evidenceIds: [],
         claimIds: [],
         claimBindings: [],
