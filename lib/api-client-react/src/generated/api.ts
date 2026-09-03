@@ -46,6 +46,7 @@ import type {
   CompanyInput,
   ConfigureProjectSignalPackRequest,
   ConfigureSignalClusterDefinitionRequest,
+  ContactEnrichmentResponse,
   CreateLearningPolicyRequest,
   CreateMarketReadinessAdjudicationRequest,
   CreateMarketReadinessBlindReviewRequest,
@@ -54,8 +55,11 @@ import type {
   CreateMarketReadinessOutcomeRequest,
   CreateMarketReadinessSalespersonReviewRequest,
   CreateOpportunityModelRequest,
+  CreateProjectPersonRequest,
+  CreateProjectPersonResponse,
   CreateSignalClusterDefinitionRequest,
   CurrentUser,
+  EnrichProjectPersonContactRequest,
   ErrorResponse,
   EvaluateSignalClusters200,
   EvaluateSignalsResponse,
@@ -78,6 +82,8 @@ import type {
   LearningProposal,
   LearningProposalReview,
   ListLearningProposalsParams,
+  ListRecommendationsParams,
+  ListSignalClustersParams,
   MarketReadinessAdjudication,
   MarketReadinessAssignmentsResponse,
   MarketReadinessBlindReview,
@@ -92,6 +98,7 @@ import type {
   MarketReadinessWorkerAdvance,
   MarketTodayResponse,
   MaturityStageRequiredResponse,
+  NextBestActionResponse,
   NotFoundResponse,
   OnboardingInput,
   OnboardingResponse,
@@ -115,6 +122,7 @@ import type {
   ProjectCompany,
   ProjectCompanyUpdate,
   ProjectInput,
+  ProjectPerson,
   ProjectSignalPack,
   ProposeOpportunityPackRequest,
   ProviderDiagnostic,
@@ -122,6 +130,9 @@ import type {
   RealDataImportInput,
   RealDataImportPreview,
   RealDataImportResult,
+  RecommendationLedgerEntry,
+  RecommendationOutcome,
+  RecordRecommendationOutcomeRequest,
   ResearchBudget,
   ResearchBudgetInput,
   ResearchEconomicsSummary,
@@ -4873,6 +4884,82 @@ export const useReviewOpportunityResearchQuestion = <TError = ErrorType<BadReque
       return useMutation(getReviewOpportunityResearchQuestionMutationOptions(options));
     }
 
+export const getExecuteOpportunityResearchQuestionUrl = (projectId: string,
+    questionId: string,
+    projectCompanyId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/opportunity-packs/questions/${questionId}/companies/${projectCompanyId}/execute`
+}
+
+/**
+ * The question must belong to an approved or activated pack version, be approved itself, and (when linked) reference an approved signal.
+ * @summary Run one approved pack question against one project company
+ */
+export const executeOpportunityResearchQuestion = async (projectId: string,
+    questionId: string,
+    projectCompanyId: string, options?: Parameters<typeof customFetch>[1]): Promise<ResearchExecutionResponse> => {
+
+  return customFetch<ResearchExecutionResponse>(getExecuteOpportunityResearchQuestionUrl(projectId,questionId,projectCompanyId),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getExecuteOpportunityResearchQuestionMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof executeOpportunityResearchQuestion>>, TError,{projectId: string;questionId: string;projectCompanyId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof executeOpportunityResearchQuestion>>, TError,{projectId: string;questionId: string;projectCompanyId: string}, TContext> => {
+
+const mutationKey = ['executeOpportunityResearchQuestion'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof executeOpportunityResearchQuestion>>, {projectId: string;questionId: string;projectCompanyId: string}> = (props) => {
+          const {projectId,questionId,projectCompanyId} = props ?? {};
+
+          return  executeOpportunityResearchQuestion(projectId,questionId,projectCompanyId,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ExecuteOpportunityResearchQuestionMutationResult = NonNullable<Awaited<ReturnType<typeof executeOpportunityResearchQuestion>>>
+
+    export type ExecuteOpportunityResearchQuestionMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+    /**
+ * @summary Run one approved pack question against one project company
+ */
+export const useExecuteOpportunityResearchQuestion = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof executeOpportunityResearchQuestion>>, TError,{projectId: string;questionId: string;projectCompanyId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof executeOpportunityResearchQuestion>>,
+        TError,
+        {projectId: string;questionId: string;projectCompanyId: string},
+        TContext
+      > => {
+      return useMutation(getExecuteOpportunityResearchQuestionMutationOptions(options));
+    }
+
 export const getAddOpportunityResearchQuestionUrl = (projectId: string,
     versionId: string,) => {
 
@@ -5390,20 +5477,29 @@ export const useConfigureSignalClusterDefinition = <TError = ErrorType<BadReques
       return useMutation(getConfigureSignalClusterDefinitionMutationOptions(options));
     }
 
-export const getListSignalClustersUrl = (projectId: string,) => {
+export const getListSignalClustersUrl = (projectId: string,
+    params?: ListSignalClustersParams,) => {
+  const normalizedParams = new URLSearchParams();
 
+  Object.entries(params || {}).forEach(([key, value]) => {
 
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
 
+  const stringifiedParams = normalizedParams.toString();
 
-  return `/api/projects/${projectId}/signal-clusters`
+  return stringifiedParams.length > 0 ? `/api/projects/${projectId}/signal-clusters?${stringifiedParams}` : `/api/projects/${projectId}/signal-clusters`
 }
 
 /**
  * @summary List explainable evaluated signal clusters
  */
-export const listSignalClusters = async (projectId: string, options?: Parameters<typeof customFetch>[1]): Promise<SignalCluster[]> => {
+export const listSignalClusters = async (projectId: string,
+    params?: ListSignalClustersParams, options?: Parameters<typeof customFetch>[1]): Promise<SignalCluster[]> => {
 
-  return customFetch<SignalCluster[]>(getListSignalClustersUrl(projectId),
+  return customFetch<SignalCluster[]>(getListSignalClustersUrl(projectId,params),
   {
     ...options,
     method: 'GET'
@@ -5416,23 +5512,25 @@ export const listSignalClusters = async (projectId: string, options?: Parameters
 
 
 
-export const getListSignalClustersQueryKey = (projectId: string,) => {
+export const getListSignalClustersQueryKey = (projectId: string,
+    params?: ListSignalClustersParams,) => {
     return [
-    `/api/projects/${projectId}/signal-clusters`
+    `/api/projects/${projectId}/signal-clusters`, ...(params ? [params] : [])
     ] as const;
     }
 
 
-export const getListSignalClustersQueryOptions = <TData = Awaited<ReturnType<typeof listSignalClusters>>, TError = ErrorType<ForbiddenResponse | NotFoundResponse>>(projectId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listSignalClusters>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+export const getListSignalClustersQueryOptions = <TData = Awaited<ReturnType<typeof listSignalClusters>>, TError = ErrorType<ForbiddenResponse | NotFoundResponse>>(projectId: string,
+    params?: ListSignalClustersParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listSignalClusters>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getListSignalClustersQueryKey(projectId);
+  const queryKey =  queryOptions?.queryKey ?? getListSignalClustersQueryKey(projectId,params);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof listSignalClusters>>> = ({ signal }) => listSignalClusters(projectId, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listSignalClusters>>> = ({ signal }) => listSignalClusters(projectId,params, { signal, ...requestOptions });
 
 
 
@@ -5450,11 +5548,12 @@ export type ListSignalClustersQueryError = ErrorType<ForbiddenResponse | NotFoun
  */
 
 export function useListSignalClusters<TData = Awaited<ReturnType<typeof listSignalClusters>>, TError = ErrorType<ForbiddenResponse | NotFoundResponse>>(
- projectId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listSignalClusters>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+ projectId: string,
+    params?: ListSignalClustersParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listSignalClusters>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
 
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
-  const queryOptions = getListSignalClustersQueryOptions(projectId,options)
+  const queryOptions = getListSignalClustersQueryOptions(projectId,params,options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 
@@ -6003,6 +6102,567 @@ export const useGenerateOpportunityWhy = <TError = ErrorType<UnauthorizedRespons
         TContext
       > => {
       return useMutation(getGenerateOpportunityWhyMutationOptions(options));
+    }
+
+export const getGetNextBestActionUrl = (projectId: string,
+    projectCompanyId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/companies/${projectCompanyId}/next-best-action`
+}
+
+/**
+ * Computes the recommendation from the persisted opportunity assessment and appends an immutable recommendation ledger entry when the semantic input changed. JYRA never executes the action.
+ * @summary Get the deterministic next best action for a project company
+ */
+export const getNextBestAction = async (projectId: string,
+    projectCompanyId: string, options?: Parameters<typeof customFetch>[1]): Promise<NextBestActionResponse> => {
+
+  return customFetch<NextBestActionResponse>(getGetNextBestActionUrl(projectId,projectCompanyId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetNextBestActionQueryKey = (projectId: string,
+    projectCompanyId: string,) => {
+    return [
+    `/api/projects/${projectId}/companies/${projectCompanyId}/next-best-action`
+    ] as const;
+    }
+
+
+export const getGetNextBestActionQueryOptions = <TData = Awaited<ReturnType<typeof getNextBestAction>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(projectId: string,
+    projectCompanyId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getNextBestAction>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetNextBestActionQueryKey(projectId,projectCompanyId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getNextBestAction>>> = ({ signal }) => getNextBestAction(projectId,projectCompanyId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: projectId !== null && projectId !== undefined && projectCompanyId !== null && projectCompanyId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getNextBestAction>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetNextBestActionQueryResult = NonNullable<Awaited<ReturnType<typeof getNextBestAction>>>
+export type GetNextBestActionQueryError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+
+/**
+ * @summary Get the deterministic next best action for a project company
+ */
+
+export function useGetNextBestAction<TData = Awaited<ReturnType<typeof getNextBestAction>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(
+ projectId: string,
+    projectCompanyId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getNextBestAction>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetNextBestActionQueryOptions(projectId,projectCompanyId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getListRecommendationsUrl = (projectId: string,
+    params?: ListRecommendationsParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/projects/${projectId}/recommendations?${stringifiedParams}` : `/api/projects/${projectId}/recommendations`
+}
+
+/**
+ * @summary List the immutable recommendation ledger for a project
+ */
+export const listRecommendations = async (projectId: string,
+    params?: ListRecommendationsParams, options?: Parameters<typeof customFetch>[1]): Promise<RecommendationLedgerEntry[]> => {
+
+  return customFetch<RecommendationLedgerEntry[]>(getListRecommendationsUrl(projectId,params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListRecommendationsQueryKey = (projectId: string,
+    params?: ListRecommendationsParams,) => {
+    return [
+    `/api/projects/${projectId}/recommendations`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getListRecommendationsQueryOptions = <TData = Awaited<ReturnType<typeof listRecommendations>>, TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(projectId: string,
+    params?: ListRecommendationsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listRecommendations>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListRecommendationsQueryKey(projectId,params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listRecommendations>>> = ({ signal }) => listRecommendations(projectId,params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: projectId !== null && projectId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listRecommendations>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListRecommendationsQueryResult = NonNullable<Awaited<ReturnType<typeof listRecommendations>>>
+export type ListRecommendationsQueryError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+
+/**
+ * @summary List the immutable recommendation ledger for a project
+ */
+
+export function useListRecommendations<TData = Awaited<ReturnType<typeof listRecommendations>>, TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(
+ projectId: string,
+    params?: ListRecommendationsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listRecommendations>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListRecommendationsQueryOptions(projectId,params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getGetRecommendationUrl = (projectId: string,
+    recommendationId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/recommendations/${recommendationId}`
+}
+
+/**
+ * @summary Get one recommendation ledger entry with its recorded outcomes
+ */
+export const getRecommendation = async (projectId: string,
+    recommendationId: string, options?: Parameters<typeof customFetch>[1]): Promise<RecommendationLedgerEntry> => {
+
+  return customFetch<RecommendationLedgerEntry>(getGetRecommendationUrl(projectId,recommendationId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetRecommendationQueryKey = (projectId: string,
+    recommendationId: string,) => {
+    return [
+    `/api/projects/${projectId}/recommendations/${recommendationId}`
+    ] as const;
+    }
+
+
+export const getGetRecommendationQueryOptions = <TData = Awaited<ReturnType<typeof getRecommendation>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(projectId: string,
+    recommendationId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getRecommendation>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetRecommendationQueryKey(projectId,recommendationId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getRecommendation>>> = ({ signal }) => getRecommendation(projectId,recommendationId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: projectId !== null && projectId !== undefined && recommendationId !== null && recommendationId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getRecommendation>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetRecommendationQueryResult = NonNullable<Awaited<ReturnType<typeof getRecommendation>>>
+export type GetRecommendationQueryError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+
+/**
+ * @summary Get one recommendation ledger entry with its recorded outcomes
+ */
+
+export function useGetRecommendation<TData = Awaited<ReturnType<typeof getRecommendation>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(
+ projectId: string,
+    recommendationId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getRecommendation>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetRecommendationQueryOptions(projectId,recommendationId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getRecordRecommendationOutcomeUrl = (projectId: string,
+    recommendationId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/recommendations/${recommendationId}/outcomes`
+}
+
+/**
+ * @summary Append a human-recorded outcome to a recommendation
+ */
+export const recordRecommendationOutcome = async (projectId: string,
+    recommendationId: string,
+    recordRecommendationOutcomeRequest: RecordRecommendationOutcomeRequest, options?: Parameters<typeof customFetch>[1]): Promise<RecommendationOutcome> => {
+
+  return customFetch<RecommendationOutcome>(getRecordRecommendationOutcomeUrl(projectId,recommendationId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(recordRecommendationOutcomeRequest)
+  }
+);}
+
+
+
+
+
+export const getRecordRecommendationOutcomeMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof recordRecommendationOutcome>>, TError,{projectId: string;recommendationId: string;data: BodyType<RecordRecommendationOutcomeRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof recordRecommendationOutcome>>, TError,{projectId: string;recommendationId: string;data: BodyType<RecordRecommendationOutcomeRequest>}, TContext> => {
+
+const mutationKey = ['recordRecommendationOutcome'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof recordRecommendationOutcome>>, {projectId: string;recommendationId: string;data: BodyType<RecordRecommendationOutcomeRequest>}> = (props) => {
+          const {projectId,recommendationId,data} = props ?? {};
+
+          return  recordRecommendationOutcome(projectId,recommendationId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type RecordRecommendationOutcomeMutationResult = NonNullable<Awaited<ReturnType<typeof recordRecommendationOutcome>>>
+    export type RecordRecommendationOutcomeMutationBody = BodyType<RecordRecommendationOutcomeRequest>
+    export type RecordRecommendationOutcomeMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+    /**
+ * @summary Append a human-recorded outcome to a recommendation
+ */
+export const useRecordRecommendationOutcome = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof recordRecommendationOutcome>>, TError,{projectId: string;recommendationId: string;data: BodyType<RecordRecommendationOutcomeRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof recordRecommendationOutcome>>,
+        TError,
+        {projectId: string;recommendationId: string;data: BodyType<RecordRecommendationOutcomeRequest>},
+        TContext
+      > => {
+      return useMutation(getRecordRecommendationOutcomeMutationOptions(options));
+    }
+
+export const getListProjectPeopleUrl = (projectId: string,
+    projectCompanyId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/companies/${projectCompanyId}/people`
+}
+
+/**
+ * @summary List known people at a project company with contact status and enrichment attempts
+ */
+export const listProjectPeople = async (projectId: string,
+    projectCompanyId: string, options?: Parameters<typeof customFetch>[1]): Promise<ProjectPerson[]> => {
+
+  return customFetch<ProjectPerson[]>(getListProjectPeopleUrl(projectId,projectCompanyId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListProjectPeopleQueryKey = (projectId: string,
+    projectCompanyId: string,) => {
+    return [
+    `/api/projects/${projectId}/companies/${projectCompanyId}/people`
+    ] as const;
+    }
+
+
+export const getListProjectPeopleQueryOptions = <TData = Awaited<ReturnType<typeof listProjectPeople>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(projectId: string,
+    projectCompanyId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listProjectPeople>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListProjectPeopleQueryKey(projectId,projectCompanyId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listProjectPeople>>> = ({ signal }) => listProjectPeople(projectId,projectCompanyId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: projectId !== null && projectId !== undefined && projectCompanyId !== null && projectCompanyId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listProjectPeople>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListProjectPeopleQueryResult = NonNullable<Awaited<ReturnType<typeof listProjectPeople>>>
+export type ListProjectPeopleQueryError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+
+/**
+ * @summary List known people at a project company with contact status and enrichment attempts
+ */
+
+export function useListProjectPeople<TData = Awaited<ReturnType<typeof listProjectPeople>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(
+ projectId: string,
+    projectCompanyId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listProjectPeople>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListProjectPeopleQueryOptions(projectId,projectCompanyId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getCreateProjectPersonUrl = (projectId: string,
+    projectCompanyId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/companies/${projectCompanyId}/people`
+}
+
+/**
+ * @summary Add a private, customer-provided person to a project company
+ */
+export const createProjectPerson = async (projectId: string,
+    projectCompanyId: string,
+    createProjectPersonRequest: CreateProjectPersonRequest, options?: Parameters<typeof customFetch>[1]): Promise<CreateProjectPersonResponse> => {
+
+  return customFetch<CreateProjectPersonResponse>(getCreateProjectPersonUrl(projectId,projectCompanyId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(createProjectPersonRequest)
+  }
+);}
+
+
+
+
+
+export const getCreateProjectPersonMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createProjectPerson>>, TError,{projectId: string;projectCompanyId: string;data: BodyType<CreateProjectPersonRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createProjectPerson>>, TError,{projectId: string;projectCompanyId: string;data: BodyType<CreateProjectPersonRequest>}, TContext> => {
+
+const mutationKey = ['createProjectPerson'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createProjectPerson>>, {projectId: string;projectCompanyId: string;data: BodyType<CreateProjectPersonRequest>}> = (props) => {
+          const {projectId,projectCompanyId,data} = props ?? {};
+
+          return  createProjectPerson(projectId,projectCompanyId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateProjectPersonMutationResult = NonNullable<Awaited<ReturnType<typeof createProjectPerson>>>
+    export type CreateProjectPersonMutationBody = BodyType<CreateProjectPersonRequest>
+    export type CreateProjectPersonMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+    /**
+ * @summary Add a private, customer-provided person to a project company
+ */
+export const useCreateProjectPerson = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createProjectPerson>>, TError,{projectId: string;projectCompanyId: string;data: BodyType<CreateProjectPersonRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createProjectPerson>>,
+        TError,
+        {projectId: string;projectCompanyId: string;data: BodyType<CreateProjectPersonRequest>},
+        TContext
+      > => {
+      return useMutation(getCreateProjectPersonMutationOptions(options));
+    }
+
+export const getEnrichProjectPersonContactUrl = (projectId: string,
+    projectCompanyId: string,
+    personId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/companies/${projectCompanyId}/people/${personId}/enrich-contact`
+}
+
+/**
+ * Email lookup always runs; phone lookup runs only when includePhone is true. Only high-priority people or explicit user requests are eligible.
+ * @summary Run selective email (and optional phone) lookup for one person
+ */
+export const enrichProjectPersonContact = async (projectId: string,
+    projectCompanyId: string,
+    personId: string,
+    enrichProjectPersonContactRequest: EnrichProjectPersonContactRequest, options?: Parameters<typeof customFetch>[1]): Promise<ContactEnrichmentResponse> => {
+
+  return customFetch<ContactEnrichmentResponse>(getEnrichProjectPersonContactUrl(projectId,projectCompanyId,personId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(enrichProjectPersonContactRequest)
+  }
+);}
+
+
+
+
+
+export const getEnrichProjectPersonContactMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof enrichProjectPersonContact>>, TError,{projectId: string;projectCompanyId: string;personId: string;data: BodyType<EnrichProjectPersonContactRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof enrichProjectPersonContact>>, TError,{projectId: string;projectCompanyId: string;personId: string;data: BodyType<EnrichProjectPersonContactRequest>}, TContext> => {
+
+const mutationKey = ['enrichProjectPersonContact'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof enrichProjectPersonContact>>, {projectId: string;projectCompanyId: string;personId: string;data: BodyType<EnrichProjectPersonContactRequest>}> = (props) => {
+          const {projectId,projectCompanyId,personId,data} = props ?? {};
+
+          return  enrichProjectPersonContact(projectId,projectCompanyId,personId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type EnrichProjectPersonContactMutationResult = NonNullable<Awaited<ReturnType<typeof enrichProjectPersonContact>>>
+    export type EnrichProjectPersonContactMutationBody = BodyType<EnrichProjectPersonContactRequest>
+    export type EnrichProjectPersonContactMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | ErrorResponse>
+
+    /**
+ * @summary Run selective email (and optional phone) lookup for one person
+ */
+export const useEnrichProjectPersonContact = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof enrichProjectPersonContact>>, TError,{projectId: string;projectCompanyId: string;personId: string;data: BodyType<EnrichProjectPersonContactRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof enrichProjectPersonContact>>,
+        TError,
+        {projectId: string;projectCompanyId: string;personId: string;data: BodyType<EnrichProjectPersonContactRequest>},
+        TContext
+      > => {
+      return useMutation(getEnrichProjectPersonContactMutationOptions(options));
     }
 
 export const getListOpportunityModelsUrl = (projectId: string,) => {

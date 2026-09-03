@@ -1093,6 +1093,20 @@ export type SignalClusterTemporalSnapshot = { [key: string]: unknown };
 
 export interface SignalCluster {
   id: string;
+  organizationId: string;
+  projectId: string;
+  companyId: string;
+  definitionId: string;
+  ruleVersion: string;
+  status?: string;
+  triggeredSignalIds?: string[];
+  originalStrength?: number;
+  needImpact?: number;
+  timingImpact?: number;
+  detectedAt?: string;
+  lastEvaluatedAt?: string;
+  createdAt?: string;
+  updatedAt?: string;
   definition: SignalClusterDefinition;
   members: SignalClusterMembersItem[];
   explanation: string;
@@ -3859,6 +3873,365 @@ export interface OpportunityWhyDetail {
   claims: WhyClaimTrace[];
 }
 
+export type NextBestActionType = typeof NextBestActionType[keyof typeof NextBestActionType];
+
+
+export const NextBestActionType = {
+  CONTACT_NOW: 'CONTACT_NOW',
+  RESEARCH_MORE: 'RESEARCH_MORE',
+  MONITOR: 'MONITOR',
+  WAIT_FOR_SIGNAL: 'WAIT_FOR_SIGNAL',
+  REVIEW_DISQUALIFIER: 'REVIEW_DISQUALIFIER',
+  REQUEST_INTRODUCTION: 'REQUEST_INTRODUCTION',
+  REOPEN_OPPORTUNITY: 'REOPEN_OPPORTUNITY',
+} as const;
+
+export type ResearchFreshness = typeof ResearchFreshness[keyof typeof ResearchFreshness];
+
+
+export const ResearchFreshness = {
+  FRESH: 'FRESH',
+  AGING: 'AGING',
+  STALE: 'STALE',
+  NOT_RESEARCHED: 'NOT_RESEARCHED',
+} as const;
+
+export interface NextBestActionFactors {
+  opportunityState: string | null;
+  fitScore: number | null;
+  needScore: number | null;
+  timingScore: number | null;
+  relationshipScore: number | null;
+  confidenceScore: number | null;
+  researchFreshness: ResearchFreshness;
+  relationshipStatus: string;
+  knownFirstPartyRelationship: boolean;
+  independentSourceCount: number;
+  negativeSignalCount: number;
+  confirmedDisqualifier: boolean;
+}
+
+export interface NextBestActionRecommendation {
+  action: NextBestActionType;
+  label: string;
+  explanation: string;
+  ruleVersion: string;
+  factors: NextBestActionFactors;
+}
+
+export interface NextBestActionResponse {
+  projectId: string;
+  projectCompanyId: string;
+  companyId: string;
+  generatedAt: string;
+  /** Ledger entry backing this recommendation; null when no opportunity assessment exists yet. */
+  recommendationId: string | null;
+  recommendation: NextBestActionRecommendation;
+}
+
+export type RecommendationOutcomeType = typeof RecommendationOutcomeType[keyof typeof RecommendationOutcomeType];
+
+
+export const RecommendationOutcomeType = {
+  USEFUL: 'USEFUL',
+  NOT_USEFUL: 'NOT_USEFUL',
+  CONTACTED: 'CONTACTED',
+  POSITIVE_REPLY: 'POSITIVE_REPLY',
+  NEGATIVE_REPLY: 'NEGATIVE_REPLY',
+  MEETING: 'MEETING',
+  QUALIFIED: 'QUALIFIED',
+  PROPOSAL: 'PROPOSAL',
+  WON: 'WON',
+  LOST: 'LOST',
+  VIEWED: 'VIEWED',
+  SKIPPED: 'SKIPPED',
+} as const;
+
+export type RecommendationOutcomeReason = typeof RecommendationOutcomeReason[keyof typeof RecommendationOutcomeReason];
+
+
+export const RecommendationOutcomeReason = {
+  WRONG_COMPANY_SIZE: 'WRONG_COMPANY_SIZE',
+  WRONG_GEOGRAPHY: 'WRONG_GEOGRAPHY',
+  NO_BUDGET: 'NO_BUDGET',
+  EXISTING_VENDOR: 'EXISTING_VENDOR',
+  WRONG_BUYER: 'WRONG_BUYER',
+  BAD_TIMING: 'BAD_TIMING',
+  BAD_DATA: 'BAD_DATA',
+  NOT_RELEVANT: 'NOT_RELEVANT',
+  COMPETITOR: 'COMPETITOR',
+  OTHER: 'OTHER',
+} as const;
+
+export interface RecommendationOutcome {
+  id: string;
+  recommendationId: string;
+  organizationId: string;
+  projectId: string;
+  projectCompanyId: string;
+  companyId: string;
+  outcomeType: RecommendationOutcomeType;
+  reason: RecommendationOutcomeReason | null;
+  note: string | null;
+  recordedBy: string;
+  recordedAt: string;
+  createdAt: string;
+}
+
+export interface RecordRecommendationOutcomeRequest {
+  outcomeType: RecommendationOutcomeType;
+  reason?: RecommendationOutcomeReason | null;
+  /** @maxLength 1000 */
+  note?: string | null;
+}
+
+export type RecommendationLedgerEntrySignalsItem = { [key: string]: unknown };
+
+export type RecommendationLedgerEntryClustersItem = { [key: string]: unknown };
+
+export type RecommendationLedgerEntryEvidenceReferencesItem = { [key: string]: unknown };
+
+export type RecommendationLedgerEntryInputSnapshot = { [key: string]: unknown };
+
+/**
+ * Immutable snapshot of one recommendation and every outcome recorded against it.
+ */
+export interface RecommendationLedgerEntry {
+  id: string;
+  organizationId: string;
+  projectId: string;
+  projectCompanyId: string;
+  companyId: string;
+  companyName: string;
+  opportunityId: string | null;
+  businessTwinVersionId: string | null;
+  businessTwinVersion: number | null;
+  icpVersionId: string | null;
+  icpVersion: number | null;
+  intelligencePackVersionId: string | null;
+  intelligencePackVersion: number | null;
+  opportunityModelVersionId: string | null;
+  opportunityModelVersion: number | null;
+  fit: number | null;
+  need: number | null;
+  timing: number | null;
+  relationship: number | null;
+  confidence: number | null;
+  state: string;
+  signals: RecommendationLedgerEntrySignalsItem[];
+  clusters: RecommendationLedgerEntryClustersItem[];
+  evidenceReferences: RecommendationLedgerEntryEvidenceReferencesItem[];
+  why: string;
+  recommendedAction: NextBestActionType;
+  recommendationRuleVersion: string;
+  inputSnapshot: RecommendationLedgerEntryInputSnapshot;
+  snapshotKey: string;
+  recommendedAt: string;
+  createdAt: string;
+  outcomes: RecommendationOutcome[];
+}
+
+export type BuyingRole = typeof BuyingRole[keyof typeof BuyingRole];
+
+
+export const BuyingRole = {
+  ECONOMIC_BUYER: 'ECONOMIC_BUYER',
+  CHAMPION: 'CHAMPION',
+  TECHNICAL_EVALUATOR: 'TECHNICAL_EVALUATOR',
+  INFLUENCER: 'INFLUENCER',
+  USER: 'USER',
+  PROCUREMENT: 'PROCUREMENT',
+  OTHER: 'OTHER',
+} as const;
+
+export type PersonPriority = typeof PersonPriority[keyof typeof PersonPriority];
+
+
+export const PersonPriority = {
+  HIGH: 'HIGH',
+  MEDIUM: 'MEDIUM',
+  LOW: 'LOW',
+} as const;
+
+export type ContactStatus = typeof ContactStatus[keyof typeof ContactStatus];
+
+
+export const ContactStatus = {
+  UNKNOWN: 'UNKNOWN',
+  FOUND: 'FOUND',
+  VERIFIED: 'VERIFIED',
+  UNVERIFIED: 'UNVERIFIED',
+  INVALID: 'INVALID',
+} as const;
+
+export type ContactEnrichmentCapability = typeof ContactEnrichmentCapability[keyof typeof ContactEnrichmentCapability];
+
+
+export const ContactEnrichmentCapability = {
+  EMAIL_LOOKUP: 'EMAIL_LOOKUP',
+  PHONE_LOOKUP: 'PHONE_LOOKUP',
+} as const;
+
+export type ProjectPersonSummarySource = typeof ProjectPersonSummarySource[keyof typeof ProjectPersonSummarySource];
+
+
+export const ProjectPersonSummarySource = {
+  EXTERNAL: 'EXTERNAL',
+  CUSTOMER_PROVIDED: 'CUSTOMER_PROVIDED',
+} as const;
+
+export type ProjectPersonSummaryVisibility = typeof ProjectPersonSummaryVisibility[keyof typeof ProjectPersonSummaryVisibility];
+
+
+export const ProjectPersonSummaryVisibility = {
+  PUBLIC: 'PUBLIC',
+  PRIVATE: 'PRIVATE',
+} as const;
+
+export interface ProjectPersonSummary {
+  id: string;
+  name: string;
+  title: string | null;
+  function: string | null;
+  seniority: string | null;
+  profileUrl: string | null;
+  source: ProjectPersonSummarySource;
+  visibility: ProjectPersonSummaryVisibility;
+}
+
+export interface ProjectPersonContext {
+  role: BuyingRole;
+  roleLabel: string;
+  roleConfidence: number;
+  priority: PersonPriority;
+  email: string | null;
+  emailStatus: ContactStatus;
+  phone: string | null;
+  phoneStatus: ContactStatus;
+  lastEnrichedAt: string | null;
+}
+
+export type ContactEnrichmentAttemptStatus = typeof ContactEnrichmentAttemptStatus[keyof typeof ContactEnrichmentAttemptStatus];
+
+
+export const ContactEnrichmentAttemptStatus = {
+  SUCCEEDED: 'SUCCEEDED',
+  EMPTY: 'EMPTY',
+  FAILED: 'FAILED',
+} as const;
+
+export interface ContactEnrichmentAttempt {
+  id: string;
+  capability: ContactEnrichmentCapability;
+  status: ContactEnrichmentAttemptStatus;
+  contactStatus: ContactStatus;
+  providerId: string | null;
+  estimatedCost: number;
+  actualCost: number | null;
+  observedAt: string;
+}
+
+export interface ProjectPerson {
+  person: ProjectPersonSummary;
+  context: ProjectPersonContext;
+  attempts: ContactEnrichmentAttempt[];
+}
+
+export interface CreateProjectPersonRequest {
+  /**
+     * @minLength 1
+     * @maxLength 180
+     */
+  name: string;
+  /** @maxLength 240 */
+  title?: string | null;
+  role?: BuyingRole;
+  /**
+     * @minLength 1
+     * @maxLength 120
+     */
+  roleLabel?: string;
+  /**
+     * @minimum 0
+     * @maximum 100
+     */
+  roleConfidence?: number;
+  priority?: PersonPriority;
+}
+
+export type CreateProjectPersonResponseVisibility = typeof CreateProjectPersonResponseVisibility[keyof typeof CreateProjectPersonResponseVisibility];
+
+
+export const CreateProjectPersonResponseVisibility = {
+  PRIVATE: 'PRIVATE',
+} as const;
+
+export type CreateProjectPersonResponseSource = typeof CreateProjectPersonResponseSource[keyof typeof CreateProjectPersonResponseSource];
+
+
+export const CreateProjectPersonResponseSource = {
+  CUSTOMER_PROVIDED: 'CUSTOMER_PROVIDED',
+} as const;
+
+export interface CreateProjectPersonResponse {
+  personId: string;
+  visibility: CreateProjectPersonResponseVisibility;
+  source: CreateProjectPersonResponseSource;
+}
+
+export interface EnrichProjectPersonContactRequest {
+  /** Defaults to true. A false value only succeeds for HIGH priority people. */
+  explicitRequest?: boolean;
+  /** Also run phone lookup after email lookup. Defaults to false. */
+  includePhone?: boolean;
+}
+
+export type ContactEnrichmentCapabilityResultCost = {
+  estimated: number;
+  actual: number | null;
+};
+
+export type ContactEnrichmentCapabilityResultResponseStatus = typeof ContactEnrichmentCapabilityResultResponseStatus[keyof typeof ContactEnrichmentCapabilityResultResponseStatus];
+
+
+export const ContactEnrichmentCapabilityResultResponseStatus = {
+  success: 'success',
+  empty: 'empty',
+  failed: 'failed',
+} as const;
+
+export type ContactEnrichmentCapabilityResultError = {
+  code: string;
+  message: string;
+  retryable: boolean;
+} | null;
+
+export interface ContactEnrichmentCapabilityResult {
+  capability: ContactEnrichmentCapability;
+  provider: string;
+  cost: ContactEnrichmentCapabilityResultCost;
+  /** The email address or phone number found, or null. */
+  result: string | null;
+  verification: ContactStatus;
+  timestamp: string;
+  responseStatus: ContactEnrichmentCapabilityResultResponseStatus;
+  error: ContactEnrichmentCapabilityResultError;
+}
+
+export type ContactEnrichmentResponseKind = typeof ContactEnrichmentResponseKind[keyof typeof ContactEnrichmentResponseKind];
+
+
+export const ContactEnrichmentResponseKind = {
+  completed: 'completed',
+} as const;
+
+export interface ContactEnrichmentResponse {
+  kind: ContactEnrichmentResponseKind;
+  personId: string;
+  requestedExplicitly: boolean;
+  results: ContactEnrichmentCapabilityResult[];
+}
+
 export interface ErrorResponse {
   error: string;
 }
@@ -3915,9 +4288,23 @@ export type CommitCompanyImport409 = {
 
 export type ActivateOpportunityPack200 = { [key: string]: unknown };
 
+export type ListSignalClustersParams = {
+/**
+ * Restrict results to clusters evaluated for one canonical company.
+ */
+companyId?: string;
+};
+
 export type EvaluateSignalClusters200 = {
   evaluated: number;
   clusters: SignalClusterRecord[];
+};
+
+export type ListRecommendationsParams = {
+/**
+ * Restrict the ledger to one project company.
+ */
+projectCompanyId?: string;
 };
 
 export type GetLearningAnalyticsParams = {

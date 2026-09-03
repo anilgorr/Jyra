@@ -5289,6 +5289,56 @@ export const ReviewOpportunityResearchQuestionResponse = zod.object({
 
 
 /**
+ * The question must belong to an approved or activated pack version, be approved itself, and (when linked) reference an approved signal.
+ * @summary Run one approved pack question against one project company
+ */
+export const ExecuteOpportunityResearchQuestionParams = zod.object({
+  "projectId": zod.coerce.string(),
+  "questionId": zod.coerce.string(),
+  "projectCompanyId": zod.coerce.string()
+})
+
+export const ExecuteOpportunityResearchQuestionResponse = zod.object({
+  "stopped": zod.boolean(),
+  "reason": zod.string().nullable(),
+  "buyerRole": zod.enum(['POTENTIAL_BUYER', 'SELLER_COMPETITOR', 'ADJACENT_VENDOR', 'PARTNER_POSSIBLE', 'UNKNOWN']),
+  "intelligenceStage": zod.string(),
+  "stopCode": zod.string().nullable(),
+  "progress": zod.string(),
+  "nextAction": zod.string(),
+  "question": zod.union([zod.object({
+  "id": zod.string(),
+  "questionType": zod.string(),
+  "questionText": zod.string(),
+  "reason": zod.string(),
+  "providerCapability": zod.string(),
+  "priority": zod.number(),
+  "expectedInformationGain": zod.number(),
+  "estimatedCost": zod.number(),
+  "status": zod.string(),
+  "lastResultSummary": zod.string().nullable(),
+  "lastAttemptAt": zod.coerce.date().nullable(),
+  "answeredAt": zod.coerce.date().nullable()
+}),zod.null()]),
+  "job": zod.union([zod.object({
+  "id": zod.string(),
+  "status": zod.string(),
+  "providerCapability": zod.string(),
+  "resultCount": zod.number(),
+  "sourceCount": zod.number(),
+  "errorCode": zod.string().nullable(),
+  "errorMessage": zod.string().nullable(),
+  "createdAt": zod.coerce.date(),
+  "completedAt": zod.coerce.date().nullable()
+}),zod.null()]),
+  "evidenceCount": zod.number(),
+  "factProposalCount": zod.number(),
+  "factRejectionCount": zod.number(),
+  "resultStatus": zod.string()
+})
+
+
+/**
  * @summary Add a contextual question to a customer review revision
  */
 export const AddOpportunityResearchQuestionParams = zod.object({
@@ -5537,8 +5587,26 @@ export const ListSignalClustersParams = zod.object({
   "projectId": zod.coerce.string()
 })
 
+export const ListSignalClustersQueryParams = zod.object({
+  "companyId": zod.coerce.string().optional().describe('Restrict results to clusters evaluated for one canonical company.')
+})
+
 export const ListSignalClustersResponseItem = zod.object({
   "id": zod.string(),
+  "organizationId": zod.string(),
+  "projectId": zod.string(),
+  "companyId": zod.string(),
+  "definitionId": zod.string(),
+  "ruleVersion": zod.string(),
+  "status": zod.string().optional(),
+  "triggeredSignalIds": zod.array(zod.string()).optional(),
+  "originalStrength": zod.number().optional(),
+  "needImpact": zod.number().optional(),
+  "timingImpact": zod.number().optional(),
+  "detectedAt": zod.coerce.date().optional(),
+  "lastEvaluatedAt": zod.coerce.date().optional(),
+  "createdAt": zod.coerce.date().optional(),
+  "updatedAt": zod.coerce.date().optional(),
   "definition": zod.object({
   "id": zod.string(),
   "organizationId": zod.string(),
@@ -6064,6 +6132,314 @@ export const GenerateOpportunityWhyResponse = zod.object({
   "factIds": zod.array(zod.string()),
   "evidenceIds": zod.array(zod.string()),
   "sourceUrls": zod.array(zod.string())
+}))
+})
+
+
+/**
+ * Computes the recommendation from the persisted opportunity assessment and appends an immutable recommendation ledger entry when the semantic input changed. JYRA never executes the action.
+ * @summary Get the deterministic next best action for a project company
+ */
+export const GetNextBestActionParams = zod.object({
+  "projectId": zod.coerce.string(),
+  "projectCompanyId": zod.coerce.string()
+})
+
+export const GetNextBestActionResponse = zod.object({
+  "projectId": zod.string(),
+  "projectCompanyId": zod.string(),
+  "companyId": zod.string(),
+  "generatedAt": zod.coerce.date(),
+  "recommendationId": zod.string().nullable().describe('Ledger entry backing this recommendation; null when no opportunity assessment exists yet.'),
+  "recommendation": zod.object({
+  "action": zod.enum(['CONTACT_NOW', 'RESEARCH_MORE', 'MONITOR', 'WAIT_FOR_SIGNAL', 'REVIEW_DISQUALIFIER', 'REQUEST_INTRODUCTION', 'REOPEN_OPPORTUNITY']),
+  "label": zod.string(),
+  "explanation": zod.string(),
+  "ruleVersion": zod.string(),
+  "factors": zod.object({
+  "opportunityState": zod.string().nullable(),
+  "fitScore": zod.number().nullable(),
+  "needScore": zod.number().nullable(),
+  "timingScore": zod.number().nullable(),
+  "relationshipScore": zod.number().nullable(),
+  "confidenceScore": zod.number().nullable(),
+  "researchFreshness": zod.enum(['FRESH', 'AGING', 'STALE', 'NOT_RESEARCHED']),
+  "relationshipStatus": zod.string(),
+  "knownFirstPartyRelationship": zod.boolean(),
+  "independentSourceCount": zod.number(),
+  "negativeSignalCount": zod.number(),
+  "confirmedDisqualifier": zod.boolean()
+})
+})
+})
+
+
+/**
+ * @summary List the immutable recommendation ledger for a project
+ */
+export const ListRecommendationsParams = zod.object({
+  "projectId": zod.coerce.string()
+})
+
+export const ListRecommendationsQueryParams = zod.object({
+  "projectCompanyId": zod.coerce.string().optional().describe('Restrict the ledger to one project company.')
+})
+
+export const ListRecommendationsResponseItem = zod.object({
+  "id": zod.string(),
+  "organizationId": zod.string(),
+  "projectId": zod.string(),
+  "projectCompanyId": zod.string(),
+  "companyId": zod.string(),
+  "companyName": zod.string(),
+  "opportunityId": zod.string().nullable(),
+  "businessTwinVersionId": zod.string().nullable(),
+  "businessTwinVersion": zod.number().nullable(),
+  "icpVersionId": zod.string().nullable(),
+  "icpVersion": zod.number().nullable(),
+  "intelligencePackVersionId": zod.string().nullable(),
+  "intelligencePackVersion": zod.number().nullable(),
+  "opportunityModelVersionId": zod.string().nullable(),
+  "opportunityModelVersion": zod.number().nullable(),
+  "fit": zod.number().nullable(),
+  "need": zod.number().nullable(),
+  "timing": zod.number().nullable(),
+  "relationship": zod.number().nullable(),
+  "confidence": zod.number().nullable(),
+  "state": zod.string(),
+  "signals": zod.array(zod.record(zod.string(), zod.unknown())),
+  "clusters": zod.array(zod.record(zod.string(), zod.unknown())),
+  "evidenceReferences": zod.array(zod.record(zod.string(), zod.unknown())),
+  "why": zod.string(),
+  "recommendedAction": zod.enum(['CONTACT_NOW', 'RESEARCH_MORE', 'MONITOR', 'WAIT_FOR_SIGNAL', 'REVIEW_DISQUALIFIER', 'REQUEST_INTRODUCTION', 'REOPEN_OPPORTUNITY']),
+  "recommendationRuleVersion": zod.string(),
+  "inputSnapshot": zod.record(zod.string(), zod.unknown()),
+  "snapshotKey": zod.string(),
+  "recommendedAt": zod.coerce.date(),
+  "createdAt": zod.coerce.date(),
+  "outcomes": zod.array(zod.object({
+  "id": zod.string(),
+  "recommendationId": zod.string(),
+  "organizationId": zod.string(),
+  "projectId": zod.string(),
+  "projectCompanyId": zod.string(),
+  "companyId": zod.string(),
+  "outcomeType": zod.enum(['USEFUL', 'NOT_USEFUL', 'CONTACTED', 'POSITIVE_REPLY', 'NEGATIVE_REPLY', 'MEETING', 'QUALIFIED', 'PROPOSAL', 'WON', 'LOST', 'VIEWED', 'SKIPPED']),
+  "reason": zod.enum(['WRONG_COMPANY_SIZE', 'WRONG_GEOGRAPHY', 'NO_BUDGET', 'EXISTING_VENDOR', 'WRONG_BUYER', 'BAD_TIMING', 'BAD_DATA', 'NOT_RELEVANT', 'COMPETITOR', 'OTHER']).nullable(),
+  "note": zod.string().nullable(),
+  "recordedBy": zod.string(),
+  "recordedAt": zod.coerce.date(),
+  "createdAt": zod.coerce.date()
+}))
+}).describe('Immutable snapshot of one recommendation and every outcome recorded against it.')
+export const ListRecommendationsResponse = zod.array(ListRecommendationsResponseItem)
+
+
+/**
+ * @summary Get one recommendation ledger entry with its recorded outcomes
+ */
+export const GetRecommendationParams = zod.object({
+  "projectId": zod.coerce.string(),
+  "recommendationId": zod.coerce.string()
+})
+
+export const GetRecommendationResponse = zod.object({
+  "id": zod.string(),
+  "organizationId": zod.string(),
+  "projectId": zod.string(),
+  "projectCompanyId": zod.string(),
+  "companyId": zod.string(),
+  "companyName": zod.string(),
+  "opportunityId": zod.string().nullable(),
+  "businessTwinVersionId": zod.string().nullable(),
+  "businessTwinVersion": zod.number().nullable(),
+  "icpVersionId": zod.string().nullable(),
+  "icpVersion": zod.number().nullable(),
+  "intelligencePackVersionId": zod.string().nullable(),
+  "intelligencePackVersion": zod.number().nullable(),
+  "opportunityModelVersionId": zod.string().nullable(),
+  "opportunityModelVersion": zod.number().nullable(),
+  "fit": zod.number().nullable(),
+  "need": zod.number().nullable(),
+  "timing": zod.number().nullable(),
+  "relationship": zod.number().nullable(),
+  "confidence": zod.number().nullable(),
+  "state": zod.string(),
+  "signals": zod.array(zod.record(zod.string(), zod.unknown())),
+  "clusters": zod.array(zod.record(zod.string(), zod.unknown())),
+  "evidenceReferences": zod.array(zod.record(zod.string(), zod.unknown())),
+  "why": zod.string(),
+  "recommendedAction": zod.enum(['CONTACT_NOW', 'RESEARCH_MORE', 'MONITOR', 'WAIT_FOR_SIGNAL', 'REVIEW_DISQUALIFIER', 'REQUEST_INTRODUCTION', 'REOPEN_OPPORTUNITY']),
+  "recommendationRuleVersion": zod.string(),
+  "inputSnapshot": zod.record(zod.string(), zod.unknown()),
+  "snapshotKey": zod.string(),
+  "recommendedAt": zod.coerce.date(),
+  "createdAt": zod.coerce.date(),
+  "outcomes": zod.array(zod.object({
+  "id": zod.string(),
+  "recommendationId": zod.string(),
+  "organizationId": zod.string(),
+  "projectId": zod.string(),
+  "projectCompanyId": zod.string(),
+  "companyId": zod.string(),
+  "outcomeType": zod.enum(['USEFUL', 'NOT_USEFUL', 'CONTACTED', 'POSITIVE_REPLY', 'NEGATIVE_REPLY', 'MEETING', 'QUALIFIED', 'PROPOSAL', 'WON', 'LOST', 'VIEWED', 'SKIPPED']),
+  "reason": zod.enum(['WRONG_COMPANY_SIZE', 'WRONG_GEOGRAPHY', 'NO_BUDGET', 'EXISTING_VENDOR', 'WRONG_BUYER', 'BAD_TIMING', 'BAD_DATA', 'NOT_RELEVANT', 'COMPETITOR', 'OTHER']).nullable(),
+  "note": zod.string().nullable(),
+  "recordedBy": zod.string(),
+  "recordedAt": zod.coerce.date(),
+  "createdAt": zod.coerce.date()
+}))
+}).describe('Immutable snapshot of one recommendation and every outcome recorded against it.')
+
+
+/**
+ * @summary Append a human-recorded outcome to a recommendation
+ */
+export const RecordRecommendationOutcomeParams = zod.object({
+  "projectId": zod.coerce.string(),
+  "recommendationId": zod.coerce.string()
+})
+
+export const recordRecommendationOutcomeBodyNoteMax = 1000;
+
+
+
+export const RecordRecommendationOutcomeBody = zod.object({
+  "outcomeType": zod.enum(['USEFUL', 'NOT_USEFUL', 'CONTACTED', 'POSITIVE_REPLY', 'NEGATIVE_REPLY', 'MEETING', 'QUALIFIED', 'PROPOSAL', 'WON', 'LOST', 'VIEWED', 'SKIPPED']),
+  "reason": zod.enum(['WRONG_COMPANY_SIZE', 'WRONG_GEOGRAPHY', 'NO_BUDGET', 'EXISTING_VENDOR', 'WRONG_BUYER', 'BAD_TIMING', 'BAD_DATA', 'NOT_RELEVANT', 'COMPETITOR', 'OTHER']).nullish(),
+  "note": zod.string().max(recordRecommendationOutcomeBodyNoteMax).nullish()
+})
+
+export const RecordRecommendationOutcomeResponse = zod.object({
+  "id": zod.string(),
+  "recommendationId": zod.string(),
+  "organizationId": zod.string(),
+  "projectId": zod.string(),
+  "projectCompanyId": zod.string(),
+  "companyId": zod.string(),
+  "outcomeType": zod.enum(['USEFUL', 'NOT_USEFUL', 'CONTACTED', 'POSITIVE_REPLY', 'NEGATIVE_REPLY', 'MEETING', 'QUALIFIED', 'PROPOSAL', 'WON', 'LOST', 'VIEWED', 'SKIPPED']),
+  "reason": zod.enum(['WRONG_COMPANY_SIZE', 'WRONG_GEOGRAPHY', 'NO_BUDGET', 'EXISTING_VENDOR', 'WRONG_BUYER', 'BAD_TIMING', 'BAD_DATA', 'NOT_RELEVANT', 'COMPETITOR', 'OTHER']).nullable(),
+  "note": zod.string().nullable(),
+  "recordedBy": zod.string(),
+  "recordedAt": zod.coerce.date(),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary List known people at a project company with contact status and enrichment attempts
+ */
+export const ListProjectPeopleParams = zod.object({
+  "projectId": zod.coerce.string(),
+  "projectCompanyId": zod.coerce.string()
+})
+
+export const ListProjectPeopleResponseItem = zod.object({
+  "person": zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "title": zod.string().nullable(),
+  "function": zod.string().nullable(),
+  "seniority": zod.string().nullable(),
+  "profileUrl": zod.string().nullable(),
+  "source": zod.enum(['EXTERNAL', 'CUSTOMER_PROVIDED']),
+  "visibility": zod.enum(['PUBLIC', 'PRIVATE'])
+}),
+  "context": zod.object({
+  "role": zod.enum(['ECONOMIC_BUYER', 'CHAMPION', 'TECHNICAL_EVALUATOR', 'INFLUENCER', 'USER', 'PROCUREMENT', 'OTHER']),
+  "roleLabel": zod.string(),
+  "roleConfidence": zod.number(),
+  "priority": zod.enum(['HIGH', 'MEDIUM', 'LOW']),
+  "email": zod.string().nullable(),
+  "emailStatus": zod.enum(['UNKNOWN', 'FOUND', 'VERIFIED', 'UNVERIFIED', 'INVALID']),
+  "phone": zod.string().nullable(),
+  "phoneStatus": zod.enum(['UNKNOWN', 'FOUND', 'VERIFIED', 'UNVERIFIED', 'INVALID']),
+  "lastEnrichedAt": zod.coerce.date().nullable()
+}),
+  "attempts": zod.array(zod.object({
+  "id": zod.string(),
+  "capability": zod.enum(['EMAIL_LOOKUP', 'PHONE_LOOKUP']),
+  "status": zod.enum(['SUCCEEDED', 'EMPTY', 'FAILED']),
+  "contactStatus": zod.enum(['UNKNOWN', 'FOUND', 'VERIFIED', 'UNVERIFIED', 'INVALID']),
+  "providerId": zod.string().nullable(),
+  "estimatedCost": zod.number(),
+  "actualCost": zod.number().nullable(),
+  "observedAt": zod.coerce.date()
+}))
+})
+export const ListProjectPeopleResponse = zod.array(ListProjectPeopleResponseItem)
+
+
+/**
+ * @summary Add a private, customer-provided person to a project company
+ */
+export const CreateProjectPersonParams = zod.object({
+  "projectId": zod.coerce.string(),
+  "projectCompanyId": zod.coerce.string()
+})
+
+export const createProjectPersonBodyNameMax = 180;
+
+export const createProjectPersonBodyTitleMax = 240;
+
+export const createProjectPersonBodyRoleLabelMax = 120;
+
+export const createProjectPersonBodyRoleConfidenceMin = 0;
+export const createProjectPersonBodyRoleConfidenceMax = 100;
+
+
+
+export const CreateProjectPersonBody = zod.object({
+  "name": zod.string().min(1).max(createProjectPersonBodyNameMax),
+  "title": zod.string().max(createProjectPersonBodyTitleMax).nullish(),
+  "role": zod.enum(['ECONOMIC_BUYER', 'CHAMPION', 'TECHNICAL_EVALUATOR', 'INFLUENCER', 'USER', 'PROCUREMENT', 'OTHER']).optional(),
+  "roleLabel": zod.string().min(1).max(createProjectPersonBodyRoleLabelMax).optional(),
+  "roleConfidence": zod.number().min(createProjectPersonBodyRoleConfidenceMin).max(createProjectPersonBodyRoleConfidenceMax).optional(),
+  "priority": zod.enum(['HIGH', 'MEDIUM', 'LOW']).optional()
+})
+
+export const CreateProjectPersonResponse = zod.object({
+  "personId": zod.string(),
+  "visibility": zod.enum(['PRIVATE']),
+  "source": zod.enum(['CUSTOMER_PROVIDED'])
+})
+
+
+/**
+ * Email lookup always runs; phone lookup runs only when includePhone is true. Only high-priority people or explicit user requests are eligible.
+ * @summary Run selective email (and optional phone) lookup for one person
+ */
+export const EnrichProjectPersonContactParams = zod.object({
+  "projectId": zod.coerce.string(),
+  "projectCompanyId": zod.coerce.string(),
+  "personId": zod.coerce.string()
+})
+
+export const EnrichProjectPersonContactBody = zod.object({
+  "explicitRequest": zod.boolean().optional().describe('Defaults to true. A false value only succeeds for HIGH priority people.'),
+  "includePhone": zod.boolean().optional().describe('Also run phone lookup after email lookup. Defaults to false.')
+})
+
+export const EnrichProjectPersonContactResponse = zod.object({
+  "kind": zod.enum(['completed']),
+  "personId": zod.string(),
+  "requestedExplicitly": zod.boolean(),
+  "results": zod.array(zod.object({
+  "capability": zod.enum(['EMAIL_LOOKUP', 'PHONE_LOOKUP']),
+  "provider": zod.string(),
+  "cost": zod.object({
+  "estimated": zod.number(),
+  "actual": zod.number().nullable()
+}),
+  "result": zod.string().nullable().describe('The email address or phone number found, or null.'),
+  "verification": zod.enum(['UNKNOWN', 'FOUND', 'VERIFIED', 'UNVERIFIED', 'INVALID']),
+  "timestamp": zod.coerce.date(),
+  "responseStatus": zod.enum(['success', 'empty', 'failed']),
+  "error": zod.object({
+  "code": zod.string(),
+  "message": zod.string(),
+  "retryable": zod.boolean()
+}).nullable()
 }))
 })
 

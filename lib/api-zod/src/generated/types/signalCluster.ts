@@ -12,6 +12,20 @@ import type { SignalClusterTemporalSnapshot } from './signalClusterTemporalSnaps
 
 export interface SignalCluster {
   id: string;
+  organizationId: string;
+  projectId: string;
+  companyId: string;
+  definitionId: string;
+  ruleVersion: string;
+  status?: string;
+  triggeredSignalIds?: string[];
+  originalStrength?: number;
+  needImpact?: number;
+  timingImpact?: number;
+  detectedAt?: Date;
+  lastEvaluatedAt?: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
   definition: SignalClusterDefinition;
   members: SignalClusterMembersItem[];
   explanation: string;

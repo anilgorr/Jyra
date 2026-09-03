@@ -4531,8 +4531,8 @@ components:
         researchFreshness: { $ref: "#/components/schemas/ResearchFreshness" }
         relationshipStatus: { type: string }
         knownFirstPartyRelationship: { type: boolean }
-        independentSourceCount: { type: integer }
-        negativeSignalCount: { type: integer }
+        independentSourceCount: { type: number }
+        negativeSignalCount: { type: number }
         confirmedDisqualifier: { type: boolean }
       required:
         - opportunityState
@@ -4629,13 +4629,13 @@ components:
         companyName: { type: string }
         opportunityId: { type: string, nullable: true }
         businessTwinVersionId: { type: string, nullable: true }
-        businessTwinVersion: { type: integer, nullable: true }
+        businessTwinVersion: { type: number, nullable: true }
         icpVersionId: { type: string, nullable: true }
-        icpVersion: { type: integer, nullable: true }
+        icpVersion: { type: number, nullable: true }
         intelligencePackVersionId: { type: string, nullable: true }
-        intelligencePackVersion: { type: integer, nullable: true }
+        intelligencePackVersion: { type: number, nullable: true }
         opportunityModelVersionId: { type: string, nullable: true }
-        opportunityModelVersion: { type: integer, nullable: true }
+        opportunityModelVersion: { type: number, nullable: true }
         fit: { type: number, nullable: true }
         need: { type: number, nullable: true }
         timing: { type: number, nullable: true }
