@@ -10,24 +10,72 @@ import { ProviderRouter } from "../provider-router";
 import { resolveProjectSellerContext } from "../seller-context";
 import { InMemoryIntelligenceV2Repository, orchestrateIntelligenceV2, type IntelligenceV2Repository } from "../intelligence-v2/orchestrator";
 import { createProviderRouterResearchInvokerV2, V2_RESEARCH_PROVIDER_CALL_GRAPH } from "../intelligence-v2/research-company";
-import { ASSESSMENT_MODEL, INTELLIGENCE_CORE_VERSION } from "../intelligence-v2/schemas";
+import { ASSESSMENT_MODEL, INTELLIGENCE_CORE_VERSION, commercialRoles, whoValues } from "../intelligence-v2/schemas";
 import { z } from "zod/v4";
 
 export const MARKET_READINESS_THRESHOLDS = {
-  role: 85, who: 80, buyerPrecision: 90, buyerRecall: 80, competitorRecall: 90,
-  dangerous: 0, positiveCompetitors: 0, roleWhoCoverage: 90, identity: 95,
+  role: 85, who: 80, roleCoverage: 95, whoCoverage: 95, buyerPrecision: 90, buyerRecall: 80, competitorRecall: 90,
+  dangerous: 0, competitorInShortlist: 0, identity: 95,
   actionableEvidence: 100, unsupported: 0, preferredAverageCents: 10, success: 95,
 } as const;
 
-export type Label = { role: boolean; who: boolean; buyer: boolean; competitor: boolean; dangerous: boolean; identity: boolean; actionableEvidence: boolean };
-export type Prediction = { role: boolean; who: boolean; buyer: boolean; competitor: boolean; identity: boolean; supported: boolean; costCents: number; succeeded: boolean };
-export const marketReadinessPersistedPredictionSchema = z.object({
+export type CommercialRoleLabel = (typeof commercialRoles)[number];
+export type WhoLabel = (typeof whoValues)[number];
+const POSITIVE_WHO: ReadonlySet<WhoLabel> = new Set<WhoLabel>(["LIKELY_FIT", "POSSIBLE_FIT"]);
+export const isPositiveWho = (who: WhoLabel): boolean => POSITIVE_WHO.has(who);
+/** A buyer is a POTENTIAL_BUYER with a positive WHO; applied identically to gold and prediction. */
+export const isBuyerLabel = (label: { commercialRole: CommercialRoleLabel; who: WhoLabel }): boolean =>
+  label.commercialRole === "POTENTIAL_BUYER" && isPositiveWho(label.who);
+
+/** Adjudicated gold labels: enum-level truth for role and WHO plus three boolean facts. */
+export const marketReadinessGoldLabelsSchema = z.object({
+  commercialRole: z.enum(commercialRoles),
+  who: z.enum(whoValues),
   identityResolved: z.boolean(),
+  actionableEvidence: z.boolean(),
+  dangerous: z.boolean(),
+}).strict();
+export type MarketReadinessGoldLabels = z.infer<typeof marketReadinessGoldLabelsSchema>;
+/**
+ * Lenient parser for the boolean shape the scripted campaign (and the previous
+ * adjudication dialog) wrote. `role`/`who` booleans carry no enum meaning and
+ * are ignored; missing keys default to false exactly as the old `!!g.x` did.
+ */
+export const marketReadinessLegacyGoldLabelsSchema = z.object({
+  role: z.boolean().optional(), who: z.boolean().optional(), buyer: z.boolean().optional(),
+  competitor: z.boolean().optional(), dangerous: z.boolean().optional(), identity: z.boolean().optional(),
+  actionableEvidence: z.boolean().optional(),
+}).catchall(z.boolean());
+export type MarketReadinessLegacyGoldLabels = {
+  legacy: true; buyer: boolean; competitor: boolean; dangerous: boolean; identityResolved: boolean; actionableEvidence: boolean;
+};
+export type Label = (MarketReadinessGoldLabels & { legacy?: false }) | MarketReadinessLegacyGoldLabels;
+export type Prediction = {
+  commercialRole: CommercialRoleLabel; who: WhoLabel; identityResolved: boolean; supported: boolean;
+  unsupportedFactsCount: number; costCents: number; succeeded: boolean;
+  /** Derived from a pre-enum snapshot: enum accuracy and coverage are not meaningful. */
+  legacy?: boolean;
+};
+/** Enum gold labels are preferred; a legacy boolean row is accepted but marked so reports flag it. */
+export function parseMarketReadinessGoldLabels(value: unknown): Label {
+  const current = marketReadinessGoldLabelsSchema.safeParse(value);
+  if (current.success) return current.data;
+  const legacy = marketReadinessLegacyGoldLabelsSchema.safeParse(value);
+  if (!legacy.success) throw new Error("INVALID_GOLD_LABELS");
+  const g = legacy.data;
+  return { legacy: true, buyer: !!g.buyer, competitor: !!g.competitor, dangerous: !!g.dangerous, identityResolved: !!g.identity, actionableEvidence: !!g.actionableEvidence };
+}
+
+const persistedPredictionFields = {
+  identityResolved: z.boolean(),
+  commercialRole: z.enum(commercialRoles).optional(),
+  who: z.enum(whoValues).optional(),
   predictedRole: z.boolean(),
   predictedWho: z.boolean(),
   predictedBuyer: z.boolean(),
   predictedCompetitor: z.boolean(),
   evidenceBacked: z.boolean(),
+  unknownFieldsCount: z.number().int().min(0).optional(),
   unsupportedFactsCount: z.number().int().min(0),
   unsupportedFacts: z.boolean(),
   processingSucceeded: z.boolean(),
@@ -43,13 +91,51 @@ export const marketReadinessPersistedPredictionSchema = z.object({
   businessTwinVersion: z.string().min(1),
   offeringVersion: z.string().min(1),
   icpVersion: z.string().min(1),
-}).strict().superRefine((value, ctx) => {
+};
+const refinePersistedPrediction = (value: {
+  commercialRole?: CommercialRoleLabel; who?: WhoLabel; predictedRole: boolean; predictedWho: boolean; predictedBuyer: boolean;
+  predictedCompetitor: boolean; unsupportedFacts: boolean; unsupportedFactsCount: number; totalCostCents: number; providerCostCents: number; semanticCostCents: number;
+}, ctx: { addIssue: (issue: { code: "custom"; message: string }) => void }) => {
   if(value.unsupportedFacts !== (value.unsupportedFactsCount > 0))ctx.addIssue({code:"custom",message:"unsupportedFacts flag/count mismatch"});
   if(value.totalCostCents !== value.providerCostCents + value.semanticCostCents)ctx.addIssue({code:"custom",message:"total cost does not equal component costs"});
-});
+  if(value.commercialRole !== undefined){
+    if(value.predictedRole !== (value.commercialRole === "POTENTIAL_BUYER"))ctx.addIssue({code:"custom",message:"predictedRole/commercialRole mismatch"});
+    if(value.predictedCompetitor !== (value.commercialRole === "SELLER_COMPETITOR"))ctx.addIssue({code:"custom",message:"predictedCompetitor/commercialRole mismatch"});
+  }
+  if(value.who !== undefined && value.predictedWho !== isPositiveWho(value.who))ctx.addIssue({code:"custom",message:"predictedWho/who mismatch"});
+  if(value.commercialRole !== undefined && value.who !== undefined && value.predictedBuyer !== (value.predictedRole && value.predictedWho))ctx.addIssue({code:"custom",message:"predictedBuyer/role/who mismatch"});
+};
+/** Read schema: enum fields and unknownFieldsCount are optional because pre-enum snapshots lack them. */
+export const marketReadinessPersistedPredictionSchema = z.object(persistedPredictionFields).strict().superRefine(refinePersistedPrediction);
+/** Write schema: every new snapshot must carry the enum classes and the informational unknown-field count. */
+export const marketReadinessPersistedPredictionWriteSchema = z.object({
+  ...persistedPredictionFields,
+  commercialRole: z.enum(commercialRoles),
+  who: z.enum(whoValues),
+  unknownFieldsCount: z.number().int().min(0),
+}).strict().superRefine(refinePersistedPrediction);
 export type MarketReadinessPersistedPrediction = z.infer<typeof marketReadinessPersistedPredictionSchema>;
+export type MarketReadinessPersistedPredictionWrite = z.infer<typeof marketReadinessPersistedPredictionWriteSchema>;
 export function parseMarketReadinessPersistedPrediction(value: unknown): MarketReadinessPersistedPrediction {
   return marketReadinessPersistedPredictionSchema.parse(value);
+}
+/** Lift a persisted snapshot into a metric prediction; pre-enum rows are derived and marked legacy. */
+export function marketReadinessPredictionFromPersisted(evaluation: MarketReadinessPersistedPrediction): Prediction {
+  const legacy = evaluation.commercialRole === undefined || evaluation.who === undefined;
+  return {
+    commercialRole: evaluation.commercialRole ?? (evaluation.predictedCompetitor ? "SELLER_COMPETITOR" : evaluation.predictedRole ? "POTENTIAL_BUYER" : "UNKNOWN"),
+    who: evaluation.who ?? (evaluation.predictedWho ? "POSSIBLE_FIT" : "INSUFFICIENT_DATA"),
+    identityResolved: evaluation.identityResolved,
+    supported: evaluation.evidenceBacked && !evaluation.unsupportedFacts,
+    unsupportedFactsCount: evaluation.unsupportedFactsCount,
+    costCents: evaluation.totalCostCents,
+    succeeded: evaluation.processingSucceeded,
+    ...(legacy ? { legacy: true } : {}),
+  };
+}
+/** Single row builder shared by the rollout route and the post-processing report. */
+export function marketReadinessMetricRow(input: { goldLabels: unknown; evaluation: MarketReadinessPersistedPrediction }): { gold: Label; prediction: Prediction } {
+  return { gold: parseMarketReadinessGoldLabels(input.goldLabels), prediction: marketReadinessPredictionFromPersisted(input.evaluation) };
 }
 export type MarketReadinessSnapshotInvariantInput = {
   cohortItemId: string;
@@ -126,42 +212,92 @@ type CompletedPredictionSnapshot = {
   cohortItemId:string; version:string; evaluation:MarketReadinessPersistedPrediction;
   evidence:Record<string,unknown>;
 };
+export type ConfusionMatrix<K extends string> = Record<K, Record<K, number>>;
 export type MetricReport = {
-  role?: number; who?: number; buyerPrecision?: number; buyerRecall?: number; competitorRecall?: number;
-  dangerous?: number; positiveCompetitors?: number; roleWhoCoverage?: number; identity?: number;
+  /** Enum-level accuracy: gold.commercialRole === prediction.commercialRole (percent). */
+  role?: number;
+  /** Enum-level accuracy: gold.who === prediction.who (percent). */
+  who?: number;
+  roleConfusion?: ConfusionMatrix<CommercialRoleLabel>; whoConfusion?: ConfusionMatrix<WhoLabel>;
+  roleCoverage?: number; whoCoverage?: number;
+  buyerPrecision?: number; buyerRecall?: number; competitorRecall?: number;
+  dangerous?: number; competitorInShortlist?: number; competitorFalsePositives?: number;
+  identity?: number; identityAgreement?: number;
   actionableEvidence?: number; unsupported?: number; preferredAverageCents?: number; success?: number;
+  legacyGoldRows?: number; legacyPredictionRows?: number;
   eligible: boolean; reasons: string[]; pass: boolean;
 };
 const percent = (n: number, d: number) => d ? n * 100 / d : 0;
+const emptyConfusion = <K extends string>(keys: readonly K[]): ConfusionMatrix<K> =>
+  Object.fromEntries(keys.map((g) => [g, Object.fromEntries(keys.map((p) => [p, 0]))])) as ConfusionMatrix<K>;
+const goldIsBuyer = (gold: Label) => gold.legacy ? gold.buyer : isBuyerLabel(gold);
+const goldIsCompetitor = (gold: Label) => gold.legacy ? gold.competitor : gold.commercialRole === "SELLER_COMPETITOR";
+const goldIsDangerous = (gold: Label) => goldIsCompetitor(gold) || gold.dangerous;
+const predictionIsCompetitor = (p: Prediction) => p.commercialRole === "SELLER_COMPETITOR";
 
-/** A zero denominator is an explicit failure, particularly for safety labels. */
+/**
+ * A zero denominator is an explicit failure, particularly for safety labels.
+ * Legacy (boolean) gold labels or pre-enum snapshots still yield boolean-level
+ * metrics, but make the report ineligible so enum accuracy is never faked.
+ */
 export function calculateMarketReadinessMetrics(rows: Array<{ gold: Label; prediction: Prediction }>): MetricReport {
   const reasons: string[] = [];
   if (!rows.length) return { eligible: false, reasons: ["NO_ADJUDICATED_ROWS"], pass: false };
-  const recall = (key: keyof Label) => {
-    const actual = rows.filter((r) => r.gold[key]).length;
-    if (!actual) { reasons.push(`VACUOUS_${key.toUpperCase()}_SAFETY`); return 0; }
-    return percent(rows.filter((r) => r.gold[key] && Boolean(r.prediction[key as keyof Prediction])).length, actual);
-  };
-  const precision = (key: "buyer") => {
-    const predicted = rows.filter((r) => r.prediction[key]).length;
-    if (!predicted) { reasons.push(`VACUOUS_${key.toUpperCase()}_PRECISION`); return 0; }
-    return percent(rows.filter((r) => r.prediction[key] && r.gold[key]).length, predicted);
-  };
-  const accuracy = (key: "role" | "who") => percent(rows.filter((r) => r.gold[key] === r.prediction[key]).length, rows.length);
-  const dangerousFalsePositive = rows.filter((r) => r.gold.competitor && r.prediction.buyer).length;
-  // A correctly identified competitor is required by competitor recall.  The
-  // zero-tolerance safety metric is therefore false-positive competitors, not
-  // all positive competitor predictions.
-  const positiveCompetitors = rows.filter((r) => !r.gold.competitor && r.prediction.competitor).length;
-  const coverage = percent(rows.filter((r) => r.prediction.role !== undefined && r.prediction.who !== undefined).length, rows.length);
-  const identity = percent(rows.filter((r) => r.prediction.identity).length, rows.length);
-  const actionableEvidence = percent(rows.filter((r) => r.gold.actionableEvidence && r.prediction.supported).length, rows.length);
-  const unsupported = percent(rows.filter((r) => !r.prediction.supported).length, rows.length);
+  const T = MARKET_READINESS_THRESHOLDS;
+  const legacyGoldRows = rows.filter((r) => r.gold.legacy).length;
+  const legacyPredictionRows = rows.filter((r) => r.prediction.legacy).length;
+  if (legacyGoldRows) reasons.push("LEGACY_GOLD_LABELS");
+  if (legacyPredictionRows) reasons.push("LEGACY_PREDICTION_SNAPSHOT");
+  const enumRows = rows.flatMap((r) => r.gold.legacy || r.prediction.legacy ? [] : [{ gold: r.gold, prediction: r.prediction }]);
+
+  const roleConfusion = emptyConfusion(commercialRoles), whoConfusion = emptyConfusion(whoValues);
+  for (const r of enumRows) {
+    roleConfusion[r.gold.commercialRole][r.prediction.commercialRole] += 1;
+    whoConfusion[r.gold.who][r.prediction.who] += 1;
+  }
+  const role = percent(enumRows.filter((r) => r.gold.commercialRole === r.prediction.commercialRole).length, enumRows.length);
+  const who = percent(enumRows.filter((r) => r.gold.who === r.prediction.who).length, enumRows.length);
+  const coverageRows = rows.filter((r) => !r.prediction.legacy);
+  const roleCoverage = percent(coverageRows.filter((r) => r.prediction.commercialRole !== "UNKNOWN").length, coverageRows.length);
+  const whoCoverage = percent(coverageRows.filter((r) => r.prediction.who !== "INSUFFICIENT_DATA").length, coverageRows.length);
+
+  const goldBuyers = rows.filter((r) => goldIsBuyer(r.gold));
+  const predictedBuyers = rows.filter((r) => isBuyerLabel(r.prediction));
+  if (!predictedBuyers.length) reasons.push("VACUOUS_BUYER_PRECISION");
+  if (!goldBuyers.length) reasons.push("VACUOUS_BUYER_SAFETY");
+  const buyerPrecision = percent(predictedBuyers.filter((r) => goldIsBuyer(r.gold)).length, predictedBuyers.length);
+  const buyerRecall = percent(goldBuyers.filter((r) => isBuyerLabel(r.prediction)).length, goldBuyers.length);
+  const goldCompetitors = rows.filter((r) => goldIsCompetitor(r.gold));
+  if (!goldCompetitors.length) reasons.push("VACUOUS_COMPETITOR_SAFETY");
+  const competitorRecall = percent(goldCompetitors.filter((r) => predictionIsCompetitor(r.prediction)).length, goldCompetitors.length);
+  // Zero-tolerance safety counts (absolute, not percent).
+  const dangerous = rows.filter((r) => goldIsDangerous(r.gold) && isBuyerLabel(r.prediction)).length;
+  const competitorInShortlist = rows.filter((r) => predictionIsCompetitor(r.prediction) && isPositiveWho(r.prediction.who)).length;
+  const competitorFalsePositives = rows.filter((r) => !goldIsCompetitor(r.gold) && predictionIsCompetitor(r.prediction)).length;
+
+  const resolvable = rows.filter((r) => r.gold.identityResolved);
+  if (!resolvable.length) reasons.push("VACUOUS_IDENTITY");
+  const identity = percent(resolvable.filter((r) => r.prediction.identityResolved).length, resolvable.length);
+  const identityAgreement = percent(rows.filter((r) => r.gold.identityResolved === r.prediction.identityResolved).length, rows.length);
+  const goldActionable = rows.filter((r) => r.gold.actionableEvidence);
+  if (!goldActionable.length) reasons.push("VACUOUS_ACTIONABLE_EVIDENCE");
+  const actionableEvidence = percent(goldActionable.filter((r) => r.prediction.supported).length, goldActionable.length);
+  const unsupported = percent(rows.filter((r) => r.prediction.unsupportedFactsCount > 0).length, rows.length);
   const preferredAverageCents = rows.reduce((sum, r) => sum + r.prediction.costCents, 0) / rows.length;
   const success = percent(rows.filter((r) => r.prediction.succeeded).length, rows.length);
-  const report = { role: accuracy("role"), who: accuracy("who"), buyerPrecision: precision("buyer"), buyerRecall: recall("buyer"), competitorRecall: recall("competitor"), dangerous: dangerousFalsePositive, positiveCompetitors, roleWhoCoverage: coverage, identity, actionableEvidence, unsupported, preferredAverageCents, success };
-  const pass = !reasons.length && report.role >= 85 && report.who >= 80 && report.buyerPrecision >= 90 && report.buyerRecall >= 80 && report.competitorRecall >= 90 && report.dangerous === 0 && report.positiveCompetitors === 0 && report.roleWhoCoverage >= 90 && report.identity >= 95 && report.actionableEvidence >= 100 && report.unsupported === 0 && report.preferredAverageCents <= 10 && report.success >= 95;
+
+  const report = {
+    role, who, roleConfusion, whoConfusion, roleCoverage, whoCoverage,
+    buyerPrecision, buyerRecall, competitorRecall, dangerous, competitorInShortlist, competitorFalsePositives,
+    identity, identityAgreement, actionableEvidence, unsupported, preferredAverageCents, success,
+    legacyGoldRows, legacyPredictionRows,
+  };
+  const pass = !reasons.length && report.role >= T.role && report.who >= T.who
+    && report.roleCoverage >= T.roleCoverage && report.whoCoverage >= T.whoCoverage
+    && report.buyerPrecision >= T.buyerPrecision && report.buyerRecall >= T.buyerRecall && report.competitorRecall >= T.competitorRecall
+    && report.dangerous <= T.dangerous && report.competitorInShortlist <= T.competitorInShortlist
+    && report.identity >= T.identity && report.actionableEvidence >= T.actionableEvidence && report.unsupported <= T.unsupported
+    && report.preferredAverageCents <= T.preferredAverageCents && report.success >= T.success;
   return { ...report, eligible: !reasons.length, reasons, pass };
 }
 
@@ -718,19 +854,32 @@ export function createMarketReadinessWorkerAdapter(deps: {
           onSemanticCost: (cost) => { observedSemanticCost += cost; },
         });
       const evidenceIds=new Set(result.evidence.map(item=>item.evidenceId));
-      const evidenceBacked=result.assessment.commercialRole.evidenceIds.length>0&&result.assessment.who.evidenceIds.length>0&&
-        [...result.assessment.commercialRole.evidenceIds,...result.assessment.who.evidenceIds].every(id=>evidenceIds.has(id));
-      const predictedRole=result.assessment.commercialRole.value==="POTENTIAL_BUYER";
-      const predictedWho=["LIKELY_FIT","POSSIBLE_FIT"].includes(result.assessment.who.value);
-      const predictedCompetitor=result.assessment.commercialRole.value==="SELLER_COMPETITOR";
+      const resolvable=(ids:string[])=>ids.length>0&&ids.every(id=>evidenceIds.has(id));
+      const {commercialRole,who}=result.assessment;
+      const evidenceBacked=resolvable(commercialRole.evidenceIds)&&resolvable(who.evidenceIds);
+      // Material claims are the asserted role (unless UNKNOWN), the asserted WHO
+      // (unless INSUFFICIENT_DATA) and every criterion judged PASS or FAIL. A claim
+      // is unsupported when it cites no evidence or cites an id outside the
+      // evidence set. UNKNOWN profile fields are not defects and are only counted.
+      const materialClaims:string[][]=[
+        ...(commercialRole.value!=="UNKNOWN"?[commercialRole.evidenceIds]:[]),
+        ...(who.value!=="INSUFFICIENT_DATA"?[who.evidenceIds]:[]),
+        ...who.criteria.filter(c=>c.result==="PASS"||c.result==="FAIL").map(c=>c.evidenceIds),
+      ];
+      const unsupportedFactsCount=materialClaims.filter(ids=>!resolvable(ids)).length;
+      const predictedRole=commercialRole.value==="POTENTIAL_BUYER";
+      const predictedWho=isPositiveWho(who.value);
+      const predictedCompetitor=commercialRole.value==="SELLER_COMPETITOR";
       const predictedBuyer=predictedRole&&predictedWho;
       const providerCostCents=cents(observedProviderCost),semanticCostCents=cents(observedSemanticCost);
-      const evaluation=marketReadinessPersistedPredictionSchema.parse({
+      const evaluation=marketReadinessPersistedPredictionWriteSchema.parse({
         identityResolved:result.profile.identity.status==="RESOLVED",
+        commercialRole:commercialRole.value,who:who.value,
         predictedRole,predictedWho,predictedBuyer,predictedCompetitor,
         evidenceBacked,
-        unsupportedFactsCount:result.profile.unknownFields.length,
-        unsupportedFacts:result.profile.unknownFields.length>0,
+        unknownFieldsCount:result.profile.unknownFields.length,
+        unsupportedFactsCount,
+        unsupportedFacts:unsupportedFactsCount>0,
         processingSucceeded:true,
         terminalState:result.assessment.resolutionType,
         providerCostCents,semanticCostCents,totalCostCents:providerCostCents+semanticCostCents,
