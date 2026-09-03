@@ -195,8 +195,12 @@ export function seededAssignments(items: Array<{ id: string; stratum: string }>,
   }
   return assignments.sort((a, b) => a.stratum.localeCompare(b.stratum) || a.cohortItemId.localeCompare(b.cohortItemId));
 }
+export const OUTCOMES_CSV_MAX_BYTES = 2 * 1024 * 1024;
+export const OUTCOMES_CSV_MAX_LINES = 20_000;
 export function parseOutcomesCsv(csv: string): Array<{ domain: string; outcome: "MEETING" | "OPPORTUNITY" | "BAD_FIT" | "OTHER"; occurredAt: string }> {
+  if (Buffer.byteLength(csv, "utf8") > OUTCOMES_CSV_MAX_BYTES) throw new Error(`CSV_EXCEEDS_${OUTCOMES_CSV_MAX_BYTES}_BYTES`);
   const lines = csv.replace(/^\uFEFF/, "").trim().split(/\r?\n/);
+  if (lines.length > OUTCOMES_CSV_MAX_LINES + 1) throw new Error(`CSV_EXCEEDS_${OUTCOMES_CSV_MAX_LINES}_ROWS`);
   if (!lines.length || lines[0] !== "domain,outcome,occurred_at") throw new Error("CSV_HEADER_MUST_BE_domain_outcome_occurred_at");
   const domains = new Set<string>();
   return lines.slice(1).map((line, index) => {
