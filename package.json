@@ -9,11 +9,17 @@
     "typecheck": "pnpm run typecheck:libs && pnpm -r --filter \"./artifacts/**\" --filter \"./scripts\" --if-present run typecheck",
     "test:market-readiness": "pnpm --dir artifacts/api-server run test:market-readiness",
     "test:market-readiness:db": "pnpm --dir artifacts/api-server run test:market-readiness:db",
-    "post-process:market-readiness": "pnpm --dir artifacts/api-server run post-process:market-readiness"
+    "post-process:market-readiness": "pnpm --dir artifacts/api-server run post-process:market-readiness",
+    "lint": "eslint ."
   },
   "private": true,
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.9.1",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "globals": "^17.12.0",
     "prettier": "^3.9.6",
-    "typescript": "~5.9.3"
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.69.0"
   }
 }

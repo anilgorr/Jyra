@@ -14,7 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { MarketCard } from "@/components/market-today/MarketCard";
 import { MarketStats } from "@/components/market-today/MarketStats";
 import { MarketFilters, type ActiveFilters } from "@/components/market-today/MarketFilters";
-import type { MarketTodayResponseFilterOptions, MarketTodayCard } from "@workspace/api-client-react";
+import type { MarketTodayResponseFilterOptions } from "@workspace/api-client-react";
 
 const INITIAL_FILTERS: ActiveFilters = {
   states: [],
@@ -47,11 +47,6 @@ export default function Today() {
 
   const [activeStatus, setActiveStatus] = useState<string | null>(null);
   const [activeFilters, setActiveFilters] = useState<ActiveFilters>(INITIAL_FILTERS);
-
-  // Redirect to onboarding if they have no organizations
-  if (user && user.organizationCount === 0) {
-    return <Redirect to="/onboarding" />;
-  }
 
   const handleFilterChange = (key: keyof MarketTodayResponseFilterOptions, value: string) => {
     setActiveFilters(prev => {
@@ -104,6 +99,12 @@ export default function Today() {
       return true;
     });
   }, [marketData, activeStatus, activeFilters]);
+
+  // Redirect to onboarding if they have no organizations.
+  // (After all hooks: an early return above useMemo broke the rules of hooks.)
+  if (user && user.organizationCount === 0) {
+    return <Redirect to="/onboarding" />;
+  }
 
   // Loading: user, workspace (orgs/projects), or the market view itself.
   if (isUserLoading || isWorkspaceLoading || (activeProjectId && isMarketLoading)) {
