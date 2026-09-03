@@ -90,11 +90,19 @@ export async function orchestrateIntelligenceV2(input: {
   researchInvoker: ResearchInvokerV2; assessmentInvoker?: AssessmentInvokerV2; now?: Date;
   maxExternalResearchCalls?: number; assessmentTimeoutMs?: number;
   onSemanticAttemptStart?: () => void; onSemanticCost?: (cost: number) => void;
+  /** Set when the research invoker carries its own cost callbacks (e.g. onProviderCost) so the run is never shared. */
+  observesResearchCost?: boolean;
 }): Promise<IntelligenceV2Result> {
   const key = fingerprintV2({ organizationId: input.request.organizationId, projectId: input.request.projectId, companyId: input.request.companyId,
     domain: input.request.domain, sourceEvidence: input.request.firstPartyEvidence.map(({ evidenceId, version }) => ({ evidenceId, version })),
     businessTwinVersion: input.context.businessTwinVersion, offeringVersion: input.context.offeringVersion, icpVersion: input.context.icpVersion,
     assessmentPolicyVersion: ASSESSMENT_POLICY_VERSION, promptVersion: ASSESSMENT_PROMPT_VERSION, model: ASSESSMENT_MODEL });
+  // In-flight de-duplication is only safe for callers that observe nothing but
+  // the result. A caller that supplied cost/attempt callbacks must run its own
+  // work so its callbacks fire for every unit of spend it is accountable for;
+  // joining another caller's promise would silently record zero cost.
+  const observesSpend = Boolean(input.onSemanticAttemptStart || input.onSemanticCost || input.observesResearchCost);
+  if (observesSpend) return orchestrateIntelligenceV2Internal(input);
   const active = inFlightRuns.get(key);
   if (active) return active;
   const work = orchestrateIntelligenceV2Internal(input).finally(() => inFlightRuns.delete(key));
