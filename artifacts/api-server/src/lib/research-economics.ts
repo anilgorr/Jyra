@@ -302,8 +302,8 @@ export async function recordResearchRequest(input: {
   organizationId: string;
   projectId: string;
   companyId: string;
-  questionId: string;
-  researchJobId: string;
+  questionId: string | null;
+  researchJobId: string | null;
   researchQuestion: string;
   providerCapability: ResearchRequestCost["providerCapability"];
   providerId: string | null;
