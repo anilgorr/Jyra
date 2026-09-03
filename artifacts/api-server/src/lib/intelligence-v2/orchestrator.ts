@@ -4,6 +4,7 @@ import { researchCompanyV2, type ResearchInvokerV2, type ResearchRequestV2 } fro
 import { buildCompanyProfileV2 } from "./build-company-profile";
 import { assessMarketFitV2, type AssessmentInvokerV2 } from "./assess-market-fit";
 import { applySafetyRulesV2 } from "./apply-safety-rules";
+import { sellerOfferingFromContextV2 } from "./offering-overlap";
 import { normalizeAssessmentEvidenceV2, validateAssessmentEvidenceV2 } from "./evidence-validator";
 import {
   ASSESSMENT_MODEL, ASSESSMENT_POLICY_VERSION, ASSESSMENT_PROMPT_VERSION, INTELLIGENCE_CORE_VERSION,
@@ -127,7 +128,10 @@ async function orchestrateIntelligenceV2Internal(input: {
     validateScopedEvidence(research.evidence, input.request, "cached-research");
   }
   if (!research) {
-    research = await researchCompanyV2({ ...input.request, requirements: deriveResearchRequirementsV2(input.context) }, async (step, request) => {
+    research = await researchCompanyV2({
+      ...input.request, requirements: deriveResearchRequirementsV2(input.context),
+      offering: input.request.offering ?? sellerOfferingFromContextV2(input.context.offering),
+    }, async (step, request) => {
       if (step.source === "CACHE") return { provider: "request-evidence", evidence: input.request.firstPartyEvidence };
       return input.researchInvoker(step, request);
     }, input.maxExternalResearchCalls);
