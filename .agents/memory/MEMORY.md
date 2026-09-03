@@ -46,3 +46,6 @@
 - [Live semantic contract validation](live-semantic-contract-validation.md) — strict evidence-bound model outputs need live contract probes before paid cohort research.
 - [JYRA market-readiness gates](jyra-market-readiness-gates.md) — launch requires blind quality, population reliability, and measured commercial lift.
 - [Paid worker lease fencing](paid-worker-lease-fencing.md) — expired paid-work leases must be fenced and conservatively charged, never automatically redispatched.
+- [Started semantic attempt accounting](started-semantic-attempt-accounting.md) — once semantic work starts, missing usage must settle at the configured maximum rather than appear free.
+- [Model citation abstention](model-citation-abstention.md) — known invalid model citations should abstain locally, while immutable evidence corruption remains a strict failure.
+- [Bounded campaign workers](bounded-campaign-workers.md) — short CLI leases and small chunks reduce restart exposure without changing service-wide defaults.

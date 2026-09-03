@@ -51,6 +51,77 @@ export type MarketReadinessPersistedPrediction = z.infer<typeof marketReadinessP
 export function parseMarketReadinessPersistedPrediction(value: unknown): MarketReadinessPersistedPrediction {
   return marketReadinessPersistedPredictionSchema.parse(value);
 }
+export type MarketReadinessSnapshotInvariantInput = {
+  cohortItemId: string;
+  processingAttemptId: string;
+  version: string;
+  predictions: unknown;
+};
+export type MarketReadinessAttemptInvariantInput = {
+  id: string;
+  state: string;
+  cohortItemId: string | null;
+  spentCents: number;
+};
+export type MarketReadinessSnapshotInvariantResult =
+  | { valid: true; evaluation: MarketReadinessPersistedPrediction }
+  | { valid: false; reason: string; evaluation?: MarketReadinessPersistedPrediction };
+
+/** Shared fail-closed predicate for every persisted snapshot accepted by freeze or reporting. */
+export function validateMarketReadinessSnapshotInvariant(
+  snapshot: MarketReadinessSnapshotInvariantInput,
+  attempt: MarketReadinessAttemptInvariantInput | undefined,
+): MarketReadinessSnapshotInvariantResult {
+  let evaluation: MarketReadinessPersistedPrediction;
+  try {
+    evaluation = parseMarketReadinessPersistedPrediction(snapshot.predictions);
+  } catch {
+    return { valid: false, reason: "INVALID_PERSISTED_PREDICTION" };
+  }
+  if (!attempt || attempt.state !== "SUCCEEDED") {
+    return { valid: false, reason: "PREDICTION_ATTEMPT_NOT_SUCCEEDED", evaluation };
+  }
+  if (attempt.id !== snapshot.processingAttemptId || attempt.cohortItemId !== snapshot.cohortItemId) {
+    return { valid: false, reason: "PREDICTION_ATTEMPT_ITEM_MISMATCH", evaluation };
+  }
+  if (attempt.spentCents !== evaluation.totalCostCents) {
+    return { valid: false, reason: "PREDICTION_ATTEMPT_COST_MISMATCH", evaluation };
+  }
+  if (!evaluation.processingSucceeded) {
+    return { valid: false, reason: "PREDICTION_PROCESSING_NOT_SUCCEEDED", evaluation };
+  }
+  if (snapshot.version !== evaluation.intelligenceVersion) {
+    return { valid: false, reason: "PREDICTION_VERSION_MISMATCH", evaluation };
+  }
+  return { valid: true, evaluation };
+}
+export function assertMarketReadinessIndependentReviewCoverage(input: {
+  cohortItemIds: string[];
+  reviews: Array<{ cohortItemId: string; reviewerId: string }>;
+  adjudications?: Array<{ cohortItemId: string; adjudicatorId: string }>;
+}): void {
+  const cohort = new Set(input.cohortItemIds);
+  if (cohort.size !== input.cohortItemIds.length) throw new Error("DUPLICATE_SCOPED_COHORT_ITEM");
+  const reviewsByItem = new Map<string, string[]>();
+  for (const review of input.reviews) {
+    if (!cohort.has(review.cohortItemId)) throw new Error("BLIND_REVIEW_SCOPE_MISMATCH");
+    const reviewers = reviewsByItem.get(review.cohortItemId) ?? [];
+    reviewers.push(review.reviewerId);
+    reviewsByItem.set(review.cohortItemId, reviewers);
+  }
+  for (const cohortItemId of cohort) {
+    const reviewers = reviewsByItem.get(cohortItemId) ?? [];
+    if (reviewers.length !== 2 || new Set(reviewers).size !== 2) {
+      throw new Error(`EXACTLY_TWO_DISTINCT_BLIND_REVIEWS_REQUIRED:${cohortItemId}`);
+    }
+  }
+  for (const adjudication of input.adjudications ?? []) {
+    if (!cohort.has(adjudication.cohortItemId)) throw new Error("ADJUDICATION_SCOPE_MISMATCH");
+    if (new Set(reviewsByItem.get(adjudication.cohortItemId) ?? []).has(adjudication.adjudicatorId)) {
+      throw new Error(`INDEPENDENT_ADJUDICATOR_REQUIRED:${adjudication.cohortItemId}`);
+    }
+  }
+}
 type CompletedPredictionSnapshot = {
   cohortItemId:string; version:string; evaluation:MarketReadinessPersistedPrediction;
   evidence:Record<string,unknown>;

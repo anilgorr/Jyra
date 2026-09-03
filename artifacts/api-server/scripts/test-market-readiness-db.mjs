@@ -15,6 +15,24 @@ process.env.MARKET_READINESS_V2_SEMANTIC_MAX_CENTS = "5";
 const helperOutput = "/tmp/jyra-market-readiness-db-test.cjs";
 await build({ entryPoints: ["./scripts/market-readiness-test-entry.ts"], outfile: helperOutput, bundle: true, format: "cjs", platform: "node" });
 const helpers = await import(`${pathToFileURL(helperOutput).href}?t=${Date.now()}`);
+function routeHandler(method,path) {
+  const layer=helpers.marketReadinessRouter.stack.find(candidate=>candidate.route?.path===path&&candidate.route.methods[method]);
+  assert.ok(layer,`missing ${method.toUpperCase()} ${path}`);
+  return layer.route.stack.at(-1).handle;
+}
+function invokeRoute(handler,{params,body,userId}) {
+  return new Promise((resolve,reject)=>{
+    const response={
+      locals:{userId},statusCode:200,
+      status(code){this.statusCode=code;return this;},
+      json(payload){resolve({status:this.statusCode,body:payload});return this;},
+    };
+    handler({params,body},response,reject);
+  });
+}
+const blindReviewHandler=routeHandler("post","/projects/:projectId/market-readiness/campaigns/:campaignId/blind-reviews");
+const adjudicationHandler=routeHandler("post","/projects/:projectId/market-readiness/campaigns/:campaignId/adjudications");
+const freezeHandler=routeHandler("post","/projects/:projectId/market-readiness/campaigns/:campaignId/freeze");
 const persistedPrediction = (overrides = {}) => ({
   identityResolved:true,predictedRole:true,predictedWho:true,predictedBuyer:true,predictedCompetitor:false,
   evidenceBacked:true,unsupportedFactsCount:0,unsupportedFacts:false,
@@ -26,6 +44,8 @@ const persistedPrediction = (overrides = {}) => ({
 const admin = new pg.Client({ connectionString: process.env.DATABASE_URL });
 await admin.connect();
 const userId = `mr-db-test-${randomUUID()}`;
+const reviewerOneId = `mr-db-reviewer-one-${randomUUID()}`;
+const reviewerTwoId = `mr-db-reviewer-two-${randomUUID()}`;
 let organizationId;
 
 async function rejects(client, text, values, pattern) {
@@ -35,8 +55,9 @@ async function rejects(client, text, values, pattern) {
 try {
   const org = randomUUID(), project = randomUUID(), campaign = randomUUID();
   organizationId = org;
-  await admin.query("insert into users(id) values($1)", [userId]);
+  await admin.query("insert into users(id) values($1),($2),($3)", [userId,reviewerOneId,reviewerTwoId]);
   await admin.query("insert into organizations(id,name,created_by_user_id) values($1,$2,$3)", [org, `MR DB ${org}`, userId]);
+  await admin.query("insert into organization_members(organization_id,user_id,role) values($1,$2,'owner'),($1,$3,'member'),($1,$4,'member')",[org,userId,reviewerOneId,reviewerTwoId]);
   await admin.query("insert into projects(id,organization_id,name) values($1,$2,$3)", [project, org, `MR DB ${project}`]);
   await admin.query("insert into market_readiness_campaigns(id,organization_id,project_id,name,target_count,paid_cap_cents,created_by,state) values($1,$2,$3,'integration',200,10,$4,'REVIEWING')", [campaign, org, project, userId]);
 
@@ -461,6 +482,33 @@ try {
     await rejects(admin, `insert into market_readiness_prediction_snapshots(organization_id,project_id,campaign_id,cohort_item_id,processing_attempt_id,version,predictions)
       values($1,$2,$3,$4,$5,'JYRA_INTELLIGENCE_V2',$6)`, [org, project, campaign, randomUUID(), attempt, {}], /incomplete or invalid/i);
 
+    // The authenticated route path rejects adjudication until two distinct
+    // blind reviewers exist, rejects duplicate reviewers and a reviewer acting
+    // as adjudicator, then accepts an independent adjudicator.
+    const routeCampaign=randomUUID(),routeItem=randomUUID();
+    await admin.query(`insert into market_readiness_campaigns(id,organization_id,project_id,name,target_count,paid_cap_cents,created_by,state)
+      values($1,$2,$3,'route review invariant',200,5000,$4,'REVIEWING')`,[routeCampaign,org,project,userId]);
+    await admin.query(`insert into market_readiness_cohort_items(id,organization_id,project_id,campaign_id,normalized_domain,source,opaque_review_key)
+      values($1,$2,$3,$4,'route-review.example','MANUAL',$5)`,[routeItem,org,project,routeCampaign,randomUUID()]);
+    const routeParams={projectId:project,campaignId:routeCampaign};
+    const reviewBody={cohortItemId:routeItem,roleFit:true,whoFit:true,buyer:true,competitor:false,actionableEvidence:true};
+    const adjudicationBody={cohortItemId:routeItem,goldLabels:{role:true,who:true,buyer:true,competitor:false,dangerous:false,identity:true,actionableEvidence:true},rationale:"independent route test"};
+    let routeResponse=await invokeRoute(adjudicationHandler,{params:routeParams,body:adjudicationBody,userId});
+    assert.equal(routeResponse.status,400);
+    assert.match(routeResponse.body.error,/EXACTLY_TWO_DISTINCT/);
+    assert.equal((await invokeRoute(blindReviewHandler,{params:routeParams,body:reviewBody,userId:reviewerOneId})).status,201);
+    routeResponse=await invokeRoute(blindReviewHandler,{params:routeParams,body:reviewBody,userId:reviewerOneId});
+    assert.equal(routeResponse.status,400);
+    assert.match(routeResponse.body.error,/BLIND_REVIEW_ALREADY_RECORDED/);
+    routeResponse=await invokeRoute(adjudicationHandler,{params:routeParams,body:adjudicationBody,userId});
+    assert.equal(routeResponse.status,400);
+    assert.match(routeResponse.body.error,/EXACTLY_TWO_DISTINCT/);
+    assert.equal((await invokeRoute(blindReviewHandler,{params:routeParams,body:reviewBody,userId:reviewerTwoId})).status,201);
+    routeResponse=await invokeRoute(adjudicationHandler,{params:routeParams,body:adjudicationBody,userId:reviewerOneId});
+    assert.equal(routeResponse.status,400);
+    assert.match(routeResponse.body.error,/INDEPENDENT_ADJUDICATOR/);
+    assert.equal((await invokeRoute(adjudicationHandler,{params:routeParams,body:adjudicationBody,userId})).status,201);
+
     // A freeze row lock wins against a concurrent child writer's KEY SHARE;
     // after commit the trigger observes frozen_at and rejects the insertion.
     await c1.query("begin");
@@ -549,6 +597,30 @@ try {
     const persisted=await admin.query("select cohort_item_id,predictions from market_readiness_prediction_snapshots where campaign_id=$1 order by cohort_item_id",[gateCampaign]);
     assert.equal(persisted.rowCount,200);
     persisted.rows.forEach(row=>helpers.parseMarketReadinessPersistedPrediction(row.predictions));
+    const gateItems=(await admin.query("select id from market_readiness_cohort_items where campaign_id=$1 order by id",[gateCampaign])).rows.map(row=>row.id);
+    const gateAdjudications=(await admin.query("select cohort_item_id,adjudicator_id from market_readiness_adjudications where campaign_id=$1",[gateCampaign])).rows.map(row=>({cohortItemId:row.cohort_item_id,adjudicatorId:row.adjudicator_id}));
+    assert.throws(()=>helpers.assertMarketReadinessIndependentReviewCoverage({cohortItemIds:gateItems,reviews:[],adjudications:gateAdjudications}),/EXACTLY_TWO_DISTINCT/,"zero reviews cannot freeze");
+    let freezeResponse=await invokeRoute(freezeHandler,{params:{projectId:project,campaignId:gateCampaign},body:{},userId});
+    assert.equal(freezeResponse.status,400);
+    assert.match(freezeResponse.body.error,/EXACTLY_TWO_DISTINCT/);
+    await admin.query(`insert into market_readiness_blind_gold_reviews(organization_id,project_id,campaign_id,cohort_item_id,reviewer_id,role_fit,who_fit,buyer,competitor,actionable_evidence)
+      select $1,$2,$3,id,'gate-reviewer-1',true,true,true,false,true from market_readiness_cohort_items where campaign_id=$3`,[org,project,gateCampaign]);
+    let gateReviews=(await admin.query("select cohort_item_id,reviewer_id from market_readiness_blind_gold_reviews where campaign_id=$1",[gateCampaign])).rows.map(row=>({cohortItemId:row.cohort_item_id,reviewerId:row.reviewer_id}));
+    assert.throws(()=>helpers.assertMarketReadinessIndependentReviewCoverage({cohortItemIds:gateItems,reviews:gateReviews,adjudications:gateAdjudications}),/EXACTLY_TWO_DISTINCT/,"one review cannot freeze");
+    freezeResponse=await invokeRoute(freezeHandler,{params:{projectId:project,campaignId:gateCampaign},body:{},userId});
+    assert.equal(freezeResponse.status,400);
+    assert.match(freezeResponse.body.error,/EXACTLY_TWO_DISTINCT/);
+    await rejects(admin,`insert into market_readiness_blind_gold_reviews(organization_id,project_id,campaign_id,cohort_item_id,reviewer_id,role_fit,who_fit,buyer,competitor,actionable_evidence)
+      values($1,$2,$3,$4,'gate-reviewer-1',true,true,true,false,true)`,[org,project,gateCampaign,gateItems[0]],/unique|duplicate/i);
+    await admin.query(`insert into market_readiness_blind_gold_reviews(organization_id,project_id,campaign_id,cohort_item_id,reviewer_id,role_fit,who_fit,buyer,competitor,actionable_evidence)
+      select $1,$2,$3,id,'gate-reviewer-2',true,true,true,false,true from market_readiness_cohort_items where campaign_id=$3`,[org,project,gateCampaign]);
+    gateReviews=(await admin.query("select cohort_item_id,reviewer_id from market_readiness_blind_gold_reviews where campaign_id=$1",[gateCampaign])).rows.map(row=>({cohortItemId:row.cohort_item_id,reviewerId:row.reviewer_id}));
+    assert.doesNotThrow(()=>helpers.assertMarketReadinessIndependentReviewCoverage({cohortItemIds:gateItems,reviews:gateReviews,adjudications:gateAdjudications}),"two distinct reviews permit independent adjudication and freeze");
+    assert.throws(()=>helpers.assertMarketReadinessIndependentReviewCoverage({cohortItemIds:gateItems,reviews:gateReviews,
+      adjudications:gateAdjudications.map(row=>({...row,adjudicatorId:"gate-reviewer-1"}))}),/INDEPENDENT_ADJUDICATOR/);
+    freezeResponse=await invokeRoute(freezeHandler,{params:{projectId:project,campaignId:gateCampaign},body:{},userId});
+    assert.equal(freezeResponse.status,200);
+    assert.equal(freezeResponse.body.state,"FROZEN");
     const reportFor=(rows)=>helpers.calculateMarketReadinessMetrics(rows.map(({gold,evaluation})=>({gold,prediction:{
       role:evaluation.predictedRole,who:evaluation.predictedWho,buyer:evaluation.predictedBuyer,
       competitor:evaluation.predictedCompetitor,
@@ -574,6 +646,6 @@ try {
   console.log("market-readiness development DB integration tests passed");
 } finally {
   if (organizationId) await admin.query("delete from organizations where id=$1", [organizationId]);
-  await admin.query("delete from users where id=$1", [userId]);
+  await admin.query("delete from users where id=any($1::text[])", [[userId,reviewerOneId,reviewerTwoId]]);
   await admin.end();
 }

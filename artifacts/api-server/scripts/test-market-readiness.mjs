@@ -134,6 +134,16 @@ assert.throws(()=>m.parseMarketReadinessPersistedPrediction({...persistedPredict
 assert.throws(()=>m.parseMarketReadinessPersistedPrediction({...persistedPrediction,unsupportedFacts:true}),/flag.count/);
 assert.throws(()=>m.parseMarketReadinessPersistedPrediction({...persistedPrediction,unexpected:true}),/unrecognized/i);
 assert.throws(()=>m.parseMarketReadinessPersistedPrediction({...persistedPrediction,profileFingerprint:""}),/too small|expected string/i);
+const persistedSnapshot={cohortItemId:"item-1",processingAttemptId:"attempt-1",version:"JYRA_INTELLIGENCE_V2",predictions:persistedPrediction};
+const succeededAttempt={id:"attempt-1",state:"SUCCEEDED",cohortItemId:"item-1",spentCents:5};
+assert.deepEqual(m.validateMarketReadinessSnapshotInvariant(persistedSnapshot,succeededAttempt),{valid:true,evaluation:persistedPrediction});
+assert.deepEqual(m.validateMarketReadinessSnapshotInvariant(
+  {...persistedSnapshot,predictions:{...persistedPrediction,processingSucceeded:false}},
+  succeededAttempt,
+),{valid:false,reason:"PREDICTION_PROCESSING_NOT_SUCCEEDED",evaluation:{...persistedPrediction,processingSucceeded:false}});
+assert.equal(m.validateMarketReadinessSnapshotInvariant(persistedSnapshot,{...succeededAttempt,spentCents:4}).reason,"PREDICTION_ATTEMPT_COST_MISMATCH");
+assert.equal(m.validateMarketReadinessSnapshotInvariant({...persistedSnapshot,version:"V1"},succeededAttempt).reason,"PREDICTION_VERSION_MISMATCH");
+assert.equal(m.validateMarketReadinessSnapshotInvariant(persistedSnapshot,undefined).reason,"PREDICTION_ATTEMPT_NOT_SUCCEEDED");
 const dangerousPersisted=m.parseMarketReadinessPersistedPrediction({...persistedPrediction,predictedRole:true,predictedWho:true,predictedBuyer:true,predictedCompetitor:false});
 const dangerousComparisonRows=rows.map((row,index)=>index===0?{...row,prediction:{...row.prediction,
   role:dangerousPersisted.predictedRole,who:dangerousPersisted.predictedWho,
@@ -164,4 +174,17 @@ assert.deepEqual(m.parseAdjudicationImport([adjudication]),[adjudication]);
 assert.doesNotThrow(()=>m.assertExactCohortMembership([{cohortItemId:"a"},{cohortItemId:"b"}],["b","a"]));
 assert.throws(()=>m.assertExactCohortMembership([{cohortItemId:"a"},{cohortItemId:"a"}],["a","b"]),/DUPLICATE/);
 assert.throws(()=>m.assertExactCohortMembership([{cohortItemId:"a"}],["a","b"]),/EXACT_COHORT/);
+const reviewCoverage={cohortItemIds:["a"],reviews:[
+  {cohortItemId:"a",reviewerId:"reviewer-1"},{cohortItemId:"a",reviewerId:"reviewer-2"},
+]};
+assert.doesNotThrow(()=>m.assertMarketReadinessIndependentReviewCoverage(reviewCoverage));
+assert.throws(()=>m.assertMarketReadinessIndependentReviewCoverage({...reviewCoverage,reviews:[]}),/EXACTLY_TWO_DISTINCT/);
+assert.throws(()=>m.assertMarketReadinessIndependentReviewCoverage({...reviewCoverage,reviews:reviewCoverage.reviews.slice(0,1)}),/EXACTLY_TWO_DISTINCT/);
+assert.throws(()=>m.assertMarketReadinessIndependentReviewCoverage({...reviewCoverage,reviews:[
+  {cohortItemId:"a",reviewerId:"reviewer-1"},{cohortItemId:"a",reviewerId:"reviewer-1"},
+]}),/EXACTLY_TWO_DISTINCT/);
+assert.throws(()=>m.assertMarketReadinessIndependentReviewCoverage({...reviewCoverage,
+  adjudications:[{cohortItemId:"a",adjudicatorId:"reviewer-1"}]}),/INDEPENDENT_ADJUDICATOR/);
+assert.doesNotThrow(()=>m.assertMarketReadinessIndependentReviewCoverage({...reviewCoverage,
+  adjudications:[{cohortItemId:"a",adjudicatorId:"adjudicator"}]}));
 console.log("market-readiness deterministic tests passed");

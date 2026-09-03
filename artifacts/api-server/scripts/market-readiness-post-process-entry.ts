@@ -8,8 +8,8 @@ import {
   marketReadinessProcessingAttemptsTable,
 } from "@workspace/db";
 import {
-  calculateMarketReadinessMetrics, freezePayloadHash,
-  parseMarketReadinessPersistedPrediction,
+  assertMarketReadinessIndependentReviewCoverage, calculateMarketReadinessMetrics, freezePayloadHash,
+  parseMarketReadinessPersistedPrediction, validateMarketReadinessSnapshotInvariant,
 } from "../src/lib/market-readiness";
 import {
   assertExactCohortMembership, parseAdjudicationImport, parseBlindReviewImport,
@@ -52,9 +52,10 @@ async function freeze(args: Required<Pick<Args,"organizationId"|"projectId"|"cam
   return db.transaction(async tx => {
     await tx.execute(sql`select id from market_readiness_campaigns where id=${args.campaignId} and organization_id=${args.organizationId} and project_id=${args.projectId} for update`);
     await reviewingCampaign(args,tx);
-    const [cohort,active,adjudications,predictions,attempts] = await Promise.all([
+    const [cohort,active,reviews,adjudications,predictions,attempts] = await Promise.all([
       tx.select().from(marketReadinessCohortItemsTable).where(childScope(marketReadinessCohortItemsTable,args)),
       tx.select().from(marketReadinessProcessingAttemptsTable).where(and(childScope(marketReadinessProcessingAttemptsTable,args),sql`${marketReadinessProcessingAttemptsTable.state} in ('PENDING','LEASED')`)),
+      tx.select().from(marketReadinessBlindGoldReviewsTable).where(childScope(marketReadinessBlindGoldReviewsTable,args)),
       tx.select().from(marketReadinessAdjudicationsTable).where(childScope(marketReadinessAdjudicationsTable,args)),
       tx.select().from(marketReadinessPredictionSnapshotsTable).where(childScope(marketReadinessPredictionSnapshotsTable,args)),
       tx.select().from(marketReadinessProcessingAttemptsTable).where(childScope(marketReadinessProcessingAttemptsTable,args)),
@@ -63,17 +64,15 @@ async function freeze(args: Required<Pick<Args,"organizationId"|"projectId"|"cam
     if (active.length) throw new Error("FREEZE_REQUIRES_NO_PENDING_OR_ACTIVE_ATTEMPTS");
     const ids = new Set(cohort.map(x=>x.id));
     const exact = (values:string[]) => values.length===200 && new Set(values).size===200 && values.every(id=>ids.has(id));
-    if (!exact(adjudications.map(x=>x.cohortItemId)) || !exact(predictions.map(x=>x.cohortItemId)) ||
-      new Set(predictions.map(x=>x.processingAttemptId)).size!==200) throw new Error("FREEZE_REQUIRES_EXACTLY_ONE_ADJUDICATION_PREDICTION_AND_ATTEMPT_PER_ITEM");
+    if (!exact(adjudications.map(x=>x.cohortItemId)) || !exact(predictions.map(x=>x.cohortItemId))) {
+      throw new Error("FREEZE_REQUIRES_EXACTLY_ONE_ADJUDICATION_AND_PREDICTION_PER_ITEM");
+    }
+    assertMarketReadinessIndependentReviewCoverage({cohortItemIds:cohort.map(x=>x.id),reviews,adjudications});
     const attemptById = new Map(attempts.map(x=>[x.id,x]));
-    if (!predictions.every(snapshot => {
-      try {
-        const prediction=parseMarketReadinessPersistedPrediction(snapshot.predictions), attempt=attemptById.get(snapshot.processingAttemptId);
-        return !!attempt && attempt.state==="SUCCEEDED" && attempt.cohortItemId===snapshot.cohortItemId &&
-          attempt.spentCents===prediction.totalCostCents && prediction.processingSucceeded &&
-          snapshot.version===prediction.intelligenceVersion;
-      } catch { return false; }
-    })) throw new Error("FREEZE_REQUIRES_SUCCESSFUL_EXACT_COST_PREDICTIONS");
+    if (!predictions.every(snapshot =>
+      validateMarketReadinessSnapshotInvariant(snapshot,attemptById.get(snapshot.processingAttemptId)).valid)) {
+      throw new Error("FREEZE_REQUIRES_SUCCESSFUL_EXACT_COST_PREDICTIONS");
+    }
     const hash=freezePayloadHash({campaignId:args.campaignId,
       cohort:cohort.map(x=>({id:x.id,domain:x.normalizedDomain,stratum:x.stratum})).sort((a,b)=>a.id.localeCompare(b.id)),
       adjudications:adjudications.map(x=>({item:x.cohortItemId,gold:x.goldLabels})).sort((a,b)=>a.item.localeCompare(b.item)),
@@ -96,17 +95,17 @@ async function report(args:Required<Pick<Args,"organizationId"|"projectId"|"camp
     db.select().from(marketReadinessBlindGoldReviewsTable).where(childScope(marketReadinessBlindGoldReviewsTable,args)),
   ]);
   const attemptById=new Map(attempts.map(x=>[x.id,x])), predictionByItem=new Map<string,ReturnType<typeof parseMarketReadinessPersistedPrediction>>(), errors:string[]=[];
-  for(const snapshot of predictions)try{
-    const prediction=parseMarketReadinessPersistedPrediction(snapshot.predictions),attempt=attemptById.get(snapshot.processingAttemptId);
-    if(snapshot.version!==prediction.intelligenceVersion)errors.push(`PREDICTION_VERSION_MISMATCH:${snapshot.cohortItemId}`);
-    if(!attempt||attempt.state!=="SUCCEEDED"||attempt.cohortItemId!==snapshot.cohortItemId)errors.push(`PREDICTION_ATTEMPT_NOT_SUCCEEDED:${snapshot.cohortItemId}`);
-    else if(attempt.spentCents!==prediction.totalCostCents)errors.push(`PREDICTION_ATTEMPT_COST_MISMATCH:${snapshot.cohortItemId}`);
-    predictionByItem.set(snapshot.cohortItemId,prediction);
-  }catch{errors.push(`INVALID_PERSISTED_PREDICTION:${snapshot.cohortItemId}`);}
+  for(const snapshot of predictions){
+    const validation=validateMarketReadinessSnapshotInvariant(snapshot,attemptById.get(snapshot.processingAttemptId));
+    if(!validation.valid)errors.push(`${validation.reason}:${snapshot.cohortItemId}`);
+    if(validation.evaluation)predictionByItem.set(snapshot.cohortItemId,validation.evaluation);
+  }
   const cohortIds=new Set(cohort.map(x=>x.id));
   if(cohort.length!==200||cohortIds.size!==200)errors.push("COVERAGE_REQUIRES_EXACTLY_200_COHORT_ITEMS");
   if(predictions.length!==200||new Set(predictions.map(x=>x.cohortItemId)).size!==200||predictions.some(x=>!cohortIds.has(x.cohortItemId)))errors.push("COVERAGE_REQUIRES_EXACTLY_ONE_PREDICTION_PER_ITEM");
   if(adjudications.length!==200||new Set(adjudications.map(x=>x.cohortItemId)).size!==200||adjudications.some(x=>!cohortIds.has(x.cohortItemId)))errors.push("COVERAGE_REQUIRES_EXACTLY_ONE_ADJUDICATION_PER_ITEM");
+  try{assertMarketReadinessIndependentReviewCoverage({cohortItemIds:cohort.map(x=>x.id),reviews,adjudications});}
+  catch(error){errors.push(error instanceof Error?error.message:"INVALID_BLIND_REVIEW_COVERAGE");}
   let metrics=calculateMarketReadinessMetrics(adjudications.flatMap(a=>{const p=predictionByItem.get(a.cohortItemId);if(!p)return[];const g=a.goldLabels;return[{gold:{role:!!g.role,who:!!g.who,buyer:!!g.buyer,competitor:!!g.competitor,dangerous:!!g.dangerous,identity:!!g.identity,actionableEvidence:!!g.actionableEvidence},prediction:{role:p.predictedRole,who:p.predictedWho,buyer:p.predictedBuyer,competitor:p.predictedCompetitor,identity:p.identityResolved,supported:p.evidenceBacked&&!p.unsupportedFacts,costCents:p.totalCostCents,succeeded:p.processingSucceeded}}]}));
   if(errors.length)metrics={...metrics,eligible:false,pass:false,reasons:[...metrics.reasons,...errors]};
   const reviewCounts=new Map<string,number>();for(const r of reviews)reviewCounts.set(r.cohortItemId,(reviewCounts.get(r.cohortItemId)??0)+1);
@@ -155,7 +154,12 @@ async function main(){
     const rows=parseBlindReviewImport(JSON.parse(await readFile(raw.file,"utf8")));
     await db.transaction(async tx=>{await tx.execute(sql`select id from market_readiness_campaigns where id=${args.campaignId} for update`);await reviewingCampaign(args,tx);
       const cohort=await tx.select().from(marketReadinessCohortItemsTable).where(childScope(marketReadinessCohortItemsTable,args));assertExactCohortMembership(rows,cohort.map(x=>x.id));
-      const existing=await tx.select().from(marketReadinessBlindGoldReviewsTable).where(and(childScope(marketReadinessBlindGoldReviewsTable,args),eq(marketReadinessBlindGoldReviewsTable.reviewerId,raw.reviewerId!)));if(existing.length)throw new Error("BLIND_REVIEW_ALREADY_RECORDED");
+      const allReviews=await tx.select().from(marketReadinessBlindGoldReviewsTable).where(childScope(marketReadinessBlindGoldReviewsTable,args));
+      if(allReviews.some(x=>x.reviewerId===raw.reviewerId))throw new Error("BLIND_REVIEW_ALREADY_RECORDED");
+      const adjudications=await tx.select().from(marketReadinessAdjudicationsTable).where(childScope(marketReadinessAdjudicationsTable,args));
+      if(adjudications.length)throw new Error("ADJUDICATION_ALREADY_RECORDED");
+      const counts=new Map<string,number>();for(const r of allReviews)counts.set(r.cohortItemId,(counts.get(r.cohortItemId)??0)+1);
+      if(cohort.some(x=>(counts.get(x.id)??0)>=2))throw new Error("BLIND_REVIEW_LIMIT_REACHED");
       await tx.insert(marketReadinessBlindGoldReviewsTable).values(rows.map(b=>({...b,organizationId:args.organizationId,projectId:args.projectId,campaignId:args.campaignId,reviewerId:raw.reviewerId!})));});
     console.log(JSON.stringify({imported:rows.length,reviewerId:raw.reviewerId}));return;
   }
@@ -164,7 +168,8 @@ async function main(){
     const rows=parseAdjudicationImport(JSON.parse(await readFile(raw.file,"utf8")));
     await db.transaction(async tx=>{await tx.execute(sql`select id from market_readiness_campaigns where id=${args.campaignId} for update`);await reviewingCampaign(args,tx);
       const cohort=await tx.select().from(marketReadinessCohortItemsTable).where(childScope(marketReadinessCohortItemsTable,args));assertExactCohortMembership(rows,cohort.map(x=>x.id));
-      const reviews=await tx.select().from(marketReadinessBlindGoldReviewsTable).where(childScope(marketReadinessBlindGoldReviewsTable,args));const counts=new Map<string,Set<string>>();for(const r of reviews)counts.set(r.cohortItemId,(counts.get(r.cohortItemId)??new Set()).add(r.reviewerId));if(cohort.some(x=>counts.get(x.id)?.size!==2))throw new Error("ADJUDICATION_REQUIRES_EXACTLY_TWO_REVIEWS_PER_ITEM");
+      const reviews=await tx.select().from(marketReadinessBlindGoldReviewsTable).where(childScope(marketReadinessBlindGoldReviewsTable,args));
+      assertMarketReadinessIndependentReviewCoverage({cohortItemIds:cohort.map(x=>x.id),reviews,adjudications:rows.map(x=>({cohortItemId:x.cohortItemId,adjudicatorId:raw.adjudicatorId!}))});
       const existing=await tx.select().from(marketReadinessAdjudicationsTable).where(childScope(marketReadinessAdjudicationsTable,args));if(existing.length)throw new Error("ADJUDICATION_ALREADY_RECORDED");
       await tx.insert(marketReadinessAdjudicationsTable).values(rows.map(b=>({...b,organizationId:args.organizationId,projectId:args.projectId,campaignId:args.campaignId,adjudicatorId:raw.adjudicatorId!})));});
     console.log(JSON.stringify({imported:rows.length,adjudicatorId:raw.adjudicatorId}));return;

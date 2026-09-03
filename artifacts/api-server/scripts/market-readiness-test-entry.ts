@@ -5,6 +5,7 @@ export
   MARKET_READINESS_V2_PROVIDER_CALL_GRAPH,
   MarketReadinessWorkError,
   advanceMarketReadinessWorker,
+  assertMarketReadinessIndependentReviewCoverage,
   assertOperationalFencedResumeFlags,
   assertOperationalFailedRetryFlags,
   assertMarketReadinessProcessingConfig,
@@ -25,6 +26,7 @@ export
   rolloutGate,
   scheduleMarketReadinessWork,
   seededAssignments,
+  validateMarketReadinessSnapshotInvariant,
   validateOutcomeOccurredAt,
 }
  from "../src/lib/market-readiness"
@@ -43,3 +45,4 @@ export {
   parseBlindReviewImport,
   redactMarketReadinessEvidence,
 } from "../src/lib/market-readiness/post-processing";
+export { default as marketReadinessRouter } from "../src/routes/market-readiness";
