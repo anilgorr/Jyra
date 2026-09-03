@@ -171,18 +171,33 @@ function parseLocationValue(raw: string, locationType: CompanyLocationType): Icp
     : null;
   return { country: country.country, iso2: country.iso2, city, region, locationType };
 }
-function locationsFromText(value: string): Array<{ raw: string; location: IcpReadyGeography }> {
-  const patterns: Array<[CompanyLocationType, RegExp]> = [
-    ["HEADQUARTERS", /\b(?:headquartered|headquarters?(?:\s+(?:is|are))?|based)\s+in\s+([^.;\n]+)/gi],
-    ["OFFICE_LOCATION", /\b(?:office|offices)\s+in\s+([^.;\n]+)/gi],
-    ["INCORPORATION_LOCATION", /\b(?:incorporated|registered)\s+in\s+([^.;\n]+)/gi],
-    ["CUSTOMER_MARKET", /\b(?:serving\s+customers?|customers?)\s+(?:across|in)\s+([^.;\n]+)/gi],
-    ["OPERATING_MARKET", /\boperat(?:es|ing)\s+(?:across|in)\s+([^.;\n]+)/gi],
+const escapeRegExp = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+/**
+ * Extracts typed locations from prose. "Headquartered in" / "headquarters in"
+ * always types HEADQUARTERS. "Based in" is HEADQUARTERS only when its subject
+ * is the company itself ("<company name> is based in", "we are based in",
+ * "is based in"); any other "based in" (a partner, a customer, a team) is an
+ * OFFICE_LOCATION at lower confidence.
+ */
+function locationsFromText(value: string, companyName?: string | null): Array<{ raw: string; location: IcpReadyGeography; confidence: number }> {
+  const subject = companyName?.trim() ? `${escapeRegExp(companyName.trim()).replace(/\s+/g, "\\s+")}|` : "";
+  const patterns: Array<[CompanyLocationType, RegExp, number]> = [
+    ["HEADQUARTERS", /\b(?:headquartered|headquarters?(?:\s+(?:is|are))?)\s+in\s+([^.;\n]+)/gi, .8],
+    ["HEADQUARTERS", new RegExp(`\\b(?:${subject}we(?:\\s+are|'re)|is)\\s+based\\s+in\\s+([^.;\\n]+)`, "gi"), .8],
+    ["OFFICE_LOCATION", /\b(?:office|offices)\s+in\s+([^.;\n]+)/gi, .8],
+    ["OFFICE_LOCATION", /\bbased\s+in\s+([^.;\n]+)/gi, .6],
+    ["INCORPORATION_LOCATION", /\b(?:incorporated|registered)\s+in\s+([^.;\n]+)/gi, .8],
+    ["CUSTOMER_MARKET", /\b(?:serving\s+customers?|customers?)\s+(?:across|in)\s+([^.;\n]+)/gi, .8],
+    ["OPERATING_MARKET", /\boperat(?:es|ing)\s+(?:across|in)\s+([^.;\n]+)/gi, .8],
   ];
-  return patterns.flatMap(([locationType, pattern]) => [...value.matchAll(pattern)].flatMap((match) => {
+  const headquarterIndexes = new Set<number>();
+  return patterns.flatMap(([locationType, pattern, confidence]) => [...value.matchAll(pattern)].flatMap((match) => {
     const raw = match[1]?.trim() ?? "";
+    const valueIndex = (match.index ?? 0) + match[0].length - (match[1]?.length ?? 0);
+    if (locationType === "HEADQUARTERS") headquarterIndexes.add(valueIndex);
+    else if (headquarterIndexes.has(valueIndex)) return [];
     const location = parseLocationValue(raw, locationType);
-    return location ? [{ raw, location }] : [];
+    return location ? [{ raw, location, confidence }] : [];
   }));
 }
 function mciClaim(rows: Provenance[], fields: string[]) {
@@ -235,7 +250,7 @@ export function selectIcpReadyCompanyFacts(company: Company, rows: Provenance[])
   if (untypedDiscoveryLocation) otherLocations.push(fact({ factType: "GEOGRAPHY", value: untypedDiscovery, normalizedValue: untypedDiscoveryLocation,
     confidence: .6, evidenceIds: rowEvidenceIds(discovery), companyId: company.id, row: discovery,
     sourceType: "JYRA_DISCOVERY", sourceText: untypedDiscovery! }));
-  const profileLocations = profiles.flatMap(({ row, excerpt, identityPermission }) => locationsFromText(excerpt).map(({ raw, location }) => ({ row, raw, location, sourceType: row.sourceType, confidence: .8, excerpt, identityPermission })));
+  const profileLocations = profiles.flatMap(({ row, excerpt, identityPermission }) => locationsFromText(excerpt, company.canonicalName).map(({ raw, location, confidence }) => ({ row, raw, location, sourceType: row.sourceType, confidence, excerpt, identityPermission })));
   for (const candidate of profileLocations.filter((item) => !["HEADQUARTERS", "UNKNOWN_LOCATION_TYPE"].includes(item.location.locationType))) {
     otherLocations.push(fact({ factType: "GEOGRAPHY", value: candidate.raw, normalizedValue: candidate.location,
       confidence: candidate.confidence, evidenceIds: rowEvidenceIds(candidate.row), companyId: company.id,
