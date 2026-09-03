@@ -1,6 +1,6 @@
 import { useEffect, useRef, type ReactNode } from 'react';
 import { QueryClientProvider, useQueryClient } from '@tanstack/react-query';
-import { ClerkProvider, SignIn, SignUp, Show, useClerk } from '@clerk/react';
+import { ClerkLoaded, ClerkLoading, ClerkProvider, SignIn, SignUp, Show, useClerk } from '@clerk/react';
 import { publishableKeyFromHost } from '@clerk/react/internal';
 import { shadcn } from '@clerk/themes';
 import { Route, Switch, useLocation, Router as WouterRouter, Redirect } from 'wouter';
@@ -226,20 +226,30 @@ function RoutedErrorBoundary({ children }: { children: ReactNode }) {
 
 function AppRoutes() {
   return (
-    <Switch>
-      <Route path="/" component={HomeRedirect} />
-      <Route path="/sign-in/*?" component={SignInPage} />
-      <Route path="/sign-up/*?" component={SignUpPage} />
-      
-      <Route>
-        <Show when="signed-in">
-          <AuthenticatedRoutes />
-        </Show>
-        <Show when="signed-out">
-          <Redirect to="/sign-in" />
-        </Show>
-      </Route>
-    </Switch>
+    <>
+      {/* Clerk's <Show> renders nothing until it has loaded; show a spinner instead of a blank page. */}
+      <ClerkLoading>
+        <div className="flex min-h-[100dvh] items-center justify-center bg-background" data-testid="auth-loading">
+          <Loader2 className="h-7 w-7 animate-spin text-muted-foreground" />
+        </div>
+      </ClerkLoading>
+      <ClerkLoaded>
+        <Switch>
+          <Route path="/" component={HomeRedirect} />
+          <Route path="/sign-in/*?" component={SignInPage} />
+          <Route path="/sign-up/*?" component={SignUpPage} />
+
+          <Route>
+            <Show when="signed-in">
+              <AuthenticatedRoutes />
+            </Show>
+            <Show when="signed-out">
+              <Redirect to="/sign-in" />
+            </Show>
+          </Route>
+        </Switch>
+      </ClerkLoaded>
+    </>
   );
 }
 

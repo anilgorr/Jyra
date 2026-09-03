@@ -7,6 +7,7 @@ import {
   type ReactNode,
 } from "react";
 import {
+  getListOrganizationsQueryKey,
   getListProjectsQueryKey,
   getGetProjectQueryKey,
   useGetProject,
@@ -24,6 +25,12 @@ interface WorkspaceContextValue {
   activeOrganizationId: string | null;
   activeProjectId: string | null;
   isLoading: boolean;
+  /** True when organizations or projects failed to load. */
+  isError: boolean;
+  error: Error | null;
+  /** Which lookup failed, for targeted copy. */
+  errorSource: "organizations" | "projects" | null;
+  refetch: () => Promise<unknown>;
   setActiveOrganizationId: (id: string) => void;
   setActiveProjectId: (id: string) => void;
 }
@@ -41,11 +48,22 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     () => window.localStorage.getItem(PROJECT_STORAGE_KEY),
   );
 
-  const { data: organizations = [], isLoading: organizationsLoading } =
-    useListOrganizations();
+  const {
+    data: organizations = [],
+    isLoading: organizationsLoading,
+    isError: organizationsError,
+    error: organizationsErrorValue,
+    refetch: refetchOrganizations,
+  } = useListOrganizations({
+    query: {
+      queryKey: getListOrganizationsQueryKey(),
+      meta: { errorTitle: "Could not load your organizations" },
+    },
+  });
 
   useEffect(() => {
-    if (organizationsLoading) return;
+    // Never clear the stored selection because of a transient fetch failure.
+    if (organizationsLoading || organizationsError) return;
     const nextOrganizationId = organizations.some(
       (organization) => organization.id === activeOrganizationId,
     )
@@ -65,20 +83,24 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       }
       window.localStorage.removeItem(PROJECT_STORAGE_KEY);
     }
-  }, [activeOrganizationId, organizations, organizationsLoading]);
+  }, [activeOrganizationId, organizations, organizationsLoading, organizationsError]);
 
-  const { data: projects = [], isLoading: projectsLoading } = useListProjects(
-    activeOrganizationId ?? "",
-    {
-      query: {
-        enabled: Boolean(activeOrganizationId),
-        queryKey: getListProjectsQueryKey(activeOrganizationId ?? ""),
-      },
+  const {
+    data: projects = [],
+    isLoading: projectsLoading,
+    isError: projectsError,
+    error: projectsErrorValue,
+    refetch: refetchProjects,
+  } = useListProjects(activeOrganizationId ?? "", {
+    query: {
+      enabled: Boolean(activeOrganizationId),
+      queryKey: getListProjectsQueryKey(activeOrganizationId ?? ""),
+      meta: { errorTitle: "Could not load your projects" },
     },
-  );
+  });
 
   useEffect(() => {
-    if (!activeOrganizationId || projectsLoading) return;
+    if (!activeOrganizationId || projectsLoading || projectsError) return;
     const nextProjectId = projects.some(
       (project) => project.id === activeProjectId,
     )
@@ -93,7 +115,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
         window.localStorage.removeItem(PROJECT_STORAGE_KEY);
       }
     }
-  }, [activeOrganizationId, activeProjectId, projects, projectsLoading]);
+  }, [activeOrganizationId, activeProjectId, projects, projectsLoading, projectsError]);
 
   const { data: activeProject = null } = useGetProject(
     activeProjectId ?? "",
@@ -117,6 +139,23 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       activeOrganizationId,
       activeProjectId,
       isLoading: organizationsLoading || projectsLoading,
+      isError: organizationsError || projectsError,
+      error: organizationsError
+        ? (organizationsErrorValue as Error | null)
+        : projectsError
+          ? (projectsErrorValue as Error | null)
+          : null,
+      errorSource: organizationsError
+        ? "organizations"
+        : projectsError
+          ? "projects"
+          : null,
+      refetch: () =>
+        organizationsError
+          ? refetchOrganizations()
+          : projectsError
+            ? refetchProjects()
+            : Promise.resolve(),
       setActiveOrganizationId: (id) => {
         setOrganizationId(id);
         setProjectId(null);
@@ -134,8 +173,14 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       activeProjectId,
       organizations,
       organizationsLoading,
+      organizationsError,
+      organizationsErrorValue,
       projects,
       projectsLoading,
+      projectsError,
+      projectsErrorValue,
+      refetchOrganizations,
+      refetchProjects,
     ],
   );
 

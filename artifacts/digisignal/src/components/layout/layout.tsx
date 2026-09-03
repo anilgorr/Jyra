@@ -2,12 +2,12 @@ import { ReactNode } from "react";
 import { Sidebar } from "./sidebar";
 import { navItems } from "./sidebar";
 import { Link } from "wouter";
-import { Menu, Settings, ShieldCheck, Wrench } from "lucide-react";
+import { AlertTriangle, Menu, Settings, ShieldCheck, Wrench } from "lucide-react";
 import { useWorkspace } from "@/context/workspace-context";
 import { useAdminAccess } from "@/hooks/use-admin-access";
 
 export function Layout({ children }: { children: ReactNode }) {
-  const { activeProject } = useWorkspace();
+  const { activeProject, isError: workspaceError, errorSource, refetch } = useWorkspace();
   const logoUrl = `${import.meta.env.BASE_URL}logo.svg`;
   const { isAdmin } = useAdminAccess();
 
@@ -56,6 +56,32 @@ export function Layout({ children }: { children: ReactNode }) {
         </header>
         <main className="flex-1 overflow-y-auto bg-background/50">
           <div className="mx-auto h-full max-w-6xl p-4 sm:p-6 lg:p-8">
+          {workspaceError && (
+            <div
+              role="alert"
+              className="mb-6 flex flex-col gap-3 rounded-xl border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive sm:flex-row sm:items-center sm:justify-between"
+              data-testid="workspace-error"
+            >
+              <div className="flex items-start gap-3">
+                <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
+                <div>
+                  <p className="font-semibold">
+                    {errorSource === "organizations" ? "Your organizations could not be loaded." : "Your projects could not be loaded."}
+                  </p>
+                  <p className="mt-0.5 text-destructive/80">
+                    Pages may show stale or empty data until the workspace reconnects.
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => void refetch()}
+                className="shrink-0 self-start rounded-md border border-destructive/30 px-3 py-1.5 font-medium hover:bg-destructive/10 sm:self-auto"
+              >
+                Try again
+              </button>
+            </div>
+          )}
           {children}
           </div>
         </main>
