@@ -128,6 +128,9 @@ export const marketReadinessProcessingAttemptsTable = pgTable("market_readiness_
   leaseExpiresAt: timestamp("lease_expires_at", { withTimezone: true }),
   reservedCents: integer("reserved_cents").notNull().default(0),
   spentCents: integer("spent_cents").notNull().default(0),
+  /** Audit only: the worst-case reservation that a lease-expiry fence released
+   * back to the campaign. It is never booked as spend. */
+  fencedReservedCents: integer("fenced_reserved_cents").notNull().default(0),
   error: text("error"),
   startedAt: timestamp("started_at", { withTimezone: true }),
   completedAt: timestamp("completed_at", { withTimezone: true }),
@@ -137,6 +140,7 @@ export const marketReadinessProcessingAttemptsTable = pgTable("market_readiness_
   index("market_readiness_attempt_lease_idx").on(table.campaignId, table.state, table.leaseExpiresAt),
   index("market_readiness_attempt_cohort_item_idx").on(table.cohortItemId),
   check("market_readiness_attempt_money_nonnegative", sql`${table.reservedCents} >= 0 and ${table.spentCents} >= 0`),
+  check("market_readiness_attempt_fenced_nonnegative", sql`${table.fencedReservedCents} >= 0`),
 ]);
 
 export const marketReadinessPredictionSnapshotsTable = pgTable("market_readiness_prediction_snapshots", {
