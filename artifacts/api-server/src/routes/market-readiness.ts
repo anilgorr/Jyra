@@ -11,7 +11,7 @@ import {
   marketReadinessProcessingAttemptsTable, marketReadinessPredictionSnapshotsTable,
 } from "@workspace/db";
 import { getAuthenticatedUserId, requireAuth } from "../middlewares/auth";
-import { advanceMarketReadinessWorker, assertMarketReadinessIndependentReviewCoverage, assertMarketReadinessProcessingConfig, calculateMarketReadinessMetrics, commercialGate, createMarketReadinessWorkerAdapter, MAX_DISCOVERY_PAGE_SIZE, freezePayloadHash, normalizeMarketDomain, parseMarketReadinessPersistedPrediction, parseOutcomesCsv, resumeMarketReadinessCampaign, rolloutGate, scheduleMarketReadinessWork, seededAssignments, validateMarketReadinessSnapshotInvariant, validateOutcomeOccurredAt } from "../lib/market-readiness";
+import { advanceMarketReadinessWorker, assertMarketReadinessIndependentReviewCoverage, assertMarketReadinessProcessingConfig, calculateMarketReadinessMetrics, commercialGate, createMarketReadinessWorkerAdapter, MAX_DISCOVERY_PAGE_SIZE, freezePayloadHash, marketReadinessGoldLabelsSchema, marketReadinessMetricRow, normalizeMarketDomain, parseMarketReadinessPersistedPrediction, parseOutcomesCsv, resumeMarketReadinessCampaign, rolloutGate, scheduleMarketReadinessWork, seededAssignments, validateMarketReadinessSnapshotInvariant, validateOutcomeOccurredAt } from "../lib/market-readiness";
 import { INTELLIGENCE_CORE_VERSION } from "../lib/intelligence-v2/schemas";
 
 const router: IRouter = Router();
@@ -139,6 +139,8 @@ router.post("/projects/:projectId/market-readiness/campaigns/:campaignId/blind-r
 }catch(e){fail(res,e);}}));
 router.post("/projects/:projectId/market-readiness/campaigns/:campaignId/adjudications",requireAuth,asyncRoute(async(req,res)=>{try{
   const p=api.CreateMarketReadinessAdjudicationParams.parse(req.params),b=api.CreateMarketReadinessAdjudicationBody.parse(req.body),u=getAuthenticatedUserId(res),a=await campaignAccess(p.projectId,p.campaignId,u);
+  // The generated body schema is not strict; the scorer's own schema is the runtime authority for gold labels.
+  const goldLabels=marketReadinessGoldLabelsSchema.parse(b.goldLabels);
   const r=await db.transaction(async tx=>{
     await tx.execute(sql`select id from market_readiness_campaigns where id=${p.campaignId} and organization_id=${a.project.organizationId} and project_id=${p.projectId} for update`);
     const[campaign]=await tx.select().from(marketReadinessCampaignsTable).where(and(eq(marketReadinessCampaignsTable.id,p.campaignId),eq(marketReadinessCampaignsTable.organizationId,a.project.organizationId),eq(marketReadinessCampaignsTable.projectId,p.projectId))).limit(1);
@@ -147,7 +149,7 @@ router.post("/projects/:projectId/market-readiness/campaigns/:campaignId/adjudic
     if(!item)throw new Error("COHORT_ITEM_SCOPE_MISMATCH");
     const reviews=await tx.select().from(marketReadinessBlindGoldReviewsTable).where(and(eq(marketReadinessBlindGoldReviewsTable.campaignId,p.campaignId),eq(marketReadinessBlindGoldReviewsTable.cohortItemId,item.id)));
     assertMarketReadinessIndependentReviewCoverage({cohortItemIds:[item.id],reviews,adjudications:[{cohortItemId:item.id,adjudicatorId:u}]});
-    const[row]=await tx.insert(marketReadinessAdjudicationsTable).values({...b,organizationId:a.project.organizationId,projectId:p.projectId,campaignId:p.campaignId,adjudicatorId:u}).onConflictDoNothing().returning();
+    const[row]=await tx.insert(marketReadinessAdjudicationsTable).values({...b,goldLabels,organizationId:a.project.organizationId,projectId:p.projectId,campaignId:p.campaignId,adjudicatorId:u}).onConflictDoNothing().returning();
     if(!row)throw new Error("ADJUDICATION_ALREADY_RECORDED");
     return row;
   });
@@ -183,7 +185,11 @@ router.put("/projects/:projectId/market-readiness/campaigns/:campaignId/rollout"
     }catch{evaluationErrors.push(`INVALID_PERSISTED_PREDICTION:${snapshot.cohortItemId}`);return[];}
   }));
   for(const adjudication of adjudications)if(!predictionByItem.has(adjudication.cohortItemId))evaluationErrors.push(`MISSING_PERSISTED_PREDICTION:${adjudication.cohortItemId}`);
-  let metrics=calculateMarketReadinessMetrics(adjudications.flatMap(a=>{const x=predictionByItem.get(a.cohortItemId);if(!x)return[];const g=a.goldLabels;return[{gold:{role:!!g.role,who:!!g.who,buyer:!!g.buyer,competitor:!!g.competitor,dangerous:!!g.dangerous,identity:!!g.identity,actionableEvidence:!!g.actionableEvidence},prediction:{role:x.predictedRole,who:x.predictedWho,buyer:x.predictedBuyer,competitor:x.predictedCompetitor,identity:x.identityResolved,supported:x.evidenceBacked&&!x.unsupportedFacts,costCents:x.totalCostCents,succeeded:x.processingSucceeded}}]}));
+  let metrics=calculateMarketReadinessMetrics(adjudications.flatMap(a=>{
+    const x=predictionByItem.get(a.cohortItemId);if(!x)return[];
+    try{return[marketReadinessMetricRow({goldLabels:a.goldLabels,evaluation:x})];}
+    catch{evaluationErrors.push(`INVALID_GOLD_LABELS:${a.cohortItemId}`);return[];}
+  }));
   if(evaluationErrors.length)metrics={...metrics,eligible:false,pass:false,reasons:[...metrics.reasons,...evaluationErrors]};
   const completedExperiment=experiments.length===1?experiments[0]!:null;
   const assignments=completedExperiment?await db.select().from(marketReadinessExperimentAssignmentsTable).where(and(eq(marketReadinessExperimentAssignmentsTable.campaignId,p.campaignId),eq(marketReadinessExperimentAssignmentsTable.experimentId,completedExperiment.id))):[];
