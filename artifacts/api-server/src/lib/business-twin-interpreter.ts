@@ -6,7 +6,7 @@ import {
   type BusinessTwinRawAnswers,
 } from "./business-twin-schemas";
 
-export const BUSINESS_TWIN_MODEL = "gpt-5.6-terra";
+export const BUSINESS_TWIN_MODEL = "gpt-5.1";
 export const BUSINESS_TWIN_PROMPT_VERSION = "business-twin-maturity-v2";
 
 export class BusinessTwinInterpretationError extends Error {

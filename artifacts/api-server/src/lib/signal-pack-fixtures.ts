@@ -310,7 +310,14 @@ export async function ensureSignalPackFixtures() {
     packs.push(pack);
   }
   if (process.env.NODE_ENV === "development" && process.env.REPLIT_DEPLOYMENT !== "1") {
-    await reconcileManagedSocSecurityComplianceActivity();
+    try {
+      await reconcileManagedSocSecurityComplianceActivity();
+    } catch (error) {
+      // Optional dev-only demo seeding (a cybersecurity/SOC scenario). It must
+      // never take down signal-pack listing when the local database is not the
+      // registered approved development database.
+      console.warn("Skipped managed SOC reconciliation:", error instanceof Error ? error.message : String(error));
+    }
   }
   return packs;
 }

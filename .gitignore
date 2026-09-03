@@ -56,3 +56,7 @@ Thumbs.db
 # Validation-run outputs (traces contain scraped third-party text and real contact PII) — never commit
 artifacts/api-server/[A-Z0-9_]*.json
 artifacts/api-server/*_RUN.lock/
+
+# local debugging artifacts
+artifacts/api-server/jyra-debug.log
+pnpm-workspace.yaml.bak

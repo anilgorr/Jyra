@@ -38,7 +38,7 @@ export function resolveCompanyV2(input: {
   const normalizedDomain = normalizeDomain(input.domain);
   const policy = identitySourcePolicyV2(input.source);
   const firstParty = input.firstPartyEvidence.filter((item) => {
-    if (!item.finalUrl || !normalizedDomain || !/WEBSITE|CRAWL/i.test(item.sourceType)) return false;
+    if (!item.finalUrl || !normalizedDomain || !item.firstParty) return false;
     try { const host = new URL(item.finalUrl).hostname.toLowerCase(); return host === normalizedDomain || host.endsWith(`.${normalizedDomain}`); } catch { return false; }
   });
   const expected = words(normalizedCompanyName);

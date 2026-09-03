@@ -99,7 +99,7 @@ export class AssessmentFailureV2 extends Error {
 
 const defaultInvoker: AssessmentInvokerV2 = async (input) => {
   const response = await openai.chat.completions.create({
-    model: input.model, max_completion_tokens: 8192,
+    model: input.model, max_completion_tokens: 8192, reasoning_effort: "medium",
     response_format: { type: "json_schema", json_schema: input.responseSchema },
     messages: [{ role: "system", content: input.systemPrompt }, { role: "user", content: JSON.stringify(input.payload) }],
   }, { signal: input.signal });
@@ -183,7 +183,7 @@ export async function assessMarketFitV2(input: {
   attempts: AssessmentAttemptV2[]; modelCalls: number;
 }> {
   const invoke = input.invoke ?? defaultInvoker;
-  const timeoutMs = Math.max(1, Math.min(input.timeoutMs ?? 30_000, 120_000));
+  const timeoutMs = Math.max(1, Math.min(input.timeoutMs ?? 90_000, 180_000));
   const immutablePayload = structuredClone({
     assessmentPolicyVersion: ASSESSMENT_POLICY_VERSION,
     sellerBusinessTwin: input.context.sellerBusinessTwin, offering: input.context.offering,

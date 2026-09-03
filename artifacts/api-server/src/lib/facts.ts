@@ -811,7 +811,7 @@ export function mergeExtractedFactCandidates(
   });
 }
 
-export const FACT_EXTRACTION_MODEL = "gpt-5.6-terra";
+export const FACT_EXTRACTION_MODEL = "gpt-5.1";
 export const FACT_EXTRACTION_PROMPT_VERSION = "fact-extraction-v4";
 
 export type FactExtractionDiagnostics = {

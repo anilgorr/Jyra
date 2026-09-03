@@ -24,7 +24,7 @@ import { PROVIDER_CAPABILITIES, type ProviderCapability } from "./provider-contr
 import { SIGNAL_PACK_FIXTURES } from "./signal-pack-fixtures";
 import { assembleSellerContext, resolveProjectSellerContext } from "./seller-context";
 
-export const OPPORTUNITY_PACK_MODEL = "gpt-5.6-terra";
+export const OPPORTUNITY_PACK_MODEL = "gpt-5.1";
 export const OPPORTUNITY_PACK_PROMPT_VERSION = "opportunity-pack-v1";
 
 const capabilitySchema = z.enum(PROVIDER_CAPABILITIES);

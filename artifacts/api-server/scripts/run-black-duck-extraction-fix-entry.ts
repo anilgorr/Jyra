@@ -130,7 +130,7 @@ async function main(): Promise<void> {
       .filter((line) => /Dom Glavach|Chief Information Security Officer|Apr 9, 2026/i.test(line))
       .slice(0, 12),
     extractor: {
-      model: "gpt-5.6-terra",
+      model: "gpt-5.1",
       version: diagnostics.extractorVersion,
       inputCharacterCount: source.crawlPage.rawContent.length,
       rawOutput: sanitize(diagnostics.rawModelOutput),

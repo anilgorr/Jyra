@@ -187,6 +187,21 @@ app.use((
     res.status(413).json({ error: "Request body is too large" });
     return;
   }
+  if (process.env.NODE_ENV !== "production") try {
+    const anyErr = error as any;
+    void import("node:fs").then((fs) => {
+      fs.appendFileSync("jyra-debug.log", JSON.stringify({
+        at: new Date().toISOString(),
+        where: "unhandledApiError",
+        path: (_req as any)?.originalUrl ?? (_req as any)?.url,
+        name: anyErr?.name,
+        message: anyErr?.message,
+        code: anyErr?.code,
+        openaiError: anyErr?.error ?? anyErr?.response?.data?.error,
+        stack: typeof anyErr?.stack === "string" ? anyErr.stack.split("\n").slice(0, 10).join(" | ") : undefined,
+      }) + "\n");
+    }).catch(() => {});
+  } catch {}
   logger.error({ err: error }, "Unhandled API error");
   res.status(500).json({ error: "Internal server error" });
 });
