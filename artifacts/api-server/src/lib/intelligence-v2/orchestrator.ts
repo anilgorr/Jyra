@@ -181,7 +181,7 @@ async function orchestrateIntelligenceV2Internal(input: {
   const semanticValidation = validateAssessmentEvidenceV2(semantic, allEvidence, input.context);
   if (!semanticValidation.ok) throw new Error(`V2_CACHED_ASSESSMENT_INVALID: ${semanticValidation.errors.join("; ")}`);
   semantic = semanticValidation.assessment;
-  const assessment = applySafetyRulesV2({ profile, assessment: semantic, fingerprint: assessmentFingerprint });
+  const assessment = applySafetyRulesV2({ profile, assessment: semantic, fingerprint: assessmentFingerprint, context: input.context });
   const { resolutionType: _resolutionType, deterministicOverrides: _deterministicOverrides, safetyOverrideMetadata: _safetyOverrideMetadata, fingerprint: _fingerprint, ...finalSemantic } = assessment;
   const finalValidation = validateAssessmentEvidenceV2(finalSemantic, allEvidence, input.context);
   if (!finalValidation.ok) throw new Error(`V2_FINAL_ASSESSMENT_INVALID: ${finalValidation.errors.join("; ")}`);
