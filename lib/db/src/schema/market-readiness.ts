@@ -103,6 +103,20 @@ export const marketReadinessBlindGoldReviewsTable = pgTable("market_readiness_bl
   index("market_readiness_blind_review_campaign_idx").on(table.campaignId, table.submittedAt),
 ]);
 
+/**
+ * Adjudicated gold labels. New rows carry the enum-level shape; rows written
+ * before the enum migration are boolean maps that the API parses leniently and
+ * flags as LEGACY_GOLD_LABELS in reports.
+ */
+export type MarketReadinessGoldLabelsJson =
+  | {
+      commercialRole: "POTENTIAL_BUYER" | "SELLER_COMPETITOR" | "ADJACENT_VENDOR" | "PARTNER_POSSIBLE" | "UNKNOWN";
+      who: "LIKELY_FIT" | "POSSIBLE_FIT" | "LIKELY_NOT_FIT" | "INSUFFICIENT_DATA";
+      identityResolved: boolean;
+      actionableEvidence: boolean;
+      dangerous: boolean;
+    }
+  | Record<string, boolean>;
 export const marketReadinessAdjudicationsTable = pgTable("market_readiness_adjudications", {
   id: uuid("id").primaryKey().defaultRandom(),
   organizationId: uuid("organization_id").notNull().references(() => organizationsTable.id, { onDelete: "cascade" }),
@@ -110,7 +124,7 @@ export const marketReadinessAdjudicationsTable = pgTable("market_readiness_adjud
   campaignId: uuid("campaign_id").notNull().references(() => marketReadinessCampaignsTable.id, { onDelete: "cascade" }),
   cohortItemId: uuid("cohort_item_id").notNull().references(() => marketReadinessCohortItemsTable.id, { onDelete: "cascade" }),
   adjudicatorId: text("adjudicator_id").notNull(),
-  goldLabels: jsonb("gold_labels").$type<Record<string, boolean>>().notNull(),
+  goldLabels: jsonb("gold_labels").$type<MarketReadinessGoldLabelsJson>().notNull(),
   rationale: text("rationale").notNull(),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 }, (table) => [uniqueIndex("market_readiness_adjudication_item_unique").on(table.campaignId, table.cohortItemId)]);

@@ -1951,14 +1951,20 @@ components:
       type: object
       required: [id, organizationId, projectId, campaignId, cohortItemId, reviewerId, roleFit, whoFit, buyer, competitor, dangerous, actionableEvidence, notes, submittedAt]
       properties: { id: { type: string }, organizationId: { type: string }, projectId: { type: string }, campaignId: { type: string }, cohortItemId: { type: string }, reviewerId: { type: string }, roleFit: { type: boolean }, whoFit: { type: boolean }, buyer: { type: boolean }, competitor: { type: boolean }, dangerous: { type: boolean }, actionableEvidence: { type: boolean }, notes: { type: string, nullable: true }, submittedAt: { type: string } }
+    MarketReadinessGoldLabels:
+      type: object
+      description: Adjudicated ground truth for one cohort item. Role and WHO use the intelligence-core enums; the three booleans are independent facts.
+      additionalProperties: false
+      required: [commercialRole, who, identityResolved, actionableEvidence, dangerous]
+      properties: { commercialRole: { type: string, enum: [POTENTIAL_BUYER, SELLER_COMPETITOR, ADJACENT_VENDOR, PARTNER_POSSIBLE, UNKNOWN] }, who: { type: string, enum: [LIKELY_FIT, POSSIBLE_FIT, LIKELY_NOT_FIT, INSUFFICIENT_DATA] }, identityResolved: { type: boolean, description: The company behind the domain is resolvable by a human }, actionableEvidence: { type: boolean, description: A salesperson could act on the available evidence }, dangerous: { type: boolean, description: Contacting this company as a buyer would be harmful } }
     CreateMarketReadinessAdjudicationRequest:
       type: object
       required: [cohortItemId, goldLabels, rationale]
-      properties: { cohortItemId: { type: string }, goldLabels: { type: object, additionalProperties: { type: boolean } }, rationale: { type: string, minLength: 1 } }
+      properties: { cohortItemId: { type: string }, goldLabels: { $ref: "#/components/schemas/MarketReadinessGoldLabels" }, rationale: { type: string, minLength: 1 } }
     MarketReadinessAdjudication:
       type: object
       required: [id, organizationId, projectId, campaignId, cohortItemId, adjudicatorId, goldLabels, rationale, createdAt]
-      properties: { id: { type: string }, organizationId: { type: string }, projectId: { type: string }, campaignId: { type: string }, cohortItemId: { type: string }, adjudicatorId: { type: string }, goldLabels: { type: object, additionalProperties: { type: boolean } }, rationale: { type: string }, createdAt: { type: string } }
+      properties: { id: { type: string }, organizationId: { type: string }, projectId: { type: string }, campaignId: { type: string }, cohortItemId: { type: string }, adjudicatorId: { type: string }, goldLabels: { $ref: "#/components/schemas/MarketReadinessGoldLabels" }, rationale: { type: string }, createdAt: { type: string } }
     CreateMarketReadinessSalespersonReviewRequest:
       type: object
       required: [cohortItemId, usable]

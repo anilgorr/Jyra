@@ -6706,7 +6706,13 @@ export const CreateMarketReadinessAdjudicationParams = zod.object({
 
 export const CreateMarketReadinessAdjudicationBody = zod.object({
   "cohortItemId": zod.string(),
-  "goldLabels": zod.record(zod.string(), zod.boolean()),
+  "goldLabels": zod.object({
+  "commercialRole": zod.enum(['POTENTIAL_BUYER', 'SELLER_COMPETITOR', 'ADJACENT_VENDOR', 'PARTNER_POSSIBLE', 'UNKNOWN']),
+  "who": zod.enum(['LIKELY_FIT', 'POSSIBLE_FIT', 'LIKELY_NOT_FIT', 'INSUFFICIENT_DATA']),
+  "identityResolved": zod.boolean().describe('The company behind the domain is resolvable by a human'),
+  "actionableEvidence": zod.boolean().describe('A salesperson could act on the available evidence'),
+  "dangerous": zod.boolean().describe('Contacting this company as a buyer would be harmful')
+}).describe('Adjudicated ground truth for one cohort item. Role and WHO use the intelligence-core enums; the three booleans are independent facts.'),
   "rationale": zod.string().min(1)
 })
 
@@ -6717,7 +6723,13 @@ export const CreateMarketReadinessAdjudicationResponse = zod.object({
   "campaignId": zod.string(),
   "cohortItemId": zod.string(),
   "adjudicatorId": zod.string(),
-  "goldLabels": zod.record(zod.string(), zod.boolean()),
+  "goldLabels": zod.object({
+  "commercialRole": zod.enum(['POTENTIAL_BUYER', 'SELLER_COMPETITOR', 'ADJACENT_VENDOR', 'PARTNER_POSSIBLE', 'UNKNOWN']),
+  "who": zod.enum(['LIKELY_FIT', 'POSSIBLE_FIT', 'LIKELY_NOT_FIT', 'INSUFFICIENT_DATA']),
+  "identityResolved": zod.boolean().describe('The company behind the domain is resolvable by a human'),
+  "actionableEvidence": zod.boolean().describe('A salesperson could act on the available evidence'),
+  "dangerous": zod.boolean().describe('Contacting this company as a buyer would be harmful')
+}).describe('Adjudicated ground truth for one cohort item. Role and WHO use the intelligence-core enums; the three booleans are independent facts.'),
   "rationale": zod.string(),
   "createdAt": zod.string()
 })
