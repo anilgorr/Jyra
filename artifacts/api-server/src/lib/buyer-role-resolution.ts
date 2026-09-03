@@ -94,21 +94,35 @@ function tokens(value: string): string[] {
   return [...new Set(value.toLowerCase().split(/[^a-z0-9]+/).filter((part) => part.length > 2 && !STOP.has(part)))];
 }
 function normal(value: string): string { return value.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim(); }
-const escapeRegExp = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-const wholeWord = (text: string, token: string) => new RegExp(`(?<![a-z0-9])${escapeRegExp(token)}(?:s|es)?(?![a-z0-9])`, "i").test(text);
+const SUFFIXES = ["ations", "ation", "ities", "ity", "ers", "er", "ing", "ies", "ied", "ed", "s"];
+/** Light stemmer so "installer"/"installation" and "services"/"service" compare equal. */
+function stem(word: string): string {
+  let base = word;
+  for (const suffix of SUFFIXES) {
+    if (base.endsWith(suffix) && base.length - suffix.length >= 4) { base = base.slice(0, -suffix.length); break; }
+  }
+  return base.endsWith("e") && base.length > 4 ? base.slice(0, -1) : base;
+}
+const FUNCTION_WORDS = new Set(["the", "and", "for", "with", "from", "that", "this", "your", "our", "you", "are", "all", "any", "into", "via", "per", "of", "to", "in", "on", "by"]);
+const PHRASE_WINDOW = 8;
 /**
- * Offering overlap on distinctive evidence only: the whole multi-word offering
- * phrase as a token sequence, or at least two distinctive (non-generic) tokens
- * present as whole words. A single shared token, or generic nouns such as
- * "platform"/"provider", never establish overlap.
+ * Offering overlap on distinctive evidence only: the whole offering phrase
+ * (contiguously, or every word inside a short window), or at least two
+ * distinctive (non-generic) tokens present as whole words. A single shared
+ * token, or generic nouns such as "platform"/"provider", never establish
+ * overlap.
  */
 export function offeringOverlapEvidence(offering: string, primaryBusiness: string): { phrase: boolean; distinctiveTokens: string[] } {
-  const normalizedOffering = normal(offering);
-  const offeringWords = normalizedOffering.split(" ").filter(Boolean);
-  const distinctive = tokens(offering).filter((token) => wholeWord(primaryBusiness, token));
-  const phrase = offeringWords.length >= 2 && tokens(offering).length > 0
-    && new RegExp(`(?<![a-z0-9])${offeringWords.map((word) => `${escapeRegExp(word)}(?:s|es)?`).join("[^a-z0-9]+")}(?![a-z0-9])`, "i").test(primaryBusiness);
-  return { phrase, distinctiveTokens: distinctive };
+  const textStems = normal(primaryBusiness).split(" ").filter(Boolean).map(stem);
+  const textSet = new Set(textStems);
+  const offeringWords = normal(offering).split(" ").filter((word) => word && !FUNCTION_WORDS.has(word));
+  const distinctiveTokens = tokens(offering).filter((token) => textSet.has(stem(token)));
+  if (!offeringWords.length || !tokens(offering).length) return { phrase: false, distinctiveTokens };
+  const wanted = offeringWords.map(stem);
+  const contiguous = wanted.length >= 2 && textStems.some((_, start) => wanted.every((word, offset) => textStems[start + offset] === word));
+  const windowed = wanted.length >= 2 && distinctiveTokens.length > 0
+    && textStems.some((_, start) => { const window = new Set(textStems.slice(start, start + PHRASE_WINDOW)); return wanted.every((word) => window.has(word)); });
+  return { phrase: contiguous || windowed, distinctiveTokens };
 }
 const overlapEstablished = (evidence: ReturnType<typeof offeringOverlapEvidence>) => evidence.phrase || evidence.distinctiveTokens.length >= 2;
 function matches(value: string | null | undefined, candidates: string[]): boolean {
