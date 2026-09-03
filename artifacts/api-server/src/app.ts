@@ -20,8 +20,20 @@ import {
   isProductionRuntime,
   positiveIntEnv,
 } from "./middlewares/securityPolicy";
+import { AUTH_MODE_ENV, LOCAL_USER_ID, assertAuthModeAllowed } from "./lib/auth-mode";
 
-assertProductionClerkKey();
+// Resolved and validated before anything else: `local` is refused outright in
+// a production-like runtime (no override), and `clerk` keeps every Clerk guard.
+const authMode = assertAuthModeAllowed();
+const localAuth = authMode === "local";
+
+if (localAuth) {
+  logger.warn(
+    `*** ${AUTH_MODE_ENV}=local: authentication is DISABLED. Every request runs as "${LOCAL_USER_ID}" and Clerk is not loaded. Development only. ***`,
+  );
+} else {
+  assertProductionClerkKey();
+}
 
 const app: Express = express();
 
@@ -67,7 +79,9 @@ app.use((req, res, next) => {
   res.status(421).json({ error: "Host not allowed" });
 });
 
-app.use(CLERK_PROXY_PATH, clerkProxyMiddleware());
+if (!localAuth) {
+  app.use(CLERK_PROXY_PATH, clerkProxyMiddleware());
+}
 
 app.use(
   helmet({
@@ -118,14 +132,18 @@ app.use(express.urlencoded({ extended: true }));
 // health check never depends on auth configuration or the Clerk API.
 app.use("/api", healthRouter);
 
-app.use(
-  clerkMiddleware((req) => ({
-    publishableKey: publishableKeyFromHost(
-      getClerkProxyHost(req, allowedHosts) ?? "",
-      process.env.CLERK_PUBLISHABLE_KEY,
-    ),
-  })),
-);
+// In local auth mode nothing Clerk-related is mounted; middlewares/auth.ts
+// attributes every request to LOCAL_USER_ID instead.
+if (!localAuth) {
+  app.use(
+    clerkMiddleware((req) => ({
+      publishableKey: publishableKeyFromHost(
+        getClerkProxyHost(req, allowedHosts) ?? "",
+        process.env.CLERK_PUBLISHABLE_KEY,
+      ),
+    })),
+  );
+}
 
 // Stricter limiter for routes that trigger paid provider or LLM spend. Keyed
 // by the authenticated user when available so one tenant cannot burn budget
@@ -135,8 +153,10 @@ const paidLimiter = rateLimit({
   limit: positiveIntEnv("JYRA_RATE_LIMIT_PAID_MAX", 30),
   standardHeaders: "draft-8",
   legacyHeaders: false,
-  keyGenerator: (req) => {
-    const userId = getAuth(req)?.userId;
+  keyGenerator: (req, res) => {
+    const userId = localAuth
+      ? (res.locals.userId as string | undefined) ?? LOCAL_USER_ID
+      : getAuth(req)?.userId;
     return typeof userId === "string" && userId ? `user:${userId}` : ipKeyGenerator(req.ip ?? "");
   },
   message: { error: "Too many paid research requests, please try again later" },
