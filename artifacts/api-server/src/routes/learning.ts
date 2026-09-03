@@ -17,6 +17,7 @@ import {
   updateLearningPolicy,
 } from "../lib/learning";
 import { getAuthenticatedUserId, requireAuth } from "../middlewares/auth";
+import { requireOrgRole } from "../lib/authz";
 
 const router: IRouter = Router();
 type AsyncHandler = (...args: Parameters<RequestHandler>) => Promise<void>;
@@ -132,6 +133,7 @@ router.put(
         error: access.status === 403 ? "Project access denied" : "Project not found",
       });
     }
+    if (!(await requireOrgRole(res, userId, access.project.organizationId))) return;
     if (!(await validScopePack(access.project.organizationId, body.data.scope, body.data.intelligencePackVersionId))) {
       return void res.status(404).json({ error: "Intelligence Pack version not found" });
     }

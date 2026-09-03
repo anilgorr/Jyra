@@ -29,6 +29,7 @@ import {
 } from "../lib/facts";
 import { evaluateSignalsForCompany } from "../lib/signal-packs";
 import { getAuthenticatedUserId, requireAuth } from "../middlewares/auth";
+import { evidenceVisibleToOrganization } from "../lib/authz";
 
 const router: IRouter = Router();
 type AsyncHandler = (...args: Parameters<RequestHandler>) => Promise<void>;
@@ -105,7 +106,7 @@ function factPayload(row: FactRow) {
   };
 }
 
-async function getEvidenceForCompany(evidenceId: string, companyId: string) {
+async function getEvidenceForCompany(evidenceId: string, companyId: string, organizationId: string) {
   const [row] = await db
     .select({
       evidence: companyEvidenceTable,
@@ -121,6 +122,7 @@ async function getEvidenceForCompany(evidenceId: string, companyId: string) {
       and(
         eq(companyEvidenceTable.id, evidenceId),
         eq(companyEvidenceTable.companyId, companyId),
+        evidenceVisibleToOrganization(organizationId),
         or(
           isNull(evidenceAttributionReviewsTable.crawlPageId),
           eq(evidenceAttributionReviewsTable.acceptedAsEvidence, true),
@@ -167,8 +169,12 @@ router.get(
         evidenceAttributionReviewsTable,
         eq(evidenceAttributionReviewsTable.crawlPageId, crawlPagesTable.id),
       )
+      // Tenant scoping (C1): facts inherit the visibility of the evidence
+      // they were extracted from, so another organization's manually
+      // submitted excerpts never leak through the shared canonical company.
       .where(and(
         eq(companyFactsTable.companyId, access.company.id),
+        evidenceVisibleToOrganization(access.organizationId!),
         or(
           isNull(evidenceAttributionReviewsTable.crawlPageId),
           eq(evidenceAttributionReviewsTable.acceptedAsEvidence, true),
@@ -202,7 +208,7 @@ router.post(
       denyAccess(res, access.status ?? 404);
       return;
     }
-    const source = await getEvidenceForCompany(body.data.evidenceId, access.company.id);
+    const source = await getEvidenceForCompany(body.data.evidenceId, access.company.id, access.organizationId!);
     if (!source) {
       res.status(404).json({ error: "Evidence not found for this company" });
       return;
@@ -298,7 +304,7 @@ router.post(
       denyAccess(res, access.status ?? 404);
       return;
     }
-    const source = await getEvidenceForCompany(body.data.evidenceId, access.company.id);
+    const source = await getEvidenceForCompany(body.data.evidenceId, access.company.id, access.organizationId!);
     if (!source) {
       res.status(404).json({ error: "Evidence not found for this company" });
       return;

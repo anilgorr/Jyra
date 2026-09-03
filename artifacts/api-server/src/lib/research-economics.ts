@@ -112,6 +112,76 @@ export async function getResearchBudget(projectId: string): Promise<ResearchBudg
   return budget ?? null;
 }
 
+// Conservative fallbacks (in cents, converted to the USD "real" columns) used
+// whenever a project has no budget row or a budget field is null. Spend must
+// never be unbounded just because nobody configured a limit.
+const DEFAULT_DAILY_RESEARCH_BUDGET_CENTS = 2_500;
+const DEFAULT_MONTHLY_RESEARCH_BUDGET_CENTS = 25_000;
+const MAX_DAILY_RESEARCH_BUDGET_CENTS = 100_000;
+const MAX_MONTHLY_RESEARCH_BUDGET_CENTS = 1_000_000;
+
+function centsEnv(env: NodeJS.ProcessEnv, name: string, fallback: number): number {
+  const raw = env[name];
+  const value = raw === undefined || raw === "" ? NaN : Number(raw);
+  return Number.isInteger(value) && value > 0 ? value : fallback;
+}
+
+export type ResearchBudgetLimits = { dailyBudget: number; monthlyBudget: number };
+
+/** Default caps in USD applied when no explicit budget exists. */
+export function defaultResearchBudgetLimits(env: NodeJS.ProcessEnv = process.env): ResearchBudgetLimits {
+  return {
+    dailyBudget: centsEnv(env, "JYRA_DEFAULT_DAILY_RESEARCH_BUDGET_CENTS", DEFAULT_DAILY_RESEARCH_BUDGET_CENTS) / 100,
+    monthlyBudget: centsEnv(env, "JYRA_DEFAULT_MONTHLY_RESEARCH_BUDGET_CENTS", DEFAULT_MONTHLY_RESEARCH_BUDGET_CENTS) / 100,
+  };
+}
+
+/** Upper bounds in USD that an owner/admin may configure through the API. */
+export function maximumResearchBudgetLimits(env: NodeJS.ProcessEnv = process.env): ResearchBudgetLimits {
+  return {
+    dailyBudget: centsEnv(env, "JYRA_MAX_DAILY_RESEARCH_BUDGET_CENTS", MAX_DAILY_RESEARCH_BUDGET_CENTS) / 100,
+    monthlyBudget: centsEnv(env, "JYRA_MAX_MONTHLY_RESEARCH_BUDGET_CENTS", MAX_MONTHLY_RESEARCH_BUDGET_CENTS) / 100,
+  };
+}
+
+/**
+ * Resolve the caps that actually gate spend: the stored budget when present,
+ * otherwise the environment defaults. Fails closed — a missing row or a null
+ * field is never treated as "unlimited".
+ */
+export function effectiveResearchBudgetLimits(
+  budget: Pick<ResearchBudget, "dailyBudget" | "monthlyBudget"> | null | undefined,
+  env: NodeJS.ProcessEnv = process.env,
+): ResearchBudgetLimits {
+  const defaults = defaultResearchBudgetLimits(env);
+  return {
+    dailyBudget: budget?.dailyBudget ?? defaults.dailyBudget,
+    monthlyBudget: budget?.monthlyBudget ?? defaults.monthlyBudget,
+  };
+}
+
+/**
+ * Pure budget decision used by both the read-only check and the reservation
+ * path, so the fail-closed semantics live in exactly one place.
+ */
+export function evaluateResearchBudget(input: {
+  budget: Pick<ResearchBudget, "dailyBudget" | "monthlyBudget"> | null | undefined;
+  daySpend: number;
+  monthSpend: number;
+  estimatedCost: number;
+  env?: NodeJS.ProcessEnv;
+}): { allowed: boolean; reason: string | null; limits: ResearchBudgetLimits } {
+  const limits = effectiveResearchBudgetLimits(input.budget, input.env);
+  const estimate = Math.max(0, input.estimatedCost);
+  let reason: string | null = null;
+  if (input.daySpend + estimate > limits.dailyBudget) {
+    reason = `Daily research budget reached: $${(input.daySpend + estimate).toFixed(2)} would exceed $${limits.dailyBudget.toFixed(2)}.`;
+  } else if (input.monthSpend + estimate > limits.monthlyBudget) {
+    reason = `Monthly research budget reached: $${(input.monthSpend + estimate).toFixed(2)} would exceed $${limits.monthlyBudget.toFixed(2)}.`;
+  }
+  return { allowed: !reason, reason, limits };
+}
+
 export async function upsertResearchBudget(input: {
   organizationId: string;
   projectId: string;
@@ -151,14 +221,14 @@ export async function checkResearchBudget(input: {
   const daysElapsed = Math.max(1, Math.ceil((input.now.getTime() - startOfMonth(input.now).getTime()) / DAY_MS));
   const projectedMonthSpend = (month.spend / daysElapsed) * new Date(input.now.getFullYear(), input.now.getMonth() + 1, 0).getDate();
   const estimate = Math.max(0, input.estimatedCost);
-  let reason: string | null = null;
-  if (budget?.dailyBudget !== null && budget?.dailyBudget !== undefined && day.spend + estimate > budget.dailyBudget) {
-    reason = `Daily research budget reached: $${(day.spend + estimate).toFixed(2)} would exceed $${budget.dailyBudget.toFixed(2)}.`;
-  } else if (budget?.monthlyBudget !== null && budget?.monthlyBudget !== undefined && month.spend + estimate > budget.monthlyBudget) {
-    reason = `Monthly research budget reached: $${(month.spend + estimate).toFixed(2)} would exceed $${budget.monthlyBudget.toFixed(2)}.`;
-  }
+  const { allowed, reason } = evaluateResearchBudget({
+    budget,
+    daySpend: day.spend,
+    monthSpend: month.spend,
+    estimatedCost: estimate,
+  });
   return {
-    allowed: !reason,
+    allowed,
     reason,
     budget,
     spendToday: day.spend,
@@ -199,12 +269,12 @@ export async function reserveResearchBudget(input: {
     const monthSpend = (await spendBetween(input.projectId, monthStart, endOfMonth(input.now))).spend
       + await reservedBetween(tx, input.projectId, monthStart, endOfMonth(input.now));
     const estimate = Math.max(0, input.estimatedCost);
-    let reason: string | null = null;
-    if (budget?.dailyBudget != null && daySpend + estimate > budget.dailyBudget) {
-      reason = `Daily research budget reached: $${(daySpend + estimate).toFixed(2)} would exceed $${budget.dailyBudget.toFixed(2)}.`;
-    } else if (budget?.monthlyBudget != null && monthSpend + estimate > budget.monthlyBudget) {
-      reason = `Monthly research budget reached: $${(monthSpend + estimate).toFixed(2)} would exceed $${budget.monthlyBudget.toFixed(2)}.`;
-    }
+    const { reason } = evaluateResearchBudget({
+      budget,
+      daySpend,
+      monthSpend,
+      estimatedCost: estimate,
+    });
     if (!reason) {
       await tx.insert(researchBudgetReservationsTable).values({
         organizationId: input.organizationId,
@@ -232,8 +302,8 @@ export async function recordResearchRequest(input: {
   organizationId: string;
   projectId: string;
   companyId: string;
-  questionId: string;
-  researchJobId: string;
+  questionId: string | null;
+  researchJobId: string | null;
   researchQuestion: string;
   providerCapability: ResearchRequestCost["providerCapability"];
   providerId: string | null;

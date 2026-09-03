@@ -29,7 +29,7 @@ const createBodySchema = z.object({
   priority: z.enum(["HIGH", "MEDIUM", "LOW"]).default("LOW"),
 }).strict();
 const enrichBodySchema = z.object({
-  explicitRequest: z.boolean().default(true),
+  explicitRequest: z.boolean().default(false),
   includePhone: z.boolean().default(false),
 }).strict();
 
@@ -94,6 +94,7 @@ router.post("/projects/:projectId/companies/:projectCompanyId/people/:personId/e
   });
   if (result.kind === "not_found") return void res.status(404).json({ error: "Person not found for this project company" });
   if (result.kind === "not_eligible") return void res.status(409).json({ error: result.reason });
+  if (result.kind === "budget_blocked") return void res.status(429).json({ error: result.reason });
   res.json(result);
 }));
 

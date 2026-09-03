@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { and, desc, eq } from "drizzle-orm";
+import { and, desc, eq, gte, ne } from "drizzle-orm";
 import {
   companiesTable,
   contactEnrichmentAttemptsTable,
@@ -16,6 +16,11 @@ import type {
   ProviderResponse,
 } from "./provider-contract";
 import { ProviderRouter } from "./provider-router";
+import {
+  recordResearchRequest,
+  releaseResearchReservation,
+  reserveResearchBudget,
+} from "./research-economics";
 
 export type ContactEnrichmentCapability = "EMAIL_LOOKUP" | "PHONE_LOOKUP";
 export type ContactStatus = "UNKNOWN" | "FOUND" | "VERIFIED" | "UNVERIFIED" | "INVALID";
@@ -39,6 +44,28 @@ function attemptStatus(response: ProviderResponse<unknown>) {
 
 export function canEnrichContact(priority: string, requestedExplicitly: boolean) {
   return priority === "HIGH" || requestedExplicitly;
+}
+
+/**
+ * Idempotency key for a paid contact lookup: one reservation per
+ * person + project company + capability per UTC day. Repeated clicks or
+ * retries within the day reuse the same key instead of paying again.
+ */
+export function contactEnrichmentAttemptKey(input: {
+  projectId: string;
+  projectCompanyId: string;
+  personId: string;
+  capability: ContactEnrichmentCapability;
+  now: Date;
+}): string {
+  const day = input.now.toISOString().slice(0, 10);
+  return `contact:${input.projectId}:${input.projectCompanyId}:${input.personId}:${input.capability}:${day}`;
+}
+
+function startOfUtcDay(now: Date): Date {
+  const date = new Date(now);
+  date.setUTCHours(0, 0, 0, 0);
+  return date;
 }
 
 export async function listProjectPeople(projectId: string, projectCompanyId: string) {
@@ -153,6 +180,62 @@ async function enrichCapability(input: {
   context: typeof projectPersonContextTable.$inferSelect;
   company: typeof companiesTable.$inferSelect;
 }) {
+  const attemptKey = contactEnrichmentAttemptKey(input);
+  // Dedupe: a non-failed attempt for this person/capability today is reused
+  // rather than paying the provider waterfall again.
+  const [priorAttempt] = await db.select().from(contactEnrichmentAttemptsTable)
+    .where(and(
+      eq(contactEnrichmentAttemptsTable.projectId, input.projectId),
+      eq(contactEnrichmentAttemptsTable.projectCompanyId, input.projectCompanyId),
+      eq(contactEnrichmentAttemptsTable.personId, input.personId),
+      eq(contactEnrichmentAttemptsTable.capability, input.capability),
+      ne(contactEnrichmentAttemptsTable.status, "FAILED"),
+      gte(contactEnrichmentAttemptsTable.observedAt, startOfUtcDay(input.now)),
+    ))
+    .orderBy(desc(contactEnrichmentAttemptsTable.observedAt))
+    .limit(1);
+  if (priorAttempt) {
+    const priorValue = input.capability === "EMAIL_LOOKUP" ? input.context.email : input.context.phone;
+    return {
+      capability: input.capability,
+      provider: priorAttempt.providerId ?? "unknown",
+      cost: { estimated: 0, actual: 0 },
+      result: priorValue,
+      verification: priorAttempt.contactStatus as ContactStatus,
+      timestamp: priorAttempt.observedAt.toISOString(),
+      responseStatus: priorAttempt.status === "SUCCEEDED" ? "success" as const : "empty" as const,
+      error: null,
+      deduplicated: true as const,
+      budgetBlocked: false as const,
+    };
+  }
+
+  // Reserve budget before any paid call. The reservation is keyed by the
+  // idempotency key so concurrent duplicates share one reservation.
+  const estimatedCost = Math.max(0, await input.router.maximumEstimatedCost(input.capability));
+  const budget = await reserveResearchBudget({
+    organizationId: input.organizationId,
+    projectId: input.projectId,
+    companyId: input.company.id,
+    attemptKey,
+    estimatedCost,
+    now: input.now,
+  });
+  if (!budget.allowed) {
+    return {
+      capability: input.capability,
+      provider: "budget",
+      cost: { estimated: estimatedCost, actual: 0 },
+      result: null,
+      verification: "UNKNOWN" as ContactStatus,
+      timestamp: input.now.toISOString(),
+      responseStatus: "empty" as const,
+      error: { code: "BUDGET_EXCEEDED", message: budget.reason ?? "Research budget reached." },
+      deduplicated: false as const,
+      budgetBlocked: true as const,
+    };
+  }
+
   const requestId = `contact:${input.projectId}:${input.personId}:${input.capability}:${randomUUID()}`;
   const request = {
     requestId,
@@ -166,16 +249,22 @@ async function enrichCapability(input: {
       personId: input.personId,
     },
   };
-  const response = await input.router.routeWaterfall(
-    input.capability,
-    request,
-    (candidate) => {
-      if (candidate.status !== "success" || !candidate.data) return false;
-      return input.capability === "EMAIL_LOOKUP"
-        ? (candidate.data as EmailLookupResult).emails.length > 0
-        : (candidate.data as PhoneLookupResult).phones.length > 0;
-    },
-  );
+  let response: ProviderResponse<unknown>;
+  try {
+    response = await input.router.routeWaterfall(
+      input.capability,
+      request,
+      (candidate) => {
+        if (candidate.status !== "success" || !candidate.data) return false;
+        return input.capability === "EMAIL_LOOKUP"
+          ? (candidate.data as EmailLookupResult).emails.length > 0
+          : (candidate.data as PhoneLookupResult).phones.length > 0;
+      },
+    );
+  } catch (error) {
+    await releaseResearchReservation(attemptKey);
+    throw error;
+  }
   const candidate = input.capability === "EMAIL_LOOKUP"
     ? (response.data as EmailLookupResult | null)?.emails[0] ?? null
     : (response.data as PhoneLookupResult | null)?.phones[0] ?? null;
@@ -193,13 +282,41 @@ async function enrichCapability(input: {
     response.sources.find((source) => source.kind === "public_url")?.reference ??
     null;
 
+  const providerId = uuidPattern.test(response.providerId) ? response.providerId : null;
+  const completedAt = new Date();
+  await recordResearchRequest({
+    organizationId: input.organizationId,
+    projectId: input.projectId,
+    companyId: input.company.id,
+    questionId: null,
+    researchJobId: null,
+    researchQuestion: `Contact ${input.capability} for person ${input.personId}`,
+    providerCapability: input.capability,
+    providerId,
+    providerRequestId: response.providerRequestId,
+    status: response.status,
+    success: response.status === "success",
+    latencyMs: response.usage.latencyMs,
+    estimatedCost: response.usage.estimatedCost || estimatedCost,
+    actualCost: response.usage.actualCost,
+    resultMetadata: {
+      personId: input.personId,
+      projectCompanyId: input.projectCompanyId,
+      resultCount: response.usage.resultCount,
+      errorCode: response.error?.code ?? null,
+    },
+    startedAt: input.now,
+    completedAt,
+    attemptKey,
+  });
+
   await db.transaction(async (tx) => {
     await tx.insert(contactEnrichmentAttemptsTable).values({
       organizationId: input.organizationId,
       projectId: input.projectId,
       projectCompanyId: input.projectCompanyId,
       personId: input.personId,
-      providerId: uuidPattern.test(response.providerId) ? response.providerId : null,
+      providerId,
       capability: input.capability,
       status: attemptStatus(response),
       contactStatus: status,
@@ -253,6 +370,8 @@ async function enrichCapability(input: {
     timestamp: input.now.toISOString(),
     responseStatus: response.status,
     error: response.error,
+    deduplicated: false as const,
+    budgetBlocked: false as const,
   };
 }
 
@@ -298,10 +417,18 @@ export async function enrichPersonContact(input: {
   };
   const results = [await enrichCapability({ ...base, capability: "EMAIL_LOOKUP" })];
   if (input.includePhone) results.push(await enrichCapability({ ...base, capability: "PHONE_LOOKUP" }));
+  if (results.every((result) => result.budgetBlocked)) {
+    return {
+      kind: "budget_blocked" as const,
+      reason: results[0]?.error?.message ?? "Research budget reached.",
+      personId: input.personId,
+    };
+  }
   return {
     kind: "completed" as const,
     personId: input.personId,
     requestedExplicitly: input.requestedExplicitly,
+    deduplicated: results.every((result) => result.deduplicated),
     results,
   };
 }

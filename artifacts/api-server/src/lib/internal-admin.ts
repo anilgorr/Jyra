@@ -1,14 +1,19 @@
-export type InternalAdminClaims = Record<string, unknown> | undefined;
+/**
+ * Input for the internal-admin decision. Only `publicMetadata` is honoured and
+ * it must come from a server-side Clerk user lookup, never from session claims
+ * (which can be templated from unsafe metadata by the client).
+ */
+export type InternalAdminClaims = { publicMetadata?: unknown } | undefined;
 
 export function isInternalAdmin(
   userId: string,
   claims: InternalAdminClaims,
   configuredIds = process.env.JYRA_INTERNAL_ADMIN_USER_IDS ?? "",
 ): boolean {
-  const metadata = [claims?.metadata, claims?.publicMetadata]
-    .find((value) => value && typeof value === "object") as Record<string, unknown> | undefined;
   const allowlist = configuredIds.split(",").map((value) => value.trim()).filter(Boolean);
-  return allowlist.includes(userId) ||
-    metadata?.internalAdmin === true ||
-    metadata?.internal_admin === true;
+  if (allowlist.includes(userId)) return true;
+  const metadata = claims?.publicMetadata;
+  if (!metadata || typeof metadata !== "object") return false;
+  const flags = metadata as Record<string, unknown>;
+  return flags.internalAdmin === true || flags.internal_admin === true;
 }

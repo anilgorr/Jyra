@@ -27,29 +27,69 @@ const CLERK_FAPI = 'https://frontend-api.clerk.dev';
 export const CLERK_PROXY_PATH = '/api/__clerk';
 
 /**
- * Returns the first effective public hostname for the given request,
- * preferring x-forwarded-host over the Host header so callers behind a
- * proxy see the original client-facing host.
+ * Hosts this deployment is allowed to serve. Built from `JYRA_ALLOWED_HOSTS`
+ * (comma-separated hostnames, optional port) plus the Replit-provided domain
+ * environment variables when present. Matching is exact on the lowercase
+ * host; a leading `*.` entry allows any subdomain of that domain.
  *
- * x-forwarded-host can take three shapes:
- *   - undefined (no proxy involved)
- *   - a single string (one proxy hop)
- *   - a comma-delimited string when an upstream appended rather than
- *     replaced the header (Node folds duplicate headers this way), or a
- *     string[] in some Express typings
- * In the multi-value case, the leftmost value is the original client-
- * facing host. Take that one in all forms. Exported so that app.ts
- * (clerkMiddleware callback) and this proxy middleware agree on which
- * hostname is canonical — otherwise multi-domain/custom-domain flows
- * break.
+ * When the list is empty (local development without any of these variables)
+ * every host is accepted, which keeps `pnpm dev` working — but production
+ * deployments must configure it so a spoofed `X-Forwarded-Host` cannot select
+ * the Clerk publishable key or pass the origin check.
+ */
+export function allowedHostsFromEnv(env: NodeJS.ProcessEnv = process.env): string[] {
+  const values: string[] = [];
+  const push = (raw: string | undefined) => {
+    for (const entry of (raw ?? '').split(',')) {
+      const host = entry.trim().toLowerCase().replace(/^https?:\/\//, '').replace(/\/.*$/, '');
+      if (host) values.push(host);
+    }
+  };
+  push(env.JYRA_ALLOWED_HOSTS);
+  push(env.REPLIT_DOMAINS);
+  push(env.REPLIT_DEV_DOMAIN);
+  return [...new Set(values)];
+}
+
+function hostWithoutPort(host: string): string {
+  return host.replace(/:\d+$/, '');
+}
+
+export function isAllowedHost(host: string | undefined, allowed = allowedHostsFromEnv()): boolean {
+  if (!host) return false;
+  if (allowed.length === 0) return true;
+  const candidate = host.trim().toLowerCase();
+  const bare = hostWithoutPort(candidate);
+  return allowed.some((entry) => {
+    if (entry.startsWith('*.')) {
+      const suffix = entry.slice(1);
+      return bare.endsWith(suffix) && bare.length > suffix.length;
+    }
+    return entry === candidate || entry === bare || hostWithoutPort(entry) === bare;
+  });
+}
+
+/**
+ * Returns the effective public hostname for the given request.
+ *
+ * `x-forwarded-host` is only honoured when the request came through a trusted
+ * proxy (`trust proxy` is enabled in app.ts) AND the value is on the host
+ * allowlist; otherwise the raw `Host` header is used. Any host that is not on
+ * the allowlist yields `undefined`, so callers (the CORS origin check and the
+ * Clerk publishable-key resolver) fail closed instead of trusting a spoofed
+ * header. Exported so that app.ts and this proxy middleware agree on which
+ * hostname is canonical.
  */
 export function getClerkProxyHost(req: {
   headers: IncomingHttpHeaders;
-}): string | undefined {
+}, allowed = allowedHostsFromEnv()): string | undefined {
   const forwarded = req.headers['x-forwarded-host'];
   const raw = Array.isArray(forwarded) ? forwarded[0] : forwarded;
   const firstHop = raw?.split(',')[0]?.trim();
-  return firstHop || req.headers.host?.trim() || undefined;
+  if (firstHop && isAllowedHost(firstHop, allowed)) return firstHop;
+  const host = req.headers.host?.trim();
+  if (host && isAllowedHost(host, allowed)) return host;
+  return undefined;
 }
 
 export function clerkProxyMiddleware(): RequestHandler {

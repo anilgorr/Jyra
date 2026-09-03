@@ -31,6 +31,7 @@ import {
 } from "../lib/opportunity-packs";
 import { executeResearchNow, type ResearchPlanDecision } from "../lib/research";
 import { getAuthenticatedUserId, requireAuth } from "../middlewares/auth";
+import { requireOrgRole } from "../lib/authz";
 
 const router: IRouter = Router();
 type AsyncHandler = (...args: Parameters<RequestHandler>) => Promise<void>;
@@ -268,6 +269,7 @@ router.post("/projects/:projectId/opportunity-packs/versions/:versionId/approve"
   const access = await projectAccess(getAuthenticatedUserId(res), params.data.projectId);
   if (access.status !== 200) return void fail(res, access.status, access.status === 403 ? "Project access denied" : "Project not found");
   if (!await ownsVersion(params.data.projectId, params.data.versionId)) return void fail(res, 404, "Pack version not found");
+  if (!(await requireOrgRole(res, getAuthenticatedUserId(res), access.project.organizationId))) return;
   res.json(await approveOpportunityPackVersion({ versionId: params.data.versionId, projectId: params.data.projectId, organizationId: access.project.organizationId, userId: getAuthenticatedUserId(res) }));
 }));
 
@@ -277,6 +279,7 @@ router.post("/projects/:projectId/opportunity-packs/versions/:versionId/activate
   const access = await projectAccess(getAuthenticatedUserId(res), params.data.projectId);
   if (access.status !== 200) return void fail(res, access.status, access.status === 403 ? "Project access denied" : "Project not found");
   if (!await ownsVersion(params.data.projectId, params.data.versionId)) return void fail(res, 404, "Pack version not found");
+  if (!(await requireOrgRole(res, getAuthenticatedUserId(res), access.project.organizationId))) return;
   res.json(await activateOpportunityPackVersion({ versionId: params.data.versionId, projectId: params.data.projectId, organizationId: access.project.organizationId, userId: getAuthenticatedUserId(res) }));
 }));
 

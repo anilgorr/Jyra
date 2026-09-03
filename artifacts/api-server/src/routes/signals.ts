@@ -32,6 +32,7 @@ import { generateWhyForOpportunity } from "../lib/opportunity-why";
 import { ensureSignalPackFixtures, SIGNAL_PACK_FIXTURES } from "../lib/signal-pack-fixtures";
 import { configureProjectSignalPack } from "../lib/project-signal-pack-config";
 import { getAuthenticatedUserId, requireAuth } from "../middlewares/auth";
+import { requireOrgRole } from "../lib/authz";
 
 const router: IRouter = Router();
 type AsyncHandler = (...args: Parameters<RequestHandler>) => Promise<void>;
@@ -161,6 +162,7 @@ router.put("/projects/:projectId/signal-packs/:signalPackId", requireAuth, async
   }
   const access = await authorize(getAuthenticatedUserId(res), params.data.projectId);
   if (!access.project) return void res.status(access.status).json({ error: access.status === 403 ? "Project access denied" : "Project not found" });
+  if (!(await requireOrgRole(res, getAuthenticatedUserId(res), access.project.organizationId))) return;
   let configured;
   try {
     configured = await configureProjectSignalPack({
