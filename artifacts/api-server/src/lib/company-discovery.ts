@@ -613,17 +613,37 @@ export const ICP_MISSING_DIMENSION_REASON_CODES = {
 function normalizedComparison(value: string): string {
   return normalizeCompanyName(value)
     .replace(/\bunited states of america\b/g, "united states")
+    .replace(/\bu s a\b/g, "united states")
     .replace(/\busa\b/g, "united states")
+    .replace(/\bu s\b/g, "united states")
+    .replace(/\bus\b/g, "united states")
+    .replace(/\bgreat britain\b/g, "united kingdom")
     .replace(/\buk\b/g, "united kingdom")
     .replace(/\buae\b/g, "united arab emirates");
+}
+
+/** Whole-token contiguous containment in either direction; never a bare substring ("us" is not in "australia"). */
+function tokenPhraseMatch(left: string, right: string): boolean {
+  const a = left.split(" ").filter(Boolean);
+  const b = right.split(" ").filter(Boolean);
+  if (!a.length || !b.length) return false;
+  const contains = (haystack: string[], needle: string[]) => {
+    if (needle.length > haystack.length) return false;
+    for (let start = 0; start + needle.length <= haystack.length; start++) {
+      if (needle.every((token, offset) => haystack[start + offset] === token)) return true;
+    }
+    return false;
+  };
+  return contains(a, b) || contains(b, a);
 }
 
 function textMatchesAny(value: string | null, targets: string[] | undefined): boolean | null {
   if (!value || !targets?.length) return null;
   const normalized = normalizedComparison(value);
+  if (!normalized) return null;
   return targets.some((target) => {
     const candidate = normalizedComparison(target);
-    return normalized.includes(candidate) || candidate.includes(normalized);
+    return Boolean(candidate) && (normalized === candidate || tokenPhraseMatch(normalized, candidate));
   });
 }
 

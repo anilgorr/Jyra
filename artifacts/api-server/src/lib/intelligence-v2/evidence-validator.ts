@@ -1,10 +1,12 @@
 import { assessmentSchema, researchRequirementSchema, type EvidenceItemV2, type SellerRelativeAssessmentV2, type SellerRelativeContextV2 } from "./schemas";
+import { claimEligibleForRequirementV2, criterionSatisfiedBy, describeRequirementV2 } from "./icp-requirements";
 
 export type EvidenceValidationResult =
   | { ok: true; assessment: SellerRelativeAssessmentV2 }
   | { ok: false; errors: string[] };
 
 const CRITERION_ABSTENTION_REASON = "This criterion is unknown because no cited atomic claim has the required evidence type.";
+const CRITERION_GEOGRAPHY_ABSTENTION_REASON = "This criterion is unknown because the cited geography claims describe office, customer or talent presence rather than headquarters or primary operating geography.";
 const WHO_ABSTENTION_REASON = "Structural fit is insufficient because no valid parent WHO evidence remains.";
 const ROLE_ABSTENTION_REASON = "Commercial role is unknown because no cited atomic claim has a compatible role relation and evidence type.";
 const COMPETITOR_ABSTENTION_REASON = "Commercial role is unknown because no cited offering-overlap claim establishes a material substitute.";
@@ -109,13 +111,15 @@ export function normalizeAssessmentEvidenceV2(
     criteria: assessment.who.criteria.map((criterion) => {
       const requirement = byCriterion.get(criterion.criterionId);
       if (!requirement) return criterion;
-      const bindings = criterion.claimBindings.filter((binding) => claims.get(binding.claimId)!.type === requirement.type);
+      const bindings = criterion.claimBindings.filter((binding) => claimEligibleForRequirementV2(requirement, claims.get(binding.claimId)!));
+      const geographyOnly = !bindings.length && criterion.claimBindings.length > 0
+        && criterion.claimBindings.every((binding) => claims.get(binding.claimId)!.type === "GEOGRAPHY") && requirement.type === "GEOGRAPHY";
       if (!bindings.length) return {
         ...criterion,
         result: "UNKNOWN" as const,
          reason: criterion.reason === UNKNOWN_CRITERION_CITATION_REASON
            ? UNKNOWN_CRITERION_CITATION_REASON
-           : CRITERION_ABSTENTION_REASON,
+           : geographyOnly ? CRITERION_GEOGRAPHY_ABSTENTION_REASON : CRITERION_ABSTENTION_REASON,
         evidenceIds: [],
         claimIds: [],
         claimBindings: [],
@@ -182,8 +186,9 @@ export function validateAssessmentEvidenceV2(value: unknown, evidence: EvidenceI
     if (parsed.data.who.criteria.length !== expected.size) errors.push("who criteria do not match supplied ICP");
     for (const criterion of parsed.data.who.criteria) {
       const requirement = expected.get(criterion.criterionId);
-      const expectedDescription = requirement && `${requirement.type} ${requirement.operator}${requirement.value ? ` ${requirement.value}` : ""}`;
-      if (!requirement || criterion.mandatory !== requirement.mandatory || criterion.description !== expectedDescription) errors.push(`criterion ${criterion.criterionId} does not match supplied ICP`);
+      const expectedDescription = requirement && describeRequirementV2(requirement);
+      if (!requirement || criterion.mandatory !== requirement.mandatory || criterion.description !== expectedDescription
+        || (criterion.exclusion !== undefined && criterion.exclusion !== requirement.exclusion)) errors.push(`criterion ${criterion.criterionId} does not match supplied ICP`);
       expected.delete(criterion.criterionId);
     }
     if (expected.size) errors.push("who is missing supplied ICP criteria");
@@ -198,21 +203,14 @@ export function validateAssessmentEvidenceV2(value: unknown, evidence: EvidenceI
       const requirement = requirements?.find((item) => item.criterionId === criterion.criterionId);
       if (requirement && criterion.result !== "UNKNOWN") for (const binding of criterion.claimBindings) {
         const claim = claims.get(binding.claimId);
-        if (!claim || (claim.type !== requirement.type && claim.type !== "ICP_CRITERION")) {
-          errors.push(`who.criteria.${index} claim type does not match criterion`);
+        if (!claim || !claimEligibleForRequirementV2(requirement, claim)) {
+          errors.push(claim?.type === "GEOGRAPHY" && requirement.type === "GEOGRAPHY"
+            ? `who.criteria.${index} geography claim semantics (${claim.geographyType ?? "unknown"}) cannot decide an ICP geography criterion`
+            : `who.criteria.${index} claim type does not match criterion`);
           continue;
         }
-        const actual = claim.value.toLocaleLowerCase();
-        const expected = requirement.value?.toLocaleLowerCase();
-        const positive = requirement.operator === "EXISTS"
-          ? true
-          : requirement.operator === "EQUALS" ? actual === expected
-          : requirement.operator === "CONTAINS" ? Boolean(expected && actual.includes(expected))
-          : requirement.operator === "NOT_CONTAINS" ? Boolean(expected && !actual.includes(expected))
-          : actual === expected;
-        const compatible = criterion.result === "PASS"
-          ? positive && requirement.operator !== "NOT_CONTAINS"
-          : !positive || (requirement.operator === "NOT_CONTAINS" && Boolean(expected && actual.includes(expected)));
+        const decision = criterionSatisfiedBy(requirement, claim.value);
+        const compatible = criterion.result === "PASS" ? decision === true : decision === false;
         if (!compatible) errors.push(`who.criteria.${index} claim value/relation does not match criterion result`);
       }
     });

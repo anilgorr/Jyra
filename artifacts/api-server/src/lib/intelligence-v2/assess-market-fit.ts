@@ -9,10 +9,12 @@ import {
   UNKNOWN_CRITERION_CITATION_REASON, UNKNOWN_ROLE_CITATION_REASON, UNKNOWN_WHO_CITATION_REASON,
   normalizeAssessmentEvidenceV2, validateAssessmentEvidenceV2,
 } from "./evidence-validator";
+import { describeRequirementV2 } from "./icp-requirements";
 
 export const SELLER_RELATIVE_ASSESSMENT_SYSTEM_PROMPT = `Use only the immutable scoped evidence and seller context supplied. Return only the requested JSON.
 Decide CommercialRole and structural WHO together. Competition requires a material substitute for the specific offering; shared industry or vocabulary is not competition. WHO is structural ICP fit, not intent.
-Every factual non-abstaining role/WHO decision and every PASS/FAIL criterion must cite existing atomic claimId values with a compatible relation. Never create, alter, or infer claims or citations. UNKNOWN, INSUFFICIENT_DATA, and UNKNOWN criteria may have no citations. Reasons must be concise and must not add facts absent from cited claims.`;
+Every factual non-abstaining role/WHO decision and every PASS/FAIL criterion must cite existing atomic claimId values with a compatible relation. Never create, alter, or infer claims or citations. UNKNOWN, INSUFFICIENT_DATA, and UNKNOWN criteria may have no citations. Reasons must be concise and must not add facts absent from cited claims.
+Criterion semantics: for an ordinary criterion PASS means the company satisfies it. For a criterion described as EXCLUSION, PASS means the company EXHIBITS the excluded characteristic (it is disqualified) and FAIL means evidence shows it does not; use UNKNOWN when evidence is silent. ICP GEOGRAPHY criteria are decided only by HEADQUARTERS or PRIMARY_OPERATING_GEOGRAPHY claims, never by office, customer or talent presence.`;
 
 const roleRelations = ["SUPPORTS_ROLE", "MATERIAL_SUBSTITUTE", "COMPLEMENTARY", "BUYER_CAPABILITY"] as const;
 const whoRelations = ["SUPPORTS_WHO", "SATISFIES_CRITERION", "FAILS_CRITERION"] as const;
@@ -155,8 +157,9 @@ function materialize(value: z.infer<typeof modelAssessmentSchema>, evidence: Evi
         const criterionHasUnknownClaim = containsUnknownClaim(criterion.citations);
         return {
           criterionId: criterion.criterionId,
-          description: `${requirement.type} ${requirement.operator}${requirement.value ? ` ${requirement.value}` : ""}`,
+          description: describeRequirementV2(requirement),
           mandatory: requirement.mandatory,
+          exclusion: requirement.exclusion,
           result: criterionHasUnknownClaim ? "UNKNOWN" : criterion.result,
           confidence: criterion.confidence,
           reason: criterionHasUnknownClaim ? UNKNOWN_CRITERION_CITATION_REASON : criterion.reason,

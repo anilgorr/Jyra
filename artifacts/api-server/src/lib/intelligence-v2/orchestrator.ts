@@ -4,6 +4,7 @@ import { researchCompanyV2, type ResearchInvokerV2, type ResearchRequestV2 } fro
 import { buildCompanyProfileV2 } from "./build-company-profile";
 import { assessMarketFitV2, type AssessmentInvokerV2 } from "./assess-market-fit";
 import { applySafetyRulesV2 } from "./apply-safety-rules";
+import { sellerOfferingFromContextV2 } from "./offering-overlap";
 import { normalizeAssessmentEvidenceV2, validateAssessmentEvidenceV2 } from "./evidence-validator";
 import {
   ASSESSMENT_MODEL, ASSESSMENT_POLICY_VERSION, ASSESSMENT_PROMPT_VERSION, INTELLIGENCE_CORE_VERSION,
@@ -89,11 +90,19 @@ export async function orchestrateIntelligenceV2(input: {
   researchInvoker: ResearchInvokerV2; assessmentInvoker?: AssessmentInvokerV2; now?: Date;
   maxExternalResearchCalls?: number; assessmentTimeoutMs?: number;
   onSemanticAttemptStart?: () => void; onSemanticCost?: (cost: number) => void;
+  /** Set when the research invoker carries its own cost callbacks (e.g. onProviderCost) so the run is never shared. */
+  observesResearchCost?: boolean;
 }): Promise<IntelligenceV2Result> {
   const key = fingerprintV2({ organizationId: input.request.organizationId, projectId: input.request.projectId, companyId: input.request.companyId,
     domain: input.request.domain, sourceEvidence: input.request.firstPartyEvidence.map(({ evidenceId, version }) => ({ evidenceId, version })),
     businessTwinVersion: input.context.businessTwinVersion, offeringVersion: input.context.offeringVersion, icpVersion: input.context.icpVersion,
     assessmentPolicyVersion: ASSESSMENT_POLICY_VERSION, promptVersion: ASSESSMENT_PROMPT_VERSION, model: ASSESSMENT_MODEL });
+  // In-flight de-duplication is only safe for callers that observe nothing but
+  // the result. A caller that supplied cost/attempt callbacks must run its own
+  // work so its callbacks fire for every unit of spend it is accountable for;
+  // joining another caller's promise would silently record zero cost.
+  const observesSpend = Boolean(input.onSemanticAttemptStart || input.onSemanticCost || input.observesResearchCost);
+  if (observesSpend) return orchestrateIntelligenceV2Internal(input);
   const active = inFlightRuns.get(key);
   if (active) return active;
   const work = orchestrateIntelligenceV2Internal(input).finally(() => inFlightRuns.delete(key));
@@ -127,7 +136,10 @@ async function orchestrateIntelligenceV2Internal(input: {
     validateScopedEvidence(research.evidence, input.request, "cached-research");
   }
   if (!research) {
-    research = await researchCompanyV2({ ...input.request, requirements: deriveResearchRequirementsV2(input.context) }, async (step, request) => {
+    research = await researchCompanyV2({
+      ...input.request, requirements: deriveResearchRequirementsV2(input.context),
+      offering: input.request.offering ?? sellerOfferingFromContextV2(input.context.offering),
+    }, async (step, request) => {
       if (step.source === "CACHE") return { provider: "request-evidence", evidence: input.request.firstPartyEvidence };
       return input.researchInvoker(step, request);
     }, input.maxExternalResearchCalls);
@@ -181,7 +193,7 @@ async function orchestrateIntelligenceV2Internal(input: {
   const semanticValidation = validateAssessmentEvidenceV2(semantic, allEvidence, input.context);
   if (!semanticValidation.ok) throw new Error(`V2_CACHED_ASSESSMENT_INVALID: ${semanticValidation.errors.join("; ")}`);
   semantic = semanticValidation.assessment;
-  const assessment = applySafetyRulesV2({ profile, assessment: semantic, fingerprint: assessmentFingerprint });
+  const assessment = applySafetyRulesV2({ profile, assessment: semantic, fingerprint: assessmentFingerprint, context: input.context });
   const { resolutionType: _resolutionType, deterministicOverrides: _deterministicOverrides, safetyOverrideMetadata: _safetyOverrideMetadata, fingerprint: _fingerprint, ...finalSemantic } = assessment;
   const finalValidation = validateAssessmentEvidenceV2(finalSemantic, allEvidence, input.context);
   if (!finalValidation.ok) throw new Error(`V2_FINAL_ASSESSMENT_INVALID: ${finalValidation.errors.join("; ")}`);

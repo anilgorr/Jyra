@@ -1,11 +1,15 @@
 import { fingerprintV2 } from "./fingerprint";
 import { MAX_EXTERNAL_RESEARCH_CALLS, evidenceItemSchema, type EvidenceItemV2, type ResearchActionV2, type ResearchPackageV2, type ResearchRequirementV2 } from "./schemas";
+import { claimEligibleForRequirementV2, criterionSatisfiedBy, evaluateRequirementAgainstClaimsV2, isNegativeRequirementOperatorV2, prohibitedRequirementValuesV2 } from "./icp-requirements";
+import { detectOfferingOverlapV2, type SellerOfferingV2 } from "./offering-overlap";
 import type { ProviderOperations, ProviderResponse } from "../provider-contract";
 import { MAX_PROFILE_RESOLUTION_SEARCHES_PER_COMPANY } from "../company-profile-resolution";
 
 export type ResearchRequestV2 = {
   organizationId: string; projectId: string; companyId: string; companyName: string; domain: string | null;
   requirements?: ResearchRequirementV2[];
+  /** Seller offering used to mint deterministic OFFERING_OVERLAP claims from company text. */
+  offering?: SellerOfferingV2 | null;
 };
 export type ResearchStepV2 = {
   source: ResearchActionV2["source"];
@@ -44,22 +48,18 @@ export function researchRequirementStatusV2(
   evidence: EvidenceItemV2[], requirement: ResearchRequirementV2,
   assertions: InternalCompletenessAttestationV2[] = [], actions: ResearchActionV2[] = [],
 ): "PASS" | "FAIL" | "UNKNOWN" {
-  const candidates = evidence.flatMap((item) => item.atomicClaims).filter((claim) => claim.type === requirement.type);
-  if (requirement.operator === "NOT_CONTAINS") {
-    if (requirement.value && candidates.some((claim) => claim.value.toLowerCase().includes(requirement.value!.toLowerCase()))) return "FAIL";
+  const candidates = evidence.flatMap((item) => item.atomicClaims).filter((claim) => claimEligibleForRequirementV2(requirement, claim));
+  if (isNegativeRequirementOperatorV2(requirement.operator)) {
+    if (candidates.some((claim) => criterionSatisfiedBy(requirement, claim.value) === false)) return "FAIL";
     const evidenceIds = new Set(evidence.map((item) => item.evidenceId));
-    const proof = assertions.some((assertion) => internallyMintedAttestations.has(assertion) && assertion.exhaustive &&
-      assertion.requirementId === requirement.criterionId && assertion.absentValue.toLowerCase() === requirement.value?.toLowerCase() &&
+    const prohibited = prohibitedRequirementValuesV2(requirement);
+    const proof = prohibited.length > 0 && prohibited.every((value) => assertions.some((assertion) => internallyMintedAttestations.has(assertion) && assertion.exhaustive &&
+      assertion.requirementId === requirement.criterionId && assertion.absentValue.toLowerCase() === value.toLowerCase() &&
       assertion.sourceEvidenceIds.length > 0 && assertion.sourceEvidenceIds.every((id) => evidenceIds.has(id)) &&
-      actions.some((action) => action.provider === assertion.providerId && action.capability === assertion.capability && action.status === "USED"));
+      actions.some((action) => action.provider === assertion.providerId && action.capability === assertion.capability && action.status === "USED")));
     return proof ? "PASS" : "UNKNOWN";
   }
-  if (!candidates.length) return "UNKNOWN";
-  const matches = candidates.some((claim) => requirement.operator === "EXISTS" || !requirement.value ||
-    requirement.operator === "EQUALS" && claim.value.toLowerCase() === requirement.value.toLowerCase() ||
-    requirement.operator === "CONTAINS" && claim.value.toLowerCase().includes(requirement.value.toLowerCase()) ||
-    requirement.operator === "RANGE" && (() => { const [min, max] = requirement.value.split("-").map(Number); const value = Number(claim.value); return Number.isFinite(value) && value >= min && value <= max; })());
-  return matches ? "PASS" : "FAIL";
+  return evaluateRequirementAgainstClaimsV2(requirement, candidates);
 }
 function sufficient(evidence: EvidenceItemV2[], required: ResearchRequirementV2[] = [], assertions: InternalCompletenessAttestationV2[] = [], actions: ResearchActionV2[] = []): boolean {
   const claims = evidence.flatMap((item) => item.claims ? [item.claims] : []);
@@ -116,13 +116,23 @@ function providerCost(response: ProviderResponse<unknown>): number {
   return Math.max(0, response.usage.actualCost ?? response.usage.estimatedCost);
 }
 
-function providerEvidence(input: {
+/** Sources whose text describes the company itself and may therefore evidence offering overlap. */
+const OVERLAP_ELIGIBLE_SOURCES = new Set(["FIRST_PARTY_WEBSITE", "COMPANY_PROFILE_RESOLUTION", "COMPANY_FIRMOGRAPHICS", "COMPANY_LOOKUP"]);
+
+export function providerEvidence(input: {
   request: ResearchRequestV2; provider: string; providerRequestId: string; capturedAt: string;
   sourceType: string; url: string | null; title: string | null; snippet: string; firstParty: boolean;
   claims?: EvidenceItemV2["claims"];
 }): EvidenceItemV2 {
   const evidenceId = fingerprintV2({ provider: input.provider, providerRequestId: input.providerRequestId, url: input.url, snippet: input.snippet });
   const fetchedContent = `${input.title ?? ""} ${input.snippet}`;
+  const overlapEligible = input.firstParty || OVERLAP_ELIGIBLE_SOURCES.has(input.sourceType);
+  const detectedOverlap = overlapEligible ? detectOfferingOverlapV2(input.snippet, input.request.offering) : [];
+  const suppliedOverlap = input.claims?.offeringOverlapFacts ?? [];
+  const overlapFacts = [...new Set([...suppliedOverlap, ...detectedOverlap.map((match) => `${match.phrase} — "${match.excerpt}"`.slice(0, 600))])];
+  const claims: EvidenceItemV2["claims"] = input.claims || overlapFacts.length
+    ? { ...(input.claims ?? {}), ...(overlapFacts.length ? { offeringOverlapFacts: overlapFacts.slice(0, 20) } : {}) }
+    : undefined;
   const brandFragment = input.request.companyName.split(/\s+/).filter((part) => part.length >= 4)
     .map((part) => {
       const index = fetchedContent.toLowerCase().indexOf(part.toLowerCase());
@@ -146,13 +156,14 @@ function providerEvidence(input: {
         ? [{ claimId: `${evidenceId}:brand`, type: "BRAND_MATCH" as const, value: brandFragment }] : []),
       ...(input.claims?.primaryBusiness ? [{ claimId: `${evidenceId}:business`, type: "PRIMARY_BUSINESS" as const, value: input.claims.primaryBusiness }] : []),
       ...(input.claims?.productsServices ?? []).map((value, i) => ({ claimId: `${evidenceId}:product:${i}`, type: "PRODUCT_SERVICE" as const, value })),
-      ...(input.claims?.offeringOverlapFacts ?? []).map((value, i) => ({ claimId: `${evidenceId}:overlap:${i}`, type: "OFFERING_OVERLAP" as const, value })),
+      ...suppliedOverlap.map((value, i) => ({ claimId: `${evidenceId}:overlap:${i}`, type: "OFFERING_OVERLAP" as const, value })),
+      ...detectedOverlap.map((match, i) => ({ claimId: `${evidenceId}:overlap-detected:${i}`, type: "OFFERING_OVERLAP" as const, value: match.phrase })),
       ...(input.claims?.geography ?? []).map((claim, i) => ({ claimId: `${evidenceId}:geography:${i}`, type: "GEOGRAPHY" as const, value: claim.value, geographyType: claim.type })),
       ...(input.claims?.businessModel ? [{ claimId: `${evidenceId}:model`, type: "BUSINESS_MODEL" as const, value: input.claims.businessModel }] : []),
       ...(input.claims?.industry ? [{ claimId: `${evidenceId}:industry`, type: "INDUSTRY" as const, value: input.claims.industry }] : []),
       ...(input.claims?.employeeSize ? [{ claimId: `${evidenceId}:employees`, type: "EMPLOYEE_SIZE" as const, value: input.claims.employeeSize }] : []),
       ...(input.claims?.technologyFacts ?? []).map((claim, i) => ({ claimId: `${evidenceId}:technology:${i}`, type: "TECHNOLOGY" as const, value: claim.value })),
-    ], claims: input.claims,
+    ], claims,
   });
 }
 
