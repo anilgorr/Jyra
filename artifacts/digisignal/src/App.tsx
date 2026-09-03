@@ -32,9 +32,20 @@ import Learning from './pages/learning';
 import AdminQualityPage from './pages/admin-quality';
 import { WorkspaceProvider } from './context/workspace-context';
 
+const configuredClerkKey: string | undefined = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
+// A pk_test_ fallback is returned unconditionally by publishableKeyFromHost and
+// puts every visitor into Clerk "Development mode". Refuse to boot a
+// production bundle with one; provisioning the production Clerk instance
+// (pk_live_ key) is an ops task.
+if (import.meta.env.PROD && configuredClerkKey?.startsWith('pk_test_')) {
+  throw new Error(
+    'VITE_CLERK_PUBLISHABLE_KEY is a pk_test_ development key in a production build. ' +
+      'Set the pk_live_ key from the production Clerk instance.',
+  );
+}
 const clerkPubKey = publishableKeyFromHost(
   window.location.hostname,
-  import.meta.env.VITE_CLERK_PUBLISHABLE_KEY,
+  configuredClerkKey,
 );
 const clerkProxyUrl = import.meta.env.VITE_CLERK_PROXY_URL;
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
