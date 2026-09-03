@@ -20,8 +20,10 @@ import {
   organizationMembersTable,
   organizationsTable,
   projectsTable,
+  researchBudgetsTable,
   usersTable,
 } from "@workspace/db";
+import { defaultResearchBudgetLimits } from "../lib/research-economics";
 import {
   getAuthenticatedUserId,
   requireAuth,
@@ -253,14 +255,24 @@ router.post(
       return;
     }
 
-    const [project] = await db
-      .insert(projectsTable)
-      .values({
+    const project = await db.transaction(async (tx) => {
+      const [created] = await tx
+        .insert(projectsTable)
+        .values({
+          organizationId: organization.id,
+          name: body.data.name.trim(),
+          description: body.data.description?.trim() || null,
+        })
+        .returning();
+      await tx.insert(researchBudgetsTable).values({
         organizationId: organization.id,
-        name: body.data.name.trim(),
-        description: body.data.description?.trim() || null,
-      })
-      .returning();
+        projectId: created.id,
+        createdBy: userId,
+        ...defaultResearchBudgetLimits(),
+        currency: "USD",
+      });
+      return created;
+    });
 
     res
       .status(201)
@@ -360,6 +372,13 @@ router.post(
             name: parsed.data.projectName.trim(),
           })
           .returning();
+        await tx.insert(researchBudgetsTable).values({
+          organizationId: organization.id,
+          projectId: project.id,
+          createdBy: userId,
+          ...defaultResearchBudgetLimits(),
+          currency: "USD",
+        });
 
         return { organization, project };
       });

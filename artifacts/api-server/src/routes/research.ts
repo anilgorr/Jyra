@@ -28,9 +28,11 @@ import { evaluateOpportunity } from "../lib/opportunity-engine";
 import { generateWhyForOpportunity } from "../lib/opportunity-why";
 import {
   getResearchEconomics,
+  maximumResearchBudgetLimits,
   upsertResearchBudget,
 } from "../lib/research-economics";
 import { getAuthenticatedUserId, requireAuth } from "../middlewares/auth";
+import { requireOrgRole } from "../lib/authz";
 
 const router: IRouter = Router();
 type AsyncHandler = (...args: Parameters<RequestHandler>) => Promise<void>;
@@ -48,6 +50,36 @@ async function authorizeProject(userId: string, projectId: string) {
       eq(organizationMembersTable.userId, userId),
     )).limit(1);
   return membership ? { project } : { status: 403 as const };
+}
+
+/**
+ * Server-side budget validation (C6): both caps must be present, whole-dollar
+ * positive integers, no larger than the configured maximums, and the daily
+ * cap may not exceed the monthly cap. Null ("unlimited") is rejected.
+ */
+export function validateResearchBudgetInput(
+  input: { dailyBudget: number | null; monthlyBudget: number | null },
+  limits = maximumResearchBudgetLimits(),
+): { ok: true; dailyBudget: number; monthlyBudget: number } | { ok: false; error: string } {
+  const { dailyBudget, monthlyBudget } = input;
+  if (dailyBudget === null || monthlyBudget === null) {
+    return { ok: false, error: "Daily and monthly research budgets are both required" };
+  }
+  for (const [label, value, max] of [
+    ["Daily", dailyBudget, limits.dailyBudget],
+    ["Monthly", monthlyBudget, limits.monthlyBudget],
+  ] as const) {
+    if (!Number.isInteger(value) || value <= 0) {
+      return { ok: false, error: `${label} research budget must be a positive whole-dollar amount` };
+    }
+    if (value > max) {
+      return { ok: false, error: `${label} research budget cannot exceed $${max.toFixed(0)}` };
+    }
+  }
+  if (dailyBudget > monthlyBudget) {
+    return { ok: false, error: "Daily research budget cannot exceed the monthly research budget" };
+  }
+  return { ok: true, dailyBudget, monthlyBudget };
 }
 
 function questionPayload(question: typeof researchQuestionsTable.$inferSelect | null) {
@@ -136,12 +168,15 @@ router.put("/projects/:projectId/research/budget", requireAuth, asyncRoute(async
   const userId = getAuthenticatedUserId(res);
   const access = await authorizeProject(userId, params.data.projectId);
   if (!access.project) return void res.status(access.status).json({ error: access.status === 403 ? "Project access denied" : "Project not found" });
+  if (!(await requireOrgRole(res, userId, access.project.organizationId))) return;
+  const validation = validateResearchBudgetInput(body.data);
+  if (!validation.ok) return void res.status(400).json({ error: validation.error });
   const budget = await upsertResearchBudget({
     organizationId: access.project.organizationId,
     projectId: params.data.projectId,
     createdBy: userId,
-    dailyBudget: body.data.dailyBudget,
-    monthlyBudget: body.data.monthlyBudget,
+    dailyBudget: validation.dailyBudget,
+    monthlyBudget: validation.monthlyBudget,
     currency: body.data.currency,
   });
   res.json(UpdateResearchBudgetResponse.parse({
