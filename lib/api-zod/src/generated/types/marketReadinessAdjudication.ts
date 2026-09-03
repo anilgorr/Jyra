@@ -5,7 +5,7 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
-import type { MarketReadinessAdjudicationGoldLabels } from './marketReadinessAdjudicationGoldLabels';
+import type { MarketReadinessGoldLabels } from './marketReadinessGoldLabels';
 
 export interface MarketReadinessAdjudication {
   id: string;
@@ -14,7 +14,7 @@ export interface MarketReadinessAdjudication {
   campaignId: string;
   cohortItemId: string;
   adjudicatorId: string;
-  goldLabels: MarketReadinessAdjudicationGoldLabels;
+  goldLabels: MarketReadinessGoldLabels;
   rationale: string;
   createdAt: string;
 }

@@ -1,4 +1,5 @@
 import * as api from "@workspace/api-zod";
+import { marketReadinessGoldLabelsSchema } from "./index";
 
 export type BlindPacketEvidence = {
   sourceType: string;
@@ -59,7 +60,12 @@ export function parseAdjudicationImport(value: unknown) {
     value && typeof value === "object" && Array.isArray((value as { adjudications?: unknown }).adjudications)
       ? (value as { adjudications: unknown[] }).adjudications : null;
   if (!rows) throw new Error("ADJUDICATION_FILE_MUST_BE_ARRAY_OR_ADJUDICATIONS_OBJECT");
-  return rows.map((row) => api.CreateMarketReadinessAdjudicationBody.strict().parse(row));
+  return rows.map((row) => {
+    const body = api.CreateMarketReadinessAdjudicationBody.strict().parse(row);
+    // The generated schema strips unknown gold-label keys; validate the raw object strictly.
+    const goldLabels = marketReadinessGoldLabelsSchema.parse((row as { goldLabels: unknown }).goldLabels);
+    return { ...body, goldLabels };
+  });
 }
 
 export function assertExactCohortMembership(rows: Array<{ cohortItemId: string }>, cohortIds: string[]) {

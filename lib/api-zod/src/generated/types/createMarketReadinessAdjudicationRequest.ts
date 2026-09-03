@@ -5,11 +5,11 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
-import type { CreateMarketReadinessAdjudicationRequestGoldLabels } from './createMarketReadinessAdjudicationRequestGoldLabels';
+import type { MarketReadinessGoldLabels } from './marketReadinessGoldLabels';
 
 export interface CreateMarketReadinessAdjudicationRequest {
   cohortItemId: string;
-  goldLabels: CreateMarketReadinessAdjudicationRequestGoldLabels;
+  goldLabels: MarketReadinessGoldLabels;
   /** @minLength 1 */
   rationale: string;
 }

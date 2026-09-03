@@ -187,16 +187,47 @@ export interface MarketReadinessBlindReview {
   submittedAt: string;
 }
 
-export type CreateMarketReadinessAdjudicationRequestGoldLabels = {[key: string]: boolean};
+export type MarketReadinessGoldLabelsCommercialRole = typeof MarketReadinessGoldLabelsCommercialRole[keyof typeof MarketReadinessGoldLabelsCommercialRole];
+
+
+export const MarketReadinessGoldLabelsCommercialRole = {
+  POTENTIAL_BUYER: 'POTENTIAL_BUYER',
+  SELLER_COMPETITOR: 'SELLER_COMPETITOR',
+  ADJACENT_VENDOR: 'ADJACENT_VENDOR',
+  PARTNER_POSSIBLE: 'PARTNER_POSSIBLE',
+  UNKNOWN: 'UNKNOWN',
+} as const;
+
+export type MarketReadinessGoldLabelsWho = typeof MarketReadinessGoldLabelsWho[keyof typeof MarketReadinessGoldLabelsWho];
+
+
+export const MarketReadinessGoldLabelsWho = {
+  LIKELY_FIT: 'LIKELY_FIT',
+  POSSIBLE_FIT: 'POSSIBLE_FIT',
+  LIKELY_NOT_FIT: 'LIKELY_NOT_FIT',
+  INSUFFICIENT_DATA: 'INSUFFICIENT_DATA',
+} as const;
+
+/**
+ * Adjudicated ground truth for one cohort item. Role and WHO use the intelligence-core enums; the three booleans are independent facts.
+ */
+export interface MarketReadinessGoldLabels {
+  commercialRole: MarketReadinessGoldLabelsCommercialRole;
+  who: MarketReadinessGoldLabelsWho;
+  /** The company behind the domain is resolvable by a human */
+  identityResolved: boolean;
+  /** A salesperson could act on the available evidence */
+  actionableEvidence: boolean;
+  /** Contacting this company as a buyer would be harmful */
+  dangerous: boolean;
+}
 
 export interface CreateMarketReadinessAdjudicationRequest {
   cohortItemId: string;
-  goldLabels: CreateMarketReadinessAdjudicationRequestGoldLabels;
+  goldLabels: MarketReadinessGoldLabels;
   /** @minLength 1 */
   rationale: string;
 }
-
-export type MarketReadinessAdjudicationGoldLabels = {[key: string]: boolean};
 
 export interface MarketReadinessAdjudication {
   id: string;
@@ -205,7 +236,7 @@ export interface MarketReadinessAdjudication {
   campaignId: string;
   cohortItemId: string;
   adjudicatorId: string;
-  goldLabels: MarketReadinessAdjudicationGoldLabels;
+  goldLabels: MarketReadinessGoldLabels;
   rationale: string;
   createdAt: string;
 }
