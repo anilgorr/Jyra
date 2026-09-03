@@ -105,6 +105,7 @@
           ,"test:task-117-intelligence-v2": "NODE_ENV=test node ./scripts/test-task-117-generic-fixtures.mjs"
            ,"test:task-117-route-isolation": "node ./scripts/test-task-117-route-isolation.mjs"
             ,"test:market-readiness": "node ./scripts/test-market-readiness.mjs"
+            ,"test:security-guards": "node ./scripts/test-security-guards.mjs"
             ,"test:market-readiness:db": "NODE_ENV=development node ./scripts/test-market-readiness-db.mjs"
               ,"run:market-readiness-campaign": "node ./scripts/run-market-readiness-campaign.mjs"
               ,"post-process:market-readiness": "node ./scripts/market-readiness-post-process.mjs"
