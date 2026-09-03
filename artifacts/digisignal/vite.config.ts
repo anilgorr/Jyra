@@ -1,7 +1,7 @@
 import path from 'path';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
-import { defineConfig, type UserConfig } from 'vite';
+import { defineConfig, loadEnv, type UserConfig } from 'vite';
 
 import runtimeErrorOverlay from '@replit/vite-plugin-runtime-error-modal';
 
@@ -36,7 +36,26 @@ function resolveBasePath(): string {
   return process.env.BASE_PATH || DEFAULT_BASE_PATH;
 }
 
-export default defineConfig(async ({ command }): Promise<UserConfig> => {
+const ENV_DIR = path.resolve(import.meta.dirname, '..', '..');
+
+/**
+ * Local auth mode (VITE_JYRA_AUTH_MODE=local) has no sign-in and must never be
+ * shipped: refuse a production build outright. src/lib/auth/mode.ts repeats the
+ * check at runtime for any bundle that slips past this one.
+ */
+function assertAuthModeAllowed(command: 'build' | 'serve', mode: string): void {
+  const env = { ...loadEnv(mode, ENV_DIR, 'VITE_'), ...process.env };
+  const authMode = (env.VITE_JYRA_AUTH_MODE ?? '').trim().toLowerCase();
+  if (command === 'build' && mode === 'production' && authMode === 'local') {
+    throw new Error(
+      'VITE_JYRA_AUTH_MODE=local is forbidden in a production build: local auth mode has no sign-in. ' +
+        'Unset it (or set "clerk") and build again.',
+    );
+  }
+}
+
+export default defineConfig(async ({ command, mode }): Promise<UserConfig> => {
+  assertAuthModeAllowed(command, mode);
   const port = resolvePort(command);
   const basePath = resolveBasePath();
 
@@ -74,7 +93,7 @@ export default defineConfig(async ({ command }): Promise<UserConfig> => {
     },
     root: path.resolve(import.meta.dirname),
     // Outside Replit the whole workspace shares one .env at the repo root.
-    envDir: path.resolve(import.meta.dirname, '..', '..'),
+    envDir: ENV_DIR,
     build: {
       outDir: path.resolve(import.meta.dirname, 'dist/public'),
       emptyOutDir: true,

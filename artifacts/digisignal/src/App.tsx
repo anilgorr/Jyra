@@ -1,8 +1,5 @@
-import { useEffect, useRef, type ReactNode } from 'react';
-import { QueryClientProvider, useQueryClient } from '@tanstack/react-query';
-import { ClerkLoaded, ClerkLoading, ClerkProvider, SignIn, SignUp, Show, useClerk } from '@clerk/react';
-import { publishableKeyFromHost } from '@clerk/react/internal';
-import { shadcn } from '@clerk/themes';
+import type { ReactNode } from 'react';
+import { QueryClientProvider } from '@tanstack/react-query';
 import { Route, Switch, useLocation, Router as WouterRouter, Redirect } from 'wouter';
 import { Loader2 } from 'lucide-react';
 import { useGetCurrentUser } from '@workspace/api-client-react';
@@ -10,6 +7,7 @@ import { useGetCurrentUser } from '@workspace/api-client-react';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
+import { AuthProvider, SignInPage, SignUpPage, useAuthSession } from '@/lib/auth';
 import { queryClient } from '@/lib/queryClient';
 
 import { Layout } from './components/layout/layout';
@@ -32,110 +30,19 @@ import Learning from './pages/learning';
 import AdminQualityPage from './pages/admin-quality';
 import { WorkspaceProvider } from './context/workspace-context';
 
-const configuredClerkKey: string | undefined = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
-// A pk_test_ fallback is returned unconditionally by publishableKeyFromHost and
-// puts every visitor into Clerk "Development mode". Refuse to boot a
-// production bundle with one; provisioning the production Clerk instance
-// (pk_live_ key) is an ops task.
-if (import.meta.env.PROD && configuredClerkKey?.startsWith('pk_test_')) {
-  throw new Error(
-    'VITE_CLERK_PUBLISHABLE_KEY is a pk_test_ development key in a production build. ' +
-      'Set the pk_live_ key from the production Clerk instance.',
-  );
-}
-const clerkPubKey = publishableKeyFromHost(
-  window.location.hostname,
-  configuredClerkKey,
-);
-const clerkProxyUrl = import.meta.env.VITE_CLERK_PROXY_URL;
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
 
-function stripBase(path: string): string {
-  return basePath && path.startsWith(basePath)
-    ? path.slice(basePath.length) || '/'
-    : path;
-}
-
-if (!clerkPubKey) {
-  throw new Error('Missing VITE_CLERK_PUBLISHABLE_KEY in .env file');
-}
-
-const clerkAppearance = {
-  theme: shadcn,
-  cssLayerName: 'clerk',
-  options: {
-    logoPlacement: 'inside' as const,
-    logoLinkUrl: basePath || '/',
-    logoImageUrl: `${window.location.origin}${basePath}/logo.svg`,
-  },
-  variables: {
-    colorPrimary: 'hsl(8, 83%, 65%)', // Coral accent
-    colorForeground: 'hsl(40, 10%, 14%)', // Deep ink
-    colorMutedForeground: 'hsl(35, 9%, 40%)',
-    colorDanger: 'hsl(0, 84%, 60%)',
-    colorBackground: 'hsl(42, 40%, 98%)', // Card bg
-    colorInput: 'hsl(35, 18%, 78%)',
-    colorInputForeground: 'hsl(40, 10%, 14%)',
-    colorNeutral: 'hsl(35, 20%, 85%)',
-    fontFamily: '"DM Sans", sans-serif',
-    borderRadius: '0.375rem',
-  },
-  elements: {
-    rootBox: 'w-full flex justify-center',
-    cardBox: 'bg-card border border-border shadow-sm rounded-2xl w-[440px] max-w-full overflow-hidden',
-    card: '!shadow-none !border-0 !bg-transparent !rounded-none',
-    footer: '!shadow-none !border-0 !bg-transparent !rounded-none',
-    headerTitle: 'font-display text-foreground',
-    headerSubtitle: 'text-muted-foreground',
-    socialButtonsBlockButtonText: 'text-foreground font-medium',
-    formFieldLabel: 'text-foreground font-medium',
-    footerActionLink: 'text-primary font-medium hover:text-accent',
-    footerActionText: 'text-muted-foreground',
-    dividerText: 'text-muted-foreground',
-    identityPreviewEditButton: 'text-primary',
-    formFieldSuccessText: 'text-primary',
-    alertText: 'text-foreground',
-    logoBox: 'h-10 mb-4',
-    logoImage: 'h-full object-contain',
-    socialButtonsBlockButton: 'border border-border bg-background hover:bg-muted transition-colors',
-    formButtonPrimary: 'bg-accent hover:bg-accent/90 text-accent-foreground shadow-sm transition-all',
-    formFieldInput: 'bg-background border border-border focus:border-ring focus:ring-1 focus:ring-ring text-foreground',
-    footerAction: 'justify-center',
-    dividerLine: 'bg-border',
-    alert: 'bg-destructive/10 border-destructive text-destructive',
-    otpCodeFieldInput: 'bg-background border border-border focus:border-ring text-foreground',
-    formFieldRow: 'mb-4',
-    main: 'flex flex-col gap-4',
-  },
-};
-
-function SignInPage() {
+function AuthLoading() {
   return (
-    <div className="flex min-h-[100dvh] items-center justify-center bg-background px-4 py-12">
-      <SignIn routing="path" path={`${basePath}/sign-in`} signUpUrl={`${basePath}/sign-up`} />
-    </div>
-  );
-}
-
-function SignUpPage() {
-  return (
-    <div className="flex min-h-[100dvh] items-center justify-center bg-background px-4 py-12">
-      <SignUp routing="path" path={`${basePath}/sign-up`} signInUrl={`${basePath}/sign-in`} />
+    <div className="flex min-h-[100dvh] items-center justify-center bg-background" data-testid="auth-loading">
+      <Loader2 className="h-7 w-7 animate-spin text-muted-foreground" />
     </div>
   );
 }
 
 function HomeRedirect() {
-  return (
-    <>
-      <Show when="signed-in">
-        <Redirect to="/today" />
-      </Show>
-      <Show when="signed-out">
-        <Landing />
-      </Show>
-    </>
-  );
+  const { isSignedIn } = useAuthSession();
+  return isSignedIn ? <Redirect to="/today" /> : <Landing />;
 }
 
 function AuthenticatedRoutes() {
@@ -208,104 +115,44 @@ function AuthenticatedRoutes() {
   );
 }
 
-function ClerkQueryClientCacheInvalidator() {
-  const { addListener } = useClerk();
-  const queryClient = useQueryClient();
-  const prevUserIdRef = useRef<string | null | undefined>(undefined);
-
-  useEffect(() => {
-    const unsubscribe = addListener(({ user }) => {
-      const userId = user?.id ?? null;
-      if (
-        prevUserIdRef.current !== undefined &&
-        prevUserIdRef.current !== userId
-      ) {
-        queryClient.clear();
-      }
-      prevUserIdRef.current = userId;
-    });
-    return unsubscribe;
-  }, [addListener, queryClient]);
-
-  return null;
-}
-
 function RoutedErrorBoundary({ children }: { children: ReactNode }) {
   const [location] = useLocation();
   return <ErrorBoundary resetKey={location}>{children}</ErrorBoundary>;
 }
 
 function AppRoutes() {
-  return (
-    <>
-      {/* Clerk's <Show> renders nothing until it has loaded; show a spinner instead of a blank page. */}
-      <ClerkLoading>
-        <div className="flex min-h-[100dvh] items-center justify-center bg-background" data-testid="auth-loading">
-          <Loader2 className="h-7 w-7 animate-spin text-muted-foreground" />
-        </div>
-      </ClerkLoading>
-      <ClerkLoaded>
-        <Switch>
-          <Route path="/" component={HomeRedirect} />
-          <Route path="/sign-in/*?" component={SignInPage} />
-          <Route path="/sign-up/*?" component={SignUpPage} />
+  const { isLoaded, isSignedIn } = useAuthSession();
 
-          <Route>
-            <Show when="signed-in">
-              <AuthenticatedRoutes />
-            </Show>
-            <Show when="signed-out">
-              <Redirect to="/sign-in" />
-            </Show>
-          </Route>
-        </Switch>
-      </ClerkLoaded>
-    </>
-  );
-}
-
-function ClerkProviderWithRoutes() {
-  const [, setLocation] = useLocation();
+  // The auth implementation renders nothing useful until it has loaded; show a
+  // spinner instead of a blank page.
+  if (!isLoaded) {
+    return <AuthLoading />;
+  }
 
   return (
-    <ClerkProvider
-      publishableKey={clerkPubKey}
-      proxyUrl={clerkProxyUrl}
-      appearance={clerkAppearance}
-      signInUrl={`${basePath}/sign-in`}
-      signUpUrl={`${basePath}/sign-up`}
-      localization={{
-        signIn: {
-          start: {
-            title: 'Welcome back',
-            subtitle: 'Sign in to continue to JYRA',
-          },
-        },
-        signUp: {
-          start: {
-            title: 'Create your account',
-            subtitle: 'Set up your first JYRA workspace',
-          },
-        },
-      }}
-      routerPush={(to) => setLocation(stripBase(to))}
-      routerReplace={(to) => setLocation(stripBase(to), { replace: true })}
-    >
-      <QueryClientProvider client={queryClient}>
-        <ClerkQueryClientCacheInvalidator />
-        <TooltipProvider>
-          <AppRoutes />
-          <Toaster />
-        </TooltipProvider>
-      </QueryClientProvider>
-    </ClerkProvider>
+    <Switch>
+      <Route path="/" component={HomeRedirect} />
+      <Route path="/sign-in/*?" component={SignInPage} />
+      <Route path="/sign-up/*?" component={SignUpPage} />
+
+      <Route>
+        {isSignedIn ? <AuthenticatedRoutes /> : <Redirect to="/sign-in" />}
+      </Route>
+    </Switch>
   );
 }
 
 export default function App() {
   return (
     <WouterRouter base={basePath}>
-      <ClerkProviderWithRoutes />
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <TooltipProvider>
+            <AppRoutes />
+            <Toaster />
+          </TooltipProvider>
+        </AuthProvider>
+      </QueryClientProvider>
     </WouterRouter>
   );
 }

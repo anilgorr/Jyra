@@ -14,8 +14,8 @@ import {
   RadioTower,
   ShieldCheck,
 } from "lucide-react";
-import { useUser, useClerk } from "@clerk/react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useAuthSession } from "@/lib/auth";
 import {
   Select,
   SelectContent,
@@ -41,8 +41,7 @@ export const navItems = [
 
 export function Sidebar() {
   const [location] = useLocation();
-  const { user } = useUser();
-  const { signOut } = useClerk();
+  const { user, mode: authMode, signOut } = useAuthSession();
   const {
     organizations,
     projects,
@@ -52,7 +51,6 @@ export function Sidebar() {
     setActiveProjectId,
   } = useWorkspace();
   const logoUrl = `${import.meta.env.BASE_URL}logo.svg`;
-  const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
   const { isAdmin } = useAdminAccess();
 
   return (
@@ -165,19 +163,31 @@ export function Sidebar() {
           </Link>
         </nav>
 
+        {authMode === "local" && (
+          <div className="mb-3 px-3">
+            <span
+              className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/40 bg-amber-500/10 px-2 py-0.5 text-[11px] font-medium text-amber-200"
+              title="VITE_JYRA_AUTH_MODE=local: no sign-in; every request runs as the fixed local developer. Development only."
+              data-testid="local-auth-mode-pill"
+            >
+              <span className="h-1.5 w-1.5 rounded-full bg-amber-400" aria-hidden="true" />
+              Local auth mode
+            </span>
+          </div>
+        )}
         <div className="flex items-center gap-3 px-3">
           <Avatar className="h-9 w-9 border border-sidebar-border">
-            <AvatarImage src={user?.imageUrl} alt={user?.fullName || ""} />
+            <AvatarImage src={user?.imageUrl ?? undefined} alt={user?.displayName || ""} />
             <AvatarFallback className="bg-sidebar-accent text-sidebar-accent-foreground">
-              {user?.firstName?.charAt(0) || "U"}
+              {user?.displayName?.charAt(0) || "U"}
             </AvatarFallback>
           </Avatar>
           <div className="flex flex-1 flex-col overflow-hidden">
             <span className="truncate text-sm font-medium text-sidebar-foreground">
-              {user?.fullName || user?.primaryEmailAddress?.emailAddress}
+              {user?.displayName || user?.email}
             </span>
             <button
-              onClick={() => signOut({ redirectUrl: basePath || "/" })}
+              onClick={() => void signOut()}
               className="text-left text-xs text-sidebar-foreground/60 hover:text-sidebar-foreground outline-none"
             >
               Log out
