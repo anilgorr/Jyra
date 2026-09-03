@@ -12,6 +12,8 @@ import runtimeErrorOverlay from '@replit/vite-plugin-runtime-error-modal';
  */
 const DEFAULT_PORT = 5173;
 const DEFAULT_BASE_PATH = '/';
+const DEFAULT_API_PROXY_TARGET = 'http://localhost:8080';
+const ON_REPLIT = process.env.REPL_ID !== undefined;
 
 function resolvePort(command: 'build' | 'serve'): number {
   const rawPort = process.env.PORT;
@@ -71,6 +73,8 @@ export default defineConfig(async ({ command }): Promise<UserConfig> => {
       dedupe: ['react', 'react-dom'],
     },
     root: path.resolve(import.meta.dirname),
+    // Outside Replit the whole workspace shares one .env at the repo root.
+    envDir: path.resolve(import.meta.dirname, '..', '..'),
     build: {
       outDir: path.resolve(import.meta.dirname, 'dist/public'),
       emptyOutDir: true,
@@ -83,6 +87,16 @@ export default defineConfig(async ({ command }): Promise<UserConfig> => {
       fs: {
         strict: true,
       },
+      // On Replit a platform router sends /api to the API server. Outside Replit
+      // the dev server proxies it to the locally running Express app instead.
+      proxy: ON_REPLIT
+        ? undefined
+        : {
+            '/api': {
+              target: process.env.JYRA_API_PROXY_TARGET || DEFAULT_API_PROXY_TARGET,
+              changeOrigin: false,
+            },
+          },
     },
     preview: {
       port,

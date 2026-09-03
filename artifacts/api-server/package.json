@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "export NODE_ENV=development && pnpm run build && pnpm run start",
     "build": "node ./build.mjs",
-    "start": "node --enable-source-maps ./dist/index.mjs",
+    "start": "node --env-file-if-exists=../../.env --enable-source-maps ./dist/index.mjs",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test:fix-08": "node ./scripts/test-fix-08.mjs",
     "test:company-assessment-readiness": "node ./scripts/test-company-assessment-readiness.mjs",
@@ -55,65 +55,65 @@
     "test:evidence": "node ./scripts/test-evidence.mjs",
     "test:facts": "node ./scripts/test-facts.mjs",
     "test:retrieval-bakeoff-01": "NODE_ENV=development node ./scripts/run-retrieval-bakeoff-01.mjs",
-    "test:retrieval-bakeoff-01:reprocess": "NODE_ENV=development JYRA_RETRIEVAL_BAKEOFF_REPROCESS=1 node ./scripts/run-retrieval-bakeoff-01.mjs"
-    ,"test:query-engine-fix-01": "NODE_ENV=development node ./scripts/run-query-engine-fix-01.mjs"
-    ,"test:retrieval-fallback-validation-01": "NODE_ENV=development node ./scripts/run-retrieval-fallback-validation-01.mjs"
-    ,"test:retrieval-fallback-validation-01:reprocess": "NODE_ENV=development JYRA_RETRIEVAL_FALLBACK_REPROCESS=1 node ./scripts/run-retrieval-fallback-validation-01.mjs"
-    ,"test:research": "node ./scripts/test-research.mjs"
-    ,"test:adaptive-retrieval-productionization": "node ./scripts/test-adaptive-retrieval-productionization.mjs"
-    ,"smoke:adaptive-retrieval-productionization": "NODE_ENV=development node ./scripts/run-adaptive-retrieval-productionization-smoke.mjs"
-    ,"test:black-duck-extraction-fix": "NODE_ENV=development node ./scripts/run-black-duck-extraction-fix.mjs"
-    ,"test:fact-temporal-safety-fix-03": "NODE_ENV=development node ./scripts/run-fact-temporal-safety-fix-03.mjs"
-    ,"test:managed-soc-signal-mapping-gap-validation-01": "NODE_ENV=development node ./scripts/run-managed-soc-signal-mapping-gap-validation-01.mjs"
-    ,"test:icp-qualification": "node ./scripts/test-icp-qualification.mjs"
-    ,"test:signals": "node ./scripts/test-signals.mjs"
-    ,"test:opportunities": "node ./scripts/test-opportunity-engine.mjs"
-    ,"test:opportunity-why": "node ./scripts/test-opportunity-why.mjs"
-    ,"test:market-today": "node ./scripts/test-market-today.mjs"
-    ,"test:next-best-action": "node ./scripts/test-next-best-action.mjs"
-    ,"test:recommendation-ledger": "node ./scripts/test-recommendation-ledger.mjs"
-    ,"test:learning": "node ./scripts/test-learning.mjs"
-    ,"test:phase23a": "node ./scripts/test-phase23a.mjs"
-    ,"test:admin-quality": "node ./scripts/test-admin-quality.mjs"
-    ,"test:admin-quality-db": "node ./scripts/test-admin-quality-db.mjs"
-    ,"test:real-data-import": "node ./scripts/test-real-data-import.mjs"
-    ,"test:semantic-idempotency": "node ./scripts/test-semantic-idempotency.mjs"
-    ,"replay:semantic-idempotency-fix-01": "NODE_ENV=development node ./scripts/replay-semantic-idempotency-fix-01.mjs"
-     ,"test:known-company-provisioning-fix-03a": "NODE_ENV=development node ./scripts/run-known-company-provisioning-fix-03a.mjs"
-     ,"test:acceptance-runner-preflight-hotfix-02a": "NODE_ENV=development node ./scripts/run-acceptance-runner-preflight-02a.mjs"
-     ,"test:discovery-canonical-handoff-fix-04": "NODE_ENV=development node ./scripts/test-discovery-canonical-handoff-fix-04.mjs"
-     ,"test:buyer-market-who-fix-05": "NODE_ENV=development node ./scripts/test-buyer-market-who-fix-05.mjs"
-     ,"run:buyer-market-who-fix-05": "NODE_ENV=development JYRA_REALITY_TEST_NAME=JYRA_50_COMPANY_MVP_REALITY_TEST_02_FIX_05_20 JYRA_REALITY_TARGET_COMPANIES=20 JYRA_REALITY_WHO_ONLY=true JYRA_REALITY_CONTACT_ENRICHMENT_ENABLED=false node ./scripts/run-test-01.mjs"
-      ,"replay:discovery-canonical-handoff-fix-04": "NODE_ENV=development node ./scripts/run-discovery-canonical-handoff-fix-04.mjs"
-      ,"test:cycle-06-structural-repair": "node ./scripts/test-cycle-06-structural-repair.mjs"
-      ,"validate:cycle-06": "NODE_ENV=development JYRA_REALITY_CONTACT_ENRICHMENT_ENABLED=false node ./scripts/run-cycle-06-validation.mjs"
-      ,"test:buyer-role-resolution-06a": "NODE_ENV=development node ./scripts/test-buyer-role-resolution-06a.mjs"
-      ,"test:canonical-company-profile": "NODE_ENV=development node ./scripts/test-canonical-company-profile.mjs"
-      ,"test:minimum-company-intelligence": "node ./scripts/test-minimum-company-intelligence.mjs"
-      ,"replay:canonical-company-profile-fix-07": "NODE_ENV=development JYRA_REALITY_CONTACT_ENRICHMENT_ENABLED=false JYRA_FIX_07_REPLAY=YES node ./scripts/run-canonical-company-profile-fix-07-replay.mjs"
-      ,"replay:buyer-role-resolution-06a": "NODE_ENV=development node ./scripts/run-buyer-role-resolution-06a-replay.mjs"
-       ,"validate:buyer-role-resolution-06a:fresh": "NODE_ENV=development JYRA_REALITY_CONTACT_ENRICHMENT_ENABLED=false JYRA_06A_FRESH_VALIDATION=YES node ./scripts/run-buyer-role-resolution-06a-fresh-validation.mjs"
-       ,"validate:fix-11-digipuush:fresh": "NODE_ENV=development JYRA_FIX_11_RUN_FRESH_20=YES node ./scripts/run-fix-11-digipuush-validation.mjs"
-        ,"validate:architecture-v1-clean-cross-domain:fresh": "NODE_ENV=development JYRA_ARCHITECTURE_V1_CLEAN_FRESH_20=YES node ./scripts/run-architecture-v1-clean-cross-domain-validation.mjs"
-         ,"regression:task-105-evidence-admission": "NODE_ENV=development JYRA_TASK_105_POST_REPAIR_REGRESSION=YES node ./scripts/run-task-105-evidence-admission-regression.mjs"
-         ,"test:task-106-who-policy": "node ./scripts/test-task-106-who-policy.mjs"
-         ,"regression:task-106-explicit-who": "NODE_ENV=development JYRA_TASK_106_POST_REPAIR_REGRESSION=YES node ./scripts/run-task-106-explicit-who-regression.mjs"
-         ,"test:task-107-commercial-role": "node ./scripts/test-task-107-commercial-role.mjs"
-         ,"regression:task-107-commercial-role": "NODE_ENV=development JYRA_TASK_107_POST_REPAIR_REGRESSION=YES node ./scripts/run-task-107-commercial-role-regression.mjs"
-         ,"test:task-109-evidence-to-icp": "node ./scripts/test-task-109-evidence-to-icp.mjs"
-          ,"test:task-113-identity-bootstrap": "node ./scripts/test-task-113-identity-bootstrap.mjs"
-          ,"test:task-117-intelligence-v2": "NODE_ENV=test node ./scripts/test-task-117-generic-fixtures.mjs"
-           ,"test:task-117-route-isolation": "node ./scripts/test-task-117-route-isolation.mjs"
-            ,"test:market-readiness": "node ./scripts/test-market-readiness.mjs"
-            ,"test:intelligence-v2-rules": "NODE_ENV=test node ./scripts/test-intelligence-v2-rules.mjs"
-            ,"test:security-guards": "node ./scripts/test-security-guards.mjs"
-            ,"test:market-readiness-reliability": "node ./scripts/test-market-readiness-reliability.mjs"
-            ,"test:market-readiness:db": "NODE_ENV=development node ./scripts/test-market-readiness-db.mjs"
-              ,"run:market-readiness-campaign": "node ./scripts/run-market-readiness-campaign.mjs"
-              ,"post-process:market-readiness": "node ./scripts/market-readiness-post-process.mjs"
-           ,"probe:task-117-live-semantic": "NODE_ENV=development node ./scripts/run-task-117-live-semantic-probe.mjs"
-         ,"integration:task-113-identity-bootstrap": "NODE_ENV=development JYRA_TASK_113_INTEGRATION=YES node ./scripts/run-task-113-identity-bootstrap-integration.mjs"
-          ,"regression:task-109-evidence-to-icp": "NODE_ENV=development JYRA_TASK_109_POST_REPAIR_REGRESSION=YES node ./scripts/run-task-109-evidence-to-icp-regression.mjs"
+    "test:retrieval-bakeoff-01:reprocess": "NODE_ENV=development JYRA_RETRIEVAL_BAKEOFF_REPROCESS=1 node ./scripts/run-retrieval-bakeoff-01.mjs",
+    "test:query-engine-fix-01": "NODE_ENV=development node ./scripts/run-query-engine-fix-01.mjs",
+    "test:retrieval-fallback-validation-01": "NODE_ENV=development node ./scripts/run-retrieval-fallback-validation-01.mjs",
+    "test:retrieval-fallback-validation-01:reprocess": "NODE_ENV=development JYRA_RETRIEVAL_FALLBACK_REPROCESS=1 node ./scripts/run-retrieval-fallback-validation-01.mjs",
+    "test:research": "node ./scripts/test-research.mjs",
+    "test:adaptive-retrieval-productionization": "node ./scripts/test-adaptive-retrieval-productionization.mjs",
+    "smoke:adaptive-retrieval-productionization": "NODE_ENV=development node ./scripts/run-adaptive-retrieval-productionization-smoke.mjs",
+    "test:black-duck-extraction-fix": "NODE_ENV=development node ./scripts/run-black-duck-extraction-fix.mjs",
+    "test:fact-temporal-safety-fix-03": "NODE_ENV=development node ./scripts/run-fact-temporal-safety-fix-03.mjs",
+    "test:managed-soc-signal-mapping-gap-validation-01": "NODE_ENV=development node ./scripts/run-managed-soc-signal-mapping-gap-validation-01.mjs",
+    "test:icp-qualification": "node ./scripts/test-icp-qualification.mjs",
+    "test:signals": "node ./scripts/test-signals.mjs",
+    "test:opportunities": "node ./scripts/test-opportunity-engine.mjs",
+    "test:opportunity-why": "node ./scripts/test-opportunity-why.mjs",
+    "test:market-today": "node ./scripts/test-market-today.mjs",
+    "test:next-best-action": "node ./scripts/test-next-best-action.mjs",
+    "test:recommendation-ledger": "node ./scripts/test-recommendation-ledger.mjs",
+    "test:learning": "node ./scripts/test-learning.mjs",
+    "test:phase23a": "node ./scripts/test-phase23a.mjs",
+    "test:admin-quality": "node ./scripts/test-admin-quality.mjs",
+    "test:admin-quality-db": "node ./scripts/test-admin-quality-db.mjs",
+    "test:real-data-import": "node ./scripts/test-real-data-import.mjs",
+    "test:semantic-idempotency": "node ./scripts/test-semantic-idempotency.mjs",
+    "replay:semantic-idempotency-fix-01": "NODE_ENV=development node ./scripts/replay-semantic-idempotency-fix-01.mjs",
+    "test:known-company-provisioning-fix-03a": "NODE_ENV=development node ./scripts/run-known-company-provisioning-fix-03a.mjs",
+    "test:acceptance-runner-preflight-hotfix-02a": "NODE_ENV=development node ./scripts/run-acceptance-runner-preflight-02a.mjs",
+    "test:discovery-canonical-handoff-fix-04": "NODE_ENV=development node ./scripts/test-discovery-canonical-handoff-fix-04.mjs",
+    "test:buyer-market-who-fix-05": "NODE_ENV=development node ./scripts/test-buyer-market-who-fix-05.mjs",
+    "run:buyer-market-who-fix-05": "NODE_ENV=development JYRA_REALITY_TEST_NAME=JYRA_50_COMPANY_MVP_REALITY_TEST_02_FIX_05_20 JYRA_REALITY_TARGET_COMPANIES=20 JYRA_REALITY_WHO_ONLY=true JYRA_REALITY_CONTACT_ENRICHMENT_ENABLED=false node ./scripts/run-test-01.mjs",
+    "replay:discovery-canonical-handoff-fix-04": "NODE_ENV=development node ./scripts/run-discovery-canonical-handoff-fix-04.mjs",
+    "test:cycle-06-structural-repair": "node ./scripts/test-cycle-06-structural-repair.mjs",
+    "validate:cycle-06": "NODE_ENV=development JYRA_REALITY_CONTACT_ENRICHMENT_ENABLED=false node ./scripts/run-cycle-06-validation.mjs",
+    "test:buyer-role-resolution-06a": "NODE_ENV=development node ./scripts/test-buyer-role-resolution-06a.mjs",
+    "test:canonical-company-profile": "NODE_ENV=development node ./scripts/test-canonical-company-profile.mjs",
+    "test:minimum-company-intelligence": "node ./scripts/test-minimum-company-intelligence.mjs",
+    "replay:canonical-company-profile-fix-07": "NODE_ENV=development JYRA_REALITY_CONTACT_ENRICHMENT_ENABLED=false JYRA_FIX_07_REPLAY=YES node ./scripts/run-canonical-company-profile-fix-07-replay.mjs",
+    "replay:buyer-role-resolution-06a": "NODE_ENV=development node ./scripts/run-buyer-role-resolution-06a-replay.mjs",
+    "validate:buyer-role-resolution-06a:fresh": "NODE_ENV=development JYRA_REALITY_CONTACT_ENRICHMENT_ENABLED=false JYRA_06A_FRESH_VALIDATION=YES node ./scripts/run-buyer-role-resolution-06a-fresh-validation.mjs",
+    "validate:fix-11-digipuush:fresh": "NODE_ENV=development JYRA_FIX_11_RUN_FRESH_20=YES node ./scripts/run-fix-11-digipuush-validation.mjs",
+    "validate:architecture-v1-clean-cross-domain:fresh": "NODE_ENV=development JYRA_ARCHITECTURE_V1_CLEAN_FRESH_20=YES node ./scripts/run-architecture-v1-clean-cross-domain-validation.mjs",
+    "regression:task-105-evidence-admission": "NODE_ENV=development JYRA_TASK_105_POST_REPAIR_REGRESSION=YES node ./scripts/run-task-105-evidence-admission-regression.mjs",
+    "test:task-106-who-policy": "node ./scripts/test-task-106-who-policy.mjs",
+    "regression:task-106-explicit-who": "NODE_ENV=development JYRA_TASK_106_POST_REPAIR_REGRESSION=YES node ./scripts/run-task-106-explicit-who-regression.mjs",
+    "test:task-107-commercial-role": "node ./scripts/test-task-107-commercial-role.mjs",
+    "regression:task-107-commercial-role": "NODE_ENV=development JYRA_TASK_107_POST_REPAIR_REGRESSION=YES node ./scripts/run-task-107-commercial-role-regression.mjs",
+    "test:task-109-evidence-to-icp": "node ./scripts/test-task-109-evidence-to-icp.mjs",
+    "test:task-113-identity-bootstrap": "node ./scripts/test-task-113-identity-bootstrap.mjs",
+    "test:task-117-intelligence-v2": "NODE_ENV=test node ./scripts/test-task-117-generic-fixtures.mjs",
+    "test:task-117-route-isolation": "node ./scripts/test-task-117-route-isolation.mjs",
+    "test:market-readiness": "node ./scripts/test-market-readiness.mjs",
+    "test:intelligence-v2-rules": "NODE_ENV=test node ./scripts/test-intelligence-v2-rules.mjs",
+    "test:security-guards": "node ./scripts/test-security-guards.mjs",
+    "test:market-readiness-reliability": "node ./scripts/test-market-readiness-reliability.mjs",
+    "test:market-readiness:db": "NODE_ENV=development node ./scripts/test-market-readiness-db.mjs",
+    "run:market-readiness-campaign": "node ./scripts/run-market-readiness-campaign.mjs",
+    "post-process:market-readiness": "node ./scripts/market-readiness-post-process.mjs",
+    "probe:task-117-live-semantic": "NODE_ENV=development node ./scripts/run-task-117-live-semantic-probe.mjs",
+    "integration:task-113-identity-bootstrap": "NODE_ENV=development JYRA_TASK_113_INTEGRATION=YES node ./scripts/run-task-113-identity-bootstrap-integration.mjs",
+    "regression:task-109-evidence-to-icp": "NODE_ENV=development JYRA_TASK_109_POST_REPAIR_REGRESSION=YES node ./scripts/run-task-109-evidence-to-icp-regression.mjs"
   },
   "dependencies": {
     "@clerk/express": "^2.1.63",

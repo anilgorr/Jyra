@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: jyra-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: jyra
+      POSTGRES_USER: jyra
+      POSTGRES_PASSWORD: jyra
+    ports:
+      - "5432:5432"
+    volumes:
+      - jyra_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U jyra -d jyra"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  jyra_pgdata:

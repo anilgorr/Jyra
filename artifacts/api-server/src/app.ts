@@ -1,4 +1,5 @@
 import express, { type Express, type RequestHandler } from "express";
+import healthRouter from "./routes/health";
 import cors from "cors";
 import helmet from "helmet";
 import { rateLimit, ipKeyGenerator } from "express-rate-limit";
@@ -113,6 +114,10 @@ app.use(globalLimiter);
 app.use(express.json({ limit: "4mb" }));
 app.use(express.urlencoded({ extended: true }));
 
+// Liveness probe is mounted ahead of Clerk so a load balancer or container
+// health check never depends on auth configuration or the Clerk API.
+app.use("/api", healthRouter);
+
 app.use(
   clerkMiddleware((req) => ({
     publishableKey: publishableKeyFromHost(
@@ -162,7 +167,7 @@ app.use((
     res.status(413).json({ error: "Request body is too large" });
     return;
   }
-  logger.error({ error }, "Unhandled API error");
+  logger.error({ err: error }, "Unhandled API error");
   res.status(500).json({ error: "Internal server error" });
 });
 

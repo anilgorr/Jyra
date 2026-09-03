@@ -10,7 +10,13 @@
     "test:market-readiness": "pnpm --dir artifacts/api-server run test:market-readiness",
     "test:market-readiness:db": "pnpm --dir artifacts/api-server run test:market-readiness:db",
     "post-process:market-readiness": "pnpm --dir artifacts/api-server run post-process:market-readiness",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "db:up": "docker compose up -d postgres",
+    "db:down": "docker compose down",
+    "db:migrate": "pnpm --dir lib/db migrate",
+    "dev:api": "pnpm --dir artifacts/api-server run dev",
+    "dev:web": "pnpm --dir artifacts/digisignal run dev",
+    "dev": "sh ./scripts/dev-local.sh"
   },
   "private": true,
   "devDependencies": {

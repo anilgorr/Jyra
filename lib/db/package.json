@@ -9,11 +9,12 @@
   },
   "scripts": {
     "generate": "drizzle-kit generate --config ./drizzle.config.ts",
-    "migrate": "node ./scripts/migrate.mjs",
-    "push": "drizzle-kit push --config ./drizzle.config.ts && node ./scripts/apply-invariants.mjs",
+    "migrate": "node --env-file-if-exists=../../.env ./scripts/migrate.mjs",
+    "push": "node --env-file-if-exists=../../.env ./node_modules/.bin/drizzle-kit push --config ./drizzle.config.ts && node --env-file-if-exists=../../.env ./scripts/apply-invariants.mjs",
     "push-force": "node ./scripts/confirm-push-force.mjs && drizzle-kit push --force --config ./drizzle.config.ts && node ./scripts/apply-invariants.mjs",
     "test:invariants": "node ./scripts/test-invariants.mjs",
-    "test:migrations": "node ./scripts/test-migrations.mjs"
+    "test:migrations": "node ./scripts/test-migrations.mjs",
+    "approve-dev-db": "node --env-file-if-exists=../../.env ./scripts/approve-development-db.mjs"
   },
   "dependencies": {
     "drizzle-orm": "catalog:",
