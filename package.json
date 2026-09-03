@@ -8,7 +8,8 @@
     "typecheck:libs": "tsc --build",
     "typecheck": "pnpm run typecheck:libs && pnpm -r --filter \"./artifacts/**\" --filter \"./scripts\" --if-present run typecheck",
     "test:market-readiness": "pnpm --dir artifacts/api-server run test:market-readiness",
-    "test:market-readiness:db": "pnpm --dir artifacts/api-server run test:market-readiness:db"
+    "test:market-readiness:db": "pnpm --dir artifacts/api-server run test:market-readiness:db",
+    "post-process:market-readiness": "pnpm --dir artifacts/api-server run post-process:market-readiness"
   },
   "private": true,
   "devDependencies": {

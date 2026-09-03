@@ -143,4 +143,25 @@ const dangerousComparison=m.calculateMarketReadinessMetrics(dangerousComparisonR
 assert.equal(dangerousComparison.competitorRecall,90);
 assert.equal(dangerousComparison.dangerous,1);
 assert.equal(dangerousComparison.pass,false);
+
+const redacted=m.redactMarketReadinessEvidence({items:[{
+  evidenceId:"secret-evidence-id",organizationId:"secret-org",projectId:"secret-project",companyId:"secret-company",
+  sourceType:"WEB_SEARCH",provider:"secret-provider",url:"https://example.com/source",finalUrl:null,
+  title:"Public source",observedAt:"2025-01-01T00:00:00.000Z",rawSnippet:"Public evidence",
+  firstParty:false,confidence:0.99,version:"secret-version",
+  atomicClaims:[{claimId:"secret-claim-id",type:"INDUSTRY",value:"Software"}],
+  predictions:{buyer:true},processingAttemptId:"secret-attempt",costCents:12,
+}]});
+assert.deepEqual(redacted,[{sourceType:"WEB_SEARCH",url:"https://example.com/source",finalUrl:null,
+  title:"Public source",observedAt:"2025-01-01T00:00:00.000Z",rawSnippet:"Public evidence",
+  firstParty:false,atomicClaims:[{type:"INDUSTRY",value:"Software"}]}]);
+assert.doesNotMatch(JSON.stringify(redacted),/prediction|attempt|cost|provider|confidence|evidenceId|claimId/i);
+const review={cohortItemId:"item-1",roleFit:true,whoFit:true,buyer:true,competitor:false,actionableEvidence:true};
+assert.deepEqual(m.parseBlindReviewImport({reviews:[review]})[0],{...review,dangerous:false});
+assert.throws(()=>m.parseBlindReviewImport({reviews:[{...review,predictedBuyer:true}]}),/unrecognized/i);
+const adjudication={cohortItemId:"item-1",goldLabels:{role:true},rationale:"Reviewed both submissions"};
+assert.deepEqual(m.parseAdjudicationImport([adjudication]),[adjudication]);
+assert.doesNotThrow(()=>m.assertExactCohortMembership([{cohortItemId:"a"},{cohortItemId:"b"}],["b","a"]));
+assert.throws(()=>m.assertExactCohortMembership([{cohortItemId:"a"},{cohortItemId:"a"}],["a","b"]),/DUPLICATE/);
+assert.throws(()=>m.assertExactCohortMembership([{cohortItemId:"a"}],["a","b"]),/EXACT_COHORT/);
 console.log("market-readiness deterministic tests passed");
