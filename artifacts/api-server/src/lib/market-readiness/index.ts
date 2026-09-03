@@ -80,7 +80,7 @@ const persistedPredictionFields = {
   unsupportedFactsCount: z.number().int().min(0),
   unsupportedFacts: z.boolean(),
   processingSucceeded: z.boolean(),
-  terminalState: z.enum(["SEMANTIC_ASSESSMENT","COMMERCIAL_ROLE_EXCLUSION","MANDATORY_CRITERION_FAILURE","IDENTITY_UNCERTAIN","EVIDENCELESS_POSITIVE_BLOCKED"]),
+  terminalState: z.enum(["SEMANTIC_ASSESSMENT","COMMERCIAL_ROLE_EXCLUSION","MANDATORY_CRITERION_FAILURE","EXCLUSION_MATCH","IDENTITY_UNCERTAIN","EVIDENCELESS_POSITIVE_BLOCKED"]),
   providerCostCents: z.number().int().min(0),
   semanticCostCents: z.number().int().min(0),
   totalCostCents: z.number().int().min(0),

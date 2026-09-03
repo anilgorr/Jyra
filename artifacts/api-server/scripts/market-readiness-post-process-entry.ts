@@ -9,7 +9,7 @@ import {
 } from "@workspace/db";
 import {
   assertMarketReadinessIndependentReviewCoverage, calculateMarketReadinessMetrics, freezePayloadHash,
-  parseMarketReadinessPersistedPrediction, validateMarketReadinessSnapshotInvariant,
+  marketReadinessMetricRow, parseMarketReadinessPersistedPrediction, validateMarketReadinessSnapshotInvariant,
 } from "../src/lib/market-readiness";
 import {
   assertExactCohortMembership, parseAdjudicationImport, parseBlindReviewImport,
@@ -106,14 +106,14 @@ async function report(args:Required<Pick<Args,"organizationId"|"projectId"|"camp
   if(adjudications.length!==200||new Set(adjudications.map(x=>x.cohortItemId)).size!==200||adjudications.some(x=>!cohortIds.has(x.cohortItemId)))errors.push("COVERAGE_REQUIRES_EXACTLY_ONE_ADJUDICATION_PER_ITEM");
   try{assertMarketReadinessIndependentReviewCoverage({cohortItemIds:cohort.map(x=>x.id),reviews,adjudications});}
   catch(error){errors.push(error instanceof Error?error.message:"INVALID_BLIND_REVIEW_COVERAGE");}
-  let metrics=calculateMarketReadinessMetrics(adjudications.flatMap(a=>{const p=predictionByItem.get(a.cohortItemId);if(!p)return[];const g=a.goldLabels;return[{gold:{role:!!g.role,who:!!g.who,buyer:!!g.buyer,competitor:!!g.competitor,dangerous:!!g.dangerous,identity:!!g.identity,actionableEvidence:!!g.actionableEvidence},prediction:{role:p.predictedRole,who:p.predictedWho,buyer:p.predictedBuyer,competitor:p.predictedCompetitor,identity:p.identityResolved,supported:p.evidenceBacked&&!p.unsupportedFacts,costCents:p.totalCostCents,succeeded:p.processingSucceeded}}]}));
+  let metrics=calculateMarketReadinessMetrics(adjudications.flatMap(a=>{const p=predictionByItem.get(a.cohortItemId);if(!p)return[];try{return[marketReadinessMetricRow({goldLabels:a.goldLabels,evaluation:p})];}catch{errors.push(`INVALID_GOLD_LABELS:${a.cohortItemId}`);return[];}}));
   if(errors.length)metrics={...metrics,eligible:false,pass:false,reasons:[...metrics.reasons,...errors]};
   const reviewCounts=new Map<string,number>();for(const r of reviews)reviewCounts.set(r.cohortItemId,(reviewCounts.get(r.cohortItemId)??0)+1);
   const exactlyTwo=cohort.filter(x=>reviewCounts.get(x.id)===2).length;
   const activeAttempts=attempts.filter(x=>x.state==="PENDING"||x.state==="LEASED").length;
   const coveragePass=cohort.length===200&&predictions.length===200&&adjudications.length===200&&exactlyTwo===200&&!errors.some(x=>x.startsWith("COVERAGE_"));
   const costPass=!errors.some(x=>x.includes("COST_MISMATCH")||x.includes("INVALID_PERSISTED"));
-  const safetyPass=activeAttempts===0&&!errors.length&&metrics.dangerous===0&&metrics.positiveCompetitors===0&&metrics.unsupported===0;
+  const safetyPass=activeAttempts===0&&!errors.length&&metrics.dangerous===0&&metrics.competitorInShortlist===0&&metrics.unsupported===0;
   return {campaign:{id:campaign.id,state:campaign.state,frozen:!!campaign.frozenAt},
     gates:{pass:metrics.pass&&coveragePass&&costPass&&safetyPass,quality:metrics.pass,coverage:coveragePass,cost:costPass,safety:safetyPass,reasons:[...metrics.reasons,...errors,...(exactlyTwo===200?[]:["INCOMPLETE_TWO_REVIEW_COVERAGE"]),...(activeAttempts?["ACTIVE_ATTEMPTS_PRESENT"]:[])]},
     coverage:{cohort:cohort.length,predictions:predictions.length,adjudications:adjudications.length,itemsWithExactlyTwoReviews:exactlyTwo},

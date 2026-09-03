@@ -764,7 +764,7 @@ RETURNS trigger LANGUAGE plpgsql AS $$
 DECLARE key_count integer;
 BEGIN
   SELECT count(*) INTO key_count FROM jsonb_object_keys(NEW.predictions);
-  IF jsonb_typeof(NEW.predictions) <> 'object' OR key_count <> 21 OR NOT (
+  IF jsonb_typeof(NEW.predictions) <> 'object' OR key_count NOT IN (21, 24) OR NOT (
     NEW.predictions ?& ARRAY['identityResolved','predictedRole','predictedWho','predictedBuyer',
       'predictedCompetitor','evidenceBacked','unsupportedFactsCount',
       'unsupportedFacts','processingSucceeded','terminalState','providerCostCents','semanticCostCents',
@@ -775,7 +775,16 @@ BEGIN
       'predictedCompetitor','evidenceBacked','unsupportedFacts',
       'processingSucceeded']) k
     WHERE jsonb_typeof(NEW.predictions -> k) <> 'boolean'
-  ) OR EXISTS (
+  ) OR (key_count = 24 AND NOT (
+    NEW.predictions ?& ARRAY['commercialRole','who','unknownFieldsCount']
+    AND NEW.predictions ->> 'commercialRole' IN ('POTENTIAL_BUYER','SELLER_COMPETITOR','ADJACENT_VENDOR','PARTNER_POSSIBLE','UNKNOWN')
+    AND NEW.predictions ->> 'who' IN ('LIKELY_FIT','POSSIBLE_FIT','LIKELY_NOT_FIT','INSUFFICIENT_DATA')
+    AND jsonb_typeof(NEW.predictions -> 'unknownFieldsCount') = 'number'
+    AND (NEW.predictions ->> 'unknownFieldsCount') ~ '^[0-9]+$'
+    AND ((NEW.predictions ->> 'predictedRole')::boolean = (NEW.predictions ->> 'commercialRole' = 'POTENTIAL_BUYER'))
+    AND ((NEW.predictions ->> 'predictedCompetitor')::boolean = (NEW.predictions ->> 'commercialRole' = 'SELLER_COMPETITOR'))
+    AND ((NEW.predictions ->> 'predictedWho')::boolean = (NEW.predictions ->> 'who' IN ('LIKELY_FIT','POSSIBLE_FIT')))
+  )) OR EXISTS (
     SELECT 1 FROM unnest(ARRAY['unsupportedFactsCount','providerCostCents','semanticCostCents','totalCostCents']) k
     WHERE jsonb_typeof(NEW.predictions -> k) <> 'number'
       OR (NEW.predictions ->> k) !~ '^[0-9]+$'
@@ -786,7 +795,7 @@ BEGIN
   ) OR (NEW.predictions ->> 'unsupportedFacts')::boolean <>
     ((NEW.predictions ->> 'unsupportedFactsCount')::integer > 0)
     OR NEW.predictions ->> 'terminalState' NOT IN ('SEMANTIC_ASSESSMENT','COMMERCIAL_ROLE_EXCLUSION',
-      'MANDATORY_CRITERION_FAILURE','IDENTITY_UNCERTAIN','EVIDENCELESS_POSITIVE_BLOCKED')
+      'MANDATORY_CRITERION_FAILURE','EXCLUSION_MATCH','IDENTITY_UNCERTAIN','EVIDENCELESS_POSITIVE_BLOCKED')
     OR NEW.version <> NEW.predictions ->> 'intelligenceVersion'
     OR (NEW.predictions ->> 'totalCostCents')::integer <>
       (NEW.predictions ->> 'providerCostCents')::integer + (NEW.predictions ->> 'semanticCostCents')::integer

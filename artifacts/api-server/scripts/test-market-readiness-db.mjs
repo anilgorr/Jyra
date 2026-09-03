@@ -660,7 +660,7 @@ try {
   }
   console.log("market-readiness development DB integration tests passed");
 } finally {
-  if (organizationId) await admin.query("delete from organizations where id=$1", [organizationId]);
+  if (organizationId) { await admin.query("begin"); await admin.query("set local jyra.allow_frozen_teardown='on'"); await admin.query("delete from organizations where id=$1", [organizationId]); await admin.query("commit"); }
   await admin.query("delete from users where id=any($1::text[])", [[userId,reviewerOneId,reviewerTwoId]]);
   await admin.end();
 }

@@ -52,3 +52,7 @@ Thumbs.db
 .env
 .env.*
 !.env.example
+
+# Validation-run outputs (traces contain scraped third-party text and real contact PII) — never commit
+artifacts/api-server/[A-Z0-9_]*.json
+artifacts/api-server/*_RUN.lock/
