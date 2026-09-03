@@ -107,6 +107,7 @@
             ,"test:market-readiness": "node ./scripts/test-market-readiness.mjs"
             ,"test:intelligence-v2-rules": "NODE_ENV=test node ./scripts/test-intelligence-v2-rules.mjs"
             ,"test:security-guards": "node ./scripts/test-security-guards.mjs"
+            ,"test:market-readiness-reliability": "node ./scripts/test-market-readiness-reliability.mjs"
             ,"test:market-readiness:db": "NODE_ENV=development node ./scripts/test-market-readiness-db.mjs"
               ,"run:market-readiness-campaign": "node ./scripts/run-market-readiness-campaign.mjs"
               ,"post-process:market-readiness": "node ./scripts/market-readiness-post-process.mjs"

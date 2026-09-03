@@ -204,7 +204,50 @@ The implemented organization, membership, user, and project tables are the tenan
 
 ## Migration policy
 
-Schema changes are development-only changes until explicitly published through Replit’s supported publish-time migration flow. Do not run startup-time DDL, custom production migration scripts, or destructive resets.
+Schema and invariant changes ship as versioned SQL migrations in `lib/db/drizzle/`
+(`meta/_journal.json` is the ordered list; `meta/*_snapshot.json` is the state
+`drizzle-kit generate` diffs against). `0000_baseline.sql` is the full schema;
+`0001_invariants.sql` holds every trigger, function, partial index and check
+constraint the application relies on for immutability, provenance and scope
+isolation, written so that it can be re-applied safely.
+
+- **Production / any deployment:** `pnpm --dir lib/db migrate`
+  (`DATABASE_URL` must point at the target). It applies only the journal
+  entries the database has not yet recorded in `drizzle.__drizzle_migrations`,
+  in one transaction, and is a no-op when the database is current. This is the
+  only supported way to change a production schema. Run it as an explicit
+  release step before the new application version starts; it is not run at
+  application boot.
+- **Development only:** `pnpm --dir lib/db push` diffs the live development
+  database against `lib/db/src/schema` and then re-applies
+  `0001_invariants.sql` through `scripts/apply-invariants.mjs`. `push` refuses
+  to run in production or against any database other than the fingerprinted
+  development target. `pnpm --dir lib/db push-force` (`drizzle-kit push --force`,
+  which accepts data-loss statements without prompting) additionally requires
+  `JYRA_CONFIRM_DESTRUCTIVE_PUSH=I_ACCEPT_DATA_LOSS` so it cannot be run by
+  accident.
+- **Authoring a change:** edit `lib/db/src/schema`, run
+  `pnpm --dir lib/db generate` (offline; produces the next `NNNN_*.sql` and
+  snapshot), review the SQL, and commit both. Trigger/function changes go into
+  a new custom migration (`drizzle-kit generate --custom`) or, when they replace
+  an existing invariant, into `0001_invariants.sql` *and* a new migration so
+  already-migrated databases pick them up. `pnpm --dir lib/db test:migrations`
+  statically verifies the folder (every trigger is dropped before creation,
+  every constraint is guarded, the journal is coherent).
+
+Do not run startup-time DDL or destructive resets.
+
+## Frozen campaign immutability
+
+Once `market_readiness_campaigns.frozen_at` is set, PostgreSQL rejects INSERT,
+UPDATE and DELETE on the campaign's cohort items, reviews, adjudications,
+prediction snapshots, attempts, experiments, assignments, outcomes, rollout
+decisions and audits, and rejects DELETE of the campaign row itself. This also
+applies to cascades: deleting a project or organization that owns a frozen
+campaign fails loudly instead of silently destroying frozen evidence. The only
+bypass is `SET LOCAL jyra.allow_frozen_teardown = 'on'` inside the deleting
+transaction, reserved for deliberate teardown of test fixtures; application
+code never sets it.
 
 ## Company provenance
 

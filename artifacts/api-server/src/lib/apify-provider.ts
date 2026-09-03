@@ -365,6 +365,27 @@ function errorFromStatus(status: number, message: string): ApifyProviderError {
   return new ApifyProviderError(`APIFY_HTTP_${status}`, message, retryable);
 }
 
+/** Rejects with `onTimeout()` if `promise` has not settled within `timeoutMs`.
+ * The connectors proxy accepts no AbortSignal, so this is the only way to keep
+ * one stalled HTTP call from overrunning the configured actor timeout (and,
+ * transitively, a worker lease). The timer is cleared as soon as the promise
+ * settles; it is deliberately not unref'd, because it is the only guarantee
+ * of progress when the proxied call never answers. */
+export function withRequestDeadline<T>(
+  promise: Promise<T>,
+  timeoutMs: number,
+  onTimeout: () => Error,
+): Promise<T> {
+  if (!Number.isFinite(timeoutMs) || timeoutMs <= 0) return Promise.reject(onTimeout());
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const deadline = new Promise<never>((_, reject) => {
+    timer = setTimeout(() => reject(onTimeout()), timeoutMs);
+  });
+  return Promise.race([promise, deadline]).finally(() => {
+    if (timer !== undefined) clearTimeout(timer);
+  });
+}
+
 export function createApifyAdapter<C extends ProviderCapability>(
   options: ApifyAdapterOptions<C>,
 ): ProviderAdapter<C> {
@@ -383,13 +404,26 @@ export function createApifyAdapter<C extends ProviderCapability>(
   const requestJson = async (
     path: string,
     requestOptions: { method?: string; body?: unknown } = {},
+    remainingMs: number = timeoutMs,
   ): Promise<{ payload: unknown; headers: Headers }> => {
-    const response = await client.proxy("apify", path, {
-      method: requestOptions.method ?? "GET",
-      body: requestOptions.body,
-      headers: requestOptions.body === undefined ? undefined : { "Content-Type": "application/json" },
-    });
-    const text = await response.text();
+    // Every proxied call (and reading its body) is bounded by whatever is
+    // left of the actor timeout, so a hung connection cannot exceed it.
+    const { response, text } = await withRequestDeadline(
+      (async () => {
+        const response = await client.proxy("apify", path, {
+          method: requestOptions.method ?? "GET",
+          body: requestOptions.body,
+          headers: requestOptions.body === undefined ? undefined : { "Content-Type": "application/json" },
+        });
+        return { response, text: await response.text() };
+      })(),
+      Math.min(remainingMs, timeoutMs),
+      () => new ApifyProviderError(
+        "APIFY_TIMEOUT",
+        `Apify request ${path} exceeded the remaining ${Math.max(0, Math.min(remainingMs, timeoutMs))}ms of the ${timeoutMs}ms timeout`,
+        true,
+      ),
+    );
     let payload: unknown = null;
     if (text) {
       try {
@@ -423,6 +457,7 @@ export function createApifyAdapter<C extends ProviderCapability>(
     request: CapabilityRequest<C>,
   ): Promise<ApifyRunOutput> => {
     const startedAt = now();
+    const remaining = () => timeoutMs - (now() - startedAt);
     let attempts = 0;
     while (attempts <= maxRetries) {
       attempts += 1;
@@ -444,6 +479,7 @@ export function createApifyAdapter<C extends ProviderCapability>(
         const start = await requestJson(
           `/v2/actors/${encodeURIComponent(options.actorId)}/runs?waitForFinish=0`,
           { method: "POST", body: actorInput },
+          remaining(),
         );
         const run = (start.payload as { data?: ApifyRun }).data;
         if (!run?.id) {
@@ -456,7 +492,7 @@ export function createApifyAdapter<C extends ProviderCapability>(
 
         let latest = run;
         while (now() - startedAt < timeoutMs) {
-          const polled = await requestJson(`/v2/actor-runs/${encodeURIComponent(run.id)}`);
+          const polled = await requestJson(`/v2/actor-runs/${encodeURIComponent(run.id)}`, {}, remaining());
           latest = (polled.payload as { data?: ApifyRun }).data ?? latest;
           if (latest.status === "SUCCEEDED") {
             const datasetId = latest.defaultDatasetId;
@@ -476,6 +512,8 @@ export function createApifyAdapter<C extends ProviderCapability>(
               const pageSize = Math.min(datasetPageSize, maxDatasetItems - rows.length);
               const dataset = await requestJson(
                 `/v2/datasets/${encodeURIComponent(datasetId)}/items?format=json&clean=true&limit=${pageSize}&offset=${offset}`,
+                {},
+                remaining(),
               );
               const page = asRows(dataset.payload);
               rows.push(...page);

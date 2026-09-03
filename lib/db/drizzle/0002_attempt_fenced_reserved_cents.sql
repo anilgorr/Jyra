@@ -1,0 +1,2 @@
+ALTER TABLE "market_readiness_processing_attempts" ADD COLUMN "fenced_reserved_cents" integer DEFAULT 0 NOT NULL;--> statement-breakpoint
+ALTER TABLE "market_readiness_processing_attempts" ADD CONSTRAINT "market_readiness_attempt_fenced_nonnegative" CHECK ("market_readiness_processing_attempts"."fenced_reserved_cents" >= 0);

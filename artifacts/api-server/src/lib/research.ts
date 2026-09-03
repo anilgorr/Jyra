@@ -1058,7 +1058,7 @@ export async function executeResearchNow(input: {
     ? replay
     : null;
   if (interruptedAttempt) {
-    await db.update(researchJobsTable).set({
+    const [interruptedJob] = await db.update(researchJobsTable).set({
       status: "FAILED",
       errorCode: "INTERRUPTED_ATTEMPT",
       errorMessage: "The prior research worker stopped before recording a terminal provider response.",
@@ -1066,7 +1066,11 @@ export async function executeResearchNow(input: {
     }).where(and(
       eq(researchJobsTable.id, interruptedAttempt.job.id),
       eq(researchJobsTable.status, "RUNNING"),
-    ));
+    )).returning({ idempotencyKey: researchJobsTable.idempotencyKey });
+    // The interrupted attempt never recorded a provider request, so its budget
+    // reservation was never settled by recordResearchRequest. Release it now:
+    // the retry below reserves under its own key and must not double count.
+    if (interruptedJob) await releaseResearchReservation(interruptedJob.idempotencyKey);
   }
   const failedAttempt = replay?.job.status === "FAILED" || interruptedAttempt ? replay : null;
   if (failedAttempt) {
@@ -1177,7 +1181,18 @@ export async function executeResearchNow(input: {
       reason: `${budget.reason} Research was deferred before creating a job or calling a provider.`,
     };
   }
-
+  // From here until the provider is dispatched, every exit that does not
+  // record a provider request against `idempotencyKey` must release the
+  // reservation, otherwise it is summed by the monthly budget forever.
+  let reservationDispatched = false;
+  const releaseUndispatchedReservation = async () => {
+    if (reservationDispatched) return;
+    reservationDispatched = true;
+    await releaseResearchReservation(idempotencyKey);
+  };
+  let selectedQuestion: ResearchQuestion;
+  let job: typeof researchJobsTable.$inferSelect;
+  try {
   const matchingQuestions = input.forceRefresh || input.plannedQuestion
     ? await db.select().from(researchQuestionsTable).where(and(
         eq(researchQuestionsTable.projectId, input.projectId),
@@ -1222,15 +1237,16 @@ export async function executeResearchNow(input: {
     attemptCount: 1,
     lastAttemptAt: now,
   }).onConflictDoNothing().returning();
-  const selectedQuestion = refreshedQuestion ?? insertedQuestion ?? (await db.select().from(researchQuestionsTable)
+  const resolvedQuestion = refreshedQuestion ?? insertedQuestion ?? (await db.select().from(researchQuestionsTable)
     .where(and(
       eq(researchQuestionsTable.projectId, input.projectId),
       eq(researchQuestionsTable.companyId, row.company.id),
       eq(researchQuestionsTable.questionType, plan.questionType),
       eq(researchQuestionsTable.providerCapability, plan.providerCapability),
     )).orderBy(desc(researchQuestionsTable.createdAt)).limit(1))[0];
-  if (!selectedQuestion) throw new Error("Research question could not be created");
-  const [job] = await db.insert(researchJobsTable).values({
+  if (!resolvedQuestion) throw new Error("Research question could not be created");
+  selectedQuestion = resolvedQuestion;
+  const [insertedJob] = await db.insert(researchJobsTable).values({
     organizationId: input.organizationId,
     projectId: input.projectId,
     companyId: row.company.id,
@@ -1241,9 +1257,14 @@ export async function executeResearchNow(input: {
     estimatedCost: budget.estimatedCost,
     startedAt: now,
   }).onConflictDoNothing().returning();
-  if (!job) {
+  if (!insertedJob) {
     const [existing] = await db.select().from(researchJobsTable).where(eq(researchJobsTable.idempotencyKey, idempotencyKey)).limit(1);
     if (!existing) throw new Error("Research job could not be created");
+    // A concurrent worker owns this idempotency key. While its job is still
+    // RUNNING it will settle the shared reservation itself; once it is
+    // terminal the reservation we just (re)created has no owner and leaks.
+    if (existing.status !== "RUNNING") await releaseUndispatchedReservation();
+    else reservationDispatched = true;
     return {
       question: selectedQuestion,
       job: existing,
@@ -1255,6 +1276,15 @@ export async function executeResearchNow(input: {
       resultStatus: existing.status,
     };
   }
+  job = insertedJob;
+  } catch (error) {
+    await releaseUndispatchedReservation().catch(() => {});
+    throw error;
+  }
+  // The provider is dispatched next; recordResearchRequest settles the
+  // reservation with the ledger row for this attempt key. A failure after
+  // dispatch intentionally leaves the reservation visible (see DATABASE.md).
+  reservationDispatched = true;
   selectedQuestionForObserver = selectedQuestion;
   selectedJobIdForObserver = job.id;
 
