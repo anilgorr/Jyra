@@ -1,5 +1,14 @@
 export { isInternalAdmin } from "../src/lib/internal-admin";
 export {
+  DEFAULT_LOCAL_USER_ID,
+  LOCAL_USER_ID,
+  assertAuthModeAllowed,
+  isLocalAuthMode,
+  localUserId,
+  resolveAuthMode,
+} from "../src/lib/auth-mode";
+export { requireAuth, requireInternalAdmin, verifiedUserId } from "../src/middlewares/auth";
+export {
   allowedHostsFromEnv,
   getClerkProxyHost,
   isAllowedHost,

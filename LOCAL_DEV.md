@@ -23,11 +23,30 @@ pnpm run db:up                     # Postgres 16 on localhost:5432 (db/user/pass
 pnpm run db:migrate                # baseline schema + integrity triggers + attempt columns
 ```
 
+### Auth: local mode is the default for local dev
+
+`.env.example` ships with `JYRA_AUTH_MODE=local` and `VITE_JYRA_AUTH_MODE=local`.
+In this mode there is no sign-in and no Clerk at all: every API request runs
+as one fixed identity (`local-dev-user`, override with `JYRA_LOCAL_USER_ID`),
+the web app skips the sign-in/sign-up pages, the local developer counts as an
+internal admin (`/admin/quality` works), and the sidebar footer shows a small
+"Local auth mode" pill. The API logs a loud warning at boot.
+
+Local mode cannot reach production: the API throws at boot if
+`JYRA_AUTH_MODE=local` while `NODE_ENV=production` or `REPLIT_DEPLOYMENT=1`,
+and `vite build` refuses a production bundle with `VITE_JYRA_AUTH_MODE=local`.
+There is no override variable.
+
+To run with real accounts, set both variables to `clerk` (or delete them —
+`clerk` is the default when unset) and fill in the Clerk block. A production
+bundle from a checkout whose `.env` still says `local` needs the override on
+the command line: `VITE_JYRA_AUTH_MODE=clerk pnpm --dir artifacts/digisignal run build`.
+
 ### Keys you have to supply
 
 | Variable | Where it comes from |
 |---|---|
-| `CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY`, `VITE_CLERK_PUBLISHABLE_KEY` | Your own Clerk application: dashboard.clerk.com → API Keys. Replit's Clerk was Replit-managed and does not follow you. `pk_test_`/`sk_test_` are correct for local dev; production refuses `pk_test_`. Enable Google as a sign-in provider if you want that button back. |
+| `CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY`, `VITE_CLERK_PUBLISHABLE_KEY` | Only when `JYRA_AUTH_MODE=clerk`. Your own Clerk application: dashboard.clerk.com → API Keys. Replit's Clerk was Replit-managed and does not follow you. `pk_test_`/`sk_test_` are correct for local dev; production refuses `pk_test_`. Enable Google as a sign-in provider if you want that button back. |
 | `AI_INTEGRATIONS_OPENAI_API_KEY` | platform.openai.com. Base URL is already set to `https://api.openai.com/v1`. |
 | `TAVILY_API_KEY`, `EXA_API_KEY`, `BRIGHTDATA_API_KEY` | Optional. The provider router skips any that are blank. |
 

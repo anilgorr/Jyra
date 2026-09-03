@@ -10,6 +10,9 @@ process.env.AI_INTEGRATIONS_OPENAI_API_KEY ??= "unused";
 delete process.env.JYRA_ALLOWED_HOSTS;
 delete process.env.REPLIT_DOMAINS;
 delete process.env.REPLIT_DEV_DOMAIN;
+delete process.env.JYRA_AUTH_MODE;
+delete process.env.JYRA_LOCAL_USER_ID;
+delete process.env.JYRA_INTERNAL_ADMIN_USER_IDS;
 
 const output = "/tmp/jyra-security-guards-test.cjs";
 await build({ entryPoints: ["./scripts/security-guards-test-entry.ts"], outfile: output, bundle: true, format: "cjs", platform: "node" });
@@ -21,6 +24,72 @@ assert.equal(m.isInternalAdmin("user_c", undefined, "user_a,user_b"), false);
 assert.equal(m.isInternalAdmin("user_c", { publicMetadata: { internalAdmin: true } }, ""), true);
 assert.equal(m.isInternalAdmin("user_c", { metadata: { internalAdmin: true } }, ""), false);
 assert.equal(m.isInternalAdmin("user_c", { publicMetadata: { internalAdmin: "true" } }, ""), false);
+
+// A1 — pluggable auth mode: clerk by default, local only outside production
+assert.equal(m.resolveAuthMode({}), "clerk");
+assert.equal(m.resolveAuthMode({ JYRA_AUTH_MODE: "" }), "clerk");
+assert.equal(m.resolveAuthMode({ JYRA_AUTH_MODE: "clerk" }), "clerk");
+assert.equal(m.resolveAuthMode({ JYRA_AUTH_MODE: "local" }), "local");
+assert.equal(m.resolveAuthMode({ JYRA_AUTH_MODE: " Local " }), "local");
+assert.throws(() => m.resolveAuthMode({ JYRA_AUTH_MODE: "none" }), /not a valid auth mode/);
+assert.equal(m.assertAuthModeAllowed({}), "clerk");
+assert.equal(m.assertAuthModeAllowed({ NODE_ENV: "production" }), "clerk");
+assert.equal(m.assertAuthModeAllowed({ NODE_ENV: "development", JYRA_AUTH_MODE: "local" }), "local");
+assert.equal(m.assertAuthModeAllowed({ NODE_ENV: "test", JYRA_AUTH_MODE: "local" }), "local");
+assert.throws(() => m.assertAuthModeAllowed({ NODE_ENV: "production", JYRA_AUTH_MODE: "local" }), /JYRA_AUTH_MODE=local is forbidden in production/);
+assert.throws(() => m.assertAuthModeAllowed({ REPLIT_DEPLOYMENT: "1", JYRA_AUTH_MODE: "local" }), /forbidden in production/);
+assert.throws(() => m.assertAuthModeAllowed({ NODE_ENV: "production", REPLIT_DEPLOYMENT: "1", JYRA_AUTH_MODE: "local" }), /forbidden in production/);
+assert.equal(m.isLocalAuthMode({}), false);
+assert.equal(m.isLocalAuthMode({ JYRA_AUTH_MODE: "local" }), true);
+assert.equal(m.DEFAULT_LOCAL_USER_ID, "local-dev-user");
+assert.equal(m.LOCAL_USER_ID, "local-dev-user");
+assert.equal(m.localUserId({}), "local-dev-user");
+assert.equal(m.localUserId({ JYRA_LOCAL_USER_ID: " dev_42 " }), "dev_42");
+
+// A1 — requireAuth: local mode yields LOCAL_USER_ID; clerk mode still demands Clerk
+{
+  const fakeRes = () => {
+    const res = { locals: {}, statusCode: 200, body: undefined };
+    res.status = (code) => { res.statusCode = code; return res; };
+    res.json = (body) => { res.body = body; return res; };
+    return res;
+  };
+  const withAuthMode = (mode, fn) => {
+    const previous = process.env.JYRA_AUTH_MODE;
+    if (mode === undefined) delete process.env.JYRA_AUTH_MODE; else process.env.JYRA_AUTH_MODE = mode;
+    try { return fn(); } finally {
+      if (previous === undefined) delete process.env.JYRA_AUTH_MODE; else process.env.JYRA_AUTH_MODE = previous;
+    }
+  };
+  const bareReq = { headers: {}, method: "GET", url: "/api/organizations" };
+
+  await withAuthMode("local", async () => {
+    assert.equal(process.env.NODE_ENV, undefined, "guard tests run outside production");
+    assert.equal(m.verifiedUserId(bareReq), "local-dev-user");
+    const res = fakeRes();
+    let nextCalled = false;
+    m.requireAuth(bareReq, res, () => { nextCalled = true; });
+    assert.equal(nextCalled, true, "local mode: requireAuth passes without Clerk");
+    assert.equal(res.locals.userId, "local-dev-user");
+    assert.equal(res.statusCode, 200);
+
+    const adminRes = fakeRes();
+    let adminNext = false;
+    await m.requireInternalAdmin(bareReq, adminRes, () => { adminNext = true; });
+    assert.equal(adminNext, true, "local mode: developer is internal admin without contacting Clerk");
+    assert.equal(adminRes.locals.userId, "local-dev-user");
+  });
+
+  withAuthMode(undefined, () => {
+    // Clerk mode is unchanged: without clerkMiddleware there is no auth object and
+    // Clerk's own guard fires. The local identity is never substituted.
+    assert.throws(() => m.verifiedUserId(bareReq), /clerkMiddleware/);
+    assert.throws(() => m.requireAuth(bareReq, fakeRes(), () => {}), /clerkMiddleware/);
+  });
+  withAuthMode("clerk", () => {
+    assert.throws(() => m.verifiedUserId(bareReq), /clerkMiddleware/);
+  });
+}
 
 // M5 — host allowlist
 assert.deepEqual(m.allowedHostsFromEnv({}), []);
