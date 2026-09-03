@@ -34,8 +34,9 @@ const blindReviewHandler=routeHandler("post","/projects/:projectId/market-readin
 const adjudicationHandler=routeHandler("post","/projects/:projectId/market-readiness/campaigns/:campaignId/adjudications");
 const freezeHandler=routeHandler("post","/projects/:projectId/market-readiness/campaigns/:campaignId/freeze");
 const persistedPrediction = (overrides = {}) => ({
-  identityResolved:true,predictedRole:true,predictedWho:true,predictedBuyer:true,predictedCompetitor:false,
-  evidenceBacked:true,unsupportedFactsCount:0,unsupportedFacts:false,
+  identityResolved:true,commercialRole:"POTENTIAL_BUYER",who:"LIKELY_FIT",
+  predictedRole:true,predictedWho:true,predictedBuyer:true,predictedCompetitor:false,
+  evidenceBacked:true,unknownFieldsCount:0,unsupportedFactsCount:0,unsupportedFacts:false,
   processingSucceeded:true,terminalState:"SEMANTIC_ASSESSMENT",providerCostCents:3,semanticCostCents:2,totalCostCents:5,
   model:"gpt-5-mini",intelligenceVersion:"JYRA_INTELLIGENCE_V2",profileFingerprint:"profile",
   assessmentFingerprint:"assessment",inputFingerprint:"input",businessTwinVersion:"bt",offeringVersion:"offering",icpVersion:"icp",
@@ -492,7 +493,7 @@ try {
       values($1,$2,$3,$4,'route-review.example','MANUAL',$5)`,[routeItem,org,project,routeCampaign,randomUUID()]);
     const routeParams={projectId:project,campaignId:routeCampaign};
     const reviewBody={cohortItemId:routeItem,roleFit:true,whoFit:true,buyer:true,competitor:false,actionableEvidence:true};
-    const adjudicationBody={cohortItemId:routeItem,goldLabels:{role:true,who:true,buyer:true,competitor:false,dangerous:false,identity:true,actionableEvidence:true},rationale:"independent route test"};
+    const adjudicationBody={cohortItemId:routeItem,goldLabels:{commercialRole:"POTENTIAL_BUYER",who:"LIKELY_FIT",identityResolved:true,actionableEvidence:true,dangerous:false},rationale:"independent route test"};
     let routeResponse=await invokeRoute(adjudicationHandler,{params:routeParams,body:adjudicationBody,userId});
     assert.equal(routeResponse.status,400);
     assert.match(routeResponse.body.error,/EXACTLY_TWO_DISTINCT/);
@@ -565,14 +566,16 @@ try {
     for(let i=0;i<200;i++){
       const gateItem=randomUUID(),competitor=i<20,buyer=i>=21;
       const gateAttempt=randomUUID();
+      const classes={commercialRole:competitor?"SELLER_COMPETITOR":buyer?"POTENTIAL_BUYER":"ADJACENT_VENDOR",who:buyer?"LIKELY_FIT":"LIKELY_NOT_FIT"};
       const evaluation=persistedPrediction({
-        predictedRole:buyer,predictedWho:buyer,predictedBuyer:buyer,predictedCompetitor:competitor,
+        ...classes,predictedRole:buyer,predictedWho:buyer,predictedBuyer:buyer,predictedCompetitor:competitor,
         profileFingerprint:`profile-${i}`,assessmentFingerprint:`assessment-${i}`,inputFingerprint:`input-${i}`,
       });
+      const gold={...classes,identityResolved:true,actionableEvidence:true,dangerous:false};
       await admin.query(`insert into market_readiness_cohort_items(id,organization_id,project_id,campaign_id,normalized_domain,source,opaque_review_key)
         values($1,$2,$3,$4,$5,'MANUAL',$6)`,[gateItem,org,project,gateCampaign,`gate-${i}.example`,randomUUID()]);
       await admin.query(`insert into market_readiness_adjudications(organization_id,project_id,campaign_id,cohort_item_id,adjudicator_id,gold_labels,rationale)
-        values($1,$2,$3,$4,$5,$6,'integration')`,[org,project,gateCampaign,gateItem,userId,{role:buyer,who:buyer,buyer,competitor,dangerous:false,identity:true,actionableEvidence:true}]);
+        values($1,$2,$3,$4,$5,$6,'integration')`,[org,project,gateCampaign,gateItem,userId,gold]);
       if(i===199){
         finalGateItem=gateItem;finalGateAttempt=gateAttempt;finalGateEvaluation=evaluation;
         await admin.query(`insert into market_readiness_processing_attempts(id,organization_id,project_id,campaign_id,cohort_item_id,kind,idempotency_key,state,reserved_cents)
@@ -583,7 +586,7 @@ try {
         await admin.query(`insert into market_readiness_prediction_snapshots(organization_id,project_id,campaign_id,cohort_item_id,processing_attempt_id,version,predictions)
           values($1,$2,$3,$4,$5,'JYRA_INTELLIGENCE_V2',$6)`,[org,project,gateCampaign,gateItem,gateAttempt,evaluation]);
       }
-      gateRows.push({gold:{role:buyer,who:buyer,buyer,competitor,dangerous:false,identity:true,actionableEvidence:true},evaluation});
+      gateRows.push({gold,evaluation});
     }
     await helpers.advanceMarketReadinessWorker({
       organizationId:org,projectId:project,campaignId:gateCampaign,workerId:"final-processing-transition",
@@ -621,25 +624,37 @@ try {
     freezeResponse=await invokeRoute(freezeHandler,{params:{projectId:project,campaignId:gateCampaign},body:{},userId});
     assert.equal(freezeResponse.status,200);
     assert.equal(freezeResponse.body.state,"FROZEN");
-    const reportFor=(rows)=>helpers.calculateMarketReadinessMetrics(rows.map(({gold,evaluation})=>({gold,prediction:{
-      role:evaluation.predictedRole,who:evaluation.predictedWho,buyer:evaluation.predictedBuyer,
-      competitor:evaluation.predictedCompetitor,
-      identity:evaluation.identityResolved,supported:evaluation.evidenceBacked&&!evaluation.unsupportedFacts,
-      costCents:evaluation.totalCostCents,succeeded:evaluation.processingSucceeded,
-    }})));
-    assert.equal(reportFor(gateRows).pass,true);
+    // Rows go through the same persisted-prediction parse and row builder the rollout route uses.
+    const reportFor=(rows)=>helpers.calculateMarketReadinessMetrics(rows.map(({gold,evaluation})=>helpers.marketReadinessMetricRow({goldLabels:gold,evaluation:helpers.parseMarketReadinessPersistedPrediction(evaluation)})));
+    const exactReport=reportFor(gateRows);
+    assert.equal(exactReport.pass,true);
+    assert.equal(exactReport.role,100);assert.equal(exactReport.who,100);assert.equal(exactReport.roleCoverage,100);
+    const asBuyer={commercialRole:"POTENTIAL_BUYER",who:"LIKELY_FIT",predictedRole:true,predictedWho:true,predictedBuyer:true,predictedCompetitor:false};
+    const asNotFit={who:"LIKELY_NOT_FIT",predictedWho:false,predictedBuyer:false};
+    const asCompetitor={commercialRole:"SELLER_COMPETITOR",predictedRole:false,predictedBuyer:false,predictedCompetitor:true};
     const variant=(change)=>gateRows.map((row,i)=>({gold:{...row.gold},evaluation:{...row.evaluation,...change(row,i)}}));
     assert.equal(reportFor(variant((_r,i)=>i===0?{providerCostCents:1198,totalCostCents:1200}:{})).pass,false,"high cost");
     assert.equal(reportFor(variant((_r,i)=>i<11?{processingSucceeded:false}:{})).pass,false,"processing failures");
     assert.equal(reportFor(variant((_r,i)=>i===0?{evidenceBacked:false,unsupportedFactsCount:1,unsupportedFacts:true}:{})).pass,false,"unsupported evidence");
-    assert.equal(reportFor(variant((_r,i)=>i<21?{predictedBuyer:true,predictedCompetitor:false}:{})).pass,false,"buyer false positives");
-    assert.equal(reportFor(variant((_r,i)=>i>=21&&i<57?{predictedBuyer:false}:{})).pass,false,"buyer false negatives");
-    assert.equal(reportFor(variant((_r,i)=>i<3?{predictedCompetitor:false}:{})).pass,false,"competitor misses");
-    assert.equal(reportFor(variant((_r,i)=>i===21?{predictedCompetitor:true}:{})).pass,false,"positive competitor shortlist");
-    const dangerous=reportFor(variant((_r,i)=>i===0?{predictedRole:true,predictedWho:true,predictedBuyer:true,predictedCompetitor:false}:{}));
+    assert.equal(reportFor(variant((_r,i)=>i<21?asBuyer:{})).pass,false,"buyer false positives");
+    assert.equal(reportFor(variant((_r,i)=>i>=21&&i<57?asNotFit:{})).pass,false,"buyer false negatives");
+    assert.equal(reportFor(variant((_r,i)=>i<3?{commercialRole:"ADJACENT_VENDOR",predictedCompetitor:false}:{})).pass,false,"competitor misses");
+    assert.equal(reportFor(variant((_r,i)=>i===0?{who:"POSSIBLE_FIT",predictedWho:true}:{})).competitorInShortlist,1,"positive competitor shortlist");
+    assert.equal(reportFor(variant((_r,i)=>i===0?{who:"POSSIBLE_FIT",predictedWho:true}:{})).pass,false,"positive competitor shortlist");
+    assert.equal(reportFor(variant((_r,i)=>i===21?asCompetitor:{})).competitorFalsePositives,1);
+    assert.equal(reportFor(variant((_r,i)=>i>=21&&i<30?{commercialRole:"UNKNOWN",predictedRole:false,predictedBuyer:false}:{})).pass,false,"role coverage below 95");
+    const dangerous=reportFor(variant((_r,i)=>i===0?asBuyer:{}));
     assert.equal(dangerous.competitorRecall,95);
     assert.equal(dangerous.dangerous,1);
     assert.equal(dangerous.pass,false,"dangerous competitor as buyer");
+    // Legacy boolean gold labels are reported but never scored at enum level.
+    const legacy=reportFor(gateRows.map((row,i)=>i===0?{...row,gold:{role:false,who:false,buyer:false,competitor:true,dangerous:false,identity:true,actionableEvidence:true}}:row));
+    assert.equal(legacy.eligible,false);
+    assert.match(legacy.reasons.join(","),/LEGACY_GOLD_LABELS/);
+    // The route refuses boolean-era gold labels outright.
+    const legacyAdjudication=await invokeRoute(adjudicationHandler,{params:{projectId:project,campaignId:gateCampaign},body:{cohortItemId:gateItems[0],goldLabels:{buyer:true,competitor:false,bad_fit:false},rationale:"legacy"},userId:"gate-adjudicator"});
+    assert.equal(legacyAdjudication.status,400);
+    assert.match(legacyAdjudication.body.error,/commercialRole/,"rejected on gold-label shape, not campaign state");
   } finally {
     await Promise.all([c1.end(), c2.end()]);
   }

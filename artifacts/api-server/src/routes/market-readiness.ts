@@ -139,8 +139,8 @@ router.post("/projects/:projectId/market-readiness/campaigns/:campaignId/blind-r
 }catch(e){fail(res,e);}}));
 router.post("/projects/:projectId/market-readiness/campaigns/:campaignId/adjudications",requireAuth,asyncRoute(async(req,res)=>{try{
   const p=api.CreateMarketReadinessAdjudicationParams.parse(req.params),b=api.CreateMarketReadinessAdjudicationBody.parse(req.body),u=getAuthenticatedUserId(res),a=await campaignAccess(p.projectId,p.campaignId,u);
-  // The generated body schema is not strict; the scorer's own schema is the runtime authority for gold labels.
-  const goldLabels=marketReadinessGoldLabelsSchema.parse(b.goldLabels);
+  // The generated body schema strips unknown keys; the scorer's strict schema is the runtime authority for gold labels.
+  const goldLabels=marketReadinessGoldLabelsSchema.parse((req.body as {goldLabels?:unknown})?.goldLabels);
   const r=await db.transaction(async tx=>{
     await tx.execute(sql`select id from market_readiness_campaigns where id=${p.campaignId} and organization_id=${a.project.organizationId} and project_id=${p.projectId} for update`);
     const[campaign]=await tx.select().from(marketReadinessCampaignsTable).where(and(eq(marketReadinessCampaignsTable.id,p.campaignId),eq(marketReadinessCampaignsTable.organizationId,a.project.organizationId),eq(marketReadinessCampaignsTable.projectId,p.projectId))).limit(1);
