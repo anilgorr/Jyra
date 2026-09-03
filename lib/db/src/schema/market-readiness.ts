@@ -135,6 +135,7 @@ export const marketReadinessProcessingAttemptsTable = pgTable("market_readiness_
 }, (table) => [
   uniqueIndex("market_readiness_attempt_idempotency_unique").on(table.campaignId, table.idempotencyKey),
   index("market_readiness_attempt_lease_idx").on(table.campaignId, table.state, table.leaseExpiresAt),
+  index("market_readiness_attempt_cohort_item_idx").on(table.cohortItemId),
   check("market_readiness_attempt_money_nonnegative", sql`${table.reservedCents} >= 0 and ${table.spentCents} >= 0`),
 ]);
 
