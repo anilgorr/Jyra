@@ -6,9 +6,7 @@ import {
   Building2, 
   Workflow, 
   Crosshair, 
-  BookOpen, 
-  TrendingUp, 
-  BrainCircuit,
+  BookOpen,
   Settings,
   Wrench,
   RadioTower,
@@ -28,15 +26,12 @@ import { useAdminAccess } from "@/hooks/use-admin-access";
 
 export const navItems = [
   { href: "/today", label: "Today", icon: LayoutDashboard },
-  { href: "/opportunities", label: "Opportunities", icon: Target },
   { href: "/companies", label: "Companies", icon: Building2 },
-  { href: "/business-twin", label: "Business Twin", icon: Workflow },
-  { href: "/icp", label: "Dynamic ICP", icon: Crosshair },
+  { href: "/opportunities", label: "Opportunities", icon: Target },
   { href: "/research", label: "Research", icon: BookOpen },
   { href: "/signals", label: "Signals", icon: RadioTower },
-  { href: "/market-readiness", label: "Market Readiness", icon: ShieldCheck },
-  { href: "/outcomes", label: "Outcomes", icon: TrendingUp },
-  { href: "/learning", label: "Learning", icon: BrainCircuit },
+  { href: "/business-twin", label: "Business Twin", icon: Workflow },
+  { href: "/icp", label: "Dynamic ICP", icon: Crosshair },
 ];
 
 export function Sidebar() {
