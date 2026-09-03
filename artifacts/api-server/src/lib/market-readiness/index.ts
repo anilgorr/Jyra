@@ -10,6 +10,7 @@ import { ProviderRouter } from "../provider-router";
 import { resolveProjectSellerContext } from "../seller-context";
 import { InMemoryIntelligenceV2Repository, orchestrateIntelligenceV2, type IntelligenceV2Repository } from "../intelligence-v2/orchestrator";
 import { createProviderRouterResearchInvokerV2, V2_RESEARCH_PROVIDER_CALL_GRAPH } from "../intelligence-v2/research-company";
+import { icpCriteriaToRequirementsV2 } from "../intelligence-v2/icp-requirements";
 import { ASSESSMENT_MODEL, INTELLIGENCE_CORE_VERSION } from "../intelligence-v2/schemas";
 import { z } from "zod/v4";
 
@@ -642,11 +643,6 @@ const cents = (value: number | null | undefined) => {
   if (!Number.isFinite(value ?? 0) || (value ?? 0) < 0) throw new Error("INVALID_PROVIDER_COST");
   return Math.ceil((value ?? 0) * 100);
 };
-const criterionClaimType = (dimension: string) => dimension.toUpperCase().includes("GEOGRAPH") ? "GEOGRAPHY" as const
-  : dimension.toUpperCase().includes("EMPLOYEE") || dimension.toUpperCase().includes("SIZE") ? "EMPLOYEE_SIZE" as const
-  : dimension.toUpperCase().includes("TECH") ? "TECHNOLOGY" as const
-  : dimension.toUpperCase().includes("INDUSTR") ? "INDUSTRY" as const
-  : dimension.toUpperCase().includes("BUSINESS_MODEL") ? "BUSINESS_MODEL" as const : "ICP_CRITERION" as const;
 
 /** Explicit-only development adapter. It never starts itself and has no V1
  * fallback: V2 must be selected before a company can be processed. */
@@ -705,7 +701,7 @@ export function createMarketReadinessWorkerAdapter(deps: {
       try {
         const result = await orchestrateIntelligenceV2({
         request: { organizationId: input.organizationId, projectId: input.projectId, companyId: row.company.id, companyName: row.company.canonicalName, domain: row.company.domain, source: "MARKET_READINESS_CAMPAIGN", firstPartyEvidence: [] },
-        context: { organizationId: input.organizationId, projectId: input.projectId, businessTwinVersion: seller.businessTwinVersionId!, offeringVersion: seller.opportunityPackVersionId ?? seller.context.fingerprint, icpVersion: seller.icpVersionId!, sellerBusinessTwin: { rawAnswers: seller.businessTwinRawAnswers, interpretation: seller.businessTwinAiInterpretation }, offering: { name: seller.context.offeringName, description: seller.context.offeringDescription, materialCapabilities: seller.context.offeringCapabilities, exclusions: seller.context.offeringExclusions }, icp: { requirements: criteria.map((c) => ({ criterionId: c.id, type: criterionClaimType(c.dimension), operator: c.operator === "EQUALS" || c.operator === "CONTAINS" || c.operator === "EXISTS" ? c.operator : "CONTAINS" as const, value: typeof c.value === "string" ? c.value : JSON.stringify(c.value), mandatory: c.criterionType === "MUST_HAVE", exclusion: c.criterionType === "DISQUALIFIER", preferred: c.criterionType === "PREFERRED" })), assumptions: seller.icpAssumptions } },
+        context: { organizationId: input.organizationId, projectId: input.projectId, businessTwinVersion: seller.businessTwinVersionId!, offeringVersion: seller.opportunityPackVersionId ?? seller.context.fingerprint, icpVersion: seller.icpVersionId!, sellerBusinessTwin: { rawAnswers: seller.businessTwinRawAnswers, interpretation: seller.businessTwinAiInterpretation }, offering: { name: seller.context.offeringName, description: seller.context.offeringDescription, materialCapabilities: seller.context.offeringCapabilities, exclusions: seller.context.offeringExclusions }, icp: { requirements: icpCriteriaToRequirementsV2(criteria), assumptions: seller.icpAssumptions } },
         repository,
         maxExternalResearchCalls: MARKET_READINESS_V2_MAX_EXTERNAL_CALLS,
           assessmentTimeoutMs: 90_000,

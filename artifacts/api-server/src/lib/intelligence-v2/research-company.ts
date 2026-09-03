@@ -1,5 +1,6 @@
 import { fingerprintV2 } from "./fingerprint";
 import { MAX_EXTERNAL_RESEARCH_CALLS, evidenceItemSchema, type EvidenceItemV2, type ResearchActionV2, type ResearchPackageV2, type ResearchRequirementV2 } from "./schemas";
+import { claimEligibleForRequirementV2, criterionSatisfiedBy, evaluateRequirementAgainstClaimsV2, isNegativeRequirementOperatorV2, prohibitedRequirementValuesV2 } from "./icp-requirements";
 import type { ProviderOperations, ProviderResponse } from "../provider-contract";
 import { MAX_PROFILE_RESOLUTION_SEARCHES_PER_COMPANY } from "../company-profile-resolution";
 
@@ -44,22 +45,18 @@ export function researchRequirementStatusV2(
   evidence: EvidenceItemV2[], requirement: ResearchRequirementV2,
   assertions: InternalCompletenessAttestationV2[] = [], actions: ResearchActionV2[] = [],
 ): "PASS" | "FAIL" | "UNKNOWN" {
-  const candidates = evidence.flatMap((item) => item.atomicClaims).filter((claim) => claim.type === requirement.type);
-  if (requirement.operator === "NOT_CONTAINS") {
-    if (requirement.value && candidates.some((claim) => claim.value.toLowerCase().includes(requirement.value!.toLowerCase()))) return "FAIL";
+  const candidates = evidence.flatMap((item) => item.atomicClaims).filter((claim) => claimEligibleForRequirementV2(requirement, claim));
+  if (isNegativeRequirementOperatorV2(requirement.operator)) {
+    if (candidates.some((claim) => criterionSatisfiedBy(requirement, claim.value) === false)) return "FAIL";
     const evidenceIds = new Set(evidence.map((item) => item.evidenceId));
-    const proof = assertions.some((assertion) => internallyMintedAttestations.has(assertion) && assertion.exhaustive &&
-      assertion.requirementId === requirement.criterionId && assertion.absentValue.toLowerCase() === requirement.value?.toLowerCase() &&
+    const prohibited = prohibitedRequirementValuesV2(requirement);
+    const proof = prohibited.length > 0 && prohibited.every((value) => assertions.some((assertion) => internallyMintedAttestations.has(assertion) && assertion.exhaustive &&
+      assertion.requirementId === requirement.criterionId && assertion.absentValue.toLowerCase() === value.toLowerCase() &&
       assertion.sourceEvidenceIds.length > 0 && assertion.sourceEvidenceIds.every((id) => evidenceIds.has(id)) &&
-      actions.some((action) => action.provider === assertion.providerId && action.capability === assertion.capability && action.status === "USED"));
+      actions.some((action) => action.provider === assertion.providerId && action.capability === assertion.capability && action.status === "USED")));
     return proof ? "PASS" : "UNKNOWN";
   }
-  if (!candidates.length) return "UNKNOWN";
-  const matches = candidates.some((claim) => requirement.operator === "EXISTS" || !requirement.value ||
-    requirement.operator === "EQUALS" && claim.value.toLowerCase() === requirement.value.toLowerCase() ||
-    requirement.operator === "CONTAINS" && claim.value.toLowerCase().includes(requirement.value.toLowerCase()) ||
-    requirement.operator === "RANGE" && (() => { const [min, max] = requirement.value.split("-").map(Number); const value = Number(claim.value); return Number.isFinite(value) && value >= min && value <= max; })());
-  return matches ? "PASS" : "FAIL";
+  return evaluateRequirementAgainstClaimsV2(requirement, candidates);
 }
 function sufficient(evidence: EvidenceItemV2[], required: ResearchRequirementV2[] = [], assertions: InternalCompletenessAttestationV2[] = [], actions: ResearchActionV2[] = []): boolean {
   const claims = evidence.flatMap((item) => item.claims ? [item.claims] : []);

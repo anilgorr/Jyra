@@ -15,9 +15,22 @@ export const commercialRoles = ["POTENTIAL_BUYER", "SELLER_COMPETITOR", "ADJACEN
 export const whoValues = ["LIKELY_FIT", "POSSIBLE_FIT", "LIKELY_NOT_FIT", "INSUFFICIENT_DATA"] as const;
 export const geographySemantics = ["HEADQUARTERS", "PRIMARY_OPERATING_GEOGRAPHY", "OFFICE_PRESENCE", "CUSTOMER_MARKET", "TALENT_MARKET", "REGISTERED_ADDRESS", "GLOBAL_AVAILABILITY"] as const;
 export const claimTypes = ["BRAND_MATCH", "PRIMARY_BUSINESS", "PRODUCT_SERVICE", "BUSINESS_MODEL", "INDUSTRY", "GEOGRAPHY", "EMPLOYEE_SIZE", "TECHNOLOGY", "OFFERING_OVERLAP", "ICP_CRITERION"] as const;
+export const requirementOperators = ["EQUALS", "NOT_EQUALS", "CONTAINS", "NOT_CONTAINS", "EXISTS", "IN", "NOT_IN", "BETWEEN", "GT", "GTE", "LT", "LTE"] as const;
+export const requirementRangeSchema = z.object({ min: z.number().finite().optional(), max: z.number().finite().optional() }).strict()
+  .refine((range) => range.min !== undefined || range.max !== undefined, "range needs min or max")
+  .refine((range) => range.min === undefined || range.max === undefined || range.min <= range.max, "range min exceeds max");
+export const requirementValueSchema = z.union([z.string().min(1), z.array(z.string().min(1)).min(1).max(50), requirementRangeSchema]);
+export type RequirementValueV2 = z.infer<typeof requirementValueSchema>;
+/**
+ * `type` is the atomic claim type a criterion binds to. `ICP_CRITERION` is a
+ * wildcard for ICP dimensions without a dedicated claim type (negative
+ * indicators, compliance, revenue, buyer maturity...): such criteria may bind
+ * any descriptive claim whose value decides them.
+ */
 export const researchRequirementSchema = z.object({
-  criterionId: z.string().min(1), type: z.enum(claimTypes), operator: z.enum(["EQUALS", "CONTAINS", "RANGE", "EXISTS", "NOT_CONTAINS"]),
-  value: z.string().min(1).optional(), mandatory: z.boolean(), exclusion: z.boolean(), preferred: z.boolean(),
+  criterionId: z.string().min(1), type: z.enum(claimTypes), operator: z.enum(requirementOperators),
+  value: requirementValueSchema.optional(), mandatory: z.boolean(), exclusion: z.boolean(), preferred: z.boolean(),
+  dimension: z.string().min(1).optional(), description: z.string().min(1).max(1000).optional(),
 }).strict();
 export type ResearchRequirementV2 = z.infer<typeof researchRequirementSchema>;
 
@@ -115,7 +128,7 @@ export const assessmentSchema = z.object({
     value: z.enum(whoValues), confidence, reason: z.string().min(1).max(1200), evidenceIds, claimIds: z.array(z.string().min(1)).max(40),
     claimBindings: z.array(z.object({ claimId: z.string().min(1), claimedValue: z.string().min(1), purpose: z.string().min(1), relation: z.enum(["SUPPORTS_WHO", "SATISFIES_CRITERION", "FAILS_CRITERION"]) }).strict()).max(40),
     criteria: z.array(z.object({
-      criterionId: z.string().min(1), description: z.string().min(1), mandatory: z.boolean(),
+      criterionId: z.string().min(1), description: z.string().min(1), mandatory: z.boolean(), exclusion: z.boolean().optional(),
       result: z.enum(["PASS", "FAIL", "UNKNOWN"]), confidence: confidence.optional(), reason: z.string().min(1).max(800), evidenceIds, claimIds: z.array(z.string().min(1)).max(40),
       claimBindings: z.array(z.object({ claimId: z.string().min(1), claimedValue: z.string().min(1), purpose: z.string().min(1), relation: z.enum(["SATISFIES_CRITERION", "FAILS_CRITERION"]) }).strict()).max(40),
     }).strict()).max(40),
@@ -169,6 +182,7 @@ export type ResearchPackageV2 = {
 export type SafetyOverrideV2 =
   | "COMMERCIAL_ROLE_EXCLUSION"
   | "MANDATORY_CRITERION_FAILURE"
+  | "EXCLUSION_MATCH"
   | "IDENTITY_UNCERTAIN"
   | "EVIDENCELESS_POSITIVE_BLOCKED";
 

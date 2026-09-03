@@ -23,6 +23,7 @@ import {
   type IntelligenceV2Result,
 } from "../lib/intelligence-v2/orchestrator";
 import { createProviderRouterResearchInvokerV2 } from "../lib/intelligence-v2/research-company";
+import { icpCriteriaToRequirementsV2 } from "../lib/intelligence-v2/icp-requirements";
 import {
   ASSESSMENT_POLICY_VERSION,
   ASSESSMENT_PROMPT_VERSION,
@@ -69,16 +70,6 @@ async function resolveOwnedCompany(userId: string, projectId: string, projectCom
       eq(projectCompaniesTable.projectId, projectId),
     )).limit(1);
   return row ?? null;
-}
-
-function criterionClaimType(dimension: string) {
-  const value = dimension.toUpperCase();
-  if (value.includes("GEOGRAPH")) return "GEOGRAPHY" as const;
-  if (value.includes("EMPLOYEE") || value.includes("SIZE")) return "EMPLOYEE_SIZE" as const;
-  if (value.includes("TECH")) return "TECHNOLOGY" as const;
-  if (value.includes("INDUSTR")) return "INDUSTRY" as const;
-  if (value.includes("BUSINESS_MODEL")) return "BUSINESS_MODEL" as const;
-  return "ICP_CRITERION" as const;
 }
 
 function compactRun(
@@ -180,16 +171,7 @@ router.post("/projects/:projectId/companies/:projectCompanyId/intelligence-v2", 
       eq(icpCriteriaTable.icpVersionId, seller.icpVersionId),
       eq(icpCriteriaTable.accepted, true),
     ));
-  const requirements = criteria.map((criterion) => ({
-    criterionId: criterion.id,
-    type: criterionClaimType(criterion.dimension),
-    operator: criterion.operator === "EQUALS" || criterion.operator === "CONTAINS" || criterion.operator === "EXISTS"
-      ? criterion.operator : "CONTAINS" as const,
-    value: typeof criterion.value === "string" ? criterion.value : JSON.stringify(criterion.value),
-    mandatory: criterion.criterionType === "MUST_HAVE",
-    exclusion: criterion.criterionType === "DISQUALIFIER",
-    preferred: criterion.criterionType === "PREFERRED",
-  }));
+  const requirements = icpCriteriaToRequirementsV2(criteria);
   const result = await orchestrateIntelligenceV2({
     request: {
       organizationId: owned.project.organizationId,
