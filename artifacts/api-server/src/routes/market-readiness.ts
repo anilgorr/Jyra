@@ -11,6 +11,7 @@ import {
   marketReadinessProcessingAttemptsTable, marketReadinessPredictionSnapshotsTable,
 } from "@workspace/db";
 import { getAuthenticatedUserId, requireAuth } from "../middlewares/auth";
+import { hasOrgRole } from "../lib/authz";
 import { advanceMarketReadinessWorker, assertMarketReadinessIndependentReviewCoverage, assertMarketReadinessProcessingConfig, calculateMarketReadinessMetrics, commercialGate, createMarketReadinessWorkerAdapter, MAX_DISCOVERY_PAGE_SIZE, freezePayloadHash, normalizeMarketDomain, parseMarketReadinessPersistedPrediction, parseOutcomesCsv, resumeMarketReadinessCampaign, rolloutGate, scheduleMarketReadinessWork, seededAssignments, validateMarketReadinessSnapshotInvariant, validateOutcomeOccurredAt } from "../lib/market-readiness";
 import { INTELLIGENCE_CORE_VERSION } from "../lib/intelligence-v2/schemas";
 
@@ -79,6 +80,7 @@ router.post("/projects/:projectId/market-readiness/campaigns/:campaignId/resume"
 }catch(e){fail(res,e);}}));
 router.post("/projects/:projectId/market-readiness/campaigns/:campaignId/freeze",requireAuth,asyncRoute(async(req,res)=>{try{
   const p=api.FreezeMarketReadinessCampaignParams.parse(req.params),u=getAuthenticatedUserId(res),a=await campaignAccess(p.projectId,p.campaignId,u);
+  if(!hasOrgRole(a.member.role))throw new Error("FREEZE_ACCESS_DENIED_OWNER_OR_ADMIN_REQUIRED");
   const r=await db.transaction(async tx=>{
     // FOR UPDATE conflicts with the FOR KEY SHARE lock acquired by every
     // canonical child writer. No child can pass its frozen check concurrently.

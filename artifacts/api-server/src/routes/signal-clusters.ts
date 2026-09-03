@@ -12,6 +12,7 @@ import {
 } from "@workspace/db";
 import { evaluateClustersForCompany, listProjectClusters } from "../lib/signal-clusters";
 import { getAuthenticatedUserId, requireAuth } from "../middlewares/auth";
+import { requireOrgRole } from "../lib/authz";
 
 const router: IRouter = Router();
 type AsyncHandler = (...args: Parameters<RequestHandler>) => Promise<void>;
@@ -56,6 +57,7 @@ router.post("/projects/:projectId/signal-clusters/definitions", requireAuth, asy
   if (!params.success || !body.success) return void res.status(400).json({ error: "Enter a valid cluster definition" });
   const project = await authorize(getAuthenticatedUserId(res), params.data.projectId);
   if (!project) return void res.status(404).json({ error: "Project not found" });
+  if (!(await requireOrgRole(res, getAuthenticatedUserId(res), project.organizationId))) return;
   if (body.data.minimumIndependentSignals > body.data.requiredSignalCodes.length + body.data.optionalSignalCodes.length) {
     return void res.status(400).json({ error: "The independence threshold exceeds configured positive signals" });
   }
@@ -81,6 +83,7 @@ router.patch("/projects/:projectId/signal-clusters/definitions/:definitionId", r
   if (!params.success || !body.success) return void res.status(400).json({ error: "Enter a valid cluster status" });
   const project = await authorize(getAuthenticatedUserId(res), params.data.projectId);
   if (!project) return void res.status(404).json({ error: "Project not found" });
+  if (!(await requireOrgRole(res, getAuthenticatedUserId(res), project.organizationId))) return;
   const [definition] = await db.update(signalClusterDefinitionsTable).set({ active: body.data.active, updatedAt: new Date() }).where(and(
     eq(signalClusterDefinitionsTable.id, params.data.definitionId),
     eq(signalClusterDefinitionsTable.organizationId, project.organizationId),

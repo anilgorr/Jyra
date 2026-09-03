@@ -34,6 +34,7 @@ import {
   type Project,
 } from "@workspace/db";
 import { getAuthenticatedUserId, requireAuth } from "../middlewares/auth";
+import { requireOrgRole } from "../lib/authz";
 import {
   deriveIcpGenerationContext,
   generateIcpCriteria,
@@ -340,6 +341,7 @@ router.delete("/projects/:projectId/icp/versions/:versionId/criteria/:criterionI
   if (!params.success) { res.status(404).json({ error: "ICP criterion not found" }); return; }
   const selected = await authorizedVersion(req, res, params.data.projectId, params.data.versionId);
   if (!selected) return;
+  if (!(await requireOrgRole(res, getAuthenticatedUserId(res), selected.project.organizationId))) return;
   if (!selected.selected.criteria.some((criterion) => criterion.id === params.data.criterionId)) { res.status(404).json({ error: "ICP criterion not found" }); return; }
   const result = await mutateCriteria(selected.project, getAuthenticatedUserId(res), selected.selected,
     selected.selected.criteria.filter((item) => item.id !== params.data.criterionId).map(cloneCriterion));
