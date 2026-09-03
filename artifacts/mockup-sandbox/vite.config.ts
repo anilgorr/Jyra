@@ -1,4 +1,4 @@
-import { defineConfig } from "vite";
+import { defineConfig, type UserConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import path from "path";
@@ -34,7 +34,7 @@ function resolveBasePath(): string {
   return process.env.BASE_PATH || DEFAULT_BASE_PATH;
 }
 
-export default defineConfig(async ({ command }) => {
+export default defineConfig(async ({ command }): Promise<UserConfig> => {
   const port = resolvePort(command);
   const basePath = resolveBasePath();
 
