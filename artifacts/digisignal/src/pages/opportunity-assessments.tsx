@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
-import { Activity, ChevronRight, ExternalLink, History, Loader2, RefreshCw, ShieldQuestion, Sparkles } from "lucide-react";
+import { Activity, ChevronRight, History, Loader2, RefreshCw, ShieldQuestion, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { WhyClaimTraceList } from "@/components/evidence/WhyClaimTrace";
 
 type Company = { id: string; company: { canonicalName: string }; opportunityAssessmentState: string | null; opportunityScore: number | null; confidenceScore: number | null };
 type Assessment = {
@@ -179,19 +180,10 @@ export function OpportunityAssessments({ projectId, initialCompanyId, focusWhy =
             {why && why.claims.length > 0 && (
               <div className="mt-5 space-y-2">
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Inspect traceability</p>
-                {why.claims.map((claim) => (
-                  <details className="group rounded-lg border bg-background/80 p-3" key={claim.ordinal}>
-                    <summary className="flex cursor-pointer list-none items-center gap-3 text-sm font-medium">
-                      <Badge variant="secondary">{claim.ordinal}</Badge><span className="flex-1">{claim.claimText}</span><ChevronRight className="h-4 w-4 transition-transform group-open:rotate-90" />
-                    </summary>
-                    <div className="mt-4 grid gap-3 border-t pt-4 text-xs md:grid-cols-4">
-                      <div><p className="font-semibold">Signals</p>{claim.signals.length ? claim.signals.map((item) => <p className="mt-2 text-muted-foreground" key={item.id}>{item.name} · {item.status}</p>) : <p className="mt-2 text-muted-foreground">None</p>}</div>
-                      <div><p className="font-semibold">Clusters</p>{claim.clusters.length ? claim.clusters.map((item) => <p className="mt-2 text-muted-foreground" key={item.id}>{item.explanation}</p>) : <p className="mt-2 text-muted-foreground">None</p>}</div>
-                      <div><p className="font-semibold">Validated facts</p>{claim.facts.length ? claim.facts.map((item) => <p className="mt-2 text-muted-foreground" key={item.id}>{item.factType.replaceAll("_", " ")} · {Math.round(item.confidence)} confidence<br />“{item.supportingExcerpt}”</p>) : <p className="mt-2 text-muted-foreground">None</p>}</div>
-                      <div><p className="font-semibold">Evidence and source</p>{claim.evidence.length ? claim.evidence.map((item) => <div className="mt-2 text-muted-foreground" key={item.id}><p>{item.extractedClaim}</p><a className="mt-1 inline-flex items-center gap-1 text-accent underline-offset-2 hover:underline" href={item.sourceUrl} target="_blank" rel="noreferrer">{item.sourceDomain}<ExternalLink className="h-3 w-3" /></a></div>) : <p className="mt-2 text-muted-foreground">No source required for this system status.</p>}</div>
-                    </div>
-                  </details>
-                ))}
+                <WhyClaimTraceList
+                  decision={{ label: detail.opportunity.state, detail: `Opportunity score ${scoreText(detail.opportunity.score)}` }}
+                  claims={why.claims}
+                />
               </div>
             )}
           </div>

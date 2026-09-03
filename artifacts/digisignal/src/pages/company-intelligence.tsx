@@ -1,4 +1,4 @@
-import { useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { Link, useLocation, useParams } from "wouter";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
@@ -62,6 +62,7 @@ import { queryClient } from "@/lib/queryClient";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { SourceLink, WhyClaimTraceList } from "@/components/evidence/WhyClaimTrace";
 import { cn } from "@/lib/utils";
 
 function label(value: string | null | undefined) {
@@ -392,6 +393,49 @@ function ResearchPanel({
   );
 }
 
+function V2Reason({
+  title,
+  reason,
+  evidenceIds,
+  evidenceIndex,
+  testId,
+}: {
+  title: string;
+  reason: string;
+  evidenceIds: string[];
+  evidenceIndex: Map<string, number>;
+  testId: string;
+}) {
+  const linked = evidenceIds.filter((id) => evidenceIndex.has(id));
+  return (
+    <div>
+      <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{title}</p>
+      <p className="mt-2 text-sm leading-relaxed" data-testid={testId}>
+        {reason}
+        {linked.length > 0 && (
+          <span className="ml-1 inline-flex flex-wrap gap-1 align-baseline">
+            {linked.map((id) => (
+              <a
+                key={id}
+                href={`#v2-evidence-${id}`}
+                className="rounded border bg-background px-1 text-[10px] font-bold text-accent underline-offset-2 hover:underline"
+                title="Jump to evidence"
+                data-testid={`link-v2-reason-evidence-${id}`}
+              >
+                [{evidenceIndex.get(id)}]
+              </a>
+            ))}
+          </span>
+        )}
+      </p>
+      {evidenceIds.length > 0 && linked.length === 0 && (
+        <p className="mt-1 text-xs text-muted-foreground">Cites {evidenceIds.length} evidence item{evidenceIds.length === 1 ? "" : "s"} not returned in this run.</p>
+      )}
+      {evidenceIds.length === 0 && <p className="mt-1 text-xs text-muted-foreground">No evidence cited.</p>}
+    </div>
+  );
+}
+
 function IntelligenceV2Panel({
   run,
   loading,
@@ -405,15 +449,19 @@ function IntelligenceV2Panel({
   analyzing: boolean;
   onAnalyze: () => void;
 }) {
+  const evidenceIndex = useMemo(
+    () => new Map((run?.evidence ?? []).map((item, index) => [item.evidenceId, index + 1] as const)),
+    [run],
+  );
   return (
-    <Section eyebrow="DEVELOPMENT INSPECTION" title="Intelligence Core: V2" icon={<Layers3 className="h-5 w-5" />}>
+    <Section eyebrow="INTELLIGENCE CORE" title="Intelligence Core: V2" icon={<Layers3 className="h-5 w-5" />}>
       <Card className="border-accent/30 shadow-none" data-testid="panel-intelligence-v2">
         <CardContent className="p-6 md:p-8">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div>
               <Badge variant="outline" data-testid="status-intelligence-version-v2">JYRA_INTELLIGENCE_V2</Badge>
               <p className="mt-3 max-w-2xl text-sm text-muted-foreground">
-                This explicit development path is isolated from the default V1 workflow.
+                CommercialRole and WHO resolution with every claim bound to its evidence. Runs on demand and is stored alongside the default V1 workflow.
               </p>
             </div>
             <Button
@@ -446,34 +494,65 @@ function IntelligenceV2Panel({
                 <InfoCell label="CommercialRole" value={`${label(run.commercialRole.value)} · ${Math.round(run.commercialRole.confidence * 100)}%`} />
                 <InfoCell label="WHO" value={`${label(run.who.value)} · ${Math.round(run.who.confidence * 100)}%`} />
               </div>
-              <div className="grid gap-5 rounded-xl border bg-muted/20 p-5 md:grid-cols-2">
+              <div className="grid gap-5 rounded-xl border bg-muted/20 p-5 md:grid-cols-3">
                 <div>
                   <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Primary business</p>
                   <p className="mt-2 text-sm leading-relaxed" data-testid="text-intelligence-v2-primary-business">
                     {run.primaryBusiness?.value ?? "Unknown"}
                   </p>
                 </div>
-                <div>
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Confidence and rationale</p>
-                  <p className="mt-2 text-sm leading-relaxed" data-testid="text-intelligence-v2-rationale">
-                    {run.commercialRole.reason} {run.who.reason}
-                  </p>
-                </div>
+                <V2Reason
+                  title="CommercialRole rationale"
+                  testId="text-intelligence-v2-commercial-role-reason"
+                  reason={run.commercialRole.reason}
+                  evidenceIds={run.commercialRole.evidenceIds}
+                  evidenceIndex={evidenceIndex}
+                />
+                <V2Reason
+                  title="WHO rationale"
+                  testId="text-intelligence-v2-who-reason"
+                  reason={run.who.reason}
+                  evidenceIds={run.who.evidenceIds}
+                  evidenceIndex={evidenceIndex}
+                />
               </div>
               <div>
                 <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Evidence</p>
                 {run.evidence.length ? (
                   <div className="mt-3 space-y-2">
-                    {run.evidence.map((item) => (
-                      <div key={item.evidenceId} className="rounded-lg border p-3 text-sm" data-testid={`evidence-intelligence-v2-${item.evidenceId}`}>
-                        <div className="flex flex-wrap items-center gap-2">
-                          <Badge variant="secondary">{label(item.sourceType)}</Badge>
-                          <span className="font-medium">{item.title}</span>
-                          <span className="text-xs text-muted-foreground">{Math.round(item.confidence * 100)}%</span>
+                    {run.evidence.map((item) => {
+                      const number = evidenceIndex.get(item.evidenceId);
+                      const usedBy = [
+                        run.commercialRole.evidenceIds.includes(item.evidenceId) ? "CommercialRole" : null,
+                        run.who.evidenceIds.includes(item.evidenceId) ? "WHO" : null,
+                      ].filter((value): value is string => Boolean(value));
+                      return (
+                        <div
+                          key={item.evidenceId}
+                          id={`v2-evidence-${item.evidenceId}`}
+                          className="scroll-mt-24 rounded-lg border p-3 text-sm target:border-accent target:bg-accent/5"
+                          data-testid={`evidence-intelligence-v2-${item.evidenceId}`}
+                        >
+                          <div className="flex flex-wrap items-center gap-2">
+                            {number !== undefined && <span className="rounded border bg-background px-1.5 text-[10px] font-bold text-muted-foreground">[{number}]</span>}
+                            <Badge variant="secondary">{label(item.sourceType)}</Badge>
+                            <span className="font-medium">{item.title}</span>
+                            <span className="text-xs text-muted-foreground">{Math.round(item.confidence * 100)}%</span>
+                            {item.firstParty && <Badge variant="outline" className="text-[10px] uppercase tracking-wider">First party</Badge>}
+                            {usedBy.map((tag) => <Badge key={tag} variant="outline" className="text-[10px] uppercase tracking-wider">{tag}</Badge>)}
+                          </div>
+                          <p className="mt-2 text-muted-foreground">{item.statement}</p>
+                          <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
+                            <span>{item.provider} · {new Date(item.observedAt).toLocaleDateString()}</span>
+                            {item.url ? (
+                              <SourceLink url={item.url} />
+                            ) : (
+                              <span className="italic">No public source URL recorded</span>
+                            )}
+                          </div>
                         </div>
-                        <p className="mt-2 text-muted-foreground">{item.statement}</p>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 ) : (
                   <p className="mt-2 text-sm text-muted-foreground" data-testid="status-intelligence-v2-evidence-empty">No evidence was returned.</p>
@@ -521,7 +600,8 @@ export default function CompanyIntelligencePage() {
   const [, navigate] = useLocation();
   const projectId = activeProjectId ?? "";
   const projectCompanyId = params.projectCompanyId ?? "";
-  const v2Enabled = import.meta.env.DEV;
+  // Shipped by default; set VITE_JYRA_V2_PANEL=false to hide the panel.
+  const v2Enabled = import.meta.env.VITE_JYRA_V2_PANEL !== "false";
 
   const companiesQuery = useListProjectCompanies(projectId, {
     query: { enabled: Boolean(projectId), queryKey: getListProjectCompaniesQueryKey(projectId), refetchOnMount: "always" },
@@ -580,7 +660,7 @@ export default function CompanyIntelligencePage() {
         toast.success("Intelligence Core V2 analysis complete");
       },
       onError: (error) => toast.error("V2 analysis failed", {
-        description: error instanceof Error ? error.message : "The development-only analysis could not be completed.",
+        description: error instanceof Error ? error.message : "The V2 analysis could not be completed.",
       }),
     },
   });
@@ -600,6 +680,17 @@ export default function CompanyIntelligencePage() {
   const evidence = evidenceQuery.data ?? [];
   const facts = factsQuery.data ?? [];
   const isLoading = companiesQuery.isLoading || (Boolean(projectCompany) && (assessmentQuery.isLoading || evidenceQuery.isLoading));
+  const pageReady = Boolean(projectId && projectCompany) && !isLoading;
+
+  // Links such as /companies/{id}#why arrive via history.pushState, which does
+  // not scroll to the fragment; do it once the page (and the WHY trace) is in.
+  useEffect(() => {
+    if (!pageReady || whyQuery.isLoading) return;
+    const hash = window.location.hash.replace(/^#/, "");
+    if (!hash) return;
+    const target = document.getElementById(hash);
+    if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [pageReady, whyQuery.isLoading]);
 
   if (!projectId) return <div className="p-8 text-center text-muted-foreground">Select a project first.</div>;
   if (companiesQuery.isLoading || isLoading) return <div className="flex min-h-[60vh] items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></div>;
@@ -810,32 +901,20 @@ export default function CompanyIntelligencePage() {
             )}
 
             <div className="mt-10 pt-10 border-t border-border/50">
-              <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mb-6">Sentence-level provenance</p>
-              {why?.claims?.length ? (
-                <div className="grid gap-3">
-                  {why.claims.map((claim) => (
-                    <details key={claim.ordinal} className="group rounded-xl border bg-muted/20 open:bg-muted/40 transition-colors">
-                      <summary className="cursor-pointer list-none flex items-center justify-between p-4 text-sm font-medium">
-                        <span className="flex-1 pr-4 leading-relaxed text-foreground"><span className="text-muted-foreground font-normal mr-2">{claim.ordinal}.</span>{claim.claimText}</span>
-                        <div className="shrink-0 flex items-center gap-2">
-                          <Badge variant="outline" className="bg-background text-[10px] uppercase tracking-wider">{label(claim.traceabilityStatus)}</Badge>
-                          <div className="h-6 w-6 rounded flex items-center justify-center bg-background border group-open:rotate-180 transition-transform">
-                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                          </div>
-                        </div>
-                      </summary>
-                      <div className="border-t border-border/50 px-4 pb-4 pt-3 text-xs text-muted-foreground leading-relaxed flex flex-wrap gap-4">
-                        <div className="flex items-center gap-1.5"><FileCheck2 className="h-3.5 w-3.5" /> {claim.evidence.length} evidence</div>
-                        <div className="flex items-center gap-1.5"><Zap className="h-3.5 w-3.5" /> {claim.signals.length} signals</div>
-                        <div className="flex items-center gap-1.5"><Layers3 className="h-3.5 w-3.5" /> {claim.facts.length} facts</div>
-                      </div>
-                    </details>
-                  ))}
-                </div>
+              <div className="mb-6 flex flex-wrap items-end justify-between gap-2">
+                <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Sentence-level provenance</p>
+                <p className="text-xs text-muted-foreground">Decision → Reason → Fact → Evidence → Source</p>
+              </div>
+              {whyQuery.isLoading ? (
+                <div className="flex items-center gap-2 py-6 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" /> Loading provenance…</div>
               ) : (
-                <div className="rounded-xl border border-dashed p-6 text-center bg-muted/5">
-                  <p className="text-sm text-muted-foreground">No sentence-level WHY trace is available for this assessment.</p>
-                </div>
+                <WhyClaimTraceList
+                  decision={{
+                    label: detail?.opportunity.assessmentStatus === "INSUFFICIENT_DATA" ? "Needs Research" : label(detail?.opportunity.state ?? projectCompany.opportunityAssessmentState),
+                    detail: `Opportunity score ${scoreText(detail?.opportunity.score ?? projectCompany.opportunityScore)}${why?.explanation.ruleVersion ? ` · rule ${why.explanation.ruleVersion}` : ""}`,
+                  }}
+                  claims={why?.claims ?? []}
+                />
               )}
             </div>
           </CardContent>

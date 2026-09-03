@@ -1,11 +1,17 @@
 import { useGetWorkspaceSummary, useGetWorkspaceCapabilities, useGetWorkspaceActivity } from "@workspace/api-client-react";
 import { format } from "date-fns";
-import { Activity, ArrowRight, CheckCircle2, CircleDashed, Clock, FileText, Lock, Target } from "lucide-react";
+import { Activity, AlertTriangle, ArrowRight, CheckCircle2, CircleDashed, Clock, FileText, Lock, Target } from "lucide-react";
 
 export default function Dashboard() {
-  const { data: summary, isLoading: isLoadingSummary } = useGetWorkspaceSummary();
-  const { data: capabilities, isLoading: isLoadingCapabilities } = useGetWorkspaceCapabilities();
-  const { data: activity, isLoading: isLoadingActivity } = useGetWorkspaceActivity();
+  const { data: summary, isLoading: isLoadingSummary, isError: isSummaryError, refetch: refetchSummary } = useGetWorkspaceSummary();
+  const { data: capabilities, isLoading: isLoadingCapabilities, isError: isCapabilitiesError, refetch: refetchCapabilities } = useGetWorkspaceCapabilities();
+  const { data: activity, isLoading: isLoadingActivity, isError: isActivityError, refetch: refetchActivity } = useGetWorkspaceActivity();
+  const isError = isSummaryError || isCapabilitiesError || isActivityError;
+  const retryAll = () => {
+    if (isSummaryError) void refetchSummary();
+    if (isCapabilitiesError) void refetchCapabilities();
+    if (isActivityError) void refetchActivity();
+  };
 
   if (isLoadingSummary || isLoadingCapabilities || isLoadingActivity) {
     return (
@@ -20,6 +26,33 @@ export default function Dashboard() {
           <div className="lg:col-span-2 h-full bg-muted rounded-xl min-h-[400px]"></div>
           <div className="h-full bg-muted rounded-xl min-h-[400px]"></div>
         </div>
+      </div>
+    );
+  }
+
+  // Never render zeros for a failed fetch: show a real error state instead.
+  if (isError) {
+    return (
+      <div
+        role="alert"
+        className="flex flex-col items-center justify-center rounded-2xl border border-destructive/20 bg-destructive/5 px-6 py-20 text-center"
+        data-testid="dashboard-error"
+      >
+        <AlertTriangle className="w-12 h-12 text-destructive mb-4" />
+        <h2 className="text-xl font-display font-semibold text-destructive">Workspace summary could not be loaded</h2>
+        <p className="mt-2 max-w-md text-destructive/80">
+          {[
+            isSummaryError ? "summary" : null,
+            isCapabilitiesError ? "capabilities" : null,
+            isActivityError ? "activity" : null,
+          ].filter(Boolean).join(", ")} failed to load. The counts below are not zero; they are unknown.
+        </p>
+        <button
+          onClick={retryAll}
+          className="mt-6 rounded-md border border-destructive/30 px-4 py-2 text-sm font-medium text-destructive hover:bg-destructive/10"
+        >
+          Try again
+        </button>
       </div>
     );
   }

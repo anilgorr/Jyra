@@ -56,7 +56,7 @@ export default function Learning() {
     { query: { enabled: Boolean(activeProjectId), queryKey: getGetLearningAnalyticsQueryKey(activeProjectId ?? "", { scope: learningScope }) } }
   );
 
-  const { data: proposals, isLoading: proposalsLoading } = useListLearningProposals(
+  const { data: proposals, isLoading: proposalsLoading, isError: proposalsError, refetch: refetchProposals } = useListLearningProposals(
     activeProjectId ?? "",
     { scope: learningScope },
     { query: { enabled: Boolean(activeProjectId), queryKey: getListLearningProposalsQueryKey(activeProjectId ?? "", { scope: learningScope }) } }
@@ -317,7 +317,16 @@ export default function Learning() {
                 </Button>
               </div>
 
-              {!proposals || proposals.length === 0 ? (
+              {proposalsError ? (
+                <div role="alert" className="rounded-xl border border-destructive/20 bg-destructive/5 p-12 text-center text-sm flex flex-col items-center justify-center">
+                  <ShieldAlert className="h-10 w-10 text-destructive mb-4" />
+                  <p className="font-medium text-destructive">Proposals could not be loaded.</p>
+                  <p className="mt-1 text-destructive/80">Existing proposals are not shown because the request failed, not because none exist.</p>
+                  <Button variant="outline" size="sm" className="mt-4 border-destructive/30 text-destructive hover:bg-destructive/10" onClick={() => void refetchProposals()}>
+                    Try again
+                  </Button>
+                </div>
+              ) : !proposals || proposals.length === 0 ? (
                 <div className="rounded-xl border border-dashed p-12 text-center text-sm text-muted-foreground bg-muted/20 flex flex-col items-center justify-center">
                   <FileSignature className="h-10 w-10 text-muted-foreground/30 mb-4" />
                   No proposals exist for this project yet. Generate proposals to check for statistically significant improvement opportunities.

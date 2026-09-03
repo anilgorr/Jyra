@@ -303,14 +303,19 @@ function CohortSection({ projectId, campaignId }: { projectId: string, campaignI
   const [activeSalesId, setActiveSalesId] = useState<string | null>(null);
   const [activeAdjId, setActiveAdjId] = useState<string | null>(null);
 
-  const { data: cohort, isLoading } = useListMarketReadinessCohort(projectId, campaignId, {
+  const { data: cohort, isLoading, isError, error, refetch } = useListMarketReadinessCohort(projectId, campaignId, {
     query: {
       queryKey: getListMarketReadinessCohortQueryKey(projectId, campaignId),
+      meta: { silent: true },
     }
   });
 
   if (isLoading) {
     return <div className="h-64 flex items-center justify-center border rounded-xl"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>;
+  }
+
+  if (isError) {
+    return <SectionError title="Cohort could not be loaded" message={error?.message} onRetry={() => void refetch()} />;
   }
 
   if (!cohort || cohort.length === 0) {
@@ -394,20 +399,22 @@ function CohortSection({ projectId, campaignId }: { projectId: string, campaignI
 }
 
 function ExperimentSection({ projectId, campaignId, experimentId, setExperimentId }: { projectId: string, campaignId: string, experimentId: string | null, setExperimentId: (id: string | null) => void }) {
-  const { data: cohort } = useListMarketReadinessCohort(projectId, campaignId, {
+  const { data: cohort, isError: cohortError } = useListMarketReadinessCohort(projectId, campaignId, {
     query: { queryKey: getListMarketReadinessCohortQueryKey(projectId, campaignId) }
   });
-  const { data: experiment, isLoading, isError, refetch } = useGetMarketReadinessExperiment(projectId, campaignId, experimentId ?? "", {
+  const { data: experiment, isLoading, isError, error, refetch } = useGetMarketReadinessExperiment(projectId, campaignId, experimentId ?? "", {
     query: {
       enabled: !!experimentId,
       retry: false,
       queryKey: getGetMarketReadinessExperimentQueryKey(projectId, campaignId, experimentId ?? ""),
+      meta: { silent: true },
     }
   });
 
-  const { data: outcomes, isLoading: loadingOutcomes } = useListMarketReadinessOutcomes(projectId, campaignId, {
+  const { data: outcomes, isLoading: loadingOutcomes, isError: outcomesError, refetch: refetchOutcomes } = useListMarketReadinessOutcomes(projectId, campaignId, {
     query: {
       queryKey: getListMarketReadinessOutcomesQueryKey(projectId, campaignId),
+      meta: { silent: true },
     }
   });
 
@@ -473,6 +480,7 @@ function ExperimentSection({ projectId, campaignId, experimentId, setExperimentI
   const [manualOutcome, setManualOutcome] = useState<"MEETING" | "OPPORTUNITY" | "BAD_FIT" | "OTHER">("MEETING");
   const recordedItemIds = new Set((outcomes ?? []).map(outcome => outcome.cohortItemId));
   const availableCohort = (cohort ?? []).filter(item => !recordedItemIds.has(item.id));
+  const cohortUnavailable = cohortError && !cohort;
 
   const handleImport = () => {
     if (!csvContent.trim()) return;
@@ -499,6 +507,11 @@ function ExperimentSection({ projectId, campaignId, experimentId, setExperimentI
 
   if (isLoading && experimentId) {
     return <div className="h-64 flex items-center justify-center border rounded-xl"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>;
+  }
+
+  const experimentStatus = (error as { status?: number } | null)?.status;
+  if (isError && experimentId && experimentStatus !== 404) {
+    return <SectionError title="Experiment could not be loaded" message={error?.message} onRetry={() => void refetch()} />;
   }
 
   if (isError || !experimentId || !experiment) {
@@ -645,6 +658,9 @@ function ExperimentSection({ projectId, campaignId, experimentId, setExperimentI
                         {availableCohort.map(item => <SelectItem key={item.id} value={item.id}>{item.normalizedDomain}</SelectItem>)}
                       </SelectContent>
                     </Select>
+                    {cohortUnavailable && (
+                      <p role="alert" className="text-xs text-destructive">The cohort could not be loaded, so no companies are listed. Reload the Cohort tab and try again.</p>
+                    )}
                   </div>
                   <div className="space-y-2">
                     <Label>Outcome</Label>
@@ -673,6 +689,11 @@ function ExperimentSection({ projectId, campaignId, experimentId, setExperimentI
 
           {loadingOutcomes ? (
             <div className="flex justify-center p-4"><Loader2 className="h-4 w-4 animate-spin text-muted-foreground" /></div>
+          ) : outcomesError ? (
+            <div role="alert" className="flex items-center justify-between gap-3 rounded-md border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">
+              <span>Recorded outcomes could not be loaded.</span>
+              <Button size="sm" variant="outline" className="border-destructive/30 text-destructive hover:bg-destructive/10" onClick={() => void refetchOutcomes()}>Retry</Button>
+            </div>
           ) : outcomes && outcomes.length > 0 ? (
             <div className="border rounded-md divide-y">
               {outcomes.map(outcome => (
@@ -692,9 +713,10 @@ function ExperimentSection({ projectId, campaignId, experimentId, setExperimentI
 }
 
 function RolloutSection({ projectId, campaignId }: { projectId: string, campaignId: string }) {
-  const { data: rollout, isLoading, refetch } = useGetMarketReadinessRollout(projectId, campaignId, {
+  const { data: rollout, isLoading, isError, error, refetch } = useGetMarketReadinessRollout(projectId, campaignId, {
     query: {
       queryKey: getGetMarketReadinessRolloutQueryKey(projectId, campaignId),
+      meta: { silent: true },
     }
   });
 
@@ -707,6 +729,16 @@ function RolloutSection({ projectId, campaignId }: { projectId: string, campaign
       onError: (err) => toast.error("Failed to update rollout", { description: err.message })
     }
   });
+
+  if (isLoading) {
+    return <div className="h-64 flex items-center justify-center border rounded-xl"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>;
+  }
+
+  // A failed fetch is not "no decision yet": never offer Initialize on an error.
+  const rolloutStatus = (error as { status?: number } | null)?.status;
+  if (isError && rolloutStatus !== 404) {
+    return <SectionError title="Rollout decision could not be loaded" message={error?.message} onRetry={() => void refetch()} />;
+  }
 
   if (!rollout) {
     return (
@@ -725,10 +757,6 @@ function RolloutSection({ projectId, campaignId }: { projectId: string, campaign
         </Button>
       </div>
     );
-  }
-
-  if (isLoading) {
-    return <div className="h-64 flex items-center justify-center border rounded-xl"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>;
   }
 
   const decision = rollout.decision as {
@@ -816,5 +844,22 @@ function RolloutSection({ projectId, campaignId }: { projectId: string, campaign
          </div>
       </CardContent>
     </Card>
+  );
+}
+
+function SectionError({ title, message, onRetry }: { title: string; message?: string; onRetry: () => void }) {
+  return (
+    <div
+      role="alert"
+      className="flex flex-col items-center justify-center rounded-xl border border-destructive/20 bg-destructive/5 p-12 text-center"
+      data-testid="section-error"
+    >
+      <ShieldAlert className="mb-4 h-10 w-10 text-destructive" />
+      <h3 className="text-lg font-medium text-destructive">{title}</h3>
+      <p className="mt-1 max-w-sm text-sm text-destructive/80">{message || "The request failed. Nothing was changed."}</p>
+      <Button variant="outline" className="mt-6 border-destructive/30 text-destructive hover:bg-destructive/10" onClick={onRetry}>
+        Try again
+      </Button>
+    </div>
   );
 }

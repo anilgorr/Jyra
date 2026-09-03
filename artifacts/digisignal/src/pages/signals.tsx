@@ -51,11 +51,12 @@ export default function Signals() {
       query: {
         enabled: Boolean(activeProjectId),
         queryKey: getListProjectSignalsQueryKey(activeProjectId ?? ""),
+        meta: { silent: true },
       },
     }
   );
-  const { data: availablePacks = [], isLoading: packsLoading } = useListSignalPacks();
-  const { data: selectedPacks = [] } = useListProjectSignalPacks(activeProjectId ?? "", {
+  const { data: availablePacks = [], isLoading: packsLoading, isError: packsError, refetch: refetchPacks } = useListSignalPacks();
+  const { data: selectedPacks = [], isError: selectedPacksError, refetch: refetchSelectedPacks } = useListProjectSignalPacks(activeProjectId ?? "", {
     query: {
       enabled: Boolean(activeProjectId),
       queryKey: getListProjectSignalPacksQueryKey(activeProjectId ?? ""),
@@ -166,6 +167,23 @@ export default function Signals() {
               placeholder="Offering name, for example: Executive search"
               className="max-w-md"
             />
+            {(packsError || selectedPacksError) && (
+              <div role="alert" className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm text-destructive">
+                <span>
+                  {packsError
+                    ? "Available signal packs could not be loaded."
+                    : "This project's pack selection could not be loaded; the toggles below may not reflect what is active."}
+                </span>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="border-destructive/30 text-destructive hover:bg-destructive/10"
+                  onClick={() => { if (packsError) void refetchPacks(); if (selectedPacksError) void refetchSelectedPacks(); }}
+                >
+                  Retry
+                </Button>
+              </div>
+            )}
             <div className="flex flex-wrap gap-2">
               {packsLoading ? <Skeleton className="h-9 w-64" /> : availablePacks.map((pack) => {
                 const selected = selectedPacks.find((item) => item.signalPackId === pack.id);

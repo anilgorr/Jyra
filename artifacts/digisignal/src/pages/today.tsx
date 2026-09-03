@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Redirect } from "wouter";
+import { Link, Redirect } from "wouter";
 import { 
   useGetMarketToday, 
   useGetCurrentUser,
@@ -8,13 +8,13 @@ import {
 import { useWorkspace } from "@/context/workspace-context";
 
 import { Skeleton } from "@/components/ui/skeleton";
-import { Target, SearchX, Filter } from "lucide-react";
+import { AlertTriangle, FolderPlus, Target, SearchX, Filter } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { MarketCard } from "@/components/market-today/MarketCard";
 import { MarketStats } from "@/components/market-today/MarketStats";
 import { MarketFilters, type ActiveFilters } from "@/components/market-today/MarketFilters";
-import type { MarketTodayResponseFilterOptions, MarketTodayCard } from "@workspace/api-client-react";
+import type { MarketTodayResponseFilterOptions } from "@workspace/api-client-react";
 
 const INITIAL_FILTERS: ActiveFilters = {
   states: [],
@@ -31,25 +31,22 @@ const INITIAL_FILTERS: ActiveFilters = {
 
 export default function Today() {
   const { data: user, isLoading: isUserLoading } = useGetCurrentUser();
-  const { activeProjectId } = useWorkspace();
+  const { activeProjectId, isLoading: isWorkspaceLoading, isError: isWorkspaceError, errorSource, refetch: refetchWorkspace } = useWorkspace();
   
-  const { data: marketData, isLoading: isMarketLoading, isError: isMarketError, refetch } = useGetMarketToday(
+  const { data: marketData, isLoading: isMarketLoading, isError: isMarketError, error: marketError, refetch } = useGetMarketToday(
     activeProjectId ?? "",
     {
       query: {
         enabled: Boolean(activeProjectId),
-        queryKey: getGetMarketTodayQueryKey(activeProjectId ?? "")
+        queryKey: getGetMarketTodayQueryKey(activeProjectId ?? ""),
+        // The page renders its own error state below.
+        meta: { silent: true },
       }
     }
   );
 
   const [activeStatus, setActiveStatus] = useState<string | null>(null);
   const [activeFilters, setActiveFilters] = useState<ActiveFilters>(INITIAL_FILTERS);
-
-  // Redirect to onboarding if they have no organizations
-  if (user && user.organizationCount === 0) {
-    return <Redirect to="/onboarding" />;
-  }
 
   const handleFilterChange = (key: keyof MarketTodayResponseFilterOptions, value: string) => {
     setActiveFilters(prev => {
@@ -103,20 +100,65 @@ export default function Today() {
     });
   }, [marketData, activeStatus, activeFilters]);
 
-  if (isUserLoading || !activeProjectId || isMarketLoading) {
+  // Redirect to onboarding if they have no organizations.
+  // (After all hooks: an early return above useMemo broke the rules of hooks.)
+  if (user && user.organizationCount === 0) {
+    return <Redirect to="/onboarding" />;
+  }
+
+  // Loading: user, workspace (orgs/projects), or the market view itself.
+  if (isUserLoading || isWorkspaceLoading || (activeProjectId && isMarketLoading)) {
     return <TodaySkeleton />;
   }
 
-  if (isMarketError || !marketData) {
+  // The workspace lookup failed: we cannot know whether a project exists.
+  if (!activeProjectId && isWorkspaceError) {
+    return (
+      <ErrorState
+        title={errorSource === "organizations" ? "Your organizations could not be loaded" : "Your projects could not be loaded"}
+        description="JYRA could not reach your workspace, so the market view cannot be shown. This is a connection problem, not an empty workspace."
+        onRetry={() => void refetchWorkspace()}
+      />
+    );
+  }
+
+  // No project exists (or none is selected) — a real empty state, not a spinner.
+  if (!activeProjectId) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 text-center animate-in fade-in" data-testid="today-no-project">
+        <FolderPlus className="w-12 h-12 text-muted-foreground/30 mb-4" />
+        <h2 className="text-xl font-display font-semibold">No project yet</h2>
+        <p className="text-muted-foreground mt-2 max-w-md">
+          Your Market Today view is built per project. Create a project to start tracking companies, signals, and opportunities.
+        </p>
+        <Link href="/settings" className="mt-5 inline-flex items-center gap-2 rounded-md bg-accent px-4 py-2 text-sm font-medium text-accent-foreground shadow-sm hover:bg-accent/90">
+          <FolderPlus className="h-4 w-4" /> Create a project
+        </Link>
+      </div>
+    );
+  }
+
+  // The market view request failed — distinct from "nothing to show".
+  if (isMarketError) {
+    return (
+      <ErrorState
+        title="Market view could not be loaded"
+        description={(marketError as { message?: string } | null)?.message || "We couldn't retrieve your persisted market view. Nothing was scored or researched; retry when the connection is back."}
+        onRetry={() => void refetch()}
+      />
+    );
+  }
+
+  if (!marketData) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center animate-in fade-in">
         <Target className="w-12 h-12 text-muted-foreground/30 mb-4" />
-        <h2 className="text-xl font-display font-semibold">No market intelligence found</h2>
+        <h2 className="text-xl font-display font-semibold">No market intelligence yet</h2>
         <p className="text-muted-foreground mt-2 max-w-md">
-          We couldn't retrieve your persisted market view. No scoring or research was run.
+          No persisted market view exists for this project. Add companies and run research to build one.
         </p>
         <button onClick={() => void refetch()} className="mt-5 text-sm font-medium text-accent hover:text-accent/80">
-          Try again
+          Refresh
         </button>
       </div>
     );
@@ -200,6 +242,26 @@ export default function Today() {
           )}
         </div>
       </div>
+    </div>
+  );
+}
+
+function ErrorState({ title, description, onRetry }: { title: string; description: string; onRetry: () => void }) {
+  return (
+    <div
+      role="alert"
+      className="flex flex-col items-center justify-center rounded-2xl border border-destructive/20 bg-destructive/5 px-6 py-20 text-center animate-in fade-in"
+      data-testid="today-error"
+    >
+      <AlertTriangle className="w-12 h-12 text-destructive mb-4" />
+      <h2 className="text-xl font-display font-semibold text-destructive">{title}</h2>
+      <p className="mt-2 max-w-md text-destructive/80">{description}</p>
+      <button
+        onClick={onRetry}
+        className="mt-6 rounded-md border border-destructive/30 px-4 py-2 text-sm font-medium text-destructive hover:bg-destructive/10"
+      >
+        Try again
+      </button>
     </div>
   );
 }

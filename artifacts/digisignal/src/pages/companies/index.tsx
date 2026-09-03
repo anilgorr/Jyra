@@ -20,8 +20,11 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { 
+  AlertTriangle,
   Building2, 
+  CheckCircle2,
   DownloadCloud, 
+  Info,
   Loader2, 
   Plus, 
   Search, 
@@ -29,6 +32,7 @@ import {
   Telescope
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 
 import { CompanyDialog } from "./company-dialog";
 import { ImportDialog } from "./import-dialog";
@@ -42,7 +46,7 @@ export default function CompaniesPage() {
   const [createOpen, setCreateOpen] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
   const [discovering, setDiscovering] = useState(false);
-  const [discoveryMessage, setDiscoveryMessage] = useState<string | null>(null);
+  const [discoveryMessage, setDiscoveryMessage] = useState<{ tone: "success" | "error" | "info"; text: string } | null>(null);
 
   const findMyMarket = async () => {
     setDiscovering(true);
@@ -69,24 +73,24 @@ export default function CompaniesPage() {
           const detail = result.diagnostics?.field
             ? ` (${result.diagnostics.field}: ${result.diagnostics.reason ?? "invalid value"})`
             : "";
-          setDiscoveryMessage(`Invalid discovery request${detail}.`);
+          setDiscoveryMessage({ tone: "error", text: `Invalid discovery request${detail}.` });
         } else {
-          setDiscoveryMessage(result.blockedReason ?? result.error ?? "Market discovery is unavailable.");
+          setDiscoveryMessage({ tone: "error", text: result.blockedReason ?? result.error ?? "Market discovery is unavailable." });
         }
         return;
       }
       if (result.status === "blocked") {
-        setDiscoveryMessage(`Market discovery is unavailable: ${result.blockedReason ?? "required configuration or provider is missing"}.`);
+        setDiscoveryMessage({ tone: "error", text: `Market discovery is unavailable: ${result.blockedReason ?? "required configuration or provider is missing"}.` });
         return;
       }
       setDiscoveryMessage(
         result.linked || result.possibleMatches
-          ? `Added ${result.linked ?? 0} candidates; removed ${result.duplicatesRemoved ?? 0} duplicates and held ${result.possibleMatches ?? 0} possible matches for review.`
-          : "Discovery completed with zero eligible candidates.",
+          ? { tone: "success", text: `Added ${result.linked ?? 0} candidates; removed ${result.duplicatesRemoved ?? 0} duplicates and held ${result.possibleMatches ?? 0} possible matches for review.` }
+          : { tone: "info", text: "Discovery completed with zero eligible candidates." },
       );
       await queryClient.invalidateQueries({ queryKey: getListProjectCompaniesQueryKey(projectId) });
     } catch {
-      setDiscoveryMessage("Market discovery could not connect. Try again.");
+      setDiscoveryMessage({ tone: "error", text: "Market discovery could not connect. Try again." });
     } finally {
       setDiscovering(false);
     }
@@ -157,8 +161,25 @@ export default function CompaniesPage() {
         </div>
       </header>
       {discoveryMessage && (
-        <div className="rounded-lg border bg-muted/30 px-4 py-3 text-sm" data-testid="text-discovery-result">
-          {discoveryMessage}
+        <div
+          role={discoveryMessage.tone === "error" ? "alert" : "status"}
+          className={cn(
+            "flex items-start gap-3 rounded-lg border px-4 py-3 text-sm",
+            discoveryMessage.tone === "error" && "border-destructive/30 bg-destructive/5 text-destructive",
+            discoveryMessage.tone === "success" && "border-emerald-500/30 bg-emerald-500/5 text-emerald-800 dark:text-emerald-300",
+            discoveryMessage.tone === "info" && "bg-muted/30 text-foreground",
+          )}
+          data-testid="text-discovery-result"
+          data-tone={discoveryMessage.tone}
+        >
+          {discoveryMessage.tone === "error" ? (
+            <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
+          ) : discoveryMessage.tone === "success" ? (
+            <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
+          ) : (
+            <Info className="mt-0.5 h-4 w-4 shrink-0" />
+          )}
+          <span>{discoveryMessage.text}</span>
         </div>
       )}
 

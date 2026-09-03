@@ -379,15 +379,28 @@ function RawAnswersView({ twin, onEdit }: any) {
 
 function HistoryView({ currentTwin, onSelect }: { currentTwin: BusinessTwinVersion, onSelect: (version: BusinessTwinVersion) => void }) {
   const { activeProjectId } = useWorkspace();
-  const { data: versions, isLoading } = useListBusinessTwinVersions(activeProjectId ?? "", {
+  const { data: versions, isLoading, isError, refetch } = useListBusinessTwinVersions(activeProjectId ?? "", {
     query: { 
       enabled: !!activeProjectId,
-      queryKey: getListBusinessTwinVersionsQueryKey(activeProjectId ?? "")
+      queryKey: getListBusinessTwinVersionsQueryKey(activeProjectId ?? ""),
+      meta: { silent: true },
     }
   });
 
   if (isLoading) {
     return <div className="p-8 flex justify-center"><Loader2 className="animate-spin text-muted-foreground h-8 w-8" /></div>;
+  }
+
+  if (isError) {
+    return (
+      <div role="alert" className="flex flex-col items-center justify-center rounded-xl border border-destructive/20 bg-destructive/5 p-8 text-center">
+        <p className="font-medium text-destructive">Version history could not be loaded.</p>
+        <p className="mt-1 text-sm text-destructive/80">Earlier Business Twin versions still exist; only the list failed to load.</p>
+        <Button variant="outline" size="sm" className="mt-4 border-destructive/30 text-destructive hover:bg-destructive/10" onClick={() => void refetch()}>
+          Try again
+        </Button>
+      </div>
+    );
   }
 
   if (!versions || versions.length === 0) return null;
