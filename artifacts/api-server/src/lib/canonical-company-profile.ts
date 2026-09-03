@@ -180,7 +180,8 @@ const escapeRegExp = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\
  * OFFICE_LOCATION at lower confidence.
  */
 function locationsFromText(value: string, companyName?: string | null): Array<{ raw: string; location: IcpReadyGeography; confidence: number }> {
-  const subject = companyName?.trim() ? `${escapeRegExp(companyName.trim()).replace(/\s+/g, "\\s+")}|` : "";
+  const subject = companyName?.trim() ? `${escapeRegExp(companyName.trim()).replace(/\s+/g, "\\s+")}(?:\\s+(?:is|are|was))?|` : "";
+  const trailingClause = /\s+(?:carry|carries|carrying|serve|serves|serving|deliver|delivers|delivering|provide|provides|providing|offer|offers|offering|operate|operates|operating|support|supports|supporting|sell|sells|selling|that|which|who|where|since|for|to)\b.*$/i;
   const patterns: Array<[CompanyLocationType, RegExp, number]> = [
     ["HEADQUARTERS", /\b(?:headquartered|headquarters?(?:\s+(?:is|are))?)\s+in\s+([^.;\n]+)/gi, .8],
     ["HEADQUARTERS", new RegExp(`\\b(?:${subject}we(?:\\s+are|'re)|is)\\s+based\\s+in\\s+([^.;\\n]+)`, "gi"), .8],
@@ -192,7 +193,7 @@ function locationsFromText(value: string, companyName?: string | null): Array<{ 
   ];
   const headquarterIndexes = new Set<number>();
   return patterns.flatMap(([locationType, pattern, confidence]) => [...value.matchAll(pattern)].flatMap((match) => {
-    const raw = match[1]?.trim() ?? "";
+    const raw = (match[1]?.trim() ?? "").replace(trailingClause, "").trim();
     const valueIndex = (match.index ?? 0) + match[0].length - (match[1]?.length ?? 0);
     if (locationType === "HEADQUARTERS") headquarterIndexes.add(valueIndex);
     else if (headquarterIndexes.has(valueIndex)) return [];

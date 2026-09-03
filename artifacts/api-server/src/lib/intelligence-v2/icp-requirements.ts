@@ -114,8 +114,16 @@ const normalizeText = (value: string, geography: boolean): string => {
   if (geography) for (const [pattern, replacement] of GEOGRAPHY_ALIASES) text = text.replace(pattern, replacement);
   return text.replace(/\s+/g, " ").trim();
 };
-const singular = (token: string) => token.length > 3 && token.endsWith("s") ? (token.endsWith("ies") ? `${token.slice(0, -3)}y` : token.endsWith("es") && /(?:s|x|z|ch|sh)es$/.test(token) ? token.slice(0, -2) : token.slice(0, -1)) : token;
-const tokensOf = (text: string) => text.split(" ").filter(Boolean).map(singular);
+const SUFFIXES = ["ations", "ation", "ities", "ity", "ers", "er", "ing", "ies", "ied", "ed", "s"];
+/** Light stemmer applied symmetrically so "manufacturing"/"manufacturers" and "service"/"services" compare equal. */
+export function stemTokenV2(word: string): string {
+  let base = word;
+  for (const suffix of SUFFIXES) {
+    if (base.endsWith(suffix) && base.length - suffix.length >= 4) { base = base.slice(0, -suffix.length); break; }
+  }
+  return base.endsWith("e") && base.length > 4 ? base.slice(0, -1) : base;
+}
+const tokensOf = (text: string) => text.split(" ").filter(Boolean).map(stemTokenV2);
 /** Whole-token contiguous phrase containment; never a bare substring. */
 function phraseIncluded(haystack: string[], needle: string[]): boolean {
   if (!needle.length || needle.length > haystack.length) return false;
@@ -202,9 +210,11 @@ export function criterionSatisfiedBy(requirement: Pick<ResearchRequirementV2, "t
 }
 
 /** Whether an atomic claim is structurally eligible to decide a requirement (type + geography semantics). */
-export function claimEligibleForRequirementV2(requirement: Pick<ResearchRequirementV2, "type">, claim: Pick<AtomicClaimV2, "type" | "geographyType">): boolean {
+export function claimEligibleForRequirementV2(requirement: Pick<ResearchRequirementV2, "type" | "dimension">, claim: Pick<AtomicClaimV2, "type" | "geographyType">): boolean {
   const typeMatch = requirement.type === "ICP_CRITERION" ? WILDCARD_CRITERION_CLAIM_TYPES.includes(claim.type) : claim.type === requirement.type;
   if (!typeMatch) return false;
+  // A wildcard dimension (revenue, buyer maturity...) is never decided by an employee count.
+  if (requirement.type === "ICP_CRITERION" && claim.type === "EMPLOYEE_SIZE" && !/employee|headcount|size/i.test(requirement.dimension ?? "")) return false;
   if (claim.type === "GEOGRAPHY" && requirement.type === "GEOGRAPHY") return CRITERION_GEOGRAPHY_TYPES.has(claim.geographyType);
   return true;
 }

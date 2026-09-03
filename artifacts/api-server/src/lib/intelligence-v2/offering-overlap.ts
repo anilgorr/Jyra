@@ -7,8 +7,9 @@
  * competitor safety rule then excludes the company from buyer targeting.
  *
  * Detection is conservative: a multi-word offering phrase must appear as a
- * whole-token sequence, or at least two distinctive tokens of the phrase must
- * co-occur within a short window. Generic business vocabulary never counts.
+ * whole-token sequence, or all of its (at least two) distinctive tokens must
+ * co-occur inside one sentence within a short word window. Generic business
+ * vocabulary never counts.
  */
 
 export type SellerOfferingV2 = {
@@ -38,7 +39,24 @@ const tokenPattern = (token: string) => {
   const escaped = base.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   return base === token ? `${escaped}(?:s|es|ies)?` : `${escaped}(?:s|es|ies|y)?`;
 };
-const WINDOW = 240;
+/** Distinctive tokens must all appear inside one sentence within this many words of each other. */
+const TOKEN_WINDOW = 10;
+const SENTENCE = /[^.!?;\n]+/g;
+const WORD = /[a-z0-9]+/gi;
+function tokensCoOccur(text: string, distinctive: string[]): { index: number; length: number } | null {
+  const wanted = distinctive.map(singular);
+  for (const sentence of text.matchAll(SENTENCE)) {
+    const words = [...sentence[0].matchAll(WORD)].map((word) => ({ stem: singular(word[0].toLowerCase()), index: sentence.index! + word.index!, length: word[0].length }));
+    for (let start = 0; start < words.length; start++) {
+      const window = words.slice(start, start + TOKEN_WINDOW);
+      if (wanted.every((token) => window.some((word) => word.stem === token))) {
+        const last = window.filter((word) => wanted.includes(word.stem)).at(-1)!;
+        return { index: words[start]!.index, length: last.index + last.length - words[start]!.index };
+      }
+    }
+  }
+  return null;
+}
 
 export function offeringPhrasesV2(offering: SellerOfferingV2 | null | undefined): string[] {
   if (!offering) return [];
@@ -82,17 +100,8 @@ export function detectOfferingOverlapV2(text: string, offering: SellerOfferingV2
       }
     }
     if (distinctive.length < 2) continue;
-    const positions = distinctive.map((token) => {
-      const hit = new RegExp(`(?<![a-z0-9])${tokenPattern(token)}(?![a-z0-9])`, "i").exec(text);
-      return hit ? { token, index: hit.index, length: hit[0].length } : null;
-    }).filter((value): value is NonNullable<typeof value> => Boolean(value));
-    if (positions.length < 2) continue;
-    positions.sort((a, b) => a.index - b.index);
-    const clustered = positions.filter((position, index, all) => all.some((other, otherIndex) => otherIndex !== index && Math.abs(other.index - position.index) <= WINDOW));
-    if (clustered.length < 2) continue;
-    const first = clustered[0]!;
-    const last = clustered[clustered.length - 1]!;
-    matches.push({ phrase, excerpt: excerptAround(text, first.index, last.index + last.length - first.index), matchedTokens: clustered.map((item) => item.token), mode: "TOKENS" });
+    const hit = tokensCoOccur(text, distinctive);
+    if (hit) matches.push({ phrase, excerpt: excerptAround(text, hit.index, hit.length), matchedTokens: distinctive, mode: "TOKENS" });
   }
   return matches;
 }
