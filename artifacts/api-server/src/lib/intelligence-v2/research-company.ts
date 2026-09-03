@@ -133,7 +133,7 @@ export function providerEvidence(input: {
   const claims: EvidenceItemV2["claims"] = input.claims || overlapFacts.length
     ? { ...(input.claims ?? {}), ...(overlapFacts.length ? { offeringOverlapFacts: overlapFacts.slice(0, 20) } : {}) }
     : undefined;
-  const brandFragment = input.request.companyName.split(/\s+/).filter((part) => part.length >= 4)
+  const brandFragment = input.request.companyName.split(/\s+/).filter((part) => part.length >= 2)
     .map((part) => {
       const index = fetchedContent.toLowerCase().indexOf(part.toLowerCase());
       return index >= 0 ? fetchedContent.slice(index, index + part.length).trim() : null;

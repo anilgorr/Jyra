@@ -124,8 +124,10 @@ function materialize(value: z.infer<typeof modelAssessmentSchema>, evidence: Evi
     const claim = claims.get(claimId)!;
     return { claimId, claimedValue: claim.value, purpose, relation };
   });
+  const keepKnown = <T extends { claimId: string }>(citations: T[]) =>
+    citations.filter(({ claimId }) => claims.has(claimId));
   const containsUnknownClaim = (citations: Array<{ claimId: string }>) =>
-    citations.some(({ claimId }) => !claims.has(claimId));
+    citations.length > 0 && keepKnown(citations).length === 0;
   const section = (citations: Array<{ claimId: string }>) => ({
     claimIds: citations.map(({ claimId }) => claimId),
     evidenceIds: [...new Set(citations.map(({ claimId }) => claims.get(claimId)!.evidenceId))],
@@ -140,17 +142,17 @@ function materialize(value: z.infer<typeof modelAssessmentSchema>, evidence: Evi
         }
       : {
           value: value.commercialRole.value, confidence: value.commercialRole.confidence, reason: value.commercialRole.reason,
-          ...section(value.commercialRole.citations),
-          claimBindings: bind(value.commercialRole.citations, "commercialRole") as SellerRelativeAssessmentV2["commercialRole"]["claimBindings"],
+          ...section(keepKnown(value.commercialRole.citations)),
+          claimBindings: bind(keepKnown(value.commercialRole.citations), "commercialRole") as SellerRelativeAssessmentV2["commercialRole"]["claimBindings"],
         },
     who: {
       value: whoHasUnknownClaim ? "INSUFFICIENT_DATA" : value.who.value,
       confidence: value.who.confidence,
       reason: whoHasUnknownClaim ? UNKNOWN_WHO_CITATION_REASON : value.who.reason,
-      ...(whoHasUnknownClaim ? { evidenceIds: [], claimIds: [] } : section(value.who.citations)),
+      ...(whoHasUnknownClaim ? { evidenceIds: [], claimIds: [] } : section(keepKnown(value.who.citations))),
       claimBindings: whoHasUnknownClaim
         ? []
-        : bind(value.who.citations, "WHO") as SellerRelativeAssessmentV2["who"]["claimBindings"],
+        : bind(keepKnown(value.who.citations), "WHO") as SellerRelativeAssessmentV2["who"]["claimBindings"],
       criteria: value.who.criteria.map((criterion) => {
         const requirement = byCriterion.get(criterion.criterionId);
         if (!requirement) throw new Error(`foreign criterionId ${criterion.criterionId}`);
@@ -163,10 +165,10 @@ function materialize(value: z.infer<typeof modelAssessmentSchema>, evidence: Evi
           result: criterionHasUnknownClaim ? "UNKNOWN" : criterion.result,
           confidence: criterion.confidence,
           reason: criterionHasUnknownClaim ? UNKNOWN_CRITERION_CITATION_REASON : criterion.reason,
-          ...(criterionHasUnknownClaim ? { evidenceIds: [], claimIds: [] } : section(criterion.citations)),
+          ...(criterionHasUnknownClaim ? { evidenceIds: [], claimIds: [] } : section(keepKnown(criterion.citations))),
           claimBindings: criterionHasUnknownClaim
             ? []
-            : bind(criterion.citations, criterion.criterionId) as SellerRelativeAssessmentV2["who"]["criteria"][number]["claimBindings"],
+            : bind(keepKnown(criterion.citations), criterion.criterionId) as SellerRelativeAssessmentV2["who"]["criteria"][number]["claimBindings"],
         };
       }),
     },
