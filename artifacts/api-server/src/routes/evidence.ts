@@ -44,6 +44,10 @@ import {
   getAuthenticatedUserId,
   requireAuth,
 } from "../middlewares/auth";
+import {
+  evidenceVisibleToOrganization,
+  isEvidenceVisibleToOrganization,
+} from "../lib/authz";
 
 const router: IRouter = Router();
 type AsyncHandler = (...args: Parameters<RequestHandler>) => Promise<void>;
@@ -158,6 +162,7 @@ function denyAccess(
 async function getEvidenceRow(
   evidenceId: string,
   companyId: string,
+  organizationId: string,
 ): Promise<EvidenceRow | null> {
   const [row] = await db
     .select({
@@ -178,6 +183,7 @@ async function getEvidenceRow(
       and(
         eq(companyEvidenceTable.id, evidenceId),
         eq(companyEvidenceTable.companyId, companyId),
+        evidenceVisibleToOrganization(organizationId),
       ),
     )
     .limit(1);
@@ -218,7 +224,13 @@ router.get(
         evidenceAttributionReviewsTable,
         eq(evidenceAttributionReviewsTable.crawlPageId, crawlPagesTable.id),
       )
-      .where(eq(companyEvidenceTable.companyId, access.company.id))
+      // Tenant scoping (C1): canonical companies are shared across
+      // organizations, so only crawl/provider-derived evidence and rows this
+      // organization preserved itself are returned.
+      .where(and(
+        eq(companyEvidenceTable.companyId, access.company.id),
+        evidenceVisibleToOrganization(access.organizationId!),
+      ))
       .orderBy(desc(companyEvidenceTable.observedAt));
 
     res.json(ListCompanyEvidenceResponse.parse(rows.map(evidencePayload)));
@@ -308,10 +320,15 @@ router.post(
       const corroborating = await tx
         .select({ sourceDomain: companyEvidenceTable.sourceDomain })
         .from(companyEvidenceTable)
+        .leftJoin(
+          evidenceAttributionReviewsTable,
+          eq(evidenceAttributionReviewsTable.crawlPageId, companyEvidenceTable.crawlPageId),
+        )
         .where(
           and(
             eq(companyEvidenceTable.companyId, access.company!.id),
             eq(companyEvidenceTable.extractedClaim, extractedClaim),
+            evidenceVisibleToOrganization(access.organizationId!),
           ),
         );
       const corroboratingSourceCount = new Set(
@@ -393,9 +410,14 @@ router.post(
     });
 
     if ("duplicate" in result && result.duplicate) {
+      const visible = isEvidenceVisibleToOrganization(
+        result.duplicate.evidence,
+        result.duplicate.attributionReview,
+        access.organizationId!,
+      );
       res.status(409).json({
         error: "This unchanged source observation is already preserved",
-        evidence: evidencePayload(result.duplicate),
+        ...(visible ? { evidence: evidencePayload(result.duplicate) } : {}),
       });
       return;
     }
@@ -431,7 +453,11 @@ router.patch(
       denyAccess(res, access.status ?? 404);
       return;
     }
-    const existing = await getEvidenceRow(params.data.evidenceId, access.company.id);
+    const existing = await getEvidenceRow(
+      params.data.evidenceId,
+      access.company.id,
+      access.organizationId!,
+    );
     if (!existing) {
       res.status(404).json({ error: "Evidence not found" });
       return;
