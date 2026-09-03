@@ -1415,6 +1415,32 @@ paths:
               schema: { $ref: "#/components/schemas/OpportunityResearchQuestion" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "403": { $ref: "#/components/responses/Forbidden" }
+  /projects/{projectId}/opportunity-packs/questions/{questionId}/companies/{projectCompanyId}/execute:
+    post:
+      operationId: executeOpportunityResearchQuestion
+      tags: [opportunity-packs]
+      summary: Run one approved pack question against one project company
+      description: >-
+        The question must belong to an approved or activated pack version, be
+        approved itself, and (when linked) reference an approved signal.
+      security: [{ clerkSession: [] }]
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+        - name: questionId
+          in: path
+          required: true
+          schema: { type: string }
+        - $ref: "#/components/parameters/ProjectCompanyId"
+      responses:
+        "200":
+          description: Research execution result
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ResearchExecutionResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
   /projects/{projectId}/opportunity-packs/versions/{versionId}/questions:
     post:
       operationId: addOpportunityResearchQuestion
@@ -1580,6 +1606,11 @@ paths:
       security: [{ clerkSession: [] }]
       parameters:
         - $ref: "#/components/parameters/ProjectId"
+        - name: companyId
+          in: query
+          required: false
+          description: Restrict results to clusters evaluated for one canonical company.
+          schema: { type: string }
       responses:
         "200":
           description: Evaluated clusters
@@ -1723,6 +1754,174 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
         "404": { $ref: "#/components/responses/NotFound" }
+  /projects/{projectId}/companies/{projectCompanyId}/next-best-action:
+    get:
+      operationId: getNextBestAction
+      tags: [opportunity-engine]
+      summary: Get the deterministic next best action for a project company
+      description: >-
+        Computes the recommendation from the persisted opportunity assessment and
+        appends an immutable recommendation ledger entry when the semantic input
+        changed. JYRA never executes the action.
+      security: [{ clerkSession: [] }]
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+        - $ref: "#/components/parameters/ProjectCompanyId"
+      responses:
+        "200":
+          description: Next best action recommendation
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/NextBestActionResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /projects/{projectId}/recommendations:
+    get:
+      operationId: listRecommendations
+      tags: [opportunity-engine]
+      summary: List the immutable recommendation ledger for a project
+      security: [{ clerkSession: [] }]
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+        - name: projectCompanyId
+          in: query
+          required: false
+          description: Restrict the ledger to one project company.
+          schema: { type: string }
+      responses:
+        "200":
+          description: Recommendation ledger entries, newest first
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/RecommendationLedgerEntry" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /projects/{projectId}/recommendations/{recommendationId}:
+    get:
+      operationId: getRecommendation
+      tags: [opportunity-engine]
+      summary: Get one recommendation ledger entry with its recorded outcomes
+      security: [{ clerkSession: [] }]
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+        - $ref: "#/components/parameters/RecommendationId"
+      responses:
+        "200":
+          description: Recommendation ledger entry
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/RecommendationLedgerEntry" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /projects/{projectId}/recommendations/{recommendationId}/outcomes:
+    post:
+      operationId: recordRecommendationOutcome
+      tags: [opportunity-engine]
+      summary: Append a human-recorded outcome to a recommendation
+      security: [{ clerkSession: [] }]
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+        - $ref: "#/components/parameters/RecommendationId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/RecordRecommendationOutcomeRequest" }
+      responses:
+        "201":
+          description: Recorded outcome
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/RecommendationOutcome" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /projects/{projectId}/companies/{projectCompanyId}/people:
+    get:
+      operationId: listProjectPeople
+      tags: [companies]
+      summary: List known people at a project company with contact status and enrichment attempts
+      security: [{ clerkSession: [] }]
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+        - $ref: "#/components/parameters/ProjectCompanyId"
+      responses:
+        "200":
+          description: People attached to the project company
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/ProjectPerson" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+    post:
+      operationId: createProjectPerson
+      tags: [companies]
+      summary: Add a private, customer-provided person to a project company
+      security: [{ clerkSession: [] }]
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+        - $ref: "#/components/parameters/ProjectCompanyId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CreateProjectPersonRequest" }
+      responses:
+        "201":
+          description: Created private person
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CreateProjectPersonResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /projects/{projectId}/companies/{projectCompanyId}/people/{personId}/enrich-contact:
+    post:
+      operationId: enrichProjectPersonContact
+      tags: [companies]
+      summary: Run selective email (and optional phone) lookup for one person
+      description: >-
+        Email lookup always runs; phone lookup runs only when includePhone is true.
+        Only high-priority people or explicit user requests are eligible.
+      security: [{ clerkSession: [] }]
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+        - $ref: "#/components/parameters/ProjectCompanyId"
+        - name: personId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/EnrichProjectPersonContactRequest" }
+      responses:
+        "200":
+          description: Contact enrichment result per capability
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ContactEnrichmentResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409":
+          description: The person is not eligible for contact enrichment
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
   /projects/{projectId}/opportunity-models:
     get:
       operationId: listOpportunityModels
@@ -2488,6 +2687,20 @@ components:
       type: object
       properties:
         id: { type: string }
+        organizationId: { type: string }
+        projectId: { type: string }
+        companyId: { type: string }
+        definitionId: { type: string }
+        ruleVersion: { type: string }
+        status: { type: string }
+        triggeredSignalIds: { type: array, items: { type: string } }
+        originalStrength: { type: number }
+        needImpact: { type: number }
+        timingImpact: { type: number }
+        detectedAt: { type: string, format: date-time }
+        lastEvaluatedAt: { type: string, format: date-time }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
         definition: { $ref: "#/components/schemas/SignalClusterDefinition" }
         members:
           type: array
@@ -2500,7 +2713,7 @@ components:
         independenceSnapshot: { type: object, additionalProperties: true }
         temporalSnapshot: { type: object, additionalProperties: true }
         supportingEvidenceIds: { type: array, items: { type: string } }
-      required: [id, definition, members, explanation, currentStrength, confidence, independenceSnapshot, temporalSnapshot, supportingEvidenceIds]
+      required: [id, organizationId, projectId, companyId, definitionId, ruleVersion, definition, members, explanation, currentStrength, confidence, independenceSnapshot, temporalSnapshot, supportingEvidenceIds]
       additionalProperties: true
     UpdateOpportunitySignalRequest:
       type: object
@@ -4294,6 +4507,310 @@ components:
         explanation: { $ref: "#/components/schemas/WhyExplanation" }
         claims: { type: array, items: { $ref: "#/components/schemas/WhyClaim" } }
       required: [explanation, claims]
+    NextBestActionType:
+      type: string
+      enum: [CONTACT_NOW, RESEARCH_MORE, MONITOR, WAIT_FOR_SIGNAL, REVIEW_DISQUALIFIER, REQUEST_INTRODUCTION, REOPEN_OPPORTUNITY]
+    ResearchFreshness:
+      type: string
+      enum: [FRESH, AGING, STALE, NOT_RESEARCHED]
+    NextBestActionFactors:
+      type: object
+      properties:
+        opportunityState: { type: string, nullable: true }
+        fitScore: { type: number, nullable: true }
+        needScore: { type: number, nullable: true }
+        timingScore: { type: number, nullable: true }
+        relationshipScore: { type: number, nullable: true }
+        confidenceScore: { type: number, nullable: true }
+        researchFreshness: { $ref: "#/components/schemas/ResearchFreshness" }
+        relationshipStatus: { type: string }
+        knownFirstPartyRelationship: { type: boolean }
+        independentSourceCount: { type: integer }
+        negativeSignalCount: { type: integer }
+        confirmedDisqualifier: { type: boolean }
+      required:
+        - opportunityState
+        - fitScore
+        - needScore
+        - timingScore
+        - relationshipScore
+        - confidenceScore
+        - researchFreshness
+        - relationshipStatus
+        - knownFirstPartyRelationship
+        - independentSourceCount
+        - negativeSignalCount
+        - confirmedDisqualifier
+    NextBestActionRecommendation:
+      type: object
+      properties:
+        action: { $ref: "#/components/schemas/NextBestActionType" }
+        label: { type: string }
+        explanation: { type: string }
+        ruleVersion: { type: string }
+        factors: { $ref: "#/components/schemas/NextBestActionFactors" }
+      required: [action, label, explanation, ruleVersion, factors]
+    NextBestActionResponse:
+      type: object
+      properties:
+        projectId: { type: string }
+        projectCompanyId: { type: string }
+        companyId: { type: string }
+        generatedAt: { type: string, format: date-time }
+        recommendationId:
+          type: string
+          nullable: true
+          description: Ledger entry backing this recommendation; null when no opportunity assessment exists yet.
+        recommendation: { $ref: "#/components/schemas/NextBestActionRecommendation" }
+      required: [projectId, projectCompanyId, companyId, generatedAt, recommendationId, recommendation]
+    RecommendationOutcomeType:
+      type: string
+      enum: [USEFUL, NOT_USEFUL, CONTACTED, POSITIVE_REPLY, NEGATIVE_REPLY, MEETING, QUALIFIED, PROPOSAL, WON, LOST, VIEWED, SKIPPED]
+    RecommendationOutcomeReason:
+      type: string
+      enum: [WRONG_COMPANY_SIZE, WRONG_GEOGRAPHY, NO_BUDGET, EXISTING_VENDOR, WRONG_BUYER, BAD_TIMING, BAD_DATA, NOT_RELEVANT, COMPETITOR, OTHER]
+    RecommendationOutcome:
+      type: object
+      properties:
+        id: { type: string }
+        recommendationId: { type: string }
+        organizationId: { type: string }
+        projectId: { type: string }
+        projectCompanyId: { type: string }
+        companyId: { type: string }
+        outcomeType: { $ref: "#/components/schemas/RecommendationOutcomeType" }
+        reason:
+          allOf:
+            - $ref: "#/components/schemas/RecommendationOutcomeReason"
+          nullable: true
+        note: { type: string, nullable: true }
+        recordedBy: { type: string }
+        recordedAt: { type: string, format: date-time }
+        createdAt: { type: string, format: date-time }
+      required:
+        - id
+        - recommendationId
+        - organizationId
+        - projectId
+        - projectCompanyId
+        - companyId
+        - outcomeType
+        - reason
+        - note
+        - recordedBy
+        - recordedAt
+        - createdAt
+    RecordRecommendationOutcomeRequest:
+      type: object
+      properties:
+        outcomeType: { $ref: "#/components/schemas/RecommendationOutcomeType" }
+        reason:
+          allOf:
+            - $ref: "#/components/schemas/RecommendationOutcomeReason"
+          nullable: true
+        note: { type: string, maxLength: 1000, nullable: true }
+      required: [outcomeType]
+      additionalProperties: false
+    RecommendationLedgerEntry:
+      type: object
+      description: Immutable snapshot of one recommendation and every outcome recorded against it.
+      properties:
+        id: { type: string }
+        organizationId: { type: string }
+        projectId: { type: string }
+        projectCompanyId: { type: string }
+        companyId: { type: string }
+        companyName: { type: string }
+        opportunityId: { type: string, nullable: true }
+        businessTwinVersionId: { type: string, nullable: true }
+        businessTwinVersion: { type: integer, nullable: true }
+        icpVersionId: { type: string, nullable: true }
+        icpVersion: { type: integer, nullable: true }
+        intelligencePackVersionId: { type: string, nullable: true }
+        intelligencePackVersion: { type: integer, nullable: true }
+        opportunityModelVersionId: { type: string, nullable: true }
+        opportunityModelVersion: { type: integer, nullable: true }
+        fit: { type: number, nullable: true }
+        need: { type: number, nullable: true }
+        timing: { type: number, nullable: true }
+        relationship: { type: number, nullable: true }
+        confidence: { type: number, nullable: true }
+        state: { type: string }
+        signals:
+          type: array
+          items: { type: object, additionalProperties: true }
+        clusters:
+          type: array
+          items: { type: object, additionalProperties: true }
+        evidenceReferences:
+          type: array
+          items: { type: object, additionalProperties: true }
+        why: { type: string }
+        recommendedAction: { $ref: "#/components/schemas/NextBestActionType" }
+        recommendationRuleVersion: { type: string }
+        inputSnapshot: { type: object, additionalProperties: true }
+        snapshotKey: { type: string }
+        recommendedAt: { type: string, format: date-time }
+        createdAt: { type: string, format: date-time }
+        outcomes:
+          type: array
+          items: { $ref: "#/components/schemas/RecommendationOutcome" }
+      required:
+        - id
+        - organizationId
+        - projectId
+        - projectCompanyId
+        - companyId
+        - companyName
+        - opportunityId
+        - businessTwinVersionId
+        - businessTwinVersion
+        - icpVersionId
+        - icpVersion
+        - intelligencePackVersionId
+        - intelligencePackVersion
+        - opportunityModelVersionId
+        - opportunityModelVersion
+        - fit
+        - need
+        - timing
+        - relationship
+        - confidence
+        - state
+        - signals
+        - clusters
+        - evidenceReferences
+        - why
+        - recommendedAction
+        - recommendationRuleVersion
+        - inputSnapshot
+        - snapshotKey
+        - recommendedAt
+        - createdAt
+        - outcomes
+    BuyingRole:
+      type: string
+      enum: [ECONOMIC_BUYER, CHAMPION, TECHNICAL_EVALUATOR, INFLUENCER, USER, PROCUREMENT, OTHER]
+    PersonPriority:
+      type: string
+      enum: [HIGH, MEDIUM, LOW]
+    ContactStatus:
+      type: string
+      enum: [UNKNOWN, FOUND, VERIFIED, UNVERIFIED, INVALID]
+    ContactEnrichmentCapability:
+      type: string
+      enum: [EMAIL_LOOKUP, PHONE_LOOKUP]
+    ProjectPersonSummary:
+      type: object
+      properties:
+        id: { type: string }
+        name: { type: string }
+        title: { type: string, nullable: true }
+        function: { type: string, nullable: true }
+        seniority: { type: string, nullable: true }
+        profileUrl: { type: string, nullable: true }
+        source: { type: string, enum: [EXTERNAL, CUSTOMER_PROVIDED] }
+        visibility: { type: string, enum: [PUBLIC, PRIVATE] }
+      required: [id, name, title, function, seniority, profileUrl, source, visibility]
+    ProjectPersonContext:
+      type: object
+      properties:
+        role: { $ref: "#/components/schemas/BuyingRole" }
+        roleLabel: { type: string }
+        roleConfidence: { type: number }
+        priority: { $ref: "#/components/schemas/PersonPriority" }
+        email: { type: string, nullable: true }
+        emailStatus: { $ref: "#/components/schemas/ContactStatus" }
+        phone: { type: string, nullable: true }
+        phoneStatus: { $ref: "#/components/schemas/ContactStatus" }
+        lastEnrichedAt: { type: string, format: date-time, nullable: true }
+      required: [role, roleLabel, roleConfidence, priority, email, emailStatus, phone, phoneStatus, lastEnrichedAt]
+    ContactEnrichmentAttempt:
+      type: object
+      properties:
+        id: { type: string }
+        capability: { $ref: "#/components/schemas/ContactEnrichmentCapability" }
+        status: { type: string, enum: [SUCCEEDED, EMPTY, FAILED] }
+        contactStatus: { $ref: "#/components/schemas/ContactStatus" }
+        providerId: { type: string, nullable: true }
+        estimatedCost: { type: number }
+        actualCost: { type: number, nullable: true }
+        observedAt: { type: string, format: date-time }
+      required: [id, capability, status, contactStatus, providerId, estimatedCost, actualCost, observedAt]
+    ProjectPerson:
+      type: object
+      properties:
+        person: { $ref: "#/components/schemas/ProjectPersonSummary" }
+        context: { $ref: "#/components/schemas/ProjectPersonContext" }
+        attempts:
+          type: array
+          items: { $ref: "#/components/schemas/ContactEnrichmentAttempt" }
+      required: [person, context, attempts]
+    CreateProjectPersonRequest:
+      type: object
+      properties:
+        name: { type: string, minLength: 1, maxLength: 180 }
+        title: { type: string, maxLength: 240, nullable: true }
+        role: { $ref: "#/components/schemas/BuyingRole" }
+        roleLabel: { type: string, minLength: 1, maxLength: 120 }
+        roleConfidence: { type: number, minimum: 0, maximum: 100 }
+        priority: { $ref: "#/components/schemas/PersonPriority" }
+      required: [name]
+      additionalProperties: false
+    CreateProjectPersonResponse:
+      type: object
+      properties:
+        personId: { type: string }
+        visibility: { type: string, enum: [PRIVATE] }
+        source: { type: string, enum: [CUSTOMER_PROVIDED] }
+      required: [personId, visibility, source]
+    EnrichProjectPersonContactRequest:
+      type: object
+      properties:
+        explicitRequest:
+          type: boolean
+          description: Defaults to true. A false value only succeeds for HIGH priority people.
+        includePhone:
+          type: boolean
+          description: Also run phone lookup after email lookup. Defaults to false.
+      additionalProperties: false
+    ContactEnrichmentCapabilityResult:
+      type: object
+      properties:
+        capability: { $ref: "#/components/schemas/ContactEnrichmentCapability" }
+        provider: { type: string }
+        cost:
+          type: object
+          properties:
+            estimated: { type: number }
+            actual: { type: number, nullable: true }
+          required: [estimated, actual]
+        result:
+          type: string
+          nullable: true
+          description: The email address or phone number found, or null.
+        verification: { $ref: "#/components/schemas/ContactStatus" }
+        timestamp: { type: string, format: date-time }
+        responseStatus: { type: string, enum: [success, empty, failed] }
+        error:
+          type: object
+          nullable: true
+          properties:
+            code: { type: string }
+            message: { type: string }
+            retryable: { type: boolean }
+          required: [code, message, retryable]
+      required: [capability, provider, cost, result, verification, timestamp, responseStatus, error]
+    ContactEnrichmentResponse:
+      type: object
+      properties:
+        kind: { type: string, enum: [completed] }
+        personId: { type: string }
+        requestedExplicitly: { type: boolean }
+        results:
+          type: array
+          items: { $ref: "#/components/schemas/ContactEnrichmentCapabilityResult" }
+      required: [kind, personId, requestedExplicitly, results]
     ErrorResponse:
       type: object
       properties:
@@ -4365,6 +4882,12 @@ components:
         type: string
     ProjectCompanyId:
       name: projectCompanyId
+      in: path
+      required: true
+      schema:
+        type: string
+    RecommendationId:
+      name: recommendationId
       in: path
       required: true
       schema:
