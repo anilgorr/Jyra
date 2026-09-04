@@ -18,6 +18,7 @@ import { useWorkspace } from "@/context/workspace-context";
 import {
   useListResearchWorkspace,
   useExecuteCompanyResearch,
+  useAnalyzeCompanyIntelligenceV2,
   useGetResearchEconomics,
   useUpdateResearchBudget,
   getGetResearchEconomicsQueryKey,
@@ -252,31 +253,27 @@ function StatusBadge({ status }: { status: string }) {
 function CompanyDetailPane({ company, activeProjectId }: { company: ResearchWorkspaceCompany, activeProjectId: string }) {
   const [lastResult, setLastResult] = useState<ResearchExecutionResponse | null>(null);
   
-  const executeResearch = useExecuteCompanyResearch({
+  // The Research sweep runs the same Intelligence Core V2 engine as Today and
+  // Opportunities, so a completed sweep here scores the company everywhere.
+  const executeResearch = useAnalyzeCompanyIntelligenceV2({
     mutation: {
-      onSuccess: (data) => {
-        setLastResult(data);
+      onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: getListResearchWorkspaceQueryKey(activeProjectId) });
-        
-        if (data.stopped) {
-          toast.info(data.stopCode === "STILL_UNKNOWN" ? "Company research completed" : "Research paused safely", {
-            description: data.reason || data.nextAction,
-          });
-        } else {
-          toast.success("Sweep complete", {
-            description: `Gathered ${data.evidenceCount} evidence items.`
-          });
-        }
+        toast.success("Assessed with Intelligence Core V2", {
+          description: `${company.companyName} has been researched and scored.`,
+        });
       },
-      onError: () => {
-        toast.error("Execution failed", { description: "The intelligence sweep could not be started." });
+      onError: (error) => {
+        toast.error("Assessment failed", {
+          description: error instanceof Error ? error.message : "The company could not be assessed.",
+        });
       }
     }
   });
 
   const handleExecute = () => {
     setLastResult(null);
-    executeResearch.mutate({ projectId: activeProjectId, projectCompanyId: company.projectCompanyId });
+    executeResearch.mutate({ projectId: activeProjectId, projectCompanyId: company.projectCompanyId, data: {} });
   };
 
   return (
