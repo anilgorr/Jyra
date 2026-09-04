@@ -339,7 +339,7 @@ function CompanyDetailPane({ company, activeProjectId }: { company: ResearchWork
               </div>
               
               <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
-                <Link href="/companies" className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-auto")}>
+                <Link href={`/companies/${company.projectCompanyId}`} className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-auto")}>
                   <Files className="mr-2 h-4 w-4" /> View Evidence
                 </Link>
                 <Button
@@ -394,76 +394,34 @@ function CompanyDetailPane({ company, activeProjectId }: { company: ResearchWork
             )}
           </div>
 
-          {/* Current State / Stats Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card className="shadow-none border-border/60">
-               <CardHeader className="pb-3 border-b border-border/40 bg-muted/10">
-                  <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-                    <Search className="h-3.5 w-3.5" /> Latest Job
-                  </CardTitle>
-               </CardHeader>
-               <CardContent className="pt-4">
-                  {company.job ? (
-                     <div className="space-y-3 text-sm">
-                       <div className="flex justify-between items-center border-b border-border/40 pb-2">
-                         <span className="text-muted-foreground">Status</span> 
-                         <Badge variant="outline" className="font-normal">{company.job.status}</Badge>
-                       </div>
-                       <div className="flex justify-between items-center border-b border-border/40 pb-2">
-                         <span className="text-muted-foreground">Provider</span> 
-                         <span className="font-medium">{company.job.providerCapability}</span>
-                       </div>
-                       <div className="flex justify-between items-center border-b border-border/40 pb-2">
-                         <span className="text-muted-foreground">Results Found</span> 
-                         <span className="font-medium">{company.job.resultCount}</span>
-                       </div>
-                       {company.job.errorMessage && (
-                          <div className="mt-3 rounded-md bg-destructive/10 p-3 text-destructive border border-destructive/20 text-xs">
-                            <span className="font-semibold block mb-1">Error</span>
-                            {company.job.errorMessage}
-                          </div>
-                       )}
-                     </div>
-                  ) : (
-                     <div className="flex flex-col items-center justify-center py-6 text-center text-muted-foreground">
-                       <Search className="h-6 w-6 mb-2 opacity-20" />
-                       <span className="text-sm">No jobs have been executed yet.</span>
-                     </div>
-                  )}
-               </CardContent>
-            </Card>
-
-            <Card className="shadow-none border-border/60">
-               <CardHeader className="pb-3 border-b border-border/40 bg-muted/10">
-                  <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-                    <Info className="h-3.5 w-3.5" /> Latest Question
-                  </CardTitle>
-               </CardHeader>
-               <CardContent className="pt-4">
-                  {company.question ? (
-                     <div className="space-y-4 text-sm">
-                       <div>
-                         <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1 block">Question</span>
-                         <p className="font-medium text-foreground leading-relaxed">{company.question.questionText}</p>
-                       </div>
-                       <div>
-                         <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1 block">Reason</span>
-                         <p className="text-muted-foreground leading-relaxed">{company.question.reason}</p>
-                       </div>
-                       <div className="flex items-center gap-2 pt-2 border-t border-border/40">
-                         <Badge variant="secondary" className="font-normal bg-secondary">{company.question.status}</Badge>
-                         <Badge variant="outline" className="font-normal">{company.question.questionType}</Badge>
-                       </div>
-                     </div>
-                  ) : (
-                     <div className="flex flex-col items-center justify-center py-6 text-center text-muted-foreground">
-                       <Info className="h-6 w-6 mb-2 opacity-20" />
-                       <span className="text-sm">No questions have been planned yet.</span>
-                     </div>
-                  )}
-               </CardContent>
-            </Card>
-          </div>
+          {/* Intelligence summary — the sweep runs Intelligence Core V2 */}
+          <Card className="shadow-none border-border/60">
+            <CardHeader className="pb-3 border-b border-border/40 bg-muted/10">
+              <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+                <Info className="h-3.5 w-3.5" /> Intelligence result
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-4">
+              <div className="flex flex-col gap-4 text-sm">
+                <div className="flex justify-between items-center border-b border-border/40 pb-2">
+                  <span className="text-muted-foreground">Commercial role</span>
+                  <Badge variant="outline" className="font-normal">{(company.buyerRole ?? "UNKNOWN").replaceAll("_", " ")}</Badge>
+                </div>
+                <p className="text-muted-foreground leading-relaxed">
+                  The sweep runs Intelligence Core V2 — it resolves WHO and commercial role with every
+                  claim bound to its evidence, and scores the company across Today and Opportunities.
+                  Open the company's intelligence to read the assessment and its cited evidence.
+                </p>
+                <Link
+                  href={`/companies/${company.projectCompanyId}`}
+                  className={cn(buttonVariants({ variant: "outline" }), "self-start")}
+                  data-testid="link-research-open-intelligence"
+                >
+                  <Files className="mr-2 h-4 w-4" /> Open full intelligence
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
           
         </div>
       </ScrollArea>
