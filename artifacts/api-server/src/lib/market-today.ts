@@ -1,4 +1,4 @@
-import { and, desc, eq, inArray } from "drizzle-orm";
+import { and, desc, eq, inArray, ne } from "drizzle-orm";
 import {
   companiesTable,
   companyEvidenceTable,
@@ -323,7 +323,7 @@ export async function getMarketToday(projectId: string, now = new Date()) {
       eq(opportunitiesTable.projectId, projectId),
       eq(opportunitiesTable.projectCompanyId, projectCompaniesTable.id),
     ))
-    .where(eq(projectCompaniesTable.projectId, projectId));
+    .where(and(eq(projectCompaniesTable.projectId, projectId), ne(projectCompaniesTable.status, "archived")));
   const companyIds = baseRows.map((row) => row.company.id);
   const opportunityIds = baseRows.flatMap((row) => row.opportunity ? [row.opportunity.id] : []);
   const [histories, whys, signalRows, clusterRows, evidenceRows, questions, models]: [

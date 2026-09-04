@@ -74,7 +74,7 @@ export function OpportunityAssessments({ projectId, initialCompanyId, focusWhy =
   const evaluate = async (projectCompanyId: string) => {
     setLoadingId(projectCompanyId);
     try {
-      await request(`/projects/${projectId}/companies/${projectCompanyId}/opportunity/evaluate`, { method: "POST" });
+      await request(`/projects/${projectId}/companies/${projectCompanyId}/intelligence-v2`, { method: "POST", body: JSON.stringify({}) });
       await load();
       const [nextDetail, nextWhy] = await Promise.all([
         request<Detail>(`/projects/${projectId}/companies/${projectCompanyId}/opportunity`),

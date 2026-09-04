@@ -15,6 +15,7 @@ import {
   projectCompaniesTable,
   projectsTable,
 } from "@workspace/db";
+import { evaluateOpportunity } from "../lib/opportunity-engine";
 import { ProviderRouter } from "../lib/provider-router";
 import { resolveProjectSellerContext } from "../lib/seller-context";
 import {
@@ -24,6 +25,10 @@ import {
 } from "../lib/intelligence-v2/orchestrator";
 import { createProviderRouterResearchInvokerV2 } from "../lib/intelligence-v2/research-company";
 import { icpCriteriaToRequirementsV2 } from "../lib/intelligence-v2/icp-requirements";
+import {
+  loadLatestIntelligenceV2Assessment,
+  persistIntelligenceV2Assessment,
+} from "../lib/intelligence-v2/persist-assessment";
 import {
   ASSESSMENT_POLICY_VERSION,
   ASSESSMENT_PROMPT_VERSION,
@@ -39,8 +44,10 @@ type AsyncHandler = (...args: Parameters<RequestHandler>) => Promise<void>;
 const asyncRoute = (handler: AsyncHandler): RequestHandler =>
   (req, res, next) => void handler(req, res, next).catch(next);
 
-// Deliberately process-private and development-only: the current schema has no
-// project-scoped private provenance entity suitable for these complete snapshots.
+// The research/profile/assessment caches stay process-private (they hold raw
+// provider payloads). Completed run outcomes are persisted to
+// intelligence_v2_assessments; `latestRuns` remains as the hot path for the
+// development panel within one process.
 const repository = new InMemoryIntelligenceV2Repository();
 const latestRuns = new Map<string, ReturnType<typeof compactRun>>();
 const keyFor = (projectId: string, projectCompanyId: string) => `${projectId}:${projectCompanyId}`;
@@ -149,8 +156,22 @@ router.get("/projects/:projectId/companies/:projectCompanyId/intelligence-v2", r
   const owned = await resolveOwnedCompany(getAuthenticatedUserId(res), params.data.projectId, params.data.projectCompanyId);
   if (!owned) return void res.status(404).json({ error: "Project company not found" });
   const run = latestRuns.get(keyFor(params.data.projectId, params.data.projectCompanyId));
-  if (!run) return void res.status(404).json({ error: "No V2 analysis has been run in this process" });
-  res.json(GetCompanyIntelligenceV2Response.parse(run));
+  if (run) return void res.json(GetCompanyIntelligenceV2Response.parse(run));
+  // Restart-safe fallback: serve the newest persisted run verbatim. A snapshot
+  // that no longer satisfies the current contract is reported as absent rather
+  // than returned malformed.
+  const persisted = await loadLatestIntelligenceV2Assessment(params.data.projectId, params.data.projectCompanyId);
+  if (!persisted) return void res.status(404).json({ error: "No V2 analysis has been run for this company" });
+  const parsed = GetCompanyIntelligenceV2Response.safeParse(persisted.runSnapshot);
+  if (!parsed.success) {
+    req.log.warn({
+      assessmentId: persisted.id,
+      projectCompanyId: params.data.projectCompanyId,
+      issues: parsed.error.issues.slice(0, 5),
+    }, "Persisted Intelligence Core V2 run does not satisfy the current response contract");
+    return void res.status(404).json({ error: "The persisted V2 analysis predates the current response contract" });
+  }
+  res.json(parsed.data);
 }));
 
 router.post("/projects/:projectId/companies/:projectCompanyId/intelligence-v2", requireAuth, asyncRoute(async (req, res) => {
@@ -209,7 +230,44 @@ router.post("/projects/:projectId/companies/:projectCompanyId/intelligence-v2", 
     icp: seller.icpVersionId,
   }, result.evidence);
   latestRuns.set(keyFor(params.data.projectId, params.data.projectCompanyId), run);
+  const completedAt = new Date();
+  const persisted = await db.transaction(async (tx) => {
+    const row = await persistIntelligenceV2Assessment({
+      organizationId: owned.project.organizationId,
+      projectId: params.data.projectId,
+      projectCompanyId: params.data.projectCompanyId,
+      companyId: owned.company.id,
+      icpVersionId: seller.icpVersionId ?? null,
+      result,
+      runSnapshot: run,
+    }, tx);
+    await tx.update(projectCompaniesTable).set({
+      researchStatus: "complete",
+      latestResearchAt: completedAt,
+      updatedAt: completedAt,
+    }).where(eq(projectCompaniesTable.id, params.data.projectCompanyId));
+    return row;
+  });
+  // Refresh the deterministic opportunity assessment so Today / Opportunities /
+  // Companies reflect this run immediately. Scoring is downstream of the
+  // persisted verdicts; its failure must never turn a completed run into an error.
+  try {
+    await evaluateOpportunity({
+      organizationId: owned.project.organizationId,
+      projectId: params.data.projectId,
+      projectCompanyId: params.data.projectCompanyId,
+      userId: getAuthenticatedUserId(res),
+      now: completedAt,
+    });
+  } catch (error) {
+    req.log.warn({
+      err: error,
+      assessmentId: persisted.id,
+      projectCompanyId: params.data.projectCompanyId,
+    }, "Opportunity re-evaluation after Intelligence Core V2 run failed; the persisted assessment is unaffected");
+  }
   req.log.info({
+    assessmentId: persisted.id,
     companyId: run.companyId,
     intelligenceVersion: run.intelligenceVersion,
     profileFingerprint: run.fingerprints.profile,

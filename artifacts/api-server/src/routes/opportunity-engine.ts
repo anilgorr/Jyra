@@ -1,4 +1,4 @@
-import { and, desc, eq } from "drizzle-orm";
+import { and, desc, eq, ne } from "drizzle-orm";
 import { Router, type IRouter, type RequestHandler } from "express";
 import { z } from "zod/v4";
 import {
@@ -58,7 +58,7 @@ router.get("/projects/:projectId/opportunities", requireAuth, asyncRoute(async (
     .from(opportunitiesTable)
     .innerJoin(projectCompaniesTable, eq(opportunitiesTable.projectCompanyId, projectCompaniesTable.id))
     .innerJoin(companiesTable, eq(opportunitiesTable.companyId, companiesTable.id))
-    .where(eq(opportunitiesTable.projectId, params.data.projectId))
+    .where(and(eq(opportunitiesTable.projectId, params.data.projectId), ne(projectCompaniesTable.status, "archived")))
     .orderBy(desc(opportunitiesTable.score), desc(opportunitiesTable.assessedAt));
   res.json(rows);
 }));

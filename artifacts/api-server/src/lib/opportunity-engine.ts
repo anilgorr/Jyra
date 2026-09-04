@@ -19,9 +19,12 @@ import {
   signalClustersTable,
   signalDefinitionsTable,
   signalsTable,
+  type IcpCriterion,
+  type IntelligenceV2Assessment,
 } from "@workspace/db";
 import { selectAcceptedFactsForCompany } from "./accepted-facts";
-import { evaluateIcpCriterion, type CriterionResult } from "./icp-engine";
+import { evaluateIcpCriterion, type CompanyFacts, type CriterionResult } from "./icp-engine";
+import { loadLatestIntelligenceV2Assessment } from "./intelligence-v2/persist-assessment";
 import { DEFAULT_NEXT_BEST_ACTION_RULES } from "./next-best-action";
 import { opportunitySemanticFingerprint } from "./semantic-fingerprint";
 
@@ -34,7 +37,10 @@ export const DEFAULT_OPPORTUNITY_RULES = {
   coolingScoreDrop: 15,
 } as const;
 export function buyerRoleAllowsBuyerOpportunity(role: string): boolean {
-  return role !== "SELLER_COMPETITOR" && role !== "ADJACENT_VENDOR";
+  // Narrowed (v2): only a true competitor (sells the seller's own service) is
+  // hard-excluded from buyer ranking. An adjacent-category vendor can still be a
+  // legitimate buyer of the seller's offering, so it is allowed through.
+  return role !== "SELLER_COMPETITOR";
 }
 type OpportunityAssessmentState = typeof opportunitiesTable.$inferSelect["state"];
 
@@ -51,10 +57,31 @@ export type ScoreComponent = {
   evidenceIds: string[];
   details: Record<string, unknown>;
 };
+export type FitCriterionType = "MUST_HAVE" | "PREFERRED" | "DISQUALIFIER" | "ADVISORY";
+export type FitCriterionSource = "INTELLIGENCE_V2" | "V1_FACTS";
+export type FitResult = { id: string; type: FitCriterionType; weight: number | null; result: CriterionResult; source?: FitCriterionSource };
+/**
+ * Present when the persisted Intelligence Core V2 assessment supplied the
+ * criterion verdicts in `fitResults`. Fit arithmetic is unchanged; this only
+ * labels the rule and lets Confidence prefer the V2 assessment confidence over
+ * legacy evidence-quality scoring when no V1 evidence pipeline has run.
+ */
+export type IntelligenceV2FitProvider = {
+  rule: string;
+  assessmentId: string;
+  assessedAt: string;
+  assessmentFingerprint: string;
+  assessmentConfidence: number;
+  whoValue: string;
+  whoConfidence: number;
+  commercialRole: string;
+  evidenceIds: string[];
+};
 export type OpportunityCalculationInput = {
   weights: { fit: number; need: number; timing: number; relationship: number };
   rules?: Partial<typeof DEFAULT_OPPORTUNITY_RULES>;
-  fitResults: Array<{ id: string; type: "MUST_HAVE" | "PREFERRED" | "DISQUALIFIER" | "ADVISORY"; weight: number | null; result: CriterionResult }>;
+  fitResults: FitResult[];
+  fitProvider?: IntelligenceV2FitProvider | null;
   signals: Array<{ id: string; polarity: "POSITIVE" | "NEGATIVE"; strength: number; confidence: number; needImpact: number; timingImpact: number; fitImpact: number; status: string; factIds: string[]; evidenceIds: string[] }>;
   clusters: Array<{ id: string; strength: number; confidence: number; needImpact: number; timingImpact: number; status: string; signalIds: string[]; evidenceIds: string[] }>;
   evidence: Array<{ id: string; sourceDomain: string; authority: number; directness: number; freshness: number; corroboration: number; status: string }>;
@@ -73,7 +100,9 @@ function fitComponent(input: OpportunityCalculationInput): ScoreComponent {
   const disqualified = known.some((item) => item.type === "DISQUALIFIER" && item.result === "pass");
   const must = known.filter((item) => item.type === "MUST_HAVE");
   const preferred = known.filter((item) => item.type === "PREFERRED");
+  const provider = input.fitProvider ?? null;
   let score: number | null = null;
+  let whoDerived = false;
   if (disqualified) score = 0;
   else if (known.length) {
     const mustPass = must.filter((item) => item.result === "pass").length;
@@ -83,16 +112,39 @@ function fitComponent(input: OpportunityCalculationInput): ScoreComponent {
     const preferredRatio = preferredWeight ? preferredPass / preferredWeight : 1;
     score = round(mustRatio * 70 + preferredRatio * 30);
     if (must.some((item) => item.result === "fail")) score = Math.min(score, 29);
+  } else if (provider?.whoValue && provider.whoValue !== "INSUFFICIENT_DATA") {
+    // No accepted criterion could be individually evaluated, but the persisted
+    // Intelligence Core V2 assessment reached an evidence-grounded structural-fit
+    // verdict. Map it deterministically: the verdict class sets the band and its
+    // calibrated confidence the position within it (never free-form model text).
+    const conf = Math.max(0, Math.min(1, provider.whoConfidence ?? 0));
+    score = provider.whoValue === "LIKELY_FIT" ? round(60 + conf * 35)
+      : provider.whoValue === "POSSIBLE_FIT" ? round(35 + conf * 25)
+      : provider.whoValue === "LIKELY_NOT_FIT" ? round(5 + conf * 15)
+      : null;
+    whoDerived = score !== null;
   }
   const unknown = relevant.filter((item) => item.result === "unknown").length;
+  const providerNote = provider ? " Criterion verdicts come from the persisted Intelligence Core V2 assessment." : "";
   return {
     dimension: "FIT", score, status: score === null ? "UNKNOWN" : disqualified ? "GATED" : "KNOWN",
-    rule: "accepted_scorable_icp_v1",
-    explanation: score === null ? "Fit is unknown because no accepted ICP criterion can be evaluated." :
+    rule: whoDerived ? "intelligence_v2_who_v1" : (provider?.rule ?? "accepted_scorable_icp_v1"),
+    explanation: (score === null ? "Fit is unknown because no accepted ICP criterion can be evaluated." :
       disqualified ? "A confirmed accepted disqualifier prevents a positive Fit conclusion." :
-      `${known.length} accepted ICP criterion result(s) were known; ${unknown} remain unknown and were not treated as failures.`,
+      whoDerived ? `Fit reflects the Intelligence Core V2 structural-fit verdict ${provider?.whoValue} at confidence ${provider?.whoConfidence}; no accepted ICP criterion was individually evaluable (${unknown} unknown).` :
+      `${known.length} accepted ICP criterion result(s) were known; ${unknown} remain unknown and were not treated as failures.`) + providerNote,
     signalIds: [], clusterIds: [], factIds: [], evidenceIds: [],
-    details: { criterionResults: input.fitResults, knownCount: known.length, unknownCount: unknown, disqualified },
+    details: {
+      criterionResults: input.fitResults, knownCount: known.length, unknownCount: unknown, disqualified, whoDerived,
+      ...(provider ? {
+        intelligenceV2: {
+          assessmentId: provider.assessmentId, assessedAt: provider.assessedAt, assessmentFingerprint: provider.assessmentFingerprint,
+          whoValue: provider.whoValue, whoConfidence: provider.whoConfidence, commercialRole: provider.commercialRole,
+          v2CriterionCount: input.fitResults.filter((item) => item.source === "INTELLIGENCE_V2").length,
+          v1CriterionCount: input.fitResults.filter((item) => item.source === "V1_FACTS").length,
+        },
+      } : {}),
+    },
   };
 }
 
@@ -142,6 +194,28 @@ function relationshipComponent(status: string): ScoreComponent {
 }
 
 function confidenceComponent(input: OpportunityCalculationInput, completeness: number): ScoreComponent {
+  const provider = input.fitProvider ?? null;
+  if (provider) {
+    // Deterministic blend: the V2 assessment confidence (0..1, produced by the
+    // evidence-validated assessment, never by free-form model output) carries
+    // the evidence-quality share; dimension completeness keeps its share.
+    const contradictions = input.evidence.filter((item) => item.status === "CONFLICTING").length;
+    const contradictionPenalty = Math.min(40, contradictions * 15);
+    const score = round(provider.assessmentConfidence * 100 * 0.85 + completeness * 100 * 0.15 - contradictionPenalty);
+    return {
+      dimension: "CONFIDENCE", score, status: contradictions ? "GATED" : "KNOWN",
+      rule: "intelligence_v2_assessment_confidence_v1",
+      explanation: `Confidence is separate from opportunity strength and reflects the Intelligence Core V2 assessment confidence ${provider.assessmentConfidence} (who: ${provider.whoValue} at ${provider.whoConfidence}), dimension completeness, and ${contradictions} legacy contradiction(s).`,
+      signalIds: [], clusterIds: [], factIds: [], evidenceIds: unique([...provider.evidenceIds, ...input.evidence.map((item) => item.id)]),
+      details: {
+        completeness, contradictions, independentSourceCount: new Set(input.evidence.map((item) => item.sourceDomain)).size,
+        intelligenceV2: {
+          assessmentId: provider.assessmentId, assessmentConfidence: provider.assessmentConfidence,
+          whoConfidence: provider.whoConfidence, legacyEvidenceCount: input.evidence.length,
+        },
+      },
+    };
+  }
   if (!input.evidence.length) return {
     dimension: "CONFIDENCE", score: null, status: "UNKNOWN", rule: "evidence_quality_confidence_v1",
     explanation: "Confidence is unknown because no supporting evidence is available.",
@@ -196,25 +270,32 @@ export function calculateOpportunityAssessment(input: OpportunityCalculationInpu
     { component: timing, weight: input.weights.timing },
     { component: relationship, weight: input.weights.relationship },
   ];
-  const coreDimensionsKnown = fit.score !== null && need.score !== null && timing.score !== null;
+  const fitKnown = fit.score !== null;
+  const timingDimensionsKnown = need.score !== null && timing.score !== null;
   const knownWeight = scoring.filter((item) => item.component.score !== null).reduce((sum, item) => sum + item.weight, 0);
-  const score = coreDimensionsKnown && knownWeight
+  // A known Fit is enough for a provisional strength; Need and Timing refine it
+  // (and unlock the strong states below) once their signals are measured.
+  const score = fitKnown && knownWeight
     ? round(scoring.reduce((sum, item) => sum + (item.component.score ?? 0) * item.weight, 0) / knownWeight)
     : null;
   const completeness = scoring.filter((item) => item.component.score !== null).reduce((sum, item) => sum + item.weight, 0) / 100;
   const confidence = confidenceComponent(input, completeness);
   let state = stateFor(score, rules);
   const gates: string[] = [];
-  if (need.score === null || need.score < rules.minimumNeedForStrongState) {
-    state = capState(state, "WATCH"); gates.push("Need evidence is absent or weak");
+  if (need.score !== null && need.score < rules.minimumNeedForStrongState) {
+    state = capState(state, "WATCH"); gates.push("Need evidence is weak");
   }
   if (fit.score !== null && fit.score < rules.minimumFitForStrongState) {
     state = capState(state, "WATCH"); gates.push("Fit is below the strong-state threshold");
   }
   const assessmentStatus: "INSUFFICIENT_DATA" | "NEEDS_MORE_RESEARCH" | "COMPLETE" = score === null ? "INSUFFICIENT_DATA" :
+    !timingDimensionsKnown ? "NEEDS_MORE_RESEARCH" :
     confidence.score === null || confidence.score < rules.minimumConfidence ? "NEEDS_MORE_RESEARCH" : "COMPLETE";
   if (assessmentStatus !== "COMPLETE") {
-    state = capState(state, "EMERGING"); gates.push("Confidence requires more research");
+    state = capState(state, "EMERGING");
+    gates.push(!timingDimensionsKnown
+      ? "Need and Timing are not yet measured; strength is provisional (Fit-based)"
+      : "Confidence requires more research");
   }
   if (["OPEN_OPPORTUNITY", "EXISTING_CUSTOMER"].includes(input.relationshipStatus) && score !== null && score >= 55 && (need.score ?? 0) >= 40 && assessmentStatus === "COMPLETE") {
     state = "ACTIVE";
@@ -227,7 +308,7 @@ export function calculateOpportunityAssessment(input: OpportunityCalculationInpu
   }
   return {
     score, state, assessmentStatus, components: [fit, need, timing, relationship, confidence],
-    explanation: `${score === null ? "NEEDS RESEARCH" : state}: ${score === null ? "an opportunity score cannot yet be calculated because Fit, Need, or Timing remains unknown" : `weighted opportunity strength is ${score}`}. Confidence is ${confidence.score ?? "unknown"} and is not included in that score.${gates.length ? ` Gates: ${gates.join("; ")}.` : ""}`,
+    explanation: `${score === null ? "NEEDS RESEARCH" : state}: ${score === null ? "an opportunity score cannot yet be calculated because Fit remains unknown" : `weighted opportunity strength is ${score}${timingDimensionsKnown ? "" : " (provisional: based on Fit; Need and Timing are not yet measured)"}`}. Confidence is ${confidence.score ?? "unknown"} and is not included in that score.${gates.length ? ` Gates: ${gates.join("; ")}.` : ""}`,
   };
 }
 
@@ -239,6 +320,47 @@ function companyFacts(company: typeof companiesTable.$inferSelect, facts: typeof
     positive_indicator: text(["FUNDING_EVENT", "COMPANY_EXPANSION", "NEW_MARKET", "EMPLOYEE_GROWTH"]),
     negative_indicator: text(["SECURITY_INCIDENT"]),
   };
+}
+
+export const INTELLIGENCE_V2_FIT_RULE = "intelligence_v2_criteria";
+
+const V2_CRITERION_RESULTS: Record<"PASS" | "FAIL" | "UNKNOWN", CriterionResult> = { PASS: "pass", FAIL: "fail", UNKNOWN: "unknown" };
+
+/**
+ * Maps the persisted V2 criterion verdicts onto the V1 Fit input. Each V2
+ * criterion is joined to the current ICP row by id for its authoritative
+ * type/weight (falling back to the V2 mandatory/exclusion flags for criteria
+ * the current ICP no longer carries). V2 `exclusion` PASS means the excluded
+ * characteristic was observed, which is exactly V1 DISQUALIFIER "pass".
+ * Current criteria V2 did not assess keep the legacy fact evaluation.
+ */
+export function fitResultsFromIntelligenceV2(
+  assessment: Pick<IntelligenceV2Assessment, "criteria">,
+  criteria: IcpCriterion[],
+  factsForIcp: CompanyFacts,
+): FitResult[] {
+  const byId = new Map(criteria.map((criterion) => [criterion.id, criterion]));
+  const covered = new Set<string>();
+  const fromV2: FitResult[] = [];
+  for (const item of assessment.criteria) {
+    if (covered.has(item.criterionId)) continue;
+    covered.add(item.criterionId);
+    const current = byId.get(item.criterionId);
+    const type: FitCriterionType = current?.criterionType
+      ?? (item.exclusion ? "DISQUALIFIER" : item.mandatory ? "MUST_HAVE" : "PREFERRED");
+    const applicable = current ? current.accepted && current.evaluability === "scorable" : true;
+    fromV2.push({
+      id: item.criterionId, type, weight: current?.weight ?? null,
+      result: applicable ? (V2_CRITERION_RESULTS[item.result] ?? "unknown") : "not_applicable",
+      source: "INTELLIGENCE_V2",
+    });
+  }
+  const fromV1: FitResult[] = criteria.filter((criterion) => !covered.has(criterion.id)).map((criterion) => ({
+    id: criterion.id, type: criterion.criterionType, weight: criterion.weight,
+    result: evaluateIcpCriterion(criterion, factsForIcp, criterion.dimension),
+    source: "V1_FACTS",
+  }));
+  return [...fromV2, ...fromV1];
 }
 
 export async function ensureOpportunityModel(organizationId: string, projectId: string, createdBy: string) {
@@ -287,10 +409,27 @@ export async function evaluateOpportunity(input: { organizationId: string; proje
   const criteria = icpVersion ? await tx.select().from(icpCriteriaTable).where(eq(icpCriteriaTable.icpVersionId, icpVersion.id)) : [];
   const facts = await selectAcceptedFactsForCompany(row.company.id, tx);
   const factsForIcp = companyFacts(row.company, facts);
-  const fitResults = criteria.map((criterion) => ({
-    id: criterion.id, type: criterion.criterionType, weight: criterion.weight,
-    result: evaluateIcpCriterion(criterion, factsForIcp, criterion.dimension),
-  }));
+  // Intelligence Core V2 is the Fit provider whenever a persisted assessment
+  // exists for this project company; otherwise the legacy fact evaluation is
+  // used exactly as before.
+  const intelligenceV2 = await loadLatestIntelligenceV2Assessment(input.projectId, row.projectCompany.id, tx);
+  const fitResults: FitResult[] = intelligenceV2
+    ? fitResultsFromIntelligenceV2(intelligenceV2, criteria, factsForIcp)
+    : criteria.map((criterion) => ({
+      id: criterion.id, type: criterion.criterionType, weight: criterion.weight,
+      result: evaluateIcpCriterion(criterion, factsForIcp, criterion.dimension),
+    }));
+  const fitProvider: IntelligenceV2FitProvider | null = intelligenceV2 ? {
+    rule: INTELLIGENCE_V2_FIT_RULE,
+    assessmentId: intelligenceV2.id,
+    assessedAt: intelligenceV2.createdAt.toISOString(),
+    assessmentFingerprint: intelligenceV2.assessmentFingerprint,
+    assessmentConfidence: intelligenceV2.assessmentConfidence,
+    whoValue: intelligenceV2.whoValue,
+    whoConfidence: intelligenceV2.whoConfidence,
+    commercialRole: intelligenceV2.commercialRole,
+    evidenceIds: unique(intelligenceV2.criteria.flatMap((criterion) => criterion.evidenceIds)),
+  } : null;
   const allSignalRows = await tx.select({ signal: signalsTable, definition: signalDefinitionsTable }).from(signalsTable)
     .innerJoin(signalDefinitionsTable, eq(signalsTable.signalDefinitionId, signalDefinitionsTable.id))
     .where(and(eq(signalsTable.projectId, input.projectId), eq(signalsTable.companyId, row.company.id)));
@@ -327,6 +466,7 @@ export async function evaluateOpportunity(input: { organizationId: string; proje
     weights: model.weights,
     rules: model.rules as Partial<typeof DEFAULT_OPPORTUNITY_RULES>,
     fitResults,
+    fitProvider,
     signals: signalRows.map(({ signal, definition }) => ({
       id: signal.id, polarity: definition.polarity, strength: signal.currentStrength, confidence: signal.confidence,
       needImpact: signal.needImpactSnapshot ?? definition.needImpact, timingImpact: signal.timingImpactSnapshot ?? definition.timingImpact,
@@ -412,6 +552,11 @@ export async function evaluateOpportunity(input: { organizationId: string; proje
       intelligencePackVersion: activePackVersion
         ? { id: activePackVersion.version.id, version: activePackVersion.version.version }
         : null,
+      intelligenceV2Assessment: intelligenceV2 ? {
+        id: intelligenceV2.id, createdAt: intelligenceV2.createdAt, icpVersionId: intelligenceV2.icpVersionId,
+        commercialRole: intelligenceV2.commercialRole, whoValue: intelligenceV2.whoValue,
+        assessmentConfidence: intelligenceV2.assessmentConfidence, assessmentFingerprint: intelligenceV2.assessmentFingerprint,
+      } : null,
       confirmedDisqualifier: Boolean(
         fitDetails && typeof fitDetails === "object" && fitDetails.disqualified === true,
       ),
@@ -419,6 +564,7 @@ export async function evaluateOpportunity(input: { organizationId: string; proje
     const inputSnapshot = {
       icpVersionId: icpVersion?.id ?? null,
       intelligencePackVersionId: activePackVersion?.version.id ?? null,
+      intelligenceV2AssessmentId: intelligenceV2?.id ?? null,
       signalIds: signalRows.map(({ signal }) => signal.id),
       clusterIds: clusters.map((cluster) => cluster.id),
       relationshipStatus: row.projectCompany.relationshipStatus,

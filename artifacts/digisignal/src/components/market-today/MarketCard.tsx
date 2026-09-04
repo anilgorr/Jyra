@@ -39,7 +39,7 @@ import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
-import { useExecuteCompanyResearch } from "@workspace/api-client-react";
+import { useAnalyzeCompanyIntelligenceV2 } from "@workspace/api-client-react";
 import { getListResearchWorkspaceQueryKey } from "@workspace/api-client-react";
 import { getGetMarketTodayQueryKey } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
@@ -75,28 +75,22 @@ const StateColorMap: Record<string, string> = {
 
 export function MarketCard({ card, projectId }: MarketCardProps) {
   const queryClient = useQueryClient();
-  const executeResearch = useExecuteCompanyResearch();
+  const executeResearch = useAnalyzeCompanyIntelligenceV2();
 
   const handleResearch = () => {
     executeResearch.mutate(
-      { projectId, projectCompanyId: card.projectCompanyId },
+      { projectId, projectCompanyId: card.projectCompanyId, data: {} },
       {
-        onSuccess: (result) => {
-          if (result.stopped) {
-            toast.info(result.stopCode === "STILL_UNKNOWN" ? "Company research completed" : "Research paused safely", {
-              description: result.reason ?? result.nextAction,
-            });
-          } else {
-            toast.success("Research completed", {
-              description: `The persisted market view for ${card.company.name} is being refreshed.`,
-            });
-          }
+        onSuccess: () => {
+          toast.success("Assessed with Intelligence Core V2", {
+            description: `${card.company.name} has been researched and scored; the market view is refreshing.`,
+          });
           queryClient.invalidateQueries({ queryKey: getGetMarketTodayQueryKey(projectId) });
           queryClient.invalidateQueries({ queryKey: getListResearchWorkspaceQueryKey(projectId) });
         },
         onError: (error) => {
-          toast.error("Failed to start research", {
-            description: "An unexpected error occurred while requesting research.",
+          toast.error("Assessment failed", {
+            description: error instanceof Error ? error.message : "The company could not be assessed.",
           });
         }
       }

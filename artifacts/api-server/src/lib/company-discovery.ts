@@ -716,7 +716,7 @@ export function qualifyCandidate(
   const missingReasonCode = missingDimensions.length > 1
     ? ICP_MISSING_DIMENSION_REASON_CODES.multiple
     : dimensionReasonCodes[0] ?? null;
-  const structurallyExcluded = buyerRole === "SELLER_COMPETITOR" || buyerRole === "ADJACENT_VENDOR";
+  const structurallyExcluded = buyerRole === "SELLER_COMPETITOR";
   const classification: DiscoveryQualification = structurallyExcluded || values.some((value) => value === false)
     ? "LIKELY_NOT_FIT"
     : matchedCriteria >= 2

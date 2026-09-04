@@ -40,3 +40,4 @@ export * from "./buyers";
 export * from "./learning";
 export * from "./recommendation-ledger";
 export * from "./market-readiness";
+export * from "./intelligence-v2-assessments";

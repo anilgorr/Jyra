@@ -343,7 +343,7 @@ export async function orchestrateCompanyIntelligence(input: {
       semantic: semanticSummary,
     });
   }
-  if (buyerRole !== "POTENTIAL_BUYER") {
+  if (buyerRole !== "POTENTIAL_BUYER" && buyerRole !== "ADJACENT_VENDOR") {
     const reasonCode = buyerRole === "SELLER_COMPETITOR"
       ? "COMPETITOR_NOT_ELIGIBLE"
       : buyerRole === "ADJACENT_VENDOR"

@@ -119,6 +119,7 @@ export default function CompaniesPage() {
   }
 
   const filteredCompanies = companies.filter((pc) => {
+    if (pc.status === "archived") return false;
     if (!searchTerm) return true;
     const term = searchTerm.toLowerCase();
     const c = pc.company;
@@ -190,7 +191,7 @@ export default function CompaniesPage() {
               <Building2 className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <p className="text-2xl font-bold font-display">{companies.length}</p>
+              <p className="text-2xl font-bold font-display">{companies.filter((c) => c.status !== "archived").length}</p>
               <p className="text-sm text-muted-foreground">Total companies tracking</p>
             </div>
           </CardContent>
