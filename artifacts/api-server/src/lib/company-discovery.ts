@@ -255,10 +255,10 @@ export function buildBuyerMarketDiscoveryQueries(
   const sizeText = size && (size.minimum !== undefined || size.maximum !== undefined)
     ? ` with ${size.minimum ?? "any"}-${size.maximum ?? "any"} employees`
     : "";
-  const slices = industries.length ? industries : ["operating business"];
+  const slices = industries.length ? industries : ["companies"];
   const markets = geographies.length ? geographies : [""];
   return slices.flatMap((industry) => markets.map((geography) =>
-    `${industry} operating companies${geography ? ` in ${geography}` : ""}${sizeText}`.slice(0, 500),
+    `${industry} companies${geography ? ` in ${geography}` : ""}${sizeText}`.slice(0, 500),
   )).slice(0, 60);
 }
 
@@ -1177,6 +1177,27 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
       }
     }
     const assessment = qualifyCandidate(value, plan.strategy, profileResolutionResult, roleDescription);
+    // ICP discipline: a candidate that fails the ICP on a known dimension
+    // (LIKELY_NOT_FIT) is never auto-linked to the project board. It stays
+    // discoverable in the market cache, and the user can still add it by hand,
+    // but discovery must not pollute the pipeline with off-ICP companies.
+    if (assessment.classification === "LIKELY_NOT_FIT") {
+      rejected += 1;
+      reports.push(candidateReport(
+        candidate,
+        value,
+        response.providerId,
+        assessment.classification,
+        "NEEDS_REVIEW",
+        "NEEDS_REVIEW",
+        researchPriority(assessment, 0),
+        null,
+        candidateIdentity.identityState,
+        profileResolutionResult,
+        assessment.buyerRole,
+      ));
+      continue;
+    }
     const result = await db.transaction(async (tx) => {
       const domain = value.domain;
       const nameKey = `company-name:${canonicalCompanyNameKey(value.canonicalName)}`;

@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { WhyClaimTraceList } from "@/components/evidence/WhyClaimTrace";
 
-type Company = { id: string; company: { canonicalName: string }; opportunityAssessmentState: string | null; opportunityScore: number | null; confidenceScore: number | null };
+type Company = { id: string; status: string; company: { canonicalName: string }; opportunityAssessmentState: string | null; opportunityScore: number | null; confidenceScore: number | null };
 type Assessment = {
   id: string; projectCompanyId: string; score: number | null; state: string; assessmentStatus: string;
   confidenceScore: number | null; explanation: string; assessedAt: string;
@@ -120,6 +120,25 @@ export function OpportunityAssessments({ projectId, initialCompanyId, focusWhy =
     } finally { setLoadingId(null); }
   };
   const assessmentByCompany = new Map(assessments.map((item) => [item.projectCompany.id, item.opportunity]));
+  // Rank the board by opportunity strength: scored companies first (highest
+  // score on top), then assessed-but-unscored, then not-yet-assessed; name
+  // breaks ties within each tier.
+  const rankOf = (company: Company) => {
+    const a = assessmentByCompany.get(company.id);
+    if (a && a.score != null) return 0;
+    if (a) return 1;
+    return 2;
+  };
+  const sortedCompanies = companies.filter((company) => company.status !== "archived").sort((x, y) => {
+    const tx = rankOf(x), ty = rankOf(y);
+    if (tx !== ty) return tx - ty;
+    if (tx === 0) {
+      const sx = assessmentByCompany.get(x.id)?.score ?? 0;
+      const sy = assessmentByCompany.get(y.id)?.score ?? 0;
+      if (sx !== sy) return sy - sx;
+    }
+    return x.company.canonicalName.localeCompare(y.company.canonicalName);
+  });
 
   return (
     <section className="space-y-4" data-testid="opportunity-assessments">
@@ -132,7 +151,7 @@ export function OpportunityAssessments({ projectId, initialCompanyId, focusWhy =
       </div>
       <Card className="overflow-hidden">
         {companies.length === 0 && <div className="p-6 text-sm text-muted-foreground">Add a company to create its project-specific assessment.</div>}
-        {companies.map((company) => {
+        {sortedCompanies.map((company) => {
           const assessment = assessmentByCompany.get(company.id);
           return (
             <div className="flex flex-col gap-3 border-b p-4 last:border-b-0 sm:flex-row sm:items-center sm:justify-between" key={company.id}>
