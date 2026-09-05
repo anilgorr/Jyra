@@ -1,34 +1,31 @@
 import { and, eq } from "drizzle-orm";
 import { dataProvidersTable, db, providerCapabilitiesTable } from "@workspace/db";
 
-const CORESIGNAL_PROVIDER_CONFIGURATION = {
-  apiBaseUrl: "https://api.coresignal.com/cdapi/v2",
-  credentialEnv: "CORESIGNAL_API_KEY",
-  timeoutMs: 25_000,
-  estimatedCost: 0.02,
-  maxCandidates: 1,
+const EXPLEE_PROVIDER_CONFIGURATION = {
+  apiBaseUrl: "https://api.explee.com/public/api/v1",
+  credentialEnv: "EXPLEE_API_KEY",
+  timeoutMs: 100_000,
+  estimatedCost: 0.05,
+  preset: "basic" as const,
 };
 
-/** Seeds the Coresignal contact provider (EMAIL_LOOKUP) for local development.
- * Idempotent: safe to run on every boot. The provider is enabled only when a
- * credential is present, so the enrichment waterfall stays fail-closed until a
- * key is configured. */
-export async function ensureDevelopmentCoresignalProvider(): Promise<void> {
+/** Seeds the Explee contact provider (EMAIL_LOOKUP) for local development.
+ * Idempotent. Enabled only when EXPLEE_API_KEY is present, and given a higher
+ * priority than other contact providers so it leads the enrichment waterfall. */
+export async function ensureDevelopmentExpleeProvider(): Promise<void> {
   if (process.env.NODE_ENV === "production") return;
 
-  // Superseded by Explee as the active EMAIL_LOOKUP provider; kept as a
-  // documented fallback but seeded disabled. Set to Boolean(process.env...) to re-enable.
-  const hasCredential = false;
+  const hasCredential = Boolean(process.env.EXPLEE_API_KEY);
   const configuration = {
-    ...CORESIGNAL_PROVIDER_CONFIGURATION,
+    ...EXPLEE_PROVIDER_CONFIGURATION,
     credentialStatus: hasCredential ? "AVAILABLE" : "MISSING",
   };
   await db.transaction(async (tx) => {
     await tx.insert(dataProvidersTable).values({
-      name: "Coresignal",
-      providerType: "coresignal",
+      name: "Explee",
+      providerType: "explee",
       enabled: hasCredential,
-      priority: 10,
+      priority: 5,
       estimatedCost: configuration.estimatedCost,
       successRate: 0,
       averageLatency: 0,
@@ -38,15 +35,15 @@ export async function ensureDevelopmentCoresignalProvider(): Promise<void> {
 
     const [provider] = await tx.select().from(dataProvidersTable)
       .where(and(
-        eq(dataProvidersTable.name, "Coresignal"),
-        eq(dataProvidersTable.providerType, "coresignal"),
+        eq(dataProvidersTable.name, "Explee"),
+        eq(dataProvidersTable.providerType, "explee"),
       ))
       .limit(1);
     if (!provider) return;
 
     await tx.update(dataProvidersTable).set({
       enabled: hasCredential,
-      priority: 10,
+      priority: 5,
       estimatedCost: configuration.estimatedCost,
       qualityScore: 0.9,
       configuration: { ...provider.configuration, ...configuration },
