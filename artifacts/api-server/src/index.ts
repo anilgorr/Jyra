@@ -3,6 +3,7 @@ import { ensureDevelopmentApifyProvider } from "./lib/apify-provider-config";
 import { ensureDevelopmentExaProvider } from "./lib/exa-provider-config";
 import { ensureDevelopmentTavilyProvider } from "./lib/tavily-provider-config";
 import { ensureDevelopmentBrightDataProvider } from "./lib/bright-data-provider-config";
+import { ensureDevelopmentCoresignalProvider } from "./lib/coresignal-provider-config";
 import { logger } from "./lib/logger";
 import { assertMarketReadinessProcessingConfig } from "./lib/market-readiness";
 
@@ -29,6 +30,7 @@ async function main() {
     await ensureDevelopmentExaProvider();
     await ensureDevelopmentTavilyProvider();
     await ensureDevelopmentBrightDataProvider();
+    await ensureDevelopmentCoresignalProvider();
   }
 
   app.listen(port, (err) => {

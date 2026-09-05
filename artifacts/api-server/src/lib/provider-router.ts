@@ -39,6 +39,7 @@ import {
   createBrightDataFirmographicsAdapter,
   parseBrightDataProviderConfiguration,
 } from "./bright-data-provider";
+import { createCoresignalEmailAdapter, parseCoresignalProviderConfiguration } from "./coresignal-provider";
 
 export type ProviderCatalogEntry = Pick<
   DataProvider,
@@ -319,6 +320,12 @@ function defaultAdapterFactory(
     return [createBrightDataFirmographicsAdapter({
       providerId: provider.id,
       configuration: parseBrightDataProviderConfiguration(provider.configuration),
+    })];
+  }
+  if (provider.providerType === "coresignal") {
+    return [createCoresignalEmailAdapter({
+      providerId: provider.id,
+      configuration: parseCoresignalProviderConfiguration(provider.configuration),
     })];
   }
   return [];
