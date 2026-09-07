@@ -249,4 +249,19 @@
   /* Soft-UI helpers for one-off surfaces */
   .neu-raised { box-shadow: 7px 7px 16px hsl(var(--neu-dark)), -7px -7px 16px hsl(var(--neu-light)); }
   .neu-inset  { box-shadow: inset 4px 4px 9px hsl(var(--neu-dark)), inset -4px -4px 9px hsl(var(--neu-light)); }
+
+  /* Soft UI has no flat cards. The legacy design expressed "flat card" as
+     <Card className="shadow-none">; a card-colored surface still rises. */
+  .bg-card.shadow-none {
+    box-shadow: 7px 7px 16px hsl(var(--neu-dark)), -7px -7px 16px hsl(var(--neu-light));
+  }
+
+  /* Inner wells (bg-muted tinted, rounded panels) press into the surface. */
+  .rounded-xl.bg-muted\/20,
+  .rounded-xl.bg-muted\/30,
+  .rounded-2xl.bg-muted\/20,
+  .rounded-2xl.bg-muted\/30 {
+    border-color: transparent;
+    box-shadow: inset 4px 4px 9px hsl(var(--neu-dark)), inset -4px -4px 9px hsl(var(--neu-light));
+  }
 }
