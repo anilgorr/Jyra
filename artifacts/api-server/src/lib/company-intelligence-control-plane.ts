@@ -344,11 +344,11 @@ export async function orchestrateCompanyIntelligence(input: {
     });
   }
   if (buyerRole !== "POTENTIAL_BUYER" && buyerRole !== "ADJACENT_VENDOR") {
+    // ADJACENT_VENDOR is eligible and excluded by the guard above, so it never
+    // reaches here — the only ineligible roles left are competitor and partner.
     const reasonCode = buyerRole === "SELLER_COMPETITOR"
       ? "COMPETITOR_NOT_ELIGIBLE"
-      : buyerRole === "ADJACENT_VENDOR"
-        ? "ADJACENT_VENDOR_NOT_ELIGIBLE"
-        : "PARTNER_NOT_ELIGIBLE";
+      : "PARTNER_NOT_ELIGIBLE";
     return result({
       status: "SUCCESS",
       reasonCode,

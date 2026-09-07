@@ -114,7 +114,30 @@ const sumUsage = (attempts: AssessmentAttemptV2[]) => {
   return Object.keys(result).length ? result : null;
 };
 
-function materialize(value: z.infer<typeof modelAssessmentSchema>, evidence: EvidenceItemV2[], context: SellerRelativeContextV2): SellerRelativeAssessmentV2 {
+/**
+ * A citation the model produced that names an atomic claim ID we never issued.
+ *
+ * Since 9a11941 these are dropped rather than collapsing the whole verdict —
+ * a single mis-transcribed ID no longer wipes an otherwise well-supported
+ * assessment, and everything retained is still a real claim. But a model that
+ * invents an identifier has told us something about that response, and
+ * discarding it silently throws that signal away. So every drop is recorded
+ * here, returned on the envelope, and logged. Rigour you cannot count is not
+ * rigour you can defend.
+ */
+export type CitationIntegrityV2 = {
+  citationsSeen: number;
+  citationsDropped: number;
+  droppedClaimIds: string[];
+  droppedBySection: { section: string; claimIds: string[] }[];
+};
+
+function materialize(
+  value: z.infer<typeof modelAssessmentSchema>,
+  evidence: EvidenceItemV2[],
+  context: SellerRelativeContextV2,
+  integrity?: CitationIntegrityV2,
+): SellerRelativeAssessmentV2 {
   const claims = new Map(evidence.flatMap((item) => item.atomicClaims.map((claim) => [claim.claimId, { ...claim, evidenceId: item.evidenceId }] as const)));
   const requirements = Array.isArray(context.icp.requirements)
     ? context.icp.requirements.map((item) => researchRequirementSchema.parse(item))
@@ -124,8 +147,18 @@ function materialize(value: z.infer<typeof modelAssessmentSchema>, evidence: Evi
     const claim = claims.get(claimId)!;
     return { claimId, claimedValue: claim.value, purpose, relation };
   });
-  const keepKnown = <T extends { claimId: string }>(citations: T[]) =>
-    citations.filter(({ claimId }) => claims.has(claimId));
+  const record = (section: string, dropped: string[]) => {
+    if (!integrity || !dropped.length) return;
+    integrity.citationsDropped += dropped.length;
+    integrity.droppedClaimIds.push(...dropped);
+    integrity.droppedBySection.push({ section, claimIds: dropped });
+  };
+  const keepKnown = <T extends { claimId: string }>(citations: T[], section?: string) => {
+    if (integrity && section) integrity.citationsSeen += citations.length;
+    const known = citations.filter(({ claimId }) => claims.has(claimId));
+    if (section) record(section, citations.filter(({ claimId }) => !claims.has(claimId)).map(({ claimId }) => claimId));
+    return known;
+  };
   const containsUnknownClaim = (citations: Array<{ claimId: string }>) =>
     citations.length > 0 && keepKnown(citations).length === 0;
   const section = (citations: Array<{ claimId: string }>) => ({
@@ -134,6 +167,10 @@ function materialize(value: z.infer<typeof modelAssessmentSchema>, evidence: Evi
   });
   const commercialRoleHasUnknownClaim = containsUnknownClaim(value.commercialRole.citations);
   const whoHasUnknownClaim = containsUnknownClaim(value.who.citations);
+  // Each section is filtered exactly once so the integrity counters do not
+  // double-count a citation that feeds both the id list and the bindings.
+  const roleKept = keepKnown(value.commercialRole.citations, "commercialRole");
+  const whoKept = keepKnown(value.who.citations, "who");
   return {
     commercialRole: commercialRoleHasUnknownClaim
       ? {
@@ -142,20 +179,21 @@ function materialize(value: z.infer<typeof modelAssessmentSchema>, evidence: Evi
         }
       : {
           value: value.commercialRole.value, confidence: value.commercialRole.confidence, reason: value.commercialRole.reason,
-          ...section(keepKnown(value.commercialRole.citations)),
-          claimBindings: bind(keepKnown(value.commercialRole.citations), "commercialRole") as SellerRelativeAssessmentV2["commercialRole"]["claimBindings"],
+          ...section(roleKept),
+          claimBindings: bind(roleKept, "commercialRole") as SellerRelativeAssessmentV2["commercialRole"]["claimBindings"],
         },
     who: {
       value: whoHasUnknownClaim ? "INSUFFICIENT_DATA" : value.who.value,
       confidence: value.who.confidence,
       reason: whoHasUnknownClaim ? UNKNOWN_WHO_CITATION_REASON : value.who.reason,
-      ...(whoHasUnknownClaim ? { evidenceIds: [], claimIds: [] } : section(keepKnown(value.who.citations))),
+      ...(whoHasUnknownClaim ? { evidenceIds: [], claimIds: [] } : section(whoKept)),
       claimBindings: whoHasUnknownClaim
         ? []
-        : bind(keepKnown(value.who.citations), "WHO") as SellerRelativeAssessmentV2["who"]["claimBindings"],
+        : bind(whoKept, "WHO") as SellerRelativeAssessmentV2["who"]["claimBindings"],
       criteria: value.who.criteria.map((criterion) => {
         const requirement = byCriterion.get(criterion.criterionId);
         if (!requirement) throw new Error(`foreign criterionId ${criterion.criterionId}`);
+        const criterionKept = keepKnown(criterion.citations, `criterion:${criterion.criterionId}`);
         const criterionHasUnknownClaim = containsUnknownClaim(criterion.citations);
         return {
           criterionId: criterion.criterionId,
@@ -165,10 +203,10 @@ function materialize(value: z.infer<typeof modelAssessmentSchema>, evidence: Evi
           result: criterionHasUnknownClaim ? "UNKNOWN" : criterion.result,
           confidence: criterion.confidence,
           reason: criterionHasUnknownClaim ? UNKNOWN_CRITERION_CITATION_REASON : criterion.reason,
-          ...(criterionHasUnknownClaim ? { evidenceIds: [], claimIds: [] } : section(keepKnown(criterion.citations))),
+          ...(criterionHasUnknownClaim ? { evidenceIds: [], claimIds: [] } : section(criterionKept)),
           claimBindings: criterionHasUnknownClaim
             ? []
-            : bind(keepKnown(criterion.citations), criterion.criterionId) as SellerRelativeAssessmentV2["who"]["criteria"][number]["claimBindings"],
+            : bind(criterionKept, criterion.criterionId) as SellerRelativeAssessmentV2["who"]["criteria"][number]["claimBindings"],
         };
       }),
     },
@@ -182,7 +220,7 @@ export async function assessMarketFitV2(input: {
   onAttemptStart?: () => void;
 }): Promise<{
   assessment: SellerRelativeAssessmentV2; usage: Record<string, unknown> | null; cost: number;
-  attempts: AssessmentAttemptV2[]; modelCalls: number;
+  attempts: AssessmentAttemptV2[]; modelCalls: number; citationIntegrity: CitationIntegrityV2;
 }> {
   const invoke = input.invoke ?? defaultInvoker;
   const timeoutMs = Math.max(1, Math.min(input.timeoutMs ?? 90_000, 180_000));
@@ -193,6 +231,7 @@ export async function assessMarketFitV2(input: {
   });
   const attempts: AssessmentAttemptV2[] = [];
   let validationErrors: string[] = [];
+  let integrity: CitationIntegrityV2 = { citationsSeen: 0, citationsDropped: 0, droppedClaimIds: [], droppedBySection: [] };
   for (const attempt of [1, 2] as const) {
     const started = Date.now();
     const controller = new AbortController();
@@ -215,11 +254,22 @@ export async function assessMarketFitV2(input: {
       const base = { attempt, durationMs: Math.max(0, Date.now() - started), usage: response.usage ?? null, cost: Math.max(0, response.cost ?? 0) };
       try {
         const parsed = modelAssessmentSchema.parse(response.content);
-        const assessment = normalizeAssessmentEvidenceV2(materialize(parsed, input.evidence, input.context), input.evidence, input.context);
+        integrity = { citationsSeen: 0, citationsDropped: 0, droppedClaimIds: [], droppedBySection: [] };
+        const assessment = normalizeAssessmentEvidenceV2(materialize(parsed, input.evidence, input.context, integrity), input.evidence, input.context);
         const grounded = validateAssessmentEvidenceV2(assessment, input.evidence, input.context);
         if (!grounded.ok) throw new Error(grounded.errors.join("; "));
         attempts.push({ ...base, outcome: "VALID" });
-        return { assessment: grounded.assessment, usage: sumUsage(attempts), cost: attempts.reduce((sum, item) => sum + item.cost, 0), attempts, modelCalls: attempts.length };
+        if (integrity.citationsDropped) {
+          console.warn("V2_ASSESSMENT_CITATION_DROPPED", {
+            citationsSeen: integrity.citationsSeen, citationsDropped: integrity.citationsDropped,
+            droppedClaimIds: integrity.droppedClaimIds, droppedBySection: integrity.droppedBySection,
+          });
+        }
+        return {
+          assessment: grounded.assessment, usage: sumUsage(attempts),
+          cost: attempts.reduce((sum, item) => sum + item.cost, 0), attempts,
+          modelCalls: attempts.length, citationIntegrity: integrity,
+        };
       } catch (error) {
         validationErrors = error instanceof z.ZodError ? error.issues.map((issue) => issue.message) : [error instanceof Error ? error.message : String(error)];
         attempts.push({ ...base, outcome: "INVALID" });

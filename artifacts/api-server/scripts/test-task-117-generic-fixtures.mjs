@@ -418,30 +418,56 @@ test("Citation normalization", "26 unknown criterion claim safely abstains witho
       ]) };
     },
   });
+  // Citation-resilience doctrine (9a11941): a mis-transcribed claim ID is
+  // dropped rather than collapsing a verdict that a real claim still supports.
+  // Every retained citation is genuine, so the PASS stays grounded — but the
+  // drop is COUNTED, never swallowed, so "how often does the model invent an
+  // ID?" has an answer.
   assert.equal(calls, 1);
-  assert.equal(result.assessment.who.criteria[0].result, "UNKNOWN");
-  assert.deepEqual([
-    result.assessment.who.criteria[0].evidenceIds,
-    result.assessment.who.criteria[0].claimIds,
-    result.assessment.who.criteria[0].claimBindings,
-  ], [[], [], []]);
-  assert.match(result.assessment.who.criteria[0].reason, /unknown atomic claim ID/);
+  assert.equal(result.assessment.who.criteria[0].result, "PASS", "a real citation still carries the verdict");
+  assert.deepEqual(result.assessment.who.criteria[0].claimIds, ["claim-geo-0"], "the invented ID is discarded, not repaired into the record");
+  assert.deepEqual(
+    result.assessment.who.criteria[0].claimBindings.map((binding) => binding.claimId),
+    ["claim-geo-0"],
+  );
+  assert.equal(result.citationIntegrity.citationsDropped, 1, "the mis-citation must be counted");
+  assert.deepEqual(result.citationIntegrity.droppedClaimIds, ["unknown-criterion-claim"]);
+  assert.ok(
+    result.citationIntegrity.droppedBySection.some((entry) => entry.section === "criterion:geo"),
+    "the drop is attributed to the section it happened in",
+  );
+  assert.ok(result.citationIntegrity.citationsSeen >= 2);
 });
-test("Citation normalization", "26a mixed known and unknown role citations discard the whole role section", async () => {
+test("Citation normalization", "26a a mis-cited role keeps the verdict its real citations support, and counts the drop", async () => {
   const result = await directAssessment(async () => {
     const content = compactResponse();
     content.commercialRole.citations.push({ claimId: "unknown-role-claim", relation: "SUPPORTS_ROLE" });
     return { content };
   });
-  assert.equal(result.assessment.commercialRole.value, "UNKNOWN");
+  assert.notEqual(result.assessment.commercialRole.value, "UNKNOWN", "real citations still support the role");
+  assert.ok(result.assessment.commercialRole.claimIds.length > 0);
+  assert.equal(result.assessment.commercialRole.claimIds.includes("unknown-role-claim"), false);
+  assert.equal(JSON.stringify(result.assessment).includes("unknown-role-claim"), false,
+    "an invented ID never reaches the stored record");
+  assert.equal(result.citationIntegrity.citationsDropped, 1);
+  assert.deepEqual(result.citationIntegrity.droppedClaimIds, ["unknown-role-claim"]);
+  assert.ok(result.citationIntegrity.droppedBySection.some((entry) => entry.section === "commercialRole"));
+});
+test("Citation normalization", "26a-i a role cited ENTIRELY by invented IDs still collapses to UNKNOWN", async () => {
+  const result = await directAssessment(async () => {
+    const content = compactResponse();
+    content.commercialRole.citations = [{ claimId: "wholly-invented", relation: "SUPPORTS_ROLE" }];
+    return { content };
+  });
+  assert.equal(result.assessment.commercialRole.value, "UNKNOWN",
+    "resilience is for a bad citation among good ones, never for a verdict with no real support at all");
   assert.deepEqual([
     result.assessment.commercialRole.evidenceIds,
     result.assessment.commercialRole.claimIds,
     result.assessment.commercialRole.claimBindings,
   ], [[], [], []]);
-  assert.equal(JSON.stringify(result.assessment).includes("unknown-role-claim"), false);
 });
-test("Citation normalization", "26b mixed known and unknown parent WHO citations preserve independent criteria", async () => {
+test("Citation normalization", "26b a mis-cited parent WHO keeps its real citations and leaves criteria independent", async () => {
   const item = evidence({ primaryBusiness: "B2B SaaS", geography: [{ type: "HEADQUARTERS", value: "TARGET" }] });
   const result = await v2.assessMarketFitV2({
     context: context("icp-v1", [geoRequirement]), profile: profile([item]), evidence: [item],
@@ -451,15 +477,13 @@ test("Citation normalization", "26b mixed known and unknown parent WHO citations
       return { content };
     },
   });
-  assert.equal(result.assessment.who.value, "INSUFFICIENT_DATA");
-  assert.deepEqual([
-    result.assessment.who.evidenceIds,
-    result.assessment.who.claimIds,
-    result.assessment.who.claimBindings,
-  ], [[], [], []]);
-  assert.equal(result.assessment.who.criteria[0].result, "PASS");
-  assert.deepEqual(result.assessment.who.criteria[0].claimIds, ["claim-geo-0"]);
+  assert.equal(result.assessment.who.claimIds.includes("unknown-who-claim"), false);
   assert.equal(JSON.stringify(result.assessment).includes("unknown-who-claim"), false);
+  assert.equal(result.assessment.who.criteria[0].result, "PASS", "criteria are judged independently of the parent citation");
+  assert.deepEqual(result.assessment.who.criteria[0].claimIds, ["claim-geo-0"]);
+  assert.equal(result.citationIntegrity.citationsDropped, 1);
+  assert.deepEqual(result.citationIntegrity.droppedClaimIds, ["unknown-who-claim"]);
+  assert.ok(result.citationIntegrity.droppedBySection.some((entry) => entry.section === "who"));
 });
 test("Cache/Citation normalization", "27 cached wrong-type criterion is normalized before validation", async () => {
   const item = evidence({ primaryBusiness: "B2B SaaS", geography: [{ type: "HEADQUARTERS", value: "TARGET" }] });
