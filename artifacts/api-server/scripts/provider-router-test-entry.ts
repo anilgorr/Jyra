@@ -6,3 +6,4 @@ export {
   createMockWebSearchAdapter,
   createMockWebsiteCrawlAdapter,
 } from "../src/lib/mock-providers";
+export { isProviderFatal } from "../src/lib/provider-router";

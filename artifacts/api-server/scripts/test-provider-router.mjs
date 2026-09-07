@@ -14,6 +14,7 @@ await build({
 
 const require = createRequire(import.meta.url);
 const {
+  isProviderFatal,
   ProviderRouter,
   ProviderAttemptBudget,
   redactProviderMetadata,
@@ -123,6 +124,88 @@ const terminal = await terminalRouter.searchWeb({ query: "do not retry" });
 assert.equal(terminal.status, "failed");
 assert.equal(terminal.providerId, "terminal");
 assert.equal(terminalUsage.length, 1);
+
+/* ------------------------------------------------------------------ *
+ * Waterfall failover: whose fault was it?
+ *
+ * A terminal failure stops the waterfall, which is right when the REQUEST is
+ * the problem — asking a second provider the same bad question just spends
+ * money for the same answer. It is wrong when the PROVIDER is the problem.
+ * Exa exhausting its credits is the exact situation a fallback exists for,
+ * and because CREDITS_EXHAUSTED is correctly non-retryable, the router used
+ * to treat it as terminal and return without ever calling Tavily. Tavily was
+ * enabled, credentialed and registered for WEB_SEARCH, and had been called
+ * zero times in the product's life.
+ * ------------------------------------------------------------------ */
+
+const exhaustedUsage = [];
+const exhaustedRouter = new ProviderRouter({
+  providers: [
+    provider({ id: "exa", priority: 5 }),
+    provider({ id: "tavily", priority: 10 }),
+  ],
+  adapters: [
+    createMockWebSearchAdapter({ providerId: "exa", mode: "failure", errorCode: "CREDITS_EXHAUSTED" }),
+    createMockWebSearchAdapter({ providerId: "tavily" }),
+  ],
+  usageWriter: async (record) => exhaustedUsage.push(record),
+});
+const exhausted = await exhaustedRouter.searchWeb({ query: "out of credits" });
+assert.equal(exhausted.status, "success", "a credit-exhausted primary must not fail the whole request");
+assert.equal(exhausted.providerId, "tavily", "the configured fallback must actually be reached");
+assert.deepEqual(exhaustedUsage.map((entry) => entry.providerId), ["exa", "tavily"]);
+assert.equal(exhaustedUsage[0].errorCode, "CREDITS_EXHAUSTED");
+assert.equal(exhaustedUsage[0].retryable, false, "non-retryable means do not ask THIS provider again");
+
+for (const code of ["AUTHENTICATION_ERROR", "PROVIDER_FORBIDDEN", "CREDENTIALS_MISSING", "EXA_HTTP_502", "TIMEOUT"]) {
+  const usage = [];
+  const router = new ProviderRouter({
+    providers: [provider({ id: "primary", priority: 1 }), provider({ id: "secondary", priority: 2 })],
+    adapters: [
+      createMockWebSearchAdapter({ providerId: "primary", mode: "failure", errorCode: code }),
+      createMockWebSearchAdapter({ providerId: "secondary" }),
+    ],
+    usageWriter: async (record) => usage.push(record),
+  });
+  const routed = await router.searchWeb({ query: `failover for ${code}` });
+  assert.equal(routed.providerId, "secondary", `${code} is the provider's problem and must fail over`);
+  assert.equal(usage.length, 2, `${code} must not end the waterfall`);
+}
+
+// The other half of the contract: a request nobody can serve still stops at
+// the first provider, so a bad ask costs one call rather than N.
+const badRequestUsage = [];
+const badRequestRouter = new ProviderRouter({
+  providers: [provider({ id: "first", priority: 1 }), provider({ id: "second", priority: 2 })],
+  adapters: [
+    createMockWebSearchAdapter({ providerId: "first", mode: "failure", errorCode: "INVALID_REQUEST" }),
+    createMockWebSearchAdapter({ providerId: "second" }),
+  ],
+  usageWriter: async (record) => badRequestUsage.push(record),
+});
+const badRequest = await badRequestRouter.searchWeb({ query: "malformed" });
+assert.equal(badRequest.status, "failed", "a request no provider can serve still fails fast");
+assert.equal(badRequestUsage.length, 1, "a bad ask must not be re-bought from every provider");
+
+assert.equal(isProviderFatal("CREDITS_EXHAUSTED"), true);
+assert.equal(isProviderFatal("EXA_HTTP_429"), true, "any provider-side HTTP status is about the provider");
+assert.equal(isProviderFatal("INVALID_REQUEST"), false);
+assert.equal(isProviderFatal(null), false);
+
+// All providers exhausted: report the last failure rather than hanging or
+// pretending success.
+const allDownUsage = [];
+const allDownRouter = new ProviderRouter({
+  providers: [provider({ id: "a", priority: 1 }), provider({ id: "b", priority: 2 })],
+  adapters: [
+    createMockWebSearchAdapter({ providerId: "a", mode: "failure", errorCode: "CREDITS_EXHAUSTED" }),
+    createMockWebSearchAdapter({ providerId: "b", mode: "failure", errorCode: "CREDITS_EXHAUSTED" }),
+  ],
+  usageWriter: async (record) => allDownUsage.push(record),
+});
+const allDown = await allDownRouter.searchWeb({ query: "everything is down" });
+assert.equal(allDown.status, "failed");
+assert.equal(allDownUsage.length, 2, "every provider is tried before giving up");
 
 const emptyUsage = [];
 const emptyRouter = new ProviderRouter({

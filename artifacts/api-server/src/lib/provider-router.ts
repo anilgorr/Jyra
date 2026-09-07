@@ -103,6 +103,42 @@ function defaultRoutingRole(providerType: string): ProviderRoutingRole | null {
   return null;
 }
 
+/**
+ * Failures that say "this PROVIDER cannot serve this request" — as opposed to
+ * "this REQUEST cannot be served".
+ *
+ * A waterfall stops on a terminal failure, which is right when the request
+ * itself is the problem: asking a second provider the same malformed question
+ * just spends money to get the same answer. It is exactly wrong when the
+ * problem is the provider. Exa running out of credits is the textbook case a
+ * fallback exists for, and because CREDITS_EXHAUSTED is (correctly) marked
+ * non-retryable, the router treated it as terminal and returned without ever
+ * calling Tavily — which is why Tavily, enabled and credentialed since it was
+ * added, had never once been invoked.
+ *
+ * Non-retryable means "do not ask THIS provider again". It never means "do not
+ * ask anyone else".
+ */
+const PROVIDER_FATAL_ERROR_CODES = new Set([
+  "CREDITS_EXHAUSTED",
+  "AUTHENTICATION_ERROR",
+  "PROVIDER_FORBIDDEN",
+  "PROVIDER_UNAVAILABLE",
+  "CREDENTIALS_MISSING",
+  "ADAPTER_NOT_REGISTERED",
+  "ADAPTER_CAPABILITY_MISMATCH",
+  "MALFORMED_RESPONSE",
+  "PROVIDER_EXCEPTION",
+  "IDENTIFIER_NOT_SUPPORTED",
+  "TIMEOUT",
+]);
+
+export function isProviderFatal(code: string | null | undefined): boolean {
+  if (!code) return false;
+  // Any provider-side HTTP status (EXA_HTTP_502, …) is about the provider.
+  return PROVIDER_FATAL_ERROR_CODES.has(code) || /_HTTP_\d{3}$/.test(code);
+}
+
 function routingRoleForProvider(provider: ProviderCatalogEntry): ProviderRoutingRole | null {
   const configured = provider.configuration.routingRole;
   return configured === "PRIMARY" || configured === "FALLBACK"
@@ -491,7 +527,13 @@ export class ProviderRouter implements ProviderOperations {
     return this.routeInternal(
       capability,
       request,
-      (response) => response.status !== "failed" || !response.retryable,
+      (response) => {
+        if (response.status !== "failed") return true;
+        if (response.retryable) return false;
+        // Terminal for this provider is not terminal for the request: keep
+        // walking the waterfall when the provider, not the ask, is at fault.
+        return !isProviderFatal(response.error?.code);
+      },
     );
   }
 

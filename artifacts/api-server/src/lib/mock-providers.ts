@@ -15,6 +15,12 @@ export type MockProviderOptions = {
   providerId: string;
   mode?: MockProviderMode;
   latencyMs?: number;
+  /**
+   * Override the failure code the mock reports. Needed to exercise routing
+   * policy that keys off specific codes — a provider that ran out of credits
+   * must be routed around, a provider that rejected the query must not be.
+   */
+  errorCode?: string;
 };
 
 function capturedAt(): string {
@@ -36,6 +42,7 @@ function response<T>(
   mode: MockProviderMode,
   latencyMs: number,
   sourceReference?: string,
+  errorCode?: string,
 ): ProviderResponse<T> {
   const timestamp = capturedAt();
   const failed = mode === "failure" || mode === "retryable_failure";
@@ -58,7 +65,7 @@ function response<T>(
     },
     error: failed
       ? {
-          code: retryable ? "MOCK_TEMPORARY_FAILURE" : "MOCK_FAILURE",
+          code: errorCode ?? (retryable ? "MOCK_TEMPORARY_FAILURE" : "MOCK_FAILURE"),
           message: retryable
             ? "The deterministic mock provider is temporarily unavailable"
             : "The deterministic mock provider failed",
@@ -98,6 +105,7 @@ export function createMockWebSearchAdapter(
         mode,
         latencyMs,
         data.results[0]?.url,
+        options.errorCode,
       );
     },
   };
