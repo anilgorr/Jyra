@@ -11,7 +11,7 @@ services:
     region: singapore
     plan: free
     branch: audit/production-fixes
-    buildCommand: npm install -g pnpm@9 && pnpm install --no-frozen-lockfile && pnpm --dir artifacts/api-server run build
+    buildCommand: npm install -g pnpm@10 && pnpm install --no-frozen-lockfile && pnpm --dir artifacts/api-server run build
     # free tier has no pre-deploy hook, so migrations run just before the server boots
     startCommand: pnpm --dir lib/db migrate && pnpm --dir artifacts/api-server run start
     healthCheckPath: /api/healthz
