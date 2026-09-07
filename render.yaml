@@ -1,0 +1,45 @@
+# JYRA — Render Blueprint (API service). DB is Supabase; web is deployed separately (Vercel).
+#
+# NOTE ON NODE_ENV: the V2 intelligence engine and the provider seeds are currently
+# gated to NODE_ENV=development in code. Running the hosted API in "development" mode
+# (secured by Clerk auth) is therefore required until those gates are productionized.
+# It is NOT wide open: JYRA_AUTH_MODE=clerk forces real login on every request.
+services:
+  - type: web
+    name: jyra-api
+    runtime: node
+    region: singapore
+    plan: free
+    branch: audit/production-fixes
+    buildCommand: npm install -g pnpm@9 && pnpm install --no-frozen-lockfile && pnpm --dir artifacts/api-server run build
+    preDeployCommand: pnpm --dir lib/db migrate
+    startCommand: pnpm --dir artifacts/api-server run start
+    healthCheckPath: /api/healthz
+    envVars:
+      - key: NODE_ENV
+        value: development
+      - key: JYRA_AUTH_MODE
+        value: clerk
+      - key: JYRA_INTELLIGENCE_VERSION
+        value: JYRA_INTELLIGENCE_V2
+      - key: JYRA_TRUST_PROXY_HOPS
+        value: "1"
+      # --- secrets: set these in the Render dashboard (Environment tab) ---
+      - key: DATABASE_URL            # Supabase JYRA project connection string (Session pooler, port 5432)
+        sync: false
+      - key: CLERK_SECRET_KEY        # from your Clerk app (sk_...)
+        sync: false
+      - key: CLERK_PUBLISHABLE_KEY   # from your Clerk app (pk_...)
+        sync: false
+      - key: AI_INTEGRATIONS_OPENAI_API_KEY
+        sync: false
+      - key: AI_INTEGRATIONS_OPENAI_BASE_URL
+        sync: false
+      - key: EXPLEE_API_KEY
+        sync: false
+      - key: TAVILY_API_KEY
+        sync: false
+      - key: EXA_API_KEY
+        sync: false
+      - key: BRIGHTDATA_API_KEY
+        sync: false
