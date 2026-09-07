@@ -146,7 +146,7 @@ export default function CompaniesPage() {
             Manage canonical company identity linked to this project. Review, import, and qualify candidates.
           </p>
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex shrink-0 flex-wrap gap-2 lg:flex-nowrap">
           <Button variant="outline" onClick={findMyMarket} disabled={discovering} data-testid="button-find-market">
             {discovering ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Telescope className="mr-2 h-4 w-4" />}
             Find My Market
@@ -185,42 +185,42 @@ export default function CompaniesPage() {
       )}
 
       <div className="grid gap-4 md:grid-cols-3">
-        <Card className="shadow-none">
+        <Card>
           <CardContent className="flex gap-4 p-5">
-            <div className="mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10">
+            <div className="mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 shadow-neu-sm">
               <Building2 className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <p className="text-2xl font-bold font-display">{companies.filter((c) => c.status !== "archived").length}</p>
+              <p className="text-3xl font-extrabold font-display tracking-tight">{companies.filter((c) => c.status !== "archived").length}</p>
               <p className="text-sm text-muted-foreground">Total companies tracking</p>
             </div>
           </CardContent>
         </Card>
-        <Card className="shadow-none">
+        <Card>
           <CardContent className="flex gap-4 p-5">
-            <div className="mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-500/10">
+            <div className="mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-500/10 shadow-neu-sm">
               <Loader2 className="h-5 w-5 text-amber-600" />
             </div>
             <div>
-              <p className="text-2xl font-bold font-display">{inProgressCount}</p>
+              <p className="text-3xl font-extrabold font-display tracking-tight">{inProgressCount}</p>
               <p className="text-sm text-muted-foreground">Research in progress</p>
             </div>
           </CardContent>
         </Card>
-        <Card className="shadow-none">
+        <Card>
           <CardContent className="flex gap-4 p-5">
-            <div className="mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-500/10">
+            <div className="mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-500/10 shadow-neu-sm">
               <Target className="h-5 w-5 text-emerald-600" />
             </div>
             <div>
-              <p className="text-2xl font-bold font-display">{oppCount}</p>
+              <p className="text-3xl font-extrabold font-display tracking-tight">{oppCount}</p>
               <p className="text-sm text-muted-foreground">Identified opportunities</p>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      <div className="rounded-xl border bg-card">
+      <div className="rounded-2xl bg-card">
         <div className="p-4 border-b flex items-center gap-4">
           <div className="relative flex-1 max-w-sm">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
