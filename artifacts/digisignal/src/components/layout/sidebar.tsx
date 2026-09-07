@@ -49,11 +49,13 @@ export function Sidebar() {
   const { isAdmin } = useAdminAccess();
 
   return (
-    <aside className="hidden h-full w-64 flex-col border-r border-border bg-sidebar text-sidebar-foreground md:flex">
+    <aside className="hidden h-full w-64 flex-col bg-sidebar text-sidebar-foreground shadow-neu md:flex">
       <div className="p-6">
-        <Link href="/today" className="flex items-center gap-2 outline-none">
-          <img src={logoUrl} alt="JYRA" className="h-8 w-8" />
-          <span className="font-display text-xl font-bold tracking-tight">JYRA</span>
+        <Link href="/today" className="flex items-center gap-3 outline-none">
+          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-linear-to-br from-primary to-primary-deep shadow-neu-primary">
+            <img src={logoUrl} alt="JYRA" className="h-6 w-6 brightness-0 invert" />
+          </span>
+          <span className="font-display text-xl font-extrabold tracking-tight">JYRA</span>
         </Link>
       </div>
 
@@ -62,7 +64,7 @@ export function Sidebar() {
           value={activeOrganizationId ?? undefined}
           onValueChange={setActiveOrganizationId}
         >
-          <SelectTrigger className="border-sidebar-border bg-white/5 text-sidebar-foreground">
+          <SelectTrigger className="text-sidebar-foreground">
             <SelectValue placeholder="Select organization" />
           </SelectTrigger>
           <SelectContent>
@@ -78,7 +80,7 @@ export function Sidebar() {
           onValueChange={setActiveProjectId}
           disabled={projects.length === 0}
         >
-          <SelectTrigger className="border-sidebar-border bg-white/5 text-sidebar-foreground">
+          <SelectTrigger className="text-sidebar-foreground">
             <SelectValue placeholder="No project yet" />
           </SelectTrigger>
           <SelectContent>
@@ -100,10 +102,10 @@ export function Sidebar() {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-all duration-200 outline-none",
+                  "flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-semibold transition-all duration-200 outline-none",
                   isActive
-                    ? "bg-sidebar-accent text-sidebar-accent-foreground shadow-sm"
-                    : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+                    ? "bg-sidebar text-sidebar-accent-foreground shadow-neu-inset"
+                    : "text-sidebar-foreground/70 hover:text-primary hover:shadow-neu-sm"
                 )}
               >
                 <item.icon className="h-4 w-4" />
@@ -114,16 +116,16 @@ export function Sidebar() {
         </nav>
       </div>
 
-      <div className="border-t border-sidebar-border p-4">
+      <div className="p-4">
         <nav className="space-y-1 mb-4">
           {isAdmin && (
             <Link
               href="/admin/quality"
               className={cn(
-                "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors outline-none",
+                "flex items-center gap-3 rounded-xl px-3.5 py-2 text-sm font-semibold transition-all outline-none",
                 location === "/admin/quality"
-                  ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                  : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+                  ? "bg-sidebar text-sidebar-accent-foreground shadow-neu-inset"
+                  : "text-sidebar-foreground/70 hover:text-primary hover:shadow-neu-sm"
               )}
             >
               <ShieldCheck className="h-4 w-4" />
@@ -134,10 +136,10 @@ export function Sidebar() {
             <Link
               href="/settings/providers"
               className={cn(
-                "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors outline-none",
+                "flex items-center gap-3 rounded-xl px-3.5 py-2 text-sm font-semibold transition-all outline-none",
                 location === "/settings/providers"
-                  ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                  : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+                  ? "bg-sidebar text-sidebar-accent-foreground shadow-neu-inset"
+                  : "text-sidebar-foreground/70 hover:text-primary hover:shadow-neu-sm"
               )}
             >
               <Wrench className="h-4 w-4" />
@@ -147,10 +149,10 @@ export function Sidebar() {
           <Link
             href="/settings"
             className={cn(
-              "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors outline-none",
+              "flex items-center gap-3 rounded-xl px-3.5 py-2 text-sm font-semibold transition-all outline-none",
               location === "/settings"
-                ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+                ? "bg-sidebar text-sidebar-accent-foreground shadow-neu-inset"
+                : "text-sidebar-foreground/70 hover:text-primary hover:shadow-neu-sm"
             )}
           >
             <Settings className="h-4 w-4" />
@@ -171,9 +173,9 @@ export function Sidebar() {
           </div>
         )}
         <div className="flex items-center gap-3 px-3">
-          <Avatar className="h-9 w-9 border border-sidebar-border">
+          <Avatar className="h-9 w-9 shadow-neu-sm">
             <AvatarImage src={user?.imageUrl ?? undefined} alt={user?.displayName || ""} />
-            <AvatarFallback className="bg-sidebar-accent text-sidebar-accent-foreground">
+            <AvatarFallback className="bg-linear-to-br from-primary to-primary-deep text-primary-foreground font-display font-bold">
               {user?.displayName?.charAt(0) || "U"}
             </AvatarFallback>
           </Avatar>

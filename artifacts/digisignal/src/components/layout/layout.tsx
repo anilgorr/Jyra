@@ -15,17 +15,17 @@ export function Layout({ children }: { children: ReactNode }) {
     <div className="flex min-h-[100dvh] w-full overflow-hidden bg-background md:h-[100dvh]">
       <Sidebar />
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-border bg-card px-4 md:hidden">
+        <header className="sticky top-0 z-40 flex h-16 items-center justify-between bg-card px-4 shadow-neu-sm md:hidden">
           <Link href="/today" className="flex items-center gap-2 font-display font-bold">
             <img src={logoUrl} alt="" className="h-7 w-7" />
             JYRA
           </Link>
           <details className="relative">
-            <summary className="flex h-9 w-9 cursor-pointer list-none items-center justify-center rounded-md border border-border">
+            <summary className="flex h-9 w-9 cursor-pointer list-none items-center justify-center rounded-xl shadow-neu-sm">
               <Menu className="h-5 w-5" />
               <span className="sr-only">Open navigation</span>
             </summary>
-            <nav className="absolute right-0 top-11 w-56 rounded-lg border border-border bg-card p-2 shadow-xl">
+            <nav className="absolute right-0 top-11 w-56 rounded-2xl bg-card p-2 shadow-neu">
               <p className="px-3 py-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                 {activeProject?.name ?? "Workspace"}
               </p>

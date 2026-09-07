@@ -3,26 +3,31 @@ import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
+// Soft-UI (neumorphic) buttons: filled actions glow, neutral actions are raised
+// from the surface and press into it on :active.
 const buttonVariants = cva(
-  "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+  "inline-flex items-center justify-center whitespace-nowrap rounded-xl text-sm font-semibold ring-offset-background transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 active:translate-y-px",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm",
+        default:
+          "bg-linear-to-br from-primary to-primary-deep text-primary-foreground shadow-neu-primary hover:brightness-105",
         destructive:
-          "bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-sm",
+          "bg-destructive text-destructive-foreground shadow-neu-sm hover:brightness-105",
         outline:
-          "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
+          "bg-card text-foreground shadow-neu-sm hover:text-primary active:shadow-neu-inset",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
+          "bg-card text-foreground shadow-neu-sm hover:text-primary active:shadow-neu-inset",
+        ghost: "text-foreground/80 hover:text-primary hover:shadow-neu-sm",
         link: "text-primary underline-offset-4 hover:underline",
-        coral: "bg-accent text-accent-foreground hover:bg-accent/90 shadow-sm", // using the coral accent
+        // Kept for call sites; the signature CTA is now the violet gradient.
+        coral:
+          "bg-linear-to-br from-primary to-primary-deep text-primary-foreground shadow-neu-primary hover:brightness-105",
       },
       size: {
-        default: "h-10 px-4 py-2",
-        sm: "h-9 rounded-md px-3",
-        lg: "h-11 rounded-md px-8",
+        default: "h-10 px-5 py-2",
+        sm: "h-9 rounded-lg px-3.5",
+        lg: "h-11 rounded-xl px-8",
         icon: "h-10 w-10",
       },
     },

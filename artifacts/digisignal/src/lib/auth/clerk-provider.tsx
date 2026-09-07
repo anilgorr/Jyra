@@ -50,20 +50,20 @@ const clerkAppearance = {
     logoImageUrl: `${window.location.origin}${basePath}/logo.svg`,
   },
   variables: {
-    colorPrimary: 'hsl(8, 83%, 65%)', // Coral accent
-    colorForeground: 'hsl(40, 10%, 14%)', // Deep ink
-    colorMutedForeground: 'hsl(35, 9%, 40%)',
+    colorPrimary: 'hsl(253, 73%, 63%)', // Violet accent
+    colorForeground: 'hsl(248, 27%, 28%)', // Ink
+    colorMutedForeground: 'hsl(249, 18%, 55%)',
     colorDanger: 'hsl(0, 84%, 60%)',
-    colorBackground: 'hsl(42, 40%, 98%)', // Card bg
-    colorInput: 'hsl(35, 18%, 78%)',
-    colorInputForeground: 'hsl(40, 10%, 14%)',
-    colorNeutral: 'hsl(35, 20%, 85%)',
-    fontFamily: '"DM Sans", sans-serif',
-    borderRadius: '0.375rem',
+    colorBackground: 'hsl(251, 47%, 94%)', // Lilac card
+    colorInput: 'hsl(251, 40%, 92%)',
+    colorInputForeground: 'hsl(248, 27%, 28%)',
+    colorNeutral: 'hsl(250, 36%, 86%)',
+    fontFamily: '"Plus Jakarta Sans", sans-serif',
+    borderRadius: '0.9rem',
   },
   elements: {
     rootBox: 'w-full flex justify-center',
-    cardBox: 'bg-card border border-border shadow-sm rounded-2xl w-[440px] max-w-full overflow-hidden',
+    cardBox: 'bg-card neu-raised rounded-3xl w-[440px] max-w-full overflow-hidden',
     card: '!shadow-none !border-0 !bg-transparent !rounded-none',
     footer: '!shadow-none !border-0 !bg-transparent !rounded-none',
     headerTitle: 'font-display text-foreground',
@@ -78,9 +78,9 @@ const clerkAppearance = {
     alertText: 'text-foreground',
     logoBox: 'h-10 mb-4',
     logoImage: 'h-full object-contain',
-    socialButtonsBlockButton: 'border border-border bg-background hover:bg-muted transition-colors',
+    socialButtonsBlockButton: 'bg-card shadow-neu-sm hover:text-primary transition-colors',
     formButtonPrimary: 'bg-accent hover:bg-accent/90 text-accent-foreground shadow-sm transition-all',
-    formFieldInput: 'bg-background border border-border focus:border-ring focus:ring-1 focus:ring-ring text-foreground',
+    formFieldInput: 'bg-card shadow-neu-inset border-0 focus:ring-2 focus:ring-ring text-foreground rounded-xl',
     footerAction: 'justify-center',
     dividerLine: 'bg-border',
     alert: 'bg-destructive/10 border-destructive text-destructive',

@@ -1,5 +1,5 @@
 @layer theme, base, clerk, components, utilities;
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Outfit:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Sora:wght@400;500;600;700;800&display=swap');
 @import 'tailwindcss';
 @import '@clerk/themes/shadcn.css';
 @import 'tw-animate-css';
@@ -8,7 +8,7 @@
 @custom-variant dark (&:is(.dark *));
 
 .cl-formFieldInput::placeholder {
-  color: hsl(35 9% 40%);
+  color: hsl(249 18% 55%);
   opacity: 1;
 }
 
@@ -28,6 +28,7 @@
   --color-popover-border: hsl(var(--popover-border));
 
   --color-primary: hsl(var(--primary));
+  --color-primary-deep: hsl(var(--primary-deep));
   --color-primary-foreground: hsl(var(--primary-foreground));
   --color-primary-border: var(--primary-border);
 
@@ -58,72 +59,79 @@
   --color-sidebar-accent-border: var(--sidebar-accent-border);
   --color-sidebar-ring: hsl(var(--sidebar-ring));
 
-  --font-sans: 'DM Sans', sans-serif;
-  --font-display: 'Outfit', sans-serif;
+  --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-display: 'Sora', system-ui, sans-serif;
 
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 6px);
+  --radius-md: calc(var(--radius) - 4px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+
+  /* Neumorphic (soft UI) shadow system — exposed as shadow-neu* utilities. */
+  --shadow-neu: 6px 6px 14px hsl(var(--neu-dark)), -6px -6px 14px hsl(var(--neu-light));
+  --shadow-neu-sm: 3px 3px 8px hsl(var(--neu-dark)), -3px -3px 8px hsl(var(--neu-light));
+  --shadow-neu-inset: inset 3px 3px 7px hsl(var(--neu-dark)), inset -3px -3px 7px hsl(var(--neu-light));
+  --shadow-neu-primary: 5px 6px 16px hsl(var(--primary) / 0.42), -4px -4px 12px hsl(var(--neu-light) / 0.55);
 }
 
-/* LIGHT MODE */
+/* LIGHT MODE — soft lilac */
 :root {
-  --button-outline: rgba(0, 0, 0, 0.1);
-  --badge-outline: rgba(0, 0, 0, 0.05);
+  --button-outline: rgba(60, 50, 120, 0.1);
+  --badge-outline: rgba(60, 50, 120, 0.06);
 
   --opaque-button-border-intensity: -8;
 
-  --elevate-1: rgba(0, 0, 0, 0.03);
-  --elevate-2: rgba(0, 0, 0, 0.08);
+  --elevate-1: rgba(60, 50, 120, 0.03);
+  --elevate-2: rgba(60, 50, 120, 0.08);
 
-  /* Oatmeal base */
-  --background: 42 33% 93%;
-  /* Deep ink typography */
-  --foreground: 40 10% 14%;
+  /* Lilac ground — surfaces share this color; depth comes from shadow */
+  --background: 251 42% 93%;
+  --foreground: 248 27% 28%;
 
-  --border: 35 20% 85%;
-  
-  --card: 42 40% 98%;
-  --card-foreground: 40 10% 14%;
-  --card-border: 35 20% 85%;
+  --border: 250 36% 86%;
 
-  /* Deep ink sidebar */
-  --sidebar: 40 10% 14%;
-  --sidebar-foreground: 0 0% 100%;
-  --sidebar-border: 40 10% 14%;
-  --sidebar-primary: 8 83% 65%;
-  --sidebar-primary-foreground: 40 10% 14%;
-  --sidebar-accent: 174 37% 34%;
-  --sidebar-accent-foreground: 0 0% 100%;
-  --sidebar-ring: 8 83% 65%;
+  --card: 251 47% 94%;
+  --card-foreground: 248 27% 28%;
+  --card-border: 250 36% 86%;
 
-  --popover: 42 40% 98%;
-  --popover-foreground: 40 10% 14%;
-  --popover-border: 35 20% 85%;
+  --sidebar: 251 42% 93%;
+  --sidebar-foreground: 248 27% 28%;
+  --sidebar-border: 250 36% 86%;
+  --sidebar-primary: 253 73% 63%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 256 70% 95%;
+  --sidebar-accent-foreground: 253 60% 50%;
+  --sidebar-ring: 253 73% 63%;
 
-  /* Deep ink */
-  --primary: 40 10% 14%;
-  --primary-foreground: 42 33% 93%;
+  --popover: 251 47% 95%;
+  --popover-foreground: 248 27% 28%;
+  --popover-border: 250 36% 86%;
 
-  /* Muted oatmeal */
-  --secondary: 42 24% 87%;
-  --secondary-foreground: 40 10% 14%;
+  /* Violet — the single accent. Primary and accent share it, like the kit. */
+  --primary: 253 73% 63%;
+  --primary-deep: 253 62% 55%;
+  --primary-foreground: 0 0% 100%;
 
-  --muted: 42 23% 91%;
-  --muted-foreground: 35 9% 40%;
+  --secondary: 251 40% 89%;
+  --secondary-foreground: 248 27% 28%;
 
-  /* Coral signal accent */
-  --accent: 8 83% 65%;
-  --accent-foreground: 40 10% 14%;
+  --muted: 252 42% 90%;
+  --muted-foreground: 249 18% 55%;
+
+  --accent: 253 73% 63%;
+  --accent-foreground: 0 0% 100%;
 
   --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 100%;
 
-  --input: 35 18% 78%;
-  --ring: 174 37% 34%;
+  --input: 251 36% 85%;
+  --ring: 253 73% 63%;
 
-  --radius: 0.375rem;
+  --radius: 1rem;
+
+  /* Neumorphic light/dark shadow hues */
+  --neu-dark: 247 35% 81%;
+  --neu-light: 0 0% 100%;
 
   --sidebar-primary-border: hsl(var(--sidebar-primary));
   --sidebar-accent-border: hsl(var(--sidebar-accent));
@@ -134,6 +142,7 @@
   --destructive-border: hsl(var(--destructive));
 }
 
+/* DARK MODE — deep indigo, same soft depth */
 .dark {
   --button-outline: rgba(255, 255, 255, 0.1);
   --badge-outline: rgba(255, 255, 255, 0.05);
@@ -143,45 +152,49 @@
   --elevate-1: rgba(255, 255, 255, 0.04);
   --elevate-2: rgba(255, 255, 255, 0.09);
 
-  --background: 40 10% 8%;
-  --foreground: 42 35% 93%;
+  --background: 248 32% 19%;
+  --foreground: 250 55% 95%;
 
-  --border: 40 8% 18%;
-  
-  --card: 40 9% 12%;
-  --card-foreground: 42 35% 93%;
-  --card-border: 40 8% 18%;
+  --border: 249 30% 27%;
 
-  --sidebar: 40 10% 6%;
-  --sidebar-foreground: 42 35% 93%;
-  --sidebar-border: 40 8% 16%;
-  --sidebar-primary: 8 83% 65%;
-  --sidebar-primary-foreground: 40 10% 8%;
-  --sidebar-accent: 174 30% 22%;
-  --sidebar-accent-foreground: 42 35% 93%;
-  --sidebar-ring: 8 83% 65%;
+  --card: 248 34% 21%;
+  --card-foreground: 250 55% 95%;
+  --card-border: 249 30% 27%;
 
-  --popover: 40 9% 12%;
-  --popover-foreground: 42 35% 93%;
-  --popover-border: 40 8% 18%;
+  --sidebar: 248 32% 19%;
+  --sidebar-foreground: 250 55% 95%;
+  --sidebar-border: 249 30% 27%;
+  --sidebar-primary: 255 100% 76%;
+  --sidebar-primary-foreground: 248 32% 14%;
+  --sidebar-accent: 250 36% 27%;
+  --sidebar-accent-foreground: 254 100% 85%;
+  --sidebar-ring: 255 100% 76%;
 
-  --primary: 42 35% 88%;
-  --primary-foreground: 40 10% 8%;
+  --popover: 248 34% 22%;
+  --popover-foreground: 250 55% 95%;
+  --popover-border: 249 30% 27%;
 
-  --secondary: 174 25% 18%;
-  --secondary-foreground: 42 35% 93%;
+  --primary: 255 100% 76%;
+  --primary-deep: 255 100% 71%;
+  --primary-foreground: 248 32% 14%;
 
-  --muted: 40 8% 16%;
-  --muted-foreground: 42 15% 68%;
+  --secondary: 249 33% 26%;
+  --secondary-foreground: 250 55% 95%;
 
-  --accent: 8 83% 65%;
-  --accent-foreground: 40 10% 8%;
+  --muted: 249 30% 26%;
+  --muted-foreground: 248 25% 64%;
 
-  --destructive: 0 62% 30%;
+  --accent: 255 100% 76%;
+  --accent-foreground: 248 32% 14%;
+
+  --destructive: 0 62% 50%;
   --destructive-foreground: 0 0% 100%;
 
-  --input: 40 8% 20%;
-  --ring: 174 45% 55%;
+  --input: 249 30% 28%;
+  --ring: 255 100% 76%;
+
+  --neu-dark: 248 36% 15%;
+  --neu-light: 249 35% 27%;
 }
 
 @layer base {
@@ -191,11 +204,13 @@
 
   body {
     @apply font-sans antialiased bg-background text-foreground;
+    font-variant-numeric: tabular-nums;
   }
-  
+
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-display);
     @apply tracking-tight;
+    text-wrap: balance;
   }
 }
 
@@ -209,4 +224,8 @@
     color: hsl(var(--muted-foreground));
     pointer-events: none;
   }
+
+  /* Soft-UI helpers for one-off surfaces */
+  .neu-raised { box-shadow: 6px 6px 14px hsl(var(--neu-dark)), -6px -6px 14px hsl(var(--neu-light)); }
+  .neu-inset  { box-shadow: inset 3px 3px 7px hsl(var(--neu-dark)), inset -3px -3px 7px hsl(var(--neu-light)); }
 }
