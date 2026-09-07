@@ -11,16 +11,17 @@ const badgeVariants = cva(
     variants: {
       variant: {
         default:
-          // Soft-UI: a raised violet pill
-          'border-transparent bg-primary text-primary-foreground shadow-neu-sm',
+          // Soft-UI: solid violet pill (flat — pills never carry depth)
+          'border-transparent bg-primary text-primary-foreground',
         secondary:
-          // Soft-UI: pressed-in neutral pill
-          'border-transparent bg-card text-foreground shadow-neu-inset',
+          // Soft-UI: quiet neutral tint
+          'border-transparent bg-muted text-foreground/80',
         destructive:
           // @replit shadow-xs instead of shadow, no hover because we use hover-elevate
           'border-transparent bg-destructive text-destructive-foreground shadow-xs',
         // @replit shadow-xs" - use badge outline variable
-        outline: 'text-foreground border-transparent bg-card shadow-neu-inset',
+        // Soft-UI: lilac tint with violet text (the "Emerging" pill)
+        outline: 'border-transparent bg-primary/12 text-primary',
       },
     },
     defaultVariants: {

@@ -73,6 +73,14 @@ const StateColorMap: Record<string, string> = {
   DORMANT: "bg-muted text-muted-foreground border-border",
 };
 
+
+/** "INSUFFICIENT_EVIDENCE" -> "Insufficient evidence"; leaves prose untouched. */
+function humanizeEnum(value: unknown): unknown {
+  if (typeof value !== "string" || !/^[A-Z][A-Z0-9_]+$/.test(value)) return value;
+  const words = value.toLowerCase().split("_").join(" ");
+  return words.charAt(0).toUpperCase() + words.slice(1);
+}
+
 export function MarketCard({ card, projectId }: MarketCardProps) {
   const queryClient = useQueryClient();
   const executeResearch = useAnalyzeCompanyIntelligenceV2();
@@ -188,7 +196,7 @@ export function MarketCard({ card, projectId }: MarketCardProps) {
           ))}
         </div>
         {/* Core Narrative: WHO, WHEN, WHY */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 [&>div]:min-w-0 [&_p]:break-words">
           <div className="space-y-2">
             <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
               <Building className="w-3.5 h-3.5" /> Who
@@ -199,7 +207,7 @@ export function MarketCard({ card, projectId }: MarketCardProps) {
             <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
               <Clock className="w-3.5 h-3.5" /> When
             </h4>
-            <p className="text-sm leading-relaxed text-foreground/90">{typeof card.when === "string" ? card.when : (card.when || "No urgent timing signals.")}</p>
+            <p className="text-sm leading-relaxed text-foreground/90">{humanizeEnum(typeof card.when === "string" ? card.when : (card.when || "No urgent timing signals."))}</p>
           </div>
           <div className="space-y-2">
             <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">

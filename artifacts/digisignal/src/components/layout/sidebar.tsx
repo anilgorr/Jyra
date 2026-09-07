@@ -52,9 +52,7 @@ export function Sidebar() {
     <aside className="hidden h-full w-64 flex-col bg-sidebar text-sidebar-foreground shadow-neu md:flex">
       <div className="p-6">
         <Link href="/today" className="flex items-center gap-3 outline-none">
-          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-linear-to-br from-primary to-primary-deep shadow-neu-primary">
-            <img src={logoUrl} alt="JYRA" className="h-6 w-6 brightness-0 invert" />
-          </span>
+          <img src={logoUrl} alt="JYRA" className="h-10 w-10 rounded-xl shadow-neu-primary" />
           <span className="font-display text-xl font-extrabold tracking-tight">JYRA</span>
         </Link>
       </div>
