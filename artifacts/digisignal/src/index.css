@@ -67,7 +67,18 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
 
-  /* Neumorphic (soft UI) shadow system — exposed as shadow-neu* utilities. */
+  /* Neumorphic (soft UI) shadow system.
+     The whole Tailwind shadow scale is redefined so every existing shadow-sm /
+     shadow / shadow-md / shadow-lg / shadow-xl surface in the app becomes a
+     raised soft-UI surface without touching call sites. */
+  --shadow-2xs: 2px 2px 5px hsl(var(--neu-dark)), -2px -2px 5px hsl(var(--neu-light));
+  --shadow-xs: 3px 3px 7px hsl(var(--neu-dark)), -3px -3px 7px hsl(var(--neu-light));
+  --shadow-sm: 4px 4px 10px hsl(var(--neu-dark)), -4px -4px 10px hsl(var(--neu-light));
+  --shadow: 6px 6px 14px hsl(var(--neu-dark)), -6px -6px 14px hsl(var(--neu-light));
+  --shadow-md: 7px 7px 16px hsl(var(--neu-dark)), -7px -7px 16px hsl(var(--neu-light));
+  --shadow-lg: 9px 9px 20px hsl(var(--neu-dark)), -9px -9px 20px hsl(var(--neu-light));
+  --shadow-xl: 12px 12px 26px hsl(var(--neu-dark)), -12px -12px 26px hsl(var(--neu-light));
+  --shadow-2xl: 16px 16px 34px hsl(var(--neu-dark)), -16px -16px 34px hsl(var(--neu-light));
   --shadow-neu: 7px 7px 16px hsl(var(--neu-dark)), -7px -7px 16px hsl(var(--neu-light));
   --shadow-neu-sm: 4px 4px 10px hsl(var(--neu-dark)), -4px -4px 10px hsl(var(--neu-light));
   --shadow-neu-inset: inset 4px 4px 9px hsl(var(--neu-dark)), inset -4px -4px 9px hsl(var(--neu-light));
@@ -212,6 +223,15 @@
     font-family: var(--font-display);
     @apply tracking-tight;
     text-wrap: balance;
+  }
+}
+
+@layer components {
+  /* Any card-colored surface is raised by default. Utility shadows
+     (shadow-neu-inset on inputs, shadow-neu-sm on buttons, shadow-none)
+     live in a later layer and still win. */
+  .bg-card {
+    box-shadow: 7px 7px 16px hsl(var(--neu-dark)), -7px -7px 16px hsl(var(--neu-light));
   }
 }
 
