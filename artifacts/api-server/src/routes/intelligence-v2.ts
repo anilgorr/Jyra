@@ -29,6 +29,7 @@ import {
   loadLatestIntelligenceV2Assessment,
   persistIntelligenceV2Assessment,
 } from "../lib/intelligence-v2/persist-assessment";
+import { persistIntelligenceV2Evidence } from "../lib/intelligence-v2/persist-evidence";
 import {
   ASSESSMENT_POLICY_VERSION,
   ASSESSMENT_PROMPT_VERSION,
@@ -241,6 +242,21 @@ router.post("/projects/:projectId/companies/:projectCompanyId/intelligence-v2", 
       result,
       runSnapshot: run,
     }, tx);
+    // The verdict is the cheap half. Persist the evidence and atomic claims it
+    // rests on in the same transaction, so the audit trail outlives the request
+    // and facts/signals have a source to derive Need and Timing from.
+    const evidence = await persistIntelligenceV2Evidence({
+      companyId: owned.company.id,
+      companyDomain: owned.company.domain,
+      evidence: result.evidence,
+      now: completedAt,
+    }, tx);
+    req.log.info({
+      assessmentId: row.id,
+      evidenceInserted: evidence.inserted,
+      evidenceReused: evidence.reused,
+      evidenceSkipped: evidence.skipped,
+    }, "V2_EVIDENCE_PERSISTED");
     await tx.update(projectCompaniesTable).set({
       researchStatus: "complete",
       latestResearchAt: completedAt,
