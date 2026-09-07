@@ -64,7 +64,7 @@ assert.equal(m.localUserId({ JYRA_LOCAL_USER_ID: " dev_42 " }), "dev_42");
   const bareReq = { headers: {}, method: "GET", url: "/api/organizations" };
 
   await withAuthMode("local", async () => {
-    assert.equal(process.env.NODE_ENV, undefined, "guard tests run outside production");
+    assert.notEqual(process.env.NODE_ENV, "production", "guard tests run outside production");
     assert.equal(m.verifiedUserId(bareReq), "local-dev-user");
     const res = fakeRes();
     let nextCalled = false;

@@ -1,3 +1,4 @@
+/** @requires-database — needs a live development Postgres; not part of the unit gate. */
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { build } from "esbuild";

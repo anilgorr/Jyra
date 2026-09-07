@@ -40,8 +40,11 @@ jobs:
       - name: Lint
         run: pnpm run lint
 
-      - name: Market readiness tests
-        run: pnpm run test:market-readiness
+      - name: Unit suites
+        # Every suite in this gate runs with no database, no API keys and no
+        # network. A suite that needs a live Postgres declares
+        # @requires-database and is excluded here.
+        run: pnpm run test:unit
 
       - name: Build
         # Vite configs default PORT/BASE_PATH; a clean checkout must build.

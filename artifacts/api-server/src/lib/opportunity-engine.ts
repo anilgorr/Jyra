@@ -379,6 +379,65 @@ export async function ensureOpportunityModel(organizationId: string, projectId: 
   return existing;
 }
 
+/**
+ * Abstention policy for persistence.
+ *
+ * `calculateOpportunityAssessment` correctly returns `score: null` /
+ * INSUFFICIENT_DATA when the inputs are unknown — that is the honest answer to
+ * "what is this opportunity worth?". It is NOT the honest answer to "what do we
+ * know about this company?", because a run that gathered no evidence has
+ * learned nothing; it has merely failed. Persisting its null over a previously
+ * earned score destroys real work and is indistinguishable, downstream, from a
+ * company genuinely assessed as unknown.
+ *
+ * So: an INSUFFICIENT_DATA calculation never overwrites an existing numeric
+ * score. The prior score, dimensions and state are retained and the run is
+ * recorded as an abstention. A calculation that produced a score always wins —
+ * a real reassessment is allowed to move a score down as well as up.
+ */
+export function resolvePersistedAssessment<
+  T extends {
+    score: number | null;
+    state: string;
+    assessmentStatus: "INSUFFICIENT_DATA" | "NEEDS_MORE_RESEARCH" | "COMPLETE";
+    explanation: string;
+    components: { dimension: string; score: number | null }[];
+  },
+>(
+  calculation: T,
+  previous: {
+    score: number | null;
+    state: string;
+    dimensions?: Record<string, number | null> | null;
+  } | null,
+): { persisted: T; abstained: boolean } {
+  const degrades =
+    calculation.assessmentStatus === "INSUFFICIENT_DATA" &&
+    calculation.score === null &&
+    previous !== null &&
+    previous.score !== null;
+
+  if (!degrades) return { persisted: calculation, abstained: false };
+
+  const previousDimensions = previous!.dimensions ?? null;
+  const persisted = {
+    ...calculation,
+    score: previous!.score,
+    state: previous!.state,
+    assessmentStatus: "NEEDS_MORE_RESEARCH" as const,
+    explanation:
+      "This run produced no usable evidence, so the previous assessment is retained. " +
+      calculation.explanation,
+    components: calculation.components.map((component) =>
+      component.score === null && previousDimensions && previousDimensions[component.dimension] != null
+        ? { ...component, score: previousDimensions[component.dimension]! }
+        : component,
+    ),
+  } as T;
+
+  return { persisted, abstained: true };
+}
+
 export async function evaluateOpportunity(input: { organizationId: string; projectId: string; projectCompanyId: string; userId: string; now?: Date }) {
   const model = await ensureOpportunityModel(input.organizationId, input.projectId, input.userId);
   return db.transaction(async (tx) => {
@@ -462,7 +521,7 @@ export async function evaluateOpportunity(input: { organizationId: string; proje
     .where(eq(companyEvidenceTable.companyId, row.company.id));
   const [previousOpportunity] = await tx.select().from(opportunitiesTable)
     .where(and(eq(opportunitiesTable.projectId, input.projectId), eq(opportunitiesTable.projectCompanyId, row.projectCompany.id))).limit(1);
-   const calculation = calculateOpportunityAssessment({
+   const rawCalculation = calculateOpportunityAssessment({
     weights: model.weights,
     rules: model.rules as Partial<typeof DEFAULT_OPPORTUNITY_RULES>,
     fitResults,
@@ -486,6 +545,22 @@ export async function evaluateOpportunity(input: { organizationId: string; proje
       state: previousOpportunity.state, score: previousOpportunity.score, timingScore: previousOpportunity.timingScore,
     } : null,
   });
+   // A run that gathered nothing must not erase an existing score. The deliberate
+   // buyer-role gate below is applied afterwards so it still wins.
+   const { persisted: calculation, abstained } = resolvePersistedAssessment(rawCalculation, previousOpportunity ? {
+     score: previousOpportunity.score,
+     state: previousOpportunity.state,
+     dimensions: {
+       FIT: previousOpportunity.fitScore, NEED: previousOpportunity.needScore,
+       TIMING: previousOpportunity.timingScore, RELATIONSHIP: previousOpportunity.relationshipScore,
+       CONFIDENCE: previousOpportunity.confidenceScore,
+     },
+   } : null);
+   if (abstained) {
+     console.warn("ASSESSMENT_ABSTAINED_PRIOR_SCORE_RETAINED", {
+       projectId: input.projectId, projectCompanyId: row.projectCompany.id, retainedScore: previousOpportunity?.score,
+     });
+   }
    if (!buyerOpportunityAllowed) {
      calculation.score = null;
      calculation.state = "WATCH";
