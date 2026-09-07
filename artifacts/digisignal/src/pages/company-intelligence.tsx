@@ -209,7 +209,7 @@ function ContactEnrichmentPanel({ projectId, projectCompanyId }: { projectId: st
             ) : peopleQuery.isError ? (
               <Unavailable message="People and contact enrichment history could not be loaded." />
             ) : people.length === 0 ? (
-              <div className="rounded-xl border border-dashed p-8 text-center text-sm text-muted-foreground">
+              <div className="rounded-2xl bg-muted/30 p-6 text-center text-sm text-muted-foreground shadow-neu-inset">
                 No people are attached to this company yet. Add a person you already know before requesting contact lookup.
               </div>
             ) : people.map(({ person, context }) => (
@@ -261,7 +261,7 @@ function Section({
 }) {
   return (
     <section id={id} className={cn("space-y-6 scroll-mt-8", className)}>
-      <div className="flex items-center justify-between border-b pb-4">
+      <div className="flex items-center justify-between border-b border-border/50 pb-4">
         <div>
           {eyebrow && <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mb-1.5">{eyebrow}</p>}
           <h2 className="flex items-center gap-2.5 font-display text-xl font-semibold text-foreground">
@@ -483,7 +483,7 @@ function IntelligenceV2Panel({
               <Unavailable message="The V2 inspection snapshot could not be loaded." />
             </div>
           ) : !run ? (
-            <div className="mt-8 rounded-xl border border-dashed p-8 text-center text-sm text-muted-foreground" data-testid="status-intelligence-v2-empty">
+            <div className="mt-8 rounded-2xl bg-muted/30 p-6 text-center text-sm text-muted-foreground shadow-neu-inset" data-testid="status-intelligence-v2-empty">
               No V2 run exists in this development process. Run an explicit analysis to inspect it.
             </div>
           ) : (
@@ -731,35 +731,75 @@ export default function CompanyIntelligencePage() {
       : null,
   ].filter((item): item is string => Boolean(item));
 
+  const headerScore = detail?.opportunity.score ?? projectCompany.opportunityScore ?? null;
+  const headerDimensions = (["FIT", "NEED", "TIMING", "RELATIONSHIP"] as const).map((dimension) => ({
+    key: dimension,
+    label: dimension === "RELATIONSHIP" ? "Rel." : label(dimension),
+    score: detail?.components.find((component) => component.dimension === dimension)?.score ?? null,
+  }));
+
   return (
-    <div className="space-y-12 pb-20" data-testid="company-intelligence-page">
-      <header className="pb-8">
+    <div className="space-y-10 pb-20" data-testid="company-intelligence-page">
+      <header className="pb-2">
         <Link href="/companies" className="group mb-6 inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
           <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" /> All companies
         </Link>
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-          <div>
+        <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start">
+          <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2 mb-3">
               <Badge variant="outline" className={stateClass(detail?.opportunity.state ?? projectCompany.opportunityAssessmentState)}>{detail?.opportunity.assessmentStatus === "INSUFFICIENT_DATA" ? "Needs Research" : label(detail?.opportunity.state ?? projectCompany.opportunityAssessmentState)}</Badge>
-              <Badge variant="secondary" className="bg-secondary/50">{label(projectCompany.researchStatus)}</Badge>
-              {detail?.opportunity.assessmentStatus && <Badge variant="outline" className="border-border/50 text-muted-foreground">{label(detail.opportunity.assessmentStatus)}</Badge>}
+              <Badge variant="secondary">{label(projectCompany.researchStatus)}</Badge>
+              {detail?.opportunity.assessmentStatus && <Badge variant="outline">{label(detail.opportunity.assessmentStatus)}</Badge>}
             </div>
-            <h1 className="font-display text-4xl lg:text-5xl font-bold tracking-tight text-foreground">{company.canonicalName}</h1>
-            <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
+            <h1 className="font-display text-4xl font-bold tracking-tight text-foreground">{company.canonicalName}</h1>
+            <div className="mt-3 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
               {company.domain && <span className="flex items-center gap-1.5"><ExternalLink className="h-3.5 w-3.5" />{company.domain}</span>}
               {company.industry && <span className="flex items-center gap-1.5"><Building2 className="h-3.5 w-3.5" />{company.industry}</span>}
               {company.country && <span className="flex items-center gap-1.5"><svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>{company.country}</span>}
             </div>
+            <div className="mt-6 flex flex-wrap items-center gap-3">
+              {company.website && (
+                <a className={cn(buttonVariants({ variant: "outline", size: "sm" }), "h-9")} href={company.website.startsWith("http") ? company.website : `https://${company.website}`} target="_blank" rel="noreferrer">
+                  <ExternalLink className="mr-2 h-4 w-4" /> Website
+                </a>
+              )}
+              <Button variant="default" size="sm" className="h-9" onClick={() => navigate(`/opportunities?company=${projectCompanyId}`)}>
+                <Sparkles className="mr-2 h-4 w-4" /> Opportunity view
+              </Button>
+            </div>
           </div>
-          <div className="flex items-center gap-3">
-            {company.website && (
-              <a className={cn(buttonVariants({ variant: "outline", size: "sm" }), "h-9 shadow-sm")} href={company.website.startsWith("http") ? company.website : `https://${company.website}`} target="_blank" rel="noreferrer">
-                <ExternalLink className="mr-2 h-4 w-4" /> Website
-              </a>
-            )}
-            <Button variant="default" size="sm" className="h-9 shadow-sm" onClick={() => navigate(`/opportunities?company=${projectCompanyId}`)}>
-              <Sparkles className="mr-2 h-4 w-4" /> Opportunity view
-            </Button>
+
+          {/* Summary before detail: the score this page exists to explain. */}
+          <div className="rounded-2xl bg-card p-6 shadow-neu" data-testid="company-score-summary">
+            <div className="flex items-center gap-5">
+              <div
+                className="relative grid h-24 w-24 shrink-0 place-items-center rounded-full shadow-neu"
+                style={{ background: `conic-gradient(hsl(var(--primary)) ${Math.max(0, Math.min(100, headerScore ?? 0))}%, hsl(var(--muted)) 0)` }}
+                role="img"
+                aria-label={`Opportunity score ${scoreText(headerScore)} out of 100`}
+              >
+                <div className="grid h-[74px] w-[74px] place-items-center rounded-full bg-card shadow-neu-inset">
+                  <span className="font-display text-2xl font-extrabold tabular-nums text-primary">{scoreText(headerScore)}</span>
+                </div>
+              </div>
+              <div className="min-w-0">
+                <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Opportunity score</p>
+                <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">Confidence is shown separately and never boosts this score.</p>
+              </div>
+            </div>
+            <div className="mt-6 grid grid-cols-2 gap-x-5 gap-y-4">
+              {headerDimensions.map((dimension) => (
+                <div key={dimension.key}>
+                  <div className="flex items-baseline justify-between gap-2">
+                    <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">{dimension.label}</p>
+                    <p className="font-display text-sm font-bold tabular-nums text-foreground">{scoreText(dimension.score)}</p>
+                  </div>
+                  <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-muted shadow-neu-inset">
+                    <div className="h-full rounded-full bg-linear-to-r from-primary to-primary-deep" style={{ width: `${Math.max(0, Math.min(100, dimension.score ?? 0))}%` }} />
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </header>
@@ -792,7 +832,7 @@ export default function CompanyIntelligencePage() {
               </div>
             </CardContent>
           </Card>
-          <Card className="bg-muted/30 shadow-none border-dashed border-border/60">
+          <Card className="border-0 bg-muted/30 shadow-neu-inset">
             <CardContent className="p-6">
               <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mb-6">Project context</p>
               <div className="space-y-5 text-sm">
