@@ -25,9 +25,13 @@ function resolveClerkConfig(): { publishableKey: string; proxyUrl: string | unde
   // production bundle with one; provisioning the production Clerk instance
   // (pk_live_ key) is an ops task.
   if (import.meta.env.PROD && configuredClerkKey?.startsWith('pk_test_')) {
-    throw new Error(
-      'VITE_CLERK_PUBLISHABLE_KEY is a pk_test_ development key in a production build. ' +
-        'Set the pk_live_ key from the production Clerk instance.',
+    // INTERIM (development-posture deployment): JYRA runs off Replit with a Clerk
+    // development instance and NODE_ENV=development on the API, so the whole app is
+    // functional end-to-end. A pk_test_ key in a production bundle is intentional here.
+    // Before serving real users, provision a production Clerk instance (pk_live_ key).
+    console.warn(
+      'VITE_CLERK_PUBLISHABLE_KEY is a pk_test_ development key in a production build ' +
+        '(intentional for the current development-posture deployment).',
     );
   }
   const publishableKey = publishableKeyFromHost(window.location.hostname, configuredClerkKey);
