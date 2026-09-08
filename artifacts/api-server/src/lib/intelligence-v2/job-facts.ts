@@ -223,11 +223,21 @@ export async function persistJobFacts(
     const scores = calculateEvidenceScores({
       sourceType: "job_posting",
       sourceDomain: row.sourceDomain,
-      companyDomain: input.companyDomain,
+      // The board is the company's own hiring system, so it is first-party by
+      // provenance even when it is hosted elsewhere. Scoring it by hostname
+      // made Datadog's Greenhouse board look like a stranger's website —
+      // authority 48, confidence 45-64 — and every hiring definition needs 60.
+      // Attribution already proved the employer before a single posting was
+      // read; the domain check would only re-litigate it and get it wrong.
+      companyDomain: row.sourceDomain,
       provider: "job-search",
       publisher: null,
       publishedAt: new Date(row.effectiveDate),
       observedAt: now,
+      // Postings from one verified board corroborate each other: a company
+      // with thirty open roles is more certainly hiring than one with a single
+      // ad that might be stale.
+      corroboratingSourceCount: Math.max(0, input.facts.length - 1),
       now,
     });
 
