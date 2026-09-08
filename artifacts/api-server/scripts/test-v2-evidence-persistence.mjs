@@ -121,6 +121,66 @@ check("V2 capability names map onto the evidence taxonomy", () => {
   assert.equal(h.evidenceSourceTypeForV2("TECH_STACK"), "technology");
 });
 
+/* The capability that fetched a page does not decide what the page IS.
+ * In the first real run that persisted evidence, LinkedIn pages for three
+ * entirely different companies (Coded Lines, FlowForma, KISSFISH) were stored
+ * against Kissflow as `company_website` and scored 84.8 confidence — higher
+ * than kissflow.com's own site at 83.4 — because COMPANY_PROFILE_RESOLUTION
+ * was mapped straight onto company_website, which counts as both official and
+ * direct. The domain has to decide. */
+
+check("only the company's own domain can be its website", () => {
+  assert.equal(
+    h.evidenceSourceTypeForV2("COMPANY_PROFILE_RESOLUTION", { sourceDomain: "linkedin.com", companyDomain: "kissflow.com" }),
+    "public_social",
+    "a LinkedIn profile is about the company, not by it",
+  );
+  assert.equal(
+    h.evidenceSourceTypeForV2("FIRST_PARTY_WEBSITE", { sourceDomain: "kissflow.com", companyDomain: "kissflow.com" }),
+    "company_website",
+  );
+  assert.equal(
+    h.evidenceSourceTypeForV2("FIRST_PARTY_WEBSITE", { sourceDomain: "someoneelse.com", companyDomain: "kissflow.com" }),
+    "other",
+    "a capability claiming first-party cannot override a foreign domain",
+  );
+});
+
+check("subdomains of the company still count as the company", () => {
+  assert.equal(
+    h.evidenceSourceTypeForV2("WEBSITE_CRAWL", { sourceDomain: "blog.kissflow.com", companyDomain: "kissflow.com" }),
+    "company_website",
+  );
+  assert.equal(
+    h.evidenceSourceTypeForV2("WEBSITE_CRAWL", { sourceDomain: "notkissflow.com", companyDomain: "kissflow.com" }),
+    "other",
+    "a suffix match must not be confused with a subdomain",
+  );
+});
+
+check("directories stay third-party even when they carry jobs or news", () => {
+  assert.equal(h.evidenceSourceTypeForV2("JOB_SEARCH", { sourceDomain: "indeed.com", companyDomain: "kissflow.com" }), "job_posting");
+  assert.equal(h.evidenceSourceTypeForV2("COMPANY_LOOKUP", { sourceDomain: "crunchbase.com", companyDomain: "kissflow.com" }), "public_social");
+});
+
+check("THE REGRESSION: a directory page cannot outrank the company's own site", () => {
+  const own = h.mapV2EvidenceToRows(
+    item({ sourceType: "WEB_SEARCH", url: "https://kissflow.com/about" }),
+    ctx({ companyDomain: "kissflow.com" }),
+  );
+  const directory = h.mapV2EvidenceToRows(
+    item({ sourceType: "COMPANY_PROFILE_RESOLUTION", url: "https://linkedin.com/company/other-co" }),
+    ctx({ companyDomain: "kissflow.com" }),
+  );
+  assert.ok(
+    own.evidence.confidence > directory.evidence.confidence,
+    "the company speaking about itself must outrank a directory listing",
+  );
+  assert.ok(own.evidence.authorityScore > directory.evidence.authorityScore);
+  assert.ok(own.evidence.directnessScore > directory.evidence.directnessScore);
+  assert.equal(directory.evidence.sourceType, "public_social");
+});
+
 check("an unrecognised source type degrades to 'other' rather than throwing", () => {
   assert.equal(h.evidenceSourceTypeForV2("SOME_FUTURE_CAPABILITY"), "other",
     "a new capability must not crash persistence of a whole run");

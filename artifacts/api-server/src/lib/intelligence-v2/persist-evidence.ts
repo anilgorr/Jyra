@@ -27,8 +27,8 @@ export type EvidenceSourceType =
 /** V2 speaks in capability names; the evidence table predates them. */
 const SOURCE_TYPE_BY_V2_KIND: Record<string, EvidenceSourceType> = {
   FIRST_PARTY_WEBSITE: "company_website",
-  COMPANY_PROFILE_RESOLUTION: "company_website",
-  COMPANY_LOOKUP: "company_website",
+  COMPANY_PROFILE_RESOLUTION: "public_social",
+  COMPANY_LOOKUP: "other",
   COMPANY_FIRMOGRAPHICS: "public_social",
   WEBSITE_CRAWL: "company_website",
   WEB_SEARCH: "other",
@@ -39,8 +39,49 @@ const SOURCE_TYPE_BY_V2_KIND: Record<string, EvidenceSourceType> = {
   TECH_STACK: "technology",
 };
 
-export function evidenceSourceTypeForV2(kind: string): EvidenceSourceType {
-  return SOURCE_TYPE_BY_V2_KIND[kind] ?? "other";
+/** Directories and social platforms: about a company, never by it. */
+const THIRD_PARTY_PLATFORMS = new Set([
+  "linkedin.com", "crunchbase.com", "glassdoor.com", "indeed.com", "x.com",
+  "twitter.com", "facebook.com", "instagram.com", "youtube.com", "github.com",
+  "g2.com", "capterra.com", "trustpilot.com", "bloomberg.com", "pitchbook.com",
+  "zoominfo.com", "apollo.io", "owler.com", "wikipedia.org", "medium.com",
+]);
+
+function isSameOrSubdomain(sourceDomain: string, companyDomain: string): boolean {
+  return sourceDomain === companyDomain || sourceDomain.endsWith(`.${companyDomain}`);
+}
+
+/**
+ * Which kind of source is this, really?
+ *
+ * The capability that fetched a page does not decide what the page IS. A
+ * LinkedIn profile arrives through COMPANY_PROFILE_RESOLUTION, but it is a
+ * directory listing about the company, not the company's own website — and
+ * `company_website` scores as both authoritative and direct. Trusting the
+ * capability name alone let a LinkedIn page for an entirely different company
+ * (Coded Lines, FlowForma, KISSFISH) outscore kissflow.com's own site, 84.8
+ * to 83.4, in the first real run that persisted evidence.
+ *
+ * So the domain decides. Only the company's own domain can be its website;
+ * known directories are always third-party; the capability is the fallback.
+ */
+export function evidenceSourceTypeForV2(
+  kind: string,
+  source?: { sourceDomain: string; companyDomain: string | null },
+): EvidenceSourceType {
+  const mapped = SOURCE_TYPE_BY_V2_KIND[kind] ?? "other";
+  if (!source) return mapped;
+
+  const { sourceDomain, companyDomain } = source;
+  if (THIRD_PARTY_PLATFORMS.has(sourceDomain)) {
+    return mapped === "job_posting" || mapped === "news" ? mapped : "public_social";
+  }
+  if (companyDomain && isSameOrSubdomain(sourceDomain, companyDomain)) {
+    return mapped === "job_posting" || mapped === "careers_page" ? mapped : "company_website";
+  }
+  // Not the company's domain, so it cannot be the company's website, whatever
+  // capability produced it.
+  return mapped === "company_website" ? "other" : mapped;
 }
 
 function domainOf(url: string | null): string | null {
@@ -107,7 +148,10 @@ export function mapV2EvidenceToRows(
   const sourceDomain = domainOf(sourceUrl);
   if (!sourceUrl || !sourceDomain) return null;
 
-  const sourceType = evidenceSourceTypeForV2(item.sourceType);
+  const sourceType = evidenceSourceTypeForV2(item.sourceType, {
+    sourceDomain,
+    companyDomain: context.companyDomain,
+  });
   const observedAt = new Date(item.observedAt);
   const scores = calculateEvidenceScores({
     sourceType,
