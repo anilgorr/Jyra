@@ -30,6 +30,8 @@ import {
   persistIntelligenceV2Assessment,
 } from "../lib/intelligence-v2/persist-assessment";
 import { persistIntelligenceV2Evidence } from "../lib/intelligence-v2/persist-evidence";
+import { mapJobsToFacts, persistJobFacts } from "../lib/intelligence-v2/job-facts";
+import { evaluateSignalsForCompany } from "../lib/signal-packs";
 import {
   ASSESSMENT_POLICY_VERSION,
   ASSESSMENT_PROMPT_VERSION,
@@ -232,6 +234,35 @@ router.post("/projects/:projectId/companies/:projectCompanyId/intelligence-v2", 
   }, result.evidence);
   latestRuns.set(keyFor(params.data.projectId, params.data.projectCompanyId), run);
   const completedAt = new Date();
+  // Hiring is the only event evidence JYRA gathers, and every signal definition
+  // keys on events — so this is what puts a number in Need and Timing. It runs
+  // outside the transaction because a provider call must never hold a row lock,
+  // and it is non-fatal: a search failure degrades the run, it does not fail it.
+  let jobFacts: Awaited<ReturnType<typeof mapJobsToFacts>> = { facts: [], skipped: [] };
+  try {
+    const jobs = await new ProviderRouter().getJobs({
+      requestId: `${params.data.projectCompanyId}:jobs`,
+      companyName: owned.company.canonicalName,
+      ...(owned.company.domain ? { domain: owned.company.domain } : {}),
+      limit: 25,
+    });
+    if (jobs.status === "success" && jobs.data?.jobs?.length) {
+      jobFacts = mapJobsToFacts(jobs.data.jobs, {
+        companyName: owned.company.canonicalName,
+        now: completedAt,
+      });
+    }
+    req.log.info({
+      projectCompanyId: params.data.projectCompanyId,
+      jobProvider: jobs.providerId,
+      jobStatus: jobs.status,
+      postingsReturned: jobs.data?.jobs?.length ?? 0,
+      factsUsable: jobFacts.facts.length,
+      skipped: jobFacts.skipped.map((entry) => entry.reason),
+    }, "JOB_EVENT_RESEARCH");
+  } catch (error) {
+    req.log.warn({ err: error, projectCompanyId: params.data.projectCompanyId }, "JOB_EVENT_RESEARCH_FAILED");
+  }
   const persisted = await db.transaction(async (tx) => {
     const row = await persistIntelligenceV2Assessment({
       organizationId: owned.project.organizationId,
@@ -257,6 +288,16 @@ router.post("/projects/:projectId/companies/:projectCompanyId/intelligence-v2", 
       evidenceReused: evidence.reused,
       evidenceSkipped: evidence.skipped,
     }, "V2_EVIDENCE_PERSISTED");
+    if (jobFacts.facts.length) {
+      const stored = await persistJobFacts({
+        organizationId: owned.project.organizationId,
+        companyId: owned.company.id,
+        companyDomain: owned.company.domain,
+        facts: jobFacts.facts,
+        now: completedAt,
+      }, tx);
+      req.log.info({ assessmentId: row.id, ...stored }, "JOB_FACTS_PERSISTED");
+    }
     await tx.update(projectCompaniesTable).set({
       researchStatus: "complete",
       latestResearchAt: completedAt,
@@ -267,6 +308,18 @@ router.post("/projects/:projectId/companies/:projectCompanyId/intelligence-v2", 
   // Refresh the deterministic opportunity assessment so Today / Opportunities /
   // Companies reflect this run immediately. Scoring is downstream of the
   // persisted verdicts; its failure must never turn a completed run into an error.
+  // Signals are derived from facts, and the score is derived from signals, so
+  // this has to run before the re-score or the new hiring facts land a cycle late.
+  try {
+    await evaluateSignalsForCompany({
+      organizationId: owned.project.organizationId,
+      projectId: params.data.projectId,
+      companyId: owned.company.id,
+      now: completedAt,
+    });
+  } catch (error) {
+    req.log.warn({ err: error, projectCompanyId: params.data.projectCompanyId }, "SIGNAL_EVALUATION_FAILED");
+  }
   try {
     await evaluateOpportunity({
       organizationId: owned.project.organizationId,
