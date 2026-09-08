@@ -35,6 +35,7 @@ import {
   createExaWebSearchAdapter,
   parseExaProviderConfiguration,
 } from "./exa-provider";
+import { createSearchBackedJobAdapter } from "./job-search-adapter";
 import {
   createBrightDataFirmographicsAdapter,
   parseBrightDataProviderConfiguration,
@@ -338,19 +339,34 @@ function defaultAdapterFactory(
     });
   }
   if (provider.providerType === "tavily") {
-    return [createTavilyWebSearchAdapter({
+    const search = createTavilyWebSearchAdapter({
       providerId: provider.id,
       configuration: parseTavilyProviderConfiguration(provider.configuration),
-    })];
+    });
+    return [
+      search,
+      // Job postings are the only dated public evidence of what a company is
+      // about to spend money on, and no provider granted JOB_SEARCH. Both
+      // search vendors get it, so the waterfall has two of them.
+      createSearchBackedJobAdapter({
+        providerId: provider.id,
+        searchWeb: (input) => search.execute(input),
+      }),
+    ];
   }
   if (provider.providerType === "exa") {
     const options = {
       providerId: provider.id,
       configuration: parseExaProviderConfiguration(provider.configuration),
     };
+    const search = createExaWebSearchAdapter(options);
     return [
       createExaCompanyDiscoveryAdapter(options),
-      createExaWebSearchAdapter(options),
+      search,
+      createSearchBackedJobAdapter({
+        providerId: provider.id,
+        searchWeb: (input) => search.execute(input),
+      }),
     ];
   }
   if (provider.providerType === "bright_data") {
