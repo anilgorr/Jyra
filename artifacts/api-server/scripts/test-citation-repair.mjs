@@ -145,4 +145,18 @@ const run = async (claimIdsByAttempt) => {
   assert.deepEqual(result.citationIntegrity.droppedClaimIds, []);
 }
 
+// 7. The predicate the orchestrator uses to spot a poisoned cache entry sees a
+//    citation abstention and nothing else. A section that abstained for want of
+//    a compatible claim type is a real verdict and must be cached.
+{
+  const { result } = await run(["claim-hallucinated", "claim-also-fake"]);
+  assert.deepEqual(v2.citationAbstainedSectionsV2(result.assessment), ["commercialRole", "who"]);
+  const { result: clean } = await run(["claim-business"]);
+  assert.deepEqual(v2.citationAbstainedSectionsV2(clean.assessment), []);
+  assert.deepEqual(v2.citationAbstainedSectionsV2({
+    commercialRole: { reason: "Commercial role is unknown because no cited atomic claim has a compatible role relation and evidence type." },
+    who: { reason: "Structural fit is insufficient because no valid parent WHO evidence remains.", criteria: [] },
+  }), [], "an evidence-shaped abstention is a real verdict, not a cache to discard");
+}
+
 console.log("PASS citation-repair");

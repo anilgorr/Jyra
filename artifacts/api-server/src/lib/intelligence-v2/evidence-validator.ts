@@ -23,6 +23,26 @@ const ROLE_TYPES = {
 const WHO_TYPES = ["ICP_CRITERION", "GEOGRAPHY", "BUSINESS_MODEL", "INDUSTRY", "EMPLOYEE_SIZE", "TECHNOLOGY", "PRIMARY_BUSINESS", "PRODUCT_SERVICE", "OFFERING_OVERLAP"] as const;
 
 /**
+ * Sections whose verdict was erased because every citation behind them named an
+ * atomic claim ID we never issued.
+ *
+ * materialize() turns those citations into a safe abstention, which is the right
+ * thing to persist — but the abstaining assessment then validates, so nothing
+ * downstream could tell "we looked and could not say" apart from "the model
+ * mistyped an identifier". Two callers need that distinction: the repair loop,
+ * which re-asks once, and the cache, which must not replay one of these forever.
+ */
+export function citationAbstainedSectionsV2(assessment: SellerRelativeAssessmentV2): string[] {
+  const sections: string[] = [];
+  if (assessment.commercialRole?.reason === UNKNOWN_ROLE_CITATION_REASON) sections.push("commercialRole");
+  if (assessment.who?.reason === UNKNOWN_WHO_CITATION_REASON) sections.push("who");
+  for (const criterion of assessment.who?.criteria ?? []) {
+    if (criterion.reason === UNKNOWN_CRITERION_CITATION_REASON) sections.push(`who.criteria.${criterion.criterionId}`);
+  }
+  return sections;
+}
+
+/**
  * Deterministically canonicalizes citation-derived provenance before semantic
  * validation. Unknown identifiers in persisted assessments and ambiguous
  * evidence are rejected rather than repaired; safe abstention for unknown

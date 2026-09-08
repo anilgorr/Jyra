@@ -5,7 +5,7 @@ import { buildCompanyProfileV2 } from "./build-company-profile";
 import { assessMarketFitV2, type AssessmentInvokerV2 } from "./assess-market-fit";
 import { applySafetyRulesV2 } from "./apply-safety-rules";
 import { sellerOfferingFromContextV2 } from "./offering-overlap";
-import { normalizeAssessmentEvidenceV2, validateAssessmentEvidenceV2 } from "./evidence-validator";
+import { citationAbstainedSectionsV2, normalizeAssessmentEvidenceV2, validateAssessmentEvidenceV2 } from "./evidence-validator";
 import {
   ASSESSMENT_MODEL, ASSESSMENT_POLICY_VERSION, ASSESSMENT_PROMPT_VERSION, INTELLIGENCE_CORE_VERSION,
   evidenceItemSchema, sellerRelativeContextSchema, type CompanyIntelligenceProfileV2, type EvidenceItemV2, type FinalAssessmentV2,
@@ -171,6 +171,15 @@ async function orchestrateIntelligenceV2Internal(input: {
     assessmentPolicyVersion: ASSESSMENT_POLICY_VERSION, promptVersion: ASSESSMENT_PROMPT_VERSION, model: ASSESSMENT_MODEL,
   });
   let semantic = await input.repository.getAssessment(assessmentFingerprint);
+  // An assessment that abstained only because the model invented claim IDs is a
+  // cached mistake, and the fingerprint does not change until the evidence does:
+  // Datadog replayed one such verdict for twenty minutes at model_calls 0. Treat
+  // it as a miss so the repair attempt gets its chance.
+  const cachedCitationAbstention = semantic ? citationAbstainedSectionsV2(semantic) : [];
+  if (cachedCitationAbstention.length) {
+    console.warn("V2_ASSESSMENT_CACHE_DISCARDED", { assessmentFingerprint, sections: cachedCitationAbstention });
+    semantic = null;
+  }
   const assessmentHit = Boolean(semantic);
   let usage: Record<string, unknown> | null = null;
   let modelCost = 0;

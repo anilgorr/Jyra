@@ -7,7 +7,7 @@ import {
 } from "./schemas";
 import {
   UNKNOWN_CRITERION_CITATION_REASON, UNKNOWN_ROLE_CITATION_REASON, UNKNOWN_WHO_CITATION_REASON,
-  normalizeAssessmentEvidenceV2, validateAssessmentEvidenceV2,
+  citationAbstainedSectionsV2, normalizeAssessmentEvidenceV2, validateAssessmentEvidenceV2,
 } from "./evidence-validator";
 import { describeRequirementV2 } from "./icp-requirements";
 
@@ -131,27 +131,6 @@ export type CitationIntegrityV2 = {
   droppedClaimIds: string[];
   droppedBySection: { section: string; claimIds: string[] }[];
 };
-
-/**
- * Sections whose verdict was erased because every citation behind them named an
- * atomic claim ID we never issued.
- *
- * materialize() converts those citations into a safe abstention, which is the
- * right thing to persist — but it also made the response *validate*, so the
- * attempt-2 repair loop never fired and a run that invented one identifier
- * silently returned UNKNOWN / INSUFFICIENT_DATA. Two runs of Datadog fifteen
- * minutes apart disagreed for exactly this reason, with model_calls: 1 both
- * times. Abstention is honest; abstention we never tried to fix is waste.
- */
-function citationAbstainedSections(assessment: SellerRelativeAssessmentV2): string[] {
-  const sections: string[] = [];
-  if (assessment.commercialRole.reason === UNKNOWN_ROLE_CITATION_REASON) sections.push("commercialRole");
-  if (assessment.who.reason === UNKNOWN_WHO_CITATION_REASON) sections.push("who");
-  for (const criterion of assessment.who.criteria) {
-    if (criterion.reason === UNKNOWN_CRITERION_CITATION_REASON) sections.push(`who.criteria.${criterion.criterionId}`);
-  }
-  return sections;
-}
 
 function materialize(
   value: z.infer<typeof modelAssessmentSchema>,
@@ -279,7 +258,7 @@ export async function assessMarketFitV2(input: {
         const assessment = normalizeAssessmentEvidenceV2(materialize(parsed, input.evidence, input.context, integrity), input.evidence, input.context);
         const grounded = validateAssessmentEvidenceV2(assessment, input.evidence, input.context);
         if (!grounded.ok) throw new Error(grounded.errors.join("; "));
-        const abstained = citationAbstainedSections(grounded.assessment);
+        const abstained = citationAbstainedSectionsV2(grounded.assessment);
         if (attempt === 1 && abstained.length) {
           const invented = [...new Set(integrity.droppedClaimIds)];
           validationErrors = [
