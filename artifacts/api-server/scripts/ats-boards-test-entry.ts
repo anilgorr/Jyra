@@ -5,6 +5,8 @@ export {
   atsHandleToProfileUrls,
   careersPageCandidates,
   atsSlugCandidates,
+  careersLinksFrom,
+  atsUrlsFromSitemap,
   ATS_SLUG_PROBES,
   discoverAtsHandle,
   fetchAtsJobs,

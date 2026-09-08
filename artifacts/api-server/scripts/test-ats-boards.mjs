@@ -21,14 +21,56 @@ const check = (name, fn) => { fn(); checks += 1; console.log(`  ok  ${name}`); }
 
 console.log("\ndetecting a board from a careers page");
 
-check("Keka embedded on the company's own page", () => {
-  // Exactly how it appears on zluri.com/careers.
-  const html = `<script src="https://zluri.keka.com/careers/api/embedjobs/js/ed2b6b25-be74-43f1-9a38-c3bf27b9146c"></script>`;
-  const handle = h.detectAtsHandle(html);
-  assert.equal(handle.kind, "keka");
-  assert.equal(handle.jobsUrl,
-    "https://zluri.keka.com/careers/api/embedjobs/default/active/ed2b6b25-be74-43f1-9a38-c3bf27b9146c");
-  assert.equal(handle.boardUrl, "https://zluri.keka.com/careers/");
+check("Keka needs only the tenant host, in either deployment mode", () => {
+  // The identifier-based endpoint only ever served embedded boards, which is
+  // why VWO — hosted, under its parent Wingify — could not be read at all.
+  // /careers/api/jobs/{portal}/active serves both and needs no identifier.
+  const embedded = `<script src="https://zluri.keka.com/careers/api/embedjobs/js/ed2b6b25-be74-43f1-9a38-c3bf27b9146c"></script>`;
+  const hosted = `<a href="https://wingify.keka.com/careers/">Open roles</a>`;
+  assert.deepEqual(h.detectAtsHandle(embedded), {
+    kind: "keka",
+    jobsUrl: "https://zluri.keka.com/careers/api/jobs/default/active",
+    boardUrl: "https://zluri.keka.com/careers/",
+  });
+  assert.equal(h.detectAtsHandle(hosted).jobsUrl,
+    "https://wingify.keka.com/careers/api/jobs/default/active");
+});
+
+console.log("\nfollowing one hop to a parent or group careers site");
+
+check("a careers link on another host is worth following", () => {
+  // vwo.com/careers carries no board; it points at Wingify, which does.
+  const html = `<a href="https://wingify.com/careers/">Careers</a>
+                <a href="https://vwo.com/careers/policy">Policy</a>
+                <a href="https://vwo.com/pricing">Pricing</a>`;
+  assert.deepEqual(h.careersLinksFrom(html, "https://vwo.com/careers"),
+    ["https://wingify.com/careers/"],
+    "same-host links are already covered, and non-careers links are not hops");
+});
+
+check("hops are capped and malformed pages do not throw", () => {
+  const many = Array.from({ length: 12 }, (_, i) => `<a href="https://x${i}.com/careers">c</a>`).join("");
+  assert.ok(h.careersLinksFrom(many, "https://vwo.com/careers").length <= 4,
+    "two hops is how a crawler ends up on someone else's site");
+  assert.deepEqual(h.careersLinksFrom("<a href='junk'>x</a>", "not-a-url"), []);
+});
+
+console.log("\nthe sitemap, as the last free look");
+
+check("ATS URLs are picked out of a sitemap", () => {
+  const xml = `<urlset>
+    <url><loc>https://acme.com/about</loc></url>
+    <url><loc>https://boards.greenhouse.io/acme</loc></url>
+    <url><loc>https://acme.keka.com/careers/</loc></url>
+  </urlset>`;
+  const urls = h.atsUrlsFromSitemap(xml);
+  assert.equal(urls.length, 2);
+  assert.ok(urls.some((url) => url.includes("greenhouse")));
+});
+
+check("a sitemap with no board yields nothing", () => {
+  assert.deepEqual(h.atsUrlsFromSitemap("<urlset><url><loc>https://acme.com/</loc></url></urlset>"), []);
+  assert.deepEqual(h.atsUrlsFromSitemap("not xml at all"), []);
 });
 
 check("Greenhouse, Lever and Ashby are recognised", () => {
@@ -195,6 +237,7 @@ check("each platform counts its own payload shape", () => {
   assert.equal(counts.ashby.count({ jobs: [1] }), 1);
   assert.equal(counts.recruitee.count({ offers: [1, 2] }), 2);
   assert.equal(counts.workable.count({ jobs: [1] }), 1);
+  assert.equal(counts.keka.count([1, 2, 3]), 3, "Keka returns a bare array");
 });
 
 check("probe URLs are built from the slug", () => {

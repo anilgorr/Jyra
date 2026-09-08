@@ -247,6 +247,7 @@ router.post("/projects/:projectId/companies/:projectCompanyId/intelligence-v2", 
   let jobFacts: Awaited<ReturnType<typeof mapJobsToFacts>> = { facts: [], skipped: [] };
   let discoveredAtsHandle: ReturnType<typeof atsHandleFromProfileUrls> = null;
   let jobSource = "NONE";
+  let atsDiscoveredVia: string | null = null;
   try {
     // The company's own applicant tracking system first. It is free, every row
     // is a posting by construction, and the dates are exact rather than
@@ -255,9 +256,13 @@ router.post("/projects/:projectId/companies/:projectCompanyId/intelligence-v2", 
     // with no discoverable board.
     let handle = atsHandleFromProfileUrls(owned.company.profileUrls);
     if (!handle) {
-      handle = await discoverAtsHandle(owned.company.domain, owned.company.canonicalName);
-      // Remember it, so this is paid once per company rather than every run.
-      if (handle) discoveredAtsHandle = handle;
+      const discovered = await discoverAtsHandle(owned.company.domain, owned.company.canonicalName);
+      // Remember it, so the waterfall is walked once per company, not every run.
+      if (discovered) {
+        handle = discovered.handle;
+        discoveredAtsHandle = discovered.handle;
+        atsDiscoveredVia = discovered.via;
+      }
     }
     let postings: Awaited<ReturnType<typeof fetchAtsJobs>> = null;
     if (handle) {
@@ -286,6 +291,7 @@ router.post("/projects/:projectId/companies/:projectCompanyId/intelligence-v2", 
       projectCompanyId: params.data.projectCompanyId,
       jobSource,
       atsBoard: handle?.boardUrl ?? null,
+      atsDiscoveredVia,
       postingsReturned: postings?.length ?? 0,
       factsUsable: jobFacts.facts.length,
       skipped: jobFacts.skipped.map((entry) => entry.reason),

@@ -31,7 +31,13 @@ export type AtsHandle = {
   boardUrl: string;
 };
 
-const UUID = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}";
+function kekaHandle(tenant: string): AtsHandle {
+  return {
+    kind: "keka",
+    jobsUrl: `https://${tenant}.keka.com/careers/api/jobs/default/active`,
+    boardUrl: `https://${tenant}.keka.com/careers/`,
+  };
+}
 
 /**
  * Find a company's job board in the HTML of its careers page.
@@ -43,18 +49,12 @@ const UUID = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}";
  * exists to avoid.
  */
 export function detectAtsHandle(html: string, _pageUrl?: string): AtsHandle | null {
-  // Keka, embedded: the company's own page carries the portal identifier.
-  const keka = html.match(
-    new RegExp(`https?://([a-z0-9-]+)\\.keka\\.com/careers/api/embedjobs/js/(${UUID})`, "i"),
-  );
-  if (keka) {
-    const [, tenant, identifier] = keka;
-    return {
-      kind: "keka",
-      jobsUrl: `https://${tenant}.keka.com/careers/api/embedjobs/default/active/${identifier}`,
-      boardUrl: `https://${tenant}.keka.com/careers/`,
-    };
-  }
+  // Keka. Any reference to the tenant is enough: /careers/api/jobs/{portal}/active
+  // serves both the embedded and the hosted portal, so no identifier is needed.
+  // The identifier-based endpoint only ever worked for embedded boards, which is
+  // why VWO — hosted, under its parent Wingify — could not be read before.
+  const keka = html.match(/https?:\/\/([a-z0-9-]+)\.keka\.com/i);
+  if (keka) return kekaHandle(keka[1].toLowerCase());
 
   const greenhouse = html.match(
     /https?:\/\/(?:boards|job-boards)\.greenhouse\.io\/(?:embed\/job_board\?for=)?([a-z0-9_-]+)/i,
@@ -258,6 +258,12 @@ export const ATS_SLUG_PROBES: Array<{
   count: (payload: unknown) => number;
 }> = [
   {
+    kind: "keka",
+    jobsUrl: (s) => `https://${s}.keka.com/careers/api/jobs/default/active`,
+    boardUrl: (s) => `https://${s}.keka.com/careers/`,
+    count: (p) => (Array.isArray(p) ? p.length : 0),
+  },
+  {
     kind: "greenhouse",
     jobsUrl: (s) => `https://boards-api.greenhouse.io/v1/boards/${s}/jobs`,
     boardUrl: (s) => `https://boards.greenhouse.io/${s}`,
@@ -296,6 +302,54 @@ export const ATS_SLUG_PROBES: Array<{
   },
 ];
 
+/**
+ * Careers pages a company's own careers page points at.
+ *
+ * VWO's careers page carries no board; it links to wingify.com/careers, and
+ * Wingify's carries the Keka board. A company whose hiring runs under a parent
+ * entity, a group site or a separate careers domain is common enough that one
+ * hop is worth following — and one is the limit, because two hops is how a
+ * crawler ends up on someone else's site.
+ */
+export function careersLinksFrom(html: string, pageUrl: string): string[] {
+  let origin: string;
+  try {
+    origin = new URL(pageUrl).hostname.replace(/^www\./, "").toLowerCase();
+  } catch {
+    return [];
+  }
+  const links = new Set<string>();
+  for (const match of html.matchAll(/href=["'](https?:\/\/[^"']+)["']/gi)) {
+    const href = match[1];
+    if (!/\/(careers?|jobs|join-us|work-with-us|openings)\b/i.test(href)) continue;
+    try {
+      const host = new URL(href).hostname.replace(/^www\./, "").toLowerCase();
+      // Only worth a hop if it leaves the site we already read.
+      if (host !== origin) links.add(href.split("#")[0]);
+    } catch {
+      continue;
+    }
+  }
+  return [...links].slice(0, 4);
+}
+
+/**
+ * ATS URLs mentioned anywhere in a sitemap.
+ *
+ * A last free look before paying for rendering: sitemaps are static, cheap and
+ * frequently list the careers URLs a JavaScript careers page never exposes.
+ */
+export function atsUrlsFromSitemap(xml: string): string[] {
+  const urls = new Set<string>();
+  for (const match of xml.matchAll(/<loc>\s*([^<\s]+)\s*<\/loc>/gi)) {
+    const url = match[1];
+    if (/greenhouse\.io|lever\.co|ashbyhq\.com|keka\.com|workable\.com|recruitee\.com|smartrecruiters\.com/i.test(url)) {
+      urls.add(url);
+    }
+  }
+  return [...urls].slice(0, 10);
+}
+
 /** Careers pages worth trying, in the order a person would try them. */
 export function careersPageCandidates(domain: string): string[] {
   const root = `https://${domain.replace(/^www\./, "")}`;
@@ -305,6 +359,9 @@ export function careersPageCandidates(domain: string): string[] {
     `${root}/jobs`,
     `${root}/company/careers`,
     `${root}/about/careers`,
+    `${root}/join-us`,
+    `${root}/work-with-us`,
+    `${root}/careers/jobs`,
   ];
 }
 
@@ -343,32 +400,60 @@ async function getText(url: string, accept: string): Promise<string | null> {
 export async function discoverAtsHandle(
   domain: string | null,
   companyName?: string,
-): Promise<AtsHandle | null> {
-  // 1. The careers page, read as HTML. Catches boards the company links or
-  //    embeds — Zluri's Keka portal is found this way.
+): Promise<{ handle: AtsHandle; via: string } | null> {
+  const careersPages: Array<{ url: string; html: string }> = [];
+
+  // 1. The careers page itself. Catches a board the company links or embeds.
   if (domain) {
     for (const candidate of careersPageCandidates(domain)) {
       const html = await getText(candidate, "text/html");
       if (!html) continue;
+      careersPages.push({ url: candidate, html });
       const handle = detectAtsHandle(html, candidate);
-      if (handle) return handle;
+      if (handle) return { handle, via: "CAREERS_PAGE" };
+      break; // one readable careers page is enough to move on from
     }
   }
 
-  // 2. Probe the free board APIs by slug. Most careers pages are JavaScript
-  //    apps whose board never appears in the HTML, so step 1 misses them —
-  //    but the board itself is usually still public and guessable. Zapier's
-  //    Ashby board was found this way after its 412KB careers page yielded
-  //    nothing.
-  const slugs = atsSlugCandidates(companyName ?? "", domain);
-  for (const slug of slugs) {
-    for (const probe of ATS_SLUG_PROBES) {
-      const payload = await getJson(probe.jobsUrl(slug));
-      if (payload === null) continue;
-      if (probe.count(payload) < 1) continue;
-      return { kind: probe.kind, jobsUrl: probe.jobsUrl(slug), boardUrl: probe.boardUrl(slug) };
+  // 2. One hop to a careers page the first one points at. VWO's board lives
+  //    under Wingify, its parent, and is only reachable this way.
+  for (const page of careersPages) {
+    for (const link of careersLinksFrom(page.html, page.url)) {
+      const html = await getText(link, "text/html");
+      if (!html) continue;
+      const handle = detectAtsHandle(html, link);
+      if (handle) return { handle, via: "CAREERS_LINK" };
     }
   }
+
+  // 3. Probe the free board APIs by slug. Most careers pages are JavaScript
+  //    apps whose board never appears in the HTML — Zapier's is 412KB and
+  //    contains no ATS link, yet its Ashby board is public and guessable.
+  for (const slug of atsSlugCandidates(companyName ?? "", domain)) {
+    for (const probe of ATS_SLUG_PROBES) {
+      const payload = await getJson(probe.jobsUrl(slug));
+      if (payload === null || probe.count(payload) < 1) continue;
+      return {
+        handle: { kind: probe.kind, jobsUrl: probe.jobsUrl(slug), boardUrl: probe.boardUrl(slug) },
+        via: "SLUG_PROBE",
+      };
+    }
+  }
+
+  // 4. The sitemap, as the last free look before anything paid. Static, cheap,
+  //    and it often lists careers URLs a JavaScript page never exposes.
+  if (domain) {
+    const root = `https://${domain.replace(/^www\./, "")}`;
+    for (const path of ["/sitemap.xml", "/sitemap_index.xml", "/robots.txt"]) {
+      const body = await getText(`${root}${path}`, "text/xml,text/plain");
+      if (!body) continue;
+      for (const url of atsUrlsFromSitemap(body)) {
+        const handle = detectAtsHandle(url, url);
+        if (handle) return { handle, via: "SITEMAP" };
+      }
+    }
+  }
+
   return null;
 }
 
