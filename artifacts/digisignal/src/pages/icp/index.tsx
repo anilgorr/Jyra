@@ -214,6 +214,23 @@ export default function IcpPage() {
       )}
 
       {selectedVersionId && <div className="flex items-center gap-2 rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm"><Clock3 className="h-4 w-4 text-amber-600" />You are viewing an earlier immutable version. Editing it will create the next current version.</div>}
+      {/* An unaccepted criterion never reaches the assessment, so a project can
+          look fully configured while Fit is decided entirely by the model's
+          holistic read. GTM-Q1 ran that way for days: twelve criteria, one
+          accepted, and a Fit score that moved 34 points between two runs a
+          minute apart. Say so here rather than in a score explanation nobody
+          opens. */}
+      {version.criteria.some((item) => item.evaluability === "scorable")
+        && !version.criteria.some((item) => item.accepted && item.evaluability === "scorable") && (
+        <div className="flex items-start gap-2 rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm">
+          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
+          <span>
+            No scorable criterion has been accepted yet, so none of them can decide structural fit.
+            Until you accept at least one, Fit rests on the model&apos;s overall read of the company
+            rather than on your ICP.
+          </span>
+        </div>
+      )}
       <div className="grid gap-3 md:grid-cols-2">
         <Card className="shadow-none"><CardContent className="flex gap-3 p-4"><ShieldCheck className="mt-0.5 h-5 w-5 text-emerald-600" /><div><p className="font-medium">Scorable</p><p className="text-sm text-muted-foreground">Structured facts can pass, fail, or remain unknown. Unknown never becomes an automatic failure.</p></div></CardContent></Card>
         <Card className="shadow-none"><CardContent className="flex gap-3 p-4"><AlertTriangle className="mt-0.5 h-5 w-5 text-amber-600" /><div><p className="font-medium">Advisory</p><p className="text-sm text-muted-foreground">Useful judgment calls remain visible but cannot silently affect a deterministic score.</p></div></CardContent></Card>
