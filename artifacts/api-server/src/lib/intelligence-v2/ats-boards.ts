@@ -1,0 +1,273 @@
+import type { JobPosting } from "./job-facts";
+
+/**
+ * Applicant tracking systems, read directly.
+ *
+ * Searching the web for a company's jobs was the wrong instrument. The first
+ * live run returned 21 pages for Zluri and VWO, of which the three that
+ * survived were a webcast and two blog posts, and none was a job. Meanwhile
+ * Zluri's actual board — six real openings with exact publish timestamps — sits
+ * behind a free unauthenticated endpoint that no search index needs to be
+ * involved in at all.
+ *
+ * Reading the ATS directly fixes three things at once. Dates are exact rather
+ * than whatever a crawler inferred, so Timing decays from truth. Everything
+ * returned is a posting by construction, so nothing needs to be filtered back
+ * out. And attribution stops being a name-matching problem: the board is
+ * recorded against the company once, so VWO's openings living at
+ * wingify.keka.com — Wingify being VWO's parent company — is simply a fact
+ * about VWO rather than a mismatch to be explained away.
+ *
+ * Detection and parsing are pure. Only the fetch touches the network.
+ */
+
+export type AtsKind = "keka" | "greenhouse" | "lever" | "ashby";
+
+export type AtsHandle = {
+  kind: AtsKind;
+  /** The endpoint that returns postings as JSON. */
+  jobsUrl: string;
+  /** Where a human would look, kept for the audit trail. */
+  boardUrl: string;
+};
+
+const UUID = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}";
+
+/**
+ * Find a company's job board in the HTML of its careers page.
+ *
+ * Each ATS is recognised by the shape of the URL it embeds, and each yields a
+ * stable identifier: a Keka portal UUID, a Greenhouse board token, a Lever or
+ * Ashby slug. Returns null rather than guessing — a wrong board would attribute
+ * another company's hiring to this one, which is the failure this whole path
+ * exists to avoid.
+ */
+export function detectAtsHandle(html: string, _pageUrl?: string): AtsHandle | null {
+  // Keka, embedded: the company's own page carries the portal identifier.
+  const keka = html.match(
+    new RegExp(`https?://([a-z0-9-]+)\\.keka\\.com/careers/api/embedjobs/js/(${UUID})`, "i"),
+  );
+  if (keka) {
+    const [, tenant, identifier] = keka;
+    return {
+      kind: "keka",
+      jobsUrl: `https://${tenant}.keka.com/careers/api/embedjobs/default/active/${identifier}`,
+      boardUrl: `https://${tenant}.keka.com/careers/`,
+    };
+  }
+
+  const greenhouse = html.match(
+    /https?:\/\/(?:boards|job-boards)\.greenhouse\.io\/(?:embed\/job_board\?for=)?([a-z0-9_-]+)/i,
+  );
+  if (greenhouse) {
+    const token = greenhouse[1].toLowerCase();
+    return {
+      kind: "greenhouse",
+      jobsUrl: `https://boards-api.greenhouse.io/v1/boards/${token}/jobs`,
+      boardUrl: `https://boards.greenhouse.io/${token}`,
+    };
+  }
+
+  const lever = html.match(/https?:\/\/jobs\.lever\.co\/([a-z0-9_-]+)/i);
+  if (lever) {
+    const slug = lever[1].toLowerCase();
+    return {
+      kind: "lever",
+      jobsUrl: `https://api.lever.co/v0/postings/${slug}?mode=json`,
+      boardUrl: `https://jobs.lever.co/${slug}`,
+    };
+  }
+
+  const ashby = html.match(/https?:\/\/jobs\.ashbyhq\.com\/([a-z0-9_-]+)/i);
+  if (ashby) {
+    const slug = ashby[1].toLowerCase();
+    return {
+      kind: "ashby",
+      jobsUrl: `https://api.ashbyhq.com/posting-api/job-board/${slug}`,
+      boardUrl: `https://jobs.ashbyhq.com/${slug}`,
+    };
+  }
+
+  return null;
+}
+
+function text(value: unknown): string | null {
+  return typeof value === "string" && value.trim() ? value.trim() : null;
+}
+
+function firstLocation(value: unknown): string | null {
+  if (typeof value === "string") return text(value);
+  if (Array.isArray(value)) {
+    for (const entry of value) {
+      const found = firstLocation(entry);
+      if (found) return found;
+    }
+    return null;
+  }
+  if (value && typeof value === "object") {
+    const record = value as Record<string, unknown>;
+    return text(record.name) ?? text(record.city) ?? text(record.location) ?? null;
+  }
+  return null;
+}
+
+/**
+ * Normalise one ATS's payload into postings.
+ *
+ * companyName is supplied by the caller rather than read from the payload: the
+ * board was recorded against this company, so the employer is already known and
+ * does not need to be re-derived from a string that may name a parent entity.
+ */
+export function parseAtsJobs(
+  handle: AtsHandle,
+  payload: unknown,
+  companyName: string,
+): JobPosting[] {
+  const rows: unknown[] = Array.isArray(payload)
+    ? payload
+    : Array.isArray((payload as { jobs?: unknown })?.jobs)
+      ? ((payload as { jobs: unknown[] }).jobs)
+      : [];
+
+  const postings: JobPosting[] = [];
+  for (const row of rows) {
+    if (!row || typeof row !== "object") continue;
+    const item = row as Record<string, unknown>;
+
+    let title: string | null = null;
+    let url: string | null = null;
+    let postedAt: string | null = null;
+    let location: string | null = null;
+
+    switch (handle.kind) {
+      case "keka": {
+        title = text(item.title);
+        postedAt = text(item.publishedOn);
+        location = firstLocation(item.jobLocations);
+        // Keka's payload carries no per-job URL; the portal builds it from the id.
+        const id = text(item.id) ?? (typeof item.id === "number" ? String(item.id) : null);
+        url = id ? `${handle.boardUrl.replace(/\/$/, "")}/jobdetails/${id}` : null;
+        break;
+      }
+      case "greenhouse": {
+        title = text(item.title);
+        url = text(item.absolute_url);
+        postedAt = text(item.first_published) ?? text(item.updated_at);
+        location = firstLocation(item.location);
+        break;
+      }
+      case "lever": {
+        title = text(item.text);
+        url = text(item.hostedUrl) ?? text(item.applyUrl);
+        postedAt = typeof item.createdAt === "number"
+          ? new Date(item.createdAt).toISOString()
+          : text(item.createdAt);
+        location = firstLocation(item.categories);
+        break;
+      }
+      case "ashby": {
+        title = text(item.title);
+        url = text(item.jobUrl) ?? text(item.applyUrl);
+        postedAt = text(item.publishedAt);
+        location = firstLocation(item.location) ?? firstLocation(item.address);
+        break;
+      }
+    }
+
+    if (!title || !url) continue;
+    postings.push({ title, companyName, location, url, postedAt });
+  }
+  return postings;
+}
+
+/** Serialised into companies.profile_urls, so no schema change is needed. */
+export const ATS_JOBS_URL_KEY = "atsJobsUrl";
+export const ATS_BOARD_URL_KEY = "atsBoardUrl";
+export const ATS_KIND_KEY = "atsKind";
+
+export function atsHandleFromProfileUrls(
+  profileUrls: Record<string, string> | null | undefined,
+): AtsHandle | null {
+  const jobsUrl = profileUrls?.[ATS_JOBS_URL_KEY];
+  const boardUrl = profileUrls?.[ATS_BOARD_URL_KEY];
+  const kind = profileUrls?.[ATS_KIND_KEY];
+  if (!jobsUrl || !boardUrl) return null;
+  if (kind !== "keka" && kind !== "greenhouse" && kind !== "lever" && kind !== "ashby") return null;
+  return { kind, jobsUrl, boardUrl };
+}
+
+export function atsHandleToProfileUrls(handle: AtsHandle): Record<string, string> {
+  return {
+    [ATS_KIND_KEY]: handle.kind,
+    [ATS_JOBS_URL_KEY]: handle.jobsUrl,
+    [ATS_BOARD_URL_KEY]: handle.boardUrl,
+  };
+}
+
+/** Careers pages worth trying, in the order a person would try them. */
+export function careersPageCandidates(domain: string): string[] {
+  const root = `https://${domain.replace(/^www\./, "")}`;
+  return [
+    `${root}/careers`,
+    `${root}/careers/`,
+    `${root}/jobs`,
+    `${root}/company/careers`,
+    `${root}/about/careers`,
+  ];
+}
+
+/* ------------------------------------------------------------------ *
+ * Network
+ * ------------------------------------------------------------------ */
+
+const FETCH_TIMEOUT_MS = 12_000;
+const USER_AGENT = "JYRA-OpportunityIntelligence/1.0 (+https://jyra.app)";
+
+async function getText(url: string, accept: string): Promise<string | null> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+  try {
+    const response = await fetch(url, {
+      signal: controller.signal,
+      redirect: "follow",
+      headers: { "user-agent": USER_AGENT, accept },
+    });
+    if (!response.ok) return null;
+    return await response.text();
+  } catch {
+    return null;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+/**
+ * Find a company's board by reading its careers page.
+ *
+ * Done once per company: the handle is then stored, so this cost is not paid
+ * again and a company whose brand differs from its hiring entity (VWO's board
+ * lives under Wingify) never has to be reconciled by name a second time.
+ */
+export async function discoverAtsHandle(domain: string): Promise<AtsHandle | null> {
+  for (const candidate of careersPageCandidates(domain)) {
+    const html = await getText(candidate, "text/html");
+    if (!html) continue;
+    const handle = detectAtsHandle(html, candidate);
+    if (handle) return handle;
+  }
+  return null;
+}
+
+/** Read a board. Returns null on any failure — job research is never fatal. */
+export async function fetchAtsJobs(
+  handle: AtsHandle,
+  companyName: string,
+): Promise<JobPosting[] | null> {
+  const body = await getText(handle.jobsUrl, "application/json");
+  if (!body) return null;
+  try {
+    return parseAtsJobs(handle, JSON.parse(body), companyName);
+  } catch {
+    return null;
+  }
+}

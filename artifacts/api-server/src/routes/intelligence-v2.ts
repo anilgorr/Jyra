@@ -31,6 +31,12 @@ import {
 } from "../lib/intelligence-v2/persist-assessment";
 import { persistIntelligenceV2Evidence } from "../lib/intelligence-v2/persist-evidence";
 import { mapJobsToFacts, persistJobFacts } from "../lib/intelligence-v2/job-facts";
+import {
+  atsHandleFromProfileUrls,
+  atsHandleToProfileUrls,
+  discoverAtsHandle,
+  fetchAtsJobs,
+} from "../lib/intelligence-v2/ats-boards";
 import { evaluateSignalsForCompany } from "../lib/signal-packs";
 import {
   ASSESSMENT_POLICY_VERSION,
@@ -239,24 +245,48 @@ router.post("/projects/:projectId/companies/:projectCompanyId/intelligence-v2", 
   // outside the transaction because a provider call must never hold a row lock,
   // and it is non-fatal: a search failure degrades the run, it does not fail it.
   let jobFacts: Awaited<ReturnType<typeof mapJobsToFacts>> = { facts: [], skipped: [] };
+  let discoveredAtsHandle: ReturnType<typeof atsHandleFromProfileUrls> = null;
+  let jobSource = "NONE";
   try {
-    const jobs = await new ProviderRouter().getJobs({
-      requestId: `${params.data.projectCompanyId}:jobs`,
-      companyName: owned.company.canonicalName,
-      ...(owned.company.domain ? { domain: owned.company.domain } : {}),
-      limit: 25,
-    });
-    if (jobs.status === "success" && jobs.data?.jobs?.length) {
-      jobFacts = mapJobsToFacts(jobs.data.jobs, {
+    // The company's own applicant tracking system first. It is free, every row
+    // is a posting by construction, and the dates are exact rather than
+    // whatever a crawler inferred — search returned 21 pages for Zluri and VWO
+    // and not one of them was a job. Search stays as the fallback for companies
+    // with no discoverable board.
+    let handle = atsHandleFromProfileUrls(owned.company.profileUrls);
+    if (!handle && owned.company.domain) {
+      handle = await discoverAtsHandle(owned.company.domain);
+      // Remember it, so this is paid once per company rather than every run.
+      if (handle) discoveredAtsHandle = handle;
+    }
+    let postings: Awaited<ReturnType<typeof fetchAtsJobs>> = null;
+    if (handle) {
+      postings = await fetchAtsJobs(handle, owned.company.canonicalName);
+      if (postings?.length) jobSource = `ATS:${handle.kind}`;
+    }
+    if (!postings?.length) {
+      const jobs = await new ProviderRouter().getJobs({
+        requestId: `${params.data.projectCompanyId}:jobs`,
+        companyName: owned.company.canonicalName,
+        ...(owned.company.domain ? { domain: owned.company.domain } : {}),
+        limit: 25,
+      });
+      if (jobs.status === "success" && jobs.data?.jobs?.length) {
+        postings = jobs.data.jobs;
+        jobSource = `SEARCH:${jobs.providerId}`;
+      }
+    }
+    if (postings?.length) {
+      jobFacts = mapJobsToFacts(postings, {
         companyName: owned.company.canonicalName,
         now: completedAt,
       });
     }
     req.log.info({
       projectCompanyId: params.data.projectCompanyId,
-      jobProvider: jobs.providerId,
-      jobStatus: jobs.status,
-      postingsReturned: jobs.data?.jobs?.length ?? 0,
+      jobSource,
+      atsBoard: handle?.boardUrl ?? null,
+      postingsReturned: postings?.length ?? 0,
       factsUsable: jobFacts.facts.length,
       skipped: jobFacts.skipped.map((entry) => entry.reason),
     }, "JOB_EVENT_RESEARCH");
@@ -288,6 +318,12 @@ router.post("/projects/:projectId/companies/:projectCompanyId/intelligence-v2", 
       evidenceReused: evidence.reused,
       evidenceSkipped: evidence.skipped,
     }, "V2_EVIDENCE_PERSISTED");
+    if (discoveredAtsHandle) {
+      await tx.update(companiesTable).set({
+        profileUrls: { ...owned.company.profileUrls, ...atsHandleToProfileUrls(discoveredAtsHandle) },
+        updatedAt: completedAt,
+      }).where(eq(companiesTable.id, owned.company.id));
+    }
     if (jobFacts.facts.length) {
       const stored = await persistJobFacts({
         organizationId: owned.project.organizationId,

@@ -1,0 +1,198 @@
+/**
+ * Reading applicant tracking systems directly.
+ *
+ * Search was the wrong instrument for this. It returned 21 pages for Zluri and
+ * VWO, of which three became facts and none was a job — a webcast and two blog
+ * posts. Zluri's actual board is six real openings with exact publish
+ * timestamps behind a free unauthenticated endpoint.
+ *
+ * The payload fixtures below are trimmed from live responses captured on
+ * 2026-09-08: Zluri's Keka board, GitLab's Greenhouse board, Ramp's Ashby
+ * board. Using real shapes matters — the bug this replaces came from assuming
+ * what data would look like instead of checking.
+ */
+import assert from "node:assert/strict";
+import { loadHermetic } from "./lib/hermetic-bundle.mjs";
+
+const h = await loadHermetic("./scripts/ats-boards-test-entry.ts", "/tmp/jyra-ats-boards-test.cjs");
+
+let checks = 0;
+const check = (name, fn) => { fn(); checks += 1; console.log(`  ok  ${name}`); };
+
+console.log("\ndetecting a board from a careers page");
+
+check("Keka embedded on the company's own page", () => {
+  // Exactly how it appears on zluri.com/careers.
+  const html = `<script src="https://zluri.keka.com/careers/api/embedjobs/js/ed2b6b25-be74-43f1-9a38-c3bf27b9146c"></script>`;
+  const handle = h.detectAtsHandle(html);
+  assert.equal(handle.kind, "keka");
+  assert.equal(handle.jobsUrl,
+    "https://zluri.keka.com/careers/api/embedjobs/default/active/ed2b6b25-be74-43f1-9a38-c3bf27b9146c");
+  assert.equal(handle.boardUrl, "https://zluri.keka.com/careers/");
+});
+
+check("Greenhouse, Lever and Ashby are recognised", () => {
+  assert.deepEqual(
+    h.detectAtsHandle(`<a href="https://boards.greenhouse.io/gitlab">Jobs</a>`),
+    { kind: "greenhouse", jobsUrl: "https://boards-api.greenhouse.io/v1/boards/gitlab/jobs", boardUrl: "https://boards.greenhouse.io/gitlab" },
+  );
+  assert.equal(h.detectAtsHandle(`<a href="https://jobs.lever.co/leverdemo">Jobs</a>`).jobsUrl,
+    "https://api.lever.co/v0/postings/leverdemo?mode=json");
+  assert.equal(h.detectAtsHandle(`<a href="https://jobs.ashbyhq.com/ramp">Jobs</a>`).jobsUrl,
+    "https://api.ashbyhq.com/posting-api/job-board/ramp");
+});
+
+check("a Greenhouse iframe embed is recognised", () => {
+  assert.equal(
+    h.detectAtsHandle(`<iframe src="https://boards.greenhouse.io/embed/job_board?for=gitlab"></iframe>`).jobsUrl,
+    "https://boards-api.greenhouse.io/v1/boards/gitlab/jobs",
+  );
+});
+
+check("a page with no board returns null rather than guessing", () => {
+  assert.equal(h.detectAtsHandle(`<html><body>We are hiring! Email careers@vwo.com</body></html>`), null,
+    "a wrong board would attribute another company's hiring to this one");
+  assert.equal(h.detectAtsHandle(""), null);
+});
+
+console.log("\nparsing real payloads");
+
+// Trimmed from https://zluri.keka.com/careers/api/embedjobs/default/active/<uuid>
+const KEKA = [
+  { id: 87316, title: "Manager – Legal & Commercial", publishedOn: "2026-09-04T09:34:46.433Z", publishedSinceDays: 4, jobLocations: [] },
+  { id: 87317, title: "Senior Software Engineer (Backend)", publishedOn: "2025-09-12T16:42:57.49Z", publishedSinceDays: 361, jobLocations: [{ city: "Bengaluru" }] },
+];
+
+// Trimmed from https://boards-api.greenhouse.io/v1/boards/gitlab/jobs
+const GREENHOUSE = {
+  jobs: [{
+    title: "Account Executive - Italy",
+    absolute_url: "https://job-boards.greenhouse.io/gitlab/jobs/8503792002",
+    updated_at: "2026-08-31T17:56:36-04:00",
+    first_published: "2026-08-20T10:00:00-04:00",
+    location: { name: "Remote, EMEA" },
+  }],
+};
+
+// Trimmed from https://api.ashbyhq.com/posting-api/job-board/ramp
+const ASHBY = {
+  jobs: [{
+    title: " Security Engineer, Cloud",
+    jobUrl: "https://jobs.ashbyhq.com/ramp/34413f8d-26bf-4bbc-8ade-eb309a0e2245",
+    publishedAt: "2026-04-07T17:12:35.753+00:00",
+    location: "New York, NY (HQ)",
+  }],
+};
+
+const LEVER = [{
+  text: "Security Operations Engineer",
+  hostedUrl: "https://jobs.lever.co/leverdemo/abc-123",
+  createdAt: 1756944000000,
+  categories: { location: "Bengaluru", team: "Security" },
+}];
+
+const handle = (kind, boardUrl) => ({ kind, jobsUrl: "x", boardUrl });
+
+check("Keka postings carry their exact publish date", () => {
+  const jobs = h.parseAtsJobs(handle("keka", "https://zluri.keka.com/careers/"), KEKA, "Zluri");
+  assert.equal(jobs.length, 2);
+  assert.equal(jobs[0].title, "Manager – Legal & Commercial");
+  assert.equal(jobs[0].postedAt, "2026-09-04T09:34:46.433Z");
+  assert.equal(jobs[0].url, "https://zluri.keka.com/careers/jobdetails/87316",
+    "Keka carries no per-job URL, so it is built from the id");
+  assert.equal(jobs[1].location, "Bengaluru");
+});
+
+check("Greenhouse prefers first published over last updated", () => {
+  const jobs = h.parseAtsJobs(handle("greenhouse", "https://boards.greenhouse.io/gitlab"), GREENHOUSE, "GitLab");
+  assert.equal(jobs[0].postedAt, "2026-08-20T10:00:00-04:00",
+    "when a posting was edited, the opening still dates from when it opened");
+  assert.equal(jobs[0].location, "Remote, EMEA");
+});
+
+check("Ashby postings parse, including the leading space in the title", () => {
+  const jobs = h.parseAtsJobs(handle("ashby", "https://jobs.ashbyhq.com/ramp"), ASHBY, "Ramp");
+  assert.equal(jobs[0].title, "Security Engineer, Cloud");
+  assert.equal(jobs[0].postedAt, "2026-04-07T17:12:35.753+00:00");
+});
+
+check("Lever's epoch timestamp becomes a real date", () => {
+  const jobs = h.parseAtsJobs(handle("lever", "https://jobs.lever.co/leverdemo"), LEVER, "Leverdemo");
+  assert.equal(jobs[0].title, "Security Operations Engineer");
+  assert.equal(jobs[0].postedAt, new Date(1756944000000).toISOString(),
+    "Lever reports epoch milliseconds where the others report ISO strings");
+  assert.equal(jobs[0].location, "Bengaluru");
+});
+
+check("the employer comes from the record, not from the payload", () => {
+  // VWO's board is at wingify.keka.com — Wingify being VWO's parent company.
+  const jobs = h.parseAtsJobs(handle("keka", "https://wingify.keka.com/careers/"), KEKA, "VWO");
+  assert.ok(jobs.every((job) => job.companyName === "VWO"),
+    "the board is recorded against the company, so a parent-entity name never has to be reconciled");
+});
+
+check("malformed rows are skipped, not fatal", () => {
+  const jobs = h.parseAtsJobs(handle("keka", "https://x.keka.com/careers/"),
+    [null, "nonsense", {}, { title: "No id" }, KEKA[0]], "Zluri");
+  assert.equal(jobs.length, 1, "one usable row survives a payload full of junk");
+});
+
+check("an empty or unexpected payload yields nothing", () => {
+  for (const payload of [[], {}, null, { jobs: null }]) {
+    assert.deepEqual(h.parseAtsJobs(handle("keka", "https://x.keka.com/careers/"), payload, "Zluri"), []);
+  }
+});
+
+console.log("\nstoring the handle on the company");
+
+check("a handle round-trips through profile_urls", () => {
+  const original = {
+    kind: "keka",
+    jobsUrl: "https://zluri.keka.com/careers/api/embedjobs/default/active/ed2b6b25-be74-43f1-9a38-c3bf27b9146c",
+    boardUrl: "https://zluri.keka.com/careers/",
+  };
+  assert.deepEqual(h.atsHandleFromProfileUrls(h.atsHandleToProfileUrls(original)), original,
+    "stored once, so attribution never has to be re-derived from a name");
+});
+
+check("incomplete or unknown stored handles are ignored", () => {
+  assert.equal(h.atsHandleFromProfileUrls(null), null);
+  assert.equal(h.atsHandleFromProfileUrls({}), null);
+  assert.equal(h.atsHandleFromProfileUrls({ atsKind: "keka" }), null);
+  assert.equal(h.atsHandleFromProfileUrls({ atsKind: "myspace", atsJobsUrl: "x", atsBoardUrl: "y" }), null);
+});
+
+check("careers page candidates are tried in a sensible order", () => {
+  const candidates = h.careersPageCandidates("www.zluri.com");
+  assert.equal(candidates[0], "https://zluri.com/careers", "www is stripped");
+  assert.ok(candidates.length >= 3);
+});
+
+console.log("\nthe whole chain: board payload to usable facts");
+
+check("Zluri's real board produces dated JOB_OPENING facts", () => {
+  const jobs = h.parseAtsJobs(handle("keka", "https://zluri.keka.com/careers/"), KEKA, "Zluri");
+  const { facts, skipped } = h.mapJobsToFacts(jobs, {
+    companyName: "Zluri",
+    now: new Date("2026-09-08T12:00:00.000Z"),
+    maximumAgeDays: 400,
+  });
+  assert.equal(skipped.length, 0, "every ATS posting is dated, so none is refused");
+  assert.equal(facts.length, 2);
+  assert.equal(facts[0].effectiveDate, "2026-09-04");
+  assert.equal(facts[0].factType, "JOB_OPENING");
+});
+
+check("Ashby's cloud security opening survives into a fact", () => {
+  const jobs = h.parseAtsJobs(handle("ashby", "https://jobs.ashbyhq.com/ramp"), ASHBY, "Ramp");
+  const { facts } = h.mapJobsToFacts(jobs, {
+    companyName: "Ramp",
+    now: new Date("2026-09-08T12:00:00.000Z"),
+    maximumAgeDays: 400,
+  });
+  assert.equal(facts.length, 1);
+  assert.match(facts[0].supportingExcerpt, /Security Engineer, Cloud/,
+    "this is the text the Cloud-security-hiring definition matches on");
+});
+
+console.log(`\nATS boards: ${checks} checks passed.`);
