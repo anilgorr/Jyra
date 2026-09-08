@@ -254,8 +254,8 @@ router.post("/projects/:projectId/companies/:projectCompanyId/intelligence-v2", 
     // and not one of them was a job. Search stays as the fallback for companies
     // with no discoverable board.
     let handle = atsHandleFromProfileUrls(owned.company.profileUrls);
-    if (!handle && owned.company.domain) {
-      handle = await discoverAtsHandle(owned.company.domain);
+    if (!handle) {
+      handle = await discoverAtsHandle(owned.company.domain, owned.company.canonicalName);
       // Remember it, so this is paid once per company rather than every run.
       if (handle) discoveredAtsHandle = handle;
     }

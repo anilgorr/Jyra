@@ -21,7 +21,7 @@ import type { JobPosting } from "./job-facts";
  * Detection and parsing are pure. Only the fetch touches the network.
  */
 
-export type AtsKind = "keka" | "greenhouse" | "lever" | "ashby";
+export type AtsKind = "keka" | "greenhouse" | "lever" | "ashby" | "smartrecruiters" | "recruitee" | "workable";
 
 export type AtsHandle = {
   kind: AtsKind;
@@ -172,6 +172,28 @@ export function parseAtsJobs(
         location = firstLocation(item.location) ?? firstLocation(item.address);
         break;
       }
+      case "smartrecruiters": {
+        title = text(item.name);
+        const id = text(item.id);
+        url = text(item.applyUrl) ?? (id ? `${handle.boardUrl.replace(/\/$/, "")}/${id}` : null);
+        postedAt = text(item.releasedDate) ?? text(item.createdOn);
+        location = firstLocation(item.location);
+        break;
+      }
+      case "recruitee": {
+        title = text(item.title);
+        url = text(item.careers_url) ?? text(item.careers_apply_url);
+        postedAt = text(item.published_at) ?? text(item.created_at);
+        location = firstLocation(item.location) ?? text(item.city);
+        break;
+      }
+      case "workable": {
+        title = text(item.title);
+        url = text(item.url) ?? text(item.application_url);
+        postedAt = text(item.published_on) ?? text(item.created_at);
+        location = firstLocation(item.location);
+        break;
+      }
     }
 
     if (!title || !url) continue;
@@ -192,8 +214,9 @@ export function atsHandleFromProfileUrls(
   const boardUrl = profileUrls?.[ATS_BOARD_URL_KEY];
   const kind = profileUrls?.[ATS_KIND_KEY];
   if (!jobsUrl || !boardUrl) return null;
-  if (kind !== "keka" && kind !== "greenhouse" && kind !== "lever" && kind !== "ashby") return null;
-  return { kind, jobsUrl, boardUrl };
+  const kinds = ["keka", "greenhouse", "lever", "ashby", "smartrecruiters", "recruitee", "workable"];
+  if (!kind || !kinds.includes(kind)) return null;
+  return { kind: kind as AtsKind, jobsUrl, boardUrl };
 }
 
 export function atsHandleToProfileUrls(handle: AtsHandle): Record<string, string> {
@@ -203,6 +226,75 @@ export function atsHandleToProfileUrls(handle: AtsHandle): Record<string, string
     [ATS_BOARD_URL_KEY]: handle.boardUrl,
   };
 }
+
+/**
+ * Slugs a company might use on a public job board.
+ *
+ * Derived from the domain rather than the display name: the domain is what a
+ * company actually registered, and "VWO" would never guess "wingify" while
+ * vwo.com at least tries the right shape. Cheap to try — every probe below is
+ * a free API call, and a wrong slug simply returns nothing.
+ */
+export function atsSlugCandidates(companyName: string, domain: string | null): string[] {
+  const fromDomain = domain ? domain.replace(/^www\./, "").split(".")[0].toLowerCase() : "";
+  const fromName = companyName.toLowerCase().replace(/[^a-z0-9]+/g, "");
+  return [...new Set([fromDomain, fromDomain.replace(/[^a-z0-9]/g, ""), fromName].filter(Boolean))];
+}
+
+/**
+ * Free job-board APIs that can be probed by slug, with the check that says
+ * whether the slug was real.
+ *
+ * The count matters more than the status code. Probing
+ * zzznotarealcompany99.zohorecruit.in returned a 302 that, followed, looked
+ * like a success — which is how a first pass "found" a Zoho board for all ten
+ * companies it was given. So redirects are refused outright and a board only
+ * counts when the payload parses and contains at least one posting.
+ */
+export const ATS_SLUG_PROBES: Array<{
+  kind: AtsKind;
+  jobsUrl: (slug: string) => string;
+  boardUrl: (slug: string) => string;
+  count: (payload: unknown) => number;
+}> = [
+  {
+    kind: "greenhouse",
+    jobsUrl: (s) => `https://boards-api.greenhouse.io/v1/boards/${s}/jobs`,
+    boardUrl: (s) => `https://boards.greenhouse.io/${s}`,
+    count: (p) => (Array.isArray((p as { jobs?: unknown[] })?.jobs) ? (p as { jobs: unknown[] }).jobs.length : 0),
+  },
+  {
+    kind: "lever",
+    jobsUrl: (s) => `https://api.lever.co/v0/postings/${s}?mode=json`,
+    boardUrl: (s) => `https://jobs.lever.co/${s}`,
+    count: (p) => (Array.isArray(p) ? p.length : 0),
+  },
+  {
+    kind: "ashby",
+    jobsUrl: (s) => `https://api.ashbyhq.com/posting-api/job-board/${s}`,
+    boardUrl: (s) => `https://jobs.ashbyhq.com/${s}`,
+    count: (p) => (Array.isArray((p as { jobs?: unknown[] })?.jobs) ? (p as { jobs: unknown[] }).jobs.length : 0),
+  },
+  {
+    kind: "smartrecruiters",
+    jobsUrl: (s) => `https://api.smartrecruiters.com/v1/companies/${s}/postings`,
+    boardUrl: (s) => `https://careers.smartrecruiters.com/${s}`,
+    // totalFound is the discriminator: an unknown company returns 0, not a 404.
+    count: (p) => (Array.isArray((p as { content?: unknown[] })?.content) ? (p as { content: unknown[] }).content.length : 0),
+  },
+  {
+    kind: "recruitee",
+    jobsUrl: (s) => `https://${s}.recruitee.com/api/offers/`,
+    boardUrl: (s) => `https://${s}.recruitee.com`,
+    count: (p) => (Array.isArray((p as { offers?: unknown[] })?.offers) ? (p as { offers: unknown[] }).offers.length : 0),
+  },
+  {
+    kind: "workable",
+    jobsUrl: (s) => `https://apply.workable.com/api/v1/widget/accounts/${s}?details=true`,
+    boardUrl: (s) => `https://apply.workable.com/${s}`,
+    count: (p) => (Array.isArray((p as { jobs?: unknown[] })?.jobs) ? (p as { jobs: unknown[] }).jobs.length : 0),
+  },
+];
 
 /** Careers pages worth trying, in the order a person would try them. */
 export function careersPageCandidates(domain: string): string[] {
@@ -248,14 +340,64 @@ async function getText(url: string, accept: string): Promise<string | null> {
  * again and a company whose brand differs from its hiring entity (VWO's board
  * lives under Wingify) never has to be reconciled by name a second time.
  */
-export async function discoverAtsHandle(domain: string): Promise<AtsHandle | null> {
-  for (const candidate of careersPageCandidates(domain)) {
-    const html = await getText(candidate, "text/html");
-    if (!html) continue;
-    const handle = detectAtsHandle(html, candidate);
-    if (handle) return handle;
+export async function discoverAtsHandle(
+  domain: string | null,
+  companyName?: string,
+): Promise<AtsHandle | null> {
+  // 1. The careers page, read as HTML. Catches boards the company links or
+  //    embeds — Zluri's Keka portal is found this way.
+  if (domain) {
+    for (const candidate of careersPageCandidates(domain)) {
+      const html = await getText(candidate, "text/html");
+      if (!html) continue;
+      const handle = detectAtsHandle(html, candidate);
+      if (handle) return handle;
+    }
+  }
+
+  // 2. Probe the free board APIs by slug. Most careers pages are JavaScript
+  //    apps whose board never appears in the HTML, so step 1 misses them —
+  //    but the board itself is usually still public and guessable. Zapier's
+  //    Ashby board was found this way after its 412KB careers page yielded
+  //    nothing.
+  const slugs = atsSlugCandidates(companyName ?? "", domain);
+  for (const slug of slugs) {
+    for (const probe of ATS_SLUG_PROBES) {
+      const payload = await getJson(probe.jobsUrl(slug));
+      if (payload === null) continue;
+      if (probe.count(payload) < 1) continue;
+      return { kind: probe.kind, jobsUrl: probe.jobsUrl(slug), boardUrl: probe.boardUrl(slug) };
+    }
   }
   return null;
+}
+
+/**
+ * Fetch JSON without following redirects.
+ *
+ * A slug probe asks "does this company have a board here?", and a redirect is
+ * that host saying no — usually to a marketing page or a login. Following it
+ * and trusting the 200 is exactly how a first pass reported a Zoho board for
+ * ten companies that had none.
+ */
+async function getJson(url: string): Promise<unknown | null> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+  try {
+    const response = await fetch(url, {
+      signal: controller.signal,
+      redirect: "manual",
+      headers: { "user-agent": USER_AGENT, accept: "application/json" },
+    });
+    if (response.status !== 200) return null;
+    const body = await response.text();
+    if (!body.trim().startsWith("{") && !body.trim().startsWith("[")) return null;
+    return JSON.parse(body);
+  } catch {
+    return null;
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 /** Read a board. Returns null on any failure — job research is never fatal. */

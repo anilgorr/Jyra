@@ -143,6 +143,67 @@ check("an empty or unexpected payload yields nothing", () => {
   }
 });
 
+console.log("\nfinding a board by slug when the page hides it");
+
+/* Most careers pages are JavaScript apps whose board never appears in the
+ * HTML — Zapier's is 412KB and contains no ATS link, Datadog's 139KB likewise.
+ * But the boards themselves are public and guessable, and probing free APIs by
+ * slug found both: Zapier on Ashby, Datadog on Greenhouse with 448 openings.
+ * Coverage went from 3 of 22 to 8 of 22 without spending anything. */
+
+check("slugs are derived from the domain first, then the name", () => {
+  const candidates = h.atsSlugCandidates("Atomic Object", "atomicobject.com");
+  assert.equal(candidates[0], "atomicobject", "the domain is what the company actually registered");
+  assert.ok(candidates.includes("atomicobject"));
+});
+
+check("a company with no domain still yields a name slug", () => {
+  assert.deepEqual(h.atsSlugCandidates("Kissflow", null), ["kissflow"]);
+});
+
+check("a company with no name and no domain yields nothing to probe", () => {
+  assert.deepEqual(h.atsSlugCandidates("", null), []);
+});
+
+/* THE FALSE POSITIVE. A first pass probed zohorecruit.in and reported a board
+ * for all ten companies it was given, including ones with none, because the
+ * host 302s unknown slugs to a marketing page and the redirect was followed
+ * into a 200. Redirects are now refused outright, and a board only counts when
+ * the payload parses AND contains at least one posting. These assertions pin
+ * the second half of that guard. */
+
+check("THE REGRESSION: an empty board never counts as a board", () => {
+  for (const probe of h.ATS_SLUG_PROBES) {
+    assert.equal(probe.count(null), 0, `${probe.kind} on null`);
+    assert.equal(probe.count({}), 0, `${probe.kind} on {}`);
+    assert.equal(probe.count([]), 0, `${probe.kind} on []`);
+    assert.equal(probe.count("<html>not json</html>"), 0, `${probe.kind} on html`);
+  }
+});
+
+check("SmartRecruiters' empty result is recognised as empty", () => {
+  const probe = h.ATS_SLUG_PROBES.find((entry) => entry.kind === "smartrecruiters");
+  // The exact payload returned for zzznotarealcompany99.
+  assert.equal(probe.count({ offset: 0, limit: 100, totalFound: 0, content: [] }), 0);
+  assert.equal(probe.count({ totalFound: 1, content: [{ id: "743999738934973", name: "test" }] }), 1);
+});
+
+check("each platform counts its own payload shape", () => {
+  const counts = Object.fromEntries(h.ATS_SLUG_PROBES.map((p) => [p.kind, p]));
+  assert.equal(counts.greenhouse.count({ jobs: [1, 2, 3] }), 3);
+  assert.equal(counts.lever.count([1, 2]), 2, "Lever returns a bare array");
+  assert.equal(counts.ashby.count({ jobs: [1] }), 1);
+  assert.equal(counts.recruitee.count({ offers: [1, 2] }), 2);
+  assert.equal(counts.workable.count({ jobs: [1] }), 1);
+});
+
+check("probe URLs are built from the slug", () => {
+  const gh = h.ATS_SLUG_PROBES.find((p) => p.kind === "greenhouse");
+  assert.equal(gh.jobsUrl("datadog"), "https://boards-api.greenhouse.io/v1/boards/datadog/jobs");
+  const ashby = h.ATS_SLUG_PROBES.find((p) => p.kind === "ashby");
+  assert.equal(ashby.jobsUrl("zapier"), "https://api.ashbyhq.com/posting-api/job-board/zapier");
+});
+
 console.log("\nstoring the handle on the company");
 
 check("a handle round-trips through profile_urls", () => {
