@@ -98,6 +98,61 @@ check("malformed URLs are refused rather than throwing", () => {
   assert.equal(h.attributeJobUrl("", KISSFLOW).attributed, false);
 });
 
+console.log("\nis it a job at all? — attribution proves who, not what");
+
+/* The first live run found the hole. Searching Zluri and VWO returned three
+ * pages that were genuinely theirs, so attribution passed, and all three were
+ * stored as JOB_OPENING facts:
+ *   vwo.com/webcast/building-career-in-cro
+ *   vwo.com/blog/how-vwo-approaches-sequential-testing
+ *   zluri.com/blog/why-zluri-why-now
+ * None is a job. A blog post titled "How we built our security operations"
+ * would have fired the SOC-hiring signal on nothing at all. */
+
+check("THE REGRESSION: the three pages that got through are refused", () => {
+  assert.equal(h.looksLikeJobPosting("https://vwo.com/webcast/building-career-in-cro", "Building a Career in CRO"), false);
+  assert.equal(h.looksLikeJobPosting("https://vwo.com/blog/how-vwo-approaches-sequential-testing", "How VWO Approaches Sequential Testing"), false);
+  assert.equal(h.looksLikeJobPosting("https://www.zluri.com/blog/why-zluri-why-now", "Why Zluri? Why now?"), false);
+});
+
+check("real postings on a company site are accepted", () => {
+  for (const url of [
+    "https://kissflow.com/careers/security-operations-engineer",
+    "https://vwo.com/jobs/cloud-security-architect",
+    "https://zluri.com/careers/openings/grc-analyst",
+  ]) {
+    assert.equal(h.looksLikeJobPosting(url, "Security Engineer"), true, url);
+  }
+});
+
+check("a careers index page is not a single posting", () => {
+  assert.equal(h.looksLikeJobPosting("https://kissflow.com/careers", "Careers"), false);
+  assert.equal(h.looksLikeJobPosting("https://vwo.com/jobs/", "Jobs"), false,
+    "a listing page has no one role to record");
+});
+
+check("marketing content wins over careers wording around it", () => {
+  assert.equal(h.looksLikeJobPosting("https://vwo.com/blog/careers/life-at-vwo", "Life at VWO"), false,
+    "a careers blog is a blog");
+  assert.equal(h.looksLikeJobPosting("https://vwo.com/resources/jobs-report", "Jobs Report"), false);
+});
+
+check("ATS postings are accepted, ATS board roots are not", () => {
+  assert.equal(h.looksLikeJobPosting("https://boards.greenhouse.io/kissflow/jobs/8503792002"), true);
+  assert.equal(h.looksLikeJobPosting("https://zluri.keka.com/careers/jobdetails/9"), true);
+  assert.equal(h.looksLikeJobPosting("https://boards.greenhouse.io/kissflow"), false,
+    "the board root lists many roles rather than being one");
+});
+
+check("a question is not a role title", () => {
+  assert.equal(h.looksLikeJobPosting("https://zluri.com/careers/why-join-us", "Why join us?"), false);
+  assert.equal(h.looksLikeJobPosting("https://zluri.com/careers/security-engineer", "Security Engineer"), true);
+});
+
+check("a malformed URL is refused rather than throwing", () => {
+  assert.equal(h.looksLikeJobPosting("not-a-url", "x"), false);
+});
+
 console.log("\ntitle cleaning — signals regex over the title");
 
 check("a trailing company name is stripped", () => {
@@ -174,7 +229,21 @@ await acheck("attributed postings come back, unattributed ones do not", async ()
     ["Security Operations Engineer", "Cloud Security Architect"]);
   assert.equal(response.metadata.rejectedUnattributed, 2,
     "the KISSFISH posting and the LinkedIn page are both refused");
+  assert.equal(response.metadata.rejectedNotAJob, 0);
   assert.ok(response.data.jobs.every((job) => job.companyName === "Kissflow"));
+});
+
+await acheck("a blog post on the company's own domain never becomes a posting", async () => {
+  const searchWeb = searchStub([[
+    result("https://vwo.com/blog/how-vwo-approaches-sequential-testing", "How VWO Approaches Sequential Testing"),
+    result("https://vwo.com/webcast/building-career-in-cro", "Building a Career in CRO"),
+    result("https://vwo.com/careers/cloud-security-engineer", "Cloud Security Engineer"),
+  ]]);
+  const adapter = h.createSearchBackedJobAdapter({ providerId: "exa", searchWeb });
+  const response = await adapter.execute({ companyName: "VWO", domain: "vwo.com" });
+  assert.deepEqual(response.data.jobs.map((job) => job.title), ["Cloud Security Engineer"]);
+  assert.equal(response.metadata.rejectedNotAJob, 2,
+    "attribution passed for all three — being the company's page is not being a job");
 });
 
 await acheck("the posted date is carried through, and its absence is visible", async () => {

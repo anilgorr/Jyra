@@ -1,6 +1,7 @@
 export {
   createSearchBackedJobAdapter,
   attributeJobUrl,
+  looksLikeJobPosting,
   cleanJobTitle,
   buildJobQueries,
   companySlug,

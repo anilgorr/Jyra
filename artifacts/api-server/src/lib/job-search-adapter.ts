@@ -99,6 +99,64 @@ export function attributeJobUrl(
 }
 
 /**
+ * Is this page a job posting at all?
+ *
+ * Attribution proves WHO a page belongs to. It says nothing about WHAT the page
+ * is, and the first live run showed the gap: searching Zluri and VWO for
+ * careers returned vwo.com/webcast/building-career-in-cro,
+ * vwo.com/blog/how-vwo-approaches-sequential-testing and
+ * zluri.com/blog/why-zluri-why-now. All three are genuinely those companies'
+ * pages, so attribution passed, and all three were stored as JOB_OPENING facts.
+ * None is a job. A blog post titled "How we built our security operations"
+ * would have fired the SOC-hiring signal outright.
+ *
+ * The URL path is the honest discriminator: publishers put content under
+ * /blog/ and /webcast/ and postings under /careers/ and /jobs/, and an ATS host
+ * serves nothing but postings. Content paths are checked first, so a careers
+ * blog is a blog.
+ */
+const CONTENT_PATH_MARKERS = [
+  "blog", "webcast", "webinar", "podcast", "resource", "resources", "guide",
+  "guides", "ebook", "whitepaper", "case-study", "case-studies", "customers",
+  "news", "press", "events", "event", "docs", "documentation", "help",
+  "support", "pricing", "product", "products", "features", "partners",
+  "academy", "glossary", "comparison", "alternatives", "templates",
+];
+
+const JOB_PATH_MARKERS = [
+  "job", "jobs", "career", "careers", "opening", "openings", "vacancy",
+  "vacancies", "position", "positions", "opportunity", "opportunities",
+  "apply", "recruit", "recruitment", "hiring", "joinus", "join-us", "roles",
+];
+
+export function looksLikeJobPosting(url: string, title?: string): boolean {
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    return false;
+  }
+  const segments = parsed.pathname.split("/").map((part) => part.toLowerCase()).filter(Boolean);
+
+  // Marketing content wins over any careers-flavoured wording around it.
+  if (segments.some((segment) => CONTENT_PATH_MARKERS.includes(segment))) return false;
+
+  const host = parsed.hostname.replace(/^www\./, "").toLowerCase();
+  // An ATS serves postings and nothing else, but its root is a board listing
+  // rather than one role, so a specific posting needs a path beyond the slug.
+  if (isAtsHost(host)) return segments.length >= 2;
+
+  const jobIndex = segments.findIndex((segment) => JOB_PATH_MARKERS.includes(segment));
+  if (jobIndex === -1) return false;
+  // /careers is the index; /careers/security-engineer is a posting.
+  if (jobIndex === segments.length - 1) return false;
+
+  // A role is a noun phrase. "Why Zluri? Why now?" is not one.
+  if (title && /\?/.test(title)) return false;
+  return true;
+}
+
+/**
  * Search result titles carry the employer: "Security Engineer - Kissflow".
  * The signal definitions regex over the title, so the noise is worth removing,
  * but only a trailing company name is stripped — never anything in the middle,
@@ -188,6 +246,7 @@ export function createSearchBackedJobAdapter(options: {
       let estimatedCost = 0;
       let actualCost = 0;
       let rejectedUnattributed = 0;
+      let rejectedNotAJob = 0;
       let lastError: ProviderResponse<WebSearchResult>["error"] = null;
 
       for (const scoped of buildJobQueries(company)) {
@@ -209,6 +268,11 @@ export function createSearchBackedJobAdapter(options: {
           const attribution = attributeJobUrl(result.url, company);
           if (!attribution.attributed) {
             rejectedUnattributed += 1;
+            continue;
+          }
+          // Attribution proved the employer; this proves the page is a posting.
+          if (!looksLikeJobPosting(result.url, result.title)) {
+            rejectedNotAJob += 1;
             continue;
           }
           seen.add(result.url);
@@ -265,6 +329,7 @@ export function createSearchBackedJobAdapter(options: {
           companyName,
           companyDomain: company.domain,
           rejectedUnattributed,
+          rejectedNotAJob,
           datedPostings: limited.filter((job) => job.postedAt).length,
         },
       };
