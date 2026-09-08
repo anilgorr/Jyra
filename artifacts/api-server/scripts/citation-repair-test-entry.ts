@@ -1,0 +1,1 @@
+export { assessMarketFitV2, AssessmentFailureV2 } from "../src/lib/intelligence-v2/assess-market-fit";

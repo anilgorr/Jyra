@@ -279,7 +279,12 @@ test("Semantic contract", "17 valid first pass materializes immutable provenance
   assert.equal(calls, 1); assert.equal(result.modelCalls, 1); assert.equal(result.assessment.commercialRole.claimBindings[0].claimedValue, "B2B SaaS");
   assert.deepEqual(result.assessment.commercialRole.evidenceIds, [ids[0]]);
 });
-test("Semantic contract", "18 unknown role citation safely abstains without retry", async () => {
+// Until the citation-repair loop landed this asserted "abstains without
+// retry": a fabricated ID collapsed the section, the collapsed section then
+// validated, and the run ended one call in. That made the same company assess
+// differently minute to minute. The abstention is still the floor — it is just
+// no longer the first answer we accept.
+test("Semantic contract", "18 unknown role citation is re-asked once, then abstains", async () => {
   let calls = 0;
   const result = await directAssessment(async () => {
     calls++;
@@ -287,8 +292,9 @@ test("Semantic contract", "18 unknown role citation safely abstains without retr
     content.commercialRole.citations[0].claimId = "foreign-claim";
     return { content, usage: { total_tokens: calls * 10 }, cost: .01 * calls };
   });
-  assert.equal(calls, 1); assert.equal(result.modelCalls, 1); assert.equal(result.usage.total_tokens, 10);
-  assert.equal(result.cost, .01); assert.deepEqual(result.attempts.map((attempt) => attempt.outcome), ["VALID"]);
+  assert.equal(calls, 2); assert.equal(result.modelCalls, 2); assert.equal(result.usage.total_tokens, 30);
+  assert.equal(Math.round(result.cost * 100) / 100, .03);
+  assert.deepEqual(result.attempts.map((attempt) => attempt.outcome), ["CITATION_ABSTAINED", "VALID"]);
   assert.equal(result.assessment.commercialRole.value, "UNKNOWN");
   assert.deepEqual([
     result.assessment.commercialRole.evidenceIds,
@@ -297,12 +303,12 @@ test("Semantic contract", "18 unknown role citation safely abstains without retr
   ], [[], [], []]);
   assert.match(result.assessment.commercialRole.reason, /unknown atomic claim ID/);
 });
-test("Semantic contract", "19 unknown parent WHO citation safely abstains without retry", async () => {
+test("Semantic contract", "19 unknown parent WHO citation is re-asked once, then abstains", async () => {
   let calls = 0;
   const result = await directAssessment(async () => {
     calls++; const content = compactResponse(); content.who.citations[0].claimId = "foreign-claim"; return { content };
   });
-  assert.equal(calls, 1);
+  assert.equal(calls, 2);
   assert.equal(result.assessment.who.value, "INSUFFICIENT_DATA");
   assert.deepEqual([
     result.assessment.who.evidenceIds,
