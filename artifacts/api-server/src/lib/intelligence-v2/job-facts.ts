@@ -1,6 +1,12 @@
 import { randomUUID } from "node:crypto";
 import { and, eq } from "drizzle-orm";
-import { companyEvidenceTable, companyFactsTable, crawlPagesTable, db } from "@workspace/db";
+import {
+  companyEvidenceTable,
+  companyFactsTable,
+  crawlPagesTable,
+  evidenceAttributionReviewsTable,
+  db,
+} from "@workspace/db";
 import { calculateEvidenceScores, hashNormalizedContent } from "../evidence";
 import type { EvidenceSourceType } from "./persist-evidence";
 
@@ -257,6 +263,30 @@ export async function persistJobFacts(
         rawContentReference: `crawl_pages:${crawlPageId}`,
         normalizedContentHash: hashNormalizedContent(`${row.sourceUrl} ${row.title}`),
       });
+      // Facts are only visible to the signal layer through an attribution
+      // review: selectAcceptedFactsForCompany inner-joins this table and
+      // requires acceptedAsEvidence. Without it, 310 perfectly good job facts
+      // sat in the database and produced zero signals — the fact existed, but
+      // nothing had ever recorded the judgement that it was admissible.
+      await executor.insert(evidenceAttributionReviewsTable).values({
+        crawlPageId,
+        companyId: input.companyId,
+        reviewedByOrganizationId: input.organizationId,
+        // These are validated by the API response schema, not by the column
+        // (both are plain text), so an invalid value is accepted by Postgres
+        // and then throws when the evidence endpoint serialises the row —
+        // which is exactly what happened: 321 stored rows, a 500 on read, and
+        // "Evidence points 0" on the company page.
+        sourceClassification: "JOB_LISTING",
+        entityStatus: "CONFIRMED_ENTITY",
+        entityConfidence: 95,
+        // The board was resolved to this company before it was ever read, so
+        // the employer is established by provenance rather than inference.
+        entityReason: `Posting published on the company's own applicant tracking board (${row.sourceDomain}).`,
+        sourceReliabilityScore: Math.round(scores.authorityScore),
+        qualityReason: "Structured posting with an explicit publish date from the employer's own board.",
+        acceptedAsEvidence: true,
+      }).onConflictDoNothing();
       const [created] = await executor.insert(companyEvidenceTable).values({
         companyId: input.companyId,
         crawlPageId,
