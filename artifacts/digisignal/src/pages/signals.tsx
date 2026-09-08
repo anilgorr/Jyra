@@ -43,7 +43,7 @@ import { Empty, EmptyHeader, EmptyTitle, EmptyDescription, EmptyMedia } from "@/
 export default function Signals() {
   const { activeProjectId } = useWorkspace();
   const queryClient = useQueryClient();
-  const [offeringName, setOfferingName] = useState("");
+  const [typedOffering, setTypedOffering] = useState<string | null>(null);
 
   const { data: signals = [], isLoading, isError, error, refetch } = useListProjectSignals(
     activeProjectId ?? "",
@@ -72,6 +72,18 @@ export default function Signals() {
       },
     },
   });
+  // The offering name is stamped into every signal this project produces, so it
+  // has to be visible and correctable after the fact. It was not: the box always
+  // started empty, and a name captured mid-typing ("managed" instead of
+  // "Managed SOC") stayed on every signal with nothing in the UI showing it.
+  const storedOffering = selectedPacks.find((item) => item.active)?.offeringSnapshot as { name?: string } | undefined;
+  const offeringName = typedOffering ?? storedOffering?.name ?? "";
+  const activeSelections = selectedPacks.filter((item) => item.active);
+  const offeringChanged = Boolean(
+    activeSelections.length && offeringName.trim() && offeringName.trim() !== (storedOffering?.name ?? "").trim(),
+  );
+  const offeringKeyFor = (name: string) => name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+
   const togglePack = (pack: SignalPack) => {
     if (!activeProjectId) return;
     const selected = selectedPacks.find((item) => item.signalPackId === pack.id);
@@ -83,12 +95,33 @@ export default function Signals() {
       signalPackId: pack.id,
       data: {
         active,
-        offeringKey: selected?.offeringKey ?? name?.toLowerCase().replace(/[^a-z0-9]+/g, "-") ?? null,
+        // Derive the key from the name being saved. Reusing the stored key let
+        // a corrected name sit beside the key of the wrong one.
+        offeringKey: name ? offeringKeyFor(name) : selected?.offeringKey ?? null,
         offeringSnapshot: active ? { ...(selected?.offeringSnapshot ?? {}), name } : selected?.offeringSnapshot ?? {},
         businessContextSnapshot: selected?.businessContextSnapshot ?? {},
         configuration: selected?.configuration ?? {},
       },
     });
+  };
+
+  const renameOffering = () => {
+    if (!activeProjectId || !offeringChanged) return;
+    const name = offeringName.trim();
+    for (const selection of activeSelections) {
+      configurePack.mutate({
+        projectId: activeProjectId,
+        signalPackId: selection.signalPackId,
+        data: {
+          active: true,
+          offeringKey: offeringKeyFor(name),
+          offeringSnapshot: { ...(selection.offeringSnapshot ?? {}), name },
+          businessContextSnapshot: selection.businessContextSnapshot ?? {},
+          configuration: selection.configuration ?? {},
+        },
+      });
+    }
+    setTypedOffering(null);
   };
 
   const activeSignals = signals.filter(s => s.status.toLowerCase() === 'active');
@@ -161,12 +194,19 @@ export default function Signals() {
               </div>
               <Badge variant="outline">{selectedPacks.filter((item) => item.active).length} active</Badge>
             </div>
-            <Input
-              value={offeringName}
-              onChange={(event) => setOfferingName(event.target.value)}
-              placeholder="Offering name, for example: Executive search"
-              className="max-w-md"
-            />
+            <div className="flex flex-wrap items-center gap-2">
+              <Input
+                value={offeringName}
+                onChange={(event) => setTypedOffering(event.target.value)}
+                placeholder="Offering name, for example: Executive search"
+                className="max-w-md"
+              />
+              {offeringChanged && (
+                <Button size="sm" onClick={renameOffering} disabled={configurePack.isPending}>
+                  Save name
+                </Button>
+              )}
+            </div>
             {(packsError || selectedPacksError) && (
               <div role="alert" className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm text-destructive">
                 <span>
