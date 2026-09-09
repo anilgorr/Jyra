@@ -12,13 +12,33 @@ import {
   researchRequirementSchema, type ResearchPackageV2, type SellerRelativeAssessmentV2, type SellerRelativeContextV2,
 } from "./schemas";
 
+/**
+ * A research package is reusable for this long. Two clicks on Analyze an hour
+ * apart should not pay for two research sweeps, but a company under
+ * continuous watch must be looked at again — and once the cache is durable
+ * rather than in-process, nothing else would ever expire it. The window is
+ * part of the cache key, so expiry needs no sweeper and no clock in the
+ * repository. Whether the *assessment* re-runs is a separate question the
+ * profile fingerprint answers: if the fresh sweep finds the same evidence,
+ * the same fingerprint comes back and the model is not asked again.
+ */
+export const RESEARCH_MAX_AGE_MS = 24 * 60 * 60 * 1000;
+
+export function researchEpochV2(now: Date, maxAgeMs: number = RESEARCH_MAX_AGE_MS): number {
+  const window = Math.max(1, Math.floor(maxAgeMs));
+  return Math.floor(now.getTime() / window);
+}
+
+/** Tenant scope a cache entry is filed under. Research and profiles carry it themselves; an assessment does not. */
+export type IntelligenceV2CacheScope = { organizationId: string; projectId: string; companyId: string };
+
 export type IntelligenceV2Repository = {
   getResearch(key: string): Promise<ResearchPackageV2 | null>;
-  putResearch(key: string, value: ResearchPackageV2): Promise<void>;
+  putResearch(key: string, value: ResearchPackageV2, scope?: IntelligenceV2CacheScope): Promise<void>;
   getProfile(fingerprint: string): Promise<CompanyIntelligenceProfileV2 | null>;
-  putProfile(fingerprint: string, value: CompanyIntelligenceProfileV2): Promise<void>;
+  putProfile(fingerprint: string, value: CompanyIntelligenceProfileV2, scope?: IntelligenceV2CacheScope): Promise<void>;
   getAssessment(fingerprint: string): Promise<SellerRelativeAssessmentV2 | null>;
-  putAssessment(fingerprint: string, value: SellerRelativeAssessmentV2): Promise<void>;
+  putAssessment(fingerprint: string, value: SellerRelativeAssessmentV2, scope?: IntelligenceV2CacheScope): Promise<void>;
 };
 
 export class InMemoryIntelligenceV2Repository implements IntelligenceV2Repository {
@@ -92,6 +112,8 @@ export async function orchestrateIntelligenceV2(input: {
   onSemanticAttemptStart?: () => void; onSemanticCost?: (cost: number) => void;
   /** Set when the research invoker carries its own cost callbacks (e.g. onProviderCost) so the run is never shared. */
   observesResearchCost?: boolean;
+  /** How long a research package stays reusable. See RESEARCH_MAX_AGE_MS. */
+  researchMaxAgeMs?: number;
 }): Promise<IntelligenceV2Result> {
   const key = fingerprintV2({ organizationId: input.request.organizationId, projectId: input.request.projectId, companyId: input.request.companyId,
     domain: input.request.domain, sourceEvidence: input.request.firstPartyEvidence.map(({ evidenceId, version }) => ({ evidenceId, version })),
@@ -116,6 +138,7 @@ async function orchestrateIntelligenceV2Internal(input: {
   researchInvoker: ResearchInvokerV2; assessmentInvoker?: AssessmentInvokerV2; now?: Date;
   maxExternalResearchCalls?: number; assessmentTimeoutMs?: number;
   onSemanticAttemptStart?: () => void; onSemanticCost?: (cost: number) => void;
+  researchMaxAgeMs?: number;
 }): Promise<IntelligenceV2Result> {
   const started = Date.now();
   sellerRelativeContextSchema.parse(input.context);
@@ -128,6 +151,7 @@ async function orchestrateIntelligenceV2Internal(input: {
     organizationId: input.request.organizationId, projectId: input.request.projectId, companyId: input.request.companyId,
     domain: input.request.domain,
     seedEvidence: input.request.firstPartyEvidence.map(({ evidenceId, version }) => ({ evidenceId, version })),
+    researchEpoch: researchEpochV2(input.now ?? new Date(), input.researchMaxAgeMs),
   });
   let research = await input.repository.getResearch(researchKey);
   const researchHit = Boolean(research);
@@ -192,7 +216,9 @@ async function orchestrateIntelligenceV2Internal(input: {
       onAttemptStart: input.onSemanticAttemptStart, onCost: input.onSemanticCost,
     });
     semantic = result.assessment; usage = result.usage; modelCost = result.cost; modelCalls = result.modelCalls; semanticAttempts = result.attempts;
-    await input.repository.putAssessment(assessmentFingerprint, semantic);
+    await input.repository.putAssessment(assessmentFingerprint, semantic, {
+      organizationId: input.request.organizationId, projectId: input.request.projectId, companyId: input.request.companyId,
+    });
   }
   try {
     semantic = normalizeAssessmentEvidenceV2(semantic, allEvidence, input.context);

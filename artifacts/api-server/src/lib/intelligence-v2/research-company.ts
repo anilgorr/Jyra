@@ -124,7 +124,15 @@ export function providerEvidence(input: {
   sourceType: string; url: string | null; title: string | null; snippet: string; firstParty: boolean;
   claims?: EvidenceItemV2["claims"];
 }): EvidenceItemV2 {
-  const evidenceId = fingerprintV2({ provider: input.provider, providerRequestId: input.providerRequestId, url: input.url, snippet: input.snippet });
+  // Identity is a function of what was found and where, never of the request
+  // that found it. The request ID used to be part of this hash, so the same
+  // paragraph from the same URL got a fresh evidenceId — and fresh claim IDs —
+  // on every run. That flipped the profile fingerprint whether or not the
+  // world had moved, which made the assessment cache miss every time and the
+  // model re-decide Datadog from scratch minutes apart. The request ID is kept
+  // below as provenance, which is all it ever was.
+  const evidenceId = fingerprintV2({ provider: input.provider, url: input.url, snippet: input.snippet });
+  const version = fingerprintV2({ url: input.url, title: input.title, snippet: input.snippet, claims: input.claims ?? null }).slice(0, 16);
   const fetchedContent = `${input.title ?? ""} ${input.snippet}`;
   const overlapEligible = input.firstParty || OVERLAP_ELIGIBLE_SOURCES.has(input.sourceType);
   const detectedOverlap = overlapEligible ? detectOfferingOverlapV2(input.snippet, input.request.offering) : [];
@@ -150,7 +158,7 @@ export function providerEvidence(input: {
     organizationId: input.request.organizationId, companyId: input.request.companyId, projectId: input.request.projectId, sourceType: input.sourceType,
     provider: input.provider, url: input.url, finalUrl: input.url, title: input.title || "Untitled fetched page",
     observedAt: input.capturedAt, rawSnippet: input.snippet.slice(0, 4000), firstParty: input.firstParty,
-    confidence: input.firstParty ? .9 : .75, version: input.providerRequestId,
+    confidence: input.firstParty ? .9 : .75, version, providerRequestId: input.providerRequestId,
     atomicClaims: [
       ...(finalHostMatches && brandFragment
         ? [{ claimId: `${evidenceId}:brand`, type: "BRAND_MATCH" as const, value: brandFragment }] : []),

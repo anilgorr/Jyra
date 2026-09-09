@@ -49,6 +49,8 @@ export const evidenceItemSchema = z.object({
   firstParty: z.boolean(),
   confidence,
   version: z.string().min(1),
+  /** Which provider call surfaced this item. Provenance only — never part of identity. */
+  providerRequestId: z.string().min(1).optional(),
   atomicClaims: z.array(z.object({
     claimId: z.string().min(1), type: z.enum(claimTypes), value: z.string().min(1),
     geographyType: z.enum(geographySemantics).optional(),

@@ -29,6 +29,13 @@
       "when": 1788457036096,
       "tag": "0003_intelligence_v2_assessments",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1788962966098,
+      "tag": "0004_intelligence_v2_cache",
+      "breakpoints": true
     }
   ]
 }

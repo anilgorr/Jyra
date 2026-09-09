@@ -19,11 +19,11 @@ import { evaluateOpportunity } from "../lib/opportunity-engine";
 import { ProviderRouter } from "../lib/provider-router";
 import { resolveProjectSellerContext } from "../lib/seller-context";
 import {
-  InMemoryIntelligenceV2Repository,
   orchestrateIntelligenceV2,
   type IntelligenceV2Result,
 } from "../lib/intelligence-v2/orchestrator";
 import { createProviderRouterResearchInvokerV2 } from "../lib/intelligence-v2/research-company";
+import { PostgresIntelligenceV2Repository } from "../lib/intelligence-v2/repository";
 import { icpCriteriaToRequirementsV2 } from "../lib/intelligence-v2/icp-requirements";
 import {
   loadLatestIntelligenceV2Assessment,
@@ -57,7 +57,10 @@ const asyncRoute = (handler: AsyncHandler): RequestHandler =>
 // provider payloads). Completed run outcomes are persisted to
 // intelligence_v2_assessments; `latestRuns` remains as the hot path for the
 // development panel within one process.
-const repository = new InMemoryIntelligenceV2Repository();
+// Durable across restarts and deploys. The in-memory repository this replaced
+// meant every wake of a sleeping host began with an empty cache, so research
+// re-ran and — with request-bound evidence IDs — the model was asked again.
+const repository = new PostgresIntelligenceV2Repository();
 const latestRuns = new Map<string, ReturnType<typeof compactRun>>();
 const keyFor = (projectId: string, projectCompanyId: string) => `${projectId}:${projectCompanyId}`;
 /** The legacy evidence model is canonical-company scoped. It is never an
