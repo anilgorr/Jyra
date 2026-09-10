@@ -1,7 +1,12 @@
 # Wakes the API hourly and asks it to run one tick of the watch loop.
 #
-# The host sleeps when idle, so the first request pays a cold start; the
-# generous timeout covers that plus ten company cycles. Nothing here decides
+# GitHub runs `schedule` workflows from the default branch only, so this file
+# has to exist on `main` even while the API deploys from another branch.
+#
+# The host sleeps when idle, so the first request pays a cold start. The tick
+# is started without waiting — a proxy in front of a small host drops a
+# connection held for the ten minutes ten cycles can take — and the job then
+# polls the report endpoint until the tick has finished. Nothing here decides
 # what to run — the API's own budget ceiling and kill switch do. To pause the
 # loop, set JYRA_WATCH_LOOP_ENABLED=false on the API; to stop even the wake-ups,
 # disable this workflow.
@@ -22,9 +27,9 @@ concurrency:
 jobs:
   tick:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 40
     steps:
-      - name: Run one tick
+      - name: Start one tick
         env:
           API_URL: ${{ secrets.JYRA_API_URL }}
           TOKEN: ${{ secrets.JYRA_WATCH_LOOP_TOKEN }}
@@ -34,18 +39,43 @@ jobs:
             echo "JYRA_API_URL and JYRA_WATCH_LOOP_TOKEN must be set as repository secrets" >&2
             exit 1
           fi
-          status=$(curl -sS -o /tmp/tick.json -w '%{http_code}' \
-            --retry 3 --retry-delay 20 --retry-all-errors --max-time 1500 \
-            -X POST "${API_URL%/}/api/internal/watch-loop/tick?wait=true" \
-            -H "Authorization: Bearer ${TOKEN}")
-          echo "HTTP ${status}"
-          cat /tmp/tick.json; echo
+          # Retries cover the cold start (the first request can take a minute
+          # to be answered at all). 409 means a tick is already running, which
+          # is fine — we just wait for that one below.
+          status=$(curl -sS -o /tmp/start.json -w '%{http_code}' \
+            --retry 4 --retry-delay 20 --retry-all-errors --max-time 120 \
+            -X POST "${API_URL%/}/api/internal/watch-loop/tick" \
+            -H "Authorization: Bearer ${TOKEN}") || true
+          echo "HTTP ${status}"; cat /tmp/start.json 2>/dev/null; echo
           case "$status" in
-            200) ;;
-            409) echo "A tick was already running; nothing to do." ;;
-            *) exit 1 ;;
+            202|409) ;;
+            *) echo "::error::tick could not be started (HTTP ${status})"; exit 1 ;;
           esac
-          if command -v jq >/dev/null && [ "$status" = "200" ]; then
-            jq -r '"due=\(.due) ran=\(.ran) changed=\(.changed) skipped=\(.skipped) failed=\(.failed) spent=$\(.spentUsd)"' /tmp/tick.json
-            [ "$(jq -r .failed /tmp/tick.json)" = "0" ] || { echo "::warning::some cycles failed"; }
-          fi
+
+      - name: Wait for the report
+        env:
+          API_URL: ${{ secrets.JYRA_API_URL }}
+          TOKEN: ${{ secrets.JYRA_WATCH_LOOP_TOKEN }}
+        run: |
+          set -euo pipefail
+          started=$(date +%s)
+          while :; do
+            sleep 30
+            curl -sS -o /tmp/last.json --max-time 60 \
+              "${API_URL%/}/api/internal/watch-loop/last" \
+              -H "Authorization: Bearer ${TOKEN}" || { echo "poll failed, retrying"; continue; }
+            running=$(jq -r '.running' /tmp/last.json)
+            has_report=$(jq -r '.last != null' /tmp/last.json)
+            echo "$(date -u +%H:%M:%S) running=${running} report=${has_report}"
+            if [ "$running" = "false" ] && [ "$has_report" = "true" ]; then break; fi
+            # A restart mid-tick loses the in-memory report; the changesets are
+            # still in the database, so this is a warning, not a failure.
+            if [ "$running" = "false" ] && [ "$has_report" = "false" ] && [ $(( $(date +%s) - started )) -gt 180 ]; then
+              echo "::warning::no report — the API restarted during the tick, or the tick never started"; exit 0
+            fi
+            if [ $(( $(date +%s) - started )) -gt 2100 ]; then
+              echo "::warning::tick still running after 35 minutes; leaving it to finish"; exit 0
+            fi
+          done
+          jq -r '.last | "due=\(.due) ran=\(.ran) changed=\(.changed) skipped=\(.skipped) failed=\(.failed) spent=$\(.spentUsd)"' /tmp/last.json
+          jq -r '.last.outcomes[] | select(.result == "failed") | "::warning::\(.companyName): \(.reason)"' /tmp/last.json
