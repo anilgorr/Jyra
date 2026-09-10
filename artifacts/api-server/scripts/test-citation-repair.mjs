@@ -159,4 +159,51 @@ const run = async (claimIdsByAttempt) => {
   }), [], "an evidence-shaped abstention is a real verdict, not a cache to discard");
 }
 
+
+// 8. A criterion the model invents is dropped and re-asked once, not fatal.
+//    Seven of ten companies in the first scheduled tick died on
+//    "foreign criterionId ICP_GEOGRAPHY" — the seller context mentions an
+//    Indian sweet spot, the ICP supplies one criterion, and the model added
+//    the one it thought was missing. Twice. That must cost one retry, not the
+//    whole cycle.
+{
+  const CONTEXT_WITH_CRITERION = {
+    ...CONTEXT,
+    icp: { ...CONTEXT.icp, requirements: [{ criterionId: "tech-website", type: "TECHNOLOGY", operator: "CONTAINS", value: "website", mandatory: false, exclusion: false, preferred: true }] },
+  };
+  const respondWith = (criteria) => ({
+    content: {
+      commercialRole: { value: "POTENTIAL_BUYER", confidence: 0.8, reason: "Cited.", citations: [{ claimId: "claim-business", relation: "SUPPORTS_ROLE" }] },
+      who: { value: "POSSIBLE_FIT", confidence: 0.7, reason: "Cited.", citations: [{ claimId: "claim-business", relation: "SUPPORTS_WHO" }], criteria },
+      uncertainties: [], assessmentConfidence: 0.75,
+    }, usage: { total_tokens: 40 }, cost: 0.01,
+  });
+  const supplied = { criterionId: "tech-website", result: "UNKNOWN", confidence: 0.5, reason: "No supplied claim decides this.", citations: [] };
+  const invented = { criterionId: "ICP_GEOGRAPHY", result: "FAIL", confidence: 0.9, reason: "Headquartered outside India.", citations: [] };
+  const seen = [];
+  const result = await v2.assessMarketFitV2({
+    context: CONTEXT_WITH_CRITERION, profile: PROFILE, evidence: EVIDENCE,
+    invoke: async (input) => { seen.push(input); return respondWith(seen.length === 1 ? [supplied, invented] : [supplied]); },
+  });
+  assert.equal(result.modelCalls, 2, "one repair attempt");
+  assert.equal(result.attempts[0].outcome, "CITATION_ABSTAINED");
+  assert.match(JSON.stringify(seen[1].validationErrors), /ICP_GEOGRAPHY/, "the repair prompt names the invented criterion");
+  assert.deepEqual(result.assessment.who.criteria.map((c) => c.criterionId), ["tech-website"]);
+  assert.equal(result.assessment.who.value, "POSSIBLE_FIT", "the verdict survives; only the invented criterion is gone");
+
+  // Still inventing on attempt 2: drop it and keep the assessment.
+  const stubborn = await v2.assessMarketFitV2({
+    context: CONTEXT_WITH_CRITERION, profile: PROFILE, evidence: EVIDENCE,
+    invoke: async () => respondWith([supplied, invented]),
+  });
+  assert.equal(stubborn.modelCalls, 2);
+  assert.deepEqual(stubborn.assessment.who.criteria.map((c) => c.criterionId), ["tech-website"]);
+  assert.deepEqual(stubborn.citationIntegrity.foreignCriteria, ["ICP_GEOGRAPHY"]);
+
+  // Omitting a supplied criterion is still a real defect, and still fails after two attempts.
+  await assert.rejects(v2.assessMarketFitV2({
+    context: CONTEXT_WITH_CRITERION, profile: PROFILE, evidence: EVIDENCE, invoke: async () => respondWith([]),
+  }), (error) => error.code === "V2_ASSESSMENT_INVALID" && /missing supplied ICP criteria/.test(error.message));
+}
+
 console.log("PASS citation-repair");

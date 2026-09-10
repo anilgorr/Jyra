@@ -133,4 +133,19 @@ const ranCycle = (cost = 0.02, hasChanges = false, modelCalls = 1) => async () =
   assert.equal(w.watchLoopTokenMatches(undefined, token), false);
 }
 
+
+// 8. Each cycle is stamped when it runs. A fixed `now` is honoured (tests), but
+//    absent one the tick must not hand every company the same timestamp.
+{
+  const stamps = [];
+  await w.runWatchLoopTick({
+    repository: {}, log: quiet, settings: { ...settings, maxCompaniesPerTick: 3 },
+    select: async () => [owned("a"), owned("b"), owned("c")],
+    spend: async () => ({ spentTodayUsd: 0, recentCycleCosts: [] }), dailyBudgetFor: async () => 25,
+    cycle: async ({ now: t }) => { stamps.push(t.getTime()); await new Promise((r) => setTimeout(r, 5)); return ranCycle()(); },
+  });
+  assert.equal(stamps.length, 3);
+  assert.ok(stamps[1] > stamps[0] && stamps[2] > stamps[1], "later cycles carry later timestamps");
+}
+
 console.log("PASS watch-loop");

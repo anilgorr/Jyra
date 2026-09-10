@@ -200,7 +200,12 @@ export async function runWatchLoopTick(input: {
       continue;
     }
     try {
-      const outcome = await cycle({ owned, repository: input.repository, trigger: "SCHEDULED", actorId: SCHEDULER_ACTOR, now, log: input.log });
+      // Each cycle is stamped when it runs, not when the tick began. Ten
+      // companies fifteen minutes apart sharing one observed_at made the feed
+      // order them arbitrarily and "last look" lie by a quarter of an hour.
+      // `now` from the caller is honoured only as a test fixture.
+      const cycleNow = input.now ?? new Date();
+      const outcome = await cycle({ owned, repository: input.repository, trigger: "SCHEDULED", actorId: SCHEDULER_ACTOR, now: cycleNow, log: input.log });
       executed++;
       report.ran++;
       if (outcome.changeset.hasChanges) report.changed++;

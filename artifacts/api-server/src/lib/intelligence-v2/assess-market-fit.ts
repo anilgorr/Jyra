@@ -130,6 +130,14 @@ export type CitationIntegrityV2 = {
   citationsDropped: number;
   droppedClaimIds: string[];
   droppedBySection: { section: string; claimIds: string[] }[];
+  /**
+   * Criterion IDs the model returned that were never supplied. Seven of ten
+   * companies in the first scheduled tick failed on these — ICP_GEOGRAPHY,
+   * HQ_IN_INDIA, ICP_COMPANY_SIZE — because the seller context *mentions* an
+   * Indian sweet spot while the ICP has one accepted criterion, and the model
+   * decided to help. Dropped, recorded, and re-asked once, like a bad claim ID.
+   */
+  foreignCriteria: string[];
 };
 
 function materialize(
@@ -190,12 +198,15 @@ function materialize(
       claimBindings: whoHasUnknownClaim
         ? []
         : bind(whoKept, "WHO") as SellerRelativeAssessmentV2["who"]["claimBindings"],
-      criteria: value.who.criteria.map((criterion) => {
+      criteria: value.who.criteria.flatMap((criterion) => {
         const requirement = byCriterion.get(criterion.criterionId);
-        if (!requirement) throw new Error(`foreign criterionId ${criterion.criterionId}`);
+        if (!requirement) {
+          integrity?.foreignCriteria.push(criterion.criterionId);
+          return [];
+        }
         const criterionKept = keepKnown(criterion.citations, `criterion:${criterion.criterionId}`);
         const criterionHasUnknownClaim = containsUnknownClaim(criterion.citations);
-        return {
+        return [{
           criterionId: criterion.criterionId,
           description: describeRequirementV2(requirement),
           mandatory: requirement.mandatory,
@@ -207,7 +218,7 @@ function materialize(
           claimBindings: criterionHasUnknownClaim
             ? []
             : bind(criterionKept, criterion.criterionId) as SellerRelativeAssessmentV2["who"]["criteria"][number]["claimBindings"],
-        };
+        }];
       }),
     },
     uncertainties: value.uncertainties, assessmentConfidence: value.assessmentConfidence,
@@ -231,7 +242,7 @@ export async function assessMarketFitV2(input: {
   });
   const attempts: AssessmentAttemptV2[] = [];
   let validationErrors: string[] = [];
-  let integrity: CitationIntegrityV2 = { citationsSeen: 0, citationsDropped: 0, droppedClaimIds: [], droppedBySection: [] };
+  let integrity: CitationIntegrityV2 = { citationsSeen: 0, citationsDropped: 0, droppedClaimIds: [], droppedBySection: [], foreignCriteria: [] };
   for (const attempt of [1, 2] as const) {
     const started = Date.now();
     const controller = new AbortController();
@@ -254,22 +265,25 @@ export async function assessMarketFitV2(input: {
       const base = { attempt, durationMs: Math.max(0, Date.now() - started), usage: response.usage ?? null, cost: Math.max(0, response.cost ?? 0) };
       try {
         const parsed = modelAssessmentSchema.parse(response.content);
-        integrity = { citationsSeen: 0, citationsDropped: 0, droppedClaimIds: [], droppedBySection: [] };
+        integrity = { citationsSeen: 0, citationsDropped: 0, droppedClaimIds: [], droppedBySection: [], foreignCriteria: [] };
         const assessment = normalizeAssessmentEvidenceV2(materialize(parsed, input.evidence, input.context, integrity), input.evidence, input.context);
         const grounded = validateAssessmentEvidenceV2(assessment, input.evidence, input.context);
         if (!grounded.ok) throw new Error(grounded.errors.join("; "));
         const abstained = citationAbstainedSectionsV2(grounded.assessment);
-        if (attempt === 1 && abstained.length) {
+        const foreign = [...new Set(integrity.foreignCriteria)];
+        if (attempt === 1 && (abstained.length || foreign.length)) {
           const invented = [...new Set(integrity.droppedClaimIds)];
           validationErrors = [
-            `These sections cited atomic claim IDs absent from the supplied evidence, so their verdicts were discarded: ${abstained.join(", ")}.`,
+            abstained.length ? `These sections cited atomic claim IDs absent from the supplied evidence, so their verdicts were discarded: ${abstained.join(", ")}.` : "",
             invented.length ? `Claim IDs that do not exist: ${invented.slice(0, 40).join(", ")}.` : "",
-            "Re-decide those sections citing only claimId values that appear verbatim in the supplied evidence, or return them as UNKNOWN / INSUFFICIENT_DATA with no citations at all.",
+            foreign.length ? `These criterionId values were not supplied and were discarded: ${foreign.join(", ")}. Return exactly the supplied ICP criteria — one entry per criterionId in icp.requirements — and no others.` : "",
+            abstained.length ? "Re-decide those sections citing only claimId values that appear verbatim in the supplied evidence, or return them as UNKNOWN / INSUFFICIENT_DATA with no citations at all." : "",
           ].filter(Boolean);
           attempts.push({ ...base, outcome: "CITATION_ABSTAINED" });
-          console.warn("V2_ASSESSMENT_CITATION_ABSTAINED", { sections: abstained, invented });
+          console.warn("V2_ASSESSMENT_CITATION_ABSTAINED", { sections: abstained, invented, foreignCriteria: foreign });
           continue;
         }
+        if (foreign.length) console.warn("V2_ASSESSMENT_FOREIGN_CRITERIA_DROPPED", { foreignCriteria: foreign });
         attempts.push({ ...base, outcome: "VALID" });
         if (integrity.citationsDropped) {
           console.warn("V2_ASSESSMENT_CITATION_DROPPED", {
