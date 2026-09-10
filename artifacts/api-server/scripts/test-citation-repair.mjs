@@ -206,4 +206,18 @@ const run = async (claimIdsByAttempt) => {
   }), (error) => error.code === "V2_ASSESSMENT_INVALID" && /missing supplied ICP criteria/.test(error.message));
 }
 
+// 9. Model calls are priced from the usage block, so the budget ceiling sees them.
+{
+  const usage = { prompt_tokens: 20_000, completion_tokens: 4_000, total_tokens: 24_000 };
+  const mini = v2.estimateModelCostUsd("gpt-5-mini", usage);
+  assert.ok(Math.abs(mini - (20_000 * 0.25 + 4_000 * 2) / 1e6) < 1e-9, `gpt-5-mini priced at list: ${mini}`);
+  assert.equal(v2.estimateModelCostUsd("gpt-5-mini-2025-08-07", usage), mini, "dated model names resolve by prefix");
+  assert.ok(v2.estimateModelCostUsd("gpt-5", usage) > mini, "gpt-5 costs more than mini");
+  assert.equal(v2.estimateModelCostUsd("some-future-model", usage), v2.estimateModelCostUsd("gpt-5", usage), "unknown models price as gpt-5, never as free");
+  assert.equal(v2.estimateModelCostUsd("gpt-5-mini", null), 0, "no usage, no charge");
+  assert.equal(v2.estimateModelCostUsd("gpt-5-mini", { input_tokens: 1_000_000 }), 0.25, "responses-API field names count too");
+  // The prompt itself now forbids invented criteria, so the repair pass is the exception, not the rule.
+  assert.match(v2.SELLER_RELATIVE_ASSESSMENT_SYSTEM_PROMPT, /exactly one entry per criterionId/, "prompt pins criteria to icp.requirements");
+}
+
 console.log("PASS citation-repair");

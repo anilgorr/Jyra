@@ -2,7 +2,7 @@ import { openai } from "@workspace/integrations-openai-ai-server";
 import { z } from "zod/v4";
 import {
   ASSESSMENT_MODEL, ASSESSMENT_POLICY_VERSION, ASSESSMENT_PROMPT_VERSION,
-  commercialRoles, researchRequirementSchema, whoValues,
+  commercialRoles, estimateModelCostUsd, researchRequirementSchema, whoValues,
   type CompanyIntelligenceProfileV2, type EvidenceItemV2, type SellerRelativeAssessmentV2, type SellerRelativeContextV2,
 } from "./schemas";
 import {
@@ -14,7 +14,8 @@ import { describeRequirementV2 } from "./icp-requirements";
 export const SELLER_RELATIVE_ASSESSMENT_SYSTEM_PROMPT = `Use only the immutable scoped evidence and seller context supplied. Return only the requested JSON.
 Decide CommercialRole and structural WHO together. Competition requires a material substitute for the specific offering; shared industry or vocabulary is not competition. WHO is structural ICP fit, not intent.
 Every factual non-abstaining role/WHO decision and every PASS/FAIL criterion must cite existing atomic claimId values with a compatible relation. Never create, alter, or infer claims or citations. UNKNOWN, INSUFFICIENT_DATA, and UNKNOWN criteria may have no citations. Reasons must be concise and must not add facts absent from cited claims.
-Criterion semantics: for an ordinary criterion PASS means the company satisfies it. For a criterion described as EXCLUSION, PASS means the company EXHIBITS the excluded characteristic (it is disqualified) and FAIL means evidence shows it does not; use UNKNOWN when evidence is silent. ICP GEOGRAPHY criteria are decided only by HEADQUARTERS or PRIMARY_OPERATING_GEOGRAPHY claims, never by office, customer or talent presence.`;
+Criterion semantics: for an ordinary criterion PASS means the company satisfies it. For a criterion described as EXCLUSION, PASS means the company EXHIBITS the excluded characteristic (it is disqualified) and FAIL means evidence shows it does not; use UNKNOWN when evidence is silent. ICP GEOGRAPHY criteria are decided only by HEADQUARTERS or PRIMARY_OPERATING_GEOGRAPHY claims, never by office, customer or talent presence.
+who.criteria must contain exactly one entry per criterionId listed in icp.requirements, using each criterionId verbatim, and no other entries. The seller's business description and sweet spot inform the WHO verdict but never add criteria of their own.`;
 
 const roleRelations = ["SUPPORTS_ROLE", "MATERIAL_SUBSTITUTE", "COMPLEMENTARY", "BUYER_CAPABILITY"] as const;
 const whoRelations = ["SUPPORTS_WHO", "SATISFIES_CRITERION", "FAILS_CRITERION"] as const;
@@ -103,7 +104,11 @@ const defaultInvoker: AssessmentInvokerV2 = async (input) => {
     response_format: { type: "json_schema", json_schema: input.responseSchema },
     messages: [{ role: "system", content: input.systemPrompt }, { role: "user", content: JSON.stringify(input.payload) }],
   }, { signal: input.signal });
-  return { content: JSON.parse(response.choices[0]?.message?.content ?? ""), usage: response.usage as unknown as Record<string, unknown> };
+  const usage = response.usage as unknown as Record<string, unknown> | undefined;
+  // Priced here, at the only place that sees the usage block, so the watch
+  // loop's budget ceiling counts model spend and not just provider spend.
+  // Ten cycles at two calls each reported $0 before this.
+  return { content: JSON.parse(response.choices[0]?.message?.content ?? ""), usage, cost: estimateModelCostUsd(input.model, usage) };
 };
 
 const sumUsage = (attempts: AssessmentAttemptV2[]) => {

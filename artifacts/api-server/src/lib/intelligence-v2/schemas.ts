@@ -3,10 +3,50 @@ import { z } from "zod/v4";
 export const INTELLIGENCE_CORE_VERSION = "JYRA_INTELLIGENCE_V2" as const;
 export const COMPANY_PROFILE_VERSION = "company-intelligence-profile-v2" as const;
 export const ASSESSMENT_POLICY_VERSION = "seller-relative-assessment-v2" as const;
-export const ASSESSMENT_PROMPT_VERSION = "seller-relative-who-role-v2" as const;
+// v3: tells the model to return exactly the supplied ICP criteria. Before
+// that, every company in the first scheduled ticks needed a second model call
+// to remove criteria the model had invented from the seller's sweet spot.
+export const ASSESSMENT_PROMPT_VERSION = "seller-relative-who-role-v3" as const;
 export const SAFETY_POLICY_VERSION = "market-fit-safety-v2" as const;
 export const ASSESSMENT_MODEL = "gpt-5-mini" as const;
 export const MAX_EXTERNAL_RESEARCH_CALLS = 6;
+
+/**
+ * OpenAI list prices, USD per million tokens. Cached input is charged at the
+ * full input rate here and reasoning tokens are already inside
+ * completion_tokens, so this rounds up — a budget ceiling should.
+ * Dated model names ("gpt-5-mini-2025-08-07") resolve by longest prefix.
+ */
+export const MODEL_PRICES_USD_PER_MILLION: Record<string, { input: number; output: number }> = {
+  "gpt-5": { input: 1.25, output: 10 },
+  "gpt-5-mini": { input: 0.25, output: 2 },
+  "gpt-5-nano": { input: 0.05, output: 0.4 },
+  "gpt-4.1": { input: 2, output: 8 },
+  "gpt-4.1-mini": { input: 0.4, output: 1.6 },
+  "gpt-4o": { input: 2.5, output: 10 },
+  "gpt-4o-mini": { input: 0.15, output: 0.6 },
+};
+
+const tokenCount = (usage: Record<string, unknown> | null | undefined, key: string): number => {
+  const value = usage?.[key];
+  return typeof value === "number" && Number.isFinite(value) && value > 0 ? value : 0;
+};
+
+/**
+ * What one model call cost, from its usage block. An unknown model is priced
+ * as gpt-5 — the most expensive entry — because under-counting spend is the
+ * one mistake a ceiling must not make.
+ */
+export function estimateModelCostUsd(model: string, usage: Record<string, unknown> | null | undefined): number {
+  const name = model.toLowerCase();
+  const key = Object.keys(MODEL_PRICES_USD_PER_MILLION)
+    .filter((candidate) => name === candidate || name.startsWith(`${candidate}-`))
+    .sort((a, b) => b.length - a.length)[0] ?? "gpt-5";
+  const price = MODEL_PRICES_USD_PER_MILLION[key];
+  const input = tokenCount(usage, "prompt_tokens") || tokenCount(usage, "input_tokens");
+  const output = tokenCount(usage, "completion_tokens") || tokenCount(usage, "output_tokens");
+  return (input * price.input + output * price.output) / 1_000_000;
+}
 
 const confidence = z.number().finite().min(0).max(1);
 const evidenceIds = z.array(z.string().min(1)).max(30);
