@@ -1718,6 +1718,74 @@ export interface BusinessTwinClaim {
   isAssumption: boolean;
 }
 
+export type BusinessTwinSuggestionRequestBusinessMaturityStage = typeof BusinessTwinSuggestionRequestBusinessMaturityStage[keyof typeof BusinessTwinSuggestionRequestBusinessMaturityStage];
+
+
+export const BusinessTwinSuggestionRequestBusinessMaturityStage = {
+  PRE_LAUNCH: 'PRE_LAUNCH',
+  LAUNCHED_NO_CUSTOMERS: 'LAUNCHED_NO_CUSTOMERS',
+  EARLY_CUSTOMERS: 'EARLY_CUSTOMERS',
+  REPEATABLE_SALES: 'REPEATABLE_SALES',
+  ESTABLISHED: 'ESTABLISHED',
+} as const;
+
+export interface BusinessTwinSuggestionRequest {
+  /**
+     * @minLength 1
+     * @maxLength 200
+     */
+  companyName: string;
+  /** @maxLength 500 */
+  website: string;
+  /**
+     * @minLength 1
+     * @maxLength 500
+     */
+  offeringOneLiner: string;
+  businessMaturityStage: BusinessTwinSuggestionRequestBusinessMaturityStage;
+}
+
+export interface BusinessTwinSuggestionItem {
+  id: string;
+  /** @maxLength 500 */
+  text: string;
+}
+
+/**
+ * LIST joins accepted items one per line; PARAGRAPH joins them into one paragraph.
+ */
+export type BusinessTwinSuggestionSectionMode = typeof BusinessTwinSuggestionSectionMode[keyof typeof BusinessTwinSuggestionSectionMode];
+
+
+export const BusinessTwinSuggestionSectionMode = {
+  LIST: 'LIST',
+  PARAGRAPH: 'PARAGRAPH',
+} as const;
+
+export interface BusinessTwinSuggestionSection {
+  /** The BusinessTwinRawAnswers field the accepted items are written to. */
+  field: string;
+  title: string;
+  /** The question this section answers, in the seller's terms. */
+  prompt: string;
+  /** LIST joins accepted items one per line; PARAGRAPH joins them into one paragraph. */
+  mode: BusinessTwinSuggestionSectionMode;
+  /** @maxItems 12 */
+  items: BusinessTwinSuggestionItem[];
+}
+
+export interface BusinessTwinSuggestions {
+  /** @maxLength 200 */
+  offeringName: string;
+  /** @maxLength 200 */
+  industry: string;
+  /** @maxLength 200 */
+  primaryGeography: string;
+  sections: BusinessTwinSuggestionSection[];
+  model: string;
+  promptVersion: string;
+}
+
 export interface BusinessTwinInterpretation {
   /** @maxLength 3000 */
   offering_summary: string;

@@ -9,10 +9,10 @@ export function EmptyState({ onStart }: { onStart: () => void }) {
       </div>
       <h1 className="text-3xl font-display font-semibold text-foreground mb-4">Build Your Business Twin</h1>
       <p className="text-lg text-muted-foreground mb-8 text-balance">
-        The Business Twin acts as a foundational model of your go-to-market motion. By providing deep, structured context tailored to your company's maturity stage, you enable JYRA to interpret opportunities with analytical precision.
+        Four questions — who you are, your website, what you sell, and how far along you are. JYRA drafts everything else as a checklist you tick, edit and accept. Every score in the app is measured against this, so it's worth five minutes.
       </p>
       <Button size="lg" onClick={onStart} className="rounded-full px-8 bg-sidebar-accent hover:bg-sidebar-accent/90 text-sidebar-accent-foreground">
-        Begin Setup <ArrowRight className="ml-2 h-4 w-4" />
+        Start with four questions <ArrowRight className="ml-2 h-4 w-4" />
       </Button>
     </div>
   );

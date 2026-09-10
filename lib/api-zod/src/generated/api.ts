@@ -2538,6 +2538,60 @@ export const RegenerateBusinessTwinResponse = zod.object({
 
 
 /**
+ * Takes the company name, website, a one-line description of what is sold and the business stage, and returns a checklist of candidate answers for every other Business Twin field. Nothing is saved; the seller ticks, edits and accepts, and the accepted items are submitted as raw answers to create a version.
+ * @summary Draft Business Twin options from four basics
+ */
+export const SuggestBusinessTwinParams = zod.object({
+  "projectId": zod.coerce.string()
+})
+
+export const suggestBusinessTwinBodyCompanyNameMax = 200;
+
+export const suggestBusinessTwinBodyWebsiteMax = 500;
+
+export const suggestBusinessTwinBodyOfferingOneLinerMax = 500;
+
+
+
+export const SuggestBusinessTwinBody = zod.object({
+  "companyName": zod.string().min(1).max(suggestBusinessTwinBodyCompanyNameMax),
+  "website": zod.string().max(suggestBusinessTwinBodyWebsiteMax),
+  "offeringOneLiner": zod.string().min(1).max(suggestBusinessTwinBodyOfferingOneLinerMax),
+  "businessMaturityStage": zod.enum(['PRE_LAUNCH', 'LAUNCHED_NO_CUSTOMERS', 'EARLY_CUSTOMERS', 'REPEATABLE_SALES', 'ESTABLISHED'])
+})
+
+export const suggestBusinessTwinResponseOfferingNameMax = 200;
+
+export const suggestBusinessTwinResponseIndustryMax = 200;
+
+export const suggestBusinessTwinResponsePrimaryGeographyMax = 200;
+
+export const suggestBusinessTwinResponseSectionsItemItemsItemTextMax = 500;
+
+export const suggestBusinessTwinResponseSectionsItemItemsMax = 12;
+
+
+
+export const SuggestBusinessTwinResponse = zod.object({
+  "offeringName": zod.string().max(suggestBusinessTwinResponseOfferingNameMax),
+  "industry": zod.string().max(suggestBusinessTwinResponseIndustryMax),
+  "primaryGeography": zod.string().max(suggestBusinessTwinResponsePrimaryGeographyMax),
+  "sections": zod.array(zod.object({
+  "field": zod.string().describe('The BusinessTwinRawAnswers field the accepted items are written to.'),
+  "title": zod.string(),
+  "prompt": zod.string().describe('The question this section answers, in the seller\'s terms.'),
+  "mode": zod.enum(['LIST', 'PARAGRAPH']).describe('LIST joins accepted items one per line; PARAGRAPH joins them into one paragraph.'),
+  "items": zod.array(zod.object({
+  "id": zod.string(),
+  "text": zod.string().max(suggestBusinessTwinResponseSectionsItemItemsItemTextMax)
+})).max(suggestBusinessTwinResponseSectionsItemItemsMax)
+})),
+  "model": zod.string(),
+  "promptVersion": zod.string()
+})
+
+
+/**
  * Creates a new immutable version carrying the selected version's raw answers and manually refined interpretation.
  * @summary Save manual Business Twin interpretation refinements
  */

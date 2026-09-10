@@ -26,6 +26,8 @@ import type {
   AdminQualityDashboard,
   BadRequestResponse,
   BusinessTwinManualInterpretationInput,
+  BusinessTwinSuggestionRequest,
+  BusinessTwinSuggestions,
   BusinessTwinVersion,
   BusinessTwinVersionInput,
   CapabilityPhase,
@@ -1651,6 +1653,79 @@ export const useRegenerateBusinessTwin = <TError = ErrorType<UnauthorizedRespons
         TContext
       > => {
       return useMutation(getRegenerateBusinessTwinMutationOptions(options));
+    }
+
+export const getSuggestBusinessTwinUrl = (projectId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/business-twin/suggestions`
+}
+
+/**
+ * Takes the company name, website, a one-line description of what is sold and the business stage, and returns a checklist of candidate answers for every other Business Twin field. Nothing is saved; the seller ticks, edits and accepts, and the accepted items are submitted as raw answers to create a version.
+ * @summary Draft Business Twin options from four basics
+ */
+export const suggestBusinessTwin = async (projectId: string,
+    businessTwinSuggestionRequest: BusinessTwinSuggestionRequest, options?: Parameters<typeof customFetch>[1]): Promise<BusinessTwinSuggestions> => {
+
+  return customFetch<BusinessTwinSuggestions>(getSuggestBusinessTwinUrl(projectId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(businessTwinSuggestionRequest)
+  }
+);}
+
+
+
+
+
+export const getSuggestBusinessTwinMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | InterpretationUnavailableResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof suggestBusinessTwin>>, TError,{projectId: string;data: BodyType<BusinessTwinSuggestionRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof suggestBusinessTwin>>, TError,{projectId: string;data: BodyType<BusinessTwinSuggestionRequest>}, TContext> => {
+
+const mutationKey = ['suggestBusinessTwin'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof suggestBusinessTwin>>, {projectId: string;data: BodyType<BusinessTwinSuggestionRequest>}> = (props) => {
+          const {projectId,data} = props ?? {};
+
+          return  suggestBusinessTwin(projectId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SuggestBusinessTwinMutationResult = NonNullable<Awaited<ReturnType<typeof suggestBusinessTwin>>>
+    export type SuggestBusinessTwinMutationBody = BodyType<BusinessTwinSuggestionRequest>
+    export type SuggestBusinessTwinMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | InterpretationUnavailableResponse>
+
+    /**
+ * @summary Draft Business Twin options from four basics
+ */
+export const useSuggestBusinessTwin = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | InterpretationUnavailableResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof suggestBusinessTwin>>, TError,{projectId: string;data: BodyType<BusinessTwinSuggestionRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof suggestBusinessTwin>>,
+        TError,
+        {projectId: string;data: BodyType<BusinessTwinSuggestionRequest>},
+        TContext
+      > => {
+      return useMutation(getSuggestBusinessTwinMutationOptions(options));
     }
 
 export const getUpdateBusinessTwinInterpretationUrl = (projectId: string,

@@ -12,6 +12,8 @@ import {
   ListBusinessTwinVersionsResponse,
   RegenerateBusinessTwinParams,
   RegenerateBusinessTwinResponse,
+  SuggestBusinessTwinParams,
+  SuggestBusinessTwinResponse,
   UpdateBusinessTwinInterpretationBody,
   UpdateBusinessTwinInterpretationParams,
   UpdateBusinessTwinInterpretationResponse,
@@ -30,6 +32,11 @@ import {
   BusinessTwinInterpretationError,
   interpretBusinessTwin,
 } from "../lib/business-twin-interpreter";
+import {
+  BusinessTwinSuggestionError,
+  businessTwinSuggestionRequestSchema,
+  suggestBusinessTwin,
+} from "../lib/business-twin-suggester";
 import {
   buildBusinessTwinEvidence,
   businessTwinInterpretationSchema,
@@ -327,6 +334,40 @@ router.get(
       return;
     }
     res.json(GetBusinessTwinVersionResponse.parse(versionPayload(version)));
+  }),
+);
+
+/**
+ * Four facts in, a checklist out. Nothing is saved here: the seller ticks,
+ * edits and accepts in the client, and the accepted items arrive at
+ * POST /business-twin/versions as ordinary raw answers.
+ */
+router.post(
+  "/projects/:projectId/business-twin/suggestions",
+  requireAuth,
+  asyncRoute(async (req, res) => {
+    const params = SuggestBusinessTwinParams.safeParse(req.params);
+    const body = businessTwinSuggestionRequestSchema.safeParse(req.body);
+    if (!params.success || !body.success) {
+      res.status(400).json({ error: "Enter the company name, what you sell, and the business stage" });
+      return;
+    }
+    const access = await authorizeProject(getAuthenticatedUserId(res), params.data.projectId);
+    if (!access.project) {
+      denyProjectAccess(res, access.status ?? 404);
+      return;
+    }
+    try {
+      const suggestions = await suggestBusinessTwin(body.data);
+      res.json(SuggestBusinessTwinResponse.parse(suggestions));
+    } catch (error) {
+      if (error instanceof BusinessTwinSuggestionError) {
+        req.log.warn({ err: error }, "Business Twin suggestion failed validation");
+        res.status(502).json({ error: "JYRA could not draft the Business Twin. Nothing was saved; please try again." });
+        return;
+      }
+      throw error;
+    }
   }),
 );
 
