@@ -10,6 +10,10 @@ import type { SignalContextSnapshot } from './signalContextSnapshot';
 export interface Signal {
   id: string;
   companyId: string;
+  projectCompanyId: string;
+  companyName: string;
+  /** @nullable */
+  domain: string | null;
   projectId: string;
   code: string;
   name: string;

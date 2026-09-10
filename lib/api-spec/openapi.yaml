@@ -4178,6 +4178,9 @@ components:
       properties:
         id: { type: string }
         companyId: { type: string }
+        projectCompanyId: { type: string }
+        companyName: { type: string }
+        domain: { type: ["string", "null"] }
         projectId: { type: string }
         code: { type: string }
         name: { type: string }
@@ -4201,7 +4204,7 @@ components:
         createdAt: { type: string, format: date-time }
         ruleVersion: { type: string }
         lastEvaluatedAt: { type: string, format: date-time }
-      required: [id, companyId, projectId, code, name, description, polarity, category, contextSnapshot, supportingFactIds, supportingEvidenceIds, effectiveDate, originalStrength, currentStrength, confidence, status, needImpact, timingImpact, fitImpact, generationMethod, generatorVersion, observedAt, createdAt, ruleVersion, lastEvaluatedAt]
+      required: [id, companyId, projectCompanyId, companyName, domain, projectId, code, name, description, polarity, category, contextSnapshot, supportingFactIds, supportingEvidenceIds, effectiveDate, originalStrength, currentStrength, confidence, status, needImpact, timingImpact, fitImpact, generationMethod, generatorVersion, observedAt, createdAt, ruleVersion, lastEvaluatedAt]
     SignalPack:
       type: object
       properties:

@@ -4691,6 +4691,9 @@ export const listProjectSignalsResponseEffectiveDateRegExp = new RegExp('^\\d{4}
 export const ListProjectSignalsResponseItem = zod.object({
   "id": zod.string(),
   "companyId": zod.string(),
+  "projectCompanyId": zod.string(),
+  "companyName": zod.string(),
+  "domain": zod.string().nullable(),
   "projectId": zod.string(),
   "code": zod.string(),
   "name": zod.string(),
@@ -4805,6 +4808,9 @@ export const EvaluateProjectSignalsResponse = zod.object({
   "signals": zod.array(zod.object({
   "id": zod.string(),
   "companyId": zod.string(),
+  "projectCompanyId": zod.string(),
+  "companyName": zod.string(),
+  "domain": zod.string().nullable(),
   "projectId": zod.string(),
   "code": zod.string(),
   "name": zod.string(),

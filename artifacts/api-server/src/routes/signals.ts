@@ -52,7 +52,22 @@ async function authorize(userId: string, projectId: string, projectCompanyId?: s
   return { project, rows: await query };
 }
 
-function signalPayload(row: { signal: typeof signalsTable.$inferSelect; definition: typeof signalDefinitionsTable.$inferSelect }) {
+const signalSelection = {
+  signal: signalsTable,
+  definition: signalDefinitionsTable,
+  company: { canonicalName: companiesTable.canonicalName, domain: companiesTable.domain },
+  projectCompany: { id: projectCompaniesTable.id },
+};
+
+// A signal is about a company; a card that cannot say which one, or link to
+// it, is a headline with no subject. The company row rides along so the feed
+// can name the target and deep-link to its page.
+function signalPayload(row: {
+  signal: typeof signalsTable.$inferSelect;
+  definition: typeof signalDefinitionsTable.$inferSelect;
+  company: { canonicalName: string; domain: string | null };
+  projectCompany: { id: string };
+}) {
   const definitionSnapshot = (row.signal.contextSnapshot as {
     definition?: {
       code?: string;
@@ -65,6 +80,9 @@ function signalPayload(row: { signal: typeof signalsTable.$inferSelect; definiti
   return {
     id: row.signal.id,
     companyId: row.signal.companyId,
+    projectCompanyId: row.projectCompany.id,
+    companyName: row.company.canonicalName,
+    domain: row.company.domain,
     projectId: row.signal.projectId,
     code: definitionSnapshot?.code ?? row.definition.code,
     name: definitionSnapshot?.name ?? row.definition.name,
@@ -97,8 +115,10 @@ router.get("/projects/:projectId/signals", requireAuth, asyncRoute(async (req, r
   const access = await authorize(getAuthenticatedUserId(res), params.data.projectId);
   if (!access.project) return void res.status(access.status).json({ error: access.status === 403 ? "Project access denied" : "Project not found" });
   await refreshProjectSignalDecay(params.data.projectId);
-  const rows = await db.select({ signal: signalsTable, definition: signalDefinitionsTable }).from(signalsTable)
+  const rows = await db.select(signalSelection).from(signalsTable)
     .innerJoin(signalDefinitionsTable, eq(signalsTable.signalDefinitionId, signalDefinitionsTable.id))
+    .innerJoin(companiesTable, eq(companiesTable.id, signalsTable.companyId))
+    .innerJoin(projectCompaniesTable, and(eq(projectCompaniesTable.projectId, signalsTable.projectId), eq(projectCompaniesTable.companyId, signalsTable.companyId)))
     .where(eq(signalsTable.projectId, params.data.projectId)).orderBy(desc(signalsTable.currentStrength), desc(signalsTable.effectiveDate));
   res.json(ListProjectSignalsResponse.parse(rows.map(signalPayload)));
 }));
@@ -207,8 +227,10 @@ router.post("/projects/:projectId/companies/:projectCompanyId/signals/evaluate",
     userId: getAuthenticatedUserId(res),
   });
   await generateWhyForOpportunity(opportunityEvaluation.opportunity.id, access.project.id);
-  const rows = await db.select({ signal: signalsTable, definition: signalDefinitionsTable }).from(signalsTable)
+  const rows = await db.select(signalSelection).from(signalsTable)
     .innerJoin(signalDefinitionsTable, eq(signalsTable.signalDefinitionId, signalDefinitionsTable.id))
+    .innerJoin(companiesTable, eq(companiesTable.id, signalsTable.companyId))
+    .innerJoin(projectCompaniesTable, and(eq(projectCompaniesTable.projectId, signalsTable.projectId), eq(projectCompaniesTable.companyId, signalsTable.companyId)))
     .where(and(eq(signalsTable.projectId, params.data.projectId), eq(signalsTable.companyId, row.company.id)))
     .orderBy(desc(signalsTable.currentStrength));
   res.json(EvaluateProjectSignalsResponse.parse({ evaluated: result.created.length, clustersEvaluated: clusterResult.evaluated, signals: rows.map(signalPayload) }));

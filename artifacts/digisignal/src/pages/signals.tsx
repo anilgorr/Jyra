@@ -342,7 +342,17 @@ function SignalCard({ signal }: { signal: Signal }) {
             </div>
             
             <div>
-              <h3 className="text-xl font-display font-medium text-foreground tracking-tight leading-snug">
+              {/* The subject comes first: a signal without its company is a headline with no noun. */}
+              <Link
+                href={`/companies/${signal.projectCompanyId}`}
+                className="inline-flex items-center gap-1.5 text-sm font-medium text-foreground hover:text-accent transition-colors"
+                data-testid={`link-signal-company-${signal.id}`}
+              >
+                <Building2 className="w-3.5 h-3.5 text-accent" />
+                {signal.companyName}
+                {signal.domain && <span className="text-muted-foreground font-normal">· {signal.domain}</span>}
+              </Link>
+              <h3 className="text-xl font-display font-medium text-foreground tracking-tight leading-snug mt-1">
                 {signal.name}
               </h3>
               <p className="text-muted-foreground text-sm leading-relaxed max-w-3xl mt-1.5">
@@ -444,9 +454,9 @@ function SignalCard({ signal }: { signal: Signal }) {
             
             <div className="w-px h-4 bg-border mx-1" />
             <Button variant="outline" size="sm" className="h-8 gap-1.5" asChild>
-               <Link href="/companies">
+               <Link href={`/companies/${signal.projectCompanyId}`} data-testid={`link-signal-target-${signal.id}`}>
                 <Building2 className="w-3.5 h-3.5" />
-                View Target
+                View {signal.companyName}
               </Link>
             </Button>
           </div>
