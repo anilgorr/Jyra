@@ -11,6 +11,7 @@ import {
   Wrench,
   RadioTower,
   ShieldCheck,
+  Radar,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuthSession } from "@/lib/auth";
@@ -30,6 +31,7 @@ export const navItems = [
   { href: "/opportunities", label: "Opportunities", icon: Target },
   { href: "/research", label: "Research", icon: BookOpen },
   { href: "/signals", label: "Signals", icon: RadioTower },
+  { href: "/changes", label: "What changed", icon: Radar },
   { href: "/business-twin", label: "Business Twin", icon: Workflow },
   { href: "/icp", label: "Dynamic ICP", icon: Crosshair },
 ];

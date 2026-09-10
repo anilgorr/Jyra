@@ -20,6 +20,8 @@ import discoveryRouter from "./discovery";
 import adminQualityRouter from "./admin-quality";
 import intelligenceV2Router from "./intelligence-v2";
 import marketReadinessRouter from "./market-readiness";
+import watchLoopRouter from "./watch-loop";
+import changesRouter from "./changes";
 
 const router: IRouter = Router();
 
@@ -43,6 +45,8 @@ router.use(learningRouter);
 router.use(discoveryRouter);
 router.use(adminQualityRouter);
 router.use(intelligenceV2Router);
+router.use(watchLoopRouter);
+router.use(changesRouter);
 router.use(marketReadinessRouter);
 
 export default router;

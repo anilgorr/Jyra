@@ -44,9 +44,20 @@ function matches(definition: SignalDefinition, fact: CompanyFact): boolean {
   return !configuration.matchAny?.length || configuration.matchAny.some((pattern) => new RegExp(pattern, "i").test(text));
 }
 
+/**
+ * Which facts support which definitions.
+ *
+ * A fact below the definition's minimum confidence neither counts toward it
+ * nor blocks it. The previous rule took the MINIMUM confidence across every
+ * matching fact and compared that to the threshold, so one stale article
+ * about a breach — third-party, uncorroborated, scoring 55 — suppressed a
+ * signal that the company's own disclosure at 70 had earned. More evidence
+ * made the signal less likely to fire. Now the threshold is applied per fact
+ * first, and the signal's own confidence is the best support it has.
+ */
 export function detectSignalCandidates(facts: FactWithEvidence[], definitions: SignalDefinition[]): SignalCandidate[] {
   return definitions.flatMap((definition) => {
-    const matching = facts.filter((fact) => matches(definition, fact));
+    const matching = facts.filter((fact) => matches(definition, fact) && fact.confidence >= definition.minimumConfidence);
     const configuration = definition.configuration as { mode?: string; minFacts?: number };
     if (configuration.mode === "increasing_count") {
       const hiring = matching
@@ -56,12 +67,12 @@ export function detectSignalCandidates(facts: FactWithEvidence[], definitions: S
       const previous = count(hiring.at(-2)!);
       const latest = count(hiring.at(-1)!);
       if (previous === undefined || latest === undefined || latest <= previous) return [];
-      return [{ definition, facts: hiring, effectiveDate: hiring.map((fact) => fact.effectiveDate).sort().at(-1)!, confidence: Math.min(...hiring.map((fact) => fact.confidence)) }];
+      return [{ definition, facts: hiring, effectiveDate: hiring.map((fact) => fact.effectiveDate).sort().at(-1)!, confidence: Math.max(...hiring.map((fact) => fact.confidence)) }];
     }
     if (matching.length < (configuration.minFacts ?? 1)) return [];
     const latest = matching.map((fact) => fact.effectiveDate).sort().at(-1)!;
-    return [{ definition, facts: matching, effectiveDate: latest, confidence: Math.min(...matching.map((fact) => fact.confidence)) }];
-  }).filter((candidate) => candidate.confidence >= candidate.definition.minimumConfidence);
+    return [{ definition, facts: matching, effectiveDate: latest, confidence: Math.max(...matching.map((fact) => fact.confidence)) }];
+  });
 }
 
 export function recalculateSignalStrength(originalStrength: number, effectiveDate: string, lifetimeDays: number, decayRule: string, now = new Date()): { currentStrength: number; status: "ACTIVE" | "STALE" } {

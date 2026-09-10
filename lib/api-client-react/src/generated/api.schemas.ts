@@ -3209,6 +3209,77 @@ export interface ResearchEconomicsSummary {
   buyersFound: number;
 }
 
+export interface ChangeEvidenceRef {
+  evidenceId: string;
+  sourceType: string;
+  title: string;
+  url: string | null;
+  version: string;
+}
+
+export type ChangeVerdictCriteria = {[key: string]: string};
+
+export interface ChangeVerdict {
+  commercialRole: string;
+  who: string;
+  criteria: ChangeVerdictCriteria;
+}
+
+export interface ChangeScore {
+  score: number | null;
+  fit: number | null;
+  need: number | null;
+  timing: number | null;
+  state: string | null;
+}
+
+export type ProjectChangeTrigger = typeof ProjectChangeTrigger[keyof typeof ProjectChangeTrigger];
+
+
+export const ProjectChangeTrigger = {
+  MANUAL: 'MANUAL',
+  SCHEDULED: 'SCHEDULED',
+} as const;
+
+export interface ProjectChange {
+  id: string;
+  projectCompanyId: string;
+  companyId: string;
+  companyName: string;
+  domain: string | null;
+  trigger: ProjectChangeTrigger;
+  observedAt: string;
+  hasChanges: boolean;
+  profileChanged: boolean;
+  verdictChanged: boolean;
+  scoreChanged: boolean;
+  evidenceAdded: ChangeEvidenceRef[];
+  evidenceRemoved: ChangeEvidenceRef[];
+  evidenceChanged: ChangeEvidenceRef[];
+  verdictBefore: ChangeVerdict | null;
+  verdictAfter: ChangeVerdict;
+  scoreBefore: ChangeScore | null;
+  scoreAfter: ChangeScore | null;
+  factsAdded: number;
+  signalsCreated: number;
+  modelCalls: number;
+  costTotal: number;
+}
+
+export type ProjectChangeFeedSummary = {
+  /** Cycles in the window, including quiet ones. */
+  cyclesTotal: number;
+  cyclesWithChanges: number;
+  companiesWatched: number;
+  lastCycleAt: string | null;
+  spendUsd: number;
+};
+
+export interface ProjectChangeFeed {
+  items: ProjectChange[];
+  summary: ProjectChangeFeedSummary;
+}
+
 export type SignalContextSnapshot = { [key: string]: unknown };
 
 export interface Signal {
@@ -4284,6 +4355,22 @@ days?: number;
 export type CommitCompanyImport409 = {
   error: string;
   needsReview: number;
+};
+
+export type ListProjectChangesParams = {
+/**
+ * Omit cycles in which nothing changed.
+ */
+onlyChanges?: boolean;
+/**
+ * Only cycles observed at or after this time.
+ */
+since?: string;
+/**
+ * @minimum 1
+ * @maximum 200
+ */
+limit?: number;
 };
 
 export type ActivateOpportunityPack200 = { [key: string]: unknown };

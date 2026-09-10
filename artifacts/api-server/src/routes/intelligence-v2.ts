@@ -10,42 +10,14 @@ import {
 import {
   companiesTable,
   db,
-  icpCriteriaTable,
   organizationMembersTable,
   projectCompaniesTable,
   projectsTable,
 } from "@workspace/db";
-import { evaluateOpportunity } from "../lib/opportunity-engine";
-import { ProviderRouter } from "../lib/provider-router";
-import { resolveProjectSellerContext } from "../lib/seller-context";
-import {
-  orchestrateIntelligenceV2,
-  type IntelligenceV2Result,
-} from "../lib/intelligence-v2/orchestrator";
-import { createProviderRouterResearchInvokerV2 } from "../lib/intelligence-v2/research-company";
 import { PostgresIntelligenceV2Repository } from "../lib/intelligence-v2/repository";
-import { icpCriteriaToRequirementsV2 } from "../lib/intelligence-v2/icp-requirements";
-import {
-  loadLatestIntelligenceV2Assessment,
-  persistIntelligenceV2Assessment,
-} from "../lib/intelligence-v2/persist-assessment";
-import { persistIntelligenceV2Evidence } from "../lib/intelligence-v2/persist-evidence";
-import { mapJobsToFacts, persistJobFacts } from "../lib/intelligence-v2/job-facts";
-import {
-  atsHandleFromProfileUrls,
-  atsHandleToProfileUrls,
-  discoverAtsHandle,
-  fetchAtsJobs,
-} from "../lib/intelligence-v2/ats-boards";
-import { evaluateSignalsForCompany } from "../lib/signal-packs";
-import {
-  ASSESSMENT_POLICY_VERSION,
-  ASSESSMENT_PROMPT_VERSION,
-  COMPANY_PROFILE_VERSION,
-  INTELLIGENCE_CORE_VERSION,
-  SAFETY_POLICY_VERSION,
-  type EvidenceItemV2,
-} from "../lib/intelligence-v2/schemas";
+import { loadLatestIntelligenceV2Assessment } from "../lib/intelligence-v2/persist-assessment";
+import { runIntelligenceCycle, SellerContextIncompleteError, type CompactRun } from "../lib/intelligence-v2/run-cycle";
+import { INTELLIGENCE_CORE_VERSION } from "../lib/intelligence-v2/schemas";
 import { getAuthenticatedUserId, requireAuth } from "../middlewares/auth";
 
 const router: IRouter = Router();
@@ -53,15 +25,11 @@ type AsyncHandler = (...args: Parameters<RequestHandler>) => Promise<void>;
 const asyncRoute = (handler: AsyncHandler): RequestHandler =>
   (req, res, next) => void handler(req, res, next).catch(next);
 
-// The research/profile/assessment caches stay process-private (they hold raw
-// provider payloads). Completed run outcomes are persisted to
-// intelligence_v2_assessments; `latestRuns` remains as the hot path for the
-// development panel within one process.
 // Durable across restarts and deploys. The in-memory repository this replaced
 // meant every wake of a sleeping host began with an empty cache, so research
 // re-ran and — with request-bound evidence IDs — the model was asked again.
 const repository = new PostgresIntelligenceV2Repository();
-const latestRuns = new Map<string, ReturnType<typeof compactRun>>();
+const latestRuns = new Map<string, CompactRun>();
 const keyFor = (projectId: string, projectCompanyId: string) => `${projectId}:${projectCompanyId}`;
 /** The legacy evidence model is canonical-company scoped. It is never an
  * authorized V2 seed because there is no project-private provenance relation. */
@@ -89,76 +57,6 @@ async function resolveOwnedCompany(userId: string, projectId: string, projectCom
       eq(projectCompaniesTable.projectId, projectId),
     )).limit(1);
   return row ?? null;
-}
-
-function compactRun(
-  result: IntelligenceV2Result,
-  projectCompanyId: string,
-  contextVersions: { businessTwin: string; offering: string; icp: string },
-  evidence: EvidenceItemV2[],
-) {
-  return {
-    intelligenceVersion: result.intelligenceVersion,
-    projectId: result.profile.projectId,
-    projectCompanyId,
-    companyId: result.profile.companyId,
-    companyName: result.profile.companyName,
-    domain: result.profile.domain,
-    createdAt: result.profile.createdAt,
-    identity: result.profile.identity,
-    primaryBusiness: result.profile.primaryBusiness,
-    commercialRole: {
-      value: result.assessment.commercialRole.value,
-      confidence: result.assessment.commercialRole.confidence,
-      reason: result.assessment.commercialRole.reason,
-      evidenceIds: result.assessment.commercialRole.evidenceIds,
-      claimIds: result.assessment.commercialRole.claimIds,
-      claimBindings: result.assessment.commercialRole.claimBindings,
-    },
-    who: {
-      value: result.assessment.who.value,
-      confidence: result.assessment.who.confidence,
-      reason: result.assessment.who.reason,
-      evidenceIds: result.assessment.who.evidenceIds,
-      claimIds: result.assessment.who.claimIds,
-      claimBindings: result.assessment.who.claimBindings,
-      criteria: result.assessment.who.criteria,
-    },
-    assessmentConfidence: result.assessment.assessmentConfidence,
-    resolutionType: result.assessment.resolutionType,
-    deterministicOverrides: result.assessment.deterministicOverrides,
-    unknownFacts: result.profile.unknownFields,
-    evidence: evidence.map((item) => ({
-      evidenceId: item.evidenceId,
-      sourceType: item.sourceType,
-      provider: item.provider,
-      url: item.url,
-      title: item.title,
-      observedAt: item.observedAt,
-      statement: item.rawSnippet,
-      firstParty: item.firstParty,
-      confidence: item.confidence,
-      version: item.version,
-    })),
-    cost: {
-      provider: result.observability.providerCost,
-      model: result.observability.modelCost,
-      total: result.observability.totalCost,
-      researchProviderCalls: result.observability.researchProviderCalls,
-      modelCalls: result.observability.modelCalls,
-    },
-    versions: {
-      profile: COMPANY_PROFILE_VERSION,
-      assessmentPolicy: ASSESSMENT_POLICY_VERSION,
-      assessmentPrompt: ASSESSMENT_PROMPT_VERSION,
-      safetyPolicy: SAFETY_POLICY_VERSION,
-      ...contextVersions,
-    },
-    fingerprints: {
-      profile: result.observability.profileFingerprint,
-      assessment: result.observability.assessmentFingerprint,
-    },
-  };
 }
 
 router.get("/projects/:projectId/companies/:projectCompanyId/intelligence-v2", requireAuth, asyncRoute(async (req, res) => {
@@ -194,209 +92,17 @@ router.post("/projects/:projectId/companies/:projectCompanyId/intelligence-v2", 
   const owned = await resolveOwnedCompany(getAuthenticatedUserId(res), params.data.projectId, params.data.projectCompanyId);
   if (!owned) return void res.status(404).json({ error: "Project company not found" });
 
-  const seller = await resolveProjectSellerContext(params.data.projectId, owned.project.organizationId);
-  if (!seller.businessTwinReady || !seller.offeringReady || !seller.icpReady
-    || !seller.businessTwinVersionId || !seller.icpVersionId) {
-    return void res.status(409).json({ error: `Current seller context is incomplete: ${seller.missingRequirements.join(", ")}` });
-  }
-  const criteria = await db.select().from(icpCriteriaTable).where(and(
-      eq(icpCriteriaTable.projectId, params.data.projectId),
-      eq(icpCriteriaTable.icpVersionId, seller.icpVersionId),
-      eq(icpCriteriaTable.accepted, true),
-    ));
-  const requirements = icpCriteriaToRequirementsV2(criteria);
-  const result = await orchestrateIntelligenceV2({
-    request: {
-      organizationId: owned.project.organizationId,
-      projectId: params.data.projectId,
-      companyId: owned.company.id,
-      companyName: owned.company.canonicalName,
-      domain: owned.company.domain,
-      source: "EXISTING_COMPANY",
-      firstPartyEvidence: legacySeedEvidenceForV2(),
-    },
-    context: {
-      organizationId: owned.project.organizationId,
-      projectId: params.data.projectId,
-      businessTwinVersion: seller.businessTwinVersionId,
-      offeringVersion: seller.opportunityPackVersionId ?? seller.context.fingerprint,
-      icpVersion: seller.icpVersionId,
-      sellerBusinessTwin: {
-        rawAnswers: seller.businessTwinRawAnswers,
-        interpretation: seller.businessTwinAiInterpretation,
-      },
-      offering: {
-        name: seller.context.offeringName,
-        description: seller.context.offeringDescription,
-        materialCapabilities: seller.context.offeringCapabilities,
-        exclusions: seller.context.offeringExclusions,
-      },
-      icp: { requirements, assumptions: seller.icpAssumptions },
-    },
-    repository,
-    researchInvoker: createProviderRouterResearchInvokerV2(new ProviderRouter()),
-  });
-  const run = compactRun(result, params.data.projectCompanyId, {
-    businessTwin: seller.businessTwinVersionId,
-    offering: seller.opportunityPackVersionId ?? seller.context.fingerprint,
-    icp: seller.icpVersionId,
-  }, result.evidence);
-  latestRuns.set(keyFor(params.data.projectId, params.data.projectCompanyId), run);
-  const completedAt = new Date();
-  // Hiring is the only event evidence JYRA gathers, and every signal definition
-  // keys on events — so this is what puts a number in Need and Timing. It runs
-  // outside the transaction because a provider call must never hold a row lock,
-  // and it is non-fatal: a search failure degrades the run, it does not fail it.
-  let jobFacts: Awaited<ReturnType<typeof mapJobsToFacts>> = { facts: [], skipped: [] };
-  let discoveredAtsHandle: ReturnType<typeof atsHandleFromProfileUrls> = null;
-  let jobSource = "NONE";
-  let atsDiscoveredVia: string | null = null;
+  let cycle: Awaited<ReturnType<typeof runIntelligenceCycle>>;
   try {
-    // The company's own applicant tracking system first. It is free, every row
-    // is a posting by construction, and the dates are exact rather than
-    // whatever a crawler inferred — search returned 21 pages for Zluri and VWO
-    // and not one of them was a job. Search stays as the fallback for companies
-    // with no discoverable board.
-    let handle = atsHandleFromProfileUrls(owned.company.profileUrls);
-    if (!handle) {
-      const discovered = await discoverAtsHandle(owned.company.domain, owned.company.canonicalName);
-      // Remember it, so the waterfall is walked once per company, not every run.
-      if (discovered) {
-        handle = discovered.handle;
-        discoveredAtsHandle = discovered.handle;
-        atsDiscoveredVia = discovered.via;
-      }
-    }
-    let postings: Awaited<ReturnType<typeof fetchAtsJobs>> = null;
-    if (handle) {
-      postings = await fetchAtsJobs(handle, owned.company.canonicalName);
-      if (postings?.length) jobSource = `ATS:${handle.kind}`;
-    }
-    if (!postings?.length) {
-      const jobs = await new ProviderRouter().getJobs({
-        requestId: `${params.data.projectCompanyId}:jobs`,
-        companyName: owned.company.canonicalName,
-        ...(owned.company.domain ? { domain: owned.company.domain } : {}),
-        limit: 25,
-      });
-      if (jobs.status === "success" && jobs.data?.jobs?.length) {
-        postings = jobs.data.jobs;
-        jobSource = `SEARCH:${jobs.providerId}`;
-      }
-    }
-    if (postings?.length) {
-      jobFacts = mapJobsToFacts(postings, {
-        companyName: owned.company.canonicalName,
-        now: completedAt,
-      });
-    }
-    req.log.info({
-      projectCompanyId: params.data.projectCompanyId,
-      jobSource,
-      atsBoard: handle?.boardUrl ?? null,
-      atsDiscoveredVia,
-      postingsReturned: postings?.length ?? 0,
-      factsUsable: jobFacts.facts.length,
-      skipped: jobFacts.skipped.map((entry) => entry.reason),
-    }, "JOB_EVENT_RESEARCH");
-  } catch (error) {
-    req.log.warn({ err: error, projectCompanyId: params.data.projectCompanyId }, "JOB_EVENT_RESEARCH_FAILED");
-  }
-  const persisted = await db.transaction(async (tx) => {
-    const row = await persistIntelligenceV2Assessment({
-      organizationId: owned.project.organizationId,
-      projectId: params.data.projectId,
-      projectCompanyId: params.data.projectCompanyId,
-      companyId: owned.company.id,
-      icpVersionId: seller.icpVersionId ?? null,
-      result,
-      runSnapshot: run,
-    }, tx);
-    // The verdict is the cheap half. Persist the evidence and atomic claims it
-    // rests on in the same transaction, so the audit trail outlives the request
-    // and facts/signals have a source to derive Need and Timing from.
-    const evidence = await persistIntelligenceV2Evidence({
-      companyId: owned.company.id,
-      companyDomain: owned.company.domain,
-      evidence: result.evidence,
-      now: completedAt,
-    }, tx);
-    req.log.info({
-      assessmentId: row.id,
-      evidenceInserted: evidence.inserted,
-      evidenceReused: evidence.reused,
-      evidenceSkipped: evidence.skipped,
-    }, "V2_EVIDENCE_PERSISTED");
-    if (discoveredAtsHandle) {
-      await tx.update(companiesTable).set({
-        profileUrls: { ...owned.company.profileUrls, ...atsHandleToProfileUrls(discoveredAtsHandle) },
-        updatedAt: completedAt,
-      }).where(eq(companiesTable.id, owned.company.id));
-    }
-    if (jobFacts.facts.length) {
-      const stored = await persistJobFacts({
-        organizationId: owned.project.organizationId,
-        companyId: owned.company.id,
-        companyDomain: owned.company.domain,
-        facts: jobFacts.facts,
-        now: completedAt,
-      }, tx);
-      req.log.info({ assessmentId: row.id, ...stored }, "JOB_FACTS_PERSISTED");
-    }
-    await tx.update(projectCompaniesTable).set({
-      researchStatus: "complete",
-      latestResearchAt: completedAt,
-      updatedAt: completedAt,
-    }).where(eq(projectCompaniesTable.id, params.data.projectCompanyId));
-    return row;
-  });
-  // Refresh the deterministic opportunity assessment so Today / Opportunities /
-  // Companies reflect this run immediately. Scoring is downstream of the
-  // persisted verdicts; its failure must never turn a completed run into an error.
-  // Signals are derived from facts, and the score is derived from signals, so
-  // this has to run before the re-score or the new hiring facts land a cycle late.
-  try {
-    await evaluateSignalsForCompany({
-      organizationId: owned.project.organizationId,
-      projectId: params.data.projectId,
-      companyId: owned.company.id,
-      now: completedAt,
+    cycle = await runIntelligenceCycle({
+      owned, repository, trigger: "MANUAL", actorId: getAuthenticatedUserId(res), log: req.log,
     });
   } catch (error) {
-    req.log.warn({ err: error, projectCompanyId: params.data.projectCompanyId }, "SIGNAL_EVALUATION_FAILED");
+    if (error instanceof SellerContextIncompleteError) return void res.status(409).json({ error: error.message });
+    throw error;
   }
-  try {
-    await evaluateOpportunity({
-      organizationId: owned.project.organizationId,
-      projectId: params.data.projectId,
-      projectCompanyId: params.data.projectCompanyId,
-      userId: getAuthenticatedUserId(res),
-      now: completedAt,
-    });
-  } catch (error) {
-    req.log.warn({
-      err: error,
-      assessmentId: persisted.id,
-      projectCompanyId: params.data.projectCompanyId,
-    }, "Opportunity re-evaluation after Intelligence Core V2 run failed; the persisted assessment is unaffected");
-  }
-  req.log.info({
-    assessmentId: persisted.id,
-    companyId: run.companyId,
-    intelligenceVersion: run.intelligenceVersion,
-    profileFingerprint: run.fingerprints.profile,
-    assessmentFingerprint: run.fingerprints.assessment,
-    evidenceCount: result.observability.evidenceCount,
-    researchProviderCalls: result.observability.researchProviderCalls,
-    modelCalls: result.observability.modelCalls,
-    commercialRole: run.commercialRole.value,
-    who: run.who.value,
-    confidence: result.assessment.assessmentConfidence,
-    deterministicOverrides: result.assessment.deterministicOverrides,
-    cost: run.cost.total,
-    duration: result.observability.durationMs,
-  }, "Completed development Intelligence Core V2 run");
-  res.json(AnalyzeCompanyIntelligenceV2Response.parse(run));
+  latestRuns.set(keyFor(params.data.projectId, params.data.projectCompanyId), cycle.run);
+  res.json(AnalyzeCompanyIntelligenceV2Response.parse(cycle.run));
 }));
 
 export default router;

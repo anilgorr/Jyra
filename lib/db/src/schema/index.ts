@@ -42,3 +42,4 @@ export * from "./recommendation-ledger";
 export * from "./market-readiness";
 export * from "./intelligence-v2-assessments";
 export * from "./intelligence-v2-cache";
+export * from "./intelligence-v2-changesets";

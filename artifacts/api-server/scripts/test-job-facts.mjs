@@ -171,4 +171,19 @@ check("confidence below a definition's floor produces no signal", () => {
     "weak evidence must not produce a confident timing claim");
 });
 
+check("a weak fact beside a strong one neither counts nor blocks", () => {
+  // Under the old rule the signal's confidence was the MINIMUM across every
+  // matching fact, so one uncorroborated article dragged a well-supported
+  // signal under its floor. More evidence made the signal less likely.
+  const { facts } = h.mapJobsToFacts([job(), job({ url: "https://jobs.example.com/kissflow/soc-analyst", title: "SOC Analyst" })], ctx());
+  const mixed = facts.map((row, index) => ({ ...asCompanyFact(row, index), confidence: index === 0 ? 40 : 82 }));
+  const [candidate] = h.detectSignalCandidates(mixed, DEFINITIONS.filter((d) => d.name === "SOC hiring"));
+  assert.ok(candidate, "the strong fact alone carries the signal");
+  assert.equal(candidate.facts.length, 1, "the weak fact is not listed as support");
+  assert.equal(candidate.confidence, 82);
+  const twoWeak = facts.map((row, index) => ({ ...asCompanyFact(row, index), confidence: 55 }));
+  const need2 = DEFINITIONS.filter((d) => d.name === "SOC hiring").map((d) => ({ ...d, configuration: { ...d.configuration, minFacts: 2 } }));
+  assert.deepEqual(h.detectSignalCandidates(twoWeak, need2), [], "minFacts counts only facts above the floor");
+});
+
 console.log(`\nJob postings to hiring signals: ${checks} checks passed.`);

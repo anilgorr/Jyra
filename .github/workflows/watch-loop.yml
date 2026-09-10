@@ -1,0 +1,51 @@
+# Wakes the API hourly and asks it to run one tick of the watch loop.
+#
+# The host sleeps when idle, so the first request pays a cold start; the
+# generous timeout covers that plus ten company cycles. Nothing here decides
+# what to run — the API's own budget ceiling and kill switch do. To pause the
+# loop, set JYRA_WATCH_LOOP_ENABLED=false on the API; to stop even the wake-ups,
+# disable this workflow.
+#
+# Secrets: JYRA_API_URL (e.g. https://jyra-api.onrender.com) and
+# JYRA_WATCH_LOOP_TOKEN (the same value the API holds).
+name: Watch loop
+
+on:
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: watch-loop
+  cancel-in-progress: false
+
+jobs:
+  tick:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Run one tick
+        env:
+          API_URL: ${{ secrets.JYRA_API_URL }}
+          TOKEN: ${{ secrets.JYRA_WATCH_LOOP_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${API_URL:-}" ] || [ -z "${TOKEN:-}" ]; then
+            echo "JYRA_API_URL and JYRA_WATCH_LOOP_TOKEN must be set as repository secrets" >&2
+            exit 1
+          fi
+          status=$(curl -sS -o /tmp/tick.json -w '%{http_code}' \
+            --retry 3 --retry-delay 20 --retry-all-errors --max-time 1500 \
+            -X POST "${API_URL%/}/api/internal/watch-loop/tick?wait=true" \
+            -H "Authorization: Bearer ${TOKEN}")
+          echo "HTTP ${status}"
+          cat /tmp/tick.json; echo
+          case "$status" in
+            200) ;;
+            409) echo "A tick was already running; nothing to do." ;;
+            *) exit 1 ;;
+          esac
+          if command -v jq >/dev/null && [ "$status" = "200" ]; then
+            jq -r '"due=\(.due) ran=\(.ran) changed=\(.changed) skipped=\(.skipped) failed=\(.failed) spent=$\(.spentUsd)"' /tmp/tick.json
+            [ "$(jq -r .failed /tmp/tick.json)" = "0" ] || { echo "::warning::some cycles failed"; }
+          fi

@@ -82,6 +82,7 @@ import type {
   LearningProposal,
   LearningProposalReview,
   ListLearningProposalsParams,
+  ListProjectChangesParams,
   ListRecommendationsParams,
   ListSignalClustersParams,
   MarketReadinessAdjudication,
@@ -119,6 +120,7 @@ import type {
   Organization,
   OrganizationInput,
   Project,
+  ProjectChangeFeed,
   ProjectCompany,
   ProjectCompanyUpdate,
   ProjectInput,
@@ -3831,6 +3833,96 @@ export const useExecuteCompanyResearch = <TError = ErrorType<UnauthorizedRespons
       > => {
       return useMutation(getExecuteCompanyResearchMutationOptions(options));
     }
+
+export const getListProjectChangesUrl = (projectId: string,
+    params?: ListProjectChangesParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/projects/${projectId}/changes?${stringifiedParams}` : `/api/projects/${projectId}/changes`
+}
+
+/**
+ * One entry per intelligence cycle per company. Entries where nothing moved are kept and can be filtered out.
+ * @summary What the watch loop and manual runs changed, newest first
+ */
+export const listProjectChanges = async (projectId: string,
+    params?: ListProjectChangesParams, options?: Parameters<typeof customFetch>[1]): Promise<ProjectChangeFeed> => {
+
+  return customFetch<ProjectChangeFeed>(getListProjectChangesUrl(projectId,params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListProjectChangesQueryKey = (projectId: string,
+    params?: ListProjectChangesParams,) => {
+    return [
+    `/api/projects/${projectId}/changes`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getListProjectChangesQueryOptions = <TData = Awaited<ReturnType<typeof listProjectChanges>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(projectId: string,
+    params?: ListProjectChangesParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listProjectChanges>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListProjectChangesQueryKey(projectId,params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listProjectChanges>>> = ({ signal }) => listProjectChanges(projectId,params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: projectId !== null && projectId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listProjectChanges>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListProjectChangesQueryResult = NonNullable<Awaited<ReturnType<typeof listProjectChanges>>>
+export type ListProjectChangesQueryError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+
+/**
+ * @summary What the watch loop and manual runs changed, newest first
+ */
+
+export function useListProjectChanges<TData = Awaited<ReturnType<typeof listProjectChanges>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(
+ projectId: string,
+    params?: ListProjectChangesParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listProjectChanges>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListProjectChangesQueryOptions(projectId,params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
 
 export const getListProjectSignalsUrl = (projectId: string,) => {
 

@@ -299,4 +299,72 @@ check("Ashby's cloud security opening survives into a fact", () => {
     "this is the text the Cloud-security-hiring definition matches on");
 });
 
+
+// ---------------------------------------------------------------------------
+// A slug is a guess, and the first full backfill proved it: "clearco" on
+// Ashby was Clearco the fintech, not ClearCompany; "navi" was Navi AI in San
+// Francisco, not navi.com. Both had real postings and both would have been
+// stored — then read as the company's own hiring, because the posting company
+// name matched the record's name exactly. These pin the corroboration gate.
+
+check("hostsIn pulls every host out of a payload, www stripped, deduplicated", () => {
+  const hosts = h.hostsIn('{"a":"https://www.zapier.com/jobs","b":"https://cdn.ashbyprd.com/x","c":"http://zapier.com/about","d":"https://help.zapier.com"}');
+  assert.deepEqual(hosts.sort(), ["cdn.ashbyprd.com", "help.zapier.com", "zapier.com"]);
+});
+
+check("hostMatchesDomain is exact or a subdomain, never a substring", () => {
+  assert.equal(h.hostMatchesDomain("zapier.com", "zapier.com"), true);
+  assert.equal(h.hostMatchesDomain("www.sep.com", "sep.com"), true);
+  assert.equal(h.hostMatchesDomain("careers.adda247.com", "adda247.com"), true);
+  assert.equal(h.hostMatchesDomain("flynavi.com", "navi.com"), false, "Navi AI is not navi.com");
+  assert.equal(h.hostMatchesDomain("clear.co", "clearcompany.com"), false);
+  assert.equal(h.hostMatchesDomain("navi.com.evil.example", "navi.com"), false);
+});
+
+check("a board that links back to the company domain is corroborated", () => {
+  const result = h.corroborateSlugBoard({
+    companyName: "Smallstep", domain: "smallstep.com",
+    payloadText: '{"jobs":[{"title":"Forward Deployed Engineer"}]}',
+    boardHtml: '<html><a href="https://smallstep.com">Smallstep</a></html>',
+    boardOwnerName: null,
+  });
+  assert.deepEqual(result, { verified: true, how: "DOMAIN_LINK" });
+});
+
+check("a board whose platform names this company as owner is corroborated", () => {
+  const result = h.corroborateSlugBoard({
+    companyName: "Anaxee Digital Runners Private Limited", domain: "anaxee.com",
+    payloadText: '{"content":[{"name":"Cloud Engineer"}]}', boardHtml: null,
+    boardOwnerName: "AnaxeeDigitalRunnersPrivateLimited",
+  });
+  assert.equal(result.verified, true);
+  assert.equal(result.how, "OWNER_NAME");
+  assert.equal(h.corroborateSlugBoard({ companyName: "Atomic Object", domain: "atomicobject.com", payloadText: "{}", boardHtml: null, boardOwnerName: "Atomic Object" }).how, "OWNER_NAME");
+});
+
+check("same name, different company: the slug hit is refused", () => {
+  const navi = h.corroborateSlugBoard({
+    companyName: "Navi", domain: "navi.com",
+    payloadText: '{"jobs":[{"title":"Founding Software Engineer","descriptionPlain":"Navi is building AI for flight ops. See flynavi.com"}]}',
+    boardHtml: '<title>Navi AI Jobs</title><a href="https://www.flynavi.com">flynavi</a>',
+    boardOwnerName: null,
+  });
+  assert.deepEqual(navi, { verified: false, how: null });
+  const clearco = h.corroborateSlugBoard({
+    companyName: "ClearCo", domain: "clearcompany.com",
+    payloadText: '{"jobs":[{"title":"Account Manager, Founder Success"}]}',
+    boardHtml: '<title>Clearco Jobs</title><a href="https://clear.co">clear.co</a>',
+    boardOwnerName: null,
+  });
+  assert.deepEqual(clearco, { verified: false, how: null });
+});
+
+check("owner-name corroboration is exact after normalisation, not fuzzy", () => {
+  assert.equal(h.corroborateSlugBoard({ companyName: "ClearCo", domain: "clearcompany.com", payloadText: "{}", boardHtml: null, boardOwnerName: "Clearco" }).verified, true,
+    "identical names do corroborate — that is precisely why the domain check comes first and the record's own name is the weak link");
+  assert.equal(h.corroborateSlugBoard({ companyName: "Navi", domain: "navi.com", payloadText: "{}", boardHtml: null, boardOwnerName: "Navigator Systems" }).verified, false);
+  assert.equal(h.corroborateSlugBoard({ companyName: "Kissflow", domain: null, payloadText: "https://kissflow.com", boardHtml: null, boardOwnerName: null }).verified, false,
+    "no domain on the record: the domain rung cannot fire");
+});
+
 console.log(`\nATS boards: ${checks} checks passed.`);

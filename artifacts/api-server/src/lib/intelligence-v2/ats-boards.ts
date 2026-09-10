@@ -1,4 +1,5 @@
 import type { JobPosting } from "./job-facts";
+import { normalizeCompanyName } from "./company-name";
 
 /**
  * Applicant tracking systems, read directly.
@@ -397,6 +398,88 @@ async function getText(url: string, accept: string): Promise<string | null> {
  * again and a company whose brand differs from its hiring entity (VWO's board
  * lives under Wingify) never has to be reconciled by name a second time.
  */
+/** Every hostname mentioned in a blob of text, lower-cased, "www." dropped. */
+export function hostsIn(text: string): string[] {
+  const hosts = new Set<string>();
+  for (const match of text.toLowerCase().matchAll(/https?:\/\/([a-z0-9.-]+\.[a-z]{2,})/g)) {
+    hosts.add(match[1]!.replace(/^www\./, ""));
+  }
+  return [...hosts];
+}
+
+/** Is `host` the company's domain, or a subdomain of it? Substrings do not count: flynavi.com is not navi.com. */
+export function hostMatchesDomain(host: string, domain: string): boolean {
+  const h = host.toLowerCase().replace(/^www\./, "");
+  const d = domain.toLowerCase().replace(/^www\./, "");
+  return h === d || h.endsWith(`.${d}`);
+}
+
+/**
+ * Does a board found by guessing its slug actually belong to this company?
+ *
+ * A slug is a guess. "clearco" on Ashby is Clearco, the Canadian fintech, not
+ * ClearCompany; "navi" is Navi AI in San Francisco, not the Indian fintech at
+ * navi.com. Both boards had real postings, both passed the count check, and
+ * both would have been stored — and then read as the company's own hiring,
+ * because the posting company name matched the record's name exactly.
+ *
+ * Two independent ways to corroborate, either suffices:
+ *  - the board points back at the company: any hostname in the jobs payload
+ *    or the board's HTML page equals the company domain or a subdomain of it
+ *    (Zapier's board links zapier.com; Navi AI's links flynavi.com);
+ *  - the platform names the board owner and it is this company: Greenhouse's
+ *    board metadata and SmartRecruiters' postings both carry a name.
+ * A board that cannot be tied to the company either way is left unstored.
+ * Boards found on the company's own careers page or sitemap need none of
+ * this — the company told us where it hires.
+ */
+export function corroborateSlugBoard(input: {
+  companyName: string;
+  domain: string | null;
+  payloadText: string;
+  boardHtml: string | null;
+  boardOwnerName: string | null;
+}): { verified: boolean; how: "DOMAIN_LINK" | "OWNER_NAME" | null } {
+  if (input.domain) {
+    const hosts = [...hostsIn(input.payloadText), ...hostsIn(input.boardHtml ?? "")];
+    if (hosts.some((host) => hostMatchesDomain(host, input.domain!))) return { verified: true, how: "DOMAIN_LINK" };
+  }
+  if (input.boardOwnerName && namesAgree(input.boardOwnerName, input.companyName)) {
+    return { verified: true, how: "OWNER_NAME" };
+  }
+  return { verified: false, how: null };
+}
+
+/**
+ * Two spellings of the same company name. Platforms glue words together
+ * ("AnaxeeDigitalRunnersPrivateLimited"), records keep the suffixes the
+ * normaliser strips, so compare both the suffix-stripped and the
+ * letters-only forms. Exact after normalisation, never fuzzy.
+ */
+export function namesAgree(left: string, right: string): boolean {
+  const compact = (value: string) => value.toLowerCase().replace(/[^a-z0-9]/g, "");
+  const stripped = (value: string) => normalizeCompanyName(value).replace(/\s+/g, "");
+  const l = [compact(left), stripped(left)].filter(Boolean);
+  const r = [compact(right), stripped(right)].filter(Boolean);
+  return l.some((a) => r.includes(a));
+}
+
+/** The name a platform records as the board's owner, where the platform exposes one. */
+function boardOwnerName(kind: AtsKind, slug: string, payload: unknown): Promise<string | null> {
+  if (kind === "smartrecruiters") {
+    const content = (payload as { content?: Array<{ company?: { name?: string } }> })?.content;
+    const name = Array.isArray(content) ? content.find((item) => item?.company?.name)?.company?.name : undefined;
+    return Promise.resolve(typeof name === "string" ? name : null);
+  }
+  if (kind === "greenhouse") {
+    return getJson(`https://boards-api.greenhouse.io/v1/boards/${slug}`).then((board) => {
+      const name = (board as { name?: unknown })?.name;
+      return typeof name === "string" ? name : null;
+    });
+  }
+  return Promise.resolve(null);
+}
+
 export async function discoverAtsHandle(
   domain: string | null,
   companyName?: string,
@@ -433,9 +516,18 @@ export async function discoverAtsHandle(
     for (const probe of ATS_SLUG_PROBES) {
       const payload = await getJson(probe.jobsUrl(slug));
       if (payload === null || probe.count(payload) < 1) continue;
+      const boardUrl = probe.boardUrl(slug);
+      const corroboration = corroborateSlugBoard({
+        companyName: companyName ?? "",
+        domain,
+        payloadText: JSON.stringify(payload),
+        boardHtml: await getText(boardUrl, "text/html"),
+        boardOwnerName: await boardOwnerName(probe.kind, slug, payload),
+      });
+      if (!corroboration.verified) continue;
       return {
-        handle: { kind: probe.kind, jobsUrl: probe.jobsUrl(slug), boardUrl: probe.boardUrl(slug) },
-        via: "SLUG_PROBE",
+        handle: { kind: probe.kind, jobsUrl: probe.jobsUrl(slug), boardUrl },
+        via: `SLUG_PROBE:${corroboration.how}`,
       };
     }
   }

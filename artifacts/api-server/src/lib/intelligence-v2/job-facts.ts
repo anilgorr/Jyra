@@ -9,6 +9,7 @@ import {
 } from "@workspace/db";
 import { calculateEvidenceScores, hashNormalizedContent } from "../evidence";
 import type { EvidenceSourceType } from "./persist-evidence";
+import { normalizeCompanyName } from "./company-name";
 
 type JobDbExecutor = typeof db | Parameters<Parameters<typeof db.transaction>[0]>[0];
 
@@ -58,15 +59,7 @@ export type JobFactRow = {
 
 export type JobFactSkip = { url: string; reason: string };
 
-/** Punctuation, suffixes and case removed so "Kissflow, Inc." matches "Kissflow". */
-export function normalizeCompanyName(value: string): string {
-  return value
-    .toLowerCase()
-    .replace(/[.,]/g, " ")
-    .replace(/\b(inc|llc|ltd|limited|corp|corporation|gmbh|pvt|private|plc|co|sa|bv|ag)\b/g, " ")
-    .replace(/[^a-z0-9]+/g, " ")
-    .trim();
-}
+export { normalizeCompanyName } from "./company-name";
 
 /**
  * Does this posting actually belong to the company we asked about?

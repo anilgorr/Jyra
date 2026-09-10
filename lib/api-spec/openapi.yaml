@@ -1115,6 +1115,38 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
         "404": { $ref: "#/components/responses/NotFound" }
+  /projects/{projectId}/changes:
+    get:
+      operationId: listProjectChanges
+      tags: [intelligence-v2]
+      summary: What the watch loop and manual runs changed, newest first
+      description: One entry per intelligence cycle per company. Entries where nothing moved are kept and can be filtered out.
+      security: [{ clerkSession: [] }]
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+        - name: onlyChanges
+          in: query
+          required: false
+          schema: { type: boolean, default: true }
+          description: Omit cycles in which nothing changed.
+        - name: since
+          in: query
+          required: false
+          schema: { type: string, format: date-time }
+          description: Only cycles observed at or after this time.
+        - name: limit
+          in: query
+          required: false
+          schema: { type: number, minimum: 1, maximum: 200, default: 50 }
+      responses:
+        "200":
+          description: Project change feed
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ProjectChangeFeed" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
   /projects/{projectId}/signals:
     get:
       operationId: listProjectSignals
@@ -4076,6 +4108,71 @@ components:
         opportunitiesIdentified: { type: number }
         buyersFound: { type: number }
       required: [currency, dailyBudget, monthlyBudget, spendToday, spendThisMonth, projectedMonthSpend, unknownCostRequestsThisMonth, requestsThisMonth, successfulRequestsThisMonth, blockedRequestsThisMonth, costPerCompanyResearched, costPerOpportunityIdentified, costPerBuyerFound, companiesResearchedThisMonth, opportunitiesIdentified, buyersFound]
+    ChangeEvidenceRef:
+      type: object
+      properties:
+        evidenceId: { type: string }
+        sourceType: { type: string }
+        title: { type: string }
+        url: { type: string, nullable: true }
+        version: { type: string }
+      required: [evidenceId, sourceType, title, url, version]
+    ChangeVerdict:
+      type: object
+      properties:
+        commercialRole: { type: string }
+        who: { type: string }
+        criteria: { type: object, additionalProperties: { type: string } }
+      required: [commercialRole, who, criteria]
+    ChangeScore:
+      type: object
+      properties:
+        score: { type: number, nullable: true }
+        fit: { type: number, nullable: true }
+        need: { type: number, nullable: true }
+        timing: { type: number, nullable: true }
+        state: { type: string, nullable: true }
+      required: [score, fit, need, timing, state]
+    ProjectChange:
+      type: object
+      properties:
+        id: { type: string }
+        projectCompanyId: { type: string }
+        companyId: { type: string }
+        companyName: { type: string }
+        domain: { type: string, nullable: true }
+        trigger: { type: string, enum: [MANUAL, SCHEDULED] }
+        observedAt: { type: string, format: date-time }
+        hasChanges: { type: boolean }
+        profileChanged: { type: boolean }
+        verdictChanged: { type: boolean }
+        scoreChanged: { type: boolean }
+        evidenceAdded: { type: array, items: { $ref: "#/components/schemas/ChangeEvidenceRef" } }
+        evidenceRemoved: { type: array, items: { $ref: "#/components/schemas/ChangeEvidenceRef" } }
+        evidenceChanged: { type: array, items: { $ref: "#/components/schemas/ChangeEvidenceRef" } }
+        verdictBefore: { $ref: "#/components/schemas/ChangeVerdict", nullable: true }
+        verdictAfter: { $ref: "#/components/schemas/ChangeVerdict" }
+        scoreBefore: { $ref: "#/components/schemas/ChangeScore", nullable: true }
+        scoreAfter: { $ref: "#/components/schemas/ChangeScore", nullable: true }
+        factsAdded: { type: number }
+        signalsCreated: { type: number }
+        modelCalls: { type: number }
+        costTotal: { type: number }
+      required: [id, projectCompanyId, companyId, companyName, domain, trigger, observedAt, hasChanges, profileChanged, verdictChanged, scoreChanged, evidenceAdded, evidenceRemoved, evidenceChanged, verdictBefore, verdictAfter, scoreBefore, scoreAfter, factsAdded, signalsCreated, modelCalls, costTotal]
+    ProjectChangeFeed:
+      type: object
+      properties:
+        items: { type: array, items: { $ref: "#/components/schemas/ProjectChange" } }
+        summary:
+          type: object
+          properties:
+            cyclesTotal: { type: number, description: "Cycles in the window, including quiet ones." }
+            cyclesWithChanges: { type: number }
+            companiesWatched: { type: number }
+            lastCycleAt: { type: string, format: date-time, nullable: true }
+            spendUsd: { type: number }
+          required: [cyclesTotal, cyclesWithChanges, companiesWatched, lastCycleAt, spendUsd]
+      required: [items, summary]
     Signal:
       type: object
       properties:

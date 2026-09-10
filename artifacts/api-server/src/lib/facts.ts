@@ -751,6 +751,74 @@ function extractDatedPatternCandidates(
   return candidates;
 }
 
+const INCIDENT_NOUN_PATTERN = String.raw`(?:data breach|security breach|security incident|cyber ?attack|ransomware(?: attack)?|unauthori[sz]ed access|cybersecurity incident|cyber incident|network intrusion|supply[- ]chain attack)`;
+
+// Company first: "Acme disclosed a data breach". The subject is the entity the
+// validator will check against the requested company, so a story about a
+// vendor's breach that merely mentions the company is rejected there.
+const INCIDENT_EVENT_PATTERN = new RegExp(
+  String.raw`\b(?<company>[A-Z][A-Za-z0-9&'.-]*(?:\s+[A-Z][A-Za-z0-9&'.-]*){0,5})\s+(?:has\s+|had\s+)?(?<verb>disclosed|reported|suffered|experienced|confirmed|acknowledged|revealed|detected|was hit by|has been hit by|fell victim to|is investigating|investigated|notified customers of)\s+(?:a\s+|an\s+|the\s+)?(?:[a-z-]+\s+){0,3}?(?<incident>${INCIDENT_NOUN_PATTERN})\b`,
+  "g",
+);
+// Incident first: "Ransomware attack hits Acme", "Data breach at Acme". The
+// noun may be capitalised in a headline, but the company capture must stay
+// case-sensitive or it swallows the "on August" that follows the name — so
+// the case tolerance is spelled out per letter instead of using the i flag.
+const caseTolerant = (pattern: string) => pattern.replace(/[a-z]/g, (letter) => `[${letter}${letter.toUpperCase()}]`);
+const INCIDENT_FIRST_EVENT_PATTERN = new RegExp(
+  String.raw`\b(?<incident>${caseTolerant(INCIDENT_NOUN_PATTERN)})\s+(?<verb>at|hits|hit|strikes|struck|targets|targeted|affecting|affects|affected|exposes|exposed)\s+(?<company>[A-Z][A-Za-z0-9&'.-]*(?:\s+[A-Z][A-Za-z0-9&'.-]*){0,5})\b`,
+  "g",
+);
+
+/**
+ * Security incidents stated outright, with a date.
+ *
+ * The highest-impact definition in the cybersecurity pack keys on this fact
+ * type — need 88, timing 95, a six-month lifetime — and until now nothing
+ * produced it. Same discipline as the leadership extractor: the event must
+ * be in the text as a sentence with a subject, and there must be an explicit
+ * calendar date within reach, or it is not a fact. No model is involved.
+ */
+export function extractExplicitSecurityIncidentCandidates(
+  evidenceId: string,
+  rawContent: string,
+): FactCandidate[] {
+  const content = normalizeEvidenceContent(rawContent);
+  const candidates: FactCandidate[] = [];
+  const matches = [
+    ...content.matchAll(INCIDENT_EVENT_PATTERN),
+    ...content.matchAll(INCIDENT_FIRST_EVENT_PATTERN),
+  ].sort((left, right) => (left.index ?? 0) - (right.index ?? 0));
+  for (const match of matches) {
+    if (match.index === undefined || !match.groups) continue;
+    const company = match.groups.company ?? "";
+    // Headline connective prose is not a company name.
+    if (/\b(?:today|announced|that|has|the|a|an|its|their)\b/i.test(company.split(/\s+/)[0] ?? "")) continue;
+    const date = explicitDateBefore(content, match.index);
+    const afterDate = date ? null : explicitDateAfter(content, match.index);
+    if (!date && !afterDate) continue;
+    const sentenceEnd = content.slice(match.index).search(/[.!?](?:\s|$)/);
+    const eventEnd = sentenceEnd >= 0 ? match.index + sentenceEnd + 1 : match.index + match[0].length;
+    const supportingExcerpt = date
+      ? content.slice(date.excerptStart, eventEnd).trim()
+      : content.slice(match.index, Math.max(eventEnd, afterDate!.excerptEnd)).trim();
+    candidates.push({
+      evidenceId,
+      factType: "SECURITY_INCIDENT",
+      structuredValue: {
+        company,
+        incidentType: match.groups.incident!.toLowerCase().replace(/\s+/g, " "),
+        eventType: match.groups.verb!.toLowerCase(),
+      },
+      effectiveDate: date?.effectiveDate ?? afterDate!.effectiveDate,
+      confidence: 92,
+      supportingExcerpt,
+      extractorVersion: "explicit-security-incident-v1",
+    });
+  }
+  return candidates;
+}
+
 export function extractExplicitCertificationCandidates(
   evidenceId: string,
   rawContent: string,
@@ -781,6 +849,7 @@ export function extractExplicitFactCandidates(
 ): FactCandidate[] {
   return [
     ...extractExplicitLeadershipCandidates(evidenceId, rawContent),
+    ...extractExplicitSecurityIncidentCandidates(evidenceId, rawContent),
     ...extractExplicitCertificationCandidates(evidenceId, rawContent),
     ...extractExplicitTechnologyChangeCandidates(evidenceId, rawContent),
   ];

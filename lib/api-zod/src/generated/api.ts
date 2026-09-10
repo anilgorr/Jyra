@@ -4586,6 +4586,99 @@ export const ExecuteCompanyResearchResponse = zod.object({
 
 
 /**
+ * One entry per intelligence cycle per company. Entries where nothing moved are kept and can be filtered out.
+ * @summary What the watch loop and manual runs changed, newest first
+ */
+export const ListProjectChangesParams = zod.object({
+  "projectId": zod.coerce.string()
+})
+
+export const listProjectChangesQueryOnlyChangesDefault = true;
+export const listProjectChangesQueryLimitDefault = 50;
+export const listProjectChangesQueryLimitMax = 200;
+
+
+
+export const ListProjectChangesQueryParams = zod.object({
+  "onlyChanges": zod.coerce.boolean().default(listProjectChangesQueryOnlyChangesDefault).describe('Omit cycles in which nothing changed.'),
+  "since": zod.date().optional().describe('Only cycles observed at or after this time.'),
+  "limit": zod.coerce.number().min(1).max(listProjectChangesQueryLimitMax).default(listProjectChangesQueryLimitDefault)
+})
+
+export const ListProjectChangesResponse = zod.object({
+  "items": zod.array(zod.object({
+  "id": zod.string(),
+  "projectCompanyId": zod.string(),
+  "companyId": zod.string(),
+  "companyName": zod.string(),
+  "domain": zod.string().nullable(),
+  "trigger": zod.enum(['MANUAL', 'SCHEDULED']),
+  "observedAt": zod.coerce.date(),
+  "hasChanges": zod.boolean(),
+  "profileChanged": zod.boolean(),
+  "verdictChanged": zod.boolean(),
+  "scoreChanged": zod.boolean(),
+  "evidenceAdded": zod.array(zod.object({
+  "evidenceId": zod.string(),
+  "sourceType": zod.string(),
+  "title": zod.string(),
+  "url": zod.string().nullable(),
+  "version": zod.string()
+})),
+  "evidenceRemoved": zod.array(zod.object({
+  "evidenceId": zod.string(),
+  "sourceType": zod.string(),
+  "title": zod.string(),
+  "url": zod.string().nullable(),
+  "version": zod.string()
+})),
+  "evidenceChanged": zod.array(zod.object({
+  "evidenceId": zod.string(),
+  "sourceType": zod.string(),
+  "title": zod.string(),
+  "url": zod.string().nullable(),
+  "version": zod.string()
+})),
+  "verdictBefore": zod.object({
+  "commercialRole": zod.string(),
+  "who": zod.string(),
+  "criteria": zod.record(zod.string(), zod.string())
+}).nullable(),
+  "verdictAfter": zod.object({
+  "commercialRole": zod.string(),
+  "who": zod.string(),
+  "criteria": zod.record(zod.string(), zod.string())
+}),
+  "scoreBefore": zod.object({
+  "score": zod.number().nullable(),
+  "fit": zod.number().nullable(),
+  "need": zod.number().nullable(),
+  "timing": zod.number().nullable(),
+  "state": zod.string().nullable()
+}).nullable(),
+  "scoreAfter": zod.object({
+  "score": zod.number().nullable(),
+  "fit": zod.number().nullable(),
+  "need": zod.number().nullable(),
+  "timing": zod.number().nullable(),
+  "state": zod.string().nullable()
+}).nullable(),
+  "factsAdded": zod.number(),
+  "signalsCreated": zod.number(),
+  "modelCalls": zod.number(),
+  "costTotal": zod.number()
+})),
+  "summary": zod.object({
+  "cyclesTotal": zod.number().describe('Cycles in the window, including quiet ones.'),
+  "cyclesWithChanges": zod.number(),
+  "companiesWatched": zod.number(),
+  "lastCycleAt": zod.coerce.date().nullable(),
+  "spendUsd": zod.number()
+})
+})
+
+
+/**
  * @summary List active and stale signals for a project
  */
 export const ListProjectSignalsParams = zod.object({

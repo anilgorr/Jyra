@@ -36,6 +36,13 @@
       "when": 1788962966098,
       "tag": "0004_intelligence_v2_cache",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1788966592850,
+      "tag": "0005_intelligence_v2_changesets",
+      "breakpoints": true
     }
   ]
 }
