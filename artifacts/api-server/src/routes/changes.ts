@@ -28,10 +28,13 @@ const asyncRoute = (handler: AsyncHandler): RequestHandler => (req, res, next) =
  */
 router.get("/projects/:projectId/changes", requireAuth, asyncRoute(async (req, res) => {
   const params = ListProjectChangesParams.safeParse(req.params);
+  // Query strings arrive as text; the generated schema expects booleans, numbers
+  // and a real Date, and only coerces the first two. Convert here, and let
+  // zod's date() refuse an unparseable value rather than treating it as "all".
   const query = ListProjectChangesQueryParams.safeParse({
-    ...req.query,
     onlyChanges: req.query.onlyChanges === undefined ? undefined : req.query.onlyChanges === "true",
     limit: req.query.limit === undefined ? undefined : Number(req.query.limit),
+    since: req.query.since === undefined ? undefined : new Date(String(req.query.since)),
   });
   if (!params.success || !query.success) return void res.status(400).json({ error: "Invalid change feed request" });
   const userId = getAuthenticatedUserId(res);
@@ -43,7 +46,7 @@ router.get("/projects/:projectId/changes", requireAuth, asyncRoute(async (req, r
 
   const onlyChanges = query.data.onlyChanges ?? true;
   const limit = query.data.limit ?? 50;
-  const since = query.data.since ? new Date(query.data.since) : null;
+  const since = query.data.since ?? null;
   const scope = [eq(intelligenceV2ChangesetsTable.projectId, project.id), ...(since ? [gte(intelligenceV2ChangesetsTable.observedAt, since)] : [])];
 
   const rows = await db.select({ change: intelligenceV2ChangesetsTable, company: companiesTable })
