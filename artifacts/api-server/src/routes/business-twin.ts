@@ -261,7 +261,15 @@ router.post(
       ? businessTwinRawAnswersInputSchema.safeParse(body.data.rawAnswers)
       : null;
     if (!params.success || !body.success || !rawAnswers?.success) {
-      res.status(400).json({ error: "Enter valid Business Twin answers" });
+      // Say which answers, not just that one is wrong: "too long" on a
+      // 200-character field is fixable in a click, "invalid" is not.
+      const issues = (rawAnswers && !rawAnswers.success ? rawAnswers.error.issues : body.success ? [] : body.error.issues)
+        .map((issue) => ({ field: issue.path.map(String).join("."), message: issue.message }))
+        .slice(0, 12);
+      const summary = issues.length
+        ? `Enter valid Business Twin answers: ${issues.map((issue) => `${issue.field || "answers"} — ${issue.message}`).join("; ")}`
+        : "Enter valid Business Twin answers";
+      res.status(400).json({ error: summary, fields: issues });
       return;
     }
 

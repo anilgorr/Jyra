@@ -123,6 +123,7 @@ const systemPrompt = (request: BusinessTwinSuggestionRequest, sections: ReturnTy
   "Do not claim facts about this specific company that the four inputs do not state — no customer names, no numbers presented as theirs. Ranges and typical patterns for this kind of offering are what is wanted.",
   `Stage is ${request.businessMaturityStage}. PRE_LAUNCH and LAUNCHED_NO_CUSTOMERS have no customers yet: phrase customer-facing sections as hypotheses.`,
   "Each item is one short, self-contained statement (under 25 words). Order items best-first. Do not number them.",
+  "typicalEmployeeRange, typicalRevenueRange, typicalDealSize and typicalSalesCycle are ranges, not sentences: each item under 6 words (e.g. \"200–1,000 employees\", \"₹5–50 crore\", \"₹8–25 lakh/year\", \"6–10 weeks\").",
   "Return JSON only, with exactly these keys:",
   JSON.stringify({
     offeringName: "short product/service name, 2-5 words, from the one-liner",

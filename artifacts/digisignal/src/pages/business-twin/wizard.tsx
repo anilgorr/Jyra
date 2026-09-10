@@ -73,6 +73,24 @@ const SECTION_TABLE: Array<Pick<Section, "field" | "title" | "prompt" | "mode"> 
 const REQUIRED_SECTIONS = ["productOrServiceDescription", "problemsSolved", "typicalCustomerProfile"];
 
 /**
+ * Character caps the server enforces per field (business-twin-schemas.ts).
+ * Four ticked lines on a 200-character field is the difference between
+ * "saved" and a 400, so the checklist counts against these as you tick.
+ */
+const FIELD_MAX: Record<string, number> = {
+  productOrServiceDescription: 3000, problemsSolved: 3000, costOfInaction: 3000, typicalCustomerProfile: 2000,
+  typicalEmployeeRange: 200, typicalRevenueRange: 200, typicalDealSize: 200, typicalSalesCycle: 200,
+  targetGeographies: 1000, badCustomerCharacteristics: 3000, commonBuyerRoles: 1000, commonChampionRoles: 1000,
+  commonTechnicalEvaluatorRoles: 1000, typicalUrgencyTriggers: 3000, majorDifferentiators: 3000,
+  competitorsOrAlternatives: 2000, commonObjections: 3000, marketHypotheses: 3000,
+  validationNotes: 3000, prospectiveCustomerEvidence: 3000, currentCustomers: 4000, customerCount: 100,
+  wonOpportunities: 4000, lostOpportunities: 4000, offeringName: 200, industry: 200, primaryGeography: 200,
+  companyName: 200, website: 500,
+};
+/** Short fields read as one line ("50–500; 500–2,000") rather than a list. */
+const ONE_LINE_FIELDS = new Set(["typicalEmployeeRange", "typicalRevenueRange", "typicalDealSize", "typicalSalesCycle"]);
+
+/**
  * Facts only the seller knows — customer counts, who bought — cannot be
  * suggested, so they stay as short text fields, shown only for the stage
  * that needs them. Mirrors the server's stage rules.
@@ -120,7 +138,7 @@ const splitSaved = (value: unknown, mode: Section["mode"]): string[] => {
   if (!text) return [];
   return mode === "PARAGRAPH"
     ? text.split(/(?<=[.!?])\s+/).map((s) => s.trim()).filter(Boolean)
-    : text.split(/\r?\n/).map((s) => s.replace(/^[-•*\d.)\s]+/, "").trim()).filter(Boolean);
+    : text.split(/\r?\n|;\s+/).map((s) => s.replace(/^[-•*\d.)\s]+/, "").trim()).filter(Boolean);
 };
 
 const sectionsFromSaved = (answers: Record<string, unknown>, stage: Stage): Section[] =>
@@ -164,6 +182,7 @@ export function BusinessTwinWizard({ defaultValues, onCancel, onSuccess }: { def
   const [facts, setFacts] = useState<Record<string, string>>(() =>
     Object.fromEntries(Object.values(STAGE_FACTS).flat().map((f) => [f.field, String(saved?.[f.field] ?? "")])));
   const [attempted, setAttempted] = useState(false);
+  const [serverProblems, setServerProblems] = useState<Record<string, string>>({});
 
   const suggest = useSuggestBusinessTwin();
   const create = useCreateBusinessTwinVersion();
@@ -191,7 +210,8 @@ export function BusinessTwinWizard({ defaultValues, onCancel, onSuccess }: { def
 
   const selectedText = (section: Section) => {
     const chosen = section.items.filter((i) => i.selected).map((i) => i.text.trim()).filter(Boolean);
-    return section.mode === "PARAGRAPH" ? chosen.join(" ") : chosen.join("\n");
+    if (section.mode === "PARAGRAPH") return chosen.join(" ");
+    return ONE_LINE_FIELDS.has(section.field) ? chosen.join("; ") : chosen.join("\n");
   };
 
   const problems = useMemo(() => {
@@ -207,12 +227,23 @@ export function BusinessTwinWizard({ defaultValues, onCancel, onSuccess }: { def
     for (const rule of STAGE_FACT_RULES[stage]) {
       if (!rule.anyOf.some(answered)) out[rule.anyOf[0]] = rule.message;
     }
+    for (const section of sections) {
+      const max = FIELD_MAX[section.field];
+      const length = selectedText(section).length;
+      if (max && length > max) out[section.field] = `Too long for this field — untick or shorten a few (${length} of ${max} characters).`;
+    }
+    for (const [field, value] of Object.entries(facts)) {
+      const max = FIELD_MAX[field];
+      if (max && value.trim().length > max) out[field] = `Too long — keep it under ${max} characters.`;
+    }
     if (!header.offeringName.trim()) out.offeringName = "Give the offering a short name.";
+    else if (header.offeringName.trim().length > FIELD_MAX.offeringName) out.offeringName = "Keep the offering name under 200 characters.";
     return out;
   }, [sections, facts, stage, header.offeringName]);
 
   const accept = () => {
     setAttempted(true);
+    setServerProblems({});
     if (!activeProjectId || Object.keys(problems).length) {
       toast.error("A few things still need an answer — see the highlighted sections.");
       return;
@@ -235,9 +266,19 @@ export function BusinessTwinWizard({ defaultValues, onCancel, onSuccess }: { def
         queryClient.invalidateQueries({ queryKey: getListBusinessTwinVersionsQueryKey(activeProjectId) });
         onSuccess();
       },
-      onError: (error) => toast.error((error as { data?: { error?: string } })?.data?.error ?? "Failed to save Business Twin"),
+      onError: (error) => {
+        const data = (error as { data?: { error?: string; fields?: Array<{ field: string; message: string }> } })?.data;
+        if (data?.fields?.length) {
+          setServerProblems(Object.fromEntries(data.fields.map((f) => [f.field.split(".")[0], f.message])));
+          toast.error("The server rejected a few answers — see the highlighted sections.");
+          return;
+        }
+        toast.error(data?.error ?? "Failed to save Business Twin");
+      },
     });
   };
+
+  const shown = attempted ? { ...serverProblems, ...problems } : serverProblems;
 
   const updateSection = (field: string, fn: (section: Section) => Section) =>
     setSections((current) => current.map((s) => (s.field === field ? fn(s) : s)));
@@ -310,8 +351,8 @@ export function BusinessTwinWizard({ defaultValues, onCancel, onSuccess }: { def
           <div className="space-y-1.5 sm:col-span-3">
             <Label htmlFor="bt-offering-name">Offering name</Label>
             <Input id="bt-offering-name" data-testid="input-bt-offering-name" value={header.offeringName} onChange={(e) => setHeader({ ...header, offeringName: e.target.value })}
-              className={attempted && problems.offeringName ? "border-destructive" : ""} />
-            {attempted && problems.offeringName && <p className="text-xs text-destructive">{problems.offeringName}</p>}
+              className={shown.offeringName ? "border-destructive" : ""} />
+            {shown.offeringName && <p className="text-xs text-destructive">{shown.offeringName}</p>}
             <p className="text-xs text-muted-foreground">This name is stamped on every signal and score, so keep it short and recognisable.</p>
           </div>
           <div className="space-y-1.5">
@@ -338,7 +379,7 @@ export function BusinessTwinWizard({ defaultValues, onCancel, onSuccess }: { def
             key={section.field}
             section={section}
             required={REQUIRED_SECTIONS.includes(section.field)}
-            error={attempted ? problems[section.field] : undefined}
+            error={shown[section.field]}
             onChange={(fn) => updateSection(section.field, fn)}
           />
         ))}
@@ -350,7 +391,7 @@ export function BusinessTwinWizard({ defaultValues, onCancel, onSuccess }: { def
               <p className="text-sm text-muted-foreground">Facts about your customers can't be drafted, so they're asked plainly.</p>
             </div>
             {STAGE_FACTS[stage].map((fact) => {
-              const error = attempted ? problems[fact.field] : undefined;
+              const error = shown[fact.field];
               return (
                 <div key={fact.field} className="space-y-1.5">
                   <Label htmlFor={`bt-fact-${fact.field}`}>{fact.label}</Label>
