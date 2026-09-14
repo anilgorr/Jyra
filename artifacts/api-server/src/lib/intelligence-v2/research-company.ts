@@ -181,6 +181,8 @@ export function createProviderRouterResearchInvokerV2(
   router: Pick<ProviderOperations, "lookupCompany" | "enrichCompany" | "searchWeb" | "resolveCompanyProfile" | "crawlWebsite">,
   configuration: {
     trustedCompletenessProviderIds?: readonly string[]; maxProviderAttempts?: number; maxResults?: number;
+    /** ISO-2 country for the company under research; biases every search it makes. */
+    country?: string | null;
     onProviderCost?: (cost: number) => void;
   } = {},
 ): ResearchInvokerV2 {
@@ -278,6 +280,7 @@ export function createProviderRouterResearchInvokerV2(
       query: `${request.companyName} ${request.domain ?? ""} company products services business model headquarters`,
       domains: step.source === "WEB_SEARCH" && request.domain ? [request.domain] : undefined,
       limit: Math.max(1, Math.min(5, configuration.maxResults ?? 5)), searchDepth: "basic", includeRawContent: false, metadata,
+      ...(configuration.country ? { country: configuration.country } : {}),
     });
     configuration.onProviderCost?.(providerCost(response));
     const results = response.data?.results ?? [];

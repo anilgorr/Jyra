@@ -1,5 +1,6 @@
 import { openai } from "@workspace/integrations-openai-ai-server";
 import { z } from "zod/v4";
+import { countryFromDomain, countryFromPlace } from "./intelligence-v2/company-country";
 import { BUSINESS_TWIN_MODEL } from "./business-twin-interpreter";
 
 /**
@@ -116,14 +117,58 @@ export function tidyItems(field: string, raw: string[], max: number): Array<{ id
   return items;
 }
 
+
+/**
+ * Money and market conventions follow the seller, not the author.
+ *
+ * The prompt used to say "if it implies India, use ₹ crore" — which was true
+ * of the first customers and wrong for everyone else, and JYRA is sold
+ * globally. The seller's own country comes from their website, and with it
+ * the currency a range should be quoted in and the titles that market uses.
+ */
+const CURRENCY_BY_COUNTRY: Record<string, { revenue: string; deal: string }> = {
+  IN: { revenue: '"₹5–50 crore"', deal: '"₹8–25 lakh/year"' },
+  US: { revenue: '"$5–50M ARR"', deal: '"$25–80k/year"' },
+  GB: { revenue: '"£4–40M turnover"', deal: '"£20–60k/year"' },
+  AE: { revenue: '"AED 20–200M"', deal: '"AED 90–300k/year"' },
+  SA: { revenue: '"SAR 20–200M"', deal: '"SAR 90–300k/year"' },
+  SG: { revenue: '"S$7–70M"', deal: '"S$35–110k/year"' },
+  AU: { revenue: '"A$8–80M"', deal: '"A$40–120k/year"' },
+  CA: { revenue: '"C$7–70M"', deal: '"C$35–110k/year"' },
+  DE: { revenue: '"€5–45M"', deal: '"€25–75k/year"' },
+  FR: { revenue: '"€5–45M"', deal: '"€25–75k/year"' },
+  NL: { revenue: '"€5–45M"', deal: '"€25–75k/year"' },
+  IE: { revenue: '"€5–45M"', deal: '"€25–75k/year"' },
+  ZA: { revenue: '"R80–800M"', deal: '"R400k–1.3M/year"' },
+  BR: { revenue: '"R$25–250M"', deal: '"R$120–400k/year"' },
+};
+const DEFAULT_CURRENCY = { revenue: '"$5–50M ARR"', deal: '"$25–80k/year"' };
+
+export function sellerCountry(request: BusinessTwinSuggestionRequest): string | null {
+  return countryFromDomain(request.website) ?? countryFromPlace(request.companyName);
+}
+
+function moneyExamples(request: BusinessTwinSuggestionRequest): string {
+  const bands = CURRENCY_BY_COUNTRY[sellerCountry(request) ?? ""] ?? DEFAULT_CURRENCY;
+  return `${bands.revenue}, ${bands.deal}`;
+}
+
+function marketConventions(request: BusinessTwinSuggestionRequest): string {
+  const country = sellerCountry(request);
+  return country
+    ? `The seller appears to be based in ${country}. Use that market's company sizes, revenue bands, currency and job titles throughout — not another market's.`
+    : "The website gives no clear country. Use internationally legible sizes and USD bands, and titles that travel.";
+}
+
 const systemPrompt = (request: BusinessTwinSuggestionRequest, sections: ReturnType<typeof sectionsForStage>) => [
   "You draft a B2B seller's Business Twin from four facts: company name, website, a one-line description of what they sell, and their business stage.",
   "The seller will review every item in a checklist: tick, edit, delete or add. Your job is to give them specific, plausible candidates to react to — not generic filler.",
-  "Be concrete to the offering and its likely market. Name real roles, real trigger events, real alternatives. Use the geography the website's TLD or the company name implies; if it implies India, use Indian company sizes, revenue bands (₹ crore) and titles.",
+  "Be concrete to the offering and its likely market. Name real roles, real trigger events, real alternatives.",
+  marketConventions(request),
   "Do not claim facts about this specific company that the four inputs do not state — no customer names, no numbers presented as theirs. Ranges and typical patterns for this kind of offering are what is wanted.",
   `Stage is ${request.businessMaturityStage}. PRE_LAUNCH and LAUNCHED_NO_CUSTOMERS have no customers yet: phrase customer-facing sections as hypotheses.`,
   "Each item is one short, self-contained statement (under 25 words). Order items best-first. Do not number them.",
-  "typicalEmployeeRange, typicalRevenueRange, typicalDealSize and typicalSalesCycle are ranges, not sentences: each item under 6 words (e.g. \"200–1,000 employees\", \"₹5–50 crore\", \"₹8–25 lakh/year\", \"6–10 weeks\").",
+  `typicalEmployeeRange, typicalRevenueRange, typicalDealSize and typicalSalesCycle are ranges, not sentences: each item under 6 words (e.g. "200–1,000 employees", ${moneyExamples(request)}, "6–10 weeks").`,
   "Return JSON only, with exactly these keys:",
   JSON.stringify({
     offeringName: "short product/service name, 2-5 words, from the one-liner",

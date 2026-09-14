@@ -23,6 +23,7 @@ import { persistIntelligenceV2Evidence } from "./persist-evidence";
 import { mapJobsToFacts, persistJobFacts } from "./job-facts";
 import { mapEventHitsToFacts, persistEventFacts, researchEvents, type EventFactRow } from "./event-facts";
 import { atsHandleFromProfileUrls, atsHandleToProfileUrls, discoverAtsHandle, fetchAtsJobs } from "./ats-boards";
+import { resolveCompanyCountry } from "./company-country";
 import {
   computeChangeset, evidenceFromRunSnapshot, verdictFromRunSnapshot,
   type ChangesetDiff, type ScoreSnapshot, type VerdictSnapshot,
@@ -188,8 +189,23 @@ export async function runIntelligenceCycle(input: {
   ));
   const requirements = icpCriteriaToRequirementsV2(criteria);
 
+
+
   // What the last cycle knew, read before anything is written.
   const previousRow = await loadLatestIntelligenceV2Assessment(projectId, projectCompanyId);
+  // Where this company is. Every search below is biased towards it, because a
+  // geo-neutral query is answered from wherever the datacentre happens to be —
+  // Singapore, in our case. Read from what the last cycle already learned, so
+  // it costs nothing; the first cycle falls back to the domain's TLD.
+  const geography = (previousRow?.runSnapshot as { geography?: { headquarters?: { value?: string } | null; primaryOperatingGeography?: { value?: string } | null } } | undefined)?.geography;
+  const { country, source: countrySource } = resolveCompanyCountry({
+    storedCountry: owned.company.country,
+    headquarters: geography?.headquarters?.value ?? null,
+    primaryGeography: geography?.primaryOperatingGeography?.value ?? null,
+    domain: owned.company.domain,
+  });
+  log.info({ projectCompanyId, company: owned.company.canonicalName, country, countrySource }, "COMPANY_COUNTRY_RESOLVED");
+
   const before = {
     profileFingerprint: previousRow?.profileFingerprint ?? null,
     evidence: evidenceFromRunSnapshot(previousRow?.runSnapshot),
@@ -216,7 +232,7 @@ export async function runIntelligenceCycle(input: {
       icp: { requirements, assumptions: seller.icpAssumptions },
     },
     repository: input.repository,
-    researchInvoker: createProviderRouterResearchInvokerV2(new ProviderRouter()),
+    researchInvoker: createProviderRouterResearchInvokerV2(new ProviderRouter(), { country }),
     now: input.now,
     ...(input.researchMaxAgeMs ? { researchMaxAgeMs: input.researchMaxAgeMs } : {}),
   });
@@ -255,6 +271,7 @@ export async function runIntelligenceCycle(input: {
         requestId: `${projectCompanyId}:jobs`,
         companyName: owned.company.canonicalName,
         ...(owned.company.domain ? { domain: owned.company.domain } : {}),
+        ...(country ? { country } : {}),
         limit: 25,
       });
       if (jobs.status === "success" && jobs.data?.jobs?.length) {
@@ -283,7 +300,7 @@ export async function runIntelligenceCycle(input: {
     const router = new ProviderRouter();
     const events = await researchEvents(
       (request) => router.searchWeb(request).then((r) => ({ status: r.status, data: r.data, providerId: r.providerId })),
-      { requestId: `${projectCompanyId}:events`, companyName: owned.company.canonicalName, domain: owned.company.domain, now: completedAt },
+      { requestId: `${projectCompanyId}:events`, companyName: owned.company.canonicalName, domain: owned.company.domain, country, now: completedAt },
     );
     const mapped = mapEventHitsToFacts(events.hits, {
       companyId: owned.company.id, companyName: owned.company.canonicalName, domain: owned.company.domain, now: completedAt,
@@ -309,6 +326,9 @@ export async function runIntelligenceCycle(input: {
       companyId: owned.company.id, companyDomain: owned.company.domain, evidence: result.evidence, now: completedAt,
     }, tx);
     log.info({ assessmentId: row.id, evidenceInserted: evidence.inserted, evidenceReused: evidence.reused, evidenceSkipped: evidence.skipped }, "V2_EVIDENCE_PERSISTED");
+    if (country && country !== owned.company.country) {
+      await tx.update(companiesTable).set({ country, updatedAt: completedAt }).where(eq(companiesTable.id, owned.company.id));
+    }
     if (discoveredAtsHandle) {
       await tx.update(companiesTable).set({
         profileUrls: { ...owned.company.profileUrls, ...atsHandleToProfileUrls(discoveredAtsHandle) },

@@ -54,8 +54,30 @@ assert.equal(lib.tidyItems("x", Array.from({ length: 30 }, (_, i) => `item ${i}`
   assert.equal(out.offeringName, "Managed SOC");
   assert.deepEqual(out.sections.map((s) => s.field), lib.sectionsForStage("EARLY_CUSTOMERS").map((s) => s.field));
   assert.deepEqual(out.sections[1].items.map((i) => i.text), ["Problems you solve option one", "Problems you solve option two", "Problems you solve option three"]);
-  assert.match(calls[0].system, /India/, "the prompt asks for the seller's own market");
+  // aadit.net gives no country, so the prompt must not invent one — it asks
+  // for internationally legible bands rather than assuming rupees.
+  assert.match(calls[0].system, /no clear country/, "an ambiguous domain gets no market assumed");
+  assert.match(calls[0].system, /USD bands/);
+  assert.doesNotMatch(calls[0].system, /₹/, "the rupee is the seller's currency only when the seller is Indian");
   assert.match(calls[0].user, /EARLY_CUSTOMERS/);
+}
+
+// 5b. Money and market conventions follow the seller, because JYRA is sold
+//     globally. The prompt used to hardcode "₹ crore" for everyone.
+{
+  const indian = [];
+  await lib.suggestBusinessTwin({ ...REQUEST, website: "https://vwo.in" }, async (input) => { indian.push(input); return reply(); }, "m");
+  assert.match(indian[0].system, /based in IN\b/);
+  assert.match(indian[0].system, /₹5–50 crore/, "an Indian seller gets rupee bands");
+
+  const american = [];
+  await lib.suggestBusinessTwin({ ...REQUEST, website: "https://acme.us" }, async (input) => { american.push(input); return reply(); }, "m");
+  assert.match(american[0].system, /\$5–50M ARR/, "an American seller gets dollars");
+  assert.doesNotMatch(american[0].system, /crore/);
+
+  const british = [];
+  await lib.suggestBusinessTwin({ ...REQUEST, website: "https://acme.co.uk" }, async (input) => { british.push(input); return reply(); }, "m");
+  assert.match(british[0].system, /£4–40M turnover/);
 }
 
 // 6. A malformed first reply is retried once; the second is used.

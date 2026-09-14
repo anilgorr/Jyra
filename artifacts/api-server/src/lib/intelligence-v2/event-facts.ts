@@ -171,7 +171,7 @@ export function corroborationFor(row: EventFactRow, all: EventFactRow[]): number
  */
 export async function researchEvents(
   search: (request: SearchWebRequest) => Promise<{ status: string; data: WebSearchResult | null; providerId: string }>,
-  input: { requestId: string; companyName: string; domain: string | null; now?: Date; limitPerQuery?: number },
+  input: { requestId: string; companyName: string; domain: string | null; country?: string | null; now?: Date; limitPerQuery?: number },
 ): Promise<{ hits: EventHit[]; queries: number; providers: string[] }> {
   const hits: EventHit[] = [];
   const providers = new Set<string>();
@@ -186,6 +186,10 @@ export async function researchEvents(
     const response = await search({
       requestId: `${input.requestId}:event:${index}`,
       query: query.query, topic: query.topic, timeRange: "year",
+      // The country biases Google's index towards local outlets. A Bengaluru
+      // company's CISO appointment is covered by the Economic Times, not by
+      // the American trade press a geo-neutral query returns.
+      ...(input.country ? { country: input.country } : {}),
       limit: input.limitPerQuery ?? 8, includeRawContent: true, searchDepth: "advanced",
     });
     if (response.status !== "success" || !response.data) continue;
