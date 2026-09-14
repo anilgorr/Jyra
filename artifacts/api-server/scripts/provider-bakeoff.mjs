@@ -23,11 +23,13 @@
  *   node scripts/provider-bakeoff.mjs --limit 5      # first 5 per country (smoke test)
  *   node scripts/provider-bakeoff.mjs --only serper,firecrawl
  *   node scripts/provider-bakeoff.mjs --kind news    # or jobs
+ *   node scripts/provider-bakeoff.mjs --seconds 150  # stop after 150s; re-run to resume
+ *   node scripts/provider-bakeoff.mjs --fresh        # discard the checkpoint and start over
  *
  * Keys read: TAVILY_API_KEY, SERPER_API_KEY, KEIROLABS_API_KEY, FIRECRAWL_API_KEY.
- * Optional: KEIROLABS_ENDPOINT (defaults to https://api.keirolabs.cloud/v1/search/fast).
+ * Optional: KEIROLABS_ENDPOINT (defaults to https://api.keirolabs.cloud/api/v2/search/fast).
  */
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { choose, scoreHit, summarise, QUERY_COST_USD } from "./lib/bakeoff-score.mjs";
@@ -69,6 +71,11 @@ async function post(url, headers, body) {
 }
 
 const hit = (title, url, snippet, date) => ({ title: title ?? "", url: url ?? "", snippet: snippet ?? "", date: date ?? null });
+/** Some providers return no date field; a date written in the snippet ("30 March 2026", "Aug 7, 2026") is the next best thing. */
+const dateInText = (text) => {
+  const m = String(text ?? "").match(/\b(\d{1,2}\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)[a-z]*\.?\s+20\d{2}|(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)[a-z]*\.?\s+\d{1,2},?\s+20\d{2}|20\d{2}-\d{2}-\d{2})\b/i);
+  return m ? m[1] : null;
+};
 
 /**
  * One function per provider: (company, kind) → hits[]. Each returns the raw
@@ -99,12 +106,14 @@ const providers = {
   keirolabs: {
     key: process.env.KEIROLABS_API_KEY,
     async search(company, kind) {
-      // Endpoint and field names follow Keirolabs' public docs as of Sep 2026;
-      // override with KEIROLABS_ENDPOINT if they differ. Errors are recorded, not fatal.
-      const endpoint = process.env.KEIROLABS_ENDPOINT ?? "https://api.keirolabs.cloud/v1/search/fast";
-      const data = await post(endpoint, { authorization: `Bearer ${this.key}` }, { query: kind === "news" ? `${company.name} news` : queryFor(company, kind), max_results: 10, freshness: kind === "news" ? "month" : "month" });
+      // Keiro v2 REST: POST /api/v2/search/fast {query, maxResults, country}.
+      // Results carry title/url/snippet and no published date, so they can
+      // only score as "dated" when the snippet itself states one. Override the
+      // path with KEIROLABS_ENDPOINT if it moves. Errors are recorded, not fatal.
+      const endpoint = process.env.KEIROLABS_ENDPOINT ?? "https://api.keirolabs.cloud/api/v2/search/fast";
+      const data = await post(endpoint, { authorization: `Bearer ${this.key}` }, { query: kind === "news" ? `"${company.name}" news ${new Date().getUTCFullYear()}` : queryFor(company, kind), maxResults: 10, country: gl(company).toUpperCase() });
       const list = data.results ?? data.data ?? data.items ?? [];
-      return list.map((r) => hit(r.title, r.url ?? r.link, r.snippet ?? r.content ?? r.description, r.published_date ?? r.date ?? r.publishedAt));
+      return list.map((r) => hit(r.title, r.url ?? r.link, r.snippet ?? r.content ?? r.description, r.published_date ?? r.date ?? r.publishedAt ?? dateInText(r.snippet)));
     },
   },
   firecrawl: {
@@ -142,30 +151,48 @@ if (!active.length) {
 }
 console.log(`Bake-off: ${companies.length} companies × ${kinds.join("+")} × [${active.map(([n]) => n).join(", ")}]${skipped.length ? `  (no key: ${skipped.join(", ")})` : ""}`);
 
-const rows = [];
+// Progress is checkpointed per (company, kind) so a run cut off by a shell
+// timeout resumes where it stopped instead of re-spending the free tier.
+mkdirSync(outDir, { recursive: true });
+const progressPath = join(outDir, "progress.jsonl");
+const rows = existsSync(progressPath) && !args.includes("--fresh")
+  ? readFileSync(progressPath, "utf8").split("\n").filter(Boolean).map((line) => JSON.parse(line))
+  : [];
+if (rows.length && args.includes("--fresh")) writeFileSync(progressPath, "");
+const finished = new Set(rows.map((r) => `${r.company}|${r.kind}|${r.provider}`));
+const providerNames = active.map(([n]) => n);
+const isDone = (company, kind) => providerNames.every((n) => finished.has(`${company.name}|${kind}|${n}`));
 let done = 0;
 const total = companies.length * kinds.length * active.length;
-for (const company of companies) {
+const already = companies.flatMap((c) => kinds.filter((k) => isDone(c, k))).length * active.length;
+if (already) console.log(`Resuming: ${already}/${total} already recorded in ${progressPath} (pass --fresh to start over)`);
+const deadlineMs = Number(flag("seconds", "0")) * 1000;
+const startedAt = Date.now();
+outer: for (const company of companies) {
   for (const kind of kinds) {
+    if (isDone(company, kind)) { done += active.length; continue; }
+    if (deadlineMs && Date.now() - startedAt > deadlineMs) { console.log(`Stopping at ${done}/${total} after --seconds; run again to resume.`); break outer; }
+    const batch = [];
     // Providers in parallel per query; queries sequential so free-tier rate limits hold.
     await Promise.all(active.map(async ([name, provider]) => {
       const seen = new Set();
       const base = { provider: name, company: company.name, domain: company.domain, country: company.bucket, kind };
       try {
         const hits = await provider.search(company, kind);
-        if (!hits.length) rows.push({ ...base, url: "", error: "" });
-        for (const h of hits) rows.push({ ...base, ...h, ...scoreHit(h, company, kind, seen, now), error: "" });
+        if (!hits.length) batch.push({ ...base, url: "", error: "" });
+        for (const h of hits) batch.push({ ...base, ...h, ...scoreHit(h, company, kind, seen, now), error: "" });
       } catch (error) {
-        rows.push({ ...base, url: "", error: String(error?.message ?? error).slice(0, 200) });
+        batch.push({ ...base, url: "", error: String(error?.message ?? error).slice(0, 200) });
       }
       done++;
       if (done % 20 === 0 || done === total) process.stdout.write(`  ${done}/${total}\n`);
     }));
+    rows.push(...batch);
+    appendFileSync(progressPath, batch.map((r) => JSON.stringify(r)).join("\n") + "\n");
     await new Promise((r) => setTimeout(r, 350));
   }
 }
 
-mkdirSync(outDir, { recursive: true });
 const columns = ["provider", "country", "kind", "company", "domain", "title", "url", "date", "ageDays", "relevant", "dated", "duplicate", "jobLike", "firstParty", "useful", "error"];
 const csv = [columns.join(","), ...rows.map((r) => columns.map((c) => JSON.stringify(r[c] ?? "")).join(","))].join("\n");
 writeFileSync(join(outDir, "hits.csv"), csv);
