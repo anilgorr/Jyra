@@ -239,13 +239,22 @@ export async function persistEventFacts(
       evidenceId = existing.id;
       evidenceReused += 1;
     } else {
-      const crawlPageId = randomUUID();
-      await executor.insert(crawlPagesTable).values({
-        id: crawlPageId, companyId: input.companyId, sourceUrl: row.sourceUrl, sourceDomain: row.sourceDomain,
+      const newCrawlPageId = randomUUID();
+      // crawl_pages is unique on (company, url, content hash). One article can
+      // yield two events, and the second insert used to collide and take the
+      // whole transaction down with it - killing a cycle that had already paid
+      // for its research and its verdict. Claim the existing row instead and
+      // reuse its id; the page is the same page.
+      const [crawlPage] = await executor.insert(crawlPagesTable).values({
+        id: newCrawlPageId, companyId: input.companyId, sourceUrl: row.sourceUrl, sourceDomain: row.sourceDomain,
         sourceType: row.sourceType, provider: "event-search", observedAt: now,
-        rawContent: row.rawContent.slice(0, 20_000), rawContentReference: `crawl_pages:${crawlPageId}`,
+        rawContent: row.rawContent.slice(0, 20_000), rawContentReference: `crawl_pages:${newCrawlPageId}`,
         normalizedContentHash: hashNormalizedContent(row.rawContent),
-      });
+      }).onConflictDoUpdate({
+        target: [crawlPagesTable.companyId, crawlPagesTable.sourceUrl, crawlPagesTable.normalizedContentHash],
+        set: { observedAt: now },
+      }).returning({ id: crawlPagesTable.id });
+      const crawlPageId = crawlPage.id;
       await executor.insert(evidenceAttributionReviewsTable).values({
         crawlPageId, companyId: input.companyId, reviewedByOrganizationId: input.organizationId,
         sourceClassification: row.sourceType === "press_release" ? "PRESS_RELEASE" : "NEWS",

@@ -183,6 +183,8 @@ export function createProviderRouterResearchInvokerV2(
     trustedCompletenessProviderIds?: readonly string[]; maxProviderAttempts?: number; maxResults?: number;
     /** ISO-2 country for the company under research; biases every search it makes. */
     country?: string | null;
+    /** Carried into provider metadata so the ledger can attribute each call to a company. */
+    projectCompanyId?: string | null;
     onProviderCost?: (cost: number) => void;
   } = {},
 ): ResearchInvokerV2 {
@@ -190,6 +192,12 @@ export function createProviderRouterResearchInvokerV2(
     const metadata = {
       organizationId: request.organizationId,
       projectId: request.projectId,
+      // Without these the ledger knows a call happened and whose project it
+      // was, but not which company it was for - so "what did this company
+      // cost" could not be answered for the research pass, which is most of
+      // the provider spend.
+      companyId: request.companyId,
+      ...(configuration.projectCompanyId ? { projectCompanyId: configuration.projectCompanyId } : {}),
       intelligenceVersion: "JYRA_INTELLIGENCE_V2",
       ...(configuration.maxProviderAttempts ? { maxProviderAttempts: String(configuration.maxProviderAttempts) } : {}),
     };

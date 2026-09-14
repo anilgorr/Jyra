@@ -235,7 +235,7 @@ export async function runIntelligenceCycle(input: {
       icp: { requirements, assumptions: seller.icpAssumptions },
     },
     repository: input.repository,
-    researchInvoker: createProviderRouterResearchInvokerV2(new ProviderRouter(), { country }),
+    researchInvoker: createProviderRouterResearchInvokerV2(new ProviderRouter(), { country, projectCompanyId }),
     // Recorded per model attempt rather than from the finished run, so a
     // cycle that pays for a verdict and then fails still shows the spend.
     onSemanticCost: (cost) => void recordSpend({
