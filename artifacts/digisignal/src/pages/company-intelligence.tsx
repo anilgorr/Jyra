@@ -64,6 +64,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { SourceLink, WhyClaimTraceList } from "@/components/evidence/WhyClaimTrace";
 import { cn } from "@/lib/utils";
+import { describeApiError } from "@/lib/errors";
 
 function label(value: string | null | undefined) {
   return value ? value.replaceAll("_", " ").toLowerCase().replace(/^\w/, (char) => char.toUpperCase()) : "Unknown";
@@ -659,8 +660,8 @@ export default function CompanyIntelligencePage() {
         queryClient.setQueryData(getGetCompanyIntelligenceV2QueryKey(projectId, projectCompanyId), run);
         toast.success("Intelligence Core V2 analysis complete");
       },
-      onError: (error) => toast.error("V2 analysis failed", {
-        description: error instanceof Error ? error.message : "The V2 analysis could not be completed.",
+      onError: (error) => toast.error("Analysis failed", {
+        description: describeApiError(error, "The analysis could not be completed."),
       }),
     },
   });

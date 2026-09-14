@@ -48,5 +48,25 @@ export async function ensureDevelopmentFirecrawlProvider(): Promise<void> {
 
     await tx.insert(providerCapabilitiesTable).values({ providerId: provider.id, capability: "WEBSITE_CRAWL" })
       .onConflictDoNothing({ target: [providerCapabilitiesTable.providerId, providerCapabilitiesTable.capability] });
+
+    // Apify's crawl actor is the only other WEBSITE_CRAWL route, it costs
+    // USD 0.02 a company against Firecrawl's 0.004, and it has been failing
+    // while still billing for the attempt. With a Firecrawl key present there
+    // is nothing for it to fall back to usefully, so switch it off rather
+    // than leave it one provider error away from being paid to fail. Its row,
+    // actor configuration and credentials are untouched: clearing the
+    // Firecrawl key turns it back on at the next boot.
+    if (credentialStatus === "AVAILABLE") {
+      const [apify] = await tx.select().from(dataProvidersTable)
+        .where(eq(dataProvidersTable.providerType, "apify")).limit(1);
+      if (apify?.enabled) {
+        await tx.update(dataProvidersTable).set({
+          enabled: false,
+          priority: Math.max(apify.priority, 40),
+          configuration: { ...apify.configuration, routingRole: "FALLBACK", disabledReason: "SUPERSEDED_BY_FIRECRAWL" },
+          updatedAt: new Date(),
+        }).where(eq(dataProvidersTable.id, apify.id));
+      }
+    }
   });
 }

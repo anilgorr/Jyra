@@ -168,6 +168,8 @@ export async function runIntelligenceCycle(input: {
   actorId: string;
   now?: Date;
   log: CycleLogger;
+  /** How old a cached research package may be. The watch loop sets this per tier; Analyze takes the default. */
+  researchMaxAgeMs?: number;
 }): Promise<{ run: CompactRun; result: IntelligenceV2Result; assessmentId: string; changeset: ChangesetDiff }> {
   const { owned, log } = input;
   const projectId = owned.project.id;
@@ -216,6 +218,7 @@ export async function runIntelligenceCycle(input: {
     repository: input.repository,
     researchInvoker: createProviderRouterResearchInvokerV2(new ProviderRouter()),
     now: input.now,
+    ...(input.researchMaxAgeMs ? { researchMaxAgeMs: input.researchMaxAgeMs } : {}),
   });
   const run = compactRun(result, projectCompanyId, {
     businessTwin: seller.businessTwinVersionId,
@@ -364,6 +367,13 @@ export async function runIntelligenceCycle(input: {
     modelCalls: result.observability.modelCalls,
     costTotal: result.observability.totalCost,
   });
+  // The watch loop measures cadence from the last look and picks the DAILY
+  // tier from the last change; a manual Analyze counts as both.
+  await db.update(projectCompaniesTable).set({
+    lastWatchedAt: completedAt,
+    ...(changeset.hasChanges ? { lastChangeAt: completedAt } : {}),
+    updatedAt: completedAt,
+  }).where(eq(projectCompaniesTable.id, projectCompanyId));
 
   log.info({
     assessmentId: persisted.id, companyId: run.companyId, trigger: input.trigger,

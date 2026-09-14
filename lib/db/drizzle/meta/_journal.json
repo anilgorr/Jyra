@@ -43,6 +43,13 @@
       "when": 1788966592850,
       "tag": "0005_intelligence_v2_changesets",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1789373220585,
+      "tag": "0006_intelligence_v2_watch_gate",
+      "breakpoints": true
     }
   ]
 }

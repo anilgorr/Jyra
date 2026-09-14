@@ -55,6 +55,33 @@ export type BuyerRoleAssessmentRecord = {
   controlPlaneVersion?: string;
 };
 
+/**
+ * How often the watch loop looks at a company, and how hard.
+ *
+ * HOT   — an active signal or a live opportunity: gate daily, research fresh.
+ * DAILY — changed recently, or newly added: gate daily, research weekly.
+ * COLD  — nothing moving: gate weekly, full research monthly at most.
+ *
+ * Recomputed by the loop from the company's own state each tick; nobody sets
+ * it by hand.
+ */
+export const projectCompanyWatchTierEnum = pgEnum("project_company_watch_tier", ["HOT", "DAILY", "COLD"]);
+export type WatchTier = (typeof projectCompanyWatchTierEnum.enumValues)[number];
+
+/**
+ * What the change gate saw last time: a hash per first-party page and the
+ * ATS job count. The gate compares the next look against these and only
+ * wakes the paid pipeline when something moved.
+ */
+export type PageFingerprints = {
+  /** URL → SHA-256 of the page's normalised main text. Only pages that were readable. */
+  pages: Record<string, string>;
+  /** Open roles on the company's ATS board, or null when there is no board. */
+  jobCount: number | null;
+  /** ISO timestamp of the look these came from. */
+  checkedAt: string;
+};
+
 export const companiesTable = pgTable(
   "companies",
   {
@@ -64,6 +91,7 @@ export const companiesTable = pgTable(
     website: text("website"),
     linkedinUrl: text("linkedin_url"),
     profileUrls: jsonb("profile_urls").$type<Record<string, string>>().notNull().default({}),
+    pageFingerprints: jsonb("page_fingerprints").$type<PageFingerprints | null>(),
     country: text("country"),
     industry: text("industry"),
     employeeCount: integer("employee_count"),
@@ -138,6 +166,11 @@ export const projectCompaniesTable = pgTable(
     opportunityScore: real("opportunity_score"),
     opportunityAssessmentState: text("opportunity_assessment_state"),
     latestResearchAt: timestamp("latest_research_at", { withTimezone: true }),
+    watchTier: projectCompanyWatchTierEnum("watch_tier").notNull().default("COLD"),
+    /** When the loop last looked — a gate check or a full cycle. Cadence is measured from here. */
+    lastWatchedAt: timestamp("last_watched_at", { withTimezone: true }),
+    /** When a look last found something different. Drives the DAILY tier. */
+    lastChangeAt: timestamp("last_change_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true })
       .notNull()
       .defaultNow(),
@@ -153,6 +186,7 @@ export const projectCompaniesTable = pgTable(
     ),
     index("project_companies_project_id_idx").on(table.projectId),
     index("project_companies_company_id_idx").on(table.companyId),
+    index("project_companies_watch_idx").on(table.status, table.watchTier, table.lastWatchedAt),
   ],
 );
 

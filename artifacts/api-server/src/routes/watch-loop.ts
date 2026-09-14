@@ -60,13 +60,19 @@ router.get("/internal/watch-loop/last", (req, res) => {
   res.json({ running: inFlight !== null, last: lastReport });
 });
 
-/** Read-only: is the loop switched on, and with what cadence? Same token. */
+/** Read-only: is the loop switched on, and with what cadence per tier? Same token. */
 router.get("/internal/watch-loop/settings", (req, res) => {
   const expected = process.env.JYRA_WATCH_LOOP_TOKEN;
   if (!expected) return void res.status(404).json({ error: "Not found" });
   if (!watchLoopTokenMatches(req.header("authorization"), expected)) return void res.status(401).json({ error: "Unauthorized" });
   const settings = watchLoopSettings();
-  res.json({ ...settings, cadenceDays: settings.cadenceMs / (24 * 60 * 60 * 1000), running: inFlight !== null });
+  const day = 24 * 60 * 60 * 1000;
+  res.json({
+    ...settings,
+    cadenceDays: Object.fromEntries(Object.entries(settings.policies).map(([tier, policy]) => [tier, policy.cadenceMs / day])),
+    refreshDays: Object.fromEntries(Object.entries(settings.policies).map(([tier, policy]) => [tier, policy.refreshMs / day])),
+    running: inFlight !== null,
+  });
 });
 
 export default router;

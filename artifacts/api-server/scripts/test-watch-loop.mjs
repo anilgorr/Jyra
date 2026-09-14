@@ -1,10 +1,12 @@
 /**
  * The loop's decisions, without a database, a clock, or a model.
  *
- * What it must get right: never run when switched off; stop a project the
- * moment it would cross its daily budget and keep going on the others; not
- * let a company that can never run starve the ones behind it; count what it
- * did honestly; and never accept a scheduler that cannot prove who it is.
+ * What it must get right: never run when switched off; check cheaply before
+ * it spends; skip the cycle when the gate says nothing moved, and still
+ * record the look; stop a project the moment it would cross its daily budget
+ * and keep going on the others; not let a company that can never run starve
+ * the ones behind it; count what it did honestly; and never accept a
+ * scheduler that cannot prove who it is.
  */
 import assert from "node:assert/strict";
 import { loadHermetic } from "./lib/hermetic-bundle.mjs";
@@ -19,28 +21,41 @@ const w = await loadHermetic("./scripts/watch-loop-test-entry.ts", "/tmp/jyra-wa
 const DAY = 24 * 60 * 60 * 1000;
 const NOW = new Date("2026-09-10T03:00:00.000Z");
 const quiet = { info: () => {}, warn: () => {} };
-const settings = { enabled: true, cadenceMs: 7 * DAY, maxCompaniesPerTick: 3, fallbackCycleCostUsd: 0.05 };
-const owned = (id, projectId = "p1") => ({
+const policies = w.tierPolicies({ hotDays: 1, coldDays: 7 });
+const settings = { enabled: true, policies, maxCompaniesPerTick: 3, maxGateChecksPerTick: 30, fallbackCycleCostUsd: 0.05 };
+const owned = (id, projectId = "p1", tier = "COLD") => ({
   project: { id: projectId, organizationId: "org" },
-  projectCompany: { id: id, latestResearchAt: null },
-  company: { id: `c-${id}`, canonicalName: id.toUpperCase() },
-  dueSince: null,
+  projectCompany: { id: id, latestResearchAt: null, lastWatchedAt: null, lastChangeAt: null },
+  company: { id: `c-${id}`, canonicalName: id.toUpperCase(), domain: `${id}.com`, profileUrls: {}, pageFingerprints: null },
+  tier, policy: policies[tier], dueSince: null,
 });
 const ranCycle = (cost = 0.02, hasChanges = false, modelCalls = 1) => async () => ({
   changeset: { hasChanges }, result: { observability: { totalCost: cost, modelCalls } },
 });
+// The gate, as the loop sees it. By default everything is worth a cycle, so
+// the budget and cap checks below are about the loop, not the gate.
+const gateSaying = (run, decision = run ? "CHANGED" : "UNCHANGED", costUsd = 0.0033) => async () => ({
+  run, decision, reason: decision, pagesChecked: 4, pagesChanged: run ? ["https://x.com"] : [], jobCountBefore: null, jobCountAfter: null, costUsd, fingerprints: null,
+});
+const noRecord = async () => {};
 
-// 1. Settings: kill switch off by default; cadence and per-tick cap parsed, bounded, defaulted.
+// 1. Settings: kill switch off by default; tier cadences and caps parsed,
+//    bounded, defaulted — and the old single-cadence setting still means something.
 {
   assert.equal(w.watchLoopSettings({}).enabled, false, "off unless explicitly on");
   assert.equal(w.watchLoopSettings({ JYRA_WATCH_LOOP_ENABLED: "1" }).enabled, false, "only the literal string true");
   assert.equal(w.watchLoopSettings({ JYRA_WATCH_LOOP_ENABLED: "true" }).enabled, true);
-  assert.equal(w.watchLoopSettings({}).cadenceMs, 7 * DAY);
-  assert.equal(w.watchLoopSettings({ JYRA_WATCH_CADENCE_DAYS: "1" }).cadenceMs, DAY);
-  assert.equal(w.watchLoopSettings({ JYRA_WATCH_CADENCE_DAYS: "-3" }).cadenceMs, 7 * DAY);
+  assert.equal(w.watchLoopSettings({}).policies.COLD.cadenceMs, 7 * DAY);
+  assert.equal(w.watchLoopSettings({}).policies.HOT.cadenceMs, DAY);
+  assert.equal(w.watchLoopSettings({ JYRA_WATCH_COLD_DAYS: "14" }).policies.COLD.cadenceMs, 14 * DAY);
+  assert.equal(w.watchLoopSettings({ JYRA_WATCH_CADENCE_DAYS: "3" }).policies.COLD.cadenceMs, 3 * DAY, "the pre-tier setting still sets the cold cadence");
+  assert.equal(w.watchLoopSettings({ JYRA_WATCH_COLD_DAYS: "14", JYRA_WATCH_CADENCE_DAYS: "3" }).policies.COLD.cadenceMs, 14 * DAY, "the explicit one wins");
+  assert.equal(w.watchLoopSettings({ JYRA_WATCH_COLD_DAYS: "-3" }).policies.COLD.cadenceMs, 7 * DAY);
   assert.equal(w.watchLoopSettings({}).maxCompaniesPerTick, 10);
   assert.equal(w.watchLoopSettings({ JYRA_WATCH_MAX_PER_TICK: "500" }).maxCompaniesPerTick, 50, "capped");
   assert.equal(w.watchLoopSettings({ JYRA_WATCH_MAX_PER_TICK: "abc" }).maxCompaniesPerTick, 10);
+  assert.equal(w.watchLoopSettings({}).maxGateChecksPerTick, 60, "many more cheap looks than expensive ones");
+  assert.equal(w.watchLoopSettings({ JYRA_WATCH_MAX_GATES_PER_TICK: "9999" }).maxGateChecksPerTick, 500, "capped");
 }
 
 // 2. Switched off: nothing is selected, nothing runs, and the report says so.
@@ -48,7 +63,8 @@ const ranCycle = (cost = 0.02, hasChanges = false, modelCalls = 1) => async () =
   let selected = 0;
   const report = await w.runWatchLoopTick({
     repository: {}, log: quiet, now: NOW, settings: { ...settings, enabled: false },
-    select: async () => { selected++; return [owned("a")]; }, cycle: ranCycle(), spend: async () => ({ spentTodayUsd: 0, recentCycleCosts: [] }), dailyBudgetFor: async () => 25,
+    select: async () => { selected++; return [owned("a")]; }, cycle: ranCycle(), gate: gateSaying(true), record: noRecord,
+    spend: async () => ({ spentTodayUsd: 0, recentCycleCosts: [] }), dailyBudgetFor: async () => 25,
   });
   assert.equal(report.enabled, false);
   assert.equal(selected, 0, "a disabled loop does not even look");
@@ -66,18 +82,23 @@ const ranCycle = (cost = 0.02, hasChanges = false, modelCalls = 1) => async () =
   assert.equal(w.budgetAllowsCycle({ spend: { spentTodayUsd: 0.5, recentCycleCosts: [Number.NaN, -1, 0.1] }, dailyBudgetUsd: 1, fallbackCycleCostUsd: 0.05 }).estimateUsd, 0.1, "garbage costs are ignored");
 }
 
-// 4. A project that crosses its budget stops; a different project in the same tick keeps going.
+// 4. A project that crosses its budget stops; a different project in the same
+//    tick keeps going. Nothing over budget is even gated — the cheap look is
+//    still a cost, and a project that cannot act on the answer should not pay.
 {
   const spendByProject = { p1: 0.99, p2: 0 };
   const cycles = [];
+  let gates = 0;
   const report = await w.runWatchLoopTick({
     repository: {}, log: quiet, now: NOW, settings,
     select: async () => [owned("a", "p1"), owned("b", "p2"), owned("c", "p1")],
     spend: async (projectId) => ({ spentTodayUsd: spendByProject[projectId], recentCycleCosts: [0.05] }),
-    dailyBudgetFor: async () => 1,
+    dailyBudgetFor: async () => 1, record: noRecord,
+    gate: async (...args) => { gates++; return gateSaying(true)(...args); },
     cycle: async ({ owned: o, trigger, actorId }) => { cycles.push([o.projectCompany.id, trigger, actorId]); return (await ranCycle(0.05, true)()); },
   });
   assert.deepEqual(cycles, [["b", "SCHEDULED", w.SCHEDULER_ACTOR]], "p1 is over budget before it starts; p2 runs; p1's second company is not re-checked");
+  assert.equal(gates, 1, "only the company that could act was gated");
   assert.equal(report.ran, 1);
   assert.equal(report.skipped, 2);
   assert.equal(report.changed, 1);
@@ -85,14 +106,15 @@ const ranCycle = (cost = 0.02, hasChanges = false, modelCalls = 1) => async () =
   assert.equal(report.outcomes.find((o) => o.projectCompanyId === "c").reason, "project budget exhausted earlier this tick");
 }
 
-// 5. The per-tick cap counts executed cycles, so a company that can never run
-//    (no seller context yet) does not consume the slots of those behind it.
+// 5. The per-tick cycle cap counts executed cycles, so a company that can never
+//    run (no seller context yet) does not consume the slots of those behind it.
 {
   const ran = [];
   const report = await w.runWatchLoopTick({
-    repository: {}, log: quiet, now: NOW, settings: { ...settings, maxCompaniesPerTick: 2 },
-    select: async (_now, _s, limit) => { assert.equal(limit, 8, "over-selects four times the cap"); return [owned("stuck", "p0"), owned("a"), owned("b"), owned("c")]; },
+    repository: {}, log: quiet, now: NOW, settings: { ...settings, maxCompaniesPerTick: 2, maxGateChecksPerTick: 4 },
+    select: async (_now, _s, limit) => { assert.equal(limit, 4, "the gate cap, not the cycle cap, bounds selection"); return [owned("stuck", "p0"), owned("a"), owned("b"), owned("c")]; },
     spend: async () => ({ spentTodayUsd: 0, recentCycleCosts: [] }), dailyBudgetFor: async () => 25,
+    gate: gateSaying(true), record: noRecord,
     cycle: async ({ owned: o }) => {
       if (o.project.id === "p0") throw new w.SellerContextIncompleteError(["business twin"]);
       ran.push(o.projectCompany.id); return ranCycle()();
@@ -101,7 +123,9 @@ const ranCycle = (cost = 0.02, hasChanges = false, modelCalls = 1) => async () =
   assert.deepEqual(ran, ["a", "b"], "two real cycles despite the stuck one sorting first");
   assert.equal(report.ran, 2);
   assert.equal(report.outcomes[0].result, "skipped_seller_context");
-  assert.equal(report.outcomes.length, 3, "c was never reached");
+  assert.equal(report.checked, 4, "all four were looked at cheaply");
+  assert.equal(report.outcomes[3].result, "skipped_budget", "c was gated but its cycle waits for the next tick");
+  assert.equal(report.outcomes[3].reason, "per-tick cycle cap reached");
 }
 
 // 6. A failing cycle is counted, logged, and does not stop the tick — and it does count toward the cap.
@@ -111,13 +135,14 @@ const ranCycle = (cost = 0.02, hasChanges = false, modelCalls = 1) => async () =
     repository: {}, log: { info: () => {}, warn: (obj, msg) => warnings.push(msg) }, now: NOW, settings: { ...settings, maxCompaniesPerTick: 2 },
     select: async () => [owned("boom"), owned("ok"), owned("never")],
     spend: async () => ({ spentTodayUsd: 0, recentCycleCosts: [] }), dailyBudgetFor: async () => 25,
+    gate: gateSaying(true, "CHANGED", 0), record: noRecord,
     cycle: async ({ owned: o }) => { if (o.projectCompany.id === "boom") throw new Error("provider exploded"); return ranCycle(0.01)(); },
   });
   assert.equal(report.failed, 1);
   assert.equal(report.ran, 1);
   assert.equal(report.outcomes.find((o) => o.result === "failed").reason, "provider exploded");
   assert.ok(warnings.includes("WATCH_LOOP_CYCLE_FAILED"));
-  assert.equal(report.outcomes.length, 2, "the failure used a slot; 'never' waits for the next tick");
+  assert.equal(report.outcomes.filter((o) => o.result === "ran" || o.result === "failed").length, 2, "the failure used a slot");
   assert.equal(Math.round(report.spentUsd * 100) / 100, 0.01);
 }
 
@@ -133,7 +158,6 @@ const ranCycle = (cost = 0.02, hasChanges = false, modelCalls = 1) => async () =
   assert.equal(w.watchLoopTokenMatches(undefined, token), false);
 }
 
-
 // 8. Each cycle is stamped when it runs. A fixed `now` is honoured (tests), but
 //    absent one the tick must not hand every company the same timestamp.
 {
@@ -142,10 +166,77 @@ const ranCycle = (cost = 0.02, hasChanges = false, modelCalls = 1) => async () =
     repository: {}, log: quiet, settings: { ...settings, maxCompaniesPerTick: 3 },
     select: async () => [owned("a"), owned("b"), owned("c")],
     spend: async () => ({ spentTodayUsd: 0, recentCycleCosts: [] }), dailyBudgetFor: async () => 25,
+    gate: gateSaying(true, "CHANGED", 0), record: noRecord,
     cycle: async ({ now: t }) => { stamps.push(t.getTime()); await new Promise((r) => setTimeout(r, 5)); return ranCycle()(); },
   });
   assert.equal(stamps.length, 3);
   assert.ok(stamps[1] > stamps[0] && stamps[2] > stamps[1], "later cycles carry later timestamps");
+}
+
+// 9. The point of the whole phase: ten quiet companies cost ten cheap looks and
+//    no cycles, and every look is recorded so the ledger can see it.
+{
+  const recorded = [];
+  const report = await w.runWatchLoopTick({
+    repository: {}, log: quiet, now: NOW, settings: { ...settings, maxCompaniesPerTick: 10, maxGateChecksPerTick: 10 },
+    select: async () => Array.from({ length: 10 }, (_, i) => owned(`q${i}`)),
+    spend: async () => ({ spentTodayUsd: 0, recentCycleCosts: [0.05] }), dailyBudgetFor: async () => 25,
+    gate: gateSaying(false), record: async (entry) => { recorded.push(entry); },
+    cycle: async () => { throw new Error("a cycle must not run for an unchanged company"); },
+  });
+  assert.equal(report.unchanged, 10);
+  assert.equal(report.ran, 0);
+  assert.equal(report.checked, 10);
+  assert.equal(recorded.length, 10, "every look is written down, cycle or not");
+  assert.equal(recorded[0].owned.tier, "COLD");
+  assert.ok(report.spentUsd < 0.04, `ten quiet companies cost ${report.spentUsd}, well under a cycle`);
+  assert.equal(Math.round(report.gateSpentUsd * 1e6), Math.round(report.spentUsd * 1e6), "with no cycles, all spend is gate spend");
+  assert.equal(report.outcomes[0].gate.decision, "UNCHANGED");
+}
+
+// 10. The tier decides the research window handed to the cycle, so a cold
+//     company's cycle may reuse month-old research and a hot one may not.
+{
+  const windows = [];
+  await w.runWatchLoopTick({
+    repository: {}, log: quiet, now: NOW, settings: { ...settings, maxCompaniesPerTick: 3 },
+    select: async () => [owned("hot", "p1", "HOT"), owned("cold", "p1", "COLD")],
+    spend: async () => ({ spentTodayUsd: 0, recentCycleCosts: [] }), dailyBudgetFor: async () => 25,
+    gate: gateSaying(true, "REFRESH", 0), record: noRecord,
+    cycle: async ({ owned: o, researchMaxAgeMs }) => { windows.push([o.projectCompany.id, researchMaxAgeMs]); return ranCycle()(); },
+  });
+  assert.deepEqual(windows, [["hot", DAY], ["cold", 30 * DAY]]);
+}
+
+// 11. A gate that throws falls back to running the cycle — the behaviour before
+//     the gate existed — rather than silently skipping a company forever.
+{
+  const ran = [];
+  const warnings = [];
+  const report = await w.runWatchLoopTick({
+    repository: {}, log: { info: () => {}, warn: (obj, msg) => warnings.push(msg) }, now: NOW, settings,
+    select: async () => [owned("a")],
+    spend: async () => ({ spentTodayUsd: 0, recentCycleCosts: [] }), dailyBudgetFor: async () => 25,
+    gate: async () => { throw new Error("firecrawl down"); }, record: noRecord,
+    cycle: async ({ owned: o }) => { ran.push(o.projectCompany.id); return ranCycle()(); },
+  });
+  assert.deepEqual(ran, ["a"], "a broken gate never costs us a company");
+  assert.equal(report.outcomes[0].gate.reason, "GATE_FAILED");
+  assert.ok(warnings.includes("WATCH_LOOP_GATE_FAILED"));
+}
+
+// 12. Recording a check is best-effort: a write that fails is logged and the
+//     cycle still runs, because the decision was already paid for.
+{
+  const warnings = [];
+  const report = await w.runWatchLoopTick({
+    repository: {}, log: { info: () => {}, warn: (obj, msg) => warnings.push(msg) }, now: NOW, settings,
+    select: async () => [owned("a")],
+    spend: async () => ({ spentTodayUsd: 0, recentCycleCosts: [] }), dailyBudgetFor: async () => 25,
+    gate: gateSaying(true, "CHANGED", 0), record: async () => { throw new Error("db down"); }, cycle: ranCycle(),
+  });
+  assert.equal(report.ran, 1);
+  assert.ok(warnings.includes("WATCH_LOOP_CHECK_RECORD_FAILED"));
 }
 
 console.log("PASS watch-loop");
