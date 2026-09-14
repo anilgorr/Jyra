@@ -119,7 +119,7 @@
     "regression:task-109-evidence-to-icp": "NODE_ENV=development JYRA_TASK_109_POST_REPAIR_REGRESSION=YES node ./scripts/run-task-109-evidence-to-icp-regression.mjs",
     "backfill:ats-boards": "node --env-file-if-exists=../../.env scripts/backfill-ats-boards.mjs",
     "watch-loop:tick": "node --env-file-if-exists=../../.env scripts/run-watch-loop.mjs",
-    "bakeoff": "node scripts/provider-bakeoff.mjs"
+    "bakeoff": "node --env-file-if-exists=../../.env scripts/provider-bakeoff.mjs"
   },
   "dependencies": {
     "@clerk/express": "^2.1.63",
