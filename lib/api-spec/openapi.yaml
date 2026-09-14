@@ -3329,7 +3329,7 @@ components:
     PlanUsage:
       type: object
       additionalProperties: false
-      required: [plan, watchPool, spend]
+      required: [plan, watchPool, intentAccounts, spend]
       properties:
         plan:
           type: object
@@ -3359,6 +3359,36 @@ components:
             limit: { type: number }
             remaining: { type: number }
             thisProject: { type: number }
+        intentAccounts:
+          type: object
+          additionalProperties: false
+          required: [delivered, promised, remaining, month, workingList]
+          description: >-
+            The unit the customer buys. A watched company becomes an intent account when it
+            fits the ICP and a new signal fires; once per company per month.
+          properties:
+            month: { type: string, description: First day of the billing month, UTC. }
+            delivered: { type: number }
+            promised: { type: number }
+            remaining: { type: number }
+            workingList:
+              type: array
+              description: This month's accounts, newest first, as recorded at delivery.
+              items:
+                type: object
+                additionalProperties: false
+                required: [projectCompanyId, companyName, who, commercialRole, signalCount, deliveredAt]
+                properties:
+                  projectCompanyId: { type: string }
+                  companyName: { type: string }
+                  domain: { type: string, nullable: true }
+                  country: { type: string, nullable: true }
+                  who: { type: string }
+                  commercialRole: { type: string }
+                  signalSummary: { type: string, nullable: true }
+                  signalCount: { type: number }
+                  score: { type: number, nullable: true }
+                  deliveredAt: { type: string }
         spend:
           type: object
           additionalProperties: false

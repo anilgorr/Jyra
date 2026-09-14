@@ -1740,6 +1740,32 @@ export type PlanUsageWatchPool = {
   thisProject: number;
 };
 
+export type PlanUsageIntentAccountsWorkingListItem = {
+  projectCompanyId: string;
+  companyName: string;
+  domain?: string | null;
+  country?: string | null;
+  who: string;
+  commercialRole: string;
+  signalSummary?: string | null;
+  signalCount: number;
+  score?: number | null;
+  deliveredAt: string;
+};
+
+/**
+ * The unit the customer buys. A watched company becomes an intent account when it fits the ICP and a new signal fires; once per company per month.
+ */
+export type PlanUsageIntentAccounts = {
+  /** First day of the billing month */
+  month: string;
+  delivered: number;
+  promised: number;
+  remaining: number;
+  /** This month's accounts, newest first, as recorded at delivery. */
+  workingList: PlanUsageIntentAccountsWorkingListItem[];
+};
+
 export type PlanUsageSpendBreakdownItem = {
   kind: string;
   source: string;
@@ -1759,6 +1785,8 @@ export type PlanUsageSpend = {
 export interface PlanUsage {
   plan: PlanUsagePlan;
   watchPool: PlanUsageWatchPool;
+  /** The unit the customer buys. A watched company becomes an intent account when it fits the ICP and a new signal fires; once per company per month. */
+  intentAccounts: PlanUsageIntentAccounts;
   spend: PlanUsageSpend;
 }
 

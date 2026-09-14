@@ -3,6 +3,7 @@ import { Router, type IRouter, type RequestHandler } from "express";
 import { db, organizationMembersTable, projectCompaniesTable, projectsTable } from "@workspace/db";
 import { GetProjectPlanUsageParams, GetProjectPlanUsageResponse } from "@workspace/api-zod";
 import { getAuthenticatedUserId, requireAuth } from "../middlewares/auth";
+import { intentAccountsInMonth, monthOf, workingList } from "../lib/intent-accounts";
 import { resolveOrganizationPlan, watchPoolUsage } from "../lib/plans";
 import { organizationSpendBreakdown, organizationSpendSince, utcDayStart, utcMonthStart, wastedSpendSince } from "../lib/spend-ledger";
 
@@ -35,12 +36,15 @@ router.get("/projects/:projectId/plan", requireAuth, asyncRoute(async (req, res)
 
   const now = new Date();
   const monthStart = utcMonthStart(now);
-  const [plan, used, thisProject, monthToDateUsd, todayUsd, wasted, breakdown] = await Promise.all([
+  const month = monthOf(now);
+  const [plan, used, thisProject, delivered, list, monthToDateUsd, todayUsd, wasted, breakdown] = await Promise.all([
     resolveOrganizationPlan(project.organizationId),
     watchPoolUsage(project.organizationId),
     db.select({ count: sql<number>`count(*)::int` }).from(projectCompaniesTable)
       .where(and(eq(projectCompaniesTable.projectId, project.id), ne(projectCompaniesTable.status, "archived")))
       .then((rows) => Number(rows[0]?.count ?? 0)),
+    intentAccountsInMonth(project.organizationId, month),
+    workingList(project.id, month),
     // Organisation-wide, to match the plan and the breakdown below it. These
     // were per-project while the breakdown was per-organisation, so on an
     // account with two projects the headline never summed to the table.
@@ -58,6 +62,11 @@ router.get("/projects/:projectId/plan", requireAuth, asyncRoute(async (req, res)
       assigned: plan.assigned, overridden: plan.overridden,
     },
     watchPool: { used, limit: plan.watchPoolSize, remaining: Math.max(0, plan.watchPoolSize - used), thisProject },
+    intentAccounts: {
+      month, delivered, promised: plan.intentAccountsPerMonth,
+      remaining: Math.max(0, plan.intentAccountsPerMonth - delivered),
+      workingList: list,
+    },
     spend: { monthToDateUsd, todayUsd, wastedUsd: wasted.costUsd, breakdown },
   }));
 }));

@@ -2563,6 +2563,24 @@ export const GetProjectPlanUsageResponse = zod.object({
   "remaining": zod.number(),
   "thisProject": zod.number()
 }),
+  "intentAccounts": zod.object({
+  "month": zod.string().describe('First day of the billing month'),
+  "delivered": zod.number(),
+  "promised": zod.number(),
+  "remaining": zod.number(),
+  "workingList": zod.array(zod.object({
+  "projectCompanyId": zod.string(),
+  "companyName": zod.string(),
+  "domain": zod.string().nullish(),
+  "country": zod.string().nullish(),
+  "who": zod.string(),
+  "commercialRole": zod.string(),
+  "signalSummary": zod.string().nullish(),
+  "signalCount": zod.number(),
+  "score": zod.number().nullish(),
+  "deliveredAt": zod.string()
+})).describe('This month\'s accounts, newest first, as recorded at delivery.')
+}).describe('The unit the customer buys. A watched company becomes an intent account when it fits the ICP and a new signal fires; once per company per month.'),
   "spend": zod.object({
   "monthToDateUsd": zod.number(),
   "todayUsd": zod.number(),

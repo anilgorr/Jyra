@@ -4,7 +4,8 @@ import { useWorkspace } from "@/context/workspace-context";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { AlertTriangle, Coins, Gauge, Radar, Send, Target } from "lucide-react";
+import { AlertTriangle, Building2, Coins, Gauge, Radar, Send, Target } from "lucide-react";
+import { Link } from "wouter";
 
 /**
  * What you are on, what you have used, and what it costs to run.
@@ -80,9 +81,12 @@ export default function PlanPage() {
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Stat
           icon={Target}
-          label="Intent accounts / month"
-          value={String(data.plan.intentAccountsPerMonth)}
-          sub="What the plan promises"
+          label="Intent accounts this month"
+          value={`${data.intentAccounts.delivered} / ${data.intentAccounts.promised}`}
+          sub={data.intentAccounts.remaining > 0
+            ? `${data.intentAccounts.remaining} still to find`
+            : "The month's promise is met"}
+          {...(data.intentAccounts.delivered === 0 ? { tone: "warn" as const } : {})}
         />
         <Stat
           icon={Radar}
@@ -99,6 +103,59 @@ export default function PlanPage() {
           sub={`${inr(data.spend.monthToDateUsd)} · ${usd(data.spend.todayUsd)} today · whole account`}
         />
       </div>
+
+
+      <Card className="p-4">
+        <div className="flex flex-wrap items-baseline justify-between gap-3">
+          <h2 className="font-medium">Working list</h2>
+          <span className="text-sm text-muted-foreground">
+            Companies that fit your ICP and did something this month
+          </span>
+        </div>
+        {data.intentAccounts.workingList.length === 0 ? (
+          <p className="mt-3 text-sm text-muted-foreground">
+            Nothing yet this month. An account lands here when a watched company both fits your ICP and a new
+            signal fires — hiring, a security incident, a leadership change. Fit alone is a list; a signal on a
+            company you could never sell to is noise.
+          </p>
+        ) : (
+          <div className="mt-3 overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="text-left text-xs uppercase tracking-wider text-muted-foreground">
+                  <th className="pb-2 pr-4 font-medium">Company</th>
+                  <th className="pb-2 pr-4 font-medium">Why now</th>
+                  <th className="pb-2 pr-4 font-medium">Fit</th>
+                  <th className="pb-2 pr-4 text-right font-medium">Score</th>
+                  <th className="pb-2 text-right font-medium">Delivered</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data.intentAccounts.workingList.map((row) => (
+                  <tr key={row.projectCompanyId} className="border-t">
+                    <td className="py-2 pr-4">
+                      <Link href={`/companies/${row.projectCompanyId}`} className="font-medium hover:underline">
+                        {row.companyName}
+                      </Link>
+                      {row.country ? <span className="ml-2 text-xs text-muted-foreground">{row.country}</span> : null}
+                    </td>
+                    <td className="py-2 pr-4 text-muted-foreground">
+                      {row.signalSummary ?? `${row.signalCount} new signal${row.signalCount === 1 ? "" : "s"}`}
+                    </td>
+                    <td className="py-2 pr-4">
+                      <Badge variant="secondary">{row.who.replace(/_/g, " ").toLowerCase()}</Badge>
+                    </td>
+                    <td className="py-2 pr-4 text-right tabular-nums">{row.score === null || row.score === undefined ? "—" : Math.round(row.score)}</td>
+                    <td className="py-2 text-right text-muted-foreground tabular-nums">
+                      {new Date(row.deliveredAt).toLocaleDateString()}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </Card>
 
       <Card className="p-4">
         <div className="flex items-baseline justify-between gap-3">

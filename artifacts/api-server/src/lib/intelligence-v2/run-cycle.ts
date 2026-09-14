@@ -25,6 +25,7 @@ import { mapEventHitsToFacts, persistEventFacts, researchEvents, type EventFactR
 import { atsHandleFromProfileUrls, atsHandleToProfileUrls, discoverAtsHandle, fetchAtsJobs } from "./ats-boards";
 import { resolveCompanyCountry } from "./company-country";
 import { recordSpend } from "../spend-ledger";
+import { recordIntentAccount } from "../intent-accounts";
 import {
   computeChangeset, evidenceFromRunSnapshot, verdictFromRunSnapshot,
   type ChangesetDiff, type ScoreSnapshot, type VerdictSnapshot,
@@ -383,9 +384,13 @@ export async function runIntelligenceCycle(input: {
   // this has to run before the re-score. Neither failure turns a completed
   // run into an error — the persisted assessment stands.
   let signalsCreated = 0;
+  let createdSignalIds: string[] = [];
+  let signalSummary: string | null = null;
   try {
     const signals = await evaluateSignalsForCompany({ organizationId, projectId, companyId: owned.company.id, now: completedAt });
     signalsCreated = signals.created.length;
+    createdSignalIds = signals.created.map((signal) => signal.id);
+    signalSummary = signals.created.map((signal) => signal.categorySnapshot).filter(Boolean).join(", ") || null;
   } catch (error) {
     log.warn({ err: error, projectCompanyId }, "SIGNAL_EVALUATION_FAILED");
   }
@@ -395,11 +400,26 @@ export async function runIntelligenceCycle(input: {
     log.warn({ err: error, assessmentId: persisted.id, projectCompanyId }, "Opportunity re-evaluation after Intelligence Core V2 run failed; the persisted assessment is unaffected");
   }
 
+  // The unit the customer buys: a company that fits the ICP and did something
+  // this cycle. Recorded here, at the moment it becomes true, rather than
+  // recomputed later from a score that will have moved — this row is what a
+  // shortfall credit is argued from.
+  const score = await readScore(projectCompanyId);
+  const intent = await recordIntentAccount({
+    organizationId, projectId, projectCompanyId, companyId: owned.company.id,
+    who: run.who.value, commercialRole: run.commercialRole.value,
+    signalsCreated, signalIds: createdSignalIds, signalSummary,
+    score: score?.score ?? null, now: completedAt,
+  });
+  if (intent.recorded) {
+    log.info({ projectCompanyId, company: owned.company.canonicalName, who: run.who.value, role: run.commercialRole.value, signals: signalsCreated }, "INTENT_ACCOUNT_DELIVERED");
+  }
+
   const changeset = computeChangeset(before, {
     profileFingerprint: run.fingerprints.profile,
     evidence: run.evidence.map((item) => ({ evidenceId: item.evidenceId, version: item.version, sourceType: item.sourceType, title: item.title, url: item.url })),
     verdict: verdictOf(run),
-    score: await readScore(projectCompanyId),
+    score,
     factsAdded,
     signalsCreated,
   });
