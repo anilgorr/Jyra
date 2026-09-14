@@ -169,6 +169,17 @@ export async function recordWatchCheck(input: {
   now: Date;
 }): Promise<void> {
   const { owned, outcome, now } = input;
+  // The money was spent before either write. Recording it first means a
+  // transaction that fails still leaves the spend on the ledger — the
+  // check row can be lost, the cost cannot.
+  await recordSpend({
+    organizationId: owned.project.organizationId, projectId: owned.project.id,
+    projectCompanyId: owned.projectCompany.id, companyId: owned.company.id,
+    kind: "GATE", source: "change-gate",
+    outcome: outcome.decision === "UNGATED" ? "empty" : "success",
+    costUsd: outcome.costUsd, occurredAt: now,
+    metadata: { decision: outcome.decision, reason: outcome.reason, pagesChecked: outcome.pagesChecked },
+  });
   await db.transaction(async (tx) => {
     await tx.insert(intelligenceV2WatchChecksTable).values({
       organizationId: owned.project.organizationId,
@@ -198,14 +209,6 @@ export async function recordWatchCheck(input: {
       ...(outcome.decision === "CHANGED" ? { lastChangeAt: now } : {}),
       updatedAt: now,
     }).where(eq(projectCompaniesTable.id, owned.projectCompany.id));
-  });
-  await recordSpend({
-    organizationId: owned.project.organizationId, projectId: owned.project.id,
-    projectCompanyId: owned.projectCompany.id, companyId: owned.company.id,
-    kind: "GATE", source: "change-gate",
-    outcome: outcome.decision === "UNGATED" ? "empty" : "success",
-    costUsd: outcome.costUsd, occurredAt: now,
-    metadata: { decision: outcome.decision, reason: outcome.reason, pagesChecked: outcome.pagesChecked },
   });
 }
 

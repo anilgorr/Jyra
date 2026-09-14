@@ -196,13 +196,15 @@ export async function runIntelligenceCycle(input: {
   const previousRow = await loadLatestIntelligenceV2Assessment(projectId, projectCompanyId);
   // Where this company is. Every search below is biased towards it, because a
   // geo-neutral query is answered from wherever the datacentre happens to be —
-  // Singapore, in our case. Read from what the last cycle already learned, so
-  // it costs nothing; the first cycle falls back to the domain's TLD.
-  const geography = (previousRow?.runSnapshot as { geography?: { headquarters?: { value?: string } | null; primaryOperatingGeography?: { value?: string } | null } } | undefined)?.geography;
+  // Singapore, in our case.
+  //
+  // Only the stored value and the domain are available here. The run snapshot
+  // does not carry geography, so reading a headquarters claim off it — which
+  // is what this did when it shipped — silently resolved to nothing every
+  // time. The headquarters claim is applied at the end of the cycle instead,
+  // from the fresh profile, and the next cycle reads it from the column.
   const { country, source: countrySource } = resolveCompanyCountry({
     storedCountry: owned.company.country,
-    headquarters: geography?.headquarters?.value ?? null,
-    primaryGeography: geography?.primaryOperatingGeography?.value ?? null,
     domain: owned.company.domain,
   });
   log.info({ projectCompanyId, company: owned.company.canonicalName, country, countrySource }, "COMPANY_COUNTRY_RESOLVED");
@@ -336,8 +338,19 @@ export async function runIntelligenceCycle(input: {
       companyId: owned.company.id, companyDomain: owned.company.domain, evidence: result.evidence, now: completedAt,
     }, tx);
     log.info({ assessmentId: row.id, evidenceInserted: evidence.inserted, evidenceReused: evidence.reused, evidenceSkipped: evidence.skipped }, "V2_EVIDENCE_PERSISTED");
-    if (country && country !== owned.company.country) {
-      await tx.update(companiesTable).set({ country, updatedAt: completedAt }).where(eq(companiesTable.id, owned.company.id));
+    // What this cycle's research says about where the company is. A
+    // headquarters claim beats the TLD guess we searched with, so store it
+    // and the next cycle is biased correctly. A TLD-derived country is only
+    // written when nothing better is known.
+    const researched = resolveCompanyCountry({
+      headquarters: result.profile.geography.headquarters?.value ?? null,
+      primaryGeography: result.profile.geography.primaryOperatingGeography?.value ?? null,
+      domain: owned.company.domain,
+    });
+    if (researched.country && researched.country !== owned.company.country) {
+      await tx.update(companiesTable).set({ country: researched.country, updatedAt: completedAt })
+        .where(eq(companiesTable.id, owned.company.id));
+      log.info({ projectCompanyId, country: researched.country, source: researched.source, searchedWith: country }, "COMPANY_COUNTRY_LEARNED");
     }
     if (discoveredAtsHandle) {
       await tx.update(companiesTable).set({

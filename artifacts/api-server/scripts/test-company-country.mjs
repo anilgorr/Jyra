@@ -80,7 +80,21 @@ const c = await loadHermetic("./scripts/company-country-test-entry.ts", "/tmp/jy
     { country: null, source: "none" });
 }
 
-// 5. The country reaches the search. This is the whole point of the phase:
+// 5. What the cycle can actually see. The run snapshot carries no geography,
+//    so a headquarters claim read off it resolves to nothing, which is what
+//    the first version of this did, silently, for every company. Before the
+//    cycle only the stored column and the domain are available; the
+//    headquarters claim is applied afterwards, from the fresh profile.
+{
+  const beforeCycle = c.resolveCompanyCountry({ storedCountry: null, domain: "zerodha.com" });
+  assert.deepEqual(beforeCycle, { country: null, source: "none" },
+    "a .com with nothing stored searches unbiased - there is no HQ claim to read yet");
+  const afterCycle = c.resolveCompanyCountry({ headquarters: "Bengaluru, Karnataka, India", domain: "zerodha.com" });
+  assert.deepEqual(afterCycle, { country: "IN", source: "headquarters" },
+    "and research teaches it, for the column the next cycle reads");
+}
+
+// 6. The country reaches the search. This is the whole point of the phase:
 //    every query was geo-neutral, so Google answered from the datacentre.
 {
   const requests = [];

@@ -24,6 +24,19 @@ services:
         value: JYRA_INTELLIGENCE_V2
       - key: JYRA_TRUST_PROXY_HOPS
         value: "1"
+      # --- watch loop: see .env.example for what each one does ---
+      - key: JYRA_WATCH_LOOP_ENABLED
+        value: "true"
+      - key: JYRA_WATCH_HOT_DAYS
+        value: "1"
+      - key: JYRA_WATCH_COLD_DAYS
+        value: "7"
+      - key: JYRA_WATCH_MAX_PER_TICK
+        value: "10"
+      - key: JYRA_WATCH_MAX_GATES_PER_TICK
+        value: "60"
+      - key: JYRA_WATCH_LOOP_TOKEN   # the bearer token the GitHub cron presents
+        sync: false
       # --- secrets: set these in the Render dashboard (Environment tab) ---
       - key: DATABASE_URL            # Supabase JYRA project connection string (Session pooler, port 5432)
         sync: false

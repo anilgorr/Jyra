@@ -22,12 +22,15 @@ const looksLikeHtml = (message: string): boolean => /<!doctype|<html|<\/?[a-z]+>
 
 export function describeApiError(error: unknown, fallback = "Something went wrong. Please try again."): string {
   const status = statusOf(error);
-  if (status === 502 || status === 503 || status === 504) {
+  // 504 is its own case and must be tested before the restart window, or it
+  // gets swallowed by it: a gateway timeout means the work ran too long, not
+  // that the service is down, and "try again shortly" is the wrong advice.
+  if (status === 504) return "That took longer than the gateway allows. It may still be running — give it a minute, then reload.";
+  if (status === 502 || status === 503) {
     return "The service is starting back up — this usually clears within a minute. Try again shortly.";
   }
   if (status === 401 || status === 403) return "Your session has expired. Sign in again and retry.";
   if (status === 429) return "Too many requests just now. Give it a moment and try again.";
-  if (status === 504) return "That took too long to finish. Try again in a minute.";
   const message = error instanceof Error ? error.message.trim() : "";
   if (!message || looksLikeHtml(message)) return fallback;
   // Drop the "HTTP 400 Bad Request: " prefix; the reader wants the sentence after it.

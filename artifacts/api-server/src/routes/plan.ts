@@ -4,7 +4,7 @@ import { db, organizationMembersTable, projectCompaniesTable, projectsTable } fr
 import { GetProjectPlanUsageParams, GetProjectPlanUsageResponse } from "@workspace/api-zod";
 import { getAuthenticatedUserId, requireAuth } from "../middlewares/auth";
 import { resolveOrganizationPlan, watchPoolUsage } from "../lib/plans";
-import { organizationSpendBreakdown, projectSpendSince, utcDayStart, utcMonthStart, wastedSpendSince } from "../lib/spend-ledger";
+import { organizationSpendBreakdown, organizationSpendSince, utcDayStart, utcMonthStart, wastedSpendSince } from "../lib/spend-ledger";
 
 const router: IRouter = Router();
 type AsyncHandler = (...args: Parameters<RequestHandler>) => Promise<void>;
@@ -41,8 +41,11 @@ router.get("/projects/:projectId/plan", requireAuth, asyncRoute(async (req, res)
     db.select({ count: sql<number>`count(*)::int` }).from(projectCompaniesTable)
       .where(and(eq(projectCompaniesTable.projectId, project.id), ne(projectCompaniesTable.status, "archived")))
       .then((rows) => Number(rows[0]?.count ?? 0)),
-    projectSpendSince(project.id, monthStart),
-    projectSpendSince(project.id, utcDayStart(now)),
+    // Organisation-wide, to match the plan and the breakdown below it. These
+    // were per-project while the breakdown was per-organisation, so on an
+    // account with two projects the headline never summed to the table.
+    organizationSpendSince(project.organizationId, monthStart),
+    organizationSpendSince(project.organizationId, utcDayStart(now)),
     wastedSpendSince(project.organizationId, monthStart),
     organizationSpendBreakdown(project.organizationId, monthStart),
   ]);

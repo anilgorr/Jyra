@@ -129,8 +129,16 @@ export function createCoresignalEmailAdapter(
         capturedAt,
       });
 
+      // A refusal decided here costs nothing — no request leaves the process.
+      // Reporting the estimate put phantom money on the ledger and reserved it
+      // against the project's daily budget, which is how a ceiling starts
+      // fencing against spend that was never going to happen.
+      const refuse = (code: string, message: string): ProviderResponse<EmailLookupResult> => ({
+        ...fail(code, message, false),
+        usage: { estimatedCost: 0, actualCost: 0, latencyMs: 0, runtimeMs: 0, resultCount: 0 },
+      });
       const apiKey = options.apiKey ?? process.env[configuration.credentialEnv ?? DEFAULTS.credentialEnv];
-      if (!apiKey) return fail("CREDENTIALS_MISSING", "Coresignal credentials are not configured", false);
+      if (!apiKey) return refuse("CREDENTIALS_MISSING", "Coresignal credentials are not configured");
       const personName = request.personName?.trim();
       if (!personName) return empty();
 

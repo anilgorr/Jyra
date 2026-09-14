@@ -96,7 +96,7 @@ export default function PlanPage() {
           icon={Coins}
           label="Run cost this month"
           value={usd(data.spend.monthToDateUsd)}
-          sub={`${inr(data.spend.monthToDateUsd)} · ${usd(data.spend.todayUsd)} today`}
+          sub={`${inr(data.spend.monthToDateUsd)} · ${usd(data.spend.todayUsd)} today · whole account`}
         />
       </div>
 

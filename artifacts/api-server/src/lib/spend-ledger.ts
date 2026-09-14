@@ -76,6 +76,14 @@ export function utcMonthStart(now: Date): Date {
   return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
 }
 
+/** What an organisation has spent since a moment — the figure the plan is measured against. */
+export async function organizationSpendSince(organizationId: string, since: Date): Promise<number> {
+  const [row] = await db.select({ total: sql<number>`coalesce(sum(${spendLedgerTable.costUsd}), 0)` })
+    .from(spendLedgerTable)
+    .where(and(eq(spendLedgerTable.organizationId, organizationId), gte(spendLedgerTable.occurredAt, since)));
+  return Number(row?.total ?? 0);
+}
+
 /** What a project has spent since a moment — every kind, successes and failures alike. */
 export async function projectSpendSince(projectId: string, since: Date): Promise<number> {
   const [row] = await db.select({ total: sql<number>`coalesce(sum(${spendLedgerTable.costUsd}), 0)` })
