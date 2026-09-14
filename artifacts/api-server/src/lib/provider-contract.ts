@@ -174,6 +174,8 @@ export type SearchWebRequest = ProviderRequestBase & {
   query: string;
   domains?: string[];
   limit?: number;
+  /** ISO 3166-1 alpha-2 of the company being researched; vendors that localise results (Google) use it. */
+  country?: string;
   searchDepth?: "basic" | "advanced";
   excludeDomains?: string[];
   topic?: "general" | "news" | "finance";
@@ -289,12 +291,14 @@ export type GetJobsRequest = ProviderRequestBase & {
   domain?: string;
   query?: string;
   limit?: number;
+  country?: string;
 };
 
 export type SearchNewsRequest = ProviderRequestBase & {
   query: string;
   domains?: string[];
   limit?: number;
+  country?: string;
 };
 
 export type DetectTechnologyRequest = ProviderRequestBase & {

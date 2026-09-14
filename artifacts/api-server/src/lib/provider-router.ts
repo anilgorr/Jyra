@@ -31,6 +31,12 @@ import {
   parseTavilyProviderConfiguration,
 } from "./tavily-provider";
 import {
+  createSerperNewsSearchAdapter,
+  createSerperWebSearchAdapter,
+  parseSerperProviderConfiguration,
+} from "./serper-provider";
+import { createFirecrawlWebsiteCrawlAdapter, parseFirecrawlProviderConfiguration } from "./firecrawl-provider";
+import {
   createExaCompanyDiscoveryAdapter,
   createExaWebSearchAdapter,
   parseExaProviderConfiguration,
@@ -99,6 +105,12 @@ export type ProviderCostBound =
   | { kind: "priced"; enabledProviderCount: number; upperBound: number };
 
 function defaultRoutingRole(providerType: string): ProviderRoutingRole | null {
+  // Serper won the 14 Sep 2026 bake-off (docs/bakeoff/) and is seeded at a
+  // lower priority number than Tavily, so it is asked first. Tavily keeps
+  // PRIMARY by default so a deployment without a Serper row still searches;
+  // the Serper seeding demotes Tavily's row to FALLBACK where both exist.
+  if (providerType === "serper") return "PRIMARY";
+  if (providerType === "firecrawl") return "PRIMARY";
   if (providerType === "tavily") return "PRIMARY";
   if (providerType === "exa") return "FALLBACK";
   return null;
@@ -337,6 +349,18 @@ function defaultAdapterFactory(
       providerId: provider.id,
       configuration: parseApifyProviderConfiguration(provider.configuration),
     });
+  }
+  if (provider.providerType === "firecrawl") {
+    return [createFirecrawlWebsiteCrawlAdapter({ providerId: provider.id, configuration: parseFirecrawlProviderConfiguration(provider.configuration) })];
+  }
+  if (provider.providerType === "serper") {
+    const options = { providerId: provider.id, configuration: parseSerperProviderConfiguration(provider.configuration) };
+    const search = createSerperWebSearchAdapter(options);
+    return [
+      search,
+      createSerperNewsSearchAdapter(options),
+      createSearchBackedJobAdapter({ providerId: provider.id, searchWeb: (input) => search.execute(input) }),
+    ];
   }
   if (provider.providerType === "tavily") {
     const search = createTavilyWebSearchAdapter({

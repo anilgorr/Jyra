@@ -37,6 +37,10 @@ services:
         sync: false
       - key: EXPLEE_API_KEY
         sync: false
+      - key: SERPER_API_KEY         # primary search (bake-off 14 Sep 2026); Tavily is the fallback
+        sync: false
+      - key: FIRECRAWL_API_KEY      # first-party page text + change gate
+        sync: false
       - key: TAVILY_API_KEY
         sync: false
       - key: EXA_API_KEY

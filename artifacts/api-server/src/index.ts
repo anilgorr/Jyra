@@ -2,6 +2,8 @@ import app from "./app";
 import { ensureDevelopmentApifyProvider } from "./lib/apify-provider-config";
 import { ensureDevelopmentExaProvider } from "./lib/exa-provider-config";
 import { ensureDevelopmentTavilyProvider } from "./lib/tavily-provider-config";
+import { ensureDevelopmentSerperProvider } from "./lib/serper-provider-config";
+import { ensureDevelopmentFirecrawlProvider } from "./lib/firecrawl-provider-config";
 import { ensureDevelopmentBrightDataProvider } from "./lib/bright-data-provider-config";
 import { ensureDevelopmentCoresignalProvider } from "./lib/coresignal-provider-config";
 import { ensureDevelopmentExpleeProvider } from "./lib/explee-provider-config";
@@ -30,6 +32,8 @@ async function main() {
     await ensureDevelopmentApifyProvider();
     await ensureDevelopmentExaProvider();
     await ensureDevelopmentTavilyProvider();
+    await ensureDevelopmentSerperProvider();
+    await ensureDevelopmentFirecrawlProvider();
     await ensureDevelopmentBrightDataProvider();
     await ensureDevelopmentCoresignalProvider();
     await ensureDevelopmentExpleeProvider();
