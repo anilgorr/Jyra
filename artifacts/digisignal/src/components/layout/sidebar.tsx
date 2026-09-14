@@ -11,7 +11,7 @@ import {
   Wrench,
   RadioTower,
   ShieldCheck,
-  Radar,
+  Radar, Gauge,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuthSession } from "@/lib/auth";
@@ -34,6 +34,7 @@ export const navItems = [
   { href: "/changes", label: "What changed", icon: Radar },
   { href: "/business-twin", label: "Business Twin", icon: Workflow },
   { href: "/icp", label: "Dynamic ICP", icon: Crosshair },
+  { href: "/plan", label: "Plan & usage", icon: Gauge },
 ];
 
 export function Sidebar() {

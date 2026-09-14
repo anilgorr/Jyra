@@ -1718,6 +1718,50 @@ export interface BusinessTwinClaim {
   isAssumption: boolean;
 }
 
+export type PlanUsagePlan = {
+  code: string;
+  name: string;
+  intentAccountsPerMonth: number;
+  watchPoolSize: number;
+  senderSeats: number;
+  priceInr: number;
+  priceUsd: number;
+  /** False when nobody has assigned a plan and the default applies. */
+  assigned: boolean;
+  /** Limits negotiated for this organisation rather than taken from the tier. */
+  overridden: string[];
+};
+
+export type PlanUsageWatchPool = {
+  /** Companies under watch across the whole organisation. */
+  used: number;
+  limit: number;
+  remaining: number;
+  thisProject: number;
+};
+
+export type PlanUsageSpendBreakdownItem = {
+  kind: string;
+  source: string;
+  outcome: string;
+  calls: number;
+  costUsd: number;
+};
+
+export type PlanUsageSpend = {
+  monthToDateUsd: number;
+  todayUsd: number;
+  /** Spend on attempts that returned nothing — refusals, empties, failures. */
+  wastedUsd: number;
+  breakdown: PlanUsageSpendBreakdownItem[];
+};
+
+export interface PlanUsage {
+  plan: PlanUsagePlan;
+  watchPool: PlanUsageWatchPool;
+  spend: PlanUsageSpend;
+}
+
 export type BusinessTwinSuggestionRequestBusinessMaturityStage = typeof BusinessTwinSuggestionRequestBusinessMaturityStage[keyof typeof BusinessTwinSuggestionRequestBusinessMaturityStage];
 
 

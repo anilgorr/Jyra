@@ -121,6 +121,7 @@ import type {
   OpportunityWhyGeneration,
   Organization,
   OrganizationInput,
+  PlanUsage,
   Project,
   ProjectChangeFeed,
   ProjectCompany,
@@ -1654,6 +1655,84 @@ export const useRegenerateBusinessTwin = <TError = ErrorType<UnauthorizedRespons
       > => {
       return useMutation(getRegenerateBusinessTwinMutationOptions(options));
     }
+
+export const getGetProjectPlanUsageUrl = (projectId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/plan`
+}
+
+/**
+ * The organisation's plan limits, how much of the watch pool is in use, and what the month has cost to run. Spend is shown to organisation members because they are paying for it; it is the same figure the invoice is built from.
+ * @summary The plan behind this project, and what it has used
+ */
+export const getProjectPlanUsage = async (projectId: string, options?: Parameters<typeof customFetch>[1]): Promise<PlanUsage> => {
+
+  return customFetch<PlanUsage>(getGetProjectPlanUsageUrl(projectId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetProjectPlanUsageQueryKey = (projectId: string,) => {
+    return [
+    `/api/projects/${projectId}/plan`
+    ] as const;
+    }
+
+
+export const getGetProjectPlanUsageQueryOptions = <TData = Awaited<ReturnType<typeof getProjectPlanUsage>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(projectId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getProjectPlanUsage>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetProjectPlanUsageQueryKey(projectId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getProjectPlanUsage>>> = ({ signal }) => getProjectPlanUsage(projectId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: projectId !== null && projectId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getProjectPlanUsage>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetProjectPlanUsageQueryResult = NonNullable<Awaited<ReturnType<typeof getProjectPlanUsage>>>
+export type GetProjectPlanUsageQueryError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+
+/**
+ * @summary The plan behind this project, and what it has used
+ */
+
+export function useGetProjectPlanUsage<TData = Awaited<ReturnType<typeof getProjectPlanUsage>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(
+ projectId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getProjectPlanUsage>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetProjectPlanUsageQueryOptions(projectId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
 
 export const getSuggestBusinessTwinUrl = (projectId: string,) => {
 

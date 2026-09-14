@@ -41,6 +41,7 @@ import {
   getAuthenticatedUserId,
   requireAuth,
 } from "../middlewares/auth";
+import { assertWatchPoolCapacity, PlanLimitError } from "../lib/plans";
 
 const router: IRouter = Router();
 
@@ -517,6 +518,18 @@ router.post(
       res.status(400).json({ error: normalized.errors.join(". ") });
       return;
     }
+    // The plan's watch pool is checked before any resolution work: being told
+    // the pool is full is more useful than a 409 about an alias conflict on a
+    // company that could never have been added.
+    try {
+      await assertWatchPoolCapacity(access.project.organizationId, 1);
+    } catch (error) {
+      if (error instanceof PlanLimitError) {
+        res.status(409).json({ error: error.message, code: error.code, plan: error.plan.code, used: error.used, limit: error.plan.watchPoolSize });
+        return;
+      }
+      throw error;
+    }
     const knownResolution = await resolveKnownCompany(body.data, {
       projectId: access.project.id,
     });
@@ -677,6 +690,18 @@ router.post(
     if (!access.project) {
       denyProjectAccess(res, access.status ?? 404);
       return;
+    }
+    // Checked once for the whole batch: a hundred-row import should be told
+    // up front that it has room for twelve, not fail on the thirteenth row
+    // with a partial result and no explanation.
+    try {
+      await assertWatchPoolCapacity(access.project.organizationId, body.data.rows.length);
+    } catch (error) {
+      if (error instanceof PlanLimitError) {
+        res.status(409).json({ error: error.message, code: error.code, plan: error.plan.code, used: error.used, limit: error.plan.watchPoolSize });
+        return;
+      }
+      throw error;
     }
 
     const importResult = await db.transaction(async (tx) => {

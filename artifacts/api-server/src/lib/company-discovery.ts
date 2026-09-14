@@ -32,6 +32,7 @@ import { resolveCompanyProfileWithRouter } from "./company-profile-resolution";
 import { assessBuyerRole, sameBuyerRoleAssessment, trustedCanonicalDomainDescription, type BuyerRoleAssessment } from "./buyer-role-resolution";
 import { getCanonicalCompanyProfile } from "./canonical-company-profile";
 import { resolveProjectSellerContext, type ProjectSellerContext } from "./seller-context";
+import { PlanLimitError, watchPoolCapacity } from "./plans";
 
 type DiscoveryInput = {
   organizationId: string;
@@ -866,7 +867,12 @@ function candidateReport(
 
 export async function discoverCompaniesForProject(input: DiscoveryInput): Promise<DiscoveryResult> {
   const now = input.now ?? new Date();
-  const limit = Math.min(50, Math.max(1, input.limit ?? 20));
+  // Discovery is bounded by what the plan's watch pool has room for. Clamping
+  // is kinder than refusing: "find me twenty" with room for six should return
+  // six good ones, not an error. A full pool finds nothing and says why.
+  const capacity = await watchPoolCapacity(input.organizationId);
+  const limit = Math.min(50, Math.max(0, Math.min(input.limit ?? 20, capacity.remaining)));
+  if (limit === 0) throw new PlanLimitError("watchPool", capacity.plan, capacity.used, 1);
   const maxProviderCalls = Math.min(10, Math.max(1, input.maxProviderCalls ?? 5));
   const providerAttemptBudget = new ProviderAttemptBudget(maxProviderCalls);
   // Resolve once before a run row or provider request. A caller cannot borrow

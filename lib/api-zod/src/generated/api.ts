@@ -2538,6 +2538,47 @@ export const RegenerateBusinessTwinResponse = zod.object({
 
 
 /**
+ * The organisation's plan limits, how much of the watch pool is in use, and what the month has cost to run. Spend is shown to organisation members because they are paying for it; it is the same figure the invoice is built from.
+ * @summary The plan behind this project, and what it has used
+ */
+export const GetProjectPlanUsageParams = zod.object({
+  "projectId": zod.coerce.string()
+})
+
+export const GetProjectPlanUsageResponse = zod.object({
+  "plan": zod.object({
+  "code": zod.string(),
+  "name": zod.string(),
+  "intentAccountsPerMonth": zod.number(),
+  "watchPoolSize": zod.number(),
+  "senderSeats": zod.number(),
+  "priceInr": zod.number(),
+  "priceUsd": zod.number(),
+  "assigned": zod.boolean().describe('False when nobody has assigned a plan and the default applies.'),
+  "overridden": zod.array(zod.string()).describe('Limits negotiated for this organisation rather than taken from the tier.')
+}),
+  "watchPool": zod.object({
+  "used": zod.number().describe('Companies under watch across the whole organisation.'),
+  "limit": zod.number(),
+  "remaining": zod.number(),
+  "thisProject": zod.number()
+}),
+  "spend": zod.object({
+  "monthToDateUsd": zod.number(),
+  "todayUsd": zod.number(),
+  "wastedUsd": zod.number().describe('Spend on attempts that returned nothing — refusals, empties, failures.'),
+  "breakdown": zod.array(zod.object({
+  "kind": zod.string(),
+  "source": zod.string(),
+  "outcome": zod.string(),
+  "calls": zod.number(),
+  "costUsd": zod.number()
+}))
+})
+})
+
+
+/**
  * Takes the company name, website, a one-line description of what is sold and the business stage, and returns a checklist of candidate answers for every other Business Twin field. Nothing is saved; the seller ticks, edits and accepts, and the accepted items are submitted as raw answers to create a version.
  * @summary Draft Business Twin options from four basics
  */

@@ -1,5 +1,6 @@
 import app from "./app";
 import { ensureDevelopmentApifyProvider } from "./lib/apify-provider-config";
+import { ensurePlansSeeded } from "./lib/plans";
 import { ensureDevelopmentExaProvider } from "./lib/exa-provider-config";
 import { ensureDevelopmentTavilyProvider } from "./lib/tavily-provider-config";
 import { ensureDevelopmentSerperProvider } from "./lib/serper-provider-config";
@@ -29,6 +30,7 @@ async function main() {
     assertMarketReadinessProcessingConfig();
   }
   if (process.env.NODE_ENV !== "production") {
+    await ensurePlansSeeded();
     await ensureDevelopmentApifyProvider();
     await ensureDevelopmentExaProvider();
     await ensureDevelopmentTavilyProvider();

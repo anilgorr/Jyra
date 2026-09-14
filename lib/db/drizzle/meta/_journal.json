@@ -57,6 +57,13 @@
       "when": 1789395940680,
       "tag": "0007_spend_ledger",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1789396547622,
+      "tag": "0008_plans",
+      "breakpoints": true
     }
   ]
 }

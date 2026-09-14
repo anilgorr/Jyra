@@ -2,6 +2,7 @@ import { and, eq } from "drizzle-orm";
 import { Router, type IRouter, type RequestHandler } from "express";
 import { db, organizationMembersTable, projectsTable } from "@workspace/db";
 import { discoverCompaniesForProject } from "../lib/company-discovery";
+import { PlanLimitError } from "../lib/plans";
 import { ProviderRouter } from "../lib/provider-router";
 import { getAuthenticatedUserId, requireAuth } from "../middlewares/auth";
 import { z } from "zod/v4";
@@ -62,14 +63,23 @@ router.post("/projects/:projectId/discovery", requireAuth, asyncRoute(async (req
     res.status(403).json({ error: "Project access denied" });
     return;
   }
-  const result = await discoverCompaniesForProject({
-    organizationId: project.organizationId,
-    projectId: project.id,
-    userId,
-    router: new ProviderRouter(),
-    limit: body.data.limit,
-    orchestrateAcceptedCandidates: true,
-  });
+  let result;
+  try {
+    result = await discoverCompaniesForProject({
+      organizationId: project.organizationId,
+      projectId: project.id,
+      userId,
+      router: new ProviderRouter(),
+      limit: body.data.limit,
+      orchestrateAcceptedCandidates: true,
+    });
+  } catch (error) {
+    if (error instanceof PlanLimitError) {
+      res.status(409).json({ error: error.message, code: error.code, plan: error.plan.code, used: error.used, limit: error.plan.watchPoolSize });
+      return;
+    }
+    throw error;
+  }
   res.status(result.status === "blocked" ? 424 : 200).json(result);
 }));
 

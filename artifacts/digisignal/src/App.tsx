@@ -30,6 +30,7 @@ import Outcomes from './pages/outcomes';
 import Learning from './pages/learning';
 import AdminQualityPage from './pages/admin-quality';
 import { WorkspaceProvider } from './context/workspace-context';
+import PlanPage from "@/pages/plan";
 
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
 
@@ -91,6 +92,7 @@ function AuthenticatedRoutes() {
             <Route path="/companies/:projectCompanyId" component={CompanyIntelligencePage} />
             <Route path="/companies" component={CompaniesPage} />
             <Route path="/business-twin" component={BusinessTwinPage} />
+            <Route path="/plan" component={PlanPage} />
             <Route path="/icp" component={IcpPage} />
             <Route path="/research" component={Research} />
             <Route path="/signals" component={Signals} />

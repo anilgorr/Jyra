@@ -453,6 +453,32 @@ paths:
           $ref: "#/components/responses/MaturityStageRequired"
         "502":
           $ref: "#/components/responses/InterpretationUnavailable"
+  /projects/{projectId}/plan:
+    get:
+      operationId: getProjectPlanUsage
+      tags: [plan]
+      summary: The plan behind this project, and what it has used
+      description: >-
+        The organisation's plan limits, how much of the watch pool is in use, and what
+        the month has cost to run. Spend is shown to organisation members because they
+        are paying for it; it is the same figure the invoice is built from.
+      security:
+        - clerkSession: []
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+      responses:
+        "200":
+          description: Plan and usage
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlanUsage"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
   /projects/{projectId}/business-twin/suggestions:
     post:
       operationId: suggestBusinessTwin
@@ -3300,6 +3326,61 @@ components:
         isAssumption:
           type: boolean
       required: [key, statement, provenance, validationStatus, evidence, isAssumption]
+    PlanUsage:
+      type: object
+      additionalProperties: false
+      required: [plan, watchPool, spend]
+      properties:
+        plan:
+          type: object
+          additionalProperties: false
+          required: [code, name, intentAccountsPerMonth, watchPoolSize, senderSeats, priceInr, priceUsd, assigned, overridden]
+          properties:
+            code: { type: string }
+            name: { type: string }
+            intentAccountsPerMonth: { type: number }
+            watchPoolSize: { type: number }
+            senderSeats: { type: number }
+            priceInr: { type: number }
+            priceUsd: { type: number }
+            assigned:
+              type: boolean
+              description: False when nobody has assigned a plan and the default applies.
+            overridden:
+              type: array
+              items: { type: string }
+              description: Limits negotiated for this organisation rather than taken from the tier.
+        watchPool:
+          type: object
+          additionalProperties: false
+          required: [used, limit, remaining, thisProject]
+          properties:
+            used: { type: number, description: Companies under watch across the whole organisation. }
+            limit: { type: number }
+            remaining: { type: number }
+            thisProject: { type: number }
+        spend:
+          type: object
+          additionalProperties: false
+          required: [monthToDateUsd, todayUsd, wastedUsd, breakdown]
+          properties:
+            monthToDateUsd: { type: number }
+            todayUsd: { type: number }
+            wastedUsd:
+              type: number
+              description: Spend on attempts that returned nothing — refusals, empties, failures.
+            breakdown:
+              type: array
+              items:
+                type: object
+                additionalProperties: false
+                required: [kind, source, outcome, calls, costUsd]
+                properties:
+                  kind: { type: string }
+                  source: { type: string }
+                  outcome: { type: string }
+                  calls: { type: number }
+                  costUsd: { type: number }
     BusinessTwinSuggestionRequest:
       type: object
       properties:
