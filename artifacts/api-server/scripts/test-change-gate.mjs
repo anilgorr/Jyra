@@ -6,7 +6,8 @@
  * cycle; a moved page or a moved job count wakes the cycle; a first look
  * never claims change; a page that fails to load is not a change; the refresh
  * window overrides silence so a company is never watched forever without a
- * real look; and every page attempted is counted as spend, readable or not.
+ * real look; pages are read free-first and only the stubborn ones are paid
+ * for; and a sweep the rate limiter refused is not recorded as a look.
  */
 import assert from "node:assert/strict";
 import { loadHermetic } from "./lib/hermetic-bundle.mjs";
@@ -17,15 +18,18 @@ const DAY = g.DAY_MS;
 const NOW = new Date("2026-09-14T09:00:00.000Z");
 const policies = g.tierPolicies({ hotDays: 1, coldDays: 7 });
 
-const page = (url, text, ok = true) => ({
-  url, finalUrl: url, title: null, text: ok ? text : "", textHash: g.textFingerprint(ok ? text : ""),
-  statusCode: ok ? 200 : 404, ok, error: ok ? null : "PAGE_HTTP_404",
+const page = (url, text, ok = true, via = "direct") => ({
+  url, ok, stamp: ok ? `${via}:${g.textFingerprint(text)}` : null, via,
+  error: ok ? null : "HTTP_404", rateLimited: false,
 });
+const limited = (url) => ({ url, ok: false, stamp: null, via: "firecrawl", error: "RATE_LIMITED", rateLimited: true });
+// A reader, as the gate sees it: takes URLs, returns rows and what it cost.
+const reading = (pages, costUsd = 0) => async () => ({ pages, costUsd });
 const company = (overrides = {}) => ({
   domain: "zerodha.com", canonicalName: "Zerodha", profileUrls: {}, pageFingerprints: null, ...overrides,
 });
-const fingerprintsFor = (pairs, jobCount = null) => ({
-  pages: Object.fromEntries(pairs.map(([url, text]) => [url, g.textFingerprint(text)])),
+const fingerprintsFor = (pairs, jobCount = null, via = "direct") => ({
+  pages: Object.fromEntries(pairs.map(([url, text]) => [url, `${via}:${g.textFingerprint(text)}`])),
   jobCount, checkedAt: "2026-09-07T09:00:00.000Z",
 });
 const HOME = "https://zerodha.com";
@@ -61,20 +65,20 @@ const CAREERS = "https://zerodha.com/careers";
 // 3. Nothing moved: no cycle, and the whole look cost four page reads.
 {
   const previous = fingerprintsFor([[HOME, "Zerodha builds broking tools"], [CAREERS, "Open roles: SOC Analyst"]], 4);
-  let scraped = null;
+  let asked = null;
   const outcome = await g.evaluateChangeGate({
     company: company({ pageFingerprints: previous }),
     latestResearchAt: new Date(NOW.getTime() - 2 * DAY),
     policy: policies.COLD, now: NOW, scrapeAvailable: true,
-    scrape: async (urls) => { scraped = urls; return [page(HOME, "Zerodha builds broking tools"), page(CAREERS, "Open roles: SOC Analyst")]; },
+    read: async (urls) => { asked = urls; return { pages: [page(HOME, "Zerodha builds broking tools"), page(CAREERS, "Open roles: SOC Analyst")], costUsd: 0 }; },
     countJobs: async () => 4,
   });
-  assert.deepEqual(scraped, [HOME, CAREERS], "only the pages known to exist are re-read");
+  assert.deepEqual(asked, [HOME, CAREERS], "only the pages known to exist are re-read");
   assert.equal(outcome.run, false);
   assert.equal(outcome.decision, "UNCHANGED");
   assert.deepEqual(outcome.pagesChanged, []);
-  assert.equal(outcome.costUsd, 2 * g.GATE_PAGE_COST_USD);
-  assert.ok(outcome.costUsd < 0.002, "a quiet look is a tenth of a cent");
+  assert.equal(outcome.costUsd, 0, "pages the free reader can handle cost nothing at all");
+  assert.equal(outcome.counted, true);
   assert.equal(outcome.fingerprints.jobCount, 4);
   assert.equal(outcome.fingerprints.checkedAt, NOW.toISOString());
 }
@@ -86,14 +90,14 @@ const CAREERS = "https://zerodha.com/careers";
     company: company({ pageFingerprints: previous }),
     latestResearchAt: new Date(NOW.getTime() - 2 * DAY),
     policy: policies.COLD, now: NOW, scrapeAvailable: true,
-    scrape: async () => [page(HOME, "Zerodha builds broking tools"), page(CAREERS, "Open roles: SOC Analyst, Head of Security")],
+    read: reading([page(HOME, "Zerodha builds broking tools"), page(CAREERS, "Open roles: SOC Analyst, Head of Security")]),
     countJobs: async () => 4,
   });
   assert.equal(outcome.run, true);
   assert.equal(outcome.decision, "CHANGED");
   assert.equal(outcome.reason, "PAGES_CHANGED");
   assert.deepEqual(outcome.pagesChanged, [CAREERS]);
-  assert.equal(outcome.fingerprints.pages[CAREERS], g.textFingerprint("Open roles: SOC Analyst, Head of Security"));
+  assert.equal(outcome.fingerprints.pages[CAREERS], `direct:${g.textFingerprint("Open roles: SOC Analyst, Head of Security")}`, "the stamp records which reader produced it");
 }
 
 // 5. Whitespace and case are not change; a different job count is.
@@ -102,13 +106,13 @@ const CAREERS = "https://zerodha.com/careers";
   const same = await g.evaluateChangeGate({
     company: company({ pageFingerprints: previous }), latestResearchAt: new Date(NOW.getTime() - DAY),
     policy: policies.COLD, now: NOW, scrapeAvailable: true,
-    scrape: async () => [page(HOME, "ZERODHA   builds\n\nbroking tools")], countJobs: async () => 4,
+    read: reading([page(HOME, "ZERODHA   builds\n\nbroking tools")]), countJobs: async () => 4,
   });
   assert.equal(same.decision, "UNCHANGED", "re-rendered whitespace is not news");
   const hiring = await g.evaluateChangeGate({
     company: company({ pageFingerprints: previous }), latestResearchAt: new Date(NOW.getTime() - DAY),
     policy: policies.COLD, now: NOW, scrapeAvailable: true,
-    scrape: async () => [page(HOME, "Zerodha builds broking tools")], countJobs: async () => 9,
+    read: reading([page(HOME, "Zerodha builds broking tools")]), countJobs: async () => 9,
   });
   assert.equal(hiring.run, true);
   assert.equal(hiring.reason, "JOBS_CHANGED");
@@ -119,18 +123,17 @@ const CAREERS = "https://zerodha.com/careers";
 // 6. The first look records a baseline and does NOT run a cycle it cannot justify —
 //    but it probes every candidate path, because it does not yet know which exist.
 {
-  let asked = null;
+  let probed = null;
   const outcome = await g.evaluateChangeGate({
     company: company(), latestResearchAt: new Date(NOW.getTime() - DAY),
     policy: policies.COLD, now: NOW, scrapeAvailable: true,
-    scrape: async (urls) => { asked = urls; return [page(HOME, "Zerodha builds broking tools"), page("https://zerodha.com/about", "", false), page("https://zerodha.com/about-us", "", false), page(CAREERS, "Open roles"), page("https://zerodha.com/jobs", "", false)]; },
+    read: async (urls) => { probed = urls; return { pages: [page(HOME, "Zerodha builds broking tools"), page("https://zerodha.com/about", "", false), page(CAREERS, "Open roles")], costUsd: g.GATE_PAGE_COST_USD }; },
     countJobs: async () => null,
   });
-  assert.equal(asked.length, 5, "every candidate path is tried once");
+  assert.deepEqual(probed, [HOME, "https://zerodha.com/about", CAREERS], "home, about and careers — three paths, not five");
   assert.equal(outcome.run, false);
   assert.equal(outcome.decision, "BASELINE");
   assert.deepEqual(outcome.pagesChanged, []);
-  assert.equal(outcome.costUsd, 5 * g.GATE_PAGE_COST_USD, "Firecrawl charges for the 404s too");
   assert.deepEqual(Object.keys(outcome.fingerprints.pages), [HOME, CAREERS], "only readable pages are remembered");
   assert.equal(g.urlsToCheck("zerodha.com", outcome.fingerprints).length, 2, "next week only those two are read");
 }
@@ -141,7 +144,7 @@ const CAREERS = "https://zerodha.com/careers";
   const outcome = await g.evaluateChangeGate({
     company: company({ pageFingerprints: previous }), latestResearchAt: new Date(NOW.getTime() - DAY),
     policy: policies.COLD, now: NOW, scrapeAvailable: true,
-    scrape: async () => [page(HOME, "Zerodha builds broking tools"), page(CAREERS, "", false)],
+    read: reading([page(HOME, "Zerodha builds broking tools"), page(CAREERS, "", false)]),
     countJobs: async () => null,
   });
   assert.equal(outcome.decision, "UNCHANGED", "a timeout is not news");
@@ -156,14 +159,14 @@ const CAREERS = "https://zerodha.com/careers";
     company: company({ pageFingerprints: previous }),
     latestResearchAt: new Date(NOW.getTime() - 31 * DAY),
     policy: policies.COLD, now: NOW, scrapeAvailable: true,
-    scrape: async () => [page(HOME, "Zerodha builds broking tools")], countJobs: async () => 4,
+    read: reading([page(HOME, "Zerodha builds broking tools")]), countJobs: async () => 4,
   });
   assert.equal(stale.run, true);
   assert.equal(stale.decision, "REFRESH");
   assert.equal(stale.reason, "REFRESH_WINDOW_LAPSED");
   const fresh = await g.evaluateChangeGate({
     company: company(), latestResearchAt: null, policy: policies.COLD, now: NOW, scrapeAvailable: true,
-    scrape: async () => [page(HOME, "Zerodha builds broking tools")], countJobs: async () => null,
+    read: reading([page(HOME, "Zerodha builds broking tools")]), countJobs: async () => null,
   });
   assert.equal(fresh.run, true);
   assert.equal(fresh.reason, "NEVER_RESEARCHED");
@@ -175,18 +178,22 @@ const CAREERS = "https://zerodha.com/careers";
   const noDomain = await g.evaluateChangeGate({
     company: company({ domain: null, pageFingerprints: { pages: {}, jobCount: 4, checkedAt: "2026-09-07T09:00:00.000Z" } }),
     latestResearchAt: new Date(NOW.getTime() - DAY), policy: policies.COLD, now: NOW, scrapeAvailable: true,
-    scrape: async () => { throw new Error("must not scrape without a domain"); }, countJobs: async () => 4,
+    read: async () => { throw new Error("must not read pages without a domain"); }, countJobs: async () => 4,
   });
   assert.equal(noDomain.run, false);
   assert.equal(noDomain.decision, "UNGATED");
   assert.equal(noDomain.costUsd, 0);
+  // Without a Firecrawl key the free reader still works; the gate is not disabled.
+  let sawFlag = null;
   const noKey = await g.evaluateChangeGate({
-    company: company({ pageFingerprints: { pages: {}, jobCount: 4, checkedAt: "2026-09-07T09:00:00.000Z" } }),
+    company: company({ pageFingerprints: fingerprintsFor([[HOME, "Zerodha builds broking tools"]], 4) }),
     latestResearchAt: new Date(NOW.getTime() - DAY), policy: policies.COLD, now: NOW, scrapeAvailable: false,
-    scrape: async () => { throw new Error("must not scrape without a key"); }, countJobs: async () => 7,
+    read: async (_urls, options) => { sawFlag = options.scrapeAvailable; return { pages: [page(HOME, "Zerodha builds broking tools")], costUsd: 0 }; },
+    countJobs: async () => 7,
   });
+  assert.equal(sawFlag, false, "the reader is told the paid fallback is unavailable");
   assert.equal(noKey.run, true);
-  assert.equal(noKey.reason, "JOBS_CHANGED", "the free signal still works when the paid one is unavailable");
+  assert.equal(noKey.reason, "JOBS_CHANGED", "the free signals still work when the paid one is unavailable");
 }
 
 // 10. A provider that falls over does not crash the gate or invent a change.
@@ -195,7 +202,7 @@ const CAREERS = "https://zerodha.com/careers";
   const outcome = await g.evaluateChangeGate({
     company: company({ pageFingerprints: previous }), latestResearchAt: new Date(NOW.getTime() - DAY),
     policy: policies.COLD, now: NOW, scrapeAvailable: true,
-    scrape: async () => { throw new Error("firecrawl down"); },
+    read: async () => { throw new Error("readers down"); },
     countJobs: async () => { throw new Error("board down"); },
   });
   assert.equal(outcome.run, false);
@@ -211,6 +218,123 @@ const CAREERS = "https://zerodha.com/careers";
   assert.deepEqual(g.compareFingerprints(null, fresh, null).pagesChanged, [], "nothing is new when there is no 'before'");
   assert.deepEqual(g.compareFingerprints(fingerprintsFor([[HOME, "x"]], null), fresh, null).pagesChanged, [CAREERS], "a careers page that did not exist last week is news");
   assert.equal(g.compareFingerprints(fingerprintsFor([], null), [], 3).jobsChanged, false, "a board found for the first time is not a count that moved");
+}
+
+// 12. A sweep the rate limiter refused is not a look: nothing is stored, and
+//     `counted` tells the loop not to park the company for a week over it.
+{
+  const previous = fingerprintsFor([[HOME, "Zerodha builds broking tools"]], 4);
+  const outcome = await g.evaluateChangeGate({
+    company: company({ pageFingerprints: previous }), latestResearchAt: new Date(NOW.getTime() - DAY),
+    policy: policies.COLD, now: NOW, scrapeAvailable: true,
+    read: reading([limited(HOME)], 0), countJobs: async () => 4,
+  });
+  assert.equal(outcome.counted, false, "we never got an answer, so this was not a look");
+  assert.equal(outcome.run, false);
+  assert.equal(outcome.reason, "RATE_LIMITED");
+  assert.equal(outcome.fingerprints, null, "nothing is written down from a refused sweep");
+  assert.equal(outcome.costUsd, 0, "a refused request is never billed");
+  // Unless the refresh window has lapsed, in which case the cycle runs anyway.
+  const overdue = await g.evaluateChangeGate({
+    company: company({ pageFingerprints: previous }), latestResearchAt: new Date(NOW.getTime() - 31 * DAY),
+    policy: policies.COLD, now: NOW, scrapeAvailable: true,
+    read: reading([limited(HOME)], 0), countJobs: async () => 4,
+  });
+  assert.equal(overdue.run, true);
+  assert.equal(overdue.counted, true);
+}
+
+// 13. Switching readers is not a change. Firecrawl's markdown and the free
+//     reader's tag strip disagree about the same page; comparing across them
+//     would wake a cycle every time the fallback kicked in.
+{
+  const previous = fingerprintsFor([[HOME, "Zerodha builds broking tools"]], null, "direct");
+  const switched = await g.evaluateChangeGate({
+    company: company({ pageFingerprints: previous }), latestResearchAt: new Date(NOW.getTime() - DAY),
+    policy: policies.COLD, now: NOW, scrapeAvailable: true,
+    read: reading([page(HOME, "Zerodha builds broking tools — markdown rendering", true, "firecrawl")], g.GATE_PAGE_COST_USD),
+    countJobs: async () => null,
+  });
+  assert.equal(switched.decision, "UNCHANGED", "a different reader is not different news");
+  assert.match(switched.fingerprints.pages[HOME], /^firecrawl:/, "but the new reader's stamp replaces the old one");
+  // And the week after, same reader, real edit — that IS a change.
+  const edited = await g.evaluateChangeGate({
+    company: company({ pageFingerprints: switched.fingerprints }), latestResearchAt: new Date(NOW.getTime() - DAY),
+    policy: policies.COLD, now: NOW, scrapeAvailable: true,
+    read: reading([page(HOME, "Zerodha builds broking tools and a bank", true, "firecrawl")], g.GATE_PAGE_COST_USD),
+    countJobs: async () => null,
+  });
+  assert.equal(edited.decision, "CHANGED");
+}
+
+// 14. Reader stamps: legacy values written before readers were tracked are
+//     Firecrawl's, because that is all there was.
+{
+  assert.deepEqual(g.splitHash("direct:abc"), { via: "direct", hash: "abc" });
+  assert.deepEqual(g.splitHash("firecrawl:abc"), { via: "firecrawl", hash: "abc" });
+  assert.deepEqual(g.splitHash("abc"), { via: "firecrawl", hash: "abc" });
+  assert.equal(g.stampHash("direct", "abc"), "direct:abc");
+}
+
+// 15. What Firecrawl actually bills for. A 429 is refused before it is served
+//     and never reaches the invoice; a 404 does.
+{
+  const rows = [
+    { error: null }, { error: "PAGE_HTTP_404" }, { error: "RATE_LIMITED" },
+    { error: "TIMEOUT" }, { error: "CREDENTIALS_MISSING" }, { error: "EMPTY_PAGE" },
+  ];
+  assert.equal(g.chargedPages(rows), 3, "served pages and 404s bill; refusals and timeouts do not");
+}
+
+// 16. The free reader: a real page passes, a JS shell does not, and neither
+//     throws. This is what keeps most of a watchlist off the paid path.
+{
+  const html = (body) => new Response(`<html><head><title>Zerodha</title></head><body>${body}</body></html>`, { status: 200, headers: { "content-type": "text/html" } });
+  const real = await g.readPageDirect("https://zerodha.com", { fetchImpl: async () => html("<p>" + "India's largest stock broker, building trading and investment platforms. ".repeat(12) + "</p>") });
+  assert.equal(real.ok, true);
+  assert.equal(real.title, "Zerodha");
+  assert.ok(real.text.length >= g.MIN_USABLE_TEXT);
+  const shell = await g.readPageDirect("https://spa.example", { fetchImpl: async () => html("<div id=root>Loading…</div>") });
+  assert.equal(shell.ok, false);
+  assert.equal(shell.error, "THIN_PAGE", "a spinner is not a page; this one goes to Firecrawl");
+  const blocked = await g.readPageDirect("https://walled.example", { fetchImpl: async () => new Response("nope", { status: 403 }) });
+  assert.equal(blocked.error, "HTTP_403");
+  const exploded = await g.readPageDirect("https://down.example", { fetchImpl: async () => { throw new Error("ECONNRESET"); } });
+  assert.equal(exploded.ok, false);
+  assert.equal(exploded.error, "FETCH_FAILED");
+}
+
+// 17. The paid reader paces itself. The first live sweep fired five pages per
+//     company with no ceiling and everything past the second company came back
+//     429; nothing may ever exceed the configured concurrency again.
+{
+  let inFlight = 0;
+  let peak = 0;
+  const fetchImpl = async () => {
+    inFlight++; peak = Math.max(peak, inFlight);
+    await new Promise((r) => setTimeout(r, 5));
+    inFlight--;
+    return new Response(JSON.stringify({ success: true, data: { markdown: "x".repeat(500), metadata: { statusCode: 200 } } }), { status: 200 });
+  };
+  const urls = Array.from({ length: 12 }, (_, i) => `https://example.com/${i}`);
+  const pages = await g.scrapePages(urls, { providerId: "t", apiKey: "k", fetchImpl, configuration: { maxConcurrency: 3 } });
+  assert.equal(pages.length, 12);
+  assert.deepEqual(pages.map((p) => p.url), urls, "order is preserved despite the pool");
+  assert.ok(peak <= 3, `concurrency stayed within the limit (peak ${peak})`);
+}
+
+// 18. A rate-limited page is retried before it is given up on, honouring
+//     Retry-After when the provider sends one.
+{
+  let calls = 0;
+  const fetchImpl = async () => {
+    calls++;
+    if (calls === 1) return new Response("slow down", { status: 429, headers: { "retry-after": "0" } });
+    return new Response(JSON.stringify({ success: true, data: { markdown: "y".repeat(500), metadata: { statusCode: 200 } } }), { status: 200 });
+  };
+  const [page] = await g.scrapePages(["https://example.com"], { providerId: "t", apiKey: "k", fetchImpl, configuration: { rateLimitRetries: 2, retryBaseMs: 1 } });
+  assert.equal(calls, 2, "the 429 was retried, not surrendered to");
+  assert.equal(page.ok, true);
 }
 
 console.log("PASS change-gate");

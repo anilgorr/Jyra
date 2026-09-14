@@ -34,8 +34,8 @@ const ranCycle = (cost = 0.02, hasChanges = false, modelCalls = 1) => async () =
 });
 // The gate, as the loop sees it. By default everything is worth a cycle, so
 // the budget and cap checks below are about the loop, not the gate.
-const gateSaying = (run, decision = run ? "CHANGED" : "UNCHANGED", costUsd = 0.0033) => async () => ({
-  run, decision, reason: decision, pagesChecked: 4, pagesChanged: run ? ["https://x.com"] : [], jobCountBefore: null, jobCountAfter: null, costUsd, fingerprints: null,
+const gateSaying = (run, decision = run ? "CHANGED" : "UNCHANGED", costUsd = 0.0033, counted = true) => async () => ({
+  run, decision, reason: decision, pagesChecked: 3, pagesChanged: run ? ["https://x.com"] : [], jobCountBefore: null, jobCountAfter: null, costUsd, fingerprints: null, counted,
 });
 const noRecord = async () => {};
 
@@ -223,6 +223,27 @@ const noRecord = async () => {};
   assert.deepEqual(ran, ["a"], "a broken gate never costs us a company");
   assert.equal(report.outcomes[0].gate.reason, "GATE_FAILED");
   assert.ok(warnings.includes("WATCH_LOOP_GATE_FAILED"));
+}
+
+// 13. A look the provider refused is not written down and does not move the
+//     company's cadence: it is simply picked up again on the next tick.
+{
+  const recorded = [];
+  const warnings = [];
+  const report = await w.runWatchLoopTick({
+    repository: {}, log: { info: () => {}, warn: (obj, msg) => warnings.push(msg) }, now: NOW, settings,
+    select: async () => [owned("a"), owned("b")],
+    spend: async () => ({ spentTodayUsd: 0, recentCycleCosts: [] }), dailyBudgetFor: async () => 25,
+    gate: gateSaying(false, "UNGATED", 0, false),
+    record: async (entry) => { recorded.push(entry); },
+    cycle: async () => { throw new Error("nothing should run"); },
+  });
+  assert.equal(report.deferred, 2);
+  assert.equal(report.checked, 0, "a refused sweep is not a check");
+  assert.equal(report.unchanged, 0, "and it is certainly not a verdict of unchanged");
+  assert.equal(recorded.length, 0, "nothing is stamped, so the next tick tries again");
+  assert.equal(report.spentUsd, 0);
+  assert.ok(warnings.includes("WATCH_LOOP_GATE_DEFERRED"));
 }
 
 // 12. Recording a check is best-effort: a write that fails is logged and the

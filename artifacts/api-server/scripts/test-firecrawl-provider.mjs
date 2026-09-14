@@ -59,21 +59,22 @@ const recorder = (override = {}) => {
   delete process.env.FIRECRAWL_API_KEY;
   const nokey = await h.scrapePage("https://zerodha.com", { providerId: "fc", fetchImpl });
   assert.equal(nokey.error, "CREDENTIALS_MISSING");
-  const limited = await h.scrapePage("https://zerodha.com", { providerId: "fc", apiKey: "k", fetchImpl: recorder({ status: 429 }).fetchImpl });
+  // Retries disabled here so the assertion is about the mapping, not the backoff.
+  const limited = await h.scrapePage("https://zerodha.com", { providerId: "fc", apiKey: "k", fetchImpl: recorder({ status: 429 }).fetchImpl, configuration: { rateLimitRetries: 0 } });
   assert.equal(limited.error, "RATE_LIMITED");
 }
 
-// 3. WEBSITE_CRAWL: home + candidates in parallel, readable pages only, credits for every attempt.
+// 3. WEBSITE_CRAWL: home + candidates, readable pages only, credits for every page served.
 {
   const { calls, fetchImpl } = recorder();
   const adapter = h.createFirecrawlWebsiteCrawlAdapter({ providerId: "fc", apiKey: "k", fetchImpl, now: () => NOW });
   const out = await adapter.execute({ requestId: "r1", url: "https://zerodha.com" });
   assert.equal(out.status, "success");
-  assert.equal(calls.length, 5, "home + four candidate paths");
+  assert.equal(calls.length, 3, "home + two candidate paths; /about-us and /jobs were 404s on most of the watchlist and cost a credit each");
   assert.equal(out.data.page.url, "https://zerodha.com", "the homepage is the primary page");
   assert.deepEqual(out.data.pages.map((p) => p.url), ["https://zerodha.com", "https://zerodha.com/about", "https://zerodha.com/careers"], "404 and tiny pages are dropped");
   assert.equal(out.usage.resultCount, 3);
-  assert.ok(Math.abs(out.usage.actualCost - 5 * 0.00083) < 1e-9, "five credits spent, three pages kept");
+  assert.ok(Math.abs(out.usage.actualCost - 3 * 0.00083) < 1e-9, "three credits spent, three pages kept");
   assert.equal(Object.keys(out.metadata.hashes).length, 3);
 }
 // Nothing readable → empty, not failed; auth failure → AUTHENTICATION_ERROR so the waterfall moves on.

@@ -1,5 +1,6 @@
 import type { PageFingerprints, WatchTier } from "@workspace/db";
-import { scrapePages, watchUrlsFor, type ScrapedPage } from "../firecrawl-provider";
+import { chargedPages, scrapePages, textFingerprint, watchUrlsFor } from "../firecrawl-provider";
+import { readPageDirect, splitHash, stampHash, type PageReadVia } from "../page-text";
 import { atsHandleFromProfileUrls, fetchAtsJobs } from "./ats-boards";
 
 /**
@@ -19,6 +20,11 @@ import { atsHandleFromProfileUrls, fetchAtsJobs } from "./ats-boards";
  * What the gate cannot see — a funding announcement in the press, a new CISO
  * on LinkedIn — is caught by the tier's refresh window: however quiet the
  * pages stay, a full cycle runs at least every `refreshMs`.
+ *
+ * Pages are read free-first: a plain HTTP GET and a tag strip, with Firecrawl
+ * asked only for the pages that come back blocked or thin. Most of a
+ * watchlist reads for nothing, which is what makes a weekly sweep of a
+ * thousand companies affordable rather than merely cheap.
  */
 
 export const DAY_MS = 24 * 60 * 60 * 1000;
@@ -74,14 +80,70 @@ export type GateOutcome = {
   pagesChanged: string[];
   jobCountBefore: number | null;
   jobCountAfter: number | null;
-  /** What this look cost in USD (Firecrawl credits; ATS reads are free). */
+  /** What this look cost in USD (Firecrawl credits only; direct reads and ATS reads are free). */
   costUsd: number;
   /** The fingerprints to store for next time; null when nothing was read. */
   fingerprints: PageFingerprints | null;
+  /**
+   * Did this count as a look? A sweep refused by the rate limiter learned
+   * nothing, so stamping it would push the company a whole cadence away on
+   * the strength of an answer we never got.
+   */
+  counted: boolean;
 };
 
-/** Firecrawl list price per page, whether or not the page was readable. */
+/** Firecrawl list price per page it actually serves. A direct read is free. */
 export const GATE_PAGE_COST_USD = 0.00083;
+
+/** One page as the gate saw it, and what it cost to see. */
+export type GatePage = {
+  url: string;
+  ok: boolean;
+  /** `via:hash`, or null when the page could not be read at all. */
+  stamp: string | null;
+  via: PageReadVia;
+  error: string | null;
+  /** Refused before it was served — no credit, and no verdict about the page. */
+  rateLimited: boolean;
+};
+
+export type PageReader = (urls: string[], options: { scrapeAvailable: boolean }) => Promise<{ pages: GatePage[]; costUsd: number }>;
+
+/**
+ * Read every URL the cheapest way that works.
+ *
+ * Direct reads all go first and in parallel — they cost nothing and the
+ * origin is not ours to protect. Only what comes back blocked, thin or
+ * non-HTML is handed to Firecrawl, which paces itself.
+ */
+export const defaultPageReader: PageReader = async (urls, { scrapeAvailable }) => {
+  const direct = await Promise.all(urls.map(async (url) => ({ url, read: await readPageDirect(url) })));
+  const pages = new Map<string, GatePage>(direct.map(({ url, read }) => [url, {
+    url,
+    ok: read.ok,
+    stamp: read.ok ? stampHash("direct", textFingerprint(read.text)) : null,
+    via: "direct" as PageReadVia,
+    error: read.error,
+    rateLimited: false,
+  }]));
+  const needsPaid = direct.filter(({ read }) => !read.ok).map(({ url }) => url);
+  let costUsd = 0;
+  if (scrapeAvailable && needsPaid.length) {
+    const scraped = await scrapePages(needsPaid, { providerId: "change-gate" });
+    costUsd = chargedPages(scraped) * GATE_PAGE_COST_USD;
+    for (const page of scraped) {
+      pages.set(page.url, {
+        url: page.url,
+        ok: page.ok,
+        stamp: page.ok ? stampHash("firecrawl", page.textHash) : null,
+        via: "firecrawl",
+        error: page.error,
+        rateLimited: page.error === "RATE_LIMITED",
+      });
+    }
+  }
+  return { pages: urls.map((url) => pages.get(url)!), costUsd };
+};
 
 /**
  * Compare a fresh look against the stored fingerprints. Pure.
@@ -92,16 +154,22 @@ export const GATE_PAGE_COST_USD = 0.00083;
  * a timeout is not a change. The job count counts when both looks had a
  * board.
  */
-export function compareFingerprints(previous: PageFingerprints | null, pages: ScrapedPage[], jobCount: number | null): {
+export function compareFingerprints(previous: PageFingerprints | null, pages: GatePage[], jobCount: number | null): {
   pagesChanged: string[];
   jobsChanged: boolean;
 } {
   const before = previous?.pages ?? {};
   const pagesChanged = pages
-    .filter((page) => page.ok)
+    .filter((page) => page.ok && page.stamp)
     .filter((page) => {
       const earlier = before[page.url];
-      return earlier === undefined ? previous !== null : earlier !== page.textHash;
+      if (earlier === undefined) return previous !== null;
+      const was = splitHash(earlier);
+      // The free reader and Firecrawl extract different text from the same
+      // page. A page that fell back to Firecrawl this week has not changed —
+      // we are simply reading it differently, and the new stamp is stored.
+      if (was.via !== page.via) return false;
+      return earlier !== page.stamp;
     })
     .map((page) => page.url);
   const jobsChanged = previous !== null && previous.jobCount !== null && jobCount !== null && previous.jobCount !== jobCount;
@@ -118,14 +186,12 @@ export type GateInput = {
   latestResearchAt: Date | null;
   policy: TierPolicy;
   now: Date;
-  /** Injected for tests; default to Firecrawl and the ATS reader. */
-  scrape?: (urls: string[]) => Promise<ScrapedPage[]>;
+  /** Injected for tests; defaults to free-first reading and the ATS board. */
+  read?: PageReader;
   countJobs?: (company: GateInput["company"]) => Promise<number | null>;
-  /** Firecrawl configured? When not, nothing can be hashed and the refresh window is the only cadence. */
+  /** Firecrawl configured? Without it only pages the free reader can handle are gated. */
   scrapeAvailable?: boolean;
 };
-
-const defaultScrape = (urls: string[]) => scrapePages(urls, { providerId: "change-gate" });
 
 async function defaultCountJobs(company: GateInput["company"]): Promise<number | null> {
   const handle = atsHandleFromProfileUrls(company.profileUrls);
@@ -149,40 +215,51 @@ export function urlsToCheck(domain: string, previous: PageFingerprints | null | 
 }
 
 export async function evaluateChangeGate(input: GateInput): Promise<GateOutcome> {
-  const scrape = input.scrape ?? defaultScrape;
+  const read = input.read ?? defaultPageReader;
   const countJobs = input.countJobs ?? defaultCountJobs;
   const scrapeAvailable = input.scrapeAvailable ?? Boolean(process.env.FIRECRAWL_API_KEY);
   const previous = input.company.pageFingerprints ?? null;
   const refreshDue = !input.latestResearchAt || input.now.getTime() - input.latestResearchAt.getTime() >= input.policy.refreshMs;
-  const base = { pagesChecked: 0, pagesChanged: [] as string[], jobCountBefore: previous?.jobCount ?? null, jobCountAfter: null as number | null, costUsd: 0, fingerprints: null as PageFingerprints | null };
+  const base = {
+    pagesChecked: 0, pagesChanged: [] as string[], jobCountBefore: previous?.jobCount ?? null,
+    jobCountAfter: null as number | null, costUsd: 0, fingerprints: null as PageFingerprints | null, counted: true,
+  };
 
-  if (!input.company.domain || !scrapeAvailable) {
+  if (!input.company.domain) {
     // Nothing to hash. The job count alone can still say "changed".
     const jobCount = await countJobs(input.company).catch(() => null);
     const { jobsChanged } = compareFingerprints(previous, [], jobCount);
     const fingerprints: PageFingerprints | null = jobCount === null && !previous ? null : { pages: previous?.pages ?? {}, jobCount, checkedAt: input.now.toISOString() };
-    if (refreshDue) return { ...base, run: true, decision: "REFRESH", reason: !input.company.domain ? "NO_DOMAIN_REFRESH_DUE" : "SCRAPE_UNAVAILABLE_REFRESH_DUE", jobCountAfter: jobCount, fingerprints };
+    if (refreshDue) return { ...base, run: true, decision: "REFRESH", reason: "NO_DOMAIN_REFRESH_DUE", jobCountAfter: jobCount, fingerprints };
     if (jobsChanged) return { ...base, run: true, decision: "CHANGED", reason: "JOBS_CHANGED", jobCountAfter: jobCount, fingerprints };
-    return { ...base, run: false, decision: "UNGATED", reason: !input.company.domain ? "NO_DOMAIN" : "SCRAPE_UNAVAILABLE", jobCountAfter: jobCount, fingerprints };
+    return { ...base, run: false, decision: "UNGATED", reason: "NO_DOMAIN", jobCountAfter: jobCount, fingerprints };
   }
 
   const urls = urlsToCheck(input.company.domain, previous, refreshDue);
-  const [pages, jobCount] = await Promise.all([
-    scrape(urls).catch(() => [] as ScrapedPage[]),
+  const [readResult, jobCount] = await Promise.all([
+    read(urls, { scrapeAvailable }).catch(() => ({ pages: [] as GatePage[], costUsd: 0 })),
     countJobs(input.company).catch(() => null),
   ]);
-  const attempted = pages.filter((p) => p.error !== "CREDENTIALS_MISSING" && p.error !== "TIMEOUT" && p.error !== "PROVIDER_EXCEPTION").length;
-  const costUsd = attempted * GATE_PAGE_COST_USD;
-  const readable = pages.filter((p) => p.ok);
+  const pages = readResult.pages;
+  const costUsd = readResult.costUsd;
+  const readable = pages.filter((page) => page.ok && page.stamp);
   const { pagesChanged, jobsChanged } = compareFingerprints(previous, pages, jobCount);
 
-  // Keep hashes only for pages read this time; a page that timed out keeps
-  // its old hash so one bad minute does not make it "new" next week.
+  // Keep stamps only for pages asked about this time; a page that timed out
+  // keeps its old stamp so one bad minute does not make it "new" next week.
   const kept = Object.fromEntries(Object.entries(previous?.pages ?? {}).filter(([url]) => urls.includes(url)));
   const fingerprints: PageFingerprints | null = readable.length || jobCount !== null || previous
-    ? { pages: { ...kept, ...Object.fromEntries(readable.map((p) => [p.url, p.textHash])) }, jobCount, checkedAt: input.now.toISOString() }
+    ? { pages: { ...kept, ...Object.fromEntries(readable.map((page) => [page.url, page.stamp!])) }, jobCount, checkedAt: input.now.toISOString() }
     : null;
   const outcome = { ...base, pagesChecked: urls.length, pagesChanged, jobCountAfter: jobCount, costUsd, fingerprints };
+
+  // A sweep the rate limiter refused tells us nothing about the company.
+  // Leave it uncounted so the next tick picks it up instead of parking it
+  // for a week on the strength of an answer we never got.
+  const rateLimited = pages.filter((page) => page.rateLimited).length;
+  if (!readable.length && rateLimited > 0 && !refreshDue) {
+    return { ...outcome, run: false, decision: "UNGATED", reason: "RATE_LIMITED", fingerprints: null, counted: false };
+  }
 
   if (refreshDue) return { ...outcome, run: true, decision: "REFRESH", reason: input.latestResearchAt ? "REFRESH_WINDOW_LAPSED" : "NEVER_RESEARCHED" };
   if (!previous) return { ...outcome, run: false, decision: "BASELINE", reason: "FIRST_LOOK" };

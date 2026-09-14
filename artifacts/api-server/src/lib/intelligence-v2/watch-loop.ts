@@ -212,7 +212,7 @@ export type TickOutcome = {
   companyName: string;
   projectId: string;
   tier?: WatchTier;
-  result: "ran" | "unchanged" | "skipped_budget" | "skipped_seller_context" | "failed";
+  result: "ran" | "unchanged" | "deferred" | "skipped_budget" | "skipped_seller_context" | "failed";
   gate?: { decision: GateOutcome["decision"]; reason: string; pagesChecked: number; costUsd: number };
   hasChanges?: boolean;
   modelCalls?: number;
@@ -227,6 +227,8 @@ export type TickReport = {
   due: number;
   checked: number;
   unchanged: number;
+  /** Looks the provider refused; they cost nothing and are retried next tick. */
+  deferred: number;
   ran: number;
   skipped: number;
   failed: number;
@@ -277,7 +279,7 @@ export async function runWatchLoopTick(input: {
   const startedAt = new Date();
   const report: TickReport = {
     enabled: settings.enabled, startedAt: startedAt.toISOString(), finishedAt: "",
-    due: 0, checked: 0, unchanged: 0, ran: 0, skipped: 0, failed: 0, changed: 0,
+    due: 0, checked: 0, unchanged: 0, deferred: 0, ran: 0, skipped: 0, failed: 0, changed: 0,
     gateSpentUsd: 0, spentUsd: 0, outcomes: [],
   };
 
@@ -332,17 +334,27 @@ export async function runWatchLoopTick(input: {
       });
     } catch (error) {
       input.log.warn({ ...base, err: error }, "WATCH_LOOP_GATE_FAILED");
-      outcome = { run: true, decision: "UNGATED", reason: "GATE_FAILED", pagesChecked: 0, pagesChanged: [], jobCountBefore: null, jobCountAfter: null, costUsd: 0, fingerprints: null };
+      outcome = { run: true, decision: "UNGATED", reason: "GATE_FAILED", pagesChecked: 0, pagesChanged: [], jobCountBefore: null, jobCountAfter: null, costUsd: 0, fingerprints: null, counted: true };
     }
-    report.checked++;
     report.gateSpentUsd += outcome.costUsd;
     report.spentUsd += outcome.costUsd;
+    const gateSummary = { decision: outcome.decision, reason: outcome.reason, pagesChecked: outcome.pagesChecked, costUsd: outcome.costUsd };
+
+    // A look that learned nothing — every page refused by a rate limiter —
+    // is not written down and does not move the company's cadence forward.
+    // It simply waits for the next tick.
+    if (!outcome.counted) {
+      report.deferred++;
+      report.outcomes.push({ ...base, result: "deferred", gate: gateSummary });
+      input.log.warn({ ...base, reason: outcome.reason }, "WATCH_LOOP_GATE_DEFERRED");
+      continue;
+    }
+    report.checked++;
     try {
       await record({ owned, outcome, now: checkedAt });
     } catch (error) {
       input.log.warn({ ...base, err: error }, "WATCH_LOOP_CHECK_RECORD_FAILED");
     }
-    const gateSummary = { decision: outcome.decision, reason: outcome.reason, pagesChecked: outcome.pagesChecked, costUsd: outcome.costUsd };
 
     if (!outcome.run) {
       report.unchanged++;
@@ -388,7 +400,7 @@ export async function runWatchLoopTick(input: {
   }
   report.finishedAt = new Date().toISOString();
   input.log.info({
-    due: report.due, checked: report.checked, unchanged: report.unchanged, ran: report.ran,
+    due: report.due, checked: report.checked, unchanged: report.unchanged, deferred: report.deferred, ran: report.ran,
     changed: report.changed, skipped: report.skipped, failed: report.failed,
     gateSpentUsd: report.gateSpentUsd, spentUsd: report.spentUsd, durationMs: Date.now() - startedAt.getTime(),
   }, "WATCH_LOOP_TICK_DONE");

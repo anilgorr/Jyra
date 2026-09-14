@@ -30,5 +30,5 @@ for (const o of report.outcomes) {
   const tail = o.result === "ran" ? `${o.hasChanges ? "CHANGED " : "same    "} calls=${o.modelCalls} $${(o.costUsd ?? 0).toFixed(3)}` : o.gate?.reason ?? o.reason ?? "";
   console.log(`${pad(o.result, 14)} ${pad(o.tier ?? "", 6)} ${pad(o.companyName.slice(0, 30), 31)} ${tail}`);
 }
-console.log(`\nenabled=${report.enabled} due=${report.due} checked=${report.checked} unchanged=${report.unchanged} ran=${report.ran} changed=${report.changed} skipped=${report.skipped} failed=${report.failed} gate=$${report.gateSpentUsd.toFixed(4)} spent=$${report.spentUsd.toFixed(3)}`);
+console.log(`\nenabled=${report.enabled} due=${report.due} checked=${report.checked} unchanged=${report.unchanged} deferred=${report.deferred} ran=${report.ran} changed=${report.changed} skipped=${report.skipped} failed=${report.failed} gate=$${report.gateSpentUsd.toFixed(4)} spent=$${report.spentUsd.toFixed(3)}`);
 process.exit(report.failed ? 1 : 0);

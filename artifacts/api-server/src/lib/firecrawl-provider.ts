@@ -30,6 +30,11 @@ export type FirecrawlProviderConfiguration = {
   /** Paths tried under the company domain besides the homepage. */
   crawlPaths?: string[];
   maxChars?: number;
+  /** Requests in flight at once. The free plan starts refusing above ten a minute. */
+  maxConcurrency?: number;
+  /** How many times a rate-limited page is retried before it is left for the next tick. */
+  rateLimitRetries?: number;
+  retryBaseMs?: number;
 };
 
 export type FirecrawlAdapterOptions = {
@@ -46,8 +51,13 @@ const DEFAULTS = {
   timeoutMs: 30_000,
   /** One credit per page at $83 per 100,000. */
   estimatedCost: 0.00083,
-  crawlPaths: ["/about", "/about-us", "/careers", "/jobs"],
+  // Three pages, not five. Every path tried is a credit whether or not it
+  // exists, and /about-us and /jobs were 404s on most of the watchlist.
+  crawlPaths: ["/about", "/careers"],
   maxChars: 30_000,
+  maxConcurrency: 4,
+  rateLimitRetries: 2,
+  retryBaseMs: 1_500,
 };
 
 const stringValue = (value: unknown): string | null => (typeof value === "string" && value.trim() ? value.trim() : null);
@@ -77,6 +87,9 @@ export function parseFirecrawlProviderConfiguration(configuration: Record<string
   };
   const paths = Array.isArray(configuration.crawlPaths) ? configuration.crawlPaths.filter((p): p is string => typeof p === "string" && p.startsWith("/")) : DEFAULTS.crawlPaths;
   return {
+    maxConcurrency: num("maxConcurrency", DEFAULTS.maxConcurrency),
+    rateLimitRetries: num("rateLimitRetries", DEFAULTS.rateLimitRetries),
+    retryBaseMs: num("retryBaseMs", DEFAULTS.retryBaseMs),
     apiBaseUrl: typeof configuration.apiBaseUrl === "string" ? configuration.apiBaseUrl.replace(/\/+$/, "") : DEFAULTS.apiBaseUrl,
     credentialEnv: typeof configuration.credentialEnv === "string" ? configuration.credentialEnv : DEFAULTS.credentialEnv,
     timeoutMs: num("timeoutMs", DEFAULTS.timeoutMs),
@@ -106,12 +119,24 @@ export async function scrapePage(url: string, options: FirecrawlAdapterOptions):
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), configuration.timeoutMs);
   try {
-    const response = await fetchImpl(`${configuration.apiBaseUrl}/v2/scrape`, {
-      method: "POST",
-      headers: { "content-type": "application/json", authorization: `Bearer ${apiKey}` },
-      body: JSON.stringify({ url, formats: ["markdown"], onlyMainContent: true, timeout: Math.min(configuration.timeoutMs - 2_000, 25_000) }),
-      signal: controller.signal,
-    });
+    let response: Response | null = null;
+    for (let attempt = 0; attempt <= configuration.rateLimitRetries; attempt++) {
+      response = await fetchImpl(`${configuration.apiBaseUrl}/v2/scrape`, {
+        method: "POST",
+        headers: { "content-type": "application/json", authorization: `Bearer ${apiKey}` },
+        body: JSON.stringify({ url, formats: ["markdown"], onlyMainContent: true, timeout: Math.min(configuration.timeoutMs - 2_000, 25_000) }),
+        signal: controller.signal,
+      });
+      // A 429 is not a verdict about the page, it is a verdict about our
+      // pace. Honour Retry-After when it is sent, otherwise back off.
+      if (response.status !== 429 || attempt === configuration.rateLimitRetries) break;
+      const retryAfter = Number(response.headers.get("retry-after"));
+      const waitMs = Number.isFinite(retryAfter) && retryAfter > 0
+        ? Math.min(retryAfter * 1_000, 20_000)
+        : configuration.retryBaseMs * Math.pow(2, attempt);
+      await new Promise((resolve) => setTimeout(resolve, waitMs));
+    }
+    if (!response) return empty("PROVIDER_EXCEPTION");
     if (!response.ok) return empty(response.status === 429 ? "RATE_LIMITED" : response.status === 401 || response.status === 403 ? "AUTHENTICATION_ERROR" : `HTTP_${response.status}`, response.status);
     let payload: ScrapeResponse;
     try { payload = await response.json() as ScrapeResponse; } catch { return empty("MALFORMED_RESPONSE"); }
@@ -143,9 +168,38 @@ export function watchUrlsFor(domain: string, paths: string[] = DEFAULTS.crawlPat
   return [base, ...paths.map((p) => `${base}${p}`)];
 }
 
-/** Scrape several pages in parallel; order preserved, failures kept as ok:false rows. */
+/**
+ * Scrape several pages, a few at a time; order preserved, failures kept as
+ * ok:false rows.
+ *
+ * Not Promise.all. The first live sweep fired five pages per company with no
+ * ceiling, tripped the plan's per-minute limit after the second company, and
+ * every page for the remaining seventy came back 429 — a gate that learned
+ * nothing and recorded a baseline it did not have.
+ */
 export async function scrapePages(urls: string[], options: FirecrawlAdapterOptions): Promise<ScrapedPage[]> {
-  return Promise.all(urls.map((url) => scrapePage(url, options)));
+  const limit = Math.max(1, options.configuration?.maxConcurrency ?? DEFAULTS.maxConcurrency);
+  const results: ScrapedPage[] = new Array(urls.length);
+  let next = 0;
+  const worker = async () => {
+    while (next < urls.length) {
+      const index = next++;
+      results[index] = await scrapePage(urls[index], options);
+    }
+  };
+  await Promise.all(Array.from({ length: Math.min(limit, urls.length) }, worker));
+  return results;
+}
+
+/**
+ * Pages Firecrawl charged us for. A rate-limited request is refused before
+ * it is served and never appears on the bill; counting it made the first
+ * sweep look like USD 0.30 when the invoice moved by USD 0.15.
+ */
+export const CHARGED_ERRORS_EXCLUDED = new Set(["CREDENTIALS_MISSING", "TIMEOUT", "PROVIDER_EXCEPTION", "RATE_LIMITED"]);
+
+export function chargedPages(pages: ScrapedPage[]): number {
+  return pages.filter((page) => !page.error || !CHARGED_ERRORS_EXCLUDED.has(page.error)).length;
 }
 
 export function createFirecrawlWebsiteCrawlAdapter(options: FirecrawlAdapterOptions): ProviderAdapter<"WEBSITE_CRAWL"> {
@@ -174,7 +228,7 @@ export function createFirecrawlWebsiteCrawlAdapter(options: FirecrawlAdapterOpti
 
       // Every page attempted is a credit spent, readable or not (Firecrawl
       // charges for 4xx pages too). Report it so the ledger is honest.
-      const spent = scraped.filter((p) => p.error !== "CREDENTIALS_MISSING" && p.error !== "TIMEOUT" && p.error !== "PROVIDER_EXCEPTION").length * configuration.estimatedCost;
+      const spent = chargedPages(scraped) * configuration.estimatedCost;
       const readable = scraped.filter((p) => p.ok && p.text.length >= 200);
       const first = scraped[0];
       if (!readable.length) {
