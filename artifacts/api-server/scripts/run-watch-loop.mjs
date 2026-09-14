@@ -8,10 +8,15 @@
  * wrapper can tell.
  */
 import { build } from "esbuild";
+import { mkdirSync } from "node:fs";
 import { pathToFileURL } from "node:url";
 
 if (!process.env.DATABASE_URL) throw new Error("DATABASE_URL is required");
-const outfile = "/tmp/jyra-watch-loop.cjs";
+// Inside the package, not /tmp: the logger's pino-pretty transport is loaded
+// by name at runtime, and pino resolves it relative to the bundle. From /tmp
+// there is no node_modules to walk up to and the process dies on boot.
+mkdirSync("./node_modules/.cache", { recursive: true });
+const outfile = "./node_modules/.cache/jyra-watch-loop.cjs";
 await build({ entryPoints: ["./scripts/watch-loop-entry.ts"], outfile, bundle: true, format: "cjs", platform: "node", external: ["pg-native", "pino-pretty"] });
 const lib = await import(`${pathToFileURL(outfile).href}?t=${Date.now()}`);
 
