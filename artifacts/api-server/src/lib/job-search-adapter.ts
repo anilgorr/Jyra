@@ -175,6 +175,13 @@ export function cleanJobTitle(title: string, companyName: string): string {
   return cleaned || title.trim();
 }
 
+/**
+ * Enough postings that a second, broader query would only add duplicates.
+ * Three is what the hiring signal needs to see a pattern; the ATS-host query
+ * exists for companies whose own site yields nothing.
+ */
+export const MIN_POSTINGS_TO_STOP_SEARCHING = 3;
+
 /** Queries scoped so that everything they return is attributable. */
 export function buildJobQueries(company: { name: string; domain: string | null }): Array<{
   query: string;
@@ -250,6 +257,11 @@ export function createSearchBackedJobAdapter(options: {
       let lastError: ProviderResponse<WebSearchResult>["error"] = null;
 
       for (const scoped of buildJobQueries(company)) {
+        // The first query is scoped to the company's own careers pages and the
+        // second to shared ATS hosts. When the first already returned postings
+        // we can attribute, the second buys nothing — and a Serper query is a
+        // credit whether or not we needed it.
+        if (jobs.length >= MIN_POSTINGS_TO_STOP_SEARCHING) break;
         const response = await options.searchWeb({
           ...(request.requestId ? { requestId: `${request.requestId}:jobs` } : {}),
           query: scoped.query,

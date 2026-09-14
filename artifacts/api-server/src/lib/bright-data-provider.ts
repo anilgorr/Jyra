@@ -479,7 +479,9 @@ function response(
       : [],
     usage: {
       estimatedCost,
-      actualCost: null,
+      // Zero, not null: the ledger falls back to the estimate when actualCost
+      // is null, which would re-inflate a refusal that cost nothing.
+      actualCost: estimatedCost === 0 ? 0 : null,
       latencyMs: runtimeMs,
       runtimeMs,
       resultCount: data ? 1 : 0,
@@ -522,15 +524,20 @@ export function createBrightDataFirmographicsAdapter(
       const requestId = request.requestId ?? `${options.providerId}:${capturedAt}`;
       const estimatedCost = configuration.estimatedCost ?? DEFAULT_ESTIMATED_COST;
       const linkedinUrl = normalizeLinkedInUrl(request.linkedinCompanyUrl);
+      // A refusal made here costs nothing: no request leaves the process. It
+      // was being reported at the full estimate, and since the ledger reads
+      // estimatedCost when actualCost is null, twenty-one refusals in an
+      // afternoon showed up as real money and were reserved against the
+      // project's daily budget. Zero is the truthful number.
       if (!request.linkedinCompanyUrl) {
-        return response(options.providerId, requestId, estimatedCost, capturedAt, "failed", null, {
+        return response(options.providerId, requestId, 0, capturedAt, "failed", null, {
           code: "IDENTIFIER_NOT_SUPPORTED",
           message: "Bright Data firmographics requires a LinkedIn company URL",
           retryable: false,
         });
       }
       if (!linkedinUrl) {
-        return response(options.providerId, requestId, estimatedCost, capturedAt, "failed", null, {
+        return response(options.providerId, requestId, 0, capturedAt, "failed", null, {
           code: "INVALID_LINKEDIN_URL",
           message: "A valid LinkedIn company URL is required",
           retryable: false,
@@ -538,7 +545,7 @@ export function createBrightDataFirmographicsAdapter(
       }
       const apiKey = options.apiKey ?? process.env[configuration.credentialEnv ?? "BRIGHTDATA_API_KEY"];
       if (!apiKey) {
-        return response(options.providerId, requestId, estimatedCost, capturedAt, "failed", null, {
+        return response(options.providerId, requestId, 0, capturedAt, "failed", null, {
           code: "CREDENTIALS_MISSING",
           message: "Bright Data credentials are not configured",
           retryable: false,

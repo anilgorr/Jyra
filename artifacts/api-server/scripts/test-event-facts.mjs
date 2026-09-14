@@ -92,7 +92,8 @@ const ctx = { companyId: "c-acme", companyName: "Acme Payments", domain: "acmepa
   assert.equal(e.corroborationFor(all[3], all), 0, "three weeks later is a different story");
 }
 
-// 5. Queries name the company exactly and the search is called once per query with raw content on.
+// 5. Queries name the company exactly, the search is called once per query with
+//    raw content on, and the last query is only paid for when it is needed.
 {
   const queries = e.buildEventQueries("Acme Payments", "acmepay.com");
   assert.equal(queries.length, 3);
@@ -102,10 +103,20 @@ const ctx = { companyId: "c-acme", companyName: "Acme Payments", domain: "acmepa
     calls.push(request);
     return { status: "success", providerId: "exa", data: { results: [{ title: "t", url: `https://x.example/${calls.length}`, snippet: "s" }, { title: "dup", url: "https://x.example/1", snippet: "s" }] } };
   }, { requestId: "pc-1", companyName: "Acme Payments", domain: "acmepay.com", now: NOW });
-  assert.equal(calls.length, 3);
+  assert.equal(calls.length, 2, "the third query restates the second; with hits in hand it is not worth a credit");
   assert.ok(calls.every((c) => c.includeRawContent === true && c.timeRange === "year"));
-  assert.equal(hits.length, 3, "duplicate URLs across queries are collapsed");
+  assert.equal(hits.length, 2, "duplicate URLs across queries are collapsed");
   assert.deepEqual(providers, ["exa"]);
+
+  // Nothing found in the news index: the broader third query is exactly the
+  // case it exists for, and it still runs.
+  const empty = [];
+  const quiet = await e.researchEvents(async (request) => {
+    empty.push(request);
+    return { status: "success", providerId: "exa", data: { results: [] } };
+  }, { requestId: "pc-2", companyName: "Quiet Co", domain: "quiet.example", now: NOW });
+  assert.equal(empty.length, 3, "a company the news index does not cover still gets the open-web query");
+  assert.equal(quiet.hits.length, 0);
 }
 
 console.log("PASS event-facts");

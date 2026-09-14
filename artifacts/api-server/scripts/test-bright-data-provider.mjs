@@ -88,6 +88,12 @@ const noIdentifier = await createBrightDataFirmographicsAdapter({
 assert.equal(noIdentifier.status, "failed");
 assert.equal(noIdentifier.error.code, "IDENTIFIER_NOT_SUPPORTED");
 assert.equal(fetchCalled, false);
+// A refusal made before any request leaves the process costs nothing. This was
+// reported at the full estimate, and because the ledger reads estimatedCost
+// when actualCost is null, twenty-one refusals in one live afternoon showed up
+// as real money and were reserved against the project's daily budget.
+assert.equal(noIdentifier.usage.estimatedCost, 0, "a call never made is not a cost");
+assert.equal(noIdentifier.usage.actualCost, 0, "and it must not fall back to the estimate");
 
 const invalid = await adapter.execute({
   companyName: "Acme",

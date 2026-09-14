@@ -178,6 +178,11 @@ export async function researchEvents(
   const queries = buildEventQueries(input.companyName, input.domain);
   const seen = new Set<string>();
   for (const [index, query] of queries.entries()) {
+    // The third query is a broader restatement of the second — both hunt a
+    // leadership change, one in news and one across the open web. It exists
+    // for the companies the news index does not cover, so it is only worth a
+    // credit when the first two found nothing about this company at all.
+    if (index === queries.length - 1 && hits.length > 0) break;
     const response = await search({
       requestId: `${input.requestId}:event:${index}`,
       query: query.query, topic: query.topic, timeRange: "year",

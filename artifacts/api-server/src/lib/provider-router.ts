@@ -665,8 +665,11 @@ export class ProviderRouter implements ProviderOperations {
           data: null,
           sources: [],
           usage: {
-            estimatedCost: provider.estimatedCost,
-            actualCost: null,
+            // Nothing was called, so nothing was spent. Reporting the
+            // provider's estimate here charged the project for a route that
+            // does not exist.
+            estimatedCost: 0,
+            actualCost: 0,
             latencyMs: 0,
             runtimeMs: 0,
             resultCount: 0,
@@ -690,8 +693,8 @@ export class ProviderRouter implements ProviderOperations {
           data: null,
           sources: [],
           usage: {
-            estimatedCost: provider.estimatedCost,
-            actualCost: null,
+            estimatedCost: 0,
+            actualCost: 0,
             latencyMs: 0,
             runtimeMs: 0,
             resultCount: 0,

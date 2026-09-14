@@ -330,4 +330,33 @@ await acheck("search cost is reported so job research is not free-looking", asyn
   assert.ok(response.usage.actualCost > 0);
 });
 
+await acheck("a second query is only bought when the first came up short", async () => {
+  // The company's own careers page already yielded three attributable
+  // postings; the ATS-host sweep would only add duplicates, and every Serper
+  // query is a credit. Nineteen of these ran in one live afternoon and
+  // returned nothing usable at all.
+  const plenty = searchStub([
+    [
+      result("https://kissflow.com/careers/soc", "Security Operations Engineer - Kissflow"),
+      result("https://kissflow.com/careers/cloud", "Cloud Security Architect - Kissflow"),
+      result("https://kissflow.com/careers/ir", "Incident Response Lead - Kissflow"),
+    ],
+    [result("https://boards.greenhouse.io/kissflow/jobs/1", "Detection Engineer")],
+  ]);
+  const full = await h.createSearchBackedJobAdapter({ providerId: "exa", searchWeb: plenty })
+    .execute({ companyName: "Kissflow", domain: "kissflow.com" });
+  assert.equal(plenty.calls.length, 1, "one query was enough");
+  assert.equal(full.data.jobs.length, 3);
+
+  // One posting is not a hiring pattern, so the broader query still runs.
+  const thin = searchStub([
+    [result("https://kissflow.com/careers/soc", "Security Operations Engineer - Kissflow")],
+    [result("https://boards.greenhouse.io/kissflow/jobs/1", "Cloud Security Architect")],
+  ]);
+  const both = await h.createSearchBackedJobAdapter({ providerId: "exa", searchWeb: thin })
+    .execute({ companyName: "Kissflow", domain: "kissflow.com" });
+  assert.equal(thin.calls.length, 2, "one posting does not settle the question");
+  assert.equal(both.data.jobs.length, 2);
+});
+
 console.log(`\nSearch-backed JOB_SEARCH: ${checks} checks passed.`);
