@@ -4,6 +4,7 @@ import { claimEligibleForRequirementV2, criterionSatisfiedBy, evaluateRequiremen
 import { detectOfferingOverlapV2, type SellerOfferingV2 } from "./offering-overlap";
 import type { ProviderOperations, ProviderResponse } from "../provider-contract";
 import { MAX_PROFILE_RESOLUTION_SEARCHES_PER_COMPANY } from "../company-profile-resolution";
+import { extractGeographyClaims } from "./geography-facts";
 
 export type ResearchRequestV2 = {
   organizationId: string; projectId: string; companyId: string; companyName: string; domain: string | null;
@@ -208,11 +209,23 @@ export function createProviderRouterResearchInvokerV2(
       const pages = response.data?.pages?.length ? response.data.pages : response.data?.page ? [response.data.page] : [];
       const result: ResearchStepResultV2 = {
         provider: response.providerId, cost: providerCost(response), status: response.status === "failed" ? "FAILED" : pages.length ? "USED" : "EMPTY",
-        evidence: pages.filter((page) => page.text.trim()).slice(0, 5).map((page) => providerEvidence({
-          request, provider: response.providerId, providerRequestId: response.providerRequestId, capturedAt: response.capturedAt,
-          sourceType: "FIRST_PARTY_WEBSITE", url: page.url, title: page.title,
-          snippet: page.text, firstParty: true, claims: { primaryBusiness: page.text.slice(0, 1000) },
-        })),
+        evidence: pages.filter((page) => page.text.trim()).slice(0, 5).map((page) => {
+          const geography = extractGeographyClaims(page.text);
+          return providerEvidence({
+            request, provider: response.providerId, providerRequestId: response.providerRequestId, capturedAt: response.capturedAt,
+            sourceType: "FIRST_PARTY_WEBSITE", url: page.url, title: page.title,
+            snippet: page.text, firstParty: true, claims: {
+              primaryBusiness: page.text.slice(0, 1000),
+              // A company's own pages are the authority on where it is, and
+              // until now the crawl read footers saying "Bengaluru, Karnataka,
+              // India" and kept only the business description. Geography was
+              // claimed exclusively by the firmographics step, whose provider
+              // refuses every request the pipeline makes, so headquarters came
+              // back UNKNOWN for every company ever assessed.
+              ...(geography.length ? { geography } : {}),
+            },
+          });
+        }),
       };
       const raw = Array.isArray(response.metadata?.completenessAttestations) ? response.metadata.completenessAttestations : [];
       if (configuration.trustedCompletenessProviderIds?.includes(response.providerId)) {
