@@ -27,8 +27,10 @@ export type FirecrawlProviderConfiguration = {
   credentialEnv?: string;
   timeoutMs?: number;
   estimatedCost?: number;
-  /** Paths tried under the company domain besides the homepage. */
+  /** Paths the change gate watches for movement, besides the homepage. */
   crawlPaths?: string[];
+  /** Paths the research pass reads for facts. Wider than the gate's: research pays once a month, the gate pays weekly. */
+  researchPaths?: string[];
   maxChars?: number;
   /** Requests in flight at once. The free plan starts refusing above ten a minute. */
   maxConcurrency?: number;
@@ -54,6 +56,11 @@ const DEFAULTS = {
   // Three pages, not five. Every path tried is a credit whether or not it
   // exists, and /about-us and /jobs were 404s on most of the watchlist.
   crawlPaths: ["/about", "/careers"],
+  // Research reads /contact too. Checking the extractor against real company
+  // sites, that is where the address actually is — Chokore, Supersox and
+  // Kalki all state their city on /contact and nowhere else. One more credit
+  // per research pass, which happens monthly, not weekly.
+  researchPaths: ["/about", "/contact", "/careers"],
   maxChars: 30_000,
   maxConcurrency: 4,
   rateLimitRetries: 2,
@@ -85,8 +92,12 @@ export function parseFirecrawlProviderConfiguration(configuration: Record<string
     const value = configuration[key];
     return typeof value === "number" && Number.isFinite(value) && value > 0 ? value : fallback;
   };
-  const paths = Array.isArray(configuration.crawlPaths) ? configuration.crawlPaths.filter((p): p is string => typeof p === "string" && p.startsWith("/")) : DEFAULTS.crawlPaths;
+  const pathList = (value: unknown, fallback: string[]) =>
+    Array.isArray(value) ? (value.filter((p): p is string => typeof p === "string" && p.startsWith("/")) || fallback) : fallback;
+  const paths = pathList(configuration.crawlPaths, DEFAULTS.crawlPaths);
+  const research = pathList(configuration.researchPaths, DEFAULTS.researchPaths);
   return {
+    researchPaths: research.length ? research : DEFAULTS.researchPaths,
     maxConcurrency: num("maxConcurrency", DEFAULTS.maxConcurrency),
     rateLimitRetries: num("rateLimitRetries", DEFAULTS.rateLimitRetries),
     retryBaseMs: num("retryBaseMs", DEFAULTS.retryBaseMs),
@@ -214,7 +225,7 @@ export function createFirecrawlWebsiteCrawlAdapter(options: FirecrawlAdapterOpti
       const requestId = request.requestId ?? `${options.providerId}:${capturedAt}`;
       const fail = (code: string, message: string, retryable: boolean, spent = 0): ProviderResponse<WebsiteCrawlResult> => ({
         status: "failed", providerId: options.providerId, providerRequestId: requestId, data: null, sources: [],
-        usage: { estimatedCost: configuration.estimatedCost * (1 + configuration.crawlPaths.length), actualCost: spent, latencyMs: Date.now() - startedAt, runtimeMs: Date.now() - startedAt, resultCount: 0 },
+        usage: { estimatedCost: configuration.estimatedCost * (1 + configuration.researchPaths.length), actualCost: spent, latencyMs: Date.now() - startedAt, runtimeMs: Date.now() - startedAt, resultCount: 0 },
         error: { code, message, retryable }, retryable, capturedAt,
       });
       const apiKey = options.apiKey ?? process.env[configuration.credentialEnv];
@@ -223,7 +234,7 @@ export function createFirecrawlWebsiteCrawlAdapter(options: FirecrawlAdapterOpti
       let home: URL;
       try { home = new URL(request.url); } catch { return fail("INVALID_REQUEST", "A valid URL is required", false); }
       const domain = home.hostname;
-      const urls = watchUrlsFor(domain, configuration.crawlPaths);
+      const urls = watchUrlsFor(domain, configuration.researchPaths);
       const scraped = await scrapePages(urls, { ...options, apiKey });
 
       // Every page attempted is a credit spent, readable or not (Firecrawl

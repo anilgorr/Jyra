@@ -49,6 +49,38 @@ const POSTCODE = /\b(\d{6}|\d{5}(-\d{4})?|[A-Z]{1,2}\d{1,2}[A-Z]?\s*\d[A-Z]{2})\
 const TAIL_NOISE = /\s+(?:and|with|where|which|since|to|for|we|our|the\s+company|serving|providing|offering|delivering)\b[\s\S]*$/i;
 
 /**
+ * Marketing copy shaped like an address.
+ *
+ * "based in India's largest private sector" matched on the first live run
+ * against real sites: the country test found "India" inside the possessive
+ * and a superlative became a headquarters. A place is a proper noun, not a
+ * claim about being the biggest one.
+ */
+const NOT_A_PLACE = /\b(largest|leading|biggest|best|top|premier|fastest|foremost|no\.?\s?1|number\s+one|award|trusted|world[-\s]?class|private\s+sector|public\s+sector|industry|sector|market|since|founded|established)\b/i;
+
+/** Phone numbers read as addresses often enough to be worth deleting first. */
+const PHONE = /(\+\d{1,3}[\s-]?)?\(?\d{2,4}\)?[\s-]?\d{3,4}[\s-]?\d{0,4}/g;
+
+/**
+ * Is this comma segment a place name rather than a phrase?
+ *
+ * Places are short and proper: "Bengaluru", "Karnataka", "United Arab
+ * Emirates". Anything with a possessive, a superlative, leftover digits, or
+ * more than five words is a sentence that happens to contain a country.
+ */
+function placeLike(segment: string): boolean {
+  const text = segment.trim();
+  if (!text || text.length > 60) return false;
+  if (/['’]s\b/.test(text)) return false;
+  if (NOT_A_PLACE.test(text)) return false;
+  if (/\d/.test(text)) return false;
+  const words = text.split(/\s+/);
+  if (words.length > 5) return false;
+  // At least one capitalised word: a place is a proper noun.
+  return words.some((word) => /^[A-Z]/.test(word));
+}
+
+/**
  * Tidy a captured fragment into a place.
  *
  * "Bengaluru, Karnataka 560103, India and serving customers worldwide"
@@ -64,17 +96,20 @@ export function tidyPlace(raw: string): string | null {
     .replace(/^[\s,;:–—-]+/, "")
     .trim();
   if (!text) return null;
-  // Drop postcodes; they add nothing to a place and break the country match.
-  text = text.replace(POSTCODE, "").replace(/\s{2,}/g, " ").replace(/\s+,/g, ",").trim();
+  // Drop phone numbers and postcodes; both read as addresses and neither is a
+  // place. "(INDIA)+91 (22) 489-" came back as a headquarters on the first
+  // live run against real sites.
+  text = text.replace(PHONE, " ").replace(POSTCODE, "")
+    .replace(/[()]/g, " ").replace(/\s{2,}/g, " ").replace(/\s+,/g, ",").trim();
   const segments = text.split(",").map((part) => part.trim()).filter(Boolean);
   if (!segments.length) return null;
-  // Keep the tail — "12th Main, Indiranagar, Bengaluru, India" is a place
-  // once the street is dropped, and the country is always last.
-  const kept = segments.slice(-3);
-  const place = kept.join(", ");
+  // Keep only the segments that look like place names, then the tail of those:
+  // "12th Main, Indiranagar, Bengaluru, India" is a place once the street is
+  // dropped, and the country is always last.
+  const places = segments.filter(placeLike);
+  if (!places.length) return null;
+  const place = places.slice(-3).join(", ").replace(/[\s,;:.\u2013\u2014-]+$/, "").trim();
   if (place.length < 3 || place.length > 90) return null;
-  // Every word capitalised or a known place word; a sentence fragment is not
-  // a place. Requiring a resolvable country below is the real filter.
   return place;
 }
 

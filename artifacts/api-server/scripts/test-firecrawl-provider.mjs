@@ -70,11 +70,17 @@ const recorder = (override = {}) => {
   const adapter = h.createFirecrawlWebsiteCrawlAdapter({ providerId: "fc", apiKey: "k", fetchImpl, now: () => NOW });
   const out = await adapter.execute({ requestId: "r1", url: "https://zerodha.com" });
   assert.equal(out.status, "success");
-  assert.equal(calls.length, 3, "home + two candidate paths; /about-us and /jobs were 404s on most of the watchlist and cost a credit each");
+  // Research reads home, /about, /contact and /careers. The gate's set is
+  // narrower (no /contact) because it pays weekly and only needs to notice
+  // movement; research pays monthly and /contact is where the address is.
+  assert.equal(calls.length, 4, "home + about + contact + careers");
+  assert.deepEqual(calls.map((c) => c.body.url), [
+    "https://zerodha.com", "https://zerodha.com/about", "https://zerodha.com/contact", "https://zerodha.com/careers",
+  ]);
   assert.equal(out.data.page.url, "https://zerodha.com", "the homepage is the primary page");
   assert.deepEqual(out.data.pages.map((p) => p.url), ["https://zerodha.com", "https://zerodha.com/about", "https://zerodha.com/careers"], "404 and tiny pages are dropped");
   assert.equal(out.usage.resultCount, 3);
-  assert.ok(Math.abs(out.usage.actualCost - 3 * 0.00083) < 1e-9, "three credits spent, three pages kept");
+  assert.ok(Math.abs(out.usage.actualCost - 4 * 0.00083) < 1e-9, "four credits spent");
   assert.equal(Object.keys(out.metadata.hashes).length, 3);
 }
 // Nothing readable → empty, not failed; auth failure → AUTHENTICATION_ERROR so the waterfall moves on.

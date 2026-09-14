@@ -97,4 +97,33 @@ const offices = (claims) => claims.filter((c) => c.type === "OFFICE_PRESENCE").m
   assert.equal(g.tidyPlace("a"), null);
 }
 
+// 9. Regression: the two things that actually got through on the first live
+//    run against real company sites, before the validator was tightened.
+{
+  // Adani's homepage: "based in India's largest private sector..." — the
+  // country test found "India" inside the possessive and a superlative became
+  // a headquarters. A place is a proper noun, not a claim about being biggest.
+  assert.deepEqual(g.extractGeographyClaims(
+    "Adani is based in India's largest private sector infrastructure portfolio, with interests across ports and energy."
+  ), [], "marketing copy containing a country name is not an address");
+
+  for (const copy of [
+    "Headquartered in the world's leading fintech market.",
+    "Based in Asia's fastest growing economy since 2011.",
+    "We are the No.1 provider based in the industry.",
+  ]) {
+    assert.deepEqual(g.extractGeographyClaims(copy), [], `superlatives are not places: ${copy}`);
+  }
+
+  // Kalki's contact page produced "(INDIA)+91 (22) 489-" as a headquarters.
+  // A phone number sits next to an address and reads like one.
+  const contact = "Visit us: Near Aasha Parekh Hospital, Santacruz, Mumbai - 400054\nCall (INDIA) +91 (22) 489-1234";
+  const claims = g.extractGeographyClaims(contact);
+  assert.ok(claims.length >= 1);
+  for (const claim of claims) {
+    assert.doesNotMatch(claim.value, /\d/, "a phone number is never part of a place");
+    assert.match(claim.value, /Mumbai/, "the city survives the cleanup");
+  }
+}
+
 console.log("PASS geography-facts");
