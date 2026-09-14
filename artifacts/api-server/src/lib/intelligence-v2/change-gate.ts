@@ -211,7 +211,11 @@ export function urlsToCheck(domain: string, previous: PageFingerprints | null | 
   const all = watchUrlsFor(domain);
   if (!previous || probeAll) return all;
   const known = all.filter((url) => previous.pages[url] !== undefined);
-  return known.length ? known : all;
+  if (known.length) return known;
+  // Nothing has ever been readable here. Keep a toe in the water — the
+  // homepage only — rather than paying for three pages a week to be told no.
+  // The tier's refresh window still forces a full probe periodically.
+  return (previous.misses ?? 0) > 0 ? all.slice(0, 1) : all;
 }
 
 export async function evaluateChangeGate(input: GateInput): Promise<GateOutcome> {
@@ -249,7 +253,7 @@ export async function evaluateChangeGate(input: GateInput): Promise<GateOutcome>
   // keeps its old stamp so one bad minute does not make it "new" next week.
   const kept = Object.fromEntries(Object.entries(previous?.pages ?? {}).filter(([url]) => urls.includes(url)));
   const fingerprints: PageFingerprints | null = readable.length || jobCount !== null || previous
-    ? { pages: { ...kept, ...Object.fromEntries(readable.map((page) => [page.url, page.stamp!])) }, jobCount, checkedAt: input.now.toISOString() }
+    ? { pages: { ...kept, ...Object.fromEntries(readable.map((page) => [page.url, page.stamp!])) }, jobCount, checkedAt: input.now.toISOString(), misses: 0 }
     : null;
   const outcome = { ...base, pagesChecked: urls.length, pagesChanged, jobCountAfter: jobCount, costUsd, fingerprints };
 
@@ -262,8 +266,17 @@ export async function evaluateChangeGate(input: GateInput): Promise<GateOutcome>
   }
 
   if (refreshDue) return { ...outcome, run: true, decision: "REFRESH", reason: input.latestResearchAt ? "REFRESH_WINDOW_LAPSED" : "NEVER_RESEARCHED" };
+  // Unreadable comes before the baseline check. A company we cannot read has
+  // no baseline to record, and calling it BASELINE stored nothing — so the
+  // next look called it BASELINE too, and paid for three pages again, every
+  // week, for ever. Now the miss itself is written down.
+  if (!readable.length && jobCount === null) {
+    return {
+      ...outcome, run: false, decision: "UNGATED", reason: "NOTHING_READABLE",
+      fingerprints: { pages: {}, jobCount: null, checkedAt: input.now.toISOString(), misses: (previous?.misses ?? 0) + 1 },
+    };
+  }
   if (!previous) return { ...outcome, run: false, decision: "BASELINE", reason: "FIRST_LOOK" };
-  if (!readable.length && jobCount === null) return { ...outcome, run: false, decision: "UNGATED", reason: "NOTHING_READABLE" };
   if (pagesChanged.length) return { ...outcome, run: true, decision: "CHANGED", reason: "PAGES_CHANGED" };
   if (jobsChanged) return { ...outcome, run: true, decision: "CHANGED", reason: "JOBS_CHANGED" };
   return { ...outcome, run: false, decision: "UNCHANGED", reason: "NO_CHANGE" };

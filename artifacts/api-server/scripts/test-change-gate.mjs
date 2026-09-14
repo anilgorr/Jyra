@@ -337,4 +337,41 @@ const CAREERS = "https://zerodha.com/careers";
   assert.equal(page.ok, true);
 }
 
+// 19. A company we cannot read at all is recorded as such, and stops costing
+//     three pages a week to be told no. Edenred came back BASELINE twice in
+//     the first live sweeps — nothing readable, so nothing stored, so the next
+//     look was a "first look" again, and paid again, for ever.
+{
+  const unreadable = {
+    company: company(), latestResearchAt: new Date(NOW.getTime() - DAY),
+    policy: policies.COLD, now: NOW, scrapeAvailable: true,
+    read: reading([page(HOME, "", false), page("https://zerodha.com/about", "", false), page(CAREERS, "", false)], 3 * g.GATE_PAGE_COST_USD),
+    countJobs: async () => null,
+  };
+  const first = await g.evaluateChangeGate(unreadable);
+  assert.equal(first.decision, "UNGATED", "not a baseline — there is no baseline to record");
+  assert.equal(first.reason, "NOTHING_READABLE");
+  assert.equal(first.run, false);
+  assert.equal(first.fingerprints.misses, 1, "the miss itself is written down");
+
+  // Next week: one page probed, not three.
+  let probed = null;
+  const second = await g.evaluateChangeGate({
+    ...unreadable, company: company({ pageFingerprints: first.fingerprints }),
+    read: async (urls) => { probed = urls; return { pages: [page(HOME, "", false)], costUsd: g.GATE_PAGE_COST_USD }; },
+  });
+  assert.deepEqual(probed, [HOME], "a site that reads nothing gets a homepage toe in the water");
+  assert.equal(second.fingerprints.misses, 2);
+  assert.equal(g.urlsToCheck("zerodha.com", first.fingerprints).length, 1);
+  assert.equal(g.urlsToCheck("zerodha.com", first.fingerprints, true).length, 3, "a refresh still probes everything");
+
+  // And the week it comes back to life, the counter resets and normal service resumes.
+  const revived = await g.evaluateChangeGate({
+    ...unreadable, company: company({ pageFingerprints: second.fingerprints }),
+    read: reading([page(HOME, "Zerodha builds broking tools")]),
+  });
+  assert.equal(revived.fingerprints.misses, 0, "a page that reads again clears the record");
+  assert.equal(revived.decision, "CHANGED", "a site we could never read and suddenly can is worth a cycle");
+}
+
 console.log("PASS change-gate");

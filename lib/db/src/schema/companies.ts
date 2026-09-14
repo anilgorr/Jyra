@@ -80,6 +80,13 @@ export type PageFingerprints = {
   jobCount: number | null;
   /** ISO timestamp of the look these came from. */
   checkedAt: string;
+  /**
+   * Consecutive looks that read nothing at all. Some sites are simply not
+   * readable by us — a hard bot wall, a domain that no longer resolves — and
+   * probing three pages a week forever is money spent to learn nothing. After
+   * the first total miss the gate probes the homepage alone.
+   */
+  misses?: number;
 };
 
 export const companiesTable = pgTable(
