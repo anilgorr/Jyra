@@ -34,6 +34,7 @@ export * from "./research-economics";
 export * from "./signals";
 export * from "./intelligence-packs";
 export * from "./signal-clusters";
+export * from "./spend-ledger";
 export * from "./opportunities";
 export * from "./people";
 export * from "./buyers";

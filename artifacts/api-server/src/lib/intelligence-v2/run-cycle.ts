@@ -24,12 +24,13 @@ import { mapJobsToFacts, persistJobFacts } from "./job-facts";
 import { mapEventHitsToFacts, persistEventFacts, researchEvents, type EventFactRow } from "./event-facts";
 import { atsHandleFromProfileUrls, atsHandleToProfileUrls, discoverAtsHandle, fetchAtsJobs } from "./ats-boards";
 import { resolveCompanyCountry } from "./company-country";
+import { recordSpend } from "../spend-ledger";
 import {
   computeChangeset, evidenceFromRunSnapshot, verdictFromRunSnapshot,
   type ChangesetDiff, type ScoreSnapshot, type VerdictSnapshot,
 } from "./changeset";
 import {
-  ASSESSMENT_POLICY_VERSION, ASSESSMENT_PROMPT_VERSION, COMPANY_PROFILE_VERSION,
+  ASSESSMENT_MODEL, ASSESSMENT_POLICY_VERSION, ASSESSMENT_PROMPT_VERSION, COMPANY_PROFILE_VERSION,
   SAFETY_POLICY_VERSION, type EvidenceItemV2,
 } from "./schemas";
 
@@ -233,6 +234,13 @@ export async function runIntelligenceCycle(input: {
     },
     repository: input.repository,
     researchInvoker: createProviderRouterResearchInvokerV2(new ProviderRouter(), { country }),
+    // Recorded per model attempt rather than from the finished run, so a
+    // cycle that pays for a verdict and then fails still shows the spend.
+    onSemanticCost: (cost) => void recordSpend({
+      organizationId, projectId, projectCompanyId, companyId: owned.company.id,
+      kind: "MODEL", source: ASSESSMENT_MODEL, outcome: "success", costUsd: cost,
+      requestId: `${projectCompanyId}:assessment`,
+    }),
     now: input.now,
     ...(input.researchMaxAgeMs ? { researchMaxAgeMs: input.researchMaxAgeMs } : {}),
   });
@@ -269,6 +277,7 @@ export async function runIntelligenceCycle(input: {
     if (!postings?.length) {
       const jobs = await new ProviderRouter().getJobs({
         requestId: `${projectCompanyId}:jobs`,
+        metadata: { organizationId, projectId, companyId: owned.company.id, projectCompanyId },
         companyName: owned.company.canonicalName,
         ...(owned.company.domain ? { domain: owned.company.domain } : {}),
         ...(country ? { country } : {}),
@@ -299,7 +308,8 @@ export async function runIntelligenceCycle(input: {
   try {
     const router = new ProviderRouter();
     const events = await researchEvents(
-      (request) => router.searchWeb(request).then((r) => ({ status: r.status, data: r.data, providerId: r.providerId })),
+      (request) => router.searchWeb({ ...request, metadata: { organizationId, projectId, companyId: owned.company.id, projectCompanyId } })
+        .then((r) => ({ status: r.status, data: r.data, providerId: r.providerId })),
       { requestId: `${projectCompanyId}:events`, companyName: owned.company.canonicalName, domain: owned.company.domain, country, now: completedAt },
     );
     const mapped = mapEventHitsToFacts(events.hits, {

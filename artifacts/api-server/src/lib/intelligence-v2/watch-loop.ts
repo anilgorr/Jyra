@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, gte, isNull, lte, ne, or, sql } from "drizzle-orm";
+import { and, asc, desc, eq, isNull, lte, ne, or, sql } from "drizzle-orm";
 import {
   companiesTable,
   db,
@@ -10,6 +10,7 @@ import {
   type WatchTier,
 } from "@workspace/db";
 import { effectiveResearchBudgetLimits, getResearchBudget } from "../research-economics";
+import { projectSpendSince, recordSpend, utcDayStart } from "../spend-ledger";
 import {
   classifyWatchTier, evaluateChangeGate, tierPolicies,
   type GateOutcome, type TierPolicy, type WatchTierPolicies,
@@ -123,26 +124,19 @@ export type ProjectSpend = { spentTodayUsd: number; recentCycleCosts: number[] }
  * cannot see them is not a budget.
  */
 export async function projectSpendToday(projectId: string, now: Date): Promise<ProjectSpend> {
-  const dayStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
-  const [today] = await db.select({ spend: sql<number>`coalesce(sum(${intelligenceV2ChangesetsTable.costTotal}), 0)` })
-    .from(intelligenceV2ChangesetsTable)
-    .where(and(
-      eq(intelligenceV2ChangesetsTable.projectId, projectId),
-      eq(intelligenceV2ChangesetsTable.trigger, "SCHEDULED"),
-      gte(intelligenceV2ChangesetsTable.observedAt, dayStart),
-    ));
-  const [gates] = await db.select({ spend: sql<number>`coalesce(sum(${intelligenceV2WatchChecksTable.costTotal}), 0)` })
-    .from(intelligenceV2WatchChecksTable)
-    .where(and(
-      eq(intelligenceV2WatchChecksTable.projectId, projectId),
-      gte(intelligenceV2WatchChecksTable.observedAt, dayStart),
-    ));
+  // Today's spend comes from the ledger, which has a row for every attempt —
+  // including the ones that failed. It used to be summed from changesets, and
+  // a changeset only exists when a cycle *finishes*: a run that paid for
+  // research and then died at the verdict spent real money and the ceiling
+  // never saw it. The estimate for the next cycle still comes from what
+  // recent complete cycles actually cost, which is the honest predictor.
+  const spentTodayUsd = await projectSpendSince(projectId, utcDayStart(now));
   const recent = await db.select({ cost: intelligenceV2ChangesetsTable.costTotal })
     .from(intelligenceV2ChangesetsTable)
     .where(eq(intelligenceV2ChangesetsTable.projectId, projectId))
     .orderBy(desc(intelligenceV2ChangesetsTable.observedAt))
     .limit(20);
-  return { spentTodayUsd: Number(today?.spend ?? 0) + Number(gates?.spend ?? 0), recentCycleCosts: recent.map((row) => row.cost) };
+  return { spentTodayUsd, recentCycleCosts: recent.map((row) => row.cost) };
 }
 
 /**
@@ -204,6 +198,14 @@ export async function recordWatchCheck(input: {
       ...(outcome.decision === "CHANGED" ? { lastChangeAt: now } : {}),
       updatedAt: now,
     }).where(eq(projectCompaniesTable.id, owned.projectCompany.id));
+  });
+  await recordSpend({
+    organizationId: owned.project.organizationId, projectId: owned.project.id,
+    projectCompanyId: owned.projectCompany.id, companyId: owned.company.id,
+    kind: "GATE", source: "change-gate",
+    outcome: outcome.decision === "UNGATED" ? "empty" : "success",
+    costUsd: outcome.costUsd, occurredAt: now,
+    metadata: { decision: outcome.decision, reason: outcome.reason, pagesChecked: outcome.pagesChecked },
   });
 }
 

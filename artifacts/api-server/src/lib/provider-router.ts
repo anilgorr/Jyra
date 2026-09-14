@@ -22,6 +22,7 @@ import {
   type ProviderRoutingRole,
 } from "./provider-contract";
 import { resolveCompanyProfileWithRouter } from "./company-profile-resolution";
+import { recordSpend, tenantFromMetadata } from "./spend-ledger";
 import {
   createApifyAdapters,
   parseApifyProviderConfiguration,
@@ -234,6 +235,23 @@ function databaseProviderLoader(): Promise<ProviderCatalogEntry[]> {
 }
 
 async function databaseUsageWriter(record: ProviderUsageRecord): Promise<void> {
+  // The ledger row goes down first and carries the tenant, so a cycle that
+  // dies later still shows what it had already spent. provider_usage stays
+  // what it has always been: the operational record of how a vendor behaves.
+  const [provider] = await db.select({ name: dataProvidersTable.name }).from(dataProvidersTable)
+    .where(eq(dataProvidersTable.id, record.providerId)).limit(1);
+  await recordSpend({
+    ...tenantFromMetadata(record.metadata),
+    kind: "PROVIDER",
+    source: provider?.name ?? record.providerId,
+    capability: record.capability,
+    outcome: record.status === "timeout" ? "failed" : record.status,
+    costUsd: record.actualCost ?? record.estimatedCost ?? 0,
+    requestId: record.requestId,
+    occurredAt: record.completedAt ?? record.startedAt,
+    ...(record.errorCode ? { metadata: { errorCode: record.errorCode } } : {}),
+  });
+
   await db.insert(providerUsageTable).values({
     providerId: record.providerId,
     capability: record.capability,
