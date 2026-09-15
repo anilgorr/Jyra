@@ -3789,6 +3789,180 @@ export const UpdateProjectCompanyResponse = zod.object({
 
 
 /**
+ * Archiving removes a company from the watch loop and from both pool counts, and is reversible — the company, its contacts, its facts and its evidence all stay. It is what frees screening room for a better list.
+ * @summary Archive companies, freeing both pools
+ */
+export const ArchiveProjectCompaniesParams = zod.object({
+  "projectId": zod.coerce.string()
+})
+
+export const archiveProjectCompaniesBodyProjectCompanyIdsItemMax = 100;
+
+export const archiveProjectCompaniesBodyProjectCompanyIdsMax = 500;
+
+
+
+export const ArchiveProjectCompaniesBody = zod.object({
+  "projectCompanyIds": zod.array(zod.string().min(1).max(archiveProjectCompaniesBodyProjectCompanyIdsItemMax)).min(1).max(archiveProjectCompaniesBodyProjectCompanyIdsMax)
+})
+
+export const archiveProjectCompaniesResponseArchivedMin = 0;
+
+export const archiveProjectCompaniesResponseAlreadyArchivedMin = 0;
+
+export const archiveProjectCompaniesResponseNotFoundMin = 0;
+
+export const archiveProjectCompaniesResponseWatchPoolUsedMin = 0;
+
+export const archiveProjectCompaniesResponseWatchPoolLimitMin = 0;
+
+export const archiveProjectCompaniesResponseWatchPoolRemainingMin = 0;
+
+export const archiveProjectCompaniesResponseScreeningPoolUsedMin = 0;
+
+export const archiveProjectCompaniesResponseScreeningPoolLimitMin = 0;
+
+export const archiveProjectCompaniesResponseScreeningPoolRemainingMin = 0;
+
+
+
+export const ArchiveProjectCompaniesResponse = zod.object({
+  "archived": zod.number().min(archiveProjectCompaniesResponseArchivedMin),
+  "alreadyArchived": zod.number().min(archiveProjectCompaniesResponseAlreadyArchivedMin),
+  "notFound": zod.number().min(archiveProjectCompaniesResponseNotFoundMin),
+  "watchPool": zod.object({
+  "used": zod.number().min(archiveProjectCompaniesResponseWatchPoolUsedMin),
+  "limit": zod.number().min(archiveProjectCompaniesResponseWatchPoolLimitMin),
+  "remaining": zod.number().min(archiveProjectCompaniesResponseWatchPoolRemainingMin)
+}),
+  "screeningPool": zod.object({
+  "used": zod.number().min(archiveProjectCompaniesResponseScreeningPoolUsedMin),
+  "limit": zod.number().min(archiveProjectCompaniesResponseScreeningPoolLimitMin),
+  "remaining": zod.number().min(archiveProjectCompaniesResponseScreeningPoolRemainingMin)
+})
+})
+
+
+/**
+ * Screens every company held in screening against the project's Business Twin and returns the disqualified ones with their reasons and the rest ranked best-first. Reads only; nothing is archived or promoted.
+ * @summary Rank the screened companies without changing anything
+ */
+export const GetProjectScreeningParams = zod.object({
+  "projectId": zod.coerce.string()
+})
+
+export const getProjectScreeningResponseConsideredMin = 0;
+
+export const getProjectScreeningResponseDisqualifiedItemScoreMin = 0;
+export const getProjectScreeningResponseDisqualifiedItemScoreMax = 100;
+
+export const getProjectScreeningResponseRankedItemScoreMin = 0;
+export const getProjectScreeningResponseRankedItemScoreMax = 100;
+
+export const getProjectScreeningResponseWatchPoolUsedMin = 0;
+
+export const getProjectScreeningResponseWatchPoolLimitMin = 0;
+
+export const getProjectScreeningResponseWatchPoolRemainingMin = 0;
+
+export const getProjectScreeningResponseScreeningPoolUsedMin = 0;
+
+export const getProjectScreeningResponseScreeningPoolLimitMin = 0;
+
+export const getProjectScreeningResponseScreeningPoolRemainingMin = 0;
+
+
+
+export const GetProjectScreeningResponse = zod.object({
+  "considered": zod.number().min(getProjectScreeningResponseConsideredMin),
+  "disqualified": zod.array(zod.object({
+  "projectCompanyId": zod.string(),
+  "companyId": zod.string(),
+  "canonicalName": zod.string(),
+  "verdict": zod.enum(['DISQUALIFIED', 'KEEP']),
+  "disqualifiers": zod.array(zod.string()),
+  "score": zod.number().min(getProjectScreeningResponseDisqualifiedItemScoreMin).max(getProjectScreeningResponseDisqualifiedItemScoreMax),
+  "reasons": zod.array(zod.string())
+})),
+  "ranked": zod.array(zod.object({
+  "projectCompanyId": zod.string(),
+  "companyId": zod.string(),
+  "canonicalName": zod.string(),
+  "verdict": zod.enum(['DISQUALIFIED', 'KEEP']),
+  "disqualifiers": zod.array(zod.string()),
+  "score": zod.number().min(getProjectScreeningResponseRankedItemScoreMin).max(getProjectScreeningResponseRankedItemScoreMax),
+  "reasons": zod.array(zod.string())
+})),
+  "watchPool": zod.object({
+  "used": zod.number().min(getProjectScreeningResponseWatchPoolUsedMin),
+  "limit": zod.number().min(getProjectScreeningResponseWatchPoolLimitMin),
+  "remaining": zod.number().min(getProjectScreeningResponseWatchPoolRemainingMin)
+}),
+  "screeningPool": zod.object({
+  "used": zod.number().min(getProjectScreeningResponseScreeningPoolUsedMin),
+  "limit": zod.number().min(getProjectScreeningResponseScreeningPoolLimitMin),
+  "remaining": zod.number().min(getProjectScreeningResponseScreeningPoolRemainingMin)
+}),
+  "cutLineScore": zod.number().nullable()
+})
+
+
+/**
+ * @summary Act on the screening — archive the rejects, promote the best
+ */
+export const ApplyProjectScreeningParams = zod.object({
+  "projectId": zod.coerce.string()
+})
+
+export const applyProjectScreeningBodyArchiveBelowScoreMin = 0;
+export const applyProjectScreeningBodyArchiveBelowScoreMax = 100;
+
+export const applyProjectScreeningBodyPromoteTopMin = 0;
+export const applyProjectScreeningBodyPromoteTopMax = 5000;
+
+
+
+export const ApplyProjectScreeningBody = zod.object({
+  "archiveDisqualified": zod.boolean(),
+  "archiveBelowScore": zod.number().min(applyProjectScreeningBodyArchiveBelowScoreMin).max(applyProjectScreeningBodyArchiveBelowScoreMax).nullable(),
+  "promoteTop": zod.number().min(applyProjectScreeningBodyPromoteTopMin).max(applyProjectScreeningBodyPromoteTopMax)
+})
+
+export const applyProjectScreeningResponseArchivedMin = 0;
+
+export const applyProjectScreeningResponsePromotedMin = 0;
+
+export const applyProjectScreeningResponseWatchPoolUsedMin = 0;
+
+export const applyProjectScreeningResponseWatchPoolLimitMin = 0;
+
+export const applyProjectScreeningResponseWatchPoolRemainingMin = 0;
+
+export const applyProjectScreeningResponseScreeningPoolUsedMin = 0;
+
+export const applyProjectScreeningResponseScreeningPoolLimitMin = 0;
+
+export const applyProjectScreeningResponseScreeningPoolRemainingMin = 0;
+
+
+
+export const ApplyProjectScreeningResponse = zod.object({
+  "archived": zod.number().min(applyProjectScreeningResponseArchivedMin),
+  "promoted": zod.number().min(applyProjectScreeningResponsePromotedMin),
+  "watchPool": zod.object({
+  "used": zod.number().min(applyProjectScreeningResponseWatchPoolUsedMin),
+  "limit": zod.number().min(applyProjectScreeningResponseWatchPoolLimitMin),
+  "remaining": zod.number().min(applyProjectScreeningResponseWatchPoolRemainingMin)
+}),
+  "screeningPool": zod.object({
+  "used": zod.number().min(applyProjectScreeningResponseScreeningPoolUsedMin),
+  "limit": zod.number().min(applyProjectScreeningResponseScreeningPoolLimitMin),
+  "remaining": zod.number().min(applyProjectScreeningResponseScreeningPoolRemainingMin)
+})
+})
+
+
+/**
  * Promotion is what the plan charges for. Screened companies are stored and evaluated for free; moving them into the watched pool is bounded by the plan's watch pool and refused as a whole rather than in part.
  * @summary Move screened companies into the watched pool
  */

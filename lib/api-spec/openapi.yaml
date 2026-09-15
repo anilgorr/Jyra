@@ -815,6 +815,137 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
         "404": { $ref: "#/components/responses/NotFound" }
+  /projects/{projectId}/companies/archive:
+    post:
+      operationId: archiveProjectCompanies
+      tags: [companies]
+      summary: Archive companies, freeing both pools
+      description: Archiving removes a company from the watch loop and from both pool counts, and is reversible — the company, its contacts, its facts and its evidence all stay. It is what frees screening room for a better list.
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/ProjectId" }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                projectCompanyIds:
+                  type: array
+                  minItems: 1
+                  maxItems: 500
+                  items: { type: string, minLength: 1, maxLength: 100 }
+              required: [projectCompanyIds]
+      responses:
+        "200":
+          description: Companies archived
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  archived: { type: number, minimum: 0 }
+                  alreadyArchived: { type: number, minimum: 0 }
+                  notFound: { type: number, minimum: 0 }
+                  watchPool: { $ref: "#/components/schemas/PoolUsage" }
+                  screeningPool: { $ref: "#/components/schemas/PoolUsage" }
+                required: [archived, alreadyArchived, notFound, watchPool, screeningPool]
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /projects/{projectId}/screening:
+    get:
+      operationId: getProjectScreening
+      tags: [companies]
+      summary: Rank the screened companies without changing anything
+      description: Screens every company held in screening against the project's Business Twin and returns the disqualified ones with their reasons and the rest ranked best-first. Reads only; nothing is archived or promoted.
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/ProjectId" }
+      responses:
+        "200":
+          description: Screening result
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ScreeningRun" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "424":
+          description: The project has no Business Twin describing what it sells
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error: { type: string }
+                  code: { type: string }
+                required: [error, code]
+  /projects/{projectId}/screening/apply:
+    post:
+      operationId: applyProjectScreening
+      tags: [companies]
+      summary: Act on the screening — archive the rejects, promote the best
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/ProjectId" }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                archiveDisqualified: { type: boolean }
+                archiveBelowScore: { type: ["number", "null"], minimum: 0, maximum: 100 }
+                promoteTop: { type: number, minimum: 0, maximum: 5000 }
+              required: [archiveDisqualified, archiveBelowScore, promoteTop]
+      responses:
+        "200":
+          description: Applied
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  archived: { type: number, minimum: 0 }
+                  promoted: { type: number, minimum: 0 }
+                  watchPool: { $ref: "#/components/schemas/PoolUsage" }
+                  screeningPool: { $ref: "#/components/schemas/PoolUsage" }
+                required: [archived, promoted, watchPool, screeningPool]
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409":
+          description: The plan's watch pool cannot take this many more companies
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error: { type: string }
+                  code: { type: string }
+                  plan: { type: string }
+                  used: { type: number }
+                  limit: { type: number }
+                required: [error, code]
+        "424":
+          description: The project has no Business Twin describing what it sells
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error: { type: string }
+                  code: { type: string }
+                required: [error, code]
   /projects/{projectId}/companies/promote:
     post:
       operationId: promoteProjectCompanies
@@ -4025,6 +4156,37 @@ components:
         createdAt: { type: string, format: date-time }
         updatedAt: { type: string, format: date-time }
       required: [id, projectId, companyId, company, status, researchStatus, fitScore, needScore, timingScore, relationshipScore, confidenceScore, opportunityState, relationshipStatus, opportunityScore, opportunityAssessmentState, latestResearchAt, createdAt, updatedAt]
+    PoolUsage:
+      type: object
+      additionalProperties: false
+      properties:
+        used: { type: number, minimum: 0 }
+        limit: { type: number, minimum: 0 }
+        remaining: { type: number, minimum: 0 }
+      required: [used, limit, remaining]
+    ScreeningResult:
+      type: object
+      additionalProperties: false
+      properties:
+        projectCompanyId: { type: string }
+        companyId: { type: string }
+        canonicalName: { type: string }
+        verdict: { type: string, enum: [DISQUALIFIED, KEEP] }
+        disqualifiers: { type: array, items: { type: string } }
+        score: { type: number, minimum: 0, maximum: 100 }
+        reasons: { type: array, items: { type: string } }
+      required: [projectCompanyId, companyId, canonicalName, verdict, disqualifiers, score, reasons]
+    ScreeningRun:
+      type: object
+      additionalProperties: false
+      properties:
+        considered: { type: number, minimum: 0 }
+        disqualified: { type: array, items: { $ref: "#/components/schemas/ScreeningResult" } }
+        ranked: { type: array, items: { $ref: "#/components/schemas/ScreeningResult" } }
+        watchPool: { $ref: "#/components/schemas/PoolUsage" }
+        screeningPool: { $ref: "#/components/schemas/PoolUsage" }
+        cutLineScore: { type: ["number", "null"] }
+      required: [considered, disqualified, ranked, watchPool, screeningPool, cutLineScore]
     ProjectCompanyUpdate:
       type: object
       properties:

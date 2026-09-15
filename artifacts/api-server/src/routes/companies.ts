@@ -12,6 +12,14 @@ import {
   PreviewCompanyImportBody,
   PreviewCompanyImportParams,
   PreviewCompanyImportResponse,
+  ApplyProjectScreeningBody,
+  ApplyProjectScreeningParams,
+  ApplyProjectScreeningResponse,
+  ArchiveProjectCompaniesBody,
+  ArchiveProjectCompaniesParams,
+  ArchiveProjectCompaniesResponse,
+  GetProjectScreeningParams,
+  GetProjectScreeningResponse,
   PromoteProjectCompaniesBody,
   PromoteProjectCompaniesParams,
   PromoteProjectCompaniesResponse,
@@ -45,7 +53,12 @@ import {
   getAuthenticatedUserId,
   requireAuth,
 } from "../middlewares/auth";
-import { assertWatchPoolCapacity, PlanLimitError, watchPoolCapacity } from "../lib/plans";
+import { assertWatchPoolCapacity, PlanLimitError, screeningPoolCapacity, watchPoolCapacity } from "../lib/plans";
+import {
+  applyScreening,
+  runScreening,
+  ScreeningUnavailableError,
+} from "../lib/intelligence-v2/screening-run";
 
 const router: IRouter = Router();
 
@@ -1033,6 +1046,142 @@ router.post(
         remaining: capacity.remaining,
       },
     }));
+  }),
+);
+
+/**
+ * Archiving, in bulk.
+ *
+ * "Delete" is the word people reach for and archive is what they mean: the
+ * company, its contacts, its facts and its evidence all stay, the watch loop
+ * stops seeing it, and both pool counts drop. A real delete is not on offer and
+ * could not be — company_facts references companies with onDelete restrict, so
+ * the moment an import writes a technology fact the row cannot be removed
+ * without dropping the fact first. Archiving is also the only version that is
+ * reversible, and the only one that remembers the decision was made.
+ */
+router.post(
+  "/projects/:projectId/companies/archive",
+  requireAuth,
+  asyncRoute(async (req, res) => {
+    const params = ArchiveProjectCompaniesParams.safeParse(req.params);
+    const body = ArchiveProjectCompaniesBody.safeParse(req.body);
+    if (!params.success) {
+      res.status(404).json({ error: "Project not found" });
+      return;
+    }
+    if (!body.success) {
+      res.status(400).json({ error: "Send between 1 and 500 project company ids to archive" });
+      return;
+    }
+    const access = await authorizeProject(getAuthenticatedUserId(res), params.data.projectId);
+    if (!access.project) {
+      denyProjectAccess(res, access.status ?? 404);
+      return;
+    }
+
+    const requested = [...new Set(body.data.projectCompanyIds)];
+    const rows = await db
+      .select({ id: projectCompaniesTable.id, status: projectCompaniesTable.status })
+      .from(projectCompaniesTable)
+      .where(and(
+        eq(projectCompaniesTable.projectId, access.project.id),
+        inArray(projectCompaniesTable.id, requested),
+      ));
+    const toArchive = rows.filter((row) => row.status !== "archived");
+    if (toArchive.length) {
+      await db
+        .update(projectCompaniesTable)
+        .set({ status: "archived", updatedAt: new Date() })
+        .where(and(
+          eq(projectCompaniesTable.projectId, access.project.id),
+          inArray(projectCompaniesTable.id, toArchive.map((row) => row.id)),
+        ));
+    }
+
+    const [watch, screening] = await Promise.all([
+      watchPoolCapacity(access.project.organizationId),
+      screeningPoolCapacity(access.project.organizationId),
+    ]);
+    res.json(ArchiveProjectCompaniesResponse.parse({
+      archived: toArchive.length,
+      alreadyArchived: rows.length - toArchive.length,
+      notFound: requested.length - rows.length,
+      watchPool: { used: watch.used, limit: watch.plan.watchPoolSize, remaining: watch.remaining },
+      screeningPool: {
+        used: screening.used,
+        limit: screening.used + screening.remaining,
+        remaining: screening.remaining,
+      },
+    }));
+  }),
+);
+
+/** Rank the screened companies. Reads only — nothing moves. */
+router.get(
+  "/projects/:projectId/screening",
+  requireAuth,
+  asyncRoute(async (req, res) => {
+    const params = GetProjectScreeningParams.safeParse(req.params);
+    if (!params.success) {
+      res.status(404).json({ error: "Project not found" });
+      return;
+    }
+    const access = await authorizeProject(getAuthenticatedUserId(res), params.data.projectId);
+    if (!access.project) {
+      denyProjectAccess(res, access.status ?? 404);
+      return;
+    }
+    try {
+      res.json(GetProjectScreeningResponse.parse(await runScreening(access.project)));
+    } catch (error) {
+      if (error instanceof ScreeningUnavailableError) {
+        res.status(424).json({ error: error.message, code: error.code });
+        return;
+      }
+      throw error;
+    }
+  }),
+);
+
+/** Act on it: archive the rejects, promote the best, report both pools. */
+router.post(
+  "/projects/:projectId/screening/apply",
+  requireAuth,
+  asyncRoute(async (req, res) => {
+    const params = ApplyProjectScreeningParams.safeParse(req.params);
+    const body = ApplyProjectScreeningBody.safeParse(req.body);
+    if (!params.success) {
+      res.status(404).json({ error: "Project not found" });
+      return;
+    }
+    if (!body.success) {
+      res.status(400).json({ error: "Choose what to archive and how many to promote" });
+      return;
+    }
+    const access = await authorizeProject(getAuthenticatedUserId(res), params.data.projectId);
+    if (!access.project) {
+      denyProjectAccess(res, access.status ?? 404);
+      return;
+    }
+    try {
+      const result = await applyScreening(access.project, {
+        archiveDisqualified: body.data.archiveDisqualified,
+        archiveBelowScore: body.data.archiveBelowScore ?? null,
+        promoteTop: body.data.promoteTop,
+      });
+      res.json(ApplyProjectScreeningResponse.parse(result));
+    } catch (error) {
+      if (error instanceof ScreeningUnavailableError) {
+        res.status(424).json({ error: error.message, code: error.code });
+        return;
+      }
+      if (error instanceof PlanLimitError) {
+        res.status(409).json({ error: error.message, code: error.code, plan: error.plan.code, used: error.used, limit: error.plan.watchPoolSize });
+        return;
+      }
+      throw error;
+    }
   }),
 );
 

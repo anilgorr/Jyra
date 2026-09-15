@@ -18,6 +18,7 @@ import Settings from './pages/settings';
 import BusinessTwinPage from './pages/business-twin';
 import IcpPage from './pages/icp';
 import CompaniesPage from './pages/companies/index';
+import ScreeningPage from '@/pages/screening';
 import CompanyIntelligencePage from './pages/company-intelligence';
 import ProviderDiagnostics from './pages/provider-diagnostics';
 import Research from './pages/research';
@@ -90,6 +91,7 @@ function AuthenticatedRoutes() {
             <Route path="/today" component={Today} />
             <Route path="/opportunities" component={Opportunities} />
             <Route path="/companies/:projectCompanyId" component={CompanyIntelligencePage} />
+            <Route path="/screening" component={ScreeningPage} />
             <Route path="/companies" component={CompaniesPage} />
             <Route path="/business-twin" component={BusinessTwinPage} />
             <Route path="/plan" component={PlanPage} />

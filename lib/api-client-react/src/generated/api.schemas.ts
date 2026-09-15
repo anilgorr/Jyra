@@ -2812,6 +2812,48 @@ export interface ProjectCompany {
   updatedAt: string;
 }
 
+export interface PoolUsage {
+  /** @minimum 0 */
+  used: number;
+  /** @minimum 0 */
+  limit: number;
+  /** @minimum 0 */
+  remaining: number;
+}
+
+export type ScreeningResultVerdict = typeof ScreeningResultVerdict[keyof typeof ScreeningResultVerdict];
+
+
+export const ScreeningResultVerdict = {
+  DISQUALIFIED: 'DISQUALIFIED',
+  KEEP: 'KEEP',
+} as const;
+
+export interface ScreeningResult {
+  projectCompanyId: string;
+  companyId: string;
+  canonicalName: string;
+  verdict: ScreeningResultVerdict;
+  disqualifiers: string[];
+  /**
+     * @minimum 0
+     * @maximum 100
+     */
+  score: number;
+  reasons: string[];
+}
+
+export interface ScreeningRun {
+  /** @minimum 0 */
+  considered: number;
+  disqualified: ScreeningResult[];
+  ranked: ScreeningResult[];
+  watchPool: PoolUsage;
+  screeningPool: PoolUsage;
+  /** @nullable */
+  cutLineScore: number | null;
+}
+
 export type ProjectCompanyUpdateStatus = typeof ProjectCompanyUpdateStatus[keyof typeof ProjectCompanyUpdateStatus];
 
 
@@ -4517,6 +4559,69 @@ export type GetAdminQualityDashboardParams = {
  * @maximum 90
  */
 days?: number;
+};
+
+export type ArchiveProjectCompaniesBody = {
+  /**
+     * @minItems 1
+     * @maxItems 500
+     * @items.minLength 1
+     * @items.maxLength 100
+     */
+  projectCompanyIds: string[];
+};
+
+export type ArchiveProjectCompanies200 = {
+  /** @minimum 0 */
+  archived: number;
+  /** @minimum 0 */
+  alreadyArchived: number;
+  /** @minimum 0 */
+  notFound: number;
+  watchPool: PoolUsage;
+  screeningPool: PoolUsage;
+};
+
+export type GetProjectScreening424 = {
+  error: string;
+  code: string;
+};
+
+export type ApplyProjectScreeningBody = {
+  archiveDisqualified: boolean;
+  /**
+     * @minimum 0
+     * @maximum 100
+     * @nullable
+     */
+  archiveBelowScore: number | null;
+  /**
+     * @minimum 0
+     * @maximum 5000
+     */
+  promoteTop: number;
+};
+
+export type ApplyProjectScreening200 = {
+  /** @minimum 0 */
+  archived: number;
+  /** @minimum 0 */
+  promoted: number;
+  watchPool: PoolUsage;
+  screeningPool: PoolUsage;
+};
+
+export type ApplyProjectScreening409 = {
+  error: string;
+  code: string;
+  plan?: string;
+  used?: number;
+  limit?: number;
+};
+
+export type ApplyProjectScreening424 = {
+  error: string;
+  code: string;
 };
 
 export type PromoteProjectCompaniesBody = {

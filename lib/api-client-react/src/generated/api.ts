@@ -24,6 +24,12 @@ import type {
   AddOpportunityResearchQuestionRequest,
   AddOpportunitySignalRequest,
   AdminQualityDashboard,
+  ApplyProjectScreening200,
+  ApplyProjectScreening409,
+  ApplyProjectScreening424,
+  ApplyProjectScreeningBody,
+  ArchiveProjectCompanies200,
+  ArchiveProjectCompaniesBody,
   BadRequestResponse,
   BusinessTwinManualInterpretationInput,
   BusinessTwinSuggestionRequest,
@@ -71,6 +77,7 @@ import type {
   GenerateLearningProposalsParams,
   GetAdminQualityDashboardParams,
   GetLearningAnalyticsParams,
+  GetProjectScreening424,
   HealthStatus,
   IcpCriterionInput,
   IcpCriterionUpdate,
@@ -147,6 +154,7 @@ import type {
   ResearchExecutionResponse,
   ResearchWorkspaceCompany,
   ReviewLearningProposalRequest,
+  ScreeningRun,
   Signal,
   SignalCluster,
   SignalClusterDefinition,
@@ -2857,6 +2865,229 @@ export const useUpdateProjectCompany = <TError = ErrorType<BadRequestResponse | 
         TContext
       > => {
       return useMutation(getUpdateProjectCompanyMutationOptions(options));
+    }
+
+export const getArchiveProjectCompaniesUrl = (projectId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/companies/archive`
+}
+
+/**
+ * Archiving removes a company from the watch loop and from both pool counts, and is reversible — the company, its contacts, its facts and its evidence all stay. It is what frees screening room for a better list.
+ * @summary Archive companies, freeing both pools
+ */
+export const archiveProjectCompanies = async (projectId: string,
+    archiveProjectCompaniesBody: ArchiveProjectCompaniesBody, options?: Parameters<typeof customFetch>[1]): Promise<ArchiveProjectCompanies200> => {
+
+  return customFetch<ArchiveProjectCompanies200>(getArchiveProjectCompaniesUrl(projectId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(archiveProjectCompaniesBody)
+  }
+);}
+
+
+
+
+
+export const getArchiveProjectCompaniesMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof archiveProjectCompanies>>, TError,{projectId: string;data: BodyType<ArchiveProjectCompaniesBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof archiveProjectCompanies>>, TError,{projectId: string;data: BodyType<ArchiveProjectCompaniesBody>}, TContext> => {
+
+const mutationKey = ['archiveProjectCompanies'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof archiveProjectCompanies>>, {projectId: string;data: BodyType<ArchiveProjectCompaniesBody>}> = (props) => {
+          const {projectId,data} = props ?? {};
+
+          return  archiveProjectCompanies(projectId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ArchiveProjectCompaniesMutationResult = NonNullable<Awaited<ReturnType<typeof archiveProjectCompanies>>>
+    export type ArchiveProjectCompaniesMutationBody = BodyType<ArchiveProjectCompaniesBody>
+    export type ArchiveProjectCompaniesMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+    /**
+ * @summary Archive companies, freeing both pools
+ */
+export const useArchiveProjectCompanies = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof archiveProjectCompanies>>, TError,{projectId: string;data: BodyType<ArchiveProjectCompaniesBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof archiveProjectCompanies>>,
+        TError,
+        {projectId: string;data: BodyType<ArchiveProjectCompaniesBody>},
+        TContext
+      > => {
+      return useMutation(getArchiveProjectCompaniesMutationOptions(options));
+    }
+
+export const getGetProjectScreeningUrl = (projectId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/screening`
+}
+
+/**
+ * Screens every company held in screening against the project's Business Twin and returns the disqualified ones with their reasons and the rest ranked best-first. Reads only; nothing is archived or promoted.
+ * @summary Rank the screened companies without changing anything
+ */
+export const getProjectScreening = async (projectId: string, options?: Parameters<typeof customFetch>[1]): Promise<ScreeningRun> => {
+
+  return customFetch<ScreeningRun>(getGetProjectScreeningUrl(projectId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetProjectScreeningQueryKey = (projectId: string,) => {
+    return [
+    `/api/projects/${projectId}/screening`
+    ] as const;
+    }
+
+
+export const getGetProjectScreeningQueryOptions = <TData = Awaited<ReturnType<typeof getProjectScreening>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | GetProjectScreening424>>(projectId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getProjectScreening>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetProjectScreeningQueryKey(projectId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getProjectScreening>>> = ({ signal }) => getProjectScreening(projectId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: projectId !== null && projectId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getProjectScreening>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetProjectScreeningQueryResult = NonNullable<Awaited<ReturnType<typeof getProjectScreening>>>
+export type GetProjectScreeningQueryError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | GetProjectScreening424>
+
+
+/**
+ * @summary Rank the screened companies without changing anything
+ */
+
+export function useGetProjectScreening<TData = Awaited<ReturnType<typeof getProjectScreening>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | GetProjectScreening424>>(
+ projectId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getProjectScreening>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetProjectScreeningQueryOptions(projectId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getApplyProjectScreeningUrl = (projectId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/screening/apply`
+}
+
+/**
+ * @summary Act on the screening — archive the rejects, promote the best
+ */
+export const applyProjectScreening = async (projectId: string,
+    applyProjectScreeningBody: ApplyProjectScreeningBody, options?: Parameters<typeof customFetch>[1]): Promise<ApplyProjectScreening200> => {
+
+  return customFetch<ApplyProjectScreening200>(getApplyProjectScreeningUrl(projectId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(applyProjectScreeningBody)
+  }
+);}
+
+
+
+
+
+export const getApplyProjectScreeningMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | ApplyProjectScreening409 | ApplyProjectScreening424>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof applyProjectScreening>>, TError,{projectId: string;data: BodyType<ApplyProjectScreeningBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof applyProjectScreening>>, TError,{projectId: string;data: BodyType<ApplyProjectScreeningBody>}, TContext> => {
+
+const mutationKey = ['applyProjectScreening'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof applyProjectScreening>>, {projectId: string;data: BodyType<ApplyProjectScreeningBody>}> = (props) => {
+          const {projectId,data} = props ?? {};
+
+          return  applyProjectScreening(projectId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ApplyProjectScreeningMutationResult = NonNullable<Awaited<ReturnType<typeof applyProjectScreening>>>
+    export type ApplyProjectScreeningMutationBody = BodyType<ApplyProjectScreeningBody>
+    export type ApplyProjectScreeningMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | ApplyProjectScreening409 | ApplyProjectScreening424>
+
+    /**
+ * @summary Act on the screening — archive the rejects, promote the best
+ */
+export const useApplyProjectScreening = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | ApplyProjectScreening409 | ApplyProjectScreening424>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof applyProjectScreening>>, TError,{projectId: string;data: BodyType<ApplyProjectScreeningBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof applyProjectScreening>>,
+        TError,
+        {projectId: string;data: BodyType<ApplyProjectScreeningBody>},
+        TContext
+      > => {
+      return useMutation(getApplyProjectScreeningMutationOptions(options));
     }
 
 export const getPromoteProjectCompaniesUrl = (projectId: string,) => {
