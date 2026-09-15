@@ -52,6 +52,17 @@ export type WatchLoopSettings = {
    * plan running dry is a warning rather than a random cycle failure.
    */
   creditReserve: number;
+  /**
+   * How long the free phases get before they hand the tick back.
+   *
+   * A tick is one HTTP request. The first real sweep read 180 pages and the
+   * request died before reporting anything — the deploy restarted the service
+   * underneath it — and nothing downstream could tell how far it had got. A
+   * count is only a bound if you know how slow each item is. A clock is a
+   * bound always, and what is left over is simply next tick's.
+   */
+  extractionBudgetMs: number;
+  reevaluationBudgetMs: number;
 };
 
 export function watchLoopSettings(env: NodeJS.ProcessEnv = process.env): WatchLoopSettings {
@@ -64,6 +75,8 @@ export function watchLoopSettings(env: NodeJS.ProcessEnv = process.env): WatchLo
   const reevaluationsPerTick = Number(env.JYRA_WATCH_MAX_REEVALUATIONS_PER_TICK);
   const extractionsPerTick = Number(env.JYRA_WATCH_MAX_EXTRACTIONS_PER_TICK);
   const reserve = Number(env.JYRA_FIRECRAWL_CREDIT_RESERVE);
+  const extractionBudget = Number(env.JYRA_WATCH_EXTRACTION_BUDGET_MS);
+  const reevaluationBudget = Number(env.JYRA_WATCH_REEVALUATION_BUDGET_MS);
   // JYRA_WATCH_CADENCE_DAYS is the old single-cadence setting. It still works:
   // a deployment that set it gets it as the cold cadence.
   const coldDays = number(env.JYRA_WATCH_COLD_DAYS ?? env.JYRA_WATCH_CADENCE_DAYS, 7);
@@ -75,6 +88,8 @@ export function watchLoopSettings(env: NodeJS.ProcessEnv = process.env): WatchLo
     maxReevaluationsPerTick: Number.isInteger(reevaluationsPerTick) && reevaluationsPerTick > 0 ? Math.min(reevaluationsPerTick, 2000) : 200,
     maxExtractionsPerTick: Number.isInteger(extractionsPerTick) && extractionsPerTick > 0 ? Math.min(extractionsPerTick, 2000) : 200,
     creditReserve: Number.isInteger(reserve) && reserve >= 0 ? reserve : 100,
+    extractionBudgetMs: Number.isFinite(extractionBudget) && extractionBudget > 0 ? Math.min(extractionBudget, 120_000) : 20_000,
+    reevaluationBudgetMs: Number.isFinite(reevaluationBudget) && reevaluationBudget > 0 ? Math.min(reevaluationBudget, 120_000) : 15_000,
     fallbackCycleCostUsd: 0.05,
   };
 }
@@ -333,8 +348,8 @@ export async function runWatchLoopTick(input: {
     enabled: settings.enabled, startedAt: startedAt.toISOString(), finishedAt: "",
     due: 0, checked: 0, unchanged: 0, deferred: 0, ran: 0, skipped: 0, failed: 0, changed: 0,
     gateSpentUsd: 0, spentUsd: 0, outcomes: [],
-    reevaluation: { considered: 0, evaluated: 0, created: 0, failed: 0, outcomes: [] },
-    extraction: { considered: 0, extracted: 0, factsInserted: 0, failed: 0, outcomes: [] },
+    reevaluation: { backlog: 0, considered: 0, evaluated: 0, created: 0, failed: 0, stoppedEarly: false, outcomes: [] },
+    extraction: { backlog: 0, considered: 0, extracted: 0, factsInserted: 0, failed: 0, stoppedEarly: false, outcomes: [] },
     credits: { remaining: null, planCredits: null, billingPeriodEnd: null, error: null, paidReadingAllowed: true, reason: null },
   };
 
@@ -350,9 +365,12 @@ export async function runWatchLoopTick(input: {
    * HOT, and should be looked at today rather than next week. A failure here
    * is logged and does not stop the paid sweep. */
   try {
-    report.extraction = await extract({ limit: settings.maxExtractionsPerTick, now, log: input.log });
+    report.extraction = await extract({
+      limit: settings.maxExtractionsPerTick, now, log: input.log,
+      deadline: startedAt.getTime() + settings.extractionBudgetMs,
+    });
     if (report.extraction.considered) {
-      input.log.info({ considered: report.extraction.considered, factsInserted: report.extraction.factsInserted, failed: report.extraction.failed }, "WATCH_LOOP_EXTRACTION");
+      input.log.info({ backlog: report.extraction.backlog, considered: report.extraction.considered, factsInserted: report.extraction.factsInserted, failed: report.extraction.failed, stoppedEarly: report.extraction.stoppedEarly }, "WATCH_LOOP_EXTRACTION");
     }
   } catch (error) {
     input.log.warn({ err: error }, "WATCH_LOOP_EXTRACTION_FAILED");
@@ -514,9 +532,12 @@ async function reevaluateStaleSignalsGuarded(
   now: Date,
   log: CycleLogger,
 ): Promise<ReevaluationReport> {
-  const report = await reevaluate({ limit: settings.maxReevaluationsPerTick, now, log });
+  const report = await reevaluate({
+    limit: settings.maxReevaluationsPerTick, now, log,
+    deadline: Date.now() + settings.reevaluationBudgetMs,
+  });
   if (report.considered) {
-    log.info({ considered: report.considered, evaluated: report.evaluated, created: report.created, failed: report.failed }, "WATCH_LOOP_REEVALUATION");
+    log.info({ backlog: report.backlog, considered: report.considered, evaluated: report.evaluated, created: report.created, failed: report.failed, stoppedEarly: report.stoppedEarly }, "WATCH_LOOP_REEVALUATION");
   }
   return report;
 }

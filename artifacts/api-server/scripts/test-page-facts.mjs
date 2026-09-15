@@ -120,6 +120,21 @@ Bayzat is ISO 27001 : 2022
   assert.deepEqual(m.trustLinksFrom("no links here", home), [], "no link, no credit spent");
 }
 
+// 7a. The free phases are bounded by a clock, not only a count.
+//     A tick is one HTTP request. The first real sweep read 180 pages and the
+//     request died before it could report anything — a deploy restarted the
+//     service underneath it — and nothing downstream could tell how far it had
+//     got. A count only bounds the work if you know how slow each item is.
+{
+  const s = m.watchLoopSettings({});
+  assert.equal(s.extractionBudgetMs, 20_000);
+  assert.equal(s.reevaluationBudgetMs, 15_000);
+  assert.equal(m.watchLoopSettings({ JYRA_WATCH_EXTRACTION_BUDGET_MS: "5000" }).extractionBudgetMs, 5_000);
+  assert.equal(m.watchLoopSettings({ JYRA_WATCH_EXTRACTION_BUDGET_MS: "9999999" }).extractionBudgetMs, 120_000,
+    "a budget longer than any request can live is not a budget");
+  assert.equal(m.watchLoopSettings({ JYRA_WATCH_EXTRACTION_BUDGET_MS: "-1" }).extractionBudgetMs, 20_000);
+}
+
 // 7. The sweep is capped, so one tick cannot spend minutes on a large archive.
 {
   assert.equal(m.watchLoopSettings({}).maxExtractionsPerTick, 200);

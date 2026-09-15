@@ -227,10 +227,15 @@ export type BackfillOutcome = {
 };
 
 export type BackfillReport = {
+  /** How many were due in this batch — the backlog it drew from. */
+  backlog: number;
+  /** How many this tick actually read. */
   considered: number;
   extracted: number;
   factsInserted: number;
   failed: number;
+  /** True when the clock ran out before the batch did. The rest is next tick's. */
+  stoppedEarly: boolean;
   outcomes: BackfillOutcome[];
 };
 
@@ -250,6 +255,17 @@ export type BackfillReport = {
 export async function backfillPageFacts(input: {
   companyId?: string;
   limit?: number;
+  /**
+   * Stop here whether or not the batch is done.
+   *
+   * A tick is one HTTP request, and this phase is the long one. The first real
+   * sweep read 180 pages and the request died before it could report anything
+   * — a deploy restarted the service underneath it — and there was no way to
+   * tell how far it had got. Work bounded by a count is only bounded if you
+   * know how slow each item is; work bounded by a clock is bounded always.
+   * Progress is durable either way, so the remainder is simply next tick's.
+   */
+  deadline?: number;
   now?: Date;
   organizationFor?: (companyId: string) => Promise<string | null>;
   log?: { info: (object: object, message: string) => void; warn: (object: object, message: string) => void };
@@ -301,10 +317,32 @@ export async function backfillPageFacts(input: {
     .orderBy(crawlPagesTable.id, desc(crawlPagesTable.observedAt))
     .limit(limit);
 
-  const report: BackfillReport = { considered: 0, extracted: 0, factsInserted: 0, failed: 0, outcomes: [] };
+  const report: BackfillReport = { backlog: pages.length, considered: 0, extracted: 0, factsInserted: 0, failed: 0, stoppedEarly: false, outcomes: [] };
   const done = new Set<string>();
+  /* Markers are written in batches, not one per page. One round trip per page
+   * is what made a 200-page sweep take longer than a request lives: 180 pages
+   * at a few hundred milliseconds of Singapore-to-Supabase latency is a minute
+   * of doing almost nothing. Batched, the same sweep is a handful of calls. */
+  const markers: Array<{ crawlPageId: string; extractorVersion: string; extractedAt: Date; factsInserted: number }> = [];
+  const flush = async () => {
+    if (!markers.length) return;
+    await db.insert(crawlPageExtractionsTable).values(markers).onConflictDoUpdate({
+      target: crawlPageExtractionsTable.crawlPageId,
+      set: {
+        extractorVersion: sql`excluded.extractor_version`,
+        extractedAt: sql`excluded.extracted_at`,
+        factsInserted: sql`excluded.facts_inserted`,
+      },
+    });
+    markers.length = 0;
+  };
+
   for (const row of pages) {
     if (done.has(row.id)) continue;
+    if (input.deadline !== undefined && Date.now() > input.deadline) {
+      report.stoppedEarly = true;
+      break;
+    }
     done.add(row.id);
     report.considered++;
     const page: PageForExtraction = {
@@ -329,12 +367,8 @@ export async function backfillPageFacts(input: {
       // Marked either way. A page that yielded nothing has still been read,
       // and re-deciding that a nav stub is a nav stub on every tick forever is
       // the same waste as never looking.
-      await db.insert(crawlPageExtractionsTable)
-        .values({ crawlPageId: row.id, extractorVersion: PAGE_FACT_EXTRACTOR_VERSION, extractedAt: now, factsInserted })
-        .onConflictDoUpdate({
-          target: crawlPageExtractionsTable.crawlPageId,
-          set: { extractorVersion: PAGE_FACT_EXTRACTOR_VERSION, extractedAt: now, factsInserted },
-        });
+      markers.push({ crawlPageId: row.id, extractorVersion: PAGE_FACT_EXTRACTOR_VERSION, extractedAt: now, factsInserted });
+      if (markers.length >= 100) await flush();
       if (factsInserted) {
         report.outcomes.push({ crawlPageId: row.id, companyName: row.companyName, sourceUrl: row.sourceUrl, factsInserted, candidates: result.facts.length });
         input.log?.info({ company: row.companyName, url: row.sourceUrl, factsInserted }, "PAGE_FACTS_EXTRACTED");
@@ -349,5 +383,6 @@ export async function backfillPageFacts(input: {
       input.log?.warn({ err: error, company: row.companyName, url: row.sourceUrl }, "PAGE_FACT_EXTRACTION_FAILED");
     }
   }
+  await flush();
   return report;
 }

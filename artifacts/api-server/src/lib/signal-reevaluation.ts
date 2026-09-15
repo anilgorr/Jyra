@@ -129,10 +129,15 @@ export type ReevaluationOutcome = {
 };
 
 export type ReevaluationReport = {
+  /** How many were due — the backlog, whether or not this tick got to them. */
+  backlog: number;
+  /** How many this tick actually looked at. */
   considered: number;
   evaluated: number;
   created: number;
   failed: number;
+  /** True when the clock ran out before the batch did. The rest is next tick's. */
+  stoppedEarly: boolean;
   outcomes: ReevaluationOutcome[];
 };
 
@@ -147,6 +152,8 @@ export type ReevaluationReport = {
 export async function reevaluateStaleSignals(input: {
   projectId?: string;
   limit?: number;
+  /** Stop here whether or not the batch is done; a tick is one HTTP request. */
+  deadline?: number;
   now?: Date;
   log?: { info: (object: object, message: string) => void; warn: (object: object, message: string) => void };
   select?: typeof selectStaleSignalCompanies;
@@ -155,9 +162,14 @@ export async function reevaluateStaleSignals(input: {
   const select = input.select ?? selectStaleSignalCompanies;
   const evaluate = input.evaluate ?? evaluateSignalsForCompany;
   const due = await select({ projectId: input.projectId, limit: input.limit });
-  const report: ReevaluationReport = { considered: due.length, evaluated: 0, created: 0, failed: 0, outcomes: [] };
+  const report: ReevaluationReport = { backlog: due.length, considered: 0, evaluated: 0, created: 0, failed: 0, stoppedEarly: false, outcomes: [] };
 
   for (const row of due) {
+    if (input.deadline !== undefined && Date.now() > input.deadline) {
+      report.stoppedEarly = true;
+      break;
+    }
+    report.considered++;
     try {
       const result = await evaluate({
         organizationId: row.organizationId,

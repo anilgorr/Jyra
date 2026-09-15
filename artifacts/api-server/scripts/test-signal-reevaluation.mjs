@@ -83,6 +83,7 @@ const row = (over = {}) => ({
     },
   });
   assert.equal(report.considered, 3);
+  assert.equal(report.backlog, 3);
   assert.equal(report.evaluated, 2);
   assert.equal(report.created, 3);
   assert.equal(report.failed, 1);
@@ -91,6 +92,33 @@ const row = (over = {}) => ({
     "a company after the failure still gets evaluated");
   assert.equal(report.outcomes.find((o) => o.companyName === "Datadog").reason, "PACK_RECONFIGURED",
     "the report says why each company was re-evaluated, so a sweep can be read without the database");
+}
+
+// 6a. The clock stops the sweep even when the batch has not finished, and the
+//     report says so. Work left over is next tick's; the staleness marker is
+//     per company, so nothing is lost by stopping in the middle.
+{
+  const many = Array.from({ length: 50 }, (_, index) => ({
+    ...row({ companyId: `c-${index}`, companyName: `Co ${index}` }),
+    verdict: { stale: true, reason: "NEW_FACTS" },
+  }));
+  const report = await m.reevaluateStaleSignals({
+    select: async () => many,
+    deadline: Date.now() - 1,
+    evaluate: async () => { throw new Error("must not be reached past the deadline"); },
+  });
+  assert.equal(report.stoppedEarly, true);
+  assert.equal(report.evaluated, 0);
+  assert.equal(report.considered, 0, "nothing was looked at");
+  assert.equal(report.backlog, 50, "but the backlog is reported, so a tick that ran out of time says how much is left");
+
+  const finished = await m.reevaluateStaleSignals({
+    select: async () => many.slice(0, 2),
+    deadline: Date.now() + 60_000,
+    evaluate: async () => ({ packs: [], created: [], total: 0 }),
+  });
+  assert.equal(finished.stoppedEarly, false, "a batch that finishes in time does not claim it was cut short");
+  assert.equal(finished.evaluated, 2);
 }
 
 // 6. The sweep is capped, so a bulk import cannot make one tick take minutes.

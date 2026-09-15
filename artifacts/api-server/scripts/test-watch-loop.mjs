@@ -273,8 +273,8 @@ const noRecord = async () => {};
     repository: {}, log: quietLog, now: NOW,
     settings: { ...settings, creditReserve: reserve },
     credits: async () => ({ remaining, planCredits: 1000, billingPeriodEnd: null, error: null }),
-    reevaluate: async () => ({ considered: 0, evaluated: 0, created: 0, failed: 0, outcomes: [] }),
-    extract: async () => ({ considered: 0, extracted: 0, factsInserted: 0, failed: 0, outcomes: [] }),
+    reevaluate: async () => ({ backlog: 0, considered: 0, evaluated: 0, created: 0, failed: 0, stoppedEarly: false, outcomes: [] }),
+    extract: async () => ({ backlog: 0, considered: 0, extracted: 0, factsInserted: 0, failed: 0, stoppedEarly: false, outcomes: [] }),
     select: async () => [owned("a")],
     gate: async (input) => { seen.push(input.scrapeAvailable); return { run: false, decision: "UNCHANGED", reason: "same", pagesChecked: 1, pagesChanged: 0, jobCountBefore: null, jobCountAfter: null, costUsd: 0, fingerprints: null, counted: true }; },
     cycle: async () => { throw new Error("no cycle expected"); },
@@ -297,8 +297,8 @@ const noRecord = async () => {};
   const blind = await w.runWatchLoopTick({
     repository: {}, log: quietLog, now: NOW, settings: { ...settings, creditReserve: 100 },
     credits: async () => { throw new Error("network"); },
-    reevaluate: async () => ({ considered: 0, evaluated: 0, created: 0, failed: 0, outcomes: [] }),
-    extract: async () => ({ considered: 0, extracted: 0, factsInserted: 0, failed: 0, outcomes: [] }),
+    reevaluate: async () => ({ backlog: 0, considered: 0, evaluated: 0, created: 0, failed: 0, stoppedEarly: false, outcomes: [] }),
+    extract: async () => ({ backlog: 0, considered: 0, extracted: 0, factsInserted: 0, failed: 0, stoppedEarly: false, outcomes: [] }),
     select: async () => [], cycle: async () => {}, gate: async () => {}, record: async () => {},
     spend: async () => ({ spentTodayUsd: 0, recentCycleCosts: [] }), dailyBudgetFor: async () => 25,
   });
