@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { readPageDirect, type PageReadVia } from "./page-text";
 import type {
   CrawlWebsiteRequest,
   ProviderAdapter,
@@ -41,6 +42,12 @@ export type FirecrawlProviderConfiguration = {
 };
 
 export type FirecrawlAdapterOptions = {
+  /**
+   * The free reader. Injected by tests: left to the default it performs real
+   * HTTP, and a unit suite that quietly reaches the internet is not hermetic
+   * and fails in CI for reasons that have nothing to do with the code.
+   */
+  directReader?: typeof readPageDirect;
   providerId: string;
   configuration?: FirecrawlProviderConfiguration;
   apiKey?: string;
@@ -97,6 +104,12 @@ export type ScrapedPage = {
   statusCode: number | null;
   ok: boolean;
   error: string | null;
+  /**
+   * Which reader produced this. A page read over plain HTTP costs nothing and
+   * must never be counted against the credit plan; only Firecrawl bills.
+   * Absent on pages from scrapePage itself, which is always Firecrawl.
+   */
+  via?: PageReadVia;
 };
 
 /** Normalise before hashing so whitespace and case drift never read as change. */
@@ -265,7 +278,72 @@ export async function scrapePages(urls: string[], options: FirecrawlAdapterOptio
 export const CHARGED_ERRORS_EXCLUDED = new Set(["CREDENTIALS_MISSING", "TIMEOUT", "PROVIDER_EXCEPTION", "RATE_LIMITED"]);
 
 export function chargedPages(pages: ScrapedPage[]): number {
-  return pages.filter((page) => !page.error || !CHARGED_ERRORS_EXCLUDED.has(page.error)).length;
+  return pages.filter((page) => page.via !== "direct" && (!page.error || !CHARGED_ERRORS_EXCLUDED.has(page.error))).length;
+}
+
+/**
+ * Read these pages as cheaply as they can be read.
+ *
+ * Plain HTTP first, Firecrawl only for what comes back blocked, empty or
+ * thin. This is not a new idea — it is what the change gate has been doing
+ * since the first sweep, where it turned 219 credits into about 40. The
+ * research crawl never adopted it and paid full price for every page,
+ * including the four-fifths of them that a GET would have returned.
+ *
+ * Credits are the binding constraint on the whole product: 1,000 a month on
+ * the free plan, every attempt charged, 404s included. Four pages a company
+ * across 73 companies is most of the plan. Across the 125 the Starter tier
+ * promises, it does not fit at all. Reading free-first is what makes the
+ * promise arithmetic work.
+ *
+ * The reader is recorded per page. The two extract different text from the
+ * same HTML — Firecrawl's markdown drops navigation the tag strip keeps — so
+ * anything comparing hashes over time has to know which produced which, or a
+ * fallback reads as a change that never happened.
+ */
+export async function readPagesCheaply(
+  urls: string[],
+  options: FirecrawlAdapterOptions & { paidAvailable?: boolean },
+): Promise<ScrapedPage[]> {
+  const directReader = options.directReader ?? readPageDirect;
+  const maxChars = options.configuration?.maxChars ?? DEFAULTS.maxChars;
+  const direct = await Promise.all(urls.map(async (url) => ({ url, read: await directReader(url, { maxChars }) })));
+  const results = new Map<string, ScrapedPage>();
+  const needPaid: string[] = [];
+  for (const { url, read } of direct) {
+    if (read.ok) {
+      results.set(url, {
+        url, finalUrl: read.finalUrl, title: read.title, text: read.text,
+        textHash: textFingerprint(read.text), statusCode: read.statusCode,
+        ok: true, error: null, via: "direct",
+      });
+      continue;
+    }
+    // A 404 read for free is a settled answer: the page is not there, and
+    // paying Firecrawl to confirm it is a credit spent to learn nothing.
+    if (read.statusCode === 404 || read.statusCode === 410) {
+      results.set(url, {
+        url, finalUrl: null, title: null, text: "", textHash: "",
+        statusCode: read.statusCode, ok: false, error: `PAGE_HTTP_${read.statusCode}`, via: "direct",
+      });
+      continue;
+    }
+    needPaid.push(url);
+  }
+  if (needPaid.length && options.paidAvailable !== false) {
+    for (const page of await scrapePages(needPaid, options)) results.set(page.url, { ...page, via: "firecrawl" });
+  } else {
+    for (const url of needPaid) {
+      const read = direct.find((entry) => entry.url === url)!.read;
+      results.set(url, {
+        url, finalUrl: null, title: null, text: "", textHash: "",
+        statusCode: read.statusCode, ok: false,
+        error: options.paidAvailable === false ? "PAID_READER_UNAVAILABLE" : (read.error ?? "UNREADABLE"),
+        via: "direct",
+      });
+    }
+  }
+  return urls.map((url) => results.get(url)!).filter(Boolean);
 }
 
 export function createFirecrawlWebsiteCrawlAdapter(options: FirecrawlAdapterOptions): ProviderAdapter<"WEBSITE_CRAWL"> {
@@ -290,7 +368,7 @@ export function createFirecrawlWebsiteCrawlAdapter(options: FirecrawlAdapterOpti
       try { home = new URL(request.url); } catch { return fail("INVALID_REQUEST", "A valid URL is required", false); }
       const domain = home.hostname;
       const urls = watchUrlsFor(domain, configuration.researchPaths);
-      const scraped = await scrapePages(urls, { ...options, apiKey });
+      const scraped = await readPagesCheaply(urls, { ...options, apiKey });
 
       // A second, conditional hop. The homepage is already in hand; if it
       // links to a security or trust page, that page is where the company
@@ -301,7 +379,7 @@ export function createFirecrawlWebsiteCrawlAdapter(options: FirecrawlAdapterOpti
       if (configuration.maxDiscoveredPages > 0 && homePage?.ok && homePage.text) {
         const discovered = trustLinksFrom(homePage.text, homePage.url, configuration.maxDiscoveredPages)
           .filter((url) => !urls.includes(url));
-        if (discovered.length) scraped.push(...await scrapePages(discovered, { ...options, apiKey }));
+        if (discovered.length) scraped.push(...await readPagesCheaply(discovered, { ...options, apiKey }));
       }
 
       // Every page attempted is a credit spent, readable or not (Firecrawl
@@ -337,4 +415,81 @@ export function createFirecrawlWebsiteCrawlAdapter(options: FirecrawlAdapterOpti
       };
     },
   };
+}
+
+export type FirecrawlCredits = {
+  remaining: number | null;
+  planCredits: number | null;
+  billingPeriodEnd: string | null;
+  error: string | null;
+};
+
+/**
+ * What is left on the plan, from Firecrawl's own ledger rather than ours.
+ *
+ * Ours cannot be trusted for this. The spend ledger was added on 2026-09-14 at
+ * 15:09 and accounts for about 20 credits against 254 actually spent that day;
+ * everything before it, including a rate-limit incident that attempted 365
+ * scrapes in two minutes, is invisible to it. A number that only counts the
+ * spending you remembered to record is worse than no number, because it reads
+ * as headroom.
+ *
+ * Free and unmetered — this endpoint does not cost a credit — so it is cheap
+ * enough to check once a tick.
+ */
+export async function firecrawlCredits(options: {
+  apiKey?: string;
+  fetchImpl?: typeof fetch;
+  apiBaseUrl?: string;
+  timeoutMs?: number;
+} = {}): Promise<FirecrawlCredits> {
+  const apiKey = options.apiKey ?? process.env[DEFAULTS.credentialEnv];
+  const empty = (error: string): FirecrawlCredits => ({ remaining: null, planCredits: null, billingPeriodEnd: null, error });
+  if (!apiKey) return empty("CREDENTIALS_MISSING");
+  const fetchImpl = options.fetchImpl ?? fetch;
+  const base = (options.apiBaseUrl ?? DEFAULTS.apiBaseUrl).replace(/\/+$/, "");
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), options.timeoutMs ?? 10_000);
+  try {
+    const response = await fetchImpl(`${base}/v2/team/credit-usage`, {
+      headers: { authorization: `Bearer ${apiKey}` },
+      signal: controller.signal,
+    });
+    if (!response.ok) return empty(`HTTP_${response.status}`);
+    const body = await response.json() as { data?: { remainingCredits?: unknown; planCredits?: unknown; billingPeriodEnd?: unknown } };
+    const remaining = typeof body.data?.remainingCredits === "number" ? body.data.remainingCredits : null;
+    return {
+      remaining,
+      planCredits: typeof body.data?.planCredits === "number" ? body.data.planCredits : null,
+      billingPeriodEnd: typeof body.data?.billingPeriodEnd === "string" ? body.data.billingPeriodEnd : null,
+      error: remaining === null ? "UNEXPECTED_RESPONSE" : null,
+    };
+  } catch (error) {
+    return empty(error instanceof Error && error.name === "AbortError" ? "TIMEOUT" : "FETCH_FAILED");
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+/**
+ * Whether paid reading is still allowed, and why not.
+ *
+ * A reserve rather than zero, for two reasons. Running a plan to exactly nil
+ * means the failure lands on whichever company happens to be next, at a random
+ * moment, with no warning — and a customer's cycle failing for an accounting
+ * reason looks exactly like the product being broken. And a reserve leaves
+ * enough credits to research a company a salesperson asks about by hand, which
+ * is the one request that must never fail for want of budget.
+ *
+ * An unknown balance does not stop anything. A credentials problem or a
+ * network blip is not evidence of an empty plan, and refusing to work because
+ * a status endpoint was unreachable would be a self-inflicted outage.
+ */
+export function paidReadingAllowed(credits: FirecrawlCredits, reserve: number): { allowed: boolean; reason: string | null } {
+  if (credits.remaining === null) return { allowed: true, reason: null };
+  if (credits.remaining <= 0) return { allowed: false, reason: "Firecrawl plan is exhausted" };
+  if (credits.remaining <= reserve) {
+    return { allowed: false, reason: `Firecrawl is down to ${credits.remaining} credits, at or below the ${reserve} reserve` };
+  }
+  return { allowed: true, reason: null };
 }

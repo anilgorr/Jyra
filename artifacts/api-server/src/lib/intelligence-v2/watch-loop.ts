@@ -12,6 +12,7 @@ import {
 import { effectiveResearchBudgetLimits, getResearchBudget } from "../research-economics";
 import { reevaluateStaleSignals, type ReevaluationReport } from "../signal-reevaluation";
 import { backfillPageFacts, type BackfillReport } from "./page-facts";
+import { firecrawlCredits, paidReadingAllowed, type FirecrawlCredits } from "../firecrawl-provider";
 import { projectSpendSince, recordSpend, utcDayStart } from "../spend-ledger";
 import {
   classifyWatchTier, evaluateChangeGate, tierPolicies,
@@ -45,6 +46,12 @@ export type WatchLoopSettings = {
   maxReevaluationsPerTick: number;
   /** Stored pages read for facts per tick. Free, same as above; capped for the same reason. */
   maxExtractionsPerTick: number;
+  /**
+   * Paid-reader credits held back from the loop. The loop stops paying at this
+   * floor so a salesperson's hand-run research still has budget, and so the
+   * plan running dry is a warning rather than a random cycle failure.
+   */
+  creditReserve: number;
 };
 
 export function watchLoopSettings(env: NodeJS.ProcessEnv = process.env): WatchLoopSettings {
@@ -56,6 +63,7 @@ export function watchLoopSettings(env: NodeJS.ProcessEnv = process.env): WatchLo
   const gatesPerTick = Number(env.JYRA_WATCH_MAX_GATES_PER_TICK);
   const reevaluationsPerTick = Number(env.JYRA_WATCH_MAX_REEVALUATIONS_PER_TICK);
   const extractionsPerTick = Number(env.JYRA_WATCH_MAX_EXTRACTIONS_PER_TICK);
+  const reserve = Number(env.JYRA_FIRECRAWL_CREDIT_RESERVE);
   // JYRA_WATCH_CADENCE_DAYS is the old single-cadence setting. It still works:
   // a deployment that set it gets it as the cold cadence.
   const coldDays = number(env.JYRA_WATCH_COLD_DAYS ?? env.JYRA_WATCH_CADENCE_DAYS, 7);
@@ -66,6 +74,7 @@ export function watchLoopSettings(env: NodeJS.ProcessEnv = process.env): WatchLo
     maxGateChecksPerTick: Number.isInteger(gatesPerTick) && gatesPerTick > 0 ? Math.min(gatesPerTick, 500) : 60,
     maxReevaluationsPerTick: Number.isInteger(reevaluationsPerTick) && reevaluationsPerTick > 0 ? Math.min(reevaluationsPerTick, 2000) : 200,
     maxExtractionsPerTick: Number.isInteger(extractionsPerTick) && extractionsPerTick > 0 ? Math.min(extractionsPerTick, 2000) : 200,
+    creditReserve: Number.isInteger(reserve) && reserve >= 0 ? reserve : 100,
     fallbackCycleCostUsd: 0.05,
   };
 }
@@ -264,6 +273,12 @@ export type TickReport = {
   reevaluation: ReevaluationReport;
   /** Facts read out of pages already crawled. Also free, also runs every tick. */
   extraction: BackfillReport;
+  /**
+   * What is left on the paid reader's plan, and whether this tick was allowed
+   * to use it. Reported every tick so a plan running dry is visible in the run
+   * that noticed, not in a support ticket three days later.
+   */
+  credits: FirecrawlCredits & { paidReadingAllowed: boolean; reason: string | null };
 };
 
 /**
@@ -299,6 +314,8 @@ export async function runWatchLoopTick(input: {
   reevaluate?: typeof reevaluateStaleSignals;
   /** Injected for tests; defaults to the real page-fact backfill. */
   extract?: typeof backfillPageFacts;
+  /** Injected for tests; defaults to asking Firecrawl for the balance. */
+  credits?: typeof firecrawlCredits;
 }): Promise<TickReport> {
   const now = input.now ?? new Date();
   const settings = input.settings ?? watchLoopSettings();
@@ -310,6 +327,7 @@ export async function runWatchLoopTick(input: {
   const dailyBudgetFor = input.dailyBudgetFor ?? (async (projectId: string) => effectiveResearchBudgetLimits(await getResearchBudget(projectId)).dailyBudget);
   const reevaluate = input.reevaluate ?? reevaluateStaleSignals;
   const extract = input.extract ?? backfillPageFacts;
+  const credits = input.credits ?? firecrawlCredits;
   const startedAt = new Date();
   const report: TickReport = {
     enabled: settings.enabled, startedAt: startedAt.toISOString(), finishedAt: "",
@@ -317,6 +335,7 @@ export async function runWatchLoopTick(input: {
     gateSpentUsd: 0, spentUsd: 0, outcomes: [],
     reevaluation: { considered: 0, evaluated: 0, created: 0, failed: 0, outcomes: [] },
     extraction: { considered: 0, extracted: 0, factsInserted: 0, failed: 0, outcomes: [] },
+    credits: { remaining: null, planCredits: null, billingPeriodEnd: null, error: null, paidReadingAllowed: true, reason: null },
   };
 
   if (!settings.enabled) {
@@ -344,6 +363,22 @@ export async function runWatchLoopTick(input: {
     report.reevaluation = await reevaluateStaleSignalsGuarded(reevaluate, settings, now, input.log);
   } catch (error) {
     input.log.warn({ err: error }, "WATCH_LOOP_REEVALUATION_FAILED");
+  }
+
+  /* What the plan has left, before spending any of it. Free to ask, and the
+   * answer decides whether this tick is allowed to pay for reading at all. */
+  try {
+    const balance = await credits({});
+    const verdict = paidReadingAllowed(balance, settings.creditReserve);
+    report.credits = { ...balance, paidReadingAllowed: verdict.allowed, reason: verdict.reason };
+    if (!verdict.allowed) {
+      input.log.warn({ remaining: balance.remaining, reserve: settings.creditReserve }, "WATCH_LOOP_CREDITS_EXHAUSTED");
+    } else if (balance.remaining !== null && balance.planCredits) {
+      input.log.info({ remaining: balance.remaining, planCredits: balance.planCredits, periodEnd: balance.billingPeriodEnd }, "WATCH_LOOP_CREDITS");
+    }
+  } catch (error) {
+    // An unreachable status endpoint is not evidence of an empty plan.
+    input.log.warn({ err: error }, "WATCH_LOOP_CREDIT_CHECK_FAILED");
   }
 
   const due = await select(now, settings, settings.maxGateChecksPerTick);
@@ -381,6 +416,10 @@ export async function runWatchLoopTick(input: {
     let outcome: GateOutcome;
     try {
       outcome = await gate({
+        // The plan's floor reaches the gate: with credits at the reserve it
+        // still reads every page it can read for free and simply declines the
+        // paid fallback, so watching degrades instead of stopping.
+        scrapeAvailable: report.credits.paidReadingAllowed && Boolean(process.env.FIRECRAWL_API_KEY),
         company: {
           domain: owned.company.domain, canonicalName: owned.company.canonicalName,
           profileUrls: owned.company.profileUrls, pageFingerprints: owned.company.pageFingerprints,

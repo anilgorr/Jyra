@@ -25,6 +25,26 @@ The change gate is cheap for a different reason: it reads pages directly and
 free first, and only falls back to Firecrawl when that fails. Nineteen
 companies gated for $0.005 in the 09-14 sweep.
 
+### Free-first reading
+
+The research crawl now reads every page over plain HTTP first and pays only for
+what comes back blocked, empty or thin — which is what the change gate has done
+since the first sweep, where it turned 219 credits into about 40. A 404 read
+for free is a settled answer and is never re-bought.
+
+Expected steady state on the free plan: most pages cost nothing, so 73
+companies researched monthly lands well under the 292 credits the old
+pay-for-everything path needed, and the 125-company Starter tier fits. The
+gate's own fallback and the sites that are genuinely bot-walled are what remain
+chargeable.
+
+The loop checks the balance once a tick, before spending any of it, and stops
+paying below a reserve (`JYRA_FIRECRAWL_CREDIT_RESERVE`, default 100). At the
+floor it keeps reading free and declines only the paid fallback, so watching
+degrades rather than stopping — and the reserve leaves enough for a salesperson
+to research a company by hand, the one request that must never fail for want of
+budget. An unreachable status endpoint is not treated as an empty plan.
+
 Re-check the balance with:
 
 ```

@@ -70,10 +70,19 @@ const CYBER_DEFINITIONS: FixtureDefinition[] = [
   definition("CLOUD_SECURITY_HIRING", "Cloud security hiring", "HIRING", ["JOB_OPENING"], [74, 82, 76], { matchAny: ["cloud.{0,20}security", "security.{0,20}cloud"] }),
   definition("SECURITY_HIRING_ACCELERATION", "Security hiring acceleration", "HIRING", ["HIRING_COUNT"], [82, 90, 80], { matchAny: ["security", "cyber"], mode: "increasing_count", minFacts: 2, defaultStrength: 88 }),
   definition("CLOUD_EXPANSION", "Cloud expansion", "EXPANSION", ["COMPANY_EXPANSION"], [65, 75, 68], { matchAny: ["cloud"] }),
-  definition("ISO27001_ACTIVITY", "ISO 27001 activity", "COMPLIANCE", ["CERTIFICATION"], [60, 70, 68], { matchAny: ["iso\\s*27001"] }),
-  definition("SOC2_ACTIVITY", "SOC 2 activity", "COMPLIANCE", ["CERTIFICATION"], [60, 70, 68], { matchAny: ["soc\\s*2"] }),
+  // CERTIFICATION is the event — "achieved it in March", dated. A trust page
+  // states the same thing standing and undated, which files as
+  // COMPLIANCE_MENTION, and that is the form nearly every company actually
+  // publishes. Accepting only the event made these two unreachable in
+  // practice: a company's own "we are ISO 27001 certified" is exactly the
+  // activity the definition is named after.
+  definition("ISO27001_ACTIVITY", "ISO 27001 activity", "COMPLIANCE", ["CERTIFICATION", "COMPLIANCE_MENTION"], [60, 70, 68], { matchAny: ["iso\\s*/?\\s*(?:iec\\s*)?27001"] }),
+  definition("SOC2_ACTIVITY", "SOC 2 activity", "COMPLIANCE", ["CERTIFICATION", "COMPLIANCE_MENTION"], [60, 70, 68], { matchAny: ["soc\\s*2"] }),
   definition("PCI_ACTIVITY", "PCI activity", "COMPLIANCE", ["CERTIFICATION", "COMPLIANCE_MENTION"], [58, 68, 65], { matchAny: ["\\bpci\\b"] }),
-  definition("REGULATORY_PRESSURE", "Regulatory pressure", "REGULATORY", ["COMPLIANCE_MENTION"], [72, 78, 70], { matchAny: ["regulat", "compliance", "gdpr", "hipaa", "pci", "requirement"] }),
+  definition("REGULATORY_PRESSURE", "Regulatory pressure", "REGULATORY", ["COMPLIANCE_MENTION"], [72, 78, 70], // The named regimes belong next to the generic words, or a company's
+  // plainest statement of its posture — "Bayzat is ISO 27001 : 2022" —
+  // matches none of them.
+  { matchAny: ["regulat", "compliance", "complian", "certified", "gdpr", "hipaa", "ccpa", "dpdp", "pci", "iso\\s*/?\\s*(?:iec\\s*)?270\\d\\d", "soc\\s*2", "fedramp", "hitrust", "requirement"] }),
   definition("GEOGRAPHIC_EXPANSION", "Geographic expansion", "EXPANSION", ["NEW_MARKET", "COMPANY_EXPANSION"], [58, 78, 62]),
   definition("FUNDING_EVENT", "Funding event", "FUNDING", ["FUNDING_EVENT"], [45, 58, 45]),
   definition("ACQUISITION", "Acquisition", "M_AND_A", ["ACQUISITION"], [60, 72, 60]),
@@ -87,7 +96,7 @@ export const MANAGED_SOC_SECURITY_COMPLIANCE_ACTIVITY_DEFINITION = definition(
   "MSOC_SECURITY_COMPLIANCE_ACTIVITY",
   "Security/compliance program activity",
   "COMPLIANCE",
-  ["CERTIFICATION"],
+  ["CERTIFICATION", "COMPLIANCE_MENTION"],
   [45, 38, 55],
   {
     description: "Recent material security/compliance program activity relevant to Managed SOC; this is SECURITY_PROGRAM_ACTIVITY and explicitly does not mean purchase intent or Managed SOC procurement.",
@@ -95,8 +104,16 @@ export const MANAGED_SOC_SECURITY_COMPLIANCE_ACTIVITY_DEFINITION = definition(
     minimumConfidence: 70,
     lifetimeDays: 180,
     decayRule: "LINEAR",
+    // matchAll is an AND, so the two shapes a compliance claim takes have to
+    // be one alternation in the first pattern rather than two entries.
+    //
+    // A dated event carries an eventType — "achieved ISO 27001 in March". A
+    // trust page carries no verb and no date; it says "SOC 2 Type 2" under a
+    // logo, which files as COMPLIANCE_MENTION with a structured value of
+    // {"standard": …}. Requiring the verb admitted only the first, and the
+    // second is what nearly every company actually publishes.
     matchAll: [
-      "\"eventType\":\"(?:has achieved|achieved|achieves|renewed|has renewed|completed|completes|has completed|have completed|received|earned|obtained|are now|is now|started|initiated|launched|expanded)\"",
+      "(?:\"eventType\"\\s*:\\s*\"(?:has achieved|achieved|achieves|renewed|has renewed|completed|completes|has completed|have completed|received|earned|obtained|are now|is now|started|initiated|launched|expanded)\"|\"standard\"\\s*:\\s*\")",
       "(?:iso(?:/iec)?\\s*27001|soc\\s*2|security.{0,30}(?:audit|assessment|certification)|(?:audit|assessment|certification).{0,30}security)",
     ],
     excludeAny: [

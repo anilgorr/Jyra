@@ -21,7 +21,7 @@
  */
 
 import { randomUUID } from "node:crypto";
-import { and, desc, eq, isNull, ne, or } from "drizzle-orm";
+import { and, desc, eq, isNull, ne, or, sql } from "drizzle-orm";
 import {
   companiesTable,
   companyEvidenceTable,
@@ -268,7 +268,14 @@ export async function backfillPageFacts(input: {
   ];
   if (input.companyId) conditions.push(eq(crawlPagesTable.companyId, input.companyId));
 
-  const pages = await db.select({
+  /* Too short to hold a claim. The archive is mostly these — a job posting
+   * row averages 63 characters and a social stub 150 — and reading them is
+   * round trips spent to conclude nothing. They are filtered here rather than
+   * in the extractor so they never occupy a slot in the tick's budget, and
+   * they are still marked as read below so the sweep moves past them. */
+  conditions.push(sql`length(${crawlPagesTable.rawContent}) >= ${MIN_PAGE_TEXT}`);
+
+  const pages = await db.selectDistinctOn([crawlPagesTable.id], {
     id: crawlPagesTable.id,
     companyId: crawlPagesTable.companyId,
     sourceUrl: crawlPagesTable.sourceUrl,
@@ -282,11 +289,16 @@ export async function backfillPageFacts(input: {
     // A page belongs to a company, not to an organisation, so the owner comes
     // from any project watching it. Pages for companies nobody watches are
     // skipped rather than filed against an arbitrary org.
+    //
+    // DISTINCT ON the page, because this join fans out: a company watched by
+    // three projects produced three rows for each of its pages, and the limit
+    // was applied to rows. A 200-page budget was really sixty-odd pages, and
+    // the sweep looked three times slower than it was.
     .innerJoin(projectCompaniesTable, eq(projectCompaniesTable.companyId, crawlPagesTable.companyId))
     .innerJoin(projectsTable, eq(projectsTable.id, projectCompaniesTable.projectId))
     .leftJoin(crawlPageExtractionsTable, eq(crawlPageExtractionsTable.crawlPageId, crawlPagesTable.id))
     .where(and(...conditions))
-    .orderBy(desc(crawlPagesTable.observedAt))
+    .orderBy(crawlPagesTable.id, desc(crawlPagesTable.observedAt))
     .limit(limit);
 
   const report: BackfillReport = { considered: 0, extracted: 0, factsInserted: 0, failed: 0, outcomes: [] };

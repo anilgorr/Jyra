@@ -69,7 +69,10 @@ const recorder = (override = {}) => {
 // 3. WEBSITE_CRAWL: home + candidates, readable pages only, credits for every page served.
 {
   const { calls, fetchImpl } = recorder();
-  const adapter = h.createFirecrawlWebsiteCrawlAdapter({ providerId: "fc", apiKey: "k", fetchImpl, now: () => NOW });
+  // Every page refused to the free reader, so this block is about which paths
+  // are chosen and what they cost, not about which reader served them.
+  const blocked = async () => ({ ok: false, text: "", finalUrl: null, title: null, statusCode: 403, error: "HTTP_403" });
+  const adapter = h.createFirecrawlWebsiteCrawlAdapter({ providerId: "fc", apiKey: "k", fetchImpl, now: () => NOW, directReader: blocked });
   const out = await adapter.execute({ requestId: "r1", url: "https://zerodha.com" });
   assert.equal(out.status, "success");
   // Research reads the homepage plus every research path. The gate's set is
@@ -96,12 +99,16 @@ const recorder = (override = {}) => {
   assert.ok(out.usage.actualCost > 0, "readable pages are paid for");
   assert.equal(Object.keys(out.metadata.hashes).length, 4);
 }
-// Nothing readable → empty, not failed; auth failure → AUTHENTICATION_ERROR so the waterfall moves on.
+// Nothing readable → empty, not failed; auth failure → AUTHENTICATION_ERROR so
+// the waterfall moves on. Both need the free reader refusing, because a page
+// the free reader CAN get no longer depends on Firecrawl working at all — an
+// expired key stops being fatal, which is the point of reading free-first.
 {
-  const adapter = h.createFirecrawlWebsiteCrawlAdapter({ providerId: "fc", apiKey: "k", fetchImpl: async (url, init) => new Response(JSON.stringify({ success: true, data: { markdown: "x", metadata: { statusCode: 404 } } })), now: () => NOW });
+  const blocked = async () => ({ ok: false, text: "", finalUrl: null, title: null, statusCode: 403, error: "HTTP_403" });
+  const adapter = h.createFirecrawlWebsiteCrawlAdapter({ providerId: "fc", apiKey: "k", directReader: blocked, fetchImpl: async () => new Response(JSON.stringify({ success: true, data: { markdown: "x", metadata: { statusCode: 404 } } })), now: () => NOW });
   const out = await adapter.execute({ url: "https://nothing.example" });
   assert.equal(out.status, "empty"); assert.equal(out.error, null);
-  const bad = h.createFirecrawlWebsiteCrawlAdapter({ providerId: "fc", apiKey: "k", fetchImpl: recorder({ status: 401 }).fetchImpl, now: () => NOW });
+  const bad = h.createFirecrawlWebsiteCrawlAdapter({ providerId: "fc", apiKey: "k", directReader: blocked, fetchImpl: recorder({ status: 401 }).fetchImpl, now: () => NOW });
   const failed = await bad.execute({ url: "https://zerodha.com" });
   assert.equal(failed.status, "failed"); assert.equal(failed.error.code, "AUTHENTICATION_ERROR"); assert.equal(failed.retryable, false);
   const invalid = await bad.execute({ url: "not a url" });
@@ -111,5 +118,63 @@ const recorder = (override = {}) => {
 // 4. Configuration parsing.
 const cfg = h.parseFirecrawlProviderConfiguration({ crawlPaths: ["/team", "nope"], estimatedCost: 0 });
 assert.deepEqual(cfg.crawlPaths, ["/team"]); assert.equal(cfg.estimatedCost, 0.00083); assert.equal(cfg.apiBaseUrl, "https://api.firecrawl.dev");
+
+// 6. Free-first reading. Credits are the binding constraint on the product —
+//    1,000 a month, every attempt charged, 404s included — and the change gate
+//    has been reading pages over plain HTTP since the first sweep, where it
+//    turned 219 credits into about 40. The research crawl paid full price for
+//    every page until now.
+{
+  const directPages = {
+    "https://acme.com": { ok: true, text: "Acme builds things. ".repeat(40), finalUrl: "https://acme.com", title: "Acme", statusCode: 200, error: null },
+    "https://acme.com/about": { ok: false, text: "", finalUrl: null, title: null, statusCode: 403, error: "HTTP_403" },
+    "https://acme.com/contact": { ok: false, text: "", finalUrl: null, title: null, statusCode: 404, error: "HTTP_404" },
+  };
+  const urls = Object.keys(directPages);
+  const paid = [];
+  const fetchImpl = async (url, init) => {
+    paid.push(JSON.parse(init.body).url);
+    return new Response(JSON.stringify({ success: true, data: { markdown: "Rendered about page. ".repeat(40), metadata: { statusCode: 200, sourceURL: JSON.parse(init.body).url } } }), { status: 200 });
+  };
+  const directReader = async (url) => directPages[url];
+  const pages = await h.readPagesCheaply(urls, { providerId: "fc", apiKey: "k", fetchImpl, directReader });
+
+  assert.deepEqual(paid, ["https://acme.com/about"],
+    "only the page the free reader could not get is paid for");
+  assert.equal(pages.find((p) => p.url === "https://acme.com").via, "direct");
+  assert.equal(pages.find((p) => p.url === "https://acme.com/about").via, "firecrawl");
+  assert.equal(pages.find((p) => p.url === "https://acme.com/contact").via, "direct",
+    "a 404 read for free is a settled answer — paying to confirm it buys nothing");
+  assert.equal(h.chargedPages(pages), 1, "two of three pages cost nothing");
+
+  // With the plan at its floor, free reading continues and the paid fallback
+  // simply does not happen. Watching degrades; it does not stop.
+  const grounded = await h.readPagesCheaply(urls, { providerId: "fc", apiKey: "k", fetchImpl: async () => { throw new Error("must not be called"); }, directReader, paidAvailable: false });
+  assert.equal(grounded.find((p) => p.url === "https://acme.com").ok, true, "the free pages still arrive");
+  assert.equal(grounded.find((p) => p.url === "https://acme.com/about").error, "PAID_READER_UNAVAILABLE");
+  assert.equal(h.chargedPages(grounded), 0);
+}
+
+// 7. The plan's balance, and the floor that keeps it from being hit blind.
+{
+  const ok = async () => new Response(JSON.stringify({ success: true, data: { remainingCredits: 746, planCredits: 1000, billingPeriodEnd: "2026-10-14T07:05:37.667Z" } }), { status: 200 });
+  const credits = await h.firecrawlCredits({ apiKey: "k", fetchImpl: ok });
+  assert.equal(credits.remaining, 746);
+  assert.equal(credits.planCredits, 1000);
+  assert.equal(credits.error, null);
+
+  assert.equal(h.paidReadingAllowed(credits, 100).allowed, true);
+  assert.equal(h.paidReadingAllowed({ ...credits, remaining: 100 }, 100).allowed, false, "the reserve is a floor, not a target");
+  assert.match(h.paidReadingAllowed({ ...credits, remaining: 40 }, 100).reason, /40 credits/);
+  assert.equal(h.paidReadingAllowed({ ...credits, remaining: 0 }, 100).reason, "Firecrawl plan is exhausted");
+
+  // An unreachable status endpoint is not evidence of an empty plan. Refusing
+  // to work because a health check failed is a self-inflicted outage.
+  const unreachable = await h.firecrawlCredits({ apiKey: "k", fetchImpl: async () => { throw new Error("network"); } });
+  assert.equal(unreachable.remaining, null);
+  assert.equal(unreachable.error, "FETCH_FAILED");
+  assert.equal(h.paidReadingAllowed(unreachable, 100).allowed, true);
+  assert.equal((await h.firecrawlCredits({ fetchImpl: ok })).error, "CREDENTIALS_MISSING");
+}
 
 console.log("PASS firecrawl-provider");

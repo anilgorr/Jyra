@@ -260,4 +260,49 @@ const noRecord = async () => {};
   assert.ok(warnings.includes("WATCH_LOOP_CHECK_RECORD_FAILED"));
 }
 
+
+// The plan's balance is checked before anything is spent, and the floor
+// reaches the gate: with credits at the reserve the loop still reads every
+// page it can read for free and declines only the paid fallback. Watching
+// degrades instead of stopping, and the reason is in the report of the run
+// that noticed rather than in a support ticket three days later.
+{
+  const quietLog = { info() {}, warn() {}, error() {}, debug() {} };
+  const seen = [];
+  const run = (remaining, reserve) => w.runWatchLoopTick({
+    repository: {}, log: quietLog, now: NOW,
+    settings: { ...settings, creditReserve: reserve },
+    credits: async () => ({ remaining, planCredits: 1000, billingPeriodEnd: null, error: null }),
+    reevaluate: async () => ({ considered: 0, evaluated: 0, created: 0, failed: 0, outcomes: [] }),
+    extract: async () => ({ considered: 0, extracted: 0, factsInserted: 0, failed: 0, outcomes: [] }),
+    select: async () => [owned("a")],
+    gate: async (input) => { seen.push(input.scrapeAvailable); return { run: false, decision: "UNCHANGED", reason: "same", pagesChecked: 1, pagesChanged: 0, jobCountBefore: null, jobCountAfter: null, costUsd: 0, fingerprints: null, counted: true }; },
+    cycle: async () => { throw new Error("no cycle expected"); },
+    record: async () => {}, spend: async () => ({ spentTodayUsd: 0, recentCycleCosts: [] }), dailyBudgetFor: async () => 25,
+  });
+
+  const healthy = await run(746, 100);
+  assert.equal(healthy.credits.remaining, 746);
+  assert.equal(healthy.credits.paidReadingAllowed, true);
+  assert.equal(healthy.credits.reason, null);
+
+  seen.length = 0;
+  const grounded = await run(40, 100);
+  assert.equal(grounded.credits.paidReadingAllowed, false);
+  assert.match(grounded.credits.reason, /40 credits/);
+  assert.equal(seen[0], false, "the floor reaches the gate, which then reads free-only");
+  assert.equal(grounded.checked, 1, "and the tick still runs — degraded, not stopped");
+
+  // A status endpoint that cannot be reached is not evidence of an empty plan.
+  const blind = await w.runWatchLoopTick({
+    repository: {}, log: quietLog, now: NOW, settings: { ...settings, creditReserve: 100 },
+    credits: async () => { throw new Error("network"); },
+    reevaluate: async () => ({ considered: 0, evaluated: 0, created: 0, failed: 0, outcomes: [] }),
+    extract: async () => ({ considered: 0, extracted: 0, factsInserted: 0, failed: 0, outcomes: [] }),
+    select: async () => [], cycle: async () => {}, gate: async () => {}, record: async () => {},
+    spend: async () => ({ spentTodayUsd: 0, recentCycleCosts: [] }), dailyBudgetFor: async () => 25,
+  });
+  assert.equal(blind.credits.paidReadingAllowed, true, "a health check failure must not become a self-inflicted outage");
+}
+
 console.log("PASS watch-loop");
