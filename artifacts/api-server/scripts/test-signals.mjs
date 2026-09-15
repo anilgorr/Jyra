@@ -415,3 +415,35 @@ try {
   if (company) await h.db.delete(h.companiesTable).where(h.eq(h.companiesTable.id, company.id));
   await h.db.delete(h.usersTable).where(h.sql`${h.usersTable.id} IN (${userId}, ${reviewerAId}, ${reviewerBId})`);
 }
+
+// A short literal means the word, not the letters inside another word.
+//
+// Every pattern below is verbatim from an approved definition in production.
+// The three plain ones were matching as substrings, which is how "ASAP
+// Infotech" read as a legacy SAP estate and Sizmek's "mediamind" read as an
+// IAM purchase. The regexes must keep working untouched - two of them already
+// carry their own \b, which is the tell that this has bitten before.
+{
+  const { patternToRegExp } = h;
+
+  assert.equal(patternToRegExp("sap").test("asap infotech uses wordpress"), false);
+  assert.equal(patternToRegExp("sap").test("acme uses sap successfactors"), true);
+  assert.equal(patternToRegExp("iam").test("acme uses sizmek mediamind"), false);
+  assert.equal(patternToRegExp("iam").test("acme uses loginradius (iam)"), true);
+  assert.equal(patternToRegExp("ats").test("supports twelve export formats"), false);
+  assert.equal(patternToRegExp("ats").test("acme runs an ats"), true);
+
+  // Multi-word literals and hyphens still behave.
+  assert.equal(patternToRegExp("marketing automation").test("uses marketo (marketing automation)"), true);
+  assert.equal(patternToRegExp("on-premise").test("an on-premise deployment"), true);
+
+  // Patterns written as regexes are left exactly alone.
+  assert.equal(patternToRegExp("\\bciso\\b").test("appointed a ciso"), true);
+  assert.equal(patternToRegExp("cloud.{0,20}security").test("cloud and workload security"), true);
+  assert.equal(patternToRegExp("soc\\s*2").test("completed soc 2 type ii"), true);
+  assert.equal(patternToRegExp("iso\\s*/?\\s*(?:iec\\s*)?27001").test("iso/iec 27001 certified"), true);
+
+  // And the two definitions that have actually fired in production keep firing.
+  assert.equal(patternToRegExp("security").test("hiring for security engineering"), true);
+  assert.equal(patternToRegExp("marketing").test("growing the marketing team"), true);
+}

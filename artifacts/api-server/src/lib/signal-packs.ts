@@ -28,6 +28,35 @@ function factText(fact: CompanyFact): string {
   return `${fact.supportingExcerpt} ${JSON.stringify(fact.structuredValue)}`.toLowerCase();
 }
 
+const REGEX_METACHARACTERS = /[\\^$.|?*+()[\]{}]/;
+
+/**
+ * A short literal means the word, not the letters.
+ *
+ * Definition authors write two kinds of pattern into `matchAny`. Some are real
+ * regexes - an ISO 27001 alternation, `cloud.{0,20}security` - and a few
+ * already carry their own boundaries, `\bcio\b` and `\bciso\b` among them,
+ * because whoever wrote those had been bitten. The rest are plain words, and
+ * those were being matched as substrings.
+ *
+ * That is fine for "marketing" and invents signals for everything shorter.
+ * RECRUITMENT_ATS_CHANGE matches "ats", which is inside "formats" and "stats".
+ * ERP_LEGACY_PLATFORM matches "sap", which is inside "ASAP Infotech". A
+ * security definition matches "iam", which is inside "mediamind" - so Sizmek
+ * running on CureJoy's website read as an identity-management purchase. On the
+ * first real technology import, eighty-five of the matches across the export
+ * came from letters inside an unrelated word.
+ *
+ * So a pattern with no regex metacharacters in it is treated as the word it
+ * plainly is, and anything a person wrote as a regex is left exactly alone.
+ */
+export function patternToRegExp(pattern: string): RegExp {
+  if (REGEX_METACHARACTERS.test(pattern)) return new RegExp(pattern, "i");
+  const leading = /^\w/.test(pattern) ? "\\b" : "";
+  const trailing = /\w$/.test(pattern) ? "\\b" : "";
+  return new RegExp(`${leading}${pattern}${trailing}`, "i");
+}
+
 function matches(definition: SignalDefinition, fact: CompanyFact): boolean {
   const text = factText(fact);
   const configuration = definition.configuration as {
@@ -39,9 +68,9 @@ function matches(definition: SignalDefinition, fact: CompanyFact): boolean {
   const requirements = (definition.factRequirements ?? {}) as { factTypes?: string[] };
   const factTypes = configuration.factTypes ?? requirements.factTypes ?? [];
   if (!factTypes.includes(fact.factType)) return false;
-  if (configuration.excludeAny?.some((pattern) => new RegExp(pattern, "i").test(text))) return false;
-  if (configuration.matchAll?.some((pattern) => !new RegExp(pattern, "i").test(text))) return false;
-  return !configuration.matchAny?.length || configuration.matchAny.some((pattern) => new RegExp(pattern, "i").test(text));
+  if (configuration.excludeAny?.some((pattern) => patternToRegExp(pattern).test(text))) return false;
+  if (configuration.matchAll?.some((pattern) => !patternToRegExp(pattern).test(text))) return false;
+  return !configuration.matchAny?.length || configuration.matchAny.some((pattern) => patternToRegExp(pattern).test(text));
 }
 
 /**
