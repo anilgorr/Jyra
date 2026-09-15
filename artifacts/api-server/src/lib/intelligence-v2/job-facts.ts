@@ -118,7 +118,10 @@ export type HiringCountRow = {
  * that was looked at and found quiet.
  */
 export function countHiringByTheme(
-  facts: JobFactRow[],
+  /* Only the titles are read, so this also takes roles listed on a careers
+   * page — which carry no date and therefore cannot become JOB_OPENING facts,
+   * but say exactly what a count is for: these are open now. */
+  facts: Array<{ title: string }>,
   input: { companyName: string; boardUrl?: string | null; now?: Date },
 ): HiringCountRow[] {
   if (!facts.length) return [];

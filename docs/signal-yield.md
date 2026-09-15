@@ -145,6 +145,77 @@ join signal_definitions sd on sd.id = s.signal_definition_id
 group by 1, 2, s.project_id having count(*) > 1;
 ```
 
+## Why sixty of seventy-three companies produced nothing
+
+Not because they are quiet. Because JYRA could only see a company whose
+applicant tracking vendor it recognised, and it knew seven.
+
+| | |
+|---|---|
+| Watched | 73 |
+| Recognised ATS board | 13 |
+| Producing any fact | 13 |
+| Carrying a signal | 5 |
+| Readable first-party pages in the archive | 61 |
+| Careers page never once fetched | 42 |
+
+Three companies show the three shapes of the problem:
+
+- **Bayzat** publishes its jobs on Whitecarrot — an eighth vendor. Invisible
+  while publishing openly.
+- **Kissflow** has no vendor at all. Two roles sit on careers.kissflow.com with
+  an email address to apply to. No integration can ever reach this, because
+  there is nothing to integrate with.
+- **Navi** links to its listing from /careers. The landing page is recruitment
+  brand copy; the openings are one hop on, at navi.com/careers/jobs.
+
+And 42 companies never had the careers page fetched at all: the 09-09 ATS probe
+guessed at slugs, stamped `atsProbedAt` on every company at one identical
+timestamp, and never opened the page that would have answered the question.
+
+### What replaced it
+
+Stop asking which vendor. Ask whether a page lists jobs.
+
+`careers-pages.ts` follows the company's own links — subdomain, subpath or a
+recognised board host wherever it points — reads the roles off whatever it
+finds, and stops after two hops. Vendor parsers stay as the fast path, because
+Greenhouse's JSON carries dates and locations that page text cannot. They are
+no longer the gate.
+
+Roles found this way are undated, so they become HIRING_COUNT rather than
+JOB_OPENING. A posting decays from its effective date and a guessed date would
+decay from a fiction; a count dated at the observation says exactly what a
+careers page tells you, which is what is open now. Both definitions that fire
+today read HIRING_COUNT as well as JOB_OPENING.
+
+### Companies with nothing to read
+
+Many will have no careers page at all — small firms that hire through LinkedIn,
+an aggregator, or word of mouth. That is a legitimate and final answer, and the
+failure to record it is its own bug: nothing found looks identical whether the
+company is quiet, whether discovery failed, or whether there is nothing there.
+
+`companies.observability` records each sensor's answer separately — ATS board,
+jobs listing, aggregator, trust page — so ABSENT is a finding rather than a
+gap. A company with no readable hiring source cannot produce a signal however
+long it is watched, so it should be replaced in the customer's pool and the
+customer should be told, rather than left waiting for something that cannot
+arrive.
+
+```sql
+-- companies nothing can be said about, and why
+select c.canonical_name,
+       c.observability->>'atsBoard' as ats,
+       c.observability->>'jobsListing' as listing,
+       c.observability->>'jobAggregator' as aggregator,
+       c.observability->>'trustPage' as trust
+from project_companies pc join companies c on c.id = pc.company_id
+where pc.status <> 'archived'
+  and c.observability->>'jobsListing' = 'ABSENT'
+  and c.observability->>'jobAggregator' = 'ABSENT';
+```
+
 ## How to re-measure
 
 ```sql

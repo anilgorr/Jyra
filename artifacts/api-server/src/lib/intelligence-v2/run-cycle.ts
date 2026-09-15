@@ -10,6 +10,7 @@ import {
   type Company,
   type Project,
   type ProjectCompany,
+  type CompanyObservability,
 } from "@workspace/db";
 import { evaluateOpportunity } from "../opportunity-engine";
 import { ProviderRouter } from "../provider-router";
@@ -23,6 +24,8 @@ import { persistIntelligenceV2Evidence } from "./persist-evidence";
 import { countHiringByTheme, mapJobsToFacts, persistHiringCounts, persistJobFacts } from "./job-facts";
 import { mapEventHitsToFacts, persistEventFacts, researchEvents, type EventFactRow } from "./event-facts";
 import { backfillPageFacts } from "./page-facts";
+import { discoverCareersPostings } from "./careers-pages";
+import { readPagesCheaply } from "../firecrawl-provider";
 import { ATS_BOARD_URL_KEY, atsHandleFromProfileUrls, atsHandleToProfileUrls, discoverAtsHandle, fetchAtsJobs } from "./ats-boards";
 import { resolveCompanyCountry } from "./company-country";
 import { recordSpend } from "../spend-ledger";
@@ -264,6 +267,9 @@ export async function runIntelligenceCycle(input: {
   let jobSource = "NONE";
   let atsDiscoveredVia: string | null = null;
   let jobBoardDomain: string | null = null;
+  let careersRoles: Array<{ title: string }> = [];
+  let careersListingUrl: string | null = null;
+  let atsHandleFound = false;
   try {
     let handle = atsHandleFromProfileUrls(owned.company.profileUrls);
     if (!handle) {
@@ -274,6 +280,7 @@ export async function runIntelligenceCycle(input: {
         atsDiscoveredVia = discovered.via;
       }
     }
+    atsHandleFound = Boolean(handle);
     let postings: Awaited<ReturnType<typeof fetchAtsJobs>> = null;
     if (handle) {
       postings = await fetchAtsJobs(handle, owned.company.canonicalName);
@@ -292,6 +299,39 @@ export async function runIntelligenceCycle(input: {
         postings = jobs.data.jobs;
         jobSource = `SEARCH:${jobs.providerId}`;
       }
+    }
+    /* No recognised board and no search result does not mean the company is
+     * quiet. Thirteen of seventy-three watched companies had a board JYRA
+     * knew; Bayzat publishes on Whitecarrot and Kissflow lists two roles on
+     * its own careers subdomain with an email address to apply to. Both are
+     * one hop from a page this cycle already paid for.
+     *
+     * These roles are undated, so they cannot become JOB_OPENING facts — a
+     * posting decays from its effective date and a guessed date decays from a
+     * fiction. They become counts instead, dated at the observation, which is
+     * what a careers page actually tells you: this is what is open now. Both
+     * definitions that fire today read HIRING_COUNT as well as JOB_OPENING. */
+    if (!postings?.length) {
+      /* Pages this cycle has already read. rawSnippet is short, but a careers
+       * link is a link — it does not need the whole page to be found. */
+      const crawled = result.evidence
+        .filter((item) => item.firstParty && (item.finalUrl ?? item.url))
+        .map((item) => ({ url: (item.finalUrl ?? item.url)!, text: item.rawSnippet }));
+      const careers = await discoverCareersPostings({
+        domain: owned.company.domain,
+        companyName: owned.company.canonicalName,
+        knownPages: crawled,
+        read: async (url) => {
+          const [page] = await readPagesCheaply([url], { providerId: "firecrawl" });
+          return page ? { ok: page.ok, text: page.text } : null;
+        },
+      });
+      if (careers.postings.length) {
+        careersRoles = careers.postings;
+        careersListingUrl = careers.listingUrl;
+        jobSource = `CAREERS:${careers.via}`;
+      }
+      log.info({ projectCompanyId, via: careers.via, roles: careers.postings.length, pagesRead: careers.pagesRead, listing: careers.listingUrl }, "CAREERS_PAGE_DISCOVERY");
     }
     if (postings?.length) {
       jobFacts = mapJobsToFacts(postings, { companyName: owned.company.canonicalName, now: completedAt });
@@ -359,12 +399,26 @@ export async function runIntelligenceCycle(input: {
         .where(eq(companiesTable.id, owned.company.id));
       log.info({ projectCompanyId, country: researched.country, source: researched.source, searchedWith: country }, "COMPANY_COUNTRY_LEARNED");
     }
-    if (discoveredAtsHandle) {
-      await tx.update(companiesTable).set({
-        profileUrls: { ...owned.company.profileUrls, ...atsHandleToProfileUrls(discoveredAtsHandle) },
-        updatedAt: completedAt,
-      }).where(eq(companiesTable.id, owned.company.id));
-    }
+    /* What could and could not be seen this cycle, recorded as a finding.
+     * "Nothing found" is ambiguous — quiet company, failed discovery, or no
+     * careers page at all — and a watchlist that cannot distinguish them fills
+     * with companies about which no promise can be kept. */
+    const observability: CompanyObservability = {
+      atsBoard: atsHandleFound ? "FOUND" : "ABSENT",
+      jobsListing: jobFacts.facts.length || careersRoles.length ? "FOUND" : "ABSENT",
+      jobAggregator: jobSource.startsWith("SEARCH:") ? "FOUND" : (jobSource === "NONE" ? "ABSENT" : "UNCHECKED"),
+      trustPage: result.evidence.some((item) => item.firstParty && /\/(security|trust|compliance)/i.test(item.finalUrl ?? item.url ?? ""))
+        ? "FOUND" : "ABSENT",
+      jobsListingUrl: careersListingUrl ?? null,
+      checkedAt: completedAt.toISOString(),
+    };
+    await tx.update(companiesTable).set({
+      ...(discoveredAtsHandle
+        ? { profileUrls: { ...owned.company.profileUrls, ...atsHandleToProfileUrls(discoveredAtsHandle) } }
+        : {}),
+      observability,
+      updatedAt: completedAt,
+    }).where(eq(companiesTable.id, owned.company.id));
     if (jobFacts.facts.length) {
       const stored = await persistJobFacts({
         organizationId, companyId: owned.company.id, companyDomain: owned.company.domain,
@@ -385,6 +439,24 @@ export async function runIntelligenceCycle(input: {
           now: completedAt,
         }, tx);
         log.info({ assessmentId: row.id, ...counts }, "HIRING_COUNTS_PERSISTED");
+      }
+    }
+    /* Roles read off a careers page: counts only, because they carry no date.
+     * This is the path for the sixty companies of seventy-three that have no
+     * board JYRA recognises. */
+    if (!jobFacts.facts.length && careersRoles.length && careersListingUrl) {
+      let listingDomain: string | null = null;
+      try { listingDomain = new URL(careersListingUrl).hostname; } catch { /* unusable listing URL */ }
+      if (listingDomain) {
+        const counts = await persistHiringCounts({
+          organizationId, companyId: owned.company.id, boardDomain: listingDomain,
+          rows: countHiringByTheme(careersRoles, {
+            companyName: owned.company.canonicalName, boardUrl: careersListingUrl, now: completedAt,
+          }),
+          now: completedAt,
+        }, tx);
+        factsAdded += counts.factsWritten;
+        log.info({ assessmentId: row.id, listing: careersListingUrl, roles: careersRoles.length, ...counts }, "CAREERS_HIRING_COUNTS_PERSISTED");
       }
     }
     if (eventFacts.length) {

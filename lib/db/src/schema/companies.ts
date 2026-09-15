@@ -89,6 +89,37 @@ export type PageFingerprints = {
   misses?: number;
 };
 
+/**
+ * What JYRA can and cannot see about a company, recorded rather than inferred.
+ *
+ * Thirteen of seventy-three watched companies had a hiring source JYRA could
+ * read. The other sixty produced nothing, and nothing is ambiguous: it looks
+ * the same whether the company is quiet, whether we failed to find its board,
+ * or whether it has no careers page at all — which many small firms genuinely
+ * do not. A customer cannot be told which, and a watchlist silently fills with
+ * companies about which no promise can ever be kept.
+ *
+ * So each sensor records its own answer. "Absent" is a finding, not a gap: a
+ * company with no readable hiring source should be replaced in the pool, and
+ * the customer should be told rather than left waiting for a signal that
+ * cannot arrive.
+ */
+export type SensorState = "FOUND" | "ABSENT" | "UNCHECKED";
+
+export type CompanyObservability = {
+  /** A board on a vendor JYRA parses — Greenhouse, Lever, Keka and the rest. */
+  atsBoard: SensorState;
+  /** Any page listing open roles, whoever hosts it, including the company's own. */
+  jobsListing: SensorState;
+  /** A job aggregator carrying this company's roles, when nothing first-party does. */
+  jobAggregator: SensorState;
+  /** A security, trust or compliance page stating what the company holds. */
+  trustPage: SensorState;
+  /** How the listing was reached, for the cases worth looking at by hand. */
+  jobsListingUrl?: string | null;
+  checkedAt: string;
+};
+
 export const companiesTable = pgTable(
   "companies",
   {
@@ -99,6 +130,7 @@ export const companiesTable = pgTable(
     linkedinUrl: text("linkedin_url"),
     profileUrls: jsonb("profile_urls").$type<Record<string, string>>().notNull().default({}),
     pageFingerprints: jsonb("page_fingerprints").$type<PageFingerprints | null>(),
+    observability: jsonb("observability").$type<CompanyObservability | null>(),
     country: text("country"),
     industry: text("industry"),
     employeeCount: integer("employee_count"),
