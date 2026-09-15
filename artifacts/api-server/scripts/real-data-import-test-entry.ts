@@ -243,6 +243,24 @@ async function main() {
       result.uncataloguedTechnologies.some((entry) => entry.technology === "Apache"),
       "an uncatalogued product is reported, not silently dropped",
     );
+    // The firmographics have to reach the companies table.
+    //
+    // They were parsed, validated and carried through the entire prepare step,
+    // then left out of the insert. The mapping UI offered the fields and the
+    // preview accepted them, so nothing looked wrong at any point — 790
+    // companies arrived with a null industry, country, size and description,
+    // which are the four columns the ICP evaluator and the competitor screen
+    // both read.
+    const [importedCompany] = await db
+      .select()
+      .from(companiesTable)
+      .where(eq(companiesTable.domain, sharedDomain))
+      .limit(1);
+    assert.ok(importedCompany);
+    assert.equal(importedCompany.industry, "Software");
+    assert.equal(importedCompany.country, "India");
+    assert.equal(importedCompany.employeeRange, "201 – 500");
+
     // A fact nothing can read is a fact that does not exist.
     //
     // The first version of the import wrote its evidence as RAW, on the
@@ -251,13 +269,7 @@ async function main() {
     // uses — inner-joins on VERIFIED, so 1,215 facts across 516 companies were
     // written, attributed, accepted and invisible. Every assertion in this
     // suite passed. This is the one that would not have.
-    const sharedCompany = await db
-      .select({ id: companiesTable.id })
-      .from(companiesTable)
-      .where(eq(companiesTable.domain, sharedDomain))
-      .limit(1);
-    assert.ok(sharedCompany[0], "the imported company exists");
-    const readable = await selectAcceptedFactsForCompany(sharedCompany[0].id);
+    const readable = await selectAcceptedFactsForCompany(importedCompany.id);
     assert.equal(
       readable.filter((fact) => fact.extractorVersion === "vendor-technographics@1").length,
       2,

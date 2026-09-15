@@ -600,6 +600,18 @@ export async function commitRealDataImport(
             website: item.company.website,
             linkedinUrl: item.company.linkedinUrl,
             profileUrls: item.company.profileUrls,
+            /* Firmographics were being parsed, validated, carried through the
+             * whole prepare step - and then left out of this insert. The
+             * mapping UI offered the fields, the preview accepted them, the
+             * provenance payload kept a copy, and `companies` never saw them.
+             * On the first real import that meant 790 companies with a null
+             * industry, country, size and description: the four columns the
+             * ICP evaluator and the competitor screen both read. */
+            country: item.company.country,
+            industry: item.company.industry,
+            employeeCount: item.company.employeeCount,
+            employeeRange: item.company.employeeRange,
+            description: item.company.description,
           })
           .returning();
         if (!company) throw new Error("Canonical company could not be created");
@@ -617,6 +629,26 @@ export async function commitRealDataImport(
       } else {
         existingCompaniesMatched += 1;
         duplicatesMerged += rowPreview.duplicateStatus === "EXACT_MATCH" ? 1 : 0;
+        /* Fill gaps, never overwrite. A company already on file may have had
+         * its industry established by research against its own website; a
+         * bought list's guess does not get to replace that. But a null is not
+         * a judgement, and leaving it null because the row happened to match
+         * an existing company is how a re-upload fixes nothing. */
+        const fill = {
+          ...(company.country ? {} : { country: item.company.country }),
+          ...(company.industry ? {} : { industry: item.company.industry }),
+          ...(company.employeeCount ? {} : { employeeCount: item.company.employeeCount }),
+          ...(company.employeeRange ? {} : { employeeRange: item.company.employeeRange }),
+          ...(company.description ? {} : { description: item.company.description }),
+        };
+        if (Object.values(fill).some((value) => value !== null && value !== undefined)) {
+          const [updated] = await client
+            .update(companiesTable)
+            .set(fill)
+            .where(eq(companiesTable.id, company.id))
+            .returning();
+          if (updated) company = updated;
+        }
         if (
           normalizeCompanyName(item.company.canonicalName) !==
           normalizeCompanyName(company.canonicalName)
