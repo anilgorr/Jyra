@@ -1,5 +1,6 @@
 import express, { type Express, type RequestHandler } from "express";
 import healthRouter from "./routes/health";
+import buildRouter from "./routes/build";
 import cors from "cors";
 import helmet from "helmet";
 import { rateLimit, ipKeyGenerator } from "express-rate-limit";
@@ -131,6 +132,7 @@ app.use(express.urlencoded({ extended: true }));
 // Liveness probe is mounted ahead of Clerk so a load balancer or container
 // health check never depends on auth configuration or the Clerk API.
 app.use("/api", healthRouter);
+app.use("/api", buildRouter);
 
 // In local auth mode nothing Clerk-related is mounted; middlewares/auth.ts
 // attributes every request to LOCAL_USER_ID instead.

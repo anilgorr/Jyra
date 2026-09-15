@@ -29,6 +29,39 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 40
     steps:
+      # Which build is answering. Twice in one day a change was pushed, this
+      # job was run, and the result was read as evidence about code that had
+      # not finished deploying — a crawl still probing ten paths, a sweep still
+      # reading nav stubs because the filter that skips them was not live. Both
+      # times it had to be inferred backwards from the data. Waiting for the
+      # deploy is a rule someone has to remember; this is the same rule the
+      # machine can keep.
+      #
+      # Never fatal. A manual run against an older build is a legitimate thing
+      # to do, and this job's purpose is to run the loop, not to police
+      # deploys. It says what is live and gets on with it.
+      - name: Report the running build
+        env:
+          API_URL: ${{ secrets.JYRA_API_URL }}
+        run: |
+          set -uo pipefail
+          curl -sS --retry 4 --retry-delay 15 --retry-all-errors --max-time 120 \
+            -o /tmp/build.json "${API_URL%/}/api/build" || true
+          live=$(jq -r '.commit // "unknown"' /tmp/build.json 2>/dev/null || echo unknown)
+          up=$(jq -r '.uptimeSeconds // "?"' /tmp/build.json 2>/dev/null || echo "?")
+          echo "live commit: ${live} (up ${up}s)"
+          if [ "$live" = "unknown" ]; then
+            echo "::warning::could not read the running build; continuing"
+          elif [ -n "${GITHUB_SHA:-}" ] && [ "${live#"${GITHUB_SHA:0:7}"}" = "$live" ] && [ "$live" != "$GITHUB_SHA" ]; then
+            echo "::warning::the API is running ${live:0:7}, this workflow is ${GITHUB_SHA:0:7} — a deploy may still be in flight"
+          fi
+          # A service that started seconds ago is mid-restart; give it a moment
+          # rather than starting a tick it cannot finish.
+          if [ "$up" != "?" ] && [ "$up" -lt 60 ] 2>/dev/null; then
+            echo "the API started ${up}s ago; waiting for it to settle"
+            sleep 45
+          fi
+
       - name: Start one tick
         env:
           API_URL: ${{ secrets.JYRA_API_URL }}
@@ -78,4 +111,8 @@ jobs:
             fi
           done
           jq -r '.last | "due=\(.due) ran=\(.ran) changed=\(.changed) skipped=\(.skipped) failed=\(.failed) spent=$\(.spentUsd)"' /tmp/last.json
+          jq -r '.last | "extraction: read=\(.extraction.considered) of backlog=\(.extraction.backlog) facts=\(.extraction.factsInserted)\(if .extraction.stoppedEarly then " (out of time — more next tick)" else "" end)"' /tmp/last.json
+          jq -r '.last | "signals: evaluated=\(.reevaluation.considered) of backlog=\(.reevaluation.backlog) created=\(.reevaluation.created)"' /tmp/last.json
+          jq -r '.last.credits | "credits: \(.remaining // "unknown") left\(if .paidReadingAllowed then "" else " — PAID READING STOPPED: \(.reason)" end)"' /tmp/last.json
+          jq -r '.last.credits | select(.paidReadingAllowed == false) | "::warning::\(.reason)"' /tmp/last.json
           jq -r '.last.outcomes[] | select(.result == "failed") | "::warning::\(.companyName): \(.reason)"' /tmp/last.json
