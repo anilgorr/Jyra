@@ -156,6 +156,19 @@ export async function evaluateSignalsForCompany(input: { organizationId: string;
           polarity: candidate.definition.polarity,
         },
       };
+      /* Support is replaced, not accumulated: a fact that no longer matches
+       * must stop being cited as the reason for the signal. */
+      const linkSupport = async <T extends { id: string }>(tx: DbExecutor, signal: T): Promise<T> => {
+        await tx.delete(signalFactsTable).where(eq(signalFactsTable.signalId, signal.id));
+        await tx.delete(signalEvidenceTable).where(eq(signalEvidenceTable.signalId, signal.id));
+        await tx.insert(signalFactsTable).values(candidate.facts.map((fact) => ({
+          signalId: signal.id, factId: fact.id, companyId: input.companyId,
+        }))).onConflictDoNothing();
+        await tx.insert(signalEvidenceTable).values(supportingEvidenceIds.map((evidenceId) => ({
+          signalId: signal.id, evidenceId, companyId: input.companyId,
+        }))).onConflictDoNothing();
+        return signal;
+      };
       const observation = {
         supportingFactIds,
         supportingEvidenceIds,
@@ -175,12 +188,39 @@ export async function evaluateSignalsForCompany(input: { organizationId: string;
         lastEvaluatedAt: now,
       };
       const persist = async (tx: DbExecutor) => {
-        /* Insert or refresh, in one statement, keyed on what a signal IS:
-         * this project, this company, this rule, this date. The old shape
-         * inserted-or-nothing and then hunted for the row by a key that
-         * included ruleVersion — so when a pack's configuration changed, the
-         * hunt missed, the insert had already conflicted on nothing, and a
-         * second identical signal appeared. */
+        /* The same situation, moved on, is not a second situation.
+         *
+         * effectiveDate is the newest supporting fact's date, so every refresh
+         * that finds one more job posting re-dates the candidate — and with the
+         * date in the key, that inserted a new row. Datadog ended up with two
+         * "Security hiring" signals a week apart, the second one supported by
+         * the first one's 31 facts plus 8 more. Left alone, a company that
+         * keeps hiring accumulates a signal per refresh forever and the count
+         * a customer is sold on becomes meaningless.
+         *
+         * Overlapping support is what distinguishes the two cases. If any of
+         * the facts behind this candidate already support a signal of the same
+         * rule, it is that signal with a newer date. If the support is
+         * disjoint — a breach in March and another in September — it is
+         * genuinely a second occurrence and earns its own row.
+         */
+        const prior = await tx.select({ id: signalsTable.id, effectiveDate: signalsTable.effectiveDate, supportingFactIds: signalsTable.supportingFactIds })
+          .from(signalsTable)
+          .where(and(
+            eq(signalsTable.projectId, input.projectId),
+            eq(signalsTable.companyId, input.companyId),
+            eq(signalsTable.signalDefinitionId, candidate.definition.id),
+          ));
+        const factIds = new Set(supportingFactIds);
+        const continuation = prior.find((row) =>
+          (row.supportingFactIds as string[] | null)?.some((id) => factIds.has(id)));
+        if (continuation && continuation.effectiveDate !== candidate.effectiveDate) {
+          const [moved] = await tx.update(signalsTable)
+            .set({ ...observation, effectiveDate: candidate.effectiveDate, updatedAt: now })
+            .where(eq(signalsTable.id, continuation.id))
+            .returning();
+          if (moved) return await linkSupport(tx, moved);
+        }
         const [saved] = await tx.insert(signalsTable).values({
           organizationId: input.organizationId,
           projectId: input.projectId,
@@ -194,17 +234,7 @@ export async function evaluateSignalsForCompany(input: { organizationId: string;
           set: { ...observation, updatedAt: now },
         }).returning();
         if (!saved) throw new Error("Signal could not be resolved");
-        /* Support is replaced, not accumulated: a fact that no longer matches
-         * must stop being cited as the reason for the signal. */
-        await tx.delete(signalFactsTable).where(eq(signalFactsTable.signalId, saved.id));
-        await tx.delete(signalEvidenceTable).where(eq(signalEvidenceTable.signalId, saved.id));
-        await tx.insert(signalFactsTable).values(candidate.facts.map((fact) => ({
-          signalId: saved.id, factId: fact.id, companyId: input.companyId,
-        }))).onConflictDoNothing();
-        await tx.insert(signalEvidenceTable).values(supportingEvidenceIds.map((evidenceId) => ({
-          signalId: saved.id, evidenceId, companyId: input.companyId,
-        }))).onConflictDoNothing();
-        return saved;
+        return await linkSupport(tx, saved);
       };
       const signal = executor === db ? await db.transaction(persist) : await persist(executor);
       if (signal) created.push(signal);

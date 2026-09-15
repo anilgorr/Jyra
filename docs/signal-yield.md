@@ -88,6 +88,63 @@ Two consequences that cost a deploy to learn:
   now goes through `claimCrawlPage`, which inserts and, on conflict, reads the
   existing row back.
 
+## Measured: ten forced refreshes, 2026-09-15
+
+Ten companies re-crawled from a 1,246-credit baseline, chosen so the answer
+could not flatter itself — six B2B SaaS likely to publish a trust page, four
+unlikely to, across all three projects and all three tiers.
+
+**21 credits for ten complete cycles. About two per company.**
+
+That is the number that sizes every plan tier, and it is the free-first reading
+doing the work: the old pay-for-everything path was four to six credits a
+crawl, and the ten-path version would have been ten. At two, a 1,500-credit
+plan carries roughly 700 company-refreshes a month — five Starter customers at
+125 companies each, on monthly cadence, from one plan.
+
+What the ten produced:
+
+- `navi.com/trust/security` fetched by following the homepage's own link,
+  which is the whole point of the change. Three trust pages across the ten.
+- HIRING_COUNT facts for the first time ever — 27 of them, ten themes for
+  Datadog alone. SECURITY_HIRING_ACCELERATION needs a second observation
+  before it can fire, so the clock has started rather than the signal.
+- Two false compliance facts, both caught and deleted. See the first-party
+  rule above.
+- Four duplicate signals, caught and collapsed. See below.
+
+Re-check with:
+
+```
+curl -s -H "Authorization: Bearer $FIRECRAWL_API_KEY" \
+  https://api.firecrawl.dev/v2/team/credit-usage
+```
+
+## The same situation, moved on, is not a second situation
+
+A signal's effectiveDate is its newest supporting fact's date, so every refresh
+that finds one more job posting re-dates the candidate. With the date in the
+unique key, that inserted a new row rather than moving the old one: Datadog
+held two "Security hiring" signals a week apart, the second supported by the
+first's 31 facts plus eight more. A company that keeps hiring would accumulate
+one signal per refresh forever, and the count a customer is sold on would stop
+meaning anything.
+
+Overlapping support tells the two cases apart. If any fact behind a candidate
+already supports a signal of the same rule, it is that signal with a newer
+date. If the support is disjoint — a breach in March and another in September
+— it is genuinely a second occurrence and earns its own row.
+
+To find duplicates that predate the fix:
+
+```sql
+select c.canonical_name, sd.code, count(*)
+from signals s
+join companies c on c.id = s.company_id
+join signal_definitions sd on sd.id = s.signal_definition_id
+group by 1, 2, s.project_id having count(*) > 1;
+```
+
 ## How to re-measure
 
 ```sql

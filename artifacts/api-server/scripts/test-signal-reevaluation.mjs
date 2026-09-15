@@ -130,4 +130,27 @@ const row = (over = {}) => ({
     "an absurd value is clamped rather than obeyed");
 }
 
+// 7. The same situation, moved on, is not a second situation.
+//    effectiveDate is the newest supporting fact's date, so every refresh that
+//    finds one more job posting re-dates the candidate. With the date in the
+//    key that inserted a new row: Datadog held two "Security hiring" signals a
+//    week apart, the second supported by the first's 31 facts plus eight more.
+//    A company that keeps hiring would accumulate one per refresh forever.
+//
+//    Overlapping support tells the two cases apart. This pins the rule itself;
+//    the persistence path that applies it needs a database and is covered by
+//    the live check in docs/signal-yield.md.
+{
+  const overlaps = (priorFacts, candidateFacts) => {
+    const set = new Set(candidateFacts);
+    return priorFacts.some((id) => set.has(id));
+  };
+  assert.equal(overlaps(["f1", "f2", "f3"], ["f1", "f2", "f3", "f4"]), true,
+    "more evidence for the same thing is the same thing");
+  assert.equal(overlaps(["f1"], ["f1"]), true, "unchanged support is unchanged");
+  assert.equal(overlaps(["march-breach"], ["september-breach"]), false,
+    "a breach in March and another in September are two occurrences, not one moved");
+  assert.equal(overlaps([], ["f1"]), false, "a signal with no recorded support cannot be continued");
+}
+
 console.log("signal re-evaluation: ok");
