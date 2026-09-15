@@ -4,6 +4,7 @@ import { eq, like, or } from "drizzle-orm";
 import {
   companiesTable,
   companyAliasesTable,
+  companyFactsTable,
   companyProvenanceTable,
   db,
   organizationsTable,
@@ -119,7 +120,10 @@ async function main() {
           phone: "+91 98765 43210",
           country: "Singapore",
           city: "Singapore",
-          technologies: '["PostgreSQL","TypeScript"]',
+          // Verbatim shapes from a real vendor export: two catalogued products,
+          // one uncatalogued, and one entry that is a phone number because a
+          // free-text field bled into this column upstream.
+          technologies: "Hubspot, Jobdiva, Apache, +91 40 6457 6565",
           keywords: "security, analytics",
           private_note: "Customer-supplied note",
           research_hint: "Uses a legacy data warehouse",
@@ -201,6 +205,36 @@ async function main() {
     assert.equal(result.domainsResolved, 4);
     assert.equal(result.domainsUnresolved, 1);
     assert.equal(result.customFieldsCreated, 1);
+    // The technology column has to reach company_facts, not stop at a private
+    // provenance payload nothing reads. Two catalogued products, one junk entry
+    // reported as junk, one uncatalogued entry reported as a catalogue gap.
+    assert.equal(
+      concurrentResults.reduce((total, candidate) => total + candidate.technologyFactsCreated, 0),
+      2,
+      "concurrent identical imports must create each technology fact once",
+    );
+    assert.ok(result.technologyEntriesRejected >= 1, "the phone number is not a technology");
+    assert.ok(
+      result.uncataloguedTechnologies.some((entry) => entry.technology === "Apache"),
+      "an uncatalogued product is reported, not silently dropped",
+    );
+    const importedFacts = await db
+      .select()
+      .from(companyFactsTable)
+      .where(eq(companyFactsTable.extractorVersion, "vendor-technographics@1"));
+    const mine = importedFacts.filter((fact) =>
+      String(fact.supportingExcerpt).includes(`Shared Company ${suffix}`),
+    );
+    assert.equal(mine.length, 2);
+    for (const fact of mine) {
+      assert.equal(fact.factType, "TECHNOLOGY_MENTION");
+      // The category is what the signal definitions match on. Without it the
+      // fact is stored and inert, which is where this column already was.
+      assert.ok(
+        /applicant tracking|marketing automation|crm/i.test(fact.supportingExcerpt),
+        `fact must carry its category: ${fact.supportingExcerpt}`,
+      );
+    }
     assert.equal(result.evidenceCandidatesCreated, 1);
 
     const shared = await db

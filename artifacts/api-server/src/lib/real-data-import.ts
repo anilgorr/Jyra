@@ -18,6 +18,7 @@ import {
   normalizeCompanyName,
   type NormalizedCompanyInput,
 } from "./company-identity";
+import { persistImportTechnologyFacts } from "./intelligence-v2/import-facts";
 
 export const IMPORT_TARGET_FIELDS = [
   "company_name",
@@ -558,6 +559,9 @@ export async function commitRealDataImport(
     let invalidContacts = 0;
     let evidenceCandidatesCreated = 0;
     let customFieldsCreated = 0;
+    let technologyFactsCreated = 0;
+    let technologyEntriesRejected = 0;
+    const uncataloguedTechnologies = new Map<string, number>();
     let rowsRejected = 0;
 
     for (const rowPreview of preview.rows) {
@@ -666,6 +670,35 @@ export async function commitRealDataImport(
         },
         visibility: "PRIVATE",
       });
+      /* The technology column becomes facts, not just a provenance payload.
+       * Wrapped, because a malformed technology cell is the vendor's problem
+       * and must not cost the uploader the company row it came with - the
+       * whole import runs in one transaction, so an unhandled throw here would
+       * discard every company in the file. */
+      try {
+        const facts = await persistImportTechnologyFacts(
+          {
+            organizationId: project.organizationId,
+            companyId: company.id,
+            companyName: item.company.canonicalName,
+            technologyColumn: item.technologies.join(", "),
+            sourceLabel: input.fileName ?? "csv_import",
+          },
+          client,
+        );
+        technologyFactsCreated += facts.factsInserted;
+        technologyEntriesRejected += facts.rejected;
+        for (const entry of facts.unknown) {
+          uncataloguedTechnologies.set(entry, (uncataloguedTechnologies.get(entry) ?? 0) + 1);
+        }
+      } catch (error) {
+        technologyEntriesRejected += item.technologies.length;
+        console.warn(
+          `[import] technology facts failed for ${item.company.canonicalName}: ${
+            error instanceof Error ? error.message : String(error)
+          }`,
+        );
+      }
       evidenceCandidatesCreated += Object.keys(item.evidenceCandidates).length;
       customFieldsCreated += Object.keys(item.customFields).length;
       if (item.company.domain && item.domainSource === "website") domainsResolved += 1;
@@ -693,6 +726,15 @@ export async function commitRealDataImport(
       invalidContacts,
       evidenceCandidatesCreated,
       customFieldsCreated,
+      technologyFactsCreated,
+      technologyEntriesRejected,
+      /* The twenty most common products the catalogue does not know. Everything
+       * uncatalogued is dropped rather than filed, so this list is the only
+       * sign that the catalogue has fallen behind what buyers actually run. */
+      uncataloguedTechnologies: [...uncataloguedTechnologies.entries()]
+        .sort((left, right) => right[1] - left[1])
+        .slice(0, 20)
+        .map(([technology, companies]) => ({ technology, companies })),
       rowsRejected,
       rows: preview.rows,
     };

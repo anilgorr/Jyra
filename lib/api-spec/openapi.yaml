@@ -4199,9 +4199,19 @@ components:
         invalidContacts: { type: number, minimum: 0 }
         evidenceCandidatesCreated: { type: number, minimum: 0 }
         customFieldsCreated: { type: number, minimum: 0 }
+        technologyFactsCreated: { type: number, minimum: 0 }
+        technologyEntriesRejected: { type: number, minimum: 0 }
+        uncataloguedTechnologies:
+          type: array
+          items:
+            type: object
+            properties:
+              technology: { type: string }
+              companies: { type: number, minimum: 0 }
+            required: [technology, companies]
         rowsRejected: { type: number, minimum: 0 }
         rows: { type: array, items: { $ref: "#/components/schemas/RealDataImportRowPreview" } }
-      required: [rowsProcessed, canonicalCompaniesCreated, existingCompaniesMatched, duplicatesMerged, companiesNeedingReview, domainsResolved, domainsUnresolved, contactsCreated, contactsMatched, invalidContacts, evidenceCandidatesCreated, customFieldsCreated, rowsRejected, rows]
+      required: [rowsProcessed, canonicalCompaniesCreated, existingCompaniesMatched, duplicatesMerged, companiesNeedingReview, domainsResolved, domainsUnresolved, contactsCreated, contactsMatched, invalidContacts, evidenceCandidatesCreated, customFieldsCreated, technologyFactsCreated, technologyEntriesRejected, uncataloguedTechnologies, rowsRejected, rows]
     ResearchQuestion:
       type: object
       properties:

@@ -5,6 +5,7 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+import type { RealDataImportResultUncataloguedTechnologiesItem } from './realDataImportResultUncataloguedTechnologiesItem';
 import type { RealDataImportRowPreview } from './realDataImportRowPreview';
 
 export interface RealDataImportResult {
@@ -32,6 +33,11 @@ export interface RealDataImportResult {
   evidenceCandidatesCreated: number;
   /** @minimum 0 */
   customFieldsCreated: number;
+  /** @minimum 0 */
+  technologyFactsCreated: number;
+  /** @minimum 0 */
+  technologyEntriesRejected: number;
+  uncataloguedTechnologies: RealDataImportResultUncataloguedTechnologiesItem[];
   /** @minimum 0 */
   rowsRejected: number;
   rows: RealDataImportRowPreview[];

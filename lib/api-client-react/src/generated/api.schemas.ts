@@ -3175,6 +3175,12 @@ export type RealDataImportCommitInput = RealDataImportInput & {
   confirm: boolean;
 };
 
+export type RealDataImportResultUncataloguedTechnologiesItem = {
+  technology: string;
+  /** @minimum 0 */
+  companies: number;
+};
+
 export interface RealDataImportResult {
   /** @minimum 0 */
   rowsProcessed: number;
@@ -3200,6 +3206,11 @@ export interface RealDataImportResult {
   evidenceCandidatesCreated: number;
   /** @minimum 0 */
   customFieldsCreated: number;
+  /** @minimum 0 */
+  technologyFactsCreated: number;
+  /** @minimum 0 */
+  technologyEntriesRejected: number;
+  uncataloguedTechnologies: RealDataImportResultUncataloguedTechnologiesItem[];
   /** @minimum 0 */
   rowsRejected: number;
   rows: RealDataImportRowPreview[];

@@ -4516,6 +4516,12 @@ export const commitRealDataImportResponseEvidenceCandidatesCreatedMin = 0;
 
 export const commitRealDataImportResponseCustomFieldsCreatedMin = 0;
 
+export const commitRealDataImportResponseTechnologyFactsCreatedMin = 0;
+
+export const commitRealDataImportResponseTechnologyEntriesRejectedMin = 0;
+
+export const commitRealDataImportResponseUncataloguedTechnologiesItemCompaniesMin = 0;
+
 export const commitRealDataImportResponseRowsRejectedMin = 0;
 
 
@@ -4533,6 +4539,12 @@ export const CommitRealDataImportResponse = zod.object({
   "invalidContacts": zod.number().min(commitRealDataImportResponseInvalidContactsMin),
   "evidenceCandidatesCreated": zod.number().min(commitRealDataImportResponseEvidenceCandidatesCreatedMin),
   "customFieldsCreated": zod.number().min(commitRealDataImportResponseCustomFieldsCreatedMin),
+  "technologyFactsCreated": zod.number().min(commitRealDataImportResponseTechnologyFactsCreatedMin),
+  "technologyEntriesRejected": zod.number().min(commitRealDataImportResponseTechnologyEntriesRejectedMin),
+  "uncataloguedTechnologies": zod.array(zod.object({
+  "technology": zod.string(),
+  "companies": zod.number().min(commitRealDataImportResponseUncataloguedTechnologiesItemCompaniesMin)
+})),
   "rowsRejected": zod.number().min(commitRealDataImportResponseRowsRejectedMin),
   "rows": zod.array(zod.object({
   "rowId": zod.string(),
