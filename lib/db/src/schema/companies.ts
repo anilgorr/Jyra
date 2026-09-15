@@ -178,6 +178,16 @@ export const projectCompaniesTable = pgTable(
     lastWatchedAt: timestamp("last_watched_at", { withTimezone: true }),
     /** When a look last found something different. Drives the DAILY tier. */
     lastChangeAt: timestamp("last_change_at", { withTimezone: true }),
+    /**
+     * When this company's signals were last worked out from its facts.
+     *
+     * Separate from latestResearchAt on purpose: research is what costs money,
+     * evaluation is free, and the two must be able to run apart. Without this,
+     * facts already on disk were only ever re-tested when a paid cycle
+     * happened to run, so switching on a signal pack left every existing fact
+     * unexamined.
+     */
+    signalsEvaluatedAt: timestamp("signals_evaluated_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true })
       .notNull()
       .defaultNow(),

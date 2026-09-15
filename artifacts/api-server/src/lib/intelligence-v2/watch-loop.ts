@@ -10,6 +10,7 @@ import {
   type WatchTier,
 } from "@workspace/db";
 import { effectiveResearchBudgetLimits, getResearchBudget } from "../research-economics";
+import { reevaluateStaleSignals, type ReevaluationReport } from "../signal-reevaluation";
 import { projectSpendSince, recordSpend, utcDayStart } from "../spend-ledger";
 import {
   classifyWatchTier, evaluateChangeGate, tierPolicies,
@@ -35,6 +36,12 @@ export type WatchLoopSettings = {
   fallbackCycleCostUsd: number;
   /** Gate checks per tick. A gate look is ~1% of a cycle, so many more fit. */
   maxGateChecksPerTick: number;
+  /**
+   * Companies re-evaluated from stored facts per tick. This costs nothing but
+   * database round trips, so the cap is generous — it exists only so that a
+   * bulk import cannot make one tick take minutes.
+   */
+  maxReevaluationsPerTick: number;
 };
 
 export function watchLoopSettings(env: NodeJS.ProcessEnv = process.env): WatchLoopSettings {
@@ -44,6 +51,7 @@ export function watchLoopSettings(env: NodeJS.ProcessEnv = process.env): WatchLo
   };
   const perTick = Number(env.JYRA_WATCH_MAX_PER_TICK);
   const gatesPerTick = Number(env.JYRA_WATCH_MAX_GATES_PER_TICK);
+  const reevaluationsPerTick = Number(env.JYRA_WATCH_MAX_REEVALUATIONS_PER_TICK);
   // JYRA_WATCH_CADENCE_DAYS is the old single-cadence setting. It still works:
   // a deployment that set it gets it as the cold cadence.
   const coldDays = number(env.JYRA_WATCH_COLD_DAYS ?? env.JYRA_WATCH_CADENCE_DAYS, 7);
@@ -52,6 +60,7 @@ export function watchLoopSettings(env: NodeJS.ProcessEnv = process.env): WatchLo
     policies: tierPolicies({ hotDays: number(env.JYRA_WATCH_HOT_DAYS, 1), coldDays }),
     maxCompaniesPerTick: Number.isInteger(perTick) && perTick > 0 ? Math.min(perTick, 50) : 10,
     maxGateChecksPerTick: Number.isInteger(gatesPerTick) && gatesPerTick > 0 ? Math.min(gatesPerTick, 500) : 60,
+    maxReevaluationsPerTick: Number.isInteger(reevaluationsPerTick) && reevaluationsPerTick > 0 ? Math.min(reevaluationsPerTick, 2000) : 200,
     fallbackCycleCostUsd: 0.05,
   };
 }
@@ -241,6 +250,13 @@ export type TickReport = {
   gateSpentUsd: number;
   spentUsd: number;
   outcomes: TickOutcome[];
+  /**
+   * The free half of the tick: facts already on disk re-tested against the
+   * rules as they stand now. Costs nothing and runs whether or not any
+   * company is due, because a pack switched on since the last tick makes
+   * existing facts newly meaningful without any page changing.
+   */
+  reevaluation: ReevaluationReport;
 };
 
 /**
@@ -272,6 +288,8 @@ export async function runWatchLoopTick(input: {
   gate?: typeof evaluateChangeGate;
   record?: typeof recordWatchCheck;
   dailyBudgetFor?: (projectId: string) => Promise<number>;
+  /** Injected for tests; defaults to the real re-evaluation sweep. */
+  reevaluate?: typeof reevaluateStaleSignals;
 }): Promise<TickReport> {
   const now = input.now ?? new Date();
   const settings = input.settings ?? watchLoopSettings();
@@ -281,17 +299,30 @@ export async function runWatchLoopTick(input: {
   const gate = input.gate ?? evaluateChangeGate;
   const record = input.record ?? recordWatchCheck;
   const dailyBudgetFor = input.dailyBudgetFor ?? (async (projectId: string) => effectiveResearchBudgetLimits(await getResearchBudget(projectId)).dailyBudget);
+  const reevaluate = input.reevaluate ?? reevaluateStaleSignals;
   const startedAt = new Date();
   const report: TickReport = {
     enabled: settings.enabled, startedAt: startedAt.toISOString(), finishedAt: "",
     due: 0, checked: 0, unchanged: 0, deferred: 0, ran: 0, skipped: 0, failed: 0, changed: 0,
     gateSpentUsd: 0, spentUsd: 0, outcomes: [],
+    reevaluation: { considered: 0, evaluated: 0, created: 0, failed: 0, outcomes: [] },
   };
 
   if (!settings.enabled) {
     input.log.info({}, "WATCH_LOOP_DISABLED");
     report.finishedAt = new Date().toISOString();
     return report;
+  }
+
+  /* Before spending anything: re-test facts we already own. This is pure
+   * database work, and it runs first so that a signal it creates is visible
+   * to the tier classification below — a company that just earned a signal is
+   * HOT, and should be looked at today rather than next week. A failure here
+   * is logged and does not stop the paid sweep. */
+  try {
+    report.reevaluation = await reevaluateStaleSignalsGuarded(reevaluate, settings, now, input.log);
+  } catch (error) {
+    input.log.warn({ err: error }, "WATCH_LOOP_REEVALUATION_FAILED");
   }
 
   const due = await select(now, settings, settings.maxGateChecksPerTick);
@@ -409,5 +440,23 @@ export async function runWatchLoopTick(input: {
     changed: report.changed, skipped: report.skipped, failed: report.failed,
     gateSpentUsd: report.gateSpentUsd, spentUsd: report.spentUsd, durationMs: Date.now() - startedAt.getTime(),
   }, "WATCH_LOOP_TICK_DONE");
+  return report;
+}
+
+/**
+ * The sweep, capped so that one tick cannot spend minutes on database round
+ * trips after a bulk import. Anything left over is picked up next tick; the
+ * staleness marker is per company, so progress is never lost.
+ */
+async function reevaluateStaleSignalsGuarded(
+  reevaluate: typeof reevaluateStaleSignals,
+  settings: WatchLoopSettings,
+  now: Date,
+  log: CycleLogger,
+): Promise<ReevaluationReport> {
+  const report = await reevaluate({ limit: settings.maxReevaluationsPerTick, now, log });
+  if (report.considered) {
+    log.info({ considered: report.considered, evaluated: report.evaluated, created: report.created, failed: report.failed }, "WATCH_LOOP_REEVALUATION");
+  }
   return report;
 }

@@ -1,0 +1,1 @@
+ALTER TABLE "project_companies" ADD COLUMN "signals_evaluated_at" timestamp with time zone;

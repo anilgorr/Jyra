@@ -87,16 +87,27 @@ export async function evaluateSignalsForCompany(input: { organizationId: string;
     .from(projectCompaniesTable)
     .where(and(eq(projectCompaniesTable.projectId, input.projectId), eq(projectCompaniesTable.companyId, input.companyId)))
     .limit(1);
+  const now = input.now ?? new Date();
+  /* Stamped on every exit, including the ones that produce nothing. A company
+   * excluded for its buyer role or with no active pack has still been looked
+   * at, and leaving the column null would put it back in the stale set on
+   * every tick forever. */
+  const stampEvaluated = () => executor.update(projectCompaniesTable)
+    .set({ signalsEvaluatedAt: now })
+    .where(and(eq(projectCompaniesTable.projectId, input.projectId), eq(projectCompaniesTable.companyId, input.companyId)));
   if (!membership || ["SELLER_COMPETITOR", "ADJACENT_VENDOR"].includes(membership.buyerRole)) {
+    await stampEvaluated();
     return { packs: [], created: [], total: 0 };
   }
   const selections = await executor.select().from(projectSignalPacksTable).where(and(
     eq(projectSignalPacksTable.projectId, input.projectId),
     eq(projectSignalPacksTable.active, true),
   ));
-  if (!selections.length) return { packs: [], created: [], total: 0 };
+  if (!selections.length) {
+    await stampEvaluated();
+    return { packs: [], created: [], total: 0 };
+  }
   const facts = await selectAcceptedFactsForCompany(input.companyId, executor);
-  const now = input.now ?? new Date();
   const created = [];
   const packs = [];
   for (const selection of selections) {
@@ -213,6 +224,7 @@ export async function evaluateSignalsForCompany(input: { organizationId: string;
     const strength = recalculateSignalStrength(row.signal.originalStrength, row.signal.effectiveDate, row.definition.lifetimeDays, row.definition.decayRule, now);
     await executor.update(signalsTable).set({ currentStrength: strength.currentStrength, status: strength.status, lastEvaluatedAt: now, updatedAt: now }).where(eq(signalsTable.id, row.signal.id));
   }
+  await stampEvaluated();
   return { packs, created, total: existing.length };
 }
 

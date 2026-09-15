@@ -31,6 +31,8 @@ import { evaluateOpportunity } from "../lib/opportunity-engine";
 import { generateWhyForOpportunity } from "../lib/opportunity-why";
 import { ensureSignalPackFixtures, SIGNAL_PACK_FIXTURES } from "../lib/signal-pack-fixtures";
 import { configureProjectSignalPack } from "../lib/project-signal-pack-config";
+import { reevaluateStaleSignals } from "../lib/signal-reevaluation";
+import { logger } from "../lib/logger";
 import { getAuthenticatedUserId, requireAuth } from "../middlewares/auth";
 import { requireOrgRole } from "../lib/authz";
 
@@ -200,6 +202,18 @@ router.put("/projects/:projectId/signal-packs/:signalPackId", requireAuth, async
       return void res.status(404).json({ error: error.message });
     }
     throw error;
+  }
+  // Switching a pack on makes facts already on disk newly meaningful. Without
+  // this the project would wait for a research cycle on each company before
+  // any of them produced a signal — which is how thirteen open marketing roles
+  // sat next to an active marketing pack for six days.
+  try {
+    const reevaluated = await reevaluateStaleSignals({ projectId: params.data.projectId });
+    if (reevaluated.created) {
+      logger.info({ projectId: params.data.projectId, created: reevaluated.created, evaluated: reevaluated.evaluated }, "SIGNALS_REEVALUATED_AFTER_PACK_CHANGE");
+    }
+  } catch (error) {
+    logger.warn({ err: error, projectId: params.data.projectId }, "SIGNAL_REEVALUATION_AFTER_PACK_CHANGE_FAILED");
   }
   res.json(ConfigureProjectSignalPackResponse.parse(projectPackPayload(configured)));
 }));
