@@ -16,6 +16,7 @@ import {
   researchJobsTable,
   usersTable,
 } from "@workspace/db";
+import { selectAcceptedFactsForCompany } from "../src/lib/accepted-facts";
 import {
   commitRealDataImport,
   previewRealDataImport,
@@ -242,6 +243,27 @@ async function main() {
       result.uncataloguedTechnologies.some((entry) => entry.technology === "Apache"),
       "an uncatalogued product is reported, not silently dropped",
     );
+    // A fact nothing can read is a fact that does not exist.
+    //
+    // The first version of the import wrote its evidence as RAW, on the
+    // reasoning that nobody had checked the claim against the company's own
+    // site. selectAcceptedFactsForCompany — the only reader signal evaluation
+    // uses — inner-joins on VERIFIED, so 1,215 facts across 516 companies were
+    // written, attributed, accepted and invisible. Every assertion in this
+    // suite passed. This is the one that would not have.
+    const sharedCompany = await db
+      .select({ id: companiesTable.id })
+      .from(companiesTable)
+      .where(eq(companiesTable.domain, sharedDomain))
+      .limit(1);
+    assert.ok(sharedCompany[0], "the imported company exists");
+    const readable = await selectAcceptedFactsForCompany(sharedCompany[0].id);
+    assert.equal(
+      readable.filter((fact) => fact.extractorVersion === "vendor-technographics@1").length,
+      2,
+      "imported facts must reach the reader signal evaluation actually uses",
+    );
+
     const importedFacts = await db
       .select()
       .from(companyFactsTable)

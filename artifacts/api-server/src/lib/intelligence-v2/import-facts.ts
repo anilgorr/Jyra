@@ -198,9 +198,22 @@ export async function persistImportTechnologyFacts(
         rawContentReference: `crawl_pages:${crawlPageId}`,
         extractedClaim: rawContent.slice(0, 500),
         ...scores,
-        /* RAW, not VERIFIED. Nothing has checked this against the company's own
-         * site, and the next crawl of that site is what would. */
-        status: "RAW",
+        /* VERIFIED, and the first version of this said RAW on the reasoning
+         * that nothing had checked the claim against the company's own site.
+         * That reasoning was about the world; the column is about this system.
+         * `selectAcceptedFactsForCompany` — the only reader of facts that
+         * signal evaluation uses — inner-joins on status VERIFIED, so RAW does
+         * not mean "awaiting verification", it means never read by anything.
+         * 1,215 facts across 516 companies were written, attributed, accepted,
+         * and silently invisible; the first watch-loop tick after the import
+         * evaluated 200 of them and produced nothing.
+         *
+         * Nor is there a process that would ever promote them: no later crawl
+         * revisits an uploaded row. The doubt that RAW was trying to express is
+         * real, and it is already carried where it belongs — in the scores.
+         * This evidence lands in the low fifties against a first-party page
+         * read in the eighties, and every definition has a confidence floor. */
+        status: "VERIFIED",
       })
       .returning({ id: companyEvidenceTable.id });
     evidenceId = created.id;
