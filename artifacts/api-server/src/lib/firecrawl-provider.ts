@@ -29,6 +29,7 @@ export type FirecrawlProviderConfiguration = {
   estimatedCost?: number;
   /** Paths the change gate watches for movement, besides the homepage. */
   crawlPaths?: string[];
+  maxDiscoveredPages?: number;
   /** Paths the research pass reads for facts. Wider than the gate's: research pays once a month, the gate pays weekly. */
   researchPaths?: string[];
   maxChars?: number;
@@ -61,21 +62,23 @@ const DEFAULTS = {
   // Kalki all state their city on /contact and nowhere else. One more credit
   // per research pass, which happens monthly, not weekly.
   /**
-   * The research crawl reads these in addition to the homepage.
+   * The research crawl reads these in addition to the homepage. Four pages,
+   * four credits — every page attempted is charged, 404s included.
    *
-   * /about and /contact say who a company is; they produce attributes. The
-   * rest say what it has DONE, which is what every signal definition keys on.
-   * Security, trust and compliance pages are where a company states its
-   * certifications and the regimes it operates under — ISO 27001, SOC 2, PCI,
-   * GDPR, HIPAA — and those four claims carry six definitions between them.
-   * Only three of 439 stored pages mentioned any certification at all, not
-   * because companies are quiet about it but because the page that says so
-   * was never fetched.
-   *
-   * Missing paths cost nothing: a 404 is a refusal and refusals are neither
-   * charged nor counted.
+   * These are paths nearly every company has. Blind-probing for the pages that
+   * carry compliance claims (/security, /trust, /compliance) is not the same
+   * bet: most sites do not have them at those exact spellings, and each miss
+   * is a credit spent to learn nothing. Those are found by following the
+   * homepage's own links instead — see trustLinksFrom below.
    */
-  researchPaths: ["/about", "/contact", "/careers", "/security", "/trust", "/compliance", "/legal/security", "/newsroom", "/press", "/news"],
+  researchPaths: ["/about", "/contact", "/careers"],
+  /**
+   * How many trust/security pages to follow from the homepage, at most.
+   * Capped because this is the constrained resource: the free plan is 1,000
+   * credits a month, and 73 companies researched once each already spends most
+   * of it.
+   */
+  maxDiscoveredPages: 2,
   maxChars: 30_000,
   maxConcurrency: 4,
   rateLimitRetries: 2,
@@ -111,8 +114,10 @@ export function parseFirecrawlProviderConfiguration(configuration: Record<string
     Array.isArray(value) ? (value.filter((p): p is string => typeof p === "string" && p.startsWith("/")) || fallback) : fallback;
   const paths = pathList(configuration.crawlPaths, DEFAULTS.crawlPaths);
   const research = pathList(configuration.researchPaths, DEFAULTS.researchPaths);
+  const discovered = Number(configuration.maxDiscoveredPages);
   return {
     researchPaths: research.length ? research : DEFAULTS.researchPaths,
+    maxDiscoveredPages: Number.isInteger(discovered) && discovered >= 0 ? Math.min(discovered, 4) : DEFAULTS.maxDiscoveredPages,
     maxConcurrency: num("maxConcurrency", DEFAULTS.maxConcurrency),
     rateLimitRetries: num("rateLimitRetries", DEFAULTS.rateLimitRetries),
     retryBaseMs: num("retryBaseMs", DEFAULTS.retryBaseMs),
@@ -189,6 +194,41 @@ export async function scrapePage(url: string, options: FirecrawlAdapterOptions):
 }
 
 /** The pages the change gate watches for a domain: home, about, careers — whichever exist. */
+/**
+ * Pages that state what a company complies with, found by following its own
+ * links rather than guessing at paths.
+ *
+ * Only three of 439 stored pages mentioned a certification, and the reason was
+ * that /security and /trust were never fetched. Adding them to the blind probe
+ * list fixed that for the minority of sites that use those exact spellings and
+ * charged a credit per miss for everyone else. The homepage is already paid
+ * for and already links to the page, whatever it is called.
+ *
+ * Same host only: a link to a third-party trust portal is someone else's page
+ * and its claims are not this company's to make.
+ */
+export function trustLinksFrom(markdown: string, pageUrl: string, limit = 2): string[] {
+  let origin: string;
+  try { origin = new URL(pageUrl).hostname.replace(/^www\./, "").toLowerCase(); } catch { return []; }
+  const links = new Set<string>();
+  const patterns = [
+    /\]\((https?:\/\/[^)\s]+)\)/gi,        // markdown links, which is what Firecrawl returns
+    /href=["'](https?:\/\/[^"']+)["']/gi,   // and raw hrefs, for anything that is not
+  ];
+  for (const pattern of patterns) {
+    for (const match of markdown.matchAll(pattern)) {
+      const href = match[1]!.split("#")[0]!;
+      if (!/\/(security|trust|trust-cente?r|compliance|certifications?)(\/|$|\?)/i.test(href)) continue;
+      // A privacy policy is boilerplate and never carries a certification.
+      if (/privacy-policy|cookie/i.test(href)) continue;
+      try {
+        if (new URL(href).hostname.replace(/^www\./, "").toLowerCase() === origin) links.add(href);
+      } catch { continue; }
+    }
+  }
+  return [...links].slice(0, limit);
+}
+
 export function watchUrlsFor(domain: string, paths: string[] = DEFAULTS.crawlPaths): string[] {
   const base = `https://${domain.replace(/^https?:\/\//, "").replace(/\/+$/, "")}`;
   return [base, ...paths.map((p) => `${base}${p}`)];
@@ -251,6 +291,18 @@ export function createFirecrawlWebsiteCrawlAdapter(options: FirecrawlAdapterOpti
       const domain = home.hostname;
       const urls = watchUrlsFor(domain, configuration.researchPaths);
       const scraped = await scrapePages(urls, { ...options, apiKey });
+
+      // A second, conditional hop. The homepage is already in hand; if it
+      // links to a security or trust page, that page is where the company
+      // states its certifications, and it demonstrably exists. Nothing is
+      // spent when there is no such link, which is the difference between
+      // following a link and guessing at a path.
+      const homePage = scraped[0];
+      if (configuration.maxDiscoveredPages > 0 && homePage?.ok && homePage.text) {
+        const discovered = trustLinksFrom(homePage.text, homePage.url, configuration.maxDiscoveredPages)
+          .filter((url) => !urls.includes(url));
+        if (discovered.length) scraped.push(...await scrapePages(discovered, { ...options, apiKey }));
+      }
 
       // Every page attempted is a credit spent, readable or not (Firecrawl
       // charges for 4xx pages too). Report it so the ledger is honest.

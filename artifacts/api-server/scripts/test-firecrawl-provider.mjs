@@ -21,12 +21,13 @@ assert.deepEqual(h.watchUrlsFor("zerodha.com", ["/about", "/careers"]), ["https:
 assert.deepEqual(h.watchUrlsFor("https://zerodha.com/", ["/about"]), ["https://zerodha.com", "https://zerodha.com/about"]);
 
 const PAGES = {
-  "https://zerodha.com": { markdown: "# Zerodha\n\nIndia's largest stock broker. " + "We build trading and investment platforms for retail investors. ".repeat(4), title: "Zerodha", statusCode: 200 },
+  "https://zerodha.com": { markdown: "# Zerodha\n\nIndia's largest stock broker. " + "We build trading and investment platforms for retail investors. ".repeat(4) + "\n\n[Security](https://zerodha.com/security) [Privacy Policy](https://zerodha.com/privacy-policy) [Partner trust portal](https://vanta.com/trust/zerodha)", title: "Zerodha", statusCode: 200 },
   "https://zerodha.com/about": { markdown: "About Zerodha. " + "Founded in 2010 in Bengaluru, bootstrapped and profitable. ".repeat(4), title: "About", statusCode: 200 },
   "https://zerodha.com/about-us": null, // 404
   "https://zerodha.com/careers": { markdown: "Careers. " + "Open roles: Security Analyst, SOC Engineer, Backend Developer. ".repeat(4), title: "Careers", statusCode: 200 },
   "https://zerodha.com/jobs": { markdown: "tiny", title: "Jobs", statusCode: 200 },
   "https://zerodha.com/security": { markdown: "Security at Zerodha. " + "Zerodha is ISO 27001 certified and maintains SOC 2 Type 2 attestation. ".repeat(4), title: "Security", statusCode: 200 },
+  "https://zerodha.com/trust-center": { markdown: "Trust. " + "Our controls are audited annually. ".repeat(8), title: "Trust", statusCode: 200 },
 };
 const recorder = (override = {}) => {
   const calls = [];
@@ -80,15 +81,17 @@ const recorder = (override = {}) => {
   const requested = calls.map((c) => c.body.url);
   assert.deepEqual(requested.slice(0, 4), [
     "https://zerodha.com", "https://zerodha.com/about", "https://zerodha.com/contact", "https://zerodha.com/careers",
-  ], "the original four still come first");
-  for (const path of ["/security", "/trust", "/compliance"]) {
-    assert.ok(requested.includes(`https://zerodha.com${path}`), `${path} is fetched`);
-  }
-  assert.ok(requested.length > 4 && requested.length === new Set(requested).size, "no path is fetched twice");
+  ], "four paths, four credits — every page attempted is charged, 404s included");
+  // The security page is reached by following the homepage's own link, not by
+  // guessing at paths. Guessing charges a credit for every site that spells it
+  // differently or does not have one, and most do not.
+  assert.deepEqual(requested.slice(4), ["https://zerodha.com/security"], "one link followed, one credit");
+  assert.ok(!requested.some((url) => url.includes("privacy-policy")), "a privacy policy carries no certification");
+  assert.ok(!requested.some((url) => url.includes("vanta.com")), "a third-party trust portal is someone else's page");
   assert.equal(out.data.page.url, "https://zerodha.com", "the homepage is the primary page");
   assert.deepEqual(out.data.pages.map((p) => p.url).sort(), [
     "https://zerodha.com", "https://zerodha.com/about", "https://zerodha.com/careers", "https://zerodha.com/security",
-  ], "404s, tiny pages and paths the site does not have are dropped");
+  ], "404s and tiny pages are dropped");
   assert.equal(out.usage.resultCount, 4);
   assert.ok(out.usage.actualCost > 0, "readable pages are paid for");
   assert.equal(Object.keys(out.metadata.hashes).length, 4);

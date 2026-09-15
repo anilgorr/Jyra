@@ -98,16 +98,26 @@ Bayzat is ISO 27001 : 2022
   assert.ok(m.MIN_PAGE_TEXT >= 200);
 }
 
-// 6. The pages that carry compliance claims are actually fetched. Three of 439
-//    stored pages mentioned any certification, because /security and /trust
-//    were never in the crawl list.
+// 6. The pages that carry compliance claims are reached by following the
+//    homepage's own links, not by probing paths. Firecrawl charges for every
+//    page attempted including 404s, and the free plan is 1,000 credits a
+//    month — 73 companies researched once each already spends most of it. A
+//    blind probe for /security, /trust and /compliance costs three credits on
+//    every site that does not have them, which is most sites.
 {
   const configured = m.parseFirecrawlProviderConfiguration({});
-  for (const path of ["/security", "/trust", "/compliance"]) {
-    assert.ok(configured.researchPaths.includes(path), `${path} is where companies state their certifications`);
-  }
-  const urls = m.watchUrlsFor("bayzat.com", configured.researchPaths);
-  assert.ok(urls.some((url) => url.endsWith("/security")));
+  assert.deepEqual(configured.researchPaths, ["/about", "/contact", "/careers"],
+    "four pages including home, and no speculative ones");
+  assert.equal(configured.maxDiscoveredPages, 2);
+  assert.equal(m.parseFirecrawlProviderConfiguration({ maxDiscoveredPages: 0 }).maxDiscoveredPages, 0,
+    "following can be switched off entirely when credits are tight");
+
+  const home = "https://acme.com";
+  const markdown = "[Security](https://acme.com/security) [Trust Center](https://acme.com/trust-center) [Privacy Policy](https://acme.com/privacy-policy) [Portal](https://vanta.com/trust/acme) [Careers](https://acme.com/careers)";
+  const found = m.trustLinksFrom(markdown, home, 4);
+  assert.deepEqual(found, ["https://acme.com/security", "https://acme.com/trust-center"]);
+  assert.equal(m.trustLinksFrom(markdown, home, 1).length, 1, "the cap is the cap");
+  assert.deepEqual(m.trustLinksFrom("no links here", home), [], "no link, no credit spent");
 }
 
 // 7. The sweep is capped, so one tick cannot spend minutes on a large archive.
