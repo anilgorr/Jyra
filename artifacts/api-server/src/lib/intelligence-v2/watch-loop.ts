@@ -11,6 +11,7 @@ import {
 } from "@workspace/db";
 import { effectiveResearchBudgetLimits, getResearchBudget } from "../research-economics";
 import { reevaluateStaleSignals, type ReevaluationReport } from "../signal-reevaluation";
+import { backfillPageFacts, type BackfillReport } from "./page-facts";
 import { projectSpendSince, recordSpend, utcDayStart } from "../spend-ledger";
 import {
   classifyWatchTier, evaluateChangeGate, tierPolicies,
@@ -42,6 +43,8 @@ export type WatchLoopSettings = {
    * bulk import cannot make one tick take minutes.
    */
   maxReevaluationsPerTick: number;
+  /** Stored pages read for facts per tick. Free, same as above; capped for the same reason. */
+  maxExtractionsPerTick: number;
 };
 
 export function watchLoopSettings(env: NodeJS.ProcessEnv = process.env): WatchLoopSettings {
@@ -52,6 +55,7 @@ export function watchLoopSettings(env: NodeJS.ProcessEnv = process.env): WatchLo
   const perTick = Number(env.JYRA_WATCH_MAX_PER_TICK);
   const gatesPerTick = Number(env.JYRA_WATCH_MAX_GATES_PER_TICK);
   const reevaluationsPerTick = Number(env.JYRA_WATCH_MAX_REEVALUATIONS_PER_TICK);
+  const extractionsPerTick = Number(env.JYRA_WATCH_MAX_EXTRACTIONS_PER_TICK);
   // JYRA_WATCH_CADENCE_DAYS is the old single-cadence setting. It still works:
   // a deployment that set it gets it as the cold cadence.
   const coldDays = number(env.JYRA_WATCH_COLD_DAYS ?? env.JYRA_WATCH_CADENCE_DAYS, 7);
@@ -61,6 +65,7 @@ export function watchLoopSettings(env: NodeJS.ProcessEnv = process.env): WatchLo
     maxCompaniesPerTick: Number.isInteger(perTick) && perTick > 0 ? Math.min(perTick, 50) : 10,
     maxGateChecksPerTick: Number.isInteger(gatesPerTick) && gatesPerTick > 0 ? Math.min(gatesPerTick, 500) : 60,
     maxReevaluationsPerTick: Number.isInteger(reevaluationsPerTick) && reevaluationsPerTick > 0 ? Math.min(reevaluationsPerTick, 2000) : 200,
+    maxExtractionsPerTick: Number.isInteger(extractionsPerTick) && extractionsPerTick > 0 ? Math.min(extractionsPerTick, 2000) : 200,
     fallbackCycleCostUsd: 0.05,
   };
 }
@@ -257,6 +262,8 @@ export type TickReport = {
    * existing facts newly meaningful without any page changing.
    */
   reevaluation: ReevaluationReport;
+  /** Facts read out of pages already crawled. Also free, also runs every tick. */
+  extraction: BackfillReport;
 };
 
 /**
@@ -290,6 +297,8 @@ export async function runWatchLoopTick(input: {
   dailyBudgetFor?: (projectId: string) => Promise<number>;
   /** Injected for tests; defaults to the real re-evaluation sweep. */
   reevaluate?: typeof reevaluateStaleSignals;
+  /** Injected for tests; defaults to the real page-fact backfill. */
+  extract?: typeof backfillPageFacts;
 }): Promise<TickReport> {
   const now = input.now ?? new Date();
   const settings = input.settings ?? watchLoopSettings();
@@ -300,12 +309,14 @@ export async function runWatchLoopTick(input: {
   const record = input.record ?? recordWatchCheck;
   const dailyBudgetFor = input.dailyBudgetFor ?? (async (projectId: string) => effectiveResearchBudgetLimits(await getResearchBudget(projectId)).dailyBudget);
   const reevaluate = input.reevaluate ?? reevaluateStaleSignals;
+  const extract = input.extract ?? backfillPageFacts;
   const startedAt = new Date();
   const report: TickReport = {
     enabled: settings.enabled, startedAt: startedAt.toISOString(), finishedAt: "",
     due: 0, checked: 0, unchanged: 0, deferred: 0, ran: 0, skipped: 0, failed: 0, changed: 0,
     gateSpentUsd: 0, spentUsd: 0, outcomes: [],
     reevaluation: { considered: 0, evaluated: 0, created: 0, failed: 0, outcomes: [] },
+    extraction: { considered: 0, extracted: 0, factsInserted: 0, failed: 0, outcomes: [] },
   };
 
   if (!settings.enabled) {
@@ -319,6 +330,16 @@ export async function runWatchLoopTick(input: {
    * to the tier classification below — a company that just earned a signal is
    * HOT, and should be looked at today rather than next week. A failure here
    * is logged and does not stop the paid sweep. */
+  try {
+    report.extraction = await extract({ limit: settings.maxExtractionsPerTick, now, log: input.log });
+    if (report.extraction.considered) {
+      input.log.info({ considered: report.extraction.considered, factsInserted: report.extraction.factsInserted, failed: report.extraction.failed }, "WATCH_LOOP_EXTRACTION");
+    }
+  } catch (error) {
+    input.log.warn({ err: error }, "WATCH_LOOP_EXTRACTION_FAILED");
+  }
+  // After extraction, so a fact read out of the archive this tick becomes a
+  // signal this tick rather than next one.
   try {
     report.reevaluation = await reevaluateStaleSignalsGuarded(reevaluate, settings, now, input.log);
   } catch (error) {

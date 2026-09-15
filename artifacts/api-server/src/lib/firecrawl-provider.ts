@@ -60,7 +60,22 @@ const DEFAULTS = {
   // sites, that is where the address actually is — Chokore, Supersox and
   // Kalki all state their city on /contact and nowhere else. One more credit
   // per research pass, which happens monthly, not weekly.
-  researchPaths: ["/about", "/contact", "/careers"],
+  /**
+   * The research crawl reads these in addition to the homepage.
+   *
+   * /about and /contact say who a company is; they produce attributes. The
+   * rest say what it has DONE, which is what every signal definition keys on.
+   * Security, trust and compliance pages are where a company states its
+   * certifications and the regimes it operates under — ISO 27001, SOC 2, PCI,
+   * GDPR, HIPAA — and those four claims carry six definitions between them.
+   * Only three of 439 stored pages mentioned any certification at all, not
+   * because companies are quiet about it but because the page that says so
+   * was never fetched.
+   *
+   * Missing paths cost nothing: a 404 is a refusal and refusals are neither
+   * charged nor counted.
+   */
+  researchPaths: ["/about", "/contact", "/careers", "/security", "/trust", "/compliance", "/legal/security", "/newsroom", "/press", "/news"],
   maxChars: 30_000,
   maxConcurrency: 4,
   rateLimitRetries: 2,

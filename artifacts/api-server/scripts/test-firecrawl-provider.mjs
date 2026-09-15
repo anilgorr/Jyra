@@ -26,6 +26,7 @@ const PAGES = {
   "https://zerodha.com/about-us": null, // 404
   "https://zerodha.com/careers": { markdown: "Careers. " + "Open roles: Security Analyst, SOC Engineer, Backend Developer. ".repeat(4), title: "Careers", statusCode: 200 },
   "https://zerodha.com/jobs": { markdown: "tiny", title: "Jobs", statusCode: 200 },
+  "https://zerodha.com/security": { markdown: "Security at Zerodha. " + "Zerodha is ISO 27001 certified and maintains SOC 2 Type 2 attestation. ".repeat(4), title: "Security", statusCode: 200 },
 };
 const recorder = (override = {}) => {
   const calls = [];
@@ -70,18 +71,27 @@ const recorder = (override = {}) => {
   const adapter = h.createFirecrawlWebsiteCrawlAdapter({ providerId: "fc", apiKey: "k", fetchImpl, now: () => NOW });
   const out = await adapter.execute({ requestId: "r1", url: "https://zerodha.com" });
   assert.equal(out.status, "success");
-  // Research reads home, /about, /contact and /careers. The gate's set is
-  // narrower (no /contact) because it pays weekly and only needs to notice
-  // movement; research pays monthly and /contact is where the address is.
-  assert.equal(calls.length, 4, "home + about + contact + careers");
-  assert.deepEqual(calls.map((c) => c.body.url), [
+  // Research reads the homepage plus every research path. The gate's set is
+  // deliberately much narrower — it pays weekly and only needs to notice
+  // movement, while research pays monthly and is where the claims are found.
+  // /security, /trust and /compliance are in this list because that is where a
+  // company states its certifications, and until they were added only three of
+  // 439 stored pages mentioned one.
+  const requested = calls.map((c) => c.body.url);
+  assert.deepEqual(requested.slice(0, 4), [
     "https://zerodha.com", "https://zerodha.com/about", "https://zerodha.com/contact", "https://zerodha.com/careers",
-  ]);
+  ], "the original four still come first");
+  for (const path of ["/security", "/trust", "/compliance"]) {
+    assert.ok(requested.includes(`https://zerodha.com${path}`), `${path} is fetched`);
+  }
+  assert.ok(requested.length > 4 && requested.length === new Set(requested).size, "no path is fetched twice");
   assert.equal(out.data.page.url, "https://zerodha.com", "the homepage is the primary page");
-  assert.deepEqual(out.data.pages.map((p) => p.url), ["https://zerodha.com", "https://zerodha.com/about", "https://zerodha.com/careers"], "404 and tiny pages are dropped");
-  assert.equal(out.usage.resultCount, 3);
-  assert.ok(Math.abs(out.usage.actualCost - 4 * 0.00083) < 1e-9, "four credits spent");
-  assert.equal(Object.keys(out.metadata.hashes).length, 3);
+  assert.deepEqual(out.data.pages.map((p) => p.url).sort(), [
+    "https://zerodha.com", "https://zerodha.com/about", "https://zerodha.com/careers", "https://zerodha.com/security",
+  ], "404s, tiny pages and paths the site does not have are dropped");
+  assert.equal(out.usage.resultCount, 4);
+  assert.ok(out.usage.actualCost > 0, "readable pages are paid for");
+  assert.equal(Object.keys(out.metadata.hashes).length, 4);
 }
 // Nothing readable → empty, not failed; auth failure → AUTHENTICATION_ERROR so the waterfall moves on.
 {

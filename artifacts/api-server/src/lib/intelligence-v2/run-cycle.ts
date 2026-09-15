@@ -22,6 +22,7 @@ import { loadLatestIntelligenceV2Assessment, persistIntelligenceV2Assessment } f
 import { persistIntelligenceV2Evidence } from "./persist-evidence";
 import { countHiringByTheme, mapJobsToFacts, persistHiringCounts, persistJobFacts } from "./job-facts";
 import { mapEventHitsToFacts, persistEventFacts, researchEvents, type EventFactRow } from "./event-facts";
+import { backfillPageFacts } from "./page-facts";
 import { ATS_BOARD_URL_KEY, atsHandleFromProfileUrls, atsHandleToProfileUrls, discoverAtsHandle, fetchAtsJobs } from "./ats-boards";
 import { resolveCompanyCountry } from "./company-country";
 import { recordSpend } from "../spend-ledger";
@@ -402,6 +403,20 @@ export async function runIntelligenceCycle(input: {
   // Signals are derived from facts, and the score is derived from signals, so
   // this has to run before the re-score. Neither failure turns a completed
   // run into an error — the persisted assessment stands.
+  // Pages this cycle just crawled carry claims nobody has read yet. Reading
+  // them is database work, so it happens here rather than waiting a tick, and
+  // before signals are worked out — a certification found on the trust page
+  // should count towards this cycle's verdict, not the next one's.
+  try {
+    const extracted = await backfillPageFacts({ companyId: owned.company.id, now: completedAt, log });
+    if (extracted.factsInserted) {
+      factsAdded += extracted.factsInserted;
+      log.info({ projectCompanyId, ...{ considered: extracted.considered, factsInserted: extracted.factsInserted } }, "PAGE_FACTS_PERSISTED");
+    }
+  } catch (error) {
+    log.warn({ err: error, projectCompanyId }, "PAGE_FACT_EXTRACTION_FAILED");
+  }
+
   let signalsCreated = 0;
   let createdSignalIds: string[] = [];
   let signalSummary: string | null = null;

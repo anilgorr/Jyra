@@ -56,11 +56,22 @@ export const crawlPagesTable = pgTable(
     rawContent: text("raw_content").notNull(),
     rawContentReference: text("raw_content_reference"),
     normalizedContentHash: text("normalized_content_hash").notNull(),
+    /**
+     * When facts were last read out of this page's text, and with which
+     * extractor. Null means never — which was true of all 439 stored pages
+     * until there was anything to read them with.
+     *
+     * The version is stored so that a better extractor re-reads the archive
+     * instead of leaving old pages frozen at whatever the first pass managed.
+     */
+    factsExtractedAt: timestamp("facts_extracted_at", { withTimezone: true }),
+    factsExtractorVersion: text("facts_extractor_version"),
     createdAt: timestamp("created_at", { withTimezone: true })
       .notNull()
       .defaultNow(),
   },
   (table) => [
+    index("crawl_pages_extraction_idx").on(table.factsExtractedAt),
     uniqueIndex("crawl_pages_company_url_hash_unique").on(
       table.companyId,
       table.sourceUrl,

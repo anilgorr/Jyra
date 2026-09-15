@@ -143,7 +143,22 @@ const FACT_TYPE_PATTERNS: Record<FactType, RegExp[]> = {
   FUNDING_EVENT: [/\b(?:raised|secured|closed|completed|announced)\b.{0,60}\b(?:funding|financing|series [a-z]|investment round|capital)\b/i],
   ACQUISITION: [/\b(?:acquired|completed the acquisition|merged with|completed the merger)\b/i],
   CERTIFICATION: [/\b(?:received|earned|obtained|achieved|achieves|renewed|completed|completes|was certified|is certified|are now|is now)\b.{0,80}\b(?:certification|certified|accreditation|examination|iso(?:\/iec)? \d+|soc [12])\b/i],
-  COMPLIANCE_MENTION: [/\b(?:is|became|remains|maintains|meets|announced|describes|addresses)\b.{0,60}\b(?:compliance|compliant|gdpr|hipaa|pci(?: dss)?|regulatory requirements?)\b/i],
+  // Every pattern in this array must match — the table is an AND, not an OR —
+  // so the two ways of stating a compliance posture are one alternation
+  // rather than two entries.
+  //
+  // Named regimes belong here alongside the generic words. GDPR, HIPAA and PCI
+  // were listed; ISO 27001 and SOC 2 were not, which left a company's plainest
+  // statement about itself — "Bayzat is ISO 27001 : 2022", sitting in the crawl
+  // archive since September — with no fact type that would accept it.
+  // CERTIFICATION is the event ("achieved it in March") and demands a date a
+  // trust page never carries. The second branch covers the claim made with no
+  // verb at all, "SOC 2 Type 2 Certified" under a logo: the regime name has to
+  // be there, and so does a word that makes it a claim and not a passing
+  // mention.
+  COMPLIANCE_MENTION: [
+    /(?:\b(?:is|became|remains|maintains|meets|holds|announced|describes|addresses)\b.{0,60}\b(?:compliance|compliant|certified|gdpr|hipaa|ccpa|nis ?2|dpdp|pci(?:[ -]dss)?|iso(?:\/iec)?\s*270\d\d|soc\s*2|fedramp|hitrust|regulatory requirements?)\b|\b(?:iso(?:\/iec)?\s*270\d\d|soc\s*2|pci[ -]?dss|fedramp|hitrust|gdpr|hipaa)\b.{0,40}\b(?:certified|certification|compliant|compliance|attestation|accredited|type\s*(?:i{1,2}|1|2))\b)/i,
+  ],
   TECHNOLOGY_MENTION: [
     /\b(?:uses?|adopt(?:ed|s)|implement(?:ed|s)|deploy(?:ed|s)|integrat(?:ed|es)|migrat(?:ed|es) (?:to|from)|replac(?:ed|es)|switch(?:ed|es) (?:to|from)|powered by|built on)\b.{0,160}\b(?:react|flutter|swift|kotlin|python|aws|gcp|azure|cloud|platform|software|system|service|stack|[A-Z][A-Za-z0-9.+#-]{1,40})\b/i,
   ],
@@ -156,7 +171,10 @@ const FACT_TYPE_PATTERNS: Record<FactType, RegExp[]> = {
 
 const NON_FACTUAL_EVENT_PATTERNS = [
   /\b(?:may(?!\s+\d{1,2},\s+\d{4})|might|could|possibly|plans? to|intends? to|expects? to|aims? to|considering|seeks? to)\b/i,
-  /\b(?:no|not|never|denied|without)\b.{0,50}\b(?:appointed|hiring|opening|expanded|funding|financing|acquir|merger|certif|compliance|customer|client|incident|breach|cyberattack|growth|trust center)\b/i,
+  // "compliance" was listed and "compliant" was not, so "Bayzat is not GDPR
+  // compliant" read as a compliance claim — a denial filed as the fact it
+  // denies. Adjectives are how these things are actually written on a page.
+  /\b(?:no|not|never|denied|without)\b.{0,50}\b(?:appointed|hiring|opening|expanded|funding|financing|acquir|merger|certif(?:ied|ication)?|complian(?:ce|t)|accredited|customer|client|incident|breach|cyberattack|growth|trust center)\b/i,
   /\b(?:appointment|hiring|opening|expansion|funding|financing|acquisition|merger|certification|compliance|customer|client|incident|breach|cyberattack|growth|trust center)\b.{0,50}\b(?:did not occur|didn't occur|was not|were not|is not|are not|denied|ruled out|unfounded|false)\b/i,
   /\b(?:incident response|breach prevention|ransomware protection)\b.{0,40}\b(?:platform|product|software|service)\b/i,
 ];
@@ -841,6 +859,96 @@ export function extractExplicitTechnologyChangeCandidates(
     TECHNOLOGY_EVENT_PATTERN,
     "TECHNOLOGY_MENTION",
   );
+}
+
+/**
+ * Standing claims a company makes about itself on its own pages.
+ *
+ * The dated extractors above look for EVENTS — "achieved ISO 27001 on March
+ * 4". A trust page does not talk like that. It says "SOC 2 Type II" under a
+ * heading and moves on, and the fact is no less true for being undated. That
+ * is what TIMELESS_FACT_TYPES is for, and until now nothing wrote one: 439
+ * crawled pages, three mentions of any certification, zero compliance facts,
+ * and six definitions across the packs waiting on a fact type that had no
+ * producer.
+ *
+ * A standing claim is dated at the observation, which validateFactCandidate
+ * already accepts for these two types and only these two. The split with the
+ * dated extractors is on the verb: "we are ISO 27001 certified" is a posture
+ * and files as COMPLIANCE_MENTION; "we achieved ISO 27001 in March" is an
+ * event, needs its date, and files as CERTIFICATION through the extractor
+ * above. A technology mention carrying a change verb is likewise an event, so
+ * this extractor steps back from it rather than quietly dating a migration to
+ * the day we happened to look.
+ */
+const COMPLIANCE_STANDARD_PATTERN = /\b(ISO(?:\/IEC)?\s*27001(?::\d{4})?|ISO(?:\/IEC)?\s*27701|SOC\s*2(?:\s*Type\s*(?:I{1,2}|1|2))?|PCI[\s-]?DSS|HIPAA|GDPR|CCPA|NIS ?2|DPDP(?:\s*Act)?|FedRAMP|HITRUST|CSA STAR)\b/gi;
+
+const TECHNOLOGY_STACK_PATTERN = /\b(AWS|Amazon Web Services|Microsoft Azure|Google Cloud(?: Platform)?|Kubernetes|Salesforce|HubSpot|NetSuite|Workday|Okta|CrowdStrike|Splunk|Snowflake|Databricks|SAP(?:\s+S\/4HANA)?|Oracle(?:\s+Fusion)?|ServiceNow|Zendesk|Marketo|Cloudflare)\b/g;
+
+/** A verb that turns a mention into a dated event, which this extractor must not claim. */
+const TECHNOLOGY_CHANGE_VERB = /\b(?:adopt(?:ed|s|ing)?|implement(?:ed|s|ing)?|deploy(?:ed|s|ing)?|integrat(?:ed|es|ing)?|migrat(?:ed|es|ing)?|replac(?:ed|es|ing)?|switch(?:ed|es|ing)?)\b/i;
+
+/** The sentence a match sits in — the unit a human can check the claim against. */
+function sentenceAround(content: string, index: number): string {
+  const before = content.lastIndexOf(".", index);
+  const openers = [content.lastIndexOf("\n", index), before];
+  const start = Math.max(...openers) + 1;
+  const rest = content.slice(index).search(/[.!?\n](?:\s|$)/);
+  const end = rest >= 0 ? index + rest + 1 : Math.min(content.length, index + 220);
+  return content.slice(Math.max(0, start), end).trim();
+}
+
+export function extractStandingClaimCandidates(
+  evidenceId: string,
+  rawContent: string,
+  observationDate: string,
+  limits: { perType?: number } = {},
+): FactCandidate[] {
+  const content = normalizeEvidenceContent(rawContent);
+  const perType = limits.perType ?? 8;
+  const candidates: FactCandidate[] = [];
+
+  const collect = (
+    pattern: RegExp,
+    factType: "COMPLIANCE_MENTION" | "TECHNOLOGY_MENTION",
+    key: "standard" | "technology",
+  ) => {
+    const seen = new Set<string>();
+    for (const match of content.matchAll(pattern)) {
+      if (match.index === undefined) continue;
+      const mention = match[1];
+      const token = mention.toLowerCase().replace(/\s+/g, " ");
+      if (seen.has(token)) continue;
+      const supportingExcerpt = sentenceAround(content, match.index);
+      // The excerpt must actually contain the mention, or the structured value
+      // is unquotable and the candidate is rejected downstream anyway.
+      if (!supportingExcerpt.toLowerCase().includes(token)) continue;
+      if (supportingExcerpt.length < 12 || supportingExcerpt.length > 2_000) continue;
+      // A change verb makes this an event; events need their own date and are
+      // the dated extractors' business, not ours.
+      if (factType === "TECHNOLOGY_MENTION" && TECHNOLOGY_CHANGE_VERB.test(supportingExcerpt)) continue;
+      seen.add(token);
+      const candidate = {
+        evidenceId,
+        factType,
+        structuredValue: { [key]: mention },
+        effectiveDate: observationDate,
+        // Lower than the dated extractors on purpose. A company saying it holds
+        // a certification is its own claim, unaudited by us and undated; it is
+        // worth acting on and it is not worth as much as a dated announcement.
+        confidence: 78,
+        supportingExcerpt,
+        extractorVersion: "standing-claim-v1",
+      };
+      const parsed = factCandidateSchema.safeParse(candidate);
+      if (parsed.success) candidates.push(parsed.data);
+      if (seen.size >= perType) break;
+    }
+  };
+
+  collect(COMPLIANCE_STANDARD_PATTERN, "COMPLIANCE_MENTION", "standard");
+  collect(TECHNOLOGY_STACK_PATTERN, "TECHNOLOGY_MENTION", "technology");
+  return candidates;
 }
 
 export function extractExplicitFactCandidates(
