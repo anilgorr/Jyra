@@ -18,7 +18,7 @@
  * pack was reconfigured, since the last time its signals were worked out.
  */
 
-import { and, desc, eq, max, ne } from "drizzle-orm";
+import { and, desc, eq, inArray, max } from "drizzle-orm";
 import {
   companyFactsTable,
   db,
@@ -26,6 +26,7 @@ import {
   projectSignalPacksTable,
   projectsTable,
   companiesTable,
+  LIVE_PROJECT_COMPANY_STATUSES,
 } from "@workspace/db";
 import { evaluateSignalsForCompany } from "./signal-packs";
 
@@ -92,7 +93,10 @@ export async function selectStaleSignalCompanies(input: { projectId?: string; li
     }).from(companyFactsTable).groupBy(companyFactsTable.companyId),
   );
 
-  const conditions = [ne(projectCompaniesTable.status, "archived")];
+  /* Screening is included on purpose. Re-testing stored facts costs nothing,
+   * and it is how a screened company earns the ranking that decides whether it
+   * is worth promoting into the watched pool. */
+  const conditions = [inArray(projectCompaniesTable.status, [...LIVE_PROJECT_COMPANY_STATUSES])];
   if (input.projectId) conditions.push(eq(projectCompaniesTable.projectId, input.projectId));
 
   const rows = await db.with(packConfigured, latestFact).select({

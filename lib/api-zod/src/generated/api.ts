@@ -2545,6 +2545,14 @@ export const GetProjectPlanUsageParams = zod.object({
   "projectId": zod.coerce.string()
 })
 
+export const getProjectPlanUsageResponseScreeningPoolUsedMin = 0;
+
+export const getProjectPlanUsageResponseScreeningPoolLimitMin = 0;
+
+export const getProjectPlanUsageResponseScreeningPoolRemainingMin = 0;
+
+
+
 export const GetProjectPlanUsageResponse = zod.object({
   "plan": zod.object({
   "code": zod.string(),
@@ -2562,6 +2570,11 @@ export const GetProjectPlanUsageResponse = zod.object({
   "limit": zod.number(),
   "remaining": zod.number(),
   "thisProject": zod.number()
+}),
+  "screeningPool": zod.object({
+  "used": zod.number().min(getProjectPlanUsageResponseScreeningPoolUsedMin),
+  "limit": zod.number().min(getProjectPlanUsageResponseScreeningPoolLimitMin),
+  "remaining": zod.number().min(getProjectPlanUsageResponseScreeningPoolRemainingMin)
 }),
   "intentAccounts": zod.object({
   "month": zod.string().describe('First day of the billing month'),
@@ -3610,7 +3623,7 @@ export const ListProjectCompaniesResponseItem = zod.object({
   "createdAt": zod.coerce.date(),
   "updatedAt": zod.coerce.date()
 }),
-  "status": zod.enum(['candidate', 'active', 'archived']),
+  "status": zod.enum(['screening', 'candidate', 'active', 'archived']),
   "researchStatus": zod.enum(['not_started', 'in_progress', 'complete']),
   "fitScore": zod.number().nullable(),
   "needScore": zod.number().nullable(),
@@ -3686,7 +3699,7 @@ export const CreateProjectCompanyResponse = zod.object({
   "createdAt": zod.coerce.date(),
   "updatedAt": zod.coerce.date()
 }),
-  "status": zod.enum(['candidate', 'active', 'archived']),
+  "status": zod.enum(['screening', 'candidate', 'active', 'archived']),
   "researchStatus": zod.enum(['not_started', 'in_progress', 'complete']),
   "fitScore": zod.number().nullable(),
   "needScore": zod.number().nullable(),
@@ -3729,7 +3742,7 @@ export const updateProjectCompanyBodyConfidenceScoreMax = 100;
 
 
 export const UpdateProjectCompanyBody = zod.object({
-  "status": zod.enum(['candidate', 'active', 'archived']).optional(),
+  "status": zod.enum(['screening', 'candidate', 'active', 'archived']).optional(),
   "researchStatus": zod.enum(['not_started', 'in_progress', 'complete']).optional(),
   "fitScore": zod.number().min(updateProjectCompanyBodyFitScoreMin).max(updateProjectCompanyBodyFitScoreMax).nullish(),
   "needScore": zod.number().min(updateProjectCompanyBodyNeedScoreMin).max(updateProjectCompanyBodyNeedScoreMax).nullish(),
@@ -3758,7 +3771,7 @@ export const UpdateProjectCompanyResponse = zod.object({
   "createdAt": zod.coerce.date(),
   "updatedAt": zod.coerce.date()
 }),
-  "status": zod.enum(['candidate', 'active', 'archived']),
+  "status": zod.enum(['screening', 'candidate', 'active', 'archived']),
   "researchStatus": zod.enum(['not_started', 'in_progress', 'complete']),
   "fitScore": zod.number().nullable(),
   "needScore": zod.number().nullable(),
@@ -3772,6 +3785,50 @@ export const UpdateProjectCompanyResponse = zod.object({
   "latestResearchAt": zod.coerce.date().nullable(),
   "createdAt": zod.coerce.date(),
   "updatedAt": zod.coerce.date()
+})
+
+
+/**
+ * Promotion is what the plan charges for. Screened companies are stored and evaluated for free; moving them into the watched pool is bounded by the plan's watch pool and refused as a whole rather than in part.
+ * @summary Move screened companies into the watched pool
+ */
+export const PromoteProjectCompaniesParams = zod.object({
+  "projectId": zod.coerce.string()
+})
+
+export const promoteProjectCompaniesBodyProjectCompanyIdsItemMax = 100;
+
+export const promoteProjectCompaniesBodyProjectCompanyIdsMax = 500;
+
+
+
+export const PromoteProjectCompaniesBody = zod.object({
+  "projectCompanyIds": zod.array(zod.string().min(1).max(promoteProjectCompaniesBodyProjectCompanyIdsItemMax)).min(1).max(promoteProjectCompaniesBodyProjectCompanyIdsMax)
+})
+
+export const promoteProjectCompaniesResponsePromotedMin = 0;
+
+export const promoteProjectCompaniesResponseAlreadyWatchedMin = 0;
+
+export const promoteProjectCompaniesResponseNotFoundMin = 0;
+
+export const promoteProjectCompaniesResponseWatchPoolUsedMin = 0;
+
+export const promoteProjectCompaniesResponseWatchPoolLimitMin = 0;
+
+export const promoteProjectCompaniesResponseWatchPoolRemainingMin = 0;
+
+
+
+export const PromoteProjectCompaniesResponse = zod.object({
+  "promoted": zod.number().min(promoteProjectCompaniesResponsePromotedMin),
+  "alreadyWatched": zod.number().min(promoteProjectCompaniesResponseAlreadyWatchedMin),
+  "notFound": zod.number().min(promoteProjectCompaniesResponseNotFoundMin),
+  "watchPool": zod.object({
+  "used": zod.number().min(promoteProjectCompaniesResponseWatchPoolUsedMin),
+  "limit": zod.number().min(promoteProjectCompaniesResponseWatchPoolLimitMin),
+  "remaining": zod.number().min(promoteProjectCompaniesResponseWatchPoolRemainingMin)
+})
 })
 
 
@@ -4235,7 +4292,7 @@ export const PreviewCompanyImportResponse = zod.object({
   "createdAt": zod.coerce.date(),
   "updatedAt": zod.coerce.date()
 }),
-  "status": zod.enum(['candidate', 'active', 'archived']),
+  "status": zod.enum(['screening', 'candidate', 'active', 'archived']),
   "researchStatus": zod.enum(['not_started', 'in_progress', 'complete']),
   "fitScore": zod.number().nullable(),
   "needScore": zod.number().nullable(),
@@ -4341,7 +4398,7 @@ export const CommitCompanyImportResponse = zod.object({
   "createdAt": zod.coerce.date(),
   "updatedAt": zod.coerce.date()
 }),
-  "status": zod.enum(['candidate', 'active', 'archived']),
+  "status": zod.enum(['screening', 'candidate', 'active', 'archived']),
   "researchStatus": zod.enum(['not_started', 'in_progress', 'complete']),
   "fitScore": zod.number().nullable(),
   "needScore": zod.number().nullable(),
@@ -6049,7 +6106,7 @@ export const ListOpportunityAssessmentsResponseItem = zod.object({
   "createdAt": zod.coerce.date(),
   "updatedAt": zod.coerce.date()
 }),
-  "status": zod.enum(['candidate', 'active', 'archived']),
+  "status": zod.enum(['screening', 'candidate', 'active', 'archived']),
   "researchStatus": zod.enum(['not_started', 'in_progress', 'complete']),
   "fitScore": zod.number().nullable(),
   "needScore": zod.number().nullable(),

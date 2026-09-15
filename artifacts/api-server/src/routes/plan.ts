@@ -1,10 +1,10 @@
-import { and, eq, ne, sql } from "drizzle-orm";
+import { and, eq, inArray, sql } from "drizzle-orm";
 import { Router, type IRouter, type RequestHandler } from "express";
-import { db, organizationMembersTable, projectCompaniesTable, projectsTable } from "@workspace/db";
+import { db, organizationMembersTable, projectCompaniesTable, projectsTable, WATCHED_PROJECT_COMPANY_STATUSES } from "@workspace/db";
 import { GetProjectPlanUsageParams, GetProjectPlanUsageResponse } from "@workspace/api-zod";
 import { getAuthenticatedUserId, requireAuth } from "../middlewares/auth";
 import { intentAccountsInMonth, monthOf, workingList } from "../lib/intent-accounts";
-import { resolveOrganizationPlan, watchPoolUsage } from "../lib/plans";
+import { resolveOrganizationPlan, screeningPoolSize, screeningPoolUsage, watchPoolUsage } from "../lib/plans";
 import { organizationSpendBreakdown, organizationSpendSince, utcDayStart, utcMonthStart, wastedSpendSince } from "../lib/spend-ledger";
 
 const router: IRouter = Router();
@@ -37,11 +37,12 @@ router.get("/projects/:projectId/plan", requireAuth, asyncRoute(async (req, res)
   const now = new Date();
   const monthStart = utcMonthStart(now);
   const month = monthOf(now);
-  const [plan, used, thisProject, delivered, list, monthToDateUsd, todayUsd, wasted, breakdown] = await Promise.all([
+  const [plan, used, screening, thisProject, delivered, list, monthToDateUsd, todayUsd, wasted, breakdown] = await Promise.all([
     resolveOrganizationPlan(project.organizationId),
     watchPoolUsage(project.organizationId),
+    screeningPoolUsage(project.organizationId),
     db.select({ count: sql<number>`count(*)::int` }).from(projectCompaniesTable)
-      .where(and(eq(projectCompaniesTable.projectId, project.id), ne(projectCompaniesTable.status, "archived")))
+      .where(and(eq(projectCompaniesTable.projectId, project.id), inArray(projectCompaniesTable.status, [...WATCHED_PROJECT_COMPANY_STATUSES])))
       .then((rows) => Number(rows[0]?.count ?? 0)),
     intentAccountsInMonth(project.organizationId, month),
     workingList(project.id, month),
@@ -62,6 +63,15 @@ router.get("/projects/:projectId/plan", requireAuth, asyncRoute(async (req, res)
       assigned: plan.assigned, overridden: plan.overridden,
     },
     watchPool: { used, limit: plan.watchPoolSize, remaining: Math.max(0, plan.watchPoolSize - used), thisProject },
+    /* Shown next to the watch pool because the two only make sense together:
+     * how much of the bought list is being held, and how much of it is being
+     * paid for. A full screening pool with an empty watch pool is a customer
+     * who has uploaded and not chosen. */
+    screeningPool: {
+      used: screening,
+      limit: screeningPoolSize(plan),
+      remaining: Math.max(0, screeningPoolSize(plan) - screening),
+    },
     intentAccounts: {
       month, delivered, promised: plan.intentAccountsPerMonth,
       remaining: Math.max(0, plan.intentAccountsPerMonth - delivered),

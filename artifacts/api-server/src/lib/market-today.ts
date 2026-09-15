@@ -1,4 +1,4 @@
-import { and, desc, eq, inArray, ne } from "drizzle-orm";
+import { and, desc, eq, inArray } from "drizzle-orm";
 import {
   companiesTable,
   companyEvidenceTable,
@@ -14,6 +14,7 @@ import {
   signalDefinitionsTable,
   signalsTable,
   whyExplanationsTable,
+  WATCHED_PROJECT_COMPANY_STATUSES,
 } from "@workspace/db";
 import {
   formatNextBestAction,
@@ -323,7 +324,7 @@ export async function getMarketToday(projectId: string, now = new Date()) {
       eq(opportunitiesTable.projectId, projectId),
       eq(opportunitiesTable.projectCompanyId, projectCompaniesTable.id),
     ))
-    .where(and(eq(projectCompaniesTable.projectId, projectId), ne(projectCompaniesTable.status, "archived")));
+    .where(and(eq(projectCompaniesTable.projectId, projectId), inArray(projectCompaniesTable.status, [...WATCHED_PROJECT_COMPANY_STATUSES])));
   const companyIds = baseRows.map((row) => row.company.id);
   const opportunityIds = baseRows.flatMap((row) => row.opportunity ? [row.opportunity.id] : []);
   const [histories, whys, signalRows, clusterRows, evidenceRows, questions, models]: [

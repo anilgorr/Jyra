@@ -205,6 +205,30 @@ async function main() {
     assert.equal(result.domainsResolved, 4);
     assert.equal(result.domainsUnresolved, 1);
     assert.equal(result.customFieldsCreated, 1);
+    // An imported company is a row somebody bought, not a company anybody has
+    // decided to watch. Landing it as `candidate` put it into the paid watch
+    // loop — at the front of the queue, because lastWatchedAt was null — before
+    // anything had asked whether it was a fit.
+    const links = await db
+      .select({ companyId: projectCompaniesTable.companyId, status: projectCompaniesTable.status })
+      .from(projectCompaniesTable)
+      .where(eq(projectCompaniesTable.projectId, project.id));
+    const fresh = links.filter((link) => link.companyId !== existing.id);
+    assert.ok(fresh.length >= 2);
+    for (const link of fresh) {
+      assert.equal(link.status, "screening", "imports must not enter the watched pool by themselves");
+    }
+    // A company already being watched is not demoted by appearing in a later
+    // file. The import decides where new rows land, never where old ones sit.
+    assert.equal(
+      links.find((link) => link.companyId === existing.id)?.status,
+      "candidate",
+    );
+    assert.equal(
+      concurrentResults.reduce((total, candidate) => total + candidate.companiesAddedToProject, 0),
+      fresh.length,
+      "the plan is charged for companies added, not rows uploaded",
+    );
     // The technology column has to reach company_facts, not stop at a private
     // provenance payload nothing reads. Two catalogued products, one junk entry
     // reported as junk, one uncatalogued entry reported as a catalogue gap.

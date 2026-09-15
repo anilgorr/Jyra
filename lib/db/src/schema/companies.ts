@@ -16,10 +16,53 @@ import { z } from "zod/v4";
 import { projectsTable } from "./projects";
 
 export const projectCompanyStatusEnum = pgEnum("project_company_status", [
+  /**
+   * Uploaded, not yet worth money.
+   *
+   * A bought list arrives thousands of rows long and mostly wrong: of the first
+   * real one, 464 companies sold what the seller sells, 1,020 were in
+   * industries the seller had ruled out, and 2,323 ran no commercial software
+   * at all. Before this state existed every imported row landed as `candidate`,
+   * and `candidate` is watched - the change gate sees a null latestResearchAt,
+   * decides REFRESH, and runs a paid cycle. Worse, the loop orders by
+   * lastWatchedAt ascending nulls first, so a fresh import went to the FRONT of
+   * the queue, ahead of the companies already being watched. Uploading a list
+   * to find out which of it mattered would have spent the month's crawl budget
+   * on the part that did not.
+   *
+   * So screening is the holding state: stored, free to keep, free to evaluate
+   * against facts already on disk, and invisible to anything that costs money.
+   * Nothing leaves it except by being promoted, and promotion is what the plan
+   * charges for.
+   */
+  "screening",
   "candidate",
   "active",
   "archived",
 ]);
+
+export type ProjectCompanyStatus = (typeof projectCompanyStatusEnum.enumValues)[number];
+
+/**
+ * The statuses that mean "we are watching this company".
+ *
+ * Written as a positive list on purpose. Every reader of this column used
+ * `status <> 'archived'`, which was correct while archived was the only
+ * exclusion and silently wrong the moment a second one existed: adding
+ * `screening` would have put every screened company straight back into the
+ * watch loop, the plan's pool count, the customer's market view and the
+ * opportunity feed, by doing nothing at all. A negative filter inherits every
+ * state added after it is written.
+ */
+export const WATCHED_PROJECT_COMPANY_STATUSES = ["candidate", "active"] as const;
+
+/**
+ * The statuses a company can be in without being archived - what the free
+ * signal re-evaluation sweep should cover. Screening belongs here and nowhere
+ * else: re-testing stored facts costs nothing, and it is how a screened
+ * company earns the ranking that decides whether it is promoted.
+ */
+export const LIVE_PROJECT_COMPANY_STATUSES = ["screening", "candidate", "active"] as const;
 
 export const projectCompanyResearchStatusEnum = pgEnum(
   "project_company_research_status",

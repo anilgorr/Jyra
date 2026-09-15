@@ -129,6 +129,9 @@ import type {
   ProjectInput,
   ProjectPerson,
   ProjectSignalPack,
+  PromoteProjectCompanies200,
+  PromoteProjectCompanies409,
+  PromoteProjectCompaniesBody,
   ProposeOpportunityPackRequest,
   ProviderDiagnostic,
   RealDataImportCommitInput,
@@ -2854,6 +2857,79 @@ export const useUpdateProjectCompany = <TError = ErrorType<BadRequestResponse | 
         TContext
       > => {
       return useMutation(getUpdateProjectCompanyMutationOptions(options));
+    }
+
+export const getPromoteProjectCompaniesUrl = (projectId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/companies/promote`
+}
+
+/**
+ * Promotion is what the plan charges for. Screened companies are stored and evaluated for free; moving them into the watched pool is bounded by the plan's watch pool and refused as a whole rather than in part.
+ * @summary Move screened companies into the watched pool
+ */
+export const promoteProjectCompanies = async (projectId: string,
+    promoteProjectCompaniesBody: PromoteProjectCompaniesBody, options?: Parameters<typeof customFetch>[1]): Promise<PromoteProjectCompanies200> => {
+
+  return customFetch<PromoteProjectCompanies200>(getPromoteProjectCompaniesUrl(projectId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(promoteProjectCompaniesBody)
+  }
+);}
+
+
+
+
+
+export const getPromoteProjectCompaniesMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | PromoteProjectCompanies409>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof promoteProjectCompanies>>, TError,{projectId: string;data: BodyType<PromoteProjectCompaniesBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof promoteProjectCompanies>>, TError,{projectId: string;data: BodyType<PromoteProjectCompaniesBody>}, TContext> => {
+
+const mutationKey = ['promoteProjectCompanies'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof promoteProjectCompanies>>, {projectId: string;data: BodyType<PromoteProjectCompaniesBody>}> = (props) => {
+          const {projectId,data} = props ?? {};
+
+          return  promoteProjectCompanies(projectId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PromoteProjectCompaniesMutationResult = NonNullable<Awaited<ReturnType<typeof promoteProjectCompanies>>>
+    export type PromoteProjectCompaniesMutationBody = BodyType<PromoteProjectCompaniesBody>
+    export type PromoteProjectCompaniesMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | PromoteProjectCompanies409>
+
+    /**
+ * @summary Move screened companies into the watched pool
+ */
+export const usePromoteProjectCompanies = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | PromoteProjectCompanies409>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof promoteProjectCompanies>>, TError,{projectId: string;data: BodyType<PromoteProjectCompaniesBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof promoteProjectCompanies>>,
+        TError,
+        {projectId: string;data: BodyType<PromoteProjectCompaniesBody>},
+        TContext
+      > => {
+      return useMutation(getPromoteProjectCompaniesMutationOptions(options));
     }
 
 export const getDiscoverProjectCompaniesUrl = (projectId: string,) => {

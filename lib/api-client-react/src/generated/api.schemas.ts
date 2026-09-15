@@ -1740,6 +1740,15 @@ export type PlanUsageWatchPool = {
   thisProject: number;
 };
 
+export type PlanUsageScreeningPool = {
+  /** @minimum 0 */
+  used: number;
+  /** @minimum 0 */
+  limit: number;
+  /** @minimum 0 */
+  remaining: number;
+};
+
 export type PlanUsageIntentAccountsWorkingListItem = {
   projectCompanyId: string;
   companyName: string;
@@ -1785,6 +1794,7 @@ export type PlanUsageSpend = {
 export interface PlanUsage {
   plan: PlanUsagePlan;
   watchPool: PlanUsageWatchPool;
+  screeningPool: PlanUsageScreeningPool;
   /** The unit the customer buys. A watched company becomes an intent account when it fits the ICP and a new signal fires; once per company per month. */
   intentAccounts: PlanUsageIntentAccounts;
   spend: PlanUsageSpend;
@@ -2713,6 +2723,7 @@ export type ProjectCompanyStatus = typeof ProjectCompanyStatus[keyof typeof Proj
 
 
 export const ProjectCompanyStatus = {
+  screening: 'screening',
   candidate: 'candidate',
   active: 'active',
   archived: 'archived',
@@ -2805,6 +2816,7 @@ export type ProjectCompanyUpdateStatus = typeof ProjectCompanyUpdateStatus[keyof
 
 
 export const ProjectCompanyUpdateStatus = {
+  screening: 'screening',
   candidate: 'candidate',
   active: 'active',
   archived: 'archived',
@@ -4505,6 +4517,43 @@ export type GetAdminQualityDashboardParams = {
  * @maximum 90
  */
 days?: number;
+};
+
+export type PromoteProjectCompaniesBody = {
+  /**
+     * @minItems 1
+     * @maxItems 500
+     * @items.minLength 1
+     * @items.maxLength 100
+     */
+  projectCompanyIds: string[];
+};
+
+export type PromoteProjectCompanies200WatchPool = {
+  /** @minimum 0 */
+  used: number;
+  /** @minimum 0 */
+  limit: number;
+  /** @minimum 0 */
+  remaining: number;
+};
+
+export type PromoteProjectCompanies200 = {
+  /** @minimum 0 */
+  promoted: number;
+  /** @minimum 0 */
+  alreadyWatched: number;
+  /** @minimum 0 */
+  notFound: number;
+  watchPool: PromoteProjectCompanies200WatchPool;
+};
+
+export type PromoteProjectCompanies409 = {
+  error: string;
+  code: string;
+  plan?: string;
+  used?: number;
+  limit?: number;
 };
 
 export type CommitCompanyImport409 = {

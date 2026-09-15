@@ -1,0 +1,1 @@
+ALTER TYPE "public"."project_company_status" ADD VALUE 'screening' BEFORE 'candidate';

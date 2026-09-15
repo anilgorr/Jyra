@@ -7,12 +7,14 @@
  */
 import type { PlanUsageIntentAccounts } from './planUsageIntentAccounts';
 import type { PlanUsagePlan } from './planUsagePlan';
+import type { PlanUsageScreeningPool } from './planUsageScreeningPool';
 import type { PlanUsageSpend } from './planUsageSpend';
 import type { PlanUsageWatchPool } from './planUsageWatchPool';
 
 export interface PlanUsage {
   plan: PlanUsagePlan;
   watchPool: PlanUsageWatchPool;
+  screeningPool: PlanUsageScreeningPool;
   /** The unit the customer buys. A watched company becomes an intent account when it fits the ICP and a new signal fires; once per company per month. */
   intentAccounts: PlanUsageIntentAccounts;
   spend: PlanUsageSpend;

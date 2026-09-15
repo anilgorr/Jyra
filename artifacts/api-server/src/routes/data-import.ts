@@ -19,6 +19,7 @@ import {
   type RealDataImportInput,
 } from "../lib/real-data-import";
 import { getAuthenticatedUserId, requireAuth } from "../middlewares/auth";
+import { PlanLimitError, screeningPoolCapacity } from "../lib/plans";
 
 const router: IRouter = Router();
 type AsyncHandler = (...args: Parameters<RequestHandler>) => Promise<void>;
@@ -109,11 +110,29 @@ router.post(
       res.status(400).json({ error: "Review and confirm the import before committing" });
       return;
     }
-    const result = await commitRealDataImport(
-      access.project,
-      body.data as RealDataImportInput & { confirm: boolean },
-    );
-    res.json(CommitRealDataImportResponse.parse(result));
+    /* The screening pool is checked inside the import transaction, where the
+     * exact number of new companies is known — a file's row count is not its
+     * company count. Overflowing rolls the import back and arrives here. */
+    try {
+      const result = await commitRealDataImport(
+        access.project,
+        body.data as RealDataImportInput & { confirm: boolean },
+      );
+      res.json(CommitRealDataImportResponse.parse(result));
+    } catch (error) {
+      if (error instanceof PlanLimitError) {
+        const capacity = await screeningPoolCapacity(access.project.organizationId);
+        res.status(409).json({
+          error: error.message,
+          code: error.code,
+          plan: error.plan.code,
+          used: capacity.used,
+          limit: capacity.used + capacity.remaining,
+        });
+        return;
+      }
+      throw error;
+    }
   }),
 );
 

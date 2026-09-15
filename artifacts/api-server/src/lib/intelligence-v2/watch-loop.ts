@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, isNull, lte, ne, or, sql } from "drizzle-orm";
+import { and, asc, desc, eq, inArray, isNull, lte, or, sql } from "drizzle-orm";
 import {
   companiesTable,
   db,
@@ -8,6 +8,7 @@ import {
   projectsTable,
   signalsTable,
   type WatchTier,
+  WATCHED_PROJECT_COMPANY_STATUSES,
 } from "@workspace/db";
 import { effectiveResearchBudgetLimits, getResearchBudget } from "../research-economics";
 import { reevaluateStaleSignals, type ReevaluationReport } from "../signal-reevaluation";
@@ -126,7 +127,9 @@ export async function selectDueCompanies(now: Date, settings: WatchLoopSettings,
     .innerJoin(projectsTable, eq(projectsTable.id, projectCompaniesTable.projectId))
     .innerJoin(companiesTable, eq(companiesTable.id, projectCompaniesTable.companyId))
     .where(and(
-      ne(projectCompaniesTable.status, "archived"),
+      /* Named, not "everything except archived". A screened company is stored
+       * and free; putting it here is what would make an upload cost money. */
+      inArray(projectCompaniesTable.status, [...WATCHED_PROJECT_COMPANY_STATUSES]),
       or(isNull(projectCompaniesTable.lastWatchedAt), lte(projectCompaniesTable.lastWatchedAt, cutoff)),
     ))
     .orderBy(sql`${projectCompaniesTable.lastWatchedAt} asc nulls first`, asc(projectCompaniesTable.createdAt))

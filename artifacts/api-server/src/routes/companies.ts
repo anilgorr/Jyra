@@ -1,4 +1,4 @@
-import { and, asc, eq, sql } from "drizzle-orm";
+import { and, asc, eq, inArray, sql } from "drizzle-orm";
 import { Router, type IRouter, type RequestHandler } from "express";
 import {
   CommitCompanyImportBody,
@@ -12,6 +12,9 @@ import {
   PreviewCompanyImportBody,
   PreviewCompanyImportParams,
   PreviewCompanyImportResponse,
+  PromoteProjectCompaniesBody,
+  PromoteProjectCompaniesParams,
+  PromoteProjectCompaniesResponse,
   UpdateProjectCompanyBody,
   UpdateProjectCompanyParams,
   UpdateProjectCompanyResponse,
@@ -24,6 +27,7 @@ import {
   organizationMembersTable,
   projectCompaniesTable,
   projectsTable,
+  WATCHED_PROJECT_COMPANY_STATUSES,
   type Company,
   type Project,
   type ProjectCompany,
@@ -41,7 +45,7 @@ import {
   getAuthenticatedUserId,
   requireAuth,
 } from "../middlewares/auth";
-import { assertWatchPoolCapacity, PlanLimitError } from "../lib/plans";
+import { assertWatchPoolCapacity, PlanLimitError, watchPoolCapacity } from "../lib/plans";
 
 const router: IRouter = Router();
 
@@ -615,6 +619,31 @@ router.patch(
       return;
     }
 
+    /* A status change can be a purchase. Moving a company out of screening
+     * into candidate or active puts it into the paid watch loop, so it has to
+     * clear the plan exactly as adding a company by hand does — otherwise the
+     * pool limit is enforced on the front door and open at the side. */
+    if (body.data.status && WATCHED_PROJECT_COMPANY_STATUSES.includes(body.data.status as never)) {
+      const [current] = await db.select({ status: projectCompaniesTable.status })
+        .from(projectCompaniesTable)
+        .where(and(
+          eq(projectCompaniesTable.id, params.data.projectCompanyId),
+          eq(projectCompaniesTable.projectId, access.project.id),
+        )).limit(1);
+      const entering = current && !WATCHED_PROJECT_COMPANY_STATUSES.includes(current.status as never);
+      if (entering) {
+        try {
+          await assertWatchPoolCapacity(access.project.organizationId, 1);
+        } catch (error) {
+          if (error instanceof PlanLimitError) {
+            res.status(409).json({ error: error.message, code: error.code, plan: error.plan.code, used: error.used, limit: error.plan.watchPoolSize });
+            return;
+          }
+          throw error;
+        }
+      }
+    }
+
     const [updated] = await db
       .update(projectCompaniesTable)
       .set({ ...body.data, updatedAt: new Date() })
@@ -921,6 +950,89 @@ router.post(
       return;
     }
     res.json(response);
+  }),
+);
+
+/**
+ * Moving screened companies into the watched pool.
+ *
+ * Screening is free and bounded generously — eight companies held per company
+ * watched — because the customer cannot know which rows of a bought list
+ * matter until something has looked. Promotion is the act that costs money, so
+ * promotion is where the plan is enforced.
+ *
+ * All or nothing. A caller who asks for 200 promotions with room for 107 is
+ * told the number, not given 107 of them in an order nobody chose; which 107
+ * is a decision with consequences and it belongs to whoever is ranking them.
+ */
+router.post(
+  "/projects/:projectId/companies/promote",
+  requireAuth,
+  asyncRoute(async (req, res) => {
+    const params = PromoteProjectCompaniesParams.safeParse(req.params);
+    const body = PromoteProjectCompaniesBody.safeParse(req.body);
+    if (!params.success) {
+      res.status(404).json({ error: "Project not found" });
+      return;
+    }
+    if (!body.success) {
+      res.status(400).json({ error: "Send between 1 and 500 project company ids to promote" });
+      return;
+    }
+    const access = await authorizeProject(getAuthenticatedUserId(res), params.data.projectId);
+    if (!access.project) {
+      denyProjectAccess(res, access.status ?? 404);
+      return;
+    }
+
+    const requested = [...new Set(body.data.projectCompanyIds)];
+    const rows = await db
+      .select({ id: projectCompaniesTable.id, status: projectCompaniesTable.status })
+      .from(projectCompaniesTable)
+      .where(and(
+        eq(projectCompaniesTable.projectId, access.project.id),
+        inArray(projectCompaniesTable.id, requested),
+      ));
+    const alreadyWatched = rows.filter((row) =>
+      WATCHED_PROJECT_COMPANY_STATUSES.includes(row.status as never),
+    );
+    const toPromote = rows.filter((row) =>
+      !WATCHED_PROJECT_COMPANY_STATUSES.includes(row.status as never),
+    );
+
+    try {
+      if (toPromote.length) {
+        await assertWatchPoolCapacity(access.project.organizationId, toPromote.length);
+      }
+    } catch (error) {
+      if (error instanceof PlanLimitError) {
+        res.status(409).json({ error: error.message, code: error.code, plan: error.plan.code, used: error.used, limit: error.plan.watchPoolSize });
+        return;
+      }
+      throw error;
+    }
+
+    if (toPromote.length) {
+      await db
+        .update(projectCompaniesTable)
+        .set({ status: "candidate", updatedAt: new Date() })
+        .where(and(
+          eq(projectCompaniesTable.projectId, access.project.id),
+          inArray(projectCompaniesTable.id, toPromote.map((row) => row.id)),
+        ));
+    }
+
+    const capacity = await watchPoolCapacity(access.project.organizationId);
+    res.json(PromoteProjectCompaniesResponse.parse({
+      promoted: toPromote.length,
+      alreadyWatched: alreadyWatched.length,
+      notFound: requested.length - rows.length,
+      watchPool: {
+        used: capacity.used,
+        limit: capacity.plan.watchPoolSize,
+        remaining: capacity.remaining,
+      },
+    }));
   }),
 );
 

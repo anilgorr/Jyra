@@ -815,6 +815,67 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
         "404": { $ref: "#/components/responses/NotFound" }
+  /projects/{projectId}/companies/promote:
+    post:
+      operationId: promoteProjectCompanies
+      tags: [companies]
+      summary: Move screened companies into the watched pool
+      description: Promotion is what the plan charges for. Screened companies are stored and evaluated for free; moving them into the watched pool is bounded by the plan's watch pool and refused as a whole rather than in part.
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/ProjectId" }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                projectCompanyIds:
+                  type: array
+                  minItems: 1
+                  maxItems: 500
+                  items: { type: string, minLength: 1, maxLength: 100 }
+              required: [projectCompanyIds]
+      responses:
+        "200":
+          description: Companies promoted
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  promoted: { type: number, minimum: 0 }
+                  alreadyWatched: { type: number, minimum: 0 }
+                  notFound: { type: number, minimum: 0 }
+                  watchPool:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      used: { type: number, minimum: 0 }
+                      limit: { type: number, minimum: 0 }
+                      remaining: { type: number, minimum: 0 }
+                    required: [used, limit, remaining]
+                required: [promoted, alreadyWatched, notFound, watchPool]
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409":
+          description: The plan's watch pool cannot take this many more companies
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error: { type: string }
+                  code: { type: string }
+                  plan: { type: string }
+                  used: { type: number }
+                  limit: { type: number }
+                required: [error, code]
   /projects/{projectId}/discovery:
     post:
       operationId: discoverProjectCompanies
@@ -3329,7 +3390,7 @@ components:
     PlanUsage:
       type: object
       additionalProperties: false
-      required: [plan, watchPool, intentAccounts, spend]
+      required: [plan, watchPool, screeningPool, intentAccounts, spend]
       properties:
         plan:
           type: object
@@ -3359,6 +3420,14 @@ components:
             limit: { type: number }
             remaining: { type: number }
             thisProject: { type: number }
+        screeningPool:
+          type: object
+          additionalProperties: false
+          properties:
+            used: { type: number, minimum: 0 }
+            limit: { type: number, minimum: 0 }
+            remaining: { type: number, minimum: 0 }
+          required: [used, limit, remaining]
         intentAccounts:
           type: object
           additionalProperties: false
@@ -3941,7 +4010,7 @@ components:
         projectId: { type: string }
         companyId: { type: string }
         company: { $ref: "#/components/schemas/Company" }
-        status: { type: string, enum: [candidate, active, archived] }
+        status: { type: string, enum: [screening, candidate, active, archived] }
         researchStatus: { type: string, enum: [not_started, in_progress, complete] }
         fitScore: { type: ["number", "null"] }
         needScore: { type: ["number", "null"] }
@@ -3959,7 +4028,7 @@ components:
     ProjectCompanyUpdate:
       type: object
       properties:
-        status: { type: string, enum: [candidate, active, archived] }
+        status: { type: string, enum: [screening, candidate, active, archived] }
         researchStatus: { type: string, enum: [not_started, in_progress, complete] }
         fitScore: { type: ["number", "null"], minimum: 0, maximum: 100 }
         needScore: { type: ["number", "null"], minimum: 0, maximum: 100 }

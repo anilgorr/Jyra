@@ -10,6 +10,7 @@ export type ProjectCompanyStatus = typeof ProjectCompanyStatus[keyof typeof Proj
 
 
 export const ProjectCompanyStatus = {
+  screening: 'screening',
   candidate: 'candidate',
   active: 'active',
   archived: 'archived',

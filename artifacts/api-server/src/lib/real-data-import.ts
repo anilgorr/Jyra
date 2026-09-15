@@ -19,6 +19,7 @@ import {
   type NormalizedCompanyInput,
 } from "./company-identity";
 import { persistImportTechnologyFacts } from "./intelligence-v2/import-facts";
+import { assertScreeningPoolCapacity } from "./plans";
 
 export const IMPORT_TARGET_FIELDS = [
   "company_name",
@@ -430,14 +431,19 @@ async function ensureProjectCompany(
   projectId: string,
   company: Company,
 ) {
+  /* Screening, not candidate. An imported company is a row somebody bought,
+   * not a company anybody has decided to watch: landing it as `candidate` put
+   * it straight into the paid watch loop, at the front of the queue, before
+   * anything had asked whether it was a fit. Promotion out of screening is a
+   * separate, plan-limited act. */
   const [created] = await client
     .insert(projectCompaniesTable)
-    .values({ projectId, companyId: company.id })
+    .values({ projectId, companyId: company.id, status: "screening" })
     .onConflictDoNothing({
       target: [projectCompaniesTable.projectId, projectCompaniesTable.companyId],
     })
     .returning();
-  if (created) return created;
+  if (created) return { ...created, linkCreated: true };
   const [existing] = await client
     .select()
     .from(projectCompaniesTable)
@@ -449,7 +455,7 @@ async function ensureProjectCompany(
     )
     .limit(1);
   if (!existing) throw new Error("Project company link could not be created");
-  return existing;
+  return { ...existing, linkCreated: false };
 }
 
 async function upsertPrivatePerson(
@@ -559,6 +565,7 @@ export async function commitRealDataImport(
     let invalidContacts = 0;
     let evidenceCandidatesCreated = 0;
     let customFieldsCreated = 0;
+    let companiesAddedToProject = 0;
     let technologyFactsCreated = 0;
     let technologyEntriesRejected = 0;
     const uncataloguedTechnologies = new Map<string, number>();
@@ -626,6 +633,7 @@ export async function commitRealDataImport(
       }
       companyByBatchKey.set(key, company);
       const projectCompany = await ensureProjectCompany(client, project.id, company);
+      if (projectCompany.linkCreated) companiesAddedToProject += 1;
       await client.insert(companyProvenanceTable).values({
         organizationId: project.organizationId,
         projectId: project.id,
@@ -713,6 +721,16 @@ export async function commitRealDataImport(
       if (person.created) contactsCreated += 1;
       if (person.matched) contactsMatched += 1;
     }
+    /* Checked here rather than before the transaction because only here is the
+     * number exact: a file's row count is not its company count, and a company
+     * already linked to this project costs no new room. Overshooting rolls the
+     * whole import back, which is the right outcome — a half-imported file is
+     * worse than a refused one, and the message says exactly how much room
+     * there is. */
+    if (companiesAddedToProject > 0) {
+      await assertScreeningPoolCapacity(project.organizationId, companiesAddedToProject);
+    }
+
     return {
       rowsProcessed: input.rows.length,
       canonicalCompaniesCreated,
@@ -726,6 +744,7 @@ export async function commitRealDataImport(
       invalidContacts,
       evidenceCandidatesCreated,
       customFieldsCreated,
+      companiesAddedToProject,
       technologyFactsCreated,
       technologyEntriesRejected,
       /* The twenty most common products the catalogue does not know. Everything

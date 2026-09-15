@@ -38,7 +38,7 @@ import { Badge } from "@/components/ui/badge";
 import { CompanyEvidencePanel } from "./company-evidence";
 
 const updateSchema = z.object({
-  status: z.enum(["candidate", "active", "archived"]),
+  status: z.enum(["screening", "candidate", "active", "archived"]),
   researchStatus: z.enum(["not_started", "in_progress", "complete"]),
   fitScore: z.coerce.number().min(0).max(100).optional().or(z.literal("").transform(() => undefined)),
   needScore: z.coerce.number().min(0).max(100).optional().or(z.literal("").transform(() => undefined)),
@@ -191,6 +191,7 @@ export function CompanySheet({
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
+                            <SelectItem value="screening">Screening (not watched)</SelectItem>
                             <SelectItem value="candidate">Candidate</SelectItem>
                             <SelectItem value="active">Active</SelectItem>
                             <SelectItem value="archived">Archived</SelectItem>
