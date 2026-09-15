@@ -170,8 +170,16 @@ export function ImportDialog({
   const contactRows =
     previewData?.rows.filter((r) => r.personName || r.contactStatus !== "MISSING") || [];
 
-  const hasReviewRows = reviewNeededRows.length > 0;
   const hasNoValidRows = previewData?.summary.validRows === 0;
+  /* Rows needing review do not block the import, because the server already
+   * decides what to do with them: a NEEDS_REVIEW row is skipped and counted,
+   * and a POSSIBLE_DUPLICATE with a resolvable domain is merged. Disabling the
+   * button on three flagged rows out of 868 asked the user to go and edit a
+   * spreadsheet to remove rows the importer was never going to write — with no
+   * way to proceed and no explanation of what "clean" meant. */
+  const skippedForReview = reviewNeededRows.filter(
+    (row) => row.companyStatus === "NEEDS_REVIEW",
+  ).length;
 
   return (
     <Dialog open={open} onOpenChange={(val) => !val && resetAndClose()}>
@@ -593,13 +601,18 @@ export function ImportDialog({
                 <ChevronLeft className="mr-2 h-4 w-4" />
                 Back to Mapping
               </Button>
+              {skippedForReview > 0 && (
+                <span className="text-sm text-amber-600">
+                  {skippedForReview} row{skippedForReview === 1 ? "" : "s"} will be skipped
+                </span>
+              )}
               <Button
                 onClick={handleCommit}
-                disabled={commit.isPending || hasReviewRows || hasNoValidRows}
-                className={hasReviewRows ? "bg-amber-600 hover:bg-amber-700 text-white" : ""}
+                disabled={commit.isPending || hasNoValidRows}
               >
                 {commit.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {hasReviewRows ? "Clean CSV to Continue" : "Confirm and Import"}
+                Import {previewData.summary.validRows} row
+                {previewData.summary.validRows === 1 ? "" : "s"}
               </Button>
             </div>
           )}
