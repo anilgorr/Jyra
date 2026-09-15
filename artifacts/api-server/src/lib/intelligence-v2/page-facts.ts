@@ -33,7 +33,8 @@ import {
   projectCompaniesTable,
   projectsTable,
 } from "@workspace/db";
-import { calculateEvidenceScores } from "../evidence";
+import { assessWebSearchEntityAttribution, calculateEvidenceScores, classifyEvidenceSource, legacySourceTypeForClassification } from "../evidence";
+import { hostMatchesDomain } from "./ats-boards";
 import {
   extractExplicitFactCandidates,
   extractStandingClaimCandidates,
@@ -75,7 +76,7 @@ export type PageExtractionResult = {
  */
 export function extractFactsFromPage(
   page: PageForExtraction,
-  input: { companyName: string; now?: Date },
+  input: { companyName: string; companyDomain?: string | null; now?: Date },
 ): PageExtractionResult {
   const facts: PageFactRow[] = [];
   const skipped: Array<{ crawlPageId: string; reason: string }> = [];
@@ -89,11 +90,25 @@ export function extractFactsFromPage(
   const observationDate = page.observedAt.toISOString().slice(0, 10);
   const evidenceId = randomUUID();
 
+  /**
+   * A standing claim has no subject. "SOC 2 Type 2 Certified" under a logo
+   * names nobody, and it is only a statement about THIS company when this
+   * company is the one publishing it. On a third-party page it is a statement
+   * about whoever the page is about — which is how "Datadog is HIPAA
+   * compliant" got extracted from Cleo Health's LinkedIn page, off a sentence
+   * saying Cleo Health uses Datadog. A confident wrong answer that moves a
+   * score is worse than no answer.
+   *
+   * The dated extractors are safe on any page: their patterns capture the
+   * company as part of the match, and the validator checks it against the
+   * subject. Only the subjectless ones need the page to be first-party.
+   */
+  const firstParty = Boolean(input.companyDomain && hostMatchesDomain(page.sourceDomain, input.companyDomain));
   let candidates: FactCandidate[];
   try {
     candidates = [
       ...extractExplicitFactCandidates(evidenceId, text),
-      ...extractStandingClaimCandidates(evidenceId, text, observationDate),
+      ...(firstParty ? extractStandingClaimCandidates(evidenceId, text, observationDate) : []),
     ];
   } catch (error) {
     // normalizeEvidenceContent throws on oversized content. One unreadable
@@ -101,7 +116,7 @@ export function extractFactsFromPage(
     return { facts, skipped: [{ crawlPageId: page.crawlPageId, reason: error instanceof Error ? error.message.slice(0, 80) : "EXTRACTION_FAILED" }] };
   }
   if (!candidates.length) {
-    return { facts, skipped: [{ crawlPageId: page.crawlPageId, reason: "NO_EXPLICIT_CLAIM" }] };
+    return { facts, skipped: [{ crawlPageId: page.crawlPageId, reason: firstParty ? "NO_EXPLICIT_CLAIM" : "NO_EXPLICIT_CLAIM_THIRD_PARTY" }] };
   }
 
   const seen = new Set<string>();
@@ -137,6 +152,8 @@ export async function persistPageFacts(
   input: {
     organizationId: string;
     companyId: string;
+    companyName: string;
+    companyDomain?: string | null;
     page: PageForExtraction;
     candidates: FactCandidate[];
     now?: Date;
@@ -146,10 +163,29 @@ export async function persistPageFacts(
   if (!input.candidates.length) return { factsInserted: 0, evidenceInserted: 0 };
   const now = input.now ?? new Date();
   const { page } = input;
+  /* Whether the page is the company's own changes what the evidence is worth
+   * and what the attribution record can honestly claim. Passing the page's own
+   * domain as the company domain scores every page as first-party, which reads
+   * a stranger's LinkedIn profile as the company speaking about itself. */
+  /* Classification, entity confidence and the attribution reason all come from
+   * the shared assessor rather than being decided here. Deciding them locally
+   * produced two bugs in one block: it wrote sourceClassification
+   * "COMPANY_WEBSITE", which is not one of the eight the API accepts and would
+   * 500 the evidence endpoint on read, and it scored every page as first-party
+   * — reading a stranger's LinkedIn profile as the company speaking about
+   * itself. The assessor also checks whether the company is actually named in
+   * the text, which is the defence that was missing. */
+  const decision = assessWebSearchEntityAttribution({
+    sourceUrl: page.sourceUrl,
+    rawContent: page.rawContent ?? "",
+    company: { canonicalName: input.companyName, domain: input.companyDomain ?? null },
+  });
+  const classification = classifyEvidenceSource(page.sourceUrl, input.companyDomain ?? null);
+  const sourceType = legacySourceTypeForClassification(classification);
   const scores = calculateEvidenceScores({
-    sourceType: "company_website",
+    sourceType,
     sourceDomain: page.sourceDomain,
-    companyDomain: page.sourceDomain,
+    companyDomain: input.companyDomain ?? null,
     provider: "crawl",
     publisher: null,
     publishedAt: page.observedAt,
@@ -174,13 +210,13 @@ export async function persistPageFacts(
       crawlPageId: page.crawlPageId,
       companyId: input.companyId,
       reviewedByOrganizationId: input.organizationId,
-      sourceClassification: "COMPANY_WEBSITE",
-      entityStatus: "CONFIRMED_ENTITY",
-      entityConfidence: 92,
-      entityReason: `Page served from the company's own domain (${page.sourceDomain}).`,
-      sourceReliabilityScore: Math.round(scores.authorityScore),
-      qualityReason: "Deterministic extraction from first-party page text, validated against the page.",
-      acceptedAsEvidence: true,
+      sourceClassification: decision.sourceClassification,
+      entityStatus: decision.entityStatus,
+      entityConfidence: decision.entityConfidence,
+      entityReason: decision.entityReason,
+      sourceReliabilityScore: decision.sourceReliabilityScore,
+      qualityReason: decision.qualityReason,
+      acceptedAsEvidence: decision.acceptedAsEvidence,
     }).onConflictDoNothing();
     const [created] = await executor.insert(companyEvidenceTable).values({
       companyId: input.companyId,
@@ -296,6 +332,7 @@ export async function backfillPageFacts(input: {
     companyId: crawlPagesTable.companyId,
     sourceUrl: crawlPagesTable.sourceUrl,
     sourceDomain: crawlPagesTable.sourceDomain,
+    companyDomain: companiesTable.domain,
     rawContent: crawlPagesTable.rawContent,
     observedAt: crawlPagesTable.observedAt,
     companyName: companiesTable.canonicalName,
@@ -350,12 +387,14 @@ export async function backfillPageFacts(input: {
       sourceDomain: row.sourceDomain, rawContent: row.rawContent, observedAt: row.observedAt,
     };
     try {
-      const result = extractFactsFromPage(page, { companyName: row.companyName, now });
+      const result = extractFactsFromPage(page, { companyName: row.companyName, companyDomain: row.companyDomain, now });
       let factsInserted = 0;
       if (result.facts.length) {
         const stored = await persistPageFacts({
           organizationId: row.organizationId,
           companyId: row.companyId,
+          companyName: row.companyName,
+          companyDomain: row.companyDomain,
           page,
           candidates: result.facts.map((fact) => fact.candidate),
           now,

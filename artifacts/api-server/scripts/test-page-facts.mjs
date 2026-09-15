@@ -39,7 +39,7 @@ Bayzat is ISO 27001 : 2022
 
 // 1. The claim the archive was already carrying.
 {
-  const out = m.extractFactsFromPage(page(BAYZAT), { companyName: "Bayzat" });
+  const out = m.extractFactsFromPage(page(BAYZAT), { companyName: "Bayzat", companyDomain: "bayzat.com" });
   const kinds = out.facts.map((fact) => fact.candidate.factType);
   assert.ok(kinds.includes("COMPLIANCE_MENTION"), `expected a compliance fact, got ${JSON.stringify(kinds)} / skipped ${JSON.stringify(out.skipped)}`);
   const standards = out.facts.map((fact) => fact.candidate.structuredValue.standard).filter(Boolean);
@@ -66,7 +66,7 @@ Bayzat is ISO 27001 : 2022
 //    it says it MIGRATED to is an event, needs a real date, and belongs to the
 //    dated extractor — this one must not date it to the day we happened to look.
 {
-  const standing = m.extractFactsFromPage(page(pad("Bayzat runs on AWS and uses Salesforce for its commercial operations.")), { companyName: "Bayzat" });
+  const standing = m.extractFactsFromPage(page(pad("Bayzat runs on AWS and uses Salesforce for its commercial operations.")), { companyName: "Bayzat", companyDomain: "bayzat.com" });
   const tech = standing.facts.filter((fact) => fact.candidate.factType === "TECHNOLOGY_MENTION")
     .map((fact) => fact.candidate.structuredValue.technology).sort();
   assert.deepEqual(tech, ["AWS", "Salesforce"]);
@@ -79,7 +79,7 @@ Bayzat is ISO 27001 : 2022
 // 4. Every structured value has to be quotable from the excerpt, or the
 //    company page shows a claim the source does not contain.
 {
-  const out = m.extractFactsFromPage(page(BAYZAT), { companyName: "Bayzat" });
+  const out = m.extractFactsFromPage(page(BAYZAT), { companyName: "Bayzat", companyDomain: "bayzat.com" });
   for (const fact of out.facts) {
     for (const value of Object.values(fact.candidate.structuredValue)) {
       assert.ok(fact.candidate.supportingExcerpt.toLowerCase().includes(String(value).toLowerCase()),
@@ -88,13 +88,36 @@ Bayzat is ISO 27001 : 2022
   }
 }
 
+// 4b. A standing claim has no subject, so it is only about THIS company when
+//     this company published it. Verbatim from the live database: JYRA read
+//     Cleo Health's LinkedIn page — stored against Datadog because Datadog is
+//     mentioned on it — and recorded "Datadog is HIPAA compliant" off a
+//     sentence saying Cleo Health uses Datadog. A confident wrong answer that
+//     moves a score is worse than no answer.
+{
+  const cleo = pad("- Key takeaway: Cleo Health leverages Datadog for observability to support scalable, HIPAA-compliant AI in acute care settings.");
+  const thirdParty = page(cleo, { sourceUrl: "https://www.linkedin.com/company/cleo-health", sourceDomain: "linkedin.com" });
+
+  const out = m.extractFactsFromPage(thirdParty, { companyName: "Datadog", companyDomain: "datadoghq.com" });
+  assert.equal(out.facts.length, 0, "a compliance claim on someone else's page is not this company's claim");
+  assert.equal(out.skipped[0].reason, "NO_EXPLICIT_CLAIM_THIRD_PARTY");
+
+  // The same sentence on Datadog's own domain would be its own statement, and
+  // the rule must be the domain rather than the words.
+  const firstParty = page(cleo, { sourceUrl: "https://www.datadoghq.com/security", sourceDomain: "datadoghq.com" });
+  assert.ok(m.extractFactsFromPage(firstParty, { companyName: "Datadog", companyDomain: "datadoghq.com" }).facts.length > 0);
+
+  // No known domain is not a licence to trust a stranger's page.
+  assert.equal(m.extractFactsFromPage(thirdParty, { companyName: "Datadog", companyDomain: null }).facts.length, 0);
+}
+
 // 5. A nav stub is not content, and is reported as such rather than silently
 //    producing nothing — the sweep marks it done so it is never re-read.
 {
-  const out = m.extractFactsFromPage(page("Home About Careers Login"), { companyName: "Bayzat" });
+  const out = m.extractFactsFromPage(page("Home About Careers Login"), { companyName: "Bayzat", companyDomain: "bayzat.com" });
   assert.equal(out.facts.length, 0);
   assert.equal(out.skipped[0].reason, "TOO_LITTLE_TEXT");
-  assert.equal(m.extractFactsFromPage(page(null), { companyName: "Bayzat" }).skipped[0].reason, "TOO_LITTLE_TEXT");
+  assert.equal(m.extractFactsFromPage(page(null), { companyName: "Bayzat", companyDomain: "bayzat.com" }).skipped[0].reason, "TOO_LITTLE_TEXT");
   assert.ok(m.MIN_PAGE_TEXT >= 200);
 }
 
