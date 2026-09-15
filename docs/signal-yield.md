@@ -66,6 +66,28 @@ Two consequences worth holding onto:
   highest-value rule there is. It needs two observations apart in time, so the
   sooner it starts recording, the sooner it pays.
 
+## crawl_pages is append-only
+
+A database trigger raises `crawl_pages records are append-only` on every UPDATE
+and DELETE of that table. That invariant is right: what a source said at the
+moment it was read is what every fact is validated against, and it must not be
+rewritable afterwards.
+
+Two consequences that cost a deploy to learn:
+
+- Processing state about a page cannot live on the page's row. The
+  "which extractor has read this" marker is its own table,
+  `crawl_page_extractions`. The first attempt put two columns on `crawl_pages`,
+  the trigger silently refused every write, and the sweep re-read the same
+  pages on every tick while reporting them as failures.
+- `ON CONFLICT DO UPDATE` on `crawl_pages` does not survive a collision. Three
+  writers used it to get past the unique index on (company, url, content hash)
+  after one collision killed a paid cycle. It converts a unique violation into
+  a trigger exception at exactly the same moment and kills the cycle the same
+  way — it only looked fixed because a genuine collision is rare. Everything
+  now goes through `claimCrawlPage`, which inserts and, on conflict, reads the
+  existing row back.
+
 ## How to re-measure
 
 ```sql

@@ -2,6 +2,7 @@ import {
   boolean,
   foreignKey,
   index,
+  integer,
   pgEnum,
   pgTable,
   real,
@@ -56,22 +57,11 @@ export const crawlPagesTable = pgTable(
     rawContent: text("raw_content").notNull(),
     rawContentReference: text("raw_content_reference"),
     normalizedContentHash: text("normalized_content_hash").notNull(),
-    /**
-     * When facts were last read out of this page's text, and with which
-     * extractor. Null means never — which was true of all 439 stored pages
-     * until there was anything to read them with.
-     *
-     * The version is stored so that a better extractor re-reads the archive
-     * instead of leaving old pages frozen at whatever the first pass managed.
-     */
-    factsExtractedAt: timestamp("facts_extracted_at", { withTimezone: true }),
-    factsExtractorVersion: text("facts_extractor_version"),
     createdAt: timestamp("created_at", { withTimezone: true })
       .notNull()
       .defaultNow(),
   },
   (table) => [
-    index("crawl_pages_extraction_idx").on(table.factsExtractedAt),
     uniqueIndex("crawl_pages_company_url_hash_unique").on(
       table.companyId,
       table.sourceUrl,
@@ -213,3 +203,38 @@ export type EvidenceAttributionReview =
 export type InsertEvidenceAttributionReview = z.infer<
   typeof insertEvidenceAttributionReviewSchema
 >;
+
+/**
+ * Which extractor has read which page.
+ *
+ * This started as two columns on crawl_pages and could never have worked:
+ * a database trigger makes that table append-only — "crawl_pages records are
+ * append-only", raised on every UPDATE — because what a source said at the
+ * moment it was read must not be rewritable afterwards. That invariant is
+ * right and the marker was in the wrong place. Whether we have read a page is
+ * a fact about our processing, not about the page.
+ *
+ * Keyed on the page alone: one row per page, carrying the newest extractor
+ * that has read it. A better extractor bumps the version and the archive is
+ * swept again, rather than old pages staying frozen at what the first pass
+ * managed.
+ */
+export const crawlPageExtractionsTable = pgTable(
+  "crawl_page_extractions",
+  {
+    crawlPageId: uuid("crawl_page_id")
+      .primaryKey()
+      .references(() => crawlPagesTable.id, { onDelete: "cascade" }),
+    extractorVersion: text("extractor_version").notNull(),
+    extractedAt: timestamp("extracted_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    /** How many facts survived validation. Zero is a real answer and is recorded. */
+    factsInserted: integer("facts_inserted").notNull().default(0),
+  },
+  (table) => [
+    index("crawl_page_extractions_version_idx").on(table.extractorVersion),
+  ],
+);
+
+export type CrawlPageExtraction = typeof crawlPageExtractionsTable.$inferSelect;

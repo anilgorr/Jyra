@@ -10,6 +10,7 @@ import {
 import { calculateEvidenceScores, hashNormalizedContent } from "../evidence";
 import type { EvidenceSourceType } from "./persist-evidence";
 import { normalizeCompanyName } from "./company-name";
+import { claimCrawlPage } from "./crawl-page";
 
 type JobDbExecutor = typeof db | Parameters<Parameters<typeof db.transaction>[0]>[0];
 
@@ -343,7 +344,7 @@ export async function persistJobFacts(
       // whole transaction down with it - killing a cycle that had already paid
       // for its research and its verdict. Claim the existing row instead and
       // reuse its id; the page is the same page.
-      const [crawlPage] = await executor.insert(crawlPagesTable).values({
+      const crawlPageId = await claimCrawlPage({
         id: newCrawlPageId,
         companyId: input.companyId,
         sourceUrl: row.sourceUrl,
@@ -354,11 +355,7 @@ export async function persistJobFacts(
         rawContent: row.supportingExcerpt,
         rawContentReference: `crawl_pages:${newCrawlPageId}`,
         normalizedContentHash: hashNormalizedContent(`${row.sourceUrl} ${row.title}`),
-      }).onConflictDoUpdate({
-        target: [crawlPagesTable.companyId, crawlPagesTable.sourceUrl, crawlPagesTable.normalizedContentHash],
-        set: { observedAt: now },
-      }).returning({ id: crawlPagesTable.id });
-      const crawlPageId = crawlPage.id;
+      }, executor);
       // Facts are only visible to the signal layer through an attribution
       // review: selectAcceptedFactsForCompany inner-joins this table and
       // requires acceptedAsEvidence. Without it, 310 perfectly good job facts
@@ -481,7 +478,7 @@ export async function persistHiringCounts(
       evidenceId = existing.id;
     } else {
       const newCrawlPageId = randomUUID();
-      const [crawlPage] = await executor.insert(crawlPagesTable).values({
+      const crawlPageId = await claimCrawlPage({
         id: newCrawlPageId,
         companyId: input.companyId,
         sourceUrl,
@@ -492,14 +489,11 @@ export async function persistHiringCounts(
         rawContent: row.supportingExcerpt,
         rawContentReference: `crawl_pages:${newCrawlPageId}`,
         normalizedContentHash: hashNormalizedContent(sourceUrl),
-      }).onConflictDoUpdate({
-        target: [crawlPagesTable.companyId, crawlPagesTable.sourceUrl, crawlPagesTable.normalizedContentHash],
-        set: { observedAt: now },
-      }).returning({ id: crawlPagesTable.id });
+      }, executor);
       // Without an accepted attribution review the fact is invisible to the
       // signal layer, however good it is.
       await executor.insert(evidenceAttributionReviewsTable).values({
-        crawlPageId: crawlPage.id,
+        crawlPageId,
         companyId: input.companyId,
         reviewedByOrganizationId: input.organizationId,
         sourceClassification: "JOB_LISTING",
@@ -512,14 +506,14 @@ export async function persistHiringCounts(
       }).onConflictDoNothing();
       const [created] = await executor.insert(companyEvidenceTable).values({
         companyId: input.companyId,
-        crawlPageId: crawlPage.id,
+        crawlPageId,
         createdByOrganizationId: input.organizationId,
         sourceUrl,
         sourceDomain: input.boardDomain,
         sourceType: "job_posting",
         provider: "job-search",
         observedAt: now,
-        rawContentReference: `crawl_pages:${crawlPage.id}`,
+        rawContentReference: `crawl_pages:${crawlPageId}`,
         extractedClaim: row.supportingExcerpt,
         ...scores,
         status: "VERIFIED",

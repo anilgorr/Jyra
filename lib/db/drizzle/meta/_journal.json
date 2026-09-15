@@ -92,6 +92,13 @@
       "when": 1789458975171,
       "tag": "0012_crawl_page_fact_extraction",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1789462971032,
+      "tag": "0013_crawl_page_extractions",
+      "breakpoints": true
     }
   ]
 }

@@ -2,6 +2,7 @@ import { createHash, randomUUID } from "node:crypto";
 import { and, eq } from "drizzle-orm";
 import { companyEvidenceTable, crawlPagesTable, db } from "@workspace/db";
 import { calculateEvidenceScores, hashNormalizedContent } from "../evidence";
+import { claimCrawlPage } from "./crawl-page";
 import type { EvidenceItemV2 } from "./schemas";
 
 /**
@@ -300,16 +301,12 @@ export async function persistIntelligenceV2Evidence(
     // yield two events, and the second insert used to collide and take the
     // whole transaction down with it - killing a cycle that had already paid
     // for its research and its verdict. Claim the existing row instead and
-    // reuse its id; the page is the same page.
-    const [crawlPage] = await executor.insert(crawlPagesTable).values({
+    // reuse its id; the page is the same page, and the table is append-only.
+    const crawlPageId = await claimCrawlPage({
       id: newCrawlPageId,
       ...row.crawlPage,
       rawContentReference: `crawl_pages:${newCrawlPageId}`,
-    }).onConflictDoUpdate({
-      target: [crawlPagesTable.companyId, crawlPagesTable.sourceUrl, crawlPagesTable.normalizedContentHash],
-      set: { observedAt: row.crawlPage.observedAt },
-    }).returning({ id: crawlPagesTable.id });
-    const crawlPageId = crawlPage.id;
+    }, executor);
     const [created] = await executor.insert(companyEvidenceTable).values({
       crawlPageId,
       rawContentReference: `crawl_pages:${crawlPageId}`,

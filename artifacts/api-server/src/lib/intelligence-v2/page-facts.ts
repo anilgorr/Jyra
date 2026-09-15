@@ -25,6 +25,7 @@ import { and, desc, eq, isNull, ne, or } from "drizzle-orm";
 import {
   companiesTable,
   companyEvidenceTable,
+  crawlPageExtractionsTable,
   companyFactsTable,
   crawlPagesTable,
   db,
@@ -255,10 +256,14 @@ export async function backfillPageFacts(input: {
 } = {}): Promise<BackfillReport> {
   const now = input.now ?? new Date();
   const limit = input.limit ?? 200;
+  /* Never read, or read by an older extractor. crawl_pages itself is
+   * append-only — a trigger raises on any UPDATE, because what a source said
+   * when it was read must not be rewritable — so this state lives in its own
+   * table and is joined in. */
   const conditions = [
     or(
-      isNull(crawlPagesTable.factsExtractedAt),
-      ne(crawlPagesTable.factsExtractorVersion, PAGE_FACT_EXTRACTOR_VERSION),
+      isNull(crawlPageExtractionsTable.crawlPageId),
+      ne(crawlPageExtractionsTable.extractorVersion, PAGE_FACT_EXTRACTOR_VERSION),
     )!,
   ];
   if (input.companyId) conditions.push(eq(crawlPagesTable.companyId, input.companyId));
@@ -279,6 +284,7 @@ export async function backfillPageFacts(input: {
     // skipped rather than filed against an arbitrary org.
     .innerJoin(projectCompaniesTable, eq(projectCompaniesTable.companyId, crawlPagesTable.companyId))
     .innerJoin(projectsTable, eq(projectsTable.id, projectCompaniesTable.projectId))
+    .leftJoin(crawlPageExtractionsTable, eq(crawlPageExtractionsTable.crawlPageId, crawlPagesTable.id))
     .where(and(...conditions))
     .orderBy(desc(crawlPagesTable.observedAt))
     .limit(limit);
@@ -308,10 +314,15 @@ export async function backfillPageFacts(input: {
         report.extracted++;
         report.factsInserted += factsInserted;
       }
-      // Marked either way. A page that yielded nothing has still been read.
-      await db.update(crawlPagesTable)
-        .set({ factsExtractedAt: now, factsExtractorVersion: PAGE_FACT_EXTRACTOR_VERSION })
-        .where(eq(crawlPagesTable.id, row.id));
+      // Marked either way. A page that yielded nothing has still been read,
+      // and re-deciding that a nav stub is a nav stub on every tick forever is
+      // the same waste as never looking.
+      await db.insert(crawlPageExtractionsTable)
+        .values({ crawlPageId: row.id, extractorVersion: PAGE_FACT_EXTRACTOR_VERSION, extractedAt: now, factsInserted })
+        .onConflictDoUpdate({
+          target: crawlPageExtractionsTable.crawlPageId,
+          set: { extractorVersion: PAGE_FACT_EXTRACTOR_VERSION, extractedAt: now, factsInserted },
+        });
       if (factsInserted) {
         report.outcomes.push({ crawlPageId: row.id, companyName: row.companyName, sourceUrl: row.sourceUrl, factsInserted, candidates: result.facts.length });
         input.log?.info({ company: row.companyName, url: row.sourceUrl, factsInserted }, "PAGE_FACTS_EXTRACTED");

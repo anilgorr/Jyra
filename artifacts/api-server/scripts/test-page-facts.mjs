@@ -117,4 +117,12 @@ Bayzat is ISO 27001 : 2022
   assert.equal(m.watchLoopSettings({ JYRA_WATCH_MAX_EXTRACTIONS_PER_TICK: "999999" }).maxExtractionsPerTick, 2000);
 }
 
+// 8. crawl_pages is append-only — a database trigger raises on every UPDATE,
+//    because what a source said when it was read must not be rewritable. The
+//    extraction marker therefore cannot live on that table; claimCrawlPage
+//    reads an existing page back rather than upserting it. That path needs a
+//    real connection to exercise, so it is pinned in docs/signal-yield.md and
+//    by the shape of the schema rather than here — a hermetic suite that
+//    touched the database would not be hermetic.
+
 console.log("page facts: ok");
