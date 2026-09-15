@@ -20,9 +20,9 @@ import { createProviderRouterResearchInvokerV2 } from "./research-company";
 import { icpCriteriaToRequirementsV2 } from "./icp-requirements";
 import { loadLatestIntelligenceV2Assessment, persistIntelligenceV2Assessment } from "./persist-assessment";
 import { persistIntelligenceV2Evidence } from "./persist-evidence";
-import { mapJobsToFacts, persistJobFacts } from "./job-facts";
+import { countHiringByTheme, mapJobsToFacts, persistHiringCounts, persistJobFacts } from "./job-facts";
 import { mapEventHitsToFacts, persistEventFacts, researchEvents, type EventFactRow } from "./event-facts";
-import { atsHandleFromProfileUrls, atsHandleToProfileUrls, discoverAtsHandle, fetchAtsJobs } from "./ats-boards";
+import { ATS_BOARD_URL_KEY, atsHandleFromProfileUrls, atsHandleToProfileUrls, discoverAtsHandle, fetchAtsJobs } from "./ats-boards";
 import { resolveCompanyCountry } from "./company-country";
 import { recordSpend } from "../spend-ledger";
 import { recordIntentAccount } from "../intent-accounts";
@@ -262,6 +262,7 @@ export async function runIntelligenceCycle(input: {
   let discoveredAtsHandle: ReturnType<typeof atsHandleFromProfileUrls> = null;
   let jobSource = "NONE";
   let atsDiscoveredVia: string | null = null;
+  let jobBoardDomain: string | null = null;
   try {
     let handle = atsHandleFromProfileUrls(owned.company.profileUrls);
     if (!handle) {
@@ -293,6 +294,10 @@ export async function runIntelligenceCycle(input: {
     }
     if (postings?.length) {
       jobFacts = mapJobsToFacts(postings, { companyName: owned.company.canonicalName, now: completedAt });
+      jobBoardDomain = jobFacts.facts[0]?.sourceDomain ?? null;
+      if (handle?.boardUrl) {
+        try { jobBoardDomain = new URL(handle.boardUrl).hostname; } catch { /* keep the posting's domain */ }
+      }
     }
     log.info({
       projectCompanyId, jobSource, atsBoard: handle?.boardUrl ?? null, atsDiscoveredVia,
@@ -366,6 +371,20 @@ export async function runIntelligenceCycle(input: {
       }, tx);
       factsAdded = stored.factsInserted;
       log.info({ assessmentId: row.id, ...stored }, "JOB_FACTS_PERSISTED");
+      // The count is a separate claim from the postings, and it is the one the
+      // acceleration rules read. Free — these are the postings just fetched.
+      if (jobBoardDomain) {
+        const counts = await persistHiringCounts({
+          organizationId, companyId: owned.company.id, boardDomain: jobBoardDomain,
+          rows: countHiringByTheme(jobFacts.facts, {
+            companyName: owned.company.canonicalName,
+            boardUrl: owned.company.profileUrls?.[ATS_BOARD_URL_KEY] ?? null,
+            now: completedAt,
+          }),
+          now: completedAt,
+        }, tx);
+        log.info({ assessmentId: row.id, ...counts }, "HIRING_COUNTS_PERSISTED");
+      }
     }
     if (eventFacts.length) {
       const stored = await persistEventFacts({

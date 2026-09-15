@@ -59,6 +59,90 @@ export type JobFactRow = {
 
 export type JobFactSkip = { url: string; reason: string };
 
+/**
+ * How many people a company is hiring, by the kind of work.
+ *
+ * The strongest definition in the whole catalogue —
+ * SECURITY_HIRING_ACCELERATION, strength 88 — keys on HIRING_COUNT, and
+ * nothing in JYRA has ever written one. Every hiring fact was a single
+ * posting, so the rules that ask "is this company hiring FASTER than it was"
+ * could never fire, and the rules that ask "how many" could only count
+ * postings one at a time.
+ *
+ * The postings are already in hand by the time this runs — the cycle fetched
+ * them to make JOB_OPENING facts — so counting them costs nothing. A count is
+ * a different claim from a posting, though, and it earns its own fact: thirty
+ * one open security roles is evidence about a company's direction in a way
+ * that thirty one separate ads are not.
+ *
+ * Themes, rather than a single total, because the definitions match on words.
+ * A bare "310 open positions" contains neither "security" nor "marketing", so
+ * it would satisfy the one definition that matches on nothing and be invisible
+ * to the twelve that don't. The total is emitted too, for exactly that one.
+ */
+export const HIRING_THEMES: Array<{ key: string; noun: string; pattern: RegExp }> = [
+  { key: "security", noun: "security", pattern: /\bsecurity\b|\bcyber|\binfosec\b|\bsoc\b|\bappsec\b|\bgrc\b|security operations/i },
+  { key: "compliance", noun: "compliance and risk", pattern: /\bcompliance\b|\bgovernance\b|\brisk\b|\baudit\b|\bregulat/i },
+  { key: "marketing", noun: "marketing", pattern: /\bmarketing\b|\bgrowth\b|demand generation|\bbrand\b|\bcontent\b|\bseo\b/i },
+  { key: "sales", noun: "sales", pattern: /\bsales\b|account executive|\bbdr\b|\bsdr\b|revenue|customer success/i },
+  { key: "engineering", noun: "engineering", pattern: /\bengineer|\bdeveloper\b|\bsoftware\b|\bbackend\b|\bfrontend\b|\bdevops\b|\bsre\b|\bplatform\b/i },
+  { key: "data", noun: "data and AI", pattern: /\bdata\b|\banalytics\b|machine learning|\bml\b|\bai\b|scientist/i },
+  { key: "finance", noun: "finance", pattern: /\bfinance\b|\baccounting\b|\bcontroller\b|\bfp&a\b|\btreasury\b|\btax\b/i },
+  { key: "operations", noun: "operations", pattern: /\boperations\b|\bfacilities\b|\bsupply chain\b|\blogistics\b|\bwarehouse\b/i },
+  { key: "cloud", noun: "cloud", pattern: /\bcloud\b|\baws\b|\bazure\b|\bgcp\b|\bkubernetes\b/i },
+];
+
+export type HiringCountRow = {
+  /** Theme key, or "all" for the whole board. */
+  theme: string;
+  count: number;
+  total: number;
+  effectiveDate: string;
+  supportingExcerpt: string;
+  structuredValue: { count: number; theme: string; total: number; companyName: string; boardUrl: string | null };
+};
+
+/**
+ * Count the postings in hand, by theme, as of today.
+ *
+ * Deliberately not a percentage or a rate. A rate needs two observations and
+ * the comparison belongs in the signal definition, which already knows how to
+ * do it — increasing_count reads the last two facts and asks whether the
+ * number went up. Storing a derived rate here would bake today's baseline into
+ * a fact, and facts are supposed to be things that were true when observed.
+ *
+ * A theme with no postings is not emitted. "Zero open security roles" is a
+ * true statement that would decay into a signal the moment one appeared, and a
+ * company that has never been looked at would be indistinguishable from one
+ * that was looked at and found quiet.
+ */
+export function countHiringByTheme(
+  facts: JobFactRow[],
+  input: { companyName: string; boardUrl?: string | null; now?: Date },
+): HiringCountRow[] {
+  if (!facts.length) return [];
+  const now = input.now ?? new Date();
+  const effectiveDate = now.toISOString().slice(0, 10);
+  const boardUrl = input.boardUrl ?? null;
+  const total = facts.length;
+  const rows: HiringCountRow[] = [];
+
+  const push = (theme: string, count: number, excerpt: string) => {
+    rows.push({
+      theme, count, total, effectiveDate, supportingExcerpt: excerpt,
+      structuredValue: { count, theme, total, companyName: input.companyName, boardUrl },
+    });
+  };
+
+  for (const { key, noun, pattern } of HIRING_THEMES) {
+    const count = facts.filter((fact) => pattern.test(fact.title)).length;
+    if (!count) continue;
+    push(key, count, `${input.companyName} has ${count} open ${noun} ${count === 1 ? "role" : "roles"} of ${total} open ${total === 1 ? "position" : "positions"}.`);
+  }
+  push("all", total, `${input.companyName} has ${total} open ${total === 1 ? "position" : "positions"}.`);
+  return rows;
+}
+
 export { normalizeCompanyName } from "./company-name";
 
 /**
@@ -331,4 +415,139 @@ export async function persistJobFacts(
   }
 
   return { evidenceInserted, evidenceReused, factsInserted };
+}
+
+/** Bumped when the theme list or the counting changes. */
+export const HIRING_COUNT_EXTRACTOR_VERSION = "hiring-count-by-theme-v1";
+
+/**
+ * Store today's hiring counts as HIRING_COUNT facts.
+ *
+ * One evidence row per company per theme, reused forever, so the history of a
+ * theme is a series of facts hanging off a stable source. That is what makes
+ * increasing_count work: the rule reads the last two facts on a company and
+ * asks whether the number went up, which requires the observations to
+ * accumulate rather than overwrite.
+ *
+ * Within a single day they do overwrite, on purpose. Two cycles on the same
+ * afternoon are two looks at one state of the world, not a trend, and leaving
+ * both would let a re-run manufacture an acceleration out of nothing.
+ */
+export async function persistHiringCounts(
+  input: {
+    organizationId: string;
+    companyId: string;
+    rows: HiringCountRow[];
+    boardDomain: string;
+    now?: Date;
+  },
+  executor: JobDbExecutor,
+): Promise<{ evidenceInserted: number; factsWritten: number }> {
+  const now = input.now ?? new Date();
+  let evidenceInserted = 0;
+  let factsWritten = 0;
+
+  for (const row of input.rows) {
+    // Stable per (company, theme): the same URL every day, so the evidence row
+    // is created once and every later count is another fact on it.
+    const sourceUrl = `https://${input.boardDomain}/#jyra-hiring-count/${input.companyId}/${row.theme}`;
+    const scores = calculateEvidenceScores({
+      sourceType: "job_posting",
+      sourceDomain: input.boardDomain,
+      companyDomain: input.boardDomain,
+      provider: "job-search",
+      publisher: null,
+      publishedAt: new Date(row.effectiveDate),
+      observedAt: now,
+      // A count is corroborated by every posting it counted.
+      corroboratingSourceCount: Math.max(0, row.count - 1),
+      now,
+    });
+
+    const [existing] = await executor
+      .select({ id: companyEvidenceTable.id })
+      .from(companyEvidenceTable)
+      .where(and(
+        eq(companyEvidenceTable.companyId, input.companyId),
+        eq(companyEvidenceTable.sourceUrl, sourceUrl),
+      ))
+      .limit(1);
+
+    let evidenceId: string;
+    if (existing) {
+      await executor.update(companyEvidenceTable).set({
+        extractedClaim: row.supportingExcerpt, ...scores, updatedAt: now,
+      }).where(eq(companyEvidenceTable.id, existing.id));
+      evidenceId = existing.id;
+    } else {
+      const newCrawlPageId = randomUUID();
+      const [crawlPage] = await executor.insert(crawlPagesTable).values({
+        id: newCrawlPageId,
+        companyId: input.companyId,
+        sourceUrl,
+        sourceDomain: input.boardDomain,
+        sourceType: "job_posting",
+        provider: "job-search",
+        observedAt: now,
+        rawContent: row.supportingExcerpt,
+        rawContentReference: `crawl_pages:${newCrawlPageId}`,
+        normalizedContentHash: hashNormalizedContent(sourceUrl),
+      }).onConflictDoUpdate({
+        target: [crawlPagesTable.companyId, crawlPagesTable.sourceUrl, crawlPagesTable.normalizedContentHash],
+        set: { observedAt: now },
+      }).returning({ id: crawlPagesTable.id });
+      // Without an accepted attribution review the fact is invisible to the
+      // signal layer, however good it is.
+      await executor.insert(evidenceAttributionReviewsTable).values({
+        crawlPageId: crawlPage.id,
+        companyId: input.companyId,
+        reviewedByOrganizationId: input.organizationId,
+        sourceClassification: "JOB_LISTING",
+        entityStatus: "CONFIRMED_ENTITY",
+        entityConfidence: 95,
+        entityReason: `Counted from postings on the company's own applicant tracking board (${input.boardDomain}).`,
+        sourceReliabilityScore: Math.round(scores.authorityScore),
+        qualityReason: "Derived by counting dated postings already admitted as evidence from the employer's own board.",
+        acceptedAsEvidence: true,
+      }).onConflictDoNothing();
+      const [created] = await executor.insert(companyEvidenceTable).values({
+        companyId: input.companyId,
+        crawlPageId: crawlPage.id,
+        createdByOrganizationId: input.organizationId,
+        sourceUrl,
+        sourceDomain: input.boardDomain,
+        sourceType: "job_posting",
+        provider: "job-search",
+        observedAt: now,
+        rawContentReference: `crawl_pages:${crawlPage.id}`,
+        extractedClaim: row.supportingExcerpt,
+        ...scores,
+        status: "VERIFIED",
+      }).returning({ id: companyEvidenceTable.id });
+      evidenceId = created.id;
+      evidenceInserted += 1;
+    }
+
+    // One observation per theme per day. The unique index keys on the excerpt,
+    // which carries the number, so a changed count on the same day would
+    // otherwise land as a second row and read as a trend.
+    await executor.delete(companyFactsTable).where(and(
+      eq(companyFactsTable.evidenceId, evidenceId),
+      eq(companyFactsTable.factType, "HIRING_COUNT"),
+      eq(companyFactsTable.effectiveDate, row.effectiveDate),
+    ));
+    await executor.insert(companyFactsTable).values({
+      companyId: input.companyId,
+      evidenceId,
+      factType: "HIRING_COUNT",
+      structuredValue: row.structuredValue,
+      effectiveDate: row.effectiveDate,
+      confidence: scores.confidence,
+      supportingExcerpt: row.supportingExcerpt,
+      extractorVersion: HIRING_COUNT_EXTRACTOR_VERSION,
+    });
+    factsWritten += 1;
+  }
+
+  return { evidenceInserted, factsWritten };
 }

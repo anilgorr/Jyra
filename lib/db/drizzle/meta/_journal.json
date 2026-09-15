@@ -78,6 +78,13 @@
       "when": 1789441075828,
       "tag": "0010_signals_evaluated_at",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1789441716279,
+      "tag": "0011_signal_identity_without_rule_version",
+      "breakpoints": true
     }
   ]
 }

@@ -62,7 +62,17 @@ export function detectSignalCandidates(facts: FactWithEvidence[], definitions: S
     if (configuration.mode === "increasing_count") {
       const hiring = matching
         .sort((left, right) => left.effectiveDate.localeCompare(right.effectiveDate));
-      const count = (fact: CompanyFact) => Object.values(fact.structuredValue as Record<string, unknown>).find((value) => typeof value === "number") as number | undefined;
+      /* The named field first. Falling back to "the first number in the
+       * object" was the only rule, and it depends on jsonb key order — which
+       * Postgres does not preserve, it sorts by key length then bytes. A
+       * HIRING_COUNT fact carrying both a count and a board total would have
+       * had its meaning decided by which word happened to sort first. The
+       * fallback stays for facts written before there was a count field. */
+      const count = (fact: CompanyFact) => {
+        const value = fact.structuredValue as Record<string, unknown>;
+        if (typeof value.count === "number") return value.count;
+        return Object.values(value).find((entry) => typeof entry === "number") as number | undefined;
+      };
       if (hiring.length < 2) return [];
       const previous = count(hiring.at(-2)!);
       const latest = count(hiring.at(-1)!);
@@ -146,63 +156,48 @@ export async function evaluateSignalsForCompany(input: { organizationId: string;
           polarity: candidate.definition.polarity,
         },
       };
+      const observation = {
+        supportingFactIds,
+        supportingEvidenceIds,
+        originalStrength: candidate.definition.defaultStrength,
+        currentStrength: strength.currentStrength,
+        confidence: candidate.confidence,
+        status: strength.status,
+        ruleVersion,
+        categorySnapshot: candidate.definition.category,
+        contextSnapshot,
+        generationMethod: "DETERMINISTIC" as const,
+        generatorVersion: candidate.definition.version,
+        observedAt: now,
+        needImpactSnapshot: candidate.definition.needImpact,
+        timingImpactSnapshot: candidate.definition.timingImpact,
+        fitImpactSnapshot: candidate.definition.fitImpact,
+        lastEvaluatedAt: now,
+      };
       const persist = async (tx: DbExecutor) => {
-        let [saved] = await tx.insert(signalsTable).values({
+        /* Insert or refresh, in one statement, keyed on what a signal IS:
+         * this project, this company, this rule, this date. The old shape
+         * inserted-or-nothing and then hunted for the row by a key that
+         * included ruleVersion — so when a pack's configuration changed, the
+         * hunt missed, the insert had already conflicted on nothing, and a
+         * second identical signal appeared. */
+        const [saved] = await tx.insert(signalsTable).values({
           organizationId: input.organizationId,
           projectId: input.projectId,
           companyId: input.companyId,
           signalDefinitionId: candidate.definition.id,
-          supportingFactIds,
-          supportingEvidenceIds,
           effectiveDate: candidate.effectiveDate,
-          originalStrength: candidate.definition.defaultStrength,
-          currentStrength: strength.currentStrength,
-          confidence: candidate.confidence,
-          status: strength.status,
-          ruleVersion,
-          categorySnapshot: candidate.definition.category,
-          contextSnapshot,
-          generationMethod: "DETERMINISTIC",
-          generatorVersion: candidate.definition.version,
-          observedAt: now,
-          needImpactSnapshot: candidate.definition.needImpact,
-          timingImpactSnapshot: candidate.definition.timingImpact,
-          fitImpactSnapshot: candidate.definition.fitImpact,
           detectedAt: now,
-          lastEvaluatedAt: now,
-        }).onConflictDoNothing().returning();
-        if (!saved) {
-          [saved] = await tx.select().from(signalsTable).where(and(
-            eq(signalsTable.projectId, input.projectId),
-            eq(signalsTable.companyId, input.companyId),
-            eq(signalsTable.signalDefinitionId, candidate.definition.id),
-            eq(signalsTable.effectiveDate, candidate.effectiveDate),
-            eq(signalsTable.ruleVersion, ruleVersion),
-          )).limit(1);
-          if (saved) {
-            await tx.delete(signalFactsTable).where(eq(signalFactsTable.signalId, saved.id));
-            await tx.delete(signalEvidenceTable).where(eq(signalEvidenceTable.signalId, saved.id));
-            [saved] = await tx.update(signalsTable).set({
-              supportingFactIds,
-              supportingEvidenceIds,
-              originalStrength: candidate.definition.defaultStrength,
-              currentStrength: strength.currentStrength,
-              confidence: candidate.confidence,
-              status: strength.status,
-              categorySnapshot: candidate.definition.category,
-              contextSnapshot,
-              generationMethod: "DETERMINISTIC",
-              generatorVersion: candidate.definition.version,
-              observedAt: now,
-              needImpactSnapshot: candidate.definition.needImpact,
-              timingImpactSnapshot: candidate.definition.timingImpact,
-              fitImpactSnapshot: candidate.definition.fitImpact,
-              lastEvaluatedAt: now,
-              updatedAt: now,
-            }).where(eq(signalsTable.id, saved.id)).returning();
-          }
-        }
+          ...observation,
+        }).onConflictDoUpdate({
+          target: [signalsTable.projectId, signalsTable.companyId, signalsTable.signalDefinitionId, signalsTable.effectiveDate],
+          set: { ...observation, updatedAt: now },
+        }).returning();
         if (!saved) throw new Error("Signal could not be resolved");
+        /* Support is replaced, not accumulated: a fact that no longer matches
+         * must stop being cited as the reason for the signal. */
+        await tx.delete(signalFactsTable).where(eq(signalFactsTable.signalId, saved.id));
+        await tx.delete(signalEvidenceTable).where(eq(signalEvidenceTable.signalId, saved.id));
         await tx.insert(signalFactsTable).values(candidate.facts.map((fact) => ({
           signalId: saved.id, factId: fact.id, companyId: input.companyId,
         }))).onConflictDoNothing();

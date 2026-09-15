@@ -138,12 +138,20 @@ export const signalsTable = pgTable(
       foreignColumns: [projectCompaniesTable.projectId, projectCompaniesTable.companyId],
       name: "signals_project_company_fk",
     }).onDelete("cascade"),
+    /**
+     * One signal per observation: this project, this company, this rule, this
+     * date. ruleVersion used to be part of the key, which meant it was not a
+     * key at all — it embeds the pack selection's updatedAt, so editing a
+     * project's pack configuration changed it and let a second identical row
+     * in. Datadog ended up with two "Security hiring" signals, same 31
+     * supporting facts, differing only in a timestamp nobody sees. How a
+     * signal was derived is metadata about it, not part of what it is.
+     */
     uniqueIndex("signals_observation_unique").on(
       table.projectId,
       table.companyId,
       table.signalDefinitionId,
       table.effectiveDate,
-      table.ruleVersion,
     ),
     uniqueIndex("signals_id_company_unique").on(table.id, table.companyId),
     check("signals_support_required", sql`jsonb_array_length(${table.supportingFactIds}) > 0 AND jsonb_array_length(${table.supportingEvidenceIds}) > 0`),
