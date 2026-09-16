@@ -188,6 +188,137 @@ paths:
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/NotFound" }
+  /admin/access:
+    get:
+      operationId: listAccessGrants
+      tags: [admin]
+      summary: Everyone who has been invited, and what they are costing
+      description: >-
+        The invite-only allowlist with each grant's organisation, plan, credit balance,
+        and month-to-date spend in real currency. Internal admins only; this is the one
+        place a cost figure is shown next to a customer.
+      security:
+        - clerkSession: []
+      responses:
+        "200":
+          description: Access grants
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/AccessGrant" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/NotFound" }
+    post:
+      operationId: createAccessGrant
+      tags: [admin]
+      summary: Invite an email address
+      description: >-
+        Adds an email to the allowlist with the plan it should land on. Nothing is created
+        until that person first logs in; then the organisation, membership, plan and credit
+        balance are provisioned in one step.
+      security:
+        - clerkSession: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CreateAccessGrantBody" }
+      responses:
+        "201":
+          description: Invited
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AccessGrant" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/NotFound" }
+        "409":
+          description: That email is already invited
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+  /admin/access/{grantId}:
+    patch:
+      operationId: updateAccessGrant
+      tags: [admin]
+      summary: Change a grant's plan, status, or note
+      description: >-
+        A plan change applies to the organisation immediately for limits; the new credit
+        allowance applies from next month. Suspending turns the person away at the door on
+        their next request. Nothing is deleted.
+      security:
+        - clerkSession: []
+      parameters:
+        - $ref: "#/components/parameters/GrantId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/UpdateAccessGrantBody" }
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AccessGrant" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/NotFound" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /admin/access/{grantId}/credits:
+    post:
+      operationId: grantCredits
+      tags: [admin]
+      summary: Add credits to a customer by hand
+      description: >-
+        A trial, a goodwill top-up, or a purchase taken outside the product before billing
+        exists. Written to the credit ledger with the admin's name and reason.
+      security:
+        - clerkSession: []
+      parameters:
+        - $ref: "#/components/parameters/GrantId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/GrantCreditsBody" }
+      responses:
+        "200":
+          description: Credited
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AccessGrant" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/NotFound" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409":
+          description: The grant has no organisation yet - the person has not logged in
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+  /admin/access/{grantId}/cost:
+    get:
+      operationId: getAccessGrantCost
+      tags: [admin]
+      summary: What one customer has cost to run this month
+      description: >-
+        Real spend by provider and purpose, alongside the plan price and the credit ledger.
+        Admin only. This figure never reaches the customer.
+      security:
+        - clerkSession: []
+      parameters:
+        - $ref: "#/components/parameters/GrantId"
+      responses:
+        "200":
+          description: Cost detail
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AccessGrantCost" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/NotFound" }
+        "404": { $ref: "#/components/responses/NotFound" }
   /me:
     get:
       operationId: getCurrentUser
@@ -459,9 +590,9 @@ paths:
       tags: [plan]
       summary: The plan behind this project, and what it has used
       description: >-
-        The organisation's plan limits, how much of the watch pool is in use, and what
-        the month has cost to run. Spend is shown to organisation members because they
-        are paying for it; it is the same figure the invoice is built from.
+        The organisation's plan limits, how much of the watch pool is in use, and the
+        credit balance. Real currency cost is deliberately absent: customers see credits,
+        admins see rupees. Decided 16 Sep 2026, reversing the earlier choice to show spend.
       security:
         - clerkSession: []
       parameters:
@@ -3518,22 +3649,123 @@ components:
         isAssumption:
           type: boolean
       required: [key, statement, provenance, validationStatus, evidence, isAssumption]
+    AccessGrant:
+      type: object
+      additionalProperties: false
+      required: [id, email, status, planCode, planName, initialCredits, organizationId, organizationName, clerkUserId, firstLoginAt, note, createdAt, credits, spend]
+      properties:
+        id: { type: string }
+        email: { type: string }
+        status: { type: string, enum: [invited, active, suspended] }
+        planCode: { type: string }
+        planName: { type: string }
+        initialCredits: { type: number }
+        organizationId: { type: string, nullable: true }
+        organizationName: { type: string, nullable: true }
+        clerkUserId: { type: string, nullable: true }
+        firstLoginAt: { type: string, nullable: true }
+        note: { type: string, nullable: true }
+        createdAt: { type: string }
+        credits:
+          type: object
+          additionalProperties: false
+          required: [balance, monthlyAllowance]
+          properties:
+            balance: { type: number }
+            monthlyAllowance: { type: number }
+        spend:
+          type: object
+          additionalProperties: false
+          description: Real currency. Admin-only; never included in any customer-facing shape.
+          required: [monthToDateUsd, monthToDateInr, planPriceInr, planPriceUsd]
+          properties:
+            monthToDateUsd: { type: number }
+            monthToDateInr: { type: number }
+            planPriceInr: { type: number }
+            planPriceUsd: { type: number }
+    CreateAccessGrantBody:
+      type: object
+      additionalProperties: false
+      required: [email, planCode]
+      properties:
+        email: { type: string, minLength: 3, maxLength: 320 }
+        planCode: { type: string }
+        organizationName: { type: string, maxLength: 120 }
+        organizationId: { type: string, description: Attach to an existing organisation instead of creating one. }
+        initialCredits: { type: number, minimum: 0, default: 0 }
+        note: { type: string, maxLength: 2000 }
+    UpdateAccessGrantBody:
+      type: object
+      additionalProperties: false
+      properties:
+        planCode: { type: string }
+        status: { type: string, enum: [invited, active, suspended] }
+        note: { type: string, maxLength: 2000, nullable: true }
+        organizationName: { type: string, maxLength: 120 }
+    GrantCreditsBody:
+      type: object
+      additionalProperties: false
+      required: [credits, reason]
+      properties:
+        credits: { type: number, minimum: 1, maximum: 1000000 }
+        reason: { type: string, minLength: 1, maxLength: 500 }
+    AccessGrantCost:
+      type: object
+      additionalProperties: false
+      required: [grant, month, spend, ledger]
+      properties:
+        grant: { $ref: "#/components/schemas/AccessGrant" }
+        month: { type: string }
+        spend:
+          type: object
+          additionalProperties: false
+          required: [monthToDateUsd, todayUsd, wastedUsd, breakdown]
+          properties:
+            monthToDateUsd: { type: number }
+            todayUsd: { type: number }
+            wastedUsd: { type: number }
+            breakdown:
+              type: array
+              items:
+                type: object
+                additionalProperties: false
+                required: [kind, source, outcome, calls, costUsd]
+                properties:
+                  kind: { type: string }
+                  source: { type: string }
+                  outcome: { type: string }
+                  calls: { type: number }
+                  costUsd: { type: number }
+        ledger:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            required: [id, kind, delta, balanceAfter, description, createdAt]
+            properties:
+              id: { type: string }
+              kind: { type: string }
+              delta: { type: number }
+              balanceAfter: { type: number }
+              description: { type: string }
+              createdAt: { type: string }
     PlanUsage:
       type: object
       additionalProperties: false
-      required: [plan, watchPool, screeningPool, intentAccounts, spend]
+      required: [plan, watchPool, screeningPool, intentAccounts, credits]
       properties:
         plan:
           type: object
           additionalProperties: false
-          required: [code, name, intentAccountsPerMonth, watchPoolSize, senderSeats, priceInr, priceUsd, assigned, overridden]
+          required: [code, name, intentAccountsPerMonth, watchPoolSize, senderSeats, creditsPerMonth, priceInr, priceUsd, assigned, overridden]
           properties:
             code: { type: string }
             name: { type: string }
             intentAccountsPerMonth: { type: number }
             watchPoolSize: { type: number }
             senderSeats: { type: number }
-            priceInr: { type: number }
+            creditsPerMonth: { type: number }
+            priceInr: { type: number, description: The list price of the plan - what the customer pays, not what it costs to run. }
             priceUsd: { type: number }
             assigned:
               type: boolean
@@ -3589,28 +3821,32 @@ components:
                   signalCount: { type: number }
                   score: { type: number, nullable: true }
                   deliveredAt: { type: string }
-        spend:
+        credits:
           type: object
           additionalProperties: false
-          required: [monthToDateUsd, todayUsd, wastedUsd, breakdown]
+          description: >-
+            The only consumption figure a customer sees. A plan is a monthly credit
+            allowance; actions spend credits; top-ups add them. Real currency cost is
+            never in this shape - see the admin cost endpoint for that.
+          required: [balance, monthlyAllowance, periodStart, recent]
           properties:
-            monthToDateUsd: { type: number }
-            todayUsd: { type: number }
-            wastedUsd:
-              type: number
-              description: Spend on attempts that returned nothing — refusals, empties, failures.
-            breakdown:
+            balance: { type: number, minimum: 0 }
+            monthlyAllowance: { type: number, minimum: 0 }
+            periodStart: { type: string, description: First day of the current allowance period, UTC. }
+            recent:
               type: array
+              description: The latest ledger entries, newest first, in the customer's words.
               items:
                 type: object
                 additionalProperties: false
-                required: [kind, source, outcome, calls, costUsd]
+                required: [id, kind, delta, balanceAfter, description, createdAt]
                 properties:
+                  id: { type: string }
                   kind: { type: string }
-                  source: { type: string }
-                  outcome: { type: string }
-                  calls: { type: number }
-                  costUsd: { type: number }
+                  delta: { type: number }
+                  balanceAfter: { type: number }
+                  description: { type: string }
+                  createdAt: { type: string }
     BusinessTwinSuggestionRequest:
       type: object
       properties:
@@ -5372,6 +5608,12 @@ components:
         type: string
     OrganizationId:
       name: organizationId
+      in: path
+      required: true
+      schema:
+        type: string
+    GrantId:
+      name: grantId
       in: path
       required: true
       schema:

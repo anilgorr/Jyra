@@ -451,6 +451,237 @@ export const GetAdminQualityDashboardResponse = zod.object({
 
 
 /**
+ * The invite-only allowlist with each grant's organisation, plan, credit balance, and month-to-date spend in real currency. Internal admins only; this is the one place a cost figure is shown next to a customer.
+ * @summary Everyone who has been invited, and what they are costing
+ */
+export const ListAccessGrantsResponseItem = zod.object({
+  "id": zod.string(),
+  "email": zod.string(),
+  "status": zod.enum(['invited', 'active', 'suspended']),
+  "planCode": zod.string(),
+  "planName": zod.string(),
+  "initialCredits": zod.number(),
+  "organizationId": zod.string().nullable(),
+  "organizationName": zod.string().nullable(),
+  "clerkUserId": zod.string().nullable(),
+  "firstLoginAt": zod.string().nullable(),
+  "note": zod.string().nullable(),
+  "createdAt": zod.string(),
+  "credits": zod.object({
+  "balance": zod.number(),
+  "monthlyAllowance": zod.number()
+}),
+  "spend": zod.object({
+  "monthToDateUsd": zod.number(),
+  "monthToDateInr": zod.number(),
+  "planPriceInr": zod.number(),
+  "planPriceUsd": zod.number()
+}).describe('Real currency. Admin-only; never included in any customer-facing shape.')
+})
+export const ListAccessGrantsResponse = zod.array(ListAccessGrantsResponseItem)
+
+
+/**
+ * Adds an email to the allowlist with the plan it should land on. Nothing is created until that person first logs in; then the organisation, membership, plan and credit balance are provisioned in one step.
+ * @summary Invite an email address
+ */
+export const createAccessGrantBodyEmailMin = 3;
+export const createAccessGrantBodyEmailMax = 320;
+
+export const createAccessGrantBodyOrganizationNameMax = 120;
+
+export const createAccessGrantBodyInitialCreditsDefault = 0;
+export const createAccessGrantBodyInitialCreditsMin = 0;
+
+export const createAccessGrantBodyNoteMax = 2000;
+
+
+
+export const CreateAccessGrantBody = zod.object({
+  "email": zod.string().min(createAccessGrantBodyEmailMin).max(createAccessGrantBodyEmailMax),
+  "planCode": zod.string(),
+  "organizationName": zod.string().max(createAccessGrantBodyOrganizationNameMax).optional(),
+  "organizationId": zod.string().optional().describe('Attach to an existing organisation instead of creating one.'),
+  "initialCredits": zod.number().min(createAccessGrantBodyInitialCreditsMin).default(createAccessGrantBodyInitialCreditsDefault),
+  "note": zod.string().max(createAccessGrantBodyNoteMax).optional()
+})
+
+export const CreateAccessGrantResponse = zod.object({
+  "id": zod.string(),
+  "email": zod.string(),
+  "status": zod.enum(['invited', 'active', 'suspended']),
+  "planCode": zod.string(),
+  "planName": zod.string(),
+  "initialCredits": zod.number(),
+  "organizationId": zod.string().nullable(),
+  "organizationName": zod.string().nullable(),
+  "clerkUserId": zod.string().nullable(),
+  "firstLoginAt": zod.string().nullable(),
+  "note": zod.string().nullable(),
+  "createdAt": zod.string(),
+  "credits": zod.object({
+  "balance": zod.number(),
+  "monthlyAllowance": zod.number()
+}),
+  "spend": zod.object({
+  "monthToDateUsd": zod.number(),
+  "monthToDateInr": zod.number(),
+  "planPriceInr": zod.number(),
+  "planPriceUsd": zod.number()
+}).describe('Real currency. Admin-only; never included in any customer-facing shape.')
+})
+
+
+/**
+ * A plan change applies to the organisation immediately for limits; the new credit allowance applies from next month. Suspending turns the person away at the door on their next request. Nothing is deleted.
+ * @summary Change a grant's plan, status, or note
+ */
+export const UpdateAccessGrantParams = zod.object({
+  "grantId": zod.coerce.string()
+})
+
+export const updateAccessGrantBodyNoteMax = 2000;
+
+export const updateAccessGrantBodyOrganizationNameMax = 120;
+
+
+
+export const UpdateAccessGrantBody = zod.object({
+  "planCode": zod.string().optional(),
+  "status": zod.enum(['invited', 'active', 'suspended']).optional(),
+  "note": zod.string().max(updateAccessGrantBodyNoteMax).nullish(),
+  "organizationName": zod.string().max(updateAccessGrantBodyOrganizationNameMax).optional()
+})
+
+export const UpdateAccessGrantResponse = zod.object({
+  "id": zod.string(),
+  "email": zod.string(),
+  "status": zod.enum(['invited', 'active', 'suspended']),
+  "planCode": zod.string(),
+  "planName": zod.string(),
+  "initialCredits": zod.number(),
+  "organizationId": zod.string().nullable(),
+  "organizationName": zod.string().nullable(),
+  "clerkUserId": zod.string().nullable(),
+  "firstLoginAt": zod.string().nullable(),
+  "note": zod.string().nullable(),
+  "createdAt": zod.string(),
+  "credits": zod.object({
+  "balance": zod.number(),
+  "monthlyAllowance": zod.number()
+}),
+  "spend": zod.object({
+  "monthToDateUsd": zod.number(),
+  "monthToDateInr": zod.number(),
+  "planPriceInr": zod.number(),
+  "planPriceUsd": zod.number()
+}).describe('Real currency. Admin-only; never included in any customer-facing shape.')
+})
+
+
+/**
+ * A trial, a goodwill top-up, or a purchase taken outside the product before billing exists. Written to the credit ledger with the admin's name and reason.
+ * @summary Add credits to a customer by hand
+ */
+export const GrantCreditsParams = zod.object({
+  "grantId": zod.coerce.string()
+})
+
+export const grantCreditsBodyCreditsMax = 1000000;
+
+export const grantCreditsBodyReasonMax = 500;
+
+
+
+export const GrantCreditsBody = zod.object({
+  "credits": zod.number().min(1).max(grantCreditsBodyCreditsMax),
+  "reason": zod.string().min(1).max(grantCreditsBodyReasonMax)
+})
+
+export const GrantCreditsResponse = zod.object({
+  "id": zod.string(),
+  "email": zod.string(),
+  "status": zod.enum(['invited', 'active', 'suspended']),
+  "planCode": zod.string(),
+  "planName": zod.string(),
+  "initialCredits": zod.number(),
+  "organizationId": zod.string().nullable(),
+  "organizationName": zod.string().nullable(),
+  "clerkUserId": zod.string().nullable(),
+  "firstLoginAt": zod.string().nullable(),
+  "note": zod.string().nullable(),
+  "createdAt": zod.string(),
+  "credits": zod.object({
+  "balance": zod.number(),
+  "monthlyAllowance": zod.number()
+}),
+  "spend": zod.object({
+  "monthToDateUsd": zod.number(),
+  "monthToDateInr": zod.number(),
+  "planPriceInr": zod.number(),
+  "planPriceUsd": zod.number()
+}).describe('Real currency. Admin-only; never included in any customer-facing shape.')
+})
+
+
+/**
+ * Real spend by provider and purpose, alongside the plan price and the credit ledger. Admin only. This figure never reaches the customer.
+ * @summary What one customer has cost to run this month
+ */
+export const GetAccessGrantCostParams = zod.object({
+  "grantId": zod.coerce.string()
+})
+
+export const GetAccessGrantCostResponse = zod.object({
+  "grant": zod.object({
+  "id": zod.string(),
+  "email": zod.string(),
+  "status": zod.enum(['invited', 'active', 'suspended']),
+  "planCode": zod.string(),
+  "planName": zod.string(),
+  "initialCredits": zod.number(),
+  "organizationId": zod.string().nullable(),
+  "organizationName": zod.string().nullable(),
+  "clerkUserId": zod.string().nullable(),
+  "firstLoginAt": zod.string().nullable(),
+  "note": zod.string().nullable(),
+  "createdAt": zod.string(),
+  "credits": zod.object({
+  "balance": zod.number(),
+  "monthlyAllowance": zod.number()
+}),
+  "spend": zod.object({
+  "monthToDateUsd": zod.number(),
+  "monthToDateInr": zod.number(),
+  "planPriceInr": zod.number(),
+  "planPriceUsd": zod.number()
+}).describe('Real currency. Admin-only; never included in any customer-facing shape.')
+}),
+  "month": zod.string(),
+  "spend": zod.object({
+  "monthToDateUsd": zod.number(),
+  "todayUsd": zod.number(),
+  "wastedUsd": zod.number(),
+  "breakdown": zod.array(zod.object({
+  "kind": zod.string(),
+  "source": zod.string(),
+  "outcome": zod.string(),
+  "calls": zod.number(),
+  "costUsd": zod.number()
+}))
+}),
+  "ledger": zod.array(zod.object({
+  "id": zod.string(),
+  "kind": zod.string(),
+  "delta": zod.number(),
+  "balanceAfter": zod.number(),
+  "description": zod.string(),
+  "createdAt": zod.string()
+}))
+})
+
+
+/**
  * Returns the local JYRA user record and organization count for the authenticated Clerk session.
  * @summary Get the authenticated user
  */
@@ -2538,7 +2769,7 @@ export const RegenerateBusinessTwinResponse = zod.object({
 
 
 /**
- * The organisation's plan limits, how much of the watch pool is in use, and what the month has cost to run. Spend is shown to organisation members because they are paying for it; it is the same figure the invoice is built from.
+ * The organisation's plan limits, how much of the watch pool is in use, and the credit balance. Real currency cost is deliberately absent: customers see credits, admins see rupees. Decided 16 Sep 2026, reversing the earlier choice to show spend.
  * @summary The plan behind this project, and what it has used
  */
 export const GetProjectPlanUsageParams = zod.object({
@@ -2551,6 +2782,10 @@ export const getProjectPlanUsageResponseScreeningPoolLimitMin = 0;
 
 export const getProjectPlanUsageResponseScreeningPoolRemainingMin = 0;
 
+export const getProjectPlanUsageResponseCreditsBalanceMin = 0;
+
+export const getProjectPlanUsageResponseCreditsMonthlyAllowanceMin = 0;
+
 
 
 export const GetProjectPlanUsageResponse = zod.object({
@@ -2560,7 +2795,8 @@ export const GetProjectPlanUsageResponse = zod.object({
   "intentAccountsPerMonth": zod.number(),
   "watchPoolSize": zod.number(),
   "senderSeats": zod.number(),
-  "priceInr": zod.number(),
+  "creditsPerMonth": zod.number(),
+  "priceInr": zod.number().describe('The list price of the plan - what the customer pays'),
   "priceUsd": zod.number(),
   "assigned": zod.boolean().describe('False when nobody has assigned a plan and the default applies.'),
   "overridden": zod.array(zod.string()).describe('Limits negotiated for this organisation rather than taken from the tier.')
@@ -2594,18 +2830,19 @@ export const GetProjectPlanUsageResponse = zod.object({
   "deliveredAt": zod.string()
 })).describe('This month\'s accounts, newest first, as recorded at delivery.')
 }).describe('The unit the customer buys. A watched company becomes an intent account when it fits the ICP and a new signal fires; once per company per month.'),
-  "spend": zod.object({
-  "monthToDateUsd": zod.number(),
-  "todayUsd": zod.number(),
-  "wastedUsd": zod.number().describe('Spend on attempts that returned nothing — refusals, empties, failures.'),
-  "breakdown": zod.array(zod.object({
+  "credits": zod.object({
+  "balance": zod.number().min(getProjectPlanUsageResponseCreditsBalanceMin),
+  "monthlyAllowance": zod.number().min(getProjectPlanUsageResponseCreditsMonthlyAllowanceMin),
+  "periodStart": zod.string().describe('First day of the current allowance period'),
+  "recent": zod.array(zod.object({
+  "id": zod.string(),
   "kind": zod.string(),
-  "source": zod.string(),
-  "outcome": zod.string(),
-  "calls": zod.number(),
-  "costUsd": zod.number()
-}))
-})
+  "delta": zod.number(),
+  "balanceAfter": zod.number(),
+  "description": zod.string(),
+  "createdAt": zod.string()
+})).describe('The latest ledger entries, newest first, in the customer\'s words.')
+}).describe('The only consumption figure a customer sees. A plan is a monthly credit allowance; actions spend credits; top-ups add them. Real currency cost is never in this shape - see the admin cost endpoint for that.')
 })
 
 

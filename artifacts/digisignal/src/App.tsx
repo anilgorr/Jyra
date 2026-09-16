@@ -30,6 +30,7 @@ import Opportunities from './pages/opportunities';
 import Outcomes from './pages/outcomes';
 import Learning from './pages/learning';
 import AdminQualityPage from './pages/admin-quality';
+import AdminAccessPage from './pages/admin-access';
 import { WorkspaceProvider } from './context/workspace-context';
 import PlanPage from "@/pages/plan";
 
@@ -48,14 +49,45 @@ function HomeRedirect() {
   return isSignedIn ? <Redirect to="/today" /> : <Landing />;
 }
 
+/** The access-gate refusal, if that is what this error is. */
+function accessDenial(error: unknown): { code: string; message: string } | null {
+  const candidate = error as { status?: number; data?: { code?: string; error?: string } } | null;
+  if (!candidate || candidate.status !== 403) return null;
+  const code = candidate.data?.code;
+  if (code !== "not_invited" && code !== "suspended" && code !== "no_email") return null;
+  return { code, message: candidate.data?.error ?? "You do not have access to JYRA yet." };
+}
+
 function AuthenticatedRoutes() {
   const [location] = useLocation();
-  const { data: user, isLoading, isError } = useGetCurrentUser();
+  const { data: user, isLoading, isError, error } = useGetCurrentUser();
 
   if (isLoading) {
     return (
       <div className="flex min-h-[100dvh] items-center justify-center bg-background">
         <Loader2 className="h-7 w-7 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  /* The door. A 403 on /me with an access code means Clerk let them in and we
+   * did not: JYRA is invite-only. Say so plainly, with the server's own
+   * wording, instead of the generic "workspace unavailable" a network fault
+   * gets - a person who was not invited should not be told to refresh. */
+  const denial = isError ? accessDenial(error) : null;
+  if (denial) {
+    return (
+      <div className="flex min-h-[100dvh] items-center justify-center bg-background px-6 text-center">
+        <div className="max-w-md">
+          <h1 className="font-display text-2xl font-semibold">
+            {denial.code === "suspended" ? "This account is paused" : "JYRA is invite-only right now"}
+          </h1>
+          <p className="mt-2 text-muted-foreground">{denial.message}</p>
+          <p className="mt-6 text-sm text-muted-foreground">
+            Signed in with the wrong account?{' '}
+            <a href="/sign-in" className="underline">Switch account</a>
+          </p>
+        </div>
       </div>
     );
   }
@@ -104,6 +136,7 @@ function AuthenticatedRoutes() {
             <Route path="/outcomes" component={Outcomes} />
             <Route path="/learning" component={Learning} />
             <Route path="/admin/quality" component={AdminQualityPage} />
+            <Route path="/admin/access" component={AdminAccessPage} />
             {import.meta.env.DEV && (
               <Route path="/settings/providers" component={ProviderDiagnostics} />
             )}

@@ -12,6 +12,8 @@ export type PlanUsagePlan = {
   intentAccountsPerMonth: number;
   watchPoolSize: number;
   senderSeats: number;
+  creditsPerMonth: number;
+  /** The list price of the plan - what the customer pays */
   priceInr: number;
   priceUsd: number;
   /** False when nobody has assigned a plan and the default applies. */

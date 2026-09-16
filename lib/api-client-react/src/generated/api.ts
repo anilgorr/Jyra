@@ -20,6 +20,8 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  AccessGrant,
+  AccessGrantCost,
   ActivateOpportunityPack200,
   AddOpportunityResearchQuestionRequest,
   AddOpportunitySignalRequest,
@@ -55,6 +57,7 @@ import type {
   ConfigureProjectSignalPackRequest,
   ConfigureSignalClusterDefinitionRequest,
   ContactEnrichmentResponse,
+  CreateAccessGrantBody,
   CreateLearningPolicyRequest,
   CreateMarketReadinessAdjudicationRequest,
   CreateMarketReadinessBlindReviewRequest,
@@ -78,6 +81,7 @@ import type {
   GetAdminQualityDashboardParams,
   GetLearningAnalyticsParams,
   GetProjectScreening424,
+  GrantCreditsBody,
   HealthStatus,
   IcpCriterionInput,
   IcpCriterionUpdate,
@@ -160,6 +164,7 @@ import type {
   SignalClusterDefinition,
   SignalPack,
   UnauthorizedResponse,
+  UpdateAccessGrantBody,
   UpdateMarketReadinessCampaignRequest,
   UpdateMarketReadinessRolloutRequest,
   UpdateOpportunityResearchQuestionRequest,
@@ -816,6 +821,380 @@ export function useGetAdminQualityDashboard<TData = Awaited<ReturnType<typeof ge
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
   const queryOptions = getGetAdminQualityDashboardQueryOptions(params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getListAccessGrantsUrl = () => {
+
+
+
+
+  return `/api/admin/access`
+}
+
+/**
+ * The invite-only allowlist with each grant's organisation, plan, credit balance, and month-to-date spend in real currency. Internal admins only; this is the one place a cost figure is shown next to a customer.
+ * @summary Everyone who has been invited, and what they are costing
+ */
+export const listAccessGrants = async ( options?: Parameters<typeof customFetch>[1]): Promise<AccessGrant[]> => {
+
+  return customFetch<AccessGrant[]>(getListAccessGrantsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListAccessGrantsQueryKey = () => {
+    return [
+    `/api/admin/access`
+    ] as const;
+    }
+
+
+export const getListAccessGrantsQueryOptions = <TData = Awaited<ReturnType<typeof listAccessGrants>>, TError = ErrorType<UnauthorizedResponse | NotFoundResponse>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listAccessGrants>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListAccessGrantsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listAccessGrants>>> = ({ signal }) => listAccessGrants({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listAccessGrants>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListAccessGrantsQueryResult = NonNullable<Awaited<ReturnType<typeof listAccessGrants>>>
+export type ListAccessGrantsQueryError = ErrorType<UnauthorizedResponse | NotFoundResponse>
+
+
+/**
+ * @summary Everyone who has been invited, and what they are costing
+ */
+
+export function useListAccessGrants<TData = Awaited<ReturnType<typeof listAccessGrants>>, TError = ErrorType<UnauthorizedResponse | NotFoundResponse>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listAccessGrants>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListAccessGrantsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getCreateAccessGrantUrl = () => {
+
+
+
+
+  return `/api/admin/access`
+}
+
+/**
+ * Adds an email to the allowlist with the plan it should land on. Nothing is created until that person first logs in; then the organisation, membership, plan and credit balance are provisioned in one step.
+ * @summary Invite an email address
+ */
+export const createAccessGrant = async (createAccessGrantBody: CreateAccessGrantBody, options?: Parameters<typeof customFetch>[1]): Promise<AccessGrant> => {
+
+  return customFetch<AccessGrant>(getCreateAccessGrantUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(createAccessGrantBody)
+  }
+);}
+
+
+
+
+
+export const getCreateAccessGrantMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | NotFoundResponse | ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createAccessGrant>>, TError,{data: BodyType<CreateAccessGrantBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createAccessGrant>>, TError,{data: BodyType<CreateAccessGrantBody>}, TContext> => {
+
+const mutationKey = ['createAccessGrant'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createAccessGrant>>, {data: BodyType<CreateAccessGrantBody>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createAccessGrant(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateAccessGrantMutationResult = NonNullable<Awaited<ReturnType<typeof createAccessGrant>>>
+    export type CreateAccessGrantMutationBody = BodyType<CreateAccessGrantBody>
+    export type CreateAccessGrantMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | NotFoundResponse | ErrorResponse>
+
+    /**
+ * @summary Invite an email address
+ */
+export const useCreateAccessGrant = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | NotFoundResponse | ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createAccessGrant>>, TError,{data: BodyType<CreateAccessGrantBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createAccessGrant>>,
+        TError,
+        {data: BodyType<CreateAccessGrantBody>},
+        TContext
+      > => {
+      return useMutation(getCreateAccessGrantMutationOptions(options));
+    }
+
+export const getUpdateAccessGrantUrl = (grantId: string,) => {
+
+
+
+
+  return `/api/admin/access/${grantId}`
+}
+
+/**
+ * A plan change applies to the organisation immediately for limits; the new credit allowance applies from next month. Suspending turns the person away at the door on their next request. Nothing is deleted.
+ * @summary Change a grant's plan, status, or note
+ */
+export const updateAccessGrant = async (grantId: string,
+    updateAccessGrantBody: UpdateAccessGrantBody, options?: Parameters<typeof customFetch>[1]): Promise<AccessGrant> => {
+
+  return customFetch<AccessGrant>(getUpdateAccessGrantUrl(grantId),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(updateAccessGrantBody)
+  }
+);}
+
+
+
+
+
+export const getUpdateAccessGrantMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateAccessGrant>>, TError,{grantId: string;data: BodyType<UpdateAccessGrantBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateAccessGrant>>, TError,{grantId: string;data: BodyType<UpdateAccessGrantBody>}, TContext> => {
+
+const mutationKey = ['updateAccessGrant'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateAccessGrant>>, {grantId: string;data: BodyType<UpdateAccessGrantBody>}> = (props) => {
+          const {grantId,data} = props ?? {};
+
+          return  updateAccessGrant(grantId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateAccessGrantMutationResult = NonNullable<Awaited<ReturnType<typeof updateAccessGrant>>>
+    export type UpdateAccessGrantMutationBody = BodyType<UpdateAccessGrantBody>
+    export type UpdateAccessGrantMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | NotFoundResponse>
+
+    /**
+ * @summary Change a grant's plan, status, or note
+ */
+export const useUpdateAccessGrant = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateAccessGrant>>, TError,{grantId: string;data: BodyType<UpdateAccessGrantBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateAccessGrant>>,
+        TError,
+        {grantId: string;data: BodyType<UpdateAccessGrantBody>},
+        TContext
+      > => {
+      return useMutation(getUpdateAccessGrantMutationOptions(options));
+    }
+
+export const getGrantCreditsUrl = (grantId: string,) => {
+
+
+
+
+  return `/api/admin/access/${grantId}/credits`
+}
+
+/**
+ * A trial, a goodwill top-up, or a purchase taken outside the product before billing exists. Written to the credit ledger with the admin's name and reason.
+ * @summary Add credits to a customer by hand
+ */
+export const grantCredits = async (grantId: string,
+    grantCreditsBody: GrantCreditsBody, options?: Parameters<typeof customFetch>[1]): Promise<AccessGrant> => {
+
+  return customFetch<AccessGrant>(getGrantCreditsUrl(grantId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(grantCreditsBody)
+  }
+);}
+
+
+
+
+
+export const getGrantCreditsMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | NotFoundResponse | ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof grantCredits>>, TError,{grantId: string;data: BodyType<GrantCreditsBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof grantCredits>>, TError,{grantId: string;data: BodyType<GrantCreditsBody>}, TContext> => {
+
+const mutationKey = ['grantCredits'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof grantCredits>>, {grantId: string;data: BodyType<GrantCreditsBody>}> = (props) => {
+          const {grantId,data} = props ?? {};
+
+          return  grantCredits(grantId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type GrantCreditsMutationResult = NonNullable<Awaited<ReturnType<typeof grantCredits>>>
+    export type GrantCreditsMutationBody = BodyType<GrantCreditsBody>
+    export type GrantCreditsMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | NotFoundResponse | ErrorResponse>
+
+    /**
+ * @summary Add credits to a customer by hand
+ */
+export const useGrantCredits = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | NotFoundResponse | ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof grantCredits>>, TError,{grantId: string;data: BodyType<GrantCreditsBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof grantCredits>>,
+        TError,
+        {grantId: string;data: BodyType<GrantCreditsBody>},
+        TContext
+      > => {
+      return useMutation(getGrantCreditsMutationOptions(options));
+    }
+
+export const getGetAccessGrantCostUrl = (grantId: string,) => {
+
+
+
+
+  return `/api/admin/access/${grantId}/cost`
+}
+
+/**
+ * Real spend by provider and purpose, alongside the plan price and the credit ledger. Admin only. This figure never reaches the customer.
+ * @summary What one customer has cost to run this month
+ */
+export const getAccessGrantCost = async (grantId: string, options?: Parameters<typeof customFetch>[1]): Promise<AccessGrantCost> => {
+
+  return customFetch<AccessGrantCost>(getGetAccessGrantCostUrl(grantId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetAccessGrantCostQueryKey = (grantId: string,) => {
+    return [
+    `/api/admin/access/${grantId}/cost`
+    ] as const;
+    }
+
+
+export const getGetAccessGrantCostQueryOptions = <TData = Awaited<ReturnType<typeof getAccessGrantCost>>, TError = ErrorType<UnauthorizedResponse | NotFoundResponse>>(grantId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getAccessGrantCost>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetAccessGrantCostQueryKey(grantId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAccessGrantCost>>> = ({ signal }) => getAccessGrantCost(grantId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: grantId !== null && grantId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAccessGrantCost>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetAccessGrantCostQueryResult = NonNullable<Awaited<ReturnType<typeof getAccessGrantCost>>>
+export type GetAccessGrantCostQueryError = ErrorType<UnauthorizedResponse | NotFoundResponse>
+
+
+/**
+ * @summary What one customer has cost to run this month
+ */
+
+export function useGetAccessGrantCost<TData = Awaited<ReturnType<typeof getAccessGrantCost>>, TError = ErrorType<UnauthorizedResponse | NotFoundResponse>>(
+ grantId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getAccessGrantCost>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetAccessGrantCostQueryOptions(grantId,options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 
@@ -1676,7 +2055,7 @@ export const getGetProjectPlanUsageUrl = (projectId: string,) => {
 }
 
 /**
- * The organisation's plan limits, how much of the watch pool is in use, and what the month has cost to run. Spend is shown to organisation members because they are paying for it; it is the same figure the invoice is built from.
+ * The organisation's plan limits, how much of the watch pool is in use, and the credit balance. Real currency cost is deliberately absent: customers see credits, admins see rupees. Decided 16 Sep 2026, reversing the earlier choice to show spend.
  * @summary The plan behind this project, and what it has used
  */
 export const getProjectPlanUsage = async (projectId: string, options?: Parameters<typeof customFetch>[1]): Promise<PlanUsage> => {

@@ -134,6 +134,13 @@
       "when": 1789561944841,
       "tag": "0018_enable_row_level_security",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1789575297664,
+      "tag": "0019_access_grants_and_credits",
+      "breakpoints": true
     }
   ]
 }

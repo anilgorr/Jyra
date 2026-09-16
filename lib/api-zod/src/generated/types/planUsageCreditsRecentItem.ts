@@ -6,10 +6,11 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export type PlanUsageSpendBreakdownItem = {
+export type PlanUsageCreditsRecentItem = {
+  id: string;
   kind: string;
-  source: string;
-  outcome: string;
-  calls: number;
-  costUsd: number;
+  delta: number;
+  balanceAfter: number;
+  description: string;
+  createdAt: string;
 };

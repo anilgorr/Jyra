@@ -35,6 +35,8 @@ export * from "./signals";
 export * from "./intelligence-packs";
 export * from "./signal-clusters";
 export * from "./plans";
+export * from "./access-grants";
+export * from "./credits";
 export * from "./spend-ledger";
 export * from "./opportunities";
 export * from "./people";

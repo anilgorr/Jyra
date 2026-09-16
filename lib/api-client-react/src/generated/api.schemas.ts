@@ -1718,12 +1718,135 @@ export interface BusinessTwinClaim {
   isAssumption: boolean;
 }
 
+export type AccessGrantStatus = typeof AccessGrantStatus[keyof typeof AccessGrantStatus];
+
+
+export const AccessGrantStatus = {
+  invited: 'invited',
+  active: 'active',
+  suspended: 'suspended',
+} as const;
+
+export type AccessGrantCredits = {
+  balance: number;
+  monthlyAllowance: number;
+};
+
+/**
+ * Real currency. Admin-only; never included in any customer-facing shape.
+ */
+export type AccessGrantSpend = {
+  monthToDateUsd: number;
+  monthToDateInr: number;
+  planPriceInr: number;
+  planPriceUsd: number;
+};
+
+export interface AccessGrant {
+  id: string;
+  email: string;
+  status: AccessGrantStatus;
+  planCode: string;
+  planName: string;
+  initialCredits: number;
+  organizationId: string | null;
+  organizationName: string | null;
+  clerkUserId: string | null;
+  firstLoginAt: string | null;
+  note: string | null;
+  createdAt: string;
+  credits: AccessGrantCredits;
+  /** Real currency. Admin-only; never included in any customer-facing shape. */
+  spend: AccessGrantSpend;
+}
+
+export interface CreateAccessGrantBody {
+  /**
+     * @minLength 3
+     * @maxLength 320
+     */
+  email: string;
+  planCode: string;
+  /** @maxLength 120 */
+  organizationName?: string;
+  /** Attach to an existing organisation instead of creating one. */
+  organizationId?: string;
+  /** @minimum 0 */
+  initialCredits?: number;
+  /** @maxLength 2000 */
+  note?: string;
+}
+
+export type UpdateAccessGrantBodyStatus = typeof UpdateAccessGrantBodyStatus[keyof typeof UpdateAccessGrantBodyStatus];
+
+
+export const UpdateAccessGrantBodyStatus = {
+  invited: 'invited',
+  active: 'active',
+  suspended: 'suspended',
+} as const;
+
+export interface UpdateAccessGrantBody {
+  planCode?: string;
+  status?: UpdateAccessGrantBodyStatus;
+  /** @maxLength 2000 */
+  note?: string | null;
+  /** @maxLength 120 */
+  organizationName?: string;
+}
+
+export interface GrantCreditsBody {
+  /**
+     * @minimum 1
+     * @maximum 1000000
+     */
+  credits: number;
+  /**
+     * @minLength 1
+     * @maxLength 500
+     */
+  reason: string;
+}
+
+export type AccessGrantCostSpendBreakdownItem = {
+  kind: string;
+  source: string;
+  outcome: string;
+  calls: number;
+  costUsd: number;
+};
+
+export type AccessGrantCostSpend = {
+  monthToDateUsd: number;
+  todayUsd: number;
+  wastedUsd: number;
+  breakdown: AccessGrantCostSpendBreakdownItem[];
+};
+
+export type AccessGrantCostLedgerItem = {
+  id: string;
+  kind: string;
+  delta: number;
+  balanceAfter: number;
+  description: string;
+  createdAt: string;
+};
+
+export interface AccessGrantCost {
+  grant: AccessGrant;
+  month: string;
+  spend: AccessGrantCostSpend;
+  ledger: AccessGrantCostLedgerItem[];
+}
+
 export type PlanUsagePlan = {
   code: string;
   name: string;
   intentAccountsPerMonth: number;
   watchPoolSize: number;
   senderSeats: number;
+  creditsPerMonth: number;
+  /** The list price of the plan - what the customer pays */
   priceInr: number;
   priceUsd: number;
   /** False when nobody has assigned a plan and the default applies. */
@@ -1775,20 +1898,27 @@ export type PlanUsageIntentAccounts = {
   workingList: PlanUsageIntentAccountsWorkingListItem[];
 };
 
-export type PlanUsageSpendBreakdownItem = {
+export type PlanUsageCreditsRecentItem = {
+  id: string;
   kind: string;
-  source: string;
-  outcome: string;
-  calls: number;
-  costUsd: number;
+  delta: number;
+  balanceAfter: number;
+  description: string;
+  createdAt: string;
 };
 
-export type PlanUsageSpend = {
-  monthToDateUsd: number;
-  todayUsd: number;
-  /** Spend on attempts that returned nothing — refusals, empties, failures. */
-  wastedUsd: number;
-  breakdown: PlanUsageSpendBreakdownItem[];
+/**
+ * The only consumption figure a customer sees. A plan is a monthly credit allowance; actions spend credits; top-ups add them. Real currency cost is never in this shape - see the admin cost endpoint for that.
+ */
+export type PlanUsageCredits = {
+  /** @minimum 0 */
+  balance: number;
+  /** @minimum 0 */
+  monthlyAllowance: number;
+  /** First day of the current allowance period */
+  periodStart: string;
+  /** The latest ledger entries, newest first, in the customer's words. */
+  recent: PlanUsageCreditsRecentItem[];
 };
 
 export interface PlanUsage {
@@ -1797,7 +1927,8 @@ export interface PlanUsage {
   screeningPool: PlanUsageScreeningPool;
   /** The unit the customer buys. A watched company becomes an intent account when it fits the ICP and a new signal fires; once per company per month. */
   intentAccounts: PlanUsageIntentAccounts;
-  spend: PlanUsageSpend;
+  /** The only consumption figure a customer sees. A plan is a monthly credit allowance; actions spend credits; top-ups add them. Real currency cost is never in this shape - see the admin cost endpoint for that. */
+  credits: PlanUsageCredits;
 }
 
 export type BusinessTwinSuggestionRequestBusinessMaturityStage = typeof BusinessTwinSuggestionRequestBusinessMaturityStage[keyof typeof BusinessTwinSuggestionRequestBusinessMaturityStage];

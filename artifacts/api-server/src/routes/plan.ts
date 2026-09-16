@@ -4,8 +4,8 @@ import { db, organizationMembersTable, projectCompaniesTable, projectsTable, WAT
 import { GetProjectPlanUsageParams, GetProjectPlanUsageResponse } from "@workspace/api-zod";
 import { getAuthenticatedUserId, requireAuth } from "../middlewares/auth";
 import { intentAccountsInMonth, monthOf, workingList } from "../lib/intent-accounts";
+import { ensureCurrentAllowance, recentCreditEntries } from "../lib/credits";
 import { resolveOrganizationPlan, screeningPoolSize, screeningPoolUsage, watchPoolUsage } from "../lib/plans";
-import { organizationSpendBreakdown, organizationSpendSince, utcDayStart, utcMonthStart, wastedSpendSince } from "../lib/spend-ledger";
 
 const router: IRouter = Router();
 type AsyncHandler = (...args: Parameters<RequestHandler>) => Promise<void>;
@@ -13,13 +13,20 @@ const asyncRoute = (handler: AsyncHandler): RequestHandler =>
   (req, res, next) => void handler(req, res, next).catch(next);
 
 /**
- * What the customer is on, what they have used of it, and what it costs to
- * run — the page an invoice is written from while billing is still manual.
+ * What the customer is on, what they have used of it, and their credits.
  *
- * Spend is shown to organisation members rather than hidden behind an admin
- * flag. They are paying for the outcome; showing what it costs to produce is
- * the same honesty the shortfall credit is built on, and it is the only way
- * a conversation about moving up a tier can be had with real numbers.
+ * This route used to show spend in dollars, on the argument that a customer
+ * paying for the outcome deserves to see what it costs to produce. That was
+ * reversed on 16 Sep 2026: customers see credits and only credits. Two
+ * reasons. The real costs are tiny and uneven - a paisa here, ₹1.10 there -
+ * and putting them on screen turns every customer into an amateur cost
+ * accountant arguing about the paisa. And the price of the product is not its
+ * cost of goods; showing the second invites a negotiation about the first.
+ * The rupee figure now lives on the admin panel (`/admin/access`), which is
+ * the one surface it belongs on.
+ *
+ * `PlanUsage` has no currency field for cost. That is enforced by the schema,
+ * not by remembering to leave it out - and `test-plan-usage-shape` asserts it.
  */
 router.get("/projects/:projectId/plan", requireAuth, asyncRoute(async (req, res) => {
   const params = GetProjectPlanUsageParams.safeParse(req.params);
@@ -35,10 +42,13 @@ router.get("/projects/:projectId/plan", requireAuth, asyncRoute(async (req, res)
   if (!membership) return void res.status(403).json({ error: "Project access denied" });
 
   const now = new Date();
-  const monthStart = utcMonthStart(now);
   const month = monthOf(now);
-  const [plan, used, screening, thisProject, delivered, list, monthToDateUsd, todayUsd, wasted, breakdown] = await Promise.all([
-    resolveOrganizationPlan(project.organizationId),
+  const plan = await resolveOrganizationPlan(project.organizationId);
+  /* Reading the page is what applies this month's allowance. Idempotent. */
+  const credits = await ensureCurrentAllowance({
+    organizationId: project.organizationId, creditsPerMonth: plan.creditsPerMonth, planName: plan.name,
+  }, now);
+  const [used, screening, thisProject, delivered, list, recent] = await Promise.all([
     watchPoolUsage(project.organizationId),
     screeningPoolUsage(project.organizationId),
     db.select({ count: sql<number>`count(*)::int` }).from(projectCompaniesTable)
@@ -46,19 +56,14 @@ router.get("/projects/:projectId/plan", requireAuth, asyncRoute(async (req, res)
       .then((rows) => Number(rows[0]?.count ?? 0)),
     intentAccountsInMonth(project.organizationId, month),
     workingList(project.id, month),
-    // Organisation-wide, to match the plan and the breakdown below it. These
-    // were per-project while the breakdown was per-organisation, so on an
-    // account with two projects the headline never summed to the table.
-    organizationSpendSince(project.organizationId, monthStart),
-    organizationSpendSince(project.organizationId, utcDayStart(now)),
-    wastedSpendSince(project.organizationId, monthStart),
-    organizationSpendBreakdown(project.organizationId, monthStart),
+    recentCreditEntries(project.organizationId, 20),
   ]);
 
   res.json(GetProjectPlanUsageResponse.parse({
     plan: {
       code: plan.code, name: plan.name, intentAccountsPerMonth: plan.intentAccountsPerMonth,
       watchPoolSize: plan.watchPoolSize, senderSeats: plan.senderSeats,
+      creditsPerMonth: plan.creditsPerMonth,
       priceInr: plan.priceInr, priceUsd: plan.priceUsd,
       assigned: plan.assigned, overridden: plan.overridden,
     },
@@ -77,7 +82,12 @@ router.get("/projects/:projectId/plan", requireAuth, asyncRoute(async (req, res)
       remaining: Math.max(0, plan.intentAccountsPerMonth - delivered),
       workingList: list,
     },
-    spend: { monthToDateUsd, todayUsd, wastedUsd: wasted.costUsd, breakdown },
+    credits: {
+      balance: credits.balance,
+      monthlyAllowance: credits.monthlyAllowance,
+      periodStart: credits.periodStart.toISOString(),
+      recent: recent.map((entry) => ({ ...entry, createdAt: entry.createdAt.toISOString() })),
+    },
   }));
 }));
 

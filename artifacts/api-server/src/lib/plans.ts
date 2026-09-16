@@ -37,10 +37,10 @@ import {
 export const SCREENING_POOL_MULTIPLE = 8;
 
 export const PLAN_TIERS = [
-  { code: "starter", name: "Starter", intentAccountsPerMonth: 10, watchPoolSize: 125, senderSeats: 1, priceInr: 4_999, priceUsd: 99, sortOrder: 10 },
-  { code: "growth", name: "Growth", intentAccountsPerMonth: 40, watchPoolSize: 500, senderSeats: 2, priceInr: 9_999, priceUsd: 249, sortOrder: 20 },
-  { code: "scale", name: "Scale", intentAccountsPerMonth: 150, watchPoolSize: 2_000, senderSeats: 5, priceInr: 34_999, priceUsd: 799, sortOrder: 30 },
-  { code: "custom", name: "Custom", intentAccountsPerMonth: 400, watchPoolSize: 5_000, senderSeats: 10, priceInr: 99_000, priceUsd: 2_500, sortOrder: 40 },
+  { code: "starter", name: "Starter", intentAccountsPerMonth: 10, watchPoolSize: 125, senderSeats: 1, creditsPerMonth: 5_000, priceInr: 4_999, priceUsd: 99, sortOrder: 10 },
+  { code: "growth", name: "Growth", intentAccountsPerMonth: 40, watchPoolSize: 500, senderSeats: 2, creditsPerMonth: 12_000, priceInr: 9_999, priceUsd: 249, sortOrder: 20 },
+  { code: "scale", name: "Scale", intentAccountsPerMonth: 150, watchPoolSize: 2_000, senderSeats: 5, creditsPerMonth: 40_000, priceInr: 34_999, priceUsd: 799, sortOrder: 30 },
+  { code: "custom", name: "Custom", intentAccountsPerMonth: 400, watchPoolSize: 5_000, senderSeats: 10, creditsPerMonth: 100_000, priceInr: 99_000, priceUsd: 2_500, sortOrder: 40 },
 ] as const;
 
 export type PlanCode = (typeof PLAN_TIERS)[number]["code"];
@@ -65,6 +65,7 @@ export async function ensurePlansSeeded(): Promise<void> {
       set: {
         name: tier.name, intentAccountsPerMonth: tier.intentAccountsPerMonth,
         watchPoolSize: tier.watchPoolSize, senderSeats: tier.senderSeats,
+        creditsPerMonth: tier.creditsPerMonth,
         priceInr: tier.priceInr, priceUsd: tier.priceUsd, sortOrder: tier.sortOrder,
         updatedAt: new Date(),
       },
@@ -78,6 +79,8 @@ export type ResolvedPlan = {
   intentAccountsPerMonth: number;
   watchPoolSize: number;
   senderSeats: number;
+  /** The monthly credit allowance. Overridable per organisation like the pools. */
+  creditsPerMonth: number;
   priceInr: number;
   priceUsd: number;
   /** Was this plan assigned to the organisation, or is it the fallback? */
@@ -98,6 +101,7 @@ const applyOverrides = (plan: Plan, overrides: PlanOverrides, assigned: boolean)
     intentAccountsPerMonth: pick("intentAccountsPerMonth", plan.intentAccountsPerMonth),
     watchPoolSize: pick("watchPoolSize", plan.watchPoolSize),
     senderSeats: pick("senderSeats", plan.senderSeats),
+    creditsPerMonth: pick("creditsPerMonth", plan.creditsPerMonth),
     priceInr: plan.priceInr, priceUsd: plan.priceUsd,
     assigned, overridden,
   };

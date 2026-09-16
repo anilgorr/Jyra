@@ -1,6 +1,8 @@
-import { clerkClient, getAuth } from "@clerk/express";
+import { getAuth } from "@clerk/express";
 import type { RequestHandler, Response } from "express";
+import { admitByGrant } from "../lib/access-grants";
 import { LOCAL_USER_ID, resolveAuthMode } from "../lib/auth-mode";
+import { clerkUserFacts } from "../lib/clerk-user";
 import { isInternalAdmin } from "../lib/internal-admin";
 
 /**
@@ -57,8 +59,7 @@ export const requireInternalAdmin: RequestHandler = async (req, res, next) => {
   }
   if (!authorized) {
     try {
-      const user = await clerkClient.users.getUser(userId);
-      authorized = isInternalAdmin(userId, { publicMetadata: user.publicMetadata });
+      authorized = isInternalAdmin(userId, await clerkUserFacts(userId));
     } catch {
       authorized = false;
     }
@@ -69,4 +70,79 @@ export const requireInternalAdmin: RequestHandler = async (req, res, next) => {
   }
   res.locals.userId = userId;
   next();
+};
+
+/**
+ * The door. Runs after `requireAuth` on every customer route.
+ *
+ * A verified Clerk session proves the person holds the mailbox. It does not
+ * prove we invited them. This looks the session's primary email up in
+ * `access_grants` and, on the first successful match, provisions everything
+ * the customer needs - organisation, membership, plan, credit balance - so
+ * that first login lands on a working product with nothing to fill in.
+ *
+ * Refusals are deliberate about their wording. A person with no grant is told
+ * JYRA is invite-only, not that they are "forbidden"; a suspended one is told
+ * to contact us. Neither reveals whether the email is known.
+ *
+ * Local mode skips the whole thing: the developer's fixed identity is always
+ * let in, and Clerk is never contacted.
+ */
+export const requireAccessGrant: RequestHandler = async (req, res, next) => {
+  const userId = (res.locals.userId as string | undefined) ?? verifiedUserId(req);
+  if (!userId) {
+    res.status(401).json({ error: "Authentication required" });
+    return;
+  }
+  res.locals.userId = userId;
+  if (resolveAuthMode() === "local") {
+    next();
+    return;
+  }
+
+  let facts: Awaited<ReturnType<typeof clerkUserFacts>>;
+  try {
+    facts = await clerkUserFacts(userId);
+  } catch {
+    res.status(503).json({ error: "Could not verify your account right now. Try again in a moment." });
+    return;
+  }
+
+  /* Admins are always inside. The check is by email and metadata, the same
+   * facts the grant lookup needs, so it costs nothing extra - and it means the
+   * person who manages the allowlist can never lock themselves out of it. */
+  if (isInternalAdmin(userId, facts)) {
+    next();
+    return;
+  }
+
+  const decision = await admitByGrant({ userId, primaryEmail: facts.primaryEmail });
+  if (decision.admitted) {
+    next();
+    return;
+  }
+  res.status(403).json({ error: decision.message, code: decision.code });
+};
+
+/**
+ * The same door, mounted once for a whole router rather than per route.
+ *
+ * Requests with no session pass through untouched so each route's own
+ * `requireAuth` can answer 401 the way it always has; requests WITH a session
+ * are put through the grant check before any route sees them. The exceptions
+ * are the internal watch-loop endpoints, which authenticate with a bearer
+ * token and have no Clerk user to look up.
+ */
+export const accessGate: RequestHandler = (req, res, next) => {
+  if (req.path.startsWith("/internal/")) {
+    next();
+    return;
+  }
+  const userId = verifiedUserId(req);
+  if (!userId) {
+    next();
+    return;
+  }
+  res.locals.userId = userId;
+  void requireAccessGrant(req, res, next);
 };

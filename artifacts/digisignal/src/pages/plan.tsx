@@ -4,22 +4,27 @@ import { useWorkspace } from "@/context/workspace-context";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { AlertTriangle, Building2, Coins, Gauge, Radar, Send, Target } from "lucide-react";
+import { Coins, Gauge, Radar, Send, Target } from "lucide-react";
 import { Link } from "wouter";
 
 /**
- * What you are on, what you have used, and what it costs to run.
+ * What you are on, what you have used, and your credits.
  *
- * Billing is manual, so this page is where the invoice comes from. It shows
- * the customer their own spend rather than hiding it: they are paying for an
- * outcome, and a conversation about moving up a tier is only honest with the
- * real numbers on the table. The waste line is here for the same reason —
- * the first afternoon of live traffic spent 41% of the provider budget on
- * calls that returned nothing, and nobody could see it.
+ * This page used to show run cost in dollars. Since 16 Sep 2026 it shows
+ * credits and nothing else: a plan is a monthly credit allowance, actions
+ * spend it, top-ups add to it. The rupee cost of running an account is on the
+ * admin panel, which is the one place it belongs. The API shape (`PlanUsage`)
+ * has no cost field, so this page could not show one if it tried.
  */
 
-const usd = (value: number) => value >= 1 ? `$${value.toFixed(2)}` : `${(value * 100).toFixed(1)}¢`;
-const inr = (value: number) => `₹${Math.round(value * 88).toLocaleString("en-IN")}`;
+const credits = (value: number) => value.toLocaleString("en-IN");
+const kindLabel: Record<string, string> = {
+  allowance: "Monthly allowance",
+  grant: "Added",
+  purchase: "Purchased",
+  debit: "Used",
+  adjustment: "Adjusted",
+};
 
 function Stat({ icon: Icon, label, value, sub, tone }: {
   icon: typeof Gauge; label: string; value: string; sub?: string; tone?: "warn";
@@ -98,9 +103,10 @@ export default function PlanPage() {
         <Stat icon={Send} label="Sender accounts" value={String(data.plan.senderSeats)} sub="Connect in Outreach" />
         <Stat
           icon={Coins}
-          label="Run cost this month"
-          value={usd(data.spend.monthToDateUsd)}
-          sub={`${inr(data.spend.monthToDateUsd)} · ${usd(data.spend.todayUsd)} today · whole account`}
+          label="Credits"
+          value={credits(data.credits.balance)}
+          sub={`${credits(data.credits.monthlyAllowance)} a month on ${data.plan.name}`}
+          {...(data.credits.balance < data.credits.monthlyAllowance * 0.1 ? { tone: "warn" as const } : {})}
         />
       </div>
 
@@ -175,54 +181,49 @@ export default function PlanPage() {
         </p>
       </Card>
 
-      {data.spend.wastedUsd > 0 && (
-        <Card className="p-4">
-          <div className="flex items-center gap-2">
-            <AlertTriangle className="h-4 w-4 text-amber-600" />
-            <h2 className="font-medium">Spent on nothing</h2>
-            <span className="tabular-nums text-amber-700 dark:text-amber-400">{usd(data.spend.wastedUsd)}</span>
-          </div>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Calls that came back empty, were refused, or failed. Some of this is unavoidable — a company with no news is
-            a real answer — but a number climbing against the total is a routing problem worth looking at.
-          </p>
-        </Card>
-      )}
-
       <Card className="p-4">
-        <h2 className="font-medium">Where the money went</h2>
+        <div className="flex flex-wrap items-baseline justify-between gap-3">
+          <h2 className="font-medium">Credits</h2>
+          <span className="text-sm text-muted-foreground">
+            Period from {new Date(data.credits.periodStart).toLocaleDateString(undefined, { day: "numeric", month: "short" })}
+          </span>
+        </div>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Your plan adds {credits(data.credits.monthlyAllowance)} credits at the start of each month. Screening a
+          company, watching it, running research on demand and verifying a contact each use some. Finding you an
+          intent account uses none — that is the thing you are here for. Need more in a busy month? Ask and we will
+          top you up.
+        </p>
         <div className="mt-3 overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="text-left text-xs uppercase tracking-wider text-muted-foreground">
-                <th className="pb-2 pr-4 font-medium">Source</th>
-                <th className="pb-2 pr-4 font-medium">Kind</th>
-                <th className="pb-2 pr-4 font-medium">Outcome</th>
-                <th className="pb-2 pr-4 text-right font-medium">Calls</th>
-                <th className="pb-2 text-right font-medium">Cost</th>
+                <th className="pb-2 pr-4 font-medium">When</th>
+                <th className="pb-2 pr-4 font-medium">What</th>
+                <th className="pb-2 pr-4 text-right font-medium">Credits</th>
+                <th className="pb-2 text-right font-medium">Balance</th>
               </tr>
             </thead>
             <tbody>
-              {data.spend.breakdown.length === 0 && (
-                <tr><td colSpan={5} className="py-6 text-center text-muted-foreground">Nothing spent this month yet.</td></tr>
+              {data.credits.recent.length === 0 && (
+                <tr><td colSpan={4} className="py-6 text-center text-muted-foreground">No credit activity yet.</td></tr>
               )}
-              {data.spend.breakdown.map((row) => (
-                <tr key={`${row.kind}:${row.source}:${row.outcome}`} className="border-t">
-                  <td className="py-2 pr-4">{row.source}</td>
-                  <td className="py-2 pr-4 text-muted-foreground">{row.kind.toLowerCase()}</td>
+              {data.credits.recent.map((row) => (
+                <tr key={row.id} className="border-t">
+                  <td className="py-2 pr-4 text-muted-foreground tabular-nums">{new Date(row.createdAt).toLocaleDateString()}</td>
                   <td className="py-2 pr-4">
-                    <Badge variant={row.outcome === "success" ? "secondary" : "outline"}>{row.outcome}</Badge>
+                    <Badge variant={row.delta >= 0 ? "secondary" : "outline"} className="mr-2">{kindLabel[row.kind] ?? row.kind}</Badge>
+                    {row.description}
                   </td>
-                  <td className="py-2 pr-4 text-right tabular-nums">{row.calls}</td>
-                  <td className="py-2 text-right tabular-nums">{usd(row.costUsd)}</td>
+                  <td className={`py-2 pr-4 text-right tabular-nums ${row.delta < 0 ? "" : "text-emerald-700 dark:text-emerald-400"}`}>
+                    {row.delta > 0 ? "+" : ""}{credits(row.delta)}
+                  </td>
+                  <td className="py-2 text-right tabular-nums">{credits(row.balanceAfter)}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-        <p className="mt-3 text-xs text-muted-foreground">
-          Rupee figures convert at ₹88 to the dollar. Billing is manual: this page is what the invoice is written from.
-        </p>
       </Card>
     </div>
   );

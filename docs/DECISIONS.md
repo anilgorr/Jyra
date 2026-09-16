@@ -148,6 +148,53 @@ matched inside unrelated words.
 
 ---
 
+## Access and money
+
+### JYRA is invite-only; the invitation is a row, not a Clerk setting
+
+`access_grants` is the allowlist. Clerk proves the person holds the mailbox;
+the API proves we invited them, on every request, and turns away anyone
+without a grant with a message saying JYRA is invite-only. First login
+provisions the organisation, membership, plan and credit balance in one
+transaction, so a customer never sees a "create your organisation" form.
+The grant is bound to the Clerk user id on first login, so a later email
+change keeps access and a second account with the same email does not
+inherit it.
+
+- **Enforced by:** `accessGate` in `middlewares/auth.ts`, mounted once for
+  every customer route; `test-access-control.mjs`
+- **Where:** `lib/access-grants.ts`, migration `0019`
+
+### Customers see credits. Only admins see cost.
+
+Reversed on 16 Sep 2026. The plan page used to show run cost in dollars, on
+the argument that a customer paying for an outcome deserves to see what it
+costs to produce. Two reasons it went: the real costs are tiny and uneven,
+and putting them on screen makes every customer an amateur cost accountant
+arguing about a paisa; and the price of the product is not its cost of goods,
+so showing the second invites a negotiation about the first.
+
+- **Enforced by:** `PlanUsage` has no cost field and the generated schema
+  strips one if a route adds it; `test-access-control.mjs` asserts both that
+  and that the admin shapes *do* carry it, so the two cannot be merged.
+- **Where:** `routes/plan.ts`, `routes/admin-access.ts`
+
+### A plan is a monthly credit allowance
+
+Model C, chosen 16 Sep 2026 over pure pay-as-you-go (loses the "10 intent
+accounts a month" story, which is what customers actually buy) and over fixed
+plans with credit add-ons (two systems to explain, and the guardrail problem
+comes back). Every action will have a credit price; a burst is a top-up. The
+allowance is applied lazily on first read in a new month and does not accrue
+across quiet months. Delivering an intent account costs nothing — it is the
+outcome.
+
+- **Where:** `lib/credits.ts`; debits and the guardrails land in Phase 3.
+- **Prices (first guess, 2–6× margin):** screen 1 · watch 10/month · deep
+  research 5 · verified email 25 · intent account 0.
+
+---
+
 ## Process
 
 ### The gate is hermetic
@@ -192,5 +239,8 @@ Recorded because an undocumented gap gets rediscovered at the worst moment.
 - **No requirements register.** Changes enter as conversation. Commit messages
   carry the reasoning, which is a record made *after* the decision rather than
   an approval before it.
+- **Credits are granted, never spent.** The ledger's debit side is not wired.
+  A customer can screen, watch and enrich without their balance moving until
+  Phase 3 lands.
 - **A `pk_test_` Clerk key serves production.** Dev instances have hard usage
   caps; sign-ins will start failing at some volume.

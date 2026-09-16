@@ -27,6 +27,12 @@ export const plansTable = pgTable(
     watchPoolSize: integer("watch_pool_size").notNull(),
     /** Sending accounts (LinkedIn, mailbox) the customer may connect. */
     senderSeats: integer("sender_seats").notNull().default(1),
+    /**
+     * The monthly credit allowance. Since 16 Sep 2026 a plan IS this number;
+     * the pool sizes above are a hard backstop behind it, not the price. See
+     * `credits.ts` for why credits, and `plans.ts` in the API for the tiers.
+     */
+    creditsPerMonth: integer("credits_per_month").notNull().default(0),
     priceInr: integer("price_inr").notNull(),
     priceUsd: integer("price_usd").notNull(),
     /** Ordering on the pricing page; also which plan is "bigger" in a message. */
@@ -68,6 +74,7 @@ export type PlanOverrides = {
   watchPoolSize?: number;
   intentAccountsPerMonth?: number;
   senderSeats?: number;
+  creditsPerMonth?: number;
 };
 
 export type Plan = typeof plansTable.$inferSelect;

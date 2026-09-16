@@ -1,4 +1,5 @@
 import { Router, type IRouter } from "express";
+import { accessGate } from "../middlewares/auth";
 import healthRouter from "./health";
 import workspaceRouter from "./workspace";
 import identityRouter from "./identity";
@@ -21,12 +22,16 @@ import discoveryRouter from "./discovery";
 import adminQualityRouter from "./admin-quality";
 import intelligenceV2Router from "./intelligence-v2";
 import marketReadinessRouter from "./market-readiness";
+import adminAccessRouter from "./admin-access";
 import watchLoopRouter from "./watch-loop";
 import changesRouter from "./changes";
 
 const router: IRouter = Router();
 
 router.use(healthRouter);
+// Every route below this line is behind the invite-only door. See
+// middlewares/auth.ts (`accessGate`) and lib/access-grants.ts.
+router.use(accessGate);
 router.use(workspaceRouter);
 router.use(identityRouter);
 router.use(businessTwinRouter);
@@ -46,6 +51,7 @@ router.use(recommendationLedgerRouter);
 router.use(learningRouter);
 router.use(discoveryRouter);
 router.use(adminQualityRouter);
+router.use(adminAccessRouter);
 router.use(intelligenceV2Router);
 router.use(watchLoopRouter);
 router.use(changesRouter);

@@ -5,10 +5,10 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+import type { PlanUsageCredits } from './planUsageCredits';
 import type { PlanUsageIntentAccounts } from './planUsageIntentAccounts';
 import type { PlanUsagePlan } from './planUsagePlan';
 import type { PlanUsageScreeningPool } from './planUsageScreeningPool';
-import type { PlanUsageSpend } from './planUsageSpend';
 import type { PlanUsageWatchPool } from './planUsageWatchPool';
 
 export interface PlanUsage {
@@ -17,5 +17,6 @@ export interface PlanUsage {
   screeningPool: PlanUsageScreeningPool;
   /** The unit the customer buys. A watched company becomes an intent account when it fits the ICP and a new signal fires; once per company per month. */
   intentAccounts: PlanUsageIntentAccounts;
-  spend: PlanUsageSpend;
+  /** The only consumption figure a customer sees. A plan is a monthly credit allowance; actions spend credits; top-ups add them. Real currency cost is never in this shape - see the admin cost endpoint for that. */
+  credits: PlanUsageCredits;
 }
