@@ -1839,6 +1839,81 @@ export interface AccessGrantCost {
   ledger: AccessGrantCostLedgerItem[];
 }
 
+export type SignalFeedbackBodyVerdict = typeof SignalFeedbackBodyVerdict[keyof typeof SignalFeedbackBodyVerdict];
+
+
+export const SignalFeedbackBodyVerdict = {
+  RELEVANT: 'RELEVANT',
+  NOT_RELEVANT: 'NOT_RELEVANT',
+} as const;
+
+export type SignalFeedbackBodyReason = typeof SignalFeedbackBodyReason[keyof typeof SignalFeedbackBodyReason];
+
+
+export const SignalFeedbackBodyReason = {
+  WRONG_COMPANY: 'WRONG_COMPANY',
+  NOT_OUR_BUYER: 'NOT_OUR_BUYER',
+  TOO_OLD: 'TOO_OLD',
+  ALREADY_CUSTOMER: 'ALREADY_CUSTOMER',
+  WRONG_SIGNAL: 'WRONG_SIGNAL',
+  OTHER: 'OTHER',
+} as const;
+
+export interface SignalFeedbackBody {
+  verdict: SignalFeedbackBodyVerdict;
+  reason?: SignalFeedbackBodyReason;
+  /** @maxLength 1000 */
+  note?: string;
+  signalId?: string;
+  /**
+     * 1-based position in the ranked list the user was looking at.
+     * @minimum 1
+     */
+  rank?: number;
+  score?: number | null;
+  state?: string;
+}
+
+export type SignalFeedbackVerdict = typeof SignalFeedbackVerdict[keyof typeof SignalFeedbackVerdict];
+
+
+export const SignalFeedbackVerdict = {
+  RELEVANT: 'RELEVANT',
+  NOT_RELEVANT: 'NOT_RELEVANT',
+} as const;
+
+export interface SignalFeedback {
+  id: string;
+  projectCompanyId: string;
+  signalId?: string | null;
+  verdict: SignalFeedbackVerdict;
+  reason: string | null;
+  note: string | null;
+  rankAtFeedback: number | null;
+  scoreAtFeedback: number | null;
+  weekStart: string;
+  recordedAt: string;
+}
+
+/**
+ * Count of NOT_RELEVANT verdicts by reason.
+ */
+export type PrecisionRowReasons = {[key: string]: number};
+
+export interface PrecisionRow {
+  organizationId: string;
+  organizationName: string;
+  weekStart: string;
+  ratedTop10: number;
+  relevantTop10: number;
+  /** relevantTop10 / ratedTop10 */
+  precisionAt10: number | null;
+  ratedTotal: number;
+  relevantTotal: number;
+  /** Count of NOT_RELEVANT verdicts by reason. */
+  reasons: PrecisionRowReasons;
+}
+
 export type PlanUsagePlan = {
   code: string;
   name: string;
@@ -4690,6 +4765,13 @@ export type GetAdminQualityDashboardParams = {
  * @maximum 90
  */
 days?: number;
+};
+
+export type ListSignalFeedbackParams = {
+/**
+ * Monday of the ISO week, YYYY-MM-DD. Defaults to the current week.
+ */
+week?: string;
 };
 
 export type ArchiveProjectCompaniesBody = {

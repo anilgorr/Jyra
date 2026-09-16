@@ -4,12 +4,13 @@ import {
   getListAccessGrantsQueryKey,
   useCreateAccessGrant,
   useGetAccessGrantCost,
+  useGetAdminPrecision,
   useGrantCredits,
   useListAccessGrants,
   useUpdateAccessGrant,
   type AccessGrant,
 } from "@workspace/api-client-react";
-import { Coins, Mail, Plus, ShieldCheck, UserX, UserCheck } from "lucide-react";
+import { Coins, Mail, Plus, ShieldCheck, Target, UserX, UserCheck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -269,6 +270,71 @@ function GrantRow({ grant, onChanged }: { grant: AccessGrant; onChanged: () => v
   );
 }
 
+const REASON_LABEL: Record<string, string> = {
+  NOT_OUR_BUYER: "not our buyer",
+  WRONG_SIGNAL: "wrong signal",
+  TOO_OLD: "too old",
+  ALREADY_CUSTOMER: "already a customer",
+  WRONG_COMPANY: "wrong company",
+  OTHER: "other",
+};
+
+/**
+ * The number the intent engine is judged by. Per organisation, per ISO week:
+ * of the top ten they rated, how many they called relevant. Silence is not a
+ * verdict, so an unrated week shows a dash rather than a zero.
+ */
+function PrecisionCard() {
+  const precision = useGetAdminPrecision({ query: { queryKey: ["/admin/precision"] } });
+  const rows = precision.data ?? [];
+  const tone = (p: number | null) => p === null ? "" : p >= 0.8 ? "text-emerald-700 dark:text-emerald-400" : p >= 0.6 ? "" : "text-amber-700 dark:text-amber-400";
+  return (
+    <Card className="p-4">
+      <div className="flex items-center gap-2">
+        <Target className="h-4 w-4" />
+        <h2 className="font-medium">Precision at ten</h2>
+        <span className="text-sm text-muted-foreground">target 60% in month one, 80% by month three</span>
+      </div>
+      {precision.isLoading ? <Skeleton className="mt-3 h-16" /> : rows.length === 0 ? (
+        <p className="mt-3 text-sm text-muted-foreground">
+          Nobody has rated a ranked list yet. Verdicts land here the week they are given.
+        </p>
+      ) : (
+        <div className="mt-3 overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="text-left text-xs uppercase tracking-wider text-muted-foreground">
+                <th className="pb-2 pr-4 font-medium">Week</th>
+                <th className="pb-2 pr-4 font-medium">Organisation</th>
+                <th className="pb-2 pr-4 text-right font-medium">Top 10 rated</th>
+                <th className="pb-2 pr-4 text-right font-medium">Precision</th>
+                <th className="pb-2 pr-4 text-right font-medium">All rated</th>
+                <th className="pb-2 font-medium">Why not</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row) => (
+                <tr key={`${row.organizationId}:${row.weekStart}`} className="border-t">
+                  <td className="py-2 pr-4 tabular-nums text-muted-foreground">{row.weekStart}</td>
+                  <td className="py-2 pr-4">{row.organizationName}</td>
+                  <td className="py-2 pr-4 text-right tabular-nums">{row.relevantTop10} / {row.ratedTop10}</td>
+                  <td className={`py-2 pr-4 text-right font-medium tabular-nums ${tone(row.precisionAt10)}`}>
+                    {row.precisionAt10 === null ? "—" : `${Math.round(row.precisionAt10 * 100)}%`}
+                  </td>
+                  <td className="py-2 pr-4 text-right tabular-nums text-muted-foreground">{row.relevantTotal} / {row.ratedTotal}</td>
+                  <td className="py-2 text-xs text-muted-foreground">
+                    {Object.entries(row.reasons).sort((a, b) => b[1] - a[1]).map(([k, v]) => `${REASON_LABEL[k] ?? k} ×${v}`).join(" · ") || "—"}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </Card>
+  );
+}
+
 export default function AdminAccessPage() {
   const queryClient = useQueryClient();
   const grants = useListAccessGrants({ query: { queryKey: getListAccessGrantsQueryKey() } });
@@ -293,6 +359,8 @@ export default function AdminAccessPage() {
           {totals.active} active · {inr(totals.spendInr)} spent this month against {inr(totals.planInr)} of plans
         </span>
       </header>
+
+      <PrecisionCard />
 
       <InviteForm onDone={refresh} />
 

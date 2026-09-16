@@ -23,6 +23,7 @@ import adminQualityRouter from "./admin-quality";
 import intelligenceV2Router from "./intelligence-v2";
 import marketReadinessRouter from "./market-readiness";
 import adminAccessRouter from "./admin-access";
+import feedbackRouter from "./feedback";
 import watchLoopRouter from "./watch-loop";
 import changesRouter from "./changes";
 
@@ -52,6 +53,7 @@ router.use(learningRouter);
 router.use(discoveryRouter);
 router.use(adminQualityRouter);
 router.use(adminAccessRouter);
+router.use(feedbackRouter);
 router.use(intelligenceV2Router);
 router.use(watchLoopRouter);
 router.use(changesRouter);

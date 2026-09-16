@@ -98,6 +98,7 @@ import type {
   ListProjectChangesParams,
   ListRecommendationsParams,
   ListSignalClustersParams,
+  ListSignalFeedbackParams,
   MarketReadinessAdjudication,
   MarketReadinessAssignmentsResponse,
   MarketReadinessBlindReview,
@@ -133,6 +134,7 @@ import type {
   Organization,
   OrganizationInput,
   PlanUsage,
+  PrecisionRow,
   Project,
   ProjectChangeFeed,
   ProjectCompany,
@@ -162,6 +164,8 @@ import type {
   Signal,
   SignalCluster,
   SignalClusterDefinition,
+  SignalFeedback,
+  SignalFeedbackBody,
   SignalPack,
   UnauthorizedResponse,
   UpdateAccessGrantBody,
@@ -1195,6 +1199,248 @@ export function useGetAccessGrantCost<TData = Awaited<ReturnType<typeof getAcces
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
   const queryOptions = getGetAccessGrantCostQueryOptions(grantId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getRecordSignalFeedbackUrl = (projectId: string,
+    projectCompanyId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/companies/${projectCompanyId}/feedback`
+}
+
+/**
+ * One verdict per company per user per ISO week; rating again replaces it. The rank and score at the FIRST verdict are kept, because precision is about what the list said when the person looked, not what it says now.
+ * @summary Say whether a ranked company was worth your attention
+ */
+export const recordSignalFeedback = async (projectId: string,
+    projectCompanyId: string,
+    signalFeedbackBody: SignalFeedbackBody, options?: Parameters<typeof customFetch>[1]): Promise<SignalFeedback> => {
+
+  return customFetch<SignalFeedback>(getRecordSignalFeedbackUrl(projectId,projectCompanyId),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(signalFeedbackBody)
+  }
+);}
+
+
+
+
+
+export const getRecordSignalFeedbackMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof recordSignalFeedback>>, TError,{projectId: string;projectCompanyId: string;data: BodyType<SignalFeedbackBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof recordSignalFeedback>>, TError,{projectId: string;projectCompanyId: string;data: BodyType<SignalFeedbackBody>}, TContext> => {
+
+const mutationKey = ['recordSignalFeedback'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof recordSignalFeedback>>, {projectId: string;projectCompanyId: string;data: BodyType<SignalFeedbackBody>}> = (props) => {
+          const {projectId,projectCompanyId,data} = props ?? {};
+
+          return  recordSignalFeedback(projectId,projectCompanyId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type RecordSignalFeedbackMutationResult = NonNullable<Awaited<ReturnType<typeof recordSignalFeedback>>>
+    export type RecordSignalFeedbackMutationBody = BodyType<SignalFeedbackBody>
+    export type RecordSignalFeedbackMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+    /**
+ * @summary Say whether a ranked company was worth your attention
+ */
+export const useRecordSignalFeedback = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof recordSignalFeedback>>, TError,{projectId: string;projectCompanyId: string;data: BodyType<SignalFeedbackBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof recordSignalFeedback>>,
+        TError,
+        {projectId: string;projectCompanyId: string;data: BodyType<SignalFeedbackBody>},
+        TContext
+      > => {
+      return useMutation(getRecordSignalFeedbackMutationOptions(options));
+    }
+
+export const getListSignalFeedbackUrl = (projectId: string,
+    params?: ListSignalFeedbackParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/projects/${projectId}/feedback?${stringifiedParams}` : `/api/projects/${projectId}/feedback`
+}
+
+/**
+ * @summary This week's verdicts for a project
+ */
+export const listSignalFeedback = async (projectId: string,
+    params?: ListSignalFeedbackParams, options?: Parameters<typeof customFetch>[1]): Promise<SignalFeedback[]> => {
+
+  return customFetch<SignalFeedback[]>(getListSignalFeedbackUrl(projectId,params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListSignalFeedbackQueryKey = (projectId: string,
+    params?: ListSignalFeedbackParams,) => {
+    return [
+    `/api/projects/${projectId}/feedback`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getListSignalFeedbackQueryOptions = <TData = Awaited<ReturnType<typeof listSignalFeedback>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(projectId: string,
+    params?: ListSignalFeedbackParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listSignalFeedback>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListSignalFeedbackQueryKey(projectId,params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listSignalFeedback>>> = ({ signal }) => listSignalFeedback(projectId,params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: projectId !== null && projectId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listSignalFeedback>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListSignalFeedbackQueryResult = NonNullable<Awaited<ReturnType<typeof listSignalFeedback>>>
+export type ListSignalFeedbackQueryError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+
+/**
+ * @summary This week's verdicts for a project
+ */
+
+export function useListSignalFeedback<TData = Awaited<ReturnType<typeof listSignalFeedback>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(
+ projectId: string,
+    params?: ListSignalFeedbackParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listSignalFeedback>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListSignalFeedbackQueryOptions(projectId,params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getGetAdminPrecisionUrl = () => {
+
+
+
+
+  return `/api/admin/precision`
+}
+
+/**
+ * The measure the intent engine is judged by. For each organisation and ISO week: how many of the top ten were rated, how many of those were relevant, and the reasons given for the rest. Eight weeks back.
+ * @summary Precision at ten, per organisation, per week
+ */
+export const getAdminPrecision = async ( options?: Parameters<typeof customFetch>[1]): Promise<PrecisionRow[]> => {
+
+  return customFetch<PrecisionRow[]>(getGetAdminPrecisionUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetAdminPrecisionQueryKey = () => {
+    return [
+    `/api/admin/precision`
+    ] as const;
+    }
+
+
+export const getGetAdminPrecisionQueryOptions = <TData = Awaited<ReturnType<typeof getAdminPrecision>>, TError = ErrorType<UnauthorizedResponse | NotFoundResponse>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getAdminPrecision>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetAdminPrecisionQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAdminPrecision>>> = ({ signal }) => getAdminPrecision({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAdminPrecision>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetAdminPrecisionQueryResult = NonNullable<Awaited<ReturnType<typeof getAdminPrecision>>>
+export type GetAdminPrecisionQueryError = ErrorType<UnauthorizedResponse | NotFoundResponse>
+
+
+/**
+ * @summary Precision at ten, per organisation, per week
+ */
+
+export function useGetAdminPrecision<TData = Awaited<ReturnType<typeof getAdminPrecision>>, TError = ErrorType<UnauthorizedResponse | NotFoundResponse>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getAdminPrecision>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetAdminPrecisionQueryOptions(options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 

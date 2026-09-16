@@ -31,6 +31,11 @@ export const factTypeEnum = pgEnum("fact_type", [
   "SECURITY_INCIDENT",
   "EMPLOYEE_GROWTH",
   "TRUST_CENTER_CHANGE",
+  /* Negative events, added 16 Sep 2026. Layoffs and hiring freezes share one
+   * type because they are one story told twice; ACQUIRED is the company being
+   * bought, which is not ACQUISITION (the company buying someone). */
+  "WORKFORCE_REDUCTION",
+  "ACQUIRED",
 ]);
 
 export const companyFactsTable = pgTable(

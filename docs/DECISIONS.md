@@ -57,6 +57,52 @@ produced no evidence must never overwrite a real score with a null either.
 - **Enforced by:** `test-opportunity-score-preservation.mjs`
 - **Cost of learning it:** VWO, 89.75, overwritten with NULL on 2026-09-07.
 
+### A standing fact is not an event, and cannot make a company RISING
+
+Signals are built from facts, and facts come in two kinds: an EVENT happened
+on a date (a job posted, a CISO hired); a STANDING fact is simply true (uses
+HubSpot, mentions ISO 27001). `TIMELESS_FACT_TYPES` is the list. On the first
+real import 142 of 148 active signals — later 236 of 244 — were
+MARKETING_MARTECH_CHANGE, each one a standing TECHNOLOGY_MENTION scored with
+timing impact 78, as if "uses HubSpot" were "switched to HubSpot last week".
+A standing state carries no timing information.
+
+So a standing-only signal contributes a fifth of its timing impact and half
+its need impact, and a company whose active signals are all standing is
+capped at EMERGING. Predicted effect on the live list at the time: 33
+standing-only companies fall from an average of 64.5 to about 32, 21 of them
+out of RISING/SURGING; the 6 with a real event stay at 73.
+
+- **Enforced by:** `STANDING_FACT_*_FACTOR` and the gate in
+  `opportunity-engine.ts`; `test-intent-quality.mjs`.
+- **Undo it and:** every company on a bought list with a technology column
+  looks like it is about to buy.
+
+### A negative signal suppresses; it does not average
+
+NEGATIVE polarity used to enter the same weighted mean with its sign flipped,
+so one −80 against three +85s netted +44 — a company that just announced
+layoffs looked three-quarters as hot as one that had not. Nothing tested it;
+every suite passed with the mean in place. Now the strongest negative
+suppresses the positive result (`positive × (1 − |impact|/100 × strength/100)`),
+two negatives do not stack, and any negative at strength ≥ 50 caps the state
+at WATCH. `WORKFORCE_REDUCTION` and `ACQUIRED` are the first two, extracted
+deterministically from news and carried by every pack.
+
+- **Enforced by:** `impactComponent`, `negativeSignalGateStrength`;
+  `test-intent-quality.mjs`, `test-event-facts.mjs`.
+
+### Precision@10 is the measure of the intent engine
+
+Every scoring rule is a hypothesis about what a seller finds relevant, and
+none can be checked without a seller saying so. `signal_feedback` records one
+verdict per company per user per ISO week with the rank and score at the time;
+`/admin/precision` reports relevant ÷ rated among the top ten. Silence is not a
+verdict: an unrated week is null, not zero. Target ≥60% month one, ≥80% month
+three.
+
+- **Where:** `schema/signal-feedback.ts`, `routes/feedback.ts`, migration `0021`.
+
 ### Screening has no size ceiling
 
 A `tooLargeToBuy` heuristic matching "conglomerate|fortune 500|…" was written,
@@ -239,6 +285,10 @@ Recorded because an undocumented gap gets rediscovered at the worst moment.
 - **No requirements register.** Changes enter as conversation. Commit messages
   carry the reasoning, which is a record made *after* the decision rather than
   an approval before it.
+- **`stateThresholds.RISING` (70) is dead config.** `stateFor` goes from the
+  EMERGING comparison straight to SURGING (85), so RISING spans 55–85 and the
+  70 is never read. Left alone on 16 Sep 2026 because changing it moves live
+  states and the intended band was never written down; decide, then fix.
 - **Credits are granted, never spent.** The ledger's debit side is not wired.
   A customer can screen, watch and enrich without their balance moving until
   Phase 3 lands.

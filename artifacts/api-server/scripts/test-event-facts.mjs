@@ -93,19 +93,22 @@ const ctx = { companyId: "c-acme", companyName: "Acme Payments", domain: "acmepa
 }
 
 // 5. Queries name the company exactly, the search is called once per query with
-//    raw content on, and the last query is only paid for when it is needed.
+//    raw content on, and the open-web leadership restatement is only paid for
+//    when the news index found nothing. The two negative-event queries always
+//    run: a company in the news for layoffs is exactly the one not to call.
 {
   const queries = e.buildEventQueries("Acme Payments", "acmepay.com");
-  assert.equal(queries.length, 3);
+  assert.equal(queries.length, 5);
+  assert.deepEqual(queries.map((q) => q.kind), ["SECURITY_INCIDENT", "LEADERSHIP_CHANGE", "LEADERSHIP_CHANGE", "WORKFORCE_REDUCTION", "ACQUIRED"]);
   assert.ok(queries.every((q) => q.query.includes('"Acme Payments"')));
   const calls = [];
   const { hits, providers } = await e.researchEvents(async (request) => {
     calls.push(request);
     return { status: "success", providerId: "exa", data: { results: [{ title: "t", url: `https://x.example/${calls.length}`, snippet: "s" }, { title: "dup", url: "https://x.example/1", snippet: "s" }] } };
   }, { requestId: "pc-1", companyName: "Acme Payments", domain: "acmepay.com", now: NOW });
-  assert.equal(calls.length, 2, "the third query restates the second; with hits in hand it is not worth a credit");
+  assert.equal(calls.length, 4, "the open-web leadership query restates the news one; with hits in hand it is skipped, the negatives are not");
   assert.ok(calls.every((c) => c.includeRawContent === true && c.timeRange === "year"));
-  assert.equal(hits.length, 2, "duplicate URLs across queries are collapsed");
+  assert.equal(hits.length, 4, "duplicate URLs across queries are collapsed");
   assert.deepEqual(providers, ["exa"]);
 
   // Nothing found in the news index: the broader third query is exactly the
@@ -115,8 +118,84 @@ const ctx = { companyId: "c-acme", companyName: "Acme Payments", domain: "acmepa
     empty.push(request);
     return { status: "success", providerId: "exa", data: { results: [] } };
   }, { requestId: "pc-2", companyName: "Quiet Co", domain: "quiet.example", now: NOW });
-  assert.equal(empty.length, 3, "a company the news index does not cover still gets the open-web query");
+  assert.equal(empty.length, 5, "a company the news index does not cover still gets the open-web query");
   assert.equal(quiet.hits.length, 0);
 }
 
 console.log("PASS event-facts");
+
+// 6. Negative events, added 16 Sep 2026. A company laying people off is not
+//    buying this quarter; a company just acquired has a new owner deciding.
+//    Same discipline as the incident extractor: a company, an explicit verb,
+//    and a date the text actually carries.
+{
+  const wr = (text) => e.extractExplicitWorkforceReductionCandidates("ev", text);
+  const acq = (text) => e.extractExplicitAcquiredCandidates("ev", text);
+
+  // Company-first, with a date before.
+  let c = wr("On March 4, 2026 Acme Payments laid off 120 employees, about 15% of its workforce, the company confirmed.");
+  assert.equal(c.length, 1, "company-first layoff");
+  assert.equal(c[0].factType, "WORKFORCE_REDUCTION");
+  assert.equal(c[0].structuredValue.action, "laid off");
+  assert.equal(c[0].effectiveDate, "2026-03-04");
+  assert.match(c[0].supportingExcerpt, /laid off 120 employees/);
+
+  // Event-first headline form, date after.
+  c = wr("Layoffs hit Acme Payments as the fintech trims costs. The cuts were announced on 12 August 2026 in an all-hands.");
+  assert.equal(c.length, 1, "event-first layoff");
+  assert.equal(c[0].effectiveDate, "2026-08-12");
+
+  // Hiring freeze is the same story told twice, so the same fact type, tagged.
+  c = wr("Acme Payments has frozen hiring across all teams, CEO Ravi Menon told staff on 2 September 2026.");
+  assert.equal(c.length, 1, "hiring freeze");
+  assert.match(`${c[0].structuredValue.action} ${c[0].structuredValue.detail}`, /frozen hiring/, "the freeze is readable from the quoted words, not a tag");
+
+  // No date, no fact. "Layoffs loom" is a rumour, not an event.
+  assert.equal(wr("Layoffs at Acme Payments are expected as the company restructures.").length, 0, "undated is not an event");
+
+  // Being acquired, both directions of the sentence.
+  c = acq("Acme Payments has been acquired by Globex Corporation, the companies announced on September 10, 2026.");
+  assert.equal(c.length, 1, "company-first acquired");
+  assert.equal(c[0].factType, "ACQUIRED");
+  assert.equal(c[0].structuredValue.acquirer, "Globex Corporation");
+  assert.equal(c[0].structuredValue.action, "acquired by");
+
+  c = acq("BENGALURU, September 11, 2026 — Globex Corporation agreed to acquire Acme Payments for an undisclosed sum.");
+  assert.equal(c.length, 1, "acquirer-first acquired");
+  assert.equal(c[0].structuredValue.company, "Acme Payments");
+  assert.equal(c[0].structuredValue.acquirer, "Globex Corporation");
+  assert.equal(c[0].structuredValue.action, "agreed to acquire");
+
+  // The company doing the buying is ACQUISITION territory, not ACQUIRED.
+  // "Acme acquires Tiny" must yield company=Tiny, acquirer=Acme - the entity
+  // validator downstream then rejects it as WRONG_ENTITY for Acme.
+  c = acq("On May 1, 2026 Acme Payments acquired Tiny Ledger, a bookkeeping startup.");
+  assert.equal(c.length, 1);
+  assert.equal(c[0].structuredValue.company, "Tiny Ledger", "the acquired party is the subject, never the acquirer");
+
+  // The whole pipeline: attribution + validation reject the buying-side story for Acme.
+  const { facts, skipped } = e.mapEventHitsToFacts([
+    { kind: "WORKFORCE_REDUCTION", url: "https://news.example/acme-layoffs", title: "Acme Payments lays off 120", snippet: "",
+      rawContent: "On August 4, 2026 Acme Payments laid off 120 employees, about 15% of its workforce.", publishedAt: "2026-08-04T00:00:00Z" },
+    { kind: "ACQUIRED", url: "https://news.example/acme-buys", title: "Acme Payments buys Tiny Ledger", snippet: "",
+      rawContent: "On May 1, 2026 Acme Payments acquired Tiny Ledger, a bookkeeping startup.", publishedAt: "2026-05-01T00:00:00Z" },
+  ], ctx);
+  assert.ok(facts.some((f) => f.kind === "WORKFORCE_REDUCTION" && f.candidate.effectiveDate === "2026-08-04"), "the layoff lands as a fact");
+  assert.ok(!facts.some((f) => f.kind === "ACQUIRED"), "Acme buying someone is not Acme being bought");
+  assert.ok(skipped.some((s) => s.url === "https://news.example/acme-buys"), "…and it is skipped, not silently dropped");
+
+  // Both fact-type lists agree, in both directions - the entity_status lesson.
+  assert.deepEqual([...e.FACT_TYPES].sort(), [...e.factTypeEnum.enumValues].sort(), "app FACT_TYPES and the pgEnum have drifted");
+
+  // Every pack carries both negatives.
+  for (const pack of e.SIGNAL_PACK_FIXTURES) {
+    const codes = pack.definitions.map((d) => d.code);
+    assert.ok(codes.includes("WORKFORCE_REDUCTION"), `${pack.slug} lacks WORKFORCE_REDUCTION`);
+    assert.ok(codes.includes("ACQUIRED"), `${pack.slug} lacks ACQUIRED`);
+    for (const d of pack.definitions.filter((d) => ["WORKFORCE_REDUCTION", "ACQUIRED"].includes(d.code))) {
+      assert.equal(d.polarity, "NEGATIVE", `${pack.slug}/${d.code} must be NEGATIVE`);
+      assert.ok(d.needImpact < 0 && d.timingImpact < 0, `${pack.slug}/${d.code} impacts must be negative`);
+    }
+  }
+  console.log("  ok  negative events: layoffs, hiring freeze, acquired; fact-type lists agree; every pack carries both");
+}

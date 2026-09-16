@@ -319,6 +319,81 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/NotFound" }
         "404": { $ref: "#/components/responses/NotFound" }
+  /projects/{projectId}/companies/{projectCompanyId}/feedback:
+    put:
+      operationId: recordSignalFeedback
+      tags: [feedback]
+      summary: Say whether a ranked company was worth your attention
+      description: >-
+        One verdict per company per user per ISO week; rating again replaces it. The rank
+        and score at the FIRST verdict are kept, because precision is about what the list
+        said when the person looked, not what it says now.
+      security:
+        - clerkSession: []
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+        - $ref: "#/components/parameters/ProjectCompanyId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/SignalFeedbackBody" }
+      responses:
+        "200":
+          description: Recorded
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SignalFeedback" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /projects/{projectId}/feedback:
+    get:
+      operationId: listSignalFeedback
+      tags: [feedback]
+      summary: This week's verdicts for a project
+      security:
+        - clerkSession: []
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+        - name: week
+          in: query
+          required: false
+          description: Monday of the ISO week, YYYY-MM-DD. Defaults to the current week.
+          schema: { type: string }
+      responses:
+        "200":
+          description: Verdicts
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/SignalFeedback" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /admin/precision:
+    get:
+      operationId: getAdminPrecision
+      tags: [admin]
+      summary: Precision at ten, per organisation, per week
+      description: >-
+        The measure the intent engine is judged by. For each organisation and ISO week: how
+        many of the top ten were rated, how many of those were relevant, and the reasons
+        given for the rest. Eight weeks back.
+      security:
+        - clerkSession: []
+      responses:
+        "200":
+          description: Precision rows
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/PrecisionRow" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/NotFound" }
   /me:
     get:
       operationId: getCurrentUser
@@ -3749,6 +3824,50 @@ components:
               balanceAfter: { type: number }
               description: { type: string }
               createdAt: { type: string }
+    SignalFeedbackBody:
+      type: object
+      additionalProperties: false
+      required: [verdict]
+      properties:
+        verdict: { type: string, enum: [RELEVANT, NOT_RELEVANT] }
+        reason: { type: string, enum: [WRONG_COMPANY, NOT_OUR_BUYER, TOO_OLD, ALREADY_CUSTOMER, WRONG_SIGNAL, OTHER] }
+        note: { type: string, maxLength: 1000 }
+        signalId: { type: string }
+        rank: { type: number, minimum: 1, description: 1-based position in the ranked list the user was looking at. }
+        score: { type: number, nullable: true }
+        state: { type: string }
+    SignalFeedback:
+      type: object
+      additionalProperties: false
+      required: [id, projectCompanyId, verdict, reason, note, rankAtFeedback, scoreAtFeedback, weekStart, recordedAt]
+      properties:
+        id: { type: string }
+        projectCompanyId: { type: string }
+        signalId: { type: string, nullable: true }
+        verdict: { type: string, enum: [RELEVANT, NOT_RELEVANT] }
+        reason: { type: string, nullable: true }
+        note: { type: string, nullable: true }
+        rankAtFeedback: { type: number, nullable: true }
+        scoreAtFeedback: { type: number, nullable: true }
+        weekStart: { type: string }
+        recordedAt: { type: string }
+    PrecisionRow:
+      type: object
+      additionalProperties: false
+      required: [organizationId, organizationName, weekStart, ratedTop10, relevantTop10, precisionAt10, ratedTotal, relevantTotal, reasons]
+      properties:
+        organizationId: { type: string }
+        organizationName: { type: string }
+        weekStart: { type: string }
+        ratedTop10: { type: number }
+        relevantTop10: { type: number }
+        precisionAt10: { type: number, nullable: true, description: relevantTop10 / ratedTop10, or null when nothing in the top ten was rated. }
+        ratedTotal: { type: number }
+        relevantTotal: { type: number }
+        reasons:
+          type: object
+          additionalProperties: { type: number }
+          description: Count of NOT_RELEVANT verdicts by reason.
     PlanUsage:
       type: object
       additionalProperties: false

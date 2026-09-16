@@ -9,8 +9,10 @@ import {
 } from "@workspace/db";
 import { calculateEvidenceScores, hashNormalizedContent } from "../evidence";
 import {
+  extractExplicitAcquiredCandidates,
   extractExplicitLeadershipCandidates,
   extractExplicitSecurityIncidentCandidates,
+  extractExplicitWorkforceReductionCandidates,
   validateFactCandidateDetailed,
   type FactCandidate,
 } from "../facts";
@@ -41,7 +43,7 @@ type DbExecutor = typeof db | Parameters<Parameters<typeof db.transaction>[0]>[0
  * article does not fire the highest-impact signal in the pack. Two do.
  */
 
-export type EventKind = "SECURITY_INCIDENT" | "LEADERSHIP_CHANGE";
+export type EventKind = "SECURITY_INCIDENT" | "LEADERSHIP_CHANGE" | "WORKFORCE_REDUCTION" | "ACQUIRED";
 
 export const EVENT_FACT_EXTRACTOR_VERSION = "event-search-deterministic-v1";
 
@@ -57,6 +59,11 @@ export function buildEventQueries(companyName: string, domain: string | null): E
     { kind: "SECURITY_INCIDENT", topic: "news", query: `${name} (data breach OR ransomware OR cyberattack OR "security incident" OR "unauthorized access")` },
     { kind: "LEADERSHIP_CHANGE", topic: "news", query: `${name} (appoints OR names OR hires OR "has joined") (CISO OR CIO OR CTO OR "chief information security officer" OR "head of security" OR "head of information security" OR "VP of security")` },
     { kind: "LEADERSHIP_CHANGE", topic: "general", query: `${name} announces appointment "chief information security officer" OR "chief technology officer" OR "chief information officer"${site}` },
+    /* Negative events. These come first in importance and last in the list
+     * only because the early-exit below is keyed to the leadership query; a
+     * company in the news for layoffs is exactly the one we must not call. */
+    { kind: "WORKFORCE_REDUCTION", topic: "news", query: `${name} (layoffs OR "laid off" OR "job cuts" OR "hiring freeze" OR redundancies OR "cuts jobs")` },
+    { kind: "ACQUIRED", topic: "news", query: `${name} ("acquired by" OR "to be acquired" OR "agreed to acquire" OR "acquires" OR "takeover" OR "merger")` },
   ];
 }
 
@@ -132,7 +139,11 @@ export function mapEventHitsToFacts(
     const evidenceId = randomUUID();
     const extracted = hit.kind === "SECURITY_INCIDENT"
       ? extractExplicitSecurityIncidentCandidates(evidenceId, rawContent)
-      : extractExplicitLeadershipCandidates(evidenceId, rawContent);
+      : hit.kind === "WORKFORCE_REDUCTION"
+        ? extractExplicitWorkforceReductionCandidates(evidenceId, rawContent)
+        : hit.kind === "ACQUIRED"
+          ? extractExplicitAcquiredCandidates(evidenceId, rawContent)
+          : extractExplicitLeadershipCandidates(evidenceId, rawContent);
     if (!extracted.length) { skipped.push({ url: hit.url, reason: "NO_EXPLICIT_EVENT" }); continue; }
     const firstParty = Boolean(input.domain && hostMatchesDomain(sourceDomain, input.domain));
     for (const candidate of extracted) {
@@ -183,7 +194,7 @@ export async function researchEvents(
     // leadership change, one in news and one across the open web. It exists
     // for the companies the news index does not cover, so it is only worth a
     // credit when the first two found nothing about this company at all.
-    if (index === queries.length - 1 && hits.length > 0) break;
+    if (query.kind === "LEADERSHIP_CHANGE" && query.topic === "general" && hits.length > 0) continue;
     const response = await search({
       requestId: `${input.requestId}:event:${index}`,
       query: query.query, topic: query.topic, timeRange: "year",

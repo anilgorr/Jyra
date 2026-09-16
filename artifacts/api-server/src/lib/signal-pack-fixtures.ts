@@ -60,6 +60,32 @@ const definition = (
   minFacts: options.minFacts ?? 1,
 });
 
+/**
+ * Negative signals every pack carries.
+ *
+ * Whatever a seller sells, a company that has just announced layoffs is not
+ * buying it this quarter, and a company that has just been acquired has a new
+ * owner deciding what it buys. These are not pack-specific and are not
+ * optional, so they are spread into every fixture rather than authored per
+ * pack and forgotten in the next one.
+ *
+ * Impacts are negative and polarity is NEGATIVE; the engine suppresses the
+ * positive score by |impact| × strength and caps the state at WATCH while the
+ * signal is strong (see impactComponent in opportunity-engine.ts). Lifetime
+ * is 180 days: a layoff stops mattering sooner than a breach, but not in a
+ * quarter. minimumConfidence 80 because a false negative costs a real lead.
+ */
+const NEGATIVE_DEFINITIONS: FixtureDefinition[] = [
+  definition("WORKFORCE_REDUCTION", "Layoffs or hiring freeze", "NEGATIVE", ["WORKFORCE_REDUCTION"], [-80, -85, -30], {
+    polarity: "NEGATIVE", defaultStrength: 85, minimumConfidence: 80, lifetimeDays: 180,
+    description: "The company is cutting staff or has frozen hiring. Budgets are closing, not opening.",
+  }),
+  definition("ACQUIRED", "Acquired or merging", "NEGATIVE", ["ACQUIRED"], [-60, -90, -40], {
+    polarity: "NEGATIVE", defaultStrength: 80, minimumConfidence: 80, lifetimeDays: 180,
+    description: "The company has been bought or is merging. Purchasing decisions move to the new owner.",
+  }),
+];
+
 const CYBER_DEFINITIONS: FixtureDefinition[] = [
   definition("NEW_CISO", "New CISO", "LEADERSHIP", ["LEADERSHIP_CHANGE"], [70, 90, 75], { matchAny: ["\\bciso\\b", "chief information security officer"], defaultStrength: 85 }),
   definition("NEW_CIO", "New CIO", "LEADERSHIP", ["LEADERSHIP_CHANGE"], [55, 75, 65], { matchAny: ["\\bcio\\b", "chief information officer"], defaultStrength: 75 }),
@@ -132,7 +158,7 @@ export const SIGNAL_PACK_FIXTURES: PackFixture[] = [
     description: "Optional source-grounded cybersecurity leadership, hiring, risk, and growth intelligence.",
     version: "1.0",
     applicableContext: { offeringFamily: "cybersecurity" },
-    definitions: CYBER_DEFINITIONS,
+    definitions: [...CYBER_DEFINITIONS, ...NEGATIVE_DEFINITIONS],
   },
   {
     slug: "managed-soc",
@@ -145,6 +171,7 @@ export const SIGNAL_PACK_FIXTURES: PackFixture[] = [
       definition("MSOC_SECURITY_HIRING", "Security operations hiring", "HIRING", ["JOB_OPENING", "HIRING_COUNT"], [72, 82, 75], { matchAny: ["security", "soc", "cyber"] }),
       definition("MSOC_FUNDED_RISK_PROGRAM", "Funded risk program window", "FUNDING", ["FUNDING_EVENT"], [42, 48, 45]),
       definition("MSOC_SECURITY_STACK_CHANGE", "Security stack change", "TECHNOLOGY", ["TECHNOLOGY_MENTION"], [75, 84, 82], { matchAny: ["security", "siem", "endpoint", "iam"] }),
+      ...NEGATIVE_DEFINITIONS,
     ],
   },
   {
@@ -158,6 +185,7 @@ export const SIGNAL_PACK_FIXTURES: PackFixture[] = [
       definition("RECRUITMENT_HIRING_SURGE", "Hiring surge", "HIRING", ["HIRING_COUNT", "JOB_OPENING"], [82, 86, 78]),
       definition("RECRUITMENT_GROWTH_FUNDING", "Funding-backed leadership demand", "FUNDING", ["FUNDING_EVENT"], [76, 78, 72]),
       definition("RECRUITMENT_ATS_CHANGE", "Recruiting platform change", "TECHNOLOGY", ["TECHNOLOGY_MENTION"], [35, 42, 45], { matchAny: ["ats", "applicant tracking", "workday"] }),
+      ...NEGATIVE_DEFINITIONS,
     ],
   },
   {
@@ -171,6 +199,7 @@ export const SIGNAL_PACK_FIXTURES: PackFixture[] = [
       definition("SOLAR_SITE_EXPANSION", "Energy-intensive site expansion", "EXPANSION", ["COMPANY_EXPANSION", "NEW_MARKET"], [84, 88, 82], { matchAny: ["facility", "warehouse", "plant", "site"] }),
       definition("SOLAR_INSTALLER_HIRING", "Energy operations hiring", "HIRING", ["JOB_OPENING"], [48, 55, 52], { matchAny: ["energy", "facilities", "sustainability"] }),
       definition("SOLAR_EXISTING_ARRAY", "Recent solar installation", "NEGATIVE", ["TECHNOLOGY_MENTION"], [-75, -80, -65], { polarity: "NEGATIVE", matchAny: ["solar array", "photovoltaic"], lifetimeDays: 365 }),
+      ...NEGATIVE_DEFINITIONS,
     ],
   },
   {
@@ -184,6 +213,7 @@ export const SIGNAL_PACK_FIXTURES: PackFixture[] = [
       definition("MARKETING_TEAM_GROWTH", "Marketing team growth", "HIRING", ["JOB_OPENING", "HIRING_COUNT"], [68, 76, 70], { matchAny: ["marketing", "growth", "demand generation"] }),
       definition("MARKETING_GROWTH_FUNDING", "Funded customer acquisition", "FUNDING", ["FUNDING_EVENT"], [72, 82, 68]),
       definition("MARKETING_MARTECH_CHANGE", "Martech platform change", "TECHNOLOGY", ["TECHNOLOGY_MENTION"], [70, 78, 76], { matchAny: ["crm", "marketing automation", "hubspot", "salesforce"] }),
+      ...NEGATIVE_DEFINITIONS,
     ],
   },
   {
@@ -197,6 +227,7 @@ export const SIGNAL_PACK_FIXTURES: PackFixture[] = [
       definition("ERP_MULTI_SITE_EXPANSION", "Multi-site operating expansion", "EXPANSION", ["COMPANY_EXPANSION", "NEW_MARKET"], [76, 84, 78], { matchAny: ["site", "facility", "market", "subsidiary"] }),
       definition("ERP_OPERATIONS_HIRING", "Business systems hiring", "HIRING", ["JOB_OPENING"], [62, 72, 70], { matchAny: ["erp", "business systems", "finance systems", "enterprise applications"] }),
       definition("ERP_LEGACY_PLATFORM", "Legacy ERP platform signal", "TECHNOLOGY", ["TECHNOLOGY_MENTION"], [82, 78, 84], { matchAny: ["legacy", "on-premise", "sap", "oracle", "dynamics", "netsuite"] }),
+      ...NEGATIVE_DEFINITIONS,
     ],
   },
 ];

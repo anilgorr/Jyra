@@ -682,6 +682,88 @@ export const GetAccessGrantCostResponse = zod.object({
 
 
 /**
+ * One verdict per company per user per ISO week; rating again replaces it. The rank and score at the FIRST verdict are kept, because precision is about what the list said when the person looked, not what it says now.
+ * @summary Say whether a ranked company was worth your attention
+ */
+export const RecordSignalFeedbackParams = zod.object({
+  "projectId": zod.coerce.string(),
+  "projectCompanyId": zod.coerce.string()
+})
+
+export const recordSignalFeedbackBodyNoteMax = 1000;
+
+
+
+
+export const RecordSignalFeedbackBody = zod.object({
+  "verdict": zod.enum(['RELEVANT', 'NOT_RELEVANT']),
+  "reason": zod.enum(['WRONG_COMPANY', 'NOT_OUR_BUYER', 'TOO_OLD', 'ALREADY_CUSTOMER', 'WRONG_SIGNAL', 'OTHER']).optional(),
+  "note": zod.string().max(recordSignalFeedbackBodyNoteMax).optional(),
+  "signalId": zod.string().optional(),
+  "rank": zod.number().min(1).optional().describe('1-based position in the ranked list the user was looking at.'),
+  "score": zod.number().nullish(),
+  "state": zod.string().optional()
+})
+
+export const RecordSignalFeedbackResponse = zod.object({
+  "id": zod.string(),
+  "projectCompanyId": zod.string(),
+  "signalId": zod.string().nullish(),
+  "verdict": zod.enum(['RELEVANT', 'NOT_RELEVANT']),
+  "reason": zod.string().nullable(),
+  "note": zod.string().nullable(),
+  "rankAtFeedback": zod.number().nullable(),
+  "scoreAtFeedback": zod.number().nullable(),
+  "weekStart": zod.string(),
+  "recordedAt": zod.string()
+})
+
+
+/**
+ * @summary This week's verdicts for a project
+ */
+export const ListSignalFeedbackParams = zod.object({
+  "projectId": zod.coerce.string()
+})
+
+export const ListSignalFeedbackQueryParams = zod.object({
+  "week": zod.coerce.string().optional().describe('Monday of the ISO week, YYYY-MM-DD. Defaults to the current week.')
+})
+
+export const ListSignalFeedbackResponseItem = zod.object({
+  "id": zod.string(),
+  "projectCompanyId": zod.string(),
+  "signalId": zod.string().nullish(),
+  "verdict": zod.enum(['RELEVANT', 'NOT_RELEVANT']),
+  "reason": zod.string().nullable(),
+  "note": zod.string().nullable(),
+  "rankAtFeedback": zod.number().nullable(),
+  "scoreAtFeedback": zod.number().nullable(),
+  "weekStart": zod.string(),
+  "recordedAt": zod.string()
+})
+export const ListSignalFeedbackResponse = zod.array(ListSignalFeedbackResponseItem)
+
+
+/**
+ * The measure the intent engine is judged by. For each organisation and ISO week: how many of the top ten were rated, how many of those were relevant, and the reasons given for the rest. Eight weeks back.
+ * @summary Precision at ten, per organisation, per week
+ */
+export const GetAdminPrecisionResponseItem = zod.object({
+  "organizationId": zod.string(),
+  "organizationName": zod.string(),
+  "weekStart": zod.string(),
+  "ratedTop10": zod.number(),
+  "relevantTop10": zod.number(),
+  "precisionAt10": zod.number().nullable().describe('relevantTop10 \/ ratedTop10'),
+  "ratedTotal": zod.number(),
+  "relevantTotal": zod.number(),
+  "reasons": zod.record(zod.string(), zod.number()).describe('Count of NOT_RELEVANT verdicts by reason.')
+})
+export const GetAdminPrecisionResponse = zod.array(GetAdminPrecisionResponseItem)
+
+
+/**
  * Returns the local JYRA user record and organization count for the authenticated Clerk session.
  * @summary Get the authenticated user
  */

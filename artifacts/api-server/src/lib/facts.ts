@@ -17,6 +17,11 @@ export const FACT_TYPES = [
   "SECURITY_INCIDENT",
   "EMPLOYEE_GROWTH",
   "TRUST_CENTER_CHANGE",
+  /* Negative events, added 16 Sep 2026. Layoffs and hiring freezes share one
+   * type because they are one story told twice; ACQUIRED is the company being
+   * bought, which is not ACQUISITION (the company buying someone). */
+  "WORKFORCE_REDUCTION",
+  "ACQUIRED",
 ] as const;
 
 export type FactType = (typeof FACT_TYPES)[number];
@@ -67,6 +72,8 @@ export const EVENT_FACT_TYPES = [
   "SECURITY_INCIDENT",
   "EMPLOYEE_GROWTH",
   "TRUST_CENTER_CHANGE",
+  "WORKFORCE_REDUCTION",
+  "ACQUIRED",
 ] as const satisfies readonly FactType[];
 
 export const TIMELESS_FACT_TYPES = [
@@ -142,6 +149,8 @@ const FACT_TYPE_PATTERNS: Record<FactType, RegExp[]> = {
   COMPANY_EXPANSION: [/\b(?:opened|launched|expanded|increased)\b.{0,60}\b(?:new office|new facility|new site|capacity|operations)\b/i],
   FUNDING_EVENT: [/\b(?:raised|secured|closed|completed|announced)\b.{0,60}\b(?:funding|financing|series [a-z]|investment round|capital)\b/i],
   ACQUISITION: [/\b(?:acquired|completed the acquisition|merged with|completed the merger)\b/i],
+  ACQUIRED: [/\b(?:acquired by|to be acquired by|agreed to be acquired|bought by|taken over by|agreed to sell|sold to|merger with|to merge with)\b/i],
+  WORKFORCE_REDUCTION: [/\b(?:lay(?:s|ing)? off|laid off|layoffs?|job cuts?|cut(?:s|ting)? \d[\d,]*\s+(?:jobs|roles|positions|staff|employees)|reduc(?:e|es|ed|ing) (?:its |their )?(?:workforce|headcount)|workforce reduction|redundanc(?:y|ies)|hiring freeze|freez(?:e|es|ing) hiring|paused hiring|hiring pause)\b/i],
   CERTIFICATION: [/\b(?:received|earned|obtained|achieved|achieves|renewed|completed|completes|was certified|is certified|are now|is now)\b.{0,80}\b(?:certification|certified|accreditation|examination|iso(?:\/iec)? \d+|soc [12])\b/i],
   // Every pattern in this array must match — the table is an AND, not an OR —
   // so the two ways of stating a compliance posture are one alternation
@@ -618,6 +627,13 @@ const MONTH_NUMBER: Record<string, number> = {
   dec: 12,
 };
 
+/**
+ * Two written forms are accepted besides ISO: "August 12, 2026" and
+ * "12 August 2026". The second was missing until 16 Sep 2026, which meant an
+ * Economic Times sentence - "the cuts were announced on 12 August 2026" -
+ * carried no date the extractor could see, and an event with no date is not
+ * an event. Most of what this product reads is Indian and British press.
+ */
 function explicitDateBefore(content: string, eventIndex: number): {
   effectiveDate: string;
   excerptStart: number;
@@ -626,6 +642,7 @@ function explicitDateBefore(content: string, eventIndex: number): {
   const prefix = content.slice(prefixStart, eventIndex);
   const matches = [
     ...prefix.matchAll(/\b(?<month>January|Jan|February|Feb|March|Mar|April|Apr|May|June|Jun|July|Jul|August|Aug|September|Sept|Sep|October|Oct|November|Nov|December|Dec)\.?\s+(?<day>\d{1,2}),\s+(?<year>\d{4})\b/gi),
+    ...prefix.matchAll(/\b(?<day>\d{1,2})(?:st|nd|rd|th)?\s+(?<month>January|Jan|February|Feb|March|Mar|April|Apr|May|June|Jun|July|Jul|August|Aug|September|Sept|Sep|October|Oct|November|Nov|December|Dec)\.?,?\s+(?<year>\d{4})\b/gi),
     ...prefix.matchAll(/\b(?<year>\d{4})-(?<monthNumber>\d{2})-(?<day>\d{2})\b/g),
   ].sort((left, right) => (right.index ?? 0) - (left.index ?? 0));
   const match = matches[0];
@@ -654,6 +671,7 @@ function explicitDateAfter(content: string, eventIndex: number): {
   const suffix = content.slice(eventIndex, eventIndex + 500);
   const matches = [
     ...suffix.matchAll(/\b(?<month>January|Jan|February|Feb|March|Mar|April|Apr|May|June|Jun|July|Jul|August|Aug|September|Sept|Sep|October|Oct|November|Nov|December|Dec)\.?\s+(?<day>\d{1,2}),\s+(?<year>\d{4})\b/gi),
+    ...suffix.matchAll(/\b(?<day>\d{1,2})(?:st|nd|rd|th)?\s+(?<month>January|Jan|February|Feb|March|Mar|April|Apr|May|June|Jun|July|Jul|August|Aug|September|Sept|Sep|October|Oct|November|Nov|December|Dec)\.?,?\s+(?<year>\d{4})\b/gi),
     ...suffix.matchAll(/\b(?<year>\d{4})-(?<monthNumber>\d{2})-(?<day>\d{2})\b/g),
   ].sort((left, right) => (left.index ?? 0) - (right.index ?? 0));
   const match = matches[0];
@@ -832,6 +850,121 @@ export function extractExplicitSecurityIncidentCandidates(
       confidence: 92,
       supportingExcerpt,
       extractorVersion: "explicit-security-incident-v1",
+    });
+  }
+  return candidates;
+}
+
+/**
+ * Negative events: the company shrank, or the company was bought.
+ *
+ * Both are the opposite of intent. A company laying people off is not buying
+ * marketing services this quarter; a company that has just been acquired has
+ * a new owner deciding what it buys. Until 16 Sep 2026 neither existed as a
+ * fact type, so a company in the news for a 30% layoff scored exactly like
+ * one that was not - the engine had no word for it.
+ *
+ * Same discipline as the security-incident extractor: a company name, an
+ * explicit verb, and a date the text actually carries. A headline that says
+ * "layoffs loom" with no date is not an event; a paragraph that says "on
+ * 4 March Acme laid off 120 staff" is.
+ */
+const COMPANY_CAPTURE = String.raw`(?<company>[A-Z][A-Za-z0-9&'.-]*(?:\s+[A-Z][A-Za-z0-9&'.-]*){0,5})`;
+
+const WORKFORCE_REDUCTION_PATTERN = new RegExp(
+  String.raw`\b${COMPANY_CAPTURE}\s+(?:has\s+|had\s+|is\s+|will\s+|to\s+)?(?<verb>laid off|lays off|lay off|laying off|cut|cuts|cutting|is cutting|slashed|slashes|eliminated|eliminates|reduced|reduces|is reducing|froze|freezes|has frozen|paused|pauses|has paused)\s+(?:its\s+|their\s+|the\s+|about\s+|around\s+|roughly\s+|nearly\s+|over\s+|up to\s+)?(?<detail>\d[\d,]*%?\s+(?:of its\s+|of their\s+)?(?:jobs|roles|positions|staff|employees|workers|people|workforce)|(?:its\s+|their\s+)?(?:workforce|headcount|hiring|all hiring|new hiring|recruitment))\b`,
+  "g",
+);
+// Event first: "Layoffs hit Acme", "Job cuts at Acme", "Hiring freeze at Acme".
+const WORKFORCE_REDUCTION_FIRST_PATTERN = new RegExp(
+  String.raw`\b(?<detail>[Ll]ayoffs?|[Jj]ob cuts?|[Rr]edundancies|[Hh]iring freeze|[Ww]orkforce reduction)\s+(?<verb>at|hit|hits|announced at|coming to|planned at|underway at)\s+${COMPANY_CAPTURE}\b`,
+  "g",
+);
+
+export function extractExplicitWorkforceReductionCandidates(
+  evidenceId: string,
+  rawContent: string,
+): FactCandidate[] {
+  return extractNegativeEventCandidates(evidenceId, rawContent, {
+    factType: "WORKFORCE_REDUCTION",
+    patterns: [WORKFORCE_REDUCTION_PATTERN, WORKFORCE_REDUCTION_FIRST_PATTERN],
+    extractorVersion: "explicit-workforce-reduction-v1",
+    /* Every value is a verbatim quote from the excerpt - the validator refuses
+     * a label the text does not contain. Whether this is a layoff or a freeze
+     * is readable from `action` and `detail`; nothing is inferred into a tag. */
+    structured: (groups) => ({
+      company: groups.company ?? "",
+      action: (groups.verb ?? "").replace(/\s+/g, " ").trim(),
+      detail: (groups.detail ?? "").replace(/\s+/g, " ").trim(),
+    }),
+  });
+}
+
+const ACQUIRED_PATTERN = new RegExp(
+  String.raw`\b${COMPANY_CAPTURE}\s+(?:has\s+|had\s+|is\s+|was\s+|will\s+|to\s+)?(?:be\s+|been\s+)?(?<verb>acquired by|bought by|taken over by|agreed to be acquired by|to be acquired by|sold to|agreed to sell (?:itself|the company) to|merged with|to merge with|will merge with)\s+(?<acquirer>[A-Z][A-Za-z0-9&'.-]*(?:\s+[A-Z][A-Za-z0-9&'.-]*){0,5})\b`,
+  "g",
+);
+// Acquirer first: "Globex acquires Acme", "Globex to buy Acme", "Globex completes acquisition of Acme".
+const ACQUIRED_FIRST_PATTERN = new RegExp(
+  String.raw`\b(?<acquirer>[A-Z][A-Za-z0-9&'.-]*(?:\s+[A-Z][A-Za-z0-9&'.-]*){0,5})\s+(?:has\s+|will\s+|to\s+)?(?<verb>acquires|acquired|acquire|buys|bought|buy|takes over|took over|completes (?:its |the )?acquisition of|completed (?:its |the )?acquisition of|agrees to acquire|agreed to acquire|to acquire|to buy)\s+${COMPANY_CAPTURE}\b`,
+  "g",
+);
+
+export function extractExplicitAcquiredCandidates(
+  evidenceId: string,
+  rawContent: string,
+): FactCandidate[] {
+  return extractNegativeEventCandidates(evidenceId, rawContent, {
+    factType: "ACQUIRED",
+    patterns: [ACQUIRED_PATTERN, ACQUIRED_FIRST_PATTERN],
+    extractorVersion: "explicit-acquired-v1",
+    structured: (groups) => ({
+      company: groups.company ?? "",
+      acquirer: groups.acquirer ?? "",
+      action: (groups.verb ?? "").replace(/\s+/g, " ").trim(),
+    }),
+  });
+}
+
+function extractNegativeEventCandidates(
+  evidenceId: string,
+  rawContent: string,
+  spec: {
+    factType: FactType;
+    patterns: RegExp[];
+    extractorVersion: string;
+    structured: (groups: Record<string, string | undefined>) => Record<string, string>;
+  },
+): FactCandidate[] {
+  const content = normalizeEvidenceContent(rawContent);
+  const candidates: FactCandidate[] = [];
+  const matches = spec.patterns
+    .flatMap((pattern) => [...content.matchAll(pattern)])
+    .sort((left, right) => (left.index ?? 0) - (right.index ?? 0));
+  const seenStarts = new Set<number>();
+  for (const match of matches) {
+    if (match.index === undefined || !match.groups) continue;
+    if (seenStarts.has(match.index)) continue;
+    seenStarts.add(match.index);
+    const company = match.groups.company ?? "";
+    // Headline connective prose is not a company name.
+    if (/\b(?:today|announced|that|has|the|a|an|its|their|as|in|on|after|amid)\b/i.test(company.split(/\s+/)[0] ?? "")) continue;
+    const date = explicitDateBefore(content, match.index);
+    const afterDate = date ? null : explicitDateAfter(content, match.index);
+    if (!date && !afterDate) continue;
+    const sentenceEnd = content.slice(match.index).search(/[.!?](?:\s|$)/);
+    const eventEnd = sentenceEnd >= 0 ? match.index + sentenceEnd + 1 : match.index + match[0].length;
+    const supportingExcerpt = date
+      ? content.slice(date.excerptStart, eventEnd).trim()
+      : content.slice(match.index, Math.max(eventEnd, afterDate!.excerptEnd)).trim();
+    candidates.push({
+      evidenceId,
+      factType: spec.factType,
+      structuredValue: spec.structured(match.groups),
+      effectiveDate: date?.effectiveDate ?? afterDate!.effectiveDate,
+      confidence: 90,
+      supportingExcerpt,
+      extractorVersion: spec.extractorVersion,
     });
   }
   return candidates;

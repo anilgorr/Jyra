@@ -23,6 +23,7 @@ import {
   type IntelligenceV2Assessment,
 } from "@workspace/db";
 import { selectAcceptedFactsForCompany } from "./accepted-facts";
+import { TIMELESS_FACT_TYPES } from "./facts";
 import { evaluateIcpCriterion, type CompanyFacts, type CriterionResult } from "./icp-engine";
 import { loadLatestIntelligenceV2Assessment } from "./intelligence-v2/persist-assessment";
 import { DEFAULT_NEXT_BEST_ACTION_RULES } from "./next-best-action";
@@ -35,6 +36,8 @@ export const DEFAULT_OPPORTUNITY_RULES = {
   minimumFitForStrongState: 30,
   minimumNeedForStrongState: 25,
   coolingScoreDrop: 15,
+  /** A negative signal at or above this strength caps the state at WATCH. */
+  negativeSignalGateStrength: 50,
 } as const;
 export function buyerRoleAllowsBuyerOpportunity(role: string): boolean {
   // Narrowed (v2): only a true competitor (sells the seller's own service) is
@@ -82,7 +85,16 @@ export type OpportunityCalculationInput = {
   rules?: Partial<typeof DEFAULT_OPPORTUNITY_RULES>;
   fitResults: FitResult[];
   fitProvider?: IntelligenceV2FitProvider | null;
-  signals: Array<{ id: string; polarity: "POSITIVE" | "NEGATIVE"; strength: number; confidence: number; needImpact: number; timingImpact: number; fitImpact: number; status: string; factIds: string[]; evidenceIds: string[] }>;
+  signals: Array<{
+    id: string; polarity: "POSITIVE" | "NEGATIVE"; strength: number; confidence: number;
+    needImpact: number; timingImpact: number; fitImpact: number; status: string; factIds: string[]; evidenceIds: string[];
+    /**
+     * "event" when at least one supporting fact is dated - something happened.
+     * "standing" when every supporting fact is a timeless state ("uses X").
+     * Omitted means event, so older callers and tests keep their meaning.
+     */
+    evidenceKind?: "event" | "standing";
+  }>;
   clusters: Array<{ id: string; strength: number; confidence: number; needImpact: number; timingImpact: number; status: string; signalIds: string[]; evidenceIds: string[] }>;
   evidence: Array<{ id: string; sourceDomain: string; authority: number; directness: number; freshness: number; corroboration: number; status: string }>;
   relationshipStatus: string;
@@ -148,19 +160,95 @@ function fitComponent(input: OpportunityCalculationInput): ScoreComponent {
   };
 }
 
+/**
+ * How much a STANDING fact is allowed to say about Need and Timing.
+ *
+ * A signal is built from facts, and facts come in two kinds. An EVENT is
+ * something that happened on a date - a job was posted, a CISO was hired, a
+ * round was raised. A STANDING fact is a state that is simply true - the
+ * company uses HubSpot, the company mentions ISO 27001. `TIMELESS_FACT_TYPES`
+ * in facts.ts is the list.
+ *
+ * On the first real import, 142 of 148 active signals were
+ * MARKETING_MARTECH_CHANGE, each built from one standing TECHNOLOGY_MENTION
+ * out of a vendor's scan column, and each scored with the definition's full
+ * timing impact of 78 - as if "uses HubSpot" were "switched to HubSpot last
+ * week". It is not. A standing state carries NO timing information: it was as
+ * true a year ago as it is today, and it will be as true next year. It does
+ * say something about Need - the stack is real - but a stack is a weak proxy
+ * for a purchase.
+ *
+ * So a standing-only signal contributes a fifth of its timing impact and half
+ * its need impact. The definition's numbers are left alone; the discount lives
+ * here, in one place, where the rule can be read and tested. An actual CHANGE
+ * in a standing fact - HubSpot appears where it was not before - is an event,
+ * and the extractor that produces it will file it as one.
+ */
+export const STANDING_FACT_NEED_FACTOR = 0.5;
+export const STANDING_FACT_TIMING_FACTOR = 0.2;
+
+/**
+ * "standing" only when EVERY supporting fact is a timeless type. One dated
+ * fact makes the signal an event. A fact the map cannot see (no longer
+ * accepted, or from before the map existed) is treated as an event, so an
+ * unknown never quietly discounts a real signal.
+ */
+export function signalEvidenceKind(
+  supportingFactIds: readonly string[],
+  factTypeById: ReadonlyMap<string, string>,
+): "event" | "standing" {
+  if (!supportingFactIds.length) return "event";
+  for (const id of supportingFactIds) {
+    const type = factTypeById.get(id);
+    if (!type || !TIMELESS_FACT_TYPE_SET.has(type)) return "event";
+  }
+  return "standing";
+}
+const TIMELESS_FACT_TYPE_SET: ReadonlySet<string> = new Set(TIMELESS_FACT_TYPES);
+
+/**
+ * How a NEGATIVE signal acts on the score.
+ *
+ * It used to enter the same weighted mean as the positives with its sign
+ * flipped, which meant one -80 against three +85s netted out around +44 - a
+ * company that just announced layoffs looked three-quarters as hot as one that
+ * had not. Averaging a contradiction away is not caution, it is noise.
+ *
+ * Now the positives are combined as before, and the strongest negative then
+ * SUPPRESSES the result: score = positive × (1 − |impact|/100 × strength/100).
+ * A layoff signal at full strength with impact -80 cuts Need and Timing to a
+ * fifth. Two negatives do not stack - the worst one wins - because "laid off
+ * staff" and "froze hiring" are one story told twice, not two stories.
+ * Anything negative and still strong also caps the state at WATCH (see the
+ * gates below), so a suppressed score cannot read as an opportunity.
+ */
 function impactComponent(input: OpportunityCalculationInput, dimension: "NEED" | "TIMING"): ScoreComponent {
   const field = dimension === "NEED" ? "needImpact" : "timingImpact";
+  const standingFactor = dimension === "NEED" ? STANDING_FACT_NEED_FACTOR : STANDING_FACT_TIMING_FACTOR;
   const activeSignals = input.signals.filter((item) => item.status === "ACTIVE");
   const activeClusters = input.clusters.filter((item) => item.status === "ACTIVE");
+  const positiveSignals = activeSignals.filter((item) => item.polarity !== "NEGATIVE");
+  const negativeSignals = activeSignals.filter((item) => item.polarity === "NEGATIVE");
+
   const observations = [
-    ...activeSignals.map((item) => ({
-      value: item.polarity === "NEGATIVE" ? -Math.abs(item[field]) : item[field],
+    ...positiveSignals.map((item) => ({
+      value: Math.abs(item[field]) * (item.evidenceKind === "standing" ? standingFactor : 1),
       weight: item.strength, confidence: item.confidence,
     })),
     ...activeClusters.map((item) => ({ value: item[field], weight: item.strength, confidence: item.confidence })),
   ].filter((item) => item.weight > 0);
   const totalWeight = observations.reduce((sum, item) => sum + item.weight, 0);
-  const score = totalWeight ? round(observations.reduce((sum, item) => sum + item.value * item.weight, 0) / totalWeight) : null;
+  const positive = totalWeight ? observations.reduce((sum, item) => sum + item.value * item.weight, 0) / totalWeight : null;
+
+  const suppression = negativeSignals
+    .filter((item) => item.strength > 0)
+    .reduce((worst, item) => Math.max(worst, (Math.abs(item[field]) / 100) * (Math.min(100, item.strength) / 100)), 0);
+  /* A negative with nothing positive to suppress is still a known answer - the
+   * company has demonstrated it is NOT buying - and that is 0, not null. */
+  const score = positive === null
+    ? (negativeSignals.some((item) => item.strength > 0) ? 0 : null)
+    : round(positive * (1 - suppression));
+
   const signalIds = activeSignals.map((item) => item.id);
   const clusterIds = activeClusters.map((item) => item.id);
   const factIds = unique(activeSignals.flatMap((item) => item.factIds));
@@ -168,13 +256,22 @@ function impactComponent(input: OpportunityCalculationInput, dimension: "NEED" |
     ...activeSignals.flatMap((item) => item.evidenceIds),
     ...activeClusters.flatMap((item) => item.evidenceIds),
   ]);
+  const standingCount = positiveSignals.filter((item) => item.evidenceKind === "standing").length;
   return {
     dimension, score, status: score === null ? "UNKNOWN" : "KNOWN",
-    rule: dimension === "NEED" ? "strength_weighted_need_impacts_v1" : "strength_weighted_timing_impacts_v1",
+    rule: dimension === "NEED" ? "strength_weighted_need_impacts_v2" : "strength_weighted_timing_impacts_v2",
     explanation: score === null ? `${dimension} is unknown because no current evidence-backed signal or cluster contributes to it.` :
-      `${dimension} combines ${activeSignals.length} current signal(s) and ${activeClusters.length} active cluster(s); stale observations do not contribute.`,
+      `${dimension} combines ${positiveSignals.length} current signal(s) and ${activeClusters.length} active cluster(s)` +
+      (standingCount ? `, ${standingCount} of them standing facts at reduced weight` : "") +
+      (suppression > 0 ? `, suppressed ${Math.round(suppression * 100)}% by ${negativeSignals.length} negative signal(s)` : "") +
+      "; stale observations do not contribute.",
     signalIds, clusterIds, factIds, evidenceIds,
-    details: { observationCount: observations.length, negativeSignalCount: activeSignals.filter((item) => item.polarity === "NEGATIVE").length },
+    details: {
+      observationCount: observations.length,
+      standingSignalCount: standingCount,
+      negativeSignalCount: negativeSignals.length,
+      suppression: Math.round(suppression * 1000) / 1000,
+    },
   };
 }
 
@@ -311,6 +408,20 @@ export function calculateOpportunityAssessment(input: OpportunityCalculationInpu
   if (fit.score !== null && fit.score < rules.minimumFitForStrongState) {
     state = capState(state, "WATCH"); gates.push("Fit is below the strong-state threshold");
   }
+  /* Standing facts alone cannot make a company RISING or SURGING. "Uses
+   * HubSpot" is a reason to keep watching, never a reason to call today. */
+  const activeSignals = input.signals.filter((item) => item.status === "ACTIVE");
+  const positiveActive = activeSignals.filter((item) => item.polarity !== "NEGATIVE");
+  if (positiveActive.length > 0 && positiveActive.every((item) => item.evidenceKind === "standing")) {
+    state = capState(state, "EMERGING");
+    gates.push("Every current signal is a standing fact; nothing has happened yet");
+  }
+  /* A negative signal that is still strong caps the state at WATCH whatever
+   * the arithmetic says. Layoffs at strength 60 are not an EMERGING account. */
+  if (activeSignals.some((item) => item.polarity === "NEGATIVE" && item.strength >= rules.negativeSignalGateStrength)) {
+    state = capState(state, "WATCH");
+    gates.push("A current negative signal says the company is not buying");
+  }
   const assessmentStatus: "INSUFFICIENT_DATA" | "NEEDS_MORE_RESEARCH" | "COMPLETE" = score === null ? "INSUFFICIENT_DATA" :
     !timingDimensionsKnown ? "NEEDS_MORE_RESEARCH" :
     confidence.score === null || confidence.score < rules.minimumConfidence ? "NEEDS_MORE_RESEARCH" : "COMPLETE";
@@ -331,6 +442,8 @@ export function calculateOpportunityAssessment(input: OpportunityCalculationInpu
   }
   return {
     score, state, assessmentStatus, components: [fit, need, timing, relationship, confidence],
+    /** Every rule that capped or changed the state, in the order it applied. */
+    gates,
     explanation: `${score === null ? "NEEDS RESEARCH" : state}: ${score === null ? "an opportunity score cannot yet be calculated because Fit remains unknown" : `weighted opportunity strength is ${score}${timingDimensionsKnown ? "" : " (provisional: based on Fit; Need and Timing are not yet measured)"}`}. Confidence is ${confidence.score ?? "unknown"} and is not included in that score.${gates.length ? ` Gates: ${gates.join("; ")}.` : ""}`,
   };
 }
@@ -491,6 +604,8 @@ export async function evaluateOpportunity(input: { organizationId: string; proje
   const criteria = icpVersion ? await tx.select().from(icpCriteriaTable).where(eq(icpCriteriaTable.icpVersionId, icpVersion.id)) : [];
   const facts = await selectAcceptedFactsForCompany(row.company.id, tx);
   const factsForIcp = companyFacts(row.company, facts);
+  /* The facts are already in hand; the signal → kind lookup costs no query. */
+  const factTypeById = new Map(facts.map((fact) => [fact.id, fact.factType as string]));
   // Intelligence Core V2 is the Fit provider whenever a persisted assessment
   // exists for this project company; otherwise the legacy fact evaluation is
   // used exactly as before.
@@ -554,6 +669,7 @@ export async function evaluateOpportunity(input: { organizationId: string; proje
       needImpact: signal.needImpactSnapshot ?? definition.needImpact, timingImpact: signal.timingImpactSnapshot ?? definition.timingImpact,
       fitImpact: signal.fitImpactSnapshot ?? definition.fitImpact, status: signal.status,
       factIds: signal.supportingFactIds, evidenceIds: signal.supportingEvidenceIds,
+      evidenceKind: signalEvidenceKind(signal.supportingFactIds, factTypeById),
     })),
     clusters: clusters.map((cluster) => ({
       id: cluster.id, strength: cluster.currentStrength, confidence: cluster.confidence, needImpact: cluster.needImpact,

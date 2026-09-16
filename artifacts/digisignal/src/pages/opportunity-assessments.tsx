@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { WhyClaimTraceList } from "@/components/evidence/WhyClaimTrace";
+import { SignalVerdict, useWeekVerdicts } from "@/components/signal-verdict";
 
 type Company = { id: string; status: string; company: { canonicalName: string }; opportunityAssessmentState: string | null; opportunityScore: number | null; confidenceScore: number | null };
 type Assessment = {
@@ -55,6 +56,7 @@ export function OpportunityAssessments({ projectId, initialCompanyId, focusWhy =
 }) {
   const [, navigate] = useLocation();
   const [companies, setCompanies] = useState<Company[]>([]);
+  const verdicts = useWeekVerdicts(projectId);
   const [assessments, setAssessments] = useState<ListItem[]>([]);
   const [detail, setDetail] = useState<Detail | null>(null);
   const [why, setWhy] = useState<WhyDetail | null>(null);
@@ -151,7 +153,7 @@ export function OpportunityAssessments({ projectId, initialCompanyId, focusWhy =
       </div>
       <Card className="overflow-hidden">
         {companies.length === 0 && <div className="p-6 text-sm text-muted-foreground">Add a company to create its project-specific assessment.</div>}
-        {sortedCompanies.map((company) => {
+        {sortedCompanies.map((company, index) => {
           const assessment = assessmentByCompany.get(company.id);
           return (
             <div className="flex flex-col gap-3 border-b p-4 last:border-b-0 sm:flex-row sm:items-center sm:justify-between" key={company.id}>
@@ -171,6 +173,16 @@ export function OpportunityAssessments({ projectId, initialCompanyId, focusWhy =
                 </div>
                 {assessment && <ChevronRight className="ml-auto h-4 w-4 text-muted-foreground" />}
               </button>
+              {assessment && (
+                <SignalVerdict
+                  projectId={projectId}
+                  projectCompanyId={company.id}
+                  rank={index + 1}
+                  score={assessment.score ?? null}
+                  state={assessment.state}
+                  existing={verdicts.get(company.id)}
+                />
+              )}
               <Button size="sm" variant="outline" onClick={() => void evaluate(company.id)} disabled={loadingId === company.id}>
                 {loadingId === company.id ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}
                 {assessment ? "Refresh" : "Assess"}

@@ -282,6 +282,8 @@ const typeSamples = {
   SECURITY_INCIDENT: "On August 20, 2026, Acme disclosed a data breach.",
   EMPLOYEE_GROWTH: "On August 20, 2026, Acme's workforce grew to 900 employees.",
   TRUST_CENTER_CHANGE: "On August 20, 2026, Acme launched a new trust center.",
+  WORKFORCE_REDUCTION: "On August 20, 2026, Acme laid off 120 employees and announced a hiring freeze.",
+  ACQUIRED: "On August 20, 2026, Acme was acquired by Globex Corporation.",
 };
 for (const factType of FACT_TYPES) {
   assert.equal(
