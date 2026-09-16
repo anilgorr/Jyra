@@ -45,7 +45,10 @@ import {
   db,
   evidenceAttributionReviewsTable,
 } from "@workspace/db";
-import { calculateEvidenceScores } from "../evidence";
+import {
+  calculateEvidenceScores,
+  type EvidenceAttributionDecision,
+} from "../evidence";
 import { claimCrawlPage } from "./crawl-page";
 import { technologyFactCandidates, type TechnologyScanReading } from "./vendor-technographics";
 
@@ -61,6 +64,33 @@ export const IMPORT_FACT_EXTRACTOR_VERSION = "vendor-technographics@1";
  * correct answer.
  */
 export const IMPORT_SOURCE_DOMAIN = "first-party-upload";
+
+/**
+ * How an uploaded row is attributed.
+ *
+ * Exported so a test can read it without a database. Both vocabulary columns
+ * are plain `text` in Postgres, so a wrong value is not a failed write - it is
+ * accepted silently and then 500s the evidence endpoint on read, for every
+ * company the import touched, discovered whenever someone finally opens one.
+ * `entityStatus` shipped as "MATCHED", which is not a status, under a comment
+ * warning about precisely this. A comment cannot check a string. The return
+ * type can, and the test parses the result through the generated API schema so
+ * the two vocabularies cannot drift apart again.
+ */
+export function importAttributionDecision(sourceLabel: string): EvidenceAttributionDecision {
+  return {
+    sourceClassification: "BUSINESS_DATABASE",
+    /* The row named this company and this website; that is the whole identity
+     * claim, and it is the uploader's, not ours. */
+    entityStatus: "CONFIRMED_ENTITY",
+    entityConfidence: 80,
+    entityReason: `Uploaded in ${sourceLabel} against this company's own row.`,
+    sourceReliabilityScore: 55,
+    qualityReason:
+      "Third-party web technology scan: checkable in principle, undated in practice.",
+    acceptedAsEvidence: true,
+  };
+}
 
 export type ImportFactReport = {
   factsInserted: number;
@@ -161,26 +191,14 @@ export async function persistImportTechnologyFacts(
   if (existing) {
     evidenceId = existing.id;
   } else {
+    const attribution = importAttributionDecision(input.sourceLabel);
     await executor
       .insert(evidenceAttributionReviewsTable)
       .values({
         crawlPageId,
         companyId: input.companyId,
         reviewedByOrganizationId: input.organizationId,
-        /* One of the eight the API accepts. An invented value here is accepted
-         * by Postgres - the column is plain text - and then 500s the evidence
-         * endpoint on read, which is how "COMPANY_WEBSITE" survived in this
-         * codebase until something finally read it back. */
-        sourceClassification: "BUSINESS_DATABASE",
-        entityStatus: "MATCHED",
-        /* The row named this company and this website; that is the whole
-         * identity claim, and it is the uploader's, not ours. */
-        entityConfidence: 80,
-        entityReason: `Uploaded in ${input.sourceLabel} against this company's own row.`,
-        sourceReliabilityScore: 55,
-        qualityReason:
-          "Third-party web technology scan: checkable in principle, undated in practice.",
-        acceptedAsEvidence: true,
+        ...attribution,
       })
       .onConflictDoNothing();
 
