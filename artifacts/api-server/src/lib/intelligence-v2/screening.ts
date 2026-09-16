@@ -181,6 +181,31 @@ export function targetCountriesFromBusinessTwin(
   return known.filter((country) => geographies.some((entry) => entry.includes(country)));
 }
 
+/**
+ * One spelling for a country, whatever the source wrote.
+ *
+ * The same field arrives as "India", "IN", "US" and "United States" from
+ * different importers and providers, and comparing raw strings meant every
+ * company recorded as "IN" scored zero on geography — not because it was
+ * abroad, but because of the spelling. A screen that silently mismarks its own
+ * target market is worse than one with no geography rule at all.
+ */
+export function normalizeCountry(value: string | null | undefined): string | null {
+  const raw = (value ?? "").trim().toLowerCase();
+  if (!raw) return null;
+  const ALIASES: Record<string, string> = {
+    in: "india", ind: "india", bharat: "india",
+    us: "united states", usa: "united states", "u.s.": "united states",
+    "u.s.a.": "united states", america: "united states",
+    uk: "united kingdom", gb: "united kingdom", gbr: "united kingdom",
+    "great britain": "united kingdom", england: "united kingdom",
+    ae: "united arab emirates", uae: "united arab emirates",
+    sg: "singapore", au: "australia", ca: "canada", de: "germany",
+    fr: "france", nl: "netherlands", ie: "ireland",
+  };
+  return ALIASES[raw] ?? raw;
+}
+
 /* ------------------------------------------------------------------ *
  * The screen
  * ------------------------------------------------------------------ */
@@ -238,6 +263,28 @@ export function screenCompany(input: ScreeningInput, policy: ScreeningPolicy): S
   ) {
     disqualifiers.push(`Same industry as you: ${company.industry}`);
   }
+
+  /* No size ceiling, and the reason is worth recording so nobody adds one
+   * from the armchair.
+   *
+   * The obvious rule — disqualify the giants — has nothing to run on. Not one
+   * of the 808 companies carries a headcount; `employee_count` is null across
+   * the board, and the vendor's `employee_range` is a four-label band
+   * ("Medium Enterprise") whose thresholds nobody has published.
+   *
+   * The next idea, reading the company's own words, was tried and measured:
+   * matching "conglomerate", "Fortune 500" and the like flagged 45 companies,
+   * and every one was a small Indian IT services firm advertising its
+   * CLIENTS — Greysoft, a Growing Startup; Neova Solutions, an Emerging
+   * Business. It caught none of the actual giants, because Xiaomi India and
+   * Mahindra Group arrived with no description at all. A hundred per cent
+   * false positives, zero true ones, and it would have deleted good prospects
+   * for boasting about their customers.
+   *
+   * The giants at the top of the first ranked list turned out not to be a size
+   * problem anyway. They were empty records — name and domain, no facts, no
+   * signals — scoring on Fit alone. Weighting evidence properly drops them
+   * without anyone having to guess at headcounts. */
 
   if (disqualifiers.length) {
     return {
@@ -297,8 +344,9 @@ export function screenCompany(input: ScreeningInput, policy: ScreeningPolicy): S
    * but 82 of the 790 imported companies have no country at all, and scoring a
    * missing value as a miss would rank a company down for a gap in the file
    * rather than a fact about the company. */
-  if (policy.targetCountries.length && company.country) {
-    if (policy.targetCountries.includes(company.country.toLowerCase())) {
+  const country = normalizeCountry(company.country);
+  if (policy.targetCountries.length && country) {
+    if (policy.targetCountries.includes(country)) {
       score += 10;
       reasons.push(`In ${company.country}, a market you sell to`);
     }

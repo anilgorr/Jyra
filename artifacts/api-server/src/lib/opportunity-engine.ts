@@ -272,11 +272,34 @@ export function calculateOpportunityAssessment(input: OpportunityCalculationInpu
   ];
   const fitKnown = fit.score !== null;
   const timingDimensionsKnown = need.score !== null && timing.score !== null;
-  const knownWeight = scoring.filter((item) => item.component.score !== null).reduce((sum, item) => sum + item.weight, 0);
-  // A known Fit is enough for a provisional strength; Need and Timing refine it
-  // (and unlock the strong states below) once their signals are measured.
-  const score = fitKnown && knownWeight
-    ? round(scoring.reduce((sum, item) => sum + (item.component.score ?? 0) * item.weight, 0) / knownWeight)
+
+  /* An unmeasured Need or Timing counts as zero, and its weight stays in the
+   * denominator.
+   *
+   * Dividing by the weight of the KNOWN dimensions only meant a company with
+   * nothing but a Fit score was judged on Fit alone — and Fit is generous,
+   * because it reads a company description rather than anything the company
+   * has done. So a company we had never researched outranked one carrying a
+   * live signal: on the first real import Xiaomi India scored 87 with zero
+   * facts and zero signals, four places above Multidots on 77 with seven facts
+   * and an active martech signal. The ranked list was sorted, in part, by
+   * ignorance.
+   *
+   * Need and Timing are derived from evidence about the company, so their
+   * absence is a fact about the company — nothing has been demonstrated — and
+   * scoring it as zero is the honest reading.
+   *
+   * Relationship is different and keeps the old treatment. It is first-party
+   * data the customer maintains, never inferred from evidence; a blank one
+   * means nobody has recorded a meeting, not that the company is cold to us.
+   * Penalising a company for a gap in someone's CRM would be scoring our own
+   * admin, so an unknown Relationship still leaves the weighting. */
+  const evidenceDimensions = [fit, need, timing];
+  const denominator = scoring
+    .filter((item) => evidenceDimensions.includes(item.component) || item.component.score !== null)
+    .reduce((sum, item) => sum + item.weight, 0);
+  const score = fitKnown && denominator
+    ? round(scoring.reduce((sum, item) => sum + (item.component.score ?? 0) * item.weight, 0) / denominator)
     : null;
   const completeness = scoring.filter((item) => item.component.score !== null).reduce((sum, item) => sum + item.weight, 0) / 100;
   const confidence = confidenceComponent(input, completeness);

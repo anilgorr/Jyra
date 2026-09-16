@@ -215,4 +215,47 @@ const tech = (product, ...categories) => ({ product, categories });
   assert.deepEqual(once, twice);
 }
 
+// 9. Country arrives spelled four ways and must be read as one.
+//
+//    "India", "IN", "US", "United States", null — all present in the same
+//    column. Comparing raw strings meant every company recorded as "IN" scored
+//    zero on geography, not because it was abroad but because of the spelling.
+{
+  assert.equal(m.normalizeCountry("IN"), "india");
+  assert.equal(m.normalizeCountry(" in "), "india");
+  assert.equal(m.normalizeCountry("India"), "india");
+  assert.equal(m.normalizeCountry("US"), "united states");
+  assert.equal(m.normalizeCountry("United States"), "united states");
+  assert.equal(m.normalizeCountry("UK"), "united kingdom");
+  assert.equal(m.normalizeCountry(null), null);
+  assert.equal(m.normalizeCountry("  "), null);
+
+  const base = { technologies: [tech("HubSpot", "crm", "marketing automation")], activeSignals: 1 };
+  const long = m.screenCompany({ ...base, company: company({ canonicalName: "Long", country: "India" }) }, policy);
+  const short = m.screenCompany({ ...base, company: company({ canonicalName: "Short", country: "IN" }) }, policy);
+  assert.equal(long.score, short.score, "the same country spelled two ways must score the same");
+  assert.ok(short.reasons.some((reason) => /market you sell to/.test(reason)));
+}
+
+// 10. No size ceiling, deliberately — and the bad version must not come back.
+//
+//     Reading a company's own words for "conglomerate" or "Fortune 500" flagged
+//     45 companies on the real list and every one was a small Indian IT firm
+//     advertising its CLIENTS. It caught none of the giants, which arrived with
+//     no description at all.
+{
+  const boaster = m.screenCompany({
+    company: company({
+      canonicalName: "Greysoft",
+      domain: "greysoft.in",
+      employeeRange: "Growing Startup",
+      description: "We build software for Fortune 500 companies and large conglomerates across India.",
+    }),
+    technologies: [tech("HubSpot", "crm", "marketing automation")],
+    activeSignals: 1,
+  }, policy);
+  assert.equal(boaster.verdict, "KEEP",
+    "naming your customers is not evidence of your own size");
+}
+
 console.log("screening: ok");

@@ -51,6 +51,8 @@ const input = (o = {}) => ({
   ...o,
 });
 const dimension = (result, name) => result.components.find((c) => c.dimension === name);
+// The engine keeps two decimals; match it rather than rounding differently here.
+const round2 = (value) => Math.round(value * 100) / 100;
 
 // ------------------------------------------ part 1: the calculation abstains
 
@@ -169,6 +171,60 @@ check("the calculation object is not mutated in place", () => {
   const before = noEvidence.score;
   h.resolvePersistedAssessment(noEvidence, priorGoodScore);
   assert.equal(noEvidence.score, before, "the policy must return a new object, not edit the calculation");
+});
+
+// ------------------------------------- part 3: ignorance is not a qualification
+
+console.log("\ncalculateOpportunityAssessment — unmeasured dimensions cost");
+
+check("a company with only a Fit score does not score its Fit", () => {
+  const blind = h.calculateOpportunityAssessment(input({ signals: [], clusters: [] }));
+  const blindFit = dimension(blind, "FIT").score;
+  assert.ok(blindFit !== null, "Fit is known in this fixture");
+  assert.equal(dimension(blind, "NEED").score, null);
+  assert.equal(dimension(blind, "TIMING").score, null);
+  // Dividing by the weight of the KNOWN dimensions only made score === fit.
+  // On the first real import that put Xiaomi India at 87 with zero facts and
+  // zero signals, four places above Multidots on 77 with seven facts and a
+  // live martech signal. The list was sorted, in part, by how little had been
+  // looked at.
+  assert.notEqual(blind.score, blindFit);
+  assert.equal(blind.score, round2((blindFit * 30) / 90),
+    "Need and Timing keep their weight in the denominator at a score of zero");
+});
+
+check("evidence outranks its absence", () => {
+  const blind = h.calculateOpportunityAssessment(input({ signals: [], clusters: [] }));
+  const evidenced = h.calculateOpportunityAssessment(input());
+  assert.ok(evidenced.score > blind.score * 2,
+    `measured beats unmeasured: ${evidenced.score} vs ${blind.score}`);
+});
+
+check("a fully measured company keeps exactly the score it had", () => {
+  const full = h.calculateOpportunityAssessment(input());
+  const f = dimension(full, "FIT").score;
+  const n = dimension(full, "NEED").score;
+  const t = dimension(full, "TIMING").score;
+  // This change moves the unresearched down; it must not move anyone else.
+  assert.equal(full.score, round2((f * 30 + n * 30 + t * 30) / 90));
+});
+
+check("an unrecorded Relationship leaves the weighting, unlike Need and Timing", () => {
+  // Relationship is first-party data the customer maintains, never inferred
+  // from evidence. A blank one means nobody logged a meeting, not that the
+  // company is cold — scoring it zero would penalise a gap in our own CRM
+  // rather than anything about the company. So it keeps the old treatment and
+  // drops out of the denominator, while Need and Timing stay in at zero.
+  const none = h.calculateOpportunityAssessment(input({ relationshipStatus: "NONE" }));
+  const known = h.calculateOpportunityAssessment(input({ relationshipStatus: "KNOWN_CHAMPION" }));
+  const f = dimension(none, "FIT").score;
+  const n = dimension(none, "NEED").score;
+  const t = dimension(none, "TIMING").score;
+  const r = dimension(known, "RELATIONSHIP").score;
+
+  assert.equal(dimension(none, "RELATIONSHIP").score, null);
+  assert.equal(none.score, round2((f * 30 + n * 30 + t * 30) / 90), "unknown: weight 10 leaves");
+  assert.equal(known.score, round2((f * 30 + n * 30 + t * 30 + r * 10) / 100), "known: weight 10 counts");
 });
 
 console.log(`\nOpportunity score preservation: ${checks} checks passed.`);
