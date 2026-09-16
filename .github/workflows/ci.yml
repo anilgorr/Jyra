@@ -1,8 +1,23 @@
 name: CI
 
+# Runs on EVERY branch push, not just main.
+#
+# This gate was already good and was aimed at the wrong target. Production
+# deploys from `audit/production-fixes`; Render and Vercel build on a push to
+# it, and CI only watched `main`. So every change that actually reached
+# customers arrived having run nothing - typecheck, lint, 66 unit suites and
+# the build all sitting idle on a branch nobody was pushing to. Pull requests
+# were covered, which matters for a team and not at all for a solo founder
+# pushing straight to the deploy branch.
+#
+# Note what this still does NOT do: it cannot BLOCK a deploy. Render and Vercel
+# start building the moment the push lands, in parallel with this job, so a red
+# gate is a fast alarm rather than a stop. Turning it into a stop means either
+# requiring a PR with a required status check, or moving the deploy behind a
+# workflow that runs after this one. Until then, read the result before
+# assuming a push was safe.
 on:
   push:
-    branches: [main]
   pull_request:
 
 concurrency:
@@ -39,6 +54,13 @@ jobs:
 
       - name: Lint
         run: pnpm run lint
+
+      - name: Migration and invariant checks
+        # Database-free: these read the migration folder and prove the journal
+        # is coherent and the invariant DDL is safe to re-apply. They existed
+        # and were not wired into the gate, so a malformed migration reached
+        # the deploy branch unchallenged.
+        run: pnpm --dir lib/db run test:migrations
 
       - name: Unit suites
         # Every suite in this gate runs with no database, no API keys and no

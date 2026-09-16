@@ -25,28 +25,25 @@ export const EVIDENCE_STATUSES = [
 
 export type EvidenceStatus = (typeof EVIDENCE_STATUSES)[number];
 
-export const EVIDENCE_SOURCE_CLASSIFICATIONS = [
-  "OFFICIAL_WEBSITE",
-  "NEWS",
-  "JOB_LISTING",
-  "SOCIAL_COMPANY_PROFILE",
-  "BUSINESS_DATABASE",
-  "PRESS_RELEASE",
-  "PARTNER_VENDOR",
-  "OTHER_WEB",
-] as const;
-
-export type EvidenceSourceClassification =
-  (typeof EVIDENCE_SOURCE_CLASSIFICATIONS)[number];
-
-export const EVIDENCE_ENTITY_STATUSES = [
-  "CONFIRMED_ENTITY",
-  "PROBABLE_ENTITY",
-  "AMBIGUOUS_ENTITY",
-  "WRONG_ENTITY",
-] as const;
-
-export type EvidenceEntityStatus = (typeof EVIDENCE_ENTITY_STATUSES)[number];
+/* Re-exported, not redeclared.
+ *
+ * These two vocabularies are Postgres enums. The database is the only layer
+ * that can refuse a wrong value at the moment it is WRITTEN, so the database's
+ * list is the definition and everything here is a view of it. A second copy in
+ * this file would be a second thing to forget.
+ *
+ * Imported from the schema module by path rather than through `@workspace/db`,
+ * because hermetic unit suites replace that package with a stub that throws on
+ * contact - and reading a vocabulary is not touching a database. */
+export {
+  EVIDENCE_SOURCE_CLASSIFICATIONS,
+  EVIDENCE_ENTITY_STATUSES,
+} from "../../../../lib/db/src/schema/evidence";
+import type {
+  EvidenceEntityStatus,
+  EvidenceSourceClassification,
+} from "../../../../lib/db/src/schema/evidence";
+export type { EvidenceEntityStatus, EvidenceSourceClassification };
 
 export type EvidenceAttributionDecision = {
   sourceClassification: EvidenceSourceClassification;

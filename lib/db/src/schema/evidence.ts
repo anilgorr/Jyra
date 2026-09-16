@@ -38,6 +38,56 @@ export const evidenceStatusEnum = pgEnum("evidence_status", [
   "STALE",
 ]);
 
+/**
+ * The attribution vocabularies, and why they live here rather than in the API.
+ *
+ * `entity_status` and `source_classification` were `text`. Postgres therefore
+ * accepted any string on write, while the evidence endpoint enforced a fixed
+ * list on read - so a wrong value was not a failed insert but a 500 on GET,
+ * for every company the writing code had touched, surfacing whenever someone
+ * finally opened one of them. A CSV import wrote `entity_status = 'MATCHED'`,
+ * which is not a status. 517 rows went in clean and 516 company pages broke.
+ *
+ * Enforcement at the point of READ is the wrong end. An enum puts it back on
+ * the write, where the failure is one row, one stack trace, and the developer
+ * who caused it - rather than silent data corruption discovered by a customer.
+ *
+ * These arrays are the single source of truth. The API's constants re-export
+ * them, and `test-evidence-vocabulary` asserts the generated OpenAPI schema
+ * still lists exactly these values, so the two ends cannot drift apart again.
+ */
+export const EVIDENCE_SOURCE_CLASSIFICATIONS = [
+  "OFFICIAL_WEBSITE",
+  "NEWS",
+  "JOB_LISTING",
+  "SOCIAL_COMPANY_PROFILE",
+  "BUSINESS_DATABASE",
+  "PRESS_RELEASE",
+  "PARTNER_VENDOR",
+  "OTHER_WEB",
+] as const;
+
+export const EVIDENCE_ENTITY_STATUSES = [
+  "CONFIRMED_ENTITY",
+  "PROBABLE_ENTITY",
+  "AMBIGUOUS_ENTITY",
+  "WRONG_ENTITY",
+] as const;
+
+export type EvidenceSourceClassification =
+  (typeof EVIDENCE_SOURCE_CLASSIFICATIONS)[number];
+export type EvidenceEntityStatus = (typeof EVIDENCE_ENTITY_STATUSES)[number];
+
+export const evidenceSourceClassificationEnum = pgEnum(
+  "evidence_source_classification",
+  EVIDENCE_SOURCE_CLASSIFICATIONS,
+);
+
+export const evidenceEntityStatusEnum = pgEnum(
+  "evidence_entity_status",
+  EVIDENCE_ENTITY_STATUSES,
+);
+
 export const crawlPagesTable = pgTable(
   "crawl_pages",
   {
@@ -146,8 +196,9 @@ export const evidenceAttributionReviewsTable = pgTable(
       () => organizationsTable.id,
       { onDelete: "restrict" },
     ),
-    sourceClassification: text("source_classification").notNull(),
-    entityStatus: text("entity_status").notNull(),
+    sourceClassification:
+      evidenceSourceClassificationEnum("source_classification").notNull(),
+    entityStatus: evidenceEntityStatusEnum("entity_status").notNull(),
     entityConfidence: real("entity_confidence").notNull(),
     entityReason: text("entity_reason").notNull(),
     sourceReliabilityScore: real("source_reliability_score").notNull(),

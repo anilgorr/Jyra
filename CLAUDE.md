@@ -34,6 +34,15 @@ Migrations: `pnpm --dir lib/db exec drizzle-kit generate --config ./drizzle.conf
 Never hand-write the SQL; the journal and snapshot must agree. Render runs
 `migrate.mjs` at startup, so a broken migration means the API does not boot.
 
+## Before changing behaviour, read `docs/DECISIONS.md`
+
+An index of the load-bearing decisions: what was decided, why, where it is
+enforced, and what breaks if it is undone. Several were reached by measuring
+something and finding the obvious answer wrong — the size ceiling that turned
+out 100% wrong in both directions, the honest-looking RAW status that made
+1,215 facts invisible. Re-deriving those costs a day each. It also lists the
+known gaps, so they are rediscovered on purpose rather than in production.
+
 ## Rules that are not style preferences
 
 **Evidence before assertion.** Every verdict cites the evidence that produced

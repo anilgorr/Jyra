@@ -113,6 +113,27 @@
       "when": 1789475383684,
       "tag": "0015_project_company_screening_state",
       "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1789561824841,
+      "tag": "0016_evidence_attribution_vocabularies",
+      "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1789561884841,
+      "tag": "0017_pin_function_search_path",
+      "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1789561944841,
+      "tag": "0018_enable_row_level_security",
+      "breakpoints": true
     }
   ]
 }

@@ -9,6 +9,7 @@
 CREATE OR REPLACE FUNCTION reject_crawl_page_mutation()
 RETURNS trigger
 LANGUAGE plpgsql
+SET search_path = pg_catalog, public
 AS $$
 BEGIN
   RAISE EXCEPTION 'crawl_pages records are append-only'
@@ -26,6 +27,7 @@ EXECUTE FUNCTION reject_crawl_page_mutation();
 CREATE OR REPLACE FUNCTION require_signal_provenance()
 RETURNS trigger
 LANGUAGE plpgsql
+SET search_path = pg_catalog, public
 AS $$
 DECLARE
   actual_fact_ids jsonb;
@@ -75,6 +77,7 @@ EXECUTE FUNCTION require_signal_provenance();
 CREATE OR REPLACE FUNCTION require_linked_signal_provenance()
 RETURNS trigger
 LANGUAGE plpgsql
+SET search_path = pg_catalog, public
 AS $$
 DECLARE
   parent_signal signals%ROWTYPE;
@@ -134,6 +137,7 @@ EXECUTE FUNCTION require_linked_signal_provenance();
 CREATE OR REPLACE FUNCTION reject_signal_provenance_link_update()
 RETURNS trigger
 LANGUAGE plpgsql
+SET search_path = pg_catalog, public
 AS $$
 BEGIN
   RAISE EXCEPTION 'signal provenance links are immutable'
@@ -162,7 +166,9 @@ CREATE UNIQUE INDEX IF NOT EXISTS why_explanations_one_current_per_opportunity
   WHERE current = true;
 
 CREATE OR REPLACE FUNCTION protect_why_explanation_immutability()
-RETURNS trigger AS $$
+RETURNS trigger
+SET search_path = pg_catalog, public
+AS $$
 BEGIN
   IF TG_OP = 'UPDATE' THEN
     IF OLD.current = true AND NEW.current = false
@@ -184,7 +190,9 @@ CREATE TRIGGER why_explanations_immutable
   FOR EACH ROW EXECUTE FUNCTION protect_why_explanation_immutability();
 
 CREATE OR REPLACE FUNCTION protect_why_claim_immutability()
-RETURNS trigger AS $$
+RETURNS trigger
+SET search_path = pg_catalog, public
+AS $$
 BEGIN
   IF TG_OP = 'UPDATE' THEN
     RAISE EXCEPTION 'WHY claims are immutable';
@@ -204,6 +212,7 @@ CREATE TRIGGER why_claims_immutable
 CREATE OR REPLACE FUNCTION require_opportunity_scope_consistency()
 RETURNS trigger
 LANGUAGE plpgsql
+SET search_path = pg_catalog, public
 AS $$
 BEGIN
   IF NOT EXISTS (
@@ -235,6 +244,7 @@ EXECUTE FUNCTION require_opportunity_scope_consistency();
 CREATE OR REPLACE FUNCTION reject_recommendation_ledger_mutation()
 RETURNS trigger
 LANGUAGE plpgsql
+SET search_path = pg_catalog, public
 AS $$
 BEGIN
   RAISE EXCEPTION 'recommendation ledger records are immutable'
@@ -257,6 +267,7 @@ EXECUTE FUNCTION reject_recommendation_ledger_mutation();
 CREATE OR REPLACE FUNCTION require_recommendation_ledger_scope()
 RETURNS trigger
 LANGUAGE plpgsql
+SET search_path = pg_catalog, public
 AS $$
 BEGIN
   IF NOT EXISTS (
@@ -340,6 +351,7 @@ EXECUTE FUNCTION require_recommendation_ledger_scope();
 CREATE OR REPLACE FUNCTION require_recommendation_outcome_scope()
 RETURNS trigger
 LANGUAGE plpgsql
+SET search_path = pg_catalog, public
 AS $$
 BEGIN
   IF NOT EXISTS (
@@ -366,6 +378,7 @@ EXECUTE FUNCTION require_recommendation_outcome_scope();
 CREATE OR REPLACE FUNCTION reject_learning_history_mutation()
 RETURNS trigger
 LANGUAGE plpgsql
+SET search_path = pg_catalog, public
 AS $$
 BEGIN
   RAISE EXCEPTION 'learning history is immutable'
@@ -391,6 +404,7 @@ FOR EACH ROW EXECUTE FUNCTION reject_learning_history_mutation();
 CREATE OR REPLACE FUNCTION require_learning_scope()
 RETURNS trigger
 LANGUAGE plpgsql
+SET search_path = pg_catalog, public
 AS $$
 BEGIN
   IF NEW.scope = 'PROJECT' AND (
@@ -450,7 +464,9 @@ BEFORE INSERT ON learning_model_versions
 FOR EACH ROW EXECUTE FUNCTION require_learning_scope();
 
 CREATE OR REPLACE FUNCTION require_learning_model_source()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SET search_path = pg_catalog, public
+AS $$
 BEGIN
   IF NEW.source_proposal_id IS NOT NULL AND NOT EXISTS (
     SELECT 1 FROM learning_improvement_proposals p
@@ -474,6 +490,7 @@ FOR EACH ROW EXECUTE FUNCTION require_learning_model_source();
 CREATE OR REPLACE FUNCTION require_learning_proposal_review()
 RETURNS trigger
 LANGUAGE plpgsql
+SET search_path = pg_catalog, public
 AS $$
 BEGIN
   IF TG_OP = 'DELETE' THEN
@@ -514,7 +531,9 @@ BEFORE UPDATE OR DELETE ON learning_improvement_proposals
 FOR EACH ROW EXECUTE FUNCTION require_learning_proposal_review();
 
 CREATE OR REPLACE FUNCTION require_research_economics_scope()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SET search_path = pg_catalog, public
+AS $$
 BEGIN
   IF NOT EXISTS (
     SELECT 1
@@ -559,7 +578,9 @@ BEFORE INSERT ON research_request_costs
 FOR EACH ROW EXECUTE FUNCTION require_research_economics_scope();
 
 CREATE OR REPLACE FUNCTION reject_research_cost_mutation()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SET search_path = pg_catalog, public
+AS $$
 BEGIN
   IF TG_OP = 'DELETE' AND NOT EXISTS (
     SELECT 1 FROM organizations o WHERE o.id = OLD.organization_id
@@ -577,7 +598,9 @@ BEFORE UPDATE OR DELETE ON research_request_costs
 FOR EACH ROW EXECUTE FUNCTION reject_research_cost_mutation();
 
 CREATE OR REPLACE FUNCTION require_research_budget_scope()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SET search_path = pg_catalog, public
+AS $$
 BEGIN
   IF NOT EXISTS (
     SELECT 1 FROM projects p
@@ -597,7 +620,9 @@ BEFORE INSERT OR UPDATE ON research_budgets
 FOR EACH ROW EXECUTE FUNCTION require_research_budget_scope();
 
 CREATE OR REPLACE FUNCTION require_research_reservation_scope()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SET search_path = pg_catalog, public
+AS $$
 BEGIN
   IF NOT EXISTS (
     SELECT 1
@@ -621,7 +646,9 @@ BEFORE INSERT OR UPDATE ON research_budget_reservations
 FOR EACH ROW EXECUTE FUNCTION require_research_reservation_scope();
 
 CREATE OR REPLACE FUNCTION require_company_provenance_scope()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SET search_path = pg_catalog, public
+AS $$
 BEGIN
   IF NOT EXISTS (
     SELECT 1
@@ -645,7 +672,9 @@ BEFORE INSERT ON company_provenance
 FOR EACH ROW EXECUTE FUNCTION require_company_provenance_scope();
 
 CREATE OR REPLACE FUNCTION reject_company_provenance_mutation()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SET search_path = pg_catalog, public
+AS $$
 BEGIN
   IF TG_OP = 'DELETE' AND pg_trigger_depth() > 1 THEN
     RETURN OLD;
@@ -664,7 +693,9 @@ FOR EACH ROW EXECUTE FUNCTION reject_company_provenance_mutation();
 -- These checks are database-side because direct/concurrent writers could
 -- otherwise attach an item or assignment from another campaign.
 CREATE OR REPLACE FUNCTION require_market_readiness_scope()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SET search_path = pg_catalog, public
+AS $$
 BEGIN
   IF NOT EXISTS (SELECT 1 FROM market_readiness_campaigns c
     WHERE c.id = NEW.campaign_id AND c.organization_id = NEW.organization_id
@@ -724,7 +755,9 @@ BEGIN
   RETURN NEW;
 END; $$;
 CREATE OR REPLACE FUNCTION reject_market_readiness_late_write()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SET search_path = pg_catalog, public
+AS $$
 DECLARE campaign_frozen_at timestamptz;
 BEGIN
   -- This row lock is compatible with other child writers but conflicts
@@ -760,7 +793,9 @@ DROP TRIGGER IF EXISTS market_readiness_manual_outcomes_freeze_writes ON market_
 CREATE UNIQUE INDEX IF NOT EXISTS market_readiness_prediction_campaign_item_unique
   ON market_readiness_prediction_snapshots(campaign_id, cohort_item_id);
 CREATE OR REPLACE FUNCTION require_complete_market_readiness_prediction()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SET search_path = pg_catalog, public
+AS $$
 DECLARE key_count integer;
 BEGIN
   SELECT count(*) INTO key_count FROM jsonb_object_keys(NEW.predictions);
@@ -813,7 +848,9 @@ ALTER TABLE market_readiness_prediction_snapshots
 CREATE UNIQUE INDEX IF NOT EXISTS market_readiness_experiment_campaign_unique
   ON market_readiness_experiments(campaign_id);
 CREATE OR REPLACE FUNCTION enforce_market_readiness_experiment_timestamps()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SET search_path = pg_catalog, public
+AS $$
 BEGIN
   IF OLD.started_at IS NOT NULL AND NEW.started_at IS DISTINCT FROM OLD.started_at THEN
     RAISE EXCEPTION 'market readiness experiment start is immutable' USING ERRCODE = '55000';
@@ -848,7 +885,9 @@ ALTER TABLE market_readiness_manual_outcomes
 -- project) is allowed only while the campaign is not frozen: frozen snapshots
 -- must never be destroyed silently through a parent teardown.
 CREATE OR REPLACE FUNCTION reject_market_readiness_prediction_snapshot_mutation()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SET search_path = pg_catalog, public
+AS $$
 DECLARE campaign_frozen_at timestamptz;
 BEGIN
   IF TG_OP = 'DELETE' AND pg_trigger_depth() > 1 THEN
@@ -876,7 +915,9 @@ CREATE TRIGGER market_readiness_prediction_snapshots_append_only
 -- `SET LOCAL jyra.allow_frozen_teardown = 'on'`, reserved for deliberate
 -- teardown of test fixtures; it is never set by application code.
 CREATE OR REPLACE FUNCTION reject_frozen_market_readiness_campaign_delete()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SET search_path = pg_catalog, public
+AS $$
 BEGIN
   IF OLD.frozen_at IS NOT NULL
      AND current_setting('jyra.allow_frozen_teardown', true) IS DISTINCT FROM 'on' THEN
@@ -890,7 +931,9 @@ CREATE TRIGGER market_readiness_campaigns_freeze_deletes
   BEFORE DELETE ON market_readiness_campaigns
   FOR EACH ROW EXECUTE FUNCTION reject_frozen_market_readiness_campaign_delete();
 CREATE OR REPLACE FUNCTION reject_market_readiness_frozen_child_delete()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SET search_path = pg_catalog, public
+AS $$
 DECLARE campaign_frozen_at timestamptz;
 BEGIN
   IF OLD.campaign_id IS NULL THEN RETURN OLD; END IF;
