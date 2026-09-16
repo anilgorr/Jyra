@@ -64,3 +64,4 @@ pnpm-workspace.yaml.bak
 # database dumps — never commit business data
 *.sql.bak
 jyra_data*.sql
+.patches/
