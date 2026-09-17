@@ -6,10 +6,14 @@
  * OpenAPI spec version: 0.1.0
  */
 
+/**
+ * RELEVANT = would reach out this week. FIT_NO_TRIGGER = right company, nothing happening. NOT_RELEVANT = wrong, with a reason.
+ */
 export type SignalFeedbackBodyVerdict = typeof SignalFeedbackBodyVerdict[keyof typeof SignalFeedbackBodyVerdict];
 
 
 export const SignalFeedbackBodyVerdict = {
   RELEVANT: 'RELEVANT',
   NOT_RELEVANT: 'NOT_RELEVANT',
+  FIT_NO_TRIGGER: 'FIT_NO_TRIGGER',
 } as const;

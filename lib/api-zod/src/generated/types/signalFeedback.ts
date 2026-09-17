@@ -11,6 +11,7 @@ export interface SignalFeedback {
   id: string;
   projectCompanyId: string;
   signalId?: string | null;
+  /** RELEVANT = would reach out this week. FIT_NO_TRIGGER = right company, nothing happening. NOT_RELEVANT = wrong, with a reason. */
   verdict: SignalFeedbackVerdict;
   reason: string | null;
   note: string | null;

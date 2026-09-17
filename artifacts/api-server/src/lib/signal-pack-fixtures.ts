@@ -211,6 +211,20 @@ export const SIGNAL_PACK_FIXTURES: PackFixture[] = [
     definitions: [
       definition("MARKETING_NEW_CMO", "New marketing leader", "LEADERSHIP", ["LEADERSHIP_CHANGE"], [76, 88, 80], { matchAny: ["cmo", "marketing", "growth"] }),
       definition("MARKETING_TEAM_GROWTH", "Marketing team growth", "HIRING", ["JOB_OPENING", "HIRING_COUNT"], [68, 76, 70], { matchAny: ["marketing", "growth", "demand generation"] }),
+      /* A company adding go-to-market capacity needs pipeline to feed it. The
+       * first feedback round said so in as many words: Accops, hiring three
+       * regional sales managers, partner sales and a customer-success manager
+       * in one month, is a prospect for a demand-generation agency - and the
+       * pack had no definition that could see it. Two facts, not one: a lone
+       * SDR opening is a replacement; several sales roles at once is a plan.
+       * Presales and sales engineering are deliberately in: they are
+       * capacity for the same funnel. "presales" is listed on its own because
+       * a plain word matches whole words only, and "sales" is not one. */
+      definition("GO_TO_MARKET_EXPANSION", "Sales team expansion", "HIRING", ["JOB_OPENING", "HIRING_COUNT"], [72, 80, 66], {
+        description: "Hiring sales, SDR/BDR, partner or customer-success roles: the company is adding go-to-market capacity and will need demand to feed it.",
+        matchAny: ["sales", "presales", "pre-sales", "sdr", "bdr", "business development", "account executive", "partner", "customer success", "revenue"],
+        minFacts: 2,
+      }),
       definition("MARKETING_GROWTH_FUNDING", "Funded customer acquisition", "FUNDING", ["FUNDING_EVENT"], [72, 82, 68]),
       definition("MARKETING_MARTECH_CHANGE", "Martech platform change", "TECHNOLOGY", ["TECHNOLOGY_MENTION"], [70, 78, 76], { matchAny: ["crm", "marketing automation", "hubspot", "salesforce"] }),
       ...NEGATIVE_DEFINITIONS,

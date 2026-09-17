@@ -308,6 +308,7 @@ function PrecisionCard() {
                 <th className="pb-2 pr-4 font-medium">Organisation</th>
                 <th className="pb-2 pr-4 text-right font-medium">Top 10 rated</th>
                 <th className="pb-2 pr-4 text-right font-medium">Precision</th>
+                <th className="pb-2 pr-4 text-right font-medium" title="Right company, nothing happening: Fit is right, the intent engine has nothing yet">Fit only</th>
                 <th className="pb-2 pr-4 text-right font-medium">All rated</th>
                 <th className="pb-2 font-medium">Why not</th>
               </tr>
@@ -321,6 +322,7 @@ function PrecisionCard() {
                   <td className={`py-2 pr-4 text-right font-medium tabular-nums ${tone(row.precisionAt10)}`}>
                     {row.precisionAt10 === null ? "—" : `${Math.round(row.precisionAt10 * 100)}%`}
                   </td>
+                  <td className="py-2 pr-4 text-right tabular-nums text-muted-foreground">{row.fitOnlyTop10}</td>
                   <td className="py-2 pr-4 text-right tabular-nums text-muted-foreground">{row.relevantTotal} / {row.ratedTotal}</td>
                   <td className="py-2 text-xs text-muted-foreground">
                     {Object.entries(row.reasons).sort((a, b) => b[1] - a[1]).map(([k, v]) => `${REASON_LABEL[k] ?? k} ×${v}`).join(" · ") || "—"}

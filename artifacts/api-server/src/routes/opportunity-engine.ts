@@ -13,6 +13,7 @@ import {
 } from "@workspace/db";
 import { GetMarketTodayResponse } from "@workspace/api-zod";
 import { getMarketToday } from "../lib/market-today";
+import { opportunityHeadlines } from "../lib/opportunity-headline";
 import { DEFAULT_OPPORTUNITY_RULES, evaluateOpportunity, getOpportunityDetail } from "../lib/opportunity-engine";
 import { generateWhyForOpportunity, getWhyDetail } from "../lib/opportunity-why";
 import { getNextBestActionForCompany } from "../lib/next-best-action-service";
@@ -61,7 +62,9 @@ router.get("/projects/:projectId/opportunities", requireAuth, asyncRoute(async (
     .innerJoin(companiesTable, eq(opportunitiesTable.companyId, companiesTable.id))
     .where(and(eq(opportunitiesTable.projectId, params.data.projectId), inArray(projectCompaniesTable.status, [...WATCHED_PROJECT_COMPANY_STATUSES])))
     .orderBy(desc(opportunitiesTable.score), desc(opportunitiesTable.assessedAt));
-  res.json(rows);
+  // Why each one is here, in a seller's words - see opportunity-headline.ts.
+  const headlines = await opportunityHeadlines(params.data.projectId, rows.map((r) => r.company.id));
+  res.json(rows.map((row) => ({ ...row, headline: headlines.get(row.company.id) ?? null })));
 }));
 
 router.get("/projects/:projectId/market-today", requireAuth, asyncRoute(async (req, res) => {

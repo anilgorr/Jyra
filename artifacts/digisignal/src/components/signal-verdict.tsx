@@ -7,21 +7,34 @@ import {
   useWithdrawSignalFeedback,
   type SignalFeedback,
 } from "@workspace/api-client-react";
-import { ThumbsDown, ThumbsUp } from "lucide-react";
+import { Check, ThumbsDown, ThumbsUp } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 /**
- * Relevant or not - the one question the intent engine is judged by.
+ * "Would you reach out this week because of this?"
  *
- * Sits on every row of the ranked list. A thumbs-up records RELEVANT; a
- * thumbs-down asks why, because the reason is the part we learn from: each
- * one points at a different piece of the engine. One verdict per company per
- * week; pressing the other thumb changes it, pressing the lit one takes it
- * back - "I don't know" leaves no row, because a row is counted.
+ * That is the question, and it is written on the control because the first
+ * round of feedback answered a different one. Every thumbs-up turned out to
+ * mean "this is a company we'd sell to" - a judgment about Fit - while the
+ * engine is judged on intent. So there are three answers now:
+ *
+ *   Reach out now   - RELEVANT. Counts toward precision@10.
+ *   Fits, not now   - FIT_NO_TRIGGER. Right company, nothing happening. The
+ *                     Fit model is right and the intent engine has nothing;
+ *                     the most useful thing a seller can say.
+ *   Not relevant    - NOT_RELEVANT, with a reason, because each reason points
+ *                     at a different piece of the engine.
+ *
+ * One verdict per company per week. Pressing another answer changes it;
+ * pressing the lit one takes it back and leaves no row, because a row is
+ * counted and silence is not.
  */
-const REASONS: Array<{ code: "WRONG_COMPANY" | "NOT_OUR_BUYER" | "TOO_OLD" | "ALREADY_CUSTOMER" | "WRONG_SIGNAL" | "OTHER"; label: string }> = [
+type Verdict = "RELEVANT" | "FIT_NO_TRIGGER" | "NOT_RELEVANT";
+type Reason = "WRONG_COMPANY" | "NOT_OUR_BUYER" | "TOO_OLD" | "ALREADY_CUSTOMER" | "WRONG_SIGNAL" | "OTHER";
+
+const REASONS: Array<{ code: Reason; label: string }> = [
   { code: "NOT_OUR_BUYER", label: "Not a company we'd sell to" },
   { code: "WRONG_SIGNAL", label: "The signal isn't a buying signal" },
   { code: "TOO_OLD", label: "Too old to act on" },
@@ -53,60 +66,73 @@ export function SignalVerdict({ projectId, projectCompanyId, rank, score, state,
   const [open, setOpen] = useState(false);
   const busy = record.isPending || withdraw.isPending;
 
+  const refresh = () => {
+    setOpen(false);
+    void queryClient.invalidateQueries({ queryKey: getListSignalFeedbackQueryKey(projectId) });
+  };
+  const fail = (fallback: string) => (error: unknown) =>
+    toast.error((error as { data?: { error?: string } })?.data?.error ?? fallback);
+
   const takeBack = () => {
-    withdraw.mutate(
-      { projectId, projectCompanyId },
-      {
-        onSuccess: () => {
-          setOpen(false);
-          void queryClient.invalidateQueries({ queryKey: getListSignalFeedbackQueryKey(projectId) });
-          toast.success("Verdict withdrawn");
-        },
-        onError: (error) => toast.error((error as { data?: { error?: string } })?.data?.error ?? "Could not withdraw that"),
-      },
-    );
+    withdraw.mutate({ projectId, projectCompanyId }, {
+      onSuccess: () => { refresh(); toast.success("Verdict withdrawn"); },
+      onError: fail("Could not withdraw that"),
+    });
   };
 
-  const submit = (verdict: "RELEVANT" | "NOT_RELEVANT", reason?: (typeof REASONS)[number]["code"]) => {
-    record.mutate(
-      { projectId, projectCompanyId, data: { verdict, reason, rank, score, state } },
-      {
-        onSuccess: () => {
-          setOpen(false);
-          void queryClient.invalidateQueries({ queryKey: getListSignalFeedbackQueryKey(projectId) });
-          toast.success(verdict === "RELEVANT" ? "Marked relevant" : "Noted - we'll learn from that");
-        },
-        onError: (error) => toast.error((error as { data?: { error?: string } })?.data?.error ?? "Could not record that"),
+  const submit = (verdict: Verdict, reason?: Reason) => {
+    record.mutate({ projectId, projectCompanyId, data: { verdict, reason, rank, score, state } }, {
+      onSuccess: () => {
+        refresh();
+        toast.success(
+          verdict === "RELEVANT" ? "Marked: reach out now"
+            : verdict === "FIT_NO_TRIGGER" ? "Marked: fits, nothing happening yet"
+              : "Noted - we'll learn from that",
+        );
       },
-    );
+      onError: fail("Could not record that"),
+    });
   };
 
-  const up = existing?.verdict === "RELEVANT";
-  const down = existing?.verdict === "NOT_RELEVANT";
+  const current = existing?.verdict as Verdict | undefined;
+  const now = current === "RELEVANT";
+  const fit = current === "FIT_NO_TRIGGER";
+  const no = current === "NOT_RELEVANT";
 
   return (
-    <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+    <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()} title="Would you reach out this week because of this?">
       <Button
         size="sm"
-        variant={up ? "default" : "ghost"}
-        className="h-8 px-2"
-        aria-label={up ? "Withdraw verdict" : "Relevant"}
-        aria-pressed={up}
-        title={up ? "Marked relevant - press again to take it back" : "Relevant"}
+        variant={now ? "default" : "ghost"}
+        className="h-8 gap-1 px-2"
+        aria-label={now ? "Marked reach out now - press again to take it back" : "Reach out now"}
+        aria-pressed={now}
         disabled={busy}
-        onClick={() => (up ? takeBack() : submit("RELEVANT"))}
+        onClick={() => (now ? takeBack() : submit("RELEVANT"))}
       >
         <ThumbsUp className="h-4 w-4" />
+        <span className="hidden text-xs sm:inline">Now</span>
+      </Button>
+      <Button
+        size="sm"
+        variant={fit ? "secondary" : "ghost"}
+        className="h-8 gap-1 px-2"
+        aria-label={fit ? "Marked fits, not now - press again to take it back" : "Fits, but nothing happening"}
+        aria-pressed={fit}
+        disabled={busy}
+        onClick={() => (fit ? takeBack() : submit("FIT_NO_TRIGGER"))}
+      >
+        <Check className="h-4 w-4" />
+        <span className="hidden text-xs sm:inline">Fits, not now</span>
       </Button>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
             size="sm"
-            variant={down ? "secondary" : "ghost"}
+            variant={no ? "secondary" : "ghost"}
             className="h-8 px-2"
             aria-label="Not relevant"
-            aria-pressed={down}
-            title={down ? "Marked not relevant - open to change or take it back" : "Not relevant"}
+            aria-pressed={no}
             disabled={busy}
           >
             <ThumbsDown className="h-4 w-4" />
@@ -114,7 +140,7 @@ export function SignalVerdict({ projectId, projectCompanyId, rank, score, state,
         </PopoverTrigger>
         <PopoverContent align="end" className="w-64 p-2">
           <p className="px-2 pb-2 text-xs text-muted-foreground">Why not? This is what we learn from.</p>
-          {down && (
+          {no && (
             <button
               type="button"
               className="mb-1 w-full rounded-md border px-2 py-1.5 text-left text-sm text-muted-foreground hover:bg-muted"

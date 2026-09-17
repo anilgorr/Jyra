@@ -13,7 +13,8 @@ type Assessment = {
   id: string; projectCompanyId: string; score: number | null; state: string; assessmentStatus: string;
   confidenceScore: number | null; explanation: string; assessedAt: string;
 };
-type ListItem = { opportunity: Assessment; projectCompany: Company; company: { canonicalName: string } };
+type Headline = { kind: "negative" | "event" | "standing" | "none"; signal: string | null; text: string; date: string | null };
+type ListItem = { opportunity: Assessment; projectCompany: Company; company: { canonicalName: string }; headline: Headline | null };
 type Component = {
   dimension: string; score: number | null; status: string; rule: string; explanation: string;
   signalIds: string[]; clusterIds: string[]; factIds: string[]; evidenceIds: string[];
@@ -44,6 +45,11 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 const scoreText = (score: number | null) => score === null ? "Unknown" : Math.round(score).toString();
+/* The one line that says why the company is here. An event reads as news; a
+ * negative reads as a warning; standing facts and "nothing yet" are muted,
+ * because they are the absence of news. */
+const headlineTone = (kind: "negative" | "event" | "standing" | "none") =>
+  kind === "negative" ? "text-red-700" : kind === "event" ? "text-foreground" : "text-muted-foreground";
 const stateTone = (state: string) =>
   state === "SURGING" || state === "ACTIVE" ? "bg-emerald-500/10 text-emerald-700 border-emerald-500/20" :
   state === "RISING" || state === "EMERGING" ? "bg-amber-500/10 text-amber-700 border-amber-500/20" :
@@ -122,6 +128,7 @@ export function OpportunityAssessments({ projectId, initialCompanyId, focusWhy =
     } finally { setLoadingId(null); }
   };
   const assessmentByCompany = new Map(assessments.map((item) => [item.projectCompany.id, item.opportunity]));
+  const headlineByCompany = new Map(assessments.map((item) => [item.projectCompany.id, item.headline]));
   // Rank the board by opportunity strength: scored companies first (highest
   // score on top), then assessed-but-unscored, then not-yet-assessed; name
   // breaks ties within each tier.
@@ -155,6 +162,7 @@ export function OpportunityAssessments({ projectId, initialCompanyId, focusWhy =
         {companies.length === 0 && <div className="p-6 text-sm text-muted-foreground">Add a company to create its project-specific assessment.</div>}
         {sortedCompanies.map((company, index) => {
           const assessment = assessmentByCompany.get(company.id);
+          const headline = headlineByCompany.get(company.id) ?? null;
           return (
             <div className="flex flex-col gap-3 border-b p-4 last:border-b-0 sm:flex-row sm:items-center sm:justify-between" key={company.id}>
               <button
@@ -168,8 +176,13 @@ export function OpportunityAssessments({ projectId, initialCompanyId, focusWhy =
                 <div>
                   <p className="font-medium">{company.company.canonicalName}</p>
                   <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-                    {assessment ? <><Badge variant="outline" className={stateTone(assessment.state)}>{assessment.assessmentStatus === "INSUFFICIENT_DATA" ? "NEEDS RESEARCH" : assessment.state}</Badge><span>Confidence {scoreText(assessment.confidenceScore)}</span><span>{assessment.assessmentStatus.replaceAll("_", " ")}</span></> : <span>Not assessed</span>}
+                    {assessment ? <><Badge variant="outline" className={stateTone(assessment.state)}>{assessment.assessmentStatus === "INSUFFICIENT_DATA" ? "NEEDS RESEARCH" : assessment.state}</Badge><span>Confidence {scoreText(assessment.confidenceScore)}</span></> : <span>Not assessed</span>}
                   </div>
+                  {assessment && headline && (
+                    <p className={`mt-1 text-sm ${headlineTone(headline.kind)}`} data-testid={`headline-${company.id}`}>
+                      {headline.kind === "event" || headline.kind === "negative" ? <><span className="font-medium">{headline.signal}</span>{": "}{headline.text}{headline.date && <span className="text-muted-foreground"> · {headline.date}</span>}</> : headline.text}
+                    </p>
+                  )}
                 </div>
                 {assessment && <ChevronRight className="ml-auto h-4 w-4 text-muted-foreground" />}
               </button>

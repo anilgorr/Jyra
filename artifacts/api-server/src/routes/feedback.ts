@@ -86,7 +86,7 @@ router.put("/projects/:projectId/companies/:projectCompanyId/feedback", requireA
     eq(signalFeedbackTable.weekStart, weekStart),
   )).limit(1);
 
-  const reason = body.data.verdict === "RELEVANT" ? null : body.data.reason ?? null;
+  const reason = body.data.verdict === "NOT_RELEVANT" ? body.data.reason ?? null : null;
   const note = body.data.note?.trim() || null;
 
   const [row] = existing
@@ -153,7 +153,10 @@ router.get("/projects/:projectId/feedback", requireAuth, asyncRoute(async (req, 
  * Precision@10 by organisation by week, eight weeks back.
  *
  * "Rated" counts verdicts on rows that were in the top ten when rated;
- * precision is relevant ÷ rated among those. A week where nobody rated
+ * precision is relevant ÷ rated among those. FIT_NO_TRIGGER counts as rated
+ * and not relevant - a right company with nothing happening is a row the
+ * intent engine put in the top ten without intent - but is reported on its
+ * own, because it is the one verdict that says the Fit model is right. A week where nobody rated
  * anything in the top ten has null precision, not zero - silence is not a
  * verdict. Reasons are tallied across all NOT_RELEVANT verdicts, top ten or
  * not, because a wrong company at rank 14 is still a wrong company.
@@ -167,6 +170,7 @@ router.get("/admin/precision", requireInternalAdmin, asyncRoute(async (_req, res
       weekStart: signalFeedbackTable.weekStart,
       ratedTop10: sql<number>`count(*) filter (where ${signalFeedbackTable.rankAtFeedback} is not null and ${signalFeedbackTable.rankAtFeedback} <= 10)::int`,
       relevantTop10: sql<number>`count(*) filter (where ${signalFeedbackTable.rankAtFeedback} is not null and ${signalFeedbackTable.rankAtFeedback} <= 10 and ${signalFeedbackTable.verdict} = 'RELEVANT')::int`,
+      fitOnlyTop10: sql<number>`count(*) filter (where ${signalFeedbackTable.rankAtFeedback} is not null and ${signalFeedbackTable.rankAtFeedback} <= 10 and ${signalFeedbackTable.verdict} = 'FIT_NO_TRIGGER')::int`,
       ratedTotal: sql<number>`count(*)::int`,
       relevantTotal: sql<number>`count(*) filter (where ${signalFeedbackTable.verdict} = 'RELEVANT')::int`,
     })
@@ -202,6 +206,7 @@ router.get("/admin/precision", requireInternalAdmin, asyncRoute(async (_req, res
       organizationName: row.organizationName,
       weekStart: row.weekStart,
       ratedTop10, relevantTop10,
+      fitOnlyTop10: Number(row.fitOnlyTop10),
       ratedTotal: Number(row.ratedTotal), relevantTotal: Number(row.relevantTotal),
       /* Silence is not a verdict: nothing rated in the top ten is null, not 0. */
       precisionAt10: ratedTop10 > 0 ? Math.round((relevantTop10 / ratedTop10) * 1000) / 1000 : null,

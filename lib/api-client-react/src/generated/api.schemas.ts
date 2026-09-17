@@ -1841,12 +1841,16 @@ export interface AccessGrantCost {
   ledger: AccessGrantCostLedgerItem[];
 }
 
+/**
+ * RELEVANT = would reach out this week. FIT_NO_TRIGGER = right company, nothing happening. NOT_RELEVANT = wrong, with a reason.
+ */
 export type SignalFeedbackBodyVerdict = typeof SignalFeedbackBodyVerdict[keyof typeof SignalFeedbackBodyVerdict];
 
 
 export const SignalFeedbackBodyVerdict = {
   RELEVANT: 'RELEVANT',
   NOT_RELEVANT: 'NOT_RELEVANT',
+  FIT_NO_TRIGGER: 'FIT_NO_TRIGGER',
 } as const;
 
 export type SignalFeedbackBodyReason = typeof SignalFeedbackBodyReason[keyof typeof SignalFeedbackBodyReason];
@@ -1862,6 +1866,7 @@ export const SignalFeedbackBodyReason = {
 } as const;
 
 export interface SignalFeedbackBody {
+  /** RELEVANT = would reach out this week. FIT_NO_TRIGGER = right company, nothing happening. NOT_RELEVANT = wrong, with a reason. */
   verdict: SignalFeedbackBodyVerdict;
   reason?: SignalFeedbackBodyReason;
   /** @maxLength 1000 */
@@ -1876,18 +1881,23 @@ export interface SignalFeedbackBody {
   state?: string;
 }
 
+/**
+ * RELEVANT = would reach out this week. FIT_NO_TRIGGER = right company, nothing happening. NOT_RELEVANT = wrong, with a reason.
+ */
 export type SignalFeedbackVerdict = typeof SignalFeedbackVerdict[keyof typeof SignalFeedbackVerdict];
 
 
 export const SignalFeedbackVerdict = {
   RELEVANT: 'RELEVANT',
   NOT_RELEVANT: 'NOT_RELEVANT',
+  FIT_NO_TRIGGER: 'FIT_NO_TRIGGER',
 } as const;
 
 export interface SignalFeedback {
   id: string;
   projectCompanyId: string;
   signalId?: string | null;
+  /** RELEVANT = would reach out this week. FIT_NO_TRIGGER = right company, nothing happening. NOT_RELEVANT = wrong, with a reason. */
   verdict: SignalFeedbackVerdict;
   reason: string | null;
   note: string | null;
@@ -1908,6 +1918,8 @@ export interface PrecisionRow {
   weekStart: string;
   ratedTop10: number;
   relevantTop10: number;
+  /** Right company, nothing happening: the Fit model is right and the intent engine has nothing yet. */
+  fitOnlyTop10: number;
   /** relevantTop10 / ratedTop10 */
   precisionAt10: number | null;
   ratedTotal: number;

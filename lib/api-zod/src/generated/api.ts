@@ -696,7 +696,7 @@ export const recordSignalFeedbackBodyNoteMax = 1000;
 
 
 export const RecordSignalFeedbackBody = zod.object({
-  "verdict": zod.enum(['RELEVANT', 'NOT_RELEVANT']),
+  "verdict": zod.enum(['RELEVANT', 'NOT_RELEVANT', 'FIT_NO_TRIGGER']).describe('RELEVANT = would reach out this week. FIT_NO_TRIGGER = right company, nothing happening. NOT_RELEVANT = wrong, with a reason.'),
   "reason": zod.enum(['WRONG_COMPANY', 'NOT_OUR_BUYER', 'TOO_OLD', 'ALREADY_CUSTOMER', 'WRONG_SIGNAL', 'OTHER']).optional(),
   "note": zod.string().max(recordSignalFeedbackBodyNoteMax).optional(),
   "signalId": zod.string().optional(),
@@ -709,7 +709,7 @@ export const RecordSignalFeedbackResponse = zod.object({
   "id": zod.string(),
   "projectCompanyId": zod.string(),
   "signalId": zod.string().nullish(),
-  "verdict": zod.enum(['RELEVANT', 'NOT_RELEVANT']),
+  "verdict": zod.enum(['RELEVANT', 'NOT_RELEVANT', 'FIT_NO_TRIGGER']).describe('RELEVANT = would reach out this week. FIT_NO_TRIGGER = right company, nothing happening. NOT_RELEVANT = wrong, with a reason.'),
   "reason": zod.string().nullable(),
   "note": zod.string().nullable(),
   "rankAtFeedback": zod.number().nullable(),
@@ -746,7 +746,7 @@ export const ListSignalFeedbackResponseItem = zod.object({
   "id": zod.string(),
   "projectCompanyId": zod.string(),
   "signalId": zod.string().nullish(),
-  "verdict": zod.enum(['RELEVANT', 'NOT_RELEVANT']),
+  "verdict": zod.enum(['RELEVANT', 'NOT_RELEVANT', 'FIT_NO_TRIGGER']).describe('RELEVANT = would reach out this week. FIT_NO_TRIGGER = right company, nothing happening. NOT_RELEVANT = wrong, with a reason.'),
   "reason": zod.string().nullable(),
   "note": zod.string().nullable(),
   "rankAtFeedback": zod.number().nullable(),
@@ -767,6 +767,7 @@ export const GetAdminPrecisionResponseItem = zod.object({
   "weekStart": zod.string(),
   "ratedTop10": zod.number(),
   "relevantTop10": zod.number(),
+  "fitOnlyTop10": zod.number().describe('Right company, nothing happening: the Fit model is right and the intent engine has nothing yet.'),
   "precisionAt10": zod.number().nullable().describe('relevantTop10 \/ ratedTop10'),
   "ratedTotal": zod.number(),
   "relevantTotal": zod.number(),

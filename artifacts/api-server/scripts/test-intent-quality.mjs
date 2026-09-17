@@ -188,6 +188,127 @@ check("the explanation says what happened", () => {
 
 
 
+// ------------------------------------------------- the definition feedback wrote
+
+console.log("\nintent quality — a sales scale-up is a demand signal");
+
+const gtm = (() => {
+  const pack = h.SIGNAL_PACK_FIXTURES.find((p) => p.slug === "digital-marketing");
+  const item = pack.definitions.find((d) => d.code === "GO_TO_MARKET_EXPANSION");
+  return {
+    id: "gtm", signalPackId: "pack", code: item.code, name: item.name, description: item.description,
+    polarity: item.polarity, evidenceRequirements: {}, defaultStrength: item.defaultStrength,
+    minimumConfidence: item.minimumConfidence, lifetimeDays: item.lifetimeDays, decayRule: item.decayRule,
+    needImpact: item.needImpact, timingImpact: item.timingImpact,
+    configuration: { mode: item.mode, factTypes: item.factTypes, matchAny: item.matchAny ?? [], matchAll: item.matchAll ?? [], excludeAny: item.excludeAny ?? [], minFacts: item.minFacts },
+    createdAt: new Date(), updatedAt: new Date(),
+  };
+})();
+const opening = (id, title, date = "2026-09-10") => ({
+  id, companyId: "c", evidenceId: "e", factType: "JOB_OPENING",
+  structuredValue: { title, companyName: "Acme" }, effectiveDate: date, confidence: 90,
+  supportingExcerpt: title, extractorVersion: "test", createdAt: new Date(),
+});
+
+check("Accops - regional sales, partner sales, presales, customer success - is a go-to-market expansion", () => {
+  const facts = [
+    opening("j1", "Regional Sales Manager - Bengaluru"),
+    opening("j2", "Partner Sales Manager - Delhi"),
+    opening("j3", "Presales - ROW & SEA"),
+    opening("j4", "Customer Success Manager"),
+    opening("j5", "Lead QA Engineer - (Jio)"),
+    opening("j6", "Head of Finance"),
+  ];
+  const [candidate] = h.detectSignalCandidates(facts, [gtm]);
+  assert.ok(candidate, "the definition must fire");
+  assert.deepEqual(candidate.facts.map((f) => f.id).sort(), ["j1", "j2", "j3", "j4"], "sales, partner, presales and CS count; QA and finance do not");
+});
+
+check("one SDR opening is a replacement, not a plan - it takes two", () => {
+  assert.equal(h.detectSignalCandidates([opening("j1", "Sales Development Representative")], [gtm]).length, 0);
+  assert.equal(h.detectSignalCandidates([opening("j1", "Sales Development Representative"), opening("j2", "Account Executive - SMB")], [gtm]).length, 1);
+});
+
+check("Roomito's code reviewer and an engineering bench are not a sales scale-up", () => {
+  const facts = [opening("j1", "Senior Reviewer - Code & Web Templates"), opening("j2", "Full Stack Developer - Python"), opening("j3", "Data Engineer")];
+  assert.equal(h.detectSignalCandidates(facts, [gtm]).length, 0);
+});
+
+check("the words are whole words: 'wholesale' and 'salesforce admin' do not count as sales hiring", () => {
+  const facts = [opening("j1", "Wholesale Operations Associate"), opening("j2", "Salesforce Administrator")];
+  assert.equal(h.detectSignalCandidates(facts, [gtm]).length, 0);
+});
+
+// ------------------------------------------------ what the row says, and asks
+
+console.log("\nintent quality — why a company is on the list");
+
+const F = (id, factType, structuredValue, supportingExcerpt, effectiveDate) => [id, { id, factType, structuredValue, supportingExcerpt, effectiveDate }];
+const factsById = new Map([
+  F("job", "JOB_OPENING", { title: "Director - Portfolio Marketing (Solutions Marketing)", location: null }, "Director - Portfolio Marketing (Solutions Marketing)", "2026-07-24"),
+  F("hub", "TECHNOLOGY_MENTION", { product: "HubSpot", detection: "VENDOR_WEB_SCAN" }, "Acme uses HubSpot (crm), detected on its website", "2026-09-01"),
+  F("sf", "TECHNOLOGY_MENTION", { product: "Salesforce" }, "Acme uses Salesforce", "2026-09-01"),
+  F("lay", "WORKFORCE_REDUCTION", { company: "Acme", action: "laid off", detail: "120 employees" }, "Acme laid off 120 employees on 12 August 2026", "2026-08-12"),
+]);
+const sig = (name, factIds, o = {}) => ({ companyId: "c", polarity: "POSITIVE", name, strength: 70, effectiveDate: "2026-09-01", factIds, ...o });
+
+check("an event reads as news: the signal, the job title and the date", () => {
+  const h1 = h.headlineFor([sig("Marketing team growth", ["job"], { strength: 76 })], factsById);
+  assert.equal(h1.kind, "event");
+  assert.equal(h1.signal, "Marketing team growth");
+  assert.equal(h1.text, "Director - Portfolio Marketing (Solutions Marketing)");
+  assert.equal(h1.date, "24 Jul");
+});
+
+check("standing facts read as the absence of news", () => {
+  const h1 = h.headlineFor([sig("Martech platform change", ["hub", "sf"])], factsById);
+  assert.equal(h1.kind, "standing");
+  assert.equal(h1.text, "Uses HubSpot, Salesforce — nothing has happened yet");
+  assert.equal(h1.date, null);
+});
+
+check("a negative outranks any positive, however strong", () => {
+  const h1 = h.headlineFor([
+    sig("Marketing team growth", ["job"], { strength: 99 }),
+    sig("Workforce reduction", ["lay"], { polarity: "NEGATIVE", strength: 60 }),
+  ], factsById);
+  assert.equal(h1.kind, "negative");
+  assert.equal(h1.signal, "Workforce reduction");
+  assert.equal(h1.date, "12 Aug");
+});
+
+check("an event beats standing facts even when the standing signal is stronger", () => {
+  const h1 = h.headlineFor([sig("Martech platform change", ["hub"], { strength: 95 }), sig("Marketing team growth", ["job"], { strength: 40 })], factsById);
+  assert.equal(h1.kind, "event");
+});
+
+check("no signals is said plainly", () => {
+  assert.deepEqual(h.headlineFor([], factsById), { kind: "none", signal: null, text: "Nothing found yet — fit only", date: null });
+});
+
+check("a fact's label is the seller's word for it", () => {
+  assert.equal(h.factLabel({ factType: "LEADERSHIP_CHANGE", structuredValue: { person: "Priya Shah", role: "CMO" }, supportingExcerpt: "x" }), "Priya Shah, CMO");
+  assert.equal(h.factLabel({ factType: "HIRING_COUNT", structuredValue: { count: 5, theme: "sales", total: 25 }, supportingExcerpt: "x" }), "5 sales openings");
+  assert.equal(h.factLabel({ factType: "HIRING_COUNT", structuredValue: { count: 25, theme: "all", total: 25 }, supportingExcerpt: "25 open roles" }), "25 open roles");
+  assert.equal(h.factLabel({ factType: "FUNDING_EVENT", structuredValue: {}, supportingExcerpt: "  Raised   $12M Series A  " }), "Raised $12M Series A");
+});
+
+console.log("\nintent quality — the question the thumb asks");
+
+check("three answers: reach out now, fits but nothing happening, not relevant", () => {
+  for (const verdict of ["RELEVANT", "FIT_NO_TRIGGER", "NOT_RELEVANT"]) {
+    assert.equal(h.RecordSignalFeedbackBody.safeParse({ verdict, reason: verdict === "NOT_RELEVANT" ? "WRONG_SIGNAL" : undefined, rank: 1 }).success, true, verdict);
+  }
+  assert.equal(h.RecordSignalFeedbackBody.safeParse({ verdict: "MAYBE" }).success, false);
+});
+
+check("the precision report carries fit-only separately from relevant, so the two cannot be summed by accident", () => {
+  const row = { organizationId: "o", organizationName: "Acme", weekStart: "2026-09-14", ratedTop10: 7, relevantTop10: 1, fitOnlyTop10: 6, precisionAt10: 0.143, ratedTotal: 7, relevantTotal: 1, reasons: {} };
+  assert.equal(h.GetAdminPrecisionResponse.safeParse([row]).success, true);
+  const { fitOnlyTop10: _omit, ...without } = row;
+  assert.equal(h.GetAdminPrecisionResponse.safeParse([without]).success, false, "fitOnlyTop10 is required");
+});
+
 // ------------------------------------------------------------ the week key
 
 console.log("\nintent quality — the week a verdict belongs to");

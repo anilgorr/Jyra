@@ -103,6 +103,63 @@ three.
 
 - **Where:** `schema/signal-feedback.ts`, `routes/feedback.ts`, migration `0021`.
 
+### The thumb asks "would you reach out this week?", not "do they fit?"
+
+The first feedback round (17 Sep 2026) gave seven thumbs-up on the re-ranked
+list, six of them on companies whose only signal was a standing "uses
+HubSpot" fact. Asked what the thumb meant, the seller said "they fit — I'd
+sell to them". That is a verdict on the Fit model; the engine is judged on
+intent. With one thumb, every good-fit company is "relevant" and precision@10
+measures fit while intent goes unjudged.
+
+So there are three answers. RELEVANT is "reach out now" and is the only one
+that counts toward precision. FIT_NO_TRIGGER is "right company, nothing
+happening" — counted as rated, reported on its own, and the one verdict that
+says the Fit model is right. NOT_RELEVANT carries a reason. The question is
+written on the control. A verdict can also be withdrawn, leaving no row,
+because a row is counted and silence is not.
+
+- **Where:** `signal-verdict.tsx`, `routes/feedback.ts`, migration `0022`
+- **Enforced by:** `test-intent-quality.mjs` — the body schema accepts exactly
+  the three, and the precision row cannot omit `fitOnlyTop10`.
+
+### Every ranked row says why it is there, in a seller's words
+
+UpGrad sat at rank 4 unrated because the row showed a score, a state and
+"assessment complete" — nothing a seller could judge. The engine's own
+explanation is for the engine. Each row now carries one line: the strongest
+negative if any (a layoff outranks every positive), else the strongest event
+with its fact and date ("Marketing team growth: Director – Portfolio
+Marketing · 24 Jul"), else the standing facts as the absence of news ("Uses
+HubSpot, Salesforce — nothing has happened yet"), else "Nothing found yet —
+fit only".
+
+- **Where:** `lib/opportunity-headline.ts`, attached to `GET /projects/:p/opportunities`
+- **Enforced by:** `test-intent-quality.mjs` (`headlineFor` ordering).
+
+### A sales scale-up is a demand signal for a marketing seller
+
+Accops — three regional sales managers, partner sales, presales, a
+customer-success manager, all in one month — got nothing from the
+digital-marketing pack, whose four definitions could not see it. The seller
+said it is a prospect: a company adding go-to-market capacity needs pipeline
+to feed it. `GO_TO_MARKET_EXPANSION` matches sales/SDR/BDR/partner/CS/revenue
+titles on JOB_OPENING and HIRING_COUNT and needs two facts, because one SDR
+opening is a replacement and several roles at once is a plan. Plain words
+match whole words, so "wholesale" and "Salesforce Administrator" do not fire.
+
+- **Where:** `signal-pack-fixtures.ts`; seeded at boot (see below).
+- **Enforced by:** `test-intent-quality.mjs` with the real Accops titles.
+
+### Signal definitions are seeded at boot, not on page view
+
+The negative definitions shipped in `02b6654` were absent from production
+after deploy: `ensureSignalPackFixtures` ran only from `GET /signal-packs`,
+which the watch loop never calls. Scoring configuration cannot depend on
+someone opening a page.
+
+- **Where:** `index.ts`, `d77faac`. Idempotent on `signal_definitions_pack_code_unique`.
+
 ### Screening has no size ceiling
 
 A `tooLargeToBuy` heuristic matching "conglomerate|fortune 500|…" was written,

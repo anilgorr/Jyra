@@ -9,6 +9,7 @@ import type { SignalFeedbackBodyReason } from './signalFeedbackBodyReason';
 import type { SignalFeedbackBodyVerdict } from './signalFeedbackBodyVerdict';
 
 export interface SignalFeedbackBody {
+  /** RELEVANT = would reach out this week. FIT_NO_TRIGGER = right company, nothing happening. NOT_RELEVANT = wrong, with a reason. */
   verdict: SignalFeedbackBodyVerdict;
   reason?: SignalFeedbackBodyReason;
   /** @maxLength 1000 */

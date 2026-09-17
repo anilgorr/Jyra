@@ -13,6 +13,8 @@ export interface PrecisionRow {
   weekStart: string;
   ratedTop10: number;
   relevantTop10: number;
+  /** Right company, nothing happening: the Fit model is right and the intent engine has nothing yet. */
+  fitOnlyTop10: number;
   /** relevantTop10 / ratedTop10 */
   precisionAt10: number | null;
   ratedTotal: number;

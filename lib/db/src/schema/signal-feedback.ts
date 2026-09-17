@@ -40,6 +40,12 @@ import { usersTable } from "./users";
 export const signalFeedbackVerdictEnum = pgEnum("signal_feedback_verdict", [
   "RELEVANT",
   "NOT_RELEVANT",
+  /* "Right company, nothing happening." Added after the first feedback round,
+   * where every thumbs-up turned out to mean "I'd sell to them" rather than
+   * "I'd call them this week". Precision@10 counts only RELEVANT; this one
+   * says the Fit model is right and the intent engine has nothing yet - the
+   * single most useful thing a seller can tell us, and the thumb could not. */
+  "FIT_NO_TRIGGER",
 ]);
 
 /**
