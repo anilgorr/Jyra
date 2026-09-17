@@ -203,13 +203,25 @@ export function budgetAllowsCycle(input: {
   return { allowed: true, estimateUsd, reason: null };
 }
 
-/** Record one gate check and move the company's watch state forward. */
+/**
+ * Record one gate check and, unless told otherwise, move the company's watch
+ * state forward.
+ *
+ * `advance: false` is for the company the gate said to refresh and the tick
+ * had no cycle left for. Its check row and its cost are written - the money
+ * was spent - but neither its fingerprints nor its last-look stamp move,
+ * because it was not looked at: stamping it pushed it a full cadence into
+ * the future, and with 50 refreshes a tick for 10 cycles, 86 of 125 watched
+ * companies were told "you need research" three days running and researched
+ * never. A company that still needs a cycle is still due.
+ */
 export async function recordWatchCheck(input: {
   owned: DueCompany;
   outcome: GateOutcome;
   now: Date;
+  advance?: boolean;
 }): Promise<void> {
-  const { owned, outcome, now } = input;
+  const { owned, outcome, now, advance = true } = input;
   // The money was spent before either write. Recording it first means a
   // transaction that fails still leaves the spend on the ledger — the
   // check row can be lost, the cost cannot.
@@ -237,6 +249,7 @@ export async function recordWatchCheck(input: {
       jobCountAfter: outcome.jobCountAfter,
       costTotal: outcome.costUsd,
     });
+    if (!advance) return;
     if (outcome.fingerprints) {
       await tx.update(companiesTable)
         .set({ pageFingerprints: outcome.fingerprints, updatedAt: now })
@@ -467,8 +480,14 @@ export async function runWatchLoopTick(input: {
       continue;
     }
     report.checked++;
+    // Past here a full cycle may be warranted; the per-tick cycle cap decides
+    // whether it happens now or on the next tick. The check and its cost are
+    // recorded either way, so nothing is re-paid - but a company the cap
+    // turned away keeps its place in the queue: its last-look stamp does not
+    // move, so the next tick sees it first, not a day later.
+    const capped = outcome.run && executed >= settings.maxCompaniesPerTick;
     try {
-      await record({ owned, outcome, now: checkedAt });
+      await record({ owned, outcome, now: checkedAt, advance: !capped });
     } catch (error) {
       input.log.warn({ ...base, err: error }, "WATCH_LOOP_CHECK_RECORD_FAILED");
     }
@@ -478,12 +497,9 @@ export async function runWatchLoopTick(input: {
       report.outcomes.push({ ...base, result: "unchanged", gate: gateSummary });
       continue;
     }
-    // Past here a full cycle is warranted; the per-tick cycle cap decides
-    // whether it happens now or on the next tick. The gate result is already
-    // recorded either way, so nothing is re-paid.
-    if (executed >= settings.maxCompaniesPerTick) {
+    if (capped) {
       report.skipped++;
-      report.outcomes.push({ ...base, result: "skipped_budget", gate: gateSummary, reason: "per-tick cycle cap reached" });
+      report.outcomes.push({ ...base, result: "skipped_budget", gate: gateSummary, reason: "per-tick cycle cap reached; still due" });
       continue;
     }
 
@@ -543,4 +559,47 @@ async function reevaluateStaleSignalsGuarded(
     log.info({ backlog: report.backlog, considered: report.considered, evaluated: report.evaluated, created: report.created, failed: report.failed, stoppedEarly: report.stoppedEarly }, "WATCH_LOOP_REEVALUATION");
   }
   return report;
+}
+
+/**
+ * One wake-up works through the backlog.
+ *
+ * The scheduler is a GitHub Actions cron, and GitHub runs scheduled workflows
+ * when it can: in the first three days it fired 17 times in 76 hours, about
+ * five a day, not twenty-four. With ten cycles a tick that is fifty cycles a
+ * day for a watch pool of 250. So a wake-up does not stop after one tick: it
+ * ticks again while the last tick turned companies away at the cycle cap,
+ * made progress, and the wall-clock budget allows. The per-tick cap still
+ * bounds each tick; the daily budget still bounds the day. What changes is
+ * that a rare wake-up is no longer a small one.
+ */
+export type WakeReport = { ticks: TickReport[]; last: TickReport; stoppedBecause: "caught_up" | "no_progress" | "out_of_time" | "tick_cap" };
+
+export function wakeBudgetMs(env: NodeJS.ProcessEnv = process.env): number {
+  const minutes = Number(env.JYRA_WATCH_WAKE_BUDGET_MINUTES);
+  return (Number.isFinite(minutes) && minutes > 0 ? Math.min(minutes, 55) : 45) * 60_000;
+}
+
+export async function runWatchLoopUntilCaughtUp(input: {
+  tick: () => Promise<TickReport>;
+  budgetMs: number;
+  maxTicks?: number;
+  now?: () => number;
+}): Promise<WakeReport> {
+  const clock = input.now ?? (() => Date.now());
+  const startedAt = clock();
+  const maxTicks = input.maxTicks ?? 24;
+  const ticks: TickReport[] = [];
+  for (;;) {
+    const report = await input.tick();
+    ticks.push(report);
+    const turnedAway = report.outcomes.some((o) => o.result === "skipped_budget" && o.reason?.includes("still due"));
+    if (!turnedAway) return { ticks, last: report, stoppedBecause: "caught_up" };
+    if (report.ran === 0) return { ticks, last: report, stoppedBecause: "no_progress" };
+    if (ticks.length >= maxTicks) return { ticks, last: report, stoppedBecause: "tick_cap" };
+    // Do not start a tick the budget cannot fit; the last one is a fair estimate of the next.
+    const elapsed = clock() - startedAt;
+    const lastTookMs = new Date(report.finishedAt).getTime() - new Date(report.startedAt).getTime();
+    if (elapsed + Math.max(lastTookMs, 0) > input.budgetMs) return { ticks, last: report, stoppedBecause: "out_of_time" };
+  }
 }

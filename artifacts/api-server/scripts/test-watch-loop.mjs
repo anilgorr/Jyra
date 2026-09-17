@@ -125,7 +125,7 @@ const noRecord = async () => {};
   assert.equal(report.outcomes[0].result, "skipped_seller_context");
   assert.equal(report.checked, 4, "all four were looked at cheaply");
   assert.equal(report.outcomes[3].result, "skipped_budget", "c was gated but its cycle waits for the next tick");
-  assert.equal(report.outcomes[3].reason, "per-tick cycle cap reached");
+  assert.equal(report.outcomes[3].reason, "per-tick cycle cap reached; still due");
 }
 
 // 6. A failing cycle is counted, logged, and does not stop the tick — and it does count toward the cap.
@@ -303,6 +303,76 @@ const noRecord = async () => {};
     spend: async () => ({ spentTodayUsd: 0, recentCycleCosts: [] }), dailyBudgetFor: async () => 25,
   });
   assert.equal(blind.credits.paidReadingAllowed, true, "a health check failure must not become a self-inflicted outage");
+}
+
+// 20. A company the cycle cap turns away is recorded without being stamped.
+//     Stamping it pushed it a full cadence out; with 50 refreshes a tick for
+//     10 cycles, 86 of 125 watched companies were told "you need research"
+//     three days running and researched never. Still due means still first.
+{
+  const recorded = [];
+  const report = await w.runWatchLoopTick({
+    repository: {}, log: quiet, now: NOW, settings: { ...settings, maxCompaniesPerTick: 1 },
+    select: async () => [owned("a"), owned("b"), owned("c")],
+    spend: async () => ({ spentTodayUsd: 0, recentCycleCosts: [] }), dailyBudgetFor: async () => 25,
+    gate: gateSaying(true, "REFRESH", 0), cycle: ranCycle(),
+    record: async (entry) => { recorded.push([entry.owned.projectCompany.id, entry.advance]); },
+  });
+  assert.equal(report.ran, 1);
+  assert.equal(report.skipped, 2);
+  assert.deepEqual(recorded, [["a", true], ["b", false], ["c", false]], "the one that ran advances; the two turned away do not");
+  assert.ok(report.outcomes.filter((o) => o.result === "skipped_budget").every((o) => /still due/.test(o.reason)), "the reason says they are still due");
+}
+
+// 21. An unchanged company still advances - it was looked at and nothing moved.
+{
+  const recorded = [];
+  await w.runWatchLoopTick({
+    repository: {}, log: quiet, now: NOW, settings: { ...settings, maxCompaniesPerTick: 0 },
+    select: async () => [owned("a")],
+    spend: async () => ({ spentTodayUsd: 0, recentCycleCosts: [] }), dailyBudgetFor: async () => 25,
+    gate: gateSaying(false), cycle: ranCycle(),
+    record: async (entry) => { recorded.push(entry.advance); },
+  });
+  assert.deepEqual(recorded, [true]);
+}
+
+// 22. One wake-up works through the backlog: it ticks again while the last
+//     tick turned companies away, made progress, and the budget allows.
+{
+  const tickReport = (ran, turnedAway, ms = 60_000) => ({
+    ran, outcomes: turnedAway ? [{ result: "skipped_budget", reason: "per-tick cycle cap reached; still due" }] : [],
+    startedAt: new Date(0).toISOString(), finishedAt: new Date(ms).toISOString(),
+  });
+  let clock = 0;
+  const now = () => clock;
+
+  // Backlog for two ticks, then caught up.
+  let n = 0;
+  const caught = await w.runWatchLoopUntilCaughtUp({ budgetMs: 60 * 60_000, now, tick: async () => { clock += 60_000; return tickReport(3, ++n < 3); } });
+  assert.equal(caught.ticks.length, 3);
+  assert.equal(caught.stoppedBecause, "caught_up");
+
+  // A tick that turned companies away but ran nothing is not going to do
+  // better next time - budget exhausted, seller context missing - so stop.
+  const stuck = await w.runWatchLoopUntilCaughtUp({ budgetMs: 60 * 60_000, now, tick: async () => tickReport(0, true) });
+  assert.equal(stuck.ticks.length, 1);
+  assert.equal(stuck.stoppedBecause, "no_progress");
+
+  // Out of time: the next tick would not fit the budget, judged by the last one.
+  clock = 0;
+  const late = await w.runWatchLoopUntilCaughtUp({ budgetMs: 5 * 60_000, now, tick: async () => { clock += 3 * 60_000; return tickReport(3, true, 3 * 60_000); } });
+  assert.equal(late.ticks.length, 1, "3 min used + 3 min estimated > 5 min budget");
+  assert.equal(late.stoppedBecause, "out_of_time");
+
+  // Nothing turned away on the first tick: one tick, done.
+  const single = await w.runWatchLoopUntilCaughtUp({ budgetMs: 60 * 60_000, now, tick: async () => tickReport(3, false) });
+  assert.equal(single.ticks.length, 1);
+
+  // The wake budget is bounded, and 45 minutes when unset - under GitHub's hour.
+  assert.equal(w.wakeBudgetMs({}), 45 * 60_000);
+  assert.equal(w.wakeBudgetMs({ JYRA_WATCH_WAKE_BUDGET_MINUTES: "500" }), 55 * 60_000);
+  assert.equal(w.wakeBudgetMs({ JYRA_WATCH_WAKE_BUDGET_MINUTES: "10" }), 10 * 60_000);
 }
 
 console.log("PASS watch-loop");

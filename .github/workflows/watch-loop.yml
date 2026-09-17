@@ -17,7 +17,14 @@ name: Watch loop
 
 on:
   schedule:
+    # Two chances an hour. GitHub runs scheduled workflows when it can, and
+    # in the first three days this one fired 17 times in 76 hours. The API
+    # answers 409 to a wake-up while one is running, and a wake-up now works
+    # through the backlog rather than stopping after one tick, so a second
+    # entry costs nothing when the first fired and covers the hour when it
+    # did not.
     - cron: "17 * * * *"
+    - cron: "47 * * * *"
   workflow_dispatch:
 
 concurrency:

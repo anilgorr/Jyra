@@ -242,6 +242,30 @@ rows between cadence windows is what health looks like.
 - **Tunable:** `JYRA_WATCH_MAX_PER_TICK` (max 50). A full run of 162 companies
   cost $1.19 against a $25/day budget, so 10 is conservative.
 
+### A company the cycle cap turns away is still due
+
+Each tick gated 60 companies, about 50 came back REFRESH, 10 got a cycle,
+and the other 40 had `last_watched_at` stamped as if they had been looked
+at — pushed out a full cadence. With the cron firing about five times a day
+(17 wake-ups in the first 76 hours; GitHub runs schedules when it can), that
+was 50 cycles a day for 250 due, and 86 of 125 watched companies were told
+"you need research" three days running and researched never. The ranked
+list showed 39 companies not because the other 86 scored low but because
+they had never been scored.
+
+Now a capped company's check and cost are recorded but its stamp and
+fingerprints do not move, so the next tick sees it first; and one wake-up
+ticks again while the last tick turned companies away, made progress and
+the 45-minute budget allows (`JYRA_WATCH_WAKE_BUDGET_MINUTES`). The
+workflow also has two cron entries an hour. The per-tick cap and the daily
+budget are unchanged — a rare wake-up is simply no longer a small one.
+
+- **Enforced by:** `test-watch-loop.mjs` §20–22.
+- **Where:** `watch-loop.ts` (`recordWatchCheck.advance`,
+  `runWatchLoopUntilCaughtUp`), `routes/watch-loop.ts`, `watch-loop.yml`.
+- **Note:** the workflow file that runs is the one on `main`; the second
+  cron entry needs to reach `main` to take effect.
+
 ### A signal pattern without regex metacharacters matches whole words
 
 "a short pattern means the word, not the letters" — an unanchored short pattern
