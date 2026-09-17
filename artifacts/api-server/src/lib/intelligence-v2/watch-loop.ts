@@ -109,6 +109,18 @@ export type DueCompany = OwnedProjectCompany & { tier: WatchTier; policy: TierPo
  * "Last look" is project_companies.last_watched_at, which both a gate check
  * and a full cycle stamp. Archived companies are never due.
  */
+/**
+ * Due means: never looked at, or looked at longer ago than the tier's cadence,
+ * or - whatever the stamp says - never researched. The stamp records a gate
+ * check; only a cycle records research, and a company with the first and not
+ * the second has been waiting, not watched.
+ */
+export function isDueNow(input: { lastWatchedAt: Date | null; latestResearchAt: Date | null; cadenceMs: number; now: Date }): boolean {
+  if (input.latestResearchAt === null) return true;
+  if (input.lastWatchedAt === null) return true;
+  return input.now.getTime() - input.lastWatchedAt.getTime() >= input.cadenceMs;
+}
+
 export async function selectDueCompanies(now: Date, settings: WatchLoopSettings, limit = settings.maxGateChecksPerTick): Promise<DueCompany[]> {
   const shortest = Math.min(...Object.values(settings.policies).map((policy) => policy.cadenceMs));
   const cutoff = new Date(now.getTime() - shortest);
@@ -130,9 +142,22 @@ export async function selectDueCompanies(now: Date, settings: WatchLoopSettings,
       /* Named, not "everything except archived". A screened company is stored
        * and free; putting it here is what would make an upload cost money. */
       inArray(projectCompaniesTable.status, [...WATCHED_PROJECT_COMPANY_STATUSES]),
-      or(isNull(projectCompaniesTable.lastWatchedAt), lte(projectCompaniesTable.lastWatchedAt, cutoff)),
+      or(
+        isNull(projectCompaniesTable.lastWatchedAt),
+        lte(projectCompaniesTable.lastWatchedAt, cutoff),
+        /* Never researched is always due. A last-look stamp says a gate ran,
+         * not that anything was learned; before the cap fix, 189 companies
+         * across two projects carried a fresh stamp and no research at all,
+         * and a cadence wait on top of that was a day lost for nothing. */
+        isNull(projectCompaniesTable.latestResearchAt),
+      ),
     ))
-    .orderBy(sql`${projectCompaniesTable.lastWatchedAt} asc nulls first`, asc(projectCompaniesTable.createdAt))
+    .orderBy(
+      /* First the never-researched, then the longest unlooked-at. */
+      sql`(${projectCompaniesTable.latestResearchAt} is null) desc`,
+      sql`${projectCompaniesTable.lastWatchedAt} asc nulls first`,
+      asc(projectCompaniesTable.createdAt),
+    )
     .limit(Math.max(1, limit) * 3);
 
   const due: DueCompany[] = [];
@@ -146,7 +171,7 @@ export async function selectDueCompanies(now: Date, settings: WatchLoopSettings,
     });
     const policy = settings.policies[tier];
     const last = row.projectCompany.lastWatchedAt;
-    if (last && now.getTime() - last.getTime() < policy.cadenceMs) continue;
+    if (!isDueNow({ lastWatchedAt: last, latestResearchAt: row.projectCompany.latestResearchAt, cadenceMs: policy.cadenceMs, now })) continue;
     due.push({
       project: row.project, projectCompany: row.projectCompany, company: row.company,
       tier, policy, dueSince: last ? new Date(last.getTime() + policy.cadenceMs) : null,

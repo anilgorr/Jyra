@@ -375,4 +375,16 @@ const noRecord = async () => {};
   assert.equal(w.wakeBudgetMs({ JYRA_WATCH_WAKE_BUDGET_MINUTES: "10" }), 10 * 60_000);
 }
 
+// 23. Never researched is always due, whatever the last-look stamp says.
+//     Before the cap fix, 189 companies across two projects carried a fresh
+//     stamp and no research; a cadence wait on top was a day lost for nothing.
+{
+  const researched = new Date(NOW.getTime() - 10 * DAY);
+  const justNow = new Date(NOW.getTime() - 60_000);
+  assert.equal(w.isDueNow({ lastWatchedAt: null, latestResearchAt: null, cadenceMs: DAY, now: NOW }), true, "never looked at");
+  assert.equal(w.isDueNow({ lastWatchedAt: justNow, latestResearchAt: null, cadenceMs: DAY, now: NOW }), true, "stamped a minute ago but never researched: still due");
+  assert.equal(w.isDueNow({ lastWatchedAt: justNow, latestResearchAt: researched, cadenceMs: DAY, now: NOW }), false, "researched and looked at recently: wait");
+  assert.equal(w.isDueNow({ lastWatchedAt: new Date(NOW.getTime() - DAY), latestResearchAt: researched, cadenceMs: DAY, now: NOW }), true, "cadence elapsed");
+}
+
 console.log("PASS watch-loop");
