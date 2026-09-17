@@ -194,6 +194,7 @@ export function OpportunityAssessments({ projectId, initialCompanyId, focusWhy =
                   score={assessment.score ?? null}
                   state={assessment.state}
                   existing={verdicts.get(company.id)}
+                  hasEvent={headline?.kind === "event" || headline?.kind === "negative"}
                 />
               )}
               <Button size="sm" variant="outline" onClick={() => void evaluate(company.id)} disabled={loadingId === company.id}>

@@ -303,7 +303,7 @@ check("three answers: reach out now, fits but nothing happening, not relevant", 
 });
 
 check("the precision report carries fit-only separately from relevant, so the two cannot be summed by accident", () => {
-  const row = { organizationId: "o", organizationName: "Acme", weekStart: "2026-09-14", ratedTop10: 7, relevantTop10: 1, fitOnlyTop10: 6, precisionAt10: 0.143, ratedTotal: 7, relevantTotal: 1, reasons: {} };
+  const row = { organizationId: "o", organizationName: "Acme", weekStart: "2026-09-14", ratedTop10: 7, relevantTop10: 1, fitOnlyTop10: 6, precisionAt10: 0.143, ratedTotal: 7, relevantTotal: 1, reasons: {}, notes: [{ companyName: "Agile CRM", verdict: "RELEVANT", note: "met them at SaaSBoomi" }] };
   assert.equal(h.GetAdminPrecisionResponse.safeParse([row]).success, true);
   const { fitOnlyTop10: _omit, ...without } = row;
   assert.equal(h.GetAdminPrecisionResponse.safeParse([without]).success, false, "fitOnlyTop10 is required");

@@ -3878,7 +3878,7 @@ components:
     PrecisionRow:
       type: object
       additionalProperties: false
-      required: [organizationId, organizationName, weekStart, ratedTop10, relevantTop10, fitOnlyTop10, precisionAt10, ratedTotal, relevantTotal, reasons]
+      required: [organizationId, organizationName, weekStart, ratedTop10, relevantTop10, fitOnlyTop10, precisionAt10, ratedTotal, relevantTotal, reasons, notes]
       properties:
         organizationId: { type: string }
         organizationName: { type: string }
@@ -3886,6 +3886,16 @@ components:
         ratedTop10: { type: number }
         relevantTop10: { type: number }
         fitOnlyTop10: { type: number, description: "Right company, nothing happening: the Fit model is right and the intent engine has nothing yet." }
+        notes:
+          type: array
+          description: What sellers wrote when asked "what makes it now?" - each one is a signal not built yet.
+          items:
+            type: object
+            properties:
+              companyName: { type: string }
+              verdict: { type: string }
+              note: { type: string }
+            required: [companyName, verdict, note]
         precisionAt10: { type: number, nullable: true, description: relevantTop10 / ratedTop10, or null when nothing in the top ten was rated. }
         ratedTotal: { type: number }
         relevantTotal: { type: number }

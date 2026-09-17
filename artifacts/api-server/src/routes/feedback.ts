@@ -10,6 +10,7 @@ import {
   RecordSignalFeedbackResponse,
 } from "@workspace/api-zod";
 import {
+  companiesTable,
   db,
   isoWeekStart,
   organizationMembersTable,
@@ -163,7 +164,7 @@ router.get("/projects/:projectId/feedback", requireAuth, asyncRoute(async (req, 
  */
 router.get("/admin/precision", requireInternalAdmin, asyncRoute(async (_req, res) => {
   const since = new Date(Date.now() - 8 * 7 * 86_400_000);
-  const [totals, reasons] = await Promise.all([
+  const [totals, reasons, notes] = await Promise.all([
     db.select({
       organizationId: signalFeedbackTable.organizationId,
       organizationName: organizationsTable.name,
@@ -188,7 +189,27 @@ router.get("/admin/precision", requireInternalAdmin, asyncRoute(async (_req, res
       .from(signalFeedbackTable)
       .where(and(gte(signalFeedbackTable.recordedAt, since), eq(signalFeedbackTable.verdict, "NOT_RELEVANT")))
       .groupBy(signalFeedbackTable.organizationId, signalFeedbackTable.weekStart, signalFeedbackTable.reason),
+    /* "What makes it now?" - a seller's own words on a row the engine had nothing for. */
+    db.select({
+      organizationId: signalFeedbackTable.organizationId,
+      weekStart: signalFeedbackTable.weekStart,
+      companyName: companiesTable.canonicalName,
+      verdict: signalFeedbackTable.verdict,
+      note: signalFeedbackTable.note,
+    })
+      .from(signalFeedbackTable)
+      .innerJoin(companiesTable, eq(companiesTable.id, signalFeedbackTable.companyId))
+      .where(and(gte(signalFeedbackTable.recordedAt, since), sql`${signalFeedbackTable.note} is not null and ${signalFeedbackTable.note} <> ''`))
+      .orderBy(desc(signalFeedbackTable.recordedAt)),
   ]);
+
+  const notesByKey = new Map<string, Array<{ companyName: string; verdict: string; note: string }>>();
+  for (const row of notes) {
+    const key = `${row.organizationId}|${row.weekStart}`;
+    const list = notesByKey.get(key) ?? [];
+    list.push({ companyName: row.companyName, verdict: row.verdict, note: row.note ?? "" });
+    notesByKey.set(key, list);
+  }
 
   const reasonsByKey = new Map<string, Record<string, number>>();
   for (const row of reasons) {
@@ -211,6 +232,7 @@ router.get("/admin/precision", requireInternalAdmin, asyncRoute(async (_req, res
       /* Silence is not a verdict: nothing rated in the top ten is null, not 0. */
       precisionAt10: ratedTop10 > 0 ? Math.round((relevantTop10 / ratedTop10) * 1000) / 1000 : null,
       reasons: reasonsByKey.get(`${row.organizationId}|${row.weekStart}`) ?? {},
+      notes: notesByKey.get(`${row.organizationId}|${row.weekStart}`) ?? [],
     };
   })));
 }));

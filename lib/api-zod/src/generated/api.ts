@@ -768,6 +768,11 @@ export const GetAdminPrecisionResponseItem = zod.object({
   "ratedTop10": zod.number(),
   "relevantTop10": zod.number(),
   "fitOnlyTop10": zod.number().describe('Right company, nothing happening: the Fit model is right and the intent engine has nothing yet.'),
+  "notes": zod.array(zod.object({
+  "companyName": zod.string(),
+  "verdict": zod.string(),
+  "note": zod.string()
+})).describe('What sellers wrote when asked \"what makes it now?\" - each one is a signal not built yet.'),
   "precisionAt10": zod.number().nullable().describe('relevantTop10 \/ ratedTop10'),
   "ratedTotal": zod.number(),
   "relevantTotal": zod.number(),

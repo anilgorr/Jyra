@@ -314,6 +314,7 @@ export * from './planUsageScreeningPool';
 export * from './planUsageWatchPool';
 export * from './poolUsage';
 export * from './precisionRow';
+export * from './precisionRowNotesItem';
 export * from './precisionRowReasons';
 export * from './project';
 export * from './projectChange';

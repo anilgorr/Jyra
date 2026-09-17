@@ -1907,6 +1907,12 @@ export interface SignalFeedback {
   recordedAt: string;
 }
 
+export type PrecisionRowNotesItem = {
+  companyName: string;
+  verdict: string;
+  note: string;
+};
+
 /**
  * Count of NOT_RELEVANT verdicts by reason.
  */
@@ -1920,6 +1926,8 @@ export interface PrecisionRow {
   relevantTop10: number;
   /** Right company, nothing happening: the Fit model is right and the intent engine has nothing yet. */
   fitOnlyTop10: number;
+  /** What sellers wrote when asked "what makes it now?" - each one is a signal not built yet. */
+  notes: PrecisionRowNotesItem[];
   /** relevantTop10 / ratedTop10 */
   precisionAt10: number | null;
   ratedTotal: number;

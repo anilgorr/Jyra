@@ -331,6 +331,21 @@ function PrecisionCard() {
               ))}
             </tbody>
           </table>
+          {rows.some((row) => row.notes.length > 0) && (
+            <div className="mt-4 border-t pt-3">
+              <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">What makes it now — in their words</p>
+              <p className="mt-1 text-xs text-muted-foreground">A "reach out now" on a row JYRA had no event for. Each one is a signal not built yet.</p>
+              <ul className="mt-2 space-y-1.5 text-sm">
+                {rows.flatMap((row) => row.notes.map((n, i) => (
+                  <li key={`${row.organizationId}:${row.weekStart}:${i}`}>
+                    <span className="font-medium">{n.companyName}</span>
+                    <span className="text-muted-foreground"> · {row.organizationName} · {row.weekStart}</span>
+                    <span className="block text-muted-foreground">“{n.note}”</span>
+                  </li>
+                )))}
+              </ul>
+            </div>
+          )}
         </div>
       )}
     </Card>
