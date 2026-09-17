@@ -10,6 +10,7 @@ import { ensureDevelopmentCoresignalProvider } from "./lib/coresignal-provider-c
 import { ensureDevelopmentExpleeProvider } from "./lib/explee-provider-config";
 import { logger } from "./lib/logger";
 import { assertMarketReadinessProcessingConfig } from "./lib/market-readiness";
+import { ensureSignalPackFixtures } from "./lib/signal-pack-fixtures";
 
 const rawPort = process.env["PORT"];
 
@@ -39,6 +40,17 @@ async function main() {
     await ensureDevelopmentBrightDataProvider();
     await ensureDevelopmentCoresignalProvider();
     await ensureDevelopmentExpleeProvider();
+  }
+
+  // Signal definitions are scoring configuration, not page content. They used
+  // to be seeded only when someone opened GET /signal-packs, so a definition
+  // added in a release (WORKFORCE_REDUCTION, ACQUIRED) did not exist for the
+  // watch loop until a person happened to visit that page. Seed at boot;
+  // never let a seeding failure keep the API down.
+  try {
+    await ensureSignalPackFixtures();
+  } catch (error) {
+    logger.error({ error }, "Signal pack fixtures could not be seeded at boot");
   }
 
   app.listen(port, (err) => {
