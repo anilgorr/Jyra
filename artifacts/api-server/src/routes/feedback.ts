@@ -114,6 +114,26 @@ router.put("/projects/:projectId/companies/:projectCompanyId/feedback", requireA
   res.json(RecordSignalFeedbackResponse.parse(payload(row!)));
 }));
 
+/**
+ * Withdraw this week's verdict. A verdict can be changed by rating again;
+ * taking it back entirely is a different act - "I don't know" - and must
+ * leave no row, because a row is counted and silence is not.
+ */
+router.delete("/projects/:projectId/companies/:projectCompanyId/feedback", requireAuth, asyncRoute(async (req, res) => {
+  const params = RecordSignalFeedbackParams.safeParse(req.params);
+  if (!params.success) return void res.status(404).json({ error: "Company not found in this project" });
+  const userId = getAuthenticatedUserId(res);
+  const access = await authorizeProject(userId, params.data.projectId);
+  if (!access.project) return void res.status(access.status).json({ error: access.status === 403 ? "Project access denied" : "Project not found" });
+  await db.delete(signalFeedbackTable).where(and(
+    eq(signalFeedbackTable.projectId, access.project.id),
+    eq(signalFeedbackTable.projectCompanyId, params.data.projectCompanyId),
+    eq(signalFeedbackTable.recordedBy, userId),
+    eq(signalFeedbackTable.weekStart, isoWeekStart(new Date())),
+  ));
+  res.status(204).end();
+}));
+
 router.get("/projects/:projectId/feedback", requireAuth, asyncRoute(async (req, res) => {
   const params = ListSignalFeedbackParams.safeParse(req.params);
   const query = ListSignalFeedbackQueryParams.safeParse(req.query);

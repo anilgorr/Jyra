@@ -39,6 +39,25 @@ export function getAuthenticatedUserId(res: Response): string {
   return res.locals.userId as string;
 }
 
+/**
+ * Internal-admin status is decided only by the server-side allowlist and the
+ * user's Clerk publicMetadata fetched from the backend API. Session claims
+ * are never consulted: they can be templated from unsafe/public metadata.
+ *
+ * Local mode is the developer's own machine: the fixed local identity is
+ * always an internal admin. The allowlist check still runs first so that
+ * code path stays exercised, and Clerk is never contacted.
+ */
+export async function isUserInternalAdmin(userId: string): Promise<boolean> {
+  if (isInternalAdmin(userId, undefined)) return true;
+  if (resolveAuthMode() === "local") return true;
+  try {
+    return isInternalAdmin(userId, await clerkUserFacts(userId));
+  } catch {
+    return false;
+  }
+}
+
 export const requireInternalAdmin: RequestHandler = async (req, res, next) => {
   const userId = verifiedUserId(req);
   if (!userId) {
@@ -46,24 +65,7 @@ export const requireInternalAdmin: RequestHandler = async (req, res, next) => {
     return;
   }
 
-  // Internal-admin status is decided only by the server-side allowlist and the
-  // user's Clerk publicMetadata fetched from the backend API. Session claims
-  // are never consulted: they can be templated from unsafe/public metadata.
-  //
-  // Local mode is the developer's own machine: the fixed local identity is
-  // always an internal admin. The allowlist check still runs first so that
-  // code path stays exercised, and Clerk is never contacted.
-  let authorized = isInternalAdmin(userId, undefined);
-  if (!authorized && resolveAuthMode() === "local") {
-    authorized = true;
-  }
-  if (!authorized) {
-    try {
-      authorized = isInternalAdmin(userId, await clerkUserFacts(userId));
-    } catch {
-      authorized = false;
-    }
-  }
+  const authorized = await isUserInternalAdmin(userId);
   if (!authorized) {
     res.status(403).json({ error: "Not found" });
     return;

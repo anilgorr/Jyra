@@ -5,4 +5,5 @@ export {
   GetProjectPlanUsageResponse,
   ListAccessGrantsResponseItem,
   GetAccessGrantCostResponse,
+  GetCurrentUserResponse,
 } from "@workspace/api-zod";

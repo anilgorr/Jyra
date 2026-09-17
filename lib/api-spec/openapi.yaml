@@ -348,6 +348,24 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
         "404": { $ref: "#/components/responses/NotFound" }
+    delete:
+      operationId: withdrawSignalFeedback
+      tags: [feedback]
+      summary: Take back this week's verdict on a company
+      description: >-
+        Removes the caller's verdict for the current ISO week. Withdrawing is not a third
+        verdict; it leaves no row, so the company counts as unrated.
+      security:
+        - clerkSession: []
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+        - $ref: "#/components/parameters/ProjectCompanyId"
+      responses:
+        "204":
+          description: Withdrawn (or nothing to withdraw)
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
   /projects/{projectId}/feedback:
     get:
       operationId: listSignalFeedback
@@ -3395,9 +3413,15 @@ components:
           type: string
         organizationCount:
           type: number
+        isInternalAdmin:
+          type: boolean
+          description: >-
+            Whether this person is on JYRA's internal admin allowlist. Decides only
+            what the app shows; every admin route checks for itself.
       required:
         - id
         - organizationCount
+        - isInternalAdmin
     Organization:
       type: object
       properties:

@@ -9,4 +9,6 @@
 export interface CurrentUser {
   id: string;
   organizationCount: number;
+  /** Whether this person is on JYRA's internal admin allowlist. Decides only what the app shows; every admin route checks for itself. */
+  isInternalAdmin: boolean;
 }

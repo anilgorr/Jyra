@@ -4,6 +4,7 @@ import {
   getListSignalFeedbackQueryKey,
   useListSignalFeedback,
   useRecordSignalFeedback,
+  useWithdrawSignalFeedback,
   type SignalFeedback,
 } from "@workspace/api-client-react";
 import { ThumbsDown, ThumbsUp } from "lucide-react";
@@ -17,7 +18,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
  * Sits on every row of the ranked list. A thumbs-up records RELEVANT; a
  * thumbs-down asks why, because the reason is the part we learn from: each
  * one points at a different piece of the engine. One verdict per company per
- * week; pressing again changes it.
+ * week; pressing the other thumb changes it, pressing the lit one takes it
+ * back - "I don't know" leaves no row, because a row is counted.
  */
 const REASONS: Array<{ code: "WRONG_COMPANY" | "NOT_OUR_BUYER" | "TOO_OLD" | "ALREADY_CUSTOMER" | "WRONG_SIGNAL" | "OTHER"; label: string }> = [
   { code: "NOT_OUR_BUYER", label: "Not a company we'd sell to" },
@@ -47,7 +49,23 @@ export function SignalVerdict({ projectId, projectCompanyId, rank, score, state,
 }) {
   const queryClient = useQueryClient();
   const record = useRecordSignalFeedback();
+  const withdraw = useWithdrawSignalFeedback();
   const [open, setOpen] = useState(false);
+  const busy = record.isPending || withdraw.isPending;
+
+  const takeBack = () => {
+    withdraw.mutate(
+      { projectId, projectCompanyId },
+      {
+        onSuccess: () => {
+          setOpen(false);
+          void queryClient.invalidateQueries({ queryKey: getListSignalFeedbackQueryKey(projectId) });
+          toast.success("Verdict withdrawn");
+        },
+        onError: (error) => toast.error((error as { data?: { error?: string } })?.data?.error ?? "Could not withdraw that"),
+      },
+    );
+  };
 
   const submit = (verdict: "RELEVANT" | "NOT_RELEVANT", reason?: (typeof REASONS)[number]["code"]) => {
     record.mutate(
@@ -72,10 +90,11 @@ export function SignalVerdict({ projectId, projectCompanyId, rank, score, state,
         size="sm"
         variant={up ? "default" : "ghost"}
         className="h-8 px-2"
-        aria-label="Relevant"
+        aria-label={up ? "Withdraw verdict" : "Relevant"}
         aria-pressed={up}
-        disabled={record.isPending}
-        onClick={() => submit("RELEVANT")}
+        title={up ? "Marked relevant - press again to take it back" : "Relevant"}
+        disabled={busy}
+        onClick={() => (up ? takeBack() : submit("RELEVANT"))}
       >
         <ThumbsUp className="h-4 w-4" />
       </Button>
@@ -87,13 +106,23 @@ export function SignalVerdict({ projectId, projectCompanyId, rank, score, state,
             className="h-8 px-2"
             aria-label="Not relevant"
             aria-pressed={down}
-            disabled={record.isPending}
+            title={down ? "Marked not relevant - open to change or take it back" : "Not relevant"}
+            disabled={busy}
           >
             <ThumbsDown className="h-4 w-4" />
           </Button>
         </PopoverTrigger>
         <PopoverContent align="end" className="w-64 p-2">
           <p className="px-2 pb-2 text-xs text-muted-foreground">Why not? This is what we learn from.</p>
+          {down && (
+            <button
+              type="button"
+              className="mb-1 w-full rounded-md border px-2 py-1.5 text-left text-sm text-muted-foreground hover:bg-muted"
+              onClick={takeBack}
+            >
+              Take back my verdict
+            </button>
+          )}
           <div className="flex flex-col">
             {REASONS.map((reason) => (
               <button

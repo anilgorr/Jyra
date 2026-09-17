@@ -720,6 +720,18 @@ export const RecordSignalFeedbackResponse = zod.object({
 
 
 /**
+ * Removes the caller's verdict for the current ISO week. Withdrawing is not a third verdict; it leaves no row, so the company counts as unrated.
+ * @summary Take back this week's verdict on a company
+ */
+export const WithdrawSignalFeedbackParams = zod.object({
+  "projectId": zod.coerce.string(),
+  "projectCompanyId": zod.coerce.string()
+})
+
+export const WithdrawSignalFeedbackResponse = zod.void()
+
+
+/**
  * @summary This week's verdicts for a project
  */
 export const ListSignalFeedbackParams = zod.object({
@@ -769,7 +781,8 @@ export const GetAdminPrecisionResponse = zod.array(GetAdminPrecisionResponseItem
  */
 export const GetCurrentUserResponse = zod.object({
   "id": zod.string(),
-  "organizationCount": zod.number()
+  "organizationCount": zod.number(),
+  "isInternalAdmin": zod.boolean().describe('Whether this person is on JYRA\'s internal admin allowlist. Decides only what the app shows; every admin route checks for itself.')
 })
 
 

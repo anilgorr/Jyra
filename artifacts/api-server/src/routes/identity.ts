@@ -26,6 +26,7 @@ import {
 import { defaultResearchBudgetLimits } from "../lib/research-economics";
 import {
   getAuthenticatedUserId,
+  isUserInternalAdmin,
   requireAuth,
 } from "../middlewares/auth";
 
@@ -121,6 +122,7 @@ router.get(
     const data = GetCurrentUserResponse.parse({
       id: userId,
       organizationCount: result?.value ?? 0,
+      isInternalAdmin: await isUserInternalAdmin(userId),
     });
     res.json(data);
   }),

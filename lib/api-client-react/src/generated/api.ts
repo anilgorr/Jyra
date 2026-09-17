@@ -1286,6 +1286,80 @@ export const useRecordSignalFeedback = <TError = ErrorType<BadRequestResponse | 
       return useMutation(getRecordSignalFeedbackMutationOptions(options));
     }
 
+export const getWithdrawSignalFeedbackUrl = (projectId: string,
+    projectCompanyId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/companies/${projectCompanyId}/feedback`
+}
+
+/**
+ * Removes the caller's verdict for the current ISO week. Withdrawing is not a third verdict; it leaves no row, so the company counts as unrated.
+ * @summary Take back this week's verdict on a company
+ */
+export const withdrawSignalFeedback = async (projectId: string,
+    projectCompanyId: string, options?: Parameters<typeof customFetch>[1]): Promise<void> => {
+
+  return customFetch<void>(getWithdrawSignalFeedbackUrl(projectId,projectCompanyId),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+
+export const getWithdrawSignalFeedbackMutationOptions = <TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof withdrawSignalFeedback>>, TError,{projectId: string;projectCompanyId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof withdrawSignalFeedback>>, TError,{projectId: string;projectCompanyId: string}, TContext> => {
+
+const mutationKey = ['withdrawSignalFeedback'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof withdrawSignalFeedback>>, {projectId: string;projectCompanyId: string}> = (props) => {
+          const {projectId,projectCompanyId} = props ?? {};
+
+          return  withdrawSignalFeedback(projectId,projectCompanyId,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type WithdrawSignalFeedbackMutationResult = NonNullable<Awaited<ReturnType<typeof withdrawSignalFeedback>>>
+
+    export type WithdrawSignalFeedbackMutationError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+    /**
+ * @summary Take back this week's verdict on a company
+ */
+export const useWithdrawSignalFeedback = <TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof withdrawSignalFeedback>>, TError,{projectId: string;projectCompanyId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof withdrawSignalFeedback>>,
+        TError,
+        {projectId: string;projectCompanyId: string},
+        TContext
+      > => {
+      return useMutation(getWithdrawSignalFeedbackMutationOptions(options));
+    }
+
 export const getListSignalFeedbackUrl = (projectId: string,
     params?: ListSignalFeedbackParams,) => {
   const normalizedParams = new URLSearchParams();

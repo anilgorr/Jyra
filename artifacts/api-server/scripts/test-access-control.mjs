@@ -146,4 +146,15 @@ check("a cost field smuggled onto PlanUsage at runtime never reaches the custome
   assert.equal(JSON.stringify(smuggled.data).includes("1.19"), false, "the cost figure survived serialisation");
 });
 
+
+// ------------------------------------------------------- what the app is told
+
+check("/me says whether the person is an internal admin, and will not parse without saying", () => {
+  // The app used to learn this by calling an admin endpoint and reading the
+  // 403 - a red failed request in every customer's console on every load.
+  assert.equal(m.GetCurrentUserResponse.safeParse({ id: "u", organizationCount: 1, isInternalAdmin: false }).success, true);
+  assert.equal(m.GetCurrentUserResponse.safeParse({ id: "u", organizationCount: 1 }).success, false, "the flag must be explicit, never assumed");
+  assert.equal(m.GetCurrentUserResponse.safeParse({ id: "u", organizationCount: 1, isInternalAdmin: "yes" }).success, false);
+});
+
 console.log(`\naccess control: ${checks} checks passed`);
