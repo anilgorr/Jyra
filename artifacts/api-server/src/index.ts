@@ -5,7 +5,7 @@ import { ensureDevelopmentExaProvider } from "./lib/exa-provider-config";
 import { ensureDevelopmentTavilyProvider } from "./lib/tavily-provider-config";
 import { ensureDevelopmentSerperProvider } from "./lib/serper-provider-config";
 import { ensureDevelopmentFirecrawlProvider } from "./lib/firecrawl-provider-config";
-import { ensureDevelopmentBrightDataProvider } from "./lib/bright-data-provider-config";
+import { retireBrightDataProvider } from "./lib/bright-data-provider-config";
 import { ensureDevelopmentCoresignalProvider } from "./lib/coresignal-provider-config";
 import { ensureDevelopmentExpleeProvider } from "./lib/explee-provider-config";
 import { logger } from "./lib/logger";
@@ -37,9 +37,16 @@ async function main() {
     await ensureDevelopmentTavilyProvider();
     await ensureDevelopmentSerperProvider();
     await ensureDevelopmentFirecrawlProvider();
-    await ensureDevelopmentBrightDataProvider();
     await ensureDevelopmentCoresignalProvider();
     await ensureDevelopmentExpleeProvider();
+  }
+
+  // Bright Data never returned a usable response; the row is disabled in every
+  // environment so no cycle pays for the request. Never let it keep the API down.
+  try {
+    await retireBrightDataProvider();
+  } catch (error) {
+    logger.error({ error }, "Bright Data provider could not be retired at boot");
   }
 
   // Signal definitions are scoring configuration, not page content. They used

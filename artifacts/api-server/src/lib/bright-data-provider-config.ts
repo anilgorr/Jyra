@@ -1,61 +1,32 @@
 import { and, eq } from "drizzle-orm";
-import { dataProvidersTable, db, providerCapabilitiesTable } from "@workspace/db";
-import { BRIGHT_DATA_DATASET_ID } from "./bright-data-provider";
+import { dataProvidersTable, db } from "@workspace/db";
 
-const BRIGHT_DATA_PROVIDER_CONFIGURATION = {
-  apiBaseUrl: "https://api.brightdata.com",
-  datasetId: BRIGHT_DATA_DATASET_ID,
-  credentialEnv: "BRIGHTDATA_API_KEY",
-  timeoutMs: 30_000,
-  estimatedCost: 0.0015,
-};
-
-export async function ensureDevelopmentBrightDataProvider(): Promise<void> {
-  if (process.env.NODE_ENV === "production") return;
-
-  const credentialStatus = process.env.BRIGHTDATA_API_KEY ? "AVAILABLE" : "MISSING";
-  const configuration = {
-    ...BRIGHT_DATA_PROVIDER_CONFIGURATION,
-    credentialStatus,
-  };
-  await db.transaction(async (tx) => {
-    await tx.insert(dataProvidersTable).values({
-      name: "Bright Data",
-      providerType: "bright_data",
-      enabled: true,
-      priority: 10,
-      estimatedCost: configuration.estimatedCost,
-      successRate: 0,
-      averageLatency: 0,
-      qualityScore: 0.85,
-      configuration,
-    }).onConflictDoNothing({ target: dataProvidersTable.name });
-
-    const [provider] = await tx.select().from(dataProvidersTable)
-      .where(and(
-        eq(dataProvidersTable.name, "Bright Data"),
-        eq(dataProvidersTable.providerType, "bright_data"),
-      ))
-      .limit(1);
-    if (!provider) return;
-
-    await tx.update(dataProvidersTable).set({
-      enabled: true,
-      priority: 10,
-      estimatedCost: configuration.estimatedCost,
-      qualityScore: 0.85,
-      configuration: {
-        ...provider.configuration,
-        ...configuration,
-      },
-      updatedAt: new Date(),
-    }).where(eq(dataProvidersTable.id, provider.id));
-
-    await tx.insert(providerCapabilitiesTable).values({
-      providerId: provider.id,
-      capability: "COMPANY_FIRMOGRAPHICS",
-    }).onConflictDoNothing({
-      target: [providerCapabilitiesTable.providerId, providerCapabilitiesTable.capability],
-    });
-  });
+/**
+ * Bright Data is retired.
+ *
+ * The firmographics adapter answered 266 of 266 calls between 14 and 18
+ * September 2026 with IDENTIFIER_NOT_SUPPORTED, and not one successful
+ * response in its entire life. That is not an expired credential or a rate
+ * limit: the adapter asks the dataset for a company by an identifier the
+ * dataset does not accept, so every cycle paid the latency of a request that
+ * could never succeed. With no INDUSTRY or EMPLOYEE_SIZE claim reaching the
+ * model, Fit was unknown for 26 of the first 99 companies assessed.
+ *
+ * What it was supposed to supply now comes from the LinkedIn company snippet
+ * the search step already returns (`profile-snippet-facts.ts`), free and
+ * deterministically. So the row is disabled at boot in every environment
+ * rather than seeded, and the router no longer knows how to build the
+ * adapter. The COMPANY_FIRMOGRAPHICS capability itself stays in the research
+ * waterfall: the step simply finds no provider and moves on, and a working
+ * vendor can be registered against it later without reopening the waterfall.
+ *
+ * Disabling rather than deleting the row keeps its spend history joinable.
+ */
+export async function retireBrightDataProvider(): Promise<void> {
+  await db.update(dataProvidersTable)
+    .set({ enabled: false, updatedAt: new Date() })
+    .where(and(
+      eq(dataProvidersTable.providerType, "bright_data"),
+      eq(dataProvidersTable.enabled, true),
+    ));
 }

@@ -142,6 +142,26 @@ the column rather than erasing a role discovery or a human established.
 - **Where:** `rankingRole` in `lib/opportunity-engine.ts`.
 - **Tests:** `test-cycle-06-structural-repair.mjs`.
 
+### Bright Data is retired; the firmographics slot stays open
+
+The firmographics adapter answered 266 of 266 calls between 14 and 18
+September 2026 with `IDENTIFIER_NOT_SUPPORTED`, and never once succeeded. Not
+an expired credential — the adapter asks the dataset for a company by an
+identifier it does not accept, so every cycle paid the latency of a request
+that could not work. The cost of that: no INDUSTRY or EMPLOYEE_SIZE claim
+reached the model, and Fit was unknown for 26 of the first 99 companies.
+
+Its job is now done by the LinkedIn company snippet the search step already
+returns, free and deterministically. The row is disabled at boot in every
+environment and the router no longer knows how to build the adapter. The
+`COMPANY_FIRMOGRAPHICS` capability stays in the research waterfall — the step
+finds no provider and moves on — so a working vendor can be registered
+against it without reopening the waterfall. The row is disabled rather than
+deleted so its spend history stays joinable.
+
+- **Where:** `retireBrightDataProvider` in `lib/bright-data-provider-config.ts`,
+  called at boot in `index.ts`.
+
 ### A standing fact is not an event, and cannot make a company RISING
 
 Signals are built from facts, and facts come in two kinds: an EVENT happened

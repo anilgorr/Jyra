@@ -43,10 +43,6 @@ import {
   parseExaProviderConfiguration,
 } from "./exa-provider";
 import { createSearchBackedJobAdapter } from "./job-search-adapter";
-import {
-  createBrightDataFirmographicsAdapter,
-  parseBrightDataProviderConfiguration,
-} from "./bright-data-provider";
 import { createCoresignalEmailAdapter, parseCoresignalProviderConfiguration } from "./coresignal-provider";
 import { createExpleeEmailAdapter, parseExpleeProviderConfiguration } from "./explee-provider";
 
@@ -410,12 +406,6 @@ function defaultAdapterFactory(
         searchWeb: (input) => search.execute(input),
       }),
     ];
-  }
-  if (provider.providerType === "bright_data") {
-    return [createBrightDataFirmographicsAdapter({
-      providerId: provider.id,
-      configuration: parseBrightDataProviderConfiguration(provider.configuration),
-    })];
   }
   if (provider.providerType === "explee") {
     return [createExpleeEmailAdapter({
