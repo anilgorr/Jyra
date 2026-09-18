@@ -1,26 +1,15 @@
-import { timingSafeEqual } from "node:crypto";
 import { Router, type IRouter, type RequestHandler } from "express";
+import { watchLoopTokenMatches } from "../lib/internal-auth";
 import { PostgresIntelligenceV2Repository } from "../lib/intelligence-v2/repository";
+import { currentQueue } from "../lib/queue";
+import { RESEARCH_COMPANY_QUEUE, queueSettings } from "../lib/queue-policy";
+import { enqueueUnresearched } from "../lib/research-worker";
 import { runWatchLoopTick, runWatchLoopUntilCaughtUp, wakeBudgetMs, watchLoopSettings, type TickReport, type WakeReport } from "../lib/intelligence-v2/watch-loop";
 
 const router: IRouter = Router();
 type AsyncHandler = (...args: Parameters<RequestHandler>) => Promise<void>;
 const asyncRoute = (handler: AsyncHandler): RequestHandler =>
   (req, res, next) => void handler(req, res, next).catch(next);
-
-/**
- * Bearer-token check for a machine caller. No user, no session, no Clerk.
- *
- * The token lives in JYRA_WATCH_LOOP_TOKEN. With it unset the endpoint does
- * not exist — a 404, not a 401, so an unconfigured deployment gives nothing
- * away. Comparison is constant-time and length-guarded.
- */
-export function watchLoopTokenMatches(header: string | undefined, expected: string | undefined): boolean {
-  if (!expected || expected.length < 32) return false;
-  const presented = header?.startsWith("Bearer ") ? header.slice(7) : "";
-  if (presented.length !== expected.length) return false;
-  return timingSafeEqual(Buffer.from(presented), Buffer.from(expected));
-}
 
 const repository = new PostgresIntelligenceV2Repository();
 let inFlight: Promise<TickReport> | null = null;
@@ -89,5 +78,47 @@ router.get("/internal/watch-loop/settings", (req, res) => {
     running: inFlight !== null,
   });
 });
+
+/**
+ * Queue a first research cycle for every company in a project that has never
+ * had one — the onboarding backlog.
+ *
+ * This is the split the queue exists for. Steady state stays with the watch
+ * loop, where the change gate does the work and a tick of ten is plenty. A
+ * new pool has no research at all, so nothing can be gated away and the only
+ * way through is one full cycle each; sequentially at ten per tick, ten
+ * thousand companies is three weeks before the client sees a complete
+ * picture. Queued and run several at a time it is days.
+ *
+ * Returns 503 rather than silently doing nothing when the queue is off, so a
+ * caller is never told work was scheduled that was not.
+ */
+router.post("/internal/queue/onboarding/:projectId", asyncRoute(async (req, res) => {
+  const expected = process.env.JYRA_WATCH_LOOP_TOKEN;
+  if (!expected) return void res.status(404).json({ error: "Not found" });
+  if (!watchLoopTokenMatches(req.header("authorization"), expected)) return void res.status(401).json({ error: "Unauthorized" });
+  if (!currentQueue()) {
+    return void res.status(503).json({ error: "Queue is not running", hint: "set JYRA_QUEUE_ENABLED=true" });
+  }
+  const limit = Number(req.query.limit);
+  const projectId = String(req.params.projectId);
+  const report = await enqueueUnresearched(
+    projectId,
+    Number.isInteger(limit) && limit > 0 ? Math.min(limit, 20_000) : undefined,
+  );
+  res.status(202).json(report);
+}));
+
+/** What the queue is doing right now. */
+router.get("/internal/queue/status", asyncRoute(async (req, res) => {
+  const expected = process.env.JYRA_WATCH_LOOP_TOKEN;
+  if (!expected) return void res.status(404).json({ error: "Not found" });
+  if (!watchLoopTokenMatches(req.header("authorization"), expected)) return void res.status(401).json({ error: "Unauthorized" });
+  const instance = currentQueue();
+  const settings = queueSettings();
+  if (!instance) return void res.json({ running: false, settings });
+  const queue = await instance.getQueue(RESEARCH_COMPANY_QUEUE);
+  res.json({ running: true, settings, queue });
+}));
 
 export default router;

@@ -79,4 +79,12 @@ await acheck("a company archived between queue and pickup is not researched", as
   assert.equal(asked, false, "nor is its balance checked");
 });
 
+check("a consumer is a distinct role, so the boot path can tell them apart", () => {
+  // A Render background worker is given no PORT. The role has to be readable
+  // before anything validates one, or the same build crash-loops as a worker.
+  assert.equal(h.queueSettings({ JYRA_QUEUE_ROLE: "consumer" }).role, "consumer");
+  assert.equal(h.queueSettings({ JYRA_QUEUE_ROLE: "producer" }).role, "producer");
+  assert.notEqual(h.queueSettings({}).role, "consumer", "the default must serve HTTP");
+});
+
 console.log(`\nqueue: ${checks} checks passed`);

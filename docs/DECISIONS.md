@@ -419,14 +419,39 @@ Enabling it is deliberate: `JYRA_QUEUE_ENABLED` defaults to false, so the
 code ships dark and the watch loop keeps running inline until someone turns
 it on.
 
+The queue takes onboarding; the watch loop keeps steady state. That is the
+split worth having: the gate already makes a steady-state sweep cheap, and it
+is the first pass over a pool with no research at all — where nothing can be
+gated away — that the queue exists to parallelise.
+
 - **Where:** `lib/queue-policy.ts` (pure, no imports), `lib/queue.ts`,
-  `lib/research-worker.ts`.
+  `lib/research-worker.ts`, `POST /api/internal/queue/onboarding/:projectId`.
 - **Enforced by:** `test-queue.mjs` — every branch of the guard, including
   that a stale or archived company costs neither a provider call nor a
   balance lookup.
 - **Also:** `pg` is pinned to 8.22.0 in the root `pnpm.overrides`. pg-boss
   wants ^8.23, and two copies in the tree gave drizzle-orm two type
   identities, which broke every table type in the API.
+
+### The API and the worker are one build with two roles
+
+`JYRA_QUEUE_ROLE=consumer` starts the same image as a queue consumer that
+serves no HTTP and skips every boot chore — the normalisation backfill, the
+provider retirement, the signal seeding. Each is a one-off owned by the API
+service, and running them from two processes buys nothing and risks two
+writers racing the same rows. One build means no second codebase to keep in
+step.
+
+Two things this cost, both found before they shipped. A Render background
+worker is given no `PORT`, and the port was validated at module load, so the
+same build crash-looped the moment it was started as a worker; it is now
+resolved where it is used. And migrations belong to the API service alone —
+they moved to `preDeployCommand`, where a failure stops the deploy and leaves
+the previous version serving, instead of `startCommand`, where it took the
+service down. Two services racing the same migration is how a half-applied
+schema happens.
+
+- **Where:** `runAsConsumer` and `servingPort` in `src/index.ts`; `render.yaml`.
 
 ## Evidence
 

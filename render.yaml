@@ -9,11 +9,19 @@ services:
     name: jyra-api
     runtime: node
     region: singapore
-    plan: free
+    # Paid compute, for three reasons in order of importance: the free tier
+    # sleeps, so every cron tick paid a cold start the workflow had to retry
+    # around; a paid instance gets a pre-deploy hook, so a failed migration
+    # stops the deploy instead of taking the API down with it; and the
+    # in-process research workers need headroom the 512 MB tier does not have.
+    plan: 1c-2g
     branch: audit/production-fixes
     buildCommand: npx --yes pnpm@10 install --no-frozen-lockfile && npx --yes pnpm@10 --dir artifacts/api-server run build
-    # free tier has no pre-deploy hook, so migrations run just before the server boots
-    startCommand: node lib/db/scripts/migrate.mjs && node --enable-source-maps artifacts/api-server/dist/index.mjs
+    # Migrations run as their own step. In startCommand a failed migration
+    # took the service down; as a pre-deploy it fails the deploy and leaves
+    # the previous version serving.
+    preDeployCommand: node lib/db/scripts/migrate.mjs
+    startCommand: node --enable-source-maps artifacts/api-server/dist/index.mjs
     healthCheckPath: /api/healthz
     envVars:
       - key: NODE_ENV
@@ -41,11 +49,11 @@ services:
       # Workers run in this process while there is one service; set
       # JYRA_QUEUE_ROLE=producer here and consumer on a worker service to split.
       - key: JYRA_QUEUE_ENABLED
-        value: "false"
+        value: "true"
+      # The API queues work; the worker service below consumes it, so a burst
+      # of ten thousand onboarding jobs cannot starve the request path.
       - key: JYRA_QUEUE_ROLE
-        value: both
-      - key: JYRA_QUEUE_CONCURRENCY
-        value: "3"
+        value: producer
       # --- secrets: set these in the Render dashboard (Environment tab) ---
       - key: DATABASE_URL            # Supabase JYRA project connection string (Session pooler, port 5432)
         sync: false
@@ -69,3 +77,50 @@ services:
         sync: false
       - key: BRIGHTDATA_API_KEY
         sync: false
+
+  # The research consumer. Same image and same build as the API — it is the
+  # same process started with a different role — so there is no second
+  # codebase to keep in step. Scale it by raising JYRA_QUEUE_CONCURRENCY or
+  # the instance size; the providers are the real ceiling, not this.
+  - type: worker
+    name: jyra-research-worker
+    runtime: node
+    region: singapore
+    plan: 1c-2g
+    branch: audit/production-fixes
+    buildCommand: npx --yes pnpm@10 install --no-frozen-lockfile && npx --yes pnpm@10 --dir artifacts/api-server run build
+    # Migrations belong to the API service alone. Two services racing the same
+    # migration is how a half-applied schema happens.
+    startCommand: node --enable-source-maps artifacts/api-server/dist/index.mjs
+    envVars:
+      # Same values as the API service. Set each in the Render dashboard for
+      # this service too — there is no shared group yet, and inventing one
+      # would mean re-entering every secret the API already holds.
+      - key: NODE_ENV
+        value: development
+      - key: JYRA_INTELLIGENCE_VERSION
+        value: JYRA_INTELLIGENCE_V2
+      - key: DATABASE_URL
+        sync: false
+      - key: SERPER_API_KEY
+        sync: false
+      - key: FIRECRAWL_API_KEY
+        sync: false
+      - key: TAVILY_API_KEY
+        sync: false
+      - key: EXA_API_KEY
+        sync: false
+      - key: AI_INTEGRATIONS_OPENAI_API_KEY
+        sync: false
+      - key: AI_INTEGRATIONS_OPENAI_BASE_URL
+        sync: false
+      - key: JYRA_QUEUE_ENABLED
+        value: "true"
+      - key: JYRA_QUEUE_ROLE
+        value: consumer
+      - key: JYRA_QUEUE_CONCURRENCY
+        value: "6"
+      # Nothing should reach this service over HTTP, and the watch-loop cron
+      # must not find a second endpoint to wake.
+      - key: JYRA_WATCH_LOOP_ENABLED
+        value: "false"

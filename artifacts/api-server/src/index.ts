@@ -15,21 +15,53 @@ import { logger } from "./lib/logger";
 import { assertMarketReadinessProcessingConfig } from "./lib/market-readiness";
 import { ensureSignalPackFixtures } from "./lib/signal-pack-fixtures";
 
-const rawPort = process.env["PORT"];
-
-if (!rawPort) {
-  throw new Error(
-    "PORT environment variable is required but was not provided.",
-  );
+/**
+ * The port to serve on — resolved when we are about to serve, not at import.
+ *
+ * A consumer process serves nothing, and a Render background worker is given
+ * no PORT at all. Validating at module load meant the same build crash-looped
+ * the moment it was started as a worker.
+ */
+function servingPort(): number {
+  const rawPort = process.env["PORT"];
+  if (!rawPort) {
+    throw new Error(
+      "PORT environment variable is required but was not provided.",
+    );
+  }
+  const port = Number(rawPort);
+  if (Number.isNaN(port) || port <= 0) {
+    throw new Error(`Invalid PORT value: "${rawPort}"`);
+  }
+  return port;
 }
 
-const port = Number(rawPort);
-
-if (Number.isNaN(port) || port <= 0) {
-  throw new Error(`Invalid PORT value: "${rawPort}"`);
+/**
+ * A consumer process is the same build with a different job: it drains the
+ * queue and serves nothing.
+ *
+ * It deliberately skips the boot chores. Every one of them — the migration
+ * backfill, the provider retirement, the signal seeding — is a one-off owned
+ * by the API service, and running them from two processes at once buys
+ * nothing and risks two writers racing the same rows.
+ */
+async function runAsConsumer(): Promise<void> {
+  const settings = queueSettings();
+  const started = await startQueue(settings);
+  if (!started) throw new Error("JYRA_QUEUE_ROLE=consumer but the queue could not start");
+  await startResearchWorker(settings);
+  logger.info({ concurrency: settings.concurrency }, "Research consumer running; not serving HTTP");
+  const shutdown = async (signal: string) => {
+    logger.info({ signal }, "Consumer shutting down");
+    await stopQueue();
+    process.exit(0);
+  };
+  process.on("SIGTERM", () => void shutdown("SIGTERM"));
+  process.on("SIGINT", () => void shutdown("SIGINT"));
 }
 
 async function main() {
+  if (queueSettings().role === "consumer") return runAsConsumer();
   if (process.env.MARKET_READINESS_PROCESSING_ENABLED === "true") {
     assertMarketReadinessProcessingConfig();
   }
@@ -84,6 +116,7 @@ async function main() {
     logger.error({ error }, "Signal pack fixtures could not be seeded at boot");
   }
 
+  const port = servingPort();
   app.listen(port, (err) => {
     if (err) {
       logger.error({ err }, "Error listening on port");
