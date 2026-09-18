@@ -10,6 +10,7 @@ import {
 import { calculateEvidenceScores, hashNormalizedContent } from "../evidence";
 import {
   extractExplicitAcquiredCandidates,
+  extractExplicitFundingCandidates,
   extractExplicitLeadershipCandidates,
   extractExplicitSecurityIncidentCandidates,
   extractExplicitWorkforceReductionCandidates,
@@ -43,7 +44,7 @@ type DbExecutor = typeof db | Parameters<Parameters<typeof db.transaction>[0]>[0
  * article does not fire the highest-impact signal in the pack. Two do.
  */
 
-export type EventKind = "SECURITY_INCIDENT" | "LEADERSHIP_CHANGE" | "WORKFORCE_REDUCTION" | "ACQUIRED";
+export type EventKind = "SECURITY_INCIDENT" | "LEADERSHIP_CHANGE" | "WORKFORCE_REDUCTION" | "ACQUIRED" | "FUNDING_EVENT";
 
 export const EVENT_FACT_EXTRACTOR_VERSION = "event-search-deterministic-v1";
 
@@ -67,6 +68,12 @@ export function buildEventQueries(companyName: string, domain: string | null): E
      * company in the news for layoffs is exactly the one we must not call. */
     { kind: "WORKFORCE_REDUCTION", topic: "news", query: `${name} (layoffs OR "laid off" OR "job cuts" OR "hiring freeze" OR redundancies OR "cuts jobs")` },
     { kind: "ACQUIRED", topic: "news", query: `${name} ("acquired by" OR "to be acquired" OR "agreed to acquire" OR "acquires" OR "takeover" OR "merger")` },
+    /* Funding, added 18 Sep 2026. The plainest buying trigger in the set and
+     * the one nothing searched for: a company that just closed a round is
+     * hiring, and a company that is hiring is choosing tools. Two rounds in
+     * the launch pool - Rocketlane's $60M and Clay's $115M - were already
+     * being returned by the queries above and thrown away unread. */
+    { kind: "FUNDING_EVENT", topic: "news", query: `${name} (raises OR raised OR secures OR "funding round" OR "Series A" OR "Series B" OR "Series C" OR "Series D" OR "led the round")` },
   ];
 }
 
@@ -154,18 +161,27 @@ export function mapEventHitsToFacts(
     const rawContent = [hit.title, hit.rawContent?.trim() || hit.snippet].filter(Boolean).join("\n\n");
     if (rawContent.length < 80) { skipped.push({ url: hit.url, reason: "NO_TEXT" }); continue; }
     const evidenceId = randomUUID();
+    /* The publisher's date, offered to the extractor as a last resort. A news
+     * snippet is ~180 characters and almost never restates the date, so an
+     * event the extractor could read plainly was being discarded for a date
+     * this pipeline already had in hand and already trusted three lines above
+     * to decide TOO_OLD. */
+    const publishedAt = hit.publishedAt ?? null;
     const extracted = hit.kind === "SECURITY_INCIDENT"
-      ? extractExplicitSecurityIncidentCandidates(evidenceId, rawContent)
+      ? extractExplicitSecurityIncidentCandidates(evidenceId, rawContent, publishedAt)
       : hit.kind === "WORKFORCE_REDUCTION"
-        ? extractExplicitWorkforceReductionCandidates(evidenceId, rawContent)
+        ? extractExplicitWorkforceReductionCandidates(evidenceId, rawContent, publishedAt)
         : hit.kind === "ACQUIRED"
-          ? extractExplicitAcquiredCandidates(evidenceId, rawContent)
-          : extractExplicitLeadershipCandidates(evidenceId, rawContent);
+          ? extractExplicitAcquiredCandidates(evidenceId, rawContent, publishedAt)
+          : hit.kind === "FUNDING_EVENT"
+            ? extractExplicitFundingCandidates(evidenceId, rawContent, publishedAt)
+            : extractExplicitLeadershipCandidates(evidenceId, rawContent, publishedAt);
     if (!extracted.length) { skipped.push({ url: hit.url, reason: "NO_EXPLICIT_EVENT" }); continue; }
     const firstParty = Boolean(input.domain && hostMatchesDomain(sourceDomain, input.domain));
     for (const candidate of extracted) {
       const report = validateFactCandidateDetailed(candidate, {
         companyId: input.companyId, evidenceId, rawContent, observationDate, companyName: input.companyName,
+        publishedAt: publishedAt ?? undefined,
       });
       if (!report.valid) { skipped.push({ url: hit.url, reason: report.issues[0]?.code ?? "INVALID" }); continue; }
       if (!withinLookback(candidate.effectiveDate, input.now)) { skipped.push({ url: hit.url, reason: "EVENT_TOO_OLD" }); continue; }

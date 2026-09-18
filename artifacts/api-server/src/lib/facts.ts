@@ -40,6 +40,20 @@ export const factCandidateSchema = z
     confidence: z.number().min(0).max(100),
     supportingExcerpt: z.string().trim().min(1).max(2_000),
     extractorVersion: z.string().trim().min(1).max(100),
+    /**
+     * Where the effective date came from. STATED means the source text says
+     * it, which is the only basis this extractor used to accept. PUBLISHED
+     * means the text announces the event without dating it and the date is
+     * the publisher's, carried on the search hit.
+     *
+     * A 180-character news snippet almost never restates the date — measured
+     * on 207 real hits, 63 of 65 rejections were an event the extractor could
+     * read, thrown away for a date the publisher had already supplied and
+     * which the lookback gate upstream already trusted. Recording the basis
+     * rather than erasing it is what keeps "the company said so" separable
+     * from "the newspaper filed it that day".
+     */
+    dateBasis: z.enum(["STATED", "PUBLISHED"]).optional(),
   })
   .strict();
 
@@ -58,6 +72,9 @@ export type FactEvidenceContext = {
   observationDate?: string;
   companyName?: string;
   publisherName?: string;
+  /** The publisher's date for this page, from the search hit. Only a candidate
+   * that declares `dateBasis: "PUBLISHED"` may rest on it. */
+  publishedAt?: string;
 };
 
 export const EVENT_FACT_TYPES = [
@@ -269,15 +286,22 @@ function dateIsOnlySourceMetadata(date: string, excerpt: string): boolean {
 }
 
 export function factDateProvenance(
-  candidate: Pick<FactCandidate, "factType" | "effectiveDate" | "supportingExcerpt">,
+  candidate: Pick<FactCandidate, "factType" | "effectiveDate" | "supportingExcerpt"> & Pick<Partial<FactCandidate>, "dateBasis">,
   observationDate?: string,
-): "EXPLICIT_SOURCE_SUPPORTED_DATE" | "OBSERVATION_DATE_TIMELESS" | "UNSUPPORTED_DATE" {
+  publishedAt?: string,
+): "EXPLICIT_SOURCE_SUPPORTED_DATE" | "PUBLISHER_DATED" | "OBSERVATION_DATE_TIMELESS" | "UNSUPPORTED_DATE" {
   const excerpt = normalizeEvidenceContent(candidate.supportingExcerpt);
   if (
     dateIsSupportedByExcerpt(candidate.effectiveDate, excerpt) &&
     !dateIsOnlySourceMetadata(candidate.effectiveDate, excerpt)
   ) {
     return "EXPLICIT_SOURCE_SUPPORTED_DATE";
+  }
+  /* A publisher date counts only when the candidate claims it as its basis AND
+   * the caller independently supplies the same date from the hit. Neither half
+   * alone is enough: a candidate cannot date itself by assertion. */
+  if (candidate.dateBasis === "PUBLISHED" && publishedAt && publishedAt.slice(0, 10) === candidate.effectiveDate) {
+    return "PUBLISHER_DATED";
   }
   if (
     !isEventCandidate(candidate.factType, excerpt) &&
@@ -466,9 +490,9 @@ export function validateFactCandidateDetailed(
   }
 
   const provenance = isValidCalendarDate(parsed.effectiveDate)
-    ? factDateProvenance(parsed, context.observationDate)
+    ? factDateProvenance(parsed, context.observationDate, context.publishedAt)
     : "UNSUPPORTED_DATE";
-  const dateSupported = provenance === "EXPLICIT_SOURCE_SUPPORTED_DATE";
+  const dateSupported = provenance === "EXPLICIT_SOURCE_SUPPORTED_DATE" || provenance === "PUBLISHER_DATED";
   if (isEventCandidate(parsed.factType, excerpt) && !dateSupported) {
     addValidationIssue(
       report,
@@ -642,31 +666,73 @@ const EXECUTIVE_LEADERSHIP_ROLE_PATTERN = [
   "Chief Operating Officer(?:\\s*\\(COO\\))?",
   "CEO", "CFO", "COO",
   "Managing Director",
+  "President",
 ].join("|");
 
 /* Longest-first within each group already; groups ordered so a more specific
- * title cannot be shadowed by a shorter one that prefixes it. */
+ * title cannot be shadowed by a shorter one that prefixes it.
+ *
+ * A "Co-" or "Interim" prefix is part of the title, not a different job. Ramp
+ * naming a Co-CEO went unread until this was allowed, and an interim CFO is
+ * the most buyable moment a finance stack ever has. */
+const ROLE_PREFIX = String.raw`(?:(?:Co|Deputy|Interim|Acting|Global|Group)[-\s]+)?`;
 const LEADERSHIP_ROLE_PATTERN = [
   String.raw`(?:Senior\s+Vice\s+President\s*(?:,|and)?\s+)?`,
+  ROLE_PREFIX,
   String.raw`(?:${SECURITY_LEADERSHIP_ROLE_PATTERN}`,
   String.raw`|${TECHNOLOGY_LEADERSHIP_ROLE_PATTERN}`,
   String.raw`|${GTM_LEADERSHIP_ROLE_PATTERN}`,
   String.raw`|${EXECUTIVE_LEADERSHIP_ROLE_PATTERN})`,
 ].join("");
 
+/**
+ * A person's name, and nothing that follows one.
+ *
+ * These patterns carry the `i` flag for the verbs, which quietly voids every
+ * `[A-Z]` in them — so a greedy capture ran straight through the title it was
+ * supposed to stop before. "Ramp Names Karim Atiyeh Co-CEO and Rahul
+ * Sengottuvelu CTO" read as one person called "Karim Atiyeh Co-CEO and Rahul
+ * Sengottuvelu", and "Gab Menachem as" kept the preposition.
+ *
+ * Lazy, so it takes the fewest words that let the role match, and it refuses
+ * the connectives that separate a name from a title outright.
+ */
+const PERSON_CAPTURE = String.raw`[A-Z][A-Za-z'.-]+(?:\s+(?!as\b|to\b|and\b|the\b|its\b|their\b|new\b|first\b|next\b|interim\b|co[-\s])[A-Z][A-Za-z'.-]+){1,5}?`;
+
 const LEADERSHIP_EVENT_PATTERN = new RegExp(
   [
     String.raw`\b(?<company>[A-Z][A-Za-z0-9&'.-]*(?:\s+[A-Z][A-Za-z0-9&'.-]*){0,7})`,
-    String.raw`\s+(?<verb>appoints?|appointed|names?|named|promotes?|promoted|hires?|hired)`,
-    String.raw`\s+(?<person>[A-Z][A-Za-z'.-]+(?:\s+[A-Z][A-Za-z'.-]+){1,5})`,
-    String.raw`\s+(?:as|to)\s+(?<role>${LEADERSHIP_ROLE_PATTERN})\b`,
+    String.raw`\s+(?<verb>appoints?|appointed|names?|named|promotes?|promoted|elevates?|elevated|hires?|hired|taps|tapped)`,
+    String.raw`\s+(?<person>${PERSON_CAPTURE})`,
+    /* "as" and "to" are optional: the press writes "Ramp Names Karim Atiyeh
+     * Co-CEO" as often as "names him as CEO", and requiring the preposition
+     * meant half of all appointment headlines read as no event at all. */
+    String.raw`\s+(?:as\s+|to\s+(?:be\s+)?)?(?:its\s+|the\s+|their\s+)?(?:new\s+|first\s+|next\s+)?(?<role>${LEADERSHIP_ROLE_PATTERN})\b`,
   ].join(""),
   "gi",
 );
 
+/**
+ * A seat being vacated. "Acme CFO John Smith steps down."
+ *
+ * A departure is not the weaker twin of an appointment — it is the window
+ * before one. The successor inherits the stack decisions, and the months in
+ * between are when an incumbent vendor is most replaceable. The extractor
+ * records who left and what they left; which departures matter is the signal
+ * pack's call, as with appointments.
+ */
+const LEADERSHIP_DEPARTURE_EVENT_PATTERN = new RegExp(
+  [
+    String.raw`\b(?<company>[A-Z][A-Za-z0-9&'.-]*(?:\s+[A-Z][A-Za-z0-9&'.-]*){0,5})?`,
+    String.raw`\s*(?<role>${LEADERSHIP_ROLE_PATTERN})\s+(?<person>${PERSON_CAPTURE})`,
+    String.raw`\s+(?:is\s+|has\s+|will\s+|to\s+)?(?<verb>steps? down|stepping down|stepped down|departs?|departing|departed|resigns?|resigning|resigned|is leaving|leaves|left the company|exits?|exiting)\b`,
+  ].join(""),
+  "g",
+);
+
 const PERSON_FIRST_LEADERSHIP_EVENT_PATTERN = new RegExp(
   [
-    String.raw`\b(?<person>[A-Z][A-Za-z'.-]+(?:\s+[A-Z][A-Za-z'.-]+){1,5})`,
+    String.raw`\b(?<person>${PERSON_CAPTURE})`,
     String.raw`\s+(?<verb>joined|joins|was appointed|was named|was promoted)`,
     String.raw`\s+(?<company>[A-Z][A-Za-z0-9&'.-]*(?:\s+[A-Z][A-Za-z0-9&'.-]*){0,7})?`,
     String.raw`\s*(?:as|to)\s+(?<role>${LEADERSHIP_ROLE_PATTERN})\b`,
@@ -677,8 +743,8 @@ const PERSON_FIRST_LEADERSHIP_EVENT_PATTERN = new RegExp(
 const ANNOUNCED_LEADERSHIP_EVENT_PATTERN = new RegExp(
   [
     String.raw`\b(?:today\s+)?announced\s+(?:today\s+)?(?:that\s+)?`,
-    String.raw`(?:(?:the\s+)?appointment\s+of\s+(?<appointedPerson>[A-Z][A-Za-z'.-]+(?:\s+[A-Z][A-Za-z'.-]+){1,5})\s+as\s+(?:its\s+)?(?<appointedRole>${LEADERSHIP_ROLE_PATTERN})|`,
-    String.raw`(?<joinedPerson>[A-Z][A-Za-z'.-]+(?:\s+[A-Z][A-Za-z'.-]+){1,5})\s+has\s+joined\s+(?:the\s+company\s+)?as\s+(?:its\s+)?(?<joinedRole>${LEADERSHIP_ROLE_PATTERN}))\b`,
+    String.raw`(?:(?:the\s+)?appointment\s+of\s+(?<appointedPerson>${PERSON_CAPTURE})\s+as\s+(?:its\s+)?(?<appointedRole>${LEADERSHIP_ROLE_PATTERN})|`,
+    String.raw`(?<joinedPerson>${PERSON_CAPTURE})\s+has\s+joined\s+(?:the\s+company\s+)?as\s+(?:its\s+)?(?<joinedRole>${LEADERSHIP_ROLE_PATTERN}))\b`,
   ].join(""),
   "gi",
 );
@@ -776,9 +842,45 @@ function explicitDateAfter(content: string, eventIndex: number): {
   return { effectiveDate, excerptEnd: dateEnd };
 }
 
+/**
+ * A date the publisher supplied, usable when the text announces an event but
+ * does not date it. `null` keeps the old behaviour: no date, no event.
+ */
+export type PublishedDate = string | null | undefined;
+
+const publishedFallback = (publishedAt: PublishedDate): string | null => {
+  const day = publishedAt?.slice(0, 10);
+  return day && isValidCalendarDate(day) ? day : null;
+};
+
+/**
+ * When the event happened, and on whose word. The text is always preferred —
+ * a date before the event phrase, then one after it — and the publisher's date
+ * is the last resort, used only when the text dates the event not at all.
+ *
+ * The excerpt window moves with the answer: a date found before the event
+ * opens the excerpt at that date so the quote carries its own evidence, while
+ * a publisher-dated event quotes the event sentence alone, because pulling in
+ * surrounding text would only dress up a date the sentence never gave.
+ */
+function resolveEventDate(
+  content: string,
+  eventIndex: number,
+  eventEnd: number,
+  publishedAt: PublishedDate,
+): { effectiveDate: string; excerptStart: number; excerptEnd: number; basis: "STATED" | "PUBLISHED" } | null {
+  const before = explicitDateBefore(content, eventIndex);
+  if (before) return { effectiveDate: before.effectiveDate, excerptStart: before.excerptStart, excerptEnd: eventEnd, basis: "STATED" };
+  const after = explicitDateAfter(content, eventIndex);
+  if (after) return { effectiveDate: after.effectiveDate, excerptStart: eventIndex, excerptEnd: Math.max(eventEnd, after.excerptEnd), basis: "STATED" };
+  const published = publishedFallback(publishedAt);
+  return published ? { effectiveDate: published, excerptStart: eventIndex, excerptEnd: eventEnd, basis: "PUBLISHED" } : null;
+}
+
 export function extractExplicitLeadershipCandidates(
   evidenceId: string,
   rawContent: string,
+  publishedAt?: PublishedDate,
 ): FactCandidate[] {
   const content = normalizeEvidenceContent(rawContent);
   const candidates: FactCandidate[] = [];
@@ -786,6 +888,7 @@ export function extractExplicitLeadershipCandidates(
     ...content.matchAll(LEADERSHIP_EVENT_PATTERN),
     ...content.matchAll(PERSON_FIRST_LEADERSHIP_EVENT_PATTERN),
     ...content.matchAll(ANNOUNCED_LEADERSHIP_EVENT_PATTERN),
+    ...content.matchAll(LEADERSHIP_DEPARTURE_EVENT_PATTERN),
   ].sort((left, right) => (left.index ?? 0) - (right.index ?? 0));
   for (const match of matches) {
     if (match.index === undefined || !match.groups) continue;
@@ -796,16 +899,14 @@ export function extractExplicitLeadershipCandidates(
       /\b(?:today|announced|that|has)\b/i.test(match.groups.company ?? "") ||
       /\b(?:today|announced|that|has)\b/i.test(match.groups.person ?? "")
     ) continue;
-    const date = explicitDateBefore(content, match.index);
-    const afterDate = date ? null : explicitDateAfter(content, match.index);
-    if (!date && !afterDate) continue;
     const sentenceEnd = content.slice(match.index).search(/[.!?](?:\s|$)/);
     const eventEnd = sentenceEnd >= 0
       ? match.index + sentenceEnd + 1
       : match.index + match[0].length;
-    const supportingExcerpt = date
-      ? content.slice(date.excerptStart, eventEnd).trim()
-      : content.slice(match.index, Math.max(eventEnd, afterDate!.excerptEnd)).trim();
+    const dated = resolveEventDate(content, match.index, eventEnd, publishedAt);
+    if (!dated) continue;
+    const published = dated.basis === "PUBLISHED";
+    const supportingExcerpt = content.slice(dated.excerptStart, dated.excerptEnd).trim();
     const matchedRole = match.groups.role ?? match.groups.appointedRole ?? match.groups.joinedRole;
     const role = matchedRole && /^\s*\(CISO\)/i.test(
       content.slice(match.index + match[0].length),
@@ -821,10 +922,13 @@ export function extractExplicitLeadershipCandidates(
         role,
         eventType: match.groups.verb ?? "announced",
       },
-      effectiveDate: date?.effectiveDate ?? afterDate!.effectiveDate,
-      confidence: 98,
+      effectiveDate: dated.effectiveDate,
+      /* The event is read from the text either way; what the publisher date
+       * weakens is when it happened, not whether it did. */
+      confidence: published ? 85 : 98,
       supportingExcerpt,
       extractorVersion: FACT_EXTRACTION_PROMPT_VERSION,
+      ...(published ? { dateBasis: "PUBLISHED" as const } : {}),
     };
     const parsed = factCandidateSchema.safeParse(candidate);
     if (parsed.success) candidates.push(parsed.data);
@@ -907,6 +1011,7 @@ const INCIDENT_FIRST_EVENT_PATTERN = new RegExp(
 export function extractExplicitSecurityIncidentCandidates(
   evidenceId: string,
   rawContent: string,
+  publishedAt?: PublishedDate,
 ): FactCandidate[] {
   const content = normalizeEvidenceContent(rawContent);
   const candidates: FactCandidate[] = [];
@@ -919,14 +1024,10 @@ export function extractExplicitSecurityIncidentCandidates(
     const company = match.groups.company ?? "";
     // Headline connective prose is not a company name.
     if (/\b(?:today|announced|that|has|the|a|an|its|their)\b/i.test(company.split(/\s+/)[0] ?? "")) continue;
-    const date = explicitDateBefore(content, match.index);
-    const afterDate = date ? null : explicitDateAfter(content, match.index);
-    if (!date && !afterDate) continue;
     const sentenceEnd = content.slice(match.index).search(/[.!?](?:\s|$)/);
     const eventEnd = sentenceEnd >= 0 ? match.index + sentenceEnd + 1 : match.index + match[0].length;
-    const supportingExcerpt = date
-      ? content.slice(date.excerptStart, eventEnd).trim()
-      : content.slice(match.index, Math.max(eventEnd, afterDate!.excerptEnd)).trim();
+    const dated = resolveEventDate(content, match.index, eventEnd, publishedAt);
+    if (!dated) continue;
     candidates.push({
       evidenceId,
       factType: "SECURITY_INCIDENT",
@@ -935,10 +1036,11 @@ export function extractExplicitSecurityIncidentCandidates(
         incidentType: match.groups.incident!.toLowerCase().replace(/\s+/g, " "),
         eventType: match.groups.verb!.toLowerCase(),
       },
-      effectiveDate: date?.effectiveDate ?? afterDate!.effectiveDate,
-      confidence: 92,
-      supportingExcerpt,
+      effectiveDate: dated.effectiveDate,
+      confidence: dated.basis === "PUBLISHED" ? 80 : 92,
+      supportingExcerpt: content.slice(dated.excerptStart, dated.excerptEnd).trim(),
       extractorVersion: "explicit-security-incident-v1",
+      ...(dated.basis === "PUBLISHED" ? { dateBasis: "PUBLISHED" as const } : {}),
     });
   }
   return candidates;
@@ -973,8 +1075,9 @@ const WORKFORCE_REDUCTION_FIRST_PATTERN = new RegExp(
 export function extractExplicitWorkforceReductionCandidates(
   evidenceId: string,
   rawContent: string,
+  publishedAt?: PublishedDate,
 ): FactCandidate[] {
-  return extractNegativeEventCandidates(evidenceId, rawContent, {
+  return extractNegativeEventCandidates(evidenceId, rawContent, publishedAt, {
     factType: "WORKFORCE_REDUCTION",
     patterns: [WORKFORCE_REDUCTION_PATTERN, WORKFORCE_REDUCTION_FIRST_PATTERN],
     extractorVersion: "explicit-workforce-reduction-v1",
@@ -1002,8 +1105,9 @@ const ACQUIRED_FIRST_PATTERN = new RegExp(
 export function extractExplicitAcquiredCandidates(
   evidenceId: string,
   rawContent: string,
+  publishedAt?: PublishedDate,
 ): FactCandidate[] {
-  return extractNegativeEventCandidates(evidenceId, rawContent, {
+  return extractNegativeEventCandidates(evidenceId, rawContent, publishedAt, {
     factType: "ACQUIRED",
     patterns: [ACQUIRED_PATTERN, ACQUIRED_FIRST_PATTERN],
     extractorVersion: "explicit-acquired-v1",
@@ -1015,9 +1119,94 @@ export function extractExplicitAcquiredCandidates(
   });
 }
 
+/**
+ * Money raised, and who put it in.
+ *
+ * Nothing in the pipeline searched for funding, and funding is the plainest
+ * buying trigger there is: a company that closed a round is hiring, and a
+ * company that is hiring is choosing tools. Rocketlane's $60M from Insight and
+ * Clay's $115M both sat in the search results tonight, matched by a query
+ * meant for something else, and died unread because no extractor knew the
+ * shape of a funding sentence.
+ *
+ * The amount is required. "Raises fresh capital" with no figure is a press
+ * release about nothing, and an event with no size cannot be ranked against
+ * another one.
+ */
+const MONEY = String.raw`(?:US)?[$€£₹]\s?\d[\d,.]*\s*(?:million|billion|crore|lakh|[MBK]n?)\b|\brs\.?\s?\d[\d,.]*\s*(?:crore|lakh)\b|\b\d[\d,.]*\s*(?:million|billion|crore)\b`;
+const ROUND = String.raw`(?:pre-)?(?:seed|angel|series\s+[A-J](?:\+|\d)?|growth|bridge|strategic|mezzanine|pre-IPO)`;
+
+const FUNDING_EVENT_PATTERN = new RegExp(
+  [
+    String.raw`\b(?<company>[A-Z][A-Za-z0-9&'.-]*(?:\s+[A-Z][A-Za-z0-9&'.-]*){0,5})`,
+    String.raw`\s+(?:has\s+|have\s+)?(?<verb>raises|raised|raise|secures|secured|closes|closed|lands|landed|nets|netted|banks|banked|picks up|picked up|gets|got)`,
+    String.raw`\s+(?:a\s+|an\s+|its\s+|the\s+|about\s+|around\s+|roughly\s+|nearly\s+|over\s+|up to\s+|another\s+|fresh\s+)*`,
+    String.raw`(?<amount>${MONEY})`,
+    String.raw`(?:\s+(?:in\s+|of\s+)?(?:a\s+|its\s+|the\s+)?(?<round>${ROUND})(?:\s+(?:round|funding|financing))?)?`,
+  ].join(""),
+  "gi",
+);
+
+/* Round first: "Series B: Acme lands $40M", "In a $40 million Series C, Acme…"
+ * is rarer than the plain form but common in Indian trade press, which is a
+ * large part of what this product reads. */
+const FUNDING_AMOUNT_FIRST_PATTERN = new RegExp(
+  [
+    String.raw`\b(?<amount>${MONEY})\s+(?<round>${ROUND})?\s*(?:round\s+|funding\s+|investment\s+)?`,
+    String.raw`(?<verb>in|for|to)\s+(?<company>[A-Z][A-Za-z0-9&'.-]*(?:\s+[A-Z][A-Za-z0-9&'.-]*){0,5})\b`,
+  ].join(""),
+  "gi",
+);
+
+export function extractExplicitFundingCandidates(
+  evidenceId: string,
+  rawContent: string,
+  publishedAt?: PublishedDate,
+): FactCandidate[] {
+  const content = normalizeEvidenceContent(rawContent);
+  const candidates: FactCandidate[] = [];
+  const seenStarts = new Set<number>();
+  const matches = [
+    ...content.matchAll(FUNDING_EVENT_PATTERN),
+    ...content.matchAll(FUNDING_AMOUNT_FIRST_PATTERN),
+  ].sort((left, right) => (left.index ?? 0) - (right.index ?? 0));
+  for (const match of matches) {
+    if (match.index === undefined || !match.groups) continue;
+    if (seenStarts.has(match.index)) continue;
+    seenStarts.add(match.index);
+    const company = (match.groups.company ?? "").trim();
+    if (!company) continue;
+    // Headline connective prose is not a company name.
+    if (/^(?:today|announced|that|has|the|a|an|its|their|as|in|on|after|amid|this|new)$/i.test(company.split(/\s+/)[0] ?? "")) continue;
+    const sentenceEnd = content.slice(match.index).search(/[.!?](?:\s|$)/);
+    const eventEnd = sentenceEnd >= 0 ? match.index + sentenceEnd + 1 : match.index + match[0].length;
+    const dated = resolveEventDate(content, match.index, eventEnd, publishedAt);
+    if (!dated) continue;
+    candidates.push({
+      evidenceId,
+      factType: "FUNDING_EVENT",
+      /* Every value is quoted verbatim from the excerpt; the validator refuses
+       * a label the text does not carry, and no round is inferred from a size. */
+      structuredValue: {
+        company,
+        amount: (match.groups.amount ?? "").replace(/\s+/g, " ").trim(),
+        action: (match.groups.verb ?? "").replace(/\s+/g, " ").trim(),
+        ...(match.groups.round ? { round: match.groups.round.replace(/\s+/g, " ").trim() } : {}),
+      },
+      effectiveDate: dated.effectiveDate,
+      confidence: dated.basis === "PUBLISHED" ? 82 : 92,
+      supportingExcerpt: content.slice(dated.excerptStart, dated.excerptEnd).trim(),
+      extractorVersion: "explicit-funding-v1",
+      ...(dated.basis === "PUBLISHED" ? { dateBasis: "PUBLISHED" as const } : {}),
+    });
+  }
+  return candidates;
+}
+
 function extractNegativeEventCandidates(
   evidenceId: string,
   rawContent: string,
+  publishedAt: PublishedDate,
   spec: {
     factType: FactType;
     patterns: RegExp[];
@@ -1038,22 +1227,19 @@ function extractNegativeEventCandidates(
     const company = match.groups.company ?? "";
     // Headline connective prose is not a company name.
     if (/\b(?:today|announced|that|has|the|a|an|its|their|as|in|on|after|amid)\b/i.test(company.split(/\s+/)[0] ?? "")) continue;
-    const date = explicitDateBefore(content, match.index);
-    const afterDate = date ? null : explicitDateAfter(content, match.index);
-    if (!date && !afterDate) continue;
     const sentenceEnd = content.slice(match.index).search(/[.!?](?:\s|$)/);
     const eventEnd = sentenceEnd >= 0 ? match.index + sentenceEnd + 1 : match.index + match[0].length;
-    const supportingExcerpt = date
-      ? content.slice(date.excerptStart, eventEnd).trim()
-      : content.slice(match.index, Math.max(eventEnd, afterDate!.excerptEnd)).trim();
+    const dated = resolveEventDate(content, match.index, eventEnd, publishedAt);
+    if (!dated) continue;
     candidates.push({
       evidenceId,
       factType: spec.factType,
       structuredValue: spec.structured(match.groups),
-      effectiveDate: date?.effectiveDate ?? afterDate!.effectiveDate,
-      confidence: 90,
-      supportingExcerpt,
+      effectiveDate: dated.effectiveDate,
+      confidence: dated.basis === "PUBLISHED" ? 78 : 90,
+      supportingExcerpt: content.slice(dated.excerptStart, dated.excerptEnd).trim(),
       extractorVersion: spec.extractorVersion,
+      ...(dated.basis === "PUBLISHED" ? { dateBasis: "PUBLISHED" as const } : {}),
     });
   }
   return candidates;

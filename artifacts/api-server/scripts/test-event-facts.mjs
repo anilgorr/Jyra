@@ -98,17 +98,17 @@ const ctx = { companyId: "c-acme", companyName: "Acme Payments", domain: "acmepa
 //    run: a company in the news for layoffs is exactly the one not to call.
 {
   const queries = e.buildEventQueries("Acme Payments", "acmepay.com");
-  assert.equal(queries.length, 5);
-  assert.deepEqual(queries.map((q) => q.kind), ["SECURITY_INCIDENT", "LEADERSHIP_CHANGE", "LEADERSHIP_CHANGE", "WORKFORCE_REDUCTION", "ACQUIRED"]);
+  assert.equal(queries.length, 6);
+  assert.deepEqual(queries.map((q) => q.kind), ["SECURITY_INCIDENT", "LEADERSHIP_CHANGE", "LEADERSHIP_CHANGE", "WORKFORCE_REDUCTION", "ACQUIRED", "FUNDING_EVENT"]);
   assert.ok(queries.every((q) => q.query.includes('"Acme Payments"')));
   const calls = [];
   const { hits, providers } = await e.researchEvents(async (request) => {
     calls.push(request);
     return { status: "success", providerId: "exa", data: { results: [{ title: "t", url: `https://x.example/${calls.length}`, snippet: "s" }, { title: "dup", url: "https://x.example/1", snippet: "s" }] } };
   }, { requestId: "pc-1", companyName: "Acme Payments", domain: "acmepay.com", now: NOW });
-  assert.equal(calls.length, 4, "the open-web leadership query restates the news one; with hits in hand it is skipped, the negatives are not");
+  assert.equal(calls.length, 5, "the open-web leadership query restates the news one; with hits in hand it is skipped, the negatives and funding are not");
   assert.ok(calls.every((c) => c.includeRawContent === true && c.timeRange === "year"));
-  assert.equal(hits.length, 4, "duplicate URLs across queries are collapsed");
+  assert.equal(hits.length, 5, "duplicate URLs across queries are collapsed");
   assert.deepEqual(providers, ["exa"]);
 
   // Nothing found in the news index: the broader third query is exactly the
@@ -118,7 +118,7 @@ const ctx = { companyId: "c-acme", companyName: "Acme Payments", domain: "acmepa
     empty.push(request);
     return { status: "success", providerId: "exa", data: { results: [] } };
   }, { requestId: "pc-2", companyName: "Quiet Co", domain: "quiet.example", now: NOW });
-  assert.equal(empty.length, 5, "a company the news index does not cover still gets the open-web query");
+  assert.equal(empty.length, 6, "a company the news index does not cover still gets the open-web query");
   assert.equal(quiet.hits.length, 0);
 }
 
@@ -341,4 +341,98 @@ console.log("PASS event-facts");
   assert.equal(issued.filter((q) => /announces appointment/i.test(q)).length, 0,
     "…but a leadership story already found still spends no second credit");
   console.log("  ok  the leadership fallback runs when the leadership query came back empty, and only then");
+}
+
+/* ------------------------------------------------------------------ *
+ * A news snippet is ~180 characters and almost never restates the date.
+ * Measured on 277 real search hits for eight pool companies: 63 of 65
+ * NO_EXPLICIT_EVENT rejections carried an event the extractor could read
+ * and a publisher date the pipeline already trusted for its lookback gate.
+ * The headlines below are verbatim from that run.
+ * ------------------------------------------------------------------ */
+{
+  const PUB = "2026-08-19T00:00:00Z";
+
+  // Before: no calendar date in the text, therefore no event, therefore nothing.
+  assert.deepEqual(
+    e.extractExplicitLeadershipCandidates("aaaaaaaa-0000-4000-8000-000000000001", "Vanta Appoints Jenny Sun as Chief Marketing Officer\n\nVanta today announced that Jenny Sun has joined as Chief Marketing Officer."),
+    [], "with no date anywhere and no publisher date, an undated announcement is still not an event",
+  );
+
+  const [vanta] = e.extractExplicitLeadershipCandidates("aaaaaaaa-0000-4000-8000-000000000002", "Vanta Appoints Jenny Sun as Chief Marketing Officer\n\nVanta today announced that Jenny Sun has joined as Chief Marketing Officer.", PUB);
+  assert.ok(vanta, "the same announcement, dated by its publisher, is an event");
+  assert.equal(vanta.effectiveDate, "2026-08-19");
+  assert.equal(vanta.dateBasis, "PUBLISHED", "the basis is recorded, never erased");
+  assert.ok(vanta.confidence < 98, "a publisher date is weaker than a stated one");
+  assert.equal(vanta.structuredValue.person, "Jenny Sun");
+
+  // A date in the text still wins, and still reads as STATED.
+  const [stated] = e.extractExplicitLeadershipCandidates("aaaaaaaa-0000-4000-8000-000000000003", "On 3 March 2026, Vanta appointed Jenny Sun as Chief Marketing Officer.", PUB);
+  assert.equal(stated.effectiveDate, "2026-03-03", "the text outranks the publisher");
+  assert.equal(stated.dateBasis, undefined, "a stated date carries no publisher basis");
+
+  // A candidate cannot date itself by assertion: the caller must supply the same date.
+  assert.equal(e.factDateProvenance({ ...vanta, dateBasis: "PUBLISHED" }, undefined, "2026-08-19T00:00:00Z"), "PUBLISHER_DATED");
+  assert.equal(e.factDateProvenance({ ...vanta, dateBasis: "PUBLISHED" }, undefined, "2026-01-01T00:00:00Z"), "UNSUPPORTED_DATE",
+    "a publisher date that disagrees with the claim supports nothing");
+  assert.equal(e.factDateProvenance({ ...vanta, dateBasis: "PUBLISHED" }, undefined, undefined), "UNSUPPORTED_DATE",
+    "a candidate cannot assert its own basis with nothing behind it");
+  console.log("  ok  a publisher date dates an event the text announces but does not date");
+}
+
+/* The press writes an appointment without the preposition as often as with it,
+ * and titles carry prefixes. Both headlines are verbatim from the same run. */
+{
+  const PUB = "2026-08-19T00:00:00Z";
+  const [ramp] = e.extractExplicitLeadershipCandidates("aaaaaaaa-0000-4000-8000-000000000004", "Ramp Names Karim Atiyeh Co-CEO and Rahul Sengottuvelu CTO\n\nRamp has given Co-Founder Karim Atiyeh a Co-CEO title alongside Eric Glyman.", PUB);
+  assert.ok(ramp, "'Names X Co-CEO' is an appointment even with no 'as'");
+  assert.equal(ramp.structuredValue.person, "Karim Atiyeh", "the name stops at the name");
+  assert.equal(ramp.structuredValue.role, "Co-CEO", "a Co- prefix is part of the title");
+
+  const [amp] = e.extractExplicitLeadershipCandidates("aaaaaaaa-0000-4000-8000-000000000005", "Amplitude Appoints ServiceNow Executive Gab Menachem as Chief Product Officer", PUB);
+  assert.equal(amp.structuredValue.role, "Chief Product Officer");
+  assert.doesNotMatch(amp.structuredValue.person, /\bas\b/, "the preposition is not part of the person");
+
+  // A seat being vacated is the window before an appointment, not its weaker twin.
+  const [gone] = e.extractExplicitLeadershipCandidates("aaaaaaaa-0000-4000-8000-000000000006", "Acme CFO John Smith steps down after six years.", PUB);
+  assert.ok(gone, "a departure is an event");
+  assert.equal(gone.structuredValue.person, "John Smith");
+  assert.equal(gone.structuredValue.role, "CFO");
+  console.log("  ok  appointments without a preposition, prefixed titles, and departures all read");
+}
+
+/* Funding: nothing searched for it, and it is the plainest buying trigger there
+ * is. Both headlines are verbatim from the run. */
+{
+  const PUB = "2026-04-21T00:00:00Z";
+  const [round] = e.extractExplicitFundingCandidates("aaaaaaaa-0000-4000-8000-000000000007", "Rocketlane raises $60 Mn in Series C led by Insight Partners\n\nProfessional services automation platform Rocketlane has raised $60 million in its Series C round.", PUB);
+  assert.ok(round, "a funding round is an event");
+  assert.equal(round.factType, "FUNDING_EVENT");
+  assert.equal(round.structuredValue.company, "Rocketlane");
+  assert.equal(round.structuredValue.amount, "$60 Mn");
+  assert.equal(round.structuredValue.round, "Series C");
+
+  assert.deepEqual(e.extractExplicitFundingCandidates("aaaaaaaa-0000-4000-8000-000000000008", "Acme raises fresh capital to fund its expansion.", PUB), [],
+    "a raise with no figure is a press release about nothing");
+
+  assert.ok(e.buildEventQueries("Rocketlane", "rocketlane.com").some((q) => q.kind === "FUNDING_EVENT"),
+    "and the pipeline actually asks for it");
+  console.log("  ok  funding rounds are searched for, extracted, and require an amount");
+}
+
+/* Precision. The date requirement had been doing two jobs - demanding evidence
+ * and incidentally suppressing garbage - so relaxing it unmasked every article
+ * that merely contains a common-word company name. These are verbatim from the
+ * run for "Clay" and must stay rejected. */
+{
+  const clay = { companyId: "c-clay", companyName: "Clay", domain: "clay.com", now: new Date("2026-09-18T00:00:00Z") };
+  const noise = [
+    { kind: "LEADERSHIP_CHANGE", url: "https://x.example/1", title: "Longacre names Whit Clay first CEO amid growth push", snippet: "Longacre Square Partners has appointed Whit Clay as its first Chief Executive Officer.", publishedAt: "2026-09-10T00:00:00Z" },
+    { kind: "LEADERSHIP_CHANGE", url: "https://x.example/2", title: "Clay McCoy Joins Evercore as Senior Managing Director", snippet: "Evercore announced today that Clay McCoy has joined the firm as a senior managing director.", publishedAt: "2026-09-10T00:00:00Z" },
+    { kind: "ACQUIRED", url: "https://x.example/3", title: "Micron acquires land in Clay for underground industrial wastewater lines", snippet: "Micron acquired more land in the town of Clay for its wastewater lines.", publishedAt: "2026-09-10T00:00:00Z" },
+    { kind: "WORKFORCE_REDUCTION", url: "https://x.example/4", title: "Manufacturing plant laying off dozens at its Clay County facility", snippet: "Dozens of workers will soon be laid off at a Clay County building materials plant.", publishedAt: "2026-09-10T00:00:00Z" },
+  ];
+  const { facts } = e.mapEventHitsToFacts(noise, clay);
+  assert.deepEqual(facts, [], "a person or a county named Clay is not the company Clay");
+  console.log("  ok  relaxing the date rule did not open the door to common-word namesakes");
 }
