@@ -11,7 +11,7 @@ import { SignalVerdict, useWeekVerdicts } from "@/components/signal-verdict";
 type Company = { id: string; status: string; company: { canonicalName: string }; opportunityAssessmentState: string | null; opportunityScore: number | null; confidenceScore: number | null };
 type Assessment = {
   id: string; projectCompanyId: string; score: number | null; state: string; assessmentStatus: string;
-  confidenceScore: number | null; explanation: string; assessedAt: string;
+  fitScore: number | null; confidenceScore: number | null; explanation: string; assessedAt: string;
 };
 type Headline = { kind: "negative" | "event" | "standing" | "none"; signal: string | null; text: string; date: string | null };
 type ListItem = { opportunity: Assessment; projectCompany: Company; company: { canonicalName: string }; headline: Headline | null };
@@ -176,7 +176,7 @@ export function OpportunityAssessments({ projectId, initialCompanyId, focusWhy =
                 <div>
                   <p className="font-medium">{company.company.canonicalName}</p>
                   <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-                    {assessment ? <><Badge variant="outline" className={stateTone(assessment.state)}>{assessment.assessmentStatus === "INSUFFICIENT_DATA" ? "NEEDS RESEARCH" : assessment.state}</Badge><span>Confidence {scoreText(assessment.confidenceScore)}</span></> : <span>Not assessed</span>}
+                    {assessment ? <><Badge variant="outline" className={stateTone(assessment.state)}>{assessment.assessmentStatus === "INSUFFICIENT_DATA" ? "NEEDS RESEARCH" : assessment.state}</Badge>{assessment.score !== null && assessment.fitScore === null && <Badge variant="outline" className="border-amber-500/30 text-amber-700" title="A real event was found but Fit could not be read; ranked on a neutral Fit. Your verdict settles it.">Fit unverified</Badge>}<span>Confidence {scoreText(assessment.confidenceScore)}</span></> : <span>Not assessed</span>}
                   </div>
                   {assessment && headline && (
                     <p className={`mt-1 text-sm ${headlineTone(headline.kind)}`} data-testid={`headline-${company.id}`}>

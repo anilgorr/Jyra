@@ -22,6 +22,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { IcpChecklist, hasChecklist } from "@/components/icp-checklist";
 import { AlertTriangle, Check, Clock3, Loader2, Pencil, Plus, RefreshCw, ShieldCheck, Sparkles, Trash2, Info } from "lucide-react";
 
 const groups = [
@@ -99,7 +100,7 @@ function CriterionDialog({ open, criterion, onClose, onSave, pending }: {
 
   return (
     <Dialog open={open} onOpenChange={(next) => !next && onClose()}>
-      <DialogContent>
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle>{criterion ? "Edit criterion" : "Add criterion"}</DialogTitle>
           <DialogDescription>Structured fields keep the ICP objective and evaluable.</DialogDescription>
@@ -113,7 +114,14 @@ function CriterionDialog({ open, criterion, onClose, onSave, pending }: {
             <div><Label>Operator</Label><select className="mt-1 h-10 w-full rounded-md border bg-background px-3 text-sm" value={operator} onChange={(e) => setOperator(e.target.value as typeof operator)}>{allowedOperators.map((item) => <option key={item}>{item}</option>)}</select></div>
             <div><Label>Weight (0–100)</Label><Input className="mt-1" type="number" min="0" max="100" value={weight} onChange={(e) => setWeight(e.target.value)} disabled={criterionType !== "PREFERRED"} /></div>
           </div>
-          <div><Label>Value</Label><Input className="mt-1" value={value} onChange={(e) => setValue(e.target.value)} placeholder={operator === "BETWEEN" ? "50-1000" : operator === "IN" ? "SaaS, IT, technology" : "Criterion value"} /></div>
+          {hasChecklist(dimension, operator) ? (
+            <div>
+              <Label>{operator === "NOT_IN" ? "Exclude any of" : "Any of"}</Label>
+              <div className="mt-2 rounded-md border p-3"><IcpChecklist dimension={dimension} value={value} onChange={setValue} /></div>
+            </div>
+          ) : (
+            <div><Label>Value</Label><Input className="mt-1" value={value} onChange={(e) => setValue(e.target.value)} placeholder={operator === "BETWEEN" ? "50-1000" : operator === "IN" ? "SaaS, IT, technology" : "Criterion value"} /></div>
+          )}
           <div><Label>Description</Label><textarea className="mt-1 min-h-24 w-full rounded-md border bg-background px-3 py-2 text-sm" value={description} onChange={(e) => setDescription(e.target.value)} /></div>
           {error && <p className="text-sm text-destructive">{error}</p>}
         </div>

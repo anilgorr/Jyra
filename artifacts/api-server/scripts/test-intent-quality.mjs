@@ -309,6 +309,41 @@ check("the precision report carries fit-only separately from relevant, so the tw
   assert.equal(h.GetAdminPrecisionResponse.safeParse([without]).success, false, "fitOnlyTop10 is required");
 });
 
+// -------------------------------------------- a real event with no Fit reading
+
+console.log("\nintent quality — Fit unknown is our ignorance, not their silence");
+
+const noFit = { ...provider, whoValue: "INSUFFICIENT_DATA" };
+const eventSignal = signal({ id: "gtm", strength: 80, needImpact: 72, timingImpact: 80 });
+
+check("Technovert: sales hiring found, Fit unreadable - ranked on a neutral Fit, not hidden", () => {
+  const r = assess([eventSignal], { fitProvider: noFit });
+  assert.notEqual(r.score, null, "a company with a real event must have a score");
+  assert.equal(dim(r, "FIT").score, null, "the Fit component stays honest: unknown");
+  assert.equal(r.fitProvisional, true);
+  const expected = Math.round(((h.PROVISIONAL_FIT_SCORE * 30) + (72 * 30) + (80 * 30)) / 90 * 100) / 100;
+  assert.equal(r.score, expected, `neutral Fit ${h.PROVISIONAL_FIT_SCORE} in the same arithmetic`);
+  assert.ok(["WATCH", "EMERGING"].includes(r.state), `capped at EMERGING until Fit is verified, got ${r.state}`);
+  assert.ok(r.gates.some((g) => /Fit is unverified/.test(g)));
+  assert.equal(r.assessmentStatus, "NEEDS_MORE_RESEARCH", "not INSUFFICIENT_DATA - this score must persist");
+});
+
+check("with nothing happening there is nothing to rank: Fit unknown and no event stays null", () => {
+  assert.equal(assess([], { fitProvider: noFit }).score, null);
+  assert.equal(assess([signal({ evidenceKind: "standing" })], { fitProvider: noFit }).score, null, "a standing fact is not an event");
+  assert.equal(assess([signal({ polarity: "NEGATIVE", needImpact: -80, timingImpact: -80 })], { fitProvider: noFit }).score, null, "a layoff is not a reason to rank");
+});
+
+check("a real event with unverified Fit outranks a standing fact with known Fit", () => {
+  const unverified = assess([eventSignal], { fitProvider: noFit }).score;
+  const standing = assess([signal({ evidenceKind: "standing" })]).score;
+  assert.ok(unverified > standing, `${unverified} should beat ${standing}`);
+});
+
+check("the neutral Fit is neutral: never above the strong-state threshold on its own", () => {
+  assert.ok(h.PROVISIONAL_FIT_SCORE >= 40 && h.PROVISIONAL_FIT_SCORE <= 60);
+});
+
 // ------------------------------------------------------------ the week key
 
 console.log("\nintent quality — the week a verdict belongs to");

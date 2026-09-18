@@ -184,6 +184,22 @@ function fitComponent(input: OpportunityCalculationInput): ScoreComponent {
  * in a standing fact - HubSpot appears where it was not before - is an event,
  * and the extractor that produces it will file it as one.
  */
+/**
+ * The Fit used to rank a company that has a real event but no Fit reading.
+ *
+ * Fit unknown is OUR ignorance - the website would not load, the model cited
+ * an ID that did not exist - not a fact about the company, so unlike an
+ * unmeasured Need it is not scored as zero. But "no score at all" hid the
+ * three companies in the first pool with real sales-hiring events (Technovert
+ * at need 72 / timing 80, Jumio, Space-O) at the bottom of the list under
+ * "needs research", below eighty companies whose only fact was "uses HubSpot".
+ * A neutral Fit ranks them on what did happen, the state is capped at
+ * EMERGING, and the row says the Fit is unverified so the seller answers it
+ * with one click - which is the Fit feedback we want anyway. Applies only when
+ * an event signal is active: with nothing happening there is nothing to rank.
+ */
+export const PROVISIONAL_FIT_SCORE = 50;
+
 export const STANDING_FACT_NEED_FACTOR = 0.5;
 export const STANDING_FACT_TIMING_FACTOR = 0.2;
 
@@ -369,6 +385,9 @@ export function calculateOpportunityAssessment(input: OpportunityCalculationInpu
   ];
   const fitKnown = fit.score !== null;
   const timingDimensionsKnown = need.score !== null && timing.score !== null;
+  const eventSignalActive = input.signals.some((item) => item.status === "ACTIVE" && item.polarity !== "NEGATIVE" && item.evidenceKind !== "standing");
+  /* Rank on a neutral Fit when a real event was found and Fit could not be read. */
+  const fitProvisional = !fitKnown && eventSignalActive;
 
   /* An unmeasured Need or Timing counts as zero, and its weight stays in the
    * denominator.
@@ -395,8 +414,10 @@ export function calculateOpportunityAssessment(input: OpportunityCalculationInpu
   const denominator = scoring
     .filter((item) => evidenceDimensions.includes(item.component) || item.component.score !== null)
     .reduce((sum, item) => sum + item.weight, 0);
-  const score = fitKnown && denominator
-    ? round(scoring.reduce((sum, item) => sum + (item.component.score ?? 0) * item.weight, 0) / denominator)
+  const scoreOf = (item: { component: ScoreComponent; weight: number }) =>
+    (item.component === fit && fitProvisional ? PROVISIONAL_FIT_SCORE : item.component.score ?? 0) * item.weight;
+  const score = (fitKnown || fitProvisional) && denominator
+    ? round(scoring.reduce((sum, item) => sum + scoreOf(item), 0) / denominator)
     : null;
   const completeness = scoring.filter((item) => item.component.score !== null).reduce((sum, item) => sum + item.weight, 0) / 100;
   const confidence = confidenceComponent(input, completeness);
@@ -422,12 +443,16 @@ export function calculateOpportunityAssessment(input: OpportunityCalculationInpu
     state = capState(state, "WATCH");
     gates.push("A current negative signal says the company is not buying");
   }
+  if (fitProvisional) {
+    state = capState(state, "EMERGING");
+    gates.push("Fit is unverified; ranked on a neutral Fit because a real event was found");
+  }
   const assessmentStatus: "INSUFFICIENT_DATA" | "NEEDS_MORE_RESEARCH" | "COMPLETE" = score === null ? "INSUFFICIENT_DATA" :
-    !timingDimensionsKnown ? "NEEDS_MORE_RESEARCH" :
+    fitProvisional || !timingDimensionsKnown ? "NEEDS_MORE_RESEARCH" :
     confidence.score === null || confidence.score < rules.minimumConfidence ? "NEEDS_MORE_RESEARCH" : "COMPLETE";
   if (assessmentStatus !== "COMPLETE") {
     state = capState(state, "EMERGING");
-    gates.push(!timingDimensionsKnown
+    if (!fitProvisional) gates.push(!timingDimensionsKnown
       ? "Need and Timing are not yet measured; strength is provisional (Fit-based)"
       : "Confidence requires more research");
   }
@@ -444,7 +469,8 @@ export function calculateOpportunityAssessment(input: OpportunityCalculationInpu
     score, state, assessmentStatus, components: [fit, need, timing, relationship, confidence],
     /** Every rule that capped or changed the state, in the order it applied. */
     gates,
-    explanation: `${score === null ? "NEEDS RESEARCH" : state}: ${score === null ? "an opportunity score cannot yet be calculated because Fit remains unknown" : `weighted opportunity strength is ${score}${timingDimensionsKnown ? "" : " (provisional: based on Fit; Need and Timing are not yet measured)"}`}. Confidence is ${confidence.score ?? "unknown"} and is not included in that score.${gates.length ? ` Gates: ${gates.join("; ")}.` : ""}`,
+    fitProvisional,
+    explanation: `${score === null ? "NEEDS RESEARCH" : state}: ${score === null ? "an opportunity score cannot yet be calculated because Fit remains unknown" : `weighted opportunity strength is ${score}${fitProvisional ? ` (provisional: Fit unverified, taken as ${PROVISIONAL_FIT_SCORE})` : timingDimensionsKnown ? "" : " (provisional: based on Fit; Need and Timing are not yet measured)"}`}. Confidence is ${confidence.score ?? "unknown"} and is not included in that score.${gates.length ? ` Gates: ${gates.join("; ")}.` : ""}`,
   };
 }
 

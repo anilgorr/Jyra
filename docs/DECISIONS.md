@@ -49,13 +49,54 @@ would be scoring our own admin.
 
 - **Where:** same function, same commit.
 
-### Unknown Fit produces no score at all, not a low one
+### Unknown Fit produces no score at all, not a low one — unless something happened
 
 A null sorts out of the list rather than to the bottom of it. A run that
 produced no evidence must never overwrite a real score with a null either.
 
-- **Enforced by:** `test-opportunity-score-preservation.mjs`
-- **Cost of learning it:** VWO, 89.75, overwritten with NULL on 2026-09-07.
+Amended 18 Sep 2026. Unknown Fit is *our* ignorance — the site would not
+load, the model cited a claim ID that did not exist — not a fact about the
+company, so it is not scored as zero the way an unmeasured Need is. But "no
+score" hid the three companies in the first pool with real sales-hiring
+events (Technovert at need 72 / timing 80, Jumio with nine open sales roles,
+Space-O) under "needs research", below eighty companies whose only fact was
+"uses HubSpot". Now a company with an active event signal and no Fit reading
+is ranked on a neutral Fit of 50 (`PROVISIONAL_FIT_SCORE`), capped at
+EMERGING, marked NEEDS_MORE_RESEARCH, and the row says "Fit unverified" —
+so the seller settles the Fit with one verdict, which is the feedback we
+wanted anyway. With no event there is still nothing to rank: null.
+
+- **Enforced by:** `test-opportunity-score-preservation.mjs`,
+  `test-opportunity-ranking-invariant.mjs`, `test-intent-quality.mjs`.
+- **Cost of learning it:** VWO, 89.75, overwritten with NULL on 2026-09-07;
+  Technovert, invisible with the strongest event in the pool, 2026-09-18.
+
+### Industry, headcount and headquarters are read off the LinkedIn snippet
+
+The firmographics provider that was to supply INDUSTRY and EMPLOYEE_SIZE
+claims refused 136 of 136 requests. With no INDUSTRY claim it could cite,
+the model asked "is this company in IT?" invented a claim ID; the safety
+rule then discarded every criterion, and Fit was unknown for 26 of the first
+99 assessed. The search step already returns the LinkedIn company snippet,
+whose three labelled fields ("Industry: … ; Company size: … ; Headquarters:
+…") are read deterministically into claims. Only a `linkedin.com/company/`
+URL is read this way; nothing unlabelled is claimed.
+
+- **Where:** `intelligence-v2/profile-snippet-facts.ts`, merged in
+  `providerEvidence`.
+- **Enforced by:** `test-geography-facts.mjs` — the Jumio and Accops
+  snippets, and a RocketReach page in the same format that must claim nothing.
+
+### ICP list values are chosen from a checklist, with "add your own"
+
+The value box was a comma-separated text field for every dimension. That is
+how a Bangalore agency's test ICP came to list five target geographies and
+not India, and fifteen Indian companies scored "not a fit" for being where
+the seller is. Presets per dimension are a starting point, not a
+vocabulary: custom entries are kept, and a saved value that is not a preset
+shows as a ticked custom chip so editing never drops it.
+
+- **Where:** `components/icp-checklist.tsx`, used by the criterion dialog.
 
 ### A standing fact is not an event, and cannot make a company RISING
 

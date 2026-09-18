@@ -75,10 +75,19 @@ check("a run with no evidence yields null, never zero", () => {
   }
 });
 
-check("an unknown core dimension keeps the whole score unknown", () => {
+check("an unknown Fit with a real event is ranked provisionally, never overwrites, and says so", () => {
+  // Changed 18 Sep 2026. Unknown Fit is our failure to read, not evidence
+  // about the company; with a real event present the company is ranked on a
+  // neutral Fit, capped at EMERGING, and marked NEEDS_MORE_RESEARCH so the
+  // preservation rule below still applies to it.
   const partial = h.calculateOpportunityAssessment(input({ fitResults: fit("unknown") }));
-  assert.equal(dimension(partial, "FIT").score, null);
-  assert.equal(partial.score, null, "a known Need must not carry an unknown Fit to a number");
+  assert.equal(dimension(partial, "FIT").score, null, "the Fit component itself stays unknown");
+  assert.equal(typeof partial.score, "number", "a real event with unread Fit is ranked, not hidden");
+  assert.equal(partial.fitProvisional, true);
+  assert.notEqual(partial.assessmentStatus, "COMPLETE");
+  assert.ok(["WATCH", "EMERGING"].includes(partial.state));
+  const quiet = h.calculateOpportunityAssessment(input({ fitResults: fit("unknown"), signals: [], clusters: [] }));
+  assert.equal(quiet.score, null, "with nothing happening, unknown Fit is still no score");
 });
 
 check("unknown ICP information is not treated as failure", () => {

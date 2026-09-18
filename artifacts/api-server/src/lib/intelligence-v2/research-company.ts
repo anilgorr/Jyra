@@ -5,6 +5,7 @@ import { detectOfferingOverlapV2, type SellerOfferingV2 } from "./offering-overl
 import type { ProviderOperations, ProviderResponse } from "../provider-contract";
 import { MAX_PROFILE_RESOLUTION_SEARCHES_PER_COMPANY } from "../company-profile-resolution";
 import { extractGeographyClaims } from "./geography-facts";
+import { extractProfileSnippetClaims, isLinkedInCompanyUrl } from "./profile-snippet-facts";
 
 export type ResearchRequestV2 = {
   organizationId: string; projectId: string; companyId: string; companyName: string; domain: string | null;
@@ -139,8 +140,17 @@ export function providerEvidence(input: {
   const detectedOverlap = overlapEligible ? detectOfferingOverlapV2(input.snippet, input.request.offering) : [];
   const suppliedOverlap = input.claims?.offeringOverlapFacts ?? [];
   const overlapFacts = [...new Set([...suppliedOverlap, ...detectedOverlap.map((match) => `${match.phrase} — "${match.excerpt}"`.slice(0, 600))])];
-  const claims: EvidenceItemV2["claims"] = input.claims || overlapFacts.length
-    ? { ...(input.claims ?? {}), ...(overlapFacts.length ? { offeringOverlapFacts: overlapFacts.slice(0, 20) } : {}) }
+  // A LinkedIn company page in the results carries labelled industry,
+  // headcount and headquarters. Read them here, once, whichever step found
+  // the page - so the model has an INDUSTRY claim to cite instead of
+  // inventing one. See profile-snippet-facts.ts.
+  const profile = isLinkedInCompanyUrl(input.url) ? extractProfileSnippetClaims(input.snippet) : {};
+  const supplied = { ...(input.claims ?? {}) };
+  if (profile.industry && !supplied.industry) supplied.industry = profile.industry;
+  if (profile.employeeSize && !supplied.employeeSize) supplied.employeeSize = profile.employeeSize;
+  if (profile.geography?.length && !supplied.geography?.length) supplied.geography = profile.geography;
+  const claims: EvidenceItemV2["claims"] = input.claims || overlapFacts.length || Object.keys(profile).length
+    ? { ...supplied, ...(overlapFacts.length ? { offeringOverlapFacts: overlapFacts.slice(0, 20) } : {}) }
     : undefined;
   const brandFragment = input.request.companyName.split(/\s+/).filter((part) => part.length >= 2)
     .map((part) => {
@@ -167,10 +177,10 @@ export function providerEvidence(input: {
       ...(input.claims?.productsServices ?? []).map((value, i) => ({ claimId: `${evidenceId}:product:${i}`, type: "PRODUCT_SERVICE" as const, value })),
       ...suppliedOverlap.map((value, i) => ({ claimId: `${evidenceId}:overlap:${i}`, type: "OFFERING_OVERLAP" as const, value })),
       ...detectedOverlap.map((match, i) => ({ claimId: `${evidenceId}:overlap-detected:${i}`, type: "OFFERING_OVERLAP" as const, value: match.phrase })),
-      ...(input.claims?.geography ?? []).map((claim, i) => ({ claimId: `${evidenceId}:geography:${i}`, type: "GEOGRAPHY" as const, value: claim.value, geographyType: claim.type })),
-      ...(input.claims?.businessModel ? [{ claimId: `${evidenceId}:model`, type: "BUSINESS_MODEL" as const, value: input.claims.businessModel }] : []),
-      ...(input.claims?.industry ? [{ claimId: `${evidenceId}:industry`, type: "INDUSTRY" as const, value: input.claims.industry }] : []),
-      ...(input.claims?.employeeSize ? [{ claimId: `${evidenceId}:employees`, type: "EMPLOYEE_SIZE" as const, value: input.claims.employeeSize }] : []),
+      ...(supplied.geography ?? []).map((claim, i) => ({ claimId: `${evidenceId}:geography:${i}`, type: "GEOGRAPHY" as const, value: claim.value, geographyType: claim.type })),
+      ...(supplied.businessModel ? [{ claimId: `${evidenceId}:model`, type: "BUSINESS_MODEL" as const, value: supplied.businessModel }] : []),
+      ...(supplied.industry ? [{ claimId: `${evidenceId}:industry`, type: "INDUSTRY" as const, value: supplied.industry }] : []),
+      ...(supplied.employeeSize ? [{ claimId: `${evidenceId}:employees`, type: "EMPLOYEE_SIZE" as const, value: supplied.employeeSize }] : []),
       ...(input.claims?.technologyFacts ?? []).map((claim, i) => ({ claimId: `${evidenceId}:technology:${i}`, type: "TECHNOLOGY" as const, value: claim.value })),
     ], claims,
   });

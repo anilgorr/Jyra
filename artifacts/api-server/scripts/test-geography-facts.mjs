@@ -126,4 +126,62 @@ const offices = (claims) => claims.filter((c) => c.type === "OFFICE_PRESENCE").m
   }
 }
 
+// ---- LinkedIn snippet: industry, headcount, headquarters, read literally ----
+{
+  const jumio = "Website: http://www.jumio.com. External link for Jumio Corporation ; Industry: Software Development ; Company size: 201-500 employees ; Headquarters: Sunnyvale, ...";
+  const c = g.extractProfileSnippetClaims(jumio);
+  assert.equal(c.industry, "Software Development");
+  assert.equal(c.employeeSize, "201-500");
+  assert.equal(c.geography?.[0]?.type, "HEADQUARTERS");
+  // A truncated headquarters ("Sunnyvale, ...") is kept as far as it is stated.
+  assert.equal(c.geography?.[0]?.value, "Sunnyvale");
+
+  const accops = "Accops Systems Pvt. Ltd. | 12,345 followers on LinkedIn. Industry: IT Services and IT Consulting ; Company size: 51-200 employees ; Headquarters: Pune, Maharashtra ; Type: Privately Held ; Founded: 2012";
+  const a = g.extractProfileSnippetClaims(accops);
+  assert.equal(a.industry, "IT Services and IT Consulting");
+  assert.equal(a.employeeSize, "51-200");
+  assert.equal(a.geography?.[0]?.value, "Pune, Maharashtra");
+
+  const big = "Industry: Information Technology & Services; Company size: 10,001+ employees; Headquarters: Bengaluru, Karnataka";
+  const b = g.extractProfileSnippetClaims(big);
+  assert.equal(b.employeeSize, "10,001+");
+  assert.equal(b.geography?.[0]?.value, "Bengaluru, Karnataka");
+
+  // Nothing labelled, nothing claimed - a description that merely mentions the words is not a field.
+  const prose = "We are an industry leader headquartered in the cloud with a company size that keeps growing.";
+  assert.deepEqual(g.extractProfileSnippetClaims(prose), {});
+
+  // Only LinkedIn company pages are read this way.
+  assert.equal(g.isLinkedInCompanyUrl("https://www.linkedin.com/company/jumio-corporation"), true);
+  assert.equal(g.isLinkedInCompanyUrl("https://in.linkedin.com/company/accops"), true);
+  assert.equal(g.isLinkedInCompanyUrl("https://www.linkedin.com/in/anil-g"), false, "a person is not a company");
+  assert.equal(g.isLinkedInCompanyUrl("https://rocketreach.co/jumio"), false);
+  assert.equal(g.isLinkedInCompanyUrl(null), false);
+}
+
+// ---- and those become INDUSTRY / EMPLOYEE_SIZE / GEOGRAPHY claims on the evidence item ----
+{
+  const request = { organizationId: "o", projectId: "p", companyId: "c", companyName: "Jumio Corporation", domain: "jumio.com", offering: { name: "AEO", description: "", keywords: [] } };
+  const item = g.providerEvidence({
+    request, provider: "serper", providerRequestId: "r1", capturedAt: new Date().toISOString(),
+    sourceType: "COMPANY_PROFILE_RESOLUTION", url: "https://www.linkedin.com/company/jumio-corporation", title: "Jumio Corporation | LinkedIn",
+    snippet: "Website: http://www.jumio.com. External link for Jumio Corporation ; Industry: Software Development ; Company size: 201-500 employees ; Headquarters: Sunnyvale, California",
+    firstParty: false, claims: { primaryBusiness: "Jumio helps organizations to know and trust their customers online." },
+  });
+  const types = item.atomicClaims.map((c) => c.type);
+  assert.ok(types.includes("INDUSTRY"), `INDUSTRY claim missing: ${types}`);
+  assert.ok(types.includes("EMPLOYEE_SIZE"), `EMPLOYEE_SIZE claim missing: ${types}`);
+  assert.ok(item.atomicClaims.some((c) => c.type === "GEOGRAPHY" && c.geographyType === "HEADQUARTERS" && c.value === "Sunnyvale, California"));
+  assert.equal(item.atomicClaims.find((c) => c.type === "INDUSTRY").value, "Software Development");
+
+  // The same snippet from a non-LinkedIn URL claims nothing extra.
+  const other = g.providerEvidence({
+    request, provider: "serper", providerRequestId: "r2", capturedAt: new Date().toISOString(),
+    sourceType: "WEB_SEARCH", url: "https://rocketreach.co/jumio-corporation-profile", title: "Jumio - RocketReach",
+    snippet: "Industry: Software ; Company size: 201-500 employees ; Headquarters: Sunnyvale, California",
+    firstParty: false, claims: { primaryBusiness: "x" },
+  });
+  assert.ok(!other.atomicClaims.some((c) => c.type === "INDUSTRY"), "only LinkedIn's labelled format is trusted");
+}
+
 console.log("PASS geography-facts");

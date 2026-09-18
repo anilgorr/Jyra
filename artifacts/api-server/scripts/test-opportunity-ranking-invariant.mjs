@@ -181,16 +181,26 @@ check("more demonstrated need never lowers the score", () => {
   }
 });
 
-check("an unknown Fit abstains rather than ranking anywhere", () => {
-  // The other half of the contract: unknown Fit is not a low score, it is no
-  // score. A null sorts out of the list instead of to the bottom of it.
+check("an unknown Fit abstains when nothing happened, and ranks neutrally when something did", () => {
+  // The other half of the contract, amended 18 Sep 2026: unknown Fit is not a
+  // low score. With no event it is no score - a null sorts out of the list.
+  // With a real event it is a neutral Fit, capped at EMERGING, so the company
+  // is seen and the seller settles the Fit with one verdict.
+  const quiet = h.calculateOpportunityAssessment({
+    weights: h.DEFAULT_OPPORTUNITY_WEIGHTS,
+    fitResults: [{ id: "c", type: "MUST_HAVE", weight: null, result: "unknown" }],
+    signals: [], clusters: [], evidence: threeSources,
+    relationshipStatus: "NONE", previous: null,
+  });
+  assert.equal(quiet.score, null, "unknown Fit and no event must leave the score null");
   const noFit = h.calculateOpportunityAssessment({
     weights: h.DEFAULT_OPPORTUNITY_WEIGHTS,
     fitResults: [{ id: "c", type: "MUST_HAVE", weight: null, result: "unknown" }],
     signals: [signal()], clusters: [], evidence: threeSources,
     relationshipStatus: "NONE", previous: null,
   });
-  assert.equal(noFit.score, null, "unknown Fit must leave the score null, not produce a number");
+  assert.equal(typeof noFit.score, "number", "unknown Fit with a real event is ranked on a neutral Fit");
+  assert.ok(["WATCH", "EMERGING"].includes(noFit.state), "and never reaches RISING on an unverified Fit");
 });
 
 console.log(`\nranking invariant: ${checks} checks passed`);
