@@ -436,3 +436,31 @@ console.log("PASS event-facts");
   assert.deepEqual(facts, [], "a person or a county named Clay is not the company Clay");
   console.log("  ok  relaxing the date rule did not open the door to common-word namesakes");
 }
+
+/* An event whose extractor captured no subject used to skip the entity check
+ * entirely - there was nothing to compare against. That is how a CMO
+ * appointment at OptimizeRx Corp was filed against Linear in production: the
+ * "announced the appointment of X as Y" pattern captures no company, and the
+ * press release merely contained the word "linear" in its prose. */
+{
+  const id = "bbbbbbbb-0000-4000-8000-00000000000a";
+  const optimizeRx = 'July 23, 2026 – OptimizeRx Corp. (Nasdaq: OPRX) today announced the appointment of Sarah Bast as Chief Marketing Officer. The company cited linear growth in engagement.';
+  const [stray] = e.extractExplicitLeadershipCandidates(id, optimizeRx);
+  assert.ok(stray, "the appointment is still read as an event");
+  assert.equal(stray.structuredValue.company, undefined, "this pattern captures no subject — that is the hazard");
+  const rejected = e.validateFactCandidateDetailed(stray, { companyId: "c-linear", evidenceId: id, rawContent: optimizeRx, observationDate: "2026-09-18", companyName: "Linear" });
+  assert.equal(rejected.valid, false, "someone else's appointment is not Linear's");
+  assert.ok(rejected.issues.some((issue) => issue.code === "WRONG_ENTITY"));
+
+  // The company's own announcement still validates, and so does one where the
+  // press writes the short name against a record carrying the legal form.
+  const own = 'SAN FRANCISCO, August 12, 2026 – Vanta, the leading trust management platform, today announced the appointment of Jenny Sun as Chief Marketing Officer.';
+  const [mine] = e.extractExplicitLeadershipCandidates(id, own);
+  assert.equal(e.validateFactCandidateDetailed(mine, { companyId: "c-vanta", evidenceId: id, rawContent: own, observationDate: "2026-09-18", companyName: "Vanta" }).valid, true);
+
+  const short = 'MUMBAI, August 12, 2026 – Accops today announced the appointment of Ravi Kumar as Chief Technology Officer.';
+  const [legal] = e.extractExplicitLeadershipCandidates(id, short);
+  assert.equal(e.validateFactCandidateDetailed(legal, { companyId: "c-accops", evidenceId: id, rawContent: short, observationDate: "2026-09-18", companyName: "Accops Systems Pvt Ltd" }).valid, true,
+    "the press writes the short name; the record carries the legal form");
+  console.log("  ok  a subjectless event must be evidenced by text that names the company");
+}
