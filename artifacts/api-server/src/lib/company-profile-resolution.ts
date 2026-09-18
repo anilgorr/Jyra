@@ -26,6 +26,7 @@ import type {
   SearchWebRequest,
   WebSearchResult,
 } from "./provider-contract";
+import { withNormalizedColumns } from "./company-normalization";
 
 const PROFILE_SOURCE_TYPE = "COMPANY_PROFILE_RESOLUTION";
 const PROFILE_REVIEW_SOURCE_TYPE = "COMPANY_PROFILE_RESOLUTION_REVIEW";
@@ -831,7 +832,7 @@ export async function resolveAndPersistCompanyProfile(
         visibility: "PRIVATE",
       });
       if (canonicalUpdated) {
-        await tx.update(companiesTable).set({ ...updates, updatedAt: now }).where(eq(companiesTable.id, input.companyId));
+        await tx.update(companiesTable).set({ ...withNormalizedColumns(updates, current, now), updatedAt: now }).where(eq(companiesTable.id, input.companyId));
       }
     } else {
       await tx.insert(companyProvenanceTable).values({

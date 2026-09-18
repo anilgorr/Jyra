@@ -20,6 +20,7 @@ import {
 } from "./company-identity";
 import { persistImportTechnologyFacts } from "./intelligence-v2/import-facts";
 import { assertScreeningPoolCapacity } from "./plans";
+import { withNormalizedColumns } from "./company-normalization";
 
 export const IMPORT_TARGET_FIELDS = [
   "company_name",
@@ -594,7 +595,7 @@ export async function commitRealDataImport(
       if (!company) {
         [company] = await client
           .insert(companiesTable)
-          .values({
+          .values(withNormalizedColumns({
             canonicalName: item.company.canonicalName,
             domain: item.company.domain,
             website: item.company.website,
@@ -612,7 +613,7 @@ export async function commitRealDataImport(
             employeeCount: item.company.employeeCount,
             employeeRange: item.company.employeeRange,
             description: item.company.description,
-          })
+          }))
           .returning();
         if (!company) throw new Error("Canonical company could not be created");
         canonicalCompaniesCreated += 1;
@@ -644,7 +645,7 @@ export async function commitRealDataImport(
         if (Object.values(fill).some((value) => value !== null && value !== undefined)) {
           const [updated] = await client
             .update(companiesTable)
-            .set(fill)
+            .set(withNormalizedColumns(fill, company))
             .where(eq(companiesTable.id, company.id))
             .returning();
           if (updated) company = updated;

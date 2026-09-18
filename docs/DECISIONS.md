@@ -197,6 +197,40 @@ number next to it.
 - **Where:** `funnels` in `intelligence-v2/run-cycle.ts`, persisted through
   `runSnapshot`.
 
+### Companies are normalised on write, and the canonical columns are stored
+
+Nine code paths write the `companies` table and not one normalised anything,
+so raw provider strings landed in the columns and every reader re-derived the
+mapping. Six modules grew their own country resolver and two grew their own
+industry vocabulary; they drifted, and the drift was invisible until an ICP
+saying "IT services" failed every company whose provider wrote "Information
+technology & services" — nine in ten of them. The table still held 35
+spellings for about twenty countries, five of them phone numbers.
+
+`company-normalization.ts` is now the only vocabulary. `withNormalizedColumns`
+is the only supported way to write a company's industry, country or headcount,
+and it carries `industry_tags`, `country_iso2`, `employee_min/max` alongside
+the raw values. The raw columns stay, because they are what a provider
+actually said and the UI shows them; the canonical ones are what the engine
+compares. `industry_tags` is a set — a company is often several things at once
+("Fintech SaaS") — which makes ICP matching an array overlap rather than a
+string compare.
+
+Backfill is keyed to `NORMALIZATION_VERSION` rather than being a one-shot
+script: any row whose stored version is not the current one is stale, so
+bumping the vocabulary re-derives every affected row by itself. It runs
+bounded at boot and resumes on the next one.
+
+- **Where:** `lib/company-normalization.ts`, `lib/company-normalization-backfill.ts`,
+  migration `0023_company_normalization`.
+- **Enforced by:** `test-company-normalization.mjs` — the set of files that
+  write `companiesTable` is pinned, and every file writing firmographics must
+  carry the normaliser. A first attempt scanned source near each write call
+  for a raw field and reported green with a write deliberately un-wired,
+  because that site passes an object built further up the file. The complete
+  fix is a repository module owning every write; until then the test asserts
+  only what it can actually prove.
+
 ### A standing fact is not an event, and cannot make a company RISING
 
 Signals are built from facts, and facts come in two kinds: an EVENT happened

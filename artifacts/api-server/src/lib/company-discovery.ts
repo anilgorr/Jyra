@@ -33,6 +33,7 @@ import { assessBuyerRole, sameBuyerRoleAssessment, trustedCanonicalDomainDescrip
 import { getCanonicalCompanyProfile } from "./canonical-company-profile";
 import { resolveProjectSellerContext, type ProjectSellerContext } from "./seller-context";
 import { PlanLimitError, watchPoolCapacity } from "./plans";
+import { withNormalizedColumns } from "./company-normalization";
 
 type DiscoveryInput = {
   organizationId: string;
@@ -1248,7 +1249,7 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
       if (!existing && await hasPossibleNameMatch(value.canonicalName, tx)) {
         return { outcome: "possible" as const, company: null, priority: researchPriority(assessment, 0), identity };
       }
-      let company = existing ?? (await tx.insert(companiesTable).values({
+      let company = existing ?? (await tx.insert(companiesTable).values(withNormalizedColumns({
         canonicalName: value.canonicalName,
         domain: value.domain,
         website: value.website,
@@ -1259,7 +1260,7 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
         employeeCount: value.employeeCount,
         employeeRange: value.employeeRange,
         description: value.description,
-      }).returning())[0];
+      })).returning())[0];
       if (!company) {
         return { outcome: "rejected" as const, company: null, priority: 0, identity };
       }

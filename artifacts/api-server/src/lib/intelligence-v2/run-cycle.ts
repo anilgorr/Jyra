@@ -38,6 +38,7 @@ import {
   ASSESSMENT_MODEL, ASSESSMENT_POLICY_VERSION, ASSESSMENT_PROMPT_VERSION, COMPANY_PROFILE_VERSION,
   SAFETY_POLICY_VERSION, type EvidenceItemV2,
 } from "./schemas";
+import { withNormalizedColumns } from "../company-normalization";
 
 /** Counts by value, so a list of skip reasons becomes {NOT_ATTRIBUTED: 12, TOO_OLD: 3}. */
 const tally = (values: string[]): Record<string, number> =>
@@ -421,7 +422,7 @@ export async function runIntelligenceCycle(input: {
       domain: owned.company.domain,
     });
     if (researched.country && researched.country !== owned.company.country) {
-      await tx.update(companiesTable).set({ country: researched.country, updatedAt: completedAt })
+      await tx.update(companiesTable).set({ ...withNormalizedColumns({ country: researched.country }, owned.company, completedAt), updatedAt: completedAt })
         .where(eq(companiesTable.id, owned.company.id));
       log.info({ projectCompanyId, country: researched.country, source: researched.source, searchedWith: country }, "COMPANY_COUNTRY_LEARNED");
     }

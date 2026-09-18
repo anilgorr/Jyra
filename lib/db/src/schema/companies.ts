@@ -179,6 +179,28 @@ export const companiesTable = pgTable(
     employeeCount: integer("employee_count"),
     employeeRange: text("employee_range"),
     description: text("description"),
+    /**
+     * The canonical form of the raw columns above, written on every insert
+     * and update by `normalizeCompany`.
+     *
+     * Nine code paths write this table and none of them normalised anything,
+     * so the raw columns hold 35 spellings for about twenty countries (five
+     * of them phone numbers) and whatever industry label a provider happened
+     * to use. Every reader re-derived the mapping, six modules grew their own
+     * resolver, and an ICP saying "IT services" failed every company whose
+     * provider wrote "Information technology & services".
+     *
+     * The raw columns are kept because they are what a provider actually
+     * said, and the UI shows them. These are what the engine compares.
+     * `industryTags` is a set because a company is often several things at
+     * once ("Fintech SaaS"), which makes ICP matching an array overlap.
+     */
+    industryTags: text("industry_tags").array().notNull().default([]),
+    countryIso2: text("country_iso2"),
+    employeeMin: integer("employee_min"),
+    employeeMax: integer("employee_max"),
+    normalizedAt: timestamp("normalized_at", { withTimezone: true }),
+    normalizationVersion: text("normalization_version"),
     createdAt: timestamp("created_at", { withTimezone: true })
       .notNull()
       .defaultNow(),

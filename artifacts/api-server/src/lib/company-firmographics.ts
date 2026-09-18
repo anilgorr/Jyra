@@ -20,6 +20,7 @@ import {
   normalizeLinkedInCompanyUrl,
   resolveAndPersistCompanyProfile,
 } from "./company-profile-resolution";
+import { withNormalizedColumns } from "./company-normalization";
 
 const DAY_MS = 86_400_000;
 const DEFAULT_FRESHNESS_DAYS = 30;
@@ -413,7 +414,7 @@ export async function enrichCompanyFirmographics(
         visibility: "PRIVATE",
       });
       if (canonicalUpdated) {
-        await tx.update(companiesTable).set({ ...updates, updatedAt: now })
+        await tx.update(companiesTable).set({ ...withNormalizedColumns(updates, company, now), updatedAt: now })
           .where(eq(companiesTable.id, company.id));
       }
     } else if (result.entityMatchStatus === "AMBIGUOUS" || result.entityMatchStatus === "PROBABLE") {

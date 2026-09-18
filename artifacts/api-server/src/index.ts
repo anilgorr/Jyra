@@ -6,6 +6,7 @@ import { ensureDevelopmentTavilyProvider } from "./lib/tavily-provider-config";
 import { ensureDevelopmentSerperProvider } from "./lib/serper-provider-config";
 import { ensureDevelopmentFirecrawlProvider } from "./lib/firecrawl-provider-config";
 import { retireBrightDataProvider } from "./lib/bright-data-provider-config";
+import { backfillCompanyNormalization } from "./lib/company-normalization-backfill";
 import { ensureDevelopmentCoresignalProvider } from "./lib/coresignal-provider-config";
 import { ensureDevelopmentExpleeProvider } from "./lib/explee-provider-config";
 import { logger } from "./lib/logger";
@@ -47,6 +48,16 @@ async function main() {
     await retireBrightDataProvider();
   } catch (error) {
     logger.error({ error }, "Bright Data provider could not be retired at boot");
+  }
+
+  // Rows written before the normaliser existed, or under an older
+  // vocabulary, carry no canonical columns. Bounded so a large table cannot
+  // hold the API down; the remainder is picked up on the next boot.
+  try {
+    const report = await backfillCompanyNormalization();
+    if (report.updated || report.remaining) logger.info(report, "Company normalization backfill");
+  } catch (error) {
+    logger.error({ error }, "Company normalization backfill failed");
   }
 
   // Signal definitions are scoring configuration, not page content. They used
