@@ -7,6 +7,8 @@ import { ensureDevelopmentSerperProvider } from "./lib/serper-provider-config";
 import { ensureDevelopmentFirecrawlProvider } from "./lib/firecrawl-provider-config";
 import { retireBrightDataProvider } from "./lib/bright-data-provider-config";
 import { backfillCompanyNormalization } from "./lib/company-normalization-backfill";
+import { queueSettings, startQueue, stopQueue } from "./lib/queue";
+import { startResearchWorker } from "./lib/research-worker";
 import { ensureDevelopmentCoresignalProvider } from "./lib/coresignal-provider-config";
 import { ensureDevelopmentExpleeProvider } from "./lib/explee-provider-config";
 import { logger } from "./lib/logger";
@@ -58,6 +60,17 @@ async function main() {
     if (report.updated || report.remaining) logger.info(report, "Company normalization backfill");
   } catch (error) {
     logger.error({ error }, "Company normalization backfill failed");
+  }
+
+  // The job queue is off unless asked for: it changes how every research
+  // cycle is scheduled, so it is turned on deliberately rather than by
+  // deploying. A queue that will not start must never keep the API down —
+  // without it the watch loop runs inline exactly as it always has.
+  try {
+    const settings = queueSettings();
+    if (await startQueue(settings)) await startResearchWorker(settings);
+  } catch (error) {
+    logger.error({ error }, "Queue could not be started; continuing without it");
   }
 
   // Signal definitions are scoring configuration, not page content. They used

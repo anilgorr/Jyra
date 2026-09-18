@@ -29,5 +29,10 @@
     "prettier": "^3.9.6",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.69.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "pg": "8.22.0"
+    }
   }
 }

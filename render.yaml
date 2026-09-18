@@ -37,6 +37,15 @@ services:
         value: "60"
       - key: JYRA_WATCH_LOOP_TOKEN   # the bearer token the GitHub cron presents
         sync: false
+      # --- job queue (pg-boss). Off until JYRA_QUEUE_ENABLED is "true".
+      # Workers run in this process while there is one service; set
+      # JYRA_QUEUE_ROLE=producer here and consumer on a worker service to split.
+      - key: JYRA_QUEUE_ENABLED
+        value: "false"
+      - key: JYRA_QUEUE_ROLE
+        value: both
+      - key: JYRA_QUEUE_CONCURRENCY
+        value: "3"
       # --- secrets: set these in the Render dashboard (Environment tab) ---
       - key: DATABASE_URL            # Supabase JYRA project connection string (Session pooler, port 5432)
         sync: false

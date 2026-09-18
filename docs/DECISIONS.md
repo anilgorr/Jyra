@@ -389,6 +389,45 @@ Mahindra have no description at all. It was 100% wrong in both directions.
 
 ---
 
+### Research is queued, not run inline — pg-boss on the database already there
+
+Research runs inside the HTTP request a GitHub cron starts, and the watch
+loop has worked around that one rule at a time: a Render restart mid-tick
+loses the run and its report, the per-tick cap of ten exists because one
+request cannot hold a connection for the ten minutes ten companies take, and
+it is sequential — ten thousand companies is three weeks to research once,
+which is the number that loses a sale rather than any steady-state cost.
+
+pg-boss puts the work in a table. Jobs survive a restart, retry with backoff,
+and several run at once. No broker and no second service: it makes its own
+`jyra_jobs` schema in the database the API already holds a pool to. Celery
+would have meant a second runtime in a second language for the same result.
+
+Workers run inside the API process because the hosting plan has one service.
+That is a deployment choice, not an architectural one — `JYRA_QUEUE_ROLE`
+splits producer from consumer whenever a separate worker service is worth
+paying for.
+
+Two rules the queue does not get to relax. The money guard is checked when a
+job is **picked up**, never when it is queued: enqueuing is a cheap burst, and
+the balance that mattered when ten thousand jobs went in says nothing about
+the balance at the four thousandth. And a job queued before the last cadence
+turn is dropped unrun, because it is answering a question the next job is
+about to ask again. Both free checks run before any provider or balance call.
+
+Enabling it is deliberate: `JYRA_QUEUE_ENABLED` defaults to false, so the
+code ships dark and the watch loop keeps running inline until someone turns
+it on.
+
+- **Where:** `lib/queue-policy.ts` (pure, no imports), `lib/queue.ts`,
+  `lib/research-worker.ts`.
+- **Enforced by:** `test-queue.mjs` — every branch of the guard, including
+  that a stale or archived company costs neither a provider call nor a
+  balance lookup.
+- **Also:** `pg` is pinned to 8.22.0 in the root `pnpm.overrides`. pg-boss
+  wants ^8.23, and two copies in the tree gave drizzle-orm two type
+  identities, which broke every table type in the API.
+
 ## Evidence
 
 ### Imported facts are written VERIFIED, not RAW
