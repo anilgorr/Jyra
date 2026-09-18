@@ -1,1 +1,1 @@
-export { queueSettings, jobIsStale, decideJob, RESEARCH_COMPANY_QUEUE } from "../src/lib/queue-policy";
+export { queueSettings, jobIsStale, decideJob, workerRegistrations, RESEARCH_COMPANY_QUEUE } from "../src/lib/queue-policy";

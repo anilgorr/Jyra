@@ -4,7 +4,7 @@ import { firecrawlCredits, paidReadingAllowed } from "./firecrawl-provider";
 import { logger } from "./logger";
 import { currentQueue, enqueueResearch } from "./queue";
 import {
-  RESEARCH_COMPANY_QUEUE, decideJob, queueSettings,
+  RESEARCH_COMPANY_QUEUE, decideJob, queueSettings, workerRegistrations,
   type QueueSettings, type ResearchCompanyJob,
 } from "./queue-policy";
 import { loadProjectCompany, runIntelligenceCycle } from "./intelligence-v2/run-cycle";
@@ -49,43 +49,39 @@ async function runOne(job: ResearchCompanyJob): Promise<void> {
   });
 }
 
-/** Registers the consumer. Returns false when this process is not a consumer. */
-export async function startResearchWorker(settings: QueueSettings = queueSettings()): Promise<boolean> {
+/** Registers the consumer. Returns the number of workers listening, or 0. */
+export async function startResearchWorker(settings: QueueSettings = queueSettings()): Promise<number> {
   const instance = currentQueue();
-  if (!instance || !["both", "consumer"].includes(settings.role)) return false;
+  if (!instance || !["both", "consumer"].includes(settings.role)) return 0;
 
-  await instance.work<ResearchCompanyJob>(
-    RESEARCH_COMPANY_QUEUE,
-    // batchSize is the concurrency: pg-boss hands this many jobs at once and
-    // waits for the handler to resolve before fetching more.
-    { batchSize: settings.concurrency, pollingIntervalSeconds: 5 },
-    async (jobs) => {
-      for (const job of jobs) {
-        const data = job.data;
-        try {
-          const decision = await decideJob(
-            data,
-            { creditsAllow, now: () => new Date() },
-            settings,
-            await isWatchable(data.projectCompanyId),
-          );
-          if (decision.action === "skipped") {
-            logger.info({ projectCompanyId: data.projectCompanyId, reason: decision.reason }, "Research job skipped");
-            continue;
-          }
-          await runOne(data);
-          logger.info({ projectCompanyId: data.projectCompanyId }, "Research job complete");
-        } catch (error) {
-          // Thrown so pg-boss retries with backoff; a company that fails twice
-          // lands in the dead-letter state rather than blocking the queue.
-          logger.error({ error, projectCompanyId: data.projectCompanyId }, "Research job failed");
-          throw error;
-        }
+  const { count, options } = workerRegistrations(settings);
+  for (let index = 0; index < count; index += 1) {
+    await instance.work<ResearchCompanyJob>(RESEARCH_COMPANY_QUEUE, options, async ([job]) => {
+      if (!job) return;
+      const data = job.data;
+      const decision = await decideJob(
+        data,
+        { creditsAllow, now: () => new Date() },
+        settings,
+        await isWatchable(data.projectCompanyId),
+      );
+      if (decision.action === "skipped") {
+        logger.info({ projectCompanyId: data.projectCompanyId, reason: decision.reason }, "Research job skipped");
+        return;
       }
-    },
-  );
-  logger.info({ concurrency: settings.concurrency }, "Research worker listening");
-  return true;
+      try {
+        await runOne(data);
+        logger.info({ projectCompanyId: data.projectCompanyId }, "Research job complete");
+      } catch (error) {
+        // Rethrown so pg-boss retries this job with backoff. Because each
+        // worker fetches one job, the failure is this company's alone.
+        logger.error({ error, projectCompanyId: data.projectCompanyId }, "Research job failed");
+        throw error;
+      }
+    });
+  }
+  logger.info({ workers: count }, "Research workers listening");
+  return count;
 }
 
 /**

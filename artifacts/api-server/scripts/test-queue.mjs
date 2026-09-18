@@ -88,6 +88,30 @@ check("a consumer is a distinct role, so the boot path can tell them apart", () 
   assert.notEqual(h.queueSettings({}).role, "consumer", "the default must serve HTTP");
 });
 
+// ---- parallelism is real, not batched-sequential ----
+//
+// pg-boss's batchSize FETCHES that many jobs and hands them to one handler.
+// The first version of this worker used batchSize = concurrency and looped
+// over the batch with await, which is sequential — it claimed parallelism it
+// did not have. A batch handler that throws also fails every job in the
+// batch, so one unreachable company would have failed the five queued beside
+// it. One job per fetch, N independent workers.
+check("each worker fetches exactly one job, so a failure is that job's alone", () => {
+  const { options } = h.workerRegistrations(h.queueSettings({ JYRA_QUEUE_CONCURRENCY: "6" }));
+  assert.equal(options.batchSize, 1, "batchSize above 1 makes the handler sequential, not concurrent");
+});
+
+check("concurrency is delivered by registering that many workers", () => {
+  assert.equal(h.workerRegistrations(h.queueSettings({ JYRA_QUEUE_CONCURRENCY: "6" })).count, 6);
+  assert.equal(h.workerRegistrations(h.queueSettings({})).count, 3, "the default");
+  assert.equal(h.workerRegistrations(h.queueSettings({ JYRA_QUEUE_CONCURRENCY: "500" })).count, 20, "still capped");
+});
+
+check("the worker registration never idles forever waiting to be told", () => {
+  const { options } = h.workerRegistrations(h.queueSettings({}));
+  assert.ok(options.pollingIntervalSeconds > 0 && options.pollingIntervalSeconds <= 30);
+});
+
 // ---- the consumer must not drag in the web server ----
 //
 // The first worker deploy failed because index.ts imported ./app at the top

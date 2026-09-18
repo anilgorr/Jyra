@@ -426,9 +426,18 @@ gated away — that the queue exists to parallelise.
 
 - **Where:** `lib/queue-policy.ts` (pure, no imports), `lib/queue.ts`,
   `lib/research-worker.ts`, `POST /api/internal/queue/onboarding/:projectId`.
+Concurrency is N independent workers, each fetching one job — not one worker
+with `batchSize: N`. pg-boss's `batchSize` *fetches* that many jobs and hands
+them to a single handler invocation, so a handler that loops over the batch
+with `await` is batched-sequential and not concurrent at all. That is how
+this shipped first, claiming parallelism it did not have. A batch handler
+that throws also fails every job in the batch, so one unreachable company
+would have failed the five queued beside it.
+
 - **Enforced by:** `test-queue.mjs` — every branch of the guard, including
   that a stale or archived company costs neither a provider call nor a
-  balance lookup.
+  balance lookup; and that `batchSize` is 1 while the worker count is the
+  configured concurrency.
 - **Also:** `pg` is pinned to 8.22.0 in the root `pnpm.overrides`. pg-boss
   wants ^8.23, and two copies in the tree gave drizzle-orm two type
   identities, which broke every table type in the API.

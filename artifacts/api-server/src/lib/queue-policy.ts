@@ -94,3 +94,26 @@ export async function decideJob(
   if (!credits.allowed) return { action: "skipped", reason: "no_credits" };
   return { action: "ran" };
 }
+
+/**
+ * How to register the consumer.
+ *
+ * pg-boss's `batchSize` *fetches* that many jobs and hands them to one
+ * handler invocation. A handler that loops over them with `await` is
+ * therefore not concurrent at all — it is batched-sequential, which is how
+ * the first version of this worker shipped claiming parallelism it did not
+ * have. Worse, a batch handler that throws fails every job in the batch, so
+ * one unreachable company would have failed the five queued beside it.
+ *
+ * So: one job per fetch, and as many independent workers as the configured
+ * concurrency. Each fetches for itself, each fails only its own job.
+ */
+export function workerRegistrations(settings: QueueSettings): {
+  count: number;
+  options: { batchSize: 1; pollingIntervalSeconds: number };
+} {
+  return {
+    count: settings.concurrency,
+    options: { batchSize: 1, pollingIntervalSeconds: 5 },
+  };
+}
