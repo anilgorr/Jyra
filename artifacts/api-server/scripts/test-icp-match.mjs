@@ -55,6 +55,24 @@ try {
   assert.equal(geographyMatch("Bengaluru, Karnataka, India", ["India"]), "pass", "a headquarters string resolves");
   assert.equal(geographyMatch("Indianapolis, IN", ["India"]), "fail", "a trailing state code is still a US state");
   assert.equal(geographyMatch("India", ["North America", "United Kingdom", "European Union"]), "fail", "the old ICP really did exclude India");
+  // The B2B SaaS ICP as the seller actually typed it. "Western and Southern
+  // Europe" splits on the conjunction into "Western" + "Southern Europe"; the
+  // orphaned qualifier borrows its noun rather than dropping three companies.
+  const saas = ["United States and Canada\nUnited Kingdom and Ireland\nDACH and Nordics\nWestern and Southern Europe\nAustralia", "New Zealand", "and India"];
+  assert.equal(geographyMatch("Netherlands", saas), "pass", "Miro is in Western Europe");
+  assert.equal(geographyMatch("France", saas), "pass", "Pigment is in Western Europe");
+  assert.equal(geographyMatch("Spain", saas), "pass", "Typeform is in Southern Europe");
+  assert.equal(geographyMatch("Italy", saas), "pass");
+  assert.equal(geographyMatch("Germany", saas), "pass", "DACH");
+  assert.equal(geographyMatch("Norway", saas), "pass", "Nordics");
+  assert.equal(geographyMatch("Ireland", saas), "pass", "a trailing conjunction still names a country");
+  assert.equal(geographyMatch("New Zealand", saas), "pass");
+  assert.equal(geographyMatch("India", saas), "pass", "'and India' is India");
+  assert.equal(geographyMatch("Brazil", saas), "fail", "the ICP really does exclude LATAM");
+  assert.equal(geographyMatch("Japan", saas), "fail");
+  assert.ok(geographyCodes("Western and Southern Europe").has("FR"));
+  assert.ok(geographyCodes("Eastern Europe").has("PL"));
+  assert.ok(!geographyCodes("Western Europe").has("PL"), "Poland is not Western Europe");
   assert.equal(factCountry("ME"), null, "an unrecognised two-letter value is not guessed");
   assert.deepEqual([...geographyCodes("US & Canada")].sort(), ["CA", "US"]);
   assert.deepEqual([...geographyCodes("Australia & New Zealand")].sort(), ["AU", "NZ"]);

@@ -68,6 +68,10 @@ const SOUTH_ASIA = ["IN", "PK", "BD", "LK", "NP"];
 const EAST_ASIA = ["JP", "KR", "CN", "HK", "TW"];
 const ANZ = ["AU", "NZ"];
 const APAC = [...SOUTH_ASIA, ...SOUTHEAST_ASIA, ...EAST_ASIA, ...ANZ];
+const WESTERN_EUROPE = ["FR", "BE", "NL", "LU", "IE", "GB", "DE", "AT", "CH", "MC"];
+const SOUTHERN_EUROPE = ["ES", "PT", "IT", "GR", "MT", "CY", "HR", "SI", "RS", "AL"];
+const EASTERN_EUROPE = ["PL", "CZ", "SK", "HU", "RO", "BG", "UA", "EE", "LV", "LT"];
+const CENTRAL_EUROPE = ["DE", "AT", "CH", "PL", "CZ", "SK", "HU", "SI"];
 const NORTH_AMERICA = ["US", "CA", "MX"];
 const LATAM = ["MX", "BR", "AR", "CL", "CO", "PE"];
 const AFRICA = ["ZA", "NG", "KE", "EG", "GH", "TZ", "MA"];
@@ -77,6 +81,10 @@ const REGIONS: Array<[RegExp, string[]]> = [
   [/^(?:north america|na|us\s*(?:&|and|\+|\/)\s*canada|usa\s*(?:&|and|\+|\/)\s*canada)$/i, NORTH_AMERICA],
   [/^(?:european union|eu)$/i, EU],
   [/^(?:europe|emea)$/i, EUROPE],
+  [/^west(?:ern)? europe$/i, WESTERN_EUROPE],
+  [/^south(?:ern)? europe$/i, SOUTHERN_EUROPE],
+  [/^east(?:ern)? europe$/i, EASTERN_EUROPE],
+  [/^central europe$/i, CENTRAL_EUROPE],
   [/^(?:nordics?|scandinavia)$/i, NORDICS],
   [/^dach$/i, DACH],
   [/^benelux$/i, BENELUX],
@@ -91,14 +99,35 @@ const REGIONS: Array<[RegExp, string[]]> = [
   [/^(?:africa|sub-saharan africa)$/i, AFRICA],
 ];
 
-const KNOWN_CODES = new Set([...Object.values(COUNTRY_NAMES), ...EUROPE, ...APAC, ...MIDDLE_EAST, ...LATAM, ...AFRICA, "RU"]);
+const KNOWN_CODES = new Set([...Object.values(COUNTRY_NAMES), ...EUROPE, ...WESTERN_EUROPE, ...SOUTHERN_EUROPE, ...EASTERN_EUROPE, ...APAC, ...MIDDLE_EAST, ...LATAM, ...AFRICA, "RU"]);
+
+/** A compass qualifier with nothing to qualify, as in "Western and Southern Europe". */
+const BARE_QUALIFIER = /^(?:north|south|east|west|central)(?:ern)?$/i;
+
+/**
+ * "Western and Southern Europe" splits on the conjunction into "Western" and
+ * "Southern Europe". The first half means nothing alone and would silently
+ * drop a French or Dutch company, so it borrows the noun from a later part.
+ */
+function completeQualifiers(parts: string[]): string[] {
+  return parts.map((part, index) => {
+    if (!BARE_QUALIFIER.test(part)) return part;
+    for (let next = index + 1; next < parts.length; next += 1) {
+      const [, ...noun] = parts[next].split(" ");
+      if (noun.length) return `${part} ${noun.join(" ")}`;
+    }
+    return part;
+  });
+}
 
 /** The ISO codes an ICP value stands for; "*" means anywhere. Empty = not understood. */
 export function geographyCodes(value: unknown): Set<string> {
   const out = new Set<string>();
-  const parts = criterionEntries(value)
-    .flatMap((entry) => entry.split(/\s*(?:,|;|\/|\+|&|\band\b)\s*/i))
-    .map((part) => part.trim().replace(/[.]/g, "")).filter(Boolean);
+  const parts = criterionEntries(value).flatMap((entry) =>
+    completeQualifiers(
+      entry.split(/\s*(?:,|;|\/|\+|&|\band\b)\s*/i).map((part) => part.trim().replace(/[.]/g, "")).filter(Boolean),
+    ),
+  );
   for (const part of parts) {
     const region = REGIONS.find(([pattern]) => pattern.test(part));
     if (region) { for (const code of region[1]) out.add(code); continue; }
