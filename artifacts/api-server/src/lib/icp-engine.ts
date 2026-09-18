@@ -1,5 +1,6 @@
 import type { IcpCriterion } from "@workspace/db";
 import { z } from "zod/v4";
+import { geographyMatch, industryMatch, invertMatch } from "./icp-match";
 import {
   BUSINESS_MATURITY_STAGES,
   EVIDENCE_PROVENANCE,
@@ -217,6 +218,18 @@ export function evaluateIcpCriterion(
   }
   if (op === "IN" || op === "NOT_IN") {
     if (!Array.isArray(criterion.value)) return "unknown";
+    // Industry and geography are written in words on both sides ("IT
+    // services" vs "Information technology & services"; "US" vs "United
+    // States"; "North America" vs "Canada"), so they are compared by
+    // meaning, not by string. Anything the matcher cannot place is unknown.
+    if (dimension === "industry") {
+      const matched = industryMatch(fact, criterion.value);
+      return op === "IN" ? matched : invertMatch(matched);
+    }
+    if (dimension === "geography") {
+      const matched = geographyMatch(fact, criterion.value);
+      return op === "IN" ? matched : invertMatch(matched);
+    }
     const values = criterion.value.map(normalized).filter((value): value is string => value !== null);
     const included = values.includes(left);
     return op === "IN" ? (included ? "pass" : "fail") : (included ? "fail" : "pass");

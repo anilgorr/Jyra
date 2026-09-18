@@ -98,6 +98,37 @@ shows as a ticked custom chip so editing never drops it.
 
 - **Where:** `components/icp-checklist.tsx`, used by the criterion dialog.
 
+### Industry and geography are matched by meaning, not by string
+
+The facts fallback compared ICP list values to the stored column with
+`===` after lowercasing. The seller's ICP said "IT services"; the column said
+"Information technology & services" for nine companies in ten, so every IT
+company failed the must-have and the martech agencies — whose LinkedIn label
+happened to equal the preset — took the top of the list with Fit 100. Country
+was the same: "US" is not "United States", "IN" is not "India". Both sides
+now map to a small canonical vocabulary (industry tags; ISO country codes,
+with regions like "North America" and "Middle East & Asia-Pacific" expanding
+to their members) and are compared there. A value the matcher cannot place is
+unknown, never a failure. Other list dimensions (technology, compliance) keep
+exact matching.
+
+- **Where:** `lib/icp-match.ts`; wired in `evaluateIcpCriterion` for
+  `industry` and `geography` with `IN` / `NOT_IN`.
+- **Tests:** `scripts/test-icp-match.mjs`, `test-icp-engine.mjs`.
+
+### An ICP edit orphans the persisted assessment; orphans are dropped
+
+Saving an ICP version gives every criterion a new id. The Fit mapper kept
+verdicts whose criterion the current ICP "no longer carries", using their old
+mandatory flag — so after the seller added India, eight Indian companies kept
+a geography FAIL from before the edit and nothing the seller could do would
+clear it. A verdict for an id the current ICP does not carry is now dropped;
+the current criteria are evaluated from facts until the next research cycle
+re-assesses them against the new ICP.
+
+- **Where:** `fitResultsFromIntelligenceV2` in `lib/opportunity-engine.ts`.
+- **Tests:** `test-intent-quality.mjs` §"Fit follows the current ICP".
+
 ### A standing fact is not an event, and cannot make a company RISING
 
 Signals are built from facts, and facts come in two kinds: an EVENT happened

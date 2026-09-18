@@ -491,10 +491,17 @@ const V2_CRITERION_RESULTS: Record<"PASS" | "FAIL" | "UNKNOWN", CriterionResult>
 /**
  * Maps the persisted V2 criterion verdicts onto the V1 Fit input. Each V2
  * criterion is joined to the current ICP row by id for its authoritative
- * type/weight (falling back to the V2 mandatory/exclusion flags for criteria
- * the current ICP no longer carries). V2 `exclusion` PASS means the excluded
- * characteristic was observed, which is exactly V1 DISQUALIFIER "pass".
- * Current criteria V2 did not assess keep the legacy fact evaluation.
+ * type/weight. V2 `exclusion` PASS means the excluded characteristic was
+ * observed, which is exactly V1 DISQUALIFIER "pass". Current criteria V2 did
+ * not assess keep the legacy fact evaluation.
+ *
+ * A verdict for a criterion the current ICP no longer carries is dropped.
+ * Saving an ICP version gives every criterion a new id, so after any edit the
+ * whole persisted assessment is "no longer carried"; counting those verdicts
+ * with their old mandatory flags meant eight Indian companies kept a
+ * geography FAIL from before India was added to the ICP, and no edit the
+ * seller made could clear it. The current criteria are evaluated from facts
+ * until the next research cycle re-assesses them.
  */
 export function fitResultsFromIntelligenceV2(
   assessment: Pick<IntelligenceV2Assessment, "criteria">,
@@ -506,13 +513,12 @@ export function fitResultsFromIntelligenceV2(
   const fromV2: FitResult[] = [];
   for (const item of assessment.criteria) {
     if (covered.has(item.criterionId)) continue;
-    covered.add(item.criterionId);
     const current = byId.get(item.criterionId);
-    const type: FitCriterionType = current?.criterionType
-      ?? (item.exclusion ? "DISQUALIFIER" : item.mandatory ? "MUST_HAVE" : "PREFERRED");
-    const applicable = current ? current.accepted && current.evaluability === "scorable" : true;
+    if (!current) continue;
+    covered.add(item.criterionId);
+    const applicable = current.accepted && current.evaluability === "scorable";
     fromV2.push({
-      id: item.criterionId, type, weight: current?.weight ?? null,
+      id: item.criterionId, type: current.criterionType, weight: current.weight ?? null,
       result: applicable ? (V2_CRITERION_RESULTS[item.result] ?? "unknown") : "not_applicable",
       source: "INTELLIGENCE_V2",
     });

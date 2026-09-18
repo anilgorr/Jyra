@@ -83,6 +83,22 @@ try {
     "revenue",
   ), "fail");
 
+  // Industry and geography IN/NOT_IN compare by meaning, not by string.
+  const industryIn = { operator: "IN", value: ["IT services", "Marketing & advertising"], accepted: true, evaluability: "scorable" };
+  assert.equal(evaluateIcpCriterion(industryIn, { industry: "Information technology & services" }, "industry"), "pass");
+  assert.equal(evaluateIcpCriterion(industryIn, { industry: "Manufacturing" }, "industry"), "fail");
+  assert.equal(evaluateIcpCriterion(industryIn, { industry: "Basket weaving" }, "industry"), "unknown");
+  assert.equal(evaluateIcpCriterion({ ...industryIn, operator: "NOT_IN" }, { industry: "Information technology & services" }, "industry"), "fail");
+  assert.equal(evaluateIcpCriterion({ ...industryIn, operator: "NOT_IN" }, { industry: "Manufacturing" }, "industry"), "pass");
+  const geographyIn = { operator: "IN", value: ["North America", "India"], accepted: true, evaluability: "scorable" };
+  assert.equal(evaluateIcpCriterion(geographyIn, { geography: "US" }, "geography"), "pass");
+  assert.equal(evaluateIcpCriterion(geographyIn, { geography: "IN" }, "geography"), "pass");
+  assert.equal(evaluateIcpCriterion(geographyIn, { geography: "United Kingdom" }, "geography"), "fail");
+  assert.equal(evaluateIcpCriterion(geographyIn, { geography: "(972) 200-4809" }, "geography"), "unknown");
+  // Other list dimensions keep exact matching.
+  assert.equal(evaluateIcpCriterion({ ...industryIn, value: ["HubSpot"] }, { technology: "hubspot" }, "technology"), "pass");
+  assert.equal(evaluateIcpCriterion({ ...industryIn, value: ["HubSpot"] }, { technology: "HubSpot CRM" }, "technology"), "fail");
+
   for (const invalid of [
     { ...base, dimension: "industry", operator: "BOOLEAN", value: true },
     { ...base, dimension: "industry", operator: "IN", value: [] },

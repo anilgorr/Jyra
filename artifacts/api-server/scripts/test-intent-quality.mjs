@@ -344,6 +344,48 @@ check("the neutral Fit is neutral: never above the strong-state threshold on its
   assert.ok(h.PROVISIONAL_FIT_SCORE >= 40 && h.PROVISIONAL_FIT_SCORE <= 60);
 });
 
+// ------------------------------------------- Fit after the seller edits the ICP
+
+console.log("\nintent quality — Fit follows the current ICP, not a stale assessment");
+
+const icpCriterion = (o = {}) => ({
+  id: "crit-current", dimension: "geography", operator: "IN", value: ["India", "United States"],
+  criterionType: "MUST_HAVE", weight: null, accepted: true, evaluability: "scorable", ...o,
+});
+
+check("a verdict for a criterion the current ICP no longer carries is dropped, not counted", () => {
+  const stale = { criteria: [{ criterionId: "crit-old-geography", result: "FAIL", mandatory: true, exclusion: false }] };
+  const results = h.fitResultsFromIntelligenceV2(stale, [icpCriterion()], { geography: "India" });
+  assert.equal(results.length, 1);
+  assert.equal(results[0].id, "crit-current");
+  assert.equal(results[0].source, "V1_FACTS");
+  assert.equal(results[0].result, "pass", "the current criterion is evaluated from facts");
+});
+
+check("a verdict for a criterion the ICP still carries keeps its verdict and the ICP's type", () => {
+  const live = { criteria: [{ criterionId: "crit-current", result: "FAIL", mandatory: false, exclusion: false }] };
+  const results = h.fitResultsFromIntelligenceV2(live, [icpCriterion()], { geography: "India" });
+  assert.equal(results.length, 1);
+  assert.equal(results[0].source, "INTELLIGENCE_V2");
+  assert.equal(results[0].result, "fail");
+  assert.equal(results[0].type, "MUST_HAVE", "type comes from the current ICP, not the stale flag");
+});
+
+check("an unaccepted current criterion is not applicable even when V2 has a verdict for it", () => {
+  const live = { criteria: [{ criterionId: "crit-current", result: "FAIL", mandatory: true, exclusion: false }] };
+  const results = h.fitResultsFromIntelligenceV2(live, [icpCriterion({ accepted: false })], { geography: "India" });
+  assert.equal(results[0].result, "not_applicable");
+});
+
+check("industry and country strings are compared by meaning in the facts fallback", () => {
+  const criteria = [
+    icpCriterion({ id: "c-ind", dimension: "industry", value: ["IT services", "Marketing & advertising"] }),
+    icpCriterion({ id: "c-geo", dimension: "geography", value: ["North America", "India"] }),
+  ];
+  const results = h.fitResultsFromIntelligenceV2({ criteria: [] }, criteria, { industry: "Information technology & services", geography: "US" });
+  assert.deepEqual(results.map((r) => r.result), ["pass", "pass"]);
+});
+
 // ------------------------------------------------------------ the week key
 
 console.log("\nintent quality — the week a verdict belongs to");
