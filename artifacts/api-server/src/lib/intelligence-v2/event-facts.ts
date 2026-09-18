@@ -57,8 +57,11 @@ export function buildEventQueries(companyName: string, domain: string | null): E
   const site = domain ? ` OR site:${domain}` : "";
   return [
     { kind: "SECURITY_INCIDENT", topic: "news", query: `${name} (data breach OR ransomware OR cyberattack OR "security incident" OR "unauthorized access")` },
-    { kind: "LEADERSHIP_CHANGE", topic: "news", query: `${name} (appoints OR names OR hires OR "has joined") (CISO OR CIO OR CTO OR "chief information security officer" OR "head of security" OR "head of information security" OR "VP of security")` },
-    { kind: "LEADERSHIP_CHANGE", topic: "general", query: `${name} announces appointment "chief information security officer" OR "chief technology officer" OR "chief information officer"${site}` },
+    /* The role list here must stay in step with LEADERSHIP_ROLE_PATTERN in
+     * facts.ts. It previously asked for CIO and CTO, which that extractor
+     * could not match, so every hit died at NO_EXPLICIT_EVENT. */
+    { kind: "LEADERSHIP_CHANGE", topic: "news", query: `${name} (appoints OR names OR hires OR "has joined") (CISO OR CIO OR CTO OR CMO OR CRO OR "chief information security officer" OR "chief technology officer" OR "chief marketing officer" OR "chief revenue officer" OR "head of security" OR "head of marketing" OR "head of growth")` },
+    { kind: "LEADERSHIP_CHANGE", topic: "general", query: `${name} announces appointment "chief marketing officer" OR "chief revenue officer" OR "chief technology officer" OR "chief information officer" OR "chief information security officer"${site}` },
     /* Negative events. These come first in importance and last in the list
      * only because the early-exit below is keyed to the leadership query; a
      * company in the news for layoffs is exactly the one we must not call. */

@@ -39,6 +39,10 @@ import {
   SAFETY_POLICY_VERSION, type EvidenceItemV2,
 } from "./schemas";
 
+/** Counts by value, so a list of skip reasons becomes {NOT_ATTRIBUTED: 12, TOO_OLD: 3}. */
+const tally = (values: string[]): Record<string, number> =>
+  values.reduce<Record<string, number>>((acc, value) => { acc[value] = (acc[value] ?? 0) + 1; return acc; }, {});
+
 export type CycleLogger = {
   info: (obj: Record<string, unknown>, msg: string) => void;
   warn: (obj: Record<string, unknown>, msg: string) => void;
@@ -262,6 +266,17 @@ export async function runIntelligenceCycle(input: {
   // keys on events — so this is what puts a number in Need and Timing. It runs
   // outside the transaction because a provider call must never hold a row lock,
   // and it is non-fatal: a search failure degrades the run, it does not fail it.
+  /**
+   * What each evidence pass actually yielded, kept on the assessment row.
+   *
+   * Both passes already logged their funnel, and the logs are where the
+   * answer went to die: 951 successful web searches across 516 companies
+   * produced zero non-hiring events, and nothing queryable said whether the
+   * searches returned nothing, the hits failed attribution, or the extractor
+   * found no explicit event. A per-cycle counter on the row turns "the event
+   * pipeline yields nothing" into a stage with a number next to it.
+   */
+  const funnels: Record<string, unknown> = {};
   let jobFacts: Awaited<ReturnType<typeof mapJobsToFacts>> = { facts: [], skipped: [] };
   let discoveredAtsHandle: ReturnType<typeof atsHandleFromProfileUrls> = null;
   let jobSource = "NONE";
@@ -340,12 +355,18 @@ export async function runIntelligenceCycle(input: {
         try { jobBoardDomain = new URL(handle.boardUrl).hostname; } catch { /* keep the posting's domain */ }
       }
     }
+    funnels.jobs = {
+      source: jobSource, atsBoard: handle?.boardUrl ?? null, discoveredVia: atsDiscoveredVia,
+      returned: postings?.length ?? 0, usable: jobFacts.facts.length,
+      skipped: tally(jobFacts.skipped.map((entry) => entry.reason)),
+    };
     log.info({
       projectCompanyId, jobSource, atsBoard: handle?.boardUrl ?? null, atsDiscoveredVia,
       postingsReturned: postings?.length ?? 0, factsUsable: jobFacts.facts.length,
       skipped: jobFacts.skipped.map((entry) => entry.reason),
     }, "JOB_EVENT_RESEARCH");
   } catch (error) {
+    funnels.jobs = { source: jobSource, failed: true };
     log.warn({ err: error, projectCompanyId }, "JOB_EVENT_RESEARCH_FAILED");
   }
 
@@ -365,13 +386,18 @@ export async function runIntelligenceCycle(input: {
       companyId: owned.company.id, companyName: owned.company.canonicalName, domain: owned.company.domain, now: completedAt,
     });
     eventFacts = mapped.facts;
-    const reasons = mapped.skipped.reduce<Record<string, number>>((acc, item) => { acc[item.reason] = (acc[item.reason] ?? 0) + 1; return acc; }, {});
+    const reasons = tally(mapped.skipped.map((item) => item.reason));
+    funnels.events = {
+      queries: events.queries, providers: events.providers, hits: events.hits.length,
+      usable: eventFacts.length, byKind: tally(eventFacts.map((f) => f.kind)), skipped: reasons,
+    };
     log.info({
       projectCompanyId, queries: events.queries, providers: events.providers, hits: events.hits.length,
       factsUsable: eventFacts.length, byKind: eventFacts.reduce<Record<string, number>>((acc, f) => { acc[f.kind] = (acc[f.kind] ?? 0) + 1; return acc; }, {}),
       skipped: reasons,
     }, "EVENT_RESEARCH");
   } catch (error) {
+    funnels.events = { failed: true };
     log.warn({ err: error, projectCompanyId }, "EVENT_RESEARCH_FAILED");
   }
 
@@ -379,7 +405,7 @@ export async function runIntelligenceCycle(input: {
   const persisted = await db.transaction(async (tx) => {
     const row = await persistIntelligenceV2Assessment({
       organizationId, projectId, projectCompanyId, companyId: owned.company.id,
-      icpVersionId: seller.icpVersionId ?? null, result, runSnapshot: run,
+      icpVersionId: seller.icpVersionId ?? null, result, runSnapshot: { ...run, evidenceFunnel: funnels },
     }, tx);
     const evidence = await persistIntelligenceV2Evidence({
       companyId: owned.company.id, companyDomain: owned.company.domain, evidence: result.evidence, now: completedAt,

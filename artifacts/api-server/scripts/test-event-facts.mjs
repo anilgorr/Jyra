@@ -199,3 +199,57 @@ console.log("PASS event-facts");
   }
   console.log("  ok  negative events: layoffs, hiring freeze, acquired; fact-type lists agree; every pack carries both");
 }
+
+{
+  // ---- the role vocabulary, and the query/extractor contract ----
+  //
+  // LEADERSHIP_CHANGE produced zero rows across 516 researched companies. The
+  // extractor knew eleven job titles, all of them security, while the search
+  // asked news for "appoints CTO OR CIO" - titles it could not match. Every
+  // hit died at NO_EXPLICIT_EVENT. These check both halves, and that they
+  // still agree with each other.
+  const appointment = (role) => ({
+    kind: "LEADERSHIP_CHANGE",
+    url: `https://acmepay.com/press/${role.replace(/[^a-z]+/gi, "-").toLowerCase()}`,
+    title: `Acme Payments appoints ${role}`,
+    snippet: "",
+    rawContent: `BENGALURU, August 25, 2026 \u2014 Acme Payments today announced the appointment of Priya Raman as ${role}.`,
+    publishedAt: "2026-08-25T00:00:00Z",
+  });
+  const extracts = (role) => e.mapEventHitsToFacts([appointment(role)], ctx).facts.length > 0;
+
+  for (const [role, label] of [
+    ["Chief Information Security Officer", "CISO, the one that already worked"],
+    ["Chief Technology Officer", "CTO"],
+    ["Chief Information Officer", "CIO"],
+    ["Chief Marketing Officer", "CMO"],
+    ["Chief Revenue Officer", "CRO"],
+    ["Chief Executive Officer", "CEO"],
+    ["Chief Financial Officer", "CFO"],
+    ["Chief Growth Officer", "Chief Growth Officer"],
+    ["Head of Growth", "Head of Growth"],
+    ["Head of Marketing", "Head of Marketing"],
+    ["VP of Demand Generation", "VP of Demand Generation"],
+  ]) {
+    assert.ok(extracts(role), `leadership extractor must recognise ${label}`);
+  }
+
+  // A job that is not a leadership appointment still must not match.
+  assert.ok(!extracts("Senior Backend Engineer"), "an engineer hire is not a leadership change");
+
+  // The contract: every role a LEADERSHIP_CHANGE query names in quotes must be
+  // one the extractor can match. Drift between the two is silent and total -
+  // the searches succeed, every hit is discarded, and the fact type reads as
+  // "nothing is happening at any of these companies".
+  const queries = e.buildEventQueries("Acme Payments", "acmepay.com")
+    .filter((q) => q.kind === "LEADERSHIP_CHANGE")
+    .map((q) => q.query).join(" ");
+  const named = [...queries.matchAll(/"([^"]+)"/g)].map((m) => m[1])
+    .filter((phrase) => /officer|head of|vice president|vp /i.test(phrase));
+  assert.ok(named.length >= 5, "the leadership queries should name several roles explicitly");
+  for (const phrase of named) {
+    const title = phrase.replace(/\b\w/g, (c) => c.toUpperCase());
+    assert.ok(extracts(title), `query asks for "${phrase}" but the extractor cannot match it`);
+  }
+  console.log("  ok  leadership roles cover security, technology, GTM and exec; every queried role is extractable");
+}

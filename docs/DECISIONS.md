@@ -162,6 +162,41 @@ deleted so its spend history stays joinable.
 - **Where:** `retireBrightDataProvider` in `lib/bright-data-provider-config.ts`,
   called at boot in `index.ts`.
 
+### Leadership roles cover the whole C-suite, not just security
+
+`LEADERSHIP_ROLE_PATTERN` was `SECURITY_LEADERSHIP_ROLE_PATTERN` with an
+optional "Senior Vice President" prefix — eleven job titles, all security.
+Meanwhile the news query asked for "appoints CTO OR CIO", titles the
+extractor could not match. The searches succeeded, every hit was discarded at
+NO_EXPLICIT_EVENT, and LEADERSHIP_CHANGE produced zero rows across 516
+researched companies while looking like "nothing is happening at any of these
+companies".
+
+The extractor now recognises security, technology, go-to-market and
+executive appointments, and records the role. Deciding which appointment
+*matters* belongs to the signal pack, not the extractor: a new CMO is a
+buying trigger for a marketing seller and noise to a SOC.
+
+- **Where:** `LEADERSHIP_ROLE_PATTERN` in `lib/facts.ts`;
+  `buildEventQueries` in `intelligence-v2/event-facts.ts`.
+- **Enforced by:** `test-event-facts.mjs` — every role a LEADERSHIP_CHANGE
+  query names in quotes must be one the extractor can match. That drift is
+  silent and total, so it is asserted rather than remembered.
+
+### The evidence funnel is kept on the row, not only in the log
+
+Both evidence passes logged their funnel, and the log is where the answer
+went to die: 951 successful web searches across 516 companies produced zero
+non-hiring events, and nothing queryable said whether the searches returned
+nothing, the hits failed attribution, or the extractor found no explicit
+event. Each cycle now writes `evidenceFunnel` into the assessment's
+`run_snapshot` — per pass: what was returned, what was usable, and a tally of
+skip reasons. "The event pipeline yields nothing" becomes a stage with a
+number next to it.
+
+- **Where:** `funnels` in `intelligence-v2/run-cycle.ts`, persisted through
+  `runSnapshot`.
+
 ### A standing fact is not an event, and cannot make a company RISING
 
 Signals are built from facts, and facts come in two kinds: an EVENT happened

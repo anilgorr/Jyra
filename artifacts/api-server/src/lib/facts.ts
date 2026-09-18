@@ -560,9 +560,65 @@ const SECURITY_LEADERSHIP_ROLE_PATTERN = [
   "Security Leader",
 ].join("|");
 
+/**
+ * Technology and go-to-market leadership, on the same footing as security.
+ *
+ * The role vocabulary was eleven security titles, so a leadership change was
+ * detectable only at a cybersecurity vendor. Everywhere else the pipeline
+ * searched news for "appoints CTO OR CIO" — titles this extractor could not
+ * match — and every hit died at NO_EXPLICIT_EVENT. Across 516 researched
+ * companies the LEADERSHIP_CHANGE fact type produced zero rows.
+ *
+ * Which appointment *matters* is the signal pack's decision, not the
+ * extractor's: a new CMO is a buying trigger for a marketing seller and noise
+ * to a SOC. So the extractor recognises the appointment and records the role,
+ * and the pack filters on it.
+ */
+const TECHNOLOGY_LEADERSHIP_ROLE_PATTERN = [
+  "Chief Technology Officer(?:\\s*\\(CTO\\))?",
+  "Chief Information Officer(?:\\s*\\(CIO\\))?",
+  "Chief Product Officer",
+  "Chief Data Officer",
+  "Chief Digital Officer",
+  "CTO", "CIO", "CPO",
+  "Vice President(?: of)? Engineering",
+  "VP(?: of)? Engineering",
+  "Head of Engineering",
+  "Head of Product",
+  "Head of Data",
+].join("|");
+
+const GTM_LEADERSHIP_ROLE_PATTERN = [
+  "Chief Marketing Officer(?:\\s*\\(CMO\\))?",
+  "Chief Revenue Officer(?:\\s*\\(CRO\\))?",
+  "Chief Growth Officer",
+  "Chief Commercial Officer",
+  "CMO", "CRO",
+  "Vice President(?: of)? (?:Marketing|Sales|Growth|Revenue|Demand Generation)",
+  "VP(?: of)? (?:Marketing|Sales|Growth|Revenue|Demand Generation)",
+  "Head of Marketing",
+  "Head of Growth",
+  "Head of Sales",
+  "Head of Demand Generation",
+  "Head of Revenue",
+].join("|");
+
+const EXECUTIVE_LEADERSHIP_ROLE_PATTERN = [
+  "Chief Executive Officer(?:\\s*\\(CEO\\))?",
+  "Chief Financial Officer(?:\\s*\\(CFO\\))?",
+  "Chief Operating Officer(?:\\s*\\(COO\\))?",
+  "CEO", "CFO", "COO",
+  "Managing Director",
+].join("|");
+
+/* Longest-first within each group already; groups ordered so a more specific
+ * title cannot be shadowed by a shorter one that prefixes it. */
 const LEADERSHIP_ROLE_PATTERN = [
   String.raw`(?:Senior\s+Vice\s+President\s*(?:,|and)?\s+)?`,
-  String.raw`(?:${SECURITY_LEADERSHIP_ROLE_PATTERN})`,
+  String.raw`(?:${SECURITY_LEADERSHIP_ROLE_PATTERN}`,
+  String.raw`|${TECHNOLOGY_LEADERSHIP_ROLE_PATTERN}`,
+  String.raw`|${GTM_LEADERSHIP_ROLE_PATTERN}`,
+  String.raw`|${EXECUTIVE_LEADERSHIP_ROLE_PATTERN})`,
 ].join("");
 
 const LEADERSHIP_EVENT_PATTERN = new RegExp(
