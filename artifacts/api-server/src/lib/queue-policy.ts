@@ -29,6 +29,20 @@ export type QueueSettings = {
   concurrency: number;
   /** A queued job this old is stale — the cadence that queued it has come round again. */
   maxJobAgeMs: number;
+  /**
+   * How long one job may stay ACTIVE before pg-boss decides its worker died
+   * and hands the job to another.
+   *
+   * Not the same thing as maxJobAgeMs, though the first version of this passed
+   * that value here. Staleness is about the question being old; this is about
+   * the process being gone. Wiring the 12-hour staleness window into it meant
+   * a worker that died mid-job orphaned that job for half a day — seven of
+   * them sat active for over an hour on 18 Sep 2026 after the worker service
+   * was suspended, which is exactly the failure a durable queue exists to
+   * prevent. It needs to be a little longer than the slowest single cycle
+   * (they average 46s) and no longer.
+   */
+  cycleTimeoutSeconds: number;
   retryLimit: number;
 };
 
@@ -49,6 +63,7 @@ export function queueSettings(env: NodeJS.ProcessEnv = process.env): QueueSettin
      * multiplies the rate at which we meet their limits, not the work done. */
     concurrency: positiveInt(env.JYRA_QUEUE_CONCURRENCY, 3, 20),
     maxJobAgeMs: positiveInt(env.JYRA_QUEUE_MAX_JOB_AGE_HOURS, 12, 168) * 3_600_000,
+    cycleTimeoutSeconds: positiveInt(env.JYRA_QUEUE_CYCLE_TIMEOUT_SECONDS, 600, 3_600),
     retryLimit: positiveInt(env.JYRA_QUEUE_RETRY_LIMIT, 2, 10),
   };
 }

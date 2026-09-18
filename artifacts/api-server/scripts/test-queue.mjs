@@ -29,6 +29,25 @@ check("an unknown role falls back to doing both jobs, never to off", () => {
   assert.equal(h.queueSettings({ JYRA_QUEUE_ROLE: "consumer" }).role, "consumer");
 });
 
+// A crashed worker's job must come back in minutes, not hours. The first
+// version passed maxJobAgeMs (12 hours) into pg-boss's expireInSeconds, which
+// is how long a job may stay ACTIVE before it is reclaimed — so when the
+// worker service was suspended mid-job on 18 Sep 2026, seven jobs sat active
+// for over an hour with nothing able to touch them.
+check("the cycle timeout is a process-death timeout, not the staleness window", () => {
+  const settings = h.queueSettings({});
+  assert.equal(settings.cycleTimeoutSeconds, 600, "a little longer than the slowest cycle");
+  assert.ok(settings.cycleTimeoutSeconds * 1000 < settings.maxJobAgeMs,
+    "reclaiming a dead worker's job must happen long before the job goes stale");
+  assert.ok(settings.cycleTimeoutSeconds <= 3600, "an hour is the most a single cycle may hold a job");
+});
+
+check("the cycle timeout is configurable but bounded", () => {
+  assert.equal(h.queueSettings({ JYRA_QUEUE_CYCLE_TIMEOUT_SECONDS: "120" }).cycleTimeoutSeconds, 120);
+  assert.equal(h.queueSettings({ JYRA_QUEUE_CYCLE_TIMEOUT_SECONDS: "99999" }).cycleTimeoutSeconds, 3600, "capped");
+  assert.equal(h.queueSettings({ JYRA_QUEUE_CYCLE_TIMEOUT_SECONDS: "nonsense" }).cycleTimeoutSeconds, 600);
+});
+
 check("a job queued before the last cadence turn is stale", () => {
   const settings = h.queueSettings({ JYRA_QUEUE_MAX_JOB_AGE_HOURS: "12" });
   const now = new Date("2026-09-18T12:00:00Z");

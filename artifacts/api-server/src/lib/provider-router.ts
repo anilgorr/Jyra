@@ -141,6 +141,18 @@ const PROVIDER_FATAL_ERROR_CODES = new Set([
   "PROVIDER_EXCEPTION",
   "IDENTIFIER_NOT_SUPPORTED",
   "TIMEOUT",
+  /* The catch-all an adapter returns for a status it does not classify —
+   * Serper's codeForStatus falls to it for anything that is not 401/403/429/
+   * 408/5xx. It was missing here, and that is not a small omission: when
+   * Serper's credits ran out on 18 Sep 2026 it began answering with a status
+   * the adapter did not recognise, the router read the generic code as "this
+   * REQUEST cannot be served", and stopped. Tavily and Exa were enabled,
+   * credentialed and idle through 605 consecutive failures over five hours.
+   *
+   * A provider that failed is a provider that failed, whatever the code. The
+   * worst case for trying the next one is a fraction of a cent on a genuinely
+   * malformed request; the worst case for stopping is what happened. */
+  "PROVIDER_REQUEST_FAILED",
 ]);
 
 export function isProviderFatal(code: string | null | undefined): boolean {

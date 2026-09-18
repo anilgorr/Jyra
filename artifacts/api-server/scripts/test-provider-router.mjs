@@ -191,6 +191,13 @@ assert.equal(isProviderFatal("CREDITS_EXHAUSTED"), true);
 assert.equal(isProviderFatal("EXA_HTTP_429"), true, "any provider-side HTTP status is about the provider");
 assert.equal(isProviderFatal("INVALID_REQUEST"), false);
 assert.equal(isProviderFatal(null), false);
+// The catch-all an adapter returns for a status it does not classify. This was
+// missing from the fatal set, so when Serper's credits ran out on 18 Sep 2026
+// the router read the generic code as "this REQUEST cannot be served" and
+// stopped — leaving Tavily and Exa, both enabled and credentialed, idle
+// through 605 consecutive failures over five hours.
+assert.equal(isProviderFatal("PROVIDER_REQUEST_FAILED"), true,
+  "an unclassified provider failure is still a provider failure: ask the next one");
 
 // All providers exhausted: report the last failure rather than hanging or
 // pretending success.

@@ -426,6 +426,16 @@ gated away — that the queue exists to parallelise.
 
 - **Where:** `lib/queue-policy.ts` (pure, no imports), `lib/queue.ts`,
   `lib/research-worker.ts`, `POST /api/internal/queue/onboarding/:projectId`.
+A job's *staleness* and its *cycle timeout* are different clocks, and pg-boss
+only has a field for the second. `expireInSeconds` is how long a job may stay
+ACTIVE before pg-boss decides the worker died and hands it to another — not
+how long it may wait to be picked up. The 12-hour staleness window was passed
+into it, so a worker that died mid-job orphaned that job for half a day: seven
+sat active for over an hour after the worker service was suspended, which is
+the exact failure a durable queue exists to prevent. The cycle timeout is now
+its own setting, 10 minutes against cycles that average 46 seconds, and
+staleness stays where it belongs — judged at pickup by `jobIsStale`.
+
 Concurrency is N independent workers, each fetching one job — not one worker
 with `batchSize: N`. pg-boss's `batchSize` *fetches* that many jobs and hands
 them to a single handler invocation, so a handler that loops over the batch

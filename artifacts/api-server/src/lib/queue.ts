@@ -86,7 +86,10 @@ export async function enqueueResearch(
       singletonKey: job.projectCompanyId,
       retryLimit: settings.retryLimit,
       retryBackoff: true,
-      expireInSeconds: Math.round(settings.maxJobAgeMs / 1000),
+      /* How long the job may be held ACTIVE before it is reclaimed — not how
+       * long it may wait in the queue. Staleness is judged at pickup by
+       * jobIsStale instead. */
+      expireInSeconds: settings.cycleTimeoutSeconds,
     },
   );
 }
