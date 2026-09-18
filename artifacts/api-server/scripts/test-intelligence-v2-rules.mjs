@@ -71,13 +71,44 @@ test("B7 IN / EQUALS / CONTAINS match whole tokens and aliases, never bare subst
   const industry = req({ type: "INDUSTRY", operator: "IN", value: ["Manufacturing"] });
   assert.equal(v2.criterionSatisfiedBy(industry, "Industrial Machinery Manufacturing"), true);
   assert.equal(v2.criterionSatisfiedBy(industry, "Manufacturers of pumps"), true, "singular/plural tolerant");
-  assert.equal(v2.criterionSatisfiedBy(industry, "Remanufacturing"), false, "no substring inside another token");
+  // An industry neither the vocabulary nor phrase matching can place is
+  // undecidable, not a proven FAIL. What this case guards is that it must not
+  // SATISFY the criterion — a bare substring never becomes a match.
+  assert.equal(v2.criterionSatisfiedBy(industry, "Remanufacturing"), null, "no substring inside another token");
   assert.equal(v2.criterionSatisfiedBy(req({ operator: "EQUALS", value: "Software" }), "software"), true);
   assert.equal(v2.criterionSatisfiedBy(req({ operator: "EQUALS", value: "Software" }), "Software Development"), false);
   assert.equal(v2.criterionSatisfiedBy(req({ operator: "CONTAINS", value: "government agency" }), "Serves every federal government agency in the region"), true);
   assert.equal(v2.criterionSatisfiedBy(req({ operator: "NOT_CONTAINS", value: "government" }), "B2B SaaS for retailers"), true);
   assert.equal(v2.criterionSatisfiedBy(req({ operator: "NOT_CONTAINS", value: "government" }), "Government contractor"), false);
   assert.equal(v2.criterionSatisfiedBy(req({ operator: "EXISTS", value: undefined }), "anything"), true);
+});
+test("the validator and the scorer must reach the same verdict on a real ICP", () => {
+  // Every job in the B2B SaaS pool died here. The model read "Vanta, United
+  // States" against an ICP asking for "United States and Canada" and said
+  // PASS; this function did whole-token phrase containment, found a 20-token
+  // needle in a 2-token haystack, and reported a CONTRADICTION. Disagreement
+  // discards the whole assessment, so 119 of 119 companies failed.
+  const geography = req({
+    type: "GEOGRAPHY", operator: "IN", dimension: "geography",
+    value: ["United States and Canada\nUnited Kingdom and Ireland\nDACH and Nordics\nWestern and Southern Europe\nAustralia", "New Zealand", "and India"],
+  });
+  for (const [claim, expected] of [
+    ["United States", true], ["San Francisco, California, United States", true], ["Canada", true],
+    ["Netherlands", true], ["France", true], ["Spain", true], ["Germany", true], ["India", true],
+    ["Brazil", false], ["Japan", false],
+  ]) assert.equal(v2.criterionSatisfiedBy(geography, claim), expected, `geography: ${claim}`);
+
+  const industry = req({ type: "INDUSTRY", operator: "IN", dimension: "industry", value: ["saas", "it"] });
+  for (const [claim, expected] of [
+    ["Software Development", true], ["SaaS / software", true], ["Computer Software", true],
+    ["Information technology & services", true], ["Manufacturing", false],
+  ]) assert.equal(v2.criterionSatisfiedBy(industry, claim), expected, `industry: ${claim}`);
+
+  // An ICP nobody can parse decides nothing. It must never assert a FAIL,
+  // because that is the verdict that throws a company's research away.
+  const unparseable = req({ type: "GEOGRAPHY", operator: "IN", dimension: "geography", value: ["Tier-2 cities"] });
+  assert.equal(v2.criterionSatisfiedBy(unparseable, "India"), null);
+  assert.equal(v2.evaluateRequirementAgainstClaimsV2(unparseable, [{ type: "GEOGRAPHY", value: "India", geographyType: "HEADQUARTERS" }]), "UNKNOWN");
 });
 test("B7 numeric operators parse claim strings and count range overlap", () => {
   assert.deepEqual(v2.parseNumericClaimValueV2("200"), { min: 200, max: 200 });

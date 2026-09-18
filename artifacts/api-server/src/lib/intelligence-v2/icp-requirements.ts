@@ -1,3 +1,4 @@
+import { geographyMatch, industryMatch } from "../icp-match";
 import { claimTypes, researchRequirementSchema, type EvidenceItemV2, type ResearchRequirementV2, type RequirementValueV2 } from "./schemas";
 
 /**
@@ -5,6 +6,12 @@ import { claimTypes, researchRequirementSchema, type EvidenceItemV2, type Resear
  * deterministic evaluator used by research sufficiency, evidence validation
  * and safety rules. Both call sites (route + market-readiness adapter) must
  * use this so criteria are never mangled into JSON substrings.
+ *
+ * Geography and industry are decided by the shared vocabulary in
+ * `icp-match` / `company-normalization`, not by the token matching below.
+ * They have to be: the scoring path and this path must reach the same verdict
+ * on the same company, and when they disagree the whole assessment is thrown
+ * away. Everything else still falls through to token matching.
  */
 
 type ClaimTypeV2 = (typeof claimTypes)[number];
@@ -175,6 +182,32 @@ export function prohibitedRequirementValuesV2(requirement: ResearchRequirementV2
   return typeof requirement.value === "string" ? [requirement.value] : Array.isArray(requirement.value) ? requirement.value : [];
 }
 
+const isIndustryRequirement = (requirement: Pick<ResearchRequirementV2, "type" | "dimension">): boolean =>
+  requirement.type === "INDUSTRY" || /industr|sector|vertical/i.test(requirement.dimension ?? "");
+
+/**
+ * The shared vocabulary's verdict, in this function's terms: true satisfies,
+ * false contradicts, null undecidable, `undefined` "not a dimension the
+ * vocabulary owns — use token matching".
+ *
+ * Token matching cannot do this job. "Software Development" satisfies a SaaS
+ * ICP and "United States" satisfies "United States and Canada"; neither shares
+ * a token with the criterion as the seller wrote it, so phrase containment
+ * reports a contradiction and the assessment is discarded.
+ */
+function semanticDecision(
+  requirement: Pick<ResearchRequirementV2, "type" | "value" | "dimension" | "operator">,
+  claimValue: string,
+  geography: boolean,
+): boolean | null | undefined {
+  /* EQUALS is the seller asking for that value and no other; the vocabulary
+   * speaks for set membership, which is where the ICP actually lives. */
+  if (requirement.operator === "EQUALS" || requirement.operator === "NOT_EQUALS") return undefined;
+  if (!geography && !isIndustryRequirement(requirement)) return undefined;
+  const result = geography ? geographyMatch(claimValue, requirement.value) : industryMatch(claimValue, requirement.value);
+  return result === "pass" ? true : result === "fail" ? false : null;
+}
+
 /**
  * Decides whether a claim value satisfies a requirement.
  * true = satisfies (PASS-compatible), false = contradicts (FAIL-compatible),
@@ -198,6 +231,14 @@ export function criterionSatisfiedBy(requirement: Pick<ResearchRequirementV2, "t
   }
   const targets = typeof requirement.value === "string" ? [requirement.value] : Array.isArray(requirement.value) ? requirement.value : null;
   if (!targets) return null;
+  const semantic = semanticDecision(requirement, claimValue, geography);
+  if (semantic !== undefined) {
+    /* A vocabulary "unknown" may still be rescued by a literal match, but it
+     * must never harden into a contradiction: claiming a company FAILS a
+     * criterion nobody can parse is how a whole assessment gets discarded. */
+    const decided = semantic ?? (targets.some((target) => textMatches(claimValue, target, "PHRASE", geography)) || null);
+    return decided === null ? null : NEGATIVE_OPERATORS.has(operator) ? !decided : decided;
+  }
   const positive = operator === "EQUALS" || operator === "NOT_EQUALS"
     ? targets.some((target) => {
         const numericClaim = parseNumericClaimValueV2(claimValue), numericTarget = parseNumericClaimValueV2(target);
