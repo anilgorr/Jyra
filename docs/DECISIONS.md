@@ -231,6 +231,48 @@ bounded at boot and resumes on the next one.
   fix is a repository module owning every write; until then the test asserts
   only what it can actually prove.
 
+### A company's short name is that company, at both name gates
+
+Two gates compared a company's name to the one printed in an article, and
+both demanded the whole registered name. `attributeEventHit` required the
+full normalised canonical name as a substring of the page; `WRONG_ENTITY`
+required exact equality, using its own suffix list that stripped inc/ltd/corp
+but not pvt/private/plc/gmbh — while the normalizer used a few lines earlier
+on the same hit strips all of them.
+
+The press writes "Accops". The record says "Accops Systems Pvt. Ltd.". So
+third-party coverage of any company whose record carries a longer legal form
+was discarded, and a company's own domain was the only thing that ever
+attributed a hit — which by definition never applies to the trade press.
+Every SECURITY_INCIDENT, WORKFORCE_REDUCTION and ACQUIRED candidate carries a
+company captured from prose, so the second gate stood in front of all three;
+all three produced zero rows in the system's life.
+
+Both now use one normalizer. Attribution also accepts the leading token when
+it is five characters or more — "accops" attributes, "acme" does not, so an
+Acme Logistics record is not handed a story about Acme Payments. The entity
+gate accepts a token-prefix, so "Accops" matches "Accops Systems Pvt Ltd"
+while "CloudVendor" still fails against "Acme Payments".
+
+- **Where:** `sameCompanyName` in `lib/facts.ts`, `attributeEventHit` in
+  `intelligence-v2/event-facts.ts`.
+- **Tests:** `test-event-facts.mjs` — both directions of the short/legal name,
+  and two different companies that must still be rejected.
+
+### The leadership fallback query counted the wrong hits
+
+`researchEvents` skips its broader leadership query when the news query
+already found a leadership story. It tested `hits.length`, which counts every
+query's results, and SECURITY_INCIDENT runs first with a broad OR over "data
+breach OR ransomware OR cyberattack OR …" that returns something for almost
+any company name. So the counter was effectively never zero and the fallback
+was skipped unconditionally — starving exactly the companies the comment says
+it exists for. It now tests for a leadership hit specifically.
+
+- **Where:** `researchEvents` in `intelligence-v2/event-facts.ts`.
+- **Tests:** `test-event-facts.mjs` — the fallback runs when the leadership
+  query came back empty, and only then.
+
 ### A standing fact is not an event, and cannot make a company RISING
 
 Signals are built from facts, and facts come in two kinds: an EVENT happened

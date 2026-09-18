@@ -1,6 +1,7 @@
 import { openai } from "@workspace/integrations-openai-ai-server";
 import { z } from "zod/v4";
 import { normalizeEvidenceContent } from "./evidence";
+import { normalizeCompanyName } from "./intelligence-v2/company-name";
 
 export const FACT_TYPES = [
   "LEADERSHIP_CHANGE",
@@ -342,9 +343,41 @@ function addValidationIssue(
   }
 }
 
-function normalizedEntityName(value: string): string {
-  return value.toLowerCase().replace(/\b(?:inc|llc|ltd|limited|corp|corporation|company)\b/g, "")
-    .replace(/[^a-z0-9]/g, "");
+/**
+ * Is the company an extractor pulled out of prose the company we asked about?
+ *
+ * This gate exists so a breach at a company's *vendor* that mentions the
+ * company in passing is rejected rather than filed against it, and that part
+ * is right. What was wrong is how it compared the two names.
+ *
+ * It had its own suffix list — inc, llc, ltd, limited, corp, corporation,
+ * company — missing pvt, private, plc, gmbh and the rest, while the sibling
+ * normalizer used a few lines earlier to attribute the same hit strips all of
+ * them. So "Accops Systems Pvt. Ltd." kept its "pvt" here and lost it there.
+ * And it demanded exact equality of the whole string, while a real article
+ * writes "Accops", never the registered legal name. Every SECURITY_INCIDENT,
+ * WORKFORCE_REDUCTION and ACQUIRED candidate carries a company captured from
+ * prose, so this gate stood in front of all three — and all three have
+ * produced zero rows in the system's life.
+ *
+ * Now both sides go through the one normalizer, and a shorter name matches
+ * when it is a leading run of tokens of the longer one: "Accops" against
+ * "Accops Systems Pvt Ltd" passes, "CloudVendor" against "Acme Payments"
+ * does not. Token-prefix rather than substring, so "Tech" does not match
+ * "Techno Solutions" on a coincidence of spelling — though a genuinely
+ * ambiguous pair like "Tata" and "Tata Motors" will still match, which the
+ * upstream attribution check is the place to resolve, not this one.
+ */
+function entityTokens(value: string): string[] {
+  return normalizeCompanyName(value).split(" ").filter(Boolean);
+}
+
+export function sameCompanyName(left: string, right: string): boolean {
+  const a = entityTokens(left);
+  const b = entityTokens(right);
+  if (!a.length || !b.length) return false;
+  const [shorter, longer] = a.length <= b.length ? [a, b] : [b, a];
+  return shorter.every((token, index) => longer[index] === token);
 }
 
 function structuredCompany(value: Record<string, unknown>): string | null {
@@ -373,7 +406,7 @@ function hasSellerAsBuyerSemantics(
   )?.groups?.actor;
   return Boolean(
     actor &&
-    normalizedEntityName(actor) !== normalizedEntityName(context.companyName),
+    !sameCompanyName(actor, context.companyName),
   );
 }
 
@@ -418,16 +451,16 @@ export function validateFactCandidateDetailed(
   if (
     context.companyName &&
     attributedCompany &&
-    normalizedEntityName(attributedCompany) !== normalizedEntityName(context.companyName)
+    !sameCompanyName(attributedCompany, context.companyName)
   ) {
     addValidationIssue(report, "entity", "WRONG_ENTITY", "Fact is attributed to a different company than the requested subject");
   }
   if (
     context.companyName &&
     context.publisherName &&
-    normalizedEntityName(context.companyName) !== normalizedEntityName(context.publisherName) &&
+    !sameCompanyName(context.companyName, context.publisherName) &&
     attributedCompany &&
-    normalizedEntityName(attributedCompany) === normalizedEntityName(context.publisherName)
+    sameCompanyName(attributedCompany, context.publisherName)
   ) {
     addValidationIssue(report, "entity", "WRONG_ENTITY", "Publisher activity cannot be attributed to the requested subject");
   }

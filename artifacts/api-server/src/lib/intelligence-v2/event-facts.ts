@@ -91,7 +91,21 @@ export function attributeEventHit(hit: { url: string; title: string; snippet: st
     return words.includes(target);
   }
   const head = normalizeCompanyName(`${hit.title} ${hit.snippet} ${(hit.rawContent ?? "").slice(0, 1200)}`);
-  return head.includes(target);
+  if (head.includes(target)) return true;
+  /* The press writes "Accops"; the record says "Accops Systems Pvt. Ltd.".
+   * Requiring the whole registered name meant third-party coverage of any
+   * company whose record carries a longer legal form was never attributed at
+   * all — and a company's own domain was the only thing saving it, which by
+   * definition never applies to the trade press.
+   *
+   * So the leading token also attributes, but only when it is distinctive on
+   * its own. Five characters is the same bar the short-name rule above uses:
+   * "accops" clears it and attributes an article that never writes the rest
+   * of the name, while "acme" does not, so an Acme Logistics record is not
+   * handed a story about Acme Payments. */
+  const [first] = target.split(" ");
+  if (!first || first.length < 5) return false;
+  return head.split(" ").includes(first);
 }
 
 export type EventFactRow = {
@@ -196,8 +210,16 @@ export async function researchEvents(
     // The third query is a broader restatement of the second — both hunt a
     // leadership change, one in news and one across the open web. It exists
     // for the companies the news index does not cover, so it is only worth a
-    // credit when the first two found nothing about this company at all.
-    if (query.kind === "LEADERSHIP_CHANGE" && query.topic === "general" && hits.length > 0) continue;
+    // credit when the news query found no leadership story.
+    //
+    // This used to test `hits.length`, which counts every query's results.
+    // SECURITY_INCIDENT runs first and is a broad OR over "data breach OR
+    // ransomware OR cyberattack OR ..." that returns something for almost any
+    // company name, so the counter was effectively always non-zero and this
+    // fallback was skipped unconditionally — starving exactly the companies
+    // the comment says it exists for.
+    if (query.kind === "LEADERSHIP_CHANGE" && query.topic === "general"
+      && hits.some((hit) => hit.kind === "LEADERSHIP_CHANGE")) continue;
     const response = await search({
       requestId: `${input.requestId}:event:${index}`,
       query: query.query, topic: query.topic, timeRange: "year",

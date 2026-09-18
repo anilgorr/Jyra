@@ -253,3 +253,92 @@ console.log("PASS event-facts");
   }
   console.log("  ok  leadership roles cover security, technology, GTM and exec; every queried role is extractable");
 }
+
+{
+  // ---- the entity gate: a short form of the company's own name is the company ----
+  //
+  // WRONG_ENTITY had its own suffix list, missing pvt/private/plc/gmbh, and
+  // demanded exact equality of the whole normalized string. Every
+  // SECURITY_INCIDENT, WORKFORCE_REDUCTION and ACQUIRED candidate carries a
+  // company captured from prose, so this gate stood in front of all three —
+  // and all three produced zero rows in the system's life.
+  const ctxFor = (name, domain) => ({ companyId: "c-1", companyName: name, domain, now: NOW });
+  const breach = (companyInProse, url) => ({
+    kind: "SECURITY_INCIDENT", url, title: `${companyInProse} confirms breach`, snippet: "",
+    rawContent: `${companyInProse} confirmed a data breach on September 3, 2026, days after customers reported fraudulent charges.`,
+    publishedAt: "2026-09-03T00:00:00Z",
+  });
+
+  {
+    // The article writes the short name; the record carries the registered one.
+    const { facts, skipped } = e.mapEventHitsToFacts(
+      [breach("Accops", "https://trade.example/accops-breach")],
+      ctxFor("Accops Systems Pvt. Ltd.", "accops.com"),
+    );
+    assert.equal(facts.length, 1, `the short form must be accepted — skipped: ${JSON.stringify(skipped)}`);
+  }
+
+  {
+    // …and the reverse, where the article uses the full legal name.
+    const { facts } = e.mapEventHitsToFacts(
+      [breach("Accops Systems Private Limited", "https://trade.example/accops-full")],
+      ctxFor("Accops", "accops.com"),
+    );
+    assert.equal(facts.length, 1, "the long form must be accepted too");
+  }
+
+  {
+    // The gate still does its job: a different company's breach is not ours.
+    const { facts, skipped } = e.mapEventHitsToFacts(
+      [breach("CloudVendor", "https://othernews.example/cloudvendor")],
+      ctxFor("Acme Payments", "acmepay.com"),
+    );
+    assert.equal(facts.length, 0, "another company's breach must not be filed against us");
+    // Either gate may catch it: attribution now rejects it first and more
+    // cheaply. The suite above already pins WRONG_ENTITY for the case that
+    // passes attribution — a vendor breach that names us in the snippet.
+    assert.ok(skipped.some((s) => ["WRONG_ENTITY", "NOT_ATTRIBUTED"].includes(s.reason)),
+      `expected a rejection, got ${JSON.stringify(skipped)}`);
+  }
+
+  {
+    // A coincidental shared first word is not a match in the wrong direction.
+    const { facts } = e.mapEventHitsToFacts(
+      [breach("Acme Payments", "https://news.example/acme")],
+      ctxFor("Acme Logistics", "acmelog.com"),
+    );
+    assert.equal(facts.length, 0, "a different Acme is a different company");
+  }
+  console.log("  ok  entity gate accepts a company's own short and legal names, still rejects other companies");
+}
+
+{
+  // ---- the leadership fallback query is no longer starved by the security query ----
+  //
+  // The early exit tested the total hit count across every query kind.
+  // SECURITY_INCIDENT runs first and is a broad OR that matches almost any
+  // company, so the general-topic leadership query was skipped nearly always.
+  const issued = [];
+  const searchReturning = (kindsWithHits) => async (request) => {
+    issued.push(request.query);
+    const isLeadership = /chief marketing officer|appoints|CMO/i.test(request.query);
+    const kind = isLeadership ? "LEADERSHIP_CHANGE" : "OTHER";
+    const give = kindsWithHits.includes(kind);
+    return {
+      status: "success", providerId: "test",
+      data: { results: give ? [{ url: `https://x.example/${issued.length}`, title: "Acme Payments news", snippet: "something", publishedAt: "2026-09-01T00:00:00Z" }] : [] },
+    };
+  };
+
+  issued.length = 0;
+  await e.researchEvents(searchReturning(["OTHER"]), { requestId: "r1", companyName: "Acme Payments", domain: "acmepay.com", now: NOW });
+  const generalLeadership = issued.filter((q) => /announces appointment/i.test(q));
+  assert.equal(generalLeadership.length, 1,
+    "the security query finding something must not cancel the leadership fallback");
+
+  issued.length = 0;
+  await e.researchEvents(searchReturning(["LEADERSHIP_CHANGE", "OTHER"]), { requestId: "r2", companyName: "Acme Payments", domain: "acmepay.com", now: NOW });
+  assert.equal(issued.filter((q) => /announces appointment/i.test(q)).length, 0,
+    "…but a leadership story already found still spends no second credit");
+  console.log("  ok  the leadership fallback runs when the leadership query came back empty, and only then");
+}
