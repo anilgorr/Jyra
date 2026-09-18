@@ -129,6 +129,19 @@ re-assesses them against the new ICP.
 - **Where:** `fitResultsFromIntelligenceV2` in `lib/opportunity-engine.ts`.
 - **Tests:** `test-intent-quality.mjs` §"Fit follows the current ICP".
 
+### The ranking role gate reads the V2 verdict, not the stored column
+
+`buyerRoleAllowsBuyerOpportunity` was fed `project_companies.buyer_role`. The
+Intelligence Core V2 pipeline does not write that column back, so two
+companies V2 had judged `SELLER_COMPETITOR` — Gujarat Infotech and Crushaders
+Tech — still carried `UNKNOWN` there and were ranked as buyers of the
+seller's own service. The gate now judges `rankingRole(v2, stored)`: the V2
+verdict when it reached one, the column otherwise. A V2 `UNKNOWN` defers to
+the column rather than erasing a role discovery or a human established.
+
+- **Where:** `rankingRole` in `lib/opportunity-engine.ts`.
+- **Tests:** `test-cycle-06-structural-repair.mjs`.
+
 ### A standing fact is not an event, and cannot make a company RISING
 
 Signals are built from facts, and facts come in two kinds: an EVENT happened

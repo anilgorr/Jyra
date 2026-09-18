@@ -28,6 +28,21 @@ check("solar vendor is role gated", () => assert.equal(lib.buyerRoleAllowsBuyerR
 check("potential buyer remains eligible", () => assert.equal(lib.buyerRoleAllowsBuyerResearch("POTENTIAL_BUYER"), true));
 check("unknown never becomes potential buyer", () => assert.equal(role("Mystery Co", null, null, "Managed SOC", "Security", ["SaaS"]), "UNKNOWN"));
 check("unknown has no implicit rank exclusion", () => assert.equal(lib.buyerRoleAllowsBuyerOpportunity("UNKNOWN"), true));
+check("a V2 competitor verdict gates the ranking even when the stored column is UNKNOWN", () => {
+  assert.equal(lib.rankingRole("SELLER_COMPETITOR", "UNKNOWN"), "SELLER_COMPETITOR");
+  assert.equal(lib.buyerRoleAllowsBuyerOpportunity(lib.rankingRole("SELLER_COMPETITOR", "UNKNOWN")), false);
+});
+check("a V2 UNKNOWN defers to the role already stored", () => {
+  assert.equal(lib.rankingRole("UNKNOWN", "SELLER_COMPETITOR"), "SELLER_COMPETITOR");
+  assert.equal(lib.rankingRole("UNKNOWN", "POTENTIAL_BUYER"), "POTENTIAL_BUYER");
+});
+check("no V2 assessment falls back to the stored role", () => {
+  assert.equal(lib.rankingRole(null, "POTENTIAL_BUYER"), "POTENTIAL_BUYER");
+  assert.equal(lib.rankingRole(undefined, "SELLER_COMPETITOR"), "SELLER_COMPETITOR");
+});
+check("an adjacent vendor is still rankable through either path", () => {
+  assert.equal(lib.buyerRoleAllowsBuyerOpportunity(lib.rankingRole("ADJACENT_VENDOR", "UNKNOWN")), true);
+});
 check("successful provider maps succeeded", () => assert.equal(lib.terminalStatusForResponse("success"), "SUCCEEDED"));
 check("empty provider maps no results", () => assert.equal(lib.terminalStatusForResponse("empty"), "NO_RESULTS"));
 check("failed provider maps provider error", () => assert.equal(lib.terminalStatusForResponse("failed"), "PROVIDER_ERROR"));
@@ -57,4 +72,4 @@ check("current run canonical cache duplicate is excluded", () =>
 check("seller canonical cache entry is excluded", () =>
   assert.equal(lib.canReusePublicDiscoveryCanonical(cacheInput({ assessment: { classification: "LIKELY_NOT_FIT", buyerRole: "SELLER_COMPETITOR" } })), false));
 
-console.info(`Cycle 06 structural regressions: ${passed.length}/24 PASS`);
+console.info(`Cycle 06 structural regressions: ${passed.length}/28 PASS`);

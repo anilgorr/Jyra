@@ -39,6 +39,20 @@ export const DEFAULT_OPPORTUNITY_RULES = {
   /** A negative signal at or above this strength caps the state at WATCH. */
   negativeSignalGateStrength: 50,
 } as const;
+/**
+ * The role the ranking gate judges, given the persisted V2 verdict and the
+ * stored column.
+ *
+ * The gate used to read `project_companies.buyer_role` alone. The V2 pipeline
+ * never writes that column back, so two companies V2 had judged
+ * SELLER_COMPETITOR still carried UNKNOWN there and were ranked as buyers of
+ * the seller's own service. V2 wins when it reached a verdict; its UNKNOWN
+ * defers to the column rather than erasing a role discovery or a human
+ * already established.
+ */
+export function rankingRole(assessedRole: string | null | undefined, storedRole: string): string {
+  return assessedRole && assessedRole !== "UNKNOWN" ? assessedRole : storedRole;
+}
 export function buyerRoleAllowsBuyerOpportunity(role: string): boolean {
   // Narrowed (v2): only a true competitor (sells the seller's own service) is
   // hard-excluded from buyer ranking. An adjacent-category vendor can still be a
@@ -616,7 +630,6 @@ export async function evaluateOpportunity(input: { organizationId: string; proje
     .from(projectCompaniesTable).innerJoin(companiesTable, eq(projectCompaniesTable.companyId, companiesTable.id))
     .where(and(eq(projectCompaniesTable.id, input.projectCompanyId), eq(projectCompaniesTable.projectId, input.projectId))).limit(1);
   if (!row) throw new Error("Project company not found");
-  const buyerOpportunityAllowed = buyerRoleAllowsBuyerOpportunity(row.projectCompany.buyerRole);
   const [icpVersion] = await tx.select().from(icpVersionsTable).where(eq(icpVersionsTable.projectId, input.projectId)).orderBy(desc(icpVersionsTable.version)).limit(1);
   const [activePackVersion] = icpVersion
     ? await tx.select({ version: intelligencePackVersionsTable }).from(intelligencePackVersionsTable)
@@ -642,6 +655,9 @@ export async function evaluateOpportunity(input: { organizationId: string; proje
   // exists for this project company; otherwise the legacy fact evaluation is
   // used exactly as before.
   const intelligenceV2 = await loadLatestIntelligenceV2Assessment(input.projectId, row.projectCompany.id, tx);
+  const buyerOpportunityAllowed = buyerRoleAllowsBuyerOpportunity(
+    rankingRole(intelligenceV2?.commercialRole, row.projectCompany.buyerRole),
+  );
   const fitResults: FitResult[] = intelligenceV2
     ? fitResultsFromIntelligenceV2(intelligenceV2, criteria, factsForIcp)
     : criteria.map((criterion) => ({
