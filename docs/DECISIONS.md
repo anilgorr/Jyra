@@ -451,7 +451,19 @@ the previous version serving, instead of `startCommand`, where it took the
 service down. Two services racing the same migration is how a half-applied
 schema happens.
 
+A third followed on the first deploy: `index.ts` imported `./app` at the top
+of the file, and the Express application — Clerk middleware, limiters, every
+route — is built at module scope. So the consumer constructed a web server it
+would never listen on and demanded the environment that server needs. The
+worker service failed on its first deploy for exactly that. The import is
+dynamic now and sits inside the serving path, so a consumer needs the
+database and the provider keys and nothing else: no `CLERK_*`, no auth mode,
+no `PORT`.
+
 - **Where:** `runAsConsumer` and `servingPort` in `src/index.ts`; `render.yaml`.
+- **Enforced by:** `test-queue.mjs` reads `src/index.ts` and fails on a static
+  `import app from "./app"` — the regression is invisible until a worker
+  deploys, which is the worst place to find it.
 
 ## Evidence
 

@@ -1,4 +1,3 @@
-import app from "./app";
 import { ensureDevelopmentApifyProvider } from "./lib/apify-provider-config";
 import { ensurePlansSeeded } from "./lib/plans";
 import { ensureDevelopmentExaProvider } from "./lib/exa-provider-config";
@@ -46,6 +45,13 @@ function servingPort(): number {
  * nothing and risks two writers racing the same rows.
  */
 async function runAsConsumer(): Promise<void> {
+  /* Deliberately never imports ./app. The Express application — Clerk
+   * middleware, rate limiters, every route — is built at module scope, so a
+   * static import would have the consumer construct a web server it will
+   * never listen on, and demand the environment that server needs. The first
+   * worker deploy failed for exactly that reason. A consumer needs the
+   * database and the provider keys; it does not need CLERK_SECRET_KEY, an
+   * auth mode, or a PORT. */
   const settings = queueSettings();
   const started = await startQueue(settings);
   if (!started) throw new Error("JYRA_QUEUE_ROLE=consumer but the queue could not start");
@@ -116,6 +122,8 @@ async function main() {
     logger.error({ error }, "Signal pack fixtures could not be seeded at boot");
   }
 
+  // Imported here rather than at the top of the file: see runAsConsumer.
+  const { default: app } = await import("./app");
   const port = servingPort();
   app.listen(port, (err) => {
     if (err) {

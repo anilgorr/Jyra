@@ -96,6 +96,9 @@ services:
       # Same values as the API service. Set each in the Render dashboard for
       # this service too — there is no shared group yet, and inventing one
       # would mean re-entering every secret the API already holds.
+      #
+      # Deliberately NOT here: CLERK_*, JYRA_AUTH_MODE, PORT. A consumer never
+      # imports the Express app, so it needs none of them.
       - key: NODE_ENV
         value: development
       - key: JYRA_INTELLIGENCE_VERSION

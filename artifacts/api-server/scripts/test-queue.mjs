@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { loadHermetic } from "./lib/hermetic-bundle.mjs";
 
 process.env.AI_INTEGRATIONS_OPENAI_BASE_URL ??= "http://localhost/unused";
@@ -85,6 +86,25 @@ check("a consumer is a distinct role, so the boot path can tell them apart", () 
   assert.equal(h.queueSettings({ JYRA_QUEUE_ROLE: "consumer" }).role, "consumer");
   assert.equal(h.queueSettings({ JYRA_QUEUE_ROLE: "producer" }).role, "producer");
   assert.notEqual(h.queueSettings({}).role, "consumer", "the default must serve HTTP");
+});
+
+// ---- the consumer must not drag in the web server ----
+//
+// The first worker deploy failed because index.ts imported ./app at the top
+// of the file. The Express application is built at module scope — Clerk
+// middleware included — so a consumer constructed a web server it would never
+// listen on, and demanded CLERK_* and a PORT that a background worker is
+// never given. The import is dynamic now, inside the serving path only.
+check("index.ts imports the Express app lazily, inside the serving path", () => {
+  const src = readFileSync("src/index.ts", "utf8");
+  assert.ok(!/^import app from "\.\/app";/m.test(src),
+    "a static `import app from \"./app\"` puts the whole web server in the consumer's path");
+  assert.ok(src.includes('await import("./app")'),
+    "the app should be imported dynamically where it is served");
+  const dynamicAt = src.indexOf('await import("./app")');
+  const consumerAt = src.indexOf("runAsConsumer");
+  assert.ok(consumerAt >= 0 && dynamicAt > consumerAt,
+    "the dynamic import must sit after the consumer early-return, not before it");
 });
 
 console.log(`\nqueue: ${checks} checks passed`);
