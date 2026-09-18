@@ -155,9 +155,15 @@ test("B7 validator accepts a correctly passing NOT_CONTAINS and wildcard-dimensi
   assert.deepEqual(normalized.who.criteria.map((c) => c.result), ["PASS", "PASS"], "wildcard dimensions are evaluable, not permanently UNKNOWN");
   const wrong = structuredClone(assessment);
   wrong.who.criteria[0].result = "FAIL"; wrong.who.criteria[0].claimBindings[0].relation = "FAILS_CRITERION";
+  // A verdict the evidence contradicts must not stand — but the cost of that
+  // is the criterion, not the company. It abstains and is reported as disputed
+  // rather than discarding the entire assessment.
   const rejected = v2.validateAssessmentEvidenceV2(wrong, [item], context);
-  assert.equal(rejected.ok, false);
-  assert.ok(rejected.errors.some((error) => /claim value\/relation does not match/.test(error)));
+  assert.equal(rejected.ok, true);
+  assert.deepEqual(rejected.disputedCriteria, [wrong.who.criteria[0].criterionId]);
+  assert.equal(rejected.assessment.who.criteria[0].result, "UNKNOWN", "the contradicted verdict does not stand");
+  assert.deepEqual(rejected.assessment.who.criteria[0].claimBindings, []);
+  assert.equal(rejected.assessment.who.criteria[1].result, "PASS", "the criterion beside it is untouched");
 });
 
 /* ---------------- B12 geography semantics ---------------- */
@@ -422,3 +428,64 @@ for (const { name, fn } of tests) {
 }
 if (failed) { console.error(`\n${failed}/${tests.length} intelligence-v2 rule tests failed`); process.exit(1); }
 console.log(`\nPASS ${tests.length}/${tests.length} intelligence-v2 rule tests`);
+test("a criterion the model and the re-check disagree on abstains, it does not detonate the assessment", () => {
+  // Ramp: the model reads the evidence and says a fintech platform satisfies a
+  // SaaS ICP; the vocabulary says fintech is not SaaS. Both are defensible.
+  // Until now that disagreement threw the whole company's research away —
+  // eight jobs died on it after the vocabularies were already aligned.
+  const criterionId = "crit-industry";
+  const requirement = {
+    criterionId, type: "INDUSTRY", operator: "IN", value: ["saas", "it"],
+    dimension: "industry", mandatory: true, exclusion: false, preferred: false,
+  };
+  const evidence = [{
+    evidenceId: "ev-1", organizationId: "org-a", projectId: "project-a", companyId: "company-ramp",
+    sourceType: "FIRST_PARTY_WEBSITE", provider: "fixture", url: "https://ramp.example/about",
+    finalUrl: "https://ramp.example/about", observedAt: "2026-01-01T00:00:00.000Z",
+    rawSnippet: "Ramp is a fintech company.", firstParty: true, confidence: 0.9, version: "v1",
+    atomicClaims: [{ claimId: "ev-1:industry", type: "INDUSTRY", value: "Fintech" }],
+    claims: { primaryBusiness: "Ramp is a fintech company.", businessModel: "SAAS" },
+  }];
+  const assessment = {
+    commercialRole: { value: "UNKNOWN", confidence: "LOW", reason: "not assessed", evidenceIds: [], claimIds: [], claimBindings: [] },
+    who: {
+      value: "STRUCTURAL_FIT", confidence: "MEDIUM", reason: "fits",
+      evidenceIds: ["ev-1"], claimIds: ["ev-1:industry"],
+      claimBindings: [{ claimId: "ev-1:industry", claimedValue: "Fintech", purpose: "who", relation: "SUPPORTS_WHO" }],
+      criteria: [{
+        criterionId, description: v2.describeRequirementV2(requirement),
+        mandatory: true, exclusion: false, result: "PASS", confidence: "MEDIUM",
+        reason: "a fintech platform is SaaS", evidenceIds: ["ev-1"], claimIds: ["ev-1:industry"],
+        claimBindings: [{ claimId: "ev-1:industry", claimedValue: "Fintech", purpose: criterionId, relation: "SATISFIES_CRITERION" }],
+      }],
+    },
+    uncertainties: [], assessmentConfidence: "MEDIUM",
+  };
+
+  const result = v2.validateAssessmentEvidenceV2(assessment, evidence, { icp: { requirements: [requirement] } });
+  assert.equal(result.ok, true, "a disagreement is not a validation failure");
+  assert.deepEqual(result.disputedCriteria, [criterionId], "and it is reported, never silent");
+  const [repaired] = result.assessment.who.criteria;
+  assert.equal(repaired.result, "UNKNOWN", "the criterion abstains");
+  assert.deepEqual(repaired.claimBindings, [], "an abstention carries no citations");
+  assert.deepEqual(repaired.evidenceIds, []);
+  assert.deepEqual(repaired.claimIds, []);
+  assert.match(repaired.reason, /disagree/);
+  assert.equal(result.assessment.who.value, "STRUCTURAL_FIT", "the rest of the assessment survives intact");
+
+  // An agreed criterion is untouched and still reports no dispute.
+  const agreed = structuredClone(assessment);
+  agreed.who.criteria[0].claimBindings[0].claimedValue = "Software Development";
+  agreed.who.criteria[0].claimIds = ["ev-2:industry"];
+  agreed.who.criteria[0].evidenceIds = ["ev-2"];
+  agreed.who.criteria[0].claimBindings[0].claimId = "ev-2:industry";
+  agreed.who.claimIds = ["ev-2:industry"]; agreed.who.evidenceIds = ["ev-2"];
+  agreed.who.claimBindings[0] = { claimId: "ev-2:industry", claimedValue: "Software Development", purpose: "who", relation: "SUPPORTS_WHO" };
+  const ok = v2.validateAssessmentEvidenceV2(agreed, [{
+    ...evidence[0], evidenceId: "ev-2",
+    atomicClaims: [{ claimId: "ev-2:industry", type: "INDUSTRY", value: "Software Development" }],
+  }], { icp: { requirements: [requirement] } });
+  assert.equal(ok.ok, true);
+  assert.deepEqual(ok.disputedCriteria, [], "agreement disputes nothing");
+  assert.equal(ok.assessment.who.criteria[0].result, "PASS", "and the verdict stands");
+});

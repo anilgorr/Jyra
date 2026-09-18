@@ -2,7 +2,7 @@ import { assessmentSchema, researchRequirementSchema, type EvidenceItemV2, type 
 import { claimEligibleForRequirementV2, criterionSatisfiedBy, describeRequirementV2 } from "./icp-requirements";
 
 export type EvidenceValidationResult =
-  | { ok: true; assessment: SellerRelativeAssessmentV2 }
+  | { ok: true; assessment: SellerRelativeAssessmentV2; disputedCriteria: string[] }
   | { ok: false; errors: string[] };
 
 const CRITERION_ABSTENTION_REASON = "This criterion is unknown because no cited atomic claim has the required evidence type.";
@@ -13,6 +13,19 @@ const COMPETITOR_ABSTENTION_REASON = "Commercial role is unknown because no cite
 export const UNKNOWN_ROLE_CITATION_REASON = "Commercial role is unknown because the model cited an unknown atomic claim ID.";
 export const UNKNOWN_WHO_CITATION_REASON = "Structural fit is insufficient because the model cited an unknown atomic claim ID.";
 export const UNKNOWN_CRITERION_CITATION_REASON = "This criterion is unknown because the model cited an unknown atomic claim ID.";
+/**
+ * The model read the evidence one way and the deterministic re-check read it
+ * the other. Neither is authoritative enough to overrule the other: a model
+ * calling Ramp a SaaS company and a vocabulary insisting fintech is not SaaS
+ * are both defensible, and the honest verdict is that this criterion is not
+ * settled.
+ *
+ * It used to be fatal. One disagreement on one criterion discarded the whole
+ * assessment - every search, every extraction, the entire cycle, twice, and
+ * then the job died. The cost of a criterion nobody can settle is that
+ * criterion, not the company.
+ */
+export const CRITERION_DISPUTED_REASON = "This criterion is unknown because the model's verdict and the deterministic re-check of the cited claim disagree.";
 
 const ROLE_TYPES = {
   SUPPORTS_ROLE: ["PRIMARY_BUSINESS", "PRODUCT_SERVICE", "OFFERING_OVERLAP"],
@@ -154,6 +167,7 @@ export function validateAssessmentEvidenceV2(value: unknown, evidence: EvidenceI
   const parsed = assessmentSchema.safeParse(value);
   if (!parsed.success) return { ok: false, errors: parsed.error.issues.map((issue) => issue.message) };
   const errors: string[] = [];
+  const disputed = new Set<string>();
   const known = new Set<string>();
   const claims = new Map<string, EvidenceItemV2["atomicClaims"][number] & { evidenceId: string }>();
   for (const item of evidence) {
@@ -231,8 +245,24 @@ export function validateAssessmentEvidenceV2(value: unknown, evidence: EvidenceI
         }
         const decision = criterionSatisfiedBy(requirement, claim.value);
         const compatible = criterion.result === "PASS" ? decision === true : decision === false;
-        if (!compatible) errors.push(`who.criteria.${index} claim value/relation does not match criterion result`);
+        if (!compatible) disputed.add(criterion.criterionId);
       }
     });
-  return errors.length ? { ok: false, errors } : { ok: true, assessment: parsed.data };
+  if (errors.length) return { ok: false, errors };
+  /* A disputed criterion abstains rather than detonating the assessment. The
+   * abstention is evidence-free, which is the same shape every other UNKNOWN
+   * criterion takes, so nothing downstream needs to know why it abstained -
+   * but disputedCriteria is returned so the run snapshot can say so. */
+  const assessment = disputed.size
+    ? {
+        ...parsed.data,
+        who: {
+          ...parsed.data.who,
+          criteria: parsed.data.who.criteria.map((criterion) => disputed.has(criterion.criterionId)
+            ? { ...criterion, result: "UNKNOWN" as const, reason: CRITERION_DISPUTED_REASON, evidenceIds: [], claimIds: [], claimBindings: [] }
+            : criterion),
+        },
+      }
+    : parsed.data;
+  return { ok: true, assessment, disputedCriteria: [...disputed] };
 }

@@ -237,6 +237,7 @@ export async function assessMarketFitV2(input: {
 }): Promise<{
   assessment: SellerRelativeAssessmentV2; usage: Record<string, unknown> | null; cost: number;
   attempts: AssessmentAttemptV2[]; modelCalls: number; citationIntegrity: CitationIntegrityV2;
+  disputedCriteria: string[];
 }> {
   const invoke = input.invoke ?? defaultInvoker;
   const timeoutMs = Math.max(1, Math.min(input.timeoutMs ?? 90_000, 180_000));
@@ -289,6 +290,10 @@ export async function assessMarketFitV2(input: {
           continue;
         }
         if (foreign.length) console.warn("V2_ASSESSMENT_FOREIGN_CRITERIA_DROPPED", { foreignCriteria: foreign });
+        /* Visible, never silent: a criterion the model and the re-check could
+         * not agree on abstained, and the operator should be able to see which
+         * ones and how often without reading the assessment row. */
+        if (grounded.disputedCriteria.length) console.warn("V2_ASSESSMENT_CRITERIA_DISPUTED", { disputedCriteria: grounded.disputedCriteria });
         attempts.push({ ...base, outcome: "VALID" });
         if (integrity.citationsDropped) {
           console.warn("V2_ASSESSMENT_CITATION_DROPPED", {
@@ -300,6 +305,7 @@ export async function assessMarketFitV2(input: {
           assessment: grounded.assessment, usage: sumUsage(attempts),
           cost: attempts.reduce((sum, item) => sum + item.cost, 0), attempts,
           modelCalls: attempts.length, citationIntegrity: integrity,
+          disputedCriteria: grounded.disputedCriteria,
         };
       } catch (error) {
         validationErrors = error instanceof z.ZodError ? error.issues.map((issue) => issue.message) : [error instanceof Error ? error.message : String(error)];
