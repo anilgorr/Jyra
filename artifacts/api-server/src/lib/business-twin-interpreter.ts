@@ -18,6 +18,7 @@ export class BusinessTwinInterpretationError extends Error {
 
 const outputShape = {
   offering_summary: "string",
+  offering_capabilities: ["string"],
   problems_solved: ["string"],
   business_outcomes: ["string"],
   ideal_customer_patterns: ["string"],
@@ -63,6 +64,14 @@ export async function interpretBusinessTwin(
               "Do not invent validation, confidence percentages, customers, deal sizes, win rates, or sales history.",
               "claims must be an empty array. The application assigns provenance and validation status deterministically from supplied answers.",
               "unknowns must list commercially relevant information that the answers leave unknown.",
+              // Capabilities are matched word-for-word against other companies' own
+              // websites to decide whether a company competes with this seller or
+              // could buy from them. A phrase written as a benefit ("grow pipeline
+              // faster") matches nothing, because no vendor describes itself that
+              // way; a capability noun does.
+              "offering_capabilities must name what the product DOES, each as a short noun phrase of at most four words, drawn only from the supplied answers.",
+              "Write capabilities as a vendor names a feature - 'contact database', 'data enrichment', 'email sequencing', 'intent signals', 'CRM sync' - never as a benefit, an outcome, or a problem the buyer has.",
+              "Leave offering_capabilities empty rather than restating problems_solved or business_outcomes in other words.",
               "Return JSON only. Return exactly the listed keys and no additional keys.",
               `Required shape: ${JSON.stringify(outputShape)}`,
             ].join("\n"),

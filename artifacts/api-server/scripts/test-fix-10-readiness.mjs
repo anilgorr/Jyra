@@ -41,11 +41,26 @@ const packOverride = assembleSellerContext({
 });
 assert.equal(packOverride.offeringName, "Managed Detection & Response");
 const mapped = assembleSellerContext({ twin: {
-  id: "mapping", businessTwinId: "twin", rawAnswers: { offeringName: "Managed SOC", productOrServiceDescription: "24/7 monitoring", problemsSolved: ["Alert fatigue"] },
+  id: "mapping", businessTwinId: "twin", rawAnswers: { offeringName: "Managed SOC", productOrServiceDescription: "24/7 monitoring", problemsSolved: ["Alert fatigue"], majorDifferentiators: ["24/7 SOC analysts"] },
   aiInterpretation: {}, manualInterpretation: {},
 } });
 assert.equal(mapped.offeringDescription, "24/7 monitoring");
-assert.deepEqual(mapped.offeringCapabilities, ["Alert fatigue"]);
+// This used to expect ["Alert fatigue"] - the problems-solved answer mapped
+// straight into the capability list. A problem is the negative of a
+// capability, and this list is matched word-for-word against other
+// companies' websites to tell a competitor from a buyer: no vendor publishes
+// "alert fatigue" as something it does. Differentiators are at least written
+// as capabilities, so they are the fallback now.
+assert.deepEqual(mapped.offeringCapabilities, ["24/7 SOC analysts"]);
+assert.deepEqual(
+  assembleSellerContext({ twin: {
+    id: "problems-only", businessTwinId: "twin",
+    rawAnswers: { offeringName: "Managed SOC", problemsSolved: ["Alert fatigue"] },
+    aiInterpretation: {}, manualInterpretation: {},
+  } }).offeringCapabilities,
+  [],
+  "a problem statement became a capability again",
+);
 // A previously captured resolver snapshot remains immutable when a newer
 // Twin/ICP snapshot is later resolved; discovery stores these exact IDs.
 const historical = evaluateProjectReadiness(base("Managed SOC"));

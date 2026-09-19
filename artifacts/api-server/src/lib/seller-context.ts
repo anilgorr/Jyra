@@ -169,8 +169,19 @@ export function assembleSellerContext(input: {
     offeringDescription: usePack
       ? first(offering.description, offering.offeringDescription, offering.summary)
       : first(raw.offeringDescription, raw.offeringDetails, raw.productOrServiceDescription, interpretation.offering_description),
+    /* Capabilities, and never problems.
+     *
+     * This used to fall back to `problemsSolved` before `majorDifferentiators`,
+     * and a problem statement is the negative of a capability: the seller
+     * writes "reps waste hours hunting for accurate contact details" and no
+     * vendor on earth publishes that sentence. The offering-overlap detector
+     * matches this list against other companies' own words to decide
+     * competitor or buyer, so it was comparing the seller's pain against a
+     * rival's feature list and finding nothing - which is how a company
+     * selling the seller's own product came back UNKNOWN and led the ranked
+     * list. Differentiators are at least written as capabilities. */
     offeringCapabilities: usePack ? list(offering.capabilities ?? offering.offeringCapabilities) : list(
-      raw.offeringCapabilities ?? interpretation.offering_capabilities ?? raw.problemsSolved ?? raw.majorDifferentiators,
+      raw.offeringCapabilities ?? interpretation.offering_capabilities ?? raw.majorDifferentiators,
     ),
     offeringExclusions: usePack ? list(offering.exclusions ?? offering.offeringExclusions) : list(raw.offeringExclusions ?? interpretation.offering_exclusions),
     /* Always from the Twin, never from a pack: the seller answered this

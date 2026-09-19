@@ -1,7 +1,7 @@
 import { fingerprintV2 } from "./fingerprint";
 import { MAX_EXTERNAL_RESEARCH_CALLS, evidenceItemSchema, type EvidenceItemV2, type ResearchActionV2, type ResearchPackageV2, type ResearchRequirementV2 } from "./schemas";
 import { claimEligibleForRequirementV2, criterionSatisfiedBy, evaluateRequirementAgainstClaimsV2, isNegativeRequirementOperatorV2, prohibitedRequirementValuesV2 } from "./icp-requirements";
-import { detectOfferingOverlapV2, type SellerOfferingV2 } from "./offering-overlap";
+import { capabilityAreaOverlapV2, detectOfferingOverlapV2, MATERIAL_AREA_THRESHOLD, type SellerOfferingV2 } from "./offering-overlap";
 import type { ProviderOperations, ProviderResponse } from "../provider-contract";
 import { MAX_PROFILE_RESOLUTION_SEARCHES_PER_COMPANY } from "../company-profile-resolution";
 import { extractGeographyClaims } from "./geography-facts";
@@ -138,8 +138,20 @@ export function providerEvidence(input: {
   const fetchedContent = `${input.title ?? ""} ${input.snippet}`;
   const overlapEligible = input.firstParty || OVERLAP_ELIGIBLE_SOURCES.has(input.sourceType);
   const detectedOverlap = overlapEligible ? detectOfferingOverlapV2(input.snippet, input.request.offering) : [];
+  /* Phrase matching needs every distinctive token of a seller phrase inside
+   * one sentence; capability-area matching needs the candidate to claim two
+   * different things the seller does. The second is what finds a competitor
+   * that words its pages differently, which is all of them. Below the
+   * two-area threshold nothing is claimed: one shared word is a coincidence,
+   * and this list becomes citable evidence the model reasons from. */
+  const areaOverlap = overlapEligible ? capabilityAreaOverlapV2(input.snippet, input.request.offering) : [];
+  const materialAreas = areaOverlap.length >= MATERIAL_AREA_THRESHOLD ? areaOverlap : [];
   const suppliedOverlap = input.claims?.offeringOverlapFacts ?? [];
-  const overlapFacts = [...new Set([...suppliedOverlap, ...detectedOverlap.map((match) => `${match.phrase} — "${match.excerpt}"`.slice(0, 600))])];
+  const overlapFacts = [...new Set([
+    ...suppliedOverlap,
+    ...detectedOverlap.map((match) => `${match.phrase} — "${match.excerpt}"`.slice(0, 600)),
+    ...materialAreas.map((match) => `${match.phrase} — "${match.excerpt}"`.slice(0, 600)),
+  ])];
   // A LinkedIn company page in the results carries labelled industry,
   // headcount and headquarters. Read them here, once, whichever step found
   // the page - so the model has an INDUSTRY claim to cite instead of

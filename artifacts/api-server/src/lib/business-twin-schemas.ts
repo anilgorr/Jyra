@@ -209,6 +209,21 @@ export const businessTwinClaimSchema = z
 export const businessTwinInterpretationSchema = z
   .object({
     offering_summary: z.string().max(3000),
+    /**
+     * What the product DOES, as short noun phrases - "contact database",
+     * "email sequencing", "intent signals". Distinct from problems_solved,
+     * which is what the buyer suffers without it.
+     *
+     * The offering-overlap detector - the only thing that can call a company
+     * a competitor, because the validator will not accept SELLER_COMPETITOR
+     * without a cited overlap claim - had no capability list to match
+     * against. It fell back to problems_solved, and a problem statement is
+     * the negative of a capability: no vendor's page says "reps waste hours
+     * hunting for accurate contact details". Matched against the launch
+     * pool's 116 crawled sites it produced zero overlap for a company
+     * selling the seller's own product.
+     */
+    offering_capabilities: z.array(listItem).max(30).default([]),
     problems_solved: z.array(listItem).max(30),
     business_outcomes: z.array(listItem).max(30),
     ideal_customer_patterns: z.array(listItem).max(30),
