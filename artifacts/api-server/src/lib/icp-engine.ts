@@ -147,15 +147,47 @@ export type IcpCriterionInput = z.infer<typeof icpCriterionInputSchema>;
 export type CompanyFacts = Partial<Record<(typeof ICP_DIMENSIONS)[number], unknown>>;
 export type CriterionResult = "pass" | "fail" | "unknown" | "not_applicable";
 
+/**
+ * The seller's target headcount, from however they wrote it.
+ *
+ * The wizard's size question is a multi-select whose picks are joined with
+ * "; ", so a seller who ticks four bands sends "50-200 employees; 201-500
+ * employees; 501-1,000 employees; 1,000-2,000 employees". This used to be
+ * anchored to one bare range and returned null for all of it - no criterion,
+ * no size filter, and nothing anywhere said so. Read every band and span
+ * them: the bands are contiguous by construction, and a seller who ticks the
+ * ends means the middle.
+ *
+ * An unbounded band ("2,000+") anywhere makes the whole range unbounded.
+ */
 export function parseEmployeeRange(value: string): { min: number; max: number | null } | null {
-  const normalized = value.trim().replace(/[–—]/g, "-").replace(/,/g, "");
-  const open = normalized.match(/^(\d+)\s*\+$/);
-  if (open) return { min: Number(open[1]), max: null };
-  const bounded = normalized.match(/^(\d+)\s*(?:-|to)\s*(\d+)$/i);
-  if (!bounded) return null;
-  const min = Number(bounded[1]);
-  const max = Number(bounded[2]);
-  return min <= max ? { min, max } : null;
+  const bands = value
+    .replace(/[–—]/g, "-")
+    .replace(/,(?=\d{3}\b)/g, "")
+    .split(/[;\n]|\bor\b/i)
+    .map((part) => part.trim())
+    .filter(Boolean);
+  let min: number | null = null;
+  let max: number | null = null;
+  let unbounded = false;
+  for (const band of bands) {
+    const open = band.match(/(?:^|\s)(\d+)\s*\+/);
+    if (open) {
+      const low = Number(open[1]);
+      min = min === null ? low : Math.min(min, low);
+      unbounded = true;
+      continue;
+    }
+    const bounded = band.match(/(?:^|\s)(\d+)\s*(?:-|to)\s*(\d+)/i);
+    if (!bounded) continue;
+    const low = Number(bounded[1]);
+    const high = Number(bounded[2]);
+    if (low > high) continue;
+    min = min === null ? low : Math.min(min, low);
+    max = max === null ? high : Math.max(max, high);
+  }
+  if (min === null) return null;
+  return { min, max: unbounded ? null : max };
 }
 
 function normalized(value: unknown): string | null {
@@ -241,8 +273,27 @@ export function evaluateIcpCriterion(
     : (left !== right ? "pass" : "fail");
 }
 
+/**
+ * The separators a seller actually uses.
+ *
+ * Newlines were missing, and the wizard's list fields are newline-joined, so
+ * a five-line geography answer split only on the commas inside its last line:
+ * "United States and Canada\nUnited Kingdom and Ireland\n...\nAustralia, New
+ * Zealand, and India" became one four-line blob plus "New Zealand" plus "and
+ * India". A blob matches no country, so the mandatory geography criterion was
+ * decided by whichever fragment happened to parse.
+ *
+ * A newline binds tighter than a comma, so split on lines first and only then
+ * on in-line separators - that keeps "Australia, New Zealand, and India"
+ * splitting into three while leaving a line that merely contains a comma
+ * intact when it is the whole entry.
+ */
 function splitValues(value: string): string[] {
-  return value.split(/[,/;]|\bor\b/i).map((part) => part.trim()).filter(Boolean);
+  return value
+    .split(/\r?\n/)
+    .flatMap((line) => line.split(/[,/;]|\bor\b/i))
+    .map((part) => part.trim().replace(/^and\s+/i, "").trim())
+    .filter(Boolean);
 }
 
 function customerIndustries(raw: string): string[] {

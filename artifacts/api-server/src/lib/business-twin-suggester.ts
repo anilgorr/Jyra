@@ -101,12 +101,30 @@ export function sectionsForStage(stage: string) {
   return SUGGESTION_SECTIONS.filter((section) => !section.stages || section.stages.includes(stage));
 }
 
+/**
+ * A list marker at the head of a suggestion, and nothing else.
+ *
+ * This used to be /^[-•*\d.)\s]+/ - a character class, so it ate every
+ * leading digit in the line rather than a numbered-list prefix. "50-200
+ * employees" was stored as "-200 employees", "1,000-2,000" as ",000-2,000",
+ * "2-4 weeks" as "-4 weeks". A seller's entire company-size answer arrived
+ * unreadable, parseEmployeeRange returned null, and the ICP was built with no
+ * size criterion at all - for a sales-intelligence seller, the most
+ * discriminating filter they have, silently absent. Answers beginning with a
+ * currency symbol were spared, which is why deal size and ARR survived and
+ * nobody noticed.
+ *
+ * So require an actual marker: a bullet followed by space, or a small number
+ * followed by a dot or bracket. A range never matches either.
+ */
+const LIST_MARKER = /^\s*(?:[-*•]\s+|\d{1,2}[.)]\s*)/;
+
 /** Trim, drop empties and near-duplicates, cap length and count. Order is preserved: the model ranks. */
 export function tidyItems(field: string, raw: string[], max: number): Array<{ id: string; text: string }> {
   const seen = new Set<string>();
   const items: Array<{ id: string; text: string }> = [];
   for (const candidate of raw) {
-    const text = String(candidate ?? "").replace(/\s+/g, " ").trim().replace(/^[-•*\d.)\s]+/, "").trim().slice(0, 500);
+    const text = String(candidate ?? "").replace(/\s+/g, " ").trim().replace(LIST_MARKER, "").trim().slice(0, 500);
     if (!text) continue;
     const key = text.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
     if (!key || seen.has(key)) continue;

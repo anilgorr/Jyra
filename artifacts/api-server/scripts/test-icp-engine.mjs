@@ -29,8 +29,19 @@ try {
     ["50-1000", { min: 50, max: 1000 }],
     ["200 to 2000", { min: 200, max: 2000 }],
     ["5000+", { min: 5000, max: null }],
+    // What the wizard actually sends: a multi-select joined with "; ". This
+    // returned null, so no size criterion was ever created for the seller
+    // whose most discriminating filter is headcount.
+    ["50-200 employees; 201-500 employees; 501-1,000 employees; 1,000-2,000 employees", { min: 50, max: 2000 }],
+    ["50\u2013200 employees", { min: 50, max: 200 }],
+    ["201-500; 51-200", { min: 51, max: 500 }],
+    // One unbounded band makes the whole target unbounded, and still carries
+    // the lowest floor the seller ticked.
+    ["500-1,000; 2,000+", { min: 500, max: null }],
+    ["employees", null],
+    [" ", null],
   ]) {
-    assert.deepEqual(parseEmployeeRange(input), expected);
+    assert.deepEqual(parseEmployeeRange(input), expected, `parseEmployeeRange(${JSON.stringify(input)})`);
   }
 
   const base = {
@@ -135,6 +146,32 @@ try {
   assert.equal(hypothesis?.evaluability, "advisory");
   assert.equal(hypothesis?.provenance, "AI_INFERRED");
   assert.equal(hypothesis?.validationStatus, "UNTESTED");
+
+  // A seller's geography answer is newline-joined by the wizard. Splitting it
+  // on in-line separators alone left a four-line blob that matches no country,
+  // and turned "Australia, New Zealand, and India" into "New Zealand" and
+  // "and India".
+  const geo = generateIcpCriteria({
+    targetGeographies: "United States and Canada\nUnited Kingdom and Ireland\nDACH and Nordics\nAustralia, New Zealand, and India",
+  }, {});
+  const geographies = geo.find((criterion) => criterion.dimension === "geography")?.value;
+  assert.deepEqual(geographies, [
+    "United States and Canada",
+    "United Kingdom and Ireland",
+    "DACH and Nordics",
+    "Australia",
+    "New Zealand",
+    "India",
+  ], "geography answer did not split on lines");
+
+  // Company size reaches the ICP as a criterion rather than going missing.
+  const sized = generateIcpCriteria({
+    typicalEmployeeRange: "50-200 employees; 201-500 employees; 501-1,000 employees",
+  }, {});
+  const size = sized.find((criterion) => criterion.dimension === "employee_count");
+  assert.ok(size, "no employee_count criterion was generated");
+  assert.equal(size.criterionType, "MUST_HAVE");
+  assert.deepEqual(size.value, { min: 50, max: 1000 });
 
   const startup = deriveIcpGenerationContext({
     businessMaturityStage: "LAUNCHED_NO_CUSTOMERS",

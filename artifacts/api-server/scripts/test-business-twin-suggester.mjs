@@ -44,6 +44,30 @@ assert.deepEqual(tidy.map((i) => i.text), ["Alert fatigue", "No night shift", "C
 assert.deepEqual(tidy.map((i) => i.id), ["problemsSolved-1", "problemsSolved-2", "problemsSolved-3"]);
 assert.equal(lib.tidyItems("x", Array.from({ length: 30 }, (_, i) => `item ${i}`), 12).length, 12, "capped at twelve");
 
+// A range is not a list marker. The stripper was a character class containing
+// \d, so it ate the leading number of every suggestion that began with one:
+// a seller's whole company-size answer was stored as "-200 employees; -500
+// employees; -1,000 employees; ,000-2,000 employees" and no size criterion
+// was ever built. Answers starting with a currency symbol were spared, which
+// is why deal size survived and nobody noticed.
+assert.deepEqual(
+  lib.tidyItems("typicalEmployeeRange", [
+    "50-200 employees",
+    "201-500 employees",
+    "501-1,000 employees",
+    "1,000-2,000 employees",
+    "2\u20134 weeks",
+  ], 12).map((i) => i.text),
+  ["50-200 employees", "201-500 employees", "501-1,000 employees", "1,000-2,000 employees", "2\u20134 weeks"],
+  "a leading number was eaten as if it were list numbering",
+);
+// Real markers still go.
+assert.deepEqual(
+  lib.tidyItems("x", ["1. First", "2) Second", "- Third", "\u2022 Fourth", "10.Tenth"], 12).map((i) => i.text),
+  ["First", "Second", "Third", "Fourth", "Tenth"],
+  "a genuine list marker survived tidying",
+);
+
 // 5. Happy path: one call, sections in display order, items tidied, prompt version stamped.
 {
   const calls = [];
