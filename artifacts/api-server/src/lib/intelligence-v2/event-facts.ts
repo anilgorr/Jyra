@@ -181,7 +181,7 @@ export function mapEventHitsToFacts(
     for (const candidate of extracted) {
       const report = validateFactCandidateDetailed(candidate, {
         companyId: input.companyId, evidenceId, rawContent, observationDate, companyName: input.companyName,
-        publishedAt: publishedAt ?? undefined,
+        publishedAt: publishedAt ?? undefined, firstParty,
       });
       if (!report.valid) { skipped.push({ url: hit.url, reason: report.issues[0]?.code ?? "INVALID" }); continue; }
       if (!withinLookback(candidate.effectiveDate, input.now)) { skipped.push({ url: hit.url, reason: "EVENT_TOO_OLD" }); continue; }

@@ -454,13 +454,15 @@ console.log("PASS event-facts");
 
   // The company's own announcement still validates, and so does one where the
   // press writes the short name against a record carrying the legal form.
+  // These two are the company's own announcements, which is what firstParty
+  // records — a subjectless event has nothing else to be checked against.
   const own = 'SAN FRANCISCO, August 12, 2026 – Vanta, the leading trust management platform, today announced the appointment of Jenny Sun as Chief Marketing Officer.';
   const [mine] = e.extractExplicitLeadershipCandidates(id, own);
-  assert.equal(e.validateFactCandidateDetailed(mine, { companyId: "c-vanta", evidenceId: id, rawContent: own, observationDate: "2026-09-18", companyName: "Vanta" }).valid, true);
+  assert.equal(e.validateFactCandidateDetailed(mine, { companyId: "c-vanta", evidenceId: id, rawContent: own, observationDate: "2026-09-18", companyName: "Vanta", firstParty: true }).valid, true);
 
   const short = 'MUMBAI, August 12, 2026 – Accops today announced the appointment of Ravi Kumar as Chief Technology Officer.';
   const [legal] = e.extractExplicitLeadershipCandidates(id, short);
-  assert.equal(e.validateFactCandidateDetailed(legal, { companyId: "c-accops", evidenceId: id, rawContent: short, observationDate: "2026-09-18", companyName: "Accops Systems Pvt Ltd" }).valid, true,
+  assert.equal(e.validateFactCandidateDetailed(legal, { companyId: "c-accops", evidenceId: id, rawContent: short, observationDate: "2026-09-18", companyName: "Accops Systems Pvt Ltd", firstParty: true }).valid, true,
     "the press writes the short name; the record carries the legal form");
   console.log("  ok  a subjectless event must be evidenced by text that names the company");
 }
@@ -534,4 +536,35 @@ console.log("PASS event-facts");
   assert.equal(alloy.structuredValue.company, "Alloy Enterprises", "a name does not cross a line break");
   assert.equal(e.extractedNamesSubject("Alloy Enterprises", "Alloy"), false, "…and it is still not Alloy");
   console.log("  ok  a subject capture stops at the verb and at the line break");
+}
+
+/* Across a full 119-company run the subjectless "announced the appointment of
+ * X as Y" pattern produced exactly two facts and both were wrong, while every
+ * true appointment came through a pattern that captures its subject. Requiring
+ * the excerpt to name the company was not enough, because that check is a
+ * substring: "Front" is inside "Front Office Sports". */
+{
+  const id = "ffffffff-0000-4000-8000-000000000001";
+  const third = 'Front Office Sports Appoints Kyle Vinansky as Chief Revenue Officer\n\nFront Office Sports today announced the appointment of Kyle Vinansky as Chief Revenue Officer.';
+  const subjectless = e.extractExplicitLeadershipCandidates(id, third, "2026-06-01T00:00:00Z")
+    .find((c) => c.structuredValue.company === undefined);
+  assert.ok(subjectless, "the pattern still produces a subjectless candidate");
+
+  const ctx = { companyId: "c-front", evidenceId: id, rawContent: third, observationDate: "2026-09-19", companyName: "Front", publishedAt: "2026-06-01T00:00:00Z" };
+  assert.equal(e.validateFactCandidateDetailed(subjectless, ctx).valid, false,
+    "a third party does not get to announce an event about a company it never names");
+  // The domain is the attribution, and it has to be: this pattern's excerpt
+  // begins at "announced", so a genuine press release usually does not repeat
+  // the company name inside it either.
+  assert.equal(e.validateFactCandidateDetailed(subjectless, { ...ctx, companyName: "Front Office Sports", firstParty: true }).valid, true,
+    "…but a company's own page may describe its own appointment");
+
+  // Ogury's press release mentions "Persona Intelligence"; persona.com did not
+  // appoint anyone.
+  const ogury = 'Aug. 25, 2026 /PRNewswire/ -- Ogury, the global adtech company powered by Persona Intelligence, today announced the appointment of Dana Kim as Chief Marketing Officer.';
+  const stray = e.extractExplicitLeadershipCandidates(id, ogury, "2026-08-25T00:00:00Z")
+    .find((c) => c.structuredValue.company === undefined);
+  if (stray) assert.equal(e.validateFactCandidateDetailed(stray, { companyId: "c-persona", evidenceId: id, rawContent: ogury, observationDate: "2026-09-19", companyName: "Persona", publishedAt: "2026-08-25T00:00:00Z" }).valid, false,
+    "being mentioned in someone else's release is not an appointment");
+  console.log("  ok  a subjectless event needs the company's own page behind it");
 }

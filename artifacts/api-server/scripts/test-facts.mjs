@@ -528,7 +528,7 @@ assert.ok(validateFactCandidateDetailed({
 
 const disconnectedSecurityFunding = {
   ...fundingCandidate,
-  structuredValue: { amount: "$20M", purpose: "security" },
+  structuredValue: { company: "Acme", amount: "$20M", purpose: "security" },
   supportingExcerpt: `${fundingExcerpt} Security is important to the market.`,
 };
 assert.ok(validateFactCandidateDetailed(disconnectedSecurityFunding, {
@@ -539,7 +539,7 @@ assert.ok(validateFactCandidateDetailed(disconnectedSecurityFunding, {
 
 const connectedSecurityFunding = {
   ...fundingCandidate,
-  structuredValue: { amount: "$20M", purpose: "security operations" },
+  structuredValue: { company: "Acme", amount: "$20M", purpose: "security operations" },
   supportingExcerpt: "On August 20, 2026, Acme raised $20M in funding to expand security operations.",
 };
 assert.equal(validateFactCandidateDetailed(connectedSecurityFunding, {

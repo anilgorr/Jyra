@@ -75,6 +75,9 @@ export type FactEvidenceContext = {
   /** The publisher's date for this page, from the search hit. Only a candidate
    * that declares `dateBasis: "PUBLISHED"` may rest on it. */
   publishedAt?: string;
+  /** Whether the source is the subject company's own domain. A third party
+   * does not get to announce an event about a company it never names. */
+  firstParty?: boolean;
 };
 
 export const EVENT_FACT_TYPES = [
@@ -461,20 +464,6 @@ function structuredCompany(value: Record<string, unknown>): string | null {
   return null;
 }
 
-/**
- * Does this text name the company? The same distinctiveness bar the event
- * attribution gate uses: the whole normalized name, or its leading token when
- * that token is long enough to stand alone.
- */
-function textNamesCompany(text: string, companyName: string): boolean {
-  const target = normalizeCompanyName(companyName);
-  if (!target) return false;
-  const haystack = normalizeCompanyName(text);
-  if (target.length >= 3 && haystack.includes(target)) return true;
-  const [first] = target.split(" ");
-  return Boolean(first && first.length >= 5 && haystack.split(" ").includes(first));
-}
-
 function hasSellerAsBuyerSemantics(
   candidate: FactCandidate,
   context: FactEvidenceContext,
@@ -543,21 +532,24 @@ export function validateFactCandidateDetailed(
   ) {
     addValidationIssue(report, "entity", "WRONG_ENTITY", "Fact is attributed to a different company than the requested subject");
   }
-  /* An event with no subject in its structured value skipped the entity check
-   * entirely, because there was nothing to compare. That is how an OptimizeRx
-   * CMO appointment was filed against Linear: the "announced the appointment
-   * of X as Y" pattern captures no company, and the page merely contained the
-   * word "linear" somewhere in its prose.
+  /* An event with no subject in its structured value cannot be checked against
+   * one. The "announced the appointment of X as Y" pattern captures no company,
+   * and requiring the excerpt to name the subject was not enough: the check was
+   * a substring, so Front Office Sports' new CRO satisfied "Front" and Ogury's
+   * Persona Intelligence satisfied "Persona".
    *
-   * A fact about a company must be evidenced by text that names the company.
-   * When the extractor found no subject, the excerpt has to supply one. */
+   * Across a full 119-company run that pattern produced exactly two facts and
+   * both were wrong, while every true appointment came through a pattern that
+   * does capture its subject. So a subjectless event now needs the company's
+   * own domain behind it — a press release may describe its own appointment
+   * without repeating the company name, and a third party may not. */
   if (
     context.companyName &&
     !attributedCompany &&
     isEventCandidate(parsed.factType, excerpt) &&
-    !textNamesCompany(parsed.supportingExcerpt, context.companyName)
+    !context.firstParty
   ) {
-    addValidationIssue(report, "entity", "WRONG_ENTITY", "Event has no subject and its excerpt does not name the requested company");
+    addValidationIssue(report, "entity", "WRONG_ENTITY", "Event has no subject and is not evidenced by the company's own page");
   }
   if (
     context.companyName &&
