@@ -112,8 +112,49 @@ export type OpportunityCalculationInput = {
   clusters: Array<{ id: string; strength: number; confidence: number; needImpact: number; timingImpact: number; status: string; signalIds: string[]; evidenceIds: string[] }>;
   evidence: Array<{ id: string; sourceDomain: string; authority: number; directness: number; freshness: number; corroboration: number; status: string }>;
   relationshipStatus: string;
+  /**
+   * The commercial role the ranking gate judged - the caller's `rankingRole`
+   * result, so the V2 verdict and the stored column are reconciled in one
+   * place. Omitted means the caller did not resolve one and no discount is
+   * applied.
+   */
+  commercialRole?: string | null;
   previous?: { state: OpportunityAssessmentState; score: number | null; timingScore: number | null } | null;
 };
+
+/**
+ * What a company's commercial role is worth, as a factor on its rank.
+ *
+ * SELLER_COMPETITOR is excluded outright and never reaches this. Everything
+ * else used to rank identically, which put Clay - a company whose stored
+ * reason reads "Commercial role is unknown because no cited offering-overlap
+ * claim establishes a material substitute" - at the top of the launch
+ * project's list, above every confirmed buyer. It sells list building and
+ * enrichment to outbound teams, which is the seller's own product.
+ *
+ * UNKNOWN is not a buyer. It is the engine saying it could not tell whether
+ * this company buys from you or competes with you, and the honest place for
+ * that is below a company it could tell about. A discount rather than an
+ * exclusion, because an undecided role is our gap and the company may be a
+ * real opportunity - it just must not lead the list while the question is
+ * open, so its state is capped as well.
+ *
+ * PARTNER_POSSIBLE and ADJACENT_VENDOR are genuine buyers with a weaker
+ * prior: they sell alongside or near the seller, so the same evidence means
+ * slightly less about a purchase. Small factors, because the evidence is
+ * still real.
+ */
+export const COMMERCIAL_ROLE_FACTORS: Record<string, number> = {
+  POTENTIAL_BUYER: 1,
+  PARTNER_POSSIBLE: 0.95,
+  ADJACENT_VENDOR: 0.9,
+  UNKNOWN: 0.8,
+};
+
+export function commercialRoleFactor(role: string | null | undefined): number {
+  if (!role) return 1;
+  return COMMERCIAL_ROLE_FACTORS[role] ?? 1;
+}
 
 const round = (value: number) => Math.round(Math.max(0, Math.min(100, value)) * 100) / 100;
 const unique = (values: string[]) => [...new Set(values)];
@@ -430,9 +471,13 @@ export function calculateOpportunityAssessment(input: OpportunityCalculationInpu
     .reduce((sum, item) => sum + item.weight, 0);
   const scoreOf = (item: { component: ScoreComponent; weight: number }) =>
     (item.component === fit && fitProvisional ? PROVISIONAL_FIT_SCORE : item.component.score ?? 0) * item.weight;
-  const score = (fitKnown || fitProvisional) && denominator
-    ? round(scoring.reduce((sum, item) => sum + scoreOf(item), 0) / denominator)
+  const weighted = (fitKnown || fitProvisional) && denominator
+    ? scoring.reduce((sum, item) => sum + scoreOf(item), 0) / denominator
     : null;
+  /* An undecided or adjacent commercial role discounts the rank rather than
+   * the evidence: the signals are real, what they mean for a sale is not. */
+  const roleFactor = commercialRoleFactor(input.commercialRole);
+  const score = weighted === null ? null : round(weighted * roleFactor);
   const completeness = scoring.filter((item) => item.component.score !== null).reduce((sum, item) => sum + item.weight, 0) / 100;
   const confidence = confidenceComponent(input, completeness);
   let state = stateFor(score, rules);
@@ -461,6 +506,16 @@ export function calculateOpportunityAssessment(input: OpportunityCalculationInpu
     state = capState(state, "EMERGING");
     gates.push("Fit is unverified; ranked on a neutral Fit because a real event was found");
   }
+  /* A company whose commercial role could not be decided may still be a real
+   * opportunity, so it stays on the list - but it must not present as a
+   * top-of-list account while nobody knows whether it is a buyer or a
+   * competitor. The cap is what puts the question in front of a human. */
+  if (input.commercialRole === "UNKNOWN") {
+    state = capState(state, "EMERGING");
+    gates.push("Commercial role is undecided; ranked below companies confirmed as buyers");
+  } else if (roleFactor < 1) {
+    gates.push(`Ranked as ${String(input.commercialRole).toLowerCase().replace(/_/g, " ")} rather than a confirmed buyer`);
+  }
   const assessmentStatus: "INSUFFICIENT_DATA" | "NEEDS_MORE_RESEARCH" | "COMPLETE" = score === null ? "INSUFFICIENT_DATA" :
     fitProvisional || !timingDimensionsKnown ? "NEEDS_MORE_RESEARCH" :
     confidence.score === null || confidence.score < rules.minimumConfidence ? "NEEDS_MORE_RESEARCH" : "COMPLETE";
@@ -484,7 +539,7 @@ export function calculateOpportunityAssessment(input: OpportunityCalculationInpu
     /** Every rule that capped or changed the state, in the order it applied. */
     gates,
     fitProvisional,
-    explanation: `${score === null ? "NEEDS RESEARCH" : state}: ${score === null ? "an opportunity score cannot yet be calculated because Fit remains unknown" : `weighted opportunity strength is ${score}${fitProvisional ? ` (provisional: Fit unverified, taken as ${PROVISIONAL_FIT_SCORE})` : timingDimensionsKnown ? "" : " (provisional: based on Fit; Need and Timing are not yet measured)"}`}. Confidence is ${confidence.score ?? "unknown"} and is not included in that score.${gates.length ? ` Gates: ${gates.join("; ")}.` : ""}`,
+    explanation: `${score === null ? "NEEDS RESEARCH" : state}: ${score === null ? "an opportunity score cannot yet be calculated because Fit remains unknown" : `weighted opportunity strength is ${score}${roleFactor < 1 ? ` (discounted to ${Math.round(roleFactor * 100)}% because the commercial role is ${input.commercialRole})` : ""}${fitProvisional ? ` (provisional: Fit unverified, taken as ${PROVISIONAL_FIT_SCORE})` : timingDimensionsKnown ? "" : " (provisional: based on Fit; Need and Timing are not yet measured)"}`}. Confidence is ${confidence.score ?? "unknown"} and is not included in that score.${gates.length ? ` Gates: ${gates.join("; ")}.` : ""}`,
   };
 }
 
@@ -655,9 +710,8 @@ export async function evaluateOpportunity(input: { organizationId: string; proje
   // exists for this project company; otherwise the legacy fact evaluation is
   // used exactly as before.
   const intelligenceV2 = await loadLatestIntelligenceV2Assessment(input.projectId, row.projectCompany.id, tx);
-  const buyerOpportunityAllowed = buyerRoleAllowsBuyerOpportunity(
-    rankingRole(intelligenceV2?.commercialRole, row.projectCompany.buyerRole),
-  );
+  const resolvedRole = rankingRole(intelligenceV2?.commercialRole, row.projectCompany.buyerRole);
+  const buyerOpportunityAllowed = buyerRoleAllowsBuyerOpportunity(resolvedRole);
   const fitResults: FitResult[] = intelligenceV2
     ? fitResultsFromIntelligenceV2(intelligenceV2, criteria, factsForIcp)
     : criteria.map((criterion) => ({
@@ -728,6 +782,7 @@ export async function evaluateOpportunity(input: { organizationId: string; proje
       freshness: item.freshnessScore, corroboration: item.corroborationScore, status: item.status,
     })),
     relationshipStatus: row.projectCompany.relationshipStatus,
+    commercialRole: resolvedRole,
     previous: previousOpportunity ? {
       state: previousOpportunity.state, score: previousOpportunity.score, timingScore: previousOpportunity.timingScore,
     } : null,
