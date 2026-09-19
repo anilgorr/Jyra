@@ -20,7 +20,7 @@ import {
 import type { SearchWebRequest, WebSearchResult } from "../provider-contract";
 import { normalizeCompanyName } from "./company-name";
 import { hostMatchesDomain } from "./ats-boards";
-import { claimCrawlPage } from "./crawl-page";
+import { claimCompanyEvidence, claimCrawlPage } from "./crawl-page";
 
 type DbExecutor = typeof db | Parameters<Parameters<typeof db.transaction>[0]>[0];
 
@@ -316,14 +316,14 @@ export async function persistEventFacts(
         qualityReason: `Explicit ${row.kind.toLowerCase().replace("_", " ")} with a stated date, extracted deterministically; ${corroborating} independent corroborating source${corroborating === 1 ? "" : "s"}.`,
         acceptedAsEvidence: true,
       }).onConflictDoNothing();
-      const [created] = await executor.insert(companyEvidenceTable).values({
+      const claimed = await claimCompanyEvidence({
         companyId: input.companyId, crawlPageId, createdByOrganizationId: input.organizationId,
         sourceUrl: row.sourceUrl, sourceDomain: row.sourceDomain, sourceType: row.sourceType, provider: "event-search",
         observedAt: now, rawContentReference: `crawl_pages:${crawlPageId}`, extractedClaim: row.candidate.supportingExcerpt,
         ...scores, status: "VERIFIED",
-      }).returning({ id: companyEvidenceTable.id });
-      evidenceId = created.id;
-      evidenceInserted += 1;
+      }, executor);
+      evidenceId = claimed.id;
+      if (claimed.created) evidenceInserted += 1; else evidenceReused += 1;
     }
     const inserted = await executor.insert(companyFactsTable).values({
       companyId: input.companyId, evidenceId, factType: row.kind,

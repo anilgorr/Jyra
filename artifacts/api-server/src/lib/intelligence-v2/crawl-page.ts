@@ -21,7 +21,7 @@
  */
 
 import { and, eq } from "drizzle-orm";
-import { crawlPagesTable, db } from "@workspace/db";
+import { companyEvidenceTable, crawlPagesTable, db } from "@workspace/db";
 
 type DbExecutor = typeof db | Parameters<Parameters<typeof db.transaction>[0]>[0];
 
@@ -54,4 +54,40 @@ export async function claimCrawlPage(values: CrawlPageClaim, executor: DbExecuto
     .limit(1);
   if (!existing) throw new Error(`Crawl page could not be claimed for ${values.sourceUrl}`);
   return existing.id;
+}
+
+/**
+ * Claiming the one evidence row a crawl page is allowed to have.
+ *
+ * company_evidence is unique on crawl_page_id: a page is a source, and a
+ * source gets one row. Four writers enforced that with a pre-check on
+ * (company, url) or (company, url, source type) and then inserted — which
+ * holds only while the pre-check's key and the crawl page's key agree. They
+ * do not. The page is keyed on (company, url, content hash); the evidence
+ * carries a source type the classifier decides per run, and five stored rows
+ * already sit on a page whose type disagrees with theirs. Reclassify one URL
+ * between two cycles and the pre-check misses, claimCrawlPage returns the
+ * page that is already there, and the insert dies on the unique index —
+ * taking down a cycle that had already paid for its research.
+ *
+ * So claim the evidence the same way the page is claimed: insert, and on
+ * conflict read back the row that owns the page. The conflict target is
+ * named, so a different unique violation still raises rather than being
+ * quietly swallowed.
+ */
+export async function claimCompanyEvidence(
+  values: typeof companyEvidenceTable.$inferInsert,
+  executor: DbExecutor,
+): Promise<{ id: string; created: boolean }> {
+  const [inserted] = await executor.insert(companyEvidenceTable)
+    .values(values)
+    .onConflictDoNothing({ target: companyEvidenceTable.crawlPageId })
+    .returning({ id: companyEvidenceTable.id });
+  if (inserted) return { id: inserted.id, created: true };
+  const [existing] = await executor.select({ id: companyEvidenceTable.id })
+    .from(companyEvidenceTable)
+    .where(eq(companyEvidenceTable.crawlPageId, values.crawlPageId))
+    .limit(1);
+  if (!existing) throw new Error(`Evidence could not be claimed for ${values.sourceUrl}`);
+  return { id: existing.id, created: false };
 }

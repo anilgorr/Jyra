@@ -10,7 +10,7 @@ import {
 import { calculateEvidenceScores, hashNormalizedContent } from "../evidence";
 import type { EvidenceSourceType } from "./persist-evidence";
 import { normalizeCompanyName } from "./company-name";
-import { claimCrawlPage } from "./crawl-page";
+import { claimCompanyEvidence, claimCrawlPage } from "./crawl-page";
 
 type JobDbExecutor = typeof db | Parameters<Parameters<typeof db.transaction>[0]>[0];
 
@@ -383,7 +383,7 @@ export async function persistJobFacts(
         qualityReason: "Structured posting with an explicit publish date from the employer's own board.",
         acceptedAsEvidence: true,
       }).onConflictDoNothing();
-      const [created] = await executor.insert(companyEvidenceTable).values({
+      const claimed = await claimCompanyEvidence({
         companyId: input.companyId,
         crawlPageId,
         createdByOrganizationId: input.organizationId,
@@ -396,9 +396,9 @@ export async function persistJobFacts(
         extractedClaim: row.supportingExcerpt,
         ...scores,
         status: "VERIFIED",
-      }).returning({ id: companyEvidenceTable.id });
-      evidenceId = created.id;
-      evidenceInserted += 1;
+      }, executor);
+      evidenceId = claimed.id;
+      if (claimed.created) evidenceInserted += 1; else evidenceReused += 1;
     }
 
     const inserted = await executor.insert(companyFactsTable).values({
@@ -507,7 +507,7 @@ export async function persistHiringCounts(
         qualityReason: "Derived by counting dated postings already admitted as evidence from the employer's own board.",
         acceptedAsEvidence: true,
       }).onConflictDoNothing();
-      const [created] = await executor.insert(companyEvidenceTable).values({
+      const claimed = await claimCompanyEvidence({
         companyId: input.companyId,
         crawlPageId,
         createdByOrganizationId: input.organizationId,
@@ -520,9 +520,9 @@ export async function persistHiringCounts(
         extractedClaim: row.supportingExcerpt,
         ...scores,
         status: "VERIFIED",
-      }).returning({ id: companyEvidenceTable.id });
-      evidenceId = created.id;
-      evidenceInserted += 1;
+      }, executor);
+      evidenceId = claimed.id;
+      if (claimed.created) evidenceInserted += 1;
     }
 
     // One observation per theme per day. The unique index keys on the excerpt,

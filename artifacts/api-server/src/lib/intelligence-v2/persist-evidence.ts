@@ -2,7 +2,7 @@ import { createHash, randomUUID } from "node:crypto";
 import { and, eq } from "drizzle-orm";
 import { companyEvidenceTable, crawlPagesTable, db } from "@workspace/db";
 import { calculateEvidenceScores, hashNormalizedContent } from "../evidence";
-import { claimCrawlPage } from "./crawl-page";
+import { claimCompanyEvidence, claimCrawlPage } from "./crawl-page";
 import type { EvidenceItemV2 } from "./schemas";
 
 /**
@@ -274,7 +274,6 @@ export async function persistIntelligenceV2Evidence(
       .where(and(
         eq(companyEvidenceTable.companyId, row.evidence.companyId),
         eq(companyEvidenceTable.sourceUrl, row.evidence.sourceUrl),
-        eq(companyEvidenceTable.sourceType, row.evidence.sourceType),
       ))
       .limit(1);
 
@@ -307,13 +306,13 @@ export async function persistIntelligenceV2Evidence(
       ...row.crawlPage,
       rawContentReference: `crawl_pages:${newCrawlPageId}`,
     }, executor);
-    const [created] = await executor.insert(companyEvidenceTable).values({
+    const claimed = await claimCompanyEvidence({
       crawlPageId,
       rawContentReference: `crawl_pages:${crawlPageId}`,
       ...row.evidence,
-    }).returning({ id: companyEvidenceTable.id });
-    evidenceIdMap[row.v2EvidenceId] = created.id;
-    inserted += 1;
+    }, executor);
+    evidenceIdMap[row.v2EvidenceId] = claimed.id;
+    if (claimed.created) inserted += 1; else reused += 1;
   }
 
   return { inserted, reused, skipped, evidenceIdMap };
