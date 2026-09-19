@@ -4,6 +4,7 @@ import { PostgresIntelligenceV2Repository } from "../lib/intelligence-v2/reposit
 import { currentQueue } from "../lib/queue";
 import { RESEARCH_COMPANY_QUEUE, queueSettings } from "../lib/queue-policy";
 import { enqueueUnresearched } from "../lib/research-worker";
+import { rescoreProject } from "../lib/signal-rescore";
 import { runWatchLoopTick, runWatchLoopUntilCaughtUp, wakeBudgetMs, watchLoopSettings, type TickReport, type WakeReport } from "../lib/intelligence-v2/watch-loop";
 
 const router: IRouter = Router();
@@ -119,6 +120,26 @@ router.get("/internal/queue/status", asyncRoute(async (req, res) => {
   if (!instance) return void res.json({ running: false, settings });
   const queue = await instance.getQueue(RESEARCH_COMPANY_QUEUE);
   res.json({ running: true, settings, queue });
+}));
+
+/**
+ * Re-rank a project from facts it already has.
+ *
+ * Changing what a fact means - a pack weight, a confidence floor - needs no
+ * research, so it must not cost any. The alternatives were the per-company
+ * evaluate endpoint 119 times or clearing latest_research_at and paying to
+ * fetch every page again, and tuning a pack is the main work a new vertical
+ * involves rather than a rare event.
+ *
+ * Synchronous: it touches no provider, so it finishes in seconds rather than
+ * the minutes a research sweep takes.
+ */
+router.post("/internal/signals/rescore/:projectId", asyncRoute(async (req, res) => {
+  const expected = process.env.JYRA_WATCH_LOOP_TOKEN;
+  if (!expected) return void res.status(404).json({ error: "Not found" });
+  if (!watchLoopTokenMatches(req.header("authorization"), expected)) return void res.status(401).json({ error: "Unauthorized" });
+  const report = await rescoreProject(String(req.params.projectId), "internal-rescore");
+  res.status(200).json(report);
 }));
 
 export default router;
