@@ -213,13 +213,21 @@ export function validateAssessmentEvidenceV2(
     if (factual && !ids.length) errors.push(`${path} has no evidence`);
     if (factual && !claimIds.length) errors.push(`${path} has no atomic claim`);
   };
-  check("commercialRole", parsed.data.commercialRole.evidenceIds, parsed.data.commercialRole.claimIds, parsed.data.commercialRole.value !== "UNKNOWN", ["PRIMARY_BUSINESS", "PRODUCT_SERVICE", "OFFERING_OVERLAP", "BUSINESS_MODEL", "INDUSTRY", "TECHNOLOGY"]);
-  check("who", parsed.data.who.evidenceIds, parsed.data.who.claimIds, parsed.data.who.value !== "INSUFFICIENT_DATA");
+  /* A seller-declared competitor cites nothing about the company, and it cannot:
+   * these are the companies whose role the normalizer had already reduced to
+   * UNKNOWN and stripped of citations, for want of an offering-overlap claim.
+   * Promoting that section to SELLER_COMPETITOR is what the seller's statement
+   * does, and demanding citations it never had is what failed the first two
+   * attempts at this. The seller's statement is the evidence, and it lives in
+   * the Business Twin rather than in this company's evidence set. */
+  const sellerDeclared = options?.sellerDeclaredCompetitor === true;
+  check("commercialRole", parsed.data.commercialRole.evidenceIds, parsed.data.commercialRole.claimIds, !sellerDeclared && parsed.data.commercialRole.value !== "UNKNOWN", ["PRIMARY_BUSINESS", "PRODUCT_SERVICE", "OFFERING_OVERLAP", "BUSINESS_MODEL", "INDUSTRY", "TECHNOLOGY"]);
+  check("who", parsed.data.who.evidenceIds, parsed.data.who.claimIds, !sellerDeclared && parsed.data.who.value !== "INSUFFICIENT_DATA");
   bindingsValid("commercialRole", parsed.data.commercialRole.claimBindings, parsed.data.commercialRole.claimIds, parsed.data.commercialRole.evidenceIds, ["SUPPORTS_ROLE", "MATERIAL_SUBSTITUTE", "COMPLEMENTARY", "BUYER_CAPABILITY"]);
   bindingsValid("who", parsed.data.who.claimBindings, parsed.data.who.claimIds, parsed.data.who.evidenceIds, ["SUPPORTS_WHO", "SATISFIES_CRITERION", "FAILS_CRITERION"]);
-  if (parsed.data.commercialRole.value !== "UNKNOWN" && !parsed.data.commercialRole.claimBindings.length) errors.push("commercialRole has no compatible binding");
-  if (parsed.data.who.value !== "INSUFFICIENT_DATA" && !parsed.data.who.claimBindings.length) errors.push("who has no compatible binding");
-  if (!options?.sellerDeclaredCompetitor && parsed.data.commercialRole.value === "SELLER_COMPETITOR" && !parsed.data.commercialRole.claimBindings.some((binding) => binding.relation === "MATERIAL_SUBSTITUTE" && claims.get(binding.claimId)?.type === "OFFERING_OVERLAP")) errors.push("competitor lacks material-substitutability overlap binding");
+  if (!sellerDeclared && parsed.data.commercialRole.value !== "UNKNOWN" && !parsed.data.commercialRole.claimBindings.length) errors.push("commercialRole has no compatible binding");
+  if (!sellerDeclared && parsed.data.who.value !== "INSUFFICIENT_DATA" && !parsed.data.who.claimBindings.length) errors.push("who has no compatible binding");
+  if (!sellerDeclared && parsed.data.commercialRole.value === "SELLER_COMPETITOR" && !parsed.data.commercialRole.claimBindings.some((binding) => binding.relation === "MATERIAL_SUBSTITUTE" && claims.get(binding.claimId)?.type === "OFFERING_OVERLAP")) errors.push("competitor lacks material-substitutability overlap binding");
   const requirements = context && Array.isArray(context.icp.requirements)
     ? context.icp.requirements.map((item) => researchRequirementSchema.safeParse(item)).filter((item) => item.success).map((item) => item.data)
     : null;

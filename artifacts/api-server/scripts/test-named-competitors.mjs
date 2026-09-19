@@ -108,6 +108,52 @@ check("screening disqualifies a named competitor before any research is paid for
   assert.equal(n.screenCompany(input("Miro"), policy).verdict, "KEEP");
 });
 
+/* The shape production actually hands the override, taken from the failing
+ * rows: the normalizer had already reduced commercialRole to UNKNOWN and
+ * stripped its citations, for want of an offering-overlap claim. That is the
+ * whole reason these companies reach the rule at all — and it is what two
+ * fixtures with citations failed to represent, which is how the unit suite
+ * stayed green through two production failures. */
+const STRIPPED = () => ({
+  commercialRole: { value: "UNKNOWN", confidence: 0.9,
+    reason: "Commercial role is unknown because no cited offering-overlap claim establishes a material substitute.",
+    evidenceIds: [], claimIds: [], claimBindings: [] },
+  who: { value: "LIKELY_FIT", confidence: 0.9, reason: "Fits.", evidenceIds: ["ev-1"], claimIds: ["ev-1:biz"],
+    claimBindings: [{ claimId: "ev-1:biz", claimedValue: "GTM platform", purpose: "WHO", relation: "SUPPORTS_WHO" }],
+    criteria: [] },
+  uncertainties: [], assessmentConfidence: 0.9,
+});
+
+check("a role the normalizer already stripped can still be declared a competitor", () => {
+  const evidence = [{
+    evidenceId: "ev-1", organizationId: "org-a", projectId: "p", companyId: "c-zoominfo",
+    sourceType: "FIRST_PARTY_WEBSITE", provider: "fixture", url: "https://zoominfo.example",
+    finalUrl: "https://zoominfo.example", observedAt: "2026-09-19T00:00:00.000Z",
+    rawSnippet: "ZoomInfo is a go-to-market platform.", firstParty: true, confidence: 0.9, version: "v1",
+    atomicClaims: [{ claimId: "ev-1:biz", type: "PRIMARY_BUSINESS", value: "GTM platform" }],
+    claims: { primaryBusiness: "ZoomInfo is a go-to-market platform." },
+  }];
+  const final = n.applySafetyRulesV2({
+    profile: PROFILE, assessment: STRIPPED(), fingerprint: "f",
+    companyName: "ZoomInfo", namedCompetitors: ["ZoomInfo"],
+  });
+  assert.equal(final.commercialRole.value, "SELLER_COMPETITOR");
+  assert.equal(final.who.value, "LIKELY_NOT_FIT");
+  const { resolutionType, deterministicOverrides, safetyOverrideMetadata, fingerprint, ...semantic } = final;
+
+  // This is the assertion that would have caught both production failures.
+  const revalidated = n.validateAssessmentEvidenceV2(semantic, evidence, { icp: { requirements: [] } },
+    { sellerDeclaredCompetitor: deterministicOverrides.includes("SELLER_NAMED_COMPETITOR") });
+  assert.equal(revalidated.ok, true,
+    `the orchestrator re-validation must accept it: ${revalidated.ok ? "" : revalidated.errors.join("; ")}`);
+
+  // And an evidence-free role that nobody declared is still rejected.
+  const undeclared = n.validateAssessmentEvidenceV2(
+    { ...STRIPPED(), commercialRole: { ...STRIPPED().commercialRole, value: "SELLER_COMPETITOR" } },
+    evidence, { icp: { requirements: [] } });
+  assert.equal(undeclared.ok, false, "the waiver applies only to a seller declaration");
+});
+
 check("the override survives the final re-validation it originally broke", () => {
   // Clearing the citations was the first attempt, and it failed on exactly the
   // three companies the rule exists for. The orchestrator re-validates after
