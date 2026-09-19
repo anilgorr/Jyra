@@ -404,6 +404,56 @@ export function sameCompanyName(left: string, right: string): boolean {
   return shorter.every((token, index) => longer[index] === token);
 }
 
+/**
+ * Words that spell out what a company *is*, not which company it is.
+ *
+ * "Accops Systems Private Limited" is Accops. "Front Office Sports" is not
+ * Front, and "Runway Growth Capital" is not Runway — those extra words are
+ * the whole difference between two companies.
+ */
+const CORPORATE_FORM_TOKENS = new Set([
+  "inc", "incorporated", "llc", "llp", "ltd", "limited", "plc", "corp", "corporation",
+  "co", "company", "gmbh", "ag", "sa", "sas", "sarl", "bv", "nv", "pty", "pvt", "private",
+  "srl", "spa", "oy", "ab", "as", "kk", "kft", "doo", "sdn", "bhd",
+  "systems", "technologies", "technology", "solutions", "software", "labs", "laboratories",
+  "group", "holdings", "holding", "international", "global", "worldwide",
+]);
+
+/**
+ * Is the entity this event is about the company we asked about?
+ *
+ * Directional, and the direction is the point. The press shortens a
+ * registered name — an article writes "Temporal" for a record reading
+ * "Temporal Technologies" — so an extracted name that is a leading run of the
+ * subject's tokens is the same company, always.
+ *
+ * Going the other way, where the article names something LONGER than the
+ * record, the extra words decide it. A legal form or a descriptor of what the
+ * business is ("Systems Private Limited") still names the same company; a
+ * distinguishing noun does not.
+ *
+ * Symmetric prefix matching cost eleven false facts in one run on 19 Sep
+ * 2026, every one a short name inheriting a stranger's news: Front took Front
+ * Office Sports' new CRO, Render took Render Networks' CTO, Runway took
+ * Runway Growth Capital's Co-CEO, Alloy was acquired in place of Alloy
+ * Enterprises, and Neon raised Neon Commerce's Series A. This rejects those
+ * and keeps every true positive in the same run.
+ *
+ * It is not complete. "Chameleon Technology" still reads as Chameleon,
+ * because "Technology" genuinely is a corporate descriptor for the many real
+ * companies called one — that residual wants the source domain to settle it,
+ * which this function does not see.
+ */
+export function extractedNamesSubject(extracted: string, subject: string): boolean {
+  const found = entityTokens(extracted);
+  const wanted = entityTokens(subject);
+  if (!found.length || !wanted.length) return false;
+  const [shorter, longer] = found.length <= wanted.length ? [found, wanted] : [wanted, found];
+  if (!shorter.every((token, index) => longer[index] === token)) return false;
+  if (found.length <= wanted.length) return true;
+  return found.slice(wanted.length).every((token) => CORPORATE_FORM_TOKENS.has(token));
+}
+
 function structuredCompany(value: Record<string, unknown>): string | null {
   for (const key of ["company", "subjectCompany", "organization", "buyer", "customer"]) {
     if (typeof value[key] === "string") return value[key];
@@ -489,7 +539,7 @@ export function validateFactCandidateDetailed(
   if (
     context.companyName &&
     attributedCompany &&
-    !sameCompanyName(attributedCompany, context.companyName)
+    !extractedNamesSubject(attributedCompany, context.companyName)
   ) {
     addValidationIssue(report, "entity", "WRONG_ENTITY", "Fact is attributed to a different company than the requested subject");
   }
@@ -904,7 +954,21 @@ function resolveEventDate(
   const after = explicitDateAfter(content, eventIndex);
   if (after) return { effectiveDate: after.effectiveDate, excerptStart: eventIndex, excerptEnd: Math.max(eventEnd, after.excerptEnd), basis: "STATED" };
   const published = publishedFallback(publishedAt);
-  return published ? { effectiveDate: published, excerptStart: eventIndex, excerptEnd: eventEnd, basis: "PUBLISHED" } : null;
+  if (!published) return null;
+  /* A publisher date stands in for a date the text does not give. It cannot
+   * stand in for one the text contradicts.
+   *
+   * getlatka.com's Chronosphere profile says "most recently a $200M Series C
+   * round in 2021", and the crawl carried 2026-08-20 — so a five-year-old
+   * round was filed as three weeks ago. Stats and profile pages are
+   * republished continuously; their publish date describes the page, not the
+   * event. When the event sentence names a year of its own and it is not the
+   * publisher's, the page is describing history and there is no event date to
+   * be had. */
+  const sentence = content.slice(eventIndex, eventEnd);
+  const statedYears = [...sentence.matchAll(/\b(19|20)\d{2}\b/g)].map((match) => match[0]);
+  if (statedYears.length && !statedYears.includes(published.slice(0, 4))) return null;
+  return { effectiveDate: published, excerptStart: eventIndex, excerptEnd: eventEnd, basis: "PUBLISHED" };
 }
 
 export function extractExplicitLeadershipCandidates(

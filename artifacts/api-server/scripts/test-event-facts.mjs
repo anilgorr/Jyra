@@ -464,3 +464,52 @@ console.log("PASS event-facts");
     "the press writes the short name; the record carries the legal form");
   console.log("  ok  a subjectless event must be evidenced by text that names the company");
 }
+
+/* Eleven false facts in one run, every one a short company name inheriting a
+ * stranger's news. Symmetric prefix matching said "Front" and "Front Office
+ * Sports" were the same company. These headlines are verbatim from that run. */
+{
+  assert.equal(e.extractedNamesSubject("Temporal", "Temporal Technologies"), true, "the press shortens a registered name");
+  assert.equal(e.extractedNamesSubject("Accops", "Accops Systems Pvt Ltd"), true);
+  assert.equal(e.extractedNamesSubject("Zendesk", "Zendesk"), true);
+  assert.equal(e.extractedNamesSubject("Accops Systems Private Limited", "Accops"), true, "a legal form spelled out is still the same company");
+  for (const [found, subject] of [
+    ["Front Office Sports", "Front"], ["Render Networks", "Render"], ["Runway Growth Capital", "Runway"],
+    ["Alloy Enterprises", "Alloy"], ["Neon Commerce", "Neon"],
+  ]) assert.equal(e.extractedNamesSubject(found, subject), false, `${found} is not ${subject}`);
+  assert.equal(e.extractedNamesSubject("Acme Payments", "CloudVendor"), false);
+  // Known residual, recorded rather than wished away: "Technology" is a real
+  // corporate descriptor for the many companies called one, so this rule
+  // cannot separate Chameleon from Chameleon Technology. The source domain
+  // can, and this function does not see it.
+  assert.equal(e.extractedNamesSubject("Chameleon Technology", "Chameleon"), true, "documented gap: needs the domain to settle");
+
+  const id = "cccccccc-0000-4000-8000-000000000001";
+  const text = "Front Office Sports Appoints Kyle Vinansky as Chief Revenue Officer";
+  const [stray] = e.extractExplicitLeadershipCandidates(id, text, "2026-06-01T00:00:00Z");
+  assert.equal(stray.structuredValue.company, "Front Office Sports");
+  assert.equal(e.validateFactCandidateDetailed(stray, { companyId: "c-front", evidenceId: id, rawContent: text, observationDate: "2026-09-19", companyName: "Front", publishedAt: "2026-06-01T00:00:00Z" }).valid, false,
+    "front.com did not hire a sports-media CRO");
+  assert.equal(e.validateFactCandidateDetailed(stray, { companyId: "c-fos", evidenceId: id, rawContent: text, observationDate: "2026-09-19", companyName: "Front Office Sports", publishedAt: "2026-06-01T00:00:00Z" }).valid, true,
+    "…but Front Office Sports did");
+  console.log("  ok  a short name does not inherit a longer company's news");
+}
+
+/* A publisher date stands in for a date the text does not give. It cannot
+ * stand in for one the text contradicts — a continuously republished stats
+ * page filed a 2021 round as three weeks ago. */
+{
+  const id = "cccccccc-0000-4000-8000-000000000002";
+  const profile = "Chronosphere has raised $254.4M in total funding across 3 rounds, most recently a $200M Series C round in 2021.";
+  assert.deepEqual(e.extractExplicitFundingCandidates(id, profile, "2026-08-20T00:00:00Z"), [],
+    "the page's date describes the page, not a five-year-old round");
+
+  const news = "Temporal Technologies raised $550 million in Series E funding at a $12.55 billion valuation.";
+  const [real] = e.extractExplicitFundingCandidates(id, news, "2026-09-16T00:00:00Z");
+  assert.equal(real.effectiveDate, "2026-09-16", "a sentence with no year of its own still takes the publisher's");
+
+  const agreeing = "Typeform closed a $135 million Series C round in 2026 led by Sofina.";
+  const [ok] = e.extractExplicitFundingCandidates(id, agreeing, "2026-08-20T00:00:00Z");
+  assert.equal(ok.effectiveDate, "2026-08-20", "a year that agrees with the publisher is no contradiction");
+  console.log("  ok  a publisher date cannot override a year the text states");
+}
