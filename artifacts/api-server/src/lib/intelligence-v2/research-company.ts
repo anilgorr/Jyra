@@ -219,7 +219,12 @@ export function createProviderRouterResearchInvokerV2(
       const pages = response.data?.pages?.length ? response.data.pages : response.data?.page ? [response.data.page] : [];
       const result: ResearchStepResultV2 = {
         provider: response.providerId, cost: providerCost(response), status: response.status === "failed" ? "FAILED" : pages.length ? "USED" : "EMPTY",
-        evidence: pages.filter((page) => page.text.trim()).slice(0, 5).map((page) => {
+        /* Seven, not five. The crawl now follows the homepage's links to the
+         * pages that say what the company sells, and those arrive behind the
+         * configured paths - at five they were fetched, charged for and then
+         * dropped before the assessment ever saw them. The provider orders
+         * them by value, so a company with fewer pages loses nothing. */
+        evidence: pages.filter((page) => page.text.trim()).slice(0, 7).map((page) => {
           const geography = extractGeographyClaims(page.text);
           return providerEvidence({
             request, provider: response.providerId, providerRequestId: response.providerRequestId, capturedAt: response.capturedAt,

@@ -177,4 +177,52 @@ assert.deepEqual(cfg.crawlPaths, ["/team"]); assert.equal(cfg.estimatedCost, 0.0
   assert.equal((await h.firecrawlCredits({ fetchImpl: ok })).error, "CREDENTIALS_MISSING");
 }
 
+// The offering hop: the research crawl read the homepage, /about, /contact
+// and /careers, and the overlap detector - which decides buyer or competitor
+// - was handed brand copy. A pricing page states capabilities because it has
+// to; a homepage does not.
+{
+  const markdown = [
+    "[Platform](https://acme.example/platform)",
+    "[Pricing](https://acme.example/pricing)",
+    "[Solutions](https://acme.example/solutions/revops)",
+    "[Blog](https://acme.example/blog/why-outbound)",
+    "[Customers](https://acme.example/customers/globex)",
+    "[Docs](https://acme.example/docs/api)",
+    "[Pricing on a partner site](https://reseller.example/pricing)",
+    '<a href="https://acme.example/products/enrichment">Products</a>',
+  ].join("\n");
+  const links = h.offeringLinksFrom(markdown, "https://acme.example", 2);
+  assert.equal(links.length, 2);
+  assert.ok(links.includes("https://acme.example/pricing"), "pricing was not preferred");
+  assert.ok(
+    links.some((url) => /\/(platform|products)\//.test(url) || url.endsWith("/platform")),
+    `no product page followed: ${JSON.stringify(links)}`,
+  );
+  // Other people's businesses are not this company's capabilities, and a
+  // third-party host is not this company at all.
+  for (const url of links) {
+    assert.ok(!/blog|customers|docs/.test(url), `followed ${url}`);
+    assert.ok(url.startsWith("https://acme.example/"), `left the host: ${url}`);
+  }
+}
+{
+  // Nothing to follow costs nothing: no link, no credit.
+  assert.deepEqual(h.offeringLinksFrom("[About](https://acme.example/about)", "https://acme.example"), []);
+  assert.deepEqual(h.offeringLinksFrom("", "not a url"), []);
+}
+{
+  // One from each tier before a second from any - a pricing page and a
+  // product page say different things; two product pages mostly repeat.
+  const markdown = [
+    "[A](https://acme.example/product/one)",
+    "[B](https://acme.example/product/two)",
+    "[C](https://acme.example/pricing)",
+  ].join("\n");
+  assert.deepEqual(
+    h.offeringLinksFrom(markdown, "https://acme.example", 2).sort(),
+    ["https://acme.example/pricing", "https://acme.example/product/one"],
+  );
+}
+
 console.log("PASS firecrawl-provider");

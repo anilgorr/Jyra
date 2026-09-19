@@ -31,6 +31,8 @@ export type FirecrawlProviderConfiguration = {
   /** Paths the change gate watches for movement, besides the homepage. */
   crawlPaths?: string[];
   maxDiscoveredPages?: number;
+  /** Pages describing what the company sells, followed from the homepage's own links. */
+  maxOfferingPages?: number;
   /** Paths the research pass reads for facts. Wider than the gate's: research pays once a month, the gate pays weekly. */
   researchPaths?: string[];
   maxChars?: number;
@@ -86,6 +88,14 @@ const DEFAULTS = {
    * of it.
    */
   maxDiscoveredPages: 2,
+  /**
+   * How many offering pages to follow, at most. Two: a pricing page and a
+   * product page between them say what a company sells, and every page is a
+   * credit. This is the cheapest place the budget can be spent, because the
+   * commercial-role verdict decides whether the other pages were worth
+   * reading at all.
+   */
+  maxOfferingPages: 2,
   maxChars: 30_000,
   maxConcurrency: 4,
   rateLimitRetries: 2,
@@ -128,9 +138,11 @@ export function parseFirecrawlProviderConfiguration(configuration: Record<string
   const paths = pathList(configuration.crawlPaths, DEFAULTS.crawlPaths);
   const research = pathList(configuration.researchPaths, DEFAULTS.researchPaths);
   const discovered = Number(configuration.maxDiscoveredPages);
+  const offering = Number(configuration.maxOfferingPages);
   return {
     researchPaths: research.length ? research : DEFAULTS.researchPaths,
     maxDiscoveredPages: Number.isInteger(discovered) && discovered >= 0 ? Math.min(discovered, 4) : DEFAULTS.maxDiscoveredPages,
+    maxOfferingPages: Number.isInteger(offering) && offering >= 0 ? Math.min(offering, 4) : DEFAULTS.maxOfferingPages,
     maxConcurrency: num("maxConcurrency", DEFAULTS.maxConcurrency),
     rateLimitRetries: num("rateLimitRetries", DEFAULTS.rateLimitRetries),
     retryBaseMs: num("retryBaseMs", DEFAULTS.retryBaseMs),
@@ -240,6 +252,69 @@ export function trustLinksFrom(markdown: string, pageUrl: string, limit = 2): st
     }
   }
   return [...links].slice(0, limit);
+}
+
+/**
+ * Pages that say what a company sells, found by following its own links.
+ *
+ * The research crawl read the homepage, /about, /contact and /careers, and
+ * the offering-overlap detector - the thing that decides whether a company is
+ * a competitor rather than a buyer - was fed the result. A modern homepage is
+ * brand copy: "Go to market with confidence." It names no capability, so the
+ * detector needs two distinctive tokens and finds none, and the verdict comes
+ * back UNKNOWN. That is how the launch project's list ended up led by a
+ * company selling the seller's own product, and why two named competitors
+ * produced no overlap match even with clean crawls.
+ *
+ * A pricing page is the densest capability text a company publishes: it has
+ * to say what each tier actually does, in the buyer's words, with no room for
+ * atmosphere. Product and platform pages are next. So prefer pricing, then
+ * product, and follow the link rather than guessing at a path - /platform,
+ * /product/sales-engagement and /why-us are all the same page under different
+ * names, and a blind probe charges a credit for every spelling that misses.
+ *
+ * Same host only, and never the blog or the customer stories: those describe
+ * other people's businesses, and a case study naming a buyer's industry has
+ * been mistaken for the seller's own capability before.
+ */
+const OFFERING_LINK_TIERS: RegExp[] = [
+  /\/(pricing|plans)(\/|$|\?)/i,
+  /\/(products?|platform|features?|capabilities)(\/|$|\?)/i,
+  /\/(solutions?|use-?cases?)(\/|$|\?)/i,
+];
+const NOT_AN_OFFERING_LINK = /\/(blog|news|press|resources?|customers?|case-stud|partners?|events?|webinars?|docs?|documentation|support|help|legal|privacy|terms|cookie)(\/|$|\?|-)/i;
+
+export function offeringLinksFrom(markdown: string, pageUrl: string, limit = 2): string[] {
+  let origin: string;
+  try { origin = new URL(pageUrl).hostname.replace(/^www\./, "").toLowerCase(); } catch { return []; }
+  const tiers: Array<Set<string>> = OFFERING_LINK_TIERS.map(() => new Set<string>());
+  const patterns = [
+    /\]\((https?:\/\/[^)\s]+)\)/gi,
+    /href=["'](https?:\/\/[^"']+)["']/gi,
+  ];
+  for (const pattern of patterns) {
+    for (const match of markdown.matchAll(pattern)) {
+      const href = match[1]!.split("#")[0]!;
+      if (NOT_AN_OFFERING_LINK.test(href)) continue;
+      const tier = OFFERING_LINK_TIERS.findIndex((test) => test.test(href));
+      if (tier < 0) continue;
+      try {
+        if (new URL(href).hostname.replace(/^www\./, "").toLowerCase() !== origin) continue;
+      } catch { continue; }
+      tiers[tier]!.add(href);
+    }
+  }
+  // One from each tier before a second from any: a pricing page and a product
+  // page say different things, two pricing pages mostly repeat.
+  const out: string[] = [];
+  for (let depth = 0; out.length < limit && depth < limit; depth += 1) {
+    for (const tier of tiers) {
+      const url = [...tier][depth];
+      if (url && !out.includes(url)) out.push(url);
+      if (out.length >= limit) break;
+    }
+  }
+  return out;
 }
 
 export function watchUrlsFor(domain: string, paths: string[] = DEFAULTS.crawlPaths): string[] {
@@ -376,9 +451,17 @@ export function createFirecrawlWebsiteCrawlAdapter(options: FirecrawlAdapterOpti
       // spent when there is no such link, which is the difference between
       // following a link and guessing at a path.
       const homePage = scraped[0];
-      if (configuration.maxDiscoveredPages > 0 && homePage?.ok && homePage.text) {
-        const discovered = trustLinksFrom(homePage.text, homePage.url, configuration.maxDiscoveredPages)
-          .filter((url) => !urls.includes(url));
+      const offeringUrls = new Set<string>();
+      if (homePage?.ok && homePage.text) {
+        const offering = configuration.maxOfferingPages > 0
+          ? offeringLinksFrom(homePage.text, homePage.url, configuration.maxOfferingPages)
+          : [];
+        const trust = configuration.maxDiscoveredPages > 0
+          ? trustLinksFrom(homePage.text, homePage.url, configuration.maxDiscoveredPages)
+          : [];
+        for (const url of offering) offeringUrls.add(url);
+        const discovered = [...offering, ...trust]
+          .filter((url, index, all) => !urls.includes(url) && all.indexOf(url) === index);
         if (discovered.length) scraped.push(...await readPagesCheaply(discovered, { ...options, apiKey }));
       }
 
@@ -399,7 +482,18 @@ export function createFirecrawlWebsiteCrawlAdapter(options: FirecrawlAdapterOpti
         };
       }
       const page = readable.find((p) => p.url === first.url) ?? readable[0];
-      const pages = readable.map((p) => ({ url: p.finalUrl ?? p.url, title: p.title, text: p.text }));
+      /* Order by what the pages are worth, because the consumer keeps only
+       * the first few. The homepage identifies the company, the offering
+       * pages decide whether it is a buyer or a competitor, and the rest fill
+       * in geography and certifications. Ranking them here means a company
+       * that publishes its pricing does not lose that page to an /about that
+       * happened to be fetched first. */
+      const rank = (p: typeof readable[number]) =>
+        p.url === first.url ? 0 : offeringUrls.has(p.url) ? 1 : 2;
+      const pages = readable
+        .map((p, index) => ({ p, index }))
+        .sort((a, b) => rank(a.p) - rank(b.p) || a.index - b.index)
+        .map(({ p }) => ({ url: p.finalUrl ?? p.url, title: p.title, text: p.text }));
       const runtimeMs = Date.now() - startedAt;
       return {
         status: "success",
