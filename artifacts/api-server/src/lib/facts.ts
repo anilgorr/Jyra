@@ -777,7 +777,7 @@ const LEADERSHIP_ROLE_PATTERN = [
  * Lazy, so it takes the fewest words that let the role match, and it refuses
  * the connectives that separate a name from a title outright.
  */
-const PERSON_CAPTURE = String.raw`[A-Z][A-Za-z'.-]+(?:\s+(?!as\b|to\b|and\b|the\b|its\b|their\b|new\b|first\b|next\b|interim\b|co[-\s])[A-Z][A-Za-z'.-]+){1,5}?`;
+const PERSON_CAPTURE = String.raw`[A-Z][A-Za-z'.-]+(?:[^\S\n]+(?!as\b|to\b|and\b|the\b|its\b|their\b|new\b|first\b|next\b|interim\b|co[-\s])[A-Z][A-Za-z'.-]+){1,5}?`;
 
 const LEADERSHIP_EVENT_PATTERN = new RegExp(
   [
@@ -1154,7 +1154,10 @@ export function extractExplicitSecurityIncidentCandidates(
  * "layoffs loom" with no date is not an event; a paragraph that says "on
  * 4 March Acme laid off 120 staff" is.
  */
-const COMPANY_CAPTURE = String.raw`(?<company>[A-Z][A-Za-z0-9&'.-]*(?:\s+[A-Z][A-Za-z0-9&'.-]*){0,5})`;
+/* `\s+` spans newlines, so a headline repeated as the first body line was
+ * captured whole: "Alloy Enterprises\n\nAlloy Enterprises". A name does not
+ * cross a line break. */
+const COMPANY_CAPTURE = String.raw`(?<company>[A-Z][A-Za-z0-9&'.-]*(?:[^\S\n]+[A-Z][A-Za-z0-9&'.-]*){0,5})`;
 
 const WORKFORCE_REDUCTION_PATTERN = new RegExp(
   String.raw`\b${COMPANY_CAPTURE}\s+(?:has\s+|had\s+|is\s+|will\s+|to\s+)?(?<verb>laid off|lays off|lay off|laying off|cut|cuts|cutting|is cutting|slashed|slashes|eliminated|eliminates|reduced|reduces|is reducing|froze|freezes|has frozen|paused|pauses|has paused)\s+(?:its\s+|their\s+|the\s+|about\s+|around\s+|roughly\s+|nearly\s+|over\s+|up to\s+)?(?<detail>\d[\d,]*%?\s+(?:of its\s+|of their\s+)?(?:jobs|roles|positions|staff|employees|workers|people|workforce)|(?:its\s+|their\s+)?(?:workforce|headcount|hiring|all hiring|new hiring|recruitment))\b`,
@@ -1227,12 +1230,26 @@ export function extractExplicitAcquiredCandidates(
  * release about nothing, and an event with no size cannot be ranked against
  * another one.
  */
+/**
+ * A company as the subject of a sentence, stopping before the verb.
+ *
+ * These patterns carry the `i` flag for their verbs, which voids every [A-Z]
+ * in them, so a capture meant to take capitalised words alone ran on into the
+ * auxiliary that follows. "Ramp has raised $200M" yielded a company called
+ * "Ramp has" — harmless while the entity check matched prefixes in either
+ * direction, and a rejected fact the moment it stopped.
+ */
+const COMPANY_SUBJECT = String.raw`[A-Z][A-Za-z0-9&'.-]*(?:[^\S\n]+(?!has\b|have\b|had\b|is\b|was\b|were\b|will\b|would\b|to\b|the\b|a\b|an\b|and\b|in\b|of\b|for\b|by\b|at\b|led\b|also\b|just\b|now\b|said\b|announced\b|today\b|raises?\b|raised\b|secures?\b|secured\b|closes?\b|closed\b|funding\b|round\b|investment\b)[A-Z][A-Za-z0-9&'.-]*){0,5}`;
+
+/** First tokens that are never a company name, whatever the pattern matched. */
+const NOT_A_COMPANY_HEAD = /^(?:today|announced|that|has|have|the|a|an|its|their|as|in|on|at|of|for|by|after|amid|this|new|series|seed|pre|round|funding|investment|capital|total|led)$/i;
+
 const MONEY = String.raw`(?:US)?[$€£₹]\s?\d[\d,.]*\s*(?:million|billion|crore|lakh|[MBK]n?)\b|\brs\.?\s?\d[\d,.]*\s*(?:crore|lakh)\b|\b\d[\d,.]*\s*(?:million|billion|crore)\b`;
 const ROUND = String.raw`(?:pre-)?(?:seed|angel|series\s+[A-J](?:\+|\d)?|growth|bridge|strategic|mezzanine|pre-IPO)`;
 
 const FUNDING_EVENT_PATTERN = new RegExp(
   [
-    String.raw`\b(?<company>[A-Z][A-Za-z0-9&'.-]*(?:\s+[A-Z][A-Za-z0-9&'.-]*){0,5})`,
+    String.raw`\b(?<company>${COMPANY_SUBJECT})`,
     String.raw`\s+(?:has\s+|have\s+)?(?<verb>raises|raised|raise|secures|secured|closes|closed|lands|landed|nets|netted|banks|banked|picks up|picked up|gets|got)`,
     String.raw`\s+(?:a\s+|an\s+|its\s+|the\s+|about\s+|around\s+|roughly\s+|nearly\s+|over\s+|up to\s+|another\s+|fresh\s+)*`,
     String.raw`(?<amount>${MONEY})`,
@@ -1247,7 +1264,7 @@ const FUNDING_EVENT_PATTERN = new RegExp(
 const FUNDING_AMOUNT_FIRST_PATTERN = new RegExp(
   [
     String.raw`\b(?<amount>${MONEY})\s+(?<round>${ROUND})?\s*(?:round\s+|funding\s+|investment\s+)?`,
-    String.raw`(?<verb>in|for|to)\s+(?<company>[A-Z][A-Za-z0-9&'.-]*(?:\s+[A-Z][A-Za-z0-9&'.-]*){0,5})\b`,
+    String.raw`(?<verb>in|for|to)\s+(?<company>${COMPANY_SUBJECT})\b`,
   ].join(""),
   "gi",
 );
@@ -1271,7 +1288,7 @@ export function extractExplicitFundingCandidates(
     const company = (match.groups.company ?? "").trim();
     if (!company) continue;
     // Headline connective prose is not a company name.
-    if (/^(?:today|announced|that|has|the|a|an|its|their|as|in|on|after|amid|this|new)$/i.test(company.split(/\s+/)[0] ?? "")) continue;
+    if (NOT_A_COMPANY_HEAD.test(company.split(/\s+/)[0] ?? "")) continue;
     const sentenceEnd = content.slice(match.index).search(/[.!?](?:\s|$)/);
     const eventEnd = sentenceEnd >= 0 ? match.index + sentenceEnd + 1 : match.index + match[0].length;
     const dated = resolveEventDate(content, match.index, eventEnd, publishedAt);

@@ -513,3 +513,25 @@ console.log("PASS event-facts");
   assert.equal(ok.effectiveDate, "2026-08-20", "a year that agrees with the publisher is no contradiction");
   console.log("  ok  a publisher date cannot override a year the text states");
 }
+
+/* Captures that ran past their subject. All three shapes are from real rows. */
+{
+  const id = "eeeeeeee-0000-4000-8000-000000000001";
+  // "Ramp has raised" gave a company called "Ramp has" — harmless while the
+  // entity check matched prefixes both ways, a rejected fact the moment it
+  // stopped, which is exactly what the directional rule does.
+  const [ramp] = e.extractExplicitFundingCandidates(id, "Ramp has raised $200 million in Series E funding led by Founders Fund.", "2026-09-01T00:00:00Z");
+  assert.equal(ramp.structuredValue.company, "Ramp", "the subject stops before the auxiliary");
+  assert.equal(e.extractedNamesSubject(ramp.structuredValue.company, "Ramp"), true);
+
+  // And the amount-first pattern stopped calling the round a company.
+  const all = e.extractExplicitFundingCandidates(id, "Ramp has raised $200 million in Series E funding led by Founders Fund.", "2026-09-01T00:00:00Z");
+  assert.ok(all.every((c) => !/funding|series/i.test(c.structuredValue.company)), "a round is not a company");
+
+  // A headline repeated as the first body line was captured whole, because
+  // \s+ spans newlines: "Alloy Enterprises\n\nAlloy Enterprises".
+  const [alloy] = e.extractExplicitAcquiredCandidates(id, "Johnson Controls acquires Alloy Enterprises\n\nAlloy Enterprises has been acquired by Johnson Controls.", "2026-05-22T00:00:00Z");
+  assert.equal(alloy.structuredValue.company, "Alloy Enterprises", "a name does not cross a line break");
+  assert.equal(e.extractedNamesSubject("Alloy Enterprises", "Alloy"), false, "…and it is still not Alloy");
+  console.log("  ok  a subject capture stops at the verb and at the line break");
+}
