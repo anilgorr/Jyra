@@ -190,6 +190,45 @@ export function parseEmployeeRange(value: string): { min: number; max: number | 
   return { min, max: unbounded ? null : max };
 }
 
+/**
+ * A headcount the source stated as a band, not a number.
+ *
+ * LinkedIn publishes "201-500 employees" and "10,001+ employees", never a
+ * count, and that band is the only headcount this system has for any company
+ * in the launch pool - the firmographics provider that was meant to supply a
+ * number has refused every request the pipeline has made. `numeric("201-500")`
+ * is NaN, so a stated size evaluated as unknown and the seller's mandatory
+ * size criterion could never bite.
+ */
+export function parseStatedBand(value: unknown): { min: number; max: number | null } | null {
+  if (typeof value !== "string") return null;
+  const text = value.replace(/[\u2013\u2014]/g, "-").replace(/,(?=\d{3}\b)/g, "").trim();
+  const open = text.match(/^(\d+)\s*\+$/);
+  if (open) return { min: Number(open[1]), max: null };
+  const bounded = text.match(/^(\d+)\s*-\s*(\d+)$/);
+  if (!bounded) return null;
+  const min = Number(bounded[1]);
+  const max = Number(bounded[2]);
+  return min <= max ? { min, max } : null;
+}
+
+/**
+ * A band against a target range, three ways.
+ *
+ * Wholly inside passes and wholly outside fails, but a band that straddles
+ * the boundary is genuinely undecided - "1,001-5,000" against a target of
+ * 50-2,000 could be either - and this system's rule throughout is that
+ * unknown is not failure. Calling it a fail would disqualify companies on a
+ * coin flip; calling it a pass would admit them the same way.
+ */
+function bandWithin(band: { min: number; max: number | null }, target: { min: number; max: number | null }): CriterionResult {
+  const targetMax = target.max ?? Infinity;
+  const bandMax = band.max ?? Infinity;
+  if (band.min >= target.min && bandMax <= targetMax) return "pass";
+  if (bandMax < target.min || band.min > targetMax) return "fail";
+  return "unknown";
+}
+
 function normalized(value: unknown): string | null {
   return typeof value === "string" && value.trim() ? value.trim().toLowerCase() : null;
 }
@@ -220,10 +259,15 @@ export function evaluateIcpCriterion(
   if (op === "EXISTS") return "pass";
   if (op === "BOOLEAN") return fact === criterion.value ? "pass" : "fail";
   if (op === "BETWEEN") {
-    const value = numeric(fact);
     const range = rangeSchema.safeParse(criterion.value);
-    if (value === null || !range.success) return "unknown";
-    return value >= range.data.min && (range.data.max === null || value <= range.data.max) ? "pass" : "fail";
+    if (!range.success) return "unknown";
+    const value = numeric(fact);
+    if (value !== null) {
+      return value >= range.data.min && (range.data.max === null || value <= range.data.max) ? "pass" : "fail";
+    }
+    const band = parseStatedBand(fact);
+    if (band) return bandWithin(band, range.data);
+    return "unknown";
   }
   if (numericDimensions.has(dimension as (typeof ICP_DIMENSIONS)[number]) &&
     (op === "EQUALS" || op === "NOT_EQUALS")) {

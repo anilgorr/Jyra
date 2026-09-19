@@ -4,6 +4,7 @@ import { PostgresIntelligenceV2Repository } from "../lib/intelligence-v2/reposit
 import { currentQueue } from "../lib/queue";
 import { RESEARCH_COMPANY_QUEUE, queueSettings } from "../lib/queue-policy";
 import { enqueueUnresearched } from "../lib/research-worker";
+import { backfillHeadcountForProject } from "../lib/intelligence-v2/headcount-backfill";
 import { rescoreProject } from "../lib/signal-rescore";
 import { runWatchLoopTick, runWatchLoopUntilCaughtUp, wakeBudgetMs, watchLoopSettings, type TickReport, type WakeReport } from "../lib/intelligence-v2/watch-loop";
 
@@ -139,6 +140,22 @@ router.post("/internal/signals/rescore/:projectId", asyncRoute(async (req, res) 
   if (!expected) return void res.status(404).json({ error: "Not found" });
   if (!watchLoopTokenMatches(req.header("authorization"), expected)) return void res.status(401).json({ error: "Unauthorized" });
   const report = await rescoreProject(String(req.params.projectId), "internal-rescore");
+  res.status(200).json(report);
+}));
+
+/**
+ * Fill in headcounts from pages the project has already paid for.
+ *
+ * Reads stored LinkedIn company evidence, takes the size only from a page
+ * that states the company's own domain, and writes it as a band. Touches no
+ * provider, so it costs nothing and finishes in seconds. Safe to re-run: a
+ * company that already has a headcount is skipped.
+ */
+router.post("/internal/companies/headcount-backfill/:projectId", asyncRoute(async (req, res) => {
+  const expected = process.env.JYRA_WATCH_LOOP_TOKEN;
+  if (!expected) return void res.status(404).json({ error: "Not found" });
+  if (!watchLoopTokenMatches(req.header("authorization"), expected)) return void res.status(401).json({ error: "Unauthorized" });
+  const report = await backfillHeadcountForProject(String(req.params.projectId));
   res.status(200).json(report);
 }));
 

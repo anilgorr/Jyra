@@ -546,7 +546,13 @@ export function calculateOpportunityAssessment(input: OpportunityCalculationInpu
 function companyFacts(company: typeof companiesTable.$inferSelect, facts: typeof companyFactsTable.$inferSelect[]) {
   const text = (types: string[]) => facts.filter((fact) => types.includes(fact.factType)).map((fact) => JSON.stringify(fact.structuredValue)).join(" ");
   return {
-    industry: company.industry, geography: company.country, employee_count: company.employeeCount,
+    industry: company.industry, geography: company.country,
+    /* A stated band when there is no count. LinkedIn publishes "201-500
+     * employees" and never a number, and that band is the only headcount any
+     * company in the pool has; dropping it left a mandatory size criterion
+     * evaluating unknown for all 119. The criterion reads a band three ways -
+     * inside passes, outside fails, straddling stays unknown. */
+    employee_count: company.employeeCount ?? company.employeeRange,
     technology: text(["TECHNOLOGY_MENTION"]), compliance: text(["COMPLIANCE_MENTION", "CERTIFICATION", "TRUST_CENTER_CHANGE"]),
     positive_indicator: text(["FUNDING_EVENT", "COMPANY_EXPANSION", "NEW_MARKET", "EMPLOYEE_GROWTH"]),
     negative_indicator: text(["SECURITY_INCIDENT"]),
