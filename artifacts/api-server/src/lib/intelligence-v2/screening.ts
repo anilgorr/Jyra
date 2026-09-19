@@ -32,6 +32,7 @@ import {
   type SellerOfferingV2,
 } from "./offering-overlap";
 import type { TechnologyCategory } from "./vendor-technographics";
+import { namedCompetitorFor } from "./seller-named-competitors";
 
 export type ScreeningCompany = {
   projectCompanyId: string;
@@ -62,6 +63,8 @@ export type ScreeningPolicy = {
   targetCountries: readonly string[];
   /** Industries the seller itself is in — a company in one is a peer, not a buyer. */
   sellerIndustries: readonly string[];
+  /** Competitors the seller named in their Business Twin. */
+  namedCompetitors?: readonly string[];
 };
 
 export type ScreeningVerdict = "DISQUALIFIED" | "KEEP";
@@ -254,6 +257,14 @@ export function screenCompany(input: ScreeningInput, policy: ScreeningPolicy): S
   if (overlap.length) {
     disqualifiers.push(`Sells what you sell: "${overlap[0]!.phrase}"`);
   }
+
+  /* The cheapest disqualifier there is. A company the seller has named as a
+   * competitor is not a prospect, and screening runs before any research spend,
+   * so recognising it here means never paying to research it at all. */
+  const named = policy.namedCompetitors?.length
+    ? namedCompetitorFor(company.canonicalName, policy.namedCompetitors)
+    : null;
+  if (named) disqualifiers.push(`You named them as a competitor: ${named}`);
 
   if (
     company.industry &&

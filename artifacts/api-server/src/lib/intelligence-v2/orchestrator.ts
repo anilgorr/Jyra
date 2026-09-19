@@ -109,6 +109,9 @@ export async function orchestrateIntelligenceV2(input: {
   context: SellerRelativeContextV2; repository: IntelligenceV2Repository;
   researchInvoker: ResearchInvokerV2; assessmentInvoker?: AssessmentInvokerV2; now?: Date;
   maxExternalResearchCalls?: number; assessmentTimeoutMs?: number;
+  /** Competitors the seller named in their Business Twin. Deliberately outside
+   * the assessment context: it never reaches the model, it decides afterwards. */
+  namedCompetitors?: readonly string[];
   onSemanticAttemptStart?: () => void; onSemanticCost?: (cost: number) => void;
   /** Set when the research invoker carries its own cost callbacks (e.g. onProviderCost) so the run is never shared. */
   observesResearchCost?: boolean;
@@ -137,6 +140,9 @@ async function orchestrateIntelligenceV2Internal(input: {
   context: SellerRelativeContextV2; repository: IntelligenceV2Repository;
   researchInvoker: ResearchInvokerV2; assessmentInvoker?: AssessmentInvokerV2; now?: Date;
   maxExternalResearchCalls?: number; assessmentTimeoutMs?: number;
+  /** Competitors the seller named in their Business Twin. Deliberately outside
+   * the assessment context: it never reaches the model, it decides afterwards. */
+  namedCompetitors?: readonly string[];
   onSemanticAttemptStart?: () => void; onSemanticCost?: (cost: number) => void;
   researchMaxAgeMs?: number;
 }): Promise<IntelligenceV2Result> {
@@ -228,7 +234,10 @@ async function orchestrateIntelligenceV2Internal(input: {
   const semanticValidation = validateAssessmentEvidenceV2(semantic, allEvidence, input.context);
   if (!semanticValidation.ok) throw new Error(`V2_CACHED_ASSESSMENT_INVALID: ${semanticValidation.errors.join("; ")}`);
   semantic = semanticValidation.assessment;
-  const assessment = applySafetyRulesV2({ profile, assessment: semantic, fingerprint: assessmentFingerprint, context: input.context });
+  const assessment = applySafetyRulesV2({
+    profile, assessment: semantic, fingerprint: assessmentFingerprint, context: input.context,
+    companyName: input.request.companyName, namedCompetitors: input.namedCompetitors,
+  });
   const { resolutionType: _resolutionType, deterministicOverrides: _deterministicOverrides, safetyOverrideMetadata: _safetyOverrideMetadata, fingerprint: _fingerprint, ...finalSemantic } = assessment;
   const finalValidation = validateAssessmentEvidenceV2(finalSemantic, allEvidence, input.context);
   if (!finalValidation.ok) throw new Error(`V2_FINAL_ASSESSMENT_INVALID: ${finalValidation.errors.join("; ")}`);

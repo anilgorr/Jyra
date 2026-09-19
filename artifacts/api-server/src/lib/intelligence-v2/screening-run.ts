@@ -12,6 +12,7 @@
  * numbers should still be there when the button is pressed.
  */
 
+import { sellerNamedCompetitors } from "./seller-named-competitors";
 import { and, desc, eq, inArray, sql } from "drizzle-orm";
 import {
   businessTwinVersionsTable,
@@ -80,6 +81,8 @@ export async function screeningPolicyForProject(project: Project): Promise<Scree
      * the same label is a peer, and on the first real import this was the
      * largest single exclusion — 98 of 790. */
     sellerIndustries: sellerIndustry ? [sellerIndustry] : [],
+    /* Read straight off the Twin, where the seller answered the question. */
+    namedCompetitors: sellerNamedCompetitors(rawAnswers.competitorsOrAlternatives ?? interpretation?.competitors_or_alternatives),
   };
 }
 

@@ -244,6 +244,7 @@ export async function runIntelligenceCycle(input: {
       },
       icp: { requirements, assumptions: seller.icpAssumptions },
     },
+    namedCompetitors: seller.context.namedCompetitors,
     repository: input.repository,
     researchInvoker: createProviderRouterResearchInvokerV2(new ProviderRouter(), { country, projectCompanyId }),
     // Recorded per model attempt rather than from the finished run, so a

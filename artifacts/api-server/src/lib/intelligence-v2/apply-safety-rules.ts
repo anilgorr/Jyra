@@ -1,3 +1,4 @@
+import { namedCompetitorFor } from "./seller-named-competitors";
 import { SAFETY_POLICY_VERSION, researchRequirementSchema, type CompanyIntelligenceProfileV2, type FinalAssessmentV2, type SafetyOverrideMetadataV2, type SellerRelativeAssessmentV2, type SafetyOverrideV2, type SellerRelativeContextV2 } from "./schemas";
 
 const POSITIVE_WHO = new Set<SellerRelativeAssessmentV2["who"]["value"]>(["LIKELY_FIT", "POSSIBLE_FIT"]);
@@ -6,6 +7,9 @@ export function applySafetyRulesV2(input: {
   profile: CompanyIntelligenceProfileV2; assessment: SellerRelativeAssessmentV2; fingerprint: string;
   /** Optional ICP context so exclusion criteria are recognised even for cached assessments that predate the `exclusion` flag. */
   context?: Pick<SellerRelativeContextV2, "icp">;
+  /** The company under assessment, and the competitors the seller named. */
+  companyName?: string;
+  namedCompetitors?: readonly string[];
 }): FinalAssessmentV2 {
   const assessment = structuredClone(input.assessment);
   const overrides: SafetyOverrideV2[] = [];
@@ -16,9 +20,39 @@ export function applySafetyRulesV2(input: {
     criterion.exclusion ?? requirements.get(criterion.criterionId)?.exclusion ?? false;
   const cited = (criterion: SellerRelativeAssessmentV2["who"]["criteria"][number]) => criterion.evidenceIds.length > 0 && criterion.claimBindings.length > 0;
   const uniqueBindings = <T extends { claimId: string }>(bindings: T[]) => [...new Map(bindings.map((binding) => [binding.claimId, binding])).values()];
+  /* The seller said so, and nothing was reading it.
+   *
+   * Inferring competition from a company's marketing copy fails on exactly the
+   * companies that matter, because competitors describe what they sell in
+   * deliberately different words: ZoomInfo leads with "GTM Platform", Salesloft
+   * with "predictive revenue system", and neither shares a phrase with the
+   * seller's own capability list. Across a full 119-company run ZoomInfo,
+   * Outreach, Salesloft, Clay and Gong all came back UNKNOWN, and ZoomInfo -
+   * Apollo's largest competitor - was assessed a LIKELY_FIT buyer.
+   *
+   * A seller naming a competitor is a first-party statement of fact about their
+   * own market. It outranks an inference from a stranger's homepage, so it is
+   * applied before the overlap-derived role and cannot be argued out of. */
+  const namedCompetitor = input.companyName && input.namedCompetitors?.length
+    ? namedCompetitorFor(input.companyName, input.namedCompetitors)
+    : null;
+  if (namedCompetitor && assessment.commercialRole.value !== "SELLER_COMPETITOR") {
+    assessment.commercialRole.value = "SELLER_COMPETITOR";
+    assessment.commercialRole.reason = `The seller named ${namedCompetitor} as a competitor in their Business Twin.`;
+    /* Seller-declared, so it carries no company-page citations - the statement
+     * is the evidence, and it lives in the Twin rather than in this company's
+     * evidence set. */
+    assessment.commercialRole.evidenceIds = [];
+    assessment.commercialRole.claimIds = [];
+    assessment.commercialRole.claimBindings = [];
+    overrides.push("SELLER_NAMED_COMPETITOR");
+    metadata.push({ rule: "SELLER_NAMED_COMPETITOR", changed: ["commercialRole"], provenance: "SELLER_DECLARED" });
+  }
   if (assessment.commercialRole.value === "SELLER_COMPETITOR") {
     assessment.who.value = "LIKELY_NOT_FIT";
-    assessment.who.reason = "The cited material substitute is excluded from actionable buyer targeting.";
+    assessment.who.reason = namedCompetitor
+      ? `Excluded from buyer targeting: the seller named ${namedCompetitor} as a competitor.`
+      : "The cited material substitute is excluded from actionable buyer targeting.";
     assessment.who.evidenceIds = [...assessment.commercialRole.evidenceIds];
     assessment.who.claimIds = [...assessment.commercialRole.claimIds];
     assessment.who.claimBindings = assessment.commercialRole.claimBindings.map((binding) => ({

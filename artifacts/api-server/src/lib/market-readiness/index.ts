@@ -877,6 +877,7 @@ export function createMarketReadinessWorkerAdapter(deps: {
         const result = await orchestrateIntelligenceV2({
         request: { organizationId: input.organizationId, projectId: input.projectId, companyId: row.company.id, companyName: row.company.canonicalName, domain: row.company.domain, source: "MARKET_READINESS_CAMPAIGN", firstPartyEvidence: [] },
         context: { organizationId: input.organizationId, projectId: input.projectId, businessTwinVersion: seller.businessTwinVersionId!, offeringVersion: seller.opportunityPackVersionId ?? seller.context.fingerprint, icpVersion: seller.icpVersionId!, sellerBusinessTwin: { rawAnswers: seller.businessTwinRawAnswers, interpretation: seller.businessTwinAiInterpretation }, offering: { name: seller.context.offeringName, description: seller.context.offeringDescription, materialCapabilities: seller.context.offeringCapabilities, exclusions: seller.context.offeringExclusions }, icp: { requirements: icpCriteriaToRequirementsV2(criteria), assumptions: seller.icpAssumptions } },
+        namedCompetitors: seller.context.namedCompetitors,
         repository,
         maxExternalResearchCalls: MARKET_READINESS_V2_MAX_EXTERNAL_CALLS,
           assessmentTimeoutMs: 90_000,

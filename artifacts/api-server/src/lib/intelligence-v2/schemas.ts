@@ -222,6 +222,8 @@ export type ResearchPackageV2 = {
 };
 
 export type SafetyOverrideV2 =
+  /** The seller named this company as a competitor in their Business Twin. */
+  | "SELLER_NAMED_COMPETITOR"
   | "COMMERCIAL_ROLE_EXCLUSION"
   | "MANDATORY_CRITERION_FAILURE"
   | "EXCLUSION_MATCH"
@@ -231,7 +233,8 @@ export type SafetyOverrideV2 =
 export type SafetyOverrideMetadataV2 = {
   rule: SafetyOverrideV2;
   changed: Array<"commercialRole" | "who">;
-  provenance: "PRESERVED" | "EVIDENCE_FREE_ABSTENTION";
+  /** SELLER_DECLARED: the seller's own statement, which carries no company-page citations. */
+  provenance: "PRESERVED" | "EVIDENCE_FREE_ABSTENTION" | "SELLER_DECLARED";
 };
 
 export type FinalAssessmentV2 = SellerRelativeAssessmentV2 & {

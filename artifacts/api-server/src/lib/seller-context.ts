@@ -1,3 +1,4 @@
+import { sellerNamedCompetitors } from "./intelligence-v2/seller-named-competitors";
 import { createHash } from "node:crypto";
 import { and, desc, eq } from "drizzle-orm";
 import {
@@ -31,6 +32,8 @@ export type SellerContext = {
   offeringDescription: string | null;
   offeringCapabilities: string[];
   offeringExclusions: string[];
+  /** Competitors the seller named in the Business Twin, vendors only. */
+  namedCompetitors: string[];
   source: "INTELLIGENCE_PACK" | "BUSINESS_TWIN" | "NONE";
   fingerprint: string;
 };
@@ -170,6 +173,9 @@ export function assembleSellerContext(input: {
       raw.offeringCapabilities ?? interpretation.offering_capabilities ?? raw.problemsSolved ?? raw.majorDifferentiators,
     ),
     offeringExclusions: usePack ? list(offering.exclusions ?? offering.offeringExclusions) : list(raw.offeringExclusions ?? interpretation.offering_exclusions),
+    /* Always from the Twin, never from a pack: the seller answered this
+     * question themselves and a generated pack has no better source for it. */
+    namedCompetitors: sellerNamedCompetitors(raw.competitorsOrAlternatives ?? interpretation.competitors_or_alternatives),
     source: usePack ? "INTELLIGENCE_PACK" : input.twin ? "BUSINESS_TWIN" : "NONE",
   };
   return { ...context, fingerprint: fingerprint(context) };
