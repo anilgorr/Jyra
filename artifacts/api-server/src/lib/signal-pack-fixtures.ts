@@ -75,15 +75,77 @@ const definition = (
  * is 180 days: a layoff stops mattering sooner than a breach, but not in a
  * quarter. minimumConfidence 80 because a false negative costs a real lead.
  */
-const NEGATIVE_DEFINITIONS: FixtureDefinition[] = [
-  definition("WORKFORCE_REDUCTION", "Layoffs or hiring freeze", "NEGATIVE", ["WORKFORCE_REDUCTION"], [-80, -85, -30], {
-    polarity: "NEGATIVE", defaultStrength: 85, minimumConfidence: 80, lifetimeDays: 180,
-    description: "The company is cutting staff or has frozen hiring. Budgets are closing, not opening.",
+const NEGATIVE_WORKFORCE_REDUCTION = definition("WORKFORCE_REDUCTION", "Layoffs or hiring freeze", "NEGATIVE", ["WORKFORCE_REDUCTION"], [-80, -85, -30], {
+  polarity: "NEGATIVE", defaultStrength: 85, minimumConfidence: 80, lifetimeDays: 180,
+  description: "The company is cutting staff or has frozen hiring. Budgets are closing, not opening.",
+});
+
+const NEGATIVE_ACQUIRED = definition("ACQUIRED", "Acquired or merging", "NEGATIVE", ["ACQUIRED"], [-60, -90, -40], {
+  polarity: "NEGATIVE", defaultStrength: 80, minimumConfidence: 80, lifetimeDays: 180,
+  description: "The company has been bought or is merging. Purchasing decisions move to the new owner.",
+});
+
+const NEGATIVE_DEFINITIONS: FixtureDefinition[] = [NEGATIVE_WORKFORCE_REDUCTION, NEGATIVE_ACQUIRED];
+
+/**
+ * What a seller of sales tooling should read into these facts.
+ *
+ * Authored because none of the packs above fits one. The nearest, the digital
+ * marketing agency, weights funding and hiring within two points of each other
+ * (need 72 both ways), and that flattening is the thing to avoid: a funding
+ * round is a company deciding to grow aggressively, while an open sales role
+ * can be replacing somebody who left. Funding therefore sits materially above
+ * hiring here, and hiring earns its keep through specificity - an SDR req and
+ * an accelerating sales headcount say far more than a generic opening.
+ *
+ * The layoff definition is deliberately not the shared one. At need -80 and
+ * timing -85 the shared rule suppresses a company outright, and for THIS
+ * seller that is the wrong reading: cost pressure is what makes a company
+ * consolidate three point tools into one platform, which is a purchase. So it
+ * discounts rather than vetoes. ZoomInfo cut 600 people and is running 102
+ * open roles; that combination is a consolidation story, not an absence of
+ * need. Being ACQUIRED still suppresses, because the budget genuinely moves to
+ * a new owner.
+ */
+const B2B_SAAS_REVENUE_DEFINITIONS: FixtureDefinition[] = [
+  definition("SAAS_FUNDING_ROUND", "Funding round closed", "FUNDING", ["FUNDING_EVENT"], [88, 92, 72], {
+    defaultStrength: 88, lifetimeDays: 120,
+    description: "The company has raised capital. Fresh money becomes headcount, and new revenue headcount chooses tools.",
   }),
-  definition("ACQUIRED", "Acquired or merging", "NEGATIVE", ["ACQUIRED"], [-60, -90, -40], {
-    polarity: "NEGATIVE", defaultStrength: 80, minimumConfidence: 80, lifetimeDays: 180,
-    description: "The company has been bought or is merging. Purchasing decisions move to the new owner.",
+  definition("SAAS_NEW_REVENUE_LEADER", "New revenue leader", "LEADERSHIP", ["LEADERSHIP_CHANGE"], [84, 90, 80], {
+    defaultStrength: 86, lifetimeDays: 120,
+    matchAny: ["\\bcro\\b", "chief revenue officer", "\\bcmo\\b", "chief marketing officer",
+      "(?:vp|vice president|head)[^\"]{0,20}(?:sales|revenue|growth|demand gen)", "sales development"],
+    description: "A new revenue, marketing or sales leader. They rebuild the stack in their first two quarters, which is the window.",
   }),
+  definition("SAAS_SDR_HIRING", "Outbound team hiring", "HIRING", ["JOB_OPENING"], [76, 80, 82], {
+    defaultStrength: 78,
+    matchAny: ["\\bsdr\\b", "\\bbdr\\b", "sales development", "business development representative", "outbound"],
+    description: "Open outbound roles. The most direct statement a company makes that it is building the motion this seller equips.",
+  }),
+  definition("SAAS_SALES_HIRING_ACCELERATION", "Sales hiring accelerating", "HIRING", ["HIRING_COUNT"], [80, 84, 76], {
+    defaultStrength: 82, mode: "increasing_count", minFacts: 2,
+    matchAny: ["sales", "revenue", "account executive", "\\bsdr\\b", "\\bbdr\\b"],
+    description: "Sales headcount rising across observations. An accelerating count is a decision, where a single opening may be a backfill.",
+  }),
+  definition("SAAS_REVENUE_TEAM_HIRING", "Revenue team hiring", "HIRING", ["JOB_OPENING"], [58, 62, 70], {
+    defaultStrength: 65,
+    matchAny: ["account executive", "enterprise sales", "sales manager", "revenue operations", "\\brevops\\b", "sales enablement"],
+    description: "Open quota-carrying or revenue-operations roles. Real, but routine enough that it ranks below funding and below outbound hiring.",
+  }),
+  definition("SAAS_GTM_LEADERSHIP_CHANGE", "Other leadership change", "LEADERSHIP", ["LEADERSHIP_CHANGE"], [50, 66, 56], {
+    defaultStrength: 62, lifetimeDays: 90,
+    description: "A leadership change outside the revenue org. Weaker: a new CTO reshapes engineering tooling, not the sales stack.",
+  }),
+  definition("SAAS_MARKET_EXPANSION", "New market or geography", "EXPANSION", ["NEW_MARKET", "COMPANY_EXPANSION"], [72, 80, 70], {
+    defaultStrength: 74,
+    description: "Entering a new market means target lists that do not exist yet, which is the work this seller removes.",
+  }),
+  definition("WORKFORCE_REDUCTION", "Layoffs", "NEGATIVE", ["WORKFORCE_REDUCTION"], [-28, -38, -12], {
+    polarity: "NEGATIVE", defaultStrength: 60, minimumConfidence: 80, lifetimeDays: 90,
+    description: "The company is cutting staff. A discount rather than a veto: cost pressure is also what drives consolidation onto one platform, and a company can cut in one place while hiring reps in another.",
+  }),
+  NEGATIVE_ACQUIRED,
 ];
 
 const CYBER_DEFINITIONS: FixtureDefinition[] = [
@@ -152,6 +214,14 @@ export const MANAGED_SOC_SECURITY_COMPLIANCE_ACTIVITY_DEFINITION = definition(
 );
 
 export const SIGNAL_PACK_FIXTURES: PackFixture[] = [
+  {
+    slug: "b2b-saas-revenue-tools",
+    name: "B2B SaaS revenue tooling",
+    description: "Sales intelligence and engagement sold to B2B SaaS revenue teams: funding and revenue-leadership change over routine hiring, with layoffs discounted rather than disqualifying.",
+    version: "1.0",
+    applicableContext: { offeringFamily: "b2b-saas-revenue-tools" },
+    definitions: B2B_SAAS_REVENUE_DEFINITIONS,
+  },
   {
     slug: "cybersecurity",
     name: "Cybersecurity sample",
