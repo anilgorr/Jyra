@@ -239,7 +239,9 @@ async function orchestrateIntelligenceV2Internal(input: {
     companyName: input.request.companyName, namedCompetitors: input.namedCompetitors,
   });
   const { resolutionType: _resolutionType, deterministicOverrides: _deterministicOverrides, safetyOverrideMetadata: _safetyOverrideMetadata, fingerprint: _fingerprint, ...finalSemantic } = assessment;
-  const finalValidation = validateAssessmentEvidenceV2(finalSemantic, allEvidence, input.context);
+  const finalValidation = validateAssessmentEvidenceV2(finalSemantic, allEvidence, input.context, {
+    sellerDeclaredCompetitor: assessment.deterministicOverrides.includes("SELLER_NAMED_COMPETITOR"),
+  });
   if (!finalValidation.ok) throw new Error(`V2_FINAL_ASSESSMENT_INVALID: ${finalValidation.errors.join("; ")}`);
   const modelTokens = typeof usage?.total_tokens === "number" && Number.isFinite(usage.total_tokens) ? usage.total_tokens : 0;
   return {

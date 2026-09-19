@@ -39,12 +39,16 @@ export function applySafetyRulesV2(input: {
   if (namedCompetitor && assessment.commercialRole.value !== "SELLER_COMPETITOR") {
     assessment.commercialRole.value = "SELLER_COMPETITOR";
     assessment.commercialRole.reason = `The seller named ${namedCompetitor} as a competitor in their Business Twin.`;
-    /* Seller-declared, so it carries no company-page citations - the statement
-     * is the evidence, and it lives in the Twin rather than in this company's
-     * evidence set. */
-    assessment.commercialRole.evidenceIds = [];
-    assessment.commercialRole.claimIds = [];
-    assessment.commercialRole.claimBindings = [];
+    /* The citations stay exactly as the model left them. They establish which
+     * company this is; the seller's statement is what establishes that it
+     * competes, and that lives in the Twin rather than in this company's
+     * evidence set.
+     *
+     * Clearing them was the first attempt and it failed the run it was built
+     * for: the final validation re-checks the assessment, a non-UNKNOWN role
+     * must cite something, and ZoomInfo, Outreach and Salesloft all died at
+     * V2_FINAL_ASSESSMENT_INVALID - the exact three companies this rule
+     * exists to catch. */
     overrides.push("SELLER_NAMED_COMPETITOR");
     metadata.push({ rule: "SELLER_NAMED_COMPETITOR", changed: ["commercialRole"], provenance: "SELLER_DECLARED" });
   }

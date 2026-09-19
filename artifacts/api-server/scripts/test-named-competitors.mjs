@@ -46,16 +46,16 @@ check("matching is stricter than elsewhere, because a false match deletes a pros
   assert.equal(n.namedCompetitorFor("Miro", ["Lusha", "ZoomInfo"]), null);
 });
 
-const PROFILE = { identity: { status: "RESOLVED", confidence: "HIGH" } };
+const PROFILE = { identity: { status: "RESOLVED", confidence: 0.9 } };
 
 const baseAssessment = () => ({
-  commercialRole: { value: "POTENTIAL_BUYER", confidence: "HIGH", reason: "Looks like a buyer.",
+  commercialRole: { value: "POTENTIAL_BUYER", confidence: 0.8, reason: "Looks like a buyer.",
     evidenceIds: ["ev-1"], claimIds: ["ev-1:biz"],
     claimBindings: [{ claimId: "ev-1:biz", claimedValue: "GTM platform", purpose: "ROLE", relation: "SUPPORTS_ROLE" }] },
-  who: { value: "LIKELY_FIT", confidence: "HIGH", reason: "Fits.", evidenceIds: ["ev-1"], claimIds: ["ev-1:biz"],
+  who: { value: "LIKELY_FIT", confidence: 0.8, reason: "Fits.", evidenceIds: ["ev-1"], claimIds: ["ev-1:biz"],
     claimBindings: [{ claimId: "ev-1:biz", claimedValue: "GTM platform", purpose: "WHO", relation: "SUPPORTS_WHO" }],
     criteria: [] },
-  uncertainties: [], assessmentConfidence: "HIGH",
+  uncertainties: [], assessmentConfidence: 0.8,
 });
 
 check("a seller-named competitor is excluded however the model read its website", () => {
@@ -70,8 +70,8 @@ check("a seller-named competitor is excluded however the model read its website"
   assert.match(out.who.reason, /named ZoomInfo as a competitor/);
   assert.ok(out.deterministicOverrides.includes("SELLER_NAMED_COMPETITOR"));
   assert.ok(out.deterministicOverrides.includes("COMMERCIAL_ROLE_EXCLUSION"));
-  assert.deepEqual(out.commercialRole.claimBindings, [],
-    "seller-declared, so it carries no company-page citations");
+  assert.deepEqual(out.commercialRole.claimBindings, baseAssessment().commercialRole.claimBindings,
+    "the model's citations stay: they establish which company this is");
   assert.equal(out.safetyOverrideMetadata.find((m) => m.rule === "SELLER_NAMED_COMPETITOR").provenance, "SELLER_DECLARED");
 
   // A company the seller did not name is untouched.
@@ -106,6 +106,35 @@ check("screening disqualifies a named competitor before any research is paid for
   assert.equal(competitor.verdict, "DISQUALIFIED");
   assert.ok(competitor.disqualifiers.some((d) => /You named them as a competitor: ZoomInfo/.test(d)));
   assert.equal(n.screenCompany(input("Miro"), policy).verdict, "KEEP");
+});
+
+check("the override survives the final re-validation it originally broke", () => {
+  // Clearing the citations was the first attempt, and it failed on exactly the
+  // three companies the rule exists for. The orchestrator re-validates after
+  // safety rules: a non-UNKNOWN role must cite something, and a SELLER_COMPETITOR
+  // normally needs a MATERIAL_SUBSTITUTE binding on an OFFERING_OVERLAP claim.
+  // ZoomInfo, Outreach and Salesloft all died at V2_FINAL_ASSESSMENT_INVALID.
+  const evidence = [{
+    evidenceId: "ev-1", organizationId: "org-a", projectId: "p", companyId: "c-zoominfo",
+    sourceType: "FIRST_PARTY_WEBSITE", provider: "fixture", url: "https://zoominfo.example",
+    finalUrl: "https://zoominfo.example", observedAt: "2026-09-19T00:00:00.000Z",
+    rawSnippet: "ZoomInfo is a go-to-market platform.", firstParty: true, confidence: 0.9, version: "v1",
+    atomicClaims: [{ claimId: "ev-1:biz", type: "PRIMARY_BUSINESS", value: "GTM platform" }],
+    claims: { primaryBusiness: "ZoomInfo is a go-to-market platform." },
+  }];
+  const final = n.applySafetyRulesV2({
+    profile: PROFILE, assessment: baseAssessment(), fingerprint: "f",
+    companyName: "ZoomInfo", namedCompetitors: ["ZoomInfo"],
+  });
+  const { resolutionType, deterministicOverrides, safetyOverrideMetadata, fingerprint, ...semantic } = final;
+
+  const strict = n.validateAssessmentEvidenceV2(semantic, evidence, { icp: { requirements: [] } });
+  assert.equal(strict.ok, false, "without the exemption a seller-declared competitor is rejected");
+  assert.ok(strict.errors.some((e) => /material-substitutability/.test(e)));
+
+  const exempt = n.validateAssessmentEvidenceV2(semantic, evidence, { icp: { requirements: [] } },
+    { sellerDeclaredCompetitor: deterministicOverrides.includes("SELLER_NAMED_COMPETITOR") });
+  assert.equal(exempt.ok, true, "with it, the assessment stands");
 });
 
 console.log(`\nnamed competitors: ${checks} checks passed`);

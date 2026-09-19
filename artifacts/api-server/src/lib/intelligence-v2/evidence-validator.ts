@@ -163,7 +163,15 @@ export function normalizeAssessmentEvidenceV2(
   return assessment;
 }
 
-export function validateAssessmentEvidenceV2(value: unknown, evidence: EvidenceItemV2[], context?: Pick<SellerRelativeContextV2, "icp">): EvidenceValidationResult {
+export function validateAssessmentEvidenceV2(
+  value: unknown,
+  evidence: EvidenceItemV2[],
+  context?: Pick<SellerRelativeContextV2, "icp">,
+  /** The role came from the seller naming this company, not from overlap
+   * detection, so there is no offering-overlap claim to demand. The seller's
+   * statement is the evidence and it is not in this company's evidence set. */
+  options?: { sellerDeclaredCompetitor?: boolean },
+): EvidenceValidationResult {
   const parsed = assessmentSchema.safeParse(value);
   if (!parsed.success) return { ok: false, errors: parsed.error.issues.map((issue) => issue.message) };
   const errors: string[] = [];
@@ -211,7 +219,7 @@ export function validateAssessmentEvidenceV2(value: unknown, evidence: EvidenceI
   bindingsValid("who", parsed.data.who.claimBindings, parsed.data.who.claimIds, parsed.data.who.evidenceIds, ["SUPPORTS_WHO", "SATISFIES_CRITERION", "FAILS_CRITERION"]);
   if (parsed.data.commercialRole.value !== "UNKNOWN" && !parsed.data.commercialRole.claimBindings.length) errors.push("commercialRole has no compatible binding");
   if (parsed.data.who.value !== "INSUFFICIENT_DATA" && !parsed.data.who.claimBindings.length) errors.push("who has no compatible binding");
-  if (parsed.data.commercialRole.value === "SELLER_COMPETITOR" && !parsed.data.commercialRole.claimBindings.some((binding) => binding.relation === "MATERIAL_SUBSTITUTE" && claims.get(binding.claimId)?.type === "OFFERING_OVERLAP")) errors.push("competitor lacks material-substitutability overlap binding");
+  if (!options?.sellerDeclaredCompetitor && parsed.data.commercialRole.value === "SELLER_COMPETITOR" && !parsed.data.commercialRole.claimBindings.some((binding) => binding.relation === "MATERIAL_SUBSTITUTE" && claims.get(binding.claimId)?.type === "OFFERING_OVERLAP")) errors.push("competitor lacks material-substitutability overlap binding");
   const requirements = context && Array.isArray(context.icp.requirements)
     ? context.icp.requirements.map((item) => researchRequirementSchema.safeParse(item)).filter((item) => item.success).map((item) => item.data)
     : null;
