@@ -82,4 +82,31 @@ check("the five existing packs keep the strict shared layoff rule", () => {
   assert.equal(pack.definitions.filter((d) => d.factTypes.includes("WORKFORCE_REDUCTION")).length, 1);
 });
 
+check("confidence floors match what the evidence arithmetic actually produces", () => {
+  // Measured on the launch pool. A single third-party report lands near 55
+  // however fresh — Temporal's $550M at three days old scored 55.8, Clay 55.1,
+  // Zendesk's CMO 56.3 — and only multi-source corroboration passes 60, which
+  // Whatfix reached at 66.8 on six outlets. The inherited floor of 60 fired
+  // nothing at all from 27 funding facts and 9 layoffs.
+  for (const code of ["SAAS_FUNDING_ROUND", "SAAS_NEW_REVENUE_LEADER", "SAAS_GTM_LEADERSHIP_CHANGE"]) {
+    const d = by(code);
+    assert.ok(d.minimumConfidence <= 50, `${code} must admit one fresh credible report (${d.minimumConfidence})`);
+    assert.ok(d.minimumConfidence >= 45, `${code} must still exclude a four-month-old round decayed into the low 40s`);
+  }
+
+  // A negative that only discounts inverts the usual caution. Withholding it
+  // over-ranks a company that is visibly cutting staff, so its floor is the
+  // lowest in the pack — and the shared 80 admitted none of the 9 layoff facts,
+  // which top out at 43.
+  const layoff = by("WORKFORCE_REDUCTION");
+  assert.ok(layoff.minimumConfidence < 45, `a discount must actually apply (${layoff.minimumConfidence})`);
+  assert.ok(layoff.minimumConfidence < by("SAAS_FUNDING_ROUND").minimumConfidence,
+    "an adjustment needs less proof than a claim");
+
+  // Hiring comes off ATS boards and scores 85 to 91, so it keeps the default.
+  for (const code of ["SAAS_SDR_HIRING", "SAAS_REVENUE_TEAM_HIRING", "SAAS_SALES_HIRING_ACCELERATION"]) {
+    assert.equal(by(code).minimumConfidence, 60, `${code} reads first-party ATS data and needs no relief`);
+  }
+});
+
 console.log(`\nb2b saas pack: ${checks} checks passed`);

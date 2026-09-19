@@ -98,6 +98,20 @@ const NEGATIVE_DEFINITIONS: FixtureDefinition[] = [NEGATIVE_WORKFORCE_REDUCTION,
  * hiring here, and hiring earns its keep through specificity - an SDR req and
  * an accelerating sales headcount say far more than a generic opening.
  *
+ * Confidence floors are set per definition, against what the evidence
+ * arithmetic actually produces rather than the 60 every other pack inherits.
+ * Measured on this pool: a single third-party report lands near 55 however
+ * fresh it is - Temporal's $550M three days old scored 55.8, Clay's 55.1,
+ * Zendesk's new CMO 56.3 - and only multi-source corroboration lifts it over
+ * 60, which Whatfix reached at 66.8 on six outlets. A floor of 60 therefore
+ * discards a credible, days-old funding round because only one publication
+ * covered it, and that is not a judgement anyone would make on purpose.
+ * Layoffs top out lower still, at 43.
+ *
+ * So positives sit at 50: enough to admit one fresh credible report, and
+ * enough to keep out the four-month-old rounds, which decay to the low 40s
+ * once freshness is applied. Age is handled by the arithmetic, not the floor.
+ *
  * The layoff definition is deliberately not the shared one. At need -80 and
  * timing -85 the shared rule suppresses a company outright, and for THIS
  * seller that is the wrong reading: cost pressure is what makes a company
@@ -109,11 +123,11 @@ const NEGATIVE_DEFINITIONS: FixtureDefinition[] = [NEGATIVE_WORKFORCE_REDUCTION,
  */
 const B2B_SAAS_REVENUE_DEFINITIONS: FixtureDefinition[] = [
   definition("SAAS_FUNDING_ROUND", "Funding round closed", "FUNDING", ["FUNDING_EVENT"], [88, 92, 72], {
-    defaultStrength: 88, lifetimeDays: 120,
+    defaultStrength: 88, lifetimeDays: 120, minimumConfidence: 50,
     description: "The company has raised capital. Fresh money becomes headcount, and new revenue headcount chooses tools.",
   }),
   definition("SAAS_NEW_REVENUE_LEADER", "New revenue leader", "LEADERSHIP", ["LEADERSHIP_CHANGE"], [84, 90, 80], {
-    defaultStrength: 86, lifetimeDays: 120,
+    defaultStrength: 86, lifetimeDays: 120, minimumConfidence: 50,
     matchAny: ["\\bcro\\b", "chief revenue officer", "\\bcmo\\b", "chief marketing officer",
       "(?:vp|vice president|head)[^\"]{0,20}(?:sales|revenue|growth|demand gen)", "sales development"],
     description: "A new revenue, marketing or sales leader. They rebuild the stack in their first two quarters, which is the window.",
@@ -134,15 +148,21 @@ const B2B_SAAS_REVENUE_DEFINITIONS: FixtureDefinition[] = [
     description: "Open quota-carrying or revenue-operations roles. Real, but routine enough that it ranks below funding and below outbound hiring.",
   }),
   definition("SAAS_GTM_LEADERSHIP_CHANGE", "Other leadership change", "LEADERSHIP", ["LEADERSHIP_CHANGE"], [50, 66, 56], {
-    defaultStrength: 62, lifetimeDays: 90,
+    defaultStrength: 62, lifetimeDays: 90, minimumConfidence: 50,
     description: "A leadership change outside the revenue org. Weaker: a new CTO reshapes engineering tooling, not the sales stack.",
   }),
   definition("SAAS_MARKET_EXPANSION", "New market or geography", "EXPANSION", ["NEW_MARKET", "COMPANY_EXPANSION"], [72, 80, 70], {
-    defaultStrength: 74,
+    defaultStrength: 74, minimumConfidence: 50,
     description: "Entering a new market means target lists that do not exist yet, which is the work this seller removes.",
   }),
   definition("WORKFORCE_REDUCTION", "Layoffs", "NEGATIVE", ["WORKFORCE_REDUCTION"], [-28, -38, -12], {
-    polarity: "NEGATIVE", defaultStrength: 60, minimumConfidence: 80, lifetimeDays: 90,
+    /* 35, not the shared 80. That floor exists because a false NEGATIVE costs a
+     * real lead - true when the signal vetoes. This one only discounts, so
+     * demanding strong evidence before applying it means the default is to
+     * over-rank a company that is visibly cutting staff. For an adjustment the
+     * cautious direction is to apply it, not to withhold it. Layoff facts here
+     * score 38 to 43, so 80 admitted none of them at all. */
+    polarity: "NEGATIVE", defaultStrength: 60, minimumConfidence: 35, lifetimeDays: 90,
     description: "The company is cutting staff. A discount rather than a veto: cost pressure is also what drives consolidation onto one platform, and a company can cut in one place while hiring reps in another.",
   }),
   NEGATIVE_ACQUIRED,
