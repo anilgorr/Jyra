@@ -136,15 +136,19 @@ export async function evaluateSignalsForCompany(input: { organizationId: string;
     .where(and(eq(projectCompaniesTable.projectId, input.projectId), eq(projectCompaniesTable.companyId, input.companyId)));
   if (!membership || ["SELLER_COMPETITOR", "ADJACENT_VENDOR"].includes(membership.buyerRole)) {
     await stampEvaluated();
-    return { packs: [], created: [], total: 0 };
+    return { packs: [], created: [], total: 0, outcome: "ROLE_EXCLUDED" as const };
   }
   const selections = await executor.select().from(projectSignalPacksTable).where(and(
     eq(projectSignalPacksTable.projectId, input.projectId),
     eq(projectSignalPacksTable.active, true),
   ));
   if (!selections.length) {
+    /* No pack, and the caller must be able to tell that from "a pack ran and
+     * nothing fired". They were the same empty result, which is how a project
+     * with no pack produced 119 researched companies, zero signals and a
+     * sixteen-way tie without anything saying why. */
     await stampEvaluated();
-    return { packs: [], created: [], total: 0 };
+    return { packs: [], created: [], total: 0, outcome: "NO_ACTIVE_PACK" as const };
   }
   const facts = await selectAcceptedFactsForCompany(input.companyId, executor);
   const created = [];
@@ -279,7 +283,7 @@ export async function evaluateSignalsForCompany(input: { organizationId: string;
     await executor.update(signalsTable).set({ currentStrength: strength.currentStrength, status: strength.status, lastEvaluatedAt: now, updatedAt: now }).where(eq(signalsTable.id, row.signal.id));
   }
   await stampEvaluated();
-  return { packs, created, total: existing.length };
+  return { packs, created, total: existing.length, outcome: "EVALUATED" as const };
 }
 
 export async function refreshProjectSignalDecay(projectId: string, now = new Date()) {

@@ -112,5 +112,31 @@ check("the launch pool's number one no longer leads", () => {
   assert.ok(clay.score < temporal.score, `undecided ${clay.score} still outranks confirmed ${temporal.score}`);
 });
 
+// A project with no signal pack is not producing a ranking, and must not
+// look like one. The launch project ran 119 full research cycles in exactly
+// that state: no pack meant no signal definitions, so no signal could fire,
+// so Need and Timing were null for every company and the score collapsed to
+// Fit alone - a sixteen-way tie at 33.3 with LIKELY_NOT_FIT companies in the
+// top ten. Nothing said why, because "no pack" and "nothing fired" were the
+// same empty result.
+check("a project with no signal pack cannot present a ranking", () => {
+  const ranked = h.calculateOpportunityAssessment(base({ commercialRole: "POTENTIAL_BUYER" }));
+  assert.ok(["RISING", "SURGING"].includes(ranked.state), `fixture should be strong; was ${ranked.state}`);
+  const unranked = h.calculateOpportunityAssessment(base({ commercialRole: "POTENTIAL_BUYER", signalPackActive: false }));
+  assert.ok(!["EMERGING", "RISING", "SURGING", "ACTIVE"].includes(unranked.state), `state was ${unranked.state}`);
+  assert.ok(
+    unranked.gates.some((gate) => /no signal pack/i.test(gate)),
+    `the reason was not recorded: ${JSON.stringify(unranked.gates)}`,
+  );
+});
+
+check("a caller that did not check the pack is not gated", () => {
+  // Undefined means unknown, not absent. Older callers keep their behaviour.
+  const unchecked = h.calculateOpportunityAssessment(base({ commercialRole: "POTENTIAL_BUYER" }));
+  const present = h.calculateOpportunityAssessment(base({ commercialRole: "POTENTIAL_BUYER", signalPackActive: true }));
+  assert.equal(unchecked.state, present.state);
+  assert.equal(unchecked.gates.length, present.gates.length);
+});
+
 if (failures) { console.error(`\n${failures} check(s) failed`); process.exit(1); }
 console.log("\ncommercial role ranking: all checks passed");

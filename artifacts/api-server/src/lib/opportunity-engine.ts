@@ -16,6 +16,7 @@ import {
   opportunityScoreComponentsTable,
   opportunitiesTable,
   projectCompaniesTable,
+  projectSignalPacksTable,
   signalClustersTable,
   signalDefinitionsTable,
   signalsTable,
@@ -119,6 +120,13 @@ export type OpportunityCalculationInput = {
    * applied.
    */
   commercialRole?: string | null;
+  /**
+   * Whether the project has an active signal pack. False means Need and
+   * Timing are not merely unmeasured but unmeasurable: no definition exists
+   * that could fire. Undefined means the caller did not check, and nothing
+   * is gated.
+   */
+  signalPackActive?: boolean;
   previous?: { state: OpportunityAssessmentState; score: number | null; timingScore: number | null } | null;
 };
 
@@ -506,6 +514,25 @@ export function calculateOpportunityAssessment(input: OpportunityCalculationInpu
     state = capState(state, "EMERGING");
     gates.push("Fit is unverified; ranked on a neutral Fit because a real event was found");
   }
+  /* No signal pack, no ranking.
+   *
+   * A project with no active pack has no signal definitions, so no signal can
+   * ever fire, so Need and Timing are null for every company and the score
+   * collapses to Fit alone. The launch project ran 119 full research cycles
+   * in that state and produced a sixteen-way tie at 33.3 with companies the
+   * engine had judged LIKELY_NOT_FIT in the top ten. Nothing anywhere said
+   * why: evaluateSignalsForCompany returned empty and stamped the company as
+   * evaluated, which is indistinguishable from "evaluated, nothing fired".
+   *
+   * This is not "needs more research" - more research cannot help, because
+   * there is nothing to interpret the facts with. So the state is capped and
+   * the reason is named, which is the difference between a customer seeing a
+   * bad list and a customer seeing that their project is not ready.
+   */
+  if (input.signalPackActive === false) {
+    state = capState(state, "WATCH");
+    gates.push("No signal pack is active for this project, so Need and Timing cannot be measured and this is not a ranking");
+  }
   /* A company whose commercial role could not be decided may still be a real
    * opportunity, so it stays on the list - but it must not present as a
    * top-of-list account while nobody knows whether it is a buyer or a
@@ -703,6 +730,12 @@ export async function evaluateOpportunity(input: { organizationId: string; proje
       .orderBy(desc(intelligencePackVersionsTable.activatedAt), desc(intelligencePackVersionsTable.version))
       .limit(1)
     : [];
+  /* One indexed lookup. Whether any pack is attached decides whether a signal
+   * could ever fire, and a score produced without one is not a ranking. */
+  const [activeSignalPack] = await tx.select({ signalPackId: projectSignalPacksTable.signalPackId })
+    .from(projectSignalPacksTable)
+    .where(and(eq(projectSignalPacksTable.projectId, input.projectId), eq(projectSignalPacksTable.active, true)))
+    .limit(1);
   const [businessTwinVersion] = icpVersion?.sourceBusinessTwinVersionId
     ? await tx.select().from(businessTwinVersionsTable)
       .where(eq(businessTwinVersionsTable.id, icpVersion.sourceBusinessTwinVersionId)).limit(1)
@@ -789,6 +822,7 @@ export async function evaluateOpportunity(input: { organizationId: string; proje
     })),
     relationshipStatus: row.projectCompany.relationshipStatus,
     commercialRole: resolvedRole,
+    signalPackActive: Boolean(activeSignalPack),
     previous: previousOpportunity ? {
       state: previousOpportunity.state, score: previousOpportunity.score, timingScore: previousOpportunity.timingScore,
     } : null,
