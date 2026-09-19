@@ -28,6 +28,36 @@ function criterionEntries(values: unknown): string[] {
   return list.flatMap((item) => (typeof item === "string" ? item : "").split(/\n/)).map(tidy).filter(Boolean);
 }
 
+/**
+ * Labels that name the market a software company serves, not a different
+ * business from software.
+ *
+ * A seller targeting "saas" had eleven real prospects disqualified by their
+ * vertical label alone: Okta, Wiz, Snyk, Abnormal Security and 1Password as
+ * "Cybersecurity", Ramp, Alloy, Sardine, Truv and Zeta as "Fintech",
+ * Innovaccer as "Healthtech". Every one of them sells software by
+ * subscription and runs the sales team the seller exists to sell to. The tag
+ * sets simply did not intersect, so the criterion said fail, and a failed
+ * MUST_HAVE clamps Fit to 29.
+ *
+ * But the label does not establish the opposite either - a fintech can be a
+ * lender, a healthtech can be a clinic - so "pass" would be as much of an
+ * invention as "fail" was. It is genuinely unknown from a label, and this
+ * system does not treat unknown as failure. The company keeps its place and
+ * the question stays open for evidence that can actually answer it.
+ *
+ * Only technology verticals qualify. "Hotels" against "saas" is still a fail:
+ * that is a different business, not a slice of the same one.
+ */
+const VERTICAL_TECH_TAGS: ReadonlySet<IndustryTag> = new Set<IndustryTag>(["CYBERSECURITY", "FINTECH", "HEALTHTECH", "EDTECH"]);
+const SOFTWARE_TAGS: ReadonlySet<IndustryTag> = new Set<IndustryTag>(["SOFTWARE", "IT_SERVICES"]);
+
+function verticalOfSoftware(factTags: ReadonlySet<IndustryTag>, wanted: ReadonlySet<IndustryTag>): boolean {
+  if (![...wanted].some((tag) => SOFTWARE_TAGS.has(tag))) return false;
+  if ([...factTags].some((tag) => SOFTWARE_TAGS.has(tag))) return false;
+  return [...factTags].some((tag) => VERTICAL_TECH_TAGS.has(tag));
+}
+
 export function industryMatch(fact: unknown, criterionValues: unknown): MatchResult {
   const factText = tidy(fact);
   if (!factText) return "unknown";
@@ -40,6 +70,7 @@ export function industryMatch(fact: unknown, criterionValues: unknown): MatchRes
   for (const entry of entries) for (const tag of industryTags(entry)) wanted.add(tag);
   if (!wanted.size || !factTags.size) return "unknown";
   for (const tag of factTags) if (wanted.has(tag)) return "pass";
+  if (verticalOfSoftware(factTags, wanted)) return "unknown";
   return "fail";
 }
 
@@ -51,7 +82,9 @@ export function industryMatchFromTags(tags: readonly string[] | null | undefined
   const wanted = new Set<IndustryTag>();
   for (const entry of entries) for (const tag of industryTags(entry)) wanted.add(tag);
   if (!wanted.size) return "unknown";
-  return tags.some((tag) => wanted.has(tag as IndustryTag)) ? "pass" : "fail";
+  if (tags.some((tag) => wanted.has(tag as IndustryTag))) return "pass";
+  if (verticalOfSoftware(new Set(tags as IndustryTag[]), wanted)) return "unknown";
+  return "fail";
 }
 
 /* ---------------------------------------------------------------- geography */

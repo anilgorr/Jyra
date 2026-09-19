@@ -79,6 +79,34 @@ try {
   assert.ok(geographyCodes("Nordics").has("SE"));
   assert.ok(geographyCodes("Bengaluru").has("IN"), "add-your-own city values resolve to a country");
 
+  /* A vertical label is not a contradiction.
+   *
+   * A seller targeting "saas" had eleven real prospects disqualified by the
+   * label alone - Okta, Wiz and Snyk as "Cybersecurity", Ramp and Alloy as
+   * "Fintech", Innovaccer as "Healthtech". Each sells software by
+   * subscription and runs the sales team the seller exists to sell to, and
+   * each had its Fit clamped to 29 by a failed MUST_HAVE. */
+  const saasIcp = ["saas", "it"];
+  for (const label of ["Cybersecurity", "Fintech", "Healthtech", "EdTech", "Computer & network security", "Financial technology"]) {
+    assert.equal(industryMatch(label, saasIcp), "unknown", `${label} against a SaaS ICP must not be a failure`);
+  }
+  // Not a pass either: a fintech can be a lender and a healthtech a clinic.
+  // The label cannot settle it, so the question stays open for evidence.
+  assert.notEqual(industryMatch("Fintech", saasIcp), "pass");
+  // A company that says software still passes outright, including one that
+  // names both its market and its business.
+  assert.equal(industryMatch("SaaS / software", saasIcp), "pass");
+  assert.equal(industryMatch("Cybersecurity software", saasIcp), "pass");
+  assert.equal(industryMatch("Software Development", saasIcp), "pass");
+  // A different business is still a failure. Widening this to anything that
+  // is not software would make the criterion decide nothing at all.
+  for (const label of ["Hotels & hospitality", "Oil & gas", "Trucking", "Restaurants"]) {
+    assert.equal(industryMatch(label, saasIcp), "fail", `${label} is not a slice of software`);
+  }
+  // And the rule is about software targets only: a seller who targets
+  // cybersecurity is not told "unknown" for every SaaS company.
+  assert.equal(industryMatch("Software Development", ["cybersecurity"]), "fail");
+
   console.log("icp-match: all checks passed");
 } finally {
   await rm(output, { force: true });
