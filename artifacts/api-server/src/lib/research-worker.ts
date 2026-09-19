@@ -4,8 +4,9 @@ import { firecrawlCredits, paidReadingAllowed } from "./firecrawl-provider";
 import { logger } from "./logger";
 import { currentQueue, enqueueResearch } from "./queue";
 import {
-  RESEARCH_COMPANY_QUEUE, decideJob, queueSettings, workerRegistrations,
-  type QueueSettings, type ResearchCompanyJob,
+  RESEARCH_COMPANY_QUEUE, decideJob, isModelQuotaExhausted, modelBudgetAllows,
+  queueSettings, tripModelBudget, workerRegistrations,
+  type ModelBudgetLatch, type QueueSettings, type ResearchCompanyJob,
 } from "./queue-policy";
 import { loadProjectCompany, runIntelligenceCycle } from "./intelligence-v2/run-cycle";
 import { PostgresIntelligenceV2Repository } from "./intelligence-v2/repository";
@@ -34,6 +35,10 @@ async function creditsAllow(): Promise<{ allowed: boolean; reason: string | null
 
 const repository = new PostgresIntelligenceV2Repository();
 
+/* Shared by every worker in this process: one job discovering the model is out
+ * of credits stops the rest from buying a search sweep to discover the same. */
+const modelBudget: ModelBudgetLatch = { exhaustedAt: null };
+
 async function runOne(job: ResearchCompanyJob): Promise<void> {
   const owned = await loadProjectCompany(job.projectId, job.projectCompanyId);
   if (!owned) throw new Error(`Project company ${job.projectCompanyId} not found`);
@@ -61,7 +66,7 @@ export async function startResearchWorker(settings: QueueSettings = queueSetting
       const data = job.data;
       const decision = await decideJob(
         data,
-        { creditsAllow, now: () => new Date() },
+        { creditsAllow, now: () => new Date(), modelBudgetAllows: () => modelBudgetAllows(modelBudget, new Date()) },
         settings,
         await isWatchable(data.projectCompanyId),
       );
@@ -73,6 +78,13 @@ export async function startResearchWorker(settings: QueueSettings = queueSetting
         await runOne(data);
         logger.info({ projectCompanyId: data.projectCompanyId }, "Research job complete");
       } catch (error) {
+        /* A model provider with no credits is not a transient failure and
+         * retrying it buys nothing but another search sweep. Latch it so the
+         * jobs behind this one are skipped for free. */
+        if (isModelQuotaExhausted(error)) {
+          tripModelBudget(modelBudget, new Date());
+          logger.error({ projectCompanyId: data.projectCompanyId }, "Model provider is out of credits — pausing research pickup");
+        }
         // Rethrown so pg-boss retries this job with backoff. Because each
         // worker fetches one job, the failure is this company's alone.
         logger.error({ error, projectCompanyId: data.projectCompanyId }, "Research job failed");

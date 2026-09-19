@@ -150,4 +150,49 @@ check("index.ts imports the Express app lazily, inside the serving path", () => 
     "the dynamic import must sit after the consumer early-return, not before it");
 });
 
+check("a model provider with no credits latches the queue instead of retrying into it", () => {
+  // The real shape, from the 19 Sep 2026 run: the provider error arrives
+  // nested two levels down inside AssessmentFailureV2.
+  const real = {
+    code: "V2_ASSESSMENT_PROVIDER_ERROR", name: "AssessmentFailureV2",
+    cause: { code: "credit_balance_exhausted", name: "Error", type: "insufficient_quota",
+      error: { code: "credit_balance_exhausted", type: "insufficient_quota", message: "You have no credits remaining." } },
+  };
+  assert.equal(h.isModelQuotaExhausted(real), true, "however deep it is nested");
+  assert.equal(h.isModelQuotaExhausted({ code: "ETIMEDOUT" }), false, "a timeout is transient and must still retry");
+  assert.equal(h.isModelQuotaExhausted(new Error("socket hang up")), false);
+  assert.equal(h.isModelQuotaExhausted(null), false);
+  // Self-referencing objects must not hang the predicate.
+  const loop = { code: "ok" }; loop.self = loop;
+  assert.equal(h.isModelQuotaExhausted(loop), false);
+
+  const latch = { exhaustedAt: null };
+  const t0 = new Date("2026-09-19T00:00:00Z");
+  assert.equal(h.modelBudgetAllows(latch, t0), true, "open until something trips it");
+  h.tripModelBudget(latch, t0);
+  assert.equal(h.modelBudgetAllows(latch, t0), false, "and shut the moment it does");
+  assert.equal(h.modelBudgetAllows(latch, new Date(t0.getTime() + h.MODEL_BUDGET_COOLDOWN_MS - 1)), false);
+  assert.equal(h.modelBudgetAllows(latch, new Date(t0.getTime() + h.MODEL_BUDGET_COOLDOWN_MS)), true,
+    "a top-up resumes the queue without a redeploy");
+  assert.equal(latch.exhaustedAt, null, "and the latch resets so the next failure can trip it again");
+});
+
+await acheck("a latched budget skips a job before it can buy a search sweep", async () => {
+  const job = { organizationId: "o", projectId: "p", projectCompanyId: "pc", companyId: "c", trigger: "ONBOARDING", enqueuedAt: new Date().toISOString() };
+  const settings = h.queueSettings({ JYRA_QUEUE_ENABLED: "true" });
+  let creditLookups = 0;
+  const creditsAllow = async () => { creditLookups += 1; return { allowed: true, reason: null }; };
+
+  const skipped = await h.decideJob(job, { creditsAllow, now: () => new Date(), modelBudgetAllows: () => false }, settings, true);
+  assert.deepEqual(skipped, { action: "skipped", reason: "model_quota_exhausted" });
+  assert.equal(creditLookups, 0, "the free check must come before the paid one");
+
+  const ran = await h.decideJob(job, { creditsAllow, now: () => new Date(), modelBudgetAllows: () => true }, settings, true);
+  assert.deepEqual(ran, { action: "ran" });
+
+  // A caller that does not track the model budget is unaffected.
+  const legacy = await h.decideJob(job, { creditsAllow, now: () => new Date() }, settings, true);
+  assert.deepEqual(legacy, { action: "ran" });
+});
+
 console.log(`\nqueue: ${checks} checks passed`);
