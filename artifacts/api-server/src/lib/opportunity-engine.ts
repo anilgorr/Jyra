@@ -17,6 +17,7 @@ import {
   opportunitiesTable,
   projectCompaniesTable,
   projectSignalPacksTable,
+  WATCHED_PROJECT_COMPANY_STATUSES,
   signalClustersTable,
   signalDefinitionsTable,
   signalsTable,
@@ -28,6 +29,7 @@ import { TIMELESS_FACT_TYPES } from "./facts";
 import { evaluateIcpCriterion, type CompanyFacts, type CriterionResult } from "./icp-engine";
 import { loadLatestIntelligenceV2Assessment } from "./intelligence-v2/persist-assessment";
 import { DEFAULT_NEXT_BEST_ACTION_RULES } from "./next-best-action";
+import { watchPoolCapacity } from "./plans";
 import { opportunitySemanticFingerprint } from "./semantic-fingerprint";
 
 export const DEFAULT_OPPORTUNITY_WEIGHTS = { fit: 30, need: 30, timing: 30, relationship: 10 } as const;
@@ -127,6 +129,13 @@ export type OpportunityCalculationInput = {
    * is gated.
    */
   signalPackActive?: boolean;
+  /**
+   * True when this company cannot enter the watch pool: it is not in a
+   * watched status and the organisation's pool has no room left. It is
+   * ranked but nothing will ever look at it again. Undefined means the
+   * caller did not check.
+   */
+  watchPoolFrozen?: boolean;
   previous?: { state: OpportunityAssessmentState; score: number | null; timingScore: number | null } | null;
 };
 
@@ -533,6 +542,28 @@ export function calculateOpportunityAssessment(input: OpportunityCalculationInpu
     state = capState(state, "WATCH");
     gates.push("No signal pack is active for this project, so Need and Timing cannot be measured and this is not a ranking");
   }
+  /* Ranked, but frozen.
+   *
+   * A screened company that is not yet in the watch pool is a normal, healthy
+   * state - ranking it is exactly how a seller decides which ones to promote,
+   * and re-testing stored facts costs nothing. What is not healthy is a
+   * screened company whose organisation has no pool room left, because then
+   * promotion is impossible and nothing will ever look at it again. Its score
+   * is a photograph of one morning, and the seller has no way to know that
+   * from the number.
+   *
+   * The launch project sat in exactly this state: 119 companies researched,
+   * ranked and read, every one of them at status `screening` in an
+   * organisation whose 125-company pool was already full. Zero watch checks,
+   * ever, and the only symptom was a ranking that never changed.
+   *
+   * So the pool being full is the condition, not the screening status. A
+   * project with room is left alone.
+   */
+  if (input.watchPoolFrozen === true) {
+    state = capState(state, "WATCH");
+    gates.push("This company cannot enter the watch pool - the plan's pool is full - so nothing will notice if it changes");
+  }
   /* A company whose commercial role could not be decided may still be a real
    * opportunity, so it stays on the list - but it must not present as a
    * top-of-list account while nobody knows whether it is a buyer or a
@@ -736,6 +767,12 @@ export async function evaluateOpportunity(input: { organizationId: string; proje
     .from(projectSignalPacksTable)
     .where(and(eq(projectSignalPacksTable.projectId, input.projectId), eq(projectSignalPacksTable.active, true)))
     .limit(1);
+  /* Only asked when it can matter: a company already in the pool is never
+   * frozen, so the capacity query is skipped for the common case. */
+  const inWatchPool = (WATCHED_PROJECT_COMPANY_STATUSES as readonly string[]).includes(row.projectCompany.status);
+  const watchPoolFrozen = inWatchPool
+    ? false
+    : (await watchPoolCapacity(input.organizationId)).remaining <= 0;
   const [businessTwinVersion] = icpVersion?.sourceBusinessTwinVersionId
     ? await tx.select().from(businessTwinVersionsTable)
       .where(eq(businessTwinVersionsTable.id, icpVersion.sourceBusinessTwinVersionId)).limit(1)
@@ -823,6 +860,7 @@ export async function evaluateOpportunity(input: { organizationId: string; proje
     relationshipStatus: row.projectCompany.relationshipStatus,
     commercialRole: resolvedRole,
     signalPackActive: Boolean(activeSignalPack),
+    watchPoolFrozen,
     previous: previousOpportunity ? {
       state: previousOpportunity.state, score: previousOpportunity.score, timingScore: previousOpportunity.timingScore,
     } : null,

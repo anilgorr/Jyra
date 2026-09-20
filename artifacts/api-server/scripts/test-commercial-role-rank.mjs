@@ -138,5 +138,31 @@ check("a caller that did not check the pack is not gated", () => {
   assert.equal(unchecked.gates.length, present.gates.length);
 });
 
+// Ranked, but frozen. A screened company waiting for promotion is healthy -
+// ranking it is how a seller decides who to promote. A screened company in an
+// organisation whose pool is full can never be promoted, so nothing will look
+// at it again and its score is a photograph of one morning. The launch project
+// sat in exactly that state: 119 researched, ranked and read, every one at
+// status screening in an org whose 125-company pool was already full, with
+// zero watch checks ever and no symptom but a ranking that never moved.
+check("a company that cannot enter a full watch pool says so", () => {
+  const frozen = h.calculateOpportunityAssessment(base({ commercialRole: "POTENTIAL_BUYER", watchPoolFrozen: true }));
+  assert.ok(!["EMERGING", "RISING", "SURGING", "ACTIVE"].includes(frozen.state), `state was ${frozen.state}`);
+  assert.ok(
+    frozen.gates.some((gate) => /watch pool/i.test(gate)),
+    `the reason was not recorded: ${JSON.stringify(frozen.gates)}`,
+  );
+});
+
+check("a pool with room is left alone", () => {
+  // The condition is the pool being full, not the screening status, or every
+  // seller screening a large pool would find their ranking suppressed.
+  const roomy = h.calculateOpportunityAssessment(base({ commercialRole: "POTENTIAL_BUYER", watchPoolFrozen: false }));
+  const unchecked = h.calculateOpportunityAssessment(base({ commercialRole: "POTENTIAL_BUYER" }));
+  assert.ok(["RISING", "SURGING"].includes(roomy.state), `a company with pool room was capped to ${roomy.state}`);
+  assert.equal(roomy.state, unchecked.state);
+  assert.equal(roomy.gates.length, unchecked.gates.length);
+});
+
 if (failures) { console.error(`\n${failures} check(s) failed`); process.exit(1); }
 console.log("\ncommercial role ranking: all checks passed");
