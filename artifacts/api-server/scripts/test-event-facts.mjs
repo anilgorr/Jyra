@@ -98,17 +98,17 @@ const ctx = { companyId: "c-acme", companyName: "Acme Payments", domain: "acmepa
 //    run: a company in the news for layoffs is exactly the one not to call.
 {
   const queries = e.buildEventQueries("Acme Payments", "acmepay.com");
-  assert.equal(queries.length, 7);
-  assert.deepEqual(queries.map((q) => q.kind), ["SECURITY_INCIDENT", "LEADERSHIP_CHANGE", "LEADERSHIP_CHANGE", "WORKFORCE_REDUCTION", "ACQUIRED", "FUNDING_EVENT", "CERTIFICATION"]);
+  assert.equal(queries.length, 8);
+  assert.deepEqual(queries.map((q) => q.kind), ["SECURITY_INCIDENT", "LEADERSHIP_CHANGE", "LEADERSHIP_CHANGE", "WORKFORCE_REDUCTION", "ACQUIRED", "FUNDING_EVENT", "COMPANY_EXPANSION", "CERTIFICATION"]);
   assert.ok(queries.every((q) => q.query.includes('"Acme Payments"')));
   const calls = [];
   const { hits, providers } = await e.researchEvents(async (request) => {
     calls.push(request);
     return { status: "success", providerId: "exa", data: { results: [{ title: "t", url: `https://x.example/${calls.length}`, snippet: "s" }, { title: "dup", url: "https://x.example/1", snippet: "s" }] } };
   }, { requestId: "pc-1", companyName: "Acme Payments", domain: "acmepay.com", now: NOW });
-  assert.equal(calls.length, 6, "the open-web leadership query restates the news one; with hits in hand it is skipped, the negatives, funding and certification are not");
+  assert.equal(calls.length, 7, "the open-web leadership query restates the news one; with hits in hand it is skipped, the negatives, funding, footprint and certification are not");
   assert.ok(calls.every((c) => c.includeRawContent === true && c.timeRange === "year"));
-  assert.equal(hits.length, 6, "duplicate URLs across queries are collapsed");
+  assert.equal(hits.length, 7, "duplicate URLs across queries are collapsed");
   assert.deepEqual(providers, ["exa"]);
 
   // Nothing found in the news index: the broader third query is exactly the
@@ -118,7 +118,7 @@ const ctx = { companyId: "c-acme", companyName: "Acme Payments", domain: "acmepa
     empty.push(request);
     return { status: "success", providerId: "exa", data: { results: [] } };
   }, { requestId: "pc-2", companyName: "Quiet Co", domain: "quiet.example", now: NOW });
-  assert.equal(empty.length, 7, "a company the news index does not cover still gets the open-web query");
+  assert.equal(empty.length, 8, "a company the news index does not cover still gets the open-web query");
   assert.equal(quiet.hits.length, 0);
 }
 
@@ -175,6 +175,63 @@ const ctx = { companyId: "c-acme", companyName: "Acme Payments", domain: "acmepa
   assert.equal(e.extractExplicitCertificationCandidates(
     EV, "Acme Payments achieved ISO 27001 certification in 2021.", "2026-07-14").length, 0,
     "the sentence names a year that is not the publisher's, so the page is describing history");
+}
+
+// 5c. Footprint, added 21 Sep 2026. COMPANY_EXPANSION and NEW_MARKET carry
+//     nine definitions between them and had never produced a row. One search
+//     feeds both, so persistence has to read the candidate's fact type rather
+//     than the kind searched for.
+{
+  const EV = "11111111-2222-4333-8444-555555555555";
+  const PUB = "2026-06-10";
+  const fp = (t) => e.extractExplicitFootprintCandidates(EV, t, PUB);
+  const one = (t) => { const o = fp(t); assert.equal(o.length, 1, t); return o[0]; };
+
+  assert.ok(e.buildEventQueries("Acme Payments", "acmepay.com").some((q) => q.kind === "COMPANY_EXPANSION"));
+
+  // A place opened files as COMPANY_EXPANSION; a market entered as NEW_MARKET.
+  const berlin = one("Acme Payments opened a new office in Berlin to serve European customers.");
+  assert.equal(berlin.factType, "COMPANY_EXPANSION");
+  assert.equal(berlin.structuredValue.location, "Berlin");
+  assert.equal(berlin.structuredValue.detail, "office");
+
+  assert.equal(one("Acme Payments has opened its first development centre in Bengaluru.").structuredValue.location,
+    "Bengaluru", "the sentence's own full stop is not part of the city");
+  assert.equal(one("Acme Payments launched a data centre in Singapore last quarter.").factType, "COMPANY_EXPANSION");
+
+  const japan = one("Acme Payments expanded into Japan, its eighth market.");
+  assert.equal(japan.factType, "NEW_MARKET");
+  assert.equal(japan.structuredValue.location, "Japan");
+  assert.equal(one("Acme Payments entered the Nordic market with a local team.").factType, "NEW_MARKET");
+  assert.equal(one("Acme Payments began operations in Australia.").factType, "NEW_MARKET");
+  assert.equal(one("Acme Payments expands to Canada following strong demand.").factType, "NEW_MARKET");
+
+  // An initialism keeps its final stop; a sentence terminator does not.
+  assert.equal(one("Acme Payments expanded into the U.S.").structuredValue.location, "U.S.");
+
+  // A month and a quarter are not places, and both appear constantly in the
+  // business press this reads.
+  assert.equal(fp("Acme Payments opened a new office in January after delays.").length, 0);
+  assert.equal(fp("Acme Payments expanded into Q3 with strong results.").length, 0);
+  // Nor is every "launched" or "opened" a footprint. The market pattern needs
+  // the preposition to follow the verb directly, which is what separates
+  // "launches in the UK" from "launched a new pricing plan in beta".
+  assert.equal(fp("Acme Payments launched a new pricing plan in beta.").length, 0);
+  assert.equal(fp("Acme Payments launched an AI assistant in preview.").length, 0);
+  assert.equal(fp("Acme Payments opened its platform to third-party developers.").length, 0);
+  assert.equal(one("Acme Payments launches in the UK with a local card programme.").structuredValue.location, "UK");
+  assert.equal(one("Acme Payments is now available in Germany.").factType, "NEW_MARKET");
+
+  // A weekday is not a market. "entered Tuesday's session" is stock-market
+  // prose and it reached the launch pool on the first live run of this query.
+  assert.equal(fp("Acme Payments shares entered Tuesday's session higher after the update.").length, 0);
+
+  // The publisher's date carries it, at the lower confidence that implies.
+  assert.equal(berlin.dateBasis, "PUBLISHED");
+  assert.equal(berlin.effectiveDate, PUB);
+  const stated = one("On March 4, 2026, Acme Payments opened a new office in Berlin.");
+  assert.equal(stated.effectiveDate, "2026-03-04");
+  assert.equal(stated.dateBasis, undefined, "a stated date needs no basis recorded");
 }
 
 console.log("PASS event-facts");

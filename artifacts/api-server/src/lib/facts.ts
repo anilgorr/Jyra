@@ -1394,6 +1394,99 @@ function extractNegativeEventCandidates(
   return candidates;
 }
 
+/**
+ * Footprint: a company opening somewhere, or entering a market.
+ *
+ * COMPANY_EXPANSION and NEW_MARKET between them carry nine definitions across
+ * the packs - SAAS_MARKET_EXPANSION, GEOGRAPHIC_EXPANSION, CLOUD_EXPANSION,
+ * SOLAR_SITE_EXPANSION, ERP_MULTI_SITE_EXPANSION - and neither type had ever
+ * produced a row, because nothing extracted them and no query asked. They are
+ * the first frequent event in this set: a certification is achieved once and
+ * announced once, while offices open and markets are entered continually, and
+ * the whole point of widening the vocabulary was to reach events that happen
+ * often enough to put a signal on an ordinary company in an ordinary month.
+ *
+ * The split follows the two fact types rather than inventing a third: a place
+ * opened is COMPANY_EXPANSION, a market entered is NEW_MARKET. One query
+ * feeds both, which is why persistence reads the candidate's own fact type
+ * rather than the kind that was searched for.
+ *
+ * A month or a quarter is not a location. Without that guard "expanded into
+ * Q3" and "opened an office in January" both read as places, and both appear
+ * constantly in exactly the business press this searches.
+ */
+const NOT_A_PLACE = String.raw`(?!(?:January|February|March|April|May|June|July|August|September|October|November|December|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Q[1-4]|H[12]|FY\d)(?:'s)?\b)`;
+const PLACE_CAPTURE = String.raw`(?<location>${NOT_A_PLACE}[A-Z][A-Za-z.'-]+(?:[^\S\n]+(?:of[^\S\n]+)?[A-Z][A-Za-z.'-]+){0,3})`;
+
+/** A place opened: "Acme opened a new office in Berlin". */
+const FOOTPRINT_SITE_PATTERN = new RegExp(
+  String.raw`\b${COMPANY_CAPTURE}\s+(?:has\s+|have\s+|is\s+|will\s+|to\s+)?(?<verb>opened|opens|is opening|will open|launched|launches|inaugurated|inaugurates|established|establishes|set up|sets up|unveiled|unveils)\s+(?:a\s+|an\s+|its\s+|their\s+|the\s+)?(?:new\s+|first\s+|second\s+|third\s+|largest\s+|flagship\s+)?(?<detail>office|facility|plant|factory|warehouse|campus|hub|headquarters|subsidiary|distribution (?:centre|center)|data (?:centre|center)|development (?:centre|center)|delivery (?:centre|center)|R&D (?:centre|center)|research (?:centre|center)|engineering (?:centre|center)|manufacturing (?:facility|plant|site)|site)\s+(?:in|at|near)\s+(?:the\s+)?${PLACE_CAPTURE}`,
+  "g",
+);
+
+/** A market entered: "Acme expanded into Japan", "Acme entered the Nordic market". */
+const FOOTPRINT_MARKET_PATTERN = new RegExp(
+  String.raw`\b${COMPANY_CAPTURE}\s+(?:has\s+|have\s+|is\s+|will\s+|to\s+)?(?<verb>expanded into|expands into|is expanding into|will expand into|entered|enters|is entering|will enter|expanded to|expands to|launched in|launches in|is launching in|goes live in|went live in|is now available in|now available in)\s+(?:the\s+)?${PLACE_CAPTURE}(?<detail>\s+market|\s+region)?`,
+  "g",
+);
+
+/** Operations begun somewhere, which is a market entry stated the long way. */
+const FOOTPRINT_OPERATIONS_PATTERN = new RegExp(
+  String.raw`\b${COMPANY_CAPTURE}\s+(?:has\s+|have\s+|is\s+|will\s+|to\s+)?(?<verb>began operations|begins operations|commenced operations|commences operations|started operations|starts operations|launched operations|launches operations|went live)\s+(?:in|at)\s+(?:the\s+)?${PLACE_CAPTURE}(?<detail>)`,
+  "g",
+);
+
+const footprintStructured = (groups: Record<string, string | undefined>): Record<string, string> => ({
+  company: groups.company ?? "",
+  action: (groups.verb ?? "").replace(/\s+/g, " ").trim(),
+  /* A place name may legitimately end in a full stop - "U.S." - so the
+   * sentence's own terminator is stripped only when it does not follow a
+   * capital, which leaves initialisms intact and takes "Bengaluru." back to
+   * the city. */
+  location: (groups.location ?? "").replace(/\s+/g, " ").trim().replace(/(?<![A-Z])\.$/, ""),
+  ...(groups.detail?.trim() ? { detail: groups.detail.replace(/\s+/g, " ").trim() } : {}),
+});
+
+/** A place opened. Files as COMPANY_EXPANSION. */
+export function extractExplicitSiteExpansionCandidates(
+  evidenceId: string,
+  rawContent: string,
+  publishedAt?: PublishedDate,
+): FactCandidate[] {
+  return extractNegativeEventCandidates(evidenceId, rawContent, publishedAt, {
+    factType: "COMPANY_EXPANSION",
+    patterns: [FOOTPRINT_SITE_PATTERN],
+    extractorVersion: "explicit-footprint-v1",
+    structured: footprintStructured,
+  });
+}
+
+/** A market entered. Files as NEW_MARKET. */
+export function extractExplicitNewMarketCandidates(
+  evidenceId: string,
+  rawContent: string,
+  publishedAt?: PublishedDate,
+): FactCandidate[] {
+  return extractNegativeEventCandidates(evidenceId, rawContent, publishedAt, {
+    factType: "NEW_MARKET",
+    patterns: [FOOTPRINT_MARKET_PATTERN, FOOTPRINT_OPERATIONS_PATTERN],
+    extractorVersion: "explicit-footprint-v1",
+    structured: footprintStructured,
+  });
+}
+
+/** Both halves of the footprint story, from one search. */
+export function extractExplicitFootprintCandidates(
+  evidenceId: string,
+  rawContent: string,
+  publishedAt?: PublishedDate,
+): FactCandidate[] {
+  return [
+    ...extractExplicitSiteExpansionCandidates(evidenceId, rawContent, publishedAt),
+    ...extractExplicitNewMarketCandidates(evidenceId, rawContent, publishedAt),
+  ];
+}
+
 export function extractExplicitCertificationCandidates(
   evidenceId: string,
   rawContent: string,

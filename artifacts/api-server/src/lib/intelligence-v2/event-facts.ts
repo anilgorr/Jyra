@@ -11,6 +11,7 @@ import { calculateEvidenceScores, hashNormalizedContent } from "../evidence";
 import {
   extractExplicitAcquiredCandidates,
   extractExplicitCertificationCandidates,
+  extractExplicitFootprintCandidates,
   extractExplicitFundingCandidates,
   extractExplicitLeadershipCandidates,
   extractExplicitSecurityIncidentCandidates,
@@ -45,7 +46,7 @@ type DbExecutor = typeof db | Parameters<Parameters<typeof db.transaction>[0]>[0
  * article does not fire the highest-impact signal in the pack. Two do.
  */
 
-export type EventKind = "SECURITY_INCIDENT" | "LEADERSHIP_CHANGE" | "WORKFORCE_REDUCTION" | "ACQUIRED" | "FUNDING_EVENT" | "CERTIFICATION";
+export type EventKind = "SECURITY_INCIDENT" | "LEADERSHIP_CHANGE" | "WORKFORCE_REDUCTION" | "ACQUIRED" | "FUNDING_EVENT" | "CERTIFICATION" | "COMPANY_EXPANSION";
 
 export const EVENT_FACT_EXTRACTOR_VERSION = "event-search-deterministic-v1";
 
@@ -102,6 +103,14 @@ export function buildEventQueries(companyName: string, domain: string | null): E
      * facts.ts; a verb asked for here that the extractor cannot match is a
      * hit paid for and dropped at NO_EXPLICIT_EVENT, which is the mistake the
      * leadership query already made once with CIO and CTO. */
+    /* Footprint, added 21 Sep 2026. COMPANY_EXPANSION and NEW_MARKET carry
+     * nine definitions between them and had never produced a row. Unlike the
+     * six events above this one is frequent - offices open and markets are
+     * entered continually - which is the whole reason for widening the
+     * vocabulary: a pool where most companies show nothing needs events that
+     * happen to an ordinary company in an ordinary month, not rarer ones read
+     * more carefully. One search feeds both fact types. */
+    { kind: "COMPANY_EXPANSION", topic: "news", query: `${name} (opens OR opened OR launches OR launched OR "expands into" OR "expanded into" OR enters OR entered OR "began operations") ("new office" OR facility OR "data centre" OR "data center" OR headquarters OR campus OR market OR region OR operations OR expansion)` },
     { kind: "CERTIFICATION", topic: "news", query: `${name} (achieved OR achieves OR earned OR obtained OR completed OR completes OR renewed OR "is now") ("SOC 2" OR "ISO 27001" OR "ISO/IEC 27001" OR "Type II" OR certification OR certified)` },
   ];
 }
@@ -206,7 +215,9 @@ export function mapEventHitsToFacts(
             ? extractExplicitFundingCandidates(evidenceId, rawContent, publishedAt)
             : hit.kind === "CERTIFICATION"
               ? extractExplicitCertificationCandidates(evidenceId, rawContent, publishedAt)
-              : extractExplicitLeadershipCandidates(evidenceId, rawContent, publishedAt);
+              : hit.kind === "COMPANY_EXPANSION"
+                ? extractExplicitFootprintCandidates(evidenceId, rawContent, publishedAt)
+                : extractExplicitLeadershipCandidates(evidenceId, rawContent, publishedAt);
     if (!extracted.length) { skipped.push({ url: hit.url, reason: "NO_EXPLICIT_EVENT" }); continue; }
     const firstParty = Boolean(input.domain && hostMatchesDomain(sourceDomain, input.domain));
     for (const candidate of extracted) {
@@ -357,7 +368,7 @@ export async function persistEventFacts(
       if (claimed.created) evidenceInserted += 1; else evidenceReused += 1;
     }
     const inserted = await executor.insert(companyFactsTable).values({
-      companyId: input.companyId, evidenceId, factType: row.kind,
+      companyId: input.companyId, evidenceId, factType: row.candidate.factType,
       structuredValue: row.candidate.structuredValue, effectiveDate: row.candidate.effectiveDate,
       confidence: scores.confidence, supportingExcerpt: row.candidate.supportingExcerpt,
       extractorVersion: EVENT_FACT_EXTRACTOR_VERSION,
