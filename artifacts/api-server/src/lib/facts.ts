@@ -823,7 +823,31 @@ const ANNOUNCED_LEADERSHIP_EVENT_PATTERN = new RegExp(
 
 // Intentionally starts at the certification phrase: press releases often place
 // the company far before it, and each phrase is an independently extractable fact.
-const CERTIFICATION_EVENT_PATTERN = /\b(?<verb>has achieved|achieved|achieves|renewed|has renewed|completed|completes|has completed|have completed|received|earned|obtained|are now|is now)\s+(?:its\s+|the\s+|a\s+)?(?<certification>ISO(?:\/IEC)?\s*\d+(?::\d+)?\s+(?:certification|certified)|SOC\s*[12]\s*®?\s+Type\s*(?:I|II|1|2)(?:\s+(?:compliance|examination|certification))?)\b/gi;
+/**
+ * A certification announced as a dated event.
+ *
+ * Two things kept this from reading real announcements once they were
+ * searched for in the news, both found by running the live query over the
+ * launch pool and getting nothing out of 36 attributed articles:
+ *
+ * 1. The standard and the word "certification" had to be adjacent, so
+ *    "Miro Achieves ISO 27001 Information Security Certification" - a real
+ *    headline, and exactly the event this is for - did not match, because two
+ *    words sat between them. A short gap is now allowed, and it is bounded by
+ *    sentence punctuation so the noun cannot be borrowed from the next
+ *    sentence.
+ * 2. Only ISO and SOC were known. "Asana Achieves FedRAMP In Process
+ *    Designation" is the same kind of event, and FedRAMP, HITRUST, PCI DSS
+ *    and the rest were already enumerated a few hundred lines below in
+ *    COMPLIANCE_STANDARD_PATTERN for the undated posture extractor. The event
+ *    extractor knowing fewer standards than the posture one was an oversight,
+ *    not a decision.
+ *
+ * The closing noun stays required. Without it "completed ISO 27001 training"
+ * and "is now HIPAA aware" both read as achievements, and a training course
+ * is not a certification.
+ */
+const CERTIFICATION_EVENT_PATTERN = /\b(?<verb>has achieved|achieved|achieves|renewed|has renewed|completed|completes|has completed|have completed|received|earned|obtained|attained|are now|is now)\s+(?:its\s+|the\s+|a\s+|an\s+)?(?<certification>(?:ISO(?:\/IEC)?\s*\d{4,5}(?::\d{4})?|SOC\s*[12]\s*[®™]?\s*(?:Type\s*(?:I{1,2}|[12]))?|PCI[\s-]?DSS|FedRAMP|HITRUST(?:\s+CSF)?|TISAX|CSA\s+STAR|IRAP|StateRAMP)[®™]?(?:[^.!?\n]{0,45}?)\s*\b(?:certification|certified|accreditation|accredited|attestation|attested|examination|designation|authorization|authorisation|compliance|compliant)\b)/gi;
 
 const TECHNOLOGY_EVENT_PATTERN = /\b(?<company>[A-Z][A-Za-z0-9&'.-]*(?:\s+[A-Z][A-Za-z0-9&'.-]*){0,7})\s+(?<verb>adopted|implemented|deployed|integrated|migrated to|replaced|switched to)\s+(?<technology>[A-Z][A-Za-z0-9.+#/-]*(?:\s+[A-Z][A-Za-z0-9.+#/-]*){0,4})\b/gi;
 
@@ -1022,24 +1046,45 @@ export function extractExplicitLeadershipCandidates(
   return candidates;
 }
 
+/**
+ * Dated events read from a single pattern: a certification achieved, a
+ * technology switched to.
+ *
+ * This dated an event only by `explicitDateBefore` - a date printed ahead of
+ * the sentence. That is the rule the other five extractors were written with
+ * and then grew out of: `resolveEventDate` looks before the event, then
+ * after it, and only then falls back to the publisher's date, refusing that
+ * fallback when the sentence names a year of its own. Leaving this one on the
+ * older rule did not matter while it only ever read crawled pages. It matters
+ * now that certifications are searched for in the news, because a news
+ * snippet is about 180 characters and almost never restates the date the
+ * press release carried in its dateline - so an achievement the extractor
+ * could read plainly was discarded for a date the pipeline already had.
+ *
+ * Confidence follows the split the sibling extractor uses: the event is read
+ * from the text either way, and what a publisher date weakens is when it
+ * happened, not whether it did.
+ */
 function extractDatedPatternCandidates(
   evidenceId: string,
   rawContent: string,
   pattern: RegExp,
   factType: "CERTIFICATION" | "TECHNOLOGY_MENTION",
+  publishedAt?: PublishedDate,
 ): FactCandidate[] {
   const content = normalizeEvidenceContent(rawContent);
   const candidates: FactCandidate[] = [];
   pattern.lastIndex = 0;
   for (const match of content.matchAll(pattern)) {
     if (match.index === undefined || !match.groups) continue;
-    const date = explicitDateBefore(content, match.index);
-    if (!date) continue;
     const sentenceEnd = content.slice(match.index).search(/[.!?](?:\s|$)/);
     const eventEnd = sentenceEnd >= 0
       ? match.index + sentenceEnd + 1
       : match.index + match[0].length;
-    const supportingExcerpt = content.slice(date.excerptStart, eventEnd).trim();
+    const date = resolveEventDate(content, match.index, eventEnd, publishedAt);
+    if (!date) continue;
+    const published = date.basis === "PUBLISHED";
+    const supportingExcerpt = content.slice(date.excerptStart, date.excerptEnd).trim();
     const structuredValue = factType === "CERTIFICATION"
       ? {
           ...(match.groups.company ? { company: match.groups.company } : {}),
@@ -1056,9 +1101,10 @@ function extractDatedPatternCandidates(
       factType,
       structuredValue,
       effectiveDate: date.effectiveDate,
-      confidence: 98,
+      confidence: published ? 85 : 98,
       supportingExcerpt,
       extractorVersion: FACT_EXTRACTION_PROMPT_VERSION,
+      ...(published ? { dateBasis: "PUBLISHED" as const } : {}),
     };
     const parsed = factCandidateSchema.safeParse(candidate);
     if (parsed.success) candidates.push(parsed.data);
@@ -1351,24 +1397,28 @@ function extractNegativeEventCandidates(
 export function extractExplicitCertificationCandidates(
   evidenceId: string,
   rawContent: string,
+  publishedAt?: PublishedDate,
 ): FactCandidate[] {
   return extractDatedPatternCandidates(
     evidenceId,
     rawContent,
     CERTIFICATION_EVENT_PATTERN,
     "CERTIFICATION",
+    publishedAt,
   );
 }
 
 export function extractExplicitTechnologyChangeCandidates(
   evidenceId: string,
   rawContent: string,
+  publishedAt?: PublishedDate,
 ): FactCandidate[] {
   return extractDatedPatternCandidates(
     evidenceId,
     rawContent,
     TECHNOLOGY_EVENT_PATTERN,
     "TECHNOLOGY_MENTION",
+    publishedAt,
   );
 }
 

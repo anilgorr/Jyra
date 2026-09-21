@@ -98,17 +98,17 @@ const ctx = { companyId: "c-acme", companyName: "Acme Payments", domain: "acmepa
 //    run: a company in the news for layoffs is exactly the one not to call.
 {
   const queries = e.buildEventQueries("Acme Payments", "acmepay.com");
-  assert.equal(queries.length, 6);
-  assert.deepEqual(queries.map((q) => q.kind), ["SECURITY_INCIDENT", "LEADERSHIP_CHANGE", "LEADERSHIP_CHANGE", "WORKFORCE_REDUCTION", "ACQUIRED", "FUNDING_EVENT"]);
+  assert.equal(queries.length, 7);
+  assert.deepEqual(queries.map((q) => q.kind), ["SECURITY_INCIDENT", "LEADERSHIP_CHANGE", "LEADERSHIP_CHANGE", "WORKFORCE_REDUCTION", "ACQUIRED", "FUNDING_EVENT", "CERTIFICATION"]);
   assert.ok(queries.every((q) => q.query.includes('"Acme Payments"')));
   const calls = [];
   const { hits, providers } = await e.researchEvents(async (request) => {
     calls.push(request);
     return { status: "success", providerId: "exa", data: { results: [{ title: "t", url: `https://x.example/${calls.length}`, snippet: "s" }, { title: "dup", url: "https://x.example/1", snippet: "s" }] } };
   }, { requestId: "pc-1", companyName: "Acme Payments", domain: "acmepay.com", now: NOW });
-  assert.equal(calls.length, 5, "the open-web leadership query restates the news one; with hits in hand it is skipped, the negatives and funding are not");
+  assert.equal(calls.length, 6, "the open-web leadership query restates the news one; with hits in hand it is skipped, the negatives, funding and certification are not");
   assert.ok(calls.every((c) => c.includeRawContent === true && c.timeRange === "year"));
-  assert.equal(hits.length, 5, "duplicate URLs across queries are collapsed");
+  assert.equal(hits.length, 6, "duplicate URLs across queries are collapsed");
   assert.deepEqual(providers, ["exa"]);
 
   // Nothing found in the news index: the broader third query is exactly the
@@ -118,8 +118,63 @@ const ctx = { companyId: "c-acme", companyName: "Acme Payments", domain: "acmepa
     empty.push(request);
     return { status: "success", providerId: "exa", data: { results: [] } };
   }, { requestId: "pc-2", companyName: "Quiet Co", domain: "quiet.example", now: NOW });
-  assert.equal(empty.length, 6, "a company the news index does not cover still gets the open-web query");
+  assert.equal(empty.length, 7, "a company the news index does not cover still gets the open-web query");
   assert.equal(quiet.hits.length, 0);
+}
+
+// 5b. Certification, added 21 Sep 2026. The extractor existed and read only
+//     crawled pages, where a company states a posture rather than a dated
+//     event - so CERTIFICATION had never produced a fact. The query is what
+//     was missing, and on news the publisher's dateline is what dates it.
+{
+  const EV = "11111111-2222-4333-8444-555555555555";  // candidates are schema-validated; evidenceId must be a uuid
+  const queries = e.buildEventQueries("Acme Payments", "acmepay.com");
+  const cert = queries.find((q) => q.kind === "CERTIFICATION");
+  assert.ok(cert, "a certification query exists");
+  assert.equal(cert.topic, "news");
+
+  // Every verb the query asks for must be one the extractor can match, or the
+  // hit is paid for and dropped at NO_EXPLICIT_EVENT.
+  const body = "Acme Payments achieved SOC 2 Type II certification for its platform.";
+  assert.equal(e.extractExplicitCertificationCandidates(EV, body).length, 0,
+    "no date in the text and no publisher date: nothing to date the event with");
+  const dated = e.extractExplicitCertificationCandidates(EV, body, "2026-07-14");
+  assert.equal(dated.length, 1, "the publisher's date stands in for one the snippet never gives");
+  assert.equal(dated[0].factType, "CERTIFICATION");
+  assert.equal(dated[0].effectiveDate, "2026-07-14");
+  assert.equal(dated[0].confidence, 85, "a borrowed date is weaker than a stated one");
+  assert.equal(dated[0].dateBasis, "PUBLISHED");
+
+  // A date the text states still wins, and still scores full confidence.
+  const stated = e.extractExplicitCertificationCandidates(
+    EV, "On March 4, 2026, Acme Payments achieved ISO 27001 certification.", "2026-07-14");
+  assert.equal(stated.length, 1);
+  assert.equal(stated[0].effectiveDate, "2026-03-04", "the text outranks the publisher");
+  assert.equal(stated[0].confidence, 98);
+
+  // Real headlines the live query returns. Both were read straight past
+  // before the pattern allowed words between the standard and its noun, and
+  // before it knew any standard beyond ISO and SOC.
+  const miro = e.extractExplicitCertificationCandidates(
+    EV, "Miro Achieves ISO 27001 Information Security Certification", "2026-04-02");
+  assert.equal(miro.length, 1, "two words may sit between the standard and the word certification");
+  assert.match(miro[0].structuredValue.certification, /^ISO 27001 Information Security Certification$/i,
+    "the capture spans the standard through its noun, as the posture extractor's consumers expect");
+
+  const fedramp = e.extractExplicitCertificationCandidates(
+    EV, "Asana Achieves FedRAMP In Process Designation to Support Public Sector", "2026-04-02");
+  assert.equal(fedramp.length, 1, "FedRAMP is a certification event, not only a posture");
+  assert.match(fedramp[0].structuredValue.certification, /^FedRAMP In Process Designation$/i);
+
+  // The closing noun is what keeps a course from reading as an achievement.
+  assert.equal(e.extractExplicitCertificationCandidates(
+    EV, "Acme Payments completed ISO 27001 training for its engineers.", "2026-04-02").length, 0,
+    "training is not certification");
+
+  // And the guard that stops a republished page dating history to today.
+  assert.equal(e.extractExplicitCertificationCandidates(
+    EV, "Acme Payments achieved ISO 27001 certification in 2021.", "2026-07-14").length, 0,
+    "the sentence names a year that is not the publisher's, so the page is describing history");
 }
 
 console.log("PASS event-facts");

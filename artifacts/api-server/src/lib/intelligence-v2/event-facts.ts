@@ -10,6 +10,7 @@ import {
 import { calculateEvidenceScores, hashNormalizedContent } from "../evidence";
 import {
   extractExplicitAcquiredCandidates,
+  extractExplicitCertificationCandidates,
   extractExplicitFundingCandidates,
   extractExplicitLeadershipCandidates,
   extractExplicitSecurityIncidentCandidates,
@@ -44,12 +45,28 @@ type DbExecutor = typeof db | Parameters<Parameters<typeof db.transaction>[0]>[0
  * article does not fire the highest-impact signal in the pack. Two do.
  */
 
-export type EventKind = "SECURITY_INCIDENT" | "LEADERSHIP_CHANGE" | "WORKFORCE_REDUCTION" | "ACQUIRED" | "FUNDING_EVENT";
+export type EventKind = "SECURITY_INCIDENT" | "LEADERSHIP_CHANGE" | "WORKFORCE_REDUCTION" | "ACQUIRED" | "FUNDING_EVENT" | "CERTIFICATION";
 
 export const EVENT_FACT_EXTRACTOR_VERSION = "event-search-deterministic-v1";
 
-/** How far back an event is worth recording. Older than this and it has decayed out of every signal anyway. */
-export const EVENT_LOOKBACK_DAYS = 180;
+/**
+ * How far back an event is worth recording.
+ *
+ * This must match the window the search actually asks for. It did not: the
+ * search below requests `timeRange: "year"` and this constant threw away
+ * everything older than 180 days, so months seven to twelve were fetched,
+ * paid for and discarded unread. Across the launch pool that was 1,111 of
+ * 6,389 hits - 17% of everything the event pass ever retrieved - rejected as
+ * TOO_OLD for being inside the window the query itself requested.
+ *
+ * The provider contract offers "month" or "year" and nothing between, so 180
+ * days was never expressible as a search. A year is what we pay for, so a
+ * year is what we keep; Timing scores on recency decay and discounts an old
+ * event on its own, which is the right place for that judgement - a breach
+ * eight months ago is weak Timing but it is still true, and dropping the row
+ * denies Need the fact entirely.
+ */
+export const EVENT_LOOKBACK_DAYS = 365;
 
 export type EventQuery = { kind: EventKind; query: string; topic: "news" | "general" };
 
@@ -74,6 +91,18 @@ export function buildEventQueries(companyName: string, domain: string | null): E
      * the launch pool - Rocketlane's $60M and Clay's $115M - were already
      * being returned by the queries above and thrown away unread. */
     { kind: "FUNDING_EVENT", topic: "news", query: `${name} (raises OR raised OR secures OR "funding round" OR "Series A" OR "Series B" OR "Series C" OR "Series D" OR "led the round")` },
+    /* Certification, added 21 Sep 2026. The extractor for this has existed
+     * since the trust-page work and ran only over crawled pages, where a
+     * company states a posture ("we are SOC 2 compliant") rather than an
+     * event with a date - so CERTIFICATION had produced nothing at all while
+     * the undated COMPLIANCE_MENTION produced 37. The announcement is a news
+     * story with a dateline, and three definitions in the packs -
+     * ISO27001_ACTIVITY, SOC2_ACTIVITY, PCI_ACTIVITY - have been waiting on
+     * it. The verbs here deliberately mirror CERTIFICATION_EVENT_PATTERN in
+     * facts.ts; a verb asked for here that the extractor cannot match is a
+     * hit paid for and dropped at NO_EXPLICIT_EVENT, which is the mistake the
+     * leadership query already made once with CIO and CTO. */
+    { kind: "CERTIFICATION", topic: "news", query: `${name} (achieved OR achieves OR earned OR obtained OR completed OR completes OR renewed OR "is now") ("SOC 2" OR "ISO 27001" OR "ISO/IEC 27001" OR "Type II" OR certification OR certified)` },
   ];
 }
 
@@ -175,7 +204,9 @@ export function mapEventHitsToFacts(
           ? extractExplicitAcquiredCandidates(evidenceId, rawContent, publishedAt)
           : hit.kind === "FUNDING_EVENT"
             ? extractExplicitFundingCandidates(evidenceId, rawContent, publishedAt)
-            : extractExplicitLeadershipCandidates(evidenceId, rawContent, publishedAt);
+            : hit.kind === "CERTIFICATION"
+              ? extractExplicitCertificationCandidates(evidenceId, rawContent, publishedAt)
+              : extractExplicitLeadershipCandidates(evidenceId, rawContent, publishedAt);
     if (!extracted.length) { skipped.push({ url: hit.url, reason: "NO_EXPLICIT_EVENT" }); continue; }
     const firstParty = Boolean(input.domain && hostMatchesDomain(sourceDomain, input.domain));
     for (const candidate of extracted) {
