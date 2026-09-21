@@ -13,5 +13,7 @@ export {
   hostsIn,
   hostMatchesDomain,
   corroborateSlugBoard,
+  ownerNameFromBoardHtml,
+  boardNameIdentifies,
 } from "../src/lib/intelligence-v2/ats-boards";
 export { mapJobsToFacts } from "../src/lib/intelligence-v2/job-facts";

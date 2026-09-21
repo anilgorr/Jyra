@@ -359,6 +359,38 @@ check("same name, different company: the slug hit is refused", () => {
   assert.deepEqual(clearco, { verified: false, how: null });
 });
 
+check("a board title corroborates only when the page claims no other company", () => {
+  // Five of the seven providers expose no owner name through their API, so
+  // before this the only corroboration open to them was the company's own
+  // domain appearing on the page - which these boards frequently do not carry.
+  const titled = (html, name, domain = "acme.com", payloadText = '{"jobs":[{"title":"Engineer"}]}') =>
+    h.corroborateSlugBoard({ companyName: name, domain, payloadText, boardHtml: html, boardOwnerName: null });
+
+  assert.deepEqual(
+    titled('<title>Acme Jobs</title><a href="https://jobs.ashbyhq.com/acme">board</a>', "Acme"),
+    { verified: true, how: "BOARD_TITLE" },
+    "the platform's own host is not a rival claim of ownership");
+
+  // The boilerplate each platform wraps the name in comes off.
+  assert.equal(h.ownerNameFromBoardHtml("<title>Deel Jobs</title>"), "Deel");
+  assert.equal(h.ownerNameFromBoardHtml("<title>Careers at Airbnb</title>"), "Airbnb");
+  assert.equal(h.ownerNameFromBoardHtml("<title>Positions Archive - Careers at Airbnb</title>"), "Airbnb");
+  assert.equal(h.ownerNameFromBoardHtml("<title>Acme - Job Board</title>"), "Acme");
+  assert.equal(h.ownerNameFromBoardHtml(null), null);
+
+  // A distinctive leading token identifies; a short or compound one does not.
+  assert.equal(h.boardNameIdentifies("Causal Labs", "Causal"), true);
+  assert.equal(h.boardNameIdentifies("Navi AI", "Navi"), false, "four letters is too common a first word");
+  assert.equal(h.boardNameIdentifies("Acme Logistics", "Acme Payments"), false);
+
+  // And a page that points at someone else is refused however well the title
+  // reads - this is what keeps a renamed domain and a namesake indistinguishable,
+  // which is the safe answer when the page alone cannot tell them apart.
+  assert.equal(
+    titled('<title>Acme Jobs</title><a href="https://acme-other.io">site</a>', "Acme").verified,
+    false);
+});
+
 check("owner-name corroboration is exact after normalisation, not fuzzy", () => {
   assert.equal(h.corroborateSlugBoard({ companyName: "ClearCo", domain: "clearcompany.com", payloadText: "{}", boardHtml: null, boardOwnerName: "Clearco" }).verified, true,
     "identical names do corroborate — that is precisely why the domain check comes first and the record's own name is the weak link");

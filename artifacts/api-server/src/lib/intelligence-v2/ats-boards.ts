@@ -433,13 +433,62 @@ export function hostMatchesDomain(host: string, domain: string): boolean {
  * Boards found on the company's own careers page or sitemap need none of
  * this — the company told us where it hires.
  */
+/**
+ * The company a board page says it belongs to, read from its title.
+ *
+ * Only SmartRecruiters and Greenhouse expose an owner name through their API,
+ * so for Ashby, Lever, Keka, Recruitee and Workable the only corroboration
+ * available was DOMAIN_LINK - the company's own domain appearing in the
+ * payload or the board HTML. Those boards frequently carry neither: Causal's
+ * Ashby board lists twenty jobs and the string "causal.app" appears nowhere in
+ * the API response or the 19KB page, so a real board with real postings was
+ * discarded as unverifiable. Five of the seven providers had one corroboration
+ * path and it was the one they were least likely to satisfy.
+ *
+ * Every board platform titles the page after the company, wrapped in its own
+ * boilerplate - "Causal Labs Jobs", "Deel Jobs", "Careers at Airbnb". Stripping
+ * the boilerplate leaves the name, which is evidence of the same kind the
+ * OWNER_NAME path already trusts, just read from the page instead of an API.
+ */
+export function ownerNameFromBoardHtml(html: string | null): string | null {
+  if (!html) return null;
+  const title = /<title[^>]*>([^<]{1,200})<\/title>/i.exec(html)?.[1];
+  if (!title) return null;
+  const cleaned = title
+    .replace(/&amp;/g, "&")
+    .replace(/^\s*(?:positions?\s+archive\s*[-–|]\s*)?/i, "")
+    .replace(/^\s*(?:careers?|jobs?|open\s+roles?|openings?)\s+(?:at|with)\s+/i, "")
+    .replace(/\s*[-–|]\s*(?:careers?|jobs?|job\s+board|open\s+roles?|openings?|we're\s+hiring).*$/i, "")
+    .replace(/\s+(?:careers?|jobs?|job\s+board|open\s+roles?|openings?)\s*$/i, "")
+    .trim();
+  return cleaned.length ? cleaned : null;
+}
+
+/**
+ * Does a board's own name for itself identify this company?
+ *
+ * Exact after normalisation first, which is what namesAgree does and the bar
+ * the API-sourced names are held to. Then the leading token, but only when it
+ * is distinctive on its own - the same five-character rule the event
+ * attribution uses, and for the same reason: a board titled "Causal Labs Jobs"
+ * belongs to the company recorded as "Causal", while "Acme" is too common a
+ * first word to hand one company's board to another.
+ */
+export function boardNameIdentifies(boardName: string, companyName: string): boolean {
+  if (namesAgree(boardName, companyName)) return true;
+  const target = normalizeCompanyName(companyName);
+  if (!target || target.length < 5 || target.includes(" ")) return false;
+  const [first] = normalizeCompanyName(boardName).split(" ");
+  return Boolean(first) && first === target;
+}
+
 export function corroborateSlugBoard(input: {
   companyName: string;
   domain: string | null;
   payloadText: string;
   boardHtml: string | null;
   boardOwnerName: string | null;
-}): { verified: boolean; how: "DOMAIN_LINK" | "OWNER_NAME" | null } {
+}): { verified: boolean; how: "DOMAIN_LINK" | "OWNER_NAME" | "BOARD_TITLE" | null } {
   if (input.domain) {
     const hosts = [...hostsIn(input.payloadText), ...hostsIn(input.boardHtml ?? "")];
     if (hosts.some((host) => hostMatchesDomain(host, input.domain!))) return { verified: true, how: "DOMAIN_LINK" };
@@ -447,7 +496,41 @@ export function corroborateSlugBoard(input: {
   if (input.boardOwnerName && namesAgree(input.boardOwnerName, input.companyName)) {
     return { verified: true, how: "OWNER_NAME" };
   }
+  /* A page title is weaker evidence than a name the platform reports, so it
+   * only counts when the page names no other company. Two records in the test
+   * corpus are exactly why: a board titled "Clearco Jobs" that links to
+   * clear.co is not the ClearCo at clearcompany.com, and "Navi AI Jobs"
+   * linking to flynavi.com is not the Navi at navi.com. Both share a name and
+   * neither shares a domain. Having already failed the domain check above, a
+   * board that points somewhere else is pointing at its real owner. */
+  const titleName = ownerNameFromBoardHtml(input.boardHtml);
+  if (titleName && boardNameIdentifies(titleName, input.companyName)
+      && !namesAnotherCompany(input.payloadText, input.boardHtml)) {
+    return { verified: true, how: "BOARD_TITLE" };
+  }
   return { verified: false, how: null };
+}
+
+/**
+ * Hosts belonging to the board platform itself, or to infrastructure every
+ * page carries. A board living on jobs.ashbyhq.com naturally says so, and that
+ * is not a rival claim of ownership.
+ */
+const PLATFORM_HOSTS = [
+  "ashbyhq.com", "greenhouse.io", "lever.co", "smartrecruiters.com", "keka.com",
+  "recruitee.com", "workable.com", "workday.com", "myworkdayjobs.com", "icims.com",
+  "google.com", "googleapis.com", "gstatic.com", "cloudflare.com", "jsdelivr.net",
+  "w3.org", "schema.org", "linkedin.com", "twitter.com", "x.com", "facebook.com",
+  "youtube.com", "instagram.com", "github.com", "gravatar.com", "cloudfront.net",
+];
+
+/** Does this board point at a company that is not the one we are checking? */
+function namesAnotherCompany(payloadText: string, boardHtml: string | null): boolean {
+  const hosts = [...hostsIn(payloadText), ...hostsIn(boardHtml ?? "")];
+  return hosts.some((host) => {
+    const bare = host.replace(/^www\./, "").toLowerCase();
+    return !PLATFORM_HOSTS.some((platform) => bare === platform || bare.endsWith(`.${platform}`));
+  });
 }
 
 /**
