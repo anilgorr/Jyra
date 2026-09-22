@@ -84,6 +84,26 @@ check("Greenhouse, Lever and Ashby are recognised", () => {
     "https://api.ashbyhq.com/posting-api/job-board/ramp");
 });
 
+check("THE REGRESSION: the Greenhouse embed script names the board, and 'embed' is not a slug", () => {
+  // The form Greenhouse documents is a script tag. It was matched only as
+  // `embed/job_board?for=`, so against `embed/job_board/js?for=lattice` the
+  // optional group matched nothing and the capture took the next path segment:
+  // the slug came out as "embed", detection reported success, and
+  // boards-api/v1/boards/embed/jobs answers 404 for every company that ships
+  // the standard embed. Lattice, Iterable and Postscript were all dark on it,
+  // with 10, 16 and 4 live postings respectively.
+  const slugOf = (html) => {
+    const handle = h.detectAtsHandle(html);
+    return handle && /\/boards\/([a-z0-9_-]+)\/jobs/.exec(handle.jobsUrl)?.[1];
+  };
+  assert.equal(slugOf('<script src="https://boards.greenhouse.io/embed/job_board/js?for=lattice"></script>'), "lattice");
+  assert.equal(slugOf('<a href="https://boards.greenhouse.io/embed/job_board?for=lattice">x</a>'), "lattice");
+  assert.equal(slugOf('<a href="https://boards.greenhouse.io/lattice">x</a>'), "lattice");
+  assert.equal(slugOf('<a href="https://job-boards.greenhouse.io/lattice">x</a>'), "lattice");
+  // An embed URL carrying no slug names no board, and must not name "embed".
+  assert.equal(h.detectAtsHandle('<a href="https://boards.greenhouse.io/embed/job_board">x</a>'), null);
+});
+
 check("a Greenhouse iframe embed is recognised", () => {
   assert.equal(
     h.detectAtsHandle(`<iframe src="https://boards.greenhouse.io/embed/job_board?for=gitlab"></iframe>`).jobsUrl,

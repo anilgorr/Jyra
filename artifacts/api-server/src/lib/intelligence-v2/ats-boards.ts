@@ -57,8 +57,23 @@ export function detectAtsHandle(html: string, _pageUrl?: string): AtsHandle | nu
   const keka = html.match(/https?:\/\/([a-z0-9-]+)\.keka\.com/i);
   if (keka) return kekaHandle(keka[1].toLowerCase());
 
+  /* Greenhouse, in both the path form and the embed form.
+   *
+   * The embed was matched only as `embed/job_board?for=<slug>`, and the form
+   * Greenhouse actually documents and ships is a script tag:
+   * `embed/job_board/js?for=<slug>`. Against that the optional group matched
+   * nothing and the capture took the next path segment instead - so the slug
+   * came out as the literal string "embed", detection reported success, and
+   * `boards-api.greenhouse.io/v1/boards/embed/jobs` answered 404 forever
+   * after. Lattice, Iterable and Postscript were all dark on this, each with
+   * a live board: Lattice's correct slug returns ten postings.
+   *
+   * So the `for=` parameter is read first, with or without the `/js`, and the
+   * path form refuses to treat `embed` as a slug rather than capturing it. */
   const greenhouse = html.match(
-    /https?:\/\/(?:boards|job-boards)\.greenhouse\.io\/(?:embed\/job_board\?for=)?([a-z0-9_-]+)/i,
+    /https?:\/\/(?:boards|job-boards)\.greenhouse\.io\/embed\/job_board(?:\/js)?\?for=([a-z0-9_-]+)/i,
+  ) ?? html.match(
+    /https?:\/\/(?:boards|job-boards)\.greenhouse\.io\/(?!embed(?:[\/?#]|$))([a-z0-9_-]+)/i,
   );
   if (greenhouse) {
     const token = greenhouse[1].toLowerCase();
