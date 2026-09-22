@@ -13,6 +13,7 @@ export {
   hostsIn,
   hostMatchesDomain,
   corroborateSlugBoard,
+  workdayPostedOn,
   ownerNameFromBoardHtml,
   boardNameIdentifies,
 } from "../src/lib/intelligence-v2/ats-boards";

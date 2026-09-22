@@ -84,6 +84,46 @@ check("Greenhouse, Lever and Ashby are recognised", () => {
     "https://api.ashbyhq.com/posting-api/job-board/ramp");
 });
 
+check("Workday: read from the link, and only dated where the words give a date", () => {
+  // Nothing probed Workday, so every company on it was invisible. The tenant,
+  // the numbered host and the site all sit in the URL a careers page links to,
+  // and the public CxS feed behind it needs all three. BrowserStack's feed
+  // serves 34 postings beginning with a Sales Development Representative.
+  const handle = h.detectAtsHandle('<a href="https://browserstack.wd3.myworkdayjobs.com/External">Open positions</a>');
+  assert.equal(handle.kind, "workday");
+  assert.equal(handle.jobsUrl, "https://browserstack.wd3.myworkdayjobs.com/wday/cxs/browserstack/External/jobs");
+  assert.equal(handle.boardUrl, "https://browserstack.wd3.myworkdayjobs.com/External");
+  // Some tenants put a locale in front of the site name.
+  assert.equal(
+    h.detectAtsHandle('<a href="https://acme.wd1.myworkdayjobs.com/en-US/Careers">x</a>').jobsUrl,
+    "https://acme.wd1.myworkdayjobs.com/wday/cxs/acme/Careers/jobs");
+
+  // Workday states an age in words. Each of these names one day and converts.
+  const NOW = new Date("2026-09-22T00:00:00Z");
+  const on = (v) => h.workdayPostedOn(v, NOW)?.slice(0, 10) ?? null;
+  assert.equal(on("Posted Today"), "2026-09-22");
+  assert.equal(on("Posted Yesterday"), "2026-09-21");
+  assert.equal(on("Posted 3 Days Ago"), "2026-09-19");
+  assert.equal(on("Posted 2 Weeks Ago"), "2026-09-08");
+
+  // "30+ Days Ago" names a floor, not a date - it could be forty days or four
+  // hundred. The fact layer drops an undated posting rather than guess, because
+  // Timing is scored from the decay and a guessed date decays from a fiction.
+  assert.equal(on("Posted 30+ Days Ago"), null);
+  assert.equal(on(null), null);
+  assert.equal(on("whenever"), null);
+
+  // The posting shape: the path is relative to the board.
+  const [posting] = h.parseAtsJobs(handle, {
+    jobPostings: [{ title: "Sales Development Representative", externalPath: "/job/Mumbai-Remote/SDR_JR103474",
+                    postedOn: "Posted Today", locationsText: "Mumbai Remote" }],
+  }, "BrowserStack");
+  assert.equal(posting.title, "Sales Development Representative");
+  assert.equal(posting.url, "https://browserstack.wd3.myworkdayjobs.com/External/job/Mumbai-Remote/SDR_JR103474");
+  assert.equal(posting.location, "Mumbai Remote");
+  assert.ok(posting.postedAt, "a posting Workday says was posted today carries that date");
+});
+
 check("THE REGRESSION: the Greenhouse embed script names the board, and 'embed' is not a slug", () => {
   // The form Greenhouse documents is a script tag. It was matched only as
   // `embed/job_board?for=`, so against `embed/job_board/js?for=lattice` the

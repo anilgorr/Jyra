@@ -22,7 +22,7 @@ import { normalizeCompanyName } from "./company-name";
  * Detection and parsing are pure. Only the fetch touches the network.
  */
 
-export type AtsKind = "keka" | "greenhouse" | "lever" | "ashby" | "smartrecruiters" | "recruitee" | "workable";
+export type AtsKind = "keka" | "greenhouse" | "lever" | "ashby" | "smartrecruiters" | "recruitee" | "workable" | "workday";
 
 export type AtsHandle = {
   kind: AtsKind;
@@ -54,6 +54,26 @@ export function detectAtsHandle(html: string, _pageUrl?: string): AtsHandle | nu
   // serves both the embedded and the hosted portal, so no identifier is needed.
   // The identifier-based endpoint only ever worked for embedded boards, which is
   // why VWO — hosted, under its parent Wingify — could not be read before.
+  /* Workday. The tenant, the numbered host and the site all sit in the URL a
+   * careers page links to - browserstack.wd3.myworkdayjobs.com/External - and
+   * the public CxS feed behind it needs all three. Nothing probed Workday at
+   * all before, which left every company on it invisible: BrowserStack's feed
+   * serves 34 postings, the first of them a Sales Development Representative.
+   *
+   * It is detected only from a link, never guessed by slug. The host number
+   * varies by tenant (wd1, wd3, wd5...) so probing would cost five requests a
+   * company to find what the careers page states outright. */
+  const workday = html.match(/https?:\/\/([a-z0-9-]+)\.(wd\d+)\.myworkdayjobs\.com\/(?:[a-z]{2}-[A-Z]{2}\/)?([A-Za-z0-9_-]+)/i);
+  if (workday) {
+    const [, tenant, host, site] = workday;
+    const root = `https://${tenant.toLowerCase()}.${host.toLowerCase()}.myworkdayjobs.com`;
+    return {
+      kind: "workday",
+      jobsUrl: `${root}/wday/cxs/${tenant.toLowerCase()}/${site}/jobs`,
+      boardUrl: `${root}/${site}`,
+    };
+  }
+
   const keka = html.match(/https?:\/\/([a-z0-9-]+)\.keka\.com/i);
   if (keka) return kekaHandle(keka[1].toLowerCase());
 
@@ -128,6 +148,30 @@ function firstLocation(value: unknown): string | null {
 }
 
 /**
+ * Workday states a posting's age in words rather than giving its date.
+ *
+ * "Posted Today", "Posted Yesterday" and "Posted 3 Days Ago" each name one
+ * day and convert exactly. "Posted 30+ Days Ago" names a floor and not a
+ * date - it means at least thirty days, which could be forty or four hundred
+ * - so it converts to nothing. That is the same rule the fact layer already
+ * states for a posting with no date at all: a guessed date would decay from a
+ * fiction, and Timing is scored from the decay.
+ */
+export function workdayPostedOn(value: string | null, now = new Date()): string | null {
+  if (!value) return null;
+  const said = value.trim().toLowerCase().replace(/^posted\s+/, "");
+  if (/\+/.test(said)) return null;
+  const day = (back: number) => new Date(now.getTime() - back * 86_400_000).toISOString();
+  if (said === "today" || said === "just posted") return day(0);
+  if (said === "yesterday") return day(1);
+  const days = /^(\d{1,3})\s+days?\s+ago$/.exec(said);
+  if (days) return day(Number(days[1]));
+  const weeks = /^(\d{1,2})\s+weeks?\s+ago$/.exec(said);
+  if (weeks) return day(Number(weeks[1]) * 7);
+  return null;
+}
+
+/**
  * Normalise one ATS's payload into postings.
  *
  * companyName is supplied by the caller rather than read from the payload: the
@@ -143,7 +187,9 @@ export function parseAtsJobs(
     ? payload
     : Array.isArray((payload as { jobs?: unknown })?.jobs)
       ? ((payload as { jobs: unknown[] }).jobs)
-      : [];
+      : Array.isArray((payload as { jobPostings?: unknown })?.jobPostings)
+        ? ((payload as { jobPostings: unknown[] }).jobPostings)
+        : [];
 
   const postings: JobPosting[] = [];
   for (const row of rows) {
@@ -194,6 +240,14 @@ export function parseAtsJobs(
         url = text(item.applyUrl) ?? (id ? `${handle.boardUrl.replace(/\/$/, "")}/${id}` : null);
         postedAt = text(item.releasedDate) ?? text(item.createdOn);
         location = firstLocation(item.location);
+        break;
+      }
+      case "workday": {
+        title = text(item.title);
+        const path = text(item.externalPath);
+        url = path ? `${handle.boardUrl.replace(/\/$/, "")}${path}` : null;
+        postedAt = workdayPostedOn(text(item.postedOn));
+        location = text(item.locationsText);
         break;
       }
       case "recruitee": {
@@ -675,12 +729,43 @@ async function getJson(url: string): Promise<unknown | null> {
   }
 }
 
+/**
+ * POST a JSON body and return the response text.
+ *
+ * Only Workday needs this: its public job feed takes the paging window in a
+ * POST body and answers 405 to a GET. Redirects are followed here, unlike the
+ * slug probes, because this URL was read off the company's own careers page
+ * rather than guessed - there is no "does this exist?" question to answer.
+ */
+async function postJson(url: string, body: unknown): Promise<string | null> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      signal: controller.signal,
+      headers: { "user-agent": USER_AGENT, accept: "application/json", "content-type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    if (!response.ok) return null;
+    return await response.text();
+  } catch {
+    return null;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 /** Read a board. Returns null on any failure — job research is never fatal. */
 export async function fetchAtsJobs(
   handle: AtsHandle,
   companyName: string,
 ): Promise<JobPosting[] | null> {
-  const body = await getText(handle.jobsUrl, "application/json");
+  // Every other board answers a GET. Workday's CxS feed takes a POST carrying
+  // the paging window, and answers 405 to anything else.
+  const body = handle.kind === "workday"
+    ? await postJson(handle.jobsUrl, { appliedFacets: {}, limit: 20, offset: 0, searchText: "" })
+    : await getText(handle.jobsUrl, "application/json");
   if (!body) return null;
   try {
     return parseAtsJobs(handle, JSON.parse(body), companyName);
