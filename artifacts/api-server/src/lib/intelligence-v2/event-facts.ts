@@ -175,6 +175,61 @@ const withinLookback = (iso: string | null | undefined, now: Date, days = EVENT_
 };
 
 /**
+ * A publisher's date dates the story the page is about, and nothing else on it.
+ *
+ * When the text states no date, the extractor falls back to the publisher's,
+ * and that is right for a headline: "Temporal raises $550M" published on the
+ * 16th happened on or about the 16th. It is wrong for every other sentence on
+ * the page. Measured on the launch pool, half the live funding signals were
+ * history re-dated to this month:
+ *
+ *   Miro     "raised a $400 million Series C led by Iconiq" - the 2022 round,
+ *            quoted as background in a September 2026 story about Miro's exit
+ *   Whatfix  "raised $125 million in a Series E led by Warburg Pincus" - the
+ *            2024 round, in an obituary for a co-founder
+ *   Typeform "$135 million Series C led by Sofina" - the 2018 round, on a
+ *            company profile page
+ *
+ * All three were true sentences, correctly attributed, and FIRING a 120-day
+ * funding signal as if the money had just landed. The funding floor could not
+ * catch them - a fresh page scores fresh - and lowering it would only have
+ * admitted a fourth.
+ *
+ * So a publisher-dated event has to be what the headline reports: the title or
+ * the URL slug carries the event itself (for a round, a raise verb, its amount
+ * or its series). A background sentence is left without a date, and an undated
+ * event is dropped rather than guessed, the same as everywhere else. A date
+ * the sentence states for itself is unaffected; "raised $115 million on
+ * September 9, 2026" is dated by its own words wherever it sits on the page.
+ */
+const HEADLINE_EVENT: Partial<Record<EventKind, RegExp>> = {
+  FUNDING_EVENT: /\b(?:raises?|raised|raising|secures?|secured|bags?|nabs?|funding round)\b/,
+  LEADERSHIP_CHANGE: /\b(?:appoints?|appointed|appointment|names|named|hires?|hired|joins|promote[sd]?|promotion|welcomes|taps|steps? down|departs?|new (?:ceo|cro|cmo|cfo|cto|ciso|coo|chief|vp|head))\b/,
+  WORKFORCE_REDUCTION: /\b(?:lay(?:s|ing)? off|layoffs?|laid off|job cuts?|cuts?\s+(?:\d+|jobs|staff|workforce|roles|headcount)|restructur\w*|downsiz\w*)\b/,
+  ACQUIRED: /\b(?:acquir\w*|acquisition|buys|bought|to buy|merge[sd]?|merger|takeover)\b/,
+};
+
+const headlineText = (title: string, url: string): string => {
+  let slug = "";
+  try { slug = decodeURIComponent(new URL(url).pathname); } catch { /* the title alone then */ }
+  return `${title} ${slug}`.replace(/[-_/+.]+/g, " ").toLowerCase();
+};
+
+export function headlineReportsEvent(kind: EventKind, hit: { title: string; url: string }, candidate: Pick<FactCandidate, "structuredValue">): boolean {
+  const pattern = HEADLINE_EVENT[kind];
+  if (!pattern) return true;
+  const head = headlineText(hit.title ?? "", hit.url ?? "");
+  if (pattern.test(head)) return true;
+  if (kind !== "FUNDING_EVENT") return false;
+  const value = candidate.structuredValue as Record<string, unknown>;
+  // "$550M", "$60 Mn", "$1.2 billion" -> "550", "60", "1 2"; the slug turned "." into a space too.
+  const amount = String(value.amount ?? "").match(/\d+(?:[.,]\d+)?/)?.[0]?.replace(/[.,]/g, " ");
+  if (amount && new RegExp(`(?:^|\\s|\\$)${amount.replace(/ /g, "\\s")}\\s?(?:m|mn|million|b|bn|billion|k)?\\b`).test(head)) return true;
+  const round = String(value.round ?? "").toLowerCase().replace(/[-_]+/g, " ").trim();
+  return Boolean(round) && head.includes(round);
+}
+
+/**
  * Turn search hits into validated fact rows. Pure over its inputs.
  *
  * Every candidate passes through validateFactCandidateDetailed with the page
@@ -226,6 +281,9 @@ export function mapEventHitsToFacts(
         publishedAt: publishedAt ?? undefined, firstParty,
       });
       if (!report.valid) { skipped.push({ url: hit.url, reason: report.issues[0]?.code ?? "INVALID" }); continue; }
+      if (candidate.dateBasis === "PUBLISHED" && !headlineReportsEvent(hit.kind, hit, candidate)) {
+        skipped.push({ url: hit.url, reason: "BACKGROUND_EVENT_UNDATED" }); continue;
+      }
       if (!withinLookback(candidate.effectiveDate, input.now)) { skipped.push({ url: hit.url, reason: "EVENT_TOO_OLD" }); continue; }
       const key = `${hit.kind}|${candidate.effectiveDate}|${sourceDomain}|${normalizeCompanyName(candidate.supportingExcerpt).slice(0, 120)}`;
       if (seen.has(key)) continue;

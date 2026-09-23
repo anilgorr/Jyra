@@ -680,3 +680,48 @@ console.log("PASS event-facts");
     "being mentioned in someone else's release is not an appointment");
   console.log("  ok  a subjectless event needs the company's own page behind it");
 }
+
+/* A publisher's date dates the headline, not the page's history. All three
+ * background cases are verbatim from the launch pool, where they were FIRING a
+ * 120-day funding signal on rounds from 2018, 2022 and 2024. */
+{
+  const now = new Date("2026-09-20T00:00:00Z");
+  const run = (companyName, domain, hit) => e.mapEventHitsToFacts([{ kind: "FUNDING_EVENT", snippet: "", ...hit }], { companyId: "c", companyName, domain, now });
+
+  const miro = run("Miro", "miro.com", { url: "https://www.trendingtopics.eu/miro-exit-bending-spoons/", title: "Miro exit: Bending Spoons takes over the whiteboard unicorn",
+    rawContent: "Miro raised a $400 million Series C led by Iconiq Growth at a valuation of $17.5 billion. The company now changes hands.", publishedAt: "2026-09-12T00:00:00Z" });
+  assert.deepEqual(miro.facts, [], "a round quoted as background in an exit story is not this month's round");
+  assert.equal(miro.skipped[0]?.reason, "BACKGROUND_EVENT_UNDATED");
+
+  const whatfix = run("Whatfix", "whatfix.com", { url: "https://indianstartupnews.com/news/whatfix-co-founder-khadim-batti-a-prominent-figure-in-indias-startup-ecosystem-passes-away-12479795",
+    title: "Whatfix co-founder Khadim Batti, a prominent figure in India's startup ecosystem, passes away",
+    rawContent: "Whatfix raised $125 million in a Series E round led by Warburg Pincus, which put in $100 million, with SoftBank's Vision Fund 2 adding $25 million.", publishedAt: "2026-09-05T00:00:00Z" });
+  assert.deepEqual(whatfix.facts, [], "an obituary's company history is not a funding event");
+
+  const typeform = run("Typeform", "typeform.com", { url: "https://getlatka.com/companies/typeform", title: "Typeform revenue, valuation & growth rate",
+    rawContent: "Typeform closed a $135 million Series C round led by Belgian investment firm Sofina at a $935 million post-money valuation, bringing the company to roughly 500 employees.", publishedAt: "2026-08-20T00:00:00Z" });
+  assert.deepEqual(typeform.facts, [], "a profile page is not news, whatever date the search engine gives it");
+
+  // The headline reports it: a raise verb, the amount, or the series.
+  const temporal = run("Temporal Technologies", "temporal.io", { url: "https://www.citybiz.co/article/902990/temporal-raises-550m-at-12-55-billion-valuation-to-push-durable-execution/",
+    title: "Temporal Raises $550M at $12.55 Billion Valuation to Push Durable Execution",
+    rawContent: "Temporal Technologies raised $550 million in Series E funding at a $12.55 billion valuation.", publishedAt: "2026-09-16T00:00:00Z" });
+  assert.ok(temporal.facts.length >= 1, "a round the headline announces keeps the publisher's date");
+  assert.ok(temporal.facts.every((f) => f.candidate.effectiveDate === "2026-09-16"));
+
+  assert.equal(e.headlineReportsEvent("FUNDING_EVENT", { title: "Acme's $60M Series C, explained", url: "https://x.example/a" }, { structuredValue: { amount: "$60 Mn", round: "Series C" } }), true, "the amount in the headline is enough");
+  assert.equal(e.headlineReportsEvent("FUNDING_EVENT", { title: "Inside Acme", url: "https://x.example/acme-series-c" }, { structuredValue: { amount: "$60 Mn", round: "Series C" } }), true, "so is the series in the slug");
+  assert.equal(e.headlineReportsEvent("FUNDING_EVENT", { title: "Acme story", url: "https://x.example/news/12479795" }, { structuredValue: { amount: "$12 million" } }), false, "an article id is not an amount");
+
+  // A date the sentence states for itself stands wherever the sentence sits.
+  const clay = run("Clay", "clay.com", { url: "https://quasa.io/insights/clay-hits-7-1b-17-000-customers-support-its-next-agent-bet", title: "Clay hits $7.1B and 17,000 customers",
+    rawContent: "Clay raised a $115 million Series D at a $7.1 billion valuation on September 9, 2026, in a Wellington Management-led deal.", publishedAt: "2026-09-12T00:00:00Z" });
+  assert.ok(clay.facts.some((f) => f.candidate.effectiveDate === "2026-09-09"), "a stated date needs no headline");
+
+  // The same rule for the other publisher-dated kinds.
+  assert.equal(e.headlineReportsEvent("LEADERSHIP_CHANGE", { title: "Acme appoints Jane Roe as CRO", url: "https://x.example/1" }, { structuredValue: {} }), true);
+  assert.equal(e.headlineReportsEvent("LEADERSHIP_CHANGE", { title: "Acme's Q3 earnings beat", url: "https://x.example/2" }, { structuredValue: {} }), false);
+  assert.equal(e.headlineReportsEvent("WORKFORCE_REDUCTION", { title: "Acme lays off 600", url: "https://x.example/3" }, { structuredValue: {} }), true);
+  assert.equal(e.headlineReportsEvent("CERTIFICATION", { title: "anything", url: "https://x.example/4" }, { structuredValue: {} }), true, "kinds without a headline rule are not gated");
+  console.log("  ok  a publisher's date dates the headline, not the history quoted beneath it");
+}
