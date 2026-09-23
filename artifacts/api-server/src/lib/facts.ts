@@ -965,9 +965,18 @@ function resolveEventDate(
   eventEnd: number,
   publishedAt: PublishedDate,
 ): { effectiveDate: string; excerptStart: number; excerptEnd: number; basis: "STATED" | "PUBLISHED" } | null {
+  /* The sentence's own date comes first. "September 12, 2026 at 01:59 PM |
+   * Author: QUASA Editorial Team" sits above "Clay raised a $115 million
+   * Series D ... on September 9, 2026", and the nearest date before the event
+   * won, so the round was filed on the byline's day. A date the event
+   * sentence states is the event's; a dateline or byline above it only stands
+   * in when the sentence has none. */
+  const after = explicitDateAfter(content, eventIndex);
+  if (after && after.excerptEnd <= eventEnd) {
+    return { effectiveDate: after.effectiveDate, excerptStart: eventIndex, excerptEnd: Math.max(eventEnd, after.excerptEnd), basis: "STATED" };
+  }
   const before = explicitDateBefore(content, eventIndex);
   if (before) return { effectiveDate: before.effectiveDate, excerptStart: before.excerptStart, excerptEnd: eventEnd, basis: "STATED" };
-  const after = explicitDateAfter(content, eventIndex);
   if (after) return { effectiveDate: after.effectiveDate, excerptStart: eventIndex, excerptEnd: Math.max(eventEnd, after.excerptEnd), basis: "STATED" };
   const published = publishedFallback(publishedAt);
   if (!published) return null;

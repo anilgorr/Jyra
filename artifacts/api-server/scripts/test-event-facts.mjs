@@ -725,3 +725,69 @@ console.log("PASS event-facts");
   assert.equal(e.headlineReportsEvent("CERTIFICATION", { title: "anything", url: "https://x.example/4" }, { structuredValue: {} }), true, "kinds without a headline rule are not gated");
   console.log("  ok  a publisher's date dates the headline, not the history quoted beneath it");
 }
+
+/* Namesakes. Both cases are verbatim from the launch pool, where each filed
+ * another company's round against ours. The legitimate descriptors below are
+ * verbatim too, and every one of them must still pass. */
+{
+  const neon = "Serverless Postgres database platform with branching. SaaS / software";
+  const mosaic = "Strategic finance platform for planning and reporting. SaaS / software";
+  assert.equal(e.describesAnotherCompany("Neon raises $13m as KRAFTON joins Series A round\nNeon , a global payments and e-commerce platform for game publishers, has closed a $13m Series A round.", "Neon", neon), true,
+    "games payments is not serverless Postgres");
+  assert.equal(e.describesAnotherCompany("Mosaic, the AI-driven deal modeling platform built for private markets, today announced it has raised an $18 million Series A.", "Mosaic", mosaic), true,
+    "deal modelling for private markets is not strategic finance");
+
+  const keep = [
+    ["Hightouch", "Data activation and composable customer data platform", "Hightouch, a data and AI platform focused on enterprise marketing, has raised $150 million."],
+    ["Hightouch", "Data activation and composable customer data platform", "Hightouch, a San Francisco, CA-based company, raised $150M in Series D funding."],
+    ["Innovaccer", "Healthcare data activation and population health platform", "Innovaccer, a California-based healthtech unicorn, laid off staff."],
+    ["Rocketlane", "Customer onboarding and professional services automation for SaaS companies", "Rocketlane, an AI-powered Professional Services Automation (PSA) company, raised $60 million."],
+    ["Sardine", "Fraud prevention and compliance platform for financial services", "Sardine, a US-based AI-powered risk platform, appointed a new CRO."],
+    ["Supabase", "Open source backend platform built on Postgres", "Supabase, an open source Postgres development platform, announced a $500 million Series F."],
+    ["Vanta", "Automated security compliance and trust management platform", "Vanta, the leading Agentic Trust Platform, named a new CMO."],
+    ["Whatfix", "Digital adoption platform for enterprise software onboarding and training", "Whatfix, the global leader in agentic digital adoption platforms (DAPs) for enterprises, today announced."],
+    ["Whatfix", "Digital adoption platform for enterprise software onboarding and training", "Whatfix, the innovative enterprise software startup, named Vara Kumar CEO."],
+  ];
+  for (const [name, ours, text] of keep) {
+    assert.equal(e.describesAnotherCompany(text, name, ours), false, `${name}: "${text.slice(0, 60)}..." describes the company we mean`);
+  }
+  assert.equal(e.describesAnotherCompany("Adoption grew in a line that was linear, a pattern the analysts called predictable.", "Linear", "Issue tracking and project planning tool for software teams"), false,
+    "a common word in lowercase prose is not the company");
+  assert.equal(e.describesAnotherCompany("Neon, a global payments platform for game publishers.", "Neon", null), false, "with no description of ours there is nothing to compare, so no ruling");
+
+  // End to end, including the outlet that never describes the company: the
+  // same $13m round is the namesake's round wherever it is reported.
+  const run = e.mapEventHitsToFacts([
+    { kind: "FUNDING_EVENT", url: "https://fintech.global/2026/07/24/neon-raises-13m-as-krafton-joins-series-a-round/", title: "Neon raises $13m as KRAFTON joins Series A round", snippet: "",
+      rawContent: "July 24, 2026\nNeon , a global payments and e-commerce platform for game publishers, has closed a $13m Series A round aimed at helping studios gain independence from app stores.", publishedAt: "2026-07-24T00:00:00Z" },
+    { kind: "FUNDING_EVENT", url: "https://www.pocketgamer.biz/neon-raises-13m-series-a-to-expand-direct-to-consumer-commerce-platform-for-game-publishers/", title: "Neon raises $13m Series A to expand direct-to-consumer commerce platform for game publishers", snippet: "",
+      rawContent: "Neon Commerce has raised $13 million in a Series A funding round to expand its direct-to-consumer (D2C) commerce and loyalty infrastructure for game publishers.", publishedAt: "2026-08-20T00:00:00Z" },
+  ], { companyId: "c-neon", companyName: "Neon", domain: "neon.tech", now: new Date("2026-09-20T00:00:00Z"), companyDescription: neon });
+  assert.deepEqual(run.facts, [], "neither outlet's Neon is ours");
+  const reasons = run.skipped.map((s) => s.reason);
+  assert.ok(reasons.includes("NAMESAKE") && reasons.includes("NAMESAKE_ROUND"), reasons.join(","));
+
+  // The company's own newsroom is never overruled by a description mismatch.
+  const own = e.mapEventHitsToFacts([
+    { kind: "FUNDING_EVENT", url: "https://neon.tech/blog/neon-raises-series-c", title: "Neon raises $104M Series C", snippet: "",
+      rawContent: "Neon, a developer-first platform for shipping apps faster, raised $104M in a Series C round.", publishedAt: "2026-09-01T00:00:00Z" },
+  ], { companyId: "c-neon", companyName: "Neon", domain: "neon.tech", now: new Date("2026-09-20T00:00:00Z"), companyDescription: neon });
+  assert.ok(own.facts.length >= 1, "a company describes itself however it likes");
+  console.log("  ok  a namesake's round is not ours, and neither is the same round reported elsewhere");
+}
+
+/* The sentence's own date beats a byline above it. Verbatim from quasa.io,
+ * where the round was filed on the byline's day, three days late. */
+{
+  const text = "September 12, 2026 at 01:59 PM | Author: QUASA Editorial Team | 5 min read | 7\nClay raised a $115 million Series D at a $7.1 billion valuation on September 9, 2026, in a Wellington Management-led deal.";
+  const rounds = e.extractExplicitFundingCandidates("cccccccc-0000-4000-8000-000000000001", text, "2026-09-13T00:00:00Z");
+  assert.ok(rounds.length >= 1);
+  assert.ok(rounds.every((c) => c.effectiveDate === "2026-09-09"), rounds.map((c) => c.effectiveDate).join(","));
+  assert.ok(rounds.every((c) => c.dateBasis !== "PUBLISHED"), "a stated date is stated");
+
+  // A dateline still governs a sentence that carries no date of its own.
+  const [dl] = e.extractExplicitFundingCandidates("cccccccc-0000-4000-8000-000000000002", "BOSTON, Apr. 9, 2026 -- Acme Payments raised $40 million in a Series B round.", null);
+  assert.equal(dl?.effectiveDate, "2026-04-09");
+  console.log("  ok  the event sentence's own date beats a byline above it");
+}
+

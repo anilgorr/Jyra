@@ -230,6 +230,72 @@ export function headlineReportsEvent(kind: EventKind, hit: { title: string; url:
 }
 
 /**
+ * A page about a different company that happens to share the name.
+ *
+ * Twenty-odd names in the launch pool are ordinary words or short coinages -
+ * Neon, Mosaic, Front, Linear, Merge, Render, Runway, Census - and the name
+ * check can only ask whether the name is on the page. It was, so Neon (the
+ * serverless Postgres company at neon.tech) was handed a $13M Series A raised
+ * by Neon, "a global payments and e-commerce platform for game publishers",
+ * and Mosaic (strategic finance, mosaic.tech) an $18M round raised by Mosaic,
+ * "the AI-driven deal modeling platform built for private markets".
+ *
+ * The press usually says who it means. An appositive right after the name -
+ * "Neon, a ...", "Mosaic, the ..." - is the writer describing the subject, and
+ * we hold a description of ours. When that description shares no substantive
+ * word with ours, the page is about someone else. It is deliberately narrow:
+ * it rules only on a descriptor with at least two lowercase content words (so
+ * "Vanta, the leading Agentic Trust Platform" and "Hightouch, a San
+ * Francisco..." are not judged), it ignores the words every company uses of
+ * itself, and it never overrides the company's own domain.
+ */
+const GENERIC_DESCRIPTOR = new Set([
+  "platform", "platforms", "company", "companies", "startup", "startups", "software", "solution", "solutions",
+  "provider", "providers", "leading", "leader", "global", "based", "tool", "tools", "service", "services",
+  "technology", "technologies", "tech", "powered", "driven", "built", "building", "focused", "innovative",
+  "firm", "business", "businesses", "enterprise", "enterprises", "modern", "unicorn", "fastest", "growing",
+  "world", "worlds", "largest", "biggest", "popular", "backed", "venture", "funded", "developer", "maker",
+  "creator", "operator", "helps", "help", "helping", "offers", "offering", "specialising", "specializing",
+  "that", "which", "with", "from", "into", "their", "they", "your", "more", "most", "than", "this",
+  "such", "also", "other", "every", "across", "around", "about", "over", "under", "using",
+]);
+
+const stemWord = (word: string): string => word.toLowerCase()
+  .replace(/ies$/, "y").replace(/(?:ing|ial|ical|al|ed|es|s|e)$/, "");
+
+function descriptorWords(text: string): Array<{ stem: string; lower: boolean }> {
+  return (text.match(/[\p{L}\p{N}]+/gu) ?? [])
+    .filter((word) => word.length >= 4 && !GENERIC_DESCRIPTOR.has(word.toLowerCase()))
+    .map((word) => ({ stem: stemWord(word), lower: word[0] === word[0]!.toLowerCase() }))
+    .filter((word) => word.stem.length >= 3 && !GENERIC_DESCRIPTOR.has(word.stem));
+}
+
+const escapeRegExp = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+/* Case-sensitive on purpose: the name as a proper noun. "growth was linear, a
+ * sign of..." is prose, not a description of Linear. */
+export function describesAnotherCompany(rawContent: string, companyName: string, ourDescription: string | null | undefined): boolean {
+  const ours = descriptorWords(ourDescription ?? "").map((word) => word.stem);
+  if (!ours.length || !companyName.trim()) return false;
+  const pattern = new RegExp(`(?:^|[^\\p{L}\\p{N}])${escapeRegExp(companyName.trim())}\\s*,\\s+(?:a|an|the)\\s([^,.;:()\\n]{5,160})`, "gu");
+  for (const match of rawContent.matchAll(pattern)) {
+    const theirs = descriptorWords(match[1] ?? "");
+    if (theirs.filter((word) => word.lower).length < 2) continue;
+    const shared = theirs.some(({ stem }) => ours.some((mine) =>
+      mine === stem || (mine.length >= 5 && stem.length >= 5 && (mine.startsWith(stem) || stem.startsWith(mine)))));
+    if (!shared) return true;
+  }
+  return false;
+}
+
+/** "$13m", "$13 million", "US$13 Mn" -> "13m": the same round however an outlet writes it. */
+const roundKey = (amount: unknown): string | null => {
+  const match = String(amount ?? "").toLowerCase().match(/(\d+(?:[.,]\d+)?)\s*(k|thousand|m|mn|million|b|bn|billion)?/);
+  if (!match) return null;
+  return `${match[1]!.replace(",", ".")}${(match[2] ?? "")[0] ?? ""}`;
+};
+
+/**
  * Turn search hits into validated fact rows. Pure over its inputs.
  *
  * Every candidate passes through validateFactCandidateDetailed with the page
@@ -240,12 +306,13 @@ export function headlineReportsEvent(kind: EventKind, hit: { title: string; url:
  */
 export function mapEventHitsToFacts(
   hits: EventHit[],
-  input: { companyId: string; companyName: string; domain: string | null; now: Date },
+  input: { companyId: string; companyName: string; domain: string | null; now: Date; companyDescription?: string | null },
 ): { facts: EventFactRow[]; skipped: Array<{ url: string; reason: string }> } {
   const facts: EventFactRow[] = [];
   const skipped: Array<{ url: string; reason: string }> = [];
   const seen = new Set<string>();
   const observationDate = input.now.toISOString().slice(0, 10);
+  const namesakeRounds = new Set<string>();
   for (const hit of hits) {
     const sourceDomain = hostOf(hit.url);
     if (!sourceDomain) { skipped.push({ url: hit.url, reason: "UNREADABLE_URL" }); continue; }
@@ -275,6 +342,18 @@ export function mapEventHitsToFacts(
                 : extractExplicitLeadershipCandidates(evidenceId, rawContent, publishedAt);
     if (!extracted.length) { skipped.push({ url: hit.url, reason: "NO_EXPLICIT_EVENT" }); continue; }
     const firstParty = Boolean(input.domain && hostMatchesDomain(sourceDomain, input.domain));
+    if (!firstParty && describesAnotherCompany(rawContent, input.companyName, input.companyDescription)) {
+      /* Remember what this namesake raised: the next outlet may report the
+       * same round without describing the company at all ("Neon Commerce has
+       * raised $13 million"), and it is still the namesake's round. */
+      if (hit.kind === "FUNDING_EVENT") {
+        for (const candidate of extracted) {
+          const key = roundKey((candidate.structuredValue as Record<string, unknown>).amount);
+          if (key) namesakeRounds.add(key);
+        }
+      }
+      skipped.push({ url: hit.url, reason: "NAMESAKE" }); continue;
+    }
     for (const candidate of extracted) {
       const report = validateFactCandidateDetailed(candidate, {
         companyId: input.companyId, evidenceId, rawContent, observationDate, companyName: input.companyName,
@@ -295,7 +374,15 @@ export function mapEventHitsToFacts(
       });
     }
   }
-  return { facts, skipped };
+  if (!namesakeRounds.size) return { facts, skipped };
+  const kept = facts.filter((row) => {
+    if (row.kind !== "FUNDING_EVENT" || row.sourceType === "press_release") return true;
+    const key = roundKey((row.candidate.structuredValue as Record<string, unknown>).amount);
+    if (!key || !namesakeRounds.has(key)) return true;
+    skipped.push({ url: row.sourceUrl, reason: "NAMESAKE_ROUND" });
+    return false;
+  });
+  return { facts: kept, skipped };
 }
 
 /** Independent sources reporting the same kind of event within a few days of each other corroborate one another. */

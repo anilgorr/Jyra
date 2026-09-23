@@ -386,6 +386,7 @@ export async function runIntelligenceCycle(input: {
     );
     const mapped = mapEventHitsToFacts(events.hits, {
       companyId: owned.company.id, companyName: owned.company.canonicalName, domain: owned.company.domain, now: completedAt,
+      companyDescription: [owned.company.description, owned.company.industry].filter(Boolean).join(". "),
     });
     eventFacts = mapped.facts;
     const reasons = tally(mapped.skipped.map((item) => item.reason));
