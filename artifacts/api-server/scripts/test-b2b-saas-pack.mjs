@@ -109,4 +109,41 @@ check("confidence floors match what the evidence arithmetic actually produces", 
   }
 });
 
+check("the catch-all leadership definition leaves revenue leaders and regional seats alone", () => {
+  // Verbatim excerpts from the launch pool. Algolia's CRO fired both
+  // leadership definitions off one fact; Zendesk's APJ CTO fired the
+  // company-wide one.
+  const asDefinition = (d) => ({ ...d, id: d.code, status: "APPROVED",
+    configuration: { mode: d.mode, factTypes: d.factTypes, matchAny: d.matchAny ?? [], matchAll: d.matchAll ?? [], excludeAny: d.excludeAny ?? [], minFacts: d.minFacts },
+    factRequirements: { factTypes: d.factTypes, minFacts: d.minFacts } });
+  const defs = pack.definitions.filter((d) => d.factTypes.includes("LEADERSHIP_CHANGE")).map(asDefinition);
+  const fired = (excerpt, role) => f.detectSignalCandidates([{ id: "x", evidenceId: "e", factType: "LEADERSHIP_CHANGE",
+    effectiveDate: "2026-09-12", confidence: 70, supportingExcerpt: excerpt, structuredValue: { role, eventType: "appointed" } }], defs)
+    .map((c) => c.definition.code).sort();
+
+  assert.deepEqual(fired("Algolia has appointed Steven Chung as chief revenue officer and Veronica Servantez as chief marketing officer.", "chief revenue officer"),
+    ["SAAS_NEW_REVENUE_LEADER"], "one fact, one signal: a CRO is a revenue leader, not also an 'other' one");
+  assert.deepEqual(fired("Zendesk appoints David Hall-Johnston as Chief Technology Officer for Asia Pacific and Japan.", "Chief Technology Officer"),
+    [], "a regional seat is not the company's leadership");
+  assert.deepEqual(fired("Zendesk appoints David Hall-Johnston as APJ chief technology officer.", "APJ chief technology officer"), []);
+  assert.deepEqual(fired("Whatfix appoints co-founder Vara Kumar as CEO following Khadim Batti's passing, the first founder in India to take the role.", "CEO"),
+    ["SAAS_GTM_LEADERSHIP_CHANGE"], "a new CEO still counts, whatever else the sentence mentions about India");
+  assert.equal(by("SAAS_GTM_LEADERSHIP_CHANGE").version, "1.1", "a changed rule carries a new version, or it never reaches the live database");
+});
+
+check("a version bump reaches the live definition, and a silent edit does not", () => {
+  const live = { ...by("SAAS_FUNDING_ROUND"), status: "APPROVED" };
+  assert.equal(f.fixtureSyncAction(null, live, true), "INSERT");
+  assert.equal(f.fixtureSyncAction(live, { ...live }, true), "NO_OP");
+  assert.equal(f.fixtureSyncAction(live, { ...live, minimumConfidence: 45, version: "1.1" }, true), "UPDATE");
+  assert.equal(f.fixtureSyncAction(live, { ...live, minimumConfidence: 45 }, true), "DRIFT",
+    "the same version with different content would make two rules indistinguishable in a signal's provenance");
+  assert.equal(f.fixtureSyncAction(live, { ...live, minimumConfidence: 45, version: "1.1" }, false), "NO_OP",
+    "packs that back frozen acceptance runs are never rewritten");
+  assert.equal(pack.reconcile, true, "the launch pack is the one being tuned");
+  for (const slug of ["managed-soc", "cybersecurity"]) {
+    assert.notEqual(f.SIGNAL_PACK_FIXTURES.find((p) => p.slug === slug)?.reconcile, true, `${slug} stays frozen`);
+  }
+});
+
 console.log(`\nb2b saas pack: ${checks} checks passed`);

@@ -22,6 +22,10 @@ type FixtureDefinition = Pick<
 };
 
 type PackFixture = {
+  /* Whether a version bump in this file is carried to the live definition.
+   * Off by default: the managed-SOC and cybersecurity packs back acceptance
+   * runs whose expectations are frozen, and must not move under them. */
+  reconcile?: boolean;
   slug: string;
   name: string;
   description: string;
@@ -121,6 +125,21 @@ const NEGATIVE_DEFINITIONS: FixtureDefinition[] = [NEGATIVE_WORKFORCE_REDUCTION,
  * need. Being ACQUIRED still suppresses, because the budget genuinely moves to
  * a new owner.
  */
+const REVENUE_LEADER_PATTERNS = ["\\bcro\\b", "chief revenue officer", "\\bcmo\\b", "chief marketing officer",
+  "(?:vp|vice president|head)[^\"]{0,20}(?:sales|revenue|growth|demand gen)", "sales development"];
+
+/* A seat is regional when the region sits against the title: "APJ chief
+ * technology officer", "Chief Technology Officer for Asia Pacific and Japan".
+ * A region elsewhere in the sentence ("appoints Vara Kumar as CEO, the
+ * first founder in India to...") says nothing about the seat, so it is not read. */
+const SEAT = "(?:chief|officer|president|head|director|ceo|cto|cfo|coo|cio|ciso|general manager|managing director|lead)";
+const REGION_ABBR = "(?:apac|apj|emea|latam|anz|amer|dach|nordics|benelux)";
+const REGION_NAME = "(?:asia[- ]pacific|apac|apj|emea|europe|middle east|africa|latin america|north america|south asia|southeast asia|india|japan|uk|germany|france|anz)";
+const REGIONAL_SEAT_PATTERNS = [
+  `\\b${REGION_ABBR}\\b[^.\"]{0,25}\\b${SEAT}\\b`,
+  `\\b${SEAT}\\b[^.\"]{0,3}\\b(?:for|of|in)\\s+(?:the\\s+)?${REGION_NAME}\\b`,
+];
+
 const B2B_SAAS_REVENUE_DEFINITIONS: FixtureDefinition[] = [
   definition("SAAS_FUNDING_ROUND", "Funding round closed", "FUNDING", ["FUNDING_EVENT"], [88, 92, 72], {
     defaultStrength: 88, lifetimeDays: 120, minimumConfidence: 50,
@@ -128,8 +147,7 @@ const B2B_SAAS_REVENUE_DEFINITIONS: FixtureDefinition[] = [
   }),
   definition("SAAS_NEW_REVENUE_LEADER", "New revenue leader", "LEADERSHIP", ["LEADERSHIP_CHANGE"], [84, 90, 80], {
     defaultStrength: 86, lifetimeDays: 120, minimumConfidence: 50,
-    matchAny: ["\\bcro\\b", "chief revenue officer", "\\bcmo\\b", "chief marketing officer",
-      "(?:vp|vice president|head)[^\"]{0,20}(?:sales|revenue|growth|demand gen)", "sales development"],
+    matchAny: REVENUE_LEADER_PATTERNS,
     description: "A new revenue, marketing or sales leader. They rebuild the stack in their first two quarters, which is the window.",
   }),
   definition("SAAS_SDR_HIRING", "Outbound team hiring", "HIRING", ["JOB_OPENING"], [76, 80, 82], {
@@ -147,9 +165,16 @@ const B2B_SAAS_REVENUE_DEFINITIONS: FixtureDefinition[] = [
     matchAny: ["account executive", "enterprise sales", "sales manager", "revenue operations", "\\brevops\\b", "sales enablement"],
     description: "Open quota-carrying or revenue-operations roles. Real, but routine enough that it ranks below funding and below outbound hiring.",
   }),
+  /* 1.1: "outside the revenue org" was only a description. With no pattern
+   * behind it, Algolia's new CRO fired both this and SAAS_NEW_REVENUE_LEADER
+   * off one fact, and Zendesk naming a CTO for Asia Pacific and Japan counted
+   * as a company-wide leadership change. A revenue leader now belongs to the
+   * definition written for one, and a regional seat is not the company's
+   * leadership. */
   definition("SAAS_GTM_LEADERSHIP_CHANGE", "Other leadership change", "LEADERSHIP", ["LEADERSHIP_CHANGE"], [50, 66, 56], {
-    defaultStrength: 62, lifetimeDays: 90, minimumConfidence: 50,
-    description: "A leadership change outside the revenue org. Weaker: a new CTO reshapes engineering tooling, not the sales stack.",
+    defaultStrength: 62, lifetimeDays: 90, minimumConfidence: 50, version: "1.1",
+    excludeAny: [...REVENUE_LEADER_PATTERNS, ...REGIONAL_SEAT_PATTERNS],
+    description: "A company-wide leadership change outside the revenue org. Weaker: a new CTO reshapes engineering tooling, not the sales stack.",
   }),
   definition("SAAS_MARKET_EXPANSION", "New market or geography", "EXPANSION", ["NEW_MARKET", "COMPANY_EXPANSION"], [72, 80, 70], {
     defaultStrength: 74, minimumConfidence: 50,
@@ -235,6 +260,7 @@ export const MANAGED_SOC_SECURITY_COMPLIANCE_ACTIVITY_DEFINITION = definition(
 
 export const SIGNAL_PACK_FIXTURES: PackFixture[] = [
   {
+    reconcile: true,
     slug: "b2b-saas-revenue-tools",
     name: "B2B SaaS revenue tooling",
     description: "Sales intelligence and engagement sold to B2B SaaS revenue teams: funding and revenue-leadership change over routine hiring, with layoffs discounted rather than disqualifying.",
@@ -410,6 +436,48 @@ export async function reconcileManagedSocSecurityComplianceActivity() {
   return { action: "UPDATED" as const, pack, definition };
 }
 
+/**
+ * What to do with a fixture definition that may already be live.
+ *
+ * Seeding used to insert-or-ignore, so a definition, once written, never
+ * changed again: a new floor, a new pattern or a corrected impact in this file
+ * reached a fresh database and never the running one. The launch pack was
+ * kept in step by hand, which is how a tuning change gets lost.
+ *
+ * The version is the deliberate act. A reconciled pack's definition is
+ * rewritten when this file carries a different version than the database, and
+ * the new version flows into every signal's rule_version, so a signal says
+ * which rule produced it. A difference WITHOUT a version bump is drift: it is
+ * reported and left alone, because rewriting a rule silently under the same
+ * version would make two different rules indistinguishable in provenance.
+ */
+export type FixtureSyncAction = "INSERT" | "UPDATE" | "NO_OP" | "DRIFT";
+
+export function definitionFingerprint(definition: Record<string, unknown>): string {
+  const stableJson = (value: unknown): string => {
+    if (Array.isArray(value)) return `[${value.map(stableJson).join(",")}]`;
+    if (value && typeof value === "object") {
+      return `{${Object.entries(value as Record<string, unknown>).sort(([left], [right]) => left.localeCompare(right))
+        .map(([key, child]) => `${JSON.stringify(key)}:${stableJson(child)}`).join(",")}}`;
+    }
+    return JSON.stringify(value);
+  };
+  const pick = ["name", "description", "category", "polarity", "factRequirements", "defaultStrength", "minimumConfidence",
+    "lifetimeDays", "decayRule", "needImpact", "timingImpact", "fitImpact", "sourcePreferences", "version", "configuration"];
+  return stableJson(Object.fromEntries(pick.map((key) => [key, definition[key] ?? null])));
+}
+
+export function fixtureSyncAction(
+  existing: Record<string, unknown> | null | undefined,
+  fixture: Record<string, unknown>,
+  reconcile: boolean,
+): FixtureSyncAction {
+  if (!existing) return "INSERT";
+  if (!reconcile) return "NO_OP";
+  if (definitionFingerprint(existing) === definitionFingerprint(fixture)) return "NO_OP";
+  return existing.version !== fixture.version ? "UPDATE" : "DRIFT";
+}
+
 export async function ensureSignalPackFixtures() {
   const packs = [];
   for (const fixture of SIGNAL_PACK_FIXTURES) {
@@ -436,7 +504,7 @@ export async function ensureSignalPackFixtures() {
         excludeAny: item.excludeAny ?? [],
         minFacts: item.minFacts,
       };
-      await db.insert(signalDefinitionsTable).values({
+      const values = {
         signalPackId: pack.id,
         code: item.code,
         name: item.name,
@@ -457,7 +525,29 @@ export async function ensureSignalPackFixtures() {
         status: "APPROVED",
         version: item.version,
         configuration,
-      }).onConflictDoNothing();
+      };
+      if (!fixture.reconcile) {
+        await db.insert(signalDefinitionsTable).values(values).onConflictDoNothing();
+        continue;
+      }
+      const [existing] = await db.select().from(signalDefinitionsTable).where(and(
+        eq(signalDefinitionsTable.signalPackId, pack.id),
+        eq(signalDefinitionsTable.code, item.code),
+      )).limit(1);
+      const action = fixtureSyncAction(existing, values, true);
+      if (action === "INSERT") {
+        await db.insert(signalDefinitionsTable).values(values).onConflictDoNothing();
+      } else if (action === "UPDATE" && existing) {
+        // The status stays whatever the database says: a definition someone
+        // retired is not revived by a version bump.
+        await db.update(signalDefinitionsTable).set({ ...values, status: existing.status })
+          .where(eq(signalDefinitionsTable.id, existing.id));
+        console.info(`SIGNAL_DEFINITION_RECONCILED ${fixture.slug}/${item.code} ${existing.version} -> ${item.version}`);
+      } else if (action === "DRIFT") {
+        // Kept on console like the managed-SOC warning below: this module is
+        // loaded by the hermetic test bundles, which cannot carry pino.
+        console.warn(`SIGNAL_DEFINITION_DRIFT ${fixture.slug}/${item.code}@${item.version}: the fixture differs from the live definition under the same version; bump the version to apply it`);
+      }
     }
     packs.push(pack);
   }
