@@ -91,7 +91,10 @@ check("confidence floors match what the evidence arithmetic actually produces", 
   for (const code of ["SAAS_FUNDING_ROUND", "SAAS_NEW_REVENUE_LEADER", "SAAS_GTM_LEADERSHIP_CHANGE"]) {
     const d = by(code);
     assert.ok(d.minimumConfidence <= 50, `${code} must admit one fresh credible report (${d.minimumConfidence})`);
-    assert.ok(d.minimumConfidence >= 45, `${code} must still exclude a four-month-old round decayed into the low 40s`);
+    // Age no longer lowers an event's confidence (the signal's decay charges
+    // it), so the floor only has to separate one credible report (~56) from
+    // weaker sourcing, not old news from new.
+    assert.ok(d.minimumConfidence >= 45, `${code} must still exclude weaker-than-one-credible-report sourcing`);
   }
 
   // A negative that only discounts inverts the usual caution. Withholding it

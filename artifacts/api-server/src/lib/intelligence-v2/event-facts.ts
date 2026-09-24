@@ -548,6 +548,8 @@ export async function persistEventFacts(
       observedAt: now,
       corroboratingSourceCount: corroborating,
       now,
+      // A dated event: its age is the signal's decay to charge, not this score's.
+      ageDecaysDownstream: true,
     });
     const [existing] = await executor.select({ id: companyEvidenceTable.id }).from(companyEvidenceTable)
       .where(and(eq(companyEvidenceTable.companyId, input.companyId), eq(companyEvidenceTable.sourceUrl, row.sourceUrl))).limit(1);

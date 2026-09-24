@@ -320,6 +320,8 @@ export async function persistJobFacts(
       // ad that might be stale.
       corroboratingSourceCount: Math.max(0, input.facts.length - 1),
       now,
+      // Dated by its posting; the hiring signal's decay charges the age.
+      ageDecaysDownstream: true,
     });
 
     const [existing] = await executor
@@ -462,6 +464,7 @@ export async function persistHiringCounts(
       // A count is corroborated by every posting it counted.
       corroboratingSourceCount: Math.max(0, row.count - 1),
       now,
+      ageDecaysDownstream: true,
     });
 
     const [existing] = await executor

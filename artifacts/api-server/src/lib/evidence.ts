@@ -65,6 +65,25 @@ export type EvidenceScoreInput = {
   observedAt: Date;
   corroboratingSourceCount?: number;
   now?: Date;
+  /**
+   * The claim is a dated event whose signal already decays by its age.
+   *
+   * Freshness asks two different questions depending on the claim. For a
+   * state - a headcount, a technology in use - an old page may simply be out
+   * of date, so age rightly lowers how much we believe it. For an event - a
+   * round closed, a leader appointed, a role posted - the date is part of the
+   * claim, and a four-month-old report of a four-month-old round is exactly
+   * as true as it was on the day. The signal layer already discounts the
+   * event by its age over the definition's lifetime. Charging age here as
+   * well counted it twice: a six-month-old article lost about 19 points of
+   * confidence (freshness is a fifth of the score) and then decayed again,
+   * so an event could fall below a definition's floor for being old, when
+   * the floor exists to ask whether it happened at all.
+   *
+   * When set, freshness is still computed and stored, but confidence reads
+   * the claim as though reported today and leaves age to the decay.
+   */
+  ageDecaysDownstream?: boolean;
 };
 
 export type EvidenceScores = {
@@ -399,10 +418,11 @@ export function calculateEvidenceScores(input: EvidenceScoreInput): EvidenceScor
   const corroborationScore = clampScore(
     corroboratingSources === 0 ? 20 : 35 + Math.min(65, corroboratingSources * 22),
   );
+  const freshnessForConfidence = input.ageDecaysDownstream ? 100 : freshnessScore;
   const confidence = clampScore(
     authorityScore * 0.35 +
       directnessScore * 0.3 +
-      freshnessScore * 0.2 +
+      freshnessForConfidence * 0.2 +
       corroborationScore * 0.15,
   );
   return {

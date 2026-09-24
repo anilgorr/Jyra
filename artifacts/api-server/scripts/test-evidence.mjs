@@ -157,6 +157,25 @@ assert.ok(official.corroborationScore > thirdParty.corroborationScore);
 assert.ok(official.confidence > thirdParty.confidence);
 assert.ok(Object.values(official).every((score) => score >= 0 && score <= 100));
 
+// Age is charged once. A dated event keeps its freshness on record, but its
+// confidence reads it as reported today, because the signal decays it by age.
+{
+  const report = (publishedAt, ageDecaysDownstream) => calculateEvidenceScores({
+    sourceType: "news", sourceDomain: "citybiz.co", companyDomain: "acme.com", provider: "event-search",
+    publisher: null, publishedAt: new Date(publishedAt), observedAt: now, corroboratingSourceCount: 0, now,
+    ...(ageDecaysDownstream ? { ageDecaysDownstream } : {}),
+  });
+  const fresh = report("2026-08-26T12:00:00.000Z", true);
+  const old = report("2026-04-29T12:00:00.000Z", true);
+  assert.equal(old.confidence, fresh.confidence, "a four-month-old round is exactly as true as it was on the day");
+  assert.ok(old.freshnessScore < fresh.freshnessScore, "the age is still recorded, for the decay to use");
+  // Calibration: a fresh single third-party report lands where every floor
+  // was tuned (Temporal's round at three days scored 55.8).
+  assert.ok(Math.abs(fresh.confidence - report("2026-08-26T12:00:00.000Z", false).confidence) < 1.5);
+  // A state claim is untouched: an old page about a headcount is less believable.
+  assert.ok(report("2026-04-29T12:00:00.000Z", false).confidence < old.confidence);
+}
+
 assert.doesNotThrow(() => assertEvidenceStatusTransition("RAW", "EXTRACTED"));
 assert.doesNotThrow(() => assertEvidenceStatusTransition("EXTRACTED", "VERIFIED"));
 assert.doesNotThrow(() => assertEvidenceStatusTransition("VERIFIED", "STALE"));
