@@ -1,22 +1,18 @@
 import { Router, type IRouter, type RequestHandler } from "express";
 import { watchLoopTokenMatches } from "../lib/internal-auth";
-import { PostgresIntelligenceV2Repository } from "../lib/intelligence-v2/repository";
 import { currentQueue } from "../lib/queue";
 import { RESEARCH_COMPANY_QUEUE, queueSettings } from "../lib/queue-policy";
 import { enqueueUnresearched } from "../lib/research-worker";
 import { backfillHeadcountForProject } from "../lib/intelligence-v2/headcount-backfill";
 import { rescoreProject } from "../lib/signal-rescore";
-import { runWatchLoopTick, runWatchLoopUntilCaughtUp, wakeBudgetMs, watchLoopSettings, type TickReport, type WakeReport } from "../lib/intelligence-v2/watch-loop";
+import { watchLoopSettings } from "../lib/intelligence-v2/watch-loop";
+import { startWatchWake, watchWakeState } from "../lib/intelligence-v2/watch-wake";
 
 const router: IRouter = Router();
 type AsyncHandler = (...args: Parameters<RequestHandler>) => Promise<void>;
 const asyncRoute = (handler: AsyncHandler): RequestHandler =>
   (req, res, next) => void handler(req, res, next).catch(next);
 
-const repository = new PostgresIntelligenceV2Repository();
-let inFlight: Promise<TickReport> | null = null;
-let lastReport: TickReport | null = null;
-let lastWake: Omit<WakeReport, "ticks"> & { ticks: number } | null = null;
 
 /**
  * One tick, for an external scheduler — a GitHub Actions cron, pg_cron via
@@ -32,27 +28,10 @@ router.post("/internal/watch-loop/tick", asyncRoute(async (req, res) => {
   const expected = process.env.JYRA_WATCH_LOOP_TOKEN;
   if (!expected) return void res.status(404).json({ error: "Not found" });
   if (!watchLoopTokenMatches(req.header("authorization"), expected)) return void res.status(401).json({ error: "Unauthorized" });
-  if (inFlight) return void res.status(409).json({ error: "A watch-loop tick is already running" });
-  // One wake-up, as many ticks as the backlog and the budget call for. Each
-  // tick's report replaces `lastReport` as it lands, so a poller sees progress.
-  const settings = watchLoopSettings();
-  const work = runWatchLoopUntilCaughtUp({
-    budgetMs: wakeBudgetMs(),
-    tick: async () => {
-      const report = await runWatchLoopTick({ repository, log: req.log, settings });
-      lastReport = report;
-      return report;
-    },
-  });
-  inFlight = work.then((wake) => {
-    lastWake = { last: wake.last, stoppedBecause: wake.stoppedBecause, ticks: wake.ticks.length };
-    req.log.info({ ticks: wake.ticks.length, stoppedBecause: wake.stoppedBecause, ran: wake.ticks.reduce((n, t) => n + t.ran, 0) }, "WATCH_LOOP_WAKE_DONE");
-    return wake.last;
-  }).finally(() => { inFlight = null; });
-  // A background tick that rejects must not become an unhandled rejection.
-  inFlight.catch((error) => req.log.warn({ err: error }, "WATCH_LOOP_TICK_FAILED"));
+  const running = startWatchWake(req.log, "http");
+  if (!running) return void res.status(409).json({ error: "A watch-loop tick is already running" });
   if (req.query.wait === "true") {
-    res.json(await inFlight);
+    res.json(await running);
     return;
   }
   res.status(202).json({ started: true, startedAt: new Date().toISOString() });
@@ -63,7 +42,7 @@ router.get("/internal/watch-loop/last", (req, res) => {
   const expected = process.env.JYRA_WATCH_LOOP_TOKEN;
   if (!expected) return void res.status(404).json({ error: "Not found" });
   if (!watchLoopTokenMatches(req.header("authorization"), expected)) return void res.status(401).json({ error: "Unauthorized" });
-  res.json({ running: inFlight !== null, last: lastReport, wake: lastWake });
+  res.json(watchWakeState());
 });
 
 /** Read-only: is the loop switched on, and with what cadence per tier? Same token. */
@@ -77,7 +56,7 @@ router.get("/internal/watch-loop/settings", (req, res) => {
     ...settings,
     cadenceDays: Object.fromEntries(Object.entries(settings.policies).map(([tier, policy]) => [tier, policy.cadenceMs / day])),
     refreshDays: Object.fromEntries(Object.entries(settings.policies).map(([tier, policy]) => [tier, policy.refreshMs / day])),
-    running: inFlight !== null,
+    running: watchWakeState().running,
   });
 });
 

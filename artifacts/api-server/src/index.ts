@@ -13,6 +13,7 @@ import { ensureDevelopmentExpleeProvider } from "./lib/explee-provider-config";
 import { logger } from "./lib/logger";
 import { assertMarketReadinessProcessingConfig } from "./lib/market-readiness";
 import { ensureSignalPackFixtures } from "./lib/signal-pack-fixtures";
+import { startInternalWatchScheduler } from "./lib/intelligence-v2/watch-wake";
 
 /**
  * The port to serve on — resolved when we are about to serve, not at import.
@@ -132,6 +133,8 @@ async function main() {
     }
 
     logger.info({ port }, "Server listening");
+    // The watch loop keeps its own time rather than waiting to be woken.
+    startInternalWatchScheduler(logger);
   });
 }
 
