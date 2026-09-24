@@ -419,7 +419,13 @@ const CORPORATE_FORM_TOKENS = new Set([
   "co", "company", "gmbh", "ag", "sa", "sas", "sarl", "bv", "nv", "pty", "pvt", "private",
   "srl", "spa", "oy", "ab", "as", "kk", "kft", "doo", "sdn", "bhd",
   "systems", "technologies", "technology", "solutions", "software", "labs", "laboratories",
-  "group", "holdings", "holding", "international", "global", "worldwide",
+  "group", "holdings", "holding",
+  /* Not "global", "international" or "worldwide". Those are brand words as
+   * often as legal forms, and accepting them as a suffix meant "Zeta Global
+   * appoints Leah Pope as CMO" - the NYSE marketing-cloud company - was filed
+   * against Zeta, the banking-technology company at zeta.tech. Across every
+   * event fact ever stored, that was the only subject whose extra word was one
+   * of these three, and it was wrong. */
 ]);
 
 /**
@@ -1316,6 +1322,9 @@ const FUNDING_AMOUNT_FIRST_PATTERN = new RegExp(
   "gi",
 );
 
+const ROUND_WITH_RUNNING_TOTAL = /\b(?:bring(?:s|ing)?|brought|tak(?:es|ing)|took|push(?:es|ing)?|lift(?:s|ing)?)\b[^.]{0,40}\btotal\b|\btotal\b[^.]{0,40}\bto (?:(?:US)?\$|€|£|₹|rs\.?\s?)?\d/i;
+const CUMULATIVE_FUNDING = /\b(?:in total|a total of|total (?:equity |venture |primary )?(?:funding|financing|capital|investment)|to date|so far|since (?:its )?(?:founding|inception|launch)|over the years|cumulative(?:ly)?|altogether|in aggregate)\b/i;
+
 export function extractExplicitFundingCandidates(
   evidenceId: string,
   rawContent: string,
@@ -1338,6 +1347,14 @@ export function extractExplicitFundingCandidates(
     if (NOT_A_COMPANY_HEAD.test(company.split(/\s+/)[0] ?? "")) continue;
     const sentenceEnd = content.slice(match.index).search(/[.!?](?:\s|$)/);
     const eventEnd = sentenceEnd >= 0 ? match.index + sentenceEnd + 1 : match.index + match[0].length;
+    /* A running total is not a round. "Ramp has raised over $3 billion in
+     * total equity financing" and "MoEngage has raised about $307 million in
+     * primary funding to date" both matched as funding events: a company, a
+     * raise verb, an amount. Neither is money that just arrived. */
+    const fundingSentence = content.slice(match.index, eventEnd);
+    // "...raised $50M Series C, bringing total funding to $120M" is a round
+    // that states the running total beside it, and stays.
+    if (CUMULATIVE_FUNDING.test(fundingSentence) && !ROUND_WITH_RUNNING_TOTAL.test(fundingSentence)) continue;
     const dated = resolveEventDate(content, match.index, eventEnd, publishedAt);
     if (!dated) continue;
     candidates.push({

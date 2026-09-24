@@ -791,3 +791,60 @@ console.log("PASS event-facts");
   console.log("  ok  the event sentence's own date beats a byline above it");
 }
 
+/* One appointment, many reports. Verbatim from the launch pool: three outlets
+ * dated Zendesk's CMO appointment June 25, and a fourth ran it on September 23
+ * under a page header carrying that day's date. */
+{
+  const now = new Date("2026-09-24T00:00:00Z");
+  const ctx = { companyId: "c-zd", companyName: "Zendesk", domain: "zendesk.com", now };
+  const hit = (url, title, rawContent, publishedAt) => ({ kind: "LEADERSHIP_CHANGE", url, title, snippet: "", rawContent, publishedAt });
+  const june = hit("https://www.businesswire.com/news/zendesk-cmo", "Zendesk Appoints Tifenn Dano Kwan as Chief Marketing Officer",
+    "June 25, 2026 -- Zendesk has named Tifenn Dano Kwan as Chief Marketing Officer.", "2026-06-25T00:00:00Z");
+  const late = hit("https://www.medianews4u.com/zendesk-names-tifenn-dano-kwan-as-chief-marketing-officer/", "Zendesk names Tifenn Dano Kwan as Chief Marketing Officer",
+    "Zendesk names Tifenn Dano Kwan as Chief Marketing Officer Wednesday, September 23, 2026 Exclusive Advertising Media Radio", "2026-09-23T00:00:00Z");
+
+  const together = e.mapEventHitsToFacts([june, late], ctx);
+  assert.ok(together.facts.length >= 1);
+  assert.ok(together.facts.every((f) => f.candidate.effectiveDate === "2026-06-25"), together.facts.map((f) => f.candidate.effectiveDate).join(","));
+  assert.ok(together.skipped.some((s) => s.reason === "LATER_REPORT_OF_EARLIER_EVENT"));
+
+  // The June reports are already on file; the September write-up arrives alone.
+  const alone = e.mapEventHitsToFacts([late], { ...ctx, priorEvents: [
+    { factType: "LEADERSHIP_CHANGE", structuredValue: { person: "Tifenn Dano Kwan", role: "Chief Marketing Officer" }, effectiveDate: "2026-06-25" },
+  ] });
+  assert.deepEqual(alone.facts, [], "a stored June appointment cannot come back as September's");
+
+  // Coverage lag is not a second event: Clay's round was reported on the 9th and the 11th.
+  assert.equal(e.eventIdentity("FUNDING_EVENT", { amount: "$115M" }), e.eventIdentity("FUNDING_EVENT", { amount: "$115 million" }));
+  const clay = e.mapEventHitsToFacts([
+    { kind: "FUNDING_EVENT", url: "https://pulse2.com/clay", title: "Clay Raises $115 Million Series D", snippet: "", rawContent: "Clay has raised $115 million in Series D funding at a $7.1 billion valuation.", publishedAt: "2026-09-11T00:00:00Z" },
+  ], { companyId: "c-clay", companyName: "Clay", domain: "clay.com", now, priorEvents: [{ factType: "FUNDING_EVENT", structuredValue: { amount: "$115M" }, effectiveDate: "2026-09-09" }] });
+  assert.ok(clay.facts.length >= 1 && clay.skipped.every((x) => x.reason !== "LATER_REPORT_OF_EARLIER_EVENT"), "two days later is the same news cycle, not a later report");
+
+  assert.equal(e.eventIdentity("LEADERSHIP_CHANGE", { person: "former Visa exec Mike Lemberger" }), e.eventIdentity("LEADERSHIP_CHANGE", { person: "Former Visa Executive Mike Lemberger" }),
+    "one appointment, however each outlet phrases the person");
+  // An event with no identity is left alone rather than guessed at.
+  assert.equal(e.eventIdentity("LEADERSHIP_CHANGE", { person: "Kwan" }), null);
+  console.log("  ok  one event reported many times keeps its earliest date");
+}
+
+/* A running total is not a round, and a round beside its running total is. */
+{
+  const PUB = "2026-06-25T00:00:00Z";
+  const id = "dddddddd-0000-4000-8000-000000000001";
+  assert.deepEqual(e.extractExplicitFundingCandidates(id, "Ramp has raised over $3 billion in total equity financing.", PUB), []);
+  assert.deepEqual(e.extractExplicitFundingCandidates(id, "MoEngage has raised about $307 million in primary funding to date.", PUB), []);
+  const [round] = e.extractExplicitFundingCandidates(id, "Acme Payments raised $50 million in a Series C round, bringing total funding to $120 million.", PUB);
+  assert.ok(round, "a round that states the running total beside it is still a round");
+  assert.equal(round.structuredValue.amount, "$50 million");
+  console.log("  ok  a running total is not a round");
+}
+
+/* "Zeta Global" is not Zeta. */
+{
+  assert.equal(e.extractedNamesSubject("Zeta Global", "Zeta"), false, "the NYSE marketing cloud is not the banking-technology company");
+  assert.equal(e.extractedNamesSubject("Temporal", "Temporal Technologies"), true, "the press shortening a registered name still matches");
+  assert.equal(e.extractedNamesSubject("Mahindra Group", "Mahindra Group"), true);
+  console.log("  ok  a longer, different company name is a different company");
+}
+

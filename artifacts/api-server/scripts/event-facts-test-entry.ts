@@ -1,4 +1,4 @@
-export { buildEventQueries, attributeEventHit, headlineReportsEvent, describesAnotherCompany, mapEventHitsToFacts, corroborationFor, researchEvents, EVENT_LOOKBACK_DAYS } from "../src/lib/intelligence-v2/event-facts";
+export { buildEventQueries, attributeEventHit, headlineReportsEvent, describesAnotherCompany, eventIdentity, mapEventHitsToFacts, corroborationFor, researchEvents, EVENT_LOOKBACK_DAYS } from "../src/lib/intelligence-v2/event-facts";
 export { extractExplicitSecurityIncidentCandidates, extractExplicitLeadershipCandidates, extractExplicitWorkforceReductionCandidates, extractExplicitAcquiredCandidates, extractExplicitFundingCandidates, extractExplicitCertificationCandidates, extractExplicitFootprintCandidates, extractExplicitSiteExpansionCandidates, extractExplicitNewMarketCandidates, factDateProvenance, extractedNamesSubject, validateFactCandidateDetailed, FACT_TYPES } from "../src/lib/facts";
 export { factTypeEnum } from "../../../lib/db/src/schema/facts";
 export { SIGNAL_PACK_FIXTURES } from "../src/lib/signal-pack-fixtures";

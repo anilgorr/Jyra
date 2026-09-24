@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { and, eq } from "drizzle-orm";
+import { and, eq, gte, inArray } from "drizzle-orm";
 import {
   companyEvidenceTable,
   companyFactsTable,
@@ -306,7 +306,7 @@ const roundKey = (amount: unknown): string | null => {
  */
 export function mapEventHitsToFacts(
   hits: EventHit[],
-  input: { companyId: string; companyName: string; domain: string | null; now: Date; companyDescription?: string | null },
+  input: { companyId: string; companyName: string; domain: string | null; now: Date; companyDescription?: string | null; priorEvents?: PriorEvent[] },
 ): { facts: EventFactRow[]; skipped: Array<{ url: string; reason: string }> } {
   const facts: EventFactRow[] = [];
   const skipped: Array<{ url: string; reason: string }> = [];
@@ -374,15 +374,94 @@ export function mapEventHitsToFacts(
       });
     }
   }
-  if (!namesakeRounds.size) return { facts, skipped };
-  const kept = facts.filter((row) => {
+  const kept = !namesakeRounds.size ? facts : facts.filter((row) => {
     if (row.kind !== "FUNDING_EVENT" || row.sourceType === "press_release") return true;
     const key = roundKey((row.candidate.structuredValue as Record<string, unknown>).amount);
     if (!key || !namesakeRounds.has(key)) return true;
     skipped.push({ url: row.sourceUrl, reason: "NAMESAKE_ROUND" });
     return false;
   });
-  return { facts: kept, skipped };
+  return { facts: dropLaterReports(kept, input.priorEvents ?? [], skipped), skipped };
+}
+
+/**
+ * The same event, reported again later, is coverage of the event and not a
+ * second one.
+ *
+ * Zendesk named Tifenn Dano Kwan CMO on June 25; Business Wire, citybiz and
+ * marketech all dated it so. On September 23 a trade site ran the story under
+ * a page header reading "Wednesday, September 23, 2026", the sentence stated
+ * no date of its own, and the header won. One fact at a three-month-old
+ * appointment's true date and one at today's, and a signal takes the newest
+ * supporting date, so Zendesk's revenue-leader signal fired at 85 as though
+ * the seat had changed hands that morning.
+ *
+ * A dated appointment or round is one event however many outlets cover it.
+ * Its date is the earliest any credible report gives, and a report dated
+ * more than two weeks after that is a later write-up, dropped
+ * (LATER_REPORT_OF_EARLIER_EVENT). Identity is the person for an
+ * appointment and the amount for a round; an event without either is left
+ * alone rather than guessed at. Stored facts count as reports too, so a
+ * re-run cannot bring a June appointment back as September's.
+ */
+export type PriorEvent = { factType: string; structuredValue: unknown; effectiveDate: string };
+
+const LATER_REPORT_TOLERANCE_DAYS = 14;
+
+/* The extractor's person is sometimes the whole noun phrase - "former Visa
+ * exec Mike Lemberger", "Former Visa Executive Mike Lemberger", "co-founder
+ * Vara Kumar" - so the same appointment reads differently per outlet. The
+ * last two words are the name in every one stored. */
+const personKey = (value: unknown): string | null => {
+  const words = String(value ?? "").toLowerCase().replace(/[^\p{L}\s]/gu, " ").split(/\s+/).filter(Boolean);
+  return words.length >= 2 ? words.slice(-2).join(" ") : null;
+};
+
+export function eventIdentity(factType: string, structuredValue: unknown): string | null {
+  const value = (structuredValue ?? {}) as Record<string, unknown>;
+  if (factType === "LEADERSHIP_CHANGE") {
+    const person = personKey(value.person);
+    return person ? `LEADERSHIP_CHANGE|${person}` : null;
+  }
+  if (factType === "FUNDING_EVENT") {
+    const round = roundKey(value.amount);
+    return round ? `FUNDING_EVENT|${round}` : null;
+  }
+  return null;
+}
+
+function dropLaterReports(facts: EventFactRow[], prior: PriorEvent[], skipped: Array<{ url: string; reason: string }>): EventFactRow[] {
+  const earliest = new Map<string, number>();
+  const note = (identity: string | null, date: string) => {
+    const t = Date.parse(date);
+    if (!identity || !Number.isFinite(t)) return;
+    earliest.set(identity, Math.min(earliest.get(identity) ?? t, t));
+  };
+  for (const event of prior) note(eventIdentity(event.factType, event.structuredValue), event.effectiveDate);
+  for (const row of facts) note(eventIdentity(row.candidate.factType, row.candidate.structuredValue), row.candidate.effectiveDate);
+  const tolerance = LATER_REPORT_TOLERANCE_DAYS * 86_400_000;
+  return facts.filter((row) => {
+    const identity = eventIdentity(row.candidate.factType, row.candidate.structuredValue);
+    const first = identity ? earliest.get(identity) : undefined;
+    if (first === undefined || Date.parse(row.candidate.effectiveDate) - first <= tolerance) return true;
+    skipped.push({ url: row.sourceUrl, reason: "LATER_REPORT_OF_EARLIER_EVENT" });
+    return false;
+  });
+}
+
+/** The appointments and rounds already on file for a company, as prior reports for dropLaterReports. */
+export async function loadPriorEvents(companyId: string, now: Date, executor: DbExecutor = db): Promise<PriorEvent[]> {
+  const since = new Date(now.getTime() - (EVENT_LOOKBACK_DAYS + 30) * 86_400_000).toISOString().slice(0, 10);
+  const rows = await executor.select({
+    factType: companyFactsTable.factType,
+    structuredValue: companyFactsTable.structuredValue,
+    effectiveDate: companyFactsTable.effectiveDate,
+  }).from(companyFactsTable).where(and(
+    eq(companyFactsTable.companyId, companyId),
+    inArray(companyFactsTable.factType, ["LEADERSHIP_CHANGE", "FUNDING_EVENT"]),
+    gte(companyFactsTable.effectiveDate, since),
+  ));
+  return rows.map((row) => ({ factType: String(row.factType), structuredValue: row.structuredValue, effectiveDate: String(row.effectiveDate).slice(0, 10) }));
 }
 
 /** Independent sources reporting the same kind of event within a few days of each other corroborate one another. */
