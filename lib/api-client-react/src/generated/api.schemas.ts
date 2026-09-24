@@ -3708,9 +3708,28 @@ export type ProjectChangeFeedSummary = {
   spendUsd: number;
 };
 
+export type ProjectChangeFeedMonitoringStatus = typeof ProjectChangeFeedMonitoringStatus[keyof typeof ProjectChangeFeedMonitoringStatus];
+
+
+export const ProjectChangeFeedMonitoringStatus = {
+  ACTIVE: 'ACTIVE',
+  PAUSED: 'PAUSED',
+} as const;
+
+/**
+ * Whether scheduled research can run for this project at all. PAUSED means every scheduled cycle is being skipped until the listed setup problems are fixed.
+ */
+export type ProjectChangeFeedMonitoring = {
+  status: ProjectChangeFeedMonitoringStatus;
+  /** Blocking setup requirements, e.g. ICP_NOT_LINKED_TO_BUSINESS_TWIN. */
+  reasons: string[];
+};
+
 export interface ProjectChangeFeed {
   items: ProjectChange[];
   summary: ProjectChangeFeedSummary;
+  /** Whether scheduled research can run for this project at all. PAUSED means every scheduled cycle is being skipped until the listed setup problems are fixed. */
+  monitoring?: ProjectChangeFeedMonitoring;
 }
 
 export type SignalContextSnapshot = { [key: string]: unknown };

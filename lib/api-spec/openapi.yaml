@@ -4994,6 +4994,16 @@ components:
             lastCycleAt: { type: string, format: date-time, nullable: true }
             spendUsd: { type: number }
           required: [cyclesTotal, cyclesWithChanges, companiesWatched, lastCycleAt, spendUsd]
+        monitoring:
+          type: object
+          description: Whether scheduled research can run for this project at all. PAUSED means every scheduled cycle is being skipped until the listed setup problems are fixed.
+          properties:
+            status: { type: string, enum: [ACTIVE, PAUSED] }
+            reasons:
+              type: array
+              items: { type: string }
+              description: Blocking setup requirements, e.g. ICP_NOT_LINKED_TO_BUSINESS_TWIN.
+          required: [status, reasons]
       required: [items, summary]
     Signal:
       type: object

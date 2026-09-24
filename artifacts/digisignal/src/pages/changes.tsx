@@ -9,6 +9,7 @@ import {
   type ChangeScore,
 } from "@workspace/api-client-react";
 import { useWorkspace } from "@/context/workspace-context";
+import { MonitoringPausedBanner } from "@/components/monitoring-paused-banner";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -234,6 +235,7 @@ export default function Changes() {
       </div>
 
       <div className="container mx-auto max-w-5xl space-y-6 px-4 py-8">
+        <MonitoringPausedBanner projectId={activeProjectId} />
         <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
           {[
             ["Looks", summary ? summary.cyclesTotal : "—", `in the last ${window.label.toLowerCase()}`],

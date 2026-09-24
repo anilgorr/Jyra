@@ -272,10 +272,20 @@ async function mutateCriteria(
   source: { version: typeof icpVersionsTable.$inferSelect; criteria: IcpCriterion[] },
   criteria: Array<IcpCriterionInput & { accepted?: boolean }>,
 ) {
+  /* An edited ICP belongs to the Business Twin as it stands now.
+   *
+   * Copying the source version's link meant that editing criteria on an ICP
+   * built from Twin v1 produced a new ICP still pointing at v1, even when v2
+   * existed. Research runs only when the latest ICP was built from the latest
+   * Twin, so that one edit on the launch pool's ICP (Sept 19) left every
+   * company unresearched for four days, silently. The person editing the
+   * criteria is endorsing them against the Twin they can see, which is the
+   * latest one. */
+  const currentTwin = await getBusinessTwin(project.id);
   return persistVersion({
     project,
     userId,
-    sourceBusinessTwinVersionId: source.version.sourceBusinessTwinVersionId,
+    sourceBusinessTwinVersionId: currentTwin?.id ?? source.version.sourceBusinessTwinVersionId,
     generationContext: {
       icpMode: source.version.icpMode,
       modeExplanation: source.version.modeExplanation,

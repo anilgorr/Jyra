@@ -319,6 +319,8 @@ export * from './precisionRowReasons';
 export * from './project';
 export * from './projectChange';
 export * from './projectChangeFeed';
+export * from './projectChangeFeedMonitoring';
+export * from './projectChangeFeedMonitoringStatus';
 export * from './projectChangeFeedSummary';
 export * from './projectChangeTrigger';
 export * from './projectCompany';

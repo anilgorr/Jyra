@@ -6,6 +6,7 @@ import {
   getGetMarketTodayQueryKey 
 } from "@workspace/api-client-react";
 import { useWorkspace } from "@/context/workspace-context";
+import { MonitoringPausedBanner } from "@/components/monitoring-paused-banner";
 
 import { Skeleton } from "@/components/ui/skeleton";
 import { AlertTriangle, FolderPlus, Target, SearchX, Filter } from "lucide-react";
@@ -166,6 +167,7 @@ export default function Today() {
 
   return (
     <div className="flex flex-col gap-6 animate-in fade-in duration-500 pb-12 min-h-[100dvh]">
+      <MonitoringPausedBanner projectId={activeProjectId} />
       <header className="space-y-1">
         <h1 className="text-3xl font-display font-bold text-foreground">Your Market Today</h1>
         <p className="text-lg text-muted-foreground flex items-center gap-2">

@@ -198,6 +198,23 @@ export async function resolveSellerContext(projectId: string): Promise<{ context
 }
 
 /** Read-only authoritative project context resolver. It never falls back across tenants. */
+/**
+ * What stops a research cycle from running for this project, if anything.
+ *
+ * The one place that decides it, so the cycle that refuses to run and the
+ * screen that reports why cannot disagree. An empty list means research
+ * runs. An opportunity pack is not required to research, so its absence is
+ * never listed here.
+ */
+export function researchBlockers(seller: Pick<ProjectSellerContext,
+  "businessTwinReady" | "offeringReady" | "icpReady" | "businessTwinVersionId" | "icpVersionId" | "missingRequirements">): string[] {
+  const ready = seller.businessTwinReady && seller.offeringReady && seller.icpReady
+    && Boolean(seller.businessTwinVersionId) && Boolean(seller.icpVersionId);
+  if (ready) return [];
+  const listed = seller.missingRequirements.filter((requirement) => requirement !== "OPPORTUNITY_PACK_MISSING");
+  return listed.length ? listed : ["SELLER_CONTEXT_INCOMPLETE"];
+}
+
 export async function resolveProjectSellerContext(projectId: string, expectedOrganizationId?: string): Promise<ProjectSellerContext> {
   const [project] = await db.select().from(projectsTable).where(eq(projectsTable.id, projectId)).limit(1);
   const [twinRows, icpRows, activeRows] = await Promise.all([

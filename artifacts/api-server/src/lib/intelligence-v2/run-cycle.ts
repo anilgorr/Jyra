@@ -14,7 +14,7 @@ import {
 } from "@workspace/db";
 import { evaluateOpportunity } from "../opportunity-engine";
 import { ProviderRouter } from "../provider-router";
-import { resolveProjectSellerContext } from "../seller-context";
+import { researchBlockers, resolveProjectSellerContext } from "../seller-context";
 import { evaluateSignalsForCompany } from "../signal-packs";
 import { orchestrateIntelligenceV2, type IntelligenceV2Repository, type IntelligenceV2Result } from "./orchestrator";
 import { createProviderRouterResearchInvokerV2 } from "./research-company";
@@ -22,7 +22,7 @@ import { icpCriteriaToRequirementsV2 } from "./icp-requirements";
 import { loadLatestIntelligenceV2Assessment, persistIntelligenceV2Assessment } from "./persist-assessment";
 import { persistIntelligenceV2Evidence } from "./persist-evidence";
 import { countHiringByTheme, mapJobsToFacts, persistHiringCounts, persistJobFacts } from "./job-facts";
-import { mapEventHitsToFacts, persistEventFacts, researchEvents, type EventFactRow } from "./event-facts";
+import { loadPriorEvents, mapEventHitsToFacts, persistEventFacts, researchEvents, type EventFactRow } from "./event-facts";
 import { backfillPageFacts } from "./page-facts";
 import { discoverCareersPostings } from "./careers-pages";
 import { readPagesCheaply } from "../firecrawl-provider";
@@ -189,9 +189,9 @@ export async function runIntelligenceCycle(input: {
   const organizationId = owned.project.organizationId;
 
   const seller = await resolveProjectSellerContext(projectId, organizationId);
-  if (!seller.businessTwinReady || !seller.offeringReady || !seller.icpReady
-    || !seller.businessTwinVersionId || !seller.icpVersionId) {
-    throw new SellerContextIncompleteError(seller.missingRequirements);
+  const blockers = researchBlockers(seller);
+  if (blockers.length || !seller.businessTwinVersionId || !seller.icpVersionId) {
+    throw new SellerContextIncompleteError(blockers);
   }
   const criteria = await db.select().from(icpCriteriaTable).where(and(
     eq(icpCriteriaTable.projectId, projectId),
@@ -384,9 +384,12 @@ export async function runIntelligenceCycle(input: {
         .then((r) => ({ status: r.status, data: r.data, providerId: r.providerId })),
       { requestId: `${projectCompanyId}:events`, companyName: owned.company.canonicalName, domain: owned.company.domain, country, now: completedAt },
     );
+    // A failed read of prior facts only loses the later-report check for this run.
+    const priorEvents = await loadPriorEvents(owned.company.id, completedAt).catch(() => []);
     const mapped = mapEventHitsToFacts(events.hits, {
       companyId: owned.company.id, companyName: owned.company.canonicalName, domain: owned.company.domain, now: completedAt,
       companyDescription: [owned.company.description, owned.company.industry].filter(Boolean).join(". "),
+      priorEvents,
     });
     eventFacts = mapped.facts;
     const reasons = tally(mapped.skipped.map((item) => item.reason));

@@ -13,6 +13,7 @@ import {
   projectsTable,
 } from "@workspace/db";
 import { getAuthenticatedUserId, requireAuth } from "../middlewares/auth";
+import { researchBlockers, resolveProjectSellerContext } from "../lib/seller-context";
 
 const router: IRouter = Router();
 type AsyncHandler = (...args: Parameters<RequestHandler>) => Promise<void>;
@@ -64,7 +65,13 @@ router.get("/projects/:projectId/changes", requireAuth, asyncRoute(async (req, r
     spendUsd: sql<number>`coalesce(sum(${intelligenceV2ChangesetsTable.costTotal}), 0)::float`,
   }).from(intelligenceV2ChangesetsTable).where(and(...scope));
 
+  /* A project whose setup is incomplete is not quiet, it is stopped. The
+   * watch loop skips every cycle for it without a trace, and on this page
+   * that looked exactly like "nothing moved" - for four days on the launch
+   * pool. Say so. */
+  const blockers = researchBlockers(await resolveProjectSellerContext(project.id, project.organizationId));
   res.json(ListProjectChangesResponse.parse({
+    monitoring: { status: blockers.length ? "PAUSED" : "ACTIVE", reasons: blockers },
     items: rows.map(({ change, company }) => ({
       id: change.id,
       projectCompanyId: change.projectCompanyId,

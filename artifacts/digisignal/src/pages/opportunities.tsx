@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { BrainCircuit, Check, CircleAlert, Loader2, LockKeyhole, Plus, RefreshCw, Sparkles, X } from "lucide-react";
 import { toast } from "sonner";
 import { useWorkspace } from "@/context/workspace-context";
+import { MonitoringPausedBanner } from "@/components/monitoring-paused-banner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -267,6 +268,8 @@ export default function Opportunities() {
         </div>
         {detail && <Badge variant="outline">Version {detail.version.version} · {detail.version.status}</Badge>}
       </header>
+
+      <MonitoringPausedBanner projectId={activeProjectId} />
 
       <OpportunityAssessments projectId={activeProjectId} initialCompanyId={deepLinkedCompanyId} focusWhy={focusWhy} />
 

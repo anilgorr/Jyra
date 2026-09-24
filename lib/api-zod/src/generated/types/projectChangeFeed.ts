@@ -6,9 +6,12 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { ProjectChange } from './projectChange';
+import type { ProjectChangeFeedMonitoring } from './projectChangeFeedMonitoring';
 import type { ProjectChangeFeedSummary } from './projectChangeFeedSummary';
 
 export interface ProjectChangeFeed {
   items: ProjectChange[];
   summary: ProjectChangeFeedSummary;
+  /** Whether scheduled research can run for this project at all. PAUSED means every scheduled cycle is being skipped until the listed setup problems are fixed. */
+  monitoring?: ProjectChangeFeedMonitoring;
 }

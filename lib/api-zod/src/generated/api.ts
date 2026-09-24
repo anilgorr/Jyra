@@ -5368,7 +5368,11 @@ export const ListProjectChangesResponse = zod.object({
   "companiesWatched": zod.number(),
   "lastCycleAt": zod.coerce.date().nullable(),
   "spendUsd": zod.number()
-})
+}),
+  "monitoring": zod.object({
+  "status": zod.enum(['ACTIVE', 'PAUSED']),
+  "reasons": zod.array(zod.string()).describe('Blocking setup requirements, e.g. ICP_NOT_LINKED_TO_BUSINESS_TWIN.')
+}).optional().describe('Whether scheduled research can run for this project at all. PAUSED means every scheduled cycle is being skipped until the listed setup problems are fixed.')
 })
 
 
