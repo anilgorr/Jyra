@@ -6,6 +6,9 @@ export {
   STANDING_FACT_NEED_FACTOR,
   STANDING_FACT_TIMING_FACTOR,
   PROVISIONAL_FIT_SCORE,
+  FULL_EVIDENCE_MASS,
+  evidenceMass,
+  evidenceMassFactor,
   fitResultsFromIntelligenceV2,
 } from "../src/lib/opportunity-engine";
 export { TIMELESS_FACT_TYPES, EVENT_FACT_TYPES } from "../src/lib/facts";

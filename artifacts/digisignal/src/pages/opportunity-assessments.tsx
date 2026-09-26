@@ -13,7 +13,32 @@ type Assessment = {
   id: string; projectCompanyId: string; score: number | null; state: string; assessmentStatus: string;
   fitScore: number | null; confidenceScore: number | null; explanation: string; assessedAt: string;
 };
-type Headline = { kind: "negative" | "event" | "standing" | "none"; signal: string | null; text: string; date: string | null };
+type Headline = {
+  kind: "negative" | "event" | "standing" | "none"; signal: string | null; text: string; date: string | null;
+  eventCount?: number; newestEventAgeDays?: number | null;
+};
+
+/* Where the verdict buttons are, say how much is behind the row and how old
+ * it is. "Reach out now" on one 50-day-old job post should be a choice made
+ * seeing that, not one made past it. Past 30 days an event is more than a
+ * third through a hiring signal's 90-day life, so it turns amber. */
+function EventFreshness({ headline }: { headline: Headline | null }) {
+  const count = headline?.eventCount ?? 0;
+  const age = headline?.newestEventAgeDays ?? null;
+  if (!headline || count === 0 || age === null) {
+    return <span className="text-xs text-muted-foreground" data-testid="event-freshness">no event</span>;
+  }
+  const old = age > 30;
+  return (
+    <span
+      className={`text-xs tabular-nums ${old ? "font-medium text-amber-700 dark:text-amber-400" : "text-muted-foreground"}`}
+      title={old ? "The newest event is over a month old. Is this still now?" : undefined}
+      data-testid="event-freshness"
+    >
+      {count} event{count === 1 ? "" : "s"} · newest {age === 0 ? "today" : `${age}d ago`}
+    </span>
+  );
+}
 type ListItem = { opportunity: Assessment; projectCompany: Company; company: { canonicalName: string }; headline: Headline | null };
 type Component = {
   dimension: string; score: number | null; status: string; rule: string; explanation: string;
@@ -186,6 +211,7 @@ export function OpportunityAssessments({ projectId, initialCompanyId, focusWhy =
                 </div>
                 {assessment && <ChevronRight className="ml-auto h-4 w-4 text-muted-foreground" />}
               </button>
+              {assessment && <EventFreshness headline={headline} />}
               {assessment && (
                 <SignalVerdict
                   projectId={projectId}

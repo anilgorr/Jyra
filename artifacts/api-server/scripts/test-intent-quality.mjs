@@ -89,8 +89,9 @@ check("the timeless list is exactly the two standing types, so the discount cann
 console.log("\nintent quality — standing facts");
 
 check("the martech case: a standing signal scores a fifth of its timing and half its need", () => {
-  const event = assess([signal()]);
-  const standing = assess([signal({ evidenceKind: "standing" })]);
+  // Strength 90 is full evidence mass on its own, so only the standing discount is under test here.
+  const event = assess([signal({ strength: 90 })]);
+  const standing = assess([signal({ evidenceKind: "standing", strength: 90 })]);
   assert.equal(dim(event, "TIMING").score, 78, "an event keeps the definition's timing impact");
   assert.equal(dim(standing, "TIMING").score, Math.round(78 * h.STANDING_FACT_TIMING_FACTOR * 100) / 100);
   assert.equal(dim(standing, "NEED").score, Math.round(70 * h.STANDING_FACT_NEED_FACTOR * 100) / 100);
@@ -252,6 +253,16 @@ const factsById = new Map([
 ]);
 const sig = (name, factIds, o = {}) => ({ companyId: "c", polarity: "POSITIVE", name, strength: 70, effectiveDate: "2026-09-01", factIds, ...o });
 
+check("the row says how many events there are and how old the newest is", () => {
+  const now = new Date("2026-09-26T10:00:00Z");
+  const one = h.headlineFor([sig("Marketing team growth", ["job"])], factsById, now);
+  assert.equal(one.eventCount, 1);
+  assert.equal(one.newestEventAgeDays, 64, "24 Jul to 26 Sep");
+  const standingOnly = h.headlineFor([sig("Martech platform change", ["hub"])], factsById, now);
+  assert.equal(standingOnly.eventCount, 0, "a standing fact is not an event");
+  assert.equal(standingOnly.newestEventAgeDays, null);
+});
+
 check("an event reads as news: the signal, the job title and the date", () => {
   const h1 = h.headlineFor([sig("Marketing team growth", ["job"], { strength: 76 })], factsById);
   assert.equal(h1.kind, "event");
@@ -283,7 +294,7 @@ check("an event beats standing facts even when the standing signal is stronger",
 });
 
 check("no signals is said plainly", () => {
-  assert.deepEqual(h.headlineFor([], factsById), { kind: "none", signal: null, text: "Nothing found yet — fit only", date: null });
+  assert.deepEqual(h.headlineFor([], factsById), { kind: "none", signal: null, text: "Nothing found yet — fit only", date: null, eventCount: 0, newestEventAgeDays: null });
 });
 
 check("a fact's label is the seller's word for it", () => {
@@ -396,6 +407,48 @@ check("isoWeekStart is Monday, UTC, including Sundays and year boundaries", () =
   assert.equal(h.isoWeekStart(new Date("2026-09-20T23:59:59Z")), "2026-09-14", "Sunday → the Monday before, not the one after");
   assert.equal(h.isoWeekStart(new Date("2027-01-01T05:00:00Z")), "2026-12-28", "New Year's Day belongs to the week that started in December");
   assert.equal(h.isoWeekStart(new Date("2026-09-14T23:30:00-05:00")), "2026-09-14", "a late-evening Monday in the Americas is still that Monday in UTC (Tuesday 04:30Z)");
+});
+
+// ------------------------------------------------------------ evidence mass
+
+console.log("\nintent quality — evidence mass");
+
+check("one fresh signal and one stale copy of it no longer score the same (Airtable vs Pave, 26 Sep)", () => {
+  const sdr = { needImpact: 76, timingImpact: 80 };
+  const fresh = assess([signal({ ...sdr, strength: 76 })]);   // Airtable: 2 days old
+  const stale = assess([signal({ ...sdr, strength: 34 })]);   // Pave: 50 days old
+  assert.ok(dim(stale, "NEED").score < dim(fresh, "NEED").score - 25,
+    `stale need ${dim(stale, "NEED").score} must sit well below fresh ${dim(fresh, "NEED").score}`);
+  assert.ok(dim(stale, "TIMING").score < dim(fresh, "TIMING").score - 25);
+  assert.ok(stale.score < fresh.score, `stale ${stale.score} must rank below fresh ${fresh.score}`);
+});
+
+check("a fresh full-strength signal keeps its definition's impact", () => {
+  const one = assess([signal({ strength: 82, needImpact: 80, timingImpact: 84 })]);
+  assert.equal(dim(one, "NEED").score, 80);
+  assert.equal(dim(one, "TIMING").score, 84);
+});
+
+check("several current signals reach full mass together where one alone does not", () => {
+  const s = (id) => signal({ id, strength: 60, needImpact: 58, timingImpact: 62 });
+  const one = assess([s("s1")]);
+  const three = assess([s("s1"), s("s2"), s("s3")]);
+  assert.ok(dim(one, "NEED").score < 58, "one mid-strength signal is not full evidence");
+  assert.equal(dim(three, "NEED").score, 58, "three of them are");
+});
+
+check("mass is 1 - product of misses, capped at full", () => {
+  assert.equal(Math.round(h.evidenceMass([50, 50]) * 1000) / 1000, 0.75);
+  assert.equal(h.evidenceMassFactor([]), 0);
+  assert.equal(h.evidenceMassFactor([100]), 1);
+  assert.equal(h.evidenceMassFactor([h.FULL_EVIDENCE_MASS * 100]), 1);
+  assert.ok(h.evidenceMassFactor([34]) < 0.45);
+});
+
+check("the explanation says when thin evidence scaled the reading", () => {
+  const stale = assess([signal({ strength: 34 })]);
+  assert.match(dim(stale, "NEED").explanation, /thin or ageing/);
+  assert.ok(dim(stale, "NEED").details.evidenceMassFactor < 1);
 });
 
 console.log(`\nintent quality: ${checks} checks passed`);

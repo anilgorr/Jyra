@@ -21,6 +21,10 @@ export type OpportunityHeadline = {
   signal: string | null;
   text: string;
   date: string | null;
+  /** Current event signals behind the row (positive, not standing). */
+  eventCount: number;
+  /** Days since the newest of them happened. Null when there is no event. */
+  newestEventAgeDays: number | null;
 };
 
 const TIMELESS = new Set<string>(TIMELESS_FACT_TYPES);
@@ -68,12 +72,35 @@ type SignalRow = {
 type FactRow = { id: string; factType: string; structuredValue: unknown; supportingExcerpt: string; effectiveDate: string | null };
 
 /** Pure: pick the headline for one company from its active signals and their facts. Exported for tests. */
-export function headlineFor(signals: SignalRow[], factsById: ReadonlyMap<string, FactRow>): OpportunityHeadline {
+/**
+ * How many events stand behind a row and how old the newest is. Added 26 Sep
+ * 2026 after a top-20 review marked every row "reach out now" at about a
+ * second and a half each: Pave's only event was a 50-day-old SDR post and the
+ * row gave no way to see that at a glance. The verdict needs the age where
+ * the buttons are.
+ */
+function eventFreshness(
+  classified: Array<{ signal: SignalRow; facts: FactRow[]; standing: boolean }>,
+  now: Date,
+): { eventCount: number; newestEventAgeDays: number | null } {
+  const events = classified.filter((c) => c.signal.polarity !== "NEGATIVE" && !c.standing);
+  const today = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+  const ages = events.map((c) => {
+    const dated = c.facts.filter((f) => !TIMELESS.has(f.factType) && f.effectiveDate).map((f) => f.effectiveDate as string);
+    const iso = dated.sort().at(-1) ?? c.signal.effectiveDate;
+    const t = Date.parse(`${String(iso).slice(0, 10)}T00:00:00Z`);
+    return Number.isNaN(t) ? null : Math.max(0, Math.round((today - t) / 86_400_000));
+  }).filter((age): age is number => age !== null);
+  return { eventCount: events.length, newestEventAgeDays: ages.length ? Math.min(...ages) : null };
+}
+
+export function headlineFor(signals: SignalRow[], factsById: ReadonlyMap<string, FactRow>, now: Date = new Date()): OpportunityHeadline {
   const classified = signals.map((signal) => {
     const facts = signal.factIds.map((id) => factsById.get(id)).filter((f): f is FactRow => Boolean(f));
     const standing = facts.length > 0 && facts.every((f) => TIMELESS.has(f.factType));
     return { signal, facts, standing };
   });
+  const freshness = eventFreshness(classified, now);
 
   const negative = classified.filter((c) => c.signal.polarity === "NEGATIVE").sort((a, b) => b.signal.strength - a.signal.strength)[0];
   if (negative) {
@@ -83,6 +110,7 @@ export function headlineFor(signals: SignalRow[], factsById: ReadonlyMap<string,
       signal: negative.signal.name,
       text: fact ? factLabel(fact) : negative.signal.name,
       date: shortDate(fact?.effectiveDate ?? negative.signal.effectiveDate),
+      ...freshness,
     };
   }
 
@@ -95,6 +123,7 @@ export function headlineFor(signals: SignalRow[], factsById: ReadonlyMap<string,
       signal: event.signal.name,
       text: fact ? factLabel(fact) : event.signal.name,
       date: shortDate(fact?.effectiveDate ?? event.signal.effectiveDate),
+      ...freshness,
     };
   }
 
@@ -103,10 +132,10 @@ export function headlineFor(signals: SignalRow[], factsById: ReadonlyMap<string,
     const products = new Set<string>();
     for (const c of standing) for (const f of c.facts) products.add(factLabel(f));
     const list = [...products].slice(0, 3).join(", ") + (products.size > 3 ? ` +${products.size - 3}` : "");
-    return { kind: "standing", signal: standing[0]!.signal.name, text: `Uses ${list} — nothing has happened yet`, date: null };
+    return { kind: "standing", signal: standing[0]!.signal.name, text: `Uses ${list} — nothing has happened yet`, date: null, ...freshness };
   }
 
-  return { kind: "none", signal: null, text: "Nothing found yet — fit only", date: null };
+  return { kind: "none", signal: null, text: "Nothing found yet — fit only", date: null, ...freshness };
 }
 
 /** Headlines for every company in a project, keyed by company id. One query for signals, one for facts. */

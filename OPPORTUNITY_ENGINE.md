@@ -5,7 +5,7 @@ The Opportunity Engine creates a deterministic, project-specific interpretation 
 ## Dimensions
 
 - **Fit** uses only accepted, scorable criteria in the latest project ICP. Unknown criteria are excluded rather than failed. Confirmed disqualifiers and failed must-haves gate strong states.
-- **Need** and **Timing** use current evidence-backed signals and active clusters. Strength controls contribution. Negative signals subtract; stale signals and clusters do not contribute.
+- **Need** and **Timing** use current evidence-backed signals and active clusters: the strength-weighted mean of their impacts, scaled by how much evidence stands behind it. Strengths combine as independent evidence (1 − Π(1 − s)); a combined mass of 0.8 or more counts in full, less scales the reading down proportionally, so one fading signal cannot score like several fresh ones (rule `evidence_mass_*_impacts_v3`, 26 Sep 2026). The strongest negative signal suppresses the result; stale signals and clusters do not contribute.
 - **Relationship** uses only the explicit first-party status maintained on the project-company record. Public evidence and generated text cannot create relationship history.
 - **Confidence** is separate from the weighted opportunity score. It reflects evidence authority, directness, freshness, corroboration, independent source domains, contradictions, and dimension completeness.
 

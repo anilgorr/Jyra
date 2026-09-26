@@ -310,6 +310,37 @@ const TIMELESS_FACT_TYPE_SET: ReadonlySet<string> = new Set(TIMELESS_FACT_TYPES)
  * Anything negative and still strong also caps the state at WATCH (see the
  * gates below), so a suppressed score cannot read as an opportunity.
  */
+/**
+ * How much evidence stands behind a Need or Timing reading.
+ *
+ * Need and Timing were a strength-WEIGHTED MEAN of the signals' impacts. A
+ * mean has no magnitude: one signal at any strength averages to its own
+ * impact. On the launch pool that put Pave (one SDR post, 50 days old,
+ * strength 34), Persona (46 days, strength 38) and Airtable (2 days, strength
+ * 76) on exactly the same score, 81.07 - the engine could not tell a fresh
+ * event from a stale one when it was the only one. Age decays strength, and
+ * strength entered only as a ratio, so a lone signal's age counted for
+ * nothing at all.
+ *
+ * Now the signals' strengths are combined as independent pieces of evidence -
+ * 1 - (1 - s1)(1 - s2)... - and the mean is scaled by how close that mass is
+ * to FULL_EVIDENCE_MASS. One fresh SDR post (strength 78) is 0.78, near full;
+ * the same post at 50 days (34) is less than half; two or three current
+ * signals reach full on their own. The definition's impacts are untouched,
+ * so a company with plenty of fresh evidence scores exactly as before.
+ */
+export const FULL_EVIDENCE_MASS = 0.8;
+
+export function evidenceMass(strengths: readonly number[]): number {
+  const miss = strengths.reduce((product, strength) => product * (1 - Math.min(100, Math.max(0, strength)) / 100), 1);
+  return 1 - miss;
+}
+
+export function evidenceMassFactor(strengths: readonly number[]): number {
+  if (!strengths.length) return 0;
+  return Math.min(1, evidenceMass(strengths) / FULL_EVIDENCE_MASS);
+}
+
 function impactComponent(input: OpportunityCalculationInput, dimension: "NEED" | "TIMING"): ScoreComponent {
   const field = dimension === "NEED" ? "needImpact" : "timingImpact";
   const standingFactor = dimension === "NEED" ? STANDING_FACT_NEED_FACTOR : STANDING_FACT_TIMING_FACTOR;
@@ -326,7 +357,10 @@ function impactComponent(input: OpportunityCalculationInput, dimension: "NEED" |
     ...activeClusters.map((item) => ({ value: item[field], weight: item.strength, confidence: item.confidence })),
   ].filter((item) => item.weight > 0);
   const totalWeight = observations.reduce((sum, item) => sum + item.weight, 0);
-  const positive = totalWeight ? observations.reduce((sum, item) => sum + item.value * item.weight, 0) / totalWeight : null;
+  const massFactor = evidenceMassFactor(observations.map((item) => item.weight));
+  const positive = totalWeight
+    ? (observations.reduce((sum, item) => sum + item.value * item.weight, 0) / totalWeight) * massFactor
+    : null;
 
   const suppression = negativeSignals
     .filter((item) => item.strength > 0)
@@ -347,10 +381,11 @@ function impactComponent(input: OpportunityCalculationInput, dimension: "NEED" |
   const standingCount = positiveSignals.filter((item) => item.evidenceKind === "standing").length;
   return {
     dimension, score, status: score === null ? "UNKNOWN" : "KNOWN",
-    rule: dimension === "NEED" ? "strength_weighted_need_impacts_v2" : "strength_weighted_timing_impacts_v2",
+    rule: dimension === "NEED" ? "evidence_mass_need_impacts_v3" : "evidence_mass_timing_impacts_v3",
     explanation: score === null ? `${dimension} is unknown because no current evidence-backed signal or cluster contributes to it.` :
       `${dimension} combines ${positiveSignals.length} current signal(s) and ${activeClusters.length} active cluster(s)` +
       (standingCount ? `, ${standingCount} of them standing facts at reduced weight` : "") +
+      (massFactor < 1 ? `, scaled to ${Math.round(massFactor * 100)}% because the evidence behind it is thin or ageing` : "") +
       (suppression > 0 ? `, suppressed ${Math.round(suppression * 100)}% by ${negativeSignals.length} negative signal(s)` : "") +
       "; stale observations do not contribute.",
     signalIds, clusterIds, factIds, evidenceIds,
@@ -359,6 +394,8 @@ function impactComponent(input: OpportunityCalculationInput, dimension: "NEED" |
       standingSignalCount: standingCount,
       negativeSignalCount: negativeSignals.length,
       suppression: Math.round(suppression * 1000) / 1000,
+      evidenceMass: Math.round(evidenceMass(observations.map((item) => item.weight)) * 1000) / 1000,
+      evidenceMassFactor: Math.round(massFactor * 1000) / 1000,
     },
   };
 }
