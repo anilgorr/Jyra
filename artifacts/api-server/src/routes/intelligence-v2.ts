@@ -18,7 +18,8 @@ import { PostgresIntelligenceV2Repository } from "../lib/intelligence-v2/reposit
 import { loadLatestIntelligenceV2Assessment } from "../lib/intelligence-v2/persist-assessment";
 import { runIntelligenceCycle, SellerContextIncompleteError, type CompactRun } from "../lib/intelligence-v2/run-cycle";
 import { INTELLIGENCE_CORE_VERSION } from "../lib/intelligence-v2/schemas";
-import { getAuthenticatedUserId, requireAuth } from "../middlewares/auth";
+import { getAuthenticatedUserId, requireAuth, viewerSeesCost } from "../middlewares/auth";
+import { redactRunCost } from "../lib/cost-redaction";
 
 const router: IRouter = Router();
 type AsyncHandler = (...args: Parameters<RequestHandler>) => Promise<void>;
@@ -66,7 +67,7 @@ router.get("/projects/:projectId/companies/:projectCompanyId/intelligence-v2", r
   const owned = await resolveOwnedCompany(getAuthenticatedUserId(res), params.data.projectId, params.data.projectCompanyId);
   if (!owned) return void res.status(404).json({ error: "Project company not found" });
   const run = latestRuns.get(keyFor(params.data.projectId, params.data.projectCompanyId));
-  if (run) return void res.json(GetCompanyIntelligenceV2Response.parse(run));
+  if (run) return void res.json(redactRunCost(GetCompanyIntelligenceV2Response.parse(run), await viewerSeesCost(res)));
   // Restart-safe fallback: serve the newest persisted run verbatim. A snapshot
   // that no longer satisfies the current contract is reported as absent rather
   // than returned malformed.
@@ -81,7 +82,7 @@ router.get("/projects/:projectId/companies/:projectCompanyId/intelligence-v2", r
     }, "Persisted Intelligence Core V2 run does not satisfy the current response contract");
     return void res.status(404).json({ error: "The persisted V2 analysis predates the current response contract" });
   }
-  res.json(parsed.data);
+  res.json(redactRunCost(parsed.data, await viewerSeesCost(res)));
 }));
 
 router.post("/projects/:projectId/companies/:projectCompanyId/intelligence-v2", requireAuth, asyncRoute(async (req, res) => {
@@ -102,7 +103,7 @@ router.post("/projects/:projectId/companies/:projectCompanyId/intelligence-v2", 
     throw error;
   }
   latestRuns.set(keyFor(params.data.projectId, params.data.projectCompanyId), cycle.run);
-  res.json(AnalyzeCompanyIntelligenceV2Response.parse(cycle.run));
+  res.json(redactRunCost(AnalyzeCompanyIntelligenceV2Response.parse(cycle.run), await viewerSeesCost(res)));
 }));
 
 export default router;

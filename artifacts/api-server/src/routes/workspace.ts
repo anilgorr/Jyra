@@ -12,7 +12,7 @@ import {
   providerCapabilitiesTable,
   providerUsageTable,
 } from "@workspace/db";
-import { requireAuth } from "../middlewares/auth";
+import { requireAuth, requireInternalAdmin } from "../middlewares/auth";
 
 const router: IRouter = Router();
 
@@ -127,6 +127,7 @@ router.get("/workspace/activity", (_req, res) => {
 router.get(
   "/workspace/providers/diagnostics",
   requireAuth,
+  requireInternalAdmin,
   asyncRoute(async (_req, res) => {
     if (process.env.NODE_ENV === "production") {
       res.status(404).json({ error: "Not found" });

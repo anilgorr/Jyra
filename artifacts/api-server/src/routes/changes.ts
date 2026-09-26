@@ -12,7 +12,8 @@ import {
   organizationMembersTable,
   projectsTable,
 } from "@workspace/db";
-import { getAuthenticatedUserId, requireAuth } from "../middlewares/auth";
+import { getAuthenticatedUserId, requireAuth, viewerSeesCost } from "../middlewares/auth";
+import { redactChangeFeedCost } from "../lib/cost-redaction";
 import { researchBlockers, resolveProjectSellerContext } from "../lib/seller-context";
 
 const router: IRouter = Router();
@@ -70,7 +71,7 @@ router.get("/projects/:projectId/changes", requireAuth, asyncRoute(async (req, r
    * that looked exactly like "nothing moved" - for four days on the launch
    * pool. Say so. */
   const blockers = researchBlockers(await resolveProjectSellerContext(project.id, project.organizationId));
-  res.json(ListProjectChangesResponse.parse({
+  res.json(redactChangeFeedCost(ListProjectChangesResponse.parse({
     monitoring: { status: blockers.length ? "PAUSED" : "ACTIVE", reasons: blockers },
     items: rows.map(({ change, company }) => ({
       id: change.id,
@@ -103,7 +104,7 @@ router.get("/projects/:projectId/changes", requireAuth, asyncRoute(async (req, r
       lastCycleAt: summary?.lastCycleAt ? new Date(summary.lastCycleAt).toISOString() : null,
       spendUsd: Number(summary?.spendUsd ?? 0),
     },
-  }));
+  }), await viewerSeesCost(res)));
 }));
 
 export default router;

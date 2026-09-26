@@ -31,7 +31,7 @@ import {
   maximumResearchBudgetLimits,
   upsertResearchBudget,
 } from "../lib/research-economics";
-import { getAuthenticatedUserId, requireAuth } from "../middlewares/auth";
+import { getAuthenticatedUserId, requireAuth, requireInternalAdmin } from "../middlewares/auth";
 import { requireOrgRole } from "../lib/authz";
 
 const router: IRouter = Router();
@@ -152,7 +152,8 @@ router.get("/projects/:projectId/research", requireAuth, asyncRoute(async (req, 
   res.json(ListResearchWorkspaceResponse.parse(payload));
 }));
 
-router.get("/projects/:projectId/research/economics", requireAuth, asyncRoute(async (req, res) => {
+// Spend, projections and dollar budgets are internal: admins only (26 Sep 2026).
+router.get("/projects/:projectId/research/economics", requireAuth, requireInternalAdmin, asyncRoute(async (req, res) => {
   const params = GetResearchEconomicsParams.safeParse(req.params);
   if (!params.success) return void res.status(404).json({ error: "Project not found" });
   const access = await authorizeProject(getAuthenticatedUserId(res), params.data.projectId);
@@ -161,7 +162,7 @@ router.get("/projects/:projectId/research/economics", requireAuth, asyncRoute(as
   res.json(GetResearchEconomicsResponse.parse(summary));
 }));
 
-router.put("/projects/:projectId/research/budget", requireAuth, asyncRoute(async (req, res) => {
+router.put("/projects/:projectId/research/budget", requireAuth, requireInternalAdmin, asyncRoute(async (req, res) => {
   const params = UpdateResearchBudgetParams.safeParse(req.params);
   const body = UpdateResearchBudgetBody.safeParse(req.body);
   if (!params.success || !body.success) return void res.status(400).json({ error: "Invalid research budget" });

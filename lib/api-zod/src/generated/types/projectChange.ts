@@ -32,5 +32,6 @@ export interface ProjectChange {
   factsAdded: number;
   signalsCreated: number;
   modelCalls: number;
-  costTotal: number;
+  /** Real currency. Present for internal admins only. */
+  costTotal?: number;
 }

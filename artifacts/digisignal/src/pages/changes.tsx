@@ -176,7 +176,7 @@ function ChangeCard({ change }: { change: ProjectChange }) {
 
       <div className="mt-4 flex flex-wrap items-center gap-4 border-t border-border/50 pt-3 text-xs text-muted-foreground">
         <span>{change.modelCalls} model call{change.modelCalls === 1 ? "" : "s"}</span>
-        <span>${change.costTotal.toFixed(3)}</span>
+        {change.costTotal !== undefined && <span>${change.costTotal.toFixed(3)}</span>}
         {change.factsAdded > 0 && <span className="flex items-center gap-1"><Sparkles className="h-3 w-3" />{change.factsAdded} facts</span>}
         {change.signalsCreated > 0 && <span className="flex items-center gap-1"><Activity className="h-3 w-3" />{change.signalsCreated} signals</span>}
       </div>
@@ -236,14 +236,15 @@ export default function Changes() {
 
       <div className="container mx-auto max-w-5xl space-y-6 px-4 py-8">
         <MonitoringPausedBanner projectId={activeProjectId} />
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
-          {[
+        <div className={`grid grid-cols-2 gap-3 ${summary?.spendUsd !== undefined ? "md:grid-cols-5" : "md:grid-cols-4"}`}>
+          {([
             ["Looks", summary ? summary.cyclesTotal : "—", `in the last ${window.label.toLowerCase()}`],
             ["Moved", summary ? summary.cyclesWithChanges : "—", "cycles with a change"],
             ["Companies", summary ? summary.companiesWatched : "—", "watched in window"],
-            ["Spend", summary ? `$${summary.spendUsd.toFixed(2)}` : "—", "providers + model"],
+            // Spend arrives only for internal admins; customers never see currency.
+            summary?.spendUsd !== undefined ? ["Spend", `$${summary.spendUsd.toFixed(2)}`, "providers + model"] : null,
             ["Last look", summary?.lastCycleAt ? formatDistanceToNow(new Date(summary.lastCycleAt), { addSuffix: true }) : "never", summary?.lastCycleAt ? new Date(summary.lastCycleAt).toLocaleString() : "the loop has not run"],
-          ].map(([name, value, hint]) => (
+          ] as Array<[string, string | number, string] | null>).filter((row): row is [string, string | number, string] => row !== null).map(([name, value, hint]) => (
             <Card key={String(name)} className="p-4">
               <div className="text-xs uppercase tracking-wider text-muted-foreground">{name}</div>
               <div className="mt-1 font-display text-2xl font-semibold tabular-nums text-foreground">{value}</div>

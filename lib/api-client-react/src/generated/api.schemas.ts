@@ -560,6 +560,9 @@ export const IntelligenceV2RunDeterministicOverridesItem = {
   EVIDENCELESS_POSITIVE_BLOCKED: 'EVIDENCELESS_POSITIVE_BLOCKED',
 } as const;
 
+/**
+ * Real currency. Present for internal admins only.
+ */
 export type IntelligenceV2RunCost = {
   provider: number;
   model: number;
@@ -606,7 +609,8 @@ export interface IntelligenceV2Run {
   deterministicOverrides: IntelligenceV2RunDeterministicOverridesItem[];
   unknownFacts: string[];
   evidence: IntelligenceV2Evidence[];
-  cost: IntelligenceV2RunCost;
+  /** Real currency. Present for internal admins only. */
+  cost?: IntelligenceV2RunCost;
   versions: IntelligenceV2RunVersions;
   fingerprints: IntelligenceV2RunFingerprints;
 }
@@ -1810,6 +1814,46 @@ export interface GrantCreditsBody {
   reason: string;
 }
 
+export type OrganizationCostsOrganizationsItem = {
+  organizationId: string;
+  organizationName: string;
+  createdAt: string;
+  /** The invited email */
+  grantEmail: string | null;
+  planCode: string | null;
+  monthToDateUsd: number;
+  monthToDateInr: number;
+  lastMonthUsd: number;
+  lastMonthInr: number;
+  lifetimeUsd: number;
+  lifetimeInr: number;
+  wastedMonthToDateUsd: number;
+  calls: number;
+  lastSpendAt: string | null;
+};
+
+export interface OrganizationCosts {
+  month: string;
+  inrPerUsd: number;
+  organizations: OrganizationCostsOrganizationsItem[];
+}
+
+export type AccessGrantCostSpendByMonthItem = {
+  /** YYYY-MM */
+  month: string;
+  calls: number;
+  costUsd: number;
+  costInr: number;
+};
+
+export type AccessGrantCostSpendByProjectItem = {
+  projectId: string | null;
+  projectName: string | null;
+  calls: number;
+  costUsd: number;
+  costInr: number;
+};
+
 export type AccessGrantCostSpendBreakdownItem = {
   kind: string;
   source: string;
@@ -1822,6 +1866,13 @@ export type AccessGrantCostSpend = {
   monthToDateUsd: number;
   todayUsd: number;
   wastedUsd: number;
+  /** Everything this account has ever cost to run. */
+  lifetimeUsd: number;
+  lifetimeInr: number;
+  /** Cost per calendar month (UTC), newest first, up to 12 months. */
+  byMonth: AccessGrantCostSpendByMonthItem[];
+  /** This month's cost split by project. A null projectId is spend not tied to one project. */
+  byProject: AccessGrantCostSpendByProjectItem[];
   breakdown: AccessGrantCostSpendBreakdownItem[];
 };
 
@@ -3696,7 +3747,8 @@ export interface ProjectChange {
   factsAdded: number;
   signalsCreated: number;
   modelCalls: number;
-  costTotal: number;
+  /** Real currency. Present for internal admins only. */
+  costTotal?: number;
 }
 
 export type ProjectChangeFeedSummary = {
@@ -3705,7 +3757,8 @@ export type ProjectChangeFeedSummary = {
   cyclesWithChanges: number;
   companiesWatched: number;
   lastCycleAt: string | null;
-  spendUsd: number;
+  /** Real currency. Present for internal admins only. */
+  spendUsd?: number;
 };
 
 export type ProjectChangeFeedMonitoringStatus = typeof ProjectChangeFeedMonitoringStatus[keyof typeof ProjectChangeFeedMonitoringStatus];
@@ -4653,8 +4706,8 @@ export interface ContactEnrichmentAttempt {
   status: ContactEnrichmentAttemptStatus;
   contactStatus: ContactStatus;
   providerId: string | null;
-  estimatedCost: number;
-  actualCost: number | null;
+  estimatedCost?: number;
+  actualCost?: number | null;
   observedAt: string;
 }
 
@@ -4736,7 +4789,7 @@ export type ContactEnrichmentCapabilityResultError = {
 export interface ContactEnrichmentCapabilityResult {
   capability: ContactEnrichmentCapability;
   provider: string;
-  cost: ContactEnrichmentCapabilityResultCost;
+  cost?: ContactEnrichmentCapabilityResultCost;
   /** The email address or phone number found, or null. */
   result: string | null;
   verification: ContactStatus;

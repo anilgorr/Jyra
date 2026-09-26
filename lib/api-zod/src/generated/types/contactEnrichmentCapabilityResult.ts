@@ -14,7 +14,7 @@ import type { ContactStatus } from './contactStatus';
 export interface ContactEnrichmentCapabilityResult {
   capability: ContactEnrichmentCapability;
   provider: string;
-  cost: ContactEnrichmentCapabilityResultCost;
+  cost?: ContactEnrichmentCapabilityResultCost;
   /** The email address or phone number found, or null. */
   result: string | null;
   verification: ContactStatus;

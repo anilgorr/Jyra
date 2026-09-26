@@ -564,10 +564,10 @@ function IntelligenceV2Panel({
                   <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Unknown facts</p>
                   <p className="mt-2 text-sm">{run.unknownFacts.length ? run.unknownFacts.join(", ") : "None recorded"}</p>
                 </div>
-                <div data-testid="text-intelligence-v2-cost">
+                {run.cost && <div data-testid="text-intelligence-v2-cost">
                   <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Run cost</p>
                   <p className="mt-2 text-sm">${run.cost.total.toFixed(4)} · {run.cost.researchProviderCalls} research / {run.cost.modelCalls} model calls</p>
-                </div>
+                </div>}
                 <div data-testid="text-intelligence-v2-fingerprints">
                   <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Versions / fingerprints</p>
                   <p className="mt-2 break-all text-xs text-muted-foreground">

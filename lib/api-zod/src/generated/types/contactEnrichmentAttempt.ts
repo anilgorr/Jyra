@@ -15,7 +15,7 @@ export interface ContactEnrichmentAttempt {
   status: ContactEnrichmentAttemptStatus;
   contactStatus: ContactStatus;
   providerId: string | null;
-  estimatedCost: number;
-  actualCost: number | null;
+  estimatedCost?: number;
+  actualCost?: number | null;
   observedAt: Date;
 }

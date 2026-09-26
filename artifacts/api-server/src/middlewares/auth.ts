@@ -58,6 +58,19 @@ export async function isUserInternalAdmin(userId: string): Promise<boolean> {
   }
 }
 
+/**
+ * Whether this request may see real-money cost. Only internal admins can;
+ * customers see credits. Memoised on the response so a route that redacts
+ * several shapes asks Clerk at most once. See lib/cost-redaction.ts.
+ */
+export async function viewerSeesCost(res: Response): Promise<boolean> {
+  if (typeof res.locals.seesCost === "boolean") return res.locals.seesCost;
+  const userId = res.locals.userId as string | undefined;
+  const sees = userId ? await isUserInternalAdmin(userId) : false;
+  res.locals.seesCost = sees;
+  return sees;
+}
+
 export const requireInternalAdmin: RequestHandler = async (req, res, next) => {
   const userId = verifiedUserId(req);
   if (!userId) {

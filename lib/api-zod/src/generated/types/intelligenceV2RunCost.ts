@@ -6,6 +6,9 @@
  * OpenAPI spec version: 0.1.0
  */
 
+/**
+ * Real currency. Present for internal admins only.
+ */
 export type IntelligenceV2RunCost = {
   provider: number;
   model: number;

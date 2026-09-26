@@ -5,6 +5,7 @@ import {
   CreateAccessGrantResponse,
   GetAccessGrantCostParams,
   GetAccessGrantCostResponse,
+  ListOrganizationCostsResponse,
   GrantCreditsBody,
   GrantCreditsParams,
   GrantCreditsResponse,
@@ -26,7 +27,10 @@ import {
 import { postCreditEntry, recentCreditEntries } from "../lib/credits";
 import { PLAN_TIERS } from "../lib/plans";
 import {
+  allOrganizationCosts,
   organizationSpendBreakdown,
+  organizationSpendByMonth,
+  organizationSpendByProject,
   organizationSpendSince,
   utcDayStart,
   utcMonthStart,
@@ -229,21 +233,49 @@ router.get("/admin/access/:grantId/cost", requireInternalAdmin, asyncRoute(async
   const now = new Date();
   const monthStart = utcMonthStart(now);
   const organizationId = row.grant.organizationId;
-  const [monthToDateUsd, todayUsd, wasted, breakdown, ledger] = organizationId
+  const [monthToDateUsd, todayUsd, wasted, breakdown, ledger, lifetimeUsd, byMonth, byProject] = organizationId
     ? await Promise.all([
       organizationSpendSince(organizationId, monthStart),
       organizationSpendSince(organizationId, utcDayStart(now)),
       wastedSpendSince(organizationId, monthStart),
       organizationSpendBreakdown(organizationId, monthStart),
       recentCreditEntries(organizationId, 100),
+      organizationSpendSince(organizationId, new Date(0)),
+      organizationSpendByMonth(organizationId, 12),
+      organizationSpendByProject(organizationId, monthStart),
     ])
-    : [0, 0, { costUsd: 0, calls: 0 }, [], []];
+    : [0, 0, { costUsd: 0, calls: 0 }, [], [], 0, [], []];
 
+  const inr = (usd: number) => Math.round(usd * INR_PER_USD * 100) / 100;
   res.json(GetAccessGrantCostResponse.parse({
     grant: await grantPayload(row, monthStart),
     month: monthStart.toISOString().slice(0, 10),
-    spend: { monthToDateUsd, todayUsd, wastedUsd: wasted.costUsd, breakdown },
+    spend: {
+      monthToDateUsd, todayUsd, wastedUsd: wasted.costUsd, breakdown,
+      lifetimeUsd, lifetimeInr: inr(lifetimeUsd),
+      byMonth: byMonth.map((m) => ({ ...m, costInr: inr(m.costUsd) })),
+      byProject: byProject.map((p) => ({ ...p, costInr: inr(p.costUsd) })),
+    },
     ledger: ledger.map((entry) => ({ ...entry, createdAt: entry.createdAt.toISOString() })),
+  }));
+}));
+
+/** Every organisation's running cost, invited or not. */
+router.get("/admin/costs", requireInternalAdmin, asyncRoute(async (_req, res) => {
+  const now = new Date();
+  const inr = (usd: number) => Math.round(usd * INR_PER_USD * 100) / 100;
+  const rows = await allOrganizationCosts(now);
+  res.json(ListOrganizationCostsResponse.parse({
+    month: utcMonthStart(now).toISOString().slice(0, 10),
+    inrPerUsd: INR_PER_USD,
+    organizations: rows.map((row) => ({
+      ...row,
+      createdAt: row.createdAt.toISOString(),
+      lastSpendAt: row.lastSpendAt?.toISOString() ?? null,
+      monthToDateInr: inr(row.monthToDateUsd),
+      lastMonthInr: inr(row.lastMonthUsd),
+      lifetimeInr: inr(row.lifetimeUsd),
+    })),
   }));
 }));
 

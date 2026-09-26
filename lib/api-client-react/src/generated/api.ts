@@ -132,6 +132,7 @@ import type {
   OpportunityWhyDetail,
   OpportunityWhyGeneration,
   Organization,
+  OrganizationCosts,
   OrganizationInput,
   PlanUsage,
   PrecisionRow,
@@ -825,6 +826,84 @@ export function useGetAdminQualityDashboard<TData = Awaited<ReturnType<typeof ge
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
   const queryOptions = getGetAdminQualityDashboardQueryOptions(params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getListOrganizationCostsUrl = () => {
+
+
+
+
+  return `/api/admin/costs`
+}
+
+/**
+ * Every organisation, invited or not, with this month's, last month's and lifetime running cost in real currency. Internal admins only.
+ * @summary What every account has cost to run
+ */
+export const listOrganizationCosts = async ( options?: Parameters<typeof customFetch>[1]): Promise<OrganizationCosts> => {
+
+  return customFetch<OrganizationCosts>(getListOrganizationCostsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListOrganizationCostsQueryKey = () => {
+    return [
+    `/api/admin/costs`
+    ] as const;
+    }
+
+
+export const getListOrganizationCostsQueryOptions = <TData = Awaited<ReturnType<typeof listOrganizationCosts>>, TError = ErrorType<UnauthorizedResponse | NotFoundResponse>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listOrganizationCosts>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListOrganizationCostsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listOrganizationCosts>>> = ({ signal }) => listOrganizationCosts({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listOrganizationCosts>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListOrganizationCostsQueryResult = NonNullable<Awaited<ReturnType<typeof listOrganizationCosts>>>
+export type ListOrganizationCostsQueryError = ErrorType<UnauthorizedResponse | NotFoundResponse>
+
+
+/**
+ * @summary What every account has cost to run
+ */
+
+export function useListOrganizationCosts<TData = Awaited<ReturnType<typeof listOrganizationCosts>>, TError = ErrorType<UnauthorizedResponse | NotFoundResponse>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listOrganizationCosts>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListOrganizationCostsQueryOptions(options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 
@@ -4781,7 +4860,7 @@ export const getGetResearchEconomicsUrl = (projectId: string,) => {
 }
 
 /**
- * @summary Get project research spend, projection, and unit economics
+ * @summary Get project research spend, projection, and unit economics (internal admins only)
  */
 export const getResearchEconomics = async (projectId: string, options?: Parameters<typeof customFetch>[1]): Promise<ResearchEconomicsSummary> => {
 
@@ -4828,7 +4907,7 @@ export type GetResearchEconomicsQueryError = ErrorType<UnauthorizedResponse | Fo
 
 
 /**
- * @summary Get project research spend, projection, and unit economics
+ * @summary Get project research spend, projection, and unit economics (internal admins only)
  */
 
 export function useGetResearchEconomics<TData = Awaited<ReturnType<typeof getResearchEconomics>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(
@@ -4858,7 +4937,7 @@ export const getUpdateResearchBudgetUrl = (projectId: string,) => {
 }
 
 /**
- * @summary Configure optional daily and monthly project research budgets
+ * @summary Configure optional daily and monthly project research budgets (internal admins only)
  */
 export const updateResearchBudget = async (projectId: string,
     researchBudgetInput: ResearchBudgetInput, options?: Parameters<typeof customFetch>[1]): Promise<ResearchBudget> => {
@@ -4908,7 +4987,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type UpdateResearchBudgetMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
 
     /**
- * @summary Configure optional daily and monthly project research budgets
+ * @summary Configure optional daily and monthly project research budgets (internal admins only)
  */
 export const useUpdateResearchBudget = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateResearchBudget>>, TError,{projectId: string;data: BodyType<ResearchBudgetInput>}, TContext>, request?: SecondParameter<typeof customFetch>}

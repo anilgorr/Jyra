@@ -12,7 +12,8 @@ import {
   enrichPersonContact,
   listProjectPeople,
 } from "../lib/contact-enrichment";
-import { getAuthenticatedUserId, requireAuth } from "../middlewares/auth";
+import { getAuthenticatedUserId, requireAuth, viewerSeesCost } from "../middlewares/auth";
+import { redactEnrichmentCost, redactPeopleCost } from "../lib/cost-redaction";
 
 const router: IRouter = Router();
 type AsyncHandler = (...args: Parameters<RequestHandler>) => Promise<void>;
@@ -59,7 +60,7 @@ router.get("/projects/:projectId/companies/:projectCompanyId/people", requireAut
   const access = await authorizeProject(getAuthenticatedUserId(res), params.data.projectId);
   if (!access.project) return void res.status(access.status).json({ error: access.status === 403 ? "Project access denied" : "Project not found" });
   if (!await projectCompanyExists(params.data.projectId, params.data.projectCompanyId)) return void res.status(404).json({ error: "Project company not found" });
-  res.json(await listProjectPeople(params.data.projectId, params.data.projectCompanyId));
+  res.json(redactPeopleCost(await listProjectPeople(params.data.projectId, params.data.projectCompanyId), await viewerSeesCost(res)));
 }));
 
 router.post("/projects/:projectId/companies/:projectCompanyId/people", requireAuth, asyncRoute(async (req, res) => {
@@ -95,7 +96,7 @@ router.post("/projects/:projectId/companies/:projectCompanyId/people/:personId/e
   if (result.kind === "not_found") return void res.status(404).json({ error: "Person not found for this project company" });
   if (result.kind === "not_eligible") return void res.status(409).json({ error: result.reason });
   if (result.kind === "budget_blocked") return void res.status(429).json({ error: result.reason });
-  res.json(result);
+  res.json(redactEnrichmentCost(result, await viewerSeesCost(res)));
 }));
 
 export default router;

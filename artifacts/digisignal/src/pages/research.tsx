@@ -15,6 +15,7 @@ import {
   Gauge,
 } from "lucide-react";
 import { useWorkspace } from "@/context/workspace-context";
+import { useAdminAccess } from "@/hooks/use-admin-access";
 import {
   useListResearchWorkspace,
   useExecuteCompanyResearch,
@@ -40,6 +41,8 @@ import { formatDistanceToNow } from "date-fns";
 
 export default function Research() {
   const { activeProjectId } = useWorkspace();
+  // Spend and dollar budgets are internal; the API refuses them to customers.
+  const { isAdmin } = useAdminAccess();
   
   const { data: companies, isLoading, isError, refetch } = useListResearchWorkspace(activeProjectId ?? "", {
     query: {
@@ -123,7 +126,7 @@ export default function Research() {
           Execute bounded research sweeps to extract structured facts and evidence.
         </p>
       </div>
-      <ResearchEconomics projectId={activeProjectId} />
+      {isAdmin && <ResearchEconomics projectId={activeProjectId} />}
 
       <div className="flex-1 rounded-xl border border-border bg-background shadow-sm overflow-hidden flex flex-col md:block">
         <ResizablePanelGroup direction="horizontal">

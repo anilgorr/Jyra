@@ -188,6 +188,24 @@ paths:
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/NotFound" }
+  /admin/costs:
+    get:
+      operationId: listOrganizationCosts
+      tags: [admin]
+      summary: What every account has cost to run
+      description: >-
+        Every organisation, invited or not, with this month's, last month's and lifetime
+        running cost in real currency. Internal admins only.
+      security:
+        - clerkSession: []
+      responses:
+        "200":
+          description: Cost per organisation
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/OrganizationCosts" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/NotFound" }
   /admin/access:
     get:
       operationId: listAccessGrants
@@ -1540,7 +1558,7 @@ paths:
     get:
       operationId: getResearchEconomics
       tags: [research]
-      summary: Get project research spend, projection, and unit economics
+      summary: Get project research spend, projection, and unit economics (internal admins only)
       security: [{ clerkSession: [] }]
       parameters:
         - $ref: "#/components/parameters/ProjectId"
@@ -1557,7 +1575,7 @@ paths:
     put:
       operationId: updateResearchBudget
       tags: [research]
-      summary: Configure optional daily and monthly project research budgets
+      summary: Configure optional daily and monthly project research budgets (internal admins only)
       security: [{ clerkSession: [] }]
       parameters:
         - $ref: "#/components/parameters/ProjectId"
@@ -2826,6 +2844,7 @@ components:
           items: { $ref: "#/components/schemas/IntelligenceV2Evidence" }
         cost:
           type: object
+          description: Real currency. Present for internal admins only.
           additionalProperties: false
           properties:
             provider: { type: number }
@@ -2853,7 +2872,7 @@ components:
             profile: { type: string }
             assessment: { type: string }
           required: [profile, assessment]
-      required: [intelligenceVersion, projectId, projectCompanyId, companyId, companyName, domain, createdAt, identity, primaryBusiness, commercialRole, who, assessmentConfidence, resolutionType, deterministicOverrides, unknownFacts, evidence, cost, versions, fingerprints]
+      required: [intelligenceVersion, projectId, projectCompanyId, companyId, companyName, domain, createdAt, identity, primaryBusiness, commercialRole, who, assessmentConfidence, resolutionType, deterministicOverrides, unknownFacts, evidence, versions, fingerprints]
     AdminMetricSection:
       type: object
       properties:
@@ -3808,6 +3827,34 @@ components:
       properties:
         credits: { type: number, minimum: 1, maximum: 1000000 }
         reason: { type: string, minLength: 1, maxLength: 500 }
+    OrganizationCosts:
+      type: object
+      additionalProperties: false
+      required: [month, inrPerUsd, organizations]
+      properties:
+        month: { type: string }
+        inrPerUsd: { type: number }
+        organizations:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            required: [organizationId, organizationName, createdAt, grantEmail, planCode, monthToDateUsd, monthToDateInr, lastMonthUsd, lastMonthInr, lifetimeUsd, lifetimeInr, wastedMonthToDateUsd, calls, lastSpendAt]
+            properties:
+              organizationId: { type: string }
+              organizationName: { type: string }
+              createdAt: { type: string }
+              grantEmail: { type: string, nullable: true, description: The invited email, or null for an organisation created without an invite. }
+              planCode: { type: string, nullable: true }
+              monthToDateUsd: { type: number }
+              monthToDateInr: { type: number }
+              lastMonthUsd: { type: number }
+              lastMonthInr: { type: number }
+              lifetimeUsd: { type: number }
+              lifetimeInr: { type: number }
+              wastedMonthToDateUsd: { type: number }
+              calls: { type: number }
+              lastSpendAt: { type: string, nullable: true }
     AccessGrantCost:
       type: object
       additionalProperties: false
@@ -3818,11 +3865,38 @@ components:
         spend:
           type: object
           additionalProperties: false
-          required: [monthToDateUsd, todayUsd, wastedUsd, breakdown]
+          required: [monthToDateUsd, todayUsd, wastedUsd, breakdown, lifetimeUsd, lifetimeInr, byMonth, byProject]
           properties:
             monthToDateUsd: { type: number }
             todayUsd: { type: number }
             wastedUsd: { type: number }
+            lifetimeUsd: { type: number, description: Everything this account has ever cost to run. }
+            lifetimeInr: { type: number }
+            byMonth:
+              type: array
+              description: Cost per calendar month (UTC), newest first, up to 12 months.
+              items:
+                type: object
+                additionalProperties: false
+                required: [month, calls, costUsd, costInr]
+                properties:
+                  month: { type: string, description: YYYY-MM }
+                  calls: { type: number }
+                  costUsd: { type: number }
+                  costInr: { type: number }
+            byProject:
+              type: array
+              description: This month's cost split by project. A null projectId is spend not tied to one project.
+              items:
+                type: object
+                additionalProperties: false
+                required: [projectId, projectName, calls, costUsd, costInr]
+                properties:
+                  projectId: { type: string, nullable: true }
+                  projectName: { type: string, nullable: true }
+                  calls: { type: number }
+                  costUsd: { type: number }
+                  costInr: { type: number }
             breakdown:
               type: array
               items:
@@ -4979,8 +5053,8 @@ components:
         factsAdded: { type: number }
         signalsCreated: { type: number }
         modelCalls: { type: number }
-        costTotal: { type: number }
-      required: [id, projectCompanyId, companyId, companyName, domain, trigger, observedAt, hasChanges, profileChanged, verdictChanged, scoreChanged, evidenceAdded, evidenceRemoved, evidenceChanged, verdictBefore, verdictAfter, scoreBefore, scoreAfter, factsAdded, signalsCreated, modelCalls, costTotal]
+        costTotal: { type: number, description: "Real currency. Present for internal admins only." }
+      required: [id, projectCompanyId, companyId, companyName, domain, trigger, observedAt, hasChanges, profileChanged, verdictChanged, scoreChanged, evidenceAdded, evidenceRemoved, evidenceChanged, verdictBefore, verdictAfter, scoreBefore, scoreAfter, factsAdded, signalsCreated, modelCalls]
     ProjectChangeFeed:
       type: object
       properties:
@@ -4992,8 +5066,8 @@ components:
             cyclesWithChanges: { type: number }
             companiesWatched: { type: number }
             lastCycleAt: { type: string, format: date-time, nullable: true }
-            spendUsd: { type: number }
-          required: [cyclesTotal, cyclesWithChanges, companiesWatched, lastCycleAt, spendUsd]
+            spendUsd: { type: number, description: "Real currency. Present for internal admins only." }
+          required: [cyclesTotal, cyclesWithChanges, companiesWatched, lastCycleAt]
         monitoring:
           type: object
           description: Whether scheduled research can run for this project at all. PAUSED means every scheduled cycle is being skipped until the listed setup problems are fixed.
@@ -5674,7 +5748,7 @@ components:
         estimatedCost: { type: number }
         actualCost: { type: number, nullable: true }
         observedAt: { type: string, format: date-time }
-      required: [id, capability, status, contactStatus, providerId, estimatedCost, actualCost, observedAt]
+      required: [id, capability, status, contactStatus, providerId, observedAt]
     ProjectPerson:
       type: object
       properties:
@@ -5738,7 +5812,7 @@ components:
             message: { type: string }
             retryable: { type: boolean }
           required: [code, message, retryable]
-      required: [capability, provider, cost, result, verification, timestamp, responseStatus, error]
+      required: [capability, provider, result, verification, timestamp, responseStatus, error]
     ContactEnrichmentResponse:
       type: object
       properties:

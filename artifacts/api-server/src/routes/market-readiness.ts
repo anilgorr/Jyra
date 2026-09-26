@@ -10,12 +10,16 @@ import {
   marketReadinessSalespersonReviewsTable,
   marketReadinessProcessingAttemptsTable, marketReadinessPredictionSnapshotsTable,
 } from "@workspace/db";
-import { getAuthenticatedUserId, requireAuth } from "../middlewares/auth";
+import { getAuthenticatedUserId, requireAuth, requireInternalAdmin } from "../middlewares/auth";
 import { hasOrgRole } from "../lib/authz";
 import { advanceMarketReadinessWorker, assertMarketReadinessIndependentReviewCoverage, assertMarketReadinessProcessingConfig, calculateMarketReadinessMetrics, commercialGate, createMarketReadinessWorkerAdapter, MAX_DISCOVERY_PAGE_SIZE, freezePayloadHash, marketReadinessGoldLabelsSchema, marketReadinessMetricRow, normalizeMarketDomain, parseMarketReadinessPersistedPrediction, parseOutcomesCsv, resumeMarketReadinessCampaign, rolloutGate, scheduleMarketReadinessWork, seededAssignments, validateMarketReadinessSnapshotInvariant, validateOutcomeOccurredAt } from "../lib/market-readiness";
 import { INTELLIGENCE_CORE_VERSION } from "../lib/intelligence-v2/schemas";
 
 const router: IRouter = Router();
+
+// Market Readiness is the internal validation harness: it spends real money
+// against a dollar cap and shows it. Admins only (26 Sep 2026).
+router.use("/projects/:projectId/market-readiness", requireAuth, requireInternalAdmin);
 const asyncRoute = (fn: (...args: Parameters<RequestHandler>) => Promise<void>): RequestHandler => (req, res, next) => void fn(req, res, next).catch(next);
 const projectParams = api.GetMarketReadinessDashboardParams;
 const campaignParams = api.GetMarketReadinessCampaignParams;

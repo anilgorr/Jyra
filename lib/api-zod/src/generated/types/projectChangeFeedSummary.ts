@@ -12,5 +12,6 @@ export type ProjectChangeFeedSummary = {
   cyclesWithChanges: number;
   companiesWatched: number;
   lastCycleAt: Date | null;
-  spendUsd: number;
+  /** Real currency. Present for internal admins only. */
+  spendUsd?: number;
 };

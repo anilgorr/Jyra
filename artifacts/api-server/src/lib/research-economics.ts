@@ -175,9 +175,10 @@ export function evaluateResearchBudget(input: {
   const estimate = Math.max(0, input.estimatedCost);
   let reason: string | null = null;
   if (input.daySpend + estimate > limits.dailyBudget) {
-    reason = `Daily research budget reached: $${(input.daySpend + estimate).toFixed(2)} would exceed $${limits.dailyBudget.toFixed(2)}.`;
+    // No amounts: this reason reaches customers, and cost is admin-only.
+    reason = "Daily research budget reached. Research resumes tomorrow.";
   } else if (input.monthSpend + estimate > limits.monthlyBudget) {
-    reason = `Monthly research budget reached: $${(input.monthSpend + estimate).toFixed(2)} would exceed $${limits.monthlyBudget.toFixed(2)}.`;
+    reason = "Monthly research budget reached. Research resumes next month.";
   }
   return { allowed: !reason, reason, limits };
 }

@@ -6,10 +6,19 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { AccessGrantCostSpendBreakdownItem } from './accessGrantCostSpendBreakdownItem';
+import type { AccessGrantCostSpendByMonthItem } from './accessGrantCostSpendByMonthItem';
+import type { AccessGrantCostSpendByProjectItem } from './accessGrantCostSpendByProjectItem';
 
 export type AccessGrantCostSpend = {
   monthToDateUsd: number;
   todayUsd: number;
   wastedUsd: number;
+  /** Everything this account has ever cost to run. */
+  lifetimeUsd: number;
+  lifetimeInr: number;
+  /** Cost per calendar month (UTC), newest first, up to 12 months. */
+  byMonth: AccessGrantCostSpendByMonthItem[];
+  /** This month's cost split by project. A null projectId is spend not tied to one project. */
+  byProject: AccessGrantCostSpendByProjectItem[];
   breakdown: AccessGrantCostSpendBreakdownItem[];
 };

@@ -1,5 +1,5 @@
 import { and, eq, gte, isNotNull, lte, sql } from "drizzle-orm";
-import { db, spendLedgerTable, type SpendKind, type SpendOutcome } from "@workspace/db";
+import { db, projectsTable, spendLedgerTable, type SpendKind, type SpendOutcome } from "@workspace/db";
 
 /**
  * Writing down what JYRA spends, as it spends it.
@@ -132,4 +132,92 @@ export async function wastedSpendSince(organizationId: string, since: Date): Pro
       sql`${spendLedgerTable.outcome} <> 'success'`,
     ));
   return { calls: Number(row?.calls ?? 0), costUsd: Number(row?.costUsd ?? 0) };
+}
+
+/** Every month an organisation has spent money in, newest first, capped at `limit`. For the admin cost view. */
+export async function organizationSpendByMonth(organizationId: string, limit = 12): Promise<Array<{ month: string; calls: number; costUsd: number }>> {
+  const month = sql<string>`to_char(date_trunc('month', ${spendLedgerTable.occurredAt} at time zone 'UTC'), 'YYYY-MM')`;
+  const rows = await db.select({
+    month,
+    calls: sql<number>`count(*)::int`,
+    costUsd: sql<number>`coalesce(sum(${spendLedgerTable.costUsd}), 0)`,
+  })
+    .from(spendLedgerTable)
+    .where(eq(spendLedgerTable.organizationId, organizationId))
+    .groupBy(month)
+    .orderBy(sql`1 desc`)
+    .limit(limit);
+  return rows.map((row) => ({ month: String(row.month), calls: Number(row.calls), costUsd: Number(row.costUsd) }));
+}
+
+/** Where an organisation's money went by project since a moment. Spend with no project is reported as projectId null. */
+export async function organizationSpendByProject(organizationId: string, since: Date): Promise<Array<{ projectId: string | null; projectName: string | null; calls: number; costUsd: number }>> {
+  const rows = await db.select({
+    projectId: spendLedgerTable.projectId,
+    projectName: projectsTable.name,
+    calls: sql<number>`count(*)::int`,
+    costUsd: sql<number>`coalesce(sum(${spendLedgerTable.costUsd}), 0)`,
+  })
+    .from(spendLedgerTable)
+    .leftJoin(projectsTable, eq(projectsTable.id, spendLedgerTable.projectId))
+    .where(and(eq(spendLedgerTable.organizationId, organizationId), gte(spendLedgerTable.occurredAt, since)))
+    .groupBy(spendLedgerTable.projectId, projectsTable.name)
+    .orderBy(sql`coalesce(sum(${spendLedgerTable.costUsd}), 0) desc`);
+  return rows.map((row) => ({ projectId: row.projectId ?? null, projectName: row.projectName ?? null, calls: Number(row.calls), costUsd: Number(row.costUsd) }));
+}
+
+export type OrganizationCostRow = {
+  organizationId: string;
+  organizationName: string;
+  createdAt: Date;
+  grantEmail: string | null;
+  planCode: string | null;
+  monthToDateUsd: number;
+  lastMonthUsd: number;
+  lifetimeUsd: number;
+  wastedMonthToDateUsd: number;
+  calls: number;
+  lastSpendAt: Date | null;
+};
+
+/**
+ * What every organisation has cost to run. The invite list only shows
+ * organisations that came in through an access grant; the ones created
+ * before invites existed (our own workspaces among them) spent real money
+ * that no admin screen showed. This covers all of them.
+ */
+export async function allOrganizationCosts(now: Date): Promise<OrganizationCostRow[]> {
+  const monthStart = utcMonthStart(now);
+  const lastMonthStart = new Date(Date.UTC(monthStart.getUTCFullYear(), monthStart.getUTCMonth() - 1, 1));
+  const result = await db.execute(sql`
+    select o.id, o.name, o.created_at,
+           g.email as grant_email, g.plan_code,
+           coalesce(sum(s.cost_usd) filter (where s.occurred_at >= ${monthStart}), 0)::float as month_to_date,
+           coalesce(sum(s.cost_usd) filter (where s.occurred_at >= ${lastMonthStart} and s.occurred_at < ${monthStart}), 0)::float as last_month,
+           coalesce(sum(s.cost_usd), 0)::float as lifetime,
+           coalesce(sum(s.cost_usd) filter (where s.occurred_at >= ${monthStart} and s.outcome is not null and s.outcome <> 'success'), 0)::float as wasted,
+           count(s.id)::int as calls,
+           max(s.occurred_at) as last_spend_at
+    from organizations o
+    left join lateral (
+      select email, plan_code from access_grants ag
+      where ag.organization_id = o.id order by ag.created_at asc limit 1
+    ) g on true
+    left join spend_ledger s on s.organization_id = o.id
+    group by o.id, o.name, o.created_at, g.email, g.plan_code
+    order by lifetime desc, o.created_at asc
+  `);
+  return (result.rows as Array<Record<string, unknown>>).map((row) => ({
+    organizationId: String(row.id),
+    organizationName: String(row.name),
+    createdAt: new Date(String(row.created_at)),
+    grantEmail: row.grant_email ? String(row.grant_email) : null,
+    planCode: row.plan_code ? String(row.plan_code) : null,
+    monthToDateUsd: Number(row.month_to_date ?? 0),
+    lastMonthUsd: Number(row.last_month ?? 0),
+    lifetimeUsd: Number(row.lifetime ?? 0),
+    wastedMonthToDateUsd: Number(row.wasted ?? 0),
+    calls: Number(row.calls ?? 0),
+    lastSpendAt: row.last_spend_at ? new Date(String(row.last_spend_at)) : null,
+  }));
 }

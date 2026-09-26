@@ -40,7 +40,8 @@ export interface IntelligenceV2Run {
   deterministicOverrides: IntelligenceV2RunDeterministicOverridesItem[];
   unknownFacts: string[];
   evidence: IntelligenceV2Evidence[];
-  cost: IntelligenceV2RunCost;
+  /** Real currency. Present for internal admins only. */
+  cost?: IntelligenceV2RunCost;
   versions: IntelligenceV2RunVersions;
   fingerprints: IntelligenceV2RunFingerprints;
 }

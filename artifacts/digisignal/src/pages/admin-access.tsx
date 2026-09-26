@@ -7,6 +7,7 @@ import {
   useGetAdminPrecision,
   useGrantCredits,
   useListAccessGrants,
+  useListOrganizationCosts,
   useUpdateAccessGrant,
   type AccessGrant,
 } from "@workspace/api-client-react";
@@ -24,8 +25,8 @@ import { toast } from "sonner";
 /**
  * The door, and the bill.
  *
- * Who has been invited, on which plan, what they have left, and what they
- * have cost this month in real money. This is the ONE customer-facing-adjacent
+ * Who has been invited, on which plan, what they have left, and what every
+ * account has cost to run in real money. This is the ONE customer-facing-adjacent
  * surface where a rupee figure appears; the customer's own plan page shows
  * credits only. If you find yourself wanting to show a cost figure anywhere
  * else, that is a product decision, not a UI change.
@@ -263,6 +264,59 @@ function GrantRow({ grant, onChanged }: { grant: AccessGrant; onChanged: () => v
                 )}
               </div>
             </div>
+            <div className="mt-6 grid gap-4 border-t pt-4 lg:grid-cols-3">
+              <div>
+                <h3 className="text-sm font-medium">Cost to run, all time</h3>
+                {cost.isLoading ? <Skeleton className="mt-2 h-10" /> : (
+                  <>
+                    <div className="mt-2 font-display text-2xl font-semibold tabular-nums">{inr(cost.data?.spend.lifetimeInr ?? 0)}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {usd(cost.data?.spend.lifetimeUsd ?? 0)} · today {usd(cost.data?.spend.todayUsd ?? 0)}
+                    </div>
+                  </>
+                )}
+              </div>
+              <div>
+                <h3 className="text-sm font-medium">By month</h3>
+                {cost.isLoading ? <Skeleton className="mt-2 h-20" /> : (
+                  <table className="mt-2 w-full text-xs">
+                    <tbody>
+                      {(cost.data?.spend.byMonth ?? []).length === 0 && (
+                        <tr><td className="py-2 text-muted-foreground">Nothing spent yet.</td></tr>
+                      )}
+                      {(cost.data?.spend.byMonth ?? []).map((row) => (
+                        <tr key={row.month} className="border-t">
+                          <td className="py-1 pr-2 tabular-nums">{row.month}</td>
+                          <td className="py-1 pr-2 text-right tabular-nums text-muted-foreground">{n(row.calls)} calls</td>
+                          <td className="py-1 pr-2 text-right tabular-nums">{inr(row.costInr)}</td>
+                          <td className="py-1 text-right tabular-nums text-muted-foreground">{usd(row.costUsd)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+              </div>
+              <div>
+                <h3 className="text-sm font-medium">This month by project</h3>
+                {cost.isLoading ? <Skeleton className="mt-2 h-20" /> : (
+                  <table className="mt-2 w-full text-xs">
+                    <tbody>
+                      {(cost.data?.spend.byProject ?? []).length === 0 && (
+                        <tr><td className="py-2 text-muted-foreground">Nothing spent yet.</td></tr>
+                      )}
+                      {(cost.data?.spend.byProject ?? []).map((row) => (
+                        <tr key={row.projectId ?? "none"} className="border-t">
+                          <td className="py-1 pr-2">{row.projectName ?? <span className="text-muted-foreground">not tied to a project</span>}</td>
+                          <td className="py-1 pr-2 text-right tabular-nums text-muted-foreground">{n(row.calls)} calls</td>
+                          <td className="py-1 pr-2 text-right tabular-nums">{inr(row.costInr)}</td>
+                          <td className="py-1 text-right tabular-nums text-muted-foreground">{usd(row.costUsd)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+              </div>
+            </div>
           </td>
         </tr>
       )}
@@ -352,6 +406,84 @@ function PrecisionCard() {
   );
 }
 
+function AccountCostsCard() {
+  const costs = useListOrganizationCosts();
+  const rows = costs.data?.organizations ?? [];
+  const total = rows.reduce((acc, row) => ({
+    month: acc.month + row.monthToDateInr,
+    lastMonth: acc.lastMonth + row.lastMonthInr,
+    lifetime: acc.lifetime + row.lifetimeInr,
+  }), { month: 0, lastMonth: 0, lifetime: 0 });
+  return (
+    <Card className="p-4">
+      <h2 className="font-medium">Cost by account</h2>
+      <p className="mt-1 text-sm text-muted-foreground">
+        What every organisation has cost to run, including ones that never came through an invite. Provider and model
+        spend from the ledger, converted at ₹{costs.data?.inrPerUsd ?? "—"}/$. Months are UTC.
+      </p>
+      {costs.isLoading ? (
+        <div className="mt-4 space-y-2">{[0, 1].map((k) => <Skeleton key={k} className="h-10" />)}</div>
+      ) : costs.isError ? (
+        <p className="mt-3 text-sm text-destructive">Account costs could not be loaded.</p>
+      ) : (
+        <div className="mt-3 overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="text-left text-xs uppercase tracking-wider text-muted-foreground">
+                <th className="pb-2 pr-4 font-medium">Account</th>
+                <th className="pb-2 pr-4 font-medium">Plan</th>
+                <th className="pb-2 pr-4 text-right font-medium">This month</th>
+                <th className="pb-2 pr-4 text-right font-medium">Last month</th>
+                <th className="pb-2 pr-4 text-right font-medium">All time</th>
+                <th className="pb-2 pr-4 text-right font-medium">Wasted this month</th>
+                <th className="pb-2 text-right font-medium">Last spend</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.length === 0 && (
+                <tr><td colSpan={7} className="py-6 text-center text-muted-foreground">No organisations yet.</td></tr>
+              )}
+              {rows.map((row) => (
+                <tr key={row.organizationId} className="border-t align-top">
+                  <td className="py-2 pr-4">
+                    <div className="font-medium">{row.organizationName}</div>
+                    <div className="text-xs text-muted-foreground">{row.grantEmail ?? "no invite (created directly)"}</div>
+                  </td>
+                  <td className="py-2 pr-4">{row.planCode ?? <span className="text-muted-foreground">—</span>}</td>
+                  <td className="py-2 pr-4 text-right tabular-nums">
+                    <div>{inr(row.monthToDateInr)}</div>
+                    <div className="text-xs text-muted-foreground">{usd(row.monthToDateUsd)}</div>
+                  </td>
+                  <td className="py-2 pr-4 text-right tabular-nums">{inr(row.lastMonthInr)}</td>
+                  <td className="py-2 pr-4 text-right tabular-nums">
+                    <div>{inr(row.lifetimeInr)}</div>
+                    <div className="text-xs text-muted-foreground">{n(row.calls)} calls</div>
+                  </td>
+                  <td className={`py-2 pr-4 text-right tabular-nums ${row.wastedMonthToDateUsd > 0 ? "text-amber-700 dark:text-amber-400" : "text-muted-foreground"}`}>
+                    {usd(row.wastedMonthToDateUsd)}
+                  </td>
+                  <td className="py-2 text-right text-xs text-muted-foreground tabular-nums">
+                    {row.lastSpendAt ? new Date(row.lastSpendAt).toLocaleString("en-IN", { timeZone: "Asia/Kolkata", dateStyle: "medium", timeStyle: "short" }) : "never"}
+                  </td>
+                </tr>
+              ))}
+              {rows.length > 1 && (
+                <tr className="border-t font-medium">
+                  <td className="py-2 pr-4" colSpan={2}>All accounts</td>
+                  <td className="py-2 pr-4 text-right tabular-nums">{inr(total.month)}</td>
+                  <td className="py-2 pr-4 text-right tabular-nums">{inr(total.lastMonth)}</td>
+                  <td className="py-2 pr-4 text-right tabular-nums">{inr(total.lifetime)}</td>
+                  <td colSpan={2} />
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </Card>
+  );
+}
+
 export default function AdminAccessPage() {
   const queryClient = useQueryClient();
   const grants = useListAccessGrants({ query: { queryKey: getListAccessGrantsQueryKey() } });
@@ -376,6 +508,8 @@ export default function AdminAccessPage() {
           {totals.active} active · {inr(totals.spendInr)} spent this month against {inr(totals.planInr)} of plans
         </span>
       </header>
+
+      <AccountCostsCard />
 
       <PrecisionCard />
 

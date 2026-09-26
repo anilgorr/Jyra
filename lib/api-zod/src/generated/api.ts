@@ -119,7 +119,7 @@ export const GetCompanyIntelligenceV2Response = zod.object({
   "total": zod.number(),
   "researchProviderCalls": zod.number(),
   "modelCalls": zod.number()
-}),
+}).optional().describe('Real currency. Present for internal admins only.'),
   "versions": zod.object({
   "profile": zod.string(),
   "assessmentPolicy": zod.string(),
@@ -251,7 +251,7 @@ export const AnalyzeCompanyIntelligenceV2Response = zod.object({
   "total": zod.number(),
   "researchProviderCalls": zod.number(),
   "modelCalls": zod.number()
-}),
+}).optional().describe('Real currency. Present for internal admins only.'),
   "versions": zod.object({
   "profile": zod.string(),
   "assessmentPolicy": zod.string(),
@@ -447,6 +447,32 @@ export const GetAdminQualityDashboardResponse = zod.object({
   "rows": zod.array(zod.record(zod.string(), zod.unknown())).optional()
 })
 })
+})
+
+
+/**
+ * Every organisation, invited or not, with this month's, last month's and lifetime running cost in real currency. Internal admins only.
+ * @summary What every account has cost to run
+ */
+export const ListOrganizationCostsResponse = zod.object({
+  "month": zod.string(),
+  "inrPerUsd": zod.number(),
+  "organizations": zod.array(zod.object({
+  "organizationId": zod.string(),
+  "organizationName": zod.string(),
+  "createdAt": zod.string(),
+  "grantEmail": zod.string().nullable().describe('The invited email'),
+  "planCode": zod.string().nullable(),
+  "monthToDateUsd": zod.number(),
+  "monthToDateInr": zod.number(),
+  "lastMonthUsd": zod.number(),
+  "lastMonthInr": zod.number(),
+  "lifetimeUsd": zod.number(),
+  "lifetimeInr": zod.number(),
+  "wastedMonthToDateUsd": zod.number(),
+  "calls": zod.number(),
+  "lastSpendAt": zod.string().nullable()
+}))
 })
 
 
@@ -662,6 +688,21 @@ export const GetAccessGrantCostResponse = zod.object({
   "monthToDateUsd": zod.number(),
   "todayUsd": zod.number(),
   "wastedUsd": zod.number(),
+  "lifetimeUsd": zod.number().describe('Everything this account has ever cost to run.'),
+  "lifetimeInr": zod.number(),
+  "byMonth": zod.array(zod.object({
+  "month": zod.string().describe('YYYY-MM'),
+  "calls": zod.number(),
+  "costUsd": zod.number(),
+  "costInr": zod.number()
+})).describe('Cost per calendar month (UTC), newest first, up to 12 months.'),
+  "byProject": zod.array(zod.object({
+  "projectId": zod.string().nullable(),
+  "projectName": zod.string().nullable(),
+  "calls": zod.number(),
+  "costUsd": zod.number(),
+  "costInr": zod.number()
+})).describe('This month\'s cost split by project. A null projectId is spend not tied to one project.'),
   "breakdown": zod.array(zod.object({
   "kind": zod.string(),
   "source": zod.string(),
@@ -5178,7 +5219,7 @@ export const ListResearchWorkspaceResponse = zod.array(ListResearchWorkspaceResp
 
 
 /**
- * @summary Get project research spend, projection, and unit economics
+ * @summary Get project research spend, projection, and unit economics (internal admins only)
  */
 export const GetResearchEconomicsParams = zod.object({
   "projectId": zod.coerce.string()
@@ -5205,7 +5246,7 @@ export const GetResearchEconomicsResponse = zod.object({
 
 
 /**
- * @summary Configure optional daily and monthly project research budgets
+ * @summary Configure optional daily and monthly project research budgets (internal admins only)
  */
 export const UpdateResearchBudgetParams = zod.object({
   "projectId": zod.coerce.string()
@@ -5360,14 +5401,14 @@ export const ListProjectChangesResponse = zod.object({
   "factsAdded": zod.number(),
   "signalsCreated": zod.number(),
   "modelCalls": zod.number(),
-  "costTotal": zod.number()
+  "costTotal": zod.number().optional().describe('Real currency. Present for internal admins only.')
 })),
   "summary": zod.object({
   "cyclesTotal": zod.number().describe('Cycles in the window, including quiet ones.'),
   "cyclesWithChanges": zod.number(),
   "companiesWatched": zod.number(),
   "lastCycleAt": zod.coerce.date().nullable(),
-  "spendUsd": zod.number()
+  "spendUsd": zod.number().optional().describe('Real currency. Present for internal admins only.')
 }),
   "monitoring": zod.object({
   "status": zod.enum(['ACTIVE', 'PAUSED']),
@@ -7159,8 +7200,8 @@ export const ListProjectPeopleResponseItem = zod.object({
   "status": zod.enum(['SUCCEEDED', 'EMPTY', 'FAILED']),
   "contactStatus": zod.enum(['UNKNOWN', 'FOUND', 'VERIFIED', 'UNVERIFIED', 'INVALID']),
   "providerId": zod.string().nullable(),
-  "estimatedCost": zod.number(),
-  "actualCost": zod.number().nullable(),
+  "estimatedCost": zod.number().optional(),
+  "actualCost": zod.number().nullish(),
   "observedAt": zod.coerce.date()
 }))
 })
@@ -7227,7 +7268,7 @@ export const EnrichProjectPersonContactResponse = zod.object({
   "cost": zod.object({
   "estimated": zod.number(),
   "actual": zod.number().nullable()
-}),
+}).optional(),
   "result": zod.string().nullable().describe('The email address or phone number found, or null.'),
   "verification": zod.enum(['UNKNOWN', 'FOUND', 'VERIFIED', 'UNVERIFIED', 'INVALID']),
   "timestamp": zod.coerce.date(),
