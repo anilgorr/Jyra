@@ -430,6 +430,61 @@ const roundKey = (amount: unknown): string | null => {
  * the extractor mangled is rejected as EXCERPT_NOT_IN_SOURCE, and a date the
  * text does not support is rejected as DATE_NOT_SUPPORTED.
  */
+/* Words that follow a company name in a headline without extending it: verbs
+ * in title case, roles, months, connectives. "Runway Appoints Michael Rovner"
+ * is Runway; "Runway Growth Capital" is somebody else. */
+const NOT_A_NAME_EXTENSION = new Set([
+  "appoints", "appointed", "names", "named", "hires", "hired", "promotes", "promoted", "taps", "tapped", "welcomes", "elevates",
+  "raises", "raised", "secures", "secured", "closes", "closed", "lands", "bags", "nabs", "announces", "announced", "launches",
+  "launched", "unveils", "introduces", "expands", "expanded", "opens", "opened", "enters", "entered", "acquires", "acquired",
+  "buys", "bought", "lays", "laid", "cuts", "cut", "reduces", "achieves", "achieved", "earns", "earned", "completes", "completed",
+  "reports", "reported", "posts", "posted", "says", "said", "to", "is", "has", "and", "or", "the", "a", "an", "in", "at", "on",
+  "for", "with", "of", "by", "as", "its", "co", "ceo", "cfo", "cto", "cmo", "cro", "coo", "cio", "ciso", "cpo", "chief", "president",
+  "founder", "vp", "svp", "head", "series", "inc", "ltd", "llc", "corp", "corporation", "limited", "plc", "co.", "january",
+  "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december", "q1", "q2",
+  "q3", "q4", "ai", "api", "labs", "technologies", "software", "hq", "io", "app", "cloud",
+]);
+
+/**
+ * Is the article about a company whose name merely begins with ours?
+ *
+ * "Runway appoints Michael Rovner as co-CEO" read as the Runway in the pool
+ * (a planning tool), and the body said "Runway Growth Capital", a credit
+ * fund, three times. A one-word name is where this happens - Clay, Pave,
+ * Alloy, Front - so only such names are checked, and only a longer proper
+ * name that recurs counts: one title-case product mention is not a namesake.
+ * Returns the longer name found, or null.
+ */
+export function namesakeWithLongerName(rawContent: string, companyName: string): string | null {
+  const clean = companyName.replace(/"/g, "").trim();
+  if (!clean || /\s/.test(clean) || !/^[A-Za-z]+$/.test(clean)) return null;
+  const pattern = new RegExp(`(?:^|[^\\p{L}\\p{N}])${escapeRegExp(clean)}((?:[ \\t]+[A-Z][A-Za-z&.'-]*){1,3})(?=$|[^\\p{L}\\p{N}&.'-])`, "gu");
+  const counts = new Map<string, number>();
+  for (const match of rawContent.matchAll(pattern)) {
+    const words = (match[1] ?? "").trim().split(/\s+/);
+    const kept: string[] = [];
+    for (const word of words) {
+      if (NOT_A_NAME_EXTENSION.has(word.toLowerCase().replace(/[.,]+$/, ""))) break;
+      kept.push(word);
+    }
+    if (!kept.length) continue;
+    const longer = `${clean} ${kept.join(" ")}`;
+    counts.set(longer, (counts.get(longer) ?? 0) + 1);
+  }
+  /* "Accops Systems Private Limited" is Accops with its legal form; "Runway
+   * Growth Capital" is another business. Generic and legal tokens do not
+   * make a name different. */
+  const distinctive = (name: string) => normalizeCompanyName(name).split(" ")
+    .filter((token) => token && !GENERIC_NAME_SUFFIX.has(token) && !LEGAL_FORM_TOKENS.has(token)).join(" ");
+  const ours = distinctive(clean);
+  for (const [longer, count] of counts) {
+    if (count >= 2 && distinctive(longer) !== ours) return longer;
+  }
+  return null;
+}
+const LEGAL_FORM_TOKENS = new Set(["private", "limited", "incorporated", "corporation", "company", "llc", "llp", "plc",
+  "holdings", "systems", "solutions", "pvt", "ltd", "inc", "corp", "co", "gmbh", "sa", "bv", "ag"]);
+
 export function mapEventHitsToFacts(
   hits: EventHit[],
   input: { companyId: string; companyName: string; domain: string | null; now: Date; companyDescription?: string | null; priorEvents?: PriorEvent[] },
@@ -468,6 +523,9 @@ export function mapEventHitsToFacts(
                 : extractExplicitLeadershipCandidates(evidenceId, rawContent, publishedAt);
     if (!extracted.length) { skipped.push({ url: hit.url, reason: "NO_EXPLICIT_EVENT" }); continue; }
     const firstParty = Boolean(input.domain && hostMatchesDomain(sourceDomain, input.domain));
+    if (!firstParty && namesakeWithLongerName(rawContent, input.companyName)) {
+      skipped.push({ url: hit.url, reason: "NAMESAKE" }); continue;
+    }
     if (!firstParty && describesAnotherCompany(rawContent, input.companyName, input.companyDescription)) {
       /* Remember what this namesake raised: the next outlet may report the
        * same round without describing the company at all ("Neon Commerce has

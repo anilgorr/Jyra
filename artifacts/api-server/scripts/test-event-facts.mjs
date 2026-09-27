@@ -939,3 +939,27 @@ console.log("PASS event-facts");
   assert.equal(role("Acme appoints Sam Lee as VP of Engineering"), "VP of Engineering", "and so do the other functions");
   console.log("  ok  VP, SVP and Head of sales, marketing and RevOps appointments are read");
 }
+
+// 27 Sep 2026, after the first pack-wide news sweep.
+{
+  const PUB = "2026-09-20T00:00:00Z";
+  const one = (text) => e.extractExplicitLeadershipCandidates("aaaaaaaa-0000-4000-8000-0000000000b1", text, PUB)[0]?.structuredValue ?? {};
+  const algolia = one("Algolia Names Peter Minev Senior Vice President of Engineering to Lead Global Scale\n\nAlgolia has appointed Peter Minev as Senior Vice President of Engineering.");
+  assert.equal(algolia.person, "Peter Minev", "'Senior' belongs to the seat, not the person");
+  assert.equal(algolia.role, "Senior Vice President of Engineering");
+  const fw = one("Freshworks appoints Kuntal Vahalia Senior Vice President, Partnership Channel");
+  assert.equal(fw.person, "Kuntal Vahalia");
+  assert.equal(fw.role, "Senior Vice President, Partnership Channel", "a two-function GTM seat, not a bare 'President'");
+  console.log("  ok  Senior Vice President is a seat, and a two-function seat is read whole");
+
+  const runway = "Runway appoints Michael Rovner as co-CEO and co-CIO\nAysha Gilmore\nBC Partners , Runway Growth Capital\nRunway Growth Capital has appointed Michael Rovner as co-chief executive and co-chief investment officer.";
+  assert.equal(e.namesakeWithLongerName(runway, "Runway"), "Runway Growth Capital", "the fund whose name begins with ours");
+  assert.equal(e.namesakeWithLongerName("Runway Appoints Michael Rovner\n\nRunway said Rovner joins in September. Runway is a planning platform.", "Runway"), null, "a title-case verb is not a longer name");
+  assert.equal(e.namesakeWithLongerName("Pave Launches Compensation Benchmarking\n\nPave Compensation Benchmarking is the product. Pave said today.", "Pave"), null, "one product mention is not a namesake");
+  assert.equal(e.namesakeWithLongerName("Grafana Labs appoints Jane Doe. Grafana Labs said.", "Grafana Labs"), null, "only one-word names are checked");
+  const ctxRunway = { companyId: "c-runway", companyName: "Runway", domain: "runway.com", now: new Date("2026-09-27T00:00:00Z") };
+  const mapped = e.mapEventHitsToFacts([{ kind: "LEADERSHIP_CHANGE", url: "https://alternativecreditinvestor.com/x", title: "Runway appoints Michael Rovner as co-CEO", snippet: "", rawContent: runway, publishedAt: "2026-08-10T00:00:00Z" }], ctxRunway);
+  assert.equal(mapped.facts.length, 0, "the credit fund's appointment is not the planning tool's");
+  assert.ok(mapped.skipped.some((s) => s.reason === "NAMESAKE"));
+  console.log("  ok  a longer name that recurs is a namesake");
+}

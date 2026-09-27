@@ -728,9 +728,10 @@ const TECHNOLOGY_LEADERSHIP_ROLE_PATTERN = [
  * "Head of Revenue Operations" - the titles below the C-suite that a sales-
  * tools seller cares about most - did not match when only a bare
  * "VP of Sales" did (27 Sep 2026: Front's SVP of Global Channel Sales). */
-const GTM_FUNCTION = "(?:Revenue Operations|RevOps|Sales Development|Demand Generation|Go-to-Market|Partnerships|Alliances|Marketing|Sales|Growth|Revenue|Channel|GTM)";
+const GTM_FUNCTION = "(?:Revenue Operations|RevOps|Sales Development|Demand Generation|Go-to-Market|Partnerships?|Alliances|Marketing|Sales|Growth|Revenue|Channel|GTM)";
 const GTM_QUALIFIER = "(?:(?:Global|Worldwide|Enterprise|Channel|Field|Inside|Commercial|International|Americas|North American?|Mid-Market|Strategic)\\s+)*";
-const GTM_SEAT = `${GTM_QUALIFIER}${GTM_FUNCTION}(?:\\s+(?:and|&)\\s+${GTM_FUNCTION})?`;
+/* Two functions in one seat: "Sales and Marketing", "Partnership Channel". */
+const GTM_SEAT = `${GTM_QUALIFIER}${GTM_FUNCTION}(?:\\s+(?:(?:and|&)\\s+)?${GTM_FUNCTION})?`;
 const GTM_LEADERSHIP_ROLE_PATTERN = [
   "Chief Marketing Officer(?:\\s*\\(CMO\\))?",
   "Chief Revenue Officer(?:\\s*\\(CRO\\))?",
@@ -757,7 +758,10 @@ const EXECUTIVE_LEADERSHIP_ROLE_PATTERN = [
  * A "Co-" or "Interim" prefix is part of the title, not a different job. Ramp
  * naming a Co-CEO went unread until this was allowed, and an interim CFO is
  * the most buyable moment a finance stack ever has. */
-const ROLE_PREFIX = String.raw`(?:(?:Co|Deputy|Interim|Acting|Global|Group)[-\s]+)?`;
+/* "Senior" and "Executive" are part of the seat too: "Senior Vice President
+ * of Engineering" used to read as a person called "Peter Minev Senior" in the
+ * seat "Vice President of Engineering" (27 Sep 2026). */
+const ROLE_PREFIX = String.raw`(?:(?:Co|Deputy|Interim|Acting|Global|Group|Senior|Executive)[-\s]+)?`;
 const LEADERSHIP_ROLE_PATTERN = [
   String.raw`(?:Senior\s+Vice\s+President\s*(?:,|and)?\s+)?`,
   ROLE_PREFIX,

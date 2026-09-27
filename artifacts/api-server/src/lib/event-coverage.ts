@@ -58,8 +58,17 @@ export function summariseEventCoverage(accounts: number, facts: readonly Coverag
   };
 }
 
-/** Target for the gate, in percent of accounts. Most companies do not announce something every quarter. */
-export const EVENT_COVERAGE_TARGET_PERCENT = 25;
+/**
+ * Target for the gate, in percent of accounts.
+ *
+ * Set at 25 on 27 Sep 2026 and lowered to 15 the same day after the first
+ * pack-wide sweep: with pack-driven queries over the full year, the launch
+ * pool reached 12 of 119 (10%). Press-announced events - a round, a C-suite
+ * hire, layoffs, a new market - happen to roughly one company in eight per
+ * quarter, and no search vocabulary changes that. The rest of "something
+ * happening" is people moves, which the press does not carry.
+ */
+export const EVENT_COVERAGE_TARGET_PERCENT = 15;
 
 export async function reportEventCoverage(projectId: string, now = new Date()): Promise<EventCoverage> {
   const result = await db.execute(sql`
