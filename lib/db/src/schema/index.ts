@@ -49,4 +49,4 @@ export * from "./intelligence-v2-assessments";
 export * from "./intelligence-v2-cache";
 export * from "./intelligence-v2-changesets";
 export * from "./intelligence-v2-watch-checks";
-export * from "./intent-accounts";
+export * from "./intent-accounts";export * from "./company-event-searches";

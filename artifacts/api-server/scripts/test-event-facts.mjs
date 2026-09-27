@@ -98,17 +98,17 @@ const ctx = { companyId: "c-acme", companyName: "Acme Payments", domain: "acmepa
 //    run: a company in the news for layoffs is exactly the one not to call.
 {
   const queries = e.buildEventQueries("Acme Payments", "acmepay.com");
-  assert.equal(queries.length, 8);
-  assert.deepEqual(queries.map((q) => q.kind), ["SECURITY_INCIDENT", "LEADERSHIP_CHANGE", "LEADERSHIP_CHANGE", "WORKFORCE_REDUCTION", "ACQUIRED", "FUNDING_EVENT", "COMPANY_EXPANSION", "CERTIFICATION"]);
+  assert.equal(queries.length, 9, "with no pack to read, everything is searched - including GTM leadership below the C-suite");
+  assert.deepEqual(queries.map((q) => q.kind), ["SECURITY_INCIDENT", "LEADERSHIP_CHANGE", "LEADERSHIP_CHANGE", "WORKFORCE_REDUCTION", "ACQUIRED", "FUNDING_EVENT", "COMPANY_EXPANSION", "CERTIFICATION", "LEADERSHIP_CHANGE"]);
   assert.ok(queries.every((q) => q.query.includes('"Acme Payments"')));
   const calls = [];
   const { hits, providers } = await e.researchEvents(async (request) => {
     calls.push(request);
     return { status: "success", providerId: "exa", data: { results: [{ title: "t", url: `https://x.example/${calls.length}`, snippet: "s" }, { title: "dup", url: "https://x.example/1", snippet: "s" }] } };
   }, { requestId: "pc-1", companyName: "Acme Payments", domain: "acmepay.com", now: NOW });
-  assert.equal(calls.length, 7, "the open-web leadership query restates the news one; with hits in hand it is skipped, the negatives, funding, footprint and certification are not");
+  assert.equal(calls.length, 8, "the open-web leadership query restates the news one; with hits in hand it is skipped, the negatives, funding, footprint, certification and GTM leadership are not");
   assert.ok(calls.every((c) => c.includeRawContent === true && c.timeRange === "year"));
-  assert.equal(hits.length, 7, "duplicate URLs across queries are collapsed");
+  assert.equal(hits.length, 8, "duplicate URLs across queries are collapsed");
   assert.deepEqual(providers, ["exa"]);
 
   // Nothing found in the news index: the broader third query is exactly the
@@ -118,7 +118,7 @@ const ctx = { companyId: "c-acme", companyName: "Acme Payments", domain: "acmepa
     empty.push(request);
     return { status: "success", providerId: "exa", data: { results: [] } };
   }, { requestId: "pc-2", companyName: "Quiet Co", domain: "quiet.example", now: NOW });
-  assert.equal(empty.length, 8, "a company the news index does not cover still gets the open-web query");
+  assert.equal(empty.length, 9, "a company the news index does not cover still gets the open-web query");
   assert.equal(quiet.hits.length, 0);
 }
 
@@ -848,3 +848,94 @@ console.log("PASS event-facts");
   console.log("  ok  a longer, different company name is a different company");
 }
 
+
+// 27 Sep 2026 - the news gap. Over eight days 2,228 searches found a dated
+// non-hiring event for 9 of 119 companies. What is asked now follows the
+// seller's pack, ordinary-word names carry a context term, and the full year
+// is searched once per query set - after that only the last month, weekly.
+{
+  const apollo = e.eventSearchPlanFromDefinitions([
+    { factTypes: ["FUNDING_EVENT"], text: "SAAS_FUNDING_ROUND funding" },
+    { factTypes: ["LEADERSHIP_CHANGE"], text: "SAAS_NEW_REVENUE_LEADER New revenue leader: a CRO or VP of Sales" },
+    { factTypes: ["NEW_MARKET", "COMPANY_EXPANSION"], text: "SAAS_MARKET_EXPANSION" },
+    { factTypes: ["JOB_OPENING"], text: "SAAS_SDR_HIRING" },
+    { factTypes: ["WORKFORCE_REDUCTION"], text: "WORKFORCE_REDUCTION" },
+    { factTypes: ["ACQUIRED"], text: "ACQUIRED" },
+  ]);
+  const apolloIds = e.buildEventQueries("Acme Payments", "acmepay.com", { plan: apollo }).map((q) => q.id);
+  assert.ok(apolloIds.includes("leadership-gtm"), "a revenue-tools pack searches for VP-level sales and marketing hires");
+  assert.ok(!apolloIds.includes("security"), "nothing in the pack reads a breach, so it is not paid for");
+  assert.ok(!apolloIds.includes("certification"), "nor a SOC 2 announcement");
+  for (const id of ["funding", "workforce", "acquired", "expansion", "leadership"]) assert.ok(apolloIds.includes(id), `${id} is searched`);
+
+  const soc = e.eventSearchPlanFromDefinitions([
+    { factTypes: ["LEADERSHIP_CHANGE"], text: "NEW_CISO A new security leader" },
+    { factTypes: ["SECURITY_INCIDENT"], text: "BREACH" },
+    { factTypes: ["CERTIFICATION"], text: "ISO27001_ACTIVITY" },
+  ]);
+  const socIds = e.buildEventQueries("Acme Payments", "acmepay.com", { plan: soc }).map((q) => q.id);
+  assert.ok(!socIds.includes("leadership-gtm"), "a security seller does not pay for VP of Sales searches");
+  assert.ok(socIds.includes("security") && socIds.includes("certification"));
+  assert.ok(socIds.includes("funding") && socIds.includes("workforce") && socIds.includes("acquired"), "negatives and funding are always searched");
+  assert.ok(!socIds.includes("expansion"), "and footprint only when a pack reads it");
+
+  assert.deepEqual(e.eventSearchPlanFromDefinitions([]), e.SEARCH_EVERYTHING, "no pack: search everything, as before");
+  assert.notEqual(
+    e.eventQuerySetSignature(e.buildEventQueries("A", null, { plan: apollo })),
+    e.eventQuerySetSignature(e.buildEventQueries("A", null, { plan: soc })),
+    "a different question set is a different signature, and earns its own full-year sweep",
+  );
+  assert.equal(
+    e.eventQuerySetSignature(e.buildEventQueries("Acme", null, { plan: apollo })),
+    e.eventQuerySetSignature(e.buildEventQueries("Other Co", "other.example", { plan: apollo })),
+    "the signature says what was asked, not about whom",
+  );
+  console.log("  ok  the seller's pack decides which events are searched");
+}
+
+{
+  const pigment = e.eventSearchName("Pigment", "pigment.com");
+  assert.equal(pigment.subject, '"Pigment"');
+  assert.match(pigment.anchor, /software OR platform/, "a one-word, all-letter name gets a context term - 'Pigment' alone is mostly paint");
+  assert.match(pigment.anchor, /"pigment\.com"/);
+  const grafana = e.eventSearchName("Grafana Labs", "grafana.com");
+  assert.equal(grafana.subject, '("Grafana Labs" OR "Grafana")', "the press writes Grafana; a quoted 'Grafana Labs' misses it");
+  const temporal = e.eventSearchName("Temporal Technologies", "temporal.io");
+  assert.equal(temporal.subject, '("Temporal Technologies" OR "Temporal")');
+  assert.notEqual(temporal.anchor, "", "and the bare brand is an ordinary word, so it is anchored");
+  assert.deepEqual(e.eventSearchName("Acme Payments", "acmepay.com"), { subject: '"Acme Payments"', anchor: "" }, "a two-word name is specific enough on its own");
+  assert.equal(e.eventSearchName("1Password", null).anchor, "", "a name with digits is not a dictionary word");
+  assert.equal(e.eventSearchName("Customer.io", "customer.io").anchor, "", "nor one with punctuation");
+  assert.ok(e.buildEventQueries("Pigment", "pigment.com").every((q) => q.query.startsWith('"Pigment" (software')));
+  console.log("  ok  ordinary-word names are searched with a context term");
+}
+
+{
+  const NOW27 = new Date("2026-09-27T06:00:00Z");
+  const day = 86_400_000;
+  const at = (d) => new Date(NOW27.getTime() - d * day);
+  const set = "v2:funding,leadership";
+  assert.deepEqual(e.planEventSearch({ lastSearchAt: null, lastYearSweep: null }, set, NOW27), { action: "SEARCH", window: "year" }, "never searched: the whole year");
+  assert.deepEqual(e.planEventSearch({ lastSearchAt: at(3), lastYearSweep: { at: at(3), querySet: set } }, set, NOW27), { action: "SKIP", window: "month" }, "searched three days ago: nothing to find yet");
+  assert.deepEqual(e.planEventSearch({ lastSearchAt: at(8), lastYearSweep: { at: at(40), querySet: set } }, set, NOW27), { action: "SEARCH", window: "month" }, "a week on: the last month only");
+  assert.deepEqual(e.planEventSearch({ lastSearchAt: at(1), lastYearSweep: { at: at(1), querySet: "v1:old" } }, set, NOW27), { action: "SEARCH", window: "year" }, "a new question set has never looked at the year, however recent the last search");
+  assert.deepEqual(e.planEventSearch({ lastSearchAt: at(8), lastYearSweep: { at: at(200), querySet: set } }, set, NOW27), { action: "SEARCH", window: "year" }, "and the year is re-swept every six months");
+
+  const seen = [];
+  await e.researchEvents(async (request) => { seen.push(request.timeRange); return { status: "success", providerId: "serper", data: { results: [] } }; },
+    { requestId: "pc-w", companyName: "Acme Payments", domain: "acmepay.com", now: NOW27, window: "month" });
+  assert.ok(seen.length > 0 && seen.every((w) => w === "month"), "the window asked for is the window searched");
+  console.log("  ok  the full year once per question set, then the last month, weekly");
+}
+
+{
+  const PUB = "2026-09-20T00:00:00Z";
+  const role = (text) => e.extractExplicitLeadershipCandidates("aaaaaaaa-0000-4000-8000-0000000000a1", text, PUB)[0]?.structuredValue?.role ?? null;
+  assert.match(role("Front Appoints Mike Kane as SVP of Global Channel Sales Partnerships to Accelerate Channel Growth") ?? "", /SVP of Global Channel Sales/,
+    "the headline that went unseen: an SVP of Global Channel Sales");
+  assert.match(role("Acme names Jane Doe as Senior Vice President of Sales") ?? "", /Senior Vice President of Sales/);
+  assert.match(role("Acme hires Raj Patel as Head of Revenue Operations") ?? "", /Head of Revenue Operations/);
+  assert.match(role("Acme appoints Sam Lee as VP of Marketing") ?? "", /VP of Marketing/, "the plain titles still read");
+  assert.equal(role("Acme appoints Sam Lee as VP of Engineering"), "VP of Engineering", "and so do the other functions");
+  console.log("  ok  VP, SVP and Head of sales, marketing and RevOps appointments are read");
+}

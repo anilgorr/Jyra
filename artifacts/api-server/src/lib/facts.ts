@@ -163,7 +163,7 @@ const INTERPRETATION_PATTERNS = [
 const FACT_TYPE_PATTERNS: Record<FactType, RegExp[]> = {
   LEADERSHIP_CHANGE: [
     /\b(?:appoint(?:ed|s|ment)|nam(?:ed|es)|promot(?:ed|es)|join(?:ed|s) as|has joined|resign(?:ed|s)|depart(?:ed|s)|steps? down|succeed(?:ed|s))\b/i,
-    /\b(?:chief|ceo|cfo|cto|ciso|president|director|officer|head of|vice president|vp)\b/i,
+    /\b(?:chief|ceo|cfo|cto|ciso|president|director|officer|head of|vice president|[se]?vp)\b/i,
   ],
   JOB_OPENING: [/\b(?:job opening|open roles?|hiring for|vacanc(?:y|ies)|open positions?|seeking applicants)\b/i],
   HIRING_COUNT: [/\b(?:(?:hiring|open roles?|open jobs?|open positions?|vacanc(?:y|ies))\D{0,30}\d+|\d+\D{0,30}(?:open roles?|open jobs?|open positions?|vacanc(?:y|ies)))\b/i],
@@ -723,19 +723,23 @@ const TECHNOLOGY_LEADERSHIP_ROLE_PATTERN = [
   "Head of Data",
 ].join("|");
 
+/* Go-to-market functions and the qualifiers the press puts in front of them.
+ * "SVP of Global Channel Sales", "Senior Vice President, Worldwide Sales",
+ * "Head of Revenue Operations" - the titles below the C-suite that a sales-
+ * tools seller cares about most - did not match when only a bare
+ * "VP of Sales" did (27 Sep 2026: Front's SVP of Global Channel Sales). */
+const GTM_FUNCTION = "(?:Revenue Operations|RevOps|Sales Development|Demand Generation|Go-to-Market|Partnerships|Alliances|Marketing|Sales|Growth|Revenue|Channel|GTM)";
+const GTM_QUALIFIER = "(?:(?:Global|Worldwide|Enterprise|Channel|Field|Inside|Commercial|International|Americas|North American?|Mid-Market|Strategic)\\s+)*";
+const GTM_SEAT = `${GTM_QUALIFIER}${GTM_FUNCTION}(?:\\s+(?:and|&)\\s+${GTM_FUNCTION})?`;
 const GTM_LEADERSHIP_ROLE_PATTERN = [
   "Chief Marketing Officer(?:\\s*\\(CMO\\))?",
   "Chief Revenue Officer(?:\\s*\\(CRO\\))?",
   "Chief Growth Officer",
   "Chief Commercial Officer",
   "CMO", "CRO",
-  "Vice President(?: of)? (?:Marketing|Sales|Growth|Revenue|Demand Generation)",
-  "VP(?: of)? (?:Marketing|Sales|Growth|Revenue|Demand Generation)",
-  "Head of Marketing",
-  "Head of Growth",
-  "Head of Sales",
-  "Head of Demand Generation",
-  "Head of Revenue",
+  `(?:Senior |Executive )?Vice President,?(?: of)? ${GTM_SEAT}`,
+  `(?:S|E)?VP,?(?: of)? ${GTM_SEAT}`,
+  `Head of ${GTM_SEAT}`,
 ].join("|");
 
 const EXECUTIVE_LEADERSHIP_ROLE_PATTERN = [

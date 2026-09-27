@@ -169,6 +169,13 @@
       "when": 1789740487556,
       "tag": "0023_company_normalization",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1790493107928,
+      "tag": "0024_company_event_searches",
+      "breakpoints": true
     }
   ]
 }

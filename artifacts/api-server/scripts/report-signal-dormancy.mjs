@@ -30,4 +30,10 @@ for (const row of rows) {
 const summary = lib.summariseDormancy(rows);
 console.log(`\nfiring=${summary.firing} armed=${summary.armed} dark=${summary.dark}`);
 if (summary.dark) console.log(`dark: ${summary.darkCodes.join(", ")}`);
+
+// The news gate: accounts with a dated non-hiring event in 90 days.
+const coverage = await lib.reportEventCoverage(projectId);
+const types = Object.entries(coverage.byType90d).map(([t, n]) => `${t} ${n}`).join(", ") || "none";
+console.log(`\nevents: ${coverage.withEvent90d}/${coverage.accounts} accounts (${coverage.share90d}%) have a non-hiring event in 90 days` +
+  ` - target ${lib.EVENT_COVERAGE_TARGET_PERCENT}%; ${coverage.withEvent180d} in 180 days; ${coverage.distinctEvents90d} distinct events (${types})`);
 process.exit(summary.dark ? 1 : 0);

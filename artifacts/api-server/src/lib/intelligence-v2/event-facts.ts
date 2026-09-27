@@ -69,29 +69,112 @@ export const EVENT_FACT_EXTRACTOR_VERSION = "event-search-deterministic-v1";
  */
 export const EVENT_LOOKBACK_DAYS = 365;
 
-export type EventQuery = { kind: EventKind; query: string; topic: "news" | "general" };
+export type EventQuery = {
+  /** Stable id: part of the query-set signature, so a new or dropped query earns a fresh full-year sweep. */
+  id: string;
+  kind: EventKind;
+  query: string;
+  topic: "news" | "general";
+  /** Only run when the named query found nothing of this kind. */
+  fallbackFor?: string;
+};
 
-export function buildEventQueries(companyName: string, domain: string | null): EventQuery[] {
-  const name = `"${companyName.replace(/"/g, "")}"`;
+/**
+ * Which events a project can use, read from its signal packs.
+ *
+ * Every company got the same nine searches whatever the seller sold, so an
+ * Apollo pool paid for data-breach and SOC 2 searches that nothing in its pack
+ * reads, and never searched for the VP of Sales hire its pack weighs at 86.
+ * `factTypes` null means no pack could be read: search everything, as before.
+ */
+export type EventSearchPlan = {
+  factTypes: ReadonlySet<string> | null;
+  /** A pack reads sales or marketing leadership, so VP-level GTM appointments are worth a search. */
+  gtmLeadership: boolean;
+};
+export const SEARCH_EVERYTHING: EventSearchPlan = { factTypes: null, gtmLeadership: true };
+
+/* Negative events and funding are searched whatever the pack says. A company
+ * being acquired or cutting staff is a reason not to call, for any seller; a
+ * round is the one trigger every seller in every pack has asked for. */
+const KIND_FACT_TYPES: Record<EventKind, readonly string[] | "always"> = {
+  SECURITY_INCIDENT: ["SECURITY_INCIDENT"],
+  LEADERSHIP_CHANGE: ["LEADERSHIP_CHANGE"],
+  WORKFORCE_REDUCTION: "always",
+  ACQUIRED: "always",
+  FUNDING_EVENT: "always",
+  COMPANY_EXPANSION: ["COMPANY_EXPANSION", "NEW_MARKET"],
+  CERTIFICATION: ["CERTIFICATION"],
+};
+
+const GTM_LEADERSHIP_TEXT = /\b(?:sales|revenue|marketing|growth|go-to-market|gtm|demand gen)/i;
+
+export function eventSearchPlanFromDefinitions(defs: ReadonlyArray<{ factTypes: readonly string[]; text: string }>): EventSearchPlan {
+  if (!defs.length) return SEARCH_EVERYTHING;
+  const factTypes = new Set(defs.flatMap((d) => d.factTypes));
+  const gtmLeadership = defs.some((d) => d.factTypes.includes("LEADERSHIP_CHANGE") && GTM_LEADERSHIP_TEXT.test(d.text));
+  return { factTypes, gtmLeadership };
+}
+
+function planWants(plan: EventSearchPlan, kind: EventKind): boolean {
+  const needs = KIND_FACT_TYPES[kind];
+  if (needs === "always" || !plan.factTypes) return true;
+  return needs.some((type) => plan.factTypes!.has(type));
+}
+
+/* Tokens that describe a company without naming it. "Grafana Labs" is
+ * written "Grafana" in most coverage, and a quoted "Grafana Labs" misses it. */
+const GENERIC_NAME_SUFFIX = new Set(["labs", "lab", "technologies", "technology", "tech", "software", "systems", "security",
+  "ai", "hq", "io", "app", "apps", "inc", "platform", "cloud", "data", "group", "solutions"]);
+
+/**
+ * How to name the company in a search, and whether the name alone is safe.
+ *
+ * A search for "Pigment" is mostly paint; "Runway", "Clay", "Pave", "Alloy",
+ * "Attentive" and "Heap" are ordinary words too. Over eight days 75-100% of
+ * their results were about something else and were thrown away after being
+ * paid for. A one-word, all-letter name gets a context term so the index
+ * returns the company rather than the word.
+ */
+export function eventSearchName(companyName: string, domain: string | null): { subject: string; anchor: string } {
+  const clean = companyName.replace(/"/g, "").trim();
+  const tokens = normalizeCompanyName(clean).split(" ").filter(Boolean);
+  let brand: string | null = null;
+  if (tokens.length > 1 && tokens.slice(1).every((t) => GENERIC_NAME_SUFFIX.has(t)) && tokens[0]!.length >= 4) {
+    brand = clean.split(/\s+/)[0]!;
+  }
+  const subject = brand ? `("${clean}" OR "${brand}")` : `"${clean}"`;
+  const bare = brand ? normalizeCompanyName(brand) : tokens.length === 1 ? tokens[0]! : null;
+  const ambiguous = bare !== null && /^[a-z]+$/.test(bare) && bare.length <= 10;
+  const anchor = ambiguous
+    ? ` (software OR platform OR startup OR SaaS OR app${domain ? ` OR "${domain.replace(/^www\./, "")}"` : ""})`
+    : "";
+  return { subject, anchor };
+}
+
+export function buildEventQueries(companyName: string, domain: string | null, options: { plan?: EventSearchPlan } = {}): EventQuery[] {
+  const plan = options.plan ?? SEARCH_EVERYTHING;
+  const { subject, anchor } = eventSearchName(companyName, domain);
+  const name = `${subject}${anchor}`;
   const site = domain ? ` OR site:${domain}` : "";
-  return [
-    { kind: "SECURITY_INCIDENT", topic: "news", query: `${name} (data breach OR ransomware OR cyberattack OR "security incident" OR "unauthorized access")` },
+  const all: EventQuery[] = [
+    { id: "security", kind: "SECURITY_INCIDENT", topic: "news", query: `${name} (data breach OR ransomware OR cyberattack OR "security incident" OR "unauthorized access")` },
     /* The role list here must stay in step with LEADERSHIP_ROLE_PATTERN in
      * facts.ts. It previously asked for CIO and CTO, which that extractor
      * could not match, so every hit died at NO_EXPLICIT_EVENT. */
-    { kind: "LEADERSHIP_CHANGE", topic: "news", query: `${name} (appoints OR names OR hires OR "has joined") (CISO OR CIO OR CTO OR CMO OR CRO OR "chief information security officer" OR "chief technology officer" OR "chief marketing officer" OR "chief revenue officer" OR "head of security" OR "head of marketing" OR "head of growth")` },
-    { kind: "LEADERSHIP_CHANGE", topic: "general", query: `${name} announces appointment "chief marketing officer" OR "chief revenue officer" OR "chief technology officer" OR "chief information officer" OR "chief information security officer"${site}` },
+    { id: "leadership", kind: "LEADERSHIP_CHANGE", topic: "news", query: `${name} (appoints OR names OR hires OR "has joined") (CISO OR CIO OR CTO OR CMO OR CRO OR "chief information security officer" OR "chief technology officer" OR "chief marketing officer" OR "chief revenue officer" OR "head of security" OR "head of marketing" OR "head of growth")` },
+    { id: "leadership-web", fallbackFor: "leadership", kind: "LEADERSHIP_CHANGE", topic: "general", query: `${name} announces appointment "chief marketing officer" OR "chief revenue officer" OR "chief technology officer" OR "chief information officer" OR "chief information security officer"${site}` },
     /* Negative events. These come first in importance and last in the list
      * only because the early-exit below is keyed to the leadership query; a
      * company in the news for layoffs is exactly the one we must not call. */
-    { kind: "WORKFORCE_REDUCTION", topic: "news", query: `${name} (layoffs OR "laid off" OR "job cuts" OR "hiring freeze" OR redundancies OR "cuts jobs")` },
-    { kind: "ACQUIRED", topic: "news", query: `${name} ("acquired by" OR "to be acquired" OR "agreed to acquire" OR "acquires" OR "takeover" OR "merger")` },
+    { id: "workforce", kind: "WORKFORCE_REDUCTION", topic: "news", query: `${name} (layoffs OR "laid off" OR "job cuts" OR "hiring freeze" OR redundancies OR "cuts jobs")` },
+    { id: "acquired", kind: "ACQUIRED", topic: "news", query: `${name} ("acquired by" OR "to be acquired" OR "agreed to acquire" OR "acquires" OR "takeover" OR "merger")` },
     /* Funding, added 18 Sep 2026. The plainest buying trigger in the set and
      * the one nothing searched for: a company that just closed a round is
      * hiring, and a company that is hiring is choosing tools. Two rounds in
      * the launch pool - Rocketlane's $60M and Clay's $115M - were already
      * being returned by the queries above and thrown away unread. */
-    { kind: "FUNDING_EVENT", topic: "news", query: `${name} (raises OR raised OR secures OR "funding round" OR "Series A" OR "Series B" OR "Series C" OR "Series D" OR "led the round")` },
+    { id: "funding", kind: "FUNDING_EVENT", topic: "news", query: `${name} (raises OR raised OR secures OR "funding round" OR "Series A" OR "Series B" OR "Series C" OR "Series D" OR "led the round")` },
     /* Certification, added 21 Sep 2026. The extractor for this has existed
      * since the trust-page work and ran only over crawled pages, where a
      * company states a posture ("we are SOC 2 compliant") rather than an
@@ -110,9 +193,52 @@ export function buildEventQueries(companyName: string, domain: string | null): E
      * vocabulary: a pool where most companies show nothing needs events that
      * happen to an ordinary company in an ordinary month, not rarer ones read
      * more carefully. One search feeds both fact types. */
-    { kind: "COMPANY_EXPANSION", topic: "news", query: `${name} (opens OR opened OR launches OR launched OR "expands into" OR "expanded into" OR enters OR entered OR "began operations") ("new office" OR facility OR "data centre" OR "data center" OR headquarters OR campus OR market OR region OR operations OR expansion)` },
-    { kind: "CERTIFICATION", topic: "news", query: `${name} (achieved OR achieves OR earned OR obtained OR completed OR completes OR renewed OR "is now") ("SOC 2" OR "ISO 27001" OR "ISO/IEC 27001" OR "Type II" OR certification OR certified)` },
+    { id: "expansion", kind: "COMPANY_EXPANSION", topic: "news", query: `${name} (opens OR opened OR launches OR launched OR "expands into" OR "expanded into" OR enters OR entered OR "began operations") ("new office" OR facility OR "data centre" OR "data center" OR headquarters OR campus OR market OR region OR operations OR expansion)` },
+    { id: "certification", kind: "CERTIFICATION", topic: "news", query: `${name} (achieved OR achieves OR earned OR obtained OR completed OR completes OR renewed OR "is now") ("SOC 2" OR "ISO 27001" OR "ISO/IEC 27001" OR "Type II" OR certification OR certified)` },
+    /* Revenue leadership below the C-suite, added 27 Sep 2026. The queries
+     * above ask for chiefs; a new VP or Head of Sales, Marketing or RevOps -
+     * the hire an Apollo-type seller weighs highest - was never searched for,
+     * so Front's new SVP of Global Channel Sales went unseen. Only for packs
+     * that read go-to-market leadership. */
+    { id: "leadership-gtm", kind: "LEADERSHIP_CHANGE", topic: "news", query: `${name} (appoints OR names OR hires OR promotes OR "has joined" OR joins) ("VP of Sales" OR "Vice President of Sales" OR "SVP of Sales" OR "Head of Sales" OR "VP of Marketing" OR "Vice President of Marketing" OR "VP of Revenue" OR "Revenue Operations" OR "VP of Growth" OR "Head of Partnerships" OR "Channel Sales")` },
   ];
+  return all.filter((q) => {
+    if (q.id === "leadership-gtm") return plan.gtmLeadership && planWants(plan, q.kind);
+    return planWants(plan, q.kind);
+  });
+}
+
+/** What was asked, independent of which company it was asked about. */
+export function eventQuerySetSignature(queries: readonly EventQuery[]): string {
+  return `v${EVENT_QUERY_SET_VERSION}:${queries.map((q) => q.id).sort().join(",")}`;
+}
+export const EVENT_QUERY_SET_VERSION = "2";
+
+export type EventSearchWindow = "year" | "month";
+export type EventSearchHistory = { lastSearchAt: Date | null; lastYearSweep: { at: Date; querySet: string } | null };
+
+/** News is re-read weekly; the full year once per query set, then every 180 days. */
+export const EVENT_SEARCH_MIN_INTERVAL_DAYS = 7;
+export const EVENT_FULL_SWEEP_MAX_AGE_DAYS = 180;
+
+/**
+ * Whether to search now, and over what window.
+ *
+ * A year sweep when this query set has never looked at the year (or looked
+ * over six months ago); otherwise the last month, and not more often than
+ * weekly - stories do not arrive faster than that, and every earlier re-run
+ * was paying to find the same articles again.
+ */
+export function planEventSearch(history: EventSearchHistory, querySet: string, now: Date): { action: "SKIP" | "SEARCH"; window: EventSearchWindow } {
+  const day = 86_400_000;
+  const sweep = history.lastYearSweep;
+  if (!sweep || sweep.querySet !== querySet || now.getTime() - sweep.at.getTime() > EVENT_FULL_SWEEP_MAX_AGE_DAYS * day) {
+    return { action: "SEARCH", window: "year" };
+  }
+  if (history.lastSearchAt && now.getTime() - history.lastSearchAt.getTime() < EVENT_SEARCH_MIN_INTERVAL_DAYS * day) {
+    return { action: "SKIP", window: "month" };
+  }
+  return { action: "SEARCH", window: "month" };
 }
 
 export type EventHit = WebSearchResult["results"][number] & { kind: EventKind };
@@ -482,11 +608,17 @@ export function corroborationFor(row: EventFactRow, all: EventFactRow[]): number
  */
 export async function researchEvents(
   search: (request: SearchWebRequest) => Promise<{ status: string; data: WebSearchResult | null; providerId: string }>,
-  input: { requestId: string; companyName: string; domain: string | null; country?: string | null; now?: Date; limitPerQuery?: number },
-): Promise<{ hits: EventHit[]; queries: number; providers: string[] }> {
+  input: {
+    requestId: string; companyName: string; domain: string | null; country?: string | null; now?: Date; limitPerQuery?: number;
+    plan?: EventSearchPlan; window?: EventSearchWindow;
+  },
+): Promise<{ hits: EventHit[]; queries: number; providers: string[]; querySet: string; window: EventSearchWindow }> {
   const hits: EventHit[] = [];
   const providers = new Set<string>();
-  const queries = buildEventQueries(input.companyName, input.domain);
+  const queries = buildEventQueries(input.companyName, input.domain, { plan: input.plan });
+  const window = input.window ?? "year";
+  const hitsByQuery = new Map<string, number>();
+  let asked = 0;
   const seen = new Set<string>();
   for (const [index, query] of queries.entries()) {
     // The third query is a broader restatement of the second — both hunt a
@@ -500,11 +632,11 @@ export async function researchEvents(
     // company name, so the counter was effectively always non-zero and this
     // fallback was skipped unconditionally — starving exactly the companies
     // the comment says it exists for.
-    if (query.kind === "LEADERSHIP_CHANGE" && query.topic === "general"
-      && hits.some((hit) => hit.kind === "LEADERSHIP_CHANGE")) continue;
+    if (query.fallbackFor && (hitsByQuery.get(query.fallbackFor) ?? 0) > 0) continue;
+    asked += 1;
     const response = await search({
       requestId: `${input.requestId}:event:${index}`,
-      query: query.query, topic: query.topic, timeRange: "year",
+      query: query.query, topic: query.topic, timeRange: window,
       // The country biases Google's index towards local outlets. A Bengaluru
       // company's CISO appointment is covered by the Economic Times, not by
       // the American trade press a geo-neutral query returns.
@@ -513,13 +645,14 @@ export async function researchEvents(
     });
     if (response.status !== "success" || !response.data) continue;
     providers.add(response.providerId);
+    hitsByQuery.set(query.id, response.data.results.length);
     for (const result of response.data.results) {
       if (seen.has(result.url)) continue;
       seen.add(result.url);
       hits.push({ ...result, kind: query.kind });
     }
   }
-  return { hits, queries: queries.length, providers: [...providers] };
+  return { hits, queries: asked, providers: [...providers], querySet: eventQuerySetSignature(queries), window };
 }
 
 /**

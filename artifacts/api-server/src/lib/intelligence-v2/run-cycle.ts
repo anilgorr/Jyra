@@ -22,7 +22,8 @@ import { icpCriteriaToRequirementsV2 } from "./icp-requirements";
 import { loadLatestIntelligenceV2Assessment, persistIntelligenceV2Assessment } from "./persist-assessment";
 import { persistIntelligenceV2Evidence } from "./persist-evidence";
 import { countHiringByTheme, mapJobsToFacts, persistHiringCounts, persistJobFacts } from "./job-facts";
-import { loadPriorEvents, mapEventHitsToFacts, persistEventFacts, researchEvents, type EventFactRow } from "./event-facts";
+import { persistEventFacts, SEARCH_EVERYTHING, type EventFactRow } from "./event-facts";
+import { loadEventSearchPlan, recordEventSearch, searchCompanyEvents, type EventSearchOutcome } from "./event-search";
 import { backfillPageFacts } from "./page-facts";
 import { discoverCareersPostings } from "./careers-pages";
 import { readPagesCheaply } from "../firecrawl-provider";
@@ -376,32 +377,28 @@ export async function runIntelligenceCycle(input: {
   // from a targeted news search, extracted deterministically and validated
   // against the page. Same rules as the job pass — outside the transaction,
   // non-fatal, and a provider miss is a quieter run rather than a failed one.
+  //
+  // Since 27 Sep 2026 the pack decides what is asked and the search history
+  // decides the window: a full year once per query set, then the last month,
+  // at most weekly. A cycle inside the week reads no news at all.
   let eventFacts: EventFactRow[] = [];
+  let eventSearch: EventSearchOutcome | null = null;
   try {
-    const router = new ProviderRouter();
-    const events = await researchEvents(
-      (request) => router.searchWeb({ ...request, metadata: { organizationId, projectId, companyId: owned.company.id, projectCompanyId } })
-        .then((r) => ({ status: r.status, data: r.data, providerId: r.providerId })),
-      { requestId: `${projectCompanyId}:events`, companyName: owned.company.canonicalName, domain: owned.company.domain, country, now: completedAt },
-    );
-    // A failed read of prior facts only loses the later-report check for this run.
-    const priorEvents = await loadPriorEvents(owned.company.id, completedAt).catch(() => []);
-    const mapped = mapEventHitsToFacts(events.hits, {
-      companyId: owned.company.id, companyName: owned.company.canonicalName, domain: owned.company.domain, now: completedAt,
-      companyDescription: [owned.company.description, owned.company.industry].filter(Boolean).join(". "),
-      priorEvents,
+    const plan = await loadEventSearchPlan(projectId).catch(() => SEARCH_EVERYTHING);
+    eventSearch = await searchCompanyEvents({
+      organizationId, projectId, projectCompanyId, plan, now: completedAt,
+      company: {
+        id: owned.company.id, canonicalName: owned.company.canonicalName, domain: owned.company.domain,
+        description: owned.company.description, industry: owned.company.industry, country: owned.company.country,
+      },
     });
-    eventFacts = mapped.facts;
-    const reasons = tally(mapped.skipped.map((item) => item.reason));
+    eventFacts = eventSearch.facts;
     funnels.events = {
-      queries: events.queries, providers: events.providers, hits: events.hits.length,
-      usable: eventFacts.length, byKind: tally(eventFacts.map((f) => f.kind)), skipped: reasons,
+      searched: eventSearch.searched, window: eventSearch.window, querySet: eventSearch.querySet,
+      queries: eventSearch.queries, providers: eventSearch.providers, hits: eventSearch.hits,
+      usable: eventFacts.length, byKind: tally(eventFacts.map((f) => f.kind)), skipped: eventSearch.skipped,
     };
-    log.info({
-      projectCompanyId, queries: events.queries, providers: events.providers, hits: events.hits.length,
-      factsUsable: eventFacts.length, byKind: eventFacts.reduce<Record<string, number>>((acc, f) => { acc[f.kind] = (acc[f.kind] ?? 0) + 1; return acc; }, {}),
-      skipped: reasons,
-    }, "EVENT_RESEARCH");
+    log.info({ projectCompanyId, ...(funnels.events as Record<string, unknown>) }, "EVENT_RESEARCH");
   } catch (error) {
     funnels.events = { failed: true };
     log.warn({ err: error, projectCompanyId }, "EVENT_RESEARCH_FAILED");
@@ -503,6 +500,8 @@ export async function runIntelligenceCycle(input: {
     }).where(eq(projectCompaniesTable.id, projectCompanyId));
     return row;
   });
+
+  if (eventSearch) await recordEventSearch({ companyId: owned.company.id, projectId, trigger: "CYCLE", outcome: eventSearch, now: completedAt });
 
   // Signals are derived from facts, and the score is derived from signals, so
   // this has to run before the re-score. Neither failure turns a completed

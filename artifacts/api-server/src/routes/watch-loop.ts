@@ -5,6 +5,7 @@ import { RESEARCH_COMPANY_QUEUE, queueSettings } from "../lib/queue-policy";
 import { enqueueUnresearched } from "../lib/research-worker";
 import { backfillHeadcountForProject } from "../lib/intelligence-v2/headcount-backfill";
 import { rescoreProject } from "../lib/signal-rescore";
+import { runEventSweep, type EventSweepReport } from "../lib/intelligence-v2/event-search";
 import { watchLoopSettings } from "../lib/intelligence-v2/watch-loop";
 import { startWatchWake, watchWakeState } from "../lib/intelligence-v2/watch-wake";
 
@@ -121,6 +122,41 @@ router.post("/internal/signals/rescore/:projectId", asyncRoute(async (req, res) 
   const report = await rescoreProject(String(req.params.projectId), "internal-rescore");
   res.status(200).json(report);
 }));
+
+/**
+ * Search news for every live company in a project, now - events only.
+ *
+ * No page crawl and no model call: the searches (about a tenth of a US cent
+ * each), fact extraction, signals and a re-score. Runs in the background and
+ * answers 202; GET /internal/events/sweep/last reports progress. One sweep at
+ * a time. `?limit=` caps the companies; `?concurrency=` (1-8, default 4).
+ */
+let eventSweep: { running: boolean; report: EventSweepReport | null; error: string | null } = { running: false, report: null, error: null };
+
+router.post("/internal/events/sweep/:projectId", asyncRoute(async (req, res) => {
+  const expected = process.env.JYRA_WATCH_LOOP_TOKEN;
+  if (!expected) return void res.status(404).json({ error: "Not found" });
+  if (!watchLoopTokenMatches(req.header("authorization"), expected)) return void res.status(401).json({ error: "Unauthorized" });
+  if (eventSweep.running) return void res.status(409).json({ error: "An event sweep is already running", report: eventSweep.report });
+  const limit = Number(req.query.limit);
+  const concurrency = Number(req.query.concurrency);
+  eventSweep = { running: true, report: null, error: null };
+  void runEventSweep({
+    projectId: String(req.params.projectId),
+    ...(Number.isInteger(limit) && limit > 0 ? { limit } : {}),
+    ...(Number.isInteger(concurrency) && concurrency > 0 ? { concurrency } : {}),
+    onProgress: (report) => { eventSweep.report = { ...report }; },
+  }).then((report) => { eventSweep = { running: false, report, error: null }; })
+    .catch((error) => { eventSweep = { running: false, report: eventSweep.report, error: error instanceof Error ? error.message : String(error) }; });
+  res.status(202).json({ started: true, projectId: String(req.params.projectId) });
+}));
+
+router.get("/internal/events/sweep/last", (req, res) => {
+  const expected = process.env.JYRA_WATCH_LOOP_TOKEN;
+  if (!expected) return void res.status(404).json({ error: "Not found" });
+  if (!watchLoopTokenMatches(req.header("authorization"), expected)) return void res.status(401).json({ error: "Unauthorized" });
+  res.json(eventSweep);
+});
 
 /**
  * Fill in headcounts from pages the project has already paid for.
