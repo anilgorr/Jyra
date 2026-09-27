@@ -94,8 +94,15 @@ router.put("/projects/:projectId/companies/:projectCompanyId/feedback", requireA
     ? await db.update(signalFeedbackTable).set({
       verdict: body.data.verdict, reason, note,
       signalId: body.data.signalId ?? existing.signalId,
-      /* Rank and score are what the list said when FIRST rated; a re-rating
-       * changes the verdict, not the record of what was shown. */
+      /* Rank, score and state are what the list showed when THIS verdict was
+       * given. They used to be frozen at the first rating, but the list moves
+       * within a week: after the 27 Sep re-score Vercel was re-rated at rank 3
+       * and still recorded rank 5, so precision@10 was measured against a
+       * list nobody was looking at. A verdict describes the row it was given
+       * on. recordedAt keeps the first rating's time. */
+      rankAtFeedback: body.data.rank ?? existing.rankAtFeedback,
+      scoreAtFeedback: body.data.score ?? existing.scoreAtFeedback,
+      stateAtFeedback: body.data.state ?? existing.stateAtFeedback,
       updatedAt: new Date(),
     }).where(eq(signalFeedbackTable.id, existing.id)).returning()
     : await db.insert(signalFeedbackTable).values({
