@@ -1,6 +1,6 @@
 import { PostgresIntelligenceV2Repository } from "./repository";
 import type { CycleLogger } from "./run-cycle";
-import { runWatchLoopTick, runWatchLoopUntilCaughtUp, wakeBudgetMs, watchLoopSettings, type TickReport, type WakeReport } from "./watch-loop";
+import { runWatchLoopTick, runWatchLoopUntilCaughtUp, wakeBudgetMs, watchLoopHalt, watchLoopSettings, type TickReport, type WakeReport } from "./watch-loop";
 
 /**
  * One wake-up of the watch loop, whoever asks for it.
@@ -17,7 +17,7 @@ let lastReport: TickReport | null = null;
 let lastWake: (Omit<WakeReport, "ticks"> & { ticks: number; trigger: string; finishedAt: string }) | null = null;
 
 export function watchWakeState() {
-  return { running: inFlight !== null, last: lastReport, wake: lastWake };
+  return { running: inFlight !== null, halt: watchLoopHalt(), last: lastReport, wake: lastWake };
 }
 
 /** Starts a wake-up unless one is running. Returns the running promise, or null when one was already in flight. */

@@ -12,6 +12,6 @@ import type { ProjectChangeFeedSummary } from './projectChangeFeedSummary';
 export interface ProjectChangeFeed {
   items: ProjectChange[];
   summary: ProjectChangeFeedSummary;
-  /** Whether scheduled research can run for this project at all. PAUSED means every scheduled cycle is being skipped until the listed setup problems are fixed. */
+  /** Whether scheduled research can run for this project at all. PAUSED means every scheduled cycle is being skipped until the listed setup problems are fixed. HALTED means the watch loop stopped itself because cycles keep failing; it probes once each wake and resumes on its own when a cycle succeeds. */
   monitoring?: ProjectChangeFeedMonitoring;
 }

@@ -3767,21 +3767,47 @@ export type ProjectChangeFeedMonitoringStatus = typeof ProjectChangeFeedMonitori
 export const ProjectChangeFeedMonitoringStatus = {
   ACTIVE: 'ACTIVE',
   PAUSED: 'PAUSED',
+  HALTED: 'HALTED',
+} as const;
+
+export type ProjectChangeFeedMonitoringHaltReason = typeof ProjectChangeFeedMonitoringHaltReason[keyof typeof ProjectChangeFeedMonitoringHaltReason];
+
+
+export const ProjectChangeFeedMonitoringHaltReason = {
+  MODEL_UNAVAILABLE: 'MODEL_UNAVAILABLE',
+  REPEATED_FAILURE: 'REPEATED_FAILURE',
 } as const;
 
 /**
- * Whether scheduled research can run for this project at all. PAUSED means every scheduled cycle is being skipped until the listed setup problems are fixed.
+ * Present when status is HALTED.
+ */
+export type ProjectChangeFeedMonitoringHalt = {
+  reason: ProjectChangeFeedMonitoringHaltReason;
+  consecutiveFailures: number;
+  /** First failure of the current streak. */
+  since: string;
+  lastFailureAt: string;
+  /** Last cycle on this project that finished, regardless of the feed window. Nothing here has been updated since. */
+  lastCompletedCycleAt: string | null;
+  /** The provider's own words. Present for internal admins only. */
+  error?: string;
+} | null;
+
+/**
+ * Whether scheduled research can run for this project at all. PAUSED means every scheduled cycle is being skipped until the listed setup problems are fixed. HALTED means the watch loop stopped itself because cycles keep failing; it probes once each wake and resumes on its own when a cycle succeeds.
  */
 export type ProjectChangeFeedMonitoring = {
   status: ProjectChangeFeedMonitoringStatus;
-  /** Blocking setup requirements, e.g. ICP_NOT_LINKED_TO_BUSINESS_TWIN. */
+  /** Blocking setup requirements, e.g. ICP_NOT_LINKED_TO_BUSINESS_TWIN; or RESEARCH_HALTED. */
   reasons: string[];
+  /** Present when status is HALTED. */
+  halt?: ProjectChangeFeedMonitoringHalt;
 };
 
 export interface ProjectChangeFeed {
   items: ProjectChange[];
   summary: ProjectChangeFeedSummary;
-  /** Whether scheduled research can run for this project at all. PAUSED means every scheduled cycle is being skipped until the listed setup problems are fixed. */
+  /** Whether scheduled research can run for this project at all. PAUSED means every scheduled cycle is being skipped until the listed setup problems are fixed. HALTED means the watch loop stopped itself because cycles keep failing; it probes once each wake and resumes on its own when a cycle succeeds. */
   monitoring?: ProjectChangeFeedMonitoring;
 }
 

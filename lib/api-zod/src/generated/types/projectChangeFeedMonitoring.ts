@@ -5,13 +5,16 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+import type { ProjectChangeFeedMonitoringHalt } from './projectChangeFeedMonitoringHalt';
 import type { ProjectChangeFeedMonitoringStatus } from './projectChangeFeedMonitoringStatus';
 
 /**
- * Whether scheduled research can run for this project at all. PAUSED means every scheduled cycle is being skipped until the listed setup problems are fixed.
+ * Whether scheduled research can run for this project at all. PAUSED means every scheduled cycle is being skipped until the listed setup problems are fixed. HALTED means the watch loop stopped itself because cycles keep failing; it probes once each wake and resumes on its own when a cycle succeeds.
  */
 export type ProjectChangeFeedMonitoring = {
   status: ProjectChangeFeedMonitoringStatus;
-  /** Blocking setup requirements, e.g. ICP_NOT_LINKED_TO_BUSINESS_TWIN. */
+  /** Blocking setup requirements, e.g. ICP_NOT_LINKED_TO_BUSINESS_TWIN; or RESEARCH_HALTED. */
   reasons: string[];
+  /** Present when status is HALTED. */
+  halt?: ProjectChangeFeedMonitoringHalt;
 };

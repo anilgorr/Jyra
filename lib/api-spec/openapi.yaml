@@ -5070,13 +5070,25 @@ components:
           required: [cyclesTotal, cyclesWithChanges, companiesWatched, lastCycleAt]
         monitoring:
           type: object
-          description: Whether scheduled research can run for this project at all. PAUSED means every scheduled cycle is being skipped until the listed setup problems are fixed.
+          description: Whether scheduled research can run for this project at all. PAUSED means every scheduled cycle is being skipped until the listed setup problems are fixed. HALTED means the watch loop stopped itself because cycles keep failing; it probes once each wake and resumes on its own when a cycle succeeds.
           properties:
-            status: { type: string, enum: [ACTIVE, PAUSED] }
+            status: { type: string, enum: [ACTIVE, PAUSED, HALTED] }
             reasons:
               type: array
               items: { type: string }
-              description: Blocking setup requirements, e.g. ICP_NOT_LINKED_TO_BUSINESS_TWIN.
+              description: Blocking setup requirements, e.g. ICP_NOT_LINKED_TO_BUSINESS_TWIN; or RESEARCH_HALTED.
+            halt:
+              type: object
+              nullable: true
+              description: Present when status is HALTED.
+              properties:
+                reason: { type: string, enum: [MODEL_UNAVAILABLE, REPEATED_FAILURE] }
+                consecutiveFailures: { type: number }
+                since: { type: string, format: date-time, description: "First failure of the current streak." }
+                lastFailureAt: { type: string, format: date-time }
+                lastCompletedCycleAt: { type: string, format: date-time, nullable: true, description: "Last cycle on this project that finished, regardless of the feed window. Nothing here has been updated since." }
+                error: { type: string, description: "The provider's own words. Present for internal admins only." }
+              required: [reason, consecutiveFailures, since, lastFailureAt, lastCompletedCycleAt]
           required: [status, reasons]
       required: [items, summary]
     Signal:

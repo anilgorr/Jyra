@@ -5411,9 +5411,17 @@ export const ListProjectChangesResponse = zod.object({
   "spendUsd": zod.number().optional().describe('Real currency. Present for internal admins only.')
 }),
   "monitoring": zod.object({
-  "status": zod.enum(['ACTIVE', 'PAUSED']),
-  "reasons": zod.array(zod.string()).describe('Blocking setup requirements, e.g. ICP_NOT_LINKED_TO_BUSINESS_TWIN.')
-}).optional().describe('Whether scheduled research can run for this project at all. PAUSED means every scheduled cycle is being skipped until the listed setup problems are fixed.')
+  "status": zod.enum(['ACTIVE', 'PAUSED', 'HALTED']),
+  "reasons": zod.array(zod.string()).describe('Blocking setup requirements, e.g. ICP_NOT_LINKED_TO_BUSINESS_TWIN; or RESEARCH_HALTED.'),
+  "halt": zod.object({
+  "reason": zod.enum(['MODEL_UNAVAILABLE', 'REPEATED_FAILURE']),
+  "consecutiveFailures": zod.number(),
+  "since": zod.coerce.date().describe('First failure of the current streak.'),
+  "lastFailureAt": zod.coerce.date(),
+  "lastCompletedCycleAt": zod.coerce.date().nullable().describe('Last cycle on this project that finished, regardless of the feed window. Nothing here has been updated since.'),
+  "error": zod.string().optional().describe('The provider\'s own words. Present for internal admins only.')
+}).nullish().describe('Present when status is HALTED.')
+}).optional().describe('Whether scheduled research can run for this project at all. PAUSED means every scheduled cycle is being skipped until the listed setup problems are fixed. HALTED means the watch loop stopped itself because cycles keep failing; it probes once each wake and resumes on its own when a cycle succeeds.')
 })
 
 

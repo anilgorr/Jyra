@@ -15,6 +15,7 @@ import {
 import { getAuthenticatedUserId, requireAuth, viewerSeesCost } from "../middlewares/auth";
 import { redactChangeFeedCost } from "../lib/cost-redaction";
 import { researchBlockers, resolveProjectSellerContext } from "../lib/seller-context";
+import { watchLoopHalt } from "../lib/intelligence-v2/watch-loop";
 
 const router: IRouter = Router();
 type AsyncHandler = (...args: Parameters<RequestHandler>) => Promise<void>;
@@ -71,8 +72,28 @@ router.get("/projects/:projectId/changes", requireAuth, asyncRoute(async (req, r
    * that looked exactly like "nothing moved" - for four days on the launch
    * pool. Say so. */
   const blockers = researchBlockers(await resolveProjectSellerContext(project.id, project.organizationId));
+  /* And a loop that stopped itself is not quiet either. The breaker trips
+   * when the model refuses or cycles keep failing; from 30 Sept to 6 Oct the
+   * model account was out of credit and this page read "nothing moved" for a
+   * week. The last completed cycle is read outside the feed window on
+   * purpose: it is the date nothing has been updated since. */
+  const seesDetail = await viewerSeesCost(res);
+  const halt = blockers.length ? null : watchLoopHalt();
+  const lastCompleted = halt ? await db.select({ at: sql<Date | null>`max(${intelligenceV2ChangesetsTable.observedAt})` })
+    .from(intelligenceV2ChangesetsTable).where(eq(intelligenceV2ChangesetsTable.projectId, project.id)) : [];
   res.json(redactChangeFeedCost(ListProjectChangesResponse.parse({
-    monitoring: { status: blockers.length ? "PAUSED" : "ACTIVE", reasons: blockers },
+    monitoring: blockers.length
+      ? { status: "PAUSED", reasons: blockers }
+      : halt
+        ? {
+          status: "HALTED", reasons: ["RESEARCH_HALTED"],
+          halt: {
+            reason: halt.reason, consecutiveFailures: halt.consecutiveFailures, since: halt.since, lastFailureAt: halt.lastFailureAt,
+            lastCompletedCycleAt: lastCompleted[0]?.at ? new Date(lastCompleted[0].at).toISOString() : null,
+            ...(seesDetail ? { error: halt.error } : {}),
+          },
+        }
+        : { status: "ACTIVE", reasons: [] },
     items: rows.map(({ change, company }) => ({
       id: change.id,
       projectCompanyId: change.projectCompanyId,
@@ -104,7 +125,7 @@ router.get("/projects/:projectId/changes", requireAuth, asyncRoute(async (req, r
       lastCycleAt: summary?.lastCycleAt ? new Date(summary.lastCycleAt).toISOString() : null,
       spendUsd: Number(summary?.spendUsd ?? 0),
     },
-  }), await viewerSeesCost(res)));
+  }), seesDetail));
 }));
 
 export default router;

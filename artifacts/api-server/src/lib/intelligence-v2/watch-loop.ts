@@ -21,6 +21,7 @@ import {
 } from "./change-gate";
 import type { IntelligenceV2Repository } from "./orchestrator";
 import { runIntelligenceCycle, SCHEDULER_ACTOR, SellerContextIncompleteError, type CycleLogger, type OwnedProjectCompany } from "./run-cycle";
+import { AssessmentFailureV2 } from "./assess-market-fit";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -291,12 +292,95 @@ export async function recordWatchCheck(input: {
   });
 }
 
+/* ---------------------------------------------------------------------------
+ * The circuit breaker.
+ *
+ * On 30 September the model account ran out of credit. Every cycle after
+ * that paid for its searches and crawls, reached the verdict, and died — and
+ * the loop, which counts a failure as a cycle attempted, moved on to the next
+ * company and did the same again. Six days of that bought about $4.60 of
+ * research nobody read, and on the Changes page it looked like a quiet week,
+ * because a cycle that fails writes no changeset.
+ *
+ * A model that refuses is not one bad company; it is every company, so the
+ * first refusal is enough to stop. Anything else has to fail three cycles
+ * running — whatever the messages say, because a message that names the
+ * company looks like a different error each time. While halted, a tick runs exactly one
+ * cycle — the probe — and if that fails too it skips the rest without gating
+ * them, so they stay due and nothing is paid for. One success clears it.
+ *
+ * The memory lives in the process, where the loop runs. A restart forgets
+ * the streak and the next tick probes once more: the cost of forgetting is
+ * one cycle's research, which within an epoch is a cache hit.
+ * ------------------------------------------------------------------------- */
+
+export type CycleFailureKind = "MODEL_UNAVAILABLE" | "OTHER";
+
+export type FailureStreak = {
+  /** The latest failure, ids and numbers stripped, for the log and the banner. */
+  key: string;
+  /** The latest failure's kind. A model refusal anywhere in the run halts it. */
+  kind: CycleFailureKind;
+  count: number;
+  firstAt: string;
+  lastAt: string;
+  message: string;
+};
+
+export type WatchHalt = {
+  reason: "MODEL_UNAVAILABLE" | "REPEATED_FAILURE";
+  error: string;
+  consecutiveFailures: number;
+  since: string;
+  lastFailureAt: string;
+};
+
+export type CircuitBreaker = { streak: FailureStreak | null; haltAfterFailures: number };
+
+const processBreaker: CircuitBreaker = { streak: null, haltAfterFailures: 3 };
+
+export function classifyCycleFailure(error: unknown): { kind: CycleFailureKind; key: string; message: string } {
+  const message = error instanceof Error ? error.message : String(error);
+  // The orchestrator may wrap the assessment failure; the cause chain still carries it.
+  for (let current: unknown = error; current instanceof Error; current = current.cause) {
+    if (current instanceof AssessmentFailureV2 && current.code === "V2_ASSESSMENT_PROVIDER_ERROR") {
+      return { kind: "MODEL_UNAVAILABLE", key: "V2_ASSESSMENT_PROVIDER_ERROR", message };
+    }
+  }
+  const key = message.replace(/[0-9a-f]{8}-[0-9a-f-]{27}/gi, "<id>").replace(/\d+/g, "<n>").slice(0, 160);
+  return { kind: "OTHER", key, message };
+}
+
+/** The halt in force, if any. Null means the loop may run cycles freely. */
+export function watchLoopHalt(state: CircuitBreaker = processBreaker): WatchHalt | null {
+  const streak = state.streak;
+  if (!streak) return null;
+  if (streak.kind !== "MODEL_UNAVAILABLE" && streak.count < state.haltAfterFailures) return null;
+  return {
+    reason: streak.kind === "MODEL_UNAVAILABLE" ? "MODEL_UNAVAILABLE" : "REPEATED_FAILURE",
+    error: streak.message, consecutiveFailures: streak.count, since: streak.firstAt, lastFailureAt: streak.lastAt,
+  };
+}
+
+export function recordCycleFailure(state: CircuitBreaker, error: unknown, at: Date): WatchHalt | null {
+  const { kind, key, message } = classifyCycleFailure(error);
+  const streak = state.streak;
+  state.streak = streak
+    ? { ...streak, key, kind, count: streak.count + 1, lastAt: at.toISOString(), message }
+    : { key, kind, count: 1, firstAt: at.toISOString(), lastAt: at.toISOString(), message };
+  return watchLoopHalt(state);
+}
+
+export function recordCycleSuccess(state: CircuitBreaker): void {
+  state.streak = null;
+}
+
 export type TickOutcome = {
   projectCompanyId: string;
   companyName: string;
   projectId: string;
   tier?: WatchTier;
-  result: "ran" | "unchanged" | "deferred" | "skipped_budget" | "skipped_seller_context" | "failed";
+  result: "ran" | "unchanged" | "deferred" | "skipped_budget" | "skipped_seller_context" | "skipped_halted" | "failed";
   gate?: { decision: GateOutcome["decision"]; reason: string; pagesChecked: number; costUsd: number };
   hasChanges?: boolean;
   modelCalls?: number;
@@ -335,6 +419,12 @@ export type TickReport = {
    * that noticed, not in a support ticket three days later.
    */
   credits: FirecrawlCredits & { paidReadingAllowed: boolean; reason: string | null };
+  /**
+   * The breaker, as the tick left it. Non-null means cycles are stopped: the
+   * model refused, or the same error struck three cycles running. Companies
+   * past the probe were not gated and stay due.
+   */
+  halted: WatchHalt | null;
 };
 
 /**
@@ -372,6 +462,8 @@ export async function runWatchLoopTick(input: {
   extract?: typeof backfillPageFacts;
   /** Injected for tests; defaults to asking Firecrawl for the balance. */
   credits?: typeof firecrawlCredits;
+  /** Injected for tests; defaults to the process-wide breaker. */
+  breaker?: CircuitBreaker;
 }): Promise<TickReport> {
   const now = input.now ?? new Date();
   const settings = input.settings ?? watchLoopSettings();
@@ -384,6 +476,7 @@ export async function runWatchLoopTick(input: {
   const reevaluate = input.reevaluate ?? reevaluateStaleSignals;
   const extract = input.extract ?? backfillPageFacts;
   const credits = input.credits ?? firecrawlCredits;
+  const breaker = input.breaker ?? processBreaker;
   const startedAt = new Date();
   const report: TickReport = {
     enabled: settings.enabled, startedAt: startedAt.toISOString(), finishedAt: "",
@@ -392,6 +485,7 @@ export async function runWatchLoopTick(input: {
     reevaluation: { backlog: 0, considered: 0, evaluated: 0, created: 0, failed: 0, stoppedEarly: false, outcomes: [] },
     extraction: { backlog: 0, considered: 0, extracted: 0, factsInserted: 0, failed: 0, stoppedEarly: false, outcomes: [] },
     credits: { remaining: null, planCredits: null, billingPeriodEnd: null, error: null, paidReadingAllowed: true, reason: null },
+    halted: watchLoopHalt(breaker),
   };
 
   if (!settings.enabled) {
@@ -447,8 +541,19 @@ export async function runWatchLoopTick(input: {
   const exhaustedProjects = new Set<string>();
   const budgetCache = new Map<string, number>();
   let executed = 0;
+  // While halted, one cycle is attempted to find out whether the fault has
+  // cleared. Everything after it is turned away before the gate, so nothing
+  // is paid for and nothing is stamped: the companies stay due.
+  let halt = watchLoopHalt(breaker);
+  if (halt) input.log.warn({ reason: halt.reason, consecutiveFailures: halt.consecutiveFailures, since: halt.since, error: halt.error }, "WATCH_LOOP_HALTED_AT_START");
+  let probed: boolean = false;
   for (const owned of due) {
     const base = { projectCompanyId: owned.projectCompany.id, companyName: owned.company.canonicalName, projectId: owned.project.id, tier: owned.tier };
+    if (halt && probed) {
+      report.skipped++;
+      report.outcomes.push({ ...base, result: "skipped_halted", reason: `research halted: ${halt.reason}; still due` });
+      continue;
+    }
     if (exhaustedProjects.has(owned.project.id)) {
       report.skipped++;
       report.outcomes.push({ ...base, result: "skipped_budget", reason: "project budget exhausted earlier this tick" });
@@ -528,24 +633,31 @@ export async function runWatchLoopTick(input: {
       continue;
     }
 
+    // Each cycle is stamped when it runs, not when the tick began. Ten
+    // companies fifteen minutes apart sharing one observed_at made the feed
+    // order them arbitrarily and "last look" lie by a quarter of an hour.
+    // `now` from the caller is honoured only as a test fixture.
+    const cycleNow = input.now ?? new Date();
+    const probedBefore: boolean = probed;
+    probed = true;
     try {
-      // Each cycle is stamped when it runs, not when the tick began. Ten
-      // companies fifteen minutes apart sharing one observed_at made the feed
-      // order them arbitrarily and "last look" lie by a quarter of an hour.
-      // `now` from the caller is honoured only as a test fixture.
-      const cycleNow = input.now ?? new Date();
       const cycleOutcome = await cycle({
         owned, repository: input.repository, trigger: "SCHEDULED", actorId: SCHEDULER_ACTOR,
         now: cycleNow, log: input.log, researchMaxAgeMs: owned.policy.researchMaxAgeMs,
       });
       executed++;
       report.ran++;
+      recordCycleSuccess(breaker);
+      if (halt) input.log.info({ ...base, clearedAfter: halt.consecutiveFailures }, "WATCH_LOOP_HALT_CLEARED");
+      halt = null;
       if (cycleOutcome.changeset.hasChanges) report.changed++;
       report.spentUsd += cycleOutcome.result.observability.totalCost;
       report.outcomes.push({ ...base, result: "ran", gate: gateSummary, hasChanges: cycleOutcome.changeset.hasChanges, modelCalls: cycleOutcome.result.observability.modelCalls, costUsd: cycleOutcome.result.observability.totalCost });
     } catch (error) {
       if (error instanceof SellerContextIncompleteError) {
-        // Nothing was attempted, so nothing is spent from the tick's cap.
+        // Nothing was attempted, so nothing is spent from the tick's cap,
+        // and nothing was learned about the fault either.
+        probed = probedBefore;
         report.skipped++;
         report.outcomes.push({ ...base, result: "skipped_seller_context", gate: gateSummary, reason: error.message });
         continue;
@@ -554,13 +666,18 @@ export async function runWatchLoopTick(input: {
       report.failed++;
       report.outcomes.push({ ...base, result: "failed", gate: gateSummary, reason: error instanceof Error ? error.message : String(error) });
       input.log.warn({ ...base, err: error }, "WATCH_LOOP_CYCLE_FAILED");
+      const wasHalted = halt !== null;
+      halt = recordCycleFailure(breaker, error, cycleNow);
+      if (halt && !wasHalted) input.log.warn({ ...base, reason: halt.reason, consecutiveFailures: halt.consecutiveFailures, error: halt.error }, "WATCH_LOOP_HALTED");
     }
   }
+  report.halted = halt;
   report.finishedAt = new Date().toISOString();
   input.log.info({
     due: report.due, checked: report.checked, unchanged: report.unchanged, deferred: report.deferred, ran: report.ran,
     changed: report.changed, skipped: report.skipped, failed: report.failed,
     gateSpentUsd: report.gateSpentUsd, spentUsd: report.spentUsd, durationMs: Date.now() - startedAt.getTime(),
+    halted: report.halted?.reason ?? null,
   }, "WATCH_LOOP_TICK_DONE");
   return report;
 }
@@ -598,7 +715,7 @@ async function reevaluateStaleSignalsGuarded(
  * bounds each tick; the daily budget still bounds the day. What changes is
  * that a rare wake-up is no longer a small one.
  */
-export type WakeReport = { ticks: TickReport[]; last: TickReport; stoppedBecause: "caught_up" | "no_progress" | "out_of_time" | "tick_cap" };
+export type WakeReport = { ticks: TickReport[]; last: TickReport; stoppedBecause: "caught_up" | "no_progress" | "out_of_time" | "tick_cap" | "halted" };
 
 export function wakeBudgetMs(env: NodeJS.ProcessEnv = process.env): number {
   const minutes = Number(env.JYRA_WATCH_WAKE_BUDGET_MINUTES);
@@ -618,6 +735,9 @@ export async function runWatchLoopUntilCaughtUp(input: {
   for (;;) {
     const report = await input.tick();
     ticks.push(report);
+    // A halted tick turned companies away on purpose. Ticking again would
+    // only probe again, and the schedule already does that next wake.
+    if (report.halted) return { ticks, last: report, stoppedBecause: "halted" };
     const turnedAway = report.outcomes.some((o) => o.result === "skipped_budget" && o.reason?.includes("still due"));
     if (!turnedAway) return { ticks, last: report, stoppedBecause: "caught_up" };
     if (report.ran === 0) return { ticks, last: report, stoppedBecause: "no_progress" };

@@ -387,4 +387,145 @@ const noRecord = async () => {};
   assert.equal(w.isDueNow({ lastWatchedAt: new Date(NOW.getTime() - DAY), latestResearchAt: researched, cadenceMs: DAY, now: NOW }), true, "cadence elapsed");
 }
 
+// 11. The breaker. A model that refuses halts the tick on the first failure;
+//     any other error has to strike three cycles running; the
+//     companies after the halt are not gated, not stamped, and stay due; the
+//     next tick probes exactly once; one success clears it.
+{
+  const fresh = () => ({ streak: null, haltAfterFailures: 3 });
+  const modelDown = () => new w.AssessmentFailureV2("V2_ASSESSMENT_PROVIDER_ERROR", "429 You exceeded your current quota", []);
+  const wrapped = () => new Error("cycle failed", { cause: modelDown() });
+
+  assert.equal(w.classifyCycleFailure(modelDown()).kind, "MODEL_UNAVAILABLE");
+  assert.equal(w.classifyCycleFailure(wrapped()).kind, "MODEL_UNAVAILABLE", "found through the cause chain");
+  assert.equal(w.classifyCycleFailure(new w.AssessmentFailureV2("V2_ASSESSMENT_TIMEOUT", "deadline exceeded", [])).kind, "OTHER", "a slow call is not a dead model");
+  assert.equal(w.classifyCycleFailure(new Error("row 1a2b3c4d-1111-2222-3333-444455556666 missing after 17ms")).key,
+    w.classifyCycleFailure(new Error("row 9f9f9f9f-aaaa-bbbb-cccc-ddddeeeeffff missing after 2ms")).key, "ids and numbers do not make it a different error");
+
+  // Pure streak arithmetic.
+  {
+    const b = fresh();
+    assert.equal(w.recordCycleFailure(b, new Error("db gone"), NOW), null);
+    assert.equal(w.recordCycleFailure(b, new Error("db gone"), NOW), null);
+    const halt = w.recordCycleFailure(b, new Error("db gone"), NOW);
+    assert.equal(halt.reason, "REPEATED_FAILURE");
+    assert.equal(halt.consecutiveFailures, 3);
+    w.recordCycleSuccess(b);
+    assert.equal(w.watchLoopHalt(b), null, "one success clears it");
+    assert.equal(w.recordCycleFailure(b, new Error("db gone"), NOW), null, "and the count starts over");
+    const c = fresh();
+    w.recordCycleFailure(c, new Error("one thing"), NOW);
+    w.recordCycleFailure(c, new Error("another thing"), NOW);
+    assert.equal(w.recordCycleFailure(c, new Error("a third"), NOW).reason, "REPEATED_FAILURE", "three in a row halts whatever they say");
+    assert.equal(w.recordCycleFailure(c, modelDown(), NOW).reason, "MODEL_UNAVAILABLE", "the model refusing is named as the reason as soon as it shows");
+    assert.equal(w.recordCycleFailure(fresh(), modelDown(), NOW).reason, "MODEL_UNAVAILABLE", "the model refusing halts at once");
+  }
+
+  // In a tick: five due, the first cycle hits a dead model, the other four are turned away before the gate.
+  {
+    const breaker = fresh();
+    let gates = 0; let cycles = 0; let recorded = 0;
+    const warnings = [];
+    const report = await w.runWatchLoopTick({
+      repository: {}, log: { info: () => {}, warn: (obj, msg) => warnings.push(msg) }, now: NOW, settings: { ...settings, maxCompaniesPerTick: 10 }, breaker,
+      select: async () => ["a", "b", "c", "d", "e"].map((id) => owned(id)),
+      spend: async () => ({ spentTodayUsd: 0, recentCycleCosts: [] }), dailyBudgetFor: async () => 25,
+      gate: async (...args) => { gates++; return gateSaying(true, "REFRESH", 0)(...args); },
+      record: async () => { recorded++; },
+      cycle: async () => { cycles++; throw wrapped(); },
+    });
+    assert.equal(cycles, 1, "one cycle paid for, not five");
+    assert.equal(gates, 1, "the rest were not even gated");
+    assert.equal(recorded, 1, "so nothing stamped them: they stay due");
+    assert.equal(report.failed, 1);
+    assert.equal(report.outcomes.filter((o) => o.result === "skipped_halted").length, 4);
+    assert.ok(report.outcomes[1].reason.includes("still due"));
+    assert.equal(report.halted.reason, "MODEL_UNAVAILABLE");
+    assert.equal(report.halted.consecutiveFailures, 1);
+    assert.ok(warnings.includes("WATCH_LOOP_HALTED"));
+
+    // Next tick, still dead: one probe, then everyone turned away again.
+    cycles = 0; gates = 0;
+    const again = await w.runWatchLoopTick({
+      repository: {}, log: quiet, now: NOW, settings: { ...settings, maxCompaniesPerTick: 10 }, breaker,
+      select: async () => ["a", "b", "c"].map((id) => owned(id)),
+      spend: async () => ({ spentTodayUsd: 0, recentCycleCosts: [] }), dailyBudgetFor: async () => 25,
+      gate: async (...args) => { gates++; return gateSaying(true, "REFRESH", 0)(...args); }, record: noRecord,
+      cycle: async () => { cycles++; throw wrapped(); },
+    });
+    assert.equal(cycles, 1, "a halted tick probes once");
+    assert.equal(again.halted.consecutiveFailures, 2);
+    assert.equal(again.outcomes.filter((o) => o.result === "skipped_halted").length, 2);
+
+    // Credits topped up: the probe succeeds and the tick runs through.
+    cycles = 0;
+    const back = await w.runWatchLoopTick({
+      repository: {}, log: quiet, now: NOW, settings: { ...settings, maxCompaniesPerTick: 10 }, breaker,
+      select: async () => ["a", "b", "c"].map((id) => owned(id)),
+      spend: async () => ({ spentTodayUsd: 0, recentCycleCosts: [] }), dailyBudgetFor: async () => 25,
+      gate: gateSaying(true, "REFRESH", 0), record: noRecord,
+      cycle: async () => { cycles++; return ranCycle(0.02)(); },
+    });
+    assert.equal(cycles, 3, "all three ran");
+    assert.equal(back.halted, null);
+    assert.equal(w.watchLoopHalt(breaker), null);
+  }
+
+  // Three companies failing the same way halts; two does not.
+  {
+    const breaker = fresh();
+    let cycles = 0;
+    const report = await w.runWatchLoopTick({
+      repository: {}, log: quiet, now: NOW, settings: { ...settings, maxCompaniesPerTick: 10 }, breaker,
+      select: async () => ["a", "b", "c", "d", "e"].map((id) => owned(id)),
+      spend: async () => ({ spentTodayUsd: 0, recentCycleCosts: [] }), dailyBudgetFor: async () => 25,
+      gate: gateSaying(true, "REFRESH", 0), record: noRecord,
+      cycle: async ({ owned: o }) => { cycles++; throw new Error(`relation "signals" does not exist (company ${o.company.id})`); },
+    });
+    assert.equal(cycles, 3, "three strikes");
+    assert.equal(report.halted.reason, "REPEATED_FAILURE");
+    assert.equal(report.outcomes.filter((o) => o.result === "skipped_halted").length, 2);
+  }
+  {
+    const breaker = fresh();
+    const report = await w.runWatchLoopTick({
+      repository: {}, log: quiet, now: NOW, settings: { ...settings, maxCompaniesPerTick: 10 }, breaker,
+      select: async () => ["a", "b", "c"].map((id) => owned(id)),
+      spend: async () => ({ spentTodayUsd: 0, recentCycleCosts: [] }), dailyBudgetFor: async () => 25,
+      gate: gateSaying(true, "REFRESH", 0), record: noRecord,
+      cycle: async ({ owned: o }) => { if (o.projectCompany.id === "c") return ranCycle()(); throw new Error("flaky"); },
+    });
+    assert.equal(report.failed, 2);
+    assert.equal(report.ran, 1);
+    assert.equal(report.halted, null, "two failures and a success is a bad hour, not a dead loop");
+  }
+
+  // A seller-context skip is not a probe: the halted tick still gets its one real attempt.
+  {
+    const breaker = fresh();
+    w.recordCycleFailure(breaker, modelDown(), NOW);
+    let cycles = 0;
+    const report = await w.runWatchLoopTick({
+      repository: {}, log: quiet, now: NOW, settings: { ...settings, maxCompaniesPerTick: 10 }, breaker,
+      select: async () => [owned("unready", "p-unready"), owned("a")],
+      spend: async () => ({ spentTodayUsd: 0, recentCycleCosts: [] }), dailyBudgetFor: async () => 25,
+      gate: gateSaying(true, "REFRESH", 0), record: noRecord,
+      cycle: async ({ owned: o }) => { if (o.project.id === "p-unready") throw new w.SellerContextIncompleteError(["ICP_MISSING"]); cycles++; return ranCycle()(); },
+    });
+    assert.equal(cycles, 1, "the real company was probed");
+    assert.equal(report.halted, null);
+  }
+
+  // The wake stops on a halted tick rather than probing in a loop.
+  {
+    let ticks = 0;
+    const wake = await w.runWatchLoopUntilCaughtUp({ budgetMs: 60 * 60_000, tick: async () => {
+      ticks++;
+      return { ran: 0, halted: { reason: "MODEL_UNAVAILABLE" }, outcomes: [{ result: "skipped_halted", reason: "research halted: MODEL_UNAVAILABLE; still due" }], startedAt: new Date(0).toISOString(), finishedAt: new Date(1000).toISOString() };
+    } });
+    assert.equal(ticks, 1);
+    assert.equal(wake.stoppedBecause, "halted");
+  }
+}
+
 console.log("PASS watch-loop");

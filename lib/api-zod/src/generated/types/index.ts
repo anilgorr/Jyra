@@ -324,6 +324,8 @@ export * from './project';
 export * from './projectChange';
 export * from './projectChangeFeed';
 export * from './projectChangeFeedMonitoring';
+export * from './projectChangeFeedMonitoringHalt';
+export * from './projectChangeFeedMonitoringHaltReason';
 export * from './projectChangeFeedMonitoringStatus';
 export * from './projectChangeFeedSummary';
 export * from './projectChangeTrigger';

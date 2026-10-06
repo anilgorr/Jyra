@@ -12,4 +12,5 @@ export type ProjectChangeFeedMonitoringStatus = typeof ProjectChangeFeedMonitori
 export const ProjectChangeFeedMonitoringStatus = {
   ACTIVE: 'ACTIVE',
   PAUSED: 'PAUSED',
+  HALTED: 'HALTED',
 } as const;
