@@ -255,6 +255,108 @@ paths:
           content:
             application/json:
               schema: { $ref: "#/components/schemas/ErrorResponse" }
+  /admin/packs/sellers:
+    get:
+      operationId: listAdminPackSellers
+      tags: [admin]
+      summary: Every project and what its seller has told us
+      description: >-
+        The raw material for a pack: each project's organisation, offering, ICP criteria and
+        the packs it already runs. Internal admins only.
+      security:
+        - clerkSession: []
+      responses:
+        "200":
+          description: Sellers
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/AdminPackSeller" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/NotFound" }
+  /admin/packs/draft:
+    post:
+      operationId: draftAdminSignalPack
+      tags: [admin]
+      summary: Draft a pack from a project's Business Twin and ICP
+      description: >-
+        The model proposes 4-7 definitions in the engine's fixed vocabulary from what the
+        customer wrote in their Business Twin and ICP. Nothing is saved; the draft is returned
+        for the admin to edit and create.
+      security:
+        - clerkSession: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                projectId: { type: string }
+              required: [projectId]
+      responses:
+        "200":
+          description: Draft
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  draft: { $ref: "#/components/schemas/AdminSignalPackInput" }
+                  basis:
+                    type: object
+                    properties:
+                      projectId: { type: string }
+                      offeringName: { type: string, nullable: true }
+                      icpCriteria: { type: number }
+                      attempts: { type: number }
+                    required: [projectId, offeringName, icpCriteria, attempts]
+                required: [draft, basis]
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/NotFound" }
+        "422":
+          description: The project has no offering to draft from, or the model could not produce a valid pack
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+  /admin/packs/{packId}/activate:
+    post:
+      operationId: activateAdminSignalPack
+      tags: [admin]
+      summary: Switch a pack on for a project
+      description: >-
+        What the customer would do on their Signals page, done for them during hand-held
+        onboarding, using the offering their Business Twin describes.
+      security:
+        - clerkSession: []
+      parameters:
+        - { name: packId, in: path, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                projectId: { type: string }
+              required: [projectId]
+      responses:
+        "200":
+          description: The project, with the pack now active
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AdminPackSeller" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/NotFound" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409":
+          description: The project's Business Twin has no offering yet
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
   /admin/packs/{packId}:
     put:
       operationId: updateAdminSignalPack
@@ -3845,6 +3947,39 @@ components:
         isAssumption:
           type: boolean
       required: [key, statement, provenance, validationStatus, evidence, isAssumption]
+    AdminPackSeller:
+      type: object
+      properties:
+        projectId: { type: string }
+        projectName: { type: string }
+        organizationId: { type: string }
+        organizationName: { type: string }
+        offeringName: { type: string, nullable: true }
+        offeringDescription: { type: string, nullable: true }
+        offeringCategory: { type: string, nullable: true }
+        businessTwinReady: { type: boolean }
+        icpReady: { type: boolean }
+        icpCriteria:
+          type: array
+          items:
+            type: object
+            properties:
+              dimension: { type: string }
+              operator: { type: string }
+              value: { type: string }
+              weight: { type: number, nullable: true }
+            required: [dimension, operator, value, weight]
+        activePacks:
+          type: array
+          items:
+            type: object
+            properties:
+              id: { type: string }
+              slug: { type: string }
+              name: { type: string }
+            required: [id, slug, name]
+        draftable: { type: boolean, description: "The Business Twin describes an offering, so there is something to draft from." }
+      required: [projectId, projectName, organizationId, organizationName, offeringName, offeringDescription, offeringCategory, businessTwinReady, icpReady, icpCriteria, activePacks, draftable]
     AdminSignalDefinitionInput:
       type: object
       description: One rule in a pack - which facts it reads, what text they must carry, and what it does to Fit, Need and Timing.

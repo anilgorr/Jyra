@@ -1724,6 +1724,35 @@ export interface BusinessTwinClaim {
   isAssumption: boolean;
 }
 
+export type AdminPackSellerIcpCriteriaItem = {
+  dimension: string;
+  operator: string;
+  value: string;
+  weight: number | null;
+};
+
+export type AdminPackSellerActivePacksItem = {
+  id: string;
+  slug: string;
+  name: string;
+};
+
+export interface AdminPackSeller {
+  projectId: string;
+  projectName: string;
+  organizationId: string;
+  organizationName: string;
+  offeringName: string | null;
+  offeringDescription: string | null;
+  offeringCategory: string | null;
+  businessTwinReady: boolean;
+  icpReady: boolean;
+  icpCriteria: AdminPackSellerIcpCriteriaItem[];
+  activePacks: AdminPackSellerActivePacksItem[];
+  /** The Business Twin describes an offering, so there is something to draft from. */
+  draftable: boolean;
+}
+
 export type AdminSignalDefinitionInputPolarity = typeof AdminSignalDefinitionInputPolarity[keyof typeof AdminSignalDefinitionInputPolarity];
 
 
@@ -5001,6 +5030,26 @@ export type GetAdminQualityDashboardParams = {
  * @maximum 90
  */
 days?: number;
+};
+
+export type DraftAdminSignalPackBody = {
+  projectId: string;
+};
+
+export type DraftAdminSignalPack200Basis = {
+  projectId: string;
+  offeringName: string | null;
+  icpCriteria: number;
+  attempts: number;
+};
+
+export type DraftAdminSignalPack200 = {
+  draft: AdminSignalPackInput;
+  basis: DraftAdminSignalPack200Basis;
+};
+
+export type ActivateAdminSignalPackBody = {
+  projectId: string;
 };
 
 export type ListSignalFeedbackParams = {

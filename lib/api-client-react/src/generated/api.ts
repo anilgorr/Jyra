@@ -22,9 +22,11 @@ import type {
 import type {
   AccessGrant,
   AccessGrantCost,
+  ActivateAdminSignalPackBody,
   ActivateOpportunityPack200,
   AddOpportunityResearchQuestionRequest,
   AddOpportunitySignalRequest,
+  AdminPackSeller,
   AdminQualityDashboard,
   AdminSignalPack,
   AdminSignalPackInput,
@@ -72,6 +74,8 @@ import type {
   CreateProjectPersonResponse,
   CreateSignalClusterDefinitionRequest,
   CurrentUser,
+  DraftAdminSignalPack200,
+  DraftAdminSignalPackBody,
   EnrichProjectPersonContactRequest,
   ErrorResponse,
   EvaluateSignalClusters200,
@@ -1066,6 +1070,229 @@ export const useCreateAdminSignalPack = <TError = ErrorType<BadRequestResponse |
         TContext
       > => {
       return useMutation(getCreateAdminSignalPackMutationOptions(options));
+    }
+
+export const getListAdminPackSellersUrl = () => {
+
+
+
+
+  return `/api/admin/packs/sellers`
+}
+
+/**
+ * The raw material for a pack: each project's organisation, offering, ICP criteria and the packs it already runs. Internal admins only.
+ * @summary Every project and what its seller has told us
+ */
+export const listAdminPackSellers = async ( options?: Parameters<typeof customFetch>[1]): Promise<AdminPackSeller[]> => {
+
+  return customFetch<AdminPackSeller[]>(getListAdminPackSellersUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListAdminPackSellersQueryKey = () => {
+    return [
+    `/api/admin/packs/sellers`
+    ] as const;
+    }
+
+
+export const getListAdminPackSellersQueryOptions = <TData = Awaited<ReturnType<typeof listAdminPackSellers>>, TError = ErrorType<UnauthorizedResponse | NotFoundResponse>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listAdminPackSellers>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListAdminPackSellersQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listAdminPackSellers>>> = ({ signal }) => listAdminPackSellers({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listAdminPackSellers>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListAdminPackSellersQueryResult = NonNullable<Awaited<ReturnType<typeof listAdminPackSellers>>>
+export type ListAdminPackSellersQueryError = ErrorType<UnauthorizedResponse | NotFoundResponse>
+
+
+/**
+ * @summary Every project and what its seller has told us
+ */
+
+export function useListAdminPackSellers<TData = Awaited<ReturnType<typeof listAdminPackSellers>>, TError = ErrorType<UnauthorizedResponse | NotFoundResponse>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listAdminPackSellers>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListAdminPackSellersQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getDraftAdminSignalPackUrl = () => {
+
+
+
+
+  return `/api/admin/packs/draft`
+}
+
+/**
+ * The model proposes 4-7 definitions in the engine's fixed vocabulary from what the customer wrote in their Business Twin and ICP. Nothing is saved; the draft is returned for the admin to edit and create.
+ * @summary Draft a pack from a project's Business Twin and ICP
+ */
+export const draftAdminSignalPack = async (draftAdminSignalPackBody: DraftAdminSignalPackBody, options?: Parameters<typeof customFetch>[1]): Promise<DraftAdminSignalPack200> => {
+
+  return customFetch<DraftAdminSignalPack200>(getDraftAdminSignalPackUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(draftAdminSignalPackBody)
+  }
+);}
+
+
+
+
+
+export const getDraftAdminSignalPackMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | NotFoundResponse | ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof draftAdminSignalPack>>, TError,{data: BodyType<DraftAdminSignalPackBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof draftAdminSignalPack>>, TError,{data: BodyType<DraftAdminSignalPackBody>}, TContext> => {
+
+const mutationKey = ['draftAdminSignalPack'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof draftAdminSignalPack>>, {data: BodyType<DraftAdminSignalPackBody>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  draftAdminSignalPack(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DraftAdminSignalPackMutationResult = NonNullable<Awaited<ReturnType<typeof draftAdminSignalPack>>>
+    export type DraftAdminSignalPackMutationBody = BodyType<DraftAdminSignalPackBody>
+    export type DraftAdminSignalPackMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | NotFoundResponse | ErrorResponse>
+
+    /**
+ * @summary Draft a pack from a project's Business Twin and ICP
+ */
+export const useDraftAdminSignalPack = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | NotFoundResponse | ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof draftAdminSignalPack>>, TError,{data: BodyType<DraftAdminSignalPackBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof draftAdminSignalPack>>,
+        TError,
+        {data: BodyType<DraftAdminSignalPackBody>},
+        TContext
+      > => {
+      return useMutation(getDraftAdminSignalPackMutationOptions(options));
+    }
+
+export const getActivateAdminSignalPackUrl = (packId: string,) => {
+
+
+
+
+  return `/api/admin/packs/${packId}/activate`
+}
+
+/**
+ * What the customer would do on their Signals page, done for them during hand-held onboarding, using the offering their Business Twin describes.
+ * @summary Switch a pack on for a project
+ */
+export const activateAdminSignalPack = async (packId: string,
+    activateAdminSignalPackBody: ActivateAdminSignalPackBody, options?: Parameters<typeof customFetch>[1]): Promise<AdminPackSeller> => {
+
+  return customFetch<AdminPackSeller>(getActivateAdminSignalPackUrl(packId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(activateAdminSignalPackBody)
+  }
+);}
+
+
+
+
+
+export const getActivateAdminSignalPackMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | NotFoundResponse | ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof activateAdminSignalPack>>, TError,{packId: string;data: BodyType<ActivateAdminSignalPackBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof activateAdminSignalPack>>, TError,{packId: string;data: BodyType<ActivateAdminSignalPackBody>}, TContext> => {
+
+const mutationKey = ['activateAdminSignalPack'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof activateAdminSignalPack>>, {packId: string;data: BodyType<ActivateAdminSignalPackBody>}> = (props) => {
+          const {packId,data} = props ?? {};
+
+          return  activateAdminSignalPack(packId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ActivateAdminSignalPackMutationResult = NonNullable<Awaited<ReturnType<typeof activateAdminSignalPack>>>
+    export type ActivateAdminSignalPackMutationBody = BodyType<ActivateAdminSignalPackBody>
+    export type ActivateAdminSignalPackMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | NotFoundResponse | ErrorResponse>
+
+    /**
+ * @summary Switch a pack on for a project
+ */
+export const useActivateAdminSignalPack = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | NotFoundResponse | ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof activateAdminSignalPack>>, TError,{packId: string;data: BodyType<ActivateAdminSignalPackBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof activateAdminSignalPack>>,
+        TError,
+        {packId: string;data: BodyType<ActivateAdminSignalPackBody>},
+        TContext
+      > => {
+      return useMutation(getActivateAdminSignalPackMutationOptions(options));
     }
 
 export const getUpdateAdminSignalPackUrl = (packId: string,) => {

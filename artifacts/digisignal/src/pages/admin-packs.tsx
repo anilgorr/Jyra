@@ -1,15 +1,20 @@
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import {
+  getListAdminPackSellersQueryKey,
   getListAdminSignalPacksQueryKey,
+  useActivateAdminSignalPack,
   useCreateAdminSignalPack,
+  useDraftAdminSignalPack,
+  useListAdminPackSellers,
   useListAdminSignalPacks,
   useUpdateAdminSignalPack,
+  type AdminPackSeller,
   type AdminSignalDefinitionInput,
   type AdminSignalPack,
   type AdminSignalPackInput,
 } from "@workspace/api-client-react";
-import { Copy, Layers, Pencil, Plus, Save, Trash2, X } from "lucide-react";
+import { Copy, Layers, Pencil, Plus, Save, Sparkles, Trash2, Users, X, Zap } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -84,6 +89,21 @@ function draftFrom(pack: AdminSignalPack, asCopy: boolean): Draft {
       polarity: d.polarity, defaultStrength: String(d.defaultStrength), minimumConfidence: String(d.minimumConfidence),
       lifetimeDays: String(d.lifetimeDays), decayRule: d.decayRule, needImpact: String(d.needImpact), timingImpact: String(d.timingImpact),
       fitImpact: String(d.fitImpact), minFacts: String(d.minFacts), mode: d.mode,
+    })),
+  };
+}
+
+/** A model draft (already in the API's input shape) into the form. */
+function draftFromInput(input: AdminSignalPackInput): Draft {
+  return {
+    id: null, name: input.name, slug: input.slug ?? "", description: input.description, offeringFamily: input.offeringFamily ?? "",
+    includeNegatives: input.includeNegatives ?? true,
+    definitions: input.definitions.map((d) => ({
+      key: nextKey(), code: d.code, name: d.name, description: d.description ?? "", category: d.category, factTypes: d.factTypes,
+      matchAny: (d.matchAny ?? []).join(", "), matchAll: (d.matchAll ?? []).join(", "), excludeAny: (d.excludeAny ?? []).join(", "),
+      polarity: d.polarity ?? "POSITIVE", defaultStrength: String(d.defaultStrength ?? 70), minimumConfidence: String(d.minimumConfidence ?? 60),
+      lifetimeDays: String(d.lifetimeDays ?? 90), decayRule: d.decayRule ?? "LINEAR", needImpact: String(d.needImpact), timingImpact: String(d.timingImpact),
+      fitImpact: String(d.fitImpact), minFacts: String(d.minFacts ?? 1), mode: d.mode ?? "single",
     })),
   };
 }
@@ -283,11 +303,92 @@ function PackCard({ pack, onEdit, onCopy }: { pack: AdminSignalPack; onEdit: () 
   );
 }
 
+function SellerRow({ seller, packs, onDraft }: { seller: AdminPackSeller; packs: AdminSignalPack[]; onDraft: (draft: AdminSignalPackInput) => void }) {
+  const queryClient = useQueryClient();
+  const draft = useDraftAdminSignalPack();
+  const activate = useActivateAdminSignalPack();
+  const [packId, setPackId] = useState<string>("");
+  const activeIds = new Set(seller.activePacks.map((p) => p.id));
+  const fail = (error: unknown, fallback: string) => {
+    const data = (error as { data?: { error?: string; problems?: string[] } })?.data;
+    toast.error(data?.problems?.join(" · ") ?? data?.error ?? fallback);
+  };
+  return (
+    <div className="rounded-xl border p-3" data-testid={`seller-${seller.projectId}`}>
+      <div className="flex flex-wrap items-start gap-2">
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="font-medium">{seller.organizationName}</span>
+            <span className="text-xs text-muted-foreground">· {seller.projectName}</span>
+            {!seller.businessTwinReady && <Badge variant="outline">no Business Twin</Badge>}
+            {seller.businessTwinReady && !seller.icpReady && <Badge variant="outline">ICP missing</Badge>}
+            {seller.activePacks.map((p) => <Badge key={p.id} variant="secondary">{p.name}</Badge>)}
+          </div>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {seller.offeringName ? <><span className="text-foreground">{seller.offeringName}</span>{seller.offeringDescription ? ` — ${seller.offeringDescription}` : ""}</> : "The Business Twin does not describe an offering yet."}
+          </p>
+          {seller.icpCriteria.length > 0 && (
+            <p className="mt-1 text-xs text-muted-foreground">
+              ICP: {seller.icpCriteria.slice(0, 6).map((c) => `${c.dimension} ${c.operator} ${c.value}`).join(" · ")}{seller.icpCriteria.length > 6 ? ` · +${seller.icpCriteria.length - 6} more` : ""}
+            </p>
+          )}
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <Button type="button" size="sm" variant="outline" disabled={!seller.draftable || draft.isPending}
+            title={seller.draftable ? "Ask the model for a draft from this seller's Business Twin and ICP" : "Needs a Business Twin with an offering first"}
+            onClick={() => draft.mutate({ data: { projectId: seller.projectId } }, {
+              onSuccess: (result) => { toast.success(`Drafted ${result.draft.name} from ${result.basis.icpCriteria} ICP criteria`); onDraft(result.draft); },
+              onError: (error) => fail(error, "Could not draft a pack"),
+            })}>
+            <Sparkles className="mr-1 h-4 w-4" />{draft.isPending ? "Drafting…" : "Draft a pack"}
+          </Button>
+          <Select value={packId} onValueChange={setPackId}>
+            <SelectTrigger className="w-52"><SelectValue placeholder="Activate a pack…" /></SelectTrigger>
+            <SelectContent>{packs.filter((p) => !activeIds.has(p.id)).map((p) => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}</SelectContent>
+          </Select>
+          <Button type="button" size="sm" disabled={!packId || !seller.offeringName || activate.isPending}
+            onClick={() => activate.mutate({ packId, data: { projectId: seller.projectId } }, {
+              onSuccess: () => { toast.success("Pack activated"); setPackId(""); void queryClient.invalidateQueries({ queryKey: getListAdminPackSellersQueryKey() }); void queryClient.invalidateQueries({ queryKey: getListAdminSignalPacksQueryKey() }); },
+              onError: (error) => fail(error, "Could not activate"),
+            })}>
+            <Zap className="mr-1 h-4 w-4" />{activate.isPending ? "Activating…" : "Activate"}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SellersCard({ packs, onDraft }: { packs: AdminSignalPack[]; onDraft: (draft: AdminSignalPackInput) => void }) {
+  const sellers = useListAdminPackSellers({ query: { queryKey: getListAdminPackSellersQueryKey() } });
+  const rows = sellers.data ?? [];
+  return (
+    <Card className="p-4">
+      <div className="flex items-center gap-2"><Users className="h-4 w-4" /><h2 className="font-medium">Sellers</h2></div>
+      <p className="mt-1 text-sm text-muted-foreground">
+        Every project and what its seller has told us. Draft a pack from a Business Twin and ICP, edit it above, then activate it here — the customer never has to find the Signals page.
+      </p>
+      {sellers.isLoading ? (
+        <div className="mt-3 space-y-2">{[0, 1].map((k) => <Skeleton key={k} className="h-16" />)}</div>
+      ) : (
+        <div className="mt-3 space-y-2">
+          {rows.length === 0 && <p className="text-sm text-muted-foreground">No projects yet.</p>}
+          {rows.map((seller) => <SellerRow key={seller.projectId} seller={seller} packs={packs} onDraft={onDraft} />)}
+        </div>
+      )}
+    </Card>
+  );
+}
+
 export default function AdminPacksPage() {
   const queryClient = useQueryClient();
   const packs = useListAdminSignalPacks({ query: { queryKey: getListAdminSignalPacksQueryKey() } });
   const [draft, setDraft] = useState<Draft | null>(null);
-  const done = () => { setDraft(null); void queryClient.invalidateQueries({ queryKey: getListAdminSignalPacksQueryKey() }); };
+  const done = () => {
+    setDraft(null);
+    void queryClient.invalidateQueries({ queryKey: getListAdminSignalPacksQueryKey() });
+    void queryClient.invalidateQueries({ queryKey: getListAdminPackSellersQueryKey() });
+  };
   const rows = packs.data ?? [];
 
   return (
@@ -302,7 +403,8 @@ export default function AdminPacksPage() {
         A customer picks one of these on their Signals page. Shipped packs are rewritten from code at every deploy, so copy one rather than wishing you could edit it.
         Changes to a pack apply to every project using it on the next re-evaluation.
       </p>
-      {draft && <PackEditor key={draft.id ?? "new"} initial={draft} onDone={done} />}
+      {draft && <PackEditor key={draft.id ?? `new-${draft.name}`} initial={draft} onDone={done} />}
+      <SellersCard packs={rows} onDraft={(input) => { setDraft(draftFromInput(input)); window.scrollTo({ top: 0, behavior: "smooth" }); }} />
       {packs.isLoading ? (
         <div className="space-y-3">{[0, 1, 2].map((k) => <Skeleton key={k} className="h-24" />)}</div>
       ) : packs.isError ? (

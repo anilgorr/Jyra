@@ -592,6 +592,118 @@ export const CreateAdminSignalPackResponse = zod.object({
 
 
 /**
+ * The raw material for a pack: each project's organisation, offering, ICP criteria and the packs it already runs. Internal admins only.
+ * @summary Every project and what its seller has told us
+ */
+export const ListAdminPackSellersResponseItem = zod.object({
+  "projectId": zod.string(),
+  "projectName": zod.string(),
+  "organizationId": zod.string(),
+  "organizationName": zod.string(),
+  "offeringName": zod.string().nullable(),
+  "offeringDescription": zod.string().nullable(),
+  "offeringCategory": zod.string().nullable(),
+  "businessTwinReady": zod.boolean(),
+  "icpReady": zod.boolean(),
+  "icpCriteria": zod.array(zod.object({
+  "dimension": zod.string(),
+  "operator": zod.string(),
+  "value": zod.string(),
+  "weight": zod.number().nullable()
+})),
+  "activePacks": zod.array(zod.object({
+  "id": zod.string(),
+  "slug": zod.string(),
+  "name": zod.string()
+})),
+  "draftable": zod.boolean().describe('The Business Twin describes an offering, so there is something to draft from.')
+})
+export const ListAdminPackSellersResponse = zod.array(ListAdminPackSellersResponseItem)
+
+
+/**
+ * The model proposes 4-7 definitions in the engine's fixed vocabulary from what the customer wrote in their Business Twin and ICP. Nothing is saved; the draft is returned for the admin to edit and create.
+ * @summary Draft a pack from a project's Business Twin and ICP
+ */
+export const DraftAdminSignalPackBody = zod.object({
+  "projectId": zod.string()
+})
+
+export const DraftAdminSignalPackResponse = zod.object({
+  "draft": zod.object({
+  "name": zod.string(),
+  "slug": zod.string().optional().describe('URL-safe identifier. Derived from the name when omitted; cannot change after creation.'),
+  "description": zod.string(),
+  "offeringFamily": zod.string().optional().describe('What kind of seller this pack is for, e.g. digital-marketing. Descriptive.'),
+  "includeNegatives": zod.boolean().optional().describe('Add the standard layoffs\/acquired negatives. Default true.'),
+  "definitions": zod.array(zod.object({
+  "code": zod.string().describe('Stable identifier within the pack, e.g. MARKETING_NEW_CMO. Upper-case letters, digits and underscores.'),
+  "name": zod.string(),
+  "description": zod.string().optional(),
+  "category": zod.string().describe('LEADERSHIP, HIRING, FUNDING, TECHNOLOGY, EXPANSION, CUSTOMER, COMPLIANCE, REGULATORY, GROWTH, M_AND_A, NEGATIVE or CUSTOM.'),
+  "factTypes": zod.array(zod.string()).describe('Fact types this rule reads, from the engine\'s fixed list.'),
+  "matchAny": zod.array(zod.string()).optional().describe('The fact must contain at least one. Plain words match whole words; anything with regex characters is a regex.'),
+  "matchAll": zod.array(zod.string()).optional(),
+  "excludeAny": zod.array(zod.string()).optional(),
+  "polarity": zod.enum(['POSITIVE', 'NEGATIVE']).optional(),
+  "defaultStrength": zod.number().optional().describe('1-100. How strongly a fresh match counts.'),
+  "minimumConfidence": zod.number().optional().describe('0-100. Facts below it neither count nor block.'),
+  "lifetimeDays": zod.number().optional().describe('Days until the signal decays to nothing.'),
+  "decayRule": zod.enum(['LINEAR', 'STEP', 'NONE']).optional(),
+  "needImpact": zod.number().describe('-100..100'),
+  "timingImpact": zod.number().describe('-100..100'),
+  "fitImpact": zod.number().describe('-100..100'),
+  "minFacts": zod.number().optional().describe('Matching facts needed before the rule fires. 2 turns one opening into a plan.'),
+  "mode": zod.enum(['single', 'increasing_count']).optional().describe('increasing_count fires only when a counted fact rises between two observations.')
+}).describe('One rule in a pack - which facts it reads, what text they must carry, and what it does to Fit, Need and Timing.'))
+}),
+  "basis": zod.object({
+  "projectId": zod.string(),
+  "offeringName": zod.string().nullable(),
+  "icpCriteria": zod.number(),
+  "attempts": zod.number()
+})
+})
+
+
+/**
+ * What the customer would do on their Signals page, done for them during hand-held onboarding, using the offering their Business Twin describes.
+ * @summary Switch a pack on for a project
+ */
+export const ActivateAdminSignalPackParams = zod.object({
+  "packId": zod.coerce.string()
+})
+
+export const ActivateAdminSignalPackBody = zod.object({
+  "projectId": zod.string()
+})
+
+export const ActivateAdminSignalPackResponse = zod.object({
+  "projectId": zod.string(),
+  "projectName": zod.string(),
+  "organizationId": zod.string(),
+  "organizationName": zod.string(),
+  "offeringName": zod.string().nullable(),
+  "offeringDescription": zod.string().nullable(),
+  "offeringCategory": zod.string().nullable(),
+  "businessTwinReady": zod.boolean(),
+  "icpReady": zod.boolean(),
+  "icpCriteria": zod.array(zod.object({
+  "dimension": zod.string(),
+  "operator": zod.string(),
+  "value": zod.string(),
+  "weight": zod.number().nullable()
+})),
+  "activePacks": zod.array(zod.object({
+  "id": zod.string(),
+  "slug": zod.string(),
+  "name": zod.string()
+})),
+  "draftable": zod.boolean().describe('The Business Twin describes an offering, so there is something to draft from.')
+})
+
+
+/**
  * Only packs built here can be edited; a code fixture is copied instead. Definitions are matched by code: existing ones are updated in place (signals already raised keep pointing at them), new ones are added, and ones left out are retired rather than deleted.
  * @summary Replace a pack's definitions
  */
