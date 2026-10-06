@@ -224,6 +224,11 @@ export default function Signals() {
                 </Button>
               </div>
             )}
+            {!packsLoading && !packsError && availablePacks.length === 0 && (
+              <p className="text-sm text-muted-foreground" data-testid="no-packs-assigned">
+                No signal pack has been set up for this account yet. Your JYRA contact builds one from your Business Twin and ICP and switches it on here.
+              </p>
+            )}
             <div className="flex flex-wrap gap-2">
               {packsLoading ? <Skeleton className="h-9 w-64" /> : availablePacks.map((pack) => {
                 const selected = selectedPacks.find((item) => item.signalPackId === pack.id);

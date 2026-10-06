@@ -5771,6 +5771,7 @@ export const ListProjectSignalsResponse = zod.array(ListProjectSignalsResponseIt
 
 
 /**
+ * The packs this viewer may activate. A customer sees only the packs an admin has set up for one of their projects; internal admins see the whole catalogue.
  * @summary List approved configurable signal packs
  */
 export const ListSignalPacksResponseItem = zod.object({

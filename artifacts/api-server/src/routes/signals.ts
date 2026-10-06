@@ -34,7 +34,7 @@ import { isAdminPack } from "../lib/admin-signal-packs";
 import { configureProjectSignalPack } from "../lib/project-signal-pack-config";
 import { reevaluateStaleSignals } from "../lib/signal-reevaluation";
 import { logger } from "../lib/logger";
-import { getAuthenticatedUserId, requireAuth } from "../middlewares/auth";
+import { getAuthenticatedUserId, isUserInternalAdmin, requireAuth } from "../middlewares/auth";
 import { requireOrgRole } from "../lib/authz";
 
 const router: IRouter = Router();
@@ -143,15 +143,37 @@ function projectPackPayload(row: {
   };
 }
 
+/**
+ * The packs a viewer may choose from.
+ *
+ * A customer sees only the packs an admin has set up for one of their
+ * projects (on /admin/packs, from their Business Twin and ICP). The full
+ * catalogue - a SOC pack, a solar pack, an ERP pack - means nothing to a
+ * marketing consultant and invites switching one on for the wrong reason;
+ * the pack is chosen for the niche by the person onboarding them. Internal
+ * admins see everything, which is how their own accounts keep working.
+ */
 router.get("/signal-packs", requireAuth, asyncRoute(async (_req, res) => {
   await ensureSignalPackFixtures();
   const fixtureSlugs = new Set(SIGNAL_PACK_FIXTURES.map((fixture) => fixture.slug));
   // Shipped fixtures and packs an admin built on /admin/packs; nothing else
   // (an orphan from a removed fixture, a half-made row) reaches a customer.
-  const packs = (await db.select().from(signalPacksTable).where(and(
+  let packs = (await db.select().from(signalPacksTable).where(and(
     eq(signalPacksTable.active, true),
     eq(signalPacksTable.status, "APPROVED"),
   ))).filter((pack) => fixtureSlugs.has(pack.slug) || isAdminPack(pack));
+  const userId = getAuthenticatedUserId(res);
+  if (!(await isUserInternalAdmin(userId))) {
+    // Assigned means a selection row exists for a project in one of the
+    // viewer's organisations - active or not, so a pack they switched off
+    // stays available to switch back on.
+    const assigned = await db.selectDistinct({ packId: projectSignalPacksTable.signalPackId })
+      .from(projectSignalPacksTable)
+      .innerJoin(organizationMembersTable, eq(organizationMembersTable.organizationId, projectSignalPacksTable.organizationId))
+      .where(eq(organizationMembersTable.userId, userId));
+    const assignedIds = new Set(assigned.map((row) => row.packId));
+    packs = packs.filter((pack) => assignedIds.has(pack.id));
+  }
   const definitions = await db.select().from(signalDefinitionsTable);
   res.json(ListSignalPacksResponse.parse(packs.map((pack) => ({
     id: pack.id,

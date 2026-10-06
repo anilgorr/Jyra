@@ -5701,6 +5701,7 @@ export const getListSignalPacksUrl = () => {
 }
 
 /**
+ * The packs this viewer may activate. A customer sees only the packs an admin has set up for one of their projects; internal admins see the whole catalogue.
  * @summary List approved configurable signal packs
  */
 export const listSignalPacks = async ( options?: Parameters<typeof customFetch>[1]): Promise<SignalPack[]> => {

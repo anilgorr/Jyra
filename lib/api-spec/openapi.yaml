@@ -1849,6 +1849,9 @@ paths:
       tags: [signals]
       summary: List approved configurable signal packs
       security: [{ clerkSession: [] }]
+      description: >-
+        The packs this viewer may activate. A customer sees only the packs an admin has set up for
+        one of their projects; internal admins see the whole catalogue.
       responses:
         "200":
           description: Available signal packs
