@@ -1724,6 +1724,122 @@ export interface BusinessTwinClaim {
   isAssumption: boolean;
 }
 
+export type AdminSignalDefinitionInputPolarity = typeof AdminSignalDefinitionInputPolarity[keyof typeof AdminSignalDefinitionInputPolarity];
+
+
+export const AdminSignalDefinitionInputPolarity = {
+  POSITIVE: 'POSITIVE',
+  NEGATIVE: 'NEGATIVE',
+} as const;
+
+export type AdminSignalDefinitionInputDecayRule = typeof AdminSignalDefinitionInputDecayRule[keyof typeof AdminSignalDefinitionInputDecayRule];
+
+
+export const AdminSignalDefinitionInputDecayRule = {
+  LINEAR: 'LINEAR',
+  STEP: 'STEP',
+  NONE: 'NONE',
+} as const;
+
+/**
+ * increasing_count fires only when a counted fact rises between two observations.
+ */
+export type AdminSignalDefinitionInputMode = typeof AdminSignalDefinitionInputMode[keyof typeof AdminSignalDefinitionInputMode];
+
+
+export const AdminSignalDefinitionInputMode = {
+  single: 'single',
+  increasing_count: 'increasing_count',
+} as const;
+
+/**
+ * One rule in a pack - which facts it reads, what text they must carry, and what it does to Fit, Need and Timing.
+ */
+export interface AdminSignalDefinitionInput {
+  /** Stable identifier within the pack, e.g. MARKETING_NEW_CMO. Upper-case letters, digits and underscores. */
+  code: string;
+  name: string;
+  description?: string;
+  /** LEADERSHIP, HIRING, FUNDING, TECHNOLOGY, EXPANSION, CUSTOMER, COMPLIANCE, REGULATORY, GROWTH, M_AND_A, NEGATIVE or CUSTOM. */
+  category: string;
+  /** Fact types this rule reads, from the engine's fixed list. */
+  factTypes: string[];
+  /** The fact must contain at least one. Plain words match whole words; anything with regex characters is a regex. */
+  matchAny?: string[];
+  matchAll?: string[];
+  excludeAny?: string[];
+  polarity?: AdminSignalDefinitionInputPolarity;
+  /** 1-100. How strongly a fresh match counts. */
+  defaultStrength?: number;
+  /** 0-100. Facts below it neither count nor block. */
+  minimumConfidence?: number;
+  /** Days until the signal decays to nothing. */
+  lifetimeDays?: number;
+  decayRule?: AdminSignalDefinitionInputDecayRule;
+  /** -100..100 */
+  needImpact: number;
+  /** -100..100 */
+  timingImpact: number;
+  /** -100..100 */
+  fitImpact: number;
+  /** Matching facts needed before the rule fires. 2 turns one opening into a plan. */
+  minFacts?: number;
+  /** increasing_count fires only when a counted fact rises between two observations. */
+  mode?: AdminSignalDefinitionInputMode;
+}
+
+export type AdminSignalDefinition = AdminSignalDefinitionInput & {
+  id: string;
+  /** APPROVED, or RETIRED when an edit dropped it. */
+  status: string;
+  version: string;
+} & Required<Pick<AdminSignalDefinitionInput & {
+  id: string;
+  /** APPROVED, or RETIRED when an edit dropped it. */
+  status: string;
+  version: string;
+}, 'description' | 'matchAny' | 'matchAll' | 'excludeAny' | 'polarity' | 'defaultStrength' | 'minimumConfidence' | 'lifetimeDays' | 'decayRule' | 'minFacts' | 'mode'>>;
+
+export interface AdminSignalPackInput {
+  name: string;
+  /** URL-safe identifier. Derived from the name when omitted; cannot change after creation. */
+  slug?: string;
+  description: string;
+  /** What kind of seller this pack is for, e.g. digital-marketing. Descriptive. */
+  offeringFamily?: string;
+  /** Add the standard layoffs/acquired negatives. Default true. */
+  includeNegatives?: boolean;
+  definitions: AdminSignalDefinitionInput[];
+}
+
+/**
+ * fixture packs ship with the code and are read-only here; admin packs were built on this page.
+ */
+export type AdminSignalPackSource = typeof AdminSignalPackSource[keyof typeof AdminSignalPackSource];
+
+
+export const AdminSignalPackSource = {
+  fixture: 'fixture',
+  admin: 'admin',
+} as const;
+
+export interface AdminSignalPack {
+  id: string;
+  slug: string;
+  name: string;
+  description: string;
+  version: string;
+  offeringFamily: string | null;
+  /** fixture packs ship with the code and are read-only here; admin packs were built on this page. */
+  source: AdminSignalPackSource;
+  editable: boolean;
+  /** Projects with this pack active. */
+  projectsUsing: number;
+  createdAt: string;
+  updatedAt: string;
+  definitions: AdminSignalDefinition[];
+}
+
 export type AccessGrantStatus = typeof AccessGrantStatus[keyof typeof AccessGrantStatus];
 
 

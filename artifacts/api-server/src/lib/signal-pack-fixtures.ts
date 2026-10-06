@@ -89,7 +89,8 @@ const NEGATIVE_ACQUIRED = definition("ACQUIRED", "Acquired or merging", "NEGATIV
   description: "The company has been bought or is merging. Purchasing decisions move to the new owner.",
 });
 
-const NEGATIVE_DEFINITIONS: FixtureDefinition[] = [NEGATIVE_WORKFORCE_REDUCTION, NEGATIVE_ACQUIRED];
+export const NEGATIVE_DEFINITIONS: FixtureDefinition[] = [NEGATIVE_WORKFORCE_REDUCTION, NEGATIVE_ACQUIRED];
+export type { FixtureDefinition };
 
 /**
  * What a seller of sales tooling should read into these facts.

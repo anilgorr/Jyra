@@ -31,6 +31,7 @@ import Outcomes from './pages/outcomes';
 import Learning from './pages/learning';
 import AdminQualityPage from './pages/admin-quality';
 import AdminAccessPage from './pages/admin-access';
+import AdminPacksPage from './pages/admin-packs';
 import { WorkspaceProvider } from './context/workspace-context';
 import PlanPage from "@/pages/plan";
 
@@ -137,6 +138,7 @@ function AuthenticatedRoutes() {
             <Route path="/learning" component={Learning} />
             <Route path="/admin/quality" component={AdminQualityPage} />
             <Route path="/admin/access" component={AdminAccessPage} />
+            <Route path="/admin/packs" component={AdminPacksPage} />
             {import.meta.env.DEV && (
               <Route path="/settings/providers" component={ProviderDiagnostics} />
             )}

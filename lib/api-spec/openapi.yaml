@@ -206,6 +206,84 @@ paths:
               schema: { $ref: "#/components/schemas/OrganizationCosts" }
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/NotFound" }
+  /admin/packs:
+    get:
+      operationId: listAdminSignalPacks
+      tags: [admin]
+      summary: Every signal pack, with its definitions
+      description: >-
+        Packs shipped as code fixtures and packs an admin built here, each with the full
+        definition list and whether any project is running on it. Internal admins only.
+      security:
+        - clerkSession: []
+      responses:
+        "200":
+          description: Packs
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/AdminSignalPack" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/NotFound" }
+    post:
+      operationId: createAdminSignalPack
+      tags: [admin]
+      summary: Build a signal pack
+      description: >-
+        Creates a pack and its definitions in one step. The standard negative definitions
+        (workforce reduction, acquired) are added unless the body says otherwise. The pack
+        is live for customers to activate as soon as it is saved.
+      security:
+        - clerkSession: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/AdminSignalPackInput" }
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AdminSignalPack" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/NotFound" }
+        "409":
+          description: A pack with that slug already exists
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+  /admin/packs/{packId}:
+    put:
+      operationId: updateAdminSignalPack
+      tags: [admin]
+      summary: Replace a pack's definitions
+      description: >-
+        Only packs built here can be edited; a code fixture is copied instead. Definitions are
+        matched by code: existing ones are updated in place (signals already raised keep
+        pointing at them), new ones are added, and ones left out are retired rather than
+        deleted.
+      security:
+        - clerkSession: []
+      parameters:
+        - { name: packId, in: path, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/AdminSignalPackInput" }
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AdminSignalPack" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/NotFound" }
+        "404": { $ref: "#/components/responses/NotFound" }
   /admin/access:
     get:
       operationId: listAccessGrants
@@ -3767,6 +3845,64 @@ components:
         isAssumption:
           type: boolean
       required: [key, statement, provenance, validationStatus, evidence, isAssumption]
+    AdminSignalDefinitionInput:
+      type: object
+      description: One rule in a pack - which facts it reads, what text they must carry, and what it does to Fit, Need and Timing.
+      properties:
+        code: { type: string, description: "Stable identifier within the pack, e.g. MARKETING_NEW_CMO. Upper-case letters, digits and underscores." }
+        name: { type: string }
+        description: { type: string }
+        category: { type: string, description: "LEADERSHIP, HIRING, FUNDING, TECHNOLOGY, EXPANSION, CUSTOMER, COMPLIANCE, REGULATORY, GROWTH, M_AND_A, NEGATIVE or CUSTOM." }
+        factTypes: { type: array, items: { type: string }, description: "Fact types this rule reads, from the engine's fixed list." }
+        matchAny: { type: array, items: { type: string }, description: "The fact must contain at least one. Plain words match whole words; anything with regex characters is a regex." }
+        matchAll: { type: array, items: { type: string } }
+        excludeAny: { type: array, items: { type: string } }
+        polarity: { type: string, enum: [POSITIVE, NEGATIVE] }
+        defaultStrength: { type: number, description: "1-100. How strongly a fresh match counts." }
+        minimumConfidence: { type: number, description: "0-100. Facts below it neither count nor block." }
+        lifetimeDays: { type: number, description: "Days until the signal decays to nothing." }
+        decayRule: { type: string, enum: [LINEAR, STEP, NONE] }
+        needImpact: { type: number, description: "-100..100" }
+        timingImpact: { type: number, description: "-100..100" }
+        fitImpact: { type: number, description: "-100..100" }
+        minFacts: { type: number, description: "Matching facts needed before the rule fires. 2 turns one opening into a plan." }
+        mode: { type: string, enum: [single, increasing_count], description: "increasing_count fires only when a counted fact rises between two observations." }
+      required: [code, name, category, factTypes, needImpact, timingImpact, fitImpact]
+    AdminSignalDefinition:
+      allOf:
+        - $ref: "#/components/schemas/AdminSignalDefinitionInput"
+        - type: object
+          properties:
+            id: { type: string }
+            status: { type: string, description: "APPROVED, or RETIRED when an edit dropped it." }
+            version: { type: string }
+          required: [id, status, version, description, matchAny, matchAll, excludeAny, polarity, defaultStrength, minimumConfidence, lifetimeDays, decayRule, minFacts, mode]
+    AdminSignalPackInput:
+      type: object
+      properties:
+        name: { type: string }
+        slug: { type: string, description: "URL-safe identifier. Derived from the name when omitted; cannot change after creation." }
+        description: { type: string }
+        offeringFamily: { type: string, description: "What kind of seller this pack is for, e.g. digital-marketing. Descriptive." }
+        includeNegatives: { type: boolean, description: "Add the standard layoffs/acquired negatives. Default true." }
+        definitions: { type: array, items: { $ref: "#/components/schemas/AdminSignalDefinitionInput" } }
+      required: [name, description, definitions]
+    AdminSignalPack:
+      type: object
+      properties:
+        id: { type: string }
+        slug: { type: string }
+        name: { type: string }
+        description: { type: string }
+        version: { type: string }
+        offeringFamily: { type: string, nullable: true }
+        source: { type: string, enum: [fixture, admin], description: "fixture packs ship with the code and are read-only here; admin packs were built on this page." }
+        editable: { type: boolean }
+        projectsUsing: { type: number, description: "Projects with this pack active." }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+        definitions: { type: array, items: { $ref: "#/components/schemas/AdminSignalDefinition" } }
+      required: [id, slug, name, description, version, offeringFamily, source, editable, projectsUsing, createdAt, updatedAt, definitions]
     AccessGrant:
       type: object
       additionalProperties: false

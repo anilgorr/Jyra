@@ -30,6 +30,7 @@ import { evaluateClustersForCompany } from "../lib/signal-clusters";
 import { evaluateOpportunity } from "../lib/opportunity-engine";
 import { generateWhyForOpportunity } from "../lib/opportunity-why";
 import { ensureSignalPackFixtures, SIGNAL_PACK_FIXTURES } from "../lib/signal-pack-fixtures";
+import { isAdminPack } from "../lib/admin-signal-packs";
 import { configureProjectSignalPack } from "../lib/project-signal-pack-config";
 import { reevaluateStaleSignals } from "../lib/signal-reevaluation";
 import { logger } from "../lib/logger";
@@ -145,10 +146,12 @@ function projectPackPayload(row: {
 router.get("/signal-packs", requireAuth, asyncRoute(async (_req, res) => {
   await ensureSignalPackFixtures();
   const fixtureSlugs = new Set(SIGNAL_PACK_FIXTURES.map((fixture) => fixture.slug));
+  // Shipped fixtures and packs an admin built on /admin/packs; nothing else
+  // (an orphan from a removed fixture, a half-made row) reaches a customer.
   const packs = (await db.select().from(signalPacksTable).where(and(
     eq(signalPacksTable.active, true),
     eq(signalPacksTable.status, "APPROVED"),
-  ))).filter((pack) => fixtureSlugs.has(pack.slug));
+  ))).filter((pack) => fixtureSlugs.has(pack.slug) || isAdminPack(pack));
   const definitions = await db.select().from(signalDefinitionsTable);
   res.json(ListSignalPacksResponse.parse(packs.map((pack) => ({
     id: pack.id,
