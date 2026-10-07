@@ -6,6 +6,7 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { AdminInstantLeadRunDetailSearchActivityItem } from './adminInstantLeadRunDetailSearchActivityItem';
+import type { AdminInstantLeadRunDetailSearchScreening } from './adminInstantLeadRunDetailSearchScreening';
 import type { InstantLeadUnmapped } from './instantLeadUnmapped';
 
 export type AdminInstantLeadRunDetailSearch = {
@@ -14,4 +15,5 @@ export type AdminInstantLeadRunDetailSearch = {
   activity: AdminInstantLeadRunDetailSearchActivityItem[];
   unmapped: InstantLeadUnmapped;
   widened: boolean;
+  screening: AdminInstantLeadRunDetailSearchScreening;
 } | null;

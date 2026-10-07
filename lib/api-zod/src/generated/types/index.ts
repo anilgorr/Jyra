@@ -34,6 +34,8 @@ export * from './adminInstantLeadRunDetailLeadsItem';
 export * from './adminInstantLeadRunDetailLedgerItem';
 export * from './adminInstantLeadRunDetailSearch';
 export * from './adminInstantLeadRunDetailSearchActivityItem';
+export * from './adminInstantLeadRunDetailSearchScreening';
+export * from './adminInstantLeadRunDetailSearchScreeningRejectedItem';
 export * from './adminInstantLeadRunList';
 export * from './adminMetricSection';
 export * from './adminMetricSectionRowsItem';

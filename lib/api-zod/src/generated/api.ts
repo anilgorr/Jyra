@@ -1421,7 +1421,14 @@ export const GetAdminInstantLeadRunResponse = zod.object({
   "industries": zod.array(zod.string()),
   "geographies": zod.array(zod.string())
 }),
-  "widened": zod.boolean()
+  "widened": zod.boolean(),
+  "screening": zod.object({
+  "rejectedCount": zod.number(),
+  "rejected": zod.array(zod.object({
+  "domain": zod.string().nullable(),
+  "reason": zod.string()
+}))
+})
 }).nullable(),
   "ledger": zod.array(zod.object({
   "id": zod.string(),

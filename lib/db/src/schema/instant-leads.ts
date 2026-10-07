@@ -34,6 +34,8 @@ export type InstantLeadFilterSnapshot = {
   activity: Array<{ code: string; field: string; type: string; value: unknown }>;
   /** Provider page cursor, so a resumed run continues the same search. */
   cursor?: string | null;
+  /** Candidates turned away at the screen and why (first fifty), for the admin. */
+  screening?: { rejectedCount: number; rejected: Array<{ domain: string | null; reason: string }> };
 };
 
 export const instantLeadRunsTable = pgTable(

@@ -137,6 +137,11 @@ function RunDetail({ runId }: { runId: string }) {
               {search.unmapped.industries.length || search.unmapped.geographies.length ? (
                 <div className="text-xs text-amber-700 dark:text-amber-300">Unmapped — industries: {search.unmapped.industries.join(", ") || "none"}; places: {search.unmapped.geographies.join(", ") || "none"}</div>
               ) : <div className="text-xs text-muted-foreground">Every ICP label mapped to the provider.</div>}
+              {search.screening.rejectedCount ? (
+                <details className="mt-1 text-xs"><summary className="cursor-pointer text-muted-foreground">{search.screening.rejectedCount} turned away at the screen</summary>
+                  <ul className="mt-1 max-h-48 overflow-auto">{search.screening.rejected.map((item, index) => <li key={index}><span className="font-medium">{item.domain ?? "(no domain)"}</span> — {item.reason}</li>)}</ul>
+                </details>
+              ) : null}
               <details className="mt-1 text-xs"><summary className="cursor-pointer text-muted-foreground">Query as sent</summary><pre className="mt-1 max-h-60 overflow-auto rounded bg-muted p-2">{JSON.stringify(search.filters, null, 1)}</pre></details>
             </>
           ) : <div className="text-muted-foreground">Not started</div>}

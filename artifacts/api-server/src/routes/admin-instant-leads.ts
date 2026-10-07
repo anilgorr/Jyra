@@ -223,6 +223,7 @@ router.get("/admin/instant-leads/runs/:runId", requireInternalAdmin, asyncRoute(
     run: runView(row.run, row, contacts.get(row.run.id) ?? { credits: 0, costUsd: 0, revealed: 0 }),
     search: row.run.filters ? {
       filters: row.run.filters.filters, activity: row.run.filters.activity, unmapped: row.run.filters.unmapped, widened: row.run.widened,
+      screening: row.run.filters.screening ?? { rejectedCount: 0, rejected: [] },
     } : null,
     ledger: ledger.map((entry) => ({ id: entry.id, kind: entry.kind, delta: entry.delta, balanceAfter: entry.balanceAfter, description: entry.description, stage: (entry.context as { stage?: string } | null)?.stage ?? null, createdAt: entry.createdAt.toISOString() })),
     leads: leads.map(({ lead, company }) => ({

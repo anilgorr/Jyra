@@ -355,18 +355,20 @@ async function linkCandidates(input: {
   /** What the provider already filtered on: a check that fails only on these is the vocabulary disagreeing, not the company. */
   searched: { countries: Set<string>; industries: Set<string>; headcount: { min: number | null; max: number | null } };
   sellerIndustry: string | null; offeringLabel: string; targetIndustries: string[]; now: Date; log: CycleLogger;
-}): Promise<{ linked: LinkedCandidate[]; rejected: number }> {
+}): Promise<{ linked: LinkedCandidate[]; rejected: number; rejections: Array<{ domain: string | null; reason: string }> }> {
   const linked: LinkedCandidate[] = [];
   let rejected = 0;
+  const rejections: Array<{ domain: string | null; reason: string }> = [];
+  const reject = (domain: string | null, reason: string) => { rejected += 1; rejections.push({ domain, reason }); };
   const within = (value: number | null, range: { min: number | null; max: number | null }) => value !== null && (range.min === null || value >= range.min) && (range.max === null || value <= range.max);
   for (const company of input.companies) {
-    if (!company.domain || !company.name) { rejected += 1; continue; }
+    if (!company.domain || !company.name) { reject(company.domain, !company.domain ? "no website domain in the provider record" : "no name in the provider record"); continue; }
     const normalized = normalizeCompanyInput({
       canonicalName: company.name, domain: company.domain, website: company.website ?? `https://${company.domain}`,
       country: company.country ? countryLabel(company.country) : null, industry: company.industries[0] ?? null,
       employeeCount: company.headcount, description: null,
     });
-    if (!normalized.value) { rejected += 1; continue; }
+    if (!normalized.value) { reject(company.domain, `record could not be normalised: ${normalized.errors.map((item) => (typeof item === "string" ? item : JSON.stringify(item))).join("; ").slice(0, 160)}`); continue; }
     const buyerRole = classifyCandidateBuyerRole({
       name: company.name, industry: company.industries[0] ?? null, description: null,
       offeringLabel: input.offeringLabel, sellerIndustry: input.sellerIndustry, targetIndustries: input.targetIndustries,
@@ -382,7 +384,8 @@ async function linkCandidates(input: {
     };
     const failing = Object.entries(assessment.checks).filter(([, value]) => value === false).map(([key]) => key);
     const forgiven = failing.length > 0 && failing.every((key) => satisfiedBySearch[key]);
-    if ((assessment.classification === "LIKELY_NOT_FIT" && !forgiven) || assessment.buyerRole === "SELLER_COMPETITOR") { rejected += 1; continue; }
+    if (assessment.buyerRole === "SELLER_COMPETITOR") { reject(company.domain, "classified as a competitor of the seller"); continue; }
+    if (assessment.classification === "LIKELY_NOT_FIT" && !forgiven) { reject(company.domain, `ICP screen: ${failing.length ? failing.join(", ") + " did not match" : assessment.missingReasonCode ?? "not a fit"}`); continue; }
     const value = normalized.value;
     try {
       const row = await db.transaction(async (tx) => {
@@ -420,13 +423,13 @@ async function linkCandidates(input: {
         });
         return { projectCompanyId: membership.id, companyId: companyRow.id, domain: company.domain! };
       });
-      if (row) linked.push(row); else rejected += 1;
+      if (row) linked.push(row); else reject(company.domain, "already on this project's board or delivered by an earlier run");
     } catch (error) {
-      rejected += 1;
+      reject(company.domain, `could not be linked: ${(error instanceof Error ? error.message : String(error)).slice(0, 200)}`);
       input.log.warn({ runId: input.run.id, domain: company.domain, err: error }, "INSTANT_LEADS_LINK_FAILED");
     }
   }
-  return { linked, rejected };
+  return { linked, rejected, rejections };
 }
 
 type RankedLead = { projectCompanyId: string; companyId: string; score: number; opportunityState: string | null; why: string[]; signalCodes: string[] };
@@ -663,9 +666,13 @@ export async function executeInstantLeadRun(runId: string, input: InstantLeadRun
       throw new CrustdataError("CRUSTDATA_BAD_REQUEST", "the search kept being refused", false);
     };
 
+    // Why candidates were turned away, for the admin's eye; the first fifty are enough to see a pattern.
+    const rejections: Array<{ domain: string | null; reason: string }> = [...(run.filters?.screening?.rejected ?? [])];
+    let rejectedCount = run.filters?.screening?.rejectedCount ?? 0;
     const snapshot = (): InstantLeadFilterSnapshot => ({
       provider: "crustdata", filters: plan.filters, unmapped: plan.unmapped,
       activity: plan.activity.map(({ code, field, type, value }) => ({ code, field, type, value })), cursor,
+      screening: { rejectedCount, rejected: rejections.slice(0, 50) },
     });
     const freshOnly = (companies: CrustdataCompany[]): CrustdataCompany[] => {
       const seen = new Set<string>();
@@ -698,7 +705,7 @@ export async function executeInstantLeadRun(runId: string, input: InstantLeadRun
 
         // ---- SCREENING ----------------------------------------------
         run = await checkpoint(run.id, { status: "SCREENING", candidatesFound, providerCalls, providerCostUsd, filters: snapshot(), widened }, input.now());
-        const { linked } = await linkCandidates({
+        const { linked, rejections: turnedAway } = await linkCandidates({
           run, companies: page, strategy: discoveryPlan.strategy,
           // Crustdata filters on ISO-3 but returns the normalised full name, so both spellings count as "searched".
           searched: { countries: new Set(plan.resolved.countries.flatMap((iso3) => [iso3, countryLabel(iso3)]).map((value) => value.toLowerCase())), industries: new Set(plan.resolved.industries.map((value) => value.toLowerCase())), headcount: plan.resolved.headcount },
@@ -708,6 +715,9 @@ export async function executeInstantLeadRun(runId: string, input: InstantLeadRun
         });
         for (const candidate of linked) { touched.add(candidate.projectCompanyId); pending.push(candidate.projectCompanyId); }
         candidatesAccepted += linked.length;
+        rejectedCount += turnedAway.length; rejections.push(...turnedAway);
+        if (turnedAway.length) log.info({ runId: run.id, rejected: turnedAway.length, reasons: turnedAway.slice(0, 10) }, "INSTANT_LEADS_SCREENED_OUT");
+        run = await checkpoint(run.id, { filters: snapshot() }, input.now());
       }
 
       // ---- RESEARCHING --------------------------------------------
@@ -765,6 +775,7 @@ export async function executeInstantLeadRun(runId: string, input: InstantLeadRun
     const reason = complete ? ""
       : outOfTime() ? "the run reached its time limit"
       : cycleFailures > 0 && cycleFailures * 2 >= researched ? `research failed for ${cycleFailures} of ${researched} candidates; try again shortly`
+      : candidatesFound > 0 && candidatesAccepted === 0 ? `none of the ${candidatesFound} compan${candidatesFound === 1 ? "y" : "ies"} found passed your ICP screen`
       : exhausted ? `your market had ${delivered} compan${delivered === 1 ? "y" : "ies"} showing intent this week`
       : `${delivered} compan${delivered === 1 ? "y" : "ies"} showed confirmed intent within the search limit`;
     const settled = await settleCredits(run, delivered, now1, complete ? `${delivered} delivered` : reason);

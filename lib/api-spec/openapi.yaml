@@ -3318,7 +3318,7 @@ components:
           type: object
           nullable: true
           additionalProperties: false
-          required: [filters, activity, unmapped, widened]
+          required: [filters, activity, unmapped, widened, screening]
           properties:
             filters: { description: The provider query as sent }
             activity:
@@ -3334,6 +3334,21 @@ components:
                   value: {}
             unmapped: { $ref: "#/components/schemas/InstantLeadUnmapped" }
             widened: { type: boolean }
+            screening:
+              type: object
+              additionalProperties: false
+              required: [rejectedCount, rejected]
+              properties:
+                rejectedCount: { type: number }
+                rejected:
+                  type: array
+                  items:
+                    type: object
+                    additionalProperties: false
+                    required: [domain, reason]
+                    properties:
+                      domain: { type: string, nullable: true }
+                      reason: { type: string }
         ledger:
           type: array
           items:

@@ -161,6 +161,16 @@ export type AdminInstantLeadRunDetailSearchActivityItem = {
   value: unknown;
 };
 
+export type AdminInstantLeadRunDetailSearchScreeningRejectedItem = {
+  domain: string | null;
+  reason: string;
+};
+
+export type AdminInstantLeadRunDetailSearchScreening = {
+  rejectedCount: number;
+  rejected: AdminInstantLeadRunDetailSearchScreeningRejectedItem[];
+};
+
 export interface InstantLeadUnmapped {
   industries: string[];
   geographies: string[];
@@ -172,6 +182,7 @@ export type AdminInstantLeadRunDetailSearch = {
   activity: AdminInstantLeadRunDetailSearchActivityItem[];
   unmapped: InstantLeadUnmapped;
   widened: boolean;
+  screening: AdminInstantLeadRunDetailSearchScreening;
 } | null;
 
 export type AdminInstantLeadRunDetailLedgerItem = {
