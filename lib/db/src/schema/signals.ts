@@ -27,6 +27,26 @@ export const signalPolarityEnum = pgEnum("signal_polarity", ["POSITIVE", "NEGATI
 export const signalDecayRuleEnum = pgEnum("signal_decay_rule", ["LINEAR", "STEP", "NONE"]);
 export const signalStatusEnum = pgEnum("signal_status", ["ACTIVE", "STALE"]);
 
+/** One buying role: a seniority band plus the words a title would carry. */
+export type BuyingRole = {
+  /** Shown to the admin and used in the contact card, e.g. "Marketing leader". */
+  label: string;
+  /** Crustdata seniority levels: CXO, Vice President, Director, Owner / Partner, Manager. */
+  seniorityLevels: string[];
+  /** Crustdata function categories, e.g. Marketing, Sales, Information Technology. Optional. */
+  functionCategories: string[];
+  /** Case-insensitive words/phrases a matching title contains: "cmo", "head of marketing". */
+  titleKeywords: string[];
+};
+
+export type BuyingRoles = {
+  /** In preference order: the first role with a match wins. */
+  roles: BuyingRole[];
+  /** Below this headcount the founder/CEO is the buyer whatever the function. */
+  fallbackUnderHeadcount: number;
+  fallbackTitles: string[];
+};
+
 export const signalPacksTable = pgTable(
   "signal_packs",
   {
@@ -39,6 +59,13 @@ export const signalPacksTable = pgTable(
     status: text("status").notNull().default("APPROVED"),
     applicableContext: jsonb("applicable_context").$type<Record<string, unknown>>().notNull().default({}),
     configuration: jsonb("configuration").$type<Record<string, unknown>>().notNull().default({}),
+    /**
+     * Who buys what this pack's seller sells - the titles a contact reveal
+     * looks for, in preference order, with a founder fallback for companies
+     * too small to have the function. Empty means "not set": the reveal
+     * falls back to the generic executive list and says so.
+     */
+    buyingRoles: jsonb("buying_roles").$type<BuyingRoles>().notNull().default({ roles: [], fallbackUnderHeadcount: 50, fallbackTitles: [] }),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
   },

@@ -4,6 +4,7 @@ import {
   db,
   signalDefinitionsTable,
   signalPacksTable,
+  type BuyingRoles,
   type InsertSignalDefinition,
 } from "@workspace/db";
 
@@ -32,7 +33,58 @@ type PackFixture = {
   version: string;
   applicableContext: Record<string, unknown>;
   definitions: FixtureDefinition[];
+  /** Who buys this seller's offering; what a contact reveal looks for. */
+  buyingRoles: BuyingRoles;
 };
+
+/*
+ * Buying roles per pack - the person a contact reveal goes looking for.
+ *
+ * Preference order matters: the first role with a match at the company wins.
+ * Seniority levels and function categories are Crustdata's fixed vocabulary;
+ * title keywords are matched case-insensitively as whole words or phrases
+ * against the person's current title. Companies under the headcount
+ * threshold rarely have the function at all, so there the founder is the
+ * buyer whatever the pack says.
+ */
+const FOUNDER_TITLES = ["founder", "co-founder", "ceo", "managing director", "owner", "managing partner"];
+
+const buyingRoles = (roles: BuyingRoles["roles"], fallbackUnderHeadcount = 50): BuyingRoles =>
+  ({ roles, fallbackUnderHeadcount, fallbackTitles: FOUNDER_TITLES });
+
+const MARKETING_BUYERS = buyingRoles([
+  { label: "Marketing leader", seniorityLevels: ["CXO", "Vice President", "Director"], functionCategories: ["Marketing"], titleKeywords: ["cmo", "chief marketing", "head of marketing", "vp marketing", "vice president marketing", "marketing director", "director of marketing", "head of growth", "vp growth", "chief growth", "head of brand", "brand director"] },
+  { label: "Marketing manager", seniorityLevels: ["Manager"], functionCategories: ["Marketing"], titleKeywords: ["marketing manager", "growth manager", "brand manager", "demand generation"] },
+  { label: "Founder", seniorityLevels: ["CXO", "Owner / Partner"], functionCategories: [], titleKeywords: FOUNDER_TITLES },
+]);
+
+const REVENUE_BUYERS = buyingRoles([
+  { label: "Revenue leader", seniorityLevels: ["CXO", "Vice President", "Director"], functionCategories: ["Sales", "Business Development"], titleKeywords: ["cro", "chief revenue", "vp sales", "vice president sales", "head of sales", "sales director", "director of sales", "head of revenue", "revenue operations", "revops", "head of business development"] },
+  { label: "Sales operations", seniorityLevels: ["Director", "Manager"], functionCategories: ["Sales", "Operations"], titleKeywords: ["sales operations", "sales ops", "revenue operations", "gtm operations"] },
+  { label: "Founder", seniorityLevels: ["CXO", "Owner / Partner"], functionCategories: [], titleKeywords: FOUNDER_TITLES },
+]);
+
+const SECURITY_BUYERS = buyingRoles([
+  { label: "Security leader", seniorityLevels: ["CXO", "Vice President", "Director"], functionCategories: ["Information Technology", "Engineering"], titleKeywords: ["ciso", "chief information security", "head of security", "vp security", "director of security", "security director", "information security"] },
+  { label: "Technology leader", seniorityLevels: ["CXO", "Vice President", "Director"], functionCategories: ["Information Technology", "Engineering"], titleKeywords: ["cto", "cio", "chief technology", "chief information", "head of it", "it director", "vp engineering", "head of engineering", "head of infrastructure"] },
+  { label: "Founder", seniorityLevels: ["CXO", "Owner / Partner"], functionCategories: [], titleKeywords: FOUNDER_TITLES },
+], 100);
+
+const PEOPLE_BUYERS = buyingRoles([
+  { label: "People leader", seniorityLevels: ["CXO", "Vice President", "Director"], functionCategories: ["Human Resources"], titleKeywords: ["chro", "chief people", "head of people", "vp people", "head of hr", "hr director", "head of talent", "talent acquisition", "director of talent", "vp talent"] },
+  { label: "Founder", seniorityLevels: ["CXO", "Owner / Partner"], functionCategories: [], titleKeywords: FOUNDER_TITLES },
+]);
+
+const FACILITIES_BUYERS = buyingRoles([
+  { label: "Operations leader", seniorityLevels: ["CXO", "Vice President", "Director"], functionCategories: ["Operations"], titleKeywords: ["coo", "chief operating", "head of operations", "vp operations", "operations director", "head of facilities", "facilities director", "facilities manager", "plant head", "plant manager", "head of sustainability", "sustainability"] },
+  { label: "Founder", seniorityLevels: ["CXO", "Owner / Partner"], functionCategories: [], titleKeywords: FOUNDER_TITLES },
+], 100);
+
+const FINANCE_SYSTEMS_BUYERS = buyingRoles([
+  { label: "Finance leader", seniorityLevels: ["CXO", "Vice President", "Director"], functionCategories: ["Finance"], titleKeywords: ["cfo", "chief financial", "finance director", "head of finance", "vp finance", "financial controller", "controller"] },
+  { label: "Business systems leader", seniorityLevels: ["CXO", "Vice President", "Director", "Manager"], functionCategories: ["Information Technology", "Operations"], titleKeywords: ["coo", "cio", "head of business systems", "erp", "enterprise applications", "head of it", "it director", "digital transformation"] },
+  { label: "Founder", seniorityLevels: ["CXO", "Owner / Partner"], functionCategories: [], titleKeywords: FOUNDER_TITLES },
+], 100);
 
 const definition = (
   code: string,
@@ -263,6 +315,7 @@ export const SIGNAL_PACK_FIXTURES: PackFixture[] = [
   {
     reconcile: true,
     slug: "b2b-saas-revenue-tools",
+    buyingRoles: REVENUE_BUYERS,
     name: "B2B SaaS revenue tooling",
     description: "Sales intelligence and engagement sold to B2B SaaS revenue teams: funding and revenue-leadership change over routine hiring, with layoffs discounted rather than disqualifying.",
     version: "1.0",
@@ -271,6 +324,7 @@ export const SIGNAL_PACK_FIXTURES: PackFixture[] = [
   },
   {
     slug: "cybersecurity",
+    buyingRoles: SECURITY_BUYERS,
     name: "Cybersecurity sample",
     description: "Optional source-grounded cybersecurity leadership, hiring, risk, and growth intelligence.",
     version: "1.0",
@@ -279,6 +333,7 @@ export const SIGNAL_PACK_FIXTURES: PackFixture[] = [
   },
   {
     slug: "managed-soc",
+    buyingRoles: SECURITY_BUYERS,
     name: "Managed SOC provider",
     description: "Synthetic managed security operations selling context used to validate the generic engine.",
     version: "1.0",
@@ -293,6 +348,7 @@ export const SIGNAL_PACK_FIXTURES: PackFixture[] = [
   },
   {
     slug: "executive-recruitment",
+    buyingRoles: PEOPLE_BUYERS,
     name: "Executive recruitment",
     description: "Synthetic executive-search context interpreting organizational change as hiring demand.",
     version: "1.0",
@@ -307,6 +363,7 @@ export const SIGNAL_PACK_FIXTURES: PackFixture[] = [
   },
   {
     slug: "commercial-solar",
+    buyingRoles: FACILITIES_BUYERS,
     name: "Commercial solar installation",
     description: "Synthetic commercial solar context focused on facilities, expansion, and energy constraints.",
     version: "1.0",
@@ -321,6 +378,7 @@ export const SIGNAL_PACK_FIXTURES: PackFixture[] = [
   },
   {
     slug: "digital-marketing",
+    buyingRoles: MARKETING_BUYERS,
     name: "Digital marketing agency",
     description: "Synthetic growth-marketing context focused on customer acquisition and martech change.",
     version: "1.0",
@@ -349,6 +407,7 @@ export const SIGNAL_PACK_FIXTURES: PackFixture[] = [
   },
   {
     slug: "erp-implementation",
+    buyingRoles: FINANCE_SYSTEMS_BUYERS,
     name: "ERP implementation consultancy",
     description: "Synthetic ERP implementation context focused on transformation, finance operations, growth, and platform replacement.",
     version: "1.0",
@@ -492,10 +551,16 @@ export async function ensureSignalPackFixtures() {
         active: true,
         status: "APPROVED",
         applicableContext: fixture.applicableContext,
+        buyingRoles: fixture.buyingRoles,
       }).onConflictDoNothing().returning();
       if (!pack) [pack] = await db.select().from(signalPacksTable).where(eq(signalPacksTable.slug, fixture.slug)).limit(1);
     }
     if (!pack) throw new Error(`Signal pack ${fixture.slug} could not be initialized`);
+    // Packs that existed before buying roles did get the fixture's defaults
+    // once; an admin's later edit (any non-empty role list) is left alone.
+    if (!pack.buyingRoles?.roles?.length) {
+      await db.update(signalPacksTable).set({ buyingRoles: fixture.buyingRoles, updatedAt: new Date() }).where(eq(signalPacksTable.id, pack.id));
+    }
     for (const item of fixture.definitions) {
       const configuration = {
         mode: item.mode,

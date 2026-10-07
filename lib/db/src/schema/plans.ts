@@ -33,6 +33,15 @@ export const plansTable = pgTable(
      * `credits.ts` for why credits, and `plans.ts` in the API for the tiers.
      */
     creditsPerMonth: integer("credits_per_month").notNull().default(0),
+    /**
+     * What an Instant Leads request costs, per lead delivered, and what a
+     * contact reveal costs. Credits, not currency: the customer sees these
+     * numbers. Overridable per organisation like the pools. Added 7 Oct 2026
+     * with the first priced action; until then no action debited anything.
+     */
+    creditsPerInstantLead: integer("credits_per_instant_lead").notNull().default(30),
+    creditsPerContactVerified: integer("credits_per_contact_verified").notNull().default(20),
+    creditsPerContactCatchAll: integer("credits_per_contact_catch_all").notNull().default(10),
     priceInr: integer("price_inr").notNull(),
     priceUsd: integer("price_usd").notNull(),
     /** Ordering on the pricing page; also which plan is "bigger" in a message. */
@@ -75,6 +84,9 @@ export type PlanOverrides = {
   intentAccountsPerMonth?: number;
   senderSeats?: number;
   creditsPerMonth?: number;
+  creditsPerInstantLead?: number;
+  creditsPerContactVerified?: number;
+  creditsPerContactCatchAll?: number;
 };
 
 export type Plan = typeof plansTable.$inferSelect;

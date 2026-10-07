@@ -45,6 +45,9 @@ export const PLAN_TIERS = [
 
 export type PlanCode = (typeof PLAN_TIERS)[number]["code"];
 
+/** Instant Leads prices when the catalogue has not been seeded. The database column defaults say the same. */
+export const DEFAULT_CREDIT_PRICES = { creditsPerInstantLead: 30, creditsPerContactVerified: 20, creditsPerContactCatchAll: 10 } as const;
+
 /**
  * The plan an organisation falls back to when nobody has assigned one.
  * Starter by default: a new organisation should meet the limit early and
@@ -81,6 +84,14 @@ export type ResolvedPlan = {
   senderSeats: number;
   /** The monthly credit allowance. Overridable per organisation like the pools. */
   creditsPerMonth: number;
+  /**
+   * Instant Leads prices, in credits. Catalogue values are edited on the
+   * admin page (deliberately NOT re-seeded at boot, unlike the limits), and
+   * overridable per organisation like everything else.
+   */
+  creditsPerInstantLead: number;
+  creditsPerContactVerified: number;
+  creditsPerContactCatchAll: number;
   priceInr: number;
   priceUsd: number;
   /** Was this plan assigned to the organisation, or is it the fallback? */
@@ -102,6 +113,9 @@ const applyOverrides = (plan: Plan, overrides: PlanOverrides, assigned: boolean)
     watchPoolSize: pick("watchPoolSize", plan.watchPoolSize),
     senderSeats: pick("senderSeats", plan.senderSeats),
     creditsPerMonth: pick("creditsPerMonth", plan.creditsPerMonth),
+    creditsPerInstantLead: pick("creditsPerInstantLead", plan.creditsPerInstantLead),
+    creditsPerContactVerified: pick("creditsPerContactVerified", plan.creditsPerContactVerified),
+    creditsPerContactCatchAll: pick("creditsPerContactCatchAll", plan.creditsPerContactCatchAll),
     priceInr: plan.priceInr, priceUsd: plan.priceUsd,
     assigned, overridden,
   };
@@ -121,7 +135,7 @@ export async function resolveOrganizationPlan(organizationId: string): Promise<R
   // than to no limit at all — an unbounded pool is how a free trial becomes a
   // bill nobody agreed to.
   const tier = PLAN_TIERS.find((entry) => entry.code === defaultPlanCode()) ?? PLAN_TIERS[0];
-  return { ...tier, assigned: false, overridden: [] };
+  return { ...tier, ...DEFAULT_CREDIT_PRICES, assigned: false, overridden: [] };
 }
 
 async function countByStatus(
