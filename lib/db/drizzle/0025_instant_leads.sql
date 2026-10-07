@@ -96,6 +96,6 @@ CREATE INDEX "instant_lead_runs_status_idx" ON "instant_lead_runs" USING btree (
 INSERT INTO "data_providers" ("name", "provider_type", "enabled", "priority", "estimated_cost", "success_rate", "average_latency", "quality_score", "configuration")
 VALUES (
   'Crustdata', 'crustdata', true, 20, 0.005, 0, 0, 0.9,
-  '{"routingRole":"ON_DEMAND","onDemandCapabilities":["COMPANY_DISCOVERY","PERSON_LOOKUP"],"apiBaseUrl":"https://api.crustdata.com","apiVersion":"2025-11-01","usdPerCredit":0.1,"timeoutMs":30000,"searchCreditsPerResult":0.03,"personEnrichCreditsBase":1,"personEnrichCreditsBusinessEmail":1}'::jsonb
+  '{"routingRole":"ON_DEMAND","onDemandCapabilities":["COMPANY_DISCOVERY","PERSON_LOOKUP"],"apiBaseUrl":"https://api.crustdata.com","apiVersion":"2025-11-01","usdPerCredit":0.1,"timeoutMs":30000,"searchCreditsPerResult":0.03,"personEnrichCreditsBase":1,"personEnrichCreditsBusinessEmail":0.5}'::jsonb
 )
 ON CONFLICT ("name") DO NOTHING;
