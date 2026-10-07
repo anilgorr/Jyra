@@ -372,4 +372,33 @@ const noCurrency = (value) => { const text = JSON.stringify(value); assert.ok(!/
   assert.equal(why.at(-1), "Worth knowing: Workforce reduction");
 }
 
+// 11. The provider refuses a field by name (the first live response did: "Invalid fields: basic_info.industries"):
+//     the field is dropped from the request and the search retried, not failed.
+{
+  const db = world({ balance: 500 });
+  const market = [1, 2, 3, 4, 5].map((n) => company(n));
+  const client = fakeClient([market], { failOn: { call: 1, code: "CRUSTDATA_BAD_REQUEST", message: 'HTTP 400: {"error":{"type":"invalid_request","message":"Invalid fields: basic_info.year_founded. Did you mean basic_info.name?"}}' } });
+  const cycle = fakeCycle(db, { intent: (domain) => (domain === "company2.com" ? 80 : null) });
+  const { run } = await m.createInstantLeadRun({ project: project(), userId: USER, requested: 1, now: now() });
+  const finished = await m.executeInstantLeadRun(run.id, deps(db, client, cycle));
+  assert.equal(finished.status, "DONE", finished.outcomeNote);
+  assert.equal(client.calls.length, 2, "refused once, retried once");
+  assert.ok(client.calls[0].fields.includes("basic_info.year_founded"));
+  assert.ok(!client.calls[1].fields.includes("basic_info.year_founded"), "the refused field is gone from the retry");
+  assert.ok(client.calls[1].fields.includes("basic_info.name"), "a field merely mentioned in the suggestion is kept");
+  assert.equal(finished.delivered, 1);
+}
+
+// 12. A provider failure keeps the provider's own words for the admin and plain words for the customer.
+{
+  const db = world({ balance: 500 });
+  const client = fakeClient([[company(1)]], { failOn: { call: 1, code: "CRUSTDATA_HTTP", message: "HTTP 502: upstream exploded" } });
+  const { run } = await m.createInstantLeadRun({ project: project(), userId: USER, requested: 1, now: now() });
+  const finished = await m.executeInstantLeadRun(run.id, deps(db, client, fakeCycle(db, { intent: () => null })));
+  assert.equal(finished.status, "FAILED");
+  assert.match(finished.errorMessage, /upstream exploded/, "the admin sees the detail");
+  assert.doesNotMatch(finished.outcomeNote, /upstream|502/, "the customer does not");
+  assert.doesNotMatch(JSON.stringify(m.serializeRun(finished)), /upstream|502/, "and the customer view cannot carry it");
+}
+
 console.log("instant-leads run: all scenarios passed");

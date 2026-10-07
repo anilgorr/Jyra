@@ -158,12 +158,16 @@ const str = (value: unknown): string | null => (typeof value === "string" && val
 const num = (value: unknown): number | null => (typeof value === "number" && Number.isFinite(value) ? value : null);
 const strs = (value: unknown): string[] => (Array.isArray(value) ? value.filter((item): item is string => typeof item === "string") : []);
 
+/**
+ * What a search returns per company. Only free sections: `basic_info` and
+ * `locations`. Every premium group received (taxonomy 0.1, headcount,
+ * funding, hiring 0.2 each) is billed per result on top of the 0.03 base, so
+ * the search finds; research — which the run does anyway — describes.
+ * `basic_info.industries` is filter-only: in `fields` it is a 400.
+ */
 export const COMPANY_FIELDS = [
-  "basic_info.name", "basic_info.primary_domain", "basic_info.website", "basic_info.industries", "basic_info.employee_count_range",
-  "headcount.total", "headcount.growth_percent.3m", "headcount.growth_percent.6m",
+  "basic_info.name", "basic_info.primary_domain", "basic_info.website", "basic_info.employee_count_range", "basic_info.year_founded",
   "locations.country", "locations.city", "locations.headquarters",
-  "funding.last_fundraise_date", "funding.last_round_type", "funding.total_investment_usd",
-  "taxonomy.professional_network_industry",
 ];
 
 export const PERSON_FIELDS = [
@@ -173,6 +177,14 @@ export const PERSON_FIELDS = [
   "social_handles.professional_network_identifier.profile_url", "contact.has_business_email",
 ];
 
+/** "51-200" → 51, "10001+" → 10001, "myself only" → 1: the lower edge of an employee-count bucket. */
+export function rangeFloor(label: string | null): number | null {
+  if (!label) return null;
+  if (/myself/i.test(label)) return 1;
+  const match = label.match(/^(\d+)/);
+  return match ? Number(match[1]) : null;
+}
+
 export function parseCompany(raw: Record<string, unknown>): CrustdataCompany {
   const domain = str(get(raw, "basic_info.primary_domain"));
   return {
@@ -180,12 +192,12 @@ export function parseCompany(raw: Record<string, unknown>): CrustdataCompany {
     name: str(get(raw, "basic_info.name")),
     domain: domain ? domain.toLowerCase().replace(/^www\./, "") : null,
     website: str(get(raw, "basic_info.website")),
-    headcount: num(get(raw, "headcount.total")),
+    headcount: num(get(raw, "headcount.total")) ?? rangeFloor(str(get(raw, "basic_info.employee_count_range"))),
     headcountGrowth6m: num(get(raw, "headcount.growth_percent.6m")),
     headcountGrowth3m: num(get(raw, "headcount.growth_percent.3m")),
     country: str(get(raw, "locations.country")),
     city: str(get(raw, "locations.city")),
-    industries: [...new Set([...strs(get(raw, "basic_info.industries")), ...(str(get(raw, "taxonomy.professional_network_industry")) ? [str(get(raw, "taxonomy.professional_network_industry"))!] : [])])],
+    industries: [...new Set([...strs(get(raw, "basic_info.industries")), ...strs(get(raw, "taxonomy.professional_network_industries")), ...(str(get(raw, "taxonomy.professional_network_industry")) ? [str(get(raw, "taxonomy.professional_network_industry"))!] : [])])],
     lastFundraiseDate: str(get(raw, "funding.last_fundraise_date")),
     lastRoundType: str(get(raw, "funding.last_round_type")),
     totalInvestmentUsd: num(get(raw, "funding.total_investment_usd")),
@@ -247,8 +259,8 @@ export function createCrustdataClient(options: CrustdataClientOptions) {
         : response.status === 429 ? "CRUSTDATA_RATE_LIMITED"
         : response.status === 400 || response.status === 422 ? "CRUSTDATA_BAD_REQUEST"
         : "CRUSTDATA_HTTP";
-      await recordSpend({ organizationId: scope.organizationId, projectId: scope.projectId, kind: "PROVIDER", source: "Crustdata", capability, outcome: "failed", costUsd: 0, requestId, occurredAt, metadata: { path, status: response.status, body: text.slice(0, 500), ...scope.metadata } });
-      throw new CrustdataError(code, `HTTP ${response.status}: ${text.slice(0, 300)}`, code === "CRUSTDATA_RATE_LIMITED" || response.status >= 500, response.status);
+      await recordSpend({ organizationId: scope.organizationId, projectId: scope.projectId, kind: "PROVIDER", source: "Crustdata", capability, outcome: "failed", costUsd: 0, requestId, occurredAt, metadata: { path, status: response.status, body: text.slice(0, 1500), ...scope.metadata } });
+      throw new CrustdataError(code, `HTTP ${response.status}: ${text.slice(0, 600)}`, code === "CRUSTDATA_RATE_LIMITED" || response.status >= 500, response.status);
     }
     let json: Record<string, unknown>;
     try {

@@ -35,7 +35,7 @@ import { researchBlockers, resolveProjectSellerContext } from "../seller-context
 import { loadProjectCompany, runIntelligenceCycle, SellerContextIncompleteError, type CycleLogger } from "../intelligence-v2/run-cycle";
 import type { IntelligenceV2Repository } from "../intelligence-v2/orchestrator";
 import { classifyCycleFailure, watchLoopHalt } from "../intelligence-v2/watch-loop";
-import { createCrustdataClient, crustdataConfiguration, crustdataFailureMessage, CrustdataError, type CrustdataClient, type CrustdataCompany } from "./crustdata-client";
+import { COMPANY_FIELDS, createCrustdataClient, crustdataConfiguration, crustdataFailureMessage, CrustdataError, type CrustdataClient, type CrustdataCompany } from "./crustdata-client";
 import { buildInstantLeadFilters, describeFilterPlan, widenInstantLeadFilters, withoutField, type InstantLeadFilterPlan } from "./filters";
 import { countryLabel } from "./geography";
 
@@ -375,8 +375,9 @@ async function linkCandidates(input: {
     // The ICP screen speaks the customer's words ("Middle East", "Fintech"); the provider spoke ISO codes and
     // LinkedIn industries. A check that fails only where the search already filtered is forgiven.
     const satisfiedBySearch: Record<string, boolean> = {
-      geography: Boolean(company.country && input.searched.countries.has(company.country)),
-      industry: company.industries.some((industry) => input.searched.industries.has(industry)),
+      geography: Boolean(company.country && input.searched.countries.has(company.country.toLowerCase())),
+      // Industries are not in the free response; a company the industry filter returned satisfied it by definition.
+      industry: company.industries.length === 0 ? input.searched.industries.size > 0 : company.industries.some((industry) => input.searched.industries.has(industry.toLowerCase())),
       employeeRange: within(company.headcount, input.searched.headcount),
     };
     const failing = Object.entries(assessment.checks).filter(([, value]) => value === false).map(([key]) => key);
@@ -578,15 +579,16 @@ export async function executeInstantLeadRun(runId: string, input: InstantLeadRun
   const outOfTime = () => elapsed() > input.maxDurationMs;
 
   /** Whatever was confirmed before a stop is still delivered and still paid for; the rest of the hold is released. */
-  async function stop(current: InstantLeadRun, status: "FAILED" | "CANCELLED", code: string | null, message: string, now: Date): Promise<InstantLeadRun> {
-    log.warn({ runId: current.id, status, code, message }, status === "FAILED" ? "INSTANT_LEADS_RUN_FAILED" : "INSTANT_LEADS_RUN_CANCELLED");
+  async function stop(current: InstantLeadRun, status: "FAILED" | "CANCELLED", code: string | null, message: string, now: Date, detail: string = message): Promise<InstantLeadRun> {
+    log.warn({ runId: current.id, status, code, message, detail: detail.slice(0, 600) }, status === "FAILED" ? "INSTANT_LEADS_RUN_FAILED" : "INSTANT_LEADS_RUN_CANCELLED");
     const ranked = await rankCandidates({ run: current, projectCompanyIds: [...touched], limit: current.requested, now }).catch(() => [] as RankedLead[]);
     const delivered = await writeLeads(current, ranked, now);
     const settled = await settleCredits(current, delivered, now, delivered ? `${delivered} delivered before the run stopped` : "the run stopped before delivering anything");
     const researchCostUsd = await researchCostSince(current, [...touched], current.startedAt ?? startedAt).catch(() => current.researchCostUsd);
     const stopped = status === "CANCELLED" ? "You cancelled the run" : `The run stopped early (${message})`;
     return patchRun(current.id, {
-      status, errorCode: code, errorMessage: message.slice(0, 500), finishedAt: now, delivered, confirmed: delivered, etaSeconds: 0,
+      // errorMessage is the provider's own words, for the admin page; the customer reads outcomeNote.
+      status, errorCode: code, errorMessage: detail.slice(0, 1000), finishedAt: now, delivered, confirmed: delivered, etaSeconds: 0,
       researched, providerCalls, providerCostUsd, researchCostUsd, pendingProjectCompanyIds: [], touchedProjectCompanyIds: [...touched],
       outcomeNote: delivered
         ? `${stopped}. ${delivered} lead${delivered === 1 ? "" : "s"} confirmed before that ${delivered === 1 ? "is" : "are"} shown; ${settled.settled} credits charged, ${settled.released} released.`
@@ -594,7 +596,7 @@ export async function executeInstantLeadRun(runId: string, input: InstantLeadRun
         : `The run could not complete: ${message}. All ${settled.released} credits were released.`,
     }, now);
   }
-  const fail = (current: InstantLeadRun, code: string, message: string, now: Date) => stop(current, "FAILED", code, message, now);
+  const fail = (current: InstantLeadRun, code: string, message: string, now: Date, detail?: string) => stop(current, "FAILED", code, message, now, detail);
 
   const [project] = await db.select().from(projectsTable).where(eq(projectsTable.id, run.projectId)).limit(1);
   if (!project) return fail(run, "BAD_REQUEST", "Project not found", input.now());
@@ -629,19 +631,31 @@ export async function executeInstantLeadRun(runId: string, input: InstantLeadRun
     let candidatesFound = run.candidatesFound;
     let candidatesAccepted = run.candidatesAccepted;
 
+    let fields = [...COMPANY_FIELDS];
     const fetchPage = async (): Promise<CrustdataCompany[]> => {
       const pageSize = Math.min(input.batchSize, Math.max(10, targetCandidates - candidatesFound));
       for (let attempt = 0; attempt < 4; attempt += 1) {
         try {
-          const page = await input.client.searchCompanies({ filters: plan.filters, limit: pageSize, sorts: plan.sorts, cursor }, scope);
+          const page = await input.client.searchCompanies({ filters: plan.filters, limit: pageSize, sorts: plan.sorts, fields, cursor }, scope);
           providerCalls += 1; providerCostUsd += page.costUsd;
           cursor = page.nextCursor;
           return page.items;
         } catch (error) {
-          // A field the provider refuses is dropped and the search retried; anything else is the run's failure.
+          // A field the provider refuses - in the filters or in the fields asked for - is dropped and the search
+          // retried; anything else is the run's failure.
           if (error instanceof CrustdataError && error.code === "CRUSTDATA_BAD_REQUEST") {
-            const refused = plan.activity.map((item) => item.field).concat(plan.firmographic.map((item) => ("field" in item ? item.field : ""))).find((field) => field && error.message.includes(field));
-            if (refused) { log.warn({ runId: run!.id, field: refused }, "INSTANT_LEADS_FIELD_REFUSED"); plan = withoutField(plan, refused); continue; }
+            // "Invalid fields: basic_info.industries. Did you mean 'basic_info.name'?" - the refused one is named first;
+            // the suggestions after it must not be mistaken for it.
+            const explicit = /invalid (?:fields?|filters?)[^:]*:\s*([a-z0-9_.]+?)\.?(?:[\s,'"]|$)/i.exec(error.message)?.[1] ?? null;
+            const named = (field: string) => Boolean(field) && (field === explicit || (!explicit && new RegExp(`(^|[^a-z0-9_.])${field.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?![a-z0-9_]|\.[a-z0-9_])`, "i").test(error.message)));
+            const refusedField = fields.find(named);
+            const refusedFilter = plan.activity.map((item) => item.field).concat(plan.firmographic.map((item) => ("field" in item ? item.field : ""))).find(named);
+            if (refusedField || refusedFilter) {
+              log.warn({ runId: run!.id, field: refusedField ?? refusedFilter, detail: error.message.slice(0, 300) }, "INSTANT_LEADS_FIELD_REFUSED");
+              if (refusedField) fields = fields.filter((field) => field !== refusedField);
+              if (refusedFilter) plan = withoutField(plan, refusedFilter);
+              continue;
+            }
           }
           throw error;
         }
@@ -686,7 +700,8 @@ export async function executeInstantLeadRun(runId: string, input: InstantLeadRun
         run = await checkpoint(run.id, { status: "SCREENING", candidatesFound, providerCalls, providerCostUsd, filters: snapshot(), widened }, input.now());
         const { linked } = await linkCandidates({
           run, companies: page, strategy: discoveryPlan.strategy,
-          searched: { countries: new Set(plan.resolved.countries), industries: new Set(plan.resolved.industries), headcount: plan.resolved.headcount },
+          // Crustdata filters on ISO-3 but returns the normalised full name, so both spellings count as "searched".
+          searched: { countries: new Set(plan.resolved.countries.flatMap((iso3) => [iso3, countryLabel(iso3)]).map((value) => value.toLowerCase())), industries: new Set(plan.resolved.industries.map((value) => value.toLowerCase())), headcount: plan.resolved.headcount },
           sellerIndustry: (seller.businessTwinRawAnswers as Record<string, unknown> | null)?.industry as string | null ?? null,
           offeringLabel: seller.context.offeringName ?? "", targetIndustries: discoveryPlan.strategy.targetIndustries ?? [],
           now: input.now(), log,
@@ -768,8 +783,9 @@ export async function executeInstantLeadRun(runId: string, input: InstantLeadRun
       return stop(current ?? run, "CANCELLED", null, "cancelled", now);
     }
     const message = error instanceof CrustdataError ? crustdataFailureMessage(error) : error instanceof Error ? error.message : String(error);
+    const detail = error instanceof Error ? error.message : String(error);
     const code = error instanceof CrustdataError ? error.code : "RUN_ERROR";
-    return fail(run, code, message, now);
+    return fail(run, code, message, now, detail);
   }
 }
 

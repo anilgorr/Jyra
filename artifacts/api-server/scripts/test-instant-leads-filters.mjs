@@ -38,11 +38,18 @@ const marketingPack = [
   assert.deepEqual(plan.unmapped, { industries: [], geographies: [] });
   assert.ok(plan.resolved.industries.length >= 13, "13 labels become at least 13 provider names");
   const fields = plan.firmographic.map((c) => c.field);
-  assert.deepEqual(fields, ["headcount.total", "headcount.total", "locations.country", "basic_info.industries"]);
+  // Size is the free `employee_count_range` buckets, never the premium `headcount.total` (billed per result, bucket edges only).
+  assert.deepEqual(fields, ["basic_info.employee_count_range", "locations.country", "basic_info.industries"]);
+  assert.deepEqual(plan.firmographic[0].value, ["2-10", "11-50", "51-200"], "10–200 overlaps three buckets");
+  assert.deepEqual(m.headcountBucketsFor(500, null), ["201-500", "501-1000", "1001-5000", "5001-10000", "10001+"]);
+  assert.deepEqual(m.headcountBucketsFor(null, null), []);
+  assert.equal(m.headcountFromRange("51-200"), 51);
+  assert.equal(m.headcountFromRange("myself only"), 1);
 
   const byCode = Object.fromEntries(plan.activity.map((a) => [a.code, a]));
-  assert.equal(byCode.MARKETING_TEAM_GROWTH.field, "roles.growth_6m.marketing", "a HIRING rule with marketing words becomes marketing role growth");
-  assert.equal(byCode.GO_TO_MARKET_EXPANSION.field, "roles.growth_6m.sales");
+  assert.equal(byCode.MARKETING_TEAM_GROWTH.field, "roles.growth_yoy.marketing", "a HIRING rule with marketing words becomes marketing role growth (the documented per-function path)");
+  assert.equal(byCode.MARKETING_TEAM_GROWTH.type, "=>", "Crustdata spells >= as =>");
+  assert.equal(byCode.GO_TO_MARKET_EXPANSION.field, "roles.growth_yoy.sales");
   assert.equal(byCode.MARKETING_GROWTH_FUNDING.field, "funding.last_fundraise_date");
   assert.equal(byCode.MARKETING_GROWTH_FUNDING.value, "2026-04-10", "a round within the rule's 180-day lifetime");
   assert.equal(byCode.MARKETING_NEW_CMO.field, "headcount.growth_percent.3m", "leadership has no filter; a growth proxy stands in");
@@ -53,7 +60,7 @@ const marketingPack = [
   assert.equal(plan.filters.op, "and");
   const orGroup = plan.filters.conditions.find((c) => c.op === "or");
   assert.ok(orGroup && orGroup.conditions.length === 4, "activity is one OR group of four");
-  assert.deepEqual(plan.sorts, [{ field: "headcount.growth_percent.6m", order: "desc" }]);
+  assert.deepEqual(plan.sorts, [{ field: "headcount.total", order: "desc" }], "growth is not sortable; a stable, free sort for pagination");
 
   const words = m.describeFilterPlan(plan, { country: m.countryLabel });
   assert.equal(words[0], "10–200 employees");
@@ -82,8 +89,8 @@ const marketingPack = [
   assert.equal(wide.activity.find((a) => a.code === "MARKETING_NEW_CMO").value, 0);
   assert.ok(wide.firmographic.every((c) => c.field !== "locations.city"));
   assert.deepEqual(wide.firmographic.find((c) => c.field === "locations.country").value, plan.firmographic.find((c) => c.field === "locations.country").value, "countries unchanged");
-  const without = m.withoutField(plan, "roles.growth_6m.marketing");
-  assert.ok(without.activity.every((a) => a.field !== "roles.growth_6m.marketing"));
+  const without = m.withoutField(plan, "roles.growth_yoy.marketing");
+  assert.ok(without.activity.every((a) => a.field !== "roles.growth_yoy.marketing"));
   assert.ok(without.skippedDefinitions.some((s) => s.code === "MARKETING_TEAM_GROWTH" && /refused/.test(s.reason)));
   assert.equal(without.activity.length, plan.activity.length - 1);
 }
@@ -128,6 +135,11 @@ const marketingPack = [
   assert.equal(companies.items[0].headcountGrowth6m, 18.2);
   assert.equal(companies.items[0].lastRoundType, "series_a");
   assert.equal(companies.items[1].domain, null);
+  // The free response carries no headcount total; the bucket's lower edge stands in, and no premium section is asked for.
+  assert.equal(m.parseCompany({ basic_info: { name: "X", primary_domain: "x.com", employee_count_range: "51-200" }, locations: { country: "United Arab Emirates" } }).headcount, 51);
+  assert.equal(m.rangeFloor("10001+"), 10001);
+  assert.ok(m.COMPANY_FIELDS.every((field) => field.startsWith("basic_info.") || field.startsWith("locations.")), `only free sections are requested: ${m.COMPANY_FIELDS}`);
+  assert.ok(!m.COMPANY_FIELDS.includes("basic_info.industries"), "filter-only field never requested");
   assert.equal(companies.creditsUsed, 0.06, "0.03 a result, two results");
   assert.equal(calls[0].headers["x-api-version"], "2025-11-01");
   assert.equal(calls[0].headers.Authorization, "Bearer k");

@@ -1,4 +1,5 @@
 import { all, any, condition, type CrustdataFilter } from "./crustdata-client";
+import { CRUSTDATA_HEADCOUNT_RANGES } from "./crustdata-vocabulary";
 import { resolveGeography } from "./geography";
 import { resolveIndustries } from "./industries";
 
@@ -101,6 +102,26 @@ const listValue = (value: unknown): string[] =>
  * decides. TECHNOLOGY/COMPLIANCE/CUSTOMER/NEGATIVE: nothing Crustdata can
  * filter on; skipped and reported.
  */
+/** The employee-count buckets Crustdata indexes, with their numeric edges. "myself only" is 1. */
+const HEADCOUNT_BUCKET_EDGES: Array<{ label: (typeof CRUSTDATA_HEADCOUNT_RANGES)[number]; min: number; max: number }> = [
+  { label: "myself only", min: 1, max: 1 }, { label: "2-10", min: 2, max: 10 }, { label: "11-50", min: 11, max: 50 }, { label: "51-200", min: 51, max: 200 },
+  { label: "201-500", min: 201, max: 500 }, { label: "501-1000", min: 501, max: 1000 }, { label: "1001-5000", min: 1001, max: 5000 },
+  { label: "5001-10000", min: 5001, max: 10000 }, { label: "10001+", min: 10001, max: Number.POSITIVE_INFINITY },
+];
+
+/** Every bucket that overlaps [min, max]; both bounds optional. */
+export function headcountBucketsFor(min: number | null, max: number | null): string[] {
+  if (min === null && max === null) return [];
+  const lo = min ?? 0; const hi = max ?? Number.POSITIVE_INFINITY;
+  return HEADCOUNT_BUCKET_EDGES.filter((bucket) => bucket.max >= lo && bucket.min <= hi).map((bucket) => bucket.label);
+}
+
+/** The lower edge of a bucket label, for a headcount when the premium total is not requested. */
+export function headcountFromRange(label: string | null | undefined): number | null {
+  const bucket = HEADCOUNT_BUCKET_EDGES.find((item) => item.label === (label ?? "").trim());
+  return bucket ? bucket.min : null;
+}
+
 export function activityConditionFor(definition: PackDefinitionInput, now: Date): ActivityCondition | { skipped: string } {
   if (definition.polarity === "NEGATIVE") return { skipped: "negative rules are applied by research, not by search" };
   const types = new Set(definition.factTypes.map((type) => type.toUpperCase()));
@@ -110,8 +131,9 @@ export function activityConditionFor(definition: PackDefinitionInput, now: Date)
   }
   if (types.has("JOB_OPENING") || types.has("HIRING_COUNT") || types.has("EMPLOYEE_GROWTH")) {
     const fn = roleFunctionFor(definition.matchAny);
-    if (fn) return { code: definition.code, field: `roles.growth_6m.${fn}`, type: ">", value: 0, rationale: `${fn.replace(/_/g, " ")} team grew in the last six months` };
-    return { code: definition.code, field: "hiring.openings_count", type: ">", value: 0, rationale: "has open roles" };
+    // Per-function growth is documented as `roles.growth_yoy.<function>` with `=>`; the six-month form is not.
+    if (fn) return { code: definition.code, field: `roles.growth_yoy.${fn}`, type: "=>", value: 20, rationale: `${fn.replace(/_/g, " ")} team grew 20%+ in the last year` };
+    return { code: definition.code, field: "hiring.openings_count", type: "=>", value: 1, rationale: "has open roles" };
   }
   if (types.has("COMPANY_EXPANSION") || types.has("NEW_MARKET")) {
     return { code: definition.code, field: "headcount.growth_percent.6m", type: ">", value: 15, rationale: "headcount up more than 15% in six months" };
@@ -145,8 +167,10 @@ export function buildInstantLeadFilters(input: {
     else if (operator.startsWith("GT") || operator === ">=" || operator === ">") min = number(value) ?? min;
     else if (operator.startsWith("LT") || operator === "<=" || operator === "<") max = number(value) ?? max;
   }
-  if (min !== null) firmographic.push(condition("headcount.total", "=>", Math.max(1, Math.floor(min))));
-  if (max !== null) firmographic.push(condition("headcount.total", "=<", Math.max(1, Math.floor(max))));
+  // `basic_info.employee_count_range` is a free basic field; `headcount.total` is a premium group billed per result
+  // on the filter side (and only accepts bucket edges anyway). The buckets that overlap the ICP's range are the filter.
+  const buckets = headcountBucketsFor(min, max);
+  if (buckets.length && buckets.length < CRUSTDATA_HEADCOUNT_RANGES.length) firmographic.push(condition("basic_info.employee_count_range", "in", buckets));
 
   // Where
   const geography = resolveGeography(accepted.filter((item) => item.dimension === "geography").flatMap((item) => listValue(item.value)));
@@ -181,7 +205,8 @@ export function buildInstantLeadFilters(input: {
     filters,
     firmographic,
     activity,
-    sorts: [{ field: "headcount.growth_percent.6m", order: "desc" }],
+    // Growth fields are filterable but not sortable; a sort is needed for stable pagination and sorting is free.
+    sorts: [{ field: "headcount.total", order: "desc" }],
     resolved: {
       headcount: { min, max }, countries: geography.countries, cities: geography.cities,
       industries: industries.industries, industryMapping: industries.mapping,
