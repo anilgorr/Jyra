@@ -27,6 +27,7 @@ import Changes from './pages/changes';
 import MarketReadinessPage from './pages/market-readiness/index';
 import MarketReadinessCampaignPage from './pages/market-readiness/campaign';
 import Opportunities from './pages/opportunities';
+import InstantLeadsPage from './pages/instant-leads';
 import Outcomes from './pages/outcomes';
 import Learning from './pages/learning';
 import AdminQualityPage from './pages/admin-quality';
@@ -123,6 +124,7 @@ function AuthenticatedRoutes() {
           <Switch>
             <Route path="/today" component={Today} />
             <Route path="/opportunities" component={Opportunities} />
+            <Route path="/instant-leads" component={InstantLeadsPage} />
             <Route path="/companies/:projectCompanyId" component={CompanyIntelligencePage} />
             <Route path="/screening" component={ScreeningPage} />
             <Route path="/companies" component={CompaniesPage} />
