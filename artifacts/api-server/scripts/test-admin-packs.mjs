@@ -91,4 +91,34 @@ const marketing = {
   assert.equal(m.slugify("ÄÖÜ 42"), "42");
 }
 
+// Buying roles: validated and tidied; omitted means "keep what the pack has"; the founder fallback always has titles.
+{
+  const problems = [];
+  const roles = m.normaliseBuyingRoles({
+    roles: [
+      { label: " Marketing leader ", seniorityLevels: ["CXO", "Director"], functionCategories: ["Marketing"], titleKeywords: ["CMO", " Head of Marketing "] },
+      { label: "Marketing manager", seniorityLevels: ["Manager"], functionCategories: [], titleKeywords: [] },
+    ],
+    fallbackUnderHeadcount: 30, fallbackTitles: [],
+  }, problems);
+  assert.deepEqual(problems, []);
+  assert.equal(roles.roles[0].label, "Marketing leader");
+  assert.deepEqual(roles.roles[0].titleKeywords, ["cmo", "head of marketing"], "keywords are lower-cased and trimmed");
+  assert.equal(roles.fallbackUnderHeadcount, 30);
+  assert.ok(roles.fallbackTitles.includes("founder"), "empty fallback titles fall back to the founder list");
+  assert.equal(m.normaliseBuyingRoles(undefined, problems), null, "omitted roles leave the pack's own untouched");
+
+  const bad = [];
+  m.normaliseBuyingRoles({ roles: [{ label: "", seniorityLevels: ["Chief"], functionCategories: [], titleKeywords: [] }], fallbackUnderHeadcount: 50, fallbackTitles: [] }, bad);
+  assert.ok(bad.some((line) => /needs a label/.test(line)), bad.join(" | "));
+  assert.ok(bad.some((line) => /"Chief" is not a seniority level/.test(line)), bad.join(" | "));
+  assert.ok(bad.some((line) => /seniority levels or title keywords/.test(line)) === false, "a bad level is already reported; the role had a level");
+
+  // Through the pack: a bad role refuses the whole pack, like a bad definition does.
+  assert.throws(() => m.normalisePackInput({ ...marketing, buyingRoles: { roles: [{ label: "Buyer", seniorityLevels: [], functionCategories: [], titleKeywords: [] }], fallbackUnderHeadcount: 50, fallbackTitles: [] } }), (error) => error instanceof m.PackValidationError && error.problems.some((line) => /Buyer: give it seniority levels or title keywords/.test(line)));
+  const withRoles = m.normalisePackInput({ ...marketing, buyingRoles: { roles: [{ label: "Buyer", seniorityLevels: ["CXO"], functionCategories: [], titleKeywords: [] }], fallbackUnderHeadcount: 50, fallbackTitles: [] } });
+  assert.equal(withRoles.buyingRoles.roles.length, 1);
+  assert.equal(m.normalisePackInput(marketing).buyingRoles, null);
+}
+
 console.log("PASS admin-packs");

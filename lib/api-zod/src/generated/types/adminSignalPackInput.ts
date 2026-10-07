@@ -6,6 +6,7 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { AdminSignalDefinitionInput } from './adminSignalDefinitionInput';
+import type { BuyingRoles } from './buyingRoles';
 
 export interface AdminSignalPackInput {
   name: string;
@@ -17,4 +18,5 @@ export interface AdminSignalPackInput {
   /** Add the standard layoffs/acquired negatives. Default true. */
   includeNegatives?: boolean;
   definitions: AdminSignalDefinitionInput[];
+  buyingRoles?: BuyingRoles;
 }

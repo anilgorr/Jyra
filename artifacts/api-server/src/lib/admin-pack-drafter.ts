@@ -12,7 +12,7 @@ import {
 import { FACT_TYPES } from "./facts";
 import { resolveProjectSellerContext } from "./seller-context";
 import { SIGNAL_PACK_FIXTURES } from "./signal-pack-fixtures";
-import { normalisePackInput, PACK_CATEGORIES, PackValidationError, slugify, type AdminPackInput } from "./admin-signal-packs";
+import { FUNCTION_CATEGORIES, normalisePackInput, PACK_CATEGORIES, PackValidationError, SENIORITY_LEVELS, slugify, type AdminPackInput } from "./admin-signal-packs";
 
 /**
  * A pack drafted from what the customer already told us.
@@ -90,6 +90,13 @@ const draftSchema = z.object({
     needImpact: z.number(), timingImpact: z.number(), fitImpact: z.number(),
     minFacts: z.number().optional(),
   })).min(1).max(10),
+  buyingRoles: z.object({
+    roles: z.array(z.object({
+      label: z.string(), seniorityLevels: z.array(z.string()).optional(), functionCategories: z.array(z.string()).optional(), titleKeywords: z.array(z.string()).optional(),
+    })).max(6),
+    fallbackUnderHeadcount: z.number().optional(),
+    fallbackTitles: z.array(z.string()).optional(),
+  }).optional(),
 });
 
 const exampleFor = (slug: string) => {
@@ -111,7 +118,8 @@ const SYSTEM = [
   `Categories: ${PACK_CATEGORIES.join(", ")}.`,
   "Rules of thumb from packs that work: a funding round means aggressive growth and outweighs routine hiring; a new leader in the function that buys this offering is the strongest Timing signal (80-92); one job opening is a replacement, several at once is a plan - use minFacts 2 for 'team expansion' rules; match words are plain lower-case words or short phrases that would appear in a job title, headline or page (they match whole words), 3-8 of them; lifetimeDays 60-120 for hiring, 90-180 for leadership and funding; impacts 0-100 for POSITIVE rules; every rule's description says in one sentence why this seller should care.",
   "Write 4 to 7 POSITIVE definitions, specific to what this seller sells and whom the ICP describes. Do not invent fact types. Codes are UPPER_SNAKE_CASE with a short prefix for the pack.",
-  "Return strict JSON only, shaped: {name, description, offeringFamily, definitions:[{code,name,description,category,factTypes,matchAny,excludeAny,needImpact,timingImpact,fitImpact,lifetimeDays,minFacts}]}. name is the pack's name (the seller's kind, not the company), description says who the pack is for in one sentence, offeringFamily is a lower-case hyphenated family like digital-marketing.",
+  `Also say WHO BUYS this offering, as buyingRoles: 2-4 roles in preference order, each {label, seniorityLevels, functionCategories, titleKeywords}. seniorityLevels are ONLY from: ${SENIORITY_LEVELS.join(", ")}. functionCategories are ONLY from: ${FUNCTION_CATEGORIES.join(", ")} (may be empty). titleKeywords are 3-10 lower-case words or phrases found in a matching job title ("cmo", "head of marketing"). Do not add a Founder role; it is appended automatically for small companies. fallbackUnderHeadcount is the headcount below which the founder is the buyer regardless (usually 50).`,
+  "Return strict JSON only, shaped: {name, description, offeringFamily, definitions:[{code,name,description,category,factTypes,matchAny,excludeAny,needImpact,timingImpact,fitImpact,lifetimeDays,minFacts}], buyingRoles:{roles:[{label,seniorityLevels,functionCategories,titleKeywords}],fallbackUnderHeadcount}}. name is the pack's name (the seller's kind, not the company), description says who the pack is for in one sentence, offeringFamily is a lower-case hyphenated family like digital-marketing.",
 ].join("\n");
 
 export type PackDraft = { draft: AdminPackInput; basis: { projectId: string; offeringName: string | null; icpCriteria: number; attempts: number } };
@@ -165,6 +173,14 @@ export async function draftPackFromSeller(projectId: string): Promise<PackDraft>
         name: parsed.name, slug: slugify(parsed.name), description: parsed.description,
         offeringFamily: parsed.offeringFamily ? slugify(parsed.offeringFamily) : undefined,
         includeNegatives: true,
+        buyingRoles: parsed.buyingRoles ? {
+          roles: parsed.buyingRoles.roles.map((role) => ({
+            label: role.label, seniorityLevels: (role.seniorityLevels ?? []).filter((level) => (SENIORITY_LEVELS as readonly string[]).includes(level)),
+            functionCategories: (role.functionCategories ?? []).filter((category) => (FUNCTION_CATEGORIES as readonly string[]).includes(category)),
+            titleKeywords: (role.titleKeywords ?? []).map((word) => word.toLowerCase()),
+          })),
+          fallbackUnderHeadcount: parsed.buyingRoles.fallbackUnderHeadcount ?? 50, fallbackTitles: parsed.buyingRoles.fallbackTitles ?? [],
+        } : undefined,
         definitions: parsed.definitions.filter((d) => d.polarity !== "NEGATIVE").map((d) => ({
           ...d, code: d.code.toUpperCase().replace(/[^A-Z0-9_]+/g, "_"), category: d.category.toUpperCase(),
           factTypes: d.factTypes.map((f) => f.toUpperCase()),

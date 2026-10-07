@@ -26,6 +26,10 @@ import type {
   ActivateOpportunityPack200,
   AddOpportunityResearchQuestionRequest,
   AddOpportunitySignalRequest,
+  AdminCreditRequestEnvelope,
+  AdminCreditRequestList,
+  AdminInstantLeadRunDetail,
+  AdminInstantLeadRunList,
   AdminPackSeller,
   AdminQualityDashboard,
   AdminSignalPack,
@@ -79,6 +83,7 @@ import type {
   CreditRequestEnvelope,
   CreditRequestList,
   CurrentUser,
+  DeclineCreditRequestBody,
   DraftAdminSignalPack200,
   DraftAdminSignalPackBody,
   EnrichProjectPersonContactRequest,
@@ -93,12 +98,15 @@ import type {
   GetInstantLeadQuoteParams,
   GetLearningAnalyticsParams,
   GetProjectScreening424,
+  GrantCreditRequestBody,
   GrantCreditsBody,
   HealthStatus,
   IcpCriterionInput,
   IcpCriterionUpdate,
   IcpVersion,
   ImportMarketReadinessOutcomesRequest,
+  InstantLeadPriceEnvelope,
+  InstantLeadPriceList,
   InstantLeadQuote,
   InstantLeadRequestError,
   InstantLeadRunDetail,
@@ -188,6 +196,7 @@ import type {
   SignalPack,
   UnauthorizedResponse,
   UpdateAccessGrantBody,
+  UpdateInstantLeadPricesBody,
   UpdateMarketReadinessCampaignRequest,
   UpdateMarketReadinessRolloutRequest,
   UpdateOpportunityResearchQuestionRequest,
@@ -1980,6 +1989,533 @@ export function useListSignalFeedback<TData = Awaited<ReturnType<typeof listSign
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
   const queryOptions = getListSignalFeedbackQueryOptions(projectId,params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getListAdminCreditRequestsUrl = () => {
+
+
+
+
+  return `/api/admin/credit-requests`
+}
+
+/**
+ * @summary Credit top-up requests from customers, newest first
+ */
+export const listAdminCreditRequests = async ( options?: Parameters<typeof customFetch>[1]): Promise<AdminCreditRequestList> => {
+
+  return customFetch<AdminCreditRequestList>(getListAdminCreditRequestsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListAdminCreditRequestsQueryKey = () => {
+    return [
+    `/api/admin/credit-requests`
+    ] as const;
+    }
+
+
+export const getListAdminCreditRequestsQueryOptions = <TData = Awaited<ReturnType<typeof listAdminCreditRequests>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listAdminCreditRequests>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListAdminCreditRequestsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listAdminCreditRequests>>> = ({ signal }) => listAdminCreditRequests({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listAdminCreditRequests>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListAdminCreditRequestsQueryResult = NonNullable<Awaited<ReturnType<typeof listAdminCreditRequests>>>
+export type ListAdminCreditRequestsQueryError = ErrorType<UnauthorizedResponse | ForbiddenResponse>
+
+
+/**
+ * @summary Credit top-up requests from customers, newest first
+ */
+
+export function useListAdminCreditRequests<TData = Awaited<ReturnType<typeof listAdminCreditRequests>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listAdminCreditRequests>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListAdminCreditRequestsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getGrantCreditRequestUrl = (requestId: string,) => {
+
+
+
+
+  return `/api/admin/credit-requests/${requestId}/grant`
+}
+
+/**
+ * The ledger entry and the closed request are one transaction; granting twice is refused with 409.
+ * @summary Add the credits and close the request
+ */
+export const grantCreditRequest = async (requestId: string,
+    grantCreditRequestBody?: GrantCreditRequestBody, options?: Parameters<typeof customFetch>[1]): Promise<AdminCreditRequestEnvelope> => {
+
+  return customFetch<AdminCreditRequestEnvelope>(getGrantCreditRequestUrl(requestId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(grantCreditRequestBody)
+  }
+);}
+
+
+
+
+
+export const getGrantCreditRequestMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof grantCreditRequest>>, TError,{requestId: string;data?: BodyType<GrantCreditRequestBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof grantCreditRequest>>, TError,{requestId: string;data?: BodyType<GrantCreditRequestBody>}, TContext> => {
+
+const mutationKey = ['grantCreditRequest'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof grantCreditRequest>>, {requestId: string;data?: BodyType<GrantCreditRequestBody>}> = (props) => {
+          const {requestId,data} = props ?? {};
+
+          return  grantCreditRequest(requestId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type GrantCreditRequestMutationResult = NonNullable<Awaited<ReturnType<typeof grantCreditRequest>>>
+    export type GrantCreditRequestMutationBody = BodyType<GrantCreditRequestBody> | undefined
+    export type GrantCreditRequestMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | ErrorResponse>
+
+    /**
+ * @summary Add the credits and close the request
+ */
+export const useGrantCreditRequest = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof grantCreditRequest>>, TError,{requestId: string;data?: BodyType<GrantCreditRequestBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof grantCreditRequest>>,
+        TError,
+        {requestId: string;data?: BodyType<GrantCreditRequestBody>},
+        TContext
+      > => {
+      return useMutation(getGrantCreditRequestMutationOptions(options));
+    }
+
+export const getDeclineCreditRequestUrl = (requestId: string,) => {
+
+
+
+
+  return `/api/admin/credit-requests/${requestId}/decline`
+}
+
+/**
+ * @summary Decline a request
+ */
+export const declineCreditRequest = async (requestId: string,
+    declineCreditRequestBody?: DeclineCreditRequestBody, options?: Parameters<typeof customFetch>[1]): Promise<AdminCreditRequestEnvelope> => {
+
+  return customFetch<AdminCreditRequestEnvelope>(getDeclineCreditRequestUrl(requestId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(declineCreditRequestBody)
+  }
+);}
+
+
+
+
+
+export const getDeclineCreditRequestMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof declineCreditRequest>>, TError,{requestId: string;data?: BodyType<DeclineCreditRequestBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof declineCreditRequest>>, TError,{requestId: string;data?: BodyType<DeclineCreditRequestBody>}, TContext> => {
+
+const mutationKey = ['declineCreditRequest'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof declineCreditRequest>>, {requestId: string;data?: BodyType<DeclineCreditRequestBody>}> = (props) => {
+          const {requestId,data} = props ?? {};
+
+          return  declineCreditRequest(requestId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeclineCreditRequestMutationResult = NonNullable<Awaited<ReturnType<typeof declineCreditRequest>>>
+    export type DeclineCreditRequestMutationBody = BodyType<DeclineCreditRequestBody> | undefined
+    export type DeclineCreditRequestMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | ErrorResponse>
+
+    /**
+ * @summary Decline a request
+ */
+export const useDeclineCreditRequest = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof declineCreditRequest>>, TError,{requestId: string;data?: BodyType<DeclineCreditRequestBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof declineCreditRequest>>,
+        TError,
+        {requestId: string;data?: BodyType<DeclineCreditRequestBody>},
+        TContext
+      > => {
+      return useMutation(getDeclineCreditRequestMutationOptions(options));
+    }
+
+export const getListInstantLeadPricesUrl = () => {
+
+
+
+
+  return `/api/admin/instant-leads/prices`
+}
+
+/**
+ * @summary Instant Leads credit prices per organisation
+ */
+export const listInstantLeadPrices = async ( options?: Parameters<typeof customFetch>[1]): Promise<InstantLeadPriceList> => {
+
+  return customFetch<InstantLeadPriceList>(getListInstantLeadPricesUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListInstantLeadPricesQueryKey = () => {
+    return [
+    `/api/admin/instant-leads/prices`
+    ] as const;
+    }
+
+
+export const getListInstantLeadPricesQueryOptions = <TData = Awaited<ReturnType<typeof listInstantLeadPrices>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listInstantLeadPrices>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListInstantLeadPricesQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listInstantLeadPrices>>> = ({ signal }) => listInstantLeadPrices({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listInstantLeadPrices>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListInstantLeadPricesQueryResult = NonNullable<Awaited<ReturnType<typeof listInstantLeadPrices>>>
+export type ListInstantLeadPricesQueryError = ErrorType<UnauthorizedResponse | ForbiddenResponse>
+
+
+/**
+ * @summary Instant Leads credit prices per organisation
+ */
+
+export function useListInstantLeadPrices<TData = Awaited<ReturnType<typeof listInstantLeadPrices>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listInstantLeadPrices>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListInstantLeadPricesQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getUpdateInstantLeadPricesUrl = (organizationId: string,) => {
+
+
+
+
+  return `/api/admin/instant-leads/prices/${organizationId}`
+}
+
+/**
+ * Written to the plan assignment's overrides; the tier itself is never re-priced for one customer.
+ * @summary Set an organisation's credit prices
+ */
+export const updateInstantLeadPrices = async (organizationId: string,
+    updateInstantLeadPricesBody: UpdateInstantLeadPricesBody, options?: Parameters<typeof customFetch>[1]): Promise<InstantLeadPriceEnvelope> => {
+
+  return customFetch<InstantLeadPriceEnvelope>(getUpdateInstantLeadPricesUrl(organizationId),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(updateInstantLeadPricesBody)
+  }
+);}
+
+
+
+
+
+export const getUpdateInstantLeadPricesMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateInstantLeadPrices>>, TError,{organizationId: string;data: BodyType<UpdateInstantLeadPricesBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateInstantLeadPrices>>, TError,{organizationId: string;data: BodyType<UpdateInstantLeadPricesBody>}, TContext> => {
+
+const mutationKey = ['updateInstantLeadPrices'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateInstantLeadPrices>>, {organizationId: string;data: BodyType<UpdateInstantLeadPricesBody>}> = (props) => {
+          const {organizationId,data} = props ?? {};
+
+          return  updateInstantLeadPrices(organizationId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateInstantLeadPricesMutationResult = NonNullable<Awaited<ReturnType<typeof updateInstantLeadPrices>>>
+    export type UpdateInstantLeadPricesMutationBody = BodyType<UpdateInstantLeadPricesBody>
+    export type UpdateInstantLeadPricesMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+    /**
+ * @summary Set an organisation's credit prices
+ */
+export const useUpdateInstantLeadPrices = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateInstantLeadPrices>>, TError,{organizationId: string;data: BodyType<UpdateInstantLeadPricesBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateInstantLeadPrices>>,
+        TError,
+        {organizationId: string;data: BodyType<UpdateInstantLeadPricesBody>},
+        TContext
+      > => {
+      return useMutation(getUpdateInstantLeadPricesMutationOptions(options));
+    }
+
+export const getListAdminInstantLeadRunsUrl = () => {
+
+
+
+
+  return `/api/admin/instant-leads/runs`
+}
+
+/**
+ * Real currency, for the admin's eye only. The customer's view of a run has no cost field.
+ * @summary Every Instant Leads run with what it cost
+ */
+export const listAdminInstantLeadRuns = async ( options?: Parameters<typeof customFetch>[1]): Promise<AdminInstantLeadRunList> => {
+
+  return customFetch<AdminInstantLeadRunList>(getListAdminInstantLeadRunsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListAdminInstantLeadRunsQueryKey = () => {
+    return [
+    `/api/admin/instant-leads/runs`
+    ] as const;
+    }
+
+
+export const getListAdminInstantLeadRunsQueryOptions = <TData = Awaited<ReturnType<typeof listAdminInstantLeadRuns>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listAdminInstantLeadRuns>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListAdminInstantLeadRunsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listAdminInstantLeadRuns>>> = ({ signal }) => listAdminInstantLeadRuns({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listAdminInstantLeadRuns>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListAdminInstantLeadRunsQueryResult = NonNullable<Awaited<ReturnType<typeof listAdminInstantLeadRuns>>>
+export type ListAdminInstantLeadRunsQueryError = ErrorType<UnauthorizedResponse | ForbiddenResponse>
+
+
+/**
+ * @summary Every Instant Leads run with what it cost
+ */
+
+export function useListAdminInstantLeadRuns<TData = Awaited<ReturnType<typeof listAdminInstantLeadRuns>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listAdminInstantLeadRuns>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListAdminInstantLeadRunsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getGetAdminInstantLeadRunUrl = (runId: string,) => {
+
+
+
+
+  return `/api/admin/instant-leads/runs/${runId}`
+}
+
+/**
+ * @summary One run — the search as it ran, the ledger, the leads
+ */
+export const getAdminInstantLeadRun = async (runId: string, options?: Parameters<typeof customFetch>[1]): Promise<AdminInstantLeadRunDetail> => {
+
+  return customFetch<AdminInstantLeadRunDetail>(getGetAdminInstantLeadRunUrl(runId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetAdminInstantLeadRunQueryKey = (runId: string,) => {
+    return [
+    `/api/admin/instant-leads/runs/${runId}`
+    ] as const;
+    }
+
+
+export const getGetAdminInstantLeadRunQueryOptions = <TData = Awaited<ReturnType<typeof getAdminInstantLeadRun>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(runId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getAdminInstantLeadRun>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetAdminInstantLeadRunQueryKey(runId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAdminInstantLeadRun>>> = ({ signal }) => getAdminInstantLeadRun(runId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: runId !== null && runId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAdminInstantLeadRun>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetAdminInstantLeadRunQueryResult = NonNullable<Awaited<ReturnType<typeof getAdminInstantLeadRun>>>
+export type GetAdminInstantLeadRunQueryError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+
+/**
+ * @summary One run — the search as it ran, the ledger, the leads
+ */
+
+export function useGetAdminInstantLeadRun<TData = Awaited<ReturnType<typeof getAdminInstantLeadRun>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(
+ runId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getAdminInstantLeadRun>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetAdminInstantLeadRunQueryOptions(runId,options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 

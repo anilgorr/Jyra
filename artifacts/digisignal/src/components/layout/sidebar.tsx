@@ -164,6 +164,20 @@ export function Sidebar() {
               Signal packs
             </Link>
           )}
+          {isAdmin && (
+            <Link
+              href="/admin/instant-leads"
+              className={cn(
+                "flex items-center gap-3 rounded-xl px-3.5 py-2 text-sm font-semibold transition-all outline-none",
+                location === "/admin/instant-leads"
+                  ? "bg-sidebar text-sidebar-accent-foreground shadow-neu-inset"
+                  : "text-sidebar-foreground/70 hover:text-primary hover:shadow-neu-sm"
+              )}
+            >
+              <Zap className="h-4 w-4" />
+              Instant Leads admin
+            </Link>
+          )}
           {import.meta.env.DEV && (
             <Link
               href="/settings/providers"

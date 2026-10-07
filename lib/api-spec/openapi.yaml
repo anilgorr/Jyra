@@ -591,6 +591,147 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
         "404": { $ref: "#/components/responses/NotFound" }
+  /admin/credit-requests:
+    get:
+      operationId: listAdminCreditRequests
+      tags: [admin]
+      summary: Credit top-up requests from customers, newest first
+      security: [{ clerkSession: [] }]
+      responses:
+        "200":
+          description: Requests with each organisation's balance
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AdminCreditRequestList" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+  /admin/credit-requests/{requestId}/grant:
+    post:
+      operationId: grantCreditRequest
+      tags: [admin]
+      summary: Add the credits and close the request
+      description: The ledger entry and the closed request are one transaction; granting twice is refused with 409.
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/CreditRequestId" }
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/GrantCreditRequestBody" }
+      responses:
+        "200":
+          description: The granted request
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AdminCreditRequestEnvelope" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409":
+          description: Already granted or declined
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+  /admin/credit-requests/{requestId}/decline:
+    post:
+      operationId: declineCreditRequest
+      tags: [admin]
+      summary: Decline a request
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/CreditRequestId" }
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/DeclineCreditRequestBody" }
+      responses:
+        "200":
+          description: The declined request
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AdminCreditRequestEnvelope" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409":
+          description: Not pending
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+  /admin/instant-leads/prices:
+    get:
+      operationId: listInstantLeadPrices
+      tags: [admin]
+      summary: Instant Leads credit prices per organisation
+      security: [{ clerkSession: [] }]
+      responses:
+        "200":
+          description: Every organisation's resolved prices
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/InstantLeadPriceList" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+  /admin/instant-leads/prices/{organizationId}:
+    put:
+      operationId: updateInstantLeadPrices
+      tags: [admin]
+      summary: Set an organisation's credit prices
+      description: Written to the plan assignment's overrides; the tier itself is never re-priced for one customer.
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/OrganizationId" }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/UpdateInstantLeadPricesBody" }
+      responses:
+        "200":
+          description: The organisation's prices after the change
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/InstantLeadPriceEnvelope" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /admin/instant-leads/runs:
+    get:
+      operationId: listAdminInstantLeadRuns
+      tags: [admin]
+      summary: Every Instant Leads run with what it cost
+      description: Real currency, for the admin's eye only. The customer's view of a run has no cost field.
+      security: [{ clerkSession: [] }]
+      responses:
+        "200":
+          description: Runs across organisations, newest first
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AdminInstantLeadRunList" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+  /admin/instant-leads/runs/{runId}:
+    get:
+      operationId: getAdminInstantLeadRun
+      tags: [admin]
+      summary: One run — the search as it ran, the ledger, the leads
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/InstantLeadRunId" }
+      responses:
+        "200":
+          description: The run in full
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AdminInstantLeadRunDetail" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
   /admin/precision:
     get:
       operationId: getAdminPrecision
@@ -3032,6 +3173,198 @@ paths:
         "404": { $ref: "#/components/responses/NotFound" }
 components:
   schemas:
+    AdminCreditRequest:
+      type: object
+      additionalProperties: false
+      required: [id, organizationId, organizationName, projectId, projectName, requestedByUserId, credits, reason, status, balance, createdAt, resolvedAt, resolvedByUserId]
+      properties:
+        id: { type: string }
+        organizationId: { type: string }
+        organizationName: { type: string }
+        projectId: { type: string, nullable: true }
+        projectName: { type: string, nullable: true }
+        requestedByUserId: { type: string }
+        credits: { type: number }
+        reason: { type: string, nullable: true }
+        status: { type: string, enum: [PENDING, GRANTED, DECLINED] }
+        balance: { type: number, description: The organisation's balance now }
+        createdAt: { type: string, format: date-time }
+        resolvedAt: { type: string, format: date-time, nullable: true }
+        resolvedByUserId: { type: string, nullable: true }
+    AdminCreditRequestList:
+      type: object
+      additionalProperties: false
+      required: [requests]
+      properties:
+        requests: { type: array, items: { $ref: "#/components/schemas/AdminCreditRequest" } }
+    AdminCreditRequestEnvelope:
+      type: object
+      additionalProperties: false
+      required: [request]
+      properties:
+        request: { $ref: "#/components/schemas/AdminCreditRequest" }
+    GrantCreditRequestBody:
+      type: object
+      additionalProperties: false
+      properties:
+        credits: { type: number, minimum: 1, description: Grant a different amount than asked }
+        note: { type: string, maxLength: 500 }
+    DeclineCreditRequestBody:
+      type: object
+      additionalProperties: false
+      properties:
+        note: { type: string, maxLength: 500 }
+    InstantLeadPrices:
+      type: object
+      additionalProperties: false
+      required: [organizationId, organizationName, planCode, planName, creditsPerInstantLead, creditsPerContactVerified, creditsPerContactCatchAll, overridden, defaults]
+      properties:
+        organizationId: { type: string }
+        organizationName: { type: string }
+        planCode: { type: string }
+        planName: { type: string }
+        creditsPerInstantLead: { type: number }
+        creditsPerContactVerified: { type: number }
+        creditsPerContactCatchAll: { type: number }
+        overridden: { type: array, items: { type: string }, description: Which of the three are set for this organisation rather than inherited }
+        defaults:
+          type: object
+          additionalProperties: false
+          required: [creditsPerInstantLead, creditsPerContactVerified, creditsPerContactCatchAll]
+          properties:
+            creditsPerInstantLead: { type: number }
+            creditsPerContactVerified: { type: number }
+            creditsPerContactCatchAll: { type: number }
+    InstantLeadPriceList:
+      type: object
+      additionalProperties: false
+      required: [organizations]
+      properties:
+        organizations: { type: array, items: { $ref: "#/components/schemas/InstantLeadPrices" } }
+    InstantLeadPriceEnvelope:
+      type: object
+      additionalProperties: false
+      required: [organization]
+      properties:
+        organization: { $ref: "#/components/schemas/InstantLeadPrices" }
+    UpdateInstantLeadPricesBody:
+      type: object
+      additionalProperties: false
+      properties:
+        creditsPerInstantLead: { type: number, minimum: 0 }
+        creditsPerContactVerified: { type: number, minimum: 0 }
+        creditsPerContactCatchAll: { type: number, minimum: 0 }
+    AdminInstantLeadRun:
+      type: object
+      additionalProperties: false
+      required: [id, organizationId, organizationName, projectId, projectName, requestedByUserId, status, requested, delivered, confirmed, candidatesFound, candidatesAccepted, researched, widened, credits, contactsRevealed, cost, errorCode, errorMessage, outcomeNote, createdAt, startedAt, finishedAt]
+      properties:
+        id: { type: string }
+        organizationId: { type: string }
+        organizationName: { type: string }
+        projectId: { type: string }
+        projectName: { type: string }
+        requestedByUserId: { type: string }
+        status: { $ref: "#/components/schemas/InstantLeadRunStatus" }
+        requested: { type: number }
+        delivered: { type: number }
+        confirmed: { type: number }
+        candidatesFound: { type: number }
+        candidatesAccepted: { type: number }
+        researched: { type: number }
+        widened: { type: boolean }
+        credits:
+          type: object
+          additionalProperties: false
+          required: [perLead, held, settled, contacts]
+          properties:
+            perLead: { type: number }
+            held: { type: number }
+            settled: { type: number }
+            contacts: { type: number, description: Credits charged for contacts revealed on this run's leads }
+        contactsRevealed: { type: number }
+        cost:
+          type: object
+          additionalProperties: false
+          required: [providerUsd, researchUsd, contactsUsd, totalUsd, totalInr, providerCalls, perDeliveredUsd]
+          properties:
+            providerUsd: { type: number }
+            researchUsd: { type: number }
+            contactsUsd: { type: number }
+            totalUsd: { type: number }
+            totalInr: { type: number }
+            providerCalls: { type: number }
+            perDeliveredUsd: { type: number, nullable: true }
+        errorCode: { type: string, nullable: true }
+        errorMessage: { type: string, nullable: true }
+        outcomeNote: { type: string, nullable: true }
+        createdAt: { type: string, format: date-time }
+        startedAt: { type: string, format: date-time, nullable: true }
+        finishedAt: { type: string, format: date-time, nullable: true }
+    AdminInstantLeadRunList:
+      type: object
+      additionalProperties: false
+      required: [inrPerUsd, runs]
+      properties:
+        inrPerUsd: { type: number }
+        runs: { type: array, items: { $ref: "#/components/schemas/AdminInstantLeadRun" } }
+    AdminInstantLeadRunDetail:
+      type: object
+      additionalProperties: false
+      required: [run, search, ledger, leads]
+      properties:
+        run: { $ref: "#/components/schemas/AdminInstantLeadRun" }
+        search:
+          type: object
+          nullable: true
+          additionalProperties: false
+          required: [filters, activity, unmapped, widened]
+          properties:
+            filters: { description: The provider query as sent }
+            activity:
+              type: array
+              items:
+                type: object
+                additionalProperties: false
+                required: [code, field, type, value]
+                properties:
+                  code: { type: string }
+                  field: { type: string }
+                  type: { type: string }
+                  value: {}
+            unmapped: { $ref: "#/components/schemas/InstantLeadUnmapped" }
+            widened: { type: boolean }
+        ledger:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            required: [id, kind, delta, balanceAfter, description, stage, createdAt]
+            properties:
+              id: { type: string }
+              kind: { type: string }
+              delta: { type: number }
+              balanceAfter: { type: number }
+              description: { type: string }
+              stage: { type: string, nullable: true }
+              createdAt: { type: string, format: date-time }
+        leads:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            required: [id, rank, score, companyName, domain, why, signalCodes, contactStatus, contactCredits, contactRevealedAt]
+            properties:
+              id: { type: string }
+              rank: { type: number }
+              score: { type: number }
+              companyName: { type: string }
+              domain: { type: string, nullable: true }
+              why: { type: array, items: { type: string } }
+              signalCodes: { type: array, items: { type: string } }
+              contactStatus: { type: string }
+              contactCredits: { type: number }
+              contactRevealedAt: { type: string, format: date-time, nullable: true }
     InstantLeadBlocker:
       type: object
       additionalProperties: false
@@ -4477,6 +4810,7 @@ components:
         offeringFamily: { type: string, description: "What kind of seller this pack is for, e.g. digital-marketing. Descriptive." }
         includeNegatives: { type: boolean, description: "Add the standard layoffs/acquired negatives. Default true." }
         definitions: { type: array, items: { $ref: "#/components/schemas/AdminSignalDefinitionInput" } }
+        buyingRoles: { $ref: "#/components/schemas/BuyingRoles" }
       required: [name, description, definitions]
     AdminSignalPack:
       type: object
@@ -4493,7 +4827,25 @@ components:
         createdAt: { type: string, format: date-time }
         updatedAt: { type: string, format: date-time }
         definitions: { type: array, items: { $ref: "#/components/schemas/AdminSignalDefinition" } }
-      required: [id, slug, name, description, version, offeringFamily, source, editable, projectsUsing, createdAt, updatedAt, definitions]
+        buyingRoles: { $ref: "#/components/schemas/BuyingRoles" }
+      required: [id, slug, name, description, version, offeringFamily, source, editable, projectsUsing, createdAt, updatedAt, definitions, buyingRoles]
+    PackBuyingRole:
+      type: object
+      additionalProperties: false
+      required: [label, seniorityLevels, functionCategories, titleKeywords]
+      properties:
+        label: { type: string, description: "Shown on the contact card, e.g. Marketing leader" }
+        seniorityLevels: { type: array, items: { type: string }, description: "Crustdata levels: CXO, Vice President, Director, Owner / Partner, Manager" }
+        functionCategories: { type: array, items: { type: string } }
+        titleKeywords: { type: array, items: { type: string }, description: "Lower-case words a matching title contains" }
+    BuyingRoles:
+      type: object
+      additionalProperties: false
+      required: [roles, fallbackUnderHeadcount, fallbackTitles]
+      properties:
+        roles: { type: array, items: { $ref: "#/components/schemas/PackBuyingRole" }, description: "In preference order; the first role with a match wins" }
+        fallbackUnderHeadcount: { type: number, description: "Below this headcount the founder is the buyer regardless" }
+        fallbackTitles: { type: array, items: { type: string } }
     AccessGrant:
       type: object
       additionalProperties: false
@@ -6609,6 +6961,12 @@ components:
         type: string
     InstantLeadId:
       name: leadId
+      in: path
+      required: true
+      schema:
+        type: string
+    CreditRequestId:
+      name: requestId
       in: path
       required: true
       schema:

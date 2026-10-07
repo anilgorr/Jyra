@@ -515,7 +515,17 @@ export const ListAdminSignalPacksResponseItem = zod.object({
   "id": zod.string(),
   "status": zod.string().describe('APPROVED, or RETIRED when an edit dropped it.'),
   "version": zod.string()
-})))
+}))),
+  "buyingRoles": zod.object({
+  "roles": zod.array(zod.object({
+  "label": zod.string().describe('Shown on the contact card, e.g. Marketing leader'),
+  "seniorityLevels": zod.array(zod.string()).describe('Crustdata levels: CXO, Vice President, Director, Owner \/ Partner, Manager'),
+  "functionCategories": zod.array(zod.string()),
+  "titleKeywords": zod.array(zod.string()).describe('Lower-case words a matching title contains')
+})).describe('In preference order; the first role with a match wins'),
+  "fallbackUnderHeadcount": zod.number().describe('Below this headcount the founder is the buyer regardless'),
+  "fallbackTitles": zod.array(zod.string())
+})
 })
 export const ListAdminSignalPacksResponse = zod.array(ListAdminSignalPacksResponseItem)
 
@@ -549,7 +559,17 @@ export const CreateAdminSignalPackBody = zod.object({
   "fitImpact": zod.number().describe('-100..100'),
   "minFacts": zod.number().optional().describe('Matching facts needed before the rule fires. 2 turns one opening into a plan.'),
   "mode": zod.enum(['single', 'increasing_count']).optional().describe('increasing_count fires only when a counted fact rises between two observations.')
-}).describe('One rule in a pack - which facts it reads, what text they must carry, and what it does to Fit, Need and Timing.'))
+}).describe('One rule in a pack - which facts it reads, what text they must carry, and what it does to Fit, Need and Timing.')),
+  "buyingRoles": zod.object({
+  "roles": zod.array(zod.object({
+  "label": zod.string().describe('Shown on the contact card, e.g. Marketing leader'),
+  "seniorityLevels": zod.array(zod.string()).describe('Crustdata levels: CXO, Vice President, Director, Owner \/ Partner, Manager'),
+  "functionCategories": zod.array(zod.string()),
+  "titleKeywords": zod.array(zod.string()).describe('Lower-case words a matching title contains')
+})).describe('In preference order; the first role with a match wins'),
+  "fallbackUnderHeadcount": zod.number().describe('Below this headcount the founder is the buyer regardless'),
+  "fallbackTitles": zod.array(zod.string())
+}).optional()
 })
 
 export const CreateAdminSignalPackResponse = zod.object({
@@ -587,7 +607,17 @@ export const CreateAdminSignalPackResponse = zod.object({
   "id": zod.string(),
   "status": zod.string().describe('APPROVED, or RETIRED when an edit dropped it.'),
   "version": zod.string()
-})))
+}))),
+  "buyingRoles": zod.object({
+  "roles": zod.array(zod.object({
+  "label": zod.string().describe('Shown on the contact card, e.g. Marketing leader'),
+  "seniorityLevels": zod.array(zod.string()).describe('Crustdata levels: CXO, Vice President, Director, Owner \/ Partner, Manager'),
+  "functionCategories": zod.array(zod.string()),
+  "titleKeywords": zod.array(zod.string()).describe('Lower-case words a matching title contains')
+})).describe('In preference order; the first role with a match wins'),
+  "fallbackUnderHeadcount": zod.number().describe('Below this headcount the founder is the buyer regardless'),
+  "fallbackTitles": zod.array(zod.string())
+})
 })
 
 
@@ -655,7 +685,17 @@ export const DraftAdminSignalPackResponse = zod.object({
   "fitImpact": zod.number().describe('-100..100'),
   "minFacts": zod.number().optional().describe('Matching facts needed before the rule fires. 2 turns one opening into a plan.'),
   "mode": zod.enum(['single', 'increasing_count']).optional().describe('increasing_count fires only when a counted fact rises between two observations.')
-}).describe('One rule in a pack - which facts it reads, what text they must carry, and what it does to Fit, Need and Timing.'))
+}).describe('One rule in a pack - which facts it reads, what text they must carry, and what it does to Fit, Need and Timing.')),
+  "buyingRoles": zod.object({
+  "roles": zod.array(zod.object({
+  "label": zod.string().describe('Shown on the contact card, e.g. Marketing leader'),
+  "seniorityLevels": zod.array(zod.string()).describe('Crustdata levels: CXO, Vice President, Director, Owner \/ Partner, Manager'),
+  "functionCategories": zod.array(zod.string()),
+  "titleKeywords": zod.array(zod.string()).describe('Lower-case words a matching title contains')
+})).describe('In preference order; the first role with a match wins'),
+  "fallbackUnderHeadcount": zod.number().describe('Below this headcount the founder is the buyer regardless'),
+  "fallbackTitles": zod.array(zod.string())
+}).optional()
 }),
   "basis": zod.object({
   "projectId": zod.string(),
@@ -736,7 +776,17 @@ export const UpdateAdminSignalPackBody = zod.object({
   "fitImpact": zod.number().describe('-100..100'),
   "minFacts": zod.number().optional().describe('Matching facts needed before the rule fires. 2 turns one opening into a plan.'),
   "mode": zod.enum(['single', 'increasing_count']).optional().describe('increasing_count fires only when a counted fact rises between two observations.')
-}).describe('One rule in a pack - which facts it reads, what text they must carry, and what it does to Fit, Need and Timing.'))
+}).describe('One rule in a pack - which facts it reads, what text they must carry, and what it does to Fit, Need and Timing.')),
+  "buyingRoles": zod.object({
+  "roles": zod.array(zod.object({
+  "label": zod.string().describe('Shown on the contact card, e.g. Marketing leader'),
+  "seniorityLevels": zod.array(zod.string()).describe('Crustdata levels: CXO, Vice President, Director, Owner \/ Partner, Manager'),
+  "functionCategories": zod.array(zod.string()),
+  "titleKeywords": zod.array(zod.string()).describe('Lower-case words a matching title contains')
+})).describe('In preference order; the first role with a match wins'),
+  "fallbackUnderHeadcount": zod.number().describe('Below this headcount the founder is the buyer regardless'),
+  "fallbackTitles": zod.array(zod.string())
+}).optional()
 })
 
 export const UpdateAdminSignalPackResponse = zod.object({
@@ -774,7 +824,17 @@ export const UpdateAdminSignalPackResponse = zod.object({
   "id": zod.string(),
   "status": zod.string().describe('APPROVED, or RETIRED when an edit dropped it.'),
   "version": zod.string()
-})))
+}))),
+  "buyingRoles": zod.object({
+  "roles": zod.array(zod.object({
+  "label": zod.string().describe('Shown on the contact card, e.g. Marketing leader'),
+  "seniorityLevels": zod.array(zod.string()).describe('Crustdata levels: CXO, Vice President, Director, Owner \/ Partner, Manager'),
+  "functionCategories": zod.array(zod.string()),
+  "titleKeywords": zod.array(zod.string()).describe('Lower-case words a matching title contains')
+})).describe('In preference order; the first role with a match wins'),
+  "fallbackUnderHeadcount": zod.number().describe('Below this headcount the founder is the buyer regardless'),
+  "fallbackTitles": zod.array(zod.string())
+})
 })
 
 
@@ -1098,6 +1158,293 @@ export const ListSignalFeedbackResponseItem = zod.object({
   "recordedAt": zod.string()
 })
 export const ListSignalFeedbackResponse = zod.array(ListSignalFeedbackResponseItem)
+
+
+/**
+ * @summary Credit top-up requests from customers, newest first
+ */
+export const ListAdminCreditRequestsResponse = zod.object({
+  "requests": zod.array(zod.object({
+  "id": zod.string(),
+  "organizationId": zod.string(),
+  "organizationName": zod.string(),
+  "projectId": zod.string().nullable(),
+  "projectName": zod.string().nullable(),
+  "requestedByUserId": zod.string(),
+  "credits": zod.number(),
+  "reason": zod.string().nullable(),
+  "status": zod.enum(['PENDING', 'GRANTED', 'DECLINED']),
+  "balance": zod.number().describe('The organisation\'s balance now'),
+  "createdAt": zod.coerce.date(),
+  "resolvedAt": zod.coerce.date().nullable(),
+  "resolvedByUserId": zod.string().nullable()
+}))
+})
+
+
+/**
+ * The ledger entry and the closed request are one transaction; granting twice is refused with 409.
+ * @summary Add the credits and close the request
+ */
+export const GrantCreditRequestParams = zod.object({
+  "requestId": zod.coerce.string()
+})
+
+
+export const grantCreditRequestBodyNoteMax = 500;
+
+
+
+export const GrantCreditRequestBody = zod.object({
+  "credits": zod.number().min(1).optional().describe('Grant a different amount than asked'),
+  "note": zod.string().max(grantCreditRequestBodyNoteMax).optional()
+})
+
+export const GrantCreditRequestResponse = zod.object({
+  "request": zod.object({
+  "id": zod.string(),
+  "organizationId": zod.string(),
+  "organizationName": zod.string(),
+  "projectId": zod.string().nullable(),
+  "projectName": zod.string().nullable(),
+  "requestedByUserId": zod.string(),
+  "credits": zod.number(),
+  "reason": zod.string().nullable(),
+  "status": zod.enum(['PENDING', 'GRANTED', 'DECLINED']),
+  "balance": zod.number().describe('The organisation\'s balance now'),
+  "createdAt": zod.coerce.date(),
+  "resolvedAt": zod.coerce.date().nullable(),
+  "resolvedByUserId": zod.string().nullable()
+})
+})
+
+
+/**
+ * @summary Decline a request
+ */
+export const DeclineCreditRequestParams = zod.object({
+  "requestId": zod.coerce.string()
+})
+
+export const declineCreditRequestBodyNoteMax = 500;
+
+
+
+export const DeclineCreditRequestBody = zod.object({
+  "note": zod.string().max(declineCreditRequestBodyNoteMax).optional()
+})
+
+export const DeclineCreditRequestResponse = zod.object({
+  "request": zod.object({
+  "id": zod.string(),
+  "organizationId": zod.string(),
+  "organizationName": zod.string(),
+  "projectId": zod.string().nullable(),
+  "projectName": zod.string().nullable(),
+  "requestedByUserId": zod.string(),
+  "credits": zod.number(),
+  "reason": zod.string().nullable(),
+  "status": zod.enum(['PENDING', 'GRANTED', 'DECLINED']),
+  "balance": zod.number().describe('The organisation\'s balance now'),
+  "createdAt": zod.coerce.date(),
+  "resolvedAt": zod.coerce.date().nullable(),
+  "resolvedByUserId": zod.string().nullable()
+})
+})
+
+
+/**
+ * @summary Instant Leads credit prices per organisation
+ */
+export const ListInstantLeadPricesResponse = zod.object({
+  "organizations": zod.array(zod.object({
+  "organizationId": zod.string(),
+  "organizationName": zod.string(),
+  "planCode": zod.string(),
+  "planName": zod.string(),
+  "creditsPerInstantLead": zod.number(),
+  "creditsPerContactVerified": zod.number(),
+  "creditsPerContactCatchAll": zod.number(),
+  "overridden": zod.array(zod.string()).describe('Which of the three are set for this organisation rather than inherited'),
+  "defaults": zod.object({
+  "creditsPerInstantLead": zod.number(),
+  "creditsPerContactVerified": zod.number(),
+  "creditsPerContactCatchAll": zod.number()
+})
+}))
+})
+
+
+/**
+ * Written to the plan assignment's overrides; the tier itself is never re-priced for one customer.
+ * @summary Set an organisation's credit prices
+ */
+export const UpdateInstantLeadPricesParams = zod.object({
+  "organizationId": zod.coerce.string()
+})
+
+export const updateInstantLeadPricesBodyCreditsPerInstantLeadMin = 0;
+
+export const updateInstantLeadPricesBodyCreditsPerContactVerifiedMin = 0;
+
+export const updateInstantLeadPricesBodyCreditsPerContactCatchAllMin = 0;
+
+
+
+export const UpdateInstantLeadPricesBody = zod.object({
+  "creditsPerInstantLead": zod.number().min(updateInstantLeadPricesBodyCreditsPerInstantLeadMin).optional(),
+  "creditsPerContactVerified": zod.number().min(updateInstantLeadPricesBodyCreditsPerContactVerifiedMin).optional(),
+  "creditsPerContactCatchAll": zod.number().min(updateInstantLeadPricesBodyCreditsPerContactCatchAllMin).optional()
+})
+
+export const UpdateInstantLeadPricesResponse = zod.object({
+  "organization": zod.object({
+  "organizationId": zod.string(),
+  "organizationName": zod.string(),
+  "planCode": zod.string(),
+  "planName": zod.string(),
+  "creditsPerInstantLead": zod.number(),
+  "creditsPerContactVerified": zod.number(),
+  "creditsPerContactCatchAll": zod.number(),
+  "overridden": zod.array(zod.string()).describe('Which of the three are set for this organisation rather than inherited'),
+  "defaults": zod.object({
+  "creditsPerInstantLead": zod.number(),
+  "creditsPerContactVerified": zod.number(),
+  "creditsPerContactCatchAll": zod.number()
+})
+})
+})
+
+
+/**
+ * Real currency, for the admin's eye only. The customer's view of a run has no cost field.
+ * @summary Every Instant Leads run with what it cost
+ */
+export const ListAdminInstantLeadRunsResponse = zod.object({
+  "inrPerUsd": zod.number(),
+  "runs": zod.array(zod.object({
+  "id": zod.string(),
+  "organizationId": zod.string(),
+  "organizationName": zod.string(),
+  "projectId": zod.string(),
+  "projectName": zod.string(),
+  "requestedByUserId": zod.string(),
+  "status": zod.enum(['QUEUED', 'SEARCHING', 'SCREENING', 'RESEARCHING', 'RANKING', 'DONE', 'PARTIAL', 'FAILED', 'CANCELLED']),
+  "requested": zod.number(),
+  "delivered": zod.number(),
+  "confirmed": zod.number(),
+  "candidatesFound": zod.number(),
+  "candidatesAccepted": zod.number(),
+  "researched": zod.number(),
+  "widened": zod.boolean(),
+  "credits": zod.object({
+  "perLead": zod.number(),
+  "held": zod.number(),
+  "settled": zod.number(),
+  "contacts": zod.number().describe('Credits charged for contacts revealed on this run\'s leads')
+}),
+  "contactsRevealed": zod.number(),
+  "cost": zod.object({
+  "providerUsd": zod.number(),
+  "researchUsd": zod.number(),
+  "contactsUsd": zod.number(),
+  "totalUsd": zod.number(),
+  "totalInr": zod.number(),
+  "providerCalls": zod.number(),
+  "perDeliveredUsd": zod.number().nullable()
+}),
+  "errorCode": zod.string().nullable(),
+  "errorMessage": zod.string().nullable(),
+  "outcomeNote": zod.string().nullable(),
+  "createdAt": zod.coerce.date(),
+  "startedAt": zod.coerce.date().nullable(),
+  "finishedAt": zod.coerce.date().nullable()
+}))
+})
+
+
+/**
+ * @summary One run — the search as it ran, the ledger, the leads
+ */
+export const GetAdminInstantLeadRunParams = zod.object({
+  "runId": zod.coerce.string()
+})
+
+export const GetAdminInstantLeadRunResponse = zod.object({
+  "run": zod.object({
+  "id": zod.string(),
+  "organizationId": zod.string(),
+  "organizationName": zod.string(),
+  "projectId": zod.string(),
+  "projectName": zod.string(),
+  "requestedByUserId": zod.string(),
+  "status": zod.enum(['QUEUED', 'SEARCHING', 'SCREENING', 'RESEARCHING', 'RANKING', 'DONE', 'PARTIAL', 'FAILED', 'CANCELLED']),
+  "requested": zod.number(),
+  "delivered": zod.number(),
+  "confirmed": zod.number(),
+  "candidatesFound": zod.number(),
+  "candidatesAccepted": zod.number(),
+  "researched": zod.number(),
+  "widened": zod.boolean(),
+  "credits": zod.object({
+  "perLead": zod.number(),
+  "held": zod.number(),
+  "settled": zod.number(),
+  "contacts": zod.number().describe('Credits charged for contacts revealed on this run\'s leads')
+}),
+  "contactsRevealed": zod.number(),
+  "cost": zod.object({
+  "providerUsd": zod.number(),
+  "researchUsd": zod.number(),
+  "contactsUsd": zod.number(),
+  "totalUsd": zod.number(),
+  "totalInr": zod.number(),
+  "providerCalls": zod.number(),
+  "perDeliveredUsd": zod.number().nullable()
+}),
+  "errorCode": zod.string().nullable(),
+  "errorMessage": zod.string().nullable(),
+  "outcomeNote": zod.string().nullable(),
+  "createdAt": zod.coerce.date(),
+  "startedAt": zod.coerce.date().nullable(),
+  "finishedAt": zod.coerce.date().nullable()
+}),
+  "search": zod.object({
+  "filters": zod.unknown().describe('The provider query as sent'),
+  "activity": zod.array(zod.object({
+  "code": zod.string(),
+  "field": zod.string(),
+  "type": zod.string(),
+  "value": zod.unknown()
+})),
+  "unmapped": zod.object({
+  "industries": zod.array(zod.string()),
+  "geographies": zod.array(zod.string())
+}),
+  "widened": zod.boolean()
+}).nullable(),
+  "ledger": zod.array(zod.object({
+  "id": zod.string(),
+  "kind": zod.string(),
+  "delta": zod.number(),
+  "balanceAfter": zod.number(),
+  "description": zod.string(),
+  "stage": zod.string().nullable(),
+  "createdAt": zod.coerce.date()
+})),
+  "leads": zod.array(zod.object({
+  "id": zod.string(),
+  "rank": zod.number(),
+  "score": zod.number(),
+  "companyName": zod.string(),
+  "domain": zod.string().nullable(),
+  "why": zod.array(zod.string()),
+  "signalCodes": zod.array(zod.string()),
+  "contactStatus": zod.string(),
+  "contactCredits": zod.number(),
+  "contactRevealedAt": zod.coerce.date().nullable()
+}))
+})
 
 
 /**

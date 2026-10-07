@@ -4,6 +4,8 @@ import {
   projectSignalPacksTable,
   signalDefinitionsTable,
   signalPacksTable,
+  type BuyingRole,
+  type BuyingRoles,
   type SignalDefinition,
   type SignalPack,
 } from "@workspace/db";
@@ -68,7 +70,38 @@ export type AdminPackInput = {
   offeringFamily?: string;
   includeNegatives?: boolean;
   definitions: AdminDefinitionInput[];
+  /** Who buys, for Instant Leads' "Show contact". Omitted on update keeps what the pack has. */
+  buyingRoles?: BuyingRoles;
 };
+
+/** Crustdata's seniority levels and function categories, as the person search filters on them. */
+export const SENIORITY_LEVELS = ["CXO", "Vice President", "Director", "Owner / Partner", "Manager"] as const;
+export const FUNCTION_CATEGORIES = [
+  "Marketing", "Sales", "Business Development", "Engineering", "Information Technology", "Finance", "Human Resources", "Operations",
+  "Customer Success and Support", "Product Management", "Legal", "Research", "General Management", "Consulting", "Education", "Healthcare Services",
+  "Media and Communication", "Purchasing", "Quality Assurance", "Real Estate", "Administrative", "Arts and Design", "Community and Social Services",
+  "Entrepreneurship", "Military and Protective Services", "Program and Project Management", "Support",
+] as const;
+const FOUNDER_TITLES = ["founder", "co-founder", "ceo", "managing director", "owner", "managing partner"];
+
+/** Validates and tidies the buying roles: known levels, lower-case keywords, no empty roles. */
+export function normaliseBuyingRoles(input: BuyingRoles | undefined, problems: string[]): BuyingRoles | null {
+  if (!input) return null;
+  const roles: BuyingRole[] = [];
+  (input.roles ?? []).forEach((role, index) => {
+    const label = role.label?.trim() || `role ${index + 1}`;
+    if (!role.label?.trim()) problems.push(`Buying role ${index + 1}: needs a label such as "Marketing leader"`);
+    const seniorityLevels = clean(role.seniorityLevels ?? []);
+    for (const level of seniorityLevels) if (!(SENIORITY_LEVELS as readonly string[]).includes(level)) problems.push(`${label}: "${level}" is not a seniority level (${SENIORITY_LEVELS.join(", ")})`);
+    const functionCategories = clean(role.functionCategories ?? []);
+    const titleKeywords = clean(role.titleKeywords ?? []).map((word) => word.toLowerCase());
+    if (!seniorityLevels.length && !titleKeywords.length) problems.push(`${label}: give it seniority levels or title keywords, or nobody can match it`);
+    roles.push({ label: role.label?.trim() ?? label, seniorityLevels, functionCategories, titleKeywords });
+  });
+  const fallbackUnderHeadcount = Number.isFinite(input.fallbackUnderHeadcount) ? Math.max(0, Math.min(5000, Math.round(input.fallbackUnderHeadcount))) : 50;
+  const fallbackTitles = clean(input.fallbackTitles ?? []).map((word) => word.toLowerCase());
+  return { roles, fallbackUnderHeadcount, fallbackTitles: fallbackTitles.length ? fallbackTitles : FOUNDER_TITLES };
+}
 
 export class PackValidationError extends Error {
   constructor(public readonly problems: string[]) {
@@ -98,8 +131,9 @@ const between = (value: number, low: number, high: number) => Number.isFinite(va
  * Patterns are compiled here so a bad regex is refused at save time and not
  * discovered as a crash inside the next watch-loop tick.
  */
-export function normalisePackInput(input: AdminPackInput): { slug: string; name: string; description: string; offeringFamily: string | null; definitions: FixtureDefinition[] } {
+export function normalisePackInput(input: AdminPackInput): { slug: string; name: string; description: string; offeringFamily: string | null; definitions: FixtureDefinition[]; buyingRoles: BuyingRoles | null } {
   const problems: string[] = [];
+  const buyingRoles = normaliseBuyingRoles(input.buyingRoles, problems);
   const name = input.name.trim();
   if (name.length < 3) problems.push("Give the pack a name");
   const description = input.description.trim();
@@ -163,7 +197,7 @@ export function normalisePackInput(input: AdminPackInput): { slug: string; name:
     for (const negative of NEGATIVE_DEFINITIONS) if (!seen.has(negative.code)) definitions.push({ ...negative });
   }
   if (problems.length) throw new PackValidationError(problems);
-  return { slug, name, description, offeringFamily, definitions };
+  return { slug, name, description, offeringFamily, definitions, buyingRoles };
 }
 
 const definitionRow = (packId: string, applicableContext: Record<string, unknown>, item: FixtureDefinition) => ({
@@ -216,6 +250,7 @@ export async function createAdminPack(input: AdminPackInput, actorId: string): P
       slug: normalised.slug, name: normalised.name, description: normalised.description, version: "1.0",
       active: true, status: "APPROVED", applicableContext,
       configuration: { source: "admin", createdBy: actorId },
+      ...(normalised.buyingRoles ? { buyingRoles: normalised.buyingRoles } : {}),
     }).returning();
     if (!pack) throw new Error("Pack insert returned nothing");
     await tx.insert(signalDefinitionsTable).values(normalised.definitions.map((item) => ({ ...definitionRow(pack.id, applicableContext, item), createdBy: actorId })));
@@ -256,6 +291,7 @@ export async function updateAdminPack(packId: string, input: AdminPackInput, act
     const [updated] = await tx.update(signalPacksTable).set({
       name: normalised.name, description: normalised.description, applicableContext, version: nextVersion,
       configuration: { ...(pack.configuration as Record<string, unknown>), source: "admin", updatedBy: actorId },
+      ...(normalised.buyingRoles ? { buyingRoles: normalised.buyingRoles } : {}),
       updatedAt: new Date(),
     }).where(eq(signalPacksTable.id, pack.id)).returning();
     return updated ?? pack;
@@ -266,6 +302,7 @@ export type AdminPackView = {
   id: string; slug: string; name: string; description: string; version: string;
   offeringFamily: string | null; source: "fixture" | "admin"; editable: boolean; projectsUsing: number;
   createdAt: string; updatedAt: string;
+  buyingRoles: BuyingRoles;
   definitions: Array<{
     id: string; code: string; name: string; description: string; category: string; factTypes: string[];
     matchAny: string[]; matchAll: string[]; excludeAny: string[]; polarity: "POSITIVE" | "NEGATIVE";
@@ -316,6 +353,7 @@ export async function listAdminPacks(): Promise<AdminPackView[]> {
       editable: isAdminPack(pack),
       projectsUsing: using.get(pack.id) ?? 0,
       createdAt: pack.createdAt.toISOString(), updatedAt: pack.updatedAt.toISOString(),
+      buyingRoles: pack.buyingRoles ?? { roles: [], fallbackUnderHeadcount: 50, fallbackTitles: FOUNDER_TITLES },
       definitions: definitions.filter((row) => row.signalPackId === pack.id)
         .sort((left, right) => (left.status === right.status ? left.createdAt.getTime() - right.createdAt.getTime() : left.status === "APPROVED" ? -1 : 1))
         .map(definitionView),

@@ -33,6 +33,7 @@ import Learning from './pages/learning';
 import AdminQualityPage from './pages/admin-quality';
 import AdminAccessPage from './pages/admin-access';
 import AdminPacksPage from './pages/admin-packs';
+import AdminInstantLeadsPage from './pages/admin-instant-leads';
 import { WorkspaceProvider } from './context/workspace-context';
 import PlanPage from "@/pages/plan";
 
@@ -141,6 +142,7 @@ function AuthenticatedRoutes() {
             <Route path="/admin/quality" component={AdminQualityPage} />
             <Route path="/admin/access" component={AdminAccessPage} />
             <Route path="/admin/packs" component={AdminPacksPage} />
+            <Route path="/admin/instant-leads" component={AdminInstantLeadsPage} />
             {import.meta.env.DEV && (
               <Route path="/settings/providers" component={ProviderDiagnostics} />
             )}

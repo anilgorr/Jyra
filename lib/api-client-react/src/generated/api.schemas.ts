@@ -5,6 +5,205 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+export type AdminCreditRequestStatus = typeof AdminCreditRequestStatus[keyof typeof AdminCreditRequestStatus];
+
+
+export const AdminCreditRequestStatus = {
+  PENDING: 'PENDING',
+  GRANTED: 'GRANTED',
+  DECLINED: 'DECLINED',
+} as const;
+
+export interface AdminCreditRequest {
+  id: string;
+  organizationId: string;
+  organizationName: string;
+  projectId: string | null;
+  projectName: string | null;
+  requestedByUserId: string;
+  credits: number;
+  reason: string | null;
+  status: AdminCreditRequestStatus;
+  /** The organisation's balance now */
+  balance: number;
+  createdAt: string;
+  resolvedAt: string | null;
+  resolvedByUserId: string | null;
+}
+
+export interface AdminCreditRequestList {
+  requests: AdminCreditRequest[];
+}
+
+export interface AdminCreditRequestEnvelope {
+  request: AdminCreditRequest;
+}
+
+export interface GrantCreditRequestBody {
+  /**
+     * Grant a different amount than asked
+     * @minimum 1
+     */
+  credits?: number;
+  /** @maxLength 500 */
+  note?: string;
+}
+
+export interface DeclineCreditRequestBody {
+  /** @maxLength 500 */
+  note?: string;
+}
+
+export type InstantLeadPricesDefaults = {
+  creditsPerInstantLead: number;
+  creditsPerContactVerified: number;
+  creditsPerContactCatchAll: number;
+};
+
+export interface InstantLeadPrices {
+  organizationId: string;
+  organizationName: string;
+  planCode: string;
+  planName: string;
+  creditsPerInstantLead: number;
+  creditsPerContactVerified: number;
+  creditsPerContactCatchAll: number;
+  /** Which of the three are set for this organisation rather than inherited */
+  overridden: string[];
+  defaults: InstantLeadPricesDefaults;
+}
+
+export interface InstantLeadPriceList {
+  organizations: InstantLeadPrices[];
+}
+
+export interface InstantLeadPriceEnvelope {
+  organization: InstantLeadPrices;
+}
+
+export interface UpdateInstantLeadPricesBody {
+  /** @minimum 0 */
+  creditsPerInstantLead?: number;
+  /** @minimum 0 */
+  creditsPerContactVerified?: number;
+  /** @minimum 0 */
+  creditsPerContactCatchAll?: number;
+}
+
+export type AdminInstantLeadRunCredits = {
+  perLead: number;
+  held: number;
+  settled: number;
+  /** Credits charged for contacts revealed on this run's leads */
+  contacts: number;
+};
+
+export type AdminInstantLeadRunCost = {
+  providerUsd: number;
+  researchUsd: number;
+  contactsUsd: number;
+  totalUsd: number;
+  totalInr: number;
+  providerCalls: number;
+  perDeliveredUsd: number | null;
+};
+
+export type InstantLeadRunStatus = typeof InstantLeadRunStatus[keyof typeof InstantLeadRunStatus];
+
+
+export const InstantLeadRunStatus = {
+  QUEUED: 'QUEUED',
+  SEARCHING: 'SEARCHING',
+  SCREENING: 'SCREENING',
+  RESEARCHING: 'RESEARCHING',
+  RANKING: 'RANKING',
+  DONE: 'DONE',
+  PARTIAL: 'PARTIAL',
+  FAILED: 'FAILED',
+  CANCELLED: 'CANCELLED',
+} as const;
+
+export interface AdminInstantLeadRun {
+  id: string;
+  organizationId: string;
+  organizationName: string;
+  projectId: string;
+  projectName: string;
+  requestedByUserId: string;
+  status: InstantLeadRunStatus;
+  requested: number;
+  delivered: number;
+  confirmed: number;
+  candidatesFound: number;
+  candidatesAccepted: number;
+  researched: number;
+  widened: boolean;
+  credits: AdminInstantLeadRunCredits;
+  contactsRevealed: number;
+  cost: AdminInstantLeadRunCost;
+  errorCode: string | null;
+  errorMessage: string | null;
+  outcomeNote: string | null;
+  createdAt: string;
+  startedAt: string | null;
+  finishedAt: string | null;
+}
+
+export interface AdminInstantLeadRunList {
+  inrPerUsd: number;
+  runs: AdminInstantLeadRun[];
+}
+
+export type AdminInstantLeadRunDetailSearchActivityItem = {
+  code: string;
+  field: string;
+  type: string;
+  value: unknown;
+};
+
+export interface InstantLeadUnmapped {
+  industries: string[];
+  geographies: string[];
+}
+
+export type AdminInstantLeadRunDetailSearch = {
+  /** The provider query as sent */
+  filters: unknown;
+  activity: AdminInstantLeadRunDetailSearchActivityItem[];
+  unmapped: InstantLeadUnmapped;
+  widened: boolean;
+} | null;
+
+export type AdminInstantLeadRunDetailLedgerItem = {
+  id: string;
+  kind: string;
+  delta: number;
+  balanceAfter: number;
+  description: string;
+  stage: string | null;
+  createdAt: string;
+};
+
+export type AdminInstantLeadRunDetailLeadsItem = {
+  id: string;
+  rank: number;
+  score: number;
+  companyName: string;
+  domain: string | null;
+  why: string[];
+  signalCodes: string[];
+  contactStatus: string;
+  contactCredits: number;
+  contactRevealedAt: string | null;
+};
+
+export interface AdminInstantLeadRunDetail {
+  run: AdminInstantLeadRun;
+  search: AdminInstantLeadRunDetailSearch;
+  ledger: AdminInstantLeadRunDetailLedgerItem[];
+  leads: AdminInstantLeadRunDetailLeadsItem[];
+}
+
 export type InstantLeadBlockerCode = typeof InstantLeadBlockerCode[keyof typeof InstantLeadBlockerCode];
 
 
@@ -24,11 +223,6 @@ export const InstantLeadBlockerCode = {
 export interface InstantLeadBlocker {
   code: InstantLeadBlockerCode;
   message: string;
-}
-
-export interface InstantLeadUnmapped {
-  industries: string[];
-  geographies: string[];
 }
 
 export type InstantLeadQuoteContactPrices = {
@@ -71,21 +265,6 @@ export interface InstantLeadQuote {
   estimatedMinutes: number;
   pendingCreditRequest: InstantLeadQuotePendingCreditRequest;
 }
-
-export type InstantLeadRunStatus = typeof InstantLeadRunStatus[keyof typeof InstantLeadRunStatus];
-
-
-export const InstantLeadRunStatus = {
-  QUEUED: 'QUEUED',
-  SEARCHING: 'SEARCHING',
-  SCREENING: 'SCREENING',
-  RESEARCHING: 'RESEARCHING',
-  RANKING: 'RANKING',
-  DONE: 'DONE',
-  PARTIAL: 'PARTIAL',
-  FAILED: 'FAILED',
-  CANCELLED: 'CANCELLED',
-} as const;
 
 export type InstantLeadRunCredits = {
   perLead: number;
@@ -2073,6 +2252,24 @@ export type AdminSignalDefinition = AdminSignalDefinitionInput & {
   version: string;
 }, 'description' | 'matchAny' | 'matchAll' | 'excludeAny' | 'polarity' | 'defaultStrength' | 'minimumConfidence' | 'lifetimeDays' | 'decayRule' | 'minFacts' | 'mode'>>;
 
+export interface PackBuyingRole {
+  /** Shown on the contact card, e.g. Marketing leader */
+  label: string;
+  /** Crustdata levels: CXO, Vice President, Director, Owner / Partner, Manager */
+  seniorityLevels: string[];
+  functionCategories: string[];
+  /** Lower-case words a matching title contains */
+  titleKeywords: string[];
+}
+
+export interface BuyingRoles {
+  /** In preference order; the first role with a match wins */
+  roles: PackBuyingRole[];
+  /** Below this headcount the founder is the buyer regardless */
+  fallbackUnderHeadcount: number;
+  fallbackTitles: string[];
+}
+
 export interface AdminSignalPackInput {
   name: string;
   /** URL-safe identifier. Derived from the name when omitted; cannot change after creation. */
@@ -2083,6 +2280,7 @@ export interface AdminSignalPackInput {
   /** Add the standard layoffs/acquired negatives. Default true. */
   includeNegatives?: boolean;
   definitions: AdminSignalDefinitionInput[];
+  buyingRoles?: BuyingRoles;
 }
 
 /**
@@ -2111,6 +2309,7 @@ export interface AdminSignalPack {
   createdAt: string;
   updatedAt: string;
   definitions: AdminSignalDefinition[];
+  buyingRoles: BuyingRoles;
 }
 
 export type AccessGrantStatus = typeof AccessGrantStatus[keyof typeof AccessGrantStatus];

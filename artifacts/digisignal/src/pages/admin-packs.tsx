@@ -13,6 +13,7 @@ import {
   type AdminSignalDefinitionInput,
   type AdminSignalPack,
   type AdminSignalPackInput,
+  type BuyingRoles,
 } from "@workspace/api-client-react";
 import { Copy, Layers, Pencil, Plus, Save, Sparkles, Trash2, Users, X, Zap } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -58,7 +59,12 @@ type DraftDefinition = {
   decayRule: "LINEAR" | "STEP" | "NONE"; needImpact: string; timingImpact: string; fitImpact: string;
   minFacts: string; mode: "single" | "increasing_count";
 };
-type Draft = { id: string | null; name: string; slug: string; description: string; offeringFamily: string; includeNegatives: boolean; definitions: DraftDefinition[] };
+type DraftRole = { key: string; label: string; seniorityLevels: string[]; functionCategories: string; titleKeywords: string };
+type Draft = { id: string | null; name: string; slug: string; description: string; offeringFamily: string; includeNegatives: boolean; definitions: DraftDefinition[]; roles: DraftRole[]; fallbackUnderHeadcount: string; fallbackTitles: string };
+
+/** Crustdata's seniority levels, as the Instant Leads person search filters on them. */
+const SENIORITY_LEVELS = ["CXO", "Vice President", "Director", "Owner / Partner", "Manager"];
+const FOUNDER_TITLES = "founder, co-founder, ceo, managing director, owner, managing partner";
 
 let keySeq = 0;
 const nextKey = () => `d${++keySeq}`;
@@ -69,7 +75,13 @@ const blankDefinition = (): DraftDefinition => ({
   lifetimeDays: "90", decayRule: "LINEAR", needImpact: "70", timingImpact: "75", fitImpact: "65", minFacts: "1", mode: "single",
 });
 
-const blankDraft = (): Draft => ({ id: null, name: "", slug: "", description: "", offeringFamily: "", includeNegatives: true, definitions: [blankDefinition()] });
+const blankRole = (): DraftRole => ({ key: nextKey(), label: "", seniorityLevels: ["CXO", "Vice President", "Director"], functionCategories: "", titleKeywords: "" });
+const rolesFrom = (roles: BuyingRoles | undefined): Pick<Draft, "roles" | "fallbackUnderHeadcount" | "fallbackTitles"> => ({
+  roles: (roles?.roles ?? []).filter((role) => role.label.toLowerCase() !== "founder").map((role) => ({ key: nextKey(), label: role.label, seniorityLevels: role.seniorityLevels, functionCategories: role.functionCategories.join(", "), titleKeywords: role.titleKeywords.join(", ") })),
+  fallbackUnderHeadcount: String(roles?.fallbackUnderHeadcount ?? 50),
+  fallbackTitles: roles?.fallbackTitles?.length ? roles.fallbackTitles.join(", ") : FOUNDER_TITLES,
+});
+const blankDraft = (): Draft => ({ id: null, name: "", slug: "", description: "", offeringFamily: "", includeNegatives: true, definitions: [blankDefinition()], ...rolesFrom(undefined) });
 
 /** A stored pack into the form. The two standard negatives are left out of the rows and re-added by the checkbox. */
 const NEGATIVE_CODES = new Set(["WORKFORCE_REDUCTION", "ACQUIRED"]);
@@ -83,6 +95,7 @@ function draftFrom(pack: AdminSignalPack, asCopy: boolean): Draft {
     description: pack.description,
     offeringFamily: pack.offeringFamily ?? "",
     includeNegatives: negatives.length > 0,
+    ...rolesFrom(pack.buyingRoles),
     definitions: live.filter((d) => !(NEGATIVE_CODES.has(d.code) && d.polarity === "NEGATIVE")).map((d) => ({
       key: nextKey(), code: d.code, name: d.name, description: d.description, category: d.category,
       factTypes: d.factTypes, matchAny: d.matchAny.join(", "), matchAll: d.matchAll.join(", "), excludeAny: d.excludeAny.join(", "),
@@ -98,6 +111,7 @@ function draftFromInput(input: AdminSignalPackInput): Draft {
   return {
     id: null, name: input.name, slug: input.slug ?? "", description: input.description, offeringFamily: input.offeringFamily ?? "",
     includeNegatives: input.includeNegatives ?? true,
+    ...rolesFrom(input.buyingRoles),
     definitions: input.definitions.map((d) => ({
       key: nextKey(), code: d.code, name: d.name, description: d.description ?? "", category: d.category, factTypes: d.factTypes,
       matchAny: (d.matchAny ?? []).join(", "), matchAll: (d.matchAll ?? []).join(", "), excludeAny: (d.excludeAny ?? []).join(", "),
@@ -115,6 +129,10 @@ function toInput(draft: Draft): AdminSignalPackInput {
   return {
     name: draft.name, slug: draft.slug || undefined, description: draft.description,
     offeringFamily: draft.offeringFamily || undefined, includeNegatives: draft.includeNegatives,
+    buyingRoles: {
+      roles: draft.roles.map((role) => ({ label: role.label, seniorityLevels: role.seniorityLevels, functionCategories: list(role.functionCategories), titleKeywords: list(role.titleKeywords).map((word) => word.toLowerCase()) })),
+      fallbackUnderHeadcount: num(draft.fallbackUnderHeadcount) || 50, fallbackTitles: list(draft.fallbackTitles).map((word) => word.toLowerCase()),
+    },
     definitions: draft.definitions.map<AdminSignalDefinitionInput>((d) => ({
       code: d.code, name: d.name, description: d.description || undefined, category: d.category, factTypes: d.factTypes,
       matchAny: list(d.matchAny), matchAll: list(d.matchAll), excludeAny: list(d.excludeAny),
@@ -127,6 +145,30 @@ function toInput(draft: Draft): AdminSignalPackInput {
 
 function Field({ label, children, className = "" }: { label: string; children: React.ReactNode; className?: string }) {
   return <div className={`space-y-1 ${className}`}><Label className="text-xs">{label}</Label>{children}</div>;
+}
+
+/** Who buys: one row per role, in preference order. The founder fallback is appended by the server for small companies. */
+function RoleEditor({ value, onChange, onRemove }: { value: DraftRole; onChange: (next: DraftRole) => void; onRemove: () => void }) {
+  const set = <K extends keyof DraftRole>(key: K, next: DraftRole[K]) => onChange({ ...value, [key]: next });
+  const toggle = (level: string) => set("seniorityLevels", value.seniorityLevels.includes(level) ? value.seniorityLevels.filter((l) => l !== level) : [...value.seniorityLevels, level]);
+  return (
+    <div className="rounded-xl border p-3" data-testid="role-editor">
+      <div className="grid gap-3 sm:grid-cols-3">
+        <Field label="Role label (shown on the contact card)"><Input value={value.label} onChange={(e) => set("label", e.target.value)} placeholder="Marketing leader" /></Field>
+        <Field label="Function categories (Crustdata, comma-separated)"><Input value={value.functionCategories} onChange={(e) => set("functionCategories", e.target.value)} placeholder="Marketing" /></Field>
+        <Field label="Title keywords (comma-separated)"><Input value={value.titleKeywords} onChange={(e) => set("titleKeywords", e.target.value)} placeholder="cmo, head of marketing, marketing director" /></Field>
+      </div>
+      <div className="mt-2 flex flex-wrap items-center gap-3">
+        <span className="text-xs text-muted-foreground">Seniority:</span>
+        {SENIORITY_LEVELS.map((level) => (
+          <label key={level} className="flex items-center gap-1.5 text-xs">
+            <Checkbox checked={value.seniorityLevels.includes(level)} onCheckedChange={() => toggle(level)} /> {level}
+          </label>
+        ))}
+        <Button type="button" variant="ghost" size="sm" className="ml-auto" onClick={onRemove}><Trash2 className="h-4 w-4" /></Button>
+      </div>
+    </div>
+  );
 }
 
 function DefinitionEditor({ value, onChange, onRemove }: { value: DraftDefinition; onChange: (next: DraftDefinition) => void; onRemove: () => void }) {
@@ -257,6 +299,27 @@ function PackEditor({ initial, onDone }: { initial: Draft; onDone: () => void })
         {draft.definitions.length === 0 && <p className="text-sm text-muted-foreground">A pack needs at least one definition.</p>}
       </div>
 
+      <div className="mt-6 flex items-center justify-between">
+        <div>
+          <h3 className="text-sm font-medium">Who buys</h3>
+          <p className="text-xs text-muted-foreground">In preference order. Instant Leads' "Show contact" looks for the first role with a match; below the headcount threshold the founder is the buyer regardless.</p>
+        </div>
+        <Button type="button" variant="outline" size="sm" onClick={() => setDraft({ ...draft, roles: [...draft.roles, blankRole()] })}>
+          <Plus className="mr-1 h-4 w-4" />Add role
+        </Button>
+      </div>
+      <div className="mt-2 space-y-3">
+        {draft.roles.map((role) => (
+          <RoleEditor key={role.key} value={role} onChange={(next) => setDraft({ ...draft, roles: draft.roles.map((r) => (r.key === role.key ? next : r)) })}
+            onRemove={() => setDraft({ ...draft, roles: draft.roles.filter((r) => r.key !== role.key) })} />
+        ))}
+        {draft.roles.length === 0 && <p className="text-sm text-muted-foreground">No roles yet: only the founder will be looked for.</p>}
+        <div className="grid gap-3 sm:grid-cols-2">
+          <Field label="Founder is the buyer below this headcount"><Input type="number" value={draft.fallbackUnderHeadcount} onChange={(e) => setDraft({ ...draft, fallbackUnderHeadcount: e.target.value })} /></Field>
+          <Field label="Founder title keywords"><Input value={draft.fallbackTitles} onChange={(e) => setDraft({ ...draft, fallbackTitles: e.target.value })} /></Field>
+        </div>
+      </div>
+
       {problems.length > 0 && (
         <div className="mt-4 rounded-xl border border-destructive/40 bg-destructive/5 p-3 text-sm" data-testid="pack-problems">
           <p className="font-medium">Fix these before saving</p>
@@ -299,6 +362,10 @@ function PackCard({ pack, onEdit, onCopy }: { pack: AdminSignalPack; onEdit: () 
           </li>
         ))}
       </ul>
+      <p className="mt-2 text-xs text-muted-foreground" data-testid="pack-buying-roles">
+        <Users className="mr-1 inline h-3 w-3" />
+        Who buys: {[...pack.buyingRoles.roles.map((role) => role.label).filter((label) => label.toLowerCase() !== "founder"), `Founder (under ${pack.buyingRoles.fallbackUnderHeadcount} staff: first)`].join(" → ")}
+      </p>
     </Card>
   );
 }

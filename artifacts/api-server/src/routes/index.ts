@@ -28,6 +28,7 @@ import feedbackRouter from "./feedback";
 import watchLoopRouter from "./watch-loop";
 import changesRouter from "./changes";
 import instantLeadsRouter from "./instant-leads";
+import adminInstantLeadsRouter from "./admin-instant-leads";
 
 const router: IRouter = Router();
 
@@ -61,6 +62,7 @@ router.use(intelligenceV2Router);
 router.use(watchLoopRouter);
 router.use(changesRouter);
 router.use(instantLeadsRouter);
+router.use(adminInstantLeadsRouter);
 router.use(marketReadinessRouter);
 
 export default router;

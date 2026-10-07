@@ -7,6 +7,7 @@
  */
 import type { AdminSignalDefinition } from './adminSignalDefinition';
 import type { AdminSignalPackSource } from './adminSignalPackSource';
+import type { BuyingRoles } from './buyingRoles';
 
 export interface AdminSignalPack {
   id: string;
@@ -23,4 +24,5 @@ export interface AdminSignalPack {
   createdAt: Date;
   updatedAt: Date;
   definitions: AdminSignalDefinition[];
+  buyingRoles: BuyingRoles;
 }
