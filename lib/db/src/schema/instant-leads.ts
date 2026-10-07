@@ -32,6 +32,8 @@ export type InstantLeadFilterSnapshot = {
   unmapped: { industries: string[]; geographies: string[] };
   /** Activity conditions derived from the pack, by definition code. */
   activity: Array<{ code: string; field: string; type: string; value: unknown }>;
+  /** Provider page cursor, so a resumed run continues the same search. */
+  cursor?: string | null;
 };
 
 export const instantLeadRunsTable = pgTable(

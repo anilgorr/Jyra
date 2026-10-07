@@ -8424,3 +8424,320 @@ export const RequestMarketReadinessWorkerAdvanceResponse = zod.object({
 })
 
 
+/**
+ * The credit price per lead, the balance, the shortfall, every blocker (no ICP, no pack, not enough credits, a run already active, research halted) and the ICP as the data provider will see it, including anything it could not map. No currency: credits only.
+ * @summary What N leads would cost, and what would stop the run
+ */
+export const GetInstantLeadQuoteParams = zod.object({
+  "projectId": zod.coerce.string()
+})
+
+export const getInstantLeadQuoteQueryRequestedDefault = 10;
+
+
+
+export const GetInstantLeadQuoteQueryParams = zod.object({
+  "requested": zod.coerce.number().min(1).default(getInstantLeadQuoteQueryRequestedDefault)
+})
+
+export const GetInstantLeadQuoteResponse = zod.object({
+  "requested": zod.number(),
+  "creditsPerLead": zod.number(),
+  "creditsRequired": zod.number(),
+  "balance": zod.number(),
+  "shortfall": zod.number(),
+  "affordable": zod.number().describe('How many leads the balance allows at this price'),
+  "contactPrices": zod.object({
+  "verified": zod.number(),
+  "catchAll": zod.number()
+}),
+  "blockers": zod.array(zod.object({
+  "code": zod.enum(['NO_ICP', 'NO_OFFERING', 'NO_PACK', 'RUN_ACTIVE', 'RESEARCH_HALTED', 'INSUFFICIENT_CREDITS', 'PROVIDER_NOT_CONFIGURED', 'RESEARCH_BUDGET', 'SCREENING_POOL_FULL', 'BAD_REQUEST']),
+  "message": zod.string()
+})),
+  "icp": zod.object({
+  "summary": zod.array(zod.string()).describe('The ICP as the provider will search it'),
+  "unmapped": zod.object({
+  "industries": zod.array(zod.string()),
+  "geographies": zod.array(zod.string())
+}),
+  "criteriaCount": zod.number(),
+  "icpVersionId": zod.string().nullable()
+}),
+  "pack": zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "version": zod.string()
+}).nullable(),
+  "estimatedMinutes": zod.number(),
+  "pendingCreditRequest": zod.object({
+  "id": zod.string(),
+  "credits": zod.number(),
+  "createdAt": zod.coerce.date()
+}).nullable()
+})
+
+
+/**
+ * @summary The project's runs, newest first
+ */
+export const ListInstantLeadRunsParams = zod.object({
+  "projectId": zod.coerce.string()
+})
+
+export const ListInstantLeadRunsResponse = zod.object({
+  "runs": zod.array(zod.object({
+  "id": zod.string(),
+  "projectId": zod.string(),
+  "status": zod.enum(['QUEUED', 'SEARCHING', 'SCREENING', 'RESEARCHING', 'RANKING', 'DONE', 'PARTIAL', 'FAILED', 'CANCELLED']),
+  "stage": zod.string().describe('The status in plain words'),
+  "working": zod.boolean(),
+  "requested": zod.number(),
+  "delivered": zod.number(),
+  "confirmed": zod.number(),
+  "candidatesFound": zod.number(),
+  "candidatesAccepted": zod.number(),
+  "researched": zod.number(),
+  "etaSeconds": zod.number().nullable(),
+  "widened": zod.boolean(),
+  "credits": zod.object({
+  "perLead": zod.number(),
+  "held": zod.number(),
+  "settled": zod.number()
+}),
+  "unmapped": zod.object({
+  "industries": zod.array(zod.string()),
+  "geographies": zod.array(zod.string())
+}),
+  "errorCode": zod.string().nullable(),
+  "outcomeNote": zod.string().nullable(),
+  "requestedByUserId": zod.string(),
+  "createdAt": zod.coerce.date(),
+  "startedAt": zod.coerce.date().nullable(),
+  "finishedAt": zod.coerce.date().nullable(),
+  "updatedAt": zod.coerce.date()
+})),
+  "credits": zod.object({
+  "balance": zod.number()
+})
+})
+
+
+/**
+ * Holds N times the per-lead price in credits and starts the run. Credits are settled for delivered leads when the run ends; anything undelivered is released. A run behind an active one queues. 402 when credits fall short, 409 when the project is not ready, 503 when the provider or research is unavailable.
+ * @summary Ask for N leads
+ */
+export const CreateInstantLeadRunParams = zod.object({
+  "projectId": zod.coerce.string()
+})
+
+
+
+
+export const CreateInstantLeadRunBody = zod.object({
+  "requested": zod.number().min(1)
+})
+
+export const CreateInstantLeadRunResponse = zod.object({
+  "run": zod.object({
+  "id": zod.string(),
+  "projectId": zod.string(),
+  "status": zod.enum(['QUEUED', 'SEARCHING', 'SCREENING', 'RESEARCHING', 'RANKING', 'DONE', 'PARTIAL', 'FAILED', 'CANCELLED']),
+  "stage": zod.string().describe('The status in plain words'),
+  "working": zod.boolean(),
+  "requested": zod.number(),
+  "delivered": zod.number(),
+  "confirmed": zod.number(),
+  "candidatesFound": zod.number(),
+  "candidatesAccepted": zod.number(),
+  "researched": zod.number(),
+  "etaSeconds": zod.number().nullable(),
+  "widened": zod.boolean(),
+  "credits": zod.object({
+  "perLead": zod.number(),
+  "held": zod.number(),
+  "settled": zod.number()
+}),
+  "unmapped": zod.object({
+  "industries": zod.array(zod.string()),
+  "geographies": zod.array(zod.string())
+}),
+  "errorCode": zod.string().nullable(),
+  "outcomeNote": zod.string().nullable(),
+  "requestedByUserId": zod.string(),
+  "createdAt": zod.coerce.date(),
+  "startedAt": zod.coerce.date().nullable(),
+  "finishedAt": zod.coerce.date().nullable(),
+  "updatedAt": zod.coerce.date()
+}),
+  "queuedBehind": zod.boolean().describe('True when an earlier run is still working and this one waits for it'),
+  "via": zod.enum(['queued', 'in-process'])
+})
+
+
+/**
+ * @summary One run with its leads
+ */
+export const GetInstantLeadRunParams = zod.object({
+  "projectId": zod.coerce.string(),
+  "runId": zod.coerce.string()
+})
+
+export const GetInstantLeadRunResponse = zod.object({
+  "run": zod.object({
+  "id": zod.string(),
+  "projectId": zod.string(),
+  "status": zod.enum(['QUEUED', 'SEARCHING', 'SCREENING', 'RESEARCHING', 'RANKING', 'DONE', 'PARTIAL', 'FAILED', 'CANCELLED']),
+  "stage": zod.string().describe('The status in plain words'),
+  "working": zod.boolean(),
+  "requested": zod.number(),
+  "delivered": zod.number(),
+  "confirmed": zod.number(),
+  "candidatesFound": zod.number(),
+  "candidatesAccepted": zod.number(),
+  "researched": zod.number(),
+  "etaSeconds": zod.number().nullable(),
+  "widened": zod.boolean(),
+  "credits": zod.object({
+  "perLead": zod.number(),
+  "held": zod.number(),
+  "settled": zod.number()
+}),
+  "unmapped": zod.object({
+  "industries": zod.array(zod.string()),
+  "geographies": zod.array(zod.string())
+}),
+  "errorCode": zod.string().nullable(),
+  "outcomeNote": zod.string().nullable(),
+  "requestedByUserId": zod.string(),
+  "createdAt": zod.coerce.date(),
+  "startedAt": zod.coerce.date().nullable(),
+  "finishedAt": zod.coerce.date().nullable(),
+  "updatedAt": zod.coerce.date()
+}),
+  "leads": zod.array(zod.object({
+  "id": zod.string(),
+  "rank": zod.number(),
+  "score": zod.number(),
+  "opportunityState": zod.string().nullable(),
+  "why": zod.array(zod.string()),
+  "signalCodes": zod.array(zod.string()),
+  "company": zod.object({
+  "projectCompanyId": zod.string(),
+  "companyId": zod.string(),
+  "name": zod.string(),
+  "domain": zod.string().nullable(),
+  "website": zod.string().nullable(),
+  "industry": zod.string().nullable(),
+  "employeeCount": zod.number().nullable(),
+  "country": zod.string().nullable()
+}),
+  "contact": zod.object({
+  "status": zod.enum(['NONE', 'VERIFIED', 'CATCH_ALL', 'NAME_ONLY', 'NOT_FOUND']),
+  "credits": zod.number(),
+  "revealedAt": zod.coerce.date().nullable(),
+  "person": zod.object({
+  "name": zod.string(),
+  "title": zod.string().nullable(),
+  "email": zod.string().nullable(),
+  "emailStatus": zod.string(),
+  "linkedinUrl": zod.string().nullable()
+}).nullable()
+})
+}))
+})
+
+
+/**
+ * @summary Stop a run; leads confirmed so far are kept and paid for, the rest of the hold is released
+ */
+export const CancelInstantLeadRunParams = zod.object({
+  "projectId": zod.coerce.string(),
+  "runId": zod.coerce.string()
+})
+
+export const CancelInstantLeadRunResponse = zod.object({
+  "run": zod.object({
+  "id": zod.string(),
+  "projectId": zod.string(),
+  "status": zod.enum(['QUEUED', 'SEARCHING', 'SCREENING', 'RESEARCHING', 'RANKING', 'DONE', 'PARTIAL', 'FAILED', 'CANCELLED']),
+  "stage": zod.string().describe('The status in plain words'),
+  "working": zod.boolean(),
+  "requested": zod.number(),
+  "delivered": zod.number(),
+  "confirmed": zod.number(),
+  "candidatesFound": zod.number(),
+  "candidatesAccepted": zod.number(),
+  "researched": zod.number(),
+  "etaSeconds": zod.number().nullable(),
+  "widened": zod.boolean(),
+  "credits": zod.object({
+  "perLead": zod.number(),
+  "held": zod.number(),
+  "settled": zod.number()
+}),
+  "unmapped": zod.object({
+  "industries": zod.array(zod.string()),
+  "geographies": zod.array(zod.string())
+}),
+  "errorCode": zod.string().nullable(),
+  "outcomeNote": zod.string().nullable(),
+  "requestedByUserId": zod.string(),
+  "createdAt": zod.coerce.date(),
+  "startedAt": zod.coerce.date().nullable(),
+  "finishedAt": zod.coerce.date().nullable(),
+  "updatedAt": zod.coerce.date()
+})
+})
+
+
+/**
+ * @summary The organisation's credit top-up requests
+ */
+export const ListCreditRequestsParams = zod.object({
+  "projectId": zod.coerce.string()
+})
+
+export const ListCreditRequestsResponse = zod.object({
+  "requests": zod.array(zod.object({
+  "id": zod.string(),
+  "credits": zod.number(),
+  "reason": zod.string().nullable(),
+  "status": zod.enum(['PENDING', 'GRANTED', 'DECLINED']),
+  "createdAt": zod.coerce.date(),
+  "resolvedAt": zod.coerce.date().nullable()
+}))
+})
+
+
+/**
+ * Before billing exists, a top-up is a request the admin grants from the Access page. One pending request per organisation; asking again returns the pending one.
+ * @summary Ask JYRA for credits
+ */
+export const CreateCreditRequestParams = zod.object({
+  "projectId": zod.coerce.string()
+})
+
+
+export const createCreditRequestBodyReasonMax = 500;
+
+
+
+export const CreateCreditRequestBody = zod.object({
+  "credits": zod.number().min(1),
+  "reason": zod.string().max(createCreditRequestBodyReasonMax).optional()
+})
+
+export const CreateCreditRequestResponse = zod.object({
+  "request": zod.object({
+  "id": zod.string(),
+  "credits": zod.number(),
+  "reason": zod.string().nullable(),
+  "status": zod.enum(['PENDING', 'GRANTED', 'DECLINED']),
+  "createdAt": zod.coerce.date(),
+  "resolvedAt": zod.coerce.date().nullable()
+}),
+  "alreadyPending": zod.boolean()
+})
+
+

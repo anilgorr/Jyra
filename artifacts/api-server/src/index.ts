@@ -7,6 +7,7 @@ import { ensureDevelopmentFirecrawlProvider } from "./lib/firecrawl-provider-con
 import { retireBrightDataProvider } from "./lib/bright-data-provider-config";
 import { backfillCompanyNormalization } from "./lib/company-normalization-backfill";
 import { queueSettings, startQueue, stopQueue } from "./lib/queue";
+import { resumeInstantLeadRuns, startInstantLeadWorker } from "./lib/instant-leads/runner";
 import { startResearchWorker } from "./lib/research-worker";
 import { ensureDevelopmentCoresignalProvider } from "./lib/coresignal-provider-config";
 import { ensureDevelopmentExpleeProvider } from "./lib/explee-provider-config";
@@ -57,6 +58,7 @@ async function runAsConsumer(): Promise<void> {
   const started = await startQueue(settings);
   if (!started) throw new Error("JYRA_QUEUE_ROLE=consumer but the queue could not start");
   await startResearchWorker(settings);
+  await startInstantLeadWorker(settings);
   logger.info({ concurrency: settings.concurrency }, "Research consumer running; not serving HTTP");
   const shutdown = async (signal: string) => {
     logger.info({ signal }, "Consumer shutting down");
@@ -107,9 +109,19 @@ async function main() {
   // without it the watch loop runs inline exactly as it always has.
   try {
     const settings = queueSettings();
-    if (await startQueue(settings)) await startResearchWorker(settings);
+    if (await startQueue(settings)) { await startResearchWorker(settings); await startInstantLeadWorker(settings); }
   } catch (error) {
     logger.error({ error }, "Queue could not be started; continuing without it");
+  }
+
+  // Instant Leads runs left working by the previous process carry on from
+  // their row: in this process when there is no queue, as jobs when there is.
+  // Never let a resume failure keep the API down.
+  try {
+    const resumed = await resumeInstantLeadRuns();
+    if (resumed.resumed) logger.info(resumed, "Instant Leads runs resumed");
+  } catch (error) {
+    logger.error({ error }, "Instant Leads runs could not be resumed");
   }
 
   // Signal definitions are scoring configuration, not page content. They used

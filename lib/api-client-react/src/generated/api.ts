@@ -62,6 +62,9 @@ import type {
   ConfigureSignalClusterDefinitionRequest,
   ContactEnrichmentResponse,
   CreateAccessGrantBody,
+  CreateCreditRequestRequest,
+  CreateInstantLeadRunRequest,
+  CreateInstantLeadRunResponse,
   CreateLearningPolicyRequest,
   CreateMarketReadinessAdjudicationRequest,
   CreateMarketReadinessBlindReviewRequest,
@@ -73,6 +76,8 @@ import type {
   CreateProjectPersonRequest,
   CreateProjectPersonResponse,
   CreateSignalClusterDefinitionRequest,
+  CreditRequestEnvelope,
+  CreditRequestList,
   CurrentUser,
   DraftAdminSignalPack200,
   DraftAdminSignalPackBody,
@@ -85,6 +90,7 @@ import type {
   ForbiddenResponse,
   GenerateLearningProposalsParams,
   GetAdminQualityDashboardParams,
+  GetInstantLeadQuoteParams,
   GetLearningAnalyticsParams,
   GetProjectScreening424,
   GrantCreditsBody,
@@ -93,6 +99,11 @@ import type {
   IcpCriterionUpdate,
   IcpVersion,
   ImportMarketReadinessOutcomesRequest,
+  InstantLeadQuote,
+  InstantLeadRequestError,
+  InstantLeadRunDetail,
+  InstantLeadRunEnvelope,
+  InstantLeadRunList,
   IntelligenceV2Run,
   IntelligenceV2RunInput,
   InterpretationUnavailableResponse,
@@ -10486,5 +10497,550 @@ export const useRequestMarketReadinessWorkerAdvance = <TError = ErrorType<BadReq
         TContext
       > => {
       return useMutation(getRequestMarketReadinessWorkerAdvanceMutationOptions(options));
+    }
+
+export const getGetInstantLeadQuoteUrl = (projectId: string,
+    params?: GetInstantLeadQuoteParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/projects/${projectId}/instant-leads/quote?${stringifiedParams}` : `/api/projects/${projectId}/instant-leads/quote`
+}
+
+/**
+ * The credit price per lead, the balance, the shortfall, every blocker (no ICP, no pack, not enough credits, a run already active, research halted) and the ICP as the data provider will see it, including anything it could not map. No currency: credits only.
+ * @summary What N leads would cost, and what would stop the run
+ */
+export const getInstantLeadQuote = async (projectId: string,
+    params?: GetInstantLeadQuoteParams, options?: Parameters<typeof customFetch>[1]): Promise<InstantLeadQuote> => {
+
+  return customFetch<InstantLeadQuote>(getGetInstantLeadQuoteUrl(projectId,params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetInstantLeadQuoteQueryKey = (projectId: string,
+    params?: GetInstantLeadQuoteParams,) => {
+    return [
+    `/api/projects/${projectId}/instant-leads/quote`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getGetInstantLeadQuoteQueryOptions = <TData = Awaited<ReturnType<typeof getInstantLeadQuote>>, TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(projectId: string,
+    params?: GetInstantLeadQuoteParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getInstantLeadQuote>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetInstantLeadQuoteQueryKey(projectId,params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getInstantLeadQuote>>> = ({ signal }) => getInstantLeadQuote(projectId,params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: projectId !== null && projectId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getInstantLeadQuote>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetInstantLeadQuoteQueryResult = NonNullable<Awaited<ReturnType<typeof getInstantLeadQuote>>>
+export type GetInstantLeadQuoteQueryError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+
+/**
+ * @summary What N leads would cost, and what would stop the run
+ */
+
+export function useGetInstantLeadQuote<TData = Awaited<ReturnType<typeof getInstantLeadQuote>>, TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(
+ projectId: string,
+    params?: GetInstantLeadQuoteParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getInstantLeadQuote>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetInstantLeadQuoteQueryOptions(projectId,params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getListInstantLeadRunsUrl = (projectId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/instant-leads`
+}
+
+/**
+ * @summary The project's runs, newest first
+ */
+export const listInstantLeadRuns = async (projectId: string, options?: Parameters<typeof customFetch>[1]): Promise<InstantLeadRunList> => {
+
+  return customFetch<InstantLeadRunList>(getListInstantLeadRunsUrl(projectId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListInstantLeadRunsQueryKey = (projectId: string,) => {
+    return [
+    `/api/projects/${projectId}/instant-leads`
+    ] as const;
+    }
+
+
+export const getListInstantLeadRunsQueryOptions = <TData = Awaited<ReturnType<typeof listInstantLeadRuns>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(projectId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listInstantLeadRuns>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListInstantLeadRunsQueryKey(projectId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listInstantLeadRuns>>> = ({ signal }) => listInstantLeadRuns(projectId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: projectId !== null && projectId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listInstantLeadRuns>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListInstantLeadRunsQueryResult = NonNullable<Awaited<ReturnType<typeof listInstantLeadRuns>>>
+export type ListInstantLeadRunsQueryError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+
+/**
+ * @summary The project's runs, newest first
+ */
+
+export function useListInstantLeadRuns<TData = Awaited<ReturnType<typeof listInstantLeadRuns>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(
+ projectId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listInstantLeadRuns>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListInstantLeadRunsQueryOptions(projectId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getCreateInstantLeadRunUrl = (projectId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/instant-leads`
+}
+
+/**
+ * Holds N times the per-lead price in credits and starts the run. Credits are settled for delivered leads when the run ends; anything undelivered is released. A run behind an active one queues. 402 when credits fall short, 409 when the project is not ready, 503 when the provider or research is unavailable.
+ * @summary Ask for N leads
+ */
+export const createInstantLeadRun = async (projectId: string,
+    createInstantLeadRunRequest: CreateInstantLeadRunRequest, options?: Parameters<typeof customFetch>[1]): Promise<CreateInstantLeadRunResponse> => {
+
+  return customFetch<CreateInstantLeadRunResponse>(getCreateInstantLeadRunUrl(projectId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(createInstantLeadRunRequest)
+  }
+);}
+
+
+
+
+
+export const getCreateInstantLeadRunMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | InstantLeadRequestError | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createInstantLeadRun>>, TError,{projectId: string;data: BodyType<CreateInstantLeadRunRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createInstantLeadRun>>, TError,{projectId: string;data: BodyType<CreateInstantLeadRunRequest>}, TContext> => {
+
+const mutationKey = ['createInstantLeadRun'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createInstantLeadRun>>, {projectId: string;data: BodyType<CreateInstantLeadRunRequest>}> = (props) => {
+          const {projectId,data} = props ?? {};
+
+          return  createInstantLeadRun(projectId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateInstantLeadRunMutationResult = NonNullable<Awaited<ReturnType<typeof createInstantLeadRun>>>
+    export type CreateInstantLeadRunMutationBody = BodyType<CreateInstantLeadRunRequest>
+    export type CreateInstantLeadRunMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | InstantLeadRequestError | ForbiddenResponse | NotFoundResponse>
+
+    /**
+ * @summary Ask for N leads
+ */
+export const useCreateInstantLeadRun = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | InstantLeadRequestError | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createInstantLeadRun>>, TError,{projectId: string;data: BodyType<CreateInstantLeadRunRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createInstantLeadRun>>,
+        TError,
+        {projectId: string;data: BodyType<CreateInstantLeadRunRequest>},
+        TContext
+      > => {
+      return useMutation(getCreateInstantLeadRunMutationOptions(options));
+    }
+
+export const getGetInstantLeadRunUrl = (projectId: string,
+    runId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/instant-leads/${runId}`
+}
+
+/**
+ * @summary One run with its leads
+ */
+export const getInstantLeadRun = async (projectId: string,
+    runId: string, options?: Parameters<typeof customFetch>[1]): Promise<InstantLeadRunDetail> => {
+
+  return customFetch<InstantLeadRunDetail>(getGetInstantLeadRunUrl(projectId,runId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetInstantLeadRunQueryKey = (projectId: string,
+    runId: string,) => {
+    return [
+    `/api/projects/${projectId}/instant-leads/${runId}`
+    ] as const;
+    }
+
+
+export const getGetInstantLeadRunQueryOptions = <TData = Awaited<ReturnType<typeof getInstantLeadRun>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(projectId: string,
+    runId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getInstantLeadRun>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetInstantLeadRunQueryKey(projectId,runId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getInstantLeadRun>>> = ({ signal }) => getInstantLeadRun(projectId,runId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: projectId !== null && projectId !== undefined && runId !== null && runId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getInstantLeadRun>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetInstantLeadRunQueryResult = NonNullable<Awaited<ReturnType<typeof getInstantLeadRun>>>
+export type GetInstantLeadRunQueryError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+
+/**
+ * @summary One run with its leads
+ */
+
+export function useGetInstantLeadRun<TData = Awaited<ReturnType<typeof getInstantLeadRun>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(
+ projectId: string,
+    runId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getInstantLeadRun>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetInstantLeadRunQueryOptions(projectId,runId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getCancelInstantLeadRunUrl = (projectId: string,
+    runId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/instant-leads/${runId}/cancel`
+}
+
+/**
+ * @summary Stop a run; leads confirmed so far are kept and paid for, the rest of the hold is released
+ */
+export const cancelInstantLeadRun = async (projectId: string,
+    runId: string, options?: Parameters<typeof customFetch>[1]): Promise<InstantLeadRunEnvelope> => {
+
+  return customFetch<InstantLeadRunEnvelope>(getCancelInstantLeadRunUrl(projectId,runId),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getCancelInstantLeadRunMutationOptions = <TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof cancelInstantLeadRun>>, TError,{projectId: string;runId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof cancelInstantLeadRun>>, TError,{projectId: string;runId: string}, TContext> => {
+
+const mutationKey = ['cancelInstantLeadRun'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof cancelInstantLeadRun>>, {projectId: string;runId: string}> = (props) => {
+          const {projectId,runId} = props ?? {};
+
+          return  cancelInstantLeadRun(projectId,runId,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CancelInstantLeadRunMutationResult = NonNullable<Awaited<ReturnType<typeof cancelInstantLeadRun>>>
+
+    export type CancelInstantLeadRunMutationError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+    /**
+ * @summary Stop a run; leads confirmed so far are kept and paid for, the rest of the hold is released
+ */
+export const useCancelInstantLeadRun = <TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof cancelInstantLeadRun>>, TError,{projectId: string;runId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof cancelInstantLeadRun>>,
+        TError,
+        {projectId: string;runId: string},
+        TContext
+      > => {
+      return useMutation(getCancelInstantLeadRunMutationOptions(options));
+    }
+
+export const getListCreditRequestsUrl = (projectId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/credit-requests`
+}
+
+/**
+ * @summary The organisation's credit top-up requests
+ */
+export const listCreditRequests = async (projectId: string, options?: Parameters<typeof customFetch>[1]): Promise<CreditRequestList> => {
+
+  return customFetch<CreditRequestList>(getListCreditRequestsUrl(projectId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListCreditRequestsQueryKey = (projectId: string,) => {
+    return [
+    `/api/projects/${projectId}/credit-requests`
+    ] as const;
+    }
+
+
+export const getListCreditRequestsQueryOptions = <TData = Awaited<ReturnType<typeof listCreditRequests>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(projectId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listCreditRequests>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListCreditRequestsQueryKey(projectId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listCreditRequests>>> = ({ signal }) => listCreditRequests(projectId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: projectId !== null && projectId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listCreditRequests>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListCreditRequestsQueryResult = NonNullable<Awaited<ReturnType<typeof listCreditRequests>>>
+export type ListCreditRequestsQueryError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+
+/**
+ * @summary The organisation's credit top-up requests
+ */
+
+export function useListCreditRequests<TData = Awaited<ReturnType<typeof listCreditRequests>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(
+ projectId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listCreditRequests>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListCreditRequestsQueryOptions(projectId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getCreateCreditRequestUrl = (projectId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/credit-requests`
+}
+
+/**
+ * Before billing exists, a top-up is a request the admin grants from the Access page. One pending request per organisation; asking again returns the pending one.
+ * @summary Ask JYRA for credits
+ */
+export const createCreditRequest = async (projectId: string,
+    createCreditRequestRequest: CreateCreditRequestRequest, options?: Parameters<typeof customFetch>[1]): Promise<CreditRequestEnvelope> => {
+
+  return customFetch<CreditRequestEnvelope>(getCreateCreditRequestUrl(projectId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(createCreditRequestRequest)
+  }
+);}
+
+
+
+
+
+export const getCreateCreditRequestMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createCreditRequest>>, TError,{projectId: string;data: BodyType<CreateCreditRequestRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createCreditRequest>>, TError,{projectId: string;data: BodyType<CreateCreditRequestRequest>}, TContext> => {
+
+const mutationKey = ['createCreditRequest'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createCreditRequest>>, {projectId: string;data: BodyType<CreateCreditRequestRequest>}> = (props) => {
+          const {projectId,data} = props ?? {};
+
+          return  createCreditRequest(projectId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateCreditRequestMutationResult = NonNullable<Awaited<ReturnType<typeof createCreditRequest>>>
+    export type CreateCreditRequestMutationBody = BodyType<CreateCreditRequestRequest>
+    export type CreateCreditRequestMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+    /**
+ * @summary Ask JYRA for credits
+ */
+export const useCreateCreditRequest = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createCreditRequest>>, TError,{projectId: string;data: BodyType<CreateCreditRequestRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createCreditRequest>>,
+        TError,
+        {projectId: string;data: BodyType<CreateCreditRequestRequest>},
+        TContext
+      > => {
+      return useMutation(getCreateCreditRequestMutationOptions(options));
     }
 

@@ -5,6 +5,245 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+export type InstantLeadBlockerCode = typeof InstantLeadBlockerCode[keyof typeof InstantLeadBlockerCode];
+
+
+export const InstantLeadBlockerCode = {
+  NO_ICP: 'NO_ICP',
+  NO_OFFERING: 'NO_OFFERING',
+  NO_PACK: 'NO_PACK',
+  RUN_ACTIVE: 'RUN_ACTIVE',
+  RESEARCH_HALTED: 'RESEARCH_HALTED',
+  INSUFFICIENT_CREDITS: 'INSUFFICIENT_CREDITS',
+  PROVIDER_NOT_CONFIGURED: 'PROVIDER_NOT_CONFIGURED',
+  RESEARCH_BUDGET: 'RESEARCH_BUDGET',
+  SCREENING_POOL_FULL: 'SCREENING_POOL_FULL',
+  BAD_REQUEST: 'BAD_REQUEST',
+} as const;
+
+export interface InstantLeadBlocker {
+  code: InstantLeadBlockerCode;
+  message: string;
+}
+
+export interface InstantLeadUnmapped {
+  industries: string[];
+  geographies: string[];
+}
+
+export type InstantLeadQuoteContactPrices = {
+  verified: number;
+  catchAll: number;
+};
+
+export type InstantLeadQuoteIcp = {
+  /** The ICP as the provider will search it */
+  summary: string[];
+  unmapped: InstantLeadUnmapped;
+  criteriaCount: number;
+  icpVersionId: string | null;
+};
+
+export type InstantLeadQuotePack = {
+  id: string;
+  name: string;
+  version: string;
+} | null;
+
+export type InstantLeadQuotePendingCreditRequest = {
+  id: string;
+  credits: number;
+  createdAt: string;
+} | null;
+
+export interface InstantLeadQuote {
+  requested: number;
+  creditsPerLead: number;
+  creditsRequired: number;
+  balance: number;
+  shortfall: number;
+  /** How many leads the balance allows at this price */
+  affordable: number;
+  contactPrices: InstantLeadQuoteContactPrices;
+  blockers: InstantLeadBlocker[];
+  icp: InstantLeadQuoteIcp;
+  pack: InstantLeadQuotePack;
+  estimatedMinutes: number;
+  pendingCreditRequest: InstantLeadQuotePendingCreditRequest;
+}
+
+export type InstantLeadRunStatus = typeof InstantLeadRunStatus[keyof typeof InstantLeadRunStatus];
+
+
+export const InstantLeadRunStatus = {
+  QUEUED: 'QUEUED',
+  SEARCHING: 'SEARCHING',
+  SCREENING: 'SCREENING',
+  RESEARCHING: 'RESEARCHING',
+  RANKING: 'RANKING',
+  DONE: 'DONE',
+  PARTIAL: 'PARTIAL',
+  FAILED: 'FAILED',
+  CANCELLED: 'CANCELLED',
+} as const;
+
+export type InstantLeadRunCredits = {
+  perLead: number;
+  held: number;
+  settled: number;
+};
+
+export interface InstantLeadRun {
+  id: string;
+  projectId: string;
+  status: InstantLeadRunStatus;
+  /** The status in plain words */
+  stage: string;
+  working: boolean;
+  requested: number;
+  delivered: number;
+  confirmed: number;
+  candidatesFound: number;
+  candidatesAccepted: number;
+  researched: number;
+  etaSeconds: number | null;
+  widened: boolean;
+  credits: InstantLeadRunCredits;
+  unmapped: InstantLeadUnmapped;
+  errorCode: string | null;
+  outcomeNote: string | null;
+  requestedByUserId: string;
+  createdAt: string;
+  startedAt: string | null;
+  finishedAt: string | null;
+  updatedAt: string;
+}
+
+export interface InstantLeadContactPerson {
+  name: string;
+  title: string | null;
+  email: string | null;
+  emailStatus: string;
+  linkedinUrl: string | null;
+}
+
+export type InstantLeadCompany = {
+  projectCompanyId: string;
+  companyId: string;
+  name: string;
+  domain: string | null;
+  website: string | null;
+  industry: string | null;
+  employeeCount: number | null;
+  country: string | null;
+};
+
+export type InstantLeadContactStatus = typeof InstantLeadContactStatus[keyof typeof InstantLeadContactStatus];
+
+
+export const InstantLeadContactStatus = {
+  NONE: 'NONE',
+  VERIFIED: 'VERIFIED',
+  CATCH_ALL: 'CATCH_ALL',
+  NAME_ONLY: 'NAME_ONLY',
+  NOT_FOUND: 'NOT_FOUND',
+} as const;
+
+export type InstantLeadContact = {
+  status: InstantLeadContactStatus;
+  credits: number;
+  revealedAt: string | null;
+  person: InstantLeadContactPerson | null;
+};
+
+export interface InstantLead {
+  id: string;
+  rank: number;
+  score: number;
+  opportunityState: string | null;
+  why: string[];
+  signalCodes: string[];
+  company: InstantLeadCompany;
+  contact: InstantLeadContact;
+}
+
+export type InstantLeadRunListCredits = {
+  balance: number;
+};
+
+export interface InstantLeadRunList {
+  runs: InstantLeadRun[];
+  credits: InstantLeadRunListCredits;
+}
+
+export interface InstantLeadRunDetail {
+  run: InstantLeadRun;
+  leads: InstantLead[];
+}
+
+export interface InstantLeadRunEnvelope {
+  run: InstantLeadRun;
+}
+
+export interface CreateInstantLeadRunRequest {
+  /** @minimum 1 */
+  requested: number;
+}
+
+export type CreateInstantLeadRunResponseVia = typeof CreateInstantLeadRunResponseVia[keyof typeof CreateInstantLeadRunResponseVia];
+
+
+export const CreateInstantLeadRunResponseVia = {
+  queued: 'queued',
+  'in-process': 'in-process',
+} as const;
+
+export interface CreateInstantLeadRunResponse {
+  run: InstantLeadRun;
+  /** True when an earlier run is still working and this one waits for it */
+  queuedBehind: boolean;
+  via: CreateInstantLeadRunResponseVia;
+}
+
+export interface InstantLeadRequestError {
+  error: string;
+  code: string;
+}
+
+export type CreditRequestStatus = typeof CreditRequestStatus[keyof typeof CreditRequestStatus];
+
+
+export const CreditRequestStatus = {
+  PENDING: 'PENDING',
+  GRANTED: 'GRANTED',
+  DECLINED: 'DECLINED',
+} as const;
+
+export interface CreditRequest {
+  id: string;
+  credits: number;
+  reason: string | null;
+  status: CreditRequestStatus;
+  createdAt: string;
+  resolvedAt: string | null;
+}
+
+export interface CreateCreditRequestRequest {
+  /** @minimum 1 */
+  credits: number;
+  /** @maxLength 500 */
+  reason?: string;
+}
+
+export interface CreditRequestEnvelope {
+  request: CreditRequest;
+  alreadyPending: boolean;
+}
+
+export interface CreditRequestList {
+  requests: CreditRequest[];
+}
+
 export type MarketReadinessCampaignState = typeof MarketReadinessCampaignState[keyof typeof MarketReadinessCampaignState];
 
 
@@ -5223,5 +5462,12 @@ scope?: LearningScopeParameter;
  * Optional immutable Intelligence Pack version for MARKET scope; omit for the market-wide aggregate.
  */
 intelligencePackVersionId?: IntelligencePackVersionIdParameter;
+};
+
+export type GetInstantLeadQuoteParams = {
+/**
+ * @minimum 1
+ */
+requested?: number;
 };
 

@@ -40,6 +40,8 @@ tags:
     description: Development-only JYRA Intelligence Core V2 inspection
   - name: market-readiness
     description: Controlled market-readiness campaign evaluation
+  - name: instant-leads
+    description: Credit-paid runs that find N accounts showing intent now, and the contacts behind them
 paths:
   /projects/{projectId}/companies/{projectCompanyId}/intelligence-v2:
     get:
@@ -2821,8 +2823,413 @@ paths:
     put: { operationId: updateMarketReadinessRollout, tags: [market-readiness], security: [{ clerkSession: [] }], parameters: [{ $ref: "#/components/parameters/ProjectId" }, { $ref: "#/components/parameters/MarketReadinessCampaignId" }], requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/UpdateMarketReadinessRolloutRequest" } } } }, responses: { "200": { description: Rollout decision, content: { application/json: { schema: { $ref: "#/components/schemas/MarketReadinessRolloutDecision" } } } }, "400": { $ref: "#/components/responses/BadRequest" }, "401": { $ref: "#/components/responses/Unauthorized" }, "403": { $ref: "#/components/responses/Forbidden" }, "404": { $ref: "#/components/responses/NotFound" } } }
   /projects/{projectId}/market-readiness/campaigns/{campaignId}/advance-worker:
     post: { operationId: requestMarketReadinessWorkerAdvance, summary: Advance one explicit development-only Market Readiness work lease, tags: [market-readiness], security: [{ clerkSession: [] }], parameters: [{ $ref: "#/components/parameters/ProjectId" }, { $ref: "#/components/parameters/MarketReadinessCampaignId" }], responses: { "200": { description: Actual progress from one explicitly requested worker lease, content: { application/json: { schema: { $ref: "#/components/schemas/MarketReadinessWorkerAdvance" } } } }, "400": { $ref: "#/components/responses/BadRequest" }, "401": { $ref: "#/components/responses/Unauthorized" }, "403": { $ref: "#/components/responses/Forbidden" }, "404": { $ref: "#/components/responses/NotFound" } } }
+  /projects/{projectId}/instant-leads/quote:
+    get:
+      operationId: getInstantLeadQuote
+      tags: [instant-leads]
+      summary: What N leads would cost, and what would stop the run
+      description: >-
+        The credit price per lead, the balance, the shortfall, every blocker (no ICP, no pack,
+        not enough credits, a run already active, research halted) and the ICP as the data
+        provider will see it, including anything it could not map. No currency: credits only.
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/ProjectId" }
+        - name: requested
+          in: query
+          required: false
+          schema: { type: number, minimum: 1, default: 10 }
+      responses:
+        "200":
+          description: The quote
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/InstantLeadQuote" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /projects/{projectId}/instant-leads:
+    get:
+      operationId: listInstantLeadRuns
+      tags: [instant-leads]
+      summary: The project's runs, newest first
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/ProjectId" }
+      responses:
+        "200":
+          description: Runs and the credit balance
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/InstantLeadRunList" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+    post:
+      operationId: createInstantLeadRun
+      tags: [instant-leads]
+      summary: Ask for N leads
+      description: >-
+        Holds N times the per-lead price in credits and starts the run. Credits are settled
+        for delivered leads when the run ends; anything undelivered is released. A run behind
+        an active one queues. 402 when credits fall short, 409 when the project is not ready,
+        503 when the provider or research is unavailable.
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/ProjectId" }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CreateInstantLeadRunRequest" }
+      responses:
+        "201":
+          description: The run, queued or started
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CreateInstantLeadRunResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "402":
+          description: Not enough credits
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/InstantLeadRequestError" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409":
+          description: The project is not ready for a run
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/InstantLeadRequestError" }
+        "503":
+          description: The provider or research is unavailable
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/InstantLeadRequestError" }
+  /projects/{projectId}/instant-leads/{runId}:
+    get:
+      operationId: getInstantLeadRun
+      tags: [instant-leads]
+      summary: One run with its leads
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/ProjectId" }
+        - { $ref: "#/components/parameters/InstantLeadRunId" }
+      responses:
+        "200":
+          description: The run and its leads so far
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/InstantLeadRunDetail" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /projects/{projectId}/instant-leads/{runId}/cancel:
+    post:
+      operationId: cancelInstantLeadRun
+      tags: [instant-leads]
+      summary: Stop a run; leads confirmed so far are kept and paid for, the rest of the hold is released
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/ProjectId" }
+        - { $ref: "#/components/parameters/InstantLeadRunId" }
+      responses:
+        "200":
+          description: The run after the cancel
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/InstantLeadRunEnvelope" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /projects/{projectId}/credit-requests:
+    get:
+      operationId: listCreditRequests
+      tags: [instant-leads]
+      summary: The organisation's credit top-up requests
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/ProjectId" }
+      responses:
+        "200":
+          description: Requests, newest first
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CreditRequestList" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+    post:
+      operationId: createCreditRequest
+      tags: [instant-leads]
+      summary: Ask JYRA for credits
+      description: >-
+        Before billing exists, a top-up is a request the admin grants from the Access page.
+        One pending request per organisation; asking again returns the pending one.
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/ProjectId" }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CreateCreditRequestRequest" }
+      responses:
+        "200":
+          description: A request was already pending; it is returned
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CreditRequestEnvelope" }
+        "201":
+          description: The request, now waiting for an admin
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CreditRequestEnvelope" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
 components:
   schemas:
+    InstantLeadBlocker:
+      type: object
+      additionalProperties: false
+      required: [code, message]
+      properties:
+        code:
+          type: string
+          enum: [NO_ICP, NO_OFFERING, NO_PACK, RUN_ACTIVE, RESEARCH_HALTED, INSUFFICIENT_CREDITS, PROVIDER_NOT_CONFIGURED, RESEARCH_BUDGET, SCREENING_POOL_FULL, BAD_REQUEST]
+        message: { type: string }
+    InstantLeadUnmapped:
+      type: object
+      additionalProperties: false
+      required: [industries, geographies]
+      properties:
+        industries: { type: array, items: { type: string } }
+        geographies: { type: array, items: { type: string } }
+    InstantLeadQuote:
+      type: object
+      additionalProperties: false
+      required: [requested, creditsPerLead, creditsRequired, balance, shortfall, affordable, contactPrices, blockers, icp, pack, estimatedMinutes, pendingCreditRequest]
+      properties:
+        requested: { type: number }
+        creditsPerLead: { type: number }
+        creditsRequired: { type: number }
+        balance: { type: number }
+        shortfall: { type: number }
+        affordable: { type: number, description: How many leads the balance allows at this price }
+        contactPrices:
+          type: object
+          additionalProperties: false
+          required: [verified, catchAll]
+          properties:
+            verified: { type: number }
+            catchAll: { type: number }
+        blockers:
+          type: array
+          items: { $ref: "#/components/schemas/InstantLeadBlocker" }
+        icp:
+          type: object
+          additionalProperties: false
+          required: [summary, unmapped, criteriaCount, icpVersionId]
+          properties:
+            summary: { type: array, items: { type: string }, description: The ICP as the provider will search it, one line per filter }
+            unmapped: { $ref: "#/components/schemas/InstantLeadUnmapped" }
+            criteriaCount: { type: number }
+            icpVersionId: { type: string, nullable: true }
+        pack:
+          type: object
+          nullable: true
+          additionalProperties: false
+          required: [id, name, version]
+          properties:
+            id: { type: string }
+            name: { type: string }
+            version: { type: string }
+        estimatedMinutes: { type: number }
+        pendingCreditRequest:
+          type: object
+          nullable: true
+          additionalProperties: false
+          required: [id, credits, createdAt]
+          properties:
+            id: { type: string }
+            credits: { type: number }
+            createdAt: { type: string, format: date-time }
+    InstantLeadRunStatus:
+      type: string
+      enum: [QUEUED, SEARCHING, SCREENING, RESEARCHING, RANKING, DONE, PARTIAL, FAILED, CANCELLED]
+    InstantLeadRun:
+      type: object
+      additionalProperties: false
+      required: [id, projectId, status, stage, working, requested, delivered, confirmed, candidatesFound, candidatesAccepted, researched, etaSeconds, widened, credits, unmapped, errorCode, outcomeNote, requestedByUserId, createdAt, startedAt, finishedAt, updatedAt]
+      properties:
+        id: { type: string }
+        projectId: { type: string }
+        status: { $ref: "#/components/schemas/InstantLeadRunStatus" }
+        stage: { type: string, description: The status in plain words }
+        working: { type: boolean }
+        requested: { type: number }
+        delivered: { type: number }
+        confirmed: { type: number }
+        candidatesFound: { type: number }
+        candidatesAccepted: { type: number }
+        researched: { type: number }
+        etaSeconds: { type: number, nullable: true }
+        widened: { type: boolean }
+        credits:
+          type: object
+          additionalProperties: false
+          required: [perLead, held, settled]
+          properties:
+            perLead: { type: number }
+            held: { type: number }
+            settled: { type: number }
+        unmapped: { $ref: "#/components/schemas/InstantLeadUnmapped" }
+        errorCode: { type: string, nullable: true }
+        outcomeNote: { type: string, nullable: true }
+        requestedByUserId: { type: string }
+        createdAt: { type: string, format: date-time }
+        startedAt: { type: string, format: date-time, nullable: true }
+        finishedAt: { type: string, format: date-time, nullable: true }
+        updatedAt: { type: string, format: date-time }
+    InstantLeadContactPerson:
+      type: object
+      additionalProperties: false
+      required: [name, title, email, emailStatus, linkedinUrl]
+      properties:
+        name: { type: string }
+        title: { type: string, nullable: true }
+        email: { type: string, nullable: true }
+        emailStatus: { type: string }
+        linkedinUrl: { type: string, nullable: true }
+    InstantLead:
+      type: object
+      additionalProperties: false
+      required: [id, rank, score, opportunityState, why, signalCodes, company, contact]
+      properties:
+        id: { type: string }
+        rank: { type: number }
+        score: { type: number }
+        opportunityState: { type: string, nullable: true }
+        why: { type: array, items: { type: string } }
+        signalCodes: { type: array, items: { type: string } }
+        company:
+          type: object
+          additionalProperties: false
+          required: [projectCompanyId, companyId, name, domain, website, industry, employeeCount, country]
+          properties:
+            projectCompanyId: { type: string }
+            companyId: { type: string }
+            name: { type: string }
+            domain: { type: string, nullable: true }
+            website: { type: string, nullable: true }
+            industry: { type: string, nullable: true }
+            employeeCount: { type: number, nullable: true }
+            country: { type: string, nullable: true }
+        contact:
+          type: object
+          additionalProperties: false
+          required: [status, credits, revealedAt, person]
+          properties:
+            status:
+              type: string
+              enum: [NONE, VERIFIED, CATCH_ALL, NAME_ONLY, NOT_FOUND]
+            credits: { type: number }
+            revealedAt: { type: string, format: date-time, nullable: true }
+            person:
+              nullable: true
+              allOf:
+                - $ref: "#/components/schemas/InstantLeadContactPerson"
+    InstantLeadRunList:
+      type: object
+      additionalProperties: false
+      required: [runs, credits]
+      properties:
+        runs:
+          type: array
+          items: { $ref: "#/components/schemas/InstantLeadRun" }
+        credits:
+          type: object
+          additionalProperties: false
+          required: [balance]
+          properties:
+            balance: { type: number }
+    InstantLeadRunDetail:
+      type: object
+      additionalProperties: false
+      required: [run, leads]
+      properties:
+        run: { $ref: "#/components/schemas/InstantLeadRun" }
+        leads:
+          type: array
+          items: { $ref: "#/components/schemas/InstantLead" }
+    InstantLeadRunEnvelope:
+      type: object
+      additionalProperties: false
+      required: [run]
+      properties:
+        run: { $ref: "#/components/schemas/InstantLeadRun" }
+    CreateInstantLeadRunRequest:
+      type: object
+      additionalProperties: false
+      required: [requested]
+      properties:
+        requested: { type: number, minimum: 1 }
+    CreateInstantLeadRunResponse:
+      type: object
+      additionalProperties: false
+      required: [run, queuedBehind, via]
+      properties:
+        run: { $ref: "#/components/schemas/InstantLeadRun" }
+        queuedBehind: { type: boolean, description: True when an earlier run is still working and this one waits for it }
+        via:
+          type: string
+          enum: [queued, in-process]
+    InstantLeadRequestError:
+      type: object
+      additionalProperties: false
+      required: [error, code]
+      properties:
+        error: { type: string }
+        code: { type: string }
+    CreditRequest:
+      type: object
+      additionalProperties: false
+      required: [id, credits, reason, status, createdAt, resolvedAt]
+      properties:
+        id: { type: string }
+        credits: { type: number }
+        reason: { type: string, nullable: true }
+        status:
+          type: string
+          enum: [PENDING, GRANTED, DECLINED]
+        createdAt: { type: string, format: date-time }
+        resolvedAt: { type: string, format: date-time, nullable: true }
+    CreateCreditRequestRequest:
+      type: object
+      additionalProperties: false
+      required: [credits]
+      properties:
+        credits: { type: number, minimum: 1 }
+        reason: { type: string, maxLength: 500 }
+    CreditRequestEnvelope:
+      type: object
+      additionalProperties: false
+      required: [request, alreadyPending]
+      properties:
+        request: { $ref: "#/components/schemas/CreditRequest" }
+        alreadyPending: { type: boolean }
+    CreditRequestList:
+      type: object
+      additionalProperties: false
+      required: [requests]
+      properties:
+        requests:
+          type: array
+          items: { $ref: "#/components/schemas/CreditRequest" }
     MarketReadinessCampaign:
       type: object
       required: [id, organizationId, projectId, name, state, discoveryMode, targetCount, paidCapCents, spentCents, reservedCents, outcomeMode, freezeHash, frozenAt, frozenBy, createdBy, createdAt, updatedAt]
@@ -6144,6 +6551,12 @@ components:
         type: string
     ProjectId:
       name: projectId
+      in: path
+      required: true
+      schema:
+        type: string
+    InstantLeadRunId:
+      name: runId
       in: path
       required: true
       schema:

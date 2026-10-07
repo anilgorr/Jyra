@@ -36,6 +36,7 @@ function discover() {
       if (!src.includes("node:assert")) return false;          // not an assertion suite
       if (src.includes("assertDevelopmentDatabase")) return false; // needs the real dev DB
       if (src.includes("@requires-database")) return false;    // declared DB-backed
+      if (src.includes("@hermetic")) return true;              // names tables but answers them in memory (scripts/lib/memdb.mjs)
       if (/\bh\.db\b|\bawait db\.|getDb\(|[A-Za-z]+Table\b/.test(src)) return false; // exercises the DB directly
       return true;
     })
