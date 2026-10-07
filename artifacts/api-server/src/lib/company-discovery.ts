@@ -910,6 +910,18 @@ function candidateReport(
   };
 }
 
+async function queriesAlreadyRun(projectId: string, plan: DiscoveryPlan): Promise<number> {
+  const [row] = await db.select({ total: sql<number>`coalesce(sum(jsonb_array_length(${companyDiscoveryRunsTable.queries})), 0)::int` })
+    .from(companyDiscoveryRunsTable)
+    .where(and(
+      eq(companyDiscoveryRunsTable.projectId, projectId),
+      eq(companyDiscoveryRunsTable.status, "SUCCEEDED"),
+      plan.businessTwinVersionId ? eq(companyDiscoveryRunsTable.businessTwinVersionId, plan.businessTwinVersionId) : sql`true`,
+      plan.icpVersionId ? eq(companyDiscoveryRunsTable.icpVersionId, plan.icpVersionId) : sql`true`,
+    ));
+  return Number(row?.total ?? 0);
+}
+
 export async function discoverCompaniesForProject(input: DiscoveryInput): Promise<DiscoveryResult> {
   const now = input.now ?? new Date();
   // Discovery is bounded by what the plan's watch pool has room for. Clamping
@@ -937,8 +949,14 @@ export async function discoverCompaniesForProject(input: DiscoveryInput): Promis
   const plan = await buildDiscoveryPlan(input.projectId, readiness);
   const discoveryCallLimit = Math.max(1, Math.min(5, Math.ceil(maxProviderCalls / 2)));
   const availableQueries = input.queryOverrides?.length ? input.queryOverrides : plan.queries;
+  // Each click picks up where the last one stopped. The rotation existed
+  // but nothing drove it: the route never passed an offset, so the first
+  // pilot customer clicked three times, ran the same three queries three
+  // times, and got two new companies for his third ₹2. The offset is the
+  // number of queries already run against this exact Twin + ICP, so an
+  // ICP edit starts the sweep over.
   const queryOffset = availableQueries.length
-    ? Math.max(0, input.queryOffset ?? 0) % availableQueries.length
+    ? Math.max(0, input.queryOffset ?? await queriesAlreadyRun(input.projectId, plan)) % availableQueries.length
     : 0;
   const rotatedQueries = [
     ...availableQueries.slice(queryOffset),
