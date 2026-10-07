@@ -275,11 +275,54 @@ function textArray(value: unknown): string[] {
 }
 
 function splitList(value: string): string[] {
+  // Newlines split too: a Business Twin answer typed one region per line
+  // ("Middle East⏎India") reached the search provider as one place.
   return value
     .replace(/\band\b/gi, ",")
-    .split(/[,;]/)
+    .split(/[,;\n\r]/)
     .map((item) => item.trim().replace(/[.]+$/, ""))
     .filter(Boolean);
+}
+
+/**
+ * Where to look and how big, from the ICP the customer accepted - falling
+ * back to the Business Twin's free text only when the ICP says nothing.
+ *
+ * The first pilot customer's ICP said "Middle East, India" and 10-200
+ * employees; discovery searched "Middle East⏎India" at 10-50, because it
+ * read both from free text and never looked at the criteria the customer
+ * had just reviewed and accepted. The criteria are the authority: they are
+ * structured, they are what the screening step scores against, and they
+ * are what the customer saw.
+ */
+export function discoveryTargetsFromCriteria(input: {
+  criteria: Array<{ dimension: string; operator: string; value: unknown; accepted: boolean }>;
+  rawTargetGeographies: string;
+  assumptionText: string;
+}): { geographies: string[]; employeeRange: CompanyDiscoveryStrategy["employeeRange"] } {
+  const accepted = input.criteria.filter((criterion) => criterion.accepted);
+  const listValue = (value: unknown): string[] => Array.isArray(value)
+    ? value.flatMap((item) => splitList(String(item)))
+    : typeof value === "string" ? splitList(value) : [];
+  const geographyFromIcp = [...new Set(accepted
+    .filter((criterion) => criterion.dimension === "geography")
+    .flatMap((criterion) => listValue(criterion.value)))];
+  const geographies = geographyFromIcp.length ? geographyFromIcp : splitList(input.rawTargetGeographies);
+
+  const sizeCriterion = accepted.find((criterion) => criterion.dimension === "employee_count");
+  const fromText = employeeRangeFromText(input.assumptionText);
+  let employeeRange = fromText;
+  if (sizeCriterion) {
+    const value = sizeCriterion.value as { min?: unknown; max?: unknown } | number | string | null;
+    const number = (raw: unknown) => { const n = typeof raw === "string" ? Number(raw.replace(/,/g, "")) : raw; return typeof n === "number" && Number.isFinite(n) ? n : undefined; };
+    const operator = sizeCriterion.operator.toUpperCase();
+    const minimum = value && typeof value === "object" ? number(value.min) : operator.startsWith("GT") || operator === ">=" || operator === ">" ? number(value) : undefined;
+    const maximum = value && typeof value === "object" ? number(value.max) : operator.startsWith("LT") || operator === "<=" || operator === "<" ? number(value) : undefined;
+    if (minimum !== undefined || maximum !== undefined) {
+      employeeRange = { ...fromText, minimum, maximum };
+    }
+  }
+  return { geographies, employeeRange };
 }
 
 function employeeRangeFromText(text: string): CompanyDiscoveryStrategy["employeeRange"] {
@@ -337,7 +380,8 @@ export async function buildDiscoveryPlan(projectId: string, resolved?: ProjectSe
   ].filter(Boolean).join(" ");
   const acceptedCriteria = criteria.filter((criterion) => criterion.accepted);
   const sellerIndustry = textValue(raw.industry);
-  const geographies = splitList(textValue(raw.targetGeographies));
+  const targets = discoveryTargetsFromCriteria({ criteria, rawTargetGeographies: textValue(raw.targetGeographies), assumptionText });
+  const geographies = targets.geographies;
   const acceptedIndustryValues = acceptedCriteria
     .filter((criterion) => criterion.dimension === "industry")
     .flatMap((criterion) => Array.isArray(criterion.value)
@@ -347,7 +391,7 @@ export async function buildDiscoveryPlan(projectId: string, resolved?: ProjectSe
     ...acceptedIndustryValues,
     ...industriesFromText(assumptionText),
   ])];
-  const employeeRange = employeeRangeFromText(assumptionText);
+  const employeeRange = targets.employeeRange;
   const acceptedTechnologyValues = acceptedCriteria
     .filter((criterion) => criterion.dimension === "technology")
     .flatMap((criterion) => Array.isArray(criterion.value)
