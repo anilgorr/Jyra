@@ -58,7 +58,28 @@ export const DEFAULT_CONTACT_DEPS: Omit<ContactDeps, "client"> = {
 };
 
 /** Crustdata's levels, most senior first. */
-const SENIORITY_ORDER = ["cxo", "owner / partner", "vice president", "director", "manager"];
+/**
+ * Crustdata's live seniority vocabulary (the API refused "Manager" on the
+ * first reveal: it has two manager levels). Most senior first. Packs may
+ * still say "Manager"; `expandSeniority` turns that into the two live values.
+ */
+export const CRUSTDATA_SENIORITY_LEVELS = ["CXO", "Owner / Partner", "Vice President", "Director", "Strategic", "Experienced Manager", "Senior", "Entry Level Manager", "Entry Level", "In Training"] as const;
+const SENIORITY_ORDER = CRUSTDATA_SENIORITY_LEVELS.map((level) => level.toLowerCase());
+const SENIORITY_ALIASES: Record<string, readonly string[]> = {
+  manager: ["Experienced Manager", "Entry Level Manager"], managers: ["Experienced Manager", "Entry Level Manager"],
+  "senior manager": ["Experienced Manager"], vp: ["Vice President"], "c-level": ["CXO"], "c-suite": ["CXO"], owner: ["Owner / Partner"], partner: ["Owner / Partner"],
+};
+/** Pack levels → live values, case-insensitive, aliases expanded, unknown levels dropped. */
+export function expandSeniority(levels: readonly string[]): string[] {
+  const out = new Set<string>();
+  for (const raw of levels) {
+    const key = raw.trim().toLowerCase();
+    const live = CRUSTDATA_SENIORITY_LEVELS.find((level) => level.toLowerCase() === key);
+    if (live) { out.add(live); continue; }
+    for (const alias of SENIORITY_ALIASES[key] ?? []) out.add(alias);
+  }
+  return [...out];
+}
 
 const FOUNDER_ROLE: BuyingRole = { label: "Founder", seniorityLevels: ["CXO", "Owner / Partner"], functionCategories: [], titleKeywords: ["founder", "co-founder", "ceo", "managing director", "owner", "managing partner"] };
 
@@ -73,7 +94,7 @@ export function rolesFor(buying: BuyingRoles | null | undefined, headcount: numb
 
 /** The one search that covers every role: current employer by domain, any of the roles' seniority levels. */
 export function personSearchFilters(domain: string, roles: BuyingRole[]) {
-  const seniorities = [...new Set(roles.flatMap((role) => role.seniorityLevels))];
+  const seniorities = expandSeniority(roles.flatMap((role) => role.seniorityLevels));
   const base = condition("experience.employment_details.current.company_website_domain", "=", domain);
   return seniorities.length ? all(base, condition("experience.employment_details.current.seniority_level", "in", seniorities)) : all(base);
 }
@@ -90,7 +111,7 @@ export function pickBuyer(people: CrustdataPerson[], roles: BuyingRole[]): { per
       const title = lower(person.title);
       const keyword = role.titleKeywords.find((word) => title.includes(word.toLowerCase()));
       const fn = role.functionCategories.some((category) => lower(person.functionCategory) === category.toLowerCase());
-      const seniority = role.seniorityLevels.some((level) => lower(person.seniority) === level.toLowerCase());
+      const seniority = expandSeniority(role.seniorityLevels).some((level) => lower(person.seniority) === level.toLowerCase());
       const rank = SENIORITY_ORDER.indexOf(lower(person.seniority));
       // Within a role: title keyword, then function, then level, then the most senior, then whoever has an email on file.
       const score = (keyword ? 100 : 0) + (fn ? 10 : 0) + (seniority ? 1 : 0) + (rank >= 0 ? (SENIORITY_ORDER.length - rank) * 0.1 : 0) + (person.hasBusinessEmail ? 0.05 : 0);

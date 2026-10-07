@@ -1,4 +1,4 @@
-export { revealLeadContact, rolesFor, pickBuyer, personSearchFilters, loadLead, DEFAULT_CONTACT_DEPS } from "../src/lib/instant-leads/contact";
+export { revealLeadContact, rolesFor, pickBuyer, personSearchFilters, loadLead, DEFAULT_CONTACT_DEPS, expandSeniority } from "../src/lib/instant-leads/contact";
 export { InstantLeadRequestError } from "../src/lib/instant-leads/run";
 export { serializeLeads } from "../src/lib/instant-leads/serialize";
 export { CrustdataError } from "../src/lib/instant-leads/crustdata-client";

@@ -74,8 +74,10 @@ export type AdminPackInput = {
   buyingRoles?: BuyingRoles;
 };
 
-/** Crustdata's seniority levels and function categories, as the person search filters on them. */
-export const SENIORITY_LEVELS = ["CXO", "Vice President", "Director", "Owner / Partner", "Manager"] as const;
+/** Crustdata's seniority levels and function categories, as the person search filters on them (live vocabulary, 7 Oct 2026). */
+export const SENIORITY_LEVELS = ["CXO", "Owner / Partner", "Vice President", "Director", "Strategic", "Experienced Manager", "Senior", "Entry Level Manager", "Entry Level", "In Training"] as const;
+/** Older packs say "Manager"; it means both manager levels. */
+const SENIORITY_ALIASES: Record<string, string[]> = { manager: ["Experienced Manager", "Entry Level Manager"], vp: ["Vice President"] };
 export const FUNCTION_CATEGORIES = [
   "Marketing", "Sales", "Business Development", "Engineering", "Information Technology", "Finance", "Human Resources", "Operations",
   "Customer Success and Support", "Product Management", "Legal", "Research", "General Management", "Consulting", "Education", "Healthcare Services",
@@ -91,11 +93,19 @@ export function normaliseBuyingRoles(input: BuyingRoles | undefined, problems: s
   (input.roles ?? []).forEach((role, index) => {
     const label = role.label?.trim() || `role ${index + 1}`;
     if (!role.label?.trim()) problems.push(`Buying role ${index + 1}: needs a label such as "Marketing leader"`);
-    const seniorityLevels = clean(role.seniorityLevels ?? []);
-    for (const level of seniorityLevels) if (!(SENIORITY_LEVELS as readonly string[]).includes(level)) problems.push(`${label}: "${level}" is not a seniority level (${SENIORITY_LEVELS.join(", ")})`);
+    let unknownLevel = false;
+    const seniorityLevels = [...new Set(clean(role.seniorityLevels ?? []).flatMap((level) => {
+      const live = SENIORITY_LEVELS.find((known) => known.toLowerCase() === level.toLowerCase());
+      if (live) return [live];
+      const alias = SENIORITY_ALIASES[level.toLowerCase()];
+      if (alias) return alias;
+      unknownLevel = true;
+      problems.push(`${label}: "${level}" is not a seniority level (${SENIORITY_LEVELS.join(", ")})`);
+      return [];
+    }))];
     const functionCategories = clean(role.functionCategories ?? []);
     const titleKeywords = clean(role.titleKeywords ?? []).map((word) => word.toLowerCase());
-    if (!seniorityLevels.length && !titleKeywords.length) problems.push(`${label}: give it seniority levels or title keywords, or nobody can match it`);
+    if (!seniorityLevels.length && !titleKeywords.length && !unknownLevel) problems.push(`${label}: give it seniority levels or title keywords, or nobody can match it`);
     roles.push({ label: role.label?.trim() ?? label, seniorityLevels, functionCategories, titleKeywords });
   });
   const fallbackUnderHeadcount = Number.isFinite(input.fallbackUnderHeadcount) ? Math.max(0, Math.min(5000, Math.round(input.fallbackUnderHeadcount))) : 50;

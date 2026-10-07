@@ -54,13 +54,13 @@ const buyingRoles = (roles: BuyingRoles["roles"], fallbackUnderHeadcount = 50): 
 
 const MARKETING_BUYERS = buyingRoles([
   { label: "Marketing leader", seniorityLevels: ["CXO", "Vice President", "Director"], functionCategories: ["Marketing"], titleKeywords: ["cmo", "chief marketing", "head of marketing", "vp marketing", "vice president marketing", "marketing director", "director of marketing", "head of growth", "vp growth", "chief growth", "head of brand", "brand director"] },
-  { label: "Marketing manager", seniorityLevels: ["Manager"], functionCategories: ["Marketing"], titleKeywords: ["marketing manager", "growth manager", "brand manager", "demand generation"] },
+  { label: "Marketing manager", seniorityLevels: ["Experienced Manager"], functionCategories: ["Marketing"], titleKeywords: ["marketing manager", "growth manager", "brand manager", "demand generation"] },
   { label: "Founder", seniorityLevels: ["CXO", "Owner / Partner"], functionCategories: [], titleKeywords: FOUNDER_TITLES },
 ]);
 
 const REVENUE_BUYERS = buyingRoles([
   { label: "Revenue leader", seniorityLevels: ["CXO", "Vice President", "Director"], functionCategories: ["Sales", "Business Development"], titleKeywords: ["cro", "chief revenue", "vp sales", "vice president sales", "head of sales", "sales director", "director of sales", "head of revenue", "revenue operations", "revops", "head of business development"] },
-  { label: "Sales operations", seniorityLevels: ["Director", "Manager"], functionCategories: ["Sales", "Operations"], titleKeywords: ["sales operations", "sales ops", "revenue operations", "gtm operations"] },
+  { label: "Sales operations", seniorityLevels: ["Director", "Experienced Manager"], functionCategories: ["Sales", "Operations"], titleKeywords: ["sales operations", "sales ops", "revenue operations", "gtm operations"] },
   { label: "Founder", seniorityLevels: ["CXO", "Owner / Partner"], functionCategories: [], titleKeywords: FOUNDER_TITLES },
 ]);
 

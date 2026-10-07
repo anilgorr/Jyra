@@ -112,6 +112,10 @@ const marketing = {
   m.normaliseBuyingRoles({ roles: [{ label: "", seniorityLevels: ["Chief"], functionCategories: [], titleKeywords: [] }], fallbackUnderHeadcount: 50, fallbackTitles: [] }, bad);
   assert.ok(bad.some((line) => /needs a label/.test(line)), bad.join(" | "));
   assert.ok(bad.some((line) => /"Chief" is not a seniority level/.test(line)), bad.join(" | "));
+  const legacy = [];
+  const expanded = m.normaliseBuyingRoles({ roles: [{ label: "Ops", seniorityLevels: ["Manager", "cxo"], functionCategories: [], titleKeywords: [] }], fallbackUnderHeadcount: 50, fallbackTitles: [] }, legacy);
+  assert.deepEqual(legacy, []);
+  assert.deepEqual(expanded.roles[0].seniorityLevels, ["Experienced Manager", "Entry Level Manager", "CXO"], "the old 'Manager' becomes the two live levels; case is forgiven");
   assert.ok(bad.some((line) => /seniority levels or title keywords/.test(line)) === false, "a bad level is already reported; the role had a level");
 
   // Through the pack: a bad role refuses the whole pack, like a bad definition does.

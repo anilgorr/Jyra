@@ -63,7 +63,7 @@ type DraftRole = { key: string; label: string; seniorityLevels: string[]; functi
 type Draft = { id: string | null; name: string; slug: string; description: string; offeringFamily: string; includeNegatives: boolean; definitions: DraftDefinition[]; roles: DraftRole[]; fallbackUnderHeadcount: string; fallbackTitles: string };
 
 /** Crustdata's seniority levels, as the Instant Leads person search filters on them. */
-const SENIORITY_LEVELS = ["CXO", "Vice President", "Director", "Owner / Partner", "Manager"];
+const SENIORITY_LEVELS = ["CXO", "Owner / Partner", "Vice President", "Director", "Strategic", "Experienced Manager", "Senior", "Entry Level Manager"];
 const FOUNDER_TITLES = "founder, co-founder, ceo, managing director, owner, managing partner";
 
 let keySeq = 0;

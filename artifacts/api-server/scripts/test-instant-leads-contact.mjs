@@ -33,7 +33,7 @@ const NOW = new Date("2026-10-07T10:00:00.000Z");
 const MARKETING = {
   roles: [
     { label: "Marketing leader", seniorityLevels: ["CXO", "Vice President", "Director"], functionCategories: ["Marketing"], titleKeywords: ["cmo", "head of marketing", "marketing director"] },
-    { label: "Marketing manager", seniorityLevels: ["Manager"], functionCategories: ["Marketing"], titleKeywords: ["marketing manager"] },
+    { label: "Marketing manager", seniorityLevels: ["Manager"], functionCategories: ["Marketing"], titleKeywords: ["marketing manager"] }, // "Manager" is the old spelling; it must expand to both live manager levels
   ],
   fallbackUnderHeadcount: 50, fallbackTitles: ["founder", "ceo"],
 };
@@ -86,7 +86,8 @@ const lead = (db) => db.all(m.instantLeadRunLeadsTable)[0];
   const filters = m.personSearchFilters("acme.ae", m.rolesFor(MARKETING, 120));
   assert.equal(filters.op, "and");
   assert.deepEqual(filters.conditions[0], { field: "experience.employment_details.current.company_website_domain", type: "=", value: "acme.ae" });
-  assert.deepEqual(filters.conditions[1].value, ["CXO", "Vice President", "Director", "Manager", "Owner / Partner"]);
+  assert.deepEqual(filters.conditions[1].value, ["CXO", "Vice President", "Director", "Experienced Manager", "Entry Level Manager", "Owner / Partner"], "only live seniority values are sent; Manager expands to both");
+  assert.deepEqual(m.expandSeniority(["manager", "VP", "Nonsense", "CXO"]), ["Experienced Manager", "Entry Level Manager", "Vice President", "CXO"]);
 }
 
 // 2. Picking: a title keyword beats a function match; a person without a LinkedIn profile is never picked; roles are tried in order.
@@ -102,7 +103,7 @@ const lead = (db) => db.all(m.instantLeadRunLeadsTable)[0];
   assert.match(picked.reason, /Marketing function at CXO level/, "the tie with the VP goes to the more senior person");
   const noProfile = m.pickBuyer([person({ linkedinUrl: null })], roles);
   assert.equal(noProfile, null, "no LinkedIn profile, no contact: the email lookup needs it");
-  const manager = m.pickBuyer([person({ title: "Marketing Manager", seniority: "Manager" }), person({ id: "x", title: "Finance Director", functionCategory: "Finance", seniority: "Director" })], roles);
+  const manager = m.pickBuyer([person({ title: "Marketing Manager", seniority: "Experienced Manager" }), person({ id: "x", title: "Finance Director", functionCategory: "Finance", seniority: "Director" })], roles);
   assert.equal(manager.role.label, "Marketing manager", "the second role is reached when the first has nobody");
   assert.equal(m.pickBuyer([person({ id: "x", title: "Finance Director", functionCategory: "Finance", seniority: "Director" })], roles), null, "a director in the wrong function is not a marketing leader");
 }
@@ -185,7 +186,7 @@ const lead = (db) => db.all(m.instantLeadRunLeadsTable)[0];
 // 6. Nobody fitting the roles: NOT_FOUND, free, no enrich call, the lead remembers so the button does not keep paying for searches.
 {
   const w = world({ balance: 100 });
-  const c = client({ people: [person({ title: "Warehouse Supervisor", functionCategory: "Operations", seniority: "Manager" })] });
+  const c = client({ people: [person({ title: "Warehouse Supervisor", functionCategory: "Operations", seniority: "Experienced Manager" })] });
   const revealed = await m.revealLeadContact({ project: w.project, run: w.run, lead: w.lead, userId: "u", deps: deps(c) });
   assert.equal(revealed.status, "NOT_FOUND");
   assert.equal(revealed.credits, 0);
@@ -222,7 +223,7 @@ const lead = (db) => db.all(m.instantLeadRunLeadsTable)[0];
 // 8. A small company: the founder is the buyer even when a marketing manager exists.
 {
   const w = world({ balance: 100, headcount: 15 });
-  const c = client({ people: [person({ id: "mm", name: "Marketing Manager", title: "Marketing Manager", seniority: "Manager" }), person({ id: "f", name: "Omar Founder", title: "Founder & CEO", seniority: "CXO", functionCategory: "General Management", linkedinUrl: "https://www.linkedin.com/in/omar" })], emails: [{ email: "omar@acme.ae", status: "deliverable" }] });
+  const c = client({ people: [person({ id: "mm", name: "Marketing Manager", title: "Marketing Manager", seniority: "Entry Level Manager" }), person({ id: "f", name: "Omar Founder", title: "Founder & CEO", seniority: "CXO", functionCategory: "General Management", linkedinUrl: "https://www.linkedin.com/in/omar" })], emails: [{ email: "omar@acme.ae", status: "deliverable" }] });
   const revealed = await m.revealLeadContact({ project: w.project, run: w.run, lead: w.lead, userId: "u", deps: deps(c) });
   assert.equal(revealed.person.name, "Omar Founder");
   assert.equal(revealed.person.roleLabel, "Founder");

@@ -3,7 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Link } from "wouter";
 import {
   getGetIcpQueryKey, getGetInstantLeadQuoteQueryKey, getGetInstantLeadRunQueryKey, getGetProjectPlanUsageQueryKey, getListInstantLeadRunsQueryKey,
-  useAddIcpCriterion, useCancelInstantLeadRun, useCreateCreditRequest, useCreateInstantLeadRun, useGetIcp, useGetInstantLeadQuote, useGetInstantLeadRun,
+  useAcceptIcpCriterion, useAddIcpCriterion, useCancelInstantLeadRun, useCreateCreditRequest, useCreateInstantLeadRun, useGetIcp, useGetInstantLeadQuote, useGetInstantLeadRun,
   useListInstantLeadRuns, useRevealInstantLeadContact, useUpdateIcpCriterion,
   type IcpCriterion, type InstantLead, type InstantLeadQuote, type InstantLeadRun,
 } from "@workspace/api-client-react";
@@ -211,9 +211,16 @@ function IcpCard({ projectId, quote, requested }: { projectId: string; quote: In
     void queryClient.invalidateQueries({ queryKey: getGetIcpQueryKey(projectId) });
     void queryClient.invalidateQueries({ queryKey: getGetInstantLeadQuoteQueryKey(projectId, { requested }) });
   };
-  const update = useUpdateIcpCriterion({ mutation: { onSuccess: () => { setEditing(null); refresh(); toast.success("ICP updated; the quote reflects it"); }, onError: (e) => setError(failMessage(e, "Could not save")) } });
-  const add = useAddIcpCriterion({ mutation: { onSuccess: () => { setEditing(null); refresh(); toast.success("ICP updated; the quote reflects it"); }, onError: (e) => setError(failMessage(e, "Could not save")) } });
+  const accept = useAcceptIcpCriterion({ mutation: { onSuccess: () => { refresh(); toast.success("Accepted; the search will use it"); }, onError: (e) => toast.error(failMessage(e, "Could not accept")) } });
   const version = icp.data;
+  // Only an accepted criterion reaches the search (as everywhere in JYRA). A saved edit is accepted in the same breath,
+  // because nobody edits a size on this card meaning "but keep ignoring it".
+  const acceptIfNeeded = (saved: { id: string; criteria: Array<{ id: string; dimension: string; accepted?: boolean }> }, dimension: string) => {
+    const criterion = saved.criteria.find((item) => item.dimension === dimension && item.accepted === false);
+    if (criterion) accept.mutate({ projectId, versionId: saved.id, criterionId: criterion.id });
+  };
+  const update = useUpdateIcpCriterion({ mutation: { onSuccess: (saved, variables) => { setEditing(null); refresh(); toast.success("ICP updated; the quote reflects it"); acceptIfNeeded(saved, variables.data.dimension ?? ""); }, onError: (e) => setError(failMessage(e, "Could not save")) } });
+  const add = useAddIcpCriterion({ mutation: { onSuccess: (saved, variables) => { setEditing(null); refresh(); toast.success("ICP updated; the quote reflects it"); acceptIfNeeded(saved, variables.data.dimension ?? ""); }, onError: (e) => setError(failMessage(e, "Could not save")) } });
   const criterionFor = (dimension: EditableDimension) => version?.criteria.find((criterion) => criterion.dimension === dimension && criterion.accepted !== false && (dimension !== "employee_count" || criterion.operator === "BETWEEN") && (dimension === "employee_count" || criterion.operator === "IN"))
     ?? version?.criteria.find((criterion) => criterion.dimension === dimension);
 
@@ -253,6 +260,14 @@ function IcpCard({ projectId, quote, requested }: { projectId: string; quote: In
                     </div>
                   ) : (
                     <div className="mt-0.5 text-sm">{criterion ? readable(criterion.value) : <span className="text-muted-foreground">Not set — the search will not filter on this</span>}</div>
+                  )}
+                  {!isEditing && criterion && criterion.accepted === false ? (
+                    <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-amber-700 dark:text-amber-400" data-testid={`icp-${dimension}-unaccepted`}>
+                      <AlertTriangle className="h-3.5 w-3.5" /> On your ICP but not accepted, so the search ignores it.
+                      <Button size="sm" variant="outline" className="h-6 px-2 text-xs" disabled={accept.isPending} onClick={() => version && accept.mutate({ projectId, versionId: version.id, criterionId: criterion.id })}>Accept</Button>
+                    </div>
+                  ) : (
+                    null
                   )}
                 </div>
                 {isEditing ? (
