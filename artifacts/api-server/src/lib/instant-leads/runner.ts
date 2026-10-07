@@ -4,6 +4,7 @@ import { logger } from "../logger";
 import { currentQueue, queueSettings, type QueueSettings } from "../queue";
 import { PostgresIntelligenceV2Repository } from "../intelligence-v2/repository";
 import { crustdataClientFromCatalogue, DEFAULT_RUN_DEPS, executeInstantLeadRun, kickInstantLeadRuns, type InstantLeadRunDeps } from "./run";
+import { DEFAULT_CONTACT_DEPS, type ContactDeps } from "./contact";
 
 /**
  * Where an Instant Leads run executes.
@@ -35,6 +36,11 @@ export function instantLeadRunDeps(): Promise<InstantLeadRunDeps> {
     concurrency: Math.max(1, Number(process.env.JYRA_INSTANT_LEADS_CONCURRENCY) || DEFAULT_RUN_DEPS.concurrency),
   }))();
   return cached;
+}
+
+/** The contact reveal shares the run's client (one rate limiter, one ledger source). */
+export async function instantLeadContactDeps(): Promise<ContactDeps> {
+  return { ...DEFAULT_CONTACT_DEPS, client: (await instantLeadRunDeps()).client };
 }
 
 /** Test seam: the next `instantLeadRunDeps()` rebuilds, or uses what is given. */

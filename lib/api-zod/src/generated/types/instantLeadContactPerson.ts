@@ -12,4 +12,5 @@ export interface InstantLeadContactPerson {
   email: string | null;
   emailStatus: string;
   linkedinUrl: string | null;
+  roleLabel: string | null;
 }

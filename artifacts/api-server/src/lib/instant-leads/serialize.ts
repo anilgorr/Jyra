@@ -65,7 +65,7 @@ export async function serializeLeads(run: InstantLeadRun): Promise<SerializedLea
         status: lead.contactStatus, credits: lead.contactCredits, revealedAt: iso(lead.contactRevealedAt),
         person: found ? {
           name: found.person.canonicalName, title: found.person.defaultTitle, email: found.context?.email ?? null,
-          emailStatus: found.context?.emailStatus ?? "UNKNOWN", linkedinUrl: found.person.profileUrl,
+          emailStatus: found.context?.emailStatus ?? "UNKNOWN", linkedinUrl: found.person.profileUrl, roleLabel: found.context?.roleLabel ?? null,
         } : null,
       },
     };

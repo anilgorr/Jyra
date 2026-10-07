@@ -8641,7 +8641,8 @@ export const GetInstantLeadRunResponse = zod.object({
   "title": zod.string().nullable(),
   "email": zod.string().nullable(),
   "emailStatus": zod.string(),
-  "linkedinUrl": zod.string().nullable()
+  "linkedinUrl": zod.string().nullable(),
+  "roleLabel": zod.string().nullable()
 }).nullable()
 })
 }))
@@ -8687,6 +8688,51 @@ export const CancelInstantLeadRunResponse = zod.object({
   "startedAt": zod.coerce.date().nullable(),
   "finishedAt": zod.coerce.date().nullable(),
   "updatedAt": zod.coerce.date()
+})
+})
+
+
+/**
+ * Finds the person matching the pack's buying roles at the lead's company and their business email. Charged by outcome: the verified price for a deliverable email, the catch-all price for a catch-all address, nothing for a name without an email or when nobody fitting was found. A second call on the same lead returns what it has, free.
+ * @summary Show the buyer at this lead, with email and LinkedIn profile
+ */
+export const RevealInstantLeadContactParams = zod.object({
+  "projectId": zod.coerce.string(),
+  "runId": zod.coerce.string(),
+  "leadId": zod.coerce.string()
+})
+
+export const RevealInstantLeadContactResponse = zod.object({
+  "lead": zod.object({
+  "id": zod.string(),
+  "rank": zod.number(),
+  "score": zod.number(),
+  "opportunityState": zod.string().nullable(),
+  "why": zod.array(zod.string()),
+  "signalCodes": zod.array(zod.string()),
+  "company": zod.object({
+  "projectCompanyId": zod.string(),
+  "companyId": zod.string(),
+  "name": zod.string(),
+  "domain": zod.string().nullable(),
+  "website": zod.string().nullable(),
+  "industry": zod.string().nullable(),
+  "employeeCount": zod.number().nullable(),
+  "country": zod.string().nullable()
+}),
+  "contact": zod.object({
+  "status": zod.enum(['NONE', 'VERIFIED', 'CATCH_ALL', 'NAME_ONLY', 'NOT_FOUND']),
+  "credits": zod.number(),
+  "revealedAt": zod.coerce.date().nullable(),
+  "person": zod.object({
+  "name": zod.string(),
+  "title": zod.string().nullable(),
+  "email": zod.string().nullable(),
+  "emailStatus": zod.string(),
+  "linkedinUrl": zod.string().nullable(),
+  "roleLabel": zod.string().nullable()
+}).nullable()
+})
 })
 })
 

@@ -2944,6 +2944,45 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
         "404": { $ref: "#/components/responses/NotFound" }
+  /projects/{projectId}/instant-leads/{runId}/leads/{leadId}/contact:
+    post:
+      operationId: revealInstantLeadContact
+      tags: [instant-leads]
+      summary: Show the buyer at this lead, with email and LinkedIn profile
+      description: >-
+        Finds the person matching the pack's buying roles at the lead's company and their business
+        email. Charged by outcome: the verified price for a deliverable email, the catch-all price
+        for a catch-all address, nothing for a name without an email or when nobody fitting was
+        found. A second call on the same lead returns what it has, free.
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/ProjectId" }
+        - { $ref: "#/components/parameters/InstantLeadRunId" }
+        - { $ref: "#/components/parameters/InstantLeadId" }
+      responses:
+        "200":
+          description: The lead with its contact
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/RevealInstantLeadContactResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "402":
+          description: Not enough credits
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/InstantLeadRequestError" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409":
+          description: The contact is already being fetched
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/InstantLeadRequestError" }
+        "503":
+          description: The provider is unavailable
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/InstantLeadRequestError" }
   /projects/{projectId}/credit-requests:
     get:
       operationId: listCreditRequests
@@ -3098,13 +3137,14 @@ components:
     InstantLeadContactPerson:
       type: object
       additionalProperties: false
-      required: [name, title, email, emailStatus, linkedinUrl]
+      required: [name, title, email, emailStatus, linkedinUrl, roleLabel]
       properties:
         name: { type: string }
         title: { type: string, nullable: true }
         email: { type: string, nullable: true }
         emailStatus: { type: string }
         linkedinUrl: { type: string, nullable: true }
+        roleLabel: { type: string, nullable: true }
     InstantLead:
       type: object
       additionalProperties: false
@@ -3166,6 +3206,12 @@ components:
         leads:
           type: array
           items: { $ref: "#/components/schemas/InstantLead" }
+    RevealInstantLeadContactResponse:
+      type: object
+      additionalProperties: false
+      required: [lead]
+      properties:
+        lead: { $ref: "#/components/schemas/InstantLead" }
     InstantLeadRunEnvelope:
       type: object
       additionalProperties: false
@@ -6557,6 +6603,12 @@ components:
         type: string
     InstantLeadRunId:
       name: runId
+      in: path
+      required: true
+      schema:
+        type: string
+    InstantLeadId:
+      name: leadId
       in: path
       required: true
       schema:

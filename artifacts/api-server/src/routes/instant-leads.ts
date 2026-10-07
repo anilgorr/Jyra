@@ -2,10 +2,15 @@ import { and, desc, eq } from "drizzle-orm";
 import { Router, type IRouter, type RequestHandler, type Response } from "express";
 import { creditRequestsTable, db, instantLeadRunsTable, organizationMembersTable, projectsTable, type Project } from "@workspace/db";
 import { z } from "zod/v4";
+import {
+  CancelInstantLeadRunResponse, CreateCreditRequestResponse, CreateInstantLeadRunResponse, GetInstantLeadQuoteResponse,
+  GetInstantLeadRunResponse, ListCreditRequestsResponse, ListInstantLeadRunsResponse, RevealInstantLeadContactResponse,
+} from "@workspace/api-zod";
 import { getAuthenticatedUserId, requireAuth } from "../middlewares/auth";
 import { creditSummary } from "../lib/credits";
 import { cancelInstantLeadRun, createInstantLeadRun, InstantLeadRequestError, quoteInstantLeads } from "../lib/instant-leads/run";
-import { scheduleInstantLeadRun } from "../lib/instant-leads/runner";
+import { instantLeadContactDeps, scheduleInstantLeadRun } from "../lib/instant-leads/runner";
+import { loadLead, revealLeadContact } from "../lib/instant-leads/contact";
 import { serializeCreditRequest, serializeLeads, serializeRun } from "../lib/instant-leads/serialize";
 
 /**
@@ -24,6 +29,7 @@ const asyncRoute = (handler: AsyncHandler): RequestHandler => (req, res, next) =
 
 const projectParams = z.object({ projectId: z.string().uuid() });
 const runParams = z.object({ projectId: z.string().uuid(), runId: z.string().uuid() });
+const leadParams = runParams.extend({ leadId: z.string().uuid() });
 const quoteQuery = z.object({ requested: z.coerce.number().int().min(1).max(100_000).default(10) });
 const createBody = z.object({ requested: z.number().int().min(1).max(100_000) });
 const creditRequestBody = z.object({ credits: z.number().int().min(1).max(10_000_000), reason: z.string().trim().max(500).optional() });
@@ -57,7 +63,7 @@ router.get("/projects/:projectId/instant-leads/quote", requireAuth, asyncRoute(a
     quoteInstantLeads({ project, requested: query.data.requested }),
     db.select().from(creditRequestsTable).where(and(eq(creditRequestsTable.organizationId, project.organizationId), eq(creditRequestsTable.status, "PENDING"))).orderBy(desc(creditRequestsTable.createdAt)).limit(1),
   ]);
-  res.json({ ...quote, pendingCreditRequest: pendingRequests[0] ? { id: pendingRequests[0].id, credits: pendingRequests[0].credits, createdAt: pendingRequests[0].createdAt.toISOString() } : null });
+  res.json(GetInstantLeadQuoteResponse.parse({ ...quote, pendingCreditRequest: pendingRequests[0] ? { id: pendingRequests[0].id, credits: pendingRequests[0].credits, createdAt: pendingRequests[0].createdAt.toISOString() } : null }));
 }));
 
 /** Submit: holds the credits, writes the run, hands it to the executor. */
@@ -71,7 +77,7 @@ router.post("/projects/:projectId/instant-leads", requireAuth, asyncRoute(async 
   try {
     const { run, quote } = await createInstantLeadRun({ project, userId: getAuthenticatedUserId(res), requested: body.data.requested });
     const via = await scheduleInstantLeadRun(run);
-    res.status(201).json({ run: serializeRun(run), queuedBehind: quote.blockers.some((blocker) => blocker.code === "RUN_ACTIVE"), via });
+    res.status(201).json(CreateInstantLeadRunResponse.parse({ run: serializeRun(run), queuedBehind: quote.blockers.some((blocker) => blocker.code === "RUN_ACTIVE"), via }));
   } catch (error) {
     if (!sendRequestError(res, error)) throw error;
   }
@@ -87,7 +93,7 @@ router.get("/projects/:projectId/instant-leads", requireAuth, asyncRoute(async (
     db.select().from(instantLeadRunsTable).where(eq(instantLeadRunsTable.projectId, project.id)).orderBy(desc(instantLeadRunsTable.createdAt)).limit(50),
     creditSummary(project.organizationId),
   ]);
-  res.json({ runs: runs.map(serializeRun), credits: { balance: credits.balance } });
+  res.json(ListInstantLeadRunsResponse.parse({ runs: runs.map(serializeRun), credits: { balance: credits.balance } }));
 }));
 
 /** One run with its leads. Polled while the run works. */
@@ -98,7 +104,7 @@ router.get("/projects/:projectId/instant-leads/:runId", requireAuth, asyncRoute(
   if (!project) return;
   const [run] = await db.select().from(instantLeadRunsTable).where(and(eq(instantLeadRunsTable.id, params.data.runId), eq(instantLeadRunsTable.projectId, project.id))).limit(1);
   if (!run) return void res.status(404).json({ error: "Run not found" });
-  res.json({ run: serializeRun(run), leads: await serializeLeads(run) });
+  res.json(GetInstantLeadRunResponse.parse({ run: serializeRun(run), leads: await serializeLeads(run) }));
 }));
 
 router.post("/projects/:projectId/instant-leads/:runId/cancel", requireAuth, asyncRoute(async (req, res) => {
@@ -110,7 +116,31 @@ router.post("/projects/:projectId/instant-leads/:runId/cancel", requireAuth, asy
   if (!run) return void res.status(404).json({ error: "Run not found" });
   const cancelled = await cancelInstantLeadRun(run.id);
   if (!cancelled) return void res.status(404).json({ error: "Run not found" });
-  res.json({ run: serializeRun(cancelled) });
+  res.json(CancelInstantLeadRunResponse.parse({ run: serializeRun(cancelled) }));
+}));
+
+/**
+ * Show contact: the buyer at this lead, with email and LinkedIn, charged by outcome.
+ * Idempotent: a revealed lead returns what it has, for nothing.
+ */
+router.post("/projects/:projectId/instant-leads/:runId/leads/:leadId/contact", requireAuth, asyncRoute(async (req, res) => {
+  const params = leadParams.safeParse(req.params);
+  if (!params.success) return void res.status(404).json({ error: "Lead not found" });
+  const project = await ownedProject(params.data.projectId, res);
+  if (!project) return;
+  const found = await loadLead(project.id, params.data.runId, params.data.leadId);
+  if (!found) return void res.status(404).json({ error: "Lead not found" });
+  try {
+    await revealLeadContact({ project, run: found.run, lead: found.lead, userId: getAuthenticatedUserId(res), deps: await instantLeadContactDeps() });
+  } catch (error) {
+    if (!sendRequestError(res, error)) throw error;
+    return;
+  }
+  const after = await loadLead(project.id, params.data.runId, params.data.leadId);
+  const leads = after ? await serializeLeads(after.run) : [];
+  const lead = leads.find((item) => item.id === params.data.leadId);
+  if (!lead) return void res.status(404).json({ error: "Lead not found" });
+  res.json(RevealInstantLeadContactResponse.parse({ lead }));
 }));
 
 /**
@@ -127,13 +157,13 @@ router.post("/projects/:projectId/credit-requests", requireAuth, asyncRoute(asyn
   if (!project) return;
   const [pending] = await db.select().from(creditRequestsTable)
     .where(and(eq(creditRequestsTable.organizationId, project.organizationId), eq(creditRequestsTable.status, "PENDING"))).limit(1);
-  if (pending) return void res.status(200).json({ request: serializeCreditRequest(pending), alreadyPending: true });
+  if (pending) return void res.status(200).json(CreateCreditRequestResponse.parse({ request: serializeCreditRequest(pending), alreadyPending: true }));
   const [created] = await db.insert(creditRequestsTable).values({
     organizationId: project.organizationId, projectId: project.id, requestedByUserId: getAuthenticatedUserId(res),
     credits: body.data.credits, reason: body.data.reason ?? null,
   }).returning();
   if (!created) throw new Error("credit request insert returned nothing");
-  res.status(201).json({ request: serializeCreditRequest(created), alreadyPending: false });
+  res.status(201).json(CreateCreditRequestResponse.parse({ request: serializeCreditRequest(created), alreadyPending: false }));
 }));
 
 router.get("/projects/:projectId/credit-requests", requireAuth, asyncRoute(async (req, res) => {
@@ -142,7 +172,7 @@ router.get("/projects/:projectId/credit-requests", requireAuth, asyncRoute(async
   const project = await ownedProject(params.data.projectId, res);
   if (!project) return;
   const rows = await db.select().from(creditRequestsTable).where(eq(creditRequestsTable.organizationId, project.organizationId)).orderBy(desc(creditRequestsTable.createdAt)).limit(20);
-  res.json({ requests: rows.map(serializeCreditRequest) });
+  res.json(ListCreditRequestsResponse.parse({ requests: rows.map(serializeCreditRequest) }));
 }));
 
 export default router;

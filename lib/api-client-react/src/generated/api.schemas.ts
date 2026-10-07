@@ -125,6 +125,7 @@ export interface InstantLeadContactPerson {
   email: string | null;
   emailStatus: string;
   linkedinUrl: string | null;
+  roleLabel: string | null;
 }
 
 export type InstantLeadCompany = {
@@ -179,6 +180,10 @@ export interface InstantLeadRunList {
 export interface InstantLeadRunDetail {
   run: InstantLeadRun;
   leads: InstantLead[];
+}
+
+export interface RevealInstantLeadContactResponse {
+  lead: InstantLead;
 }
 
 export interface InstantLeadRunEnvelope {

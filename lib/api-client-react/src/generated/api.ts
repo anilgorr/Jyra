@@ -177,6 +177,7 @@ import type {
   ResearchEconomicsSummary,
   ResearchExecutionResponse,
   ResearchWorkspaceCompany,
+  RevealInstantLeadContactResponse,
   ReviewLearningProposalRequest,
   ScreeningRun,
   Signal,
@@ -10892,6 +10893,82 @@ export const useCancelInstantLeadRun = <TError = ErrorType<UnauthorizedResponse 
         TContext
       > => {
       return useMutation(getCancelInstantLeadRunMutationOptions(options));
+    }
+
+export const getRevealInstantLeadContactUrl = (projectId: string,
+    runId: string,
+    leadId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/instant-leads/${runId}/leads/${leadId}/contact`
+}
+
+/**
+ * Finds the person matching the pack's buying roles at the lead's company and their business email. Charged by outcome: the verified price for a deliverable email, the catch-all price for a catch-all address, nothing for a name without an email or when nobody fitting was found. A second call on the same lead returns what it has, free.
+ * @summary Show the buyer at this lead, with email and LinkedIn profile
+ */
+export const revealInstantLeadContact = async (projectId: string,
+    runId: string,
+    leadId: string, options?: Parameters<typeof customFetch>[1]): Promise<RevealInstantLeadContactResponse> => {
+
+  return customFetch<RevealInstantLeadContactResponse>(getRevealInstantLeadContactUrl(projectId,runId,leadId),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getRevealInstantLeadContactMutationOptions = <TError = ErrorType<UnauthorizedResponse | InstantLeadRequestError | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof revealInstantLeadContact>>, TError,{projectId: string;runId: string;leadId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof revealInstantLeadContact>>, TError,{projectId: string;runId: string;leadId: string}, TContext> => {
+
+const mutationKey = ['revealInstantLeadContact'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof revealInstantLeadContact>>, {projectId: string;runId: string;leadId: string}> = (props) => {
+          const {projectId,runId,leadId} = props ?? {};
+
+          return  revealInstantLeadContact(projectId,runId,leadId,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type RevealInstantLeadContactMutationResult = NonNullable<Awaited<ReturnType<typeof revealInstantLeadContact>>>
+
+    export type RevealInstantLeadContactMutationError = ErrorType<UnauthorizedResponse | InstantLeadRequestError | ForbiddenResponse | NotFoundResponse>
+
+    /**
+ * @summary Show the buyer at this lead, with email and LinkedIn profile
+ */
+export const useRevealInstantLeadContact = <TError = ErrorType<UnauthorizedResponse | InstantLeadRequestError | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof revealInstantLeadContact>>, TError,{projectId: string;runId: string;leadId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof revealInstantLeadContact>>,
+        TError,
+        {projectId: string;runId: string;leadId: string},
+        TContext
+      > => {
+      return useMutation(getRevealInstantLeadContactMutationOptions(options));
     }
 
 export const getListCreditRequestsUrl = (projectId: string,) => {

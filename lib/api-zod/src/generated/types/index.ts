@@ -442,6 +442,7 @@ export * from './researchJob';
 export * from './researchQuestion';
 export * from './researchWorkspaceCompany';
 export * from './researchWorkspaceCompanyBuyerRole';
+export * from './revealInstantLeadContactResponse';
 export * from './reviewLearningProposalRequest';
 export * from './screeningResult';
 export * from './screeningResultVerdict';
