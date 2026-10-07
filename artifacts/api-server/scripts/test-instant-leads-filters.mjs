@@ -140,6 +140,27 @@ const marketingPack = [
   assert.equal(m.rangeFloor("10001+"), 10001);
   assert.ok(m.COMPANY_FIELDS.every((field) => field.startsWith("basic_info.") || field.startsWith("locations.")), `only free sections are requested: ${m.COMPANY_FIELDS}`);
   assert.ok(!m.COMPANY_FIELDS.includes("basic_info.industries"), "filter-only field never requested");
+  assert.ok(!m.PERSON_FIELDS.includes("experience.employment_details.current.company_website_domain"), "the employer domain is a filter path; fields ask for its twin");
+  assert.ok(m.PERSON_FIELDS.includes("experience.employment_details.current.company_website"));
+  assert.equal(m.domainOf("https://www.Freelancer.com/about"), "freelancer.com");
+  assert.equal(m.domainOf("stripe.com"), "stripe.com");
+  assert.equal(m.parsePerson({ experience: { employment_details: { current: { company_website: "https://www.citi.com/" } } } }).companyDomain, "citi.com");
+
+  // The provider names a twin path for a field: the client swaps it and retries once, and the ledger shows both calls.
+  {
+    const seen = [];
+    const twinClient = m.createCrustdataClient({ apiKey: "k", configuration: { usdPerCredit: 0.1 }, limiter: { take: async () => {} }, recordSpend: async (row) => { seen.push(row.outcome); },
+      fetchImpl: async (_url, init) => {
+        const body = JSON.parse(init.body);
+        if (body.fields.includes("experience.employment_details.current.company_website_domain")) {
+          return new Response(JSON.stringify({ error: { type: "invalid_request", message: "Invalid fields: experience.employment_details.current.company_website_domain. 'experience.employment_details.current.company_website_domain' is a filter path. In fields, use 'experience.employment_details.current.company_website'." } }), { status: 400 });
+        }
+        return new Response(JSON.stringify({ profiles: [{ basic_profile: { name: "A" } }] }), { status: 200 });
+      } });
+    const result = await twinClient.searchPeople({ filters: { op: "and", conditions: [] }, limit: 5, fields: ["basic_profile.name", "experience.employment_details.current.company_website_domain"] }, scope);
+    assert.equal(result.items.length, 1);
+    assert.deepEqual(seen, ["failed", "success"]);
+  }
   assert.equal(companies.creditsUsed, 0.06, "0.03 a result, two results");
   assert.equal(calls[0].headers["x-api-version"], "2025-11-01");
   assert.equal(calls[0].headers.Authorization, "Bearer k");

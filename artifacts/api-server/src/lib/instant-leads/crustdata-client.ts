@@ -172,7 +172,8 @@ export const COMPANY_FIELDS = [
 
 export const PERSON_FIELDS = [
   "basic_profile.name", "basic_profile.current_title", "basic_profile.location",
-  "experience.employment_details.current.name", "experience.employment_details.current.company_website_domain",
+  // `company_website_domain` is the filter path; the response twin is `company_website` (a full URL).
+  "experience.employment_details.current.name", "experience.employment_details.current.company_website",
   "experience.employment_details.current.seniority_level", "experience.employment_details.current.function_category",
   "social_handles.professional_network_identifier.profile_url", "contact.has_business_email",
 ];
@@ -183,6 +184,14 @@ export function rangeFloor(label: string | null): number | null {
   if (/myself/i.test(label)) return 1;
   const match = label.match(/^(\d+)/);
   return match ? Number(match[1]) : null;
+}
+
+/** "https://www.stripe.com/about" → "stripe.com"; a bare domain passes through. */
+export function domainOf(value: string | null): string | null {
+  if (!value) return null;
+  const trimmed = value.trim().toLowerCase();
+  const host = trimmed.includes("://") ? (() => { try { return new URL(trimmed).hostname; } catch { return null; } })() : trimmed.split("/")[0] ?? null;
+  return host ? host.replace(/^www\./, "") : null;
 }
 
 export function parseCompany(raw: Record<string, unknown>): CrustdataCompany {
@@ -213,7 +222,7 @@ export function parsePerson(raw: Record<string, unknown>): CrustdataPerson {
     seniority: str(get(raw, "experience.employment_details.current.seniority_level")),
     functionCategory: str(get(raw, "experience.employment_details.current.function_category")),
     companyName: str(get(raw, "experience.employment_details.current.name")),
-    companyDomain: str(get(raw, "experience.employment_details.current.company_website_domain")),
+    companyDomain: str(get(raw, "experience.employment_details.current.company_website_domain")) ?? domainOf(str(get(raw, "experience.employment_details.current.company_website"))),
     linkedinUrl: str(get(raw, "social_handles.professional_network_identifier.profile_url")),
     location: str(get(raw, "basic_profile.location.raw")) ?? str(get(raw, "basic_profile.location")) ?? str(get(raw, "professional_network.location.raw")),
     hasBusinessEmail: typeof get(raw, "contact.has_business_email") === "boolean" ? (get(raw, "contact.has_business_email") as boolean) : null,
@@ -229,7 +238,7 @@ export function createCrustdataClient(options: CrustdataClientOptions) {
   const limiter = options.limiter ?? (limiters.get(configuration.apiBaseUrl) ?? (() => { const created = new MinuteLimiter(configuration.requestsPerMinute); limiters.set(configuration.apiBaseUrl, created); return created; })());
   const usd = (credits: number) => Math.round(credits * configuration.usdPerCredit * 1_000_000) / 1_000_000;
 
-  async function call(path: string, body: unknown, scope: CrustdataScope, capability: string, creditsFor: (json: unknown, count: number) => number): Promise<{ json: Record<string, unknown>; creditsUsed: number; costUsd: number }> {
+  async function call(path: string, body: unknown, scope: CrustdataScope, capability: string, creditsFor: (json: unknown, count: number) => number, retried = false): Promise<{ json: Record<string, unknown>; creditsUsed: number; costUsd: number }> {
     if (!options.apiKey) throw new CrustdataError("CRUSTDATA_NOT_CONFIGURED", "CRUSTDATA_API_KEY is not set", false);
     await limiter.take();
     const controller = new AbortController();
@@ -260,6 +269,12 @@ export function createCrustdataClient(options: CrustdataClientOptions) {
         : response.status === 400 || response.status === 422 ? "CRUSTDATA_BAD_REQUEST"
         : "CRUSTDATA_HTTP";
       await recordSpend({ organizationId: scope.organizationId, projectId: scope.projectId, kind: "PROVIDER", source: "Crustdata", capability, outcome: "failed", costUsd: 0, requestId, occurredAt, metadata: { path, status: response.status, body: text.slice(0, 1500), ...scope.metadata } });
+      // "Invalid fields: X. 'X' is a filter path. In fields, use 'Y'." - the provider names the twin; take it, once.
+      const twin = !retried && code === "CRUSTDATA_BAD_REQUEST" ? /Invalid fields: ([a-z0-9_]+(?:\.[a-z0-9_]+)*)[^]*?use '([a-z0-9_]+(?:\.[a-z0-9_]+)*)'/i.exec(text) : null;
+      const fieldsIn = body && typeof body === "object" && Array.isArray((body as { fields?: unknown }).fields) ? ((body as { fields: string[] }).fields) : null;
+      if (twin && fieldsIn && fieldsIn.includes(twin[1]!)) {
+        return call(path, { ...(body as Record<string, unknown>), fields: fieldsIn.map((field) => (field === twin[1] ? twin[2]! : field)) }, scope, capability, creditsFor, true);
+      }
       throw new CrustdataError(code, `HTTP ${response.status}: ${text.slice(0, 600)}`, code === "CRUSTDATA_RATE_LIMITED" || response.status >= 500, response.status);
     }
     let json: Record<string, unknown>;
