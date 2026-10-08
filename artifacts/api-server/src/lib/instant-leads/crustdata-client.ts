@@ -59,6 +59,52 @@ export type CrustdataContact = { emails: Array<{ email: string; status: Crustdat
 
 export type CrustdataSearchResult<T> = { items: T[]; totalCount: number | null; nextCursor: string | null; creditsUsed: number; costUsd: number };
 
+/** The premium groups a search can be asked to return; each is billed per result on the response side. */
+export type CrustdataActivityGroup = "headcount" | "funding" | "hiring";
+
+/** What Crustdata knows about a company's recent movement: the premium groups, read back for the candidates a run accepted. */
+export type CrustdataActivity = {
+  domain: string | null;
+  headcount: number | null;
+  growthPercent: { m1: number | null; m3: number | null; m6: number | null; m12: number | null };
+  lastFundraiseDate: string | null;
+  lastRoundType: string | null;
+  lastRoundAmountUsd: number | null;
+  totalInvestmentUsd: number | null;
+  openingsCount: number | null;
+  raw: Record<string, unknown>;
+};
+
+export const ACTIVITY_FIELDS: Record<CrustdataActivityGroup, string[]> = {
+  headcount: ["headcount.total", "headcount.growth_percent"],
+  funding: ["funding.last_fundraise_date", "funding.last_round_type", "funding.last_round_amount_usd", "funding.total_investment_usd"],
+  hiring: ["hiring.openings_count"],
+};
+
+/** Which premium group a filter field belongs to; `roles.*` rides the headcount group. */
+export function activityGroupOf(field: string): CrustdataActivityGroup | null {
+  if (field.startsWith("headcount.") || field.startsWith("roles.")) return "headcount";
+  if (field.startsWith("funding.")) return "funding";
+  if (field.startsWith("hiring.")) return "hiring";
+  return null;
+}
+
+export function parseActivity(raw: Record<string, unknown>): CrustdataActivity {
+  const growth = (key: string) => num(get(raw, `headcount.growth_percent.${key}`));
+  const domain = str(get(raw, "basic_info.primary_domain"));
+  return {
+    domain: domain ? domain.toLowerCase().replace(/^www\./, "") : null,
+    headcount: num(get(raw, "headcount.total")),
+    growthPercent: { m1: growth("1m"), m3: growth("3m"), m6: growth("6m"), m12: growth("12m") },
+    lastFundraiseDate: str(get(raw, "funding.last_fundraise_date")),
+    lastRoundType: str(get(raw, "funding.last_round_type")),
+    lastRoundAmountUsd: num(get(raw, "funding.last_round_amount_usd")),
+    totalInvestmentUsd: num(get(raw, "funding.total_investment_usd")),
+    openingsCount: num(get(raw, "hiring.openings_count")),
+    raw,
+  };
+}
+
 export type CrustdataConfiguration = {
   apiBaseUrl: string;
   apiVersion: string;
@@ -67,6 +113,8 @@ export type CrustdataConfiguration = {
   /** Whether usdPerCredit is a placeholder nobody has verified against the dashboard. */
   usdPerCreditVerified: boolean;
   searchCreditsPerResult: number;
+  /** Per result, per premium group filtered on or received (headcount, funding, hiring 0.2; taxonomy 0.1 - the larger figure is assumed). */
+  premiumGroupCreditsPerResult: number;
   /** Contact Enrich: 1 credit per matched person, +0.5 for deliverability verification. */
   personEnrichCreditsBase: number;
   personEnrichCreditsBusinessEmail: number;
@@ -80,6 +128,7 @@ export const DEFAULT_CRUSTDATA_CONFIGURATION: CrustdataConfiguration = {
   usdPerCredit: 0.1,
   usdPerCreditVerified: false,
   searchCreditsPerResult: 0.03,
+  premiumGroupCreditsPerResult: 0.2,
   personEnrichCreditsBase: 1,
   personEnrichCreditsBusinessEmail: 0.5,
   requestsPerMinute: 30,
@@ -96,6 +145,7 @@ export function crustdataConfiguration(row: Record<string, unknown> | null | und
     usdPerCredit: Number.isFinite(envRate) && envRate > 0 ? envRate : rowRate,
     usdPerCreditVerified: (Number.isFinite(envRate) && envRate > 0) || row?.usdPerCreditVerified === true,
     searchCreditsPerResult: number(row?.searchCreditsPerResult, DEFAULT_CRUSTDATA_CONFIGURATION.searchCreditsPerResult),
+    premiumGroupCreditsPerResult: number(row?.premiumGroupCreditsPerResult, DEFAULT_CRUSTDATA_CONFIGURATION.premiumGroupCreditsPerResult),
     personEnrichCreditsBase: number(row?.personEnrichCreditsBase, DEFAULT_CRUSTDATA_CONFIGURATION.personEnrichCreditsBase),
     personEnrichCreditsBusinessEmail: number(row?.personEnrichCreditsBusinessEmail, DEFAULT_CRUSTDATA_CONFIGURATION.personEnrichCreditsBusinessEmail),
     requestsPerMinute: number(row?.requestsPerMinute, DEFAULT_CRUSTDATA_CONFIGURATION.requestsPerMinute),
@@ -310,6 +360,22 @@ export function createCrustdataClient(options: CrustdataClientOptions) {
       }, scope, "COMPANY_DISCOVERY", (_json, count) => count * configuration.searchCreditsPerResult);
       const rows = Array.isArray(json.companies) ? (json.companies as Record<string, unknown>[]) : [];
       return { items: rows.map(parseCompany), totalCount: num(json.total_count), nextCursor: str(json.next_cursor), creditsUsed, costUsd };
+    },
+    /**
+     * The premium groups for known companies, by domain. Filtering by domain is
+     * a basic field, so the only premium charge is the response side for the
+     * groups asked for - and only for the companies a run actually kept.
+     */
+    async fetchActivity(input: { domains: string[]; groups: CrustdataActivityGroup[] }, scope: CrustdataScope): Promise<CrustdataSearchResult<CrustdataActivity>> {
+      const domains = [...new Set(input.domains.map((domain) => domain.toLowerCase().replace(/^www\./, "")))].filter(Boolean);
+      const groups = [...new Set(input.groups)];
+      if (!domains.length || !groups.length) return { items: [], totalCount: 0, nextCursor: null, creditsUsed: 0, costUsd: 0 };
+      const fields = ["basic_info.primary_domain", ...groups.flatMap((group) => ACTIVITY_FIELDS[group])];
+      const { json, creditsUsed, costUsd } = await call("/company/search", {
+        filters: condition("basic_info.primary_domain", "in", domains), limit: Math.max(1, Math.min(1000, domains.length)), fields,
+      }, scope, "COMPANY_FIRMOGRAPHICS", (_json, count) => count * (configuration.searchCreditsPerResult + groups.length * configuration.premiumGroupCreditsPerResult));
+      const rows = Array.isArray(json.companies) ? (json.companies as Record<string, unknown>[]) : [];
+      return { items: rows.map(parseActivity), totalCount: num(json.total_count), nextCursor: null, creditsUsed, costUsd };
     },
     async searchPeople(input: { filters: CrustdataFilter; limit: number; fields?: string[] }, scope: CrustdataScope): Promise<CrustdataSearchResult<CrustdataPerson>> {
       const { json, creditsUsed, costUsd } = await call("/person/search", {

@@ -79,10 +79,16 @@ const company = (n, extra = {}) => ({
 });
 
 /** A scripted provider: pages of companies, then nothing. Records every call. */
-function fakeClient(pages, { failOn = null } = {}) {
+function fakeClient(pages, { failOn = null, activity = () => null } = {}) {
   const calls = [];
   return {
     calls,
+    activityCalls: [],
+    async fetchActivity(input) {
+      this.activityCalls.push(input);
+      const items = input.domains.map((domain) => activity(domain)).filter(Boolean);
+      return { items, totalCount: items.length, nextCursor: null, creditsUsed: items.length * 0.43, costUsd: items.length * 0.043 };
+    },
     configuration: { usdPerCredit: 0.1, searchCreditsPerResult: 0.03 },
     async searchCompanies(input) {
       calls.push({ ...input });
@@ -399,6 +405,47 @@ const noCurrency = (value) => { const text = JSON.stringify(value); assert.ok(!/
   assert.match(finished.errorMessage, /upstream exploded/, "the admin sees the detail");
   assert.doesNotMatch(finished.outcomeNote, /upstream|502/, "the customer does not");
   assert.doesNotMatch(JSON.stringify(m.serializeRun(finished)), /upstream|502/, "and the customer view cannot carry it");
+}
+
+// 13. The provider's own movement is filed as facts for the kept candidates, with Crustdata as the evidence,
+//     so the pack's funding and growth definitions have something to fire on before research even starts.
+{
+  const db = world({ balance: 500 });
+  const market = [1, 2, 3].map((n) => company(n));
+  const client = fakeClient([market], { activity: (domain) => (domain === "company2.com"
+    ? { domain, headcount: 60, growthPercent: { m1: 2, m3: 9, m6: 22, m12: 40 }, lastFundraiseDate: "2026-08-15", lastRoundType: "series_a", lastRoundAmountUsd: 5_000_000, totalInvestmentUsd: 7_000_000, openingsCount: 4, raw: {} }
+    : { domain, headcount: 30, growthPercent: { m1: 0, m3: 1, m6: 2, m12: 3 }, lastFundraiseDate: "2023-01-01", lastRoundType: "seed", lastRoundAmountUsd: null, totalInvestmentUsd: 1_000_000, openingsCount: 0, raw: {} }) });
+  const cycle = fakeCycle(db, { intent: (domain) => (domain === "company2.com" ? 80 : null) });
+  const { run } = await m.createInstantLeadRun({ project: project(), userId: USER, requested: 1, now: now() });
+  const finished = await m.executeInstantLeadRun(run.id, deps(db, client, cycle));
+  assert.equal(finished.status, "DONE", finished.outcomeNote);
+  assert.equal(client.activityCalls.length, 1, "one activity fetch per batch");
+  assert.deepEqual(client.activityCalls[0].groups.sort(), ["funding", "headcount", "hiring"].filter((g) => client.activityCalls[0].groups.includes(g)));
+  assert.ok(client.activityCalls[0].domains.includes("company2.com"));
+  const facts = db.all(m.companyFactsTable).filter((fact) => fact.extractorVersion === "crustdata-activity@1");
+  const company2 = db.all(m.companiesTable).find((c) => c.domain === "company2.com");
+  const forTwo = facts.filter((fact) => fact.companyId === company2.id).map((fact) => fact.factType).sort();
+  assert.deepEqual(forTwo, ["EMPLOYEE_GROWTH", "FUNDING_EVENT", "HIRING_COUNT"], `company2 gets all three: ${forTwo}`);
+  const funding = facts.find((fact) => fact.companyId === company2.id && fact.factType === "FUNDING_EVENT");
+  assert.equal(funding.effectiveDate, "2026-08-15", "a round is dated on its own date");
+  assert.match(funding.supportingExcerpt, /\$5M/);
+  assert.match(funding.supportingExcerpt, /Series A/);
+  const others = facts.filter((fact) => fact.companyId !== company2.id).map((fact) => fact.factType);
+  assert.deepEqual(others, [], `a stale round, flat headcount and no openings file nothing: ${others}`);
+  const evidence = db.all(m.companyEvidenceTable).filter((row) => row.provider === "crustdata");
+  assert.equal(evidence.length, 1);
+  assert.equal(evidence[0].status, "VERIFIED", "readable by signal evaluation");
+  assert.ok(db.all(m.evidenceAttributionReviewsTable).some((row) => row.acceptedAsEvidence === true && row.sourceClassification === "BUSINESS_DATABASE"));
+  assert.ok(finished.providerCostUsd > 0.003, "the premium groups are paid for and attributed to the run");
+}
+
+// 14. Switched off, the run never asks for the premium groups.
+{
+  const db = world({ balance: 500 });
+  const client = fakeClient([[company(1)]]);
+  const { run } = await m.createInstantLeadRun({ project: project(), userId: USER, requested: 1, now: now() });
+  await m.executeInstantLeadRun(run.id, deps(db, client, fakeCycle(db, { intent: () => 70 }), { activityFacts: false }));
+  assert.equal(client.activityCalls.length, 0);
 }
 
 console.log("instant-leads run: all scenarios passed");

@@ -146,6 +146,39 @@ const marketingPack = [
   assert.equal(m.domainOf("stripe.com"), "stripe.com");
   assert.equal(m.parsePerson({ experience: { employment_details: { current: { company_website: "https://www.citi.com/" } } } }).companyDomain, "citi.com");
 
+  // Activity: filter by domain (free), ask only for the groups the pack needs (paid per result), parse the family object.
+  {
+    const seen = [];
+    const activityClient = m.createCrustdataClient({ apiKey: "k", configuration: { usdPerCredit: 0.1 }, limiter: { take: async () => {} }, recordSpend: async (row) => { seen.push(row); },
+      fetchImpl: async (_url, init) => { seen.push(JSON.parse(init.body)); return new Response(JSON.stringify({ companies: [
+        { basic_info: { primary_domain: "www.Acme.in" }, headcount: { total: 120, growth_percent: { "1m": 1, "3m": 4, "6m": 18.2, "12m": 30 } }, funding: { last_fundraise_date: "2026-06-01", last_round_type: "series_a", last_round_amount_usd: 4000000 }, hiring: { openings_count: 6 } },
+      ] }), { status: 200 }); } });
+    const result = await activityClient.fetchActivity({ domains: ["acme.in", "WWW.acme.in", "beta.in"], groups: ["headcount", "funding"] }, scope);
+    const body = seen[0];
+    assert.deepEqual(body.filters, { field: "basic_info.primary_domain", type: "in", value: ["acme.in", "beta.in"] }, "domains de-duplicated and normalised");
+    assert.ok(body.fields.includes("headcount.growth_percent") && body.fields.includes("funding.last_fundraise_date") && !body.fields.some((f) => f.startsWith("hiring")), `only the asked groups: ${body.fields}`);
+    assert.equal(result.items[0].domain, "acme.in");
+    assert.equal(result.items[0].growthPercent.m6, 18.2);
+    assert.equal(result.items[0].lastRoundAmountUsd, 4000000);
+    assert.equal(result.items[0].openingsCount, 6, "whatever the response carries is read, asked for or not");
+    assert.equal(result.creditsUsed, 0.03 + 2 * 0.2, "base plus two premium groups per result");
+    assert.equal(m.activityGroupOf("roles.growth_yoy.marketing"), "headcount");
+    assert.equal(m.activityGroupOf("basic_info.industries"), null);
+  }
+  // The pure fact candidates: a dated round, a real growth figure, open roles - and nothing for stale or flat.
+  {
+    const observedAt = new Date("2026-10-08T00:00:00Z");
+    const hot = m.crustdataFactCandidates({ domain: "acme.in", headcount: 120, growthPercent: { m1: 1, m3: 4, m6: 18.2, m12: 30 }, lastFundraiseDate: "2026-06-01", lastRoundType: "series_a", lastRoundAmountUsd: 4000000, totalInvestmentUsd: 9000000, openingsCount: 6, raw: {} }, { companyName: "Acme", observedAt });
+    assert.deepEqual(hot.map((c) => c.factType), ["FUNDING_EVENT", "EMPLOYEE_GROWTH", "HIRING_COUNT"]);
+    assert.equal(hot[0].effectiveDate, "2026-06-01");
+    assert.equal(hot[0].structuredValue.round, "Series A");
+    assert.equal(hot[1].effectiveDate, "2026-10-08", "a measurement is dated when it was observed");
+    assert.equal(hot[1].structuredValue.percent, 18.2);
+    assert.equal(hot[2].structuredValue.count, 6);
+    const cold = m.crustdataFactCandidates({ domain: "b.in", headcount: 30, growthPercent: { m1: 0, m3: 1, m6: 3, m12: 5 }, lastFundraiseDate: "2024-01-01", lastRoundType: "seed", lastRoundAmountUsd: null, totalInvestmentUsd: 500000, openingsCount: 0, raw: {} }, { companyName: "B", observedAt });
+    assert.deepEqual(cold, [], "a two-year-old round and 3% growth say nothing about now; a total is not an event");
+  }
+
   // The provider names a twin path for a field: the client swaps it and retries once, and the ledger shows both calls.
   {
     const seen = [];

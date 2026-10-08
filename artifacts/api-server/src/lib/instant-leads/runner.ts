@@ -34,6 +34,7 @@ export function instantLeadRunDeps(): Promise<InstantLeadRunDeps> {
     repository: new PostgresIntelligenceV2Repository(),
     log: { info: (obj, msg) => logger.info(obj, msg), warn: (obj, msg) => logger.warn(obj, msg) },
     concurrency: Math.max(1, Number(process.env.JYRA_INSTANT_LEADS_CONCURRENCY) || DEFAULT_RUN_DEPS.concurrency),
+    activityFacts: process.env.JYRA_INSTANT_LEADS_ACTIVITY_FACTS !== "false",
   }))();
   return cached;
 }

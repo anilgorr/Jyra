@@ -68,6 +68,7 @@ function client({ people = [], emails = [], searchError = null, enrichError = nu
     calls,
     configuration: {},
     async searchCompanies() { throw new Error("not here"); },
+    async fetchActivity() { throw new Error("not here"); },
     async searchPeople(input, scope) { calls.push({ kind: "search", input, scope }); if (searchError) throw searchError; return { items: people, totalCount: people.length, nextCursor: null, creditsUsed: people.length * 0.03, costUsd: people.length * 0.003 }; },
     async enrichContact(input, scope) { calls.push({ kind: "enrich", input, scope }); if (enrichError) throw enrichError; return { contact: emails.length ? { emails, personId: "cp-1" } : null, creditsUsed: emails.length ? 1.5 : 0, costUsd: emails.length ? 0.15 : 0 }; },
   };

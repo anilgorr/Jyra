@@ -35,7 +35,8 @@ import { researchBlockers, resolveProjectSellerContext } from "../seller-context
 import { loadProjectCompany, runIntelligenceCycle, SellerContextIncompleteError, type CycleLogger } from "../intelligence-v2/run-cycle";
 import type { IntelligenceV2Repository } from "../intelligence-v2/orchestrator";
 import { classifyCycleFailure, watchLoopHalt } from "../intelligence-v2/watch-loop";
-import { COMPANY_FIELDS, createCrustdataClient, crustdataConfiguration, crustdataFailureMessage, CrustdataError, type CrustdataClient, type CrustdataCompany } from "./crustdata-client";
+import { activityGroupOf, COMPANY_FIELDS, createCrustdataClient, crustdataConfiguration, crustdataFailureMessage, CrustdataError, type CrustdataActivityGroup, type CrustdataClient, type CrustdataCompany } from "./crustdata-client";
+import { persistCrustdataFacts } from "./provider-facts";
 import { buildInstantLeadFilters, describeFilterPlan, widenInstantLeadFilters, withoutField, type InstantLeadFilterPlan } from "./filters";
 import { countryLabel } from "./geography";
 
@@ -100,6 +101,8 @@ export type InstantLeadRunDeps = {
   maxDurationMs: number;
   /** Average cycle length for the first ETA, refined as cycles finish. */
   assumedCycleMs: number;
+  /** Read the provider's own activity figures for accepted candidates and file them as facts (see provider-facts.ts). */
+  activityFacts: boolean;
 };
 
 /** What one research cycle costs on average, for the budget check before a run. Admin-facing only. */
@@ -116,6 +119,7 @@ export const DEFAULT_RUN_DEPS: Omit<InstantLeadRunDeps, "client" | "repository" 
   maxCandidates: 2_000,
   maxDurationMs: 45 * 60_000,
   assumedCycleMs: 46_000,
+  activityFacts: true,
 };
 
 /* ------------------------------------------------------------------------ */
@@ -342,7 +346,7 @@ async function excludedDomains(projectId: string): Promise<Set<string>> {
   return out;
 }
 
-type LinkedCandidate = { projectCompanyId: string; companyId: string; domain: string };
+type LinkedCandidate = { projectCompanyId: string; companyId: string; domain: string; name: string };
 
 /**
  * A Crustdata row becomes a company and a screening-status membership of
@@ -421,7 +425,7 @@ async function linkCandidates(input: {
             lastFundraiseDate: company.lastFundraiseDate, lastRoundType: company.lastRoundType, totalInvestmentUsd: company.totalInvestmentUsd,
           },
         });
-        return { projectCompanyId: membership.id, companyId: companyRow.id, domain: company.domain! };
+        return { projectCompanyId: membership.id, companyId: companyRow.id, domain: company.domain!, name: companyRow.canonicalName };
       });
       if (row) linked.push(row); else reject(company.domain, "already on this project's board or delivered by an earlier run");
     } catch (error) {
@@ -650,7 +654,7 @@ export async function executeInstantLeadRun(runId: string, input: InstantLeadRun
             // "Invalid fields: basic_info.industries. Did you mean 'basic_info.name'?" - the refused one is named first;
             // the suggestions after it must not be mistaken for it.
             const explicit = /invalid (?:fields?|filters?)[^:]*:\s*([a-z0-9_.]+?)\.?(?:[\s,'"]|$)/i.exec(error.message)?.[1] ?? null;
-            const named = (field: string) => Boolean(field) && (field === explicit || (!explicit && new RegExp(`(^|[^a-z0-9_.])${field.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?![a-z0-9_]|\.[a-z0-9_])`, "i").test(error.message)));
+            const named = (field: string) => Boolean(field) && (field === explicit || (!explicit && new RegExp(`(^|[^a-z0-9_.])${field.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?![a-z0-9_]|[.][a-z0-9_])`, "i").test(error.message)));
             const refusedField = fields.find(named);
             const refusedFilter = plan.activity.map((item) => item.field).concat(plan.firmographic.map((item) => ("field" in item ? item.field : ""))).find(named);
             if (refusedField || refusedFilter) {
@@ -715,6 +719,29 @@ export async function executeInstantLeadRun(runId: string, input: InstantLeadRun
         });
         for (const candidate of linked) { touched.add(candidate.projectCompanyId); pending.push(candidate.projectCompanyId); }
         candidatesAccepted += linked.length;
+
+        // What the provider knows about the kept candidates' movement, filed as facts before research looks for more.
+        if (input.activityFacts && linked.length) {
+          const groups = [...new Set(plan.activity.map((item) => activityGroupOf(item.field)).filter((group): group is CrustdataActivityGroup => group !== null))];
+          if (groups.length) {
+            try {
+              const details = await input.client.fetchActivity({ domains: linked.map((candidate) => candidate.domain), groups }, scope);
+              providerCalls += 1; providerCostUsd += details.costUsd;
+              const byDomain = new Map(details.items.map((item) => [item.domain, item]));
+              let providerFacts = 0;
+              for (const candidate of linked) {
+                const activity = byDomain.get(normalizeDomain(candidate.domain));
+                if (!activity) continue;
+                const report = await persistCrustdataFacts({ organizationId: run.organizationId, companyId: candidate.companyId, companyName: candidate.name, domain: normalizeDomain(candidate.domain)!, activity, now: input.now() });
+                providerFacts += report.factsInserted;
+              }
+              log.info({ runId: run.id, companies: details.items.length, providerFacts, groups }, "INSTANT_LEADS_PROVIDER_FACTS");
+            } catch (error) {
+              // Not fatal: research still runs on the company's own pages.
+              log.warn({ runId: run.id, err: error }, "INSTANT_LEADS_ACTIVITY_FAILED");
+            }
+          }
+        }
         rejectedCount += turnedAway.length; rejections.push(...turnedAway);
         if (turnedAway.length) log.info({ runId: run.id, rejected: turnedAway.length, reasons: turnedAway.slice(0, 10) }, "INSTANT_LEADS_SCREENED_OUT");
         run = await checkpoint(run.id, { filters: snapshot() }, input.now());
