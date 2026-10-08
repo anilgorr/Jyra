@@ -63,6 +63,7 @@ function accessDenial(error: unknown): { code: string; message: string } | null 
 
 function AuthenticatedRoutes() {
   const [location] = useLocation();
+  const { signOut } = useAuthSession();
   const { data: user, isLoading, isError, error } = useGetCurrentUser();
 
   if (isLoading) {
@@ -86,9 +87,14 @@ function AuthenticatedRoutes() {
             {denial.code === "suspended" ? "This account is paused" : "JYRA is invite-only right now"}
           </h1>
           <p className="mt-2 text-muted-foreground">{denial.message}</p>
+          {/* A link to /sign-in would not do: Clerk sees the live session and
+            * sends it straight back here. Sign out first; Clerk then lands on
+            * the sign-in page. */}
           <p className="mt-6 text-sm text-muted-foreground">
             Signed in with the wrong account?{' '}
-            <a href="/sign-in" className="underline">Switch account</a>
+            <button type="button" onClick={() => void signOut()} className="underline" data-testid="switch-account">
+              Switch account
+            </button>
           </p>
         </div>
       </div>
