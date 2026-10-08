@@ -12,7 +12,18 @@ import { recordSpend as recordSpendToLedger } from "../spend-ledger";
  * Credits are Crustdata's unit; dollars are ours. The conversion is the
  * provider row's `usdPerCredit` (env `CRUSTDATA_USD_PER_CREDIT` wins), and
  * until someone reads the real rate off the dashboard it is a placeholder,
- * which the ledger row says in its metadata.
+ * which the ledger row says in its metadata. The dashboard's own rate on
+ * 8 Oct 2026: $9 per 1,000 search records, so $0.30 a credit.
+ *
+ * The credits themselves come from the provider, not from us: every response
+ * carries `x-credits-used`, and that figure is what the ledger records. The
+ * per-result rates in `creditsFor` are a fallback for a response without the
+ * header, and a known underestimate - premium groups (headcount, funding,
+ * hiring, person experience) are billed per result on the filter side as well
+ * as the field side, and the first live day's headers showed a 100-company
+ * page costing ~8 credits where the estimate said under 1. Crustdata also
+ * rounds each request's balance deduction up to the next whole credit, so
+ * the dashboard can run a little ahead of the sum of the headers.
  *
  * Reference: https://docs.crustdata.com (company search, person search,
  * person enrich; header `x-api-version: 2025-11-01`).
@@ -206,6 +217,12 @@ const get = (object: unknown, path: string): unknown =>
   path.split(".").reduce<unknown>((current, key) => (current && typeof current === "object" ? (current as Record<string, unknown>)[key] : undefined), object);
 const str = (value: unknown): string | null => (typeof value === "string" && value.trim() ? value.trim() : null);
 const num = (value: unknown): number | null => (typeof value === "number" && Number.isFinite(value) ? value : null);
+/** A header value such as "0.09" or "3"; anything else is "not reported". */
+const decimal = (value: string | null): number | null => {
+  if (value === null) return null;
+  const parsed = Number(value.trim());
+  return value.trim() !== "" && Number.isFinite(parsed) && parsed >= 0 ? parsed : null;
+};
 const strs = (value: unknown): string[] => (Array.isArray(value) ? value.filter((item): item is string => typeof item === "string") : []);
 
 /**
@@ -312,13 +329,20 @@ export function createCrustdataClient(options: CrustdataClientOptions) {
     }
     clearTimeout(timer);
     const text = await response.text();
+    // The exact charge, from the provider: every data-API response carries
+    // `x-credits-used`, error responses included (a 400 for a bad field still
+    // bills the search behind it). Only a 429, answered before the request
+    // reached the API, has no header. Our own estimate is the fallback, and
+    // the dashboard proved it low by 10x on premium filters.
+    const headerCredits = decimal(response.headers.get("x-credits-used"));
+    const providerRequestId = response.headers.get("x-request-id");
     if (!response.ok) {
       const code = response.status === 401 || response.status === 403 ? "CRUSTDATA_UNAUTHORIZED"
         : response.status === 402 ? "CRUSTDATA_NO_CREDITS"
         : response.status === 429 ? "CRUSTDATA_RATE_LIMITED"
         : response.status === 400 || response.status === 422 ? "CRUSTDATA_BAD_REQUEST"
         : "CRUSTDATA_HTTP";
-      await recordSpend({ organizationId: scope.organizationId, projectId: scope.projectId, kind: "PROVIDER", source: "Crustdata", capability, outcome: "failed", costUsd: 0, requestId, occurredAt, metadata: { path, status: response.status, body: text.slice(0, 1500), ...scope.metadata } });
+      await recordSpend({ organizationId: scope.organizationId, projectId: scope.projectId, kind: "PROVIDER", source: "Crustdata", capability, outcome: "failed", costUsd: usd(headerCredits ?? 0), requestId, occurredAt, metadata: { path, status: response.status, body: text.slice(0, 1500), creditsUsed: headerCredits ?? 0, creditsReported: headerCredits !== null, providerRequestId, ...scope.metadata } });
       // "Invalid fields: X. 'X' is a filter path. In fields, use 'Y'." - the provider names the twin; take it, once.
       const twin = !retried && code === "CRUSTDATA_BAD_REQUEST" ? /Invalid fields: ([a-z0-9_]+(?:\.[a-z0-9_]+)*)[^]*?use '([a-z0-9_]+(?:\.[a-z0-9_]+)*)'/i.exec(text) : null;
       const fieldsIn = body && typeof body === "object" && Array.isArray((body as { fields?: unknown }).fields) ? ((body as { fields: string[] }).fields) : null;
@@ -337,14 +361,14 @@ export function createCrustdataClient(options: CrustdataClientOptions) {
       : Array.isArray(json.profiles) ? json.profiles.length
       : Array.isArray(json.matches) ? json.matches.length
       : Array.isArray(json.results) ? json.results.length : 0;
-    // Prefer the provider's own figure when it reports one; otherwise the documented rate.
-    const reported = num(json.credits_used) ?? num(json.credits_consumed) ?? num(get(json, "usage.credits"));
+    // The header first, a figure in the body second, our documented-rate estimate last.
+    const reported = headerCredits ?? num(json.credits_used) ?? num(json.credits_consumed) ?? num(get(json, "usage.credits"));
     const creditsUsed = reported ?? creditsFor(json, count);
     const costUsd = usd(creditsUsed);
     await recordSpend({
       organizationId: scope.organizationId, projectId: scope.projectId, kind: "PROVIDER", source: "Crustdata", capability,
       outcome: count > 0 ? "success" : "empty", costUsd, requestId, occurredAt,
-      metadata: { path, results: count, creditsUsed, creditsReported: reported !== null, usdPerCredit: configuration.usdPerCredit, usdPerCreditVerified: configuration.usdPerCreditVerified, latencyMs: Date.now() - startedAt, ...scope.metadata },
+      metadata: { path, results: count, creditsUsed, creditsReported: reported !== null, creditsEstimated: reported === null ? null : creditsFor(json, count), providerRequestId, usdPerCredit: configuration.usdPerCredit, usdPerCreditVerified: configuration.usdPerCreditVerified, latencyMs: Date.now() - startedAt, ...scope.metadata },
     });
     return { json, creditsUsed, costUsd };
   }

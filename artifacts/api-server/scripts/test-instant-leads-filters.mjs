@@ -224,6 +224,28 @@ const marketingPack = [
   assert.equal(spend.at(-1).outcome, "failed");
   assert.equal(spend.at(-1).costUsd, 0);
   assert.equal(m.crustdataFailureMessage(new m.CrustdataError("CRUSTDATA_NO_CREDITS", "x", false)), "The company data provider's balance is empty.");
+
+  // The provider's own charge wins over our estimate: `x-credits-used` on a
+  // 100-result search said 8.21 where the per-result rate says 3. On an error
+  // response the header is still a charge, and still filed.
+  {
+    const rows = [];
+    const headed = m.createCrustdataClient({ apiKey: "k", configuration: { usdPerCredit: 0.3 }, limiter: { take: async () => {} }, recordSpend: async (row) => { rows.push(row); },
+      fetchImpl: async (url) => {
+        if (url.endsWith("/person/search")) return new Response(JSON.stringify({ error: { type: "invalid_request", message: "Invalid filters: nope" } }), { status: 400, headers: { "x-credits-used": "0.09", "x-request-id": "req_err" } });
+        return new Response(JSON.stringify({ companies: [{ basic_info: { name: "A", primary_domain: "a.com" } }, { basic_info: { name: "B", primary_domain: "b.com" } }] }), { status: 200, headers: { "x-credits-used": "8.21", "x-request-id": "req_ok" } });
+      } });
+    const page = await headed.searchCompanies({ filters: { op: "and", conditions: [] }, limit: 2 }, scope);
+    assert.equal(page.creditsUsed, 8.21, "the header, not 2 x 0.03");
+    assert.equal(Math.round(page.costUsd * 1000) / 1000, 2.463);
+    assert.equal(rows[0].metadata.creditsReported, true);
+    assert.equal(rows[0].metadata.creditsEstimated, 0.06, "what we would have guessed, kept beside the truth");
+    assert.equal(rows[0].metadata.providerRequestId, "req_ok");
+    await assert.rejects(() => headed.searchPeople({ filters: { op: "and", conditions: [] }, limit: 1 }, scope), (error) => error.code === "CRUSTDATA_BAD_REQUEST");
+    assert.equal(rows[1].outcome, "failed");
+    assert.equal(Math.round(rows[1].costUsd * 1000) / 1000, 0.027, "a 400 that was billed is filed at what it cost");
+    assert.equal(rows[1].metadata.providerRequestId, "req_err");
+  }
   const unconfigured = m.createCrustdataClient({ apiKey: undefined, limiter: { take: async () => {} }, recordSpend: async () => {} });
   await assert.rejects(() => unconfigured.searchCompanies({ filters: { op: "and", conditions: [] }, limit: 1 }, scope), (error) => error.code === "CRUSTDATA_NOT_CONFIGURED");
 
