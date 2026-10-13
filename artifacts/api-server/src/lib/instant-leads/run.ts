@@ -592,6 +592,16 @@ export async function executeInstantLeadRun(runId: string, input: InstantLeadRun
     const delivered = await writeLeads(current, ranked, now);
     const settled = await settleCredits(current, delivered, now, delivered ? `${delivered} delivered before the run stopped` : "the run stopped before delivering anything");
     const researchCostUsd = await researchCostSince(current, [...touched], current.startedAt ?? startedAt).catch(() => current.researchCostUsd);
+    // A halt that arrives after the request is already satisfied is not a failure: the Aadit SOC run on
+    // 10 Oct had its tenth lead confirmed, then the model's quota ran out, and read "failed, 10 of 10".
+    // The customer got what they asked for; the admin still sees the halt in errorCode/errorMessage.
+    if (status === "FAILED" && delivered >= current.requested) {
+      return patchRun(current.id, {
+        status: "DONE", errorCode: code, errorMessage: detail.slice(0, 1000), finishedAt: now, delivered, confirmed: delivered, etaSeconds: 0,
+        researched, providerCalls, providerCostUsd, researchCostUsd, pendingProjectCompanyIds: [], touchedProjectCompanyIds: [...touched],
+        outcomeNote: `${delivered} lead${delivered === 1 ? "" : "s"} delivered; ${settled.settled} credits charged.`,
+      }, now);
+    }
     const stopped = status === "CANCELLED" ? "You cancelled the run" : `The run stopped early (${message})`;
     return patchRun(current.id, {
       // errorMessage is the provider's own words, for the admin page; the customer reads outcomeNote.

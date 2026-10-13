@@ -280,6 +280,22 @@ const noCurrency = (value) => { const text = JSON.stringify(value); assert.ok(!/
   assert.equal(balance(db), 470);
 }
 
+// 6b. The model goes away after the request is already satisfied: that is a finished run, not a failed one.
+{
+  const db = world({ balance: 500 });
+  const market = [1, 2, 3, 4, 5, 6].map((n) => company(n));
+  const client = fakeClient([market]);
+  let calls = 0;
+  const cycle = fakeCycle(db, { intent: (domain) => (domain === "company1.com" || domain === "company2.com" ? 80 : null), failFor: () => (++calls === 3 ? new m.AssessmentFailureV2("V2_ASSESSMENT_PROVIDER_ERROR", "429 insufficient_quota", []) : null) });
+  const { run } = await m.createInstantLeadRun({ project: project(), userId: USER, requested: 2, now: now() });
+  const finished = await m.executeInstantLeadRun(run.id, deps(db, client, cycle, { concurrency: 1 }));
+  assert.equal(finished.status, "DONE", finished.outcomeNote);
+  assert.equal(finished.errorCode, "RESEARCH_HALTED", "the admin still sees why the run stopped where it did");
+  assert.equal(finished.delivered, 2);
+  assert.match(finished.outcomeNote, /^2 leads delivered; 60 credits charged\.$/);
+  assert.equal(balance(db), 440);
+}
+
 // 7. Cancel mid-run: the executor sees the flipped status at its next checkpoint, keeps what is confirmed, releases the rest.
 {
   const db = world({ balance: 500 });
