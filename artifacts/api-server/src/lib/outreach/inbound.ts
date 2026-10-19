@@ -202,7 +202,7 @@ export const classifyReply: ReplyClassifier = async ({ text, subject, organizati
   if (/out of (the )?office|on leave|auto-?reply|automatic reply|currently away|on vacation|annual leave/.test(haystack)) return { classification: "OUT_OF_OFFICE", reason: "An away message." };
   if (/\b(unsubscribe|remove me|stop (emailing|contacting|messaging)|do not (contact|email) me|take me off)\b/.test(haystack)) return { classification: "UNSUBSCRIBE", reason: "Asked not to be contacted." };
   const response = await openai.chat.completions.create({
-    model: OUTREACH_DRAFT_MODEL, max_completion_tokens: 200, response_format: { type: "json_object" },
+    model: OUTREACH_DRAFT_MODEL, max_completion_tokens: 1500, reasoning_effort: "low", response_format: { type: "json_object" },
     messages: [{ role: "system", content: CLASSIFY_SYSTEM }, { role: "user", content: `SUBJECT: ${subject ?? ""}\n\n${text.slice(0, 4000)}` }],
   });
   await recordSpend({ organizationId, projectId: projectId ?? null, kind: "MODEL", source: response.model ?? OUTREACH_DRAFT_MODEL, outcome: "success", costUsd: estimateModelCostUsd(response.model ?? OUTREACH_DRAFT_MODEL, (response.usage as unknown as Record<string, unknown>) ?? null), requestId: `outreach-classify:${Date.now()}`, metadata: { purpose: "outreach-classify" } });

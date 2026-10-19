@@ -115,13 +115,21 @@ export function validateDraft(kind: OutreachStepKind, draft: Draft, basis: Enrol
   return problems;
 }
 
+export class DraftError extends Error {
+  constructor(public readonly problems: string[]) { super(`The writer could not produce an acceptable draft: ${problems.join("; ")}`); this.name = "DraftError"; }
+}
+
 export type DraftWriter = (prompt: { system: string; user: string; problems: string[] }) => Promise<{ text: string; model: string; usage?: Record<string, unknown> | null }>;
 
 /** The real model behind `DraftWriter`. */
 export const openAiDraftWriter: DraftWriter = async ({ system, user, problems }) => {
+  // Reasoning tokens come out of this budget on gpt-5-class models; 900 was
+  // all thinking and no answer. Low effort: the task is short and the
+  // evidence is given, so there is little to reason about.
   const response = await openai.chat.completions.create({
     model: OUTREACH_DRAFT_MODEL,
-    max_completion_tokens: 900,
+    max_completion_tokens: 4000,
+    reasoning_effort: "low",
     response_format: { type: "json_object" },
     messages: [
       { role: "system", content: system },
@@ -129,12 +137,11 @@ export const openAiDraftWriter: DraftWriter = async ({ system, user, problems })
       ...(problems.length ? [{ role: "user" as const, content: `Your previous draft was refused. Fix exactly these and answer again with the whole JSON:\n${problems.map((p) => `- ${p}`).join("\n")}` }] : []),
     ],
   });
-  return { text: response.choices[0]?.message?.content ?? "", model: response.model ?? OUTREACH_DRAFT_MODEL, usage: (response.usage as unknown as Record<string, unknown>) ?? null };
+  const choice = response.choices[0];
+  const text = choice?.message?.content ?? "";
+  if (!text.trim()) throw new DraftError([`the model returned nothing (finish reason: ${choice?.finish_reason ?? "unknown"})`]);
+  return { text, model: response.model ?? OUTREACH_DRAFT_MODEL, usage: (response.usage as unknown as Record<string, unknown>) ?? null };
 };
-
-export class DraftError extends Error {
-  constructor(public readonly problems: string[]) { super(`The writer could not produce an acceptable draft: ${problems.join("; ")}`); this.name = "DraftError"; }
-}
 
 /** Write one step; two attempts, the second told what was wrong with the first. Spend is filed per attempt. */
 export async function writeDraft(
@@ -155,10 +162,10 @@ export async function writeDraft(
     });
     let parsed: Draft;
     try {
-      const json = JSON.parse(answer.text) as { subject?: unknown; body?: unknown };
+      const json = JSON.parse(answer.text.trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "")) as { subject?: unknown; body?: unknown };
       parsed = { subject: typeof json.subject === "string" && json.subject.trim() ? json.subject.trim() : null, body: typeof json.body === "string" ? json.body.trim() : "" };
     } catch {
-      problems = ["the answer was not JSON"]; continue;
+      problems = [`the answer was not JSON (it began "${answer.text.trim().slice(0, 60)}")`]; continue;
     }
     problems = validateDraft(input.kind, parsed, input.basis, input.seller);
     if (!problems.length) {
