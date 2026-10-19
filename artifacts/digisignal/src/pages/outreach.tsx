@@ -143,7 +143,7 @@ function DraftCard({ projectId, enrollment }: { projectId: string; enrollment: O
   const Icon = KIND_ICON[step.kind];
   const isEmail = step.channel === "EMAIL";
   const noteLimit = step.kind === "LINKEDIN_INVITATION" ? 300 : null;
-  const busy = approve.isPending || regenerate.isPending || skip.isPending || stop.isPending;
+  const busy = approve.isPending || regenerate.isPending || skip.isPending || stop.isPending || step.status === "DRAFTING";
   const act = (run: () => void) => { if (!busy) run(); };
   return (
     <Card className="p-4 space-y-3">
@@ -162,6 +162,7 @@ function DraftCard({ projectId, enrollment }: { projectId: string; enrollment: O
         <Badge variant="outline" className="gap-1"><Icon className="h-3 w-3" />{KIND_LABEL[step.kind]}</Badge>
       </div>
 
+      {step.status === "DRAFTING" ? <p className="flex items-center gap-2 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" />Being written…</p> : null}
       {step.status === "FAILED" ? (
         <div className="flex items-start gap-2 rounded-md border border-amber-500/40 bg-amber-500/10 p-2 text-sm">
           <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
@@ -372,7 +373,7 @@ export default function OutreachPage() {
 
   if (!activeProjectId) return <div className="p-6 text-muted-foreground">Pick a project to run outreach for.</div>;
   const all = enrollments.data?.enrollments ?? [];
-  const queue = all.filter((e) => e.status === "AWAITING_APPROVAL" && e.currentStepDraft && (e.currentStepDraft.status === "AWAITING_APPROVAL" || e.currentStepDraft.status === "FAILED"));
+  const queue = all.filter((e) => e.status === "AWAITING_APPROVAL" && e.currentStepDraft);
   const writing = all.filter((e) => e.status === "DRAFTING").length;
   const inSequence = all.filter((e) => e.status !== "AWAITING_APPROVAL" && e.status !== "DRAFTING");
   const counts = enrollments.data?.counts;

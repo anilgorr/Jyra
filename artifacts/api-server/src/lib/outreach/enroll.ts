@@ -3,7 +3,7 @@ import {
   companiesTable, companyFactsTable, db, outreachEnrollmentsTable, outreachSequencesTable, outreachStepsTable, outreachSuppressionsTable, peopleTable,
   projectCompaniesTable, projectPersonContextTable, senderAccountsTable, signalDefinitionsTable, signalsTable,
   ENROLLMENT_LIVE_STATUSES, STEP_KIND_CHANNEL,
-  type EnrollmentBasis, type EnrollmentContact, type OutreachChannel, type OutreachEnrollment, type OutreachSequence, type OutreachStep, type SenderAccount, type SuppressionKind,
+  type EnrollmentBasis, type EnrollmentContact, type OutreachChannel, type OutreachEnrollment, type OutreachSequence, type OutreachStep, type OutreachStepKind, type SenderAccount, type SuppressionKind,
 } from "@workspace/db";
 import { logger } from "../logger";
 import { resolveProjectSellerContext } from "../seller-context";
@@ -217,29 +217,36 @@ export async function draftStep(
 
   const prior = await db.select().from(outreachStepsTable)
     .where(and(eq(outreachStepsTable.enrollmentId, enrollment.id), eq(outreachStepsTable.status, "SENT"))).orderBy(outreachStepsTable.stepIndex);
+  // The first message that actually goes out is the first touch, whatever its step
+  // number: a skipped or failed step 0 does not make step 1 a "follow-up". It is
+  // written as a cold email when the plan said follow-up, and a person approves it.
+  const nothingSentYet = prior.length === 0;
+  const kind: OutreachStepKind = plan.kind === "EMAIL_FOLLOW_UP" && !prior.some((step) => STEP_KIND_CHANNEL[step.kind] === "EMAIL") ? "EMAIL" : plan.kind;
+  const needsPerson = plan.requiresApproval || nothingSentYet;
+  const waitForPerson = async () => {
+    if (enrollment.status === "DRAFTING" || enrollment.status === "ACTIVE" || enrollment.status === "AWAITING_APPROVAL") {
+      await db.update(outreachEnrollmentsTable).set({ status: "AWAITING_APPROVAL", nextActionAt: null, updatedAt: now }).where(eq(outreachEnrollmentsTable.id, enrollment.id));
+    }
+  };
   const senderName = deps.senderName ?? null;
   const seller = await sellerBriefFor(enrollment.projectId, enrollment.organizationId, senderName);
   try {
     const { draft, source } = await writeDraft({
-      kind: plan.kind, contact: enrollment.contact, basis: enrollment.basis, seller, sequence,
+      kind, contact: enrollment.contact, basis: enrollment.basis, seller, sequence,
       priorMessages: prior.map((step) => ({ kind: step.kind, subject: step.subject, body: step.body ?? "" })),
       now, organizationId: enrollment.organizationId, projectId: enrollment.projectId, companyId: enrollment.companyId,
     }, { writer: deps.writer });
-    const status = plan.requiresApproval ? "AWAITING_APPROVAL" : "APPROVED";
+    const status = needsPerson ? "AWAITING_APPROVAL" : "APPROVED";
     const [updated] = await db.update(outreachStepsTable).set({
-      subject: draft.subject, body: draft.body, draftSource: source, status, error: null, updatedAt: now,
+      kind, subject: draft.subject, body: draft.body, draftSource: source, status, error: null, updatedAt: now,
       ...(status === "APPROVED" ? { approvedAt: now, approvedByUserId: null } : {}),
     }).where(eq(outreachStepsTable.id, existing.id)).returning();
-    if (input.stepIndex === 0 && enrollment.status === "DRAFTING") {
-      await db.update(outreachEnrollmentsTable).set({ status: "AWAITING_APPROVAL", updatedAt: now }).where(eq(outreachEnrollmentsTable.id, enrollment.id));
-    }
+    if (status === "AWAITING_APPROVAL") await waitForPerson();
     return updated!;
   } catch (error) {
     const message = error instanceof DraftError ? error.message : (error instanceof Error ? error.message : String(error));
-    const [failed] = await db.update(outreachStepsTable).set({ status: "FAILED", error: message.slice(0, 1000), updatedAt: now }).where(eq(outreachStepsTable.id, existing.id)).returning();
-    if (input.stepIndex === 0 && enrollment.status === "DRAFTING") {
-      await db.update(outreachEnrollmentsTable).set({ status: "AWAITING_APPROVAL", updatedAt: now }).where(eq(outreachEnrollmentsTable.id, enrollment.id));
-    }
+    const [failed] = await db.update(outreachStepsTable).set({ kind, status: "FAILED", error: message.slice(0, 1000), updatedAt: now }).where(eq(outreachStepsTable.id, existing.id)).returning();
+    await waitForPerson();
     return failed!;
   }
 }
@@ -268,7 +275,8 @@ export async function approveStep(input: { organizationId: string; stepId: strin
   if (STEP_KIND_CHANNEL[step.kind] === "EMAIL" && !subject) throw new OutreachRequestError("EMPTY", "The subject is empty", 400);
   if (step.kind === "LINKEDIN_INVITATION" && body.length > 300) throw new OutreachRequestError("TOO_LONG", "A LinkedIn note is at most 300 characters", 400);
   const edited = body !== (step.body ?? "").trim() || (subject ?? null) !== (step.subject ?? null);
-  const scheduledFor = step.scheduledFor && step.scheduledFor.getTime() > now.getTime() ? step.scheduledFor : now;
+  // A follow-up keeps its day; a first touch (nothing sent yet) goes as soon as it is approved, whatever delay the plan gave the slot.
+  const scheduledFor = enrollment.lastOutboundAt && step.scheduledFor && step.scheduledFor.getTime() > now.getTime() ? step.scheduledFor : now;
   const [updated] = await db.update(outreachStepsTable).set({
     status: "APPROVED", subject, body, approvedByUserId: input.userId, approvedAt: now, scheduledFor, error: null,
     draftSource: step.draftSource ? { ...step.draftSource, edited: step.draftSource.edited || edited } : { model: null, promptVersion: "manual", evidence: enrollment.basis.why, generatedAt: now.toISOString(), edited: true },

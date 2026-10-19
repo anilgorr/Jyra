@@ -179,8 +179,8 @@ async function sendStep(
   const [sequence] = await db.select().from(outreachSequencesTable).where(eq(outreachSequencesTable.id, enrollment.sequenceId)).limit(1);
   if (!sequence) return "failed";
 
-  // The first touch is the paid moment.
-  if (step.stepIndex === 0 && !enrollment.creditEntryId) {
+  // The first touch is the paid moment: the first message that goes out, whatever its step number.
+  if (!enrollment.creditEntryId && !enrollment.lastOutboundAt) {
     const pricing = await resolveOrganizationPlan(enrollment.organizationId);
     const price = pricing.creditsPerOutreachContact;
     if (price > 0) {

@@ -678,4 +678,61 @@ async function enrolAndApprove(db, { unipile = fakeUnipile(), writer = fakeWrite
   assert.equal(stepsOf(db, enrollment.id)[1].status, "CANCELLED");
 }
 
+// 18. A skipped or failed first step does not make the next one a follow-up: it is written cold, waits for a person, and is the paid first touch.
+{
+  const db = world();
+  const never = fakeWriter(["nope", "nope"]);
+  const report = await m.enrollCompanies({ organizationId: ORG, projectId: PROJECT, userId: ANIL, projectCompanyIds: [ACME.projectCompany] }, { now, writer: never.writer });
+  const enrollment = report.enrolled[0];
+  const [failed] = stepsOf(db, enrollment.id);
+  assert.equal(failed.status, "FAILED");
+  const good = fakeWriter();
+  await m.skipStep({ organizationId: ORG, stepId: failed.id, userId: ANIL }, { now, writer: good.writer });
+  const [, next] = stepsOf(db, enrollment.id);
+  assert.equal(next.kind, "EMAIL", "the plan said follow-up, but nothing was sent to follow");
+  assert.equal(next.status, "AWAITING_APPROVAL", "the first message out always waits for a person");
+  assert.match(good.prompts[0].user, /FORM: A cold email/);
+  assert.equal(next.subject, "Security operations at Acme");
+  const waiting = enrollmentOf(db, enrollment.id);
+  assert.equal(waiting.status, "AWAITING_APPROVAL");
+  assert.equal(waiting.currentStep, 1);
+  assert.equal(waiting.nextActionAt, null);
+
+  const unipile = fakeUnipile();
+  await m.approveStep({ organizationId: ORG, stepId: next.id, userId: ANIL }, { now });
+  assert.equal(enrollmentOf(db, enrollment.id).status, "ACTIVE");
+  const tick = await m.runPacerTick(pacerDeps(unipile));
+  assert.equal(tick.accounts.find((entry) => entry.senderAccountId === EMAIL_ACCOUNT).sent, 1);
+  assert.equal(unipile.calls[0][1].replyToMessageId, null, "a first touch, not a reply");
+  assert.equal(balance(db), 95, "charged as the first touch though it is step two");
+  const steps = stepsOf(db, enrollment.id);
+  assert.equal(steps[1].status, "SENT");
+  assert.equal(steps[2].kind, "LINKEDIN_INVITATION");
+  assert.equal(steps[2].status, "APPROVED", "after something has gone out, an ungated step runs on its own");
+  assert.equal(enrollmentOf(db, enrollment.id).status, "ACTIVE");
+}
+
+// 19. A later step the sequence gates puts the enrolment back in the queue, and approval sends it on its day.
+{
+  const db = world();
+  db.rows.set("outreach_sequences", []);
+  db.seed(m.outreachSequencesTable, [{ id: "seq-gated", organizationId: ORG, projectId: PROJECT, name: "Default", masterPrompt: "", signature: "", complianceFooter: "", active: true,
+    steps: [{ kind: "EMAIL", delayDays: 0, requiresApproval: true, condition: "ALWAYS" }, { kind: "EMAIL_FOLLOW_UP", delayDays: 3, requiresApproval: true, condition: "NO_REPLY" }] }]);
+  const { enrollment, unipile } = await enrolAndApprove(db);
+  await m.runPacerTick(pacerDeps(unipile));
+  const [, followUp] = stepsOf(db, enrollment.id);
+  assert.equal(followUp.kind, "EMAIL_FOLLOW_UP", "a real follow-up this time: the first email went");
+  assert.equal(followUp.status, "AWAITING_APPROVAL");
+  assert.equal(enrollmentOf(db, enrollment.id).status, "AWAITING_APPROVAL", "back in the queue, not silently stuck as active");
+  await m.approveStep({ organizationId: ORG, stepId: followUp.id, userId: ANIL }, { now });
+  const active = enrollmentOf(db, enrollment.id);
+  assert.equal(active.status, "ACTIVE");
+  assert.equal(stepsOf(db, enrollment.id)[1].scheduledFor.getTime(), clock.getTime() + 3 * DAY, "approval keeps the follow-up's day");
+  at("2026-10-23T15:00:00.000Z");
+  const tick = await m.runPacerTick(pacerDeps(unipile));
+  assert.equal(tick.accounts.find((entry) => entry.senderAccountId === EMAIL_ACCOUNT).sent, 1);
+  assert.equal(unipile.calls[1][1].replyToMessageId, "em-1");
+  assert.equal(balance(db), 95, "no second charge");
+}
+
 console.log("outreach sequence: all scenarios pass");
