@@ -42,6 +42,8 @@ tags:
     description: Controlled market-readiness campaign evaluation
   - name: instant-leads
     description: Credit-paid runs that find N accounts showing intent now, and the contacts behind them
+  - name: outreach
+    description: The accounts a customer sends outreach from, connected through the sending provider's hosted sign-in
 paths:
   /projects/{projectId}/companies/{projectCompanyId}/intelligence-v2:
     get:
@@ -3171,8 +3173,183 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
         "404": { $ref: "#/components/responses/NotFound" }
+  /organizations/{organizationId}/sender-accounts:
+    get:
+      operationId: listSenderAccounts
+      tags: [outreach]
+      summary: The accounts this organisation sends outreach from
+      description: >-
+        Every connected email, LinkedIn, WhatsApp or Instagram account in the organisation with its
+        live connection status, the seats used against the plan, and whether outreach is set up on
+        this server at all. Nothing about the sending provider's own identifiers is exposed.
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/OrganizationId" }
+      responses:
+        "200":
+          description: Connected accounts and seats
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SenderAccountList" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /organizations/{organizationId}/sender-accounts/links:
+    post:
+      operationId: startSenderAccountLink
+      tags: [outreach]
+      summary: Start connecting an account on a channel
+      description: >-
+        Mints a short-lived hosted sign-in link for the chosen channel and answers with the URL to
+        send the browser to. The user signs in on the provider's own page; their credentials never
+        reach JYRA. A user with no connected account yet takes a sender seat; when the plan's seats
+        are all taken the request is refused with code SEAT_LIMIT.
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/OrganizationId" }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/StartSenderAccountLinkRequest" }
+      responses:
+        "201":
+          description: Where to send the browser
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SenderAccountLink" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+  /organizations/{organizationId}/sender-accounts/{senderAccountId}/reconnect:
+    post:
+      operationId: reconnectSenderAccount
+      tags: [outreach]
+      summary: Reconnect an account whose session lapsed
+      description: >-
+        A hosted sign-in link bound to the existing account. The user must sign in with the same
+        provider account; a different one is refused. Allowed for the person who connected the
+        account and for organisation owners and admins.
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/OrganizationId" }
+        - { $ref: "#/components/parameters/SenderAccountId" }
+      responses:
+        "201":
+          description: Where to send the browser
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SenderAccountLink" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /organizations/{organizationId}/sender-accounts/{senderAccountId}:
+    delete:
+      operationId: removeSenderAccount
+      tags: [outreach]
+      summary: Disconnect an account
+      description: >-
+        Removes the account at the sending provider and retires it here. Allowed for the person
+        who connected it and for organisation owners and admins. Answers with the remaining list.
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/OrganizationId" }
+        - { $ref: "#/components/parameters/SenderAccountId" }
+      responses:
+        "200":
+          description: The remaining accounts and seats
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SenderAccountList" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
 components:
   schemas:
+    OutreachChannel:
+      type: string
+      enum: [EMAIL, LINKEDIN, WHATSAPP, INSTAGRAM]
+    SenderAccountStatus:
+      type: string
+      enum: [CONNECTED, DISCONNECTED, ERRORED, DEGRADED, PARTIAL, REMOVED]
+    SenderAccount:
+      type: object
+      additionalProperties: false
+      required: [id, userId, channel, provider, displayName, status, statusReason, statusChangedAt, isLocked, connectedAt, lastEventAt, needsReconnect, mine]
+      properties:
+        id: { type: string }
+        userId: { type: string }
+        channel: { $ref: "#/components/schemas/OutreachChannel" }
+        provider:
+          type: string
+          description: The sending provider's own name for the kind of account (google, outlook, imap, linkedin, whatsapp, instagram).
+        displayName:
+          type: string
+          nullable: true
+          description: The address, number or profile name the account sends as.
+        status: { $ref: "#/components/schemas/SenderAccountStatus" }
+        statusReason: { type: string, nullable: true }
+        statusChangedAt: { type: string, format: date-time }
+        isLocked:
+          type: boolean
+          description: Sending is suspended on the provider side (a subscription matter), independent of the connection.
+        connectedAt: { type: string, format: date-time }
+        lastEventAt: { type: string, format: date-time, nullable: true }
+        needsReconnect:
+          type: boolean
+          description: The session lapsed; the user has to sign in again.
+        mine:
+          type: boolean
+          description: Connected by the viewer.
+    SenderAccountSeats:
+      type: object
+      additionalProperties: false
+      required: [used, limit, remaining]
+      properties:
+        used: { type: number }
+        limit: { type: number }
+        remaining: { type: number }
+    SenderAccountChannelOption:
+      type: object
+      additionalProperties: false
+      required: [channel, label]
+      properties:
+        channel: { $ref: "#/components/schemas/OutreachChannel" }
+        label: { type: string }
+    SenderAccountList:
+      type: object
+      additionalProperties: false
+      required: [accounts, seats, channels, configured]
+      properties:
+        accounts:
+          type: array
+          items: { $ref: "#/components/schemas/SenderAccount" }
+        seats: { $ref: "#/components/schemas/SenderAccountSeats" }
+        channels:
+          type: array
+          items: { $ref: "#/components/schemas/SenderAccountChannelOption" }
+        configured:
+          type: boolean
+          description: Whether this server has a sending provider set up at all; when false the connect buttons are disabled.
+    StartSenderAccountLinkRequest:
+      type: object
+      additionalProperties: false
+      required: [channel]
+      properties:
+        channel: { $ref: "#/components/schemas/OutreachChannel" }
+    SenderAccountLink:
+      type: object
+      additionalProperties: false
+      required: [linkId, url, expiresAt, channel]
+      properties:
+        linkId: { type: string }
+        url:
+          type: string
+          description: The hosted sign-in page. Open it in the top-level window, never an iframe.
+        expiresAt: { type: string, format: date-time }
+        channel: { $ref: "#/components/schemas/OutreachChannel" }
     AdminCreditRequest:
       type: object
       additionalProperties: false
@@ -6956,6 +7133,12 @@ components:
       required: true
       schema:
         type: string
+    SenderAccountId:
+      name: senderAccountId
+      in: path
+      required: true
+      schema:
+        type: string
     GrantId:
       name: grantId
       in: path
@@ -7061,6 +7244,12 @@ components:
             $ref: "#/components/schemas/ErrorResponse"
     NotFound:
       description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    Conflict:
+      description: The request conflicts with the current state
       content:
         application/json:
           schema:

@@ -29,10 +29,13 @@ import watchLoopRouter from "./watch-loop";
 import changesRouter from "./changes";
 import instantLeadsRouter from "./instant-leads";
 import adminInstantLeadsRouter from "./admin-instant-leads";
+import outreachAccountsRouter, { outreachLinkCallbackRouter } from "./outreach-accounts";
 
 const router: IRouter = Router();
 
 router.use(healthRouter);
+// The browser comes back here from the sending provider's hosted sign-in with no session; see routes/outreach-accounts.ts.
+router.use(outreachLinkCallbackRouter);
 // Every route below this line is behind the invite-only door. See
 // middlewares/auth.ts (`accessGate`) and lib/access-grants.ts.
 router.use(accessGate);
@@ -63,6 +66,7 @@ router.use(watchLoopRouter);
 router.use(changesRouter);
 router.use(instantLeadsRouter);
 router.use(adminInstantLeadsRouter);
+router.use(outreachAccountsRouter);
 router.use(marketReadinessRouter);
 
 export default router;

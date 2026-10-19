@@ -5,6 +5,80 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+export type OutreachChannel = typeof OutreachChannel[keyof typeof OutreachChannel];
+
+
+export const OutreachChannel = {
+  EMAIL: 'EMAIL',
+  LINKEDIN: 'LINKEDIN',
+  WHATSAPP: 'WHATSAPP',
+  INSTAGRAM: 'INSTAGRAM',
+} as const;
+
+export type SenderAccountStatus = typeof SenderAccountStatus[keyof typeof SenderAccountStatus];
+
+
+export const SenderAccountStatus = {
+  CONNECTED: 'CONNECTED',
+  DISCONNECTED: 'DISCONNECTED',
+  ERRORED: 'ERRORED',
+  DEGRADED: 'DEGRADED',
+  PARTIAL: 'PARTIAL',
+  REMOVED: 'REMOVED',
+} as const;
+
+export interface SenderAccount {
+  id: string;
+  userId: string;
+  channel: OutreachChannel;
+  /** The sending provider's own name for the kind of account (google, outlook, imap, linkedin, whatsapp, instagram). */
+  provider: string;
+  /** The address, number or profile name the account sends as. */
+  displayName: string | null;
+  status: SenderAccountStatus;
+  statusReason: string | null;
+  statusChangedAt: string;
+  /** Sending is suspended on the provider side (a subscription matter), independent of the connection. */
+  isLocked: boolean;
+  connectedAt: string;
+  lastEventAt: string | null;
+  /** The session lapsed; the user has to sign in again. */
+  needsReconnect: boolean;
+  /** Connected by the viewer. */
+  mine: boolean;
+}
+
+export interface SenderAccountSeats {
+  used: number;
+  limit: number;
+  remaining: number;
+}
+
+export interface SenderAccountChannelOption {
+  channel: OutreachChannel;
+  label: string;
+}
+
+export interface SenderAccountList {
+  accounts: SenderAccount[];
+  seats: SenderAccountSeats;
+  channels: SenderAccountChannelOption[];
+  /** Whether this server has a sending provider set up at all; when false the connect buttons are disabled. */
+  configured: boolean;
+}
+
+export interface StartSenderAccountLinkRequest {
+  channel: OutreachChannel;
+}
+
+export interface SenderAccountLink {
+  linkId: string;
+  /** The hosted sign-in page. Open it in the top-level window, never an iframe. */
+  url: string;
+  expiresAt: string;
+  channel: OutreachChannel;
+}
+
 export type AdminCreditRequestStatus = typeof AdminCreditRequestStatus[keyof typeof AdminCreditRequestStatus];
 
 
@@ -5460,6 +5534,11 @@ export type ForbiddenResponse = ErrorResponse;
  * Resource not found
  */
 export type NotFoundResponse = ErrorResponse;
+
+/**
+ * The request conflicts with the current state
+ */
+export type ConflictResponse = ErrorResponse;
 
 /**
  * A legacy Business Twin must be saved with a maturity stage before creating a derived version

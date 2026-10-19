@@ -18,6 +18,8 @@ import { z } from "zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { toast } from "sonner";
 import { useWorkspace } from "@/context/workspace-context";
+import { ConnectedAccounts } from "@/components/connected-accounts";
+import { useSearch } from "wouter";
 
 const orgSchema = z.object({
   name: z.string().min(2).max(120),
@@ -30,6 +32,8 @@ const projectSchema = z.object({
 
 export default function Settings() {
   const queryClient = useQueryClient();
+  // The provider's sign-in sends the browser back to /settings?tab=accounts.
+  const initialTab = new URLSearchParams(useSearch()).get("tab") === "accounts" ? "accounts" : "projects";
   const {
     organizations,
     projects,
@@ -82,15 +86,20 @@ export default function Settings() {
       <header>
         <h1 className="text-3xl font-display font-bold text-foreground">Settings</h1>
         <p className="text-muted-foreground mt-1">
-          Manage your organizations and projects.
+          Manage your organizations, projects and the accounts you send outreach from.
         </p>
       </header>
 
-      <Tabs defaultValue="projects" className="w-full">
+      <Tabs defaultValue={initialTab} className="w-full">
         <TabsList className="mb-6">
           <TabsTrigger value="projects">Projects</TabsTrigger>
           <TabsTrigger value="organizations">Organizations</TabsTrigger>
+          <TabsTrigger value="accounts">Connected accounts</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="accounts" className="space-y-6">
+          <ConnectedAccounts organizationId={activeOrganizationId} />
+        </TabsContent>
         
         <TabsContent value="projects" className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

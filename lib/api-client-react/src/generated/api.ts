@@ -64,6 +64,7 @@ import type {
   CompanyInput,
   ConfigureProjectSignalPackRequest,
   ConfigureSignalClusterDefinitionRequest,
+  ConflictResponse,
   ContactEnrichmentResponse,
   CreateAccessGrantBody,
   CreateCreditRequestRequest,
@@ -188,12 +189,15 @@ import type {
   RevealInstantLeadContactResponse,
   ReviewLearningProposalRequest,
   ScreeningRun,
+  SenderAccountLink,
+  SenderAccountList,
   Signal,
   SignalCluster,
   SignalClusterDefinition,
   SignalFeedback,
   SignalFeedbackBody,
   SignalPack,
+  StartSenderAccountLinkRequest,
   UnauthorizedResponse,
   UpdateAccessGrantBody,
   UpdateInstantLeadPricesBody,
@@ -11655,5 +11659,304 @@ export const useCreateCreditRequest = <TError = ErrorType<BadRequestResponse | U
         TContext
       > => {
       return useMutation(getCreateCreditRequestMutationOptions(options));
+    }
+
+export const getListSenderAccountsUrl = (organizationId: string,) => {
+
+
+
+
+  return `/api/organizations/${organizationId}/sender-accounts`
+}
+
+/**
+ * Every connected email, LinkedIn, WhatsApp or Instagram account in the organisation with its live connection status, the seats used against the plan, and whether outreach is set up on this server at all. Nothing about the sending provider's own identifiers is exposed.
+ * @summary The accounts this organisation sends outreach from
+ */
+export const listSenderAccounts = async (organizationId: string, options?: Parameters<typeof customFetch>[1]): Promise<SenderAccountList> => {
+
+  return customFetch<SenderAccountList>(getListSenderAccountsUrl(organizationId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListSenderAccountsQueryKey = (organizationId: string,) => {
+    return [
+    `/api/organizations/${organizationId}/sender-accounts`
+    ] as const;
+    }
+
+
+export const getListSenderAccountsQueryOptions = <TData = Awaited<ReturnType<typeof listSenderAccounts>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(organizationId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listSenderAccounts>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListSenderAccountsQueryKey(organizationId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listSenderAccounts>>> = ({ signal }) => listSenderAccounts(organizationId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: organizationId !== null && organizationId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listSenderAccounts>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListSenderAccountsQueryResult = NonNullable<Awaited<ReturnType<typeof listSenderAccounts>>>
+export type ListSenderAccountsQueryError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+
+/**
+ * @summary The accounts this organisation sends outreach from
+ */
+
+export function useListSenderAccounts<TData = Awaited<ReturnType<typeof listSenderAccounts>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(
+ organizationId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listSenderAccounts>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListSenderAccountsQueryOptions(organizationId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getStartSenderAccountLinkUrl = (organizationId: string,) => {
+
+
+
+
+  return `/api/organizations/${organizationId}/sender-accounts/links`
+}
+
+/**
+ * Mints a short-lived hosted sign-in link for the chosen channel and answers with the URL to send the browser to. The user signs in on the provider's own page; their credentials never reach JYRA. A user with no connected account yet takes a sender seat; when the plan's seats are all taken the request is refused with code SEAT_LIMIT.
+ * @summary Start connecting an account on a channel
+ */
+export const startSenderAccountLink = async (organizationId: string,
+    startSenderAccountLinkRequest: StartSenderAccountLinkRequest, options?: Parameters<typeof customFetch>[1]): Promise<SenderAccountLink> => {
+
+  return customFetch<SenderAccountLink>(getStartSenderAccountLinkUrl(organizationId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(startSenderAccountLinkRequest)
+  }
+);}
+
+
+
+
+
+export const getStartSenderAccountLinkMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | ConflictResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof startSenderAccountLink>>, TError,{organizationId: string;data: BodyType<StartSenderAccountLinkRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof startSenderAccountLink>>, TError,{organizationId: string;data: BodyType<StartSenderAccountLinkRequest>}, TContext> => {
+
+const mutationKey = ['startSenderAccountLink'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof startSenderAccountLink>>, {organizationId: string;data: BodyType<StartSenderAccountLinkRequest>}> = (props) => {
+          const {organizationId,data} = props ?? {};
+
+          return  startSenderAccountLink(organizationId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type StartSenderAccountLinkMutationResult = NonNullable<Awaited<ReturnType<typeof startSenderAccountLink>>>
+    export type StartSenderAccountLinkMutationBody = BodyType<StartSenderAccountLinkRequest>
+    export type StartSenderAccountLinkMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | ConflictResponse>
+
+    /**
+ * @summary Start connecting an account on a channel
+ */
+export const useStartSenderAccountLink = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | ConflictResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof startSenderAccountLink>>, TError,{organizationId: string;data: BodyType<StartSenderAccountLinkRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof startSenderAccountLink>>,
+        TError,
+        {organizationId: string;data: BodyType<StartSenderAccountLinkRequest>},
+        TContext
+      > => {
+      return useMutation(getStartSenderAccountLinkMutationOptions(options));
+    }
+
+export const getReconnectSenderAccountUrl = (organizationId: string,
+    senderAccountId: string,) => {
+
+
+
+
+  return `/api/organizations/${organizationId}/sender-accounts/${senderAccountId}/reconnect`
+}
+
+/**
+ * A hosted sign-in link bound to the existing account. The user must sign in with the same provider account; a different one is refused. Allowed for the person who connected the account and for organisation owners and admins.
+ * @summary Reconnect an account whose session lapsed
+ */
+export const reconnectSenderAccount = async (organizationId: string,
+    senderAccountId: string, options?: Parameters<typeof customFetch>[1]): Promise<SenderAccountLink> => {
+
+  return customFetch<SenderAccountLink>(getReconnectSenderAccountUrl(organizationId,senderAccountId),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getReconnectSenderAccountMutationOptions = <TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof reconnectSenderAccount>>, TError,{organizationId: string;senderAccountId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof reconnectSenderAccount>>, TError,{organizationId: string;senderAccountId: string}, TContext> => {
+
+const mutationKey = ['reconnectSenderAccount'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof reconnectSenderAccount>>, {organizationId: string;senderAccountId: string}> = (props) => {
+          const {organizationId,senderAccountId} = props ?? {};
+
+          return  reconnectSenderAccount(organizationId,senderAccountId,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ReconnectSenderAccountMutationResult = NonNullable<Awaited<ReturnType<typeof reconnectSenderAccount>>>
+
+    export type ReconnectSenderAccountMutationError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+    /**
+ * @summary Reconnect an account whose session lapsed
+ */
+export const useReconnectSenderAccount = <TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof reconnectSenderAccount>>, TError,{organizationId: string;senderAccountId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof reconnectSenderAccount>>,
+        TError,
+        {organizationId: string;senderAccountId: string},
+        TContext
+      > => {
+      return useMutation(getReconnectSenderAccountMutationOptions(options));
+    }
+
+export const getRemoveSenderAccountUrl = (organizationId: string,
+    senderAccountId: string,) => {
+
+
+
+
+  return `/api/organizations/${organizationId}/sender-accounts/${senderAccountId}`
+}
+
+/**
+ * Removes the account at the sending provider and retires it here. Allowed for the person who connected it and for organisation owners and admins. Answers with the remaining list.
+ * @summary Disconnect an account
+ */
+export const removeSenderAccount = async (organizationId: string,
+    senderAccountId: string, options?: Parameters<typeof customFetch>[1]): Promise<SenderAccountList> => {
+
+  return customFetch<SenderAccountList>(getRemoveSenderAccountUrl(organizationId,senderAccountId),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+
+export const getRemoveSenderAccountMutationOptions = <TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof removeSenderAccount>>, TError,{organizationId: string;senderAccountId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof removeSenderAccount>>, TError,{organizationId: string;senderAccountId: string}, TContext> => {
+
+const mutationKey = ['removeSenderAccount'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof removeSenderAccount>>, {organizationId: string;senderAccountId: string}> = (props) => {
+          const {organizationId,senderAccountId} = props ?? {};
+
+          return  removeSenderAccount(organizationId,senderAccountId,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type RemoveSenderAccountMutationResult = NonNullable<Awaited<ReturnType<typeof removeSenderAccount>>>
+
+    export type RemoveSenderAccountMutationError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+    /**
+ * @summary Disconnect an account
+ */
+export const useRemoveSenderAccount = <TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof removeSenderAccount>>, TError,{organizationId: string;senderAccountId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof removeSenderAccount>>,
+        TError,
+        {organizationId: string;senderAccountId: string},
+        TContext
+      > => {
+      return useMutation(getRemoveSenderAccountMutationOptions(options));
     }
 

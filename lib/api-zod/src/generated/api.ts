@@ -9141,3 +9141,115 @@ export const CreateCreditRequestResponse = zod.object({
 })
 
 
+/**
+ * Every connected email, LinkedIn, WhatsApp or Instagram account in the organisation with its live connection status, the seats used against the plan, and whether outreach is set up on this server at all. Nothing about the sending provider's own identifiers is exposed.
+ * @summary The accounts this organisation sends outreach from
+ */
+export const ListSenderAccountsParams = zod.object({
+  "organizationId": zod.coerce.string()
+})
+
+export const ListSenderAccountsResponse = zod.object({
+  "accounts": zod.array(zod.object({
+  "id": zod.string(),
+  "userId": zod.string(),
+  "channel": zod.enum(['EMAIL', 'LINKEDIN', 'WHATSAPP', 'INSTAGRAM']),
+  "provider": zod.string().describe('The sending provider\'s own name for the kind of account (google, outlook, imap, linkedin, whatsapp, instagram).'),
+  "displayName": zod.string().nullable().describe('The address, number or profile name the account sends as.'),
+  "status": zod.enum(['CONNECTED', 'DISCONNECTED', 'ERRORED', 'DEGRADED', 'PARTIAL', 'REMOVED']),
+  "statusReason": zod.string().nullable(),
+  "statusChangedAt": zod.coerce.date(),
+  "isLocked": zod.boolean().describe('Sending is suspended on the provider side (a subscription matter), independent of the connection.'),
+  "connectedAt": zod.coerce.date(),
+  "lastEventAt": zod.coerce.date().nullable(),
+  "needsReconnect": zod.boolean().describe('The session lapsed; the user has to sign in again.'),
+  "mine": zod.boolean().describe('Connected by the viewer.')
+})),
+  "seats": zod.object({
+  "used": zod.number(),
+  "limit": zod.number(),
+  "remaining": zod.number()
+}),
+  "channels": zod.array(zod.object({
+  "channel": zod.enum(['EMAIL', 'LINKEDIN', 'WHATSAPP', 'INSTAGRAM']),
+  "label": zod.string()
+})),
+  "configured": zod.boolean().describe('Whether this server has a sending provider set up at all; when false the connect buttons are disabled.')
+})
+
+
+/**
+ * Mints a short-lived hosted sign-in link for the chosen channel and answers with the URL to send the browser to. The user signs in on the provider's own page; their credentials never reach JYRA. A user with no connected account yet takes a sender seat; when the plan's seats are all taken the request is refused with code SEAT_LIMIT.
+ * @summary Start connecting an account on a channel
+ */
+export const StartSenderAccountLinkParams = zod.object({
+  "organizationId": zod.coerce.string()
+})
+
+export const StartSenderAccountLinkBody = zod.object({
+  "channel": zod.enum(['EMAIL', 'LINKEDIN', 'WHATSAPP', 'INSTAGRAM'])
+})
+
+export const StartSenderAccountLinkResponse = zod.object({
+  "linkId": zod.string(),
+  "url": zod.string().describe('The hosted sign-in page. Open it in the top-level window, never an iframe.'),
+  "expiresAt": zod.coerce.date(),
+  "channel": zod.enum(['EMAIL', 'LINKEDIN', 'WHATSAPP', 'INSTAGRAM'])
+})
+
+
+/**
+ * A hosted sign-in link bound to the existing account. The user must sign in with the same provider account; a different one is refused. Allowed for the person who connected the account and for organisation owners and admins.
+ * @summary Reconnect an account whose session lapsed
+ */
+export const ReconnectSenderAccountParams = zod.object({
+  "organizationId": zod.coerce.string(),
+  "senderAccountId": zod.coerce.string()
+})
+
+export const ReconnectSenderAccountResponse = zod.object({
+  "linkId": zod.string(),
+  "url": zod.string().describe('The hosted sign-in page. Open it in the top-level window, never an iframe.'),
+  "expiresAt": zod.coerce.date(),
+  "channel": zod.enum(['EMAIL', 'LINKEDIN', 'WHATSAPP', 'INSTAGRAM'])
+})
+
+
+/**
+ * Removes the account at the sending provider and retires it here. Allowed for the person who connected it and for organisation owners and admins. Answers with the remaining list.
+ * @summary Disconnect an account
+ */
+export const RemoveSenderAccountParams = zod.object({
+  "organizationId": zod.coerce.string(),
+  "senderAccountId": zod.coerce.string()
+})
+
+export const RemoveSenderAccountResponse = zod.object({
+  "accounts": zod.array(zod.object({
+  "id": zod.string(),
+  "userId": zod.string(),
+  "channel": zod.enum(['EMAIL', 'LINKEDIN', 'WHATSAPP', 'INSTAGRAM']),
+  "provider": zod.string().describe('The sending provider\'s own name for the kind of account (google, outlook, imap, linkedin, whatsapp, instagram).'),
+  "displayName": zod.string().nullable().describe('The address, number or profile name the account sends as.'),
+  "status": zod.enum(['CONNECTED', 'DISCONNECTED', 'ERRORED', 'DEGRADED', 'PARTIAL', 'REMOVED']),
+  "statusReason": zod.string().nullable(),
+  "statusChangedAt": zod.coerce.date(),
+  "isLocked": zod.boolean().describe('Sending is suspended on the provider side (a subscription matter), independent of the connection.'),
+  "connectedAt": zod.coerce.date(),
+  "lastEventAt": zod.coerce.date().nullable(),
+  "needsReconnect": zod.boolean().describe('The session lapsed; the user has to sign in again.'),
+  "mine": zod.boolean().describe('Connected by the viewer.')
+})),
+  "seats": zod.object({
+  "used": zod.number(),
+  "limit": zod.number(),
+  "remaining": zod.number()
+}),
+  "channels": zod.array(zod.object({
+  "channel": zod.enum(['EMAIL', 'LINKEDIN', 'WHATSAPP', 'INSTAGRAM']),
+  "label": zod.string()
+})),
+  "configured": zod.boolean().describe('Whether this server has a sending provider set up at all; when false the connect buttons are disabled.')
+})
+
+

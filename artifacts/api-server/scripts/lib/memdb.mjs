@@ -200,7 +200,9 @@ export function createMemDb({ now = () => new Date() } = {}) {
   function insert(query) {
     const table = query.table;
     const list = Array.isArray(query.values) ? query.values : [query.values];
-    const conflictNothing = calls(query, "onConflictDoNothing")[0]?.[0];
+    // `.onConflictDoNothing()` with no target is still a conflict clause: it means every unique index.
+    const nothingCall = calls(query, "onConflictDoNothing")[0];
+    const conflictNothing = nothingCall ? (nothingCall[0] ?? {}) : undefined;
     const conflictUpdate = calls(query, "onConflictDoUpdate")[0]?.[0];
     const out = [];
     for (const values of list) {

@@ -8,6 +8,7 @@ import pinoHttp from "pino-http";
 import { clerkMiddleware, getAuth } from "@clerk/express";
 import { publishableKeyFromHost } from "@clerk/shared/keys";
 import router from "./routes";
+import unipileWebhooksRouter from "./routes/unipile-webhooks";
 import { logger } from "./lib/logger";
 import {
   CLERK_PROXY_PATH,
@@ -123,6 +124,11 @@ const globalLimiter = rateLimit({
   message: { error: "Too many requests, please slow down" },
 });
 app.use(globalLimiter);
+
+// Unipile signs each webhook over the raw bytes, so its route reads the body
+// itself and must sit ahead of the JSON parser. It has no session and no
+// tenant; routes/unipile-webhooks.ts verifies the signature.
+app.use("/api/webhooks/unipile", unipileWebhooksRouter);
 
 // OpenAPI bounds rawContent by JavaScript characters. Four MiB safely covers
 // 500,000 UTF-16 code units even when JSON escaping expands each unit.

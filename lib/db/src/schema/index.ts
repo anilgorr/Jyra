@@ -52,3 +52,5 @@ export * from "./intelligence-v2-watch-checks";
 export * from "./intent-accounts";export * from "./company-event-searches";
 
 export * from "./instant-leads";
+
+export * from "./outreach";
