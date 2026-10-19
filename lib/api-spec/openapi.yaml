@@ -3266,8 +3266,533 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
         "404": { $ref: "#/components/responses/NotFound" }
+  /projects/{projectId}/outreach/sequence:
+    get:
+      operationId: getOutreachSequence
+      tags: [outreach]
+      summary: The project's outreach sequence
+      description: The steps, the master prompt the writer follows, the signature and the compliance footer. Created with sensible defaults on first read.
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/ProjectId" }
+      responses:
+        "200":
+          description: The sequence
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/OutreachSequence" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+    put:
+      operationId: updateOutreachSequence
+      tags: [outreach]
+      summary: Edit the sequence
+      description: Changes apply to contacts enrolled from now on; a running enrolment keeps the steps it was enrolled with.
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/ProjectId" }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/OutreachSequenceInput" }
+      responses:
+        "200":
+          description: The sequence as saved
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/OutreachSequence" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /projects/{projectId}/outreach/candidates:
+    get:
+      operationId: listOutreachCandidates
+      tags: [outreach]
+      summary: Companies that can be enrolled
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/ProjectId" }
+      responses:
+        "200":
+          description: Watched companies on the project, best first, with whether each is already in a sequence
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/OutreachCandidateList" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /projects/{projectId}/outreach/enrollments:
+    get:
+      operationId: listOutreachEnrollments
+      tags: [outreach]
+      summary: Everyone in the sequence
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/ProjectId" }
+        - name: status
+          in: query
+          required: false
+          schema: { $ref: "#/components/schemas/OutreachEnrollmentStatus" }
+        - name: limit
+          in: query
+          required: false
+          schema: { type: number, minimum: 1, maximum: 500, default: 200 }
+      responses:
+        "200":
+          description: Enrolments, newest first, each with its steps
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/OutreachEnrollmentList" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+    post:
+      operationId: enrollOutreach
+      tags: [outreach]
+      summary: Put companies into the sequence
+      description: >-
+        For each company JYRA picks the contact from its buying committee, freezes the evidence the lead was ranked on,
+        and starts writing the first message. Companies it cannot enrol are listed back with the reason; they cost nothing.
+        Drafts arrive within a minute; poll the list.
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/ProjectId" }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [projectCompanyIds]
+              properties:
+                projectCompanyIds:
+                  type: array
+                  items: { type: string }
+      responses:
+        "201":
+          description: What was enrolled and what was refused
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/OutreachEnrollReport" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /projects/{projectId}/outreach/enrollments/{enrollmentId}:
+    get:
+      operationId: getOutreachEnrollment
+      tags: [outreach]
+      summary: One enrolment with its steps and messages
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/ProjectId" }
+        - { $ref: "#/components/parameters/OutreachEnrollmentId" }
+      responses:
+        "200":
+          description: The enrolment
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/OutreachEnrollment" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /projects/{projectId}/outreach/enrollments/{enrollmentId}/stop:
+    post:
+      operationId: stopOutreachEnrollment
+      tags: [outreach]
+      summary: Take a contact out of the sequence
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/ProjectId" }
+        - { $ref: "#/components/parameters/OutreachEnrollmentId" }
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                reason: { type: string }
+      responses:
+        "200":
+          description: The enrolment, stopped
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/OutreachEnrollment" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /projects/{projectId}/outreach/enrollments/{enrollmentId}/pause:
+    post:
+      operationId: pauseOutreachEnrollment
+      tags: [outreach]
+      summary: Pause, or with resume=true resume, a contact's sequence
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/ProjectId" }
+        - { $ref: "#/components/parameters/OutreachEnrollmentId" }
+        - name: resume
+          in: query
+          required: false
+          schema: { type: boolean }
+      responses:
+        "200":
+          description: The enrolment
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/OutreachEnrollment" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /projects/{projectId}/outreach/steps/{stepId}/approve:
+    post:
+      operationId: approveOutreachStep
+      tags: [outreach]
+      summary: Approve a draft, with any edits
+      description: The step may now go out, at the sender account's pace, in the recipient's working hours. The first touch is charged in credits when it is sent.
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/ProjectId" }
+        - { $ref: "#/components/parameters/OutreachStepId" }
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                subject: { type: string, nullable: true }
+                body: { type: string, nullable: true }
+      responses:
+        "200":
+          description: The step, approved
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/OutreachStep" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+  /projects/{projectId}/outreach/steps/{stepId}/regenerate:
+    post:
+      operationId: regenerateOutreachStep
+      tags: [outreach]
+      summary: Write the draft again
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/ProjectId" }
+        - { $ref: "#/components/parameters/OutreachStepId" }
+      responses:
+        "200":
+          description: The step with its new draft (or the reason the writer could not produce one)
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/OutreachStep" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+  /projects/{projectId}/outreach/steps/{stepId}/skip:
+    post:
+      operationId: skipOutreachStep
+      tags: [outreach]
+      summary: Skip this step; the sequence moves on
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/ProjectId" }
+        - { $ref: "#/components/parameters/OutreachStepId" }
+      responses:
+        "200":
+          description: The enrolment after the skip
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/OutreachEnrollment" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+  /projects/{projectId}/outreach/replies:
+    get:
+      operationId: listOutreachReplies
+      tags: [outreach]
+      summary: Replies to outreach, newest first
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/ProjectId" }
+      responses:
+        "200":
+          description: Inbound messages matched to an enrolment, each sorted into a box
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/OutreachReplyList" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /projects/{projectId}/outreach/replies/{messageId}/read:
+    post:
+      operationId: markOutreachReplyRead
+      tags: [outreach]
+      summary: Mark a reply as read
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/ProjectId" }
+        - { $ref: "#/components/parameters/OutreachMessageId" }
+      responses:
+        "200":
+          description: The message
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/OutreachMessage" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
 components:
   schemas:
+    OutreachStepKind:
+      type: string
+      enum: [EMAIL, EMAIL_FOLLOW_UP, LINKEDIN_INVITATION, LINKEDIN_MESSAGE]
+    OutreachEnrollmentStatus:
+      type: string
+      enum: [DRAFTING, AWAITING_APPROVAL, ACTIVE, PAUSED, REPLIED, BOUNCED, COMPLETED, STOPPED, FAILED]
+    OutreachStepStatus:
+      type: string
+      enum: [DRAFTING, AWAITING_APPROVAL, APPROVED, SENT, SKIPPED, CANCELLED, FAILED]
+    ReplyClassification:
+      type: string
+      enum: [INTERESTED, NOT_NOW, OBJECTION, OUT_OF_OFFICE, UNSUBSCRIBE, REFERRAL, OTHER]
+    OutreachSequenceStep:
+      type: object
+      additionalProperties: false
+      required: [kind, delayDays, requiresApproval, condition]
+      properties:
+        kind: { $ref: "#/components/schemas/OutreachStepKind" }
+        delayDays: { type: number }
+        requiresApproval: { type: boolean }
+        condition:
+          type: string
+          enum: [NO_REPLY, ALWAYS]
+    OutreachSequence:
+      type: object
+      additionalProperties: false
+      required: [id, name, masterPrompt, signature, complianceFooter, steps, active, updatedAt]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        masterPrompt: { type: string }
+        signature: { type: string }
+        complianceFooter: { type: string }
+        steps:
+          type: array
+          items: { $ref: "#/components/schemas/OutreachSequenceStep" }
+        active: { type: boolean }
+        updatedAt: { type: string, format: date-time }
+    OutreachSequenceInput:
+      type: object
+      additionalProperties: false
+      properties:
+        masterPrompt: { type: string }
+        signature: { type: string }
+        complianceFooter: { type: string }
+        steps:
+          type: array
+          items: { $ref: "#/components/schemas/OutreachSequenceStep" }
+    OutreachStep:
+      type: object
+      additionalProperties: false
+      required: [id, stepIndex, kind, channel, status, subject, body, evidence, edited, scheduledFor, sentAt, openedAt, clickedAt, approvedAt, error]
+      properties:
+        id: { type: string }
+        stepIndex: { type: number }
+        kind: { $ref: "#/components/schemas/OutreachStepKind" }
+        channel: { $ref: "#/components/schemas/OutreachChannel" }
+        status: { $ref: "#/components/schemas/OutreachStepStatus" }
+        subject: { type: string, nullable: true }
+        body: { type: string, nullable: true }
+        evidence:
+          type: array
+          items: { type: string }
+          description: The lines the writer was given; everything in the draft rests on these.
+        edited: { type: boolean }
+        scheduledFor: { type: string, format: date-time, nullable: true }
+        sentAt: { type: string, format: date-time, nullable: true }
+        openedAt: { type: string, format: date-time, nullable: true }
+        clickedAt: { type: string, format: date-time, nullable: true }
+        approvedAt: { type: string, format: date-time, nullable: true }
+        error: { type: string, nullable: true }
+    OutreachContact:
+      type: object
+      additionalProperties: false
+      required: [name, title, email, linkedinUrl]
+      properties:
+        name: { type: string }
+        title: { type: string, nullable: true }
+        email: { type: string, nullable: true }
+        linkedinUrl: { type: string, nullable: true }
+    OutreachMessage:
+      type: object
+      additionalProperties: false
+      required: [id, enrollmentId, channel, direction, stepKind, fromAddress, toAddress, subject, text, occurredAt, classification, classificationReason, readAt]
+      properties:
+        id: { type: string }
+        enrollmentId: { type: string, nullable: true }
+        channel: { $ref: "#/components/schemas/OutreachChannel" }
+        direction:
+          type: string
+          enum: [OUTBOUND, INBOUND]
+        stepKind:
+          allOf: [{ $ref: "#/components/schemas/OutreachStepKind" }]
+          nullable: true
+        fromAddress: { type: string, nullable: true }
+        toAddress: { type: string, nullable: true }
+        subject: { type: string, nullable: true }
+        text: { type: string, nullable: true }
+        occurredAt: { type: string, format: date-time }
+        classification:
+          allOf: [{ $ref: "#/components/schemas/ReplyClassification" }]
+          nullable: true
+        classificationReason: { type: string, nullable: true }
+        readAt: { type: string, format: date-time, nullable: true }
+    OutreachEnrollment:
+      type: object
+      additionalProperties: false
+      required: [id, projectCompanyId, companyId, companyName, companyDomain, contact, status, currentStep, totalSteps, nextActionAt, lastOutboundAt, repliedAt, stopReason, why, signalCodes, score, opportunityState, creditsCharged, createdAt, currentStepDraft]
+      properties:
+        id: { type: string }
+        projectCompanyId: { type: string }
+        companyId: { type: string }
+        companyName: { type: string }
+        companyDomain: { type: string, nullable: true }
+        contact: { $ref: "#/components/schemas/OutreachContact" }
+        status: { $ref: "#/components/schemas/OutreachEnrollmentStatus" }
+        currentStep: { type: number }
+        totalSteps: { type: number }
+        nextActionAt: { type: string, format: date-time, nullable: true }
+        lastOutboundAt: { type: string, format: date-time, nullable: true }
+        repliedAt: { type: string, format: date-time, nullable: true }
+        stopReason: { type: string, nullable: true }
+        why:
+          type: array
+          items: { type: string }
+        signalCodes:
+          type: array
+          items: { type: string }
+        score: { type: number, nullable: true }
+        opportunityState: { type: string, nullable: true }
+        creditsCharged: { type: number }
+        createdAt: { type: string, format: date-time }
+        currentStepDraft:
+          allOf: [{ $ref: "#/components/schemas/OutreachStep" }]
+          nullable: true
+        steps:
+          type: array
+          items: { $ref: "#/components/schemas/OutreachStep" }
+        messages:
+          type: array
+          items: { $ref: "#/components/schemas/OutreachMessage" }
+    OutreachEnrollmentList:
+      type: object
+      additionalProperties: false
+      required: [enrollments, counts]
+      properties:
+        enrollments:
+          type: array
+          items: { $ref: "#/components/schemas/OutreachEnrollment" }
+        counts:
+          type: object
+          additionalProperties: false
+          required: [awaitingApproval, active, replied, paused]
+          properties:
+            awaitingApproval: { type: number }
+            active: { type: number }
+            replied: { type: number }
+            paused: { type: number }
+    OutreachRefusal:
+      type: object
+      additionalProperties: false
+      required: [projectCompanyId, companyName, code, message]
+      properties:
+        projectCompanyId: { type: string }
+        companyName: { type: string }
+        code:
+          type: string
+          enum: [NO_CONTACT, NO_ADDRESS, ALREADY_ENROLLED, SUPPRESSED, NO_SENDER, COMPETITOR, NO_EVIDENCE]
+        message: { type: string }
+    OutreachEnrollReport:
+      type: object
+      additionalProperties: false
+      required: [enrolled, refused]
+      properties:
+        enrolled:
+          type: array
+          items: { $ref: "#/components/schemas/OutreachEnrollment" }
+        refused:
+          type: array
+          items: { $ref: "#/components/schemas/OutreachRefusal" }
+    OutreachCandidate:
+      type: object
+      additionalProperties: false
+      required: [projectCompanyId, companyName, domain, opportunityState, score, enrolled]
+      properties:
+        projectCompanyId: { type: string }
+        companyName: { type: string }
+        domain: { type: string, nullable: true }
+        opportunityState: { type: string, nullable: true }
+        score: { type: number, nullable: true }
+        enrolled: { type: boolean }
+    OutreachCandidateList:
+      type: object
+      additionalProperties: false
+      required: [candidates]
+      properties:
+        candidates:
+          type: array
+          items: { $ref: "#/components/schemas/OutreachCandidate" }
+    OutreachReply:
+      type: object
+      additionalProperties: false
+      required: [id, enrollmentId, channel, direction, stepKind, fromAddress, toAddress, subject, text, occurredAt, classification, classificationReason, readAt, contactName, contactTitle, companyName, enrollmentStatus]
+      properties:
+        id: { type: string }
+        enrollmentId: { type: string, nullable: true }
+        channel: { $ref: "#/components/schemas/OutreachChannel" }
+        direction:
+          type: string
+          enum: [OUTBOUND, INBOUND]
+        stepKind:
+          allOf: [{ $ref: "#/components/schemas/OutreachStepKind" }]
+          nullable: true
+        fromAddress: { type: string, nullable: true }
+        toAddress: { type: string, nullable: true }
+        subject: { type: string, nullable: true }
+        text: { type: string, nullable: true }
+        occurredAt: { type: string, format: date-time }
+        classification:
+          allOf: [{ $ref: "#/components/schemas/ReplyClassification" }]
+          nullable: true
+        classificationReason: { type: string, nullable: true }
+        readAt: { type: string, format: date-time, nullable: true }
+        contactName: { type: string, nullable: true }
+        contactTitle: { type: string, nullable: true }
+        companyName: { type: string, nullable: true }
+        enrollmentStatus:
+          allOf: [{ $ref: "#/components/schemas/OutreachEnrollmentStatus" }]
+          nullable: true
+    OutreachReplyList:
+      type: object
+      additionalProperties: false
+      required: [replies, unread]
+      properties:
+        replies:
+          type: array
+          items: { $ref: "#/components/schemas/OutreachReply" }
+        unread: { type: number }
     OutreachChannel:
       type: string
       enum: [EMAIL, LINKEDIN, WHATSAPP, INSTAGRAM]
@@ -7135,6 +7660,24 @@ components:
         type: string
     SenderAccountId:
       name: senderAccountId
+      in: path
+      required: true
+      schema:
+        type: string
+    OutreachEnrollmentId:
+      name: enrollmentId
+      in: path
+      required: true
+      schema:
+        type: string
+    OutreachStepId:
+      name: stepId
+      in: path
+      required: true
+      schema:
+        type: string
+    OutreachMessageId:
+      name: messageId
       in: path
       required: true
       schema:

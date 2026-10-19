@@ -1,7 +1,7 @@
 import express, { Router, type IRouter, type RequestHandler } from "express";
 import { eq } from "drizzle-orm";
 import { db, outreachEventsTable } from "@workspace/db";
-import { applyUnipileEvent, parseUnipileEvent, recordOutreachEvent } from "../lib/outreach/accounts";
+import { applyUnipileEvent, isKeptEventType, parseUnipileEvent, recordOutreachEvent } from "../lib/outreach/accounts";
 import { unipileConfiguration, verifyUnipileSignature } from "../lib/outreach/unipile-client";
 
 /**
@@ -38,6 +38,8 @@ router.post("/", express.raw({ type: "*/*", limit: "2mb" }), asyncRoute(async (r
   try { body = JSON.parse(rawBody.toString("utf8")); } catch { return void res.status(400).json({ error: "Body was not JSON" }); }
   const event = parseUnipileEvent(body);
   if (!event) return void res.status(400).json({ error: "Not an event" });
+  // A connected mailbox's initial sync delivers hundreds of folder and delete events in a minute; none of them is ours to keep.
+  if (!isKeptEventType(event.type)) return void res.status(200).json({ received: true, ignored: true });
 
   const filed = await recordOutreachEvent(event);
   if (!filed.fresh) return void res.status(200).json({ received: true, duplicate: true });

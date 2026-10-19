@@ -73,11 +73,56 @@ export type CreateAuthLinkInput =
   | { providers: string[] | string; expiresOn: Date; redirectUri: string; state: string; loginHint?: string }
   | { accountId: string; expiresOn: Date; redirectUri: string; state: string };
 
+export type EmailAddress = { email: string; display_name?: string };
+
+export type SendEmailInput = {
+  accountId: string;
+  to: EmailAddress[];
+  subject: string;
+  /** Plain text; the HTML part is derived so tracking can be attached. */
+  text: string;
+  /** Unipile's id of the message being answered, which keeps the reply in the same thread. */
+  replyToMessageId?: string | null;
+  tracking?: { opens?: boolean; clicks?: boolean; label?: string };
+  from?: EmailAddress;
+};
+
+export type SentEmail = { id: string; messageId: string | null };
+
+/** The slice of Unipile's User object the outreach engine reads. */
+export type UnipileUser = {
+  id: string;
+  provider_id?: string;
+  public_identifier?: string | null;
+  display_name?: string | null;
+  first_name?: string | null;
+  last_name?: string | null;
+  headline?: string | null;
+  network_distance?: "SELF" | "FIRST_DEGREE" | "SECOND_DEGREE" | "THIRD_DEGREE" | "OUT_OF_NETWORK" | string | null;
+  is_open_profile?: boolean;
+};
+
+export type RelationRequest = { id: string; created_at?: string; message?: string | null; user?: UnipileUser | null };
+
 export type UnipileClient = {
   createAuthLink(input: CreateAuthLinkInput): Promise<{ url: string }>;
   getAccount(accountId: string): Promise<UnipileAccount | null>;
   removeAccount(accountId: string): Promise<void>;
+  sendEmail(input: SendEmailInput): Promise<SentEmail>;
+  /** `userId` is a provider id or, on LinkedIn, the public identifier from the profile URL. */
+  getUserProfile(accountId: string, userId: string): Promise<UnipileUser | null>;
+  sendRelationRequest(accountId: string, userId: string, message?: string | null): Promise<RelationRequest>;
+  /** Starts a 1:1 chat with the first message; LinkedIn needs the person to be a connection unless `inmail` is set. */
+  startChat(accountId: string, userId: string, text: string, options?: { inmail?: boolean }): Promise<{ chatId: string | null; messageId: string | null }>;
+  listSentRelationRequests(accountId: string): Promise<RelationRequest[]>;
+  cancelRelationRequest(accountId: string, requestId: string): Promise<void>;
 };
+
+/** Plain text to the simplest HTML that mail clients render identically, so tracking has a document to live in. */
+export function textToHtml(text: string): string {
+  const escaped = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  return `<div style="font-family:inherit;white-space:pre-wrap">${escaped.split(/\n{2,}/).map((paragraph) => `<p style="margin:0 0 1em 0">${paragraph.replace(/\n/g, "<br>")}</p>`).join("")}</div>`;
+}
 
 const str = (value: unknown): string | null => (typeof value === "string" && value.trim() ? value : null);
 
@@ -149,6 +194,44 @@ export function createUnipileClient(options: { configuration?: Partial<UnipileCo
         if (error instanceof UnipileError && error.code === "UNIPILE_NOT_FOUND") return;
         throw error;
       }
+    },
+    async sendEmail(input) {
+      const { json } = await call<{ id?: unknown; message_id?: unknown }>("POST", `/v2/${encodeURIComponent(input.accountId)}/emails/send`, {
+        to: input.to, subject: input.subject, plain_text: input.text, html: textToHtml(input.text),
+        ...(input.from ? { from: input.from } : {}),
+        ...(input.replyToMessageId ? { reply_to_message_id: input.replyToMessageId } : {}),
+        ...(input.tracking ? { tracking_options: { opens: input.tracking.opens ?? false, clicks: input.tracking.clicks ?? false, ...(input.tracking.label ? { label: input.tracking.label } : {}) } } : {}),
+      });
+      const id = str(json?.id);
+      if (!id) throw new UnipileError("UNIPILE_BAD_RESPONSE", "send email answered without an id", false);
+      return { id, messageId: str(json?.message_id) };
+    },
+    async getUserProfile(accountId, userId) {
+      try {
+        const { json } = await call<UnipileUser>("GET", `/v2/${encodeURIComponent(accountId)}/users/${encodeURIComponent(userId)}`);
+        return json && typeof json === "object" && (str(json.id) || str(json.provider_id)) ? { ...json, id: str(json.id) ?? str(json.provider_id)! } : null;
+      } catch (error) {
+        if (error instanceof UnipileError && error.code === "UNIPILE_NOT_FOUND") return null;
+        throw error;
+      }
+    },
+    async sendRelationRequest(accountId, userId, message) {
+      const { json } = await call<RelationRequest>("POST", `/v2/${encodeURIComponent(accountId)}/users/me/relation-requests`, { user_id: userId, ...(message ? { message } : {}) });
+      if (!json || typeof json !== "object") throw new UnipileError("UNIPILE_BAD_RESPONSE", "relation request answered without a body", false);
+      return { id: str(json.id) ?? "", created_at: json.created_at, message: json.message ?? null, user: json.user ?? null };
+    },
+    async startChat(accountId, userId, text, options) {
+      const { json } = await call<{ chat_id?: unknown; message_id?: unknown; id?: unknown }>("POST", `/v2/${encodeURIComponent(accountId)}/chats/send`, {
+        users_ids: userId, text, ...(options?.inmail ? { specifics: { linkedin: { inmail: true } } } : {}),
+      });
+      return { chatId: str(json?.chat_id) ?? str(json?.id), messageId: str(json?.message_id) };
+    },
+    async listSentRelationRequests(accountId) {
+      const { json } = await call<{ items?: unknown }>("GET", `/v2/${encodeURIComponent(accountId)}/users/me/relation-requests?type=sent&limit=100`);
+      return Array.isArray(json?.items) ? (json!.items as RelationRequest[]) : [];
+    },
+    async cancelRelationRequest(accountId, requestId) {
+      await call("POST", `/v2/${encodeURIComponent(accountId)}/users/me/relation-requests/${encodeURIComponent(requestId)}/cancel`);
     },
   };
 }

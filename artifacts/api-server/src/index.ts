@@ -15,6 +15,7 @@ import { logger } from "./lib/logger";
 import { assertMarketReadinessProcessingConfig } from "./lib/market-readiness";
 import { ensureSignalPackFixtures } from "./lib/signal-pack-fixtures";
 import { startInternalWatchScheduler } from "./lib/intelligence-v2/watch-wake";
+import { startOutreachPacer } from "./lib/outreach/pacer";
 
 /**
  * The port to serve on — resolved when we are about to serve, not at import.
@@ -147,6 +148,8 @@ async function main() {
     logger.info({ port }, "Server listening");
     // The watch loop keeps its own time rather than waiting to be woken.
     startInternalWatchScheduler(logger);
+    // Outreach sends on its own clock, every five minutes, inside the sender accounts' daily budgets. See lib/outreach/pacer.ts.
+    startOutreachPacer();
   });
 }
 

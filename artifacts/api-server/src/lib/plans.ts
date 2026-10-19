@@ -46,7 +46,7 @@ export const PLAN_TIERS = [
 export type PlanCode = (typeof PLAN_TIERS)[number]["code"];
 
 /** Instant Leads prices when the catalogue has not been seeded. The database column defaults say the same. */
-export const DEFAULT_CREDIT_PRICES = { creditsPerInstantLead: 30, creditsPerContactVerified: 20, creditsPerContactCatchAll: 10 } as const;
+export const DEFAULT_CREDIT_PRICES = { creditsPerInstantLead: 30, creditsPerContactVerified: 20, creditsPerContactCatchAll: 10, creditsPerOutreachContact: 5 } as const;
 
 /**
  * The plan an organisation falls back to when nobody has assigned one.
@@ -92,6 +92,7 @@ export type ResolvedPlan = {
   creditsPerInstantLead: number;
   creditsPerContactVerified: number;
   creditsPerContactCatchAll: number;
+  creditsPerOutreachContact: number;
   priceInr: number;
   priceUsd: number;
   /** Was this plan assigned to the organisation, or is it the fallback? */
@@ -116,6 +117,7 @@ const applyOverrides = (plan: Plan, overrides: PlanOverrides, assigned: boolean)
     creditsPerInstantLead: pick("creditsPerInstantLead", plan.creditsPerInstantLead),
     creditsPerContactVerified: pick("creditsPerContactVerified", plan.creditsPerContactVerified),
     creditsPerContactCatchAll: pick("creditsPerContactCatchAll", plan.creditsPerContactCatchAll),
+    creditsPerOutreachContact: pick("creditsPerOutreachContact", plan.creditsPerOutreachContact),
     priceInr: plan.priceInr, priceUsd: plan.priceUsd,
     assigned, overridden,
   };

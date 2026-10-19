@@ -61,13 +61,54 @@ const OPERATORS = new Set(["=", "<>", "!=", ">=", "<=", ">", "<"]);
 
 /**
  * Evaluates a where/on clause against `env`: a Map from table name to row.
- * Returns true when every recognised condition holds.
+ * Drizzle wraps every `and(...)` / `or(...)` in its own parentheses, so the
+ * token stream is split into nested groups on those and each group is
+ * combined with the connective it carries; a condition is then evaluated on
+ * its own run of tokens. `and(a, or(b, c))` therefore means what it says.
  */
 export function evaluate(node, env) {
   if (!node) return true;
-  const flat = tokens(node);
-  const text = flat.map((token) => token.str ?? "").join(" ");
-  if (/\bor\b/.test(text)) return true;
+  return evalGroup(parseGroups(tokens(node)), env);
+}
+
+function parseGroups(flat) {
+  const root = { items: [], op: null };
+  const stack = [root];
+  const current = () => stack[stack.length - 1];
+  for (const token of flat) {
+    if (!("str" in token)) { current().items.push(token); continue; }
+    for (const part of token.str.split(/(\(|\)|\band\b|\bor\b)/)) {
+      if (part === "(") { const group = { items: [], op: null }; current().items.push(group); stack.push(group); }
+      else if (part === ")") { if (stack.length > 1) stack.pop(); }
+      else if (part === "and" || part === "or") { current().op = part; current().items.push({ sep: part }); }
+      else if (part.trim()) current().items.push({ str: part });
+    }
+  }
+  return root;
+}
+
+function evalGroup(group, env) {
+  const clauses = [[]];
+  for (const item of group.items) {
+    if (item.sep) { clauses.push([]); continue; }
+    clauses[clauses.length - 1].push(item);
+  }
+  const results = clauses.map((clause) => evalClause(clause, env));
+  return group.op === "or" ? results.some(Boolean) : results.every(Boolean);
+}
+
+function evalClause(items, env) {
+  let ok = true;
+  const flat = [];
+  for (const item of items) {
+    if (Array.isArray(item.items)) { if (!evalGroup(item, env)) ok = false; }
+    else flat.push(item);
+  }
+  return ok && evalConditions(flat, env);
+}
+
+/** One run of tokens with no grouping left in it: `col op value` triples, `is null`, `in (list)`. */
+function evalConditions(flat, env) {
   const rowValue = (column) => {
     const row = env.get(column.table[NAME]);
     if (row === undefined) throw new Error(`memdb: no row for ${column.table[NAME]} in env`);

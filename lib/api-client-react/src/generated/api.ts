@@ -38,6 +38,7 @@ import type {
   ApplyProjectScreening409,
   ApplyProjectScreening424,
   ApplyProjectScreeningBody,
+  ApproveOutreachStepBody,
   ArchiveProjectCompanies200,
   ArchiveProjectCompaniesBody,
   BadRequestResponse,
@@ -88,6 +89,7 @@ import type {
   DraftAdminSignalPack200,
   DraftAdminSignalPackBody,
   EnrichProjectPersonContactRequest,
+  EnrollOutreachBody,
   ErrorResponse,
   EvaluateSignalClusters200,
   EvaluateSignalsResponse,
@@ -121,6 +123,7 @@ import type {
   LearningProposal,
   LearningProposalReview,
   ListLearningProposalsParams,
+  ListOutreachEnrollmentsParams,
   ListProjectChangesParams,
   ListRecommendationsParams,
   ListSignalClustersParams,
@@ -160,6 +163,16 @@ import type {
   Organization,
   OrganizationCosts,
   OrganizationInput,
+  OutreachCandidateList,
+  OutreachEnrollReport,
+  OutreachEnrollment,
+  OutreachEnrollmentList,
+  OutreachMessage,
+  OutreachReplyList,
+  OutreachSequence,
+  OutreachSequenceInput,
+  OutreachStep,
+  PauseOutreachEnrollmentParams,
   PlanUsage,
   PrecisionRow,
   Project,
@@ -198,6 +211,7 @@ import type {
   SignalFeedbackBody,
   SignalPack,
   StartSenderAccountLinkRequest,
+  StopOutreachEnrollmentBody,
   UnauthorizedResponse,
   UpdateAccessGrantBody,
   UpdateInstantLeadPricesBody,
@@ -11958,5 +11972,1004 @@ export const useRemoveSenderAccount = <TError = ErrorType<UnauthorizedResponse |
         TContext
       > => {
       return useMutation(getRemoveSenderAccountMutationOptions(options));
+    }
+
+export const getGetOutreachSequenceUrl = (projectId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/outreach/sequence`
+}
+
+/**
+ * The steps, the master prompt the writer follows, the signature and the compliance footer. Created with sensible defaults on first read.
+ * @summary The project's outreach sequence
+ */
+export const getOutreachSequence = async (projectId: string, options?: Parameters<typeof customFetch>[1]): Promise<OutreachSequence> => {
+
+  return customFetch<OutreachSequence>(getGetOutreachSequenceUrl(projectId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetOutreachSequenceQueryKey = (projectId: string,) => {
+    return [
+    `/api/projects/${projectId}/outreach/sequence`
+    ] as const;
+    }
+
+
+export const getGetOutreachSequenceQueryOptions = <TData = Awaited<ReturnType<typeof getOutreachSequence>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(projectId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getOutreachSequence>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetOutreachSequenceQueryKey(projectId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getOutreachSequence>>> = ({ signal }) => getOutreachSequence(projectId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: projectId !== null && projectId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getOutreachSequence>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetOutreachSequenceQueryResult = NonNullable<Awaited<ReturnType<typeof getOutreachSequence>>>
+export type GetOutreachSequenceQueryError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+
+/**
+ * @summary The project's outreach sequence
+ */
+
+export function useGetOutreachSequence<TData = Awaited<ReturnType<typeof getOutreachSequence>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(
+ projectId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getOutreachSequence>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetOutreachSequenceQueryOptions(projectId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getUpdateOutreachSequenceUrl = (projectId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/outreach/sequence`
+}
+
+/**
+ * Changes apply to contacts enrolled from now on; a running enrolment keeps the steps it was enrolled with.
+ * @summary Edit the sequence
+ */
+export const updateOutreachSequence = async (projectId: string,
+    outreachSequenceInput: OutreachSequenceInput, options?: Parameters<typeof customFetch>[1]): Promise<OutreachSequence> => {
+
+  return customFetch<OutreachSequence>(getUpdateOutreachSequenceUrl(projectId),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(outreachSequenceInput)
+  }
+);}
+
+
+
+
+
+export const getUpdateOutreachSequenceMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateOutreachSequence>>, TError,{projectId: string;data: BodyType<OutreachSequenceInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateOutreachSequence>>, TError,{projectId: string;data: BodyType<OutreachSequenceInput>}, TContext> => {
+
+const mutationKey = ['updateOutreachSequence'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateOutreachSequence>>, {projectId: string;data: BodyType<OutreachSequenceInput>}> = (props) => {
+          const {projectId,data} = props ?? {};
+
+          return  updateOutreachSequence(projectId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateOutreachSequenceMutationResult = NonNullable<Awaited<ReturnType<typeof updateOutreachSequence>>>
+    export type UpdateOutreachSequenceMutationBody = BodyType<OutreachSequenceInput>
+    export type UpdateOutreachSequenceMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+    /**
+ * @summary Edit the sequence
+ */
+export const useUpdateOutreachSequence = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateOutreachSequence>>, TError,{projectId: string;data: BodyType<OutreachSequenceInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateOutreachSequence>>,
+        TError,
+        {projectId: string;data: BodyType<OutreachSequenceInput>},
+        TContext
+      > => {
+      return useMutation(getUpdateOutreachSequenceMutationOptions(options));
+    }
+
+export const getListOutreachCandidatesUrl = (projectId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/outreach/candidates`
+}
+
+/**
+ * @summary Companies that can be enrolled
+ */
+export const listOutreachCandidates = async (projectId: string, options?: Parameters<typeof customFetch>[1]): Promise<OutreachCandidateList> => {
+
+  return customFetch<OutreachCandidateList>(getListOutreachCandidatesUrl(projectId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListOutreachCandidatesQueryKey = (projectId: string,) => {
+    return [
+    `/api/projects/${projectId}/outreach/candidates`
+    ] as const;
+    }
+
+
+export const getListOutreachCandidatesQueryOptions = <TData = Awaited<ReturnType<typeof listOutreachCandidates>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(projectId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listOutreachCandidates>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListOutreachCandidatesQueryKey(projectId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listOutreachCandidates>>> = ({ signal }) => listOutreachCandidates(projectId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: projectId !== null && projectId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listOutreachCandidates>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListOutreachCandidatesQueryResult = NonNullable<Awaited<ReturnType<typeof listOutreachCandidates>>>
+export type ListOutreachCandidatesQueryError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+
+/**
+ * @summary Companies that can be enrolled
+ */
+
+export function useListOutreachCandidates<TData = Awaited<ReturnType<typeof listOutreachCandidates>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(
+ projectId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listOutreachCandidates>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListOutreachCandidatesQueryOptions(projectId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getListOutreachEnrollmentsUrl = (projectId: string,
+    params?: ListOutreachEnrollmentsParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/projects/${projectId}/outreach/enrollments?${stringifiedParams}` : `/api/projects/${projectId}/outreach/enrollments`
+}
+
+/**
+ * @summary Everyone in the sequence
+ */
+export const listOutreachEnrollments = async (projectId: string,
+    params?: ListOutreachEnrollmentsParams, options?: Parameters<typeof customFetch>[1]): Promise<OutreachEnrollmentList> => {
+
+  return customFetch<OutreachEnrollmentList>(getListOutreachEnrollmentsUrl(projectId,params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListOutreachEnrollmentsQueryKey = (projectId: string,
+    params?: ListOutreachEnrollmentsParams,) => {
+    return [
+    `/api/projects/${projectId}/outreach/enrollments`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getListOutreachEnrollmentsQueryOptions = <TData = Awaited<ReturnType<typeof listOutreachEnrollments>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(projectId: string,
+    params?: ListOutreachEnrollmentsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listOutreachEnrollments>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListOutreachEnrollmentsQueryKey(projectId,params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listOutreachEnrollments>>> = ({ signal }) => listOutreachEnrollments(projectId,params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: projectId !== null && projectId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listOutreachEnrollments>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListOutreachEnrollmentsQueryResult = NonNullable<Awaited<ReturnType<typeof listOutreachEnrollments>>>
+export type ListOutreachEnrollmentsQueryError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+
+/**
+ * @summary Everyone in the sequence
+ */
+
+export function useListOutreachEnrollments<TData = Awaited<ReturnType<typeof listOutreachEnrollments>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(
+ projectId: string,
+    params?: ListOutreachEnrollmentsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listOutreachEnrollments>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListOutreachEnrollmentsQueryOptions(projectId,params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getEnrollOutreachUrl = (projectId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/outreach/enrollments`
+}
+
+/**
+ * For each company JYRA picks the contact from its buying committee, freezes the evidence the lead was ranked on, and starts writing the first message. Companies it cannot enrol are listed back with the reason; they cost nothing. Drafts arrive within a minute; poll the list.
+ * @summary Put companies into the sequence
+ */
+export const enrollOutreach = async (projectId: string,
+    enrollOutreachBody: EnrollOutreachBody, options?: Parameters<typeof customFetch>[1]): Promise<OutreachEnrollReport> => {
+
+  return customFetch<OutreachEnrollReport>(getEnrollOutreachUrl(projectId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(enrollOutreachBody)
+  }
+);}
+
+
+
+
+
+export const getEnrollOutreachMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof enrollOutreach>>, TError,{projectId: string;data: BodyType<EnrollOutreachBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof enrollOutreach>>, TError,{projectId: string;data: BodyType<EnrollOutreachBody>}, TContext> => {
+
+const mutationKey = ['enrollOutreach'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof enrollOutreach>>, {projectId: string;data: BodyType<EnrollOutreachBody>}> = (props) => {
+          const {projectId,data} = props ?? {};
+
+          return  enrollOutreach(projectId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type EnrollOutreachMutationResult = NonNullable<Awaited<ReturnType<typeof enrollOutreach>>>
+    export type EnrollOutreachMutationBody = BodyType<EnrollOutreachBody>
+    export type EnrollOutreachMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+    /**
+ * @summary Put companies into the sequence
+ */
+export const useEnrollOutreach = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof enrollOutreach>>, TError,{projectId: string;data: BodyType<EnrollOutreachBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof enrollOutreach>>,
+        TError,
+        {projectId: string;data: BodyType<EnrollOutreachBody>},
+        TContext
+      > => {
+      return useMutation(getEnrollOutreachMutationOptions(options));
+    }
+
+export const getGetOutreachEnrollmentUrl = (projectId: string,
+    enrollmentId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/outreach/enrollments/${enrollmentId}`
+}
+
+/**
+ * @summary One enrolment with its steps and messages
+ */
+export const getOutreachEnrollment = async (projectId: string,
+    enrollmentId: string, options?: Parameters<typeof customFetch>[1]): Promise<OutreachEnrollment> => {
+
+  return customFetch<OutreachEnrollment>(getGetOutreachEnrollmentUrl(projectId,enrollmentId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetOutreachEnrollmentQueryKey = (projectId: string,
+    enrollmentId: string,) => {
+    return [
+    `/api/projects/${projectId}/outreach/enrollments/${enrollmentId}`
+    ] as const;
+    }
+
+
+export const getGetOutreachEnrollmentQueryOptions = <TData = Awaited<ReturnType<typeof getOutreachEnrollment>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(projectId: string,
+    enrollmentId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getOutreachEnrollment>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetOutreachEnrollmentQueryKey(projectId,enrollmentId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getOutreachEnrollment>>> = ({ signal }) => getOutreachEnrollment(projectId,enrollmentId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: projectId !== null && projectId !== undefined && enrollmentId !== null && enrollmentId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getOutreachEnrollment>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetOutreachEnrollmentQueryResult = NonNullable<Awaited<ReturnType<typeof getOutreachEnrollment>>>
+export type GetOutreachEnrollmentQueryError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+
+/**
+ * @summary One enrolment with its steps and messages
+ */
+
+export function useGetOutreachEnrollment<TData = Awaited<ReturnType<typeof getOutreachEnrollment>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(
+ projectId: string,
+    enrollmentId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getOutreachEnrollment>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetOutreachEnrollmentQueryOptions(projectId,enrollmentId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getStopOutreachEnrollmentUrl = (projectId: string,
+    enrollmentId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/outreach/enrollments/${enrollmentId}/stop`
+}
+
+/**
+ * @summary Take a contact out of the sequence
+ */
+export const stopOutreachEnrollment = async (projectId: string,
+    enrollmentId: string,
+    stopOutreachEnrollmentBody?: StopOutreachEnrollmentBody, options?: Parameters<typeof customFetch>[1]): Promise<OutreachEnrollment> => {
+
+  return customFetch<OutreachEnrollment>(getStopOutreachEnrollmentUrl(projectId,enrollmentId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(stopOutreachEnrollmentBody)
+  }
+);}
+
+
+
+
+
+export const getStopOutreachEnrollmentMutationOptions = <TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stopOutreachEnrollment>>, TError,{projectId: string;enrollmentId: string;data?: BodyType<StopOutreachEnrollmentBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof stopOutreachEnrollment>>, TError,{projectId: string;enrollmentId: string;data?: BodyType<StopOutreachEnrollmentBody>}, TContext> => {
+
+const mutationKey = ['stopOutreachEnrollment'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof stopOutreachEnrollment>>, {projectId: string;enrollmentId: string;data?: BodyType<StopOutreachEnrollmentBody>}> = (props) => {
+          const {projectId,enrollmentId,data} = props ?? {};
+
+          return  stopOutreachEnrollment(projectId,enrollmentId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type StopOutreachEnrollmentMutationResult = NonNullable<Awaited<ReturnType<typeof stopOutreachEnrollment>>>
+    export type StopOutreachEnrollmentMutationBody = BodyType<StopOutreachEnrollmentBody> | undefined
+    export type StopOutreachEnrollmentMutationError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+    /**
+ * @summary Take a contact out of the sequence
+ */
+export const useStopOutreachEnrollment = <TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stopOutreachEnrollment>>, TError,{projectId: string;enrollmentId: string;data?: BodyType<StopOutreachEnrollmentBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof stopOutreachEnrollment>>,
+        TError,
+        {projectId: string;enrollmentId: string;data?: BodyType<StopOutreachEnrollmentBody>},
+        TContext
+      > => {
+      return useMutation(getStopOutreachEnrollmentMutationOptions(options));
+    }
+
+export const getPauseOutreachEnrollmentUrl = (projectId: string,
+    enrollmentId: string,
+    params?: PauseOutreachEnrollmentParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/projects/${projectId}/outreach/enrollments/${enrollmentId}/pause?${stringifiedParams}` : `/api/projects/${projectId}/outreach/enrollments/${enrollmentId}/pause`
+}
+
+/**
+ * @summary Pause, or with resume=true resume, a contact's sequence
+ */
+export const pauseOutreachEnrollment = async (projectId: string,
+    enrollmentId: string,
+    params?: PauseOutreachEnrollmentParams, options?: Parameters<typeof customFetch>[1]): Promise<OutreachEnrollment> => {
+
+  return customFetch<OutreachEnrollment>(getPauseOutreachEnrollmentUrl(projectId,enrollmentId,params),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getPauseOutreachEnrollmentMutationOptions = <TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof pauseOutreachEnrollment>>, TError,{projectId: string;enrollmentId: string;params?: PauseOutreachEnrollmentParams}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof pauseOutreachEnrollment>>, TError,{projectId: string;enrollmentId: string;params?: PauseOutreachEnrollmentParams}, TContext> => {
+
+const mutationKey = ['pauseOutreachEnrollment'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof pauseOutreachEnrollment>>, {projectId: string;enrollmentId: string;params?: PauseOutreachEnrollmentParams}> = (props) => {
+          const {projectId,enrollmentId,params} = props ?? {};
+
+          return  pauseOutreachEnrollment(projectId,enrollmentId,params,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PauseOutreachEnrollmentMutationResult = NonNullable<Awaited<ReturnType<typeof pauseOutreachEnrollment>>>
+
+    export type PauseOutreachEnrollmentMutationError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+    /**
+ * @summary Pause, or with resume=true resume, a contact's sequence
+ */
+export const usePauseOutreachEnrollment = <TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof pauseOutreachEnrollment>>, TError,{projectId: string;enrollmentId: string;params?: PauseOutreachEnrollmentParams}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof pauseOutreachEnrollment>>,
+        TError,
+        {projectId: string;enrollmentId: string;params?: PauseOutreachEnrollmentParams},
+        TContext
+      > => {
+      return useMutation(getPauseOutreachEnrollmentMutationOptions(options));
+    }
+
+export const getApproveOutreachStepUrl = (projectId: string,
+    stepId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/outreach/steps/${stepId}/approve`
+}
+
+/**
+ * The step may now go out, at the sender account's pace, in the recipient's working hours. The first touch is charged in credits when it is sent.
+ * @summary Approve a draft, with any edits
+ */
+export const approveOutreachStep = async (projectId: string,
+    stepId: string,
+    approveOutreachStepBody?: ApproveOutreachStepBody, options?: Parameters<typeof customFetch>[1]): Promise<OutreachStep> => {
+
+  return customFetch<OutreachStep>(getApproveOutreachStepUrl(projectId,stepId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(approveOutreachStepBody)
+  }
+);}
+
+
+
+
+
+export const getApproveOutreachStepMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | ConflictResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof approveOutreachStep>>, TError,{projectId: string;stepId: string;data?: BodyType<ApproveOutreachStepBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof approveOutreachStep>>, TError,{projectId: string;stepId: string;data?: BodyType<ApproveOutreachStepBody>}, TContext> => {
+
+const mutationKey = ['approveOutreachStep'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof approveOutreachStep>>, {projectId: string;stepId: string;data?: BodyType<ApproveOutreachStepBody>}> = (props) => {
+          const {projectId,stepId,data} = props ?? {};
+
+          return  approveOutreachStep(projectId,stepId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ApproveOutreachStepMutationResult = NonNullable<Awaited<ReturnType<typeof approveOutreachStep>>>
+    export type ApproveOutreachStepMutationBody = BodyType<ApproveOutreachStepBody> | undefined
+    export type ApproveOutreachStepMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | ConflictResponse>
+
+    /**
+ * @summary Approve a draft, with any edits
+ */
+export const useApproveOutreachStep = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | ConflictResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof approveOutreachStep>>, TError,{projectId: string;stepId: string;data?: BodyType<ApproveOutreachStepBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof approveOutreachStep>>,
+        TError,
+        {projectId: string;stepId: string;data?: BodyType<ApproveOutreachStepBody>},
+        TContext
+      > => {
+      return useMutation(getApproveOutreachStepMutationOptions(options));
+    }
+
+export const getRegenerateOutreachStepUrl = (projectId: string,
+    stepId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/outreach/steps/${stepId}/regenerate`
+}
+
+/**
+ * @summary Write the draft again
+ */
+export const regenerateOutreachStep = async (projectId: string,
+    stepId: string, options?: Parameters<typeof customFetch>[1]): Promise<OutreachStep> => {
+
+  return customFetch<OutreachStep>(getRegenerateOutreachStepUrl(projectId,stepId),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getRegenerateOutreachStepMutationOptions = <TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | ConflictResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof regenerateOutreachStep>>, TError,{projectId: string;stepId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof regenerateOutreachStep>>, TError,{projectId: string;stepId: string}, TContext> => {
+
+const mutationKey = ['regenerateOutreachStep'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof regenerateOutreachStep>>, {projectId: string;stepId: string}> = (props) => {
+          const {projectId,stepId} = props ?? {};
+
+          return  regenerateOutreachStep(projectId,stepId,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type RegenerateOutreachStepMutationResult = NonNullable<Awaited<ReturnType<typeof regenerateOutreachStep>>>
+
+    export type RegenerateOutreachStepMutationError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | ConflictResponse>
+
+    /**
+ * @summary Write the draft again
+ */
+export const useRegenerateOutreachStep = <TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | ConflictResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof regenerateOutreachStep>>, TError,{projectId: string;stepId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof regenerateOutreachStep>>,
+        TError,
+        {projectId: string;stepId: string},
+        TContext
+      > => {
+      return useMutation(getRegenerateOutreachStepMutationOptions(options));
+    }
+
+export const getSkipOutreachStepUrl = (projectId: string,
+    stepId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/outreach/steps/${stepId}/skip`
+}
+
+/**
+ * @summary Skip this step; the sequence moves on
+ */
+export const skipOutreachStep = async (projectId: string,
+    stepId: string, options?: Parameters<typeof customFetch>[1]): Promise<OutreachEnrollment> => {
+
+  return customFetch<OutreachEnrollment>(getSkipOutreachStepUrl(projectId,stepId),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getSkipOutreachStepMutationOptions = <TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | ConflictResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof skipOutreachStep>>, TError,{projectId: string;stepId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof skipOutreachStep>>, TError,{projectId: string;stepId: string}, TContext> => {
+
+const mutationKey = ['skipOutreachStep'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof skipOutreachStep>>, {projectId: string;stepId: string}> = (props) => {
+          const {projectId,stepId} = props ?? {};
+
+          return  skipOutreachStep(projectId,stepId,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SkipOutreachStepMutationResult = NonNullable<Awaited<ReturnType<typeof skipOutreachStep>>>
+
+    export type SkipOutreachStepMutationError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | ConflictResponse>
+
+    /**
+ * @summary Skip this step; the sequence moves on
+ */
+export const useSkipOutreachStep = <TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | ConflictResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof skipOutreachStep>>, TError,{projectId: string;stepId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof skipOutreachStep>>,
+        TError,
+        {projectId: string;stepId: string},
+        TContext
+      > => {
+      return useMutation(getSkipOutreachStepMutationOptions(options));
+    }
+
+export const getListOutreachRepliesUrl = (projectId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/outreach/replies`
+}
+
+/**
+ * @summary Replies to outreach, newest first
+ */
+export const listOutreachReplies = async (projectId: string, options?: Parameters<typeof customFetch>[1]): Promise<OutreachReplyList> => {
+
+  return customFetch<OutreachReplyList>(getListOutreachRepliesUrl(projectId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListOutreachRepliesQueryKey = (projectId: string,) => {
+    return [
+    `/api/projects/${projectId}/outreach/replies`
+    ] as const;
+    }
+
+
+export const getListOutreachRepliesQueryOptions = <TData = Awaited<ReturnType<typeof listOutreachReplies>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(projectId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listOutreachReplies>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListOutreachRepliesQueryKey(projectId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listOutreachReplies>>> = ({ signal }) => listOutreachReplies(projectId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: projectId !== null && projectId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listOutreachReplies>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListOutreachRepliesQueryResult = NonNullable<Awaited<ReturnType<typeof listOutreachReplies>>>
+export type ListOutreachRepliesQueryError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+
+/**
+ * @summary Replies to outreach, newest first
+ */
+
+export function useListOutreachReplies<TData = Awaited<ReturnType<typeof listOutreachReplies>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(
+ projectId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listOutreachReplies>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListOutreachRepliesQueryOptions(projectId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getMarkOutreachReplyReadUrl = (projectId: string,
+    messageId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/outreach/replies/${messageId}/read`
+}
+
+/**
+ * @summary Mark a reply as read
+ */
+export const markOutreachReplyRead = async (projectId: string,
+    messageId: string, options?: Parameters<typeof customFetch>[1]): Promise<OutreachMessage> => {
+
+  return customFetch<OutreachMessage>(getMarkOutreachReplyReadUrl(projectId,messageId),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getMarkOutreachReplyReadMutationOptions = <TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof markOutreachReplyRead>>, TError,{projectId: string;messageId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof markOutreachReplyRead>>, TError,{projectId: string;messageId: string}, TContext> => {
+
+const mutationKey = ['markOutreachReplyRead'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof markOutreachReplyRead>>, {projectId: string;messageId: string}> = (props) => {
+          const {projectId,messageId} = props ?? {};
+
+          return  markOutreachReplyRead(projectId,messageId,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type MarkOutreachReplyReadMutationResult = NonNullable<Awaited<ReturnType<typeof markOutreachReplyRead>>>
+
+    export type MarkOutreachReplyReadMutationError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+    /**
+ * @summary Mark a reply as read
+ */
+export const useMarkOutreachReplyRead = <TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof markOutreachReplyRead>>, TError,{projectId: string;messageId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof markOutreachReplyRead>>,
+        TError,
+        {projectId: string;messageId: string},
+        TContext
+      > => {
+      return useMutation(getMarkOutreachReplyReadMutationOptions(options));
     }
 

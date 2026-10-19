@@ -5,6 +5,90 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+export type OutreachStepKind = typeof OutreachStepKind[keyof typeof OutreachStepKind];
+
+
+export const OutreachStepKind = {
+  EMAIL: 'EMAIL',
+  EMAIL_FOLLOW_UP: 'EMAIL_FOLLOW_UP',
+  LINKEDIN_INVITATION: 'LINKEDIN_INVITATION',
+  LINKEDIN_MESSAGE: 'LINKEDIN_MESSAGE',
+} as const;
+
+export type OutreachEnrollmentStatus = typeof OutreachEnrollmentStatus[keyof typeof OutreachEnrollmentStatus];
+
+
+export const OutreachEnrollmentStatus = {
+  DRAFTING: 'DRAFTING',
+  AWAITING_APPROVAL: 'AWAITING_APPROVAL',
+  ACTIVE: 'ACTIVE',
+  PAUSED: 'PAUSED',
+  REPLIED: 'REPLIED',
+  BOUNCED: 'BOUNCED',
+  COMPLETED: 'COMPLETED',
+  STOPPED: 'STOPPED',
+  FAILED: 'FAILED',
+} as const;
+
+export type OutreachStepStatus = typeof OutreachStepStatus[keyof typeof OutreachStepStatus];
+
+
+export const OutreachStepStatus = {
+  DRAFTING: 'DRAFTING',
+  AWAITING_APPROVAL: 'AWAITING_APPROVAL',
+  APPROVED: 'APPROVED',
+  SENT: 'SENT',
+  SKIPPED: 'SKIPPED',
+  CANCELLED: 'CANCELLED',
+  FAILED: 'FAILED',
+} as const;
+
+export type ReplyClassification = typeof ReplyClassification[keyof typeof ReplyClassification];
+
+
+export const ReplyClassification = {
+  INTERESTED: 'INTERESTED',
+  NOT_NOW: 'NOT_NOW',
+  OBJECTION: 'OBJECTION',
+  OUT_OF_OFFICE: 'OUT_OF_OFFICE',
+  UNSUBSCRIBE: 'UNSUBSCRIBE',
+  REFERRAL: 'REFERRAL',
+  OTHER: 'OTHER',
+} as const;
+
+export type OutreachSequenceStepCondition = typeof OutreachSequenceStepCondition[keyof typeof OutreachSequenceStepCondition];
+
+
+export const OutreachSequenceStepCondition = {
+  NO_REPLY: 'NO_REPLY',
+  ALWAYS: 'ALWAYS',
+} as const;
+
+export interface OutreachSequenceStep {
+  kind: OutreachStepKind;
+  delayDays: number;
+  requiresApproval: boolean;
+  condition: OutreachSequenceStepCondition;
+}
+
+export interface OutreachSequence {
+  id: string;
+  name: string;
+  masterPrompt: string;
+  signature: string;
+  complianceFooter: string;
+  steps: OutreachSequenceStep[];
+  active: boolean;
+  updatedAt: string;
+}
+
+export interface OutreachSequenceInput {
+  masterPrompt?: string;
+  signature?: string;
+  complianceFooter?: string;
+  steps?: OutreachSequenceStep[];
+}
+
 export type OutreachChannel = typeof OutreachChannel[keyof typeof OutreachChannel];
 
 
@@ -14,6 +98,164 @@ export const OutreachChannel = {
   WHATSAPP: 'WHATSAPP',
   INSTAGRAM: 'INSTAGRAM',
 } as const;
+
+export interface OutreachStep {
+  id: string;
+  stepIndex: number;
+  kind: OutreachStepKind;
+  channel: OutreachChannel;
+  status: OutreachStepStatus;
+  subject: string | null;
+  body: string | null;
+  /** The lines the writer was given; everything in the draft rests on these. */
+  evidence: string[];
+  edited: boolean;
+  scheduledFor: string | null;
+  sentAt: string | null;
+  openedAt: string | null;
+  clickedAt: string | null;
+  approvedAt: string | null;
+  error: string | null;
+}
+
+export interface OutreachContact {
+  name: string;
+  title: string | null;
+  email: string | null;
+  linkedinUrl: string | null;
+}
+
+export type OutreachMessageDirection = typeof OutreachMessageDirection[keyof typeof OutreachMessageDirection];
+
+
+export const OutreachMessageDirection = {
+  OUTBOUND: 'OUTBOUND',
+  INBOUND: 'INBOUND',
+} as const;
+
+export interface OutreachMessage {
+  id: string;
+  enrollmentId: string | null;
+  channel: OutreachChannel;
+  direction: OutreachMessageDirection;
+  stepKind: OutreachStepKind | null;
+  fromAddress: string | null;
+  toAddress: string | null;
+  subject: string | null;
+  text: string | null;
+  occurredAt: string;
+  classification: ReplyClassification | null;
+  classificationReason: string | null;
+  readAt: string | null;
+}
+
+export interface OutreachEnrollment {
+  id: string;
+  projectCompanyId: string;
+  companyId: string;
+  companyName: string;
+  companyDomain: string | null;
+  contact: OutreachContact;
+  status: OutreachEnrollmentStatus;
+  currentStep: number;
+  totalSteps: number;
+  nextActionAt: string | null;
+  lastOutboundAt: string | null;
+  repliedAt: string | null;
+  stopReason: string | null;
+  why: string[];
+  signalCodes: string[];
+  score: number | null;
+  opportunityState: string | null;
+  creditsCharged: number;
+  createdAt: string;
+  currentStepDraft: OutreachStep | null;
+  steps?: OutreachStep[];
+  messages?: OutreachMessage[];
+}
+
+export type OutreachEnrollmentListCounts = {
+  awaitingApproval: number;
+  active: number;
+  replied: number;
+  paused: number;
+};
+
+export interface OutreachEnrollmentList {
+  enrollments: OutreachEnrollment[];
+  counts: OutreachEnrollmentListCounts;
+}
+
+export type OutreachRefusalCode = typeof OutreachRefusalCode[keyof typeof OutreachRefusalCode];
+
+
+export const OutreachRefusalCode = {
+  NO_CONTACT: 'NO_CONTACT',
+  NO_ADDRESS: 'NO_ADDRESS',
+  ALREADY_ENROLLED: 'ALREADY_ENROLLED',
+  SUPPRESSED: 'SUPPRESSED',
+  NO_SENDER: 'NO_SENDER',
+  COMPETITOR: 'COMPETITOR',
+  NO_EVIDENCE: 'NO_EVIDENCE',
+} as const;
+
+export interface OutreachRefusal {
+  projectCompanyId: string;
+  companyName: string;
+  code: OutreachRefusalCode;
+  message: string;
+}
+
+export interface OutreachEnrollReport {
+  enrolled: OutreachEnrollment[];
+  refused: OutreachRefusal[];
+}
+
+export interface OutreachCandidate {
+  projectCompanyId: string;
+  companyName: string;
+  domain: string | null;
+  opportunityState: string | null;
+  score: number | null;
+  enrolled: boolean;
+}
+
+export interface OutreachCandidateList {
+  candidates: OutreachCandidate[];
+}
+
+export type OutreachReplyDirection = typeof OutreachReplyDirection[keyof typeof OutreachReplyDirection];
+
+
+export const OutreachReplyDirection = {
+  OUTBOUND: 'OUTBOUND',
+  INBOUND: 'INBOUND',
+} as const;
+
+export interface OutreachReply {
+  id: string;
+  enrollmentId: string | null;
+  channel: OutreachChannel;
+  direction: OutreachReplyDirection;
+  stepKind: OutreachStepKind | null;
+  fromAddress: string | null;
+  toAddress: string | null;
+  subject: string | null;
+  text: string | null;
+  occurredAt: string;
+  classification: ReplyClassification | null;
+  classificationReason: string | null;
+  readAt: string | null;
+  contactName: string | null;
+  contactTitle: string | null;
+  companyName: string | null;
+  enrollmentStatus: OutreachEnrollmentStatus | null;
+}
+
+export interface OutreachReplyList {
+  replies: OutreachReply[];
+  unread: number;
+}
 
 export type SenderAccountStatus = typeof SenderAccountStatus[keyof typeof SenderAccountStatus];
 
@@ -5763,5 +6005,31 @@ export type GetInstantLeadQuoteParams = {
  * @minimum 1
  */
 requested?: number;
+};
+
+export type ListOutreachEnrollmentsParams = {
+status?: OutreachEnrollmentStatus;
+/**
+ * @minimum 1
+ * @maximum 500
+ */
+limit?: number;
+};
+
+export type EnrollOutreachBody = {
+  projectCompanyIds: string[];
+};
+
+export type StopOutreachEnrollmentBody = {
+  reason?: string;
+};
+
+export type PauseOutreachEnrollmentParams = {
+resume?: boolean;
+};
+
+export type ApproveOutreachStepBody = {
+  subject?: string | null;
+  body?: string | null;
 };
 

@@ -42,6 +42,8 @@ export const plansTable = pgTable(
     creditsPerInstantLead: integer("credits_per_instant_lead").notNull().default(30),
     creditsPerContactVerified: integer("credits_per_contact_verified").notNull().default(20),
     creditsPerContactCatchAll: integer("credits_per_contact_catch_all").notNull().default(10),
+    /** Outreach: charged once per contact when their first touch is sent. */
+    creditsPerOutreachContact: integer("credits_per_outreach_contact").notNull().default(5),
     priceInr: integer("price_inr").notNull(),
     priceUsd: integer("price_usd").notNull(),
     /** Ordering on the pricing page; also which plan is "bigger" in a message. */
@@ -87,6 +89,7 @@ export type PlanOverrides = {
   creditsPerInstantLead?: number;
   creditsPerContactVerified?: number;
   creditsPerContactCatchAll?: number;
+  creditsPerOutreachContact?: number;
 };
 
 export type Plan = typeof plansTable.$inferSelect;

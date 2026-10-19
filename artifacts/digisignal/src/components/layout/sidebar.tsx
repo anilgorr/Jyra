@@ -12,7 +12,7 @@ import {
   RadioTower,
   ShieldCheck,
   Layers,
-  Radar, Gauge, Filter, Zap,
+  Radar, Gauge, Filter, Zap, Send,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuthSession } from "@/lib/auth";
@@ -32,6 +32,7 @@ export const navItems = [
   { href: "/screening", label: "Screening", icon: Filter },
   { href: "/opportunities", label: "Opportunities", icon: Target },
   { href: "/instant-leads", label: "Instant Leads", icon: Zap },
+  { href: "/outreach", label: "Outreach", icon: Send },
   { href: "/research", label: "Research", icon: BookOpen },
   { href: "/signals", label: "Signals", icon: RadioTower },
   { href: "/changes", label: "What changed", icon: Radar },

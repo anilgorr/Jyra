@@ -190,6 +190,13 @@
       "when": 1792389938933,
       "tag": "0026_outreach_sender_accounts",
       "breakpoints": true
+    },
+    {
+      "idx": 27,
+      "version": "7",
+      "when": 1792397585824,
+      "tag": "0027_outreach_sequences",
+      "breakpoints": true
     }
   ]
 }

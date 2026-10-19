@@ -5,6 +5,7 @@ import {
 } from "@workspace/db";
 import { resolveOrganizationPlan } from "../plans";
 import { createUnipileClient, type UnipileAccount, type UnipileClient } from "./unipile-client";
+import { handleInboundEvent, type InboundDeps } from "./inbound";
 
 /**
  * Sender accounts: linking, status, seats, and what Unipile tells us.
@@ -278,7 +279,7 @@ export type EventOutcome = { handled: boolean; note: string };
  * the phases that read it (messages, emails, tracking, relations) and left
  * alone here.
  */
-export async function applyUnipileEvent(event: UnipileEvent, deps: { client?: UnipileClient; now?: () => Date } = {}): Promise<EventOutcome> {
+export async function applyUnipileEvent(event: UnipileEvent, deps: { client?: UnipileClient; now?: () => Date } & InboundDeps = {}): Promise<EventOutcome> {
   const now = deps.now?.() ?? new Date();
   const payload = event.payload ?? {};
 
@@ -312,8 +313,17 @@ export async function applyUnipileEvent(event: UnipileEvent, deps: { client?: Un
     const id = event.account_id ?? (typeof (payload.account as { id?: unknown } | undefined)?.id === "string" ? (payload.account as { id: string }).id : null);
     return setStatus(id, { status: "REMOVED", statusReason: "removed at Unipile" }, now);
   }
+  // Replies, bounces, opens, clicks, messages: inbound.ts decides whether the event is part of an outreach conversation.
+  if (INBOUND_EVENT_TYPES.has(event.type)) {
+    const outcome = await handleInboundEvent(event, deps);
+    return { handled: outcome.handled, note: outcome.note };
+  }
   return { handled: false, note: `filed ${event.type}` };
 }
+
+/** Event types the receiver keeps; everything else (folder housekeeping, deletes, drafts) is answered 200 and dropped before it reaches the table. */
+export const INBOUND_EVENT_TYPES: ReadonlySet<string> = new Set(["email.new", "email.new.bounce", "tracking.open", "tracking.click", "message.new", "message.receipt.read", "relation.new"]);
+export const isKeptEventType = (type: string): boolean => type.startsWith("account.") || INBOUND_EVENT_TYPES.has(type);
 
 async function refreshFromUnipile(unipileAccountId: string, given: UnipileAccount | null, now: Date, note: string): Promise<EventOutcome> {
   const [existing] = await db.select().from(senderAccountsTable).where(eq(senderAccountsTable.unipileAccountId, unipileAccountId)).limit(1);
