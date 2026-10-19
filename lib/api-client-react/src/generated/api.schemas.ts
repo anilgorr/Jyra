@@ -13,6 +13,7 @@ export const OutreachStepKind = {
   EMAIL_FOLLOW_UP: 'EMAIL_FOLLOW_UP',
   LINKEDIN_INVITATION: 'LINKEDIN_INVITATION',
   LINKEDIN_MESSAGE: 'LINKEDIN_MESSAGE',
+  WHATSAPP_MESSAGE: 'WHATSAPP_MESSAGE',
 } as const;
 
 export type OutreachEnrollmentStatus = typeof OutreachEnrollmentStatus[keyof typeof OutreachEnrollmentStatus];
@@ -123,6 +124,7 @@ export interface OutreachContact {
   title: string | null;
   email: string | null;
   linkedinUrl: string | null;
+  phone: string | null;
 }
 
 export type OutreachMessageDirection = typeof OutreachMessageDirection[keyof typeof OutreachMessageDirection];
@@ -206,9 +208,17 @@ export interface OutreachRefusal {
   message: string;
 }
 
+export interface OutreachEnrollWarning {
+  projectCompanyId: string;
+  companyName: string;
+  message: string;
+}
+
 export interface OutreachEnrollReport {
   enrolled: OutreachEnrollment[];
   refused: OutreachRefusal[];
+  /** Enrolled, but not on every channel asked for; each says which were skipped and why. */
+  warnings: OutreachEnrollWarning[];
 }
 
 export interface OutreachCandidate {
@@ -6016,8 +6026,22 @@ status?: OutreachEnrollmentStatus;
 limit?: number;
 };
 
+export type EnrollOutreachBodyChannelsItem = typeof EnrollOutreachBodyChannelsItem[keyof typeof EnrollOutreachBodyChannelsItem];
+
+
+export const EnrollOutreachBodyChannelsItem = {
+  EMAIL: 'EMAIL',
+  LINKEDIN: 'LINKEDIN',
+  WHATSAPP: 'WHATSAPP',
+} as const;
+
 export type EnrollOutreachBody = {
   projectCompanyIds: string[];
+  /**
+     * How to reach each contact. Every channel chosen is a first touch, sent the day it is approved.
+     * @minItems 1
+     */
+  channels: EnrollOutreachBodyChannelsItem[];
 };
 
 export type StopOutreachEnrollmentBody = {

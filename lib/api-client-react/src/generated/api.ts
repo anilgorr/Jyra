@@ -12300,7 +12300,7 @@ export const getEnrollOutreachUrl = (projectId: string,) => {
 }
 
 /**
- * For each company JYRA picks the contact from its buying committee, freezes the evidence the lead was ranked on, and starts writing the first message. Companies it cannot enrol are listed back with the reason; they cost nothing. Drafts arrive within a minute; poll the list.
+ * For each company JYRA picks the contact from its buying committee who can be reached on the channels chosen, freezes the evidence the lead was ranked on, and writes one message per channel. Companies it cannot enrol are listed back with the reason; they cost nothing. Drafts arrive within a minute; poll the list.
  * @summary Put companies into the sequence
  */
 export const enrollOutreach = async (projectId: string,

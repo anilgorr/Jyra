@@ -48,6 +48,7 @@ export const LIMITS: Record<OutreachStepKind, { subjectChars: number | null; bod
   EMAIL_FOLLOW_UP: { subjectChars: 60, bodyWords: 70, bodyChars: null },
   LINKEDIN_INVITATION: { subjectChars: null, bodyWords: null, bodyChars: 280 },
   LINKEDIN_MESSAGE: { subjectChars: null, bodyWords: 90, bodyChars: 700 },
+  WHATSAPP_MESSAGE: { subjectChars: null, bodyWords: 70, bodyChars: 450 },
 };
 
 const SYSTEM = `You write one short outbound message on behalf of a seller to a named person at a company, in the seller's voice, from the evidence provided. Rules that override everything else:
@@ -65,6 +66,7 @@ export function buildDraftPrompt(input: DraftInput): { system: string; user: str
   const form = input.kind === "EMAIL" ? `A cold email. Subject at most ${limits.subjectChars} characters, specific, no clickbait. Body at most ${limits.bodyWords} words, three short paragraphs at most, one question at the end.`
     : input.kind === "EMAIL_FOLLOW_UP" ? `A follow-up email in the same thread, at most ${limits.bodyWords} words. Refer to the earlier note in one clause, add one new angle from the evidence if there is one, ask again. Subject: reuse the earlier subject prefixed with "Re: ".`
     : input.kind === "LINKEDIN_INVITATION" ? `A LinkedIn connection note, at most ${limits.bodyChars} characters in total. One or two sentences: the specific reason from the evidence, and why connecting is worth their while. No pitch, no link, no question mark needed.`
+    : input.kind === "WHATSAPP_MESSAGE" ? `A WhatsApp message to someone who does not know the sender, at most ${limits.bodyWords} words. Say who is writing and from where in the first sentence, the specific reason from the evidence in the second, one easy question to end. Plain and brief; it is read on a phone.`
     : `A LinkedIn message to a new connection, at most ${limits.bodyWords} words. Thank them briefly for connecting, give the reason from the evidence, one question.`;
   const lines = [
     `FORM: ${form}`,
@@ -177,7 +179,7 @@ export async function writeDraft(
 
 /** The text that goes on the wire: the draft, the sign-off, and on cold email the compliance footer. */
 export function finalBody(kind: OutreachStepKind, body: string, sequence: Pick<OutreachSequence, "signature" | "complianceFooter">): string {
-  if (kind === "LINKEDIN_INVITATION") return body.trim();
+  if (kind === "LINKEDIN_INVITATION" || kind === "WHATSAPP_MESSAGE") return body.trim();
   const parts = [body.trim()];
   if (sequence.signature.trim()) parts.push(sequence.signature.trim());
   if ((kind === "EMAIL" || kind === "EMAIL_FOLLOW_UP") && sequence.complianceFooter.trim()) parts.push(sequence.complianceFooter.trim());

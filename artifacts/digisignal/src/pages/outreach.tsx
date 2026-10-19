@@ -3,11 +3,12 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Link } from "wouter";
 import {
   getGetOutreachSequenceQueryKey, getListOutreachCandidatesQueryKey, getListOutreachEnrollmentsQueryKey, getListOutreachRepliesQueryKey,
+  getListSenderAccountsQueryKey, useListSenderAccounts,
   useApproveOutreachStep, useEnrollOutreach, useGetOutreachSequence, useListOutreachCandidates, useListOutreachEnrollments, useListOutreachReplies,
   useMarkOutreachReplyRead, usePauseOutreachEnrollment, useRegenerateOutreachStep, useSkipOutreachStep, useStopOutreachEnrollment, useUpdateOutreachSequence,
-  type OutreachCandidate, type OutreachEnrollment, type OutreachReply, type OutreachSequence, type OutreachSequenceStep, type OutreachStep, type OutreachStepKind, type ReplyClassification,
+  type OutreachCandidate, type OutreachEnrollment, type OutreachReply, type OutreachSequence, type OutreachStep, type OutreachStepKind, type ReplyClassification,
 } from "@workspace/api-client-react";
-import { AlertTriangle, Building2, CheckCircle2, Eye, Inbox, Linkedin, Loader2, Mail, MousePointerClick, Pause, Play, Plus, RefreshCw, Send, SkipForward, Square, Trash2, UserRound } from "lucide-react";
+import { AlertTriangle, Building2, CheckCircle2, Eye, Inbox, Linkedin, Loader2, Mail, MessageCircle, MousePointerClick, Pause, Play, Plus, RefreshCw, Send, SkipForward, Square, Trash2, UserRound } from "lucide-react";
 import { toast } from "sonner";
 import { useWorkspace } from "@/context/workspace-context";
 import { Badge } from "@/components/ui/badge";
@@ -18,7 +19,6 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -26,12 +26,13 @@ import { Textarea } from "@/components/ui/textarea";
  * Outreach: from a ranked company to a conversation, with a person in the
  * loop at the one moment that matters.
  *
- * Four tabs. Approve is the queue: every first message JYRA has drafted,
- * next to the evidence it was written from, to read, edit and send - or
- * rewrite, or skip. In sequence is everyone who has been approved: where
- * each is in the steps, when the next goes, what came back. Replies is the
- * inbox, already sorted. Sequence is the customer's: the steps, the master
- * prompt the writer follows, the signature, the footer.
+ * The customer picks the channels when enrolling - email, LinkedIn,
+ * WhatsApp, any mix - and every one is a first touch: drafted now, sent the
+ * day it is approved, nothing chained after it. Four tabs. Approve is the
+ * queue: one card per contact, one draft per channel, next to the evidence
+ * they were written from. In progress is everyone approved: what went,
+ * what is due, what came back. Replies is the inbox, already sorted.
+ * Writing is the master prompt the writer follows, the signature, the footer.
  *
  * Credits only on this page, as everywhere a customer looks.
  */
@@ -39,8 +40,15 @@ import { Textarea } from "@/components/ui/textarea";
 const when = (iso: string | null | undefined) => (iso ? new Date(iso).toLocaleString("en-IN", { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" }) : null);
 const day = (iso: string | null | undefined) => (iso ? new Date(iso).toLocaleDateString("en-IN", { day: "numeric", month: "short" }) : null);
 
-const KIND_LABEL: Record<OutreachStepKind, string> = { EMAIL: "Email", EMAIL_FOLLOW_UP: "Follow-up email", LINKEDIN_INVITATION: "LinkedIn invitation", LINKEDIN_MESSAGE: "LinkedIn message" };
-const KIND_ICON: Record<OutreachStepKind, typeof Mail> = { EMAIL: Mail, EMAIL_FOLLOW_UP: Mail, LINKEDIN_INVITATION: Linkedin, LINKEDIN_MESSAGE: Linkedin };
+const KIND_LABEL: Record<OutreachStepKind, string> = { EMAIL: "Email", EMAIL_FOLLOW_UP: "Follow-up email", LINKEDIN_INVITATION: "LinkedIn invitation", LINKEDIN_MESSAGE: "LinkedIn message", WHATSAPP_MESSAGE: "WhatsApp" };
+const KIND_ICON: Record<OutreachStepKind, typeof Mail> = { EMAIL: Mail, EMAIL_FOLLOW_UP: Mail, LINKEDIN_INVITATION: Linkedin, LINKEDIN_MESSAGE: Linkedin, WHATSAPP_MESSAGE: MessageCircle };
+type EnrolChannel = "EMAIL" | "LINKEDIN" | "WHATSAPP";
+const CHANNELS: Array<{ id: EnrolChannel; label: string; icon: typeof Mail; note: string }> = [
+  { id: "EMAIL", label: "Email", icon: Mail, note: "From your connected mailbox; needs an email address on the contact." },
+  { id: "LINKEDIN", label: "LinkedIn", icon: Linkedin, note: "A connection note (or a message if you are already connected); needs a profile URL." },
+  { id: "WHATSAPP", label: "WhatsApp", icon: MessageCircle, note: "From your connected number; needs a phone number on the contact. Cold WhatsApp to a stranger gets numbers reported — best after they have replied elsewhere." },
+];
+const OPEN_DRAFT = new Set<OutreachStep["status"]>(["DRAFTING", "AWAITING_APPROVAL", "FAILED"]);
 
 const STATUS_TONE: Record<OutreachEnrollment["status"], string> = {
   DRAFTING: "bg-sky-500/15 text-sky-700 dark:text-sky-300", AWAITING_APPROVAL: "bg-amber-500/15 text-amber-700 dark:text-amber-300",
@@ -49,7 +57,7 @@ const STATUS_TONE: Record<OutreachEnrollment["status"], string> = {
   COMPLETED: "bg-muted text-muted-foreground", STOPPED: "bg-muted text-muted-foreground", FAILED: "bg-rose-500/15 text-rose-700 dark:text-rose-300",
 };
 const STATUS_LABEL: Record<OutreachEnrollment["status"], string> = {
-  DRAFTING: "Writing", AWAITING_APPROVAL: "Needs approval", ACTIVE: "In sequence", PAUSED: "Paused", REPLIED: "Replied", BOUNCED: "Bounced", COMPLETED: "Finished", STOPPED: "Stopped", FAILED: "Failed",
+  DRAFTING: "Writing", AWAITING_APPROVAL: "Needs approval", ACTIVE: "Sending", PAUSED: "Paused", REPLIED: "Replied", BOUNCED: "Bounced", COMPLETED: "Finished", STOPPED: "Stopped", FAILED: "Failed",
 };
 const BOX_LABEL: Record<ReplyClassification, string> = { INTERESTED: "Interested", NOT_NOW: "Not now", OBJECTION: "Objection", OUT_OF_OFFICE: "Out of office", UNSUBSCRIBE: "Unsubscribe", REFERRAL: "Referral", OTHER: "Other" };
 const BOX_TONE: Record<ReplyClassification, string> = {
@@ -75,18 +83,23 @@ function useInvalidateOutreach(projectId: string) {
 /* Enrol                                                                     */
 /* ------------------------------------------------------------------------ */
 
-function EnrolDialog({ projectId, open, onClose }: { projectId: string; open: boolean; onClose: () => void }) {
+function EnrolDialog({ projectId, organizationId, open, onClose }: { projectId: string; organizationId: string; open: boolean; onClose: () => void }) {
   const candidates = useListOutreachCandidates(projectId, { query: { enabled: open, queryKey: getListOutreachCandidatesQueryKey(projectId) } });
   const enroll = useEnrollOutreach();
   const invalidate = useInvalidateOutreach(projectId);
+  const accounts = useListSenderAccounts(organizationId, { query: { enabled: open && Boolean(organizationId), queryKey: getListSenderAccountsQueryKey(organizationId) } });
+  const connected = new Set((accounts.data?.accounts ?? []).filter((a) => a.status === "CONNECTED").map((a) => a.channel));
   const [picked, setPicked] = useState<Set<string>>(new Set());
+  const [channels, setChannels] = useState<Set<EnrolChannel>>(new Set(["EMAIL"]));
   const [filter, setFilter] = useState("");
   useEffect(() => { if (!open) { setPicked(new Set()); setFilter(""); } }, [open]);
+  const toggleChannel = (channel: EnrolChannel) => setChannels((prev) => { const next = new Set(prev); if (next.has(channel)) next.delete(channel); else next.add(channel); return next; });
   const list = useMemo(() => (candidates.data?.candidates ?? []).filter((c) => !filter || c.companyName.toLowerCase().includes(filter.toLowerCase()) || (c.domain ?? "").includes(filter.toLowerCase())), [candidates.data, filter]);
   const toggle = (candidate: OutreachCandidate) => setPicked((prev) => { const next = new Set(prev); if (next.has(candidate.projectCompanyId)) next.delete(candidate.projectCompanyId); else next.add(candidate.projectCompanyId); return next; });
-  const submit = () => enroll.mutate({ projectId, data: { projectCompanyIds: [...picked] } }, {
+  const submit = () => enroll.mutate({ projectId, data: { projectCompanyIds: [...picked], channels: [...channels] } }, {
     onSuccess: (report) => {
-      if (report.enrolled.length) toast.success(`${report.enrolled.length} ${report.enrolled.length === 1 ? "contact" : "contacts"} enrolled — first drafts are on the way`);
+      if (report.enrolled.length) toast.success(`${report.enrolled.length} ${report.enrolled.length === 1 ? "contact" : "contacts"} enrolled — drafts are on the way`);
+      for (const warning of report.warnings) toast.info(`${warning.companyName}: ${warning.message}`);
       for (const refusal of report.refused) toast.warning(`${refusal.companyName}: ${refusal.message}`);
       invalidate(); onClose();
     },
@@ -96,9 +109,21 @@ function EnrolDialog({ projectId, open, onClose }: { projectId: string; open: bo
     <Dialog open={open} onOpenChange={(next) => { if (!next) onClose(); }}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Put companies into the sequence</DialogTitle>
-          <DialogDescription>JYRA picks the best contact on each buying committee, writes the first message from the evidence it has, and waits for you to approve it. Credits are charged when the first message is sent, not now.</DialogDescription>
+          <DialogTitle>Reach out</DialogTitle>
+          <DialogDescription>Pick how to reach them. JYRA picks the best contact on each buying committee, writes one message per channel from the evidence it has, and waits for you to approve each. Credits are charged once per contact, when the first message is sent.</DialogDescription>
         </DialogHeader>
+        <div className="grid gap-2 sm:grid-cols-3">
+          {CHANNELS.map((channel) => {
+            const Icon = channel.icon; const on = channels.has(channel.id); const available = connected.has(channel.id);
+            return (
+              <button key={channel.id} type="button" disabled={!available} onClick={() => toggleChannel(channel.id)} title={available ? channel.note : `Connect ${channel.label} first (Settings → Connected accounts)`}
+                className={`rounded-md border p-3 text-left text-sm transition ${on ? "border-primary bg-primary/10" : "hover:bg-muted/50"} ${available ? "" : "cursor-not-allowed opacity-50"}`}>
+                <span className="flex items-center gap-2 font-medium"><Icon className="h-4 w-4" />{channel.label}{on ? <CheckCircle2 className="ml-auto h-4 w-4 text-primary" /> : null}</span>
+                <span className="mt-1 block text-xs text-muted-foreground">{available ? channel.note : "Not connected"}</span>
+              </button>
+            );
+          })}
+        </div>
         <Input placeholder="Filter by name or domain" value={filter} onChange={(e) => setFilter(e.target.value)} />
         <div className="max-h-[50vh] overflow-y-auto rounded-md border divide-y">
           {candidates.isLoading ? <div className="p-4"><Skeleton className="h-5 w-2/3" /></div> : null}
@@ -111,14 +136,14 @@ function EnrolDialog({ projectId, open, onClose }: { projectId: string; open: bo
               {candidate.domain ? <span className="text-muted-foreground">{candidate.domain}</span> : null}
               <span className="ml-auto flex items-center gap-2">
                 {candidate.score !== null ? <Badge variant="secondary">{Math.round(candidate.score)}</Badge> : null}
-                {candidate.enrolled ? <Badge variant="outline">In sequence</Badge> : null}
+                {candidate.enrolled ? <Badge variant="outline">In outreach</Badge> : null}
               </span>
             </label>
           ))}
         </div>
         <DialogFooter>
           <Button variant="ghost" onClick={onClose}>Cancel</Button>
-          <Button onClick={submit} disabled={picked.size === 0 || enroll.isPending}>{enroll.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Plus className="mr-2 h-4 w-4" />}Enrol {picked.size || ""}</Button>
+          <Button onClick={submit} disabled={picked.size === 0 || channels.size === 0 || enroll.isPending}>{enroll.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}Write to {picked.size || ""} by {[...channels].map((c) => CHANNELS.find((x) => x.id === c)?.label).join(" + ") || "…"}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -129,22 +154,65 @@ function EnrolDialog({ projectId, open, onClose }: { projectId: string; open: bo
 /* Approve                                                                   */
 /* ------------------------------------------------------------------------ */
 
-function DraftCard({ projectId, enrollment }: { projectId: string; enrollment: OutreachEnrollment }) {
-  const step = enrollment.currentStepDraft;
+function DraftBlock({ projectId, enrollment, step }: { projectId: string; enrollment: OutreachEnrollment; step: OutreachStep }) {
   const invalidate = useInvalidateOutreach(projectId);
   const approve = useApproveOutreachStep();
   const regenerate = useRegenerateOutreachStep();
   const skip = useSkipOutreachStep();
-  const stop = useStopOutreachEnrollment();
-  const [subject, setSubject] = useState(step?.subject ?? "");
-  const [body, setBody] = useState(step?.body ?? "");
-  useEffect(() => { setSubject(step?.subject ?? ""); setBody(step?.body ?? ""); }, [step?.id, step?.subject, step?.body]);
-  if (!step) return null;
+  const [subject, setSubject] = useState(step.subject ?? "");
+  const [body, setBody] = useState(step.body ?? "");
+  useEffect(() => { setSubject(step.subject ?? ""); setBody(step.body ?? ""); }, [step.id, step.subject, step.body]);
   const Icon = KIND_ICON[step.kind];
   const isEmail = step.channel === "EMAIL";
-  const noteLimit = step.kind === "LINKEDIN_INVITATION" ? 300 : null;
-  const busy = approve.isPending || regenerate.isPending || skip.isPending || stop.isPending || step.status === "DRAFTING";
+  const charLimit = step.kind === "LINKEDIN_INVITATION" ? 300 : step.kind === "WHATSAPP_MESSAGE" ? 1000 : null;
+  const busy = approve.isPending || regenerate.isPending || skip.isPending || step.status === "DRAFTING";
   const act = (run: () => void) => { if (!busy) run(); };
+  return (
+    <div className="space-y-2 rounded-md border p-3">
+      <div className="flex items-center gap-2 text-sm">
+        <Icon className="h-4 w-4 text-muted-foreground" /><span className="font-medium">{KIND_LABEL[step.kind]}</span>
+        <span className="text-muted-foreground">to {step.channel === "EMAIL" ? enrollment.contact.email : step.channel === "WHATSAPP" ? enrollment.contact.phone : enrollment.contact.linkedinUrl?.replace(/^https?:\/\/(www\.)?/, "")}</span>
+        {step.status === "DRAFTING" ? <span className="ml-auto flex items-center gap-1 text-xs text-muted-foreground"><Loader2 className="h-3.5 w-3.5 animate-spin" />Being written…</span> : null}
+      </div>
+      {step.status === "FAILED" ? (
+        <div className="flex items-start gap-2 rounded-md border border-amber-500/40 bg-amber-500/10 p-2 text-sm">
+          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
+          <span>The writer could not produce a draft ({step.error ?? "unknown reason"}). Write one below, or try again.</span>
+        </div>
+      ) : null}
+      {isEmail ? <Input value={subject} onChange={(e) => setSubject(e.target.value)} placeholder="Subject" className="font-medium" /> : null}
+      <Textarea value={body} onChange={(e) => setBody(e.target.value)} rows={isEmail ? 8 : 4} placeholder={isEmail ? "The email" : "The message"} />
+      <div className="flex items-center justify-between text-xs text-muted-foreground">
+        <span>{step.edited || body !== (step.body ?? "") || subject !== (step.subject ?? "") ? "Edited" : "As written by JYRA"}{isEmail ? " · signature and footer are added on send" : step.kind === "LINKEDIN_MESSAGE" ? " · signature is added on send" : ""}</span>
+        {charLimit ? <span className={body.length > charLimit ? "text-rose-600" : ""}>{body.length}/{charLimit}</span> : null}
+      </div>
+      <div className="flex flex-wrap items-center gap-2">
+        <Button size="sm" disabled={busy || !body.trim() || (isEmail && !subject.trim()) || (charLimit !== null && body.length > charLimit)}
+          onClick={() => act(() => approve.mutate({ projectId, stepId: step.id, data: { subject: isEmail ? subject : null, body } }, {
+            onSuccess: () => { toast.success(`${KIND_LABEL[step.kind]} approved — it goes out in ${enrollment.contact.name.split(" ")[0]}'s working hours`); invalidate(); },
+            onError: (error) => toast.error(failMessage(error, "Could not approve")),
+          }))}>
+          {approve.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}Approve &amp; send
+        </Button>
+        <Button size="sm" variant="outline" disabled={busy} onClick={() => act(() => regenerate.mutate({ projectId, stepId: step.id }, {
+          onSuccess: (next) => { if (next.status === "FAILED") toast.error(next.error ?? "The writer could not produce a draft"); else toast.success("Rewritten"); invalidate(); },
+          onError: (error) => toast.error(failMessage(error, "Could not rewrite")),
+        }))}>
+          {regenerate.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}Rewrite
+        </Button>
+        <Button size="sm" variant="ghost" disabled={busy} onClick={() => act(() => skip.mutate({ projectId, stepId: step.id }, {
+          onSuccess: () => { toast(`${KIND_LABEL[step.kind]} skipped`); invalidate(); }, onError: (error) => toast.error(failMessage(error, "Could not skip")),
+        }))}><SkipForward className="mr-2 h-4 w-4" />Don't send this one</Button>
+      </div>
+    </div>
+  );
+}
+
+function DraftCard({ projectId, enrollment }: { projectId: string; enrollment: OutreachEnrollment }) {
+  const invalidate = useInvalidateOutreach(projectId);
+  const stop = useStopOutreachEnrollment();
+  const drafts = (enrollment.steps ?? []).filter((step) => OPEN_DRAFT.has(step.status));
+  const evidence = drafts[0]?.evidence ?? enrollment.why;
   return (
     <Card className="p-4 space-y-3">
       <div className="flex flex-wrap items-start gap-3">
@@ -159,55 +227,21 @@ function DraftCard({ projectId, enrollment }: { projectId: string; enrollment: O
             {enrollment.score !== null ? <Badge variant="secondary">{Math.round(enrollment.score)}</Badge> : null}
           </div>
         </div>
-        <Badge variant="outline" className="gap-1"><Icon className="h-3 w-3" />{KIND_LABEL[step.kind]}</Badge>
+        <Button size="sm" variant="ghost" className="text-muted-foreground" disabled={stop.isPending} onClick={() => stop.mutate({ projectId, enrollmentId: enrollment.id, data: { reason: "removed from the approval queue" } }, {
+          onSuccess: () => { toast("Taken out of outreach"); invalidate(); }, onError: (error) => toast.error(failMessage(error, "Could not remove")),
+        })}><Trash2 className="mr-2 h-4 w-4" />Don't contact</Button>
       </div>
-
-      {step.status === "DRAFTING" ? <p className="flex items-center gap-2 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" />Being written…</p> : null}
-      {step.status === "FAILED" ? (
-        <div className="flex items-start gap-2 rounded-md border border-amber-500/40 bg-amber-500/10 p-2 text-sm">
-          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
-          <span>The writer could not produce a draft ({step.error ?? "unknown reason"}). Write one below, or try again.</span>
-        </div>
-      ) : null}
-
       <div className="grid gap-3 md:grid-cols-[1fr_280px]">
-        <div className="space-y-2">
-          {isEmail ? <Input value={subject} onChange={(e) => setSubject(e.target.value)} placeholder="Subject" className="font-medium" /> : null}
-          <Textarea value={body} onChange={(e) => setBody(e.target.value)} rows={isEmail ? 9 : 5} placeholder={isEmail ? "The email" : "The note"} />
-          <div className="flex items-center justify-between text-xs text-muted-foreground">
-            <span>{step.edited || body !== (step.body ?? "") || subject !== (step.subject ?? "") ? "Edited" : "As written by JYRA"}{isEmail ? " · signature and footer are added on send" : ""}</span>
-            {noteLimit ? <span className={body.length > noteLimit ? "text-rose-600" : ""}>{body.length}/{noteLimit}</span> : null}
-          </div>
+        <div className="space-y-3">
+          {drafts.map((step) => <DraftBlock key={step.id} projectId={projectId} enrollment={enrollment} step={step} />)}
         </div>
         <div className="rounded-md bg-muted/40 p-3 text-sm">
           <p className="mb-1 text-xs font-medium uppercase tracking-wide text-muted-foreground">Written from</p>
           <ul className="space-y-1">
-            {step.evidence.map((line, index) => <li key={index} className="flex gap-2"><span className="text-muted-foreground">•</span><span>{line}</span></li>)}
-            {step.evidence.length === 0 ? <li className="text-muted-foreground">No evidence lines on this step.</li> : null}
+            {evidence.map((line, index) => <li key={index} className="flex gap-2"><span className="text-muted-foreground">•</span><span>{line}</span></li>)}
+            {evidence.length === 0 ? <li className="text-muted-foreground">No evidence lines.</li> : null}
           </ul>
         </div>
-      </div>
-
-      <div className="flex flex-wrap items-center gap-2">
-        <Button size="sm" disabled={busy || !body.trim() || (isEmail && !subject.trim()) || (noteLimit !== null && body.length > noteLimit)}
-          onClick={() => act(() => approve.mutate({ projectId, stepId: step.id, data: { subject: isEmail ? subject : null, body } }, {
-            onSuccess: () => { toast.success(`Approved — it goes out in ${enrollment.contact.name.split(' ')[0]}'s working hours`); invalidate(); },
-            onError: (error) => toast.error(failMessage(error, "Could not approve")),
-          }))}>
-          {approve.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}Approve &amp; send
-        </Button>
-        <Button size="sm" variant="outline" disabled={busy} onClick={() => act(() => regenerate.mutate({ projectId, stepId: step.id }, {
-          onSuccess: (next) => { if (next.status === "FAILED") toast.error(next.error ?? "The writer could not produce a draft"); else toast.success("Rewritten"); invalidate(); },
-          onError: (error) => toast.error(failMessage(error, "Could not rewrite")),
-        }))}>
-          {regenerate.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}Rewrite
-        </Button>
-        <Button size="sm" variant="ghost" disabled={busy} onClick={() => act(() => skip.mutate({ projectId, stepId: step.id }, {
-          onSuccess: () => { toast("Skipped; the sequence moves on"); invalidate(); }, onError: (error) => toast.error(failMessage(error, "Could not skip")),
-        }))}><SkipForward className="mr-2 h-4 w-4" />Skip this step</Button>
-        <Button size="sm" variant="ghost" className="ml-auto text-muted-foreground" disabled={busy} onClick={() => act(() => stop.mutate({ projectId, enrollmentId: enrollment.id, data: { reason: "removed from the approval queue" } }, {
-          onSuccess: () => { toast("Taken out of the sequence"); invalidate(); }, onError: (error) => toast.error(failMessage(error, "Could not remove")),
-        }))}><Trash2 className="mr-2 h-4 w-4" />Don't contact</Button>
       </div>
     </Card>
   );
@@ -253,7 +287,6 @@ function EnrollmentRow({ projectId, enrollment }: { projectId: string; enrollmen
       {enrollment.stopReason ? <p className="text-sm text-amber-700 dark:text-amber-300">{enrollment.stopReason}</p> : null}
       <ul className="space-y-1">
         {steps.map((step) => <StepLine key={step.id} step={step} />)}
-        {steps.length < enrollment.totalSteps && live ? <li className="text-xs text-muted-foreground">{enrollment.totalSteps - steps.length} more step{enrollment.totalSteps - steps.length === 1 ? "" : "s"} to come</li> : null}
       </ul>
       <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
         {enrollment.creditsCharged ? <span>{enrollment.creditsCharged} credits</span> : <span>Not charged yet</span>}
@@ -298,46 +331,20 @@ function ReplyCard({ projectId, reply }: { projectId: string; reply: OutreachRep
 /* Sequence                                                                  */
 /* ------------------------------------------------------------------------ */
 
-const KINDS: OutreachStepKind[] = ["EMAIL", "EMAIL_FOLLOW_UP", "LINKEDIN_INVITATION", "LINKEDIN_MESSAGE"];
-
-function SequenceEditor({ projectId, sequence }: { projectId: string; sequence: OutreachSequence }) {
+function WritingSettings({ projectId, sequence }: { projectId: string; sequence: OutreachSequence }) {
   const queryClient = useQueryClient();
   const update = useUpdateOutreachSequence();
-  const [steps, setSteps] = useState<OutreachSequenceStep[]>(sequence.steps);
   const [masterPrompt, setMasterPrompt] = useState(sequence.masterPrompt);
   const [signature, setSignature] = useState(sequence.signature);
   const [complianceFooter, setComplianceFooter] = useState(sequence.complianceFooter);
-  useEffect(() => { setSteps(sequence.steps); setMasterPrompt(sequence.masterPrompt); setSignature(sequence.signature); setComplianceFooter(sequence.complianceFooter); }, [sequence.id, sequence.updatedAt]);
-  const dirty = JSON.stringify({ steps, masterPrompt, signature, complianceFooter }) !== JSON.stringify({ steps: sequence.steps, masterPrompt: sequence.masterPrompt, signature: sequence.signature, complianceFooter: sequence.complianceFooter });
-  const patch = (index: number, next: Partial<OutreachSequenceStep>) => setSteps((prev) => prev.map((step, i) => (i === index ? { ...step, ...next } : step)));
-  const save = () => update.mutate({ projectId, data: { steps, masterPrompt, signature, complianceFooter } }, {
-    onSuccess: () => { toast.success("Sequence saved; it applies to contacts enrolled from now on"); void queryClient.invalidateQueries({ queryKey: getGetOutreachSequenceQueryKey(projectId) }); },
-    onError: (error) => toast.error(failMessage(error, "Could not save the sequence")),
+  useEffect(() => { setMasterPrompt(sequence.masterPrompt); setSignature(sequence.signature); setComplianceFooter(sequence.complianceFooter); }, [sequence.id, sequence.updatedAt]);
+  const dirty = masterPrompt !== sequence.masterPrompt || signature !== sequence.signature || complianceFooter !== sequence.complianceFooter;
+  const save = () => update.mutate({ projectId, data: { masterPrompt, signature, complianceFooter } }, {
+    onSuccess: () => { toast.success("Saved; it applies to drafts written from now on"); void queryClient.invalidateQueries({ queryKey: getGetOutreachSequenceQueryKey(projectId) }); },
+    onError: (error) => toast.error(failMessage(error, "Could not save")),
   });
   return (
     <div className="space-y-6">
-      <Card className="p-4 space-y-3">
-        <div>
-          <h3 className="font-medium">Steps</h3>
-          <p className="text-sm text-muted-foreground">The first step is always approved by a person before it goes. Later steps go on their own unless you tick approval, and only if the contact has not replied.</p>
-        </div>
-        <div className="space-y-2">
-          {steps.map((step, index) => (
-            <div key={index} className="flex flex-wrap items-center gap-2 rounded-md border p-2 text-sm">
-              <span className="w-6 text-center text-muted-foreground">{index + 1}</span>
-              <select className="rounded-md border bg-background px-2 py-1" value={step.kind} onChange={(e) => patch(index, { kind: e.target.value as OutreachStepKind })}>
-                {KINDS.map((kind) => <option key={kind} value={kind}>{KIND_LABEL[kind]}</option>)}
-              </select>
-              {index === 0 ? <span className="text-muted-foreground">as soon as approved</span> : (
-                <label className="flex items-center gap-1">after <Input type="number" min={1} max={60} className="h-8 w-16" value={step.delayDays} onChange={(e) => patch(index, { delayDays: Number(e.target.value) })} /> day{step.delayDays === 1 ? "" : "s"}</label>
-              )}
-              <label className="ml-auto flex items-center gap-2"><Switch checked={index === 0 ? true : step.requiresApproval} disabled={index === 0} onCheckedChange={(checked) => patch(index, { requiresApproval: checked })} />Approve first</label>
-              {index > 0 ? <Button size="sm" variant="ghost" onClick={() => setSteps((prev) => prev.filter((_, i) => i !== index))}><Trash2 className="h-3.5 w-3.5" /></Button> : null}
-            </div>
-          ))}
-        </div>
-        {steps.length < 8 ? <Button size="sm" variant="outline" onClick={() => setSteps((prev) => [...prev, { kind: "EMAIL_FOLLOW_UP", delayDays: 3, requiresApproval: false, condition: "NO_REPLY" }])}><Plus className="mr-1 h-3.5 w-3.5" />Add a step</Button> : null}
-      </Card>
       <Card className="p-4 space-y-3">
         <div>
           <h3 className="font-medium">How JYRA writes</h3>
@@ -345,11 +352,11 @@ function SequenceEditor({ projectId, sequence }: { projectId: string; sequence: 
         </div>
         <Textarea rows={5} value={masterPrompt} onChange={(e) => setMasterPrompt(e.target.value)} />
         <div className="grid gap-3 md:grid-cols-2">
-          <div className="space-y-1"><Label>Signature (added to emails and messages)</Label><Textarea rows={3} value={signature} onChange={(e) => setSignature(e.target.value)} placeholder={"Anil\nAadit · aadit.net"} /></div>
+          <div className="space-y-1"><Label>Signature (added to emails and LinkedIn messages)</Label><Textarea rows={3} value={signature} onChange={(e) => setSignature(e.target.value)} placeholder={"Anil\nAadit · aadit.net"} /></div>
           <div className="space-y-1"><Label>Compliance footer (emails only)</Label><Textarea rows={3} value={complianceFooter} onChange={(e) => setComplianceFooter(e.target.value)} placeholder="If this is not relevant, reply and I will not write again." /></div>
         </div>
       </Card>
-      <div className="flex justify-end"><Button onClick={save} disabled={!dirty || update.isPending}>{update.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}Save sequence</Button></div>
+      <div className="flex justify-end"><Button onClick={save} disabled={!dirty || update.isPending}>{update.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}Save</Button></div>
     </div>
   );
 }
@@ -359,13 +366,13 @@ function SequenceEditor({ projectId, sequence }: { projectId: string; sequence: 
 /* ------------------------------------------------------------------------ */
 
 export default function OutreachPage() {
-  const { activeProjectId } = useWorkspace();
+  const { activeProjectId, activeOrganizationId } = useWorkspace();
   const projectId = activeProjectId ?? "";
   const [enrolling, setEnrolling] = useState(false);
   const enrollments = useListOutreachEnrollments(projectId, { limit: 300 }, {
     query: {
       enabled: Boolean(projectId), queryKey: getListOutreachEnrollmentsQueryKey(projectId),
-      refetchInterval: (state) => (state.state.data?.enrollments.some((e) => e.status === "DRAFTING") ? 5_000 : 60_000),
+      refetchInterval: (state) => (state.state.data?.enrollments.some((e) => e.status === "DRAFTING" || (e.steps ?? []).some((step) => step.status === "DRAFTING")) ? 5_000 : 60_000),
     },
   });
   const replies = useListOutreachReplies(projectId, { query: { enabled: Boolean(projectId), queryKey: getListOutreachRepliesQueryKey(projectId), refetchInterval: 60_000 } });
@@ -373,9 +380,10 @@ export default function OutreachPage() {
 
   if (!activeProjectId) return <div className="p-6 text-muted-foreground">Pick a project to run outreach for.</div>;
   const all = enrollments.data?.enrollments ?? [];
-  const queue = all.filter((e) => e.status === "AWAITING_APPROVAL" && e.currentStepDraft);
-  const writing = all.filter((e) => e.status === "DRAFTING").length;
-  const inSequence = all.filter((e) => e.status !== "AWAITING_APPROVAL" && e.status !== "DRAFTING");
+  const waiting = (e: OutreachEnrollment) => (e.status === "AWAITING_APPROVAL" || e.status === "ACTIVE" || e.status === "DRAFTING") && (e.steps ?? []).some((step) => OPEN_DRAFT.has(step.status));
+  const queue = all.filter(waiting);
+  const writing = all.filter((e) => (e.steps ?? []).some((step) => step.status === "DRAFTING")).length;
+  const inProgress = all.filter((e) => e.status !== "DRAFTING" && !(e.status === "AWAITING_APPROVAL"));
   const counts = enrollments.data?.counts;
   const unread = replies.data?.unread ?? 0;
 
@@ -384,17 +392,17 @@ export default function OutreachPage() {
       <div className="flex flex-wrap items-start gap-3">
         <div>
           <h1 className="text-2xl font-semibold">Outreach</h1>
-          <p className="text-sm text-muted-foreground">Every first message is written from the evidence and waits for you. Sent from your own accounts, in the contact's working hours, a few at a time. <Link href="/settings?tab=accounts" className="underline">Connected accounts</Link></p>
+          <p className="text-sm text-muted-foreground">Pick the companies and how to reach them — email, LinkedIn, WhatsApp, or all at once. Every message is written from the evidence and waits for you; sent from your own accounts, in the contact's working hours, a few at a time. <Link href="/settings?tab=accounts" className="underline">Connected accounts</Link></p>
         </div>
-        <Button className="ml-auto" onClick={() => setEnrolling(true)}><Plus className="mr-2 h-4 w-4" />Enrol companies</Button>
+        <Button className="ml-auto" onClick={() => setEnrolling(true)}><Plus className="mr-2 h-4 w-4" />Reach out</Button>
       </div>
 
       <Tabs defaultValue="approve">
         <TabsList>
-          <TabsTrigger value="approve">Approve{counts?.awaitingApproval ? <Badge variant="secondary" className="ml-2">{counts.awaitingApproval}</Badge> : null}</TabsTrigger>
-          <TabsTrigger value="sequence">In sequence{counts?.active ? <Badge variant="secondary" className="ml-2">{counts.active}</Badge> : null}</TabsTrigger>
+          <TabsTrigger value="approve">Approve{queue.length ? <Badge variant="secondary" className="ml-2">{queue.length}</Badge> : null}</TabsTrigger>
+          <TabsTrigger value="sequence">In progress{counts?.active ? <Badge variant="secondary" className="ml-2">{counts.active}</Badge> : null}</TabsTrigger>
           <TabsTrigger value="replies">Replies{unread ? <Badge className="ml-2">{unread}</Badge> : null}</TabsTrigger>
-          <TabsTrigger value="settings">Sequence</TabsTrigger>
+          <TabsTrigger value="settings">Writing</TabsTrigger>
         </TabsList>
 
         <TabsContent value="approve" className="space-y-3">
@@ -402,15 +410,15 @@ export default function OutreachPage() {
           {enrollments.isLoading ? <Skeleton className="h-40 w-full" /> : null}
           {!enrollments.isLoading && queue.length === 0 && !writing ? (
             <Card className="p-8 text-center text-sm text-muted-foreground">
-              <Inbox className="mx-auto mb-2 h-6 w-6" />Nothing waiting for you. Enrol companies and the first drafts land here.
+              <Inbox className="mx-auto mb-2 h-6 w-6" />Nothing waiting for you. Pick companies with Reach out and the drafts land here.
             </Card>
           ) : null}
           {queue.map((enrollment) => <DraftCard key={enrollment.id} projectId={projectId} enrollment={enrollment} />)}
         </TabsContent>
 
         <TabsContent value="sequence" className="space-y-3">
-          {inSequence.length === 0 && !enrollments.isLoading ? <Card className="p-8 text-center text-sm text-muted-foreground">No one is in the sequence yet.</Card> : null}
-          {inSequence.map((enrollment) => <EnrollmentRow key={enrollment.id} projectId={projectId} enrollment={enrollment} />)}
+          {inProgress.length === 0 && !enrollments.isLoading ? <Card className="p-8 text-center text-sm text-muted-foreground">Nothing approved yet.</Card> : null}
+          {inProgress.map((enrollment) => <EnrollmentRow key={enrollment.id} projectId={projectId} enrollment={enrollment} />)}
         </TabsContent>
 
         <TabsContent value="replies" className="space-y-3">
@@ -420,11 +428,11 @@ export default function OutreachPage() {
         </TabsContent>
 
         <TabsContent value="settings">
-          {sequence.data ? <SequenceEditor projectId={projectId} sequence={sequence.data} /> : <Skeleton className="h-40 w-full" />}
+          {sequence.data ? <WritingSettings projectId={projectId} sequence={sequence.data} /> : <Skeleton className="h-40 w-full" />}
         </TabsContent>
       </Tabs>
 
-      <EnrolDialog projectId={projectId} open={enrolling} onClose={() => setEnrolling(false)} />
+      <EnrolDialog projectId={projectId} organizationId={activeOrganizationId ?? ""} open={enrolling} onClose={() => setEnrolling(false)} />
     </div>
   );
 }

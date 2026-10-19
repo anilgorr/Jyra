@@ -170,11 +170,11 @@ export type OutreachEvent = typeof outreachEventsTable.$inferSelect;
  * the two.
  */
 
-export const OUTREACH_STEP_KINDS = ["EMAIL", "EMAIL_FOLLOW_UP", "LINKEDIN_INVITATION", "LINKEDIN_MESSAGE"] as const;
+export const OUTREACH_STEP_KINDS = ["EMAIL", "EMAIL_FOLLOW_UP", "LINKEDIN_INVITATION", "LINKEDIN_MESSAGE", "WHATSAPP_MESSAGE"] as const;
 export type OutreachStepKind = (typeof OUTREACH_STEP_KINDS)[number];
 
 export const STEP_KIND_CHANNEL: Record<OutreachStepKind, OutreachChannel> = {
-  EMAIL: "EMAIL", EMAIL_FOLLOW_UP: "EMAIL", LINKEDIN_INVITATION: "LINKEDIN", LINKEDIN_MESSAGE: "LINKEDIN",
+  EMAIL: "EMAIL", EMAIL_FOLLOW_UP: "EMAIL", LINKEDIN_INVITATION: "LINKEDIN", LINKEDIN_MESSAGE: "LINKEDIN", WHATSAPP_MESSAGE: "WHATSAPP",
 };
 
 /** One step of a sequence, as the customer configures it. */
@@ -225,6 +225,8 @@ export type EnrollmentContact = {
   title: string | null;
   email: string | null;
   linkedinUrl: string | null;
+  /** As held on the buying committee, any format; WhatsApp addresses the digits in international form. */
+  phone?: string | null;
   /** The provider's own id for the LinkedIn profile, once resolved (phase 2 uses it for messages after acceptance). */
   linkedinProviderId?: string | null;
 };

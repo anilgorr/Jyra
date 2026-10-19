@@ -3,13 +3,13 @@ import {
   companiesTable, companyFactsTable, db, outreachEnrollmentsTable, outreachSequencesTable, outreachStepsTable, outreachSuppressionsTable, peopleTable,
   projectCompaniesTable, projectPersonContextTable, senderAccountsTable, signalDefinitionsTable, signalsTable,
   ENROLLMENT_LIVE_STATUSES, STEP_KIND_CHANNEL,
-  type EnrollmentBasis, type EnrollmentContact, type OutreachChannel, type OutreachEnrollment, type OutreachSequence, type OutreachStep, type OutreachStepKind, type SenderAccount, type SuppressionKind,
+  type EnrollmentBasis, type EnrollmentContact, type OutreachChannel, type OutreachEnrollment, type OutreachSequence, type OutreachStep, type OutreachStepKind, type SenderAccount, type SequenceStep, type SuppressionKind,
 } from "@workspace/db";
 import { logger } from "../logger";
 import { resolveProjectSellerContext } from "../seller-context";
 import { whyBullets } from "../instant-leads/run";
 import { writeDraft, DraftError, type DraftWriter, type SellerBrief } from "./drafter";
-import { channelsRequired, ensureProjectSequence } from "./sequences";
+import { ensureProjectSequence } from "./sequences";
 
 /**
  * Enrolment: from "these companies" to a contact, a sender, a frozen basis,
@@ -32,7 +32,7 @@ import { channelsRequired, ensureProjectSequence } from "./sequences";
 
 export type EnrollRefusal = { projectCompanyId: string; companyName: string; code: "NO_CONTACT" | "NO_ADDRESS" | "ALREADY_ENROLLED" | "SUPPRESSED" | "NO_SENDER" | "COMPETITOR" | "NO_EVIDENCE"; message: string };
 
-export type EnrollReport = { enrolled: OutreachEnrollment[]; refused: EnrollRefusal[] };
+export type EnrollReport = { enrolled: OutreachEnrollment[]; refused: EnrollRefusal[]; warnings: EnrollWarning[] };
 
 const emailDomain = (email: string) => email.toLowerCase().split("@")[1] ?? "";
 
@@ -56,33 +56,39 @@ export async function isSuppressed(organizationId: string, contact: Pick<Enrollm
   return hit ? { suppressed: true, reason: `${hit.reason.toLowerCase()}${hit.note ? `: ${hit.note}` : ""}` } : { suppressed: false, reason: null };
 }
 
-/** The buying-committee person to write to, for one project company. */
-export async function pickContact(projectCompanyId: string, needs: OutreachChannel[]): Promise<{ contact: EnrollmentContact; personId: string } | null> {
+const digits = (value: string | null | undefined) => (value ?? "").replace(/\D+/g, "");
+
+/** The buying-committee person to write to, for one project company, reachable on at least one of the channels asked for. */
+export async function pickContact(projectCompanyId: string, channels: OutreachChannel[]): Promise<{ contact: EnrollmentContact; personId: string } | null> {
   const rows = await db.select({ context: projectPersonContextTable, person: peopleTable })
     .from(projectPersonContextTable).innerJoin(peopleTable, eq(peopleTable.id, projectPersonContextTable.personId))
     .where(eq(projectPersonContextTable.projectCompanyId, projectCompanyId));
   const priorityRank = { HIGH: 0, MEDIUM: 1, LOW: 2 } as const;
   const roleRank: Record<string, number> = { ECONOMIC_BUYER: 0, CHAMPION: 1, TECHNICAL_EVALUATOR: 2, INFLUENCER: 3, USER: 4, PROCUREMENT: 5, OTHER: 6 };
-  const reachable = (row: (typeof rows)[number]) => {
-    const email = row.context.email && row.context.emailStatus !== "INVALID" ? row.context.email : null;
-    const linkedin = row.person.profileUrl && /linkedin\.com\/in\//i.test(row.person.profileUrl) ? row.person.profileUrl : null;
-    const first = needs[0];
-    if (first === "EMAIL" && !email) return null;
-    if (first === "LINKEDIN" && !linkedin) return null;
-    return { email, linkedin };
-  };
+  const reach = (row: (typeof rows)[number]) => ({
+    email: row.context.email && row.context.emailStatus !== "INVALID" ? row.context.email : null,
+    linkedin: row.person.profileUrl && /linkedin\.com\/in\//i.test(row.person.profileUrl) ? row.person.profileUrl : null,
+    phone: row.context.phone && row.context.phoneStatus !== "INVALID" && digits(row.context.phone).length >= 8 ? row.context.phone : null,
+  });
+  const reachableOn = (r: ReturnType<typeof reach>) => channels.filter((channel) => (channel === "EMAIL" && r.email) || (channel === "LINKEDIN" && r.linkedin) || (channel === "WHATSAPP" && r.phone)).length;
   const candidates = rows
-    .map((row) => ({ row, reach: reachable(row) }))
-    .filter((entry): entry is { row: (typeof rows)[number]; reach: { email: string | null; linkedin: string | null } } => entry.reach !== null)
-    .sort((a, b) => (priorityRank[a.row.context.priority] - priorityRank[b.row.context.priority]) || ((roleRank[a.row.context.role] ?? 9) - (roleRank[b.row.context.role] ?? 9)) || ((a.row.context.emailStatus === "VERIFIED" ? 0 : 1) - (b.row.context.emailStatus === "VERIFIED" ? 0 : 1)));
+    .map((row) => ({ row, reach: reach(row) }))
+    .filter((entry) => reachableOn(entry.reach) > 0)
+    .sort((a, b) => (priorityRank[a.row.context.priority] - priorityRank[b.row.context.priority]) || ((roleRank[a.row.context.role] ?? 9) - (roleRank[b.row.context.role] ?? 9)) || (reachableOn(b.reach) - reachableOn(a.reach)) || ((a.row.context.emailStatus === "VERIFIED" ? 0 : 1) - (b.row.context.emailStatus === "VERIFIED" ? 0 : 1)));
   const best = candidates[0];
   if (!best) return null;
   const name = best.row.person.canonicalName.trim();
   return {
     personId: best.row.person.id,
-    contact: { name, firstName: name.split(/\s+/)[0] ?? null, title: best.row.person.defaultTitle ?? null, email: best.reach.email, linkedinUrl: best.reach.linkedin },
+    contact: { name, firstName: name.split(/\s+/)[0] ?? null, title: best.row.person.defaultTitle ?? null, email: best.reach.email, linkedinUrl: best.reach.linkedin, phone: best.reach.phone },
   };
 }
+
+/** The step kind a channel's first touch takes. */
+export const FIRST_TOUCH_KIND: Record<OutreachChannel, OutreachStepKind | null> = { EMAIL: "EMAIL", LINKEDIN: "LINKEDIN_INVITATION", WHATSAPP: "WHATSAPP_MESSAGE", INSTAGRAM: null };
+const CHANNEL_ORDER: OutreachChannel[] = ["EMAIL", "LINKEDIN", "WHATSAPP", "INSTAGRAM"];
+const CHANNEL_WORD: Record<OutreachChannel, string> = { EMAIL: "email", LINKEDIN: "LinkedIn", WHATSAPP: "WhatsApp", INSTAGRAM: "Instagram" };
+const contactHas = (contact: EnrollmentContact, channel: OutreachChannel) => (channel === "EMAIL" ? Boolean(contact.email) : channel === "LINKEDIN" ? Boolean(contact.linkedinUrl) : channel === "WHATSAPP" ? Boolean(contact.phone) : false);
 
 /** The why-bullets for each company, from its active positive signals, the way Instant Leads ranks them. */
 export async function basisFor(projectId: string, projectCompanyIds: string[], now: Date): Promise<Map<string, EnrollmentBasis & { competitor: boolean }>> {
@@ -146,18 +152,27 @@ export async function sellerBriefFor(projectId: string, organizationId: string, 
 
 export type EnrollDeps = { now?: () => Date; writer?: DraftWriter; draftInBackground?: boolean; senderName?: string | null };
 
+export type EnrollWarning = { projectCompanyId: string; companyName: string; message: string };
+
+/**
+ * The customer chooses the channels for this enrolment; every one of them is
+ * a first touch, drafted now and sent the day it is approved. There is no
+ * chain: nothing follows unless the customer enrols the contact again.
+ */
 export async function enrollCompanies(
-  input: { organizationId: string; projectId: string; userId: string; projectCompanyIds: string[] },
+  input: { organizationId: string; projectId: string; userId: string; projectCompanyIds: string[]; channels: OutreachChannel[] },
   deps: EnrollDeps = {},
 ): Promise<EnrollReport> {
   const now = deps.now?.() ?? new Date();
   const sequence = await ensureProjectSequence({ organizationId: input.organizationId, projectId: input.projectId, userId: input.userId });
-  const needs = channelsRequired(sequence.steps);
+  const channels = CHANNEL_ORDER.filter((channel) => input.channels.includes(channel) && FIRST_TOUCH_KIND[channel]);
+  if (!channels.length) throw new OutreachRequestError("NO_CHANNEL", "Choose at least one way to reach them", 400);
   const senders = await senderAccountsFor(input.organizationId, input.userId);
   const bases = await basisFor(input.projectId, input.projectCompanyIds, now);
   const refused: EnrollRefusal[] = [];
+  const warnings: EnrollWarning[] = [];
   const enrolled: OutreachEnrollment[] = [];
-  const firstChannel = STEP_KIND_CHANNEL[sequence.steps[0]!.kind];
+  const withSender = channels.filter((channel) => senders[channel]);
 
   for (const projectCompanyId of input.projectCompanyIds) {
     const basis = bases.get(projectCompanyId);
@@ -166,38 +181,50 @@ export async function enrollCompanies(
     if (basis.competitor) { refused.push({ projectCompanyId, companyName, code: "COMPETITOR", message: "Marked as a competitor" }); continue; }
     // An ICP-fit line alone is not a reason to write; the draft needs something that happened at the company.
     if (!basis.signalCodes.length) { refused.push({ projectCompanyId, companyName, code: "NO_EVIDENCE", message: "No active signal to write from; the draft would have nothing to say" }); continue; }
-    if (!senders[firstChannel]) { refused.push({ projectCompanyId, companyName, code: "NO_SENDER", message: `Connect your ${firstChannel === "EMAIL" ? "email" : "LinkedIn"} first (Settings → Connected accounts)` }); continue; }
-    const picked = await pickContact(projectCompanyId, needs);
-    if (!picked) { refused.push({ projectCompanyId, companyName, code: "NO_ADDRESS", message: firstChannel === "EMAIL" ? "No contact with an email address" : "No contact with a LinkedIn profile" }); continue; }
+    if (!withSender.length) { refused.push({ projectCompanyId, companyName, code: "NO_SENDER", message: `Connect your ${channels.map((c) => CHANNEL_WORD[c]).join(" or ")} first (Settings → Connected accounts)` }); continue; }
+    const picked = await pickContact(projectCompanyId, withSender);
+    if (!picked) { refused.push({ projectCompanyId, companyName, code: "NO_ADDRESS", message: `No contact reachable by ${withSender.map((c) => CHANNEL_WORD[c]).join(" or ")}` }); continue; }
     const live = await db.select({ id: outreachEnrollmentsTable.id }).from(outreachEnrollmentsTable)
       .where(and(eq(outreachEnrollmentsTable.organizationId, input.organizationId), eq(outreachEnrollmentsTable.personId, picked.personId), inArray(outreachEnrollmentsTable.status, [...ENROLLMENT_LIVE_STATUSES]))).limit(1);
-    if (live.length) { refused.push({ projectCompanyId, companyName, code: "ALREADY_ENROLLED", message: `${picked.contact.name} is already in a sequence` }); continue; }
+    if (live.length) { refused.push({ projectCompanyId, companyName, code: "ALREADY_ENROLLED", message: `${picked.contact.name} is already in outreach` }); continue; }
     const suppression = await isSuppressed(input.organizationId, picked.contact, picked.personId);
     if (suppression.suppressed) { refused.push({ projectCompanyId, companyName, code: "SUPPRESSED", message: `${picked.contact.name} is on the do-not-contact list (${suppression.reason})` }); continue; }
 
+    const usable = channels.filter((channel) => senders[channel] && contactHas(picked.contact, channel));
+    const dropped = channels.filter((channel) => !usable.includes(channel));
+    if (dropped.length) {
+      const reasons = dropped.map((channel) => `${CHANNEL_WORD[channel]} (${senders[channel] ? `no ${channel === "EMAIL" ? "address" : channel === "LINKEDIN" ? "profile" : "phone number"} for ${picked.contact.name}` : "not connected"})`);
+      warnings.push({ projectCompanyId, companyName, message: `Going by ${usable.map((c) => CHANNEL_WORD[c]).join(" and ")} only; skipped ${reasons.join(", ")}` });
+    }
     const [companyRow] = await db.select({ companyId: projectCompaniesTable.companyId }).from(projectCompaniesTable).where(eq(projectCompaniesTable.id, projectCompanyId)).limit(1);
     const senderAccounts: Partial<Record<OutreachChannel, string>> = {};
-    for (const channel of needs) if (senders[channel]) senderAccounts[channel] = senders[channel]!.id;
+    for (const channel of usable) senderAccounts[channel] = senders[channel]!.id;
+    const steps: SequenceStep[] = usable.map((channel) => ({ kind: FIRST_TOUCH_KIND[channel]!, delayDays: 0, requiresApproval: true, condition: "ALWAYS" }));
     const { competitor: _competitor, ...frozen } = basis;
     const [enrollment] = await db.insert(outreachEnrollmentsTable).values({
       organizationId: input.organizationId, projectId: input.projectId, sequenceId: sequence.id, projectCompanyId, companyId: companyRow!.companyId,
-      personId: picked.personId, contact: picked.contact, senderAccounts, steps: sequence.steps, basis: frozen,
+      personId: picked.personId, contact: picked.contact, senderAccounts, steps, basis: frozen,
       status: "DRAFTING", currentStep: 0, createdByUserId: input.userId, createdAt: now, updatedAt: now,
     }).returning();
-    await db.insert(outreachStepsTable).values({
-      enrollmentId: enrollment!.id, organizationId: input.organizationId, stepIndex: 0, kind: sequence.steps[0]!.kind, channel: firstChannel, status: "DRAFTING", createdAt: now, updatedAt: now,
-    });
+    for (const [index, step] of steps.entries()) {
+      await db.insert(outreachStepsTable).values({
+        enrollmentId: enrollment!.id, organizationId: input.organizationId, stepIndex: index, kind: step.kind, channel: STEP_KIND_CHANNEL[step.kind], status: "DRAFTING", createdAt: now, updatedAt: now,
+      });
+    }
     enrolled.push(enrollment!);
   }
 
   const drafting = async () => {
     for (const enrollment of enrolled) {
-      try { await draftStep({ enrollment, stepIndex: 0, sequence }, deps); }
-      catch (error) { logger.warn({ enrollmentId: enrollment.id, err: error }, "OUTREACH_DRAFT_FAILED"); }
+      for (let index = 0; index < enrollment.steps.length; index += 1) {
+        try { await draftStep({ enrollment, stepIndex: index, sequence }, deps); }
+        catch (error) { logger.warn({ enrollmentId: enrollment.id, stepIndex: index, err: error }, "OUTREACH_DRAFT_FAILED"); }
+      }
+      await settleEnrollment(enrollment.id, now);
     }
   };
   if (deps.draftInBackground) void drafting(); else await drafting();
-  return { enrolled, refused };
+  return { enrolled, refused, warnings };
 }
 
 /** Write (or rewrite) one step's draft. Leaves the step AWAITING_APPROVAL, or APPROVED when the sequence says no approval is needed, or FAILED with the reason. */
@@ -223,11 +250,6 @@ export async function draftStep(
   const nothingSentYet = prior.length === 0;
   const kind: OutreachStepKind = plan.kind === "EMAIL_FOLLOW_UP" && !prior.some((step) => STEP_KIND_CHANNEL[step.kind] === "EMAIL") ? "EMAIL" : plan.kind;
   const needsPerson = plan.requiresApproval || nothingSentYet;
-  const waitForPerson = async () => {
-    if (enrollment.status === "DRAFTING" || enrollment.status === "ACTIVE" || enrollment.status === "AWAITING_APPROVAL") {
-      await db.update(outreachEnrollmentsTable).set({ status: "AWAITING_APPROVAL", nextActionAt: null, updatedAt: now }).where(eq(outreachEnrollmentsTable.id, enrollment.id));
-    }
-  };
   const senderName = deps.senderName ?? null;
   const seller = await sellerBriefFor(enrollment.projectId, enrollment.organizationId, senderName);
   try {
@@ -241,12 +263,10 @@ export async function draftStep(
       kind, subject: draft.subject, body: draft.body, draftSource: source, status, error: null, updatedAt: now,
       ...(status === "APPROVED" ? { approvedAt: now, approvedByUserId: null } : {}),
     }).where(eq(outreachStepsTable.id, existing.id)).returning();
-    if (status === "AWAITING_APPROVAL") await waitForPerson();
     return updated!;
   } catch (error) {
     const message = error instanceof DraftError ? error.message : (error instanceof Error ? error.message : String(error));
     const [failed] = await db.update(outreachStepsTable).set({ kind, status: "FAILED", error: message.slice(0, 1000), updatedAt: now }).where(eq(outreachStepsTable.id, existing.id)).returning();
-    await waitForPerson();
     return failed!;
   }
 }
@@ -282,7 +302,7 @@ export async function approveStep(input: { organizationId: string; stepId: strin
     draftSource: step.draftSource ? { ...step.draftSource, edited: step.draftSource.edited || edited } : { model: null, promptVersion: "manual", evidence: enrollment.basis.why, generatedAt: now.toISOString(), edited: true },
     updatedAt: now,
   }).where(eq(outreachStepsTable.id, step.id)).returning();
-  await db.update(outreachEnrollmentsTable).set({ status: "ACTIVE", nextActionAt: scheduledFor, stopReason: null, updatedAt: now }).where(eq(outreachEnrollmentsTable.id, enrollment.id));
+  await db.update(outreachEnrollmentsTable).set({ status: "ACTIVE", nextActionAt: enrollment.nextActionAt && enrollment.nextActionAt < scheduledFor ? enrollment.nextActionAt : scheduledFor, stopReason: null, updatedAt: now }).where(eq(outreachEnrollmentsTable.id, enrollment.id));
   return updated!;
 }
 
@@ -290,7 +310,9 @@ export async function regenerateStep(input: { organizationId: string; stepId: st
   const { step, enrollment } = await loadStep(input.organizationId, input.stepId);
   if (step.status === "SENT") throw new OutreachRequestError("ALREADY_SENT", "This message has already been sent", 409);
   const [sequence] = await db.select().from(outreachSequencesTable).where(eq(outreachSequencesTable.id, enrollment.sequenceId)).limit(1);
-  return draftStep({ enrollment, stepIndex: step.stepIndex, sequence: sequence!, force: true }, deps);
+  const drafted = await draftStep({ enrollment, stepIndex: step.stepIndex, sequence: sequence!, force: true }, deps);
+  await settleEnrollment(enrollment.id, deps.now?.() ?? new Date());
+  return drafted;
 }
 
 /** Skip one step; the sequence moves on to the next, or ends. */
@@ -299,7 +321,8 @@ export async function skipStep(input: { organizationId: string; stepId: string; 
   const { step, enrollment } = await loadStep(input.organizationId, input.stepId);
   if (step.status === "SENT") throw new OutreachRequestError("ALREADY_SENT", "This message has already been sent", 409);
   await db.update(outreachStepsTable).set({ status: "SKIPPED", updatedAt: now }).where(eq(outreachStepsTable.id, step.id));
-  return advanceEnrollment({ enrollment, afterStepIndex: step.stepIndex, at: now, sentAt: enrollment.lastOutboundAt ?? now }, deps);
+  void deps.writer;
+  return settleEnrollment(enrollment.id, now);
 }
 
 export async function stopEnrollment(input: { organizationId: string; enrollmentId: string; reason: string }, deps: { now?: () => Date } = {}): Promise<OutreachEnrollment> {
@@ -332,40 +355,25 @@ export async function cancelPendingSteps(enrollmentId: string, now: Date): Promi
   return rows.length;
 }
 
+const OPEN_STEP_STATUSES = new Set(["DRAFTING", "AWAITING_APPROVAL", "FAILED"]);
+
 /**
- * After a step is sent or skipped: create the next step's row, draft it now
- * (so a follow-up is readable and editable before its day comes), and set
- * when it may go. A NO_REPLY step after a reply never gets created; the
- * enrolment is REPLIED by then and the pacer does not look at it.
+ * The enrolment's status follows its steps. Something approved and not yet
+ * sent: ACTIVE, the pacer's. Only drafts waiting on a person: AWAITING_APPROVAL.
+ * Nothing left to send: COMPLETED. A paused, stopped, replied or bounced
+ * enrolment is left alone; those are decided elsewhere.
  */
-export async function advanceEnrollment(
-  input: { enrollment: OutreachEnrollment; afterStepIndex: number; at: Date; sentAt: Date },
-  deps: { now?: () => Date; writer?: DraftWriter; senderName?: string | null } = {},
-): Promise<OutreachEnrollment> {
-  const nextIndex = input.afterStepIndex + 1;
-  const plan = input.enrollment.steps[nextIndex];
-  if (!plan) {
-    const [done] = await db.update(outreachEnrollmentsTable).set({ status: "COMPLETED", currentStep: nextIndex, nextActionAt: null, updatedAt: input.at }).where(eq(outreachEnrollmentsTable.id, input.enrollment.id)).returning();
-    return done!;
-  }
-  const scheduledFor = new Date(input.sentAt.getTime() + plan.delayDays * 24 * 60 * 60 * 1000);
-  const channel = STEP_KIND_CHANNEL[plan.kind];
-  const [existing] = await db.select({ id: outreachStepsTable.id }).from(outreachStepsTable).where(and(eq(outreachStepsTable.enrollmentId, input.enrollment.id), eq(outreachStepsTable.stepIndex, nextIndex))).limit(1);
-  if (!existing) {
-    await db.insert(outreachStepsTable).values({
-      enrollmentId: input.enrollment.id, organizationId: input.enrollment.organizationId, stepIndex: nextIndex, kind: plan.kind, channel, status: "DRAFTING", scheduledFor, createdAt: input.at, updatedAt: input.at,
-    });
-  }
-  const [updated] = await db.update(outreachEnrollmentsTable).set({ currentStep: nextIndex, nextActionAt: scheduledFor, updatedAt: input.at }).where(eq(outreachEnrollmentsTable.id, input.enrollment.id)).returning();
-  // The sender for this channel must exist; if not, the step waits as FAILED with a plain reason rather than silently vanishing.
-  if (!input.enrollment.senderAccounts[channel]) {
-    await db.update(outreachStepsTable).set({ status: "FAILED", error: `No connected ${channel === "EMAIL" ? "email" : "LinkedIn"} account to send from`, updatedAt: input.at })
-      .where(and(eq(outreachStepsTable.enrollmentId, input.enrollment.id), eq(outreachStepsTable.stepIndex, nextIndex)));
-    return updated!;
-  }
-  const [sequence] = await db.select().from(outreachSequencesTable).where(eq(outreachSequencesTable.id, input.enrollment.sequenceId)).limit(1);
-  await draftStep({ enrollment: updated!, stepIndex: nextIndex, sequence: sequence! }, deps).catch((error) => logger.warn({ enrollmentId: input.enrollment.id, err: error }, "OUTREACH_FOLLOW_UP_DRAFT_FAILED"));
-  const [after] = await db.select().from(outreachStepsTable).where(and(eq(outreachStepsTable.enrollmentId, input.enrollment.id), eq(outreachStepsTable.stepIndex, nextIndex))).limit(1);
-  if (after && after.status === "APPROVED") await db.update(outreachStepsTable).set({ scheduledFor }).where(eq(outreachStepsTable.id, after.id));
+export async function settleEnrollment(enrollmentId: string, at: Date): Promise<OutreachEnrollment> {
+  const [enrollment] = await db.select().from(outreachEnrollmentsTable).where(eq(outreachEnrollmentsTable.id, enrollmentId)).limit(1);
+  if (!enrollment) throw new OutreachRequestError("NOT_FOUND", "That enrolment was not found", 404);
+  const steps = await db.select().from(outreachStepsTable).where(eq(outreachStepsTable.enrollmentId, enrollmentId));
+  const settled = steps.filter((step) => !OPEN_STEP_STATUSES.has(step.status) && step.status !== "APPROVED").length;
+  if (!["DRAFTING", "AWAITING_APPROVAL", "ACTIVE"].includes(enrollment.status)) return enrollment;
+  const approved = steps.filter((step) => step.status === "APPROVED");
+  const open = steps.some((step) => OPEN_STEP_STATUSES.has(step.status));
+  const next = approved.length ? { status: "ACTIVE" as const, nextActionAt: approved.reduce<Date | null>((soonest, step) => (step.scheduledFor && (!soonest || step.scheduledFor < soonest) ? step.scheduledFor : soonest), null) ?? at }
+    : open ? { status: "AWAITING_APPROVAL" as const, nextActionAt: null }
+    : { status: "COMPLETED" as const, nextActionAt: null };
+  const [updated] = await db.update(outreachEnrollmentsTable).set({ ...next, currentStep: settled, updatedAt: at }).where(eq(outreachEnrollmentsTable.id, enrollment.id)).returning();
   return updated!;
 }

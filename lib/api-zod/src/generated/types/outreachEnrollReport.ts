@@ -6,9 +6,12 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { OutreachEnrollment } from './outreachEnrollment';
+import type { OutreachEnrollWarning } from './outreachEnrollWarning';
 import type { OutreachRefusal } from './outreachRefusal';
 
 export interface OutreachEnrollReport {
   enrolled: OutreachEnrollment[];
   refused: OutreachRefusal[];
+  /** Enrolled, but not on every channel asked for; each says which were skipped and why. */
+  warnings: OutreachEnrollWarning[];
 }

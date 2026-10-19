@@ -11,4 +11,5 @@ export interface OutreachContact {
   title: string | null;
   email: string | null;
   linkedinUrl: string | null;
+  phone: string | null;
 }

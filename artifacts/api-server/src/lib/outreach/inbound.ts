@@ -22,8 +22,8 @@ import type { UnipileEvent } from "./accounts";
  *   tracking.open /   the label we put on the email is the step id.
  *   tracking.click
  *   message.new       a LinkedIn or WhatsApp message from someone other
- *                     than the account owner, in a chat we started or from
- *                     a contact we invited.
+ *                     than the account owner, in a chat we started, from a
+ *                     contact we invited, or from a number we wrote to.
  *
  * A reply ends the sequence at once - pending steps are cancelled before
  * the classifier is even asked - and is then sorted into one of a few
@@ -176,7 +176,11 @@ export async function handleInboundEvent(event: UnipileEvent, deps: InboundDeps 
     }
     if (!enrollment && message.sender_id) {
       const candidates = await db.select().from(outreachEnrollmentsTable).where(eq(outreachEnrollmentsTable.organizationId, account.organizationId)).orderBy(desc(outreachEnrollmentsTable.createdAt)).limit(500);
-      enrollment = candidates.find((candidate) => candidate.contact.linkedinProviderId && candidate.contact.linkedinProviderId === message.sender_id && candidate.senderAccounts[account.channel] === account.id) ?? null;
+      const senderDigits = message.sender_id.replace(/\D+/g, "");
+      enrollment = candidates.find((candidate) => candidate.senderAccounts[account.channel] === account.id && (
+        (candidate.contact.linkedinProviderId && candidate.contact.linkedinProviderId === message.sender_id)
+        || (account.channel === "WHATSAPP" && senderDigits.length >= 8 && (candidate.contact.phone ?? "").replace(/\D+/g, "").endsWith(senderDigits.slice(-10)))
+      )) ?? null;
     }
     if (!enrollment) return { handled: false, note: "message not part of an outreach conversation" };
     return recordReply({

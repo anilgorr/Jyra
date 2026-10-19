@@ -5,7 +5,13 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+import type { EnrollOutreachBodyChannelsItem } from './enrollOutreachBodyChannelsItem';
 
 export type EnrollOutreachBody = {
   projectCompanyIds: string[];
+  /**
+     * How to reach each contact. Every channel chosen is a first touch, sent the day it is approved.
+     * @minItems 1
+     */
+  channels: EnrollOutreachBodyChannelsItem[];
 };

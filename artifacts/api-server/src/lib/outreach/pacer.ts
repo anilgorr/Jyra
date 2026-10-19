@@ -8,13 +8,14 @@ import { logger } from "../logger";
 import { resolveOrganizationPlan } from "../plans";
 import { dailyBudget, withinSendingWindow, type DailyBudget } from "./budgets";
 import { finalBody, type DraftWriter } from "./drafter";
-import { advanceEnrollment, cancelPendingSteps, isSuppressed, linkedinPublicIdentifier } from "./enroll";
+import { cancelPendingSteps, isSuppressed, linkedinPublicIdentifier, settleEnrollment } from "./enroll";
 import { createUnipileClient, UnipileError, type UnipileClient } from "./unipile-client";
 
 /**
  * The pacer. Every few minutes it looks at each connected sender account,
  * works out what that account may still do today, finds the approved steps
- * that are due, and sends a few of them - never all at once, never outside
+ * that are due (every step is its own first touch; several channels for one
+ * contact go the same day, each from its own account), and sends a few of them - never all at once, never outside
  * the recipient's working day, never to someone who has replied, bounced or
  * asked not to be written to since the step was approved.
  *
@@ -39,7 +40,7 @@ import { createUnipileClient, UnipileError, type UnipileClient } from "./unipile
  */
 
 export const PACER_INTERVAL_MS = 5 * 60 * 1000;
-const FIRST_TOUCH_KINDS: ReadonlySet<OutreachStepKind> = new Set(["EMAIL", "LINKEDIN_INVITATION"]);
+const FIRST_TOUCH_KINDS: ReadonlySet<OutreachStepKind> = new Set(["EMAIL", "LINKEDIN_INVITATION", "WHATSAPP_MESSAGE"]);
 
 const COUNTRY_TIMEZONES: Record<string, string> = {
   US: "America/Chicago", CA: "America/Toronto", MX: "America/Mexico_City", BR: "America/Sao_Paulo",
@@ -148,7 +149,6 @@ async function dueSteps(account: SenderAccount, now: Date): Promise<DueStep[]> {
     const enrollment = byId.get(step.enrollmentId);
     if (!enrollment) continue;
     if (enrollment.senderAccounts[account.channel] !== account.id) continue;
-    if (enrollment.currentStep !== step.stepIndex) continue;
     out.push({ step, enrollment, countryIso2: countryById.get(enrollment.companyId) ?? null });
   }
   return out;
@@ -221,6 +221,12 @@ async function sendStep(
         tracking: { opens: true, clicks: true, label: step.id },
       });
       providerMessageId = sent.id; providerThreadId = first?.providerThreadId ?? sent.messageId ?? sent.id; toAddress = enrollment.contact.email;
+    } else if (STEP_KIND_CHANNEL[step.kind] === "WHATSAPP") {
+      // Unipile addresses a WhatsApp user by the phone number in international format, digits only.
+      const number = (enrollment.contact.phone ?? "").replace(/\D+/g, "");
+      if (!number) throw new RecipientError("The contact has no phone number");
+      const chat = await client.startChat(account.unipileAccountId, number, body);
+      providerChatId = chat.chatId; providerMessageId = chat.messageId ?? chat.chatId ?? `wa:${number}:${now.getTime()}`; toAddress = enrollment.contact.phone ?? null;
     } else {
       const handle = linkedinPublicIdentifier(enrollment.contact.linkedinUrl);
       if (!handle) throw new RecipientError("The contact has no LinkedIn profile URL");
@@ -249,9 +255,8 @@ async function sendStep(
       channel: account.channel, direction: "OUTBOUND", stepKind: sentKind, providerMessageId: providerMessageId!, providerThreadId, providerChatId,
       fromAddress: account.displayName, toAddress, subject: step.subject, text: body, occurredAt: now,
     }).onConflictDoNothing();
-    const [fresh] = await db.select().from(outreachEnrollmentsTable).where(eq(outreachEnrollmentsTable.id, enrollment.id)).limit(1);
     await db.update(outreachEnrollmentsTable).set({ lastOutboundAt: now, updatedAt: now }).where(eq(outreachEnrollmentsTable.id, enrollment.id));
-    await advanceEnrollment({ enrollment: { ...(fresh ?? enrollment), lastOutboundAt: now }, afterStepIndex: step.stepIndex, at: now, sentAt: now }, { writer: deps.writer, now: deps.now });
+    await settleEnrollment(enrollment.id, now);
     log.info({ providerMessageId }, "OUTREACH_SENT");
     return "sent";
   } catch (error) {

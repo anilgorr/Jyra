@@ -3354,9 +3354,9 @@ paths:
       tags: [outreach]
       summary: Put companies into the sequence
       description: >-
-        For each company JYRA picks the contact from its buying committee, freezes the evidence the lead was ranked on,
-        and starts writing the first message. Companies it cannot enrol are listed back with the reason; they cost nothing.
-        Drafts arrive within a minute; poll the list.
+        For each company JYRA picks the contact from its buying committee who can be reached on the channels chosen,
+        freezes the evidence the lead was ranked on, and writes one message per channel. Companies it cannot enrol are
+        listed back with the reason; they cost nothing. Drafts arrive within a minute; poll the list.
       security: [{ clerkSession: [] }]
       parameters:
         - { $ref: "#/components/parameters/ProjectId" }
@@ -3367,11 +3367,18 @@ paths:
             schema:
               type: object
               additionalProperties: false
-              required: [projectCompanyIds]
+              required: [projectCompanyIds, channels]
               properties:
                 projectCompanyIds:
                   type: array
                   items: { type: string }
+                channels:
+                  type: array
+                  minItems: 1
+                  description: How to reach each contact. Every channel chosen is a first touch, sent the day it is approved.
+                  items:
+                    type: string
+                    enum: [EMAIL, LINKEDIN, WHATSAPP]
       responses:
         "201":
           description: What was enrolled and what was refused
@@ -3557,7 +3564,7 @@ components:
   schemas:
     OutreachStepKind:
       type: string
-      enum: [EMAIL, EMAIL_FOLLOW_UP, LINKEDIN_INVITATION, LINKEDIN_MESSAGE]
+      enum: [EMAIL, EMAIL_FOLLOW_UP, LINKEDIN_INVITATION, LINKEDIN_MESSAGE, WHATSAPP_MESSAGE]
     OutreachEnrollmentStatus:
       type: string
       enum: [DRAFTING, AWAITING_APPROVAL, ACTIVE, PAUSED, REPLIED, BOUNCED, COMPLETED, STOPPED, FAILED]
@@ -3629,12 +3636,13 @@ components:
     OutreachContact:
       type: object
       additionalProperties: false
-      required: [name, title, email, linkedinUrl]
+      required: [name, title, email, linkedinUrl, phone]
       properties:
         name: { type: string }
         title: { type: string, nullable: true }
         email: { type: string, nullable: true }
         linkedinUrl: { type: string, nullable: true }
+        phone: { type: string, nullable: true }
     OutreachMessage:
       type: object
       additionalProperties: false
@@ -3724,10 +3732,18 @@ components:
           type: string
           enum: [NO_CONTACT, NO_ADDRESS, ALREADY_ENROLLED, SUPPRESSED, NO_SENDER, COMPETITOR, NO_EVIDENCE]
         message: { type: string }
+    OutreachEnrollWarning:
+      type: object
+      additionalProperties: false
+      required: [projectCompanyId, companyName, message]
+      properties:
+        projectCompanyId: { type: string }
+        companyName: { type: string }
+        message: { type: string }
     OutreachEnrollReport:
       type: object
       additionalProperties: false
-      required: [enrolled, refused]
+      required: [enrolled, refused, warnings]
       properties:
         enrolled:
           type: array
@@ -3735,6 +3751,10 @@ components:
         refused:
           type: array
           items: { $ref: "#/components/schemas/OutreachRefusal" }
+        warnings:
+          type: array
+          description: Enrolled, but not on every channel asked for; each says which were skipped and why.
+          items: { $ref: "#/components/schemas/OutreachEnrollWarning" }
     OutreachCandidate:
       type: object
       additionalProperties: false

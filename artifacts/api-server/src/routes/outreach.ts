@@ -36,7 +36,7 @@ const sequenceBody = z.object({
   complianceFooter: z.string().max(1000).optional(),
   steps: z.array(z.object({ kind: z.string(), delayDays: z.number(), requiresApproval: z.boolean().optional(), condition: z.string().optional() })).optional(),
 });
-const enrollBody = z.object({ projectCompanyIds: z.array(z.string().uuid()).min(1).max(200) });
+const enrollBody = z.object({ projectCompanyIds: z.array(z.string().uuid()).min(1).max(200), channels: z.array(z.enum(["EMAIL", "LINKEDIN", "WHATSAPP"])).min(1).max(3) });
 const approveBody = z.object({ subject: z.string().max(200).nullable().optional(), body: z.string().max(6000).nullable().optional() });
 const stopBody = z.object({ reason: z.string().max(300).optional() });
 const listQuery = z.object({ status: z.enum(ENROLLMENT_STATUSES).optional(), limit: z.coerce.number().int().min(1).max(500).default(200) });
@@ -77,7 +77,7 @@ export function serializeEnrollment(enrollment: OutreachEnrollment, extras: { co
   return {
     id: enrollment.id, projectCompanyId: enrollment.projectCompanyId, companyId: enrollment.companyId,
     companyName: extras.companyName, companyDomain: extras.companyDomain,
-    contact: { name: enrollment.contact.name, title: enrollment.contact.title, email: enrollment.contact.email, linkedinUrl: enrollment.contact.linkedinUrl },
+    contact: { name: enrollment.contact.name, title: enrollment.contact.title, email: enrollment.contact.email, linkedinUrl: enrollment.contact.linkedinUrl, phone: enrollment.contact.phone ?? null },
     status: enrollment.status, currentStep: enrollment.currentStep, totalSteps: enrollment.steps.length,
     nextActionAt: enrollment.nextActionAt?.toISOString() ?? null, lastOutboundAt: enrollment.lastOutboundAt?.toISOString() ?? null, repliedAt: enrollment.repliedAt?.toISOString() ?? null,
     stopReason: enrollment.stopReason, why: enrollment.basis.why, signalCodes: enrollment.basis.signalCodes, score: enrollment.basis.score, opportunityState: enrollment.basis.opportunityState,
@@ -148,19 +148,20 @@ router.post("/projects/:projectId/outreach/enrollments", requireAuth, asyncRoute
   const params = projectParams.safeParse(req.params);
   const body = enrollBody.safeParse(req.body ?? {});
   if (!params.success) return void res.status(404).json({ error: "Project not found" });
-  if (!body.success) return void res.status(400).json({ error: "Choose at least one company", code: "INVALID_REQUEST" });
+  if (!body.success) return void res.status(400).json({ error: "Choose at least one company and one way to reach them", code: "INVALID_REQUEST" });
   const project = await ownedProject(params.data.projectId, res);
   if (!project) return;
   const userId = getAuthenticatedUserId(res);
   try {
     const report = await enrollCompanies(
-      { organizationId: project.organizationId, projectId: project.id, userId, projectCompanyIds: body.data.projectCompanyIds },
+      { organizationId: project.organizationId, projectId: project.id, userId, projectCompanyIds: body.data.projectCompanyIds, channels: body.data.channels },
       { draftInBackground: true, senderName: await senderNameFor(project.organizationId, userId) },
     );
     const names = await companyNames(report.enrolled);
     res.status(201).json(EnrollOutreachResponse.parse({
       enrolled: report.enrolled.map((enrollment) => serializeEnrollment(enrollment, { companyName: names.get(enrollment.companyId)?.name ?? enrollment.basis.companyName, companyDomain: names.get(enrollment.companyId)?.domain ?? null })),
       refused: report.refused,
+      warnings: report.warnings,
     }));
   } catch (error) {
     if (!sendError(res, error)) throw error;

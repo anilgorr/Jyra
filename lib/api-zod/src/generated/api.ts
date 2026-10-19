@@ -9268,7 +9268,7 @@ export const GetOutreachSequenceResponse = zod.object({
   "signature": zod.string(),
   "complianceFooter": zod.string(),
   "steps": zod.array(zod.object({
-  "kind": zod.enum(['EMAIL', 'EMAIL_FOLLOW_UP', 'LINKEDIN_INVITATION', 'LINKEDIN_MESSAGE']),
+  "kind": zod.enum(['EMAIL', 'EMAIL_FOLLOW_UP', 'LINKEDIN_INVITATION', 'LINKEDIN_MESSAGE', 'WHATSAPP_MESSAGE']),
   "delayDays": zod.number(),
   "requiresApproval": zod.boolean(),
   "condition": zod.enum(['NO_REPLY', 'ALWAYS'])
@@ -9291,7 +9291,7 @@ export const UpdateOutreachSequenceBody = zod.object({
   "signature": zod.string().optional(),
   "complianceFooter": zod.string().optional(),
   "steps": zod.array(zod.object({
-  "kind": zod.enum(['EMAIL', 'EMAIL_FOLLOW_UP', 'LINKEDIN_INVITATION', 'LINKEDIN_MESSAGE']),
+  "kind": zod.enum(['EMAIL', 'EMAIL_FOLLOW_UP', 'LINKEDIN_INVITATION', 'LINKEDIN_MESSAGE', 'WHATSAPP_MESSAGE']),
   "delayDays": zod.number(),
   "requiresApproval": zod.boolean(),
   "condition": zod.enum(['NO_REPLY', 'ALWAYS'])
@@ -9305,7 +9305,7 @@ export const UpdateOutreachSequenceResponse = zod.object({
   "signature": zod.string(),
   "complianceFooter": zod.string(),
   "steps": zod.array(zod.object({
-  "kind": zod.enum(['EMAIL', 'EMAIL_FOLLOW_UP', 'LINKEDIN_INVITATION', 'LINKEDIN_MESSAGE']),
+  "kind": zod.enum(['EMAIL', 'EMAIL_FOLLOW_UP', 'LINKEDIN_INVITATION', 'LINKEDIN_MESSAGE', 'WHATSAPP_MESSAGE']),
   "delayDays": zod.number(),
   "requiresApproval": zod.boolean(),
   "condition": zod.enum(['NO_REPLY', 'ALWAYS'])
@@ -9362,7 +9362,8 @@ export const ListOutreachEnrollmentsResponse = zod.object({
   "name": zod.string(),
   "title": zod.string().nullable(),
   "email": zod.string().nullable(),
-  "linkedinUrl": zod.string().nullable()
+  "linkedinUrl": zod.string().nullable(),
+  "phone": zod.string().nullable()
 }),
   "status": zod.enum(['DRAFTING', 'AWAITING_APPROVAL', 'ACTIVE', 'PAUSED', 'REPLIED', 'BOUNCED', 'COMPLETED', 'STOPPED', 'FAILED']),
   "currentStep": zod.number(),
@@ -9380,7 +9381,7 @@ export const ListOutreachEnrollmentsResponse = zod.object({
   "currentStepDraft": zod.object({
   "id": zod.string(),
   "stepIndex": zod.number(),
-  "kind": zod.enum(['EMAIL', 'EMAIL_FOLLOW_UP', 'LINKEDIN_INVITATION', 'LINKEDIN_MESSAGE']),
+  "kind": zod.enum(['EMAIL', 'EMAIL_FOLLOW_UP', 'LINKEDIN_INVITATION', 'LINKEDIN_MESSAGE', 'WHATSAPP_MESSAGE']),
   "channel": zod.enum(['EMAIL', 'LINKEDIN', 'WHATSAPP', 'INSTAGRAM']),
   "status": zod.enum(['DRAFTING', 'AWAITING_APPROVAL', 'APPROVED', 'SENT', 'SKIPPED', 'CANCELLED', 'FAILED']),
   "subject": zod.string().nullable(),
@@ -9397,7 +9398,7 @@ export const ListOutreachEnrollmentsResponse = zod.object({
   "steps": zod.array(zod.object({
   "id": zod.string(),
   "stepIndex": zod.number(),
-  "kind": zod.enum(['EMAIL', 'EMAIL_FOLLOW_UP', 'LINKEDIN_INVITATION', 'LINKEDIN_MESSAGE']),
+  "kind": zod.enum(['EMAIL', 'EMAIL_FOLLOW_UP', 'LINKEDIN_INVITATION', 'LINKEDIN_MESSAGE', 'WHATSAPP_MESSAGE']),
   "channel": zod.enum(['EMAIL', 'LINKEDIN', 'WHATSAPP', 'INSTAGRAM']),
   "status": zod.enum(['DRAFTING', 'AWAITING_APPROVAL', 'APPROVED', 'SENT', 'SKIPPED', 'CANCELLED', 'FAILED']),
   "subject": zod.string().nullable(),
@@ -9416,7 +9417,7 @@ export const ListOutreachEnrollmentsResponse = zod.object({
   "enrollmentId": zod.string().nullable(),
   "channel": zod.enum(['EMAIL', 'LINKEDIN', 'WHATSAPP', 'INSTAGRAM']),
   "direction": zod.enum(['OUTBOUND', 'INBOUND']),
-  "stepKind": zod.enum(['EMAIL', 'EMAIL_FOLLOW_UP', 'LINKEDIN_INVITATION', 'LINKEDIN_MESSAGE']).nullable(),
+  "stepKind": zod.enum(['EMAIL', 'EMAIL_FOLLOW_UP', 'LINKEDIN_INVITATION', 'LINKEDIN_MESSAGE', 'WHATSAPP_MESSAGE']).nullable(),
   "fromAddress": zod.string().nullable(),
   "toAddress": zod.string().nullable(),
   "subject": zod.string().nullable(),
@@ -9437,15 +9438,19 @@ export const ListOutreachEnrollmentsResponse = zod.object({
 
 
 /**
- * For each company JYRA picks the contact from its buying committee, freezes the evidence the lead was ranked on, and starts writing the first message. Companies it cannot enrol are listed back with the reason; they cost nothing. Drafts arrive within a minute; poll the list.
+ * For each company JYRA picks the contact from its buying committee who can be reached on the channels chosen, freezes the evidence the lead was ranked on, and writes one message per channel. Companies it cannot enrol are listed back with the reason; they cost nothing. Drafts arrive within a minute; poll the list.
  * @summary Put companies into the sequence
  */
 export const EnrollOutreachParams = zod.object({
   "projectId": zod.coerce.string()
 })
 
+
+
+
 export const EnrollOutreachBody = zod.object({
-  "projectCompanyIds": zod.array(zod.string())
+  "projectCompanyIds": zod.array(zod.string()),
+  "channels": zod.array(zod.enum(['EMAIL', 'LINKEDIN', 'WHATSAPP'])).min(1).describe('How to reach each contact. Every channel chosen is a first touch, sent the day it is approved.')
 })
 
 export const EnrollOutreachResponse = zod.object({
@@ -9459,7 +9464,8 @@ export const EnrollOutreachResponse = zod.object({
   "name": zod.string(),
   "title": zod.string().nullable(),
   "email": zod.string().nullable(),
-  "linkedinUrl": zod.string().nullable()
+  "linkedinUrl": zod.string().nullable(),
+  "phone": zod.string().nullable()
 }),
   "status": zod.enum(['DRAFTING', 'AWAITING_APPROVAL', 'ACTIVE', 'PAUSED', 'REPLIED', 'BOUNCED', 'COMPLETED', 'STOPPED', 'FAILED']),
   "currentStep": zod.number(),
@@ -9477,7 +9483,7 @@ export const EnrollOutreachResponse = zod.object({
   "currentStepDraft": zod.object({
   "id": zod.string(),
   "stepIndex": zod.number(),
-  "kind": zod.enum(['EMAIL', 'EMAIL_FOLLOW_UP', 'LINKEDIN_INVITATION', 'LINKEDIN_MESSAGE']),
+  "kind": zod.enum(['EMAIL', 'EMAIL_FOLLOW_UP', 'LINKEDIN_INVITATION', 'LINKEDIN_MESSAGE', 'WHATSAPP_MESSAGE']),
   "channel": zod.enum(['EMAIL', 'LINKEDIN', 'WHATSAPP', 'INSTAGRAM']),
   "status": zod.enum(['DRAFTING', 'AWAITING_APPROVAL', 'APPROVED', 'SENT', 'SKIPPED', 'CANCELLED', 'FAILED']),
   "subject": zod.string().nullable(),
@@ -9494,7 +9500,7 @@ export const EnrollOutreachResponse = zod.object({
   "steps": zod.array(zod.object({
   "id": zod.string(),
   "stepIndex": zod.number(),
-  "kind": zod.enum(['EMAIL', 'EMAIL_FOLLOW_UP', 'LINKEDIN_INVITATION', 'LINKEDIN_MESSAGE']),
+  "kind": zod.enum(['EMAIL', 'EMAIL_FOLLOW_UP', 'LINKEDIN_INVITATION', 'LINKEDIN_MESSAGE', 'WHATSAPP_MESSAGE']),
   "channel": zod.enum(['EMAIL', 'LINKEDIN', 'WHATSAPP', 'INSTAGRAM']),
   "status": zod.enum(['DRAFTING', 'AWAITING_APPROVAL', 'APPROVED', 'SENT', 'SKIPPED', 'CANCELLED', 'FAILED']),
   "subject": zod.string().nullable(),
@@ -9513,7 +9519,7 @@ export const EnrollOutreachResponse = zod.object({
   "enrollmentId": zod.string().nullable(),
   "channel": zod.enum(['EMAIL', 'LINKEDIN', 'WHATSAPP', 'INSTAGRAM']),
   "direction": zod.enum(['OUTBOUND', 'INBOUND']),
-  "stepKind": zod.enum(['EMAIL', 'EMAIL_FOLLOW_UP', 'LINKEDIN_INVITATION', 'LINKEDIN_MESSAGE']).nullable(),
+  "stepKind": zod.enum(['EMAIL', 'EMAIL_FOLLOW_UP', 'LINKEDIN_INVITATION', 'LINKEDIN_MESSAGE', 'WHATSAPP_MESSAGE']).nullable(),
   "fromAddress": zod.string().nullable(),
   "toAddress": zod.string().nullable(),
   "subject": zod.string().nullable(),
@@ -9529,7 +9535,12 @@ export const EnrollOutreachResponse = zod.object({
   "companyName": zod.string(),
   "code": zod.enum(['NO_CONTACT', 'NO_ADDRESS', 'ALREADY_ENROLLED', 'SUPPRESSED', 'NO_SENDER', 'COMPETITOR', 'NO_EVIDENCE']),
   "message": zod.string()
-}))
+})),
+  "warnings": zod.array(zod.object({
+  "projectCompanyId": zod.string(),
+  "companyName": zod.string(),
+  "message": zod.string()
+})).describe('Enrolled, but not on every channel asked for; each says which were skipped and why.')
 })
 
 
@@ -9551,7 +9562,8 @@ export const GetOutreachEnrollmentResponse = zod.object({
   "name": zod.string(),
   "title": zod.string().nullable(),
   "email": zod.string().nullable(),
-  "linkedinUrl": zod.string().nullable()
+  "linkedinUrl": zod.string().nullable(),
+  "phone": zod.string().nullable()
 }),
   "status": zod.enum(['DRAFTING', 'AWAITING_APPROVAL', 'ACTIVE', 'PAUSED', 'REPLIED', 'BOUNCED', 'COMPLETED', 'STOPPED', 'FAILED']),
   "currentStep": zod.number(),
@@ -9569,7 +9581,7 @@ export const GetOutreachEnrollmentResponse = zod.object({
   "currentStepDraft": zod.object({
   "id": zod.string(),
   "stepIndex": zod.number(),
-  "kind": zod.enum(['EMAIL', 'EMAIL_FOLLOW_UP', 'LINKEDIN_INVITATION', 'LINKEDIN_MESSAGE']),
+  "kind": zod.enum(['EMAIL', 'EMAIL_FOLLOW_UP', 'LINKEDIN_INVITATION', 'LINKEDIN_MESSAGE', 'WHATSAPP_MESSAGE']),
   "channel": zod.enum(['EMAIL', 'LINKEDIN', 'WHATSAPP', 'INSTAGRAM']),
   "status": zod.enum(['DRAFTING', 'AWAITING_APPROVAL', 'APPROVED', 'SENT', 'SKIPPED', 'CANCELLED', 'FAILED']),
   "subject": zod.string().nullable(),
@@ -9586,7 +9598,7 @@ export const GetOutreachEnrollmentResponse = zod.object({
   "steps": zod.array(zod.object({
   "id": zod.string(),
   "stepIndex": zod.number(),
-  "kind": zod.enum(['EMAIL', 'EMAIL_FOLLOW_UP', 'LINKEDIN_INVITATION', 'LINKEDIN_MESSAGE']),
+  "kind": zod.enum(['EMAIL', 'EMAIL_FOLLOW_UP', 'LINKEDIN_INVITATION', 'LINKEDIN_MESSAGE', 'WHATSAPP_MESSAGE']),
   "channel": zod.enum(['EMAIL', 'LINKEDIN', 'WHATSAPP', 'INSTAGRAM']),
   "status": zod.enum(['DRAFTING', 'AWAITING_APPROVAL', 'APPROVED', 'SENT', 'SKIPPED', 'CANCELLED', 'FAILED']),
   "subject": zod.string().nullable(),
@@ -9605,7 +9617,7 @@ export const GetOutreachEnrollmentResponse = zod.object({
   "enrollmentId": zod.string().nullable(),
   "channel": zod.enum(['EMAIL', 'LINKEDIN', 'WHATSAPP', 'INSTAGRAM']),
   "direction": zod.enum(['OUTBOUND', 'INBOUND']),
-  "stepKind": zod.enum(['EMAIL', 'EMAIL_FOLLOW_UP', 'LINKEDIN_INVITATION', 'LINKEDIN_MESSAGE']).nullable(),
+  "stepKind": zod.enum(['EMAIL', 'EMAIL_FOLLOW_UP', 'LINKEDIN_INVITATION', 'LINKEDIN_MESSAGE', 'WHATSAPP_MESSAGE']).nullable(),
   "fromAddress": zod.string().nullable(),
   "toAddress": zod.string().nullable(),
   "subject": zod.string().nullable(),
@@ -9640,7 +9652,8 @@ export const StopOutreachEnrollmentResponse = zod.object({
   "name": zod.string(),
   "title": zod.string().nullable(),
   "email": zod.string().nullable(),
-  "linkedinUrl": zod.string().nullable()
+  "linkedinUrl": zod.string().nullable(),
+  "phone": zod.string().nullable()
 }),
   "status": zod.enum(['DRAFTING', 'AWAITING_APPROVAL', 'ACTIVE', 'PAUSED', 'REPLIED', 'BOUNCED', 'COMPLETED', 'STOPPED', 'FAILED']),
   "currentStep": zod.number(),
@@ -9658,7 +9671,7 @@ export const StopOutreachEnrollmentResponse = zod.object({
   "currentStepDraft": zod.object({
   "id": zod.string(),
   "stepIndex": zod.number(),
-  "kind": zod.enum(['EMAIL', 'EMAIL_FOLLOW_UP', 'LINKEDIN_INVITATION', 'LINKEDIN_MESSAGE']),
+  "kind": zod.enum(['EMAIL', 'EMAIL_FOLLOW_UP', 'LINKEDIN_INVITATION', 'LINKEDIN_MESSAGE', 'WHATSAPP_MESSAGE']),
   "channel": zod.enum(['EMAIL', 'LINKEDIN', 'WHATSAPP', 'INSTAGRAM']),
   "status": zod.enum(['DRAFTING', 'AWAITING_APPROVAL', 'APPROVED', 'SENT', 'SKIPPED', 'CANCELLED', 'FAILED']),
   "subject": zod.string().nullable(),
@@ -9675,7 +9688,7 @@ export const StopOutreachEnrollmentResponse = zod.object({
   "steps": zod.array(zod.object({
   "id": zod.string(),
   "stepIndex": zod.number(),
-  "kind": zod.enum(['EMAIL', 'EMAIL_FOLLOW_UP', 'LINKEDIN_INVITATION', 'LINKEDIN_MESSAGE']),
+  "kind": zod.enum(['EMAIL', 'EMAIL_FOLLOW_UP', 'LINKEDIN_INVITATION', 'LINKEDIN_MESSAGE', 'WHATSAPP_MESSAGE']),
   "channel": zod.enum(['EMAIL', 'LINKEDIN', 'WHATSAPP', 'INSTAGRAM']),
   "status": zod.enum(['DRAFTING', 'AWAITING_APPROVAL', 'APPROVED', 'SENT', 'SKIPPED', 'CANCELLED', 'FAILED']),
   "subject": zod.string().nullable(),
@@ -9694,7 +9707,7 @@ export const StopOutreachEnrollmentResponse = zod.object({
   "enrollmentId": zod.string().nullable(),
   "channel": zod.enum(['EMAIL', 'LINKEDIN', 'WHATSAPP', 'INSTAGRAM']),
   "direction": zod.enum(['OUTBOUND', 'INBOUND']),
-  "stepKind": zod.enum(['EMAIL', 'EMAIL_FOLLOW_UP', 'LINKEDIN_INVITATION', 'LINKEDIN_MESSAGE']).nullable(),
+  "stepKind": zod.enum(['EMAIL', 'EMAIL_FOLLOW_UP', 'LINKEDIN_INVITATION', 'LINKEDIN_MESSAGE', 'WHATSAPP_MESSAGE']).nullable(),
   "fromAddress": zod.string().nullable(),
   "toAddress": zod.string().nullable(),
   "subject": zod.string().nullable(),
@@ -9729,7 +9742,8 @@ export const PauseOutreachEnrollmentResponse = zod.object({
   "name": zod.string(),
   "title": zod.string().nullable(),
   "email": zod.string().nullable(),
-  "linkedinUrl": zod.string().nullable()
+  "linkedinUrl": zod.string().nullable(),
+  "phone": zod.string().nullable()
 }),
   "status": zod.enum(['DRAFTING', 'AWAITING_APPROVAL', 'ACTIVE', 'PAUSED', 'REPLIED', 'BOUNCED', 'COMPLETED', 'STOPPED', 'FAILED']),
   "currentStep": zod.number(),
@@ -9747,7 +9761,7 @@ export const PauseOutreachEnrollmentResponse = zod.object({
   "currentStepDraft": zod.object({
   "id": zod.string(),
   "stepIndex": zod.number(),
-  "kind": zod.enum(['EMAIL', 'EMAIL_FOLLOW_UP', 'LINKEDIN_INVITATION', 'LINKEDIN_MESSAGE']),
+  "kind": zod.enum(['EMAIL', 'EMAIL_FOLLOW_UP', 'LINKEDIN_INVITATION', 'LINKEDIN_MESSAGE', 'WHATSAPP_MESSAGE']),
   "channel": zod.enum(['EMAIL', 'LINKEDIN', 'WHATSAPP', 'INSTAGRAM']),
   "status": zod.enum(['DRAFTING', 'AWAITING_APPROVAL', 'APPROVED', 'SENT', 'SKIPPED', 'CANCELLED', 'FAILED']),
   "subject": zod.string().nullable(),
@@ -9764,7 +9778,7 @@ export const PauseOutreachEnrollmentResponse = zod.object({
   "steps": zod.array(zod.object({
   "id": zod.string(),
   "stepIndex": zod.number(),
-  "kind": zod.enum(['EMAIL', 'EMAIL_FOLLOW_UP', 'LINKEDIN_INVITATION', 'LINKEDIN_MESSAGE']),
+  "kind": zod.enum(['EMAIL', 'EMAIL_FOLLOW_UP', 'LINKEDIN_INVITATION', 'LINKEDIN_MESSAGE', 'WHATSAPP_MESSAGE']),
   "channel": zod.enum(['EMAIL', 'LINKEDIN', 'WHATSAPP', 'INSTAGRAM']),
   "status": zod.enum(['DRAFTING', 'AWAITING_APPROVAL', 'APPROVED', 'SENT', 'SKIPPED', 'CANCELLED', 'FAILED']),
   "subject": zod.string().nullable(),
@@ -9783,7 +9797,7 @@ export const PauseOutreachEnrollmentResponse = zod.object({
   "enrollmentId": zod.string().nullable(),
   "channel": zod.enum(['EMAIL', 'LINKEDIN', 'WHATSAPP', 'INSTAGRAM']),
   "direction": zod.enum(['OUTBOUND', 'INBOUND']),
-  "stepKind": zod.enum(['EMAIL', 'EMAIL_FOLLOW_UP', 'LINKEDIN_INVITATION', 'LINKEDIN_MESSAGE']).nullable(),
+  "stepKind": zod.enum(['EMAIL', 'EMAIL_FOLLOW_UP', 'LINKEDIN_INVITATION', 'LINKEDIN_MESSAGE', 'WHATSAPP_MESSAGE']).nullable(),
   "fromAddress": zod.string().nullable(),
   "toAddress": zod.string().nullable(),
   "subject": zod.string().nullable(),
@@ -9813,7 +9827,7 @@ export const ApproveOutreachStepBody = zod.object({
 export const ApproveOutreachStepResponse = zod.object({
   "id": zod.string(),
   "stepIndex": zod.number(),
-  "kind": zod.enum(['EMAIL', 'EMAIL_FOLLOW_UP', 'LINKEDIN_INVITATION', 'LINKEDIN_MESSAGE']),
+  "kind": zod.enum(['EMAIL', 'EMAIL_FOLLOW_UP', 'LINKEDIN_INVITATION', 'LINKEDIN_MESSAGE', 'WHATSAPP_MESSAGE']),
   "channel": zod.enum(['EMAIL', 'LINKEDIN', 'WHATSAPP', 'INSTAGRAM']),
   "status": zod.enum(['DRAFTING', 'AWAITING_APPROVAL', 'APPROVED', 'SENT', 'SKIPPED', 'CANCELLED', 'FAILED']),
   "subject": zod.string().nullable(),
@@ -9840,7 +9854,7 @@ export const RegenerateOutreachStepParams = zod.object({
 export const RegenerateOutreachStepResponse = zod.object({
   "id": zod.string(),
   "stepIndex": zod.number(),
-  "kind": zod.enum(['EMAIL', 'EMAIL_FOLLOW_UP', 'LINKEDIN_INVITATION', 'LINKEDIN_MESSAGE']),
+  "kind": zod.enum(['EMAIL', 'EMAIL_FOLLOW_UP', 'LINKEDIN_INVITATION', 'LINKEDIN_MESSAGE', 'WHATSAPP_MESSAGE']),
   "channel": zod.enum(['EMAIL', 'LINKEDIN', 'WHATSAPP', 'INSTAGRAM']),
   "status": zod.enum(['DRAFTING', 'AWAITING_APPROVAL', 'APPROVED', 'SENT', 'SKIPPED', 'CANCELLED', 'FAILED']),
   "subject": zod.string().nullable(),
@@ -9874,7 +9888,8 @@ export const SkipOutreachStepResponse = zod.object({
   "name": zod.string(),
   "title": zod.string().nullable(),
   "email": zod.string().nullable(),
-  "linkedinUrl": zod.string().nullable()
+  "linkedinUrl": zod.string().nullable(),
+  "phone": zod.string().nullable()
 }),
   "status": zod.enum(['DRAFTING', 'AWAITING_APPROVAL', 'ACTIVE', 'PAUSED', 'REPLIED', 'BOUNCED', 'COMPLETED', 'STOPPED', 'FAILED']),
   "currentStep": zod.number(),
@@ -9892,7 +9907,7 @@ export const SkipOutreachStepResponse = zod.object({
   "currentStepDraft": zod.object({
   "id": zod.string(),
   "stepIndex": zod.number(),
-  "kind": zod.enum(['EMAIL', 'EMAIL_FOLLOW_UP', 'LINKEDIN_INVITATION', 'LINKEDIN_MESSAGE']),
+  "kind": zod.enum(['EMAIL', 'EMAIL_FOLLOW_UP', 'LINKEDIN_INVITATION', 'LINKEDIN_MESSAGE', 'WHATSAPP_MESSAGE']),
   "channel": zod.enum(['EMAIL', 'LINKEDIN', 'WHATSAPP', 'INSTAGRAM']),
   "status": zod.enum(['DRAFTING', 'AWAITING_APPROVAL', 'APPROVED', 'SENT', 'SKIPPED', 'CANCELLED', 'FAILED']),
   "subject": zod.string().nullable(),
@@ -9909,7 +9924,7 @@ export const SkipOutreachStepResponse = zod.object({
   "steps": zod.array(zod.object({
   "id": zod.string(),
   "stepIndex": zod.number(),
-  "kind": zod.enum(['EMAIL', 'EMAIL_FOLLOW_UP', 'LINKEDIN_INVITATION', 'LINKEDIN_MESSAGE']),
+  "kind": zod.enum(['EMAIL', 'EMAIL_FOLLOW_UP', 'LINKEDIN_INVITATION', 'LINKEDIN_MESSAGE', 'WHATSAPP_MESSAGE']),
   "channel": zod.enum(['EMAIL', 'LINKEDIN', 'WHATSAPP', 'INSTAGRAM']),
   "status": zod.enum(['DRAFTING', 'AWAITING_APPROVAL', 'APPROVED', 'SENT', 'SKIPPED', 'CANCELLED', 'FAILED']),
   "subject": zod.string().nullable(),
@@ -9928,7 +9943,7 @@ export const SkipOutreachStepResponse = zod.object({
   "enrollmentId": zod.string().nullable(),
   "channel": zod.enum(['EMAIL', 'LINKEDIN', 'WHATSAPP', 'INSTAGRAM']),
   "direction": zod.enum(['OUTBOUND', 'INBOUND']),
-  "stepKind": zod.enum(['EMAIL', 'EMAIL_FOLLOW_UP', 'LINKEDIN_INVITATION', 'LINKEDIN_MESSAGE']).nullable(),
+  "stepKind": zod.enum(['EMAIL', 'EMAIL_FOLLOW_UP', 'LINKEDIN_INVITATION', 'LINKEDIN_MESSAGE', 'WHATSAPP_MESSAGE']).nullable(),
   "fromAddress": zod.string().nullable(),
   "toAddress": zod.string().nullable(),
   "subject": zod.string().nullable(),
@@ -9954,7 +9969,7 @@ export const ListOutreachRepliesResponse = zod.object({
   "enrollmentId": zod.string().nullable(),
   "channel": zod.enum(['EMAIL', 'LINKEDIN', 'WHATSAPP', 'INSTAGRAM']),
   "direction": zod.enum(['OUTBOUND', 'INBOUND']),
-  "stepKind": zod.enum(['EMAIL', 'EMAIL_FOLLOW_UP', 'LINKEDIN_INVITATION', 'LINKEDIN_MESSAGE']).nullable(),
+  "stepKind": zod.enum(['EMAIL', 'EMAIL_FOLLOW_UP', 'LINKEDIN_INVITATION', 'LINKEDIN_MESSAGE', 'WHATSAPP_MESSAGE']).nullable(),
   "fromAddress": zod.string().nullable(),
   "toAddress": zod.string().nullable(),
   "subject": zod.string().nullable(),
@@ -9985,7 +10000,7 @@ export const MarkOutreachReplyReadResponse = zod.object({
   "enrollmentId": zod.string().nullable(),
   "channel": zod.enum(['EMAIL', 'LINKEDIN', 'WHATSAPP', 'INSTAGRAM']),
   "direction": zod.enum(['OUTBOUND', 'INBOUND']),
-  "stepKind": zod.enum(['EMAIL', 'EMAIL_FOLLOW_UP', 'LINKEDIN_INVITATION', 'LINKEDIN_MESSAGE']).nullable(),
+  "stepKind": zod.enum(['EMAIL', 'EMAIL_FOLLOW_UP', 'LINKEDIN_INVITATION', 'LINKEDIN_MESSAGE', 'WHATSAPP_MESSAGE']).nullable(),
   "fromAddress": zod.string().nullable(),
   "toAddress": zod.string().nullable(),
   "subject": zod.string().nullable(),
