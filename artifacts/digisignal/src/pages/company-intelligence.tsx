@@ -6,6 +6,8 @@ import {
   ArrowRight,
   Building2,
   CheckCircle2,
+  ChevronDown,
+  ChevronUp,
   Clock3,
   ExternalLink,
   FileCheck2,
@@ -462,7 +464,7 @@ function IntelligenceV2Panel({
             <div>
               <Badge variant="outline" data-testid="status-intelligence-version-v2">JYRA_INTELLIGENCE_V2</Badge>
               <p className="mt-3 max-w-2xl text-sm text-muted-foreground">
-                CommercialRole and WHO resolution with every claim bound to its evidence. Runs on demand and is stored alongside the default V1 workflow.
+                How JYRA decided whether this company is a fit, with every claim tied to the evidence it came from.
               </p>
             </div>
             <Button
@@ -564,10 +566,6 @@ function IntelligenceV2Panel({
                   <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Unknown facts</p>
                   <p className="mt-2 text-sm">{run.unknownFacts.length ? run.unknownFacts.join(", ") : "None recorded"}</p>
                 </div>
-                {run.cost && <div data-testid="text-intelligence-v2-cost">
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Run cost</p>
-                  <p className="mt-2 text-sm">${run.cost.total.toFixed(4)} · {run.cost.researchProviderCalls} research / {run.cost.modelCalls} model calls</p>
-                </div>}
                 <div data-testid="text-intelligence-v2-fingerprints">
                   <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Versions / fingerprints</p>
                   <p className="mt-2 break-all text-xs text-muted-foreground">
@@ -682,6 +680,8 @@ export default function CompanyIntelligencePage() {
   const facts = factsQuery.data ?? [];
   const isLoading = companiesQuery.isLoading || (Boolean(projectCompany) && (assessmentQuery.isLoading || evidenceQuery.isLoading));
   const pageReady = Boolean(projectId && projectCompany) && !isLoading;
+  // The page opens on the summary; the sections underneath are there for whoever wants to check the working.
+  const [showDetail, setShowDetail] = useState(() => typeof window !== "undefined" && Boolean(window.location.hash));
 
   // Links such as /companies/{id}#why arrive via history.pushState, which does
   // not scroll to the fragment; do it once the page (and the WHY trace) is in.
@@ -805,6 +805,26 @@ export default function CompanyIntelligencePage() {
         </div>
       </header>
 
+      <CompanySummary
+        verdict={v2Query.data ? { label: label(v2Query.data.who.value), confidence: v2Query.data.who.confidence, reason: v2Query.data.who.reason } : null}
+        state={detail?.opportunity.assessmentStatus === "INSUFFICIENT_DATA" ? "Needs research" : label(detail?.opportunity.state ?? projectCompany.opportunityAssessmentState)}
+        description={company.description ?? null}
+        why={whyText}
+        action={nextBestActionQuery.data ? { label: nextBestActionQuery.data.recommendation.label, explanation: nextBestActionQuery.data.recommendation.explanation } : null}
+        when={when}
+        signals={activeSignals.slice(0, 3).map((signal) => signal.name)}
+        negatives={negativeSignals.slice(0, 2).map((signal) => signal.name)}
+        missing={missingInformation.length}
+      />
+
+      <div className="flex justify-center">
+        <Button variant="outline" size="sm" onClick={() => setShowDetail((value) => !value)} data-testid="button-toggle-detail">
+          {showDetail ? <ChevronUp className="mr-2 h-4 w-4" /> : <ChevronDown className="mr-2 h-4 w-4" />}
+          {showDetail ? "Hide the working" : "Show the working"}
+        </Button>
+      </div>
+
+      {showDetail && (<>
       {v2Enabled && (
         <IntelligenceV2Panel
           run={v2Query.data}
@@ -1110,7 +1130,54 @@ export default function CompanyIntelligencePage() {
           </Card>
         </Section>
       </div>
+      </>)}
     </div>
+  );
+}
+
+/**
+ * The page in six lines. Everything below it is the working; most visits
+ * never need it. No figure in currency here or anywhere a customer looks.
+ */
+function CompanySummary({ verdict, state, description, why, action, when, signals, negatives, missing }: {
+  verdict: { label: string; confidence: number; reason: string } | null;
+  state: string;
+  description: string | null;
+  why: string;
+  action: { label: string; explanation: string } | null;
+  when: string;
+  signals: string[];
+  negatives: string[];
+  missing: number;
+}) {
+  const fit = verdict ? /not/i.test(verdict.label) ? "no" : /unknown|uncertain/i.test(verdict.label) ? "unsure" : "yes" : "unsure";
+  const tone = fit === "yes" ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300" : fit === "no" ? "border-rose-500/40 bg-rose-500/10 text-rose-700 dark:text-rose-300" : "border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-300";
+  return (
+    <Card className="border-border/60 shadow-none" data-testid="company-summary">
+      <CardContent className="space-y-5 p-6 md:p-8">
+        <div className="flex flex-wrap items-center gap-2">
+          <Badge variant="outline" className={cn("px-3 py-1 text-sm font-semibold", tone)}>{verdict ? verdict.label : state}</Badge>
+          {verdict ? <span className="text-xs text-muted-foreground">{Math.round(verdict.confidence * 100)}% sure</span> : null}
+          <Badge variant="secondary">{state}</Badge>
+          <Badge variant="outline">{label(when)}</Badge>
+          {missing ? <span className="text-xs text-muted-foreground">· {missing} thing{missing === 1 ? "" : "s"} still unknown</span> : null}
+        </div>
+        {description ? <p className="text-sm leading-relaxed text-muted-foreground">{description}</p> : null}
+        <p className="text-base leading-relaxed text-foreground">{verdict?.reason || why}</p>
+        {signals.length || negatives.length ? (
+          <div className="flex flex-wrap items-center gap-2 text-sm">
+            {signals.map((name) => <Badge key={name} variant="secondary" className="bg-emerald-500/10 text-emerald-700 dark:text-emerald-300">{name}</Badge>)}
+            {negatives.map((name) => <Badge key={`n-${name}`} variant="secondary" className="bg-rose-500/10 text-rose-700 dark:text-rose-300">{name}</Badge>)}
+          </div>
+        ) : null}
+        {action ? (
+          <div className="rounded-xl border border-accent/30 bg-accent/5 p-4">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">What to do</p>
+            <p className="mt-1 text-sm"><span className="font-semibold text-foreground">{action.label}.</span> <span className="text-muted-foreground">{action.explanation}</span></p>
+          </div>
+        ) : null}
+      </CardContent>
+    </Card>
   );
 }
 
