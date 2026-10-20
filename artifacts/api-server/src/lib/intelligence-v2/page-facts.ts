@@ -202,22 +202,29 @@ export async function persistPageFacts(
       eq(companyEvidenceTable.crawlPageId, page.crawlPageId),
     )).limit(1);
 
+  /* The review is what admits a page's facts to scoring (accepted-facts.ts
+   * joins on it), so it is written whether or not the evidence row already
+   * exists. It used to be written only alongside a new evidence row; the
+   * research crawl had already created the row for the company's own site,
+   * so every compliance and technology mention read from that site arrived
+   * without a review and never reached a signal - 233 of 234 on one project. */
+  await executor.insert(evidenceAttributionReviewsTable).values({
+    crawlPageId: page.crawlPageId,
+    companyId: input.companyId,
+    reviewedByOrganizationId: input.organizationId,
+    sourceClassification: decision.sourceClassification,
+    entityStatus: decision.entityStatus,
+    entityConfidence: decision.entityConfidence,
+    entityReason: decision.entityReason,
+    sourceReliabilityScore: decision.sourceReliabilityScore,
+    qualityReason: decision.qualityReason,
+    acceptedAsEvidence: decision.acceptedAsEvidence,
+  }).onConflictDoNothing();
+
   let evidenceId: string;
   if (existing) {
     evidenceId = existing.id;
   } else {
-    await executor.insert(evidenceAttributionReviewsTable).values({
-      crawlPageId: page.crawlPageId,
-      companyId: input.companyId,
-      reviewedByOrganizationId: input.organizationId,
-      sourceClassification: decision.sourceClassification,
-      entityStatus: decision.entityStatus,
-      entityConfidence: decision.entityConfidence,
-      entityReason: decision.entityReason,
-      sourceReliabilityScore: decision.sourceReliabilityScore,
-      qualityReason: decision.qualityReason,
-      acceptedAsEvidence: decision.acceptedAsEvidence,
-    }).onConflictDoNothing();
     const [created] = await executor.insert(companyEvidenceTable).values({
       companyId: input.companyId,
       crawlPageId: page.crawlPageId,
