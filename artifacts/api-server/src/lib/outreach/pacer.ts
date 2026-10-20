@@ -6,7 +6,7 @@ import {
 import { postCreditEntry } from "../credits";
 import { logger } from "../logger";
 import { resolveOrganizationPlan } from "../plans";
-import { dailyBudget, withinSendingWindow, type DailyBudget } from "./budgets";
+import { dailyBudget, linkedInClassOf, withinSendingWindow, type DailyBudget } from "./budgets";
 import { finalBody, type DraftWriter } from "./drafter";
 import { cancelPendingSteps, isSuppressed, linkedinPublicIdentifier, settleEnrollment } from "./enroll";
 import { createUnipileClient, UnipileError, type UnipileClient } from "./unipile-client";
@@ -98,7 +98,7 @@ export async function runPacerTick(deps: PacerDeps = {}): Promise<PacerTickRepor
   const report: PacerTickReport = { at: now.toISOString(), accounts: [] };
 
   for (const account of accounts) {
-    const budget = dailyBudget({ channel: account.channel, connectedAt: account.connectedAt, now, linkedInClass: account.channel === "LINKEDIN" ? (account.metadata.products?.sales_navigator ? "sales_navigator" : "premium") : null });
+    const budget = dailyBudget({ channel: account.channel, connectedAt: account.connectedAt, now, linkedInClass: account.channel === "LINKEDIN" ? linkedInClassOf(account.metadata.products) : null });
     const used = await usageToday(account.id, now);
     const entry: AccountTickReport = { senderAccountId: account.id, channel: account.channel, budget, usedFirstTouches: used.firstTouches, usedActions: used.actions, due: 0, sent: 0, skipped: 0, failed: 0 };
     report.accounts.push(entry);

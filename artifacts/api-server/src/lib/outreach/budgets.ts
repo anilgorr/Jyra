@@ -44,6 +44,18 @@ const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 const LINKEDIN_PAID_RAMP = [20, 40, 60, 80];
 const EMAIL_RAMP = [20, 40, 80, 120];
 
+/**
+ * Which LinkedIn plan an account is on, from Unipile's `products_connection_status` ({classic, premium, sales_navigator, recruiter} → "running" | …).
+ * Only `classic` running means a free account, which gets the small budget; a missing map is treated as free too, never as paid.
+ */
+export function linkedInClassOf(products: Record<string, unknown> | null | undefined): LinkedInAccountClass {
+  const on = (key: string) => { const v = products?.[key]; return v === true || v === "running" || v === "ok" || v === "connected"; };
+  if (on("recruiter")) return "recruiter";
+  if (on("sales_navigator")) return "sales_navigator";
+  if (on("premium")) return "premium";
+  return "free";
+}
+
 export function dailyBudget(input: { channel: OutreachChannel; connectedAt: Date; now: Date; linkedInClass?: LinkedInAccountClass | null }): DailyBudget {
   const ageWeeks = Math.max(0, Math.floor((input.now.getTime() - input.connectedAt.getTime()) / WEEK_MS));
   const ramp = (steps: number[]) => (ageWeeks < steps.length ? { value: steps[ageWeeks]!, week: ageWeeks + 1 } : { value: steps[steps.length - 1]!, week: null });

@@ -4,7 +4,7 @@ import {
   CAMPAIGN_LEAD_LIVE_STATUSES, type ActionKind, type Campaign, type CampaignAction, type CampaignLead, type Lead, type SenderAccount,
 } from "@workspace/db";
 import { logger } from "../logger";
-import { dailyBudget, withinSendingWindow } from "../outreach/budgets";
+import { dailyBudget, linkedInClassOf, withinSendingWindow } from "../outreach/budgets";
 import type { DraftWriter } from "../outreach/drafter";
 import { createUnipileClient, UnipileError, type UnipileClient, type UnipileReaction } from "../outreach/unipile-client";
 import { linkedinHandle } from "./import";
@@ -41,7 +41,7 @@ export type AccountCaps = { views: number; engagements: number; invitations: num
 
 export function accountCaps(account: SenderAccount, now: Date): AccountCaps {
   const weeks = Math.max(0, Math.floor((now.getTime() - account.connectedAt.getTime()) / WEEK_MS));
-  const budget = dailyBudget({ channel: account.channel, connectedAt: account.connectedAt, now, linkedInClass: account.channel === "LINKEDIN" ? (account.metadata.products?.sales_navigator ? "sales_navigator" : "premium") : null });
+  const budget = dailyBudget({ channel: account.channel, connectedAt: account.connectedAt, now, linkedInClass: account.channel === "LINKEDIN" ? linkedInClassOf(account.metadata.products) : null });
   return {
     views: Math.min(60, 20 + 10 * weeks),
     engagements: Math.min(40, 10 + 10 * weeks),
