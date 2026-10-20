@@ -31,6 +31,7 @@ import instantLeadsRouter from "./instant-leads";
 import adminInstantLeadsRouter from "./admin-instant-leads";
 import outreachAccountsRouter, { outreachLinkCallbackRouter } from "./outreach-accounts";
 import outreachRouter from "./outreach";
+import campaignsRouter from "./campaigns";
 
 const router: IRouter = Router();
 
@@ -69,6 +70,7 @@ router.use(instantLeadsRouter);
 router.use(adminInstantLeadsRouter);
 router.use(outreachAccountsRouter);
 router.use(outreachRouter);
+router.use(campaignsRouter);
 router.use(marketReadinessRouter);
 
 export default router;

@@ -54,3 +54,4 @@ export * from "./intent-accounts";export * from "./company-event-searches";
 export * from "./instant-leads";
 
 export * from "./outreach";
+export * from "./campaigns";

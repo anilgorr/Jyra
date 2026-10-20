@@ -104,6 +104,13 @@ export type UnipileUser = {
 
 export type RelationRequest = { id: string; created_at?: string; message?: string | null; user?: UnipileUser | null };
 
+/** A post as the engagement steps see it: enough to pick one, quote it and act on it. */
+export type UnipilePost = { id: string; text: string; postedAt: string | null; url: string | null; authorId: string | null; commentCount: number | null; reactionCount: number | null };
+export type UnipileComment = { id: string; text: string; authorId: string | null; authorName: string | null; postedAt: string | null };
+export type UnipileReaction = "linkedin_like" | "linkedin_celebrate" | "linkedin_support" | "linkedin_love" | "linkedin_insighful" | "linkedin_funny";
+/** One row of a LinkedIn people search, classic or Sales Navigator. */
+export type UnipileSearchHit = { id: string; publicIdentifier: string | null; name: string | null; headline: string | null; location: string | null; profileUrl: string | null; networkDistance: string | null };
+
 export type UnipileClient = {
   createAuthLink(input: CreateAuthLinkInput): Promise<{ url: string }>;
   getAccount(accountId: string): Promise<UnipileAccount | null>;
@@ -116,6 +123,15 @@ export type UnipileClient = {
   startChat(accountId: string, userId: string, text: string, options?: { inmail?: boolean }): Promise<{ chatId: string | null; messageId: string | null }>;
   listSentRelationRequests(accountId: string): Promise<RelationRequest[]>;
   cancelRelationRequest(accountId: string, requestId: string): Promise<void>;
+  /** Registers a real "viewed your profile" on LinkedIn. */
+  visitProfile(accountId: string, userId: string): Promise<void>;
+  /** A person's recent posts, newest first; `userId` as for getUserProfile. */
+  listUserPosts(accountId: string, userId: string, limit?: number): Promise<UnipilePost[]>;
+  reactToPost(accountId: string, postId: string, reaction: UnipileReaction): Promise<void>;
+  commentOnPost(accountId: string, postId: string, text: string): Promise<{ commentId: string | null }>;
+  listPostComments(accountId: string, postId: string): Promise<UnipileComment[]>;
+  /** A LinkedIn people search by URL (classic or Sales Navigator), one page; `cursor` continues it. */
+  searchPeopleByUrl(accountId: string, url: string, cursor?: string | null): Promise<{ hits: UnipileSearchHit[]; nextCursor: string | null }>;
 };
 
 /** Plain text to the simplest HTML that mail clients render identically, so tracking has a document to live in. */
@@ -232,6 +248,54 @@ export function createUnipileClient(options: { configuration?: Partial<UnipileCo
     },
     async cancelRelationRequest(accountId, requestId) {
       await call("POST", `/v2/${encodeURIComponent(accountId)}/users/me/relation-requests/${encodeURIComponent(requestId)}/cancel`);
+    },
+    async visitProfile(accountId, userId) {
+      await call("POST", `/v2/${encodeURIComponent(accountId)}/users/${encodeURIComponent(userId)}/visit`);
+    },
+    async listUserPosts(accountId, userId, limit = 10) {
+      const { json } = await call<{ items?: unknown }>("GET", `/v2/${encodeURIComponent(accountId)}/users/${encodeURIComponent(userId)}/posts`);
+      const items = Array.isArray(json?.items) ? (json!.items as Array<Record<string, unknown>>) : [];
+      return items.slice(0, limit).map((item) => ({
+        id: str(item.id) ?? str(item.social_id) ?? "",
+        text: str(item.text) ?? str(item.commentary) ?? "",
+        postedAt: str(item.date) ?? str(item.posted_at) ?? str(item.parsed_datetime) ?? null,
+        url: str(item.share_url) ?? str(item.url) ?? null,
+        authorId: str((item.author as Record<string, unknown> | undefined)?.id) ?? null,
+        commentCount: typeof item.comment_counter === "number" ? item.comment_counter : null,
+        reactionCount: typeof item.reaction_counter === "number" ? item.reaction_counter : null,
+      })).filter((post) => post.id);
+    },
+    async reactToPost(accountId, postId, reaction) {
+      await call("POST", `/v2/${encodeURIComponent(accountId)}/posts/${encodeURIComponent(postId)}/reactions`, { reaction });
+    },
+    async commentOnPost(accountId, postId, text) {
+      const { json } = await call<{ id?: unknown; comment_id?: unknown }>("POST", `/v2/${encodeURIComponent(accountId)}/posts/${encodeURIComponent(postId)}/comments`, { text });
+      return { commentId: str(json?.id) ?? str(json?.comment_id) };
+    },
+    async listPostComments(accountId, postId) {
+      const { json } = await call<{ items?: unknown }>("GET", `/v2/${encodeURIComponent(accountId)}/posts/${encodeURIComponent(postId)}/comments`);
+      const items = Array.isArray(json?.items) ? (json!.items as Array<Record<string, unknown>>) : [];
+      return items.map((item) => ({
+        id: str(item.id) ?? "", text: str(item.text) ?? "",
+        authorId: str(item.author_details && (item.author_details as Record<string, unknown>).id) ?? str(item.author_id) ?? null,
+        authorName: str(item.author) ?? null, postedAt: str(item.date) ?? null,
+      })).filter((comment) => comment.id);
+    },
+    async searchPeopleByUrl(accountId, url, cursor) {
+      const salesNavigator = /linkedin\.com\/sales\//i.test(url);
+      const path = `/v2/${encodeURIComponent(accountId)}/linkedin/${salesNavigator ? "sales-navigator/search" : "search"}${cursor ? `?cursor=${encodeURIComponent(cursor)}` : ""}`;
+      const { json } = await call<{ items?: unknown; cursor?: unknown; paging?: { next_cursor?: unknown } }>("POST", path, { url });
+      const items = Array.isArray(json?.items) ? (json!.items as Array<Record<string, unknown>>) : [];
+      const hits = items.map((item) => ({
+        id: str(item.id) ?? str(item.provider_id) ?? "",
+        publicIdentifier: str(item.public_identifier) ?? null,
+        name: str(item.name) ?? ([str(item.first_name), str(item.last_name)].filter(Boolean).join(" ") || null),
+        headline: str(item.headline) ?? null,
+        location: str(item.location) ?? null,
+        profileUrl: str(item.profile_url) ?? (str(item.public_identifier) ? `https://www.linkedin.com/in/${item.public_identifier}/` : null),
+        networkDistance: str(item.network_distance) ?? null,
+      })).filter((hit) => hit.id);
+      return { hits, nextCursor: str(json?.cursor) ?? str(json?.paging?.next_cursor) ?? null };
     },
   };
 }

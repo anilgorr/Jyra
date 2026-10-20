@@ -16,6 +16,7 @@ import { assertMarketReadinessProcessingConfig } from "./lib/market-readiness";
 import { ensureSignalPackFixtures } from "./lib/signal-pack-fixtures";
 import { startInternalWatchScheduler } from "./lib/intelligence-v2/watch-wake";
 import { startOutreachPacer } from "./lib/outreach/pacer";
+import { startCampaignRunner } from "./lib/campaigns/runner";
 
 /**
  * The port to serve on — resolved when we are about to serve, not at import.
@@ -150,6 +151,7 @@ async function main() {
     startInternalWatchScheduler(logger);
     // Outreach sends on its own clock, every five minutes, inside the sender accounts' daily budgets. See lib/outreach/pacer.ts.
     startOutreachPacer();
+  startCampaignRunner();
   });
 }
 

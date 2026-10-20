@@ -3560,6 +3560,480 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
         "404": { $ref: "#/components/responses/NotFound" }
+  /organizations/{organizationId}/campaigns:
+    get:
+      operationId: listCampaigns
+      tags: [campaigns]
+      summary: The workspace's campaigns with their funnels
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/OrganizationId" }
+      responses:
+        "200":
+          description: Campaigns, newest first, plus the default playbook for a new one
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CampaignList" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+    post:
+      operationId: createCampaign
+      tags: [campaigns]
+      summary: Create a campaign (as a draft)
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/OrganizationId" }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CampaignInput" }
+      responses:
+        "201":
+          description: The campaign
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Campaign" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+  /organizations/{organizationId}/campaigns/{campaignId}:
+    get:
+      operationId: getCampaign
+      tags: [campaigns]
+      summary: One campaign
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/OrganizationId" }
+        - { $ref: "#/components/parameters/CampaignId" }
+      responses:
+        "200":
+          description: The campaign
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Campaign" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+    patch:
+      operationId: updateCampaign
+      tags: [campaigns]
+      summary: Edit a campaign, or start / pause / archive it
+      description: Setting status to ACTIVE requires a connected sender for every channel the playbook uses. Playbook edits apply to leads added from now on.
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/OrganizationId" }
+        - { $ref: "#/components/parameters/CampaignId" }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CampaignInput" }
+      responses:
+        "200":
+          description: The campaign as saved
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Campaign" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /organizations/{organizationId}/leads:
+    get:
+      operationId: listLeads
+      tags: [campaigns]
+      summary: The workspace's leads
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/OrganizationId" }
+        - name: q
+          in: query
+          required: false
+          schema: { type: string }
+        - name: limit
+          in: query
+          required: false
+          schema: { type: number, minimum: 1, maximum: 500, default: 100 }
+      responses:
+        "200":
+          description: Leads, newest first
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/LeadList" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+  /organizations/{organizationId}/leads/import:
+    post:
+      operationId: importLeadsCsv
+      tags: [campaigns]
+      summary: Import leads from a CSV, optionally straight into a campaign
+      description: Headers are matched loosely (First Name / first_name / Firstname all work). Leads are deduplicated on LinkedIn URL, then email; an existing lead is enriched, not duplicated. Unknown columns are kept and shown to the writer.
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/OrganizationId" }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [csv]
+              properties:
+                csv: { type: string }
+                fileName: { type: string, nullable: true }
+                campaignId: { type: string }
+      responses:
+        "201":
+          description: What was created, updated and skipped
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ImportCsvReport" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+  /organizations/{organizationId}/leads/import-linkedin:
+    post:
+      operationId: importLeadsLinkedin
+      tags: [campaigns]
+      summary: Import leads from a LinkedIn people-search URL
+      description: Runs the search through one of the workspace's connected LinkedIn accounts (classic or Sales Navigator URL). Counts toward that account's daily search allowance.
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/OrganizationId" }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [url, senderAccountId]
+              properties:
+                url: { type: string }
+                max: { type: number, minimum: 1, maximum: 500, default: 100 }
+                senderAccountId: { type: string }
+                campaignId: { type: string }
+      responses:
+        "201":
+          description: What was fetched and kept
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ImportLinkedinReport" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+  /organizations/{organizationId}/campaigns/{campaignId}/leads:
+    get:
+      operationId: listCampaignLeads
+      tags: [campaigns]
+      summary: Everyone in the campaign, with their steps
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/OrganizationId" }
+        - { $ref: "#/components/parameters/CampaignId" }
+        - name: status
+          in: query
+          required: false
+          schema: { $ref: "#/components/schemas/CampaignLeadStatus" }
+        - name: limit
+          in: query
+          required: false
+          schema: { type: number, minimum: 1, maximum: 1000, default: 300 }
+      responses:
+        "200":
+          description: Campaign leads, most recently touched first
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CampaignLeadList" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+    post:
+      operationId: addCampaignLeads
+      tags: [campaigns]
+      summary: Put leads into the campaign
+      description: Each lead is researched and its first step drafted in the background; refused leads are listed with the reason.
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/OrganizationId" }
+        - { $ref: "#/components/parameters/CampaignId" }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [leadIds]
+              properties:
+                leadIds:
+                  type: array
+                  items: { type: string }
+      responses:
+        "201":
+          description: Added and refused
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AddLeadsReport" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /organizations/{organizationId}/campaign-leads/{campaignLeadId}/stop:
+    post:
+      operationId: stopCampaignLead
+      tags: [campaigns]
+      summary: Take a lead out of the campaign
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/OrganizationId" }
+        - { $ref: "#/components/parameters/CampaignLeadId" }
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                reason: { type: string }
+      responses:
+        "200":
+          description: The lead, stopped
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CampaignLead" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /organizations/{organizationId}/campaign-leads/{campaignLeadId}/pause:
+    post:
+      operationId: pauseCampaignLead
+      tags: [campaigns]
+      summary: Pause, or with resume=true resume, a lead's walk
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/OrganizationId" }
+        - { $ref: "#/components/parameters/CampaignLeadId" }
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                resume: { type: boolean }
+      responses:
+        "200":
+          description: The lead
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CampaignLead" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /organizations/{organizationId}/campaign-leads/{campaignLeadId}/book:
+    post:
+      operationId: bookCampaignLead
+      tags: [campaigns]
+      summary: Mark a meeting booked (or undo it)
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/OrganizationId" }
+        - { $ref: "#/components/parameters/CampaignLeadId" }
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                note: { type: string, nullable: true }
+                undo: { type: boolean }
+      responses:
+        "200":
+          description: The lead
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CampaignLead" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /organizations/{organizationId}/approvals:
+    get:
+      operationId: listCampaignApprovals
+      tags: [campaigns]
+      summary: Every draft waiting for a person, across the workspace
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/OrganizationId" }
+        - name: campaignId
+          in: query
+          required: false
+          schema: { type: string }
+        - name: limit
+          in: query
+          required: false
+          schema: { type: number, minimum: 1, maximum: 200, default: 50 }
+      responses:
+        "200":
+          description: Drafts, soonest first, each with the lead and the post it answers
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ApprovalList" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+  /organizations/{organizationId}/actions/{actionId}/approve:
+    post:
+      operationId: approveCampaignAction
+      tags: [campaigns]
+      summary: Approve a draft, with any edits
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/OrganizationId" }
+        - { $ref: "#/components/parameters/ActionId" }
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                subject: { type: string, nullable: true }
+                body: { type: string, nullable: true }
+      responses:
+        "200":
+          description: The action, approved
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CampaignAction" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+  /organizations/{organizationId}/actions/{actionId}/rewrite:
+    post:
+      operationId: rewriteCampaignAction
+      tags: [campaigns]
+      summary: Write the draft again
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/OrganizationId" }
+        - { $ref: "#/components/parameters/ActionId" }
+      responses:
+        "200":
+          description: The action with its new draft, or the reason there is none
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CampaignAction" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+  /organizations/{organizationId}/actions/{actionId}/skip:
+    post:
+      operationId: skipCampaignAction
+      tags: [campaigns]
+      summary: Skip this step; the walk moves on
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/OrganizationId" }
+        - { $ref: "#/components/parameters/ActionId" }
+      responses:
+        "200":
+          description: The lead after the skip
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CampaignLead" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+  /organizations/{organizationId}/inbox:
+    get:
+      operationId: listInbox
+      tags: [campaigns]
+      summary: Conversations with leads, newest first
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/OrganizationId" }
+        - name: campaignId
+          in: query
+          required: false
+          schema: { type: string }
+        - name: unread
+          in: query
+          required: false
+          schema: { type: boolean }
+        - name: limit
+          in: query
+          required: false
+          schema: { type: number, minimum: 1, maximum: 500, default: 100 }
+      responses:
+        "200":
+          description: One thread per lead who wrote back
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/InboxList" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+  /organizations/{organizationId}/inbox/{leadId}:
+    get:
+      operationId: getLeadThread
+      tags: [campaigns]
+      summary: Everything exchanged with one lead, on every channel
+      description: Opening the thread marks its messages read.
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/OrganizationId" }
+        - { $ref: "#/components/parameters/LeadId" }
+      responses:
+        "200":
+          description: The thread
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/LeadThread" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /organizations/{organizationId}/inbox/{leadId}/reply:
+    post:
+      operationId: replyToLead
+      tags: [campaigns]
+      summary: Write back on a channel; sent now from the workspace's account
+      security: [{ clerkSession: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/OrganizationId" }
+        - { $ref: "#/components/parameters/LeadId" }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [channel, text]
+              properties:
+                channel: { $ref: "#/components/schemas/OutreachChannel" }
+                text: { type: string }
+                subject: { type: string, nullable: true }
+      responses:
+        "201":
+          description: The message as sent
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/LeadMessage" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
 components:
   schemas:
     OutreachStepKind:
@@ -7658,6 +8132,450 @@ components:
           type: string
       required:
         - error
+    CampaignStatus:
+      type: string
+      enum: [DRAFT, ACTIVE, PAUSED, ARCHIVED]
+    CampaignActionKind:
+      type: string
+      enum: [VIEW_PROFILE, REACT_POST, COMMENT_POST, CONNECT, LINKEDIN_MESSAGE, EMAIL, WHATSAPP, INSTAGRAM_DM]
+    CampaignActionStatus:
+      type: string
+      enum: [DRAFTING, AWAITING_APPROVAL, APPROVED, DONE, SKIPPED, CANCELLED, FAILED]
+    CampaignLeadStatus:
+      type: string
+      enum: [QUEUED, RESEARCHING, AWAITING_APPROVAL, ACTIVE, REPLIED, BOOKED, COMPLETED, PAUSED, STOPPED, FAILED]
+    ConnectionState:
+      type: string
+      enum: [NONE, PENDING, ACCEPTED, DECLINED, ALREADY_CONNECTED]
+    StepCondition:
+      type: string
+      enum: [ALWAYS, CONNECTED, NO_REPLY, REPLIED]
+    PlaybookStep:
+      type: object
+      additionalProperties: false
+      required: [kind, delayDays, requiresApproval, condition]
+      properties:
+        kind: { $ref: "#/components/schemas/CampaignActionKind" }
+        delayDays: { type: number }
+        requiresApproval: { type: boolean }
+        condition: { $ref: "#/components/schemas/StepCondition" }
+        note: { type: string, nullable: true }
+    PlaybookStepView:
+      type: object
+      additionalProperties: false
+      required: [kind, label, delayDays, requiresApproval, condition, note]
+      properties:
+        kind: { $ref: "#/components/schemas/CampaignActionKind" }
+        label: { type: string }
+        delayDays: { type: number }
+        requiresApproval: { type: boolean }
+        condition: { $ref: "#/components/schemas/StepCondition" }
+        note: { type: string, nullable: true }
+    CampaignOffer:
+      type: object
+      additionalProperties: false
+      required: [senderName, pitch, proofPoints, callToAction, bookingUrl, website]
+      properties:
+        senderName: { type: string }
+        pitch: { type: string }
+        proofPoints:
+          type: array
+          items: { type: string }
+        callToAction: { type: string }
+        bookingUrl: { type: string, nullable: true }
+        website: { type: string, nullable: true }
+    CampaignOfferInput:
+      type: object
+      additionalProperties: false
+      required: [senderName, pitch, callToAction]
+      properties:
+        senderName: { type: string }
+        pitch: { type: string }
+        proofPoints:
+          type: array
+          items: { type: string }
+        callToAction: { type: string }
+        bookingUrl: { type: string, nullable: true }
+        website: { type: string, nullable: true }
+    CampaignAudience:
+      type: object
+      additionalProperties: true
+      required: [kind]
+      properties:
+        kind:
+          type: string
+          enum: [CSV, LINKEDIN_SEARCH, MANUAL]
+        fileName: { type: string, nullable: true }
+        url: { type: string }
+        importedAt: { type: string, nullable: true }
+        count: { type: number }
+    CampaignSender:
+      type: object
+      additionalProperties: false
+      required: [channel, senderAccountId, displayName, status]
+      properties:
+        channel: { $ref: "#/components/schemas/OutreachChannel" }
+        senderAccountId: { type: string }
+        displayName: { type: string, nullable: true }
+        status: { type: string }
+    CampaignFunnel:
+      type: object
+      additionalProperties: false
+      required: [leads, queued, awaitingApproval, active, connected, replied, booked, completed, stopped, sent]
+      properties:
+        leads: { type: number }
+        queued: { type: number }
+        awaitingApproval: { type: number }
+        active: { type: number }
+        connected: { type: number }
+        replied: { type: number }
+        booked: { type: number }
+        completed: { type: number }
+        stopped: { type: number }
+        sent: { type: number }
+    Campaign:
+      type: object
+      additionalProperties: false
+      required: [id, name, status, offer, audience, playbook, senders, missingSenders, masterPrompt, signature, timezone, funnel, createdAt, updatedAt]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        status: { $ref: "#/components/schemas/CampaignStatus" }
+        offer: { $ref: "#/components/schemas/CampaignOffer" }
+        audience: { $ref: "#/components/schemas/CampaignAudience" }
+        playbook:
+          type: array
+          items: { $ref: "#/components/schemas/PlaybookStepView" }
+        senders:
+          type: array
+          items: { $ref: "#/components/schemas/CampaignSender" }
+        missingSenders:
+          type: array
+          items: { type: string }
+        masterPrompt: { type: string }
+        signature: { type: string }
+        timezone: { type: string }
+        funnel: { $ref: "#/components/schemas/CampaignFunnel" }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+    CampaignInput:
+      type: object
+      additionalProperties: false
+      properties:
+        name: { type: string }
+        offer: { $ref: "#/components/schemas/CampaignOfferInput" }
+        playbook:
+          type: array
+          items: { $ref: "#/components/schemas/PlaybookStep" }
+        senderAccounts:
+          type: object
+          additionalProperties: { type: string }
+        masterPrompt: { type: string }
+        signature: { type: string }
+        timezone: { type: string }
+        status: { $ref: "#/components/schemas/CampaignStatus" }
+    CampaignList:
+      type: object
+      additionalProperties: false
+      required: [campaigns, defaults, hasApprovals]
+      properties:
+        campaigns:
+          type: array
+          items: { $ref: "#/components/schemas/Campaign" }
+        defaults:
+          type: object
+          additionalProperties: false
+          required: [playbook, masterPrompt]
+          properties:
+            playbook:
+              type: array
+              items: { $ref: "#/components/schemas/PlaybookStepView" }
+            masterPrompt: { type: string }
+        hasApprovals: { type: boolean }
+    LeadBriefView:
+      type: object
+      additionalProperties: false
+      required: [companySummary, services, profileSummary, talkingPoints, recentPosts, builtAt]
+      properties:
+        companySummary: { type: string, nullable: true }
+        services:
+          type: array
+          items: { type: string }
+        profileSummary: { type: string, nullable: true }
+        talkingPoints:
+          type: array
+          items: { type: string }
+        recentPosts:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            required: [text, postedAt, url]
+            properties:
+              text: { type: string }
+              postedAt: { type: string, nullable: true }
+              url: { type: string, nullable: true }
+        builtAt: { type: string }
+    Lead:
+      type: object
+      additionalProperties: false
+      required: [id, name, firstName, title, companyName, companyDomain, companyWebsite, location, linkedinUrl, email, emailStatus, phone, instagramHandle, source, attributes, doNotContact, doNotContactReason, brief, briefError, createdAt]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        firstName: { type: string, nullable: true }
+        title: { type: string, nullable: true }
+        companyName: { type: string, nullable: true }
+        companyDomain: { type: string, nullable: true }
+        companyWebsite: { type: string, nullable: true }
+        location: { type: string, nullable: true }
+        linkedinUrl: { type: string, nullable: true }
+        email: { type: string, nullable: true }
+        emailStatus: { type: string }
+        phone: { type: string, nullable: true }
+        instagramHandle: { type: string, nullable: true }
+        source: { type: string }
+        attributes:
+          type: object
+          additionalProperties: { type: string }
+        doNotContact: { type: boolean }
+        doNotContactReason: { type: string, nullable: true }
+        brief:
+          allOf: [{ $ref: "#/components/schemas/LeadBriefView" }]
+          nullable: true
+        briefError: { type: string, nullable: true }
+        createdAt: { type: string, format: date-time }
+        campaign:
+          description: The walk this lead is on, when listed from the workspace's leads.
+          type: object
+          nullable: true
+          additionalProperties: false
+          required: [campaignId, status]
+          properties:
+            campaignId: { type: string }
+            status: { type: string }
+    LeadList:
+      type: object
+      additionalProperties: false
+      required: [leads]
+      properties:
+        leads:
+          type: array
+          items: { $ref: "#/components/schemas/Lead" }
+    CampaignAction:
+      type: object
+      additionalProperties: false
+      required: [id, campaignLeadId, campaignId, stepIndex, kind, label, channel, status, targetPost, subject, body, evidence, edited, scheduledFor, doneAt, openedAt, clickedAt, approvedAt, error]
+      properties:
+        id: { type: string }
+        campaignLeadId: { type: string }
+        campaignId: { type: string }
+        stepIndex: { type: number }
+        kind: { $ref: "#/components/schemas/CampaignActionKind" }
+        label: { type: string }
+        channel: { $ref: "#/components/schemas/OutreachChannel" }
+        status: { $ref: "#/components/schemas/CampaignActionStatus" }
+        targetPost:
+          type: object
+          nullable: true
+          additionalProperties: false
+          required: [text, url]
+          properties:
+            text: { type: string }
+            url: { type: string, nullable: true }
+        subject: { type: string, nullable: true }
+        body: { type: string, nullable: true }
+        evidence:
+          type: array
+          items: { type: string }
+        edited: { type: boolean }
+        scheduledFor: { type: string, format: date-time, nullable: true }
+        doneAt: { type: string, format: date-time, nullable: true }
+        openedAt: { type: string, format: date-time, nullable: true }
+        clickedAt: { type: string, format: date-time, nullable: true }
+        approvedAt: { type: string, format: date-time, nullable: true }
+        error: { type: string, nullable: true }
+    CampaignLead:
+      type: object
+      additionalProperties: false
+      required: [id, campaignId, lead, status, connection, nextStepIndex, totalSteps, nextActionAt, connectedAt, lastOutboundAt, lastInboundAt, repliedAt, bookedAt, bookingNote, stopReason, createdAt, actions]
+      properties:
+        id: { type: string }
+        campaignId: { type: string }
+        lead: { $ref: "#/components/schemas/Lead" }
+        status: { $ref: "#/components/schemas/CampaignLeadStatus" }
+        connection: { $ref: "#/components/schemas/ConnectionState" }
+        nextStepIndex: { type: number }
+        totalSteps: { type: number }
+        nextActionAt: { type: string, format: date-time, nullable: true }
+        connectedAt: { type: string, format: date-time, nullable: true }
+        lastOutboundAt: { type: string, format: date-time, nullable: true }
+        lastInboundAt: { type: string, format: date-time, nullable: true }
+        repliedAt: { type: string, format: date-time, nullable: true }
+        bookedAt: { type: string, format: date-time, nullable: true }
+        bookingNote: { type: string, nullable: true }
+        stopReason: { type: string, nullable: true }
+        createdAt: { type: string, format: date-time }
+        actions:
+          type: array
+          items: { $ref: "#/components/schemas/CampaignAction" }
+    CampaignLeadList:
+      type: object
+      additionalProperties: false
+      required: [leads]
+      properties:
+        leads:
+          type: array
+          items: { $ref: "#/components/schemas/CampaignLead" }
+    LeadRefusal:
+      type: object
+      additionalProperties: false
+      required: [leadId, name, code, message]
+      properties:
+        leadId: { type: string }
+        name: { type: string }
+        code: { type: string }
+        message: { type: string }
+    ImportCsvReport:
+      type: object
+      additionalProperties: false
+      required: [created, updated, skipped, dropped, columns, addedToCampaign, refused]
+      properties:
+        created: { type: number }
+        updated: { type: number }
+        skipped: { type: number }
+        dropped: { type: number }
+        columns:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            required: [header, field]
+            properties:
+              header: { type: string }
+              field: { type: string, nullable: true }
+        addedToCampaign: { type: number }
+        refused:
+          type: array
+          items: { $ref: "#/components/schemas/LeadRefusal" }
+    ImportLinkedinReport:
+      type: object
+      additionalProperties: false
+      required: [fetched, created, updated, skipped, addedToCampaign, refused]
+      properties:
+        fetched: { type: number }
+        created: { type: number }
+        updated: { type: number }
+        skipped: { type: number }
+        addedToCampaign: { type: number }
+        refused:
+          type: array
+          items: { $ref: "#/components/schemas/LeadRefusal" }
+    AddLeadsReport:
+      type: object
+      additionalProperties: false
+      required: [added, refused]
+      properties:
+        added: { type: number }
+        refused:
+          type: array
+          items: { $ref: "#/components/schemas/LeadRefusal" }
+    ApprovalItem:
+      type: object
+      additionalProperties: false
+      required: [action, lead, campaign, campaignLeadId, connection]
+      properties:
+        action: { $ref: "#/components/schemas/CampaignAction" }
+        lead: { $ref: "#/components/schemas/Lead" }
+        campaign:
+          type: object
+          additionalProperties: false
+          required: [id, name]
+          properties:
+            id: { type: string }
+            name: { type: string }
+        campaignLeadId: { type: string }
+        connection: { $ref: "#/components/schemas/ConnectionState" }
+    ApprovalList:
+      type: object
+      additionalProperties: false
+      required: [items, total]
+      properties:
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/ApprovalItem" }
+        total: { type: number }
+    LeadMessage:
+      type: object
+      additionalProperties: false
+      required: [id, leadId, campaignId, channel, direction, kind, subject, text, occurredAt, box, boxReason, readAt]
+      properties:
+        id: { type: string }
+        leadId: { type: string }
+        campaignId: { type: string, nullable: true }
+        channel: { $ref: "#/components/schemas/OutreachChannel" }
+        direction:
+          type: string
+          enum: [OUTBOUND, INBOUND]
+        kind:
+          allOf: [{ $ref: "#/components/schemas/CampaignActionKind" }]
+          nullable: true
+        subject: { type: string, nullable: true }
+        text: { type: string, nullable: true }
+        occurredAt: { type: string, format: date-time }
+        box:
+          allOf: [{ $ref: "#/components/schemas/ReplyClassification" }]
+          nullable: true
+        boxReason: { type: string, nullable: true }
+        readAt: { type: string, format: date-time, nullable: true }
+    InboxThread:
+      type: object
+      additionalProperties: false
+      required: [lead, lastMessage, unread, count, campaign, campaignLeadId, status, box]
+      properties:
+        lead: { $ref: "#/components/schemas/Lead" }
+        lastMessage: { $ref: "#/components/schemas/LeadMessage" }
+        unread: { type: number }
+        count: { type: number }
+        campaign:
+          type: object
+          nullable: true
+          additionalProperties: false
+          required: [id, name]
+          properties:
+            id: { type: string }
+            name: { type: string }
+        campaignLeadId: { type: string, nullable: true }
+        status:
+          allOf: [{ $ref: "#/components/schemas/CampaignLeadStatus" }]
+          nullable: true
+        box:
+          allOf: [{ $ref: "#/components/schemas/ReplyClassification" }]
+          nullable: true
+    InboxList:
+      type: object
+      additionalProperties: false
+      required: [threads, unread]
+      properties:
+        threads:
+          type: array
+          items: { $ref: "#/components/schemas/InboxThread" }
+        unread: { type: number }
+    LeadThread:
+      type: object
+      additionalProperties: false
+      required: [lead, messages, campaignLead, canReply]
+      properties:
+        lead: { $ref: "#/components/schemas/Lead" }
+        messages:
+          type: array
+          items: { $ref: "#/components/schemas/LeadMessage" }
+        campaignLead:
+          allOf: [{ $ref: "#/components/schemas/CampaignLead" }]
+          nullable: true
+        canReply:
+          type: array
+          items: { $ref: "#/components/schemas/OutreachChannel" }
   parameters:
     LearningScope:
       name: scope
@@ -7670,6 +8588,30 @@ components:
       in: query
       required: false
       description: Optional immutable Intelligence Pack version for MARKET scope; omit for the market-wide aggregate.
+      schema:
+        type: string
+    CampaignId:
+      name: campaignId
+      in: path
+      required: true
+      schema:
+        type: string
+    CampaignLeadId:
+      name: campaignLeadId
+      in: path
+      required: true
+      schema:
+        type: string
+    ActionId:
+      name: actionId
+      in: path
+      required: true
+      schema:
+        type: string
+    LeadId:
+      name: leadId
+      in: path
+      required: true
       schema:
         type: string
     OrganizationId:

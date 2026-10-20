@@ -24,6 +24,8 @@ import type {
   AccessGrantCost,
   ActivateAdminSignalPackBody,
   ActivateOpportunityPack200,
+  AddCampaignLeadsBody,
+  AddLeadsReport,
   AddOpportunityResearchQuestionRequest,
   AddOpportunitySignalRequest,
   AdminCreditRequestEnvelope,
@@ -38,15 +40,24 @@ import type {
   ApplyProjectScreening409,
   ApplyProjectScreening424,
   ApplyProjectScreeningBody,
+  ApprovalList,
+  ApproveCampaignActionBody,
   ApproveOutreachStepBody,
   ArchiveProjectCompanies200,
   ArchiveProjectCompaniesBody,
   BadRequestResponse,
+  BookCampaignLeadBody,
   BusinessTwinManualInterpretationInput,
   BusinessTwinSuggestionRequest,
   BusinessTwinSuggestions,
   BusinessTwinVersion,
   BusinessTwinVersionInput,
+  Campaign,
+  CampaignAction,
+  CampaignInput,
+  CampaignLead,
+  CampaignLeadList,
+  CampaignList,
   CapabilityPhase,
   CommitCompanyImport409,
   CompanyDiscoveryInput,
@@ -107,7 +118,12 @@ import type {
   IcpCriterionInput,
   IcpCriterionUpdate,
   IcpVersion,
+  ImportCsvReport,
+  ImportLeadsCsvBody,
+  ImportLeadsLinkedinBody,
+  ImportLinkedinReport,
   ImportMarketReadinessOutcomesRequest,
+  InboxList,
   InstantLeadPriceEnvelope,
   InstantLeadPriceList,
   InstantLeadQuote,
@@ -118,10 +134,17 @@ import type {
   IntelligenceV2Run,
   IntelligenceV2RunInput,
   InterpretationUnavailableResponse,
+  LeadList,
+  LeadMessage,
+  LeadThread,
   LearningAnalytics,
   LearningPolicy,
   LearningProposal,
   LearningProposalReview,
+  ListCampaignApprovalsParams,
+  ListCampaignLeadsParams,
+  ListInboxParams,
+  ListLeadsParams,
   ListLearningProposalsParams,
   ListOutreachEnrollmentsParams,
   ListProjectChangesParams,
@@ -172,6 +195,7 @@ import type {
   OutreachSequence,
   OutreachSequenceInput,
   OutreachStep,
+  PauseCampaignLeadBody,
   PauseOutreachEnrollmentParams,
   PlanUsage,
   PrecisionRow,
@@ -194,6 +218,7 @@ import type {
   RecommendationLedgerEntry,
   RecommendationOutcome,
   RecordRecommendationOutcomeRequest,
+  ReplyToLeadBody,
   ResearchBudget,
   ResearchBudgetInput,
   ResearchEconomicsSummary,
@@ -211,6 +236,7 @@ import type {
   SignalFeedbackBody,
   SignalPack,
   StartSenderAccountLinkRequest,
+  StopCampaignLeadBody,
   StopOutreachEnrollmentBody,
   UnauthorizedResponse,
   UpdateAccessGrantBody,
@@ -12971,5 +12997,1492 @@ export const useMarkOutreachReplyRead = <TError = ErrorType<UnauthorizedResponse
         TContext
       > => {
       return useMutation(getMarkOutreachReplyReadMutationOptions(options));
+    }
+
+export const getListCampaignsUrl = (organizationId: string,) => {
+
+
+
+
+  return `/api/organizations/${organizationId}/campaigns`
+}
+
+/**
+ * @summary The workspace's campaigns with their funnels
+ */
+export const listCampaigns = async (organizationId: string, options?: Parameters<typeof customFetch>[1]): Promise<CampaignList> => {
+
+  return customFetch<CampaignList>(getListCampaignsUrl(organizationId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListCampaignsQueryKey = (organizationId: string,) => {
+    return [
+    `/api/organizations/${organizationId}/campaigns`
+    ] as const;
+    }
+
+
+export const getListCampaignsQueryOptions = <TData = Awaited<ReturnType<typeof listCampaigns>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse>>(organizationId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listCampaigns>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListCampaignsQueryKey(organizationId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listCampaigns>>> = ({ signal }) => listCampaigns(organizationId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: organizationId !== null && organizationId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listCampaigns>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListCampaignsQueryResult = NonNullable<Awaited<ReturnType<typeof listCampaigns>>>
+export type ListCampaignsQueryError = ErrorType<UnauthorizedResponse | ForbiddenResponse>
+
+
+/**
+ * @summary The workspace's campaigns with their funnels
+ */
+
+export function useListCampaigns<TData = Awaited<ReturnType<typeof listCampaigns>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse>>(
+ organizationId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listCampaigns>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListCampaignsQueryOptions(organizationId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getCreateCampaignUrl = (organizationId: string,) => {
+
+
+
+
+  return `/api/organizations/${organizationId}/campaigns`
+}
+
+/**
+ * @summary Create a campaign (as a draft)
+ */
+export const createCampaign = async (organizationId: string,
+    campaignInput: CampaignInput, options?: Parameters<typeof customFetch>[1]): Promise<Campaign> => {
+
+  return customFetch<Campaign>(getCreateCampaignUrl(organizationId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(campaignInput)
+  }
+);}
+
+
+
+
+
+export const getCreateCampaignMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createCampaign>>, TError,{organizationId: string;data: BodyType<CampaignInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createCampaign>>, TError,{organizationId: string;data: BodyType<CampaignInput>}, TContext> => {
+
+const mutationKey = ['createCampaign'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createCampaign>>, {organizationId: string;data: BodyType<CampaignInput>}> = (props) => {
+          const {organizationId,data} = props ?? {};
+
+          return  createCampaign(organizationId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateCampaignMutationResult = NonNullable<Awaited<ReturnType<typeof createCampaign>>>
+    export type CreateCampaignMutationBody = BodyType<CampaignInput>
+    export type CreateCampaignMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse>
+
+    /**
+ * @summary Create a campaign (as a draft)
+ */
+export const useCreateCampaign = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createCampaign>>, TError,{organizationId: string;data: BodyType<CampaignInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createCampaign>>,
+        TError,
+        {organizationId: string;data: BodyType<CampaignInput>},
+        TContext
+      > => {
+      return useMutation(getCreateCampaignMutationOptions(options));
+    }
+
+export const getGetCampaignUrl = (organizationId: string,
+    campaignId: string,) => {
+
+
+
+
+  return `/api/organizations/${organizationId}/campaigns/${campaignId}`
+}
+
+/**
+ * @summary One campaign
+ */
+export const getCampaign = async (organizationId: string,
+    campaignId: string, options?: Parameters<typeof customFetch>[1]): Promise<Campaign> => {
+
+  return customFetch<Campaign>(getGetCampaignUrl(organizationId,campaignId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetCampaignQueryKey = (organizationId: string,
+    campaignId: string,) => {
+    return [
+    `/api/organizations/${organizationId}/campaigns/${campaignId}`
+    ] as const;
+    }
+
+
+export const getGetCampaignQueryOptions = <TData = Awaited<ReturnType<typeof getCampaign>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(organizationId: string,
+    campaignId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getCampaign>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetCampaignQueryKey(organizationId,campaignId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getCampaign>>> = ({ signal }) => getCampaign(organizationId,campaignId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: organizationId !== null && organizationId !== undefined && campaignId !== null && campaignId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getCampaign>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetCampaignQueryResult = NonNullable<Awaited<ReturnType<typeof getCampaign>>>
+export type GetCampaignQueryError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+
+/**
+ * @summary One campaign
+ */
+
+export function useGetCampaign<TData = Awaited<ReturnType<typeof getCampaign>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(
+ organizationId: string,
+    campaignId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getCampaign>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetCampaignQueryOptions(organizationId,campaignId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getUpdateCampaignUrl = (organizationId: string,
+    campaignId: string,) => {
+
+
+
+
+  return `/api/organizations/${organizationId}/campaigns/${campaignId}`
+}
+
+/**
+ * Setting status to ACTIVE requires a connected sender for every channel the playbook uses. Playbook edits apply to leads added from now on.
+ * @summary Edit a campaign, or start / pause / archive it
+ */
+export const updateCampaign = async (organizationId: string,
+    campaignId: string,
+    campaignInput: CampaignInput, options?: Parameters<typeof customFetch>[1]): Promise<Campaign> => {
+
+  return customFetch<Campaign>(getUpdateCampaignUrl(organizationId,campaignId),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(campaignInput)
+  }
+);}
+
+
+
+
+
+export const getUpdateCampaignMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateCampaign>>, TError,{organizationId: string;campaignId: string;data: BodyType<CampaignInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateCampaign>>, TError,{organizationId: string;campaignId: string;data: BodyType<CampaignInput>}, TContext> => {
+
+const mutationKey = ['updateCampaign'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateCampaign>>, {organizationId: string;campaignId: string;data: BodyType<CampaignInput>}> = (props) => {
+          const {organizationId,campaignId,data} = props ?? {};
+
+          return  updateCampaign(organizationId,campaignId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateCampaignMutationResult = NonNullable<Awaited<ReturnType<typeof updateCampaign>>>
+    export type UpdateCampaignMutationBody = BodyType<CampaignInput>
+    export type UpdateCampaignMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+    /**
+ * @summary Edit a campaign, or start / pause / archive it
+ */
+export const useUpdateCampaign = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateCampaign>>, TError,{organizationId: string;campaignId: string;data: BodyType<CampaignInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateCampaign>>,
+        TError,
+        {organizationId: string;campaignId: string;data: BodyType<CampaignInput>},
+        TContext
+      > => {
+      return useMutation(getUpdateCampaignMutationOptions(options));
+    }
+
+export const getListLeadsUrl = (organizationId: string,
+    params?: ListLeadsParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/organizations/${organizationId}/leads?${stringifiedParams}` : `/api/organizations/${organizationId}/leads`
+}
+
+/**
+ * @summary The workspace's leads
+ */
+export const listLeads = async (organizationId: string,
+    params?: ListLeadsParams, options?: Parameters<typeof customFetch>[1]): Promise<LeadList> => {
+
+  return customFetch<LeadList>(getListLeadsUrl(organizationId,params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListLeadsQueryKey = (organizationId: string,
+    params?: ListLeadsParams,) => {
+    return [
+    `/api/organizations/${organizationId}/leads`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getListLeadsQueryOptions = <TData = Awaited<ReturnType<typeof listLeads>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse>>(organizationId: string,
+    params?: ListLeadsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listLeads>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListLeadsQueryKey(organizationId,params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listLeads>>> = ({ signal }) => listLeads(organizationId,params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: organizationId !== null && organizationId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listLeads>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListLeadsQueryResult = NonNullable<Awaited<ReturnType<typeof listLeads>>>
+export type ListLeadsQueryError = ErrorType<UnauthorizedResponse | ForbiddenResponse>
+
+
+/**
+ * @summary The workspace's leads
+ */
+
+export function useListLeads<TData = Awaited<ReturnType<typeof listLeads>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse>>(
+ organizationId: string,
+    params?: ListLeadsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listLeads>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListLeadsQueryOptions(organizationId,params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getImportLeadsCsvUrl = (organizationId: string,) => {
+
+
+
+
+  return `/api/organizations/${organizationId}/leads/import`
+}
+
+/**
+ * Headers are matched loosely (First Name / first_name / Firstname all work). Leads are deduplicated on LinkedIn URL, then email; an existing lead is enriched, not duplicated. Unknown columns are kept and shown to the writer.
+ * @summary Import leads from a CSV, optionally straight into a campaign
+ */
+export const importLeadsCsv = async (organizationId: string,
+    importLeadsCsvBody: ImportLeadsCsvBody, options?: Parameters<typeof customFetch>[1]): Promise<ImportCsvReport> => {
+
+  return customFetch<ImportCsvReport>(getImportLeadsCsvUrl(organizationId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(importLeadsCsvBody)
+  }
+);}
+
+
+
+
+
+export const getImportLeadsCsvMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof importLeadsCsv>>, TError,{organizationId: string;data: BodyType<ImportLeadsCsvBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof importLeadsCsv>>, TError,{organizationId: string;data: BodyType<ImportLeadsCsvBody>}, TContext> => {
+
+const mutationKey = ['importLeadsCsv'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof importLeadsCsv>>, {organizationId: string;data: BodyType<ImportLeadsCsvBody>}> = (props) => {
+          const {organizationId,data} = props ?? {};
+
+          return  importLeadsCsv(organizationId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ImportLeadsCsvMutationResult = NonNullable<Awaited<ReturnType<typeof importLeadsCsv>>>
+    export type ImportLeadsCsvMutationBody = BodyType<ImportLeadsCsvBody>
+    export type ImportLeadsCsvMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse>
+
+    /**
+ * @summary Import leads from a CSV, optionally straight into a campaign
+ */
+export const useImportLeadsCsv = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof importLeadsCsv>>, TError,{organizationId: string;data: BodyType<ImportLeadsCsvBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof importLeadsCsv>>,
+        TError,
+        {organizationId: string;data: BodyType<ImportLeadsCsvBody>},
+        TContext
+      > => {
+      return useMutation(getImportLeadsCsvMutationOptions(options));
+    }
+
+export const getImportLeadsLinkedinUrl = (organizationId: string,) => {
+
+
+
+
+  return `/api/organizations/${organizationId}/leads/import-linkedin`
+}
+
+/**
+ * Runs the search through one of the workspace's connected LinkedIn accounts (classic or Sales Navigator URL). Counts toward that account's daily search allowance.
+ * @summary Import leads from a LinkedIn people-search URL
+ */
+export const importLeadsLinkedin = async (organizationId: string,
+    importLeadsLinkedinBody: ImportLeadsLinkedinBody, options?: Parameters<typeof customFetch>[1]): Promise<ImportLinkedinReport> => {
+
+  return customFetch<ImportLinkedinReport>(getImportLeadsLinkedinUrl(organizationId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(importLeadsLinkedinBody)
+  }
+);}
+
+
+
+
+
+export const getImportLeadsLinkedinMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof importLeadsLinkedin>>, TError,{organizationId: string;data: BodyType<ImportLeadsLinkedinBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof importLeadsLinkedin>>, TError,{organizationId: string;data: BodyType<ImportLeadsLinkedinBody>}, TContext> => {
+
+const mutationKey = ['importLeadsLinkedin'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof importLeadsLinkedin>>, {organizationId: string;data: BodyType<ImportLeadsLinkedinBody>}> = (props) => {
+          const {organizationId,data} = props ?? {};
+
+          return  importLeadsLinkedin(organizationId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ImportLeadsLinkedinMutationResult = NonNullable<Awaited<ReturnType<typeof importLeadsLinkedin>>>
+    export type ImportLeadsLinkedinMutationBody = BodyType<ImportLeadsLinkedinBody>
+    export type ImportLeadsLinkedinMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse>
+
+    /**
+ * @summary Import leads from a LinkedIn people-search URL
+ */
+export const useImportLeadsLinkedin = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof importLeadsLinkedin>>, TError,{organizationId: string;data: BodyType<ImportLeadsLinkedinBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof importLeadsLinkedin>>,
+        TError,
+        {organizationId: string;data: BodyType<ImportLeadsLinkedinBody>},
+        TContext
+      > => {
+      return useMutation(getImportLeadsLinkedinMutationOptions(options));
+    }
+
+export const getListCampaignLeadsUrl = (organizationId: string,
+    campaignId: string,
+    params?: ListCampaignLeadsParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/organizations/${organizationId}/campaigns/${campaignId}/leads?${stringifiedParams}` : `/api/organizations/${organizationId}/campaigns/${campaignId}/leads`
+}
+
+/**
+ * @summary Everyone in the campaign, with their steps
+ */
+export const listCampaignLeads = async (organizationId: string,
+    campaignId: string,
+    params?: ListCampaignLeadsParams, options?: Parameters<typeof customFetch>[1]): Promise<CampaignLeadList> => {
+
+  return customFetch<CampaignLeadList>(getListCampaignLeadsUrl(organizationId,campaignId,params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListCampaignLeadsQueryKey = (organizationId: string,
+    campaignId: string,
+    params?: ListCampaignLeadsParams,) => {
+    return [
+    `/api/organizations/${organizationId}/campaigns/${campaignId}/leads`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getListCampaignLeadsQueryOptions = <TData = Awaited<ReturnType<typeof listCampaignLeads>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(organizationId: string,
+    campaignId: string,
+    params?: ListCampaignLeadsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listCampaignLeads>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListCampaignLeadsQueryKey(organizationId,campaignId,params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listCampaignLeads>>> = ({ signal }) => listCampaignLeads(organizationId,campaignId,params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: organizationId !== null && organizationId !== undefined && campaignId !== null && campaignId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listCampaignLeads>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListCampaignLeadsQueryResult = NonNullable<Awaited<ReturnType<typeof listCampaignLeads>>>
+export type ListCampaignLeadsQueryError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+
+/**
+ * @summary Everyone in the campaign, with their steps
+ */
+
+export function useListCampaignLeads<TData = Awaited<ReturnType<typeof listCampaignLeads>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(
+ organizationId: string,
+    campaignId: string,
+    params?: ListCampaignLeadsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listCampaignLeads>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListCampaignLeadsQueryOptions(organizationId,campaignId,params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getAddCampaignLeadsUrl = (organizationId: string,
+    campaignId: string,) => {
+
+
+
+
+  return `/api/organizations/${organizationId}/campaigns/${campaignId}/leads`
+}
+
+/**
+ * Each lead is researched and its first step drafted in the background; refused leads are listed with the reason.
+ * @summary Put leads into the campaign
+ */
+export const addCampaignLeads = async (organizationId: string,
+    campaignId: string,
+    addCampaignLeadsBody: AddCampaignLeadsBody, options?: Parameters<typeof customFetch>[1]): Promise<AddLeadsReport> => {
+
+  return customFetch<AddLeadsReport>(getAddCampaignLeadsUrl(organizationId,campaignId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(addCampaignLeadsBody)
+  }
+);}
+
+
+
+
+
+export const getAddCampaignLeadsMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof addCampaignLeads>>, TError,{organizationId: string;campaignId: string;data: BodyType<AddCampaignLeadsBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof addCampaignLeads>>, TError,{organizationId: string;campaignId: string;data: BodyType<AddCampaignLeadsBody>}, TContext> => {
+
+const mutationKey = ['addCampaignLeads'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof addCampaignLeads>>, {organizationId: string;campaignId: string;data: BodyType<AddCampaignLeadsBody>}> = (props) => {
+          const {organizationId,campaignId,data} = props ?? {};
+
+          return  addCampaignLeads(organizationId,campaignId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AddCampaignLeadsMutationResult = NonNullable<Awaited<ReturnType<typeof addCampaignLeads>>>
+    export type AddCampaignLeadsMutationBody = BodyType<AddCampaignLeadsBody>
+    export type AddCampaignLeadsMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+    /**
+ * @summary Put leads into the campaign
+ */
+export const useAddCampaignLeads = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof addCampaignLeads>>, TError,{organizationId: string;campaignId: string;data: BodyType<AddCampaignLeadsBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof addCampaignLeads>>,
+        TError,
+        {organizationId: string;campaignId: string;data: BodyType<AddCampaignLeadsBody>},
+        TContext
+      > => {
+      return useMutation(getAddCampaignLeadsMutationOptions(options));
+    }
+
+export const getStopCampaignLeadUrl = (organizationId: string,
+    campaignLeadId: string,) => {
+
+
+
+
+  return `/api/organizations/${organizationId}/campaign-leads/${campaignLeadId}/stop`
+}
+
+/**
+ * @summary Take a lead out of the campaign
+ */
+export const stopCampaignLead = async (organizationId: string,
+    campaignLeadId: string,
+    stopCampaignLeadBody?: StopCampaignLeadBody, options?: Parameters<typeof customFetch>[1]): Promise<CampaignLead> => {
+
+  return customFetch<CampaignLead>(getStopCampaignLeadUrl(organizationId,campaignLeadId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(stopCampaignLeadBody)
+  }
+);}
+
+
+
+
+
+export const getStopCampaignLeadMutationOptions = <TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stopCampaignLead>>, TError,{organizationId: string;campaignLeadId: string;data?: BodyType<StopCampaignLeadBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof stopCampaignLead>>, TError,{organizationId: string;campaignLeadId: string;data?: BodyType<StopCampaignLeadBody>}, TContext> => {
+
+const mutationKey = ['stopCampaignLead'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof stopCampaignLead>>, {organizationId: string;campaignLeadId: string;data?: BodyType<StopCampaignLeadBody>}> = (props) => {
+          const {organizationId,campaignLeadId,data} = props ?? {};
+
+          return  stopCampaignLead(organizationId,campaignLeadId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type StopCampaignLeadMutationResult = NonNullable<Awaited<ReturnType<typeof stopCampaignLead>>>
+    export type StopCampaignLeadMutationBody = BodyType<StopCampaignLeadBody> | undefined
+    export type StopCampaignLeadMutationError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+    /**
+ * @summary Take a lead out of the campaign
+ */
+export const useStopCampaignLead = <TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stopCampaignLead>>, TError,{organizationId: string;campaignLeadId: string;data?: BodyType<StopCampaignLeadBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof stopCampaignLead>>,
+        TError,
+        {organizationId: string;campaignLeadId: string;data?: BodyType<StopCampaignLeadBody>},
+        TContext
+      > => {
+      return useMutation(getStopCampaignLeadMutationOptions(options));
+    }
+
+export const getPauseCampaignLeadUrl = (organizationId: string,
+    campaignLeadId: string,) => {
+
+
+
+
+  return `/api/organizations/${organizationId}/campaign-leads/${campaignLeadId}/pause`
+}
+
+/**
+ * @summary Pause, or with resume=true resume, a lead's walk
+ */
+export const pauseCampaignLead = async (organizationId: string,
+    campaignLeadId: string,
+    pauseCampaignLeadBody?: PauseCampaignLeadBody, options?: Parameters<typeof customFetch>[1]): Promise<CampaignLead> => {
+
+  return customFetch<CampaignLead>(getPauseCampaignLeadUrl(organizationId,campaignLeadId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(pauseCampaignLeadBody)
+  }
+);}
+
+
+
+
+
+export const getPauseCampaignLeadMutationOptions = <TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof pauseCampaignLead>>, TError,{organizationId: string;campaignLeadId: string;data?: BodyType<PauseCampaignLeadBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof pauseCampaignLead>>, TError,{organizationId: string;campaignLeadId: string;data?: BodyType<PauseCampaignLeadBody>}, TContext> => {
+
+const mutationKey = ['pauseCampaignLead'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof pauseCampaignLead>>, {organizationId: string;campaignLeadId: string;data?: BodyType<PauseCampaignLeadBody>}> = (props) => {
+          const {organizationId,campaignLeadId,data} = props ?? {};
+
+          return  pauseCampaignLead(organizationId,campaignLeadId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PauseCampaignLeadMutationResult = NonNullable<Awaited<ReturnType<typeof pauseCampaignLead>>>
+    export type PauseCampaignLeadMutationBody = BodyType<PauseCampaignLeadBody> | undefined
+    export type PauseCampaignLeadMutationError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+    /**
+ * @summary Pause, or with resume=true resume, a lead's walk
+ */
+export const usePauseCampaignLead = <TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof pauseCampaignLead>>, TError,{organizationId: string;campaignLeadId: string;data?: BodyType<PauseCampaignLeadBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof pauseCampaignLead>>,
+        TError,
+        {organizationId: string;campaignLeadId: string;data?: BodyType<PauseCampaignLeadBody>},
+        TContext
+      > => {
+      return useMutation(getPauseCampaignLeadMutationOptions(options));
+    }
+
+export const getBookCampaignLeadUrl = (organizationId: string,
+    campaignLeadId: string,) => {
+
+
+
+
+  return `/api/organizations/${organizationId}/campaign-leads/${campaignLeadId}/book`
+}
+
+/**
+ * @summary Mark a meeting booked (or undo it)
+ */
+export const bookCampaignLead = async (organizationId: string,
+    campaignLeadId: string,
+    bookCampaignLeadBody?: BookCampaignLeadBody, options?: Parameters<typeof customFetch>[1]): Promise<CampaignLead> => {
+
+  return customFetch<CampaignLead>(getBookCampaignLeadUrl(organizationId,campaignLeadId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(bookCampaignLeadBody)
+  }
+);}
+
+
+
+
+
+export const getBookCampaignLeadMutationOptions = <TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof bookCampaignLead>>, TError,{organizationId: string;campaignLeadId: string;data?: BodyType<BookCampaignLeadBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof bookCampaignLead>>, TError,{organizationId: string;campaignLeadId: string;data?: BodyType<BookCampaignLeadBody>}, TContext> => {
+
+const mutationKey = ['bookCampaignLead'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof bookCampaignLead>>, {organizationId: string;campaignLeadId: string;data?: BodyType<BookCampaignLeadBody>}> = (props) => {
+          const {organizationId,campaignLeadId,data} = props ?? {};
+
+          return  bookCampaignLead(organizationId,campaignLeadId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type BookCampaignLeadMutationResult = NonNullable<Awaited<ReturnType<typeof bookCampaignLead>>>
+    export type BookCampaignLeadMutationBody = BodyType<BookCampaignLeadBody> | undefined
+    export type BookCampaignLeadMutationError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+    /**
+ * @summary Mark a meeting booked (or undo it)
+ */
+export const useBookCampaignLead = <TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof bookCampaignLead>>, TError,{organizationId: string;campaignLeadId: string;data?: BodyType<BookCampaignLeadBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof bookCampaignLead>>,
+        TError,
+        {organizationId: string;campaignLeadId: string;data?: BodyType<BookCampaignLeadBody>},
+        TContext
+      > => {
+      return useMutation(getBookCampaignLeadMutationOptions(options));
+    }
+
+export const getListCampaignApprovalsUrl = (organizationId: string,
+    params?: ListCampaignApprovalsParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/organizations/${organizationId}/approvals?${stringifiedParams}` : `/api/organizations/${organizationId}/approvals`
+}
+
+/**
+ * @summary Every draft waiting for a person, across the workspace
+ */
+export const listCampaignApprovals = async (organizationId: string,
+    params?: ListCampaignApprovalsParams, options?: Parameters<typeof customFetch>[1]): Promise<ApprovalList> => {
+
+  return customFetch<ApprovalList>(getListCampaignApprovalsUrl(organizationId,params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListCampaignApprovalsQueryKey = (organizationId: string,
+    params?: ListCampaignApprovalsParams,) => {
+    return [
+    `/api/organizations/${organizationId}/approvals`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getListCampaignApprovalsQueryOptions = <TData = Awaited<ReturnType<typeof listCampaignApprovals>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse>>(organizationId: string,
+    params?: ListCampaignApprovalsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listCampaignApprovals>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListCampaignApprovalsQueryKey(organizationId,params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listCampaignApprovals>>> = ({ signal }) => listCampaignApprovals(organizationId,params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: organizationId !== null && organizationId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listCampaignApprovals>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListCampaignApprovalsQueryResult = NonNullable<Awaited<ReturnType<typeof listCampaignApprovals>>>
+export type ListCampaignApprovalsQueryError = ErrorType<UnauthorizedResponse | ForbiddenResponse>
+
+
+/**
+ * @summary Every draft waiting for a person, across the workspace
+ */
+
+export function useListCampaignApprovals<TData = Awaited<ReturnType<typeof listCampaignApprovals>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse>>(
+ organizationId: string,
+    params?: ListCampaignApprovalsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listCampaignApprovals>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListCampaignApprovalsQueryOptions(organizationId,params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getApproveCampaignActionUrl = (organizationId: string,
+    actionId: string,) => {
+
+
+
+
+  return `/api/organizations/${organizationId}/actions/${actionId}/approve`
+}
+
+/**
+ * @summary Approve a draft, with any edits
+ */
+export const approveCampaignAction = async (organizationId: string,
+    actionId: string,
+    approveCampaignActionBody?: ApproveCampaignActionBody, options?: Parameters<typeof customFetch>[1]): Promise<CampaignAction> => {
+
+  return customFetch<CampaignAction>(getApproveCampaignActionUrl(organizationId,actionId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(approveCampaignActionBody)
+  }
+);}
+
+
+
+
+
+export const getApproveCampaignActionMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | ConflictResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof approveCampaignAction>>, TError,{organizationId: string;actionId: string;data?: BodyType<ApproveCampaignActionBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof approveCampaignAction>>, TError,{organizationId: string;actionId: string;data?: BodyType<ApproveCampaignActionBody>}, TContext> => {
+
+const mutationKey = ['approveCampaignAction'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof approveCampaignAction>>, {organizationId: string;actionId: string;data?: BodyType<ApproveCampaignActionBody>}> = (props) => {
+          const {organizationId,actionId,data} = props ?? {};
+
+          return  approveCampaignAction(organizationId,actionId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ApproveCampaignActionMutationResult = NonNullable<Awaited<ReturnType<typeof approveCampaignAction>>>
+    export type ApproveCampaignActionMutationBody = BodyType<ApproveCampaignActionBody> | undefined
+    export type ApproveCampaignActionMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | ConflictResponse>
+
+    /**
+ * @summary Approve a draft, with any edits
+ */
+export const useApproveCampaignAction = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | ConflictResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof approveCampaignAction>>, TError,{organizationId: string;actionId: string;data?: BodyType<ApproveCampaignActionBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof approveCampaignAction>>,
+        TError,
+        {organizationId: string;actionId: string;data?: BodyType<ApproveCampaignActionBody>},
+        TContext
+      > => {
+      return useMutation(getApproveCampaignActionMutationOptions(options));
+    }
+
+export const getRewriteCampaignActionUrl = (organizationId: string,
+    actionId: string,) => {
+
+
+
+
+  return `/api/organizations/${organizationId}/actions/${actionId}/rewrite`
+}
+
+/**
+ * @summary Write the draft again
+ */
+export const rewriteCampaignAction = async (organizationId: string,
+    actionId: string, options?: Parameters<typeof customFetch>[1]): Promise<CampaignAction> => {
+
+  return customFetch<CampaignAction>(getRewriteCampaignActionUrl(organizationId,actionId),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getRewriteCampaignActionMutationOptions = <TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | ConflictResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof rewriteCampaignAction>>, TError,{organizationId: string;actionId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof rewriteCampaignAction>>, TError,{organizationId: string;actionId: string}, TContext> => {
+
+const mutationKey = ['rewriteCampaignAction'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof rewriteCampaignAction>>, {organizationId: string;actionId: string}> = (props) => {
+          const {organizationId,actionId} = props ?? {};
+
+          return  rewriteCampaignAction(organizationId,actionId,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type RewriteCampaignActionMutationResult = NonNullable<Awaited<ReturnType<typeof rewriteCampaignAction>>>
+
+    export type RewriteCampaignActionMutationError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | ConflictResponse>
+
+    /**
+ * @summary Write the draft again
+ */
+export const useRewriteCampaignAction = <TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | ConflictResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof rewriteCampaignAction>>, TError,{organizationId: string;actionId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof rewriteCampaignAction>>,
+        TError,
+        {organizationId: string;actionId: string},
+        TContext
+      > => {
+      return useMutation(getRewriteCampaignActionMutationOptions(options));
+    }
+
+export const getSkipCampaignActionUrl = (organizationId: string,
+    actionId: string,) => {
+
+
+
+
+  return `/api/organizations/${organizationId}/actions/${actionId}/skip`
+}
+
+/**
+ * @summary Skip this step; the walk moves on
+ */
+export const skipCampaignAction = async (organizationId: string,
+    actionId: string, options?: Parameters<typeof customFetch>[1]): Promise<CampaignLead> => {
+
+  return customFetch<CampaignLead>(getSkipCampaignActionUrl(organizationId,actionId),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getSkipCampaignActionMutationOptions = <TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | ConflictResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof skipCampaignAction>>, TError,{organizationId: string;actionId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof skipCampaignAction>>, TError,{organizationId: string;actionId: string}, TContext> => {
+
+const mutationKey = ['skipCampaignAction'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof skipCampaignAction>>, {organizationId: string;actionId: string}> = (props) => {
+          const {organizationId,actionId} = props ?? {};
+
+          return  skipCampaignAction(organizationId,actionId,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SkipCampaignActionMutationResult = NonNullable<Awaited<ReturnType<typeof skipCampaignAction>>>
+
+    export type SkipCampaignActionMutationError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | ConflictResponse>
+
+    /**
+ * @summary Skip this step; the walk moves on
+ */
+export const useSkipCampaignAction = <TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | ConflictResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof skipCampaignAction>>, TError,{organizationId: string;actionId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof skipCampaignAction>>,
+        TError,
+        {organizationId: string;actionId: string},
+        TContext
+      > => {
+      return useMutation(getSkipCampaignActionMutationOptions(options));
+    }
+
+export const getListInboxUrl = (organizationId: string,
+    params?: ListInboxParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/organizations/${organizationId}/inbox?${stringifiedParams}` : `/api/organizations/${organizationId}/inbox`
+}
+
+/**
+ * @summary Conversations with leads, newest first
+ */
+export const listInbox = async (organizationId: string,
+    params?: ListInboxParams, options?: Parameters<typeof customFetch>[1]): Promise<InboxList> => {
+
+  return customFetch<InboxList>(getListInboxUrl(organizationId,params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListInboxQueryKey = (organizationId: string,
+    params?: ListInboxParams,) => {
+    return [
+    `/api/organizations/${organizationId}/inbox`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getListInboxQueryOptions = <TData = Awaited<ReturnType<typeof listInbox>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse>>(organizationId: string,
+    params?: ListInboxParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listInbox>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListInboxQueryKey(organizationId,params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listInbox>>> = ({ signal }) => listInbox(organizationId,params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: organizationId !== null && organizationId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listInbox>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListInboxQueryResult = NonNullable<Awaited<ReturnType<typeof listInbox>>>
+export type ListInboxQueryError = ErrorType<UnauthorizedResponse | ForbiddenResponse>
+
+
+/**
+ * @summary Conversations with leads, newest first
+ */
+
+export function useListInbox<TData = Awaited<ReturnType<typeof listInbox>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse>>(
+ organizationId: string,
+    params?: ListInboxParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listInbox>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListInboxQueryOptions(organizationId,params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getGetLeadThreadUrl = (organizationId: string,
+    leadId: string,) => {
+
+
+
+
+  return `/api/organizations/${organizationId}/inbox/${leadId}`
+}
+
+/**
+ * Opening the thread marks its messages read.
+ * @summary Everything exchanged with one lead, on every channel
+ */
+export const getLeadThread = async (organizationId: string,
+    leadId: string, options?: Parameters<typeof customFetch>[1]): Promise<LeadThread> => {
+
+  return customFetch<LeadThread>(getGetLeadThreadUrl(organizationId,leadId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetLeadThreadQueryKey = (organizationId: string,
+    leadId: string,) => {
+    return [
+    `/api/organizations/${organizationId}/inbox/${leadId}`
+    ] as const;
+    }
+
+
+export const getGetLeadThreadQueryOptions = <TData = Awaited<ReturnType<typeof getLeadThread>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(organizationId: string,
+    leadId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getLeadThread>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetLeadThreadQueryKey(organizationId,leadId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getLeadThread>>> = ({ signal }) => getLeadThread(organizationId,leadId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: organizationId !== null && organizationId !== undefined && leadId !== null && leadId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getLeadThread>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetLeadThreadQueryResult = NonNullable<Awaited<ReturnType<typeof getLeadThread>>>
+export type GetLeadThreadQueryError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>
+
+
+/**
+ * @summary Everything exchanged with one lead, on every channel
+ */
+
+export function useGetLeadThread<TData = Awaited<ReturnType<typeof getLeadThread>>, TError = ErrorType<UnauthorizedResponse | ForbiddenResponse | NotFoundResponse>>(
+ organizationId: string,
+    leadId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getLeadThread>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetLeadThreadQueryOptions(organizationId,leadId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getReplyToLeadUrl = (organizationId: string,
+    leadId: string,) => {
+
+
+
+
+  return `/api/organizations/${organizationId}/inbox/${leadId}/reply`
+}
+
+/**
+ * @summary Write back on a channel; sent now from the workspace's account
+ */
+export const replyToLead = async (organizationId: string,
+    leadId: string,
+    replyToLeadBody: ReplyToLeadBody, options?: Parameters<typeof customFetch>[1]): Promise<LeadMessage> => {
+
+  return customFetch<LeadMessage>(getReplyToLeadUrl(organizationId,leadId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(replyToLeadBody)
+  }
+);}
+
+
+
+
+
+export const getReplyToLeadMutationOptions = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | ConflictResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof replyToLead>>, TError,{organizationId: string;leadId: string;data: BodyType<ReplyToLeadBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof replyToLead>>, TError,{organizationId: string;leadId: string;data: BodyType<ReplyToLeadBody>}, TContext> => {
+
+const mutationKey = ['replyToLead'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof replyToLead>>, {organizationId: string;leadId: string;data: BodyType<ReplyToLeadBody>}> = (props) => {
+          const {organizationId,leadId,data} = props ?? {};
+
+          return  replyToLead(organizationId,leadId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ReplyToLeadMutationResult = NonNullable<Awaited<ReturnType<typeof replyToLead>>>
+    export type ReplyToLeadMutationBody = BodyType<ReplyToLeadBody>
+    export type ReplyToLeadMutationError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | ConflictResponse>
+
+    /**
+ * @summary Write back on a channel; sent now from the workspace's account
+ */
+export const useReplyToLead = <TError = ErrorType<BadRequestResponse | UnauthorizedResponse | ForbiddenResponse | NotFoundResponse | ConflictResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof replyToLead>>, TError,{organizationId: string;leadId: string;data: BodyType<ReplyToLeadBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof replyToLead>>,
+        TError,
+        {organizationId: string;leadId: string;data: BodyType<ReplyToLeadBody>},
+        TContext
+      > => {
+      return useMutation(getReplyToLeadMutationOptions(options));
     }
 

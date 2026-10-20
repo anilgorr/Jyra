@@ -10012,3 +10012,1349 @@ export const MarkOutreachReplyReadResponse = zod.object({
 })
 
 
+/**
+ * @summary The workspace's campaigns with their funnels
+ */
+export const ListCampaignsParams = zod.object({
+  "organizationId": zod.coerce.string()
+})
+
+export const ListCampaignsResponse = zod.object({
+  "campaigns": zod.array(zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "status": zod.enum(['DRAFT', 'ACTIVE', 'PAUSED', 'ARCHIVED']),
+  "offer": zod.object({
+  "senderName": zod.string(),
+  "pitch": zod.string(),
+  "proofPoints": zod.array(zod.string()),
+  "callToAction": zod.string(),
+  "bookingUrl": zod.string().nullable(),
+  "website": zod.string().nullable()
+}),
+  "audience": zod.object({
+  "kind": zod.enum(['CSV', 'LINKEDIN_SEARCH', 'MANUAL']),
+  "fileName": zod.string().nullish(),
+  "url": zod.string().optional(),
+  "importedAt": zod.string().nullish(),
+  "count": zod.number().optional()
+}),
+  "playbook": zod.array(zod.object({
+  "kind": zod.enum(['VIEW_PROFILE', 'REACT_POST', 'COMMENT_POST', 'CONNECT', 'LINKEDIN_MESSAGE', 'EMAIL', 'WHATSAPP', 'INSTAGRAM_DM']),
+  "label": zod.string(),
+  "delayDays": zod.number(),
+  "requiresApproval": zod.boolean(),
+  "condition": zod.enum(['ALWAYS', 'CONNECTED', 'NO_REPLY', 'REPLIED']),
+  "note": zod.string().nullable()
+})),
+  "senders": zod.array(zod.object({
+  "channel": zod.enum(['EMAIL', 'LINKEDIN', 'WHATSAPP', 'INSTAGRAM']),
+  "senderAccountId": zod.string(),
+  "displayName": zod.string().nullable(),
+  "status": zod.string()
+})),
+  "missingSenders": zod.array(zod.string()),
+  "masterPrompt": zod.string(),
+  "signature": zod.string(),
+  "timezone": zod.string(),
+  "funnel": zod.object({
+  "leads": zod.number(),
+  "queued": zod.number(),
+  "awaitingApproval": zod.number(),
+  "active": zod.number(),
+  "connected": zod.number(),
+  "replied": zod.number(),
+  "booked": zod.number(),
+  "completed": zod.number(),
+  "stopped": zod.number(),
+  "sent": zod.number()
+}),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+})),
+  "defaults": zod.object({
+  "playbook": zod.array(zod.object({
+  "kind": zod.enum(['VIEW_PROFILE', 'REACT_POST', 'COMMENT_POST', 'CONNECT', 'LINKEDIN_MESSAGE', 'EMAIL', 'WHATSAPP', 'INSTAGRAM_DM']),
+  "label": zod.string(),
+  "delayDays": zod.number(),
+  "requiresApproval": zod.boolean(),
+  "condition": zod.enum(['ALWAYS', 'CONNECTED', 'NO_REPLY', 'REPLIED']),
+  "note": zod.string().nullable()
+})),
+  "masterPrompt": zod.string()
+}),
+  "hasApprovals": zod.boolean()
+})
+
+
+/**
+ * @summary Create a campaign (as a draft)
+ */
+export const CreateCampaignParams = zod.object({
+  "organizationId": zod.coerce.string()
+})
+
+export const CreateCampaignBody = zod.object({
+  "name": zod.string().optional(),
+  "offer": zod.object({
+  "senderName": zod.string(),
+  "pitch": zod.string(),
+  "proofPoints": zod.array(zod.string()).optional(),
+  "callToAction": zod.string(),
+  "bookingUrl": zod.string().nullish(),
+  "website": zod.string().nullish()
+}).optional(),
+  "playbook": zod.array(zod.object({
+  "kind": zod.enum(['VIEW_PROFILE', 'REACT_POST', 'COMMENT_POST', 'CONNECT', 'LINKEDIN_MESSAGE', 'EMAIL', 'WHATSAPP', 'INSTAGRAM_DM']),
+  "delayDays": zod.number(),
+  "requiresApproval": zod.boolean(),
+  "condition": zod.enum(['ALWAYS', 'CONNECTED', 'NO_REPLY', 'REPLIED']),
+  "note": zod.string().nullish()
+})).optional(),
+  "senderAccounts": zod.record(zod.string(), zod.string()).optional(),
+  "masterPrompt": zod.string().optional(),
+  "signature": zod.string().optional(),
+  "timezone": zod.string().optional(),
+  "status": zod.enum(['DRAFT', 'ACTIVE', 'PAUSED', 'ARCHIVED']).optional()
+})
+
+export const CreateCampaignResponse = zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "status": zod.enum(['DRAFT', 'ACTIVE', 'PAUSED', 'ARCHIVED']),
+  "offer": zod.object({
+  "senderName": zod.string(),
+  "pitch": zod.string(),
+  "proofPoints": zod.array(zod.string()),
+  "callToAction": zod.string(),
+  "bookingUrl": zod.string().nullable(),
+  "website": zod.string().nullable()
+}),
+  "audience": zod.object({
+  "kind": zod.enum(['CSV', 'LINKEDIN_SEARCH', 'MANUAL']),
+  "fileName": zod.string().nullish(),
+  "url": zod.string().optional(),
+  "importedAt": zod.string().nullish(),
+  "count": zod.number().optional()
+}),
+  "playbook": zod.array(zod.object({
+  "kind": zod.enum(['VIEW_PROFILE', 'REACT_POST', 'COMMENT_POST', 'CONNECT', 'LINKEDIN_MESSAGE', 'EMAIL', 'WHATSAPP', 'INSTAGRAM_DM']),
+  "label": zod.string(),
+  "delayDays": zod.number(),
+  "requiresApproval": zod.boolean(),
+  "condition": zod.enum(['ALWAYS', 'CONNECTED', 'NO_REPLY', 'REPLIED']),
+  "note": zod.string().nullable()
+})),
+  "senders": zod.array(zod.object({
+  "channel": zod.enum(['EMAIL', 'LINKEDIN', 'WHATSAPP', 'INSTAGRAM']),
+  "senderAccountId": zod.string(),
+  "displayName": zod.string().nullable(),
+  "status": zod.string()
+})),
+  "missingSenders": zod.array(zod.string()),
+  "masterPrompt": zod.string(),
+  "signature": zod.string(),
+  "timezone": zod.string(),
+  "funnel": zod.object({
+  "leads": zod.number(),
+  "queued": zod.number(),
+  "awaitingApproval": zod.number(),
+  "active": zod.number(),
+  "connected": zod.number(),
+  "replied": zod.number(),
+  "booked": zod.number(),
+  "completed": zod.number(),
+  "stopped": zod.number(),
+  "sent": zod.number()
+}),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary One campaign
+ */
+export const GetCampaignParams = zod.object({
+  "organizationId": zod.coerce.string(),
+  "campaignId": zod.coerce.string()
+})
+
+export const GetCampaignResponse = zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "status": zod.enum(['DRAFT', 'ACTIVE', 'PAUSED', 'ARCHIVED']),
+  "offer": zod.object({
+  "senderName": zod.string(),
+  "pitch": zod.string(),
+  "proofPoints": zod.array(zod.string()),
+  "callToAction": zod.string(),
+  "bookingUrl": zod.string().nullable(),
+  "website": zod.string().nullable()
+}),
+  "audience": zod.object({
+  "kind": zod.enum(['CSV', 'LINKEDIN_SEARCH', 'MANUAL']),
+  "fileName": zod.string().nullish(),
+  "url": zod.string().optional(),
+  "importedAt": zod.string().nullish(),
+  "count": zod.number().optional()
+}),
+  "playbook": zod.array(zod.object({
+  "kind": zod.enum(['VIEW_PROFILE', 'REACT_POST', 'COMMENT_POST', 'CONNECT', 'LINKEDIN_MESSAGE', 'EMAIL', 'WHATSAPP', 'INSTAGRAM_DM']),
+  "label": zod.string(),
+  "delayDays": zod.number(),
+  "requiresApproval": zod.boolean(),
+  "condition": zod.enum(['ALWAYS', 'CONNECTED', 'NO_REPLY', 'REPLIED']),
+  "note": zod.string().nullable()
+})),
+  "senders": zod.array(zod.object({
+  "channel": zod.enum(['EMAIL', 'LINKEDIN', 'WHATSAPP', 'INSTAGRAM']),
+  "senderAccountId": zod.string(),
+  "displayName": zod.string().nullable(),
+  "status": zod.string()
+})),
+  "missingSenders": zod.array(zod.string()),
+  "masterPrompt": zod.string(),
+  "signature": zod.string(),
+  "timezone": zod.string(),
+  "funnel": zod.object({
+  "leads": zod.number(),
+  "queued": zod.number(),
+  "awaitingApproval": zod.number(),
+  "active": zod.number(),
+  "connected": zod.number(),
+  "replied": zod.number(),
+  "booked": zod.number(),
+  "completed": zod.number(),
+  "stopped": zod.number(),
+  "sent": zod.number()
+}),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+})
+
+
+/**
+ * Setting status to ACTIVE requires a connected sender for every channel the playbook uses. Playbook edits apply to leads added from now on.
+ * @summary Edit a campaign, or start / pause / archive it
+ */
+export const UpdateCampaignParams = zod.object({
+  "organizationId": zod.coerce.string(),
+  "campaignId": zod.coerce.string()
+})
+
+export const UpdateCampaignBody = zod.object({
+  "name": zod.string().optional(),
+  "offer": zod.object({
+  "senderName": zod.string(),
+  "pitch": zod.string(),
+  "proofPoints": zod.array(zod.string()).optional(),
+  "callToAction": zod.string(),
+  "bookingUrl": zod.string().nullish(),
+  "website": zod.string().nullish()
+}).optional(),
+  "playbook": zod.array(zod.object({
+  "kind": zod.enum(['VIEW_PROFILE', 'REACT_POST', 'COMMENT_POST', 'CONNECT', 'LINKEDIN_MESSAGE', 'EMAIL', 'WHATSAPP', 'INSTAGRAM_DM']),
+  "delayDays": zod.number(),
+  "requiresApproval": zod.boolean(),
+  "condition": zod.enum(['ALWAYS', 'CONNECTED', 'NO_REPLY', 'REPLIED']),
+  "note": zod.string().nullish()
+})).optional(),
+  "senderAccounts": zod.record(zod.string(), zod.string()).optional(),
+  "masterPrompt": zod.string().optional(),
+  "signature": zod.string().optional(),
+  "timezone": zod.string().optional(),
+  "status": zod.enum(['DRAFT', 'ACTIVE', 'PAUSED', 'ARCHIVED']).optional()
+})
+
+export const UpdateCampaignResponse = zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "status": zod.enum(['DRAFT', 'ACTIVE', 'PAUSED', 'ARCHIVED']),
+  "offer": zod.object({
+  "senderName": zod.string(),
+  "pitch": zod.string(),
+  "proofPoints": zod.array(zod.string()),
+  "callToAction": zod.string(),
+  "bookingUrl": zod.string().nullable(),
+  "website": zod.string().nullable()
+}),
+  "audience": zod.object({
+  "kind": zod.enum(['CSV', 'LINKEDIN_SEARCH', 'MANUAL']),
+  "fileName": zod.string().nullish(),
+  "url": zod.string().optional(),
+  "importedAt": zod.string().nullish(),
+  "count": zod.number().optional()
+}),
+  "playbook": zod.array(zod.object({
+  "kind": zod.enum(['VIEW_PROFILE', 'REACT_POST', 'COMMENT_POST', 'CONNECT', 'LINKEDIN_MESSAGE', 'EMAIL', 'WHATSAPP', 'INSTAGRAM_DM']),
+  "label": zod.string(),
+  "delayDays": zod.number(),
+  "requiresApproval": zod.boolean(),
+  "condition": zod.enum(['ALWAYS', 'CONNECTED', 'NO_REPLY', 'REPLIED']),
+  "note": zod.string().nullable()
+})),
+  "senders": zod.array(zod.object({
+  "channel": zod.enum(['EMAIL', 'LINKEDIN', 'WHATSAPP', 'INSTAGRAM']),
+  "senderAccountId": zod.string(),
+  "displayName": zod.string().nullable(),
+  "status": zod.string()
+})),
+  "missingSenders": zod.array(zod.string()),
+  "masterPrompt": zod.string(),
+  "signature": zod.string(),
+  "timezone": zod.string(),
+  "funnel": zod.object({
+  "leads": zod.number(),
+  "queued": zod.number(),
+  "awaitingApproval": zod.number(),
+  "active": zod.number(),
+  "connected": zod.number(),
+  "replied": zod.number(),
+  "booked": zod.number(),
+  "completed": zod.number(),
+  "stopped": zod.number(),
+  "sent": zod.number()
+}),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary The workspace's leads
+ */
+export const ListLeadsParams = zod.object({
+  "organizationId": zod.coerce.string()
+})
+
+export const listLeadsQueryLimitDefault = 100;
+export const listLeadsQueryLimitMax = 500;
+
+
+
+export const ListLeadsQueryParams = zod.object({
+  "q": zod.coerce.string().optional(),
+  "limit": zod.coerce.number().min(1).max(listLeadsQueryLimitMax).default(listLeadsQueryLimitDefault)
+})
+
+export const ListLeadsResponse = zod.object({
+  "leads": zod.array(zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "firstName": zod.string().nullable(),
+  "title": zod.string().nullable(),
+  "companyName": zod.string().nullable(),
+  "companyDomain": zod.string().nullable(),
+  "companyWebsite": zod.string().nullable(),
+  "location": zod.string().nullable(),
+  "linkedinUrl": zod.string().nullable(),
+  "email": zod.string().nullable(),
+  "emailStatus": zod.string(),
+  "phone": zod.string().nullable(),
+  "instagramHandle": zod.string().nullable(),
+  "source": zod.string(),
+  "attributes": zod.record(zod.string(), zod.string()),
+  "doNotContact": zod.boolean(),
+  "doNotContactReason": zod.string().nullable(),
+  "brief": zod.object({
+  "companySummary": zod.string().nullable(),
+  "services": zod.array(zod.string()),
+  "profileSummary": zod.string().nullable(),
+  "talkingPoints": zod.array(zod.string()),
+  "recentPosts": zod.array(zod.object({
+  "text": zod.string(),
+  "postedAt": zod.string().nullable(),
+  "url": zod.string().nullable()
+})),
+  "builtAt": zod.string()
+}).nullable(),
+  "briefError": zod.string().nullable(),
+  "createdAt": zod.coerce.date(),
+  "campaign": zod.object({
+  "campaignId": zod.string(),
+  "status": zod.string()
+}).nullish().describe('The walk this lead is on, when listed from the workspace\'s leads.')
+}))
+})
+
+
+/**
+ * Headers are matched loosely (First Name / first_name / Firstname all work). Leads are deduplicated on LinkedIn URL, then email; an existing lead is enriched, not duplicated. Unknown columns are kept and shown to the writer.
+ * @summary Import leads from a CSV, optionally straight into a campaign
+ */
+export const ImportLeadsCsvParams = zod.object({
+  "organizationId": zod.coerce.string()
+})
+
+export const ImportLeadsCsvBody = zod.object({
+  "csv": zod.string(),
+  "fileName": zod.string().nullish(),
+  "campaignId": zod.string().optional()
+})
+
+export const ImportLeadsCsvResponse = zod.object({
+  "created": zod.number(),
+  "updated": zod.number(),
+  "skipped": zod.number(),
+  "dropped": zod.number(),
+  "columns": zod.array(zod.object({
+  "header": zod.string(),
+  "field": zod.string().nullable()
+})),
+  "addedToCampaign": zod.number(),
+  "refused": zod.array(zod.object({
+  "leadId": zod.string(),
+  "name": zod.string(),
+  "code": zod.string(),
+  "message": zod.string()
+}))
+})
+
+
+/**
+ * Runs the search through one of the workspace's connected LinkedIn accounts (classic or Sales Navigator URL). Counts toward that account's daily search allowance.
+ * @summary Import leads from a LinkedIn people-search URL
+ */
+export const ImportLeadsLinkedinParams = zod.object({
+  "organizationId": zod.coerce.string()
+})
+
+export const importLeadsLinkedinBodyMaxDefault = 100;
+export const importLeadsLinkedinBodyMaxMax = 500;
+
+
+
+export const ImportLeadsLinkedinBody = zod.object({
+  "url": zod.string(),
+  "max": zod.number().min(1).max(importLeadsLinkedinBodyMaxMax).default(importLeadsLinkedinBodyMaxDefault),
+  "senderAccountId": zod.string(),
+  "campaignId": zod.string().optional()
+})
+
+export const ImportLeadsLinkedinResponse = zod.object({
+  "fetched": zod.number(),
+  "created": zod.number(),
+  "updated": zod.number(),
+  "skipped": zod.number(),
+  "addedToCampaign": zod.number(),
+  "refused": zod.array(zod.object({
+  "leadId": zod.string(),
+  "name": zod.string(),
+  "code": zod.string(),
+  "message": zod.string()
+}))
+})
+
+
+/**
+ * @summary Everyone in the campaign, with their steps
+ */
+export const ListCampaignLeadsParams = zod.object({
+  "organizationId": zod.coerce.string(),
+  "campaignId": zod.coerce.string()
+})
+
+export const listCampaignLeadsQueryLimitDefault = 300;
+export const listCampaignLeadsQueryLimitMax = 1000;
+
+
+
+export const ListCampaignLeadsQueryParams = zod.object({
+  "status": zod.enum(['QUEUED', 'RESEARCHING', 'AWAITING_APPROVAL', 'ACTIVE', 'REPLIED', 'BOOKED', 'COMPLETED', 'PAUSED', 'STOPPED', 'FAILED']).optional(),
+  "limit": zod.coerce.number().min(1).max(listCampaignLeadsQueryLimitMax).default(listCampaignLeadsQueryLimitDefault)
+})
+
+export const ListCampaignLeadsResponse = zod.object({
+  "leads": zod.array(zod.object({
+  "id": zod.string(),
+  "campaignId": zod.string(),
+  "lead": zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "firstName": zod.string().nullable(),
+  "title": zod.string().nullable(),
+  "companyName": zod.string().nullable(),
+  "companyDomain": zod.string().nullable(),
+  "companyWebsite": zod.string().nullable(),
+  "location": zod.string().nullable(),
+  "linkedinUrl": zod.string().nullable(),
+  "email": zod.string().nullable(),
+  "emailStatus": zod.string(),
+  "phone": zod.string().nullable(),
+  "instagramHandle": zod.string().nullable(),
+  "source": zod.string(),
+  "attributes": zod.record(zod.string(), zod.string()),
+  "doNotContact": zod.boolean(),
+  "doNotContactReason": zod.string().nullable(),
+  "brief": zod.object({
+  "companySummary": zod.string().nullable(),
+  "services": zod.array(zod.string()),
+  "profileSummary": zod.string().nullable(),
+  "talkingPoints": zod.array(zod.string()),
+  "recentPosts": zod.array(zod.object({
+  "text": zod.string(),
+  "postedAt": zod.string().nullable(),
+  "url": zod.string().nullable()
+})),
+  "builtAt": zod.string()
+}).nullable(),
+  "briefError": zod.string().nullable(),
+  "createdAt": zod.coerce.date(),
+  "campaign": zod.object({
+  "campaignId": zod.string(),
+  "status": zod.string()
+}).nullish().describe('The walk this lead is on, when listed from the workspace\'s leads.')
+}),
+  "status": zod.enum(['QUEUED', 'RESEARCHING', 'AWAITING_APPROVAL', 'ACTIVE', 'REPLIED', 'BOOKED', 'COMPLETED', 'PAUSED', 'STOPPED', 'FAILED']),
+  "connection": zod.enum(['NONE', 'PENDING', 'ACCEPTED', 'DECLINED', 'ALREADY_CONNECTED']),
+  "nextStepIndex": zod.number(),
+  "totalSteps": zod.number(),
+  "nextActionAt": zod.coerce.date().nullable(),
+  "connectedAt": zod.coerce.date().nullable(),
+  "lastOutboundAt": zod.coerce.date().nullable(),
+  "lastInboundAt": zod.coerce.date().nullable(),
+  "repliedAt": zod.coerce.date().nullable(),
+  "bookedAt": zod.coerce.date().nullable(),
+  "bookingNote": zod.string().nullable(),
+  "stopReason": zod.string().nullable(),
+  "createdAt": zod.coerce.date(),
+  "actions": zod.array(zod.object({
+  "id": zod.string(),
+  "campaignLeadId": zod.string(),
+  "campaignId": zod.string(),
+  "stepIndex": zod.number(),
+  "kind": zod.enum(['VIEW_PROFILE', 'REACT_POST', 'COMMENT_POST', 'CONNECT', 'LINKEDIN_MESSAGE', 'EMAIL', 'WHATSAPP', 'INSTAGRAM_DM']),
+  "label": zod.string(),
+  "channel": zod.enum(['EMAIL', 'LINKEDIN', 'WHATSAPP', 'INSTAGRAM']),
+  "status": zod.enum(['DRAFTING', 'AWAITING_APPROVAL', 'APPROVED', 'DONE', 'SKIPPED', 'CANCELLED', 'FAILED']),
+  "targetPost": zod.object({
+  "text": zod.string(),
+  "url": zod.string().nullable()
+}).nullable(),
+  "subject": zod.string().nullable(),
+  "body": zod.string().nullable(),
+  "evidence": zod.array(zod.string()),
+  "edited": zod.boolean(),
+  "scheduledFor": zod.coerce.date().nullable(),
+  "doneAt": zod.coerce.date().nullable(),
+  "openedAt": zod.coerce.date().nullable(),
+  "clickedAt": zod.coerce.date().nullable(),
+  "approvedAt": zod.coerce.date().nullable(),
+  "error": zod.string().nullable()
+}))
+}))
+})
+
+
+/**
+ * Each lead is researched and its first step drafted in the background; refused leads are listed with the reason.
+ * @summary Put leads into the campaign
+ */
+export const AddCampaignLeadsParams = zod.object({
+  "organizationId": zod.coerce.string(),
+  "campaignId": zod.coerce.string()
+})
+
+export const AddCampaignLeadsBody = zod.object({
+  "leadIds": zod.array(zod.string())
+})
+
+export const AddCampaignLeadsResponse = zod.object({
+  "added": zod.number(),
+  "refused": zod.array(zod.object({
+  "leadId": zod.string(),
+  "name": zod.string(),
+  "code": zod.string(),
+  "message": zod.string()
+}))
+})
+
+
+/**
+ * @summary Take a lead out of the campaign
+ */
+export const StopCampaignLeadParams = zod.object({
+  "organizationId": zod.coerce.string(),
+  "campaignLeadId": zod.coerce.string()
+})
+
+export const StopCampaignLeadBody = zod.object({
+  "reason": zod.string().optional()
+})
+
+export const StopCampaignLeadResponse = zod.object({
+  "id": zod.string(),
+  "campaignId": zod.string(),
+  "lead": zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "firstName": zod.string().nullable(),
+  "title": zod.string().nullable(),
+  "companyName": zod.string().nullable(),
+  "companyDomain": zod.string().nullable(),
+  "companyWebsite": zod.string().nullable(),
+  "location": zod.string().nullable(),
+  "linkedinUrl": zod.string().nullable(),
+  "email": zod.string().nullable(),
+  "emailStatus": zod.string(),
+  "phone": zod.string().nullable(),
+  "instagramHandle": zod.string().nullable(),
+  "source": zod.string(),
+  "attributes": zod.record(zod.string(), zod.string()),
+  "doNotContact": zod.boolean(),
+  "doNotContactReason": zod.string().nullable(),
+  "brief": zod.object({
+  "companySummary": zod.string().nullable(),
+  "services": zod.array(zod.string()),
+  "profileSummary": zod.string().nullable(),
+  "talkingPoints": zod.array(zod.string()),
+  "recentPosts": zod.array(zod.object({
+  "text": zod.string(),
+  "postedAt": zod.string().nullable(),
+  "url": zod.string().nullable()
+})),
+  "builtAt": zod.string()
+}).nullable(),
+  "briefError": zod.string().nullable(),
+  "createdAt": zod.coerce.date(),
+  "campaign": zod.object({
+  "campaignId": zod.string(),
+  "status": zod.string()
+}).nullish().describe('The walk this lead is on, when listed from the workspace\'s leads.')
+}),
+  "status": zod.enum(['QUEUED', 'RESEARCHING', 'AWAITING_APPROVAL', 'ACTIVE', 'REPLIED', 'BOOKED', 'COMPLETED', 'PAUSED', 'STOPPED', 'FAILED']),
+  "connection": zod.enum(['NONE', 'PENDING', 'ACCEPTED', 'DECLINED', 'ALREADY_CONNECTED']),
+  "nextStepIndex": zod.number(),
+  "totalSteps": zod.number(),
+  "nextActionAt": zod.coerce.date().nullable(),
+  "connectedAt": zod.coerce.date().nullable(),
+  "lastOutboundAt": zod.coerce.date().nullable(),
+  "lastInboundAt": zod.coerce.date().nullable(),
+  "repliedAt": zod.coerce.date().nullable(),
+  "bookedAt": zod.coerce.date().nullable(),
+  "bookingNote": zod.string().nullable(),
+  "stopReason": zod.string().nullable(),
+  "createdAt": zod.coerce.date(),
+  "actions": zod.array(zod.object({
+  "id": zod.string(),
+  "campaignLeadId": zod.string(),
+  "campaignId": zod.string(),
+  "stepIndex": zod.number(),
+  "kind": zod.enum(['VIEW_PROFILE', 'REACT_POST', 'COMMENT_POST', 'CONNECT', 'LINKEDIN_MESSAGE', 'EMAIL', 'WHATSAPP', 'INSTAGRAM_DM']),
+  "label": zod.string(),
+  "channel": zod.enum(['EMAIL', 'LINKEDIN', 'WHATSAPP', 'INSTAGRAM']),
+  "status": zod.enum(['DRAFTING', 'AWAITING_APPROVAL', 'APPROVED', 'DONE', 'SKIPPED', 'CANCELLED', 'FAILED']),
+  "targetPost": zod.object({
+  "text": zod.string(),
+  "url": zod.string().nullable()
+}).nullable(),
+  "subject": zod.string().nullable(),
+  "body": zod.string().nullable(),
+  "evidence": zod.array(zod.string()),
+  "edited": zod.boolean(),
+  "scheduledFor": zod.coerce.date().nullable(),
+  "doneAt": zod.coerce.date().nullable(),
+  "openedAt": zod.coerce.date().nullable(),
+  "clickedAt": zod.coerce.date().nullable(),
+  "approvedAt": zod.coerce.date().nullable(),
+  "error": zod.string().nullable()
+}))
+})
+
+
+/**
+ * @summary Pause, or with resume=true resume, a lead's walk
+ */
+export const PauseCampaignLeadParams = zod.object({
+  "organizationId": zod.coerce.string(),
+  "campaignLeadId": zod.coerce.string()
+})
+
+export const PauseCampaignLeadBody = zod.object({
+  "resume": zod.boolean().optional()
+})
+
+export const PauseCampaignLeadResponse = zod.object({
+  "id": zod.string(),
+  "campaignId": zod.string(),
+  "lead": zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "firstName": zod.string().nullable(),
+  "title": zod.string().nullable(),
+  "companyName": zod.string().nullable(),
+  "companyDomain": zod.string().nullable(),
+  "companyWebsite": zod.string().nullable(),
+  "location": zod.string().nullable(),
+  "linkedinUrl": zod.string().nullable(),
+  "email": zod.string().nullable(),
+  "emailStatus": zod.string(),
+  "phone": zod.string().nullable(),
+  "instagramHandle": zod.string().nullable(),
+  "source": zod.string(),
+  "attributes": zod.record(zod.string(), zod.string()),
+  "doNotContact": zod.boolean(),
+  "doNotContactReason": zod.string().nullable(),
+  "brief": zod.object({
+  "companySummary": zod.string().nullable(),
+  "services": zod.array(zod.string()),
+  "profileSummary": zod.string().nullable(),
+  "talkingPoints": zod.array(zod.string()),
+  "recentPosts": zod.array(zod.object({
+  "text": zod.string(),
+  "postedAt": zod.string().nullable(),
+  "url": zod.string().nullable()
+})),
+  "builtAt": zod.string()
+}).nullable(),
+  "briefError": zod.string().nullable(),
+  "createdAt": zod.coerce.date(),
+  "campaign": zod.object({
+  "campaignId": zod.string(),
+  "status": zod.string()
+}).nullish().describe('The walk this lead is on, when listed from the workspace\'s leads.')
+}),
+  "status": zod.enum(['QUEUED', 'RESEARCHING', 'AWAITING_APPROVAL', 'ACTIVE', 'REPLIED', 'BOOKED', 'COMPLETED', 'PAUSED', 'STOPPED', 'FAILED']),
+  "connection": zod.enum(['NONE', 'PENDING', 'ACCEPTED', 'DECLINED', 'ALREADY_CONNECTED']),
+  "nextStepIndex": zod.number(),
+  "totalSteps": zod.number(),
+  "nextActionAt": zod.coerce.date().nullable(),
+  "connectedAt": zod.coerce.date().nullable(),
+  "lastOutboundAt": zod.coerce.date().nullable(),
+  "lastInboundAt": zod.coerce.date().nullable(),
+  "repliedAt": zod.coerce.date().nullable(),
+  "bookedAt": zod.coerce.date().nullable(),
+  "bookingNote": zod.string().nullable(),
+  "stopReason": zod.string().nullable(),
+  "createdAt": zod.coerce.date(),
+  "actions": zod.array(zod.object({
+  "id": zod.string(),
+  "campaignLeadId": zod.string(),
+  "campaignId": zod.string(),
+  "stepIndex": zod.number(),
+  "kind": zod.enum(['VIEW_PROFILE', 'REACT_POST', 'COMMENT_POST', 'CONNECT', 'LINKEDIN_MESSAGE', 'EMAIL', 'WHATSAPP', 'INSTAGRAM_DM']),
+  "label": zod.string(),
+  "channel": zod.enum(['EMAIL', 'LINKEDIN', 'WHATSAPP', 'INSTAGRAM']),
+  "status": zod.enum(['DRAFTING', 'AWAITING_APPROVAL', 'APPROVED', 'DONE', 'SKIPPED', 'CANCELLED', 'FAILED']),
+  "targetPost": zod.object({
+  "text": zod.string(),
+  "url": zod.string().nullable()
+}).nullable(),
+  "subject": zod.string().nullable(),
+  "body": zod.string().nullable(),
+  "evidence": zod.array(zod.string()),
+  "edited": zod.boolean(),
+  "scheduledFor": zod.coerce.date().nullable(),
+  "doneAt": zod.coerce.date().nullable(),
+  "openedAt": zod.coerce.date().nullable(),
+  "clickedAt": zod.coerce.date().nullable(),
+  "approvedAt": zod.coerce.date().nullable(),
+  "error": zod.string().nullable()
+}))
+})
+
+
+/**
+ * @summary Mark a meeting booked (or undo it)
+ */
+export const BookCampaignLeadParams = zod.object({
+  "organizationId": zod.coerce.string(),
+  "campaignLeadId": zod.coerce.string()
+})
+
+export const BookCampaignLeadBody = zod.object({
+  "note": zod.string().nullish(),
+  "undo": zod.boolean().optional()
+})
+
+export const BookCampaignLeadResponse = zod.object({
+  "id": zod.string(),
+  "campaignId": zod.string(),
+  "lead": zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "firstName": zod.string().nullable(),
+  "title": zod.string().nullable(),
+  "companyName": zod.string().nullable(),
+  "companyDomain": zod.string().nullable(),
+  "companyWebsite": zod.string().nullable(),
+  "location": zod.string().nullable(),
+  "linkedinUrl": zod.string().nullable(),
+  "email": zod.string().nullable(),
+  "emailStatus": zod.string(),
+  "phone": zod.string().nullable(),
+  "instagramHandle": zod.string().nullable(),
+  "source": zod.string(),
+  "attributes": zod.record(zod.string(), zod.string()),
+  "doNotContact": zod.boolean(),
+  "doNotContactReason": zod.string().nullable(),
+  "brief": zod.object({
+  "companySummary": zod.string().nullable(),
+  "services": zod.array(zod.string()),
+  "profileSummary": zod.string().nullable(),
+  "talkingPoints": zod.array(zod.string()),
+  "recentPosts": zod.array(zod.object({
+  "text": zod.string(),
+  "postedAt": zod.string().nullable(),
+  "url": zod.string().nullable()
+})),
+  "builtAt": zod.string()
+}).nullable(),
+  "briefError": zod.string().nullable(),
+  "createdAt": zod.coerce.date(),
+  "campaign": zod.object({
+  "campaignId": zod.string(),
+  "status": zod.string()
+}).nullish().describe('The walk this lead is on, when listed from the workspace\'s leads.')
+}),
+  "status": zod.enum(['QUEUED', 'RESEARCHING', 'AWAITING_APPROVAL', 'ACTIVE', 'REPLIED', 'BOOKED', 'COMPLETED', 'PAUSED', 'STOPPED', 'FAILED']),
+  "connection": zod.enum(['NONE', 'PENDING', 'ACCEPTED', 'DECLINED', 'ALREADY_CONNECTED']),
+  "nextStepIndex": zod.number(),
+  "totalSteps": zod.number(),
+  "nextActionAt": zod.coerce.date().nullable(),
+  "connectedAt": zod.coerce.date().nullable(),
+  "lastOutboundAt": zod.coerce.date().nullable(),
+  "lastInboundAt": zod.coerce.date().nullable(),
+  "repliedAt": zod.coerce.date().nullable(),
+  "bookedAt": zod.coerce.date().nullable(),
+  "bookingNote": zod.string().nullable(),
+  "stopReason": zod.string().nullable(),
+  "createdAt": zod.coerce.date(),
+  "actions": zod.array(zod.object({
+  "id": zod.string(),
+  "campaignLeadId": zod.string(),
+  "campaignId": zod.string(),
+  "stepIndex": zod.number(),
+  "kind": zod.enum(['VIEW_PROFILE', 'REACT_POST', 'COMMENT_POST', 'CONNECT', 'LINKEDIN_MESSAGE', 'EMAIL', 'WHATSAPP', 'INSTAGRAM_DM']),
+  "label": zod.string(),
+  "channel": zod.enum(['EMAIL', 'LINKEDIN', 'WHATSAPP', 'INSTAGRAM']),
+  "status": zod.enum(['DRAFTING', 'AWAITING_APPROVAL', 'APPROVED', 'DONE', 'SKIPPED', 'CANCELLED', 'FAILED']),
+  "targetPost": zod.object({
+  "text": zod.string(),
+  "url": zod.string().nullable()
+}).nullable(),
+  "subject": zod.string().nullable(),
+  "body": zod.string().nullable(),
+  "evidence": zod.array(zod.string()),
+  "edited": zod.boolean(),
+  "scheduledFor": zod.coerce.date().nullable(),
+  "doneAt": zod.coerce.date().nullable(),
+  "openedAt": zod.coerce.date().nullable(),
+  "clickedAt": zod.coerce.date().nullable(),
+  "approvedAt": zod.coerce.date().nullable(),
+  "error": zod.string().nullable()
+}))
+})
+
+
+/**
+ * @summary Every draft waiting for a person, across the workspace
+ */
+export const ListCampaignApprovalsParams = zod.object({
+  "organizationId": zod.coerce.string()
+})
+
+export const listCampaignApprovalsQueryLimitDefault = 50;
+export const listCampaignApprovalsQueryLimitMax = 200;
+
+
+
+export const ListCampaignApprovalsQueryParams = zod.object({
+  "campaignId": zod.coerce.string().optional(),
+  "limit": zod.coerce.number().min(1).max(listCampaignApprovalsQueryLimitMax).default(listCampaignApprovalsQueryLimitDefault)
+})
+
+export const ListCampaignApprovalsResponse = zod.object({
+  "items": zod.array(zod.object({
+  "action": zod.object({
+  "id": zod.string(),
+  "campaignLeadId": zod.string(),
+  "campaignId": zod.string(),
+  "stepIndex": zod.number(),
+  "kind": zod.enum(['VIEW_PROFILE', 'REACT_POST', 'COMMENT_POST', 'CONNECT', 'LINKEDIN_MESSAGE', 'EMAIL', 'WHATSAPP', 'INSTAGRAM_DM']),
+  "label": zod.string(),
+  "channel": zod.enum(['EMAIL', 'LINKEDIN', 'WHATSAPP', 'INSTAGRAM']),
+  "status": zod.enum(['DRAFTING', 'AWAITING_APPROVAL', 'APPROVED', 'DONE', 'SKIPPED', 'CANCELLED', 'FAILED']),
+  "targetPost": zod.object({
+  "text": zod.string(),
+  "url": zod.string().nullable()
+}).nullable(),
+  "subject": zod.string().nullable(),
+  "body": zod.string().nullable(),
+  "evidence": zod.array(zod.string()),
+  "edited": zod.boolean(),
+  "scheduledFor": zod.coerce.date().nullable(),
+  "doneAt": zod.coerce.date().nullable(),
+  "openedAt": zod.coerce.date().nullable(),
+  "clickedAt": zod.coerce.date().nullable(),
+  "approvedAt": zod.coerce.date().nullable(),
+  "error": zod.string().nullable()
+}),
+  "lead": zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "firstName": zod.string().nullable(),
+  "title": zod.string().nullable(),
+  "companyName": zod.string().nullable(),
+  "companyDomain": zod.string().nullable(),
+  "companyWebsite": zod.string().nullable(),
+  "location": zod.string().nullable(),
+  "linkedinUrl": zod.string().nullable(),
+  "email": zod.string().nullable(),
+  "emailStatus": zod.string(),
+  "phone": zod.string().nullable(),
+  "instagramHandle": zod.string().nullable(),
+  "source": zod.string(),
+  "attributes": zod.record(zod.string(), zod.string()),
+  "doNotContact": zod.boolean(),
+  "doNotContactReason": zod.string().nullable(),
+  "brief": zod.object({
+  "companySummary": zod.string().nullable(),
+  "services": zod.array(zod.string()),
+  "profileSummary": zod.string().nullable(),
+  "talkingPoints": zod.array(zod.string()),
+  "recentPosts": zod.array(zod.object({
+  "text": zod.string(),
+  "postedAt": zod.string().nullable(),
+  "url": zod.string().nullable()
+})),
+  "builtAt": zod.string()
+}).nullable(),
+  "briefError": zod.string().nullable(),
+  "createdAt": zod.coerce.date(),
+  "campaign": zod.object({
+  "campaignId": zod.string(),
+  "status": zod.string()
+}).nullish().describe('The walk this lead is on, when listed from the workspace\'s leads.')
+}),
+  "campaign": zod.object({
+  "id": zod.string(),
+  "name": zod.string()
+}),
+  "campaignLeadId": zod.string(),
+  "connection": zod.enum(['NONE', 'PENDING', 'ACCEPTED', 'DECLINED', 'ALREADY_CONNECTED'])
+})),
+  "total": zod.number()
+})
+
+
+/**
+ * @summary Approve a draft, with any edits
+ */
+export const ApproveCampaignActionParams = zod.object({
+  "organizationId": zod.coerce.string(),
+  "actionId": zod.coerce.string()
+})
+
+export const ApproveCampaignActionBody = zod.object({
+  "subject": zod.string().nullish(),
+  "body": zod.string().nullish()
+})
+
+export const ApproveCampaignActionResponse = zod.object({
+  "id": zod.string(),
+  "campaignLeadId": zod.string(),
+  "campaignId": zod.string(),
+  "stepIndex": zod.number(),
+  "kind": zod.enum(['VIEW_PROFILE', 'REACT_POST', 'COMMENT_POST', 'CONNECT', 'LINKEDIN_MESSAGE', 'EMAIL', 'WHATSAPP', 'INSTAGRAM_DM']),
+  "label": zod.string(),
+  "channel": zod.enum(['EMAIL', 'LINKEDIN', 'WHATSAPP', 'INSTAGRAM']),
+  "status": zod.enum(['DRAFTING', 'AWAITING_APPROVAL', 'APPROVED', 'DONE', 'SKIPPED', 'CANCELLED', 'FAILED']),
+  "targetPost": zod.object({
+  "text": zod.string(),
+  "url": zod.string().nullable()
+}).nullable(),
+  "subject": zod.string().nullable(),
+  "body": zod.string().nullable(),
+  "evidence": zod.array(zod.string()),
+  "edited": zod.boolean(),
+  "scheduledFor": zod.coerce.date().nullable(),
+  "doneAt": zod.coerce.date().nullable(),
+  "openedAt": zod.coerce.date().nullable(),
+  "clickedAt": zod.coerce.date().nullable(),
+  "approvedAt": zod.coerce.date().nullable(),
+  "error": zod.string().nullable()
+})
+
+
+/**
+ * @summary Write the draft again
+ */
+export const RewriteCampaignActionParams = zod.object({
+  "organizationId": zod.coerce.string(),
+  "actionId": zod.coerce.string()
+})
+
+export const RewriteCampaignActionResponse = zod.object({
+  "id": zod.string(),
+  "campaignLeadId": zod.string(),
+  "campaignId": zod.string(),
+  "stepIndex": zod.number(),
+  "kind": zod.enum(['VIEW_PROFILE', 'REACT_POST', 'COMMENT_POST', 'CONNECT', 'LINKEDIN_MESSAGE', 'EMAIL', 'WHATSAPP', 'INSTAGRAM_DM']),
+  "label": zod.string(),
+  "channel": zod.enum(['EMAIL', 'LINKEDIN', 'WHATSAPP', 'INSTAGRAM']),
+  "status": zod.enum(['DRAFTING', 'AWAITING_APPROVAL', 'APPROVED', 'DONE', 'SKIPPED', 'CANCELLED', 'FAILED']),
+  "targetPost": zod.object({
+  "text": zod.string(),
+  "url": zod.string().nullable()
+}).nullable(),
+  "subject": zod.string().nullable(),
+  "body": zod.string().nullable(),
+  "evidence": zod.array(zod.string()),
+  "edited": zod.boolean(),
+  "scheduledFor": zod.coerce.date().nullable(),
+  "doneAt": zod.coerce.date().nullable(),
+  "openedAt": zod.coerce.date().nullable(),
+  "clickedAt": zod.coerce.date().nullable(),
+  "approvedAt": zod.coerce.date().nullable(),
+  "error": zod.string().nullable()
+})
+
+
+/**
+ * @summary Skip this step; the walk moves on
+ */
+export const SkipCampaignActionParams = zod.object({
+  "organizationId": zod.coerce.string(),
+  "actionId": zod.coerce.string()
+})
+
+export const SkipCampaignActionResponse = zod.object({
+  "id": zod.string(),
+  "campaignId": zod.string(),
+  "lead": zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "firstName": zod.string().nullable(),
+  "title": zod.string().nullable(),
+  "companyName": zod.string().nullable(),
+  "companyDomain": zod.string().nullable(),
+  "companyWebsite": zod.string().nullable(),
+  "location": zod.string().nullable(),
+  "linkedinUrl": zod.string().nullable(),
+  "email": zod.string().nullable(),
+  "emailStatus": zod.string(),
+  "phone": zod.string().nullable(),
+  "instagramHandle": zod.string().nullable(),
+  "source": zod.string(),
+  "attributes": zod.record(zod.string(), zod.string()),
+  "doNotContact": zod.boolean(),
+  "doNotContactReason": zod.string().nullable(),
+  "brief": zod.object({
+  "companySummary": zod.string().nullable(),
+  "services": zod.array(zod.string()),
+  "profileSummary": zod.string().nullable(),
+  "talkingPoints": zod.array(zod.string()),
+  "recentPosts": zod.array(zod.object({
+  "text": zod.string(),
+  "postedAt": zod.string().nullable(),
+  "url": zod.string().nullable()
+})),
+  "builtAt": zod.string()
+}).nullable(),
+  "briefError": zod.string().nullable(),
+  "createdAt": zod.coerce.date(),
+  "campaign": zod.object({
+  "campaignId": zod.string(),
+  "status": zod.string()
+}).nullish().describe('The walk this lead is on, when listed from the workspace\'s leads.')
+}),
+  "status": zod.enum(['QUEUED', 'RESEARCHING', 'AWAITING_APPROVAL', 'ACTIVE', 'REPLIED', 'BOOKED', 'COMPLETED', 'PAUSED', 'STOPPED', 'FAILED']),
+  "connection": zod.enum(['NONE', 'PENDING', 'ACCEPTED', 'DECLINED', 'ALREADY_CONNECTED']),
+  "nextStepIndex": zod.number(),
+  "totalSteps": zod.number(),
+  "nextActionAt": zod.coerce.date().nullable(),
+  "connectedAt": zod.coerce.date().nullable(),
+  "lastOutboundAt": zod.coerce.date().nullable(),
+  "lastInboundAt": zod.coerce.date().nullable(),
+  "repliedAt": zod.coerce.date().nullable(),
+  "bookedAt": zod.coerce.date().nullable(),
+  "bookingNote": zod.string().nullable(),
+  "stopReason": zod.string().nullable(),
+  "createdAt": zod.coerce.date(),
+  "actions": zod.array(zod.object({
+  "id": zod.string(),
+  "campaignLeadId": zod.string(),
+  "campaignId": zod.string(),
+  "stepIndex": zod.number(),
+  "kind": zod.enum(['VIEW_PROFILE', 'REACT_POST', 'COMMENT_POST', 'CONNECT', 'LINKEDIN_MESSAGE', 'EMAIL', 'WHATSAPP', 'INSTAGRAM_DM']),
+  "label": zod.string(),
+  "channel": zod.enum(['EMAIL', 'LINKEDIN', 'WHATSAPP', 'INSTAGRAM']),
+  "status": zod.enum(['DRAFTING', 'AWAITING_APPROVAL', 'APPROVED', 'DONE', 'SKIPPED', 'CANCELLED', 'FAILED']),
+  "targetPost": zod.object({
+  "text": zod.string(),
+  "url": zod.string().nullable()
+}).nullable(),
+  "subject": zod.string().nullable(),
+  "body": zod.string().nullable(),
+  "evidence": zod.array(zod.string()),
+  "edited": zod.boolean(),
+  "scheduledFor": zod.coerce.date().nullable(),
+  "doneAt": zod.coerce.date().nullable(),
+  "openedAt": zod.coerce.date().nullable(),
+  "clickedAt": zod.coerce.date().nullable(),
+  "approvedAt": zod.coerce.date().nullable(),
+  "error": zod.string().nullable()
+}))
+})
+
+
+/**
+ * @summary Conversations with leads, newest first
+ */
+export const ListInboxParams = zod.object({
+  "organizationId": zod.coerce.string()
+})
+
+export const listInboxQueryLimitDefault = 100;
+export const listInboxQueryLimitMax = 500;
+
+
+
+export const ListInboxQueryParams = zod.object({
+  "campaignId": zod.coerce.string().optional(),
+  "unread": zod.coerce.boolean().optional(),
+  "limit": zod.coerce.number().min(1).max(listInboxQueryLimitMax).default(listInboxQueryLimitDefault)
+})
+
+export const ListInboxResponse = zod.object({
+  "threads": zod.array(zod.object({
+  "lead": zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "firstName": zod.string().nullable(),
+  "title": zod.string().nullable(),
+  "companyName": zod.string().nullable(),
+  "companyDomain": zod.string().nullable(),
+  "companyWebsite": zod.string().nullable(),
+  "location": zod.string().nullable(),
+  "linkedinUrl": zod.string().nullable(),
+  "email": zod.string().nullable(),
+  "emailStatus": zod.string(),
+  "phone": zod.string().nullable(),
+  "instagramHandle": zod.string().nullable(),
+  "source": zod.string(),
+  "attributes": zod.record(zod.string(), zod.string()),
+  "doNotContact": zod.boolean(),
+  "doNotContactReason": zod.string().nullable(),
+  "brief": zod.object({
+  "companySummary": zod.string().nullable(),
+  "services": zod.array(zod.string()),
+  "profileSummary": zod.string().nullable(),
+  "talkingPoints": zod.array(zod.string()),
+  "recentPosts": zod.array(zod.object({
+  "text": zod.string(),
+  "postedAt": zod.string().nullable(),
+  "url": zod.string().nullable()
+})),
+  "builtAt": zod.string()
+}).nullable(),
+  "briefError": zod.string().nullable(),
+  "createdAt": zod.coerce.date(),
+  "campaign": zod.object({
+  "campaignId": zod.string(),
+  "status": zod.string()
+}).nullish().describe('The walk this lead is on, when listed from the workspace\'s leads.')
+}),
+  "lastMessage": zod.object({
+  "id": zod.string(),
+  "leadId": zod.string(),
+  "campaignId": zod.string().nullable(),
+  "channel": zod.enum(['EMAIL', 'LINKEDIN', 'WHATSAPP', 'INSTAGRAM']),
+  "direction": zod.enum(['OUTBOUND', 'INBOUND']),
+  "kind": zod.enum(['VIEW_PROFILE', 'REACT_POST', 'COMMENT_POST', 'CONNECT', 'LINKEDIN_MESSAGE', 'EMAIL', 'WHATSAPP', 'INSTAGRAM_DM']).nullable(),
+  "subject": zod.string().nullable(),
+  "text": zod.string().nullable(),
+  "occurredAt": zod.coerce.date(),
+  "box": zod.enum(['INTERESTED', 'NOT_NOW', 'OBJECTION', 'OUT_OF_OFFICE', 'UNSUBSCRIBE', 'REFERRAL', 'OTHER']).nullable(),
+  "boxReason": zod.string().nullable(),
+  "readAt": zod.coerce.date().nullable()
+}),
+  "unread": zod.number(),
+  "count": zod.number(),
+  "campaign": zod.object({
+  "id": zod.string(),
+  "name": zod.string()
+}).nullable(),
+  "campaignLeadId": zod.string().nullable(),
+  "status": zod.enum(['QUEUED', 'RESEARCHING', 'AWAITING_APPROVAL', 'ACTIVE', 'REPLIED', 'BOOKED', 'COMPLETED', 'PAUSED', 'STOPPED', 'FAILED']).nullable(),
+  "box": zod.enum(['INTERESTED', 'NOT_NOW', 'OBJECTION', 'OUT_OF_OFFICE', 'UNSUBSCRIBE', 'REFERRAL', 'OTHER']).nullable()
+})),
+  "unread": zod.number()
+})
+
+
+/**
+ * Opening the thread marks its messages read.
+ * @summary Everything exchanged with one lead, on every channel
+ */
+export const GetLeadThreadParams = zod.object({
+  "organizationId": zod.coerce.string(),
+  "leadId": zod.coerce.string()
+})
+
+export const GetLeadThreadResponse = zod.object({
+  "lead": zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "firstName": zod.string().nullable(),
+  "title": zod.string().nullable(),
+  "companyName": zod.string().nullable(),
+  "companyDomain": zod.string().nullable(),
+  "companyWebsite": zod.string().nullable(),
+  "location": zod.string().nullable(),
+  "linkedinUrl": zod.string().nullable(),
+  "email": zod.string().nullable(),
+  "emailStatus": zod.string(),
+  "phone": zod.string().nullable(),
+  "instagramHandle": zod.string().nullable(),
+  "source": zod.string(),
+  "attributes": zod.record(zod.string(), zod.string()),
+  "doNotContact": zod.boolean(),
+  "doNotContactReason": zod.string().nullable(),
+  "brief": zod.object({
+  "companySummary": zod.string().nullable(),
+  "services": zod.array(zod.string()),
+  "profileSummary": zod.string().nullable(),
+  "talkingPoints": zod.array(zod.string()),
+  "recentPosts": zod.array(zod.object({
+  "text": zod.string(),
+  "postedAt": zod.string().nullable(),
+  "url": zod.string().nullable()
+})),
+  "builtAt": zod.string()
+}).nullable(),
+  "briefError": zod.string().nullable(),
+  "createdAt": zod.coerce.date(),
+  "campaign": zod.object({
+  "campaignId": zod.string(),
+  "status": zod.string()
+}).nullish().describe('The walk this lead is on, when listed from the workspace\'s leads.')
+}),
+  "messages": zod.array(zod.object({
+  "id": zod.string(),
+  "leadId": zod.string(),
+  "campaignId": zod.string().nullable(),
+  "channel": zod.enum(['EMAIL', 'LINKEDIN', 'WHATSAPP', 'INSTAGRAM']),
+  "direction": zod.enum(['OUTBOUND', 'INBOUND']),
+  "kind": zod.enum(['VIEW_PROFILE', 'REACT_POST', 'COMMENT_POST', 'CONNECT', 'LINKEDIN_MESSAGE', 'EMAIL', 'WHATSAPP', 'INSTAGRAM_DM']).nullable(),
+  "subject": zod.string().nullable(),
+  "text": zod.string().nullable(),
+  "occurredAt": zod.coerce.date(),
+  "box": zod.enum(['INTERESTED', 'NOT_NOW', 'OBJECTION', 'OUT_OF_OFFICE', 'UNSUBSCRIBE', 'REFERRAL', 'OTHER']).nullable(),
+  "boxReason": zod.string().nullable(),
+  "readAt": zod.coerce.date().nullable()
+})),
+  "campaignLead": zod.object({
+  "id": zod.string(),
+  "campaignId": zod.string(),
+  "lead": zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "firstName": zod.string().nullable(),
+  "title": zod.string().nullable(),
+  "companyName": zod.string().nullable(),
+  "companyDomain": zod.string().nullable(),
+  "companyWebsite": zod.string().nullable(),
+  "location": zod.string().nullable(),
+  "linkedinUrl": zod.string().nullable(),
+  "email": zod.string().nullable(),
+  "emailStatus": zod.string(),
+  "phone": zod.string().nullable(),
+  "instagramHandle": zod.string().nullable(),
+  "source": zod.string(),
+  "attributes": zod.record(zod.string(), zod.string()),
+  "doNotContact": zod.boolean(),
+  "doNotContactReason": zod.string().nullable(),
+  "brief": zod.object({
+  "companySummary": zod.string().nullable(),
+  "services": zod.array(zod.string()),
+  "profileSummary": zod.string().nullable(),
+  "talkingPoints": zod.array(zod.string()),
+  "recentPosts": zod.array(zod.object({
+  "text": zod.string(),
+  "postedAt": zod.string().nullable(),
+  "url": zod.string().nullable()
+})),
+  "builtAt": zod.string()
+}).nullable(),
+  "briefError": zod.string().nullable(),
+  "createdAt": zod.coerce.date(),
+  "campaign": zod.object({
+  "campaignId": zod.string(),
+  "status": zod.string()
+}).nullish().describe('The walk this lead is on, when listed from the workspace\'s leads.')
+}),
+  "status": zod.enum(['QUEUED', 'RESEARCHING', 'AWAITING_APPROVAL', 'ACTIVE', 'REPLIED', 'BOOKED', 'COMPLETED', 'PAUSED', 'STOPPED', 'FAILED']),
+  "connection": zod.enum(['NONE', 'PENDING', 'ACCEPTED', 'DECLINED', 'ALREADY_CONNECTED']),
+  "nextStepIndex": zod.number(),
+  "totalSteps": zod.number(),
+  "nextActionAt": zod.coerce.date().nullable(),
+  "connectedAt": zod.coerce.date().nullable(),
+  "lastOutboundAt": zod.coerce.date().nullable(),
+  "lastInboundAt": zod.coerce.date().nullable(),
+  "repliedAt": zod.coerce.date().nullable(),
+  "bookedAt": zod.coerce.date().nullable(),
+  "bookingNote": zod.string().nullable(),
+  "stopReason": zod.string().nullable(),
+  "createdAt": zod.coerce.date(),
+  "actions": zod.array(zod.object({
+  "id": zod.string(),
+  "campaignLeadId": zod.string(),
+  "campaignId": zod.string(),
+  "stepIndex": zod.number(),
+  "kind": zod.enum(['VIEW_PROFILE', 'REACT_POST', 'COMMENT_POST', 'CONNECT', 'LINKEDIN_MESSAGE', 'EMAIL', 'WHATSAPP', 'INSTAGRAM_DM']),
+  "label": zod.string(),
+  "channel": zod.enum(['EMAIL', 'LINKEDIN', 'WHATSAPP', 'INSTAGRAM']),
+  "status": zod.enum(['DRAFTING', 'AWAITING_APPROVAL', 'APPROVED', 'DONE', 'SKIPPED', 'CANCELLED', 'FAILED']),
+  "targetPost": zod.object({
+  "text": zod.string(),
+  "url": zod.string().nullable()
+}).nullable(),
+  "subject": zod.string().nullable(),
+  "body": zod.string().nullable(),
+  "evidence": zod.array(zod.string()),
+  "edited": zod.boolean(),
+  "scheduledFor": zod.coerce.date().nullable(),
+  "doneAt": zod.coerce.date().nullable(),
+  "openedAt": zod.coerce.date().nullable(),
+  "clickedAt": zod.coerce.date().nullable(),
+  "approvedAt": zod.coerce.date().nullable(),
+  "error": zod.string().nullable()
+}))
+}).nullable(),
+  "canReply": zod.array(zod.enum(['EMAIL', 'LINKEDIN', 'WHATSAPP', 'INSTAGRAM']))
+})
+
+
+/**
+ * @summary Write back on a channel; sent now from the workspace's account
+ */
+export const ReplyToLeadParams = zod.object({
+  "organizationId": zod.coerce.string(),
+  "leadId": zod.coerce.string()
+})
+
+export const ReplyToLeadBody = zod.object({
+  "channel": zod.enum(['EMAIL', 'LINKEDIN', 'WHATSAPP', 'INSTAGRAM']),
+  "text": zod.string(),
+  "subject": zod.string().nullish()
+})
+
+export const ReplyToLeadResponse = zod.object({
+  "id": zod.string(),
+  "leadId": zod.string(),
+  "campaignId": zod.string().nullable(),
+  "channel": zod.enum(['EMAIL', 'LINKEDIN', 'WHATSAPP', 'INSTAGRAM']),
+  "direction": zod.enum(['OUTBOUND', 'INBOUND']),
+  "kind": zod.enum(['VIEW_PROFILE', 'REACT_POST', 'COMMENT_POST', 'CONNECT', 'LINKEDIN_MESSAGE', 'EMAIL', 'WHATSAPP', 'INSTAGRAM_DM']).nullable(),
+  "subject": zod.string().nullable(),
+  "text": zod.string().nullable(),
+  "occurredAt": zod.coerce.date(),
+  "box": zod.enum(['INTERESTED', 'NOT_NOW', 'OBJECTION', 'OUT_OF_OFFICE', 'UNSUBSCRIBE', 'REFERRAL', 'OTHER']).nullable(),
+  "boxReason": zod.string().nullable(),
+  "readAt": zod.coerce.date().nullable()
+})
+
+

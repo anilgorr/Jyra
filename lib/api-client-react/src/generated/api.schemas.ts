@@ -5767,6 +5767,404 @@ export interface ErrorResponse {
   error: string;
 }
 
+export type CampaignStatus = typeof CampaignStatus[keyof typeof CampaignStatus];
+
+
+export const CampaignStatus = {
+  DRAFT: 'DRAFT',
+  ACTIVE: 'ACTIVE',
+  PAUSED: 'PAUSED',
+  ARCHIVED: 'ARCHIVED',
+} as const;
+
+export type CampaignActionKind = typeof CampaignActionKind[keyof typeof CampaignActionKind];
+
+
+export const CampaignActionKind = {
+  VIEW_PROFILE: 'VIEW_PROFILE',
+  REACT_POST: 'REACT_POST',
+  COMMENT_POST: 'COMMENT_POST',
+  CONNECT: 'CONNECT',
+  LINKEDIN_MESSAGE: 'LINKEDIN_MESSAGE',
+  EMAIL: 'EMAIL',
+  WHATSAPP: 'WHATSAPP',
+  INSTAGRAM_DM: 'INSTAGRAM_DM',
+} as const;
+
+export type CampaignActionStatus = typeof CampaignActionStatus[keyof typeof CampaignActionStatus];
+
+
+export const CampaignActionStatus = {
+  DRAFTING: 'DRAFTING',
+  AWAITING_APPROVAL: 'AWAITING_APPROVAL',
+  APPROVED: 'APPROVED',
+  DONE: 'DONE',
+  SKIPPED: 'SKIPPED',
+  CANCELLED: 'CANCELLED',
+  FAILED: 'FAILED',
+} as const;
+
+export type CampaignLeadStatus = typeof CampaignLeadStatus[keyof typeof CampaignLeadStatus];
+
+
+export const CampaignLeadStatus = {
+  QUEUED: 'QUEUED',
+  RESEARCHING: 'RESEARCHING',
+  AWAITING_APPROVAL: 'AWAITING_APPROVAL',
+  ACTIVE: 'ACTIVE',
+  REPLIED: 'REPLIED',
+  BOOKED: 'BOOKED',
+  COMPLETED: 'COMPLETED',
+  PAUSED: 'PAUSED',
+  STOPPED: 'STOPPED',
+  FAILED: 'FAILED',
+} as const;
+
+export type ConnectionState = typeof ConnectionState[keyof typeof ConnectionState];
+
+
+export const ConnectionState = {
+  NONE: 'NONE',
+  PENDING: 'PENDING',
+  ACCEPTED: 'ACCEPTED',
+  DECLINED: 'DECLINED',
+  ALREADY_CONNECTED: 'ALREADY_CONNECTED',
+} as const;
+
+export type StepCondition = typeof StepCondition[keyof typeof StepCondition];
+
+
+export const StepCondition = {
+  ALWAYS: 'ALWAYS',
+  CONNECTED: 'CONNECTED',
+  NO_REPLY: 'NO_REPLY',
+  REPLIED: 'REPLIED',
+} as const;
+
+export interface PlaybookStep {
+  kind: CampaignActionKind;
+  delayDays: number;
+  requiresApproval: boolean;
+  condition: StepCondition;
+  note?: string | null;
+}
+
+export interface PlaybookStepView {
+  kind: CampaignActionKind;
+  label: string;
+  delayDays: number;
+  requiresApproval: boolean;
+  condition: StepCondition;
+  note: string | null;
+}
+
+export interface CampaignOffer {
+  senderName: string;
+  pitch: string;
+  proofPoints: string[];
+  callToAction: string;
+  bookingUrl: string | null;
+  website: string | null;
+}
+
+export interface CampaignOfferInput {
+  senderName: string;
+  pitch: string;
+  proofPoints?: string[];
+  callToAction: string;
+  bookingUrl?: string | null;
+  website?: string | null;
+}
+
+export type CampaignAudienceKind = typeof CampaignAudienceKind[keyof typeof CampaignAudienceKind];
+
+
+export const CampaignAudienceKind = {
+  CSV: 'CSV',
+  LINKEDIN_SEARCH: 'LINKEDIN_SEARCH',
+  MANUAL: 'MANUAL',
+} as const;
+
+export interface CampaignAudience {
+  kind: CampaignAudienceKind;
+  fileName?: string | null;
+  url?: string;
+  importedAt?: string | null;
+  count?: number;
+  [key: string]: unknown;
+ }
+
+export interface CampaignSender {
+  channel: OutreachChannel;
+  senderAccountId: string;
+  displayName: string | null;
+  status: string;
+}
+
+export interface CampaignFunnel {
+  leads: number;
+  queued: number;
+  awaitingApproval: number;
+  active: number;
+  connected: number;
+  replied: number;
+  booked: number;
+  completed: number;
+  stopped: number;
+  sent: number;
+}
+
+export interface Campaign {
+  id: string;
+  name: string;
+  status: CampaignStatus;
+  offer: CampaignOffer;
+  audience: CampaignAudience;
+  playbook: PlaybookStepView[];
+  senders: CampaignSender[];
+  missingSenders: string[];
+  masterPrompt: string;
+  signature: string;
+  timezone: string;
+  funnel: CampaignFunnel;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type CampaignInputSenderAccounts = {[key: string]: string};
+
+export interface CampaignInput {
+  name?: string;
+  offer?: CampaignOfferInput;
+  playbook?: PlaybookStep[];
+  senderAccounts?: CampaignInputSenderAccounts;
+  masterPrompt?: string;
+  signature?: string;
+  timezone?: string;
+  status?: CampaignStatus;
+}
+
+export type CampaignListDefaults = {
+  playbook: PlaybookStepView[];
+  masterPrompt: string;
+};
+
+export interface CampaignList {
+  campaigns: Campaign[];
+  defaults: CampaignListDefaults;
+  hasApprovals: boolean;
+}
+
+export type LeadBriefViewRecentPostsItem = {
+  text: string;
+  postedAt: string | null;
+  url: string | null;
+};
+
+export interface LeadBriefView {
+  companySummary: string | null;
+  services: string[];
+  profileSummary: string | null;
+  talkingPoints: string[];
+  recentPosts: LeadBriefViewRecentPostsItem[];
+  builtAt: string;
+}
+
+export type LeadAttributes = {[key: string]: string};
+
+/**
+ * The walk this lead is on, when listed from the workspace's leads.
+ */
+export type LeadCampaign = {
+  campaignId: string;
+  status: string;
+} | null;
+
+export interface Lead {
+  id: string;
+  name: string;
+  firstName: string | null;
+  title: string | null;
+  companyName: string | null;
+  companyDomain: string | null;
+  companyWebsite: string | null;
+  location: string | null;
+  linkedinUrl: string | null;
+  email: string | null;
+  emailStatus: string;
+  phone: string | null;
+  instagramHandle: string | null;
+  source: string;
+  attributes: LeadAttributes;
+  doNotContact: boolean;
+  doNotContactReason: string | null;
+  brief: LeadBriefView | null;
+  briefError: string | null;
+  createdAt: string;
+  /** The walk this lead is on, when listed from the workspace's leads. */
+  campaign?: LeadCampaign;
+}
+
+export interface LeadList {
+  leads: Lead[];
+}
+
+export type CampaignActionTargetPost = {
+  text: string;
+  url: string | null;
+} | null;
+
+export interface CampaignAction {
+  id: string;
+  campaignLeadId: string;
+  campaignId: string;
+  stepIndex: number;
+  kind: CampaignActionKind;
+  label: string;
+  channel: OutreachChannel;
+  status: CampaignActionStatus;
+  targetPost: CampaignActionTargetPost;
+  subject: string | null;
+  body: string | null;
+  evidence: string[];
+  edited: boolean;
+  scheduledFor: string | null;
+  doneAt: string | null;
+  openedAt: string | null;
+  clickedAt: string | null;
+  approvedAt: string | null;
+  error: string | null;
+}
+
+export interface CampaignLead {
+  id: string;
+  campaignId: string;
+  lead: Lead;
+  status: CampaignLeadStatus;
+  connection: ConnectionState;
+  nextStepIndex: number;
+  totalSteps: number;
+  nextActionAt: string | null;
+  connectedAt: string | null;
+  lastOutboundAt: string | null;
+  lastInboundAt: string | null;
+  repliedAt: string | null;
+  bookedAt: string | null;
+  bookingNote: string | null;
+  stopReason: string | null;
+  createdAt: string;
+  actions: CampaignAction[];
+}
+
+export interface CampaignLeadList {
+  leads: CampaignLead[];
+}
+
+export interface LeadRefusal {
+  leadId: string;
+  name: string;
+  code: string;
+  message: string;
+}
+
+export type ImportCsvReportColumnsItem = {
+  header: string;
+  field: string | null;
+};
+
+export interface ImportCsvReport {
+  created: number;
+  updated: number;
+  skipped: number;
+  dropped: number;
+  columns: ImportCsvReportColumnsItem[];
+  addedToCampaign: number;
+  refused: LeadRefusal[];
+}
+
+export interface ImportLinkedinReport {
+  fetched: number;
+  created: number;
+  updated: number;
+  skipped: number;
+  addedToCampaign: number;
+  refused: LeadRefusal[];
+}
+
+export interface AddLeadsReport {
+  added: number;
+  refused: LeadRefusal[];
+}
+
+export type ApprovalItemCampaign = {
+  id: string;
+  name: string;
+};
+
+export interface ApprovalItem {
+  action: CampaignAction;
+  lead: Lead;
+  campaign: ApprovalItemCampaign;
+  campaignLeadId: string;
+  connection: ConnectionState;
+}
+
+export interface ApprovalList {
+  items: ApprovalItem[];
+  total: number;
+}
+
+export type LeadMessageDirection = typeof LeadMessageDirection[keyof typeof LeadMessageDirection];
+
+
+export const LeadMessageDirection = {
+  OUTBOUND: 'OUTBOUND',
+  INBOUND: 'INBOUND',
+} as const;
+
+export interface LeadMessage {
+  id: string;
+  leadId: string;
+  campaignId: string | null;
+  channel: OutreachChannel;
+  direction: LeadMessageDirection;
+  kind: CampaignActionKind | null;
+  subject: string | null;
+  text: string | null;
+  occurredAt: string;
+  box: ReplyClassification | null;
+  boxReason: string | null;
+  readAt: string | null;
+}
+
+export type InboxThreadCampaign = {
+  id: string;
+  name: string;
+} | null;
+
+export interface InboxThread {
+  lead: Lead;
+  lastMessage: LeadMessage;
+  unread: number;
+  count: number;
+  campaign: InboxThreadCampaign;
+  campaignLeadId: string | null;
+  status: CampaignLeadStatus | null;
+  box: ReplyClassification | null;
+}
+
+export interface InboxList {
+  threads: InboxThread[];
+  unread: number;
+}
+
+export interface LeadThread {
+  lead: Lead;
+  messages: LeadMessage[];
+  campaignLead: CampaignLead | null;
+  canReply: OutreachChannel[];
+}
+
 /**
  * Invalid request
  */
@@ -6055,5 +6453,87 @@ resume?: boolean;
 export type ApproveOutreachStepBody = {
   subject?: string | null;
   body?: string | null;
+};
+
+export type ListLeadsParams = {
+q?: string;
+/**
+ * @minimum 1
+ * @maximum 500
+ */
+limit?: number;
+};
+
+export type ImportLeadsCsvBody = {
+  csv: string;
+  fileName?: string | null;
+  campaignId?: string;
+};
+
+export type ImportLeadsLinkedinBody = {
+  url: string;
+  /**
+     * @minimum 1
+     * @maximum 500
+     */
+  max?: number;
+  senderAccountId: string;
+  campaignId?: string;
+};
+
+export type ListCampaignLeadsParams = {
+status?: CampaignLeadStatus;
+/**
+ * @minimum 1
+ * @maximum 1000
+ */
+limit?: number;
+};
+
+export type AddCampaignLeadsBody = {
+  leadIds: string[];
+};
+
+export type StopCampaignLeadBody = {
+  reason?: string;
+};
+
+export type PauseCampaignLeadBody = {
+  resume?: boolean;
+};
+
+export type BookCampaignLeadBody = {
+  note?: string | null;
+  undo?: boolean;
+};
+
+export type ListCampaignApprovalsParams = {
+campaignId?: string;
+/**
+ * @minimum 1
+ * @maximum 200
+ */
+limit?: number;
+};
+
+export type ApproveCampaignActionBody = {
+  subject?: string | null;
+  body?: string | null;
+};
+
+export type ListInboxParams = {
+campaignId?: string;
+unread?: boolean;
+/**
+ * @minimum 1
+ * @maximum 500
+ */
+limit?: number;
+};
+
+export type ReplyToLeadBody = {
+  channel: OutreachChannel;
+  text: string;
+  subject?: string | null;
 };
 

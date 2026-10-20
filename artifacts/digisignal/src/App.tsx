@@ -29,6 +29,12 @@ import MarketReadinessCampaignPage from './pages/market-readiness/campaign';
 import Opportunities from './pages/opportunities';
 import InstantLeadsPage from './pages/instant-leads';
 import OutreachPage from './pages/outreach';
+import CampaignsPage from './pages/campaigns/index';
+import NewCampaignPage from './pages/campaigns/new';
+import CampaignPage from './pages/campaigns/campaign';
+import ApprovalsPage from './pages/approvals';
+import InboxPage from './pages/inbox';
+import LeadsPage from './pages/leads';
 import Outcomes from './pages/outcomes';
 import Learning from './pages/learning';
 import AdminQualityPage from './pages/admin-quality';
@@ -39,6 +45,8 @@ import { WorkspaceProvider } from './context/workspace-context';
 import PlanPage from "@/pages/plan";
 
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
+// The campaigns product is the front door; the older intelligence pages stay reachable behind VITE_JYRA_LEGACY_NAV=true.
+export const CAMPAIGN_MODE = import.meta.env.VITE_JYRA_LEGACY_NAV !== 'true';
 
 function AuthLoading() {
   return (
@@ -50,7 +58,7 @@ function AuthLoading() {
 
 function HomeRedirect() {
   const { isSignedIn } = useAuthSession();
-  return isSignedIn ? <Redirect to="/today" /> : <Landing />;
+  return isSignedIn ? <Redirect to={CAMPAIGN_MODE ? "/campaigns" : "/today"} /> : <Landing />;
 }
 
 /** The access-gate refusal, if that is what this error is. */
@@ -134,6 +142,12 @@ function AuthenticatedRoutes() {
             <Route path="/opportunities" component={Opportunities} />
             <Route path="/instant-leads" component={InstantLeadsPage} />
             <Route path="/outreach" component={OutreachPage} />
+            <Route path="/campaigns" component={CampaignsPage} />
+            <Route path="/campaigns/new" component={NewCampaignPage} />
+            <Route path="/campaigns/:campaignId" component={CampaignPage} />
+            <Route path="/approvals" component={ApprovalsPage} />
+            <Route path="/inbox" component={InboxPage} />
+            <Route path="/leads" component={LeadsPage} />
             <Route path="/companies/:projectCompanyId" component={CompanyIntelligencePage} />
             <Route path="/screening" component={ScreeningPage} />
             <Route path="/companies" component={CompaniesPage} />

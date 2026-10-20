@@ -12,7 +12,7 @@ import {
   RadioTower,
   ShieldCheck,
   Layers,
-  Radar, Gauge, Filter, Zap, Send,
+  Radar, Gauge, Filter, Zap, Send, CheckCircle2, Inbox, Users,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuthSession } from "@/lib/auth";
@@ -26,7 +26,16 @@ import {
 import { useWorkspace } from "@/context/workspace-context";
 import { useAdminAccess } from "@/hooks/use-admin-access";
 
-export const navItems = [
+const CAMPAIGN_MODE = import.meta.env.VITE_JYRA_LEGACY_NAV !== "true";
+
+const campaignNav = [
+  { href: "/campaigns", label: "Campaigns", icon: Send },
+  { href: "/approvals", label: "Approvals", icon: CheckCircle2 },
+  { href: "/inbox", label: "Inbox", icon: Inbox },
+  { href: "/leads", label: "Leads", icon: Users },
+];
+
+const legacyNav = [
   { href: "/today", label: "Today", icon: LayoutDashboard },
   { href: "/companies", label: "Companies", icon: Building2 },
   { href: "/screening", label: "Screening", icon: Filter },
@@ -40,6 +49,8 @@ export const navItems = [
   { href: "/icp", label: "Dynamic ICP", icon: Crosshair },
   { href: "/plan", label: "Plan & usage", icon: Gauge },
 ];
+
+export const navItems = CAMPAIGN_MODE ? campaignNav : legacyNav;
 
 export function Sidebar() {
   const [location] = useLocation();
@@ -58,7 +69,7 @@ export function Sidebar() {
   return (
     <aside className="hidden h-full w-64 flex-col bg-sidebar text-sidebar-foreground shadow-neu md:flex">
       <div className="p-6">
-        <Link href="/today" className="flex items-center gap-3 outline-none">
+        <Link href={CAMPAIGN_MODE ? "/campaigns" : "/today"} className="flex items-center gap-3 outline-none">
           <img src={logoUrl} alt="JYRA" className="h-10 w-10 rounded-xl shadow-neu-primary" />
           <span className="font-display text-xl font-extrabold tracking-tight">JYRA</span>
         </Link>
@@ -80,7 +91,7 @@ export function Sidebar() {
             ))}
           </SelectContent>
         </Select>
-        <Select
+        {!CAMPAIGN_MODE && <Select
           value={activeProjectId ?? undefined}
           onValueChange={setActiveProjectId}
           disabled={projects.length === 0}
@@ -95,13 +106,13 @@ export function Sidebar() {
               </SelectItem>
             ))}
           </SelectContent>
-        </Select>
+        </Select>}
       </div>
 
       <div className="flex-1 overflow-y-auto py-4">
         <nav className="space-y-1 px-3">
           {navItems.map((item) => {
-            const isActive = location === item.href;
+            const isActive = location === item.href || (item.href !== "/" && location.startsWith(`${item.href}/`));
             return (
               <Link
                 key={item.href}
