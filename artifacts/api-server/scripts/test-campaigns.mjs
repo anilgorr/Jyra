@@ -169,8 +169,8 @@ function fakeUnipile({ distance = {}, posts = { janedoe: JANE_POSTS }, overrides
     async sendEmail(input) { calls.push(["sendEmail", input]); n += 1; return { id: `em-${n}`, messageId: `<em-${n}@mail>` }; },
     async searchPeopleByUrl(accountId, url, cursor) {
       calls.push(["searchPeopleByUrl", { accountId, url, cursor }]);
-      if (!cursor) return { hits: [{ id: "prov-a", publicIdentifier: "alice-a", name: "Alice A", headline: "VP Marketing at Alpha | Speaker", location: "Pune", profileUrl: "https://www.linkedin.com/in/alice-a", networkDistance: "SECOND_DEGREE" }, { id: "prov-b", publicIdentifier: "ben-b", name: "Ben B", headline: "Founder @ Bravo", location: null, profileUrl: null, networkDistance: null }], nextCursor: "page2" };
-      return { hits: [{ id: "prov-c", publicIdentifier: "cara-c", name: "Cara C", headline: null, location: null, profileUrl: "https://www.linkedin.com/in/cara-c/", networkDistance: null }], nextCursor: null };
+      if (!cursor) return { hits: [{ id: "prov-a", publicIdentifier: "alice-a", name: "Alice A", headline: "VP Marketing at Alpha | Speaker", location: "Pune", profileUrl: "https://www.linkedin.com/in/alice-a", networkDistance: "SECOND_DEGREE", companyName: null }, { id: "prov-b", publicIdentifier: "ben-b", name: "Ben B", headline: "Founder @ Bravo", location: null, profileUrl: null, networkDistance: null, companyName: "Bravo Labs" }], nextCursor: "page2" };
+      return { hits: [{ id: "prov-c", publicIdentifier: "cara-c", name: "Cara C", headline: null, location: null, profileUrl: "https://www.linkedin.com/in/cara-c/", networkDistance: null, companyName: null }], nextCursor: null };
     },
     async listSentRelationRequests() { return []; },
     async cancelRelationRequest() {},
@@ -243,6 +243,7 @@ const approveAll = async (db, walkId, d) => { for (const action of actionsOf(db,
   assert.equal(alice.companyName, "Alpha"); assert.equal(alice.title, "VP Marketing at Alpha | Speaker"); assert.equal(alice.linkedinProviderId, "prov-a"); assert.equal(alice.source, "LINKEDIN_SEARCH");
   const ben = db.all(m.leadsTable).find((l) => l.linkedinHandle === "ben-b");
   assert.equal(ben.linkedinUrl, "https://www.linkedin.com/in/ben-b/", "a hit without a URL still gets one from its identifier");
+  assert.equal(ben.companyName, "Bravo Labs", "the company from the profile's experience beats the headline");
   const capped = fakeUnipile();
   const two = await m.importFromLinkedInSearch({ organizationId: ORG, unipileAccountId: "uni-li", url: "https://www.linkedin.com/search/results/people/?keywords=x", max: 2, userId: ANIL, client: capped.client, now: now() });
   assert.equal(two.fetched, 2); assert.equal(capped.only("searchPeopleByUrl").length, 1, "the cap stops the paging");

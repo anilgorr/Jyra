@@ -182,7 +182,7 @@ export async function importFromLinkedInSearch(input: { organizationId: string; 
       if (rows.length >= input.max) break;
       const name = hit.name ?? hit.publicIdentifier ?? "Unknown";
       rows.push({
-        name, firstName: name.split(/\s+/)[0] ?? null, title: hit.headline, companyName: hit.headline ? companyFromHeadline(hit.headline) : null, companyWebsite: null,
+        name, firstName: name.split(/\s+/)[0] ?? null, title: hit.headline, companyName: hit.companyName ?? (hit.headline ? companyFromHeadline(hit.headline) : null), companyWebsite: null,
         location: hit.location, linkedinUrl: hit.profileUrl ?? (hit.publicIdentifier ? `https://www.linkedin.com/in/${hit.publicIdentifier}/` : null),
         email: null, phone: null, instagramHandle: null, attributes: { linkedin_provider_id: hit.id, ...(hit.networkDistance ? { network_distance: hit.networkDistance } : {}) },
       });

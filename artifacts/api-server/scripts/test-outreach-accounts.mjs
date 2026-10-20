@@ -256,6 +256,43 @@ const gmail = (id, over = {}) => ({ id, provider: "google", user_id: "anil@aadit
   assert.deepEqual({ apiKey: configuration.apiKey, apiUrl: configuration.apiUrl, webhookSecret: configuration.webhookSecret }, { apiKey: "k", apiUrl: "https://api1.unipile.com", webhookSecret: undefined });
 }
 
+// 7b. A people search by URL reads Unipile's actual answer: { data: PeopleSearchResult[], next_cursor }, display_name and member_id, the
+//     company from the experience; classic pages by cursor at ten, Sales Navigator by offset when no cursor comes back.
+{
+  const requests = [];
+  const person = (n, extra = {}) => ({ object: "PeopleSearchResult", id: `ACo${n}`, member_id: `${n}`, display_name: `Person ${n}`, public_identifier: `person-${n}`, profile_url: `https://www.linkedin.com/in/person-${n}`, headline: `Head of Support at Co ${n}`, location: "Pune", network_distance: "SECOND_DEGREE", product: "classic", ...extra });
+  const client = m.createUnipileClient({
+    configuration: { apiKey: "k", apiUrl: "https://api.unipile.com", webhookSecret: undefined, timeoutMs: 1000 },
+    fetchImpl: async (url, init) => {
+      requests.push({ url, body: JSON.parse(init.body) });
+      if (url.includes("/linkedin/sales-navigator/search")) {
+        const offset = Number(new URL(url).searchParams.get("offset") ?? 0);
+        return new Response(JSON.stringify({ object: "LinkedinSearch", data: offset === 0 ? Array.from({ length: 25 }, (_, i) => person(i, { product: "sales_navigator", work_experience: [{ company: { id: null, name: `Acme ${i}` }, position: "Head of Support" }] })) : [person(99)], total_count: 26 }), { status: 200 });
+      }
+      if (url.includes("/linkedin/search")) {
+        const cursor = new URL(url).searchParams.get("cursor");
+        return new Response(JSON.stringify({ object: "LinkedinSearch", data: cursor ? [person(3, { work_experience: [] })] : [person(1), person(2, { public_identifier: null, profile_url: null }), { object: "CompanySearchResult", id: "c1", name: "Not a person" }], next_cursor: cursor ? undefined : "page2", total_count: 3 }), { status: 200 });
+      }
+      return new Response("{}", { status: 404 });
+    },
+  });
+  const first = await client.searchPeopleByUrl("acc_li", "https://www.linkedin.com/search/results/people/?keywords=support", null);
+  assert.equal(new URL(requests[0].url).searchParams.get("limit"), "10");
+  assert.deepEqual(requests[0].body, { url: "https://www.linkedin.com/search/results/people/?keywords=support" });
+  assert.deepEqual(first.hits.map((h) => [h.id, h.name, h.publicIdentifier, h.profileUrl, h.companyName]), [["ACo1", "Person 1", "person-1", "https://www.linkedin.com/in/person-1", null], ["ACo2", "Person 2", null, null, null]], "a company result in a people search is dropped");
+  assert.equal(first.nextCursor, "page2");
+  const second = await client.searchPeopleByUrl("acc_li", "https://www.linkedin.com/search/results/people/?keywords=support", "page2");
+  assert.equal(new URL(requests[1].url).searchParams.get("cursor"), "page2");
+  assert.equal(second.nextCursor, null);
+  const sales = await client.searchPeopleByUrl("acc_li", "https://www.linkedin.com/sales/search/people?query=x", null);
+  assert.equal(new URL(requests[2].url).searchParams.get("limit"), "25");
+  assert.equal(sales.hits.length, 25); assert.equal(sales.hits[0].companyName, "Acme 0", "the company comes from the experience");
+  assert.equal(sales.nextCursor, "offset:25", "no cursor from Sales Navigator: continue by offset");
+  const salesMore = await client.searchPeopleByUrl("acc_li", "https://www.linkedin.com/sales/search/people?query=x", "offset:25");
+  assert.equal(new URL(requests[3].url).searchParams.get("offset"), "25");
+  assert.equal(salesMore.hits.length, 1); assert.equal(salesMore.nextCursor, null, "the last page ends the paging");
+}
+
 // 8. Budgets ramp from the connection date and never reset on reconnect; a free LinkedIn account is a follow-up channel.
 {
   const day = (n) => new Date(NOW.getTime() + n * 24 * 60 * 60 * 1000);

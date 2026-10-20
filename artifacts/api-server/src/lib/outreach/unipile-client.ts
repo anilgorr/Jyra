@@ -109,7 +109,7 @@ export type UnipilePost = { id: string; text: string; postedAt: string | null; u
 export type UnipileComment = { id: string; text: string; authorId: string | null; authorName: string | null; postedAt: string | null };
 export type UnipileReaction = "linkedin_like" | "linkedin_celebrate" | "linkedin_support" | "linkedin_love" | "linkedin_insighful" | "linkedin_funny";
 /** One row of a LinkedIn people search, classic or Sales Navigator. */
-export type UnipileSearchHit = { id: string; publicIdentifier: string | null; name: string | null; headline: string | null; location: string | null; profileUrl: string | null; networkDistance: string | null };
+export type UnipileSearchHit = { id: string; publicIdentifier: string | null; name: string | null; headline: string | null; location: string | null; profileUrl: string | null; networkDistance: string | null; companyName: string | null };
 
 export type UnipileClient = {
   createAuthLink(input: CreateAuthLinkInput): Promise<{ url: string }>;
@@ -286,20 +286,38 @@ export function createUnipileClient(options: { configuration?: Partial<UnipileCo
       })).filter((comment) => comment.id);
     },
     async searchPeopleByUrl(accountId, url, cursor) {
+      // Unipile answers { data: PeopleSearchResult[], next_cursor?, total_count? }. Classic search pages by cursor (10 a page);
+      // Sales Navigator may give no cursor, in which case the page is continued by offset, carried here as "offset:<n>".
       const salesNavigator = /linkedin\.com\/sales\//i.test(url);
-      const path = `/v2/${encodeURIComponent(accountId)}/linkedin/${salesNavigator ? "sales-navigator/search" : "search"}${cursor ? `?cursor=${encodeURIComponent(cursor)}` : ""}`;
-      const { json } = await call<{ items?: unknown; cursor?: unknown; paging?: { next_cursor?: unknown } }>("POST", path, { url });
-      const items = Array.isArray(json?.items) ? (json!.items as Array<Record<string, unknown>>) : [];
-      const hits = items.map((item) => ({
-        id: str(item.id) ?? str(item.provider_id) ?? "",
-        publicIdentifier: str(item.public_identifier) ?? null,
-        name: str(item.name) ?? ([str(item.first_name), str(item.last_name)].filter(Boolean).join(" ") || null),
-        headline: str(item.headline) ?? null,
-        location: str(item.location) ?? null,
-        profileUrl: str(item.profile_url) ?? (str(item.public_identifier) ? `https://www.linkedin.com/in/${item.public_identifier}/` : null),
-        networkDistance: str(item.network_distance) ?? null,
-      })).filter((hit) => hit.id);
-      return { hits, nextCursor: str(json?.cursor) ?? str(json?.paging?.next_cursor) ?? null };
+      const limit = salesNavigator ? 25 : 10;
+      const query = new URLSearchParams({ limit: String(limit) });
+      let offset = 0;
+      if (cursor?.startsWith("offset:")) { offset = Number(cursor.slice(7)) || 0; query.set("offset", String(offset)); }
+      else if (cursor) query.set("cursor", cursor);
+      const path = `/v2/${encodeURIComponent(accountId)}/linkedin/${salesNavigator ? "sales-navigator/search" : "search"}?${query.toString()}`;
+      const { json } = await call<{ data?: unknown; items?: unknown; next_cursor?: unknown; cursor?: unknown; total_count?: unknown }>("POST", path, { url });
+      const items = Array.isArray(json?.data) ? (json!.data as Array<Record<string, unknown>>) : Array.isArray(json?.items) ? (json!.items as Array<Record<string, unknown>>) : [];
+      const hits = items
+        .filter((item) => !str(item.object) || /people/i.test(String(item.object)))
+        .map((item) => {
+          const experience = Array.isArray(item.work_experience) ? (item.work_experience as Array<{ company?: { name?: unknown } | null; position?: unknown }>) : [];
+          const company = experience.map((e) => str(e?.company?.name)).find(Boolean) ?? null;
+          return {
+            id: str(item.id) ?? str(item.member_id) ?? str(item.provider_id) ?? "",
+            publicIdentifier: str(item.public_identifier) ?? null,
+            name: str(item.display_name) ?? str(item.name) ?? ([str(item.first_name), str(item.last_name)].filter(Boolean).join(" ") || null),
+            headline: str(item.headline) ?? null,
+            location: str(item.location) ?? null,
+            profileUrl: str(item.profile_url) ?? (str(item.public_identifier) ? `https://www.linkedin.com/in/${item.public_identifier}/` : null),
+            networkDistance: str(item.network_distance) ?? null,
+            companyName: company,
+          };
+        })
+        .filter((hit) => hit.id);
+      const total = typeof json?.total_count === "number" ? json.total_count : null;
+      const next = str(json?.next_cursor) ?? str(json?.cursor);
+      const nextCursor = next ?? (hits.length === limit && (total === null || offset + limit < total) ? `offset:${offset + limit}` : null);
+      return { hits, nextCursor };
     },
   };
 }
