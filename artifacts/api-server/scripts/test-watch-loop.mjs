@@ -500,6 +500,35 @@ const noRecord = async () => {};
     assert.equal(report.halted, null, "two failures and a success is a bad hour, not a dead loop");
   }
 
+  // One company whose page cannot be stored: three failures halt the loop, but the probe
+  // then tries the next company, which succeeds and clears it; the bad one fails alone.
+  {
+    const breaker = fresh();
+    const bad = new Error('Failed query: insert into "intelligence_v2_cache" ... invalid input syntax for type json');
+    const cycle = async ({ owned }) => { if (owned.projectCompany.id === "vordr") throw bad; return ranCycle()(); };
+    const tick = (ids) => w.runWatchLoopTick({
+      repository: {}, log: quiet, now: NOW, settings: { ...settings, maxCompaniesPerTick: 10 }, breaker,
+      select: async () => ids.map((id) => owned(id)),
+      spend: async () => ({ spentTodayUsd: 0, recentCycleCosts: [] }), dailyBudgetFor: async () => 25,
+      gate: gateSaying(true, "REFRESH", 0), record: noRecord, cycle,
+    });
+    // Three ticks where only the poisoned company is due: a real halt.
+    for (let i = 0; i < 3; i += 1) await tick(["vordr"]);
+    assert.equal(w.watchLoopHalt(breaker).consecutiveFailures, 3);
+    assert.equal(breaker.streak.lastProjectCompanyId, "vordr");
+    // Others become due: the probe is not vordr again.
+    const report = await tick(["vordr", "acme", "beta"]);
+    const byId = Object.fromEntries(report.outcomes.map((o) => [o.projectCompanyId, o.result]));
+    assert.equal(byId.acme, "ran", "the probe moved on to a company that could succeed");
+    assert.equal(byId.beta, "ran", "and the success cleared the halt for the rest of the tick");
+    assert.equal(byId.vordr, "skipped_halted", "the poisoned one waited this time");
+    assert.equal(report.halted, null);
+    // Alone again, vordr is still tried: nobody else to probe with.
+    const alone = await tick(["vordr"]);
+    assert.equal(alone.outcomes[0].result, "failed");
+    assert.equal(breaker.streak.count, 1, "a fresh streak after the success");
+  }
+
   // A seller-context skip is not a probe: the halted tick still gets its one real attempt.
   {
     const breaker = fresh();

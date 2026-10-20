@@ -325,6 +325,8 @@ export type FailureStreak = {
   firstAt: string;
   lastAt: string;
   message: string;
+  /** The company whose cycle failed last; the probe tries someone else first, so one poisoned page cannot hold the loop alone. */
+  lastProjectCompanyId?: string;
 };
 
 export type WatchHalt = {
@@ -362,12 +364,12 @@ export function watchLoopHalt(state: CircuitBreaker = processBreaker): WatchHalt
   };
 }
 
-export function recordCycleFailure(state: CircuitBreaker, error: unknown, at: Date): WatchHalt | null {
+export function recordCycleFailure(state: CircuitBreaker, error: unknown, at: Date, projectCompanyId?: string): WatchHalt | null {
   const { kind, key, message } = classifyCycleFailure(error);
   const streak = state.streak;
   state.streak = streak
-    ? { ...streak, key, kind, count: streak.count + 1, lastAt: at.toISOString(), message }
-    : { key, kind, count: 1, firstAt: at.toISOString(), lastAt: at.toISOString(), message };
+    ? { ...streak, key, kind, count: streak.count + 1, lastAt: at.toISOString(), message, lastProjectCompanyId: projectCompanyId }
+    : { key, kind, count: 1, firstAt: at.toISOString(), lastAt: at.toISOString(), message, lastProjectCompanyId: projectCompanyId };
   return watchLoopHalt(state);
 }
 
@@ -547,9 +549,14 @@ export async function runWatchLoopTick(input: {
   let halt = watchLoopHalt(breaker);
   if (halt) input.log.warn({ reason: halt.reason, consecutiveFailures: halt.consecutiveFailures, since: halt.since, error: halt.error }, "WATCH_LOOP_HALTED_AT_START");
   let probed: boolean = false;
+  // The probe is the company that failed last only when nobody else is due: a
+  // page that cannot be stored would otherwise be retried every wake while
+  // the rest of the list, which would succeed, waits behind it.
+  const lastFailed = breaker.streak?.lastProjectCompanyId ?? null;
+  const probeCandidate = halt && lastFailed && due.some((owned) => owned.projectCompany.id !== lastFailed) ? lastFailed : null;
   for (const owned of due) {
     const base = { projectCompanyId: owned.projectCompany.id, companyName: owned.company.canonicalName, projectId: owned.project.id, tier: owned.tier };
-    if (halt && probed) {
+    if (halt && (probed || owned.projectCompany.id === probeCandidate)) {
       report.skipped++;
       report.outcomes.push({ ...base, result: "skipped_halted", reason: `research halted: ${halt.reason}; still due` });
       continue;
@@ -667,7 +674,7 @@ export async function runWatchLoopTick(input: {
       report.outcomes.push({ ...base, result: "failed", gate: gateSummary, reason: error instanceof Error ? error.message : String(error) });
       input.log.warn({ ...base, err: error }, "WATCH_LOOP_CYCLE_FAILED");
       const wasHalted = halt !== null;
-      halt = recordCycleFailure(breaker, error, cycleNow);
+      halt = recordCycleFailure(breaker, error, cycleNow, owned.projectCompany.id);
       if (halt && !wasHalted) input.log.warn({ ...base, reason: halt.reason, consecutiveFailures: halt.consecutiveFailures, error: halt.error }, "WATCH_LOOP_HALTED");
     }
   }

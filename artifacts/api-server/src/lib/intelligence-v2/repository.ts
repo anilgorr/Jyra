@@ -2,6 +2,7 @@ import { and, eq, sql } from "drizzle-orm";
 import { db, intelligenceV2CacheTable } from "@workspace/db";
 import type { IntelligenceV2CacheScope, IntelligenceV2Repository } from "./orchestrator";
 import type { CompanyIntelligenceProfileV2, ResearchPackageV2, SellerRelativeAssessmentV2 } from "./schemas";
+import { jsonSafe } from "../json-safe";
 
 type DbExecutor = typeof db | Parameters<Parameters<typeof db.transaction>[0]>[0];
 type CacheKind = "RESEARCH" | "PROFILE" | "ASSESSMENT";
@@ -32,7 +33,8 @@ export class PostgresIntelligenceV2Repository implements IntelligenceV2Repositor
     return (row?.payload as T | undefined) ?? null;
   }
 
-  private async write(kind: CacheKind, key: string, scope: CacheScope, payload: Record<string, unknown>): Promise<void> {
+  private async write(kind: CacheKind, key: string, scope: CacheScope, raw: Record<string, unknown>): Promise<void> {
+    const payload = jsonSafe(raw);
     await this.executor
       .insert(intelligenceV2CacheTable)
       .values({ kind, cacheKey: key, ...scope, payload })

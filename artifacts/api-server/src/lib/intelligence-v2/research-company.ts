@@ -1,3 +1,4 @@
+import { cutText } from "../json-safe";
 import { fingerprintV2 } from "./fingerprint";
 import { MAX_EXTERNAL_RESEARCH_CALLS, evidenceItemSchema, type EvidenceItemV2, type ResearchActionV2, type ResearchPackageV2, type ResearchRequirementV2 } from "./schemas";
 import { claimEligibleForRequirementV2, criterionSatisfiedBy, evaluateRequirementAgainstClaimsV2, isNegativeRequirementOperatorV2, prohibitedRequirementValuesV2 } from "./icp-requirements";
@@ -180,7 +181,7 @@ export function providerEvidence(input: {
     evidenceId,
     organizationId: input.request.organizationId, companyId: input.request.companyId, projectId: input.request.projectId, sourceType: input.sourceType,
     provider: input.provider, url: input.url, finalUrl: input.url, title: input.title || "Untitled fetched page",
-    observedAt: input.capturedAt, rawSnippet: input.snippet.slice(0, 4000), firstParty: input.firstParty,
+    observedAt: input.capturedAt, rawSnippet: cutText(input.snippet, 4000), firstParty: input.firstParty,
     confidence: input.firstParty ? .9 : .75, version, providerRequestId: input.providerRequestId,
     atomicClaims: [
       ...(finalHostMatches && brandFragment
