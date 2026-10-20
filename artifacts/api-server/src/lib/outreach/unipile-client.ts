@@ -185,9 +185,13 @@ export function createUnipileClient(options: { configuration?: Partial<UnipileCo
 
   return {
     async createAuthLink(input) {
+      // LinkedIn: activate what the account actually has, with no product screen for the user to miss. Sales Navigator and Recruiter
+      // cannot share one Unipile account, and we never use Recruiter, so it is left out. On a reconnect the same list expands an
+      // account linked as classic-only to Sales Navigator once the person has it.
+      const config = { linkedin: { products: ["classic", "sales_navigator"], allow_product_selection: false }, ...("accountId" in input || !input.loginHint ? {} : { global: { login_hint: input.loginHint } }) };
       const body = "accountId" in input
-        ? { account_id: input.accountId, expires_on: input.expiresOn.toISOString(), redirect_uri: input.redirectUri, state: input.state }
-        : { providers: input.providers, expires_on: input.expiresOn.toISOString(), redirect_uri: input.redirectUri, state: input.state, ...(input.loginHint ? { login_hint: input.loginHint } : {}) };
+        ? { account_id: input.accountId, expires_on: input.expiresOn.toISOString(), redirect_uri: input.redirectUri, state: input.state, config }
+        : { providers: input.providers, expires_on: input.expiresOn.toISOString(), redirect_uri: input.redirectUri, state: input.state, config };
       const { json } = await call<{ link?: unknown; url?: unknown }>("POST", "/v2/auth/link", body);
       const url = str(json?.link) ?? str(json?.url);
       if (!url) throw new UnipileError("UNIPILE_BAD_RESPONSE", "hosted auth response carried no link", false);

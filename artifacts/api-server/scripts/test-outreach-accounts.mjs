@@ -241,10 +241,11 @@ const gmail = (id, over = {}) => ({ id, provider: "google", user_id: "anil@aadit
   const link = await client.createAuthLink({ providers: ["linkedin"], expiresOn: NOW, redirectUri: REDIRECT, state: "s1" });
   assert.equal(link.url, "https://auth.unipile.com/abc");
   assert.equal(requests[0].init.headers["X-API-KEY"], "k");
-  assert.deepEqual(requests[0].body, { providers: ["linkedin"], expires_on: NOW.toISOString(), redirect_uri: REDIRECT, state: "s1" });
+  const LINKEDIN_CONFIG = { linkedin: { products: ["classic", "sales_navigator"], allow_product_selection: false } };
+  assert.deepEqual(requests[0].body, { providers: ["linkedin"], expires_on: NOW.toISOString(), redirect_uri: REDIRECT, state: "s1", config: LINKEDIN_CONFIG }, "Sales Navigator is activated when the account has it, with no product screen to miss");
   const reconnect = await client.createAuthLink({ accountId: "acc_li", expiresOn: NOW, redirectUri: REDIRECT, state: "s2" });
   assert.ok(reconnect.url);
-  assert.deepEqual(requests[1].body, { account_id: "acc_li", expires_on: NOW.toISOString(), redirect_uri: REDIRECT, state: "s2" });
+  assert.deepEqual(requests[1].body, { account_id: "acc_li", expires_on: NOW.toISOString(), redirect_uri: REDIRECT, state: "s2", config: LINKEDIN_CONFIG }, "a reconnect expands a classic-only account to Sales Navigator");
   assert.equal(await client.getAccount("acc_gone"), null);
   assert.equal((await client.getAccount("acc_li")).provider, "linkedin");
   await client.removeAccount("acc_li");
